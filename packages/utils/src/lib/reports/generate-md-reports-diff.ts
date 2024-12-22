@@ -127,7 +127,7 @@ function createDiffCategoriesSection(
   return new MarkdownDocument()
     .heading(HIERARCHY.level_2, !skipHeading && '🏷️ Categories')
     .table(columns, rows)
-    .paragraph(added.length > 0 && md.italic('(\\*) New category.'))
+    .paragraph(added.length > 0 && md.italic(String.raw`(\*) New category.`))
     .paragraph(
       skipUnchanged &&
         unchanged.length > 0 &&
@@ -153,9 +153,9 @@ function createCategoriesTable(
     ]),
     ...added.map(category => [
       formatTitle(category),
-      md.italic('n/a (\\*)'),
+      md.italic(String.raw`n/a (\*)`),
       formatScoreWithColor(category.score),
-      md.italic('n/a (\\*)'),
+      md.italic(String.raw`n/a (\*)`),
     ]),
     ...(skipUnchanged
       ? []

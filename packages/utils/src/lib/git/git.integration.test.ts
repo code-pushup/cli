@@ -1,5 +1,5 @@
 import { mkdir, rm, stat, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
 import { afterAll, beforeAll, beforeEach, describe, expect } from 'vitest';
 import { toUnixPath } from '../transform.js';
@@ -11,7 +11,7 @@ import {
 } from './git.js';
 
 describe('git utils in a git repo', () => {
-  const baseDir = join(process.cwd(), 'tmp', 'git-tests');
+  const baseDir = path.join(process.cwd(), 'tmp', 'git-tests');
   let emptyGit: SimpleGit;
 
   beforeAll(async () => {
@@ -34,7 +34,7 @@ describe('git utils in a git repo', () => {
 
   describe('with a branch and commits clean', () => {
     beforeAll(async () => {
-      await writeFile(join(baseDir, 'README.md'), '# hello-world\n');
+      await writeFile(path.join(baseDir, 'README.md'), '# hello-world\n');
       await emptyGit.add('README.md');
       await emptyGit.commit('Create README');
 
@@ -53,13 +53,13 @@ describe('git utils in a git repo', () => {
 
     it('should convert absolute path to relative Git path', async () => {
       await expect(
-        toGitPath(join(baseDir, 'src', 'utils.ts'), emptyGit),
+        toGitPath(path.join(baseDir, 'src', 'utils.ts'), emptyGit),
       ).resolves.toBe('src/utils.ts');
     });
 
     it('should convert relative Windows path to relative Git path', async () => {
       await expect(
-        toGitPath('Backend\\API\\Startup.cs', emptyGit),
+        toGitPath(String.raw`Backend\API\Startup.cs`, emptyGit),
       ).resolves.toBe('../../Backend/API/Startup.cs');
     });
 
@@ -92,10 +92,10 @@ describe('git utils in a git repo', () => {
   });
 
   describe('with a branch and commits dirty', () => {
-    const newFilePath = join(baseDir, 'new-file.md');
+    const newFilePath = path.join(baseDir, 'new-file.md');
 
     beforeAll(async () => {
-      await writeFile(join(baseDir, 'README.md'), '# hello-world\n');
+      await writeFile(path.join(baseDir, 'README.md'), '# hello-world\n');
       await emptyGit.add('README.md');
       await emptyGit.commit('Create README');
 

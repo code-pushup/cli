@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment */
 // Note: The plugins of the ScoredReport are not structured correctly, hence the ESLint disables.
 import type { Report } from '@code-pushup/models';
 import { GroupRefInvalidError } from '../../src/lib/reports/scoring.js';

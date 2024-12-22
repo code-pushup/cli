@@ -14,6 +14,7 @@ import type { Yarnv1FieldName } from './types.js';
 
 describe('yarnv1ToOutdatedResult', () => {
   const yarnInfo = { type: 'info', data: 'Colours' };
+
   it('should transform Yarn v1 outdated to unified outdated result', () => {
     const table = {
       type: 'table',

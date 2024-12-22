@@ -22,13 +22,13 @@ export const dependencyGroupToLong: Record<
   optional: 'optionalDependencies',
 };
 
-/* eslint-disable no-magic-numbers */
 export const dependencyGroupWeights: Record<DependencyGroup, number> = {
+  /* eslint-disable @typescript-eslint/no-magic-numbers */
   prod: 80,
   dev: 15,
   optional: 5,
+  /* eslint-enable @typescript-eslint/no-magic-numbers */
 };
-/* eslint-enable no-magic-numbers */
 
 export const dependencyDocs: Record<DependencyGroup, string> = {
   prod: 'https://classic.yarnpkg.com/docs/dependency-types#toc-dependencies',

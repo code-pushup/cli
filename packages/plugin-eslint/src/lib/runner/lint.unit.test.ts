@@ -32,7 +32,6 @@ vi.mock('eslint', () => ({
 
 vi.mock('@code-pushup/utils', async () => {
   const utils = await vi.importActual('@code-pushup/utils');
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   const testUtils: { MEMFS_VOLUME: string } = await vi.importActual(
     '@code-pushup/test-utils',
   );

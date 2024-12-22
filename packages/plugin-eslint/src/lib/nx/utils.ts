@@ -1,5 +1,5 @@
 import type { ProjectConfiguration } from '@nx/devkit';
-import { join } from 'node:path';
+import path from 'node:path';
 import { fileExists, toArray } from '@code-pushup/utils';
 import type { ConfigFormat } from '../meta/index.js';
 
@@ -96,7 +96,7 @@ async function findProjectFile(
     // eslint-disable-next-line functional/no-loop-statements
     for (const ext of file.extensions) {
       const filename = `./${project.root}/${name}.${ext}`;
-      if (await fileExists(join(process.cwd(), filename))) {
+      if (await fileExists(path.join(process.cwd(), filename))) {
         return filename;
       }
     }

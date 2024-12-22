@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Audit, Group, PluginConfig } from '@code-pushup/models';
 import {
@@ -10,7 +10,7 @@ import {
   dependencyGroups,
 } from './config.js';
 import { dependencyDocs, dependencyGroupWeights } from './constants.js';
-import { packageManagers } from './package-managers/package-managers';
+import { packageManagers } from './package-managers/package-managers.js';
 import { createRunnerConfig } from './runner/index.js';
 import { normalizeConfig } from './utils.js';
 
@@ -37,8 +37,8 @@ export async function jsPackagesPlugin(
   const { packageManager, checks, depGroups, ...jsPackagesPluginConfigRest } =
     await normalizeConfig(config);
 
-  const runnerScriptPath = join(
-    fileURLToPath(dirname(import.meta.url)),
+  const runnerScriptPath = path.join(
+    fileURLToPath(path.dirname(import.meta.url)),
     '..',
     'bin.js',
   );

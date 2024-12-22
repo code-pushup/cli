@@ -31,6 +31,7 @@ describe('history', () => {
     },
     plugins: [MINIMAL_PLUGIN_CONFIG_MOCK],
   };
+
   it('should check out all passed commits and reset to initial branch or tag', async () => {
     await history(historyBaseOptions, ['abc', 'def']);
 

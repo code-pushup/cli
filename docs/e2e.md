@@ -144,14 +144,14 @@ export default defineConfig({
 
 // to avoid port conflicts ever E2E targets has a unique port
 const uniquePort = 6000 + Math.round(Math.random() * 1000);
-const e2eDir = join('tmp', 'e2e');
+const e2eDir = path.join('tmp', 'e2e');
 
 export async function setup() {
   // start local verdaccio registry
   const { registry } = await startLocalRegistry({
     localRegistryTarget: '@code-pushup/cli-source:start-verdaccio',
     // to avoid file system conflicts ever E2E targets has a unique storage folder
-    storage: join(join(e2eDir, `registry-${uniquePort}`), 'storage'),
+    storage: path.join(path.join(e2eDir, `registry-${uniquePort}`), 'storage'),
     port: uniquePort,
   });
 

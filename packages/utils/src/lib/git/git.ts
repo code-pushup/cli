@@ -1,4 +1,4 @@
-import { isAbsolute, join, relative } from 'node:path';
+import path from 'node:path';
 import { type StatusResult, simpleGit } from 'simple-git';
 import { ui } from '../logging.js';
 import { toUnixPath } from '../transform.js';
@@ -7,18 +7,20 @@ export function getGitRoot(git = simpleGit()): Promise<string> {
   return git.revparse('--show-toplevel');
 }
 
-export function formatGitPath(path: string, gitRoot: string): string {
-  const absolutePath = isAbsolute(path) ? path : join(process.cwd(), path);
-  const relativePath = relative(gitRoot, absolutePath);
+export function formatGitPath(filePath: string, gitRoot: string): string {
+  const absolutePath = path.isAbsolute(filePath)
+    ? filePath
+    : path.join(process.cwd(), filePath);
+  const relativePath = path.relative(gitRoot, absolutePath);
   return toUnixPath(relativePath);
 }
 
 export async function toGitPath(
-  path: string,
+  filePath: string,
   git = simpleGit(),
 ): Promise<string> {
   const gitRoot = await getGitRoot(git);
-  return formatGitPath(path, gitRoot);
+  return formatGitPath(filePath, gitRoot);
 }
 
 export class GitStatusError extends Error {

@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
-import { join } from 'node:path';
+import path from 'node:path';
 import {
   type Format,
   type PersistConfig,
@@ -58,7 +58,7 @@ export async function compareReportFiles(
 
   return Promise.all(
     format.map(async fmt => {
-      const outputPath = join(outputDir, `${filename}-diff.${fmt}`);
+      const outputPath = path.join(outputDir, `${filename}-diff.${fmt}`);
       const content = reportsDiffToFileContent(diff, fmt);
       await ensureDirectoryExists(outputDir);
       await writeFile(outputPath, content);

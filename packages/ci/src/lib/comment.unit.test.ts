@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { commentOnPR } from './comment.js';
 import type { Comment, Logger, ProviderAPIClient } from './models.js';
@@ -8,7 +8,7 @@ import type { Comment, Logger, ProviderAPIClient } from './models.js';
 describe('commentOnPR', () => {
   const diffText = '# Code PushUp\n\nNo changes to report.\n';
   const diffFile = 'report-diff.md';
-  const diffPath = join(MEMFS_VOLUME, diffFile);
+  const diffPath = path.join(MEMFS_VOLUME, diffFile);
 
   const comment: Comment = {
     id: 42,

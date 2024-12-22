@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import {
   type Format,
   type PersistConfig,
@@ -20,7 +20,7 @@ export async function loadReport<T extends Format>(
 ): Promise<LoadedReportFormat<T>> {
   const { outputDir, filename, format } = options;
   await ensureDirectoryExists(outputDir);
-  const filePath = join(outputDir, `${filename}.${format}`);
+  const filePath = path.join(outputDir, `${filename}.${format}`);
 
   if (format === 'json') {
     const content = await readJsonFile(filePath);

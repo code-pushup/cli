@@ -1,7 +1,7 @@
 import type { JestExecutorOptions } from '@nx/jest/src/executors/jest/schema';
 import type { VitestExecutorOptions } from '@nx/vite/executors';
 import { vol } from 'memfs';
-import { join } from 'node:path';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import type { CoverageResult } from '../config.js';
@@ -19,7 +19,7 @@ vi.mock('bundle-require', () => ({
       test: {
         coverage: {
           reporter: ['lcov'],
-          reportsDirectory: join('coverage', 'cli'),
+          reportsDirectory: path.join('coverage', 'cli'),
         },
       },
     };
@@ -39,7 +39,7 @@ vi.mock('bundle-require', () => ({
 
     const JEST_VALID: JestCoverageConfig = {
       coverageReporters: ['lcov'],
-      coverageDirectory: join('coverage', 'core'),
+      coverageDirectory: path.join('coverage', 'core'),
     };
 
     const JEST_NO_DIR: JestCoverageConfig = {
@@ -99,7 +99,7 @@ describe('getCoveragePathForTarget', () => {
       getCoveragePathsForTarget(
         {
           name: 'cli',
-          root: join('packages', 'cli'),
+          root: path.join('packages', 'cli'),
           targets: {
             test: {
               executor: '@nx/vite:test',
@@ -112,8 +112,8 @@ describe('getCoveragePathForTarget', () => {
         'test',
       ),
     ).resolves.toEqual({
-      pathToProject: join('packages', 'cli'),
-      resultsPath: join('packages', 'cli', 'coverage', 'cli', 'lcov.info'),
+      pathToProject: path.join('packages', 'cli'),
+      resultsPath: path.join('packages', 'cli', 'coverage', 'cli', 'lcov.info'),
     });
   });
 
@@ -122,7 +122,7 @@ describe('getCoveragePathForTarget', () => {
       getCoveragePathsForTarget(
         {
           name: 'core',
-          root: join('packages', 'core'),
+          root: path.join('packages', 'core'),
           targets: {
             test: {
               executor: '@nx/jest:jest',
@@ -134,7 +134,9 @@ describe('getCoveragePathForTarget', () => {
         },
         'test',
       ),
-    ).resolves.toBe(join('packages', 'core', 'coverage', 'core', 'lcov.info'));
+    ).resolves.toBe(
+      path.join('packages', 'core', 'coverage', 'core', 'lcov.info'),
+    );
   });
 
   it('should throw for unsupported executor (only vitest and jest are supported)', async () => {
@@ -142,7 +144,7 @@ describe('getCoveragePathForTarget', () => {
       getCoveragePathsForTarget(
         {
           name: 'ui',
-          root: join('apps', 'ui'),
+          root: path.join('apps', 'ui'),
           targets: {
             'component-test': {
               executor: '@nx/cypress',
@@ -173,12 +175,12 @@ describe('getCoveragePathForVitest', () => {
     await expect(
       getCoveragePathForVitest(
         { configFile: 'vitest-valid.config.unit.ts' },
-        { name: 'cli', root: join('packages', 'cli') },
+        { name: 'cli', root: path.join('packages', 'cli') },
         'unit-test',
       ),
     ).resolves.toEqual({
-      pathToProject: join('packages', 'cli'),
-      resultsPath: join('packages', 'cli', 'coverage', 'cli', 'lcov.info'),
+      pathToProject: path.join('packages', 'cli'),
+      resultsPath: path.join('packages', 'cli', 'coverage', 'cli', 'lcov.info'),
     } satisfies CoverageResult);
   });
 
@@ -186,7 +188,7 @@ describe('getCoveragePathForVitest', () => {
     await expect(() =>
       getCoveragePathForVitest(
         { configFile: 'vitest-no-dir.config.integration.ts' },
-        { name: 'cli', root: join('packages', 'cli') },
+        { name: 'cli', root: path.join('packages', 'cli') },
         'integration-test',
       ),
     ).rejects.toThrow(
@@ -199,7 +201,7 @@ describe('getCoveragePathForVitest', () => {
       getCoveragePathForVitest(
         {
           configFile: 'vitest-valid.config.unit.ts',
-          reportsDirectory: join(
+          reportsDirectory: path.join(
             '..',
             '..',
             'dist',
@@ -208,12 +210,18 @@ describe('getCoveragePathForVitest', () => {
             'coverage',
           ),
         },
-        { name: 'cli', root: join('packages', 'cli') },
+        { name: 'cli', root: path.join('packages', 'cli') },
         'unit-test',
       ),
     ).resolves.toEqual({
-      pathToProject: join('packages', 'cli'),
-      resultsPath: join('dist', 'packages', 'cli', 'coverage', 'lcov.info'),
+      pathToProject: path.join('packages', 'cli'),
+      resultsPath: path.join(
+        'dist',
+        'packages',
+        'cli',
+        'coverage',
+        'lcov.info',
+      ),
     } satisfies CoverageResult);
   });
 
@@ -221,7 +229,7 @@ describe('getCoveragePathForVitest', () => {
     await expect(() =>
       getCoveragePathForVitest(
         { configFile: 'vitest-no-lcov.config.integration.ts' },
-        { name: 'core', root: join('packages', 'core') },
+        { name: 'core', root: path.join('packages', 'core') },
         'integration-test',
       ),
     ).rejects.toThrow(/configuration .* does not include LCOV report format/);
@@ -232,13 +240,18 @@ describe('getCoveragePathForVitest', () => {
       getCoveragePathForVitest(
         {
           configFile: 'vitest-valid.config.unit.ts',
-          reportsDirectory: join(process.cwd(), 'coverage', 'packages', 'cli'),
+          reportsDirectory: path.join(
+            process.cwd(),
+            'coverage',
+            'packages',
+            'cli',
+          ),
         },
-        { name: 'cli', root: join('packages', 'cli') },
+        { name: 'cli', root: path.join('packages', 'cli') },
         'unit-test',
       ),
     ).resolves.toBe(
-      join(process.cwd(), 'coverage', 'packages', 'cli', 'lcov.info'),
+      path.join(process.cwd(), 'coverage', 'packages', 'cli', 'lcov.info'),
     );
   });
 });
@@ -260,17 +273,19 @@ describe('getCoveragePathForJest', () => {
     await expect(
       getCoveragePathForJest(
         { jestConfig: 'jest-valid.config.unit.ts' },
-        { name: 'cli', root: join('packages', 'cli') },
+        { name: 'cli', root: path.join('packages', 'cli') },
         'unit-test',
       ),
-    ).resolves.toBe(join('packages', 'cli', 'coverage', 'core', 'lcov.info'));
+    ).resolves.toBe(
+      path.join('packages', 'cli', 'coverage', 'core', 'lcov.info'),
+    );
   });
 
   it('should throw when coverageDirectory is not set in Jest config', async () => {
     await expect(() =>
       getCoveragePathForJest(
         { jestConfig: 'jest-no-dir.config.integration.ts' },
-        { name: 'core', root: join('packages', 'core') },
+        { name: 'core', root: path.join('packages', 'core') },
         'integration-test',
       ),
     ).rejects.toThrow(
@@ -283,7 +298,7 @@ describe('getCoveragePathForJest', () => {
       getCoveragePathForJest(
         {
           jestConfig: 'jest-valid.config.unit.ts',
-          coverageDirectory: join(
+          coverageDirectory: path.join(
             '..',
             '..',
             'dist',
@@ -292,17 +307,19 @@ describe('getCoveragePathForJest', () => {
             'coverage',
           ),
         },
-        { name: 'cli', root: join('packages', 'cli') },
+        { name: 'cli', root: path.join('packages', 'cli') },
         'unit-test',
       ),
-    ).resolves.toBe(join('dist', 'packages', 'cli', 'coverage', 'lcov.info'));
+    ).resolves.toBe(
+      path.join('dist', 'packages', 'cli', 'coverage', 'lcov.info'),
+    );
   });
 
   it('should throw when Jest config does not include lcov reporter', async () => {
     await expect(() =>
       getCoveragePathForJest(
         { jestConfig: 'jest-no-lcov.config.integration.ts' },
-        { name: 'core', root: join('packages', 'core') },
+        { name: 'core', root: path.join('packages', 'core') },
         'integration-test',
       ),
     ).rejects.toThrow(/configuration .* does not include LCOV report format/);
@@ -315,7 +332,7 @@ describe('getCoveragePathForJest', () => {
           jestConfig: 'jest-no-lcov.config.integration.ts',
           coverageReporters: ['lcov'],
         },
-        { name: 'core', root: join('packages', 'core') },
+        { name: 'core', root: path.join('packages', 'core') },
         'integration-test',
       ),
     ).resolves.toBeTypeOf('string');
@@ -328,7 +345,7 @@ describe('getCoveragePathForJest', () => {
           jestConfig: 'jest-valid.config.integration.ts',
           coverageReporters: ['text', 'html'],
         },
-        { name: 'core', root: join('packages', 'core') },
+        { name: 'core', root: path.join('packages', 'core') },
         'integration-test',
       ),
     ).rejects.toThrow(/configuration .* does not include LCOV report format/);
@@ -341,7 +358,7 @@ describe('getCoveragePathForJest', () => {
           jestConfig: 'jest-valid.config.integration.ts',
           coverageReporters: ['lcov'],
         },
-        { name: 'core', root: join('packages', 'core') },
+        { name: 'core', root: path.join('packages', 'core') },
         'integration-test',
       ),
     ).resolves.toBeTypeOf('string');
@@ -351,7 +368,7 @@ describe('getCoveragePathForJest', () => {
     await expect(
       getCoveragePathForJest(
         { jestConfig: 'jest-preset.config.ts' },
-        { name: 'core', root: join('packages', 'core') },
+        { name: 'core', root: path.join('packages', 'core') },
         'test',
       ),
     ).resolves.toBeTypeOf('string');
@@ -362,13 +379,18 @@ describe('getCoveragePathForJest', () => {
       getCoveragePathForJest(
         {
           jestConfig: 'jest-valid.config.unit.ts',
-          coverageDirectory: join(process.cwd(), 'coverage', 'packages', 'cli'),
+          coverageDirectory: path.join(
+            process.cwd(),
+            'coverage',
+            'packages',
+            'cli',
+          ),
         },
-        { name: 'cli', root: join('packages', 'cli') },
+        { name: 'cli', root: path.join('packages', 'cli') },
         'unit-test',
       ),
     ).resolves.toBe(
-      join(process.cwd(), 'coverage', 'packages', 'cli', 'lcov.info'),
+      path.join(process.cwd(), 'coverage', 'packages', 'cli', 'lcov.info'),
     );
   });
 });

@@ -1,5 +1,10 @@
 import type { Linter } from 'eslint';
-import { isRuleOff, optionsFromRuleEntry, parseRuleId } from './parse.js';
+import {
+  isRuleOff,
+  optionsFromRuleEntry,
+  parseRuleId,
+  resolveRuleOptions,
+} from './parse.js';
 
 describe('parseRuleId', () => {
   it.each([
@@ -26,6 +31,11 @@ describe('parseRuleId', () => {
       ruleId: '@angular-eslint/template/no-negated-async',
       plugin: '@angular-eslint/template',
       name: 'no-negated-async',
+    },
+    {
+      ruleId: 'n/prefer-promises/fs',
+      plugin: 'n',
+      name: 'prefer-promises/fs',
     },
   ])('$ruleId => name: $name, plugin: $plugin', ({ ruleId, name, plugin }) => {
     expect(parseRuleId(ruleId)).toEqual({ name, plugin });
@@ -81,5 +91,33 @@ describe('optionsFromRuleEntry', () => {
 
   it('should return empty options for array entry with severity only', () => {
     expect(optionsFromRuleEntry(['warn'])).toEqual([]);
+  });
+});
+
+describe('resolveRuleOptions', () => {
+  it('should prioritize custom options', () => {
+    expect(
+      resolveRuleOptions({
+        id: 'arrow-body-style',
+        options: ['always'],
+        meta: { defaultOptions: ['as-needed'] },
+      }),
+    ).toEqual(['always']);
+  });
+
+  it('should fallback to default options if no custom options', () => {
+    expect(
+      resolveRuleOptions({
+        id: 'arrow-body-style',
+        options: [],
+        meta: { defaultOptions: ['as-needed'] },
+      }),
+    ).toEqual(['as-needed']);
+  });
+
+  it('should return undefined if neither custom not default options are set', () => {
+    expect(
+      resolveRuleOptions({ id: 'require-await', options: [], meta: {} }),
+    ).toBeUndefined();
   });
 });

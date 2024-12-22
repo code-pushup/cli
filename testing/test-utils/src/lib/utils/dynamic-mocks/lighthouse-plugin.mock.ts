@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import type {
   Audit,
   AuditReport,
@@ -61,7 +61,7 @@ export function lighthousePluginConfigMock(outputDir = 'tmp'): PluginConfig {
     ...LH_PLUGIN_META,
     runner: echoRunnerConfigMock(
       Object.values(LIGHTHOUSE_AUDITS_MAP),
-      join(outputDir, 'lighthouse-out.json'),
+      path.join(outputDir, 'lighthouse-out.json'),
     ),
     audits,
     groups: [LH_PLUGIN_GROUP_PERFORMANCE],

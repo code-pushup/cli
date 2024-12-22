@@ -48,7 +48,7 @@ export function npmToFixInformation(
 export function npmToAdvisory(
   name: string,
   vulnerabilities: NpmVulnerabilities,
-  prevNodes: Set<string> = new Set(),
+  prevNodes = new Set<string>(),
 ): NpmAdvisory | null {
   const advisory = vulnerabilities[name]?.via;
 

@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers */
 import type { Audit, CategoryRef, Group } from '@code-pushup/models';
 
 export const LIGHTHOUSE_OUTPUT_FILE_DEFAULT = 'lighthouse-report.json';
@@ -77,6 +76,7 @@ export const categoryCorePerfGroup: Group = {
   slug: LIGHTHOUSE_PERFORMANCE_CORE_GROUP_SLUG,
   title: 'performance-core',
   refs: [
+    /* eslint-disable @typescript-eslint/no-magic-numbers */
     // web vitals
     {
       slug: fcpSlug,
@@ -111,6 +111,7 @@ export const categoryCorePerfGroup: Group = {
       slug: 'user-timings',
       weight: 0,
     },
+    /* eslint-enable @typescript-eslint/no-magic-numbers */
   ],
 };
 
@@ -119,6 +120,7 @@ export const categoryCorePerfGroup2: Group = {
   title: 'performance-core-2',
   refs: [
     // web vitals
+    /* eslint-disable @typescript-eslint/no-magic-numbers */
     {
       slug: 'first-contentful-paint',
       weight: 10,
@@ -139,5 +141,6 @@ export const categoryCorePerfGroup2: Group = {
       slug: 'speed-index',
       weight: 10,
     },
+    /* eslint-enable @typescript-eslint/no-magic-numbers */
   ],
 };

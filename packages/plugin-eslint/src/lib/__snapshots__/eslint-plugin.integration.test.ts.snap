@@ -6,7 +6,7 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
     {
       "description": "ESLint rule **no-cond-assign**.",
       "docsUrl": "https://eslint.org/docs/latest/rules/no-cond-assign",
-      "slug": "no-cond-assign",
+      "slug": "no-cond-assign-4da1eac06e945b1a",
       "title": "Disallow assignment operators in conditional expressions",
     },
     {
@@ -24,31 +24,31 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
     {
       "description": "ESLint rule **no-invalid-regexp**.",
       "docsUrl": "https://eslint.org/docs/latest/rules/no-invalid-regexp",
-      "slug": "no-invalid-regexp",
+      "slug": "no-invalid-regexp-9b874a94de5d65c6",
       "title": "Disallow invalid regular expression strings in \`RegExp\` constructors",
     },
     {
       "description": "ESLint rule **no-undef**.",
       "docsUrl": "https://eslint.org/docs/latest/rules/no-undef",
-      "slug": "no-undef",
+      "slug": "no-undef-1c0a571cbd314966",
       "title": "Disallow the use of undeclared variables unless mentioned in \`/*global */\` comments",
     },
     {
       "description": "ESLint rule **no-unreachable-loop**.",
       "docsUrl": "https://eslint.org/docs/latest/rules/no-unreachable-loop",
-      "slug": "no-unreachable-loop",
+      "slug": "no-unreachable-loop-6bd5152d46f5cba7",
       "title": "Disallow loops with a body that allows only one iteration",
     },
     {
       "description": "ESLint rule **no-unsafe-negation**.",
       "docsUrl": "https://eslint.org/docs/latest/rules/no-unsafe-negation",
-      "slug": "no-unsafe-negation",
+      "slug": "no-unsafe-negation-1c3a548d96c1e95f",
       "title": "Disallow negating the left operand of relational operators",
     },
     {
       "description": "ESLint rule **no-unsafe-optional-chaining**.",
       "docsUrl": "https://eslint.org/docs/latest/rules/no-unsafe-optional-chaining",
-      "slug": "no-unsafe-optional-chaining",
+      "slug": "no-unsafe-optional-chaining-0724d742fbe97cb2",
       "title": "Disallow use of optional chaining in contexts where the \`undefined\` value is not allowed",
     },
     {
@@ -60,31 +60,31 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
     {
       "description": "ESLint rule **use-isnan**.",
       "docsUrl": "https://eslint.org/docs/latest/rules/use-isnan",
-      "slug": "use-isnan",
+      "slug": "use-isnan-20b8ba68b5cc1ea7",
       "title": "Require calls to \`isNaN()\` when checking for \`NaN\`",
     },
     {
       "description": "ESLint rule **valid-typeof**.",
       "docsUrl": "https://eslint.org/docs/latest/rules/valid-typeof",
-      "slug": "valid-typeof",
+      "slug": "valid-typeof-19926c783be07085",
       "title": "Enforce comparing \`typeof\` expressions against valid strings",
     },
     {
       "description": "ESLint rule **arrow-body-style**.",
       "docsUrl": "https://eslint.org/docs/latest/rules/arrow-body-style",
-      "slug": "arrow-body-style",
+      "slug": "arrow-body-style-61b676e8783b0a34",
       "title": "Require braces around arrow function bodies",
     },
     {
       "description": "ESLint rule **camelcase**.",
       "docsUrl": "https://eslint.org/docs/latest/rules/camelcase",
-      "slug": "camelcase",
+      "slug": "camelcase-3568b92e56d6fcb0",
       "title": "Enforce camelcase naming convention",
     },
     {
       "description": "ESLint rule **curly**.",
       "docsUrl": "https://eslint.org/docs/latest/rules/curly",
-      "slug": "curly",
+      "slug": "curly-da196f7d88e0421b",
       "title": "Enforce consistent brace style for all control statements",
     },
     {
@@ -108,7 +108,7 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
     {
       "description": "ESLint rule **no-shadow**.",
       "docsUrl": "https://eslint.org/docs/latest/rules/no-shadow",
-      "slug": "no-shadow",
+      "slug": "no-shadow-b9e07f46bb0b5444",
       "title": "Disallow variable declarations from shadowing variables declared in the outer scope",
     },
     {
@@ -126,13 +126,13 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
     {
       "description": "ESLint rule **prefer-arrow-callback**.",
       "docsUrl": "https://eslint.org/docs/latest/rules/prefer-arrow-callback",
-      "slug": "prefer-arrow-callback",
+      "slug": "prefer-arrow-callback-81999cc2a4967394",
       "title": "Require using arrow functions for callbacks",
     },
     {
       "description": "ESLint rule **prefer-const**.",
       "docsUrl": "https://eslint.org/docs/latest/rules/prefer-const",
-      "slug": "prefer-const",
+      "slug": "prefer-const-519d0b1dc698e7d6",
       "title": "Require \`const\` declarations for variables that are never reassigned after declared",
     },
     {
@@ -144,7 +144,7 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
     {
       "description": "ESLint rule **yoda**.",
       "docsUrl": "https://eslint.org/docs/latest/rules/yoda",
-      "slug": "yoda",
+      "slug": "yoda-e0d68df5f54f65ab",
       "title": "Require or disallow "Yoda" conditions",
     },
     {
@@ -197,7 +197,7 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
       "description": "Code that either will cause an error or may cause confusing behavior. Developers should consider this a high priority to resolve.",
       "refs": [
         {
-          "slug": "no-cond-assign",
+          "slug": "no-cond-assign-4da1eac06e945b1a",
           "weight": 1,
         },
         {
@@ -209,23 +209,23 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
           "weight": 1,
         },
         {
-          "slug": "no-invalid-regexp",
+          "slug": "no-invalid-regexp-9b874a94de5d65c6",
           "weight": 1,
         },
         {
-          "slug": "no-undef",
+          "slug": "no-undef-1c0a571cbd314966",
           "weight": 1,
         },
         {
-          "slug": "no-unreachable-loop",
+          "slug": "no-unreachable-loop-6bd5152d46f5cba7",
           "weight": 1,
         },
         {
-          "slug": "no-unsafe-negation",
+          "slug": "no-unsafe-negation-1c3a548d96c1e95f",
           "weight": 1,
         },
         {
-          "slug": "no-unsafe-optional-chaining",
+          "slug": "no-unsafe-optional-chaining-0724d742fbe97cb2",
           "weight": 1,
         },
         {
@@ -233,11 +233,11 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
           "weight": 1,
         },
         {
-          "slug": "use-isnan",
+          "slug": "use-isnan-20b8ba68b5cc1ea7",
           "weight": 1,
         },
         {
-          "slug": "valid-typeof",
+          "slug": "valid-typeof-19926c783be07085",
           "weight": 1,
         },
         {
@@ -252,15 +252,15 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
       "description": "Something that could be done in a better way but no errors will occur if the code isn't changed.",
       "refs": [
         {
-          "slug": "arrow-body-style",
+          "slug": "arrow-body-style-61b676e8783b0a34",
           "weight": 1,
         },
         {
-          "slug": "camelcase",
+          "slug": "camelcase-3568b92e56d6fcb0",
           "weight": 1,
         },
         {
-          "slug": "curly",
+          "slug": "curly-da196f7d88e0421b",
           "weight": 1,
         },
         {
@@ -276,7 +276,7 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
           "weight": 1,
         },
         {
-          "slug": "no-shadow",
+          "slug": "no-shadow-b9e07f46bb0b5444",
           "weight": 1,
         },
         {
@@ -288,11 +288,11 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
           "weight": 1,
         },
         {
-          "slug": "prefer-arrow-callback",
+          "slug": "prefer-arrow-callback-81999cc2a4967394",
           "weight": 1,
         },
         {
-          "slug": "prefer-const",
+          "slug": "prefer-const-519d0b1dc698e7d6",
           "weight": 1,
         },
         {
@@ -300,7 +300,7 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
           "weight": 1,
         },
         {
-          "slug": "yoda",
+          "slug": "yoda-e0d68df5f54f65ab",
           "weight": 1,
         },
         {

@@ -1,21 +1,21 @@
 import { readJsonFile } from '@nx/devkit';
-import { join } from 'node:path';
+import * as path from 'node:path';
 import type { PackageJson } from 'nx/src/utils/package-json';
 
-const workspaceRoot = join(__dirname, '../../');
-const projectsFolder = join(__dirname, '../../../');
+const workspaceRoot = path.join(__dirname, '../../');
+const projectsFolder = path.join(__dirname, '../../../');
 
 export const cpNxPluginVersion = loadPackageJson(workspaceRoot).version;
 export const cpModelVersion = loadPackageJson(
-  join(projectsFolder, 'cli'),
+  path.join(projectsFolder, 'cli'),
 ).version;
 export const cpUtilsVersion = loadPackageJson(
-  join(projectsFolder, 'utils'),
+  path.join(projectsFolder, 'utils'),
 ).version;
 export const cpCliVersion = loadPackageJson(
-  join(projectsFolder, 'models'),
+  path.join(projectsFolder, 'models'),
 ).version;
 
 function loadPackageJson(folderPath: string): PackageJson {
-  return readJsonFile<PackageJson>(join(folderPath, 'package.json'));
+  return readJsonFile<PackageJson>(path.join(folderPath, 'package.json'));
 }

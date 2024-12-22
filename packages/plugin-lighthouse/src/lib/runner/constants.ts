@@ -5,7 +5,7 @@ import {
   type Audit as LHAudit,
   defaultConfig,
 } from 'lighthouse';
-import { join } from 'node:path';
+import path from 'node:path';
 import type { Audit, Group } from '@code-pushup/models';
 import { DEFAULT_CHROME_FLAGS, LIGHTHOUSE_OUTPUT_PATH } from '../constants.js';
 
@@ -75,8 +75,8 @@ async function loadLighthouseAudit(
   //   shape: string
   // otherwise it is a JS object maintaining a `path` property
   //   shape: { path: string, options?: {}; }
-  const path = typeof value === 'string' ? value : value.path;
-  const module = (await import(`lighthouse/core/audits/${path}.js`)) as {
+  const file = typeof value === 'string' ? value : value.path;
+  const module = (await import(`lighthouse/core/audits/${file}.js`)) as {
     default: typeof LHAudit;
   };
   return module.default;
@@ -101,5 +101,5 @@ export const DEFAULT_CLI_FLAGS = {
   skipAudits: [],
   onlyCategories: [],
   output: ['json'],
-  outputPath: join(LIGHTHOUSE_OUTPUT_PATH, LIGHTHOUSE_REPORT_NAME),
+  outputPath: path.join(LIGHTHOUSE_OUTPUT_PATH, LIGHTHOUSE_REPORT_NAME),
 } satisfies Partial<CliFlags>;

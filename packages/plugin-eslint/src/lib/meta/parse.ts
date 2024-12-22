@@ -2,14 +2,16 @@ import type { Linter, Rule } from 'eslint';
 import { toArray } from '@code-pushup/utils';
 
 export type RuleData = {
-  ruleId: string;
+  id: string;
   meta: Rule.RuleMetaData;
   options: unknown[] | undefined;
 };
 
 export function parseRuleId(ruleId: string): { plugin?: string; name: string } {
-  const i = ruleId.lastIndexOf('/');
-  if (i < 0) {
+  const i = ruleId.startsWith('@')
+    ? ruleId.lastIndexOf('/')
+    : ruleId.indexOf('/');
+  if (i === -1) {
     return { name: ruleId };
   }
   return {
@@ -37,4 +39,11 @@ export function optionsFromRuleEntry(
   entry: Linter.RuleEntry<unknown[]>,
 ): unknown[] {
   return toArray(entry).slice(1);
+}
+
+export function resolveRuleOptions(rule: RuleData): unknown[] | undefined {
+  if (rule.options?.length) {
+    return rule.options;
+  }
+  return rule.meta.defaultOptions;
 }

@@ -2,14 +2,9 @@
   "name": "core",
   "sourceRoot": "packages/core/src",
   "projectType": "library",
-  "implicitDependencies": ["utils"],
   "targets": {
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["packages/core/**/*.ts"]
-      }
+      "executor": "@nx/eslint:lint"
     }
   }
 }

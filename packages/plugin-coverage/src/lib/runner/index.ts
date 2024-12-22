@@ -1,6 +1,6 @@
 import { bold } from 'ansis';
 import { writeFile } from 'node:fs/promises';
-import { dirname } from 'node:path';
+import path from 'node:path';
 import type { AuditOutputs, RunnerConfig } from '@code-pushup/models';
 import {
   ProcessError,
@@ -41,7 +41,7 @@ export async function executeRunner(): Promise<void> {
   // Calculate coverage from LCOV results
   const auditOutputs = await lcovResultsToAuditOutputs(reports, coverageTypes);
 
-  await ensureDirectoryExists(dirname(RUNNER_OUTPUT_PATH));
+  await ensureDirectoryExists(path.dirname(RUNNER_OUTPUT_PATH));
   await writeFile(RUNNER_OUTPUT_PATH, JSON.stringify(auditOutputs));
 }
 
@@ -50,7 +50,7 @@ export async function createRunnerConfig(
   config: FinalCoveragePluginConfig,
 ): Promise<RunnerConfig> {
   // Create JSON config for executeRunner
-  await ensureDirectoryExists(dirname(PLUGIN_CONFIG_PATH));
+  await ensureDirectoryExists(path.dirname(PLUGIN_CONFIG_PATH));
   await writeFile(PLUGIN_CONFIG_PATH, JSON.stringify(config));
 
   const threshold = config.perfectScoreThreshold;

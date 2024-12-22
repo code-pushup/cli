@@ -9,7 +9,7 @@ describe('normalizeContext', () => {
       cwd: 'string',
       projectsConfigurations: {
         projects: {
-          ['my-app']: {
+          'my-app': {
             root: './my-app',
           },
         },

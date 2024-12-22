@@ -1,7 +1,6 @@
 import type { Linter, Rule } from 'eslint';
-// eslint-disable-next-line import/no-deprecated
 import { builtinRules } from 'eslint/use-at-your-own-risk';
-import { isAbsolute, join } from 'node:path';
+import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { exists, findNearestFile, toArray, ui } from '@code-pushup/utils';
 import type { ESLintTarget } from '../../config.js';
@@ -24,9 +23,9 @@ export async function loadRulesForFlatConfig({
   const rules = findEnabledRulesWithOptions(configs);
   return rules
     .map(rule => {
-      const meta = findRuleMeta(rule.ruleId, configs);
+      const meta = findRuleMeta(rule.id, configs);
       if (!meta) {
-        ui().logger.warning(`Cannot find metadata for rule ${rule.ruleId}`);
+        ui().logger.warning(`Cannot find metadata for rule ${rule.id}`);
         return null;
       }
       return { ...rule, meta };
@@ -34,7 +33,7 @@ export async function loadRulesForFlatConfig({
     .filter(exists);
 }
 
-type FlatConfig = Linter.FlatConfig | Linter.FlatConfig[];
+type FlatConfig = Linter.Config | Linter.Config[];
 
 async function loadConfigByDefaultLocation(): Promise<FlatConfig> {
   const flatConfigFileNames = [
@@ -54,27 +53,29 @@ async function loadConfigByDefaultLocation(): Promise<FlatConfig> {
   );
 }
 
-async function loadConfigByPath(path: string): Promise<FlatConfig> {
-  const absolutePath = isAbsolute(path) ? path : join(process.cwd(), path);
+async function loadConfigByPath(configPath: string): Promise<FlatConfig> {
+  const absolutePath = path.isAbsolute(configPath)
+    ? configPath
+    : path.join(process.cwd(), configPath);
   const url = pathToFileURL(absolutePath).toString();
   const mod = (await import(url)) as FlatConfig | { default: FlatConfig };
   return 'default' in mod ? mod.default : mod;
 }
 
 function findEnabledRulesWithOptions(
-  configs: Linter.FlatConfig[],
+  configs: Linter.Config[],
 ): Omit<RuleData, 'meta'>[] {
   const enabledRules = configs
     .flatMap(({ rules }) => Object.entries(rules ?? {}))
     .filter(([, entry]) => entry != null && !isRuleOff(entry))
-    .map(([ruleId, entry]) => ({
-      ruleId,
+    .map(([id, entry]) => ({
+      id,
       options: entry ? optionsFromRuleEntry(entry) : [],
     }));
   const uniqueRulesMap = new Map(
-    enabledRules.map(({ ruleId, options }) => [
-      `${ruleId}::${jsonHash(options)}`,
-      { ruleId, options },
+    enabledRules.map(({ id, options }) => [
+      `${id}::${jsonHash(options)}`,
+      { id, options },
     ]),
   );
   return [...uniqueRulesMap.values()];
@@ -82,7 +83,7 @@ function findEnabledRulesWithOptions(
 
 function findRuleMeta(
   ruleId: string,
-  configs: Linter.FlatConfig[],
+  configs: Linter.Config[],
 ): Rule.RuleMetaData | undefined {
   const { plugin, name } = parseRuleId(ruleId);
   if (!plugin) {
@@ -92,7 +93,6 @@ function findRuleMeta(
 }
 
 function findBuiltinRuleMeta(name: string): Rule.RuleMetaData | undefined {
-  // eslint-disable-next-line import/no-deprecated, deprecation/deprecation
   const rule = builtinRules.get(name);
   return rule?.meta;
 }
@@ -100,7 +100,7 @@ function findBuiltinRuleMeta(name: string): Rule.RuleMetaData | undefined {
 function findPluginRuleMeta(
   plugin: string,
   name: string,
-  configs: Linter.FlatConfig[],
+  configs: Linter.Config[],
 ): Rule.RuleMetaData | undefined {
   const config = configs.find(({ plugins = {} }) => plugin in plugins);
   const rule = config?.plugins?.[plugin]?.rules?.[name];

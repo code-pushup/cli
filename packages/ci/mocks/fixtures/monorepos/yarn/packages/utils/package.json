@@ -1,0 +1,6 @@
+{
+  "name": "utils",
+  "scripts": {
+    "code-pushup": "code-pushup"
+  }
+}

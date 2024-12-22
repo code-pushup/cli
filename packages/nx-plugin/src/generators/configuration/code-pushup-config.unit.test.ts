@@ -1,6 +1,6 @@
 import * as devKit from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { join } from 'node:path';
+import * as path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import {
@@ -74,7 +74,7 @@ describe('generateCodePushupConfig options', () => {
   });
 
   it('should skip creation if config already exists', () => {
-    tree.write(join(testProjectName, 'code-pushup.config.js'), '');
+    tree.write(path.join(testProjectName, 'code-pushup.config.js'), '');
     generateCodePushupConfig(tree, testProjectName);
     expect(generateFilesSpy).toHaveBeenCalledTimes(0);
     expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
@@ -90,7 +90,7 @@ describe('generateCodePushupConfig options', () => {
     expect(generateFilesSpy).toHaveBeenCalledWith(
       expect.anything(),
       expect.stringContaining(
-        join('nx-plugin', 'src', 'generators', 'configuration', 'files'),
+        path.join('nx-plugin', 'src', 'generators', 'configuration', 'files'),
       ),
       expect.any(String),
       expect.any(Object),

@@ -28,7 +28,6 @@ export function omitVariablePluginData(
   },
 ) {
   const { omitAuditData } = options ?? {};
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return {
     ...pluginReport,
     audits: audits.map(plugin =>

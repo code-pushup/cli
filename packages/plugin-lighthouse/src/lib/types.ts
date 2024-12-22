@@ -1,7 +1,7 @@
 import type { CliFlags } from 'lighthouse';
-import type { ExcludeNullFromPropertyTypes } from '@code-pushup/utils';
+import type { ExcludeNullableProps } from '@code-pushup/utils';
 
-export type LighthouseOptions = ExcludeNullFromPropertyTypes<
+export type LighthouseOptions = ExcludeNullableProps<
   Partial<
     Omit<
       CliFlags,

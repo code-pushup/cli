@@ -1,5 +1,5 @@
 import * as Benchmark from 'benchmark';
-import { join } from 'node:path';
+import path from 'node:path';
 import {
   type CrawlFileSystemOptions,
   crawlFileSystem,
@@ -21,7 +21,7 @@ const suite = new Benchmark.Suite('report-scoring');
 
 const TARGET_DIRECTORY =
   PROCESS_ARGUMENT_TARGET_DIRECTORY ||
-  join(process.cwd(), '..', '..', '..', 'node_modules');
+  path.join(process.cwd(), '..', '..', '..', 'node_modules');
 const PATTERN = PROCESS_ARGUMENT_PATTERN || /.json$/;
 
 // ==================
@@ -30,7 +30,7 @@ const start = performance.now();
 
 // Add listener
 const listeners = {
-  cycle: function (event: Benchmark.Event) {
+  cycle(event: Benchmark.Event) {
     console.info(String(event.target));
   },
   complete: () => {
@@ -87,7 +87,7 @@ function wrapWithDefer<T>(
 ) {
   return {
     defer: true, // important for async functions
-    fn: function (deferred: { resolve: () => void }) {
+    fn(deferred: { resolve: () => void }) {
       return asyncFn(options)
         .catch(() => [])
         .then((result: unknown[]) => {

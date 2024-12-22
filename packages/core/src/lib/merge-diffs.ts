@@ -1,5 +1,5 @@
 import { writeFile } from 'node:fs/promises';
-import { basename, dirname, join } from 'node:path';
+import path from 'node:path';
 import { type PersistConfig, reportsDiffSchema } from '@code-pushup/models';
 import {
   ensureDirectoryExists,
@@ -42,13 +42,13 @@ export async function mergeDiffs(
 
   const labeledDiffs = diffs.map(diff => ({
     ...diff,
-    label: diff.label || basename(dirname(diff.file)), // fallback is parent folder name
+    label: diff.label || path.basename(path.dirname(diff.file)), // fallback is parent folder name
   }));
 
   const markdown = generateMdReportsDiffForMonorepo(labeledDiffs);
 
   const { outputDir, filename } = persistConfig;
-  const outputPath = join(outputDir, `${filename}-diff.md`);
+  const outputPath = path.join(outputDir, `${filename}-diff.md`);
   await ensureDirectoryExists(outputDir);
   await writeFile(outputPath, markdown);
 

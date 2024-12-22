@@ -32,6 +32,7 @@ export const groupSchema = scorableSchema(
   getDuplicateRefsInGroups,
   duplicateRefsInGroupsErrorMsg,
 ).merge(groupMetaSchema);
+
 export type Group = z.infer<typeof groupSchema>;
 
 export const groupsSchema = z

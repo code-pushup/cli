@@ -1,5 +1,5 @@
 import { cp } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import { afterAll, afterEach, beforeAll } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
@@ -12,23 +12,26 @@ import {
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
 describe('PLUGIN collect report with coverage-plugin NPM package', () => {
-  const envRoot = join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
-  const testFileDir = join(envRoot, TEST_OUTPUT_DIR, 'collect');
+  const envRoot = path.join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
+  const testFileDir = path.join(envRoot, TEST_OUTPUT_DIR, 'collect');
 
-  const basicDir = join(testFileDir, 'basic-setup');
-  const existingDir = join(testFileDir, 'existing-report');
+  const basicDir = path.join(testFileDir, 'basic-setup');
+  const existingDir = path.join(testFileDir, 'existing-report');
 
-  const fixtureDir = join('e2e', nxTargetProject(), 'mocks', 'fixtures');
+  const fixtureDir = path.join('e2e', nxTargetProject(), 'mocks', 'fixtures');
+
   beforeAll(async () => {
     await cp(fixtureDir, testFileDir, { recursive: true });
   });
+
   afterAll(async () => {
     await teardownTestFolder(basicDir);
     await teardownTestFolder(existingDir);
   });
+
   afterEach(async () => {
-    await teardownTestFolder(join(basicDir, '.code-pushup'));
-    await teardownTestFolder(join(existingDir, '.code-pushup'));
+    await teardownTestFolder(path.join(basicDir, '.code-pushup'));
+    await teardownTestFolder(path.join(existingDir, '.code-pushup'));
   });
 
   it('should run Code coverage plugin which collects passed results and creates report.json', async () => {
@@ -41,7 +44,7 @@ describe('PLUGIN collect report with coverage-plugin NPM package', () => {
     expect(code).toBe(0);
 
     const report = await readJsonFile(
-      join(basicDir, '.code-pushup', 'report.json'),
+      path.join(basicDir, '.code-pushup', 'report.json'),
     );
 
     expect(() => reportSchema.parse(report)).not.toThrow();
@@ -58,7 +61,7 @@ describe('PLUGIN collect report with coverage-plugin NPM package', () => {
     expect(code).toBe(0);
 
     const report = await readJsonFile(
-      join(existingDir, '.code-pushup', 'report.json'),
+      path.join(existingDir, '.code-pushup', 'report.json'),
     );
 
     expect(() => reportSchema.parse(report)).not.toThrow();

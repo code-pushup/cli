@@ -1,5 +1,5 @@
 import { type Tree, generateFiles, logger } from '@nx/devkit';
-import { join } from 'node:path';
+import * as path from 'node:path';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
 import type { ItemOrArray } from '@code-pushup/utils';
 import type { ExecutableCode } from './types.js';
@@ -29,7 +29,7 @@ export function generateCodePushupConfig(
 ) {
   const supportedFormats = ['ts', 'mjs', 'js'];
   const firstExistingFormat = supportedFormats.find(ext =>
-    tree.exists(join(root, `code-pushup.config.${ext}`)),
+    tree.exists(path.join(root, `code-pushup.config.${ext}`)),
   );
   if (firstExistingFormat) {
     logger.warn(
@@ -52,7 +52,7 @@ export function generateCodePushupConfig(
       ...(categories ?? []).flatMap(({ fileImports }) => fileImports),
     ];
 
-    generateFiles(tree, join(__dirname, 'files'), root, {
+    generateFiles(tree, path.join(__dirname, 'files'), root, {
       ...options,
       fileImports: formatArrayToLinesOfJsString(configFileImports),
       persist: formatObjectToFormattedJsString(persist),

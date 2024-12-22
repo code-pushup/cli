@@ -39,7 +39,7 @@ vi.mock('lighthouse/cli/run.js', async () => {
             config,
             lhr: {
               audits: {
-                ['cumulative-layout-shift']: {
+                'cumulative-layout-shift': {
                   id: 'cumulative-layout-shift',
                   title: 'Cumulative Layout Shift',
                   description:
