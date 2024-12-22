@@ -1,5 +1,8 @@
 import type { ClassDeclaration, VariableStatement } from 'ts-morph';
-import { nodeMock, sourceFileMock } from '../../../mocks/source-files.mock';
+import {
+  nodeMock,
+  sourceFileMock,
+} from '../../../mocks/source-files-mock.generator';
 import {
   getClassNodes,
   getUnprocessedCoverageReport,
