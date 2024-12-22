@@ -5,7 +5,7 @@ describe('path-matcher', () => {
   const osAgnosticPathSpy = vi.spyOn(testUtils, 'osAgnosticPath');
 
   it('should provide "toMatchPath" as expect matcher', () => {
-    const actual = 'tmp\\path\\to\\file.txt';
+    const actual = String.raw`tmp\path\to\file.txt`;
     const expected = 'tmp/path/to/file.txt';
 
     expect(actual).toMatchPath(expected);
@@ -16,7 +16,7 @@ describe('path-matcher', () => {
   });
 
   it('should provide "pathToMatch" as expect matcher', () => {
-    const actual = 'tmp\\path\\to\\file.txt';
+    const actual = String.raw`tmp\path\to\file.txt`;
     const expected = 'tmp/path/to/file.txt';
 
     expect({ path: actual }).toStrictEqual({
@@ -29,7 +29,7 @@ describe('path-matcher', () => {
   });
 
   it('should provide "toStartWithPath" as expect matcher', () => {
-    const actual = 'tmp\\path\\to\\file.txt';
+    const actual = String.raw`tmp\path\to\file.txt`;
     const expected = 'tmp/path/to';
 
     expect(actual).toStartWithPath(expected);
@@ -40,7 +40,7 @@ describe('path-matcher', () => {
   });
 
   it('should provide "pathToStartWith" as expect matcher', () => {
-    const actual = 'tmp\\path\\to\\file.txt';
+    const actual = String.raw`tmp\path\to\file.txt`;
     const expected = 'tmp/path/to';
 
     expect({ path: actual }).toStrictEqual({
@@ -53,7 +53,7 @@ describe('path-matcher', () => {
   });
 
   it('should provide "toContainPath" as expect matcher', () => {
-    const actual = 'tmp\\path\\to\\file.txt';
+    const actual = String.raw`tmp\path\to\file.txt`;
     const expected = 'path/to';
 
     expect(actual).toContainPath(expected);
@@ -64,7 +64,7 @@ describe('path-matcher', () => {
   });
 
   it('should provide "pathToContain" as expect matcher', () => {
-    const actual = 'tmp\\path\\to\\file.txt';
+    const actual = String.raw`tmp\path\to\file.txt`;
     const expected = 'path/to';
 
     expect({ path: actual }).toStrictEqual({
@@ -77,7 +77,7 @@ describe('path-matcher', () => {
   });
 
   it('should provide "toEndWithPath" as expect matcher', () => {
-    const actual = 'tmp\\path\\to\\file.txt';
+    const actual = String.raw`tmp\path\to\file.txt`;
     const expected = 'path/to/file.txt';
 
     expect(actual).toEndWithPath(expected);
@@ -88,7 +88,7 @@ describe('path-matcher', () => {
   });
 
   it('should provide "pathToEndWith" as expect matcher', () => {
-    const actual = 'tmp\\path\\to\\file.txt';
+    const actual = String.raw`tmp\path\to\file.txt`;
     const expected = 'path/to/file.txt';
 
     expect({ path: actual }).toStrictEqual({
