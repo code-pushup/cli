@@ -1,7 +1,7 @@
 import type { AuditOutputs, RunnerFunction } from '@code-pushup/models';
 import type { DocCoveragePluginConfig } from '../config.js';
 import { processDocCoverage } from './doc-processer.js';
-import type { CoverageResult, CoverageType } from './models.js';
+import type { CoverageResult } from './models.js';
 
 export function createRunnerFunction(
   config: DocCoveragePluginConfig,
@@ -33,17 +33,16 @@ export function trasformCoverageReportToAudits(
       }
       return true;
     })
-    .map(([type, items]) => {
-      const coverageType = type as CoverageType;
-      const coverage = items.coverage;
+    .map(([type, item]) => {
+      const { coverage } = item;
 
       return {
-        slug: `${coverageType}-coverage`,
+        slug: `${type}-coverage`,
         value: coverage,
         score: coverage / 100,
         displayValue: `${coverage} %`,
         details: {
-          issues: items.issues.map(({ file, line }) => ({
+          issues: item.issues.map(({ file, line }) => ({
             message: 'Missing documentation',
             source: { file, position: { startLine: line } },
             severity: 'warning',

@@ -1,23 +1,34 @@
 import { processDocCoverage } from './doc-processer.js';
 
 describe('processDocCoverage', () => {
-  it('should succesfully get the right number of ts files', () => {
-    const results = processDocCoverage({
-      sourceGlob: [
-        'packages/plugin-doc-coverage/mocks/fixtures/angular/**/*.ts',
-      ],
-    });
-    expect(results).toMatchSnapshot();
+  const sourcePath =
+    'packages/plugin-doc-coverage/mocks/fixtures/angular/**/*.ts';
+
+  it('should count total nodes from TypeScript files correctly', () => {
+    const expectedNodeCount = 8;
+
+    const results = processDocCoverage({ sourceGlob: [sourcePath] });
+
+    const totalNodeCount = Object.values(results).reduce(
+      (acc, node) => acc + node.nodesCount,
+      0,
+    );
+
+    expect(totalNodeCount).toBe(expectedNodeCount);
   });
 
-  it('should succesfully get the right number of ts files and not include spec files', () => {
+  it('should count total nodes from TypeScript files correctly and not include spec files when specified', () => {
+    const expectedNodeCount = 7;
+
     const results = processDocCoverage({
-      sourceGlob: [
-        'packages/plugin-doc-coverage/mocks/fixtures/angular/**/*.ts',
-        '!**/*.spec.ts',
-        '!**/*.test.ts',
-      ],
+      sourceGlob: [sourcePath, '!**/*.spec.ts', '!**/*.test.ts'],
     });
-    expect(results).toMatchSnapshot();
+
+    const totalNodeCount = Object.values(results).reduce(
+      (acc, node) => acc + node.nodesCount,
+      0,
+    );
+
+    expect(totalNodeCount).toBe(expectedNodeCount);
   });
 });

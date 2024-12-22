@@ -6,7 +6,7 @@ import {
   getVariablesInformation,
   mergeCoverageResults,
 } from './doc-processer.js';
-import type { UnprocessedCoverageResult } from './models.js';
+import type { CoverageReportShape } from './models.js';
 
 describe('getUnprocessedCoverageReport', () => {
   it('should produce a full report', () => {
@@ -72,7 +72,7 @@ describe('getUnprocessedCoverageReport', () => {
 });
 
 describe('mergeCoverageResults', () => {
-  const emptyResult: UnprocessedCoverageResult = {
+  const emptyResult: CoverageReportShape = {
     enums: { nodesCount: 0, issues: [] },
     interfaces: { nodesCount: 0, issues: [] },
     types: { nodesCount: 0, issues: [] },
@@ -102,7 +102,7 @@ describe('mergeCoverageResults', () => {
 
     const results = mergeCoverageResults(
       emptyResult,
-      secondResult as Partial<UnprocessedCoverageResult>,
+      secondResult as Partial<CoverageReportShape>,
     );
     expect(results).toStrictEqual(
       expect.objectContaining({

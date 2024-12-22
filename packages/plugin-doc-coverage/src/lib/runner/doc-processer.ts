@@ -6,13 +6,13 @@ import {
 } from 'ts-morph';
 import type { DocCoveragePluginConfig } from '../config.js';
 import type {
+  CoverageReportShape,
   CoverageResult,
   CoverageType,
-  UnprocessedCoverageResult,
 } from './models.js';
 import {
   calculateCoverage,
-  createEmptyUnprocessedCoverageReport,
+  createEmptyCoverageData,
   getCoverageTypeFromKind,
 } from './utils.js';
 
@@ -56,7 +56,7 @@ export function processDocCoverage(
 /**
  * Gets the unprocessed coverage report from the source files
  * @param sourceFiles - The source files to process
- * @returns {UnprocessedCoverageResult} The unprocessed coverage report
+ * @returns {CoverageReportShape} The unprocessed coverage report
  */
 export function getUnprocessedCoverageReport(
   sourceFiles: SourceFile[],
@@ -102,7 +102,7 @@ export function getUnprocessedCoverageReport(
             },
           };
         },
-        createEmptyUnprocessedCoverageReport(),
+        createEmptyCoverageData(),
       );
 
       return mergeCoverageResults(
@@ -110,7 +110,7 @@ export function getUnprocessedCoverageReport(
         coverageReportOfCurrentFile,
       );
     },
-    createEmptyUnprocessedCoverageReport(),
+    createEmptyCoverageData(),
   );
 
   return calculateCoverage(unprocessedCoverageReport);
@@ -120,12 +120,12 @@ export function getUnprocessedCoverageReport(
  * Merges two coverage results
  * @param results - The first empty coverage result
  * @param current - The second coverage result
- * @returns {UnprocessedCoverageResult} The merged coverage result
+ * @returns {CoverageReportShape} The merged coverage result
  */
 export function mergeCoverageResults(
-  results: UnprocessedCoverageResult,
-  current: Partial<UnprocessedCoverageResult>,
-): UnprocessedCoverageResult {
+  results: CoverageReportShape,
+  current: Partial<CoverageReportShape>,
+): CoverageReportShape {
   return Object.fromEntries(
     Object.entries(results).map(([key, value]) => {
       const node = value as CoverageResult[CoverageType];
@@ -138,7 +138,7 @@ export function mergeCoverageResults(
         },
       ];
     }),
-  ) as UnprocessedCoverageResult;
+  ) as CoverageReportShape;
 }
 
 /**

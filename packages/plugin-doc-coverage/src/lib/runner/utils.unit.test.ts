@@ -1,14 +1,14 @@
 import { SyntaxKind } from 'ts-morph';
-import type { UnprocessedCoverageResult } from './models.js';
+import type { CoverageReportShape } from './models.js';
 import {
   calculateCoverage,
-  createEmptyUnprocessedCoverageReport,
+  createEmptyCoverageData,
   getCoverageTypeFromKind,
 } from './utils.js';
 
-describe('createEmptyUnprocessedCoverageReport', () => {
+describe('createEmptyCoverageData', () => {
   it('should create an empty report with all categories initialized', () => {
-    const result = createEmptyUnprocessedCoverageReport();
+    const result = createEmptyCoverageData();
 
     expect(result).toStrictEqual({
       enums: { nodesCount: 0, issues: [] },
@@ -25,8 +25,7 @@ describe('createEmptyUnprocessedCoverageReport', () => {
 
 describe('calculateCoverage', () => {
   it('should calculate 100% coverage when there are no nodes', () => {
-    const input: UnprocessedCoverageResult =
-      createEmptyUnprocessedCoverageReport();
+    const input = createEmptyCoverageData();
     const result = calculateCoverage(input);
 
     Object.values(result).forEach(category => {
@@ -37,8 +36,8 @@ describe('calculateCoverage', () => {
   });
 
   it('should calculate correct coverage percentage with issues', () => {
-    const input: UnprocessedCoverageResult = {
-      ...createEmptyUnprocessedCoverageReport(),
+    const input: CoverageReportShape = {
+      ...createEmptyCoverageData(),
       functions: {
         nodesCount: 4,
         issues: [

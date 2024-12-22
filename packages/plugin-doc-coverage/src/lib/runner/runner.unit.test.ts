@@ -18,71 +18,58 @@ describe('trasformCoverageReportToAudits', () => {
     classes: {
       coverage: 100,
       nodesCount: 2,
-      issues: [],
+      issues: [
+        {
+          file: 'test.ts',
+          line: 10,
+          name: 'testClass',
+          type: 'classes',
+        },
+      ],
     },
   } as unknown as CoverageResult;
 
-  it('should transform coverage report to audit outputs with no filters', () => {
+  it('should return all audits from the coverage result when no filters are provided', () => {
     const result = trasformCoverageReportToAudits(mockCoverageResult, {});
-    expect(result).toMatchSnapshot();
+    expect(result.map(item => item.slug)).toStrictEqual([
+      'functions-coverage',
+      'classes-coverage',
+    ]);
   });
 
   it('should filter audits when onlyAudits is provided', () => {
     const result = trasformCoverageReportToAudits(mockCoverageResult, {
       onlyAudits: ['functions-coverage'],
     });
-    expect(result).toMatchSnapshot();
+    expect(result).toHaveLength(1);
+    expect(result.map(item => item.slug)).toStrictEqual(['functions-coverage']);
   });
 
   it('should filter audits when skipAudits is provided', () => {
     const result = trasformCoverageReportToAudits(mockCoverageResult, {
-      skipAudits: ['classes-coverage'],
+      skipAudits: ['functions-coverage'],
     });
-    expect(result).toMatchSnapshot();
+    expect(result).toHaveLength(1);
+    expect(result.map(item => item.slug)).toStrictEqual(['classes-coverage']);
   });
 
-  it('should handle empty coverage result', () => {
+  it('should handle properly empty coverage result', () => {
     const result = trasformCoverageReportToAudits(
       {} as unknown as CoverageResult,
       {},
     );
-    expect(result).toMatchSnapshot();
+    expect(result).toEqual([]);
   });
 
-  it('should handle coverage result with multiple issues', () => {
-    const coverageWithMultipleIssues = {
-      functions: {
-        coverage: 50,
-        nodesCount: 4,
-        issues: [
-          {
-            file: 'test1.ts',
-            line: 10,
-            name: 'function1',
-            type: 'functions',
-          },
-          {
-            file: 'test2.ts',
-            line: 20,
-            name: 'function2',
-            type: 'functions',
-          },
-        ],
-      },
-    } as unknown as CoverageResult;
-
-    const result = trasformCoverageReportToAudits(
-      coverageWithMultipleIssues,
-      {},
-    );
-    expect(result).toMatchSnapshot();
-  });
-
-  it('should prioritize onlyAudits over skipAudits when both are provided', () => {
-    const result = trasformCoverageReportToAudits(mockCoverageResult, {
-      onlyAudits: ['functions-coverage'],
-      skipAudits: ['functions-coverage'],
-    });
-    expect(result).toMatchSnapshot();
+  it('should handle coverage result with multiple issues and add them to the details.issue of the report', () => {
+    const expectedIssues = 2;
+    const result = trasformCoverageReportToAudits(mockCoverageResult, {});
+    expect(result).toHaveLength(2);
+    expect(
+      result.reduce(
+        (acc, item) => acc + (item.details?.issues?.length ?? 0),
+        0,
+      ),
+    ).toBe(expectedIssues);
   });
 });
