@@ -48,6 +48,6 @@ export default mergeConfigs(
       '!**/implementation/**',
       '!**/internal/**',
     ],
-    skipAudits: ['methodawdawdds-coverage'],
+    skipAudits: ['methods-coverage'],
   }),
 );
