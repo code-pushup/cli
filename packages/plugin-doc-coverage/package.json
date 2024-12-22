@@ -13,21 +13,22 @@
     "directory": "packages/plugin-doc-coverage"
   },
   "keywords": [
-    "CLI",
-    "Code PushUp",
-    "plugin",
-    "automation",
-    "developer tools",
-    "conformance",
     "documentation coverage",
-    "documentation",
-    "docs",
-    "KPI tracking",
-    "automated feedback",
-    "regression guard",
-    "actionable feedback",
-    "audit",
-    "score monitoring"
+    "documentation quality",
+    "docs completeness",
+    "automated documentation checks",
+    "coverage audit",
+    "documentation conformance",
+    "docs KPI tracking",
+    "documentation feedback",
+    "actionable documentation insights",
+    "documentation regression guard",
+    "documentation score monitoring",
+    "developer documentation tools",
+    "plugin for documentation coverage",
+    "CLI documentation coverage",
+    "Code PushUp documentation",
+    "documentation audit"
   ],
   "publishConfig": {
     "access": "public"
