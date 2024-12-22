@@ -1,5 +1,5 @@
 import { cp } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import { teardownTestFolder } from '@code-pushup/test-setup';
@@ -9,21 +9,21 @@ import { executeProcess, readTextFile } from '@code-pushup/utils';
 describe('CLI collect', () => {
   const dummyPluginTitle = 'Dummy Plugin';
   const dummyAuditTitle = 'Dummy Audit';
-  const fixtureDummyDir = join(
+  const fixtureDummyDir = path.join(
     'e2e',
     nxTargetProject(),
     'mocks',
     'fixtures',
     'dummy-setup',
   );
-  const testFileDir = join(
+  const testFileDir = path.join(
     E2E_ENVIRONMENTS_DIR,
     nxTargetProject(),
     TEST_OUTPUT_DIR,
     'collect',
   );
-  const dummyDir = join(testFileDir, 'dummy-setup');
-  const dummyOutputDir = join(dummyDir, '.code-pushup');
+  const dummyDir = path.join(testFileDir, 'dummy-setup');
+  const dummyOutputDir = path.join(dummyDir, '.code-pushup');
 
   beforeAll(async () => {
     await cp(fixtureDummyDir, dummyDir, { recursive: true });
@@ -52,7 +52,7 @@ describe('CLI collect', () => {
     expect(code).toBe(0);
     expect(stderr).toBe('');
 
-    const md = await readTextFile(join(dummyOutputDir, 'report.md'));
+    const md = await readTextFile(path.join(dummyOutputDir, 'report.md'));
 
     expect(md).toContain('# Code PushUp Report');
     expect(md).toContain(dummyPluginTitle);

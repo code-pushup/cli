@@ -1,5 +1,5 @@
 import { writeFile } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, it } from 'vitest';
 import type {
@@ -8,9 +8,13 @@ import type {
   RunnerConfig,
 } from '@code-pushup/models';
 import { readJsonFile, removeDirectoryIfExists } from '@code-pushup/utils';
-import { createRunnerConfig, executeRunner } from '.';
-import type { FinalCoveragePluginConfig } from '../config';
-import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH, WORKDIR } from './constants';
+import type { FinalCoveragePluginConfig } from '../config.js';
+import {
+  PLUGIN_CONFIG_PATH,
+  RUNNER_OUTPUT_PATH,
+  WORKDIR,
+} from './constants.js';
+import { createRunnerConfig, executeRunner } from './index.js';
 
 describe('createRunnerConfig', () => {
   it('should create a valid runner config', async () => {
@@ -49,8 +53,8 @@ describe('executeRunner', () => {
   it('should successfully execute runner', async () => {
     const config: FinalCoveragePluginConfig = {
       reports: [
-        join(
-          fileURLToPath(dirname(import.meta.url)),
+        path.join(
+          fileURLToPath(path.dirname(import.meta.url)),
           '..',
           '..',
           '..',

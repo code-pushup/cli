@@ -7,7 +7,7 @@ import {
   it,
   vi,
 } from 'vitest';
-import { osAgnosticPath } from './os-agnostic-paths';
+import { osAgnosticPath } from './os-agnostic-paths.js';
 
 describe('osAgnosticPath', () => {
   const cwdSpy: MockInstance<[], string> = vi.spyOn(process, 'cwd');
@@ -22,6 +22,7 @@ describe('osAgnosticPath', () => {
     beforeEach(() => {
       cwdSpy.mockReturnValue(unixCwd);
     });
+
     afterEach(() => {
       cwdSpy.mockReset();
     });
@@ -70,11 +71,12 @@ describe('osAgnosticPath', () => {
   });
 
   describe('Windows', () => {
-    const windowsCWD = 'D:\\users\\jerry';
+    const windowsCWD = String.raw`D:\users\jerry`;
 
     beforeEach(() => {
       cwdSpy.mockReturnValue(windowsCWD);
     });
+
     afterEach(() => {
       cwdSpy.mockReset();
     });
@@ -94,26 +96,27 @@ describe('osAgnosticPath', () => {
     });
 
     it('should handle absolute paths correctly on Windows', () => {
-      expect(osAgnosticPath('\\.code-pushup\\.code-pushup.config.ts')).toBe(
-        '/.code-pushup/.code-pushup.config.ts',
-      );
+      expect(
+        osAgnosticPath(String.raw`\.code-pushup\.code-pushup.config.ts`),
+      ).toBe('/.code-pushup/.code-pushup.config.ts');
     });
 
     it('should handle paths with CWD shorthand "." correctly on Windows', () => {
-      expect(osAgnosticPath('.\\.code-pushup\\.code-pushup.config.ts')).toBe(
-        './.code-pushup/.code-pushup.config.ts',
-      );
+      expect(
+        osAgnosticPath(String.raw`.\.code-pushup\.code-pushup.config.ts`),
+      ).toBe('./.code-pushup/.code-pushup.config.ts');
     });
 
     it('should handle relative paths correctly on Windows', () => {
       expect(
-        osAgnosticPath('..\\..\\.code-pushup\\.code-pushup.config.ts'),
+        osAgnosticPath(String.raw`..\..\.code-pushup\.code-pushup.config.ts`),
       ).toBe('../../.code-pushup/.code-pushup.config.ts');
     });
+
     it('should handle path segments correctly on Windows', () => {
-      expect(osAgnosticPath('.code-pushup\\.code-pushup.config.ts')).toBe(
-        '.code-pushup/.code-pushup.config.ts',
-      );
+      expect(
+        osAgnosticPath(String.raw`.code-pushup\.code-pushup.config.ts`),
+      ).toBe('.code-pushup/.code-pushup.config.ts');
     });
   });
 });

@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { unlink } from 'node:fs/promises';
-import { basename, join } from 'node:path';
+import path from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { formatBytes } from '@code-pushup/utils';
 import {
@@ -10,7 +10,7 @@ import {
   fileSizeIssues,
   infoMessage,
   runnerFunction,
-} from './file-size.plugin';
+} from './file-size.plugin.js';
 
 const outputDir = 'test';
 const projectJson = JSON.stringify(
@@ -29,11 +29,11 @@ const testJs = `
   `;
 
 describe('infoMessage', () => {
-  it.each([['index.js'], [join('src', 'index.js')]])(
+  it.each([['index.js'], [path.join('src', 'index.js')]])(
     'should return info message',
     file => {
       expect(infoMessage(file, 12)).toBe(
-        `File ${basename(file)} is OK. (size: ${formatBytes(12)})`,
+        `File ${path.basename(file)} is OK. (size: ${formatBytes(12)})`,
       );
     },
   );
@@ -198,7 +198,7 @@ describe('runnerFunction', () => {
       },
       outputDir,
     );
-    await unlink(join(outputDir, 'm.js'));
+    await unlink(path.join(outputDir, 'm.js'));
 
     await expect(runnerFunction(baseOptions)).resolves.toEqual([
       filesizeAuditOutputBase,

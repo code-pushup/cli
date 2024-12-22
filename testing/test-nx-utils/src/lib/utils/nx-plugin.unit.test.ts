@@ -1,6 +1,10 @@
 import * as process from 'node:process';
 import { describe, expect } from 'vitest';
 import { createNodesContext } from './nx-plugin';
+import {
+  createNodesContext,
+  invokeCreateNodesOnVirtualFiles,
+} from './nx-plugin.js';
 
 describe('createNodesContext', () => {
   it('should return a context with the provided options', () => {

@@ -5,7 +5,7 @@ import {
   categoriesSchema,
   categoryConfigSchema,
   categoryRefSchema,
-} from './category-config';
+} from './category-config.js';
 
 describe('categoryRefSchema', () => {
   it('should accept a valid category reference audit', () => {
@@ -129,7 +129,7 @@ describe('categoryConfigSchema', () => {
         title: 'This category is empty for now',
         refs: [],
       } satisfies CategoryConfig),
-    ).toThrow('In a category there has to be at least one ref');
+    ).toThrow('In a category, there has to be at least one ref');
   });
 
   it('should throw for duplicate category references', () => {
@@ -175,7 +175,9 @@ describe('categoryConfigSchema', () => {
           },
         ],
       } satisfies CategoryConfig),
-    ).toThrow('In a category there has to be at least one ref with weight > 0');
+    ).toThrow(
+      'In a category, there has to be at least one ref with weight > 0. Affected refs: functional/immutable-data, lighthouse-experimental',
+    );
   });
 });
 

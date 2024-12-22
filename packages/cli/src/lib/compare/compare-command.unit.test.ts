@@ -7,9 +7,9 @@ import {
 } from '@code-pushup/models';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
-import { yargsCli } from '../yargs-cli';
-import { yargsCompareCommandObject } from './compare-command';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants.js';
+import { yargsCli } from '../yargs-cli.js';
+import { yargsCompareCommandObject } from './compare-command.js';
 
 vi.mock('@code-pushup/core', async () => {
   const core: object = await vi.importActual('@code-pushup/core');

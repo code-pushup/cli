@@ -1,11 +1,11 @@
 import { mkdir, rename, rm, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
 import { initGitRepo } from '@code-pushup/test-utils';
-import { type ChangedFiles, listChangedFiles } from './git';
+import { type ChangedFiles, listChangedFiles } from './git.js';
 
 describe('git diff', () => {
-  const baseDir = join('tmp', 'ci', 'git-utils-test');
+  const baseDir = path.join('tmp', 'ci', 'git-utils-test');
 
   let git: SimpleGit;
 
@@ -13,13 +13,13 @@ describe('git diff', () => {
     await rm(baseDir, { recursive: true, force: true });
     git = await initGitRepo(simpleGit, { baseDir });
 
-    await writeFile(join(baseDir, 'LICENSE'), 'MIT License\n\n...');
+    await writeFile(path.join(baseDir, 'LICENSE'), 'MIT License\n\n...');
     await writeFile(
-      join(baseDir, 'index.js'),
+      path.join(baseDir, 'index.js'),
       'export const sum = values => values.reduce((acc, val) => acc + val, 0)\n',
     );
     await writeFile(
-      join(baseDir, 'package.json'),
+      path.join(baseDir, 'package.json'),
       JSON.stringify(
         { name: 'sum', type: 'module', main: 'index.js' },
         null,
@@ -30,11 +30,14 @@ describe('git diff', () => {
     await git.commit('Initial commit');
 
     await git.checkoutLocalBranch('testing');
-    await mkdir(join(baseDir, 'src'));
-    await mkdir(join(baseDir, 'test'));
-    await rename(join(baseDir, 'index.js'), join(baseDir, 'src/index.js'));
+    await mkdir(path.join(baseDir, 'src'));
+    await mkdir(path.join(baseDir, 'test'));
+    await rename(
+      path.join(baseDir, 'index.js'),
+      path.join(baseDir, 'src/index.js'),
+    );
     await writeFile(
-      join(baseDir, 'test/index.test.js'),
+      path.join(baseDir, 'test/index.test.js'),
       [
         "import assert from 'node:assert'",
         "import test from 'node:test'",
@@ -48,7 +51,7 @@ describe('git diff', () => {
         .join(''),
     );
     await writeFile(
-      join(baseDir, 'package.json'),
+      path.join(baseDir, 'package.json'),
       JSON.stringify(
         {
           name: 'sum',

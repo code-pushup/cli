@@ -1,5 +1,6 @@
-import type { SourceFileIssue } from './issues';
-import type { MonorepoTool } from './monorepo';
+import type { Format } from '@code-pushup/models';
+import type { SourceFileIssue } from './issues.js';
+import type { MonorepoTool } from './monorepo/index.js';
 
 /**
  * Customization options for {@link runInCI}
@@ -7,8 +8,10 @@ import type { MonorepoTool } from './monorepo';
  */
 export type Options = {
   monorepo?: boolean | MonorepoTool;
+  parallel?: boolean | number;
   projects?: string[] | null;
   task?: string;
+  nxProjectsFilter?: string | string[];
   bin?: string;
   config?: string | null;
   directory?: string;
@@ -16,7 +19,6 @@ export type Options = {
   debug?: boolean;
   detectNewIssues?: boolean;
   logger?: Logger;
-  output?: string;
 };
 
 /**
@@ -91,7 +93,7 @@ export type MonorepoRunResult = {
   mode: 'monorepo';
   projects: ProjectRunResult[];
   commentId?: number;
-  diffArtifact?: ArtifactData;
+  diffPath?: string;
 };
 
 /**
@@ -99,9 +101,9 @@ export type MonorepoRunResult = {
  */
 export type ProjectRunResult = {
   name: string;
-  artifacts: {
-    report: ArtifactData;
-    diff?: ArtifactData;
+  files: {
+    report: OutputFiles;
+    diff?: OutputFiles;
   };
   newIssues?: SourceFileIssue[];
 };
@@ -109,7 +111,4 @@ export type ProjectRunResult = {
 /**
  * Paths to output files from {@link runInCI}, for uploading as job artifact
  */
-export type ArtifactData = {
-  rootDir: string;
-  files: string[];
-};
+export type OutputFiles = Record<Format, string>;

@@ -1,15 +1,15 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import type { LCOVRecord } from 'parse-lcov';
 import type { AuditOutputs } from '@code-pushup/models';
 import { exists, readTextFile, toUnixNewlines, ui } from '@code-pushup/utils';
-import type { CoverageResult, CoverageType } from '../../config';
-import { mergeLcovResults } from './merge-lcov';
-import { parseLcov } from './parse-lcov';
+import type { CoverageResult, CoverageType } from '../../config.js';
+import { mergeLcovResults } from './merge-lcov.js';
+import { parseLcov } from './parse-lcov.js';
 import {
   lcovCoverageToAuditOutput,
   recordToStatFunctionMapper,
-} from './transform';
-import type { LCOVStat, LCOVStats } from './types';
+} from './transform.js';
+import type { LCOVStat, LCOVStats } from './types.js';
 
 // Note: condition or statement coverage is not supported in LCOV
 // https://stackoverflow.com/questions/48260434/is-it-possible-to-check-condition-coverage-with-gcov
@@ -71,7 +71,7 @@ export async function parseLcovFiles(
         file:
           typeof result === 'string' || result.pathToProject == null
             ? record.file
-            : join(result.pathToProject, record.file),
+            : path.join(result.pathToProject, record.file),
       }));
     }),
   );

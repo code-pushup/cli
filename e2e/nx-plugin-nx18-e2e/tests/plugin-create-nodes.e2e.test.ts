@@ -1,8 +1,11 @@
-import {join} from 'node:path';
-import {afterEach, expect} from 'vitest';
-import {nxShowProjectJson, registerPluginInNxJson,} from '@code-pushup/test-nx-utils';
-import {teardownTestFolder} from '@code-pushup/test-setup';
-import {executeProcess} from '@code-pushup/utils';
+import { join } from 'node:path';
+import { afterEach, expect } from 'vitest';
+import {
+  nxShowProjectJson,
+  registerPluginInNxJson,
+} from '@code-pushup/test-nx-utils';
+import { teardownTestFolder } from '@code-pushup/test-setup';
+import { executeProcess } from '@code-pushup/utils';
 
 describe('nx-plugin-nx18', () => {
   const project = 'my-lib';
@@ -24,8 +27,11 @@ describe('nx-plugin-nx18', () => {
         '--ci=skip',
       ],
       cwd: envRoot,
-    })
-    await registerPluginInNxJson(join(envRoot, 'code-pushup.config.ts'), '@code-pushup/nx-plugin');
+    });
+    await registerPluginInNxJson(
+      join(envRoot, 'code-pushup.config.ts'),
+      '@code-pushup/nx-plugin',
+    );
   });
 
   afterEach(async () => {
@@ -33,7 +39,6 @@ describe('nx-plugin-nx18', () => {
   });
 
   it('should add configuration target dynamically in nx18', async () => {
-
     const { code, projectJson } = await nxShowProjectJson(envRoot, project);
     expect(code).toBe(0);
 
@@ -49,5 +54,4 @@ describe('nx-plugin-nx18', () => {
 
     expect(projectJson.targets).toMatchSnapshot();
   });
-
 }, 300000);

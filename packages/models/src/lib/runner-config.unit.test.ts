@@ -6,7 +6,7 @@ import {
   outputTransformSchema,
   runnerConfigSchema,
   runnerFunctionSchema,
-} from './runner-config';
+} from './runner-config.js';
 
 describe('runnerConfigSchema', () => {
   it('should accept a valid runner configuration', () => {

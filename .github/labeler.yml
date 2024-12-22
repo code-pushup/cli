@@ -73,7 +73,6 @@
           - 'nx.json'
           - '.nvmrc'
           - '.prettierrc'
-          - 'esbuild.config.js'
           - '.github/ISSUE_TEMPLATE/**'
           - '.husky/**'
           - 'commitlint.config.mjs'

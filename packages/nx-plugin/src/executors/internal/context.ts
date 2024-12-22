@@ -1,5 +1,5 @@
 import type { ExecutorContext } from 'nx/src/config/misc-interfaces';
-import type { BaseNormalizedExecutorContext } from './types';
+import type { BaseNormalizedExecutorContext } from './types.js';
 
 export type NormalizedExecutorContext = BaseNormalizedExecutorContext & {
   projectName: string;

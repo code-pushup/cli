@@ -1,16 +1,16 @@
 import type { RunnerResult } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
-import { dirname } from 'node:path';
+import path from 'node:path';
 import type { AuditOutputs, RunnerFunction } from '@code-pushup/models';
 import { ensureDirectoryExists } from '@code-pushup/utils';
-import { DEFAULT_CLI_FLAGS } from './constants';
-import type { LighthouseCliFlags } from './types';
+import { DEFAULT_CLI_FLAGS } from './constants.js';
+import type { LighthouseCliFlags } from './types.js';
 import {
   determineAndSetLogLevel,
   getConfig,
   normalizeAuditOutputs,
   toAuditOutputs,
-} from './utils';
+} from './utils.js';
 
 export function createRunnerFunction(
   urlUnderTest: string,
@@ -28,7 +28,7 @@ export function createRunnerFunction(
 
     const config = await getConfig({ configPath, preset });
     if (outputPath) {
-      await ensureDirectoryExists(dirname(outputPath));
+      await ensureDirectoryExists(path.dirname(outputPath));
     }
 
     const enrichedFlags = {

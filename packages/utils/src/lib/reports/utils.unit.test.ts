@@ -1,8 +1,12 @@
 import type { Ansis } from 'ansis';
 import { type Mock, describe, expect, it } from 'vitest';
 import type { AuditReport, Issue, IssueSeverity } from '@code-pushup/models';
-import { SCORE_COLOR_RANGE } from './constants';
-import type { ScoredReport, SortableAuditReport, SortableGroup } from './types';
+import { SCORE_COLOR_RANGE } from './constants.js';
+import type {
+  ScoredReport,
+  SortableAuditReport,
+  SortableGroup,
+} from './types.js';
 import {
   MARKERS,
   type MarkerShape,
@@ -25,7 +29,7 @@ import {
   scoreMarker,
   severityMarker,
   targetScoreIcon,
-} from './utils';
+} from './utils.js';
 
 describe('formatReportScore', () => {
   it.each([
@@ -484,9 +488,11 @@ describe('targetScoreIcon', () => {
   it('should return target score icon "✅" for passed score', () => {
     expect(targetScoreIcon(0.42, 0.4)).toBe('✅');
   });
+
   it('should return target score icon "❌" for failed score', () => {
     expect(targetScoreIcon(0.42, 0.5)).toBe('❌');
   });
+
   it('should return prefixed target score icon if prefix is provided', () => {
     expect(
       targetScoreIcon(0.42, 0.1, {
@@ -494,6 +500,7 @@ describe('targetScoreIcon', () => {
       }),
     ).toBe('<✅');
   });
+
   it('should return prefixed target score icon if postfix is provided', () => {
     expect(
       targetScoreIcon(0.42, 0.1, {
@@ -501,6 +508,7 @@ describe('targetScoreIcon', () => {
       }),
     ).toBe('✅>');
   });
+
   it('should return pre and postfixed target score icon if both are provided', () => {
     expect(
       targetScoreIcon(0.42, 0.1, {
@@ -509,6 +517,7 @@ describe('targetScoreIcon', () => {
       }),
     ).toBe('<✅>');
   });
+
   it('should return no target score icon if no targetScore is provided', () => {
     expect(targetScoreIcon(0.42)).toBe('');
   });
@@ -689,7 +698,7 @@ describe('countCategoryAudits', () => {
               weight: 1,
             },
           ],
-          [{ slug: 'coverage', groups: groups }] as ScoredReport['plugins'],
+          [{ slug: 'coverage', groups }] as ScoredReport['plugins'],
         ),
       ).toBe(0);
     },

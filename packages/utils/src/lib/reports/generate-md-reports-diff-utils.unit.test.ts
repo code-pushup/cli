@@ -8,8 +8,8 @@ import {
   sortChanges,
   summarizeDiffOutcomes,
   summarizeUnchanged,
-} from './generate-md-reports-diff-utils';
-import type { DiffOutcome } from './types';
+} from './generate-md-reports-diff-utils.js';
+import type { DiffOutcome } from './types.js';
 
 describe('summarizeUnchanged', () => {
   it('should print unchanged array length with pluralized token and verb', () => {

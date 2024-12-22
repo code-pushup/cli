@@ -2,10 +2,10 @@ import type { Config } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
 import { expect, vi } from 'vitest';
-import { DEFAULT_CLI_FLAGS } from './constants';
-import { createRunnerFunction } from './runner';
-import type { LighthouseCliFlags } from './types';
-import { determineAndSetLogLevel, getConfig } from './utils';
+import { DEFAULT_CLI_FLAGS } from './constants.js';
+import { createRunnerFunction } from './runner.js';
+import type { LighthouseCliFlags } from './types.js';
+import { determineAndSetLogLevel, getConfig } from './utils.js';
 
 // used for createRunnerMocking
 vi.mock('./utils', async () => {
@@ -39,7 +39,7 @@ vi.mock('lighthouse/cli/run.js', async () => {
             config,
             lhr: {
               audits: {
-                ['cumulative-layout-shift']: {
+                'cumulative-layout-shift': {
                   id: 'cumulative-layout-shift',
                   title: 'Cumulative Layout Shift',
                   description:

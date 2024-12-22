@@ -3,8 +3,8 @@ import { vol } from 'memfs';
 import { join } from 'node:path';
 import { describe, expect } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { PACKAGE_NAME, PROJECT_JSON_FILE_NAME } from '../internal/constants';
-import { CP_TARGET_NAME } from './constants';
+import { PACKAGE_NAME, PROJECT_JSON_FILE_NAME } from '../internal/constants.js';
+import { CP_TARGET_NAME } from './constants.js';
 import { createNodesV1Fn } from './plugin';
 
 describe('createNodesV1Fn', () => {

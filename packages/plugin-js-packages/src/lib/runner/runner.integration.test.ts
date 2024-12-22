@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { RunnerConfig } from '@code-pushup/models';
 import { readJsonFile, removeDirectoryIfExists } from '@code-pushup/utils';
-import { createRunnerConfig } from '.';
-import type { FinalJSPackagesPluginConfig } from '../config';
-import { defaultAuditLevelMapping } from '../constants';
-import { PLUGIN_CONFIG_PATH, WORKDIR } from './constants';
+import type { FinalJSPackagesPluginConfig } from '../config.js';
+import { defaultAuditLevelMapping } from '../constants.js';
+import { PLUGIN_CONFIG_PATH, WORKDIR } from './constants.js';
+import { createRunnerConfig } from './index.js';
 
 describe('createRunnerConfig', () => {
   it('should create a valid runner config', async () => {

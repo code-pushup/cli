@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { Report } from '@code-pushup/models';
 import {
@@ -10,7 +10,7 @@ import {
   getLogMessages,
 } from '@code-pushup/test-utils';
 import { scoreReport, sortReport, ui } from '@code-pushup/utils';
-import { logPersistedResults, persistReport } from './persist';
+import { logPersistedResults, persistReport } from './persist.js';
 
 describe('persistReport', () => {
   beforeEach(() => {
@@ -26,7 +26,7 @@ describe('persistReport', () => {
     });
 
     const jsonReport: Report = JSON.parse(
-      await readFile(join(MEMFS_VOLUME, 'report.json'), 'utf8'),
+      await readFile(path.join(MEMFS_VOLUME, 'report.json'), 'utf8'),
     );
     expect(jsonReport).toEqual(
       expect.objectContaining({
@@ -36,7 +36,7 @@ describe('persistReport', () => {
     );
 
     await expect(() =>
-      readFile(join(MEMFS_VOLUME, 'report.md')),
+      readFile(path.join(MEMFS_VOLUME, 'report.md')),
     ).rejects.toThrow('no such file or directory');
   });
 
@@ -48,11 +48,14 @@ describe('persistReport', () => {
       format: ['md'],
     });
 
-    const mdReport = await readFile(join(MEMFS_VOLUME, 'report.md'), 'utf8');
+    const mdReport = await readFile(
+      path.join(MEMFS_VOLUME, 'report.md'),
+      'utf8',
+    );
     expect(mdReport).toContain('Code PushUp Report');
 
     await expect(() =>
-      readFile(join(MEMFS_VOLUME, 'report.json'), 'utf8'),
+      readFile(path.join(MEMFS_VOLUME, 'report.json'), 'utf8'),
     ).rejects.toThrow('no such file or directory');
   });
 
@@ -64,14 +67,17 @@ describe('persistReport', () => {
       filename: 'report',
     });
 
-    const mdReport = await readFile(join(MEMFS_VOLUME, 'report.md'), 'utf8');
+    const mdReport = await readFile(
+      path.join(MEMFS_VOLUME, 'report.md'),
+      'utf8',
+    );
     expect(mdReport).toContain('Code PushUp Report');
     expect(mdReport).toMatch(
       /\|\s*🏷 Category\s*\|\s*⭐ Score\s*\|\s*🛡 Audits\s*\|/,
     );
 
     const jsonReport: Report = JSON.parse(
-      await readFile(join(MEMFS_VOLUME, 'report.json'), 'utf8'),
+      await readFile(path.join(MEMFS_VOLUME, 'report.json'), 'utf8'),
     );
     expect(jsonReport).toEqual(
       expect.objectContaining({

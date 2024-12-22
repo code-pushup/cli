@@ -3,7 +3,7 @@ import {
   barStyles,
   getProgressBar,
   getSingletonProgressBars,
-} from './progress';
+} from './progress.js';
 
 /**
  * ANSI escape codes in terminal stdout:

@@ -1,8 +1,8 @@
-import { DEFAULT_PERSIST_OUTPUT_DIR } from '@code-pushup/models';
-import type { Settings } from './models';
+import type { Settings } from './models.js';
 
 export const DEFAULT_SETTINGS: Settings = {
   monorepo: false,
+  parallel: false,
   projects: null,
   task: 'code-pushup',
   bin: 'npx --no-install code-pushup',
@@ -12,5 +12,5 @@ export const DEFAULT_SETTINGS: Settings = {
   debug: false,
   detectNewIssues: true,
   logger: console,
-  output: DEFAULT_PERSIST_OUTPUT_DIR,
+  nxProjectsFilter: '--with-target={task}',
 };

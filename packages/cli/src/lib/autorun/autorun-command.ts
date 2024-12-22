@@ -7,13 +7,13 @@ import {
   upload,
 } from '@code-pushup/core';
 import { ui } from '@code-pushup/utils';
-import { CLI_NAME } from '../constants';
+import { CLI_NAME } from '../constants.js';
 import {
   collectSuccessfulLog,
   renderConfigureCategoriesHint,
   renderIntegratePortalHint,
   uploadSuccessfulLog,
-} from '../implementation/logging';
+} from '../implementation/logging.js';
 
 type AutorunOptions = CollectOptions & UploadOptions;
 

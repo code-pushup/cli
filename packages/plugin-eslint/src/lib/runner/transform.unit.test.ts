@@ -1,6 +1,6 @@
 import type { ESLint } from 'eslint';
 import type { AuditOutput } from '@code-pushup/models';
-import { lintResultsToAudits } from './transform';
+import { lintResultsToAudits } from './transform.js';
 
 describe('lintResultsToAudits', () => {
   it('should convert ESLint results with custom options to Code PushUp audits', () => {

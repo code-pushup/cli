@@ -1,8 +1,8 @@
 import type Details from 'lighthouse/types/lhr/audit-details';
 import { describe, expect, it } from 'vitest';
 import type { Table } from '@code-pushup/models';
-import { parseOpportunityToAuditDetailsTable } from './opportunity.type';
-import { LighthouseAuditDetailsParsingError } from './utils';
+import { parseOpportunityToAuditDetailsTable } from './opportunity.type.js';
+import { LighthouseAuditDetailsParsingError } from './utils.js';
 
 describe('parseOpportunityDetails', () => {
   it('should omit empty opportunities', () => {

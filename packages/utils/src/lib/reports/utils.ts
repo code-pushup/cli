@@ -8,8 +8,12 @@ import type {
   Group,
   Issue,
 } from '@code-pushup/models';
-import { SCORE_COLOR_RANGE } from './constants';
-import type { ScoredReport, SortableAuditReport, SortableGroup } from './types';
+import { SCORE_COLOR_RANGE } from './constants.js';
+import type {
+  ScoredReport,
+  SortableAuditReport,
+  SortableGroup,
+} from './types.js';
 
 export function formatReportScore(score: number): string {
   const scaledScore = score * 100;
@@ -233,34 +237,31 @@ export function compareIssues(a: Issue, b: Issue): number {
   if (a.severity !== b.severity) {
     return -compareIssueSeverity(a.severity, b.severity);
   }
-
   if (!a.source && b.source) {
     return -1;
   }
-
   if (a.source && !b.source) {
     return 1;
   }
-
   if (a.source?.file !== b.source?.file) {
     return a.source?.file.localeCompare(b.source?.file || '') ?? 0;
   }
+  return compareSourceFilePosition(a.source?.position, b.source?.position);
+}
 
-  if (!a.source?.position && b.source?.position) {
+function compareSourceFilePosition(
+  a: NonNullable<Issue['source']>['position'],
+  b: NonNullable<Issue['source']>['position'],
+): number {
+  if (!a && b) {
     return -1;
   }
-
-  if (a.source?.position && !b.source?.position) {
+  if (a && !b) {
     return 1;
   }
-
-  if (a.source?.position?.startLine !== b.source?.position?.startLine) {
-    return (
-      (a.source?.position?.startLine ?? 0) -
-      (b.source?.position?.startLine ?? 0)
-    );
+  if (a?.startLine !== b?.startLine) {
+    return (a?.startLine ?? 0) - (b?.startLine ?? 0);
   }
-
   return 0;
 }
 

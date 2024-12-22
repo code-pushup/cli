@@ -1,6 +1,6 @@
 import { expect } from 'vitest';
 import { pluginConfigSchema } from '@code-pushup/models';
-import { lighthousePlugin } from './lighthouse-plugin';
+import { lighthousePlugin } from './lighthouse-plugin.js';
 
 describe('lighthousePlugin-config-object', () => {
   it('should create valid plugin config', () => {
@@ -48,6 +48,16 @@ describe('lighthousePlugin-config-object', () => {
           slug: 'first-contentful-paint',
         }),
       ]),
+    );
+  });
+
+  it('should throw when filtering groups by zero-weight onlyAudits', () => {
+    const pluginConfig = lighthousePlugin('https://code-pushup-portal.com', {
+      onlyAudits: ['csp-xss'],
+    });
+
+    expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
+      'In a category, there has to be at least one ref with weight > 0. Affected refs: csp-xss',
     );
   });
 });

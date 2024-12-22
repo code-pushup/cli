@@ -1,8 +1,8 @@
 import type { CategoryRef, Group } from '@code-pushup/models';
-import { pluginSlug } from './constants';
-import { dependenciesAuditMeta } from './integration/dependencies.audit';
-import { licenseAuditMeta } from './integration/license.audit';
-import { typeAuditInfoMeta } from './integration/type.audit';
+import { pluginSlug } from './constants.js';
+import { dependenciesAuditMeta } from './integration/dependencies.audit.js';
+import { licenseAuditMeta } from './integration/license.audit.js';
+import { typeAuditInfoMeta } from './integration/type.audit.js';
 
 const documentationGroupSlug = 'documentation';
 export const documentationGroup: Group = {

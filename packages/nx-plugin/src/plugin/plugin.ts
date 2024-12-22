@@ -1,7 +1,11 @@
-import {type CreateNodes, type CreateNodesContext, CreateNodesResult} from '@nx/devkit';
-
-import {PROJECT_JSON_FILE_NAME} from '../internal/constants';
-import {createProjectConfiguration, loadProjectConfiguration, normalizeCreateNodesOptions,} from './utils';
+import type {
+  CreateNodes,
+  CreateNodesContext,
+  CreateNodesResult,
+} from '@nx/devkit';
+import { normalizeCreateNodesOptions } from '@push-based/nx-verdaccio/src/plugin/normalize-create-nodes-options';
+import { createProjectConfiguration } from '@push-based/nx-verdaccio/src/plugin/targets/create-targets';
+import { PROJECT_JSON_FILE_NAME } from '../internal/constants';
 
 type FileMatcher = `${string}${typeof PROJECT_JSON_FILE_NAME}`;
 const PROJECT_JSON_FILE_GLOB = `**/${PROJECT_JSON_FILE_NAME}` as FileMatcher;
@@ -20,7 +24,7 @@ export async function createNodesV1Fn(
   const projectJson = await loadProjectConfiguration(projectConfigurationFile);
   const createOptions = normalizeCreateNodesOptions(createNodesOptions);
 
-  const {targets} = await createProjectConfiguration(
+  const { targets } = await createProjectConfiguration(
     projectJson,
     createOptions,
   );

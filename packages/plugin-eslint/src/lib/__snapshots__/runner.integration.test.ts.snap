@@ -8,7 +8,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     },
     "displayValue": "passed",
     "score": 1,
-    "slug": "no-cond-assign",
+    "slug": "no-cond-assign-4da1eac06e945b1a",
     "value": 0,
   },
   {
@@ -35,7 +35,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     },
     "displayValue": "passed",
     "score": 1,
-    "slug": "no-invalid-regexp",
+    "slug": "no-invalid-regexp-9b874a94de5d65c6",
     "value": 0,
   },
   {
@@ -44,7 +44,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     },
     "displayValue": "passed",
     "score": 1,
-    "slug": "no-undef",
+    "slug": "no-undef-1c0a571cbd314966",
     "value": 0,
   },
   {
@@ -53,7 +53,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     },
     "displayValue": "passed",
     "score": 1,
-    "slug": "no-unreachable-loop",
+    "slug": "no-unreachable-loop-6bd5152d46f5cba7",
     "value": 0,
   },
   {
@@ -62,7 +62,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     },
     "displayValue": "passed",
     "score": 1,
-    "slug": "no-unsafe-negation",
+    "slug": "no-unsafe-negation-1c3a548d96c1e95f",
     "value": 0,
   },
   {
@@ -71,7 +71,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     },
     "displayValue": "passed",
     "score": 1,
-    "slug": "no-unsafe-optional-chaining",
+    "slug": "no-unsafe-optional-chaining-0724d742fbe97cb2",
     "value": 0,
   },
   {
@@ -103,7 +103,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     },
     "displayValue": "passed",
     "score": 1,
-    "slug": "use-isnan",
+    "slug": "use-isnan-20b8ba68b5cc1ea7",
     "value": 0,
   },
   {
@@ -112,7 +112,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     },
     "displayValue": "passed",
     "score": 1,
-    "slug": "valid-typeof",
+    "slug": "valid-typeof-19926c783be07085",
     "value": 0,
   },
   {
@@ -135,7 +135,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     },
     "displayValue": "1 warning",
     "score": 0,
-    "slug": "arrow-body-style",
+    "slug": "arrow-body-style-61b676e8783b0a34",
     "value": 1,
   },
   {
@@ -144,7 +144,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     },
     "displayValue": "passed",
     "score": 1,
-    "slug": "camelcase",
+    "slug": "camelcase-3568b92e56d6fcb0",
     "value": 0,
   },
   {
@@ -153,7 +153,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     },
     "displayValue": "passed",
     "score": 1,
-    "slug": "curly",
+    "slug": "curly-da196f7d88e0421b",
     "value": 0,
   },
   {
@@ -257,7 +257,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     },
     "displayValue": "3 warnings",
     "score": 0,
-    "slug": "no-shadow",
+    "slug": "no-shadow-b9e07f46bb0b5444",
     "value": 3,
   },
   {
@@ -324,7 +324,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     },
     "displayValue": "passed",
     "score": 1,
-    "slug": "prefer-arrow-callback",
+    "slug": "prefer-arrow-callback-81999cc2a4967394",
     "value": 0,
   },
   {
@@ -347,7 +347,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     },
     "displayValue": "1 warning",
     "score": 0,
-    "slug": "prefer-const",
+    "slug": "prefer-const-519d0b1dc698e7d6",
     "value": 1,
   },
   {
@@ -365,7 +365,7 @@ exports[`executeRunner > should execute ESLint and create audit results for Reac
     },
     "displayValue": "passed",
     "score": 1,
-    "slug": "yoda",
+    "slug": "yoda-e0d68df5f54f65ab",
     "value": 0,
   },
   {

@@ -1,18 +1,18 @@
 import * as devKit from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { join } from 'node:path';
+import * as path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import {
   DEFAULT_IMPORTS,
   generateCodePushupConfig,
-} from './code-pushup-config';
+} from './code-pushup-config.js';
 import {
   formatArrayToJSArray,
   formatArrayToLinesOfJsString,
   formatObjectToFormattedJsString,
   normalizeExecutableCode,
-} from './utils';
+} from './utils.js';
 
 describe('generateCodePushupConfig options', () => {
   let tree: devKit.Tree;
@@ -74,7 +74,7 @@ describe('generateCodePushupConfig options', () => {
   });
 
   it('should skip creation if config already exists', () => {
-    tree.write(join(testProjectName, 'code-pushup.config.js'), '');
+    tree.write(path.join(testProjectName, 'code-pushup.config.js'), '');
     generateCodePushupConfig(tree, testProjectName);
     expect(generateFilesSpy).toHaveBeenCalledTimes(0);
     expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
@@ -90,7 +90,7 @@ describe('generateCodePushupConfig options', () => {
     expect(generateFilesSpy).toHaveBeenCalledWith(
       expect.anything(),
       expect.stringContaining(
-        join('nx-plugin', 'src', 'generators', 'configuration', 'files'),
+        path.join('nx-plugin', 'src', 'generators', 'configuration', 'files'),
       ),
       expect.any(String),
       expect.any(Object),
@@ -126,7 +126,7 @@ describe('generateCodePushupConfig options', () => {
   it('should use fileImports options', () => {
     generateCodePushupConfig(tree, testProjectName, {
       fileImports: [
-        "import type { CoreConfig } from '../../dist/packages/models';",
+        "import type { CoreConfig } from '../../dist/packages/models.js';",
       ],
     });
     expect(generateFilesSpy).toHaveBeenCalledWith(
@@ -135,7 +135,7 @@ describe('generateCodePushupConfig options', () => {
       expect.any(String),
       expect.objectContaining({
         fileImports: formatArrayToLinesOfJsString([
-          'import type { CoreConfig } from "../../dist/packages/models";',
+          'import type { CoreConfig } from "../../dist/packages/models.js";',
         ]),
       }),
     );
@@ -168,8 +168,8 @@ describe('generateCodePushupConfig options', () => {
       upload: {
         organization: 'code-pushup',
         project: 'cli',
-        server: 'https://code-pushup.dev/portal',
-        apiKey: '12345678',
+        server: 'https://api.staging.code-pushup.dev/graphql',
+        apiKey: 'cp_12345678',
       },
     });
     expect(generateFilesSpy).toHaveBeenCalledWith(
@@ -180,8 +180,8 @@ describe('generateCodePushupConfig options', () => {
         upload: formatObjectToFormattedJsString({
           organization: 'code-pushup',
           project: 'cli',
-          server: 'https://code-pushup.dev/portal',
-          apiKey: '12345678',
+          server: 'https://api.staging.code-pushup.dev/graphql',
+          apiKey: 'cp_12345678',
         }),
       }),
     );

@@ -4,7 +4,7 @@ import log from 'lighthouse-logger';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
 import { vol } from 'memfs';
-import { join } from 'node:path';
+import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   type AuditOutput,
@@ -13,13 +13,13 @@ import {
 } from '@code-pushup/models';
 import { MEMFS_VOLUME, getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import { unsupportedDetailTypes } from './details/details';
+import { unsupportedDetailTypes } from './details/details.js';
 import {
   determineAndSetLogLevel,
   getConfig,
   normalizeAuditOutputs,
   toAuditOutputs,
-} from './utils';
+} from './utils.js';
 
 // mock bundleRequire inside importEsmModule used for fetching config
 vi.mock('bundle-require', async () => {
@@ -376,7 +376,7 @@ describe('getConfig', () => {
 
   it('should return undefined and log if configPath has wrong extension', async () => {
     await expect(
-      getConfig({ configPath: join('wrong.not') }),
+      getConfig({ configPath: path.join('wrong.not') }),
     ).resolves.toBeUndefined();
     expect(getLogMessages(ui().logger).at(0)).toMatch(
       'Format of file wrong.not not supported',
@@ -386,6 +386,7 @@ describe('getConfig', () => {
 
 describe('determineAndSetLogLevel', () => {
   const debugLib = debug as { enabled: (flag: string) => boolean };
+
   beforeEach(() => {
     log.setLevel('info');
   });

@@ -1,6 +1,6 @@
 import type { IssueSeverity } from '@code-pushup/models';
-import type { DependencyGroup, PackageAuditLevel } from './config';
-import type { DependencyGroupLong } from './runner/outdated/types';
+import type { DependencyGroup, PackageAuditLevel } from './config.js';
+import type { DependencyGroupLong } from './runner/outdated/types.js';
 
 export const defaultAuditLevelMapping: Record<
   PackageAuditLevel,
@@ -22,13 +22,13 @@ export const dependencyGroupToLong: Record<
   optional: 'optionalDependencies',
 };
 
-/* eslint-disable no-magic-numbers */
 export const dependencyGroupWeights: Record<DependencyGroup, number> = {
+  /* eslint-disable @typescript-eslint/no-magic-numbers */
   prod: 80,
   dev: 15,
   optional: 5,
+  /* eslint-enable @typescript-eslint/no-magic-numbers */
 };
-/* eslint-enable no-magic-numbers */
 
 export const dependencyDocs: Record<DependencyGroup, string> = {
   prod: 'https://classic.yarnpkg.com/docs/dependency-types#toc-dependencies',

@@ -6,9 +6,9 @@ import {
   md,
 } from 'build-md';
 import type { ReportsDiff } from '@code-pushup/models';
-import { HIERARCHY } from '../text-formats';
-import { toArray } from '../transform';
-import type { WithRequired } from '../types';
+import { HIERARCHY } from '../text-formats/index.js';
+import { toArray } from '../transform.js';
+import type { WithRequired } from '../types.js';
 import {
   changesToDiffOutcomes,
   compareDiffsBy,
@@ -21,14 +21,14 @@ import {
   sortChanges,
   summarizeDiffOutcomes,
   summarizeUnchanged,
-} from './generate-md-reports-diff-utils';
-import type { DiffOutcome } from './types';
+} from './generate-md-reports-diff-utils.js';
+import type { DiffOutcome } from './types.js';
 import {
   formatScoreChange,
   formatScoreWithColor,
   formatValueChange,
   scoreMarker,
-} from './utils';
+} from './utils.js';
 
 export function generateMdReportsDiff(diff: ReportsDiff): string {
   return new MarkdownDocument()
@@ -127,7 +127,7 @@ function createDiffCategoriesSection(
   return new MarkdownDocument()
     .heading(HIERARCHY.level_2, !skipHeading && '🏷️ Categories')
     .table(columns, rows)
-    .paragraph(added.length > 0 && md.italic('(\\*) New category.'))
+    .paragraph(added.length > 0 && md.italic(String.raw`(\*) New category.`))
     .paragraph(
       skipUnchanged &&
         unchanged.length > 0 &&
@@ -153,9 +153,9 @@ function createCategoriesTable(
     ]),
     ...added.map(category => [
       formatTitle(category),
-      md.italic('n/a (\\*)'),
+      md.italic(String.raw`n/a (\*)`),
       formatScoreWithColor(category.score),
-      md.italic('n/a (\\*)'),
+      md.italic(String.raw`n/a (\*)`),
     ]),
     ...(skipUnchanged
       ? []

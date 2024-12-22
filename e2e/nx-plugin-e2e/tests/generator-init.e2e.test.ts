@@ -1,6 +1,6 @@
 import type { Tree } from '@nx/devkit';
 import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import { afterEach, expect } from 'vitest';
 import {
   generateWorkspaceAndProject,
@@ -18,7 +18,7 @@ import { executeProcess } from '@code-pushup/utils';
 describe('nx-plugin g init', () => {
   let tree: Tree;
   const project = 'my-lib';
-  const testFileDir = join(
+  const testFileDir = path.join(
     E2E_ENVIRONMENTS_DIR,
     nxTargetProject(),
     TEST_OUTPUT_DIR,
@@ -34,7 +34,7 @@ describe('nx-plugin g init', () => {
   });
 
   it('should inform about dry run when used on init generator', async () => {
-    const cwd = join(testFileDir, 'dry-run');
+    const cwd = path.join(testFileDir, 'dry-run');
     await materializeTree(tree, cwd);
 
     const { stderr } = await executeProcess({
@@ -50,7 +50,7 @@ describe('nx-plugin g init', () => {
   });
 
   it('should update packages.json and configure nx.json', async () => {
-    const cwd = join(testFileDir, 'nx-update');
+    const cwd = path.join(testFileDir, 'nx-update');
     await materializeTree(tree, cwd);
 
     const { code, stdout } = await executeProcess({
@@ -73,8 +73,8 @@ describe('nx-plugin g init', () => {
     expect(cleanedStdout).toMatch(/^UPDATE package.json/m);
     expect(cleanedStdout).toMatch(/^UPDATE nx.json/m);
 
-    const packageJson = await readFile(join(cwd, 'package.json'), 'utf8');
-    const nxJson = await readFile(join(cwd, 'nx.json'), 'utf8');
+    const packageJson = await readFile(path.join(cwd, 'package.json'), 'utf8');
+    const nxJson = await readFile(path.join(cwd, 'nx.json'), 'utf8');
 
     expect(JSON.parse(packageJson)).toStrictEqual(
       expect.objectContaining({
@@ -99,7 +99,7 @@ describe('nx-plugin g init', () => {
   });
 
   it('should skip packages.json update if --skipPackageJson is given', async () => {
-    const cwd = join(testFileDir, 'skip-packages');
+    const cwd = path.join(testFileDir, 'skip-packages');
     await materializeTree(tree, cwd);
 
     const { code, stdout } = await executeProcess({
@@ -123,8 +123,8 @@ describe('nx-plugin g init', () => {
     expect(cleanedStdout).not.toMatch(/^UPDATE package.json/m);
     expect(cleanedStdout).toMatch(/^UPDATE nx.json/m);
 
-    const packageJson = await readFile(join(cwd, 'package.json'), 'utf8');
-    const nxJson = await readFile(join(cwd, 'nx.json'), 'utf8');
+    const packageJson = await readFile(path.join(cwd, 'package.json'), 'utf8');
+    const nxJson = await readFile(path.join(cwd, 'nx.json'), 'utf8');
 
     expect(JSON.parse(packageJson)).toStrictEqual(
       expect.objectContaining({

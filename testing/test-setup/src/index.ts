@@ -1,1 +1,1 @@
-export * from './lib/test-folder.setup';
+export * from './lib/test-folder.setup.js';

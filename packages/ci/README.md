@@ -94,22 +94,23 @@ A `Comment` object has the following required properties:
 
 Optionally, you can override default options for further customization:
 
-| Property          | Type                      | Default                          | Description                                                                          |
-| :---------------- | :------------------------ | :------------------------------- | :----------------------------------------------------------------------------------- |
-| `monorepo`        | `boolean \| MonorepoTool` | `false`                          | Enables [monorepo mode](#monorepo-mode)                                              |
-| `projects`        | `string[] \| null`        | `null`                           | Custom projects configuration for [monorepo mode](#monorepo-mode)                    |
-| `task`            | `string`                  | `'code-pushup'`                  | Name of command to run Code PushUp per project in [monorepo mode](#monorepo-mode)    |
-| `directory`       | `string`                  | `process.cwd()`                  | Directory in which Code PushUp CLI should run                                        |
-| `config`          | `string \| null`          | `null` [^1]                      | Path to config file (`--config` option)                                              |
-| `silent`          | `boolean`                 | `false`                          | Toggles if logs from CLI commands are printed                                        |
-| `bin`             | `string`                  | `'npx --no-install code-pushup'` | Command for executing Code PushUp CLI                                                |
-| `detectNewIssues` | `boolean`                 | `true`                           | Toggles if new issues should be detected and returned in `newIssues` property        |
-| `logger`          | `Logger`                  | `console`                        | Logger for reporting progress and encountered problems                               |
-| `output`          | `string`                  | `'.code-pushup'`                 | Directory where Code PushUp reports will be created (interpolates project name [^2]) |
+| Property           | Type                      | Default                          | Description                                                                                                                                              |
+| :----------------- | :------------------------ | :------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `monorepo`         | `boolean \| MonorepoTool` | `false`                          | Enables [monorepo mode](#monorepo-mode)                                                                                                                  |
+| `parallel`         | `boolean \| number`       | `false`                          | Enables parallel execution in [monorepo mode](#monorepo-mode)                                                                                            |
+| `projects`         | `string[] \| null`        | `null`                           | Custom projects configuration for [monorepo mode](#monorepo-mode)                                                                                        |
+| `task`             | `string`                  | `'code-pushup'`                  | Name of command to run Code PushUp per project in [monorepo mode](#monorepo-mode)                                                                        |
+| `nxProjectsFilter` | `string \| string[]`      | `'--with-target={task}'`         | Arguments passed to [`nx show projects`](https://nx.dev/nx-api/nx/documents/show#projects), only relevant for Nx in [monorepo mode](#monorepo-mode) [^2] |
+| `directory`        | `string`                  | `process.cwd()`                  | Directory in which Code PushUp CLI should run                                                                                                            |
+| `config`           | `string \| null`          | `null` [^1]                      | Path to config file (`--config` option)                                                                                                                  |
+| `silent`           | `boolean`                 | `false`                          | Toggles if logs from CLI commands are printed                                                                                                            |
+| `bin`              | `string`                  | `'npx --no-install code-pushup'` | Command for executing Code PushUp CLI                                                                                                                    |
+| `detectNewIssues`  | `boolean`                 | `true`                           | Toggles if new issues should be detected and returned in `newIssues` property                                                                            |
+| `logger`           | `Logger`                  | `console`                        | Logger for reporting progress and encountered problems                                                                                                   |
 
 [^1]: By default, the `code-pushup.config` file is autodetected as described in [`@code-pushup/cli` docs](../cli/README.md#configuration).
 
-[^2]: In monorepo mode, any occurrence of `{project}` in the `output` path will be replaced with a project name. This separation of folders per project (e.g. `output: '.code-pushup/{project}'`) may be useful for caching purposes.
+[^2]: The `{task}` pattern is replaced with the `task` value, so the default behaviour is to list projects using `npx nx show projects --with-target=code-pushup --json`. The `nxProjectsFilter` options gives Nx users the flexibility to filter projects in alternative ways supported by the Nx CLI (e.g. `--affected`, `--projects`, `--exclude`, `--type`) - refer to [options in Nx docs](https://nx.dev/nx-api/nx/documents/show#options) for details.
 
 The `Logger` object has the following required properties:
 
@@ -135,7 +136,7 @@ const result = await runInCI(refs, api);
 if (result.mode === 'standalone') {
   const {
     // output files, can be uploaded as job artifact
-    artifacts: { report, diff },
+    files: { report, diff },
     // ID of created/updated PR comment
     commentId,
     // array of source code issues, can be used to annotate changed files in PR
@@ -193,6 +194,27 @@ await runInCI(refs, api, {
 });
 ```
 
+### Parallel tasks
+
+By default, tasks are run sequentially for each project in the monorepo.
+The `parallel` option enables parallel execution for tools which support it (Nx, Turborepo, PNPM, Yarn 2+).
+
+```ts
+await runInCI(refs, api, {
+  monorepo: true,
+  parallel: true,
+});
+```
+
+The maximum number of concurrent tasks can be set by passing in a number instead of a boolean:
+
+```ts
+await runInCI(refs, api, {
+  monorepo: true,
+  parallel: 3,
+});
+```
+
 ### Monorepo result
 
 In monorepo mode, the resolved object includes the merged diff at the top-level, as well as a list of projects.
@@ -208,7 +230,7 @@ if (result.mode === 'monorepo') {
     // ID of created/updated PR comment
     commentId,
     // merged report-diff.md used in PR comment, can also be uploaded as job artifact
-    diffArtifact,
+    diffPath,
   } = result;
 
   for (const project of projects) {
@@ -216,7 +238,7 @@ if (result.mode === 'monorepo') {
       // detected project name (from package.json, project.json or folder name)
       name,
       // output files, can be uploaded as job artifacts
-      artifacts: { report, diff },
+      files: { report, diff },
       // array of source code issues, can be used to annotate changed files in PR
       newIssues,
     } = project;

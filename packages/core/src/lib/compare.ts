@@ -1,5 +1,6 @@
 import { writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { createRequire } from 'node:module';
+import path from 'node:path';
 import {
   type Format,
   type PersistConfig,
@@ -17,14 +18,13 @@ import {
   scoreReport,
   ui,
 } from '@code-pushup/utils';
-import { name as packageName, version } from '../../package.json';
 import {
   type ReportsToCompare,
   compareAudits,
   compareCategories,
   compareGroups,
-} from './implementation/compare-scorables';
-import { loadPortalClient } from './load-portal-client';
+} from './implementation/compare-scorables.js';
+import { loadPortalClient } from './load-portal-client.js';
 
 export async function compareReportFiles(
   inputPaths: Diff<string>,
@@ -58,7 +58,7 @@ export async function compareReportFiles(
 
   return Promise.all(
     format.map(async fmt => {
-      const outputPath = join(outputDir, `${filename}-diff.${fmt}`);
+      const outputPath = path.join(outputDir, `${filename}-diff.${fmt}`);
       const content = reportsDiffToFileContent(diff, fmt);
       await ensureDirectoryExists(outputDir);
       await writeFile(outputPath, content);
@@ -87,13 +87,17 @@ export function compareReports(reports: Diff<Report>): ReportsDiff {
 
   const duration = calcDuration(start);
 
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
+
   return {
     commits,
     categories,
     groups,
     audits,
-    packageName,
-    version,
+    packageName: packageJson.name,
+    version: packageJson.version,
     date,
     duration,
   };

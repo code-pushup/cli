@@ -1,6 +1,5 @@
 import type { CoreConfig, Format, UploadConfig } from '@code-pushup/models';
 
-/* eslint-disable @typescript-eslint/naming-convention */
 export type PersistConfigCliOptions = {
   'persist.outputDir'?: string;
   'persist.filename'?: string;
@@ -13,7 +12,6 @@ export type UploadConfigCliOptions = {
   'upload.apiKey'?: string;
   'upload.server'?: string;
 };
-/* eslint-enable @typescript-eslint/naming-convention */
 
 export type ConfigCliOptions = {
   config?: string;

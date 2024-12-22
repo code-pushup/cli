@@ -1,10 +1,10 @@
-import { dirname, join } from 'node:path';
+import { createRequire } from 'node:module';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { PluginConfig } from '@code-pushup/models';
-import { name, version } from '../../package.json';
-import { type ESLintPluginConfig, eslintPluginConfigSchema } from './config';
-import { listAuditsAndGroups } from './meta';
-import { createRunnerConfig } from './runner';
+import { type ESLintPluginConfig, eslintPluginConfigSchema } from './config.js';
+import { listAuditsAndGroups } from './meta/index.js';
+import { createRunnerConfig } from './runner/index.js';
 
 /**
  * Instantiates Code PushUp ESLint plugin for use in core config.
@@ -33,10 +33,15 @@ export async function eslintPlugin(
 
   const { audits, groups } = await listAuditsAndGroups(targets);
 
-  const runnerScriptPath = join(
-    fileURLToPath(dirname(import.meta.url)),
+  const runnerScriptPath = path.join(
+    fileURLToPath(path.dirname(import.meta.url)),
+    '..',
     'bin.js',
   );
+
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
 
   return {
     slug: 'eslint',
@@ -44,8 +49,8 @@ export async function eslintPlugin(
     icon: 'eslint',
     description: 'Official Code PushUp ESLint plugin',
     docsUrl: 'https://www.npmjs.com/package/@code-pushup/eslint-plugin',
-    packageName: name,
-    version,
+    packageName: packageJson.name,
+    version: packageJson.version,
 
     audits,
     groups,

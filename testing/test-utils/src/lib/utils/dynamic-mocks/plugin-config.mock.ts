@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import {
   type Audit,
   type AuditReport,
@@ -7,14 +7,14 @@ import {
   auditSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
-import { echoRunnerConfigMock } from './runner-config.mock';
+import { echoRunnerConfigMock } from './runner-config.mock.js';
 
 export function pluginConfigMock(
   auditOutputs: AuditReport[],
   opt?: Partial<PluginConfig> & { outputDir?: string; outputFile?: string },
 ): PluginConfig {
   const { outputDir, outputFile } = opt || {};
-  const pluginOutputFile = join(
+  const pluginOutputFile = path.join(
     outputDir || 'tmp',
     outputFile || `out.${Date.now()}.json`,
   );

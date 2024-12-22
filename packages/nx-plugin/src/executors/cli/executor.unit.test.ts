@@ -1,16 +1,14 @@
 import { logger } from '@nx/devkit';
-// eslint-disable-next-line n/no-sync
 import { execSync } from 'node:child_process';
 import { afterEach, beforeEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
-import runAutorunExecutor from './executor';
+import runAutorunExecutor from './executor.js';
 
 vi.mock('node:child_process', async () => {
   const actual = await vi.importActual('node:child_process');
 
   return {
     ...actual,
-    // eslint-disable-next-line n/no-sync
     execSync: vi.fn((command: string) => {
       if (command.includes('THROW_ERROR')) {
         throw new Error(command);
@@ -27,6 +25,7 @@ describe('runAutorunExecutor', () => {
   beforeEach(() => {
     envSpy.mockReturnValue({});
   });
+
   afterEach(() => {
     loggerWarnSpy.mockReset();
     loggerInfoSpy.mockReset();

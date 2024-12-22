@@ -6,9 +6,9 @@ import {
   type DependencyGroup,
   type PackageManagerId,
   packageAuditLevels,
-} from '../../config';
-import { auditScoreModifiers } from './constants';
-import type { AuditResult, AuditSummary, Vulnerability } from './types';
+} from '../../config.js';
+import { auditScoreModifiers } from './constants.js';
+import type { AuditResult, AuditSummary, Vulnerability } from './types.js';
 
 export function auditResultToAuditOutput(
   result: AuditResult,

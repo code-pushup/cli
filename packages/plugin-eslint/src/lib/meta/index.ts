@@ -1,8 +1,11 @@
 import type { Audit, Group } from '@code-pushup/models';
-import type { ESLintTarget } from '../config';
-import { groupsFromRuleCategories, groupsFromRuleTypes } from './groups';
-import { listRules } from './rules';
-import { ruleToAudit } from './transform';
+import type { ESLintTarget } from '../config.js';
+import { groupsFromRuleCategories, groupsFromRuleTypes } from './groups.js';
+import { listRules } from './rules.js';
+import { ruleToAudit } from './transform.js';
+
+export { ruleIdToSlug } from './hash.js';
+export { detectConfigVersion, type ConfigFormat } from './versions/index.js';
 
 export async function listAuditsAndGroups(
   targets: ESLintTarget[],

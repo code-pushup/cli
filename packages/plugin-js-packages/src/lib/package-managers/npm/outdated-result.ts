@@ -1,6 +1,6 @@
 import { objectToEntries } from '@code-pushup/utils';
-import type { OutdatedResult } from '../../runner/outdated/types';
-import type { NpmNormalizedOverview, NpmOutdatedResultJson } from './types';
+import type { OutdatedResult } from '../../runner/outdated/types.js';
+import type { NpmNormalizedOverview, NpmOutdatedResultJson } from './types.js';
 
 export function npmToOutdatedResult(output: string): OutdatedResult {
   const npmOutdated = JSON.parse(output) as NpmOutdatedResultJson;

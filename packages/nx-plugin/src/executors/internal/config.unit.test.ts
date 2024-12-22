@@ -1,7 +1,7 @@
 import { type MockInstance, describe, expect } from 'vitest';
 import { osAgnosticPath } from '@code-pushup/test-utils';
-import { ENV } from '../../../mock/fixtures/env';
-import { globalConfig, persistConfig, uploadConfig } from './config';
+import { ENV } from '../../../mock/fixtures/env.js';
+import { globalConfig, persistConfig, uploadConfig } from './config.js';
 
 describe('globalConfig', () => {
   it('should provide default global verbose options', () => {
@@ -253,9 +253,11 @@ describe('uploadConfig', () => {
   };
 
   let processEnvSpy: MockInstance<[], NodeJS.ProcessEnv>;
+
   beforeAll(() => {
     processEnvSpy = vi.spyOn(process, 'env', 'get').mockReturnValue({});
   });
+
   afterAll(() => {
     processEnvSpy.mockRestore();
   });

@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import type {
   Audit,
   AuditReport,
@@ -10,8 +10,8 @@ import {
   LIGHTHOUSE_AUDITS_CHANGES,
   LIGHTHOUSE_AUDITS_MAP,
   LIGHTHOUSE_AUDIT_SLUGS,
-} from './lighthouse-audits.mock';
-import { echoRunnerConfigMock } from './runner-config.mock';
+} from './lighthouse-audits.mock.js';
+import { echoRunnerConfigMock } from './runner-config.mock.js';
 
 export const LH_PLUGIN_GROUP_PERFORMANCE: Group = {
   slug: 'performance',
@@ -61,7 +61,7 @@ export function lighthousePluginConfigMock(outputDir = 'tmp'): PluginConfig {
     ...LH_PLUGIN_META,
     runner: echoRunnerConfigMock(
       Object.values(LIGHTHOUSE_AUDITS_MAP),
-      join(outputDir, 'lighthouse-out.json'),
+      path.join(outputDir, 'lighthouse-out.json'),
     ),
     audits,
     groups: [LH_PLUGIN_GROUP_PERFORMANCE],

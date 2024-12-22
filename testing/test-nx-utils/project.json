@@ -1,18 +1,17 @@
 {
   "name": "test-nx-utils",
-  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "testing/test-nx-utils/src",
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nx/esbuild:esbuild",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/testing/test-nx-utils",
         "main": "testing/test-nx-utils/src/index.ts",
         "tsConfig": "testing/test-nx-utils/tsconfig.lib.json",
-        "assets": ["testing/test-nx-utils/*.md"],
-        "esbuildConfig": "esbuild.config.js"
+        "assets": ["testing/test-nx-utils/*.md"]
       }
     },
     "lint": {

@@ -1,6 +1,6 @@
 import { black, bold, gray, green } from 'ansis';
 import { type CtorOptions, MultiProgressBars } from 'multi-progress-bars';
-import { TERMINAL_WIDTH } from './reports/constants';
+import { TERMINAL_WIDTH } from './reports/constants.js';
 
 type BarStyles = 'active' | 'done' | 'idle';
 type StatusStyles = Record<BarStyles, (s: string) => string>;
@@ -29,7 +29,6 @@ let mpb: MultiProgressBars;
 export function getSingletonProgressBars(
   options?: Partial<CtorOptions>,
 ): MultiProgressBars {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!mpb) {
     mpb = new MultiProgressBars({
       progressWidth: TERMINAL_WIDTH,

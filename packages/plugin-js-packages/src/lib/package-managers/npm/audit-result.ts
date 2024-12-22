@@ -1,11 +1,11 @@
 import { objectToEntries } from '@code-pushup/utils';
-import type { AuditResult, Vulnerability } from '../../runner/audit/types';
+import type { AuditResult, Vulnerability } from '../../runner/audit/types.js';
 import type {
   NpmAdvisory,
   NpmAuditResultJson,
   NpmFixInformation,
   NpmVulnerabilities,
-} from './types';
+} from './types.js';
 
 export function npmToAuditResult(output: string): AuditResult {
   const npmAudit = JSON.parse(output) as NpmAuditResultJson;
@@ -48,7 +48,7 @@ export function npmToFixInformation(
 export function npmToAdvisory(
   name: string,
   vulnerabilities: NpmVulnerabilities,
-  prevNodes: Set<string> = new Set(),
+  prevNodes = new Set<string>(),
 ): NpmAdvisory | null {
   const advisory = vulnerabilities[name]?.via;
 

@@ -1,5 +1,5 @@
 import { type Tree, updateProjectConfiguration } from '@nx/devkit';
-import { join, relative } from 'node:path';
+import path from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
 import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
@@ -12,45 +12,32 @@ import { teardownTestFolder } from '@code-pushup/test-setup';
 import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
-  osAgnosticPath,
   removeColorCodes,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
-
-function relativePathToCwd(testDir: string): string {
-  return relative(join(process.cwd(), testDir), process.cwd());
-}
+import { INLINE_PLUGIN } from './inline-plugin.js';
 
 async function addTargetToWorkspace(
   tree: Tree,
   options: { cwd: string; project: string },
 ) {
   const { cwd, project } = options;
-  const pathRelativeToPackage = relative(join(cwd, 'libs', project), cwd);
   const projectCfg = readProjectConfiguration(tree, project);
   updateProjectConfiguration(tree, project, {
     ...projectCfg,
     targets: {
       ...projectCfg.targets,
-      ['code-pushup']: {
+      'code-pushup': {
         executor: '@code-pushup/nx-plugin:cli',
       },
     },
   });
   const { root } = projectCfg;
   generateCodePushupConfig(tree, root, {
-    fileImports: `import type {CoreConfig} from "@code-pushup/models";`,
     plugins: [
       {
-        // @TODO replace with inline plugin
-        fileImports: `import {customPlugin} from "${osAgnosticPath(
-          join(
-            relativePathToCwd(cwd),
-            pathRelativeToPackage,
-            'dist/testing/test-utils',
-          ),
-        )}";`,
-        codeStrings: 'customPlugin()',
+        fileImports: '',
+        codeStrings: INLINE_PLUGIN,
       },
     ],
   });
@@ -60,7 +47,7 @@ async function addTargetToWorkspace(
 describe('executor command', () => {
   let tree: Tree;
   const project = 'my-lib';
-  const testFileDir = join(
+  const testFileDir = path.join(
     E2E_ENVIRONMENTS_DIR,
     nxTargetProject(),
     TEST_OUTPUT_DIR,
@@ -76,7 +63,7 @@ describe('executor command', () => {
   });
 
   it('should execute no specific command by default', async () => {
-    const cwd = join(testFileDir, 'execute-default-command');
+    const cwd = path.join(testFileDir, 'execute-default-command');
     await addTargetToWorkspace(tree, { cwd, project });
     const { stdout, code } = await executeProcess({
       command: 'npx',
@@ -90,7 +77,7 @@ describe('executor command', () => {
   });
 
   it('should execute print-config executor', async () => {
-    const cwd = join(testFileDir, 'execute-print-config-command');
+    const cwd = path.join(testFileDir, 'execute-print-config-command');
     await addTargetToWorkspace(tree, { cwd, project });
 
     const { stdout, code } = await executeProcess({
@@ -104,12 +91,12 @@ describe('executor command', () => {
     expect(cleanStdout).toContain('nx run my-lib:code-pushup print-config');
 
     await expect(() =>
-      readJsonFile(join(cwd, '.code-pushup', project, 'report.json')),
+      readJsonFile(path.join(cwd, '.code-pushup', project, 'report.json')),
     ).rejects.toThrow('');
   });
 
   it('should execute collect executor and add report to sub folder named by project', async () => {
-    const cwd = join(testFileDir, 'execute-collect-command');
+    const cwd = path.join(testFileDir, 'execute-collect-command');
     await addTargetToWorkspace(tree, { cwd, project });
 
     const { stdout, code } = await executeProcess({
@@ -123,7 +110,7 @@ describe('executor command', () => {
     expect(cleanStdout).toContain('nx run my-lib:code-pushup collect');
 
     const report = await readJsonFile(
-      join(cwd, '.code-pushup', project, 'report.json'),
+      path.join(cwd, '.code-pushup', project, 'report.json'),
     );
     expect(report).toStrictEqual(
       expect.objectContaining({

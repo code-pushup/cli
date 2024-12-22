@@ -1,8 +1,8 @@
-import { dependencyGroupToLong } from '../../constants';
-import { COMMON_AUDIT_ARGS, COMMON_OUTDATED_ARGS } from '../constants';
-import type { PackageManager } from '../types';
-import { yarnv1ToAuditResult } from './audit-result';
-import { yarnv1ToOutdatedResult } from './outdated-result';
+import { dependencyGroupToLong } from '../../constants.js';
+import { COMMON_AUDIT_ARGS, COMMON_OUTDATED_ARGS } from '../constants.js';
+import type { PackageManager } from '../types.js';
+import { yarnv1ToAuditResult } from './audit-result.js';
+import { yarnv1ToOutdatedResult } from './outdated-result.js';
 
 export const yarnv1PackageManager: PackageManager = {
   slug: 'yarn-classic',

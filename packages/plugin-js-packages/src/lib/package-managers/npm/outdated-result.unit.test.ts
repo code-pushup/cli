@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { OutdatedResult } from '../../runner/outdated/types';
-import { npmToOutdatedResult } from './outdated-result';
+import type { OutdatedResult } from '../../runner/outdated/types.js';
+import { npmToOutdatedResult } from './outdated-result.js';
 
 describe('npmToOutdatedResult', () => {
   it('should transform NPM outdated to unified outdated result', () => {

@@ -1,10 +1,10 @@
-import { hashObject } from 'nx/src/hasher/file-hasher';
 import {
   type ProjectConfiguration,
   readJsonFile,
   writeJsonFile,
 } from '@nx/devkit';
 import { existsSync } from 'node:fs';
+import { hashObject } from 'nx/src/hasher/file-hasher';
 
 export function cacheKey(prefix: string, hashData: Record<string, unknown>) {
   return `${prefix}-${hashObject(hashData)}`;
@@ -13,7 +13,7 @@ export function cacheKey(prefix: string, hashData: Record<string, unknown>) {
 export function getCacheRecord<T>(
   targetsCache: Record<string, T>,
   prefix: string,
-  hashData: Record<string, unknown>
+  hashData: Record<string, unknown>,
 ) {
   const targetCacheKey = cacheKey(prefix, hashData);
 
@@ -27,7 +27,7 @@ export function setCacheRecord<T>(
   targetsCache: Record<string, T>,
   prefix: string,
   hashData: Record<string, unknown>,
-  cacheData: T
+  cacheData: T,
 ) {
   const targetCacheKey = cacheKey(prefix, hashData);
 
@@ -35,7 +35,7 @@ export function setCacheRecord<T>(
 }
 
 export function readTargetsCache(
-  cachePath: string
+  cachePath: string,
 ): Record<string, Partial<ProjectConfiguration>> {
   return process.env.NX_CACHE_PROJECT_GRAPH !== 'false' && existsSync(cachePath)
     ? readJsonFile(cachePath)
@@ -44,7 +44,7 @@ export function readTargetsCache(
 
 export function writeTargetsToCache(
   cachePath: string,
-  results: Record<string, Partial<ProjectConfiguration>>
+  results: Record<string, Partial<ProjectConfiguration>>,
 ) {
   writeJsonFile(cachePath, results);
 }

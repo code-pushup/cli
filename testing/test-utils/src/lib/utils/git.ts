@@ -1,6 +1,12 @@
 import { mkdir, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import type { SimpleGit, SimpleGitFactory } from 'simple-git';
+import path from 'node:path';
+import type {
+  FetchResult,
+  Response,
+  SimpleGit,
+  SimpleGitFactory,
+} from 'simple-git';
+import { vi } from 'vitest';
 
 export type GitConfig = { name: string; email: string };
 
@@ -36,7 +42,7 @@ export async function commitFile(
   } = opt ?? {};
   const { name = 'README.md', content = `# hello-world-${Math.random()}\n` } =
     file ?? {};
-  await writeFile(join(baseDir, name), content);
+  await writeFile(path.join(baseDir, name), content);
   await git.add(name);
   if (tagName) {
     await git.tag([tagName]);
@@ -45,4 +51,29 @@ export async function commitFile(
     await git.commit(commitMsg);
   }
   return git;
+}
+
+export async function simulateGitFetch(git: SimpleGit) {
+  let fetchHead: string = await git.branchLocal().then(resp => resp.current);
+
+  vi.spyOn(git, 'fetch').mockImplementation((...args) => {
+    fetchHead = (args as unknown as [string, string, string[]])[1];
+    return Promise.resolve({}) as Response<FetchResult>;
+  });
+
+  const originalDiffSummary = git.diffSummary.bind(git);
+  const originalDiff = git.diff.bind(git);
+
+  vi.spyOn(git, 'diffSummary').mockImplementation(args =>
+    originalDiffSummary(
+      (args as unknown as string[]).map(arg =>
+        arg === 'FETCH_HEAD' ? fetchHead : arg,
+      ),
+    ),
+  );
+  vi.spyOn(git, 'diff').mockImplementation(args =>
+    originalDiff(
+      (args as string[]).map(arg => (arg === 'FETCH_HEAD' ? fetchHead : arg)),
+    ),
+  );
 }

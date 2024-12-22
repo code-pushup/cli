@@ -1,15 +1,15 @@
-import { dirname, join } from 'node:path';
+import { createRequire } from 'node:module';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Audit, Group, PluginConfig } from '@code-pushup/models';
 import { capitalize } from '@code-pushup/utils';
-import { name, version } from '../../package.json';
 import {
   type CoveragePluginConfig,
   type CoverageType,
   coveragePluginConfigSchema,
-} from './config';
-import { createRunnerConfig } from './runner';
-import { coverageDescription, coverageTypeWeightMapper } from './utils';
+} from './config.js';
+import { createRunnerConfig } from './runner/index.js';
+import { coverageDescription, coverageTypeWeightMapper } from './utils.js';
 
 /**
  * Instantiates Code PushUp code coverage plugin for core config.
@@ -55,10 +55,15 @@ export async function coveragePlugin(
     })),
   };
 
-  const runnerScriptPath = join(
-    fileURLToPath(dirname(import.meta.url)),
+  const runnerScriptPath = path.join(
+    fileURLToPath(path.dirname(import.meta.url)),
+    '..',
     'bin.js',
   );
+
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
 
   return {
     slug: 'coverage',
@@ -66,8 +71,8 @@ export async function coveragePlugin(
     icon: 'folder-coverage-open',
     description: 'Official Code PushUp code coverage plugin.',
     docsUrl: 'https://www.npmjs.com/package/@code-pushup/coverage-plugin/',
-    packageName: name,
-    version,
+    packageName: packageJson.name,
+    version: packageJson.version,
     audits,
     groups: [group],
     runner: await createRunnerConfig(runnerScriptPath, coverageConfig),

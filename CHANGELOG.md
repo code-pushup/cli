@@ -1,3 +1,50 @@
+## 0.57.0 (2024-12-17)
+
+### 🚀 Features
+
+- **ci:** detect persist config from print-config ([ad8bd284](https://github.com/code-pushup/cli/commit/ad8bd284))
+- **ci:** remove obsolete output option ([0b9d679e](https://github.com/code-pushup/cli/commit/0b9d679e))
+- **ci:** implement run many command resolution for each monorepo tool ([094797d9](https://github.com/code-pushup/cli/commit/094797d9))
+- **ci:** add parallel option ([85e51864](https://github.com/code-pushup/cli/commit/85e51864))
+- **ci:** filter nx run-many by projects from nx show projects as fallback ([97a603cc](https://github.com/code-pushup/cli/commit/97a603cc))
+- **ci:** sort nx projects alphabetically ([6a6c2f3d](https://github.com/code-pushup/cli/commit/6a6c2f3d))
+- **ci:** copy merged-report-diff.md from project to root ([e1305295](https://github.com/code-pushup/cli/commit/e1305295))
+- **ci:** implement bulk collecting reports for parallel monorepo runs ([e0b4d97f](https://github.com/code-pushup/cli/commit/e0b4d97f))
+- **core:** enhance config validation ([836b242d](https://github.com/code-pushup/cli/commit/836b242d))
+- **utils:** implement type guard for nullable object props ([c3fc549e](https://github.com/code-pushup/cli/commit/c3fc549e))
+
+### 🩹 Fixes
+
+- prevent "ExperimentalWarning: Importing JSON" logged to stderr ([8ce9e635](https://github.com/code-pushup/cli/commit/8ce9e635))
+- update progress bar gradually as plugin run complete ([7a592ebd](https://github.com/code-pushup/cli/commit/7a592ebd))
+- lint import extensions and fix missing .js extensions ([9d6eacf4](https://github.com/code-pushup/cli/commit/9d6eacf4))
+- **ci:** handle non-JSON prefix/suffix lines from print-config ([43ffcf2d](https://github.com/code-pushup/cli/commit/43ffcf2d))
+- **ci:** ensure valid output directory for reports and merged diff ([5e36323d](https://github.com/code-pushup/cli/commit/5e36323d))
+- **ci:** resolve outputDir correctly by running workspace commands in project dir ([94b25f88](https://github.com/code-pushup/cli/commit/94b25f88))
+- **ci:** only copy merged-report-diff.md when paths are different ([f8ac4007](https://github.com/code-pushup/cli/commit/f8ac4007))
+- **nx-plugin:** use wildcard path imports to prevent CJS runtime errors ([31bed82a](https://github.com/code-pushup/cli/commit/31bed82a))
+- **plugin-eslint:** avoid directory imports ([688a4859](https://github.com/code-pushup/cli/commit/688a4859))
+- **plugin-eslint:** consider defaultOptions to ensure rule slugs from runner match ([13de4b57](https://github.com/code-pushup/cli/commit/13de4b57))
+- **plugin-eslint:** handle mismatched slugs for legacy configs ([e324f39d](https://github.com/code-pushup/cli/commit/e324f39d))
+- **plugin-eslint:** parse rule names containing slashes correctly ([f1163d0a](https://github.com/code-pushup/cli/commit/f1163d0a))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- Matěj Chalk
+- Vojtech Masek @vmasek
+
+## 0.56.0 (2024-11-29)
+
+### 🚀 Features
+
+- **ci:** add nxProjectsFilter option, forwards custom filters to Nx CLI ([93a6a428](https://github.com/code-pushup/cli/commit/93a6a428))
+- **plugin-eslint:** support new config format in nx helpers ([effd5d26](https://github.com/code-pushup/cli/commit/effd5d26))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.55.0 (2024-11-25)
 
 ### 🚀 Features

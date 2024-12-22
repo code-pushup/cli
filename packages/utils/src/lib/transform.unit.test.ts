@@ -15,7 +15,7 @@ import {
   toNumberPrecision,
   toOrdinal,
   toUnixPath,
-} from './transform';
+} from './transform.js';
 
 describe('toArray', () => {
   it('should transform non-array value into array with single value', () => {
@@ -238,7 +238,7 @@ describe('toUnixPath', () => {
     ['src/main.ts', 'src/main.ts'],
     ['../../relative/unix/path/index.ts', '../../relative/unix/path/index.ts'],
     [
-      '..\\..\\relative\\windows\\path\\index.ts',
+      String.raw`..\..\relative\windows\path\index.ts`,
       '../../relative/windows/path/index.ts',
     ],
   ])('should transform "%s" to valid slug "%s"', (path, unixPath) => {

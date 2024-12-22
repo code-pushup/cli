@@ -1,18 +1,18 @@
-import { dirname, join } from 'node:path';
+import { createRequire } from 'node:module';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Audit, Group, PluginConfig } from '@code-pushup/models';
-import { name, version } from '../../package.json';
 import {
   type DependencyGroup,
   type JSPackagesPluginConfig,
   type PackageCommand,
   type PackageManagerId,
   dependencyGroups,
-} from './config';
-import { dependencyDocs, dependencyGroupWeights } from './constants';
-import { packageManagers } from './package-managers';
-import { createRunnerConfig } from './runner';
-import { normalizeConfig } from './utils';
+} from './config.js';
+import { dependencyDocs, dependencyGroupWeights } from './constants.js';
+import { packageManagers } from './package-managers/package-managers.js';
+import { createRunnerConfig } from './runner/index.js';
+import { normalizeConfig } from './utils.js';
 
 /**
  * Instantiates Code PushUp JS packages plugin for core config.
@@ -37,10 +37,15 @@ export async function jsPackagesPlugin(
   const { packageManager, checks, depGroups, ...jsPackagesPluginConfigRest } =
     await normalizeConfig(config);
 
-  const runnerScriptPath = join(
-    fileURLToPath(dirname(import.meta.url)),
+  const runnerScriptPath = path.join(
+    fileURLToPath(path.dirname(import.meta.url)),
+    '..',
     'bin.js',
   );
+
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
 
   return {
     slug: 'js-packages',
@@ -49,8 +54,8 @@ export async function jsPackagesPlugin(
     description:
       'This plugin runs audit to uncover vulnerabilities and lists outdated dependencies. It supports npm, yarn classic, yarn modern, and pnpm package managers.',
     docsUrl: packageManager.docs.homepage,
-    packageName: name,
-    version,
+    packageName: packageJson.name,
+    version: packageJson.version,
     audits: createAudits(packageManager.slug, checks, depGroups),
     groups: createGroups(packageManager.slug, checks, depGroups),
     runner: await createRunnerConfig(runnerScriptPath, {

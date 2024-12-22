@@ -4,14 +4,7 @@
   "projectType": "application",
   "targets": {
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/cli/**/*.ts",
-          "packages/cli/package.json"
-        ]
-      }
+      "executor": "@nx/eslint:lint"
     }
   }
 }

@@ -1,14 +1,14 @@
 import { vol } from 'memfs';
-import { join } from 'node:path';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import { parseLcovFiles } from './lcov-runner';
+import { parseLcovFiles } from './lcov-runner.js';
 
 describe('parseLcovFiles', () => {
   const UTILS_REPORT = `
 TN:
-SF:${join('common', 'utils.ts')}
+SF:${path.join('common', 'utils.ts')}
 FNF:0
 FNH:0
 DA:1,1
@@ -23,7 +23,7 @@ end_of_record
 
   const CONSTANTS_REPORT = `
 TN:
-SF:${join('src', 'lib', 'constants.ts')}
+SF:${path.join('src', 'lib', 'constants.ts')}
 FNF:0
 FNH:0
 DA:1,1
@@ -37,8 +37,8 @@ end_of_record
   beforeEach(() => {
     vol.fromJSON(
       {
-        [join('integration-tests', 'lcov.info')]: UTILS_REPORT, // file name value under SF used in tests
-        [join('unit-tests', 'lcov.info')]: CONSTANTS_REPORT, // file name value under SF used in tests
+        [path.join('integration-tests', 'lcov.info')]: UTILS_REPORT, // file name value under SF used in tests
+        [path.join('unit-tests', 'lcov.info')]: CONSTANTS_REPORT, // file name value under SF used in tests
         'lcov.info': '', // empty report file
       },
       'coverage',
@@ -47,9 +47,9 @@ end_of_record
 
   it('should identify coverage path passed as a string', async () => {
     await expect(
-      parseLcovFiles([join('coverage', 'integration-tests', 'lcov.info')]),
+      parseLcovFiles([path.join('coverage', 'integration-tests', 'lcov.info')]),
     ).resolves.toEqual([
-      expect.objectContaining({ file: join('common', 'utils.ts') }),
+      expect.objectContaining({ file: path.join('common', 'utils.ts') }),
     ]);
   });
 
@@ -57,13 +57,13 @@ end_of_record
     await expect(
       parseLcovFiles([
         {
-          resultsPath: join('coverage', 'unit-tests', 'lcov.info'),
-          pathToProject: join('packages', 'cli'),
+          resultsPath: path.join('coverage', 'unit-tests', 'lcov.info'),
+          pathToProject: path.join('packages', 'cli'),
         },
       ]),
     ).resolves.toEqual([
       expect.objectContaining({
-        file: join('packages', 'cli', 'src', 'lib', 'constants.ts'),
+        file: path.join('packages', 'cli', 'src', 'lib', 'constants.ts'),
       }),
     ]);
   });
@@ -72,35 +72,35 @@ end_of_record
     await expect(
       parseLcovFiles([
         {
-          resultsPath: join('coverage', 'unit-tests', 'lcov.info'),
-          pathToProject: join('packages', 'cli'),
+          resultsPath: path.join('coverage', 'unit-tests', 'lcov.info'),
+          pathToProject: path.join('packages', 'cli'),
         },
-        join('coverage', 'integration-tests', 'lcov.info'),
+        path.join('coverage', 'integration-tests', 'lcov.info'),
       ]),
     ).resolves.toEqual([
       expect.objectContaining({
-        file: join('packages', 'cli', 'src', 'lib', 'constants.ts'),
+        file: path.join('packages', 'cli', 'src', 'lib', 'constants.ts'),
       }),
       expect.objectContaining({
-        file: join('common', 'utils.ts'),
+        file: path.join('common', 'utils.ts'),
       }),
     ]);
   });
 
   it('should throw for only empty reports', async () => {
     await expect(() =>
-      parseLcovFiles([join('coverage', 'lcov.info')]),
+      parseLcovFiles([path.join('coverage', 'lcov.info')]),
     ).rejects.toThrow('All provided results are empty.');
   });
 
   it('should warn about an empty lcov file', async () => {
     await parseLcovFiles([
-      join('coverage', 'integration-tests', 'lcov.info'),
-      join('coverage', 'lcov.info'),
+      path.join('coverage', 'integration-tests', 'lcov.info'),
+      path.join('coverage', 'lcov.info'),
     ]);
 
     expect(getLogMessages(ui().logger)[0]).toContain(
-      `Coverage plugin: Empty lcov report file detected at ${join(
+      `Coverage plugin: Empty lcov report file detected at ${path.join(
         'coverage',
         'lcov.info',
       )}`,

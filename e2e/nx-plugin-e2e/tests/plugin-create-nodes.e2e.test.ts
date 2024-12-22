@@ -1,5 +1,5 @@
 import type { Tree } from '@nx/devkit';
-import { join, relative } from 'node:path';
+import path from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
 import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
@@ -17,12 +17,13 @@ import {
   removeColorCodes,
 } from '@code-pushup/test-utils';
 import { executeProcess, readTextFile } from '@code-pushup/utils';
+import { INLINE_PLUGIN } from './inline-plugin.js';
 
 describe('nx-plugin', () => {
   let tree: Tree;
   const project = 'my-lib';
-  const projectRoot = join('libs', project);
-  const testFileDir = join(
+  const projectRoot = path.join('libs', project);
+  const testFileDir = path.join(
     E2E_ENVIRONMENTS_DIR,
     nxTargetProject(),
     TEST_OUTPUT_DIR,
@@ -38,20 +39,21 @@ describe('nx-plugin', () => {
   });
 
   it('should add configuration target dynamically', async () => {
-    const cwd = join(testFileDir, 'add-configuration-dynamically');
+    const cwd = path.join(testFileDir, 'add-configuration-dynamically');
     registerPluginInWorkspace(tree, '@code-pushup/nx-plugin');
     await materializeTree(tree, cwd);
 
     const { code, projectJson } = await nxShowProjectJson(cwd, project);
     expect(code).toBe(0);
 
-    expect(projectJson.targets).toStrictEqual({
-      ['code-pushup--configuration']: {
+    expect(projectJson.targets).toEqual({
+      'code-pushup--configuration': {
         configurations: {},
         executor: 'nx:run-commands',
         options: {
           command: `nx g @code-pushup/nx-plugin:configuration --skipTarget --targetName="code-pushup" --project="${project}"`,
         },
+        parallelism: true,
       },
     });
 
@@ -59,7 +61,7 @@ describe('nx-plugin', () => {
   });
 
   it('should execute dynamic configuration target', async () => {
-    const cwd = join(testFileDir, 'execute-dynamic-configuration');
+    const cwd = path.join(testFileDir, 'execute-dynamic-configuration');
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
     });
@@ -75,15 +77,15 @@ describe('nx-plugin', () => {
 
     const cleanStdout = removeColorCodes(stdout);
     expect(cleanStdout).toContain(
-      `>  NX   Successfully ran target code-pushup--configuration for project ${project}`,
+      `Successfully ran target code-pushup--configuration for project ${project}`,
     );
     await expect(
-      readTextFile(join(cwd, projectRoot, 'code-pushup.config.ts')),
+      readTextFile(path.join(cwd, projectRoot, 'code-pushup.config.ts')),
     ).resolves.toMatchSnapshot();
   });
 
   it('should consider plugin option targetName in configuration target', async () => {
-    const cwd = join(testFileDir, 'configuration-option-target-name');
+    const cwd = path.join(testFileDir, 'configuration-option-target-name');
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
       options: {
@@ -97,12 +99,12 @@ describe('nx-plugin', () => {
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({
-      ['cp--configuration']: expect.any(Object),
+      'cp--configuration': expect.any(Object),
     });
   });
 
   it('should consider plugin option bin in configuration target', async () => {
-    const cwd = join(testFileDir, 'configuration-option-bin');
+    const cwd = path.join(testFileDir, 'configuration-option-bin');
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
       options: {
@@ -116,7 +118,7 @@ describe('nx-plugin', () => {
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({
-      ['code-pushup--configuration']: expect.objectContaining({
+      'code-pushup--configuration': expect.objectContaining({
         options: {
           command: `nx g XYZ:configuration --skipTarget --targetName="code-pushup" --project="${project}"`,
         },
@@ -125,7 +127,7 @@ describe('nx-plugin', () => {
   });
 
   it('should NOT add config targets dynamically if the project is configured', async () => {
-    const cwd = join(testFileDir, 'configuration-already-configured');
+    const cwd = path.join(testFileDir, 'configuration-already-configured');
     registerPluginInWorkspace(tree, '@code-pushup/nx-plugin');
     const { root } = readProjectConfiguration(tree, project);
     generateCodePushupConfig(tree, root);
@@ -137,14 +139,14 @@ describe('nx-plugin', () => {
 
     expect(projectJson.targets).toStrictEqual(
       expect.not.objectContaining({
-        ['code-pushup--configuration']: expect.any(Object),
+        'code-pushup--configuration': expect.any(Object),
       }),
     );
     expect(projectJson.targets).toMatchSnapshot();
   });
 
   it('should add executor target dynamically if the project is configured', async () => {
-    const cwd = join(testFileDir, 'add-executor-dynamically');
+    const cwd = path.join(testFileDir, 'add-executor-dynamically');
     registerPluginInWorkspace(tree, '@code-pushup/nx-plugin');
     const { root } = readProjectConfiguration(tree, project);
     generateCodePushupConfig(tree, root);
@@ -154,10 +156,11 @@ describe('nx-plugin', () => {
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({
-      ['code-pushup']: {
+      'code-pushup': {
         configurations: {},
         executor: `@code-pushup/nx-plugin:cli`,
         options: {},
+        parallelism: true,
       },
     });
 
@@ -165,29 +168,22 @@ describe('nx-plugin', () => {
   });
 
   it('should execute dynamic executor target', async () => {
-    const cwd = join(testFileDir, 'execute-dynamic-executor');
-    const pathRelativeToPackage = relative(join(cwd, 'libs', project), cwd);
+    const cwd = path.join(testFileDir, 'execute-dynamic-executor');
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
     });
     const { root } = readProjectConfiguration(tree, project);
     generateCodePushupConfig(tree, root, {
-      fileImports: `import type {CoreConfig} from "@code-pushup/models";`,
       plugins: [
         {
-          // @TODO replace with inline plugin
-          fileImports: `import {customPlugin} from "${join(
-            relative(join(process.cwd(), cwd), process.cwd()),
-            pathRelativeToPackage,
-            'dist/testing/test-utils',
-          )}";`,
-          codeStrings: 'customPlugin()',
+          fileImports: '',
+          codeStrings: INLINE_PLUGIN,
         },
       ],
       upload: {
-        server: 'http://staging.code-pushup.dev',
+        server: 'https://api.staging.code-pushup.dev/graphql',
         organization: 'code-pushup',
-        apiKey: '12345678',
+        apiKey: 'cp_12345678',
       },
     });
 
@@ -210,7 +206,7 @@ describe('nx-plugin', () => {
   });
 
   it('should consider plugin option bin in executor target', async () => {
-    const cwd = join(testFileDir, 'configuration-option-bin');
+    const cwd = path.join(testFileDir, 'configuration-option-bin');
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
       options: {
@@ -226,14 +222,14 @@ describe('nx-plugin', () => {
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({
-      ['code-pushup']: expect.objectContaining({
+      'code-pushup': expect.objectContaining({
         executor: 'XYZ:cli',
       }),
     });
   });
 
   it('should consider plugin option projectPrefix in executor target', async () => {
-    const cwd = join(testFileDir, 'configuration-option-bin');
+    const cwd = path.join(testFileDir, 'configuration-option-bin');
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
       options: {
@@ -249,7 +245,7 @@ describe('nx-plugin', () => {
     expect(code).toBe(0);
 
     expect(projectJson.targets).toStrictEqual({
-      ['code-pushup']: expect.objectContaining({
+      'code-pushup': expect.objectContaining({
         executor: `@code-pushup/nx-plugin:cli`,
         options: {
           projectPrefix: 'cli',
@@ -259,7 +255,7 @@ describe('nx-plugin', () => {
   });
 
   it('should NOT add targets dynamically if plugin is not registered', async () => {
-    const cwd = join(testFileDir, 'plugin-not-registered');
+    const cwd = path.join(testFileDir, 'plugin-not-registered');
     await materializeTree(tree, cwd);
 
     const { code, projectJson } = await nxShowProjectJson(cwd, project);

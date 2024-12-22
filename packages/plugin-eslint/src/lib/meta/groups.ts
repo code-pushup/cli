@@ -1,8 +1,8 @@
 import type { Rule } from 'eslint';
 import type { Group, GroupRef } from '@code-pushup/models';
 import { objectToKeys, slugify } from '@code-pushup/utils';
-import { ruleIdToSlug } from './hash';
-import { type RuleData, parseRuleId } from './parse';
+import { ruleToSlug } from './hash.js';
+import { type RuleData, parseRuleId } from './parse.js';
 
 type RuleType = NonNullable<Rule.RuleMetaData['type']>;
 
@@ -32,12 +32,15 @@ export function groupsFromRuleTypes(rules: RuleData[]): Group[] {
   const allTypes = objectToKeys(typeGroups);
 
   const auditSlugsMap = rules.reduce<Partial<Record<RuleType, string[]>>>(
-    (acc, { meta: { type }, ruleId, options }) =>
-      type == null
+    (acc, rule) =>
+      rule.meta.type == null
         ? acc
         : {
             ...acc,
-            [type]: [...(acc[type] ?? []), ruleIdToSlug(ruleId, options)],
+            [rule.meta.type]: [
+              ...(acc[rule.meta.type] ?? []),
+              ruleToSlug(rule),
+            ],
           },
     {},
   );
@@ -54,21 +57,18 @@ export function groupsFromRuleTypes(rules: RuleData[]): Group[] {
 
 export function groupsFromRuleCategories(rules: RuleData[]): Group[] {
   const categoriesMap = rules.reduce<Record<string, Record<string, string[]>>>(
-    (acc, { meta: { docs }, ruleId, options }) => {
+    (acc, rule) => {
       // meta.docs.category still used by some popular plugins (e.g. import, react, functional)
-      const category = docs?.category;
+      const category = rule.meta.docs?.category;
       if (!category) {
         return acc;
       }
-      const { plugin = '' } = parseRuleId(ruleId);
+      const { plugin = '' } = parseRuleId(rule.id);
       return {
         ...acc,
         [plugin]: {
           ...acc[plugin],
-          [category]: [
-            ...(acc[plugin]?.[category] ?? []),
-            ruleIdToSlug(ruleId, options),
-          ],
+          [category]: [...(acc[plugin]?.[category] ?? []), ruleToSlug(rule)],
         },
       };
     },

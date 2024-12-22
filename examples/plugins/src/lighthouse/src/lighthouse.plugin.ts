@@ -1,5 +1,5 @@
 import type Result from 'lighthouse/types/lhr/lhr';
-import { dirname } from 'node:path';
+import path from 'node:path';
 import type {
   AuditOutput,
   AuditOutputs,
@@ -16,9 +16,12 @@ import {
   PLUGIN_SLUG,
   audits,
   categoryCorePerfGroup,
-} from './constants';
-import type { LighthouseCliOptions, PluginOptions } from './types';
-import { getLighthouseCliArguments, lhrDetailsToIssueDetails } from './utils';
+} from './constants.js';
+import type { LighthouseCliOptions, PluginOptions } from './types.js';
+import {
+  getLighthouseCliArguments,
+  lhrDetailsToIssueDetails,
+} from './utils.js';
 
 /**
  * @example
@@ -57,7 +60,7 @@ export async function create(options: PluginOptions) {
 
   // ensure output dir
   if (outputPath !== undefined) {
-    await ensureDirectoryExists(dirname(outputPath));
+    await ensureDirectoryExists(path.dirname(outputPath));
   }
 
   return {
@@ -118,7 +121,7 @@ function lhrToAuditOutputs(lhr: Result): AuditOutputs {
         slug,
         score: score ?? 0, // score can be null
         value: Number.parseInt(value.toString(), 10),
-        displayValue: displayValue,
+        displayValue,
       };
 
       const issues = lhrDetailsToIssueDetails(details);

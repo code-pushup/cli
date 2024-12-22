@@ -1,8 +1,8 @@
 import { ESLint, type Linter } from 'eslint';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
-import type { ESLintPluginConfig } from '../config';
-import { lint } from './lint';
+import type { ESLintPluginConfig } from '../config.js';
+import { lint } from './lint.js';
 
 class MockESLint {
   calculateConfigForFile = vi.fn().mockImplementation(
@@ -32,7 +32,6 @@ vi.mock('eslint', () => ({
 
 vi.mock('@code-pushup/utils', async () => {
   const utils = await vi.importActual('@code-pushup/utils');
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   const testUtils: { MEMFS_VOLUME: string } = await vi.importActual(
     '@code-pushup/test-utils',
   );

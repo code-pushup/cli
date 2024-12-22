@@ -6,12 +6,12 @@ import type {
   GroupRef,
   Report,
 } from '@code-pushup/models';
-import type { ScoredReport } from '../../src';
-import { GroupRefInvalidError } from '../../src/lib/reports/scoring';
+import type { ScoredReport } from '../../src/index.js';
+import { GroupRefInvalidError } from '../../src/lib/reports/scoring.js';
 import type {
   ScoredCategoryConfig,
   ScoredGroup,
-} from '../../src/lib/reports/types';
+} from '../../src/lib/reports/types.js';
 
 export function calculateScore<T extends { weight: number }>(
   refs: T[],

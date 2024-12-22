@@ -1,6 +1,6 @@
-export { runCollect } from './commands/collect';
-export { runCompare } from './commands/compare';
-export { runMergeDiffs } from './commands/merge-diffs';
-export { runPrintConfig } from './commands/print-config';
-export { createCommandContext, type CommandContext } from './context';
-export { findPersistedFiles, type PersistedCliFiles } from './persist';
+export { runCollect } from './commands/collect.js';
+export { runCompare } from './commands/compare.js';
+export { runMergeDiffs } from './commands/merge-diffs.js';
+export { runPrintConfig } from './commands/print-config.js';
+export { createCommandContext, type CommandContext } from './context.js';
+export { persistedFilesFromConfig } from './persist.js';

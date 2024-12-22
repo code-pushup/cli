@@ -5,16 +5,9 @@ import {
   eslintCoreConfigNx,
   jsPackagesCoreConfig,
   lighthouseCoreConfig,
-} from './code-pushup.preset';
-import {
-  fileSizePlugin,
-  fileSizeRecommendedRefs,
-  packageJsonDocumentationGroupRef,
-  packageJsonPerformanceGroupRef,
-  packageJsonPlugin,
-} from './dist/examples/plugins';
-import { mergeConfigs } from './dist/packages/utils';
-import type { CoreConfig } from './packages/models/src';
+} from './code-pushup.preset.js';
+import type { CoreConfig } from './packages/models/src/index.js';
+import { mergeConfigs } from './packages/utils/src/index.js';
 
 // load upload configuration from environment
 const envSchema = z.object({
@@ -35,31 +28,7 @@ const config: CoreConfig = {
     },
   }),
 
-  plugins: [
-    fileSizePlugin({
-      directory: './dist/packages',
-      pattern: /\.js$/,
-      budget: 174_080, // 170 kB
-    }),
-
-    packageJsonPlugin({
-      directory: './dist/packages',
-      license: 'MIT',
-      type: 'module',
-    }),
-  ],
-
-  categories: [
-    {
-      slug: 'custom-checks',
-      title: 'Custom checks',
-      refs: [
-        ...fileSizeRecommendedRefs,
-        packageJsonPerformanceGroupRef,
-        packageJsonDocumentationGroupRef,
-      ],
-    },
-  ],
+  plugins: [],
 };
 
 export default mergeConfigs(

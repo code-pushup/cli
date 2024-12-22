@@ -5,7 +5,7 @@ import {
   groupRefSchema,
   groupSchema,
   groupsSchema,
-} from './group';
+} from './group.js';
 
 describe('groupRefSchema', () => {
   it('should accept a valid group reference', () => {
@@ -69,7 +69,7 @@ describe('groupSchema', () => {
         title: 'Empty group',
         refs: [],
       } satisfies Group),
-    ).toThrow('In a category there has to be at least one ref');
+    ).toThrow('In a category, there has to be at least one ref');
   });
 
   it('should throw for duplicate group references', () => {

@@ -1,13 +1,13 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   auditSchema,
   categoryRefSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
-import { corePerfGroupRefs } from './constants';
-import { audits, PLUGIN_SLUG as slug } from './index';
-import { create } from './lighthouse.plugin';
+import { corePerfGroupRefs } from './constants.js';
+import { audits, PLUGIN_SLUG as slug } from './index.js';
+import { create } from './lighthouse.plugin.js';
 
 describe('lighthouse-create-export-config', () => {
   it('should return valid PluginConfig if create is called', async () => {
@@ -89,7 +89,7 @@ describe('lighthouse-create-export-config', () => {
   it('should use onlyAudits', async () => {
     const pluginConfig = await create({
       url: 'http://localhost:8080',
-      outputPath: `${join('tmp', 'lighthouse-report.json')}`,
+      outputPath: `${path.join('tmp', 'lighthouse-report.json')}`,
       onlyAudits: 'largest-contentful-paint',
     });
     expect(pluginConfig.runner.args).toEqual(

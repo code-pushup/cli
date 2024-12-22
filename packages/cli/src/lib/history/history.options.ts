@@ -1,5 +1,5 @@
 import type { Options } from 'yargs';
-import type { HistoryCliOptions } from './history.model';
+import type { HistoryCliOptions } from './history.model.js';
 
 export function yargsHistoryOptionsDefinition(): Record<
   keyof HistoryCliOptions,
@@ -30,7 +30,7 @@ export function yargsHistoryOptionsDefinition(): Record<
       // https://git-scm.com/docs/git-log#Documentation/git-log.txt---max-countltnumbergt
       describe: 'Number of steps in history',
       type: 'number',
-      // eslint-disable-next-line no-magic-numbers
+      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
       default: 5,
     },
     from: {

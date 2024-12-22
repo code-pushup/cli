@@ -1,22 +1,26 @@
-import { executeProcess } from '@code-pushup/utils';
-import type { CommandContext } from '../context';
+import path from 'node:path';
 import {
-  type PersistedCliFiles,
-  persistCliOptions,
-  persistedCliFiles,
-} from '../persist';
+  DEFAULT_PERSIST_FILENAME,
+  DEFAULT_PERSIST_OUTPUT_DIR,
+} from '@code-pushup/models';
+import { executeProcess } from '@code-pushup/utils';
+import type { CommandContext } from '../context.js';
 
 export async function runMergeDiffs(
   files: string[],
-  { bin, config, directory, silent, output }: CommandContext,
-): Promise<PersistedCliFiles<'md'>> {
+  { bin, config, directory, silent }: CommandContext,
+): Promise<string> {
+  const outputDir = path.join(directory, DEFAULT_PERSIST_OUTPUT_DIR);
+  const filename = `merged-${DEFAULT_PERSIST_FILENAME}`;
+
   const { stdout } = await executeProcess({
     command: bin,
     args: [
       'merge-diffs',
       ...files.map(file => `--files=${file}`),
       ...(config ? [`--config=${config}`] : []),
-      ...persistCliOptions({ directory, output }),
+      `--persist.outputDir=${outputDir}`,
+      `--persist.filename=${filename}`,
     ],
     cwd: directory,
   });
@@ -24,10 +28,5 @@ export async function runMergeDiffs(
     console.info(stdout);
   }
 
-  return persistedCliFiles({
-    directory,
-    isDiff: true,
-    formats: ['md'],
-    output,
-  });
+  return path.join(outputDir, `${filename}-diff.md`);
 }

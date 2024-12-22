@@ -1,24 +1,22 @@
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { setWorkspaceRoot, workspaceRoot } from 'nx/src/utils/workspace-root';
 import type { MockInstance } from 'vitest';
-import type { ESLintTarget } from './config';
+import { executeProcess } from '@code-pushup/utils';
+import type { ESLintTarget } from './config.js';
+import { eslintConfigFromNxProject } from './nx/find-project-without-deps.js';
 import {
   eslintConfigFromAllNxProjects,
   eslintConfigFromNxProjectAndDeps,
-} from './nx';
-import { eslintConfigFromNxProject } from './nx/find-project-without-deps';
+} from './nx/index.js';
 
-const ALL_PROJECTS = ['cli', 'core', 'nx-plugin', 'utils'] as const;
-type Project = (typeof ALL_PROJECTS)[number];
+type Project = 'cli' | 'core' | 'nx-plugin' | 'utils';
 
 describe('Nx helpers', () => {
   let cwdSpy: MockInstance<[], string>;
-  const originalWorkspaceRoot = workspaceRoot;
 
-  beforeAll(() => {
-    const workspaceDir = join(
-      fileURLToPath(dirname(import.meta.url)),
+  beforeAll(async () => {
+    const workspaceDir = path.join(
+      fileURLToPath(path.dirname(import.meta.url)),
       '..',
       '..',
       'mocks',
@@ -27,64 +25,35 @@ describe('Nx helpers', () => {
     );
     cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(workspaceDir);
 
-    // eslint-disable-next-line functional/immutable-data
-    process.env['NX_DAEMON'] = 'false';
-
-    setWorkspaceRoot(workspaceDir);
+    // HACK: somehow prevents "Failed to process project graph" errors
+    await executeProcess({
+      command: 'npx nx graph --file=.nx/graph.json',
+      cwd: workspaceDir,
+    });
   });
 
   afterAll(() => {
     cwdSpy.mockRestore();
-    setWorkspaceRoot(originalWorkspaceRoot);
   });
 
   describe('create config from all Nx projects', () => {
     it('should include eslintrc and patterns of each project', async () => {
       await expect(eslintConfigFromAllNxProjects()).resolves.toEqual([
         {
-          eslintrc: './packages/cli/.eslintrc.json',
-          patterns: [
-            'packages/cli/**/*.ts',
-            'packages/cli/package.json',
-            'packages/cli/src/*.spec.ts',
-            'packages/cli/src/*.cy.ts',
-            'packages/cli/src/*.stories.ts',
-            'packages/cli/src/.storybook/main.ts',
-          ],
+          eslintrc: './packages/cli/eslint.config.js',
+          patterns: ['packages/cli'],
         },
         {
-          eslintrc: './packages/core/.eslintrc.json',
-          patterns: [
-            'packages/core/**/*.ts',
-            'packages/core/package.json',
-            'packages/core/src/*.spec.ts',
-            'packages/core/src/*.cy.ts',
-            'packages/core/src/*.stories.ts',
-            'packages/core/src/.storybook/main.ts',
-          ],
+          eslintrc: './packages/core/eslint.config.js',
+          patterns: ['packages/core'],
         },
         {
-          eslintrc: './packages/nx-plugin/.eslintrc.json',
-          patterns: [
-            'packages/nx-plugin/**/*.ts',
-            'packages/nx-plugin/package.json',
-            'packages/nx-plugin/generators.json',
-            'packages/nx-plugin/src/*.spec.ts',
-            'packages/nx-plugin/src/*.cy.ts',
-            'packages/nx-plugin/src/*.stories.ts',
-            'packages/nx-plugin/src/.storybook/main.ts',
-          ],
+          eslintrc: './packages/nx-plugin/eslint.config.js',
+          patterns: ['packages/nx-plugin'],
         },
         {
-          eslintrc: './packages/utils/.eslintrc.json',
-          patterns: [
-            'packages/utils/**/*.ts',
-            'packages/utils/package.json',
-            'packages/utils/src/*.spec.ts',
-            'packages/utils/src/*.cy.ts',
-            'packages/utils/src/*.stories.ts',
-            'packages/utils/src/.storybook/main.ts',
-          ],
+          eslintrc: './packages/utils/eslint.config.js',
+          patterns: ['packages/utils'],
         },
       ] satisfies ESLintTarget[]);
     });
@@ -94,16 +63,8 @@ describe('Nx helpers', () => {
         eslintConfigFromAllNxProjects({ exclude: ['cli', 'core', 'utils'] }),
       ).resolves.toEqual([
         {
-          eslintrc: './packages/nx-plugin/.eslintrc.json',
-          patterns: [
-            'packages/nx-plugin/**/*.ts',
-            'packages/nx-plugin/package.json',
-            'packages/nx-plugin/generators.json',
-            'packages/nx-plugin/src/*.spec.ts',
-            'packages/nx-plugin/src/*.cy.ts',
-            'packages/nx-plugin/src/*.stories.ts',
-            'packages/nx-plugin/src/.storybook/main.ts',
-          ],
+          eslintrc: './packages/nx-plugin/eslint.config.js',
+          patterns: ['packages/nx-plugin'],
         },
       ] satisfies ESLintTarget[]);
     });
@@ -137,8 +98,8 @@ describe('Nx helpers', () => {
         expect(targets).toEqual(
           expectedProjects.map(
             (p): ESLintTarget => ({
-              eslintrc: `./packages/${p}/.eslintrc.json`,
-              patterns: expect.arrayContaining([`packages/${p}/**/*.ts`]),
+              eslintrc: `./packages/${p}/eslint.config.js`,
+              patterns: [`packages/${p}`],
             }),
           ),
         );
@@ -167,8 +128,8 @@ describe('Nx helpers', () => {
         const targets = await eslintConfigFromNxProject(project);
 
         expect(targets).toEqual({
-          eslintrc: `./packages/${project}/.eslintrc.json`,
-          patterns: expect.arrayContaining([`packages/${project}/**/*.ts`]),
+          eslintrc: `./packages/${project}/eslint.config.js`,
+          patterns: [`packages/${project}`],
         });
       },
     );

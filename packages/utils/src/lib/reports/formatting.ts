@@ -4,24 +4,24 @@ import {
   MarkdownDocument,
   md,
 } from 'build-md';
-import { posix as pathPosix } from 'node:path';
+import path from 'node:path';
 import type {
   AuditReport,
   SourceFileLocation,
   Table,
 } from '@code-pushup/models';
-import { HIERARCHY } from '../text-formats';
+import { HIERARCHY } from '../text-formats/index.js';
 import {
   columnsToStringArray,
   getColumnAlignments,
   rowToStringArray,
-} from '../text-formats/table';
+} from '../text-formats/table.js';
 import {
   getEnvironmentType,
   getGitHubBaseUrl,
   getGitLabBaseUrl,
-} from './environment-type';
-import type { MdReportOptions } from './types';
+} from './environment-type.js';
+import type { MdReportOptions } from './types.js';
 
 export function tableSection(
   tableData: Table,
@@ -143,7 +143,7 @@ export function formatFileLink(
   position: SourceFileLocation['position'],
   outputDir: string,
 ): string {
-  const relativePath = pathPosix.relative(outputDir, file);
+  const relativePath = path.posix.relative(outputDir, file);
   const env = getEnvironmentType();
 
   switch (env) {

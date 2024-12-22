@@ -4,12 +4,12 @@ import {
   metaSchema,
   scorableSchema,
   weightedRefSchema,
-} from './implementation/schemas';
+} from './implementation/schemas.js';
 import {
   errorItems,
   exists,
   hasDuplicateStrings,
-} from './implementation/utils';
+} from './implementation/utils.js';
 
 export const groupRefSchema = weightedRefSchema(
   'Weighted reference to a group',
@@ -32,6 +32,7 @@ export const groupSchema = scorableSchema(
   getDuplicateRefsInGroups,
   duplicateRefsInGroupsErrorMsg,
 ).merge(groupMetaSchema);
+
 export type Group = z.infer<typeof groupSchema>;
 
 export const groupsSchema = z

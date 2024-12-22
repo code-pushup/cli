@@ -1,4 +1,4 @@
-import dummyPlugin, { dummyCategory } from './dummy.plugin';
+import dummyPlugin, { dummyCategory } from './dummy.plugin.js';
 
 export default {
   plugins: [dummyPlugin()],

@@ -1,15 +1,15 @@
 import os from 'node:os';
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
 import type { Audit, PluginConfig, RunnerConfig } from '@code-pushup/models';
 import { toUnixPath } from '@code-pushup/utils';
-import { eslintPlugin } from './eslint-plugin';
+import { eslintPlugin } from './eslint-plugin.js';
 
 describe('eslintPlugin', () => {
-  const thisDir = fileURLToPath(dirname(import.meta.url));
+  const thisDir = fileURLToPath(path.dirname(import.meta.url));
 
-  const fixturesDir = join(thisDir, '..', '..', 'mocks', 'fixtures');
+  const fixturesDir = path.join(thisDir, '..', '..', 'mocks', 'fixtures');
 
   let cwdSpy: MockInstance<[], string>;
   let platformSpy: MockInstance<[], NodeJS.Platform>;
@@ -19,7 +19,7 @@ describe('eslintPlugin', () => {
     runner: {
       ...(plugin.runner as RunnerConfig),
       args: (plugin.runner as RunnerConfig).args?.map(arg =>
-        toUnixPath(arg.replace(thisDir, '<dirname>')),
+        toUnixPath(arg.replace(path.dirname(thisDir), '<dirname>')),
       ),
       outputFile: toUnixPath((plugin.runner as RunnerConfig).outputFile),
     },
@@ -37,9 +37,9 @@ describe('eslintPlugin', () => {
   });
 
   it('should initialize ESLint plugin for React application', async () => {
-    cwdSpy.mockReturnValue(join(fixturesDir, 'todos-app'));
+    cwdSpy.mockReturnValue(path.join(fixturesDir, 'todos-app'));
     const plugin = await eslintPlugin({
-      eslintrc: '.eslintrc.js',
+      eslintrc: 'eslint.config.js',
       patterns: ['src/**/*.js', 'src/**/*.jsx'],
     });
 
@@ -49,13 +49,13 @@ describe('eslintPlugin', () => {
   });
 
   it('should initialize ESLint plugin for Nx project', async () => {
-    cwdSpy.mockReturnValue(join(fixturesDir, 'nx-monorepo'));
+    cwdSpy.mockReturnValue(path.join(fixturesDir, 'nx-monorepo'));
     const plugin = await eslintPlugin({
-      eslintrc: './packages/utils/.eslintrc.json',
-      patterns: ['packages/utils/**/*.ts', 'packages/utils/**/*.json'],
+      eslintrc: './packages/nx-plugin/eslint.config.js',
+      patterns: ['packages/nx-plugin/**/*.ts', 'packages/nx-plugin/**/*.json'],
     });
 
-    // expect rule from extended base .eslintrc.json
+    // expect rule from extended base eslint.config.js
     expect(plugin.audits).toContainEqual(
       expect.objectContaining<Audit>({
         slug: expect.stringMatching(/^nx-enforce-module-boundaries/),
@@ -63,10 +63,10 @@ describe('eslintPlugin', () => {
         description: expect.stringContaining('sourceTag'),
       }),
     );
-    // expect rule from utils project's .eslintrc.json
+    // expect rule from nx-plugin project's eslint.config.js
     expect(plugin.audits).toContainEqual(
       expect.objectContaining<Partial<Audit>>({
-        slug: 'nx-dependency-checks',
+        slug: 'nx-nx-plugin-checks',
       }),
     );
   });
@@ -81,6 +81,6 @@ describe('eslintPlugin', () => {
   it("should throw if eslintrc file doesn't exist", async () => {
     await expect(
       eslintPlugin({ eslintrc: '.eslintrc.yml', patterns: '**/*.js' }),
-    ).rejects.toThrow('Cannot read config file');
+    ).rejects.toThrow(/Failed to load url .*\.eslintrc.yml/);
   });
 });

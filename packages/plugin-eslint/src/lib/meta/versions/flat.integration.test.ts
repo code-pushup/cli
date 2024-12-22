@@ -1,11 +1,11 @@
 import type { ESLint, Linter, Rule } from 'eslint';
 import { mkdir, rm, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import type { RuleData } from '../parse';
-import { loadRulesForFlatConfig } from './flat';
+import path from 'node:path';
+import type { RuleData } from '../parse.js';
+import { loadRulesForFlatConfig } from './flat.js';
 
 describe('loadRulesForFlatConfig', () => {
-  const workDir = join(
+  const workDir = path.join(
     process.cwd(),
     'tmp',
     'plugin-eslint',
@@ -22,14 +22,14 @@ describe('loadRulesForFlatConfig', () => {
   });
 
   it('should load built-in rules from implicit flat config location', async () => {
-    const config: Linter.FlatConfig = {
+    const config: Linter.Config = {
       rules: {
         'no-unused-vars': 'error',
         'prefer-const': 'warn',
       },
     };
     await writeFile(
-      join(workDir, 'eslint.config.js'),
+      path.join(workDir, 'eslint.config.js'),
       `export default ${JSON.stringify(config, null, 2)}`,
     );
 
@@ -40,8 +40,8 @@ describe('loadRulesForFlatConfig', () => {
       }),
     });
     await expect(loadRulesForFlatConfig({})).resolves.toEqual([
-      { ruleId: 'no-unused-vars', meta: expectedMeta, options: [] },
-      { ruleId: 'prefer-const', meta: expectedMeta, options: [] },
+      { id: 'no-unused-vars', meta: expectedMeta, options: [] },
+      { id: 'prefer-const', meta: expectedMeta, options: [] },
     ] satisfies RuleData[]);
   });
 
@@ -78,7 +78,7 @@ describe('loadRulesForFlatConfig', () => {
         } as Rule.RuleModule,
       },
     } as ESLint.Plugin;
-    const config: Linter.FlatConfig[] = [
+    const config: Linter.Config[] = [
       {
         plugins: {
           '@typescript-eslint': tseslint,
@@ -102,7 +102,7 @@ describe('loadRulesForFlatConfig', () => {
       },
     ];
     await writeFile(
-      join(workDir, 'code-pushup.eslint.config.js'),
+      path.join(workDir, 'code-pushup.eslint.config.js'),
       `export default ${JSON.stringify(config, null, 2)}`,
     );
 
@@ -110,7 +110,7 @@ describe('loadRulesForFlatConfig', () => {
       loadRulesForFlatConfig({ eslintrc: 'code-pushup.eslint.config.js' }),
     ).resolves.toEqual([
       {
-        ruleId: '@typescript-eslint/no-explicit-any',
+        id: '@typescript-eslint/no-explicit-any',
         meta: {
           docs: {
             description: 'Disallow the `any` type',
@@ -120,7 +120,7 @@ describe('loadRulesForFlatConfig', () => {
         options: [],
       },
       {
-        ruleId: 'react-hooks/rules-of-hooks',
+        id: 'react-hooks/rules-of-hooks',
         meta: {
           docs: {
             description: 'enforces the Rules of Hooks',
@@ -130,7 +130,7 @@ describe('loadRulesForFlatConfig', () => {
         options: [],
       },
       {
-        ruleId: '@typescript-eslint/no-unsafe-call',
+        id: '@typescript-eslint/no-unsafe-call',
         meta: {
           docs: {
             description: 'Disallow calling a value with type `any`',
@@ -143,7 +143,7 @@ describe('loadRulesForFlatConfig', () => {
   });
 
   it('should load custom rule options', async () => {
-    const config: Linter.FlatConfig[] = [
+    const config: Linter.Config[] = [
       {
         rules: {
           complexity: ['warn', 30],
@@ -152,18 +152,18 @@ describe('loadRulesForFlatConfig', () => {
       },
     ];
     await writeFile(
-      join(workDir, 'eslint.config.cjs'),
+      path.join(workDir, 'eslint.config.cjs'),
       `module.exports = ${JSON.stringify(config, null, 2)}`,
     );
 
     await expect(loadRulesForFlatConfig({})).resolves.toEqual([
       {
-        ruleId: 'complexity',
+        id: 'complexity',
         meta: expect.any(Object),
         options: [30],
       },
       {
-        ruleId: 'eqeqeq',
+        id: 'eqeqeq',
         meta: expect.any(Object),
         options: ['always', { null: 'never' }],
       },
@@ -171,7 +171,7 @@ describe('loadRulesForFlatConfig', () => {
   });
 
   it('should create multiple rule instances when different options used', async () => {
-    const config: Linter.FlatConfig[] = [
+    const config: Linter.Config[] = [
       {
         rules: {
           'max-lines': ['warn', { max: 300 }],
@@ -185,18 +185,18 @@ describe('loadRulesForFlatConfig', () => {
       },
     ];
     await writeFile(
-      join(workDir, 'eslint.config.mjs'),
+      path.join(workDir, 'eslint.config.mjs'),
       `export default ${JSON.stringify(config, null, 2)}`,
     );
 
     await expect(loadRulesForFlatConfig({})).resolves.toEqual([
       {
-        ruleId: 'max-lines',
+        id: 'max-lines',
         meta: expect.any(Object),
         options: [{ max: 300 }],
       },
       {
-        ruleId: 'max-lines',
+        id: 'max-lines',
         meta: expect.any(Object),
         options: [{ max: 500 }],
       },

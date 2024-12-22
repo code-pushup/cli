@@ -1,5 +1,5 @@
 import { ESLint } from 'eslint';
-import type { ESLintTarget } from './config';
+import type { ESLintTarget } from './config.js';
 
 export async function setupESLint(eslintrc: ESLintTarget['eslintrc']) {
   const eslintConstructor = await loadESLint();

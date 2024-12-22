@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vite';
-import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases';
+import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases.js';
 
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/ci-e2e',

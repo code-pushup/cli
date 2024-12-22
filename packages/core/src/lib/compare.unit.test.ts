@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import { getPortalComparisonLink } from '@code-pushup/portal-client';
 import {
   type Commit,
@@ -16,7 +16,7 @@ import {
   reportMock,
 } from '@code-pushup/test-utils';
 import { type Diff, fileExists, readJsonFile } from '@code-pushup/utils';
-import { compareReportFiles, compareReports } from './compare';
+import { compareReportFiles, compareReports } from './compare.js';
 
 describe('compareReportFiles', () => {
   const commitShas = {
@@ -37,15 +37,15 @@ describe('compareReportFiles', () => {
   it('should create valid report-diff.json from report.json files', async () => {
     await compareReportFiles(
       {
-        before: join(MEMFS_VOLUME, 'source-report.json'),
-        after: join(MEMFS_VOLUME, 'target-report.json'),
+        before: path.join(MEMFS_VOLUME, 'source-report.json'),
+        after: path.join(MEMFS_VOLUME, 'target-report.json'),
       },
       { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json'] },
       undefined,
     );
 
     const reportsDiffPromise = readJsonFile(
-      join(MEMFS_VOLUME, 'report-diff.json'),
+      path.join(MEMFS_VOLUME, 'report-diff.json'),
     );
     await expect(reportsDiffPromise).resolves.toBeTruthy();
 
@@ -56,26 +56,26 @@ describe('compareReportFiles', () => {
   it('should create all diff files specified by persist.format', async () => {
     await compareReportFiles(
       {
-        before: join(MEMFS_VOLUME, 'source-report.json'),
-        after: join(MEMFS_VOLUME, 'target-report.json'),
+        before: path.join(MEMFS_VOLUME, 'source-report.json'),
+        after: path.join(MEMFS_VOLUME, 'target-report.json'),
       },
       { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json', 'md'] },
       undefined,
     );
 
     await expect(
-      fileExists(join(MEMFS_VOLUME, 'report-diff.json')),
+      fileExists(path.join(MEMFS_VOLUME, 'report-diff.json')),
     ).resolves.toBeTruthy();
     await expect(
-      fileExists(join(MEMFS_VOLUME, 'report-diff.md')),
+      fileExists(path.join(MEMFS_VOLUME, 'report-diff.md')),
     ).resolves.toBeTruthy();
   });
 
   it('should include portal link (fetched using upload config) in Markdown file', async () => {
     await compareReportFiles(
       {
-        before: join(MEMFS_VOLUME, 'source-report.json'),
-        after: join(MEMFS_VOLUME, 'target-report.json'),
+        before: path.join(MEMFS_VOLUME, 'source-report.json'),
+        after: path.join(MEMFS_VOLUME, 'target-report.json'),
       },
       { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json', 'md'] },
       {
@@ -87,7 +87,7 @@ describe('compareReportFiles', () => {
     );
 
     await expect(
-      readFile(join(MEMFS_VOLUME, 'report-diff.md'), 'utf8'),
+      readFile(path.join(MEMFS_VOLUME, 'report-diff.md'), 'utf8'),
     ).resolves.toContain(
       `[🕵️ See full comparison in Code PushUp portal 🔍](https://code-pushup.example.com/portal/dunder-mifflin/website/comparison/${commitShas.before}/${commitShas.after})`,
     );
@@ -109,15 +109,15 @@ describe('compareReportFiles', () => {
   it('should not include portal link in Markdown if upload config is missing', async () => {
     await compareReportFiles(
       {
-        before: join(MEMFS_VOLUME, 'source-report.json'),
-        after: join(MEMFS_VOLUME, 'target-report.json'),
+        before: path.join(MEMFS_VOLUME, 'source-report.json'),
+        after: path.join(MEMFS_VOLUME, 'target-report.json'),
       },
       { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json', 'md'] },
       undefined,
     );
 
     await expect(
-      readFile(join(MEMFS_VOLUME, 'report-diff.md'), 'utf8'),
+      readFile(path.join(MEMFS_VOLUME, 'report-diff.md'), 'utf8'),
     ).resolves.not.toContain(
       '[🕵️ See full comparison in Code PushUp portal 🔍]',
     );
@@ -138,8 +138,8 @@ describe('compareReportFiles', () => {
     );
     await compareReportFiles(
       {
-        before: join(MEMFS_VOLUME, 'source-report.json'),
-        after: join(MEMFS_VOLUME, 'target-report.json'),
+        before: path.join(MEMFS_VOLUME, 'source-report.json'),
+        after: path.join(MEMFS_VOLUME, 'target-report.json'),
       },
       { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json', 'md'] },
       {
@@ -151,7 +151,7 @@ describe('compareReportFiles', () => {
     );
 
     await expect(
-      readFile(join(MEMFS_VOLUME, 'report-diff.md'), 'utf8'),
+      readFile(path.join(MEMFS_VOLUME, 'report-diff.md'), 'utf8'),
     ).resolves.not.toContain(
       '[🕵️ See full comparison in Code PushUp portal 🔍]',
     );
@@ -162,8 +162,8 @@ describe('compareReportFiles', () => {
   it('should include portal link in JSON file', async () => {
     await compareReportFiles(
       {
-        before: join(MEMFS_VOLUME, 'source-report.json'),
-        after: join(MEMFS_VOLUME, 'target-report.json'),
+        before: path.join(MEMFS_VOLUME, 'source-report.json'),
+        after: path.join(MEMFS_VOLUME, 'target-report.json'),
       },
       { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json', 'md'] },
       {
@@ -175,7 +175,7 @@ describe('compareReportFiles', () => {
     );
 
     await expect(
-      readJsonFile(join(MEMFS_VOLUME, 'report-diff.json')),
+      readJsonFile(path.join(MEMFS_VOLUME, 'report-diff.json')),
     ).resolves.toEqual(
       expect.objectContaining({
         portalUrl: `https://code-pushup.example.com/portal/dunder-mifflin/website/comparison/${commitShas.before}/${commitShas.after}`,
@@ -186,8 +186,8 @@ describe('compareReportFiles', () => {
   it('should include label in JSON file', async () => {
     await compareReportFiles(
       {
-        before: join(MEMFS_VOLUME, 'source-report.json'),
-        after: join(MEMFS_VOLUME, 'target-report.json'),
+        before: path.join(MEMFS_VOLUME, 'source-report.json'),
+        after: path.join(MEMFS_VOLUME, 'target-report.json'),
       },
       { outputDir: MEMFS_VOLUME, filename: 'report', format: ['json', 'md'] },
       undefined,
@@ -195,7 +195,7 @@ describe('compareReportFiles', () => {
     );
 
     await expect(
-      readJsonFile(join(MEMFS_VOLUME, 'report-diff.json')),
+      readJsonFile(path.join(MEMFS_VOLUME, 'report-diff.json')),
     ).resolves.toEqual(
       expect.objectContaining({
         label: 'backoffice',

@@ -3,17 +3,18 @@ import { toJsonLines } from '@code-pushup/utils';
 import type {
   OutdatedDependency,
   OutdatedResult,
-} from '../../runner/outdated/types';
-import { REQUIRED_OUTDATED_FIELDS } from './constants';
+} from '../../runner/outdated/types.js';
+import { REQUIRED_OUTDATED_FIELDS } from './constants.js';
 import {
   getOutdatedFieldIndexes,
   validateOutdatedFields,
   yarnv1ToOutdatedResult,
-} from './outdated-result';
-import type { Yarnv1FieldName } from './types';
+} from './outdated-result.js';
+import type { Yarnv1FieldName } from './types.js';
 
 describe('yarnv1ToOutdatedResult', () => {
   const yarnInfo = { type: 'info', data: 'Colours' };
+
   it('should transform Yarn v1 outdated to unified outdated result', () => {
     const table = {
       type: 'table',

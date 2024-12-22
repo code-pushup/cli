@@ -208,7 +208,7 @@ of `AuditOutputs`:
 // file-size.plugin.ts
 import { AuditOutput } from '@code-pushup/models';
 import { crawlFileSystem, pluralizeToken } from '@code-pushup/utils';
-import { RunnerFunction } from './plugin-config-runner';
+import { RunnerFunction } from './plugin-config-runner.js';
 
 // ...
 
@@ -328,7 +328,7 @@ The basic implementation of a `RunnerConfig` for the above command looks like th
 ```typescript
 // lighthouse.plugin.ts
 // ...
-import { join } from 'path';
+import path from 'node:path';
 import { AuditOutputs } from '@code-pushup/models';
 import { objectToCliArgs } from '@code-pushup/utils';
 
@@ -336,7 +336,7 @@ function runnerConfig(options: Options): RunnerConfig {
   const { url } = options;
   // hardcoded to run only the LCP audit
   const audits = [lcpAuditMeta.slug];
-  const outputFile = join(process.cwd(), '.code-pushup', 'lighthouse-report.json');
+  const outputFile = path.join(process.cwd(), '.code-pushup', 'lighthouse-report.json');
   return {
     // npx lighthouse https://example.com --output=json --outputFile=lighthouse-report.json  --onlyAudits=largest-contentful-paint
     command: 'npx',
@@ -496,7 +496,7 @@ We will extend the `fileSizeAuditOutput` with `details` show which files exceed 
 // ...
 import { basename } from 'path';
 import { formatBytes } from '@code-pushup/utils';
-import { AuditOutput } from './plugin-process-output';
+import { AuditOutput } from './plugin-process-output.js';
 
 async function runnerFunction(options: Options): Promise<AuditOutputs> {
   // ...

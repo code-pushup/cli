@@ -1,8 +1,8 @@
 import type { ESLint, Linter } from 'eslint';
 import { distinct, exists, toArray, ui } from '@code-pushup/utils';
-import type { ESLintTarget } from '../../config';
-import { setupESLint } from '../../setup';
-import { type RuleData, isRuleOff, optionsFromRuleEntry } from '../parse';
+import type { ESLintTarget } from '../../config.js';
+import { setupESLint } from '../../setup.js';
+import { type RuleData, isRuleOff, optionsFromRuleEntry } from '../parse.js';
 
 export async function loadRulesForLegacyConfig({
   eslintrc,
@@ -13,9 +13,9 @@ export async function loadRulesForLegacyConfig({
   const configs = await toArray(patterns).reduce(
     async (acc, pattern) => [
       ...(await acc),
-      (await eslint.calculateConfigForFile(pattern)) as Linter.Config,
+      (await eslint.calculateConfigForFile(pattern)) as Linter.LegacyConfig,
     ],
-    Promise.resolve<Linter.Config[]>([]),
+    Promise.resolve<Linter.LegacyConfig[]>([]),
   );
 
   const rulesIds = distinct(
@@ -31,21 +31,19 @@ export async function loadRulesForLegacyConfig({
 
   return configs
     .flatMap(config => Object.entries(config.rules ?? {}))
-    .map(([ruleId, ruleEntry]): RuleData | null => {
-      if (ruleEntry == null || isRuleOff(ruleEntry)) {
+    .map(([id, entry]): RuleData | null => {
+      if (entry == null || isRuleOff(entry)) {
         return null;
       }
-      const meta = rulesMeta[ruleId];
-      if (!meta) {
-        ui().logger.warning(`Metadata not found for ESLint rule ${ruleId}`);
+      const ruleMeta = rulesMeta[id];
+      if (!ruleMeta) {
+        ui().logger.warning(`Metadata not found for ESLint rule ${id}`);
         return null;
       }
-      const options = optionsFromRuleEntry(ruleEntry);
-      return {
-        ruleId,
-        meta,
-        options,
-      };
+      // ignoring meta.defaultOptions to match legacy config handling in calculateConfigForFile
+      const { defaultOptions: _, ...meta } = ruleMeta;
+      const options = optionsFromRuleEntry(entry);
+      return { id, meta, options };
     })
     .filter(exists);
 }

@@ -5,14 +5,13 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nx/esbuild:esbuild",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/examples/plugins",
         "main": "examples/plugins/src/index.ts",
         "tsConfig": "examples/plugins/tsconfig.lib.json",
-        "assets": ["examples/plugins/*.md"],
-        "esbuildConfig": "esbuild.config.js"
+        "assets": ["examples/plugins/*.md"]
       }
     },
     "lint": {

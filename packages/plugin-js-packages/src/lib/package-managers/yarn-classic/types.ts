@@ -1,4 +1,4 @@
-import type { PackageAuditLevel } from '../../config';
+import type { PackageAuditLevel } from '../../config.js';
 
 // Subset of Yarn v1 audit JSON type
 export type Yarnv1AuditAdvisory = {
@@ -8,7 +8,6 @@ export type Yarnv1AuditAdvisory = {
       id: number;
       path: string;
     };
-    /* eslint-disable @typescript-eslint/naming-convention */
     advisory: {
       module_name: string;
       severity: PackageAuditLevel;
@@ -17,7 +16,6 @@ export type Yarnv1AuditAdvisory = {
       title: string;
       url: string;
     };
-    /* eslint-enable @typescript-eslint/naming-convention */
   };
 };
 

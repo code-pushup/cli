@@ -1,8 +1,8 @@
-import { commands } from './commands';
-import { CLI_NAME, CLI_SCRIPT_NAME } from './constants';
-import { middlewares } from './middlewares';
-import { groups, options } from './options';
-import { yargsCli } from './yargs-cli';
+import { commands } from './commands.js';
+import { CLI_NAME, CLI_SCRIPT_NAME } from './constants.js';
+import { middlewares } from './middlewares.js';
+import { groups, options } from './options.js';
+import { yargsCli } from './yargs-cli.js';
 
 export const cli = (args: string[]) =>
   yargsCli(args, {

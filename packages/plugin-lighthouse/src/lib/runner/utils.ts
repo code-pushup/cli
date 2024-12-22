@@ -13,9 +13,9 @@ import {
   readJsonFile,
   ui,
 } from '@code-pushup/utils';
-import type { LighthouseOptions } from '../types';
-import { logUnsupportedDetails, toAuditDetails } from './details/details';
-import type { LighthouseCliFlags } from './types';
+import type { LighthouseOptions } from '../types.js';
+import { logUnsupportedDetails, toAuditDetails } from './details/details.js';
+import type { LighthouseCliFlags } from './types.js';
 
 export function normalizeAuditOutputs(
   auditOutputs: AuditOutputs,

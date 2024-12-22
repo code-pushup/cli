@@ -1,5 +1,4 @@
-import { DEFAULT_SETTINGS } from '../constants';
-import { type CommandContext, createCommandContext } from './context';
+import { type CommandContext, createCommandContext } from './context.js';
 
 describe('createCommandContext', () => {
   it('should pick CLI-related settings in standalone mode', () => {
@@ -13,7 +12,7 @@ describe('createCommandContext', () => {
           directory: '/test',
           logger: console,
           monorepo: false,
-          output: '.code-pushup',
+          nxProjectsFilter: '--with-target={task}',
           projects: null,
           silent: false,
           task: 'code-pushup',
@@ -21,12 +20,10 @@ describe('createCommandContext', () => {
         null,
       ),
     ).toStrictEqual<CommandContext>({
-      project: undefined,
       bin: 'npx --no-install code-pushup',
       directory: '/test',
       config: null,
       silent: false,
-      output: '.code-pushup',
     });
   });
 
@@ -41,7 +38,7 @@ describe('createCommandContext', () => {
           directory: '/test',
           logger: console,
           monorepo: false,
-          output: '.code-pushup',
+          nxProjectsFilter: '--with-target={task}',
           projects: null,
           silent: false,
           task: 'code-pushup',
@@ -53,49 +50,10 @@ describe('createCommandContext', () => {
         },
       ),
     ).toStrictEqual<CommandContext>({
-      project: 'ui',
       bin: 'yarn code-pushup',
       directory: '/test/ui',
       config: null,
       silent: false,
-      output: '.code-pushup',
     });
-  });
-
-  it('should interpolate project name in output path for monorepo project', () => {
-    expect(
-      createCommandContext(
-        {
-          ...DEFAULT_SETTINGS,
-          output: '.code-pushup/{project}',
-        },
-        {
-          name: 'website',
-          bin: 'npx nx run website:code-pushup --',
-        },
-      ),
-    ).toEqual(
-      expect.objectContaining<Partial<CommandContext>>({
-        project: 'website',
-        bin: 'npx nx run website:code-pushup --',
-        output: '.code-pushup/website',
-      }),
-    );
-  });
-
-  it('should omit {project} placeholder in output path when in standalone mode', () => {
-    expect(
-      createCommandContext(
-        {
-          ...DEFAULT_SETTINGS,
-          output: '.code-pushup/{project}',
-        },
-        undefined,
-      ),
-    ).toEqual(
-      expect.objectContaining<Partial<CommandContext>>({
-        output: '.code-pushup/',
-      }),
-    );
   });
 });

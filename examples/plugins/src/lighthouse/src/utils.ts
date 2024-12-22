@@ -1,8 +1,8 @@
 import type Result from 'lighthouse/types/lhr/lhr';
 import { type Issue, MAX_ISSUE_MESSAGE_LENGTH } from '@code-pushup/models';
 import { objectToCliArgs, toArray } from '@code-pushup/utils';
-import { LIGHTHOUSE_REPORT_NAME } from './constants';
-import type { LighthouseCliOptions } from './types';
+import { LIGHTHOUSE_REPORT_NAME } from './constants.js';
+import type { LighthouseCliOptions } from './types.js';
 
 export function getLighthouseCliArguments(
   options: LighthouseCliOptions,
@@ -33,7 +33,7 @@ export function getLighthouseCliArguments(
 
   // handle chrome flags
   // eslint-disable-next-line functional/no-let
-  let chromeFlags: Array<string> = [];
+  let chromeFlags: string[] = [];
   if (headless) {
     chromeFlags = [...chromeFlags, `--headless=${headless}`];
   }
@@ -43,7 +43,7 @@ export function getLighthouseCliArguments(
   if (chromeFlags.length > 0) {
     argsObj = {
       ...argsObj,
-      ['chrome-flags']: chromeFlags.join(' '),
+      'chrome-flags': chromeFlags.join(' '),
     };
   }
 

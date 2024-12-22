@@ -1,6 +1,6 @@
 import { describe, expect } from 'vitest';
 import { REPORT_MOCK } from '@code-pushup/test-utils';
-import { calculateScore, scoreReport } from './scoring';
+import { calculateScore, scoreReport } from './scoring.js';
 
 describe('calculateScore', () => {
   it('should calculate the same score for one reference', () => {

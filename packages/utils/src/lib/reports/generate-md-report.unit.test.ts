@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { AuditReport, Issue, Table } from '@code-pushup/models';
-import { tableSection } from './formatting';
+import { tableSection } from './formatting.js';
 import {
   aboutSection,
   auditDetails,
@@ -8,8 +8,8 @@ import {
   auditDetailsIssues,
   auditsSection,
   generateMdReport,
-} from './generate-md-report';
-import type { ScoredReport } from './types';
+} from './generate-md-report.js';
+import type { ScoredReport } from './types.js';
 
 const baseScoredReport = {
   date: '2025.01.01',

@@ -1,7 +1,7 @@
-import type { ESLintTarget } from '../config';
-import { jsonHash } from './hash';
-import type { RuleData } from './parse';
-import { detectConfigVersion, selectRulesLoader } from './versions';
+import type { ESLintTarget } from '../config.js';
+import { jsonHash } from './hash.js';
+import type { RuleData } from './parse.js';
+import { detectConfigVersion, selectRulesLoader } from './versions/index.js';
 
 type RulesMap = Record<string, Record<string, RuleData>>;
 
@@ -21,8 +21,8 @@ export async function listRules(targets: ESLintTarget[]): Promise<RuleData[]> {
 function mergeRuleIntoMap(map: RulesMap, rule: RuleData): RulesMap {
   return {
     ...map,
-    [rule.ruleId]: {
-      ...map[rule.ruleId],
+    [rule.id]: {
+      ...map[rule.id],
       [jsonHash(rule.options)]: rule,
     },
   };

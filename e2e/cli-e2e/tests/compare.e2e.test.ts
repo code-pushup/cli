@@ -1,5 +1,5 @@
 import { cp } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import { beforeAll } from 'vitest';
 import type { ReportsDiff } from '@code-pushup/models';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
@@ -8,7 +8,7 @@ import { E2E_ENVIRONMENTS_DIR, TEST_OUTPUT_DIR } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('CLI compare', () => {
-  const fixtureDummyDir = join(
+  const fixtureDummyDir = path.join(
     'e2e',
     nxTargetProject(),
     'mocks',
@@ -16,14 +16,14 @@ describe('CLI compare', () => {
     'existing-reports',
   );
 
-  const testFileDir = join(
+  const testFileDir = path.join(
     E2E_ENVIRONMENTS_DIR,
     nxTargetProject(),
     TEST_OUTPUT_DIR,
     'compare',
   );
-  const existingDir = join(testFileDir, 'existing-reports');
-  const existingOutputDir = join(existingDir, '.code-pushup');
+  const existingDir = path.join(testFileDir, 'existing-reports');
+  const existingOutputDir = path.join(existingDir, '.code-pushup');
 
   beforeAll(async () => {
     await cp(fixtureDummyDir, existingDir, { recursive: true });
@@ -39,14 +39,14 @@ describe('CLI compare', () => {
       args: [
         '@code-pushup/cli',
         'compare',
-        `--before=${join('.code-pushup', 'source-report.json')}`,
-        `--after=${join('.code-pushup', 'target-report.json')}`,
+        `--before=${path.join('.code-pushup', 'source-report.json')}`,
+        `--after=${path.join('.code-pushup', 'target-report.json')}`,
       ],
       cwd: existingDir,
     });
 
     const reportsDiff = await readJsonFile<ReportsDiff>(
-      join(existingOutputDir, 'report-diff.json'),
+      path.join(existingOutputDir, 'report-diff.json'),
     );
     expect(reportsDiff).toMatchSnapshot({
       commits: expect.any(Object),
@@ -56,7 +56,7 @@ describe('CLI compare', () => {
     });
 
     const reportsDiffMd = await readTextFile(
-      join(existingOutputDir, 'report-diff.md'),
+      path.join(existingOutputDir, 'report-diff.md'),
     );
     // commits are variable, replace SHAs with placeholders
     const sanitizedMd = reportsDiffMd.replace(/[\da-f]{40}/g, '`<commit-sha>`');
