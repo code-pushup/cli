@@ -1,5 +1,7 @@
 import type {
+  Audit,
   CategoryConfig,
+  CategoryRef,
   CoreConfig,
 } from './packages/models/src/index.js';
 import coveragePlugin, {
@@ -13,6 +15,14 @@ import jsPackagesPlugin from './packages/plugin-js-packages/src/index.js';
 import lighthousePlugin, {
   lighthouseGroupRef,
 } from './packages/plugin-lighthouse/src/index.js';
+import { typescriptPlugin } from './packages/plugin-typescript/src';
+import { audits as tsAudits } from './packages/plugin-typescript/src/lib/constants';
+import {
+  filterAuditsByOnlyAudits,
+  filterCategoryRefsByOnlyAudits,
+  filterDiagnisticsByOnlyAudits,
+} from './packages/plugin-typescript/src/lib/runner/runner';
+import { TypescriptPluginOptions } from './packages/plugin-typescript/src/lib/typescript-plugin';
 
 export const jsPackagesCategories: CategoryConfig[] = [
   {
@@ -126,6 +136,33 @@ export const eslintCoreConfigNx = async (
       ),
     ],
     categories: eslintCategories,
+  };
+};
+
+export const typescriptPluginConfigNx = async (
+  options: TypescriptPluginOptions,
+): Promise<CoreConfig> => {
+  const supportedAuditSlugs = tsAudits
+    .filter(filterAuditsByOnlyAudits(options.onlyAudits))
+    .map(({ slug }) => slug);
+
+  return {
+    plugins: [await typescriptPlugin(options)],
+    /*...(supportedAuditSlugs.length > 0 ? {
+      categories: [
+        {
+          slug: 'typescript',
+          title: 'Typescript',
+          refs: supportedAuditSlugs
+            .map(({slug}) => ({
+              plugin: 'typescript',
+              type: 'audit' as const,
+              slug,
+              weight: 1
+            }))
+        }
+      ]
+    } : {})*/
   };
 };
 

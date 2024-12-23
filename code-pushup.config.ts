@@ -5,6 +5,7 @@ import {
   eslintCoreConfigNx,
   jsPackagesCoreConfig,
   lighthouseCoreConfig,
+  typescriptPluginConfigNx,
 } from './code-pushup.preset.js';
 import type { CoreConfig } from './packages/models/src/index.js';
 import { mergeConfigs } from './packages/utils/src/index.js';
@@ -33,10 +34,15 @@ const config: CoreConfig = {
 
 export default mergeConfigs(
   config,
-  await coverageCoreConfigNx(),
+  /*await coverageCoreConfigNx(),
   await jsPackagesCoreConfig(),
   await lighthouseCoreConfig(
     'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
   ),
-  await eslintCoreConfigNx(),
+   await eslintCoreConfigNx(),*/
+  await typescriptPluginConfigNx({
+    tsConfigPath:
+      'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
+    onlyAudits: ['noimplicitany', 'strictnullchecks'],
+  }),
 );

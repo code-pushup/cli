@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "strict": true,
+    "target": "ES6",
+    "module": "CommonJS",
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "alwaysStrict": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.js"],
+}
