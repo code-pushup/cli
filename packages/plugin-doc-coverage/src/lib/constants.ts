@@ -32,7 +32,7 @@ export const AUDITS_MAP: Record<AuditSlug, Audit> = {
   'properties-coverage': {
     slug: 'properties-coverage',
     title: 'Properties coverage',
-    description: 'Coverage of properties',
+    description: 'Documentation coverage of properties',
   },
   'types-coverage': {
     slug: 'types-coverage',
