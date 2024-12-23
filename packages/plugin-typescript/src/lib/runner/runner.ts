@@ -7,6 +7,7 @@ import type {
   RunnerFunction,
 } from '@code-pushup/models';
 import type { TypescriptPluginOptions } from '../config.js';
+import { AUDITS } from '../generated/audits.js';
 import type { AuditSlug } from '../types.js';
 import { getDiagnostics } from './typescript-runner.js';
 import {
@@ -53,10 +54,11 @@ export function createRunnerFunction(
         >,
       );
 
-    return Object.values(result).map(({ slug, details }) => {
+    return AUDITS.map(audit => {
+      const { details } = result[audit.slug as AuditSlug] ?? {};
       const issues = details?.issues ?? [];
       return {
-        slug,
+        ...audit,
         score: issues.length === 0 ? 1 : 0,
         value: issues.length,
         ...(issues.length > 0 ? { details } : {}),

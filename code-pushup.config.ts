@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import {z} from 'zod';
+import { z } from 'zod';
 import {
   coverageCoreConfigNx,
   eslintCoreConfigNx,
@@ -7,9 +7,9 @@ import {
   lighthouseCoreConfig,
   typescriptPluginConfigNx,
 } from './code-pushup.preset.js';
-import type {CoreConfig} from './packages/models/src/index.js';
-import {BASIC_CHECKES} from './packages/plugin-typescript/src/lib/constants';
-import {mergeConfigs} from './packages/utils/src/index.js';
+import type { CoreConfig } from './packages/models/src/index.js';
+import { BASIC_CHECKES } from './packages/plugin-typescript/src/lib/constants';
+import { mergeConfigs } from './packages/utils/src/index.js';
 
 // load upload configuration from environment
 const envSchema = z.object({
@@ -18,7 +18,7 @@ const envSchema = z.object({
   CP_ORGANIZATION: z.string().min(1),
   CP_PROJECT: z.string().min(1),
 });
-const {data: env} = await envSchema.safeParseAsync(process.env);
+const { data: env } = await envSchema.safeParseAsync(process.env);
 
 const config: CoreConfig = {
   ...(env && {

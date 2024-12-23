@@ -1,7 +1,5 @@
 import type {
-  Audit,
   CategoryConfig,
-  CategoryRef,
   CoreConfig,
 } from './packages/models/src/index.js';
 import coveragePlugin, {
@@ -16,7 +14,7 @@ import lighthousePlugin, {
   lighthouseGroupRef,
 } from './packages/plugin-lighthouse/src/index.js';
 import { typescriptPlugin } from './packages/plugin-typescript/src';
-import { AUDITS as tsAudits } from './packages/plugin-typescript/src/lib/generated/audits';
+import { AUDITS } from './packages/plugin-typescript/src/lib/generated/audits';
 import { TypescriptPluginOptions } from './packages/plugin-typescript/src/lib/typescript-plugin';
 
 export const jsPackagesCategories: CategoryConfig[] = [
@@ -139,21 +137,18 @@ export const typescriptPluginConfigNx = async (
 ): Promise<CoreConfig> => {
   return {
     plugins: [await typescriptPlugin(options)],
-    /*...(supportedAuditSlugs.length > 0 ? {
-      categories: [
-        {
-          slug: 'typescript',
-          title: 'Typescript',
-          refs: supportedAuditSlugs
-            .map(({slug}) => ({
-              plugin: 'typescript',
-              type: 'audit' as const,
-              slug,
-              weight: 1
-            }))
-        }
-      ]
-    } : {})*/
+    categories: [
+      {
+        slug: 'typescript',
+        title: 'Typescript',
+        refs: AUDITS.map(({ slug }) => ({
+          plugin: 'typescript',
+          type: 'audit' as const,
+          slug,
+          weight: 1,
+        })),
+      },
+    ],
   };
 };
 
