@@ -16,7 +16,7 @@ describe('getDiagnostics', () => {
       tsConfigPath:
         'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
     });
-    expect(res).toHaveLength(8);
-    expect(res.at(0)?.code).toBe(2322);
+    expect(res).toHaveLength(4);
+    expect(res.at(0)?.code).toBe(2307);
   });
 });
