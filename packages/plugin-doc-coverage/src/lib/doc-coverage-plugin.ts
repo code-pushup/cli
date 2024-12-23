@@ -36,9 +36,9 @@ export const PLUGIN_DOCS_URL =
  *
  * @returns Plugin configuration.
  */
-export async function docCoveragePlugin(
+export function docCoveragePlugin(
   config: DocCoveragePluginConfig,
-): Promise<PluginConfig> {
+): PluginConfig {
   const docCoverageConfig = docCoveragePluginConfigSchema.parse(config);
 
   return {
