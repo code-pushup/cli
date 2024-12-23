@@ -1,5 +1,5 @@
 import { SyntaxKind } from 'ts-morph';
-import type { CoverageReportShape } from './models.js';
+import type { DocumentationReport } from './models.js';
 import {
   calculateCoverage,
   createEmptyCoverageData,
@@ -36,7 +36,7 @@ describe('calculateCoverage', () => {
   });
 
   it('should calculate correct coverage percentage with issues', () => {
-    const input: CoverageReportShape = {
+    const input: DocumentationReport = {
       ...createEmptyCoverageData(),
       functions: {
         nodesCount: 4,

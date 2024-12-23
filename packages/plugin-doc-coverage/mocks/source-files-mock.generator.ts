@@ -8,7 +8,7 @@ import {
   TypeAliasDeclaration,
   VariableStatement,
 } from 'ts-morph';
-import type { CoverageType } from '../src/lib/runner/models';
+import type { CoverageType } from '../src/lib/runner/models.js';
 
 export function sourceFileMock(
   file: string,

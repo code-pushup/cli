@@ -1,15 +1,15 @@
 import { SyntaxKind } from 'ts-morph';
 import type {
-  CoverageReportShape,
-  CoverageResult,
   CoverageType,
+  DocumentationCoverageReport,
+  DocumentationReport,
 } from './models.js';
 
 /**
  * Creates an empty unprocessed coverage report.
  * @returns The empty unprocessed coverage report.
  */
-export function createEmptyCoverageData(): CoverageReportShape {
+export function createEmptyCoverageData(): DocumentationReport {
   return {
     enums: { nodesCount: 0, issues: [] },
     interfaces: { nodesCount: 0, issues: [] },
@@ -27,7 +27,7 @@ export function createEmptyCoverageData(): CoverageReportShape {
  * @param result - The unprocessed coverage result.
  * @returns The processed coverage result.
  */
-export function calculateCoverage(result: CoverageReportShape) {
+export function calculateCoverage(result: DocumentationReport) {
   return Object.fromEntries(
     Object.entries(result).map(([key, value]) => {
       const type = key as CoverageType;
@@ -47,7 +47,7 @@ export function calculateCoverage(result: CoverageReportShape) {
         },
       ];
     }),
-  ) as CoverageResult;
+  ) as DocumentationCoverageReport;
 }
 
 /**

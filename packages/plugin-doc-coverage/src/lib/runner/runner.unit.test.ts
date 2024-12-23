@@ -1,4 +1,4 @@
-import type { CoverageResult } from './models.js';
+import type { DocumentationCoverageReport } from './models.js';
 import { trasformCoverageReportToAudits } from './runner.js';
 
 describe('trasformCoverageReportToAudits', () => {
@@ -27,7 +27,7 @@ describe('trasformCoverageReportToAudits', () => {
         },
       ],
     },
-  } as unknown as CoverageResult;
+  } as unknown as DocumentationCoverageReport;
 
   it('should return all audits from the coverage result when no filters are provided', () => {
     const result = trasformCoverageReportToAudits(mockCoverageResult, {});
@@ -55,7 +55,7 @@ describe('trasformCoverageReportToAudits', () => {
 
   it('should handle properly empty coverage result', () => {
     const result = trasformCoverageReportToAudits(
-      {} as unknown as CoverageResult,
+      {} as unknown as DocumentationCoverageReport,
       {},
     );
     expect(result).toEqual([]);

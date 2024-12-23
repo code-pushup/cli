@@ -6,9 +6,9 @@ import {
 } from 'ts-morph';
 import type { DocCoveragePluginConfig } from '../config.js';
 import type {
-  CoverageReportShape,
-  CoverageResult,
   CoverageType,
+  DocumentationCoverageReport,
+  DocumentationReport,
 } from './models.js';
 import {
   calculateCoverage,
@@ -43,24 +43,24 @@ export function getVariablesInformation(
 /**
  * Processes documentation coverage for TypeScript files in the specified path
  * @param toInclude - The file path pattern to include for documentation analysis
- * @returns {CoverageResult} Object containing coverage statistics and undocumented items
+ * @returns {DocumentationCoverageReport} Object containing coverage statistics and undocumented items
  */
 export function processDocCoverage(
   config: DocCoveragePluginConfig,
-): CoverageResult {
+): DocumentationCoverageReport {
   const project = new Project();
   project.addSourceFilesAtPaths(config.sourceGlob);
-  return getUnprocessedCoverageReport(project.getSourceFiles());
+  return getDocumentationReport(project.getSourceFiles());
 }
 
 /**
- * Gets the unprocessed coverage report from the source files
+ * Gets the documentation coverage report from the source files
  * @param sourceFiles - The source files to process
- * @returns {CoverageReportShape} The unprocessed coverage report
+ * @returns {DocumentationCoverageReport} The documentation coverage report
  */
-export function getUnprocessedCoverageReport(
+export function getDocumentationReport(
   sourceFiles: SourceFile[],
-): CoverageResult {
+): DocumentationCoverageReport {
   const unprocessedCoverageReport = sourceFiles.reduce(
     (coverageReportOfAllFiles, sourceFile) => {
       const filePath = sourceFile.getFilePath();
@@ -105,7 +105,7 @@ export function getUnprocessedCoverageReport(
         createEmptyCoverageData(),
       );
 
-      return mergeCoverageResults(
+      return mergeDocumentationReports(
         coverageReportOfAllFiles,
         coverageReportOfCurrentFile,
       );
@@ -117,28 +117,29 @@ export function getUnprocessedCoverageReport(
 }
 
 /**
- * Merges two coverage results
- * @param results - The first empty coverage result
- * @param current - The second coverage result
- * @returns {CoverageReportShape} The merged coverage result
+ * Merges two documentation results
+ * @param accumulatedReport - The first empty documentation result
+ * @param currentFileReport - The second documentation result
+ * @returns {DocumentationReport} The merged documentation result
  */
-export function mergeCoverageResults(
-  results: CoverageReportShape,
-  current: Partial<CoverageReportShape>,
-): CoverageReportShape {
+export function mergeDocumentationReports(
+  accumulatedReport: DocumentationReport,
+  currentFileReport: Partial<DocumentationReport>,
+): DocumentationReport {
   return Object.fromEntries(
-    Object.entries(results).map(([key, value]) => {
-      const node = value as CoverageResult[CoverageType];
+    Object.entries(accumulatedReport).map(([key, value]) => {
+      const node = value as DocumentationCoverageReport[CoverageType];
       const type = key as CoverageType;
       return [
         type,
         {
-          nodesCount: node.nodesCount + (current[type]?.nodesCount ?? 0),
-          issues: [...node.issues, ...(current[type]?.issues ?? [])],
+          nodesCount:
+            node.nodesCount + (currentFileReport[type]?.nodesCount ?? 0),
+          issues: [...node.issues, ...(currentFileReport[type]?.issues ?? [])],
         },
       ];
     }),
-  ) as CoverageReportShape;
+  ) as DocumentationReport;
 }
 
 /**

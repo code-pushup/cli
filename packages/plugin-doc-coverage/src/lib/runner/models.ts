@@ -25,19 +25,19 @@ export type UndocumentedNode = {
   class?: string;
 };
 
-/** The coverage data is the data that is used to create the coverage report. Without coverage stats. */
-export type CoverageData = {
+/** The documentation data has the issues and the total nodes count from a specific CoverageType. */
+export type DocumentationData = {
   issues: UndocumentedNode[];
   nodesCount: number;
 };
 
-/** The coverage report shape the report of every CoverageType without coverage stats. */
-export type CoverageReportShape = Record<CoverageType, CoverageData>;
+/** The documentation report has all the documentation data for each coverage type. */
+export type DocumentationReport = Record<CoverageType, DocumentationData>;
 
-/** The processed coverage result CoverageData but for each coverage type and with coverage stats. */
-export type CoverageResult = Record<
+/** The processed documentation result has the documentation data for each coverage type and with coverage stats. */
+export type DocumentationCoverageReport = Record<
   CoverageType,
-  CoverageData & {
+  DocumentationData & {
     coverage: number;
   }
 >;

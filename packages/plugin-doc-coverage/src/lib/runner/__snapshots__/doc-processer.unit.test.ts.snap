@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`getUnprocessedCoverageReport > should produce a full report 1`] = `
+exports[`getDocumentationReport > should produce a full report 1`] = `
 {
   "classes": {
     "coverage": 33.33,

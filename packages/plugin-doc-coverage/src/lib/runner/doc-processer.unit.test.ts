@@ -5,15 +5,15 @@ import {
 } from '../../../mocks/source-files-mock.generator';
 import {
   getClassNodes,
-  getUnprocessedCoverageReport,
+  getDocumentationReport,
   getVariablesInformation,
-  mergeCoverageResults,
+  mergeDocumentationReports,
 } from './doc-processer.js';
-import type { CoverageReportShape } from './models.js';
+import type { DocumentationReport } from './models.js';
 
-describe('getUnprocessedCoverageReport', () => {
+describe('getDocumentationReport', () => {
   it('should produce a full report', () => {
-    const results = getUnprocessedCoverageReport([
+    const results = getDocumentationReport([
       sourceFileMock('test.ts', {
         functions: { 1: true, 2: true, 3: true },
         classes: { 4: false, 5: false, 6: true },
@@ -28,14 +28,14 @@ describe('getUnprocessedCoverageReport', () => {
   });
 
   it('should accept array of source files', () => {
-    const results = getUnprocessedCoverageReport([
+    const results = getDocumentationReport([
       sourceFileMock('test.ts', { functions: { 1: true, 2: true, 3: false } }),
     ]);
     expect(results).toBeDefined();
   });
 
   it('should count nodes correctly', () => {
-    const results = getUnprocessedCoverageReport([
+    const results = getDocumentationReport([
       sourceFileMock('test.ts', { functions: { 1: true, 2: true, 3: false } }),
     ]);
 
@@ -43,7 +43,7 @@ describe('getUnprocessedCoverageReport', () => {
   });
 
   it('should collect uncommented nodes issues', () => {
-    const results = getUnprocessedCoverageReport([
+    const results = getDocumentationReport([
       sourceFileMock('test.ts', { functions: { 1: true, 2: false, 3: false } }),
     ]);
 
@@ -51,7 +51,7 @@ describe('getUnprocessedCoverageReport', () => {
   });
 
   it('should collect valid issues', () => {
-    const results = getUnprocessedCoverageReport([
+    const results = getDocumentationReport([
       sourceFileMock('test.ts', { functions: { 1: false } }),
     ]);
 
@@ -66,7 +66,7 @@ describe('getUnprocessedCoverageReport', () => {
   });
 
   it('should calculate coverage correctly', () => {
-    const results = getUnprocessedCoverageReport([
+    const results = getDocumentationReport([
       sourceFileMock('test.ts', { functions: { 1: true, 2: false } }),
     ]);
 
@@ -74,8 +74,8 @@ describe('getUnprocessedCoverageReport', () => {
   });
 });
 
-describe('mergeCoverageResults', () => {
-  const emptyResult: CoverageReportShape = {
+describe('mergeDocumentationReports', () => {
+  const emptyResult: DocumentationReport = {
     enums: { nodesCount: 0, issues: [] },
     interfaces: { nodesCount: 0, issues: [] },
     types: { nodesCount: 0, issues: [] },
@@ -103,9 +103,9 @@ describe('mergeCoverageResults', () => {
       },
     };
 
-    const results = mergeCoverageResults(
+    const results = mergeDocumentationReports(
       emptyResult,
-      secondResult as Partial<CoverageReportShape>,
+      secondResult as Partial<DocumentationReport>,
     );
     expect(results).toStrictEqual(
       expect.objectContaining({
@@ -118,12 +118,12 @@ describe('mergeCoverageResults', () => {
   });
 
   it('should merge empty results', () => {
-    const results = mergeCoverageResults(emptyResult, emptyResult);
+    const results = mergeDocumentationReports(emptyResult, emptyResult);
     expect(results).toStrictEqual(emptyResult);
   });
 
   it('should merge second level property nodesCount', () => {
-    const results = mergeCoverageResults(
+    const results = mergeDocumentationReports(
       {
         ...emptyResult,
         enums: { nodesCount: 1, issues: [] },
@@ -136,7 +136,7 @@ describe('mergeCoverageResults', () => {
   });
 
   it('should merge second level property issues', () => {
-    const results = mergeCoverageResults(
+    const results = mergeDocumentationReports(
       {
         ...emptyResult,
         enums: {

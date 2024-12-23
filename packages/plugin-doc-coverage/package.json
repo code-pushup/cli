@@ -38,10 +38,5 @@
     "@code-pushup/models": "0.57.0",
     "zod": "^3.22.4",
     "ts-morph": "^24.0.0"
-  },
-  "peerDependenciesMeta": {
-    "@nx/devkit": {
-      "optional": true
-    }
   }
 }
