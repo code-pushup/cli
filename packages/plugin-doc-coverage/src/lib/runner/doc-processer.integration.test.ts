@@ -17,7 +17,7 @@ describe('processDocCoverage', () => {
     expect(totalNodeCount).toBe(expectedNodeCount);
   });
 
-  it('should count total nodes from TypeScript files correctly and not include spec files when specified', () => {
+  it('respect `sourceGlob` and only include matching files', () => {
     const expectedNodeCount = 7;
 
     const results = processDocCoverage({
