@@ -16,7 +16,7 @@ vi.mock('./runner/index.ts', () => ({
 }));
 
 describe('docCoveragePlugin', () => {
-  it('should initialise a Documentation coverage plugin', async () => {
+  it('should create a valid plugin config', async () => {
     await expect(
       docCoveragePlugin({
         sourceGlob: ['src/**/*.ts', '!**/*.spec.ts', '!**/*.test.ts'],
