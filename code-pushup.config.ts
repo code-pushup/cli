@@ -43,8 +43,7 @@ export default mergeConfigs(
   await docCoverageCoreConfig({
     sourceGlob: [
       'packages/**/src/**/*.ts',
-      '!**/*.spec.ts',
-      '!**/*.test.ts',
+   '!**/*.{spec,test}.ts'
       '!**/implementation/**',
       '!**/internal/**',
     ],
