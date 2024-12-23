@@ -43,10 +43,11 @@ export default mergeConfigs(
   await docCoverageCoreConfig({
     sourceGlob: [
       'packages/**/src/**/*.ts',
+      '!packages/**/node_modules',
+      '!packages/**/{mocks,mocks}',
       '!**/*.{spec,test}.ts',
       '!**/implementation/**',
       '!**/internal/**',
     ],
-    skipAudits: ['methods-coverage'],
   }),
 );
