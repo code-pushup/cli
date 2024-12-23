@@ -5,7 +5,7 @@ import {
 } from './config.js';
 
 describe('docCoveragePluginConfigSchema', () => {
-  it('accepts a complete valid configuration', () => {
+  it('accepts a valid configuration', () => {
     expect(() =>
       docCoveragePluginConfigSchema.parse({
         sourceGlob: ['src/**/*.ts'],
