@@ -27,7 +27,7 @@ export const AUDITS_MAP: Record<AuditSlug, Audit> = {
   'variables-coverage': {
     slug: 'variables-coverage',
     title: 'Variables coverage',
-    description: 'Coverage of variables',
+    description: 'Documentation coverage of variables',
   },
   'properties-coverage': {
     slug: 'properties-coverage',
