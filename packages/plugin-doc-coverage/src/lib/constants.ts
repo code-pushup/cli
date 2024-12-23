@@ -12,7 +12,7 @@ export const AUDITS_MAP: Record<AuditSlug, Audit> = {
   'methods-coverage': {
     slug: 'methods-coverage',
     title: 'Methods coverage',
-    description: 'Coverage of methods',
+    description: 'Documentation coverage of methods',
   },
   'functions-coverage': {
     slug: 'functions-coverage',
