@@ -35,7 +35,7 @@ Measured documentation types are mapped to Code PushUp audits in the following w
    pnpm add --save-dev @code-pushup/doc-coverage-plugin
    ```
 
-3. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.js`).
+3. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.ts`).
 
    Pass the target files to analyze and optionally specify which types of documentation you want to track.
    You can skip for example tests by defining in the sourceGlob the path to the tests folder or pattern to match the tests files with the `!` symbol.
