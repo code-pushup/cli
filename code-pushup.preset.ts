@@ -16,7 +16,7 @@ import lighthousePlugin, {
   lighthouseGroupRef,
 } from './packages/plugin-lighthouse/src/index.js';
 import { typescriptPlugin } from './packages/plugin-typescript/src';
-import { AUDITS as tsAudits } from './packages/plugin-typescript/src/lib/audits';
+import { AUDITS as tsAudits } from './packages/plugin-typescript/src/lib/generated/audits';
 import { TypescriptPluginOptions } from './packages/plugin-typescript/src/lib/typescript-plugin';
 
 export const jsPackagesCategories: CategoryConfig[] = [

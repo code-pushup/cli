@@ -1,5 +1,5 @@
 import { writeFile } from 'node:fs/promises';
-import { transformTSErrorCodeToAuditSlug } from '../../src/lib/runner/utils';
+import { transformTSErrorCodeToAuditSlug } from '../../src/lib/runner/utils.js';
 
 /*
 transform strictNullChecks to Strict null checks
@@ -10,9 +10,13 @@ function formatTitle(description: string = '') {
     .replace(/\b\w/g, letter => letter.toUpperCase());
 }
 
-async function fetchJsonFromGitHub(url: string): Promise<any> {
+async function fetchJsonFromGitHub(
+  url: string,
+): Promise<Record<string, { code: number; category: string }>> {
   try {
+    // eslint-disable-next-line n/no-unsupported-features/node-builtins
     const response = await fetch(url, {
+      // eslint-disable-next-line n/no-unsupported-features/node-builtins
       headers: new Headers({ 'Content-Type': 'application/json' }),
     });
 
@@ -37,22 +41,22 @@ export async function generateAuditsFromGithub() {
   >;
 
   const audits = Object.entries(githubResult)
-    .filter(([_, { category }]) => {
-      return category === 'Error' || category === 'Warning';
-    })
-    .map(([description, { code, category }]) => {
-      return errorToAudit(code, description);
-    });
+    .filter(
+      ([_, { category }]) => category === 'Error' || category === 'Warning',
+    )
+    .map(([description, { code }]) => errorToAudit(code, description));
 
   console.info(
-    `Generated ${audits.length} audits in packages/plugin-typescript/src/lib/audits.ts`,
+    `Generated ${audits.length} audits in packages/plugin-typescript/src/lib/generated/audits.ts`,
   );
 
   await writeFile(
-    'packages/plugin-typescript/src/lib/audits.ts',
+    'packages/plugin-typescript/src/lib/generated/audits.ts',
     `
   import type {Audit} from "@code-pushup/models";
-  export const AUDITS: Audit[] = ${JSON.stringify(audits)};
+  /* eslint-disable max-lines */
+  export const AUDITS: Audit[] = ${JSON.stringify(audits, null, 2)};
+  /* eslint-enable max-lines */
   `,
   );
 }

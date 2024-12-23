@@ -42,8 +42,7 @@ export default mergeConfigs(
   ),
    await eslintCoreConfigNx(),*/
   await typescriptPluginConfigNx({
-    tsConfigPath:
-      'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
+    tsConfigPath: 'packages/plugin-typescript/tsconfig.lib.json',
     tsCodes: [...BASIC_CHECKES],
   }),
 );

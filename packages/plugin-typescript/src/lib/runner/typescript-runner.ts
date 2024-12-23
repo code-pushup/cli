@@ -1,4 +1,5 @@
 import { access, readFile } from 'node:fs/promises';
+// eslint-disable-next-line unicorn/import-style
 import { dirname, resolve } from 'node:path';
 import {
   type Diagnostic,
@@ -8,7 +9,7 @@ import {
   parseJsonConfigFileContent,
   sys,
 } from 'typescript';
-import type { TypescriptPluginOptions } from '../typescript-plugin.js';
+import type { TypescriptPluginOptions } from '../config.js';
 
 export async function getDiagnostics(
   options: TypescriptPluginOptions,
@@ -23,7 +24,7 @@ export async function getDiagnostics(
     throw new Error(`tsconfig not found at: ${configPath}`);
   }
 
-  const configFile = await readFile(configPath, 'utf-8');
+  const configFile = (await readFile(configPath)).toString();
   const { config: strictConfig } = parseConfigFileTextToJson(
     configPath,
     configFile,

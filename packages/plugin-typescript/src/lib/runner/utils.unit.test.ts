@@ -12,7 +12,9 @@ describe('transformTSErrorCodeToAuditSlug', () => {
   it.each(Object.entries(SUPPORTED_TS_ERROR_CODES))(
     'should transform supported code to readable audit',
     (code, slug) => {
-      expect(transformTSErrorCodeToAuditSlug(Number.parseInt(code))).toBe(slug);
+      expect(transformTSErrorCodeToAuditSlug(Number.parseInt(code, 10))).toBe(
+        slug,
+      );
     },
   );
 

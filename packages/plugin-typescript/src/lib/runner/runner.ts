@@ -6,8 +6,8 @@ import type {
   Issue,
   RunnerFunction,
 } from '@code-pushup/models';
+import type { TypescriptPluginOptions } from '../config.js';
 import type { AuditSlug } from '../types.js';
-import type { TypescriptPluginOptions } from '../typescript-plugin.js';
 import { getDiagnostics } from './typescript-runner.js';
 import {
   getIssueFromDiagnostic,

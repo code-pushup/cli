@@ -1,5 +1,4 @@
 import { generateAuditsFromGithub } from './utils.js';
 
-// node --experimental-strip-types packages/plugin-typescript/tools/generate-audits/bin.ts
-console.log('GENERATE AUDITS');
+// eslint-disable-next-line unicorn/prefer-top-level-await
 (async () => await generateAuditsFromGithub())();

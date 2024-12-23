@@ -29,8 +29,8 @@ export function getSeverity(category: DiagnosticCategory): Issue['severity'] {
       return 'error';
     case DiagnosticCategory.Warning:
       return 'warning';
-    case DiagnosticCategory.Suggestion:
-    case DiagnosticCategory.Message:
+    // case DiagnosticCategory.Suggestion:
+    // case DiagnosticCategory.Message:
     default:
       return 'info';
   }

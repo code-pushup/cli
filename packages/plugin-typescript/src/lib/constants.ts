@@ -1,5 +1,6 @@
 export const TYPESCRIPT_PLUGIN_SLUG = 'typescript';
 
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 export const SUPPORTED_TS_ERROR_CODES = {
   2322: 'strict-type-checks', // Type 'X' is not assignable to type 'Y'
   2345: 'strict-function-types', // Argument of type 'X' is not assignable to parameter of type 'Y'
@@ -68,3 +69,4 @@ export const SUPPORTED_TS_ERROR_CODES = {
 } as const;
 
 export const BASIC_CHECKES = [2322, 2345, 2531];
+/* eslint-enable @typescript-eslint/no-magic-numbers */
