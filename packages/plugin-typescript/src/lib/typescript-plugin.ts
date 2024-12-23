@@ -1,6 +1,7 @@
 import type { PluginConfig } from '@code-pushup/models';
+import packageJson from '../../package.json';
 import { AUDITS } from './audits.js';
-import type { TypescriptPluginConfig } from './config.js';
+import type { TypescriptPluginOptions } from './config.js';
 import { TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
 import { createRunnerFunction } from './runner/runner.js';
 
@@ -18,7 +19,9 @@ export function typescriptPlugin(
     slug: TYPESCRIPT_PLUGIN_SLUG,
     packageName: packageJson.name,
     version: packageJson.version,
-    title: 'Typescript',
+    title: PLUGIN_TITLE,
+    description: PLUGIN_DESCRIPTION,
+    docsUrl: PLUGIN_DOCS_URL,
     icon: 'typescript',
     audits: AUDITS,
     groups: [],

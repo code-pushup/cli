@@ -8,6 +8,6 @@ export const typescriptPluginConfigSchema = z.object({
     .describe('Array with specific TsCodes to measure'),
 });
 
-export type TypescriptPluginConfig = z.infer<
+export type TypescriptPluginOptions = z.infer<
   typeof typescriptPluginConfigSchema
 >;

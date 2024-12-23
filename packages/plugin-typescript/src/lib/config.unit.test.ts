@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  type TypescriptPluginConfig,
+  type TypescriptPluginOptions,
   typescriptPluginConfigSchema,
 } from './config.js';
 
@@ -13,7 +13,7 @@ describe('TypescriptPlugin Configuration', () => {
         typescriptPluginConfigSchema.parse({
           tsConfigPath,
           tsCodes: [1000, 1002],
-        } satisfies TypescriptPluginConfig),
+        } satisfies TypescriptPluginOptions),
       ).not.toThrow();
     });
   });
@@ -23,7 +23,7 @@ describe('TypescriptPlugin Configuration', () => {
       expect(() =>
         typescriptPluginConfigSchema.parse({
           tsConfigPath,
-        } satisfies TypescriptPluginConfig),
+        } satisfies TypescriptPluginOptions),
       ).not.toThrow();
     });
 
