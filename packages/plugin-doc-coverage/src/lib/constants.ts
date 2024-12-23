@@ -37,7 +37,7 @@ export const AUDITS_MAP: Record<AuditSlug, Audit> = {
   'types-coverage': {
     slug: 'types-coverage',
     title: 'Types coverage',
-    description: 'Coverage of types',
+    description: 'Documentation coverage of types',
   },
   'enums-coverage': {
     slug: 'enums-coverage',
