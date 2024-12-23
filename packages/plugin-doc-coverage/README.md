@@ -11,7 +11,7 @@ It analyzes your codebase and checks for documentation on different code element
 
 Measured documentation types are mapped to Code PushUp audits in the following way:
 
-- `value`: The value is the number of  undocumented nodes -> 4
+- `value`: The value is the number of undocumented nodes -> 4
 - `displayValue`: `${value} undocumented ${type}` -> 4 undocumented functions
 - `score`: 0.5 -> total nodes 8 undocumented 4 -> 8/4
 - The score is value converted to 0-1 range
