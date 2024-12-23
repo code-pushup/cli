@@ -34,13 +34,13 @@ export function trasformCoverageReportToAudits(
       return true;
     })
     .map(([type, item]) => {
-      const { coverage } = item;
+      const { coverage, issues } = item;
 
       return {
         slug: `${type}-coverage`,
-        value: coverage,
+        value: issues.length,
         score: coverage / 100,
-        displayValue: `${coverage} %`,
+        displayValue: `${issues.length} undocumented ${type}`,
         details: {
           issues: item.issues.map(({ file, line }) => ({
             message: 'Missing documentation',

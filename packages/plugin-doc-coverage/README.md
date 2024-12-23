@@ -37,15 +37,6 @@ Measured documentation types are mapped to Code PushUp audits in the following w
 
 3. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.ts`).
 
-   Pass the target files to analyze and optionally specify which types of documentation you want to track.
-   You can skip for example tests by defining in the sourceGlob the path to the tests folder or pattern to match the tests files with the `!` symbol.
-   All documentation types are measured by default.
-   If you wish to focus on a subset of offered types, define them in `onlyAudits`.
-   Also you can skip some types by defining them in `skipAudits`.
-   You can only define or `onlyAudits` or `skipAudits`, not both.
-
-   The configuration will look similarly to the following:
-
    ```js
    import docCoveragePlugin from '@code-pushup/doc-coverage-plugin';
 
@@ -92,9 +83,16 @@ Measured documentation types are mapped to Code PushUp audits in the following w
 
 Documentation coverage is a metric that indicates what percentage of your code elements have proper documentation. It helps ensure your codebase is well-documented and maintainable.
 
-The plugin provides a single audit that measures the overall percentage of documentation coverage across your codebase:
+The plugin provides multiple audits, one for each documentation type (classes, functions, interfaces, etc.), and groups them together for an overall documentation coverage measurement. Each audit:
 
-- **Percentage coverage**: Measures how many percent of the codebase have documentation.
+- Measures the documentation coverage for its specific type (e.g., classes, functions)
+- Provides a score based on the percentage of documented elements
+- Includes details about which elements are missing documentation
+
+These audits are grouped together to provide a comprehensive view of your codebase's documentation status. You can use either:
+
+- The complete group of audits for overall documentation coverage
+- Individual audits to focus on specific documentation types
 
 ## Plugin architecture
 
@@ -102,10 +100,49 @@ The plugin provides a single audit that measures the overall percentage of docum
 
 The plugin accepts the following parameters:
 
-- (optional) `coverageToolCommand`: If you wish to run your documentation coverage tool (compodoc) to generate the results first, you may define it here.
-  - `command`: Command to run coverage tool (e.g. `npx`).
-  - `args`: Arguments to be passed to the coverage tool (e.g. `['compodoc', '-p', 'tsconfig.doc.json', '-e', 'json']`).
-- `outputPath`: Path to the documentation.json file. Defaults to `'documentation/documentation.json'`.
+#### SourceGlob
+
+Required parameter. The `sourceGlob` option accepts an array of strings that define patterns to include or exclude files. You can use glob patterns to match files and the `!` symbol to exclude specific patterns. Example:
+
+```js
+await docCoveragePlugin({
+  sourceGlob: [
+    'src/**/*.ts',              // include all TypeScript files in src
+    '!src/**/*.{spec,test}.ts', // exclude test files
+    '!src/**/testing/**/*.ts'   // exclude testing utilities
+  ],
+}),
+```
+
+#### OnlyAudits
+
+Optional parameter. The `onlyAudits` option allows you to specify which documentation types you want to measure. Only the specified audits will be included in the results. Example:
+
+```js
+await docCoveragePlugin({
+  sourceGlob: ['src/**/*.ts'],
+  onlyAudits: [
+    'classes-coverage',
+    'functions-coverage'
+  ] // Only measure documentation for classes and functions
+}),
+```
+
+#### SkipAudits
+
+Optional parameter. The `skipAudits` option allows you to exclude specific documentation types from measurement. All other types will be included in the results.
+
+```js
+await docCoveragePlugin({
+  sourceGlob: ['src/**/*.ts'],
+  skipAudits: [
+    'variables-coverage',
+    'interfaces-coverage'
+  ] // Measure all documentation types except variables and interfaces
+}),
+```
+
+> ⚠️ **Warning:** You cannot use both `onlyAudits` and `skipAudits` in the same configuration. Choose the one that better suits your needs.
 
 ### Audits and group
 
