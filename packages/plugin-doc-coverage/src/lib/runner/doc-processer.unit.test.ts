@@ -4,6 +4,7 @@ import {
   sourceFileMock,
 } from '../../../mocks/source-files-mock.generator';
 import {
+  getAllNodesFromASourceFile,
   getClassNodes,
   getDocumentationReport,
   getVariablesInformation,
@@ -274,5 +275,39 @@ describe('getVariablesInformation', () => {
       mockVariableStatement as unknown as VariableStatement,
     ]);
     expect(result).toHaveLength(0);
+  });
+});
+
+describe('getAllNodesFromASourceFile', () => {
+  it('should combine all node types from a source file', () => {
+    const mockSourceFile = sourceFileMock('test.ts', {
+      functions: { 1: true },
+      classes: { 2: false },
+      types: { 3: true },
+      enums: { 4: false },
+      interfaces: { 5: true },
+    });
+
+    const result = getAllNodesFromASourceFile(mockSourceFile);
+
+    expect(result).toHaveLength(5);
+  });
+
+  it('should handle empty source file', () => {
+    const mockSourceFile = sourceFileMock('empty.ts', {});
+
+    const result = getAllNodesFromASourceFile(mockSourceFile);
+
+    expect(result).toHaveLength(0);
+  });
+
+  it('should handle source file with only functions', () => {
+    const mockSourceFile = sourceFileMock('functions.ts', {
+      functions: { 1: true, 2: false, 3: true },
+    });
+
+    const result = getAllNodesFromASourceFile(mockSourceFile);
+
+    expect(result).toHaveLength(3);
   });
 });

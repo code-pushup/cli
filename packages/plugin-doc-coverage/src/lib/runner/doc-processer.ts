@@ -53,6 +53,19 @@ export function processDocCoverage(
   return getDocumentationReport(project.getSourceFiles());
 }
 
+export function getAllNodesFromASourceFile(sourceFile: SourceFile) {
+  const classes = sourceFile.getClasses();
+  return [
+    ...sourceFile.getFunctions(),
+    ...classes,
+    ...getClassNodes(classes),
+    ...sourceFile.getTypeAliases(),
+    ...sourceFile.getEnums(),
+    ...sourceFile.getInterfaces(),
+    ...getVariablesInformation(sourceFile.getVariableStatements()),
+  ];
+}
+
 /**
  * Gets the documentation coverage report from the source files
  * @param sourceFiles - The source files to process
@@ -64,23 +77,12 @@ export function getDocumentationReport(
   const unprocessedCoverageReport = sourceFiles.reduce(
     (coverageReportOfAllFiles, sourceFile) => {
       const filePath = sourceFile.getFilePath();
-      const classes = sourceFile.getClasses();
-
-      const allNodesFromFile = [
-        ...sourceFile.getFunctions(),
-        ...classes,
-        ...getClassNodes(classes),
-        ...sourceFile.getTypeAliases(),
-        ...sourceFile.getEnums(),
-        ...sourceFile.getInterfaces(),
-        ...getVariablesInformation(sourceFile.getVariableStatements()),
-      ];
+      const allNodesFromFile = getAllNodesFromASourceFile(sourceFile);
 
       const coverageReportOfCurrentFile = allNodesFromFile.reduce(
         (acc, node) => {
           const nodeType = getCoverageTypeFromKind(node.getKind());
           const currentTypeReport = acc[nodeType];
-
           const updatedIssues =
             node.getJsDocs().length === 0
               ? [

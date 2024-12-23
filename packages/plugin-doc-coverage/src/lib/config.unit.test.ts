@@ -91,7 +91,7 @@ describe('DocCoveragePlugin Configuration', () => {
         docCoveragePluginConfigSchema.parse({
           onlyAudits: [123, true],
         }),
-      ).toThrow('Expected string');
+      ).toThrow('Expected string, received number');
     });
   });
 

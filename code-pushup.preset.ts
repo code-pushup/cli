@@ -144,7 +144,7 @@ export const docCoverageCoreConfig = async (
   config: DocCoveragePluginConfig,
 ): Promise<CoreConfig> => {
   return {
-    plugins: [await docCoveragePlugin(config)],
+    plugins: [docCoveragePlugin(config)],
     categories: getDocCoverageCategories(config),
   };
 };

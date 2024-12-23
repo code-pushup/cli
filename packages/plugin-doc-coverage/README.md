@@ -44,7 +44,7 @@ Measured documentation types are mapped to Code PushUp audits in the following w
      // ...
      plugins: [
        // ...
-       await docCoveragePlugin({
+       docCoveragePlugin({
          sourceGlob: ['**/*.ts'],
        }),
      ],
@@ -105,7 +105,7 @@ The plugin accepts the following parameters:
 Required parameter. The `sourceGlob` option accepts an array of strings that define patterns to include or exclude files. You can use glob patterns to match files and the `!` symbol to exclude specific patterns. Example:
 
 ```js
-await docCoveragePlugin({
+docCoveragePlugin({
   sourceGlob: [
     'src/**/*.ts',              // include all TypeScript files in src
     '!src/**/*.{spec,test}.ts', // exclude test files
@@ -119,7 +119,7 @@ await docCoveragePlugin({
 Optional parameter. The `onlyAudits` option allows you to specify which documentation types you want to measure. Only the specified audits will be included in the results. Example:
 
 ```js
-await docCoveragePlugin({
+docCoveragePlugin({
   sourceGlob: ['src/**/*.ts'],
   onlyAudits: [
     'classes-coverage',
@@ -133,7 +133,7 @@ await docCoveragePlugin({
 Optional parameter. The `skipAudits` option allows you to exclude specific documentation types from measurement. All other types will be included in the results.
 
 ```js
-await docCoveragePlugin({
+docCoveragePlugin({
   sourceGlob: ['src/**/*.ts'],
   skipAudits: [
     'variables-coverage',

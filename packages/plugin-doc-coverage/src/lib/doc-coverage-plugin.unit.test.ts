@@ -22,12 +22,12 @@ vi.mock('./runner/runner.js', () => ({
 }));
 
 describe('docCoveragePlugin', () => {
-  it('should create a valid plugin config', async () => {
-    await expect(
+  it('should create a valid plugin config', () => {
+    expect(
       docCoveragePlugin({
         sourceGlob: ['src/**/*.ts', '!**/*.spec.ts', '!**/*.test.ts'],
       }),
-    ).resolves.toStrictEqual(
+    ).toStrictEqual(
       expect.objectContaining({
         slug: PLUGIN_SLUG,
         title: PLUGIN_TITLE,
@@ -41,32 +41,32 @@ describe('docCoveragePlugin', () => {
     );
   });
 
-  it('should throw for invalid plugin options', async () => {
-    await expect(
+  it('should throw for invalid plugin options', () => {
+    expect(() =>
       docCoveragePlugin({
         // @ts-expect-error testing invalid config
         sourceGlob: 123,
       }),
-    ).rejects.toThrow('Expected array, received number');
+    ).toThrow('Expected array, received number');
   });
 
-  it('should filter groups', async () => {
+  it('should filter groups', () => {
     const config = { sourceGlob: ['src/**/*.ts'] };
-    await docCoveragePlugin(config);
+    docCoveragePlugin(config);
 
     expect(filterGroupsByOnlyAudits).toHaveBeenCalledWith(groups, config);
   });
 
   it('should filter audits', async () => {
     const config = { sourceGlob: ['src/**/*.ts'] };
-    await docCoveragePlugin(config);
+    docCoveragePlugin(config);
 
     expect(filterAuditsByPluginConfig).toHaveBeenCalledWith(config);
   });
 
   it('should forward options to runner function', async () => {
     const config = { sourceGlob: ['src/**/*.ts'] };
-    await docCoveragePlugin(config);
+    docCoveragePlugin(config);
 
     expect(createRunnerFunction).toHaveBeenCalledWith(config);
   });
