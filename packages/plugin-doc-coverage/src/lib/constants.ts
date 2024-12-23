@@ -42,7 +42,7 @@ export const AUDITS_MAP: Record<AuditSlug, Audit> = {
   'enums-coverage': {
     slug: 'enums-coverage',
     title: 'Enums coverage',
-    description: 'Coverage of enums',
+    description: 'Documentation coverage of enums',
   },
 } as const;
 
