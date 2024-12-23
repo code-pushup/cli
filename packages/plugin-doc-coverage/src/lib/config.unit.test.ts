@@ -52,7 +52,7 @@ describe('sourceGlob', () => {
 });
 
 describe('onlyAudits', () => {
-  it('accepts valid audit slugs array', () => {
+  it('accepts a valid `onlyAudits` array', () => {
     expect(() =>
       docCoveragePluginConfigSchema.parse({
         onlyAudits: ['functions-coverage', 'classes-coverage'],
