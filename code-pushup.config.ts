@@ -44,7 +44,7 @@ export default mergeConfigs(
     sourceGlob: [
       'packages/**/src/**/*.ts',
       '!packages/**/node_modules',
-      '!packages/**/{mocks,mocks}',
+      '!packages/**/{mocks,mock}',
       '!**/*.{spec,test}.ts',
       '!**/implementation/**',
       '!**/internal/**',
