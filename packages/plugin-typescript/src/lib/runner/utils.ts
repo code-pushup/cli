@@ -3,7 +3,7 @@ import {
   DiagnosticCategory,
   flattenDiagnosticMessageText,
 } from 'typescript';
-import type { Audit, Issue } from '@code-pushup/models';
+import type { Issue } from '@code-pushup/models';
 import { SUPPORTED_TS_ERROR_CODES } from '../constants.js';
 
 export function transformTSErrorCodeToAuditSlug(tscode: number) {

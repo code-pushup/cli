@@ -1,14 +1,15 @@
 import type { PluginConfig } from '@code-pushup/models';
-import packageJson from '../../package.json';
 import { AUDITS } from './audits.js';
+import type { TypescriptPluginConfig } from './config.js';
 import { TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
 import { createRunnerFunction } from './runner/runner.js';
 
-export type TypescriptPluginOptions = {
-  tsConfigPath?: string;
-  tsCodes?: number[];
-  sourceGlob?: string;
-};
+export const PLUGIN_TITLE = 'Typescript';
+
+export const PLUGIN_DESCRIPTION = 'Official Code PushUp typescript plugin.';
+
+export const PLUGIN_DOCS_URL =
+  'https://www.npmjs.com/package/@code-pushup/typescript-plugin/';
 
 export function typescriptPlugin(
   options: TypescriptPluginOptions,
