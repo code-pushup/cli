@@ -1,25 +1,13 @@
 import type { PluginConfig } from '@code-pushup/models';
 import packageJson from '../../package.json';
-import {
-  TYPESCRIPT_PLUGIN_SLUG,
-  audits,
-  errorCodeToCompilerOption,
-} from './constants.js';
+import { AUDITS } from './audits.js';
+import { TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
 import { createRunnerFunction } from './runner/runner.js';
-
-export type CamelToKebabCase<S extends string> =
-  S extends `${infer First}${infer Rest}`
-    ? `${First extends Capitalize<First> ? '-' : ''}${Lowercase<First>}${CamelToKebabCase<Rest>}`
-    : '';
-
-export type SupportedCompilerErrorCode = keyof typeof errorCodeToCompilerOption;
-export type SupportedCompilerOptions =
-  (typeof errorCodeToCompilerOption)[SupportedCompilerErrorCode];
-export type AuditSlug = Lowercase<SupportedCompilerOptions>;
 
 export type TypescriptPluginOptions = {
   tsConfigPath?: string;
-  onlyAudits?: AuditSlug[];
+  tsCodes?: number[];
+  sourceGlob?: string;
 };
 
 export function typescriptPlugin(
@@ -31,7 +19,7 @@ export function typescriptPlugin(
     version: packageJson.version,
     title: 'Typescript',
     icon: 'typescript',
-    audits,
+    audits: AUDITS,
     groups: [],
     runner: createRunnerFunction(options),
   };

@@ -16,12 +16,7 @@ import lighthousePlugin, {
   lighthouseGroupRef,
 } from './packages/plugin-lighthouse/src/index.js';
 import { typescriptPlugin } from './packages/plugin-typescript/src';
-import { audits as tsAudits } from './packages/plugin-typescript/src/lib/constants';
-import {
-  filterAuditsByOnlyAudits,
-  filterCategoryRefsByOnlyAudits,
-  filterDiagnisticsByOnlyAudits,
-} from './packages/plugin-typescript/src/lib/runner/runner';
+import { AUDITS as tsAudits } from './packages/plugin-typescript/src/lib/audits';
 import { TypescriptPluginOptions } from './packages/plugin-typescript/src/lib/typescript-plugin';
 
 export const jsPackagesCategories: CategoryConfig[] = [
@@ -142,10 +137,6 @@ export const eslintCoreConfigNx = async (
 export const typescriptPluginConfigNx = async (
   options: TypescriptPluginOptions,
 ): Promise<CoreConfig> => {
-  const supportedAuditSlugs = tsAudits
-    .filter(filterAuditsByOnlyAudits(options.onlyAudits))
-    .map(({ slug }) => slug);
-
   return {
     plugins: [await typescriptPlugin(options)],
     /*...(supportedAuditSlugs.length > 0 ? {

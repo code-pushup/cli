@@ -8,6 +8,7 @@ import {
   typescriptPluginConfigNx,
 } from './code-pushup.preset.js';
 import type { CoreConfig } from './packages/models/src/index.js';
+import { BASIC_CHECKES } from './packages/plugin-typescript/src/lib/constants';
 import { mergeConfigs } from './packages/utils/src/index.js';
 
 // load upload configuration from environment
@@ -43,6 +44,6 @@ export default mergeConfigs(
   await typescriptPluginConfigNx({
     tsConfigPath:
       'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
-    onlyAudits: ['noimplicitany', 'strictnullchecks'],
+    tsCodes: [...BASIC_CHECKES],
   }),
 );

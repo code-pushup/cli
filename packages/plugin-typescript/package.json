@@ -24,7 +24,6 @@
   "type": "module",
   "dependencies": {
     "@code-pushup/models": "0.57.0",
-    "@code-pushup/utils": "0.57.0",
-    "typescript": "^12.0.0"
+    "typescript": "5.5.4"
   }
 }
