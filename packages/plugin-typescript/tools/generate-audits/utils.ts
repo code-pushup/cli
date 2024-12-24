@@ -55,7 +55,7 @@ export async function generateAuditsFromGithub() {
     `
   import type {Audit} from "@code-pushup/models";
   /* eslint-disable max-lines */
-  export const AUDITS: Audit[] = ${JSON.stringify(audits, null, 2)};
+  export const AUDITS = ${JSON.stringify(audits, null, 2)} as const satisfies Audit[];
   /* eslint-enable max-lines */
   `,
   );

@@ -1,7 +1,7 @@
 import type { Audit } from '@code-pushup/models';
 
 /* eslint-disable max-lines */
-export const AUDITS: Audit[] = [
+export const AUDITS = [
   {
     slug: 'unterminated-string-literal',
     title: 'Unterminated String Literal',
@@ -7493,5 +7493,5 @@ export const AUDITS: Audit[] = [
     description:
       "String literal import and export names are not supported when the '--module' flag is set to 'es2015' or 'es2020'.",
   },
-];
+] as const satisfies Audit[];
 /* eslint-enable max-lines */

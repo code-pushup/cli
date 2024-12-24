@@ -4,6 +4,7 @@ import type { TypescriptPluginOptions } from './config.js';
 import { TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
 import { AUDITS } from './generated/audits.js';
 import { createRunnerFunction } from './runner/runner.js';
+import { filterAuditsBySlug } from './utils.js';
 
 export const PLUGIN_TITLE = 'Typescript';
 
@@ -23,7 +24,7 @@ export function typescriptPlugin(
     description: PLUGIN_DESCRIPTION,
     docsUrl: PLUGIN_DOCS_URL,
     icon: 'typescript',
-    audits: AUDITS,
+    audits: AUDITS.filter(filterAuditsBySlug(options.tsAudits)),
     groups: [],
     runner: createRunnerFunction(options),
   };

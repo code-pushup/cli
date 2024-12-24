@@ -1,5 +1,3 @@
-import { SUPPORTED_TS_ERROR_CODES } from './constants.js';
-import type { SupportedCompilerErrorCode } from './runner/models.js';
+import { AUDITS } from './generated/audits.js';
 
-export type AuditSlug =
-  (typeof SUPPORTED_TS_ERROR_CODES)[SupportedCompilerErrorCode];
+export type AuditSlug = (typeof AUDITS)[number]['slug'];

@@ -13,9 +13,14 @@ import jsPackagesPlugin from './packages/plugin-js-packages/src/index.js';
 import lighthousePlugin, {
   lighthouseGroupRef,
 } from './packages/plugin-lighthouse/src/index.js';
-import { typescriptPlugin } from './packages/plugin-typescript/src';
-import { AUDITS } from './packages/plugin-typescript/src/lib/generated/audits';
-import { TypescriptPluginOptions } from './packages/plugin-typescript/src/lib/typescript-plugin';
+import {
+  type TypescriptPluginOptions,
+  typescriptPlugin,
+} from './packages/plugin-typescript/src/index.js';
+import { SUPPORTED_TS_ERROR_CODES } from './packages/plugin-typescript/src/lib/constants.js';
+import { AUDITS } from './packages/plugin-typescript/src/lib/generated/audits.js';
+import { AuditSlug } from './packages/plugin-typescript/src/lib/types.js';
+import { filterAuditsBySlug } from './packages/plugin-typescript/src/lib/utils.js';
 
 export const jsPackagesCategories: CategoryConfig[] = [
   {
@@ -135,18 +140,25 @@ export const eslintCoreConfigNx = async (
 export const typescriptPluginConfigNx = async (
   options: TypescriptPluginOptions,
 ): Promise<CoreConfig> => {
+  const opt: TypescriptPluginOptions = {
+    tsAudits: Object.values(SUPPORTED_TS_ERROR_CODES) as AuditSlug[],
+    ...options,
+  };
+
   return {
-    plugins: [await typescriptPlugin(options)],
+    plugins: [await typescriptPlugin(opt)],
     categories: [
       {
         slug: 'typescript',
         title: 'Typescript',
-        refs: AUDITS.map(({ slug }) => ({
-          plugin: 'typescript',
-          type: 'audit' as const,
-          slug,
-          weight: 1,
-        })),
+        refs: AUDITS.filter(filterAuditsBySlug(opt.tsAudits)).map(
+          ({ slug }) => ({
+            plugin: 'typescript',
+            type: 'audit' as const,
+            slug,
+            weight: 1,
+          }),
+        ),
       },
     ],
   };

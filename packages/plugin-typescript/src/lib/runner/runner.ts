@@ -9,6 +9,7 @@ import type {
 import type { TypescriptPluginOptions } from '../config.js';
 import { AUDITS } from '../generated/audits.js';
 import type { AuditSlug } from '../types.js';
+import { filterAuditsBySlug } from '../utils.js';
 import { getDiagnostics } from './typescript-runner.js';
 import {
   getIssueFromDiagnostic,
@@ -36,7 +37,8 @@ export function createRunnerFunction(
           const issue = getIssueFromDiagnostic(diag);
 
           const existingIssues: Issue[] =
-            (acc[slug] && acc[slug].details?.issues) || ([] as Issue[]);
+            ((acc[slug] as Issue) && acc[slug].details?.issues) ||
+            ([] as Issue[]);
 
           return {
             ...acc,
@@ -63,6 +65,6 @@ export function createRunnerFunction(
         value: issues.length,
         ...(issues.length > 0 ? { details } : {}),
       } satisfies AuditOutput;
-    });
+    }).filter(filterAuditsBySlug(options.tsAudits));
   };
 }

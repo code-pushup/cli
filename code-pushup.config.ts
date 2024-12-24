@@ -8,7 +8,10 @@ import {
   typescriptPluginConfigNx,
 } from './code-pushup.preset.js';
 import type { CoreConfig } from './packages/models/src/index.js';
-import { BASIC_CHECKES } from './packages/plugin-typescript/src/lib/constants';
+import {
+  BASIC_CHECKES,
+  SUPPORTED_TS_ERROR_CODES,
+} from './packages/plugin-typescript/src/lib/constants';
 import { mergeConfigs } from './packages/utils/src/index.js';
 
 // load upload configuration from environment
@@ -43,6 +46,6 @@ export default mergeConfigs(
   await eslintCoreConfigNx(),
   await typescriptPluginConfigNx({
     tsConfigPath: 'packages/plugin-typescript/tsconfig.lib.json',
-    tsCodes: [...BASIC_CHECKES],
+    tsAudits: ['stris'],
   }),
 );
