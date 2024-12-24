@@ -12,7 +12,7 @@ describe('TypescriptPlugin Configuration', () => {
       expect(() =>
         typescriptPluginConfigSchema.parse({
           tsConfigPath,
-          tsCodes: [1000, 1002],
+          onlyAudits: ['ts-code-1065', 'ts-code-2354'],
         } satisfies TypescriptPluginOptions),
       ).not.toThrow();
     });
@@ -30,19 +30,19 @@ describe('TypescriptPlugin Configuration', () => {
     it('throws for invalid tsConfigPath type', () => {
       expect(() =>
         typescriptPluginConfigSchema.parse({
-          tsConfigPath: 123,
+          onlyAudits: 123,
         }),
-      ).toThrow('Expected string');
+      ).toThrow('invalid_type');
     });
   });
 
-  describe('tsCodes', () => {
-    it('accepts a valid `tsCodes` array', () => {
+  describe('onlyAudits', () => {
+    it('accepts a valid `onlyAudits` array', () => {
       expect(() =>
         typescriptPluginConfigSchema.parse({
           tsConfigPath,
-          tsCodes: [1000, 1002],
-        }),
+          onlyAudits: ['ts-code-1065', 'argument-expected-1011'],
+        } satisfies TypescriptPluginOptions),
       ).not.toThrow();
     });
 
@@ -50,8 +50,8 @@ describe('TypescriptPlugin Configuration', () => {
       expect(() =>
         typescriptPluginConfigSchema.parse({
           tsConfigPath,
-          tsCodes: [],
-        }),
+          onlyAudits: [],
+        } satisfies TypescriptPluginOptions),
       ).not.toThrow();
     });
 
@@ -59,26 +59,17 @@ describe('TypescriptPlugin Configuration', () => {
       expect(() =>
         typescriptPluginConfigSchema.parse({
           tsConfigPath,
-        }),
+        } satisfies TypescriptPluginOptions),
       ).not.toThrow();
-    });
-
-    it('throws for invalid tsCodes type', () => {
-      expect(() =>
-        typescriptPluginConfigSchema.parse({
-          tsConfigPath,
-          tsCodes: 'invalidCodes',
-        }),
-      ).toThrow('Expected array');
     });
 
     it('throws for array with non-string elements', () => {
       expect(() =>
         typescriptPluginConfigSchema.parse({
           tsConfigPath,
-          tsCodes: [123, true],
+          onlyAudits: [123, true],
         }),
-      ).toThrow('Expected number, received boolean');
+      ).toThrow('invalid_type');
     });
   });
 });

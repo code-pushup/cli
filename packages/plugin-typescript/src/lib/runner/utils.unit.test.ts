@@ -1,8 +1,8 @@
 import { DiagnosticCategory } from 'typescript';
 import { describe, expect } from 'vitest';
-import { SUPPORTED_TS_ERROR_CODES } from '../constants.js';
+import { SUPPORTED_TS_ERROR_CODES } from '../internal/known-ts-error-codes.js';
 import {
-  codeToAuditSlug,
+  codeToAuditCodeSlug,
   getIssueFromDiagnostic,
   getSeverity,
   transformTSErrorCodeToAuditSlug,
@@ -23,9 +23,9 @@ describe('transformTSErrorCodeToAuditSlug', () => {
   });
 });
 
-describe('codeToAuditSlug', () => {
+describe('codeToAuditCodeSlug', () => {
   it('should prodice ts-code audit', () => {
-    expect(codeToAuditSlug(123)).toBe('ts-code-123');
+    expect(codeToAuditCodeSlug(123)).toBe('ts-code-123');
   });
 });
 
