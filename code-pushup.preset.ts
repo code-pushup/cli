@@ -141,7 +141,8 @@ export const typescriptPluginConfigNx = async (
   options: TypescriptPluginOptions,
 ): Promise<CoreConfig> => {
   const opt: TypescriptPluginOptions = {
-    tsAudits: Object.values(SUPPORTED_TS_ERROR_CODES) as AuditSlug[],
+    onlyAudits: Object.values(SUPPORTED_TS_ERROR_CODES) as (string &
+      AuditSlug)[],
     ...options,
   };
 
@@ -151,7 +152,7 @@ export const typescriptPluginConfigNx = async (
       {
         slug: 'typescript',
         title: 'Typescript',
-        refs: AUDITS.filter(filterAuditsBySlug(opt.tsAudits)).map(
+        refs: AUDITS.filter(filterAuditsBySlug(opt.onlyAudits)).map(
           ({ slug }) => ({
             plugin: 'typescript',
             type: 'audit' as const,

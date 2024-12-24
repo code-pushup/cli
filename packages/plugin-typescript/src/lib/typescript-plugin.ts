@@ -24,7 +24,7 @@ export function typescriptPlugin(
     description: PLUGIN_DESCRIPTION,
     docsUrl: PLUGIN_DOCS_URL,
     icon: 'typescript',
-    audits: AUDITS.filter(filterAuditsBySlug(options.tsAudits)),
+    audits: AUDITS.filter(filterAuditsBySlug(options.onlyAudits)),
     groups: [],
     runner: createRunnerFunction(options),
   };

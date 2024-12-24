@@ -1,4 +1,5 @@
 import { writeFile } from 'node:fs/promises';
+import type { Audit } from '@code-pushup/models';
 import { transformTSErrorCodeToAuditSlug } from '../../src/lib/runner/utils.js';
 
 /*
@@ -55,17 +56,17 @@ export async function generateAuditsFromGithub() {
     `
   import type {Audit} from "@code-pushup/models";
   /* eslint-disable max-lines */
-  export const AUDITS = ${JSON.stringify(audits, null, 2)} as const satisfies Audit[];
+  export const AUDITS = ${JSON.stringify(audits, null, 2)} as const satisfies (Audit & { code: number })[];
   /* eslint-enable max-lines */
   `,
   );
 }
 
-function errorToAudit(tscode: number, description: string) {
+function errorToAudit(tscode: number, description: string): Audit {
   const slug = transformTSErrorCodeToAuditSlug(tscode);
   return {
     slug,
-    title: formatTitle(slug),
+    title: `${formatTitle(slug)}-${tscode}`,
     description,
   };
 }

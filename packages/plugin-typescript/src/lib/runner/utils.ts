@@ -5,11 +5,13 @@ import {
 } from 'typescript';
 import type { Issue } from '@code-pushup/models';
 import { SUPPORTED_TS_ERROR_CODES } from '../constants.js';
+import type { AuditSlug } from '../types.js';
 
-export function transformTSErrorCodeToAuditSlug(tscode: number) {
+export function transformTSErrorCodeToAuditSlug(tscode: number): AuditSlug {
   return (
-    SUPPORTED_TS_ERROR_CODES[tscode as keyof typeof SUPPORTED_TS_ERROR_CODES] ||
-    codeToAuditSlug(tscode)
+    (SUPPORTED_TS_ERROR_CODES[
+      tscode as keyof typeof SUPPORTED_TS_ERROR_CODES
+    ] as AuditSlug) || codeToAuditSlug(tscode)
   );
 }
 

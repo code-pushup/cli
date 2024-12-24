@@ -1,3 +1,5 @@
+import type { AuditSlug } from './types.js';
+
 export const TYPESCRIPT_PLUGIN_SLUG = 'typescript';
 
 /* eslint-disable @typescript-eslint/no-magic-numbers */
@@ -62,11 +64,8 @@ export const SUPPORTED_TS_ERROR_CODES = {
   1063: 'export-assignment-error',
   1064: 'async-promise-type-error',
   1066: 'constant-enum-initializer-required',
-  1085: 'syntax-error',
-  1086: 'no-accessor-in-ambient',
   1089: 'invalid-constructor-modifier',
   1090: 'invalid-param-modifier',
-} as const;
+} as const satisfies Record<string, AuditSlug>;
 
-export const BASIC_CHECKES = [2322, 2345, 2531];
 /* eslint-enable @typescript-eslint/no-magic-numbers */

@@ -46,6 +46,5 @@ export default mergeConfigs(
   await eslintCoreConfigNx(),
   await typescriptPluginConfigNx({
     tsConfigPath: 'packages/plugin-typescript/tsconfig.lib.json',
-    tsAudits: ['stris'],
   }),
 );

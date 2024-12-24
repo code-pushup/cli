@@ -37,8 +37,7 @@ export function createRunnerFunction(
           const issue = getIssueFromDiagnostic(diag);
 
           const existingIssues: Issue[] =
-            ((acc[slug] as Issue) && acc[slug].details?.issues) ||
-            ([] as Issue[]);
+            (acc[slug] && acc[slug].details?.issues) || ([] as Issue[]);
 
           return {
             ...acc,
@@ -65,6 +64,6 @@ export function createRunnerFunction(
         value: issues.length,
         ...(issues.length > 0 ? { details } : {}),
       } satisfies AuditOutput;
-    }).filter(filterAuditsBySlug(options.tsAudits));
+    }).filter(filterAuditsBySlug(options.onlyAudits));
   };
 }
