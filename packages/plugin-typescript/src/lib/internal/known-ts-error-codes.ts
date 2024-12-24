@@ -4,39 +4,125 @@ import type {AuditSlug} from '../types.js';
 /**
  *   [src/compiler/types.ts](https://github.com/microsoft/TypeScript/blob/56a08250f3516b3f5bc120d6c7ab4450a9a69352/src/compiler/types.ts) -> compilerOptions 7482
  *   [src/compiler/utilities.ts](https://github.com/microsoft/TypeScript/blob/56a08250f3516b3f5bc120d6c7ab4450a9a69352/src/compiler/types.ts)  9125
- *
- *     strictNullChecks: {
- *         dependencies: ["strict"],
- *         computeValue: compilerOptions => {
- *             return getStrictOptionValue(compilerOptions, "strictNullChecks");
- *         },
- *     },
- *     microsoft/TypeScript/src/compiler/utilities.ts
- *     src/compiler/utilities.ts
- *
- *     export function getStrictOptionValue(compilerOptions: CompilerOptions, flag: StrictOptionName): boolean {
- *     return compilerOptions[flag] === undefined ? !!compilerOptions.strict : !!compilerOptions[flag];
- * }
- *
- * Compiler options that are activated by strict: true
- *
- * strictFunctionTypes?: boolean; // Always combine with strict property
- * strictBindCallApply?: boolean; // Always combine with strict property
- * strictNullChecks?: boolean; // Always combine with strict property
- * strictPropertyInitialization?: boolean; // Always combine with strict property
- * strictBuiltinIteratorReturn?: boolean; // Always combine with strict property
- * alwaysStrict?: boolean; // Always combine with strict property
- * noImplicitAny?: boolean; // Always combine with strict property
- * noImplicitThis?: boolean; // Always combine with strict property
- *
  */
-export const NEW_SUPPORTED_TS_ERROR_CODES = {
-  'strict-types': [
-    2322, // Type 'X' is not assignable to type 'Y'
-  ]
-}
-export const SUPPORTED_TS_ERROR_CODES = {
 
+// Strict checks group
+const noImplicitAnyCodes = [7005, 7006, 7008, 7009, 7010, 7011, 7015, 7016, 7017, 7018, 7019, 7031, 7032, 7033];
+const noImplicitThisCodes = [2683, 2674];
+const alwaysStrictCodes = [1100, 1101, 1102, 1212, 1213, 1214, 1215, 1250, 1251, 1252];
+const strictBuiltinIteratorReturn = [1065]; // sussy
+const strictPropertyInitializationCodes = [2564, 2565, 1263, 1264];
+const strictNullChecksCodes = [2531, 2532, 2533, 2722, 2721, 18047, 18048, 18049];
+const strictBindCallApplyCodes = [2677, 2345, 2769];
+const strictFunctionTypesCodes = [2344, 2322, 2345, 2411];
+
+// Extras checks group
+// Previous groups remain the same...
+
+// Build and Emit Options
+const noEmitCodes = [6059];
+const noEmitHelpersCodes = [2343];
+const noEmitOnErrorCodes = [2318, 2354];
+const preserveConstEnumsCodes = [2748];
+const removeCommentsCodes = [2728];
+const stripInternalCodes = [2680];
+const emitBOMCodes = [2427];
+const importHelpersCodes = [2343, 2344];
+const downlevelIterationCodes = [2569];
+const emitDeclarationOnlyCodes = [5069];
+
+// Code Quality
+const allowUnreachableCodeCodes = [7027];
+const allowUnusedLabelsCodes = [7028];
+const noImplicitReturnsInAsyncFunctionsCodes = [7030, 1064];
+const noUnusedLabelsCodes = [7028];
+const allowUnusedParametersCodes = [6134];
+const noFallthroughCasesInSwitchCodes = [7029];
+const noImplicitReturnsInGeneratorsCodes = [7030];
+const noPropertyAccessFromComputedKeyCodes = [4111];
+
+// Type Checking Behavior
+const noErrorTruncationCodes = [2322, 2345]; // This affects error message display rather than triggering specific errors
+const exactOptionalPropertyTypesCodes = [2775];
+const noFallthroughCasesInSwitchCodes = [7029];
+const noUncheckedIndexedAccessCodes = [7061];
+const noImplicitOverrideCodes = [4114, 4113];
+const noPropertyAccessFromIndexSignatureCodes = [4111];
+
+// Module Resolution
+const moduleResolutionNodeCodes = [2307];
+const moduleResolutionBundlerCodes = [1479];
+const customConditionsCodes = [1378];
+const resolvePackageJsonExportsCodes = [1343];
+const resolvePackageJsonImportsCodes = [1344];
+
+// Project References
+const compositeCodes = [6372];
+const disableReferencedProjectLoadCodes = [6371];
+const disableSolutionSearchingCodes = [6370];
+const disableSourceOfProjectReferenceRedirectCodes = [6374];
+
+// Watch Options
+const assumeChangesOnlyAffectDirectDependenciesCodes = [6373];
+const preserveWatchOutputCodes = [6379]; // This affects watch mode behavior rather than emitting errors
+const watchDirectoryCodes = [6378];
+const watchFileCodes = [6377];
+
+// Interop Constraints
+const allowSyntheticDefaultImportsCodes = [1192, 1259];
+const esModuleInteropCodes = [1202, 1203, 1204, 1259];
+const forceConsistentCasingInFileNamesCodes = [1149, 1261];
+const isolatedModulesCodes = [18055, 18056, 18057];
+const preserveSymlinksCodes = [1421];
+
+// Language and Environment
+const experimentalDecorators = [1240, 1241, 1242, 1243, 1244, 1270, 1271, 1272];
+const emitDecoratorMetadata = [1240, 1241, 1272];
+const jsx = [1341, 18007, 18034, 18035, 18053];
+const jsxFactoryCodes = [17004, 17001];
+const jsxFragmentFactoryCodes = [17002, 17003];
+const jsxImportSourceCodes = [17004];
+const libCodes = [2318, 2432];
+const moduleDetectionCodes = [1280];
+const noLibCodes = [2318, 2354];
+const reactNamespaceCodes = [2503, 2504];
+const targetCodes = [2322, 2339, 2459];
+const useDefineForClassFieldsCodes = [2729, 2730];
+
+const verbatimModuleSyntaxCodes = [1286, 1287, 1288, 1484, 1485];
+
+export const STRICT_CHECKS = {
+  'no-implicit-any-codes': noImplicitAnyCodes,
+  'no-implicit-this-codes': noImplicitThisCodes,
+  'always-strict-codes': alwaysStrictCodes,
+  'strict-builtin-iterator-return': strictBuiltinIteratorReturn,
+  'strict-property-initialization-codes': strictPropertyInitializationCodes,
+  'strict-null-checks-codes': strictNullChecksCodes,
+  'strict-bind-call-apply-codes': strictBindCallApplyCodes,
+  'strict-function-types-codes': strictFunctionTypesCodes,
+}
+
+/*
+* # Audits
+*
+* - strict-checks - group
+*   - no-implicit-any-codes - audit
+*     - 1240 - issue
+*     - 1241 - issue
+*     - 1272 - issue
+*   - no-implicit-this-codes - audit
+*   - always-strict-codes - audit
+*   - strict-builtin-iterator-return - audit
+*   - strict-property-initialization-codes - audit
+**/
+// Build Reverse Lookup Map
+export const AUDIT_LOOKUP = new Map<number, string>();
+
+for (const [slug, codes] of Object.entries(STRICT_CHECKS)) {
+  codes.forEach((code) => AUDIT_LOOKUP.set(code, slug));
+}
+
+export const SUPPORTED_TS_ERROR_CODES = {
   2322: 'strict-type-checks-2322', // Type 'X' is not assignable to type 'Y'
   2345: 'strict-function-types-2345', // Argument of type 'X' is not assignable to parameter of type 'Y'
   2366: 'strict-missing-return-2366', // Function lacks ending return statement and return type does not include 'undefined'

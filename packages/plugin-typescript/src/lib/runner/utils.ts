@@ -4,15 +4,18 @@ import {
   flattenDiagnosticMessageText,
 } from 'typescript';
 import type { Issue } from '@code-pushup/models';
-import { SUPPORTED_TS_ERROR_CODES } from '../internal/known-ts-error-codes.js';
+import {
+  AUDIT_LOOKUP
+} from '../internal/known-ts-error-codes.js';
 import type { AuditSlug } from '../types.js';
 
-export function transformTSErrorCodeToAuditSlug(tscode: number): AuditSlug {
-  const knownCode =
-    SUPPORTED_TS_ERROR_CODES[tscode as keyof typeof SUPPORTED_TS_ERROR_CODES];
-  return knownCode !== undefined ? knownCode : codeToAuditCodeSlug(tscode);
+export function transformTSErrorCodeToAuditSlug(code: number): AuditSlug {
+  const knownCode = AUDIT_LOOKUP.get(code);
+  if (knownCode === undefined) {
+    console.info(`Code ${code} not supported.`);
+  }
+  return knownCode;
 }
-
 export function codeToAuditCodeSlug(tscode: number) {
   return `ts-code-${tscode.toString()}` as AuditSlug;
 }
