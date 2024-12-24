@@ -17,10 +17,10 @@ import {
   type TypescriptPluginOptions,
   typescriptPlugin,
 } from './packages/plugin-typescript/src/index.js';
-import { SUPPORTED_TS_ERROR_CODES } from './packages/plugin-typescript/src/lib/constants.js';
-import { AUDITS } from './packages/plugin-typescript/src/lib/generated/audits.js';
-import { AuditSlug } from './packages/plugin-typescript/src/lib/types.js';
-import { filterAuditsBySlug } from './packages/plugin-typescript/src/lib/utils.js';
+import {BASIC_AUDITS, SUPPORTED_TS_ERROR_CODES} from './packages/plugin-typescript/src/lib/constants.js';
+import {AUDITS} from './packages/plugin-typescript/src/lib/generated/audits.js';
+import {AuditSlug} from './packages/plugin-typescript/src/lib/types.js';
+import {filterAuditsBySlug} from './packages/plugin-typescript/src/lib/utils.js';
 
 export const jsPackagesCategories: CategoryConfig[] = [
   {
@@ -79,14 +79,14 @@ export const eslintCategories: CategoryConfig[] = [
     slug: 'bug-prevention',
     title: 'Bug prevention',
     description: 'Lint rules that find **potential bugs** in your code.',
-    refs: [{ type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 }],
+    refs: [{type: 'group', plugin: 'eslint', slug: 'problems', weight: 1}],
   },
   {
     slug: 'code-style',
     title: 'Code style',
     description:
       'Lint rules that promote **good practices** and consistency in your code.',
-    refs: [{ type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 }],
+    refs: [{type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1}],
   },
 ];
 
@@ -141,8 +141,7 @@ export const typescriptPluginConfigNx = async (
   options: TypescriptPluginOptions,
 ): Promise<CoreConfig> => {
   const opt: TypescriptPluginOptions = {
-    onlyAudits: Object.values(SUPPORTED_TS_ERROR_CODES) as (string &
-      AuditSlug)[],
+    onlyAudits: BASIC_AUDITS,
     ...options,
   };
 
@@ -153,7 +152,7 @@ export const typescriptPluginConfigNx = async (
         slug: 'typescript',
         title: 'Typescript',
         refs: AUDITS.filter(filterAuditsBySlug(opt.onlyAudits)).map(
-          ({ slug }) => ({
+          ({slug}) => ({
             plugin: 'typescript',
             type: 'audit' as const,
             slug,

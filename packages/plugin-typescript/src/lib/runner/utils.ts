@@ -3,21 +3,20 @@ import {
   DiagnosticCategory,
   flattenDiagnosticMessageText,
 } from 'typescript';
-import type { Issue } from '@code-pushup/models';
-import { SUPPORTED_TS_ERROR_CODES } from '../constants.js';
-import type { AuditSlug } from '../types.js';
+import type {Issue} from '@code-pushup/models';
+
+import type {AuditSlug} from '../types.js';
+import {SUPPORTED_TS_ERROR_CODES} from "../internal/known-ts-error-codes.js";
 
 export function transformTSErrorCodeToAuditSlug(tscode: number): AuditSlug {
-  return (
-    (SUPPORTED_TS_ERROR_CODES[
-      tscode as keyof typeof SUPPORTED_TS_ERROR_CODES
-    ] as AuditSlug) || codeToAuditSlug(tscode)
-  );
+  const knownCode = SUPPORTED_TS_ERROR_CODES[tscode as keyof typeof SUPPORTED_TS_ERROR_CODES];
+  return knownCode !== undefined ? knownCode : codeToAuditCodeSlug(tscode);
 }
 
-export function codeToAuditSlug(tscode: number) {
-  return `ts-code-${tscode.toString()}`;
+export function codeToAuditCodeSlug(tscode: number) {
+  return `ts-code-${tscode.toString()}` as AuditSlug;
 }
+
 
 /**
  *  ts.DiagnosticCategory.Warning (1)

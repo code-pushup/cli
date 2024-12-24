@@ -48,15 +48,15 @@ export async function generateAuditsFromGithub() {
     .map(([description, { code }]) => errorToAudit(code, description));
 
   console.info(
-    `Generated ${audits.length} audits in packages/plugin-typescript/src/lib/generated/audits.ts`,
+    `Generated ${audits.length} audits in packages/plugin-typescript/src/lib/audits.generated.ts`,
   );
 
   await writeFile(
-    'packages/plugin-typescript/src/lib/generated/audits.ts',
+    'packages/plugin-typescript/src/lib/audits.generated.ts',
     `
   import type {Audit} from "@code-pushup/models";
   /* eslint-disable max-lines */
-  export const AUDITS = ${JSON.stringify(audits, null, 2)} as const satisfies (Audit & { code: number })[];
+  export const AUDITS = ${JSON.stringify(audits, null, 2)} as const satisfies Audit[];
   /* eslint-enable max-lines */
   `,
   );
@@ -66,7 +66,7 @@ function errorToAudit(tscode: number, description: string): Audit {
   const slug = transformTSErrorCodeToAuditSlug(tscode);
   return {
     slug,
-    title: `${formatTitle(slug)}-${tscode}`,
+    title: `${formatTitle(slug)}`,
     description,
   };
 }
