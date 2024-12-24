@@ -1,7 +1,42 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import type { AuditSlug } from '../types.js';
+import type {AuditSlug} from '../types.js';
 
+/**
+ *   [src/compiler/types.ts](https://github.com/microsoft/TypeScript/blob/56a08250f3516b3f5bc120d6c7ab4450a9a69352/src/compiler/types.ts) -> compilerOptions 7482
+ *   [src/compiler/utilities.ts](https://github.com/microsoft/TypeScript/blob/56a08250f3516b3f5bc120d6c7ab4450a9a69352/src/compiler/types.ts)  9125
+ *
+ *     strictNullChecks: {
+ *         dependencies: ["strict"],
+ *         computeValue: compilerOptions => {
+ *             return getStrictOptionValue(compilerOptions, "strictNullChecks");
+ *         },
+ *     },
+ *     microsoft/TypeScript/src/compiler/utilities.ts
+ *     src/compiler/utilities.ts
+ *
+ *     export function getStrictOptionValue(compilerOptions: CompilerOptions, flag: StrictOptionName): boolean {
+ *     return compilerOptions[flag] === undefined ? !!compilerOptions.strict : !!compilerOptions[flag];
+ * }
+ *
+ * Compiler options that are activated by strict: true
+ *
+ * strictFunctionTypes?: boolean; // Always combine with strict property
+ * strictBindCallApply?: boolean; // Always combine with strict property
+ * strictNullChecks?: boolean; // Always combine with strict property
+ * strictPropertyInitialization?: boolean; // Always combine with strict property
+ * strictBuiltinIteratorReturn?: boolean; // Always combine with strict property
+ * alwaysStrict?: boolean; // Always combine with strict property
+ * noImplicitAny?: boolean; // Always combine with strict property
+ * noImplicitThis?: boolean; // Always combine with strict property
+ *
+ */
+export const NEW_SUPPORTED_TS_ERROR_CODES = {
+  'strict-types': [
+    2322, // Type 'X' is not assignable to type 'Y'
+  ]
+}
 export const SUPPORTED_TS_ERROR_CODES = {
+
   2322: 'strict-type-checks-2322', // Type 'X' is not assignable to type 'Y'
   2345: 'strict-function-types-2345', // Argument of type 'X' is not assignable to parameter of type 'Y'
   2366: 'strict-missing-return-2366', // Function lacks ending return statement and return type does not include 'undefined'
@@ -65,3 +100,4 @@ export const SUPPORTED_TS_ERROR_CODES = {
   1089: 'invalid-constructor-modifier-1089',
   1090: 'invalid-param-modifier-1090',
 } as const satisfies Record<string, AuditSlug>;
+
