@@ -1,6 +1,5 @@
-
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import type {AuditSlug} from "../types.js";
+import type { AuditSlug } from '../types.js';
 
 export const SUPPORTED_TS_ERROR_CODES = {
   2322: 'strict-type-checks-2322', // Type 'X' is not assignable to type 'Y'

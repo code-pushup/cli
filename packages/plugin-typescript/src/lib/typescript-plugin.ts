@@ -1,8 +1,8 @@
 import type { PluginConfig } from '@code-pushup/models';
 import packageJson from '../../package.json';
+import { AUDITS } from './audits.generated.js';
 import type { TypescriptPluginOptions } from './config.js';
 import { TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
-import { AUDITS } from './generated/audits.js';
 import { createRunnerFunction } from './runner/runner.js';
 import { filterAuditsBySlug } from './utils.js';
 
