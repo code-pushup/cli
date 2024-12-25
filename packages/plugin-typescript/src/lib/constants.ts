@@ -1,5 +1,5 @@
 import type { Audit, Group } from '@code-pushup/models';
-import { camelCaseToKebabCase, formatSlugToTitle } from '@code-pushup/utils';
+import { camelCaseToKebabCase, kebabCaseToSentence } from '@code-pushup/utils';
 import {
   GROUPS_DESCRIPTIONS,
   TS_ERROR_CODES,
@@ -11,7 +11,7 @@ export const AUDITS = Object.values(TS_ERROR_CODES)
   .flatMap(i => Object.entries(i))
   .reduce<Audit[]>((audits, [name]) => {
     const slug = camelCaseToKebabCase(name);
-    const title = formatSlugToTitle(name);
+    const title = kebabCaseToSentence(name);
     return [
       ...audits,
       {
@@ -32,7 +32,7 @@ const weights = {
 export const GROUPS: Group[] = Object.entries(TS_ERROR_CODES).map(
   ([groupSlug, auditMap]) => ({
     slug: camelCaseToKebabCase(groupSlug),
-    title: formatSlugToTitle(groupSlug),
+    title: kebabCaseToSentence(groupSlug),
     description:
       GROUPS_DESCRIPTIONS[groupSlug as keyof typeof GROUPS_DESCRIPTIONS],
     refs: Object.keys(auditMap).map(audit => ({

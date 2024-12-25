@@ -32,7 +32,7 @@ export function camelCaseToKebabCase(string: string): string {
  * @param slug - The slug to format.
  * @returns The formatted title.
  */
-export function formatSlugToTitle(slug: string = '') {
+export function kebabCaseToSentence(slug: string = '') {
   return slug
     .replace(/-/g, ' ')
     .replace(/\b\w/g, letter => letter.toUpperCase());

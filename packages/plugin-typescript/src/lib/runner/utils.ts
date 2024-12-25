@@ -4,8 +4,8 @@ import {
   flattenDiagnosticMessageText,
 } from 'typescript';
 import type { Issue } from '@code-pushup/models';
+import { camelCaseToKebabCase } from '@code-pushup/utils';
 import type { AuditSlug } from '../types.js';
-import { camelCaseToKebabCase } from '../utils.js';
 import { TS_ERROR_CODES } from './ts-error-codes.js';
 
 /** Build Reverse Lookup Map. It will a map with key as the error code and value as the audit slug. */
@@ -58,9 +58,7 @@ export function getSeverity(category: DiagnosticCategory): Issue['severity'] {
  * @returns The issue.
  * @throws Error if the diagnostic is global (e.g., invalid compiler option).
  */
-export function getIssueFromDiagnostic(
-  diag: Diagnostic,
-): Omit<Issue, 'source'> & { source: Required<NonNullable<Issue['source']>> } {
+export function getIssueFromDiagnostic(diag: Diagnostic) {
   const message = `${flattenDiagnosticMessageText(diag.messageText, '\n')}`;
 
   // If undefined, the error might be global (e.g., invalid compiler option).
@@ -71,16 +69,20 @@ export function getIssueFromDiagnostic(
   const startLine =
     diag.start !== undefined
       ? diag.file.getLineAndCharacterOfPosition(diag.start).line + 1
-      : 1;
+      : undefined;
 
   return {
     severity: getSeverity(diag.category),
     message,
     source: {
       file: diag.file.fileName,
-      position: {
-        startLine,
-      },
+      ...(startLine
+        ? {
+            position: {
+              startLine,
+            },
+          }
+        : {}),
     },
-  };
+  } satisfies Issue;
 }

@@ -1,25 +1,21 @@
-import { type Diagnostic, DiagnosticCategory } from 'typescript';
+import { DiagnosticCategory } from 'typescript';
 import { describe, expect } from 'vitest';
 import {
   getIssueFromDiagnostic,
   getSeverity,
-  transformTSErrorCodeToAuditSlug,
+  tSCodeToAuditSlug,
 } from './utils.js';
 
-describe('transformTSErrorCodeToAuditSlug', () => {
+describe('tSCodeToAuditSlug', () => {
   it.each(Object.entries({}))(
     'should transform supported code to readable audit',
     (code, slug) => {
-      expect(transformTSErrorCodeToAuditSlug(Number.parseInt(code, 10))).toBe(
-        slug,
-      );
+      expect(tSCodeToAuditSlug(Number.parseInt(code, 10))).toBe(slug);
     },
   );
 
   it('should throw error for unknown code', () => {
-    expect(() => transformTSErrorCodeToAuditSlug(1111)).toThrow(
-      'Code 1111 not supported.',
-    );
+    expect(() => tSCodeToAuditSlug(1111)).toThrow('Code 1111 not supported.');
   });
 });
 
@@ -39,7 +35,7 @@ describe('getSeverity', () => {
 });
 
 describe('getIssueFromDiagnostic', () => {
-  const diagnositcMock = {
+  const diagnosticMock = {
     code: 222,
     category: DiagnosticCategory.Error,
     messageText: "Type 'number' is not assignable to type 'string'.",
@@ -105,6 +101,6 @@ describe('getIssueFromDiagnostic', () => {
   it('position.startLine should be 1 if start is undefined', () => {
     diagnosticMock.start = undefined;
     const result = getIssueFromDiagnostic(diagnosticMock);
-    expect(result.source.position.startLine).toBe(1);
+    expect(result.source.position?.startLine).toBe(1);
   });
 });
