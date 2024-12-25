@@ -17,3 +17,16 @@ export function filterGroupsByAuditSlug(slugs?: string[]) {
     return true;
   };
 }
+
+export function camelCaseToKebabCase(string: string): string {
+  return string
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
+    .replace(/[\s_]+/g, '-')
+    .toLowerCase();
+}
+
+export function formatTitle(description: string = '') {
+  return description
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, letter => letter.toUpperCase());
+}

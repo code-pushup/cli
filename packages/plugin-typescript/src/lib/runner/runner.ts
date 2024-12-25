@@ -1,4 +1,3 @@
-import { DiagnosticCategory } from 'typescript';
 import type {
   Audit,
   AuditOutput,
@@ -7,48 +6,43 @@ import type {
   Issue,
   RunnerFunction,
 } from '@code-pushup/models';
-import type { TypescriptPluginOptions } from '../config.js';
-import { AUDITS } from '../constants.js';
 import type { AuditSlug } from '../types.js';
-import { filterAuditsBySlug } from '../utils.js';
-import { getDiagnostics } from './typescript-runner.js';
+import {
+  type DiagnosticsOptions,
+  getDiagnostics,
+} from './typescript-runner.js';
 import {
   AUDIT_LOOKUP,
   getIssueFromDiagnostic,
-  transformTSErrorCodeToAuditSlug,
+  tSCodeToAuditSlug,
 } from './utils.js';
 
-export function createRunnerFunction(
-  options: TypescriptPluginOptions & { audits: Audit[] },
-): RunnerFunction {
+export type RunnerOptions = DiagnosticsOptions & {
+  filteredAudits: Audit[];
+};
+
+export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
-    const diagnostics = await getDiagnostics(options);
+    const { filteredAudits, tsConfigPath } = options;
+    const diagnostics = await getDiagnostics({ tsConfigPath });
 
     const result: Record<
       AuditSlug,
       Pick<AuditReport, 'slug' | 'details'>
     > = diagnostics
-      .filter(
-        ({ category }) =>
-          category === DiagnosticCategory.Warning ||
-          category === DiagnosticCategory.Error,
-      )
       // filter out unsupported errors
       .filter(({ code }) => AUDIT_LOOKUP.get(code) !== undefined)
       .reduce(
         (acc, diag) => {
-          const slug = transformTSErrorCodeToAuditSlug(diag.code);
-          const issue = getIssueFromDiagnostic(diag);
-
+          const slug = tSCodeToAuditSlug(diag.code);
           const existingIssues: Issue[] =
             (acc[slug] && acc[slug].details?.issues) || ([] as Issue[]);
-
           return {
             ...acc,
             [slug]: {
               slug,
               details: {
-                issues: [...existingIssues, issue],
+                issues: [...existingIssues, getIssueFromDiagnostic(diag)],
               },
             },
           };
@@ -59,7 +53,7 @@ export function createRunnerFunction(
         >,
       );
 
-    return AUDITS.filter(filterAuditsBySlug(options.onlyAudits)).map(audit => {
+    return filteredAudits.map(audit => {
       const { details } = result[audit.slug as AuditSlug] ?? {};
       const issues = details?.issues ?? [];
       return {

@@ -5,13 +5,16 @@ import {
 } from 'typescript';
 import type { Issue } from '@code-pushup/models';
 import type { AuditSlug } from '../types.js';
+import { camelCaseToKebabCase } from '../utils.js';
 import { TS_ERROR_CODES } from './ts-error-codes.js';
 
 /** Build Reverse Lookup Map. It will a map with key as the error code and value as the audit slug. */
 export const AUDIT_LOOKUP = Object.values(TS_ERROR_CODES)
   .flatMap(v => Object.entries(v))
-  .reduce<Map<number, AuditSlug>>((lookup, [slug, codes]) => {
-    codes.forEach(code => lookup.set(code, slug as AuditSlug));
+  .reduce<Map<number, AuditSlug>>((lookup, [name, codes]) => {
+    codes.forEach(code =>
+      lookup.set(code, camelCaseToKebabCase(name) as AuditSlug),
+    );
     return lookup;
   }, new Map<number, AuditSlug>());
 
@@ -21,7 +24,7 @@ export const AUDIT_LOOKUP = Object.values(TS_ERROR_CODES)
  * @returns The audit slug.
  * @throws Error if the code is not supported.
  */
-export function transformTSErrorCodeToAuditSlug(code: number): AuditSlug {
+export function tSCodeToAuditSlug(code: number): AuditSlug {
   const knownCode = AUDIT_LOOKUP.get(code);
   if (knownCode === undefined) {
     throw new Error(`Code ${code} not supported.`);

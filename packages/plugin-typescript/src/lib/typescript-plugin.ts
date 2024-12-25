@@ -1,24 +1,26 @@
 import type { PluginConfig } from '@code-pushup/models';
-import packageJson from '../../package.json';
-import type { TypescriptPluginOptions } from './config.js';
+import { name as packageName, version } from '../../package.json';
 import { AUDITS, GROUPS, TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
 import { createRunnerFunction } from './runner/runner.js';
+import type { TypescriptPluginOptions } from './types.js';
 import { filterAuditsBySlug, filterGroupsByAuditSlug } from './utils.js';
 
 export function typescriptPlugin(
   options: TypescriptPluginOptions,
 ): PluginConfig {
-  const audits = AUDITS.filter(filterAuditsBySlug(options.onlyAudits));
+  const { tsConfigPath, onlyAudits } = options;
+  const filteredAudits = AUDITS.filter(filterAuditsBySlug(onlyAudits));
+  const filteredGroups = GROUPS.filter(filterGroupsByAuditSlug(onlyAudits));
   return {
     slug: TYPESCRIPT_PLUGIN_SLUG,
-    packageName: packageJson.name,
-    version: packageJson.version,
+    packageName,
+    version,
     title: 'Typescript',
     description: 'Official Code PushUp typescript plugin.',
     docsUrl: 'https://www.npmjs.com/package/@code-pushup/typescript-plugin/',
     icon: 'typescript',
-    audits,
-    groups: GROUPS.filter(filterGroupsByAuditSlug(options.onlyAudits)),
-    runner: createRunnerFunction({ ...options, audits }),
+    audits: filteredAudits,
+    groups: filteredGroups,
+    runner: createRunnerFunction({ tsConfigPath, filteredAudits }),
   };
 }

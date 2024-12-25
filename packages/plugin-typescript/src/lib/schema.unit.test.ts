@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   type TypescriptPluginOptions,
   typescriptPluginConfigSchema,
-} from './config.js';
+} from './schema.js';
 
 describe('TypescriptPlugin Configuration', () => {
   const tsConfigPath = 'tsconfig.json';

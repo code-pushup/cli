@@ -39,20 +39,16 @@ describe('getSeverity', () => {
 });
 
 describe('getIssueFromDiagnostic', () => {
-  let diagnosticMock: Diagnostic;
-
-  beforeEach(() => {
-    diagnosticMock = {
-      code: 222,
-      category: DiagnosticCategory.Error,
-      messageText: "Type 'number' is not assignable to type 'string'.",
-      file: {
-        fileName: 'file.ts',
-        getLineAndCharacterOfPosition: () => ({ line: 99 }),
-      },
-      start: 4,
-    } as any;
-  });
+  const diagnositcMock = {
+    code: 222,
+    category: DiagnosticCategory.Error,
+    messageText: "Type 'number' is not assignable to type 'string'.",
+    file: {
+      fileName: 'file.ts',
+      getLineAndCharacterOfPosition: () => ({ line: 99 }),
+    },
+    start: 4,
+  } as any;
 
   it('should return valid issue', () => {
     expect(getIssueFromDiagnostic(diagnosticMock)).toStrictEqual({

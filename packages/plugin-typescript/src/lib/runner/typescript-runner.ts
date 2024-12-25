@@ -11,9 +11,18 @@ import {
 } from 'typescript';
 
 export type DiagnosticsOptions = { tsConfigPath: string };
+
 export async function getDiagnostics(
   options: DiagnosticsOptions,
 ): Promise<readonly Diagnostic[]> {
+  const { fileNames, options: parsedOptions } =
+    await getTsConfiguration(options);
+
+  const program = createProgram(fileNames, parsedOptions);
+  return getPreEmitDiagnostics(program);
+}
+
+export async function getTsConfiguration(options: DiagnosticsOptions) {
   const { tsConfigPath = 'tsconfig.json' } = options;
   const configPath = resolve(process.cwd(), tsConfigPath);
   const basePath = dirname(configPath);
@@ -26,11 +35,8 @@ export async function getDiagnostics(
 
   const configFile = (await readFile(configPath)).toString();
 
-  const { config: strictConfig } = parseConfigFileTextToJson(
-    configPath,
-    configFile,
-  );
-  const parsed = parseJsonConfigFileContent(strictConfig, sys, basePath);
+  const { config } = parseConfigFileTextToJson(configPath, configFile);
+  const parsed = parseJsonConfigFileContent(config, sys, basePath);
 
   const { options: opt, fileNames } = parsed;
   if (fileNames.length === 0) {
@@ -38,6 +44,9 @@ export async function getDiagnostics(
       'No files matched by the TypeScript configuration. Check your "include", "exclude" or "files" settings.',
     );
   }
-  const program = createProgram(fileNames, opt);
-  return getPreEmitDiagnostics(program);
+
+  return {
+    options: opt,
+    fileNames,
+  };
 }
