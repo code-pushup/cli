@@ -21,10 +21,11 @@ export async function getDiagnostics(
   try {
     await access(configPath);
   } catch {
-    throw new Error(`tsconfig not found at: ${configPath}`);
+    throw new Error(`tsconfig not found at: ${tsConfigPath}`);
   }
 
   const configFile = (await readFile(configPath)).toString();
+
   const { config: strictConfig } = parseConfigFileTextToJson(
     configPath,
     configFile,

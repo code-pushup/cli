@@ -1,5 +1,6 @@
 import { expect } from 'vitest';
 import { pluginConfigSchema } from '@code-pushup/models';
+import { AUDITS, GROUPS } from './constants.js';
 import { typescriptPlugin } from './typescript-plugin.js';
 
 describe('typescriptPlugin-config-object', () => {
@@ -11,7 +12,8 @@ describe('typescriptPlugin-config-object', () => {
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
 
     const { audits, groups } = pluginConfig;
-    expect(audits.length).toBeGreaterThan(1000);
-    expect(groups).toStrictEqual([]);
+    expect(audits).toHaveLength(AUDITS.length);
+    expect(groups).toBeDefined();
+    expect(groups!).toHaveLength(GROUPS.length);
   });
 });
