@@ -1,5 +1,29 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers, unicorn/numeric-separators-style */
 
+export const GROUPS_DESCRIPTIONS = {
+  languageAndEnvironment:
+    'Configuration options for TypeScript language features and runtime environment, including decorators, JSX support, target ECMAScript version, and class field behaviors',
+  interopConstraints:
+    'Settings that control how TypeScript interoperates with other JavaScript code, including module imports/exports and case sensitivity rules',
+  watchOptions:
+    'Configuration for TypeScript watch mode behavior, including file watching strategies and dependency tracking',
+  projectReferences:
+    'Options for managing TypeScript project references, composite projects, and build optimization settings',
+  moduleResolution:
+    'Settings that control how TypeScript finds and resolves module imports, including Node.js resolution, package.json exports/imports, and module syntax handling',
+  typeCheckingBehavior:
+    'Configuration for TypeScript type checking strictness and error reporting, including property access rules and method override checking',
+  controlFlowOptions:
+    'Settings that affect code flow analysis, including handling of unreachable code, unused labels, switch statements, and async/generator functions',
+  strictChecks:
+    'Strict type checking options that enable additional compile-time verifications, including null checks, implicit any/this, and function type checking',
+  buildEmitOptions:
+    'Configuration options that control TypeScript output generation, including whether to emit files, how to handle comments and declarations, and settings for output optimization and compatibility helpers',
+};
+
+/** This is the list of error codes that can be triggered by the TypeScript compiler.
+ * It's divided into: category -> compiler option -> error codes (that might trigger)
+ */
 export const TS_ERROR_CODES = {
   languageAndEnvironment: {
     experimentalDecorators: [1240, 1241, 1242, 1243, 1244, 1270, 1271, 1272],

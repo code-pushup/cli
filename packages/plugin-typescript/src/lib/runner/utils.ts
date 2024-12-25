@@ -7,7 +7,7 @@ import type { Issue } from '@code-pushup/models';
 import type { AuditSlug } from '../types.js';
 import { TS_ERROR_CODES } from './ts-error-codes.js';
 
-// Build Reverse Lookup Map
+/** Build Reverse Lookup Map. It will a map with key as the error code and value as the audit slug. */
 export const AUDIT_LOOKUP = Object.values(TS_ERROR_CODES)
   .flatMap(v => Object.entries(v))
   .reduce<Map<number, AuditSlug>>((lookup, [slug, codes]) => {
@@ -15,6 +15,12 @@ export const AUDIT_LOOKUP = Object.values(TS_ERROR_CODES)
     return lookup;
   }, new Map<number, AuditSlug>());
 
+/**
+ * Transform the TypeScript error code to the audit slug.
+ * @param code - The TypeScript error code.
+ * @returns The audit slug.
+ * @throws Error if the code is not supported.
+ */
 export function transformTSErrorCodeToAuditSlug(code: number): AuditSlug {
   const knownCode = AUDIT_LOOKUP.get(code);
   if (knownCode === undefined) {
@@ -23,15 +29,14 @@ export function transformTSErrorCodeToAuditSlug(code: number): AuditSlug {
   return knownCode;
 }
 
-export function codeToAuditCodeSlug(tscode: number) {
-  return `ts-code-${tscode.toString()}` as AuditSlug;
-}
-
 /**
- *  ts.DiagnosticCategory.Warning (1)
- *   ts.DiagnosticCategory.Error (2)
- *   ts.DiagnosticCategory.Suggestion (3)
- *   ts.DiagnosticCategory.Message (4)
+ * Get the severity of the issue based on the TypeScript diagnostic category.
+ * - ts.DiagnosticCategory.Warning (1)
+ * - ts.DiagnosticCategory.Error (2)
+ * - ts.DiagnosticCategory.Suggestion (3)
+ * - ts.DiagnosticCategory.Message (4)
+ * @param category - The TypeScript diagnostic category.
+ * @returns The severity of the issue.
  */
 export function getSeverity(category: DiagnosticCategory): Issue['severity'] {
   switch (category) {
@@ -39,34 +44,39 @@ export function getSeverity(category: DiagnosticCategory): Issue['severity'] {
       return 'error';
     case DiagnosticCategory.Warning:
       return 'warning';
-    // case DiagnosticCategory.Suggestion:
-    // case DiagnosticCategory.Message:
     default:
       return 'info';
   }
 }
 
-export function getIssueFromDiagnostic(diag: Diagnostic): Issue {
+/**
+ * Get the issue from the TypeScript diagnostic.
+ * @param diag - The TypeScript diagnostic.
+ * @returns The issue.
+ * @throws Error if the diagnostic is global (e.g., invalid compiler option).
+ */
+export function getIssueFromDiagnostic(
+  diag: Diagnostic,
+): Omit<Issue, 'source'> & { source: Required<NonNullable<Issue['source']>> } {
   const message = `${flattenDiagnosticMessageText(diag.messageText, '\n')}`;
-  const file = diag.file?.fileName;
 
-  //   If undefined, the error might be global (e.g., invalid compiler option).
-  if (file === undefined) {
+  // If undefined, the error might be global (e.g., invalid compiler option).
+  if (diag.file === undefined) {
     throw new Error(message);
   }
 
-  const line =
-    diag.file && diag.start !== undefined
+  const startLine =
+    diag.start !== undefined
       ? diag.file.getLineAndCharacterOfPosition(diag.start).line + 1
-      : 0;
+      : 1;
 
   return {
     severity: getSeverity(diag.category),
     message,
     source: {
-      file,
+      file: diag.file.fileName,
       position: {
-        startLine: line,
+        startLine,
       },
     },
   };

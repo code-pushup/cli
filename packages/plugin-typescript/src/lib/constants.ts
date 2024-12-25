@@ -1,6 +1,9 @@
 import type { Audit, Group } from '@code-pushup/models';
-import { TS_ERROR_CODES } from './runner/ts-error-codes.js';
-import { camelCaseToKebabCase, formatTitle } from './utils.js';
+import { camelCaseToKebabCase, formatSlugToTitle } from '@code-pushup/utils';
+import {
+  GROUPS_DESCRIPTIONS,
+  TS_ERROR_CODES,
+} from './runner/ts-error-codes.js';
 
 export const TYPESCRIPT_PLUGIN_SLUG = 'typescript';
 
@@ -8,7 +11,7 @@ export const AUDITS = Object.values(TS_ERROR_CODES)
   .flatMap(i => Object.entries(i))
   .reduce<Audit[]>((audits, [name]) => {
     const slug = camelCaseToKebabCase(name);
-    const title = formatTitle(name);
+    const title = formatSlugToTitle(name);
     return [
       ...audits,
       {
@@ -29,7 +32,9 @@ const weights = {
 export const GROUPS: Group[] = Object.entries(TS_ERROR_CODES).map(
   ([groupSlug, auditMap]) => ({
     slug: camelCaseToKebabCase(groupSlug),
-    title: formatTitle(groupSlug),
+    title: formatSlugToTitle(groupSlug),
+    description:
+      GROUPS_DESCRIPTIONS[groupSlug as keyof typeof GROUPS_DESCRIPTIONS],
     refs: Object.keys(auditMap).map(audit => ({
       slug: camelCaseToKebabCase(audit),
       weight: weights[audit as keyof typeof weights] ?? 1,

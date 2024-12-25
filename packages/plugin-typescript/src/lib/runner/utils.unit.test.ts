@@ -1,7 +1,6 @@
-import { DiagnosticCategory } from 'typescript';
+import { type Diagnostic, DiagnosticCategory } from 'typescript';
 import { describe, expect } from 'vitest';
 import {
-  codeToAuditCodeSlug,
   getIssueFromDiagnostic,
   getSeverity,
   transformTSErrorCodeToAuditSlug,
@@ -17,14 +16,10 @@ describe('transformTSErrorCodeToAuditSlug', () => {
     },
   );
 
-  it('should transform unsupported code to ts-code audit', () => {
-    expect(transformTSErrorCodeToAuditSlug(1111)).toBe('ts-code-1111');
-  });
-});
-
-describe('codeToAuditCodeSlug', () => {
-  it('should prodice ts-code audit', () => {
-    expect(codeToAuditCodeSlug(123)).toBe('ts-code-123');
+  it('should throw error for unknown code', () => {
+    expect(() => transformTSErrorCodeToAuditSlug(1111)).toThrow(
+      'Code 1111 not supported.',
+    );
   });
 });
 
@@ -44,19 +39,23 @@ describe('getSeverity', () => {
 });
 
 describe('getIssueFromDiagnostic', () => {
-  const diagnositcMock = {
-    code: 222,
-    category: DiagnosticCategory.Error,
-    messageText: "Type 'number' is not assignable to type 'string'.",
-    file: {
-      fileName: 'file.ts',
-      getLineAndCharacterOfPosition: () => ({ line: 99 }),
-    },
-    start: 4,
-  } as any;
+  let diagnosticMock: Diagnostic;
+
+  beforeEach(() => {
+    diagnosticMock = {
+      code: 222,
+      category: DiagnosticCategory.Error,
+      messageText: "Type 'number' is not assignable to type 'string'.",
+      file: {
+        fileName: 'file.ts',
+        getLineAndCharacterOfPosition: () => ({ line: 99 }),
+      },
+      start: 4,
+    } as any;
+  });
 
   it('should return valid issue', () => {
-    expect(getIssueFromDiagnostic(diagnositcMock)).toStrictEqual({
+    expect(getIssueFromDiagnostic(diagnosticMock)).toStrictEqual({
       message: "Type 'number' is not assignable to type 'string'.",
       severity: 'error',
       source: {
@@ -69,7 +68,7 @@ describe('getIssueFromDiagnostic', () => {
   });
 
   it('should extract messageText and provide it under message', () => {
-    expect(getIssueFromDiagnostic(diagnositcMock)).toStrictEqual(
+    expect(getIssueFromDiagnostic(diagnosticMock)).toStrictEqual(
       expect.objectContaining({
         message: "Type 'number' is not assignable to type 'string'.",
       }),
@@ -77,7 +76,7 @@ describe('getIssueFromDiagnostic', () => {
   });
 
   it('should extract category and provide it under severity', () => {
-    expect(getIssueFromDiagnostic(diagnositcMock)).toStrictEqual(
+    expect(getIssueFromDiagnostic(diagnosticMock)).toStrictEqual(
       expect.objectContaining({
         severity: 'error',
       }),
@@ -85,7 +84,7 @@ describe('getIssueFromDiagnostic', () => {
   });
 
   it('should extract file path and provide it under source.file', () => {
-    expect(getIssueFromDiagnostic(diagnositcMock)).toStrictEqual(
+    expect(getIssueFromDiagnostic(diagnosticMock)).toStrictEqual(
       expect.objectContaining({
         source: expect.objectContaining({ file: 'file.ts' }),
       }),
@@ -93,10 +92,23 @@ describe('getIssueFromDiagnostic', () => {
   });
 
   it('should extract line and provide it under source.position', () => {
-    expect(getIssueFromDiagnostic(diagnositcMock)).toStrictEqual(
+    expect(getIssueFromDiagnostic(diagnosticMock)).toStrictEqual(
       expect.objectContaining({
         source: expect.objectContaining({ position: { startLine: 100 } }),
       }),
     );
+  });
+
+  it('should throw error if file is undefined', () => {
+    diagnosticMock.file = undefined;
+    expect(() => getIssueFromDiagnostic(diagnosticMock)).toThrow(
+      "Type 'number' is not assignable to type 'string'.",
+    );
+  });
+
+  it('position.startLine should be 1 if start is undefined', () => {
+    diagnosticMock.start = undefined;
+    const result = getIssueFromDiagnostic(diagnosticMock);
+    expect(result.source.position.startLine).toBe(1);
   });
 });

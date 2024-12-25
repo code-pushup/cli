@@ -6,11 +6,18 @@
 
 🕵️ **Code PushUp plugin for measuring TypeScript quality with compiler diagnostics.** 🔥
 
----
+This plugin allows you to measure and track TypeScript compiler diagnostics in your TypeScript/JavaScript project.
+It analyzes your codebase using the TypeScript compiler to detect potential issues and configuration problems.
 
-The plugin parses your TypeScript and JavaScript code and lints all audits of the official [TypeScript Compiler]().
+TypeScript compiler diagnostics are mapped to Code PushUp audits in the following way:
 
-For more infos visit the [official docs](https://developer.chrome.com/docs/typescript/overview).
+- `value`: The number of issues found for a specific TypeScript configuration option -> 3
+- `displayValue`: The number of issues found -> 3 issues
+- `score`: Binary scoring - 1 if no issues are found, 0 if any issues exist
+- Issues are mapped to audit details, containing:
+  - Source file location
+  - Error message from TypeScript compiler
+  - Code reference where the issue was found
 
 ## Getting started
 
@@ -50,41 +57,148 @@ For more infos visit the [official docs](https://developer.chrome.com/docs/types
 
 4. Run the CLI with `npx code-pushup collect` and view or upload the report (refer to [CLI docs](../cli/README.md)).
 
-### Optionally set up categories
+## About documentation coverage
 
-Reference audits (or groups) which you wish to include in custom categories (use `npx code-pushup print-config --onlyPlugins=typescript` to list audits and groups).
+The TypeScript plugin analyzes your codebase using the TypeScript compiler to identify potential issues and enforce best practices. It helps ensure type safety and maintainability of your TypeScript code.
 
-Assign weights based on what influence each Lighthouse audit has on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
-The plugin exports the helper `typescriptAuditRef` and `typescriptGroupRef` to reference Lighthouse category references for audits and groups.
+The plugin provides multiple audits grouped into different categories like:
 
-#### Reference audits directly with `typescriptGroupRef`
+- Language and Environment - Checks configuration for TypeScript features like decorators, JSX, target version
+- Type Checking - Validates strict null checks, implicit any/this, function types
+- Module Resolution - Verifies module imports/exports and resolution settings
+- Build/Emit Options - Checks output generation and optimization settings
+- Control Flow - Analyzes code flow, unreachable code, switch statements
 
-```ts
-import { typescriptGroupRef } from './utils';
+Each audit:
 
-export default {
-  // ...
-  categories: [],
-};
+- Checks for specific TypeScript compiler errors and warnings
+- Provides a score based on the number of issues found
+- Includes detailed error messages and locations
+
+The audits are organized into logical groups to give you a comprehensive view of your TypeScript configuration and code quality. You can:
+
+- Use all groups for complete TypeScript analysis
+- Focus on specific groups or individual audits based on your needs
+
+## Plugin architecture
+
+### Plugin configuration specification
+
+The plugin accepts the following parameters:
+
+#### TsConfigPath
+
+Required parameter. The `tsConfigPath` option accepts a string that defines the path to your `tsconfig.json` file.
+
+```js
+typescriptPlugin({
+  tsConfigPath: './tsconfig.json',
+}),
 ```
 
-#### Reference groups with `typescriptAuditRef`
+#### OnlyAudits
 
-The TypeScript categories are reflected as groups.
-Referencing individual audits offers more granularity. However, keep maintenance costs of a higher number of audits in mind as well.
+Optional parameter. The `onlyAudits` option allows you to specify which documentation types you want to measure. Only the specified audits will be included in the results. Example:
+
+```js
+typescriptPlugin({
+  tsConfigPath: './tsconfig.json',
+  onlyAudits: [
+    'no-implicit-any'
+  ] // Only measure documentation for classes and functions
+}),
+```
+
+### Audits and group
+
+This plugin provides a list of groups to cover different TypeScript configuration options and their areas of responsibility.
 
 ```ts
-import { typescriptAuditRef } from './utils';
+     // ...
+     categories: [
+       {
+         slug: 'typescript',
+         title: 'TypeScript',
+         refs: [
+           {
+             slug: 'language-and-environment',
+             weight: 1,
+             type: 'group',
+             plugin: 'typescript'
+           },
+           // ...
+         ],
+       },
+       // ...
+     ],
+```
 
-export default {
-  // ...
-  categories: [
+Each TypeScript configuration option still has its own audit. So when you want to include a subset of configuration options or assign different weights to them, you can do so in the following way:
+
+```ts
+     // ...
+     categories: [
+       {
+         slug: 'typescript',
+         title: 'TypeScript',
+         refs: [
+           {
+             type: 'audit',
+             plugin: 'typescript',
+             slug: 'no-implicit-any',
+             weight: 2,
+           },
+           {
+             type: 'audit',
+             plugin: 'typescript',
+             slug: 'no-explicit-any',
+             weight: 1,
+           },
+           // ...
+         ],
+       },
+       // ...
+     ],
+```
+
+### Audit output
+
+The plugin outputs a single audit that measures the overall documentation coverage percentage of your codebase.
+
+For instance, this is an example of the plugin output:
+
+```json
+{
+  "packageName": "@code-pushup/typescript-plugin",
+  "version": "0.57.0",
+  "title": "Typescript",
+  "slug": "typescript",
+  "icon": "typescript",
+  "date": "2024-12-25T11:10:22.646Z",
+  "duration": 2059,
+  "audits": [
     {
-      slug: 'pwa',
-      title: 'PWA',
-      isBinary: true,
-      refs: [typescriptAuditRef('installable-manifest', 2), typescriptAuditRef('splash-screen', 1), typescriptAuditRef('themed-omnibox', 1), typescriptAuditRef('content-width', 1), typescriptAuditRef('themed-omnibox', 2), typescriptAuditRef('viewport', 2), typescriptAuditRef('maskable-icon', 1), typescriptAuditRef('pwa-cross-browser', 0), typescriptAuditRef('pwa-page-transitions', 0), typescriptAuditRef('pwa-each-page-has-url', 0)],
-    },
+      "slug": "experimental-decorators",
+      "value": 0,
+      "score": 1,
+      "title": "ExperimentalDecorators",
+      "docsUrl": "https://www.typescriptlang.org/tsconfig/#experimentalDecorators"
+    }
   ],
-};
+  "description": "Official Code PushUp typescript plugin.",
+  "docsUrl": "https://www.npmjs.com/package/@code-pushup/typescript-plugin/",
+  "groups": [
+    {
+      "slug": "language-and-environment",
+      "refs": [
+        {
+          "slug": "experimental-decorators",
+          "weight": 1
+        }
+      ],
+      "title": "LanguageAndEnvironment",
+      "description": "Configuration options for TypeScript language features and runtime environment"
+    }
+  ]
+}
 ```

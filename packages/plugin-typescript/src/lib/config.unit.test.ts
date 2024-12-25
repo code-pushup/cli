@@ -12,7 +12,7 @@ describe('TypescriptPlugin Configuration', () => {
       expect(() =>
         typescriptPluginConfigSchema.parse({
           tsConfigPath,
-          onlyAudits: ['ts-code-1065', 'ts-code-2354'],
+          onlyAudits: ['no-implicit-any', 'module-resolution-node'],
         } satisfies TypescriptPluginOptions),
       ).not.toThrow();
     });
@@ -41,7 +41,7 @@ describe('TypescriptPlugin Configuration', () => {
       expect(() =>
         typescriptPluginConfigSchema.parse({
           tsConfigPath,
-          onlyAudits: ['ts-code-1065', 'argument-expected-1011'],
+          onlyAudits: ['no-implicit-any', 'module-resolution-node'],
         } satisfies TypescriptPluginOptions),
       ).not.toThrow();
     });
@@ -70,6 +70,18 @@ describe('TypescriptPlugin Configuration', () => {
           onlyAudits: [123, true],
         }),
       ).toThrow('invalid_type');
+    });
+
+    it('throws for unknown audit slug', () => {
+      expect(
+        () =>
+          typescriptPluginConfigSchema.parse({
+            tsConfigPath,
+            onlyAudits: ['unknown-audit'],
+          }),
+        // Message too large because enums validation
+        // eslint-disable-next-line vitest/require-to-throw-message
+      ).toThrow();
     });
   });
 });
