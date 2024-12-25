@@ -50,6 +50,7 @@ export default {
     // ...
     typescriptPlugin({
       tsConfigPath: './tsconfig.json',
+      onlyAudits: ['no-implicit-any'],
     }),
   ],
 };
@@ -95,12 +96,12 @@ The plugin accepts the following parameters:
 
 #### TsConfigPath
 
-Required parameter. The `tsConfigPath` option accepts a string that defines the path to your `tsconfig.json` file.
+Optional parameter. The `tsConfigPath` option accepts a string that defines the path to your config file and defaults to `tsconfig.json`.
 
 ```js
 typescriptPlugin({
   tsConfigPath: './tsconfig.json',
-}),
+});
 ```
 
 #### OnlyAudits
@@ -109,39 +110,18 @@ Optional parameter. The `onlyAudits` option allows you to specify which document
 
 ```js
 typescriptPlugin({
-  tsConfigPath: './tsconfig.json',
-  onlyAudits: ['no-implicit-any'], // Only measure documentation for classes and functions
+  onlyAudits: ['no-implicit-any'],
 });
 ```
 
-### Audits and group
+### Optionally set up categories
 
-This plugin provides a list of groups to cover different TypeScript configuration options and their areas of responsibility.
+1. Reference audits (or groups) which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
 
-```ts
-     // ...
-categories: [
-  {
-    slug: 'typescript',
-    title: 'TypeScript',
-    refs: [
-      {
-        slug: 'language-and-environment',
-        weight: 1,
-        type: 'group',
-        plugin: 'typescript'
-      },
-      // ...
-    ],
-  },
-  // ...
-],
-```
-
-Each TypeScript configuration option still has its own audit. So when you want to include a subset of configuration options or assign different weights to them, you can do so in the following way:
+Assign weights based on what influence each TypeScript checks should have on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
 
 ```ts
-     // ...
+// ...
 categories: [
   {
     slug: 'typescript',
@@ -163,47 +143,27 @@ categories: [
     ],
   },
   // ...
-],
+];
 ```
 
-### Audit output
+Also groups can be used:
 
-The plugin outputs multiple audits that track all issues of your codebase.
-
-For instance, this is an example of the plugin output:
-
-```json
-{
-  "packageName": "@code-pushup/typescript-plugin",
-  "version": "0.57.0",
-  "title": "Typescript",
-  "slug": "typescript",
-  "icon": "typescript",
-  "date": "2024-12-25T11:10:22.646Z",
-  "duration": 2059,
-  "audits": [
-    {
-      "slug": "experimental-decorators",
-      "value": 0,
-      "score": 1,
-      "title": "ExperimentalDecorators",
-      "docsUrl": "https://www.typescriptlang.org/tsconfig/#experimentalDecorators"
-    }
-  ],
-  "description": "Official Code PushUp typescript plugin.",
-  "docsUrl": "https://www.npmjs.com/package/@code-pushup/typescript-plugin/",
-  "groups": [
-    {
-      "slug": "language-and-environment",
-      "refs": [
-        {
-          "slug": "experimental-decorators",
-          "weight": 1
-        }
-      ],
-      "title": "LanguageAndEnvironment",
-      "description": "Configuration options for TypeScript language features and runtime environment"
-    }
-  ]
-}
+```ts
+// ...
+categories: [
+  {
+    slug: 'typescript',
+    title: 'TypeScript',
+    refs: [
+      {
+        slug: 'language-and-environment',
+        weight: 1,
+        type: 'group',
+        plugin: 'typescript',
+      },
+      // ...
+    ],
+  },
+  // ...
+];
 ```
