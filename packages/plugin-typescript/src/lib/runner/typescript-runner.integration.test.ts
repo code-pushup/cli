@@ -1,5 +1,7 @@
+// eslint-disable-next-line unicorn/import-style
+import { basename } from 'node:path';
 import { describe, expect } from 'vitest';
-import { getDiagnostics } from './typescript-runner.js';
+import { getDiagnostics, getTsConfiguration } from './typescript-runner.js';
 
 describe('getDiagnostics', () => {
   it('should accept valid options', async () => {
@@ -37,5 +39,24 @@ describe('getDiagnostics', () => {
     ).rejects.toThrow(
       'No files matched by the TypeScript configuration. Check your "include", "exclude" or "files" settings.',
     );
+  });
+});
+
+describe('getTsConfiguration', () => {
+  it('should accept valid TS config file', async () => {
+    const config = await getTsConfiguration({
+      tsConfigPath:
+        './packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
+    });
+
+    expect({
+      ...config,
+      // omitting path details for better snapshots
+      fileNames: config.fileNames.map(fileName => basename(fileName)),
+      options: {
+        ...config.options,
+        rootDir: basename(config.options?.rootDir ?? ''),
+      },
+    }).toMatchSnapshot();
   });
 });

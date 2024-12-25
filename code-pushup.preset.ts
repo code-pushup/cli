@@ -136,7 +136,7 @@ export const eslintCoreConfigNx = async (
 };
 
 export const typescriptPluginConfigNx = async (
-  options: TypescriptPluginOptions,
+  options?: TypescriptPluginOptions,
 ): Promise<CoreConfig> => {
   const opt: TypescriptPluginOptions = {
     ...options,

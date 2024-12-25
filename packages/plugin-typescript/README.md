@@ -39,35 +39,40 @@ TypeScript compiler diagnostics are mapped to Code PushUp audits in the followin
 
 3. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.ts`).
 
-   Pass in the URL you want to measure, along with optional [flags](#flags) and [config](#config) data.
+Define the ts config file used to compile your codebase. Based on those compiler options the plugin will generate audits.
 
-   ```ts
-   import typescriptPlugin from '@code-pushup/typescript-plugin';
+```ts
+import typescriptPlugin from '@code-pushup/typescript-plugin';
 
-   export default {
-     // ...
-     plugins: [
-       // ...
-       await typescriptPlugin({
-         tsConfigPath: './tsconfig.json',
-       }),
-     ],
-   };
-   ```
+export default {
+  // ...
+  plugins: [
+    // ...
+    typescriptPlugin({
+      tsConfigPath: './tsconfig.json',
+    }),
+  ],
+};
+```
 
 4. Run the CLI with `npx code-pushup collect` and view or upload the report (refer to [CLI docs](../cli/README.md)).
 
-## About documentation coverage
+## About TypeScript checks
 
-The TypeScript plugin analyzes your codebase using the TypeScript compiler to identify potential issues and enforce best practices. It helps ensure type safety and maintainability of your TypeScript code.
+The TypeScript plugin analyzes your codebase using the TypeScript compiler to identify potential issues and enforce best practices.
+It helps ensure type safety and maintainability of your TypeScript code.
 
-The plugin provides multiple audits grouped into different categories like:
+The plugin provides multiple audits grouped into different sets:
 
-- Language and Environment - Checks configuration for TypeScript features like decorators, JSX, target version
-- Type Checking - Validates strict null checks, implicit any/this, function types
-- Module Resolution - Verifies module imports/exports and resolution settings
-- Build/Emit Options - Checks output generation and optimization settings
-- Control Flow - Analyzes code flow, unreachable code, switch statements
+- Language and Environment - Configuration options for TypeScript language features and runtime environment, including decorators, JSX support, target ECMAScript version, and class field behaviors
+- Interop Constraints - Settings that control how TypeScript interoperates with other JavaScript code, including module imports/exports and case sensitivity rules
+- Watch Options - Configuration for TypeScript watch mode behavior, including file watching strategies and dependency tracking
+- Project References - Options for managing TypeScript project references, composite projects, and build optimization settings
+- Module Resolution - Settings that control how TypeScript finds and resolves module imports, including Node.js resolution, package.json exports/imports, and module syntax handling
+- Type Checking Behavior - Configuration for TypeScript type checking strictness and error reporting, including property access rules and method override checking
+- Control Flow Options - Settings that affect code flow analysis, including handling of unreachable code, unused labels, switch statements, and async/generator functions
+- Strict Checks - Strict type checking options that enable additional compile-time verifications, including null checks, implicit any/this, and function type checking
+- Build/Emit Options - Configuration options that control TypeScript output generation, including whether to emit files, how to handle comments and declarations, and settings for output optimization and compatibility helpers
 
 Each audit:
 
@@ -75,16 +80,18 @@ Each audit:
 - Provides a score based on the number of issues found
 - Includes detailed error messages and locations
 
-The audits are organized into logical groups to give you a comprehensive view of your TypeScript configuration and code quality. You can:
-
-- Use all groups for complete TypeScript analysis
-- Focus on specific groups or individual audits based on your needs
+Each set is also available as group in the plugin. See more under [Audits and Groups]()
 
 ## Plugin architecture
 
 ### Plugin configuration specification
 
 The plugin accepts the following parameters:
+
+| Option       | Type     | Default         | Description                                                                                                                                 |
+| ------------ | -------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| tsConfigPath | string   | `tsconfig.json` | A string that defines the path to your `tsconfig.json` file                                                                                 |
+| onlyAudits   | string[] | undefined       | An array of audit slugs to specify which documentation types you want to measure. Only the specified audits will be included in the results |
 
 #### TsConfigPath
 
@@ -103,10 +110,8 @@ Optional parameter. The `onlyAudits` option allows you to specify which document
 ```js
 typescriptPlugin({
   tsConfigPath: './tsconfig.json',
-  onlyAudits: [
-    'no-implicit-any'
-  ] // Only measure documentation for classes and functions
-}),
+  onlyAudits: ['no-implicit-any'], // Only measure documentation for classes and functions
+});
 ```
 
 ### Audits and group
@@ -115,55 +120,55 @@ This plugin provides a list of groups to cover different TypeScript configuratio
 
 ```ts
      // ...
-     categories: [
-       {
-         slug: 'typescript',
-         title: 'TypeScript',
-         refs: [
-           {
-             slug: 'language-and-environment',
-             weight: 1,
-             type: 'group',
-             plugin: 'typescript'
-           },
-           // ...
-         ],
-       },
-       // ...
-     ],
+categories: [
+  {
+    slug: 'typescript',
+    title: 'TypeScript',
+    refs: [
+      {
+        slug: 'language-and-environment',
+        weight: 1,
+        type: 'group',
+        plugin: 'typescript'
+      },
+      // ...
+    ],
+  },
+  // ...
+],
 ```
 
 Each TypeScript configuration option still has its own audit. So when you want to include a subset of configuration options or assign different weights to them, you can do so in the following way:
 
 ```ts
      // ...
-     categories: [
-       {
-         slug: 'typescript',
-         title: 'TypeScript',
-         refs: [
-           {
-             type: 'audit',
-             plugin: 'typescript',
-             slug: 'no-implicit-any',
-             weight: 2,
-           },
-           {
-             type: 'audit',
-             plugin: 'typescript',
-             slug: 'no-explicit-any',
-             weight: 1,
-           },
-           // ...
-         ],
-       },
-       // ...
-     ],
+categories: [
+  {
+    slug: 'typescript',
+    title: 'TypeScript',
+    refs: [
+      {
+        type: 'audit',
+        plugin: 'typescript',
+        slug: 'no-implicit-any',
+        weight: 2,
+      },
+      {
+        type: 'audit',
+        plugin: 'typescript',
+        slug: 'no-explicit-any',
+        weight: 1,
+      },
+      // ...
+    ],
+  },
+  // ...
+],
 ```
 
 ### Audit output
 
-The plugin outputs a single audit that measures the overall documentation coverage percentage of your codebase.
+The plugin outputs multiple audits that track all issues of your codebase.
 
 For instance, this is an example of the plugin output:
 

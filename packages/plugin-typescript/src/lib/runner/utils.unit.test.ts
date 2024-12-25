@@ -1,5 +1,5 @@
-import { DiagnosticCategory } from 'typescript';
-import { describe, expect } from 'vitest';
+import { type Diagnostic, DiagnosticCategory } from 'typescript';
+import { beforeEach, describe, expect } from 'vitest';
 import {
   getIssueFromDiagnostic,
   getSeverity,
@@ -35,16 +35,20 @@ describe('getSeverity', () => {
 });
 
 describe('getIssueFromDiagnostic', () => {
-  const diagnosticMock = {
-    code: 222,
-    category: DiagnosticCategory.Error,
-    messageText: "Type 'number' is not assignable to type 'string'.",
-    file: {
-      fileName: 'file.ts',
-      getLineAndCharacterOfPosition: () => ({ line: 99 }),
-    },
-    start: 4,
-  } as any;
+  let diagnosticMock: Diagnostic;
+
+  beforeEach(() => {
+    diagnosticMock = {
+      code: 222,
+      category: DiagnosticCategory.Error,
+      messageText: "Type 'number' is not assignable to type 'string'.",
+      file: {
+        fileName: 'file.ts',
+        getLineAndCharacterOfPosition: () => ({ line: 99 }),
+      },
+      start: 4,
+    } as any;
+  });
 
   it('should return valid issue', () => {
     expect(getIssueFromDiagnostic(diagnosticMock)).toStrictEqual({
@@ -92,15 +96,16 @@ describe('getIssueFromDiagnostic', () => {
   });
 
   it('should throw error if file is undefined', () => {
-    diagnosticMock.file = undefined;
-    expect(() => getIssueFromDiagnostic(diagnosticMock)).toThrow(
-      "Type 'number' is not assignable to type 'string'.",
-    );
+    expect(() =>
+      getIssueFromDiagnostic({ ...diagnosticMock, file: undefined }),
+    ).toThrow("Type 'number' is not assignable to type 'string'.");
   });
 
   it('position.startLine should be 1 if start is undefined', () => {
-    diagnosticMock.start = undefined;
-    const result = getIssueFromDiagnostic(diagnosticMock);
-    expect(result.source.position?.startLine).toBe(1);
+    const result = getIssueFromDiagnostic({
+      ...diagnosticMock,
+      start: undefined,
+    });
+    expect(result.source.position).toBeUndefined();
   });
 });

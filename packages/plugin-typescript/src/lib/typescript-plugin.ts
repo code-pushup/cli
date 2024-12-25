@@ -1,14 +1,19 @@
 import type { PluginConfig } from '@code-pushup/models';
 import { name as packageName, version } from '../../package.json';
-import { AUDITS, GROUPS, TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
+import {
+  AUDITS,
+  DEFAULT_TS_CONFIG,
+  GROUPS,
+  TYPESCRIPT_PLUGIN_SLUG,
+} from './constants.js';
 import { createRunnerFunction } from './runner/runner.js';
 import type { TypescriptPluginOptions } from './types.js';
 import { filterAuditsBySlug, filterGroupsByAuditSlug } from './utils.js';
 
 export function typescriptPlugin(
-  options: TypescriptPluginOptions,
+  options?: TypescriptPluginOptions,
 ): PluginConfig {
-  const { tsConfigPath, onlyAudits } = options;
+  const { tsConfigPath = DEFAULT_TS_CONFIG, onlyAudits } = options ?? {};
   const filteredAudits = AUDITS.filter(filterAuditsBySlug(onlyAudits));
   const filteredGroups = GROUPS.filter(filterGroupsByAuditSlug(onlyAudits));
   return {

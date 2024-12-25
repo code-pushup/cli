@@ -25,6 +25,7 @@
   "dependencies": {
     "@code-pushup/models": "0.57.0",
     "typescript": "5.5.4",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "@code-pushup/utils": "0.57.0"
   }
 }

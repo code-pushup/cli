@@ -6,6 +6,7 @@ import {
 } from './runner/ts-error-codes.js';
 
 export const TYPESCRIPT_PLUGIN_SLUG = 'typescript';
+export const DEFAULT_TS_CONFIG = 'tsconfig.json';
 
 export const AUDITS = Object.values(TS_ERROR_CODES)
   .flatMap(i => Object.entries(i))

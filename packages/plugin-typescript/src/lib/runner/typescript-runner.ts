@@ -9,6 +9,7 @@ import {
   parseJsonConfigFileContent,
   sys,
 } from 'typescript';
+import { DEFAULT_TS_CONFIG } from '../constants.js';
 
 export type DiagnosticsOptions = { tsConfigPath: string };
 
@@ -23,7 +24,7 @@ export async function getDiagnostics(
 }
 
 export async function getTsConfiguration(options: DiagnosticsOptions) {
-  const { tsConfigPath = 'tsconfig.json' } = options;
+  const { tsConfigPath = DEFAULT_TS_CONFIG } = options;
   const configPath = resolve(process.cwd(), tsConfigPath);
   const basePath = dirname(configPath);
 

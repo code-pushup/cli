@@ -67,9 +67,9 @@ export function getIssueFromDiagnostic(diag: Diagnostic) {
   }
 
   const startLine =
-    diag.start !== undefined
-      ? diag.file.getLineAndCharacterOfPosition(diag.start).line + 1
-      : undefined;
+    diag.start === undefined
+      ? undefined
+      : diag.file.getLineAndCharacterOfPosition(diag.start).line + 1;
 
   return {
     severity: getSeverity(diag.category),
