@@ -1,9 +1,9 @@
-import type {PluginConfig} from '@code-pushup/models';
+import type { PluginConfig } from '@code-pushup/models';
 import packageJson from '../../package.json';
-import type {TypescriptPluginOptions} from './config.js';
-import {AUDITS, GROUPS, TYPESCRIPT_PLUGIN_SLUG} from './constants.js';
-import {createRunnerFunction} from './runner/runner.js';
-import {filterAuditsBySlug, filterGroupsByAuditSlug} from './utils.js';
+import type { TypescriptPluginOptions } from './config.js';
+import { AUDITS, GROUPS, TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
+import { createRunnerFunction } from './runner/runner.js';
+import { filterAuditsBySlug, filterGroupsByAuditSlug } from './utils.js';
 
 export function typescriptPlugin(
   options: TypescriptPluginOptions,
@@ -19,6 +19,6 @@ export function typescriptPlugin(
     icon: 'typescript',
     audits,
     groups: GROUPS.filter(filterGroupsByAuditSlug(options.onlyAudits)),
-    runner: createRunnerFunction({...options, audits}),
+    runner: createRunnerFunction({ ...options, audits }),
   };
 }

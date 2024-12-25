@@ -8,6 +8,7 @@ import type {
   RunnerFunction,
 } from '@code-pushup/models';
 import type { TypescriptPluginOptions } from '../config.js';
+import { AUDITS } from '../constants.js';
 import type { AuditSlug } from '../types.js';
 import { filterAuditsBySlug } from '../utils.js';
 import { getDiagnostics } from './typescript-runner.js';
@@ -16,10 +17,9 @@ import {
   getIssueFromDiagnostic,
   transformTSErrorCodeToAuditSlug,
 } from './utils.js';
-import {AUDITS} from "../constants.js";
 
 export function createRunnerFunction(
-  options: TypescriptPluginOptions & { audits: Audit[]},
+  options: TypescriptPluginOptions & { audits: Audit[] },
 ): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
     const diagnostics = await getDiagnostics(options);
@@ -34,7 +34,7 @@ export function createRunnerFunction(
           category === DiagnosticCategory.Error,
       )
       // filter out unsupported errors
-      .filter(({code}) => AUDIT_LOOKUP.get(code) !== undefined)
+      .filter(({ code }) => AUDIT_LOOKUP.get(code) !== undefined)
       .reduce(
         (acc, diag) => {
           const slug = transformTSErrorCodeToAuditSlug(diag.code);
@@ -59,9 +59,7 @@ export function createRunnerFunction(
         >,
       );
 
-    return AUDITS
-      .filter(filterAuditsBySlug(options.onlyAudits))
-      .map(audit => {
+    return AUDITS.filter(filterAuditsBySlug(options.onlyAudits)).map(audit => {
       const { details } = result[audit.slug as AuditSlug] ?? {};
       const issues = details?.issues ?? [];
       return {

@@ -42,7 +42,7 @@ For more infos visit the [official docs](https://developer.chrome.com/docs/types
      plugins: [
        // ...
        await typescriptPlugin({
-          tsConfigPath: './tsconfig.json'
+         tsConfigPath: './tsconfig.json',
        }),
      ],
    };
@@ -64,9 +64,7 @@ import { typescriptGroupRef } from './utils';
 
 export default {
   // ...
-  categories: [
-    
-  ],
+  categories: [],
 };
 ```
 

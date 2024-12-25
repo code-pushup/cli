@@ -1,6 +1,5 @@
 import { DiagnosticCategory } from 'typescript';
 import { describe, expect } from 'vitest';
-
 import {
   codeToAuditCodeSlug,
   getIssueFromDiagnostic,

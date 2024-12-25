@@ -3,30 +3,17 @@ import {
   DiagnosticCategory,
   flattenDiagnosticMessageText,
 } from 'typescript';
-import type {Issue} from '@code-pushup/models';
-import {
-  BUILD_EMIT_OPTIONS,
-  CONTROL_FLOW_OPTIONS, INTEROP_CONSTRAINTS, LANGUAGE_ENVIRONMENT_OPTIONS, MODULE_RESOLUTION, PROJECT_REFERENCES,
-  STRICT_CHECKS,
-  TYPE_CHECKING_BEHAVIOR, WATCH_OPTIONS
-} from './ts-error-codes.js';
-import type {AuditSlug} from '../types.js';
+import type { Issue } from '@code-pushup/models';
+import type { AuditSlug } from '../types.js';
+import { TS_ERROR_CODES } from './ts-error-codes.js';
 
 // Build Reverse Lookup Map
-export const AUDIT_LOOKUP = [
-  STRICT_CHECKS, BUILD_EMIT_OPTIONS,
-  CONTROL_FLOW_OPTIONS, TYPE_CHECKING_BEHAVIOR,
-  MODULE_RESOLUTION, PROJECT_REFERENCES,
-  WATCH_OPTIONS, INTEROP_CONSTRAINTS, LANGUAGE_ENVIRONMENT_OPTIONS
-]
+export const AUDIT_LOOKUP = Object.values(TS_ERROR_CODES)
   .flatMap(v => Object.entries(v))
-  .reduce<Map<number, AuditSlug>>(
-    (lookup, [slug, codes]) => {
-      codes.forEach((code) => lookup.set(code, slug as AuditSlug));
-      return lookup;
-    },
-    new Map<number, AuditSlug>()
-  );
+  .reduce<Map<number, AuditSlug>>((lookup, [slug, codes]) => {
+    codes.forEach(code => lookup.set(code, slug as AuditSlug));
+    return lookup;
+  }, new Map<number, AuditSlug>());
 
 export function transformTSErrorCodeToAuditSlug(code: number): AuditSlug {
   const knownCode = AUDIT_LOOKUP.get(code);
