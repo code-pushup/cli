@@ -9,10 +9,10 @@ import {
   parseJsonConfigFileContent,
   sys,
 } from 'typescript';
-import type { TypescriptPluginOptions } from '../config.js';
 
+export type DiagnosticsOptions = { tsConfigPath: string };
 export async function getDiagnostics(
-  options: TypescriptPluginOptions,
+  options: DiagnosticsOptions,
 ): Promise<readonly Diagnostic[]> {
   const { tsConfigPath = 'tsconfig.json' } = options;
   const configPath = resolve(process.cwd(), tsConfigPath);

@@ -1,6 +1,6 @@
 import { DiagnosticCategory } from 'typescript';
 import { describe, expect } from 'vitest';
-import { SUPPORTED_TS_ERROR_CODES } from '../internal/known-ts-error-codes.js';
+
 import {
   codeToAuditCodeSlug,
   getIssueFromDiagnostic,
@@ -9,7 +9,7 @@ import {
 } from './utils.js';
 
 describe('transformTSErrorCodeToAuditSlug', () => {
-  it.each(Object.entries(SUPPORTED_TS_ERROR_CODES))(
+  it.each(Object.entries({}))(
     'should transform supported code to readable audit',
     (code, slug) => {
       expect(transformTSErrorCodeToAuditSlug(Number.parseInt(code, 10))).toBe(

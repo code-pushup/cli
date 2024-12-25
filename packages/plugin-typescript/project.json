@@ -35,9 +35,6 @@
       "options": {
         "configFile": "packages/plugin-typescript/vite.config.integration.ts"
       }
-    },
-    "generate-audits": {
-      "command": "tsx --tsconfig=packages/plugin-typescript/tsconfig.tools.json packages/plugin-typescript/tools/generate-audits/bin.ts"
     }
   },
   "tags": ["scope:plugin", "type:feature", "publishable"]

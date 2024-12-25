@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { AUDITS } from './audits.generated.js';
 import type { AuditSlug } from './types.js';
+import {AUDITS} from "./constants.js";
 
 const auditSlugs = AUDITS.map(({ slug }) => slug) as [string, ...string[]];
 export const typescriptPluginConfigSchema = z.object({

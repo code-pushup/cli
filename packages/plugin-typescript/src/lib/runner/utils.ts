@@ -3,19 +3,39 @@ import {
   DiagnosticCategory,
   flattenDiagnosticMessageText,
 } from 'typescript';
-import type { Issue } from '@code-pushup/models';
+import type {Issue} from '@code-pushup/models';
 import {
-  AUDIT_LOOKUP
-} from '../internal/known-ts-error-codes.js';
-import type { AuditSlug } from '../types.js';
+  BUILD_EMIT_OPTIONS,
+  CONTROL_FLOW_OPTIONS, INTEROP_CONSTRAINTS, LANGUAGE_ENVIRONMENT_OPTIONS, MODULE_RESOLUTION, PROJECT_REFERENCES,
+  STRICT_CHECKS,
+  TYPE_CHECKING_BEHAVIOR, WATCH_OPTIONS
+} from './ts-error-codes.js';
+import type {AuditSlug} from '../types.js';
+
+// Build Reverse Lookup Map
+export const AUDIT_LOOKUP = [
+  STRICT_CHECKS, BUILD_EMIT_OPTIONS,
+  CONTROL_FLOW_OPTIONS, TYPE_CHECKING_BEHAVIOR,
+  MODULE_RESOLUTION, PROJECT_REFERENCES,
+  WATCH_OPTIONS, INTEROP_CONSTRAINTS, LANGUAGE_ENVIRONMENT_OPTIONS
+]
+  .flatMap(v => Object.entries(v))
+  .reduce<Map<number, AuditSlug>>(
+    (lookup, [slug, codes]) => {
+      codes.forEach((code) => lookup.set(code, slug as AuditSlug));
+      return lookup;
+    },
+    new Map<number, AuditSlug>()
+  );
 
 export function transformTSErrorCodeToAuditSlug(code: number): AuditSlug {
   const knownCode = AUDIT_LOOKUP.get(code);
   if (knownCode === undefined) {
-    console.info(`Code ${code} not supported.`);
+    throw new Error(`Code ${code} not supported.`);
   }
   return knownCode;
 }
+
 export function codeToAuditCodeSlug(tscode: number) {
   return `ts-code-${tscode.toString()}` as AuditSlug;
 }

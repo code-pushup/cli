@@ -1,23 +1,25 @@
 import { DiagnosticCategory } from 'typescript';
 import type {
+  Audit,
   AuditOutput,
   AuditOutputs,
   AuditReport,
   Issue,
   RunnerFunction,
 } from '@code-pushup/models';
-import { AUDITS } from '../audits.generated.js';
 import type { TypescriptPluginOptions } from '../config.js';
 import type { AuditSlug } from '../types.js';
 import { filterAuditsBySlug } from '../utils.js';
 import { getDiagnostics } from './typescript-runner.js';
 import {
+  AUDIT_LOOKUP,
   getIssueFromDiagnostic,
   transformTSErrorCodeToAuditSlug,
 } from './utils.js';
+import {AUDITS} from "../constants.js";
 
 export function createRunnerFunction(
-  options: TypescriptPluginOptions,
+  options: TypescriptPluginOptions & { audits: Audit[]},
 ): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
     const diagnostics = await getDiagnostics(options);
@@ -31,6 +33,8 @@ export function createRunnerFunction(
           category === DiagnosticCategory.Warning ||
           category === DiagnosticCategory.Error,
       )
+      // filter out unsupported errors
+      .filter(({code}) => AUDIT_LOOKUP.get(code) !== undefined)
       .reduce(
         (acc, diag) => {
           const slug = transformTSErrorCodeToAuditSlug(diag.code);
@@ -55,7 +59,9 @@ export function createRunnerFunction(
         >,
       );
 
-    return AUDITS.map(audit => {
+    return AUDITS
+      .filter(filterAuditsBySlug(options.onlyAudits))
+      .map(audit => {
       const { details } = result[audit.slug as AuditSlug] ?? {};
       const issues = details?.issues ?? [];
       return {
@@ -64,6 +70,6 @@ export function createRunnerFunction(
         value: issues.length,
         ...(issues.length > 0 ? { details } : {}),
       } satisfies AuditOutput;
-    }).filter(filterAuditsBySlug(options.onlyAudits));
+    });
   };
 }
