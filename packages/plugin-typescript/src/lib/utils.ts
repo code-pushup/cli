@@ -32,7 +32,6 @@ export async function getCurrentTsVersion(): Promise<SemVerString> {
 export async function loadDefaultTsConfig(version: SemVerString) {
   try {
     const module = await import(`./${version}.ts`);
-    //const module = await import(`.packages/plugin-typescript/src/lib/default-ts-configs/1.6.2.ts`);
     return module.default as CompilerOptions;
   } catch (error) {
     throw new Error(
