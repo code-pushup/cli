@@ -8,6 +8,8 @@
     "vite.config.unit.ts",
     "vite.config.integration.ts",
     "mocks/**/*.ts",
+    "tools/**/*.ts",
+    "tools/**/*.test.ts",
     "src/**/*.test.ts",
     "src/**/*.test.tsx",
     "src/**/*.test.js",
