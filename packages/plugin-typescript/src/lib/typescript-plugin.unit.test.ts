@@ -4,7 +4,7 @@ import { AUDITS, GROUPS } from './constants.js';
 import { typescriptPlugin } from './typescript-plugin.js';
 
 describe('typescriptPlugin-config-object', () => {
-  it('should create valid plugin config',async () => {
+  it('should create valid plugin config', async () => {
     const pluginConfig = await typescriptPlugin({
       tsConfigPath:
         'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
