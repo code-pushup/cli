@@ -20,10 +20,11 @@
 import { executeProcess } from '@push-based/nx-verdaccio/src/internal/execute-process';
 import { ensureDirectoryExists } from '@push-based/nx-verdaccio/src/internal/file-system';
 import { readdir, writeFile } from 'node:fs/promises';
+// eslint-disable-next-line unicorn/import-style
 import { basename, join } from 'node:path';
 import * as process from 'node:process';
 import type { CompilerOptions } from 'typescript';
-import { readJsonFile, readTextFile } from '@code-pushup/utils';
+import { readTextFile } from '@code-pushup/utils';
 
 export type SemVerString = `${number}.${number}.${number}`;
 
@@ -81,9 +82,10 @@ export async function updateKnownConfigMap() {
     version => !knownVersions.includes(version),
   );
 
-  console.log(
-    `generate TS config defaults for ${versionsToGenerate.length} versions`,
+  console.info(
+    `Generate TS config defaults for ${versionsToGenerate.length} versions: `,
   );
+  console.info(versionsToGenerate);
 
   await Promise.all(versionsToGenerate.map(saveDefaultTsConfig));
 }
@@ -94,7 +96,10 @@ export async function saveDefaultTsConfig(version: SemVerString) {
   await cleanupNpmCache(version);
   return writeFile(
     join(TS_CONFIG_DIR, `${version}.ts`),
-    `export default ${JSON.stringify(config, null, 2)}`,
+    [
+      `const config = ${JSON.stringify(config, null, 2)}`,
+      `export default config;`,
+    ].join('\n'),
   );
 }
 
@@ -118,18 +123,10 @@ export async function extractTsConfig(
   const dir = join(TMP_TS_CONFIG_DIR, version);
   await ensureDirectoryExists(dir);
   try {
-    const fileContent = await readTextFile(join(dir, 'tsconfig.json'));
-
-    await writeFile(
-      join(TMP_TS_CONFIG_DIR, version, `tsconfig.clean.json`),
-      prepareTsConfigFileContent(fileContent),
-    );
-    const stConfigJson = JSON.parse(prepareTsConfigFileContent(fileContent));
-
-    return stConfigJson;
-  } catch (e) {
+    return parseTsConfigJson(await readTextFile(join(dir, 'tsconfig.json')));
+  } catch (error) {
     throw new Error(
-      `Failed to extract tsconfig.json for version ${version}. \n ${(e as Error).message}`,
+      `Failed to extract tsconfig.json for version ${version}. \n ${(error as Error).message}`,
     );
   }
 }
@@ -170,9 +167,10 @@ export async function getRelevantVersions() {
   });
   const allVersions: SemVerString[] = JSON.parse(stdout);
   return allVersions.filter(version => {
-    const [major, minor, patch] = version.split('.').map(Number);
+    const [major = 0, minor = 0, patch = 0] = version.split('.').map(Number);
     return (
       major >= 1 &&
+      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
       minor >= 6 &&
       patch >= 2 &&
       !version.includes('rc') &&
@@ -182,13 +180,19 @@ export async function getRelevantVersions() {
   });
 }
 
-export function prepareTsConfigFileContent(fileContent: string) {
+/**
+ * Parse the tsconfig.json file content into a CompilerOptions object.
+ * tsconfig.json files can have comments and trailing commas, which are not valid JSON.
+ * This function removes comments and trailing commas and parses the JSON.
+ * @param fileContent
+ */
+export function parseTsConfigJson(fileContent: string) {
   const parsedFileContent = fileContent
+    .trim()
     .split('\n')
     .map(line =>
       line
         // replace all /**/ comments with empty string
-        .replace(/\r/g, '')
         .replace(/\/\*.*\*\//g, '')
         // replace all // strings with empty string
         .replace(/\/\//g, '')
@@ -197,16 +201,17 @@ export function prepareTsConfigFileContent(fileContent: string) {
         .trim(),
     )
     .filter(s => s !== '')
+    // missing comma dua to newly uncommented lines
     .map(s => {
-      // if it is a property with a value, check if there is a comma at the end
-      if (s.match(/:\s*[^,\n\r]*$/)) {
+      // if is si noa a opening or closing  object bracket "{" or "}"
+      if (!/[{}[]$/.test(s)) {
+        // add a comma at the end it is missing
         return s.replace(/:\s*([^,]*)$/, ': $1,');
       }
       return s;
     })
     .join('')
-    // last camma is not allowed
+    // remove dangling commas
     .replace(/,\s*}/gm, '}');
-
-  return parsedFileContent;
+  return JSON.parse(parsedFileContent) as CompilerOptions;
 }

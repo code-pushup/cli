@@ -25,7 +25,7 @@ export const GROUPS_DESCRIPTIONS = {
  * It's divided into: category -> compiler option -> error codes (that might trigger)
  */
 export const TS_ERROR_CODES = {
-  languageAndEnvironment: {
+  languageAndEnvivronment: {
     experimentalDecorators: [1240, 1241, 1242, 1243, 1244, 1270, 1271, 1272],
     emitDecoratorMetadata: [1240, 1241, 1272],
     jsx: [1341, 18007, 18034, 18035, 18053],

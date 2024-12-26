@@ -10,10 +10,12 @@ import { createRunnerFunction } from './runner/runner.js';
 import type { TypescriptPluginOptions } from './types.js';
 import { filterAuditsBySlug, filterGroupsByAuditSlug } from './utils.js';
 
-export function typescriptPlugin(
+export async function typescriptPlugin(
   options?: TypescriptPluginOptions,
-): PluginConfig {
+): Promise<PluginConfig> {
   const { tsConfigPath = DEFAULT_TS_CONFIG, onlyAudits } = options ?? {};
+  // const defaultConfig = loadDefaultTsConfig(await getCurrentTsVersion());
+  // console.log(defaultConfig);
   const filteredAudits = AUDITS.filter(filterAuditsBySlug(onlyAudits));
   const filteredGroups = GROUPS.filter(filterGroupsByAuditSlug(onlyAudits));
   return {

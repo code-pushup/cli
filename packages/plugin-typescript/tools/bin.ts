@@ -1,3 +1,6 @@
-import { updateKnownConfigMap } from './generate-ts-config';
+import {updateKnownConfigMap,} from './generate-ts-config.js';
 
-(async () => await updateKnownConfigMap())();
+// eslint-disable-next-line unicorn/prefer-top-level-await
+(async () => {
+  await updateKnownConfigMap();
+})();

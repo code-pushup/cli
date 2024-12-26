@@ -143,7 +143,7 @@ export const typescriptPluginConfigNx = async (
   };
 
   return {
-    plugins: [typescriptPlugin(opt)],
+    plugins: [await typescriptPlugin(opt)],
     categories: [
       {
         slug: 'typescript',
