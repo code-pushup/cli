@@ -1,0 +1,59 @@
+{
+  "name": "@code-pushup/stylelint-plugin",
+  "version": "0.57.0",
+  "description": "Code PushUp plugin for tracking code stylelint ☂",
+  "license": "MIT",
+  "homepage": "https://github.com/code-pushup/cli/tree/main/packages/plugin-stylelint#readme",
+  "bugs": {
+    "url": "https://github.com/code-pushup/cli/issues?q=is%3Aissue%20state%3Aopen%20type%3ABug%20label%3A\"🧩%20stylelint-plugin\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code-pushup/cli.git",
+    "directory": "packages/plugin-stylelint"
+  },
+  "keywords": [
+    "CLI",
+    "Code PushUp",
+    "plugin",
+    "automation",
+    "developer tools",
+    "conformance",
+    "code stylelint",
+    "unit tests",
+    "testing",
+    "KPI tracking",
+    "automated feedback",
+    "regression guard",
+    "actionable feedback",
+    "audit",
+    "score monitoring"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "dependencies": {
+    "@code-pushup/models": "0.57.0",
+    "@code-pushup/utils": "0.57.0",
+    "ansis": "^3.3.0",
+    "parse-lcov": "^1.0.4",
+    "zod": "^3.22.4"
+  },
+  "peerDependencies": {
+    "@nx/devkit": ">=17.0.0",
+    "@nx/jest": ">=17.0.0",
+    "@nx/vite": ">=17.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@nx/devkit": {
+      "optional": true
+    },
+    "@nx/jest": {
+      "optional": true
+    },
+    "@nx/vite": {
+      "optional": true
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "name": "plugin-stylelint",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/plugin-stylelint/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/plugin-stylelint",
+        "main": "packages/plugin-stylelint/src/index.ts",
+        "tsConfig": "packages/plugin-stylelint/tsconfig.lib.json",
+        "additionalEntryPoints": ["packages/plugin-stylelint/src/bin.ts"],
+        "assets": ["packages/plugin-stylelint/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/plugin-stylelint/**/*.ts",
+          "packages/plugin-stylelint/package.json"
+        ]
+      }
+    },
+    "unit-test": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "packages/plugin-stylelint/vite.config.unit.ts"
+      }
+    },
+    "integration-test": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "packages/plugin-stylelint/vite.config.integration.ts"
+      }
+    }
+  },
+  "tags": ["scope:plugin", "type:feature", "publishable"]
+}
