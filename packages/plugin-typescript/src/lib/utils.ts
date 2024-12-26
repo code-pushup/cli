@@ -1,7 +1,7 @@
 import type { CompilerOptions } from 'typescript';
 import type { Audit, Group } from '@code-pushup/models';
 import { executeProcess } from '@code-pushup/utils';
-import type { SemVerString } from '../../tools/generate-ts-config.js';
+import type {SemVerString} from "./types.js";
 
 export function filterAuditsBySlug(slugs?: string[]) {
   return ({ slug }: Audit) => {

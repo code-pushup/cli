@@ -25,8 +25,7 @@ import { basename, join } from 'node:path';
 import * as process from 'node:process';
 import type { CompilerOptions } from 'typescript';
 import { readTextFile } from '@code-pushup/utils';
-
-export type SemVerString = `${number}.${number}.${number}`;
+import type {SemVerString} from "../src/lib/types.js";
 
 export const TS_CONFIG_DIR = join(
   'packages',

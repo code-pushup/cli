@@ -2,6 +2,8 @@ import { z } from 'zod';
 import type { AUDITS } from './constants.js';
 import { typescriptPluginConfigSchema } from './schema.js';
 
+export type SemVerString = `${number}.${number}.${number}`;
+
 export type AuditSlug = (typeof AUDITS)[number]['slug'];
 
 export type TypescriptPluginOptions = z.infer<
