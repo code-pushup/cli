@@ -17,8 +17,8 @@ export async function getTypeScriptDiagnostics(
 ): Promise<readonly Diagnostic[]> {
   try {
     const { fileNames, options } = await loadTargetConfig(tsConfigPath);
-    const program = createProgram(fileNames, options);
 
+    const program = createProgram(fileNames, options);
     const diagnostics = getPreEmitDiagnostics(program);
     validateDiagnostics(diagnostics);
 
