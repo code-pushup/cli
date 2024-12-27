@@ -60,12 +60,10 @@ export async function typescriptPlugin(
   options?: TypescriptPluginOptions,
 ): Promise<PluginConfig> {
   const { tsConfigPath = DEFAULT_TS_CONFIG, onlyAudits } = options ?? {};
-  const {options: defaultCompiletOptions} = await loadDefaultTsConfig(await getCurrentTsVersion());
-  const {compilerOptions: existingCompilerOptions, fileNames}  = await getTsConfigurationFromPath({tsConfigPath, existingConfig: defaultCompiletOptions});
-  const __dirname = new URL('.', import.meta.url).pathname;
-  const configPath = `${__dirname}default-ts-configs/${await getCurrentTsVersion()}.ts`;
+  const {options: defaultCompilerOptions} = await loadDefaultTsConfig(await getCurrentTsVersion());
+  const {compilerOptions: existingCompilerOptions, fileNames}  = await getTsConfigurationFromPath({tsConfigPath, existingConfig: defaultCompilerOptions});
 
-  const config = await mergeTsConfigs(configPath, tsConfigPath);
+  //const config = await mergeTsConfigs(configPath, tsConfigPath);
 
   const filteredAudits = AUDITS.filter(filterAuditsBySlug(onlyAudits));
   const filteredGroups = GROUPS.filter(filterGroupsByAuditSlug(onlyAudits));
@@ -79,6 +77,6 @@ export async function typescriptPlugin(
     icon: 'typescript',
     audits: filteredAudits,
     groups: filteredGroups,
-    runner: createRunnerFunction({ fileNames, compilerOptions: { ...existingCompilerOptions}, filteredAudits }),
+    runner: createRunnerFunction({ fileNames, compilerOptions: { ...defaultCompilerOptions,  ...existingCompilerOptions}, filteredAudits }),
   };
 }
