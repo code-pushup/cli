@@ -17,8 +17,7 @@ import {
   readTextFile,
   truncateIssueMessage,
 } from '@code-pushup/utils';
-import { generateCurrentTsConfig } from '../../postinstall/utils';
-import { DEFAULT_TS_CONFIG, TS_CONFIG_DIR } from '../constants';
+import { TS_CONFIG_DIR } from '../constants.js';
 import { AUDIT_LOOKUP } from './constants.js';
 import type { CompilerOptionName, SemVerString } from './types.js';
 
@@ -133,7 +132,6 @@ export async function loadTsConfigDefaultsByVersion() {
   try {
     await access(configPath);
   } catch {
-    await generateCurrentTsConfig(version);
     throw new Error(
       `Could not find default TS config for version ${version} at ${configPath}. The plugin maintainer has to support this version.`,
     );
