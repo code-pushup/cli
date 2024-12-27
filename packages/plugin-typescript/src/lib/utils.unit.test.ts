@@ -1,13 +1,13 @@
+import type { CompilerOptions } from 'typescript';
 import { describe, expect, it } from 'vitest';
 import type { Audit, Group } from '@code-pushup/models';
+import { GROUPS } from './constants';
 import {
   filterAuditsBySlug,
   filterGroupsByAuditSlug,
   filterGroupsByTsOptions,
-  handleCompilerOptionStrict
+  handleCompilerOptionStrict,
 } from './utils.js';
-import type { CompilerOptions } from 'typescript';
-import {GROUPS} from "./constants";
 
 describe('filterAuditsBySlug', () => {
   const mockAudits: Audit[] = [
@@ -82,14 +82,11 @@ describe('filterGroupsByAuditSlug', () => {
   });
 });
 
-
-
-
 describe('handleCompilerOptionStrict', () => {
   it('should return original options when strict is false', () => {
     const options: CompilerOptions = {
       strict: false,
-      target: 2
+      target: 2,
     };
 
     const result = handleCompilerOptionStrict(options);
@@ -99,7 +96,7 @@ describe('handleCompilerOptionStrict', () => {
   it('should add all strict options when strict is true', () => {
     const options: CompilerOptions = {
       strict: true,
-      target: 2
+      target: 2,
     };
 
     const result = handleCompilerOptionStrict(options);
@@ -113,7 +110,7 @@ describe('handleCompilerOptionStrict', () => {
       strictPropertyInitialization: true,
       strictNullChecks: true,
       strictBindCallApply: true,
-      strictFunctionTypes: true
+      strictFunctionTypes: true,
     });
   });
 
@@ -121,7 +118,7 @@ describe('handleCompilerOptionStrict', () => {
     const options: CompilerOptions = {
       strict: true,
       target: 2,
-      noImplicitAny: false
+      noImplicitAny: false,
     };
 
     const result = handleCompilerOptionStrict(options);
@@ -133,11 +130,17 @@ describe('handleCompilerOptionStrict', () => {
 
 describe('filterGroupsByTsOptions', () => {
   it('should filter the groups correctly', () => {
-    expect(GROUPS.filter(filterGroupsByTsOptions({strict: false}, []))).toStrictEqual(expect.arrayContaining([expect.objectContaining({
-      strict: expect.objectContaining({
-        "slug": "strict-null-checks",
-        "weight": 1,
-      })
-    })]));
+    expect(
+      GROUPS.filter(filterGroupsByTsOptions({ strict: false }, [])),
+    ).toStrictEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          strict: expect.objectContaining({
+            slug: 'strict-null-checks',
+            weight: 1,
+          }),
+        }),
+      ]),
+    );
   });
-})
+});

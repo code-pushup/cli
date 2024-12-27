@@ -1,3 +1,5 @@
+import { loadTsConfig } from 'bundle-require';
+import { a } from 'vitest/dist/suite-UrZdHRff';
 import type {
   CategoryConfig,
   CoreConfig,
@@ -17,14 +19,17 @@ import {
   type TypescriptPluginOptions,
   typescriptPlugin,
 } from './packages/plugin-typescript/src/index.js';
-import {AUDITS, GROUPS} from './packages/plugin-typescript/src/lib/constants';
+import { AUDITS, GROUPS } from './packages/plugin-typescript/src/lib/constants';
 import {
   filterGroupsByAuditSlug,
-  filterGroupsByTsOptions, getCategorieReferences, getCategoryReferences, getCompilerOptionsToDetermineListedAudits,
-  getFinalAuditSlugs, loadTargetConfig, getCategoryRefsFromGroups
+  filterGroupsByTsOptions,
+  getCategorieReferences,
+  getCategoryReferences,
+  getCategoryRefsFromGroups,
+  getCompilerOptionsToDetermineListedAudits,
+  getFinalAuditSlugs,
+  loadTargetConfig,
 } from './packages/plugin-typescript/src/lib/utils.js';
-import {a} from "vitest/dist/suite-UrZdHRff";
-import {loadTsConfig} from "bundle-require";
 
 export const jsPackagesCategories: CategoryConfig[] = [
   {
@@ -83,14 +88,14 @@ export const eslintCategories: CategoryConfig[] = [
     slug: 'bug-prevention',
     title: 'Bug prevention',
     description: 'Lint rules that find **potential bugs** in your code.',
-    refs: [{type: 'group', plugin: 'eslint', slug: 'problems', weight: 1}],
+    refs: [{ type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 }],
   },
   {
     slug: 'code-style',
     title: 'Code style',
     description:
       'Lint rules that promote **good practices** and consistency in your code.',
-    refs: [{type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1}],
+    refs: [{ type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 }],
   },
 ];
 
@@ -153,7 +158,7 @@ export const typescriptPluginConfigNx = async (
       {
         slug: 'typescript',
         title: 'Typescript',
-        refs: (await getCategoryRefsFromGroups(opt))
+        refs: await getCategoryRefsFromGroups(opt),
       },
     ],
   };

@@ -1,12 +1,26 @@
-import type {Audit, AuditOutput, AuditOutputs, AuditReport, Issue, RunnerFunction,} from '@code-pushup/models';
-import type {CompilerOptionName, TypescriptPluginOptions} from '../types.js';
-import {getDiagnostics,} from './typescript-runner.js';
-import {AUDIT_LOOKUP, getIssueFromDiagnostic, tSCodeToAuditSlug, validateDiagnostics} from './utils.js';
-export type RunnerOptions = TypescriptPluginOptions & {filteredAudits: Audit[]};
+import type {
+  Audit,
+  AuditOutput,
+  AuditOutputs,
+  AuditReport,
+  Issue,
+  RunnerFunction,
+} from '@code-pushup/models';
+import type { CompilerOptionName, TypescriptPluginOptions } from '../types.js';
+import { getDiagnostics } from './typescript-runner.js';
+import {
+  AUDIT_LOOKUP,
+  getIssueFromDiagnostic,
+  tSCodeToAuditSlug,
+  validateDiagnostics,
+} from './utils.js';
+
+export type RunnerOptions = TypescriptPluginOptions & {
+  filteredAudits: Audit[];
+};
 
 export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
-
     const diagnostics = await getDiagnostics(options.tsConfigPath);
     validateDiagnostics(diagnostics);
     const result: Record<

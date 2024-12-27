@@ -11,25 +11,29 @@ import {
   sys,
 } from 'typescript';
 import type { TypescriptPluginOptions } from '../types.js';
-import {loadTargetConfig} from "../utils.js";
+import { loadTargetConfig } from '../utils.js';
 
 export type DiagnosticsOptions = {
   fileNames: string[];
   compilerOptions: CompilerOptions;
 };
 
-export async function getDiagnostics(tsConfigPath: string): Promise<readonly Diagnostic[]> {
+export async function getDiagnostics(
+  tsConfigPath: string,
+): Promise<readonly Diagnostic[]> {
   try {
-    const {fileNames, options}= await loadTargetConfig(tsConfigPath);
-  const program = createProgram(fileNames, options);
-  return getPreEmitDiagnostics(program);
+    const { fileNames, options } = await loadTargetConfig(tsConfigPath);
+    const program = createProgram(fileNames, options);
+    return getPreEmitDiagnostics(program);
   } catch (error) {
-    throw new Error(`Can't create TS program in getDiagnostics. \n ${(error as Error).message}`);
+    throw new Error(
+      `Can't create TS program in getDiagnostics. \n ${(error as Error).message}`,
+    );
   }
 }
 
 export async function getTsConfigurationFromPath(
-  options: Pick<TypescriptPluginOptions, 'tsConfigPath'>
+  options: Pick<TypescriptPluginOptions, 'tsConfigPath'>,
 ): Promise<DiagnosticsOptions> {
   const { tsConfigPath } = options;
   const configPath = resolve(process.cwd(), tsConfigPath);
@@ -44,11 +48,7 @@ export async function getTsConfigurationFromPath(
   const configFile = (await readFile(configPath)).toString();
 
   const { config } = parseConfigFileTextToJson(configPath, configFile);
-  const parsed = parseJsonConfigFileContent(
-    config,
-    sys,
-    basePath
-  );
+  const parsed = parseJsonConfigFileContent(config, sys, basePath);
 
   const { options: compilerOptions, fileNames } = parsed;
   if (fileNames.length === 0) {

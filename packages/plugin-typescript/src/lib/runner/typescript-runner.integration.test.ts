@@ -1,14 +1,13 @@
 // eslint-disable-next-line unicorn/import-style
-import {describe, expect} from 'vitest';
-import {
-  getTsConfigurationFromPath,
-} from './typescript-runner.js';
+import { describe, expect } from 'vitest';
+import { getTsConfigurationFromPath } from './typescript-runner.js';
 
 describe('getTsConfigurationFromPath', () => {
   it('should accept valid options', async () => {
     await expect(
       getTsConfigurationFromPath({
-        tsConfigPath: 'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
+        tsConfigPath:
+          'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
       }),
     ).resolves.toStrictEqual({
       compilerOptions: {
@@ -26,7 +25,6 @@ describe('getTsConfigurationFromPath', () => {
       ]),
     });
   });
-
 });
 
 /*
