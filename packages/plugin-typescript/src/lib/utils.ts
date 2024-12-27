@@ -1,21 +1,34 @@
-import {access} from 'node:fs/promises';
-import {dirname} from 'node:path';
+import { access } from 'node:fs/promises';
+// eslint-disable-next-line unicorn/import-style
+import { dirname } from 'node:path';
 import {
   type CompilerOptions,
-  parseConfigFileTextToJson,
   type ParsedCommandLine,
+  parseConfigFileTextToJson,
   parseJsonConfigFileContent,
   sys,
 } from 'typescript';
-import type {CategoryRef, CategoryRef, CategoryRef, Group} from '@code-pushup/models';
-import {camelCaseToKebabCase, executeProcess, kebabCaseToCamelCase, readTextFile} from '@code-pushup/utils';
-import type {AuditSlug, SemVerString, TypescriptPluginOptions} from './types.js';
-import {TS_ERROR_CODES} from "./runner/ts-error-codes.js";
-import {DEFAULT_TS_CONFIG, GROUPS, TYPESCRIPT_PLUGIN_SLUG} from "./constants.js";
-
+import type { CategoryRef, Group } from '@code-pushup/models';
+import {
+  camelCaseToKebabCase,
+  executeProcess,
+  kebabCaseToCamelCase,
+  readTextFile,
+} from '@code-pushup/utils';
+import {
+  DEFAULT_TS_CONFIG,
+  GROUPS,
+  TYPESCRIPT_PLUGIN_SLUG,
+} from './constants.js';
+import { TS_ERROR_CODES } from './runner/ts-error-codes.js';
+import type {
+  AuditSlug,
+  SemVerString,
+  TypescriptPluginOptions,
+} from './types.js';
 
 export function filterAuditsBySlug(slugs?: string[]) {
-  return ({slug}: { slug: string }) => {
+  return ({ slug }: { slug: string }) => {
     if (slugs && slugs.length > 0) {
       return slugs.includes(slug);
     }
@@ -47,25 +60,32 @@ export function auditSlugToCompilerOption(slug: string): string {
  * @param onlyAudits OnlyAudits
  * @returns Filtered Audits
  */
-export function filterAuditsByTsOptions(compilerOptions: CompilerOptions, onlyAudits?: string[]) {
-  return ({slug}: { slug: string }) => {
+export function filterAuditsByTsOptions(
+  compilerOptions: CompilerOptions,
+  onlyAudits?: string[],
+) {
+  return ({ slug }: { slug: string }) => {
     const option = compilerOptions[auditSlugToCompilerOption(slug)];
-    return (option !== false && option !== undefined) && filterAuditsBySlug(onlyAudits);
+    return (
+      option !== false && option !== undefined && filterAuditsBySlug(onlyAudits)
+    );
   };
 }
 
 export function filterGroupsByAuditSlug(slugs?: string[]) {
-  return ({refs}: Group) => refs.some(filterAuditsBySlug(slugs));
+  return ({ refs }: Group) => refs.some(filterAuditsBySlug(slugs));
 }
 
-
-export function getGroups(compilerOptions: CompilerOptions, {onlyAudits}: TypescriptPluginOptions) {
-  return GROUPS
-    .map(group => ({
-      ...group,
-      refs: group.refs.filter(filterAuditsByTsOptions(compilerOptions, onlyAudits))
-    }))
-    .filter(group => group.refs.length > 0);
+export function getGroups(
+  compilerOptions: CompilerOptions,
+  onlyAudits?: string[],
+) {
+  return GROUPS.map(group => ({
+    ...group,
+    refs: group.refs.filter(
+      filterAuditsByTsOptions(compilerOptions, onlyAudits),
+    ),
+  })).filter(group => group.refs.length > 0);
 }
 
 /**
@@ -74,16 +94,18 @@ export function getGroups(compilerOptions: CompilerOptions, {onlyAudits}: Typesc
  * @param opt TSPluginOptions
  * @returns The array of category references
  */
-export async function getCategoryRefsFromGroups(opt?: TypescriptPluginOptions): Promise<CategoryRef[]> {
-
+export async function getCategoryRefsFromGroups(
+  opt?: TypescriptPluginOptions,
+): Promise<CategoryRef[]> {
   const definitive = await getCompilerOptionsToDetermineListedAudits(opt);
-  return GROUPS
-    .map(group => ({
-      ...group,
-      refs: group.refs.filter(filterAuditsByTsOptions(definitive, opt?.onlyAudits))
-    }))
+  return GROUPS.map(group => ({
+    ...group,
+    refs: group.refs.filter(
+      filterAuditsByTsOptions(definitive, opt?.onlyAudits),
+    ),
+  }))
     .filter(group => group.refs.length > 0)
-    .map(({slug}) => ({
+    .map(({ slug }) => ({
       plugin: TYPESCRIPT_PLUGIN_SLUG,
       slug,
       weight: 1,
@@ -92,7 +114,7 @@ export async function getCategoryRefsFromGroups(opt?: TypescriptPluginOptions): 
 }
 
 export async function getCurrentTsVersion(): Promise<SemVerString> {
-  const {stdout} = await executeProcess({
+  const { stdout } = await executeProcess({
     command: 'npx',
     args: ['tsc', '--version'],
   });
@@ -130,15 +152,17 @@ export function handleCompilerOptionStrict(options: CompilerOptions) {
     return options;
   }
 
-  const strictOptions = Object.fromEntries(Object.keys(TS_ERROR_CODES.strict).map((key) => [key, true])) as CompilerOptions;
+  const strictOptions = Object.fromEntries(
+    Object.keys(TS_ERROR_CODES.strict).map(key => [key, true]),
+  ) as CompilerOptions;
 
   return {
     ...options,
-    ...strictOptions
+    ...strictOptions,
   };
 }
 
-
+// eslint-disable-next-line functional/no-let
 let _COMPILER_OPTIONS: CompilerOptions;
 
 /**
@@ -147,35 +171,46 @@ let _COMPILER_OPTIONS: CompilerOptions;
  * later if existing
  * @param options Plugin options
  */
-export async function getCompilerOptionsToDetermineListedAudits(options?: TypescriptPluginOptions) {
+export async function getCompilerOptionsToDetermineListedAudits(
+  options?: TypescriptPluginOptions,
+) {
   if (_COMPILER_OPTIONS) {
     return _COMPILER_OPTIONS;
   }
-  const {tsConfigPath = DEFAULT_TS_CONFIG} = options ?? {};
-  const {compilerOptions: defaultCompilerOptions} = await loadDefaultTsConfig(await getCurrentTsVersion());
+  const { tsConfigPath = DEFAULT_TS_CONFIG } = options ?? {};
+  const { compilerOptions: defaultCompilerOptions } = await loadDefaultTsConfig(
+    await getCurrentTsVersion(),
+  );
   const config = await loadTargetConfig(tsConfigPath);
-  const definitiveCompilerOptions = handleCompilerOptionStrict({...defaultCompilerOptions, ...config.options});
+  const definitiveCompilerOptions = handleCompilerOptionStrict({
+    ...defaultCompilerOptions,
+    ...config.options,
+  });
   _COMPILER_OPTIONS = definitiveCompilerOptions;
   return _COMPILER_OPTIONS;
-
 }
 
 // used in presets
 export async function getFinalAuditSlugs(options: TypescriptPluginOptions) {
   const definitive = await getCompilerOptionsToDetermineListedAudits(options);
-  return Object.keys(definitive).map((key) => camelCaseToKebabCase(key) as AuditSlug);
+  return Object.keys(definitive).map(
+    key => camelCaseToKebabCase(key) as AuditSlug,
+  );
 }
 
 const _TS_CONFIG_MAP = new Map<string, ParsedCommandLine>();
 
 export async function loadTargetConfig(tsConfigPath: string) {
   if (_TS_CONFIG_MAP.get(tsConfigPath) === undefined) {
-    const {config} = parseConfigFileTextToJson(tsConfigPath, await readTextFile(tsConfigPath));
+    const { config } = parseConfigFileTextToJson(
+      tsConfigPath,
+      await readTextFile(tsConfigPath),
+    );
 
     const parsedConfig = parseJsonConfigFileContent(
       config,
       sys,
-      dirname(tsConfigPath)
+      dirname(tsConfigPath),
     );
 
     if (parsedConfig.fileNames.length === 0) {
@@ -183,7 +218,6 @@ export async function loadTargetConfig(tsConfigPath: string) {
         'No files matched by the TypeScript configuration. Check your "include", "exclude" or "files" settings.',
       );
     }
-
 
     _TS_CONFIG_MAP.set(tsConfigPath, parsedConfig);
   }

@@ -1,11 +1,9 @@
 import type { CompilerOptions } from 'typescript';
 import { describe, expect, it } from 'vitest';
 import type { Audit, Group } from '@code-pushup/models';
-import { GROUPS } from './constants';
 import {
   filterAuditsBySlug,
   filterGroupsByAuditSlug,
-  filterGroupsByTsOptions,
   handleCompilerOptionStrict,
 } from './utils.js';
 
@@ -125,22 +123,5 @@ describe('handleCompilerOptionStrict', () => {
 
     expect(result.target).toBe(2);
     expect(result.noImplicitAny).toBe(true);
-  });
-});
-
-describe('filterGroupsByTsOptions', () => {
-  it('should filter the groups correctly', () => {
-    expect(
-      GROUPS.filter(filterGroupsByTsOptions({ strict: false }, [])),
-    ).toStrictEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          strict: expect.objectContaining({
-            slug: 'strict-null-checks',
-            weight: 1,
-          }),
-        }),
-      ]),
-    );
   });
 });

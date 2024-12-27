@@ -1,5 +1,3 @@
-import { loadTsConfig } from 'bundle-require';
-import { a } from 'vitest/dist/suite-UrZdHRff';
 import type {
   CategoryConfig,
   CoreConfig,
@@ -19,17 +17,7 @@ import {
   type TypescriptPluginOptions,
   typescriptPlugin,
 } from './packages/plugin-typescript/src/index.js';
-import { AUDITS, GROUPS } from './packages/plugin-typescript/src/lib/constants';
-import {
-  filterGroupsByAuditSlug,
-  filterGroupsByTsOptions,
-  getCategorieReferences,
-  getCategoryReferences,
-  getCategoryRefsFromGroups,
-  getCompilerOptionsToDetermineListedAudits,
-  getFinalAuditSlugs,
-  loadTargetConfig,
-} from './packages/plugin-typescript/src/lib/utils.js';
+import { getCategoryRefsFromGroups } from './packages/plugin-typescript/src/lib/utils.js';
 
 export const jsPackagesCategories: CategoryConfig[] = [
   {

@@ -165,14 +165,13 @@ export async function getRelevantVersions() {
     args: ['view', 'typescript', 'versions', '--json'],
   });
   const allVersions: SemVerString[] = JSON.parse(stdout);
-  return allVersions.filter(version => {
-    return (
+  return allVersions.filter(
+    version =>
       // not ends with a prerelease version like -dev.20190404, -0, -rc
       !version.match('-[a-z0-9]') &&
       // start from 1.6.2 as before that there was no init
-      version >= '1.6.2'
-    );
-  });
+      version >= '1.6.2',
+  );
 }
 
 /**
