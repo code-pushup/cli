@@ -31,6 +31,7 @@ export function filterAuditsBySlug(slugs?: string[]) {
  * @returns The slug as compilerOption key
  */
 export function auditSlugToCompilerOption(slug: string): string {
+  // eslint-disable-next-line sonarjs/no-small-switch
   switch (slug) {
     case 'emit-bom':
       return 'emitBOM';
@@ -39,14 +40,16 @@ export function auditSlugToCompilerOption(slug: string): string {
   }
 }
 
+/**
+ * From a list of audits, it will filter out the ones that might have been disabled from the compiler options
+ * plus from the parameter onlyAudits
+ * @param compilerOptions Compiler options
+ * @param onlyAudits OnlyAudits
+ * @returns Filtered Audits
+ */
 export function filterAuditsByTsOptions(compilerOptions: CompilerOptions, onlyAudits?: string[]) {
   return ({slug}: { slug: string }) => {
     const option = compilerOptions[auditSlugToCompilerOption(slug)];
-    if (slug === 'emit-bom') {
-      console.log('-----------------------')
-      console.log(option, slug)
-      console.log((option !== false && option !== undefined) && filterAuditsBySlug(onlyAudits))
-    }
     return (option !== false && option !== undefined) && filterAuditsBySlug(onlyAudits);
   };
 }
@@ -55,15 +58,8 @@ export function filterGroupsByAuditSlug(slugs?: string[]) {
   return ({refs}: Group) => refs.some(filterAuditsBySlug(slugs));
 }
 
-export function filterGroupsByTsOptions(compilerOptions: CompilerOptions, onlyAudits?: string[]) {
-  console.log(compilerOptions.emitBOM);
-  console.log(filterAuditsByTsOptions(compilerOptions, onlyAudits), 'filtered')
-  console.log('nuevoo')
-  return ({refs}: Group) => refs.filter(filterAuditsByTsOptions(compilerOptions, onlyAudits));
-}
 
-
-export function getGroups(compilerOptions: CompilerOptions, onlyAudits?: string[]) {
+export function getGroups(compilerOptions: CompilerOptions, {onlyAudits}: TypescriptPluginOptions) {
   return GROUPS
     .map(group => ({
       ...group,
@@ -81,7 +77,6 @@ export function getGroups(compilerOptions: CompilerOptions, onlyAudits?: string[
 export async function getCategoryRefsFromGroups(opt?: TypescriptPluginOptions): Promise<CategoryRef[]> {
 
   const definitive = await getCompilerOptionsToDetermineListedAudits(opt);
-
   return GROUPS
     .map(group => ({
       ...group,

@@ -15,21 +15,16 @@ export async function typescriptPlugin(
 
   const filteredAudits = AUDITS
     .filter(filterAuditsByTsOptions(definitive, options?.onlyAudits));
+  const filteredGroups = getGroups(definitive, options);
 
   const skippedAudits = AUDITS
     .filter(audit => !filteredAudits.some(filtered => filtered.slug === audit.slug))
     .map(audit => kebabCaseToCamelCase(audit.slug));
 
   if(skippedAudits.length > 0){
-    console.warn(`Some audits were skipped: [${skippedAudits.join(', ')}]`);
+    console.warn(`Some audits were skipped because the configuration of the compiler options [${skippedAudits.join(', ')}]`);
   }
 
-  console.info('filteredAudits', Object.keys(filteredAudits).length);
-  console.info('AUDITS', Object.keys(AUDITS).length);
-  console.info('audits', AUDITS.map(audit => audit.slug));
-
-  const filteredGroups = getGroups(definitive, options?.onlyAudits);
-  console.log(filteredGroups.length, 'CANTIDAD');
   return {
     slug: TYPESCRIPT_PLUGIN_SLUG,
     packageName,

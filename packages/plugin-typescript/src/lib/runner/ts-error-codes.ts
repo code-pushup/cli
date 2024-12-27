@@ -75,7 +75,7 @@ export const TS_ERROR_CODES = {
     disableSourceOfProjectReferenceRedirect: [6374],
   } as const,*/
   moduleResolution: {
-    moduleResolution: [2307, 1479],
+    moduleResolution: [2307, 1479, 2792],
     customConditions: [1378],
     resolvePackageJsonExports: [1343],
     resolvePackageJsonImports: [1344],
@@ -84,7 +84,7 @@ export const TS_ERROR_CODES = {
   typeCheckingBehavior: {
     // noErrorTruncation: [2322, 2345], // This affects error message display rather than triggering specific errors
     exactOptionalPropertyTypes: [2775],
-    noUncheckedIndexedAccess: [7061],
+    noUncheckedIndexedAccess: [7061, 2536],
     noImplicitOverride: [4114, 4113],
     noPropertyAccessFromIndexSignature: [4111],
   } as const,
