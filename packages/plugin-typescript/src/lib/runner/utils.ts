@@ -12,7 +12,7 @@ import { TS_ERROR_CODES } from './ts-error-codes.js';
 export const AUDIT_LOOKUP = Object.values(TS_ERROR_CODES)
   .flatMap(v => Object.entries(v))
   .reduce<Map<number, AuditSlug>>((lookup, [name, codes]) => {
-    codes.forEach(code =>
+    codes.forEach((code: number) =>
       lookup.set(code, camelCaseToKebabCase(name) as AuditSlug),
     );
     return lookup;

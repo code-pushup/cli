@@ -7,9 +7,11 @@ import type {
   RunnerFunction,
 } from '@code-pushup/models';
 import type { AuditSlug } from '../types.js';
+import { mergeTsConfigs } from '../typescript-plugin';
 import {
   type DiagnosticsOptions,
   getDiagnostics,
+  getTsConfigurationFromPath,
 } from './typescript-runner.js';
 import {
   AUDIT_LOOKUP,
@@ -23,8 +25,8 @@ export type RunnerOptions = DiagnosticsOptions & {
 
 export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
-    const { filteredAudits, tsConfigPath } = options;
-    const diagnostics = await getDiagnostics({ tsConfigPath });
+    const { filteredAudits, compilerOptions, fileNames } = options;
+    const diagnostics = await getDiagnostics({ fileNames, compilerOptions });
 
     const result: Record<
       AuditSlug,

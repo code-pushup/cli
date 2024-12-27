@@ -1,7 +1,14 @@
-import type { CompilerOptions } from 'typescript';
+import { access } from 'node:fs/promises';
+import { dirname } from 'node:path';
+import {
+  type CompilerOptions,
+  type TsConfigSourceFile,
+  parseJsonConfigFileContent,
+  sys,
+} from 'typescript';
 import type { Audit, Group } from '@code-pushup/models';
 import { executeProcess } from '@code-pushup/utils';
-import type {SemVerString} from "./types.js";
+import type { SemVerString } from './types.js';
 
 export function filterAuditsBySlug(slugs?: string[]) {
   return ({ slug }: Audit) => {
@@ -26,16 +33,43 @@ export async function getCurrentTsVersion(): Promise<SemVerString> {
     command: 'npx',
     args: ['tsc', '--version'],
   });
-  return stdout.trim() as SemVerString;
+  return stdout.split(' ').slice(-1).join('').trim() as SemVerString;
 }
 
 export async function loadDefaultTsConfig(version: SemVerString) {
+  const __dirname = new URL('.', import.meta.url).pathname;
+  const configPath = `${__dirname}default-ts-configs/${version}.ts`;
+
   try {
-    const module = await import(`./${version}.ts`);
-    return module.default as CompilerOptions;
+    await access(configPath);
+  } catch {
+    throw new Error(`Could not find default TS config for version ${version}.`);
+  }
+
+  try {
+    const module = await import(configPath);
+    return module.default;
   } catch (error) {
     throw new Error(
-      `Could not find default TS config for version ${version}. /n ${(error as Error).message}`,
+      `Could load default TS config for version ${version}. /n ${(error as Error).message}`,
     );
   }
+}
+
+export function mergeTsConfigs(
+  ...configs: { compilerOptions: CompilerOptions }[]
+): { compilerOptions: CompilerOptions } {
+  return configs.reduce(
+    (acc, config) => {
+      return {
+        ...acc,
+        ...config,
+        compilerOptions: {
+          ...acc?.compilerOptions,
+          ...config?.compilerOptions,
+        },
+      };
+    },
+    {} as { compilerOptions: CompilerOptions },
+  );
 }

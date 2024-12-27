@@ -25,7 +25,7 @@ export const GROUPS_DESCRIPTIONS = {
  * It's divided into: category -> compiler option -> error codes (that might trigger)
  */
 export const TS_ERROR_CODES = {
-  languageAndEnvivronment: {
+  languageAndEnvironment: {
     experimentalDecorators: [1240, 1241, 1242, 1243, 1244, 1270, 1271, 1272],
     emitDecoratorMetadata: [1240, 1241, 1272],
     jsx: [1341, 18007, 18034, 18035, 18053],
@@ -38,26 +38,26 @@ export const TS_ERROR_CODES = {
     reactNamespace: [2503, 2504],
     target: [2322, 2339, 2459],
     useDefineForClassFields: [2729, 2730],
-  },
+  } as const,
   interopConstraints: {
     allowSyntheticDefaultImports: [1192, 1259],
     esModuleInterop: [1202, 1203, 1204, 1259],
     forceConsistentCasingInFileNames: [1149, 1261],
     isolatedModules: [18055, 18056, 18057],
     preserveSymlinks: [1421],
-  },
+  } as const,
   watchOptions: {
     assumeChangesOnlyAffectDirectDependencies: [6373],
     preserveWatchOutput: [6379], // This affects watch mode behavior rather than emitting errors
     watchDirectory: [6378],
     watchFile: [6377],
-  },
+  } as const,
   projectReferences: {
     composite: [6372],
     disableReferencedProjectLoad: [6371],
     disableSolutionSearching: [6370],
     disableSourceOfProjectReferenceRedirect: [6374],
-  },
+  } as const,
   moduleResolution: {
     moduleResolutionNode: [2307],
     moduleResolutionBundler: [1479],
@@ -65,14 +65,14 @@ export const TS_ERROR_CODES = {
     resolvePackageJsonExports: [1343],
     resolvePackageJsonImports: [1344],
     verbatimModuleSyntax: [1286, 1287, 1288, 1484, 1485],
-  },
+  } as const,
   typeCheckingBehavior: {
     noErrorTruncation: [2322, 2345], // This affects error message display rather than triggering specific errors
     exactOptionalPropertyTypes: [2775],
     noUncheckedIndexedAccess: [7061],
     noImplicitOverride: [4114, 4113],
     noPropertyAccessFromIndexSignature: [4111],
-  },
+  } as const,
   controlFlowOptions: {
     allowUnreachableCode: [7027],
     allowUnusedLabels: [7028],
@@ -82,7 +82,7 @@ export const TS_ERROR_CODES = {
     noFallthroughCasesInSwitch: [7029],
     noImplicitReturnsInGenerators: [7030],
     noPropertyAccessFromComputedKey: [4111],
-  },
+  } as const,
   buildEmitOptions: {
     noEmit: [6059],
     noEmitHelpers: [2343],
@@ -94,7 +94,7 @@ export const TS_ERROR_CODES = {
     importHelpers: [2343, 2344],
     downlevelIteration: [2569],
     emitDeclarationOnly: [5069],
-  },
+  } as const,
   strictChecks: {
     noImplicitAny: [
       7005, 7006, 7008, 7009, 7010, 7011, 7015, 7016, 7017, 7018, 7019, 7031,
@@ -107,5 +107,5 @@ export const TS_ERROR_CODES = {
     strictNullChecks: [2531, 2532, 2533, 2722, 2721, 18047, 18048, 18049],
     strictBindCallApply: [2677, 2345, 2769],
     strictFunctionTypes: [2344, 2322, 2345, 2411],
-  },
-};
+  } as const,
+} as const;

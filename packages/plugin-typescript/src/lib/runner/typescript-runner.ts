@@ -2,6 +2,7 @@ import { access, readFile } from 'node:fs/promises';
 // eslint-disable-next-line unicorn/import-style
 import { dirname, resolve } from 'node:path';
 import {
+  type CompilerOptions,
   type Diagnostic,
   createProgram,
   getPreEmitDiagnostics,
@@ -9,22 +10,27 @@ import {
   parseJsonConfigFileContent,
   sys,
 } from 'typescript';
-import { DEFAULT_TS_CONFIG } from '../constants.js';
+import type { TypescriptPluginOptions } from '../types.js';
 
-export type DiagnosticsOptions = { tsConfigPath: string };
+export type DiagnosticsOptions = {
+  fileNames: string[];
+  compilerOptions: CompilerOptions;
+};
 
-export async function getDiagnostics(
-  options: DiagnosticsOptions,
-): Promise<readonly Diagnostic[]> {
-  const { fileNames, options: parsedOptions } =
-    await getTsConfiguration(options);
-
-  const program = createProgram(fileNames, parsedOptions);
+export async function getDiagnostics({
+  fileNames,
+  compilerOptions,
+}: DiagnosticsOptions): Promise<readonly Diagnostic[]> {
+  const program = createProgram(fileNames, compilerOptions);
   return getPreEmitDiagnostics(program);
 }
 
-export async function getTsConfiguration(options: DiagnosticsOptions) {
-  const { tsConfigPath = DEFAULT_TS_CONFIG } = options;
+export async function getTsConfigurationFromPath(
+  options: Pick<TypescriptPluginOptions, 'tsConfigPath'> & {
+    existingConfig: CompilerOptions;
+  },
+): Promise<DiagnosticsOptions> {
+  const { tsConfigPath, existingConfig } = options;
   const configPath = resolve(process.cwd(), tsConfigPath);
   const basePath = dirname(configPath);
 
@@ -37,9 +43,14 @@ export async function getTsConfiguration(options: DiagnosticsOptions) {
   const configFile = (await readFile(configPath)).toString();
 
   const { config } = parseConfigFileTextToJson(configPath, configFile);
-  const parsed = parseJsonConfigFileContent(config, sys, basePath);
+  const parsed = parseJsonConfigFileContent(
+    config,
+    sys,
+    basePath,
+    existingConfig,
+  );
 
-  const { options: opt, fileNames } = parsed;
+  const { options: compilerOptions, fileNames } = parsed;
   if (fileNames.length === 0) {
     throw new Error(
       'No files matched by the TypeScript configuration. Check your "include", "exclude" or "files" settings.',
@@ -47,7 +58,7 @@ export async function getTsConfiguration(options: DiagnosticsOptions) {
   }
 
   return {
-    options: opt,
+    compilerOptions,
     fileNames,
   };
 }

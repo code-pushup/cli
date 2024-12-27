@@ -25,7 +25,7 @@ import { basename, join } from 'node:path';
 import * as process from 'node:process';
 import type { CompilerOptions } from 'typescript';
 import { readTextFile } from '@code-pushup/utils';
-import type {SemVerString} from "../src/lib/types.js";
+import type { SemVerString } from '../src/lib/types.js';
 
 export const TS_CONFIG_DIR = join(
   'packages',
@@ -166,15 +166,11 @@ export async function getRelevantVersions() {
   });
   const allVersions: SemVerString[] = JSON.parse(stdout);
   return allVersions.filter(version => {
-    const [major = 0, minor = 0, patch = 0] = version.split('.').map(Number);
     return (
-      major >= 1 &&
-      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-      minor >= 6 &&
-      patch >= 2 &&
-      !version.includes('rc') &&
-      !version.includes('dev') &&
-      !version.includes('insiders')
+      // not ends with a prerelease version like -dev.20190404, -0, -rc
+      !version.match('-[a-z0-9]') &&
+      // start from 1.6.2 as before that there was no init
+      version >= '1.6.2'
     );
   });
 }
