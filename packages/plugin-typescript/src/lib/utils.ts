@@ -9,7 +9,6 @@ import {
 } from './constants.js';
 import { TS_ERROR_CODES } from './runner/ts-error-codes.js';
 import {
-  getCurrentTsVersion,
   loadTargetConfig,
   loadTsConfigDefaultsByVersion,
 } from './runner/utils.js';
@@ -69,7 +68,7 @@ export function getGroups(
     refs: group.refs.filter(
       filterAuditsByCompilerOptions(
         compilerOptions,
-        (options ?? {})?.onlyAudits,
+        (options ?? {}).onlyAudits,
       ),
     ),
   })).filter(group => group.refs.length > 0);
@@ -141,7 +140,7 @@ export async function normalizeCompilerOptions(
 ) {
   const { tsConfigPath = DEFAULT_TS_CONFIG } = options ?? {};
   const { compilerOptions: defaultCompilerOptions } =
-    await loadTsConfigDefaultsByVersion(await getCurrentTsVersion());
+    await loadTsConfigDefaultsByVersion();
   const config = await loadTargetConfig(tsConfigPath);
   return handleCompilerOptionStrict({
     ...defaultCompilerOptions,
@@ -153,7 +152,6 @@ export function validateAudits(filteredAudits: Audit[]) {
   const skippedAudits = AUDITS.filter(
     audit => !filteredAudits.some(filtered => filtered.slug === audit.slug),
   ).map(audit => kebabCaseToCamelCase(audit.slug));
-
   if (skippedAudits.length > 0) {
     console.warn(
       `Some audits were skipped because the configuration of the compiler options [${skippedAudits.join(', ')}]`,

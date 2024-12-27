@@ -1,7 +1,12 @@
 import type { CompilerOptions } from 'typescript';
-import { describe, expect, it } from 'vitest';
-import type { Audit, Group } from '@code-pushup/models';
-import { filterAuditsBySlug, handleCompilerOptionStrict } from './utils.js';
+import { describe, expect, it, vi } from 'vitest';
+import type { Audit } from '@code-pushup/models';
+import { AUDITS } from './constants.js';
+import {
+  filterAuditsBySlug,
+  handleCompilerOptionStrict,
+  validateAudits,
+} from './utils.js';
 
 describe('filterAuditsBySlug', () => {
   const mockAudits: Audit[] = [
@@ -119,5 +124,38 @@ describe('handleCompilerOptionStrict', () => {
 
     expect(result.target).toBe(2);
     expect(result.noImplicitAny).toBe(true);
+  });
+});
+
+describe('validateAudits', () => {
+  beforeEach(() => {
+    vi.mock('console', () => ({
+      warn: vi.fn(),
+    }));
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should not warn when all audits are included', () => {
+    const filteredAudits = AUDITS.map(audit => ({ ...audit }));
+
+    validateAudits(filteredAudits);
+
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
+  it('should warn about skipped audits', () => {
+    const filteredAudits = AUDITS.slice(1); // Removes an audit
+    validateAudits(filteredAudits);
+
+    expect(console.warn).toHaveBeenCalled();
+  });
+
+  it('should warn of all audits when filteredAudits are empty', () => {
+    validateAudits([]);
+
+    expect(console.warn).toHaveBeenCalled();
   });
 });

@@ -1,6 +1,5 @@
 import { access } from 'node:fs/promises';
-// eslint-disable-next-line unicorn/import-style
-import { dirname } from 'node:path';
+import { dirname, join } from 'node:path';
 import {
   type CompilerOptions,
   type Diagnostic,
@@ -11,6 +10,7 @@ import {
   parseJsonConfigFileContent,
   sys,
 } from 'typescript';
+// eslint-disable-next-line unicorn/import-style
 import type { Issue } from '@code-pushup/models';
 import {
   executeProcess,
@@ -90,31 +90,34 @@ export function getIssueFromDiagnostic(diag: Diagnostic) {
 }
 
 const _TS_CONFIG_MAP = new Map<string, ParsedCommandLine>();
+
 export async function loadTargetConfig(tsConfigPath: string) {
-  if (_TS_CONFIG_MAP.get(tsConfigPath) === undefined) {
-    const { config } = parseConfigFileTextToJson(
-      tsConfigPath,
-      await readTextFile(tsConfigPath),
-    );
-
-    const parsedConfig = parseJsonConfigFileContent(
-      config,
-      sys,
-      dirname(tsConfigPath),
-    );
-
-    if (parsedConfig.fileNames.length === 0) {
-      throw new Error(
-        'No files matched by the TypeScript configuration. Check your "include", "exclude" or "files" settings.',
-      );
-    }
-
-    _TS_CONFIG_MAP.set(tsConfigPath, parsedConfig);
+  if (_TS_CONFIG_MAP.has(tsConfigPath)) {
+    return _TS_CONFIG_MAP.get(tsConfigPath) as ParsedCommandLine;
   }
+
+  const { config } = parseConfigFileTextToJson(
+    tsConfigPath,
+    await readTextFile(tsConfigPath),
+  );
+
+  const parsedConfig = parseJsonConfigFileContent(
+    config,
+    sys,
+    dirname(tsConfigPath),
+  );
+
+  if (parsedConfig.fileNames.length === 0) {
+    throw new Error(
+      'No files matched by the TypeScript configuration. Check your "include", "exclude" or "files" settings.',
+    );
+  }
+
+  _TS_CONFIG_MAP.set(tsConfigPath, parsedConfig);
   return _TS_CONFIG_MAP.get(tsConfigPath) as ParsedCommandLine;
 }
 
-export async function getCurrentTsVersion(): Promise<SemVerString> {
+async function _getCurrentTsVersion(): Promise<SemVerString> {
   const { stdout } = await executeProcess({
     command: 'npx',
     args: ['-y', 'tsc', '--version'],
@@ -122,10 +125,15 @@ export async function getCurrentTsVersion(): Promise<SemVerString> {
   return stdout.split(' ').slice(-1).join('').trim() as SemVerString;
 }
 
-export async function loadTsConfigDefaultsByVersion(version: SemVerString) {
+export async function loadTsConfigDefaultsByVersion() {
+  const version = await _getCurrentTsVersion();
   const __dirname = new URL('.', import.meta.url).pathname;
-  const configPath = `${__dirname}default-ts-configs/${version}.ts`;
-
+  const configPath = join(
+    __dirname,
+    '..',
+    'default-ts-configs',
+    `${version}.ts`,
+  );
   try {
     await access(configPath);
   } catch {

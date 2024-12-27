@@ -45,9 +45,9 @@ export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
           Pick<AuditReport, 'slug' | 'details'>
         >,
       );
-
     return options.expectedAudits.map(audit => {
-      const { details } = result[audit.slug as CompilerOptionName];
+      const { details } = result[audit.slug as CompilerOptionName] || {};
+
       const issues = details?.issues ?? [];
       return {
         ...audit,
