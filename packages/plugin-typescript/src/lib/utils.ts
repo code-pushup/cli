@@ -1,17 +1,17 @@
-import { access } from 'node:fs/promises';
-import { dirname } from 'node:path';
+import {access} from 'node:fs/promises';
+import {dirname} from 'node:path';
 import {
   type CompilerOptions,
   type TsConfigSourceFile,
   parseJsonConfigFileContent,
   sys,
 } from 'typescript';
-import type { Audit, Group } from '@code-pushup/models';
-import { executeProcess } from '@code-pushup/utils';
-import type { SemVerString } from './types.js';
+import type {Audit, Group} from '@code-pushup/models';
+import {executeProcess, kebabCaseToCamelCase} from '@code-pushup/utils';
+import type {CompilerOptionName, SemVerString} from './types.js';
 
 export function filterAuditsBySlug(slugs?: string[]) {
-  return ({ slug }: Audit) => {
+  return ({slug}: { slug: string }) => {
     if (slugs && slugs.length > 0) {
       return slugs.includes(slug);
     }
@@ -19,17 +19,27 @@ export function filterAuditsBySlug(slugs?: string[]) {
   };
 }
 
+export function filterAuditsByTsOptions(compilerOptions: CompilerOptions, onlyAudits?: string[]) {
+  return ({slug}: { slug: string }) => {
+    const compilerOptionName = kebabCaseToCamelCase(slug) as CompilerOptionName;
+    return compilerOptions[compilerOptionName] === true && filterAuditsBySlug(onlyAudits);
+  };
+}
+
 export function filterGroupsByAuditSlug(slugs?: string[]) {
-  return ({ refs }: Group) => {
-    if (slugs && slugs.length > 0) {
-      return refs.some(({ slug }) => slugs.includes(slug));
-    }
-    return true;
+  return ({refs}: Group) => {
+    return refs.some(filterAuditsBySlug(slugs));
+  };
+}
+
+export function filterGroupsByByTsOptions(compilerOptions: CompilerOptions, onlyAudits?: string[]) {
+  return ({refs}: Group) => {
+    return refs.some(filterAuditsByTsOptions(compilerOptions, onlyAudits));
   };
 }
 
 export async function getCurrentTsVersion(): Promise<SemVerString> {
-  const { stdout } = await executeProcess({
+  const {stdout} = await executeProcess({
     command: 'npx',
     args: ['tsc', '--version'],
   });

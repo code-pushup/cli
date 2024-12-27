@@ -4,7 +4,7 @@ import {
   GROUPS_DESCRIPTIONS,
   TS_ERROR_CODES,
 } from './runner/ts-error-codes.js';
-import type { AuditSlug } from './types.js';
+import type { CompilerOptionName } from './types.js';
 
 export const TYPESCRIPT_PLUGIN_SLUG = 'typescript';
 export const DEFAULT_TS_CONFIG = 'tsconfig.json';
@@ -12,7 +12,7 @@ export const DEFAULT_TS_CONFIG = 'tsconfig.json';
 export const AUDITS = Object.values(TS_ERROR_CODES)
   .flatMap(i => Object.entries(i))
   .reduce<Audit[]>((audits, [name]) => {
-    const slug = camelCaseToKebabCase(name) as AuditSlug;
+    const slug = camelCaseToKebabCase(name) as CompilerOptionName;
     const title = kebabCaseToSentence(name);
     return [
       ...audits,

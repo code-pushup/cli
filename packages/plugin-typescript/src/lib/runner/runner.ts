@@ -6,7 +6,7 @@ import type {
   Issue,
   RunnerFunction,
 } from '@code-pushup/models';
-import type { AuditSlug } from '../types.js';
+import type { CompilerOptionName } from '../types.js';
 import { mergeTsConfigs } from '../typescript-plugin';
 import {
   type DiagnosticsOptions,
@@ -29,7 +29,7 @@ export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
     const diagnostics = await getDiagnostics({ fileNames, compilerOptions });
 
     const result: Record<
-      AuditSlug,
+      CompilerOptionName,
       Pick<AuditReport, 'slug' | 'details'>
     > = diagnostics
       // filter out unsupported errors
@@ -50,13 +50,13 @@ export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
           };
         },
         {} as unknown as Record<
-          AuditSlug,
+          CompilerOptionName,
           Pick<AuditReport, 'slug' | 'details'>
         >,
       );
 
     return filteredAudits.map(audit => {
-      const { details } = result[audit.slug as AuditSlug] ?? {};
+      const { details } = result[audit.slug as CompilerOptionName] ?? {};
       const issues = details?.issues ?? [];
       return {
         ...audit,

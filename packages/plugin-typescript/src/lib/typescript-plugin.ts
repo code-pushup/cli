@@ -1,23 +1,26 @@
 import type {PluginConfig} from '@code-pushup/models';
 import {name as packageName, version} from '../../package.json';
-import {
-  AUDITS,
-  DEFAULT_TS_CONFIG,
-  GROUPS,
-  TYPESCRIPT_PLUGIN_SLUG,
-} from './constants.js';
+import {AUDITS, DEFAULT_TS_CONFIG, GROUPS, TYPESCRIPT_PLUGIN_SLUG,} from './constants.js';
 import {createRunnerFunction} from './runner/runner.js';
-import type {TypescriptPluginOptions} from './types.js';
+import type {AuditSlug, CompilerOptionName, TypescriptPluginOptions} from './types.js';
 import {
-  filterAuditsBySlug,
+  filterAuditsByTsOptions,
   filterGroupsByAuditSlug,
+  filterGroupsByByTsOptions,
   getCurrentTsVersion,
-  loadDefaultTsConfig,
-  mergeTsConfigs
+  loadDefaultTsConfig
 } from './utils.js';
 import {getTsConfigurationFromPath} from "./runner/typescript-runner.ts";
-import {join, resolve} from "node:path";
-import {formatDiagnosticsWithColorAndContext, parseJsonConfigFileContent, readConfigFile, sys} from "typescript";
+import {resolve} from "node:path";
+import {
+  type CompilerOptions,
+  formatDiagnosticsWithColorAndContext,
+  parseJsonConfigFileContent,
+  readConfigFile,
+  sys,
+} from "typescript";
+import {kebabCaseToCamelCase} from "@code-pushup/utils";
+import {filterAuditsBySlug} from './utils.js';
 
 export function mergeTsConfigs(baseConfigPath: string, overrideConfigPath: string) {
   // Read and parse the base configuration
@@ -66,13 +69,15 @@ export async function typescriptPlugin(
     existingConfig: defaultCompilerOptions
   });
 
-  const  compilerOptions =  {...defaultCompilerOptions, ...desiredCompilerOptions};
+  // merges the defaultCompilerOptions of that TS Version with the compilerOptions configured by the user. EX: user vermatin could be undefined, but the default could be true
+  const  compilerOptions: CompilerOptions =  {...defaultCompilerOptions, ...desiredCompilerOptions};
 
-  const filteredAudits = AUDITS//.filter(filterAuditsBySlug(onlyAudits))
-  // filter by active compilerOptions
-  // .filter();
 
-  const filteredGroups = GROUPS.filter(filterGroupsByAuditSlug(onlyAudits));
+
+  const filteredAudits = AUDITS
+    .filter(filterAuditsByTsOptions(compilerOptions, onlyAudits))
+
+  const filteredGroups = GROUPS.filter(filterGroupsByByTsOptions(compilerOptions, onlyAudits));
   return {
     slug: TYPESCRIPT_PLUGIN_SLUG,
     packageName,
@@ -82,7 +87,7 @@ export async function typescriptPlugin(
     docsUrl: 'https://www.npmjs.com/package/@code-pushup/typescript-plugin/',
     icon: 'typescript',
     audits: filteredAudits,
-    groups: filteredGroups,
+    // groups: filteredGroups,
     runner: createRunnerFunction({
       fileNames,
       compilerOptions,

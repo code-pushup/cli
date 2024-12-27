@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { AUDITS, DEFAULT_TS_CONFIG } from './constants.js';
-import type { AuditSlug } from './types.js';
+import type { CompilerOptionName } from './types.js';
 
 const auditSlugs = AUDITS.map(({ slug }) => slug) as [string, ...string[]];
 export const typescriptPluginConfigSchema = z.object({
@@ -18,4 +18,4 @@ export const typescriptPluginConfigSchema = z.object({
 
 export type TypescriptPluginOptions = z.infer<
   typeof typescriptPluginConfigSchema
-> & { onlyAudits?: (string | AuditSlug)[] | undefined };
+> & { onlyAudits?: (string | CompilerOptionName)[] | undefined };

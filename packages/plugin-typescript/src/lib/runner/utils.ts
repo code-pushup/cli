@@ -5,18 +5,18 @@ import {
 } from 'typescript';
 import type { Issue } from '@code-pushup/models';
 import { camelCaseToKebabCase } from '@code-pushup/utils';
-import type { AuditSlug } from '../types.js';
+import type { CompilerOptionName } from '../types.js';
 import { TS_ERROR_CODES } from './ts-error-codes.js';
 
 /** Build Reverse Lookup Map. It will a map with key as the error code and value as the audit slug. */
 export const AUDIT_LOOKUP = Object.values(TS_ERROR_CODES)
   .flatMap(v => Object.entries(v))
-  .reduce<Map<number, AuditSlug>>((lookup, [name, codes]) => {
+  .reduce<Map<number, CompilerOptionName>>((lookup, [name, codes]) => {
     codes.forEach((code: number) =>
-      lookup.set(code, camelCaseToKebabCase(name) as AuditSlug),
+      lookup.set(code, camelCaseToKebabCase(name) as CompilerOptionName),
     );
     return lookup;
-  }, new Map<number, AuditSlug>());
+  }, new Map<number, CompilerOptionName>());
 
 /**
  * Transform the TypeScript error code to the audit slug.
@@ -24,7 +24,7 @@ export const AUDIT_LOOKUP = Object.values(TS_ERROR_CODES)
  * @returns The audit slug.
  * @throws Error if the code is not supported.
  */
-export function tSCodeToAuditSlug(code: number): AuditSlug {
+export function tSCodeToAuditSlug(code: number): CompilerOptionName {
   const knownCode = AUDIT_LOOKUP.get(code);
   if (knownCode === undefined) {
     throw new Error(`Code ${code} not supported.`);
