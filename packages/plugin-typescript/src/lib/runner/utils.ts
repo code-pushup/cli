@@ -1,22 +1,24 @@
+import { access } from 'node:fs/promises';
+// eslint-disable-next-line unicorn/import-style
+import { dirname } from 'node:path';
 import {
+  type CompilerOptions,
   type Diagnostic,
   DiagnosticCategory,
+  type ParsedCommandLine,
   flattenDiagnosticMessageText,
+  parseConfigFileTextToJson,
+  parseJsonConfigFileContent,
+  sys,
 } from 'typescript';
 import type { Issue } from '@code-pushup/models';
-import { camelCaseToKebabCase, truncateIssueMessage } from '@code-pushup/utils';
-import type { CompilerOptionName } from '../types.js';
-import { TS_ERROR_CODES } from './ts-error-codes.js';
-
-/** Build Reverse Lookup Map. It will a map with key as the error code and value as the audit slug. */
-export const AUDIT_LOOKUP = Object.values(TS_ERROR_CODES)
-  .flatMap(v => Object.entries(v))
-  .reduce<Map<number, CompilerOptionName>>((lookup, [name, codes]) => {
-    codes.forEach((code: number) =>
-      lookup.set(code, camelCaseToKebabCase(name) as CompilerOptionName),
-    );
-    return lookup;
-  }, new Map<number, CompilerOptionName>());
+import {
+  executeProcess,
+  readTextFile,
+  truncateIssueMessage,
+} from '@code-pushup/utils';
+import { AUDIT_LOOKUP } from './constants.js';
+import type { CompilerOptionName, SemVerString } from './types.js';
 
 /**
  * Transform the TypeScript error code to the audit slug.
@@ -30,18 +32,6 @@ export function tSCodeToAuditSlug(code: number): CompilerOptionName {
     throw new Error(`Code ${code} not supported.`);
   }
   return knownCode;
-}
-
-//OK DOOONE, now it's more beautiful, goodbye! let me know when u finish if u want
-// I was getting so frustrated of with webstorm sry xD
-export function validateDiagnostics(diagnostics: readonly Diagnostic[]) {
-  diagnostics
-    .filter(({ code }) => !AUDIT_LOOKUP.has(code))
-    .forEach(({ code, messageText }) => {
-      console.warn(
-        `Diagnostic Warning: The code ${code} is not supported. ${messageText}`,
-      );
-    });
 }
 
 /**
@@ -97,4 +87,59 @@ export function getIssueFromDiagnostic(diag: Diagnostic) {
         : {}),
     },
   } satisfies Issue;
+}
+
+const _TS_CONFIG_MAP = new Map<string, ParsedCommandLine>();
+export async function loadTargetConfig(tsConfigPath: string) {
+  if (_TS_CONFIG_MAP.get(tsConfigPath) === undefined) {
+    const { config } = parseConfigFileTextToJson(
+      tsConfigPath,
+      await readTextFile(tsConfigPath),
+    );
+
+    const parsedConfig = parseJsonConfigFileContent(
+      config,
+      sys,
+      dirname(tsConfigPath),
+    );
+
+    if (parsedConfig.fileNames.length === 0) {
+      throw new Error(
+        'No files matched by the TypeScript configuration. Check your "include", "exclude" or "files" settings.',
+      );
+    }
+
+    _TS_CONFIG_MAP.set(tsConfigPath, parsedConfig);
+  }
+  return _TS_CONFIG_MAP.get(tsConfigPath) as ParsedCommandLine;
+}
+
+export async function getCurrentTsVersion(): Promise<SemVerString> {
+  const { stdout } = await executeProcess({
+    command: 'npx',
+    args: ['-y', 'tsc', '--version'],
+  });
+  return stdout.split(' ').slice(-1).join('').trim() as SemVerString;
+}
+
+export async function loadTsConfigDefaultsByVersion(version: SemVerString) {
+  const __dirname = new URL('.', import.meta.url).pathname;
+  const configPath = `${__dirname}default-ts-configs/${version}.ts`;
+
+  try {
+    await access(configPath);
+  } catch {
+    throw new Error(
+      `Could not find default TS config for version ${version}. R The plugin maintainer has to support this version.`,
+    );
+  }
+
+  try {
+    const module = await import(configPath);
+    return module.default as { compilerOptions: CompilerOptions };
+  } catch (error) {
+    throw new Error(
+      `Could load default TS config for version ${version}. /n ${(error as Error).message}`,
+    );
+  }
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import config544 from './default-ts-configs/5.4.4.js';
 import type { TypescriptPluginOptions } from './types.js';
-import { getCompilerOptionsToDetermineListedAudits } from './utils.js';
+import { normalizeCompilerOptions } from './utils.js';
 import * as utilsModule from './utils.js';
 
 describe('getCompilerOptions', () => {
@@ -14,7 +14,7 @@ describe('getCompilerOptions', () => {
         'packages/plugin-typescript/mocks/fixtures/compiler-defaults/tsconfig.json',
     };
 
-    const definitive = await getCompilerOptionsToDetermineListedAudits(options);
+    const definitive = await normalizeCompilerOptions(options);
     const { importsNotUsedAsValues, preserveValueImports, ...parsedOptions } =
       config544.compilerOptions;
     expect(definitive).toStrictEqual(
@@ -37,7 +37,7 @@ describe('getCompilerOptions', () => {
         'packages/plugin-typescript/mocks/fixtures/compiler-defaults/tsconfig.json',
     };
 
-    const definitive = await getCompilerOptionsToDetermineListedAudits(options);
+    const definitive = await normalizeCompilerOptions(options);
     expect(definitive).toStrictEqual(
       expect.objectContaining({
         strict: true,

@@ -97,6 +97,7 @@ export {
 export { isSemver, normalizeSemver, sortSemvers } from './lib/semver.js';
 export {
   camelCaseToKebabCase,
+  type CamelCaseToKebabCase,
   kebabCaseToSentence,
   kebabCaseToCamelCase,
 } from './lib/string.js';

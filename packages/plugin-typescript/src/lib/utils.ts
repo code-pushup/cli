@@ -1,31 +1,19 @@
-import { access } from 'node:fs/promises';
-// eslint-disable-next-line unicorn/import-style
-import { dirname } from 'node:path';
+import type { CompilerOptions } from 'typescript';
+import type { Audit, CategoryRef } from '@code-pushup/models';
+import { kebabCaseToCamelCase } from '@code-pushup/utils';
 import {
-  type CompilerOptions,
-  type ParsedCommandLine,
-  parseConfigFileTextToJson,
-  parseJsonConfigFileContent,
-  sys,
-} from 'typescript';
-import type { CategoryRef, Group } from '@code-pushup/models';
-import {
-  camelCaseToKebabCase,
-  executeProcess,
-  kebabCaseToCamelCase,
-  readTextFile,
-} from '@code-pushup/utils';
-import {
+  AUDITS,
   DEFAULT_TS_CONFIG,
   GROUPS,
   TYPESCRIPT_PLUGIN_SLUG,
 } from './constants.js';
 import { TS_ERROR_CODES } from './runner/ts-error-codes.js';
-import type {
-  AuditSlug,
-  SemVerString,
-  TypescriptPluginOptions,
-} from './types.js';
+import {
+  getCurrentTsVersion,
+  loadTargetConfig,
+  loadTsConfigDefaultsByVersion,
+} from './runner/utils.js';
+import type { TypescriptPluginOptions } from './types.js';
 
 export function filterAuditsBySlug(slugs?: string[]) {
   return ({ slug }: { slug: string }) => {
@@ -43,7 +31,7 @@ export function filterAuditsBySlug(slugs?: string[]) {
  * @param slug Slug to be transformed
  * @returns The slug as compilerOption key
  */
-export function auditSlugToCompilerOption(slug: string): string {
+function auditSlugToCompilerOption(slug: string): string {
   // eslint-disable-next-line sonarjs/no-small-switch
   switch (slug) {
     case 'emit-bom':
@@ -60,7 +48,7 @@ export function auditSlugToCompilerOption(slug: string): string {
  * @param onlyAudits OnlyAudits
  * @returns Filtered Audits
  */
-export function filterAuditsByTsOptions(
+export function filterAuditsByCompilerOptions(
   compilerOptions: CompilerOptions,
   onlyAudits?: string[],
 ) {
@@ -72,20 +60,28 @@ export function filterAuditsByTsOptions(
   };
 }
 
-export function filterGroupsByAuditSlug(slugs?: string[]) {
-  return ({ refs }: Group) => refs.some(filterAuditsBySlug(slugs));
-}
-
 export function getGroups(
   compilerOptions: CompilerOptions,
-  onlyAudits?: string[],
+  options?: TypescriptPluginOptions,
 ) {
   return GROUPS.map(group => ({
     ...group,
     refs: group.refs.filter(
-      filterAuditsByTsOptions(compilerOptions, onlyAudits),
+      filterAuditsByCompilerOptions(
+        compilerOptions,
+        (options ?? {})?.onlyAudits,
+      ),
     ),
   })).filter(group => group.refs.length > 0);
+}
+
+export function getAudits(
+  definitive: CompilerOptions,
+  options?: TypescriptPluginOptions,
+) {
+  return AUDITS.filter(
+    filterAuditsByCompilerOptions(definitive, options?.onlyAudits),
+  );
 }
 
 /**
@@ -97,11 +93,11 @@ export function getGroups(
 export async function getCategoryRefsFromGroups(
   opt?: TypescriptPluginOptions,
 ): Promise<CategoryRef[]> {
-  const definitive = await getCompilerOptionsToDetermineListedAudits(opt);
+  const definitive = await normalizeCompilerOptions(opt);
   return GROUPS.map(group => ({
     ...group,
     refs: group.refs.filter(
-      filterAuditsByTsOptions(definitive, opt?.onlyAudits),
+      filterAuditsByCompilerOptions(definitive, opt?.onlyAudits),
     ),
   }))
     .filter(group => group.refs.length > 0)
@@ -111,34 +107,6 @@ export async function getCategoryRefsFromGroups(
       weight: 1,
       type: 'group',
     }));
-}
-
-export async function getCurrentTsVersion(): Promise<SemVerString> {
-  const { stdout } = await executeProcess({
-    command: 'npx',
-    args: ['tsc', '--version'],
-  });
-  return stdout.split(' ').slice(-1).join('').trim() as SemVerString;
-}
-
-export async function loadDefaultTsConfig(version: SemVerString) {
-  const __dirname = new URL('.', import.meta.url).pathname;
-  const configPath = `${__dirname}default-ts-configs/${version}.ts`;
-
-  try {
-    await access(configPath);
-  } catch {
-    throw new Error(`Could not find default TS config for version ${version}.`);
-  }
-
-  try {
-    const module = await import(configPath);
-    return module.default as { compilerOptions: CompilerOptions };
-  } catch (error) {
-    throw new Error(
-      `Could load default TS config for version ${version}. /n ${(error as Error).message}`,
-    );
-  }
 }
 
 /**
@@ -162,64 +130,33 @@ export function handleCompilerOptionStrict(options: CompilerOptions) {
   };
 }
 
-// eslint-disable-next-line functional/no-let
-let _COMPILER_OPTIONS: CompilerOptions;
-
 /**
  * It will from the options, and the TS Version, get a final compiler options to be used later for filters
  * Once it's processed for the first time, it will store the information in a variable, to be retrieve
  * later if existing
  * @param options Plugin options
  */
-export async function getCompilerOptionsToDetermineListedAudits(
+export async function normalizeCompilerOptions(
   options?: TypescriptPluginOptions,
 ) {
-  if (_COMPILER_OPTIONS) {
-    return _COMPILER_OPTIONS;
-  }
   const { tsConfigPath = DEFAULT_TS_CONFIG } = options ?? {};
-  const { compilerOptions: defaultCompilerOptions } = await loadDefaultTsConfig(
-    await getCurrentTsVersion(),
-  );
+  const { compilerOptions: defaultCompilerOptions } =
+    await loadTsConfigDefaultsByVersion(await getCurrentTsVersion());
   const config = await loadTargetConfig(tsConfigPath);
-  const definitiveCompilerOptions = handleCompilerOptionStrict({
+  return handleCompilerOptionStrict({
     ...defaultCompilerOptions,
     ...config.options,
   });
-  _COMPILER_OPTIONS = definitiveCompilerOptions;
-  return _COMPILER_OPTIONS;
 }
 
-// used in presets
-export async function getFinalAuditSlugs(options: TypescriptPluginOptions) {
-  const definitive = await getCompilerOptionsToDetermineListedAudits(options);
-  return Object.keys(definitive).map(
-    key => camelCaseToKebabCase(key) as AuditSlug,
-  );
-}
+export function validateAudits(filteredAudits: Audit[]) {
+  const skippedAudits = AUDITS.filter(
+    audit => !filteredAudits.some(filtered => filtered.slug === audit.slug),
+  ).map(audit => kebabCaseToCamelCase(audit.slug));
 
-const _TS_CONFIG_MAP = new Map<string, ParsedCommandLine>();
-
-export async function loadTargetConfig(tsConfigPath: string) {
-  if (_TS_CONFIG_MAP.get(tsConfigPath) === undefined) {
-    const { config } = parseConfigFileTextToJson(
-      tsConfigPath,
-      await readTextFile(tsConfigPath),
+  if (skippedAudits.length > 0) {
+    console.warn(
+      `Some audits were skipped because the configuration of the compiler options [${skippedAudits.join(', ')}]`,
     );
-
-    const parsedConfig = parseJsonConfigFileContent(
-      config,
-      sys,
-      dirname(tsConfigPath),
-    );
-
-    if (parsedConfig.fileNames.length === 0) {
-      throw new Error(
-        'No files matched by the TypeScript configuration. Check your "include", "exclude" or "files" settings.',
-      );
-    }
-
-    _TS_CONFIG_MAP.set(tsConfigPath, parsedConfig);
   }
-  return _TS_CONFIG_MAP.get(tsConfigPath) as ParsedCommandLine;
 }

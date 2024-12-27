@@ -14,17 +14,27 @@ export function kebabCaseToCamelCase(string: string) {
     .join('');
 }
 
+export type CamelCaseToKebabCase<T extends string> =
+  T extends `${infer First}${infer Rest}`
+    ? Rest extends Uncapitalize<Rest>
+      ? `${Lowercase<First>}${CamelCaseToKebabCase<Rest>}`
+      : `${Lowercase<First>}-${CamelCaseToKebabCase<Rest>}`
+    : T;
+
 /**
  * Converts a camelCase string to kebab-case.
  * @param string - The camelCase string to convert.
  * @returns The kebab-case string.
  */
-export function camelCaseToKebabCase(string: string): string {
+export function camelCaseToKebabCase<T extends string>(
+  string: T,
+): CamelCaseToKebabCase<T> {
   return string
-    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2') // handle consecutive capital letters
-    .replace(/([a-z])([A-Z])/g, '$1-$2')
-    .replace(/[\s_]+/g, '-')
-    .toLowerCase();
+    .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2') // Split between uppercase followed by uppercase+lowercase
+    .replace(/([a-z])([A-Z])/g, '$1-$2') // Split between lowercase followed by uppercase
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2') // Additional split for consecutive uppercase
+    .replace(/[\s_]+/g, '-') // Replace spaces and underscores with hyphens
+    .toLowerCase() as CamelCaseToKebabCase<T>;
 }
 
 /**

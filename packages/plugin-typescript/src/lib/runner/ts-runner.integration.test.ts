@@ -1,13 +1,12 @@
 import { describe, expect } from 'vitest';
-import { getTsConfigurationFromPath } from './typescript-runner.js';
+import { getTypeScriptDiagnostics } from './ts-runner.js';
 
-describe('getTsConfigurationFromPath', () => {
+describe('getTypeScriptDiagnostics', () => {
   it('should accept valid options', async () => {
     await expect(
-      getTsConfigurationFromPath({
-        tsConfigPath:
-          'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
-      }),
+      getTypeScriptDiagnostics(
+        'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
+      ),
     ).resolves.toStrictEqual({
       compilerOptions: {
         configFilePath: undefined,
