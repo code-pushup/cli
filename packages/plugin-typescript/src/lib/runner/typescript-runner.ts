@@ -11,26 +11,27 @@ import {
   sys,
 } from 'typescript';
 import type { TypescriptPluginOptions } from '../types.js';
+import {loadTargetConfig} from "../utils.js";
 
 export type DiagnosticsOptions = {
   fileNames: string[];
   compilerOptions: CompilerOptions;
 };
 
-export async function getDiagnostics({
-  fileNames,
-  compilerOptions,
-}: DiagnosticsOptions): Promise<readonly Diagnostic[]> {
-  const program = createProgram(fileNames, compilerOptions);
+export async function getDiagnostics(tsConfigPath: string): Promise<readonly Diagnostic[]> {
+  try {
+    const {fileNames, options}= await loadTargetConfig(tsConfigPath);
+  const program = createProgram(fileNames, options);
   return getPreEmitDiagnostics(program);
+  } catch (error) {
+    throw new Error(`Can't create TS program in getDiagnostics. \n ${(error as Error).message}`);
+  }
 }
 
 export async function getTsConfigurationFromPath(
-  options: Pick<TypescriptPluginOptions, 'tsConfigPath'> & {
-    existingConfig: CompilerOptions;
-  },
+  options: Pick<TypescriptPluginOptions, 'tsConfigPath'>
 ): Promise<DiagnosticsOptions> {
-  const { tsConfigPath, existingConfig } = options;
+  const { tsConfigPath } = options;
   const configPath = resolve(process.cwd(), tsConfigPath);
   const basePath = dirname(configPath);
 
@@ -46,8 +47,7 @@ export async function getTsConfigurationFromPath(
   const parsed = parseJsonConfigFileContent(
     config,
     sys,
-    basePath,
-    existingConfig,
+    basePath
   );
 
   const { options: compilerOptions, fileNames } = parsed;

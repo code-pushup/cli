@@ -41,7 +41,7 @@ export default mergeConfigs(
   ),
   await eslintCoreConfigNx(),*/
   await typescriptPluginConfigNx({
-    tsConfigPath: 'packages/plugin-typescript/tsconfig.lib.json',
+    tsConfigPath: 'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
     // onlyAudits: ['verbatim-module-syntax-typescript']
   }),
 );

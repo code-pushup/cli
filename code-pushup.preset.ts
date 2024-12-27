@@ -17,8 +17,9 @@ import {
   type TypescriptPluginOptions,
   typescriptPlugin,
 } from './packages/plugin-typescript/src/index.js';
-import { GROUPS } from './packages/plugin-typescript/src/lib/constants';
-import { filterGroupsByAuditSlug } from './packages/plugin-typescript/src/lib/utils.js';
+import {AUDITS, GROUPS} from './packages/plugin-typescript/src/lib/constants';
+import {filterGroupsByAuditSlug, getFinalAuditSlugs} from './packages/plugin-typescript/src/lib/utils.js';
+import {a} from "vitest/dist/suite-UrZdHRff";
 
 export const jsPackagesCategories: CategoryConfig[] = [
   {
@@ -142,22 +143,21 @@ export const typescriptPluginConfigNx = async (
     ...options,
   };
 
+
   return {
     plugins: [await typescriptPlugin(opt)],
-    /*categories: [
-      {
+    categories: [
+  /*    {
         slug: 'typescript',
         title: 'Typescript',
-        refs: GROUPS.filter(filterGroupsByAuditSlug(opt.onlyAudits)).map(
-          ({ slug }) => ({
-            plugin: 'typescript',
-            type: 'group' as const,
-            slug,
-            weight: 1,
-          }),
-        ),
-      },
-    ],*/
+        refs: AUDITS.filter(filterGroupsByAuditSlug(await getFinalAuditSlugs(opt))).map( ({slug}) => ({
+          type: 'audit',
+          plugin: 'typescript',
+          slug,
+          weight: 1,
+        }))
+      },*/
+    ],
   };
 };
 

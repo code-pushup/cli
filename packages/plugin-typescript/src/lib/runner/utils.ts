@@ -4,7 +4,7 @@ import {
   flattenDiagnosticMessageText,
 } from 'typescript';
 import type { Issue } from '@code-pushup/models';
-import { camelCaseToKebabCase } from '@code-pushup/utils';
+import {camelCaseToKebabCase, truncateIssueMessage} from '@code-pushup/utils';
 import type { CompilerOptionName } from '../types.js';
 import { TS_ERROR_CODES } from './ts-error-codes.js';
 
@@ -30,6 +30,14 @@ export function tSCodeToAuditSlug(code: number): CompilerOptionName {
     throw new Error(`Code ${code} not supported.`);
   }
   return knownCode;
+}
+
+//OK DOOONE, now it's more beautiful, goodbye! let me know when u finish if u want
+// I was getting so frustrated of with webstorm sry xD
+export function validateDiagnostics(diagnostics: readonly Diagnostic[]){
+  diagnostics.filter(({code}) => !AUDIT_LOOKUP.has(code)).forEach(({code, messageText}) => {
+    console.warn(`Diagnostic Warning: The code ${code} is not supported. ${messageText}`)
+  })
 }
 
 /**
@@ -73,7 +81,7 @@ export function getIssueFromDiagnostic(diag: Diagnostic) {
 
   return {
     severity: getSeverity(diag.category),
-    message,
+    message: truncateIssueMessage(message),
     source: {
       file: diag.file.fileName,
       ...(startLine

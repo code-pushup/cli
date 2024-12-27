@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Audit, Group } from '@code-pushup/models';
-import { filterAuditsBySlug, filterGroupsByAuditSlug } from './utils.js';
+import { filterAuditsBySlug, filterGroupsByAuditSlug, handleCompilerOptionStrict } from './utils.js';
+import type { CompilerOptions } from 'typescript';
 
 describe('filterAuditsBySlug', () => {
   const mockAudits: Audit[] = [
@@ -72,5 +73,54 @@ describe('filterGroupsByAuditSlug', () => {
   ])('should filter group %# by audit slugs', (group, expected) => {
     const filter = filterGroupsByAuditSlug(['audit-1', 'audit-3']);
     expect(filter(group!)).toBe(expected);
+  });
+});
+
+
+
+
+describe('handleCompilerOptionStrict', () => {
+  it('should return original options when strict is false', () => {
+    const options: CompilerOptions = {
+      strict: false,
+      target: 2
+    };
+
+    const result = handleCompilerOptionStrict(options);
+    expect(result).toEqual(options);
+  });
+
+  it('should add all strict options when strict is true', () => {
+    const options: CompilerOptions = {
+      strict: true,
+      target: 2
+    };
+
+    const result = handleCompilerOptionStrict(options);
+
+    expect(result).toEqual({
+      ...options,
+      noImplicitAny: true,
+      noImplicitThis: true,
+      alwaysStrict: true,
+      strictBuiltinIteratorReturn: true,
+      strictPropertyInitialization: true,
+      strictNullChecks: true,
+      strictBindCallApply: true,
+      strictFunctionTypes: true
+    });
+  });
+
+  it('should preserve existing option values while adding strict options', () => {
+    const options: CompilerOptions = {
+      strict: true,
+      target: 2,
+      noImplicitAny: false
+    };
+
+    const result = handleCompilerOptionStrict(options);
+
+    expect(result.target).toBe(2);
+    expect(result.noImplicitAny).toBe(true);
   });
 });

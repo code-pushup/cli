@@ -21,6 +21,21 @@ export const GROUPS_DESCRIPTIONS = {
     'Configuration options that control TypeScript output generation, including whether to emit files, how to handle comments and declarations, and settings for output optimization and compatibility helpers',
 };
 
+/**
+ *  Strict grouping: https://github.com/microsoft/TypeScript/blob/56a08250f3516b3f5bc120d6c7ab4450a9a69352/src/compiler/utilities.ts Line 9113
+ *      noImplicitThis: {
+ *         dependencies: ["strict"],
+ *         computeValue: compilerOptions => {
+ *             return getStrictOptionValue(compilerOptions, "noImplicitThis");
+ *         },
+ *     },
+ *  Line 9262
+ *  export function getStrictOptionValue(compilerOptions: CompilerOptions, flag: StrictOptionName): boolean {
+ *     return compilerOptions[flag] === undefined ? !!compilerOptions.strict : !!compilerOptions[flag];
+ * }
+ * https://github.com/microsoft/TypeScript/blob/56a08250f3516b3f5bc120d6c7ab4450a9a69352/src/compiler/utilities.ts#L9262
+ */
+
 /** This is the list of error codes that can be triggered by the TypeScript compiler.
  * It's divided into: category -> compiler option -> error codes (that might trigger)
  */
@@ -46,6 +61,7 @@ export const TS_ERROR_CODES = {
     isolatedModules: [18055, 18056, 18057],
     preserveSymlinks: [1421],
   } as const,
+  /*
   watchOptions: {
     assumeChangesOnlyAffectDirectDependencies: [6373],
     preserveWatchOutput: [6379], // This affects watch mode behavior rather than emitting errors
@@ -57,17 +73,16 @@ export const TS_ERROR_CODES = {
     disableReferencedProjectLoad: [6371],
     disableSolutionSearching: [6370],
     disableSourceOfProjectReferenceRedirect: [6374],
-  } as const,
+  } as const,*/
   moduleResolution: {
-    moduleResolutionNode: [2307],
-    moduleResolutionBundler: [1479],
+    moduleResolution: [2307, 1479],
     customConditions: [1378],
     resolvePackageJsonExports: [1343],
     resolvePackageJsonImports: [1344],
     verbatimModuleSyntax: [1286, 1287, 1288, 1484, 1485],
   } as const,
   typeCheckingBehavior: {
-    noErrorTruncation: [2322, 2345], // This affects error message display rather than triggering specific errors
+    // noErrorTruncation: [2322, 2345], // This affects error message display rather than triggering specific errors
     exactOptionalPropertyTypes: [2775],
     noUncheckedIndexedAccess: [7061],
     noImplicitOverride: [4114, 4113],
@@ -75,13 +90,8 @@ export const TS_ERROR_CODES = {
   } as const,
   controlFlowOptions: {
     allowUnreachableCode: [7027],
-    allowUnusedLabels: [7028],
-    noUnusedLabels: [7028],
-    noImplicitReturnsInAsyncFunctions: [7030, 1064],
-    allowUnusedParameters: [6134],
+    noImplicitReturns: [7030, 1064],
     noFallthroughCasesInSwitch: [7029],
-    noImplicitReturnsInGenerators: [7030],
-    noPropertyAccessFromComputedKey: [4111],
   } as const,
   buildEmitOptions: {
     noEmit: [6059],
@@ -95,7 +105,7 @@ export const TS_ERROR_CODES = {
     downlevelIteration: [2569],
     emitDeclarationOnly: [5069],
   } as const,
-  strictChecks: {
+  strict: {
     noImplicitAny: [
       7005, 7006, 7008, 7009, 7010, 7011, 7015, 7016, 7017, 7018, 7019, 7031,
       7032, 7033,
