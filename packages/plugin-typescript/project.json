@@ -38,6 +38,9 @@
     },
     "generate-ts-defaults": {
       "command": "npx tsx --tsconfig=packages/plugin-typescript/tsconfig.tools.json packages/plugin-typescript/tools/bin.ts"
+    },
+    "postinstall": {
+      "command": "npx tsx --tsconfig=packages/plugin-typescript/tsconfig.tools.json packages/plugin-typescript/src/postinstall/index.ts"
     }
   },
   "tags": ["scope:plugin", "type:feature", "publishable"]

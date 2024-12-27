@@ -17,6 +17,8 @@ import {
   readTextFile,
   truncateIssueMessage,
 } from '@code-pushup/utils';
+import { generateCurrentTsConfig } from '../../postinstall/utils';
+import { DEFAULT_TS_CONFIG, TS_CONFIG_DIR } from '../constants';
 import { AUDIT_LOOKUP } from './constants.js';
 import type { CompilerOptionName, SemVerString } from './types.js';
 
@@ -117,7 +119,7 @@ export async function loadTargetConfig(tsConfigPath: string) {
   return _TS_CONFIG_MAP.get(tsConfigPath) as ParsedCommandLine;
 }
 
-async function _getCurrentTsVersion(): Promise<SemVerString> {
+export async function getCurrentTsVersion(): Promise<SemVerString> {
   const { stdout } = await executeProcess({
     command: 'npx',
     args: ['-y', 'tsc', '--version'],
@@ -126,19 +128,14 @@ async function _getCurrentTsVersion(): Promise<SemVerString> {
 }
 
 export async function loadTsConfigDefaultsByVersion() {
-  const version = await _getCurrentTsVersion();
-  const __dirname = new URL('.', import.meta.url).pathname;
-  const configPath = join(
-    __dirname,
-    '..',
-    'default-ts-configs',
-    `${version}.ts`,
-  );
+  const version = await getCurrentTsVersion();
+  const configPath = join(TS_CONFIG_DIR, `${version}.ts`);
   try {
     await access(configPath);
   } catch {
+    await generateCurrentTsConfig(version);
     throw new Error(
-      `Could not find default TS config for version ${version}. R The plugin maintainer has to support this version.`,
+      `Could not find default TS config for version ${version} at ${configPath}. The plugin maintainer has to support this version.`,
     );
   }
 

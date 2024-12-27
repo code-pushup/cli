@@ -25,15 +25,11 @@ import { basename, join } from 'node:path';
 import * as process from 'node:process';
 import type { CompilerOptions } from 'typescript';
 import { readTextFile } from '@code-pushup/utils';
-import type { SemVerString } from '../src/lib/runner/types';
+import { TS_CONFIG_DIR } from '../src/lib/constants.js';
+import type { SemVerString } from '../src/lib/runner/types.js';
+import { getCurrentTsVersion } from '../src/lib/runner/utils.js';
+import type { AuditSlug } from '../src/lib/types.js';
 
-export const TS_CONFIG_DIR = join(
-  'packages',
-  'plugin-typescript',
-  'src',
-  'lib',
-  'default-ts-configs',
-);
 export const TMP_TS_CONFIG_DIR = join('tmp', 'plugin-typescript-ts-config');
 
 /**
@@ -86,11 +82,11 @@ export async function updateKnownConfigMap() {
   );
   console.info(versionsToGenerate);
 
-  await Promise.all(versionsToGenerate.map(saveDefaultTsConfig));
+  await Promise.all(versionsToGenerate.map(generateDefaultTsConfig));
 }
 
-export async function saveDefaultTsConfig(version: SemVerString) {
-  await generateTsConfigFile(version);
+export async function generateDefaultTsConfig(version: SemVerString) {
+  await generateRawTsConfigFile(version);
   const config = await extractTsConfig(version);
   await cleanupNpmCache(version);
   return writeFile(
@@ -102,7 +98,7 @@ export async function saveDefaultTsConfig(version: SemVerString) {
   );
 }
 
-export async function generateTsConfigFile(version: SemVerString) {
+export async function generateRawTsConfigFile(version: SemVerString) {
   const dir = join(TMP_TS_CONFIG_DIR, version);
   await ensureDirectoryExists(dir);
   await executeProcess({
@@ -208,4 +204,9 @@ export function parseTsConfigJson(fileContent: string) {
     // remove dangling commas
     .replace(/,\s*}/gm, '}');
   return JSON.parse(parsedFileContent) as CompilerOptions;
+}
+
+export async function generateCurrentTsConfig() {
+  await ensureDirectoryExists(TS_CONFIG_DIR);
+  return generateDefaultTsConfig((await getCurrentTsVersion()) as AuditSlug);
 }

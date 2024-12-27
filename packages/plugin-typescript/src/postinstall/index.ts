@@ -1,7 +1,4 @@
-import {
-  generateCurrentTsConfig,
-  updateKnownConfigMap,
-} from './generate-ts-config.js';
+import { generateCurrentTsConfig } from './utils.js';
 
 // eslint-disable-next-line unicorn/prefer-top-level-await
 (async () => {
