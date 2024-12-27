@@ -3,7 +3,8 @@ import {name as packageName, version} from '../../package.json';
 import {AUDITS, DEFAULT_TS_CONFIG, TYPESCRIPT_PLUGIN_SLUG,} from './constants.js';
 import {createRunnerFunction} from './runner/runner.js';
 import type {TypescriptPluginOptions} from './types.js';
-import {filterAuditsByTsOptions, getCompilerOptionsToDetermineListedAudits} from './utils.js';
+import {filterAuditsByTsOptions, getCompilerOptionsToDetermineListedAudits, getGroups} from './utils.js';
+import {kebabCaseToCamelCase} from "@code-pushup/utils";
 
 export async function typescriptPlugin(
   options?: TypescriptPluginOptions,
@@ -15,20 +16,20 @@ export async function typescriptPlugin(
   const filteredAudits = AUDITS
     .filter(filterAuditsByTsOptions(definitive, options?.onlyAudits));
 
-  const filteredSlugs = filteredAudits.map(audit => audit.slug);
+  const skippedAudits = AUDITS
+    .filter(audit => !filteredAudits.some(filtered => filtered.slug === audit.slug))
+    .map(audit => kebabCaseToCamelCase(audit.slug));
 
-  const originalSlugs = AUDITS.map(audit => audit.slug);
-
-  const notThere = originalSlugs.filter(slug => !filteredSlugs.includes(slug));
-  console.info(notThere);
-  if(notThere.length > 0){
-    console.warn(`Some audits were skipped: [${notThere.join(', ')}]`);
+  if(skippedAudits.length > 0){
+    console.warn(`Some audits were skipped: [${skippedAudits.join(', ')}]`);
   }
 
   console.info('filteredAudits', Object.keys(filteredAudits).length);
   console.info('AUDITS', Object.keys(AUDITS).length);
+  console.info('audits', AUDITS.map(audit => audit.slug));
 
-  //const filteredGroups = GROUPS.filter(filterGroupsByAuditSlug(filteredAudits));
+  const filteredGroups = getGroups(definitive, options?.onlyAudits);
+  console.log(filteredGroups.length, 'CANTIDAD');
   return {
     slug: TYPESCRIPT_PLUGIN_SLUG,
     packageName,
@@ -38,7 +39,7 @@ export async function typescriptPlugin(
     docsUrl: 'https://www.npmjs.com/package/@code-pushup/typescript-plugin/',
     icon: 'typescript',
     audits: filteredAudits,
-    // groups: filteredGroups,
+    groups: filteredGroups,
     runner: createRunnerFunction({
       tsConfigPath,
       filteredAudits

@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { Audit, Group } from '@code-pushup/models';
-import { filterAuditsBySlug, filterGroupsByAuditSlug, handleCompilerOptionStrict } from './utils.js';
+import {
+  filterAuditsBySlug,
+  filterGroupsByAuditSlug,
+  filterGroupsByTsOptions,
+  handleCompilerOptionStrict
+} from './utils.js';
 import type { CompilerOptions } from 'typescript';
+import {GROUPS} from "./constants";
 
 describe('filterAuditsBySlug', () => {
   const mockAudits: Audit[] = [
@@ -124,3 +130,14 @@ describe('handleCompilerOptionStrict', () => {
     expect(result.noImplicitAny).toBe(true);
   });
 });
+
+describe('filterGroupsByTsOptions', () => {
+  it('should filter the groups correctly', () => {
+    expect(GROUPS.filter(filterGroupsByTsOptions({strict: false}, []))).toStrictEqual(expect.arrayContaining([expect.objectContaining({
+      strict: expect.objectContaining({
+        "slug": "strict-null-checks",
+        "weight": 1,
+      })
+    })]));
+  });
+})

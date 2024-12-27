@@ -18,8 +18,13 @@ import {
   typescriptPlugin,
 } from './packages/plugin-typescript/src/index.js';
 import {AUDITS, GROUPS} from './packages/plugin-typescript/src/lib/constants';
-import {filterGroupsByAuditSlug, getFinalAuditSlugs} from './packages/plugin-typescript/src/lib/utils.js';
+import {
+  filterGroupsByAuditSlug,
+  filterGroupsByTsOptions, getCategorieReferences, getCategoryReferences, getCompilerOptionsToDetermineListedAudits,
+  getFinalAuditSlugs, loadTargetConfig, getCategoryRefsFromGroups
+} from './packages/plugin-typescript/src/lib/utils.js';
 import {a} from "vitest/dist/suite-UrZdHRff";
+import {loadTsConfig} from "bundle-require";
 
 export const jsPackagesCategories: CategoryConfig[] = [
   {
@@ -78,14 +83,14 @@ export const eslintCategories: CategoryConfig[] = [
     slug: 'bug-prevention',
     title: 'Bug prevention',
     description: 'Lint rules that find **potential bugs** in your code.',
-    refs: [{ type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 }],
+    refs: [{type: 'group', plugin: 'eslint', slug: 'problems', weight: 1}],
   },
   {
     slug: 'code-style',
     title: 'Code style',
     description:
       'Lint rules that promote **good practices** and consistency in your code.',
-    refs: [{ type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 }],
+    refs: [{type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1}],
   },
 ];
 
@@ -142,21 +147,14 @@ export const typescriptPluginConfigNx = async (
   const opt: TypescriptPluginOptions = {
     ...options,
   };
-
-
   return {
     plugins: [await typescriptPlugin(opt)],
     categories: [
-  /*    {
+      {
         slug: 'typescript',
         title: 'Typescript',
-        refs: AUDITS.filter(filterGroupsByAuditSlug(await getFinalAuditSlugs(opt))).map( ({slug}) => ({
-          type: 'audit',
-          plugin: 'typescript',
-          slug,
-          weight: 1,
-        }))
-      },*/
+        refs: (await getCategoryRefsFromGroups(opt))
+      },
     ],
   };
 };

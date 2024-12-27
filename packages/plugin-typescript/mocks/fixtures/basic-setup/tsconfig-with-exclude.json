@@ -3,13 +3,7 @@
     "rootDir": "./src",
     "strict": true,
     "target": "ES6",
-    "module": "CommonJS",
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "alwaysStrict": true
+    "module": "CommonJS"
   },
   "exclude": ["src/**/*.ts", "src/**/*.js"]
 }

@@ -1,23 +1,17 @@
-import {access, readFile} from 'node:fs/promises';
+import {access} from 'node:fs/promises';
 import {dirname} from 'node:path';
 import {
   type CompilerOptions,
-  type TsConfigSourceFile,
+  parseConfigFileTextToJson,
+  type ParsedCommandLine,
   parseJsonConfigFileContent,
-  sys, readConfigFile, parseConfigFileTextToJson, type ParsedCommandLine,
+  sys,
 } from 'typescript';
-import type {Audit, CategoryRef, Group} from '@code-pushup/models';
-import {
-  camelCaseToKebabCase,
-  executeProcess,
-  kebabCaseToCamelCase,
-  readJsonFile,
-  readTextFile
-} from '@code-pushup/utils';
-import type {AuditSlug, CompilerOptionName, SemVerString, TypescriptPluginOptions} from './types.js';
+import type {CategoryRef, CategoryRef, CategoryRef, Group} from '@code-pushup/models';
+import {camelCaseToKebabCase, executeProcess, kebabCaseToCamelCase, readTextFile} from '@code-pushup/utils';
+import type {AuditSlug, SemVerString, TypescriptPluginOptions} from './types.js';
 import {TS_ERROR_CODES} from "./runner/ts-error-codes.js";
-import {AUDITS, DEFAULT_TS_CONFIG} from "./constants";
-import {getTsConfigurationFromPath} from "./runner/typescript-runner";
+import {DEFAULT_TS_CONFIG, GROUPS, TYPESCRIPT_PLUGIN_SLUG} from "./constants.js";
 
 
 export function filterAuditsBySlug(slugs?: string[]) {
@@ -29,11 +23,30 @@ export function filterAuditsBySlug(slugs?: string[]) {
   };
 }
 
+/**
+ * It transforms a slug code to a compiler option format
+ * By default, kebabCabeToCamelCase.
+ * It will handle also cases like emit-bom that it should be emit-BOM
+ * @param slug Slug to be transformed
+ * @returns The slug as compilerOption key
+ */
+export function auditSlugToCompilerOption(slug: string): string {
+  switch (slug) {
+    case 'emit-bom':
+      return 'emitBOM';
+    default:
+      return kebabCaseToCamelCase(slug);
+  }
+}
+
 export function filterAuditsByTsOptions(compilerOptions: CompilerOptions, onlyAudits?: string[]) {
   return ({slug}: { slug: string }) => {
-
-    const compilerOptionName = slug === 'emit-bom' ? 'emitBOM' : kebabCaseToCamelCase(slug) as CompilerOptionName;
-    const option = compilerOptions[compilerOptionName];
+    const option = compilerOptions[auditSlugToCompilerOption(slug)];
+    if (slug === 'emit-bom') {
+      console.log('-----------------------')
+      console.log(option, slug)
+      console.log((option !== false && option !== undefined) && filterAuditsBySlug(onlyAudits))
+    }
     return (option !== false && option !== undefined) && filterAuditsBySlug(onlyAudits);
   };
 }
@@ -42,8 +55,45 @@ export function filterGroupsByAuditSlug(slugs?: string[]) {
   return ({refs}: Group) => refs.some(filterAuditsBySlug(slugs));
 }
 
-export function filterGroupsByByTsOptions(compilerOptions: CompilerOptions, onlyAudits?: string[]) {
-  return ({refs}: Group) => refs.some(filterAuditsByTsOptions(compilerOptions, onlyAudits));
+export function filterGroupsByTsOptions(compilerOptions: CompilerOptions, onlyAudits?: string[]) {
+  console.log(compilerOptions.emitBOM);
+  console.log(filterAuditsByTsOptions(compilerOptions, onlyAudits), 'filtered')
+  console.log('nuevoo')
+  return ({refs}: Group) => refs.filter(filterAuditsByTsOptions(compilerOptions, onlyAudits));
+}
+
+
+export function getGroups(compilerOptions: CompilerOptions, onlyAudits?: string[]) {
+  return GROUPS
+    .map(group => ({
+      ...group,
+      refs: group.refs.filter(filterAuditsByTsOptions(compilerOptions, onlyAudits))
+    }))
+    .filter(group => group.refs.length > 0);
+}
+
+/**
+ * Retrieve the category references from the groups (already processed from the audits).
+ * Used in the code-pushup preset
+ * @param opt TSPluginOptions
+ * @returns The array of category references
+ */
+export async function getCategoryRefsFromGroups(opt?: TypescriptPluginOptions): Promise<CategoryRef[]> {
+
+  const definitive = await getCompilerOptionsToDetermineListedAudits(opt);
+
+  return GROUPS
+    .map(group => ({
+      ...group,
+      refs: group.refs.filter(filterAuditsByTsOptions(definitive, opt?.onlyAudits))
+    }))
+    .filter(group => group.refs.length > 0)
+    .map(({slug}) => ({
+      plugin: TYPESCRIPT_PLUGIN_SLUG,
+      slug,
+      weight: 1,
+      type: 'group',
+    }));
 }
 
 export async function getCurrentTsVersion(): Promise<SemVerString> {
