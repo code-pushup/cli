@@ -1,4 +1,5 @@
 import { access } from 'node:fs/promises';
+// eslint-disable-next-line unicorn/import-style
 import { dirname, join } from 'node:path';
 import {
   type CompilerOptions,
@@ -10,7 +11,6 @@ import {
   parseJsonConfigFileContent,
   sys,
 } from 'typescript';
-// eslint-disable-next-line unicorn/import-style
 import type { Issue } from '@code-pushup/models';
 import {
   executeProcess,

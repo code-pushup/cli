@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import config544 from './default-ts-configs/5.4.4.js';
 import type { TypescriptPluginOptions } from './types.js';
 import { normalizeCompilerOptions } from './utils.js';
 import * as utilsModule from './utils.js';

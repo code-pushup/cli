@@ -1,3 +1,4 @@
+// eslint-disable-next-line unicorn/import-style
 import { join } from 'node:path';
 import type { Audit, Group } from '@code-pushup/models';
 import { camelCaseToKebabCase, kebabCaseToSentence } from '@code-pushup/utils';

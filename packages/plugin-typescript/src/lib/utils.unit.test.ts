@@ -29,58 +29,7 @@ describe('filterAuditsBySlug', () => {
     },
   );
 });
-/*
-describe('filterGroupsByAuditSlug', () => {
-  const mockGroups: Group[] = [
-    {
-      slug: 'group-1',
-      title: 'Group 1',
-      refs: [
-        { slug: 'audit-1', weight: 1 },
-        { slug: 'audit-2', weight: 1 },
-      ],
-    },
-    {
-      slug: 'group-2',
-      title: 'Group 2',
-      refs: [{ slug: 'audit-3', weight: 1 }],
-    },
-    {
-      slug: 'group-3',
-      title: 'Group 3',
-      refs: [
-        { slug: 'audit-4', weight: 1 },
-        { slug: 'audit-5', weight: 1 },
-      ],
-    },
-  ];
 
-  it.each(mockGroups)(
-    'should return true for group %# when no slugs provided',
-    group => {
-      const filter = filterGr();
-      expect(filter(group)).toBe(true);
-    },
-  );
-
-  it.each(mockGroups)(
-    'should return true for group %# when empty slugs array provided',
-    group => {
-      const filter = filterGroupsByAuditSlug([]);
-      expect(filter(group)).toBe(true);
-    },
-  );
-
-  it.each([
-    [mockGroups[0], true],
-    [mockGroups[1], true],
-    [mockGroups[2], false],
-  ])('should filter group %# by audit slugs', (group, expected) => {
-    const filter = filterGroupsByAuditSlug(['audit-1', 'audit-3']);
-    expect(filter(group!)).toBe(expected);
-  });
-});
-*/
 describe('handleCompilerOptionStrict', () => {
   it('should return original options when strict is false', () => {
     const options: CompilerOptions = {
