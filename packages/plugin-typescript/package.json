@@ -30,6 +30,6 @@
     "@push-based/nx-verdaccio": "0.0.0-alpha.26"
   },
   "scripts": {
-    "postinstall": "node ./postinstall/index.js"
+    "postinstall": "node ./src/postinstall/index.js"
   }
 }

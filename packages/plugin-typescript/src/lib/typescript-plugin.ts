@@ -1,5 +1,4 @@
 import type { PluginConfig } from '@code-pushup/models';
-import { name as packageName, version } from '../../package.json';
 import { DEFAULT_TS_CONFIG, TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
 import { createRunnerFunction } from './runner/runner.js';
 import type { TypescriptPluginOptions } from './types.js';
@@ -9,6 +8,11 @@ import {
   logSkippedAudits,
 } from './utils.js';
 import {normalizeCompilerOptions} from "./normalize-compiler-options.js";
+import {createRequire} from "node:module";
+
+const packageJson = createRequire(import.meta.url)(
+  '../../package.json',
+) as typeof import('../../package.json');
 
 export async function typescriptPlugin(
   options?: TypescriptPluginOptions,
@@ -23,8 +27,8 @@ export async function typescriptPlugin(
 
   return {
     slug: TYPESCRIPT_PLUGIN_SLUG,
-    packageName,
-    version,
+    packageName: packageJson.name,
+    version: packageJson.version,
     title: 'Typescript',
     description: 'Official Code PushUp Typescript plugin.',
     docsUrl: 'https://www.npmjs.com/package/@code-pushup/typescript-plugin/',

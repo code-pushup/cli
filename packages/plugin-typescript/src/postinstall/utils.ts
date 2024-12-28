@@ -1,8 +1,7 @@
 // Run typescript init (with a version specified) to generate a tsconfig.json that will have all defaults listed.
 // store this json per ts version in src/default-configs.ts
 // get a list of TS version, maybe from npm and somehow filter only versions
-import { executeProcess } from '@push-based/nx-verdaccio/src/internal/execute-process';
-import { ensureDirectoryExists } from '@push-based/nx-verdaccio/src/internal/file-system';
+import { executeProcess, ensureDirectoryExists } from '@code-pushup/utils';
 import { writeFile } from 'node:fs/promises';
 // eslint-disable-next-line unicorn/import-style
 import { join } from 'node:path';
