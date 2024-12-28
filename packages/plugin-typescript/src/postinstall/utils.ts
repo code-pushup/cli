@@ -5,7 +5,11 @@ import { writeFile } from 'node:fs/promises';
 // eslint-disable-next-line unicorn/import-style
 import { join } from 'node:path';
 import type { CompilerOptions } from 'typescript';
-import { ensureDirectoryExists, executeProcess , readTextFile } from '@code-pushup/utils';
+import {
+  ensureDirectoryExists,
+  executeProcess,
+  readTextFile,
+} from '@code-pushup/utils';
 import { TS_CONFIG_DIR } from '../lib/constants.js';
 import type { SemVerString } from '../lib/runner/types.js';
 import { getCurrentTsVersion } from '../lib/runner/utils.js';

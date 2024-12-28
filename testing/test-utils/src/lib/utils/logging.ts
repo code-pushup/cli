@@ -1,4 +1,3 @@
- 
 export function getLogMessages(logger: any): string[] {
   return logger
     .getRenderer()
