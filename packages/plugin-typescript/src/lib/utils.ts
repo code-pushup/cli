@@ -150,13 +150,13 @@ export async function normalizeCompilerOptions(
   });
 }
 
-export function validateAudits(filteredAudits: Audit[]) {
+export function validateAudits(audits: Audit[]) {
   const skippedAudits = AUDITS.filter(
-    audit => !filteredAudits.some(filtered => filtered.slug === audit.slug),
+    audit => !audits.some(filtered => filtered.slug === audit.slug),
   ).map(audit => kebabCaseToCamelCase(audit.slug));
   if (skippedAudits.length > 0) {
     console.warn(
-      `Some audits were skipped because the configuration of the compiler options [${skippedAudits.join(', ')}]`,
+      `Skipped audits because the compiler options disabled: [${skippedAudits.join(', ')}]`,
     );
   }
 }

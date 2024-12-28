@@ -6,6 +6,7 @@ import {
   filterAuditsByCompilerOptions,
   filterAuditsBySlug,
   handleCompilerOptionStrict,
+  normalizeCompilerOptions,
   validateAudits,
 } from './utils.js';
 
@@ -93,17 +94,15 @@ describe('handleCompilerOptionStrict', () => {
   it('should return original options when strict is false', () => {
     const options: CompilerOptions = {
       strict: false,
-      target: 2,
     };
 
     const result = handleCompilerOptionStrict(options);
-    expect(result).toB(options);
+    expect(result).toBe(options);
   });
 
   it('should add all strict options when strict is true', () => {
     const options: CompilerOptions = {
       strict: true,
-      target: 2,
     };
 
     const result = handleCompilerOptionStrict(options);
@@ -121,17 +120,29 @@ describe('handleCompilerOptionStrict', () => {
     });
   });
 
-  it('should preserve existing option values while adding strict options', () => {
+  it('should add all strict options when strict is true and override existing value', () => {
     const options: CompilerOptions = {
       strict: true,
-      target: 2,
       noImplicitAny: false,
     };
 
     const result = handleCompilerOptionStrict(options);
 
-    expect(result.target).toBe(2);
     expect(result.noImplicitAny).toBe(true);
+  });
+
+  it('should preserve existing option values while adding strict options', () => {
+    const options: CompilerOptions = {
+      strict: true,
+      target: 2,
+      verbatimModuleSyntax: false,
+    };
+
+    const result = handleCompilerOptionStrict(options);
+
+    expect(result.strict).toBe(true);
+    expect(result.target).toBe(2);
+    expect(result.verbatimModuleSyntax).toBe(false);
   });
 });
 
@@ -147,23 +158,28 @@ describe('validateAudits', () => {
   });
 
   it('should not warn when all audits are included', () => {
-    const filteredAudits = AUDITS.map(audit => ({ ...audit }));
-
-    validateAudits(filteredAudits);
+    validateAudits(AUDITS);
 
     expect(console.warn).not.toHaveBeenCalled();
   });
 
   it('should warn about skipped audits', () => {
-    const filteredAudits = AUDITS.slice(1); // Removes an audit
-    validateAudits(filteredAudits);
+    validateAudits(AUDITS.slice(0, -1));
 
-    expect(console.warn).toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        `Skipped audits because the compiler options disabled: [`,
+      ),
+    );
   });
 
-  it('should warn of all audits when filteredAudits are empty', () => {
-    validateAudits([]);
+  it('should camel case the slugs in the audit message', () => {
+    validateAudits(AUDITS.slice(0, -1));
 
-    expect(console.warn).toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining(`strictFunctionTypes`),
+    );
   });
 });
