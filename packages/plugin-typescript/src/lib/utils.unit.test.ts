@@ -3,31 +3,90 @@ import { describe, expect, it, vi } from 'vitest';
 import type { Audit } from '@code-pushup/models';
 import { AUDITS } from './constants.js';
 import {
+  filterAuditsByCompilerOptions,
   filterAuditsBySlug,
   handleCompilerOptionStrict,
   validateAudits,
 } from './utils.js';
 
 describe('filterAuditsBySlug', () => {
-  const mockAudits: Audit[] = [
-    { slug: 'test-1', title: 'Test 1' },
-    { slug: 'test-2', title: 'Test 2' },
-    { slug: 'test-3', title: 'Test 3' },
-  ];
+  const mockAudit = { slug: 'strict-function-types' } as Audit;
 
-  it.each([
-    [undefined, mockAudits, [true, true, true]],
-    [[], mockAudits, [true, true, true]],
-    [['test-1', 'test-2'], mockAudits, [true, true, false]],
-  ])(
-    'should filter audits correctly when slugs is %p',
-    (slugs, audits, expected) => {
-      const filter = filterAuditsBySlug(slugs);
-      audits.forEach((audit, index) => {
-        expect(filter(audit)).toBe(expected[index]);
-      });
-    },
-  );
+  it('should return true if slugs are undefined', () => {
+    expect(filterAuditsBySlug(undefined)(mockAudit)).toBe(true);
+  });
+
+  it('should return true if slugs are empty', () => {
+    expect(filterAuditsBySlug([])(mockAudit)).toBe(true);
+  });
+
+  it('should return true if slugs are including the current audit slug', () => {
+    expect(filterAuditsBySlug(['strict-function-types'])(mockAudit)).toBe(true);
+  });
+
+  it('should return false if slugs are not including the current audit slug', () => {
+    expect(filterAuditsBySlug(['verbatim-module-syntax'])(mockAudit)).toBe(
+      false,
+    );
+  });
+});
+
+describe('filterAuditsByCompilerOptions', () => {
+  it('should return false if the audit is false in compiler options', () => {
+    expect(
+      filterAuditsByCompilerOptions(
+        {
+          strictFunctionTypes: false,
+        },
+        ['strict-function-types'],
+      )({ slug: 'strict-function-types' }),
+    ).toBe(false);
+  });
+
+  it('should return false if the audit is undefined in compiler options', () => {
+    expect(
+      filterAuditsByCompilerOptions(
+        {
+          strictFunctionTypes: undefined,
+        },
+        ['strict-function-types'],
+      )({ slug: 'strict-function-types' }),
+    ).toBe(false);
+  });
+
+  it('should return false if the audit is enabled in compiler options but not in onlyAudits', () => {
+    const onlyAudits = ['strict-null-checks'];
+    expect(
+      filterAuditsByCompilerOptions(
+        {
+          strictFunctionTypes: true,
+        },
+        onlyAudits,
+      )({ slug: 'strict-function-types' }),
+    ).toBe(false);
+  });
+
+  it('should return true if the audit is enabled in compiler options and onlyAudits is empty', () => {
+    expect(
+      filterAuditsByCompilerOptions(
+        {
+          strictFunctionTypes: true,
+        },
+        [],
+      )({ slug: 'strict-function-types' }),
+    ).toBe(true);
+  });
+
+  it('should return true if the audit is enabled in compiler options and in onlyAudits', () => {
+    expect(
+      filterAuditsByCompilerOptions(
+        {
+          strictFunctionTypes: true,
+        },
+        ['strict-function-types'],
+      )({ slug: 'strict-function-types' }),
+    ).toBe(true);
+  });
 });
 
 describe('handleCompilerOptionStrict', () => {
@@ -38,7 +97,7 @@ describe('handleCompilerOptionStrict', () => {
     };
 
     const result = handleCompilerOptionStrict(options);
-    expect(result).toEqual(options);
+    expect(result).toB(options);
   });
 
   it('should add all strict options when strict is true', () => {
@@ -49,7 +108,7 @@ describe('handleCompilerOptionStrict', () => {
 
     const result = handleCompilerOptionStrict(options);
 
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       ...options,
       noImplicitAny: true,
       noImplicitThis: true,

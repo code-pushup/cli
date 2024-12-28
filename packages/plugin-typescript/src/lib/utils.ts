@@ -54,7 +54,9 @@ export function filterAuditsByCompilerOptions(
   return ({ slug }: { slug: string }) => {
     const option = compilerOptions[auditSlugToCompilerOption(slug)];
     return (
-      option !== false && option !== undefined && filterAuditsBySlug(onlyAudits)
+      option !== false &&
+      option !== undefined &&
+      filterAuditsBySlug(onlyAudits)({ slug })
     );
   };
 }
