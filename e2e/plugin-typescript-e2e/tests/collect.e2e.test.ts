@@ -26,6 +26,13 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
     await teardownTestFolder(testFileDir);
   });
 
+  it('should have current TS version defaults generated after install', async () => {
+    await expect(readJsonFile(
+      path.join(testFileDir, 'node_modules', '.code-pushup', 'plugin-typescript', 'default-ts-configs', await getCurrentTsVersion()),
+    )).resolves.not.toThrow();
+  });
+
+
   it('should run plugin over CLI and creates report.json', async () => {
     const {code, stdout} = await executeProcess({
       command: 'npx',
@@ -38,8 +45,5 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
     const cleanStdout = removeColorCodes(stdout);
     expect(cleanStdout).toContain('● NoImplicitAny');
 
-    await expect(readJsonFile(
-      path.join('node_modules', '.code-pushup', 'plugin-typescript', 'default-ts-configs', await getCurrentTsVersion()),
-    )).resolves.not.toThrow();
   });
 });

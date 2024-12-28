@@ -1,8 +1,7 @@
-import type { Logger } from '@poppinss/cliui';
-
-export function getLogMessages(logger: Logger): string[] {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getLogMessages(logger: any): string[] {
   return logger
     .getRenderer()
     .getLogs()
-    .map(({ message }) => message);
+    .map(({ message }: {message: string}) => message);
 }
