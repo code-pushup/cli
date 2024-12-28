@@ -4,7 +4,7 @@ import baseConfig from '../../eslint.config.js';
 export default tseslint.config(
   ...baseConfig,
   {
-    files: ['**/*.ts', '!**/default-ts-configs', '!**/mocks'],
+    files: ['**/*.ts', '!**/mocks'],
     languageOptions: {
       parserOptions: {
         projectService: true,

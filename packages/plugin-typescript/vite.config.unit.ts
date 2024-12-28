@@ -19,10 +19,7 @@ export default defineConfig({
       exclude: ['mocks/**', '**/types.ts'],
     },
     environment: 'node',
-    include: [
-      'src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-      'tools/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-    ],
+    include: ['src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     globalSetup: ['../../global-setup.ts'],
     setupFiles: [
       '../../testing/test-setup/src/lib/cliui.mock.ts',

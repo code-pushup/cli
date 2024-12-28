@@ -36,9 +36,6 @@
         "configFile": "packages/plugin-typescript/vite.config.integration.ts"
       }
     },
-    "generate-ts-defaults": {
-      "command": "npx tsx --tsconfig=packages/plugin-typescript/tsconfig.tools.json packages/plugin-typescript/tools/bin.ts"
-    },
     "postinstall": {
       "command": "npx tsx --tsconfig=packages/plugin-typescript/tsconfig.tools.json packages/plugin-typescript/src/postinstall/index.ts"
     }
