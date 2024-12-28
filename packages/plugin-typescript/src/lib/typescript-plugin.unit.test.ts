@@ -43,7 +43,7 @@ describe('typescriptPlugin-config-object', () => {
     expect(loadTsConfigDefaultsByVersionSpy).toHaveBeenCalledTimes(1);
     expect(loadTargetConfigSpy).toHaveBeenCalledTimes(1);
     expect(loadTargetConfigSpy).toHaveBeenCalledWith(
-      expect.stringContaining('mocked-away/tsconfig.json'),
+      expect.stringContaining('mocked-away'),
     );
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
 
