@@ -1,7 +1,11 @@
-import {describe, expect, it, vi} from 'vitest';
-import type {Audit} from '@code-pushup/models';
-import {AUDITS} from './constants.js';
-import {filterAuditsByCompilerOptions, filterAuditsBySlug, logSkippedAudits,} from './utils.js';
+import { describe, expect, it, vi } from 'vitest';
+import type { Audit } from '@code-pushup/models';
+import { AUDITS } from './constants.js';
+import {
+  filterAuditsByCompilerOptions,
+  filterAuditsBySlug,
+  logSkippedAudits,
+} from './utils.js';
 
 describe('filterAuditsBySlug', () => {
   const mockAudit = { slug: 'strict-function-types' } as Audit;

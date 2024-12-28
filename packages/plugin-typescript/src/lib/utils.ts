@@ -1,9 +1,14 @@
-import type {CompilerOptions} from 'typescript';
-import type {Audit, CategoryRef} from '@code-pushup/models';
-import {kebabCaseToCamelCase} from '@code-pushup/utils';
-import {AUDITS, GROUPS, TYPESCRIPT_PLUGIN_SLUG,} from './constants.js';
-import type {TypescriptPluginOptions} from './types.js';
-import {normalizeCompilerOptions} from "./normalize-compiler-options.js";
+import type { CompilerOptions } from 'typescript';
+import type { Audit, CategoryRef } from '@code-pushup/models';
+import { kebabCaseToCamelCase } from '@code-pushup/utils';
+import {
+  AUDITS,
+  DEFAULT_TS_CONFIG,
+  GROUPS,
+  TYPESCRIPT_PLUGIN_SLUG,
+} from './constants.js';
+import { normalizeCompilerOptions } from './normalize-compiler-options.js';
+import type { TypescriptPluginOptions } from './types.js';
 
 export function filterAuditsBySlug(slugs?: string[]) {
   return ({ slug }: { slug: string }) => {
@@ -83,9 +88,10 @@ export function getAudits(
  * @returns The array of category references
  */
 export async function getCategoryRefsFromGroups(
-  opt: TypescriptPluginOptions,
+  opt?: TypescriptPluginOptions,
 ): Promise<CategoryRef[]> {
-  const definitive = await normalizeCompilerOptions(opt);
+  const { tsConfigPath } = opt ?? { tsConfigPath: DEFAULT_TS_CONFIG };
+  const definitive = await normalizeCompilerOptions({ ...opt, tsConfigPath });
   return GROUPS.map(group => ({
     ...group,
     refs: group.refs.filter(

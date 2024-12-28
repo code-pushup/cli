@@ -1,6 +1,9 @@
-import type {CompilerOptions} from 'typescript';
-import {describe, expect, it} from 'vitest';
-import {handleCompilerOptionStrict, normalizeCompilerOptions} from "./normalize-compiler-options.js";
+import type { CompilerOptions } from 'typescript';
+import { describe, expect, it } from 'vitest';
+import {
+  handleCompilerOptionStrict,
+  normalizeCompilerOptions,
+} from './normalize-compiler-options.js';
 
 describe('handleCompilerOptionStrict', () => {
   it('should return original options when strict is false', () => {
@@ -58,9 +61,13 @@ describe('handleCompilerOptionStrict', () => {
   });
 });
 
-
 describe('normalizeCompilerOptions', () => {
-  it.todo('should return default compiler options from provided file', async () => {
-    expect(await normalizeCompilerOptions({tsConfigPath: ''})).toStrictEqual({}) ;
-  })
-})
+  it.todo(
+    'should return default compiler options from provided file',
+    async () => {
+      expect(
+        await normalizeCompilerOptions({ tsConfigPath: '' }),
+      ).toStrictEqual({});
+    },
+  );
+});

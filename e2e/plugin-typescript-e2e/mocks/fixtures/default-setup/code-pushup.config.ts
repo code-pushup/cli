@@ -1,5 +1,5 @@
 import type { CoreConfig } from '@code-pushup/models';
-import {typescriptPlugin} from "@code-pushup/typescript-plugin";
+import {getCategoryRefsFromGroups, typescriptPlugin} from "@code-pushup/typescript-plugin";
 
 export default {
   plugins: [
@@ -7,5 +7,13 @@ export default {
       tsConfigPath: 'tsconfig.json',
     }),
   ],
-  categories: [],
+  categories: [
+    {
+      slug: 'typescript-quality',
+      title: 'Typescript',
+      refs: await getCategoryRefsFromGroups({
+        tsConfigPath: 'tsconfig.json',
+      })
+    }
+  ],
 } satisfies CoreConfig;

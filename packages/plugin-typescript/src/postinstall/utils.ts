@@ -1,12 +1,11 @@
 // Run typescript init (with a version specified) to generate a tsconfig.json that will have all defaults listed.
 // store this json per ts version in src/default-configs.ts
 // get a list of TS version, maybe from npm and somehow filter only versions
-import { executeProcess, ensureDirectoryExists } from '@code-pushup/utils';
 import { writeFile } from 'node:fs/promises';
 // eslint-disable-next-line unicorn/import-style
 import { join } from 'node:path';
 import type { CompilerOptions } from 'typescript';
-import { readTextFile } from '@code-pushup/utils';
+import { ensureDirectoryExists, executeProcess , readTextFile } from '@code-pushup/utils';
 import { TS_CONFIG_DIR } from '../lib/constants.js';
 import type { SemVerString } from '../lib/runner/types.js';
 import { getCurrentTsVersion } from '../lib/runner/utils.js';

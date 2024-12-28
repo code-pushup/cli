@@ -1,7 +1,10 @@
-import type {TypescriptPluginOptions} from "./types.js";
-import {loadTargetConfig, loadTsConfigDefaultsByVersion} from "./runner/utils.js";
-import type {CompilerOptions} from "typescript";
-import {TS_ERROR_CODES} from "./runner/ts-error-codes.js";
+import type { CompilerOptions } from 'typescript';
+import { TS_ERROR_CODES } from './runner/ts-error-codes.js';
+import {
+  loadTargetConfig,
+  loadTsConfigDefaultsByVersion,
+} from './runner/utils.js';
+import type { TypescriptPluginOptions } from './types.js';
 
 /**
  * It will evaluate if the option strict is enabled. If so, it must enable all it's dependencies.
@@ -33,10 +36,11 @@ export function handleCompilerOptionStrict(options: CompilerOptions) {
 export async function normalizeCompilerOptions(
   options: Required<Pick<TypescriptPluginOptions, 'tsConfigPath'>>,
 ) {
-  const {tsConfigPath} = options;
-  const {compilerOptions: defaultCompilerOptions} =
+  const { tsConfigPath } = options;
+  const { compilerOptions: defaultCompilerOptions } =
     await loadTsConfigDefaultsByVersion();
-  const {options: targetCompilerOptions} = await loadTargetConfig(tsConfigPath);
+  const { options: targetCompilerOptions } =
+    await loadTargetConfig(tsConfigPath);
   return handleCompilerOptionStrict({
     ...defaultCompilerOptions,
     ...targetCompilerOptions,
