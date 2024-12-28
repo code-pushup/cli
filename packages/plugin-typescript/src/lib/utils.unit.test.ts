@@ -6,7 +6,6 @@ import {
   filterAuditsByCompilerOptions,
   filterAuditsBySlug,
   handleCompilerOptionStrict,
-  normalizeCompilerOptions,
   validateAudits,
 } from './utils.js';
 
