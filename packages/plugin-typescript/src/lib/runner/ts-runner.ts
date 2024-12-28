@@ -1,11 +1,5 @@
-import {
-  type CompilerOptions,
-  type Diagnostic,
-  createProgram,
-  getPreEmitDiagnostics,
-} from 'typescript';
-import { AUDIT_LOOKUP } from './constants.js';
-import { loadTargetConfig } from './utils.js';
+import {type CompilerOptions, createProgram, type Diagnostic, getPreEmitDiagnostics,} from 'typescript';
+import {loadTargetConfig, validateDiagnostics} from './utils.js';
 
 export type DiagnosticsOptions = {
   fileNames: string[];
@@ -28,14 +22,4 @@ export async function getTypeScriptDiagnostics(
       `Can't create TS program in getDiagnostics. \n ${(error as Error).message}`,
     );
   }
-}
-
-export function validateDiagnostics(diagnostics: readonly Diagnostic[]) {
-  diagnostics
-    .filter(({ code }) => !AUDIT_LOOKUP.has(code))
-    .forEach(({ code, messageText }) => {
-      console.warn(
-        `Diagnostic Warning: The code ${code} is not supported. ${messageText}`,
-      );
-    });
 }

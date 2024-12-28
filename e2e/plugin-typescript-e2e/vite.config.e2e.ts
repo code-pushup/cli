@@ -11,6 +11,11 @@ export default defineConfig({
     alias: tsconfigPathAliases(),
     pool: 'threads',
     poolOptions: { threads: { singleThread: true } },
+    coverage: {
+      reporter: ['text', 'lcov'],
+      reportsDirectory: '../../coverage/plugin-typescript-e2e/e2e-tests',
+      exclude: ['mocks/**', '**/types.ts'],
+    },
     cache: {
       dir: '../../node_modules/.vitest',
     },

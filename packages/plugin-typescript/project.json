@@ -37,7 +37,7 @@
       }
     },
     "postinstall": {
-      "command": "npx tsx --tsconfig=packages/plugin-typescript/tsconfig.tools.json packages/plugin-typescript/src/postinstall/index.ts"
+      "command": "npx tsx --tsconfig=packages/plugin-typescript/tsconfig.lib.json packages/plugin-typescript/src/postinstall/index.ts"
     }
   },
   "tags": ["scope:plugin", "type:feature", "publishable"]

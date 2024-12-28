@@ -1,10 +1,34 @@
-import { type Diagnostic, DiagnosticCategory } from 'typescript';
-import { beforeEach, describe, expect } from 'vitest';
-import {
-  getIssueFromDiagnostic,
-  getSeverity,
-  tSCodeToAuditSlug,
-} from './utils.js';
+import {type Diagnostic, DiagnosticCategory,} from 'typescript';
+import {beforeEach, describe, expect} from 'vitest';
+import {getIssueFromDiagnostic, getSeverity, tSCodeToAuditSlug, validateDiagnostics,} from './utils.js';
+
+describe('validateDiagnostics', () => {
+  const consoleWarnSpy = vi.spyOn(console, 'warn');
+
+  it('should not log for known error codes', () => {
+    expect(() =>
+      validateDiagnostics([
+        {
+          code: 7005,
+          messageText: 'strich checks error',
+        } as Diagnostic,
+      ]),
+    ).not.toThrow();
+    expect(consoleWarnSpy).toHaveBeenCalledTimes(0);
+  });
+
+  it.todo('should log for known error codes', () => {
+    expect(() =>
+      validateDiagnostics([
+        {
+          code: 1337,
+          messageText: 'unknown error code',
+        } as Diagnostic,
+      ]),
+    ).not.toThrow();
+    expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+  });
+});
 
 describe('tSCodeToAuditSlug', () => {
   it.each(Object.entries({}))(

@@ -1,9 +1,12 @@
-import { describe, expect, it, vi } from 'vitest';
-import type { Audit } from '@code-pushup/models';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { type Audit, categoryRefSchema } from '@code-pushup/models';
+import config554 from '../../mocks/fixtures/default-ts-configs/5.5.4';
 import { AUDITS } from './constants.js';
+import * as runnerUtilsModule from './runner/utils.js';
 import {
   filterAuditsByCompilerOptions,
   filterAuditsBySlug,
+  getCategoryRefsFromGroups,
   logSkippedAudits,
 } from './utils.js';
 
@@ -84,6 +87,53 @@ describe('filterAuditsByCompilerOptions', () => {
         ['strict-function-types'],
       )({ slug: 'strict-function-types' }),
     ).toBe(true);
+  });
+});
+
+describe('getCategoryRefsFromGroups', () => {
+  const loadTsConfigDefaultsByVersionSpy = vi.spyOn(
+    runnerUtilsModule,
+    'loadTsConfigDefaultsByVersion',
+  );
+  const loadTargetConfigSpy = vi.spyOn(runnerUtilsModule, 'loadTargetConfig');
+
+  beforeEach(() => {
+    loadTsConfigDefaultsByVersionSpy.mockResolvedValue(config554 as any);
+    loadTargetConfigSpy.mockResolvedValue({
+      options: {
+        verbatimModuleSyntax: false,
+      },
+      fileNames: [],
+      errors: [],
+    });
+  });
+
+  it('should return all groups as categoryRefs if no compiler options are given', async () => {
+    const categoryRefs = await getCategoryRefsFromGroups();
+    expect(categoryRefs).toHaveLength(7);
+    expect(loadTsConfigDefaultsByVersionSpy).toHaveBeenCalledTimes(1);
+    expect(loadTargetConfigSpy).toHaveBeenCalledTimes(1);
+    expect(loadTargetConfigSpy).toHaveBeenCalledWith(
+      expect.stringContaining('tsconfig.json'),
+    );
+    expect(() =>
+      categoryRefs.map(categoryRefSchema.parse as () => unknown),
+    ).not.toThrow();
+  });
+
+  it('should return all groups as categoryRefs if compiler options are given', async () => {
+    const categoryRefs = await getCategoryRefsFromGroups({
+      tsConfigPath: 'tsconfig.json',
+    });
+    expect(categoryRefs).toHaveLength(7);
+  });
+
+  it('should return a subset of all groups as categoryRefs if compiler options contain onlyAudits filter', async () => {
+    const categoryRefs = await getCategoryRefsFromGroups({
+      tsConfigPath: 'tsconfig.json',
+      onlyAudits: ['no-implicit-any'],
+    });
+    expect(categoryRefs).toHaveLength(1);
   });
 });
 

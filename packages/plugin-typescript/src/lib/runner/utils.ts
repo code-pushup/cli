@@ -66,7 +66,9 @@ export function getIssueFromDiagnostic(diag: Diagnostic) {
 
   // If undefined, the error might be global (e.g., invalid compiler option).
   if (diag.file === undefined) {
-    throw new Error(message);
+    throw new Error(
+      `Error with code ${diag.code} has no file given. Message: ${message}`,
+    );
   }
 
   const startLine =
@@ -145,4 +147,14 @@ export async function loadTsConfigDefaultsByVersion() {
       `Could load default TS config for version ${version}. /n ${(error as Error).message}`,
     );
   }
+}
+
+export function validateDiagnostics(diagnostics: readonly Diagnostic[]) {
+  diagnostics
+    .filter(({ code }) => !AUDIT_LOOKUP.has(code))
+    .forEach(({ code, messageText }) => {
+      console.warn(
+        `Diagnostic Warning: The code ${code} is not supported. ${messageText}`,
+      );
+    });
 }

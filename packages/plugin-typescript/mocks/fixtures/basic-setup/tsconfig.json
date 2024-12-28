@@ -4,7 +4,7 @@
     "strict": true,
     "verbatimModuleSyntax": false,
     "target": "ES6",
-    "module": "CommonJSsss"
+    "module": "CommonJS"
   },
   "include": ["src/**/*.ts", "src/**/*.js"],
 }

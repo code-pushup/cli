@@ -1,3 +1,6 @@
+// eslint-disable-next-line unicorn/import-style
+import { join } from 'node:path';
+import * as process from 'node:process';
 import type { CompilerOptions } from 'typescript';
 import { TS_ERROR_CODES } from './runner/ts-error-codes.js';
 import {
@@ -39,8 +42,9 @@ export async function normalizeCompilerOptions(
   const { tsConfigPath } = options;
   const { compilerOptions: defaultCompilerOptions } =
     await loadTsConfigDefaultsByVersion();
-  const { options: targetCompilerOptions } =
-    await loadTargetConfig(tsConfigPath);
+  const { options: targetCompilerOptions } = await loadTargetConfig(
+    join(process.cwd(), tsConfigPath),
+  );
   return handleCompilerOptionStrict({
     ...defaultCompilerOptions,
     ...targetCompilerOptions,

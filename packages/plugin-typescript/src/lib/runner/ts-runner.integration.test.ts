@@ -1,26 +1,16 @@
 import { describe, expect } from 'vitest';
 import { getTypeScriptDiagnostics } from './ts-runner.js';
+import * as utilsModule from './utils.js';
 
 describe('getTypeScriptDiagnostics', () => {
-  it('should accept valid options', async () => {
+  const validateDiagnosticsSpy = vi.spyOn(utilsModule, 'validateDiagnostics');
+
+  it('should return valid diagnostics', async () => {
     await expect(
       getTypeScriptDiagnostics(
         'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
       ),
-    ).resolves.toStrictEqual({
-      compilerOptions: {
-        configFilePath: undefined,
-        module: 1,
-        rootDir: expect.any(String),
-        strict: true,
-        target: 2,
-      },
-      fileNames: expect.arrayContaining([
-        expect.any(String),
-        expect.any(String),
-        expect.any(String),
-        expect.any(String),
-      ]),
-    });
+    ).resolves.toHaveLength(4);
+    expect(validateDiagnosticsSpy).toHaveBeenCalledTimes(1);
   });
 });

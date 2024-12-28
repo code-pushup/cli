@@ -13,7 +13,7 @@ import type { CompilerOptionName } from './types.js';
 import { getIssueFromDiagnostic, tSCodeToAuditSlug } from './utils.js';
 
 export type RunnerOptions = TypescriptPluginOptions & {
-  expectedAudits: Audit[];
+  expectedAudits: Pick<Audit, 'slug'>[];
 };
 
 export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
@@ -45,12 +45,13 @@ export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
           Pick<AuditReport, 'slug' | 'details'>
         >,
       );
-    return options.expectedAudits.map(audit => {
-      const { details } = result[audit.slug as CompilerOptionName] || {};
+
+    return options.expectedAudits.map(({ slug }) => {
+      const { details } = result[slug as CompilerOptionName] ?? {};
 
       const issues = details?.issues ?? [];
       return {
-        ...audit,
+        slug,
         score: issues.length === 0 ? 1 : 0,
         value: issues.length,
         ...(issues.length > 0 ? { details } : {}),
