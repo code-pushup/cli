@@ -37,13 +37,13 @@ describe('typescriptPlugin-config-object', () => {
 
   it('should create valid plugin config', async () => {
     const pluginConfig = await typescriptPlugin({
-      tsConfigPath: 'mocked/away/tsconfig.json',
+      tsConfigPath: 'mocked-away/tsconfig.json',
     });
 
     expect(loadTsConfigDefaultsByVersionSpy).toHaveBeenCalledTimes(1);
     expect(loadTargetConfigSpy).toHaveBeenCalledTimes(1);
     expect(loadTargetConfigSpy).toHaveBeenCalledWith(
-      expect.stringContaining('mocked/away/tsconfig.json'),
+      expect.stringContaining('mocked-away/tsconfig.json'),
     );
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
 

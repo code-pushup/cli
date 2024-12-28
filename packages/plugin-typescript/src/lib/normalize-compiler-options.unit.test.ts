@@ -1,5 +1,6 @@
 import type { CompilerOptions } from 'typescript';
 import { describe, expect, it } from 'vitest';
+import { osAgnosticPath } from '@code-pushup/test-utils';
 import config554 from '../../mocks/fixtures/default-ts-configs/5.5.4.js';
 import {
   handleCompilerOptionStrict,
@@ -79,7 +80,7 @@ describe('normalizeCompilerOptions', () => {
 
   it('should return default compiler options from provided file', async () => {
     await expect(
-      normalizeCompilerOptions({ tsConfigPath: 'mocked/away/tsconfig.json' }),
+      normalizeCompilerOptions({ tsConfigPath: 'mocked-away/tsconfig.json' }),
     ).resolves.toStrictEqual(
       expect.objectContaining({
         verbatimModuleSyntax: false,
@@ -90,7 +91,7 @@ describe('normalizeCompilerOptions', () => {
     expect(loadTsConfigDefaultsByVersionSpy).toHaveBeenCalledTimes(1);
     expect(loadTargetConfigSpy).toHaveBeenCalledTimes(1);
     expect(loadTargetConfigSpy).toHaveBeenCalledWith(
-      expect.stringContaining('mocked/away/tsconfig.json'),
+      expect.stringContaining(osAgnosticPath('mocked-away')),
     );
   });
 });
