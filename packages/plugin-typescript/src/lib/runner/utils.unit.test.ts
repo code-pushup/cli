@@ -1,6 +1,11 @@
-import {type Diagnostic, DiagnosticCategory,} from 'typescript';
-import {beforeEach, describe, expect} from 'vitest';
-import {getIssueFromDiagnostic, getSeverity, tSCodeToAuditSlug, validateDiagnostics,} from './utils.js';
+import { type Diagnostic, DiagnosticCategory } from 'typescript';
+import { beforeEach, describe, expect } from 'vitest';
+import {
+  getIssueFromDiagnostic,
+  getSeverity,
+  tSCodeToAuditSlug,
+  validateDiagnostics,
+} from './utils.js';
 
 describe('validateDiagnostics', () => {
   const consoleWarnSpy = vi.spyOn(console, 'warn');

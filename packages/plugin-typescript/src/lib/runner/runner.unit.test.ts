@@ -1,7 +1,12 @@
-import {type Diagnostic, DiagnosticCategory, type LineAndCharacter, type SourceFile,} from 'typescript';
-import {beforeEach, describe, expect} from 'vitest';
-import {auditOutputsSchema} from '@code-pushup/models';
-import {createRunnerFunction} from './runner.js';
+import {
+  type Diagnostic,
+  DiagnosticCategory,
+  type LineAndCharacter,
+  type SourceFile,
+} from 'typescript';
+import { beforeEach, describe, expect } from 'vitest';
+import { auditOutputsSchema } from '@code-pushup/models';
+import { createRunnerFunction } from './runner.js';
 import * as runnerModule from './ts-runner.js';
 import * as utilsModule from './utils.js';
 

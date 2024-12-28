@@ -1,5 +1,10 @@
-import {type CompilerOptions, createProgram, type Diagnostic, getPreEmitDiagnostics,} from 'typescript';
-import {loadTargetConfig, validateDiagnostics} from './utils.js';
+import {
+  type CompilerOptions,
+  type Diagnostic,
+  createProgram,
+  getPreEmitDiagnostics,
+} from 'typescript';
+import { loadTargetConfig, validateDiagnostics } from './utils.js';
 
 export type DiagnosticsOptions = {
   fileNames: string[];
