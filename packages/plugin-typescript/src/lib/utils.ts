@@ -1,18 +1,9 @@
-import type { CompilerOptions } from 'typescript';
-import type { Audit, CategoryRef } from '@code-pushup/models';
-import { kebabCaseToCamelCase } from '@code-pushup/utils';
-import {
-  AUDITS,
-  DEFAULT_TS_CONFIG,
-  GROUPS,
-  TYPESCRIPT_PLUGIN_SLUG,
-} from './constants.js';
-import { TS_ERROR_CODES } from './runner/ts-error-codes.js';
-import {
-  loadTargetConfig,
-  loadTsConfigDefaultsByVersion,
-} from './runner/utils.js';
-import type { TypescriptPluginOptions } from './types.js';
+import type {CompilerOptions} from 'typescript';
+import type {Audit, CategoryRef} from '@code-pushup/models';
+import {kebabCaseToCamelCase} from '@code-pushup/utils';
+import {AUDITS, GROUPS, TYPESCRIPT_PLUGIN_SLUG,} from './constants.js';
+import type {TypescriptPluginOptions} from './types.js';
+import {normalizeCompilerOptions} from "./normalize-compiler-options.js";
 
 export function filterAuditsBySlug(slugs?: string[]) {
   return ({ slug }: { slug: string }) => {
@@ -25,7 +16,7 @@ export function filterAuditsBySlug(slugs?: string[]) {
 
 /**
  * It transforms a slug code to a compiler option format
- * By default, kebabCabeToCamelCase.
+ * By default, kebabCaseToCamelCase.
  * It will handle also cases like emit-bom that it should be emit-BOM
  * @param slug Slug to be transformed
  * @returns The slug as compilerOption key
@@ -92,7 +83,7 @@ export function getAudits(
  * @returns The array of category references
  */
 export async function getCategoryRefsFromGroups(
-  opt?: TypescriptPluginOptions,
+  opt: TypescriptPluginOptions,
 ): Promise<CategoryRef[]> {
   const definitive = await normalizeCompilerOptions(opt);
   return GROUPS.map(group => ({
@@ -110,47 +101,7 @@ export async function getCategoryRefsFromGroups(
     }));
 }
 
-/**
- * It will evaluate if the option strict is enabled. If so, it must enable all it's dependencies.
- * [Logic Reference](https://github.com/microsoft/TypeScript/blob/56a08250f3516b3f5bc120d6c7ab4450a9a69352/src/compiler/utilities.ts#L9262)
- * @param options Current compiler options
- * @returns CompilerOptions evaluated.
- */
-export function handleCompilerOptionStrict(options: CompilerOptions) {
-  if (!options.strict) {
-    return options;
-  }
-
-  const strictOptions = Object.fromEntries(
-    Object.keys(TS_ERROR_CODES.strict).map(key => [key, true]),
-  ) as CompilerOptions;
-
-  return {
-    ...options,
-    ...strictOptions,
-  };
-}
-
-/**
- * It will from the options, and the TS Version, get a final compiler options to be used later for filters
- * Once it's processed for the first time, it will store the information in a variable, to be retrieve
- * later if existing
- * @param options Plugin options
- */
-export async function normalizeCompilerOptions(
-  options?: TypescriptPluginOptions,
-) {
-  const { tsConfigPath = DEFAULT_TS_CONFIG } = options ?? {};
-  const { compilerOptions: defaultCompilerOptions } =
-    await loadTsConfigDefaultsByVersion();
-  const config = await loadTargetConfig(tsConfigPath);
-  return handleCompilerOptionStrict({
-    ...defaultCompilerOptions,
-    ...config.options,
-  });
-}
-
-export function validateAudits(audits: Audit[]) {
+export function logSkippedAudits(audits: Audit[]) {
   const skippedAudits = AUDITS.filter(
     audit => !audits.some(filtered => filtered.slug === audit.slug),
   ).map(audit => kebabCaseToCamelCase(audit.slug));

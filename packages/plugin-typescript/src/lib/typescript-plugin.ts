@@ -6,20 +6,20 @@ import type { TypescriptPluginOptions } from './types.js';
 import {
   getAudits,
   getGroups,
-  normalizeCompilerOptions,
-  validateAudits,
+  logSkippedAudits,
 } from './utils.js';
+import {normalizeCompilerOptions} from "./normalize-compiler-options.js";
 
 export async function typescriptPlugin(
   options?: TypescriptPluginOptions,
 ): Promise<PluginConfig> {
   const { tsConfigPath } = options ?? { tsConfigPath: DEFAULT_TS_CONFIG };
 
-  const compilerOptions = await normalizeCompilerOptions(options);
+  const compilerOptions = await normalizeCompilerOptions({tsConfigPath});
   const filteredAudits = getAudits(compilerOptions, options);
   const filteredGroups = getGroups(compilerOptions, options);
 
-  validateAudits(filteredAudits);
+  logSkippedAudits(filteredAudits);
 
   return {
     slug: TYPESCRIPT_PLUGIN_SLUG,
