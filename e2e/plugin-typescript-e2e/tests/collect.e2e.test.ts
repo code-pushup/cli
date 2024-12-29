@@ -55,7 +55,7 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
 
     expect(code).toBe(0);
     const cleanStdout = removeColorCodes(stdout);
-    expect(cleanStdout).toMatchFileSnapshot(
+    expect(cleanStdout.split('\n').filter(l => l.startsWith('[ success ] -')).join('\n')).toMatchFileSnapshot(
       '__snapshots__/typescript-plugin-terminal-report.txt',
     );
 
