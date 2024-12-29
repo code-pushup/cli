@@ -64,8 +64,8 @@ Categories
 Made with ❤ by code-pushup.dev
 
 [ success ] Generated reports successfully: 
-[ success ] - __test__/create-report/.code-pushup/report.json (19.08 kB)
-[ success ] - __test__/create-report/.code-pushup/report.md (10.5 kB)
+[ success ] - __test__/create-report/.code-pushup/report.json (19.09 kB)
+[ success ] - __test__/create-report/.code-pushup/report.md (10.51 kB)
 [ success ] Collecting report successful!
 ╭────────────────────────────────────────────────────────────────────────────────────────────╮
 │                                                                                            │
