@@ -3,7 +3,7 @@
 // get a list of TS version, maybe from npm and somehow filter only versions
 import { rm, writeFile } from 'node:fs/promises';
 // eslint-disable-next-line unicorn/import-style
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 import type { CompilerOptions } from 'typescript';
 import {
   ensureDirectoryExists,
@@ -34,9 +34,6 @@ export async function generateDefaultTsConfig(version: SemVerString) {
       `const config = ${JSON.stringify(config, null, 2)}`,
       `export default config;`,
     ].join('\n'),
-  );
-  console.log(
-    `Generated default TS config for version ${version} under ${normalizedTsConfigFolder}`,
   );
 }
 
