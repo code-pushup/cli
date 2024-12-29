@@ -14,11 +14,15 @@ import {
 import type { Issue } from '@code-pushup/models';
 import {
   executeProcess,
+  readJsonFile,
   readTextFile,
   truncateIssueMessage,
 } from '@code-pushup/utils';
-import { TS_CONFIG_DIR } from '../constants.js';
-import { AUDIT_LOOKUP } from './constants.js';
+import {
+  AUDIT_LOOKUP,
+  TS_CONFIG_DIR,
+  getTsDefaultsFilename,
+} from './constants.js';
 import type { CompilerOptionName, SemVerString } from './types.js';
 
 /**
@@ -134,7 +138,7 @@ export async function loadTsConfigDefaultsByVersion() {
     process.cwd(),
     'node_modules',
     TS_CONFIG_DIR,
-    `${version}.js`,
+    getTsDefaultsFilename(version),
   );
   try {
     await access(configPath);
@@ -145,8 +149,7 @@ export async function loadTsConfigDefaultsByVersion() {
   }
 
   try {
-    const module = await import(configPath);
-    return module.default as { compilerOptions: CompilerOptions };
+    return await readJsonFile<{ compilerOptions: CompilerOptions }>(configPath);
   } catch (error) {
     throw new Error(
       `Could load default TS config for version ${version} at ${configPath}. The plugin maintainer has to support this version. \n ${(error as Error).message}`,

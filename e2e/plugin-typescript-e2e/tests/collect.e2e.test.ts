@@ -1,6 +1,6 @@
 import { cp } from 'node:fs/promises';
 // eslint-disable-next-line unicorn/import-style
-import { join } from 'node:path';
+import path, { join } from 'node:path';
 import { afterAll, beforeAll, expect } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
@@ -13,48 +13,58 @@ import {
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
-describe.todo(
-  'PLUGIN collect report with typescript-plugin NPM package',
-  () => {
-    const envRoot = join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
-    const testFileDir = join(envRoot, TEST_OUTPUT_DIR, 'collect');
-    const defaultSetupDir = join(testFileDir, 'default-setup');
+describe('PLUGIN collect report with typescript-plugin NPM package', () => {
+  const envRoot = join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
+  const distRoot = join(envRoot, TEST_OUTPUT_DIR);
 
-    const fixturesDir = join('e2e', nxTargetProject(), 'mocks', 'fixtures');
+  const fixturesDir = join(
+    'e2e',
+    nxTargetProject(),
+    'mocks',
+    'fixtures',
+    'default-setup',
+  );
 
-    beforeAll(async () => {
-      await cp(fixturesDir, testFileDir, { recursive: true });
+  beforeAll(async () => {
+    await cp(fixturesDir, envRoot, { recursive: true });
+  });
+
+  afterAll(async () => {
+    await teardownTestFolder(distRoot);
+  });
+
+  it('should run plugin over CLI and creates report.json', async () => {
+    const outputDir = join(
+      path.relative(envRoot, distRoot),
+      'create-report',
+      '.code-pushup',
+    );
+
+    const { code, stdout } = await executeProcess({
+      command: 'npx',
+      // verbose exposes audits with perfect scores that are hidden in the default stdout
+      args: [
+        '@code-pushup/cli',
+        'collect',
+        '--no-progress',
+        '--verbose',
+        `--persist.outputDir=${outputDir}`,
+      ],
+      cwd: envRoot,
     });
 
-    afterAll(async () => {
-      await teardownTestFolder(testFileDir);
-    });
+    expect(code).toBe(0);
+    const cleanStdout = removeColorCodes(stdout);
+    expect(cleanStdout).toMatchFileSnapshot(
+      '__snapshots__/typescript-plugin-terminal-report.txt',
+    );
 
-    it('should run plugin over CLI and creates report.json', async () => {
-      const { code, stdout } = await executeProcess({
-        command: 'npx',
-        // verbose exposes audits with perfect scores that are hidden in the default stdout
-        args: [
-          '@code-pushup/cli',
-          'collect',
-          `--config=${join(TEST_OUTPUT_DIR, 'collect', 'default-setup', 'code-pushup.config.ts')}`,
-          '--no-progress',
-          '--verbose',
-        ],
-        cwd: envRoot,
-      });
+    expect(cleanStdout).toMatch(/● NoImplicitAny\s+1/);
 
-      expect(code).toBe(0);
-      const cleanStdout = removeColorCodes(stdout);
-      expect(cleanStdout).toContain('● Largest Contentful Paint');
-
-      const report = await readJsonFile(
-        join(defaultSetupDir, '.code-pushup', 'report.json'),
-      );
-      expect(() => reportSchema.parse(report)).not.toThrow();
-      expect(
-        omitVariableReportData(report as Report, { omitAuditData: true }),
-      ).toMatchSnapshot();
-    });
-  },
-);
+    const report = await readJsonFile(join(envRoot, outputDir, 'report.json'));
+    expect(() => reportSchema.parse(report)).not.toThrow();
+    expect(
+      omitVariableReportData(report as Report, { omitAuditData: true }),
+    ).toMatchFileSnapshot('__snapshots__/typescript-plugin-json-report.json');
+  });
+});

@@ -1,12 +1,8 @@
 // eslint-disable-next-line unicorn/import-style
-import { join } from 'node:path';
 import type { Audit, Group } from '@code-pushup/models';
 import { camelCaseToKebabCase, kebabCaseToSentence } from '@code-pushup/utils';
 import { TS_ERROR_CODES } from './runner/ts-error-codes.js';
 import type { CompilerOptionName } from './runner/types.js';
-
-export const TS_PLUGIN_CACHE = join('.code-pushup', 'typescript-plugin');
-export const TS_CONFIG_DIR = join(TS_PLUGIN_CACHE, 'default-ts-configs');
 
 export const TYPESCRIPT_PLUGIN_SLUG = 'typescript';
 export const DEFAULT_TS_CONFIG = 'tsconfig.json';

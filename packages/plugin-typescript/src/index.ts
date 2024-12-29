@@ -7,3 +7,4 @@ export { getCurrentTsVersion } from './lib/runner/utils.js';
 export { getCategoryRefsFromGroups } from './lib/utils.js';
 export { typescriptPlugin } from './lib/typescript-plugin.js';
 export default typescriptPlugin;
+export { getTsDefaultsFilename } from './lib/runner/constants.js';

@@ -37,7 +37,9 @@
       }
     },
     "postinstall": {
-      "command": "npx tsx --tsconfig=packages/plugin-typescript/tsconfig.lib.json packages/plugin-typescript/src/postinstall/index.ts"
+      "dependsOn": ["build"],
+      "command": "npx tsx --tsconfig packages/plugin-typescript/tsconfig.lib.json packages/plugin-typescript/src/postinstall/create.bin.ts",
+      "cwd": ""
     }
   },
   "tags": ["scope:plugin", "type:feature", "publishable"]

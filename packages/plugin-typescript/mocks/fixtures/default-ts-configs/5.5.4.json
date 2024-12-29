@@ -1,4 +1,4 @@
-const config = {
+{
   "compilerOptions": {
     "incremental": true,
     "composite": true,
@@ -89,4 +89,3 @@ const config = {
     "skipLibCheck": true
   }
 }
-export default config;

@@ -16,8 +16,7 @@
     "prepare": "husky install",
     "commit": "git-cz",
     "knip": "knip",
-    "postinstall-plugin-typescript": "npx tsx --tsconfig=packages/plugin-typescript/tsconfig.lib.json packages/plugin-typescript/src/postinstall/index.ts",
-    "postinstall": "npm run postinstall-plugin-typescript"
+    "postinstall": "npx nx run plugin-typescript:postinstall"
   },
   "private": true,
   "engines": {
