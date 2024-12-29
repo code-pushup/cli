@@ -1,37 +1,47 @@
 // Run typescript init (with a version specified) to generate a tsconfig.json that will have all defaults listed.
 // store this json per ts version in src/default-configs.ts
 // get a list of TS version, maybe from npm and somehow filter only versions
-import { writeFile } from 'node:fs/promises';
+import { rm, writeFile } from 'node:fs/promises';
 // eslint-disable-next-line unicorn/import-style
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import type { CompilerOptions } from 'typescript';
 import {
   ensureDirectoryExists,
   executeProcess,
   readTextFile,
 } from '@code-pushup/utils';
-import { TS_CONFIG_DIR } from '../lib/constants.js';
 import type { SemVerString } from '../lib/runner/types.js';
 import { getCurrentTsVersion } from '../lib/runner/utils.js';
 
-export const TMP_TS_CONFIG_DIR = join('tmp', 'plugin-typescript-ts-config');
+const normalizedTsConfigFolder = join(
+  '..',
+  '..',
+  '.code-pushup',
+  'typescript-plugin',
+  'default-ts-configs',
+);
+const tmpDir = join(normalizedTsConfigFolder, 'tmp');
 
 export async function generateDefaultTsConfig(version: SemVerString) {
-  await ensureDirectoryExists(TS_CONFIG_DIR);
+  await ensureDirectoryExists(normalizedTsConfigFolder);
   await generateRawTsConfigFile(version);
   const config = await extractTsConfig(version);
+  await cleanupArtefacts();
   await cleanupNpmCache(version);
-  return writeFile(
-    join(TS_CONFIG_DIR, `${version}.ts`),
+  await writeFile(
+    join(normalizedTsConfigFolder, `${version}.js`),
     [
       `const config = ${JSON.stringify(config, null, 2)}`,
       `export default config;`,
     ].join('\n'),
   );
+  console.log(
+    `Generated default TS config for version ${version} under ${normalizedTsConfigFolder}`,
+  );
 }
 
 export async function generateRawTsConfigFile(version: SemVerString) {
-  const dir = join(TMP_TS_CONFIG_DIR, version);
+  const dir = join(tmpDir, version);
   await ensureDirectoryExists(dir);
   await executeProcess({
     command: 'npx',
@@ -47,7 +57,7 @@ export async function generateRawTsConfigFile(version: SemVerString) {
 export async function extractTsConfig(
   version: SemVerString,
 ): Promise<CompilerOptions> {
-  const dir = join(TMP_TS_CONFIG_DIR, version);
+  const dir = join(tmpDir, version);
   await ensureDirectoryExists(dir);
   try {
     return parseTsConfigJson(await readTextFile(join(dir, 'tsconfig.json')));
@@ -67,6 +77,14 @@ export async function cleanupNpmCache(version: SemVerString) {
     command: 'npm',
     args: ['uninstall', `typescript@${version}`, '-g'],
   });
+}
+
+/**
+ * Cleanup artefacts`
+ * @param version
+ */
+export async function cleanupArtefacts() {
+  await rm(tmpDir, { recursive: true });
 }
 
 /**

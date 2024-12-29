@@ -130,7 +130,12 @@ export async function getCurrentTsVersion(): Promise<SemVerString> {
 
 export async function loadTsConfigDefaultsByVersion() {
   const version = await getCurrentTsVersion();
-  const configPath = join(TS_CONFIG_DIR, `${version}.ts`);
+  const configPath = join(
+    process.cwd(),
+    'node_modules',
+    TS_CONFIG_DIR,
+    `${version}.js`,
+  );
   try {
     await access(configPath);
   } catch {
@@ -144,7 +149,7 @@ export async function loadTsConfigDefaultsByVersion() {
     return module.default as { compilerOptions: CompilerOptions };
   } catch (error) {
     throw new Error(
-      `Could load default TS config for version ${version}. /n ${(error as Error).message}`,
+      `Could load default TS config for version ${version} at ${configPath}. The plugin maintainer has to support this version. \n ${(error as Error).message}`,
     );
   }
 }
