@@ -1,6 +1,6 @@
 import { expect } from 'vitest';
 import { pluginConfigSchema } from '@code-pushup/models';
-import config554 from '../../mocks/fixtures/default-ts-configs/5.5.4.js';
+import config554 from '../../mocks/fixtures/default-ts-configs/tsconfig.5.5.4.json';
 import { AUDITS, GROUPS } from './constants.js';
 import * as runnerUtilsModule from './runner/utils.js';
 import { typescriptPlugin } from './typescript-plugin.js';

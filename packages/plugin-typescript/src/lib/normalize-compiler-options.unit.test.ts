@@ -1,7 +1,7 @@
 import type { CompilerOptions } from 'typescript';
 import { describe, expect, it } from 'vitest';
 import { osAgnosticPath } from '@code-pushup/test-utils';
-import config554 from '../../mocks/fixtures/default-ts-configs/5.5.4.js';
+import config554 from '../../mocks/fixtures/default-ts-configs/tsconfig.5.5.4.json';
 import {
   handleCompilerOptionStrict,
   normalizeCompilerOptions,

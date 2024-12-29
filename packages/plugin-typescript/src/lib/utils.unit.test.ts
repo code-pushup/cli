@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { type Audit, categoryRefSchema } from '@code-pushup/models';
-import config554 from '../../mocks/fixtures/default-ts-configs/5.5.4';
+import config554 from '../../mocks/fixtures/default-ts-configs/tsconfig.5.5.4.json';
 import { AUDITS } from './constants.js';
 import * as runnerUtilsModule from './runner/utils.js';
 import {

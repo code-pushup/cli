@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/import-style
 import type { Audit, Group } from '@code-pushup/models';
 import { camelCaseToKebabCase, kebabCaseToSentence } from '@code-pushup/utils';
 import { TS_ERROR_CODES } from './runner/ts-error-codes.js';
