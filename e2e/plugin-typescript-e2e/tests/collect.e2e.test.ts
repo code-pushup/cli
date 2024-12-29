@@ -1,5 +1,6 @@
 import { cp } from 'node:fs/promises';
-import path, { join } from 'node:path';
+// eslint-disable-next-line unicorn/import-style
+import { join } from 'node:path';
 import { afterAll, beforeAll, expect } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
@@ -15,16 +16,11 @@ import { executeProcess, readJsonFile } from '@code-pushup/utils';
 describe.todo(
   'PLUGIN collect report with typescript-plugin NPM package',
   () => {
-    const envRoot = path.join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
-    const testFileDir = path.join(envRoot, TEST_OUTPUT_DIR, 'collect');
-    const defaultSetupDir = path.join(testFileDir, 'default-setup');
+    const envRoot = join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
+    const testFileDir = join(envRoot, TEST_OUTPUT_DIR, 'collect');
+    const defaultSetupDir = join(testFileDir, 'default-setup');
 
-    const fixturesDir = path.join(
-      'e2e',
-      nxTargetProject(),
-      'mocks',
-      'fixtures',
-    );
+    const fixturesDir = join('e2e', nxTargetProject(), 'mocks', 'fixtures');
 
     beforeAll(async () => {
       await cp(fixturesDir, testFileDir, { recursive: true });
@@ -53,7 +49,7 @@ describe.todo(
       expect(cleanStdout).toContain('● Largest Contentful Paint');
 
       const report = await readJsonFile(
-        path.join(defaultSetupDir, '.code-pushup', 'report.json'),
+        join(defaultSetupDir, '.code-pushup', 'report.json'),
       );
       expect(() => reportSchema.parse(report)).not.toThrow();
       expect(
