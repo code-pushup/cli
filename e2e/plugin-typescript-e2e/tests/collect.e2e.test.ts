@@ -58,7 +58,7 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
     expect(
       cleanStdout
         .split('\n')
-        .filter(l => l.startsWith('[ success ] -'))
+        .filter(l => !l.startsWith('[ success ] -'))
         .join('\n'),
     ).toMatchFileSnapshot(
       '__snapshots__/typescript-plugin-terminal-report.txt',
