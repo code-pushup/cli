@@ -1,22 +1,10 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers, unicorn/numeric-separators-style */
 
-/**
- *  Strict grouping: https://github.com/microsoft/TypeScript/blob/56a08250f3516b3f5bc120d6c7ab4450a9a69352/src/compiler/utilities.ts Line 9113
- *      noImplicitThis: {
- *         dependencies: ["strict"],
- *         computeValue: compilerOptions => {
- *             return getStrictOptionValue(compilerOptions, "noImplicitThis");
- *         },
- *     },
- *  Line 9262
- *  export function getStrictOptionValue(compilerOptions: CompilerOptions, flag: StrictOptionName): boolean {
- *     return compilerOptions[flag] === undefined ? !!compilerOptions.strict : !!compilerOptions[flag];
- * }
- * https://github.com/microsoft/TypeScript/blob/56a08250f3516b3f5bc120d6c7ab4450a9a69352/src/compiler/utilities.ts#L9262
- */
-
 /** This is the list of error codes that can be triggered by the TypeScript compiler.
- * It's divided into: category -> compiler option -> error codes (that might trigger)
+ * It's divided into: group -> compiler option as audit -> error codes
+ *
+ * Source:
+ * https://github.com/microsoft/TypeScript/blob/56a08250f3516b3f5bc120d6c7ab4450a9a69352/src/compiler/diagnosticMessages.json
  */
 export const TS_ERROR_CODES = {
   languageAndEnvironment: {

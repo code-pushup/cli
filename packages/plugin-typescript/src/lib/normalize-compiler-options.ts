@@ -3,11 +3,11 @@ import { join } from 'node:path';
 import * as process from 'node:process';
 import type { CompilerOptions } from 'typescript';
 import { TS_ERROR_CODES } from './runner/ts-error-codes.js';
+import type { DiagnosticsOptions } from './runner/ts-runner.js';
 import {
   loadTargetConfig,
   loadTsConfigDefaultsByVersion,
 } from './runner/utils.js';
-import type { TypescriptPluginOptions } from './types.js';
 
 /**
  * It will evaluate if the option strict is enabled. If so, it must enable all it's dependencies.
@@ -36,9 +36,7 @@ export function handleCompilerOptionStrict(options: CompilerOptions) {
  * later if existing
  * @param options Plugin options
  */
-export async function normalizeCompilerOptions(
-  options: Required<Pick<TypescriptPluginOptions, 'tsConfigPath'>>,
-) {
+export async function normalizeCompilerOptions(options: DiagnosticsOptions) {
   const { tsConfigPath } = options;
   const { compilerOptions: defaultCompilerOptions } =
     await loadTsConfigDefaultsByVersion();
