@@ -8,7 +8,10 @@ import {
   TYPESCRIPT_PLUGIN_SLUG,
 } from './constants.js';
 import { normalizeCompilerOptions } from './normalize-compiler-options.js';
-import type { TypescriptPluginOptions } from './types.js';
+import type {
+  FilterOptions,
+  TypescriptPluginOptions,
+} from './typescript-plugin.js';
 
 export function filterAuditsBySlug(slugs?: string[]) {
   return ({ slug }: { slug: string }) => {
@@ -74,7 +77,7 @@ export function getGroups(
 
 export function getAudits(
   definitive: CompilerOptions,
-  options?: TypescriptPluginOptions,
+  options?: FilterOptions,
 ) {
   return AUDITS.filter(
     filterAuditsByCompilerOptions(definitive, options?.onlyAudits),
@@ -91,11 +94,16 @@ export async function getCategoryRefsFromGroups(
   opt?: TypescriptPluginOptions,
 ): Promise<CategoryRef[]> {
   const { tsConfigPath } = opt ?? { tsConfigPath: DEFAULT_TS_CONFIG };
-  const definitive = await normalizeCompilerOptions({ ...opt, tsConfigPath });
+  // this line is duplicated in the typescriptPlugin function
+  // to mitigate multiple file access we cache the result
+  const compilerOptions = await normalizeCompilerOptions({
+    ...opt,
+    tsConfigPath,
+  });
   return GROUPS.map(group => ({
     ...group,
     refs: group.refs.filter(
-      filterAuditsByCompilerOptions(definitive, opt?.onlyAudits),
+      filterAuditsByCompilerOptions(compilerOptions, opt?.onlyAudits),
     ),
   }))
     .filter(group => group.refs.length > 0)
@@ -105,6 +113,31 @@ export async function getCategoryRefsFromGroups(
       weight: 1,
       type: 'group',
     }));
+}
+
+/**
+ * Retrieve the category references from the audits.
+ * @param opt TSPluginOptions
+ * @returns The array of category references
+ */
+export async function getCategoryRefsFromAudits(
+  opt?: TypescriptPluginOptions,
+): Promise<CategoryRef[]> {
+  const { tsConfigPath } = opt ?? { tsConfigPath: DEFAULT_TS_CONFIG };
+  // this line is duplicated in the typescriptPlugin function
+  // to mitigate multiple file access we cache the result
+  const compilerOptions = await normalizeCompilerOptions({
+    ...opt,
+    tsConfigPath,
+  });
+  return AUDITS.filter(
+    filterAuditsByCompilerOptions(compilerOptions, opt?.onlyAudits),
+  ).map(({ slug }) => ({
+    plugin: TYPESCRIPT_PLUGIN_SLUG,
+    slug,
+    weight: 1,
+    type: 'audit',
+  }));
 }
 
 export function logSkippedAudits(audits: Audit[]) {

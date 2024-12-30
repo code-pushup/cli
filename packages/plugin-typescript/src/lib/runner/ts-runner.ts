@@ -1,5 +1,4 @@
 import {
-  type CompilerOptions,
   type Diagnostic,
   createProgram,
   getPreEmitDiagnostics,
@@ -7,13 +6,11 @@ import {
 import { loadTargetConfig, validateDiagnostics } from './utils.js';
 
 export type DiagnosticsOptions = {
-  fileNames: string[];
-  compilerOptions: CompilerOptions;
+  tsConfigPath: string;
 };
-
-export async function getTypeScriptDiagnostics(
-  tsConfigPath: string,
-): Promise<readonly Diagnostic[]> {
+export async function getTypeScriptDiagnostics({
+  tsConfigPath,
+}: DiagnosticsOptions): Promise<readonly Diagnostic[]> {
   try {
     const { fileNames, options } = await loadTargetConfig(tsConfigPath);
 

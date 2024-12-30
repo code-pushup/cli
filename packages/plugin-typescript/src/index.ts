@@ -2,9 +2,14 @@ import { typescriptPlugin } from './lib/typescript-plugin.js';
 
 export { TYPESCRIPT_PLUGIN_SLUG } from './lib/constants.js';
 
-export type { TypescriptPluginOptions } from './lib/types.js';
 export { getCurrentTsVersion } from './lib/runner/utils.js';
-export { getCategoryRefsFromGroups } from './lib/utils.js';
-export { typescriptPlugin } from './lib/typescript-plugin.js';
+export {
+  getCategoryRefsFromAudits,
+  getCategoryRefsFromGroups,
+} from './lib/utils.js';
+export {
+  typescriptPlugin,
+  TypescriptPluginOptions,
+} from './lib/typescript-plugin.js';
 export default typescriptPlugin;
 export { getTsDefaultsFilename } from './lib/runner/constants.js';
