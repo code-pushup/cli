@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers, unicorn/numeric-separators-style */
 
-/** This is the list of error codes that can be triggered by the TypeScript compiler.
- * It's divided into: group -> compiler option as audit -> error codes
+/** The TypeScript compiler emits diagnostic objects maintaniing a `category` an error code and a `textMessage` we can use to map to audits.
+ * The following shape has different levels: group -> audit -> diagnostic code
  *
- * Source:
+ * Diagnostic Messages Source:
  * https://github.com/microsoft/TypeScript/blob/56a08250f3516b3f5bc120d6c7ab4450a9a69352/src/compiler/diagnosticMessages.json
  */
 export const TS_ERROR_CODES = {
