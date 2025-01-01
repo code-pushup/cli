@@ -100,6 +100,7 @@ export {
   type CamelCaseToKebabCase,
   kebabCaseToSentence,
   kebabCaseToCamelCase,
+  camelCaseToSentence,
 } from './lib/string.js';
 export * from './lib/text-formats/index.js';
 export {

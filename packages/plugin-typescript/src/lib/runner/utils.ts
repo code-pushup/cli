@@ -23,7 +23,8 @@ import {
   TS_CONFIG_DIR,
   getTsDefaultsFilename,
 } from './constants.js';
-import type { CompilerOptionName, SemVerString } from './types.js';
+import { TS_CODE_RANGE_NAMES } from './ts-error-codes.js';
+import type { CodeRangeName, SemVerString } from './types.js';
 
 /**
  * Transform the TypeScript error code to the audit slug.
@@ -31,12 +32,11 @@ import type { CompilerOptionName, SemVerString } from './types.js';
  * @returns The audit slug.
  * @throws Error if the code is not supported.
  */
-export function tSCodeToAuditSlug(code: number): CompilerOptionName {
-  const knownCode = AUDIT_LOOKUP.get(code);
-  if (knownCode === undefined) {
-    throw new Error(`Code ${code} not supported.`);
-  }
-  return knownCode;
+export function tSCodeToAuditSlug(code: number): CodeRangeName {
+  const rangeNumber = code
+    .toString()
+    .slice(0, 1) as keyof typeof TS_CODE_RANGE_NAMES;
+  return TS_CODE_RANGE_NAMES[rangeNumber] ?? 'unknown-code';
 }
 
 /**
@@ -68,11 +68,14 @@ export function getSeverity(category: DiagnosticCategory): Issue['severity'] {
 export function getIssueFromDiagnostic(diag: Diagnostic) {
   const message = `${flattenDiagnosticMessageText(diag.messageText, '\n')}`;
 
+  const issue: Issue = {
+    severity: getSeverity(diag.category),
+    message: truncateIssueMessage(`TS${diag.code}: ${message}`),
+  };
+
   // If undefined, the error might be global (e.g., invalid compiler option).
   if (diag.file === undefined) {
-    throw new Error(
-      `Error with code ${diag.code} has no file given. Message: ${message}`,
-    );
+    return issue;
   }
 
   const startLine =
@@ -81,8 +84,7 @@ export function getIssueFromDiagnostic(diag: Diagnostic) {
       : diag.file.getLineAndCharacterOfPosition(diag.start).line + 1;
 
   return {
-    severity: getSeverity(diag.category),
-    message: truncateIssueMessage(message),
+    ...issue,
     source: {
       file: diag.file.fileName,
       ...(startLine

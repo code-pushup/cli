@@ -39,9 +39,9 @@ export default mergeConfigs(
   await lighthouseCoreConfig(
     'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
   ),
-  await eslintCoreConfigNx(),
   await typescriptPluginConfigNx({
     tsConfigPath:
       'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
   }),
+  await eslintCoreConfigNx(),
 );

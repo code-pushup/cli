@@ -1,60 +1,77 @@
 import type { Audit, Group } from '@code-pushup/models';
-import { camelCaseToKebabCase, kebabCaseToSentence } from '@code-pushup/utils';
-import { TS_ERROR_CODES } from './runner/ts-error-codes.js';
-import type { CompilerOptionName } from './runner/types.js';
+import { camelCaseToSentence, slugify } from '@code-pushup/utils';
+import { TS_CODE_RANGE_NAMES } from './runner/ts-error-codes.js';
+import type { AuditSlug } from './types.js';
 
 export const TYPESCRIPT_PLUGIN_SLUG = 'typescript';
 export const DEFAULT_TS_CONFIG = 'tsconfig.json';
 
-export const AUDITS = Object.values(TS_ERROR_CODES)
-  .flatMap(i => Object.entries(i))
-  .reduce<Audit[]>((audits, [name]) => {
-    const slug = camelCaseToKebabCase(name) as CompilerOptionName;
-    const title = kebabCaseToSentence(name);
-    return [
-      ...audits,
-      {
-        slug,
-        title,
-        docsUrl: `https://www.typescriptlang.org/tsconfig/#${name}`,
-      },
-    ];
-  }, []);
-
-const GROUP_WEIGHTS: Partial<Record<keyof typeof TS_ERROR_CODES, number>> = {
-  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-  strict: 3,
-  typeCheckingBehavior: 2,
-  controlFlowOptions: 2,
-  interopConstraints: 2,
+const AUDIT_DESCRIPTIONS: Record<AuditSlug, string> = {
+  'semantic-errors':
+    'Errors that occur during type checking and type inference',
+  'syntax-errors':
+    'Errors that occur during parsing and lexing of TypeScript source code',
+  suggestions: 'Suggestions for improving code quality and maintainability',
+  'configuration-errors':
+    'Errors that occur when parsing TypeScript configuration files',
+  'language-service-errors':
+    'Errors that occur during TypeScript language service operations',
+  'internal-errors': 'Errors that occur during TypeScript internal operations',
+  'unknown-codes': 'Errors that do not match any known TypeScript error code',
 };
+export const AUDITS: (Audit & { slug: AuditSlug })[] = Object.values(
+  TS_CODE_RANGE_NAMES,
+).map(slug => {
+  return {
+    slug: slugify(slug) as AuditSlug,
+    title: camelCaseToSentence(slug),
+    description: AUDIT_DESCRIPTIONS[slug as AuditSlug],
+  };
+});
 
-const GROUPS_DESCRIPTIONS: Record<keyof typeof TS_ERROR_CODES, string> = {
-  languageAndEnvironment:
-    'Configuration options for TypeScript language features and runtime environment, including decorators, JSX support, target ECMAScript version, and class field behaviors',
-  interopConstraints:
-    'Settings that control how TypeScript interoperates with other JavaScript code, including module imports/exports and case sensitivity rules',
-  moduleResolution:
-    'Settings that control how TypeScript finds and resolves module imports, including Node.js resolution, package.json exports/imports, and module syntax handling',
-  typeCheckingBehavior:
-    'Configuration for TypeScript type checking strictness and error reporting, including property access rules and method override checking',
-  controlFlowOptions:
-    'Settings that affect code flow analysis, including handling of unreachable code, unused labels, switch statements, and async/generator functions',
-  strict:
-    'Strict type checking options that enable additional compile-time verifications, including null checks, implicit any/this, and function type checking',
-  buildEmitOptions:
-    'Configuration options that control TypeScript output generation, including whether to emit files, how to handle comments and declarations, and settings for output optimization and compatibility helpers',
-};
-
-export const GROUPS: Group[] = Object.entries(TS_ERROR_CODES).map(
-  ([groupSlug, auditMap]) => ({
-    slug: camelCaseToKebabCase(groupSlug),
-    title: kebabCaseToSentence(groupSlug),
+/**
+ * # Diagnostic Code Categories
+ * | 🏷️ Category       | Diagnostic Code Ranges | Audits                                                |
+ * |-------------------|------------------------|-------------------------------------------------------|
+ * | **Problems**| 1XXX, 2XXX, 5XXX       | `syntax-errors`, `semantic-errors`, `internal-errors` |
+ * | **Suggestions**    | 3XXX                   | `suggestions`                                         |
+ * | **Configuration** | 6XXX                   | `configuration-errors`                                |
+ */
+export const GROUPS: Group[] = [
+  {
+    slug: 'problems-group',
+    title: 'Problems',
     description:
-      GROUPS_DESCRIPTIONS[groupSlug as keyof typeof GROUPS_DESCRIPTIONS],
-    refs: Object.keys(auditMap).map(audit => ({
-      slug: camelCaseToKebabCase(audit),
-      weight: GROUP_WEIGHTS[audit as keyof typeof GROUP_WEIGHTS] ?? 1,
+      'Syntax, semantic, and internal compiler errors are critical for identifying and preventing bugs.',
+    refs: (
+      [
+        'syntax-errors',
+        'semantic-errors',
+        'internal-errors',
+      ] satisfies AuditSlug[]
+    ).map(slug => ({
+      slug,
+      weight: 1,
     })),
-  }),
-);
+  },
+  {
+    slug: 'suggestions-group',
+    title: 'Suggestions',
+    description:
+      'Suggestions often include improvements to code readability and adherence to style guidelines.',
+    refs: (['suggestions'] satisfies AuditSlug[]).map(slug => ({
+      slug,
+      weight: 1,
+    })),
+  },
+  {
+    slug: 'ts-configuration-group',
+    title: 'Configuration',
+    description:
+      'TypeScript configuration and options errors ensure correct project setup, reducing risks from misconfiguration.',
+    refs: (['configuration-errors'] satisfies AuditSlug[]).map(slug => ({
+      slug,
+      weight: 1,
+    })),
+  },
+];

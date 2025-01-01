@@ -1,13 +1,7 @@
 import type { CompilerOptions } from 'typescript';
 import type { Audit, CategoryRef } from '@code-pushup/models';
 import { kebabCaseToCamelCase } from '@code-pushup/utils';
-import {
-  AUDITS,
-  DEFAULT_TS_CONFIG,
-  GROUPS,
-  TYPESCRIPT_PLUGIN_SLUG,
-} from './constants.js';
-import { normalizeCompilerOptions } from './normalize-compiler-options.js';
+import { AUDITS, GROUPS, TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
 import type {
   FilterOptions,
   TypescriptPluginOptions,
@@ -60,28 +54,15 @@ export function filterAuditsByCompilerOptions(
   };
 }
 
-export function getGroups(
-  compilerOptions: CompilerOptions,
-  options?: TypescriptPluginOptions,
-) {
+export function getGroups(options?: TypescriptPluginOptions) {
   return GROUPS.map(group => ({
     ...group,
-    refs: group.refs.filter(
-      filterAuditsByCompilerOptions(
-        compilerOptions,
-        (options ?? {}).onlyAudits,
-      ),
-    ),
+    refs: group.refs.filter(filterAuditsBySlug(options?.onlyAudits)),
   })).filter(group => group.refs.length > 0);
 }
 
-export function getAudits(
-  definitive: CompilerOptions,
-  options?: FilterOptions,
-) {
-  return AUDITS.filter(
-    filterAuditsByCompilerOptions(definitive, options?.onlyAudits),
-  );
+export function getAudits(options?: FilterOptions) {
+  return AUDITS.filter(filterAuditsBySlug(options?.onlyAudits));
 }
 
 /**
@@ -93,26 +74,12 @@ export function getAudits(
 export async function getCategoryRefsFromGroups(
   opt?: TypescriptPluginOptions,
 ): Promise<CategoryRef[]> {
-  const { tsConfigPath } = opt ?? { tsConfigPath: DEFAULT_TS_CONFIG };
-  // this line is duplicated in the typescriptPlugin function
-  // to mitigate multiple file access we cache the result
-  const compilerOptions = await normalizeCompilerOptions({
-    ...opt,
-    tsConfigPath,
-  });
-  return GROUPS.map(group => ({
-    ...group,
-    refs: group.refs.filter(
-      filterAuditsByCompilerOptions(compilerOptions, opt?.onlyAudits),
-    ),
-  }))
-    .filter(group => group.refs.length > 0)
-    .map(({ slug }) => ({
-      plugin: TYPESCRIPT_PLUGIN_SLUG,
-      slug,
-      weight: 1,
-      type: 'group',
-    }));
+  return getGroups(opt).map(({ slug }) => ({
+    plugin: TYPESCRIPT_PLUGIN_SLUG,
+    slug,
+    weight: 1,
+    type: 'group',
+  }));
 }
 
 /**
@@ -123,16 +90,7 @@ export async function getCategoryRefsFromGroups(
 export async function getCategoryRefsFromAudits(
   opt?: TypescriptPluginOptions,
 ): Promise<CategoryRef[]> {
-  const { tsConfigPath } = opt ?? { tsConfigPath: DEFAULT_TS_CONFIG };
-  // this line is duplicated in the typescriptPlugin function
-  // to mitigate multiple file access we cache the result
-  const compilerOptions = await normalizeCompilerOptions({
-    ...opt,
-    tsConfigPath,
-  });
-  return AUDITS.filter(
-    filterAuditsByCompilerOptions(compilerOptions, opt?.onlyAudits),
-  ).map(({ slug }) => ({
+  return AUDITS.filter(filterAuditsBySlug(opt?.onlyAudits)).map(({ slug }) => ({
     plugin: TYPESCRIPT_PLUGIN_SLUG,
     slug,
     weight: 1,

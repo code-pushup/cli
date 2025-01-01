@@ -47,3 +47,17 @@ export function kebabCaseToSentence(slug: string = '') {
     .replace(/-/g, ' ')
     .replace(/\b\w/g, letter => letter.toUpperCase());
 }
+
+/**
+ * Formats a slug to a readable title.
+ * @param slug - The slug to format.
+ * @returns The formatted title.
+ */
+export function camelCaseToSentence(slug: string = '') {
+  return slug
+    .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2') // Split between uppercase followed by uppercase+lowercase
+    .replace(/([a-z])([A-Z])/g, '$1-$2') // Split between lowercase followed by uppercase
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2') // Additional split for consecutive uppercase
+    .replace(/[\s_]+/g, ' ') // Replace spaces and underscores with hyphens
+    .replace(/\b\w/g, letter => letter.toUpperCase());
+}

@@ -148,6 +148,25 @@ export const typescriptPluginConfigNx = async (
         title: 'Typescript',
         refs: await getCategoryRefsFromGroups(opt),
       },
+      {
+        slug: 'bug-prevention',
+        title: 'Bug prevention',
+        refs: await getCategoryRefsFromGroups({
+          onlyAudits: [
+            'syntax-errors',
+            'semantic-errors',
+            'internal-errors',
+            'configuration-errors',
+          ],
+        }),
+      },
+      {
+        slug: 'code-style',
+        title: 'Code style',
+        description:
+          'TypeScript & Lint rules that promote **good practices** and consistency in your code.',
+        refs: await getCategoryRefsFromGroups({ onlyAudits: ['suggestions'] }),
+      },
     ],
   };
 };

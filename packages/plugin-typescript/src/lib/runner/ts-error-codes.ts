@@ -81,8 +81,33 @@ export const TS_ERROR_CODES = {
     alwaysStrict: [1100, 1101, 1102, 1212, 1213, 1214, 1215, 1250, 1251, 1252],
     strictBuiltinIteratorReturn: [1065],
     strictPropertyInitialization: [2564, 2565, 1263, 1264],
-    strictNullChecks: [2531, 2532, 2533, 2722, 2721, 18047, 18048, 18049],
+    strictNullChecks: [2532, 2533, 2722, 2721, 18047, 18048, 18049],
     strictBindCallApply: [2677, 2345, 2769],
-    strictFunctionTypes: [2344, 2322, 2345, 2411],
+    strictFunctionTypes: [2349, 2344, 2322, 2345, 2411],
+    unmappedStrict: [],
   } as const,
+} as const;
+
+/**
+ * # Diagnostic Code Ranges and Their Grouping
+ *
+ * TypeScript diagnostic codes are grouped into ranges based on their source and purpose. Here's how they are categorized:
+ *
+ * | Code Range | Type                        | Description                                               |
+ * |------------|-----------------------------|-----------------------------------------------------------|
+ * | 1XXX       | Syntax Errors               | Structural issues detected during parsing.                |
+ * | 2XXX       | Semantic Errors             | Type-checking and type-system violations.                 |
+ * | 3XXX       | Suggestions                 | Optional improvements (e.g., unused variables).           |
+ * | 4XXX       | Language Service Diagnostics | Used by editors (e.g., VSCode) for IntelliSense.          |
+ * | 5XXX       | Internal Compiler Errors    | Rare, unexpected failures in the compiler.                |
+ * | 6XXX       | Configuration/Options Errors| Issues with tsconfig.json or compiler options.            |
+ */
+export const TS_CODE_RANGE_NAMES = {
+  '1': 'syntax-errors',
+  '2': 'semantic-errors',
+  '3': 'suggestions',
+  '4': 'language-service-errors',
+  '5': 'internal-errors',
+  '6': 'configuration-errors',
+  '9': 'unknown-codes',
 } as const;

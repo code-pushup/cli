@@ -1,7 +1,6 @@
 import { createRequire } from 'node:module';
 import type { PluginConfig } from '@code-pushup/models';
 import { DEFAULT_TS_CONFIG, TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
-import { normalizeCompilerOptions } from './normalize-compiler-options.js';
 import { createRunnerFunction } from './runner/runner.js';
 import type { DiagnosticsOptions } from './runner/ts-runner.js';
 import { typescriptPluginConfigSchema } from './schema.js';
@@ -23,9 +22,8 @@ export async function typescriptPlugin(
     options ?? {},
   );
 
-  const compilerOptions = await normalizeCompilerOptions({ tsConfigPath });
-  const filteredAudits = getAudits(compilerOptions, { onlyAudits });
-  const filteredGroups = getGroups(compilerOptions, { onlyAudits });
+  const filteredAudits = getAudits({ onlyAudits });
+  const filteredGroups = getGroups({ onlyAudits });
 
   logSkippedAudits(filteredAudits);
 
