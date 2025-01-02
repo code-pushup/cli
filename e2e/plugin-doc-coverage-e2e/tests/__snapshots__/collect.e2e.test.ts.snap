@@ -1,0 +1,227 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PLUGIN collect report with eslint-plugin NPM package > should run ESLint plugin for flat config and create report.json 1`] = `
+{
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "audits": [
+        {
+          "description": "ESLint rule **eqeqeq**.",
+          "details": {
+            "issues": [
+              {
+                "message": "Expected '===' and instead saw '=='.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-doc-coverage-e2e/__test__/flat-config/src/index.js",
+                  "position": {
+                    "endColumn": 15,
+                    "endLine": 6,
+                    "startColumn": 13,
+                    "startLine": 6,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "1 error",
+          "docsUrl": "https://eslint.org/docs/latest/rules/eqeqeq",
+          "score": 0,
+          "slug": "eqeqeq",
+          "title": "Require the use of \`===\` and \`!==\`",
+          "value": 1,
+        },
+        {
+          "description": "ESLint rule **max-lines**.
+
+Custom options:
+
+\`\`\`json
+100
+\`\`\`",
+          "details": {
+            "issues": [],
+          },
+          "displayValue": "passed",
+          "docsUrl": "https://eslint.org/docs/latest/rules/max-lines",
+          "score": 1,
+          "slug": "max-lines-71b54366cb01f77b",
+          "title": "Enforce a maximum number of lines per file",
+          "value": 0,
+        },
+        {
+          "description": "ESLint rule **no-unused-vars**.",
+          "details": {
+            "issues": [
+              {
+                "message": "'unusedFn' is defined but never used.",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-doc-coverage-e2e/__test__/flat-config/src/index.js",
+                  "position": {
+                    "endColumn": 18,
+                    "endLine": 1,
+                    "startColumn": 10,
+                    "startLine": 1,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "1 warning",
+          "docsUrl": "https://eslint.org/docs/latest/rules/no-unused-vars",
+          "score": 0,
+          "slug": "no-unused-vars",
+          "title": "Disallow unused variables",
+          "value": 1,
+        },
+      ],
+      "description": "Official Code PushUp ESLint plugin",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
+      "groups": [
+        {
+          "description": "Code that either will cause an error or may cause confusing behavior. Developers should consider this a high priority to resolve.",
+          "refs": [
+            {
+              "slug": "no-unused-vars",
+              "weight": 1,
+            },
+          ],
+          "slug": "problems",
+          "title": "Problems",
+        },
+        {
+          "description": "Something that could be done in a better way but no errors will occur if the code isn't changed.",
+          "refs": [
+            {
+              "slug": "eqeqeq",
+              "weight": 1,
+            },
+            {
+              "slug": "max-lines-71b54366cb01f77b",
+              "weight": 1,
+            },
+          ],
+          "slug": "suggestions",
+          "title": "Suggestions",
+        },
+      ],
+      "icon": "eslint",
+      "packageName": "@code-pushup/eslint-plugin",
+      "slug": "eslint",
+      "title": "ESLint",
+    },
+  ],
+}
+`;
+
+exports[`PLUGIN collect report with eslint-plugin NPM package > should run ESLint plugin for legacy config and create report.json 1`] = `
+{
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "audits": [
+        {
+          "description": "ESLint rule **no-unused-vars**.",
+          "details": {
+            "issues": [
+              {
+                "message": "'unusedFn' is defined but never used.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-doc-coverage-e2e/__test__/legacy-config/src/index.js",
+                  "position": {
+                    "endColumn": 18,
+                    "endLine": 1,
+                    "startColumn": 10,
+                    "startLine": 1,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "1 error",
+          "docsUrl": "https://eslint.org/docs/latest/rules/no-unused-vars",
+          "score": 0,
+          "slug": "no-unused-vars",
+          "title": "Disallow unused variables",
+          "value": 1,
+        },
+        {
+          "description": "ESLint rule **no-console**.",
+          "details": {
+            "issues": [
+              {
+                "message": "Unexpected console statement.",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-doc-coverage-e2e/__test__/legacy-config/src/index.js",
+                  "position": {
+                    "endColumn": 14,
+                    "endLine": 5,
+                    "startColumn": 3,
+                    "startLine": 5,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "1 warning",
+          "docsUrl": "https://eslint.org/docs/latest/rules/no-console",
+          "score": 0,
+          "slug": "no-console",
+          "title": "Disallow the use of \`console\`",
+          "value": 1,
+        },
+        {
+          "description": "ESLint rule **no-undef**.",
+          "details": {
+            "issues": [],
+          },
+          "displayValue": "passed",
+          "docsUrl": "https://eslint.org/docs/latest/rules/no-undef",
+          "score": 1,
+          "slug": "no-undef",
+          "title": "Disallow the use of undeclared variables unless mentioned in \`/*global */\` comments",
+          "value": 0,
+        },
+      ],
+      "description": "Official Code PushUp ESLint plugin",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
+      "groups": [
+        {
+          "description": "Code that either will cause an error or may cause confusing behavior. Developers should consider this a high priority to resolve.",
+          "refs": [
+            {
+              "slug": "no-unused-vars",
+              "weight": 1,
+            },
+            {
+              "slug": "no-undef",
+              "weight": 1,
+            },
+          ],
+          "slug": "problems",
+          "title": "Problems",
+        },
+        {
+          "description": "Something that could be done in a better way but no errors will occur if the code isn't changed.",
+          "refs": [
+            {
+              "slug": "no-console",
+              "weight": 1,
+            },
+          ],
+          "slug": "suggestions",
+          "title": "Suggestions",
+        },
+      ],
+      "icon": "eslint",
+      "packageName": "@code-pushup/eslint-plugin",
+      "slug": "eslint",
+      "title": "ESLint",
+    },
+  ],
+}
+`;
