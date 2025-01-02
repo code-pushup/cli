@@ -11,4 +11,3 @@ export {
   type TypescriptPluginOptions,
 } from './lib/typescript-plugin.js';
 export default typescriptPlugin;
-export { getTsDefaultsFilename } from './lib/runner/constants.js';

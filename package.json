@@ -15,8 +15,7 @@
   "scripts": {
     "prepare": "husky install",
     "commit": "git-cz",
-    "knip": "knip",
-    "postinstall": "npx nx run plugin-typescript:postinstall"
+    "knip": "knip"
   },
   "private": true,
   "engines": {

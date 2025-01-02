@@ -35,11 +35,6 @@
       "options": {
         "configFile": "packages/plugin-typescript/vite.config.integration.ts"
       }
-    },
-    "postinstall": {
-      "dependsOn": ["build"],
-      "command": "npx tsx --tsconfig packages/plugin-typescript/tsconfig.lib.json packages/plugin-typescript/src/postinstall/create.bin.ts",
-      "cwd": ""
     }
   },
   "tags": ["scope:plugin", "type:feature", "publishable"]

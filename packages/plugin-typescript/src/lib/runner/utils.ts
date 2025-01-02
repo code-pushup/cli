@@ -10,7 +10,6 @@ import {
 } from 'typescript';
 import type { Issue } from '@code-pushup/models';
 import { readTextFile, truncateIssueMessage } from '@code-pushup/utils';
-import { AUDIT_LOOKUP } from './constants.js';
 import { TS_CODE_RANGE_NAMES } from './ts-error-codes.js';
 import type { CodeRangeName } from './types.js';
 
@@ -105,14 +104,4 @@ export async function loadTargetConfig(tsConfigPath: string) {
   }
 
   return parsedConfig;
-}
-
-export function validateDiagnostics(diagnostics: readonly Diagnostic[]) {
-  diagnostics
-    .filter(({ code }) => !AUDIT_LOOKUP.has(code))
-    .forEach(({ code, messageText }) => {
-      console.warn(
-        `Diagnostic Warning: The code ${code} is not supported. ${messageText}`,
-      );
-    });
 }
