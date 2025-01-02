@@ -1,226 +1,200 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`PLUGIN collect report with eslint-plugin NPM package > should run ESLint plugin for flat config and create report.json 1`] = `
+exports[`PLUGIN collect report with doc-coverage-plugin NPM package > should run Doc Coverage plugin for Angular example dir and create report.json 1`] = `
 {
   "packageName": "@code-pushup/core",
   "plugins": [
     {
       "audits": [
         {
-          "description": "ESLint rule **eqeqeq**.",
-          "details": {
-            "issues": [
-              {
-                "message": "Expected '===' and instead saw '=='.",
-                "severity": "error",
-                "source": {
-                  "file": "tmp/e2e/plugin-doc-coverage-e2e/__test__/flat-config/src/index.js",
-                  "position": {
-                    "endColumn": 15,
-                    "endLine": 6,
-                    "startColumn": 13,
-                    "startLine": 6,
-                  },
-                },
-              },
-            ],
-          },
-          "displayValue": "1 error",
-          "docsUrl": "https://eslint.org/docs/latest/rules/eqeqeq",
-          "score": 0,
-          "slug": "eqeqeq",
-          "title": "Require the use of \`===\` and \`!==\`",
-          "value": 1,
-        },
-        {
-          "description": "ESLint rule **max-lines**.
-
-Custom options:
-
-\`\`\`json
-100
-\`\`\`",
+          "description": "Documentation coverage of enums",
           "details": {
             "issues": [],
           },
-          "displayValue": "passed",
-          "docsUrl": "https://eslint.org/docs/latest/rules/max-lines",
+          "displayValue": "0 undocumented enums",
           "score": 1,
-          "slug": "max-lines-71b54366cb01f77b",
-          "title": "Enforce a maximum number of lines per file",
+          "slug": "enums-coverage",
+          "title": "Enums coverage",
           "value": 0,
         },
         {
-          "description": "ESLint rule **no-unused-vars**.",
+          "description": "Documentation coverage of interfaces",
+          "details": {
+            "issues": [],
+          },
+          "displayValue": "0 undocumented interfaces",
+          "score": 1,
+          "slug": "interfaces-coverage",
+          "title": "Interfaces coverage",
+          "value": 0,
+        },
+        {
+          "description": "Documentation coverage of types",
+          "details": {
+            "issues": [],
+          },
+          "displayValue": "0 undocumented types",
+          "score": 1,
+          "slug": "types-coverage",
+          "title": "Types coverage",
+          "value": 0,
+        },
+        {
+          "description": "Documentation coverage of functions",
           "details": {
             "issues": [
               {
-                "message": "'unusedFn' is defined but never used.",
+                "message": "Missing documentation",
                 "severity": "warning",
                 "source": {
-                  "file": "tmp/e2e/plugin-doc-coverage-e2e/__test__/flat-config/src/index.js",
+                  "file": "tmp/e2e/plugin-doc-coverage-e2e/__test__/angular/src/app.component.spec.ts",
                   "position": {
-                    "endColumn": 18,
-                    "endLine": 1,
-                    "startColumn": 10,
+                    "startLine": 1,
+                  },
+                },
+              },
+              {
+                "message": "Missing documentation",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-doc-coverage-e2e/__test__/angular/src/map-event.function.ts",
+                  "position": {
+                    "startLine": 3,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "2 undocumented functions",
+          "score": 0.3333,
+          "slug": "functions-coverage",
+          "title": "Functions coverage",
+          "value": 2,
+        },
+        {
+          "description": "Documentation coverage of variables",
+          "details": {
+            "issues": [
+              {
+                "message": "Missing documentation",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-doc-coverage-e2e/__test__/angular/src/map-event.function.ts",
+                  "position": {
                     "startLine": 1,
                   },
                 },
               },
             ],
           },
-          "displayValue": "1 warning",
-          "docsUrl": "https://eslint.org/docs/latest/rules/no-unused-vars",
+          "displayValue": "1 undocumented variables",
           "score": 0,
-          "slug": "no-unused-vars",
-          "title": "Disallow unused variables",
+          "slug": "variables-coverage",
+          "title": "Variables coverage",
           "value": 1,
         },
-      ],
-      "description": "Official Code PushUp ESLint plugin",
-      "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
-      "groups": [
         {
-          "description": "Code that either will cause an error or may cause confusing behavior. Developers should consider this a high priority to resolve.",
-          "refs": [
-            {
-              "slug": "no-unused-vars",
-              "weight": 1,
-            },
-          ],
-          "slug": "problems",
-          "title": "Problems",
+          "description": "Documentation coverage of classes",
+          "details": {
+            "issues": [],
+          },
+          "displayValue": "0 undocumented classes",
+          "score": 1,
+          "slug": "classes-coverage",
+          "title": "Classes coverage",
+          "value": 0,
         },
         {
-          "description": "Something that could be done in a better way but no errors will occur if the code isn't changed.",
-          "refs": [
-            {
-              "slug": "eqeqeq",
-              "weight": 1,
-            },
-            {
-              "slug": "max-lines-71b54366cb01f77b",
-              "weight": 1,
-            },
-          ],
-          "slug": "suggestions",
-          "title": "Suggestions",
-        },
-      ],
-      "icon": "eslint",
-      "packageName": "@code-pushup/eslint-plugin",
-      "slug": "eslint",
-      "title": "ESLint",
-    },
-  ],
-}
-`;
-
-exports[`PLUGIN collect report with eslint-plugin NPM package > should run ESLint plugin for legacy config and create report.json 1`] = `
-{
-  "packageName": "@code-pushup/core",
-  "plugins": [
-    {
-      "audits": [
-        {
-          "description": "ESLint rule **no-unused-vars**.",
+          "description": "Documentation coverage of methods",
           "details": {
             "issues": [
               {
-                "message": "'unusedFn' is defined but never used.",
-                "severity": "error",
+                "message": "Missing documentation",
+                "severity": "warning",
                 "source": {
-                  "file": "tmp/e2e/plugin-doc-coverage-e2e/__test__/legacy-config/src/index.js",
+                  "file": "tmp/e2e/plugin-doc-coverage-e2e/__test__/angular/src/app.component.ts",
                   "position": {
-                    "endColumn": 18,
-                    "endLine": 1,
-                    "startColumn": 10,
-                    "startLine": 1,
+                    "startLine": 15,
                   },
                 },
               },
             ],
           },
-          "displayValue": "1 error",
-          "docsUrl": "https://eslint.org/docs/latest/rules/no-unused-vars",
-          "score": 0,
-          "slug": "no-unused-vars",
-          "title": "Disallow unused variables",
+          "displayValue": "1 undocumented methods",
+          "score": 0.5,
+          "slug": "methods-coverage",
+          "title": "Methods coverage",
           "value": 1,
         },
         {
-          "description": "ESLint rule **no-console**.",
+          "description": "Documentation coverage of properties",
           "details": {
             "issues": [
               {
-                "message": "Unexpected console statement.",
+                "message": "Missing documentation",
                 "severity": "warning",
                 "source": {
-                  "file": "tmp/e2e/plugin-doc-coverage-e2e/__test__/legacy-config/src/index.js",
+                  "file": "tmp/e2e/plugin-doc-coverage-e2e/__test__/angular/src/app.component.ts",
                   "position": {
-                    "endColumn": 14,
-                    "endLine": 5,
-                    "startColumn": 3,
                     "startLine": 5,
                   },
                 },
               },
             ],
           },
-          "displayValue": "1 warning",
-          "docsUrl": "https://eslint.org/docs/latest/rules/no-console",
+          "displayValue": "1 undocumented properties",
           "score": 0,
-          "slug": "no-console",
-          "title": "Disallow the use of \`console\`",
+          "slug": "properties-coverage",
+          "title": "Properties coverage",
           "value": 1,
         },
-        {
-          "description": "ESLint rule **no-undef**.",
-          "details": {
-            "issues": [],
-          },
-          "displayValue": "passed",
-          "docsUrl": "https://eslint.org/docs/latest/rules/no-undef",
-          "score": 1,
-          "slug": "no-undef",
-          "title": "Disallow the use of undeclared variables unless mentioned in \`/*global */\` comments",
-          "value": 0,
-        },
       ],
-      "description": "Official Code PushUp ESLint plugin",
-      "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
+      "description": "Official Code PushUp documentation coverage plugin.",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/doc-coverage-plugin/",
       "groups": [
         {
-          "description": "Code that either will cause an error or may cause confusing behavior. Developers should consider this a high priority to resolve.",
+          "description": "Documentation coverage",
           "refs": [
             {
-              "slug": "no-unused-vars",
+              "slug": "classes-coverage",
+              "weight": 2,
+            },
+            {
+              "slug": "methods-coverage",
+              "weight": 2,
+            },
+            {
+              "slug": "functions-coverage",
+              "weight": 2,
+            },
+            {
+              "slug": "interfaces-coverage",
               "weight": 1,
             },
             {
-              "slug": "no-undef",
+              "slug": "variables-coverage",
+              "weight": 1,
+            },
+            {
+              "slug": "properties-coverage",
+              "weight": 1,
+            },
+            {
+              "slug": "types-coverage",
+              "weight": 1,
+            },
+            {
+              "slug": "enums-coverage",
               "weight": 1,
             },
           ],
-          "slug": "problems",
-          "title": "Problems",
-        },
-        {
-          "description": "Something that could be done in a better way but no errors will occur if the code isn't changed.",
-          "refs": [
-            {
-              "slug": "no-console",
-              "weight": 1,
-            },
-          ],
-          "slug": "suggestions",
-          "title": "Suggestions",
+          "slug": "documentation-coverage",
+          "title": "Documentation coverage",
         },
       ],
-      "icon": "eslint",
-      "packageName": "@code-pushup/eslint-plugin",
-      "slug": "eslint",
-      "title": "ESLint",
+      "icon": "folder-src",
+      "slug": "doc-coverage",
+      "title": "Documentation coverage",
     },
   ],
 }

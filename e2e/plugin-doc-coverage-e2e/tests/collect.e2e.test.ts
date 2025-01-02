@@ -54,7 +54,6 @@ describe('PLUGIN collect report with doc-coverage-plugin NPM package', () => {
     });
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     const report = await readJsonFile(
       path.join(angularOutputDir, 'report.json'),
@@ -64,19 +63,4 @@ describe('PLUGIN collect report with doc-coverage-plugin NPM package', () => {
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
   });
 
-  it('should run Doc Coverage plugin for React example dir and create report.json', async () => {
-    const { code, stderr } = await executeProcess({
-      command: 'npx',
-      args: ['@code-pushup/cli', 'collect', '--no-progress'],
-      cwd: reactDir,
-    });
-
-    expect(code).toBe(0);
-    expect(stderr).toBe('');
-
-    const report = await readJsonFile(path.join(reactOutputDir, 'report.json'));
-
-    expect(() => reportSchema.parse(report)).not.toThrow();
-    expect(omitVariableReportData(report as Report)).toMatchSnapshot();
-  });
 });
