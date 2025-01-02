@@ -84,7 +84,6 @@ export const TS_ERROR_CODES = {
     strictNullChecks: [2532, 2533, 2722, 2721, 18047, 18048, 18049],
     strictBindCallApply: [2677, 2345, 2769],
     strictFunctionTypes: [2349, 2344, 2322, 2345, 2411],
-    unmappedStrict: [],
   } as const,
 } as const;
 

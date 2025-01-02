@@ -5,60 +5,20 @@ Code PushUp Report - @code-pushup/core@0.57.0
 
 Typescript audits
 
-● AllowSyntheticDefaultImports                              0
-● AllowUnreachableCode                                      0
-● AlwaysStrict                                              0
-● CustomConditions                                          0
-● DownlevelIteration                                        0
-● EmitBOM                                                   0
-● EmitDeclarationOnly                                       0
-● EmitDecoratorMetadata                                     0
-● EsModuleInterop                                           0
-● ExactOptionalPropertyTypes                                0
-● ExperimentalDecorators                                    0
-● ForceConsistentCasingInFileNames                          0
-● ImportHelpers                                             0
-● IsolatedModules                                           0
-● Jsx                                                       0
-● JsxFactory                                                0
-● JsxFragmentFactory                                        0
-● JsxImportSource                                           0
-● Lib                                                       0
-● ModuleDetection                                           0
-● ModuleResolution                                          0
-● NoEmit                                                    0
-● NoEmitHelpers                                             0
-● NoEmitOnError                                             0
-● NoFallthroughCasesInSwitch                                0
-● NoImplicitAny                                             0
-● NoImplicitOverride                                        0
-● NoImplicitReturns                                         0
-● NoImplicitThis                                            0
-● NoLib                                                     0
-● NoPropertyAccessFromIndexSignature                        0
-● NoUncheckedIndexedAccess                                  0
-● PreserveConstEnums                                        0
-● PreserveSymlinks                                          0
-● ReactNamespace                                            0
-● RemoveComments                                            0
-● ResolvePackageJsonExports                                 0
-● ResolvePackageJsonImports                                 0
-● StrictBindCallApply                                       0
-● StrictBuiltinIteratorReturn                               0
-● StrictFunctionTypes                                       0
-● StrictNullChecks                                          0
-● StrictPropertyInitialization                              0
-● StripInternal                                             0
-● Target                                                    0
-● UseDefineForClassFields                                   0
-● VerbatimModuleSyntax                                      0
+● Semantic-Errors                                           4
+● Configuration-Errors                                      0
+● Internal-Errors                                           0
+● Language-Service-Errors                                   0
+● Suggestions                                               0
+● Syntax-Errors                                             0
+● Unknown-Codes                                             0
 
 Categories
 
 ┌─────────────────────────────────────────────────────────┬─────────┬──────────┐
 │  Category                                               │  Score  │  Audits  │
 ├─────────────────────────────────────────────────────────┼─────────┼──────────┤
-│  Typescript                                             │    100  │      47  │
+│  Typescript                                             │     89  │       5  │
 └─────────────────────────────────────────────────────────┴─────────┴──────────┘
 
 Made with ❤ by code-pushup.dev

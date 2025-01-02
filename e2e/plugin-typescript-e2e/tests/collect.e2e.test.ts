@@ -11,7 +11,7 @@ import {
   omitVariableReportData,
   removeColorCodes,
 } from '@code-pushup/test-utils';
-import { executeProcess, readJsonFile } from '@code-pushup/utils';
+import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('PLUGIN collect report with typescript-plugin NPM package', () => {
   const envRoot = join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
@@ -65,12 +65,19 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
     );
 
     // @TODO should be 1 test failing => /● NoImplicitAny\s+1/
-    expect(cleanStdout).toMatch(/● NoImplicitAny\s+\d+/);
+    expect(cleanStdout).toMatch(/● Configuration-Errors\s+\d+/);
 
-    const report = await readJsonFile(join(envRoot, outputDir, 'report.json'));
-    expect(() => reportSchema.parse(report)).not.toThrow();
+    const reportJson = await readJsonFile(
+      join(envRoot, outputDir, 'report.json'),
+    );
+    expect(() => reportSchema.parse(reportJson)).not.toThrow();
     expect(
-      omitVariableReportData(report as Report, { omitAuditData: true }),
+      omitVariableReportData(reportJson as Report, { omitAuditData: true }),
     ).toMatchFileSnapshot('__snapshots__/typescript-plugin-json-report.json');
+
+    const reportMd = await readTextFile(join(envRoot, outputDir, 'report.md'));
+    expect(reportMd).toMatchFileSnapshot(
+      '__snapshots__/typescript-plugin-md-report.md',
+    );
   });
 });

@@ -1,11 +1,11 @@
 import type {
-  Audit,
   AuditOutput,
   AuditOutputs,
   AuditReport,
   Issue,
   RunnerFunction,
 } from '@code-pushup/models';
+import type { AuditSlug } from '../types.js';
 import {
   type DiagnosticsOptions,
   getTypeScriptDiagnostics,
@@ -14,7 +14,7 @@ import type { CodeRangeName } from './types.js';
 import { getIssueFromDiagnostic, tSCodeToAuditSlug } from './utils.js';
 
 export type RunnerOptions = DiagnosticsOptions & {
-  expectedAudits: Pick<Audit, 'slug'>[];
+  expectedAudits: { slug: AuditSlug }[];
 };
 
 export function createRunnerFunction(options: RunnerOptions): RunnerFunction {

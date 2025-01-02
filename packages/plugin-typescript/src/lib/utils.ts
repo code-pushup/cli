@@ -103,8 +103,6 @@ export function logSkippedAudits(audits: Audit[]) {
     audit => !audits.some(filtered => filtered.slug === audit.slug),
   ).map(audit => kebabCaseToCamelCase(audit.slug));
   if (skippedAudits.length > 0) {
-    console.warn(
-      `Skipped audits because the compiler options disabled: [${skippedAudits.join(', ')}]`,
-    );
+    console.warn(`Skipped audits: [${skippedAudits.join(', ')}]`);
   }
 }

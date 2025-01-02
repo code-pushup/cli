@@ -36,15 +36,14 @@ describe('validateDiagnostics', () => {
 });
 
 describe('tSCodeToAuditSlug', () => {
-  it.each(Object.entries({}))(
-    'should transform supported code to readable audit',
-    (code, slug) => {
-      expect(tSCodeToAuditSlug(Number.parseInt(code, 10))).toBe(slug);
-    },
-  );
+  it('should transform supported code to readable audit', () => {
+    expect(tSCodeToAuditSlug(Number.parseInt('2345', 10))).toBe(
+      'semantic-errors',
+    );
+  });
 
-  it('should throw error for unknown code', () => {
-    expect(() => tSCodeToAuditSlug(1111)).toThrow('Code 1111 not supported.');
+  it('should return unknown slug for unknown code', () => {
+    expect(tSCodeToAuditSlug(999)).toBe('unknown-codes');
   });
 });
 
@@ -81,7 +80,7 @@ describe('getIssueFromDiagnostic', () => {
 
   it('should return valid issue', () => {
     expect(getIssueFromDiagnostic(diagnosticMock)).toStrictEqual({
-      message: "Type 'number' is not assignable to type 'string'.",
+      message: "TS222: Type 'number' is not assignable to type 'string'.",
       severity: 'error',
       source: {
         file: 'file.ts',
@@ -95,7 +94,7 @@ describe('getIssueFromDiagnostic', () => {
   it('should extract messageText and provide it under message', () => {
     expect(getIssueFromDiagnostic(diagnosticMock)).toStrictEqual(
       expect.objectContaining({
-        message: "Type 'number' is not assignable to type 'string'.",
+        message: "TS222: Type 'number' is not assignable to type 'string'.",
       }),
     );
   });
@@ -124,10 +123,13 @@ describe('getIssueFromDiagnostic', () => {
     );
   });
 
-  it('should throw error if file is undefined', () => {
-    expect(() =>
+  it('should return issue without position if file is undefined', () => {
+    expect(
       getIssueFromDiagnostic({ ...diagnosticMock, file: undefined }),
-    ).toThrow("Type 'number' is not assignable to type 'string'.");
+    ).toStrictEqual({
+      message: "TS222: Type 'number' is not assignable to type 'string'.",
+      severity: 'error',
+    });
   });
 
   it('position.startLine should be 1 if start is undefined', () => {
@@ -135,6 +137,6 @@ describe('getIssueFromDiagnostic', () => {
       ...diagnosticMock,
       start: undefined,
     });
-    expect(result.source.position).toBeUndefined();
+    expect(result.source?.position).toBeUndefined();
   });
 });

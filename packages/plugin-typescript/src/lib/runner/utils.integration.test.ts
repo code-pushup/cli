@@ -1,13 +1,6 @@
-import packageJson from 'node_modules/typescript/package.json';
 import * as tsModule from 'typescript';
 import { describe, expect } from 'vitest';
-import { getCurrentTsVersion, loadTargetConfig } from './utils.js';
-
-describe('getCurrentTsVersion', () => {
-  it('should return currently installed TypeScript version as semver string', async () => {
-    await expect(getCurrentTsVersion()).resolves.toMatch(packageJson.version);
-  });
-});
+import { loadTargetConfig } from './utils.js';
 
 describe('loadTargetConfig', () => {
   const parseConfigFileTextToJsonSpy = vi.spyOn(
@@ -22,7 +15,7 @@ describe('loadTargetConfig', () => {
   it('should return the parsed content of a tsconfig file and ist TypeScript helper to parse it', async () => {
     await expect(
       loadTargetConfig(
-        'packages/plugin-typescript/mocks/fixtures/tsconfig.init.json',
+        'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.init.json',
       ),
     ).resolves.toStrictEqual(
       expect.objectContaining({
@@ -40,7 +33,7 @@ describe('loadTargetConfig', () => {
     );
     expect(parseConfigFileTextToJsonSpy).toHaveBeenCalledTimes(1);
     expect(parseConfigFileTextToJsonSpy).toHaveBeenCalledWith(
-      'packages/plugin-typescript/mocks/fixtures/tsconfig.init.json',
+      'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.init.json',
       expect.stringContaining('/* Projects */'),
     );
     expect(parseJsonConfigFileContentSpy).toHaveBeenCalledTimes(1);

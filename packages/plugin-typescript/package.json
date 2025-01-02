@@ -28,7 +28,5 @@
     "zod": "^3.23.8",
     "@code-pushup/utils": "0.57.0"
   },
-  "scripts": {
-    "postinstall": "node ./src/postinstall/bin.js"
-  }
+  "scripts": {}
 }

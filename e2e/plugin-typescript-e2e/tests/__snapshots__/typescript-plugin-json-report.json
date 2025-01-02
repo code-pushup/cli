@@ -4,43 +4,19 @@
       "refs": [
         {
           "plugin": "typescript",
-          "slug": "language-and-environment",
+          "slug": "problems-group",
           "type": "group",
           "weight": 1,
         },
         {
           "plugin": "typescript",
-          "slug": "interop-constraints",
+          "slug": "suggestions-group",
           "type": "group",
           "weight": 1,
         },
         {
           "plugin": "typescript",
-          "slug": "module-resolution",
-          "type": "group",
-          "weight": 1,
-        },
-        {
-          "plugin": "typescript",
-          "slug": "type-checking-behavior",
-          "type": "group",
-          "weight": 1,
-        },
-        {
-          "plugin": "typescript",
-          "slug": "control-flow-options",
-          "type": "group",
-          "weight": 1,
-        },
-        {
-          "plugin": "typescript",
-          "slug": "build-emit-options",
-          "type": "group",
-          "weight": 1,
-        },
-        {
-          "plugin": "typescript",
-          "slug": "strict",
+          "slug": "ts-configuration-group",
           "type": "group",
           "weight": 1,
         },
@@ -54,480 +30,84 @@
     {
       "audits": [
         {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#experimentalDecorators",
-          "slug": "experimental-decorators",
-          "title": "ExperimentalDecorators",
+          "description": "Errors that occur during parsing and lexing of TypeScript source code",
+          "slug": "syntax-errors",
+          "title": "Syntax-Errors",
         },
         {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#emitDecoratorMetadata",
-          "slug": "emit-decorator-metadata",
-          "title": "EmitDecoratorMetadata",
+          "description": "Errors that occur during type checking and type inference",
+          "slug": "semantic-errors",
+          "title": "Semantic-Errors",
         },
         {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#jsx",
-          "slug": "jsx",
-          "title": "Jsx",
+          "description": "Suggestions for improving code quality and maintainability",
+          "slug": "suggestions",
+          "title": "Suggestions",
         },
         {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#jsxFactory",
-          "slug": "jsx-factory",
-          "title": "JsxFactory",
+          "description": "Errors that occur during TypeScript language service operations",
+          "slug": "language-service-errors",
+          "title": "Language-Service-Errors",
         },
         {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#jsxFragmentFactory",
-          "slug": "jsx-fragment-factory",
-          "title": "JsxFragmentFactory",
+          "description": "Errors that occur during TypeScript internal operations",
+          "slug": "internal-errors",
+          "title": "Internal-Errors",
         },
         {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#jsxImportSource",
-          "slug": "jsx-import-source",
-          "title": "JsxImportSource",
+          "description": "Errors that occur when parsing TypeScript configuration files",
+          "slug": "configuration-errors",
+          "title": "Configuration-Errors",
         },
         {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#lib",
-          "slug": "lib",
-          "title": "Lib",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#moduleDetection",
-          "slug": "module-detection",
-          "title": "ModuleDetection",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#noLib",
-          "slug": "no-lib",
-          "title": "NoLib",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#reactNamespace",
-          "slug": "react-namespace",
-          "title": "ReactNamespace",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#target",
-          "slug": "target",
-          "title": "Target",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#useDefineForClassFields",
-          "slug": "use-define-for-class-fields",
-          "title": "UseDefineForClassFields",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#allowSyntheticDefaultImports",
-          "slug": "allow-synthetic-default-imports",
-          "title": "AllowSyntheticDefaultImports",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#esModuleInterop",
-          "slug": "es-module-interop",
-          "title": "EsModuleInterop",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#forceConsistentCasingInFileNames",
-          "slug": "force-consistent-casing-in-file-names",
-          "title": "ForceConsistentCasingInFileNames",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#isolatedModules",
-          "slug": "isolated-modules",
-          "title": "IsolatedModules",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#preserveSymlinks",
-          "slug": "preserve-symlinks",
-          "title": "PreserveSymlinks",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#moduleResolution",
-          "slug": "module-resolution",
-          "title": "ModuleResolution",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#customConditions",
-          "slug": "custom-conditions",
-          "title": "CustomConditions",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#resolvePackageJsonExports",
-          "slug": "resolve-package-json-exports",
-          "title": "ResolvePackageJsonExports",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#resolvePackageJsonImports",
-          "slug": "resolve-package-json-imports",
-          "title": "ResolvePackageJsonImports",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#verbatimModuleSyntax",
-          "slug": "verbatim-module-syntax",
-          "title": "VerbatimModuleSyntax",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#exactOptionalPropertyTypes",
-          "slug": "exact-optional-property-types",
-          "title": "ExactOptionalPropertyTypes",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#noUncheckedIndexedAccess",
-          "slug": "no-unchecked-indexed-access",
-          "title": "NoUncheckedIndexedAccess",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#noImplicitOverride",
-          "slug": "no-implicit-override",
-          "title": "NoImplicitOverride",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#noPropertyAccessFromIndexSignature",
-          "slug": "no-property-access-from-index-signature",
-          "title": "NoPropertyAccessFromIndexSignature",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#allowUnreachableCode",
-          "slug": "allow-unreachable-code",
-          "title": "AllowUnreachableCode",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#noImplicitReturns",
-          "slug": "no-implicit-returns",
-          "title": "NoImplicitReturns",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#noFallthroughCasesInSwitch",
-          "slug": "no-fallthrough-cases-in-switch",
-          "title": "NoFallthroughCasesInSwitch",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#noEmit",
-          "slug": "no-emit",
-          "title": "NoEmit",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#noEmitHelpers",
-          "slug": "no-emit-helpers",
-          "title": "NoEmitHelpers",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#noEmitOnError",
-          "slug": "no-emit-on-error",
-          "title": "NoEmitOnError",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#preserveConstEnums",
-          "slug": "preserve-const-enums",
-          "title": "PreserveConstEnums",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#removeComments",
-          "slug": "remove-comments",
-          "title": "RemoveComments",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#stripInternal",
-          "slug": "strip-internal",
-          "title": "StripInternal",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#emitBOM",
-          "slug": "emit-bom",
-          "title": "EmitBOM",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#importHelpers",
-          "slug": "import-helpers",
-          "title": "ImportHelpers",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#downlevelIteration",
-          "slug": "downlevel-iteration",
-          "title": "DownlevelIteration",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#emitDeclarationOnly",
-          "slug": "emit-declaration-only",
-          "title": "EmitDeclarationOnly",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#noImplicitAny",
-          "slug": "no-implicit-any",
-          "title": "NoImplicitAny",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#noImplicitThis",
-          "slug": "no-implicit-this",
-          "title": "NoImplicitThis",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#alwaysStrict",
-          "slug": "always-strict",
-          "title": "AlwaysStrict",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#strictBuiltinIteratorReturn",
-          "slug": "strict-builtin-iterator-return",
-          "title": "StrictBuiltinIteratorReturn",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#strictPropertyInitialization",
-          "slug": "strict-property-initialization",
-          "title": "StrictPropertyInitialization",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#strictNullChecks",
-          "slug": "strict-null-checks",
-          "title": "StrictNullChecks",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#strictBindCallApply",
-          "slug": "strict-bind-call-apply",
-          "title": "StrictBindCallApply",
-        },
-        {
-          "docsUrl": "https://www.typescriptlang.org/tsconfig/#strictFunctionTypes",
-          "slug": "strict-function-types",
-          "title": "StrictFunctionTypes",
+          "description": "Errors that do not match any known TypeScript error code",
+          "slug": "unknown-codes",
+          "title": "Unknown-Codes",
         },
       ],
       "description": "Official Code PushUp Typescript plugin.",
       "docsUrl": "https://www.npmjs.com/package/@code-pushup/typescript-plugin/",
       "groups": [
         {
-          "description": "Configuration options for TypeScript language features and runtime environment, including decorators, JSX support, target ECMAScript version, and class field behaviors",
+          "description": "Syntax, semantic, and internal compiler errors are critical for identifying and preventing bugs.",
           "refs": [
             {
-              "slug": "experimental-decorators",
+              "slug": "syntax-errors",
               "weight": 1,
             },
             {
-              "slug": "emit-decorator-metadata",
+              "slug": "semantic-errors",
               "weight": 1,
             },
             {
-              "slug": "jsx",
-              "weight": 1,
-            },
-            {
-              "slug": "jsx-factory",
-              "weight": 1,
-            },
-            {
-              "slug": "jsx-fragment-factory",
-              "weight": 1,
-            },
-            {
-              "slug": "jsx-import-source",
-              "weight": 1,
-            },
-            {
-              "slug": "lib",
-              "weight": 1,
-            },
-            {
-              "slug": "module-detection",
-              "weight": 1,
-            },
-            {
-              "slug": "no-lib",
-              "weight": 1,
-            },
-            {
-              "slug": "react-namespace",
-              "weight": 1,
-            },
-            {
-              "slug": "target",
-              "weight": 1,
-            },
-            {
-              "slug": "use-define-for-class-fields",
+              "slug": "internal-errors",
               "weight": 1,
             },
           ],
-          "slug": "language-and-environment",
-          "title": "LanguageAndEnvironment",
+          "slug": "problems-group",
+          "title": "Problems",
         },
         {
-          "description": "Settings that control how TypeScript interoperates with other JavaScript code, including module imports/exports and case sensitivity rules",
+          "description": "Suggestions often include improvements to code readability and adherence to style guidelines.",
           "refs": [
             {
-              "slug": "allow-synthetic-default-imports",
-              "weight": 1,
-            },
-            {
-              "slug": "es-module-interop",
-              "weight": 1,
-            },
-            {
-              "slug": "force-consistent-casing-in-file-names",
-              "weight": 1,
-            },
-            {
-              "slug": "isolated-modules",
-              "weight": 1,
-            },
-            {
-              "slug": "preserve-symlinks",
+              "slug": "suggestions",
               "weight": 1,
             },
           ],
-          "slug": "interop-constraints",
-          "title": "InteropConstraints",
+          "slug": "suggestions-group",
+          "title": "Suggestions",
         },
         {
-          "description": "Settings that control how TypeScript finds and resolves module imports, including Node.js resolution, package.json exports/imports, and module syntax handling",
+          "description": "TypeScript configuration and options errors ensure correct project setup, reducing risks from misconfiguration.",
           "refs": [
             {
-              "slug": "module-resolution",
-              "weight": 1,
-            },
-            {
-              "slug": "custom-conditions",
-              "weight": 1,
-            },
-            {
-              "slug": "resolve-package-json-exports",
-              "weight": 1,
-            },
-            {
-              "slug": "resolve-package-json-imports",
-              "weight": 1,
-            },
-            {
-              "slug": "verbatim-module-syntax",
+              "slug": "configuration-errors",
               "weight": 1,
             },
           ],
-          "slug": "module-resolution",
-          "title": "ModuleResolution",
-        },
-        {
-          "description": "Configuration for TypeScript type checking strictness and error reporting, including property access rules and method override checking",
-          "refs": [
-            {
-              "slug": "exact-optional-property-types",
-              "weight": 1,
-            },
-            {
-              "slug": "no-unchecked-indexed-access",
-              "weight": 1,
-            },
-            {
-              "slug": "no-implicit-override",
-              "weight": 1,
-            },
-            {
-              "slug": "no-property-access-from-index-signature",
-              "weight": 1,
-            },
-          ],
-          "slug": "type-checking-behavior",
-          "title": "TypeCheckingBehavior",
-        },
-        {
-          "description": "Settings that affect code flow analysis, including handling of unreachable code, unused labels, switch statements, and async/generator functions",
-          "refs": [
-            {
-              "slug": "allow-unreachable-code",
-              "weight": 1,
-            },
-            {
-              "slug": "no-implicit-returns",
-              "weight": 1,
-            },
-            {
-              "slug": "no-fallthrough-cases-in-switch",
-              "weight": 1,
-            },
-          ],
-          "slug": "control-flow-options",
-          "title": "ControlFlowOptions",
-        },
-        {
-          "description": "Configuration options that control TypeScript output generation, including whether to emit files, how to handle comments and declarations, and settings for output optimization and compatibility helpers",
-          "refs": [
-            {
-              "slug": "no-emit",
-              "weight": 1,
-            },
-            {
-              "slug": "no-emit-helpers",
-              "weight": 1,
-            },
-            {
-              "slug": "no-emit-on-error",
-              "weight": 1,
-            },
-            {
-              "slug": "preserve-const-enums",
-              "weight": 1,
-            },
-            {
-              "slug": "remove-comments",
-              "weight": 1,
-            },
-            {
-              "slug": "strip-internal",
-              "weight": 1,
-            },
-            {
-              "slug": "emit-bom",
-              "weight": 1,
-            },
-            {
-              "slug": "import-helpers",
-              "weight": 1,
-            },
-            {
-              "slug": "downlevel-iteration",
-              "weight": 1,
-            },
-            {
-              "slug": "emit-declaration-only",
-              "weight": 1,
-            },
-          ],
-          "slug": "build-emit-options",
-          "title": "BuildEmitOptions",
-        },
-        {
-          "description": "Strict type checking options that enable additional compile-time verifications, including null checks, implicit any/this, and function type checking",
-          "refs": [
-            {
-              "slug": "no-implicit-any",
-              "weight": 1,
-            },
-            {
-              "slug": "no-implicit-this",
-              "weight": 1,
-            },
-            {
-              "slug": "always-strict",
-              "weight": 1,
-            },
-            {
-              "slug": "strict-builtin-iterator-return",
-              "weight": 1,
-            },
-            {
-              "slug": "strict-property-initialization",
-              "weight": 1,
-            },
-            {
-              "slug": "strict-null-checks",
-              "weight": 1,
-            },
-            {
-              "slug": "strict-bind-call-apply",
-              "weight": 1,
-            },
-            {
-              "slug": "strict-function-types",
-              "weight": 1,
-            },
-          ],
-          "slug": "strict",
-          "title": "Strict",
+          "slug": "ts-configuration-group",
+          "title": "Configuration",
         },
       ],
       "icon": "typescript",

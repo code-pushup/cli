@@ -1,8 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { type Audit, categoryRefSchema } from '@code-pushup/models';
-import config554 from '../../mocks/fixtures/default-ts-configs/tsconfig.5.5.4.json';
 import { AUDITS } from './constants.js';
-import * as runnerUtilsModule from './runner/utils.js';
 import {
   filterAuditsByCompilerOptions,
   filterAuditsBySlug,
@@ -91,31 +89,9 @@ describe('filterAuditsByCompilerOptions', () => {
 });
 
 describe('getCategoryRefsFromGroups', () => {
-  const loadTsConfigDefaultsByVersionSpy = vi.spyOn(
-    runnerUtilsModule,
-    'loadTsConfigDefaultsByVersion',
-  );
-  const loadTargetConfigSpy = vi.spyOn(runnerUtilsModule, 'loadTargetConfig');
-
-  beforeEach(() => {
-    loadTsConfigDefaultsByVersionSpy.mockResolvedValue(config554 as any);
-    loadTargetConfigSpy.mockResolvedValue({
-      options: {
-        verbatimModuleSyntax: false,
-      },
-      fileNames: [],
-      errors: [],
-    });
-  });
-
   it('should return all groups as categoryRefs if no compiler options are given', async () => {
     const categoryRefs = await getCategoryRefsFromGroups();
-    expect(categoryRefs).toHaveLength(7);
-    expect(loadTsConfigDefaultsByVersionSpy).toHaveBeenCalledTimes(1);
-    expect(loadTargetConfigSpy).toHaveBeenCalledTimes(1);
-    expect(loadTargetConfigSpy).toHaveBeenCalledWith(
-      expect.stringContaining('tsconfig.json'),
-    );
+    expect(categoryRefs).toHaveLength(3);
     expect(() =>
       categoryRefs.map(categoryRefSchema.parse as () => unknown),
     ).not.toThrow();
@@ -125,13 +101,13 @@ describe('getCategoryRefsFromGroups', () => {
     const categoryRefs = await getCategoryRefsFromGroups({
       tsConfigPath: 'tsconfig.json',
     });
-    expect(categoryRefs).toHaveLength(7);
+    expect(categoryRefs).toHaveLength(3);
   });
 
   it('should return a subset of all groups as categoryRefs if compiler options contain onlyAudits filter', async () => {
     const categoryRefs = await getCategoryRefsFromGroups({
       tsConfigPath: 'tsconfig.json',
-      onlyAudits: ['no-implicit-any'],
+      onlyAudits: ['semantic-errors'],
     });
     expect(categoryRefs).toHaveLength(1);
   });
@@ -159,9 +135,7 @@ describe('logSkippedAudits', () => {
 
     expect(console.warn).toHaveBeenCalledTimes(1);
     expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining(
-        `Skipped audits because the compiler options disabled: [`,
-      ),
+      expect.stringContaining(`Skipped audits: [`),
     );
   });
 
@@ -170,7 +144,7 @@ describe('logSkippedAudits', () => {
 
     expect(console.warn).toHaveBeenCalledTimes(1);
     expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining(`strictFunctionTypes`),
+      expect.stringContaining(`unknownCodes`),
     );
   });
 });

@@ -21,13 +21,11 @@ const AUDIT_DESCRIPTIONS: Record<AuditSlug, string> = {
 };
 export const AUDITS: (Audit & { slug: AuditSlug })[] = Object.values(
   TS_CODE_RANGE_NAMES,
-).map(slug => {
-  return {
-    slug: slugify(slug) as AuditSlug,
-    title: camelCaseToSentence(slug),
-    description: AUDIT_DESCRIPTIONS[slug as AuditSlug],
-  };
-});
+).map(slug => ({
+  slug: slugify(slug) as AuditSlug,
+  title: camelCaseToSentence(slug),
+  description: AUDIT_DESCRIPTIONS[slug as AuditSlug],
+}));
 
 /**
  * # Diagnostic Code Categories

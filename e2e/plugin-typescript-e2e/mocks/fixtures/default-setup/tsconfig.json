@@ -2,7 +2,9 @@
   "compilerOptions": {
     "rootDir": "./src",
     "target": "ES6",
-    "module": "CommonJS"
+    "module": "CommonJS",
+    "strict": true,
+    "verbatimModuleSyntax": false
   },
   "include": ["src/**/*.ts"],
 }

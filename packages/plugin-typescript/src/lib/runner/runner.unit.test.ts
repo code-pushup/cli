@@ -1,7 +1,6 @@
 import {
   type Diagnostic,
   DiagnosticCategory,
-  type LineAndCharacter,
   type SourceFile,
 } from 'typescript';
 import { beforeEach, describe, expect } from 'vitest';
@@ -20,16 +19,27 @@ describe('createRunnerFunction', () => {
     utilsModule,
     'getIssueFromDiagnostic',
   );
-  const diagnosticCode = 7005;
-  const mockDiagnostic = {
-    code: diagnosticCode,
-    start: () => void 0,
-    messageText: `error text [${diagnosticCode}]`,
+
+  const semanticTsCode = 2322;
+  const mockSemanticDiagnostic = {
+    code: semanticTsCode, // "Type 'string' is not assignable to type 'number'"
+    start: 10, // Mocked character position
+    messageText: "Type 'string' is not assignable to type 'number'.",
     category: DiagnosticCategory.Error,
     file: {
-      getLineAndCharacterOfPosition: () =>
-        ({ line: 1, character: 1 }) as LineAndCharacter,
-      fileName: 'file-name.ts',
+      getLineAndCharacterOfPosition: () => ({ line: 5, character: 10 }),
+      fileName: 'example.ts',
+    } as unknown as SourceFile,
+  } as unknown as Diagnostic;
+  const syntacticTsCode = 1005;
+  const mockSyntacticDiagnostic = {
+    code: syntacticTsCode, // "';' expected."
+    start: 25, // Mocked character position
+    messageText: "';' expected.",
+    category: DiagnosticCategory.Error,
+    file: {
+      getLineAndCharacterOfPosition: () => ({ line: 10, character: 20 }),
+      fileName: 'example.ts',
     } as unknown as SourceFile,
   } as unknown as Diagnostic;
 
@@ -47,7 +57,7 @@ describe('createRunnerFunction', () => {
   });
 
   it('should return empty array if no supported diagnostics are found', async () => {
-    getTypeScriptDiagnosticsSpy.mockResolvedValue([mockDiagnostic]);
+    getTypeScriptDiagnosticsSpy.mockResolvedValue([mockSemanticDiagnostic]);
     const runner = createRunnerFunction({
       tsConfigPath: 'tsconfig.json',
       expectedAudits: [],
@@ -56,51 +66,58 @@ describe('createRunnerFunction', () => {
   });
 
   it('should pass the diagnostic code to tsCodeToSlug', async () => {
-    getTypeScriptDiagnosticsSpy.mockResolvedValue([mockDiagnostic]);
+    getTypeScriptDiagnosticsSpy.mockResolvedValue([mockSemanticDiagnostic]);
     const runner = createRunnerFunction({
       tsConfigPath: 'tsconfig.json',
       expectedAudits: [],
     });
     await expect(runner(() => void 0)).resolves.toStrictEqual([]);
     expect(tSCodeToAuditSlugSpy).toHaveBeenCalledTimes(1);
-    expect(tSCodeToAuditSlugSpy).toHaveBeenCalledWith(diagnosticCode);
+    expect(tSCodeToAuditSlugSpy).toHaveBeenCalledWith(semanticTsCode);
   });
 
   it('should pass the diagnostic to getIssueFromDiagnostic', async () => {
-    getTypeScriptDiagnosticsSpy.mockResolvedValue([mockDiagnostic]);
+    getTypeScriptDiagnosticsSpy.mockResolvedValue([mockSemanticDiagnostic]);
     const runner = createRunnerFunction({
       tsConfigPath: 'tsconfig.json',
       expectedAudits: [],
     });
     await expect(runner(() => void 0)).resolves.toStrictEqual([]);
     expect(getIssueFromDiagnosticSpy).toHaveBeenCalledTimes(1);
-    expect(getIssueFromDiagnosticSpy).toHaveBeenCalledWith(mockDiagnostic);
+    expect(getIssueFromDiagnosticSpy).toHaveBeenCalledWith(
+      mockSemanticDiagnostic,
+    );
   });
 
   it('should return multiple issues per audit', async () => {
+    const code = 2222;
     getTypeScriptDiagnosticsSpy.mockResolvedValue([
-      { ...mockDiagnostic },
+      mockSemanticDiagnostic,
       {
-        ...mockDiagnostic,
-        code: 7006,
-        messageText: `error text [7006]`,
+        ...mockSemanticDiagnostic,
+        code,
+        messageText: `error text [${code}]`,
       },
     ]);
     const runner = createRunnerFunction({
       tsConfigPath: 'tsconfig.json',
-      expectedAudits: [{ slug: 'no-implicit-any' }],
+      expectedAudits: [{ slug: 'semantic-errors' }],
     });
 
     const auditOutputs = await runner(() => void 0);
     expect(auditOutputs).toStrictEqual([
       {
-        slug: 'no-implicit-any',
+        slug: 'semantic-errors',
         score: 0,
         value: 2,
         details: {
           issues: [
-            expect.objectContaining({ message: 'error text [7005]' }),
-            expect.objectContaining({ message: 'error text [7006]' }),
+            expect.objectContaining({
+              message: `TS${mockSemanticDiagnostic.code}: ${mockSemanticDiagnostic.messageText}`,
+            }),
+            expect.objectContaining({
+              message: `TS${code}: error text [${code}]`,
+            }),
           ],
         },
       },
@@ -110,34 +127,32 @@ describe('createRunnerFunction', () => {
 
   it('should return multiple audits', async () => {
     getTypeScriptDiagnosticsSpy.mockResolvedValue([
-      { ...mockDiagnostic },
-      {
-        ...mockDiagnostic,
-        // no-implicit-this
-        code: 2683,
-        messageText: `error text [2683]`,
-      },
+      mockSyntacticDiagnostic,
+      mockSemanticDiagnostic,
     ]);
     const runner = createRunnerFunction({
       tsConfigPath: 'tsconfig.json',
-      expectedAudits: [
-        { slug: 'no-implicit-any' },
-        { slug: 'no-implicit-this' },
-      ],
+      expectedAudits: [{ slug: 'semantic-errors' }, { slug: 'syntax-errors' }],
     });
 
     const auditOutputs = await runner(() => void 0);
     expect(auditOutputs).toStrictEqual([
       expect.objectContaining({
-        slug: 'no-implicit-any',
+        slug: 'semantic-errors',
         details: {
-          issues: [expect.objectContaining({ message: 'error text [7005]' })],
+          issues: [
+            expect.objectContaining({
+              message: `TS2322: Type 'string' is not assignable to type 'number'.`,
+            }),
+          ],
         },
       }),
       expect.objectContaining({
-        slug: 'no-implicit-this',
+        slug: 'syntax-errors',
         details: {
-          issues: [expect.objectContaining({ message: 'error text [2683]' })],
+          issues: [
+            expect.objectContaining({ message: "TS1005: ';' expected." }),
+          ],
         },
       }),
     ]);
@@ -145,20 +160,22 @@ describe('createRunnerFunction', () => {
 
   it('should return valid AuditOutput shape', async () => {
     getTypeScriptDiagnosticsSpy.mockResolvedValue([
-      mockDiagnostic,
-      { ...mockDiagnostic, code: 7006, messageText: `error text [7006]` },
+      mockSyntacticDiagnostic,
       {
-        ...mockDiagnostic,
-        code: 2683,
-        messageText: `error text [2683]`,
+        ...mockSyntacticDiagnostic,
+        code: 2222,
+        messageText: `error text [2222]`,
+      },
+      mockSemanticDiagnostic,
+      {
+        ...mockSemanticDiagnostic,
+        code: 1111,
+        messageText: `error text [1111]`,
       },
     ]);
     const runner = createRunnerFunction({
       tsConfigPath: 'tsconfig.json',
-      expectedAudits: [
-        { slug: 'no-implicit-any' },
-        { slug: 'no-implicit-this' },
-      ],
+      expectedAudits: [{ slug: 'semantic-errors' }, { slug: 'syntax-errors' }],
     });
     const auditOutputs = await runner(() => void 0);
     expect(() => auditOutputsSchema.parse(auditOutputs)).not.toThrow();

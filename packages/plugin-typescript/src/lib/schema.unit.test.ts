@@ -32,7 +32,11 @@ describe('typescriptPluginConfigSchema', () => {
     expect(() =>
       typescriptPluginConfigSchema.parse({
         tsConfigPath,
-        onlyAudits: ['no-implicit-any', 'jsx', 'strict-function-types'],
+        onlyAudits: [
+          'syntax-errors',
+          'semantic-errors',
+          'configuration-errors',
+        ],
       } satisfies TypescriptPluginOptions),
     ).not.toThrow();
   });

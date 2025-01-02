@@ -7,10 +7,11 @@ describe('getTypeScriptDiagnostics', () => {
 
   it('should return valid diagnostics', async () => {
     await expect(
-      getTypeScriptDiagnostics(
-        'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
-      ),
-    ).resolves.toHaveLength(4);
+      getTypeScriptDiagnostics({
+        tsConfigPath:
+          'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
+      }),
+    ).resolves.toHaveLength(5);
     expect(validateDiagnosticsSpy).toHaveBeenCalledTimes(1);
   });
 });

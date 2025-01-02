@@ -1,30 +1,18 @@
-import { access } from 'node:fs/promises';
 // eslint-disable-next-line unicorn/import-style
-import { dirname, join } from 'node:path';
+import { dirname } from 'node:path';
 import {
-  type CompilerOptions,
   type Diagnostic,
   DiagnosticCategory,
-  type ParsedCommandLine,
   flattenDiagnosticMessageText,
   parseConfigFileTextToJson,
   parseJsonConfigFileContent,
   sys,
 } from 'typescript';
 import type { Issue } from '@code-pushup/models';
-import {
-  executeProcess,
-  readJsonFile,
-  readTextFile,
-  truncateIssueMessage,
-} from '@code-pushup/utils';
-import {
-  AUDIT_LOOKUP,
-  TS_CONFIG_DIR,
-  getTsDefaultsFilename,
-} from './constants.js';
+import { readTextFile, truncateIssueMessage } from '@code-pushup/utils';
+import { AUDIT_LOOKUP } from './constants.js';
 import { TS_CODE_RANGE_NAMES } from './ts-error-codes.js';
-import type { CodeRangeName, SemVerString } from './types.js';
+import type { CodeRangeName } from './types.js';
 
 /**
  * Transform the TypeScript error code to the audit slug.
@@ -98,13 +86,7 @@ export function getIssueFromDiagnostic(diag: Diagnostic) {
   } satisfies Issue;
 }
 
-const _TS_CONFIG_MAP = new Map<string, ParsedCommandLine>();
-
 export async function loadTargetConfig(tsConfigPath: string) {
-  if (_TS_CONFIG_MAP.has(tsConfigPath)) {
-    return _TS_CONFIG_MAP.get(tsConfigPath) as ParsedCommandLine;
-  }
-
   const { config } = parseConfigFileTextToJson(
     tsConfigPath,
     await readTextFile(tsConfigPath),
@@ -122,41 +104,7 @@ export async function loadTargetConfig(tsConfigPath: string) {
     );
   }
 
-  _TS_CONFIG_MAP.set(tsConfigPath, parsedConfig);
-  return _TS_CONFIG_MAP.get(tsConfigPath) as ParsedCommandLine;
-}
-
-export async function getCurrentTsVersion(): Promise<SemVerString> {
-  const { stdout } = await executeProcess({
-    command: 'npx',
-    args: ['-y', 'tsc', '--version'],
-  });
-  return stdout.split(' ').slice(-1).join('').trim() as SemVerString;
-}
-
-export async function loadTsConfigDefaultsByVersion() {
-  const version = await getCurrentTsVersion();
-  const configPath = join(
-    process.cwd(),
-    'node_modules',
-    TS_CONFIG_DIR,
-    getTsDefaultsFilename(version),
-  );
-  try {
-    await access(configPath);
-  } catch {
-    throw new Error(
-      `Could not find default TS config for version ${version} at ${configPath}. The plugin maintainer has to support this version.`,
-    );
-  }
-
-  try {
-    return await readJsonFile<{ compilerOptions: CompilerOptions }>(configPath);
-  } catch (error) {
-    throw new Error(
-      `Could load default TS config for version ${version} at ${configPath}. The plugin maintainer has to support this version. \n ${(error as Error).message}`,
-    );
-  }
+  return parsedConfig;
 }
 
 export function validateDiagnostics(diagnostics: readonly Diagnostic[]) {
