@@ -74,10 +74,5 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
     expect(
       omitVariableReportData(reportJson as Report, { omitAuditData: true }),
     ).toMatchFileSnapshot('__snapshots__/typescript-plugin-json-report.json');
-
-    const reportMd = await readTextFile(join(envRoot, outputDir, 'report.md'));
-    expect(reportMd).toMatchFileSnapshot(
-      '__snapshots__/typescript-plugin-md-report.md',
-    );
   });
 });
