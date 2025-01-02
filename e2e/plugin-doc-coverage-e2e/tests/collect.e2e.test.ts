@@ -62,5 +62,4 @@ describe('PLUGIN collect report with doc-coverage-plugin NPM package', () => {
     expect(() => reportSchema.parse(report)).not.toThrow();
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
   });
-
 });
