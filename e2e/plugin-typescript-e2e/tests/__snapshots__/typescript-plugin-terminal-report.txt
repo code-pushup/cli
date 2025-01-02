@@ -5,12 +5,11 @@ Code PushUp Report - @code-pushup/core@0.57.0
 
 Typescript audits
 
-● Semantic-Errors                                           4
-● Configuration-Errors                                      0
+● Semantic-Errors                                           6
+● Configuration-Errors                                      1
+● Language-Service-Errors                                   1
+● Syntax-Errors                                             1
 ● Internal-Errors                                           0
-● Language-Service-Errors                                   0
-● Suggestions                                               0
-● Syntax-Errors                                             0
 ● Unknown-Codes                                             0
 
 Categories
@@ -18,7 +17,7 @@ Categories
 ┌─────────────────────────────────────────────────────────┬─────────┬──────────┐
 │  Category                                               │  Score  │  Audits  │
 ├─────────────────────────────────────────────────────────┼─────────┼──────────┤
-│  Typescript                                             │     89  │       5  │
+│  Typescript                                             │     28  │       6  │
 └─────────────────────────────────────────────────────────┴─────────┴──────────┘
 
 Made with ❤ by code-pushup.dev

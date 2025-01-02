@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "strict": true,
+    "verbatimModuleSyntax": false,
+    "target": "ES6",
+    "module": "CommonJS"
+  },
+  "exclude": ["exclude"],
+  "include": [
+    "src/1-syntax-errors/**/*.ts",
+    "src/2-semantic-errors/**/*.ts",
+    "src/4-languale-service/**/*.ts",
+    "src/6-config-errors/**/*.ts"
+  ]
+}

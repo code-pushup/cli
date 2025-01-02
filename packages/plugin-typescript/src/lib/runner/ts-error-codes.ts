@@ -100,11 +100,14 @@ export const TS_ERROR_CODES = {
  * | 4XXX       | Language Service Diagnostics | Used by editors (e.g., VSCode) for IntelliSense.          |
  * | 5XXX       | Internal Compiler Errors    | Rare, unexpected failures in the compiler.                |
  * | 6XXX       | Configuration/Options Errors| Issues with tsconfig.json or compiler options.            |
+ *
+ * *Note:* 3XXX Diagnostics are not emitted by tsc. They are only available through the Language Service API.
+ * If you want to measure them use the eslint plugin `@typescript-eslint/eslint-plugin`.
  */
 export const TS_CODE_RANGE_NAMES = {
   '1': 'syntax-errors',
   '2': 'semantic-errors',
-  '3': 'suggestions',
+  // '3': 'suggestions',
   '4': 'language-service-errors',
   '5': 'internal-errors',
   '6': 'configuration-errors',

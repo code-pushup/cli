@@ -11,7 +11,6 @@ const AUDIT_DESCRIPTIONS: Record<AuditSlug, string> = {
     'Errors that occur during type checking and type inference',
   'syntax-errors':
     'Errors that occur during parsing and lexing of TypeScript source code',
-  suggestions: 'Suggestions for improving code quality and maintainability',
   'configuration-errors':
     'Errors that occur when parsing TypeScript configuration files',
   'language-service-errors':
@@ -31,8 +30,8 @@ export const AUDITS: (Audit & { slug: AuditSlug })[] = Object.values(
  * # Diagnostic Code Categories
  * | 🏷️ Category       | Diagnostic Code Ranges | Audits                                                |
  * |-------------------|------------------------|-------------------------------------------------------|
- * | **Problems**| 1XXX, 2XXX, 5XXX       | `syntax-errors`, `semantic-errors`, `internal-errors` |
- * | **Suggestions**    | 3XXX                   | `suggestions`                                         |
+ * | **Problems**      | 1XXX, 2XXX, 5XXX       | `syntax-errors`, `semantic-errors`, `internal-errors` |
+ * | **Suggestions**   | 3XXX                   | `suggestions`                                         |
  * | **Configuration** | 6XXX                   | `configuration-errors`                                |
  */
 export const GROUPS: Group[] = [
@@ -53,21 +52,23 @@ export const GROUPS: Group[] = [
     })),
   },
   {
-    slug: 'suggestions-group',
-    title: 'Suggestions',
-    description:
-      'Suggestions often include improvements to code readability and adherence to style guidelines.',
-    refs: (['suggestions'] satisfies AuditSlug[]).map(slug => ({
-      slug,
-      weight: 1,
-    })),
-  },
-  {
     slug: 'ts-configuration-group',
     title: 'Configuration',
     description:
       'TypeScript configuration and options errors ensure correct project setup, reducing risks from misconfiguration.',
     refs: (['configuration-errors'] satisfies AuditSlug[]).map(slug => ({
+      slug,
+      weight: 1,
+    })),
+  },
+  {
+    slug: 'miscellaneous-group',
+    title: 'Miscellaneous',
+    description:
+      'Errors that do not bring any specific value to the developer, but are still useful to know.',
+    refs: (
+      ['unknown-codes', 'language-service-errors'] satisfies AuditSlug[]
+    ).map(slug => ({
       slug,
       weight: 1,
     })),

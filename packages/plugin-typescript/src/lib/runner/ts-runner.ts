@@ -12,9 +12,8 @@ export type DiagnosticsOptions = {
 export async function getTypeScriptDiagnostics({
   tsConfigPath,
 }: DiagnosticsOptions): Promise<readonly Diagnostic[]> {
+  const { fileNames, options } = await loadTargetConfig(tsConfigPath);
   try {
-    const { fileNames, options } = await loadTargetConfig(tsConfigPath);
-
     const program = createProgram(fileNames, options);
     // @TODO use more fine-grained helpers like getSemanticDiagnostics instead of getPreEmitDiagnostics
     return getPreEmitDiagnostics(program);

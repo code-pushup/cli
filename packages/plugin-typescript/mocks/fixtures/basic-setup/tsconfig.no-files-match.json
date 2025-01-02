@@ -4,6 +4,5 @@
     "strict": true,
     "target": "ES6",
     "module": "CommonJS"
-  },
-  "exclude": ["src/**/*.ts", "src/**/*.js"]
+  }
 }

@@ -137,16 +137,13 @@ export const eslintCoreConfigNx = async (
 export const typescriptPluginConfigNx = async (
   options?: TypescriptPluginOptions,
 ): Promise<CoreConfig> => {
-  const opt: TypescriptPluginOptions = {
-    ...options,
-  };
   return {
-    plugins: [await typescriptPlugin(opt)],
+    plugins: [await typescriptPlugin(options)],
     categories: [
       {
         slug: 'typescript',
-        title: 'Typescript',
-        refs: await getCategoryRefsFromGroups(opt),
+        title: 'Typescript - All Groups',
+        refs: await getCategoryRefsFromGroups(options),
       },
       {
         slug: 'bug-prevention',
@@ -166,6 +163,15 @@ export const typescriptPluginConfigNx = async (
         description:
           'TypeScript & Lint rules that promote **good practices** and consistency in your code.',
         refs: await getCategoryRefsFromGroups({ onlyAudits: ['suggestions'] }),
+      },
+      {
+        slug: 'miscellaneous',
+        title: 'Miscellaneous',
+        description:
+          'Errors that do not bring any specific value to the developer, but are still useful to know.',
+        refs: await getCategoryRefsFromGroups({
+          onlyAudits: ['unknown-codes', 'language-service-errors'],
+        }),
       },
     ],
   };

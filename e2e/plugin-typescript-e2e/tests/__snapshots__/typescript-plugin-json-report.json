@@ -10,13 +10,13 @@
         },
         {
           "plugin": "typescript",
-          "slug": "suggestions-group",
+          "slug": "ts-configuration-group",
           "type": "group",
           "weight": 1,
         },
         {
           "plugin": "typescript",
-          "slug": "ts-configuration-group",
+          "slug": "miscellaneous-group",
           "type": "group",
           "weight": 1,
         },
@@ -38,11 +38,6 @@
           "description": "Errors that occur during type checking and type inference",
           "slug": "semantic-errors",
           "title": "Semantic-Errors",
-        },
-        {
-          "description": "Suggestions for improving code quality and maintainability",
-          "slug": "suggestions",
-          "title": "Suggestions",
         },
         {
           "description": "Errors that occur during TypeScript language service operations",
@@ -88,17 +83,6 @@
           "title": "Problems",
         },
         {
-          "description": "Suggestions often include improvements to code readability and adherence to style guidelines.",
-          "refs": [
-            {
-              "slug": "suggestions",
-              "weight": 1,
-            },
-          ],
-          "slug": "suggestions-group",
-          "title": "Suggestions",
-        },
-        {
           "description": "TypeScript configuration and options errors ensure correct project setup, reducing risks from misconfiguration.",
           "refs": [
             {
@@ -108,6 +92,21 @@
           ],
           "slug": "ts-configuration-group",
           "title": "Configuration",
+        },
+        {
+          "description": "Errors that do not bring any specific value to the developer, but are still useful to know.",
+          "refs": [
+            {
+              "slug": "unknown-codes",
+              "weight": 1,
+            },
+            {
+              "slug": "language-service-errors",
+              "weight": 1,
+            },
+          ],
+          "slug": "miscellaneous-group",
+          "title": "Miscellaneous",
         },
       ],
       "icon": "typescript",
