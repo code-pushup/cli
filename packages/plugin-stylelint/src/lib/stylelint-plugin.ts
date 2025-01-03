@@ -6,7 +6,7 @@ import {getNormalizedConfigForFile} from "./runner/normalize-config.js";
 
 
 export type StylelintPluginConfig = Pick<LinterOptions, 'configFile' | 'files'> & {
-  onlyAudits: string[]
+  onlyAudits?: string[]
 }
 
 /**
