@@ -68,6 +68,5 @@ describe('PLUGIN collect report with doc-coverage-plugin NPM package', () => {
     expect(
       JSON.stringify(omitVariableReportData(report as Report), null, 2),
     ).toMatchFileSnapshot('__snapshots__/report.json');
-
   });
 });
