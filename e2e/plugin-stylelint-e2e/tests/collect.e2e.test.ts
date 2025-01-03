@@ -8,6 +8,7 @@ import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
   omitVariableReportData,
+  removeColorCodes,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
@@ -41,21 +42,24 @@ describe('PLUGIN collect report with eslint-plugin NPM package', () => {
   });
 
   it('should run StyleLint plugin for flat config and create report.json', async () => {
-    const { code, stderr } = await executeProcess({
+    const { code, stdout } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'collect', '--no-progress'],
       cwd: testFileDir,
     });
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     const report = await readJsonFile(
       path.join(flatConfigOutputDir, 'report.json'),
     );
+    expect(removeColorCodes(stdout)).toMatchFileSnapshot(
+      '__snapshots__/terminal.txt',
+    );
 
     expect(() => reportSchema.parse(report)).not.toThrow();
-    expect(omitVariableReportData(report as Report)).toMatchSnapshot();
+    expect(
+      JSON.stringify(omitVariableReportData(report as Report), null, 2),
+    ).toMatchFileSnapshot('__snapshots__/report.json');
   });
-
 });

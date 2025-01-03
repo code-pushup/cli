@@ -1,5 +1,5 @@
-import {type LintResult} from 'stylelint';
-import type {Audit, AuditOutputs, AuditReport} from '@code-pushup/models';
+import { type LintResult } from 'stylelint';
+import type { Audit, AuditOutputs, AuditReport } from '@code-pushup/models';
 
 export function mapStylelintResultsToAudits(
   results: LintResult[],

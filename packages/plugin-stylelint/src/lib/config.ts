@@ -6,7 +6,9 @@ const patternsSchema = z.union([z.string(), z.array(z.string()).min(1)], {
     'Lint target files. May contain file paths, directory paths or glob patterns',
 });
 
-const stylelintrcSchema = z.string({ description: 'Path to StyleLint config file' });
+const stylelintrcSchema = z.string({
+  description: 'Path to StyleLint config file',
+});
 
 const stylelintTargetObjectSchema = z.object({
   stylelintrc: stylelintrcSchema.optional(),

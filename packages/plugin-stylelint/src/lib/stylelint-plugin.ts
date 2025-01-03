@@ -1,8 +1,12 @@
-import {createRequire} from 'node:module';
-import type {PluginConfig} from '@code-pushup/models';
-import {createRunnerFunction} from './runner/index.js';
-import {getAudits} from './utils.js';
-import {type StyleLintPluginConfig, stylelintPluginConfigSchema, type StyleLintTarget} from "./config.js";
+import { createRequire } from 'node:module';
+import type { PluginConfig } from '@code-pushup/models';
+import {
+  type StyleLintPluginConfig,
+  type StyleLintTarget,
+  stylelintPluginConfigSchema,
+} from './config.js';
+import { createRunnerFunction } from './runner/index.js';
+import { getAudits } from './utils.js';
 
 /**
  * Instantiates Code PushUp code stylelint plugin for core config.
@@ -25,10 +29,8 @@ import {type StyleLintPluginConfig, stylelintPluginConfigSchema, type StyleLintT
 export async function stylelintPlugin(
   options?: StyleLintPluginConfig,
 ): Promise<PluginConfig> {
-  const {
-    stylelintrc: configFile,
-    patterns: files
-  } = stylelintPluginConfigSchema.parse(options ?? {}).at(0) as StyleLintTarget;
+  const { stylelintrc: configFile, patterns: files } =
+    stylelintPluginConfigSchema.parse(options ?? {}).at(0) as StyleLintTarget;
 
   const packageJson = createRequire(import.meta.url)(
     '../../package.json',
@@ -47,6 +49,6 @@ export async function stylelintPlugin(
     packageName: packageJson.name,
     version: packageJson.version,
     audits,
-    runner: createRunnerFunction({configFile, files}, audits),
+    runner: createRunnerFunction({ configFile, files }, audits),
   };
 }

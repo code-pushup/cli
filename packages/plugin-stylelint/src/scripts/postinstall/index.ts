@@ -1,12 +1,15 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
-const absolutesStylelintPath = resolve(
-  process.cwd(),
-  'node_modules/stylelint/lib/index.mjs',
+const stylelintEntryFromPackageRoot = resolve(
+  '..',
+  '..',
+  'stylelint/lib/index.mjs',
 );
 
-export async function patchStylelint(stylelintPath = absolutesStylelintPath) {
+export async function patchStylelint(
+  stylelintPath = stylelintEntryFromPackageRoot,
+) {
   try {
     let content = await readFile(stylelintPath, 'utf-8');
 

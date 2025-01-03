@@ -1,0 +1,585 @@
+Code PushUp CLI
+[ info ] Run collect...
+auditMap:  Map(70) {
+  'color-no-invalid-hex' => {
+    slug: 'color-no-invalid-hex',
+    title: 'color-no-invalid-hex',
+    docsUrl: 'https://stylelint.io/user-guide/rules/color-no-invalid-hex',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'alpha-value-notation' => {
+    slug: 'alpha-value-notation',
+    title: 'alpha-value-notation',
+    docsUrl: 'https://stylelint.io/user-guide/rules/alpha-value-notation',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'at-rule-empty-line-before' => {
+    slug: 'at-rule-empty-line-before',
+    title: 'at-rule-empty-line-before',
+    docsUrl: 'https://stylelint.io/user-guide/rules/at-rule-empty-line-before',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'at-rule-no-vendor-prefix' => {
+    slug: 'at-rule-no-vendor-prefix',
+    title: 'at-rule-no-vendor-prefix',
+    docsUrl: 'https://stylelint.io/user-guide/rules/at-rule-no-vendor-prefix',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'color-function-notation' => {
+    slug: 'color-function-notation',
+    title: 'color-function-notation',
+    docsUrl: 'https://stylelint.io/user-guide/rules/color-function-notation',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'color-hex-length' => {
+    slug: 'color-hex-length',
+    title: 'color-hex-length',
+    docsUrl: 'https://stylelint.io/user-guide/rules/color-hex-length',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'comment-empty-line-before' => {
+    slug: 'comment-empty-line-before',
+    title: 'comment-empty-line-before',
+    docsUrl: 'https://stylelint.io/user-guide/rules/comment-empty-line-before',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'comment-whitespace-inside' => {
+    slug: 'comment-whitespace-inside',
+    title: 'comment-whitespace-inside',
+    docsUrl: 'https://stylelint.io/user-guide/rules/comment-whitespace-inside',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'custom-property-empty-line-before' => {
+    slug: 'custom-property-empty-line-before',
+    title: 'custom-property-empty-line-before',
+    docsUrl: 'https://stylelint.io/user-guide/rules/custom-property-empty-line-before',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'custom-media-pattern' => {
+    slug: 'custom-media-pattern',
+    title: 'custom-media-pattern',
+    docsUrl: 'https://stylelint.io/user-guide/rules/custom-media-pattern',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'custom-property-pattern' => {
+    slug: 'custom-property-pattern',
+    title: 'custom-property-pattern',
+    docsUrl: 'https://stylelint.io/user-guide/rules/custom-property-pattern',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'declaration-block-no-redundant-longhand-properties' => {
+    slug: 'declaration-block-no-redundant-longhand-properties',
+    title: 'declaration-block-no-redundant-longhand-properties',
+    docsUrl: 'https://stylelint.io/user-guide/rules/declaration-block-no-redundant-longhand-properties',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'declaration-block-single-line-max-declarations' => {
+    slug: 'declaration-block-single-line-max-declarations',
+    title: 'declaration-block-single-line-max-declarations',
+    docsUrl: 'https://stylelint.io/user-guide/rules/declaration-block-single-line-max-declarations',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'declaration-empty-line-before' => {
+    slug: 'declaration-empty-line-before',
+    title: 'declaration-empty-line-before',
+    docsUrl: 'https://stylelint.io/user-guide/rules/declaration-empty-line-before',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'font-family-name-quotes' => {
+    slug: 'font-family-name-quotes',
+    title: 'font-family-name-quotes',
+    docsUrl: 'https://stylelint.io/user-guide/rules/font-family-name-quotes',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'function-name-case' => {
+    slug: 'function-name-case',
+    title: 'function-name-case',
+    docsUrl: 'https://stylelint.io/user-guide/rules/function-name-case',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'function-url-quotes' => {
+    slug: 'function-url-quotes',
+    title: 'function-url-quotes',
+    docsUrl: 'https://stylelint.io/user-guide/rules/function-url-quotes',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'hue-degree-notation' => {
+    slug: 'hue-degree-notation',
+    title: 'hue-degree-notation',
+    docsUrl: 'https://stylelint.io/user-guide/rules/hue-degree-notation',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'import-notation' => {
+    slug: 'import-notation',
+    title: 'import-notation',
+    docsUrl: 'https://stylelint.io/user-guide/rules/import-notation',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'keyframe-selector-notation' => {
+    slug: 'keyframe-selector-notation',
+    title: 'keyframe-selector-notation',
+    docsUrl: 'https://stylelint.io/user-guide/rules/keyframe-selector-notation',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'keyframes-name-pattern' => {
+    slug: 'keyframes-name-pattern',
+    title: 'keyframes-name-pattern',
+    docsUrl: 'https://stylelint.io/user-guide/rules/keyframes-name-pattern',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'length-zero-no-unit' => {
+    slug: 'length-zero-no-unit',
+    title: 'length-zero-no-unit',
+    docsUrl: 'https://stylelint.io/user-guide/rules/length-zero-no-unit',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'lightness-notation' => {
+    slug: 'lightness-notation',
+    title: 'lightness-notation',
+    docsUrl: 'https://stylelint.io/user-guide/rules/lightness-notation',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'media-feature-name-no-vendor-prefix' => {
+    slug: 'media-feature-name-no-vendor-prefix',
+    title: 'media-feature-name-no-vendor-prefix',
+    docsUrl: 'https://stylelint.io/user-guide/rules/media-feature-name-no-vendor-prefix',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'media-feature-range-notation' => {
+    slug: 'media-feature-range-notation',
+    title: 'media-feature-range-notation',
+    docsUrl: 'https://stylelint.io/user-guide/rules/media-feature-range-notation',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'number-max-precision' => {
+    slug: 'number-max-precision',
+    title: 'number-max-precision',
+    docsUrl: 'https://stylelint.io/user-guide/rules/number-max-precision',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'property-no-vendor-prefix' => {
+    slug: 'property-no-vendor-prefix',
+    title: 'property-no-vendor-prefix',
+    docsUrl: 'https://stylelint.io/user-guide/rules/property-no-vendor-prefix',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'rule-empty-line-before' => {
+    slug: 'rule-empty-line-before',
+    title: 'rule-empty-line-before',
+    docsUrl: 'https://stylelint.io/user-guide/rules/rule-empty-line-before',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'selector-attribute-quotes' => {
+    slug: 'selector-attribute-quotes',
+    title: 'selector-attribute-quotes',
+    docsUrl: 'https://stylelint.io/user-guide/rules/selector-attribute-quotes',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'selector-class-pattern' => {
+    slug: 'selector-class-pattern',
+    title: 'selector-class-pattern',
+    docsUrl: 'https://stylelint.io/user-guide/rules/selector-class-pattern',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'selector-id-pattern' => {
+    slug: 'selector-id-pattern',
+    title: 'selector-id-pattern',
+    docsUrl: 'https://stylelint.io/user-guide/rules/selector-id-pattern',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'selector-no-vendor-prefix' => {
+    slug: 'selector-no-vendor-prefix',
+    title: 'selector-no-vendor-prefix',
+    docsUrl: 'https://stylelint.io/user-guide/rules/selector-no-vendor-prefix',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'selector-not-notation' => {
+    slug: 'selector-not-notation',
+    title: 'selector-not-notation',
+    docsUrl: 'https://stylelint.io/user-guide/rules/selector-not-notation',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'selector-pseudo-element-colon-notation' => {
+    slug: 'selector-pseudo-element-colon-notation',
+    title: 'selector-pseudo-element-colon-notation',
+    docsUrl: 'https://stylelint.io/user-guide/rules/selector-pseudo-element-colon-notation',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'selector-type-case' => {
+    slug: 'selector-type-case',
+    title: 'selector-type-case',
+    docsUrl: 'https://stylelint.io/user-guide/rules/selector-type-case',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'shorthand-property-no-redundant-values' => {
+    slug: 'shorthand-property-no-redundant-values',
+    title: 'shorthand-property-no-redundant-values',
+    docsUrl: 'https://stylelint.io/user-guide/rules/shorthand-property-no-redundant-values',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'value-keyword-case' => {
+    slug: 'value-keyword-case',
+    title: 'value-keyword-case',
+    docsUrl: 'https://stylelint.io/user-guide/rules/value-keyword-case',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'value-no-vendor-prefix' => {
+    slug: 'value-no-vendor-prefix',
+    title: 'value-no-vendor-prefix',
+    docsUrl: 'https://stylelint.io/user-guide/rules/value-no-vendor-prefix',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'annotation-no-unknown' => {
+    slug: 'annotation-no-unknown',
+    title: 'annotation-no-unknown',
+    docsUrl: 'https://stylelint.io/user-guide/rules/annotation-no-unknown',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'at-rule-no-unknown' => {
+    slug: 'at-rule-no-unknown',
+    title: 'at-rule-no-unknown',
+    docsUrl: 'https://stylelint.io/user-guide/rules/at-rule-no-unknown',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'block-no-empty' => {
+    slug: 'block-no-empty',
+    title: 'block-no-empty',
+    docsUrl: 'https://stylelint.io/user-guide/rules/block-no-empty',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'comment-no-empty' => {
+    slug: 'comment-no-empty',
+    title: 'comment-no-empty',
+    docsUrl: 'https://stylelint.io/user-guide/rules/comment-no-empty',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'custom-property-no-missing-var-function' => {
+    slug: 'custom-property-no-missing-var-function',
+    title: 'custom-property-no-missing-var-function',
+    docsUrl: 'https://stylelint.io/user-guide/rules/custom-property-no-missing-var-function',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'declaration-block-no-duplicate-custom-properties' => {
+    slug: 'declaration-block-no-duplicate-custom-properties',
+    title: 'declaration-block-no-duplicate-custom-properties',
+    docsUrl: 'https://stylelint.io/user-guide/rules/declaration-block-no-duplicate-custom-properties',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'declaration-block-no-duplicate-properties' => {
+    slug: 'declaration-block-no-duplicate-properties',
+    title: 'declaration-block-no-duplicate-properties',
+    docsUrl: 'https://stylelint.io/user-guide/rules/declaration-block-no-duplicate-properties',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'declaration-block-no-shorthand-property-overrides' => {
+    slug: 'declaration-block-no-shorthand-property-overrides',
+    title: 'declaration-block-no-shorthand-property-overrides',
+    docsUrl: 'https://stylelint.io/user-guide/rules/declaration-block-no-shorthand-property-overrides',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'font-family-no-duplicate-names' => {
+    slug: 'font-family-no-duplicate-names',
+    title: 'font-family-no-duplicate-names',
+    docsUrl: 'https://stylelint.io/user-guide/rules/font-family-no-duplicate-names',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'font-family-no-missing-generic-family-keyword' => {
+    slug: 'font-family-no-missing-generic-family-keyword',
+    title: 'font-family-no-missing-generic-family-keyword',
+    docsUrl: 'https://stylelint.io/user-guide/rules/font-family-no-missing-generic-family-keyword',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'function-calc-no-unspaced-operator' => {
+    slug: 'function-calc-no-unspaced-operator',
+    title: 'function-calc-no-unspaced-operator',
+    docsUrl: 'https://stylelint.io/user-guide/rules/function-calc-no-unspaced-operator',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'function-linear-gradient-no-nonstandard-direction' => {
+    slug: 'function-linear-gradient-no-nonstandard-direction',
+    title: 'function-linear-gradient-no-nonstandard-direction',
+    docsUrl: 'https://stylelint.io/user-guide/rules/function-linear-gradient-no-nonstandard-direction',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'function-no-unknown' => {
+    slug: 'function-no-unknown',
+    title: 'function-no-unknown',
+    docsUrl: 'https://stylelint.io/user-guide/rules/function-no-unknown',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'keyframe-block-no-duplicate-selectors' => {
+    slug: 'keyframe-block-no-duplicate-selectors',
+    title: 'keyframe-block-no-duplicate-selectors',
+    docsUrl: 'https://stylelint.io/user-guide/rules/keyframe-block-no-duplicate-selectors',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'keyframe-declaration-no-important' => {
+    slug: 'keyframe-declaration-no-important',
+    title: 'keyframe-declaration-no-important',
+    docsUrl: 'https://stylelint.io/user-guide/rules/keyframe-declaration-no-important',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'media-feature-name-no-unknown' => {
+    slug: 'media-feature-name-no-unknown',
+    title: 'media-feature-name-no-unknown',
+    docsUrl: 'https://stylelint.io/user-guide/rules/media-feature-name-no-unknown',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'media-query-no-invalid' => {
+    slug: 'media-query-no-invalid',
+    title: 'media-query-no-invalid',
+    docsUrl: 'https://stylelint.io/user-guide/rules/media-query-no-invalid',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'named-grid-areas-no-invalid' => {
+    slug: 'named-grid-areas-no-invalid',
+    title: 'named-grid-areas-no-invalid',
+    docsUrl: 'https://stylelint.io/user-guide/rules/named-grid-areas-no-invalid',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'no-descending-specificity' => {
+    slug: 'no-descending-specificity',
+    title: 'no-descending-specificity',
+    docsUrl: 'https://stylelint.io/user-guide/rules/no-descending-specificity',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'no-duplicate-at-import-rules' => {
+    slug: 'no-duplicate-at-import-rules',
+    title: 'no-duplicate-at-import-rules',
+    docsUrl: 'https://stylelint.io/user-guide/rules/no-duplicate-at-import-rules',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'no-duplicate-selectors' => {
+    slug: 'no-duplicate-selectors',
+    title: 'no-duplicate-selectors',
+    docsUrl: 'https://stylelint.io/user-guide/rules/no-duplicate-selectors',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'no-empty-source' => {
+    slug: 'no-empty-source',
+    title: 'no-empty-source',
+    docsUrl: 'https://stylelint.io/user-guide/rules/no-empty-source',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'no-invalid-double-slash-comments' => {
+    slug: 'no-invalid-double-slash-comments',
+    title: 'no-invalid-double-slash-comments',
+    docsUrl: 'https://stylelint.io/user-guide/rules/no-invalid-double-slash-comments',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'no-invalid-position-at-import-rule' => {
+    slug: 'no-invalid-position-at-import-rule',
+    title: 'no-invalid-position-at-import-rule',
+    docsUrl: 'https://stylelint.io/user-guide/rules/no-invalid-position-at-import-rule',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'no-irregular-whitespace' => {
+    slug: 'no-irregular-whitespace',
+    title: 'no-irregular-whitespace',
+    docsUrl: 'https://stylelint.io/user-guide/rules/no-irregular-whitespace',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'property-no-unknown' => {
+    slug: 'property-no-unknown',
+    title: 'property-no-unknown',
+    docsUrl: 'https://stylelint.io/user-guide/rules/property-no-unknown',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'selector-anb-no-unmatchable' => {
+    slug: 'selector-anb-no-unmatchable',
+    title: 'selector-anb-no-unmatchable',
+    docsUrl: 'https://stylelint.io/user-guide/rules/selector-anb-no-unmatchable',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'selector-pseudo-class-no-unknown' => {
+    slug: 'selector-pseudo-class-no-unknown',
+    title: 'selector-pseudo-class-no-unknown',
+    docsUrl: 'https://stylelint.io/user-guide/rules/selector-pseudo-class-no-unknown',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'selector-pseudo-element-no-unknown' => {
+    slug: 'selector-pseudo-element-no-unknown',
+    title: 'selector-pseudo-element-no-unknown',
+    docsUrl: 'https://stylelint.io/user-guide/rules/selector-pseudo-element-no-unknown',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'selector-type-no-unknown' => {
+    slug: 'selector-type-no-unknown',
+    title: 'selector-type-no-unknown',
+    docsUrl: 'https://stylelint.io/user-guide/rules/selector-type-no-unknown',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'string-no-newline' => {
+    slug: 'string-no-newline',
+    title: 'string-no-newline',
+    docsUrl: 'https://stylelint.io/user-guide/rules/string-no-newline',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  },
+  'unit-no-unknown' => {
+    slug: 'unit-no-unknown',
+    title: 'unit-no-unknown',
+    docsUrl: 'https://stylelint.io/user-guide/rules/unit-no-unknown',
+    score: 1,
+    value: 0,
+    details: { issues: [] }
+  }
+}
+Code PushUp Report - @code-pushup/core@0.57.0
+
+
+Code stylelint audits
+
+● ... All 70 audits have perfect scores ...
+
+Made with ❤ by code-pushup.dev
+
+[ success ] Collecting report successful!
+[ info ] 💡 Configure categories to see the scores in an overview table. See: https://github.com/code-pushup/cli/blob/main/packages/cli/README.md
+╭────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                            │
+│    💡 Visualize your reports                                                               │
+│                                                                                            │
+│    ❯ npx code-pushup upload - Run upload to upload the created report to the server        │
+│      https://github.com/code-pushup/cli/tree/main/packages/cli#upload-command              │
+│    ❯ npx code-pushup autorun - Run collect & upload                                        │
+│      https://github.com/code-pushup/cli/tree/main/packages/cli#autorun-command             │
+│                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯

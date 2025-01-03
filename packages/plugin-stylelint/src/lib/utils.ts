@@ -1,7 +1,6 @@
-import type {Audit} from '@code-pushup/models';
-import {getNormalizedConfigForFile} from './runner/normalize-config.js';
-import type {StyleLintTarget} from './config.js';
-
+import type { Audit } from '@code-pushup/models';
+import type { StyleLintTarget } from './config.js';
+import { getNormalizedConfigForFile } from './runner/normalize-config.js';
 
 export function auditSlugToFullAudit(slug: string): Audit {
   return {
