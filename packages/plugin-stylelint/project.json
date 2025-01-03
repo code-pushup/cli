@@ -36,6 +36,9 @@
       "options": {
         "configFile": "packages/plugin-stylelint/vite.config.integration.ts"
       }
+    },
+    "postinstall": {
+      "command": "tsx --tsconfig=packages/plugin-stylelint/tsconfig.lib.json packages/plugin-stylelint/src/scripts/postinstall/bin.ts"
     }
   },
   "tags": ["scope:plugin", "type:feature", "publishable"]

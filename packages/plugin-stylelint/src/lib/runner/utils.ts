@@ -1,4 +1,4 @@
-import type { LintResult } from 'stylelint';
+import stylelint, { type LintResult } from 'stylelint';
 import type { Audit, AuditReport } from '@code-pushup/models';
 
 export function mapStylelintResultsToAudits(results: LintResult[]): Audit[] {
@@ -48,4 +48,8 @@ export function mapStylelintResultsToAudits(results: LintResult[]): Audit[] {
   }, new Map<string, AuditReport>());
 
   return [...auditMap.values()];
+}
+
+export function getRules() {
+  return Object.keys(stylelint.rules);
 }

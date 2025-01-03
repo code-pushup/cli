@@ -55,5 +55,8 @@
     "@nx/vite": {
       "optional": true
     }
+  },
+  "scripts": {
+    "postinstall": "node ./src/scripts/postinstall.js"
   }
 }

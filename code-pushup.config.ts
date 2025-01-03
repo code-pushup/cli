@@ -37,19 +37,11 @@ export default mergeConfigs(
   {
     plugins: [
       await stylelintPlugin({
+        configFile: 'packages/plugin-stylelint/mocks/fixtures/basic/.stylelintrc.json',
         files: 'packages/plugin-stylelint/mocks/fixtures/basic/**/*.css', // Adjust the path to your CSS files
         config: {
           rules: {
             'color-no-invalid-hex': true,
-            'block-no-empty': true,
-            'unit-no-unknown': true,
-            'no-duplicate-selectors': true,
-            'property-no-unknown': true,
-            'selector-pseudo-class-no-unknown': true,
-            'declaration-block-no-duplicate-properties': true,
-            'font-family-no-missing-generic-family-keyword': true,
-            'string-no-newline': true,
-            'length-zero-no-unit': true,
           },
         },
       }),
