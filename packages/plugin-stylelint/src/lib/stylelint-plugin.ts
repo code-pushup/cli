@@ -38,7 +38,9 @@ export async function stylelintPlugin(
     docsUrl: 'https://www.npmjs.com/package/@code-pushup/stylelint-plugin/',
     packageName: packageJson.name,
     version: packageJson.version,
-    audits: Object.keys(options?.config?.rules ?? {}).map(slug => ({
+    audits: Object.keys(options?.config?.rules ?? {
+        'color-no-invalid-hex': true,
+      }).map(slug => ({
       slug,
       title: slug,
       docsUrl: `https://stylelint.io/user-guide/rules/${slug}`,
