@@ -47,7 +47,7 @@ describe('PLUGIN collect report with doc-coverage-plugin NPM package', () => {
   });
 
   it('should run Doc Coverage plugin for Angular example dir and create report.json', async () => {
-    const { code, stderr } = await executeProcess({
+    const { code } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'collect', '--no-progress'],
       cwd: angularDir,
