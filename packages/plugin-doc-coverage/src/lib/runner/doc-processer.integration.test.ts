@@ -11,7 +11,7 @@ describe('processDocCoverage', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringContaining('classes-coverage.ts'),
+          file: expect.stringMatching(/classes-coverage\.ts$/),
           type: 'classes',
           name: 'ExampleClass',
           line: 1,
@@ -44,7 +44,7 @@ describe('processDocCoverage', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringContaining('methods-coverage.ts'),
+          file: expect.stringMatching(/methods-coverage\.ts$/),
           type: 'methods',
           name: 'exampleMethod',
           line: 5,
@@ -77,7 +77,7 @@ describe('processDocCoverage', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringContaining('interfaces-coverage.ts'),
+          file: expect.stringMatching(/interfaces-coverage\.ts$/),
           type: 'interfaces',
           name: 'ExampleInterface',
           line: 1,
@@ -110,7 +110,7 @@ describe('processDocCoverage', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringContaining('variables-coverage.ts'),
+          file: expect.stringMatching(/variables-coverage\.ts$/),
           type: 'variables',
           name: 'exampleVariable',
           line: 1,
@@ -143,9 +143,9 @@ describe('processDocCoverage', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringContaining('properties-coverage.ts'),
+          file: expect.stringMatching(/properties-coverage\.ts$/),
           type: 'properties',
-          name: 'internalId',
+          name: 'exampleProperty',
           line: 5,
         },
       ],
@@ -176,7 +176,7 @@ describe('processDocCoverage', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringContaining('types-coverage.ts'),
+          file: expect.stringMatching(/types-coverage\.ts$/),
           type: 'types',
           name: 'ExampleType',
           line: 1,
@@ -209,7 +209,7 @@ describe('processDocCoverage', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringContaining('enums-coverage.ts'),
+          file: expect.stringMatching(/enums-coverage\.ts$/),
           type: 'enums',
           name: 'ExampleEnum',
           line: 1,
