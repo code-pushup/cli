@@ -1,3 +1,0 @@
-function notRealisticFunction() {
-  return 'notRealisticFunction';
-}
