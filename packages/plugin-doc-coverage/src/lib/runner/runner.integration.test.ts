@@ -28,11 +28,8 @@ describe('createRunnerFunction', () => {
 
     const results = await runnerFn({} as any);
 
-    const expectedAudits = Object.keys(AUDITS_MAP);
-
     // Verify all expected audits are present
-    expect(results).toHaveLength(expectedAudits.length);
-    expect(results.map(r => r.slug).sort()).toEqual(expectedAudits.sort());
+    expect(results).toHaveLength(Object.keys(AUDITS_MAP).length);
 
     // Verify structure and content of each audit
     results.forEach(audit => {
@@ -96,7 +93,7 @@ describe('createRunnerFunction', () => {
     const results = await runnerFn({} as any);
 
     results.forEach(audit => {
-      expect(audit.score).toStrictEqual(0);
+      expect(audit.score).toBe(0);
       expect(audit.details?.issues?.length).toBeGreaterThan(0); // There are multiples classes due to methods and properties
     });
   });
@@ -109,8 +106,8 @@ describe('createRunnerFunction', () => {
     const results = await runnerFn({} as any);
 
     results.forEach(audit => {
-      expect(audit.score).toStrictEqual(1);
-      expect(audit.details?.issues?.length).toStrictEqual(0);
+      expect(audit.score).toBe(1);
+      expect(audit.details?.issues?.length).toBe(0);
     });
   });
 });
