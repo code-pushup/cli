@@ -37,7 +37,8 @@ export default mergeConfigs(
   {
     plugins: [
       await stylelintPlugin({
-        configFile: 'packages/plugin-stylelint/mocks/fixtures/basic/.stylelintrc.json',
+        configFile:
+          'packages/plugin-stylelint/mocks/fixtures/basic/.stylelintrc.json',
         files: 'packages/plugin-stylelint/mocks/fixtures/basic/**/*.css', // Adjust the path to your CSS files
       }),
     ],

@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 
 const absolutesStylelintPath = resolve(
   process.cwd(),
-  'node_modules/stylelint/lib/index.mjs'
+  'node_modules/stylelint/lib/index.mjs',
 );
 
 export async function patchStylelint(stylelintPath = absolutesStylelintPath) {
