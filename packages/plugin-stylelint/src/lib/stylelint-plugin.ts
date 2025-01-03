@@ -1,15 +1,8 @@
-import { createRequire } from 'node:module';
-import type { LinterOptions } from 'stylelint';
-import type { PluginConfig } from '@code-pushup/models';
-import { createRunnerFunction } from './runner/index.js';
-import { getAudits } from './utils.js';
-
-export type StylelintPluginConfig = Pick<
-  LinterOptions,
-  'configFile' | 'files'
-> & {
-  onlyAudits?: string[];
-};
+import {createRequire} from 'node:module';
+import type {PluginConfig} from '@code-pushup/models';
+import {createRunnerFunction} from './runner/index.js';
+import {getAudits} from './utils.js';
+import {type StyleLintPluginConfig, stylelintPluginConfigSchema, type StyleLintTarget} from "./config.js";
 
 /**
  * Instantiates Code PushUp code stylelint plugin for core config.
@@ -30,15 +23,20 @@ export type StylelintPluginConfig = Pick<
  * @returns Plugin configuration.
  */
 export async function stylelintPlugin(
-  options?: StylelintPluginConfig,
+  options?: StyleLintPluginConfig,
 ): Promise<PluginConfig> {
-  // const stylelintConfig = stylelintPluginConfigSchema.parse(config ?? {});
+  const {
+    stylelintrc: configFile,
+    patterns: files
+  } = stylelintPluginConfigSchema.parse(options ?? {}).at(0) as StyleLintTarget;
 
   const packageJson = createRequire(import.meta.url)(
     '../../package.json',
   ) as typeof import('../../package.json');
 
-  const audits = await getAudits(options ?? {});
+  const audits = await getAudits({
+    stylelintrc: configFile ?? '.stylelintrc.json',
+  });
 
   return {
     slug: 'stylelint',
@@ -49,16 +47,6 @@ export async function stylelintPlugin(
     packageName: packageJson.name,
     version: packageJson.version,
     audits,
-    runner: createRunnerFunction(options ?? {}, audits),
+    runner: createRunnerFunction({configFile, files}, audits),
   };
 }
-
-// async function getAudits(options: StylelintPluginConfig): Promise<Audit[]> {
-//   const {onlyAudits = [], ...rawCfg} = options;
-//   const config = await getNormalizedConfigForFile(rawCfg);
-//   return Object.keys(config.rules).filter(rule => onlyAudits.length > 0 && config.rules[rule] !== false).map(rule => ({
-//     slug: rule,
-//     title: rule,
-//     docsUrl: `https://stylelint.io/user-guide/rules/${rule}`,
-//   }));
-// }

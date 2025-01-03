@@ -1,10 +1,10 @@
-import stylelint, { type LintResult } from 'stylelint';
-import type { Audit, AuditReport } from '@code-pushup/models';
+import {type LintResult} from 'stylelint';
+import type {Audit, AuditOutputs, AuditReport} from '@code-pushup/models';
 
 export function mapStylelintResultsToAudits(
   results: LintResult[],
   expectedAudits: Audit[],
-): Audit[] {
+): AuditOutputs {
   const initialAuditMap = expectedAudits.reduce((map, audit) => {
     return map.set(audit.slug, {
       ...audit,
@@ -59,8 +59,4 @@ export function mapStylelintResultsToAudits(
   console.log('auditMap: ', auditMap);
 
   return [...auditMap.values()];
-}
-
-export function getRules() {
-  return Object.keys(stylelint.rules);
 }

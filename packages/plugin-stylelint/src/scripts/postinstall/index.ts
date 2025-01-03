@@ -20,6 +20,6 @@ export async function patchStylelint(stylelintPath = absolutesStylelintPath) {
       console.log('Stylelint already patched.');
     }
   } catch (error) {
-    console.error('Error patching Stylelint:', error.message);
+    console.error('Error patching Stylelint:', (error as Error).message);
   }
 }

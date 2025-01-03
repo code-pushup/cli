@@ -1,34 +1,35 @@
 import { z } from 'zod';
+import { toArray } from '@code-pushup/utils';
 
-export const stylelintTypeSchema = z.enum(['function', 'branch', 'line']);
-export type CoverageType = z.infer<typeof stylelintTypeSchema>;
-
-export const stylelintResultSchema = z.union([
-  z.object({
-    resultsPath: z
-      .string({
-        description: 'Path to stylelint results for Nx setup.',
-      })
-      .includes('lcov'),
-    pathToProject: z
-      .string({
-        description:
-          'Path from workspace root to project root. Necessary for LCOV reports which provide a relative path.',
-      })
-      .optional(),
-  }),
-  z
-    .string({
-      description: 'Path to stylelint results for a single project setup.',
-    })
-    .includes('lcov'),
-]);
-export type CoverageResult = z.infer<typeof stylelintResultSchema>;
-
-export const stylelintPluginConfigSchema = z.object({
-  rules: z.array(z.string()).optional(),
+const patternsSchema = z.union([z.string(), z.array(z.string()).min(1)], {
+  description:
+    'Lint target files. May contain file paths, directory paths or glob patterns',
 });
-export type StylelintPluginConfig = z.input<typeof stylelintPluginConfigSchema>;
-export type FinalCoveragePluginConfig = z.infer<
-  typeof stylelintPluginConfigSchema
->;
+
+const stylelintrcSchema = z.string({ description: 'Path to StyleLint config file' });
+
+const stylelintTargetObjectSchema = z.object({
+  stylelintrc: stylelintrcSchema.optional(),
+  patterns: patternsSchema,
+});
+type StyleLintTargetObject = z.infer<typeof stylelintTargetObjectSchema>;
+
+export const stylelintTargetSchema = z
+  .union([patternsSchema, stylelintTargetObjectSchema])
+  .transform(
+    (target): StyleLintTargetObject =>
+      typeof target === 'string' || Array.isArray(target)
+        ? { patterns: target }
+        : target,
+  );
+export type StyleLintTarget = z.infer<typeof stylelintTargetSchema>;
+
+export const stylelintPluginConfigSchema = z
+  .union([stylelintTargetSchema, z.array(stylelintTargetSchema).min(1)])
+  .transform(toArray);
+export type StyleLintPluginConfig = z.input<typeof stylelintPluginConfigSchema>;
+
+export type StyleLintPluginRunnerConfig = {
+  targets: StyleLintTarget[];
+  slugs: string[];
+};

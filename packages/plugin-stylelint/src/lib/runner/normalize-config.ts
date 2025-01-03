@@ -1,14 +1,16 @@
 import path from 'node:path';
 import * as process from 'node:process';
-import stylelint, { type LinterOptions, getConfigForFile } from 'stylelint';
+// @ts-expect-error
+import stylelint, { getConfigForFile } from 'stylelint';
 import type { NormalizedStyleLintConfig } from './model.js';
+import type {StyleLintTarget} from "../config.js";
 
 export function getNormalizedConfigForFile(
-  options: LinterOptions,
+  {stylelintrc, cwd}: Required<Pick<StyleLintTarget, 'stylelintrc'>> & {cwd?: string},
 ): NormalizedStyleLintConfig {
-  const _linter = stylelint._createLinter(options);
+  const _linter = stylelint._createLinter({configFile: stylelintrc});
   const configFile =
-    options.configFile ??
-    path.join(options?.cwd ?? process.cwd(), '.stylelintrc.json');
+    stylelintrc ??
+    path.join(cwd ?? process.cwd(), '.stylelintrc.json');
   return getConfigForFile(_linter, configFile);
 }
