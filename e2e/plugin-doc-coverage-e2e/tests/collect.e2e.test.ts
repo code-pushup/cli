@@ -10,7 +10,7 @@ import {
   omitVariableReportData,
   removeColorCodes,
 } from '@code-pushup/test-utils';
-import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
+import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
 describe('PLUGIN collect report with doc-coverage-plugin NPM package', () => {
   const fixturesDir = path.join(
