@@ -1,4 +1,4 @@
-import stylelint, { type LinterOptions, getConfigForFile } from 'stylelint';
+import stylelint, { type LinterOptions } from 'stylelint';
 
 // Run Stylelint Programmatically
 export async function lintStyles({config, ...options}: Omit<LinterOptions, 'formatter'>) {
