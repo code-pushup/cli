@@ -8,8 +8,9 @@ import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
   omitVariableReportData,
+  removeColorCodes,
 } from '@code-pushup/test-utils';
-import { executeProcess, readJsonFile } from '@code-pushup/utils';
+import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('PLUGIN collect report with doc-coverage-plugin NPM package', () => {
   const fixturesDir = path.join(
@@ -47,7 +48,7 @@ describe('PLUGIN collect report with doc-coverage-plugin NPM package', () => {
   });
 
   it('should run Doc Coverage plugin for Angular example dir and create report.json', async () => {
-    const { code } = await executeProcess({
+    const { code, stdout } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'collect', '--no-progress'],
       cwd: angularDir,
@@ -55,11 +56,25 @@ describe('PLUGIN collect report with doc-coverage-plugin NPM package', () => {
 
     expect(code).toBe(0);
 
+    expect(removeColorCodes(stdout)).toMatchFileSnapshot(
+      '__snapshots__/report.txt',
+    );
+
     const report = await readJsonFile(
       path.join(angularOutputDir, 'report.json'),
     );
 
     expect(() => reportSchema.parse(report)).not.toThrow();
-    expect(omitVariableReportData(report as Report)).toMatchSnapshot();
+    expect(
+      JSON.stringify(omitVariableReportData(report as Report), null, 2),
+    ).toMatchFileSnapshot('__snapshots__/report.json');
+
+    const reportMd = await readTextFile(
+      path.join(angularOutputDir, 'report.md'),
+    );
+
+    expect(reportMd.replace(/## About\.*/gm, '')).toMatchFileSnapshot(
+      '__snapshots__/report.md',
+    );
   });
 });

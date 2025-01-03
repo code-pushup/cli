@@ -1,3 +1,6 @@
+/**
+ * A class that serves as an example for documentation coverage testing
+ */
 export class ExampleWithProperties {
-  private readonly internalId = '123';
+  private readonly exampleProperty = '123';
 }

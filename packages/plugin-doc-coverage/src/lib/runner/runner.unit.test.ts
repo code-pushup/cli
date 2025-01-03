@@ -1,5 +1,5 @@
 import type { DocumentationCoverageReport } from './models.js';
-import { trasformCoverageReportToAudits } from './runner.js';
+import { trasformCoverageReportToAuditOutputs } from './runner.js';
 
 describe('trasformCoverageReportToAudits', () => {
   const mockCoverageResult = {
@@ -30,7 +30,7 @@ describe('trasformCoverageReportToAudits', () => {
   } as unknown as DocumentationCoverageReport;
 
   it('should return all audits from the coverage result when no filters are provided', () => {
-    const result = trasformCoverageReportToAudits(mockCoverageResult, {});
+    const result = trasformCoverageReportToAuditOutputs(mockCoverageResult, {});
     expect(result.map(item => item.slug)).toStrictEqual([
       'functions-coverage',
       'classes-coverage',
@@ -38,7 +38,7 @@ describe('trasformCoverageReportToAudits', () => {
   });
 
   it('should filter audits when onlyAudits is provided', () => {
-    const result = trasformCoverageReportToAudits(mockCoverageResult, {
+    const result = trasformCoverageReportToAuditOutputs(mockCoverageResult, {
       onlyAudits: ['functions-coverage'],
     });
     expect(result).toHaveLength(1);
@@ -46,7 +46,7 @@ describe('trasformCoverageReportToAudits', () => {
   });
 
   it('should filter audits when skipAudits is provided', () => {
-    const result = trasformCoverageReportToAudits(mockCoverageResult, {
+    const result = trasformCoverageReportToAuditOutputs(mockCoverageResult, {
       skipAudits: ['functions-coverage'],
     });
     expect(result).toHaveLength(1);
@@ -54,7 +54,7 @@ describe('trasformCoverageReportToAudits', () => {
   });
 
   it('should handle properly empty coverage result', () => {
-    const result = trasformCoverageReportToAudits(
+    const result = trasformCoverageReportToAuditOutputs(
       {} as unknown as DocumentationCoverageReport,
       {},
     );
@@ -63,7 +63,7 @@ describe('trasformCoverageReportToAudits', () => {
 
   it('should handle coverage result with multiple issues and add them to the details.issue of the report', () => {
     const expectedIssues = 2;
-    const result = trasformCoverageReportToAudits(mockCoverageResult, {});
+    const result = trasformCoverageReportToAuditOutputs(mockCoverageResult, {});
     expect(result).toHaveLength(2);
     expect(
       result.reduce(

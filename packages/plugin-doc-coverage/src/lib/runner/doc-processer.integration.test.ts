@@ -1,7 +1,7 @@
 import { processDocCoverage } from './doc-processer.js';
 import type { DocumentationData } from './models.js';
 
-describe('Classes', () => {
+describe('processDocCoverage', () => {
   it('should detect undocumented class', () => {
     const sourcePath =
       'packages/plugin-doc-coverage/mocks/fixtures/missing-documentation/classes-coverage.ts';
@@ -11,7 +11,7 @@ describe('Classes', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringContaining('classes-coverage'),
+          file: expect.stringContaining('classes-coverage.ts'),
           type: 'classes',
           name: 'ExampleClass',
           line: 1,
@@ -34,9 +34,7 @@ describe('Classes', () => {
       coverage: number;
     });
   });
-});
 
-describe('Methods', () => {
   it('should detect undocumented method', () => {
     const sourcePath =
       'packages/plugin-doc-coverage/mocks/fixtures/missing-documentation/methods-coverage.ts';
@@ -46,10 +44,10 @@ describe('Methods', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringContaining('methods-coverage'),
+          file: expect.stringContaining('methods-coverage.ts'),
           type: 'methods',
           name: 'exampleMethod',
-          line: 2,
+          line: 5,
         },
       ],
     } satisfies DocumentationData & {
@@ -69,9 +67,7 @@ describe('Methods', () => {
       coverage: number;
     });
   });
-});
 
-describe('Interfaces', () => {
   it('should detect undocumented interface', () => {
     const sourcePath =
       'packages/plugin-doc-coverage/mocks/fixtures/missing-documentation/interfaces-coverage.ts';
@@ -81,7 +77,7 @@ describe('Interfaces', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringContaining('interfaces-coverage'),
+          file: expect.stringContaining('interfaces-coverage.ts'),
           type: 'interfaces',
           name: 'ExampleInterface',
           line: 1,
@@ -104,9 +100,7 @@ describe('Interfaces', () => {
       coverage: number;
     });
   });
-});
 
-describe('Variables', () => {
   it('should detect undocumented variable', () => {
     const sourcePath =
       'packages/plugin-doc-coverage/mocks/fixtures/missing-documentation/variables-coverage.ts';
@@ -116,7 +110,7 @@ describe('Variables', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringContaining('variables-coverage'),
+          file: expect.stringContaining('variables-coverage.ts'),
           type: 'variables',
           name: 'exampleVariable',
           line: 1,
@@ -139,9 +133,7 @@ describe('Variables', () => {
       coverage: number;
     });
   });
-});
 
-describe('Properties', () => {
   it('should detect undocumented property', () => {
     const sourcePath =
       'packages/plugin-doc-coverage/mocks/fixtures/missing-documentation/properties-coverage.ts';
@@ -151,10 +143,10 @@ describe('Properties', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringContaining('properties-coverage'),
+          file: expect.stringContaining('properties-coverage.ts'),
           type: 'properties',
           name: 'internalId',
-          line: 2,
+          line: 5,
         },
       ],
     } satisfies DocumentationData & {
@@ -174,9 +166,7 @@ describe('Properties', () => {
       coverage: number;
     });
   });
-});
 
-describe('Types', () => {
   it('should detect undocumented type', () => {
     const sourcePath =
       'packages/plugin-doc-coverage/mocks/fixtures/missing-documentation/types-coverage.ts';
@@ -186,7 +176,7 @@ describe('Types', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringContaining('types-coverage'),
+          file: expect.stringContaining('types-coverage.ts'),
           type: 'types',
           name: 'ExampleType',
           line: 1,
@@ -209,9 +199,7 @@ describe('Types', () => {
       coverage: number;
     });
   });
-});
 
-describe('Enums', () => {
   it('should detect undocumented enum', () => {
     const sourcePath =
       'packages/plugin-doc-coverage/mocks/fixtures/missing-documentation/enums-coverage.ts';
@@ -221,7 +209,7 @@ describe('Enums', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringContaining('enums-coverage'),
+          file: expect.stringContaining('enums-coverage.ts'),
           type: 'enums',
           name: 'ExampleEnum',
           line: 1,

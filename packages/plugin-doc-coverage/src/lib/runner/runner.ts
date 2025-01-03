@@ -8,7 +8,7 @@ export function createRunnerFunction(
 ): RunnerFunction {
   return (): AuditOutputs => {
     const coverageResult = processDocCoverage(config);
-    return trasformCoverageReportToAudits(coverageResult, config);
+    return trasformCoverageReportToAuditOutputs(coverageResult, config);
   };
 }
 
@@ -18,7 +18,7 @@ export function createRunnerFunction(
  * @param options - Configuration options specifying which audits to include and exclude
  * @returns Audit outputs with coverage scores and details about undocumented items
  */
-export function trasformCoverageReportToAudits(
+export function trasformCoverageReportToAuditOutputs(
   coverageResult: DocumentationCoverageReport,
   options: Pick<DocCoveragePluginConfig, 'onlyAudits' | 'skipAudits'>,
 ): AuditOutputs {
@@ -42,8 +42,8 @@ export function trasformCoverageReportToAudits(
         score: coverage / 100,
         displayValue: `${issues.length} undocumented ${type}`,
         details: {
-          issues: item.issues.map(({ file, line }) => ({
-            message: 'Missing documentation',
+          issues: item.issues.map(({ file, line, name }) => ({
+            message: `Missing ${type} documentation for ${name}`,
             source: { file, position: { startLine: line } },
             severity: 'warning',
           })),
