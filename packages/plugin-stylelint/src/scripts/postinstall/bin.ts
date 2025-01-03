@@ -1,6 +1,6 @@
-import {patchStylelint} from "./index.js";
+import { patchStylelint } from './index.js';
 
 (async () => {
   await patchStylelint();
-  console.log("stylelint patched!");
-})()
+  console.log('stylelint patched!');
+})();

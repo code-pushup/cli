@@ -1,7 +1,21 @@
 import stylelint, { type LintResult } from 'stylelint';
 import type { Audit, AuditReport } from '@code-pushup/models';
 
-export function mapStylelintResultsToAudits(results: LintResult[]): Audit[] {
+export function mapStylelintResultsToAudits(
+  results: LintResult[],
+  expectedAudits: Audit[],
+): Audit[] {
+  const initialAuditMap = expectedAudits.reduce((map, audit) => {
+    return map.set(audit.slug, {
+      ...audit,
+      score: 1,
+      value: 0,
+      details: {
+        issues: [],
+      },
+    });
+  }, new Map<string, AuditReport>());
+
   const auditMap = results.reduce((map, result) => {
     const { source, warnings } = result;
 
@@ -12,15 +26,10 @@ export function mapStylelintResultsToAudits(results: LintResult[]): Audit[] {
     return warnings.reduce((innerMap, warning) => {
       const { rule, severity, line, text } = warning;
 
-      const existingAudit: AuditReport = innerMap.get(rule) || {
-        slug: rule,
-        title: '',
-        score: 1,
-        value: 0,
-        details: {
-          issues: [],
-        },
-      };
+      const existingAudit = innerMap.get(rule);
+      if (!existingAudit) {
+        return innerMap;
+      }
 
       const updatedAudit: AuditReport = {
         ...existingAudit,
@@ -28,7 +37,7 @@ export function mapStylelintResultsToAudits(results: LintResult[]): Audit[] {
         value: existingAudit.value + 1,
         details: {
           issues: [
-            ...(existingAudit?.details?.issues ?? []),
+            ...(existingAudit.details?.issues ?? []),
             {
               severity,
               message: text,
@@ -43,9 +52,11 @@ export function mapStylelintResultsToAudits(results: LintResult[]): Audit[] {
         },
       };
 
-      return new Map(innerMap).set(rule, updatedAudit);
+      return innerMap.set(rule, updatedAudit);
     }, map);
-  }, new Map<string, AuditReport>());
+  }, initialAuditMap);
+
+  console.log('auditMap: ', auditMap);
 
   return [...auditMap.values()];
 }
