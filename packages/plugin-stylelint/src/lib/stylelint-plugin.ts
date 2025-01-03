@@ -2,11 +2,11 @@ import {createRequire} from 'node:module';
 import type {LinterOptions} from 'stylelint';
 import type {Audit, PluginConfig} from '@code-pushup/models';
 import {createRunnerFunction} from './runner/index.js';
-import {getNormalizedConfigForFile} from "./runner/normalize-config";
+import {getNormalizedConfigForFile} from "./runner/normalize-config.js";
 
 
-export type StylelintPluginConfig = LinterOptions & {
-  onlyAudits: string[];
+export type StylelintPluginConfig = Pick<LinterOptions, 'configFile' | 'files'> & {
+  onlyAudits: string[]
 }
 
 /**
@@ -36,7 +36,7 @@ export async function stylelintPlugin(
     '../../package.json',
   ) as typeof import('../../package.json');
 
-  //  console.log('getAudits: ', await getAudits(options ?? {}));
+   console.log('getNormalizedConfigForFile: ', await getNormalizedConfigForFile(options ?? {}));
 
   return {
     slug: 'stylelint',
