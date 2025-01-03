@@ -4,7 +4,7 @@ export default {
   plugins: [
     await stylelintPlugin({
       stylelintrc: '.stylelintrc.json',
-      patterns: ['styles/*.css'],
+      patterns: ['./styles/*.css'],
     }),
   ],
 };

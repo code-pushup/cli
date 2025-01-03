@@ -41,7 +41,7 @@ describe('PLUGIN collect report with eslint-plugin NPM package', () => {
     await teardownTestFolder(flatConfigOutputDir);
   });
 
-  it('should run StyleLint plugin for flat config and create report.json', async () => {
+  it('should run StyleLint plugin for prod example and create report.json', async () => {
     const { code, stdout } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'collect', '--no-progress'],
@@ -61,5 +61,27 @@ describe('PLUGIN collect report with eslint-plugin NPM package', () => {
     expect(
       JSON.stringify(omitVariableReportData(report as Report), null, 2),
     ).toMatchFileSnapshot('__snapshots__/report.json');
+  });
+
+  it('should run StyleLint plugin for next example and create report.json', async () => {
+    const { code, stdout } = await executeProcess({
+      command: 'npx',
+      args: ['@code-pushup/cli', 'collect', '--config=code-pushup.config.next.ts' ,'--no-progress'],
+      cwd: testFileDir,
+    });
+
+    expect(code).toBe(0);
+
+    const report = await readJsonFile(
+        path.join(flatConfigOutputDir, 'report.json'),
+    );
+    expect(removeColorCodes(stdout)).toMatchFileSnapshot(
+        '__snapshots__/terminal.next.txt',
+    );
+
+    expect(() => reportSchema.parse(report)).not.toThrow();
+    expect(
+        JSON.stringify(omitVariableReportData(report as Report), null, 2),
+    ).toMatchFileSnapshot('__snapshots__/report.next.json');
   });
 });

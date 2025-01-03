@@ -1,4 +1,4 @@
-import stylelintPlugin from '@code-pushup/stylelint-plugin.js';
+import stylelintPlugin from '@code-pushup/stylelint-plugin';
 
 export default {
   plugins: [

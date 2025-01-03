@@ -56,7 +56,5 @@ export function mapStylelintResultsToAudits(
     }, map);
   }, initialAuditMap);
 
-  console.log('auditMap: ', auditMap);
-
   return [...auditMap.values()];
 }
