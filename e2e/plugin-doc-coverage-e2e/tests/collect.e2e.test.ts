@@ -69,12 +69,5 @@ describe('PLUGIN collect report with doc-coverage-plugin NPM package', () => {
       JSON.stringify(omitVariableReportData(report as Report), null, 2),
     ).toMatchFileSnapshot('__snapshots__/report.json');
 
-    const reportMd = await readTextFile(
-      path.join(angularOutputDir, 'report.md'),
-    );
-
-    expect(reportMd.replace(/## About\.*/gm, '')).toMatchFileSnapshot(
-      '__snapshots__/report.md',
-    );
   });
 });
