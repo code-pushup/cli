@@ -6,7 +6,7 @@ import {
   stylelintPluginConfigSchema,
 } from './config.js';
 import { createRunnerFunction } from './runner/index.js';
-import { getAudits } from './utils.js';
+import {getAudits, getGroups} from './utils.js';
 
 /**
  * Instantiates Code PushUp code stylelint plugin for core config.
@@ -29,7 +29,7 @@ import { getAudits } from './utils.js';
 export async function stylelintPlugin(
   options?: StyleLintPluginConfig,
 ): Promise<PluginConfig> {
-  const { stylelintrc: configFile, patterns: files } =
+  const { stylelintrc: configFile = '.stylelintrc.json', patterns: files } =
     stylelintPluginConfigSchema.parse(options ?? {}).at(0) as StyleLintTarget;
 
   const packageJson = createRequire(import.meta.url)(
@@ -37,7 +37,7 @@ export async function stylelintPlugin(
   ) as typeof import('../../package.json');
 
   const audits = await getAudits({
-    stylelintrc: configFile ?? '.stylelintrc.json',
+    stylelintrc: configFile,
   });
 
   return {
@@ -49,6 +49,7 @@ export async function stylelintPlugin(
     packageName: packageJson.name,
     version: packageJson.version,
     audits,
+    groups: await getGroups({ stylelintrc: configFile }),
     runner: createRunnerFunction({ configFile, files }, audits),
   };
 }

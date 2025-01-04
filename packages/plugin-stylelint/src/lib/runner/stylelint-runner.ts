@@ -14,6 +14,6 @@ export async function lintStyles({
     });
     return results;
   } catch (error) {
-    throw new Error('Error while linting: ' + error);
+    throw new Error(`Error while linting: ${error}`);
   }
 }

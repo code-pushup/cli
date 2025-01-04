@@ -1,6 +1,6 @@
 import path from 'node:path';
 import * as process from 'node:process';
-// @ts-expect-error
+// @ts-expect-error missing types for stylelint package after postinstall patch
 import stylelint, { getConfigForFile } from 'stylelint';
 import type { StyleLintTarget } from '../config.js';
 import type { NormalizedStyleLintConfig } from './model.js';
