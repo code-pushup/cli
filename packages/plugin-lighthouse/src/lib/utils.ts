@@ -1,5 +1,5 @@
 import type { Audit, CategoryRef, Group } from '@code-pushup/models';
-import { filterItemRefsBy, toArray } from '@code-pushup/utils';
+import { toArray } from '@code-pushup/utils';
 import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
 import type { LighthouseCliFlags } from './runner/types.js';
 
@@ -70,7 +70,8 @@ export type FilterOptions = Partial<
   Pick<LighthouseCliFlags, 'onlyAudits' | 'onlyCategories' | 'skipAudits'>
 >;
 
-export function filterAuditsAndGroupsByOnlyOptions(
+// eslint-disable-next-line max-lines-per-function
+export function markSkippedAuditsAndGroups(
   audits: Audit[],
   groups: Group[],
   options?: FilterOptions,
@@ -84,45 +85,57 @@ export function filterAuditsAndGroupsByOnlyOptions(
     onlyCategories = [],
   } = options ?? {};
 
-  // category wins over audits
+  if (
+    onlyCategories.length === 0 &&
+    onlyAudits.length === 0 &&
+    skipAudits.length === 0
+  ) {
+    return { audits, groups };
+  }
+
   if (onlyCategories.length > 0) {
     validateOnlyCategories(groups, onlyCategories);
+  }
 
-    const categorySlugs = new Set(onlyCategories);
-    const filteredGroups: Group[] = groups.filter(({ slug }) =>
-      categorySlugs.has(slug),
-    );
-    const auditSlugsFromRemainingGroups = new Set(
-      filteredGroups.flatMap(({ refs }) => refs.map(({ slug }) => slug)),
-    );
-    return {
-      audits: audits.filter(({ slug }) =>
-        auditSlugsFromRemainingGroups.has(slug),
-      ),
-      groups: filteredGroups,
-    };
-  } else if (onlyAudits.length > 0 || skipAudits.length > 0) {
+  if (onlyAudits.length > 0 || skipAudits.length > 0) {
     validateAudits(audits, onlyAudits);
     validateAudits(audits, skipAudits);
-    const onlyAuditSlugs = new Set(onlyAudits);
-    const skipAuditSlugs = new Set(skipAudits);
-    const filterAudits = ({ slug }: Pick<Audit, 'slug'>) =>
-      !(
-        // audit is NOT in given onlyAuditSlugs
-        (
-          (onlyAudits.length > 0 && !onlyAuditSlugs.has(slug)) ||
-          // audit IS in given skipAuditSlugs
-          (skipAudits.length > 0 && skipAuditSlugs.has(slug))
-        )
-      );
-    return {
-      audits: audits.filter(filterAudits),
-      groups: filterItemRefsBy(groups, filterAudits),
-    };
   }
-  // return unchanged
+
+  const onlyGroupSlugs = new Set(onlyCategories);
+  const onlyAuditSlugs = new Set(onlyAudits);
+  const skipAuditSlugs = new Set(skipAudits);
+
+  const markedGroups: Group[] = groups.map(group => ({
+    ...group,
+    isSkipped: onlyCategories.length > 0 && !onlyGroupSlugs.has(group.slug),
+  }));
+
+  const validGroupAuditSlugs = new Set(
+    markedGroups
+      .filter(group => !group.isSkipped)
+      .flatMap(group => group.refs.map(ref => ref.slug)),
+  );
+
+  const markedAudits = audits.map(audit => ({
+    ...audit,
+    isSkipped:
+      (onlyAudits.length > 0 && !onlyAuditSlugs.has(audit.slug)) ||
+      (skipAudits.length > 0 && skipAuditSlugs.has(audit.slug)) ||
+      (validGroupAuditSlugs.size > 0 && !validGroupAuditSlugs.has(audit.slug)),
+  }));
+
+  const fullyMarkedGroups = markedGroups.map(group => ({
+    ...group,
+    isSkipped:
+      group.isSkipped ||
+      group.refs.every(ref =>
+        markedAudits.some(audit => audit.slug === ref.slug && audit.isSkipped),
+      ),
+  }));
+
   return {
-    audits,
-    groups,
+    audits: markedAudits,
+    groups: fullyMarkedGroups,
   };
 }
