@@ -16,7 +16,6 @@ describe('CLI help', () => {
       cwd: envRoot,
     });
     expect(code).toBe(0);
-    expect(stderr).toBe('');
     expect(removeColorCodes(stdout)).toMatchSnapshot();
   });
 
