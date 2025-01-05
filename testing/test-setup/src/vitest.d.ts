@@ -10,3 +10,4 @@ declare module 'vitest' {
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface AsymmetricMatchersContaining extends CustomAsymmetricPathMatchers {}
 }
+/* eslint-enable @typescript-eslint/consistent-type-definitions */
