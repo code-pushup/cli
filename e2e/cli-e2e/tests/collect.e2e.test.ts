@@ -38,7 +38,7 @@ describe('CLI collect', () => {
   });
 
   it('should create report.md', async () => {
-    const { code, stderr } = await executeProcess({
+    const { code } = await executeProcess({
       command: 'npx',
       args: [
         '@code-pushup/cli',
@@ -59,7 +59,7 @@ describe('CLI collect', () => {
   });
 
   it('should print report summary to stdout', async () => {
-    const { code, stdout, stderr } = await executeProcess({
+    const { code, stdout } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', '--no-progress', 'collect'],
       cwd: dummyDir,
