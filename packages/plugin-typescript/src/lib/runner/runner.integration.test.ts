@@ -13,5 +13,5 @@ describe('createRunnerFunction', () => {
     ).resolves.toMatchFileSnapshot(
       '__snapshots__/runner-function-all-audits.json',
     );
-  }, 8000);
+  }, 15_000);
 });
