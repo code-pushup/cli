@@ -5,7 +5,7 @@ Code PushUp Report - @code-pushup/core@0.57.0
 
 Typescript audits
 
-● Semantic-Errors                                           6
+● Semantic-Errors                                           2
 ● Configuration-Errors                                      1
 ● Language-Service-Errors                                   1
 ● Syntax-Errors                                             1
