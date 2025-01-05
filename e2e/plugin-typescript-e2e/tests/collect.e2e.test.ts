@@ -11,7 +11,7 @@ import {
   omitVariableReportData,
   removeColorCodes,
 } from '@code-pushup/test-utils';
-import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
+import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
 describe('PLUGIN collect report with typescript-plugin NPM package', () => {
   const envRoot = join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
