@@ -17,7 +17,12 @@ export function mapStylelintResultsToAudits(
   }, new Map<string, AuditReport>());
 
   const auditMap = results.reduce((map, result) => {
-    const { source, warnings } = result;
+    const {
+      source,
+      warnings,
+      // @TODO
+      // invalidOptionWarnings, deprecations, parseErrors
+    } = result;
 
     if (source === undefined) {
       throw new Error('Stylelint source can`t be undefined');

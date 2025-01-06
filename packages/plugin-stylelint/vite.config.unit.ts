@@ -13,7 +13,7 @@ export default defineConfig({
     alias: tsconfigPathAliases(),
     pool: 'threads',
     poolOptions: { threads: { singleThread: true } },
-    stylelint: {
+    coverage: {
       reporter: ['text', 'lcov'],
       reportsDirectory: '../../stylelint/plugin-stylelint/unit-tests',
       exclude: ['mocks/**', '**/types.ts'],

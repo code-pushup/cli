@@ -1,7 +1,12 @@
 import 'dotenv/config';
 import { z } from 'zod';
+import {
+  coverageCoreConfigNx,
+  eslintCoreConfigNx,
+  jsPackagesCoreConfig,
+  lighthouseCoreConfig,
+} from './code-pushup.preset.js';
 import type { CoreConfig } from './packages/models/src/index.js';
-import { getAudits, getCategoryRefs } from './packages/plugin-stylelint/src';
 import { stylelintPlugin } from './packages/plugin-stylelint/src/lib/stylelint-plugin';
 import { getCategoryRefsFromGroups } from './packages/plugin-stylelint/src/lib/utils';
 import { mergeConfigs } from './packages/utils/src/index.js';
@@ -31,12 +36,12 @@ const stylelintrc =
   'packages/plugin-stylelint/mocks/fixtures/basic/.stylelintrc.json';
 export default mergeConfigs(
   config,
-  /*await coverageCoreConfigNx(),
+  await coverageCoreConfigNx(),
   await jsPackagesCoreConfig(),
   await lighthouseCoreConfig(
     'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
   ),
-  await eslintCoreConfigNx(),*/
+  await eslintCoreConfigNx(),
   {
     plugins: [
       await stylelintPlugin([
@@ -48,11 +53,33 @@ export default mergeConfigs(
     ],
     categories: [
       {
-        slug: 'style',
+        slug: 'code-style',
         title: 'Code style',
         description:
           'Lint rules that promote **good practices** and consistency in your code.',
-        refs: await getCategoryRefsFromGroups({ stylelintrc }),
+        refs: (
+          await getCategoryRefsFromGroups([
+            {
+              stylelintrc,
+              patterns:
+                'packages/plugin-stylelint/mocks/fixtures/basic/**/*.css', // Adjust the path to your CSS files
+            },
+          ])
+        ).filter(ref => ref.slug === 'suggestions'),
+      },
+      {
+        slug: 'bug-prevention',
+        title: 'Bug Prevention',
+        description: 'Lint rules that help **prevent bugs** in your code.',
+        refs: (
+          await getCategoryRefsFromGroups([
+            {
+              stylelintrc,
+              patterns:
+                'packages/plugin-stylelint/mocks/fixtures/basic/**/*.css', // Adjust the path to your CSS files
+            },
+          ])
+        ).filter(ref => ref.slug === 'problems'),
       },
     ],
   },

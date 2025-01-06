@@ -42,7 +42,7 @@ export async function stylelintPlugin(
 
   return {
     slug: 'stylelint',
-    title: 'Code stylelint',
+    title: 'Stylelint',
     icon: 'folder-css',
     description: 'Official Code PushUp code stylelint plugin.',
     docsUrl: 'https://www.npmjs.com/package/@code-pushup/stylelint-plugin/',

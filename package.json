@@ -41,6 +41,7 @@
     "semver": "^7.6.3",
     "simple-git": "^3.26.0",
     "stylelint": "^16.12.0",
+    "stylelint-config-recommended": "^14.0.1",
     "stylelint-config-standard": "^36.0.1",
     "tslib": "^2.6.2",
     "vscode-material-icons": "^0.1.1",
