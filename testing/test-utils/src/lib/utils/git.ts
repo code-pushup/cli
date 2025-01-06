@@ -21,6 +21,8 @@ export async function initGitRepo(
   await git.init();
   await git.addConfig('user.name', name);
   await git.addConfig('user.email', email);
+  await git.addConfig('commit.gpgSign', 'false');
+  await git.addConfig('tag.gpgSign', 'false');
   await git.branch(['-M', 'main']);
   return git;
 }

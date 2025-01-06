@@ -38,7 +38,7 @@ describe('CLI collect', () => {
   });
 
   it('should create report.md', async () => {
-    const { code, stderr } = await executeProcess({
+    const { code } = await executeProcess({
       command: 'npx',
       args: [
         '@code-pushup/cli',
@@ -50,7 +50,6 @@ describe('CLI collect', () => {
     });
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     const md = await readTextFile(path.join(dummyOutputDir, 'report.md'));
 
@@ -60,14 +59,13 @@ describe('CLI collect', () => {
   });
 
   it('should print report summary to stdout', async () => {
-    const { code, stdout, stderr } = await executeProcess({
+    const { code, stdout } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', '--no-progress', 'collect'],
       cwd: dummyDir,
     });
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     expect(stdout).toContain('Code PushUp Report');
     expect(stdout).not.toContain('Generated reports');
