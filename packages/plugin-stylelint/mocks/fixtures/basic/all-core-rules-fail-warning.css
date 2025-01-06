@@ -1,0 +1,101 @@
+/* indentation */
+.invalid-indentation {
+  background-color: red; /* Invalid: no indentation */
+}
+
+/* max-line-length */
+.invalid-line-length {
+  /* Invalid: This is a very long comment that exceeds the maximum line length of 80 characters */
+}
+
+/* max-empty-lines */
+
+.invalid-max-empty-lines { /* Invalid: More than 1 empty line */ }
+
+
+
+/* no-eol-whitespace */
+.invalid-eol-whitespace { color: red;   } /* Invalid: trailing whitespace */
+
+/* declaration-block-no-redundant-longhand-properties */
+.invalid-longhand {
+  margin-top: 10px;
+  margin-right: 20px;
+  margin-bottom: 10px;
+  margin-left: 20px; /* Invalid: redundant longhand */
+}
+
+/* declaration-block-semicolon-space-after */
+.invalid-semicolon-space {
+  color: red ;background: blue; /* Invalid: no space after semicolon */
+}
+
+/* declaration-block-semicolon-space-before */
+.invalid-semicolon-before {
+  color : red; /* Invalid: space before semicolon */
+}
+
+/* block-closing-brace-space-before */
+.invalid-brace-space {
+  color: red;} /* Invalid: no space before closing brace */
+
+/* string-quotes */
+.invalid-string-quotes {
+  content: 'single quotes'; /* Invalid: single quotes */
+}
+
+/* font-family-name-quotes */
+.invalid-font-family-quotes {
+  font-family: Times New Roman; /* Invalid: missing quotes */
+}
+
+/* function-url-quotes */
+.invalid-url-quotes {
+  background: url(image.png); /* Invalid: missing quotes */
+}
+
+/* color-hex-case */
+.invalid-hex-case {
+  color: #ABC123; /* Invalid: uppercase hex */
+}
+
+/* color-hex-length */
+.invalid-hex-length {
+  color: #ffccaa; /* Invalid: long hex */
+}
+
+/* color-function-notation */
+.invalid-color-function {
+  color: rgb(255, 0, 0); /* Invalid: legacy notation */
+}
+
+/* lightness-notation */
+.invalid-lightness-notation {
+  color: hsl(0, 100%, 50); /* Invalid: missing percentage */
+}
+
+/* value-list-comma-space-after */
+.invalid-value-list-comma-space {
+  padding: 10px,20px; /* Invalid: no space after comma */
+}
+
+/* selector-list-comma-newline-after */
+.invalid-selector-list-comma-newline {
+  .class1, .class2 { color: red; } /* Invalid: no newline after comma */
+}
+
+/* comment-whitespace-inside */
+.invalid-comment-whitespace {
+  /*Invalid: no whitespace inside comments*/
+}
+
+/* keyframes-name-pattern */
+@keyframes InvalidKeyframe { /* Invalid: not kebab-case */
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* alpha-value-notation */
+.invalid-alpha-value {
+  color: rgba(255, 0, 0, 0.5); /* Invalid: legacy alpha value */
+}

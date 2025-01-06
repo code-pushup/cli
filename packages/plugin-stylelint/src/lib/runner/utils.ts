@@ -1,4 +1,4 @@
-import { type LintResult } from 'stylelint';
+import type { ConfigRuleSettings, LintResult, Warning } from 'stylelint';
 import type { Audit, AuditOutputs, AuditReport } from '@code-pushup/models';
 
 export function mapStylelintResultsToAudits(
@@ -24,7 +24,7 @@ export function mapStylelintResultsToAudits(
     }
 
     return warnings.reduce((innerMap, warning) => {
-      const { rule, severity, line, text } = warning;
+      const { rule, line, text } = warning;
 
       const existingAudit = innerMap.get(rule);
       if (!existingAudit) {
@@ -39,7 +39,7 @@ export function mapStylelintResultsToAudits(
           issues: [
             ...(existingAudit.details?.issues ?? []),
             {
-              severity,
+              severity: getSeverityFromWarning(warning),
               message: text,
               source: {
                 file: source,
@@ -57,4 +57,35 @@ export function mapStylelintResultsToAudits(
   }, initialAuditMap);
 
   return [...auditMap.values()];
+}
+
+export function getSeverityFromWarning(warning: Warning): 'error' | 'warning' {
+  const { severity } = warning;
+
+  if (severity === 'error' || severity === 'warning') {
+    return severity;
+  }
+  throw new Error(`Unknown severity: ${severity}`);
+}
+
+export function getSeverityFromRuleConfig(
+  ruleConfig: ConfigRuleSettings<unknown, { severity?: 'error' | 'warning' }>,
+): 'error' | 'warning' {
+  if (!ruleConfig) {
+    // Default severity if the ruleConfig is null or undefined
+    return 'error';
+  }
+
+  if (Array.isArray(ruleConfig)) {
+    const options = ruleConfig[1];
+    if (options && typeof options === 'object' && 'severity' in options) {
+      const severity = options.severity;
+      if (severity === 'warning') {
+        return 'warning';
+      }
+    }
+  }
+
+  // Default severity if severity is not explicitly set
+  return 'error';
 }

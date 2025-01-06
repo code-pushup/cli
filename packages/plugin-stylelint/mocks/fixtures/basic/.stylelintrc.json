@@ -1,22 +1,6 @@
 {
-  "extends": "stylelint-config-standard",
+  "extends": "./stylelint-config-cp-standard.js",
   "rules": {
-    "block-no-empty": ["warning"],
-    "rule-empty-line-before": ["warning"],
-    "selector-pseudo-element-no-unknown": ["warning"],
-    "string-no-newline": ["warning"],
-    "unit-no-unknown": ["warning"],
-    "alpha-value-notation": ["warning"],
-    "annotation-no-unknown": ["warning"],
-    "at-rule-empty-line-before": ["warning"],
-    "at-rule-no-unknown": ["warning"],
-    "at-rule-no-vendor-prefix": ["warning"],
-    "color-function-notation": ["warning"],
-    "color-hex-length": ["warning"],
-    "comment-empty-line-before": ["warning"],
-    "comment-no-empty": ["warning"],
-    "comment-whitespace-inside": ["warning"],
-    "custom-media-pattern": ["warning"],
-    "custom-property-empty-line-before":  ["warning"]
+    "block-no-empty": ["warning"]
   }
 }

@@ -1,0 +1,46 @@
+/* annotation-no-unknown */
+@unknown-annotation; /* Invalid: unknown annotation */
+
+/* at-rule-no-unknown */
+@unknown-rule { color: red; } /* Invalid: unknown at-rule */
+
+/* block-no-empty */
+.empty-block { } /* Invalid: empty block */
+
+/* color-no-invalid-hex */
+.invalid-hex { color: #12345; } /* Invalid: invalid hex color */
+
+/* custom-property-no-missing-var-function */
+:root { --custom-var: 100px; }
+.invalid-var { width: var(custom-var); } /* Invalid: missing var function */
+
+/* declaration-block-no-duplicate-properties */
+.duplicate-properties {
+  color: red;
+  color: blue; /* Invalid: duplicate property */
+}
+
+/* function-no-unknown */
+.unknown-function { color: unknown(255, 0, 0); } /* Invalid: unknown function */
+
+/* keyframe-block-no-duplicate-selectors */
+@keyframes duplicate-keyframe {
+  0% { opacity: 0; }
+  0% { opacity: 1; } /* Invalid: duplicate keyframe selector */
+}
+
+/* media-feature-name-no-unknown */
+@media (unknown-feature: 100px) { color: red; } /* Invalid: unknown media feature */
+
+/* no-duplicate-selectors */
+.duplicate-selectors { color: red; }
+.duplicate-selectors { color: blue; } /* Invalid: duplicate selector */
+
+/* property-no-unknown */
+.unknown-property { unknown: red; } /* Invalid: unknown property */
+
+/* selector-pseudo-class-no-unknown */
+:unknown-class { color: red; } /* Invalid: unknown pseudo-class */
+
+/* unit-no-unknown */
+.invalid-unit { width: 10pixels; } /* Invalid: unknown unit */

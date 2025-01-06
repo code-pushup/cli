@@ -6,7 +6,7 @@ import {
   stylelintPluginConfigSchema,
 } from './config.js';
 import { createRunnerFunction } from './runner/index.js';
-import {getAudits, getGroups} from './utils.js';
+import { getAudits, getGroups } from './utils.js';
 
 /**
  * Instantiates Code PushUp code stylelint plugin for core config.

@@ -66,22 +66,27 @@ describe('PLUGIN collect report with eslint-plugin NPM package', () => {
   it('should run StyleLint plugin for next example and create report.json', async () => {
     const { code, stdout } = await executeProcess({
       command: 'npx',
-      args: ['@code-pushup/cli', 'collect', '--config=code-pushup.config.next.ts' ,'--no-progress'],
+      args: [
+        '@code-pushup/cli',
+        'collect',
+        '--config=code-pushup.config.next.ts',
+        '--no-progress',
+      ],
       cwd: testFileDir,
     });
 
     expect(code).toBe(0);
 
     const report = await readJsonFile(
-        path.join(flatConfigOutputDir, 'report.json'),
+      path.join(flatConfigOutputDir, 'report.json'),
     );
     expect(removeColorCodes(stdout)).toMatchFileSnapshot(
-        '__snapshots__/terminal.next.txt',
+      '__snapshots__/terminal.next.txt',
     );
 
     expect(() => reportSchema.parse(report)).not.toThrow();
     expect(
-        JSON.stringify(omitVariableReportData(report as Report), null, 2),
+      JSON.stringify(omitVariableReportData(report as Report), null, 2),
     ).toMatchFileSnapshot('__snapshots__/report.next.json');
   });
 });

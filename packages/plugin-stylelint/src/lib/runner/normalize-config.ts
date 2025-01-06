@@ -10,7 +10,7 @@ export function getNormalizedConfigForFile({
   cwd,
 }: Required<Pick<StyleLintTarget, 'stylelintrc'>> & {
   cwd?: string;
-}): NormalizedStyleLintConfig {
+}) {
   const _linter = stylelint._createLinter({ configFile: stylelintrc });
   const configFile =
     stylelintrc ?? path.join(cwd ?? process.cwd(), '.stylelintrc.json');
