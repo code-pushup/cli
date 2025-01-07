@@ -136,4 +136,60 @@ describe('coreConfigSchema', () => {
       'category references need to point to an audit or group: eslint#eslint-errors (group)',
     );
   });
+
+  it('should throw for a category with a zero-weight audit', () => {
+    const config = {
+      categories: [
+        {
+          slug: 'performance',
+          title: 'Performance',
+          refs: [
+            {
+              slug: 'performance',
+              weight: 1,
+              type: 'group',
+              plugin: 'lighthouse',
+            },
+          ],
+        },
+        {
+          slug: 'best-practices',
+          title: 'Best practices',
+          refs: [
+            {
+              slug: 'best-practices',
+              weight: 1,
+              type: 'group',
+              plugin: 'lighthouse',
+            },
+          ],
+        },
+      ],
+      plugins: [
+        {
+          slug: 'lighthouse',
+          title: 'Lighthouse',
+          icon: 'lighthouse',
+          runner: { command: 'npm run lint', outputFile: 'output.json' },
+          audits: [
+            {
+              slug: 'csp-xss',
+              title: 'Ensure CSP is effective against XSS attacks',
+            },
+          ],
+          groups: [
+            {
+              slug: 'best-practices',
+              title: 'Best practices',
+              refs: [{ slug: 'csp-xss', weight: 0 }],
+            },
+          ],
+        },
+      ],
+    } satisfies CoreConfig;
+
+    expect(() => coreConfigSchema.parse(config)).toThrow(
+      'In a category, there has to be at least one ref with weight > 0. Affected refs: csp-xss',
+    );
+  });
 });
