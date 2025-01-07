@@ -1,5 +1,6 @@
-import type { ConfigRuleSettings, LintResult, Warning } from 'stylelint';
+import type { LintResult, Secondary, Severity, Warning } from 'stylelint';
 import type { Audit, AuditOutputs, AuditReport } from '@code-pushup/models';
+import type { ActiveConfigRuleSetting } from './model.js';
 
 export function mapStylelintResultsToAudits(
   results: LintResult[],
@@ -73,24 +74,39 @@ export function getSeverityFromWarning(warning: Warning): 'error' | 'warning' {
   throw new Error(`Unknown severity: ${severity}`);
 }
 
+/**
+ * Function that returns the severity from a ruleConfig.
+ * If the ruleConfig is not an array, the default severity of the config file must be returned, since the custom severity can be only specified in an array.
+ * If the ruleConfig is an array, a custom severity might have been set, in that case, it must be returned
+ * @param ruleConfig - The Stylelint rule config value
+ * @param defaultSeverity - The default severity of the config file. By default, it's 'error'
+ * @returns The severity (EX: 'error' | 'warning')
+ */
 export function getSeverityFromRuleConfig(
-  ruleConfig: ConfigRuleSettings<unknown, { severity?: 'error' | 'warning' }>,
-): 'error' | 'warning' {
-  if (!ruleConfig) {
-    // Default severity if the ruleConfig is null or undefined
-    return 'error';
+  ruleConfig: ActiveConfigRuleSetting,
+  defaultSeverity: Severity = 'error',
+): Severity {
+  //If it's not an array, the default severity of the config file must be returned, since the custom severity can be only specified in an array.
+  if (!Array.isArray(ruleConfig)) {
+    return defaultSeverity;
   }
 
-  if (Array.isArray(ruleConfig)) {
-    const options = ruleConfig[1];
-    if (options && typeof options === 'object' && 'severity' in options) {
-      const severity = options.severity;
-      if (severity === 'warning') {
-        return 'warning';
-      }
-    }
+  // If it's an array, a custom severity might have been set, in that case, it must be returned
+
+  const secondary: Secondary = ruleConfig.at(1);
+
+  if (secondary == null) {
+    return defaultSeverity;
   }
 
-  // Default severity if severity is not explicitly set
-  return 'error';
+  if (!secondary['severity']) {
+    return defaultSeverity;
+  }
+
+  if (typeof secondary['severity'] === 'function') {
+    console.warn('Function severity is not supported');
+    return defaultSeverity;
+  }
+
+  return secondary['severity'];
 }

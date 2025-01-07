@@ -1,3 +1,4 @@
+import type { ConfigRuleSettings } from 'stylelint';
 import type { Audit, CategoryRef } from '@code-pushup/models';
 import {
   type StyleLintPluginConfig,
@@ -9,6 +10,7 @@ import {
   GROUPS,
   STYLELINT_PLUGIN_SLUG,
 } from './constants.js';
+import type { ActiveConfigRuleSetting } from './runner/model.js';
 import { getNormalizedConfigForFile } from './runner/normalize-config.js';
 import { getSeverityFromRuleConfig } from './runner/utils.js';
 
@@ -31,12 +33,16 @@ export async function getGroups(
   options: Required<Pick<StyleLintTarget, 'stylelintrc'>>,
 ) {
   const { config } = await getNormalizedConfigForFile(options);
-  const { rules } = config;
+  const { rules, defaultSeverity } = config;
   return GROUPS.map(group => ({
     ...group,
     refs: Object.entries(rules)
+      .filter(filterNonNull) // TODO Type Narrowing is not fully working for the nulls / undefineds
       .filter(([_, ruleConfig]) => {
-        const severity = getSeverityFromRuleConfig(ruleConfig);
+        const severity = getSeverityFromRuleConfig(
+          ruleConfig as ActiveConfigRuleSetting,
+          defaultSeverity,
+        );
         if (severity === 'error' && group.slug === 'problems') {
           return true;
         } else if (severity === 'warning' && group.slug === 'suggestions') {
@@ -74,4 +80,13 @@ export async function getCategoryRefsFromAudits(
     weight: 1,
     type: 'audit',
   }));
+}
+
+function filterNonNull<T, O extends object = object>(
+  settings: Array<ConfigRuleSettings<T, O>>,
+): Exclude<ConfigRuleSettings<T, O>, null | undefined>[] {
+  return settings.filter(
+    (setting): setting is Exclude<ConfigRuleSettings<T, O>, null | undefined> =>
+      setting !== null && setting !== undefined,
+  );
 }
