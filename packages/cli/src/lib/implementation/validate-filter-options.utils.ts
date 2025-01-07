@@ -1,11 +1,19 @@
-import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
+import type {
+  CategoryConfig,
+  CategoryRef,
+  PluginConfig,
+} from '@code-pushup/models';
 import {
   capitalize,
   filterItemRefsBy,
   pluralize,
   ui,
 } from '@code-pushup/utils';
-import type { FilterOptionType, Filterables } from './filter.model.js';
+import type {
+  FilterOptionType,
+  FilterOptions,
+  Filterables,
+} from './filter.model.js';
 
 export class OptionValidationError extends Error {}
 
@@ -55,6 +63,68 @@ export function validateFilterOption(
   }
 }
 
+export function validateFilteredCategories(
+  originalCategories: NonNullable<Filterables['categories']>,
+  filteredCategories: NonNullable<Filterables['categories']>,
+  {
+    onlyCategories,
+    skipCategories,
+    verbose,
+  }: Pick<FilterOptions, 'onlyCategories' | 'skipCategories' | 'verbose'>,
+): void {
+  const skippedCategories = originalCategories.filter(
+    original => !filteredCategories.some(({ slug }) => slug === original.slug),
+  );
+  if (verbose) {
+    skippedCategories.forEach(category => {
+      ui().logger.info(
+        `Category ${category.slug} was removed because all its refs were skipped. Affected refs: ${category.refs
+          .map(ref => `${ref.slug} (${ref.type})`)
+          .join(', ')}`,
+      );
+    });
+  }
+  const invalidArgs = [
+    { option: 'onlyCategories', args: onlyCategories ?? [] },
+    { option: 'skipCategories', args: skipCategories ?? [] },
+  ].filter(({ args }) =>
+    args.some(arg => skippedCategories.some(({ slug }) => slug === arg)),
+  );
+  if (invalidArgs.length > 0) {
+    throw new OptionValidationError(
+      invalidArgs
+        .map(
+          ({ option, args }) =>
+            `The --${option} argument references skipped categories: ${args.join(', ')}`,
+        )
+        .join('. '),
+    );
+  }
+  if (filteredCategories.length === 0) {
+    throw new OptionValidationError(
+      `No categories remain after filtering. Removed categories: ${skippedCategories
+        .map(({ slug }) => slug)
+        .join(', ')}`,
+    );
+  }
+}
+
+export function isValidCategoryRef(
+  ref: CategoryRef,
+  plugins: Filterables['plugins'],
+): boolean {
+  const plugin = plugins.find(({ slug }) => slug === ref.plugin);
+  if (!plugin) {
+    return false;
+  }
+  switch (ref.type) {
+    case 'audit':
+      return plugin.audits.some(({ slug }) => slug === ref.slug);
+    case 'group':
+      return plugin.groups?.some(({ slug }) => slug === ref.slug) ?? false;
+  }
+}
+
 export function validateFinalState(
   filteredItems: Filterables,
   originalItems: Filterables,
@@ -76,6 +146,30 @@ export function validateFinalState(
       `Nothing to report. No plugins or categories are available after filtering. Available plugins: ${availablePlugins}. Available categories: ${availableCategories}.`,
     );
   }
+  if (filteredPlugins.every(pluginHasZeroWeightRefs)) {
+    throw new OptionValidationError(
+      `All groups in the filtered plugins have refs with zero weight. Please adjust your filters or weights.`,
+    );
+  }
+}
+
+export function pluginHasZeroWeightRefs(
+  plugin: Pick<PluginConfig, 'groups' | 'audits'>,
+): boolean {
+  if (!plugin.groups || plugin.groups.length === 0) {
+    return false;
+  }
+  const weightMap = new Map<string, number>();
+  plugin.groups.forEach(group => {
+    group.refs.forEach(ref => {
+      weightMap.set(ref.slug, (weightMap.get(ref.slug) ?? 0) + ref.weight);
+    });
+  });
+  const totalWeight = plugin.audits.reduce(
+    (sum, audit) => sum + (weightMap.get(audit.slug) ?? 0),
+    0,
+  );
+  return totalWeight === 0;
 }
 
 function isCategoryOption(option: FilterOptionType): boolean {

@@ -1,18 +1,25 @@
-import type { CoreConfig } from '@code-pushup/models';
+import type {
+  CategoryConfig,
+  CoreConfig,
+  PluginConfig,
+} from '@code-pushup/models';
 import { filterItemRefsBy } from '@code-pushup/utils';
 import type { FilterOptions, Filterables } from './filter.model.js';
 import {
   handleConflictingOptions,
+  isValidCategoryRef,
   validateFilterOption,
+  validateFilteredCategories,
   validateFinalState,
 } from './validate-filter-options.utils.js';
 
+// eslint-disable-next-line max-lines-per-function
 export function filterMiddleware<T extends FilterOptions>(
   originalProcessArgs: T,
 ): T {
   const {
-    plugins,
-    categories,
+    categories: rcCategories,
+    plugins: rcPlugins,
     skipCategories = [],
     onlyCategories = [],
     skipPlugins = [],
@@ -20,13 +27,28 @@ export function filterMiddleware<T extends FilterOptions>(
     verbose = false,
   } = originalProcessArgs;
 
+  const plugins = processPlugins(rcPlugins);
+  const categories = filterSkippedCategories(rcCategories, plugins);
+
+  if (rcCategories && categories) {
+    validateFilteredCategories(rcCategories, categories, {
+      onlyCategories,
+      skipCategories,
+      verbose,
+    });
+  }
+
   if (
     skipCategories.length === 0 &&
     onlyCategories.length === 0 &&
     skipPlugins.length === 0 &&
     onlyPlugins.length === 0
   ) {
-    return originalProcessArgs;
+    return {
+      ...originalProcessArgs,
+      ...(categories && { categories }),
+      plugins,
+    };
   }
 
   handleConflictingOptions('categories', onlyCategories, skipCategories);
@@ -52,7 +74,7 @@ export function filterMiddleware<T extends FilterOptions>(
 
   validateFinalState(
     { categories: finalCategories, plugins: filteredPlugins },
-    { categories, plugins },
+    { categories: rcCategories, plugins: rcPlugins },
   );
 
   return {
@@ -140,4 +162,41 @@ function filterPluginsFromCategories({
     categories.flatMap(category => category.refs.map(ref => ref.plugin)),
   );
   return plugins.filter(plugin => validPluginSlugs.has(plugin.slug));
+}
+
+function filterSkippedItems<T extends { isSkipped?: boolean }>(
+  items: T[] | undefined,
+): Omit<T, 'isSkipped'>[] {
+  return (items ?? [])
+    .filter(({ isSkipped }) => isSkipped !== true)
+    .map(({ isSkipped, ...props }) => props);
+}
+
+export function processPlugins(plugins: PluginConfig[]): PluginConfig[] {
+  return plugins.map((plugin: PluginConfig) => {
+    const filteredAudits = filterSkippedItems(plugin.audits);
+    return {
+      ...plugin,
+      ...(plugin.groups && {
+        groups: filterItemRefsBy(filterSkippedItems(plugin.groups), ref =>
+          filteredAudits.some(({ slug }) => slug === ref.slug),
+        ),
+      }),
+      audits: filteredAudits,
+    };
+  });
+}
+
+export function filterSkippedCategories(
+  categories: CoreConfig['categories'],
+  plugins: CoreConfig['plugins'],
+): CoreConfig['categories'] {
+  return categories
+    ?.map(category => {
+      const validRefs = category.refs.filter(ref =>
+        isValidCategoryRef(ref, plugins),
+      );
+      return validRefs.length > 0 ? { ...category, refs: validRefs } : null;
+    })
+    .filter((category): category is CategoryConfig => category != null);
 }

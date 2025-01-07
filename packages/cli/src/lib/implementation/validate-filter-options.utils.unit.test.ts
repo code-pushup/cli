@@ -1,14 +1,21 @@
 import { describe, expect } from 'vitest';
-import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
+import type {
+  CategoryConfig,
+  CategoryRef,
+  PluginConfig,
+} from '@code-pushup/models';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import type { FilterOptionType } from './filter.model.js';
+import type { FilterOptionType, Filterables } from './filter.model.js';
 import {
   OptionValidationError,
   createValidationMessage,
   getItemType,
   handleConflictingOptions,
+  isValidCategoryRef,
+  pluginHasZeroWeightRefs,
   validateFilterOption,
+  validateFilteredCategories,
   validateFinalState,
 } from './validate-filter-options.utils.js';
 
@@ -321,16 +328,76 @@ describe('validateFinalState', () => {
 
   it('should perform validation without throwing an error when categories are missing', () => {
     const filteredItems = {
-      plugins: [{ slug: 'p1', audits: [{ slug: 'a1-p1' }] }] as PluginConfig[],
+      plugins: [
+        {
+          slug: 'p1',
+          audits: [{ slug: 'a1-p1' }],
+          groups: [{ slug: 'g1-p1', refs: [{ slug: 'a1-p1', weight: 1 }] }],
+        },
+      ] as PluginConfig[],
     };
     const originalItems = {
       plugins: [
-        { slug: 'p1', audits: [{ slug: 'a1-p1' }] },
-        { slug: 'p2', audits: [{ slug: 'a1-p2' }] },
+        {
+          slug: 'p1',
+          audits: [{ slug: 'a1-p1' }],
+          groups: [{ slug: 'g1-p1', refs: [{ slug: 'a1-p1', weight: 1 }] }],
+        },
+        {
+          slug: 'p2',
+          audits: [{ slug: 'a1-p2' }],
+          groups: [{ slug: 'g1-p2', refs: [{ slug: 'a1-p2', weight: 1 }] }],
+        },
       ] as PluginConfig[],
     };
     expect(() => {
       validateFinalState(filteredItems, originalItems);
+    }).not.toThrow();
+  });
+
+  it('should throw OptionValidationError when all groups in plugins have zero weight', () => {
+    const items = {
+      plugins: [
+        {
+          slug: 'p1',
+          audits: [
+            { slug: 'a1', isSkipped: false },
+            { slug: 'a2', isSkipped: false },
+          ],
+          groups: [
+            { slug: 'g1', refs: [{ slug: 'a1', weight: 0 }], isSkipped: false },
+            { slug: 'g2', refs: [{ slug: 'a2', weight: 0 }], isSkipped: false },
+          ],
+        },
+      ] as PluginConfig[],
+    };
+    expect(() => {
+      validateFinalState(items, items);
+    }).toThrow(
+      new OptionValidationError(
+        'All groups in the filtered plugins have refs with zero weight. Please adjust your filters or weights.',
+      ),
+    );
+  });
+
+  it('should not throw an error when at least one group ref has positive weight', () => {
+    const items = {
+      plugins: [
+        {
+          slug: 'p1',
+          audits: [
+            { slug: 'a1', isSkipped: false },
+            { slug: 'a2', isSkipped: false },
+          ],
+          groups: [
+            { slug: 'g1', refs: [{ slug: 'a1', weight: 1 }], isSkipped: false },
+            { slug: 'g2', refs: [{ slug: 'a2', weight: 0 }], isSkipped: false },
+          ],
+        },
+      ] as PluginConfig[],
+    };
+    expect(() => {
+      validateFinalState(items, items);
     }).not.toThrow();
   });
 });
@@ -348,4 +415,187 @@ describe('getItemType', () => {
       expect(getItemType(option as FilterOptionType, count)).toBe(expected);
     },
   );
+});
+
+describe('validateFilteredCategories', () => {
+  const categories = [
+    {
+      slug: 'c1',
+      refs: [{ type: 'group', plugin: 'p1', slug: 'g1', weight: 0 }],
+    },
+    {
+      slug: 'c2',
+      refs: [{ type: 'audit', plugin: 'p2', slug: 'a1', weight: 1 }],
+    },
+  ] as NonNullable<Filterables['categories']>;
+
+  it('should log info when categories are removed', () => {
+    const loggerSpy = vi.spyOn(ui().logger, 'info');
+    validateFilteredCategories(
+      categories,
+      [
+        {
+          slug: 'c2',
+          refs: [{ type: 'audit', plugin: 'p2', slug: 'a1', weight: 1 }],
+        },
+      ] as NonNullable<Filterables['categories']>,
+      { verbose: true },
+    );
+    expect(loggerSpy).toHaveBeenCalledWith(
+      'Category c1 was removed because all its refs were skipped. Affected refs: g1 (group)',
+    );
+  });
+
+  it('should not log anything when categories are not removed', () => {
+    const loggerSpy = vi.spyOn(ui().logger, 'info');
+    validateFilteredCategories(categories, categories, { verbose: true });
+    expect(loggerSpy).not.toHaveBeenCalled();
+  });
+
+  it('should throw an error when onlyCategories references skipped categories', () => {
+    expect(() =>
+      validateFilteredCategories(categories, [], {
+        onlyCategories: ['c1'],
+        skipCategories: [],
+        verbose: false,
+      }),
+    ).toThrow(
+      new OptionValidationError(
+        'The --onlyCategories argument references skipped categories: c1',
+      ),
+    );
+  });
+
+  it('should throw an error when skipCategories references skipped categories', () => {
+    expect(() =>
+      validateFilteredCategories(categories, [], {
+        onlyCategories: [],
+        skipCategories: ['c1'],
+        verbose: false,
+      }),
+    ).toThrow(
+      new OptionValidationError(
+        'The --skipCategories argument references skipped categories: c1',
+      ),
+    );
+  });
+
+  it('should throw an error when no categories remain after filtering', () => {
+    expect(() =>
+      validateFilteredCategories(categories, [], {
+        onlyCategories: [],
+        skipCategories: [],
+        verbose: false,
+      }),
+    ).toThrow(
+      new OptionValidationError(
+        'No categories remain after filtering. Removed categories: c1, c2',
+      ),
+    );
+  });
+});
+
+describe('isValidCategoryRef', () => {
+  const plugins = [
+    {
+      slug: 'p1',
+      audits: [{ slug: 'a1' }],
+      groups: [{ slug: 'g1' }],
+    },
+  ] as Filterables['plugins'];
+
+  it('should return true for valid audit ref', () => {
+    const ref = {
+      type: 'audit',
+      slug: 'a1',
+      plugin: 'p1',
+      weight: 1,
+    } satisfies CategoryRef;
+    expect(isValidCategoryRef(ref, plugins)).toBe(true);
+  });
+
+  it('should return false for skipped audit ref', () => {
+    const ref = {
+      type: 'audit',
+      slug: 'a2',
+      plugin: 'p1',
+      weight: 1,
+    } satisfies CategoryRef;
+    expect(isValidCategoryRef(ref, plugins)).toBe(false);
+  });
+
+  it('should return true for valid group ref', () => {
+    const ref = {
+      type: 'group',
+      slug: 'g1',
+      plugin: 'p1',
+      weight: 1,
+    } satisfies CategoryRef;
+    expect(isValidCategoryRef(ref, plugins)).toBe(true);
+  });
+
+  it('should return false for skipped group ref', () => {
+    const ref = {
+      type: 'group',
+      slug: 'g2',
+      plugin: 'p1',
+      weight: 1,
+    } satisfies CategoryRef;
+    expect(isValidCategoryRef(ref, plugins)).toBe(false);
+  });
+
+  it('should return false for nonexistent plugin', () => {
+    const ref = {
+      type: 'audit',
+      slug: 'a1',
+      plugin: 'nonexistent',
+      weight: 1,
+    } satisfies CategoryRef;
+    expect(isValidCategoryRef(ref, plugins)).toBe(false);
+  });
+});
+
+describe('pluginHasZeroWeightRefs', () => {
+  it('should return true if all refs have zero weight', () => {
+    expect(
+      pluginHasZeroWeightRefs({
+        groups: [
+          {
+            slug: 'g1',
+            refs: [
+              { slug: 'a1', weight: 0 },
+              { slug: 'a2', weight: 0 },
+            ],
+          },
+        ],
+        audits: [{ slug: 'a1' }, { slug: 'a2' }],
+      } as PluginConfig),
+    ).toBe(true);
+  });
+
+  it('should return false if any ref has non-zero weight', () => {
+    expect(
+      pluginHasZeroWeightRefs({
+        groups: [
+          {
+            slug: 'g1',
+            refs: [
+              { slug: 'a1', weight: 1 },
+              { slug: 'a2', weight: 0 },
+            ],
+          },
+        ],
+        audits: [{ slug: 'a1' }, { slug: 'a2' }],
+      } as PluginConfig),
+    ).toBe(false);
+  });
+
+  it('should return false if there are no groups', () => {
+    expect(
+      pluginHasZeroWeightRefs({
+        groups: undefined,
+        audits: [{ slug: 'a1' }],
+      } as PluginConfig),
+    ).toBe(false);
+  });
 });
