@@ -11,7 +11,7 @@ describe('processDocCoverage', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringMatching(/classes-coverage\.ts$/),
+          file: expect.pathToEndWith('classes-coverage.ts'),
           type: 'classes',
           name: 'ExampleClass',
           line: 1,
@@ -44,7 +44,7 @@ describe('processDocCoverage', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringMatching(/methods-coverage\.ts$/),
+          file: expect.pathToEndWith('methods-coverage.ts'),
           type: 'methods',
           name: 'exampleMethod',
           line: 5,
@@ -77,7 +77,7 @@ describe('processDocCoverage', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringMatching(/interfaces-coverage\.ts$/),
+          file: expect.pathToEndWith('interfaces-coverage.ts'),
           type: 'interfaces',
           name: 'ExampleInterface',
           line: 1,
@@ -110,7 +110,7 @@ describe('processDocCoverage', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringMatching(/variables-coverage\.ts$/),
+          file: expect.pathToEndWith('variables-coverage.ts'),
           type: 'variables',
           name: 'exampleVariable',
           line: 1,
@@ -143,7 +143,7 @@ describe('processDocCoverage', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringMatching(/properties-coverage\.ts$/),
+          file: expect.pathToEndWith('properties-coverage.ts'),
           type: 'properties',
           name: 'exampleProperty',
           line: 5,
@@ -176,7 +176,7 @@ describe('processDocCoverage', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringMatching(/types-coverage\.ts$/),
+          file: expect.pathToEndWith('types-coverage.ts'),
           type: 'types',
           name: 'ExampleType',
           line: 1,
@@ -209,7 +209,7 @@ describe('processDocCoverage', () => {
       nodesCount: 1,
       issues: [
         {
-          file: expect.stringMatching(/enums-coverage\.ts$/),
+          file: expect.pathToEndWith('enums-coverage.ts'),
           type: 'enums',
           name: 'ExampleEnum',
           line: 1,
