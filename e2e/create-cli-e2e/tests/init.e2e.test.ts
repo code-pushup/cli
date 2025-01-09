@@ -13,7 +13,8 @@ import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 const fakeCacheFolderName = () =>
   `fake-cache-${new Date().toISOString().replace(/[:.]/g, '-')}`;
 
-describe('create-cli-init', () => {
+/* after a new release of the nx-verdaccio plugin we can enable the test again. For now, it is too flaky to be productive. (5.jan.2025) */
+describe.todo('create-cli-init', () => {
   const workspaceRoot = path.join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
   const testFileDir = path.join(workspaceRoot, TEST_OUTPUT_DIR, 'init');
 
