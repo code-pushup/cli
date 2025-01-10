@@ -85,11 +85,13 @@ export const CATEGORY_MAP: Record<string, CategoryConfig> = {
   typescript: {
     slug: 'type-safety',
     title: 'Type Safety',
+    description: 'TypeScript diagnostics and type-checking errors',
     refs: await getCategoryRefsFromGroups(),
   },
   'bug-prevention': {
     slug: 'bug-prevention',
     title: 'Bug prevention',
+    description: 'Type checks that find **potential bugs** in your code.',
     refs: await getCategoryRefsFromGroups({
       onlyAudits: [
         'syntax-errors',
