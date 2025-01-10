@@ -1,35 +1,35 @@
 export {
-  type TableCellValue,
   tableCellValueSchema,
+  type TableCellValue,
 } from './lib/implementation/schemas.js';
 export {
-  type SourceFileLocation,
   sourceFileLocationSchema,
+  type SourceFileLocation,
 } from './lib/source.js';
 
-export { type Audit, auditSchema } from './lib/audit.js';
 export {
-  type AuditDetails,
-  type AuditOutput,
-  type AuditOutputs,
   auditDetailsSchema,
   auditOutputSchema,
   auditOutputsSchema,
+  type AuditDetails,
+  type AuditOutput,
+  type AuditOutputs,
 } from './lib/audit-output.js';
+export { auditSchema, type Audit } from './lib/audit.js';
 export {
-  type CategoryConfig,
-  type CategoryRef,
   categoryConfigSchema,
   categoryRefSchema,
+  type CategoryConfig,
+  type CategoryRef,
 } from './lib/category-config.js';
-export { type Commit, commitSchema } from './lib/commit.js';
-export { type CoreConfig, coreConfigSchema } from './lib/core-config.js';
+export { commitSchema, type Commit } from './lib/commit.js';
+export { coreConfigSchema, type CoreConfig } from './lib/core-config.js';
 export {
-  type Group,
-  type GroupRef,
-  type GroupMeta,
   groupRefSchema,
   groupSchema,
+  type Group,
+  type GroupMeta,
+  type GroupRef,
 } from './lib/group.js';
 export {
   CONFIG_FILE_NAME,
@@ -47,58 +47,37 @@ export {
   MAX_TITLE_LENGTH,
 } from './lib/implementation/limits.js';
 export {
-  type MaterialIcon,
   materialIconSchema,
+  type MaterialIcon,
 } from './lib/implementation/schemas.js';
 export { exists } from './lib/implementation/utils.js';
 export {
-  type TableAlignment,
-  tableAlignmentSchema,
-  type TableRowPrimitive,
-  tableRowPrimitiveSchema,
-  type TableRowObject,
-  tableRowObjectSchema,
-  type TableColumnPrimitive,
-  tableColumnPrimitiveSchema,
-  type TableColumnObject,
-  tableColumnObjectSchema,
-  type Table,
-  tableSchema,
-} from './lib/table.js';
-export {
-  type Issue,
-  type IssueSeverity,
   issueSchema,
   issueSeveritySchema,
+  type Issue,
+  type IssueSeverity,
 } from './lib/issue.js';
 export {
-  type Format,
-  type PersistConfig,
   formatSchema,
   persistConfigSchema,
+  type Format,
+  type PersistConfig,
 } from './lib/persist-config.js';
 export {
-  type PluginConfig,
-  type PluginMeta,
   pluginConfigSchema,
   pluginMetaSchema,
+  type PluginConfig,
+  type PluginMeta,
 } from './lib/plugin-config.js';
 export {
-  type AuditReport,
-  type PluginReport,
-  type Report,
   auditReportSchema,
   pluginReportSchema,
   reportSchema,
+  type AuditReport,
+  type PluginReport,
+  type Report,
 } from './lib/report.js';
 export {
-  type AuditDiff,
-  type AuditResult,
-  type CategoryDiff,
-  type CategoryResult,
-  type GroupDiff,
-  type GroupResult,
-  type ReportsDiff,
   auditDiffSchema,
   auditResultSchema,
   categoryDiffSchema,
@@ -106,13 +85,39 @@ export {
   groupDiffSchema,
   groupResultSchema,
   reportsDiffSchema,
+  type AuditDiff,
+  type AuditResult,
+  type CategoryDiff,
+  type CategoryResult,
+  type GroupDiff,
+  type GroupResult,
+  type ReportsDiff,
 } from './lib/reports-diff.js';
 export {
-  type OnProgress,
-  type RunnerConfig,
-  type RunnerFunction,
   onProgressSchema,
   runnerConfigSchema,
   runnerFunctionSchema,
+  type OnProgress,
+  type RunnerConfig,
+  type RunnerFunction,
 } from './lib/runner-config.js';
-export { type UploadConfig, uploadConfigSchema } from './lib/upload-config.js';
+export {
+  tableAlignmentSchema,
+  tableColumnObjectSchema,
+  tableColumnPrimitiveSchema,
+  tableRowObjectSchema,
+  tableRowPrimitiveSchema,
+  tableSchema,
+  type Table,
+  type TableAlignment,
+  type TableColumnObject,
+  type TableColumnPrimitive,
+  type TableRowObject,
+  type TableRowPrimitive,
+} from './lib/table.js';
+export { uploadConfigSchema, type UploadConfig } from './lib/upload-config.js';
+
+export {
+  fileNameSchema,
+  filePathSchema,
+} from './lib/implementation/schemas.js';
