@@ -47,6 +47,8 @@ export {
   MAX_TITLE_LENGTH,
 } from './lib/implementation/limits.js';
 export {
+  fileNameSchema,
+  filePathSchema,
   materialIconSchema,
   type MaterialIcon,
 } from './lib/implementation/schemas.js';
@@ -116,8 +118,3 @@ export {
   type TableRowPrimitive,
 } from './lib/table.js';
 export { uploadConfigSchema, type UploadConfig } from './lib/upload-config.js';
-
-export {
-  fileNameSchema,
-  filePathSchema,
-} from './lib/implementation/schemas.js';
