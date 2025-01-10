@@ -25,43 +25,138 @@
       "title": "Typescript",
     },
   ],
+  "commit": {
+    "author": "Michael",
+    "date": "2025-01-10T15:39:35.000Z",
+    "hash": "2fd18c12cfe96a15a736859554a206e85ca13034",
+    "message": "wip",
+  },
+  "date": "2025-01-10T15:45:46.195Z",
+  "duration": 2182,
   "packageName": "@code-pushup/core",
   "plugins": [
     {
       "audits": [
         {
           "description": "Errors that occur during parsing and lexing of TypeScript source code",
+          "details": {
+            "issues": [
+              {
+                "message": "TS1136: Property assignment expected.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-typescript-e2e/src/1-syntax-errors.ts",
+                  "position": {
+                    "startLine": 1,
+                  },
+                },
+              },
+            ],
+          },
+          "score": 0,
           "slug": "syntax-errors",
           "title": "Syntax-Errors",
+          "value": 1,
         },
         {
           "description": "Errors that occur during type checking and type inference",
+          "details": {
+            "issues": [
+              {
+                "message": "TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-typescript-e2e/src/2-semantic-errors.ts",
+                  "position": {
+                    "startLine": 3,
+                  },
+                },
+              },
+              {
+                "message": "TS2322: Type 'null' is not assignable to type 'string'.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-typescript-e2e/src/2-semantic-errors.ts",
+                  "position": {
+                    "startLine": 7,
+                  },
+                },
+              },
+            ],
+          },
+          "score": 0,
           "slug": "semantic-errors",
           "title": "Semantic-Errors",
+          "value": 2,
         },
         {
           "description": "Errors that occur during TypeScript language service operations",
-          "slug": "language-service-errors",
-          "title": "Language-Service-Errors",
+          "details": {
+            "issues": [
+              {
+                "message": "TS4112: This member cannot have an 'override' modifier because its containing class 'Standalone' does not extend another class.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-typescript-e2e/src/4-languale-service.ts",
+                  "position": {
+                    "startLine": 2,
+                  },
+                },
+              },
+            ],
+          },
+          "score": 0,
+          "slug": "declaration-and-language-service-errors",
+          "title": "Declaration-And-Language-Service-Errors",
+          "value": 1,
         },
         {
           "description": "Errors that occur during TypeScript internal operations",
+          "score": 1,
           "slug": "internal-errors",
           "title": "Internal-Errors",
+          "value": 0,
         },
         {
           "description": "Errors that occur when parsing TypeScript configuration files",
+          "details": {
+            "issues": [
+              {
+                "message": "TS6059: File '/Users/michael_hladky/WebstormProjects/quality-metrics-cli/tmp/e2e/plugin-typescript-e2e/exclude/utils.ts' is not under 'rootDir' 'src'. 'rootDir' is expected to contain all source files.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-typescript-e2e/src/6-configuration-errors.ts",
+                  "position": {
+                    "startLine": 1,
+                  },
+                },
+              },
+            ],
+          },
+          "score": 0,
           "slug": "configuration-errors",
           "title": "Configuration-Errors",
+          "value": 1,
+        },
+        {
+          "description": "Errors related to no implicit any compiler option",
+          "score": 1,
+          "slug": "no-implicit-any-errors",
+          "title": "No-Implicit-Any-Errors",
+          "value": 0,
         },
         {
           "description": "Errors that do not match any known TypeScript error code",
+          "score": 1,
           "slug": "unknown-codes",
           "title": "Unknown-Codes",
+          "value": 0,
         },
       ],
+      "date": "2025-01-10T15:45:46.227Z",
       "description": "Official Code PushUp Typescript plugin.",
       "docsUrl": "https://www.npmjs.com/package/@code-pushup/typescript-plugin/",
+      "duration": 2125,
       "groups": [
         {
           "description": "Syntax, semantic, and internal compiler errors are critical for identifying and preventing bugs.",
@@ -76,6 +171,10 @@
             },
             {
               "slug": "internal-errors",
+              "weight": 1,
+            },
+            {
+              "slug": "no-implicit-any-errors",
               "weight": 1,
             },
           ],
@@ -101,7 +200,7 @@
               "weight": 1,
             },
             {
-              "slug": "language-service-errors",
+              "slug": "declaration-and-language-service-errors",
               "weight": 1,
             },
           ],
@@ -113,6 +212,8 @@
       "packageName": "@code-pushup/typescript-plugin",
       "slug": "typescript",
       "title": "Typescript",
+      "version": "0.57.0",
     },
   ],
+  "version": "0.57.0",
 }

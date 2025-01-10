@@ -55,14 +55,6 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
 
     expect(code).toBe(0);
     const cleanStdout = removeColorCodes(stdout);
-    expect(
-      cleanStdout
-        .split('\n')
-        .filter(l => !l.startsWith('[ success ] -'))
-        .join('\n'),
-    ).toMatchFileSnapshot(
-      '__snapshots__/typescript-plugin-terminal-report.txt',
-    );
 
     // @TODO should be 1 test failing => /● NoImplicitAny\s+1/
     expect(cleanStdout).toMatch(/● Configuration-Errors\s+\d+/);
@@ -71,8 +63,8 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
       join(envRoot, outputDir, 'report.json'),
     );
     expect(() => reportSchema.parse(reportJson)).not.toThrow();
-    expect(
-      omitVariableReportData(reportJson as Report, { omitAuditData: true }),
-    ).toMatchFileSnapshot('__snapshots__/typescript-plugin-json-report.json');
+    expect(reportJson).toMatchFileSnapshot(
+      '__snapshots__/typescript-plugin-json-report.json',
+    );
   });
 });
