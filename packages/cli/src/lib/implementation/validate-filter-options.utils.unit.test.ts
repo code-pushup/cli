@@ -223,7 +223,7 @@ describe('validateFilterOption', () => {
     );
     const logs = getLogMessages(ui().logger);
     expect(logs[0]).toContain(
-      'The --skipPlugins argument references skipped plugin: p1.',
+      'The --skipPlugins argument references a skipped plugin: p1.',
     );
   });
 });

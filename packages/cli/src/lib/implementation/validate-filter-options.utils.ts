@@ -19,21 +19,23 @@ export function validateFilterOption(
     verbose,
   }: { itemsToFilter: string[]; skippedItems: string[]; verbose: boolean },
 ): void {
+  const validItems = isCategoryOption(option)
+    ? categories.map(({ slug }) => slug)
+    : isPluginOption(option)
+      ? plugins.map(({ slug }) => slug)
+      : [];
+
   const itemsToFilterSet = new Set(itemsToFilter);
   const skippedItemsSet = new Set(skippedItems);
-  const validItemsSet = new Set(
-    isCategoryOption(option)
-      ? categories.map(({ slug }) => slug)
-      : isPluginOption(option)
-        ? plugins.map(({ slug }) => slug)
-        : [''],
-  );
+  const validItemsSet = new Set(validItems);
+
   const nonExistentItems = itemsToFilter.filter(
     item => !validItemsSet.has(item) && !skippedItemsSet.has(item),
   );
   const skippedValidItems = itemsToFilter.filter(item =>
     skippedItemsSet.has(item),
   );
+
   if (nonExistentItems.length > 0) {
     const message = createValidationMessage(
       option,
@@ -50,8 +52,10 @@ export function validateFilterOption(
     ui().logger.warning(message);
   }
   if (skippedValidItems.length > 0 && verbose) {
+    const item = getItemType(option, skippedValidItems.length);
+    const prefix = skippedValidItems.length === 1 ? `a skipped` : `skipped`;
     ui().logger.warning(
-      `The --${option} argument references skipped ${getItemType(option, skippedValidItems.length)}: ${skippedValidItems.join(', ')}.`,
+      `The --${option} argument references ${prefix} ${item}: ${skippedValidItems.join(', ')}.`,
     );
   }
   if (isPluginOption(option) && categories.length > 0 && verbose) {
