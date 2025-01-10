@@ -97,7 +97,6 @@ export {
 export { isSemver, normalizeSemver, sortSemvers } from './lib/semver.js';
 export {
   camelCaseToKebabCase,
-  type CamelCaseToKebabCase,
   kebabCaseToSentence,
   kebabCaseToCamelCase,
   camelCaseToSentence,
@@ -128,6 +127,7 @@ export type {
   ItemOrArray,
   Prettify,
   WithRequired,
+  CamelCaseToKebabCase,
 } from './lib/types.js';
 export { verboseUtils } from './lib/verbose-utils.js';
 export { zodErrorMessageBuilder } from './lib/zod-validation.js';

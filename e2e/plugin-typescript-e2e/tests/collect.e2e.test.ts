@@ -9,6 +9,7 @@ import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
   omitVariableReportData,
+  osAgnosticPath,
   removeColorCodes,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
@@ -59,12 +60,30 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
     // @TODO should be 1 test failing => /● NoImplicitAny\s+1/
     expect(cleanStdout).toMatch(/● Configuration-Errors\s+\d+/);
 
-    const reportJson = await readJsonFile(
+    const reportJson = await readJsonFile<Report>(
       join(envRoot, outputDir, 'report.json'),
     );
     expect(() => reportSchema.parse(reportJson)).not.toThrow();
-    expect(reportJson).toMatchFileSnapshot(
-      '__snapshots__/typescript-plugin-json-report.json',
-    );
+    expect({
+      ...omitVariableReportData(reportJson, { omitAuditData: false }),
+      plugins: reportJson.plugins.map(plugin => ({
+        ...plugin,
+        audits: plugin.audits.map(audit => ({
+          ...audit,
+          details: {
+            ...audit.details,
+            issues: (audit?.details?.issues ?? []).map(issue => ({
+              ...issue,
+              source: {
+                ...issue.source,
+                ...(issue?.source?.file
+                  ? { file: osAgnosticPath(issue?.source?.file) }
+                  : {}),
+              },
+            })),
+          },
+        })),
+      })),
+    }).toMatchFileSnapshot('__snapshots__/typescript-plugin-json-report.json');
   });
 });

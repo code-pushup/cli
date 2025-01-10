@@ -25,14 +25,6 @@
       "title": "Typescript",
     },
   ],
-  "commit": {
-    "author": "Michael",
-    "date": "2025-01-10T15:39:35.000Z",
-    "hash": "2fd18c12cfe96a15a736859554a206e85ca13034",
-    "message": "wip",
-  },
-  "date": "2025-01-10T15:45:46.195Z",
-  "duration": 2182,
   "packageName": "@code-pushup/core",
   "plugins": [
     {
@@ -112,6 +104,9 @@
         },
         {
           "description": "Errors that occur during TypeScript internal operations",
+          "details": {
+            "issues": [],
+          },
           "score": 1,
           "slug": "internal-errors",
           "title": "Internal-Errors",
@@ -140,6 +135,9 @@
         },
         {
           "description": "Errors related to no implicit any compiler option",
+          "details": {
+            "issues": [],
+          },
           "score": 1,
           "slug": "no-implicit-any-errors",
           "title": "No-Implicit-Any-Errors",
@@ -147,16 +145,19 @@
         },
         {
           "description": "Errors that do not match any known TypeScript error code",
+          "details": {
+            "issues": [],
+          },
           "score": 1,
           "slug": "unknown-codes",
           "title": "Unknown-Codes",
           "value": 0,
         },
       ],
-      "date": "2025-01-10T15:45:46.227Z",
+      "date": "2025-01-10T17:22:29.075Z",
       "description": "Official Code PushUp Typescript plugin.",
       "docsUrl": "https://www.npmjs.com/package/@code-pushup/typescript-plugin/",
-      "duration": 2125,
+      "duration": 2091,
       "groups": [
         {
           "description": "Syntax, semantic, and internal compiler errors are critical for identifying and preventing bugs.",
@@ -215,5 +216,4 @@
       "version": "0.57.0",
     },
   ],
-  "version": "0.57.0",
 }

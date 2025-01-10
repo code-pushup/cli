@@ -1,3 +1,5 @@
+import type { CamelCaseToKebabCase } from './types';
+
 /**
  * Converts a kebab-case string to camelCase.
  * @param string - The kebab-case string to convert.
@@ -13,13 +15,6 @@ export function kebabCaseToCamelCase(string: string) {
     )
     .join('');
 }
-
-export type CamelCaseToKebabCase<T extends string> =
-  T extends `${infer First}${infer Rest}`
-    ? Rest extends Uncapitalize<Rest>
-      ? `${Lowercase<First>}${CamelCaseToKebabCase<Rest>}`
-      : `${Lowercase<First>}-${CamelCaseToKebabCase<Rest>}`
-    : T;
 
 /**
  * Converts a camelCase string to kebab-case.

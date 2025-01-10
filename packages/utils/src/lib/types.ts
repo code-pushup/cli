@@ -15,3 +15,10 @@ export type WithRequired<T, K extends keyof T> = Prettify<
 >;
 
 export type Prettify<T> = { [K in keyof T]: T[K] };
+
+export type CamelCaseToKebabCase<T extends string> =
+  T extends `${infer First}${infer Rest}`
+    ? Rest extends Uncapitalize<Rest>
+      ? `${Lowercase<First>}${CamelCaseToKebabCase<Rest>}`
+      : `${Lowercase<First>}-${CamelCaseToKebabCase<Rest>}`
+    : T;
