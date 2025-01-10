@@ -17,7 +17,7 @@ import {
   type TypescriptPluginOptions,
   typescriptPlugin,
 } from './packages/plugin-typescript/src/index.js';
-import { getCategoryRefsFromGroups } from './packages/plugin-typescript/src/lib/utils.js';
+import { CATEGORY_MAP } from './packages/plugin-typescript/src/lib/constants';
 
 export const jsPackagesCategories: CategoryConfig[] = [
   {
@@ -136,46 +136,10 @@ export const eslintCoreConfigNx = async (
 
 export const typescriptPluginConfigNx = async (
   options?: TypescriptPluginOptions,
-): Promise<CoreConfig> => {
-  return {
-    plugins: [await typescriptPlugin(options)],
-    categories: [
-      {
-        slug: 'typescript',
-        title: 'Typescript - All Groups',
-        refs: await getCategoryRefsFromGroups(options),
-      },
-      {
-        slug: 'bug-prevention',
-        title: 'Bug prevention',
-        refs: await getCategoryRefsFromGroups({
-          onlyAudits: [
-            'syntax-errors',
-            'semantic-errors',
-            'internal-errors',
-            'configuration-errors',
-          ],
-        }),
-      },
-      {
-        slug: 'code-style',
-        title: 'Code style',
-        description:
-          'TypeScript & Lint rules that promote **good practices** and consistency in your code.',
-        refs: await getCategoryRefsFromGroups({ onlyAudits: ['suggestions'] }),
-      },
-      {
-        slug: 'miscellaneous',
-        title: 'Miscellaneous',
-        description:
-          'Errors that do not bring any specific value to the developer, but are still useful to know.',
-        refs: await getCategoryRefsFromGroups({
-          onlyAudits: ['unknown-codes', 'language-service-errors'],
-        }),
-      },
-    ],
-  };
-};
+): Promise<CoreConfig> => ({
+  plugins: [await typescriptPlugin(options)],
+  categories: Object.values(CATEGORY_MAP),
+});
 
 export const coverageCoreConfigNx = async (
   projectName?: string,

@@ -1,7 +1,8 @@
-import type { Audit, Group } from '@code-pushup/models';
+import type { Audit, CategoryConfig, Group } from '@code-pushup/models';
 import { camelCaseToSentence, slugify } from '@code-pushup/utils';
 import { TS_CODE_RANGE_NAMES } from './runner/ts-error-codes.js';
 import type { AuditSlug } from './types.js';
+import { getCategoryRefsFromGroups } from './utils.js';
 
 export const TYPESCRIPT_PLUGIN_SLUG = 'typescript';
 export const DEFAULT_TS_CONFIG = 'tsconfig.json';
@@ -13,9 +14,10 @@ const AUDIT_DESCRIPTIONS: Record<AuditSlug, string> = {
     'Errors that occur during parsing and lexing of TypeScript source code',
   'configuration-errors':
     'Errors that occur when parsing TypeScript configuration files',
-  'language-service-errors':
+  'declaration-and-language-service-errors':
     'Errors that occur during TypeScript language service operations',
   'internal-errors': 'Errors that occur during TypeScript internal operations',
+  'no-implicit-any-errors': 'Errors related to no implicit any compiler option',
   'unknown-codes': 'Errors that do not match any known TypeScript error code',
 };
 export const AUDITS: (Audit & { slug: AuditSlug })[] = Object.values(
@@ -45,6 +47,7 @@ export const GROUPS: Group[] = [
         'syntax-errors',
         'semantic-errors',
         'internal-errors',
+        'no-implicit-any-errors',
       ] satisfies AuditSlug[]
     ).map(slug => ({
       slug,
@@ -67,10 +70,43 @@ export const GROUPS: Group[] = [
     description:
       'Errors that do not bring any specific value to the developer, but are still useful to know.',
     refs: (
-      ['unknown-codes', 'language-service-errors'] satisfies AuditSlug[]
+      [
+        'unknown-codes',
+        'declaration-and-language-service-errors',
+      ] satisfies AuditSlug[]
     ).map(slug => ({
       slug,
       weight: 1,
     })),
   },
 ];
+
+export const CATEGORY_MAP: Record<string, CategoryConfig> = {
+  typescript: {
+    slug: 'type-safety',
+    title: 'Type Safety',
+    refs: await getCategoryRefsFromGroups(),
+  },
+  'bug-prevention': {
+    slug: 'bug-prevention',
+    title: 'Bug prevention',
+    refs: await getCategoryRefsFromGroups({
+      onlyAudits: [
+        'syntax-errors',
+        'semantic-errors',
+        'internal-errors',
+        'configuration-errors',
+        'no-implicit-any-errors',
+      ],
+    }),
+  },
+  miscellaneous: {
+    slug: 'miscellaneous',
+    title: 'Miscellaneous',
+    description:
+      'Errors that do not bring any specific value to the developer, but are still useful to know.',
+    refs: await getCategoryRefsFromGroups({
+      onlyAudits: ['unknown-codes', 'declaration-and-language-service-errors'],
+    }),
+  },
+};
