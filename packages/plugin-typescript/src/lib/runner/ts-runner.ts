@@ -6,13 +6,13 @@ import {
 import { loadTargetConfig } from './utils.js';
 
 export type DiagnosticsOptions = {
-  tsConfigPath: string;
+  tsconfig: string;
 };
 
 export async function getTypeScriptDiagnostics({
-  tsConfigPath,
+  tsconfig,
 }: DiagnosticsOptions): Promise<readonly Diagnostic[]> {
-  const { fileNames, options } = await loadTargetConfig(tsConfigPath);
+  const { fileNames, options } = await loadTargetConfig(tsconfig);
   try {
     const program = createProgram(fileNames, options);
     // @TODO use more fine-grained helpers like getSemanticDiagnostics instead of getPreEmitDiagnostics

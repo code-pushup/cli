@@ -18,7 +18,7 @@ export type TypescriptPluginOptions = Partial<DiagnosticsOptions> &
 export async function typescriptPlugin(
   options?: TypescriptPluginOptions,
 ): Promise<PluginConfig> {
-  const { tsConfigPath = DEFAULT_TS_CONFIG, onlyAudits } = parseOptions(
+  const { tsconfig = DEFAULT_TS_CONFIG, onlyAudits } = parseOptions(
     options ?? {},
   );
 
@@ -38,7 +38,7 @@ export async function typescriptPlugin(
     audits: filteredAudits,
     groups: filteredGroups,
     runner: createRunnerFunction({
-      tsConfigPath,
+      tsconfig,
       expectedAudits: filteredAudits,
     }),
   };

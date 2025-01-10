@@ -18,9 +18,9 @@ export type RunnerOptions = DiagnosticsOptions & {
 };
 
 export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
-  const { tsConfigPath, expectedAudits } = options;
+  const { tsconfig, expectedAudits } = options;
   return async (): Promise<AuditOutputs> => {
-    const diagnostics = await getTypeScriptDiagnostics({ tsConfigPath });
+    const diagnostics = await getTypeScriptDiagnostics({ tsconfig });
     const result: Record<
       CodeRangeName,
       Pick<AuditReport, 'slug' | 'details'>

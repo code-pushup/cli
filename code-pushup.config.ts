@@ -40,7 +40,7 @@ export default mergeConfigs(
     'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
   ),
   await typescriptPluginConfigNx({
-    tsConfigPath:
+    tsconfig:
       'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
   }),
   await eslintCoreConfigNx(),

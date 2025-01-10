@@ -7,7 +7,7 @@ const auditSlugs = AUDITS.map(({ slug }) => slug) as [
   ...AuditSlug[],
 ];
 export const typescriptPluginConfigSchema = z.object({
-  tsConfigPath: z
+  tsconfig: z
     .string({
       description: 'Path to the TsConfig',
     })

@@ -23,18 +23,18 @@ const AUDIT_DESCRIPTIONS: Record<AuditSlug, string> = {
 export const AUDITS: (Audit & { slug: AuditSlug })[] = Object.values(
   TS_CODE_RANGE_NAMES,
 ).map(slug => ({
-  slug: slugify(slug) as AuditSlug,
+  slug,
   title: camelCaseToSentence(slug),
-  description: AUDIT_DESCRIPTIONS[slug as AuditSlug],
+  description: AUDIT_DESCRIPTIONS[slug],
 }));
 
 /**
  * # Diagnostic Code Categories
- * | 🏷️ Category       | Diagnostic Code Ranges | Audits                                                |
- * |-------------------|------------------------|-------------------------------------------------------|
- * | **Problems**      | 1XXX, 2XXX, 5XXX       | `syntax-errors`, `semantic-errors`, `internal-errors` |
- * | **Suggestions**   | 3XXX                   | `suggestions`                                         |
- * | **Configuration** | 6XXX                   | `configuration-errors`                                |
+ * | 🏷️ Category       | Diagnostic Code Ranges | Audits                                                                   |
+ * |-------------------|------------------------|--------------------------------------------------------------------------|
+ * | **Problems**      | 1XXX, 2XXX, 5XXX, 7XXX | `syntax-errors`, `semantic-errors`, `internal-errors`, `no-implicit-any` |
+ * | **Suggestions**   | 3XXX                   | `suggestions`                                                            |
+ * | **Configuration** | 6XXX                   | `configuration-errors`                                                   |
  */
 export const GROUPS: Group[] = [
   {
