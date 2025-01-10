@@ -24,7 +24,7 @@ _Object containing the following properties:_
 | `docsUrl`                | Documentation site                   | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                                                              |
 | **`scores`** (\*)        | Score comparison                     | _Object with properties:_<ul><li>`before`: `number` (_≥0, ≤1_) - Value between 0 and 1 (source commit)</li><li>`after`: `number` (_≥0, ≤1_) - Value between 0 and 1 (target commit)</li><li>`diff`: `number` (_≥-1, ≤1_) - Score change (`scores.after - scores.before`)</li></ul>                                   |
 | **`plugin`** (\*)        | Plugin which defines it              | _Object with properties:_<ul><li>`slug`: `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) - Unique plugin slug within core config</li><li>`title`: `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `string` (_url_) (_optional_) _or_ `''` - Plugin documentation site</li></ul> |
-| **`values`** (\*)        | Audit `value` comparison             | _Object with properties:_<ul><li>`before`: `number` (_≥0_) - Raw numeric value (source commit)</li><li>`after`: `number` (_≥0_) - Raw numeric value (target commit)</li><li>`diff`: `number` (_int_) - Value change (`values.after - values.before`)</li></ul>                                                       |
+| **`values`** (\*)        | Audit `value` comparison             | _Object with properties:_<ul><li>`before`: `number` (_≥0_) - Raw numeric value (source commit)</li><li>`after`: `number` (_≥0_) - Raw numeric value (target commit)</li><li>`diff`: `number` - Value change (`values.after - values.before`)</li></ul>                                                               |
 | **`displayValues`** (\*) | Audit `displayValue` comparison      | _Object with properties:_<ul><li>`before`: `string` - Formatted value (e.g. '0.9 s', '2.1 MB') (source commit)</li><li>`after`: `string` - Formatted value (e.g. '0.9 s', '2.1 MB') (target commit)</li></ul>                                                                                                        |
 
 _(\*) Required._
@@ -59,6 +59,7 @@ _Object containing the following properties:_
 | **`title`** (\*) | Descriptive name                         | `string` (_max length: 256_)                                      |
 | `description`    | Description (markdown)                   | `string` (_max length: 65536_)                                    |
 | `docsUrl`        | Link to documentation (rationale)        | `string` (_url_) (_optional_) _or_ `''`                           |
+| `isSkipped`      | Indicates whether the audit is skipped   | `boolean`                                                         |
 | `displayValue`   | Formatted value (e.g. '0.9 s', '2.1 MB') | `string`                                                          |
 | **`value`** (\*) | Raw numeric value                        | `number` (_≥0_)                                                   |
 | **`score`** (\*) | Value between 0 and 1                    | `number` (_≥0, ≤1_)                                               |
@@ -86,12 +87,13 @@ _(\*) Required._
 
 _Object containing the following properties:_
 
-| Property         | Description                       | Type                                                              |
-| :--------------- | :-------------------------------- | :---------------------------------------------------------------- |
-| **`slug`** (\*)  | ID (unique within plugin)         | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
-| **`title`** (\*) | Descriptive name                  | `string` (_max length: 256_)                                      |
-| `description`    | Description (markdown)            | `string` (_max length: 65536_)                                    |
-| `docsUrl`        | Link to documentation (rationale) | `string` (_url_) (_optional_) _or_ `''`                           |
+| Property         | Description                            | Type                                                              |
+| :--------------- | :------------------------------------- | :---------------------------------------------------------------- |
+| **`slug`** (\*)  | ID (unique within plugin)              | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
+| **`title`** (\*) | Descriptive name                       | `string` (_max length: 256_)                                      |
+| `description`    | Description (markdown)                 | `string` (_max length: 65536_)                                    |
+| `docsUrl`        | Link to documentation (rationale)      | `string` (_url_) (_optional_) _or_ `''`                           |
+| `isSkipped`      | Indicates whether the audit is skipped | `boolean`                                                         |
 
 _(\*) Required._
 
@@ -106,6 +108,7 @@ _Object containing the following properties:_
 | **`title`** (\*) | Category Title                                                             | `string` (_max length: 256_)                                      |
 | `description`    | Category description                                                       | `string` (_max length: 65536_)                                    |
 | `docsUrl`        | Category docs URL                                                          | `string` (_url_) (_optional_) _or_ `''`                           |
+| `isSkipped`      |                                                                            | `boolean`                                                         |
 | `isBinary`       | Is this a binary category (i.e. only a perfect score considered a "pass")? | `boolean`                                                         |
 
 _(\*) Required._
@@ -236,6 +239,7 @@ _Object containing the following properties:_
 | **`title`** (\*) | Descriptive name for the group               | `string` (_max length: 256_)                                      |
 | `description`    | Description of the group (markdown)          | `string` (_max length: 65536_)                                    |
 | `docsUrl`        | Group documentation site                     | `string` (_url_) (_optional_) _or_ `''`                           |
+| `isSkipped`      | Indicates whether the group is skipped       | `boolean`                                                         |
 
 _(\*) Required._
 
@@ -245,11 +249,11 @@ Issue information
 
 _Object containing the following properties:_
 
-| Property            | Description               | Type                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| :------------------ | :------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`message`** (\*)  | Descriptive error message | `string` (_max length: 1024_)                                                                                                                                                                                                                                                                                                                                                                                                  |
-| **`severity`** (\*) | Severity level            | [IssueSeverity](#issueseverity)                                                                                                                                                                                                                                                                                                                                                                                                |
-| `source`            | Source file location      | _Object with properties:_<ul><li>`file`: `string` (_min length: 1_) - Relative path to source file in Git repo</li><li>`position`: _Object with properties:_<ul><li>`startLine`: `number` (_int, >0_) - Start line</li><li>`startColumn`: `number` (_int, >0_) - Start column</li><li>`endLine`: `number` (_int, >0_) - End line</li><li>`endColumn`: `number` (_int, >0_) - End column</li></ul> - Location in file</li></ul> |
+| Property            | Description               | Type                                      |
+| :------------------ | :------------------------ | :---------------------------------------- |
+| **`message`** (\*)  | Descriptive error message | `string` (_max length: 1024_)             |
+| **`severity`** (\*) | Severity level            | [IssueSeverity](#issueseverity)           |
+| `source`            | Source file location      | [SourceFileLocation](#sourcefilelocation) |
 
 _(\*) Required._
 
@@ -270,7 +274,7 @@ Icon from VSCode Material Icons extension
 _Enum string, one of the following possible values:_
 
 <details>
-<summary><i>Expand for full list of 839 values</i></summary>
+<summary><i>Expand for full list of 858 values</i></summary>
 
 - `'git'`
 - `'yaml'`
@@ -481,6 +485,8 @@ _Enum string, one of the following possible values:_
 - `'vercel'`
 - `'vercel_light'`
 - `'verdaccio'`
+- `'payload'`
+- `'payload_light'`
 - `'next'`
 - `'next_light'`
 - `'remix'`
@@ -574,6 +580,7 @@ _Enum string, one of the following possible values:_
 - `'hcl_light'`
 - `'helm'`
 - `'san'`
+- `'quokka'`
 - `'wallaby'`
 - `'stencil'`
 - `'red'`
@@ -634,7 +641,7 @@ _Enum string, one of the following possible values:_
 - `'meson'`
 - `'commitlint'`
 - `'buck'`
-- `'nrwl'`
+- `'nx'`
 - `'opam'`
 - `'dune'`
 - `'imba'`
@@ -703,13 +710,18 @@ _Enum string, one of the following possible values:_
 - `'pnpm_light'`
 - `'gridsome'`
 - `'steadybit'`
+- `'capnp'`
 - `'caddy'`
+- `'openapi'`
+- `'openapi_light'`
+- `'swagger'`
 - `'bun'`
 - `'bun_light'`
 - `'antlr'`
 - `'pinejs'`
 - `'nano-staged'`
 - `'nano-staged_light'`
+- `'knip'`
 - `'taskfile'`
 - `'craco'`
 - `'gamemaker'`
@@ -723,6 +735,7 @@ _Enum string, one of the following possible values:_
 - `'unocss'`
 - `'ifanr-cloud'`
 - `'mermaid'`
+- `'syncpack'`
 - `'werf'`
 - `'roblox'`
 - `'panda'`
@@ -749,6 +762,12 @@ _Enum string, one of the following possible values:_
 - `'folder-css-open'`
 - `'folder-sass'`
 - `'folder-sass-open'`
+- `'folder-television'`
+- `'folder-television-open'`
+- `'folder-desktop'`
+- `'folder-desktop-open'`
+- `'folder-console'`
+- `'folder-console-open'`
 - `'folder-images'`
 - `'folder-images-open'`
 - `'folder-scripts'`
@@ -1107,6 +1126,10 @@ _Enum string, one of the following possible values:_
 - `'folder-lottie-open'`
 - `'folder-taskfile'`
 - `'folder-taskfile-open'`
+- `'folder-cloudflare'`
+- `'folder-cloudflare-open'`
+- `'folder-seeders'`
+- `'folder-seeders-open'`
 - `'folder'`
 - `'folder-open'`
 - `'folder-root'`
@@ -1149,6 +1172,7 @@ _Object containing the following properties:_
 | **`title`** (\*)  | Descriptive name                          | `string` (_max length: 256_)                                         |
 | `description`     | Description (markdown)                    | `string` (_max length: 65536_)                                       |
 | `docsUrl`         | Plugin documentation site                 | `string` (_url_) (_optional_) _or_ `''`                              |
+| `isSkipped`       |                                           | `boolean`                                                            |
 | **`slug`** (\*)   | Unique plugin slug within core config     | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)    |
 | **`icon`** (\*)   | Icon from VSCode Material Icons extension | [MaterialIcon](#materialicon)                                        |
 | **`runner`** (\*) |                                           | [RunnerConfig](#runnerconfig) _or_ [RunnerFunction](#runnerfunction) |
@@ -1168,6 +1192,7 @@ _Object containing the following properties:_
 | **`title`** (\*) | Descriptive name                          | `string` (_max length: 256_)                                      |
 | `description`    | Description (markdown)                    | `string` (_max length: 65536_)                                    |
 | `docsUrl`        | Plugin documentation site                 | `string` (_url_) (_optional_) _or_ `''`                           |
+| `isSkipped`      |                                           | `boolean`                                                         |
 | **`slug`** (\*)  | Unique plugin slug within core config     | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
 | **`icon`** (\*)  | Icon from VSCode Material Icons extension | [MaterialIcon](#materialicon)                                     |
 
@@ -1184,6 +1209,7 @@ _Object containing the following properties:_
 | **`title`** (\*)    | Descriptive name                          | `string` (_max length: 256_)                                      |
 | `description`       | Description (markdown)                    | `string` (_max length: 65536_)                                    |
 | `docsUrl`           | Plugin documentation site                 | `string` (_url_) (_optional_) _or_ `''`                           |
+| `isSkipped`         |                                           | `boolean`                                                         |
 | **`slug`** (\*)     | Unique plugin slug within core config     | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
 | **`icon`** (\*)     | Icon from VSCode Material Icons extension | [MaterialIcon](#materialicon)                                     |
 | **`date`** (\*)     | Start date and time of plugin run         | `string`                                                          |
@@ -1203,8 +1229,8 @@ _Object containing the following properties:_
 | **`version`** (\*)     | NPM version of the CLI                    | `string`                                                                                                                                                                                                                                                                                            |
 | **`date`** (\*)        | Start date and time of the collect run    | `string`                                                                                                                                                                                                                                                                                            |
 | **`duration`** (\*)    | Duration of the collect run in ms         | `number`                                                                                                                                                                                                                                                                                            |
-| **`categories`** (\*)  |                                           | _Array of [CategoryConfig](#categoryconfig) items_                                                                                                                                                                                                                                                  |
 | **`plugins`** (\*)     |                                           | _Array of at least 1 [PluginReport](#pluginreport) items_                                                                                                                                                                                                                                           |
+| `categories`           |                                           | _Array of [CategoryConfig](#categoryconfig) items_                                                                                                                                                                                                                                                  |
 | **`commit`** (\*)      | Git commit for which report was collected | _Object with properties:_<ul><li>`hash`: `string` (_regex: `/^[\da-f]{40}$/`_) - Commit SHA (full)</li><li>`message`: `string` - Commit message</li><li>`date`: `Date` (_nullable_) - Date and time when commit was authored</li><li>`author`: `string` - Commit author name</li></ul> (_nullable_) |
 
 _(\*) Required._
@@ -1254,6 +1280,19 @@ _Parameters:_
 _Returns:_
 
 - [AuditOutputs](#auditoutputs) _or_ _Promise of_ [AuditOutputs](#auditoutputs)
+
+## SourceFileLocation
+
+Source file location
+
+_Object containing the following properties:_
+
+| Property        | Description                              | Type                                                                                                                                                                                                                                                           |
+| :-------------- | :--------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`file`** (\*) | Relative path to source file in Git repo | `string` (_min length: 1_)                                                                                                                                                                                                                                     |
+| `position`      | Location in file                         | _Object with properties:_<ul><li>`startLine`: `number` (_int, >0_) - Start line</li><li>`startColumn`: `number` (_int, >0_) - Start column</li><li>`endLine`: `number` (_int, >0_) - End line</li><li>`endColumn`: `number` (_int, >0_) - End column</li></ul> |
+
+_(\*) Required._
 
 ## TableAlignment
 

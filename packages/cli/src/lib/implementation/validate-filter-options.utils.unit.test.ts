@@ -1,9 +1,5 @@
 import { describe, expect } from 'vitest';
-import type {
-  CategoryConfig,
-  CategoryRef,
-  PluginConfig,
-} from '@code-pushup/models';
+import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
 import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import type { FilterOptionType, Filterables } from './filter.model.js';
@@ -12,11 +8,10 @@ import {
   createValidationMessage,
   getItemType,
   handleConflictingOptions,
-  isValidCategoryRef,
   pluginHasZeroWeightRefs,
   validateFilterOption,
-  validateFilteredCategories,
   validateFinalState,
+  validateSkippedCategories,
 } from './validate-filter-options.utils.js';
 
 describe('validateFilterOption', () => {
@@ -54,7 +49,7 @@ describe('validateFilterOption', () => {
             { slug: 'c1', refs: [{ plugin: 'p1', slug: 'a1-p1' }] },
           ] as CategoryConfig[],
         },
-        { itemsToFilter, verbose: false },
+        { itemsToFilter, skippedItems: [], verbose: false },
       );
       const logs = getLogMessages(ui().logger);
       expect(logs[0]).toContain(expected);
@@ -98,7 +93,7 @@ describe('validateFilterOption', () => {
             },
           ] as CategoryConfig[],
         },
-        { itemsToFilter, verbose: false },
+        { itemsToFilter, skippedItems: [], verbose: false },
       );
       const logs = getLogMessages(ui().logger);
       expect(logs[0]).toContain(expected);
@@ -114,7 +109,7 @@ describe('validateFilterOption', () => {
           { slug: 'p2', audits: [{ slug: 'a1-p2' }] },
         ] as PluginConfig[],
       },
-      { itemsToFilter: ['p1'], verbose: false },
+      { itemsToFilter: ['p1'], skippedItems: [], verbose: false },
     );
     expect(getLogMessages(ui().logger)).toHaveLength(0);
   });
@@ -133,7 +128,7 @@ describe('validateFilterOption', () => {
           { slug: 'c3', refs: [{ plugin: 'p2' }] },
         ] as CategoryConfig[],
       },
-      { itemsToFilter: ['p1'], verbose: true },
+      { itemsToFilter: ['p1'], skippedItems: [], verbose: true },
     );
     expect(getLogMessages(ui().logger)).toHaveLength(1);
     expect(getLogMessages(ui().logger)[0]).toContain(
@@ -152,7 +147,7 @@ describe('validateFilterOption', () => {
             { slug: 'p3', audits: [{ slug: 'a1-p3' }] },
           ] as PluginConfig[],
         },
-        { itemsToFilter: ['p4', 'p5'], verbose: false },
+        { itemsToFilter: ['p4', 'p5'], skippedItems: [], verbose: false },
       );
     }).toThrow(
       new OptionValidationError(
@@ -171,12 +166,12 @@ describe('validateFilterOption', () => {
       validateFilterOption(
         'skipPlugins',
         { plugins: allPlugins },
-        { itemsToFilter: ['plugin1'], verbose: false },
+        { itemsToFilter: ['plugin1'], skippedItems: [], verbose: false },
       );
       validateFilterOption(
         'onlyPlugins',
         { plugins: allPlugins },
-        { itemsToFilter: ['plugin3'], verbose: false },
+        { itemsToFilter: ['plugin3'], skippedItems: [], verbose: false },
       );
     }).toThrow(
       new OptionValidationError(
@@ -204,12 +199,31 @@ describe('validateFilterOption', () => {
             },
           ] as CategoryConfig[],
         },
-        { itemsToFilter: ['c2', 'c3'], verbose: false },
+        { itemsToFilter: ['c2', 'c3'], skippedItems: [], verbose: false },
       );
     }).toThrow(
       new OptionValidationError(
         'The --onlyCategories argument references categories that do not exist: c2, c3. The only valid category is c1.',
       ),
+    );
+  });
+
+  it('should log skipped items if verbose mode is enabled', () => {
+    const plugins = [
+      { slug: 'p1', audits: [{ slug: 'a1-p1' }] },
+    ] as PluginConfig[];
+    const categories = [
+      { slug: 'c1', refs: [{ plugin: 'p1', slug: 'a1-p1' }] },
+    ] as CategoryConfig[];
+
+    validateFilterOption(
+      'skipPlugins',
+      { plugins, categories },
+      { itemsToFilter: ['p1'], skippedItems: ['p1'], verbose: true },
+    );
+    const logs = getLogMessages(ui().logger);
+    expect(logs[0]).toContain(
+      'The --skipPlugins argument references skipped plugin: p1.',
     );
   });
 });
@@ -259,7 +273,7 @@ describe('createValidationMessage', () => {
         createValidationMessage(
           option as FilterOptionType,
           invalidPlugins,
-          validPlugins.map(slug => ({ slug })),
+          new Set(validPlugins),
         ),
       ).toBe(expected);
     },
@@ -375,12 +389,12 @@ describe('validateFinalState', () => {
       validateFinalState(items, items);
     }).toThrow(
       new OptionValidationError(
-        'All groups in the filtered plugins have refs with zero weight. Please adjust your filters or weights.',
+        'Some groups in the filtered plugins have only zero-weight references. Please adjust your filters or weights.',
       ),
     );
   });
 
-  it('should not throw an error when at least one group ref has positive weight', () => {
+  it('should throw an error when at least one group has all zero-weigh refs', () => {
     const items = {
       plugins: [
         {
@@ -398,7 +412,9 @@ describe('validateFinalState', () => {
     };
     expect(() => {
       validateFinalState(items, items);
-    }).not.toThrow();
+    }).toThrow(
+      'Some groups in the filtered plugins have only zero-weight references. Please adjust your filters or weights.',
+    );
   });
 });
 
@@ -417,7 +433,7 @@ describe('getItemType', () => {
   );
 });
 
-describe('validateFilteredCategories', () => {
+describe('validateSkippedCategories', () => {
   const categories = [
     {
       slug: 'c1',
@@ -431,7 +447,7 @@ describe('validateFilteredCategories', () => {
 
   it('should log info when categories are removed', () => {
     const loggerSpy = vi.spyOn(ui().logger, 'info');
-    validateFilteredCategories(
+    validateSkippedCategories(
       categories,
       [
         {
@@ -439,7 +455,7 @@ describe('validateFilteredCategories', () => {
           refs: [{ type: 'audit', plugin: 'p2', slug: 'a1', weight: 1 }],
         },
       ] as NonNullable<Filterables['categories']>,
-      { verbose: true },
+      true,
     );
     expect(loggerSpy).toHaveBeenCalledWith(
       'Category c1 was removed because all its refs were skipped. Affected refs: g1 (group)',
@@ -448,46 +464,12 @@ describe('validateFilteredCategories', () => {
 
   it('should not log anything when categories are not removed', () => {
     const loggerSpy = vi.spyOn(ui().logger, 'info');
-    validateFilteredCategories(categories, categories, { verbose: true });
+    validateSkippedCategories(categories, categories, true);
     expect(loggerSpy).not.toHaveBeenCalled();
   });
 
-  it('should throw an error when onlyCategories references skipped categories', () => {
-    expect(() =>
-      validateFilteredCategories(categories, [], {
-        onlyCategories: ['c1'],
-        skipCategories: [],
-        verbose: false,
-      }),
-    ).toThrow(
-      new OptionValidationError(
-        'The --onlyCategories argument references skipped categories: c1',
-      ),
-    );
-  });
-
-  it('should throw an error when skipCategories references skipped categories', () => {
-    expect(() =>
-      validateFilteredCategories(categories, [], {
-        onlyCategories: [],
-        skipCategories: ['c1'],
-        verbose: false,
-      }),
-    ).toThrow(
-      new OptionValidationError(
-        'The --skipCategories argument references skipped categories: c1',
-      ),
-    );
-  });
-
   it('should throw an error when no categories remain after filtering', () => {
-    expect(() =>
-      validateFilteredCategories(categories, [], {
-        onlyCategories: [],
-        skipCategories: [],
-        verbose: false,
-      }),
-    ).toThrow(
+    expect(() => validateSkippedCategories(categories, [], false)).toThrow(
       new OptionValidationError(
         'No categories remain after filtering. Removed categories: c1, c2',
       ),
@@ -495,68 +477,8 @@ describe('validateFilteredCategories', () => {
   });
 });
 
-describe('isValidCategoryRef', () => {
-  const plugins = [
-    {
-      slug: 'p1',
-      audits: [{ slug: 'a1' }],
-      groups: [{ slug: 'g1' }],
-    },
-  ] as Filterables['plugins'];
-
-  it('should return true for valid audit ref', () => {
-    const ref = {
-      type: 'audit',
-      slug: 'a1',
-      plugin: 'p1',
-      weight: 1,
-    } satisfies CategoryRef;
-    expect(isValidCategoryRef(ref, plugins)).toBe(true);
-  });
-
-  it('should return false for skipped audit ref', () => {
-    const ref = {
-      type: 'audit',
-      slug: 'a2',
-      plugin: 'p1',
-      weight: 1,
-    } satisfies CategoryRef;
-    expect(isValidCategoryRef(ref, plugins)).toBe(false);
-  });
-
-  it('should return true for valid group ref', () => {
-    const ref = {
-      type: 'group',
-      slug: 'g1',
-      plugin: 'p1',
-      weight: 1,
-    } satisfies CategoryRef;
-    expect(isValidCategoryRef(ref, plugins)).toBe(true);
-  });
-
-  it('should return false for skipped group ref', () => {
-    const ref = {
-      type: 'group',
-      slug: 'g2',
-      plugin: 'p1',
-      weight: 1,
-    } satisfies CategoryRef;
-    expect(isValidCategoryRef(ref, plugins)).toBe(false);
-  });
-
-  it('should return false for nonexistent plugin', () => {
-    const ref = {
-      type: 'audit',
-      slug: 'a1',
-      plugin: 'nonexistent',
-      weight: 1,
-    } satisfies CategoryRef;
-    expect(isValidCategoryRef(ref, plugins)).toBe(false);
-  });
-});
-
 describe('pluginHasZeroWeightRefs', () => {
-  it('should return true if all refs have zero weight', () => {
+  it('should return true if any group has all refs with zero weight', () => {
     expect(
       pluginHasZeroWeightRefs({
         groups: [
@@ -567,8 +489,14 @@ describe('pluginHasZeroWeightRefs', () => {
               { slug: 'a2', weight: 0 },
             ],
           },
+          {
+            slug: 'g2',
+            refs: [
+              { slug: 'a3', weight: 1 },
+              { slug: 'a4', weight: 0 },
+            ],
+          },
         ],
-        audits: [{ slug: 'a1' }, { slug: 'a2' }],
       } as PluginConfig),
     ).toBe(true);
   });
@@ -584,18 +512,21 @@ describe('pluginHasZeroWeightRefs', () => {
               { slug: 'a2', weight: 0 },
             ],
           },
+          {
+            slug: 'g2',
+            refs: [
+              { slug: 'a3', weight: 1 },
+              { slug: 'a4', weight: 0 },
+            ],
+          },
         ],
-        audits: [{ slug: 'a1' }, { slug: 'a2' }],
       } as PluginConfig),
     ).toBe(false);
   });
 
   it('should return false if there are no groups', () => {
-    expect(
-      pluginHasZeroWeightRefs({
-        groups: undefined,
-        audits: [{ slug: 'a1' }],
-      } as PluginConfig),
-    ).toBe(false);
+    expect(pluginHasZeroWeightRefs({ groups: undefined } as PluginConfig)).toBe(
+      false,
+    );
   });
 });

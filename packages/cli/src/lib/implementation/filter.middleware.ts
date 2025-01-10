@@ -4,13 +4,19 @@ import type {
   PluginConfig,
 } from '@code-pushup/models';
 import { filterItemRefsBy } from '@code-pushup/utils';
+import {
+  applyFilters,
+  extractSkippedItems,
+  filterPluginsFromCategories,
+  filterSkippedItems,
+  isValidCategoryRef,
+} from './filter.middleware.utils.js';
 import type { FilterOptions, Filterables } from './filter.model.js';
 import {
   handleConflictingOptions,
-  isValidCategoryRef,
   validateFilterOption,
-  validateFilteredCategories,
   validateFinalState,
+  validateSkippedCategories,
 } from './validate-filter-options.utils.js';
 
 // eslint-disable-next-line max-lines-per-function
@@ -27,16 +33,8 @@ export function filterMiddleware<T extends FilterOptions>(
     verbose = false,
   } = originalProcessArgs;
 
-  const plugins = processPlugins(rcPlugins);
+  const plugins = filterSkippedInPlugins(rcPlugins);
   const categories = filterSkippedCategories(rcCategories, plugins);
-
-  if (rcCategories && categories) {
-    validateFilteredCategories(rcCategories, categories, {
-      onlyCategories,
-      skipCategories,
-      verbose,
-    });
-  }
 
   if (
     skipCategories.length === 0 &&
@@ -44,6 +42,9 @@ export function filterMiddleware<T extends FilterOptions>(
     skipPlugins.length === 0 &&
     onlyPlugins.length === 0
   ) {
+    if (rcCategories && categories) {
+      validateSkippedCategories(rcCategories, categories, verbose);
+    }
     return {
       ...originalProcessArgs,
       ...(categories && { categories }),
@@ -54,17 +55,18 @@ export function filterMiddleware<T extends FilterOptions>(
   handleConflictingOptions('categories', onlyCategories, skipCategories);
   handleConflictingOptions('plugins', onlyPlugins, skipPlugins);
 
+  const skippedPlugins = extractSkippedItems(rcPlugins, plugins);
+  const skippedCategories = extractSkippedItems(rcCategories, categories);
+
   const filteredCategories = applyCategoryFilters(
     { categories, plugins },
-    skipCategories,
-    onlyCategories,
-    verbose,
+    skippedCategories,
+    { skipCategories, onlyCategories, verbose },
   );
   const filteredPlugins = applyPluginFilters(
     { categories: filteredCategories, plugins },
-    skipPlugins,
-    onlyPlugins,
-    verbose,
+    skippedPlugins,
+    { skipPlugins, onlyPlugins, verbose },
   );
   const finalCategories = filteredCategories
     ? filterItemRefsBy(filteredCategories, ref =>
@@ -84,53 +86,37 @@ export function filterMiddleware<T extends FilterOptions>(
   };
 }
 
-function applyFilters<T>(
-  items: T[],
-  skipItems: string[],
-  onlyItems: string[],
-  key: keyof T,
-): T[] {
-  return items.filter(item => {
-    const itemKey = item[key] as unknown as string;
-    return (
-      !skipItems.includes(itemKey) &&
-      (onlyItems.length === 0 || onlyItems.includes(itemKey))
-    );
-  });
-}
-
 function applyCategoryFilters(
   { categories, plugins }: Filterables,
-  skipCategories: string[],
-  onlyCategories: string[],
-  verbose: boolean,
+  skippedCategories: string[],
+  options: Pick<FilterOptions, 'skipCategories' | 'onlyCategories' | 'verbose'>,
 ): CoreConfig['categories'] {
+  const { skipCategories = [], onlyCategories = [], verbose = false } = options;
   if (
     (skipCategories.length === 0 && onlyCategories.length === 0) ||
-    !categories ||
-    categories.length === 0
+    ((!categories || categories.length === 0) && skippedCategories.length === 0)
   ) {
     return categories;
   }
   validateFilterOption(
     'skipCategories',
     { plugins, categories },
-    { itemsToFilter: skipCategories, verbose },
+    { itemsToFilter: skipCategories, skippedItems: skippedCategories, verbose },
   );
   validateFilterOption(
     'onlyCategories',
     { plugins, categories },
-    { itemsToFilter: onlyCategories, verbose },
+    { itemsToFilter: onlyCategories, skippedItems: skippedCategories, verbose },
   );
-  return applyFilters(categories, skipCategories, onlyCategories, 'slug');
+  return applyFilters(categories ?? [], skipCategories, onlyCategories, 'slug');
 }
 
 function applyPluginFilters(
   { categories, plugins }: Filterables,
-  skipPlugins: string[],
-  onlyPlugins: string[],
-  verbose: boolean,
+  skippedPlugins: string[],
+  options: Pick<FilterOptions, 'skipPlugins' | 'onlyPlugins' | 'verbose'>,
 ): CoreConfig['plugins'] {
+  const { skipPlugins = [], onlyPlugins = [], verbose = false } = options;
   const filteredPlugins = filterPluginsFromCategories({
     categories,
     plugins,
@@ -141,38 +127,19 @@ function applyPluginFilters(
   validateFilterOption(
     'skipPlugins',
     { plugins: filteredPlugins, categories },
-    { itemsToFilter: skipPlugins, verbose },
+    { itemsToFilter: skipPlugins, skippedItems: skippedPlugins, verbose },
   );
   validateFilterOption(
     'onlyPlugins',
     { plugins: filteredPlugins, categories },
-    { itemsToFilter: onlyPlugins, verbose },
+    { itemsToFilter: onlyPlugins, skippedItems: skippedPlugins, verbose },
   );
   return applyFilters(filteredPlugins, skipPlugins, onlyPlugins, 'slug');
 }
 
-function filterPluginsFromCategories({
-  categories,
-  plugins,
-}: Filterables): CoreConfig['plugins'] {
-  if (!categories || categories.length === 0) {
-    return plugins;
-  }
-  const validPluginSlugs = new Set(
-    categories.flatMap(category => category.refs.map(ref => ref.plugin)),
-  );
-  return plugins.filter(plugin => validPluginSlugs.has(plugin.slug));
-}
-
-function filterSkippedItems<T extends { isSkipped?: boolean }>(
-  items: T[] | undefined,
-): Omit<T, 'isSkipped'>[] {
-  return (items ?? [])
-    .filter(({ isSkipped }) => isSkipped !== true)
-    .map(({ isSkipped, ...props }) => props);
-}
-
-export function processPlugins(plugins: PluginConfig[]): PluginConfig[] {
+export function filterSkippedInPlugins(
+  plugins: PluginConfig[],
+): PluginConfig[] {
   return plugins.map((plugin: PluginConfig) => {
     const filteredAudits = filterSkippedItems(plugin.audits);
     return {
