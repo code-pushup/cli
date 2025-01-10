@@ -15,9 +15,9 @@ import lighthousePlugin, {
 } from './packages/plugin-lighthouse/src/index.js';
 import {
   type TypescriptPluginOptions,
+  getCategories,
   typescriptPlugin,
 } from './packages/plugin-typescript/src/index.js';
-import { CATEGORY_MAP } from './packages/plugin-typescript/src/lib/constants';
 
 export const jsPackagesCategories: CategoryConfig[] = [
   {
@@ -138,7 +138,7 @@ export const typescriptPluginConfigNx = async (
   options?: TypescriptPluginOptions,
 ): Promise<CoreConfig> => ({
   plugins: [await typescriptPlugin(options)],
-  categories: Object.values(CATEGORY_MAP),
+  categories: getCategories(),
 });
 
 export const coverageCoreConfigNx = async (

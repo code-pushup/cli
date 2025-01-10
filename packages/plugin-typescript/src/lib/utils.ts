@@ -1,5 +1,5 @@
 import type { CompilerOptions } from 'typescript';
-import type { Audit, CategoryRef } from '@code-pushup/models';
+import type { Audit, CategoryConfig, CategoryRef } from '@code-pushup/models';
 import { kebabCaseToCamelCase } from '@code-pushup/utils';
 import { AUDITS, GROUPS, TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
 import type {
@@ -96,6 +96,42 @@ export async function getCategoryRefsFromAudits(
     weight: 1,
     type: 'audit',
   }));
+}
+
+export const CATEGORY_MAP: Record<string, CategoryConfig> = {
+  typescript: {
+    slug: 'type-safety',
+    title: 'Type Safety',
+    description: 'TypeScript diagnostics and type-checking errors',
+    refs: await getCategoryRefsFromGroups(),
+  },
+  'bug-prevention': {
+    slug: 'bug-prevention',
+    title: 'Bug prevention',
+    description: 'Type checks that find **potential bugs** in your code.',
+    refs: await getCategoryRefsFromGroups({
+      onlyAudits: [
+        'syntax-errors',
+        'semantic-errors',
+        'internal-errors',
+        'configuration-errors',
+        'no-implicit-any-errors',
+      ],
+    }),
+  },
+  miscellaneous: {
+    slug: 'miscellaneous',
+    title: 'Miscellaneous',
+    description:
+      'Errors that do not bring any specific value to the developer, but are still useful to know.',
+    refs: await getCategoryRefsFromGroups({
+      onlyAudits: ['unknown-codes', 'declaration-and-language-service-errors'],
+    }),
+  },
+};
+
+export function getCategories() {
+  return Object.values(CATEGORY_MAP);
 }
 
 export function logSkippedAudits(audits: Audit[]) {
