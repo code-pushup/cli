@@ -34,22 +34,22 @@ export function camelCaseToKebabCase<T extends string>(
 
 /**
  * Formats a slug to a readable title.
- * @param slug - The slug to format.
+ * @param string - The slug to format.
  * @returns The formatted title.
  */
-export function kebabCaseToSentence(slug: string = '') {
-  return slug
+export function kebabCaseToSentence(string = '') {
+  return string
     .replace(/-/g, ' ')
     .replace(/\b\w/g, letter => letter.toUpperCase());
 }
 
 /**
  * Formats a slug to a readable title.
- * @param slug - The slug to format.
+ * @param string - The slug to format.
  * @returns The formatted title.
  */
-export function camelCaseToSentence(slug: string = '') {
-  return slug
+export function camelCaseToSentence(string = '') {
+  return string
     .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2') // Split between uppercase followed by uppercase+lowercase
     .replace(/([a-z])([A-Z])/g, '$1-$2') // Split between lowercase followed by uppercase
     .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2') // Additional split for consecutive uppercase
