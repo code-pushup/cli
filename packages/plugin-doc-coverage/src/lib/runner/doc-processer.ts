@@ -128,10 +128,10 @@ export function mergeDocumentationReports(
   accumulatedReport: DocumentationReport,
   currentFileReport: Partial<DocumentationReport>,
 ): DocumentationReport {
-  return Object.fromEntries(
-    Object.entries(accumulatedReport).map(([key, value]) => {
-      const node = value as DocumentationCoverageReport[CoverageType];
-      const type = key as CoverageType;
+  return objectFromEntries(
+    objectToEntries(accumulatedReport).map(([key, value]) => {
+      const node = value;
+      const type = key;
       return [
         type,
         {
@@ -141,7 +141,7 @@ export function mergeDocumentationReports(
         },
       ];
     }),
-  ) as DocumentationReport;
+  );
 }
 
 /**
