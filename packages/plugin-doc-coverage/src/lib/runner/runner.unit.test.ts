@@ -27,7 +27,7 @@ describe('trasformCoverageReportToAudits', () => {
         },
       ],
     },
-  } as unknown as DocumentationCoverageReport;
+  } as DocumentationCoverageReport;
 
   it('should return all audits from the coverage result when no filters are provided', () => {
     const result = trasformCoverageReportToAuditOutputs(mockCoverageResult, {});
