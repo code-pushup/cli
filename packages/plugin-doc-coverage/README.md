@@ -13,7 +13,7 @@ Measured documentation types are mapped to Code PushUp audits in the following w
 
 - `value`: The value is the number of undocumented nodes -> 4
 - `displayValue`: `${value} undocumented ${type}` -> 4 undocumented functions
-- `score`: 0.5 -> total nodes 8 undocumented 4 -> 8/4
+- `score`: 0.5 -> total nodes 8, undocumented 4 -> 4/8
 - The score is value converted to 0-1 range
 - Missing documentation is mapped to issues in the audit details (undocumented classes, functions, interfaces, etc.)
 
