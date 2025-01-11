@@ -9,7 +9,7 @@ describe('DocCoveragePlugin Configuration', () => {
     it('accepts a valid configuration', () => {
       expect(() =>
         docCoveragePluginConfigSchema.parse({
-          sourceGlob: ['src/**/*.ts'],
+          patterns: ['src/**/*.ts'],
           onlyAudits: ['functions-coverage'],
         } satisfies DocCoveragePluginConfig),
       ).not.toThrow();
@@ -18,6 +18,7 @@ describe('DocCoveragePlugin Configuration', () => {
     it('throws when skipAudits and onlyAudits are defined', () => {
       expect(() =>
         docCoveragePluginConfigSchema.parse({
+          patterns: ['src/**/*.ts'],
           skipAudits: ['functions-coverage'],
           onlyAudits: ['classes-coverage'],
         }),
@@ -27,28 +28,29 @@ describe('DocCoveragePlugin Configuration', () => {
     });
   });
 
-  describe('sourceGlob', () => {
-    it('accepts a valid source glob pattern', () => {
+  describe('patterns', () => {
+    it('accepts a valid patterns array', () => {
       expect(() =>
         docCoveragePluginConfigSchema.parse({
-          sourceGlob: ['src/**/*.{ts,tsx}', '!**/*.spec.ts', '!**/*.test.ts'],
+          patterns: ['src/**/*.{ts,tsx}', '!**/*.spec.ts', '!**/*.test.ts'],
         } satisfies DocCoveragePluginConfig),
       ).not.toThrow();
     });
 
-    it('uses default value for missing sourceGlob', () => {
-      const result = docCoveragePluginConfigSchema.parse({});
-      expect(result.sourceGlob).toEqual([
-        'src/**/*.{ts,tsx}',
-        '!**/*.spec.ts',
-        '!**/*.test.ts',
-      ]);
+    it('accepts a valid patterns array directly', () => {
+      expect(() =>
+        docCoveragePluginConfigSchema.parse([
+          'src/**/*.{ts,tsx}',
+          '!**/*.spec.ts',
+          '!**/*.test.ts',
+        ]),
+      ).not.toThrow();
     });
 
-    it('throws for invalid sourceGlob type', () => {
+    it('throws for invalid patterns type', () => {
       expect(() =>
         docCoveragePluginConfigSchema.parse({
-          sourceGlob: 123,
+          patterns: 123,
         }),
       ).toThrow('Expected array');
     });
@@ -59,7 +61,7 @@ describe('DocCoveragePlugin Configuration', () => {
       expect(() =>
         docCoveragePluginConfigSchema.parse({
           onlyAudits: ['functions-coverage', 'classes-coverage'],
-          sourceGlob: ['src/**/*.ts'],
+          patterns: ['src/**/*.ts'],
         }),
       ).not.toThrow();
     });
@@ -68,13 +70,15 @@ describe('DocCoveragePlugin Configuration', () => {
       expect(() =>
         docCoveragePluginConfigSchema.parse({
           onlyAudits: [],
-          sourceGlob: ['src/**/*.ts'],
+          patterns: ['src/**/*.ts'],
         }),
       ).not.toThrow();
     });
 
     it('allows onlyAudits to be undefined', () => {
-      const result = docCoveragePluginConfigSchema.parse({});
+      const result = docCoveragePluginConfigSchema.parse({
+        patterns: ['src/**/*.ts'],
+      });
       expect(result.onlyAudits).toBeUndefined();
     });
 
@@ -82,6 +86,7 @@ describe('DocCoveragePlugin Configuration', () => {
       expect(() =>
         docCoveragePluginConfigSchema.parse({
           onlyAudits: 'functions-coverage',
+          patterns: ['src/**/*.ts'],
         }),
       ).toThrow('Expected array');
     });
@@ -90,6 +95,7 @@ describe('DocCoveragePlugin Configuration', () => {
       expect(() =>
         docCoveragePluginConfigSchema.parse({
           onlyAudits: [123, true],
+          patterns: ['src/**/*.ts'],
         }),
       ).toThrow('Expected string, received number');
     });
@@ -100,7 +106,7 @@ describe('DocCoveragePlugin Configuration', () => {
       expect(() =>
         docCoveragePluginConfigSchema.parse({
           skipAudits: ['functions-coverage', 'classes-coverage'],
-          sourceGlob: ['src/**/*.ts'],
+          patterns: ['src/**/*.ts'],
         }),
       ).not.toThrow();
     });
@@ -109,13 +115,15 @@ describe('DocCoveragePlugin Configuration', () => {
       expect(() =>
         docCoveragePluginConfigSchema.parse({
           skipAudits: [],
-          sourceGlob: ['src/**/*.ts'],
+          patterns: ['src/**/*.ts'],
         }),
       ).not.toThrow();
     });
 
     it('allows skipAudits to be undefined', () => {
-      const result = docCoveragePluginConfigSchema.parse({});
+      const result = docCoveragePluginConfigSchema.parse({
+        patterns: ['src/**/*.ts'],
+      });
       expect(result.skipAudits).toBeUndefined();
     });
 
@@ -123,6 +131,7 @@ describe('DocCoveragePlugin Configuration', () => {
       expect(() =>
         docCoveragePluginConfigSchema.parse({
           skipAudits: 'functions-coverage',
+          patterns: ['src/**/*.ts'],
         }),
       ).toThrow('Expected array');
     });
@@ -131,6 +140,7 @@ describe('DocCoveragePlugin Configuration', () => {
       expect(() =>
         docCoveragePluginConfigSchema.parse({
           skipAudits: [123, true],
+          patterns: ['src/**/*.ts'],
         }),
       ).toThrow('Expected string');
     });

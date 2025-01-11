@@ -95,8 +95,8 @@ export function getDocCoverageCategories(
 ): CategoryConfig[] {
   return [
     {
-     slug: 'docs',
-     title: 'Documentation',
+      slug: 'docs',
+      title: 'Documentation',
       description: 'Measures how much of your code is **documented**.',
       refs: filterGroupsByOnlyAudits(groups, config).map(group => ({
         weight: 1,
@@ -141,11 +141,15 @@ export const lighthouseCoreConfig = async (
 };
 
 export const docCoverageCoreConfig = (
-  config: DocCoveragePluginConfig,
+  config: DocCoveragePluginConfig | string[],
 ): CoreConfig => {
   return {
-    plugins: [docCoveragePlugin(config)],
-    categories: getDocCoverageCategories(config),
+    plugins: [
+      docCoveragePlugin(Array.isArray(config) ? { patterns: config } : config),
+    ],
+    categories: getDocCoverageCategories(
+      Array.isArray(config) ? { patterns: config } : config,
+    ),
   };
 };
 

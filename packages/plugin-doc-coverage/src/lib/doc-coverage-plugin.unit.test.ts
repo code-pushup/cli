@@ -25,13 +25,13 @@ describe('docCoveragePlugin', () => {
   it('should create a valid plugin config', () => {
     expect(
       docCoveragePlugin({
-        sourceGlob: ['src/**/*.ts', '!**/*.spec.ts', '!**/*.test.ts'],
+        patterns: ['src/**/*.ts', '!**/*.spec.ts', '!**/*.test.ts'],
       }),
     ).toStrictEqual(
       expect.objectContaining({
         slug: PLUGIN_SLUG,
         title: PLUGIN_TITLE,
-        icon: 'folder-src',
+        icon: 'folder-docs',
         description: PLUGIN_DESCRIPTION,
         docsUrl: PLUGIN_DOCS_URL,
         groups: expect.any(Array),
@@ -45,27 +45,27 @@ describe('docCoveragePlugin', () => {
     expect(() =>
       docCoveragePlugin({
         // @ts-expect-error testing invalid config
-        sourceGlob: 123,
+        patterns: 123,
       }),
     ).toThrow('Expected array, received number');
   });
 
   it('should filter groups', () => {
-    const config = { sourceGlob: ['src/**/*.ts'] };
+    const config = { patterns: ['src/**/*.ts'] };
     docCoveragePlugin(config);
 
     expect(filterGroupsByOnlyAudits).toHaveBeenCalledWith(groups, config);
   });
 
   it('should filter audits', async () => {
-    const config = { sourceGlob: ['src/**/*.ts'] };
+    const config = { patterns: ['src/**/*.ts'] };
     docCoveragePlugin(config);
 
     expect(filterAuditsByPluginConfig).toHaveBeenCalledWith(config);
   });
 
   it('should forward options to runner function', async () => {
-    const config = { sourceGlob: ['src/**/*.ts'] };
+    const config = { patterns: ['src/**/*.ts'] };
     docCoveragePlugin(config);
 
     expect(createRunnerFunction).toHaveBeenCalledWith(config);

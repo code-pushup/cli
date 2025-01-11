@@ -1,8 +1,9 @@
 import { SyntaxKind } from 'ts-morph';
-import type {
-  CoverageType,
-  DocumentationCoverageReport,
-  DocumentationReport,
+import {
+  type CoverageType,
+  type DocumentationCoverageReport,
+  type DocumentationReport,
+  SYNTAX_COVERAGE_MAP,
 } from './models.js';
 
 /**
@@ -20,6 +21,15 @@ export function createEmptyCoverageData(): DocumentationReport {
     methods: { nodesCount: 0, issues: [] },
     properties: { nodesCount: 0, issues: [] },
   };
+}
+
+/**
+ * Converts the coverage type to the audit slug.
+ * @param type - The coverage type.
+ * @returns The audit slug.
+ */
+export function coverageTypeToAuditSlug(type: CoverageType) {
+  return `${type}-coverage`;
 }
 
 /**
@@ -56,25 +66,10 @@ export function calculateCoverage(result: DocumentationReport) {
  * @returns The coverage type.
  */
 export function getCoverageTypeFromKind(kind: SyntaxKind): CoverageType {
-  switch (kind) {
-    case SyntaxKind.ClassDeclaration:
-      return 'classes';
-    case SyntaxKind.MethodDeclaration:
-      return 'methods';
-    case SyntaxKind.FunctionDeclaration:
-      return 'functions';
-    case SyntaxKind.InterfaceDeclaration:
-      return 'interfaces';
-    case SyntaxKind.EnumDeclaration:
-      return 'enums';
-    case SyntaxKind.VariableStatement:
-    case SyntaxKind.VariableDeclaration:
-      return 'variables';
-    case SyntaxKind.PropertyDeclaration:
-      return 'properties';
-    case SyntaxKind.TypeAliasDeclaration:
-      return 'types';
-    default:
-      throw new Error(`Unsupported syntax kind: ${kind}`);
+  const type = SYNTAX_COVERAGE_MAP.get(kind);
+
+  if (!type) {
+    throw new Error(`Unsupported syntax kind: ${kind}`);
   }
+  return type;
 }

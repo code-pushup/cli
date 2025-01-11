@@ -26,7 +26,7 @@ describe('createRunnerFunction', () => {
         `missing-documentation/${coverageType}-coverage.ts`,
       );
       const runnerFn = createRunnerFunction({
-        sourceGlob: [filePath],
+        patterns: [filePath],
       });
 
       const results = await runnerFn(() => void 0);
@@ -68,7 +68,7 @@ describe('createRunnerFunction', () => {
         `filled-documentation/${coverageType}-coverage.ts`,
       );
       const runnerFn = createRunnerFunction({
-        sourceGlob: [filePath],
+        patterns: [filePath],
       });
 
       const results = await runnerFn(() => void 0);
@@ -91,7 +91,7 @@ describe('createRunnerFunction', () => {
 
   it('should respect onlyAudits option', async () => {
     const runnerFn = createRunnerFunction({
-      sourceGlob: [],
+      patterns: [],
       onlyAudits: ['classes-coverage', 'methods-coverage'],
     });
 
@@ -106,7 +106,7 @@ describe('createRunnerFunction', () => {
 
   it('should respect skipAudits option', async () => {
     const runnerFn = createRunnerFunction({
-      sourceGlob: [],
+      patterns: [],
       skipAudits: ['classes-coverage', 'methods-coverage'],
     });
 

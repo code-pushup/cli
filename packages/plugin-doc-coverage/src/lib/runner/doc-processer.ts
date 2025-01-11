@@ -1,12 +1,14 @@
 import {
   ClassDeclaration,
+  JSDoc,
   Project,
   SourceFile,
+  SyntaxKind,
   VariableStatement,
 } from 'ts-morph';
+import { objectFromEntries, objectToEntries } from '@code-pushup/utils';
 import type { DocCoveragePluginConfig } from '../config.js';
 import type {
-  CoverageType,
   DocumentationCoverageReport,
   DocumentationReport,
 } from './models.js';
@@ -16,10 +18,17 @@ import {
   getCoverageTypeFromKind,
 } from './utils.js';
 
+type Node = {
+  getKind: () => SyntaxKind;
+  getName: () => string;
+  getStartLineNumber: () => number;
+  getJsDocs: () => JSDoc[];
+};
+
 /**
  * Gets the variables information from the variable statements
  * @param variableStatements - The variable statements to process
- * @returns {Node[]} The variables information with the right methods to get the information
+ * @returns The variables information with the right methods to get the information
  */
 export function getVariablesInformation(
   variableStatements: VariableStatement[],
@@ -42,14 +51,14 @@ export function getVariablesInformation(
 
 /**
  * Processes documentation coverage for TypeScript files in the specified path
- * @param toInclude - The file path pattern to include for documentation analysis
- * @returns {DocumentationCoverageReport} Object containing coverage statistics and undocumented items
+ * @param config - The configuration object containing patterns to include for documentation analysis
+ * @returns Object containing coverage statistics and undocumented items
  */
 export function processDocCoverage(
   config: DocCoveragePluginConfig,
 ): DocumentationCoverageReport {
   const project = new Project();
-  project.addSourceFilesAtPaths(config.sourceGlob);
+  project.addSourceFilesAtPaths(config.patterns);
   return getDocumentationReport(project.getSourceFiles());
 }
 
@@ -69,7 +78,7 @@ export function getAllNodesFromASourceFile(sourceFile: SourceFile) {
 /**
  * Gets the documentation coverage report from the source files
  * @param sourceFiles - The source files to process
- * @returns {DocumentationCoverageReport} The documentation coverage report
+ * @returns The documentation coverage report
  */
 export function getDocumentationReport(
   sourceFiles: SourceFile[],
@@ -79,32 +88,9 @@ export function getDocumentationReport(
       const filePath = sourceFile.getFilePath();
       const allNodesFromFile = getAllNodesFromASourceFile(sourceFile);
 
-      const coverageReportOfCurrentFile = allNodesFromFile.reduce(
-        (acc, node) => {
-          const nodeType = getCoverageTypeFromKind(node.getKind());
-          const currentTypeReport = acc[nodeType];
-          const updatedIssues =
-            node.getJsDocs().length === 0
-              ? [
-                  ...currentTypeReport.issues,
-                  {
-                    file: filePath,
-                    type: nodeType,
-                    name: node.getName() || '',
-                    line: node.getStartLineNumber(),
-                  },
-                ]
-              : currentTypeReport.issues;
-
-          return {
-            ...acc,
-            [nodeType]: {
-              nodesCount: currentTypeReport.nodesCount + 1,
-              issues: updatedIssues,
-            },
-          };
-        },
-        createEmptyCoverageData(),
+      const coverageReportOfCurrentFile = getCoverageFromAllNodesOfFile(
+        allNodesFromFile as Node[],
+        filePath,
       );
 
       return mergeDocumentationReports(
@@ -119,10 +105,43 @@ export function getDocumentationReport(
 }
 
 /**
+ * Gets the coverage from all nodes of a file
+ * @param nodes - The nodes to process
+ * @param filePath - The file path where the nodes are located
+ * @returns The coverage report for the nodes
+ */
+function getCoverageFromAllNodesOfFile(nodes: Node[], filePath: string) {
+  return nodes.reduce((acc: DocumentationReport, node: Node) => {
+    const nodeType = getCoverageTypeFromKind(node.getKind());
+    const currentTypeReport = acc[nodeType];
+    const updatedIssues =
+      node.getJsDocs().length === 0
+        ? [
+            ...currentTypeReport.issues,
+            {
+              file: filePath,
+              type: nodeType,
+              name: node.getName() || '',
+              line: node.getStartLineNumber(),
+            },
+          ]
+        : currentTypeReport.issues;
+
+    return {
+      ...acc,
+      [nodeType]: {
+        nodesCount: currentTypeReport.nodesCount + 1,
+        issues: updatedIssues,
+      },
+    };
+  }, createEmptyCoverageData());
+}
+
+/**
  * Merges two documentation results
  * @param accumulatedReport - The first empty documentation result
  * @param currentFileReport - The second documentation result
- * @returns {DocumentationReport} The merged documentation result
+ * @returns The merged documentation result
  */
 export function mergeDocumentationReports(
   accumulatedReport: DocumentationReport,
@@ -147,7 +166,7 @@ export function mergeDocumentationReports(
 /**
  * Gets the nodes from a class
  * @param classNodes - The class nodes to process
- * @returns {Node[]} The nodes from the class
+ * @returns The nodes from the class
  */
 export function getClassNodes(classNodes: ClassDeclaration[]) {
   return classNodes.flatMap(classNode => [

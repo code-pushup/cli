@@ -45,7 +45,7 @@ Measured documentation types are mapped to Code PushUp audits in the following w
      plugins: [
        // ...
        docCoveragePlugin({
-         sourceGlob: ['**/*.ts'],
+         patterns: ['**/*.ts'],
        }),
      ],
    };
@@ -100,13 +100,13 @@ These audits are grouped together to provide a comprehensive view of your codeba
 
 The plugin accepts the following parameters:
 
-#### SourceGlob
+#### patterns
 
-Required parameter. The `sourceGlob` option accepts an array of strings that define patterns to include or exclude files. You can use glob patterns to match files and the `!` symbol to exclude specific patterns. Example:
+Required parameter. The `patterns` option accepts an array of strings that define patterns to include or exclude files. You can use glob patterns to match files and the `!` symbol to exclude specific patterns. Example:
 
 ```js
 docCoveragePlugin({
-  sourceGlob: [
+  patterns: [
     'src/**/*.ts',              // include all TypeScript files in src
     '!src/**/*.{spec,test}.ts', // exclude test files
     '!src/**/testing/**/*.ts'   // exclude testing utilities
@@ -120,7 +120,7 @@ Optional parameter. The `onlyAudits` option allows you to specify which document
 
 ```js
 docCoveragePlugin({
-  sourceGlob: ['src/**/*.ts'],
+  patterns: ['src/**/*.ts'],
   onlyAudits: [
     'classes-coverage',
     'functions-coverage'
@@ -134,7 +134,7 @@ Optional parameter. The `skipAudits` option allows you to exclude specific docum
 
 ```js
 docCoveragePlugin({
-  sourceGlob: ['src/**/*.ts'],
+  patterns: ['src/**/*.ts'],
   skipAudits: [
     'variables-coverage',
     'interfaces-coverage'

@@ -1,11 +1,24 @@
+import path from 'node:path';
+import { fileURLToPath } from 'url';
 import { processDocCoverage } from './doc-processer.js';
 import type { DocumentationData } from './models.js';
 
+type DocumentationDataCovered = DocumentationData & {
+  coverage: number;
+};
+
 describe('processDocCoverage', () => {
+  const fixturesDir = path.join(
+    fileURLToPath(path.dirname(import.meta.url)),
+    '../../../mocks/fixtures',
+  );
+
   it('should detect undocumented class', () => {
-    const sourcePath =
-      'packages/plugin-doc-coverage/mocks/fixtures/missing-documentation/classes-coverage.ts';
-    const results = processDocCoverage({ sourceGlob: [sourcePath] });
+    const sourcePath = path.join(
+      fixturesDir,
+      'missing-documentation/classes-coverage.ts',
+    );
+    const results = processDocCoverage({ patterns: [sourcePath] });
     expect(results.classes).toStrictEqual({
       coverage: 0,
       nodesCount: 1,
@@ -17,28 +30,28 @@ describe('processDocCoverage', () => {
           line: 1,
         },
       ],
-    } satisfies DocumentationData & {
-      coverage: number;
-    });
+    } satisfies DocumentationDataCovered);
   });
 
   it('should detect documented class', () => {
-    const sourcePath =
-      'packages/plugin-doc-coverage/mocks/fixtures/filled-documentation/classes-coverage.ts';
-    const results = processDocCoverage({ sourceGlob: [sourcePath] });
+    const sourcePath = path.join(
+      fixturesDir,
+      'filled-documentation/classes-coverage.ts',
+    );
+    const results = processDocCoverage({ patterns: [sourcePath] });
     expect(results.classes).toStrictEqual({
       coverage: 100,
       nodesCount: 1,
       issues: [],
-    } satisfies DocumentationData & {
-      coverage: number;
-    });
+    } satisfies DocumentationDataCovered);
   });
 
   it('should detect undocumented method', () => {
-    const sourcePath =
-      'packages/plugin-doc-coverage/mocks/fixtures/missing-documentation/methods-coverage.ts';
-    const results = processDocCoverage({ sourceGlob: [sourcePath] });
+    const sourcePath = path.join(
+      fixturesDir,
+      'missing-documentation/methods-coverage.ts',
+    );
+    const results = processDocCoverage({ patterns: [sourcePath] });
     expect(results.methods).toStrictEqual({
       coverage: 0,
       nodesCount: 1,
@@ -50,28 +63,28 @@ describe('processDocCoverage', () => {
           line: 5,
         },
       ],
-    } satisfies DocumentationData & {
-      coverage: number;
-    });
+    } satisfies DocumentationDataCovered);
   });
 
   it('should detect documented method', () => {
-    const sourcePath =
-      'packages/plugin-doc-coverage/mocks/fixtures/filled-documentation/methods-coverage.ts';
-    const results = processDocCoverage({ sourceGlob: [sourcePath] });
+    const sourcePath = path.join(
+      fixturesDir,
+      'filled-documentation/methods-coverage.ts',
+    );
+    const results = processDocCoverage({ patterns: [sourcePath] });
     expect(results.methods).toStrictEqual({
       coverage: 100,
       nodesCount: 1,
       issues: [],
-    } satisfies DocumentationData & {
-      coverage: number;
-    });
+    } satisfies DocumentationDataCovered);
   });
 
   it('should detect undocumented interface', () => {
-    const sourcePath =
-      'packages/plugin-doc-coverage/mocks/fixtures/missing-documentation/interfaces-coverage.ts';
-    const results = processDocCoverage({ sourceGlob: [sourcePath] });
+    const sourcePath = path.join(
+      fixturesDir,
+      'missing-documentation/interfaces-coverage.ts',
+    );
+    const results = processDocCoverage({ patterns: [sourcePath] });
     expect(results.interfaces).toStrictEqual({
       coverage: 0,
       nodesCount: 1,
@@ -83,28 +96,28 @@ describe('processDocCoverage', () => {
           line: 1,
         },
       ],
-    } satisfies DocumentationData & {
-      coverage: number;
-    });
+    } satisfies DocumentationDataCovered);
   });
 
   it('should detect documented interface', () => {
-    const sourcePath =
-      'packages/plugin-doc-coverage/mocks/fixtures/filled-documentation/interfaces-coverage.ts';
-    const results = processDocCoverage({ sourceGlob: [sourcePath] });
+    const sourcePath = path.join(
+      fixturesDir,
+      'filled-documentation/interfaces-coverage.ts',
+    );
+    const results = processDocCoverage({ patterns: [sourcePath] });
     expect(results.interfaces).toStrictEqual({
       coverage: 100,
       nodesCount: 1,
       issues: [],
-    } satisfies DocumentationData & {
-      coverage: number;
-    });
+    } satisfies DocumentationDataCovered);
   });
 
   it('should detect undocumented variable', () => {
-    const sourcePath =
-      'packages/plugin-doc-coverage/mocks/fixtures/missing-documentation/variables-coverage.ts';
-    const results = processDocCoverage({ sourceGlob: [sourcePath] });
+    const sourcePath = path.join(
+      fixturesDir,
+      'missing-documentation/variables-coverage.ts',
+    );
+    const results = processDocCoverage({ patterns: [sourcePath] });
     expect(results.variables).toStrictEqual({
       coverage: 0,
       nodesCount: 1,
@@ -116,28 +129,28 @@ describe('processDocCoverage', () => {
           line: 1,
         },
       ],
-    } satisfies DocumentationData & {
-      coverage: number;
-    });
+    } satisfies DocumentationDataCovered);
   });
 
   it('should detect documented variable', () => {
-    const sourcePath =
-      'packages/plugin-doc-coverage/mocks/fixtures/filled-documentation/variables-coverage.ts';
-    const results = processDocCoverage({ sourceGlob: [sourcePath] });
+    const sourcePath = path.join(
+      fixturesDir,
+      'filled-documentation/variables-coverage.ts',
+    );
+    const results = processDocCoverage({ patterns: [sourcePath] });
     expect(results.variables).toStrictEqual({
       coverage: 100,
       nodesCount: 1,
       issues: [],
-    } satisfies DocumentationData & {
-      coverage: number;
-    });
+    } satisfies DocumentationDataCovered);
   });
 
   it('should detect undocumented property', () => {
-    const sourcePath =
-      'packages/plugin-doc-coverage/mocks/fixtures/missing-documentation/properties-coverage.ts';
-    const results = processDocCoverage({ sourceGlob: [sourcePath] });
+    const sourcePath = path.join(
+      fixturesDir,
+      'missing-documentation/properties-coverage.ts',
+    );
+    const results = processDocCoverage({ patterns: [sourcePath] });
     expect(results.properties).toStrictEqual({
       coverage: 0,
       nodesCount: 1,
@@ -149,28 +162,28 @@ describe('processDocCoverage', () => {
           line: 5,
         },
       ],
-    } satisfies DocumentationData & {
-      coverage: number;
-    });
+    } satisfies DocumentationDataCovered);
   });
 
   it('should detect documented property', () => {
-    const sourcePath =
-      'packages/plugin-doc-coverage/mocks/fixtures/filled-documentation/properties-coverage.ts';
-    const results = processDocCoverage({ sourceGlob: [sourcePath] });
+    const sourcePath = path.join(
+      fixturesDir,
+      'filled-documentation/properties-coverage.ts',
+    );
+    const results = processDocCoverage({ patterns: [sourcePath] });
     expect(results.properties).toStrictEqual({
       coverage: 100,
       nodesCount: 1,
       issues: [],
-    } satisfies DocumentationData & {
-      coverage: number;
-    });
+    } satisfies DocumentationDataCovered);
   });
 
   it('should detect undocumented type', () => {
-    const sourcePath =
-      'packages/plugin-doc-coverage/mocks/fixtures/missing-documentation/types-coverage.ts';
-    const results = processDocCoverage({ sourceGlob: [sourcePath] });
+    const sourcePath = path.join(
+      fixturesDir,
+      'missing-documentation/types-coverage.ts',
+    );
+    const results = processDocCoverage({ patterns: [sourcePath] });
     expect(results.types).toStrictEqual({
       coverage: 0,
       nodesCount: 1,
@@ -182,28 +195,28 @@ describe('processDocCoverage', () => {
           line: 1,
         },
       ],
-    } satisfies DocumentationData & {
-      coverage: number;
-    });
+    } satisfies DocumentationDataCovered);
   });
 
   it('should detect documented type', () => {
-    const sourcePath =
-      'packages/plugin-doc-coverage/mocks/fixtures/filled-documentation/types-coverage.ts';
-    const results = processDocCoverage({ sourceGlob: [sourcePath] });
+    const sourcePath = path.join(
+      fixturesDir,
+      'filled-documentation/types-coverage.ts',
+    );
+    const results = processDocCoverage({ patterns: [sourcePath] });
     expect(results.types).toStrictEqual({
       coverage: 100,
       nodesCount: 1,
       issues: [],
-    } satisfies DocumentationData & {
-      coverage: number;
-    });
+    } satisfies DocumentationDataCovered);
   });
 
   it('should detect undocumented enum', () => {
-    const sourcePath =
-      'packages/plugin-doc-coverage/mocks/fixtures/missing-documentation/enums-coverage.ts';
-    const results = processDocCoverage({ sourceGlob: [sourcePath] });
+    const sourcePath = path.join(
+      fixturesDir,
+      'missing-documentation/enums-coverage.ts',
+    );
+    const results = processDocCoverage({ patterns: [sourcePath] });
     expect(results.enums).toStrictEqual({
       coverage: 0,
       nodesCount: 1,
@@ -215,21 +228,19 @@ describe('processDocCoverage', () => {
           line: 1,
         },
       ],
-    } satisfies DocumentationData & {
-      coverage: number;
-    });
+    } satisfies DocumentationDataCovered);
   });
 
   it('should detect documented enum', () => {
-    const sourcePath =
-      'packages/plugin-doc-coverage/mocks/fixtures/filled-documentation/enums-coverage.ts';
-    const results = processDocCoverage({ sourceGlob: [sourcePath] });
+    const sourcePath = path.join(
+      fixturesDir,
+      'filled-documentation/enums-coverage.ts',
+    );
+    const results = processDocCoverage({ patterns: [sourcePath] });
     expect(results.enums).toStrictEqual({
       coverage: 100,
       nodesCount: 1,
       issues: [],
-    } satisfies DocumentationData & {
-      coverage: number;
-    });
+    } satisfies DocumentationDataCovered);
   });
 });

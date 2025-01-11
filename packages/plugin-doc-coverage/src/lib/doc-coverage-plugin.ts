@@ -29,7 +29,7 @@ export const PLUGIN_DOCS_URL =
  *   plugins: [
  *     // ... other plugins ...
  *     docCoveragePlugin({
- *       sourceGlob: ['src&#47;**&#47;*.{ts,tsx}']
+ *       patterns: ['src&#47;**&#47;*.{ts,tsx}']
  *     })
  *   ]
  * }
