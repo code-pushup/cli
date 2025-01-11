@@ -95,8 +95,8 @@ export function getDocCoverageCategories(
 ): CategoryConfig[] {
   return [
     {
-      slug: 'doc-coverage-cat',
-      title: 'Documentation coverage',
+     slug: 'docs',
+     title: 'Documentation',
       description: 'Measures how much of your code is **documented**.',
       refs: filterGroupsByOnlyAudits(groups, config).map(group => ({
         weight: 1,
