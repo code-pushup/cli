@@ -3,6 +3,8 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "e2e/plugin-doc-coverage-e2e/src",
   "projectType": "application",
+  "tags": ["scope:plugin", "type:e2e"],
+  "implicitDependencies": ["cli", "plugin-jsdocs"],
   "targets": {
     "lint": {
       "executor": "@nx/linter:eslint",
@@ -17,7 +19,5 @@
         "configFile": "e2e/plugin-doc-coverage-e2e/vite.config.e2e.ts"
       }
     }
-  },
-  "implicitDependencies": ["cli", "plugin-doc-coverage"],
-  "tags": ["scope:plugin", "type:e2e"]
+  }
 }

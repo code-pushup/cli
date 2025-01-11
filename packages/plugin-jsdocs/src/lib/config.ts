@@ -4,7 +4,7 @@ const patternsSchema = z.union([z.string(), z.array(z.string()).min(1)], {
   description: 'Glob pattern to match source files to evaluate.',
 });
 
-const docCoverageTargetObjectSchema = z
+const jsDocsTargetObjectSchema = z
   .object({
     skipAudits: z
       .array(z.string())
@@ -25,14 +25,12 @@ const docCoverageTargetObjectSchema = z
     path: ['skipAudits', 'onlyAudits'],
   });
 
-export const docCoveragePluginConfigSchema = z
-  .union([patternsSchema, docCoverageTargetObjectSchema])
+export const jsDocsPluginConfigSchema = z
+  .union([patternsSchema, jsDocsTargetObjectSchema])
   .transform(target =>
     typeof target === 'string' || Array.isArray(target)
       ? { patterns: target }
       : target,
   );
 
-export type DocCoveragePluginConfig = z.infer<
-  typeof docCoveragePluginConfigSchema
->;
+export type JsDocsPluginConfig = z.infer<typeof jsDocsPluginConfigSchema>;

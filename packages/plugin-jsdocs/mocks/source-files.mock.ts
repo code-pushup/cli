@@ -9,7 +9,7 @@ import {
   VariableStatement,
 } from 'ts-morph';
 import type { CoverageType } from '../src/lib/runner/models.js';
-import {nodeMock} from "./node.mock";
+import { nodeMock } from './node.mock';
 
 export function sourceFileMock(
   file: string,

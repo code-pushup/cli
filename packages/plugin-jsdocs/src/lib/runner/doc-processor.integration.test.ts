@@ -1,13 +1,13 @@
 import path from 'node:path';
-import { fileURLToPath } from 'url';
-import { processDocCoverage } from './doc-processor.js';
+import { fileURLToPath } from 'node:url';
+import { processJsDocs } from './doc-processor.js';
 import type { DocumentationData } from './models.js';
 
 type DocumentationDataCovered = DocumentationData & {
   coverage: number;
 };
 
-describe('processDocCoverage', () => {
+describe('processJsDocs', () => {
   const fixturesDir = path.join(
     fileURLToPath(path.dirname(import.meta.url)),
     '../../../mocks/fixtures',
@@ -18,7 +18,7 @@ describe('processDocCoverage', () => {
       fixturesDir,
       'missing-documentation/classes-coverage.ts',
     );
-    const results = processDocCoverage({ patterns: [sourcePath] });
+    const results = processJsDocs({ patterns: [sourcePath] });
     expect(results.classes).toStrictEqual({
       coverage: 0,
       nodesCount: 1,
@@ -38,7 +38,7 @@ describe('processDocCoverage', () => {
       fixturesDir,
       'filled-documentation/classes-coverage.ts',
     );
-    const results = processDocCoverage({ patterns: [sourcePath] });
+    const results = processJsDocs({ patterns: [sourcePath] });
     expect(results.classes).toStrictEqual({
       coverage: 100,
       nodesCount: 1,
@@ -51,7 +51,7 @@ describe('processDocCoverage', () => {
       fixturesDir,
       'missing-documentation/methods-coverage.ts',
     );
-    const results = processDocCoverage({ patterns: [sourcePath] });
+    const results = processJsDocs({ patterns: [sourcePath] });
     expect(results.methods).toStrictEqual({
       coverage: 0,
       nodesCount: 1,
@@ -71,7 +71,7 @@ describe('processDocCoverage', () => {
       fixturesDir,
       'filled-documentation/methods-coverage.ts',
     );
-    const results = processDocCoverage({ patterns: [sourcePath] });
+    const results = processJsDocs({ patterns: [sourcePath] });
     expect(results.methods).toStrictEqual({
       coverage: 100,
       nodesCount: 1,
@@ -84,7 +84,7 @@ describe('processDocCoverage', () => {
       fixturesDir,
       'missing-documentation/interfaces-coverage.ts',
     );
-    const results = processDocCoverage({ patterns: [sourcePath] });
+    const results = processJsDocs({ patterns: [sourcePath] });
     expect(results.interfaces).toStrictEqual({
       coverage: 0,
       nodesCount: 1,
@@ -104,7 +104,7 @@ describe('processDocCoverage', () => {
       fixturesDir,
       'filled-documentation/interfaces-coverage.ts',
     );
-    const results = processDocCoverage({ patterns: [sourcePath] });
+    const results = processJsDocs({ patterns: [sourcePath] });
     expect(results.interfaces).toStrictEqual({
       coverage: 100,
       nodesCount: 1,
@@ -117,7 +117,7 @@ describe('processDocCoverage', () => {
       fixturesDir,
       'missing-documentation/variables-coverage.ts',
     );
-    const results = processDocCoverage({ patterns: [sourcePath] });
+    const results = processJsDocs({ patterns: [sourcePath] });
     expect(results.variables).toStrictEqual({
       coverage: 0,
       nodesCount: 1,
@@ -137,7 +137,7 @@ describe('processDocCoverage', () => {
       fixturesDir,
       'filled-documentation/variables-coverage.ts',
     );
-    const results = processDocCoverage({ patterns: [sourcePath] });
+    const results = processJsDocs({ patterns: [sourcePath] });
     expect(results.variables).toStrictEqual({
       coverage: 100,
       nodesCount: 1,
@@ -150,7 +150,7 @@ describe('processDocCoverage', () => {
       fixturesDir,
       'missing-documentation/properties-coverage.ts',
     );
-    const results = processDocCoverage({ patterns: [sourcePath] });
+    const results = processJsDocs({ patterns: [sourcePath] });
     expect(results.properties).toStrictEqual({
       coverage: 0,
       nodesCount: 1,
@@ -170,7 +170,7 @@ describe('processDocCoverage', () => {
       fixturesDir,
       'filled-documentation/properties-coverage.ts',
     );
-    const results = processDocCoverage({ patterns: [sourcePath] });
+    const results = processJsDocs({ patterns: [sourcePath] });
     expect(results.properties).toStrictEqual({
       coverage: 100,
       nodesCount: 1,
@@ -183,7 +183,7 @@ describe('processDocCoverage', () => {
       fixturesDir,
       'missing-documentation/types-coverage.ts',
     );
-    const results = processDocCoverage({ patterns: [sourcePath] });
+    const results = processJsDocs({ patterns: [sourcePath] });
     expect(results.types).toStrictEqual({
       coverage: 0,
       nodesCount: 1,
@@ -203,7 +203,7 @@ describe('processDocCoverage', () => {
       fixturesDir,
       'filled-documentation/types-coverage.ts',
     );
-    const results = processDocCoverage({ patterns: [sourcePath] });
+    const results = processJsDocs({ patterns: [sourcePath] });
     expect(results.types).toStrictEqual({
       coverage: 100,
       nodesCount: 1,
@@ -216,7 +216,7 @@ describe('processDocCoverage', () => {
       fixturesDir,
       'missing-documentation/enums-coverage.ts',
     );
-    const results = processDocCoverage({ patterns: [sourcePath] });
+    const results = processJsDocs({ patterns: [sourcePath] });
     expect(results.enums).toStrictEqual({
       coverage: 0,
       nodesCount: 1,
@@ -236,7 +236,7 @@ describe('processDocCoverage', () => {
       fixturesDir,
       'filled-documentation/enums-coverage.ts',
     );
-    const results = processDocCoverage({ patterns: [sourcePath] });
+    const results = processJsDocs({ patterns: [sourcePath] });
     expect(results.enums).toStrictEqual({
       coverage: 100,
       nodesCount: 1,

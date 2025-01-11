@@ -1,8 +1,8 @@
-# @code-pushup/doc-coverage-plugin
+# @code-pushup/jsdocs-plugin
 
-[![npm](https://img.shields.io/npm/v/%40code-pushup%2Fdoc-coverage-plugin.svg)](https://www.npmjs.com/package/@code-pushup/doc-coverage-plugin)
-[![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Fdoc-coverage-plugin)](https://npmtrends.com/@code-pushup/doc-coverage-plugin)
-[![dependencies](https://img.shields.io/librariesio/release/npm/%40code-pushup%2Fdoc-coverage-plugin)](https://www.npmjs.com/package/@code-pushup/doc-coverage-plugin?activeTab=dependencies)
+[![npm](https://img.shields.io/npm/v/%40code-pushup%2Fdoc-coverage-plugin.svg)](https://www.npmjs.com/package/@code-pushup/jsdocs-plugin)
+[![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Fdoc-coverage-plugin)](https://npmtrends.com/@code-pushup/jsdocs-plugin)
+[![dependencies](https://img.shields.io/librariesio/release/npm/%40code-pushup%2Fdoc-coverage-plugin)](https://www.npmjs.com/package/@code-pushup/jsdocs-plugin?activeTab=dependencies)
 
 📚 **Code PushUp plugin for tracking documentation coverage.** 📝
 
@@ -24,27 +24,27 @@ Measured documentation types are mapped to Code PushUp audits in the following w
 2. Install as a dev dependency with your package manager:
 
    ```sh
-   npm install --save-dev @code-pushup/doc-coverage-plugin
+   npm install --save-dev @code-pushup/jsdocs-plugin
    ```
 
    ```sh
-   yarn add --dev @code-pushup/doc-coverage-plugin
+   yarn add --dev @code-pushup/jsdocs-plugin
    ```
 
    ```sh
-   pnpm add --save-dev @code-pushup/doc-coverage-plugin
+   pnpm add --save-dev @code-pushup/jsdocs-plugin
    ```
 
 3. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.ts`).
 
    ```js
-   import docCoveragePlugin from '@code-pushup/doc-coverage-plugin';
+   import jsDocsPlugin from '@code-pushup/jsdocs-plugin';
 
    export default {
      // ...
      plugins: [
        // ...
-       docCoveragePlugin({
+       jsDocsPlugin({
          patterns: ['**/*.ts'],
        }),
      ],
@@ -105,7 +105,7 @@ The plugin accepts the following parameters:
 Required parameter. The `patterns` option accepts an array of strings that define patterns to include or exclude files. You can use glob patterns to match files and the `!` symbol to exclude specific patterns. Example:
 
 ```js
-docCoveragePlugin({
+jsDocsPlugin({
   patterns: [
     'src/**/*.ts',              // include all TypeScript files in src
     '!src/**/*.{spec,test}.ts', // exclude test files
@@ -119,7 +119,7 @@ docCoveragePlugin({
 Optional parameter. The `onlyAudits` option allows you to specify which documentation types you want to measure. Only the specified audits will be included in the results. Example:
 
 ```js
-docCoveragePlugin({
+jsDocsPlugin({
   patterns: ['src/**/*.ts'],
   onlyAudits: [
     'classes-coverage',
@@ -133,7 +133,7 @@ docCoveragePlugin({
 Optional parameter. The `skipAudits` option allows you to exclude specific documentation types from measurement. All other types will be included in the results.
 
 ```js
-docCoveragePlugin({
+jsDocsPlugin({
   patterns: ['src/**/*.ts'],
   skipAudits: [
     'variables-coverage',
@@ -204,7 +204,7 @@ For instance, this is an example of the plugin output:
 
 ```json
 {
-  "packageName": "@code-pushup/doc-coverage-plugin",
+  "packageName": "@code-pushup/jsdocs-plugin",
   "version": "0.57.0",
   "title": "Documentation coverage",
   "slug": "doc-coverage",
@@ -225,7 +225,7 @@ For instance, this is an example of the plugin output:
     }
   ],
   "description": "Official Code PushUp documentation coverage plugin.",
-  "docsUrl": "https://www.npmjs.com/package/@code-pushup/doc-coverage-plugin/",
+  "docsUrl": "https://www.npmjs.com/package/@code-pushup/jsdocs-plugin/",
   "groups": [
     {
       "slug": "doc-coverage",

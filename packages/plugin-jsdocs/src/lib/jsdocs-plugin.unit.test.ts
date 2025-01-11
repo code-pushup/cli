@@ -4,8 +4,8 @@ import {
   PLUGIN_DESCRIPTION,
   PLUGIN_DOCS_URL,
   PLUGIN_TITLE,
-  docCoveragePlugin,
-} from './doc-coverage-plugin.js';
+  jsDocsPlugin,
+} from './jsdocs-plugin.js';
 import { createRunnerFunction } from './runner/runner.js';
 import {
   filterAuditsByPluginConfig,
@@ -21,10 +21,10 @@ vi.mock('./runner/runner.js', () => ({
   createRunnerFunction: vi.fn().mockReturnValue(() => Promise.resolve([])),
 }));
 
-describe('docCoveragePlugin', () => {
+describe('jsDocsPlugin', () => {
   it('should create a valid plugin config', () => {
     expect(
-      docCoveragePlugin({
+      jsDocsPlugin({
         patterns: ['src/**/*.ts', '!**/*.spec.ts', '!**/*.test.ts'],
       }),
     ).toStrictEqual(
@@ -43,7 +43,7 @@ describe('docCoveragePlugin', () => {
 
   it('should throw for invalid plugin options', () => {
     expect(() =>
-      docCoveragePlugin({
+      jsDocsPlugin({
         // @ts-expect-error testing invalid config
         patterns: 123,
       }),
@@ -52,21 +52,21 @@ describe('docCoveragePlugin', () => {
 
   it('should filter groups', () => {
     const config = { patterns: ['src/**/*.ts'] };
-    docCoveragePlugin(config);
+    jsDocsPlugin(config);
 
     expect(filterGroupsByOnlyAudits).toHaveBeenCalledWith(groups, config);
   });
 
   it('should filter audits', async () => {
     const config = { patterns: ['src/**/*.ts'] };
-    docCoveragePlugin(config);
+    jsDocsPlugin(config);
 
     expect(filterAuditsByPluginConfig).toHaveBeenCalledWith(config);
   });
 
   it('should forward options to runner function', async () => {
     const config = { patterns: ['src/**/*.ts'] };
-    docCoveragePlugin(config);
+    jsDocsPlugin(config);
 
     expect(createRunnerFunction).toHaveBeenCalledWith(config);
   });

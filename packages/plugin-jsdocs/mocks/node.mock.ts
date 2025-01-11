@@ -1,5 +1,5 @@
-import {SyntaxKind,} from 'ts-morph';
-import type {CoverageType} from '../src/lib/runner/models.js';
+import { SyntaxKind } from 'ts-morph';
+import type { CoverageType } from '../src/lib/runner/models.js';
 
 export function nodeMock(options: {
   coverageType: CoverageType;

@@ -1,14 +1,14 @@
 import type { AuditOutputs, RunnerFunction } from '@code-pushup/models';
-import type { DocCoveragePluginConfig } from '../config.js';
-import { processDocCoverage } from './doc-processor.js';
+import type { JsDocsPluginConfig } from '../config.js';
+import { processJsDocs } from './doc-processor.js';
 import type { CoverageType, DocumentationCoverageReport } from './models.js';
 import { coverageTypeToAuditSlug } from './utils.js';
 
 export function createRunnerFunction(
-  config: DocCoveragePluginConfig,
+  config: JsDocsPluginConfig,
 ): RunnerFunction {
   return (): AuditOutputs => {
-    const coverageResult = processDocCoverage(config);
+    const coverageResult = processJsDocs(config);
     return trasformCoverageReportToAuditOutputs(coverageResult, config);
   };
 }
@@ -21,7 +21,7 @@ export function createRunnerFunction(
  */
 export function trasformCoverageReportToAuditOutputs(
   coverageResult: DocumentationCoverageReport,
-  options: Pick<DocCoveragePluginConfig, 'onlyAudits' | 'skipAudits'>,
+  options: Pick<JsDocsPluginConfig, 'onlyAudits' | 'skipAudits'>,
 ): AuditOutputs {
   return Object.entries(coverageResult)
     .filter(([type]) => {

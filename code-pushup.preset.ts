@@ -5,19 +5,19 @@ import type {
 import coveragePlugin, {
   getNxCoveragePaths,
 } from './packages/plugin-coverage/src/index.js';
-import docCoveragePlugin, {
-  DocCoveragePluginConfig,
-} from './packages/plugin-doc-coverage/src/index.js';
-import {
-  PLUGIN_SLUG,
-  groups,
-} from './packages/plugin-doc-coverage/src/lib/constants.js';
-import { filterGroupsByOnlyAudits } from './packages/plugin-doc-coverage/src/lib/utils.js';
 import eslintPlugin, {
   eslintConfigFromAllNxProjects,
   eslintConfigFromNxProject,
 } from './packages/plugin-eslint/src/index.js';
 import jsPackagesPlugin from './packages/plugin-js-packages/src/index.js';
+import jsDocsPlugin, {
+  JsDocsPluginConfig,
+} from './packages/plugin-jsdocs/src/index.js';
+import {
+  PLUGIN_SLUG,
+  groups,
+} from './packages/plugin-jsdocs/src/lib/constants.js';
+import { filterGroupsByOnlyAudits } from './packages/plugin-jsdocs/src/lib/utils.js';
 import lighthousePlugin, {
   lighthouseGroupRef,
 } from './packages/plugin-lighthouse/src/index.js';
@@ -90,8 +90,8 @@ export const eslintCategories: CategoryConfig[] = [
   },
 ];
 
-export function getDocCoverageCategories(
-  config: DocCoveragePluginConfig,
+export function getJsDocsCategories(
+  config: JsDocsPluginConfig,
 ): CategoryConfig[] {
   return [
     {
@@ -140,14 +140,14 @@ export const lighthouseCoreConfig = async (
   };
 };
 
-export const docCoverageCoreConfig = (
-  config: DocCoveragePluginConfig | string[],
+export const jsDocsCoreConfig = (
+  config: JsDocsPluginConfig | string[],
 ): CoreConfig => {
   return {
     plugins: [
-      docCoveragePlugin(Array.isArray(config) ? { patterns: config } : config),
+      jsDocsPlugin(Array.isArray(config) ? { patterns: config } : config),
     ],
-    categories: getDocCoverageCategories(
+    categories: getJsDocsCategories(
       Array.isArray(config) ? { patterns: config } : config,
     ),
   };

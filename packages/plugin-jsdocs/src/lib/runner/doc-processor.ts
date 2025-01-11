@@ -7,7 +7,7 @@ import {
   VariableStatement,
 } from 'ts-morph';
 import { objectFromEntries, objectToEntries } from '@code-pushup/utils';
-import type { DocCoveragePluginConfig } from '../config.js';
+import type { JsDocsPluginConfig } from '../config.js';
 import type {
   DocumentationCoverageReport,
   DocumentationReport,
@@ -54,8 +54,8 @@ export function getVariablesInformation(
  * @param config - The configuration object containing patterns to include for documentation analysis
  * @returns Object containing coverage statistics and undocumented items
  */
-export function processDocCoverage(
-  config: DocCoveragePluginConfig,
+export function processJsDocs(
+  config: JsDocsPluginConfig,
 ): DocumentationCoverageReport {
   const project = new Project();
   project.addSourceFilesAtPaths(config.patterns);

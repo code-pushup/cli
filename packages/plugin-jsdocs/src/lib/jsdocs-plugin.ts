@@ -1,8 +1,5 @@
 import type { PluginConfig } from '@code-pushup/models';
-import {
-  type DocCoveragePluginConfig,
-  docCoveragePluginConfigSchema,
-} from './config.js';
+import { type JsDocsPluginConfig, jsDocsPluginConfigSchema } from './config.js';
 import { PLUGIN_SLUG, groups } from './constants.js';
 import { createRunnerFunction } from './runner/runner.js';
 import {
@@ -16,19 +13,19 @@ export const PLUGIN_DESCRIPTION =
   'Official Code PushUp documentation coverage plugin.';
 
 export const PLUGIN_DOCS_URL =
-  'https://www.npmjs.com/package/@code-pushup/doc-coverage-plugin/';
+  'https://www.npmjs.com/package/@code-pushup/jsdocs-plugin/';
 
 /**
  * Instantiates Code PushUp documentation coverage plugin for core config.
  *
  * @example
- * import docCoveragePlugin from '@code-pushup/doc-coverage-plugin'
+ * import jsDocsPlugin from '@code-pushup/jsdocs-plugin'
  *
  * export default {
  *   // ... core config ...
  *   plugins: [
  *     // ... other plugins ...
- *     docCoveragePlugin({
+ *     jsDocsPlugin({
  *       patterns: ['src&#47;**&#47;*.{ts,tsx}']
  *     })
  *   ]
@@ -36,10 +33,8 @@ export const PLUGIN_DOCS_URL =
  *
  * @returns Plugin configuration.
  */
-export function docCoveragePlugin(
-  config: DocCoveragePluginConfig,
-): PluginConfig {
-  const docCoverageConfig = docCoveragePluginConfigSchema.parse(config);
+export function jsDocsPlugin(config: JsDocsPluginConfig): PluginConfig {
+  const jsDocsConfig = jsDocsPluginConfigSchema.parse(config);
 
   return {
     slug: PLUGIN_SLUG,
@@ -47,8 +42,8 @@ export function docCoveragePlugin(
     icon: 'folder-docs',
     description: PLUGIN_DESCRIPTION,
     docsUrl: PLUGIN_DOCS_URL,
-    groups: filterGroupsByOnlyAudits(groups, docCoverageConfig),
-    audits: filterAuditsByPluginConfig(docCoverageConfig),
-    runner: createRunnerFunction(docCoverageConfig),
+    groups: filterGroupsByOnlyAudits(groups, jsDocsConfig),
+    audits: filterAuditsByPluginConfig(jsDocsConfig),
+    runner: createRunnerFunction(jsDocsConfig),
   };
 }
