@@ -44,7 +44,7 @@ export function docCoveragePlugin(
   return {
     slug: PLUGIN_SLUG,
     title: PLUGIN_TITLE,
-    icon: 'folder-src',
+    icon: 'folder-docs',
     description: PLUGIN_DESCRIPTION,
     docsUrl: PLUGIN_DOCS_URL,
     groups: filterGroupsByOnlyAudits(groups, docCoverageConfig),
