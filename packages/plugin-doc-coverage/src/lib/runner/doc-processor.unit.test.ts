@@ -1,13 +1,13 @@
 import type { ClassDeclaration, VariableStatement } from 'ts-morph';
-import { nodeMock } from '../../../mocks/node.mock';
-import { sourceFileMock } from '../../../mocks/source-files.mock';
+import { nodeMock } from '../../../mocks/node.mock.js';
+import { sourceFileMock } from '../../../mocks/source-files.mock.js';
 import {
   getAllNodesFromASourceFile,
   getClassNodes,
   getDocumentationReport,
   getVariablesInformation,
   mergeDocumentationReports,
-} from './doc-processer.js';
+} from './doc-processor.js';
 import type { DocumentationReport } from './models.js';
 
 describe('getDocumentationReport', () => {

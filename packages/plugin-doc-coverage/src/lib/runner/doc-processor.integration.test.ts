@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'url';
-import { processDocCoverage } from './doc-processer.js';
+import { processDocCoverage } from './doc-processor.js';
 import type { DocumentationData } from './models.js';
 
 type DocumentationDataCovered = DocumentationData & {

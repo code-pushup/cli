@@ -1,6 +1,6 @@
 import type { AuditOutputs, RunnerFunction } from '@code-pushup/models';
 import type { DocCoveragePluginConfig } from '../config.js';
-import { processDocCoverage } from './doc-processer.js';
+import { processDocCoverage } from './doc-processor.js';
 import type { CoverageType, DocumentationCoverageReport } from './models.js';
 import { coverageTypeToAuditSlug } from './utils.js';
 
