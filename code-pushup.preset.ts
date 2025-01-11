@@ -140,9 +140,9 @@ export const lighthouseCoreConfig = async (
   };
 };
 
-export const docCoverageCoreConfig = async (
+export const docCoverageCoreConfig = (
   config: DocCoveragePluginConfig,
-): Promise<CoreConfig> => {
+): CoreConfig => {
   return {
     plugins: [docCoveragePlugin(config)],
     categories: getDocCoverageCategories(config),
