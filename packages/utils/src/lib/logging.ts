@@ -1,5 +1,5 @@
 import isaacs_cliui from '@isaacs/cliui';
-import { cliui } from '@poppinss/cliui';
+import { cliui } from '@poppinss/cliui/build/index.js';
 import { underline } from 'ansis';
 import { TERMINAL_WIDTH } from './reports/constants.js';
 
