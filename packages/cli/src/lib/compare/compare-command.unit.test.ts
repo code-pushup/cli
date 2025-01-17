@@ -74,8 +74,8 @@ describe('compare-command', () => {
       { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsCompareCommandObject()] },
     ).parseAsync();
 
-    expect(ui()).toHaveLoggedLevel('info');
-    expect(ui()).toHaveLoggedMessage(
+    expect(ui()).toHaveLogged(
+      'info',
       `Reports diff written to ${bold(
         '.code-pushup/report-diff.json',
       )} and ${bold('.code-pushup/report-diff.md')}`,

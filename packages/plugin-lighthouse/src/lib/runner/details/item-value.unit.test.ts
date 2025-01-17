@@ -146,16 +146,16 @@ describe('parseTableItemPropertyValue', () => {
       }),
     ).toBe('');
 
-    expect(ui()).toHaveLoggedLevel('info');
-    expect(ui()).toHaveLoggedMessage(
+    expect(ui()).toHaveLogged(
+      'info',
       `Value type ${bold('subitems')} is not implemented`,
     );
   });
 
   it('should parse value item debugdata to empty string and log implemented', () => {
     expect(parseTableItemPropertyValue({ type: 'debugdata' })).toBe('');
-    expect(ui()).toHaveLoggedLevel('info');
-    expect(ui()).toHaveLoggedMessage(
+    expect(ui()).toHaveLogged(
+      'info',
       `Value type ${bold('debugdata')} is not implemented`,
     );
   });
@@ -363,8 +363,8 @@ describe('formatTableItemPropertyValue', () => {
       ),
     ).toBe('');
 
-    expect(ui()).toHaveLoggedLevel('info');
-    expect(ui()).toHaveLoggedMessage(
+    expect(ui()).toHaveLogged(
+      'info',
       `Format type ${bold('multi')} is not implemented`,
     );
   });
@@ -376,8 +376,8 @@ describe('formatTableItemPropertyValue', () => {
         'thumbnail',
       ),
     ).toBe('');
-    expect(ui()).toHaveLoggedLevel('info');
-    expect(ui()).toHaveLoggedMessage(
+    expect(ui()).toHaveLogged(
+      'info',
       `Format type ${bold('thumbnail')} is not implemented`,
     );
   });

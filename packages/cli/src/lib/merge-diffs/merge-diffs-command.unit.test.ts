@@ -64,7 +64,8 @@ describe('merge-diffs-command', () => {
       },
     ).parseAsync();
 
-    expect(ui()).toHaveLoggedMessage(
+    expect(ui()).toHaveLogged(
+      'info',
       `Reports diff written to ${bold('.code-pushup/report-diff.md')}`,
     );
   });

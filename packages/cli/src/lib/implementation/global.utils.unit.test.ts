@@ -64,8 +64,7 @@ describe('logErrorBeforeThrow', () => {
     } catch {
       /* suppress */
     }
-    expect(ui()).toHaveLoggedLevel('error');
-    expect(ui()).toHaveLoggedMessage('Option validation failed');
+    expect(ui()).toHaveLogged('error', 'Option validation failed');
   });
 
   it('should rethrow errors other than OptionValidationError', async () => {

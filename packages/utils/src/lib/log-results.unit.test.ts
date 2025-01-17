@@ -67,10 +67,12 @@ describe('logPromiseResults', () => {
       'Uploaded reports successfully:',
       (result): string => result.value.toString(),
     );
-    expect(ui()).toHaveLoggedNthLevel(1, 'success');
-    expect(ui()).toHaveLoggedNthMessage(1, 'Uploaded reports successfully:');
-    expect(ui()).toHaveLoggedNthLevel(2, 'success');
-    expect(ui()).toHaveLoggedNthMessage(2, 'out.json');
+    expect(ui()).toHaveNthLogged(
+      1,
+      'success',
+      'Uploaded reports successfully:',
+    );
+    expect(ui()).toHaveNthLogged(2, 'success', 'out.json');
   });
 
   it('should log on fail', () => {
@@ -79,9 +81,7 @@ describe('logPromiseResults', () => {
       'Generated reports failed:',
       (result: { reason: string }) => result.reason,
     );
-    expect(ui()).toHaveLoggedNthLevel(1, 'warn');
-    expect(ui()).toHaveLoggedNthMessage(1, 'Generated reports failed:');
-    expect(ui()).toHaveLoggedNthLevel(2, 'warn');
-    expect(ui()).toHaveLoggedNthMessage(2, 'fail');
+    expect(ui()).toHaveNthLogged(1, 'warn', 'Generated reports failed:');
+    expect(ui()).toHaveNthLogged(2, 'warn', 'fail');
   });
 });

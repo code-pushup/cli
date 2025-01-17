@@ -12,8 +12,8 @@ describe('logUnsupportedDetails', () => {
       { details: { type: 'screenshot' } },
     ] as unknown as Result[]);
     expect(ui()).toHaveLoggedTimes(1);
-    expect(ui()).toHaveLoggedLevel('debug');
-    expect(ui()).toHaveLoggedMessage(
+    expect(ui()).toHaveLogged(
+      'debug',
       `${yellow('⚠')} Plugin ${bold(
         'lighthouse',
       )} skipped parsing of unsupported audit details: ${bold('screenshot')}`,
@@ -31,8 +31,8 @@ describe('logUnsupportedDetails', () => {
       { details: { type: 'criticalrequestchain' } },
     ] as unknown as Result[]);
     expect(ui()).toHaveLoggedTimes(1);
-    expect(ui()).toHaveLoggedLevel('debug');
-    expect(ui()).toHaveLoggedMessage(
+    expect(ui()).toHaveLogged(
+      'debug',
       `${yellow('⚠')} Plugin ${bold(
         'lighthouse',
       )} skipped parsing of unsupported audit details: ${bold(

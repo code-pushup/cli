@@ -114,6 +114,6 @@ describe('collectAndPersistReports', () => {
     await collectAndPersistReports(
       MINIMAL_CONFIG_MOCK as CollectAndPersistReportsOptions,
     );
-    expect(ui()).toHaveLoggedMessage('Made with ❤ by code-pushup.dev');
+    expect(ui()).toHaveLogged('log', 'Made with ❤ by code-pushup.dev');
   });
 });

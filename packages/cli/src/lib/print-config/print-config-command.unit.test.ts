@@ -26,10 +26,16 @@ describe('print-config-command', () => {
       { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsConfigCommandObject()] },
     ).parseAsync();
 
-    expect(ui()).not.toHaveLoggedMessageContaining('"$0":');
-    expect(ui()).not.toHaveLoggedMessageContaining('"_":');
+    expect(ui()).not.toHaveLogged('log', expect.stringContaining('"$0":'));
+    expect(ui()).not.toHaveLogged('log', expect.stringContaining('"_":'));
 
-    expect(ui()).toHaveLoggedMessageContaining('"outputDir": "destinationDir"');
-    expect(ui()).not.toHaveLoggedMessageContaining('"output-dir":');
+    expect(ui()).toHaveLogged(
+      'log',
+      expect.stringContaining('"outputDir": "destinationDir"'),
+    );
+    expect(ui()).not.toHaveLogged(
+      'log',
+      expect.stringContaining('"output-dir":'),
+    );
   });
 });

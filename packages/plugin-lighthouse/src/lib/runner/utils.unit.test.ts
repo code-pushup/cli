@@ -242,7 +242,7 @@ describe('toAuditOutputs', () => {
           }) as Result,
       ),
     );
-    expect(ui()).not.toHaveLogged();
+    expect(ui()).not.toHaveLogs();
   });
 
   it('should inform that for all unsupported details if verbose IS given', () => {
@@ -343,7 +343,7 @@ describe('getConfig', () => {
     await expect(
       getConfig({ preset: 'wrong' as 'desktop' }),
     ).resolves.toBeUndefined();
-    expect(ui()).toHaveLoggedMessage('Preset "wrong" is not supported');
+    expect(ui()).toHaveLogged('info', 'Preset "wrong" is not supported');
   });
 
   it('should load config from json file if configPath is specified', async () => {
@@ -376,7 +376,7 @@ describe('getConfig', () => {
     await expect(
       getConfig({ configPath: path.join('wrong.not') }),
     ).resolves.toBeUndefined();
-    expect(ui()).toHaveLoggedMessage('Format of file wrong.not not supported');
+    expect(ui()).toHaveLogged('info', 'Format of file wrong.not not supported');
   });
 });
 

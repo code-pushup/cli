@@ -98,7 +98,8 @@ end_of_record
       path.join('coverage', 'lcov.info'),
     ]);
 
-    expect(ui()).toHaveLoggedMessage(
+    expect(ui()).toHaveLogged(
+      'warn',
       `Coverage plugin: Empty lcov report file detected at ${path.join(
         'coverage',
         'lcov.info',

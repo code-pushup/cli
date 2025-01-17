@@ -50,7 +50,7 @@ describe('validateFilterOption', () => {
         },
         { itemsToFilter, skippedItems: [], verbose: false },
       );
-      expect(ui()).toHaveLoggedMessage(expected);
+      expect(ui()).toHaveLogged('warn', expected);
     },
   );
 
@@ -93,7 +93,7 @@ describe('validateFilterOption', () => {
         },
         { itemsToFilter, skippedItems: [], verbose: false },
       );
-      expect(ui()).toHaveLoggedMessage(expected);
+      expect(ui()).toHaveLogged('warn', expected);
     },
   );
 
@@ -108,7 +108,7 @@ describe('validateFilterOption', () => {
       },
       { itemsToFilter: ['p1'], skippedItems: [], verbose: false },
     );
-    expect(ui()).not.toHaveLogged();
+    expect(ui()).not.toHaveLogs();
   });
 
   it('should log a category ignored as a result of plugin filtering', () => {
@@ -128,7 +128,8 @@ describe('validateFilterOption', () => {
       { itemsToFilter: ['p1'], skippedItems: [], verbose: true },
     );
     expect(ui()).toHaveLoggedTimes(1);
-    expect(ui()).toHaveLoggedMessage(
+    expect(ui()).toHaveLogged(
+      'info',
       'The --onlyPlugins argument removed the following categories: c1, c3.',
     );
   });
@@ -218,12 +219,14 @@ describe('validateFilterOption', () => {
       { plugins, categories },
       { itemsToFilter: ['p1'], skippedItems: ['p1'], verbose: true },
     );
-    expect(ui()).toHaveLoggedNthMessage(
+    expect(ui()).toHaveNthLogged(
       1,
+      'warn',
       'The --skipPlugins argument references a skipped plugin: p1.',
     );
-    expect(ui()).toHaveLoggedNthMessage(
+    expect(ui()).toHaveNthLogged(
       2,
+      'info',
       'The --skipPlugins argument removed the following categories: c1.',
     );
   });
@@ -457,8 +460,8 @@ describe('validateSkippedCategories', () => {
       ] as NonNullable<Filterables['categories']>,
       true,
     );
-    expect(ui()).toHaveLoggedLevel('info');
-    expect(ui()).toHaveLoggedMessage(
+    expect(ui()).toHaveLogged(
+      'info',
       'Category c1 was removed because all its refs were skipped. Affected refs: g1 (group)',
     );
   });

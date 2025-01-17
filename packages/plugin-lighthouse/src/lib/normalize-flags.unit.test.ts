@@ -11,8 +11,8 @@ describe('logUnsupportedFlagsInUse', () => {
   it('should log unsupported entries', () => {
     logUnsupportedFlagsInUse({ 'list-all-audits': true } as LighthouseOptions);
     expect(ui()).toHaveLoggedTimes(1);
-    expect(ui()).toHaveLoggedLevel('debug');
-    expect(ui()).toHaveLoggedMessage(
+    expect(ui()).toHaveLogged(
+      'debug',
       `${yellow('⚠')} Plugin ${bold(
         'lighthouse',
       )} used unsupported flags: ${bold('list-all-audits')}`,
@@ -33,8 +33,8 @@ describe('logUnsupportedFlagsInUse', () => {
       ...unsupportedFlags,
     } as unknown as LighthouseOptions);
     expect(ui()).toHaveLoggedTimes(1);
-    expect(ui()).toHaveLoggedLevel('debug');
-    expect(ui()).toHaveLoggedMessage(
+    expect(ui()).toHaveLogged(
+      'debug',
       `${yellow('⚠')} Plugin ${bold(
         'lighthouse',
       )} used unsupported flags: ${bold(

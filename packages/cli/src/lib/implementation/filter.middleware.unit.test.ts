@@ -314,14 +314,14 @@ describe('filterMiddleware', () => {
       verbose: true,
     });
 
-    expect(ui()).toHaveLoggedNthLevel(1, 'info');
-    expect(ui()).toHaveLoggedNthLevel(2, 'info');
-    expect(ui()).toHaveLoggedNthMessage(
+    expect(ui()).toHaveNthLogged(
       1,
+      'info',
       'The --skipPlugins argument removed the following categories: c1, c2.',
     );
-    expect(ui()).toHaveLoggedNthMessage(
+    expect(ui()).toHaveNthLogged(
       2,
+      'info',
       'The --onlyPlugins argument removed the following categories: c1, c2.',
     );
   });

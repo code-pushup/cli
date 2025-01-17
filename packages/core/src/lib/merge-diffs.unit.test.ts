@@ -63,13 +63,19 @@ describe('mergeDiffs', () => {
       ),
     ).resolves.toBe(path.join(MEMFS_VOLUME, 'report-diff.md'));
 
-    expect(ui()).toHaveLoggedNthMessageContaining(
+    expect(ui()).toHaveNthLogged(
       1,
-      'Skipped invalid report diff - Failed to read JSON file missing-report-diff.json',
+      'warn',
+      expect.stringContaining(
+        'Skipped invalid report diff - Failed to read JSON file missing-report-diff.json',
+      ),
     );
-    expect(ui()).toHaveLoggedNthMessageContaining(
+    expect(ui()).toHaveNthLogged(
       2,
-      'Skipped invalid report diff - Invalid reports diff in invalid-report-diff.json',
+      'warn',
+      expect.stringContaining(
+        'Skipped invalid report diff - Invalid reports diff in invalid-report-diff.json',
+      ),
     );
   });
 });
