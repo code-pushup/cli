@@ -2,151 +2,66 @@ import { cliui } from '@poppinss/cliui';
 import type { SyncExpectationResult } from '@vitest/expect';
 import { expect } from 'vitest';
 import {
+  type ExpectedMessage,
   type LogLevel,
-  extractLevel,
-  extractMessage,
+  extractLogDetails,
   hasExpectedMessage,
-  messageContains,
 } from './ui-logger.matcher.utils';
 
 type CliUi = ReturnType<typeof cliui>;
 
 export type CustomUiLoggerMatchers = {
-  toHaveLoggedMessage: (expected: string) => void;
-  toHaveLoggedNthMessage: (nth: number, expected: string) => void;
-  toHaveLoggedLevel: (expected: LogLevel) => void;
-  toHaveLoggedNthLevel: (nth: number, expected: LogLevel) => void;
-  toHaveLoggedMessageContaining: (expected: string) => void;
-  toHaveLoggedNthMessageContaining: (nth: number, expected: string) => void;
-  toHaveLogged: () => void;
+  toHaveLogged: (level: LogLevel, message: ExpectedMessage) => void;
+  toHaveNthLogged: (
+    nth: number,
+    level: LogLevel,
+    message: ExpectedMessage,
+  ) => void;
   toHaveLoggedTimes: (times: number) => void;
+  toHaveLogs: () => void;
 };
 
 expect.extend({
-  toHaveLoggedMessage: assertMessageLogged,
-  toHaveLoggedNthMessage: assertNthMessageLogged,
-  toHaveLoggedLevel: assertLevelLogged,
-  toHaveLoggedNthLevel: assertNthLevelLogged,
-  toHaveLoggedMessageContaining: assertMessageContaining,
-  toHaveLoggedNthMessageContaining: assertNthMessageContaining,
-  toHaveLogged: assertLogs,
+  toHaveLogged: assertLogged,
+  toHaveNthLogged: assertNthLogged,
   toHaveLoggedTimes: assertLogCount,
+  toHaveLogs: assertLogs,
 });
 
-function assertMessageLogged(
+function assertLogged(
   actual: CliUi,
-  expected: string,
+  level: LogLevel,
+  message: ExpectedMessage,
 ): SyncExpectationResult {
-  const messages = actual.logger
-    .getRenderer()
-    .getLogs()
-    .map(({ message }) => extractMessage(message));
+  const logs = extractLogDetails(actual.logger);
 
-  const pass = messages.some(msg => hasExpectedMessage(expected, msg));
+  const pass = logs.some(
+    log => log.level === level && hasExpectedMessage(message, log.message),
+  );
   return {
     pass,
     message: () =>
       pass
-        ? `Expected not to have logged: ${expected}`
-        : `Expected to have logged: ${expected}}`,
+        ? `Expected not to find a log with level "${level}" and message matching: ${message}`
+        : `Expected a log with level "${level}" and message matching: ${message}`,
   };
 }
 
-function assertNthMessageLogged(
+function assertNthLogged(
   actual: CliUi,
   nth: number,
-  expected: string,
+  level: LogLevel,
+  message: ExpectedMessage,
 ): SyncExpectationResult {
-  const messages = actual.logger
-    .getRenderer()
-    .getLogs()
-    .map(({ message }) => extractMessage(message));
+  const log = extractLogDetails(actual.logger)[nth - 1];
 
-  const pass = hasExpectedMessage(expected, messages[nth - 1]);
+  const pass = log?.level === level && hasExpectedMessage(message, log.message);
   return {
     pass,
     message: () =>
       pass
-        ? `Expected not to have logged at position ${nth}: ${expected}`
-        : `Expected to have logged at position ${nth}: ${expected}`,
-  };
-}
-
-function assertLevelLogged(
-  actual: CliUi,
-  expected: LogLevel,
-): SyncExpectationResult {
-  const levels = actual.logger
-    .getRenderer()
-    .getLogs()
-    .map(({ message }) => extractLevel(message));
-
-  const pass = levels.includes(expected);
-  return {
-    pass,
-    message: () =>
-      pass
-        ? `Expected not to have ${expected} log level`
-        : `Expected to have ${expected} log level`,
-  };
-}
-
-function assertNthLevelLogged(
-  actual: CliUi,
-  nth: number,
-  expected: LogLevel,
-): SyncExpectationResult {
-  const levels = actual.logger
-    .getRenderer()
-    .getLogs()
-    .map(({ message }) => extractLevel(message));
-
-  const pass = levels[nth - 1] === expected;
-  return {
-    pass,
-    message: () =>
-      pass
-        ? `Expected not to have log level at position ${nth}: ${expected}`
-        : `Expected to have log level at position ${nth}: ${expected}`,
-  };
-}
-
-function assertMessageContaining(
-  actual: CliUi,
-  expected: string,
-): SyncExpectationResult {
-  const messages = actual.logger
-    .getRenderer()
-    .getLogs()
-    .map(({ message }) => extractMessage(message));
-
-  const pass = messages.some(msg => messageContains(expected, msg));
-  return {
-    pass,
-    message: () =>
-      pass
-        ? `Expected not to find a message containing: ${expected}`
-        : `Expected to find a message containing: ${expected}, but none matched.`,
-  };
-}
-
-function assertNthMessageContaining(
-  actual: CliUi,
-  nth: number,
-  expected: string,
-): SyncExpectationResult {
-  const messages = actual.logger
-    .getRenderer()
-    .getLogs()
-    .map(({ message }) => extractMessage(message));
-
-  const pass = messageContains(expected, messages[nth - 1]);
-  return {
-    pass,
-    message: () =>
-      pass
-        ? `Expected not to find the fragment "${expected}" in the message at position ${nth}`
-        : `Expected to find the fragment "${expected}" in the message at position ${nth}, but it was not found.`,
+        ? `Expected not to find a log at position ${nth} with level "${level}" and message matching: ${message}`
+        : `Expected a log at position ${nth} with level "${level}" and message matching: ${message}`,
   };
 }
 
@@ -158,8 +73,8 @@ function assertLogs(actual: CliUi): SyncExpectationResult {
     pass,
     message: () =>
       pass
-        ? `Expected not to have any logs`
-        : `Expected to have some logs, but no logs were produced`,
+        ? `Expected no logs, but found ${logs.length}`
+        : `Expected some logs, but no logs were produced`,
   };
 }
 
@@ -174,7 +89,7 @@ function assertLogCount(
     pass,
     message: () =>
       pass
-        ? `Expected not to have exactly ${expected} logs`
-        : `Expected to have ${expected} logs, but got ${logs.length}`,
+        ? `Expected not to find exactly ${expected} logs, but found ${logs.length}`
+        : `Expected exactly ${expected} logs, but found ${logs.length}`,
   };
 }

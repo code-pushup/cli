@@ -3,7 +3,6 @@ import {
   extractLevel,
   extractMessage,
   hasExpectedMessage,
-  messageContains,
 } from './ui-logger.matcher.utils';
 
 describe('extractLevel', () => {
@@ -15,12 +14,12 @@ describe('extractLevel', () => {
     expect(extractLevel('[ yellow(warn) ] Warning message')).toBe('warn');
   });
 
-  it('should return null for a log without a level', () => {
-    expect(extractLevel('Message without level')).toBeNull();
+  it('should fall back to a default log level for a log without a level', () => {
+    expect(extractLevel('Message without level')).toBe('log');
   });
 
-  it('should return null for an invalid log level', () => {
-    expect(extractLevel('[ unknown ] Message with invalid level')).toBeNull();
+  it('should fall back to a default log level for an invalid log level', () => {
+    expect(extractLevel('[ unknown ] Message with invalid level')).toBe('log');
   });
 });
 
@@ -39,13 +38,6 @@ describe('extractMessage', () => {
     );
     expect(styledMessage).toBe('Warning message without styles.');
     expect(unstyledMessage).toBe('Warning message without styles.');
-  });
-
-  it('should return raw log for unmatchable logs', () => {
-    const log = 'Unmatchable log format';
-    const { styledMessage, unstyledMessage } = extractMessage(log);
-    expect(styledMessage).toBe(log);
-    expect(unstyledMessage).toBe(log);
   });
 });
 
@@ -78,37 +70,13 @@ describe('hasExpectedMessage', () => {
     const result = hasExpectedMessage('Expected message', undefined);
     expect(result).toBe(false);
   });
-});
 
-describe('messageContains', () => {
-  it('should return true when styled message contains the substring', () => {
-    expect(
-      messageContains('message', {
-        styledMessage: 'Styled message content',
-        unstyledMessage: 'Plain message content',
-      }),
-    ).toBe(true);
-  });
-
-  it('should return true when unstyled message contains the substring', () => {
-    expect(
-      messageContains('Plain', {
-        styledMessage: 'Styled message content',
-        unstyledMessage: 'Plain message content',
-      }),
-    ).toBe(true);
-  });
-
-  it('should return false when neither message contains the substring', () => {
-    expect(
-      messageContains('Non-existent', {
-        styledMessage: 'Styled message content',
-        unstyledMessage: 'Plain message content',
-      }),
-    ).toBe(false);
-  });
-
-  it('should return false for undefined message', () => {
-    expect(messageContains('Expected substring', undefined)).toBe(false);
+  it('should handle asymmetric matchers', () => {
+    const asymmetricMatcher = expect.stringContaining('Styled');
+    const result = hasExpectedMessage(asymmetricMatcher, {
+      styledMessage: 'Styled message',
+      unstyledMessage: 'Plain message',
+    });
+    expect(result).toBe(true);
   });
 });

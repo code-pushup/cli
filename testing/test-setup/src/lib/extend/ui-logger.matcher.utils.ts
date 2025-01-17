@@ -1,7 +1,22 @@
+import type { Logger } from '@poppinss/cliui';
 import type { LoggingTypes } from '@poppinss/cliui/build/src/types';
 import { removeColorCodes } from '@code-pushup/test-utils';
 
-export type LogLevel = Exclude<LoggingTypes, 'warning'> | 'warn';
+export type LogLevel = Exclude<LoggingTypes, 'warning'> | 'warn' | 'log';
+
+export type ExpectedMessage =
+  | string
+  | { asymmetricMatch: (value: string) => boolean };
+
+type ExtractedMessage = {
+  styledMessage: string;
+  unstyledMessage: string;
+};
+
+type LogDetails = {
+  level: LogLevel;
+  message: ExtractedMessage;
+};
 
 const LOG_LEVELS = new Set<LogLevel>([
   'success',
@@ -11,17 +26,25 @@ const LOG_LEVELS = new Set<LogLevel>([
   'debug',
   'await',
   'warn',
+  'log',
 ]);
 
-type ExtractedMessage = {
-  styledMessage: string;
-  unstyledMessage: string;
-};
+export function extractLogDetails(logger: Logger): LogDetails[] {
+  return logger
+    .getRenderer()
+    .getLogs()
+    .map(
+      ({ message }): LogDetails => ({
+        level: extractLevel(message),
+        message: extractMessage(message),
+      }),
+    );
+}
 
-export function extractLevel(log: string): LogLevel | null {
+export function extractLevel(log: string): LogLevel {
   const match = removeColorCodes(log).match(/^\[\s*\w+\((?<level>\w+)\)\s*]/);
   const level = match?.groups?.['level'] as LogLevel | undefined;
-  return level && LOG_LEVELS.has(level) ? level : null;
+  return level && LOG_LEVELS.has(level) ? level : 'log';
 }
 
 export function extractMessage(log: string): ExtractedMessage {
@@ -34,26 +57,27 @@ export function extractMessage(log: string): ExtractedMessage {
 }
 
 export function hasExpectedMessage(
-  expected: string,
+  expected: ExpectedMessage,
   message: ExtractedMessage | undefined,
 ): boolean {
   if (!message) {
     return false;
+  }
+  if (isAsymmetricMatcher(expected)) {
+    return (
+      expected.asymmetricMatch(message.styledMessage) ||
+      expected.asymmetricMatch(message.unstyledMessage)
+    );
   }
   return (
     message.styledMessage === expected || message.unstyledMessage === expected
   );
 }
 
-export function messageContains(
-  expected: string,
-  message: ExtractedMessage | undefined,
-): boolean {
-  if (!message) {
-    return false;
-  }
+function isAsymmetricMatcher(
+  value: unknown,
+): value is { asymmetricMatch: (input: string) => boolean } {
   return (
-    message.styledMessage.includes(expected) ||
-    message.unstyledMessage.includes(expected)
+    typeof value === 'object' && value != null && 'asymmetricMatch' in value
   );
 }
