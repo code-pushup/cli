@@ -1,5 +1,3 @@
-import { SyntaxKind } from 'ts-morph';
-
 /** The possible coverage types for documentation analysis */
 export type CoverageType =
   | 'classes'
@@ -10,19 +8,6 @@ export type CoverageType =
   | 'variables'
   | 'properties'
   | 'types';
-
-/** Maps the SyntaxKind from the library ts-morph to the coverage type. */
-export const SYNTAX_COVERAGE_MAP = new Map<SyntaxKind, CoverageType>([
-  [SyntaxKind.ClassDeclaration, 'classes'],
-  [SyntaxKind.MethodDeclaration, 'methods'],
-  [SyntaxKind.FunctionDeclaration, 'functions'],
-  [SyntaxKind.InterfaceDeclaration, 'interfaces'],
-  [SyntaxKind.EnumDeclaration, 'enums'],
-  [SyntaxKind.VariableDeclaration, 'variables'],
-  [SyntaxKind.VariableStatement, 'variables'],
-  [SyntaxKind.PropertyDeclaration, 'properties'],
-  [SyntaxKind.TypeAliasDeclaration, 'types'],
-]);
 
 /** The undocumented node is the node that is not documented and has the information for the report. */
 export type UndocumentedNode = {

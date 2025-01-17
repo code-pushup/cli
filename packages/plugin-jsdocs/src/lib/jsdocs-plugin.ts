@@ -7,10 +7,9 @@ import {
   filterGroupsByOnlyAudits,
 } from './utils.js';
 
-export const PLUGIN_TITLE = 'Documentation coverage';
+export const PLUGIN_TITLE = 'JSDoc coverage';
 
-export const PLUGIN_DESCRIPTION =
-  'Official Code PushUp documentation coverage plugin.';
+export const PLUGIN_DESCRIPTION = 'Official Code PushUp JSDoc coverage plugin.';
 
 export const PLUGIN_DOCS_URL =
   'https://www.npmjs.com/package/@code-pushup/jsdocs-plugin/';
@@ -25,9 +24,7 @@ export const PLUGIN_DOCS_URL =
  *   // ... core config ...
  *   plugins: [
  *     // ... other plugins ...
- *     jsDocsPlugin({
- *       patterns: ['src&#47;**&#47;*.{ts,tsx}']
- *     })
+ *     jsDocsPlugin(['**&#47;*.ts'])
  *   ]
  * }
  *

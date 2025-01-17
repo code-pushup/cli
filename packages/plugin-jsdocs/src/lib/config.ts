@@ -33,4 +33,10 @@ export const jsDocsPluginConfigSchema = z
       : target,
   );
 
+/** Type of the config that is passed to the plugin */
 export type JsDocsPluginConfig = z.input<typeof jsDocsPluginConfigSchema>;
+
+/** Same as JsDocsPluginConfig but processed so the config is already an object even if it was passed the array of patterns */
+export type JsDocsPluginTransformedConfig = z.infer<
+  typeof jsDocsPluginConfigSchema
+>;

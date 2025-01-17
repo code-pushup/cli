@@ -1,5 +1,5 @@
 import type { Audit, Group } from '@code-pushup/models';
-import type { JsDocsPluginConfig } from './config.js';
+import type { JsDocsPluginTransformedConfig } from './config.js';
 import { AUDITS_MAP } from './constants.js';
 
 /**
@@ -10,7 +10,7 @@ import { AUDITS_MAP } from './constants.js';
  * @returns The audits.
  */
 export function filterAuditsByPluginConfig(
-  config: Pick<JsDocsPluginConfig, 'onlyAudits' | 'skipAudits'>,
+  config: Pick<JsDocsPluginTransformedConfig, 'onlyAudits' | 'skipAudits'>,
 ): Audit[] {
   const { onlyAudits, skipAudits } = config;
 
@@ -38,7 +38,7 @@ export function filterAuditsByPluginConfig(
  */
 export function filterGroupsByOnlyAudits(
   groups: Group[],
-  options: Pick<JsDocsPluginConfig, 'onlyAudits' | 'skipAudits'>,
+  options: Pick<JsDocsPluginTransformedConfig, 'onlyAudits' | 'skipAudits'>,
 ): Group[] {
   const audits = filterAuditsByPluginConfig(options);
   return groups

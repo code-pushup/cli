@@ -1,8 +1,8 @@
 # @code-pushup/jsdocs-plugin
 
-[![npm](https://img.shields.io/npm/v/%40code-pushup%2Fdoc-coverage-plugin.svg)](https://www.npmjs.com/package/@code-pushup/jsdocs-plugin)
-[![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Fdoc-coverage-plugin)](https://npmtrends.com/@code-pushup/jsdocs-plugin)
-[![dependencies](https://img.shields.io/librariesio/release/npm/%40code-pushup%2Fdoc-coverage-plugin)](https://www.npmjs.com/package/@code-pushup/jsdocs-plugin?activeTab=dependencies)
+[![npm](https://img.shields.io/npm/v/%40code-pushup%2Fjsdocs-plugin.svg)](https://www.npmjs.com/package/@code-pushup/jsdocs-plugin)
+[![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Fjsdocs-plugin)](https://npmtrends.com/@code-pushup/jsdocs-plugin)
+[![dependencies](https://img.shields.io/librariesio/release/npm/%40code-pushup%2Fjsdocs-plugin)](https://www.npmjs.com/package/@code-pushup/jsdocs-plugin?activeTab=dependencies)
 
 📚 **Code PushUp plugin for tracking documentation coverage.** 📝
 
@@ -44,9 +44,7 @@ Measured documentation types are mapped to Code PushUp audits in the following w
      // ...
      plugins: [
        // ...
-       jsDocsPlugin({
-         patterns: ['**/*.ts'],
-       }),
+       jsDocsPlugin(['**/*.ts']),
      ],
    };
    ```
@@ -65,8 +63,8 @@ Measured documentation types are mapped to Code PushUp audits in the following w
          refs: [
            {
              type: 'group',
-             plugin: 'doc-coverage',
-             slug: 'doc-coverage',
+             plugin: 'jsdocs',
+             slug: 'jsdocs',
              weight: 1,
            },
            // ...
@@ -157,8 +155,8 @@ This plugin provides a group for convenient declaration in your config. When def
          refs: [
            {
              type: 'group',
-             plugin: 'doc-coverage',
-             slug: 'doc-coverage',
+             plugin: 'jsdocs',
+             slug: 'jsdocs',
              weight: 1,
            },
            // ...
@@ -179,14 +177,14 @@ Each documentation type still has its own audit. So when you want to include a s
          refs: [
            {
              type: 'audit',
-             plugin: 'doc-coverage',
-             slug: 'class-doc-coverage',
+             plugin: 'jsdocs',
+             slug: 'class-jsdocs',
              weight: 2,
            },
            {
              type: 'audit',
-             plugin: 'doc-coverage',
-             slug: 'function-doc-coverage',
+             plugin: 'jsdocs',
+             slug: 'function-jsdocs',
              weight: 1,
            },
            // ...
@@ -207,7 +205,7 @@ For instance, this is an example of the plugin output:
   "packageName": "@code-pushup/jsdocs-plugin",
   "version": "0.57.0",
   "title": "Documentation coverage",
-  "slug": "doc-coverage",
+  "slug": "jsdocs",
   "icon": "folder-src",
   "duration": 920,
   "date": "2024-12-17T16:45:28.581Z",
@@ -228,7 +226,7 @@ For instance, this is an example of the plugin output:
   "docsUrl": "https://www.npmjs.com/package/@code-pushup/jsdocs-plugin/",
   "groups": [
     {
-      "slug": "doc-coverage",
+      "slug": "jsdocs",
       "refs": [
         {
           "slug": "percentage-coverage",

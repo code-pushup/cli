@@ -12,7 +12,7 @@ import {
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
-describe('PLUGIN collect report with doc-coverage-plugin NPM package', () => {
+describe('PLUGIN collect report with jsdocs-plugin NPM package', () => {
   const fixturesDir = path.join(
     'e2e',
     'plugin-jsdocs-e2e',
@@ -47,7 +47,7 @@ describe('PLUGIN collect report with doc-coverage-plugin NPM package', () => {
     await teardownTestFolder(reactOutputDir);
   });
 
-  it('should run Doc Coverage plugin for Angular example dir and create report.json', async () => {
+  it('should run JSDoc plugin for Angular example dir and create report.json', async () => {
     const { code, stdout } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'collect', '--no-progress'],

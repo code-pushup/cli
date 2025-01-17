@@ -1,9 +1,9 @@
 import { SyntaxKind } from 'ts-morph';
-import {
-  type CoverageType,
-  type DocumentationCoverageReport,
-  type DocumentationReport,
-  SYNTAX_COVERAGE_MAP,
+import { SYNTAX_COVERAGE_MAP } from './constants.js';
+import type {
+  CoverageType,
+  DocumentationCoverageReport,
+  DocumentationReport,
 } from './models.js';
 
 /**

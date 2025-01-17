@@ -1,5 +1,5 @@
-import docCoveragePlugin from '@code-pushup/doc-coverage-plugin';
+import jsDocsPlugin from '@code-pushup/jsdocs-plugin';
 
 export default {
-  plugins: [await docCoveragePlugin({ sourceGlob: ['**/*.ts'] })],
+  plugins: [jsDocsPlugin(['**/*.ts'])],
 };

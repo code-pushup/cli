@@ -1,7 +1,7 @@
 import type { Audit, Group } from '@code-pushup/models';
 import type { AuditSlug } from './models.js';
 
-export const PLUGIN_SLUG = 'doc-coverage';
+export const PLUGIN_SLUG = 'jsdocs';
 
 export const AUDITS_MAP: Record<AuditSlug, Audit> = {
   'classes-coverage': {
