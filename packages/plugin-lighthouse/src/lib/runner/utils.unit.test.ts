@@ -11,7 +11,7 @@ import {
   type CoreConfig,
   auditOutputsSchema,
 } from '@code-pushup/models';
-import { MEMFS_VOLUME, getLogMessages } from '@code-pushup/test-utils';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { unsupportedDetailTypes } from './details/details.js';
 import {
@@ -242,7 +242,7 @@ describe('toAuditOutputs', () => {
           }) as Result,
       ),
     );
-    expect(getLogMessages(ui().logger)).toHaveLength(0);
+    expect(ui()).not.toHaveLogged();
   });
 
   it('should inform that for all unsupported details if verbose IS given', () => {
@@ -260,7 +260,7 @@ describe('toAuditOutputs', () => {
       ),
       { verbose: true },
     );
-    expect(getLogMessages(ui().logger)).toHaveLength(1);
+    expect(ui()).toHaveLoggedTimes(1);
   });
 
   it('should not parse empty audit details', () => {
@@ -343,9 +343,7 @@ describe('getConfig', () => {
     await expect(
       getConfig({ preset: 'wrong' as 'desktop' }),
     ).resolves.toBeUndefined();
-    expect(getLogMessages(ui().logger).at(0)).toMatch(
-      'Preset "wrong" is not supported',
-    );
+    expect(ui()).toHaveLoggedMessage('Preset "wrong" is not supported');
   });
 
   it('should load config from json file if configPath is specified', async () => {
@@ -378,9 +376,7 @@ describe('getConfig', () => {
     await expect(
       getConfig({ configPath: path.join('wrong.not') }),
     ).resolves.toBeUndefined();
-    expect(getLogMessages(ui().logger).at(0)).toMatch(
-      'Format of file wrong.not not supported',
-    );
+    expect(ui()).toHaveLoggedMessage('Format of file wrong.not not supported');
   });
 });
 

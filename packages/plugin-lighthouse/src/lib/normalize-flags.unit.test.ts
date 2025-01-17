@@ -1,7 +1,6 @@
 import { bold, yellow } from 'ansis';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { DEFAULT_CHROME_FLAGS, LIGHTHOUSE_OUTPUT_PATH } from './constants.js';
 import { logUnsupportedFlagsInUse, normalizeFlags } from './normalize-flags.js';
@@ -11,9 +10,10 @@ import type { LighthouseOptions } from './types.js';
 describe('logUnsupportedFlagsInUse', () => {
   it('should log unsupported entries', () => {
     logUnsupportedFlagsInUse({ 'list-all-audits': true } as LighthouseOptions);
-    expect(getLogMessages(ui().logger)).toHaveLength(1);
-    expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ cyan(debug) ] ${yellow('⚠')} Plugin ${bold(
+    expect(ui()).toHaveLoggedTimes(1);
+    expect(ui()).toHaveLoggedLevel('debug');
+    expect(ui()).toHaveLoggedMessage(
+      `${yellow('⚠')} Plugin ${bold(
         'lighthouse',
       )} used unsupported flags: ${bold('list-all-audits')}`,
     );
@@ -32,9 +32,10 @@ describe('logUnsupportedFlagsInUse', () => {
       // unsupported
       ...unsupportedFlags,
     } as unknown as LighthouseOptions);
-    expect(getLogMessages(ui().logger)).toHaveLength(1);
-    expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ cyan(debug) ] ${yellow('⚠')} Plugin ${bold(
+    expect(ui()).toHaveLoggedTimes(1);
+    expect(ui()).toHaveLoggedLevel('debug');
+    expect(ui()).toHaveLoggedMessage(
+      `${yellow('⚠')} Plugin ${bold(
         'lighthouse',
       )} used unsupported flags: ${bold(
         'list-all-audits, list-locales, list-trace-categories',
@@ -118,7 +119,7 @@ describe('normalizeFlags', () => {
         ...supportedFlags,
       } as unknown as LighthouseOptions),
     ).toEqual(expect.not.objectContaining({ 'list-all-audits': true }));
-    expect(getLogMessages(ui().logger)).toHaveLength(1);
+    expect(ui()).toHaveLoggedTimes(1);
   });
 
   it('should remove any flag with an empty array as a value', () => {
