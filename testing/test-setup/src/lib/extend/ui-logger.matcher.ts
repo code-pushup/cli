@@ -23,6 +23,7 @@ export type CustomUiLoggerMatchers = {
 
 expect.extend({
   toHaveLogged: assertLogged,
+  // @ts-expect-error Custom matcher works despite TypeScript signature mismatch
   toHaveNthLogged: assertNthLogged,
   toHaveLoggedTimes: assertLogCount,
   toHaveLogs: assertLogs,
