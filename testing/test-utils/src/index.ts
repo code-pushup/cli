@@ -1,7 +1,6 @@
 export * from './lib/constants.js';
 export * from './lib/utils/execute-process-helper.mock.js';
 export * from './lib/utils/os-agnostic-paths.js';
-export * from './lib/utils/logging.js';
 export * from './lib/utils/env.js';
 export * from './lib/utils/git.js';
 export * from './lib/utils/string.js';
