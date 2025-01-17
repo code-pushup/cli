@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from 'vitest';
-import { getLogMessages } from '@code-pushup/test-utils';
 import type { FileResult } from './file-system.js';
 import { logMultipleResults, logPromiseResults } from './log-results.js';
 import { ui } from './logging.js';
@@ -68,9 +67,10 @@ describe('logPromiseResults', () => {
       'Uploaded reports successfully:',
       (result): string => result.value.toString(),
     );
-    const logs = getLogMessages(ui().logger);
-    expect(logs[0]).toBe('[ green(success) ] Uploaded reports successfully:');
-    expect(logs[1]).toBe('[ green(success) ] out.json');
+    expect(ui()).toHaveLoggedNthLevel(1, 'success');
+    expect(ui()).toHaveLoggedNthMessage(1, 'Uploaded reports successfully:');
+    expect(ui()).toHaveLoggedNthLevel(2, 'success');
+    expect(ui()).toHaveLoggedNthMessage(2, 'out.json');
   });
 
   it('should log on fail', () => {
@@ -79,8 +79,9 @@ describe('logPromiseResults', () => {
       'Generated reports failed:',
       (result: { reason: string }) => result.reason,
     );
-    const logs = getLogMessages(ui().logger);
-    expect(logs[0]).toBe('[ yellow(warn) ] Generated reports failed:');
-    expect(logs[1]).toBe('[ yellow(warn) ] fail');
+    expect(ui()).toHaveLoggedNthLevel(1, 'warn');
+    expect(ui()).toHaveLoggedNthMessage(1, 'Generated reports failed:');
+    expect(ui()).toHaveLoggedNthLevel(2, 'warn');
+    expect(ui()).toHaveLoggedNthMessage(2, 'fail');
   });
 });
