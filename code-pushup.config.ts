@@ -3,6 +3,7 @@ import { z } from 'zod';
 import {
   coverageCoreConfigNx,
   eslintCoreConfigNx,
+  jsDocsCoreConfig,
   jsPackagesCoreConfig,
   lighthouseCoreConfig,
 } from './code-pushup.preset.js';
@@ -39,4 +40,12 @@ export default mergeConfigs(
     'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
   ),
   await eslintCoreConfigNx(),
+  jsDocsCoreConfig([
+    'packages/**/src/**/*.ts',
+    '!packages/**/node_modules',
+    '!packages/**/{mocks,mock}',
+    '!**/*.{spec,test}.ts',
+    '!**/implementation/**',
+    '!**/internal/**',
+  ]),
 );
