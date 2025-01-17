@@ -1,0 +1,197 @@
+{
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "title": "JSDoc coverage",
+      "slug": "jsdocs",
+      "icon": "folder-docs",
+      "description": "Official Code PushUp JSDoc coverage plugin.",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/jsdocs-plugin/",
+      "groups": [
+        {
+          "slug": "documentation-coverage",
+          "refs": [
+            {
+              "slug": "classes-coverage",
+              "weight": 2
+            },
+            {
+              "slug": "methods-coverage",
+              "weight": 2
+            },
+            {
+              "slug": "functions-coverage",
+              "weight": 2
+            },
+            {
+              "slug": "interfaces-coverage",
+              "weight": 1
+            },
+            {
+              "slug": "variables-coverage",
+              "weight": 1
+            },
+            {
+              "slug": "properties-coverage",
+              "weight": 1
+            },
+            {
+              "slug": "types-coverage",
+              "weight": 1
+            },
+            {
+              "slug": "enums-coverage",
+              "weight": 1
+            }
+          ],
+          "title": "Documentation coverage",
+          "description": "Documentation coverage"
+        }
+      ],
+      "audits": [
+        {
+          "slug": "enums-coverage",
+          "displayValue": "0 undocumented enums",
+          "value": 0,
+          "score": 1,
+          "details": {
+            "issues": []
+          },
+          "title": "Enums coverage",
+          "description": "Documentation coverage of enums"
+        },
+        {
+          "slug": "interfaces-coverage",
+          "displayValue": "0 undocumented interfaces",
+          "value": 0,
+          "score": 1,
+          "details": {
+            "issues": []
+          },
+          "title": "Interfaces coverage",
+          "description": "Documentation coverage of interfaces"
+        },
+        {
+          "slug": "types-coverage",
+          "displayValue": "0 undocumented types",
+          "value": 0,
+          "score": 1,
+          "details": {
+            "issues": []
+          },
+          "title": "Types coverage",
+          "description": "Documentation coverage of types"
+        },
+        {
+          "slug": "functions-coverage",
+          "displayValue": "2 undocumented functions",
+          "value": 2,
+          "score": 0.3333,
+          "details": {
+            "issues": [
+              {
+                "message": "Missing functions documentation for notRealisticFunction",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-jsdocs-e2e/__test__/angular/src/app.component.spec.ts",
+                  "position": {
+                    "startLine": 1
+                  }
+                }
+              },
+              {
+                "message": "Missing functions documentation for mapEventToCustomEvent",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-jsdocs-e2e/__test__/angular/src/map-event.function.ts",
+                  "position": {
+                    "startLine": 3
+                  }
+                }
+              }
+            ]
+          },
+          "title": "Functions coverage",
+          "description": "Documentation coverage of functions"
+        },
+        {
+          "slug": "variables-coverage",
+          "displayValue": "1 undocumented variables",
+          "value": 1,
+          "score": 0,
+          "details": {
+            "issues": [
+              {
+                "message": "Missing variables documentation for someVariable",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-jsdocs-e2e/__test__/angular/src/map-event.function.ts",
+                  "position": {
+                    "startLine": 1
+                  }
+                }
+              }
+            ]
+          },
+          "title": "Variables coverage",
+          "description": "Documentation coverage of variables"
+        },
+        {
+          "slug": "classes-coverage",
+          "displayValue": "0 undocumented classes",
+          "value": 0,
+          "score": 1,
+          "details": {
+            "issues": []
+          },
+          "title": "Classes coverage",
+          "description": "Documentation coverage of classes"
+        },
+        {
+          "slug": "methods-coverage",
+          "displayValue": "1 undocumented methods",
+          "value": 1,
+          "score": 0.5,
+          "details": {
+            "issues": [
+              {
+                "message": "Missing methods documentation for sendEvent",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-jsdocs-e2e/__test__/angular/src/app.component.ts",
+                  "position": {
+                    "startLine": 15
+                  }
+                }
+              }
+            ]
+          },
+          "title": "Methods coverage",
+          "description": "Documentation coverage of methods"
+        },
+        {
+          "slug": "properties-coverage",
+          "displayValue": "1 undocumented properties",
+          "value": 1,
+          "score": 0,
+          "details": {
+            "issues": [
+              {
+                "message": "Missing properties documentation for title",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-jsdocs-e2e/__test__/angular/src/app.component.ts",
+                  "position": {
+                    "startLine": 5
+                  }
+                }
+              }
+            ]
+          },
+          "title": "Properties coverage",
+          "description": "Documentation coverage of properties"
+        }
+      ]
+    }
+  ]
+}
