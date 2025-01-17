@@ -15,7 +15,7 @@ import { executeProcess, readJsonFile } from '@code-pushup/utils';
 describe('PLUGIN collect report with doc-coverage-plugin NPM package', () => {
   const fixturesDir = path.join(
     'e2e',
-    'plugin-doc-coverage-e2e',
+    'plugin-jsdocs-e2e',
     'mocks',
     'fixtures',
   );

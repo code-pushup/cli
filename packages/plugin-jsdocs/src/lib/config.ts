@@ -33,4 +33,4 @@ export const jsDocsPluginConfigSchema = z
       : target,
   );
 
-export type JsDocsPluginConfig = z.infer<typeof jsDocsPluginConfigSchema>;
+export type JsDocsPluginConfig = z.input<typeof jsDocsPluginConfigSchema>;

@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases.js';
 
 export default defineConfig({
-  cacheDir: '../../node_modules/.vite/plugin-doc-coverage-e2e',
+  cacheDir: '../../node_modules/.vite/plugin-jsdocs-e2e',
   test: {
     reporters: ['basic'],
     testTimeout: 120_000,

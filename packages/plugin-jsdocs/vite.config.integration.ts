@@ -15,7 +15,7 @@ export default defineConfig({
     poolOptions: { threads: { singleThread: true } },
     coverage: {
       reporter: ['text', 'lcov'],
-      reportsDirectory: '../../coverage/plugin-doc-coverage/integration-tests',
+      reportsDirectory: '../../coverage/plugin-jsdocs/integration-tests',
       exclude: ['mocks/**', '**/types.ts'],
     },
     environment: 'node',

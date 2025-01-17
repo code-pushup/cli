@@ -20,7 +20,7 @@ import {
 
 type Node = {
   getKind: () => SyntaxKind;
-  getName: () => string;
+  getName: () => string | undefined;
   getStartLineNumber: () => number;
   getJsDocs: () => JSDoc[];
 };
@@ -89,7 +89,7 @@ export function getDocumentationReport(
       const allNodesFromFile = getAllNodesFromASourceFile(sourceFile);
 
       const coverageReportOfCurrentFile = getCoverageFromAllNodesOfFile(
-        allNodesFromFile as Node[],
+        allNodesFromFile,
         filePath,
       );
 
