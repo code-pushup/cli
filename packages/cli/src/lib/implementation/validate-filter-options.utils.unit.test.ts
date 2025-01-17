@@ -1,6 +1,5 @@
 import { describe, expect } from 'vitest';
 import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
-import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import type { FilterOptionType, Filterables } from './filter.model.js';
 import {
@@ -19,22 +18,22 @@ describe('validateFilterOption', () => {
     [
       'onlyPlugins',
       ['p1', 'p3', 'p4'],
-      'The --onlyPlugins argument references plugins that do not exist: p3, p4.',
+      'The --onlyPlugins argument references plugins that do not exist: p3, p4. The only valid plugin is p1.',
     ],
     [
       'onlyPlugins',
       ['p1', 'p3'],
-      'The --onlyPlugins argument references a plugin that does not exist: p3.',
+      'The --onlyPlugins argument references a plugin that does not exist: p3. The only valid plugin is p1.',
     ],
     [
       'onlyCategories',
       ['c1', 'c3', 'c4'],
-      'The --onlyCategories argument references categories that do not exist: c3, c4.',
+      'The --onlyCategories argument references categories that do not exist: c3, c4. The only valid category is c1.',
     ],
     [
       'onlyCategories',
       ['c1', 'c3'],
-      'The --onlyCategories argument references a category that does not exist: c3.',
+      'The --onlyCategories argument references a category that does not exist: c3. The only valid category is c1.',
     ],
   ])(
     'should log a warning if the only argument %s references nonexistent slugs %o along with valid ones',
@@ -51,8 +50,7 @@ describe('validateFilterOption', () => {
         },
         { itemsToFilter, skippedItems: [], verbose: false },
       );
-      const logs = getLogMessages(ui().logger);
-      expect(logs[0]).toContain(expected);
+      expect(ui()).toHaveLoggedMessage(expected);
     },
   );
 
@@ -60,22 +58,22 @@ describe('validateFilterOption', () => {
     [
       'skipPlugins',
       ['p3', 'p4'],
-      'The --skipPlugins argument references plugins that do not exist: p3, p4.',
+      'The --skipPlugins argument references plugins that do not exist: p3, p4. The only valid plugin is p1.',
     ],
     [
       'skipPlugins',
       ['p3'],
-      'The --skipPlugins argument references a plugin that does not exist: p3.',
+      'The --skipPlugins argument references a plugin that does not exist: p3. The only valid plugin is p1.',
     ],
     [
       'skipCategories',
       ['c3', 'c4'],
-      'The --skipCategories argument references categories that do not exist: c3, c4.',
+      'The --skipCategories argument references categories that do not exist: c3, c4. The only valid category is c1.',
     ],
     [
       'skipCategories',
       ['c3'],
-      'The --skipCategories argument references a category that does not exist: c3.',
+      'The --skipCategories argument references a category that does not exist: c3. The only valid category is c1.',
     ],
   ])(
     'should log a warning if the skip argument %s references nonexistent slugs %o',
@@ -95,8 +93,7 @@ describe('validateFilterOption', () => {
         },
         { itemsToFilter, skippedItems: [], verbose: false },
       );
-      const logs = getLogMessages(ui().logger);
-      expect(logs[0]).toContain(expected);
+      expect(ui()).toHaveLoggedMessage(expected);
     },
   );
 
@@ -111,7 +108,7 @@ describe('validateFilterOption', () => {
       },
       { itemsToFilter: ['p1'], skippedItems: [], verbose: false },
     );
-    expect(getLogMessages(ui().logger)).toHaveLength(0);
+    expect(ui()).not.toHaveLogged();
   });
 
   it('should log a category ignored as a result of plugin filtering', () => {
@@ -130,9 +127,9 @@ describe('validateFilterOption', () => {
       },
       { itemsToFilter: ['p1'], skippedItems: [], verbose: true },
     );
-    expect(getLogMessages(ui().logger)).toHaveLength(1);
-    expect(getLogMessages(ui().logger)[0]).toContain(
-      'The --onlyPlugins argument removed the following categories: c1, c3',
+    expect(ui()).toHaveLoggedTimes(1);
+    expect(ui()).toHaveLoggedMessage(
+      'The --onlyPlugins argument removed the following categories: c1, c3.',
     );
   });
 
@@ -221,9 +218,13 @@ describe('validateFilterOption', () => {
       { plugins, categories },
       { itemsToFilter: ['p1'], skippedItems: ['p1'], verbose: true },
     );
-    const logs = getLogMessages(ui().logger);
-    expect(logs[0]).toContain(
+    expect(ui()).toHaveLoggedNthMessage(
+      1,
       'The --skipPlugins argument references a skipped plugin: p1.',
+    );
+    expect(ui()).toHaveLoggedNthMessage(
+      2,
+      'The --skipPlugins argument removed the following categories: c1.',
     );
   });
 });
@@ -446,7 +447,6 @@ describe('validateSkippedCategories', () => {
   ] as NonNullable<Filterables['categories']>;
 
   it('should log info when categories are removed', () => {
-    const loggerSpy = vi.spyOn(ui().logger, 'info');
     validateSkippedCategories(
       categories,
       [
@@ -457,7 +457,8 @@ describe('validateSkippedCategories', () => {
       ] as NonNullable<Filterables['categories']>,
       true,
     );
-    expect(loggerSpy).toHaveBeenCalledWith(
+    expect(ui()).toHaveLoggedLevel('info');
+    expect(ui()).toHaveLoggedMessage(
       'Category c1 was removed because all its refs were skipped. Affected refs: g1 (group)',
     );
   });

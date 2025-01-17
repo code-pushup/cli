@@ -291,8 +291,6 @@ describe('filterMiddleware', () => {
   );
 
   it('should trigger verbose logging when skipPlugins or onlyPlugins removes categories', () => {
-    const loggerSpy = vi.spyOn(ui().logger, 'info');
-
     filterMiddleware({
       onlyPlugins: ['p1'],
       skipPlugins: ['p2'],
@@ -316,8 +314,15 @@ describe('filterMiddleware', () => {
       verbose: true,
     });
 
-    expect(loggerSpy).toHaveBeenCalledWith(
-      expect.stringContaining('removed the following categories'),
+    expect(ui()).toHaveLoggedNthLevel(1, 'info');
+    expect(ui()).toHaveLoggedNthLevel(2, 'info');
+    expect(ui()).toHaveLoggedNthMessage(
+      1,
+      'The --skipPlugins argument removed the following categories: c1, c2.',
+    );
+    expect(ui()).toHaveLoggedNthMessage(
+      2,
+      'The --onlyPlugins argument removed the following categories: c1, c2.',
     );
   });
 
