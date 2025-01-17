@@ -3,7 +3,6 @@ import {
   ISO_STRING_REGEXP,
   MINIMAL_CONFIG_MOCK,
   MINIMAL_REPORT_MOCK,
-  getLogMessages,
 } from '@code-pushup/test-utils';
 import {
   type ScoredReport,
@@ -115,7 +114,6 @@ describe('collectAndPersistReports', () => {
     await collectAndPersistReports(
       MINIMAL_CONFIG_MOCK as CollectAndPersistReportsOptions,
     );
-    const logs = getLogMessages(ui().logger);
-    expect(logs.at(-2)).toContain('Made with ❤ by code-pushup.dev');
+    expect(ui()).toHaveLoggedMessage('Made with ❤ by code-pushup.dev');
   });
 });
