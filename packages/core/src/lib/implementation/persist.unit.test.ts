@@ -7,7 +7,6 @@ import {
   MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,
   REPORT_MOCK,
-  getLogMessages,
 } from '@code-pushup/test-utils';
 import { scoreReport, sortReport, ui } from '@code-pushup/utils';
 import { logPersistedResults, persistReport } from './persist.js';
@@ -91,17 +90,27 @@ describe('persistReport', () => {
 describe('logPersistedResults', () => {
   it('should log report sizes correctly`', () => {
     logPersistedResults([{ status: 'fulfilled', value: ['out.json', 10_000] }]);
-    const logs = getLogMessages(ui().logger);
-    expect(logs[0]).toBe('[ green(success) ] Generated reports successfully: ');
-    expect(logs[1]).toContain('9.77 kB');
-    expect(logs[1]).toContain('out.json');
+    expect(ui()).toHaveNthLogged(
+      1,
+      'success',
+      expect.stringContaining('Generated reports successfully: '),
+    );
+    expect(ui()).toHaveNthLogged(
+      2,
+      'success',
+      expect.stringContaining('9.77 kB'),
+    );
+    expect(ui()).toHaveNthLogged(
+      2,
+      'success',
+      expect.stringContaining('out.json'),
+    );
   });
 
   it('should log fails correctly`', () => {
     logPersistedResults([{ status: 'rejected', reason: 'fail' }]);
-    const logs = getLogMessages(ui().logger);
-    expect(logs[0]).toBe('[ yellow(warn) ] Generated reports failed: ');
-    expect(logs[1]).toContain('fail');
+    expect(ui()).toHaveNthLogged(1, 'warn', 'Generated reports failed: ');
+    expect(ui()).toHaveNthLogged(2, 'warn', expect.stringContaining('fail'));
   });
 
   it('should log report sizes and fails correctly`', () => {
@@ -109,12 +118,26 @@ describe('logPersistedResults', () => {
       { status: 'fulfilled', value: ['out.json', 10_000] },
       { status: 'rejected', reason: 'fail' },
     ]);
-    const logs = getLogMessages(ui().logger);
-    expect(logs[0]).toBe('[ green(success) ] Generated reports successfully: ');
-    expect(logs[1]).toContain('out.json');
-    expect(logs[1]).toContain('9.77 kB');
-
-    expect(logs[2]).toContain('Generated reports failed: ');
-    expect(logs[2]).toContain('fail');
+    expect(ui()).toHaveNthLogged(
+      1,
+      'success',
+      'Generated reports successfully: ',
+    );
+    expect(ui()).toHaveNthLogged(
+      2,
+      'success',
+      expect.stringContaining('out.json'),
+    );
+    expect(ui()).toHaveNthLogged(
+      2,
+      'success',
+      expect.stringContaining('9.77 kB'),
+    );
+    expect(ui()).toHaveNthLogged(
+      3,
+      'warn',
+      expect.stringContaining('Generated reports failed: '),
+    );
+    expect(ui()).toHaveNthLogged(3, 'warn', expect.stringContaining('fail'));
   });
 });

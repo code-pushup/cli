@@ -1,7 +1,6 @@
 import { bold } from 'ansis';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import {
   type SimpleItemValue,
@@ -147,15 +146,17 @@ describe('parseTableItemPropertyValue', () => {
       }),
     ).toBe('');
 
-    expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ blue(info) ] Value type ${bold('subitems')} is not implemented`,
+    expect(ui()).toHaveLogged(
+      'info',
+      `Value type ${bold('subitems')} is not implemented`,
     );
   });
 
   it('should parse value item debugdata to empty string and log implemented', () => {
     expect(parseTableItemPropertyValue({ type: 'debugdata' })).toBe('');
-    expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ blue(info) ] Value type ${bold('debugdata')} is not implemented`,
+    expect(ui()).toHaveLogged(
+      'info',
+      `Value type ${bold('debugdata')} is not implemented`,
     );
   });
 
@@ -362,8 +363,9 @@ describe('formatTableItemPropertyValue', () => {
       ),
     ).toBe('');
 
-    expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ blue(info) ] Format type ${bold('multi')} is not implemented`,
+    expect(ui()).toHaveLogged(
+      'info',
+      `Format type ${bold('multi')} is not implemented`,
     );
   });
 
@@ -374,8 +376,9 @@ describe('formatTableItemPropertyValue', () => {
         'thumbnail',
       ),
     ).toBe('');
-    expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ blue(info) ] Format type ${bold('thumbnail')} is not implemented`,
+    expect(ui()).toHaveLogged(
+      'info',
+      `Format type ${bold('thumbnail')} is not implemented`,
     );
   });
 
