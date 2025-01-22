@@ -2,7 +2,12 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { PluginConfig } from '@code-pushup/models';
-import { type ESLintPluginConfig, eslintPluginConfigSchema } from './config.js';
+import {
+  type ESLintPluginConfig,
+  type ESLintPluginOptions,
+  eslintPluginConfigSchema,
+  eslintPluginOptionsSchema,
+} from './config.js';
 import { listAuditsAndGroups } from './meta/index.js';
 import { createRunnerConfig } from './runner/index.js';
 
@@ -24,14 +29,20 @@ import { createRunnerConfig } from './runner/index.js';
  * }
  *
  * @param config Configuration options.
+ * @param options Optional settings for customizing the plugin behavior.
  * @returns Plugin configuration as a promise.
  */
 export async function eslintPlugin(
   config: ESLintPluginConfig,
+  options?: ESLintPluginOptions,
 ): Promise<PluginConfig> {
   const targets = eslintPluginConfigSchema.parse(config);
 
-  const { audits, groups } = await listAuditsAndGroups(targets);
+  const customGroups = options
+    ? eslintPluginOptionsSchema.parse(options).groups
+    : undefined;
+
+  const { audits, groups } = await listAuditsAndGroups(targets, customGroups);
 
   const runnerScriptPath = path.join(
     fileURLToPath(path.dirname(import.meta.url)),

@@ -71,6 +71,49 @@ describe('eslintPlugin', () => {
     );
   });
 
+  it('should initialize with plugin options for custom rules', async () => {
+    cwdSpy.mockReturnValue(path.join(fixturesDir, 'nx-monorepo'));
+    const plugin = await eslintPlugin(
+      {
+        eslintrc: './packages/nx-plugin/eslint.config.js',
+        patterns: [
+          'packages/nx-plugin/**/*.ts',
+          'packages/nx-plugin/**/*.json',
+        ],
+      },
+      {
+        groups: [
+          {
+            slug: 'type-safety',
+            title: 'Type safety',
+            rules: [
+              '@typescript-eslint/no-explicit-any',
+              '@typescript-eslint/no-unsafe-*',
+            ],
+          },
+        ],
+      },
+    );
+
+    expect(plugin.groups).toContainEqual({
+      slug: 'type-safety',
+      title: 'Type safety',
+      refs: [
+        { slug: 'typescript-eslint-no-explicit-any', weight: 1 },
+        {
+          slug: 'typescript-eslint-no-unsafe-declaration-merging',
+          weight: 1,
+        },
+        { slug: 'typescript-eslint-no-unsafe-function-type', weight: 1 },
+      ],
+    });
+    expect(plugin.audits).toContainEqual(
+      expect.objectContaining<Partial<Audit>>({
+        slug: 'typescript-eslint-no-explicit-any',
+      }),
+    );
+  });
+
   it('should throw when invalid parameters provided', async () => {
     await expect(
       // @ts-expect-error simulating invalid non-TS config
