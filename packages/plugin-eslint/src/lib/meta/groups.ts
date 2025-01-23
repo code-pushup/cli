@@ -136,15 +136,13 @@ export function resolveGroupRefs(
   groupRules: Record<string, number>,
   rulesMap: Record<string, RuleData[]>,
 ): { refs: Group['refs']; invalidRules: string[] } {
-  const uniqueRuleIds = [...new Set(Object.keys(rulesMap))];
-
   return Object.entries(groupRules).reduce<{
     refs: Group['refs'];
     invalidRules: string[];
   }>(
     (acc, [rule, weight]) => {
       const matchedRuleIds = rule.endsWith('*')
-        ? expandWildcardRules(rule, uniqueRuleIds)
+        ? expandWildcardRules(rule, Object.keys(rulesMap))
         : [rule];
 
       const matchedRefs = matchedRuleIds.flatMap(ruleId => {
