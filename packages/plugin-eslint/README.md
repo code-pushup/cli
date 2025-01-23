@@ -95,7 +95,7 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
 
 ### Custom groups
 
-You can extend the plugin configuration with custom groups to categorize ESLint rules according to your project's specific needs. Custom groups allow you to assign weights to individual rules, influencing their impact on the report. Rules can be defined as an object with explicit weights or as an array where each rule defaults to a weight of 1.
+You can extend the plugin configuration with custom groups to categorize ESLint rules according to your project's specific needs. Custom groups allow you to assign weights to individual rules, influencing their impact on the report. Rules can be defined as an object with explicit weights or as an array where each rule defaults to a weight of 1. Additionally, you can use wildcard patterns (`*`) to include multiple rules with similar prefixes.
 
 ```js
 import eslintPlugin from '@code-pushup/eslint-plugin';
@@ -120,7 +120,7 @@ export default {
           {
             slug: 'type-safety',
             title: 'Type safety',
-            rules: ['@typescript-eslint/no-explicit-any', '@typescript-eslint/no-unsafe-*'],
+            rules: ['@typescript-eslint/no-unsafe-*'],
           },
         ],
       },
