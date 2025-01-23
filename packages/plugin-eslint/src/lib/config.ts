@@ -35,7 +35,18 @@ export type ESLintPluginRunnerConfig = {
 };
 
 const customGroupRulesSchema = z.union(
-  [z.array(z.string()).min(1), z.record(z.string(), z.number())],
+  [
+    z
+      .array(z.string())
+      .min(1, 'Custom group rules must contain at least 1 element'),
+    z.record(z.string(), z.number()).refine(
+      schema => Object.keys(schema).length > 0,
+      () => ({
+        code: 'too_small',
+        message: 'Custom group rules must contain at least 1 element',
+      }),
+    ),
+  ],
   {
     description:
       'Array of rule IDs with equal weights or object mapping rule IDs to specific weights',

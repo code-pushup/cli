@@ -71,15 +71,12 @@ describe('eslintPlugin', () => {
     );
   });
 
-  it('should initialize with plugin options for custom rules', async () => {
+  it('should initialize with plugin options for custom groups', async () => {
     cwdSpy.mockReturnValue(path.join(fixturesDir, 'nx-monorepo'));
     const plugin = await eslintPlugin(
       {
         eslintrc: './packages/nx-plugin/eslint.config.js',
-        patterns: [
-          'packages/nx-plugin/**/*.ts',
-          'packages/nx-plugin/**/*.json',
-        ],
+        patterns: ['packages/nx-plugin/**/*.ts'],
       },
       {
         groups: [
@@ -114,11 +111,36 @@ describe('eslintPlugin', () => {
     );
   });
 
+  it('should throw when custom group rules are empty', async () => {
+    await expect(
+      eslintPlugin(
+        {
+          eslintrc: './packages/nx-plugin/eslint.config.js',
+          patterns: ['packages/nx-plugin/**/*.ts'],
+        },
+        {
+          groups: [{ slug: 'type-safety', title: 'Type safety', rules: [] }],
+        },
+      ),
+    ).rejects.toThrow(/Custom group rules must contain at least 1 element/);
+    await expect(
+      eslintPlugin(
+        {
+          eslintrc: './packages/nx-plugin/eslint.config.js',
+          patterns: ['packages/nx-plugin/**/*.ts'],
+        },
+        {
+          groups: [{ slug: 'type-safety', title: 'Type safety', rules: {} }],
+        },
+      ),
+    ).rejects.toThrow(/Custom group rules must contain at least 1 element/);
+  });
+
   it('should throw when invalid parameters provided', async () => {
     await expect(
       // @ts-expect-error simulating invalid non-TS config
       eslintPlugin({ eslintrc: '.eslintrc.json' }),
-    ).rejects.toThrow('patterns');
+    ).rejects.toThrow(/Invalid input/);
   });
 
   it("should throw if eslintrc file doesn't exist", async () => {

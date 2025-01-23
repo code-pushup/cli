@@ -1,28 +1,15 @@
-import { bold } from 'ansis';
 import path from 'node:path';
-import { fromError, isZodErrorLike } from 'zod-validation-error';
 import {
   CONFIG_FILE_NAME,
   type CoreConfig,
   SUPPORTED_CONFIG_FILE_FORMATS,
   coreConfigSchema,
 } from '@code-pushup/models';
-import {
-  fileExists,
-  importModule,
-  zodErrorMessageBuilder,
-} from '@code-pushup/utils';
+import { fileExists, importModule, parseSchema } from '@code-pushup/utils';
 
 export class ConfigPathError extends Error {
   constructor(configPath: string) {
     super(`Provided path '${configPath}' is not valid.`);
-  }
-}
-
-export class ConfigValidationError extends Error {
-  constructor(configPath: string, message: string) {
-    const relativePath = path.relative(process.cwd(), configPath);
-    super(`Failed parsing core config in ${bold(relativePath)}.\n\n${message}`);
   }
 }
 
@@ -38,18 +25,16 @@ export async function readRcByPath(
     throw new ConfigPathError(filepath);
   }
 
-  const cfg = await importModule({ filepath, tsconfig, format: 'esm' });
+  const cfg: CoreConfig = await importModule({
+    filepath,
+    tsconfig,
+    format: 'esm',
+  });
 
-  try {
-    return coreConfigSchema.parse(cfg);
-  } catch (error) {
-    const validationError = fromError(error, {
-      messageBuilder: zodErrorMessageBuilder,
-    });
-    throw isZodErrorLike(error)
-      ? new ConfigValidationError(filepath, validationError.message)
-      : error;
-  }
+  return parseSchema(coreConfigSchema, cfg, {
+    schemaType: 'core config',
+    sourcePath: filepath,
+  });
 }
 
 export async function autoloadRc(tsconfig?: string): Promise<CoreConfig> {

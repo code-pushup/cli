@@ -2,6 +2,7 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { PluginConfig } from '@code-pushup/models';
+import { parseSchema } from '@code-pushup/utils';
 import {
   type ESLintPluginConfig,
   type ESLintPluginOptions,
@@ -36,10 +37,14 @@ export async function eslintPlugin(
   config: ESLintPluginConfig,
   options?: ESLintPluginOptions,
 ): Promise<PluginConfig> {
-  const targets = eslintPluginConfigSchema.parse(config);
+  const targets = parseSchema(eslintPluginConfigSchema, config, {
+    schemaType: 'ESLint plugin config',
+  });
 
   const customGroups = options
-    ? eslintPluginOptionsSchema.parse(options).groups
+    ? parseSchema(eslintPluginOptionsSchema, options, {
+        schemaType: 'ESLint plugin options',
+      }).groups
     : undefined;
 
   const { audits, groups } = await listAuditsAndGroups(targets, customGroups);
