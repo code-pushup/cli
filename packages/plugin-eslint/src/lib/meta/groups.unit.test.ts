@@ -288,14 +288,22 @@ describe('groupsFromCustomConfig', () => {
   });
 
   it('should log a warning when some of custom group rules are invalid', () => {
-    groupsFromCustomConfig(eslintRules, [
+    expect(
+      groupsFromCustomConfig(eslintRules, [
+        {
+          slug: 'custom-group',
+          title: 'Custom Group',
+          rules: {
+            'react/jsx-key': 3,
+            'invalid-rule': 3,
+          },
+        },
+      ]),
+    ).toEqual<Group[]>([
       {
         slug: 'custom-group',
         title: 'Custom Group',
-        rules: {
-          'react/jsx-key': 3,
-          'invalid-rule': 3,
-        },
+        refs: [{ slug: 'react-jsx-key', weight: 3 }],
       },
     ]);
     expect(ui()).toHaveLogged(
