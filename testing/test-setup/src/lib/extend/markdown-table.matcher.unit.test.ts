@@ -1,29 +1,41 @@
 import { describe, expect, it } from 'vitest';
 
 describe('markdown-table-matcher', () => {
-  const markdown = `
-    | 🏷 Category   | ⭐ Score    | 🛡 Audits |
-    |--------------|-------------|-----------|
-    | Performance  | 🟡 **61**   | 2         |
-    | SEO          | 🟢 **100**  | 1         |
-    | PWA          | 🔴 **0**    | 1         |
-  `;
+  it('should match table rows', () => {
+    const markdown = `
+      | 🏷 Category                 | ⭐ Score  | 🛡 Audits |
+      | :-------------------------- | :-------: | :-------: |
+      | [Security](#security)       | 🟡 **81** |     2     |
+      | [Performance](#performance) | 🟡 **64** |    56     |
+      | [SEO](#seo)                 | 🟡 **61** |    11     |
+`;
 
-  it('toContainMarkdownTableRow matches correctly', () => {
     expect(markdown).toContainMarkdownTableRow([
       '🏷 Category',
       '⭐ Score',
       '🛡 Audits',
     ]);
     expect(markdown).toContainMarkdownTableRow([
-      'Performance',
-      '🟡 **61**',
-      '2',
+      '[Performance](#performance)',
+      '🟡 **64**',
+      '56',
     ]);
     expect(markdown).not.toContainMarkdownTableRow([
       'Non-existent cell',
       'Row cell',
       'Test cell',
+    ]);
+  });
+
+  it('should match table row with escaped pipe symbols', () => {
+    const markdown = `
+      | Package    | Versions                 |
+      | :--------- | :----------------------- |
+      | \`eslint\` | \`^8.0.0 \\|\\| ^9.0.0\` |
+    `;
+    expect(markdown).toContainMarkdownTableRow([
+      '`eslint`',
+      '`^8.0.0 || ^9.0.0`',
     ]);
   });
 });
