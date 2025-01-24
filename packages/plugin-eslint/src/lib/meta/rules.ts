@@ -27,3 +27,11 @@ function mergeRuleIntoMap(map: RulesMap, rule: RuleData): RulesMap {
     },
   };
 }
+
+export function expandWildcardRules(
+  wildcard: string,
+  rules: string[],
+): string[] {
+  const prefix = wildcard.slice(0, -1);
+  return rules.filter(rule => rule.startsWith(prefix));
+}
