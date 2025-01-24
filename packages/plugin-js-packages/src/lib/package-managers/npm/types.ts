@@ -36,13 +36,10 @@ export type NpmAuditResultJson = {
 // Subset of NPM outdated JSON type
 export type NpmVersionOverview = {
   current?: string;
+  wanted: string;
   latest: string;
   type: DependencyGroupLong;
   homepage?: string;
-};
-
-export type NpmNormalizedOverview = Omit<NpmVersionOverview, 'current'> & {
-  current: string;
 };
 
 export type NpmOutdatedResultJson = Record<string, NpmVersionOverview>;

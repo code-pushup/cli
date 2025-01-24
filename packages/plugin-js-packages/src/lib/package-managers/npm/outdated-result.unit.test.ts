@@ -39,7 +39,7 @@ describe('npmToOutdatedResult', () => {
     ]);
   });
 
-  it('should skip dependencies without current version', () => {
+  it('should not skip dependencies without current version', () => {
     expect(
       npmToOutdatedResult(
         JSON.stringify({
@@ -50,7 +50,14 @@ describe('npmToOutdatedResult', () => {
           },
         }),
       ),
-    ).toEqual([]);
+    ).toEqual([
+      {
+        current: undefined,
+        latest: '5.3.0',
+        name: 'typescript',
+        type: 'dependencies',
+      },
+    ]);
   });
 
   it('should transform no dependencies to empty array', () => {
