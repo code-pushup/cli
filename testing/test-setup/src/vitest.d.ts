@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
+import type { CustomMarkdownTableMatchers } from './lib/extend/markdown-table.matcher.js';
 import type {
   CustomAsymmetricPathMatchers,
   CustomPathMatchers,
@@ -6,7 +7,10 @@ import type {
 import type { CustomUiLoggerMatchers } from './lib/extend/ui-logger.matcher.js';
 
 declare module 'vitest' {
-  interface Assertion extends CustomPathMatchers, CustomUiLoggerMatchers {}
+  interface Assertion
+    extends CustomPathMatchers,
+      CustomUiLoggerMatchers,
+      CustomMarkdownTableMatchers {}
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface AsymmetricMatchersContaining extends CustomAsymmetricPathMatchers {}
 }

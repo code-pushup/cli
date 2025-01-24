@@ -23,6 +23,7 @@ export default defineConfig({
     setupFiles: [
       '../test-setup/src/lib/reset.mocks.ts',
       '../test-setup/src/lib/extend/path.matcher.ts',
+      '../test-setup/src/lib/extend/markdown-table.matcher.ts',
     ],
   },
 });
