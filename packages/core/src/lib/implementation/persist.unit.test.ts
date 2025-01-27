@@ -71,9 +71,11 @@ describe('persistReport', () => {
       'utf8',
     );
     expect(mdReport).toContain('Code PushUp Report');
-    expect(mdReport).toMatch(
-      /\|\s*🏷 Category\s*\|\s*⭐ Score\s*\|\s*🛡 Audits\s*\|/,
-    );
+    expect(mdReport).toContainMarkdownTableRow([
+      '🏷 Category',
+      '⭐ Score',
+      '🛡 Audits',
+    ]);
 
     const jsonReport: Report = JSON.parse(
       await readFile(path.join(MEMFS_VOLUME, 'report.json'), 'utf8'),
