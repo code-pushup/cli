@@ -176,7 +176,7 @@ describe('auditDetailsIssues', () => {
           severity: 'warning',
         } as Issue,
       ])?.toString(),
-    ).toContainMarkdownTableRow(['⚠️ _warning_', '`index.js`', '4-7']);
+    ).toContainMarkdownTableRow(['⚠️ _warning_', '', '`index.js`', '4-7']);
   });
 });
 

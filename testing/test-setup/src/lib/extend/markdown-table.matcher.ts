@@ -19,9 +19,9 @@ function assertMarkdownTableRow(
     .filter(line => line.startsWith('|') && line.endsWith('|'))
     .map(line =>
       line
+        .slice(1, -1)
         .split(/(?<!\\)\|/)
-        .map(cell => cell.replace(/\\\|/g, '|').trim())
-        .filter(Boolean),
+        .map(cell => cell.replace(/\\\|/g, '|').trim()),
     );
 
   const pass = rows.some(
