@@ -46,7 +46,7 @@ Examples:
 #### CLI
 
 Install JS packages configure a target in your project json.
-See [CLI executor docs](./src/executor/cli/README.md) for details
+See [CLI executor docs](./src/executors/cli/README.md) for details
 
 Examples:
 
