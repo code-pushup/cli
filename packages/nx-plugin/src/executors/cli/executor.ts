@@ -3,7 +3,7 @@ import { execSync } from 'node:child_process';
 import { createCliCommand } from '../internal/cli.js';
 import { normalizeContext } from '../internal/context.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
-import { parseAutorunExecutorOptions } from './utils.js';
+import { mergeExecutorOptions, parseAutorunExecutorOptions } from './utils.js';
 
 export type ExecutorOutput = {
   success: boolean;
@@ -16,11 +16,15 @@ export default function runAutorunExecutor(
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
   const normalizedContext = normalizeContext(context);
-  const cliArgumentObject = parseAutorunExecutorOptions(
+  const mergedOptions = mergeExecutorOptions(
+    context.target?.options,
     terminalAndExecutorOptions,
+  );
+  const cliArgumentObject = parseAutorunExecutorOptions(
+    mergedOptions,
     normalizedContext,
   );
-  const { dryRun, verbose, command } = terminalAndExecutorOptions;
+  const { dryRun, verbose, command } = mergedOptions;
 
   const commandString = createCliCommand({ command, args: cliArgumentObject });
   const commandStringOptions = context.cwd ? { cwd: context.cwd } : {};

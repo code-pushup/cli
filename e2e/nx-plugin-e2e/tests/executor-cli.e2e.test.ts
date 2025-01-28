@@ -2,7 +2,10 @@ import { type Tree, updateProjectConfiguration } from '@nx/devkit';
 import path from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
 import { afterEach, expect } from 'vitest';
-import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
+import {
+  type AutorunCommandExecutorOptions,
+  generateCodePushupConfig,
+} from '@code-pushup/nx-plugin';
 import {
   generateWorkspaceAndProject,
   materializeTree,
@@ -20,6 +23,7 @@ import { INLINE_PLUGIN } from './inline-plugin.js';
 async function addTargetToWorkspace(
   tree: Tree,
   options: { cwd: string; project: string },
+  executorOptions?: AutorunCommandExecutorOptions,
 ) {
   const { cwd, project } = options;
   const projectCfg = readProjectConfiguration(tree, project);
@@ -29,6 +33,7 @@ async function addTargetToWorkspace(
       ...projectCfg.targets,
       'code-pushup': {
         executor: '@code-pushup/nx-plugin:cli',
+        ...(executorOptions && { options: executorOptions }),
       },
     },
   });
@@ -93,6 +98,42 @@ describe('executor command', () => {
     await expect(() =>
       readJsonFile(path.join(cwd, '.code-pushup', project, 'report.json')),
     ).rejects.toThrow('');
+  });
+
+  it('should execute collect executor and merge target and command-line options', async () => {
+    const cwd = path.join(testFileDir, 'execute-collect-with-merged-options');
+    await addTargetToWorkspace(
+      tree,
+      { cwd, project },
+      {
+        persist: {
+          outputDir: '.reports',
+          filename: 'report',
+        },
+      },
+    );
+
+    const { stdout, code } = await executeProcess({
+      command: 'npx',
+      args: [
+        'nx',
+        'run',
+        `${project}:code-pushup`,
+        'collect',
+        '--persist.filename=terminal-report',
+      ],
+      cwd,
+    });
+
+    expect(code).toBe(0);
+    const cleanStdout = removeColorCodes(stdout);
+    expect(cleanStdout).toContain(
+      'nx run my-lib:code-pushup collect --persist.filename=terminal-report',
+    );
+
+    await expect(
+      readJsonFile(path.join(cwd, '.reports', 'terminal-report.json')),
+    ).resolves.not.toThrow();
   });
 
   it('should execute collect executor and add report to sub folder named by project', async () => {
