@@ -1,0 +1,42 @@
+{
+  "name": "plugin-jsdocs",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/plugin-jsdocs/src",
+  "projectType": "library",
+  "tags": ["scope:plugin", "type:feature", "publishable"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/plugin-jsdocs",
+        "main": "packages/plugin-jsdocs/src/index.ts",
+        "tsConfig": "packages/plugin-jsdocs/tsconfig.lib.json",
+        "additionalEntryPoints": ["packages/plugin-jsdocs/src/bin.ts"],
+        "assets": ["packages/plugin-jsdocs/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/plugin-jsdocs/**/*.ts",
+          "packages/plugin-jsdocs/package.json"
+        ]
+      }
+    },
+    "unit-test": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "packages/plugin-jsdocs/vite.config.unit.ts"
+      }
+    },
+    "integration-test": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "packages/plugin-jsdocs/vite.config.integration.ts"
+      }
+    }
+  }
+}

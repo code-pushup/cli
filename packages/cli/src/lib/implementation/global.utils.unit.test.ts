@@ -55,10 +55,6 @@ describe('logErrorBeforeThrow', () => {
   });
 
   it('should log a custom error when OptionValidationError is thrown', async () => {
-    const loggerSpy = vi.spyOn(ui().logger, 'error').mockImplementation(() => {
-      /* empty */
-    });
-
     const errorFn = vi
       .fn()
       .mockRejectedValue(new OptionValidationError('Option validation failed'));
@@ -68,8 +64,7 @@ describe('logErrorBeforeThrow', () => {
     } catch {
       /* suppress */
     }
-
-    expect(loggerSpy).toHaveBeenCalledWith('Option validation failed');
+    expect(ui()).toHaveLogged('error', 'Option validation failed');
   });
 
   it('should rethrow errors other than OptionValidationError', async () => {

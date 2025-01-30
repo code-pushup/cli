@@ -143,7 +143,7 @@ export async function getCoveragePathForVitest(
     );
   }
 
-  if (!reporter?.includes('lcov')) {
+  if (!reporter?.some(format => format === 'lcov' || format === 'lcovonly')) {
     throw new Error(
       `Vitest coverage configuration at ${config} does not include LCOV report format for target ${target} in project ${project.name}. Add 'lcov' format under coverage > reporter.`,
     );

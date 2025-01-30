@@ -10,6 +10,14 @@ import eslintPlugin, {
   eslintConfigFromNxProject,
 } from './packages/plugin-eslint/src/index.js';
 import jsPackagesPlugin from './packages/plugin-js-packages/src/index.js';
+import jsDocsPlugin, {
+  JsDocsPluginConfig,
+} from './packages/plugin-jsdocs/src/index.js';
+import {
+  PLUGIN_SLUG,
+  groups,
+} from './packages/plugin-jsdocs/src/lib/constants.js';
+import { filterGroupsByOnlyAudits } from './packages/plugin-jsdocs/src/lib/utils.js';
 import lighthousePlugin, {
   lighthouseGroupRef,
 } from './packages/plugin-lighthouse/src/index.js';
@@ -82,6 +90,24 @@ export const eslintCategories: CategoryConfig[] = [
   },
 ];
 
+export function getJsDocsCategories(
+  config: JsDocsPluginConfig,
+): CategoryConfig[] {
+  return [
+    {
+      slug: 'docs',
+      title: 'Documentation',
+      description: 'Measures how much of your code is **documented**.',
+      refs: filterGroupsByOnlyAudits(groups, config).map(group => ({
+        weight: 1,
+        type: 'group',
+        plugin: PLUGIN_SLUG,
+        slug: group.slug,
+      })),
+    },
+  ];
+}
+
 export const coverageCategories: CategoryConfig[] = [
   {
     slug: 'code-coverage',
@@ -111,6 +137,19 @@ export const lighthouseCoreConfig = async (
   return {
     plugins: [await lighthousePlugin(url)],
     categories: lighthouseCategories,
+  };
+};
+
+export const jsDocsCoreConfig = (
+  config: JsDocsPluginConfig | string[],
+): CoreConfig => {
+  return {
+    plugins: [
+      jsDocsPlugin(Array.isArray(config) ? { patterns: config } : config),
+    ],
+    categories: getJsDocsCategories(
+      Array.isArray(config) ? { patterns: config } : config,
+    ),
   };
 };
 

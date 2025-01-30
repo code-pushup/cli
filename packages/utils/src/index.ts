@@ -100,6 +100,7 @@ export {
   kebabCaseToSentence,
   kebabCaseToCamelCase,
   formatToSentenceCase,
+  capitalize,
 } from './lib/case-conversions.js';
 export * from './lib/text-formats/index.js';
 export {
@@ -129,5 +130,4 @@ export type {
   CamelCaseToKebabCase,
 } from './lib/types.js';
 export { verboseUtils } from './lib/verbose-utils.js';
-export { zodErrorMessageBuilder } from './lib/zod-validation.js';
-export { capitalize } from './lib/case-conversions';
+export { parseSchema, SchemaValidationError } from './lib/zod-validation.js';
