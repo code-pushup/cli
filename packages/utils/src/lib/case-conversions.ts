@@ -16,17 +16,15 @@ export function kebabCaseToCamelCase<T extends string>(
 
 /**
  * Converts a camelCase string to kebab-case.
- * @param string - The camelCase string to convert.
+ * @param input - The camelCase string to convert.
  * @returns The kebab-case string.
  */
 export function camelCaseToKebabCase<T extends string>(
-  string: T,
+  input: T,
 ): CamelCaseToKebabCase<T> {
-  return string
-    .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2') // Split between uppercase followed by uppercase+lowercase
-    .replace(/([a-z])([A-Z])/g, '$1-$2') // Split between lowercase followed by uppercase
-    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2') // Additional split for consecutive uppercase
-    .replace(/[\s_]+/g, '-') // Replace spaces and underscores with hyphens
+  return input
+    .replace(/([a-z])([A-Z])/g, '$1-$2') // Insert dash before uppercase letters
+    .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2') // Handle consecutive uppercase letters
     .toLowerCase() as CamelCaseToKebabCase<T>;
 }
 

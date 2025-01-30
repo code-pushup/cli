@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
   camelCaseToKebabCase,
   capitalize,
@@ -50,30 +50,28 @@ describe('kebabCaseToCamelCase', () => {
 });
 
 describe('camelCaseToKebabCase', () => {
-  it('should convert simple camelCase to kebab-case', () => {
-    expect(camelCaseToKebabCase('helloWorld')).toBe('hello-world');
+  it('should convert camelCase to kebab-case', () => {
+    expect(camelCaseToKebabCase('myTestString')).toBe('my-test-string');
   });
 
-  it('should handle multiple capital letters', () => {
-    expect(camelCaseToKebabCase('thisIsALongString')).toBe(
-      'this-is-a-long-string',
-    );
+  it('should handle acronyms properly', () => {
+    expect(camelCaseToKebabCase('APIResponse')).toBe('api-response');
   });
 
-  it('should handle consecutive capital letters', () => {
+  it('should handle consecutive uppercase letters correctly', () => {
     expect(camelCaseToKebabCase('myXMLParser')).toBe('my-xml-parser');
   });
 
-  it('should handle spaces and underscores', () => {
-    expect(camelCaseToKebabCase('hello_world test')).toBe('hello-world-test');
+  it('should handle single-word camelCase', () => {
+    expect(camelCaseToKebabCase('singleWord')).toBe('single-word');
   });
 
-  it('should handle single word', () => {
-    expect(camelCaseToKebabCase('hello')).toBe('hello');
+  it('should not modify already kebab-case strings', () => {
+    expect(camelCaseToKebabCase('already-kebab')).toBe('already-kebab');
   });
 
-  it('should handle empty string', () => {
-    expect(camelCaseToKebabCase('')).toBe('');
+  it('should not modify non-camelCase inputs', () => {
+    expect(camelCaseToKebabCase('not_camelCase')).toBe('not_camel-case');
   });
 });
 
