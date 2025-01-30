@@ -1,11 +1,13 @@
-import type { CamelCaseToKebabCase } from './types.js';
+import type { CamelCaseToKebabCase, KebabCaseToCamelCase } from './types.js';
 
 /**
  * Converts a kebab-case string to camelCase.
  * @param string - The kebab-case string to convert.
  * @returns The camelCase string.
  */
-export function kebabCaseToCamelCase(string: string) {
+export function kebabCaseToCamelCase<T extends string>(
+  string: T,
+): KebabCaseToCamelCase<T> {
   return string
     .split('-')
     .map((segment, index) =>
@@ -13,7 +15,7 @@ export function kebabCaseToCamelCase(string: string) {
         ? segment
         : segment.charAt(0).toUpperCase() + segment.slice(1),
     )
-    .join('');
+    .join('') as KebabCaseToCamelCase<T>;
 }
 
 /**
@@ -98,4 +100,10 @@ export function toSentenceCase(input: string): string {
     .toLowerCase()
     .replace(/^(\w)/, match => match.toUpperCase()) // Capitalize first letter
     .replace(/\b([A-Z]{2,})\b/g, match => match); // Preserve uppercase acronyms
+}
+
+export function capitalize<T extends string>(text: T): Capitalize<T> {
+  return `${text.charAt(0).toLocaleUpperCase()}${text.slice(
+    1,
+  )}` as Capitalize<T>;
 }

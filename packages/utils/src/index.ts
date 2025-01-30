@@ -103,7 +103,6 @@ export {
 } from './lib/case-conversions.js';
 export * from './lib/text-formats/index.js';
 export {
-  capitalize,
   countOccurrences,
   distinct,
   factorOf,
@@ -131,3 +130,4 @@ export type {
 } from './lib/types.js';
 export { verboseUtils } from './lib/verbose-utils.js';
 export { zodErrorMessageBuilder } from './lib/zod-validation.js';
+export { capitalize } from './lib/case-conversions';

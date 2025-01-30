@@ -123,12 +123,6 @@ export function toJsonLines<T>(json: T[]) {
   return json.map(item => JSON.stringify(item)).join('\n');
 }
 
-export function capitalize<T extends string>(text: T): Capitalize<T> {
-  return `${text.charAt(0).toLocaleUpperCase()}${text.slice(
-    1,
-  )}` as Capitalize<T>;
-}
-
 export function toNumberPrecision(
   value: number,
   decimalPlaces: number,

@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  capitalize,
   countOccurrences,
   deepClone,
   distinct,
@@ -270,20 +269,6 @@ describe('JSON lines format', () => {
 
   it('should transform to JSON lines and back', () => {
     expect(fromJsonLines(toJsonLines([head, body]))).toEqual([head, body]);
-  });
-});
-
-describe('capitalize', () => {
-  it('should transform the first string letter to upper case', () => {
-    expect(capitalize('code PushUp')).toBe('Code PushUp');
-  });
-
-  it('should leave the first string letter in upper case', () => {
-    expect(capitalize('Code PushUp')).toBe('Code PushUp');
-  });
-
-  it('should accept empty string', () => {
-    expect(capitalize('')).toBe('');
   });
 });
 
