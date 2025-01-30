@@ -97,10 +97,10 @@ export {
 export { isSemver, normalizeSemver, sortSemvers } from './lib/semver.js';
 export {
   camelCaseToKebabCase,
-  kebabCaseToSentence,
   kebabCaseToCamelCase,
-  formatToSentenceCase,
   capitalize,
+  toSentenceCase,
+  toTitleCase,
 } from './lib/case-conversions.js';
 export * from './lib/text-formats/index.js';
 export {

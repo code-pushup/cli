@@ -75,7 +75,7 @@ export function toTitleCase(input: string): string {
 
       // Capitalize first word or non-minor words
       if (index === 0 || !minorWords.has(word.toLowerCase())) {
-        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        return capitalize(word);
       }
       return word.toLowerCase();
     })
@@ -103,7 +103,5 @@ export function toSentenceCase(input: string): string {
 }
 
 export function capitalize<T extends string>(text: T): Capitalize<T> {
-  return `${text.charAt(0).toLocaleUpperCase()}${text.slice(
-    1,
-  )}` as Capitalize<T>;
+  return `${text.charAt(0).toLocaleUpperCase()}${text.slice(1).toLowerCase()}` as Capitalize<T>;
 }
