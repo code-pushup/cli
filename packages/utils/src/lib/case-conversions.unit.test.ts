@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
   camelCaseToKebabCase,
   capitalize,
@@ -9,11 +9,15 @@ import {
 
 describe('capitalize', () => {
   it('should transform the first string letter to upper case', () => {
-    expect(capitalize('code PushUp')).toBe('Code PushUp');
+    expect(capitalize('code')).toBe('Code');
+  });
+
+  it('should lowercase all but the the first string letter', () => {
+    expect(capitalize('PushUp')).toBe('Pushup');
   });
 
   it('should leave the first string letter in upper case', () => {
-    expect(capitalize('Code PushUp')).toBe('Code PushUp');
+    expect(capitalize('Code')).toBe('Code');
   });
 
   it('should accept empty string', () => {
