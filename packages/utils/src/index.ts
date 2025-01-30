@@ -100,7 +100,7 @@ export {
   kebabCaseToSentence,
   kebabCaseToCamelCase,
   formatToSentenceCase,
-} from './lib/string.js';
+} from './lib/case-conversions.js';
 export * from './lib/text-formats/index.js';
 export {
   capitalize,
