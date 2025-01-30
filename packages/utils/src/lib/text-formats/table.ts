@@ -5,7 +5,7 @@ import type {
   TableColumnObject,
   TableColumnPrimitive,
 } from '@code-pushup/models';
-import { capitalize } from '@code-pushup/utils';
+import { capitalize } from '../case-conversions.js';
 
 export function rowToStringArray({ rows, columns = [] }: Table): string[][] {
   if (Array.isArray(rows.at(0)) && typeof columns.at(0) === 'object') {
