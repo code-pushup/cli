@@ -99,7 +99,7 @@ export {
   camelCaseToKebabCase,
   kebabCaseToSentence,
   kebabCaseToCamelCase,
-  camelCaseToSentence,
+  formatToSentenceCase,
 } from './lib/string.js';
 export * from './lib/text-formats/index.js';
 export {
