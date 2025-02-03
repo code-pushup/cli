@@ -15,8 +15,9 @@ export const runnerConfigSchema = z.object(
       description: 'Shell command to execute',
     }),
     args: z.array(z.string({ description: 'Command arguments' })).optional(),
-    outputFile: filePathSchema.describe('Output path'),
+    outputFile: filePathSchema.describe('Runner output path'),
     outputTransform: outputTransformSchema.optional(),
+    configFile: filePathSchema.describe('Runner config path').optional(),
   },
   {
     description: 'How to execute runner',
@@ -37,3 +38,10 @@ export const runnerFunctionSchema = z
   .returns(z.union([auditOutputsSchema, z.promise(auditOutputsSchema)]));
 
 export type RunnerFunction = z.infer<typeof runnerFunctionSchema>;
+
+export const runnerFilesPathsSchema = z.object({
+  runnerConfigPath: filePathSchema.describe('Runner config path'),
+  runnerOutputPath: filePathSchema.describe('Runner output path'),
+});
+
+export type RunnerFilesPaths = z.infer<typeof runnerFilesPathsSchema>;

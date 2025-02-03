@@ -13,7 +13,7 @@ export { detectConfigVersion, type ConfigFormat } from './versions/index.js';
 
 export async function listAuditsAndGroups(
   targets: ESLintTarget[],
-  customGroups: CustomGroup[] | undefined,
+  customGroups?: CustomGroup[] | undefined,
 ): Promise<{ audits: Audit[]; groups: Group[] }> {
   const rules = await listRules(targets);
 
