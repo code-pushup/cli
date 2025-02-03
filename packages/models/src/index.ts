@@ -99,9 +99,11 @@ export {
   onProgressSchema,
   runnerConfigSchema,
   runnerFunctionSchema,
+  runnerFilesPathsSchema,
   type OnProgress,
   type RunnerConfig,
   type RunnerFunction,
+  type RunnerFilesPaths,
 } from './lib/runner-config.js';
 export {
   tableAlignmentSchema,

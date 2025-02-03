@@ -1,19 +1,13 @@
-import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { describe, it } from 'vitest';
+import { expect } from 'vitest';
 import type {
   AuditOutput,
   AuditOutputs,
   RunnerConfig,
 } from '@code-pushup/models';
-import { readJsonFile, removeDirectoryIfExists } from '@code-pushup/utils';
+import { createRunnerFiles, readJsonFile } from '@code-pushup/utils';
 import type { FinalCoveragePluginConfig } from '../config.js';
-import {
-  PLUGIN_CONFIG_PATH,
-  RUNNER_OUTPUT_PATH,
-  WORKDIR,
-} from './constants.js';
 import { createRunnerConfig, executeRunner } from './index.js';
 
 describe('createRunnerConfig', () => {
@@ -25,15 +19,18 @@ describe('createRunnerConfig', () => {
     });
     expect(runnerConfig).toStrictEqual<RunnerConfig>({
       command: 'node',
-      args: ['"executeRunner.ts"'],
+      args: [
+        '"executeRunner.ts"',
+        expect.stringContaining('plugin-config.json'),
+        expect.stringContaining('runner-output.json'),
+      ],
       outputTransform: expect.any(Function),
       outputFile: expect.stringContaining('runner-output.json'),
+      configFile: expect.stringContaining('plugin-config.json'),
     });
   });
 
   it('should provide plugin config to runner in JSON file', async () => {
-    await removeDirectoryIfExists(WORKDIR);
-
     const pluginConfig: FinalCoveragePluginConfig = {
       coverageTypes: ['line'],
       reports: ['coverage/lcov.info'],
@@ -41,10 +38,13 @@ describe('createRunnerConfig', () => {
       perfectScoreThreshold: 85,
     };
 
-    await createRunnerConfig('executeRunner.ts', pluginConfig);
+    const { configFile } = await createRunnerConfig(
+      'executeRunner.ts',
+      pluginConfig,
+    );
 
-    const config =
-      await readJsonFile<FinalCoveragePluginConfig>(PLUGIN_CONFIG_PATH);
+    expect(configFile).toMatch(/.*plugin-config\.json$/);
+    const config = await readJsonFile<FinalCoveragePluginConfig>(configFile!);
     expect(config).toStrictEqual(pluginConfig);
   });
 });
@@ -65,10 +65,15 @@ describe('executeRunner', () => {
       coverageTypes: ['line'],
     };
 
-    await writeFile(PLUGIN_CONFIG_PATH, JSON.stringify(config));
-    await executeRunner();
+    const runnerFiles = await createRunnerFiles(
+      'coverage',
+      JSON.stringify(config),
+    );
+    await executeRunner(runnerFiles);
 
-    const results = await readJsonFile<AuditOutputs>(RUNNER_OUTPUT_PATH);
+    const results = await readJsonFile<AuditOutputs>(
+      runnerFiles.runnerOutputPath,
+    );
     expect(results).toStrictEqual([
       expect.objectContaining({
         slug: 'line-coverage',

@@ -2,26 +2,37 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { type MockInstance, describe, expect, it } from 'vitest';
-import type { AuditOutput, AuditOutputs, Issue } from '@code-pushup/models';
+import type {
+  AuditOutput,
+  AuditOutputs,
+  Issue,
+  RunnerFilesPaths,
+} from '@code-pushup/models';
 import { osAgnosticAuditOutputs } from '@code-pushup/test-utils';
 import { readJsonFile } from '@code-pushup/utils';
 import type { ESLintTarget } from './config.js';
 import { listAuditsAndGroups } from './meta/index.js';
-import {
-  RUNNER_OUTPUT_PATH,
-  createRunnerConfig,
-  executeRunner,
-} from './runner/index.js';
+import { createRunnerConfig, executeRunner } from './runner/index.js';
 
 describe('executeRunner', () => {
   let cwdSpy: MockInstance<[], string>;
   let platformSpy: MockInstance<[], NodeJS.Platform>;
 
-  const createPluginConfig = async (eslintrc: ESLintTarget['eslintrc']) => {
+  const createPluginConfig = async (
+    eslintrc: ESLintTarget['eslintrc'],
+  ): Promise<RunnerFilesPaths> => {
     const patterns = ['src/**/*.js', 'src/**/*.jsx'];
     const targets: ESLintTarget[] = [{ eslintrc, patterns }];
     const { audits } = await listAuditsAndGroups(targets);
-    await createRunnerConfig('bin.js', audits, targets);
+    const { outputFile, configFile } = await createRunnerConfig(
+      'bin.js',
+      audits,
+      targets,
+    );
+    return {
+      runnerOutputPath: outputFile,
+      runnerConfigPath: configFile!,
+    };
   };
 
   const appDir = path.join(
@@ -45,18 +56,22 @@ describe('executeRunner', () => {
   });
 
   it('should execute ESLint and create audit results for React application', async () => {
-    await createPluginConfig('eslint.config.js');
-    await executeRunner();
+    const runnerPaths = await createPluginConfig('eslint.config.js');
+    await executeRunner(runnerPaths);
 
-    const json = await readJsonFile<AuditOutputs>(RUNNER_OUTPUT_PATH);
+    const json = await readJsonFile<AuditOutputs>(runnerPaths.runnerOutputPath);
     expect(osAgnosticAuditOutputs(json)).toMatchSnapshot();
   });
 
   it('should execute runner with custom config using @code-pushup/eslint-config', async () => {
-    await createPluginConfig('code-pushup.eslint.config.mjs');
-    await executeRunner();
+    const runnerPaths = await createPluginConfig(
+      'code-pushup.eslint.config.mjs',
+    );
+    await executeRunner(runnerPaths);
 
-    const json = await readJsonFile<AuditOutput[]>(RUNNER_OUTPUT_PATH);
+    const json = await readJsonFile<AuditOutput[]>(
+      runnerPaths.runnerOutputPath,
+    );
     // expect warnings from unicorn/filename-case rule from default config
     expect(json).toContainEqual(
       expect.objectContaining<Partial<AuditOutput>>({
