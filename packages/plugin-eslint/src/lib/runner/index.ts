@@ -12,6 +12,7 @@ import {
   filePathToCliArg,
   objectToCliArgs,
   readJsonFile,
+  ui,
 } from '@code-pushup/utils';
 import type { ESLintPluginRunnerConfig, ESLintTarget } from '../config.js';
 import { lint } from './lint.js';
@@ -24,6 +25,8 @@ export async function executeRunner({
 }: RunnerFilesPaths): Promise<void> {
   const { slugs, targets } =
     await readJsonFile<ESLintPluginRunnerConfig>(runnerConfigPath);
+
+  ui().logger.log(`ESLint plugin executing ${targets.length} lint targets`);
 
   const linterOutputs = await targets.reduce(
     async (acc, target) => [...(await acc), await lint(target)],
