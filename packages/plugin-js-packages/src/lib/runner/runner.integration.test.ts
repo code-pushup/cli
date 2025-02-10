@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { RunnerConfig } from '@code-pushup/models';
-import { readJsonFile, removeDirectoryIfExists } from '@code-pushup/utils';
+import { readJsonFile } from '@code-pushup/utils';
 import type { FinalJSPackagesPluginConfig } from '../config.js';
 import { defaultAuditLevelMapping } from '../constants.js';
-import { PLUGIN_CONFIG_PATH, WORKDIR } from './constants.js';
 import { createRunnerConfig } from './index.js';
 
 describe('createRunnerConfig', () => {
@@ -17,13 +16,17 @@ describe('createRunnerConfig', () => {
     });
     expect(runnerConfig).toStrictEqual<RunnerConfig>({
       command: 'node',
-      args: ['"executeRunner.ts"'],
+      args: [
+        '"executeRunner.ts"',
+        expect.stringContaining('plugin-config.json'),
+        expect.stringContaining('runner-output.json'),
+      ],
       outputFile: expect.stringContaining('runner-output.json'),
+      configFile: expect.stringContaining('plugin-config.json'),
     });
   });
 
   it('should provide plugin config to runner in JSON file', async () => {
-    await removeDirectoryIfExists(WORKDIR);
     const pluginConfig: FinalJSPackagesPluginConfig = {
       packageManager: 'yarn-classic',
       checks: ['outdated'],
@@ -31,9 +34,12 @@ describe('createRunnerConfig', () => {
       auditLevelMapping: { ...defaultAuditLevelMapping, moderate: 'error' },
       packageJsonPaths: ['package.json'],
     };
-    await createRunnerConfig('executeRunner.ts', pluginConfig);
-    const config =
-      await readJsonFile<FinalJSPackagesPluginConfig>(PLUGIN_CONFIG_PATH);
+    const { configFile } = await createRunnerConfig(
+      'executeRunner.ts',
+      pluginConfig,
+    );
+    expect(configFile).toMatch(/.*plugin-config\.json$/);
+    const config = await readJsonFile<FinalJSPackagesPluginConfig>(configFile!);
     expect(config).toStrictEqual(pluginConfig);
   });
 });

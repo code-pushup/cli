@@ -54,7 +54,7 @@ export type CliArgsObject<T extends object = Record<string, ArgumentValue>> =
  * Converts an object with different types of values into an array of command-line arguments.
  *
  * @example
- * const args = objectToProcessArgs({
+ * const args = objectToCliArgs({
  *   _: ['node', 'index.js'], // node index.js
  *   name: 'Juanita', // --name=Juanita
  *   formats: ['json', 'md'] // --format=json --format=md

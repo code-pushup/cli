@@ -1,13 +1,15 @@
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import type { RunnerConfig } from '@code-pushup/models';
+import type { RunnerConfig, RunnerFilesPaths } from '@code-pushup/models';
 import {
+  createRunnerFiles,
   ensureDirectoryExists,
   executeProcess,
   filePathToCliArg,
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
   objectFromEntries,
+  objectToCliArgs,
   readJsonFile,
 } from '@code-pushup/utils';
 import {
@@ -22,7 +24,6 @@ import { dependencyGroupToLong } from '../constants.js';
 import { packageManagers } from '../package-managers/package-managers.js';
 import { auditResultToAuditOutput } from './audit/transform.js';
 import type { AuditResult } from './audit/types.js';
-import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants.js';
 import { outdatedResultToAuditOutput } from './outdated/transform.js';
 import { findAllPackageJson, getTotalDependencies } from './utils.js';
 
@@ -30,24 +31,33 @@ export async function createRunnerConfig(
   scriptPath: string,
   config: FinalJSPackagesPluginConfig,
 ): Promise<RunnerConfig> {
-  await ensureDirectoryExists(path.dirname(PLUGIN_CONFIG_PATH));
-  await writeFile(PLUGIN_CONFIG_PATH, JSON.stringify(config));
+  const { runnerConfigPath, runnerOutputPath } = await createRunnerFiles(
+    'js-packages',
+    JSON.stringify(config),
+  );
 
   return {
     command: 'node',
-    args: [filePathToCliArg(scriptPath)],
-    outputFile: RUNNER_OUTPUT_PATH,
+    args: [
+      filePathToCliArg(scriptPath),
+      ...objectToCliArgs({ runnerConfigPath, runnerOutputPath }),
+    ],
+    configFile: runnerConfigPath,
+    outputFile: runnerOutputPath,
   };
 }
 
-export async function executeRunner(): Promise<void> {
+export async function executeRunner({
+  runnerConfigPath,
+  runnerOutputPath,
+}: RunnerFilesPaths): Promise<void> {
   const {
     packageManager,
     checks,
     auditLevelMapping,
     packageJsonPaths,
     dependencyGroups: depGroups,
-  } = await readJsonFile<FinalJSPackagesPluginConfig>(PLUGIN_CONFIG_PATH);
+  } = await readJsonFile<FinalJSPackagesPluginConfig>(runnerConfigPath);
 
   const auditResults = checks.includes('audit')
     ? await processAudit(packageManager, depGroups, auditLevelMapping)
@@ -58,8 +68,8 @@ export async function executeRunner(): Promise<void> {
     : [];
   const checkResults = [...auditResults, ...outdatedResults];
 
-  await ensureDirectoryExists(path.dirname(RUNNER_OUTPUT_PATH));
-  await writeFile(RUNNER_OUTPUT_PATH, JSON.stringify(checkResults));
+  await ensureDirectoryExists(path.dirname(runnerOutputPath));
+  await writeFile(runnerOutputPath, JSON.stringify(checkResults));
 }
 
 async function processOutdated(

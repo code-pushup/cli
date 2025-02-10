@@ -1,3 +1,7 @@
+import process from 'node:process';
+import { Parser } from 'yargs/helpers';
 import { executeRunner } from './lib/runner/index.js';
 
-await executeRunner();
+const { runnerConfigPath, runnerOutputPath } = Parser(process.argv);
+
+await executeRunner({ runnerConfigPath, runnerOutputPath });

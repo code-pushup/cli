@@ -1,5 +1,6 @@
 import os from 'node:os';
 import path from 'node:path';
+import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
 import type { Audit, PluginConfig, RunnerConfig } from '@code-pushup/models';
@@ -19,9 +20,19 @@ describe('eslintPlugin', () => {
     runner: {
       ...(plugin.runner as RunnerConfig),
       args: (plugin.runner as RunnerConfig).args?.map(arg =>
-        toUnixPath(arg.replace(path.dirname(thisDir), '<dirname>')),
+        toUnixPath(arg.replace(path.dirname(thisDir), '<dirname>')).replace(
+          /\/eslint\/\d+\//,
+          '/eslint/<timestamp>/',
+        ),
       ),
-      outputFile: toUnixPath((plugin.runner as RunnerConfig).outputFile),
+      ...((plugin.runner as RunnerConfig).configFile && {
+        configFile: toUnixPath(
+          (plugin.runner as RunnerConfig).configFile!,
+        ).replace(/\/eslint\/\d+\//, '/eslint/<timestamp>/'),
+      }),
+      outputFile: toUnixPath(
+        (plugin.runner as RunnerConfig).outputFile,
+      ).replace(/\/eslint\/\d+\//, '/eslint/<timestamp>/'),
     },
   });
 
@@ -38,6 +49,7 @@ describe('eslintPlugin', () => {
 
   it('should initialize ESLint plugin for React application', async () => {
     cwdSpy.mockReturnValue(path.join(fixturesDir, 'todos-app'));
+
     const plugin = await eslintPlugin({
       eslintrc: 'eslint.config.js',
       patterns: ['src/**/*.js', 'src/**/*.jsx'],
