@@ -28,6 +28,7 @@ export async function collectAndPersistReports(
 
   const report = await collect(options);
   const sortedScoredReport = sortReport(scoreReport(report));
+
   const persistResults = await persistReport(
     report,
     sortedScoredReport,

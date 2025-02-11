@@ -1,4 +1,5 @@
 import path from 'node:path';
+import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
 import { executeProcess } from '@code-pushup/utils';
@@ -11,7 +12,8 @@ import {
 
 type Project = 'cli' | 'core' | 'nx-plugin' | 'utils';
 
-describe('Nx helpers', () => {
+// skipping tests on Windows due to a problem with createProjectGraphAsync that hangs forever, issue seems to be connected to nested git or some other Nx graph related problem https://github.com/nrwl/nx/issues/27494#issuecomment-2633836688
+describe.skipIf(process.platform === 'win32')('Nx helpers', () => {
   let cwdSpy: MockInstance<[], string>;
 
   beforeAll(async () => {
