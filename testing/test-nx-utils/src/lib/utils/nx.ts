@@ -4,10 +4,12 @@ import {
   type PluginConfiguration,
   type ProjectConfiguration,
   type Tree,
+  readJson,
   updateJson,
 } from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
 import type { LibraryGeneratorSchema } from '@nx/js/src/utils/schema';
+import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
 import { executeProcess } from '@code-pushup/utils';
@@ -74,6 +76,28 @@ export function registerPluginInWorkspace(
     ...json,
     plugins: [...(json.plugins ?? []), normalizedPluginConfiguration],
   }));
+}
+
+export async function registerPluginInNxJson(
+  nxJsonPath: string,
+  configuration: PluginConfiguration,
+) {
+  const normalizedPluginConfiguration =
+    typeof configuration === 'string'
+      ? {
+          plugin: configuration,
+        }
+      : configuration;
+  const json = JSON.parse(
+    (await readFile(nxJsonPath)).toString(),
+  ) as NxJsonConfiguration;
+  await writeFile(
+    nxJsonPath,
+    JSON.stringify({
+      ...json,
+      plugins: [...(json.plugins ?? []), normalizedPluginConfiguration],
+    }),
+  );
 }
 
 export async function nxShowProjectJson<T extends ProjectConfiguration>(
