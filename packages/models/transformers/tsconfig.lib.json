@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../dist/packages/models-transformers",
+    "rootDir": "./",
+    "module": "commonjs",
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts"]
+}

@@ -69,6 +69,9 @@ export const scoreSchema = z
   .min(0)
   .max(1);
 
+/** Schema for a property indicating whether an entity is filtered out */
+export const isSkippedSchema = z.boolean().optional();
+
 /**
  * Used for categories, plugins and audits
  * @param options
@@ -78,12 +81,14 @@ export function metaSchema(options?: {
   descriptionDescription?: string;
   docsUrlDescription?: string;
   description?: string;
+  isSkippedDescription?: string;
 }) {
   const {
     descriptionDescription,
     titleDescription,
     docsUrlDescription,
     description,
+    isSkippedDescription,
   } = options ?? {};
   return z.object(
     {
@@ -96,6 +101,9 @@ export function metaSchema(options?: {
       docsUrl: docsUrlDescription
         ? docsUrlSchema.describe(docsUrlDescription)
         : docsUrlSchema,
+      isSkipped: isSkippedDescription
+        ? isSkippedSchema.describe(isSkippedDescription)
+        : isSkippedSchema,
     },
     { description },
   );

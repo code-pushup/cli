@@ -26,6 +26,8 @@ export default defineConfig({
       '../../testing/test-setup/src/lib/fs.mock.ts',
       '../../testing/test-setup/src/lib/console.mock.ts',
       '../../testing/test-setup/src/lib/reset.mocks.ts',
+      '../../testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
+      '../../testing/test-setup/src/lib/extend/markdown-table.matcher.ts',
     ],
   },
 });

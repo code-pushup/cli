@@ -4,7 +4,12 @@ import type {
   RunnerConfig,
   RunnerFunction,
 } from '@code-pushup/models';
-import { calcDuration, executeProcess, readJsonFile } from '@code-pushup/utils';
+import {
+  calcDuration,
+  executeProcess,
+  readJsonFile,
+  removeDirectoryIfExists,
+} from '@code-pushup/utils';
 
 export type RunnerResult = {
   date: string;
@@ -26,7 +31,9 @@ export async function executeRunnerConfig(
   });
 
   // read process output from file system and parse it
-  const outputs = await readJsonFile(path.join(process.cwd(), outputFile));
+  const outputs = await readJsonFile(outputFile);
+  // clean up plugin individual runner output directory
+  await removeDirectoryIfExists(path.dirname(outputFile));
 
   // transform unknownAuditOutputs to auditOutputs
   const audits = outputTransform ? await outputTransform(outputs) : outputs;

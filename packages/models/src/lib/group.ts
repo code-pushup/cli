@@ -22,6 +22,7 @@ export const groupMetaSchema = metaSchema({
   descriptionDescription: 'Description of the group (markdown)',
   docsUrlDescription: 'Group documentation site',
   description: 'Group metadata',
+  isSkippedDescription: 'Indicates whether the group is skipped',
 });
 export type GroupMeta = z.infer<typeof groupMetaSchema>;
 

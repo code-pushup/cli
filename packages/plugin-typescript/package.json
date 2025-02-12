@@ -2,7 +2,7 @@
   "name": "@code-pushup/typescript-plugin",
   "version": "0.57.0",
   "license": "MIT",
-  "description": "Code PushUp plugin for measuring typescript rules",
+  "description": "Code PushUp plugin for incrementally adopting strict compilation flags in TypeScript projects",
   "homepage": "https://github.com/code-pushup/cli/tree/main/packages/plugin-typescript#readme",
   "bugs": {
     "url": "https://github.com/code-pushup/cli/issues?q=is%3Aissue%20state%3Aopen%20type%3ABug%20label%3A\"🧩%20typescript-plugin\""
@@ -22,11 +22,6 @@
     "access": "public"
   },
   "type": "module",
-  "dependencies": {
-    "@code-pushup/models": "0.57.0",
-    "typescript": "5.5.4",
-    "zod": "^3.23.8",
-    "@code-pushup/utils": "0.57.0"
-  },
+  "dependencies": {},
   "scripts": {}
 }

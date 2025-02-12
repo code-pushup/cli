@@ -54,7 +54,7 @@ export type CliArgsObject<T extends object = Record<string, ArgumentValue>> =
  * Converts an object with different types of values into an array of command-line arguments.
  *
  * @example
- * const args = objectToProcessArgs({
+ * const args = objectToCliArgs({
  *   _: ['node', 'index.js'], // node index.js
  *   name: 'Juanita', // --name=Juanita
  *   formats: ['json', 'md'] // --format=json --format=md
@@ -121,12 +121,6 @@ export function fromJsonLines<T = unknown>(jsonLines: string) {
 
 export function toJsonLines<T>(json: T[]) {
   return json.map(item => JSON.stringify(item)).join('\n');
-}
-
-export function capitalize<T extends string>(text: T): Capitalize<T> {
-  return `${text.charAt(0).toLocaleUpperCase()}${text.slice(
-    1,
-  )}` as Capitalize<T>;
 }
 
 export function toNumberPrecision(

@@ -26,6 +26,9 @@
       "options": {
         "configFile": "testing/test-utils/vite.config.unit.ts"
       }
+    },
+    "nx-release-publish": {
+      "executor": "nx:noop"
     }
   },
   "tags": ["scope:shared", "type:testing"]

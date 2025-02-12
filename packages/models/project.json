@@ -5,6 +5,7 @@
   "projectType": "library",
   "targets": {
     "build": {
+      "dependsOn": [{ "projects": "models-transformers", "target": "build" }],
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {

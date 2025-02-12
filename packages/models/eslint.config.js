@@ -4,7 +4,7 @@ import baseConfig from '../../eslint.config.js';
 export default tseslint.config(
   ...baseConfig,
   {
-    files: ['**/*.ts'],
+    files: ['/**/*.ts'],
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -17,5 +17,8 @@ export default tseslint.config(
     rules: {
       '@nx/dependency-checks': 'error',
     },
+  },
+  {
+    ignores: ['packages/models/transformers/**/*.ts'],
   },
 );

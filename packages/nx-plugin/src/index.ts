@@ -15,3 +15,4 @@ export {
   type ProcessConfig,
 } from './internal/execute-process.js';
 export { objectToCliArgs } from './executors/internal/cli.js';
+export type { AutorunCommandExecutorOptions } from './executors/cli/schema.js';

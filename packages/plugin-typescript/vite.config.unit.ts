@@ -8,7 +8,7 @@ export default defineConfig({
     reporters: ['basic'],
     globals: true,
     cache: {
-      dir: '../../node_modules/.vitest',
+      dir: '../../node_modules/.vitest/plugin-typescript',
     },
     alias: tsconfigPathAliases(),
     pool: 'threads',

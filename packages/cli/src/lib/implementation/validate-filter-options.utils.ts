@@ -1,4 +1,4 @@
-import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
+import type { PluginConfig } from '@code-pushup/models';
 import {
   capitalize,
   filterItemRefsBy,
@@ -9,49 +9,95 @@ import type { FilterOptionType, Filterables } from './filter.model.js';
 
 export class OptionValidationError extends Error {}
 
+// eslint-disable-next-line max-lines-per-function
 export function validateFilterOption(
   option: FilterOptionType,
   { plugins, categories = [] }: Filterables,
-  { itemsToFilter, verbose }: { itemsToFilter: string[]; verbose: boolean },
+  {
+    itemsToFilter,
+    skippedItems,
+    verbose,
+  }: { itemsToFilter: string[]; skippedItems: string[]; verbose: boolean },
 ): void {
-  const itemsToFilterSet = new Set(itemsToFilter);
   const validItems = isCategoryOption(option)
-    ? categories
+    ? categories.map(({ slug }) => slug)
     : isPluginOption(option)
-      ? plugins
+      ? plugins.map(({ slug }) => slug)
       : [];
-  const invalidItems = itemsToFilter.filter(
-    item => !validItems.some(({ slug }) => slug === item),
+
+  const itemsToFilterSet = new Set(itemsToFilter);
+  const skippedItemsSet = new Set(skippedItems);
+  const validItemsSet = new Set(validItems);
+
+  const nonExistentItems = itemsToFilter.filter(
+    item => !validItemsSet.has(item) && !skippedItemsSet.has(item),
+  );
+  const skippedValidItems = itemsToFilter.filter(item =>
+    skippedItemsSet.has(item),
   );
 
-  const message = createValidationMessage(option, invalidItems, validItems);
-
-  if (
-    isOnlyOption(option) &&
-    itemsToFilterSet.size > 0 &&
-    itemsToFilterSet.size === invalidItems.length
-  ) {
-    throw new OptionValidationError(message);
-  }
-
-  if (invalidItems.length > 0) {
+  if (nonExistentItems.length > 0) {
+    const message = createValidationMessage(
+      option,
+      nonExistentItems,
+      validItemsSet,
+    );
+    if (
+      isOnlyOption(option) &&
+      itemsToFilterSet.size > 0 &&
+      itemsToFilterSet.size === nonExistentItems.length
+    ) {
+      throw new OptionValidationError(message);
+    }
     ui().logger.warning(message);
   }
-
+  if (skippedValidItems.length > 0 && verbose) {
+    const item = getItemType(option, skippedValidItems.length);
+    const prefix = skippedValidItems.length === 1 ? `a skipped` : `skipped`;
+    ui().logger.warning(
+      `The --${option} argument references ${prefix} ${item}: ${skippedValidItems.join(', ')}.`,
+    );
+  }
   if (isPluginOption(option) && categories.length > 0 && verbose) {
-    const removedCategorySlugs = filterItemRefsBy(categories, ({ plugin }) =>
+    const removedCategories = filterItemRefsBy(categories, ({ plugin }) =>
       isOnlyOption(option)
         ? !itemsToFilterSet.has(plugin)
         : itemsToFilterSet.has(plugin),
     ).map(({ slug }) => slug);
 
-    if (removedCategorySlugs.length > 0) {
+    if (removedCategories.length > 0) {
       ui().logger.info(
-        `The --${option} argument removed the following categories: ${removedCategorySlugs.join(
+        `The --${option} argument removed the following categories: ${removedCategories.join(
           ', ',
         )}.`,
       );
     }
+  }
+}
+
+export function validateSkippedCategories(
+  originalCategories: NonNullable<Filterables['categories']>,
+  filteredCategories: NonNullable<Filterables['categories']>,
+  verbose: boolean,
+): void {
+  const skippedCategories = originalCategories.filter(
+    original => !filteredCategories.some(({ slug }) => slug === original.slug),
+  );
+  if (skippedCategories.length > 0 && verbose) {
+    skippedCategories.forEach(category => {
+      ui().logger.info(
+        `Category ${category.slug} was removed because all its refs were skipped. Affected refs: ${category.refs
+          .map(ref => `${ref.slug} (${ref.type})`)
+          .join(', ')}`,
+      );
+    });
+  }
+  if (filteredCategories.length === 0) {
+    throw new OptionValidationError(
+      `No categories remain after filtering. Removed categories: ${skippedCategories
+        .map(({ slug }) => slug)
+        .join(', ')}`,
+    );
   }
 }
 
@@ -76,6 +122,22 @@ export function validateFinalState(
       `Nothing to report. No plugins or categories are available after filtering. Available plugins: ${availablePlugins}. Available categories: ${availableCategories}.`,
     );
   }
+  if (filteredPlugins.some(pluginHasZeroWeightRefs)) {
+    throw new OptionValidationError(
+      'Some groups in the filtered plugins have only zero-weight references. Please adjust your filters or weights.',
+    );
+  }
+}
+
+export function pluginHasZeroWeightRefs(
+  plugin: Pick<PluginConfig, 'groups' | 'audits'>,
+): boolean {
+  if (!plugin.groups || plugin.groups.length === 0) {
+    return false;
+  }
+  return plugin.groups.some(
+    group => group.refs.reduce((sum, ref) => sum + ref.weight, 0) === 0,
+  );
 }
 
 function isCategoryOption(option: FilterOptionType): boolean {
@@ -102,7 +164,7 @@ export function getItemType(option: FilterOptionType, count: number): string {
 export function createValidationMessage(
   option: FilterOptionType,
   invalidItems: string[],
-  validItems: Pick<PluginConfig | CategoryConfig, 'slug'>[],
+  validItems: Set<string>,
 ): string {
   const invalidItem = getItemType(option, invalidItems.length);
   const invalidItemText =
@@ -111,12 +173,12 @@ export function createValidationMessage(
       : `${invalidItem} that do not exist:`;
   const invalidSlugs = invalidItems.join(', ');
 
-  const validItem = getItemType(option, validItems.length);
+  const validItem = getItemType(option, validItems.size);
   const validItemText =
-    validItems.length === 1
+    validItems.size === 1
       ? `The only valid ${validItem} is`
       : `Valid ${validItem} are`;
-  const validSlugs = validItems.map(({ slug }) => slug).join(', ');
+  const validSlugs = [...validItems].join(', ');
 
   return `The --${option} argument references ${invalidItemText} ${invalidSlugs}. ${validItemText} ${validSlugs}.`;
 }

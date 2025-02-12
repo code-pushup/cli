@@ -1,5 +1,4 @@
 import { describe, expect, vi } from 'vitest';
-import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants.js';
 import { yargsCli } from '../yargs-cli.js';
@@ -27,11 +26,16 @@ describe('print-config-command', () => {
       { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsConfigCommandObject()] },
     ).parseAsync();
 
-    const log = getLogMessages(ui().logger)[0];
-    expect(log).not.toContain('"$0":');
-    expect(log).not.toContain('"_":');
+    expect(ui()).not.toHaveLogged('log', expect.stringContaining('"$0":'));
+    expect(ui()).not.toHaveLogged('log', expect.stringContaining('"_":'));
 
-    expect(log).toContain('"outputDir": "destinationDir"');
-    expect(log).not.toContain('"output-dir":');
+    expect(ui()).toHaveLogged(
+      'log',
+      expect.stringContaining('"outputDir": "destinationDir"'),
+    );
+    expect(ui()).not.toHaveLogged(
+      'log',
+      expect.stringContaining('"output-dir":'),
+    );
   });
 });

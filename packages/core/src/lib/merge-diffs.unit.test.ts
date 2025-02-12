@@ -4,7 +4,6 @@ import path from 'node:path';
 import type { PersistConfig } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
-  getLogMessages,
   reportsDiffAddedPluginMock,
   reportsDiffAltMock,
   reportsDiffMock,
@@ -64,13 +63,19 @@ describe('mergeDiffs', () => {
       ),
     ).resolves.toBe(path.join(MEMFS_VOLUME, 'report-diff.md'));
 
-    expect(getLogMessages(ui().logger)).toEqual([
+    expect(ui()).toHaveNthLogged(
+      1,
+      'warn',
       expect.stringContaining(
         'Skipped invalid report diff - Failed to read JSON file missing-report-diff.json',
       ),
+    );
+    expect(ui()).toHaveNthLogged(
+      2,
+      'warn',
       expect.stringContaining(
         'Skipped invalid report diff - Invalid reports diff in invalid-report-diff.json',
       ),
-    ]);
+    );
   });
 });

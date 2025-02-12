@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from 'vitest';
-import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from './logging.js';
 import { verboseUtils } from './verbose-utils.js';
 
@@ -24,16 +23,16 @@ describe('verbose-utils', () => {
 
   it('logs should be off by default', () => {
     verboseUtils(false).log('42');
-    expect(getLogMessages(ui().logger)).toHaveLength(0);
+    expect(ui()).not.toHaveLogs();
   });
 
   it('should not print any logs when verbose is off', () => {
     verboseUtils(false).log('42');
-    expect(getLogMessages(ui().logger)).toHaveLength(0);
+    expect(ui()).not.toHaveLogs();
   });
 
   it('should log when verbose is on', () => {
     verboseUtils(true).log('42');
-    expect(getLogMessages(ui().logger)[0]).toContain('42');
+    expect(ui()).toHaveLogged('info', '42');
   });
 });

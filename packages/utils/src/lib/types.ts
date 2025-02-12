@@ -22,3 +22,8 @@ export type CamelCaseToKebabCase<T extends string> =
       ? `${Lowercase<First>}${CamelCaseToKebabCase<Rest>}`
       : `${Lowercase<First>}-${CamelCaseToKebabCase<Rest>}`
     : T;
+
+export type KebabCaseToCamelCase<T extends string> =
+  T extends `${infer First}-${infer Rest}`
+    ? `${First}${Capitalize<KebabCaseToCamelCase<Rest>>}`
+    : T;

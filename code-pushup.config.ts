@@ -3,6 +3,7 @@ import { z } from 'zod';
 import {
   coverageCoreConfigNx,
   eslintCoreConfigNx,
+  jsDocsCoreConfig,
   jsPackagesCoreConfig,
   lighthouseCoreConfig,
   typescriptPluginConfigNx,
@@ -44,4 +45,12 @@ export default mergeConfigs(
       'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
   }),
   await eslintCoreConfigNx(),
+  jsDocsCoreConfig([
+    'packages/**/src/**/*.ts',
+    '!packages/**/node_modules',
+    '!packages/**/{mocks,mock}',
+    '!**/*.{spec,test}.ts',
+    '!**/implementation/**',
+    '!**/internal/**',
+  ]),
 );

@@ -1,6 +1,7 @@
 import { expect } from 'vitest';
 import { pluginConfigSchema } from '@code-pushup/models';
 import { lighthousePlugin } from './lighthouse-plugin.js';
+import type { LighthouseOptions } from './types.js';
 
 describe('lighthousePlugin-config-object', () => {
   it('should create valid plugin config', () => {
@@ -17,47 +18,73 @@ describe('lighthousePlugin-config-object', () => {
     ]);
   });
 
-  it('should filter audits by onlyAudits string "first-contentful-paint"', () => {
+  it.each([
+    [
+      { onlyAudits: ['first-contentful-paint'] },
+      'first-contentful-paint',
+      false,
+    ],
+    [
+      { onlyAudits: ['first-contentful-paint'] },
+      'largest-contentful-paint',
+      true,
+    ],
+    [
+      { skipAudits: ['first-contentful-paint'] },
+      'first-contentful-paint',
+      true,
+    ],
+    [
+      { skipAudits: ['first-contentful-paint'] },
+      'largest-contentful-paint',
+      false,
+    ],
+  ])(
+    'should apply option %o and set the "%s" audit skipped status to %s',
+    (option, audit, isSkipped) => {
+      const pluginConfig = lighthousePlugin(
+        'https://code-pushup-portal.com',
+        option as LighthouseOptions,
+      );
+      expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+      expect(pluginConfig.audits.find(({ slug }) => audit === slug)).toEqual(
+        expect.objectContaining({ isSkipped }),
+      );
+    },
+  );
+
+  it.each([
+    [{ onlyGroups: ['performance'] }, 'performance', false],
+    [{ onlyGroups: ['performance'] }, 'accessibility', true],
+  ])(
+    'should apply option %o and set the "%s" group skipped status to %s',
+    (option, group, isSkipped) => {
+      const pluginConfig = lighthousePlugin(
+        'https://code-pushup-portal.com',
+        option as LighthouseOptions,
+      );
+      expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+      expect(pluginConfig.groups?.find(({ slug }) => group === slug)).toEqual(
+        expect.objectContaining({ isSkipped }),
+      );
+    },
+  );
+
+  it('should mark groups referencing audits in onlyAudits as not skipped', () => {
     const pluginConfig = lighthousePlugin('https://code-pushup-portal.com', {
       onlyAudits: ['first-contentful-paint'],
     });
 
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
 
-    expect(pluginConfig.audits[0]).toEqual(
+    const group = pluginConfig.groups?.find(({ refs }) =>
+      refs.some(ref => ref.slug === 'first-contentful-paint'),
+    );
+
+    expect(group).toEqual(
       expect.objectContaining({
-        slug: 'first-contentful-paint',
+        isSkipped: false,
       }),
-    );
-  });
-
-  it('should filter groups by onlyAudits string "first-contentful-paint"', () => {
-    const pluginConfig = lighthousePlugin('https://code-pushup-portal.com', {
-      onlyAudits: ['first-contentful-paint'],
-    });
-
-    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
-    expect(pluginConfig.groups).toHaveLength(1);
-
-    const refs = pluginConfig.groups?.[0]?.refs;
-    expect(refs).toHaveLength(1);
-
-    expect(refs).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          slug: 'first-contentful-paint',
-        }),
-      ]),
-    );
-  });
-
-  it('should throw when filtering groups by zero-weight onlyAudits', () => {
-    const pluginConfig = lighthousePlugin('https://code-pushup-portal.com', {
-      onlyAudits: ['csp-xss'],
-    });
-
-    expect(() => pluginConfigSchema.parse(pluginConfig)).toThrow(
-      'In a category, there has to be at least one ref with weight > 0. Affected refs: csp-xss',
     );
   });
 });

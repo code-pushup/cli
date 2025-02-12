@@ -28,6 +28,7 @@
       "@code-pushup/js-packages-plugin": [
         "packages/plugin-js-packages/src/index.ts"
       ],
+      "@code-pushup/jsdocs-plugin": ["packages/plugin-jsdocs/src/index.ts"],
       "@code-pushup/lighthouse-plugin": [
         "packages/plugin-lighthouse/src/index.ts"
       ],
