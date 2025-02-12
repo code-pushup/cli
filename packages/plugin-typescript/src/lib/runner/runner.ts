@@ -46,7 +46,7 @@ export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
     );
 
     return expectedAudits.map(({ slug }) => {
-      const { details } = result[slug as CodeRangeName] ?? {};
+      const { details } = result[slug] ?? {};
 
       const issues = details?.issues ?? [];
       return {
