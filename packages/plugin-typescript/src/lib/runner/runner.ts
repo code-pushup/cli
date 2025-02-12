@@ -27,8 +27,7 @@ export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
     > = diagnostics.reduce(
       (acc, diag) => {
         const slug = tSCodeToAuditSlug(diag.code);
-        const existingIssues: Issue[] =
-          (acc[slug] && acc[slug].details?.issues) || ([] as Issue[]);
+        const existingIssues: Issue[] = acc[slug]?.details?.issues ?? [];
         return {
           ...acc,
           [slug]: {
