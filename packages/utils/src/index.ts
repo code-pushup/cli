@@ -95,9 +95,15 @@ export {
   formatReportScore,
 } from './lib/reports/utils.js';
 export { isSemver, normalizeSemver, sortSemvers } from './lib/semver.js';
+export {
+  camelCaseToKebabCase,
+  kebabCaseToCamelCase,
+  capitalize,
+  toSentenceCase,
+  toTitleCase,
+} from './lib/case-conversions.js';
 export * from './lib/text-formats/index.js';
 export {
-  capitalize,
   countOccurrences,
   distinct,
   factorOf,
@@ -121,6 +127,7 @@ export type {
   ItemOrArray,
   Prettify,
   WithRequired,
+  CamelCaseToKebabCase,
 } from './lib/types.js';
 export { verboseUtils } from './lib/verbose-utils.js';
 export { parseSchema, SchemaValidationError } from './lib/zod-validation.js';
