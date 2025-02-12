@@ -1,3 +1,29 @@
+## 0.58.0 (2025-02-12)
+
+### 🚀 Features
+
+- **models:** auto-generate JSDoc annotations ([29cf02ad](https://github.com/code-pushup/cli/commit/29cf02ad))
+- **plugin-coverage:** support lcovonly option for vitest ([b230a3d2](https://github.com/code-pushup/cli/commit/b230a3d2))
+- **plugin-eslint:** add support for custom groups ([#925](https://github.com/code-pushup/cli/pull/925))
+- **plugin-jsdocs:** add plugin-jsdocs to analyze documentation in ts/js projects ([#896](https://github.com/code-pushup/cli/pull/896))
+- **plugin-typescript:** setup plugin project base ([#917](https://github.com/code-pushup/cli/pull/917))
+
+### 🩹 Fixes
+
+- handle skipped audits and groups ([#911](https://github.com/code-pushup/cli/pull/911))
+- fix poppinss version ([#921](https://github.com/code-pushup/cli/pull/921))
+- nest files with timestamp for plugin runners ([4ecf9772](https://github.com/code-pushup/cli/commit/4ecf9772))
+- **models:** add missing exports ([#918](https://github.com/code-pushup/cli/pull/918))
+- **nx-plugin:** deep merge executor options ([#927](https://github.com/code-pushup/cli/pull/927))
+
+### ❤️ Thank You
+
+- Alejandro @aramirezj
+- Hanna Skryl @hanna-skryl
+- hanna-skryl
+- Michael Hladky @BioPhoton
+- Vojtech Masek @vmasek
+
 ## 0.57.0 (2024-12-17)
 
 ### 🚀 Features
