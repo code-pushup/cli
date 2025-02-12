@@ -22,6 +22,10 @@
     "access": "public"
   },
   "type": "module",
-  "dependencies": {},
+  "dependencies": {
+    "@code-pushup/models": "0.58.0",
+    "@code-pushup/utils": "0.58.0",
+    "typescript": "5.5.4"
+  },
   "scripts": {}
 }
