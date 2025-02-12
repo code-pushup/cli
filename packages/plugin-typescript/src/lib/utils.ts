@@ -2,10 +2,7 @@ import type { CompilerOptions } from 'typescript';
 import type { Audit, CategoryConfig, CategoryRef } from '@code-pushup/models';
 import { kebabCaseToCamelCase } from '@code-pushup/utils';
 import { AUDITS, GROUPS, TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
-import type {
-  FilterOptions,
-  TypescriptPluginOptions,
-} from './typescript-plugin.js';
+import type { FilterOptions, TypescriptPluginOptions } from './types.js';
 
 export function filterAuditsBySlug(slugs?: string[]) {
   return ({ slug }: { slug: string }) => {
