@@ -24,7 +24,7 @@ export async function executeRunner({
   runnerConfigPath,
   runnerOutputPath,
 }: RunnerFilesPaths): Promise<void> {
-  const { reports, coverageToolCommand, coverageTypes } =
+  const { reports, coverageToolCommand, continueOnCommandFail, coverageTypes } =
     await readJsonFile<FinalCoveragePluginConfig>(runnerConfigPath);
 
   // Run coverage tool if provided
@@ -34,15 +34,20 @@ export async function executeRunner({
       await executeProcess({ command, args });
     } catch (error) {
       if (error instanceof ProcessError) {
-        ui().logger.error(bold('stdout from failed coverage tool process:'));
-        ui().logger.error(error.stdout);
-        ui().logger.error(bold('stderr from failed coverage tool process:'));
-        ui().logger.error(error.stderr);
+        const loggingFn = continueOnCommandFail
+          ? ui().logger.warning.bind(ui().logger)
+          : ui().logger.error.bind(ui().logger);
+        loggingFn(bold('stdout from failed coverage tool process:'));
+        loggingFn(error.stdout);
+        loggingFn(bold('stderr from failed coverage tool process:'));
+        loggingFn(error.stderr);
       }
 
-      throw new Error(
-        'Coverage plugin: Running coverage tool failed. Make sure all your provided tests are passing.',
-      );
+      if (!continueOnCommandFail) {
+        throw new Error(
+          'Coverage plugin: Running coverage tool failed. Make sure all your provided tests are passing.',
+        );
+      }
     }
   }
 

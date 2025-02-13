@@ -89,7 +89,7 @@ end_of_record
   it('should throw for only empty reports', async () => {
     await expect(() =>
       parseLcovFiles([path.join('coverage', 'lcov.info')]),
-    ).rejects.toThrow('All provided results are empty.');
+    ).rejects.toThrow('All provided coverage results are empty.');
   });
 
   it('should warn about an empty lcov file', async () => {
