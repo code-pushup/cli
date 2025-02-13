@@ -55,37 +55,34 @@ export async function lcovResultsToAuditOutputs(
 export async function parseLcovFiles(
   results: CoverageResult[],
 ): Promise<LCOVRecord[]> {
-  const parsedResults = await Promise.all(
-    results.map(async result => {
-      const resultsPath =
-        typeof result === 'string' ? result : result.resultsPath;
-      const lcovFileContent = await readTextFile(resultsPath);
-      if (lcovFileContent.trim() === '') {
-        ui().logger.warning(
-          `Coverage plugin: Empty lcov report file detected at ${resultsPath}.`,
-        );
-      }
-      const parsedRecords = parseLcov(toUnixNewlines(lcovFileContent));
-      return parsedRecords.map<LCOVRecord>(record => ({
-        ...record,
-        file:
-          typeof result === 'string' || result.pathToProject == null
-            ? record.file
-            : path.join(result.pathToProject, record.file),
-      }));
-    }),
-  );
-  if (parsedResults.length !== results.length) {
-    throw new Error('Some provided LCOV results were not valid.');
+  const parsedResults = (
+    await Promise.all(
+      results.map(async result => {
+        const resultsPath =
+          typeof result === 'string' ? result : result.resultsPath;
+        const lcovFileContent = await readTextFile(resultsPath);
+        if (lcovFileContent.trim() === '') {
+          ui().logger.warning(
+            `Coverage plugin: Empty lcov report file detected at ${resultsPath}.`,
+          );
+        }
+        const parsedRecords = parseLcov(toUnixNewlines(lcovFileContent));
+        return parsedRecords.map<LCOVRecord>(record => ({
+          ...record,
+          file:
+            typeof result === 'string' || result.pathToProject == null
+              ? record.file
+              : path.join(result.pathToProject, record.file),
+        }));
+      }),
+    )
+  ).flat();
+
+  if (parsedResults.length === 0) {
+    throw new Error('All provided coverage results are empty.');
   }
 
-  const flatResults = parsedResults.flat();
-
-  if (flatResults.length === 0) {
-    throw new Error('All provided results are empty.');
-  }
-
-  return flatResults;
+  return parsedResults;
 }
 
 /**
