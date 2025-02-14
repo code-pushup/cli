@@ -69,8 +69,8 @@ describe('runAutorunExecutor', () => {
     expect(output.command).toMatch('--persist.filename="REPORT"');
   });
 
-  it('should create command from context, options and arguments', async () => {
-    envSpy.mockReturnValue({ CP_PROJECT: 'CLI' });
+  it('should create command from context, options and arguments if APIkey is set', async () => {
+    envSpy.mockReturnValue({ CP_PROJECT: 'CLI', CP_API_KEY: '123456789' });
     const output = await runAutorunExecutor(
       { persist: { filename: 'REPORT', format: ['md', 'json'] } },
       executorContext('core'),
@@ -80,6 +80,20 @@ describe('runAutorunExecutor', () => {
       '--persist.format="md" --persist.format="json"',
     );
     expect(output.command).toMatch('--upload.project="CLI"');
+    expect(output.command).toMatch('--upload.apiKey="123456789"');
+  });
+
+  it('should create command from context, options and arguments without upload if APIkey is not set', async () => {
+    envSpy.mockReturnValue({ CP_PROJECT: 'CLI' });
+    const output = await runAutorunExecutor(
+      { persist: { filename: 'REPORT', format: ['md', 'json'] } },
+      executorContext('core'),
+    );
+    expect(output.command).toMatch('--persist.filename="REPORT"');
+    expect(output.command).toMatch(
+      '--persist.format="md" --persist.format="json"',
+    );
+    expect(output.command).not.toMatch('--upload.project="CLI"');
   });
 
   it('should log information if verbose is set', async () => {

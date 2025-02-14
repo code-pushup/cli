@@ -27,6 +27,11 @@ export function parseAutorunExecutorOptions(
   const { projectPrefix, persist, upload, command } = options;
   const needsUploadParams =
     command === 'upload' || command === 'autorun' || command === undefined;
+  const uploadCfg = uploadConfig(
+    { projectPrefix, ...upload },
+    normalizedContext,
+  );
+  const hasApiToken = uploadCfg?.apiKey != null;
   return {
     ...parseAutorunExecutorOnlyOptions(options),
     ...globalConfig(options, normalizedContext),
@@ -34,9 +39,7 @@ export function parseAutorunExecutorOptions(
     // @TODO This is a hack to avoid validation errors of upload config for commands that dont need it.
     // Fix: use utils and execute the core logic directly
     // Blocked by Nx plugins can't compile to es6
-    upload: needsUploadParams
-      ? uploadConfig({ projectPrefix, ...upload }, normalizedContext)
-      : undefined,
+    ...(needsUploadParams && hasApiToken ? { upload: uploadCfg } : {}),
   };
 }
 
