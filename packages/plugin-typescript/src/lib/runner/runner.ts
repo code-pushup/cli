@@ -24,8 +24,7 @@ export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
       Partial<Record<CodeRangeName, Pick<AuditOutput, 'slug' | 'details'>>>
     >((acc, diag) => {
       const slug = tsCodeToAuditSlug(diag.code);
-      const existingIssues: Issue[] =
-        (acc[slug] && acc[slug].details?.issues) || ([] as Issue[]);
+      const existingIssues: Issue[] = acc[slug]?.details?.issues ?? [];
       return {
         ...acc,
         [slug]: {
