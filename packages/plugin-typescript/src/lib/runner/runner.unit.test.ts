@@ -14,7 +14,7 @@ describe('createRunnerFunction', () => {
     runnerModule,
     'getTypeScriptDiagnostics',
   );
-  const tSCodeToAuditSlugSpy = vi.spyOn(utilsModule, 'tSCodeToAuditSlug');
+  const tSCodeToAuditSlugSpy = vi.spyOn(utilsModule, 'tsCodeToAuditSlug');
   const getIssueFromDiagnosticSpy = vi.spyOn(
     utilsModule,
     'getIssueFromDiagnostic',
@@ -50,7 +50,7 @@ describe('createRunnerFunction', () => {
   it('should return empty array if no diagnostics are found', async () => {
     getTypeScriptDiagnosticsSpy.mockResolvedValue([]);
     const runner = createRunnerFunction({
-      tsConfigPath: 'tsconfig.json',
+      tsconfig: 'tsconfig.json',
       expectedAudits: [],
     });
     await expect(runner(() => void 0)).resolves.toStrictEqual([]);
@@ -59,7 +59,7 @@ describe('createRunnerFunction', () => {
   it('should return empty array if no supported diagnostics are found', async () => {
     getTypeScriptDiagnosticsSpy.mockResolvedValue([mockSemanticDiagnostic]);
     const runner = createRunnerFunction({
-      tsConfigPath: 'tsconfig.json',
+      tsconfig: 'tsconfig.json',
       expectedAudits: [],
     });
     await expect(runner(() => void 0)).resolves.toStrictEqual([]);
@@ -68,7 +68,7 @@ describe('createRunnerFunction', () => {
   it('should pass the diagnostic code to tsCodeToSlug', async () => {
     getTypeScriptDiagnosticsSpy.mockResolvedValue([mockSemanticDiagnostic]);
     const runner = createRunnerFunction({
-      tsConfigPath: 'tsconfig.json',
+      tsconfig: 'tsconfig.json',
       expectedAudits: [],
     });
     await expect(runner(() => void 0)).resolves.toStrictEqual([]);
@@ -79,7 +79,7 @@ describe('createRunnerFunction', () => {
   it('should pass the diagnostic to getIssueFromDiagnostic', async () => {
     getTypeScriptDiagnosticsSpy.mockResolvedValue([mockSemanticDiagnostic]);
     const runner = createRunnerFunction({
-      tsConfigPath: 'tsconfig.json',
+      tsconfig: 'tsconfig.json',
       expectedAudits: [],
     });
     await expect(runner(() => void 0)).resolves.toStrictEqual([]);
@@ -100,7 +100,7 @@ describe('createRunnerFunction', () => {
       },
     ]);
     const runner = createRunnerFunction({
-      tsConfigPath: 'tsconfig.json',
+      tsconfig: 'tsconfig.json',
       expectedAudits: [{ slug: 'semantic-errors' }],
     });
 
@@ -131,7 +131,7 @@ describe('createRunnerFunction', () => {
       mockSemanticDiagnostic,
     ]);
     const runner = createRunnerFunction({
-      tsConfigPath: 'tsconfig.json',
+      tsconfig: 'tsconfig.json',
       expectedAudits: [{ slug: 'semantic-errors' }, { slug: 'syntax-errors' }],
     });
 
@@ -174,7 +174,7 @@ describe('createRunnerFunction', () => {
       },
     ]);
     const runner = createRunnerFunction({
-      tsConfigPath: 'tsconfig.json',
+      tsconfig: 'tsconfig.json',
       expectedAudits: [{ slug: 'semantic-errors' }, { slug: 'syntax-errors' }],
     });
     const auditOutputs = await runner(() => void 0);
