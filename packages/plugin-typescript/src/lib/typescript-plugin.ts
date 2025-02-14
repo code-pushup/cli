@@ -1,5 +1,6 @@
 import { createRequire } from 'node:module';
 import type { PluginConfig } from '@code-pushup/models';
+import { stringifyError } from '@code-pushup/utils';
 import { DEFAULT_TS_CONFIG, TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
 import { createRunnerFunction } from './runner/runner.js';
 import type { DiagnosticsOptions } from './runner/ts-runner.js';
@@ -11,7 +12,7 @@ const packageJson = createRequire(import.meta.url)(
   '../../package.json',
 ) as typeof import('../../package.json');
 
-export type FilterOptions = { onlyAudits?: AuditSlug[] | undefined };
+export type FilterOptions = { onlyAudits?: AuditSlug[] };
 export type TypescriptPluginOptions = Partial<DiagnosticsOptions> &
   FilterOptions;
 
@@ -48,10 +49,10 @@ function parseOptions(
   tsPluginOptions: TypescriptPluginOptions,
 ): TypescriptPluginOptions {
   try {
-    return typescriptPluginConfigSchema.parse(tsPluginOptions);
+    return typescriptPluginConfigSchema.parse(tsPluginOptions) as FilterOptions;
   } catch (error) {
     throw new Error(
-      `Error parsing TypeScript Plugin options: ${(error as Error).message}`,
+      `Error parsing TypeScript Plugin options: ${stringifyError(error)}`,
     );
   }
 }
