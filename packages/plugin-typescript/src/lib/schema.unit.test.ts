@@ -59,14 +59,11 @@ describe('typescriptPluginConfigSchema', () => {
   });
 
   it('throws for unknown audit slug', () => {
-    expect(
-      () =>
-        typescriptPluginConfigSchema.parse({
-          tsConfigPath,
-          onlyAudits: ['unknown-audit'],
-        }),
-      // Message too large because enums validation
-      // eslint-disable-next-line vitest/require-to-throw-message
-    ).toThrow();
+    expect(() =>
+      typescriptPluginConfigSchema.parse({
+        tsConfigPath,
+        onlyAudits: ['unknown-audit'],
+      }),
+    ).toThrow(/unknown-audit/);
   });
 });
