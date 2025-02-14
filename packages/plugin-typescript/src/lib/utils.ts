@@ -4,6 +4,11 @@ import { kebabCaseToCamelCase } from '@code-pushup/utils';
 import { AUDITS, GROUPS, TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
 import type { FilterOptions, TypescriptPluginOptions } from './types.js';
 
+/**
+ * It filters the audits by the slugs
+ *
+ * @param slugs
+ */
 export function filterAuditsBySlug(slugs?: string[]) {
   return ({ slug }: { slug: string }) => {
     if (slugs && slugs.length > 0) {
