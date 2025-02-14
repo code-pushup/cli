@@ -3,6 +3,7 @@ import {
   createProgram,
   getPreEmitDiagnostics,
 } from 'typescript';
+import { stringifyError } from '@code-pushup/utils';
 import { loadTargetConfig } from './utils.js';
 
 export type DiagnosticsOptions = {
@@ -15,11 +16,10 @@ export async function getTypeScriptDiagnostics({
   const { fileNames, options } = await loadTargetConfig(tsconfig);
   try {
     const program = createProgram(fileNames, options);
-    // @TODO use more fine-grained helpers like getSemanticDiagnostics instead of getPreEmitDiagnostics
     return getPreEmitDiagnostics(program);
   } catch (error) {
     throw new Error(
-      `Can't create TS program in getDiagnostics. \n ${(error as Error).message}`,
+      `Can't create TS program in getDiagnostics. \n ${stringifyError(error)}`,
     );
   }
 }
