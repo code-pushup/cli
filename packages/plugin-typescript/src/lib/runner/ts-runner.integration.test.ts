@@ -5,7 +5,7 @@ describe('getTypeScriptDiagnostics', () => {
   it('should return valid diagnostics', async () => {
     await expect(
       getTypeScriptDiagnostics({
-        tsConfigPath:
+        tsconfig:
           'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
       }),
     ).resolves.toHaveLength(5);

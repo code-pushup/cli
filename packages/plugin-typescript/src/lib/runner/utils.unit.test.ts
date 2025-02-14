@@ -3,18 +3,18 @@ import { beforeEach, describe, expect } from 'vitest';
 import {
   getIssueFromDiagnostic,
   getSeverity,
-  tSCodeToAuditSlug,
+  tsCodeToAuditSlug,
 } from './utils.js';
 
 describe('tSCodeToAuditSlug', () => {
   it('should transform supported code to readable audit', () => {
-    expect(tSCodeToAuditSlug(Number.parseInt('2345', 10))).toBe(
+    expect(tsCodeToAuditSlug(Number.parseInt('2345', 10))).toBe(
       'semantic-errors',
     );
   });
 
   it('should return unknown slug for unknown code', () => {
-    expect(tSCodeToAuditSlug(999)).toBe('unknown-codes');
+    expect(tsCodeToAuditSlug(999)).toBe('unknown-codes');
   });
 });
 

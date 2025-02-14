@@ -19,7 +19,7 @@ import type { CodeRangeName } from './types.js';
  * @returns The audit slug.
  * @throws Error if the code is not supported.
  */
-export function tSCodeToAuditSlug(code: number): CodeRangeName {
+export function tsCodeToAuditSlug(code: number): CodeRangeName {
   const rangeNumber = code
     .toString()
     .slice(0, 1) as keyof typeof TS_CODE_RANGE_NAMES;

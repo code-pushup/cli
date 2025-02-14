@@ -6,7 +6,7 @@ describe('createRunnerFunction', () => {
   it('should create valid audit outputs when called', async () => {
     await expect(
       createRunnerFunction({
-        tsConfigPath:
+        tsconfig:
           'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.all-audits.json',
         expectedAudits: getAudits(),
       })(() => void 0),

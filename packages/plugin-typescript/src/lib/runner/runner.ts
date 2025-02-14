@@ -1,7 +1,6 @@
 import type {
   AuditOutput,
   AuditOutputs,
-  AuditReport,
   Issue,
   RunnerFunction,
 } from '@code-pushup/models';
@@ -11,7 +10,7 @@ import {
   getTypeScriptDiagnostics,
 } from './ts-runner.js';
 import type { CodeRangeName } from './types.js';
-import { getIssueFromDiagnostic, tSCodeToAuditSlug } from './utils.js';
+import { getIssueFromDiagnostic, tsCodeToAuditSlug } from './utils.js';
 
 export type RunnerOptions = DiagnosticsOptions & {
   expectedAudits: { slug: AuditSlug }[];
@@ -21,32 +20,24 @@ export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
   const { tsconfig, expectedAudits } = options;
   return async (): Promise<AuditOutputs> => {
     const diagnostics = await getTypeScriptDiagnostics({ tsconfig });
-    const result: Record<
-      CodeRangeName,
-      Pick<AuditReport, 'slug' | 'details'>
-    > = diagnostics.reduce(
-      (acc, diag) => {
-        const slug = tSCodeToAuditSlug(diag.code);
-        const existingIssues: Issue[] =
-          (acc[slug] && acc[slug].details?.issues) || ([] as Issue[]);
-        return {
-          ...acc,
-          [slug]: {
-            slug,
-            details: {
-              issues: [...existingIssues, getIssueFromDiagnostic(diag)],
-            },
+    const result = diagnostics.reduce<
+      Partial<Record<CodeRangeName, Pick<AuditOutput, 'slug' | 'details'>>>
+    >((acc, diag) => {
+      const slug = tsCodeToAuditSlug(diag.code);
+      const existingIssues: Issue[] = acc[slug]?.details?.issues ?? [];
+      return {
+        ...acc,
+        [slug]: {
+          slug,
+          details: {
+            issues: [...existingIssues, getIssueFromDiagnostic(diag)],
           },
-        };
-      },
-      {} as unknown as Record<
-        CodeRangeName,
-        Pick<AuditOutput, 'slug' | 'details'>
-      >,
-    );
+        },
+      };
+    }, {});
 
     return expectedAudits.map(({ slug }) => {
-      const { details } = result[slug as CodeRangeName] ?? {};
+      const { details } = result[slug] ?? {};
 
       const issues = details?.issues ?? [];
       return {

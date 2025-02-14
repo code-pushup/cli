@@ -94,7 +94,7 @@
       ],
     },
     "score": 0,
-    "slug": "language-service-errors",
+    "slug": "declaration-and-language-service-errors",
     "value": 1,
   },
   {
@@ -105,6 +105,11 @@
   {
     "score": 1,
     "slug": "configuration-errors",
+    "value": 0,
+  },
+  {
+    "score": 1,
+    "slug": "no-implicit-any-errors",
     "value": 0,
   },
   {
