@@ -37,7 +37,7 @@ export const AUDITS: (Audit & { slug: AuditSlug })[] = Object.values(
  */
 export const GROUPS: Group[] = [
   {
-    slug: 'problems-group',
+    slug: 'problems',
     title: 'Problems',
     description:
       'Syntax, semantic, and internal compiler errors are critical for identifying and preventing bugs.',
@@ -54,7 +54,7 @@ export const GROUPS: Group[] = [
     })),
   },
   {
-    slug: 'ts-configuration-group',
+    slug: 'ts-configuration',
     title: 'Configuration',
     description:
       'TypeScript configuration and options errors ensure correct project setup, reducing risks from misconfiguration.',
@@ -64,7 +64,7 @@ export const GROUPS: Group[] = [
     })),
   },
   {
-    slug: 'miscellaneous-group',
+    slug: 'miscellaneous',
     title: 'Miscellaneous',
     description:
       'Errors that do not bring any specific value to the developer, but are still useful to know.',
