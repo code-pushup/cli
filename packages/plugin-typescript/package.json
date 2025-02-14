@@ -23,8 +23,8 @@
   },
   "type": "module",
   "dependencies": {
-    "@code-pushup/models": "0.58.0",
-    "@code-pushup/utils": "0.58.0"
+    "@code-pushup/models": "*",
+    "@code-pushup/utils": "*"
   },
   "peerDependencies": {
     "typescript": ">=4.0.0"
