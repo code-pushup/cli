@@ -1,3 +1,19 @@
+## 0.59.0 (2025-02-14)
+
+### 🚀 Features
+
+- **plugin-coverage:** do not halt plugin execution on fail ([23f1ce5c](https://github.com/code-pushup/cli/commit/23f1ce5c))
+- **utils:** add string helper ([#916](https://github.com/code-pushup/cli/pull/916))
+
+### 🩹 Fixes
+
+- explicitly exit process with successful code to not leave cli hanging ([2cb815bb](https://github.com/code-pushup/cli/commit/2cb815bb))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+- Vojtech Masek @vmasek
+
 ## 0.58.0 (2025-02-12)
 
 ### 🚀 Features
