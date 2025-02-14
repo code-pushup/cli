@@ -22,6 +22,12 @@
     "access": "public"
   },
   "type": "module",
-  "dependencies": {},
+  "dependencies": {
+    "@code-pushup/models": "0.59.0",
+    "@code-pushup/utils": "0.59.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.0.0"
+  },
   "scripts": {}
 }

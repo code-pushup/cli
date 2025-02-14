@@ -1,0 +1,120 @@
+[
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "TS1136: Property assignment expected.",
+          "severity": "error",
+          "source": {
+            "file": "packages/plugin-typescript/mocks/fixtures/basic-setup/src/1-syntax-errors/ts-1136-property-assignment-expected.ts",
+            "position": {
+              "startLine": 1,
+            },
+          },
+        },
+      ],
+    },
+    "score": 0,
+    "slug": "syntax-errors",
+    "value": 1,
+  },
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "TS2307: Cannot find module './non-existent' or its corresponding type declarations.",
+          "severity": "error",
+          "source": {
+            "file": "packages/plugin-typescript/mocks/fixtures/basic-setup/src/2-semantic-errors/module-resolution/ts-2307-module-not-fount.ts",
+            "position": {
+              "startLine": 2,
+            },
+          },
+        },
+        {
+          "message": "TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.",
+          "severity": "error",
+          "source": {
+            "file": "packages/plugin-typescript/mocks/fixtures/basic-setup/src/2-semantic-errors/strict/no-implicit-this/ts-2683-not-implicit-this.ts",
+            "position": {
+              "startLine": 3,
+            },
+          },
+        },
+        {
+          "message": "TS2349: This expression is not callable.
+  Type 'Number' has no call signatures.",
+          "severity": "error",
+          "source": {
+            "file": "packages/plugin-typescript/mocks/fixtures/basic-setup/src/2-semantic-errors/strict/strict-function-types/ts-2349-not-callable.ts",
+            "position": {
+              "startLine": 3,
+            },
+          },
+        },
+        {
+          "message": "TS2322: Type 'null' is not assignable to type 'string'.",
+          "severity": "error",
+          "source": {
+            "file": "packages/plugin-typescript/mocks/fixtures/basic-setup/src/2-semantic-errors/strict/strict-null-checks/ts-2531-strict-null-checks.ts",
+            "position": {
+              "startLine": 2,
+            },
+          },
+        },
+        {
+          "message": "TS2304: Cannot find name 'NonExistentType'.",
+          "severity": "error",
+          "source": {
+            "file": "packages/plugin-typescript/mocks/fixtures/basic-setup/src/2-semantic-errors/ts-2307-cannot-find-module.ts",
+            "position": {
+              "startLine": 1,
+            },
+          },
+        },
+      ],
+    },
+    "score": 0,
+    "slug": "semantic-errors",
+    "value": 5,
+  },
+  {
+    "details": {
+      "issues": [
+        {
+          "message": "TS4112: This member cannot have an 'override' modifier because its containing class 'Standalone' does not extend another class.",
+          "severity": "error",
+          "source": {
+            "file": "packages/plugin-typescript/mocks/fixtures/basic-setup/src/4-languale-service/ts-4114-incorrect-modifier.ts",
+            "position": {
+              "startLine": 2,
+            },
+          },
+        },
+      ],
+    },
+    "score": 0,
+    "slug": "declaration-and-language-service-errors",
+    "value": 1,
+  },
+  {
+    "score": 1,
+    "slug": "internal-errors",
+    "value": 0,
+  },
+  {
+    "score": 1,
+    "slug": "configuration-errors",
+    "value": 0,
+  },
+  {
+    "score": 1,
+    "slug": "no-implicit-any-errors",
+    "value": 0,
+  },
+  {
+    "score": 1,
+    "slug": "unknown-codes",
+    "value": 0,
+  },
+]
