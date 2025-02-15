@@ -1,8 +1,11 @@
 import type { CompilerOptions } from 'typescript';
 import type { Audit, CategoryConfig, CategoryRef } from '@code-pushup/models';
-import { kebabCaseToCamelCase } from '@code-pushup/utils';
+import { kebabCaseToCamelCase, ui } from '@code-pushup/utils';
 import { AUDITS, GROUPS, TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
-import type { FilterOptions, TypescriptPluginOptions } from './types.js';
+import type {
+  TypescriptPluginConfig,
+  TypescriptPluginOptions,
+} from './schema.js';
 
 /**
  * It filters the audits by the slugs
@@ -63,7 +66,9 @@ export function getGroups(options?: TypescriptPluginOptions) {
   })).filter(group => group.refs.length > 0);
 }
 
-export function getAudits(options?: FilterOptions) {
+export function getAudits(
+  options?: Pick<TypescriptPluginConfig, 'onlyAudits'>,
+) {
   return AUDITS.filter(filterAuditsBySlug(options?.onlyAudits));
 }
 
@@ -141,6 +146,6 @@ export function logSkippedAudits(audits: Audit[]) {
     audit => !audits.some(filtered => filtered.slug === audit.slug),
   ).map(audit => kebabCaseToCamelCase(audit.slug));
   if (skippedAudits.length > 0) {
-    console.warn(`Skipped audits: [${skippedAudits.join(', ')}]`);
+    ui().logger.info(`Skipped audits: [${skippedAudits.join(', ')}]`);
   }
 }

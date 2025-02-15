@@ -1,7 +1,7 @@
 import { expect } from 'vitest';
 import { pluginConfigSchema } from '@code-pushup/models';
 import { AUDITS, GROUPS } from './constants.js';
-import type { TypescriptPluginOptions } from './types.js';
+import type { TypescriptPluginOptions } from './schema.js';
 import { typescriptPlugin } from './typescript-plugin.js';
 
 describe('typescriptPlugin-config-object', () => {

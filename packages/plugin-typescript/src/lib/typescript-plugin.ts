@@ -3,18 +3,16 @@ import type { PluginConfig } from '@code-pushup/models';
 import { stringifyError } from '@code-pushup/utils';
 import { DEFAULT_TS_CONFIG, TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
 import { createRunnerFunction } from './runner/runner.js';
-import type { DiagnosticsOptions } from './runner/ts-runner.js';
-import { typescriptPluginConfigSchema } from './schema.js';
-import type { AuditSlug } from './types.js';
+import {
+  type TypescriptPluginConfig,
+  type TypescriptPluginOptions,
+  typescriptPluginConfigSchema,
+} from './schema.js';
 import { getAudits, getGroups, logSkippedAudits } from './utils.js';
 
 const packageJson = createRequire(import.meta.url)(
   '../../package.json',
 ) as typeof import('../../package.json');
-
-export type FilterOptions = { onlyAudits?: AuditSlug[] };
-export type TypescriptPluginOptions = Partial<DiagnosticsOptions> &
-  FilterOptions;
 
 export async function typescriptPlugin(
   options?: TypescriptPluginOptions,

@@ -5,7 +5,7 @@ import {
 } from './schema.js';
 
 describe('typescriptPluginConfigSchema', () => {
-  const tsConfigPath = 'tsconfig.json';
+  const tsconfig = 'tsconfig.json';
 
   it('accepts a empty configuration', () => {
     expect(() => typescriptPluginConfigSchema.parse({})).not.toThrow();
@@ -14,7 +14,7 @@ describe('typescriptPluginConfigSchema', () => {
   it('accepts a configuration with tsConfigPath set', () => {
     expect(() =>
       typescriptPluginConfigSchema.parse({
-        tsConfigPath,
+        tsconfig,
       } satisfies TypescriptPluginOptions),
     ).not.toThrow();
   });
@@ -22,7 +22,7 @@ describe('typescriptPluginConfigSchema', () => {
   it('accepts a configuration with tsConfigPath and empty onlyAudits', () => {
     expect(() =>
       typescriptPluginConfigSchema.parse({
-        tsConfigPath,
+        tsconfig,
         onlyAudits: [],
       } satisfies TypescriptPluginOptions),
     ).not.toThrow();
@@ -31,7 +31,7 @@ describe('typescriptPluginConfigSchema', () => {
   it('accepts a configuration with tsConfigPath and full onlyAudits', () => {
     expect(() =>
       typescriptPluginConfigSchema.parse({
-        tsConfigPath,
+        tsconfig,
         onlyAudits: [
           'syntax-errors',
           'semantic-errors',
@@ -52,7 +52,7 @@ describe('typescriptPluginConfigSchema', () => {
   it('throws for invalid onlyAudits items', () => {
     expect(() =>
       typescriptPluginConfigSchema.parse({
-        tsConfigPath,
+        tsconfig,
         onlyAudits: [123, true],
       }),
     ).toThrow('invalid_type');
@@ -61,7 +61,7 @@ describe('typescriptPluginConfigSchema', () => {
   it('throws for unknown audit slug', () => {
     expect(() =>
       typescriptPluginConfigSchema.parse({
-        tsConfigPath,
+        tsconfig,
         onlyAudits: ['unknown-audit'],
       }),
     ).toThrow(/unknown-audit/);
