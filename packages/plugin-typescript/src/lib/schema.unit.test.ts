@@ -11,7 +11,7 @@ describe('typescriptPluginConfigSchema', () => {
     expect(() => typescriptPluginConfigSchema.parse({})).not.toThrow();
   });
 
-  it('accepts a configuration with tsConfigPath set', () => {
+  it('accepts a configuration with tsconfig set', () => {
     expect(() =>
       typescriptPluginConfigSchema.parse({
         tsconfig,
@@ -19,7 +19,7 @@ describe('typescriptPluginConfigSchema', () => {
     ).not.toThrow();
   });
 
-  it('accepts a configuration with tsConfigPath and empty onlyAudits', () => {
+  it('accepts a configuration with tsconfig and empty onlyAudits', () => {
     expect(() =>
       typescriptPluginConfigSchema.parse({
         tsconfig,
@@ -28,7 +28,7 @@ describe('typescriptPluginConfigSchema', () => {
     ).not.toThrow();
   });
 
-  it('accepts a configuration with tsConfigPath and full onlyAudits', () => {
+  it('accepts a configuration with tsconfig and full onlyAudits', () => {
     expect(() =>
       typescriptPluginConfigSchema.parse({
         tsconfig,
