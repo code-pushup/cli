@@ -47,9 +47,9 @@ export async function typescriptPlugin(
 
 function parseOptions(
   tsPluginOptions: TypescriptPluginOptions,
-): TypescriptPluginOptions {
+): TypescriptPluginConfig {
   try {
-    return typescriptPluginConfigSchema.parse(tsPluginOptions) as FilterOptions;
+    return typescriptPluginConfigSchema.parse(tsPluginOptions);
   } catch (error) {
     throw new Error(
       `Error parsing TypeScript Plugin options: ${stringifyError(error)}`,
