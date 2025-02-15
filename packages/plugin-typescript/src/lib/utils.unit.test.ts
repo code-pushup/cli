@@ -1,7 +1,7 @@
-import {describe, expect, it} from 'vitest';
-import {type Audit, categoryRefSchema} from '@code-pushup/models';
-import {ui} from '@code-pushup/utils';
-import {AUDITS} from './constants.js';
+import { describe, expect, it } from 'vitest';
+import { type Audit, categoryRefSchema } from '@code-pushup/models';
+import { ui } from '@code-pushup/utils';
+import { AUDITS } from './constants.js';
 import {
   filterAuditsByCompilerOptions,
   filterAuditsBySlug,
