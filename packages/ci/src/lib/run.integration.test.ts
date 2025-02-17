@@ -404,6 +404,43 @@ describe('runInCI', () => {
         expect(logger.info).toHaveBeenCalled();
         expect(logger.debug).toHaveBeenCalled();
       });
+
+      it('should skip comment if disabled', async () => {
+        const api: ProviderAPIClient = {
+          maxCommentChars: 1_000_000,
+          createComment: vi.fn(),
+          updateComment: vi.fn(),
+          listComments: vi.fn().mockResolvedValue([]),
+        };
+
+        await expect(
+          runInCI(refs, api, { ...options, skipComment: true }, git),
+        ).resolves.toEqual({
+          mode: 'standalone',
+          commentId: undefined,
+          newIssues: [],
+          files: {
+            report: {
+              json: path.join(outputDir, 'report.json'),
+              md: path.join(outputDir, 'report.md'),
+            },
+            diff: {
+              json: path.join(outputDir, 'report-diff.json'),
+              md: path.join(outputDir, 'report-diff.md'),
+            },
+          },
+        } satisfies RunResult);
+
+        expect(api.listComments).not.toHaveBeenCalled();
+        expect(api.createComment).not.toHaveBeenCalled();
+        expect(api.updateComment).not.toHaveBeenCalled();
+
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: options.bin,
+          args: expect.arrayContaining(['compare']),
+          cwd: workDir,
+        } satisfies utils.ProcessConfig);
+      });
     });
   });
 
@@ -742,6 +779,60 @@ describe('runInCI', () => {
         expect(logger.warn).not.toHaveBeenCalled();
         expect(logger.info).toHaveBeenCalled();
         expect(logger.debug).toHaveBeenCalled();
+      });
+
+      it('should skip comment if disabled', async () => {
+        const api: ProviderAPIClient = {
+          maxCommentChars: 1_000_000,
+          createComment: vi.fn(),
+          updateComment: vi.fn(),
+          listComments: vi.fn(),
+        };
+
+        await expect(
+          runInCI(
+            refs,
+            api,
+            { ...options, monorepo: tool, skipComment: true },
+            git,
+          ),
+        ).resolves.toEqual({
+          mode: 'monorepo',
+          commentId: undefined,
+          diffPath: path.join(workDir, '.code-pushup/merged-report-diff.md'),
+          projects: [
+            expect.objectContaining({ name: 'cli' }),
+            expect.objectContaining({ name: 'core' }),
+            expect.objectContaining({ name: 'utils' }),
+          ],
+        } satisfies RunResult);
+
+        await expect(
+          readFile(
+            path.join(workDir, '.code-pushup/merged-report-diff.md'),
+            'utf8',
+          ),
+        ).resolves.toBe(diffMdString);
+
+        expect(api.listComments).not.toHaveBeenCalled();
+        expect(api.createComment).not.toHaveBeenCalled();
+        expect(api.updateComment).not.toHaveBeenCalled();
+
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: runMany,
+          args: expect.any(Array),
+          cwd: expect.stringContaining(workDir),
+        } satisfies utils.ProcessConfig);
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: run,
+          args: expect.arrayContaining(['compare']),
+          cwd: expect.stringContaining(workDir),
+        } satisfies utils.ProcessConfig);
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: run,
+          args: expect.arrayContaining(['merge-diffs']),
+          cwd: expect.stringContaining(workDir),
+        } satisfies utils.ProcessConfig);
       });
     });
   });

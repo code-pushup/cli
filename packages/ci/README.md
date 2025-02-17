@@ -107,6 +107,7 @@ Optionally, you can override default options for further customization:
 | `bin`              | `string`                  | `'npx --no-install code-pushup'` | Command for executing Code PushUp CLI                                                                                                                    |
 | `detectNewIssues`  | `boolean`                 | `true`                           | Toggles if new issues should be detected and returned in `newIssues` property                                                                            |
 | `logger`           | `Logger`                  | `console`                        | Logger for reporting progress and encountered problems                                                                                                   |
+| `skipComment`      | `boolean`                 | `false`                          | Toggles if comparison comment is posted to PR                                                                                                            |
 
 [^1]: By default, the `code-pushup.config` file is autodetected as described in [`@code-pushup/cli` docs](../cli/README.md#configuration).
 
