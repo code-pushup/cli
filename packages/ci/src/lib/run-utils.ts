@@ -223,6 +223,13 @@ export async function loadCachedBaseReport(
   return null;
 }
 
+export async function ensureHeadBranch({ refs, git }: RunEnv): Promise<void> {
+  const { head } = refs;
+  if ((await git.revparse('HEAD')) !== (await git.revparse(head.ref))) {
+    await git.checkout(['-f', head.ref]);
+  }
+}
+
 export async function runInBaseBranch<T>(
   base: GitBranch,
   env: RunEnv,
