@@ -33,6 +33,7 @@ import {
   type RunEnv,
   checkPrintConfig,
   compareReports,
+  ensureHeadBranch,
   loadCachedBaseReport,
   printPersistConfig,
   runInBaseBranch,
@@ -46,6 +47,8 @@ export async function runInMonorepoMode(
   const { logger, directory } = settings;
 
   logger.info('Running Code PushUp in monorepo mode');
+
+  await ensureHeadBranch(env);
 
   const { projects, runManyCommand } = await listMonorepoProjects(settings);
   const projectResults = runManyCommand
