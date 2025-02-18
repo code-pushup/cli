@@ -1,3 +1,20 @@
+## 0.60.0 (2025-02-18)
+
+### 🚀 Features
+
+- **ci:** add skipComment option ([9ac2a6ba](https://github.com/code-pushup/cli/commit/9ac2a6ba))
+- **plugin-typescript:** add TS core logic ([#932](https://github.com/code-pushup/cli/pull/932))
+- **plugin-typescript:** add plugin logic ([#936](https://github.com/code-pushup/cli/pull/936))
+
+### 🩹 Fixes
+
+- **ci:** ensure head ref is checked out ([74db9023](https://github.com/code-pushup/cli/commit/74db9023))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael Hladky @BioPhoton
+
 ## 0.59.0 (2025-02-14)
 
 ### 🚀 Features
