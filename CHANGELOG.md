@@ -1,3 +1,15 @@
+## 0.60.1 (2025-02-18)
+
+### 🩹 Fixes
+
+- add toSorted polyfill as hotfix for bug in github actions runner ([55704d18](https://github.com/code-pushup/cli/commit/55704d18))
+- **ci:** prevent ambigious ref when checking head ([f5f226e1](https://github.com/code-pushup/cli/commit/f5f226e1))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Vojtech Masek @vmasek
+
 ## 0.60.0 (2025-02-18)
 
 ### 🚀 Features
