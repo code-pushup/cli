@@ -21,7 +21,8 @@ Global Options:
       --progress        Show progress bar in stdout.
                                              [boolean] [default: true]
       --verbose         When true creates more verbose output. This is helpful w
-                        hen debugging. [boolean] [default: false]
+                        hen debugging. You may also set CP_VERBOSE env variable
+                        instead.       [boolean] [default: false]
       --config          Path to config file. By default it loads code-pushup.con
                         fig.(ts|mjs|js).                 [string]
       --tsconfig        Path to a TypeScript config, to be used when loading con
@@ -65,9 +66,9 @@ Examples:
   code-pushup collect --onlyPlugins=covera  Run collect with only coverage plugi
   ge                                        n, other plugins from config file wi
                                             ll be skipped.
-  code-pushup collect --skipPlugins=covera  Run collect skiping the coverage plu
-  ge                                        gin, other plugins from config file
-                                            will be included.
+  code-pushup collect --skipPlugins=covera  Run collect skipping the coverage pl
+  ge                                        ugin, other plugins from config file
+                                             will be included.
   code-pushup upload --persist.outputDir=d  Upload dist/report.json to portal us
   ist --upload.apiKey=$CP_API_KEY           ing API key from environment variabl
                                             e
