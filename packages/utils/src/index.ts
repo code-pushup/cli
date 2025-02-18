@@ -129,6 +129,5 @@ export type {
   WithRequired,
   CamelCaseToKebabCase,
 } from './lib/types.js';
-export { verboseUtils } from './lib/verbose-utils.js';
 export { parseSchema, SchemaValidationError } from './lib/zod-validation.js';
 export { createRunnerFiles } from './lib/create-runner-files.js';
