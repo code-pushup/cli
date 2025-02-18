@@ -241,7 +241,7 @@ export async function runInBaseBranch<T>(
   } = env;
 
   await git.fetch('origin', base.ref, ['--depth=1']);
-  await git.checkout(['-f', base.ref]);
+  await git.checkout(['-f', base.sha]);
   logger.info(`Switched to base branch ${base.ref}`);
 
   const result = await fn();
