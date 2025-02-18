@@ -1,3 +1,13 @@
+## 0.60.2 (2025-02-18)
+
+### 🩹 Fixes
+
+- **ci:** prevent unknown pathspec error for custom base ref ([60dfb5b2](https://github.com/code-pushup/cli/commit/60dfb5b2))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.60.1 (2025-02-18)
 
 ### 🩹 Fixes
