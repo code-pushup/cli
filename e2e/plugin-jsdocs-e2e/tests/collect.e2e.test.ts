@@ -56,9 +56,9 @@ describe('PLUGIN collect report with jsdocs-plugin NPM package', () => {
 
     expect(code).toBe(0);
 
-    expect(removeColorCodes(stdout)).toMatchFileSnapshot(
-      '__snapshots__/report.txt',
-    );
+    expect(
+      removeColorCodes(stdout).replace(/@\d+\.\d+\.\d+/, '@<version>'),
+    ).toMatchFileSnapshot('__snapshots__/report.txt');
 
     const report = await readJsonFile(
       path.join(angularOutputDir, 'report.json'),
