@@ -153,7 +153,7 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   const logCommand = [command, ...(args || [])].join(' ');
   ui().logger.log(
     gray(
-      `Executing command:\n${logCommand}\nIn working directory:\n${cfg.cwd}`,
+      `Executing command:\n${logCommand}\nIn working directory:\n${cfg.cwd ?? process.cwd()}`,
     ),
   );
 
