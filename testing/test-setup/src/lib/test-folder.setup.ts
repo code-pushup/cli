@@ -1,17 +1,27 @@
 import { logger } from '@nx/devkit';
 import { bold } from 'ansis';
-import { mkdir, rm } from 'node:fs/promises';
-
-export async function setupTestFolder(dirName: string) {
-  await mkdir(dirName, { recursive: true });
-}
+import { mkdir, rm, stat } from 'node:fs/promises';
 
 export async function cleanTestFolder(dirName: string) {
-  await rm(dirName, { recursive: true, force: true });
+  await teardownTestFolder(dirName);
   await mkdir(dirName, { recursive: true });
 }
 
 export async function teardownTestFolder(dirName: string) {
+  try {
+    const stats = await stat(dirName);
+    if (!stats.isDirectory()) {
+      logger.warn(
+        `⚠️ You are trying to delete single file instead of directory ${bold(
+          dirName,
+        )}.`,
+      );
+    }
+  } catch {
+    // continue safely without deleting as folder does not exist in the filesystem
+    return;
+  }
+
   try {
     await rm(dirName, {
       recursive: true,
