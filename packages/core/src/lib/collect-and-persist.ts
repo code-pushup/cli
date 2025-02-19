@@ -3,7 +3,12 @@ import {
   type PersistConfig,
   pluginReportSchema,
 } from '@code-pushup/models';
-import { logStdoutSummary, scoreReport, sortReport } from '@code-pushup/utils';
+import {
+  isVerbose,
+  logStdoutSummary,
+  scoreReport,
+  sortReport,
+} from '@code-pushup/utils';
 import { collect } from './implementation/collect.js';
 import {
   logPersistedResults,
@@ -29,9 +34,9 @@ export async function collectAndPersistReports(
   );
 
   // terminal output
-  logStdoutSummary(sortedScoredReport, options.verbose);
+  logStdoutSummary(sortedScoredReport);
 
-  if (options.verbose) {
+  if (isVerbose()) {
     logPersistedResults(persistResults);
   }
 

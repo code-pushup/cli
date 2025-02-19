@@ -291,6 +291,8 @@ describe('filterMiddleware', () => {
   );
 
   it('should trigger verbose logging when skipPlugins or onlyPlugins removes categories', () => {
+    vi.stubEnv('CP_VERBOSE', 'true');
+
     filterMiddleware({
       onlyPlugins: ['p1'],
       skipPlugins: ['p2'],
@@ -311,7 +313,6 @@ describe('filterMiddleware', () => {
           refs: [{ type: 'audit', plugin: 'p2', slug: 'a1-p2', weight: 1 }],
         },
       ] as CategoryConfig[],
-      verbose: true,
     });
 
     expect(ui()).toHaveNthLogged(

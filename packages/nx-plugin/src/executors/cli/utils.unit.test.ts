@@ -84,7 +84,7 @@ describe('parseAutorunExecutorOptions', () => {
       }),
     );
 
-    expect(processEnvSpy).toHaveBeenCalledTimes(1);
+    expect(processEnvSpy.mock.calls.length).toBeGreaterThanOrEqual(1);
 
     expect(executorOptions.persist).toEqual(
       expect.objectContaining({

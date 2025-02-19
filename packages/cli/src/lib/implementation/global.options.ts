@@ -13,7 +13,7 @@ export function yargsGlobalOptionsDefinition(): Record<
     },
     verbose: {
       describe:
-        'When true creates more verbose output. This is helpful when debugging.',
+        'When true creates more verbose output. This is helpful when debugging. You may also set CP_VERBOSE env variable instead.',
       type: 'boolean',
       default: false,
     },

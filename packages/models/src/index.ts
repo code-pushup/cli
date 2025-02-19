@@ -100,7 +100,6 @@ export {
   runnerConfigSchema,
   runnerFunctionSchema,
   runnerFilesPathsSchema,
-  type OnProgress,
   type RunnerConfig,
   type RunnerFunction,
   type RunnerFilesPaths,
