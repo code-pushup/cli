@@ -11,8 +11,12 @@ import { fileURLToPath } from 'node:url';
 import { type SimpleGit, simpleGit } from 'simple-git';
 import type { MockInstance } from 'vitest';
 import type { CoreConfig } from '@code-pushup/models';
-import { cleanTestFolder, teardownTestFolder } from '@code-pushup/test-setup';
-import { initGitRepo, simulateGitFetch } from '@code-pushup/test-utils';
+import {
+  cleanTestFolder,
+  initGitRepo,
+  simulateGitFetch,
+  teardownTestFolder,
+} from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
 import type {
   Comment,
