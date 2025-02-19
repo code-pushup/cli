@@ -1,3 +1,14 @@
+## 0.61.0 (2025-02-19)
+
+### 🚀 Features
+
+- **ci:** disable nx/turbo cache for non-autorun code-pushup commands ([29a1bc63](https://github.com/code-pushup/cli/commit/29a1bc63))
+- **models:** do not throw if docs url invalid, treat as missing and log warning ([a54295c6](https://github.com/code-pushup/cli/commit/a54295c6))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.60.2 (2025-02-18)
 
 ### 🩹 Fixes
