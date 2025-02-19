@@ -12,7 +12,7 @@ export async function teardownTestFolder(dirName: string) {
     const stats = await stat(dirName);
     if (!stats.isDirectory()) {
       logger.warn(
-        `⚠️ You are trying to delete single file instead of directory ${bold(
+        `⚠️ You are trying to delete a file instead of a directory - ${bold(
           dirName,
         )}.`,
       );

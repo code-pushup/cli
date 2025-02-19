@@ -61,7 +61,7 @@ export {
   hasNoNullableProps,
 } from './lib/guards.js';
 export { logMultipleResults } from './lib/log-results.js';
-export { link, ui, type CliUi, type Column } from './lib/logging.js';
+export { link, ui, type CliUi, type Column, isVerbose } from './lib/logging.js';
 export { mergeConfigs } from './lib/merge-configs.js';
 export { getProgressBar, type ProgressBar } from './lib/progress.js';
 export {

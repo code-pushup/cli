@@ -50,7 +50,9 @@ describe('logStdoutSummary', () => {
   });
 
   it('should include all audits when verbose is true', async () => {
-    logStdoutSummary(sortReport(scoreReport(reportMock())), true);
+    vi.stubEnv('CP_VERBOSE', 'true');
+
+    logStdoutSummary(sortReport(scoreReport(reportMock())));
 
     const output = logs.join('\n');
 

@@ -6,6 +6,7 @@ import {
 } from '@code-pushup/test-utils';
 import {
   type ScoredReport,
+  isVerbose,
   logStdoutSummary,
   scoreReport,
   sortReport,
@@ -47,6 +48,9 @@ describe('collectAndPersistReports', () => {
 
   it('should call collect and persistReport with correct parameters in non-verbose mode', async () => {
     const sortedScoredReport = sortReport(scoreReport(MINIMAL_REPORT_MOCK));
+
+    expect(isVerbose()).toBe(false);
+
     const nonVerboseConfig: CollectAndPersistReportsOptions = {
       ...MINIMAL_CONFIG_MOCK,
       persist: {
@@ -54,7 +58,6 @@ describe('collectAndPersistReports', () => {
         filename: 'report',
         format: ['md'],
       },
-      verbose: false,
       progress: false,
     };
     await collectAndPersistReports(nonVerboseConfig);
@@ -80,12 +83,15 @@ describe('collectAndPersistReports', () => {
       },
     );
 
-    expect(logStdoutSummary).toHaveBeenCalledWith(sortedScoredReport, false);
+    expect(logStdoutSummary).toHaveBeenCalledWith(sortedScoredReport);
     expect(logPersistedResults).not.toHaveBeenCalled();
   });
 
   it('should call collect and persistReport with correct parameters in verbose mode', async () => {
     const sortedScoredReport = sortReport(scoreReport(MINIMAL_REPORT_MOCK));
+
+    vi.stubEnv('CP_VERBOSE', 'true');
+
     const verboseConfig: CollectAndPersistReportsOptions = {
       ...MINIMAL_CONFIG_MOCK,
       persist: {
@@ -93,7 +99,6 @@ describe('collectAndPersistReports', () => {
         filename: 'report',
         format: ['md'],
       },
-      verbose: true,
       progress: false,
     };
     await collectAndPersistReports(verboseConfig);
@@ -106,7 +111,7 @@ describe('collectAndPersistReports', () => {
       verboseConfig.persist,
     );
 
-    expect(logStdoutSummary).toHaveBeenCalledWith(sortedScoredReport, true);
+    expect(logStdoutSummary).toHaveBeenCalledWith(sortedScoredReport);
     expect(logPersistedResults).toHaveBeenCalled();
   });
 
