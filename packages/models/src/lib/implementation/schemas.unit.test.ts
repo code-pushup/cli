@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   type TableCellValue,
+  docsUrlSchema,
   tableCellValueSchema,
   weightSchema,
 } from './schemas.js';
@@ -32,5 +33,34 @@ describe('weightSchema', () => {
 
   it('should throw for negative number', () => {
     expect(() => weightSchema.parse(-1)).toThrow('too_small');
+  });
+});
+
+describe('docsUrlSchema', () => {
+  it('should accept a valid URL', () => {
+    expect(() =>
+      docsUrlSchema.parse(
+        'https://eslint.org/docs/latest/rules/no-unused-vars',
+      ),
+    ).not.toThrow();
+  });
+
+  it('should accept an empty string', () => {
+    expect(() => docsUrlSchema.parse('')).not.toThrow();
+  });
+
+  it('should tolerate invalid URL - treat as missing and log warning', () => {
+    expect(
+      docsUrlSchema.parse(
+        '/home/user/project/tools/eslint-rules/rules/my-custom-rule.ts',
+      ),
+    ).toBe('');
+    expect(console.warn).toHaveBeenCalledWith(
+      'Ignoring invalid docsUrl: /home/user/project/tools/eslint-rules/rules/my-custom-rule.ts',
+    );
+  });
+
+  it('should throw if not a string', () => {
+    expect(() => docsUrlSchema.parse(false)).toThrow('invalid_type');
   });
 });
