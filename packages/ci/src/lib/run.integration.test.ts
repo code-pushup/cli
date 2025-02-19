@@ -455,7 +455,7 @@ describe('runInCI', () => {
       name: 'Nx',
       tool: 'nx',
       run: expect.stringMatching(
-        /^npx nx run (cli|core|utils):code-pushup --$/,
+        /^npx nx run (cli|core|utils):code-pushup --skip-nx-cache --$/,
       ),
       runMany:
         'npx nx run-many --targets=code-pushup --parallel=false --projects=cli,core,utils --',
@@ -463,7 +463,7 @@ describe('runInCI', () => {
     {
       name: 'Turborepo',
       tool: 'turbo',
-      run: 'npx turbo run code-pushup --',
+      run: 'npx turbo run code-pushup --no-cache --force --',
       runMany: 'npx turbo run code-pushup --concurrency=1 --',
     },
     {
