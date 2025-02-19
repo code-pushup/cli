@@ -2,8 +2,7 @@ import { mkdir, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
 import { afterAll, beforeAll, beforeEach, describe, expect } from 'vitest';
-import { teardownTestFolder } from '@code-pushup/test-setup';
-import { initGitRepo } from '@code-pushup/test-utils';
+import { initGitRepo, teardownTestFolder } from '@code-pushup/test-utils';
 import { toUnixPath } from '../transform.js';
 import {
   getGitRoot,

@@ -2,8 +2,11 @@ import { cp } from 'node:fs/promises';
 import path from 'node:path';
 import { beforeAll, expect } from 'vitest';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
-import { teardownTestFolder } from '@code-pushup/test-setup';
-import { E2E_ENVIRONMENTS_DIR, TEST_OUTPUT_DIR } from '@code-pushup/test-utils';
+import {
+  E2E_ENVIRONMENTS_DIR,
+  TEST_OUTPUT_DIR,
+  teardownTestFolder,
+} from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
 describe('CLI print-config', () => {
