@@ -166,7 +166,7 @@ export function formatReportOutcome(
   };
 
   if (commits) {
-    const commitsText = `compared target commit ${commits.after.hash} with source commit ${commits.before.hash}`;
+    const commitsText = `compared current commit ${commits.after.hash} with previous commit ${commits.before.hash}`;
     return md`${outcomeTexts[outcome]} – ${commitsText}.`;
   }
 
