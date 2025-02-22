@@ -84,6 +84,12 @@
   },
   "plugins": [
     {
+      "plugin": "@code-pushup/nx-plugin",
+      "options": {
+        "targetName": "cp"
+      }
+    },
+    {
       "plugin": "@push-based/nx-verdaccio",
       "options": {
         "environments": {

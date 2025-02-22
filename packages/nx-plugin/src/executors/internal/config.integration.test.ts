@@ -1,5 +1,5 @@
 import { describe, expect } from 'vitest';
-import { ENV } from '../../../mock/fixtures/env.js';
+import { ENV } from '../../../mock/fixtures/env';
 import { uploadConfig } from './config.js';
 import * as env from './env.js';
 
