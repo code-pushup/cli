@@ -56,6 +56,21 @@ export async function invokeCreateNodesOnVirtualFiles<
 }
 
 export function createNodesContext(
+  options?: Partial<CreateNodesContext>,
+): CreateNodesContext {
+  const {
+    workspaceRoot = process.cwd(),
+    nxJsonConfiguration = {},
+    configFiles = [],
+  } = options ?? {};
+  return {
+    workspaceRoot,
+    nxJsonConfiguration,
+    configFiles,
+  };
+}
+
+export function createNodesV2Context(
   options?: Partial<CreateNodesContextV2>,
 ): CreateNodesContextV2 {
   const { workspaceRoot = process.cwd(), nxJsonConfiguration = {} } =

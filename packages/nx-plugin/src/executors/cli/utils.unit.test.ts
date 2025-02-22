@@ -73,7 +73,7 @@ describe('parseAutorunExecutorOptions', () => {
         },
       },
     );
-    expect(osAgnosticPath(executorOptions.config)).toBe(
+    expect(osAgnosticPath(executorOptions.config ?? '')).toBe(
       osAgnosticPath('root/code-pushup.config.ts'),
     );
     expect(executorOptions).toEqual(
@@ -91,7 +91,7 @@ describe('parseAutorunExecutorOptions', () => {
       }),
     );
 
-    expect(osAgnosticPath(executorOptions.persist?.outputDir)).toBe(
+    expect(osAgnosticPath(executorOptions.persist?.outputDir ?? '')).toBe(
       osAgnosticPath('workspaceRoot/.code-pushup/my-app'),
     );
   });
