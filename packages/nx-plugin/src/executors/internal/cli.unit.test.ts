@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createCliCommand, objectToCliArgs } from './cli.js';
+import { createCliCommand, objectToCliArgs } from './cli';
 
 describe('objectToCliArgs', () => {
   it('should empty params', () => {

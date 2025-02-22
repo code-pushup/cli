@@ -3,7 +3,7 @@ import { execSync } from 'node:child_process';
 import { afterEach, beforeEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import runAutorunExecutor from './executor.js';
+import runAutorunExecutor from './executor';
 
 vi.mock('node:child_process', async () => {
   const actual = await vi.importActual('node:child_process');

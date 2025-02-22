@@ -1,5 +1,5 @@
 import type { ExtractArrays } from '@code-pushup/utils';
-import type { ExecutableCode } from './types.js';
+import type { ExecutableCode } from './types';
 
 export function normalizeExecutableCode(
   executableCode: ExecutableCode,

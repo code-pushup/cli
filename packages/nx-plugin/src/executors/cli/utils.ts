@@ -1,13 +1,9 @@
-import {
-  globalConfig,
-  persistConfig,
-  uploadConfig,
-} from '../internal/config.js';
-import type { NormalizedExecutorContext } from '../internal/context.js';
+import { globalConfig, persistConfig, uploadConfig } from '../internal/config';
+import type { NormalizedExecutorContext } from '../internal/context';
 import type {
   AutorunCommandExecutorOnlyOptions,
   AutorunCommandExecutorOptions,
-} from './schema.js';
+} from './schema';
 
 export function parseAutorunExecutorOnlyOptions(
   options: Partial<AutorunCommandExecutorOnlyOptions>,

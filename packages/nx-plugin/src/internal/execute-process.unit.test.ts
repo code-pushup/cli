@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { getAsyncProcessRunnerConfig } from '@code-pushup/test-utils';
-import { type ProcessObserver, executeProcess } from './execute-process.js';
+import { type ProcessObserver, executeProcess } from './execute-process';
 
 describe('executeProcess', () => {
   const spyObserver: ProcessObserver = {

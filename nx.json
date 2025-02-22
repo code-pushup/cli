@@ -84,6 +84,9 @@
   },
   "plugins": [
     {
+      "plugin": "./dist/packages/nx-plugin"
+    },
+    {
       "plugin": "@push-based/nx-verdaccio",
       "options": {
         "environments": {

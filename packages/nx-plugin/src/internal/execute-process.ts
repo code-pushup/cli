@@ -123,7 +123,7 @@ export type ProcessObserver = {
  * // async process execution
  * const result = await executeProcess({
  *    command: 'node',
- *    args: ['download-data.js'],
+ *    args: ['download-data'],
  *    observer: {
  *      onStdout: updateProgress,
  *      error: handleError,

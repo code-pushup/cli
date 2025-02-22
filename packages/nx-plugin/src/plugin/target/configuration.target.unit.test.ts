@@ -1,6 +1,6 @@
 import { expect } from 'vitest';
-import { PACKAGE_NAME } from '../../internal/constants.js';
-import { createConfigurationTarget } from './configuration-target.js';
+import { PACKAGE_NAME } from '../../internal/constants';
+import { createConfigurationTarget } from './configuration-target';
 
 describe('createConfigurationTarget', () => {
   it('should return code-pushup--configuration target for given project', () => {

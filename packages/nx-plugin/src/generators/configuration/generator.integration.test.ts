@@ -7,8 +7,8 @@ import {
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import * as path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants.js';
-import { addTargetToProject, configurationGenerator } from './generator.js';
+import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants';
+import { addTargetToProject, configurationGenerator } from './generator';
 
 describe('addTargetToProject', () => {
   let tree: Tree;
