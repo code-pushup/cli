@@ -84,7 +84,10 @@
   },
   "plugins": [
     {
-      "plugin": "./dist/packages/nx-plugin"
+      "plugin": "./dist/packages/nx-plugin",
+      "options": {
+        "targetName": "cp"
+      }
     },
     {
       "plugin": "@push-based/nx-verdaccio",
