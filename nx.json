@@ -84,7 +84,7 @@
   },
   "plugins": [
     {
-      "plugin": "./dist/packages/nx-plugin",
+      "plugin": "@code-pushup/nx-plugin",
       "options": {
         "targetName": "cp"
       }
