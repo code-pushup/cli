@@ -26,11 +26,8 @@ export const runnerConfigSchema = z.object(
 
 export type RunnerConfig = z.infer<typeof runnerConfigSchema>;
 
-export const onProgressSchema = z.function().args(z.string()).returns(z.void());
-
 export const runnerFunctionSchema = z
   .function()
-  .args(z.void())
   .returns(z.union([auditOutputsSchema, z.promise(auditOutputsSchema)]));
 
 export type RunnerFunction = z.infer<typeof runnerFunctionSchema>;
