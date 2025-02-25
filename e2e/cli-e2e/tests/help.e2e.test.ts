@@ -23,6 +23,7 @@ describe('CLI help', () => {
     const helpArgResult = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'help'],
+      cwd: envRoot,
     });
     const helpCommandResult = await executeProcess({
       command: 'npx',
