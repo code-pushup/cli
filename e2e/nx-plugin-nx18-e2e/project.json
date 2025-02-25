@@ -1,0 +1,23 @@
+{
+  "name": "nx-plugin-nx18-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "e2e/nx-plugin-nx18-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["e2e/nx-plugin-nx18-e2e/**/*.ts"]
+      }
+    },
+    "e2e": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "e2e/nx-plugin-nx18-e2e/vite.config.e2e.ts"
+      }
+    }
+  },
+  "implicitDependencies": ["test-utils", "nx-plugin"],
+  "tags": ["scope:tooling", "type:e2e"]
+}

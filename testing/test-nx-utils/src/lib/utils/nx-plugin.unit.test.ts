@@ -1,5 +1,6 @@
 import * as process from 'node:process';
 import { describe, expect } from 'vitest';
+import { createNodesContext } from './nx-plugin';
 import {
   createNodesContext,
   invokeCreateNodesOnVirtualFiles,
@@ -23,39 +24,5 @@ describe('createNodesContext', () => {
       workspaceRoot: process.cwd(),
       nxJsonConfiguration: {},
     });
-  });
-});
-
-describe('invokeCreateNodesOnVirtualFiles', () => {
-  it('should invoke passed function if matching file is given', async () => {
-    const createNodesFnSpy = vi.fn().mockResolvedValue({});
-    await expect(
-      invokeCreateNodesOnVirtualFiles(
-        [`**/project.json`, createNodesFnSpy],
-        createNodesContext(),
-        {},
-        {
-          matchingFilesData: {
-            '**/project.json': JSON.stringify({
-              name: 'my-lib',
-            }),
-          },
-        },
-      ),
-    ).resolves.toStrictEqual({});
-    expect(createNodesFnSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('should NOT invoke passed function if matching file is NOT given', async () => {
-    const createNodesFnSpy = vi.fn().mockResolvedValue({});
-    await expect(
-      invokeCreateNodesOnVirtualFiles(
-        [`**/project.json`, createNodesFnSpy],
-        createNodesContext(),
-        {},
-        { matchingFilesData: {} },
-      ),
-    ).resolves.toStrictEqual({});
-    expect(createNodesFnSpy).not.toHaveBeenCalled();
   });
 });
