@@ -1,3 +1,18 @@
+## 0.62.0 (2025-02-25)
+
+### 🚀 Features
+
+- log process working directory as cwd if undefined ([a0638f8c](https://github.com/code-pushup/cli/commit/a0638f8c))
+
+### 🩹 Fixes
+
+- **utils:** replace misleading commit labels in markdown diff ([21a1f25d](https://github.com/code-pushup/cli/commit/21a1f25d))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Vojtech Masek @vmasek
+
 ## 0.61.0 (2025-02-19)
 
 ### 🚀 Features
