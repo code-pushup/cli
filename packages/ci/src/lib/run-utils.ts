@@ -69,7 +69,7 @@ export async function runOnProject(
     logger.info(`Running Code PushUp on monorepo project ${project.name}`);
   }
 
-  const config = await printPersistConfig(ctx, settings);
+  const config = await printPersistConfig(ctx);
   logger.debug(
     `Loaded persist config from print-config command - ${JSON.stringify(config.persist)}`,
   );
@@ -267,7 +267,7 @@ export async function checkPrintConfig(
     ? `Executing print-config for project ${project.name}`
     : 'Executing print-config';
   try {
-    const config = await printPersistConfig(ctx, settings);
+    const config = await printPersistConfig(ctx);
     logger.debug(
       `${operation} verified code-pushup installed in base branch ${base.ref}`,
     );
@@ -283,9 +283,8 @@ export async function checkPrintConfig(
 
 export async function printPersistConfig(
   ctx: CommandContext,
-  settings: Settings,
 ): Promise<Pick<CoreConfig, 'persist'>> {
-  const json = await runPrintConfig({ ...ctx, silent: !settings.debug });
+  const json = await runPrintConfig(ctx);
   return parsePersistConfig(json);
 }
 

@@ -1,9 +1,17 @@
 export { exists } from '@code-pushup/models';
+export {
+  camelCaseToKebabCase,
+  capitalize,
+  kebabCaseToCamelCase,
+  toSentenceCase,
+  toTitleCase,
+} from './lib/case-conversions.js';
+export { createRunnerFiles } from './lib/create-runner-files.js';
 export { comparePairs, matchArrayItemsByKey, type Diff } from './lib/diff.js';
 export { stringifyError } from './lib/errors.js';
 export {
-  ProcessError,
   executeProcess,
+  ProcessError,
   type ProcessConfig,
   type ProcessObserver,
   type ProcessResult,
@@ -41,8 +49,8 @@ export {
 } from './lib/formatting.js';
 export {
   getCurrentBranchOrTag,
-  getHashFromTag,
   getHashes,
+  getHashFromTag,
   getLatestCommit,
   getSemverTags,
   type LogResult,
@@ -56,14 +64,15 @@ export {
 } from './lib/git/git.js';
 export { groupByStatus } from './lib/group-by-status.js';
 export {
+  hasNoNullableProps,
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
-  hasNoNullableProps,
 } from './lib/guards.js';
 export { logMultipleResults } from './lib/log-results.js';
-export { link, ui, type CliUi, type Column, isVerbose } from './lib/logging.js';
+export { isVerbose, link, ui, type CliUi, type Column } from './lib/logging.js';
 export { mergeConfigs } from './lib/merge-configs.js';
 export { getProgressBar, type ProgressBar } from './lib/progress.js';
+export { generateRandomId } from './lib/random.js';
 export {
   CODE_PUSHUP_DOMAIN,
   CODE_PUSHUP_UNICODE_LOGO,
@@ -95,13 +104,6 @@ export {
   formatReportScore,
 } from './lib/reports/utils.js';
 export { isSemver, normalizeSemver, sortSemvers } from './lib/semver.js';
-export {
-  camelCaseToKebabCase,
-  kebabCaseToCamelCase,
-  capitalize,
-  toSentenceCase,
-  toTitleCase,
-} from './lib/case-conversions.js';
 export * from './lib/text-formats/index.js';
 export {
   countOccurrences,
@@ -121,13 +123,12 @@ export {
   type CliArgsObject,
 } from './lib/transform.js';
 export type {
+  CamelCaseToKebabCase,
   ExcludeNullableProps,
   ExtractArray,
   ExtractArrays,
   ItemOrArray,
   Prettify,
   WithRequired,
-  CamelCaseToKebabCase,
 } from './lib/types.js';
 export { parseSchema, SchemaValidationError } from './lib/zod-validation.js';
-export { createRunnerFiles } from './lib/create-runner-files.js';
