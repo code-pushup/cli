@@ -1,3 +1,14 @@
+## 0.63.0 (2025-02-26)
+
+### 🚀 Features
+
+- **ci:** use temporary file for print-config instead of stdout ([aa4d0b38](https://github.com/code-pushup/cli/commit/aa4d0b38))
+- **cli:** add --output=<file> option to print-config command ([a1fde20c](https://github.com/code-pushup/cli/commit/a1fde20c))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.62.0 (2025-02-25)
 
 ### 🚀 Features
