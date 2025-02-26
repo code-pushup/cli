@@ -151,3 +151,11 @@ export function toOrdinal(value: number): string {
 
   return `${value}th`;
 }
+
+export function removeUndefinedAndEmptyProps<T extends object>(obj: T): T {
+  return Object.fromEntries(
+    Object.entries(obj).filter(
+      ([, value]) => value !== undefined && value !== '',
+    ),
+  ) as T;
+}

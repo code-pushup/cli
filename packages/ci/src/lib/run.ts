@@ -1,15 +1,13 @@
 import { type SimpleGit, simpleGit } from 'simple-git';
-import { DEFAULT_SETTINGS } from './constants.js';
 import type {
   GitRefs,
   Options,
   ProviderAPIClient,
   RunResult,
-  Settings,
 } from './models.js';
 import { runInMonorepoMode } from './run-monorepo.js';
 import { runInStandaloneMode } from './run-standalone.js';
-import type { RunEnv } from './run-utils.js';
+import { createRunEnv } from './run-utils.js';
 
 /**
  * Runs Code PushUp in CI environment.
@@ -25,14 +23,9 @@ export async function runInCI(
   options?: Options,
   git: SimpleGit = simpleGit(),
 ): Promise<RunResult> {
-  const settings: Settings = {
-    ...DEFAULT_SETTINGS,
-    ...options,
-  };
+  const env = await createRunEnv(refs, api, options, git);
 
-  const env: RunEnv = { refs, api, settings, git };
-
-  if (settings.monorepo) {
+  if (env.settings.monorepo) {
     return runInMonorepoMode(env);
   }
 

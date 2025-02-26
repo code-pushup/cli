@@ -1,4 +1,5 @@
-import { DiffNameStatus, simpleGit } from 'simple-git';
+import { DiffNameStatus, GitError, simpleGit } from 'simple-git';
+import type { GitBranch } from './models.js';
 
 export type ChangedFiles = Record<string, ChangedFile>;
 
@@ -11,6 +12,29 @@ type LineChange = {
   prev: { line: number; count: number };
   curr: { line: number; count: number };
 };
+
+export async function normalizeGitRef(
+  ref: string | GitBranch,
+  git = simpleGit(),
+): Promise<GitBranch> {
+  if (typeof ref === 'object') {
+    return ref;
+  }
+  try {
+    const sha = await git.revparse(ref);
+    return { ref, sha };
+  } catch (error) {
+    if (
+      error instanceof GitError &&
+      error.message.includes(`fatal: ambiguous argument '${ref}'`)
+    ) {
+      await git.fetch(['origin', ref, '--depth=1']);
+      const sha = await git.revparse('FETCH_HEAD');
+      return { ref, sha };
+    }
+    throw error;
+  }
+}
 
 export async function listChangedFiles(
   refs: {

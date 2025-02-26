@@ -1,6 +1,6 @@
 import { commentOnPR } from './comment.js';
 import type { StandaloneRunResult } from './models.js';
-import { type RunEnv, ensureHeadBranch, runOnProject } from './run-utils.js';
+import { type RunEnv, runOnProject } from './run-utils.js';
 
 export async function runInStandaloneMode(
   env: RunEnv,
@@ -9,8 +9,6 @@ export async function runInStandaloneMode(
   const { logger } = settings;
 
   logger.info('Running Code PushUp in standalone project mode');
-
-  await ensureHeadBranch(env);
 
   const { files, newIssues } = await runOnProject(null, env);
 
