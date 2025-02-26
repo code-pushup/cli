@@ -28,11 +28,11 @@ export type Options = {
 export type Settings = Required<Options>;
 
 /**
- * Branches/commits for {@link runInCI}
+ * Branches/tags for {@link runInCI}
  */
 export type GitRefs = {
-  head: GitBranch;
-  base?: GitBranch;
+  head: string | GitBranch;
+  base?: string | GitBranch;
 };
 
 /**
