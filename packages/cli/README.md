@@ -303,7 +303,11 @@ Usage:
 Description:
 Print the resolved configuration.
 
-Refer to the [Common Command Options](#common-command-options) for the list of available options.
+In addition to the [Common Command Options](#common-command-options), the following options are recognized by the `print-config` command:
+
+| Option         | Required | Type     | Description                                              |
+| -------------- | :------: | -------- | -------------------------------------------------------- |
+| **`--output`** |    no    | `string` | Path to output file to print config (default is stdout). |
 
 ### `merge-diffs` command
 

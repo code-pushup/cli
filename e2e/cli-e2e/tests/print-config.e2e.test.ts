@@ -1,4 +1,4 @@
-import { cp } from 'node:fs/promises';
+import { cp, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { beforeAll, expect } from 'vitest';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
@@ -72,4 +72,30 @@ describe('CLI print-config', () => {
       );
     },
   );
+
+  it('should print config to output file', async () => {
+    const { code, stdout } = await executeProcess({
+      command: 'npx',
+      args: ['@code-pushup/cli', 'print-config', '--output=config.json'],
+      cwd: testFileDummySetup,
+    });
+
+    expect(code).toBe(0);
+
+    const output = await readFile(
+      path.join(testFileDummySetup, 'config.json'),
+      'utf8',
+    );
+    expect(JSON.parse(output)).toEqual(
+      expect.objectContaining({
+        plugins: [
+          expect.objectContaining({
+            slug: 'dummy-plugin',
+            title: 'Dummy Plugin',
+          }),
+        ],
+      }),
+    );
+    expect(stdout).not.toContain('dummy-plugin');
+  });
 });
