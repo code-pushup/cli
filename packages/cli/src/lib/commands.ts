@@ -4,7 +4,7 @@ import { yargsCollectCommandObject } from './collect/collect-command.js';
 import { yargsCompareCommandObject } from './compare/compare-command.js';
 import { yargsHistoryCommandObject } from './history/history-command.js';
 import { yargsMergeDiffsCommandObject } from './merge-diffs/merge-diffs-command.js';
-import { yargsConfigCommandObject } from './print-config/print-config-command.js';
+import { yargsPrintConfigCommandObject } from './print-config/print-config-command.js';
 import { yargsUploadCommandObject } from './upload/upload-command.js';
 
 export const commands: CommandModule[] = [
@@ -17,6 +17,6 @@ export const commands: CommandModule[] = [
   yargsUploadCommandObject(),
   yargsHistoryCommandObject(),
   yargsCompareCommandObject(),
-  yargsConfigCommandObject(),
+  yargsPrintConfigCommandObject(),
   yargsMergeDiffsCommandObject(),
 ];
