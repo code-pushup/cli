@@ -128,7 +128,7 @@ async function runProjectsInBulk(
   const currProjectReports = await Promise.all(
     projects.map(async (project): Promise<ProjectReport> => {
       const ctx = createCommandContext(settings, project);
-      const config = await printPersistConfig(ctx, settings);
+      const config = await printPersistConfig(ctx);
       const reports = persistedFilesFromConfig(config, ctx);
       return { project, reports, config, ctx };
     }),
