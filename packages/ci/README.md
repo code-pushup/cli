@@ -64,10 +64,10 @@ If only the `head` is supplied, then Code PushUp will collect a new report and o
 If triggered by a pull request, then specify the `base` ref as well.
 This will additionally compare reports from both source and target branches and post a comment to the PR.
 
-| Property | Required | Type                           | Description           |
-| :------- | :------: | :----------------------------- | :-------------------- |
-| `head`   |   yes    | `{ ref: string, sha: string }` | Current branch/commit |
-| `base`   |    no    | `{ ref: string, sha: string }` | Branch targeted by PR |
+| Property | Required | Type                                     | Description           |
+| :------- | :------: | :--------------------------------------- | :-------------------- |
+| `head`   |   yes    | `string \| { ref: string, sha: string }` | Current branch/commit |
+| `base`   |    no    | `string \| { ref: string, sha: string }` | Branch targeted by PR |
 
 ### Provider API client
 

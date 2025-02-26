@@ -9,6 +9,7 @@ import {
   objectToCliArgs,
   objectToEntries,
   objectToKeys,
+  removeUndefinedAndEmptyProps,
   toArray,
   toJsonLines,
   toNumberPrecision,
@@ -301,5 +302,18 @@ describe('toOrdinal', () => {
     [173, '173rd'],
   ])('should covert %d to ordinal as %s', (value, ordinalValue) => {
     expect(toOrdinal(value)).toBe(ordinalValue);
+  });
+});
+
+describe('removeUndefinedAndEmptyProps', () => {
+  it('should omit empty strings and undefined', () => {
+    expect(
+      removeUndefinedAndEmptyProps({ foo: '', bar: undefined }),
+    ).toStrictEqual({});
+  });
+
+  it('should preserve other values', () => {
+    const obj = { a: 'hello', b: 42, c: [], d: {}, e: null };
+    expect(removeUndefinedAndEmptyProps(obj)).toStrictEqual(obj);
   });
 });

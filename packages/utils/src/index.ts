@@ -114,6 +114,7 @@ export {
   objectToCliArgs,
   objectToEntries,
   objectToKeys,
+  removeUndefinedAndEmptyProps,
   toArray,
   toJsonLines,
   toNumberPrecision,

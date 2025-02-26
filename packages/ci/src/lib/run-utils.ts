@@ -2,7 +2,10 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { SimpleGit } from 'simple-git';
 import type { CoreConfig, Report, ReportsDiff } from '@code-pushup/models';
-import { stringifyError } from '@code-pushup/utils';
+import {
+  removeUndefinedAndEmptyProps,
+  stringifyError,
+} from '@code-pushup/utils';
 import {
   type CommandContext,
   createCommandContext,
@@ -12,12 +15,14 @@ import {
   runPrintConfig,
 } from './cli/index.js';
 import { parsePersistConfig } from './cli/persist.js';
-import { listChangedFiles } from './git.js';
+import { DEFAULT_SETTINGS } from './constants.js';
+import { listChangedFiles, normalizeGitRef } from './git.js';
 import { type SourceFileIssue, filterRelevantIssues } from './issues.js';
 import type {
   GitBranch,
   GitRefs,
   Logger,
+  Options,
   OutputFiles,
   ProjectRunResult,
   ProviderAPIClient,
@@ -26,10 +31,15 @@ import type {
 import type { ProjectConfig } from './monorepo/index.js';
 
 export type RunEnv = {
-  refs: GitRefs;
+  refs: NormalizedGitRefs;
   api: ProviderAPIClient;
   settings: Settings;
   git: SimpleGit;
+};
+
+type NormalizedGitRefs = {
+  head: GitBranch;
+  base?: GitBranch;
 };
 
 export type CompareReportsArgs = {
@@ -52,6 +62,28 @@ export type BaseReportArgs = {
   base: GitBranch;
   ctx: CommandContext;
 };
+
+export async function createRunEnv(
+  refs: GitRefs,
+  api: ProviderAPIClient,
+  options: Options | undefined,
+  git: SimpleGit,
+): Promise<RunEnv> {
+  const [head, base] = await Promise.all([
+    normalizeGitRef(refs.head, git),
+    refs.base && normalizeGitRef(refs.base, git),
+  ]);
+
+  return {
+    refs: { head, ...(base && { base }) },
+    api,
+    settings: {
+      ...DEFAULT_SETTINGS,
+      ...(options && removeUndefinedAndEmptyProps(options)),
+    },
+    git,
+  };
+}
 
 export async function runOnProject(
   project: ProjectConfig | null,
@@ -81,9 +113,7 @@ export async function runOnProject(
 
   const noDiffOutput = {
     name: project?.name ?? '-',
-    files: {
-      report: reportFiles,
-    },
+    files: { report: reportFiles },
   } satisfies ProjectRunResult;
 
   if (base == null) {
@@ -221,13 +251,6 @@ export async function loadCachedBaseReport(
     return readFile(cachedBaseReport, 'utf8');
   }
   return null;
-}
-
-export async function ensureHeadBranch({ refs, git }: RunEnv): Promise<void> {
-  const { head } = refs;
-  if (head.sha !== (await git.revparse('HEAD'))) {
-    await git.checkout(['-f', head.ref]);
-  }
 }
 
 export async function runInBaseBranch<T>(
