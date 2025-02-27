@@ -1,3 +1,13 @@
+## 0.64.0 (2025-02-27)
+
+### 🚀 Features
+
+- **ci:** allow refs without shas, fetch if needed ([2ee0a8d1](https://github.com/code-pushup/cli/commit/2ee0a8d1))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.63.0 (2025-02-26)
 
 ### 🚀 Features
