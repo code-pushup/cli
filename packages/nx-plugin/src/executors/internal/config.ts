@@ -1,11 +1,11 @@
 import * as path from 'node:path';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
-import { parseEnv } from './env.js';
+import { parseEnv } from './env';
 import type {
   BaseNormalizedExecutorContext,
   GlobalExecutorOptions,
   ProjectExecutorOnlyOptions,
-} from './types.js';
+} from './types';
 
 export function globalConfig(
   options: Partial<GlobalExecutorOptions & Record<string, unknown>>,

@@ -1,7 +1,7 @@
 import { type Tree, logger, readJson, readNxJson } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { describe, expect, it, vi } from 'vitest';
-import { initGenerator } from './generator.js';
+import { initGenerator } from './generator';
 
 type PackageJson = {
   devDependencies: Record<string, string>;

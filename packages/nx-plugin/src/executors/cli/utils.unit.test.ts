@@ -1,11 +1,11 @@
 import { type MockInstance, expect, vi } from 'vitest';
 import { osAgnosticPath } from '@code-pushup/test-utils';
-import type { Command } from '../internal/types.js';
+import type { Command } from '../internal/types';
 import {
   mergeExecutorOptions,
   parseAutorunExecutorOnlyOptions,
   parseAutorunExecutorOptions,
-} from './utils.js';
+} from './utils';
 
 describe('parseAutorunExecutorOnlyOptions', () => {
   it('should provide NO default projectPrefix', () => {
@@ -73,14 +73,13 @@ describe('parseAutorunExecutorOptions', () => {
         },
       },
     );
-    expect(osAgnosticPath(executorOptions.config)).toBe(
+    expect(osAgnosticPath(executorOptions.config ?? '')).toBe(
       osAgnosticPath('root/code-pushup.config.ts'),
     );
     expect(executorOptions).toEqual(
       expect.objectContaining({
         progress: false,
         verbose: false,
-        upload: { project: projectName },
       }),
     );
 
@@ -92,20 +91,20 @@ describe('parseAutorunExecutorOptions', () => {
       }),
     );
 
-    expect(osAgnosticPath(executorOptions.persist?.outputDir)).toBe(
+    expect(osAgnosticPath(executorOptions.persist?.outputDir ?? '')).toBe(
       osAgnosticPath('workspaceRoot/.code-pushup/my-app'),
     );
   });
 
   it.each<Command | undefined>(['upload', 'autorun', undefined])(
-    'should include upload config for command %s',
+    'should include upload config for command %s if API key is provided',
     command => {
       const projectName = 'my-app';
       const executorOptions = parseAutorunExecutorOptions(
         {
           command,
           upload: {
-            organization: 'code-pushup',
+            apiKey: '123456789',
           },
         },
         {
