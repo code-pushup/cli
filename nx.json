@@ -16,6 +16,11 @@
     "e2e": {
       "dependsOn": ["^build"]
     },
+    "cp": {
+      "options": {
+        "bin": "dist/packages/cli/src/index.js"
+      }
+    },
     "@nx/vite:test": {
       "cache": true,
       "inputs": ["default", "^production"],
@@ -83,12 +88,6 @@
     "releaseTagPattern": "v{version}"
   },
   "plugins": [
-    {
-      "plugin": "@code-pushup/nx-plugin",
-      "options": {
-        "targetName": "cp"
-      }
-    },
     {
       "plugin": "@push-based/nx-verdaccio",
       "options": {

@@ -30,7 +30,6 @@ export function filterMiddleware<T extends FilterOptions>(
     onlyCategories = [],
     skipPlugins = [],
     onlyPlugins = [],
-    verbose = false,
   } = originalProcessArgs;
 
   const plugins = filterSkippedInPlugins(rcPlugins);
@@ -43,7 +42,7 @@ export function filterMiddleware<T extends FilterOptions>(
     onlyPlugins.length === 0
   ) {
     if (rcCategories && categories) {
-      validateSkippedCategories(rcCategories, categories, verbose);
+      validateSkippedCategories(rcCategories, categories);
     }
     return {
       ...originalProcessArgs,
@@ -61,12 +60,12 @@ export function filterMiddleware<T extends FilterOptions>(
   const filteredCategories = applyCategoryFilters(
     { categories, plugins },
     skippedCategories,
-    { skipCategories, onlyCategories, verbose },
+    { skipCategories, onlyCategories },
   );
   const filteredPlugins = applyPluginFilters(
     { categories: filteredCategories, plugins },
     skippedPlugins,
-    { skipPlugins, onlyPlugins, verbose },
+    { skipPlugins, onlyPlugins },
   );
   const finalCategories = filteredCategories
     ? filterItemRefsBy(filteredCategories, ref =>
@@ -89,9 +88,9 @@ export function filterMiddleware<T extends FilterOptions>(
 function applyCategoryFilters(
   { categories, plugins }: Filterables,
   skippedCategories: string[],
-  options: Pick<FilterOptions, 'skipCategories' | 'onlyCategories' | 'verbose'>,
+  options: Pick<FilterOptions, 'skipCategories' | 'onlyCategories'>,
 ): CoreConfig['categories'] {
-  const { skipCategories = [], onlyCategories = [], verbose = false } = options;
+  const { skipCategories = [], onlyCategories = [] } = options;
   if (
     (skipCategories.length === 0 && onlyCategories.length === 0) ||
     ((!categories || categories.length === 0) && skippedCategories.length === 0)
@@ -101,12 +100,12 @@ function applyCategoryFilters(
   validateFilterOption(
     'skipCategories',
     { plugins, categories },
-    { itemsToFilter: skipCategories, skippedItems: skippedCategories, verbose },
+    { itemsToFilter: skipCategories, skippedItems: skippedCategories },
   );
   validateFilterOption(
     'onlyCategories',
     { plugins, categories },
-    { itemsToFilter: onlyCategories, skippedItems: skippedCategories, verbose },
+    { itemsToFilter: onlyCategories, skippedItems: skippedCategories },
   );
   return applyFilters(categories ?? [], skipCategories, onlyCategories, 'slug');
 }
@@ -114,9 +113,9 @@ function applyCategoryFilters(
 function applyPluginFilters(
   { categories, plugins }: Filterables,
   skippedPlugins: string[],
-  options: Pick<FilterOptions, 'skipPlugins' | 'onlyPlugins' | 'verbose'>,
+  options: Pick<FilterOptions, 'skipPlugins' | 'onlyPlugins'>,
 ): CoreConfig['plugins'] {
-  const { skipPlugins = [], onlyPlugins = [], verbose = false } = options;
+  const { skipPlugins = [], onlyPlugins = [] } = options;
   const filteredPlugins = filterPluginsFromCategories({
     categories,
     plugins,
@@ -127,12 +126,12 @@ function applyPluginFilters(
   validateFilterOption(
     'skipPlugins',
     { plugins: filteredPlugins, categories },
-    { itemsToFilter: skipPlugins, skippedItems: skippedPlugins, verbose },
+    { itemsToFilter: skipPlugins, skippedItems: skippedPlugins },
   );
   validateFilterOption(
     'onlyPlugins',
     { plugins: filteredPlugins, categories },
-    { itemsToFilter: onlyPlugins, skippedItems: skippedPlugins, verbose },
+    { itemsToFilter: onlyPlugins, skippedItems: skippedPlugins },
   );
   return applyFilters(filteredPlugins, skipPlugins, onlyPlugins, 'slug');
 }

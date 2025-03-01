@@ -48,7 +48,7 @@ describe('validateFilterOption', () => {
             { slug: 'c1', refs: [{ plugin: 'p1', slug: 'a1-p1' }] },
           ] as CategoryConfig[],
         },
-        { itemsToFilter, skippedItems: [], verbose: false },
+        { itemsToFilter, skippedItems: [] },
       );
       expect(ui()).toHaveLogged('warn', expected);
     },
@@ -91,7 +91,7 @@ describe('validateFilterOption', () => {
             },
           ] as CategoryConfig[],
         },
-        { itemsToFilter, skippedItems: [], verbose: false },
+        { itemsToFilter, skippedItems: [] },
       );
       expect(ui()).toHaveLogged('warn', expected);
     },
@@ -106,12 +106,14 @@ describe('validateFilterOption', () => {
           { slug: 'p2', audits: [{ slug: 'a1-p2' }] },
         ] as PluginConfig[],
       },
-      { itemsToFilter: ['p1'], skippedItems: [], verbose: false },
+      { itemsToFilter: ['p1'], skippedItems: [] },
     );
     expect(ui()).not.toHaveLogs();
   });
 
   it('should log a category ignored as a result of plugin filtering', () => {
+    vi.stubEnv('CP_VERBOSE', 'true');
+
     validateFilterOption(
       'onlyPlugins',
       {
@@ -125,7 +127,7 @@ describe('validateFilterOption', () => {
           { slug: 'c3', refs: [{ plugin: 'p2' }] },
         ] as CategoryConfig[],
       },
-      { itemsToFilter: ['p1'], skippedItems: [], verbose: true },
+      { itemsToFilter: ['p1'], skippedItems: [] },
     );
     expect(ui()).toHaveLoggedTimes(1);
     expect(ui()).toHaveLogged(
@@ -145,7 +147,7 @@ describe('validateFilterOption', () => {
             { slug: 'p3', audits: [{ slug: 'a1-p3' }] },
           ] as PluginConfig[],
         },
-        { itemsToFilter: ['p4', 'p5'], skippedItems: [], verbose: false },
+        { itemsToFilter: ['p4', 'p5'], skippedItems: [] },
       );
     }).toThrow(
       new OptionValidationError(
@@ -164,12 +166,12 @@ describe('validateFilterOption', () => {
       validateFilterOption(
         'skipPlugins',
         { plugins: allPlugins },
-        { itemsToFilter: ['plugin1'], skippedItems: [], verbose: false },
+        { itemsToFilter: ['plugin1'], skippedItems: [] },
       );
       validateFilterOption(
         'onlyPlugins',
         { plugins: allPlugins },
-        { itemsToFilter: ['plugin3'], skippedItems: [], verbose: false },
+        { itemsToFilter: ['plugin3'], skippedItems: [] },
       );
     }).toThrow(
       new OptionValidationError(
@@ -178,7 +180,7 @@ describe('validateFilterOption', () => {
     );
   });
 
-  it('should throw OptionValidationError when none of the onlyCatigories are valid', () => {
+  it('should throw OptionValidationError when none of the onlyCategories are valid', () => {
     expect(() => {
       validateFilterOption(
         'onlyCategories',
@@ -197,7 +199,7 @@ describe('validateFilterOption', () => {
             },
           ] as CategoryConfig[],
         },
-        { itemsToFilter: ['c2', 'c3'], skippedItems: [], verbose: false },
+        { itemsToFilter: ['c2', 'c3'], skippedItems: [] },
       );
     }).toThrow(
       new OptionValidationError(
@@ -207,6 +209,8 @@ describe('validateFilterOption', () => {
   });
 
   it('should log skipped items if verbose mode is enabled', () => {
+    vi.stubEnv('CP_VERBOSE', 'true');
+
     const plugins = [
       { slug: 'p1', audits: [{ slug: 'a1-p1' }] },
     ] as PluginConfig[];
@@ -217,7 +221,7 @@ describe('validateFilterOption', () => {
     validateFilterOption(
       'skipPlugins',
       { plugins, categories },
-      { itemsToFilter: ['p1'], skippedItems: ['p1'], verbose: true },
+      { itemsToFilter: ['p1'], skippedItems: ['p1'] },
     );
     expect(ui()).toHaveNthLogged(
       1,
@@ -450,16 +454,14 @@ describe('validateSkippedCategories', () => {
   ] as NonNullable<Filterables['categories']>;
 
   it('should log info when categories are removed', () => {
-    validateSkippedCategories(
-      categories,
-      [
-        {
-          slug: 'c2',
-          refs: [{ type: 'audit', plugin: 'p2', slug: 'a1', weight: 1 }],
-        },
-      ] as NonNullable<Filterables['categories']>,
-      true,
-    );
+    vi.stubEnv('CP_VERBOSE', 'true');
+
+    validateSkippedCategories(categories, [
+      {
+        slug: 'c2',
+        refs: [{ type: 'audit', plugin: 'p2', slug: 'a1', weight: 1 }],
+      },
+    ] as NonNullable<Filterables['categories']>);
     expect(ui()).toHaveLogged(
       'info',
       'Category c1 was removed because all its refs were skipped. Affected refs: g1 (group)',
@@ -468,12 +470,12 @@ describe('validateSkippedCategories', () => {
 
   it('should not log anything when categories are not removed', () => {
     const loggerSpy = vi.spyOn(ui().logger, 'info');
-    validateSkippedCategories(categories, categories, true);
+    validateSkippedCategories(categories, categories);
     expect(loggerSpy).not.toHaveBeenCalled();
   });
 
   it('should throw an error when no categories remain after filtering', () => {
-    expect(() => validateSkippedCategories(categories, [], false)).toThrow(
+    expect(() => validateSkippedCategories(categories, [])).toThrow(
       new OptionValidationError(
         'No categories remain after filtering. Removed categories: c1, c2',
       ),

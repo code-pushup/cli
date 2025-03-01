@@ -3,12 +3,12 @@ import path from 'node:path';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
-import { teardownTestFolder } from '@code-pushup/test-setup';
 import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
   omitVariableReportData,
   removeColorCodes,
+  teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
@@ -56,9 +56,9 @@ describe('PLUGIN collect report with jsdocs-plugin NPM package', () => {
 
     expect(code).toBe(0);
 
-    expect(removeColorCodes(stdout)).toMatchFileSnapshot(
-      '__snapshots__/report.txt',
-    );
+    expect(
+      removeColorCodes(stdout).replace(/@\d+\.\d+\.\d+/, '@<version>'),
+    ).toMatchFileSnapshot('__snapshots__/report.txt');
 
     const report = await readJsonFile(
       path.join(angularOutputDir, 'report.json'),

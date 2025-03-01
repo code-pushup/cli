@@ -1,4 +1,6 @@
+import { gray } from 'ansis';
 import { spawn } from 'node:child_process';
+import { ui } from '@code-pushup/utils';
 
 export function calcDuration(start: number, stop?: number): number {
   return Math.round((stop ?? performance.now()) - start);
@@ -140,6 +142,13 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   const { onStdout, onError, onComplete } = observer ?? {};
   const date = new Date().toISOString();
   const start = performance.now();
+
+  const logCommand = [command, ...(args || [])].join(' ');
+  ui().logger.log(
+    gray(
+      `Executing command:\n${logCommand}\nIn working directory:\n${cfg.cwd ?? process.cwd()}`,
+    ),
+  );
 
   return new Promise((resolve, reject) => {
     // shell:true tells Windows to use shell command for spawning a child process

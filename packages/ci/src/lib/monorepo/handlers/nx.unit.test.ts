@@ -56,8 +56,14 @@ describe('nxHandler', () => {
 
     it('should list projects from `nx show projects`', async () => {
       await expect(nxHandler.listProjects(options)).resolves.toEqual([
-        { name: 'backend', bin: 'npx nx run backend:code-pushup --' },
-        { name: 'frontend', bin: 'npx nx run frontend:code-pushup --' },
+        {
+          name: 'backend',
+          bin: 'npx nx run backend:code-pushup --skip-nx-cache --',
+        },
+        {
+          name: 'frontend',
+          bin: 'npx nx run frontend:code-pushup --skip-nx-cache --',
+        },
       ] satisfies ProjectConfig[]);
     });
 
@@ -119,8 +125,14 @@ describe('nxHandler', () => {
   describe('createRunManyCommand', () => {
     const projects: MonorepoHandlerProjectsContext = {
       all: [
-        { name: 'backend', bin: 'npx nx run backend:code-pushup --' },
-        { name: 'frontend', bin: 'npx nx run frontend:code-pushup --' },
+        {
+          name: 'backend',
+          bin: 'npx nx run backend:code-pushup --skip-nx-cache --',
+        },
+        {
+          name: 'frontend',
+          bin: 'npx nx run frontend:code-pushup --skip-nx-cache --',
+        },
       ],
     };
 

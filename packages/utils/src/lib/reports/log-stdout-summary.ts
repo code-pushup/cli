@@ -1,6 +1,6 @@
 import { bold, cyan, cyanBright, green, red } from 'ansis';
 import type { AuditReport } from '@code-pushup/models';
-import { ui } from '../logging.js';
+import { isVerbose, ui } from '../logging.js';
 import {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
@@ -19,11 +19,11 @@ function log(msg = ''): void {
   ui().logger.log(msg);
 }
 
-export function logStdoutSummary(report: ScoredReport, verbose = false): void {
+export function logStdoutSummary(report: ScoredReport): void {
   const { plugins, categories, packageName, version } = report;
   log(reportToHeaderSection({ packageName, version }));
   log();
-  logPlugins(plugins, verbose);
+  logPlugins(plugins);
   if (categories && categories.length > 0) {
     logCategories({ plugins, categories });
   }
@@ -38,14 +38,11 @@ function reportToHeaderSection({
   return `${bold(REPORT_HEADLINE_TEXT)} - ${packageName}@${version}`;
 }
 
-export function logPlugins(
-  plugins: ScoredReport['plugins'],
-  verbose: boolean,
-): void {
+export function logPlugins(plugins: ScoredReport['plugins']): void {
   plugins.forEach(plugin => {
     const { title, audits } = plugin;
     const filteredAudits =
-      verbose || audits.length === 1
+      isVerbose() || audits.length === 1
         ? audits
         : audits.filter(({ score }) => score !== 1);
     const diff = audits.length - filteredAudits.length;

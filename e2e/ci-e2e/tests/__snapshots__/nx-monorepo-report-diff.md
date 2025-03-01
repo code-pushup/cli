@@ -1,6 +1,6 @@
 # Code PushUp
 
-🤨 Code PushUp report has both **improvements and regressions** – compared target commit `<commit-sha>` with source commit `<commit-sha>`.
+🤨 Code PushUp report has both **improvements and regressions** – compared current commit `<commit-sha>` with previous commit `<commit-sha>`.
 
 ## 💼 Project `api`
 

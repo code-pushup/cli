@@ -1,3 +1,89 @@
+## 0.64.0 (2025-02-27)
+
+### 🚀 Features
+
+- **ci:** allow refs without shas, fetch if needed ([2ee0a8d1](https://github.com/code-pushup/cli/commit/2ee0a8d1))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.63.0 (2025-02-26)
+
+### 🚀 Features
+
+- **ci:** use temporary file for print-config instead of stdout ([aa4d0b38](https://github.com/code-pushup/cli/commit/aa4d0b38))
+- **cli:** add --output=<file> option to print-config command ([a1fde20c](https://github.com/code-pushup/cli/commit/a1fde20c))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.62.0 (2025-02-25)
+
+### 🚀 Features
+
+- log process working directory as cwd if undefined ([a0638f8c](https://github.com/code-pushup/cli/commit/a0638f8c))
+
+### 🩹 Fixes
+
+- **utils:** replace misleading commit labels in markdown diff ([21a1f25d](https://github.com/code-pushup/cli/commit/21a1f25d))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Vojtech Masek @vmasek
+
+## 0.61.0 (2025-02-19)
+
+### 🚀 Features
+
+- **ci:** disable nx/turbo cache for non-autorun code-pushup commands ([29a1bc63](https://github.com/code-pushup/cli/commit/29a1bc63))
+- **models:** do not throw if docs url invalid, treat as missing and log warning ([a54295c6](https://github.com/code-pushup/cli/commit/a54295c6))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.60.2 (2025-02-18)
+
+### 🩹 Fixes
+
+- **ci:** prevent unknown pathspec error for custom base ref ([60dfb5b2](https://github.com/code-pushup/cli/commit/60dfb5b2))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.60.1 (2025-02-18)
+
+### 🩹 Fixes
+
+- add toSorted polyfill as hotfix for bug in github actions runner ([55704d18](https://github.com/code-pushup/cli/commit/55704d18))
+- **ci:** prevent ambigious ref when checking head ([f5f226e1](https://github.com/code-pushup/cli/commit/f5f226e1))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Vojtech Masek @vmasek
+
+## 0.60.0 (2025-02-18)
+
+### 🚀 Features
+
+- **ci:** add skipComment option ([9ac2a6ba](https://github.com/code-pushup/cli/commit/9ac2a6ba))
+- **plugin-typescript:** add TS core logic ([#932](https://github.com/code-pushup/cli/pull/932))
+- **plugin-typescript:** add plugin logic ([#936](https://github.com/code-pushup/cli/pull/936))
+
+### 🩹 Fixes
+
+- **ci:** ensure head ref is checked out ([74db9023](https://github.com/code-pushup/cli/commit/74db9023))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael Hladky @BioPhoton
+
 ## 0.59.0 (2025-02-14)
 
 ### 🚀 Features

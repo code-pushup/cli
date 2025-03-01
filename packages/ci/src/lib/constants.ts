@@ -13,4 +13,5 @@ export const DEFAULT_SETTINGS: Settings = {
   detectNewIssues: true,
   logger: console,
   nxProjectsFilter: '--with-target={task}',
+  skipComment: false,
 };

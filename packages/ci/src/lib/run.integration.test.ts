@@ -11,8 +11,12 @@ import { fileURLToPath } from 'node:url';
 import { type SimpleGit, simpleGit } from 'simple-git';
 import type { MockInstance } from 'vitest';
 import type { CoreConfig } from '@code-pushup/models';
-import { cleanTestFolder, teardownTestFolder } from '@code-pushup/test-setup';
-import { initGitRepo, simulateGitFetch } from '@code-pushup/test-utils';
+import {
+  cleanTestFolder,
+  initGitRepo,
+  simulateGitFetch,
+  teardownTestFolder,
+} from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
 import type {
   Comment,
@@ -111,13 +115,21 @@ describe('runInCI', () => {
         break;
 
       case 'print-config':
-        stdout = await readFile(fixturePaths.config, 'utf8');
+        let content = await readFile(fixturePaths.config, 'utf8');
         if (nxMatch) {
           // simulate effect of custom persist.outputDir per Nx project
-          const config = JSON.parse(stdout) as CoreConfig;
+          const config = JSON.parse(content) as CoreConfig;
           // eslint-disable-next-line functional/immutable-data
           config.persist!.outputDir = outputDir;
-          stdout = JSON.stringify(config, null, 2);
+          content = JSON.stringify(config, null, 2);
+        }
+        const outputFile = args
+          ?.find(arg => arg.startsWith('--output='))
+          ?.split('=')[1];
+        if (outputFile) {
+          await writeFile(path.join(cwd as string, outputFile), content);
+        } else {
+          stdout = content;
         }
         break;
 
@@ -231,7 +243,7 @@ describe('runInCI', () => {
         expect(utils.executeProcess).toHaveBeenCalledTimes(2);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {
           command: options.bin,
-          args: ['print-config'],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: workDir,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
@@ -303,7 +315,7 @@ describe('runInCI', () => {
         expect(utils.executeProcess).toHaveBeenCalledTimes(5);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {
           command: options.bin,
-          args: ['print-config'],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: workDir,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
@@ -313,7 +325,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(3, {
           command: options.bin,
-          args: ['print-config'],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: workDir,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(4, {
@@ -379,7 +391,7 @@ describe('runInCI', () => {
         expect(utils.executeProcess).toHaveBeenCalledTimes(3);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {
           command: options.bin,
-          args: ['print-config'],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: workDir,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
@@ -404,6 +416,43 @@ describe('runInCI', () => {
         expect(logger.info).toHaveBeenCalled();
         expect(logger.debug).toHaveBeenCalled();
       });
+
+      it('should skip comment if disabled', async () => {
+        const api: ProviderAPIClient = {
+          maxCommentChars: 1_000_000,
+          createComment: vi.fn(),
+          updateComment: vi.fn(),
+          listComments: vi.fn().mockResolvedValue([]),
+        };
+
+        await expect(
+          runInCI(refs, api, { ...options, skipComment: true }, git),
+        ).resolves.toEqual({
+          mode: 'standalone',
+          commentId: undefined,
+          newIssues: [],
+          files: {
+            report: {
+              json: path.join(outputDir, 'report.json'),
+              md: path.join(outputDir, 'report.md'),
+            },
+            diff: {
+              json: path.join(outputDir, 'report-diff.json'),
+              md: path.join(outputDir, 'report-diff.md'),
+            },
+          },
+        } satisfies RunResult);
+
+        expect(api.listComments).not.toHaveBeenCalled();
+        expect(api.createComment).not.toHaveBeenCalled();
+        expect(api.updateComment).not.toHaveBeenCalled();
+
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: options.bin,
+          args: expect.arrayContaining(['compare']),
+          cwd: workDir,
+        } satisfies utils.ProcessConfig);
+      });
     });
   });
 
@@ -418,7 +467,7 @@ describe('runInCI', () => {
       name: 'Nx',
       tool: 'nx',
       run: expect.stringMatching(
-        /^npx nx run (cli|core|utils):code-pushup --$/,
+        /^npx nx run (cli|core|utils):code-pushup --skip-nx-cache --$/,
       ),
       runMany:
         'npx nx run-many --targets=code-pushup --parallel=false --projects=cli,core,utils --',
@@ -426,7 +475,7 @@ describe('runInCI', () => {
     {
       name: 'Turborepo',
       tool: 'turbo',
-      run: 'npx turbo run code-pushup --',
+      run: 'npx turbo run code-pushup --no-cache --force --',
       runMany: 'npx turbo run code-pushup --concurrency=1 --',
     },
     {
@@ -536,7 +585,7 @@ describe('runInCI', () => {
         ).toHaveLength(4); // 1 autorun for all projects, 3 print-configs for each project
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: run,
-          args: ['print-config'],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: expect.stringContaining(workDir),
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
@@ -705,7 +754,7 @@ describe('runInCI', () => {
         ).toHaveLength(10);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: run,
-          args: ['print-config'],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: expect.stringContaining(workDir),
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
@@ -742,6 +791,60 @@ describe('runInCI', () => {
         expect(logger.warn).not.toHaveBeenCalled();
         expect(logger.info).toHaveBeenCalled();
         expect(logger.debug).toHaveBeenCalled();
+      });
+
+      it('should skip comment if disabled', async () => {
+        const api: ProviderAPIClient = {
+          maxCommentChars: 1_000_000,
+          createComment: vi.fn(),
+          updateComment: vi.fn(),
+          listComments: vi.fn(),
+        };
+
+        await expect(
+          runInCI(
+            refs,
+            api,
+            { ...options, monorepo: tool, skipComment: true },
+            git,
+          ),
+        ).resolves.toEqual({
+          mode: 'monorepo',
+          commentId: undefined,
+          diffPath: path.join(workDir, '.code-pushup/merged-report-diff.md'),
+          projects: [
+            expect.objectContaining({ name: 'cli' }),
+            expect.objectContaining({ name: 'core' }),
+            expect.objectContaining({ name: 'utils' }),
+          ],
+        } satisfies RunResult);
+
+        await expect(
+          readFile(
+            path.join(workDir, '.code-pushup/merged-report-diff.md'),
+            'utf8',
+          ),
+        ).resolves.toBe(diffMdString);
+
+        expect(api.listComments).not.toHaveBeenCalled();
+        expect(api.createComment).not.toHaveBeenCalled();
+        expect(api.updateComment).not.toHaveBeenCalled();
+
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: runMany,
+          args: expect.any(Array),
+          cwd: expect.stringContaining(workDir),
+        } satisfies utils.ProcessConfig);
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: run,
+          args: expect.arrayContaining(['compare']),
+          cwd: expect.stringContaining(workDir),
+        } satisfies utils.ProcessConfig);
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: run,
+          args: expect.arrayContaining(['merge-diffs']),
+          cwd: expect.stringContaining(workDir),
+        } satisfies utils.ProcessConfig);
       });
     });
   });
@@ -827,7 +930,7 @@ describe('runInCI', () => {
         ).toHaveLength(6); // 3 autoruns and 3 print-configs for each project
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: ['print-config'],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: expect.stringContaining(workDir),
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
@@ -982,7 +1085,7 @@ describe('runInCI', () => {
         ).toHaveLength(10);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: ['print-config'],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: expect.stringContaining(workDir),
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({

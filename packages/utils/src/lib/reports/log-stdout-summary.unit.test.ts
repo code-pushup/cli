@@ -181,19 +181,16 @@ describe('logPlugins', () => {
   });
 
   it('should log only audits with scores other than 1 when verbose is false', () => {
-    logPlugins(
-      [
-        {
-          title: 'Best Practices',
-          slug: 'best-practices',
-          audits: [
-            { title: 'Audit 1', score: 0.75, value: 75 },
-            { title: 'Audit 2', score: 1, value: 100 },
-          ],
-        },
-      ] as ScoredReport['plugins'],
-      false,
-    );
+    logPlugins([
+      {
+        title: 'Best Practices',
+        slug: 'best-practices',
+        audits: [
+          { title: 'Audit 1', score: 0.75, value: 75 },
+          { title: 'Audit 2', score: 1, value: 100 },
+        ],
+      },
+    ] as ScoredReport['plugins']);
     const output = logs.join('\n');
     expect(output).toContain('Audit 1');
     expect(output).not.toContain('Audit 2');
@@ -201,72 +198,62 @@ describe('logPlugins', () => {
   });
 
   it('should log all audits when verbose is true', () => {
-    logPlugins(
-      [
-        {
-          title: 'Best Practices',
-          slug: 'best-practices',
-          audits: [
-            { title: 'Audit 1', score: 0.5, value: 50 },
-            { title: 'Audit 2', score: 1, value: 100 },
-          ],
-        },
-      ] as ScoredReport['plugins'],
-      true,
-    );
+    vi.stubEnv('CP_VERBOSE', 'true');
+
+    logPlugins([
+      {
+        title: 'Best Practices',
+        slug: 'best-practices',
+        audits: [
+          { title: 'Audit 1', score: 0.5, value: 50 },
+          { title: 'Audit 2', score: 1, value: 100 },
+        ],
+      },
+    ] as ScoredReport['plugins']);
     const output = logs.join('\n');
     expect(output).toContain('Audit 1');
     expect(output).toContain('Audit 2');
   });
 
   it('should indicate all audits have perfect scores', () => {
-    logPlugins(
-      [
-        {
-          title: 'Best Practices',
-          slug: 'best-practices',
-          audits: [
-            { title: 'Audit 1', score: 1, value: 100 },
-            { title: 'Audit 2', score: 1, value: 100 },
-          ],
-        },
-      ] as ScoredReport['plugins'],
-      false,
-    );
+    logPlugins([
+      {
+        title: 'Best Practices',
+        slug: 'best-practices',
+        audits: [
+          { title: 'Audit 1', score: 1, value: 100 },
+          { title: 'Audit 2', score: 1, value: 100 },
+        ],
+      },
+    ] as ScoredReport['plugins']);
     const output = logs.join('\n');
     expect(output).toContain('All 2 audits have perfect scores');
   });
 
   it('should log original audits when verbose is false and no audits have perfect scores', () => {
-    logPlugins(
-      [
-        {
-          title: 'Best Practices',
-          slug: 'best-practices',
-          audits: [
-            { title: 'Audit 1', score: 0.5, value: 100 },
-            { title: 'Audit 2', score: 0.5, value: 100 },
-          ],
-        },
-      ] as ScoredReport['plugins'],
-      false,
-    );
+    logPlugins([
+      {
+        title: 'Best Practices',
+        slug: 'best-practices',
+        audits: [
+          { title: 'Audit 1', score: 0.5, value: 100 },
+          { title: 'Audit 2', score: 0.5, value: 100 },
+        ],
+      },
+    ] as ScoredReport['plugins']);
     const output = logs.join('\n');
     expect(output).toContain('Audit 1');
     expect(output).toContain('Audit 2');
   });
 
   it('should not truncate a perfect audit in non-verbose mode when it is the only audit available', () => {
-    logPlugins(
-      [
-        {
-          title: 'Best Practices',
-          slug: 'best-practices',
-          audits: [{ title: 'Audit 1', score: 1, value: 100 }],
-        },
-      ] as ScoredReport['plugins'],
-      false,
-    );
+    logPlugins([
+      {
+        title: 'Best Practices',
+        slug: 'best-practices',
+        audits: [{ title: 'Audit 1', score: 1, value: 100 }],
+      },
+    ] as ScoredReport['plugins']);
     const output = logs.join('\n');
     expect(output).toContain('Audit 1');
   });

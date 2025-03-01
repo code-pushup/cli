@@ -10,11 +10,11 @@ import {
   nxTargetProject,
   registerPluginInWorkspace,
 } from '@code-pushup/test-nx-utils';
-import { teardownTestFolder } from '@code-pushup/test-setup';
 import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
   removeColorCodes,
+  teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess, readTextFile } from '@code-pushup/utils';
 import { INLINE_PLUGIN } from './inline-plugin.js';

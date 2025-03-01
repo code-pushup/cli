@@ -4,7 +4,6 @@ import {
   type AuditOutput,
   type AuditOutputs,
   type AuditReport,
-  type OnProgress,
   type PluginConfig,
   type PluginReport,
   auditOutputsSchema,
@@ -37,7 +36,6 @@ export class PluginOutputMissingAuditError extends Error {
  *
  * @public
  * @param pluginConfig - {@link ProcessConfig} object with runner and meta
- * @param onProgress - progress handler {@link OnProgress}
  * @returns {Promise<AuditOutput[]>} - audit outputs from plugin runner
  * @throws {PluginOutputMissingAuditError} - if plugin runner output is invalid
  *
@@ -56,7 +54,6 @@ export class PluginOutputMissingAuditError extends Error {
  */
 export async function executePlugin(
   pluginConfig: PluginConfig,
-  onProgress?: OnProgress,
 ): Promise<PluginReport> {
   const {
     runner,
@@ -70,8 +67,8 @@ export async function executePlugin(
   // execute plugin runner
   const runnerResult =
     typeof runner === 'object'
-      ? await executeRunnerConfig(runner, onProgress)
-      : await executeRunnerFunction(runner, onProgress);
+      ? await executeRunnerConfig(runner)
+      : await executeRunnerFunction(runner);
   const { audits: unvalidatedAuditOutputs, ...executionMeta } = runnerResult;
 
   // validate auditOutputs

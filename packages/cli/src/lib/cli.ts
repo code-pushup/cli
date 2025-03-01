@@ -25,7 +25,7 @@ export const cli = (args: string[]) =>
       ],
       [
         'code-pushup collect --skipPlugins=coverage',
-        'Run collect skiping the coverage plugin, other plugins from config file will be included.',
+        'Run collect skipping the coverage plugin, other plugins from config file will be included.',
       ],
       [
         'code-pushup upload --persist.outputDir=dist --upload.apiKey=$CP_API_KEY',

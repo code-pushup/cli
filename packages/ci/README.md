@@ -64,10 +64,10 @@ If only the `head` is supplied, then Code PushUp will collect a new report and o
 If triggered by a pull request, then specify the `base` ref as well.
 This will additionally compare reports from both source and target branches and post a comment to the PR.
 
-| Property | Required | Type                           | Description           |
-| :------- | :------: | :----------------------------- | :-------------------- |
-| `head`   |   yes    | `{ ref: string, sha: string }` | Current branch/commit |
-| `base`   |    no    | `{ ref: string, sha: string }` | Branch targeted by PR |
+| Property | Required | Type                                     | Description           |
+| :------- | :------: | :--------------------------------------- | :-------------------- |
+| `head`   |   yes    | `string \| { ref: string, sha: string }` | Current branch/commit |
+| `base`   |    no    | `string \| { ref: string, sha: string }` | Branch targeted by PR |
 
 ### Provider API client
 
@@ -107,6 +107,7 @@ Optionally, you can override default options for further customization:
 | `bin`              | `string`                  | `'npx --no-install code-pushup'` | Command for executing Code PushUp CLI                                                                                                                    |
 | `detectNewIssues`  | `boolean`                 | `true`                           | Toggles if new issues should be detected and returned in `newIssues` property                                                                            |
 | `logger`           | `Logger`                  | `console`                        | Logger for reporting progress and encountered problems                                                                                                   |
+| `skipComment`      | `boolean`                 | `false`                          | Toggles if comparison comment is posted to PR                                                                                                            |
 
 [^1]: By default, the `code-pushup.config` file is autodetected as described in [`@code-pushup/cli` docs](../cli/README.md#configuration).
 
