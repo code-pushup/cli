@@ -3,6 +3,7 @@ import path from 'node:path';
 import {
   executeProcess,
   generateRandomId,
+  isVerbose,
   readJsonFile,
   stringifyError,
 } from '@code-pushup/utils';
@@ -12,24 +13,23 @@ export async function runPrintConfig({
   bin,
   config,
   directory,
-  silent,
+  observer,
 }: CommandContext): Promise<unknown> {
   // random file name so command can be run in parallel
   const outputFile = `code-pushup.${generateRandomId()}.config.json`;
   const outputPath = path.join(directory, outputFile);
 
-  const { stdout } = await executeProcess({
+  await executeProcess({
     command: bin,
     args: [
       ...(config ? [`--config=${config}`] : []),
       'print-config',
+      ...(isVerbose() ? ['--verbose'] : []),
       `--output=${outputFile}`,
     ],
     cwd: directory,
+    observer,
   });
-  if (!silent) {
-    console.info(stdout);
-  }
 
   try {
     const content = await readJsonFile(outputPath);
