@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { SimpleGit } from 'simple-git';
@@ -69,6 +70,9 @@ export async function createRunEnv(
   options: Options | undefined,
   git: SimpleGit,
 ): Promise<RunEnv> {
+  // eslint-disable-next-line functional/immutable-data
+  process.env['CP_VERBOSE'] = options?.silent ? 'false' : 'true';
+
   const [head, base] = await Promise.all([
     normalizeGitRef(refs.head, git),
     refs.base && normalizeGitRef(refs.base, git),
