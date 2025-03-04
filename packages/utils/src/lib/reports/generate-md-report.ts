@@ -46,8 +46,8 @@ export function generateMdReport(
     .$concat(
       ...(hasCategories(report)
         ? [
-            categoriesOverviewSection(report, { isScoreListed: isScoreListed }),
-            categoriesDetailsSection(report, { isScoreListed: isScoreListed }),
+            categoriesOverviewSection(report, { isScoreListed }),
+            categoriesDetailsSection(report, { isScoreListed }),
           ]
         : []),
       auditsSection(report, { isScoreListed, ...opts }),
