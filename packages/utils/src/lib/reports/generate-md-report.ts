@@ -30,6 +30,10 @@ export function auditDetailsAuditValue({
   )} (score: ${formatReportScore(score)})`;
 }
 
+/**
+ * Check if the report has categories.
+ * @param report
+ */
 function hasCategories(
   report: ScoredReport,
 ): report is ScoredReport & Required<Pick<ScoredReport, 'categories'>> {
