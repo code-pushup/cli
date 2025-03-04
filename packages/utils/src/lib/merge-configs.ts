@@ -9,8 +9,8 @@ import type {
 export function mergeConfigs(
   config: CoreConfig,
   ...configs: Partial<CoreConfig>[]
-): Partial<CoreConfig> {
-  return configs.reduce(
+): CoreConfig {
+  return configs.reduce<CoreConfig>(
     (acc, obj) => ({
       ...acc,
       ...mergeCategories(acc.categories, obj.categories),
