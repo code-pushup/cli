@@ -40,13 +40,17 @@ export function generateMdReport(
   report: ScoredReport,
   options?: MdReportOptions,
 ): string {
+  const { isScoreListed, ...opts } = options ?? {};
   return new MarkdownDocument()
     .heading(HIERARCHY.level_1, REPORT_HEADLINE_TEXT)
     .$concat(
       ...(hasCategories(report)
-        ? [categoriesOverviewSection(report), categoriesDetailsSection(report)]
+        ? [
+            categoriesOverviewSection(report, { isScoreListed: isScoreListed }),
+            categoriesDetailsSection(report, { isScoreListed: isScoreListed }),
+          ]
         : []),
-      auditsSection(report, options),
+      auditsSection(report, { isScoreListed, ...opts }),
       aboutSection(report),
     )
     .rule()
@@ -110,11 +114,14 @@ export function auditsSection(
   { plugins }: Pick<ScoredReport, 'plugins'>,
   options?: MdReportOptions,
 ): MarkdownDocument {
+  const { isScoreListed = (_: number) => true } = options ?? {};
   return new MarkdownDocument()
     .heading(HIERARCHY.level_2, '🛡️ Audits')
     .$foreach(
       plugins.flatMap(plugin =>
-        plugin.audits.map(audit => ({ ...audit, plugin })),
+        plugin.audits
+          .filter(audit => isScoreListed(audit.score))
+          .map(audit => ({ ...audit, plugin })),
       ),
       (doc, { plugin, ...audit }) => {
         const auditTitle = `${audit.title} (${plugin.title})`;

@@ -4,7 +4,7 @@ import { slugify } from '../formatting.js';
 import { HIERARCHY } from '../text-formats/index.js';
 import { metaDescription } from './formatting.js';
 import { getSortableAuditByRef, getSortableGroupByRef } from './sorting.js';
-import type { ScoredGroup, ScoredReport } from './types.js';
+import type { ScoreFilter, ScoredGroup, ScoredReport } from './types.js';
 import {
   countCategoryAudits,
   formatReportScore,
@@ -15,7 +15,9 @@ import {
 
 export function categoriesOverviewSection(
   report: Required<Pick<ScoredReport, 'plugins' | 'categories'>>,
+  options?: ScoreFilter,
 ): MarkdownDocument {
+  const { isScoreListed = (_: number) => true } = options ?? {};
   const { categories, plugins } = report;
   return new MarkdownDocument().table(
     [
@@ -23,56 +25,66 @@ export function categoriesOverviewSection(
       { heading: '⭐ Score', alignment: 'center' },
       { heading: '🛡 Audits', alignment: 'center' },
     ],
-    categories.map(({ title, refs, score, isBinary }) => [
-      // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
-      // The heading "ID" is inferred from the heading text in Markdown.
-      md.link(`#${slugify(title)}`, title),
-      md`${scoreMarker(score)} ${md.bold(
-        formatReportScore(score),
-      )}${binaryIconSuffix(score, isBinary)}`,
-      countCategoryAudits(refs, plugins).toString(),
-    ]),
+    categories
+      .filter(({ score }) => isScoreListed(score))
+      .map(({ title, refs, score, isBinary }) => [
+        // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
+        // The heading "ID" is inferred from the heading text in Markdown.
+        md.link(`#${slugify(title)}`, title),
+        md`${scoreMarker(score)} ${md.bold(
+          formatReportScore(score),
+        )}${binaryIconSuffix(score, isBinary)}`,
+        countCategoryAudits(refs, plugins).toString(),
+      ]),
   );
 }
 
 export function categoriesDetailsSection(
   report: Required<Pick<ScoredReport, 'plugins' | 'categories'>>,
+  options?: ScoreFilter,
 ): MarkdownDocument {
+  const { isScoreListed = (_: number) => true } = options ?? {};
   const { categories, plugins } = report;
 
   return new MarkdownDocument()
     .heading(HIERARCHY.level_2, '🏷 Categories')
-    .$foreach(categories, (doc, category) =>
-      doc
-        .heading(HIERARCHY.level_3, category.title)
-        .paragraph(metaDescription(category))
-        .paragraph(
-          md`${scoreMarker(category.score)} Score: ${md.bold(
-            formatReportScore(category.score),
-          )}${binaryIconSuffix(category.score, category.isBinary)}`,
-        )
-        .list(
-          category.refs.map(ref => {
-            // Add group details
-            if (ref.type === 'group') {
-              const group = getSortableGroupByRef(ref, plugins);
-              const groupAudits = group.refs.map(groupRef =>
-                getSortableAuditByRef(
-                  { ...groupRef, plugin: group.plugin, type: 'audit' },
-                  plugins,
-                ),
-              );
-              const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
-              return categoryGroupItem(group, groupAudits, pluginTitle);
-            }
-            // Add audit details
-            else {
-              const audit = getSortableAuditByRef(ref, plugins);
-              const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
-              return categoryRef(audit, pluginTitle);
-            }
-          }),
-        ),
+    .$foreach(
+      categories.filter(({ score }) => isScoreListed(score)),
+      (doc, category) =>
+        doc
+          .heading(HIERARCHY.level_3, category.title)
+          .paragraph(metaDescription(category))
+          .paragraph(
+            md`${scoreMarker(category.score)} Score: ${md.bold(
+              formatReportScore(category.score),
+            )}${binaryIconSuffix(category.score, category.isBinary)}`,
+          )
+          .list(
+            category.refs.map(ref => {
+              // Add group details
+              if (ref.type === 'group') {
+                const group = getSortableGroupByRef(ref, plugins);
+                const groupAudits = group.refs.map(groupRef =>
+                  getSortableAuditByRef(
+                    { ...groupRef, plugin: group.plugin, type: 'audit' },
+                    plugins,
+                  ),
+                );
+                const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
+                return isScoreListed(group.score)
+                  ? categoryGroupItem(group, groupAudits, pluginTitle)
+                  : '';
+              }
+              // Add audit details
+              else {
+                const audit = getSortableAuditByRef(ref, plugins);
+                const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
+                return isScoreListed(audit.score)
+                  ? categoryRef(audit, pluginTitle)
+                  : '';
+              }
+            }),
+          ),
     );
 }
 

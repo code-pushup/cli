@@ -49,6 +49,48 @@ describe('categoriesOverviewSection', () => {
     ).toMatchSnapshot();
   });
 
+  it('should render filtered categories table', () => {
+    expect(
+      categoriesOverviewSection(
+        {
+          plugins: [
+            {
+              slug: 'eslint',
+              title: 'Eslint',
+            },
+            {
+              slug: 'lighthouse',
+              title: 'Lighthouse',
+            },
+          ],
+          categories: [
+            {
+              slug: 'bug-prevention',
+              title: 'Bug Prevention',
+              score: 1,
+              refs: [{ slug: 'no-let', type: 'audit' }],
+            },
+            {
+              slug: 'performance',
+              title: 'Performance',
+              score: 0.74,
+              refs: [{ slug: 'largest-contentful-paint', type: 'audit' }],
+            },
+            {
+              slug: 'typescript',
+              title: 'Typescript',
+              score: 0.14,
+              refs: [{ slug: 'no-any', type: 'audit' }],
+            },
+          ],
+        } as Required<Pick<ScoredReport, 'plugins' | 'categories'>>,
+        {
+          isScoreListed: score => score === 1,
+        },
+      ).toString(),
+    ).toMatchSnapshot();
+  });
+
   it('should render targetScore icon "❌" if score fails', () => {
     expect(
       categoriesOverviewSection({
@@ -213,6 +255,68 @@ describe('categoriesDetailsSection', () => {
         ],
       } as Required<Pick<ScoredReport, 'plugins' | 'categories'>>).toString(),
     ).toMatchSnapshot();
+  });
+
+  it('should render filtered categories details', () => {
+    expect(
+      categoriesDetailsSection(
+        {
+          plugins: [
+            {
+              slug: 'eslint',
+              title: 'Eslint',
+              audits: [
+                { slug: 'no-let', title: 'No let', score: 1, value: 0 },
+                { slug: 'no-any', title: 'No any', score: 0, value: 5 },
+              ],
+            },
+            {
+              slug: 'lighthouse',
+              title: 'Lighthouse',
+              audits: [
+                {
+                  slug: 'largest-contentful-paint',
+                  title: 'Largest Contentful Paint',
+                  score: 0.7,
+                  value: 2905,
+                },
+              ],
+            },
+          ],
+          categories: [
+            {
+              slug: 'bug-prevention',
+              title: 'Bug Prevention',
+              score: 1,
+              isBinary: true,
+              refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
+            },
+            {
+              slug: 'performance',
+              title: 'Performance',
+              score: 0.74,
+              refs: [
+                {
+                  slug: 'largest-contentful-paint',
+                  type: 'audit',
+                  plugin: 'lighthouse',
+                },
+              ],
+            },
+            {
+              slug: 'typescript',
+              title: 'Typescript',
+              score: 0.14,
+              isBinary: true,
+              refs: [{ slug: 'no-any', type: 'audit', plugin: 'eslint' }],
+            },
+          ],
+        } as Required<Pick<ScoredReport, 'plugins' | 'categories'>>,
+        {
+          isScoreListed: score => score === 1,
+        },
+      ).toString(),
+    ).toMatchSnapshot('filtered');
   });
 
   it('should render categories details and add "❌" when isBinary is failing', () => {
