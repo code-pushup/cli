@@ -1,3 +1,13 @@
+## 0.65.0 (2025-03-05)
+
+### 🚀 Features
+
+- **utils:** add score filter to md report generation ([#956](https://github.com/code-pushup/cli/pull/956))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.64.2 (2025-03-05)
 
 ### 🩹 Fixes
