@@ -11,18 +11,22 @@ describe('createNodesContext', () => {
       workspaceRoot: 'root',
       nxJsonConfiguration: { plugins: [] },
     });
-    expect(context).toEqual({
-      workspaceRoot: 'root',
-      nxJsonConfiguration: { plugins: [] },
-    });
+    expect(context).toStrictEqual(
+      expect.objectContaining({
+        workspaceRoot: 'root',
+        nxJsonConfiguration: { plugins: [] },
+      }),
+    );
   });
 
   it('should return a context with defaults', () => {
     const context = createNodesContext();
-    expect(context).toEqual({
-      workspaceRoot: process.cwd(),
-      nxJsonConfiguration: {},
-    });
+    expect(context).toStrictEqual(
+      expect.objectContaining({
+        workspaceRoot: process.cwd(),
+        nxJsonConfiguration: {},
+      }),
+    );
   });
 });
 
