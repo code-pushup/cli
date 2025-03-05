@@ -1,3 +1,16 @@
+## 0.64.2 (2025-03-05)
+
+### 🩹 Fixes
+
+- update nx-verdaccio pkg ([#954](https://github.com/code-pushup/cli/pull/954))
+- **plugin-js-packages:** ignore non-empty stderr ([7936a00c](https://github.com/code-pushup/cli/commit/7936a00c))
+- **utils:** ignore non-json lines in fromJsonLines utility ([7886c572](https://github.com/code-pushup/cli/commit/7886c572))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael Hladky @BioPhoton
+
 ## 0.64.1 (2025-03-04)
 
 ### 🩹 Fixes
