@@ -114,9 +114,19 @@ export function toUnixNewlines(text: string): string {
   return platform() === 'win32' ? text.replace(/\r\n/g, '\n') : text;
 }
 
-export function fromJsonLines<T = unknown>(jsonLines: string) {
+export function fromJsonLines<T extends unknown[]>(jsonLines: string) {
   const unifiedNewLines = toUnixNewlines(jsonLines).trim();
-  return JSON.parse(`[${unifiedNewLines.split('\n').join(',')}]`) as T;
+  const invalid = Symbol('invalid json');
+  return unifiedNewLines
+    .split('\n')
+    .map(line => {
+      try {
+        return JSON.parse(line);
+      } catch {
+        return invalid;
+      }
+    })
+    .filter(line => line !== invalid) as T;
 }
 
 export function toJsonLines<T>(json: T[]) {
