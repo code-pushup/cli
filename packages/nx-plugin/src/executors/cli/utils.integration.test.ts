@@ -1,8 +1,8 @@
 import { expect, vi } from 'vitest';
 import type { UploadConfig } from '@code-pushup/models';
-import { normalizedExecutorContext } from '../../../mock/utils/executor.js';
-import * as config from '../internal/config.js';
-import { parseAutorunExecutorOptions } from './utils.js';
+import { normalizedExecutorContext } from '../../../mock/utils/executor';
+import * as config from '../internal/config';
+import { parseAutorunExecutorOptions } from './utils';
 
 describe('parseAutorunExecutorOptions', () => {
   const persistConfigSpy = vi.spyOn(config, 'persistConfig');

@@ -1,2 +1,2 @@
-export { createNodes } from './plugin.js';
-export type { CreateNodesOptions } from './types.js';
+export { createNodes } from './plugin';
+export type { CreateNodesOptions } from './types';
