@@ -16,7 +16,7 @@ import {
 import {
   categoriesDetailsSection,
   categoriesOverviewSection,
-} from './generate-md-report-categoy-section.js';
+} from './generate-md-report-category-section.js';
 import type { MdReportOptions, ScoredReport } from './types.js';
 import {
   formatReportScore,
