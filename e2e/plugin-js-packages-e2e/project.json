@@ -1,0 +1,23 @@
+{
+  "name": "plugin-js-packages-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "e2e/plugin-js-packages-e2e/src",
+  "implicitDependencies": ["cli", "plugin-js-packages"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["e2e/plugin-eslint-e2e/**/*.ts"]
+      }
+    },
+    "e2e": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "e2e/plugin-eslint-e2e/vite.config.e2e.ts"
+      }
+    }
+  },
+  "tags": ["scope:plugin", "type:e2e"]
+}
