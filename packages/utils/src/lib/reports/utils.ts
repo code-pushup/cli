@@ -17,7 +17,7 @@ import type {
 } from './types.js';
 
 export function scoreFilter<T extends { score: number }>(
-  options: ScoreFilter | undefined,
+  options?: ScoreFilter,
 ) {
   const { isScoreListed = () => true } = options ?? {};
   return ({ score }: T) => isScoreListed(score);
