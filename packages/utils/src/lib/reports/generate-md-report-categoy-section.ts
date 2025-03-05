@@ -9,6 +9,7 @@ import {
   countCategoryAudits,
   formatReportScore,
   getPluginNameFromSlug,
+  scoreFilter,
   scoreMarker,
   targetScoreIcon,
 } from './utils.js';
@@ -17,7 +18,6 @@ export function categoriesOverviewSection(
   report: Required<Pick<ScoredReport, 'plugins' | 'categories'>>,
   options?: ScoreFilter,
 ): MarkdownDocument {
-  const { isScoreListed = (_: number) => true } = options ?? {};
   const { categories, plugins } = report;
   return new MarkdownDocument().table(
     [
@@ -26,7 +26,7 @@ export function categoriesOverviewSection(
       { heading: '🛡 Audits', alignment: 'center' },
     ],
     categories
-      .filter(({ score }) => isScoreListed(score))
+      .filter(scoreFilter(options))
       .map(({ title, refs, score, isBinary }) => [
         // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
         // The heading "ID" is inferred from the heading text in Markdown.
@@ -43,48 +43,45 @@ export function categoriesDetailsSection(
   report: Required<Pick<ScoredReport, 'plugins' | 'categories'>>,
   options?: ScoreFilter,
 ): MarkdownDocument {
-  const { isScoreListed = (_: number) => true } = options ?? {};
   const { categories, plugins } = report;
-
+  const isScoreDisplayed = scoreFilter(options);
   return new MarkdownDocument()
     .heading(HIERARCHY.level_2, '🏷 Categories')
-    .$foreach(
-      categories.filter(({ score }) => isScoreListed(score)),
-      (doc, category) =>
-        doc
-          .heading(HIERARCHY.level_3, category.title)
-          .paragraph(metaDescription(category))
-          .paragraph(
-            md`${scoreMarker(category.score)} Score: ${md.bold(
-              formatReportScore(category.score),
-            )}${binaryIconSuffix(category.score, category.isBinary)}`,
-          )
-          .list(
-            category.refs.map(ref => {
-              // Add group details
-              if (ref.type === 'group') {
-                const group = getSortableGroupByRef(ref, plugins);
-                const groupAudits = group.refs.map(groupRef =>
-                  getSortableAuditByRef(
-                    { ...groupRef, plugin: group.plugin, type: 'audit' },
-                    plugins,
-                  ),
-                );
-                const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
-                return isScoreListed(group.score)
-                  ? categoryGroupItem(group, groupAudits, pluginTitle)
-                  : '';
-              }
-              // Add audit details
-              else {
-                const audit = getSortableAuditByRef(ref, plugins);
-                const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
-                return isScoreListed(audit.score)
-                  ? categoryRef(audit, pluginTitle)
-                  : '';
-              }
-            }),
-          ),
+    .$foreach(categories.filter(isScoreDisplayed), (doc, category) =>
+      doc
+        .heading(HIERARCHY.level_3, category.title)
+        .paragraph(metaDescription(category))
+        .paragraph(
+          md`${scoreMarker(category.score)} Score: ${md.bold(
+            formatReportScore(category.score),
+          )}${binaryIconSuffix(category.score, category.isBinary)}`,
+        )
+        .list(
+          category.refs.map(ref => {
+            // Add group details
+            if (ref.type === 'group') {
+              const group = getSortableGroupByRef(ref, plugins);
+              const groupAudits = group.refs.map(groupRef =>
+                getSortableAuditByRef(
+                  { ...groupRef, plugin: group.plugin, type: 'audit' },
+                  plugins,
+                ),
+              );
+              const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
+              return isScoreDisplayed(group)
+                ? categoryGroupItem(group, groupAudits, pluginTitle)
+                : '';
+            }
+            // Add audit details
+            else {
+              const audit = getSortableAuditByRef(ref, plugins);
+              const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
+              return isScoreDisplayed(audit)
+                ? categoryRef(audit, pluginTitle)
+                : '';
+            }
+          }),
+        ),
     );
 }
 

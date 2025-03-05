@@ -18,7 +18,12 @@ import {
   categoriesOverviewSection,
 } from './generate-md-report-categoy-section.js';
 import type { MdReportOptions, ScoredReport } from './types.js';
-import { formatReportScore, scoreMarker, severityMarker } from './utils.js';
+import {
+  formatReportScore,
+  scoreFilter,
+  scoreMarker,
+  severityMarker,
+} from './utils.js';
 
 export function auditDetailsAuditValue({
   score,
@@ -44,17 +49,16 @@ export function generateMdReport(
   report: ScoredReport,
   options?: MdReportOptions,
 ): string {
-  const { isScoreListed, ...opts } = options ?? {};
   return new MarkdownDocument()
     .heading(HIERARCHY.level_1, REPORT_HEADLINE_TEXT)
     .$concat(
       ...(hasCategories(report)
         ? [
-            categoriesOverviewSection(report, { isScoreListed }),
-            categoriesDetailsSection(report, { isScoreListed }),
+            categoriesOverviewSection(report, options),
+            categoriesDetailsSection(report, options),
           ]
         : []),
-      auditsSection(report, { isScoreListed, ...opts }),
+      auditsSection(report, options),
       aboutSection(report),
     )
     .rule()
@@ -118,13 +122,13 @@ export function auditsSection(
   { plugins }: Pick<ScoredReport, 'plugins'>,
   options?: MdReportOptions,
 ): MarkdownDocument {
-  const { isScoreListed = (_: number) => true } = options ?? {};
+  const isScoreDisplayed = scoreFilter(options);
   return new MarkdownDocument()
     .heading(HIERARCHY.level_2, '🛡️ Audits')
     .$foreach(
       plugins.flatMap(plugin =>
         plugin.audits
-          .filter(audit => isScoreListed(audit.score))
+          .filter(isScoreDisplayed)
           .map(audit => ({ ...audit, plugin })),
       ),
       (doc, { plugin, ...audit }) => {
