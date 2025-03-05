@@ -1,3 +1,15 @@
+## 0.64.1 (2025-03-04)
+
+### 🩹 Fixes
+
+- **ci:** always show execute process errors and log stdout if verbose ([b41de478](https://github.com/code-pushup/cli/commit/b41de478))
+- **utils:** remove partial from mergeConfigs return type ([69c2ef4c](https://github.com/code-pushup/cli/commit/69c2ef4c))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Vojtech Masek @vmasek
+
 ## 0.64.0 (2025-02-27)
 
 ### 🚀 Features

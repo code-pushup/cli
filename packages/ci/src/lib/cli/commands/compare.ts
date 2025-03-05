@@ -1,5 +1,5 @@
 import { DEFAULT_PERSIST_FORMAT } from '@code-pushup/models';
-import { executeProcess } from '@code-pushup/utils';
+import { executeProcess, isVerbose } from '@code-pushup/utils';
 import type { CommandContext } from '../context.js';
 
 type CompareOptions = {
@@ -10,12 +10,13 @@ type CompareOptions = {
 
 export async function runCompare(
   { before, after, label }: CompareOptions,
-  { bin, config, directory, silent }: CommandContext,
+  { bin, config, directory, observer }: CommandContext,
 ): Promise<void> {
-  const { stdout } = await executeProcess({
+  await executeProcess({
     command: bin,
     args: [
       'compare',
+      ...(isVerbose() ? ['--verbose'] : []),
       `--before=${before}`,
       `--after=${after}`,
       ...(label ? [`--label=${label}`] : []),
@@ -23,8 +24,6 @@ export async function runCompare(
       ...DEFAULT_PERSIST_FORMAT.map(format => `--persist.format=${format}`),
     ],
     cwd: directory,
+    observer,
   });
-  if (!silent) {
-    console.info(stdout);
-  }
 }

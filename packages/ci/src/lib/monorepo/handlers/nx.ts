@@ -25,25 +25,23 @@ export const nxHandler: MonorepoToolHandler = {
     );
   },
 
-  async listProjects(options) {
+  async listProjects({ cwd, task, nxProjectsFilter, observer }) {
     const { stdout } = await executeProcess({
       command: 'npx',
       args: [
         'nx',
         'show',
         'projects',
-        ...toArray(options.nxProjectsFilter).map(arg =>
-          arg.replaceAll('{task}', options.task),
-        ),
+        ...toArray(nxProjectsFilter).map(arg => arg.replaceAll('{task}', task)),
         '--json',
       ],
-      cwd: options.cwd,
-      observer: options.observer,
+      cwd,
+      observer,
     });
     const projects = parseProjects(stdout);
     return projects.toSorted().map(project => ({
       name: project,
-      bin: `npx nx run ${project}:${options.task} --skip-nx-cache --`,
+      bin: `npx nx run ${project}:${task} --skip-nx-cache --`,
     }));
   },
 
