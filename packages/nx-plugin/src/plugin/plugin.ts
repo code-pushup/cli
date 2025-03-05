@@ -1,22 +1,12 @@
-import {
+import type {
   CreateNodes,
   CreateNodesContext,
-  CreateNodesContextV2,
   CreateNodesResult,
-  CreateNodesV2,
-  createNodesFromFiles,
 } from '@nx/devkit';
-import { dirname } from 'path';
-import {
-  CODE_PUSHUP_CONFIG_REGEX,
-  PROJECT_JSON_FILE_NAME,
-} from '../internal/constants';
+import { PROJECT_JSON_FILE_NAME } from '../internal/constants';
 import { createTargets } from './target/targets';
 import type { CreateNodesOptions } from './types';
-import {
-  normalizedCreateNodesContext,
-  normalizedCreateNodesV2Context,
-} from './utils';
+import { normalizedCreateNodesContext } from './utils';
 
 // name has to be "createNodes" to get picked up by Nx <v20
 export const createNodes: CreateNodes = [
