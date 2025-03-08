@@ -8,7 +8,7 @@ import {
 } from './runner/constants.js';
 import { createRunnerFunction } from './runner/runner.js';
 import type { LighthouseOptions } from './types.js';
-import { filterAuditsAndGroupsByOnlyOptions } from './utils.js';
+import { markSkippedAuditsAndGroups } from './utils.js';
 
 export function lighthousePlugin(
   url: string,
@@ -17,7 +17,7 @@ export function lighthousePlugin(
   const { skipAudits, onlyAudits, onlyCategories, ...unparsedFlags } =
     normalizeFlags(flags ?? {});
 
-  const { audits, groups } = filterAuditsAndGroupsByOnlyOptions(
+  const { audits, groups } = markSkippedAuditsAndGroups(
     LIGHTHOUSE_NAVIGATION_AUDITS,
     LIGHTHOUSE_GROUPS,
     { skipAudits, onlyAudits, onlyCategories },

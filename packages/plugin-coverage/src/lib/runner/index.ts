@@ -1,23 +1,31 @@
 import { bold } from 'ansis';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import type { AuditOutputs, RunnerConfig } from '@code-pushup/models';
+import type {
+  AuditOutputs,
+  RunnerConfig,
+  RunnerFilesPaths,
+} from '@code-pushup/models';
 import {
   ProcessError,
+  createRunnerFiles,
   ensureDirectoryExists,
   executeProcess,
   filePathToCliArg,
+  objectToCliArgs,
   readJsonFile,
   ui,
 } from '@code-pushup/utils';
 import type { FinalCoveragePluginConfig } from '../config.js';
 import { applyMaxScoreAboveThreshold } from '../utils.js';
-import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants.js';
 import { lcovResultsToAuditOutputs } from './lcov/lcov-runner.js';
 
-export async function executeRunner(): Promise<void> {
-  const { reports, coverageToolCommand, coverageTypes } =
-    await readJsonFile<FinalCoveragePluginConfig>(PLUGIN_CONFIG_PATH);
+export async function executeRunner({
+  runnerConfigPath,
+  runnerOutputPath,
+}: RunnerFilesPaths): Promise<void> {
+  const { reports, coverageToolCommand, continueOnCommandFail, coverageTypes } =
+    await readJsonFile<FinalCoveragePluginConfig>(runnerConfigPath);
 
   // Run coverage tool if provided
   if (coverageToolCommand != null) {
@@ -26,23 +34,28 @@ export async function executeRunner(): Promise<void> {
       await executeProcess({ command, args });
     } catch (error) {
       if (error instanceof ProcessError) {
-        ui().logger.error(bold('stdout from failed coverage tool process:'));
-        ui().logger.error(error.stdout);
-        ui().logger.error(bold('stderr from failed coverage tool process:'));
-        ui().logger.error(error.stderr);
+        const loggingFn = continueOnCommandFail
+          ? ui().logger.warning.bind(ui().logger)
+          : ui().logger.error.bind(ui().logger);
+        loggingFn(bold('stdout from failed coverage tool process:'));
+        loggingFn(error.stdout);
+        loggingFn(bold('stderr from failed coverage tool process:'));
+        loggingFn(error.stderr);
       }
 
-      throw new Error(
-        'Coverage plugin: Running coverage tool failed. Make sure all your provided tests are passing.',
-      );
+      if (!continueOnCommandFail) {
+        throw new Error(
+          'Coverage plugin: Running coverage tool failed. Make sure all your provided tests are passing.',
+        );
+      }
     }
   }
 
   // Calculate coverage from LCOV results
   const auditOutputs = await lcovResultsToAuditOutputs(reports, coverageTypes);
 
-  await ensureDirectoryExists(path.dirname(RUNNER_OUTPUT_PATH));
-  await writeFile(RUNNER_OUTPUT_PATH, JSON.stringify(auditOutputs));
+  await ensureDirectoryExists(path.dirname(runnerOutputPath));
+  await writeFile(runnerOutputPath, JSON.stringify(auditOutputs));
 }
 
 export async function createRunnerConfig(
@@ -50,15 +63,21 @@ export async function createRunnerConfig(
   config: FinalCoveragePluginConfig,
 ): Promise<RunnerConfig> {
   // Create JSON config for executeRunner
-  await ensureDirectoryExists(path.dirname(PLUGIN_CONFIG_PATH));
-  await writeFile(PLUGIN_CONFIG_PATH, JSON.stringify(config));
+  const { runnerConfigPath, runnerOutputPath } = await createRunnerFiles(
+    'coverage',
+    JSON.stringify(config),
+  );
 
   const threshold = config.perfectScoreThreshold;
 
   return {
     command: 'node',
-    args: [filePathToCliArg(scriptPath)],
-    outputFile: RUNNER_OUTPUT_PATH,
+    args: [
+      filePathToCliArg(scriptPath),
+      ...objectToCliArgs({ runnerConfigPath, runnerOutputPath }),
+    ],
+    configFile: runnerConfigPath,
+    outputFile: runnerOutputPath,
     ...(threshold != null && {
       outputTransform: outputs =>
         applyMaxScoreAboveThreshold(outputs as AuditOutputs, threshold),

@@ -55,6 +55,7 @@ export async function runInMonorepoMode(
   const diffJsonPaths = projectResults
     .map(({ files }) => files.diff?.json)
     .filter((file): file is string => file != null);
+
   if (diffJsonPaths.length > 0) {
     const tmpDiffPath = await runMergeDiffs(
       diffJsonPaths,
@@ -70,12 +71,14 @@ export async function runInMonorepoMode(
       await copyFile(tmpDiffPath, diffPath);
       logger.debug(`Copied ${tmpDiffPath} to ${diffPath}`);
     }
-    const commentId = await commentOnPR(tmpDiffPath, api, logger);
+    const commentId = settings.skipComment
+      ? null
+      : await commentOnPR(tmpDiffPath, api, logger);
     return {
       mode: 'monorepo',
       projects: projectResults,
-      commentId,
       diffPath,
+      ...(commentId != null && { commentId }),
     };
   }
 
@@ -122,7 +125,7 @@ async function runProjectsInBulk(
   const currProjectReports = await Promise.all(
     projects.map(async (project): Promise<ProjectReport> => {
       const ctx = createCommandContext(settings, project);
-      const config = await printPersistConfig(ctx, settings);
+      const config = await printPersistConfig(ctx);
       const reports = persistedFilesFromConfig(config, ctx);
       return { project, reports, config, ctx };
     }),

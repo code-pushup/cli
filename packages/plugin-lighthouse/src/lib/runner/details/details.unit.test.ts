@@ -3,7 +3,6 @@ import type { FormattedIcu } from 'lighthouse';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
 import { describe, expect, it } from 'vitest';
-import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { logUnsupportedDetails, toAuditDetails } from './details.js';
 
@@ -12,9 +11,10 @@ describe('logUnsupportedDetails', () => {
     logUnsupportedDetails([
       { details: { type: 'screenshot' } },
     ] as unknown as Result[]);
-    expect(getLogMessages(ui().logger)).toHaveLength(1);
-    expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ cyan(debug) ] ${yellow('⚠')} Plugin ${bold(
+    expect(ui()).toHaveLoggedTimes(1);
+    expect(ui()).toHaveLogged(
+      'debug',
+      `${yellow('⚠')} Plugin ${bold(
         'lighthouse',
       )} skipped parsing of unsupported audit details: ${bold('screenshot')}`,
     );
@@ -30,9 +30,10 @@ describe('logUnsupportedDetails', () => {
       { details: { type: 'treemap-data' } },
       { details: { type: 'criticalrequestchain' } },
     ] as unknown as Result[]);
-    expect(getLogMessages(ui().logger)).toHaveLength(1);
-    expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ cyan(debug) ] ${yellow('⚠')} Plugin ${bold(
+    expect(ui()).toHaveLoggedTimes(1);
+    expect(ui()).toHaveLogged(
+      'debug',
+      `${yellow('⚠')} Plugin ${bold(
         'lighthouse',
       )} skipped parsing of unsupported audit details: ${bold(
         'filmstrip, screenshot, debugdata',

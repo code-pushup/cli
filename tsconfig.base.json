@@ -28,6 +28,7 @@
       "@code-pushup/js-packages-plugin": [
         "packages/plugin-js-packages/src/index.ts"
       ],
+      "@code-pushup/jsdocs-plugin": ["packages/plugin-jsdocs/src/index.ts"],
       "@code-pushup/lighthouse-plugin": [
         "packages/plugin-lighthouse/src/index.ts"
       ],
@@ -36,6 +37,9 @@
       "@code-pushup/test-nx-utils": ["testing/test-nx-utils/src/index.ts"],
       "@code-pushup/test-setup": ["testing/test-setup/src/index.ts"],
       "@code-pushup/test-utils": ["testing/test-utils/src/index.ts"],
+      "@code-pushup/typescript-plugin": [
+        "packages/plugin-typescript/src/index.ts"
+      ],
       "@code-pushup/utils": ["packages/utils/src/index.ts"]
     }
   },

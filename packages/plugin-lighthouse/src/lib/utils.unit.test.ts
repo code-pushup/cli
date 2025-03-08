@@ -9,9 +9,9 @@ import {
 import {
   AuditsNotImplementedError,
   CategoriesNotImplementedError,
-  filterAuditsAndGroupsByOnlyOptions,
   lighthouseAuditRef,
   lighthouseGroupRef,
+  markSkippedAuditsAndGroups,
   validateAudits,
   validateOnlyCategories,
 } from './utils.js';
@@ -111,7 +111,7 @@ describe('validateOnlyCategories', () => {
   });
 });
 
-describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () => {
+describe('markSkippedAuditsAndGroups to be used in plugin config', () => {
   type PartialGroup = Partial<
     Omit<Group, 'refs'> & { refs: Partial<Group['refs'][number]>[] }
   >;
@@ -149,19 +149,19 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
         refs: [{ slug: 'speed-index' }],
       },
     ] as Group[];
-    const { audits: filteredAudits, groups: filteredGroups } =
-      filterAuditsAndGroupsByOnlyOptions(audits, groups, {});
+    const { audits: markedAudits, groups: markedGroups } =
+      markSkippedAuditsAndGroups(audits, groups, {});
 
-    expect(filteredAudits).toStrictEqual(audits);
-    expect(filteredGroups).toStrictEqual(groups);
+    expect(markedAudits).toStrictEqual(audits);
+    expect(markedGroups).toStrictEqual(groups);
 
-    const pluginConfig = basePluginConfig(filteredAudits, filteredGroups);
+    const pluginConfig = basePluginConfig(markedAudits, markedGroups);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
   });
 
-  it('should filter audits if skipAudits is set', () => {
-    const { audits: filteredAudits, groups: filteredGroups } =
-      filterAuditsAndGroupsByOnlyOptions(
+  it('should mark audits as skipped when skipAudits is set', () => {
+    const { audits: markedAudits, groups: markedGroups } =
+      markSkippedAuditsAndGroups(
         [
           { slug: 'speed-index' },
           { slug: 'first-contentful-paint' },
@@ -175,21 +175,25 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
         { skipAudits: ['speed-index'] },
       );
 
-    expect(filteredAudits).toStrictEqual([{ slug: 'first-contentful-paint' }]);
-    expect(filteredGroups).toStrictEqual([
+    expect(markedAudits).toStrictEqual([
+      { slug: 'speed-index', isSkipped: true },
+      { slug: 'first-contentful-paint', isSkipped: false },
+    ]);
+    expect(markedGroups).toStrictEqual([
       {
         slug: 'performance',
-        refs: [{ slug: 'first-contentful-paint' }],
+        isSkipped: false,
+        refs: [{ slug: 'speed-index' }, { slug: 'first-contentful-paint' }],
       },
     ]);
 
-    const pluginConfig = basePluginConfig(filteredAudits, filteredGroups);
+    const pluginConfig = basePluginConfig(markedAudits, markedGroups);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
   });
 
   it('should throw if skipAudits is set with a missing audit slug', () => {
     expect(() =>
-      filterAuditsAndGroupsByOnlyOptions(
+      markSkippedAuditsAndGroups(
         [
           { slug: 'speed-index' },
           { slug: 'first-contentful-paint' },
@@ -208,9 +212,9 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
     ).toThrow(new AuditsNotImplementedError(['missing-audit']));
   });
 
-  it('should filter audits if onlyAudits is set', () => {
-    const { audits: filteredAudits, groups: filteredGroups } =
-      filterAuditsAndGroupsByOnlyOptions(
+  it('should mark audits as not skipped when onlyAudits is set', () => {
+    const { audits: markedAudits, groups: markedGroups } =
+      markSkippedAuditsAndGroups(
         [
           { slug: 'speed-index' },
           { slug: 'first-contentful-paint' },
@@ -224,20 +228,24 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
         { onlyAudits: ['speed-index'] },
       );
 
-    expect(filteredAudits).toStrictEqual([{ slug: 'speed-index' }]);
-    expect(filteredGroups).toStrictEqual([
+    expect(markedAudits).toStrictEqual([
+      { slug: 'speed-index', isSkipped: false },
+      { slug: 'first-contentful-paint', isSkipped: true },
+    ]);
+    expect(markedGroups).toStrictEqual([
       {
         slug: 'performance',
+        isSkipped: false,
         refs: [{ slug: 'speed-index' }],
       },
     ]);
-    const pluginConfig = basePluginConfig(filteredAudits, filteredGroups);
+    const pluginConfig = basePluginConfig(markedAudits, markedGroups);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
   });
 
   it('should throw if onlyAudits is set with a missing audit slug', () => {
     expect(() =>
-      filterAuditsAndGroupsByOnlyOptions(
+      markSkippedAuditsAndGroups(
         [
           { slug: 'speed-index' },
           { slug: 'first-contentful-paint' },
@@ -253,9 +261,9 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
     ).toThrow(new AuditsNotImplementedError(['missing-audit']));
   });
 
-  it('should filter group if onlyGroups is set', () => {
-    const { audits: filteredAudits, groups: filteredGroups } =
-      filterAuditsAndGroupsByOnlyOptions(
+  it('should mark skipped audits and groups when onlyGroups is set', () => {
+    const { audits: markedAudits, groups: markedGroups } =
+      markSkippedAuditsAndGroups(
         [
           { slug: 'speed-index' },
           { slug: 'first-contentful-paint' },
@@ -274,21 +282,31 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
         { onlyCategories: ['coverage'] },
       );
 
-    expect(filteredAudits).toStrictEqual([{ slug: 'function-coverage' }]);
-    expect(filteredGroups).toStrictEqual([
+    expect(markedAudits).toStrictEqual([
+      { slug: 'speed-index', isSkipped: true },
+      { slug: 'first-contentful-paint', isSkipped: true },
+      { slug: 'function-coverage', isSkipped: false },
+    ]);
+    expect(markedGroups).toStrictEqual([
+      {
+        slug: 'performance',
+        isSkipped: true,
+        refs: [{ slug: 'speed-index' }],
+      },
       {
         slug: 'coverage',
+        isSkipped: false,
         refs: [{ slug: 'function-coverage' }],
       },
     ]);
 
-    const pluginConfig = basePluginConfig(filteredAudits, filteredGroups);
+    const pluginConfig = basePluginConfig(markedAudits, markedGroups);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
   });
 
-  it('should ignore onlyAudits and only filter groups if onlyGroups and onlyAudits is set', () => {
-    const { audits: filteredAudits, groups: filteredGroups } =
-      filterAuditsAndGroupsByOnlyOptions(
+  it('should handle mixed onlyGroups and onlyAudits filters', () => {
+    const { audits: markedAudits, groups: markedGroups } =
+      markSkippedAuditsAndGroups(
         [
           { slug: 'speed-index' },
           { slug: 'first-contentful-paint' },
@@ -310,21 +328,63 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
         },
       );
 
-    expect(filteredAudits).toStrictEqual([{ slug: 'function-coverage' }]);
-    expect(filteredGroups).toStrictEqual([
+    expect(markedAudits).toStrictEqual([
+      { slug: 'speed-index', isSkipped: true },
+      { slug: 'first-contentful-paint', isSkipped: true },
+      { slug: 'function-coverage', isSkipped: true },
+    ]);
+    expect(markedGroups).toStrictEqual([
+      {
+        slug: 'performance',
+        isSkipped: true,
+        refs: [{ slug: 'speed-index' }],
+      },
       {
         slug: 'coverage',
+        isSkipped: true,
         refs: [{ slug: 'function-coverage' }],
       },
     ]);
 
-    const pluginConfig = basePluginConfig(filteredAudits, filteredGroups);
+    const pluginConfig = basePluginConfig(markedAudits, markedGroups);
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+  });
+
+  it('should mark a group as skipped if all of its audits are skipped', () => {
+    const { audits: markedAudits, groups: markedGroups } =
+      markSkippedAuditsAndGroups(
+        [
+          { slug: 'speed-index' },
+          { slug: 'first-contentful-paint' },
+        ] as Audit[],
+        [
+          {
+            slug: 'performance',
+            refs: [{ slug: 'speed-index' }, { slug: 'first-contentful-paint' }],
+          },
+        ] as Group[],
+        { skipAudits: ['speed-index', 'first-contentful-paint'] },
+      );
+
+    expect(markedAudits).toStrictEqual([
+      { slug: 'speed-index', isSkipped: true },
+      { slug: 'first-contentful-paint', isSkipped: true },
+    ]);
+    expect(markedGroups).toStrictEqual([
+      {
+        slug: 'performance',
+        isSkipped: true,
+        refs: [{ slug: 'speed-index' }, { slug: 'first-contentful-paint' }],
+      },
+    ]);
+
+    const pluginConfig = basePluginConfig(markedAudits, markedGroups);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
   });
 
   it('should throw if onlyAudits is set with a audit slug that is not implemented', () => {
     expect(() =>
-      filterAuditsAndGroupsByOnlyOptions(
+      markSkippedAuditsAndGroups(
         [{ slug: 'speed-index' }] as Audit[],
         [
           {
@@ -341,7 +401,7 @@ describe('filterAuditsAndGroupsByOnlyOptions to be used in plugin config', () =>
 
   it('should throw if onlyGroups is set with a group slug that is not implemented', () => {
     expect(() =>
-      filterAuditsAndGroupsByOnlyOptions(
+      markSkippedAuditsAndGroups(
         [{ slug: 'speed-index' }] as Audit[],
         [
           {

@@ -1,7 +1,6 @@
 import { vol } from 'memfs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { parseLcovFiles } from './lcov-runner.js';
 
@@ -90,7 +89,7 @@ end_of_record
   it('should throw for only empty reports', async () => {
     await expect(() =>
       parseLcovFiles([path.join('coverage', 'lcov.info')]),
-    ).rejects.toThrow('All provided results are empty.');
+    ).rejects.toThrow('All provided coverage results are empty.');
   });
 
   it('should warn about an empty lcov file', async () => {
@@ -99,11 +98,12 @@ end_of_record
       path.join('coverage', 'lcov.info'),
     ]);
 
-    expect(getLogMessages(ui().logger)[0]).toContain(
+    expect(ui()).toHaveLogged(
+      'warn',
       `Coverage plugin: Empty lcov report file detected at ${path.join(
         'coverage',
         'lcov.info',
-      )}`,
+      )}.`,
     );
   });
 });

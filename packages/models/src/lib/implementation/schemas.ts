@@ -53,8 +53,21 @@ export const urlSchema = z.string().url();
 /**  Schema for a docsUrl */
 export const docsUrlSchema = urlSchema
   .optional()
-  .or(z.literal(''))
-  .describe('Documentation site'); // allow empty string (no URL validation)
+  .or(z.literal('')) // allow empty string (no URL validation)
+  // eslint-disable-next-line unicorn/prefer-top-level-await, unicorn/catch-error-name
+  .catch(ctx => {
+    // if only URL validation fails, supress error since this metadata is optional anyway
+    if (
+      ctx.error.errors.length === 1 &&
+      ctx.error.errors[0]?.code === 'invalid_string' &&
+      ctx.error.errors[0].validation === 'url'
+    ) {
+      console.warn(`Ignoring invalid docsUrl: ${ctx.input}`);
+      return '';
+    }
+    throw ctx.error;
+  })
+  .describe('Documentation site');
 
 /** Schema for a title of a plugin, category and audit */
 export const titleSchema = z
@@ -69,6 +82,9 @@ export const scoreSchema = z
   .min(0)
   .max(1);
 
+/** Schema for a property indicating whether an entity is filtered out */
+export const isSkippedSchema = z.boolean().optional();
+
 /**
  * Used for categories, plugins and audits
  * @param options
@@ -78,12 +94,14 @@ export function metaSchema(options?: {
   descriptionDescription?: string;
   docsUrlDescription?: string;
   description?: string;
+  isSkippedDescription?: string;
 }) {
   const {
     descriptionDescription,
     titleDescription,
     docsUrlDescription,
     description,
+    isSkippedDescription,
   } = options ?? {};
   return z.object(
     {
@@ -96,6 +114,9 @@ export function metaSchema(options?: {
       docsUrl: docsUrlDescription
         ? docsUrlSchema.describe(docsUrlDescription)
         : docsUrlSchema,
+      isSkipped: isSkippedDescription
+        ? isSkippedSchema.describe(isSkippedDescription)
+        : isSkippedSchema,
     },
     { description },
   );

@@ -1,6 +1,12 @@
+import { expect } from 'vitest';
 import { type CommandContext, createCommandContext } from './context.js';
 
 describe('createCommandContext', () => {
+  const expectedObserver = expect.objectContaining({
+    onStderr: expect.any(Function),
+    onStdout: expect.any(Function),
+  });
+
   it('should pick CLI-related settings in standalone mode', () => {
     expect(
       createCommandContext(
@@ -12,10 +18,12 @@ describe('createCommandContext', () => {
           directory: '/test',
           logger: console,
           monorepo: false,
+          parallel: false,
           nxProjectsFilter: '--with-target={task}',
           projects: null,
           silent: false,
           task: 'code-pushup',
+          skipComment: false,
         },
         null,
       ),
@@ -23,7 +31,7 @@ describe('createCommandContext', () => {
       bin: 'npx --no-install code-pushup',
       directory: '/test',
       config: null,
-      silent: false,
+      observer: expectedObserver,
     });
   });
 
@@ -38,10 +46,12 @@ describe('createCommandContext', () => {
           directory: '/test',
           logger: console,
           monorepo: false,
+          parallel: false,
           nxProjectsFilter: '--with-target={task}',
           projects: null,
           silent: false,
           task: 'code-pushup',
+          skipComment: false,
         },
         {
           name: 'ui',
@@ -53,7 +63,7 @@ describe('createCommandContext', () => {
       bin: 'yarn code-pushup',
       directory: '/test/ui',
       config: null,
-      silent: false,
+      observer: expectedObserver,
     });
   });
 });

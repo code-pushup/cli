@@ -2,6 +2,7 @@ import { mkdir, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
 import { afterAll, beforeAll, beforeEach, describe, expect } from 'vitest';
+import { initGitRepo, teardownTestFolder } from '@code-pushup/test-utils';
 import { toUnixPath } from '../transform.js';
 import {
   getGitRoot,
@@ -16,14 +17,11 @@ describe('git utils in a git repo', () => {
 
   beforeAll(async () => {
     await mkdir(baseDir, { recursive: true });
-    emptyGit = simpleGit(baseDir);
-    await emptyGit.init();
-    await emptyGit.addConfig('user.name', 'John Doe');
-    await emptyGit.addConfig('user.email', 'john.doe@example.com');
+    emptyGit = await initGitRepo(simpleGit, { baseDir, baseBranch: 'master' });
   });
 
   afterAll(async () => {
-    await rm(baseDir, { recursive: true, force: true });
+    await teardownTestFolder(baseDir);
   });
 
   describe('without a branch and commits', () => {

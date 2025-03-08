@@ -9,19 +9,24 @@ import type {
 import { vi } from 'vitest';
 
 export type GitConfig = { name: string; email: string };
-
 export async function initGitRepo(
   simpleGit: SimpleGitFactory,
-  opt: { baseDir: string; config?: GitConfig },
+  opt: {
+    baseDir: string;
+    config?: GitConfig;
+    baseBranch?: string;
+  },
 ): Promise<SimpleGit> {
-  const { baseDir, config } = opt;
+  const { baseDir, config, baseBranch } = opt;
   const { email = 'john.doe@example.com', name = 'John Doe' } = config ?? {};
   await mkdir(baseDir, { recursive: true });
   const git = simpleGit(baseDir);
   await git.init();
   await git.addConfig('user.name', name);
   await git.addConfig('user.email', email);
-  await git.branch(['-M', 'main']);
+  await git.addConfig('commit.gpgSign', 'false');
+  await git.addConfig('tag.gpgSign', 'false');
+  await git.branch(['-M', baseBranch ?? 'main']);
   return git;
 }
 

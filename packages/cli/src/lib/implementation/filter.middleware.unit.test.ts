@@ -1,6 +1,10 @@
 import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
-import { filterMiddleware } from './filter.middleware.js';
+import {
+  filterMiddleware,
+  filterSkippedCategories,
+  filterSkippedInPlugins,
+} from './filter.middleware.js';
 import { OptionValidationError } from './validate-filter-options.utils.js';
 
 vi.mock('@code-pushup/core', async () => {
@@ -34,8 +38,8 @@ describe('filterMiddleware', () => {
       {
         slug: 'c1',
         refs: [
-          { plugin: 'p1', slug: 'a1-p1' },
-          { plugin: 'p2', slug: 'a1-p2' },
+          { type: 'audit', plugin: 'p1', slug: 'a1-p1' },
+          { type: 'audit', plugin: 'p2', slug: 'a1-p2' },
         ],
       },
     ] as CategoryConfig[];
@@ -58,8 +62,8 @@ describe('filterMiddleware', () => {
       {
         slug: 'c1',
         refs: [
-          { plugin: 'p1', slug: 'a1-p1' },
-          { plugin: 'p2', slug: 'a1-p2' },
+          { type: 'audit', plugin: 'p1', slug: 'a1-p1' },
+          { type: 'audit', plugin: 'p2', slug: 'a1-p2' },
         ],
       },
     ] as CategoryConfig[];
@@ -87,155 +91,239 @@ describe('filterMiddleware', () => {
     (option, expected) => {
       const { plugins } = filterMiddleware({
         ...option,
-        plugins: [{ slug: 'p1' }, { slug: 'p2' }] as PluginConfig[],
+        plugins: [
+          {
+            slug: 'p1',
+            groups: [{ slug: 'g1-p1', refs: [{ slug: 'a1-p1', weight: 1 }] }],
+            audits: [{ slug: 'a1-p1' }],
+          },
+          {
+            slug: 'p2',
+            groups: [{ slug: 'g1-p2', refs: [{ slug: 'a1-p2', weight: 1 }] }],
+            audits: [{ slug: 'a1-p2' }],
+          },
+        ] as PluginConfig[],
       });
       expect(plugins).toStrictEqual([expect.objectContaining(expected)]);
     },
   );
 
   it.each([
-    [
-      { onlyPlugins: ['p1'] },
-      [{ slug: 'p1' }],
-      [{ slug: 'c1', refs: [{ plugin: 'p1', slug: 'a1-p1' }] }],
-    ],
-    [
-      { skipPlugins: ['p1'], onlyPlugins: ['p3'] },
-      [{ slug: 'p3' }],
-      [{ slug: 'c2', refs: [{ plugin: 'p3', slug: 'a1-p3' }] }],
-    ],
-    [
-      { skipPlugins: ['p1'] },
-      [{ slug: 'p2' }, { slug: 'p3' }],
-      [
-        { slug: 'c1', refs: [{ plugin: 'p2', slug: 'a1-p2' }] },
-        { slug: 'c2', refs: [{ plugin: 'p3', slug: 'a1-p3' }] },
-      ],
-    ],
+    [{ onlyPlugins: ['p1'] }, ['p1'], ['c1']],
+    [{ skipPlugins: ['p1'], onlyPlugins: ['p3'] }, ['p3'], ['c2']],
+    [{ skipPlugins: ['p1'] }, ['p2', 'p3'], ['c1', 'c2']],
   ])(
     'should filter plugins and categories with plugin filter option %o',
     (option, expectedPlugins, expectedCategories) => {
       const { plugins, categories } = filterMiddleware({
         ...option,
         plugins: [
-          { slug: 'p1' },
-          { slug: 'p2' },
-          { slug: 'p3' },
+          {
+            slug: 'p1',
+            audits: [{ slug: 'a1-p1' }],
+            groups: [{ slug: 'g1-p1', refs: [{ slug: 'a1-p1', weight: 1 }] }],
+          },
+          {
+            slug: 'p2',
+            audits: [{ slug: 'a1-p2' }],
+            groups: [{ slug: 'g1-p2', refs: [{ slug: 'a1-p2', weight: 1 }] }],
+          },
+          {
+            slug: 'p3',
+            audits: [{ slug: 'a1-p3' }],
+            groups: [{ slug: 'g1-p3', refs: [{ slug: 'a1-p3', weight: 1 }] }],
+          },
         ] as PluginConfig[],
         categories: [
           {
             slug: 'c1',
             refs: [
-              { plugin: 'p1', slug: 'a1-p1' },
-              { plugin: 'p2', slug: 'a1-p2' },
+              { type: 'group', plugin: 'p1', slug: 'g1-p1', weight: 1 },
+              { type: 'group', plugin: 'p2', slug: 'g1-p2', weight: 1 },
             ],
           },
-          { slug: 'c2', refs: [{ plugin: 'p3', slug: 'a1-p3' }] },
+          {
+            slug: 'c2',
+            refs: [{ type: 'group', plugin: 'p3', slug: 'g1-p3', weight: 1 }],
+          },
         ] as CategoryConfig[],
       });
-      expect(plugins).toStrictEqual(expectedPlugins);
-      expect(categories).toStrictEqual(expectedCategories);
+      const pluginSlugs = plugins.map(({ slug }) => slug);
+      const categorySlugs = categories.map(({ slug }) => slug);
+
+      expect(pluginSlugs).toStrictEqual(expectedPlugins);
+      expect(categorySlugs).toStrictEqual(expectedCategories);
     },
   );
 
   it.each([
-    [
-      { skipCategories: ['c1'] },
-      [{ slug: 'p3' }],
-      [{ slug: 'c2', refs: [{ plugin: 'p3', slug: 'a1-p3' }] }],
-    ],
-    [
-      { skipCategories: ['c1'], onlyCategories: ['c2'] },
-      [{ slug: 'p3' }],
-      [{ slug: 'c2', refs: [{ plugin: 'p3', slug: 'a1-p3' }] }],
-    ],
-    [
-      { onlyCategories: ['c1'] },
-      [{ slug: 'p1' }, { slug: 'p2' }],
-      [
-        {
-          slug: 'c1',
-          refs: [
-            { plugin: 'p1', slug: 'a1-p1' },
-            { plugin: 'p2', slug: 'a1-p2' },
-          ],
-        },
-      ],
-    ],
+    [{ skipCategories: ['c1'] }, ['p3'], ['c2']],
+    [{ skipCategories: ['c1'], onlyCategories: ['c2'] }, ['p3'], ['c2']],
+    [{ onlyCategories: ['c1'] }, ['p1', 'p2'], ['c1']],
   ])(
     'should filter plugins and categories with category filter option %o',
     (option, expectedPlugins, expectedCategories) => {
       const { plugins, categories } = filterMiddleware({
         ...option,
         plugins: [
-          { slug: 'p1' },
-          { slug: 'p2' },
-          { slug: 'p3' },
+          {
+            slug: 'p1',
+            audits: [{ slug: 'a1-p1' }],
+            groups: [{ slug: 'g1-p1', refs: [{ slug: 'a1-p1', weight: 1 }] }],
+          },
+          {
+            slug: 'p2',
+            audits: [{ slug: 'a1-p2' }],
+            groups: [{ slug: 'g1-p2', refs: [{ slug: 'a1-p2', weight: 1 }] }],
+          },
+          {
+            slug: 'p3',
+            audits: [{ slug: 'a1-p3' }],
+            groups: [{ slug: 'g1-p3', refs: [{ slug: 'a1-p3', weight: 1 }] }],
+          },
         ] as PluginConfig[],
         categories: [
           {
             slug: 'c1',
             refs: [
-              { plugin: 'p1', slug: 'a1-p1' },
-              { plugin: 'p2', slug: 'a1-p2' },
+              { type: 'group', plugin: 'p1', slug: 'g1-p1', weight: 1 },
+              { type: 'group', plugin: 'p2', slug: 'g1-p2', weight: 1 },
             ],
           },
-          { slug: 'c2', refs: [{ plugin: 'p3', slug: 'a1-p3' }] },
+          {
+            slug: 'c2',
+            refs: [{ type: 'group', plugin: 'p3', slug: 'g1-p3', weight: 1 }],
+          },
         ] as CategoryConfig[],
       });
-      expect(plugins).toStrictEqual(expectedPlugins);
-      expect(categories).toStrictEqual(expectedCategories);
+      const pluginSlugs = plugins.map(({ slug }) => slug);
+      const categorySlugs = categories.map(({ slug }) => slug);
+
+      expect(pluginSlugs).toStrictEqual(expectedPlugins);
+      expect(categorySlugs).toStrictEqual(expectedCategories);
     },
   );
 
-  it('should filter plugins and categories with mixed filter options', () => {
-    const { plugins, categories } = filterMiddleware({
-      skipPlugins: ['p1'],
-      onlyCategories: ['c1'],
+  it.each([
+    [
+      { skipPlugins: ['eslint'], onlyCategories: ['performance'] },
+      ['lighthouse'],
+      ['performance'],
+    ],
+    [
+      { skipCategories: ['performance'], onlyPlugins: ['lighthouse'] },
+      ['lighthouse'],
+      ['best-practices'],
+    ],
+  ])(
+    'should filter plugins and categories with mixed filter options: %o',
+    (option, expectedPlugins, expectedCategories) => {
+      const { plugins, categories } = filterMiddleware({
+        ...option,
+        plugins: [
+          {
+            slug: 'lighthouse',
+            audits: [{ slug: 'largest-contentful-paint' }, { slug: 'doctype' }],
+            groups: [
+              {
+                slug: 'performance',
+                refs: [{ slug: 'largest-contentful-paint', weight: 1 }],
+              },
+              {
+                slug: 'best-practices',
+                refs: [{ slug: 'doctype', weight: 1 }],
+              },
+            ],
+          },
+          {
+            slug: 'eslint',
+            audits: [{ slug: 'no-unreachable' }],
+            groups: [
+              {
+                slug: 'problems',
+                refs: [{ slug: 'no-unreachable', weight: 1 }],
+              },
+            ],
+          },
+        ] as PluginConfig[],
+        categories: [
+          {
+            slug: 'performance',
+            refs: [
+              {
+                type: 'group',
+                plugin: 'lighthouse',
+                slug: 'performance',
+                weight: 1,
+              },
+            ],
+          },
+          {
+            slug: 'best-practices',
+            refs: [
+              {
+                type: 'group',
+                plugin: 'lighthouse',
+                slug: 'best-practices',
+                weight: 1,
+              },
+            ],
+          },
+          {
+            slug: 'bug-prevention',
+            refs: [
+              {
+                type: 'group',
+                plugin: 'eslint',
+                slug: 'problems',
+                weight: 1,
+              },
+            ],
+          },
+        ] as CategoryConfig[],
+      });
+      const pluginSlugs = plugins.map(({ slug }) => slug);
+      const categorySlugs = categories?.map(({ slug }) => slug);
+
+      expect(pluginSlugs).toStrictEqual(expectedPlugins);
+      expect(categorySlugs).toStrictEqual(expectedCategories);
+    },
+  );
+
+  it('should trigger verbose logging when skipPlugins or onlyPlugins removes categories', () => {
+    vi.stubEnv('CP_VERBOSE', 'true');
+
+    filterMiddleware({
+      onlyPlugins: ['p1'],
+      skipPlugins: ['p2'],
       plugins: [
-        { slug: 'p1' },
-        { slug: 'p2' },
-        { slug: 'p3' },
+        { slug: 'p1', audits: [{ slug: 'a1-p1' }] },
+        { slug: 'p2', audits: [{ slug: 'a1-p2' }] },
       ] as PluginConfig[],
       categories: [
         {
           slug: 'c1',
           refs: [
-            { plugin: 'p1', slug: 'a1-p1' },
-            { plugin: 'p2', slug: 'a1-p2' },
+            { type: 'audit', plugin: 'p1', slug: 'a1-p1', weight: 1 },
+            { type: 'audit', plugin: 'p2', slug: 'a1-p2', weight: 1 },
           ],
         },
-        { slug: 'c2', refs: [{ plugin: 'p3', slug: 'a1-p3' }] },
-      ] as CategoryConfig[],
-    });
-    expect(plugins).toStrictEqual([{ slug: 'p2' }]);
-    expect(categories).toStrictEqual([
-      { slug: 'c1', refs: [{ plugin: 'p2', slug: 'a1-p2' }] },
-    ]);
-  });
-
-  it('should trigger verbose logging when skipPlugins or onlyPlugins removes categories', () => {
-    const loggerSpy = vi.spyOn(ui().logger, 'info');
-
-    filterMiddleware({
-      onlyPlugins: ['p1'],
-      skipPlugins: ['p2'],
-      plugins: [{ slug: 'p1' }, { slug: 'p2' }] as PluginConfig[],
-      categories: [
         {
-          slug: 'c1',
-          refs: [
-            { plugin: 'p1', slug: 'a1-p1' },
-            { plugin: 'p2', slug: 'a1-p2' },
-          ],
+          slug: 'c2',
+          refs: [{ type: 'audit', plugin: 'p2', slug: 'a1-p2', weight: 1 }],
         },
-        { slug: 'c2', refs: [{ plugin: 'p2', slug: 'a1-p2' }] },
       ] as CategoryConfig[],
-      verbose: true,
     });
 
-    expect(loggerSpy).toHaveBeenCalledWith(
-      expect.stringContaining('removed the following categories'),
+    expect(ui()).toHaveNthLogged(
+      1,
+      'info',
+      'The --skipPlugins argument removed the following categories: c1, c2.',
+    );
+    expect(ui()).toHaveNthLogged(
+      2,
+      'info',
+      'The --onlyPlugins argument removed the following categories: c1, c2.',
     );
   });
 
@@ -251,11 +339,14 @@ describe('filterMiddleware', () => {
           {
             slug: 'c1',
             refs: [
-              { plugin: 'p1', slug: 'a1-p1' },
-              { plugin: 'p2', slug: 'a1-p2' },
+              { type: 'audit', plugin: 'p1', slug: 'a1-p1', weight: 1 },
+              { type: 'audit', plugin: 'p2', slug: 'a1-p2', weight: 1 },
             ],
           },
-          { slug: 'c2', refs: [{ plugin: 'p2', slug: 'a1-p2' }] },
+          {
+            slug: 'c2',
+            refs: [{ type: 'audit', plugin: 'p2', slug: 'a1-p2', weight: 1 }],
+          },
         ] as CategoryConfig[],
       }),
     ).toThrow(
@@ -276,8 +367,8 @@ describe('filterMiddleware', () => {
           {
             slug: 'c1',
             refs: [
-              { plugin: 'p1', slug: 'a1-p1' },
-              { plugin: 'p2', slug: 'a1-p2' },
+              { type: 'audit', plugin: 'p1', slug: 'a1-p1', weight: 1 },
+              { type: 'audit', plugin: 'p2', slug: 'a1-p2', weight: 1 },
             ],
           },
         ] as CategoryConfig[],
@@ -295,18 +386,156 @@ describe('filterMiddleware', () => {
     expect(() => {
       filterMiddleware({
         plugins: [
-          { slug: 'p1', audits: [{ slug: 'a1-p1' }] },
+          {
+            slug: 'p1',
+            audits: [{ slug: 'a1-p1', isSkipped: false }],
+          },
+          {
+            slug: 'p2',
+            groups: [{ slug: 'g1-p2', isSkipped: true }],
+          },
         ] as PluginConfig[],
         categories: [
-          { slug: 'c1', refs: [{ plugin: 'p1', slug: 'a1-p1' }] },
+          {
+            slug: 'c1',
+            refs: [{ type: 'audit', plugin: 'p1', slug: 'a1-p1', weight: 1 }],
+          },
+          {
+            slug: 'c2',
+            refs: [{ type: 'group', plugin: 'p1', slug: 'g1-p2', weight: 1 }],
+          },
         ] as CategoryConfig[],
         skipPlugins: ['p1'],
         onlyCategories: ['c1'],
       });
     }).toThrow(
       new OptionValidationError(
-        `Nothing to report. No plugins or categories are available after filtering. Available plugins: p1. Available categories: c1.`,
+        `Nothing to report. No plugins or categories are available after filtering. Available plugins: p1, p2. Available categories: c1, c2.`,
       ),
     );
+  });
+});
+
+describe('filterSkippedInPlugins', () => {
+  it('should filter out skipped audits and groups', () => {
+    expect(
+      filterSkippedInPlugins([
+        {
+          slug: 'p1',
+          audits: [
+            { slug: 'a1', isSkipped: false },
+            { slug: 'a2', isSkipped: true },
+          ],
+          groups: [
+            {
+              slug: 'g1',
+              refs: [
+                { slug: 'a1', weight: 1 },
+                { slug: 'a2', weight: 1 },
+              ],
+              isSkipped: false,
+            },
+          ],
+        },
+      ] as PluginConfig[]),
+    ).toEqual([
+      {
+        slug: 'p1',
+        audits: [{ slug: 'a1' }],
+        groups: [
+          {
+            slug: 'g1',
+            refs: [{ slug: 'a1', weight: 1 }],
+          },
+        ],
+      },
+    ]);
+  });
+
+  it('should filter out entire groups when marked as skipped', () => {
+    expect(
+      filterSkippedInPlugins([
+        {
+          slug: 'p1',
+          audits: [{ slug: 'a1', isSkipped: false }],
+          groups: [
+            {
+              slug: 'g1',
+              refs: [{ slug: 'a1', weight: 1 }],
+              isSkipped: true,
+            },
+          ],
+        },
+      ] as PluginConfig[]),
+    ).toEqual([
+      {
+        slug: 'p1',
+        audits: [{ slug: 'a1' }],
+        groups: [],
+      },
+    ]);
+  });
+});
+
+describe('filterSkippedCategories', () => {
+  it('should filter out categories with all skipped refs', () => {
+    expect(
+      filterSkippedCategories(
+        [
+          {
+            slug: 'c1',
+            refs: [{ type: 'group', plugin: 'p1', slug: 'g1', weight: 1 }],
+          },
+        ] as CategoryConfig[],
+        [
+          {
+            slug: 'p1',
+            audits: [{ slug: 'a1' }, { slug: 'a2' }],
+          },
+        ] as PluginConfig[],
+      ),
+    ).toStrictEqual([]);
+  });
+
+  it('should retain categories with valid refs', () => {
+    expect(
+      filterSkippedCategories(
+        [
+          {
+            slug: 'c1',
+            refs: [{ type: 'group', plugin: 'p1', slug: 'g1-p1', weight: 1 }],
+          },
+          {
+            slug: 'c2',
+            refs: [{ type: 'group', plugin: 'p2', slug: 'g1-p2', weight: 1 }],
+          },
+        ] as CategoryConfig[],
+        [
+          {
+            slug: 'p1',
+            audits: [{ slug: 'a1-p1' }, { slug: 'a2-p1' }],
+            groups: [],
+          },
+          {
+            slug: 'p2',
+            audits: [{ slug: 'a1-p2' }, { slug: 'a2-p2' }],
+            groups: [
+              {
+                slug: 'g1-p2',
+                refs: [
+                  { slug: 'a1-p2', weight: 1 },
+                  { slug: 'a2-p2', weight: 1 },
+                ],
+              },
+            ],
+          },
+        ] as PluginConfig[],
+      ),
+    ).toEqual([
+      {
+        slug: 'c2',
+        refs: [{ type: 'group', plugin: 'p2', slug: 'g1-p2', weight: 1 }],
+      },
+    ]);
   });
 });

@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  capitalize,
   countOccurrences,
   deepClone,
   distinct,
@@ -10,6 +9,7 @@ import {
   objectToCliArgs,
   objectToEntries,
   objectToKeys,
+  removeUndefinedAndEmptyProps,
   toArray,
   toJsonLines,
   toNumberPrecision,
@@ -273,20 +273,6 @@ describe('JSON lines format', () => {
   });
 });
 
-describe('capitalize', () => {
-  it('should transform the first string letter to upper case', () => {
-    expect(capitalize('code PushUp')).toBe('Code PushUp');
-  });
-
-  it('should leave the first string letter in upper case', () => {
-    expect(capitalize('Code PushUp')).toBe('Code PushUp');
-  });
-
-  it('should accept empty string', () => {
-    expect(capitalize('')).toBe('');
-  });
-});
-
 describe('toNumberPrecision', () => {
   it.each([
     [12.1, 0, 12],
@@ -316,5 +302,18 @@ describe('toOrdinal', () => {
     [173, '173rd'],
   ])('should covert %d to ordinal as %s', (value, ordinalValue) => {
     expect(toOrdinal(value)).toBe(ordinalValue);
+  });
+});
+
+describe('removeUndefinedAndEmptyProps', () => {
+  it('should omit empty strings and undefined', () => {
+    expect(
+      removeUndefinedAndEmptyProps({ foo: '', bar: undefined }),
+    ).toStrictEqual({});
+  });
+
+  it('should preserve other values', () => {
+    const obj = { a: 'hello', b: 42, c: [], d: {}, e: null };
+    expect(removeUndefinedAndEmptyProps(obj)).toStrictEqual(obj);
   });
 });

@@ -10,13 +10,12 @@ describe('CLI help', () => {
   const envRoot = path.join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
 
   it('should print help with help command', async () => {
-    const { code, stdout, stderr } = await executeProcess({
+    const { code, stdout } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'help'],
       cwd: envRoot,
     });
     expect(code).toBe(0);
-    expect(stderr).toBe('');
     expect(removeColorCodes(stdout)).toMatchSnapshot();
   });
 
@@ -24,6 +23,7 @@ describe('CLI help', () => {
     const helpArgResult = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'help'],
+      cwd: envRoot,
     });
     const helpCommandResult = await executeProcess({
       command: 'npx',

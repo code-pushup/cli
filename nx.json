@@ -58,7 +58,7 @@
   },
   "generators": {},
   "release": {
-    "projects": ["packages/*"],
+    "projects": ["packages/*", "!plugin-typescript"],
     "projectsRelationship": "fixed",
     "changelog": {
       "automaticFromRef": true,

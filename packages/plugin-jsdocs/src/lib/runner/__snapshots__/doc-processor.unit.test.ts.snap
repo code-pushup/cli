@@ -1,0 +1,92 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`getDocumentationReport > should produce a full report 1`] = `
+{
+  "classes": {
+    "coverage": 33.33,
+    "issues": [
+      {
+        "file": "test.ts",
+        "line": 4,
+        "name": "test",
+        "type": "classes",
+      },
+      {
+        "file": "test.ts",
+        "line": 5,
+        "name": "test",
+        "type": "classes",
+      },
+    ],
+    "nodesCount": 3,
+  },
+  "enums": {
+    "coverage": 33.33,
+    "issues": [
+      {
+        "file": "test.ts",
+        "line": 8,
+        "name": "test",
+        "type": "enums",
+      },
+      {
+        "file": "test.ts",
+        "line": 9,
+        "name": "test",
+        "type": "enums",
+      },
+    ],
+    "nodesCount": 3,
+  },
+  "functions": {
+    "coverage": 100,
+    "issues": [],
+    "nodesCount": 3,
+  },
+  "interfaces": {
+    "coverage": 66.67,
+    "issues": [
+      {
+        "file": "test.ts",
+        "line": 15,
+        "name": "test",
+        "type": "interfaces",
+      },
+    ],
+    "nodesCount": 3,
+  },
+  "methods": {
+    "coverage": 100,
+    "issues": [],
+    "nodesCount": 0,
+  },
+  "properties": {
+    "coverage": 100,
+    "issues": [],
+    "nodesCount": 0,
+  },
+  "types": {
+    "coverage": 50,
+    "issues": [
+      {
+        "file": "test.ts",
+        "line": 10,
+        "name": "test",
+        "type": "types",
+      },
+      {
+        "file": "test.ts",
+        "line": 11,
+        "name": "test",
+        "type": "types",
+      },
+    ],
+    "nodesCount": 4,
+  },
+  "variables": {
+    "coverage": 100,
+    "issues": [],
+    "nodesCount": 0,
+  },
+}
+`;

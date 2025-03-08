@@ -12,6 +12,7 @@ export const auditSchema = z
       descriptionDescription: 'Description (markdown)',
       docsUrlDescription: 'Link to documentation (rationale)',
       description: 'List of scorable metrics for the given plugin',
+      isSkippedDescription: 'Indicates whether the audit is skipped',
     }),
   );
 

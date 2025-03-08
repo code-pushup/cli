@@ -3,7 +3,13 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "declaration": true,
-    "types": ["node"]
+    "types": ["node"],
+    "plugins": [
+      {
+        "transform": "./dist/packages/models-transformers",
+        "afterDeclarations": true
+      }
+    ]
   },
   "include": ["src/**/*.ts"],
   "exclude": [

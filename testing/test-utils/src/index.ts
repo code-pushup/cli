@@ -1,7 +1,6 @@
 export * from './lib/constants.js';
 export * from './lib/utils/execute-process-helper.mock.js';
 export * from './lib/utils/os-agnostic-paths.js';
-export * from './lib/utils/logging.js';
 export * from './lib/utils/env.js';
 export * from './lib/utils/git.js';
 export * from './lib/utils/string.js';
@@ -9,6 +8,7 @@ export * from './lib/utils/file-system.js';
 export * from './lib/utils/create-npm-workshpace.js';
 export * from './lib/utils/omit-report-data.js';
 export * from './lib/utils/project-graph.js';
+export * from './lib/utils/test-folder-setup.js';
 
 // static mocks
 export * from './lib/utils/commit.mock.js';

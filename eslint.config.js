@@ -87,7 +87,9 @@ export default tseslint.config(
     rules: {
       'vitest/consistent-test-filename': [
         'warn',
-        { pattern: String.raw`.*\.(unit|integration|e2e)\.test\.[tj]sx?$` },
+        {
+          pattern: String.raw`.*\.(bench|type|unit|integration|e2e)\.test\.[tj]sx?$`,
+        },
       ],
     },
   },

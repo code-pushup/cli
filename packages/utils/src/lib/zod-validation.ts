@@ -1,5 +1,33 @@
 import { bold, red } from 'ansis';
-import type { MessageBuilder } from 'zod-validation-error';
+import path from 'node:path';
+import type { z } from 'zod';
+import {
+  type MessageBuilder,
+  fromError,
+  isZodErrorLike,
+} from 'zod-validation-error';
+
+type SchemaValidationContext = {
+  schemaType: string;
+  sourcePath?: string;
+};
+
+export class SchemaValidationError extends Error {
+  constructor(
+    { schemaType, sourcePath }: SchemaValidationContext,
+    error: Error,
+  ) {
+    const validationError = fromError(error, {
+      messageBuilder: zodErrorMessageBuilder,
+    });
+    const pathDetails = sourcePath
+      ? ` in ${bold(path.relative(process.cwd(), sourcePath))}`
+      : '';
+    super(
+      `Failed parsing ${schemaType}${pathDetails}.\n\n${validationError.message}`,
+    );
+  }
+}
 
 export function formatErrorPath(errorPath: (string | number)[]): string {
   return errorPath
@@ -12,7 +40,7 @@ export function formatErrorPath(errorPath: (string | number)[]): string {
     .join('');
 }
 
-export const zodErrorMessageBuilder: MessageBuilder = issues =>
+const zodErrorMessageBuilder: MessageBuilder = issues =>
   issues
     .map(issue => {
       const formattedMessage = red(`${bold(issue.code)}: ${issue.message}`);
@@ -23,3 +51,18 @@ export const zodErrorMessageBuilder: MessageBuilder = issues =>
       return `${formattedMessage}\n`;
     })
     .join('\n');
+
+export function parseSchema<T extends z.ZodTypeAny>(
+  schema: T,
+  data: z.input<T>,
+  { schemaType, sourcePath }: SchemaValidationContext,
+): z.output<T> {
+  try {
+    return schema.parse(data);
+  } catch (error) {
+    if (isZodErrorLike(error)) {
+      throw new SchemaValidationError({ schemaType, sourcePath }, error);
+    }
+    throw error;
+  }
+}

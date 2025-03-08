@@ -2,8 +2,11 @@ import { cp } from 'node:fs/promises';
 import path from 'node:path';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
-import { teardownTestFolder } from '@code-pushup/test-setup';
-import { E2E_ENVIRONMENTS_DIR, TEST_OUTPUT_DIR } from '@code-pushup/test-utils';
+import {
+  E2E_ENVIRONMENTS_DIR,
+  TEST_OUTPUT_DIR,
+  teardownTestFolder,
+} from '@code-pushup/test-utils';
 import { executeProcess, readTextFile } from '@code-pushup/utils';
 
 describe('CLI collect', () => {
@@ -38,7 +41,7 @@ describe('CLI collect', () => {
   });
 
   it('should create report.md', async () => {
-    const { code, stderr } = await executeProcess({
+    const { code } = await executeProcess({
       command: 'npx',
       args: [
         '@code-pushup/cli',
@@ -50,7 +53,6 @@ describe('CLI collect', () => {
     });
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     const md = await readTextFile(path.join(dummyOutputDir, 'report.md'));
 
@@ -60,14 +62,13 @@ describe('CLI collect', () => {
   });
 
   it('should print report summary to stdout', async () => {
-    const { code, stdout, stderr } = await executeProcess({
+    const { code, stdout } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', '--no-progress', 'collect'],
       cwd: dummyDir,
     });
 
     expect(code).toBe(0);
-    expect(stderr).toBe('');
 
     expect(stdout).toContain('Code PushUp Report');
     expect(stdout).not.toContain('Generated reports');

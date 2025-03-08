@@ -38,6 +38,12 @@ export const coveragePluginConfigSchema = z.object({
         .optional(),
     })
     .optional(),
+  continueOnCommandFail: z
+    .boolean({
+      description:
+        'Continue on coverage tool command failure or error. Defaults to true.',
+    })
+    .default(true),
   coverageTypes: z
     .array(coverageTypeSchema, {
       description: 'Coverage types measured. Defaults to all available types.',

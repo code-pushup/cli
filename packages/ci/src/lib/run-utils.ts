@@ -1,8 +1,12 @@
+/* eslint-disable max-lines */
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { SimpleGit } from 'simple-git';
 import type { CoreConfig, Report, ReportsDiff } from '@code-pushup/models';
-import { stringifyError } from '@code-pushup/utils';
+import {
+  removeUndefinedAndEmptyProps,
+  stringifyError,
+} from '@code-pushup/utils';
 import {
   type CommandContext,
   createCommandContext,
@@ -12,12 +16,14 @@ import {
   runPrintConfig,
 } from './cli/index.js';
 import { parsePersistConfig } from './cli/persist.js';
-import { listChangedFiles } from './git.js';
+import { DEFAULT_SETTINGS } from './constants.js';
+import { listChangedFiles, normalizeGitRef } from './git.js';
 import { type SourceFileIssue, filterRelevantIssues } from './issues.js';
 import type {
   GitBranch,
   GitRefs,
   Logger,
+  Options,
   OutputFiles,
   ProjectRunResult,
   ProviderAPIClient,
@@ -26,10 +32,15 @@ import type {
 import type { ProjectConfig } from './monorepo/index.js';
 
 export type RunEnv = {
-  refs: GitRefs;
+  refs: NormalizedGitRefs;
   api: ProviderAPIClient;
   settings: Settings;
   git: SimpleGit;
+};
+
+type NormalizedGitRefs = {
+  head: GitBranch;
+  base?: GitBranch;
 };
 
 export type CompareReportsArgs = {
@@ -53,6 +64,31 @@ export type BaseReportArgs = {
   ctx: CommandContext;
 };
 
+export async function createRunEnv(
+  refs: GitRefs,
+  api: ProviderAPIClient,
+  options: Options | undefined,
+  git: SimpleGit,
+): Promise<RunEnv> {
+  // eslint-disable-next-line functional/immutable-data
+  process.env['CP_VERBOSE'] = options?.silent ? 'false' : 'true';
+
+  const [head, base] = await Promise.all([
+    normalizeGitRef(refs.head, git),
+    refs.base && normalizeGitRef(refs.base, git),
+  ]);
+
+  return {
+    refs: { head, ...(base && { base }) },
+    api,
+    settings: {
+      ...DEFAULT_SETTINGS,
+      ...(options && removeUndefinedAndEmptyProps(options)),
+    },
+    git,
+  };
+}
+
 export async function runOnProject(
   project: ProjectConfig | null,
   env: RunEnv,
@@ -69,7 +105,7 @@ export async function runOnProject(
     logger.info(`Running Code PushUp on monorepo project ${project.name}`);
   }
 
-  const config = await printPersistConfig(ctx, settings);
+  const config = await printPersistConfig(ctx);
   logger.debug(
     `Loaded persist config from print-config command - ${JSON.stringify(config.persist)}`,
   );
@@ -81,9 +117,7 @@ export async function runOnProject(
 
   const noDiffOutput = {
     name: project?.name ?? '-',
-    files: {
-      report: reportFiles,
-    },
+    files: { report: reportFiles },
   } satisfies ProjectRunResult;
 
   if (base == null) {
@@ -234,7 +268,7 @@ export async function runInBaseBranch<T>(
   } = env;
 
   await git.fetch('origin', base.ref, ['--depth=1']);
-  await git.checkout(['-f', base.ref]);
+  await git.checkout(['-f', base.sha]);
   logger.info(`Switched to base branch ${base.ref}`);
 
   const result = await fn();
@@ -260,7 +294,7 @@ export async function checkPrintConfig(
     ? `Executing print-config for project ${project.name}`
     : 'Executing print-config';
   try {
-    const config = await printPersistConfig(ctx, settings);
+    const config = await printPersistConfig(ctx);
     logger.debug(
       `${operation} verified code-pushup installed in base branch ${base.ref}`,
     );
@@ -276,9 +310,8 @@ export async function checkPrintConfig(
 
 export async function printPersistConfig(
   ctx: CommandContext,
-  settings: Settings,
 ): Promise<Pick<CoreConfig, 'persist'>> {
-  const json = await runPrintConfig({ ...ctx, silent: !settings.debug });
+  const json = await runPrintConfig(ctx);
   return parsePersistConfig(json);
 }
 

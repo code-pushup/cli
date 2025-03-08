@@ -5,7 +5,6 @@ import {
   DEFAULT_PERSIST_FORMAT,
   DEFAULT_PERSIST_OUTPUT_DIR,
 } from '@code-pushup/models';
-import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants.js';
 import { yargsCli } from '../yargs-cli.js';
@@ -65,7 +64,8 @@ describe('merge-diffs-command', () => {
       },
     ).parseAsync();
 
-    expect(getLogMessages(ui().logger).at(-1)).toContain(
+    expect(ui()).toHaveLogged(
+      'info',
       `Reports diff written to ${bold('.code-pushup/report-diff.md')}`,
     );
   });

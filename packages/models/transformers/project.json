@@ -1,0 +1,24 @@
+{
+  "name": "models-transformers",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/models/transformers/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": [{ "target": "pre-build" }],
+      "options": {
+        "outputPath": "dist/packages/models-transformers",
+        "main": "packages/models/transformers/src/index.ts",
+        "tsConfig": "packages/models/transformers/tsconfig.lib.json"
+      }
+    },
+    "pre-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ts-patch install"
+      }
+    }
+  }
+}

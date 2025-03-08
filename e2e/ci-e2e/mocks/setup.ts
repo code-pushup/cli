@@ -3,12 +3,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { simpleGit } from 'simple-git';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
-import { teardownTestFolder } from '@code-pushup/test-setup';
 import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
   initGitRepo,
   simulateGitFetch,
+  teardownTestFolder,
 } from '@code-pushup/test-utils';
 
 export type TestRepo = Awaited<ReturnType<typeof setupTestRepo>>;

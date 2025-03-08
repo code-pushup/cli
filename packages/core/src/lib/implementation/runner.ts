@@ -1,10 +1,13 @@
 import path from 'node:path';
-import type {
-  OnProgress,
-  RunnerConfig,
-  RunnerFunction,
-} from '@code-pushup/models';
-import { calcDuration, executeProcess, readJsonFile } from '@code-pushup/utils';
+import type { RunnerConfig, RunnerFunction } from '@code-pushup/models';
+import {
+  calcDuration,
+  executeProcess,
+  isVerbose,
+  readJsonFile,
+  removeDirectoryIfExists,
+  ui,
+} from '@code-pushup/utils';
 
 export type RunnerResult = {
   date: string;
@@ -14,7 +17,6 @@ export type RunnerResult = {
 
 export async function executeRunnerConfig(
   cfg: RunnerConfig,
-  onProgress?: OnProgress,
 ): Promise<RunnerResult> {
   const { args, command, outputFile, outputTransform } = cfg;
 
@@ -22,11 +24,20 @@ export async function executeRunnerConfig(
   const { duration, date } = await executeProcess({
     command,
     args,
-    observer: { onStdout: onProgress },
+    observer: {
+      onStdout: stdout => {
+        if (isVerbose()) {
+          ui().logger.log(stdout);
+        }
+      },
+      onStderr: stderr => ui().logger.error(stderr),
+    },
   });
 
   // read process output from file system and parse it
-  const outputs = await readJsonFile(path.join(process.cwd(), outputFile));
+  const outputs = await readJsonFile(outputFile);
+  // clean up plugin individual runner output directory
+  await removeDirectoryIfExists(path.dirname(outputFile));
 
   // transform unknownAuditOutputs to auditOutputs
   const audits = outputTransform ? await outputTransform(outputs) : outputs;
@@ -41,13 +52,12 @@ export async function executeRunnerConfig(
 
 export async function executeRunnerFunction(
   runner: RunnerFunction,
-  onProgress?: OnProgress,
 ): Promise<RunnerResult> {
   const date = new Date().toISOString();
   const start = performance.now();
 
   // execute plugin runner
-  const audits = await runner(onProgress);
+  const audits = await runner();
 
   // create runner result
   return {

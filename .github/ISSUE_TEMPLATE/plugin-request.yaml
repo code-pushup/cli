@@ -1,0 +1,49 @@
+name: Plugin request
+description: Add a request for a new plugin
+title: 'Plugin request'
+body:
+  - type: textarea
+    id: metric
+    attributes:
+      label: Metric
+      description: Elaborate on the specific metric the plugin will measure.
+      placeholder: e.g. Code coverage of functions, branches and lines.
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: Please provide a concise set of requirements, so that we can process your request as soon as possible.
+  - type: textarea
+    id: user-story
+    attributes:
+      label: User story
+      description: Here you can phrase your request in a user story format which highlights the added value of the requested plugin.
+      placeholder: e.g. As a Code PushUp user, I want to <request>, so that <added value>.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: List all added dependencies needed for the plugin (dev-dependencies excluded)
+      placeholder: e.g. - [ts-morph npm package](https://www.npmjs.com/package/ts-morph)
+    validations:
+      required: false
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      description: Please list a set of criteria to help us determine whether the scope of the plugin was fully addressed.
+      placeholder: |
+        For example:
+        - [ ] All packages have a comprehensive documentation in place.
+        - [ ] All unit, integration and e2e tests for the plugin.
+        - [ ] Cross references to relevant models or files are added as links.
+    validations:
+      required: true
+  - type: textarea
+    id: implementation-details
+    attributes:
+      label: Implementation details
+      description: If there are any implementation details you would want to point out, feel free to do so here.
+      placeholder: e.g. A link to a 3rd-party library, relevant article, expected flow details, wireframes highlighting the change or other.

@@ -1,7 +1,8 @@
 import { logger } from '@nx/devkit';
 import { execSync } from 'node:child_process';
-import { afterEach, beforeEach, expect, vi } from 'vitest';
+import { afterEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import runAutorunExecutor from './executor.js';
 
 vi.mock('node:child_process', async () => {
@@ -18,18 +19,12 @@ vi.mock('node:child_process', async () => {
 });
 
 describe('runAutorunExecutor', () => {
-  const envSpy = vi.spyOn(process, 'env', 'get');
   const loggerInfoSpy = vi.spyOn(logger, 'info');
   const loggerWarnSpy = vi.spyOn(logger, 'warn');
-
-  beforeEach(() => {
-    envSpy.mockReturnValue({});
-  });
 
   afterEach(() => {
     loggerWarnSpy.mockReset();
     loggerInfoSpy.mockReset();
-    envSpy.mockReset().mockReturnValue({});
   });
 
   it('should call execSync with return result', async () => {
@@ -39,7 +34,7 @@ describe('runAutorunExecutor', () => {
     // eslint-disable-next-line n/no-sync
     expect(execSync).toHaveBeenCalledWith(
       expect.stringContaining('npx @code-pushup/cli'),
-      { cwd: '/test' },
+      { cwd: MEMFS_VOLUME },
     );
   });
 
@@ -69,7 +64,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should create command from context, options and arguments', async () => {
-    envSpy.mockReturnValue({ CP_PROJECT: 'CLI' });
+    vi.stubEnv('CP_PROJECT', 'CLI');
     const output = await runAutorunExecutor(
       { persist: { filename: 'REPORT', format: ['md', 'json'] } },
       executorContext('core'),

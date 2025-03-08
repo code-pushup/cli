@@ -9,10 +9,14 @@ import {
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { type SimpleGit, simpleGit } from 'simple-git';
-import type { MockInstance } from 'vitest';
+import { type MockInstance, expect } from 'vitest';
 import type { CoreConfig } from '@code-pushup/models';
-import { cleanTestFolder, teardownTestFolder } from '@code-pushup/test-setup';
-import { initGitRepo, simulateGitFetch } from '@code-pushup/test-utils';
+import {
+  cleanTestFolder,
+  initGitRepo,
+  simulateGitFetch,
+  teardownTestFolder,
+} from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
 import type {
   Comment,
@@ -78,6 +82,11 @@ describe('runInCI', () => {
     url: 'https://fake.hosted.git/comments/42',
   };
 
+  const expectedObserver = expect.objectContaining({
+    onStderr: expect.any(Function),
+    onStdout: expect.any(Function),
+  });
+
   let git: SimpleGit;
 
   let cwdSpy: MockInstance<
@@ -111,13 +120,21 @@ describe('runInCI', () => {
         break;
 
       case 'print-config':
-        stdout = await readFile(fixturePaths.config, 'utf8');
+        let content = await readFile(fixturePaths.config, 'utf8');
         if (nxMatch) {
           // simulate effect of custom persist.outputDir per Nx project
-          const config = JSON.parse(stdout) as CoreConfig;
+          const config = JSON.parse(content) as CoreConfig;
           // eslint-disable-next-line functional/immutable-data
           config.persist!.outputDir = outputDir;
-          stdout = JSON.stringify(config, null, 2);
+          content = JSON.stringify(config, null, 2);
+        }
+        const outputFile = args
+          ?.find(arg => arg.startsWith('--output='))
+          ?.split('=')[1];
+        if (outputFile) {
+          await writeFile(path.join(cwd as string, outputFile), content);
+        } else {
+          stdout = content;
         }
         break;
 
@@ -231,13 +248,24 @@ describe('runInCI', () => {
         expect(utils.executeProcess).toHaveBeenCalledTimes(2);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {
           command: options.bin,
-          args: ['print-config'],
+          args: [
+            'print-config',
+            '--verbose',
+            expect.stringMatching(/^--output=.*\.json$/),
+          ],
           cwd: workDir,
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
-          args: ['--persist.format=json', '--persist.format=md'],
+          args: [
+            '--verbose',
+            '--no-progress',
+            '--persist.format=json',
+            '--persist.format=md',
+          ],
           cwd: workDir,
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
 
         expect(logger.error).not.toHaveBeenCalled();
@@ -303,34 +331,58 @@ describe('runInCI', () => {
         expect(utils.executeProcess).toHaveBeenCalledTimes(5);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {
           command: options.bin,
-          args: ['print-config'],
+          args: [
+            'print-config',
+            '--verbose',
+            expect.stringMatching(/^--output=.*\.json$/),
+          ],
           cwd: workDir,
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
-          args: ['--persist.format=json', '--persist.format=md'],
+          args: [
+            '--verbose',
+            '--no-progress',
+            '--persist.format=json',
+            '--persist.format=md',
+          ],
           cwd: workDir,
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(3, {
           command: options.bin,
-          args: ['print-config'],
+          args: [
+            'print-config',
+            '--verbose',
+            expect.stringMatching(/^--output=.*\.json$/),
+          ],
           cwd: workDir,
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(4, {
           command: options.bin,
-          args: ['--persist.format=json', '--persist.format=md'],
+          args: [
+            '--verbose',
+            '--no-progress',
+            '--persist.format=json',
+            '--persist.format=md',
+          ],
           cwd: workDir,
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(5, {
           command: options.bin,
           args: [
             'compare',
+            '--verbose',
             `--before=${path.join(outputDir, 'prev-report.json')}`,
             `--after=${path.join(outputDir, 'curr-report.json')}`,
             '--persist.format=json',
             '--persist.format=md',
           ],
           cwd: workDir,
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
 
         expect(logger.error).not.toHaveBeenCalled();
@@ -379,30 +431,81 @@ describe('runInCI', () => {
         expect(utils.executeProcess).toHaveBeenCalledTimes(3);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {
           command: options.bin,
-          args: ['print-config'],
+          args: [
+            'print-config',
+            '--verbose',
+            expect.stringMatching(/^--output=.*\.json$/),
+          ],
           cwd: workDir,
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
-          args: ['--persist.format=json', '--persist.format=md'],
+          args: [
+            '--verbose',
+            '--no-progress',
+            '--persist.format=json',
+            '--persist.format=md',
+          ],
           cwd: workDir,
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(3, {
           command: options.bin,
           args: [
             'compare',
+            '--verbose',
             `--before=${path.join(outputDir, 'prev-report.json')}`,
             `--after=${path.join(outputDir, 'curr-report.json')}`,
             '--persist.format=json',
             '--persist.format=md',
           ],
           cwd: workDir,
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
 
         expect(logger.error).not.toHaveBeenCalled();
         expect(logger.warn).not.toHaveBeenCalled();
         expect(logger.info).toHaveBeenCalled();
         expect(logger.debug).toHaveBeenCalled();
+      });
+
+      it('should skip comment if disabled', async () => {
+        const api: ProviderAPIClient = {
+          maxCommentChars: 1_000_000,
+          createComment: vi.fn(),
+          updateComment: vi.fn(),
+          listComments: vi.fn().mockResolvedValue([]),
+        };
+
+        await expect(
+          runInCI(refs, api, { ...options, skipComment: true }, git),
+        ).resolves.toEqual({
+          mode: 'standalone',
+          commentId: undefined,
+          newIssues: [],
+          files: {
+            report: {
+              json: path.join(outputDir, 'report.json'),
+              md: path.join(outputDir, 'report.md'),
+            },
+            diff: {
+              json: path.join(outputDir, 'report-diff.json'),
+              md: path.join(outputDir, 'report-diff.md'),
+            },
+          },
+        } satisfies RunResult);
+
+        expect(api.listComments).not.toHaveBeenCalled();
+        expect(api.createComment).not.toHaveBeenCalled();
+        expect(api.updateComment).not.toHaveBeenCalled();
+
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: options.bin,
+          args: expect.arrayContaining(['compare']),
+          cwd: workDir,
+          observer: expectedObserver,
+        } satisfies utils.ProcessConfig);
       });
     });
   });
@@ -418,7 +521,7 @@ describe('runInCI', () => {
       name: 'Nx',
       tool: 'nx',
       run: expect.stringMatching(
-        /^npx nx run (cli|core|utils):code-pushup --$/,
+        /^npx nx run (cli|core|utils):code-pushup --skip-nx-cache --$/,
       ),
       runMany:
         'npx nx run-many --targets=code-pushup --parallel=false --projects=cli,core,utils --',
@@ -426,7 +529,7 @@ describe('runInCI', () => {
     {
       name: 'Turborepo',
       tool: 'turbo',
-      run: 'npx turbo run code-pushup --',
+      run: 'npx turbo run code-pushup --no-cache --force --',
       runMany: 'npx turbo run code-pushup --concurrency=1 --',
     },
     {
@@ -536,13 +639,24 @@ describe('runInCI', () => {
         ).toHaveLength(4); // 1 autorun for all projects, 3 print-configs for each project
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: run,
-          args: ['print-config'],
+          args: [
+            'print-config',
+            '--verbose',
+            expect.stringMatching(/^--output=.*\.json$/),
+          ],
           cwd: expect.stringContaining(workDir),
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: runMany,
-          args: ['--persist.format=json', '--persist.format=md'],
+          args: [
+            '--verbose',
+            '--no-progress',
+            '--persist.format=json',
+            '--persist.format=md',
+          ],
           cwd: expect.stringContaining(workDir),
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
 
         expect(logger.error).not.toHaveBeenCalled();
@@ -705,18 +819,30 @@ describe('runInCI', () => {
         ).toHaveLength(10);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: run,
-          args: ['print-config'],
+          args: [
+            'print-config',
+            '--verbose',
+            expect.stringMatching(/^--output=.*\.json$/),
+          ],
           cwd: expect.stringContaining(workDir),
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: runMany,
-          args: ['--persist.format=json', '--persist.format=md'],
+          args: [
+            '--verbose',
+            '--no-progress',
+            '--persist.format=json',
+            '--persist.format=md',
+          ],
           cwd: expect.stringContaining(workDir),
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: run,
           args: [
             'compare',
+            '--verbose',
             expect.stringMatching(/^--before=.*prev-report.json$/),
             expect.stringMatching(/^--after=.*curr-report.json$/),
             expect.stringMatching(/^--label=\w+$/),
@@ -724,11 +850,13 @@ describe('runInCI', () => {
             '--persist.format=md',
           ],
           cwd: expect.stringContaining(workDir),
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: run,
           args: [
             'merge-diffs',
+            '--verbose',
             `--files=${path.join(workDir, 'packages/cli/.code-pushup/report-diff.json')}`,
             `--files=${path.join(workDir, 'packages/core/.code-pushup/report-diff.json')}`,
             `--files=${path.join(workDir, 'packages/utils/.code-pushup/report-diff.json')}`,
@@ -736,12 +864,70 @@ describe('runInCI', () => {
             '--persist.filename=merged-report',
           ],
           cwd: expect.stringContaining(workDir),
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
 
         expect(logger.error).not.toHaveBeenCalled();
         expect(logger.warn).not.toHaveBeenCalled();
         expect(logger.info).toHaveBeenCalled();
         expect(logger.debug).toHaveBeenCalled();
+      });
+
+      it('should skip comment if disabled', async () => {
+        const api: ProviderAPIClient = {
+          maxCommentChars: 1_000_000,
+          createComment: vi.fn(),
+          updateComment: vi.fn(),
+          listComments: vi.fn(),
+        };
+
+        await expect(
+          runInCI(
+            refs,
+            api,
+            { ...options, monorepo: tool, skipComment: true },
+            git,
+          ),
+        ).resolves.toEqual({
+          mode: 'monorepo',
+          commentId: undefined,
+          diffPath: path.join(workDir, '.code-pushup/merged-report-diff.md'),
+          projects: [
+            expect.objectContaining({ name: 'cli' }),
+            expect.objectContaining({ name: 'core' }),
+            expect.objectContaining({ name: 'utils' }),
+          ],
+        } satisfies RunResult);
+
+        await expect(
+          readFile(
+            path.join(workDir, '.code-pushup/merged-report-diff.md'),
+            'utf8',
+          ),
+        ).resolves.toBe(diffMdString);
+
+        expect(api.listComments).not.toHaveBeenCalled();
+        expect(api.createComment).not.toHaveBeenCalled();
+        expect(api.updateComment).not.toHaveBeenCalled();
+
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: runMany,
+          args: expect.any(Array),
+          cwd: expect.stringContaining(workDir),
+          observer: expectedObserver,
+        } satisfies utils.ProcessConfig);
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: run,
+          args: expect.arrayContaining(['compare']),
+          cwd: expect.stringContaining(workDir),
+          observer: expectedObserver,
+        } satisfies utils.ProcessConfig);
+        expect(utils.executeProcess).toHaveBeenCalledWith({
+          command: run,
+          args: expect.arrayContaining(['merge-diffs']),
+          cwd: expect.stringContaining(workDir),
+          observer: expectedObserver,
+        } satisfies utils.ProcessConfig);
       });
     });
   });
@@ -827,13 +1013,24 @@ describe('runInCI', () => {
         ).toHaveLength(6); // 3 autoruns and 3 print-configs for each project
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: ['print-config'],
+          args: [
+            'print-config',
+            '--verbose',
+            expect.stringMatching(/^--output=.*\.json$/),
+          ],
           cwd: expect.stringContaining(workDir),
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: ['--persist.format=json', '--persist.format=md'],
+          args: [
+            '--verbose',
+            '--no-progress',
+            '--persist.format=json',
+            '--persist.format=md',
+          ],
           cwd: expect.stringContaining(workDir),
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
 
         expect(logger.error).not.toHaveBeenCalled();
@@ -982,18 +1179,30 @@ describe('runInCI', () => {
         ).toHaveLength(10);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: ['print-config'],
+          args: [
+            'print-config',
+            '--verbose',
+            expect.stringMatching(/^--output=.*\.json$/),
+          ],
           cwd: expect.stringContaining(workDir),
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: ['--persist.format=json', '--persist.format=md'],
+          args: [
+            '--verbose',
+            '--no-progress',
+            '--persist.format=json',
+            '--persist.format=md',
+          ],
           cwd: expect.stringContaining(workDir),
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
           args: [
             'compare',
+            '--verbose',
             expect.stringMatching(/^--before=.*prev-report.json$/),
             expect.stringMatching(/^--after=.*curr-report.json$/),
             expect.stringMatching(/^--label=\w+$/),
@@ -1001,11 +1210,13 @@ describe('runInCI', () => {
             '--persist.format=md',
           ],
           cwd: expect.stringContaining(workDir),
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
           args: [
             'merge-diffs',
+            '--verbose',
             `--files=${path.join(workDir, 'backend/api/.code-pushup/report-diff.json')}`,
             `--files=${path.join(workDir, 'backend/auth/.code-pushup/report-diff.json')}`,
             `--files=${path.join(workDir, 'frontend/.code-pushup/report-diff.json')}`,
@@ -1013,6 +1224,7 @@ describe('runInCI', () => {
             '--persist.filename=merged-report',
           ],
           cwd: expect.stringContaining(workDir),
+          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
 
         expect(logger.error).not.toHaveBeenCalled();
