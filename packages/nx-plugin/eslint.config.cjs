@@ -15,6 +15,7 @@ module.exports = tseslint.config(
   {
     files: ['**/*.ts'],
     rules: {
+      'n/file-extension-in-import': 'off',
       // Nx plugins don't yet support ESM: https://github.com/nrwl/nx/issues/15682
       'unicorn/prefer-module': 'off',
       // used instead of verbatimModuleSyntax tsconfig flag (requires ESM)
