@@ -1,10 +1,10 @@
-import type {
-  CreateNodes,
-  CreateNodesContext,
-  CreateNodesResult,
-  CreateNodesV2,
+import {
+  type CreateNodes,
+  type CreateNodesContext,
+  type CreateNodesResult,
+  type CreateNodesV2,
+  createNodesFromFiles
 } from '@nx/devkit';
-import { createNodesFromFiles } from '@nx/devkit';
 import { PROJECT_JSON_FILE_NAME } from '../internal/constants';
 import { createTargets } from './target/targets';
 import type { CreateNodesOptions } from './types';
