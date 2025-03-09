@@ -3,7 +3,7 @@ import {
   type CreateNodesContext,
   type CreateNodesResult,
   type CreateNodesV2,
-  createNodesFromFiles
+  createNodesFromFiles,
 } from '@nx/devkit';
 import { PROJECT_JSON_FILE_NAME } from '../internal/constants';
 import { createTargets } from './target/targets';
@@ -59,5 +59,5 @@ export const createNodesV2: CreateNodesV2 = [
       configFiles,
       options,
       context,
-    )
+    ),
 ];
