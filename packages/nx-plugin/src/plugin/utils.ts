@@ -1,7 +1,7 @@
-import type { CreateNodesContext } from '@nx/devkit';
+import type { CreateNodesContext, CreateNodesContextV2 } from '@nx/devkit';
 import { readFile } from 'node:fs/promises';
 import * as path from 'node:path';
-import { CP_TARGET_NAME } from './constants.js';
+import { CP_TARGET_NAME } from './constants';
 import type {
   CreateNodesOptions,
   NormalizedCreateNodesContext,
@@ -9,7 +9,7 @@ import type {
 } from './types.js';
 
 export async function normalizedCreateNodesContext(
-  context: CreateNodesContext,
+  context: CreateNodesContext | CreateNodesContextV2,
   projectConfigurationFile: string,
   createOptions: CreateNodesOptions = {},
 ): Promise<NormalizedCreateNodesContext> {

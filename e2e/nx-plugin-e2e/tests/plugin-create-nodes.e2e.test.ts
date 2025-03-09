@@ -14,7 +14,6 @@ import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
   removeColorCodes,
-  teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess, readTextFile } from '@code-pushup/utils';
 import { INLINE_PLUGIN } from './inline-plugin.js';
@@ -35,7 +34,7 @@ describe('nx-plugin', () => {
   });
 
   afterEach(async () => {
-    await teardownTestFolder(testFileDir);
+    // await teardownTestFolder(testFileDir);
   });
 
   it('should add configuration target dynamically', async () => {
