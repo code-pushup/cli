@@ -36,7 +36,7 @@ export const createNodes: CreateNodes = [
   },
 ];
 
-export const createNodesV2: CreateNodesV2<any> = [
+export const createNodesV2: CreateNodesV2 = [
   `**/${PROJECT_JSON_FILE_NAME}`,
 
   async (configFiles, options, context) => {
