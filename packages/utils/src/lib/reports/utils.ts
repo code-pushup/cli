@@ -10,10 +10,18 @@ import type {
 } from '@code-pushup/models';
 import { SCORE_COLOR_RANGE } from './constants.js';
 import type {
+  ScoreFilter,
   ScoredReport,
   SortableAuditReport,
   SortableGroup,
 } from './types.js';
+
+export function scoreFilter<T extends { score: number }>(
+  options?: ScoreFilter,
+) {
+  const { isScoreListed = () => true } = options ?? {};
+  return ({ score }: T) => isScoreListed(score);
+}
 
 export function formatReportScore(score: number): string {
   const scaledScore = score * 100;

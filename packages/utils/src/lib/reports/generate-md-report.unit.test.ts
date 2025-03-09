@@ -47,6 +47,54 @@ const baseScoredReport = {
   ],
 } as ScoredReport;
 
+const baseScoredReport2 = {
+  date: '2025.01.01',
+  duration: 4200,
+  version: 'v1.0.0',
+  commit: {
+    message: 'ci: update action',
+    author: 'Michael <michael.hladky@push-based.io>',
+    date: new Date('2025.01.01'),
+    hash: '535b8e9e557336618a764f3fa45609d224a62837',
+  },
+  plugins: [
+    {
+      slug: 'lighthouse',
+      version: '1.0.1',
+      duration: 15_365,
+      title: 'Lighthouse',
+      audits: [
+        {
+          slug: 'largest-contentful-paint',
+          title: 'Largest Contentful Paint',
+          score: 0.6,
+          value: 2700,
+        },
+        {
+          slug: 'cumulative-layout-shift',
+          title: 'Cumulative Layout Shift',
+          score: 1,
+          value: 0,
+        },
+      ],
+    },
+  ],
+  categories: [
+    {
+      title: 'Speed',
+      slug: 'speed',
+      score: 0.93,
+      refs: [{ slug: 'largest-contentful-paint', plugin: 'lighthouse' }],
+    },
+    {
+      title: 'Visual Stability',
+      slug: 'visual-stability',
+      score: 1,
+      refs: [{ slug: 'cumulative-layout-shift', plugin: 'lighthouse' }],
+    },
+  ],
+} as ScoredReport;
+
 // === Audit Details
 
 describe('auditDetailsAuditValue', () => {
@@ -359,6 +407,22 @@ describe('auditsSection', () => {
     ).toMatch('🟩 **0** (score: 100)');
   });
 
+  it('should render filtered result', () => {
+    const auditSection = auditsSection(
+      {
+        plugins: [
+          { audits: [{ score: 1, value: 0 }] },
+          { audits: [{ score: 0, value: 1 }] },
+        ],
+      } as ScoredReport,
+      {
+        isScoreListed: (score: number) => score === 1,
+      },
+    ).toString();
+    expect(auditSection).toMatch('(score: 100)');
+    expect(auditSection).not.toMatch('(score: 0)');
+  });
+
   it('should render audit details', () => {
     const md = auditsSection({
       plugins: [
@@ -578,6 +642,18 @@ describe('generateMdReport', () => {
     ]);
     // made with <3
     expect(md).toMatch('Made with ❤ by [Code PushUp]');
+  });
+
+  it('should render sections filtered by isScoreListed of the report', () => {
+    const md = generateMdReport(baseScoredReport2, {
+      isScoreListed: (score: number) => score === 1,
+    });
+
+    expect(md).toMatch('Visual Stability');
+    expect(md).toMatch('Cumulative Layout Shift');
+
+    expect(md).not.toMatch('Speed');
+    expect(md).not.toMatch('Largest Contentful Paint');
   });
 
   it('should skip categories section when categories are missing', () => {

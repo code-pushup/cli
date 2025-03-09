@@ -78,17 +78,12 @@ async function processOutdated(
   packageJsonPaths: PackageJsonPaths,
 ) {
   const pm = packageManagers[id];
-  const { stdout, stderr } = await executeProcess({
+  const { stdout } = await executeProcess({
     command: pm.command,
     args: pm.outdated.commandArgs,
     cwd: process.cwd(),
     ignoreExitCode: true, // outdated returns exit code 1 when outdated dependencies are found
   });
-
-  // Successful outdated check has empty stderr
-  if (stderr) {
-    throw new Error(`JS packages plugin: outdated error: ${stderr}`);
-  }
 
   // Locate all package.json files in the repository if not provided
   const finalPaths = Array.isArray(packageJsonPaths)
@@ -122,16 +117,12 @@ async function processAudit(
   const auditResults = await Promise.allSettled(
     compatibleAuditDepGroups.map(
       async (depGroup): Promise<[DependencyGroup, AuditResult]> => {
-        const { stdout, stderr } = await executeProcess({
+        const { stdout } = await executeProcess({
           command: pm.command,
           args: pm.audit.getCommandArgs(depGroup),
           cwd: process.cwd(),
           ignoreExitCode: pm.audit.ignoreExitCode,
         });
-        // Successful audit check has empty stderr
-        if (stderr) {
-          throw new Error(`JS packages plugin: audit error: ${stderr}`);
-        }
         return [depGroup, pm.audit.unifyResult(stdout)];
       },
     ),

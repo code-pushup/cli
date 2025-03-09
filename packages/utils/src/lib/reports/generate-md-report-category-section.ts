@@ -4,17 +4,19 @@ import { slugify } from '../formatting.js';
 import { HIERARCHY } from '../text-formats/index.js';
 import { metaDescription } from './formatting.js';
 import { getSortableAuditByRef, getSortableGroupByRef } from './sorting.js';
-import type { ScoredGroup, ScoredReport } from './types.js';
+import type { ScoreFilter, ScoredGroup, ScoredReport } from './types.js';
 import {
   countCategoryAudits,
   formatReportScore,
   getPluginNameFromSlug,
+  scoreFilter,
   scoreMarker,
   targetScoreIcon,
 } from './utils.js';
 
 export function categoriesOverviewSection(
   report: Required<Pick<ScoredReport, 'plugins' | 'categories'>>,
+  options?: ScoreFilter,
 ): MarkdownDocument {
   const { categories, plugins } = report;
   return new MarkdownDocument().table(
@@ -23,26 +25,29 @@ export function categoriesOverviewSection(
       { heading: '⭐ Score', alignment: 'center' },
       { heading: '🛡 Audits', alignment: 'center' },
     ],
-    categories.map(({ title, refs, score, isBinary }) => [
-      // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
-      // The heading "ID" is inferred from the heading text in Markdown.
-      md.link(`#${slugify(title)}`, title),
-      md`${scoreMarker(score)} ${md.bold(
-        formatReportScore(score),
-      )}${binaryIconSuffix(score, isBinary)}`,
-      countCategoryAudits(refs, plugins).toString(),
-    ]),
+    categories
+      .filter(scoreFilter(options))
+      .map(({ title, refs, score, isBinary }) => [
+        // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
+        // The heading "ID" is inferred from the heading text in Markdown.
+        md.link(`#${slugify(title)}`, title),
+        md`${scoreMarker(score)} ${md.bold(
+          formatReportScore(score),
+        )}${binaryIconSuffix(score, isBinary)}`,
+        countCategoryAudits(refs, plugins).toString(),
+      ]),
   );
 }
 
 export function categoriesDetailsSection(
   report: Required<Pick<ScoredReport, 'plugins' | 'categories'>>,
+  options?: ScoreFilter,
 ): MarkdownDocument {
   const { categories, plugins } = report;
-
+  const isScoreDisplayed = scoreFilter(options);
   return new MarkdownDocument()
     .heading(HIERARCHY.level_2, '🏷 Categories')
-    .$foreach(categories, (doc, category) =>
+    .$foreach(categories.filter(isScoreDisplayed), (doc, category) =>
       doc
         .heading(HIERARCHY.level_3, category.title)
         .paragraph(metaDescription(category))
@@ -63,13 +68,17 @@ export function categoriesDetailsSection(
                 ),
               );
               const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
-              return categoryGroupItem(group, groupAudits, pluginTitle);
+              return isScoreDisplayed(group)
+                ? categoryGroupItem(group, groupAudits, pluginTitle)
+                : '';
             }
             // Add audit details
             else {
               const audit = getSortableAuditByRef(ref, plugins);
               const pluginTitle = getPluginNameFromSlug(ref.plugin, plugins);
-              return categoryRef(audit, pluginTitle);
+              return isScoreDisplayed(audit)
+                ? categoryRef(audit, pluginTitle)
+                : '';
             }
           }),
         ),

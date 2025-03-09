@@ -16,9 +16,14 @@ import {
 import {
   categoriesDetailsSection,
   categoriesOverviewSection,
-} from './generate-md-report-categoy-section.js';
+} from './generate-md-report-category-section.js';
 import type { MdReportOptions, ScoredReport } from './types.js';
-import { formatReportScore, scoreMarker, severityMarker } from './utils.js';
+import {
+  formatReportScore,
+  scoreFilter,
+  scoreMarker,
+  severityMarker,
+} from './utils.js';
 
 export function auditDetailsAuditValue({
   score,
@@ -30,6 +35,10 @@ export function auditDetailsAuditValue({
   )} (score: ${formatReportScore(score)})`;
 }
 
+/**
+ * Check if the report has categories.
+ * @param report
+ */
 function hasCategories(
   report: ScoredReport,
 ): report is ScoredReport & Required<Pick<ScoredReport, 'categories'>> {
@@ -44,7 +53,10 @@ export function generateMdReport(
     .heading(HIERARCHY.level_1, REPORT_HEADLINE_TEXT)
     .$concat(
       ...(hasCategories(report)
-        ? [categoriesOverviewSection(report), categoriesDetailsSection(report)]
+        ? [
+            categoriesOverviewSection(report, options),
+            categoriesDetailsSection(report, options),
+          ]
         : []),
       auditsSection(report, options),
       aboutSection(report),
@@ -110,11 +122,14 @@ export function auditsSection(
   { plugins }: Pick<ScoredReport, 'plugins'>,
   options?: MdReportOptions,
 ): MarkdownDocument {
+  const isScoreDisplayed = scoreFilter(options);
   return new MarkdownDocument()
     .heading(HIERARCHY.level_2, '🛡️ Audits')
     .$foreach(
       plugins.flatMap(plugin =>
-        plugin.audits.map(audit => ({ ...audit, plugin })),
+        plugin.audits
+          .filter(isScoreDisplayed)
+          .map(audit => ({ ...audit, plugin })),
       ),
       (doc, { plugin, ...audit }) => {
         const auditTitle = `${audit.title} (${plugin.title})`;

@@ -258,6 +258,17 @@ describe('JSON lines format', () => {
 
       expect(fromJsonLines(jsonLines)).toEqual([head, body]);
     });
+
+    it('should ignore non-JSON lines', () => {
+      const jsonLines = [
+        '(node:346640) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.',
+        '(Use `node --trace-deprecation ...` to show where the warning was created)',
+        JSON.stringify(head),
+        JSON.stringify(body),
+      ].join('\n');
+
+      expect(fromJsonLines(jsonLines)).toEqual([head, body]);
+    });
   });
 
   describe('toJsonLines', () => {

@@ -26,10 +26,23 @@ import {
   formatValueChange,
   getPluginNameFromSlug,
   roundValue,
+  scoreFilter,
   scoreMarker,
   severityMarker,
   targetScoreIcon,
 } from './utils.js';
+
+describe('scoreFilter', () => {
+  it('should not filter by score if no options are passed', () => {
+    expect(scoreFilter()({ score: 0 })).toBe(true);
+  });
+
+  it('should filter by score if options are passed', () => {
+    expect(
+      scoreFilter({ isScoreListed: score => score === 0.5 })({ score: 0 }),
+    ).toBe(false);
+  });
+});
 
 describe('formatReportScore', () => {
   it.each([
