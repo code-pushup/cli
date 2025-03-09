@@ -1,18 +1,18 @@
-import type {ProjectConfiguration} from '@nx/devkit';
-import {readFile} from 'node:fs/promises';
+import type { CreateNodesContext, ProjectConfiguration } from '@nx/devkit';
+import { readFile } from 'node:fs/promises';
 import * as path from 'node:path';
-import {dirname, join} from 'node:path';
-import {createTargets} from './target/targets';
-import type {CreateNodesOptions, NormalizedCreateNodesOptions} from './types';
-import {CP_TARGET_NAME} from './constants.js';
-import type {CreateNodesOptions, NormalizedCreateNodesContext,} from './types.js';
+import { dirname, join } from 'node:path';
+import { CP_TARGET_NAME } from './constants';
+import { createTargets } from './target/targets';
+import type { CreateNodesOptions, NormalizedCreateNodesOptions } from './types';
 
 export async function normalizedCreateNodesContext(
   context: CreateNodesContext,
   projectConfigurationFile: string,
   createOptions: CreateNodesOptions = {},
-): Promise<NormalizedCreateNodesContext> {
+) {
   const projectRoot = path.dirname(projectConfigurationFile);
+}
 
 export function normalizeCreateNodesOptions(
   options: unknown = {},
