@@ -94,9 +94,6 @@
           "filterByTags": ["publishable"]
         }
       }
-    },
-    {
-      "plugin": "./packages/nx-plugin/src/plugin/plugin.ts"
     }
   ]
 }
