@@ -21,6 +21,11 @@ import { filterGroupsByOnlyAudits } from './packages/plugin-jsdocs/src/lib/utils
 import lighthousePlugin, {
   lighthouseGroupRef,
 } from './packages/plugin-lighthouse/src/index.js';
+import {
+  type TypescriptPluginOptions,
+  getCategories,
+  typescriptPlugin,
+} from './packages/plugin-typescript/src/index.js';
 
 export const jsPackagesCategories: CategoryConfig[] = [
   {
@@ -167,6 +172,13 @@ export const eslintCoreConfigNx = async (
     categories: eslintCategories,
   };
 };
+
+export const typescriptPluginConfigNx = async (
+  options?: TypescriptPluginOptions,
+): Promise<CoreConfig> => ({
+  plugins: [await typescriptPlugin(options)],
+  categories: getCategories(),
+});
 
 export const coverageCoreConfigNx = async (
   projectName?: string,
