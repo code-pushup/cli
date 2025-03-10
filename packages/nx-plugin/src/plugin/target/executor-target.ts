@@ -1,6 +1,6 @@
 import type { TargetConfiguration } from '@nx/devkit';
-import { PACKAGE_NAME } from '../../internal/constants';
-import type { ProjectPrefixOptions } from '../types';
+import { PACKAGE_NAME } from '../../internal/constants.js';
+import type { ProjectPrefixOptions } from '../types.js';
 
 export function createExecutorTarget(options?: {
   bin?: string;
