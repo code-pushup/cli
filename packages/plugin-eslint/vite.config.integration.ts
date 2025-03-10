@@ -5,8 +5,6 @@ import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases.js
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/plugin-eslint',
   test: {
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    testTimeout: 25_000,
     reporters: ['basic'],
     globals: true,
     cache: {
