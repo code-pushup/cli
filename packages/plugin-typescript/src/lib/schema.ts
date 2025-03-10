@@ -9,16 +9,19 @@ const auditSlugs = AUDITS.map(({ slug }) => slug) as [
 export const typescriptPluginConfigSchema = z.object({
   tsconfig: z
     .string({
-      description: 'Path to the TsConfig',
+      description: 'Path to a tsconfig file (default is tsconfig.json)',
     })
     .default(DEFAULT_TS_CONFIG),
   onlyAudits: z
     .array(z.enum(auditSlugs), {
-      description: 'Array with specific TsCodes to measure',
+      description: 'Filters TypeScript compiler errors by diagnostic codes',
     })
     .optional(),
 });
 
-export type TypescriptPluginOptions = z.infer<
+export type TypescriptPluginOptions = z.input<
+  typeof typescriptPluginConfigSchema
+>;
+export type TypescriptPluginConfig = z.infer<
   typeof typescriptPluginConfigSchema
 >;

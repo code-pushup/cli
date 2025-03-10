@@ -45,12 +45,30 @@ exports[`categoriesDetailsSection > should render complete categories details 1`
 "
 `;
 
+exports[`categoriesDetailsSection > should render filtered categories details > filtered 1`] = `
+"## 🏷 Categories
+
+### Bug Prevention
+
+🟢 Score: **100** ✅
+
+- 🟩 [No let](#no-let-eslint) (_Eslint_) - **0**
+"
+`;
+
 exports[`categoriesOverviewSection > should render complete categories table 1`] = `
 "| 🏷 Category                       |  ⭐ Score  | 🛡 Audits |
 | :-------------------------------- | :-------: | :-------: |
 | [Bug Prevention](#bug-prevention) | 🟢 **98** |     1     |
 | [Performance](#performance)       | 🟡 **74** |     1     |
 | [Typescript](#typescript)         | 🔴 **14** |     1     |
+"
+`;
+
+exports[`categoriesOverviewSection > should render filtered categories table 1`] = `
+"| 🏷 Category                       |  ⭐ Score   | 🛡 Audits |
+| :-------------------------------- | :--------: | :-------: |
+| [Bug Prevention](#bug-prevention) | 🟢 **100** |     1     |
 "
 `;
 

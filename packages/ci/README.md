@@ -64,10 +64,10 @@ If only the `head` is supplied, then Code PushUp will collect a new report and o
 If triggered by a pull request, then specify the `base` ref as well.
 This will additionally compare reports from both source and target branches and post a comment to the PR.
 
-| Property | Required | Type                           | Description           |
-| :------- | :------: | :----------------------------- | :-------------------- |
-| `head`   |   yes    | `{ ref: string, sha: string }` | Current branch/commit |
-| `base`   |    no    | `{ ref: string, sha: string }` | Branch targeted by PR |
+| Property | Required | Type                                     | Description           |
+| :------- | :------: | :--------------------------------------- | :-------------------- |
+| `head`   |   yes    | `string \| { ref: string, sha: string }` | Current branch/commit |
+| `base`   |    no    | `string \| { ref: string, sha: string }` | Branch targeted by PR |
 
 ### Provider API client
 
@@ -103,10 +103,11 @@ Optionally, you can override default options for further customization:
 | `nxProjectsFilter` | `string \| string[]`      | `'--with-target={task}'`         | Arguments passed to [`nx show projects`](https://nx.dev/nx-api/nx/documents/show#projects), only relevant for Nx in [monorepo mode](#monorepo-mode) [^2] |
 | `directory`        | `string`                  | `process.cwd()`                  | Directory in which Code PushUp CLI should run                                                                                                            |
 | `config`           | `string \| null`          | `null` [^1]                      | Path to config file (`--config` option)                                                                                                                  |
-| `silent`           | `boolean`                 | `false`                          | Toggles if logs from CLI commands are printed                                                                                                            |
+| `silent`           | `boolean`                 | `false`                          | Hides logs from CLI commands (erros will be printed)                                                                                                     |
 | `bin`              | `string`                  | `'npx --no-install code-pushup'` | Command for executing Code PushUp CLI                                                                                                                    |
 | `detectNewIssues`  | `boolean`                 | `true`                           | Toggles if new issues should be detected and returned in `newIssues` property                                                                            |
 | `logger`           | `Logger`                  | `console`                        | Logger for reporting progress and encountered problems                                                                                                   |
+| `skipComment`      | `boolean`                 | `false`                          | Toggles if comparison comment is posted to PR                                                                                                            |
 
 [^1]: By default, the `code-pushup.config` file is autodetected as described in [`@code-pushup/cli` docs](../cli/README.md#configuration).
 

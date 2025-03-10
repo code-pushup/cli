@@ -1,5 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { type Audit, categoryRefSchema } from '@code-pushup/models';
+import { ui } from '@code-pushup/utils';
 import { AUDITS } from './constants.js';
 import {
   filterAuditsByCompilerOptions,
@@ -99,14 +100,14 @@ describe('getCategoryRefsFromGroups', () => {
 
   it('should return all groups as categoryRefs if compiler options are given', async () => {
     const categoryRefs = await getCategoryRefsFromGroups({
-      tsConfigPath: 'tsconfig.json',
+      tsconfig: 'tsconfig.json',
     });
     expect(categoryRefs).toHaveLength(3);
   });
 
   it('should return a subset of all groups as categoryRefs if compiler options contain onlyAudits filter', async () => {
     const categoryRefs = await getCategoryRefsFromGroups({
-      tsConfigPath: 'tsconfig.json',
+      tsconfig: 'tsconfig.json',
       onlyAudits: ['semantic-errors'],
     });
     expect(categoryRefs).toHaveLength(1);
@@ -114,16 +115,6 @@ describe('getCategoryRefsFromGroups', () => {
 });
 
 describe('logSkippedAudits', () => {
-  beforeEach(() => {
-    vi.mock('console', () => ({
-      warn: vi.fn(),
-    }));
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should not warn when all audits are included', () => {
     logSkippedAudits(AUDITS);
 
@@ -133,8 +124,8 @@ describe('logSkippedAudits', () => {
   it('should warn about skipped audits', () => {
     logSkippedAudits(AUDITS.slice(0, -1));
 
-    expect(console.warn).toHaveBeenCalledTimes(1);
-    expect(console.warn).toHaveBeenCalledWith(
+    expect(ui()).toHaveLogged(
+      'info',
       expect.stringContaining(`Skipped audits: [`),
     );
   });
@@ -142,9 +133,6 @@ describe('logSkippedAudits', () => {
   it('should camel case the slugs in the audit message', () => {
     logSkippedAudits(AUDITS.slice(0, -1));
 
-    expect(console.warn).toHaveBeenCalledTimes(1);
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining(`unknownCodes`),
-    );
+    expect(ui()).toHaveLogged('info', expect.stringContaining(`unknownCodes`));
   });
 });

@@ -23,14 +23,18 @@ describe('auditSchema', () => {
     ).not.toThrow();
   });
 
-  it('should throw for an invalid URL', () => {
-    expect(() =>
+  it('should ignore invalid docs URL', () => {
+    expect(
       auditSchema.parse({
         slug: 'consistent-test-it',
         title: 'Use a consistent test function.',
         docsUrl: 'invalid-url',
       } satisfies Audit),
-    ).toThrow('Invalid url');
+    ).toEqual<Audit>({
+      slug: 'consistent-test-it',
+      title: 'Use a consistent test function.',
+      docsUrl: '',
+    });
   });
 });
 

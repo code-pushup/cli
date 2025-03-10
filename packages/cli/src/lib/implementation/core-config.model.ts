@@ -16,6 +16,7 @@ export type UploadConfigCliOptions = {
 export type ConfigCliOptions = {
   config?: string;
   tsconfig?: string;
+  verbose?: string;
 };
 
 export type CoreConfigCliOptions = Pick<CoreConfig, 'persist'> & {

@@ -96,11 +96,9 @@ export {
   type ReportsDiff,
 } from './lib/reports-diff.js';
 export {
-  onProgressSchema,
   runnerConfigSchema,
   runnerFunctionSchema,
   runnerFilesPathsSchema,
-  type OnProgress,
   type RunnerConfig,
   type RunnerFunction,
   type RunnerFilesPaths,

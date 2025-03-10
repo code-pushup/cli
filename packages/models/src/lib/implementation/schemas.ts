@@ -53,8 +53,21 @@ export const urlSchema = z.string().url();
 /**  Schema for a docsUrl */
 export const docsUrlSchema = urlSchema
   .optional()
-  .or(z.literal(''))
-  .describe('Documentation site'); // allow empty string (no URL validation)
+  .or(z.literal('')) // allow empty string (no URL validation)
+  // eslint-disable-next-line unicorn/prefer-top-level-await, unicorn/catch-error-name
+  .catch(ctx => {
+    // if only URL validation fails, supress error since this metadata is optional anyway
+    if (
+      ctx.error.errors.length === 1 &&
+      ctx.error.errors[0]?.code === 'invalid_string' &&
+      ctx.error.errors[0].validation === 'url'
+    ) {
+      console.warn(`Ignoring invalid docsUrl: ${ctx.input}`);
+      return '';
+    }
+    throw ctx.error;
+  })
+  .describe('Documentation site');
 
 /** Schema for a title of a plugin, category and audit */
 export const titleSchema = z

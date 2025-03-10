@@ -5,33 +5,33 @@ import {
 } from './schema.js';
 
 describe('typescriptPluginConfigSchema', () => {
-  const tsConfigPath = 'tsconfig.json';
+  const tsconfig = 'tsconfig.json';
 
   it('accepts a empty configuration', () => {
     expect(() => typescriptPluginConfigSchema.parse({})).not.toThrow();
   });
 
-  it('accepts a configuration with tsConfigPath set', () => {
+  it('accepts a configuration with tsconfig set', () => {
     expect(() =>
       typescriptPluginConfigSchema.parse({
-        tsConfigPath,
+        tsconfig,
       } satisfies TypescriptPluginOptions),
     ).not.toThrow();
   });
 
-  it('accepts a configuration with tsConfigPath and empty onlyAudits', () => {
+  it('accepts a configuration with tsconfig and empty onlyAudits', () => {
     expect(() =>
       typescriptPluginConfigSchema.parse({
-        tsConfigPath,
+        tsconfig,
         onlyAudits: [],
       } satisfies TypescriptPluginOptions),
     ).not.toThrow();
   });
 
-  it('accepts a configuration with tsConfigPath and full onlyAudits', () => {
+  it('accepts a configuration with tsconfig and full onlyAudits', () => {
     expect(() =>
       typescriptPluginConfigSchema.parse({
-        tsConfigPath,
+        tsconfig,
         onlyAudits: [
           'syntax-errors',
           'semantic-errors',
@@ -52,21 +52,18 @@ describe('typescriptPluginConfigSchema', () => {
   it('throws for invalid onlyAudits items', () => {
     expect(() =>
       typescriptPluginConfigSchema.parse({
-        tsConfigPath,
+        tsconfig,
         onlyAudits: [123, true],
       }),
     ).toThrow('invalid_type');
   });
 
   it('throws for unknown audit slug', () => {
-    expect(
-      () =>
-        typescriptPluginConfigSchema.parse({
-          tsConfigPath,
-          onlyAudits: ['unknown-audit'],
-        }),
-      // Message too large because enums validation
-      // eslint-disable-next-line vitest/require-to-throw-message
-    ).toThrow();
+    expect(() =>
+      typescriptPluginConfigSchema.parse({
+        tsconfig,
+        onlyAudits: ['unknown-audit'],
+      }),
+    ).toThrow(/unknown-audit/);
   });
 });

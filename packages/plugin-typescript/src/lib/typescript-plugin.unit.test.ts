@@ -1,6 +1,7 @@
 import { expect } from 'vitest';
 import { pluginConfigSchema } from '@code-pushup/models';
 import { AUDITS, GROUPS } from './constants.js';
+import type { TypescriptPluginOptions } from './schema.js';
 import { typescriptPlugin } from './typescript-plugin.js';
 
 describe('typescriptPlugin-config-object', () => {
@@ -17,7 +18,7 @@ describe('typescriptPlugin-config-object', () => {
 
   it('should create valid plugin config', async () => {
     const pluginConfig = await typescriptPlugin({
-      tsConfigPath: 'mocked-away/tsconfig.json',
+      tsconfig: 'mocked-away/tsconfig.json',
       onlyAudits: ['syntax-errors', 'semantic-errors', 'configuration-errors'],
     });
 
@@ -27,5 +28,13 @@ describe('typescriptPlugin-config-object', () => {
     expect(audits).toHaveLength(3);
     expect(groups).toBeDefined();
     expect(groups!).toHaveLength(2);
+  });
+
+  it('should throw for invalid valid params', async () => {
+    await expect(() =>
+      typescriptPlugin({
+        tsconfig: 42,
+      } as unknown as TypescriptPluginOptions),
+    ).rejects.toThrow(/invalid_type/);
   });
 });

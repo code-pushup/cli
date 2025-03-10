@@ -1,12 +1,12 @@
 import path from 'node:path';
 import { afterEach, expect } from 'vitest';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
-import { teardownTestFolder } from '@code-pushup/test-setup';
 import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
   createNpmWorkspace,
   removeColorCodes,
+  teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 

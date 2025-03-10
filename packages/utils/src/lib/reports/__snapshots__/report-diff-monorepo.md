@@ -1,6 +1,6 @@
 # Code PushUp
 
-🤨 Code PushUp report has both **improvements and regressions** – compared target commit 0123456789abcdef0123456789abcdef01234567 with source commit abcdef0123456789abcdef0123456789abcdef01.
+🤨 Code PushUp report has both **improvements and regressions** – compared current commit 0123456789abcdef0123456789abcdef01234567 with previous commit abcdef0123456789abcdef0123456789abcdef01.
 
 ## 💼 Project `console`
 

@@ -2,6 +2,7 @@ import type { PluginConfig } from '@code-pushup/models';
 import {
   capitalize,
   filterItemRefsBy,
+  isVerbose,
   pluralize,
   ui,
 } from '@code-pushup/utils';
@@ -16,8 +17,7 @@ export function validateFilterOption(
   {
     itemsToFilter,
     skippedItems,
-    verbose,
-  }: { itemsToFilter: string[]; skippedItems: string[]; verbose: boolean },
+  }: { itemsToFilter: string[]; skippedItems: string[] },
 ): void {
   const validItems = isCategoryOption(option)
     ? categories.map(({ slug }) => slug)
@@ -51,14 +51,14 @@ export function validateFilterOption(
     }
     ui().logger.warning(message);
   }
-  if (skippedValidItems.length > 0 && verbose) {
+  if (skippedValidItems.length > 0 && isVerbose()) {
     const item = getItemType(option, skippedValidItems.length);
     const prefix = skippedValidItems.length === 1 ? `a skipped` : `skipped`;
     ui().logger.warning(
       `The --${option} argument references ${prefix} ${item}: ${skippedValidItems.join(', ')}.`,
     );
   }
-  if (isPluginOption(option) && categories.length > 0 && verbose) {
+  if (isPluginOption(option) && categories.length > 0 && isVerbose()) {
     const removedCategories = filterItemRefsBy(categories, ({ plugin }) =>
       isOnlyOption(option)
         ? !itemsToFilterSet.has(plugin)
@@ -78,12 +78,11 @@ export function validateFilterOption(
 export function validateSkippedCategories(
   originalCategories: NonNullable<Filterables['categories']>,
   filteredCategories: NonNullable<Filterables['categories']>,
-  verbose: boolean,
 ): void {
   const skippedCategories = originalCategories.filter(
     original => !filteredCategories.some(({ slug }) => slug === original.slug),
   );
-  if (skippedCategories.length > 0 && verbose) {
+  if (skippedCategories.length > 0 && isVerbose()) {
     skippedCategories.forEach(category => {
       ui().logger.info(
         `Category ${category.slug} was removed because all its refs were skipped. Affected refs: ${category.refs

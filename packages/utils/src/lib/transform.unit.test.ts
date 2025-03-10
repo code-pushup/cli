@@ -9,6 +9,7 @@ import {
   objectToCliArgs,
   objectToEntries,
   objectToKeys,
+  removeUndefinedAndEmptyProps,
   toArray,
   toJsonLines,
   toNumberPrecision,
@@ -257,6 +258,17 @@ describe('JSON lines format', () => {
 
       expect(fromJsonLines(jsonLines)).toEqual([head, body]);
     });
+
+    it('should ignore non-JSON lines', () => {
+      const jsonLines = [
+        '(node:346640) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.',
+        '(Use `node --trace-deprecation ...` to show where the warning was created)',
+        JSON.stringify(head),
+        JSON.stringify(body),
+      ].join('\n');
+
+      expect(fromJsonLines(jsonLines)).toEqual([head, body]);
+    });
   });
 
   describe('toJsonLines', () => {
@@ -301,5 +313,18 @@ describe('toOrdinal', () => {
     [173, '173rd'],
   ])('should covert %d to ordinal as %s', (value, ordinalValue) => {
     expect(toOrdinal(value)).toBe(ordinalValue);
+  });
+});
+
+describe('removeUndefinedAndEmptyProps', () => {
+  it('should omit empty strings and undefined', () => {
+    expect(
+      removeUndefinedAndEmptyProps({ foo: '', bar: undefined }),
+    ).toStrictEqual({});
+  });
+
+  it('should preserve other values', () => {
+    const obj = { a: 'hello', b: 42, c: [], d: {}, e: null };
+    expect(removeUndefinedAndEmptyProps(obj)).toStrictEqual(obj);
   });
 });

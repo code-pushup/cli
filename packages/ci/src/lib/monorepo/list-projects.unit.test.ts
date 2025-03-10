@@ -58,8 +58,14 @@ describe('listMonorepoProjects', () => {
     await expect(listMonorepoProjects(MONOREPO_SETTINGS)).resolves.toEqual({
       tool: 'nx',
       projects: [
-        { name: 'backend', bin: 'npx nx run backend:code-pushup --' },
-        { name: 'frontend', bin: 'npx nx run frontend:code-pushup --' },
+        {
+          name: 'backend',
+          bin: 'npx nx run backend:code-pushup --skip-nx-cache --',
+        },
+        {
+          name: 'frontend',
+          bin: 'npx nx run frontend:code-pushup --skip-nx-cache --',
+        },
       ],
       runManyCommand: expect.any(Function),
     } satisfies MonorepoProjects);
@@ -120,22 +126,22 @@ describe('listMonorepoProjects', () => {
         {
           name: 'api',
           directory: path.join(MEMFS_VOLUME, 'backend', 'api'),
-          bin: 'npx turbo run code-pushup --',
+          bin: 'npx turbo run code-pushup --no-cache --force --',
         },
         {
           name: 'auth',
           directory: path.join(MEMFS_VOLUME, 'backend', 'auth'),
-          bin: 'npx turbo run code-pushup --',
+          bin: 'npx turbo run code-pushup --no-cache --force --',
         },
         {
           name: 'cms',
           directory: path.join(MEMFS_VOLUME, 'frontend', 'cms'),
-          bin: 'npx turbo run code-pushup --',
+          bin: 'npx turbo run code-pushup --no-cache --force --',
         },
         {
           name: 'web',
           directory: path.join(MEMFS_VOLUME, 'frontend', 'web'),
-          bin: 'npx turbo run code-pushup --',
+          bin: 'npx turbo run code-pushup --no-cache --force --',
         },
       ],
       runManyCommand: expect.any(Function),

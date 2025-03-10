@@ -1,3 +1,124 @@
+## 0.65.0 (2025-03-05)
+
+### 🚀 Features
+
+- **utils:** add score filter to md report generation ([#956](https://github.com/code-pushup/cli/pull/956))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
+## 0.64.2 (2025-03-05)
+
+### 🩹 Fixes
+
+- update nx-verdaccio pkg ([#954](https://github.com/code-pushup/cli/pull/954))
+- **plugin-js-packages:** ignore non-empty stderr ([7936a00c](https://github.com/code-pushup/cli/commit/7936a00c))
+- **utils:** ignore non-json lines in fromJsonLines utility ([7886c572](https://github.com/code-pushup/cli/commit/7886c572))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael Hladky @BioPhoton
+
+## 0.64.1 (2025-03-04)
+
+### 🩹 Fixes
+
+- **ci:** always show execute process errors and log stdout if verbose ([b41de478](https://github.com/code-pushup/cli/commit/b41de478))
+- **utils:** remove partial from mergeConfigs return type ([69c2ef4c](https://github.com/code-pushup/cli/commit/69c2ef4c))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Vojtech Masek @vmasek
+
+## 0.64.0 (2025-02-27)
+
+### 🚀 Features
+
+- **ci:** allow refs without shas, fetch if needed ([2ee0a8d1](https://github.com/code-pushup/cli/commit/2ee0a8d1))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.63.0 (2025-02-26)
+
+### 🚀 Features
+
+- **ci:** use temporary file for print-config instead of stdout ([aa4d0b38](https://github.com/code-pushup/cli/commit/aa4d0b38))
+- **cli:** add --output=<file> option to print-config command ([a1fde20c](https://github.com/code-pushup/cli/commit/a1fde20c))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.62.0 (2025-02-25)
+
+### 🚀 Features
+
+- log process working directory as cwd if undefined ([a0638f8c](https://github.com/code-pushup/cli/commit/a0638f8c))
+
+### 🩹 Fixes
+
+- **utils:** replace misleading commit labels in markdown diff ([21a1f25d](https://github.com/code-pushup/cli/commit/21a1f25d))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Vojtech Masek @vmasek
+
+## 0.61.0 (2025-02-19)
+
+### 🚀 Features
+
+- **ci:** disable nx/turbo cache for non-autorun code-pushup commands ([29a1bc63](https://github.com/code-pushup/cli/commit/29a1bc63))
+- **models:** do not throw if docs url invalid, treat as missing and log warning ([a54295c6](https://github.com/code-pushup/cli/commit/a54295c6))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.60.2 (2025-02-18)
+
+### 🩹 Fixes
+
+- **ci:** prevent unknown pathspec error for custom base ref ([60dfb5b2](https://github.com/code-pushup/cli/commit/60dfb5b2))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.60.1 (2025-02-18)
+
+### 🩹 Fixes
+
+- add toSorted polyfill as hotfix for bug in github actions runner ([55704d18](https://github.com/code-pushup/cli/commit/55704d18))
+- **ci:** prevent ambigious ref when checking head ([f5f226e1](https://github.com/code-pushup/cli/commit/f5f226e1))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Vojtech Masek @vmasek
+
+## 0.60.0 (2025-02-18)
+
+### 🚀 Features
+
+- **ci:** add skipComment option ([9ac2a6ba](https://github.com/code-pushup/cli/commit/9ac2a6ba))
+- **plugin-typescript:** add TS core logic ([#932](https://github.com/code-pushup/cli/pull/932))
+- **plugin-typescript:** add plugin logic ([#936](https://github.com/code-pushup/cli/pull/936))
+
+### 🩹 Fixes
+
+- **ci:** ensure head ref is checked out ([74db9023](https://github.com/code-pushup/cli/commit/74db9023))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael Hladky @BioPhoton
+
 ## 0.59.0 (2025-02-14)
 
 ### 🚀 Features

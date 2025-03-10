@@ -32,7 +32,11 @@ export type SortableAuditReport = AuditReport & {
 
 export type DiffOutcome = 'positive' | 'negative' | 'mixed' | 'unchanged';
 
-export type MdReportOptions = Pick<PersistConfig, 'outputDir'>;
+export type ScoreFilter = {
+  isScoreListed?: (score: number) => boolean;
+};
+
+export type MdReportOptions = Pick<PersistConfig, 'outputDir'> & ScoreFilter;
 
 export const SUPPORTED_ENVIRONMENTS = [
   'vscode',

@@ -4,10 +4,10 @@ import {
   pluginReportSchema,
 } from '@code-pushup/models';
 import {
+  isVerbose,
   logStdoutSummary,
   scoreReport,
   sortReport,
-  verboseUtils,
 } from '@code-pushup/utils';
 import { collect } from './implementation/collect.js';
 import {
@@ -24,8 +24,6 @@ export type CollectAndPersistReportsOptions = Pick<
 export async function collectAndPersistReports(
   options: CollectAndPersistReportsOptions,
 ): Promise<void> {
-  const { exec } = verboseUtils(options.verbose);
-
   const report = await collect(options);
   const sortedScoredReport = sortReport(scoreReport(report));
 
@@ -36,11 +34,11 @@ export async function collectAndPersistReports(
   );
 
   // terminal output
-  logStdoutSummary(sortedScoredReport, options.verbose);
+  logStdoutSummary(sortedScoredReport);
 
-  exec(() => {
+  if (isVerbose()) {
     logPersistedResults(persistResults);
-  });
+  }
 
   // validate report and throw if invalid
   report.plugins.forEach(plugin => {

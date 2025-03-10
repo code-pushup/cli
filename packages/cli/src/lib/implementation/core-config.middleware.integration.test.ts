@@ -21,7 +21,7 @@ const configDirPath = path.join(
 describe('coreConfigMiddleware', () => {
   const CLI_DEFAULTS = {
     progress: true,
-    verbose: false,
+    plugins: [],
     onlyPlugins: [],
     skipPlugins: [],
   };

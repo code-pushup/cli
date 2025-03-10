@@ -19,19 +19,27 @@ export type Column = {
 };
 export type CliUi = CliUiBase & CliExtension;
 
-// eslint-disable-next-line import/no-mutable-exports,functional/no-let
-export let singletonUiInstance: CliUiBase | undefined;
+export const isVerbose = () => process.env['CP_VERBOSE'] === 'true';
+
+// eslint-disable-next-line functional/no-let
+let cliUISingleton: CliUiBase | undefined;
+// eslint-disable-next-line functional/no-let
+let cliUIExtendedSingleton: CliUi | undefined;
 
 export function ui(): CliUi {
-  if (singletonUiInstance === undefined) {
-    singletonUiInstance = cliui();
+  if (cliUISingleton === undefined) {
+    cliUISingleton = cliui();
   }
-  return {
-    ...singletonUiInstance,
-    row: args => {
-      logListItem(args);
-    },
-  };
+  if (!cliUIExtendedSingleton) {
+    cliUIExtendedSingleton = {
+      ...cliUISingleton,
+      row: args => {
+        logListItem(args);
+      },
+    };
+  }
+
+  return cliUIExtendedSingleton;
 }
 
 // eslint-disable-next-line functional/no-let
@@ -44,7 +52,7 @@ export function logListItem(args: ArgumentsType<UI['div']>) {
   const content = singletonisaacUi.toString();
   // eslint-disable-next-line functional/immutable-data
   singletonisaacUi.rows = [];
-  singletonUiInstance?.logger.log(content);
+  cliUIExtendedSingleton?.logger.log(content);
 }
 
 export function link(text: string) {
