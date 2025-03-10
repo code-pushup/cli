@@ -1,7 +1,7 @@
 import type { CreateNodesContext, CreateNodesContextV2 } from '@nx/devkit';
 import { readFile } from 'node:fs/promises';
 import * as path from 'node:path';
-import { CP_TARGET_NAME } from './constants';
+import { CP_TARGET_NAME } from './constants.js';
 import type {
   CreateNodesOptions,
   NormalizedCreateNodesContext,
