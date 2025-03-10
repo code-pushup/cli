@@ -1,7 +1,7 @@
-import { type Tree, updateProjectConfiguration } from '@nx/devkit';
+import {type Tree, updateProjectConfiguration} from '@nx/devkit';
 import path from 'node:path';
-import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
-import { afterEach, expect } from 'vitest';
+import {readProjectConfiguration} from 'nx/src/generators/utils/project-configuration';
+import {afterEach, expect} from 'vitest';
 import {
   type AutorunCommandExecutorOptions,
   generateCodePushupConfig,
@@ -17,15 +17,15 @@ import {
   removeColorCodes,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
-import { executeProcess, readJsonFile } from '@code-pushup/utils';
-import { INLINE_PLUGIN } from './inline-plugin.js';
+import {executeProcess, readJsonFile} from '@code-pushup/utils';
+import {INLINE_PLUGIN} from './inline-plugin.js';
 
 async function addTargetToWorkspace(
   tree: Tree,
   options: { cwd: string; project: string },
   executorOptions?: AutorunCommandExecutorOptions,
 ) {
-  const { cwd, project } = options;
+  const {cwd, project} = options;
   const projectCfg = readProjectConfiguration(tree, project);
   updateProjectConfiguration(tree, project, {
     ...projectCfg,
@@ -33,11 +33,11 @@ async function addTargetToWorkspace(
       ...projectCfg.targets,
       'code-pushup': {
         executor: '@code-pushup/nx-plugin:cli',
-        ...(executorOptions && { options: executorOptions }),
+        ...(executorOptions && {options: executorOptions}),
       },
     },
   });
-  const { root } = projectCfg;
+  const {root} = projectCfg;
   generateCodePushupConfig(tree, root, {
     plugins: [
       {
@@ -61,6 +61,10 @@ describe('executor command', () => {
 
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject(project);
+    vi.stubEnv('CP_ORGANIZATION', '');
+    vi.stubEnv('CP_PROJECT', '');
+    vi.stubEnv('CP_SERVER', '');
+    vi.stubEnv('CP_API_KEY', '');
   });
 
   afterEach(async () => {
@@ -69,8 +73,8 @@ describe('executor command', () => {
 
   it('should execute no specific command by default', async () => {
     const cwd = path.join(testFileDir, 'execute-default-command');
-    await addTargetToWorkspace(tree, { cwd, project });
-    const { stdout, code } = await executeProcess({
+    await addTargetToWorkspace(tree, {cwd, project});
+    const {stdout, code} = await executeProcess({
       command: 'npx',
       args: ['nx', 'run', `${project}:code-pushup`, '--dryRun'],
       cwd,
@@ -83,9 +87,9 @@ describe('executor command', () => {
 
   it('should execute print-config executor', async () => {
     const cwd = path.join(testFileDir, 'execute-print-config-command');
-    await addTargetToWorkspace(tree, { cwd, project });
+    await addTargetToWorkspace(tree, {cwd, project});
 
-    const { stdout, code } = await executeProcess({
+    const {stdout, code} = await executeProcess({
       command: 'npx',
       args: ['nx', 'run', `${project}:code-pushup`, 'print-config'],
       cwd,
@@ -102,9 +106,9 @@ describe('executor command', () => {
 
   it('should execute print-config executor with api key', async () => {
     const cwd = path.join(testFileDir, 'execute-print-config-command');
-    await addTargetToWorkspace(tree, { cwd, project });
+    await addTargetToWorkspace(tree, {cwd, project});
 
-    const { stdout, code } = await executeProcess({
+    const {stdout, code} = await executeProcess({
       command: 'npx',
       args: [
         'nx',
@@ -130,7 +134,7 @@ describe('executor command', () => {
     const cwd = path.join(testFileDir, 'execute-collect-with-merged-options');
     await addTargetToWorkspace(
       tree,
-      { cwd, project },
+      {cwd, project},
       {
         persist: {
           outputDir: '.reports',
@@ -139,7 +143,7 @@ describe('executor command', () => {
       },
     );
 
-    const { stdout, code } = await executeProcess({
+    const {stdout, code} = await executeProcess({
       command: 'npx',
       args: [
         'nx',
@@ -164,9 +168,9 @@ describe('executor command', () => {
 
   it('should execute collect executor and add report to sub folder named by project', async () => {
     const cwd = path.join(testFileDir, 'execute-collect-command');
-    await addTargetToWorkspace(tree, { cwd, project });
+    await addTargetToWorkspace(tree, {cwd, project});
 
-    const { stdout, code } = await executeProcess({
+    const {stdout, code} = await executeProcess({
       command: 'npx',
       args: ['nx', 'run', `${project}:code-pushup`, 'collect'],
       cwd,
