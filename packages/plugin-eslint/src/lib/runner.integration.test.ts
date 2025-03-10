@@ -1,5 +1,6 @@
 import os from 'node:os';
 import path from 'node:path';
+import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { type MockInstance, describe, expect, it } from 'vitest';
 import type {
@@ -63,33 +64,36 @@ describe('executeRunner', () => {
     expect(osAgnosticAuditOutputs(json)).toMatchSnapshot();
   });
 
-  it('should execute runner with custom config using @code-pushup/eslint-config', async () => {
-    const runnerPaths = await createPluginConfig(
-      'code-pushup.eslint.config.mjs',
-    );
-    await executeRunner(runnerPaths);
+  it.skipIf(process.platform === 'win32')(
+    'should execute runner with custom config using @code-pushup/eslint-config',
+    async () => {
+      const runnerPaths = await createPluginConfig(
+        'code-pushup.eslint.config.mjs',
+      );
+      await executeRunner(runnerPaths);
 
-    const json = await readJsonFile<AuditOutput[]>(
-      runnerPaths.runnerOutputPath,
-    );
-    // expect warnings from unicorn/filename-case rule from default config
-    expect(json).toContainEqual(
-      expect.objectContaining<Partial<AuditOutput>>({
-        slug: 'unicorn-filename-case',
-        displayValue: expect.stringMatching(/^\d+ warnings?$/),
-        details: {
-          issues: expect.arrayContaining<Issue>([
-            {
-              severity: 'warning',
-              message:
-                'Filename is not in kebab case. Rename it to `use-todos.js`.',
-              source: expect.objectContaining<Issue['source']>({
-                file: path.join(appDir, 'src', 'hooks', 'useTodos.js'),
-              }),
-            },
-          ]),
-        },
-      }),
-    );
-  });
+      const json = await readJsonFile<AuditOutput[]>(
+        runnerPaths.runnerOutputPath,
+      );
+      // expect warnings from unicorn/filename-case rule from default config
+      expect(json).toContainEqual(
+        expect.objectContaining<Partial<AuditOutput>>({
+          slug: 'unicorn-filename-case',
+          displayValue: expect.stringMatching(/^\d+ warnings?$/),
+          details: {
+            issues: expect.arrayContaining<Issue>([
+              {
+                severity: 'warning',
+                message:
+                  'Filename is not in kebab case. Rename it to `use-todos.js`.',
+                source: expect.objectContaining<Issue['source']>({
+                  file: path.join(appDir, 'src', 'hooks', 'useTodos.js'),
+                }),
+              },
+            ]),
+          },
+        }),
+      );
+    },
+  );
 }, 20_000);
