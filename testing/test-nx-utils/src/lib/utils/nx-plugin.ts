@@ -3,6 +3,7 @@ import type {
   CreateNodesContext,
   CreateNodesContextV2,
   CreateNodesResult,
+  CreateNodesV2,
 } from '@nx/devkit';
 import { vol } from 'memfs';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
@@ -28,10 +29,9 @@ import { MEMFS_VOLUME } from '@code-pushup/test-utils';
  * @param createNodeOptions
  * @param mockData
  */
-export async function invokeCreateNodesOnVirtualFiles<
+export async function invokeCreateNodesOnVirtualFilesV1<
   T extends Record<string, unknown> | undefined,
 >(
-  // FIXME: refactor this to use the V2 api & remove the eslint disable on the whole file
   createNodes: CreateNodes,
   context: CreateNodesContext,
   createNodeOptions: T,
@@ -55,7 +55,43 @@ export async function invokeCreateNodesOnVirtualFiles<
   );
 }
 
-export function createNodesContext(
+export async function invokeCreateNodesOnVirtualFilesV2<
+  T extends Record<string, unknown> | undefined,
+>(
+  createNodes: CreateNodesV2,
+  context: CreateNodesContextV2,
+  createNodeOptions: T,
+  mockData: {
+    matchingFilesData: Record<string, string>;
+  },
+) {
+  const { matchingFilesData } = mockData;
+  vol.fromJSON(matchingFilesData, MEMFS_VOLUME);
+
+  const files = Object.keys(matchingFilesData);
+
+  const results = await createNodes[1](files, createNodeOptions, context);
+
+  const result: NonNullable<CreateNodesResult['projects']> = {};
+  return results.reduce(
+    (acc, [_, { projects }]) => ({ ...acc, ...projects }),
+    result,
+  );
+}
+
+export function createNodesContextV1(
+  options?: Partial<CreateNodesContext>,
+): CreateNodesContext {
+  const { workspaceRoot = process.cwd(), nxJsonConfiguration = {} } =
+    options ?? {};
+  return {
+    workspaceRoot,
+    nxJsonConfiguration,
+    configFiles: [],
+  };
+}
+
+export function createNodesContextV2(
   options?: Partial<CreateNodesContextV2>,
 ): CreateNodesContextV2 {
   const { workspaceRoot = process.cwd(), nxJsonConfiguration = {} } =

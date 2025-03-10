@@ -5,13 +5,12 @@ import {
   type CreateNodesV2,
   createNodesFromFiles,
 } from '@nx/devkit';
-import { PROJECT_JSON_FILE_NAME } from '../internal/constants';
-import { createTargets } from './target/targets';
-import type { CreateNodesOptions } from './types';
-import { normalizedCreateNodesContext } from './utils';
+import { PROJECT_JSON_FILE_NAME } from '../internal/constants.js';
+import { createTargets } from './target/targets.js';
+import type { CreateNodesOptions } from './types.js';
+import { normalizedCreateNodesContext } from './utils.js';
 
-// name has to be "createNodes" to get picked up by Nx
-
+/** Create the nodes for a V1 Plugin. The name `createNodes` is required by Nx in order to be picked up as a plugin. */
 export const createNodes: CreateNodes = [
   `**/${PROJECT_JSON_FILE_NAME}`,
   async (
@@ -36,6 +35,7 @@ export const createNodes: CreateNodes = [
   },
 ];
 
+/** Create the nodes for a V2 Plugin. The name `createNodesV2` is required by Nx in order to be picked up as a plugin. */
 export const createNodesV2: CreateNodesV2 = [
   `**/${PROJECT_JSON_FILE_NAME}`,
   async (configFiles, options, context) =>
@@ -48,6 +48,7 @@ export const createNodesV2: CreateNodesV2 = [
           globMatchingFile,
           parsedCreateNodesOptions,
         );
+
         return {
           projects: {
             [normalizedContext.projectRoot]: {

@@ -8,6 +8,13 @@ import type {
   ProjectConfigurationWithName,
 } from './types.js';
 
+/**
+ * Normalize the context for a V1 or V2 Plugin.
+ * @param context - The context for a V1 or V2 Plugin.
+ * @param projectConfigurationFile - The project configuration file.
+ * @param createOptions - The create options.
+ * @returns The normalized context.
+ */
 export async function normalizedCreateNodesContext(
   context: CreateNodesContext | CreateNodesContextV2,
   projectConfigurationFile: string,
