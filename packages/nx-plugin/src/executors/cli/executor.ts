@@ -1,9 +1,9 @@
 import { type ExecutorContext, logger } from '@nx/devkit';
 import { execSync } from 'node:child_process';
-import { createCliCommand } from '../internal/cli';
-import { normalizeContext } from '../internal/context';
-import type { AutorunCommandExecutorOptions } from './schema';
-import { mergeExecutorOptions, parseAutorunExecutorOptions } from './utils';
+import { createCliCommand } from '../internal/cli.js';
+import { normalizeContext } from '../internal/context.js';
+import type { AutorunCommandExecutorOptions } from './schema.js';
+import { mergeExecutorOptions, parseAutorunExecutorOptions } from './utils.js';
 
 export type ExecutorOutput = {
   success: boolean;

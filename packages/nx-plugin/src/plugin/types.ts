@@ -4,8 +4,8 @@ import type {
   ProjectConfiguration,
 } from '@nx/devkit';
 import type { WithRequired } from '@code-pushup/utils';
-import type { DynamicTargetOptions } from '../internal/types';
-import type { CreateTargetsOptions } from './target/targets';
+import type { DynamicTargetOptions } from '../internal/types.js';
+import type { CreateTargetsOptions } from './target/targets.js';
 
 export type ProjectPrefixOptions = {
   projectPrefix?: string;
