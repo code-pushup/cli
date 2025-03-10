@@ -1,12 +1,24 @@
-import {type Tree, updateProjectConfiguration} from '@nx/devkit';
+import { type Tree, updateProjectConfiguration } from '@nx/devkit';
 import path from 'node:path';
-import {readProjectConfiguration} from 'nx/src/generators/utils/project-configuration';
-import {afterAll, afterEach, beforeEach, expect, vi} from 'vitest';
-import {type AutorunCommandExecutorOptions, generateCodePushupConfig,} from '@code-pushup/nx-plugin';
-import {generateWorkspaceAndProject, materializeTree, nxTargetProject,} from '@code-pushup/test-nx-utils';
-import {E2E_ENVIRONMENTS_DIR, removeColorCodes, teardownTestFolder, TEST_OUTPUT_DIR,} from '@code-pushup/test-utils';
-import {executeProcess, readJsonFile} from '@code-pushup/utils';
-import {INLINE_PLUGIN} from './inline-plugin.js';
+import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
+import { afterAll, afterEach, beforeEach, expect, vi } from 'vitest';
+import {
+  type AutorunCommandExecutorOptions,
+  generateCodePushupConfig,
+} from '@code-pushup/nx-plugin';
+import {
+  generateWorkspaceAndProject,
+  materializeTree,
+  nxTargetProject,
+} from '@code-pushup/test-nx-utils';
+import {
+  E2E_ENVIRONMENTS_DIR,
+  TEST_OUTPUT_DIR,
+  removeColorCodes,
+  teardownTestFolder,
+} from '@code-pushup/test-utils';
+import { executeProcess, readJsonFile } from '@code-pushup/utils';
+import { INLINE_PLUGIN } from './inline-plugin.js';
 
 async function addTargetToWorkspace(
   tree: Tree,
@@ -57,7 +69,7 @@ describe('executor command', () => {
       .forEach(([k]) => delete process.env[k]);
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.unstubAllEnvs();
     tree = await generateWorkspaceAndProject(project);
   });
@@ -70,7 +82,6 @@ describe('executor command', () => {
     Object.entries(processEnvCP).forEach(([k, v]) => (process.env[k] = v));
   });
   /* eslint-enable functional/immutable-data, @typescript-eslint/no-dynamic-delete */
-
 
   it('should execute no specific command by default', async () => {
     const cwd = path.join(testFileDir, 'execute-default-command');
