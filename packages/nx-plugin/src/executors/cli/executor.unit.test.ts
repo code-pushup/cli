@@ -25,6 +25,7 @@ describe('runAutorunExecutor', () => {
   const loggerInfoSpy = vi.spyOn(logger, 'info');
   const loggerWarnSpy = vi.spyOn(logger, 'warn');
 
+  /* eslint-disable functional/immutable-data, @typescript-eslint/no-dynamic-delete */
   beforeAll(() => {
     Object.entries(process.env)
       .filter(([k]) => k.startsWith('CP_'))
@@ -43,6 +44,7 @@ describe('runAutorunExecutor', () => {
   afterAll(() => {
     Object.entries(processEnvCP).forEach(([k, v]) => (process.env[k] = v));
   });
+  /* eslint-enable functional/immutable-data, @typescript-eslint/no-dynamic-delete */
 
   it('should call execSync with return result', async () => {
     const output = await runAutorunExecutor({}, executorContext('utils'));
