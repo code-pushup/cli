@@ -1,24 +1,12 @@
-import { type Tree, updateProjectConfiguration } from '@nx/devkit';
+import {type Tree, updateProjectConfiguration} from '@nx/devkit';
 import path from 'node:path';
-import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
-import { afterEach, expect } from 'vitest';
-import {
-  type AutorunCommandExecutorOptions,
-  generateCodePushupConfig,
-} from '@code-pushup/nx-plugin';
-import {
-  generateWorkspaceAndProject,
-  materializeTree,
-  nxTargetProject,
-} from '@code-pushup/test-nx-utils';
-import {
-  E2E_ENVIRONMENTS_DIR,
-  TEST_OUTPUT_DIR,
-  removeColorCodes,
-  teardownTestFolder,
-} from '@code-pushup/test-utils';
-import { executeProcess, readJsonFile } from '@code-pushup/utils';
-import { INLINE_PLUGIN } from './inline-plugin.js';
+import {readProjectConfiguration} from 'nx/src/generators/utils/project-configuration';
+import {afterAll, afterEach, beforeEach, expect, vi} from 'vitest';
+import {type AutorunCommandExecutorOptions, generateCodePushupConfig,} from '@code-pushup/nx-plugin';
+import {generateWorkspaceAndProject, materializeTree, nxTargetProject,} from '@code-pushup/test-nx-utils';
+import {E2E_ENVIRONMENTS_DIR, removeColorCodes, teardownTestFolder, TEST_OUTPUT_DIR,} from '@code-pushup/test-utils';
+import {executeProcess, readJsonFile} from '@code-pushup/utils';
+import {INLINE_PLUGIN} from './inline-plugin.js';
 
 async function addTargetToWorkspace(
   tree: Tree,
@@ -58,18 +46,31 @@ describe('executor command', () => {
     TEST_OUTPUT_DIR,
     'executor-cli',
   );
+  const processEnvCP = Object.fromEntries(
+    Object.entries(process.env).filter(([k]) => k.startsWith('CP_')),
+  );
 
-  beforeEach(async () => {
+  /* eslint-disable functional/immutable-data, @typescript-eslint/no-dynamic-delete */
+  beforeAll(() => {
+    Object.entries(process.env)
+      .filter(([k]) => k.startsWith('CP_'))
+      .forEach(([k]) => delete process.env[k]);
+  });
+
+  beforeEach(() => {
+    vi.unstubAllEnvs();
     tree = await generateWorkspaceAndProject(project);
-    vi.stubEnv('CP_ORGANIZATION', '');
-    vi.stubEnv('CP_PROJECT', '');
-    vi.stubEnv('CP_SERVER', '');
-    vi.stubEnv('CP_API_KEY', '');
   });
 
   afterEach(async () => {
     await teardownTestFolder(testFileDir);
   });
+
+  afterAll(() => {
+    Object.entries(processEnvCP).forEach(([k, v]) => (process.env[k] = v));
+  });
+  /* eslint-enable functional/immutable-data, @typescript-eslint/no-dynamic-delete */
+
 
   it('should execute no specific command by default', async () => {
     const cwd = path.join(testFileDir, 'execute-default-command');
