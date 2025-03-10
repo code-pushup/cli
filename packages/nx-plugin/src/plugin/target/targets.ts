@@ -13,6 +13,7 @@ export type CreateTargetsOptions = {
   projectRoot: string;
   createOptions: CreateNodesOptions;
 };
+
 export async function createTargets(normalizedContext: CreateTargetsOptions) {
   const {
     targetName = CP_TARGET_NAME,
