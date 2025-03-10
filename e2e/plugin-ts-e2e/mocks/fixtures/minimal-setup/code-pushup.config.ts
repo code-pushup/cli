@@ -1,5 +1,5 @@
-import tsPlugin from '@code-pushup/ts-plugin';
+import typescriptPlugin from '@code-pushup/typescript-plugin';
 
 export default {
-  plugins: [tsPlugin(['**/*.ts'])],
+  plugins: [typescriptPlugin(['**/*.ts'])],
 };
