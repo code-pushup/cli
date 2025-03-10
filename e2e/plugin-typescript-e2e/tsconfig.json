@@ -8,7 +8,11 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["vitest"]
+    "types": ["vitest"],
+    "paths": {
+      "@code-pushup/test-setup": ["../../testing/test-setup/src/index.ts"],
+      "@code-pushup/test-nx-setup": ["../../testing/test-nx-setup/src/index.ts"]
+    }
   },
   "files": [],
   "include": [],
