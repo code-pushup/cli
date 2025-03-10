@@ -1,12 +1,12 @@
 import { readdir } from 'node:fs/promises';
-import { CP_TARGET_NAME } from '../constants';
+import { CP_TARGET_NAME } from '../constants.js';
 import type {
   CreateNodesOptions,
   ProjectConfigurationWithName,
-} from '../types';
-import { createConfigurationTarget } from './configuration-target';
-import { CODE_PUSHUP_CONFIG_REGEX } from './constants';
-import { createExecutorTarget } from './executor-target';
+} from '../types.js';
+import { createConfigurationTarget } from './configuration-target.js';
+import { CODE_PUSHUP_CONFIG_REGEX } from './constants.js';
+import { createExecutorTarget } from './executor-target.js';
 
 export type CreateTargetsOptions = {
   projectJson: ProjectConfigurationWithName;

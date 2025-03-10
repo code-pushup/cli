@@ -4,7 +4,7 @@ import type {
   GeneralExecutorOnlyOptions,
   GlobalExecutorOptions,
   ProjectExecutorOnlyOptions,
-} from '../internal/types';
+} from '../internal/types.js';
 
 export type AutorunCommandExecutorOnlyOptions = ProjectExecutorOnlyOptions &
   CollectExecutorOnlyOptions &

@@ -1,11 +1,11 @@
 import { type MockInstance, expect, vi } from 'vitest';
 import { osAgnosticPath } from '@code-pushup/test-utils';
-import type { Command } from '../internal/types';
+import type { Command } from '../internal/types.js';
 import {
   mergeExecutorOptions,
   parseAutorunExecutorOnlyOptions,
   parseAutorunExecutorOptions,
-} from './utils';
+} from './utils.js';
 
 describe('parseAutorunExecutorOnlyOptions', () => {
   it('should provide NO default projectPrefix', () => {
