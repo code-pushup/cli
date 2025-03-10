@@ -34,16 +34,16 @@ export function executorContext<
   };
 }
 
-export async function generateWorkspaceAndProject(
+export async function generateProject(
+  tree: Tree,
   options:
     | string
     | (Omit<Partial<LibraryGeneratorSchema>, 'name'> & {
         name: string;
       }),
 ) {
-  const tree = createTreeWithEmptyWorkspace({ layout: 'apps-libs' });
   const { name, ...normalizedOptions } =
-    typeof options === 'string' ? { name: options } : options;
+    typeof options === 'string' ? { name: options } : (options ?? {});
   await libraryGenerator(tree, {
     name,
     directory: path.join('libs', name),
@@ -56,6 +56,20 @@ export async function generateWorkspaceAndProject(
     projectNameAndRootFormat: 'as-provided',
     ...normalizedOptions,
   });
+}
+export async function generateWorkspaceAndProject(
+  options?:
+    | string
+    | (Omit<Partial<LibraryGeneratorSchema>, 'name'> & {
+        name: string;
+      }),
+) {
+  const tree = createTreeWithEmptyWorkspace({ layout: 'apps-libs' });
+  const { name, ...opts } =
+    typeof options === 'string' ? { name: options } : (options ?? {});
+  if (name) {
+    await generateProject(tree, { ...opts, name });
+  }
 
   return tree;
 }
