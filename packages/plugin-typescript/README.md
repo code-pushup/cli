@@ -89,15 +89,14 @@ The plugin accepts the following parameters:
 | tsConfigPath | string   | `tsconfig.json` | A string that defines the path to your `tsconfig.json` file                                                                                 |
 | onlyAudits   | string[] | undefined       | An array of audit slugs to specify which documentation types you want to measure. Only the specified audits will be included in the results |
 
-#### TsConfigPath
+#### `tsconfig`
 
-Optional parameter. The `tsConfigPath` option accepts a string that defines the path to your config file and defaults to `tsconfig.json`.
+Optional parameter. The `tsconfig` option accepts a string that defines the path to your config file and defaults to `tsconfig.json`.
 
 ```js
-typescriptPlugin({
-  tsConfigPath: './tsconfig.json',
+await typescriptPlugin({
+  tsconfig: './tsconfig.json',
 });
-```
 
 #### OnlyAudits
 
