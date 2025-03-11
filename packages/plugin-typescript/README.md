@@ -48,10 +48,7 @@ export default {
   // ...
   plugins: [
     // ...
-    typescriptPlugin({
-      tsConfigPath: './tsconfig.json',
-      onlyAudits: ['no-implicit-any'],
-    }),
+    await typescriptPlugin(),
   ],
 };
 ```
