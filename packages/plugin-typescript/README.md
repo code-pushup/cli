@@ -86,7 +86,7 @@ The plugin accepts the following parameters:
 
 | Option       | Type     | Default         | Description                                                                                                                                 |
 | ------------ | -------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| tsConfigPath | string   | `tsconfig.json` | A string that defines the path to your `tsconfig.json` file                                                                                 |
+| tsconfig | string   | `tsconfig.json` | A string that defines the path to your `tsconfig.json` file                                                                                 |
 | onlyAudits   | string[] | undefined       | An array of audit slugs to specify which documentation types you want to measure. Only the specified audits will be included in the results |
 
 #### `tsconfig`
