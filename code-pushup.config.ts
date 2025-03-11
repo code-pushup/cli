@@ -41,8 +41,7 @@ export default mergeConfigs(
     'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
   ),
   await typescriptPluginConfigNx({
-    tsconfig:
-      'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
+    tsconfig: 'packages/cli/tsconfig.lib.json',
   }),
   await eslintCoreConfigNx(),
   jsDocsCoreConfig([
