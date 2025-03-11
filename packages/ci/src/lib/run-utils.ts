@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import path from 'node:path';
+import { readFile } from 'node:fs/promises';
 import type { SimpleGit } from 'simple-git';
 import type { CoreConfig, Report, ReportsDiff } from '@code-pushup/models';
 import {
@@ -22,7 +21,6 @@ import { type SourceFileIssue, filterRelevantIssues } from './issues.js';
 import type {
   GitBranch,
   GitRefs,
-  Logger,
   Options,
   OutputFiles,
   ProjectRunResult,
@@ -30,6 +28,7 @@ import type {
   Settings,
 } from './models.js';
 import type { ProjectConfig } from './monorepo/index.js';
+import { saveOutputFiles } from './output-files.js';
 
 export type RunEnv = {
   refs: NormalizedGitRefs;
@@ -47,14 +46,9 @@ export type CompareReportsArgs = {
   project: ProjectConfig | null;
   env: RunEnv;
   base: GitBranch;
-  currReport: string;
-  prevReport: string;
+  currReport: ReportData<'current'>;
+  prevReport: ReportData<'previous'>;
   config: Pick<CoreConfig, 'persist'>;
-};
-
-export type CompareReportsResult = {
-  files: OutputFiles;
-  newIssues?: SourceFileIssue[];
 };
 
 export type BaseReportArgs = {
@@ -62,6 +56,11 @@ export type BaseReportArgs = {
   env: RunEnv;
   base: GitBranch;
   ctx: CommandContext;
+};
+
+export type ReportData<T extends 'current' | 'previous'> = {
+  content: string;
+  files: Required<ProjectRunResult['files']>[T];
 };
 
 export async function createRunEnv(
@@ -111,13 +110,17 @@ export async function runOnProject(
   );
 
   await runCollect(ctx);
-  const reportFiles = persistedFilesFromConfig(config, ctx);
-  const currReport = await readFile(reportFiles.json, 'utf8');
-  logger.debug(`Collected current report at ${reportFiles.json}`);
+  const currReport = await saveReportFiles({
+    project,
+    type: 'current',
+    files: persistedFilesFromConfig(config, ctx),
+    settings,
+  });
+  logger.debug(`Collected current report at ${currReport.files.json}`);
 
   const noDiffOutput = {
-    name: project?.name ?? '-',
-    files: { report: reportFiles },
+    name: projectToName(project),
+    files: { current: currReport.files },
   } satisfies ProjectRunResult;
 
   if (base == null) {
@@ -134,25 +137,15 @@ export async function runOnProject(
   }
 
   const compareArgs = { project, env, base, config, currReport, prevReport };
-  const { files: diffFiles, newIssues } = await compareReports(compareArgs);
-
-  return {
-    ...noDiffOutput,
-    files: {
-      ...noDiffOutput.files,
-      diff: diffFiles,
-    },
-    ...(newIssues && { newIssues }),
-  };
+  return compareReports(compareArgs);
 }
 
 export async function compareReports(
   args: CompareReportsArgs,
-): Promise<CompareReportsResult> {
+): Promise<ProjectRunResult> {
   const {
     project,
-    env: { settings, git },
-    base,
+    env: { settings },
     currReport,
     prevReport,
     config,
@@ -161,47 +154,58 @@ export async function compareReports(
 
   const ctx = createCommandContext(settings, project);
 
-  const reportsDir = path.join(settings.directory, '.code-pushup');
-  const currPath = path.join(reportsDir, 'curr-report.json');
-  const prevPath = path.join(reportsDir, 'prev-report.json');
-  await mkdir(reportsDir, { recursive: true });
-  await writeFile(currPath, currReport);
-  await writeFile(prevPath, prevReport);
-  logger.debug(`Saved reports to ${currPath} and ${prevPath}`);
-
   await runCompare(
-    { before: prevPath, after: currPath, label: project?.name },
+    {
+      before: prevReport.files.json,
+      after: currReport.files.json,
+      label: project?.name,
+    },
     ctx,
   );
-  const comparisonFiles = persistedFilesFromConfig(config, {
+  const diffFiles = persistedFilesFromConfig(config, {
     directory: ctx.directory,
     isDiff: true,
   });
   logger.info('Compared reports and generated diff files');
-  logger.debug(
-    `Generated diff files at ${comparisonFiles.json} and ${comparisonFiles.md}`,
-  );
+  logger.debug(`Generated diff files at ${diffFiles.json} and ${diffFiles.md}`);
 
-  if (!settings.detectNewIssues) {
-    return { files: comparisonFiles };
-  }
+  return {
+    name: projectToName(project),
+    files: {
+      current: currReport.files,
+      previous: prevReport.files,
+      comparison: await saveOutputFiles({
+        project,
+        type: 'comparison',
+        files: diffFiles,
+        settings,
+      }),
+    },
+    ...(settings.detectNewIssues && {
+      newIssues: await findNewIssues({ ...args, diffFiles }),
+    }),
+  };
+}
 
-  const newIssues = await findNewIssues({
-    base,
-    currReport,
-    prevReport,
-    comparisonFiles,
-    logger,
-    git,
-  });
-
-  return { files: comparisonFiles, newIssues };
+export async function saveReportFiles<T extends 'current' | 'previous'>(args: {
+  project: Pick<ProjectConfig, 'name'> | null;
+  type: T;
+  files: ReportData<T>['files'];
+  settings: Settings;
+}): Promise<ReportData<T>> {
+  const [content, files] = await Promise.all([
+    readFile(args.files.json, 'utf8'),
+    saveOutputFiles(args),
+  ]);
+  return { content, files };
 }
 
 export async function collectPreviousReport(
   args: BaseReportArgs,
-): Promise<string | null> {
-  const { ctx, env, base } = args;
+): Promise<ReportData<'previous'> | null> {
+  const { ctx, env, base, project } = args;
+  const { settings } = env;
+  const { logger } = settings;
 
   const cachedBaseReport = await loadCachedBaseReport(args);
   if (cachedBaseReport) {
@@ -215,23 +219,25 @@ export async function collectPreviousReport(
     }
 
     await runCollect(ctx);
-    const { json: prevReportPath } = persistedFilesFromConfig(config, ctx);
-    const prevReport = await readFile(prevReportPath, 'utf8');
-    env.settings.logger.debug(`Collected previous report at ${prevReportPath}`);
-    return prevReport;
+    const report = await saveReportFiles({
+      project,
+      type: 'previous',
+      files: persistedFilesFromConfig(config, ctx),
+      settings,
+    });
+    logger.debug(`Collected previous report at ${report.files.json}`);
+    return report;
   });
 }
 
 export async function loadCachedBaseReport(
   args: BaseReportArgs,
-): Promise<string | null> {
+): Promise<ReportData<'previous'> | null> {
   const {
     project,
-    env: {
-      api,
-      settings: { logger },
-    },
+    env: { api, settings },
   } = args;
+  const { logger } = settings;
 
   const cachedBaseReport = await api
     .downloadReportArtifact?.(project?.name)
@@ -251,10 +257,15 @@ export async function loadCachedBaseReport(
     }
   }
 
-  if (cachedBaseReport) {
-    return readFile(cachedBaseReport, 'utf8');
+  if (!cachedBaseReport) {
+    return null;
   }
-  return null;
+  return saveReportFiles({
+    project,
+    type: 'previous',
+    files: { json: cachedBaseReport },
+    settings,
+  });
 }
 
 export async function runInBaseBranch<T>(
@@ -315,25 +326,29 @@ export async function printPersistConfig(
   return parsePersistConfig(json);
 }
 
-export async function findNewIssues(args: {
-  base: GitBranch;
-  currReport: string;
-  prevReport: string;
-  comparisonFiles: OutputFiles;
-  logger: Logger;
-  git: SimpleGit;
-}): Promise<SourceFileIssue[]> {
-  const { base, currReport, prevReport, comparisonFiles, logger, git } = args;
+export async function findNewIssues(
+  args: CompareReportsArgs & { diffFiles: OutputFiles },
+): Promise<SourceFileIssue[]> {
+  const {
+    base,
+    currReport,
+    prevReport,
+    diffFiles,
+    env: {
+      git,
+      settings: { logger },
+    },
+  } = args;
 
   await git.fetch('origin', base.ref, ['--depth=1']);
-  const reportsDiff = await readFile(comparisonFiles.json, 'utf8');
+  const reportsDiff = await readFile(diffFiles.json, 'utf8');
   const changedFiles = await listChangedFiles(
     { base: 'FETCH_HEAD', head: 'HEAD' },
     git,
   );
   const issues = filterRelevantIssues({
-    currReport: JSON.parse(currReport) as Report,
-    prevReport: JSON.parse(prevReport) as Report,
+    currReport: JSON.parse(currReport.content) as Report,
+    prevReport: JSON.parse(prevReport.content) as Report,
     reportsDiff: JSON.parse(reportsDiff) as ReportsDiff,
     changedFiles,
   });
@@ -344,4 +359,8 @@ export async function findNewIssues(args: {
   );
 
   return issues;
+}
+
+function projectToName(project: ProjectConfig | null): string {
+  return project?.name ?? '-';
 }

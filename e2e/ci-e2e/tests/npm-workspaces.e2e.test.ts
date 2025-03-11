@@ -52,14 +52,14 @@ describe('CI - monorepo mode (npm workspaces)', () => {
           {
             name: '@example/cli',
             files: {
-              report: {
+              current: {
                 json: path.join(
                   repo.baseDir,
-                  'packages/cli/.code-pushup/report.json',
+                  '.code-pushup/.ci/@example/cli/.current/report.json',
                 ),
                 md: path.join(
                   repo.baseDir,
-                  'packages/cli/.code-pushup/report.md',
+                  '.code-pushup/.ci/@example/cli/.current/report.md',
                 ),
               },
             },
@@ -69,7 +69,10 @@ describe('CI - monorepo mode (npm workspaces)', () => {
 
       await expect(
         readJsonFile(
-          path.join(repo.baseDir, 'packages/cli/.code-pushup/report.json'),
+          path.join(
+            repo.baseDir,
+            '.code-pushup/.ci/@example/cli/.current/report.json',
+          ),
         ),
       ).resolves.toEqual(
         expect.objectContaining({
@@ -120,29 +123,46 @@ describe('CI - monorepo mode (npm workspaces)', () => {
       await expect(runInCI(refs, MOCK_API, options, git)).resolves.toEqual({
         mode: 'monorepo',
         commentId: MOCK_COMMENT.id,
-        diffPath: path.join(repo.baseDir, '.code-pushup/merged-report-diff.md'),
+        files: {
+          comparison: {
+            md: path.join(
+              repo.baseDir,
+              '.code-pushup/.ci/.comparison/report-diff.md',
+            ),
+          },
+        },
         projects: expect.arrayContaining<ProjectRunResult>([
           {
             name: '@example/core',
             files: {
-              report: {
+              current: {
                 json: path.join(
                   repo.baseDir,
-                  'packages/core/.code-pushup/report.json',
+                  '.code-pushup/.ci/@example/core/.current/report.json',
                 ),
                 md: path.join(
                   repo.baseDir,
-                  'packages/core/.code-pushup/report.md',
+                  '.code-pushup/.ci/@example/core/.current/report.md',
                 ),
               },
-              diff: {
+              previous: {
                 json: path.join(
                   repo.baseDir,
-                  'packages/core/.code-pushup/report-diff.json',
+                  '.code-pushup/.ci/@example/core/.previous/report.json',
                 ),
                 md: path.join(
                   repo.baseDir,
-                  'packages/core/.code-pushup/report-diff.md',
+                  '.code-pushup/.ci/@example/core/.previous/report.md',
+                ),
+              },
+              comparison: {
+                json: path.join(
+                  repo.baseDir,
+                  '.code-pushup/.ci/@example/core/.comparison/report-diff.json',
+                ),
+                md: path.join(
+                  repo.baseDir,
+                  '.code-pushup/.ci/@example/core/.comparison/report-diff.md',
                 ),
               },
             },
@@ -152,7 +172,7 @@ describe('CI - monorepo mode (npm workspaces)', () => {
       } satisfies RunResult);
 
       const mdPromise = readFile(
-        path.join(repo.baseDir, '.code-pushup/merged-report-diff.md'),
+        path.join(repo.baseDir, '.code-pushup/.ci/.comparison/report-diff.md'),
         'utf8',
       );
       await expect(mdPromise).resolves.toBeTruthy();
