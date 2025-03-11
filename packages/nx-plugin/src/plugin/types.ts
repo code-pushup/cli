@@ -1,6 +1,11 @@
-import type { CreateNodesContext, ProjectConfiguration } from '@nx/devkit';
+import type {
+  CreateNodesContext,
+  CreateNodesContextV2,
+  ProjectConfiguration,
+} from '@nx/devkit';
 import type { WithRequired } from '@code-pushup/utils';
 import type { DynamicTargetOptions } from '../internal/types.js';
+import type { CreateTargetsOptions } from './target/targets.js';
 
 export type ProjectPrefixOptions = {
   projectPrefix?: string;
@@ -13,8 +18,8 @@ export type ProjectConfigurationWithName = WithRequired<
   'name'
 >;
 
-export type NormalizedCreateNodesContext = CreateNodesContext & {
-  projectJson: ProjectConfigurationWithName;
-  projectRoot: string;
-  createOptions: CreateNodesOptions;
-};
+export type NormalizedCreateNodesContext = CreateNodesContext &
+  CreateTargetsOptions;
+
+export type NormalizedCreateNodesV2Context = CreateNodesContextV2 &
+  CreateTargetsOptions;

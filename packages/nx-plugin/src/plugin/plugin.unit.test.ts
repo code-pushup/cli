@@ -13,6 +13,7 @@ describe('@code-pushup/nx-plugin/plugin', () => {
     context = {
       nxJsonConfiguration: {},
       workspaceRoot: '',
+      configFiles: [],
     };
   });
 

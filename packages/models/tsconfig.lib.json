@@ -15,6 +15,7 @@
   "exclude": [
     "vite.config.unit.ts",
     "vite.config.integration.ts",
+    "code-pushup.config.ts",
     "zod2md.config.ts",
     "src/**/*.test.ts",
     "src/**/*.mock.ts",

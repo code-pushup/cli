@@ -4,6 +4,7 @@
     "outDir": "../../dist/out-tsc",
     "types": ["vitest/globals", "vitest/importMeta", "vite/client", "node"]
   },
+  "exclude": ["**/code-pushup.config.ts"],
   "include": [
     "vite.config.unit.ts",
     "vite.config.integration.ts",
