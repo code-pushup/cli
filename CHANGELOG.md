@@ -1,3 +1,16 @@
+## 0.65.1 (2025-03-11)
+
+### 🩹 Fixes
+
+- update pkgs ([#965](https://github.com/code-pushup/cli/pull/965))
+- **ci:** prevent overwriting report artifacts ([3c7fa08f](https://github.com/code-pushup/cli/commit/3c7fa08f))
+- **nx-plugin:** adjust upload config handling ([#937](https://github.com/code-pushup/cli/pull/937))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael Hladky @BioPhoton
+
 ## 0.65.0 (2025-03-05)
 
 ### 🚀 Features
