@@ -11,8 +11,8 @@ It analyzes your codebase using the TypeScript compiler to detect potential issu
 
 TypeScript compiler diagnostics are mapped to Code PushUp audits in the following way:
 
-- `value`: The number of issues found for a specific TypeScript configuration option -> 3
-- `displayValue`: The number of issues found -> 3 issues
+- `value`: The number of issues found for a specific TypeScript configuration option (e.g. 3)
+- `displayValue`: The number of issues found (e.g. "3 issues')
 - `score`: Binary scoring - 1 if no issues are found, 0 if any issues exist
 - Issues are mapped to audit details, containing:
   - Source file location
