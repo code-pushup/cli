@@ -16,6 +16,10 @@ export const cpCliVersion = loadPackageJson(
   path.join(projectsFolder, 'models'),
 ).version;
 
+/**
+ * Load the package.json file from the given folder path.
+ * @param folderPath
+ */
 function loadPackageJson(folderPath: string): PackageJson {
   return readJsonFile<PackageJson>(path.join(folderPath, 'package.json'));
 }
