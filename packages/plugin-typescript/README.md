@@ -98,15 +98,14 @@ await typescriptPlugin({
   tsconfig: './tsconfig.json',
 });
 
-#### OnlyAudits
+#### `onlyAudits`
 
-Optional parameter. The `onlyAudits` option allows you to specify which documentation types you want to measure. Only the specified audits will be included in the results. Example:
+The `onlyAudits` option allows you to specify which documentation types you want to measure. Only the specified audits will be included in the results. All audits are included by default. Example:
 
 ```js
-typescriptPlugin({
+await typescriptPlugin({
   onlyAudits: ['no-implicit-any'],
 });
-```
 
 ### Optionally set up categories
 
