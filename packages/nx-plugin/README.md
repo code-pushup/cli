@@ -66,3 +66,5 @@ Examples:
 
 - `nx run <project-name>:code-pushup`
 - `nx run <project-name>:code-pushup print-config --persist.filename=custom-report`
+
+> ℹ️ This plugin supports both V1 and V2 plugin strategies. When installed in an Nx workspace using Nx 18 or later, the executors will be automatically inferred. Learn more about inferred tasks [here](https://nx.dev/concepts/inferred-tasks).
