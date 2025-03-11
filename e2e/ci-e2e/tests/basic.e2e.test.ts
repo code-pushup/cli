@@ -46,15 +46,18 @@ describe('CI - standalone mode', () => {
       ).resolves.toEqual({
         mode: 'standalone',
         files: {
-          report: {
-            json: path.join(repo.baseDir, '.code-pushup/report.json'),
-            md: path.join(repo.baseDir, '.code-pushup/report.md'),
+          current: {
+            json: path.join(
+              repo.baseDir,
+              '.code-pushup/.ci/.current/report.json',
+            ),
+            md: path.join(repo.baseDir, '.code-pushup/.ci/.current/report.md'),
           },
         },
       } satisfies RunResult);
 
       const jsonPromise = readFile(
-        path.join(repo.baseDir, '.code-pushup/report.json'),
+        path.join(repo.baseDir, '.code-pushup/.ci/.current/report.json'),
         'utf8',
       );
       await expect(jsonPromise).resolves.toBeTruthy();
@@ -103,19 +106,35 @@ describe('CI - standalone mode', () => {
         commentId: MOCK_COMMENT.id,
         newIssues: [],
         files: {
-          report: {
-            json: path.join(repo.baseDir, '.code-pushup/report.json'),
-            md: path.join(repo.baseDir, '.code-pushup/report.md'),
+          current: {
+            json: path.join(
+              repo.baseDir,
+              '.code-pushup/.ci/.current/report.json',
+            ),
+            md: path.join(repo.baseDir, '.code-pushup/.ci/.current/report.md'),
           },
-          diff: {
-            json: path.join(repo.baseDir, '.code-pushup/report-diff.json'),
-            md: path.join(repo.baseDir, '.code-pushup/report-diff.md'),
+          previous: {
+            json: path.join(
+              repo.baseDir,
+              '.code-pushup/.ci/.previous/report.json',
+            ),
+            md: path.join(repo.baseDir, '.code-pushup/.ci/.previous/report.md'),
+          },
+          comparison: {
+            json: path.join(
+              repo.baseDir,
+              '.code-pushup/.ci/.comparison/report-diff.json',
+            ),
+            md: path.join(
+              repo.baseDir,
+              '.code-pushup/.ci/.comparison/report-diff.md',
+            ),
           },
         },
       } satisfies RunResult);
 
       const mdPromise = readFile(
-        path.join(repo.baseDir, '.code-pushup/report-diff.md'),
+        path.join(repo.baseDir, '.code-pushup/.ci/.comparison/report-diff.md'),
         'utf8',
       );
       await expect(mdPromise).resolves.toBeTruthy();

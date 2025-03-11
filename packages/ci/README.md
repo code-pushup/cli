@@ -137,7 +137,7 @@ const result = await runInCI(refs, api);
 if (result.mode === 'standalone') {
   const {
     // output files, can be uploaded as job artifact
-    files: { report, diff },
+    files: { current, comparison },
     // ID of created/updated PR comment
     commentId,
     // array of source code issues, can be used to annotate changed files in PR
@@ -231,7 +231,7 @@ if (result.mode === 'monorepo') {
     // ID of created/updated PR comment
     commentId,
     // merged report-diff.md used in PR comment, can also be uploaded as job artifact
-    diffPath,
+    files: { comparison },
   } = result;
 
   for (const project of projects) {
@@ -239,7 +239,7 @@ if (result.mode === 'monorepo') {
       // detected project name (from package.json, project.json or folder name)
       name,
       // output files, can be uploaded as job artifacts
-      files: { report, diff },
+      files: { current, comparison },
       // array of source code issues, can be used to annotate changed files in PR
       newIssues,
     } = project;

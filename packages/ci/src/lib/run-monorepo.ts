@@ -1,9 +1,5 @@
-import { copyFile, readFile } from 'node:fs/promises';
-import path from 'node:path';
-import {
-  type CoreConfig,
-  DEFAULT_PERSIST_OUTPUT_DIR,
-} from '@code-pushup/models';
+import { readFile } from 'node:fs/promises';
+import type { CoreConfig } from '@code-pushup/models';
 import {
   type ExcludeNullableProps,
   hasNoNullableProps,
@@ -21,15 +17,17 @@ import type {
   MonorepoRunResult,
   OutputFiles,
   ProjectRunResult,
+  Settings,
 } from './models.js';
 import {
   type ProjectConfig,
   type RunManyCommand,
   listMonorepoProjects,
 } from './monorepo/index.js';
+import { saveOutputFiles } from './output-files.js';
 import {
   type BaseReportArgs,
-  type CompareReportsResult,
+  type ReportData,
   type RunEnv,
   checkPrintConfig,
   compareReports,
@@ -37,13 +35,14 @@ import {
   printPersistConfig,
   runInBaseBranch,
   runOnProject,
+  saveReportFiles,
 } from './run-utils.js';
 
 export async function runInMonorepoMode(
   env: RunEnv,
 ): Promise<MonorepoRunResult> {
   const { api, settings } = env;
-  const { logger, directory } = settings;
+  const { logger } = settings;
 
   logger.info('Running Code PushUp in monorepo mode');
 
@@ -53,36 +52,35 @@ export async function runInMonorepoMode(
     : await runProjectsIndividually(projects, env);
 
   const diffJsonPaths = projectResults
-    .map(({ files }) => files.diff?.json)
+    .map(({ files }) => files.comparison?.json)
     .filter((file): file is string => file != null);
 
-  if (diffJsonPaths.length > 0) {
-    const tmpDiffPath = await runMergeDiffs(
-      diffJsonPaths,
-      createCommandContext(settings, projects[0]),
-    );
-    logger.debug(`Merged ${diffJsonPaths.length} diffs into ${tmpDiffPath}`);
-    const diffPath = path.join(
-      directory,
-      DEFAULT_PERSIST_OUTPUT_DIR,
-      path.basename(tmpDiffPath),
-    );
-    if (tmpDiffPath !== diffPath) {
-      await copyFile(tmpDiffPath, diffPath);
-      logger.debug(`Copied ${tmpDiffPath} to ${diffPath}`);
-    }
-    const commentId = settings.skipComment
-      ? null
-      : await commentOnPR(tmpDiffPath, api, logger);
-    return {
-      mode: 'monorepo',
-      projects: projectResults,
-      diffPath,
-      ...(commentId != null && { commentId }),
-    };
+  if (diffJsonPaths.length === 0) {
+    return { mode: 'monorepo', projects: projectResults };
   }
 
-  return { mode: 'monorepo', projects: projectResults };
+  const tmpDiffPath = await runMergeDiffs(
+    diffJsonPaths,
+    createCommandContext(settings, projects[0]),
+  );
+  logger.debug(`Merged ${diffJsonPaths.length} diffs into ${tmpDiffPath}`);
+  const { md: diffPath } = await saveOutputFiles({
+    project: null,
+    type: 'comparison',
+    files: { md: tmpDiffPath },
+    settings,
+  });
+
+  const commentId = settings.skipComment
+    ? null
+    : await commentOnPR(diffPath, api, logger);
+
+  return {
+    mode: 'monorepo',
+    projects: projectResults,
+    files: { comparison: { md: diffPath } },
+    ...(commentId != null && { commentId }),
+  };
 }
 
 type ProjectReport = {
@@ -114,7 +112,7 @@ async function runProjectsInBulk(
     refs: { base },
     settings,
   } = env;
-  const logger = settings.logger;
+  const { logger } = settings;
 
   logger.info(
     `Running on ${projects.length} projects in bulk (parallel: ${settings.parallel})`,
@@ -126,7 +124,12 @@ async function runProjectsInBulk(
     projects.map(async (project): Promise<ProjectReport> => {
       const ctx = createCommandContext(settings, project);
       const config = await printPersistConfig(ctx);
-      const reports = persistedFilesFromConfig(config, ctx);
+      const reports = await saveOutputFiles({
+        project,
+        type: 'current',
+        files: persistedFilesFromConfig(config, ctx),
+        settings,
+      });
       return { project, reports, config, ctx };
     }),
   );
@@ -150,12 +153,16 @@ async function compareProjectsInBulk(
   const projectReportsWithCache = await Promise.all(
     currProjectReports.map(async ({ project, ctx, reports, config }) => {
       const args = { project, base, ctx, env };
-      return {
-        ...args,
-        config,
-        currReport: await readFile(reports.json, 'utf8'),
-        prevReport: await loadCachedBaseReport(args),
-      };
+      const [currReport, prevReport] = await Promise.all([
+        readFile(reports.json, 'utf8').then(
+          (content): ReportData<'current'> => ({
+            content,
+            files: reports,
+          }),
+        ),
+        loadCachedBaseReport(args),
+      ]);
+      return { ...args, config, currReport, prevReport };
     }),
   );
   const uncachedProjectReports = projectReportsWithCache.filter(
@@ -180,7 +187,7 @@ async function compareProjectsInBulk(
     .filter(hasNoNullableProps);
 
   const projectComparisons = await projectsToCompare.reduce<
-    Promise<Record<string, CompareReportsResult>>
+    Promise<Record<string, ProjectRunResult>>
   >(
     async (acc, args) => ({
       ...(await acc),
@@ -194,16 +201,13 @@ async function compareProjectsInBulk(
 
 function finalizeProjectReports(
   projectReports: ProjectReport[],
-  projectComparisons?: Record<string, CompareReportsResult>,
+  projectComparisons?: Record<string, ProjectRunResult>,
 ): ProjectRunResult[] {
   return projectReports.map(({ project, reports }): ProjectRunResult => {
     const comparison = projectComparisons?.[project.name];
     return {
       name: project.name,
-      files: {
-        report: reports,
-        ...(comparison && { diff: comparison.files }),
-      },
+      files: comparison?.files ?? { current: reports },
       ...(comparison?.newIssues && { newIssues: comparison.newIssues }),
     };
   });
@@ -214,10 +218,9 @@ async function collectPreviousReports(
   uncachedProjectReports: ExcludeNullableProps<BaseReportArgs>[],
   runManyCommand: RunManyCommand,
   env: RunEnv,
-): Promise<Record<string, string>> {
-  const {
-    settings: { logger },
-  } = env;
+): Promise<Record<string, ReportData<'previous'>>> {
+  const { settings } = env;
+  const { logger } = settings;
 
   if (uncachedProjectReports.length === 0) {
     return {};
@@ -254,16 +257,28 @@ async function collectPreviousReports(
       await collectMany(runManyCommand, env, onlyProjects);
     }
 
-    const projectFiles = validProjectConfigs.map(
-      async ({ name, ctx, config }) =>
-        [
-          name,
-          await readFile(persistedFilesFromConfig(config, ctx).json, 'utf8'),
-        ] as const,
+    const projectFiles = validProjectConfigs.map(args =>
+      savePreviousProjectReport({ ...args, settings }),
     );
 
     return Object.fromEntries(await Promise.all(projectFiles));
   });
+}
+
+async function savePreviousProjectReport(args: {
+  name: string;
+  ctx: CommandContext;
+  config: Pick<CoreConfig, 'persist'>;
+  settings: Settings;
+}): Promise<[string, ReportData<'previous'>]> {
+  const { name, ctx, config, settings } = args;
+  const files = await saveReportFiles({
+    project: { name },
+    type: 'previous',
+    files: persistedFilesFromConfig(config, ctx),
+    settings,
+  });
+  return [name, files];
 }
 
 async function collectMany(
