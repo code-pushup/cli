@@ -6,7 +6,7 @@
 
 🕵️ **Code PushUp plugin for measuring TypeScript quality with compiler diagnostics.** 🔥
 
-This plugin allows you to **incrementally adopting strict compilation flags in TypeScript projects**.
+This plugin allows you to **incrementally adopt strict compilation flags in TypeScript projects**.
 It analyzes your codebase using the TypeScript compiler to detect potential issues and configuration problems.
 
 TypeScript compiler diagnostics are mapped to Code PushUp audits in the following way:
