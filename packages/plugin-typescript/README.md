@@ -67,7 +67,7 @@ The plugin provides multiple audits grouped into different sets:
 - _Configuration Errors_: `configuration-errors` - Errors that occur when parsing TypeScript configuration files
 - _Declaration and Language Service Errors_: `declaration-and-language-service-errors` - Errors that occur during TypeScript language service operations
 - _Internal Errors_: `internal-errors` - Errors that occur during TypeScript internal operations
-- _No Implicit Any Errors_: `no-implicit-any-errors` - Errors related to no implicit any compiler option
+- _No Implicit Any Errors_: `no-implicit-any-errors` - Errors related to `noImplicitAny` compiler option
 - _Unknown Codes_: `unknown-codes` - Errors that do not match any known TypeScript error code
 
 Each audit:
