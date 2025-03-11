@@ -39,7 +39,7 @@ TypeScript compiler diagnostics are mapped to Code PushUp audits in the followin
 
 3. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.ts`).
 
-Define the ts config file used to compile your codebase. Based on those compiler options the plugin will generate audits.
+By default, a root `tsconfig.json` is used to compile your codebase. Based on those compiler options, the plugin will generate audits.
 
 ```ts
 import typescriptPlugin from '@code-pushup/typescript-plugin';
