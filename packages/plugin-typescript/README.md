@@ -110,7 +110,7 @@ typescriptPlugin({
 
 ### Optionally set up categories
 
-1. Reference audits (or groups) which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
+Reference audits (or groups) which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
 
 Assign weights based on what influence each TypeScript checks should have on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
 
