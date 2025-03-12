@@ -1,7 +1,10 @@
 import { bold, gray } from 'ansis';
 import { type Options, bundleRequire } from 'bundle-require';
+import * as fs from 'node:fs';
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
+import * as readline from 'node:readline';
+import type { SourceFileLocation } from '@code-pushup/models';
 import { formatBytes } from './formatting.js';
 import { logMultipleResults } from './log-results.js';
 import { ui } from './logging.js';
@@ -93,6 +96,7 @@ export type CrawlFileSystemOptions<T> = {
   pattern?: string | RegExp;
   fileTransform?: (filePath: string) => Promise<T> | T;
 };
+
 export async function crawlFileSystem<T = string>(
   options: CrawlFileSystemOptions<T>,
 ): Promise<T[]> {
@@ -158,4 +162,105 @@ export function filePathToCliArg(filePath: string): string {
 
 export function projectToFilename(project: string): string {
   return project.replace(/[/\\\s]+/g, '-').replace(/@/g, '');
+}
+
+export type LineHit = {
+  startColumn: number;
+  endColumn: number;
+};
+
+export type FileHit = Pick<SourceFileLocation, 'file'> &
+  Exclude<SourceFileLocation['position'], undefined>;
+
+const escapeRegExp = (str: string): string =>
+  str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const ensureGlobalRegex = (pattern: RegExp): RegExp =>
+  new RegExp(
+    pattern.source,
+    pattern.flags.includes('g') ? pattern.flags : `${pattern.flags}g`,
+  );
+
+const findAllMatches = (
+  line: string,
+  searchPattern: string | RegExp | ((line: string) => LineHit[] | null),
+): LineHit[] => {
+  if (typeof searchPattern === 'string') {
+    return [...line.matchAll(new RegExp(escapeRegExp(searchPattern), 'g'))].map(
+      ({ index = 0 }) => ({
+        startColumn: index,
+        endColumn: index + searchPattern.length,
+      }),
+    );
+  }
+
+  if (searchPattern instanceof RegExp) {
+    return [...line.matchAll(ensureGlobalRegex(searchPattern))].map(
+      ({ index = 0, 0: match }) => ({
+        startColumn: index,
+        endColumn: index + match.length,
+      }),
+    );
+  }
+
+  return searchPattern(line) || [];
+};
+
+/**
+ * Reads a file line-by-line and checks if it contains the search pattern.
+ * @param file - The file path to check.
+ * @param searchPattern - The pattern to match.
+ * @param options - Additional options. If true, the search will stop after the first hit.
+ * @returns Promise<FileHit[]> - List of hits with matching details.
+ */
+export async function findInFile(
+  file: string,
+  searchPattern: string | RegExp | ((line: string) => LineHit[] | null),
+  options?: { bail?: boolean },
+): Promise<FileHit[]> {
+  const { bail = false } = options || {};
+  const hits: FileHit[] = [];
+
+  return new Promise((resolve, reject) => {
+    const stream = fs.createReadStream(file, { encoding: 'utf8' });
+    const rl = readline.createInterface({ input: stream });
+    // eslint-disable-next-line functional/no-let
+    let lineNumber = 0;
+    // eslint-disable-next-line functional/no-let
+    let isResolved = false;
+
+    rl.on('line', line => {
+      lineNumber++;
+      const matches = findAllMatches(line, searchPattern);
+
+      matches.forEach(({ startColumn, endColumn }) => {
+        // eslint-disable-next-line functional/immutable-data
+        hits.push({
+          file,
+          startLine: lineNumber,
+          startColumn,
+          endLine: lineNumber,
+          endColumn,
+        });
+
+        if (bail && !isResolved) {
+          isResolved = true;
+          stream.destroy();
+          resolve(hits);
+        }
+      });
+    });
+    rl.once('close', () => {
+      if (!isResolved) {
+        isResolved = true;
+      }
+      resolve(hits); // Resolve only once after closure
+    });
+
+    rl.once('error', error => {
+      if (!isResolved) {
+        isResolved = true;
+        reject(error);
+      }
+    });
+  });
 }
