@@ -5,7 +5,7 @@ import { CP_TARGET_NAME } from './constants.js';
 import type {
   CreateNodesOptions,
   NormalizedCreateNodesContext,
-  NormalizedCreateNodesV2Context,
+  NormalizedCreateNodesContextV2,
   ProjectConfigurationWithName,
 } from './types.js';
 
@@ -49,7 +49,7 @@ export async function normalizedCreateNodesV2Context(
   context: CreateNodesContextV2,
   projectConfigurationFile: string,
   createOptions: CreateNodesOptions = {},
-): Promise<NormalizedCreateNodesV2Context> {
+): Promise<NormalizedCreateNodesContextV2> {
   const projectRoot = path.dirname(projectConfigurationFile);
 
   try {
