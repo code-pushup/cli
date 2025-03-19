@@ -6,7 +6,7 @@ export default defineConfig({
   cacheDir: '../../node_modules/.vite/plugin-lighthouse-e2e',
   test: {
     reporters: ['basic'],
-    testTimeout: 120_000,
+    testTimeout: 40_000,
     globals: true,
     alias: tsconfigPathAliases(),
     pool: 'threads',
