@@ -84,16 +84,16 @@ Each set is also available as group in the plugin. See more under [Audits and Gr
 
 The plugin accepts the following parameters:
 
-| Option       | Type     | Default         | Description                                                                                                                                 |
-| ------------ | -------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| tsconfig | string   | `tsconfig.json` | A string that defines the path to your `tsconfig.json` file                                                                                 |
-| onlyAudits   | string[] | undefined       | An array of audit slugs to specify which documentation types you want to measure. Only the specified audits will be included in the results |
+| Option     | Type     | Default         | Description                                                                                                                                 |
+| ---------- | -------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| tsconfig   | string   | `tsconfig.json` | A string that defines the path to your `tsconfig.json` file                                                                                 |
+| onlyAudits | string[] | undefined       | An array of audit slugs to specify which documentation types you want to measure. Only the specified audits will be included in the results |
 
 #### `tsconfig`
 
 Optional parameter. The `tsconfig` option accepts a string that defines the path to your config file and defaults to `tsconfig.json`.
 
-```js
+````js
 await typescriptPlugin({
   tsconfig: './tsconfig.json',
 });
@@ -123,13 +123,13 @@ categories: [
       {
         type: 'audit',
         plugin: 'typescript',
-        slug: 'no-implicit-any',
+        slug: 'semantic-errors',
         weight: 2,
       },
       {
         type: 'audit',
         plugin: 'typescript',
-        slug: 'no-explicit-any',
+        slug: 'syntax-errors',
         weight: 1,
       },
       // ...
@@ -137,7 +137,7 @@ categories: [
   },
   // ...
 ];
-```
+````
 
 Also groups can be used:
 
