@@ -1,7 +1,7 @@
 import { type Tree, updateProjectConfiguration } from '@nx/devkit';
 import path from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
-import { afterEach, expect } from 'vitest';
+import { afterAll, afterEach, beforeEach, expect, vi } from 'vitest';
 import {
   type AutorunCommandExecutorOptions,
   generateCodePushupConfig,
@@ -58,14 +58,30 @@ describe('executor command', () => {
     TEST_OUTPUT_DIR,
     'executor-cli',
   );
+  const processEnvCP = Object.fromEntries(
+    Object.entries(process.env).filter(([k]) => k.startsWith('CP_')),
+  );
+
+  /* eslint-disable functional/immutable-data, @typescript-eslint/no-dynamic-delete */
+  beforeAll(() => {
+    Object.entries(process.env)
+      .filter(([k]) => k.startsWith('CP_'))
+      .forEach(([k]) => delete process.env[k]);
+  });
 
   beforeEach(async () => {
+    vi.unstubAllEnvs();
     tree = await generateWorkspaceAndProject(project);
   });
 
   afterEach(async () => {
     await teardownTestFolder(testFileDir);
   });
+
+  afterAll(() => {
+    Object.entries(processEnvCP).forEach(([k, v]) => (process.env[k] = v));
+  });
+  /* eslint-enable functional/immutable-data, @typescript-eslint/no-dynamic-delete */
 
   it('should execute no specific command by default', async () => {
     const cwd = path.join(testFileDir, 'execute-default-command');
@@ -94,6 +110,32 @@ describe('executor command', () => {
     expect(code).toBe(0);
     const cleanStdout = removeColorCodes(stdout);
     expect(cleanStdout).toContain('nx run my-lib:code-pushup print-config');
+
+    await expect(() =>
+      readJsonFile(path.join(cwd, '.code-pushup', project, 'report.json')),
+    ).rejects.toThrow('');
+  });
+
+  it('should execute print-config executor with api key', async () => {
+    const cwd = path.join(testFileDir, 'execute-print-config-command');
+    await addTargetToWorkspace(tree, { cwd, project });
+
+    const { stdout, code } = await executeProcess({
+      command: 'npx',
+      args: [
+        'nx',
+        'run',
+        `${project}:code-pushup`,
+        'print-config',
+        '--upload.apiKey=a123a',
+      ],
+      cwd,
+    });
+
+    expect(code).toBe(0);
+    const cleanStdout = removeColorCodes(stdout);
+    expect(cleanStdout).toContain('nx run my-lib:code-pushup print-config');
+    expect(cleanStdout).toContain('a123a');
 
     await expect(() =>
       readJsonFile(path.join(cwd, '.code-pushup', project, 'report.json')),

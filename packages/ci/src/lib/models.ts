@@ -94,7 +94,9 @@ export type MonorepoRunResult = {
   mode: 'monorepo';
   projects: ProjectRunResult[];
   commentId?: number;
-  diffPath?: string;
+  files?: {
+    comparison: Pick<OutputFiles, 'md'>;
+  };
 };
 
 /**
@@ -103,8 +105,9 @@ export type MonorepoRunResult = {
 export type ProjectRunResult = {
   name: string;
   files: {
-    report: OutputFiles;
-    diff?: OutputFiles;
+    current: OutputFiles;
+    previous?: OutputFiles | Pick<OutputFiles, 'json'>;
+    comparison?: OutputFiles;
   };
   newIssues?: SourceFileIssue[];
 };

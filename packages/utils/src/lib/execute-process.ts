@@ -1,4 +1,3 @@
-import { gray } from 'ansis';
 import {
   type ChildProcess,
   type ChildProcessByStdio,
@@ -7,7 +6,8 @@ import {
   spawn,
 } from 'node:child_process';
 import type { Readable, Writable } from 'node:stream';
-import { ui } from './logging.js';
+import { formatCommandLog } from './format-command-log.js';
+import { isVerbose, ui } from './logging.js';
 import { calcDuration } from './reports/utils.js';
 
 /**
@@ -150,12 +150,11 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   const date = new Date().toISOString();
   const start = performance.now();
 
-  const logCommand = [command, ...(args || [])].join(' ');
-  ui().logger.log(
-    gray(
-      `Executing command:\n${logCommand}\nIn working directory:\n${cfg.cwd ?? process.cwd()}`,
-    ),
-  );
+  if (isVerbose()) {
+    ui().logger.log(
+      formatCommandLog(command, args, `${cfg.cwd ?? process.cwd()}`),
+    );
+  }
 
   return new Promise((resolve, reject) => {
     // shell:true tells Windows to use shell command for spawning a child process

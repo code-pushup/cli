@@ -12,7 +12,7 @@ export async function runInStandaloneMode(
 
   const { files, newIssues } = await runOnProject(null, env);
 
-  const commentMdPath = files.diff?.md;
+  const commentMdPath = files.comparison?.md;
   if (!settings.skipComment && commentMdPath) {
     const commentId = await commentOnPR(commentMdPath, api, logger);
     return {
