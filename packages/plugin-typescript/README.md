@@ -137,7 +137,7 @@ categories: [
   },
   // ...
 ];
-````
+```
 
 Also groups can be used:
 
@@ -160,3 +160,4 @@ categories: [
   // ...
 ];
 ```
+````
