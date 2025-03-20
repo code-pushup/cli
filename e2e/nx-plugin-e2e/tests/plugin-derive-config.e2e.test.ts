@@ -11,7 +11,11 @@ import {
   nxTargetProject,
   registerPluginInWorkspace,
 } from '@code-pushup/test-nx-utils';
-import { E2E_ENVIRONMENTS_DIR, TEST_OUTPUT_DIR } from '@code-pushup/test-utils';
+import {
+  E2E_ENVIRONMENTS_DIR,
+  TEST_OUTPUT_DIR,
+  teardownTestFolder,
+} from '@code-pushup/test-utils';
 
 describe('nx-plugin-derived-config', () => {
   let root: string;
@@ -33,7 +37,7 @@ describe('nx-plugin-derived-config', () => {
   });
 
   afterEach(async () => {
-    // await teardownTestFolder(testFileDir);
+    await teardownTestFolder(testFileDir);
   });
 
   it('should derive config from project.json', async () => {
