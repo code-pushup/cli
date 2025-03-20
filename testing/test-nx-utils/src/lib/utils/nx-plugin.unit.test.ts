@@ -1,4 +1,4 @@
-import * as process from 'node:process';
+import process from 'node:process';
 import { describe, expect } from 'vitest';
 import {
   createNodesContextV1,
