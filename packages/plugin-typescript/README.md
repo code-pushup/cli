@@ -93,10 +93,11 @@ The plugin accepts the following parameters:
 
 Optional parameter. The `tsconfig` option accepts a string that defines the path to your config file and defaults to `tsconfig.json`.
 
-````js
+```js
 await typescriptPlugin({
   tsconfig: './tsconfig.json',
 });
+```
 
 #### `onlyAudits`
 
@@ -106,6 +107,7 @@ The `onlyAudits` option allows you to specify which documentation types you want
 await typescriptPlugin({
   onlyAudits: ['no-implicit-any'],
 });
+```
 
 ### Optionally set up categories
 
@@ -160,4 +162,3 @@ categories: [
   // ...
 ];
 ```
-````
