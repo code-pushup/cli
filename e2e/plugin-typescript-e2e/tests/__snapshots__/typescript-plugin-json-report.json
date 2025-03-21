@@ -34,7 +34,6 @@
           "details": {
             "issues": [
               {
-                "message": "TS1136: Property assignment expected.",
                 "severity": "error",
                 "source": {
                   "file": "tmp/e2e/plugin-typescript-e2e/src/1-syntax-errors.ts",
@@ -56,7 +55,6 @@
           "details": {
             "issues": [
               {
-                "message": "TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.",
                 "severity": "error",
                 "source": {
                   "file": "tmp/e2e/plugin-typescript-e2e/src/2-semantic-errors.ts",
@@ -66,7 +64,6 @@
                 },
               },
               {
-                "message": "TS2322: Type 'null' is not assignable to type 'string'.",
                 "severity": "error",
                 "source": {
                   "file": "tmp/e2e/plugin-typescript-e2e/src/2-semantic-errors.ts",
@@ -88,7 +85,6 @@
           "details": {
             "issues": [
               {
-                "message": "TS4112: This member cannot have an 'override' modifier because its containing class 'Standalone' does not extend another class.",
                 "severity": "error",
                 "source": {
                   "file": "tmp/e2e/plugin-typescript-e2e/src/4-languale-service.ts",
@@ -121,7 +117,6 @@
           "details": {
             "issues": [
               {
-                "message": "TS6059: File '/Users/michael_hladky/WebstormProjects/quality-metrics-cli/tmp/e2e/plugin-typescript-e2e/exclude/utils.ts' is not under 'rootDir' 'src'. 'rootDir' is expected to contain all source files.",
                 "severity": "error",
                 "source": {
                   "file": "tmp/e2e/plugin-typescript-e2e/src/6-configuration-errors.ts",
@@ -161,10 +156,10 @@
           "value": 0,
         },
       ],
-      "date": "2025-03-21T14:28:54.857Z",
+      "date": "2025-03-21T15:11:20.928Z",
       "description": "Official Code PushUp Typescript plugin.",
       "docsUrl": "https://www.npmjs.com/package/@code-pushup/typescript-plugin/",
-      "duration": 2251,
+      "duration": 2173,
       "groups": [
         {
           "description": "Syntax, semantic, and internal compiler errors are critical for identifying and preventing bugs.",

@@ -78,15 +78,17 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
           ...audit,
           details: {
             ...audit.details,
-            issues: (audit?.details?.issues ?? []).map(issue => ({
-              ...issue,
-              source: {
-                ...issue.source,
-                ...(issue?.source?.file
-                  ? { file: osAgnosticPath(issue?.source?.file) }
-                  : {}),
-              },
-            })),
+            issues: (audit?.details?.issues ?? []).map(
+              ({ message, ...issue }) => ({
+                ...issue,
+                source: {
+                  ...issue.source,
+                  ...(issue?.source?.file
+                    ? { file: osAgnosticPath(issue?.source?.file) }
+                    : {}),
+                },
+              }),
+            ),
           },
         })),
       })),
