@@ -57,8 +57,14 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
     expect(code).toBe(0);
     const cleanStdout = removeColorCodes(stdout);
 
-    // @TODO should be 1 test failing => /● NoImplicitAny\s+1/
-    expect(cleanStdout).toMatch(/● Configuration-Errors\s+\d+/);
+    expect(cleanStdout).toMatch(/● Semantic errors\s+\d+ issue/);
+    expect(cleanStdout).toMatch(/● Configuration errors\s+\d+ issue/);
+    expect(cleanStdout).toMatch(
+      /● Declaration and language service errors\s+\d+ issue/,
+    );
+    expect(cleanStdout).toMatch(/● Syntax errors\s+\d+ issue/);
+    expect(cleanStdout).toMatch(/● Internal errors\s+\d+ issue/);
+    expect(cleanStdout).toMatch(/● No implicit any errors\s+\d+ issue/);
 
     const reportJson = await readJsonFile<Report>(
       join(envRoot, outputDir, 'report.json'),
