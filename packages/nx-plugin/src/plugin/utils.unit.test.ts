@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { describe, expect } from 'vitest';
-import { createNodesContext } from '@code-pushup/test-nx-utils';
+import { createNodesContextV2 } from '@code-pushup/test-nx-utils';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { normalizedCreateNodesContext } from './utils.js';
 
@@ -15,7 +15,7 @@ describe('normalizedCreateNodesContext', () => {
 
     await expect(
       normalizedCreateNodesContext(
-        createNodesContext({ workspaceRoot: MEMFS_VOLUME }),
+        createNodesContextV2({ workspaceRoot: MEMFS_VOLUME }),
         'project.json',
       ),
     ).resolves.toStrictEqual(
@@ -37,7 +37,7 @@ describe('normalizedCreateNodesContext', () => {
 
     await expect(
       normalizedCreateNodesContext(
-        createNodesContext(),
+        createNodesContextV2(),
         'packages/utils/project.json',
       ),
     ).resolves.toStrictEqual(
@@ -59,7 +59,7 @@ describe('normalizedCreateNodesContext', () => {
 
     await expect(
       normalizedCreateNodesContext(
-        createNodesContext({
+        createNodesContextV2({
           nxJsonConfiguration: {
             workspaceLayout: {
               libsDir: 'libs',
@@ -90,7 +90,7 @@ describe('normalizedCreateNodesContext', () => {
     );
 
     await expect(
-      normalizedCreateNodesContext(createNodesContext(), 'project.json'),
+      normalizedCreateNodesContext(createNodesContextV2(), 'project.json'),
     ).resolves.toStrictEqual(
       expect.objectContaining({
         projectJson: {
@@ -109,7 +109,7 @@ describe('normalizedCreateNodesContext', () => {
     );
 
     await expect(
-      normalizedCreateNodesContext(createNodesContext(), 'project.json'),
+      normalizedCreateNodesContext(createNodesContextV2(), 'project.json'),
     ).rejects.toThrow('Error parsing project.json file project.json.');
   });
 
@@ -124,7 +124,7 @@ describe('normalizedCreateNodesContext', () => {
     );
 
     await expect(
-      normalizedCreateNodesContext(createNodesContext(), 'project.json'),
+      normalizedCreateNodesContext(createNodesContextV2(), 'project.json'),
     ).resolves.toStrictEqual(
       expect.objectContaining({
         createOptions: {
@@ -145,7 +145,7 @@ describe('normalizedCreateNodesContext', () => {
     );
 
     await expect(
-      normalizedCreateNodesContext(createNodesContext(), 'project.json', {
+      normalizedCreateNodesContext(createNodesContextV2(), 'project.json', {
         projectPrefix: 'cli',
       }),
     ).resolves.toStrictEqual(
