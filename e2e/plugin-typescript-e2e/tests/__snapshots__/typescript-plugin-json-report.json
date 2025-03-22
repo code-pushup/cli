@@ -31,135 +31,42 @@
       "audits": [
         {
           "description": "Errors that occur during parsing and lexing of TypeScript source code",
-          "details": {
-            "issues": [
-              {
-                "severity": "error",
-                "source": {
-                  "file": "tmp/e2e/plugin-typescript-e2e/src/1-syntax-errors.ts",
-                  "position": {
-                    "startLine": 1,
-                  },
-                },
-              },
-            ],
-          },
-          "displayValue": "1 issue",
-          "score": 0,
           "slug": "syntax-errors",
           "title": "Syntax errors",
-          "value": 1,
         },
         {
           "description": "Errors that occur during type checking and type inference",
-          "details": {
-            "issues": [
-              {
-                "severity": "error",
-                "source": {
-                  "file": "tmp/e2e/plugin-typescript-e2e/src/2-semantic-errors.ts",
-                  "position": {
-                    "startLine": 3,
-                  },
-                },
-              },
-              {
-                "severity": "error",
-                "source": {
-                  "file": "tmp/e2e/plugin-typescript-e2e/src/2-semantic-errors.ts",
-                  "position": {
-                    "startLine": 7,
-                  },
-                },
-              },
-            ],
-          },
-          "displayValue": "2 issues",
-          "score": 0,
           "slug": "semantic-errors",
           "title": "Semantic errors",
-          "value": 2,
         },
         {
           "description": "Errors that occur during TypeScript language service operations",
-          "details": {
-            "issues": [
-              {
-                "severity": "error",
-                "source": {
-                  "file": "tmp/e2e/plugin-typescript-e2e/src/4-languale-service.ts",
-                  "position": {
-                    "startLine": 2,
-                  },
-                },
-              },
-            ],
-          },
-          "displayValue": "1 issue",
-          "score": 0,
           "slug": "declaration-and-language-service-errors",
           "title": "Declaration and language service errors",
-          "value": 1,
         },
         {
           "description": "Errors that occur during TypeScript internal operations",
-          "details": {
-            "issues": [],
-          },
-          "displayValue": "0 issues",
-          "score": 1,
           "slug": "internal-errors",
           "title": "Internal errors",
-          "value": 0,
         },
         {
           "description": "Errors that occur when parsing TypeScript configuration files",
-          "details": {
-            "issues": [
-              {
-                "severity": "error",
-                "source": {
-                  "file": "tmp/e2e/plugin-typescript-e2e/src/6-configuration-errors.ts",
-                  "position": {
-                    "startLine": 1,
-                  },
-                },
-              },
-            ],
-          },
-          "displayValue": "1 issue",
-          "score": 0,
           "slug": "configuration-errors",
           "title": "Configuration errors",
-          "value": 1,
         },
         {
           "description": "Errors related to no implicit any compiler option",
-          "details": {
-            "issues": [],
-          },
-          "displayValue": "0 issues",
-          "score": 1,
           "slug": "no-implicit-any-errors",
           "title": "No implicit any errors",
-          "value": 0,
         },
         {
           "description": "Errors that do not match any known TypeScript error code",
-          "details": {
-            "issues": [],
-          },
-          "displayValue": "0 issues",
-          "score": 1,
           "slug": "unknown-codes",
           "title": "Unknown codes",
-          "value": 0,
         },
       ],
-      "date": "2025-03-21T15:11:20.928Z",
       "description": "Official Code PushUp Typescript plugin.",
       "docsUrl": "https://www.npmjs.com/package/@code-pushup/typescript-plugin/",
-      "duration": 2173,
       "groups": [
         {
           "description": "Syntax, semantic, and internal compiler errors are critical for identifying and preventing bugs.",
@@ -215,7 +122,6 @@
       "packageName": "@code-pushup/typescript-plugin",
       "slug": "typescript",
       "title": "Typescript",
-      "version": "0.57.0",
     },
   ],
 }

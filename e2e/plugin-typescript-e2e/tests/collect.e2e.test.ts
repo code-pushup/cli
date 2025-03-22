@@ -7,8 +7,8 @@ import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
+  omitVariablePluginData,
   omitVariableReportData,
-  osAgnosticPath,
   removeColorCodes,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
@@ -70,28 +70,8 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
       join(envRoot, outputDir, 'report.json'),
     );
     expect(() => reportSchema.parse(reportJson)).not.toThrow();
-    expect({
-      ...omitVariableReportData(reportJson, { omitAuditData: false }),
-      plugins: reportJson.plugins.map(plugin => ({
-        ...plugin,
-        audits: plugin.audits.map(audit => ({
-          ...audit,
-          details: {
-            ...audit.details,
-            issues: (audit?.details?.issues ?? []).map(
-              ({ message, ...issue }) => ({
-                ...issue,
-                source: {
-                  ...issue.source,
-                  ...(issue?.source?.file
-                    ? { file: osAgnosticPath(issue?.source?.file) }
-                    : {}),
-                },
-              }),
-            ),
-          },
-        })),
-      })),
-    }).toMatchFileSnapshot('__snapshots__/typescript-plugin-json-report.json');
+    expect(
+      omitVariableReportData(reportJson, { omitAuditData: true }),
+    ).toMatchFileSnapshot('__snapshots__/typescript-plugin-json-report.json');
   });
 });
