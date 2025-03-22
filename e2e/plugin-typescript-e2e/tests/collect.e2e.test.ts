@@ -7,7 +7,6 @@ import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
-  omitVariablePluginData,
   omitVariableReportData,
   removeColorCodes,
   teardownTestFolder,
