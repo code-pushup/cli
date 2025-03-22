@@ -1,0 +1,127 @@
+{
+  "categories": [
+    {
+      "refs": [
+        {
+          "plugin": "typescript",
+          "slug": "problems",
+          "type": "group",
+          "weight": 1,
+        },
+        {
+          "plugin": "typescript",
+          "slug": "ts-configuration",
+          "type": "group",
+          "weight": 1,
+        },
+        {
+          "plugin": "typescript",
+          "slug": "miscellaneous",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "typescript-quality",
+      "title": "Typescript",
+    },
+  ],
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "audits": [
+        {
+          "description": "Errors that occur during parsing and lexing of TypeScript source code",
+          "slug": "syntax-errors",
+          "title": "Syntax errors",
+        },
+        {
+          "description": "Errors that occur during type checking and type inference",
+          "slug": "semantic-errors",
+          "title": "Semantic errors",
+        },
+        {
+          "description": "Errors that occur during TypeScript language service operations",
+          "slug": "declaration-and-language-service-errors",
+          "title": "Declaration and language service errors",
+        },
+        {
+          "description": "Errors that occur during TypeScript internal operations",
+          "slug": "internal-errors",
+          "title": "Internal errors",
+        },
+        {
+          "description": "Errors that occur when parsing TypeScript configuration files",
+          "slug": "configuration-errors",
+          "title": "Configuration errors",
+        },
+        {
+          "description": "Errors related to no implicit any compiler option",
+          "slug": "no-implicit-any-errors",
+          "title": "No implicit any errors",
+        },
+        {
+          "description": "Errors that do not match any known TypeScript error code",
+          "slug": "unknown-codes",
+          "title": "Unknown codes",
+        },
+      ],
+      "description": "Official Code PushUp Typescript plugin.",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/typescript-plugin/",
+      "groups": [
+        {
+          "description": "Syntax, semantic, and internal compiler errors are critical for identifying and preventing bugs.",
+          "refs": [
+            {
+              "slug": "syntax-errors",
+              "weight": 1,
+            },
+            {
+              "slug": "semantic-errors",
+              "weight": 1,
+            },
+            {
+              "slug": "no-implicit-any-errors",
+              "weight": 1,
+            },
+          ],
+          "slug": "problems",
+          "title": "Problems",
+        },
+        {
+          "description": "TypeScript configuration and options errors ensure correct project setup, reducing risks from misconfiguration.",
+          "refs": [
+            {
+              "slug": "configuration-errors",
+              "weight": 1,
+            },
+          ],
+          "slug": "ts-configuration",
+          "title": "Configuration",
+        },
+        {
+          "description": "Errors that do not bring any specific value to the developer, but are still useful to know.",
+          "refs": [
+            {
+              "slug": "unknown-codes",
+              "weight": 1,
+            },
+            {
+              "slug": "internal-errors",
+              "weight": 1,
+            },
+            {
+              "slug": "declaration-and-language-service-errors",
+              "weight": 1,
+            },
+          ],
+          "slug": "miscellaneous",
+          "title": "Miscellaneous",
+        },
+      ],
+      "icon": "typescript",
+      "packageName": "@code-pushup/typescript-plugin",
+      "slug": "typescript",
+      "title": "Typescript",
+    },
+  ],
+}
