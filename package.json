@@ -64,7 +64,7 @@
     "@nx/react": "19.8.13",
     "@nx/vite": "19.8.13",
     "@nx/workspace": "19.8.13",
-    "@push-based/nx-verdaccio": "0.0.0-alpha.30",
+    "@push-based/nx-verdaccio": "^0.0.0-alpha.31",
     "@swc-node/register": "1.9.2",
     "@swc/cli": "0.3.14",
     "@swc/core": "1.5.7",
