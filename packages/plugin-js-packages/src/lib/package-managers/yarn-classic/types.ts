@@ -51,4 +51,4 @@ type Yarnv1Table = {
   };
 };
 
-export type Yarnv1OutdatedResultJson = [Yarnv1Info, Yarnv1Table];
+export type Yarnv1OutdatedResultJson = [Yarnv1Info, Yarnv1Table] | [];

@@ -20,8 +20,8 @@ import {
 
 export function yarnv1ToOutdatedResult(output: string): OutdatedResult {
   const yarnv1Outdated = fromJsonLines<Yarnv1OutdatedResultJson>(output);
-  const fields = yarnv1Outdated[1].data.head;
-  const dependencies = yarnv1Outdated[1].data.body;
+  const fields = yarnv1Outdated[1]?.data.head ?? [];
+  const dependencies = yarnv1Outdated[1]?.data.body ?? [];
 
   // no outdated dependencies
   if (dependencies.length === 0) {
