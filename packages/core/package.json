@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/core",
-  "version": "0.65.1",
+  "version": "0.65.2",
   "license": "MIT",
   "description": "Core business logic for the used by the Code PushUp CLI",
   "homepage": "https://github.com/code-pushup/cli/tree/main/packages/core#readme",
@@ -39,8 +39,8 @@
   },
   "type": "module",
   "dependencies": {
-    "@code-pushup/models": "0.65.1",
-    "@code-pushup/utils": "0.65.1",
+    "@code-pushup/models": "0.65.2",
+    "@code-pushup/utils": "0.65.2",
     "ansis": "^3.3.0"
   },
   "peerDependencies": {

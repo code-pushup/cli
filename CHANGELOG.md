@@ -1,3 +1,18 @@
+## 0.65.2 (2025-03-26)
+
+### 🚀 Features
+
+- **plugin-typescript:** adjust logic ([#975](https://github.com/code-pushup/cli/pull/975))
+
+### 🩹 Fixes
+
+- **plugin-js-packages:** handle empty output from yarn outdated ([a8cb0810](https://github.com/code-pushup/cli/commit/a8cb0810))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael Hladky @BioPhoton
+
 ## 0.65.1 (2025-03-11)
 
 ### 🩹 Fixes
