@@ -8,6 +8,7 @@ import {
   crawlFileSystem,
   ensureDirectoryExists,
   filePathToCliArg,
+  findInFile,
   findLineNumberInText,
   findNearestFile,
   logMultipleFileResults,
@@ -261,5 +262,45 @@ describe('projectToFilename', () => {
     ['backend/shared/auth', 'backend-shared-auth'],
   ])('should convert project name %p to file name %p', (project, file) => {
     expect(projectToFilename(project)).toBe(file);
+  });
+});
+
+describe('findInFile', () => {
+  const file = 'file.txt';
+  const content =
+    'line 1 - even:false\nline 2 - even:true\nline 3 - even:false\nline 4 - even:true\nline 5 - even:false\n';
+  const filePath = path.join(MEMFS_VOLUME, file);
+
+  beforeEach(() => {
+    vol.reset();
+    vol.fromJSON({ [file]: content }, MEMFS_VOLUME);
+  });
+
+  it('should find pattern in a file if a string is given', async () => {
+    const result = await findInFile(filePath, 'line 3');
+    expect(result).toStrictEqual([
+      {
+        file: filePath,
+        endColumn: 6,
+        endLine: 3,
+        startColumn: 0,
+        startLine: 3,
+      },
+    ]);
+  });
+
+  // @TODO any second test will fail
+  // Error: EBADF: bad file descriptor, close
+  it.todo('should find pattern in a file if a RegEx is given', async () => {
+    const result = await findInFile('file.txt', new RegExp('line 3', 'g'));
+    expect(result).toStrictEqual([
+      {
+        file: 'file.txt',
+        endColumn: 6,
+        endLine: 3,
+        startColumn: 0,
+        startLine: 3,
+      },
+    ]);
   });
 });
