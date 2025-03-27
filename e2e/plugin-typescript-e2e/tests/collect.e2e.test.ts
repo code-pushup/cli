@@ -1,6 +1,5 @@
 import { cp } from 'node:fs/promises';
-// eslint-disable-next-line unicorn/import-style
-import path, { join } from 'node:path';
+import path from 'node:path';
 import { afterAll, beforeAll, expect } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
