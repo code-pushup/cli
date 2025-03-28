@@ -20,7 +20,7 @@ export function yargsPrintConfigCommandObject() {
       const { output, ...config } = args as PrintConfigOptions &
         Record<string, unknown>;
 
-      const content = JSON.stringify(config, null, 2);
+      const content = JSON.stringify(config);
 
       if (output) {
         await mkdir(path.dirname(output), { recursive: true });

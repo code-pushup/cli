@@ -35,7 +35,7 @@ export async function persistReport(
       case 'json':
         return {
           format: 'json',
-          content: JSON.stringify(report, null, 2),
+          content: JSON.stringify(report),
         };
       case 'md':
         return {

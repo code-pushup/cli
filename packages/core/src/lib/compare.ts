@@ -109,7 +109,7 @@ function reportsDiffToFileContent(
 ): string {
   switch (format) {
     case 'json':
-      return JSON.stringify(reportsDiff, null, 2);
+      return JSON.stringify(reportsDiff);
     case 'md':
       return generateMdReportsDiff(reportsDiff);
   }
