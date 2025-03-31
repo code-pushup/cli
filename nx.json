@@ -16,6 +16,9 @@
     "e2e": {
       "dependsOn": ["^build"]
     },
+    "nxv-pkg-install": {
+      "parallelism": false
+    },
     "@nx/vite:test": {
       "cache": true,
       "inputs": ["default", "^production"],
