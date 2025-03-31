@@ -1,3 +1,13 @@
+## 0.65.3 (2025-03-31)
+
+### 🩹 Fixes
+
+- **utils:** update esbuild to version patched for GHSA-67mh-4wv8-2f99 ([c5921ab2](https://github.com/code-pushup/cli/commit/c5921ab2))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.65.2 (2025-03-26)
 
 ### 🚀 Features
