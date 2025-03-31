@@ -16,7 +16,7 @@ import {
   type AuditSeverity,
   type DependencyGroup,
   type FinalJSPackagesPluginConfig,
-  type PackageJsonPaths,
+  type PackageJsonPath,
   type PackageManagerId,
   dependencyGroups,
 } from '../config.js';
@@ -25,7 +25,7 @@ import { packageManagers } from '../package-managers/package-managers.js';
 import { auditResultToAuditOutput } from './audit/transform.js';
 import type { AuditResult } from './audit/types.js';
 import { outdatedResultToAuditOutput } from './outdated/transform.js';
-import { findAllPackageJson, getTotalDependencies } from './utils.js';
+import { getTotalDependencies } from './utils.js';
 
 export async function createRunnerConfig(
   scriptPath: string,
@@ -55,16 +55,21 @@ export async function executeRunner({
     packageManager,
     checks,
     auditLevelMapping,
-    packageJsonPaths,
+    packageJsonPath,
     dependencyGroups: depGroups,
   } = await readJsonFile<FinalJSPackagesPluginConfig>(runnerConfigPath);
 
   const auditResults = checks.includes('audit')
-    ? await processAudit(packageManager, depGroups, auditLevelMapping)
+    ? await processAudit(
+        packageManager,
+        depGroups,
+        auditLevelMapping,
+        packageJsonPath,
+      )
     : [];
 
   const outdatedResults = checks.includes('outdated')
-    ? await processOutdated(packageManager, depGroups, packageJsonPaths)
+    ? await processOutdated(packageManager, depGroups, packageJsonPath)
     : [];
   const checkResults = [...auditResults, ...outdatedResults];
 
@@ -75,21 +80,17 @@ export async function executeRunner({
 async function processOutdated(
   id: PackageManagerId,
   depGroups: DependencyGroup[],
-  packageJsonPaths: PackageJsonPaths,
+  packageJsonPath: PackageJsonPath,
 ) {
   const pm = packageManagers[id];
   const { stdout } = await executeProcess({
     command: pm.command,
     args: pm.outdated.commandArgs,
-    cwd: process.cwd(),
+    cwd: packageJsonPath ? path.dirname(packageJsonPath) : process.cwd(),
     ignoreExitCode: true, // outdated returns exit code 1 when outdated dependencies are found
   });
 
-  // Locate all package.json files in the repository if not provided
-  const finalPaths = Array.isArray(packageJsonPaths)
-    ? packageJsonPaths
-    : await findAllPackageJson();
-  const depTotals = await getTotalDependencies(finalPaths);
+  const depTotals = await getTotalDependencies(packageJsonPath);
 
   const normalizedResult = pm.outdated.unifyResult(stdout);
   return depGroups.map(depGroup =>
@@ -106,6 +107,7 @@ async function processAudit(
   id: PackageManagerId,
   depGroups: DependencyGroup[],
   auditLevelMapping: AuditSeverity,
+  packageJsonPath: PackageJsonPath,
 ) {
   const pm = packageManagers[id];
   const supportedAuditDepGroups =
@@ -120,7 +122,7 @@ async function processAudit(
         const { stdout } = await executeProcess({
           command: pm.command,
           args: pm.audit.getCommandArgs(depGroup),
-          cwd: process.cwd(),
+          cwd: packageJsonPath ? path.dirname(packageJsonPath) : process.cwd(),
           ignoreExitCode: pm.audit.ignoreExitCode,
         });
         return [depGroup, pm.audit.unifyResult(stdout)];

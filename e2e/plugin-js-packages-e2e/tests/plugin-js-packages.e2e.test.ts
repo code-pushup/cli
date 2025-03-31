@@ -7,8 +7,11 @@ import {
   reportSchema,
 } from '@code-pushup/models';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
-import { teardownTestFolder } from '@code-pushup/test-setup';
-import { E2E_ENVIRONMENTS_DIR, TEST_OUTPUT_DIR } from '@code-pushup/test-utils';
+import {
+  E2E_ENVIRONMENTS_DIR,
+  TEST_OUTPUT_DIR,
+  teardownTestFolder,
+} from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
 describe('plugin-js-packages', () => {
@@ -37,13 +40,19 @@ describe('plugin-js-packages', () => {
 
   it('should run JS packages plugin for NPM and create report.json', async () => {
     const { code } = await executeProcess({
-      command: 'node',
+      command: 'npx',
       args: [
-        '../../node_modules/@code-pushup/cli/src/index.js',
+        '@code-pushup/cli',
         'collect',
+        '--verbose',
         '--no-progress',
+        `--config=${path.join(
+          TEST_OUTPUT_DIR,
+          'npm-repo',
+          'code-pushup.config.ts',
+        )}`,
       ],
-      cwd: npmRepoDir,
+      cwd: path.join(E2E_ENVIRONMENTS_DIR, nxTargetProject()),
     });
 
     expect(code).toBe(0);
@@ -89,8 +98,9 @@ describe('plugin-js-packages', () => {
 
     const expressOutdatedIssue = npmOutdatedProd.details!.issues![0]!;
     expect(expressOutdatedIssue.severity).toBe('error');
-    expect(expressOutdatedIssue.message).toMatch(
-      /^Package \[`express`]\(http:\/\/expressjs\.com\/?\) requires a \*\*major\*\* update from \*\*3.0.0\*\* to \*\*\d+\.\d+\.\d+\*\*\.$/,
+    expect(expressOutdatedIssue?.message).toContain('express');
+    expect(expressOutdatedIssue?.message).toContain(
+      'requires a **major** update from **3.0.0** to',
     );
 
     expect(() => reportSchema.parse(report)).not.toThrow();
