@@ -1,13 +1,10 @@
-import path from 'node:path';
 import {
-  crawlFileSystem,
   objectFromEntries,
   objectToKeys,
   readJsonFile,
 } from '@code-pushup/utils';
 import type { AuditResult, Vulnerability } from './audit/types.js';
 import {
-  type DependencyGroupLong,
   type DependencyTotals,
   type PackageJson,
   dependencyGroupLong,
@@ -54,41 +51,18 @@ export function filterAuditResult(
   };
 }
 
-// TODO: use .gitignore
-export async function findAllPackageJson(): Promise<string[]> {
-  return (
-    await crawlFileSystem({
-      directory: '.',
-      pattern: /(^|[\\/])package\.json$/,
-    })
-  ).filter(
-    filePath =>
-      !filePath.startsWith(`node_modules${path.sep}`) &&
-      !filePath.includes(`${path.sep}node_modules${path.sep}`) &&
-      !filePath.startsWith(`.nx${path.sep}`),
-  );
-}
-
 export async function getTotalDependencies(
-  packageJsonPaths: string[],
+  packageJsonPath: string,
 ): Promise<DependencyTotals> {
-  const parsedDeps = await Promise.all(
-    packageJsonPaths.map(readJsonFile<PackageJson>),
+  const parsedDeps = await readJsonFile<PackageJson>(packageJsonPath);
+
+  const mergedDeps = objectFromEntries(
+    dependencyGroupLong.map(group => {
+      const deps = parsedDeps[group];
+      return [group, deps == null ? [] : objectToKeys(deps)];
+    }),
   );
 
-  const mergedDeps = parsedDeps.reduce<Record<DependencyGroupLong, string[]>>(
-    (acc, depMapper) =>
-      objectFromEntries(
-        dependencyGroupLong.map(group => {
-          const deps = depMapper[group];
-          return [
-            group,
-            [...acc[group], ...(deps == null ? [] : objectToKeys(deps))],
-          ];
-        }),
-      ),
-    { dependencies: [], devDependencies: [], optionalDependencies: [] },
-  );
   return objectFromEntries(
     objectToKeys(mergedDeps).map(deps => [
       deps,

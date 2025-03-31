@@ -35,3 +35,7 @@ log:
 
 publish:
   allow_offline: true # set offline to true to allow publish offline
+
+middlewares:
+  audit:
+    enabled: true # needed to run npm audit in e2e test folder

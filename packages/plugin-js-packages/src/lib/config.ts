@@ -18,16 +18,14 @@ const packageManagerIdSchema = z.enum([
 export type PackageManagerId = z.infer<typeof packageManagerIdSchema>;
 
 const packageJsonPathSchema = z
-  .union([
-    z.array(z.string()).min(1),
-    z.object({ autoSearch: z.literal(true) }),
-  ])
+  .string()
+  .regex(/package\.json$/, 'File path must end with package.json')
   .describe(
-    'File paths to package.json. Looks only at root package.json by default',
+    'File path to package.json, tries to use root package.json at CWD by default',
   )
-  .default(['package.json']);
+  .default('package.json');
 
-export type PackageJsonPaths = z.infer<typeof packageJsonPathSchema>;
+export type PackageJsonPath = z.infer<typeof packageJsonPathSchema>;
 
 export const packageAuditLevels = [
   'critical',
@@ -75,7 +73,7 @@ export const jsPackagesPluginConfigSchema = z.object({
     })
     .default(defaultAuditLevelMapping)
     .transform(fillAuditLevelMapping),
-  packageJsonPaths: packageJsonPathSchema,
+  packageJsonPath: packageJsonPathSchema,
 });
 
 export type JSPackagesPluginConfig = z.input<

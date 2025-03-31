@@ -4,34 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import type { AuditResult, Vulnerability } from './audit/types.js';
 import type { DependencyTotals, PackageJson } from './outdated/types.js';
-import {
-  filterAuditResult,
-  findAllPackageJson,
-  getTotalDependencies,
-} from './utils.js';
-
-describe('findAllPackageJson', () => {
-  beforeEach(() => {
-    vol.fromJSON(
-      {
-        'package.json': '',
-        [path.join('ui', 'package.json')]: '',
-        [path.join('ui', 'ng-package.json')]: '', // non-exact file match should be excluded
-        [path.join('.nx', 'cache', 'ui', 'package.json')]: '', // nx cache should be excluded
-        [path.join('node_modules', 'eslint', 'package.json')]: '', // root node_modules should be excluded
-        [path.join('ui', 'node_modules', 'eslint', 'package.json')]: '', // project node_modules should be excluded
-      },
-      MEMFS_VOLUME,
-    );
-  });
-
-  it('should return all valid package.json files (exclude .nx, node_modules)', async () => {
-    await expect(findAllPackageJson()).resolves.toEqual([
-      'package.json',
-      path.join('ui', 'package.json'),
-    ]);
-  });
-});
+import { filterAuditResult, getTotalDependencies } from './utils.js';
 
 describe('getTotalDependencies', () => {
   beforeEach(() => {
@@ -64,7 +37,7 @@ describe('getTotalDependencies', () => {
 
   it('should return correct number of dependencies', async () => {
     await expect(
-      getTotalDependencies([path.join(MEMFS_VOLUME, 'package.json')]),
+      getTotalDependencies(path.join(MEMFS_VOLUME, 'package.json')),
     ).resolves.toStrictEqual({
       dependencies: 1,
       devDependencies: 3,
@@ -72,15 +45,12 @@ describe('getTotalDependencies', () => {
     } satisfies DependencyTotals);
   });
 
-  it('should merge dependencies for multiple package.json files', async () => {
+  it('should return dependencies for nested package.json file', async () => {
     await expect(
-      getTotalDependencies([
-        path.join(MEMFS_VOLUME, 'package.json'),
-        path.join(MEMFS_VOLUME, 'ui', 'package.json'),
-      ]),
+      getTotalDependencies(path.join(MEMFS_VOLUME, 'ui', 'package.json')),
     ).resolves.toStrictEqual({
       dependencies: 2,
-      devDependencies: 4,
+      devDependencies: 1,
       optionalDependencies: 1,
     } satisfies DependencyTotals);
   });

@@ -12,7 +12,7 @@ describe('createRunnerConfig', () => {
       checks: ['audit'],
       auditLevelMapping: defaultAuditLevelMapping,
       dependencyGroups: ['prod', 'dev'],
-      packageJsonPaths: ['package.json'],
+      packageJsonPath: 'package.json',
     });
     expect(runnerConfig).toStrictEqual<RunnerConfig>({
       command: 'node',
@@ -32,7 +32,7 @@ describe('createRunnerConfig', () => {
       checks: ['outdated'],
       dependencyGroups: ['prod', 'dev'],
       auditLevelMapping: { ...defaultAuditLevelMapping, moderate: 'error' },
-      packageJsonPaths: ['package.json'],
+      packageJsonPath: 'package.json',
     };
     const { configFile } = await createRunnerConfig(
       'executeRunner.ts',
