@@ -1,16 +1,23 @@
 import { type LogOptions as SimpleGitLogOptions, simpleGit } from 'simple-git';
 import { type Commit, commitSchema } from '@code-pushup/models';
+import { stringifyError } from '../errors.js';
+import { ui } from '../logging.js';
 import { isSemver } from '../semver.js';
 
 export async function getLatestCommit(
   git = simpleGit(),
 ): Promise<Commit | null> {
-  const log = await git.log({
-    maxCount: 1,
-    // git log -1 --pretty=format:"%H %s %an %aI" - See: https://git-scm.com/docs/pretty-formats
-    format: { hash: '%H', message: '%s', author: '%an', date: '%aI' },
-  });
-  return commitSchema.parse(log.latest);
+  try {
+    const log = await git.log({
+      maxCount: 1,
+      // git log -1 --pretty=format:"%H %s %an %aI" - See: https://git-scm.com/docs/pretty-formats
+      format: { hash: '%H', message: '%s', author: '%an', date: '%aI' },
+    });
+    return commitSchema.parse(log.latest);
+  } catch (e) {
+    ui().logger.error(stringifyError(e));
+    return null;
+  }
 }
 
 export async function getCurrentBranchOrTag(
