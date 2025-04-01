@@ -14,8 +14,8 @@ export async function getLatestCommit(
       format: { hash: '%H', message: '%s', author: '%an', date: '%aI' },
     });
     return commitSchema.parse(log.latest);
-  } catch (e) {
-    ui().logger.error(stringifyError(e));
+  } catch (error) {
+    ui().logger.error(stringifyError(error));
     return null;
   }
 }
