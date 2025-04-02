@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/consistent-type-definitions */
 import type { CustomMarkdownTableMatchers } from './lib/extend/markdown-table.matcher.js';
 import type {
   CustomAsymmetricPathMatchers,
@@ -11,7 +10,5 @@ declare module 'vitest' {
     extends CustomPathMatchers,
       CustomUiLoggerMatchers,
       CustomMarkdownTableMatchers {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface AsymmetricMatchersContaining extends CustomAsymmetricPathMatchers {}
 }
-/* eslint-enable @typescript-eslint/consistent-type-definitions */
