@@ -121,7 +121,7 @@ exports[`PLUGIN collect report with typescript-plugin NPM package > should run p
           "details": {
             "issues": [
               {
-                "message": "TS6059: File '/home/matejchalk/Projects/quality-metrics-cli/tmp/e2e/plugin-typescript-e2e/exclude/utils.ts' is not under 'rootDir' 'src'. 'rootDir' is expected to contain all source files.",
+                "message": "TS6059: File './exclude/utils.ts' is not under 'rootDir' 'src'. 'rootDir' is expected to contain all source files.",
                 "severity": "error",
                 "source": {
                   "file": "tmp/e2e/plugin-typescript-e2e/src/6-configuration-errors.ts",

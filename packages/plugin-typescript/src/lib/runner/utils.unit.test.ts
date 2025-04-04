@@ -94,6 +94,20 @@ describe('getIssueFromDiagnostic', () => {
     );
   });
 
+  it('should replace absolute paths in message', () => {
+    expect(
+      getIssueFromDiagnostic({
+        ...diagnosticMock,
+        code: 6059,
+        messageText: `File '${process.cwd()}/tools/publish.ts' is not under 'rootDir' 'src'. 'rootDir' is expected to contain all source files.`,
+      }),
+    ).toStrictEqual(
+      expect.objectContaining({
+        message: `TS6059: File './tools/publish.ts' is not under 'rootDir' 'src'. 'rootDir' is expected to contain all source files.`,
+      }),
+    );
+  });
+
   it('should return issue without position if file is undefined', () => {
     expect(
       getIssueFromDiagnostic({ ...diagnosticMock, file: undefined }),
