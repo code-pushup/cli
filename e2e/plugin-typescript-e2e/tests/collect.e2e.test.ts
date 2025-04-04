@@ -68,8 +68,6 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
       path.join(envRoot, outputDir, 'report.json'),
     );
     expect(() => reportSchema.parse(reportJson)).not.toThrow();
-    expect(
-      omitVariableReportData(reportJson, { omitAuditData: true }),
-    ).toMatchFileSnapshot('__snapshots__/typescript-plugin-json-report.json');
+    expect(omitVariableReportData(reportJson)).toMatchSnapshot();
   });
 });
