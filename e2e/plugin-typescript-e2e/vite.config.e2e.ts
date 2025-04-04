@@ -4,16 +4,9 @@ import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases.js
 
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/plugin-typescript-e2e',
-  resolve: {
-    alias: {
-      '@code-pushup/test-nx-utils': '../../test-nx-utils/index.js',
-      '@code-pushup/test-setup': '../../test-setup/index.js',
-      '@code-pushup/test-utils': '../../test-utils/index.js',
-    },
-  },
   test: {
     reporters: ['basic'],
-    testTimeout: 120_000,
+    testTimeout: 20_000,
     globals: true,
     alias: tsconfigPathAliases(),
     pool: 'threads',
