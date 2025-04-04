@@ -13,10 +13,10 @@ import {
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
 describe('PLUGIN collect report with typescript-plugin NPM package', () => {
-  const envRoot = join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
-  const distRoot = join(envRoot, TEST_OUTPUT_DIR);
+  const envRoot = path.join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
+  const distRoot = path.join(envRoot, TEST_OUTPUT_DIR);
 
-  const fixturesDir = join(
+  const fixturesDir = path.join(
     'e2e',
     nxTargetProject(),
     'mocks',
@@ -33,7 +33,7 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
   });
 
   it('should run plugin over CLI and creates report.json', async () => {
-    const outputDir = join(
+    const outputDir = path.join(
       path.relative(envRoot, distRoot),
       'create-report',
       '.code-pushup',
@@ -65,7 +65,7 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
     expect(cleanStdout).toMatch(/● No implicit any errors\s+\d+ issue/);
 
     const reportJson = await readJsonFile<Report>(
-      join(envRoot, outputDir, 'report.json'),
+      path.join(envRoot, outputDir, 'report.json'),
     );
     expect(() => reportSchema.parse(reportJson)).not.toThrow();
     expect(
