@@ -1,3 +1,18 @@
+## 0.66.0 (2025-04-04)
+
+### 🚀 Features
+
+- **plugin-typescript:** prepare for first release ([6b1e39d6](https://github.com/code-pushup/cli/commit/6b1e39d6))
+
+### 🩹 Fixes
+
+- **plugin-js-packages-e2e:** npm outdated fallback to "wanted" if "current" is missing ([ef5c2eee](https://github.com/code-pushup/cli/commit/ef5c2eee))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Vojtech Masek @vmasek
+
 ## 0.65.3 (2025-03-31)
 
 ### 🩹 Fixes
