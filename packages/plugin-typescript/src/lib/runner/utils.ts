@@ -47,17 +47,28 @@ export function getSeverity(category: DiagnosticCategory): Issue['severity'] {
 }
 
 /**
+ * Format issue message from the TypeScript diagnostic.
+ * @param diag - The TypeScript diagnostic.
+ * @returns The issue message.
+ */
+export function getMessage(diag: Diagnostic): string {
+  const flattened = flattenDiagnosticMessageText(diag.messageText, '\n');
+  const text = flattened
+    .replace(process.cwd(), '.')
+    .replace(process.cwd().replace(/\\/g, '/'), '.');
+  return truncateIssueMessage(`TS${diag.code}: ${text}`);
+}
+
+/**
  * Get the issue from the TypeScript diagnostic.
  * @param diag - The TypeScript diagnostic.
  * @returns The issue.
  * @throws Error if the diagnostic is global (e.g., invalid compiler option).
  */
 export function getIssueFromDiagnostic(diag: Diagnostic) {
-  const message = `${flattenDiagnosticMessageText(diag.messageText, '\n')}`;
-
   const issue: Issue = {
     severity: getSeverity(diag.category),
-    message: truncateIssueMessage(`TS${diag.code}: ${message}`),
+    message: getMessage(diag),
   };
 
   // If undefined, the error might be global (e.g., invalid compiler option).
