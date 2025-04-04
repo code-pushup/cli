@@ -78,9 +78,9 @@ export function getAudits(
  * @param opt TSPluginOptions
  * @returns The array of category references
  */
-export async function getCategoryRefsFromGroups(
+export function getCategoryRefsFromGroups(
   opt?: TypescriptPluginOptions,
-): Promise<CategoryRef[]> {
+): CategoryRef[] {
   return getGroups(opt).map(({ slug }) => ({
     plugin: TYPESCRIPT_PLUGIN_SLUG,
     slug,
@@ -94,9 +94,9 @@ export async function getCategoryRefsFromGroups(
  * @param opt TSPluginOptions
  * @returns The array of category references
  */
-export async function getCategoryRefsFromAudits(
+export function getCategoryRefsFromAudits(
   opt?: TypescriptPluginOptions,
-): Promise<CategoryRef[]> {
+): CategoryRef[] {
   return AUDITS.filter(filterAuditsBySlug(opt?.onlyAudits)).map(({ slug }) => ({
     plugin: TYPESCRIPT_PLUGIN_SLUG,
     slug,
@@ -110,13 +110,13 @@ export const CATEGORY_MAP: Record<string, CategoryConfig> = {
     slug: 'type-safety',
     title: 'Type Safety',
     description: 'TypeScript diagnostics and type-checking errors',
-    refs: await getCategoryRefsFromGroups(),
+    refs: getCategoryRefsFromGroups(),
   },
   'bug-prevention': {
     slug: 'bug-prevention',
     title: 'Bug prevention',
     description: 'Type checks that find **potential bugs** in your code.',
-    refs: await getCategoryRefsFromGroups({
+    refs: getCategoryRefsFromGroups({
       onlyAudits: [
         'syntax-errors',
         'semantic-errors',
@@ -131,7 +131,7 @@ export const CATEGORY_MAP: Record<string, CategoryConfig> = {
     title: 'Miscellaneous',
     description:
       'Errors that do not bring any specific value to the developer, but are still useful to know.',
-    refs: await getCategoryRefsFromGroups({
+    refs: getCategoryRefsFromGroups({
       onlyAudits: ['unknown-codes', 'declaration-and-language-service-errors'],
     }),
   },

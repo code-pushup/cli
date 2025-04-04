@@ -10,7 +10,7 @@ export default {
     {
       slug: 'typescript-quality',
       title: 'Typescript',
-      refs: await getCategoryRefsFromGroups(),
+      refs: getCategoryRefsFromGroups(),
     },
   ],
 } satisfies CoreConfig;
