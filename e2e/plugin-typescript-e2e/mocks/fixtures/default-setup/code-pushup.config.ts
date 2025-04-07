@@ -1,15 +1,14 @@
 import type { CoreConfig } from '@code-pushup/models';
-import {
+import typescriptPlugin, {
   getCategoryRefsFromGroups,
-  typescriptPlugin,
 } from '@code-pushup/typescript-plugin';
 
 export default {
   plugins: [await typescriptPlugin()],
   categories: [
     {
-      slug: 'typescript-quality',
-      title: 'Typescript',
+      slug: 'type-safety',
+      title: 'Type safety',
       refs: getCategoryRefsFromGroups(),
     },
   ],
