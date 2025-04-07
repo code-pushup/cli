@@ -1,3 +1,6 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`createRunnerFunction > should create valid audit outputs when called 1`] = `
 [
   {
     "details": {
@@ -14,7 +17,7 @@
         },
       ],
     },
-    "displayValue": "1 issue",
+    "displayValue": "1 error",
     "score": 0,
     "slug": "syntax-errors",
     "value": 1,
@@ -75,7 +78,7 @@
         },
       ],
     },
-    "displayValue": "5 issues",
+    "displayValue": "5 errors",
     "score": 0,
     "slug": "semantic-errors",
     "value": 5,
@@ -95,33 +98,34 @@
         },
       ],
     },
-    "displayValue": "1 issue",
+    "displayValue": "1 error",
     "score": 0,
     "slug": "declaration-and-language-service-errors",
     "value": 1,
   },
   {
-    "displayValue": "0 issues",
+    "displayValue": "passed",
     "score": 1,
     "slug": "internal-errors",
     "value": 0,
   },
   {
-    "displayValue": "0 issues",
+    "displayValue": "passed",
     "score": 1,
     "slug": "configuration-errors",
     "value": 0,
   },
   {
-    "displayValue": "0 issues",
+    "displayValue": "passed",
     "score": 1,
     "slug": "no-implicit-any-errors",
     "value": 0,
   },
   {
-    "displayValue": "0 issues",
+    "displayValue": "passed",
     "score": 1,
     "slug": "unknown-codes",
     "value": 0,
   },
 ]
+`;

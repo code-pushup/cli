@@ -10,8 +10,6 @@ describe('createRunnerFunction', () => {
           'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.all-audits.json',
         expectedAudits: getAudits(),
       })(() => void 0),
-    ).resolves.toMatchFileSnapshot(
-      '__snapshots__/runner-function-all-audits.json',
-    );
+    ).resolves.toMatchSnapshot();
   }, 35_000);
 });

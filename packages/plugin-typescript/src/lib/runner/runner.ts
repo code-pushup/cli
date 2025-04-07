@@ -4,7 +4,7 @@ import type {
   Issue,
   RunnerFunction,
 } from '@code-pushup/models';
-import { pluralize } from '@code-pushup/utils';
+import { pluralizeToken } from '@code-pushup/utils';
 import type { AuditSlug } from '../types.js';
 import {
   type DiagnosticsOptions,
@@ -37,7 +37,7 @@ export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
       };
     }, {});
 
-    return expectedAudits.map(({ slug }) => {
+    return expectedAudits.map(({ slug }): AuditOutput => {
       const { details } = result[slug] ?? {};
 
       const issues = details?.issues ?? [];
@@ -45,9 +45,12 @@ export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
         slug,
         score: issues.length === 0 ? 1 : 0,
         value: issues.length,
-        displayValue: `${issues.length} ${pluralize('issue', issues.length)}`,
+        displayValue:
+          issues.length === 0
+            ? 'passed'
+            : pluralizeToken('error', issues.length),
         ...(issues.length > 0 ? { details } : {}),
-      } satisfies AuditOutput;
+      };
     });
   };
 }
