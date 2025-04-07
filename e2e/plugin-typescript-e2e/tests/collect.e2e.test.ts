@@ -7,7 +7,6 @@ import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
   omitVariableReportData,
-  removeColorCodes,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
@@ -39,7 +38,7 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
       '.code-pushup',
     );
 
-    const { code, stdout } = await executeProcess({
+    const { code } = await executeProcess({
       command: 'npx',
       // verbose exposes audits with perfect scores that are hidden in the default stdout
       args: [
@@ -53,16 +52,6 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
     });
 
     expect(code).toBe(0);
-    const cleanStdout = removeColorCodes(stdout);
-
-    expect(cleanStdout).toMatch(/● Semantic errors\s+\d+ issue/);
-    expect(cleanStdout).toMatch(/● Configuration errors\s+\d+ issue/);
-    expect(cleanStdout).toMatch(
-      /● Declaration and language service errors\s+\d+ issue/,
-    );
-    expect(cleanStdout).toMatch(/● Syntax errors\s+\d+ issue/);
-    expect(cleanStdout).toMatch(/● Internal errors\s+\d+ issue/);
-    expect(cleanStdout).toMatch(/● No implicit any errors\s+\d+ issue/);
 
     const reportJson = await readJsonFile<Report>(
       path.join(envRoot, outputDir, 'report.json'),

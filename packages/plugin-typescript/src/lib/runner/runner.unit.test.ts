@@ -110,7 +110,7 @@ describe('createRunnerFunction', () => {
         slug: 'semantic-errors',
         score: 0,
         value: 2,
-        displayValue: '2 issues',
+        displayValue: '2 errors',
         details: {
           issues: [
             expect.objectContaining({
