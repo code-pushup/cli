@@ -1,3 +1,13 @@
+## 0.66.1 (2025-04-07)
+
+### 🩹 Fixes
+
+- **plugin-typescript:** use default export ([1aa6211f](https://github.com/code-pushup/cli/commit/1aa6211f))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.66.0 (2025-04-04)
 
 ### 🚀 Features
