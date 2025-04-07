@@ -1,3 +1,14 @@
+## 0.66.2 (2025-04-07)
+
+### 🩹 Fixes
+
+- **plugin-typescript:** use consistent casing for plugin metadata (Typescript -> TypeScript) ([8e78e8d8](https://github.com/code-pushup/cli/commit/8e78e8d8))
+- **plugin-typescript:** use same displayValue formatting as eslint ([87dadf33](https://github.com/code-pushup/cli/commit/87dadf33))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.66.1 (2025-04-07)
 
 ### 🩹 Fixes
