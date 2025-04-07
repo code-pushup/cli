@@ -42,6 +42,14 @@
   - changed-files:
       - any-glob-to-any-file: 'packages/plugin-lighthouse/src/**'
 
+🧩 jsdocs-plugin:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/plugin-jsdocs/src/**'
+
+🧩 typescript-plugin:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/plugin-typescript/src/**'
+
 🔬 testing:
   - changed-files:
       - any-glob-to-any-file:
