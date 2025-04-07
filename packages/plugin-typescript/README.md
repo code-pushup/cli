@@ -151,7 +151,7 @@ categories: [
     title: 'TypeScript',
     refs: [
       {
-        slug: 'language-and-environment',
+        slug: 'problems',
         weight: 1,
         type: 'group',
         plugin: 'typescript',
