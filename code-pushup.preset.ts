@@ -1,3 +1,4 @@
+/* eslint-disable @nx/enforce-module-boundaries */
 import type {
   CategoryConfig,
   CoreConfig,
@@ -21,10 +22,9 @@ import { filterGroupsByOnlyAudits } from './packages/plugin-jsdocs/src/lib/utils
 import lighthousePlugin, {
   lighthouseGroupRef,
 } from './packages/plugin-lighthouse/src/index.js';
-import {
+import typescriptPlugin, {
   type TypescriptPluginOptions,
   getCategories,
-  typescriptPlugin,
 } from './packages/plugin-typescript/src/index.js';
 
 export const jsPackagesCategories: CategoryConfig[] = [
@@ -129,51 +129,43 @@ export const coverageCategories: CategoryConfig[] = [
   },
 ];
 
-export const jsPackagesCoreConfig = async (): Promise<CoreConfig> => {
-  return {
-    plugins: [await jsPackagesPlugin()],
-    categories: jsPackagesCategories,
-  };
-};
+export const jsPackagesCoreConfig = async (): Promise<CoreConfig> => ({
+  plugins: [await jsPackagesPlugin()],
+  categories: jsPackagesCategories,
+});
 
 export const lighthouseCoreConfig = async (
   url: string,
-): Promise<CoreConfig> => {
-  return {
-    plugins: [await lighthousePlugin(url)],
-    categories: lighthouseCategories,
-  };
-};
+): Promise<CoreConfig> => ({
+  plugins: [await lighthousePlugin(url)],
+  categories: lighthouseCategories,
+});
 
 export const jsDocsCoreConfig = (
   config: JsDocsPluginConfig | string[],
-): CoreConfig => {
-  return {
-    plugins: [
-      jsDocsPlugin(Array.isArray(config) ? { patterns: config } : config),
-    ],
-    categories: getJsDocsCategories(
-      Array.isArray(config) ? { patterns: config } : config,
-    ),
-  };
-};
+): CoreConfig => ({
+  plugins: [
+    jsDocsPlugin(Array.isArray(config) ? { patterns: config } : config),
+  ],
+  categories: getJsDocsCategories(
+    Array.isArray(config) ? { patterns: config } : config,
+  ),
+});
 
 export const eslintCoreConfigNx = async (
   projectName?: string,
-): Promise<CoreConfig> => {
-  return {
-    plugins: [
-      await eslintPlugin(
-        await (projectName
-          ? eslintConfigFromNxProject(projectName)
-          : eslintConfigFromAllNxProjects()),
-      ),
-    ],
-    categories: eslintCategories,
-  };
-};
+): Promise<CoreConfig> => ({
+  plugins: [
+    await eslintPlugin(
+      await (projectName
+        ? eslintConfigFromNxProject(projectName)
+        : eslintConfigFromAllNxProjects()),
+    ),
+  ],
+  categories: eslintCategories,
+});
 
-export const typescriptPluginConfigNx = async (
+export const typescriptPluginConfig = async (
   options?: TypescriptPluginOptions,
 ): Promise<CoreConfig> => ({
   plugins: [await typescriptPlugin(options)],

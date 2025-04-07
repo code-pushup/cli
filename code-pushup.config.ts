@@ -6,7 +6,7 @@ import {
   jsDocsCoreConfig,
   jsPackagesCoreConfig,
   lighthouseCoreConfig,
-  typescriptPluginConfigNx,
+  typescriptPluginConfig,
 } from './code-pushup.preset.js';
 import type { CoreConfig } from './packages/models/src/index.js';
 import { mergeConfigs } from './packages/utils/src/index.js';
@@ -40,7 +40,7 @@ export default mergeConfigs(
   await lighthouseCoreConfig(
     'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
   ),
-  await typescriptPluginConfigNx({
+  await typescriptPluginConfig({
     tsconfig: 'packages/cli/tsconfig.lib.json',
   }),
   await eslintCoreConfigNx(),
