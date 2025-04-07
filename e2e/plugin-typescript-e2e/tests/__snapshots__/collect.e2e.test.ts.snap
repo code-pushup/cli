@@ -155,7 +155,7 @@ exports[`PLUGIN collect report with typescript-plugin NPM package > should run p
           "value": 0,
         },
       ],
-      "description": "Official Code PushUp Typescript plugin.",
+      "description": "Official Code PushUp TypeScript plugin.",
       "docsUrl": "https://www.npmjs.com/package/@code-pushup/typescript-plugin/",
       "groups": [
         {
@@ -211,7 +211,7 @@ exports[`PLUGIN collect report with typescript-plugin NPM package > should run p
       "icon": "typescript",
       "packageName": "@code-pushup/typescript-plugin",
       "slug": "typescript",
-      "title": "Typescript",
+      "title": "TypeScript",
     },
   ],
 }
