@@ -51,6 +51,8 @@ _We want to change that!_
 |  <img width="24" src="docs/images/plugin-coverage.icon.png">   | [Code Coverage](./packages/plugin-coverage#readme)  | Collects code **coverage** from your tests.                                        |
 | <img width="24" src="docs/images/plugin-js-packages.icon.png"> | [JS Packages](./packages/plugin-js-packages#readme) | Checks 3rd party packages for known **vulnerabilities** and **outdated** versions. |
 | <img width="24" src="docs/images/plugin-lighthouse.icon.png">  | [Lighthouse](./packages/plugin-lighthouse#readme)   | Measures web performance and best practices with **Lighthouse**.                   |
+|   <img width="24" src="docs/images/plugin-jsdocs.icon.png">    | [JSDocs](./packages/plugin-jsdocs#readme)           | Analyzes how much source code is **documented** using JSDocs comments.             |
+| <img width="24" src="docs/images/plugin-typescript.icon.png">  | [TypeScript](./packages/plugin-typescript#readme)   | Checks for **TypeScript** errors using strict compiler flags.                      |
 
 ---
 
