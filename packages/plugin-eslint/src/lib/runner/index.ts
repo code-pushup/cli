@@ -7,6 +7,7 @@ import type {
   RunnerFilesPaths,
 } from '@code-pushup/models';
 import {
+  asyncSequential,
   createRunnerFiles,
   ensureDirectoryExists,
   filePathToCliArg,
@@ -17,7 +18,6 @@ import {
 import type { ESLintPluginRunnerConfig, ESLintTarget } from '../config.js';
 import { lint } from './lint.js';
 import { lintResultsToAudits, mergeLinterOutputs } from './transform.js';
-import type { LinterOutput } from './types.js';
 
 export async function executeRunner({
   runnerConfigPath,
@@ -28,10 +28,7 @@ export async function executeRunner({
 
   ui().logger.log(`ESLint plugin executing ${targets.length} lint targets`);
 
-  const linterOutputs = await targets.reduce(
-    async (acc, target) => [...(await acc), await lint(target)],
-    Promise.resolve<LinterOutput[]>([]),
-  );
+  const linterOutputs = await asyncSequential(targets, lint);
   const lintResults = mergeLinterOutputs(linterOutputs);
   const failedAudits = lintResultsToAudits(lintResults);
 

@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import type { CoreConfig } from '@code-pushup/models';
 import {
   type ExcludeNullableProps,
+  asyncSequential,
   hasNoNullableProps,
 } from '@code-pushup/utils';
 import {
@@ -97,10 +98,7 @@ function runProjectsIndividually(
   env.settings.logger.info(
     `Running on ${projects.length} projects individually`,
   );
-  return projects.reduce<Promise<ProjectRunResult[]>>(
-    async (acc, project) => [...(await acc), await runOnProject(project, env)],
-    Promise.resolve([]),
-  );
+  return asyncSequential(projects, project => runOnProject(project, env));
 }
 
 async function runProjectsInBulk(
@@ -186,14 +184,11 @@ async function compareProjectsInBulk(
     }))
     .filter(hasNoNullableProps);
 
-  const projectComparisons = await projectsToCompare.reduce<
-    Promise<Record<string, ProjectRunResult>>
-  >(
-    async (acc, args) => ({
-      ...(await acc),
-      [args.project.name]: await compareReports(args),
-    }),
-    Promise.resolve({}),
+  const projectComparisons = Object.fromEntries(
+    await asyncSequential(projectsToCompare, async args => [
+      args.project.name,
+      await compareReports(args),
+    ]),
   );
 
   return finalizeProjectReports(currProjectReports, projectComparisons);
