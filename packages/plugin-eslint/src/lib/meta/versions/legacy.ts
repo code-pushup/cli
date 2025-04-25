@@ -1,5 +1,11 @@
 import type { ESLint, Linter } from 'eslint';
-import { distinct, exists, toArray, ui } from '@code-pushup/utils';
+import {
+  asyncSequential,
+  distinct,
+  exists,
+  toArray,
+  ui,
+} from '@code-pushup/utils';
 import type { ESLintTarget } from '../../config.js';
 import { setupESLint } from '../../setup.js';
 import { type RuleData, isRuleOff, optionsFromRuleEntry } from '../parse.js';
@@ -10,12 +16,10 @@ export async function loadRulesForLegacyConfig({
 }: ESLintTarget): Promise<RuleData[]> {
   const eslint = await setupESLint(eslintrc);
 
-  const configs = await toArray(patterns).reduce(
-    async (acc, pattern) => [
-      ...(await acc),
-      (await eslint.calculateConfigForFile(pattern)) as Linter.LegacyConfig,
-    ],
-    Promise.resolve<Linter.LegacyConfig[]>([]),
+  const configs = await asyncSequential(
+    toArray(patterns),
+    pattern =>
+      eslint.calculateConfigForFile(pattern) as Promise<Linter.LegacyConfig>,
   );
 
   const rulesIds = distinct(
