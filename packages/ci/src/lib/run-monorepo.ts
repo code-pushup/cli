@@ -118,8 +118,9 @@ async function runProjectsInBulk(
 
   await collectMany(runManyCommand, env);
 
-  const currProjectReports = await Promise.all(
-    projects.map(async (project): Promise<ProjectReport> => {
+  const currProjectReports = await asyncSequential(
+    projects,
+    async (project): Promise<ProjectReport> => {
       const ctx = createCommandContext(settings, project);
       const config = await printPersistConfig(ctx);
       const reports = await saveOutputFiles({
@@ -129,7 +130,7 @@ async function runProjectsInBulk(
         settings,
       });
       return { project, reports, config, ctx };
-    }),
+    },
   );
   logger.debug(
     `Loaded ${currProjectReports.length} persist configs by running print-config command for each project`,
@@ -222,12 +223,13 @@ async function collectPreviousReports(
   }
 
   return runInBaseBranch(base, env, async () => {
-    const uncachedProjectConfigs = await Promise.all(
-      uncachedProjectReports.map(async args => ({
+    const uncachedProjectConfigs = await asyncSequential(
+      uncachedProjectReports,
+      async args => ({
         name: args.project.name,
         ctx: args.ctx,
         config: await checkPrintConfig(args),
-      })),
+      }),
     );
 
     const validProjectConfigs =
