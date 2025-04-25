@@ -41,6 +41,9 @@
   "bin": {
     "code-pushup": "./src/index.js"
   },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "@code-pushup/models": "0.66.2",
     "@code-pushup/core": "0.66.2",
