@@ -1,3 +1,20 @@
+## 0.67.0 (2025-04-28)
+
+### 🚀 Features
+
+- **utils:** create helper function for sequential Promise.all ([556d8788](https://github.com/code-pushup/cli/commit/556d8788))
+
+### 🩹 Fixes
+
+- handle repos without git gracefully ([dba3ff58](https://github.com/code-pushup/cli/commit/dba3ff58))
+- lint ([18225ede](https://github.com/code-pushup/cli/commit/18225ede))
+- **ci:** prevent parallel print-config commands ([85ff390c](https://github.com/code-pushup/cli/commit/85ff390c))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael @rx-angular
+
 ## 0.66.2 (2025-04-07)
 
 ### 🩹 Fixes
