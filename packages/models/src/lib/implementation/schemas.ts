@@ -223,3 +223,13 @@ type Ref = { weight: number };
 function hasNonZeroWeightedRef(refs: Ref[]) {
   return refs.reduce((acc, { weight }) => weight + acc, 0) !== 0;
 }
+
+export const filePositionSchema = z.object(
+  {
+    startLine: positiveIntSchema.describe('Start line'),
+    startColumn: positiveIntSchema.describe('Start column').optional(),
+    endLine: positiveIntSchema.describe('End line').optional(),
+    endColumn: positiveIntSchema.describe('End column').optional(),
+  },
+  { description: 'Location in file' },
+);

@@ -97,11 +97,11 @@ export {
 } from './lib/reports-diff.js';
 export {
   runnerConfigSchema,
-  runnerFunctionSchema,
   runnerFilesPathsSchema,
+  runnerFunctionSchema,
   type RunnerConfig,
-  type RunnerFunction,
   type RunnerFilesPaths,
+  type RunnerFunction,
 } from './lib/runner-config.js';
 export {
   tableAlignmentSchema,
@@ -117,4 +117,18 @@ export {
   type TableRowObject,
   type TableRowPrimitive,
 } from './lib/table.js';
+export {
+  basicTreeNodeSchema,
+  basicTreeSchema,
+  coverageTreeMissingLOCSchema,
+  coverageTreeNodeSchema,
+  coverageTreeSchema,
+  treeSchema,
+  type BasicTree,
+  type BasicTreeNode,
+  type CoverageTree,
+  type CoverageTreeMissingLOC,
+  type CoverageTreeNode,
+  type Tree,
+} from './lib/tree.js';
 export { uploadConfigSchema, type UploadConfig } from './lib/upload-config.js';
