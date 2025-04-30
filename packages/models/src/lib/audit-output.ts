@@ -7,6 +7,7 @@ import {
 import { errorItems, hasDuplicateStrings } from './implementation/utils.js';
 import { issueSchema } from './issue.js';
 import { tableSchema } from './table.js';
+import { treeSchema } from './tree.js';
 
 export const auditValueSchema =
   nonnegativeNumberSchema.describe('Raw numeric value');
@@ -20,6 +21,9 @@ export const auditDetailsSchema = z.object(
       .array(issueSchema, { description: 'List of findings' })
       .optional(),
     table: tableSchema('Table of related findings').optional(),
+    trees: z
+      .array(treeSchema, { description: 'Findings in tree structure' })
+      .optional(),
   },
   { description: 'Detailed information' },
 );

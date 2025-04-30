@@ -6,10 +6,11 @@ Detailed information
 
 _Object containing the following properties:_
 
-| Property | Description               | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| :------- | :------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `issues` | List of findings          | _Array of [Issue](#issue) items_                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `table`  | Table of related findings | _Object with properties:_<ul><li>`title`: `string` - Display title for table</li><li>`columns`: _Array of [TableAlignment](#tablealignment) items_</li><li>`rows`: _Array of [TableRowPrimitive](#tablerowprimitive) items_</li></ul> _or_ _Object with properties:_<ul><li>`title`: `string` - Display title for table</li><li>`columns`: _Array of [TableAlignment](#tablealignment) items_ _or_ _Array of [TableColumnObject](#tablecolumnobject) items_</li><li>`rows`: _Array of [TableRowObject](#tablerowobject) items_</li></ul> |
+| Property | Description                | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| :------- | :------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `issues` | List of findings           | _Array of [Issue](#issue) items_                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `table`  | Table of related findings  | _Object with properties:_<ul><li>`title`: `string` - Display title for table</li><li>`columns`: _Array of [TableAlignment](#tablealignment) items_</li><li>`rows`: _Array of [TableRowPrimitive](#tablerowprimitive) items_</li></ul> _or_ _Object with properties:_<ul><li>`title`: `string` - Display title for table</li><li>`columns`: _Array of [TableAlignment](#tablealignment) items_ _or_ _Array of [TableColumnObject](#tablecolumnobject) items_</li><li>`rows`: _Array of [TableRowObject](#tablerowobject) items_</li></ul> |
+| `trees`  | Findings in tree structure | _Array of [Tree](#tree) items_                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 _All properties are optional._
 
@@ -97,6 +98,32 @@ _Object containing the following properties:_
 
 _(\*) Required._
 
+## BasicTreeNode
+
+_Object containing the following properties:_
+
+| Property        | Description                                    | Type                                             |
+| :-------------- | :--------------------------------------------- | :----------------------------------------------- |
+| **`name`** (\*) | Text label for node                            | `string` (_min length: 1_)                       |
+| `values`        | Additional values for node                     | `Record<string, number \| string>`               |
+| `children`      | Direct descendants of this node (omit if leaf) | _Array of [BasicTreeNode](#basictreenode) items_ |
+
+_(\*) Required._
+
+## BasicTree
+
+Generic tree
+
+_Object containing the following properties:_
+
+| Property        | Description  | Type                            |
+| :-------------- | :----------- | :------------------------------ |
+| `title`         | Heading      | `string`                        |
+| `type`          | Discriminant | `'basic'`                       |
+| **`root`** (\*) | Root node    | [BasicTreeNode](#basictreenode) |
+
+_(\*) Required._
+
 ## CategoryConfig
 
 _Object containing the following properties:_
@@ -179,6 +206,57 @@ _Object containing the following properties:_
 | `categories`       |                                                                      | _Array of [CategoryConfig](#categoryconfig) items_        |
 
 _(\*) Required._
+
+## CoverageTreeMissingLOC
+
+Uncovered line of code, optionally referring to a named function/class/etc.
+
+_Object containing the following properties:_
+
+| Property             | Description                       | Type                 |
+| :------------------- | :-------------------------------- | :------------------- |
+| **`startLine`** (\*) | Start line                        | `number` (_int, >0_) |
+| `startColumn`        | Start column                      | `number` (_int, >0_) |
+| `endLine`            | End line                          | `number` (_int, >0_) |
+| `endColumn`          | End column                        | `number` (_int, >0_) |
+| `name`               | Identifier of function/class/etc. | `string`             |
+| `kind`               | E.g. "function", "class"          | `string`             |
+
+_(\*) Required._
+
+## CoverageTreeNode
+
+_Object containing the following properties:_
+
+| Property          | Description                                               | Type                                                                                                                                                                                                        |
+| :---------------- | :-------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`name`** (\*)   | File or folder name                                       | `string` (_min length: 1_)                                                                                                                                                                                  |
+| **`values`** (\*) | Coverage metrics for file/folder                          | _Object with properties:_<ul><li>`coverage`: `number` (_≥0, ≤1_) - Coverage ratio</li><li>`missing`: _Array of [CoverageTreeMissingLOC](#coveragetreemissingloc) items_ - Uncovered lines of code</li></ul> |
+| `children`        | Files and folders contained in this folder (omit if file) | _Array of [CoverageTreeNode](#coveragetreenode) items_                                                                                                                                                      |
+
+_(\*) Required._
+
+## CoverageTree
+
+Coverage for files and folders
+
+_Object containing the following properties:_
+
+| Property        | Description  | Type                                  |
+| :-------------- | :----------- | :------------------------------------ |
+| `title`         | Heading      | `string`                              |
+| **`type`** (\*) | Discriminant | `'coverage'`                          |
+| **`root`** (\*) | Root folder  | [CoverageTreeNode](#coveragetreenode) |
+
+_(\*) Required._
+
+## FileName
+
+_String which matches the regular expression `/^(?!.*[ \\/:*?"<>|]).+$/` and has a minimum length of 1._
+
+## FilePath
+
+_String which has a minimum length of 1._
 
 ## Format
 
@@ -1137,27 +1215,15 @@ _Enum string, one of the following possible values:_
 
 </details>
 
-## OnProgress
-
-_Function._
-
-_Parameters:_
-
-1. `unknown` (_optional & nullable_)
-
-_Returns:_
-
-- `void` (_optional_)
-
 ## PersistConfig
 
 _Object containing the following properties:_
 
-| Property    | Description                             | Type                                                            |
-| :---------- | :-------------------------------------- | :-------------------------------------------------------------- |
-| `outputDir` | Artifacts folder                        | `string` (_min length: 1_)                                      |
-| `filename`  | Artifacts file name (without extension) | `string` (_regex: `/^(?!.*[ \\/:*?"<>\|]).+$/`, min length: 1_) |
-| `format`    |                                         | _Array of [Format](#format) items_                              |
+| Property    | Description                             | Type                               |
+| :---------- | :-------------------------------------- | :--------------------------------- |
+| `outputDir` | Artifacts folder                        | [FilePath](#filepath)              |
+| `filename`  | Artifacts file name (without extension) | [FileName](#filename)              |
+| `format`    |                                         | _Array of [Format](#format) items_ |
 
 _All properties are optional._
 
@@ -1264,8 +1330,20 @@ _Object containing the following properties:_
 | :-------------------- | :----------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`command`** (\*)    | Shell command to execute | `string`                                                                                                                                                                                              |
 | `args`                |                          | `Array<string>`                                                                                                                                                                                       |
-| **`outputFile`** (\*) | Output path              | `string` (_min length: 1_)                                                                                                                                                                            |
+| **`outputFile`** (\*) | Runner output path       | [FilePath](#filepath)                                                                                                                                                                                 |
 | `outputTransform`     |                          | _Function:_<br /><ul><li>_parameters:_ <ol><li>`unknown` (_optional & nullable_)</li></ol></li><li>_returns:_ [AuditOutputs](#auditoutputs) _or_ _Promise of_ [AuditOutputs](#auditoutputs)</li></ul> |
+| `configFile`          | Runner config path       | [FilePath](#filepath)                                                                                                                                                                                 |
+
+_(\*) Required._
+
+## RunnerFilesPaths
+
+_Object containing the following properties:_
+
+| Property                    | Description        | Type                  |
+| :-------------------------- | :----------------- | :-------------------- |
+| **`runnerConfigPath`** (\*) | Runner config path | [FilePath](#filepath) |
+| **`runnerOutputPath`** (\*) | Runner output path | [FilePath](#filepath) |
 
 _(\*) Required._
 
@@ -1275,7 +1353,7 @@ _Function._
 
 _Parameters:_
 
-1. [OnProgress](#onprogress) (_optional_)
+- _none_
 
 _Returns:_
 
@@ -1289,7 +1367,7 @@ _Object containing the following properties:_
 
 | Property        | Description                              | Type                                                                                                                                                                                                                                                           |
 | :-------------- | :--------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`file`** (\*) | Relative path to source file in Git repo | `string` (_min length: 1_)                                                                                                                                                                                                                                     |
+| **`file`** (\*) | Relative path to source file in Git repo | [FilePath](#filepath)                                                                                                                                                                                                                                          |
 | `position`      | Location in file                         | _Object with properties:_<ul><li>`startLine`: `number` (_int, >0_) - Start line</li><li>`startColumn`: `number` (_int, >0_) - Start column</li><li>`endLine`: `number` (_int, >0_) - End line</li><li>`endColumn`: `number` (_int, >0_) - End column</li></ul> |
 
 _(\*) Required._
@@ -1352,6 +1430,13 @@ _Object record with dynamic keys:_
 Primitive row
 
 _Array of [TableCellValue](#tablecellvalue) (\_optional & nullable_) items.\_
+
+## Tree
+
+_Union of the following possible types:_
+
+- [BasicTree](#basictree)
+- [CoverageTree](#coveragetree)
 
 ## UploadConfig
 
