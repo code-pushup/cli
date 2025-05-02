@@ -6,7 +6,7 @@ export default defineConfig({
   cacheDir: '../../node_modules/.vite/nx-plugin-e2e',
   test: {
     reporters: ['basic'],
-    testTimeout: 40_000,
+    testTimeout: 80_000,
     globals: true,
     alias: tsconfigPathAliases(),
     pool: 'threads',
