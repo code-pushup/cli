@@ -26,7 +26,7 @@ describe('treeSchema', () => {
     expect(() =>
       treeSchema.parse({
         type: 'coverage',
-        title: 'Critical request chain',
+        title: 'Function coverage',
         root: {
           name: '.',
           values: { coverage: 0.7 },

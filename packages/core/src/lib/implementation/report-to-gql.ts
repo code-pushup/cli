@@ -11,12 +11,19 @@ import type {
   TableAlignment as PortalTableAlignment,
   AuditReportTableCell as PortalTableCell,
   AuditReportTableColumn as PortalTableColumn,
+  AuditReportTree as PortalTree,
+  AuditReportTreeNode as PortalTreeNode,
+  TreeType as PortalTreeType,
   SaveReportMutationVariables,
 } from '@code-pushup/portal-client';
 import type {
   AuditReport,
+  BasicTree,
+  BasicTreeNode,
   CategoryConfig,
   CategoryRef,
+  CoverageTree,
+  CoverageTreeNode,
   Group,
   Issue,
   IssueSeverity,
@@ -24,6 +31,7 @@ import type {
   Report,
   Table,
   TableAlignment,
+  Tree,
 } from '@code-pushup/models';
 
 export function reportToGQL(
@@ -75,7 +83,7 @@ function auditToGQL(audit: AuditReport): PortalAudit {
     displayValue: formattedValue,
     details,
   } = audit;
-  const { issues, table } = details ?? {};
+  const { issues, table, trees } = details ?? {};
   return {
     slug,
     title,
@@ -88,6 +96,7 @@ function auditToGQL(audit: AuditReport): PortalAudit {
       details: {
         ...(issues && { issues: issues.map(issueToGQL) }),
         ...(table && { tables: [tableToGQL(table)] }),
+        ...(trees && { trees: trees.map(treeToGQL) }),
       },
     }),
   };
@@ -131,6 +140,57 @@ export function tableToGQL(table: Table): PortalTable {
             content: content?.toString() ?? '',
           })),
     ),
+  };
+}
+
+export function treeToGQL(tree: Tree): PortalTree {
+  if (tree.type === 'coverage') {
+    return coverageTreeToGQL(tree);
+  }
+  return basicTreeToGQL(tree);
+}
+
+function basicTreeToGQL(tree: BasicTree): PortalTree {
+  return {
+    type: safeEnum<PortalTreeType>('Basic'),
+    ...(tree.title && { title: tree.title }),
+    root: basicTreeNodeToGQL(tree.root),
+  };
+}
+
+function basicTreeNodeToGQL(node: BasicTreeNode): PortalTreeNode {
+  return {
+    name: node.name,
+    ...(node.values && {
+      values: Object.entries(node.values).map(([key, value]) => ({
+        key,
+        value: value.toString(),
+      })),
+    }),
+    ...(node.children?.length && {
+      children: node.children.map(basicTreeNodeToGQL),
+    }),
+  };
+}
+
+function coverageTreeToGQL(tree: CoverageTree): PortalTree {
+  return {
+    type: safeEnum<PortalTreeType>('Coverage'),
+    ...(tree.title && { title: tree.title }),
+    root: coverageTreeNodeToGQL(tree.root),
+  };
+}
+
+function coverageTreeNodeToGQL(node: CoverageTreeNode): PortalTreeNode {
+  return {
+    name: node.name,
+    coverage: node.values.coverage,
+    ...(node.values.missing?.length && {
+      missing: node.values.missing,
+    }),
+    ...(node.children?.length && {
+      children: node.children.map(coverageTreeNodeToGQL),
+    }),
   };
 }
 
@@ -188,7 +248,8 @@ function safeEnum<
     | PortalCategoryRefType
     | PortalIssueSeverity
     | PortalIssueSourceType
-    | PortalTableAlignment,
+    | PortalTableAlignment
+    | PortalTreeType,
 >(value: `${T}`): T {
   return value as T;
 }

@@ -1,5 +1,6 @@
 import { describe } from 'vitest';
-import { issueToGQL, tableToGQL } from './report-to-gql.js';
+import { type AuditReportTree, TreeType } from '@code-pushup/portal-client';
+import { issueToGQL, tableToGQL, treeToGQL } from './report-to-gql.js';
 
 describe('issueToGQL', () => {
   it('transforms issue to GraphQL input type', () => {
@@ -78,6 +79,125 @@ describe('tableToGQL', () => {
           { key: 'timeSpent', content: '712 ms' },
         ],
       ],
+    });
+  });
+});
+
+describe('treeToGQL', () => {
+  it('should transform basic tree', () => {
+    expect(
+      treeToGQL({
+        title: 'Critical request chain',
+        root: {
+          name: 'https://example.com',
+          children: [
+            {
+              name: 'https://example.com/styles/base.css',
+              values: { size: '2 kB', duration: 20 },
+            },
+            {
+              name: 'https://example.com/styles/theme.css',
+              values: { size: '10 kB', duration: 100 },
+            },
+          ],
+        },
+      }),
+    ).toStrictEqual<AuditReportTree>({
+      type: TreeType.Basic,
+      title: 'Critical request chain',
+      root: {
+        name: 'https://example.com',
+        children: [
+          {
+            name: 'https://example.com/styles/base.css',
+            values: [
+              { key: 'size', value: '2 kB' },
+              { key: 'duration', value: '20' },
+            ],
+          },
+          {
+            name: 'https://example.com/styles/theme.css',
+            values: [
+              { key: 'size', value: '10 kB' },
+              { key: 'duration', value: '100' },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  it('should transform coverage tree', () => {
+    expect(
+      treeToGQL({
+        type: 'coverage',
+        title: 'Function coverage',
+        root: {
+          name: '.',
+          values: { coverage: 0.7 },
+          children: [
+            {
+              name: 'src',
+              values: { coverage: 0.7 },
+              children: [
+                {
+                  name: 'App.tsx',
+                  values: {
+                    coverage: 0.8,
+                    missing: [
+                      {
+                        startLine: 42,
+                        endLine: 50,
+                        name: 'login',
+                        kind: 'function',
+                      },
+                    ],
+                  },
+                },
+                {
+                  name: 'index.ts',
+                  values: {
+                    coverage: 0,
+                    missing: [{ startLine: 1, endLine: 10 }],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      }),
+    ).toStrictEqual<AuditReportTree>({
+      type: TreeType.Coverage,
+      title: 'Function coverage',
+      root: {
+        name: '.',
+        coverage: 0.7,
+        children: [
+          {
+            name: 'src',
+            coverage: 0.7,
+            children: [
+              {
+                name: 'App.tsx',
+                coverage: 0.8,
+                missing: [
+                  {
+                    startLine: 42,
+                    endLine: 50,
+                    name: 'login',
+                    kind: 'function',
+                  },
+                ],
+              },
+              {
+                name: 'index.ts',
+                coverage: 0,
+                missing: [{ startLine: 1, endLine: 10 }],
+              },
+            ],
+          },
+        ],
+      },
     });
   });
 });
