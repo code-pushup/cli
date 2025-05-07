@@ -1,0 +1,15 @@
+.
+└── src
+    ├── app
+    │   ├── components
+    │   │   ├── login
+    │   │   │   └── login.component.ts
+    │   │   └── platform
+    │   │       └── platform.component.ts
+    │   ├── services
+    │   │   ├── api-client.service.ts
+    │   │   └── auth.service.ts
+    │   ├── app.component.ts
+    │   ├── app.config.ts
+    │   └── app.routes.ts
+    └── main.ts

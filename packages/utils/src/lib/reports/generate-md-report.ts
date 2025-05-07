@@ -3,6 +3,7 @@ import type { AuditReport, Issue, Report } from '@code-pushup/models';
 import { formatDate, formatDuration } from '../formatting.js';
 import { HIERARCHY } from '../text-formats/index.js';
 import {
+  AUDIT_DETAILS_HEADING_LEVEL,
   FOOTER_PREFIX,
   README_LINK,
   REPORT_HEADLINE_TEXT,
@@ -12,6 +13,7 @@ import {
   linkToLocalSourceForIde,
   metaDescription,
   tableSection,
+  treeSection,
 } from './formatting.js';
 import {
   categoriesDetailsSection,
@@ -73,48 +75,57 @@ export function auditDetailsIssues(
   if (issues.length === 0) {
     return null;
   }
-  return new MarkdownDocument().heading(HIERARCHY.level_4, 'Issues').table(
-    [
-      { heading: 'Severity', alignment: 'center' },
-      { heading: 'Message', alignment: 'left' },
-      { heading: 'Source file', alignment: 'left' },
-      { heading: 'Line(s)', alignment: 'center' },
-    ],
-    issues.map(({ severity: level, message, source }: Issue) => {
-      const severity = md`${severityMarker(level)} ${md.italic(level)}`;
+  return new MarkdownDocument()
+    .heading(AUDIT_DETAILS_HEADING_LEVEL, 'Issues')
+    .table(
+      [
+        { heading: 'Severity', alignment: 'center' },
+        { heading: 'Message', alignment: 'left' },
+        { heading: 'Source file', alignment: 'left' },
+        { heading: 'Line(s)', alignment: 'center' },
+      ],
+      issues.map(({ severity: level, message, source }: Issue) => {
+        const severity = md`${severityMarker(level)} ${md.italic(level)}`;
 
-      if (!source) {
-        return [severity, message];
-      }
-      const file = linkToLocalSourceForIde(source, options);
-      if (!source.position) {
-        return [severity, message, file];
-      }
-      const line = formatSourceLine(source.position);
-      return [severity, message, file, line];
-    }),
-  );
+        if (!source) {
+          return [severity, message];
+        }
+        const file = linkToLocalSourceForIde(source, options);
+        if (!source.position) {
+          return [severity, message, file];
+        }
+        const line = formatSourceLine(source.position);
+        return [severity, message, file, line];
+      }),
+    );
 }
 
 export function auditDetails(
   audit: AuditReport,
   options?: MdReportOptions,
 ): MarkdownDocument {
-  const { table, issues = [] } = audit.details ?? {};
+  const { table, issues = [], trees = [] } = audit.details ?? {};
   const detailsValue = auditDetailsAuditValue(audit);
 
   // undefined details OR empty details (undefined issues OR empty issues AND empty table)
-  if (issues.length === 0 && !table?.rows.length) {
+  if (issues.length === 0 && !table?.rows.length && trees.length === 0) {
     return new MarkdownDocument().paragraph(detailsValue);
   }
 
   const tableSectionContent = table && tableSection(table);
   const issuesSectionContent =
     issues.length > 0 && auditDetailsIssues(issues, options);
+  const treesSectionContent =
+    trees.length > 0 &&
+    new MarkdownDocument().$concat(...trees.map(tree => treeSection(tree)));
 
   return new MarkdownDocument().details(
     detailsValue,
-    new MarkdownDocument().$concat(tableSectionContent, issuesSectionContent),
+    new MarkdownDocument().$concat(
+      tableSectionContent,
+      treesSectionContent,
+      issuesSectionContent,
+    ),
   );
 }
 

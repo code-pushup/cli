@@ -339,6 +339,56 @@ describe('auditDetails', () => {
     expect(md).not.toMatch('#### Issues');
   });
 
+  it('should display tree section if trees are present', () => {
+    const md = auditDetails({
+      slug: 'line-coverage',
+      title: 'Line coverage',
+      score: 0.7,
+      value: 70,
+      displayValue: '70 %',
+      details: {
+        trees: [
+          {
+            type: 'coverage',
+            title: 'Line coverage',
+            root: {
+              name: '.',
+              values: { coverage: 0.7 },
+              children: [
+                {
+                  name: 'src',
+                  values: { coverage: 0.7 },
+                  children: [
+                    {
+                      name: 'App.tsx',
+                      values: {
+                        coverage: 0.8,
+                        missing: [{ startLine: 42, endLine: 50 }],
+                      },
+                    },
+                    {
+                      name: 'index.ts',
+                      values: {
+                        coverage: 0,
+                        missing: [{ startLine: 1, endLine: 10 }],
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      },
+    } as AuditReport).toString();
+    expect(md).toMatch('<details>');
+    expect(md).toMatch('#### Line coverage');
+    expect(md).toContain('```');
+    expect(md).toContain('└── src');
+    expect(md).toContain('├── App.tsx');
+    expect(md).not.toMatch('#### Issues');
+  });
+
   it('should render complete details section', () => {
     expect(
       auditDetails({

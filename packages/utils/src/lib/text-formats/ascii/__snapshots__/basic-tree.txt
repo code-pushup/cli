@@ -1,0 +1,3 @@
+https://example.com
+├── https://example.com/styles/base.css
+└── https://example.com/styles/theme.css
