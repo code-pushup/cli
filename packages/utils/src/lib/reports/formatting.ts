@@ -9,13 +9,15 @@ import type {
   AuditReport,
   SourceFileLocation,
   Table,
+  Tree,
 } from '@code-pushup/models';
-import { HIERARCHY } from '../text-formats/index.js';
+import { formatAsciiTree } from '../text-formats/ascii/tree.js';
 import {
   columnsToStringArray,
   getColumnAlignments,
   rowToStringArray,
 } from '../text-formats/table.js';
+import { AUDIT_DETAILS_HEADING_LEVEL } from './constants.js';
 import {
   getEnvironmentType,
   getGitHubBaseUrl,
@@ -24,19 +26,19 @@ import {
 import type { MdReportOptions } from './types.js';
 
 export function tableSection(
-  tableData: Table,
+  table: Table,
   options?: {
     level?: HeadingLevel;
   },
 ): MarkdownDocument | null {
-  if (tableData.rows.length === 0) {
+  if (table.rows.length === 0) {
     return null;
   }
-  const { level = HIERARCHY.level_4 } = options ?? {};
-  const columns = columnsToStringArray(tableData);
-  const alignments = getColumnAlignments(tableData);
-  const rows = rowToStringArray(tableData);
-  return new MarkdownDocument().heading(level, tableData.title).table(
+  const { level = AUDIT_DETAILS_HEADING_LEVEL } = options ?? {};
+  const columns = columnsToStringArray(table);
+  const alignments = getColumnAlignments(table);
+  const rows = rowToStringArray(table);
+  return new MarkdownDocument().heading(level, table.title).table(
     columns.map((heading, i) => {
       const alignment = alignments[i];
       if (alignment) {
@@ -46,6 +48,18 @@ export function tableSection(
     }),
     rows,
   );
+}
+
+export function treeSection(
+  tree: Tree,
+  options?: {
+    level?: HeadingLevel;
+  },
+): MarkdownDocument {
+  const { level = AUDIT_DETAILS_HEADING_LEVEL } = options ?? {};
+  return new MarkdownDocument()
+    .heading(level, tree.title)
+    .code(formatAsciiTree(tree));
 }
 
 // @TODO extract `Pick<AuditReport, 'docsUrl' | 'description'>` to a reusable schema and type

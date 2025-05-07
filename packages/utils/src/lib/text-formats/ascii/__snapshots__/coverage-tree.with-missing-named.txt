@@ -1,0 +1,7 @@
+.                          70.00 %
+└── src                    70.00 %
+    ├── components         80.00 %
+    │   ├── App.tsx        75.00 %  login (42-50), logout (52-55)
+    │   └── Layout.tsx    100.00 %
+    ├── index.ts          100.00 %
+    └── utils.ts            0.00 %  ErrorBoundary (1-10)

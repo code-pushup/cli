@@ -1,0 +1,15 @@
+.                                             72.00 %
+└── src                                       72.00 %
+    ├── app                                   88.00 %
+    │   ├── components                        68.00 %
+    │   │   ├── login                         48.00 %
+    │   │   │   └── login.component.ts        48.00 %
+    │   │   └── platform                      74.00 %
+    │   │       └── platform.component.ts     74.00 %
+    │   ├── services                          97.00 %
+    │   │   ├── api-client.service.ts         99.00 %
+    │   │   └── auth.service.ts               94.00 %
+    │   ├── app.component.ts                  92.00 %
+    │   ├── app.config.ts                    100.00 %
+    │   └── app.routes.ts                    100.00 %
+    └── main.ts                                0.00 %

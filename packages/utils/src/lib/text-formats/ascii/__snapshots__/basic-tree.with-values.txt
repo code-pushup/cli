@@ -1,0 +1,3 @@
+https://example.com
+├── https://example.com/styles/base.css      2 kB   20
+└── https://example.com/styles/theme.css    10 kB  100
