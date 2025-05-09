@@ -159,3 +159,24 @@ export function filePathToCliArg(filePath: string): string {
 export function projectToFilename(project: string): string {
   return project.replace(/[/\\\s]+/g, '-').replace(/@/g, '');
 }
+
+type SplitFilePath = {
+  folders: string[];
+  file: string;
+};
+
+export function splitFilePath(filePath: string): SplitFilePath {
+  const file = path.basename(filePath);
+  const folders: string[] = [];
+  // eslint-disable-next-line functional/no-loop-statements
+  for (
+    // eslint-disable-next-line functional/no-let
+    let dirPath = path.dirname(filePath);
+    path.dirname(dirPath) !== dirPath;
+    dirPath = path.dirname(dirPath)
+  ) {
+    // eslint-disable-next-line functional/immutable-data
+    folders.unshift(path.basename(dirPath));
+  }
+  return { folders, file };
+}
