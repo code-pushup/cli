@@ -12,6 +12,7 @@ import {
   findNearestFile,
   logMultipleFileResults,
   projectToFilename,
+  splitFilePath,
 } from './file-system.js';
 import * as logResults from './log-results.js';
 
@@ -261,5 +262,14 @@ describe('projectToFilename', () => {
     ['backend/shared/auth', 'backend-shared-auth'],
   ])('should convert project name %p to file name %p', (project, file) => {
     expect(projectToFilename(project)).toBe(file);
+  });
+});
+
+describe('splitFilePath', () => {
+  it('should extract folders from file path', () => {
+    expect(splitFilePath(path.join('src', 'app', 'app.component.ts'))).toEqual({
+      folders: ['src', 'app'],
+      file: 'app.component.ts',
+    });
   });
 });
