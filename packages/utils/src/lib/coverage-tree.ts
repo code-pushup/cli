@@ -6,15 +6,25 @@ import type {
 import { splitFilePath } from './file-system.js';
 import { formatGitPath } from './git/git.js';
 
-type FileCoverage = {
+export type FileCoverage = {
   path: string;
   total: number;
-  hits: number;
+  covered: number;
   missing: CoverageTreeMissingLOC[];
 };
 
-// TODO: calculate folder coverage
-const COVERAGE_PLACEHOLDER = -1;
+type CoverageStats = Pick<FileCoverage, 'covered' | 'total'>;
+
+type FileTree = FolderNode | FileNode;
+
+type FileNode = FileCoverage & {
+  name: string;
+};
+
+type FolderNode = {
+  name: string;
+  children: FileTree[];
+};
 
 export function filesCoverageToTree(
   files: FileCoverage[],
@@ -26,13 +36,15 @@ export function filesCoverageToTree(
     path: formatGitPath(file.path, gitRoot),
   }));
 
-  const root = normalizedFiles.reduce<CoverageTreeNode>(
-    (acc: CoverageTreeNode, { path: filePath, ...coverage }) => {
-      const { folders, file } = splitFilePath(filePath);
+  const tree = normalizedFiles.reduce<FileTree>(
+    (acc, coverage) => {
+      const { folders, file } = splitFilePath(coverage.path);
       return addNode(acc, folders, file, coverage);
     },
-    { name: '.', values: { coverage: COVERAGE_PLACEHOLDER } },
+    { name: '.', children: [] },
   );
+
+  const root = calculateTreeCoverage(tree);
 
   return {
     type: 'coverage',
@@ -42,18 +54,19 @@ export function filesCoverageToTree(
 }
 
 function addNode(
-  root: CoverageTreeNode,
+  root: FileTree,
   folders: string[],
   file: string,
-  coverage: Omit<FileCoverage, 'path'>,
-): CoverageTreeNode {
+  coverage: FileCoverage,
+): FileTree {
   const folder = folders[0];
+  const rootChildren = 'children' in root ? root.children : [];
 
   if (folder) {
-    if (root.children?.some(({ name }) => name === folder)) {
+    if (rootChildren.some(({ name }) => name === folder)) {
       return {
         ...root,
-        children: root.children.map(node =>
+        children: rootChildren.map(node =>
           node.name === folder
             ? addNode(node, folders.slice(1), file, coverage)
             : node,
@@ -63,9 +76,9 @@ function addNode(
     return {
       ...root,
       children: [
-        ...(root.children ?? []),
+        ...rootChildren,
         addNode(
-          { name: folder, values: { coverage: COVERAGE_PLACEHOLDER } },
+          { name: folder, children: [] },
           folders.slice(1),
           file,
           coverage,
@@ -76,25 +89,65 @@ function addNode(
 
   return {
     ...root,
-    children: [
-      ...(root.children ?? []),
-      {
-        name: file,
-        values: {
-          coverage: calculateCoverage(coverage),
-          missing: coverage.missing,
-        },
-      },
-    ],
+    children: [...rootChildren, { ...coverage, name: file }],
   };
 }
 
-function calculateCoverage({
-  hits,
-  total,
-}: Pick<FileCoverage, 'hits' | 'total'>): number {
+function calculateTreeCoverage(root: FileTree): CoverageTreeNode {
+  if ('children' in root) {
+    const stats = aggregateChildCoverage(root.children);
+    const coverage = calculateCoverage(stats);
+    return {
+      name: root.name,
+      values: { coverage },
+      children: root.children.map(calculateTreeCoverage),
+    };
+  }
+
+  return {
+    name: root.name,
+    values: {
+      coverage: calculateCoverage(root),
+      missing: root.missing,
+    },
+  };
+}
+
+function calculateCoverage({ covered, total }: CoverageStats): number {
   if (total === 0) {
     return 1;
   }
-  return hits / total;
+  return covered / total;
+}
+
+function aggregateChildCoverage(
+  nodes: FileTree[],
+  cache = new Map<FolderNode, CoverageStats>(),
+): CoverageStats {
+  return nodes.reduce<CoverageStats>(
+    (acc, node) => {
+      const stats = getNodeCoverageStats(node, cache);
+      return {
+        covered: acc.covered + stats.covered,
+        total: acc.total + stats.total,
+      };
+    },
+    { covered: 0, total: 0 },
+  );
+}
+
+function getNodeCoverageStats(
+  node: FileTree,
+  cache: Map<FolderNode, CoverageStats>,
+): CoverageStats {
+  if (!('children' in node)) {
+    return node;
+  }
+  const cached = cache.get(node);
+  if (cached) {
+    return cached;
+  }
+  const stats = aggregateChildCoverage(node.children, cache);
+  cache.set(node, stats);
+  return stats;
 }
