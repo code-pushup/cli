@@ -36,7 +36,7 @@ export function filesCoverageToTree(
     path: formatGitPath(file.path, gitRoot),
   }));
 
-  const tree = normalizedFiles.reduce<FileTree>(
+  const filesTree = normalizedFiles.reduce<FileTree>(
     (acc, coverage) => {
       const { folders, file } = splitFilePath(coverage.path);
       return addNode(acc, folders, file, coverage);
@@ -44,7 +44,8 @@ export function filesCoverageToTree(
     { name: '.', children: [] },
   );
 
-  const root = calculateTreeCoverage(tree);
+  const coverageTree = calculateTreeCoverage(filesTree);
+  const root = sortCoverageTree(coverageTree);
 
   return {
     type: 'coverage',
@@ -150,4 +151,20 @@ function getNodeCoverageStats(
   const stats = aggregateChildCoverage(node.children, cache);
   cache.set(node, stats);
   return stats;
+}
+
+function sortCoverageTree(root: CoverageTreeNode): CoverageTreeNode {
+  if (!root.children?.length) {
+    return root;
+  }
+  return {
+    ...root,
+    children: root.children
+      .map(sortCoverageTree)
+      .toSorted(
+        (a, b) =>
+          Number(Boolean(b.children?.length)) -
+            Number(Boolean(a.children?.length)) || a.name.localeCompare(b.name),
+      ),
+  };
 }
