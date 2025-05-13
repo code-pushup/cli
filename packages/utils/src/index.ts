@@ -6,6 +6,7 @@ export {
   toSentenceCase,
   toTitleCase,
 } from './lib/case-conversions.js';
+export { filesCoverageToTree, type FileCoverage } from './lib/coverage-tree.js';
 export { createRunnerFiles } from './lib/create-runner-files.js';
 export { comparePairs, matchArrayItemsByKey, type Diff } from './lib/diff.js';
 export { stringifyError } from './lib/errors.js';

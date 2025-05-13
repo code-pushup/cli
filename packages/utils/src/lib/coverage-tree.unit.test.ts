@@ -164,4 +164,62 @@ describe('filesCoverageToTree', () => {
       expect.objectContaining({ title: 'Branch coverage' }),
     );
   });
+
+  it('should sort tree alphabetically with folders before files', () => {
+    const mockCoverage: Omit<FileCoverage, 'path'> = {
+      covered: 0,
+      total: 0,
+      missing: [],
+    };
+    const files: FileCoverage[] = [
+      {
+        ...mockCoverage,
+        path: path.join(process.cwd(), 'src', 'App.jsx'),
+      },
+      {
+        ...mockCoverage,
+        path: path.join(process.cwd(), 'src', 'components', 'TodoList.jsx'),
+      },
+      {
+        ...mockCoverage,
+        path: path.join(process.cwd(), 'src', 'hooks', 'useTodos.js'),
+      },
+      {
+        ...mockCoverage,
+        path: path.join(process.cwd(), 'src', 'components', 'TodoFilter.jsx'),
+      },
+      {
+        ...mockCoverage,
+        path: path.join(process.cwd(), 'src', 'components', 'CreateTodo.jsx'),
+      },
+    ];
+
+    expect(filesCoverageToTree(files, process.cwd())).toEqual(
+      expect.objectContaining({
+        root: expect.objectContaining({
+          name: '.',
+          children: [
+            expect.objectContaining({
+              name: 'src',
+              children: [
+                expect.objectContaining({
+                  name: 'components',
+                  children: [
+                    expect.objectContaining({ name: 'CreateTodo.jsx' }),
+                    expect.objectContaining({ name: 'TodoFilter.jsx' }),
+                    expect.objectContaining({ name: 'TodoList.jsx' }),
+                  ],
+                }),
+                expect.objectContaining({
+                  name: 'hooks',
+                  children: [expect.objectContaining({ name: 'useTodos.js' })],
+                }),
+                expect.objectContaining({ name: 'App.jsx' }),
+              ],
+            }),
+          ],
+        }),
+      }),
+    );
+  });
 });
