@@ -1,11 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expect } from 'vitest';
-import type {
-  AuditOutput,
-  AuditOutputs,
-  RunnerConfig,
-} from '@code-pushup/models';
+import type { AuditOutputs, RunnerConfig } from '@code-pushup/models';
 import { createRunnerFiles, readJsonFile } from '@code-pushup/utils';
 import type { FinalCoveragePluginConfig } from '../config.js';
 import { createRunnerConfig, executeRunner } from './index.js';
@@ -16,6 +12,7 @@ describe('createRunnerConfig', () => {
       reports: ['coverage/lcov.info'],
       coverageTypes: ['branch'],
       perfectScoreThreshold: 85,
+      continueOnCommandFail: true,
     });
     expect(runnerConfig).toStrictEqual<RunnerConfig>({
       command: 'node',
@@ -36,6 +33,7 @@ describe('createRunnerConfig', () => {
       reports: ['coverage/lcov.info'],
       coverageToolCommand: { command: 'npm', args: ['run', 'test'] },
       perfectScoreThreshold: 85,
+      continueOnCommandFail: true,
     };
 
     const { configFile } = await createRunnerConfig(
@@ -63,6 +61,7 @@ describe('executeRunner', () => {
         ),
       ],
       coverageTypes: ['line'],
+      continueOnCommandFail: true,
     };
 
     const runnerFiles = await createRunnerFiles(
@@ -74,19 +73,46 @@ describe('executeRunner', () => {
     const results = await readJsonFile<AuditOutputs>(
       runnerFiles.runnerOutputPath,
     );
-    expect(results).toStrictEqual([
-      expect.objectContaining({
+    expect(results).toStrictEqual<AuditOutputs>([
+      {
         slug: 'line-coverage',
         score: 0.7,
         value: 70,
+        displayValue: '70 %',
         details: {
-          issues: [
-            expect.objectContaining({
-              message: 'Lines 7-9 are not covered in any test case.',
-            }),
+          trees: [
+            {
+              type: 'coverage',
+              title: 'Line coverage',
+              root: {
+                name: '.',
+                values: { coverage: 0.7 },
+                children: [
+                  {
+                    name: 'src',
+                    values: { coverage: 0.7 },
+                    children: [
+                      {
+                        name: 'lib',
+                        values: { coverage: 0.7 },
+                        children: [
+                          {
+                            name: 'utils.ts',
+                            values: {
+                              coverage: 0.7,
+                              missing: [{ startLine: 7, endLine: 9 }],
+                            },
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
           ],
         },
-      } satisfies AuditOutput),
+      },
     ]);
   });
 });

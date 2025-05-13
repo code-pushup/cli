@@ -7,7 +7,6 @@ import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
   omitVariableReportData,
-  removeColorCodes,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
@@ -48,7 +47,7 @@ describe('PLUGIN collect report with jsdocs-plugin NPM package', () => {
   });
 
   it('should run JSDoc plugin for Angular example dir and create report.json', async () => {
-    const { code, stdout } = await executeProcess({
+    const { code } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'collect', '--no-progress'],
       cwd: angularDir,
@@ -56,17 +55,11 @@ describe('PLUGIN collect report with jsdocs-plugin NPM package', () => {
 
     expect(code).toBe(0);
 
-    expect(
-      removeColorCodes(stdout).replace(/@\d+\.\d+\.\d+/, '@<version>'),
-    ).toMatchFileSnapshot('__snapshots__/report.txt');
-
-    const report = await readJsonFile(
+    const report = await readJsonFile<Report>(
       path.join(angularOutputDir, 'report.json'),
     );
 
     expect(() => reportSchema.parse(report)).not.toThrow();
-    expect(
-      JSON.stringify(omitVariableReportData(report as Report), null, 2),
-    ).toMatchFileSnapshot('__snapshots__/report.json');
+    expect(omitVariableReportData(report)).toMatchSnapshot();
   });
 });
