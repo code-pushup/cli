@@ -1,6 +1,8 @@
+import path from 'node:path';
 import type { LCOVRecord } from 'parse-lcov';
 import { describe, it } from 'vitest';
-import type { AuditOutput, Issue } from '@code-pushup/models';
+import type { AuditOutput } from '@code-pushup/models';
+import type { FileCoverage } from '@code-pushup/utils';
 import { INVALID_FUNCTION_NAME } from '../constants.js';
 import {
   lcovCoverageToAuditOutput,
@@ -8,10 +10,9 @@ import {
   lcovReportToFunctionStat,
   lcovReportToLineStat,
 } from './transform.js';
-import type { LCOVStat } from './types.js';
 
 const lcovRecordMock: LCOVRecord = {
-  file: 'cli.ts',
+  file: 'bin.js',
   title: '',
   branches: { details: [], hit: 0, found: 0 },
   functions: { details: [], hit: 0, found: 0 },
@@ -19,33 +20,41 @@ const lcovRecordMock: LCOVRecord = {
 };
 
 describe('lcovReportToFunctionStat', () => {
-  it('should transform a fully covered function report to LCOV stat', () => {
+  it('should transform a fully covered function report', () => {
     expect(
       lcovReportToFunctionStat({
         ...lcovRecordMock,
+        file: 'src/main.ts',
         functions: {
           hit: 1,
           found: 1,
           details: [{ line: 12, name: 'yargsCli', hit: 6 }],
         },
       }),
-    ).toEqual<LCOVStat>({ totalHit: 1, totalFound: 1, issues: [] });
-  });
-
-  it('should transform an empty LCOV function report to LCOV stat', () => {
-    expect(
-      lcovReportToFunctionStat({
-        ...lcovRecordMock,
-        functions: { hit: 0, found: 0, details: [] },
-      }),
-    ).toEqual<LCOVStat>({
-      totalHit: 0,
-      totalFound: 0,
-      issues: [],
+    ).toEqual<FileCoverage>({
+      path: 'src/main.ts',
+      covered: 1,
+      total: 1,
+      missing: [],
     });
   });
 
-  it('should transform details from function report to issues', () => {
+  it('should transform an empty LCOV function report', () => {
+    expect(
+      lcovReportToFunctionStat({
+        ...lcovRecordMock,
+        file: 'src/main.ts',
+        functions: { hit: 0, found: 0, details: [] },
+      }),
+    ).toEqual<FileCoverage>({
+      path: 'src/main.ts',
+      covered: 0,
+      total: 0,
+      missing: [],
+    });
+  });
+
+  it('should transform details from function report to missing lines of code', () => {
     expect(
       lcovReportToFunctionStat({
         ...lcovRecordMock,
@@ -56,19 +65,19 @@ describe('lcovReportToFunctionStat', () => {
         },
       }),
     ).toEqual(
-      expect.objectContaining({
-        issues: [
+      expect.objectContaining<Partial<FileCoverage>>({
+        missing: [
           {
-            message: 'Function yargsCli is not called in any test case.',
-            severity: 'error',
-            source: { file: 'cli.ts', position: { startLine: 12 } },
-          } satisfies Issue,
+            kind: 'function',
+            name: 'yargsCli',
+            startLine: 12,
+          },
         ],
       }),
     );
   });
 
-  it('should skip covered functions when transforming details to issues', () => {
+  it('should skip covered functions when transforming details to missing lines of code', () => {
     expect(
       lcovReportToFunctionStat({
         ...lcovRecordMock,
@@ -82,13 +91,13 @@ describe('lcovReportToFunctionStat', () => {
         },
       }),
     ).toEqual(
-      expect.objectContaining({
-        issues: [
+      expect.objectContaining<Partial<FileCoverage>>({
+        missing: [
           {
-            message: 'Function cliError is not called in any test case.',
-            severity: 'error',
-            source: { file: 'cli.ts', position: { startLine: 20 } },
-          } satisfies Issue,
+            kind: 'function',
+            name: 'cliError',
+            startLine: 20,
+          },
         ],
       }),
     );
@@ -98,6 +107,7 @@ describe('lcovReportToFunctionStat', () => {
     expect(
       lcovReportToFunctionStat({
         ...lcovRecordMock,
+        file: 'src/main.ts',
         functions: {
           hit: 1,
           found: 2,
@@ -107,46 +117,51 @@ describe('lcovReportToFunctionStat', () => {
           ],
         },
       }),
-    ).toStrictEqual<LCOVStat>({
-      totalFound: 1,
-      totalHit: 1,
-      issues: [],
+    ).toStrictEqual<FileCoverage>({
+      path: 'src/main.ts',
+      total: 1,
+      covered: 1,
+      missing: [],
     });
   });
 });
 
 describe('lcovReportToLineStat', () => {
-  it('should transform a fully covered line report to LCOV stat', () => {
+  it('should transform a fully covered line report', () => {
     expect(
       lcovReportToLineStat({
         ...lcovRecordMock,
+        file: 'src/main.ts',
         lines: {
           hit: 1,
           found: 1,
           details: [{ line: 1, hit: 6 }],
         },
       }),
-    ).toEqual<LCOVStat>({
-      totalHit: 1,
-      totalFound: 1,
-      issues: [],
+    ).toEqual<FileCoverage>({
+      path: 'src/main.ts',
+      covered: 1,
+      total: 1,
+      missing: [],
     });
   });
 
-  it('should transform an empty LCOV line report to LCOV stat', () => {
+  it('should transform an empty LCOV line report', () => {
     expect(
       lcovReportToLineStat({
         ...lcovRecordMock,
+        file: 'src/main.ts',
         lines: { hit: 0, found: 0, details: [] },
       }),
-    ).toEqual<LCOVStat>({
-      totalHit: 0,
-      totalFound: 0,
-      issues: [],
+    ).toEqual<FileCoverage>({
+      path: 'src/main.ts',
+      covered: 0,
+      total: 0,
+      missing: [],
     });
   });
 
-  it('should transform details from line report to issues', () => {
+  it('should transform details from line report to missing lines of code', () => {
     expect(
       lcovReportToLineStat({
         ...lcovRecordMock,
@@ -157,19 +172,13 @@ describe('lcovReportToLineStat', () => {
         },
       }),
     ).toEqual(
-      expect.objectContaining({
-        issues: [
-          {
-            message: 'Line 1 is not covered in any test case.',
-            severity: 'warning',
-            source: { file: 'cli.ts', position: { startLine: 1 } },
-          } satisfies Issue,
-        ],
+      expect.objectContaining<Partial<FileCoverage>>({
+        missing: [{ startLine: 1 }],
       }),
     );
   });
 
-  it('should skip covered lines when transforming details to issues', () => {
+  it('should skip covered lines when transforming details to missing lines of code', () => {
     expect(
       lcovReportToLineStat({
         ...lcovRecordMock,
@@ -183,14 +192,8 @@ describe('lcovReportToLineStat', () => {
         },
       }),
     ).toEqual(
-      expect.objectContaining({
-        issues: [
-          {
-            message: 'Line 2 is not covered in any test case.',
-            severity: 'warning',
-            source: { file: 'cli.ts', position: { startLine: 2 } },
-          } satisfies Issue,
-        ],
+      expect.objectContaining<Partial<FileCoverage>>({
+        missing: [{ startLine: 2 }],
       }),
     );
   });
@@ -213,57 +216,49 @@ describe('lcovReportToLineStat', () => {
         },
       }),
     ).toEqual(
-      expect.objectContaining({
-        issues: [
-          {
-            message: 'Lines 2-4 are not covered in any test case.',
-            severity: 'warning',
-            source: { file: 'cli.ts', position: { startLine: 2, endLine: 4 } },
-          },
-
-          {
-            message: 'Line 6 is not covered in any test case.',
-            severity: 'warning',
-            source: { file: 'cli.ts', position: { startLine: 6 } },
-          },
-        ] satisfies Issue[],
+      expect.objectContaining<Partial<FileCoverage>>({
+        missing: [{ startLine: 2, endLine: 4 }, { startLine: 6 }],
       }),
     );
   });
 });
 
 describe('lcovReportToBranchStat', () => {
-  it('should transform a fully covered branch report to LCOV stat', () => {
+  it('should transform a fully covered branch report', () => {
     expect(
       lcovReportToBranchStat({
         ...lcovRecordMock,
+        file: 'src/main.ts',
         branches: {
           hit: 1,
           found: 1,
           details: [{ line: 12, taken: 6, branch: 0, block: 0 }],
         },
       }),
-    ).toEqual<LCOVStat>({
-      totalHit: 1,
-      totalFound: 1,
-      issues: [],
+    ).toEqual<FileCoverage>({
+      path: 'src/main.ts',
+      covered: 1,
+      total: 1,
+      missing: [],
     });
   });
 
-  it('should transform an empty LCOV branch report to LCOV stat', () => {
+  it('should transform an empty LCOV branch report', () => {
     expect(
       lcovReportToBranchStat({
         ...lcovRecordMock,
+        file: 'src/main.ts',
         branches: { hit: 0, found: 0, details: [] },
       }),
-    ).toEqual<LCOVStat>({
-      totalHit: 0,
-      totalFound: 0,
-      issues: [],
+    ).toEqual<FileCoverage>({
+      path: 'src/main.ts',
+      covered: 0,
+      total: 0,
+      missing: [],
     });
   });
 
-  it('should transform details from branch report to issues', () => {
+  it('should transform details from branch report to missing lines of code', () => {
     expect(
       lcovReportToBranchStat({
         ...lcovRecordMock,
@@ -274,19 +269,19 @@ describe('lcovReportToBranchStat', () => {
         },
       }),
     ).toEqual(
-      expect.objectContaining({
-        issues: [
+      expect.objectContaining<Partial<FileCoverage>>({
+        missing: [
           {
-            message: '1st branch is not taken in any test case.',
-            severity: 'error',
-            source: { file: 'cli.ts', position: { startLine: 12 } },
-          } satisfies Issue,
+            kind: 'branch',
+            name: '0',
+            startLine: 12,
+          },
         ],
       }),
     );
   });
 
-  it('should skip a covered branch when transforming details to issues', () => {
+  it('should skip a covered branch when transforming details to missing lines of code', () => {
     expect(
       lcovReportToBranchStat({
         ...lcovRecordMock,
@@ -300,13 +295,13 @@ describe('lcovReportToBranchStat', () => {
         },
       }),
     ).toEqual(
-      expect.objectContaining({
-        issues: [
+      expect.objectContaining<Partial<FileCoverage>>({
+        missing: [
           {
-            message: '2nd branch is not taken in any test case.',
-            severity: 'error',
-            source: { file: 'cli.ts', position: { startLine: 20 } },
-          } satisfies Issue,
+            kind: 'branch',
+            name: '1',
+            startLine: 20,
+          },
         ],
       }),
     );
@@ -317,60 +312,134 @@ describe('lcovCoverageToAudit', () => {
   it('should transform full branch coverage to audit output', () => {
     expect(
       lcovCoverageToAuditOutput(
-        { totalHit: 56, totalFound: 56, issues: [] },
+        [
+          {
+            path: path.join(process.cwd(), 'main.js'),
+            covered: 2,
+            total: 2,
+            missing: [],
+          },
+        ],
         'branch',
+        process.cwd(),
       ),
     ).toEqual<AuditOutput>({
       slug: 'branch-coverage',
       score: 1,
       value: 100,
       displayValue: '100 %',
-      details: { issues: [] },
+      details: {
+        trees: [
+          {
+            type: 'coverage',
+            title: 'Branch coverage',
+            root: {
+              name: '.',
+              values: { coverage: 1 },
+              children: [
+                { name: 'main.js', values: { coverage: 1, missing: [] } },
+              ],
+            },
+          },
+        ],
+      },
     });
   });
 
   it('should transform an empty function coverage to audit output', () => {
     expect(
       lcovCoverageToAuditOutput(
-        { totalHit: 0, totalFound: 0, issues: [] },
+        [
+          {
+            path: path.join(process.cwd(), 'release.js'),
+            covered: 0,
+            total: 0,
+            missing: [],
+          },
+        ],
         'function',
+        process.cwd(),
       ),
     ).toEqual<AuditOutput>({
       slug: 'function-coverage',
       score: 1,
       value: 100,
       displayValue: '100 %',
-      details: { issues: [] },
+      details: {
+        trees: [
+          {
+            type: 'coverage',
+            title: 'Function coverage',
+            root: {
+              name: '.',
+              values: { coverage: 1 },
+              children: [
+                { name: 'release.js', values: { coverage: 1, missing: [] } },
+              ],
+            },
+          },
+        ],
+      },
     });
   });
 
   it('should transform a partial line coverage to audit output', () => {
     expect(
       lcovCoverageToAuditOutput(
-        {
-          totalHit: 9,
-          totalFound: 10,
-          issues: [
-            {
-              message: 'Line 2 is not covered in any test case.',
-              severity: 'warning',
-              source: { file: 'cli.ts', position: { startLine: 2 } },
-            },
-          ],
-        },
+        [
+          {
+            path: path.join(process.cwd(), 'bin.js'),
+            covered: 0,
+            total: 5,
+            missing: [{ startLine: 1, endLine: 5 }],
+          },
+          {
+            path: path.join(process.cwd(), 'src', 'core.js'),
+            covered: 50,
+            total: 50,
+            missing: [],
+          },
+          {
+            path: path.join(process.cwd(), 'src', 'utils.js'),
+            covered: 45,
+            total: 45,
+            missing: [],
+          },
+        ],
         'line',
+        process.cwd(),
       ),
     ).toEqual<AuditOutput>({
       slug: 'line-coverage',
-      score: 0.9,
-      value: 90,
-      displayValue: '90 %',
+      score: 0.95,
+      value: 95,
+      displayValue: '95 %',
       details: {
-        issues: [
+        trees: [
           {
-            message: 'Line 2 is not covered in any test case.',
-            severity: 'warning',
-            source: { file: 'cli.ts', position: { startLine: 2 } },
+            type: 'coverage',
+            title: 'Line coverage',
+            root: {
+              name: '.',
+              values: { coverage: 0.95 },
+              children: [
+                {
+                  name: 'src',
+                  values: { coverage: 1 },
+                  children: [
+                    { name: 'core.js', values: { coverage: 1, missing: [] } },
+                    { name: 'utils.js', values: { coverage: 1, missing: [] } },
+                  ],
+                },
+                {
+                  name: 'bin.js',
+                  values: {
+                    coverage: 0,
+                    missing: [{ startLine: 1, endLine: 5 }],
+                  },
+                },
+              ],
+            },
           },
         ],
       },

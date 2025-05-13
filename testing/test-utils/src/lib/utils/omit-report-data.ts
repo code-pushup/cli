@@ -16,24 +16,19 @@ export function omitVariableAuditData({
 }
 
 export function omitVariablePluginData(
-  {
-    date: _,
-    duration: __,
-    version: ___,
-    audits,
-    ...pluginReport
-  }: PluginReport,
+  { date: _, duration: __, version: ___, ...pluginReport }: PluginReport,
   options?: {
     omitAuditData: boolean;
   },
 ) {
   const { omitAuditData } = options ?? {};
-  return {
-    ...pluginReport,
-    audits: audits.map(plugin =>
-      omitAuditData ? omitVariableAuditData(plugin) : plugin,
-    ) as AuditReport[],
-  } as PluginReport;
+  if (omitAuditData) {
+    return {
+      ...pluginReport,
+      audits: pluginReport.audits.map(omitVariableAuditData),
+    };
+  }
+  return pluginReport;
 }
 
 export function omitVariableReportData(

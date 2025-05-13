@@ -9,6 +9,7 @@ import type {
 import { vi } from 'vitest';
 
 export type GitConfig = { name: string; email: string };
+
 export async function initGitRepo(
   simpleGit: SimpleGitFactory,
   opt: {

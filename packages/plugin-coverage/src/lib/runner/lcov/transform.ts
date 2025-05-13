@@ -1,32 +1,29 @@
 import type { LCOVRecord } from 'parse-lcov';
-import type { AuditOutput, Issue } from '@code-pushup/models';
-import { toNumberPrecision, toOrdinal } from '@code-pushup/utils';
+import type { AuditOutput } from '@code-pushup/models';
+import {
+  type FileCoverage,
+  capitalize,
+  filesCoverageToTree,
+  toNumberPrecision,
+} from '@code-pushup/utils';
 import type { CoverageType } from '../../config.js';
 import { INVALID_FUNCTION_NAME } from '../constants.js';
-import type { LCOVStat } from './types.js';
-import { calculateCoverage, mergeConsecutiveNumbers } from './utils.js';
+import { mergeConsecutiveNumbers } from './utils.js';
 
-export function lcovReportToFunctionStat(record: LCOVRecord): LCOVStat {
+export function lcovReportToFunctionStat(record: LCOVRecord): FileCoverage {
   const validRecord = removeEmptyReport(record);
 
   return {
-    totalFound: validRecord.functions.found,
-    totalHit: validRecord.functions.hit,
-    issues:
-      validRecord.functions.hit < validRecord.functions.found
-        ? validRecord.functions.details
-            .filter(detail => !detail.hit)
-            .map(
-              (detail): Issue => ({
-                message: `Function ${detail.name} is not called in any test case.`,
-                severity: 'error',
-                source: {
-                  file: validRecord.file,
-                  position: { startLine: detail.line },
-                },
-              }),
-            )
-        : [],
+    path: validRecord.file,
+    covered: validRecord.functions.hit,
+    total: validRecord.functions.found,
+    missing: validRecord.functions.details
+      .filter(detail => !detail.hit)
+      .map(detail => ({
+        startLine: detail.line,
+        kind: 'function',
+        name: detail.name,
+      })),
   };
 }
 
@@ -52,67 +49,43 @@ function removeEmptyReport(record: LCOVRecord): LCOVRecord {
   };
 }
 
-export function lcovReportToLineStat(record: LCOVRecord): LCOVStat {
-  const missingCoverage = record.lines.hit < record.lines.found;
-  const lines = missingCoverage
-    ? record.lines.details
-        .filter(detail => !detail.hit)
-        .map(detail => detail.line)
-    : [];
+export function lcovReportToLineStat(record: LCOVRecord): FileCoverage {
+  const lines = record.lines.details
+    .filter(detail => !detail.hit)
+    .map(detail => detail.line);
 
-  const linePositions = mergeConsecutiveNumbers(lines);
+  const lineRanges = mergeConsecutiveNumbers(lines);
 
   return {
-    totalFound: record.lines.found,
-    totalHit: record.lines.hit,
-    issues: missingCoverage
-      ? linePositions.map((linePosition): Issue => {
-          const lineReference =
-            linePosition.end == null
-              ? `Line ${linePosition.start} is`
-              : `Lines ${linePosition.start}-${linePosition.end} are`;
-
-          return {
-            message: `${lineReference} not covered in any test case.`,
-            severity: 'warning',
-            source: {
-              file: record.file,
-              position: {
-                startLine: linePosition.start,
-                endLine: linePosition.end,
-              },
-            },
-          };
-        })
-      : [],
+    path: record.file,
+    covered: record.lines.hit,
+    total: record.lines.found,
+    missing: lineRanges.map(({ start, end }) => ({
+      startLine: start,
+      endLine: end,
+    })),
   };
 }
 
-export function lcovReportToBranchStat(record: LCOVRecord): LCOVStat {
+export function lcovReportToBranchStat(record: LCOVRecord): FileCoverage {
   return {
-    totalFound: record.branches.found,
-    totalHit: record.branches.hit,
-    issues:
-      record.branches.hit < record.branches.found
-        ? record.branches.details
-            .filter(detail => !detail.taken)
-            .map(
-              (detail): Issue => ({
-                message: `${toOrdinal(
-                  detail.branch + 1,
-                )} branch is not taken in any test case.`,
-                severity: 'error',
-                source: {
-                  file: record.file,
-                  position: { startLine: detail.line },
-                },
-              }),
-            )
-        : [],
+    path: record.file,
+    covered: record.branches.hit,
+    total: record.branches.found,
+    missing: record.branches.details
+      .filter(detail => !detail.taken)
+      .map(detail => ({
+        startLine: detail.line,
+        kind: 'branch',
+        name: detail.branch.toString(),
+      })),
   };
 }
 
-export const recordToStatFunctionMapper = {
+export const recordToStatFunctionMapper: Record<
+  CoverageType,
+  (record: LCOVRecord) => FileCoverage
+> = {
   branch: lcovReportToBranchStat,
   line: lcovReportToLineStat,
   function: lcovReportToFunctionStat,
@@ -120,15 +93,22 @@ export const recordToStatFunctionMapper = {
 
 /**
  *
- * @param stat code coverage result for a given type
+ * @param files code coverage of given type for all files
  * @param coverageType code coverage type
+ * @param gitRoot root directory in repo, for relative paths
  * @returns Result of complete code ccoverage data coverted to AuditOutput
  */
 export function lcovCoverageToAuditOutput(
-  stat: LCOVStat,
+  files: FileCoverage[],
   coverageType: CoverageType,
+  gitRoot: string,
 ): AuditOutput {
-  const coverage = calculateCoverage(stat.totalHit, stat.totalFound);
+  const tree = filesCoverageToTree(
+    files,
+    gitRoot,
+    `${capitalize(coverageType)} coverage`,
+  );
+  const coverage = tree.root.values.coverage;
   const MAX_DECIMAL_PLACES = 4;
   const coveragePercentage = coverage * 100;
 
@@ -138,7 +118,7 @@ export function lcovCoverageToAuditOutput(
     value: coveragePercentage,
     displayValue: `${toNumberPrecision(coveragePercentage, 1)} %`,
     details: {
-      issues: stat.issues,
+      trees: [tree],
     },
   };
 }

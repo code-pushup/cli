@@ -4,26 +4,68 @@ exports[`lcovResultsToAuditOutputs > should correctly convert lcov results to Au
 [
   {
     "details": {
-      "issues": [
+      "trees": [
         {
-          "message": "1st branch is not taken in any test case.",
-          "severity": "error",
-          "source": {
-            "file": "packages/cli/src/lib/utils.ts",
-            "position": {
-              "startLine": 6,
+          "root": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [
+                              {
+                                "name": "utils.ts",
+                                "values": {
+                                  "coverage": 0.8,
+                                  "missing": [
+                                    {
+                                      "kind": "branch",
+                                      "name": "0",
+                                      "startLine": 6,
+                                    },
+                                    {
+                                      "kind": "branch",
+                                      "name": "0",
+                                      "startLine": 10,
+                                    },
+                                  ],
+                                },
+                              },
+                            ],
+                            "name": "lib",
+                            "values": {
+                              "coverage": 0.8,
+                            },
+                          },
+                        ],
+                        "name": "src",
+                        "values": {
+                          "coverage": 0.8,
+                        },
+                      },
+                    ],
+                    "name": "cli",
+                    "values": {
+                      "coverage": 0.8,
+                    },
+                  },
+                ],
+                "name": "packages",
+                "values": {
+                  "coverage": 0.8,
+                },
+              },
+            ],
+            "name": ".",
+            "values": {
+              "coverage": 0.8,
             },
           },
-        },
-        {
-          "message": "1st branch is not taken in any test case.",
-          "severity": "error",
-          "source": {
-            "file": "packages/cli/src/lib/utils.ts",
-            "position": {
-              "startLine": 10,
-            },
-          },
+          "title": "Branch coverage",
+          "type": "coverage",
         },
       ],
     },
@@ -34,7 +76,59 @@ exports[`lcovResultsToAuditOutputs > should correctly convert lcov results to Au
   },
   {
     "details": {
-      "issues": [],
+      "trees": [
+        {
+          "root": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [
+                              {
+                                "name": "utils.ts",
+                                "values": {
+                                  "coverage": 1,
+                                  "missing": [],
+                                },
+                              },
+                            ],
+                            "name": "lib",
+                            "values": {
+                              "coverage": 1,
+                            },
+                          },
+                        ],
+                        "name": "src",
+                        "values": {
+                          "coverage": 1,
+                        },
+                      },
+                    ],
+                    "name": "cli",
+                    "values": {
+                      "coverage": 1,
+                    },
+                  },
+                ],
+                "name": "packages",
+                "values": {
+                  "coverage": 1,
+                },
+              },
+            ],
+            "name": ".",
+            "values": {
+              "coverage": 1,
+            },
+          },
+          "title": "Function coverage",
+          "type": "coverage",
+        },
+      ],
     },
     "displayValue": "100 %",
     "score": 1,
@@ -43,17 +137,62 @@ exports[`lcovResultsToAuditOutputs > should correctly convert lcov results to Au
   },
   {
     "details": {
-      "issues": [
+      "trees": [
         {
-          "message": "Lines 7-9 are not covered in any test case.",
-          "severity": "warning",
-          "source": {
-            "file": "packages/cli/src/lib/utils.ts",
-            "position": {
-              "endLine": 9,
-              "startLine": 7,
+          "root": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [
+                              {
+                                "name": "utils.ts",
+                                "values": {
+                                  "coverage": 0.7,
+                                  "missing": [
+                                    {
+                                      "endLine": 9,
+                                      "startLine": 7,
+                                    },
+                                  ],
+                                },
+                              },
+                            ],
+                            "name": "lib",
+                            "values": {
+                              "coverage": 0.7,
+                            },
+                          },
+                        ],
+                        "name": "src",
+                        "values": {
+                          "coverage": 0.7,
+                        },
+                      },
+                    ],
+                    "name": "cli",
+                    "values": {
+                      "coverage": 0.7,
+                    },
+                  },
+                ],
+                "name": "packages",
+                "values": {
+                  "coverage": 0.7,
+                },
+              },
+            ],
+            "name": ".",
+            "values": {
+              "coverage": 0.7,
             },
           },
+          "title": "Line coverage",
+          "type": "coverage",
         },
       ],
     },
@@ -69,17 +208,62 @@ exports[`lcovResultsToAuditOutputs > should correctly merge all lines for covera
 [
   {
     "details": {
-      "issues": [
+      "trees": [
         {
-          "message": "Lines 1-30 are not covered in any test case.",
-          "severity": "warning",
-          "source": {
-            "file": "packages/cli/src/lib/index.ts",
-            "position": {
-              "endLine": 30,
-              "startLine": 1,
+          "root": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [
+                              {
+                                "name": "index.ts",
+                                "values": {
+                                  "coverage": 0,
+                                  "missing": [
+                                    {
+                                      "endLine": 30,
+                                      "startLine": 1,
+                                    },
+                                  ],
+                                },
+                              },
+                            ],
+                            "name": "lib",
+                            "values": {
+                              "coverage": 0,
+                            },
+                          },
+                        ],
+                        "name": "src",
+                        "values": {
+                          "coverage": 0,
+                        },
+                      },
+                    ],
+                    "name": "cli",
+                    "values": {
+                      "coverage": 0,
+                    },
+                  },
+                ],
+                "name": "packages",
+                "values": {
+                  "coverage": 0,
+                },
+              },
+            ],
+            "name": ".",
+            "values": {
+              "coverage": 0,
             },
           },
+          "title": "Line coverage",
+          "type": "coverage",
         },
       ],
     },

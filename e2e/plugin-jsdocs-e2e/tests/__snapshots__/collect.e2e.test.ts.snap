@@ -1,0 +1,201 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PLUGIN collect report with jsdocs-plugin NPM package > should run JSDoc plugin for Angular example dir and create report.json 1`] = `
+{
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "audits": [
+        {
+          "description": "Documentation coverage of enums",
+          "details": {
+            "issues": [],
+          },
+          "displayValue": "0 undocumented enums",
+          "score": 1,
+          "slug": "enums-coverage",
+          "title": "Enums coverage",
+          "value": 0,
+        },
+        {
+          "description": "Documentation coverage of interfaces",
+          "details": {
+            "issues": [],
+          },
+          "displayValue": "0 undocumented interfaces",
+          "score": 1,
+          "slug": "interfaces-coverage",
+          "title": "Interfaces coverage",
+          "value": 0,
+        },
+        {
+          "description": "Documentation coverage of types",
+          "details": {
+            "issues": [],
+          },
+          "displayValue": "0 undocumented types",
+          "score": 1,
+          "slug": "types-coverage",
+          "title": "Types coverage",
+          "value": 0,
+        },
+        {
+          "description": "Documentation coverage of functions",
+          "details": {
+            "issues": [
+              {
+                "message": "Missing functions documentation for notRealisticFunction",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-jsdocs-e2e/__test__/angular/src/app.component.spec.ts",
+                  "position": {
+                    "startLine": 1,
+                  },
+                },
+              },
+              {
+                "message": "Missing functions documentation for mapEventToCustomEvent",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-jsdocs-e2e/__test__/angular/src/map-event.function.ts",
+                  "position": {
+                    "startLine": 3,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "2 undocumented functions",
+          "score": 0.3333,
+          "slug": "functions-coverage",
+          "title": "Functions coverage",
+          "value": 2,
+        },
+        {
+          "description": "Documentation coverage of variables",
+          "details": {
+            "issues": [
+              {
+                "message": "Missing variables documentation for someVariable",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-jsdocs-e2e/__test__/angular/src/map-event.function.ts",
+                  "position": {
+                    "startLine": 1,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "1 undocumented variables",
+          "score": 0,
+          "slug": "variables-coverage",
+          "title": "Variables coverage",
+          "value": 1,
+        },
+        {
+          "description": "Documentation coverage of classes",
+          "details": {
+            "issues": [],
+          },
+          "displayValue": "0 undocumented classes",
+          "score": 1,
+          "slug": "classes-coverage",
+          "title": "Classes coverage",
+          "value": 0,
+        },
+        {
+          "description": "Documentation coverage of methods",
+          "details": {
+            "issues": [
+              {
+                "message": "Missing methods documentation for sendEvent",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-jsdocs-e2e/__test__/angular/src/app.component.ts",
+                  "position": {
+                    "startLine": 15,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "1 undocumented methods",
+          "score": 0.5,
+          "slug": "methods-coverage",
+          "title": "Methods coverage",
+          "value": 1,
+        },
+        {
+          "description": "Documentation coverage of properties",
+          "details": {
+            "issues": [
+              {
+                "message": "Missing properties documentation for title",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-jsdocs-e2e/__test__/angular/src/app.component.ts",
+                  "position": {
+                    "startLine": 5,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "1 undocumented properties",
+          "score": 0,
+          "slug": "properties-coverage",
+          "title": "Properties coverage",
+          "value": 1,
+        },
+      ],
+      "description": "Official Code PushUp JSDoc coverage plugin.",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/jsdocs-plugin/",
+      "groups": [
+        {
+          "description": "Documentation coverage",
+          "refs": [
+            {
+              "slug": "classes-coverage",
+              "weight": 2,
+            },
+            {
+              "slug": "methods-coverage",
+              "weight": 2,
+            },
+            {
+              "slug": "functions-coverage",
+              "weight": 2,
+            },
+            {
+              "slug": "interfaces-coverage",
+              "weight": 1,
+            },
+            {
+              "slug": "variables-coverage",
+              "weight": 1,
+            },
+            {
+              "slug": "properties-coverage",
+              "weight": 1,
+            },
+            {
+              "slug": "types-coverage",
+              "weight": 1,
+            },
+            {
+              "slug": "enums-coverage",
+              "weight": 1,
+            },
+          ],
+          "slug": "documentation-coverage",
+          "title": "Documentation coverage",
+        },
+      ],
+      "icon": "folder-docs",
+      "slug": "jsdocs",
+      "title": "JSDoc coverage",
+    },
+  ],
+}
+`;

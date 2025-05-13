@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases.js';
 
 export default defineConfig({
-  cacheDir: '../../node_modules/.vite/plugin-lighthouse-e2e',
+  cacheDir: '../../node_modules/.vite/plugin-coverage-e2e',
   test: {
     reporters: ['basic'],
     testTimeout: 40_000,
