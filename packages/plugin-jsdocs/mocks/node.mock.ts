@@ -12,6 +12,7 @@ export function nodeMock(options: {
     getJsDocs: () => (options.isCommented ? ['Comment'] : []),
     getName: () => 'test',
     getStartLineNumber: () => options.line,
+    getEndLineNumber: () => options.line,
     getDeclarations: () => [],
     // Only for classes
     getMethods: () => [],

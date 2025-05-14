@@ -61,6 +61,7 @@ describe('getDocumentationReport', () => {
     >([
       {
         startLine: 1,
+        endLine: 1,
         kind: 'function',
         name: 'test',
       },
@@ -97,6 +98,7 @@ describe('getVariablesInformation', () => {
       getKind: () => 'const',
       getJsDocs: () => ['some docs'],
       getStartLineNumber: () => 42,
+      getEndLineNumber: () => 44,
       getDeclarations: () => [mockDeclaration],
     };
 
@@ -109,6 +111,7 @@ describe('getVariablesInformation', () => {
       getKind: expect.any(Function),
       getJsDocs: expect.any(Function),
       getStartLineNumber: expect.any(Function),
+      getEndLineNumber: expect.any(Function),
       getName: expect.any(Function),
     });
     // It must be defined
@@ -116,6 +119,7 @@ describe('getVariablesInformation', () => {
     expect(result[0]!.getKind()).toBe('const');
     expect(result[0]!.getJsDocs()).toEqual(['some docs']);
     expect(result[0]!.getStartLineNumber()).toBe(42);
+    expect(result[0]!.getEndLineNumber()).toBe(44);
   });
 
   it('should handle multiple declarations in a single variable statement', () => {
@@ -128,6 +132,7 @@ describe('getVariablesInformation', () => {
       getKind: () => 'let',
       getJsDocs: () => [],
       getStartLineNumber: () => 10,
+      getEndLineNumber: () => 10,
       getDeclarations: () => mockDeclarations,
     };
 
@@ -153,6 +158,7 @@ describe('getVariablesInformation', () => {
       getKind: () => 'const',
       getJsDocs: () => [],
       getStartLineNumber: () => 1,
+      getEndLineNumber: () => 1,
       getDeclarations: () => [],
     };
 

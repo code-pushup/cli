@@ -7,11 +7,13 @@ exports[`getDocumentationReport > should produce a full report 1`] = `
       "covered": 1,
       "missing": [
         {
+          "endLine": 4,
           "kind": "class",
           "name": "test",
           "startLine": 4,
         },
         {
+          "endLine": 5,
           "kind": "class",
           "name": "test",
           "startLine": 5,
@@ -26,11 +28,13 @@ exports[`getDocumentationReport > should produce a full report 1`] = `
       "covered": 1,
       "missing": [
         {
+          "endLine": 8,
           "kind": "enum",
           "name": "test",
           "startLine": 8,
         },
         {
+          "endLine": 9,
           "kind": "enum",
           "name": "test",
           "startLine": 9,
@@ -53,6 +57,7 @@ exports[`getDocumentationReport > should produce a full report 1`] = `
       "covered": 2,
       "missing": [
         {
+          "endLine": 15,
           "kind": "interface",
           "name": "test",
           "startLine": 15,
@@ -83,11 +88,13 @@ exports[`getDocumentationReport > should produce a full report 1`] = `
       "covered": 2,
       "missing": [
         {
+          "endLine": 10,
           "kind": "type",
           "name": "test",
           "startLine": 10,
         },
         {
+          "endLine": 11,
           "kind": "type",
           "name": "test",
           "startLine": 11,
