@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import type { AuditOutput, CoverageTree } from '@code-pushup/models';
 import { AUDITS_MAP } from '../constants.js';
 import { createRunnerFunction } from './runner.js';
 
@@ -19,7 +20,7 @@ describe('createRunnerFunction', () => {
   ]);
 
   it.each(AUDIT_SLUGS)(
-    'should generate issues for %s coverage if undocumented',
+    'should calculate %s coverage when undocumented',
     async coverageType => {
       const filePath = path.join(
         fixturesDir,
@@ -33,35 +34,28 @@ describe('createRunnerFunction', () => {
 
       expect(
         results.find(({ slug }) => slug === `${coverageType}-coverage`),
-      ).toStrictEqual(
-        expect.objectContaining({
-          slug: `${coverageType}-coverage`,
-          score: 0,
-          value: 1,
-          displayValue: `1 undocumented ${coverageType}`,
-          details: {
-            issues: [
-              expect.objectContaining({
-                message: expect.stringContaining(
-                  `Missing ${coverageType} documentation for`,
-                ),
-                severity: 'warning',
-                source: {
-                  file: expect.stringContaining(path.basename(filePath)),
-                  position: {
-                    startLine: expect.any(Number),
-                  },
-                },
-              }),
-            ],
-          },
-        }),
-      );
+      ).toStrictEqual<AuditOutput>({
+        slug: `${coverageType}-coverage`,
+        score: 0,
+        value: 1,
+        displayValue: `1 undocumented ${coverageType}`,
+        details: {
+          trees: [
+            expect.objectContaining<Partial<CoverageTree>>({
+              root: {
+                name: '.',
+                values: { coverage: 0 },
+                children: [expect.any(Object)],
+              },
+            }),
+          ],
+        },
+      });
     },
   );
 
   it.each(AUDIT_SLUGS)(
-    'should not generate issues for %s coverage if documented',
+    'should calculate %s coverage when documented',
     async coverageType => {
       const filePath = path.join(
         fixturesDir,
@@ -75,17 +69,23 @@ describe('createRunnerFunction', () => {
 
       expect(
         results.find(({ slug }) => slug === `${coverageType}-coverage`),
-      ).toStrictEqual(
-        expect.objectContaining({
-          slug: `${coverageType}-coverage`,
-          score: 1,
-          value: 0,
-          displayValue: `0 undocumented ${coverageType}`,
-          details: {
-            issues: [],
-          },
-        }),
-      );
+      ).toStrictEqual<AuditOutput>({
+        slug: `${coverageType}-coverage`,
+        score: 1,
+        value: 0,
+        displayValue: `0 undocumented ${coverageType}`,
+        details: {
+          trees: [
+            expect.objectContaining<Partial<CoverageTree>>({
+              root: {
+                name: '.',
+                values: { coverage: 1 },
+                children: [expect.any(Object)],
+              },
+            }),
+          ],
+        },
+      });
     },
   );
 

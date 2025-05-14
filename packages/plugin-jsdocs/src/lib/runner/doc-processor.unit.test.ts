@@ -1,4 +1,5 @@
 import type { ClassDeclaration, VariableStatement } from 'ts-morph';
+import type { CoverageTreeMissingLOC } from '@code-pushup/models';
 import { nodeMock } from '../../../mocks/node.mock.js';
 import { sourceFileMock } from '../../../mocks/source-files.mock.js';
 import {
@@ -6,9 +7,7 @@ import {
   getClassNodes,
   getDocumentationReport,
   getVariablesInformation,
-  mergeDocumentationReports,
 } from './doc-processor.js';
-import type { DocumentationReport } from './models.js';
 
 describe('getDocumentationReport', () => {
   it('should produce a full report', () => {
@@ -38,144 +37,32 @@ describe('getDocumentationReport', () => {
       sourceFileMock('test.ts', { functions: { 1: true, 2: true, 3: false } }),
     ]);
 
-    expect(results.functions.nodesCount).toBe(3);
+    expect(results.functions).toHaveLength(1);
+    expect(results.functions[0]!.total).toBe(3);
   });
 
-  it('should collect uncommented nodes issues', () => {
+  it('should collect uncommented nodes', () => {
     const results = getDocumentationReport([
       sourceFileMock('test.ts', { functions: { 1: true, 2: false, 3: false } }),
     ]);
 
-    expect(results.functions.issues).toHaveLength(2);
+    expect(results.functions).toHaveLength(1);
+    expect(results.functions[0]!.missing).toHaveLength(2);
   });
 
-  it('should collect valid issues', () => {
+  it('should collect valid missing nodes', () => {
     const results = getDocumentationReport([
       sourceFileMock('test.ts', { functions: { 1: false } }),
     ]);
 
-    expect(results.functions.issues).toStrictEqual([
+    expect(results.functions).toHaveLength(1);
+    expect(results.functions[0]!.missing).toStrictEqual<
+      CoverageTreeMissingLOC[]
+    >([
       {
-        line: 1,
-        file: 'test.ts',
-        type: 'functions',
+        startLine: 1,
+        kind: 'function',
         name: 'test',
-      },
-    ]);
-  });
-
-  it('should calculate coverage correctly', () => {
-    const results = getDocumentationReport([
-      sourceFileMock('test.ts', { functions: { 1: true, 2: false } }),
-    ]);
-
-    expect(results.functions.coverage).toBe(50);
-  });
-});
-
-describe('mergeDocumentationReports', () => {
-  const emptyResult: DocumentationReport = {
-    enums: { nodesCount: 0, issues: [] },
-    interfaces: { nodesCount: 0, issues: [] },
-    types: { nodesCount: 0, issues: [] },
-    functions: { nodesCount: 0, issues: [] },
-    variables: { nodesCount: 0, issues: [] },
-    classes: { nodesCount: 0, issues: [] },
-    methods: { nodesCount: 0, issues: [] },
-    properties: { nodesCount: 0, issues: [] },
-  };
-
-  it.each([
-    'enums',
-    'interfaces',
-    'types',
-    'functions',
-    'variables',
-    'classes',
-    'methods',
-    'properties',
-  ])('should merge results on top-level property: %s', type => {
-    const secondResult = {
-      [type]: {
-        nodesCount: 1,
-        issues: [{ file: 'test2.ts', line: 1, name: 'test2', type }],
-      },
-    };
-
-    const results = mergeDocumentationReports(
-      emptyResult,
-      secondResult as Partial<DocumentationReport>,
-    );
-    expect(results).toStrictEqual(
-      expect.objectContaining({
-        [type]: {
-          nodesCount: 1,
-          issues: [{ file: 'test2.ts', line: 1, name: 'test2', type }],
-        },
-      }),
-    );
-  });
-
-  it('should merge empty results', () => {
-    const results = mergeDocumentationReports(emptyResult, emptyResult);
-    expect(results).toStrictEqual(emptyResult);
-  });
-
-  it('should merge second level property nodesCount', () => {
-    const results = mergeDocumentationReports(
-      {
-        ...emptyResult,
-        enums: { nodesCount: 1, issues: [] },
-      },
-      {
-        enums: { nodesCount: 1, issues: [] },
-      },
-    );
-    expect(results.enums.nodesCount).toBe(2);
-  });
-
-  it('should merge second level property issues', () => {
-    const results = mergeDocumentationReports(
-      {
-        ...emptyResult,
-        enums: {
-          nodesCount: 0,
-          issues: [
-            {
-              file: 'file.enum-first.ts',
-              line: 6,
-              name: 'file.enum-first',
-              type: 'enums',
-            },
-          ],
-        },
-      },
-      {
-        enums: {
-          nodesCount: 0,
-          issues: [
-            {
-              file: 'file.enum-second.ts',
-              line: 5,
-              name: 'file.enum-second',
-              type: 'enums',
-            },
-          ],
-        },
-      },
-    );
-    expect(results.enums.issues).toStrictEqual([
-      {
-        file: 'file.enum-first.ts',
-        line: 6,
-        name: 'file.enum-first',
-        type: 'enums',
-      },
-      {
-        file: 'file.enum-second.ts',
-        line: 5,
-        name: 'file.enum-second',
-        type: 'enums',
       },
     ]);
   });

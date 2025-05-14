@@ -1,15 +1,27 @@
 import type { AuditOutputs, RunnerFunction } from '@code-pushup/models';
+import {
+  type FileCoverage,
+  filesCoverageToTree,
+  getGitRoot,
+  objectToEntries,
+  toNumberPrecision,
+} from '@code-pushup/utils';
 import type { JsDocsPluginTransformedConfig } from '../config.js';
 import { processJsDocs } from './doc-processor.js';
-import type { CoverageType, DocumentationCoverageReport } from './models.js';
+import type { CoverageType } from './models.js';
 import { coverageTypeToAuditSlug } from './utils.js';
 
 export function createRunnerFunction(
   config: JsDocsPluginTransformedConfig,
 ): RunnerFunction {
-  return (): AuditOutputs => {
+  return async (): Promise<AuditOutputs> => {
     const coverageResult = processJsDocs(config);
-    return trasformCoverageReportToAuditOutputs(coverageResult, config);
+    const gitRoot = await getGitRoot();
+    return trasformCoverageReportToAuditOutputs(
+      coverageResult,
+      config,
+      gitRoot,
+    );
   };
 }
 
@@ -17,15 +29,17 @@ export function createRunnerFunction(
  * Transforms the coverage report into audit outputs.
  * @param coverageResult - The coverage result containing undocumented items and coverage statistics
  * @param options - Configuration options specifying which audits to include and exclude
+ * @param gitRoot - Root directory in repo for relative file paths
  * @returns Audit outputs with coverage scores and details about undocumented items
  */
 export function trasformCoverageReportToAuditOutputs(
-  coverageResult: DocumentationCoverageReport,
+  coverageResult: Record<CoverageType, FileCoverage[]>,
   options: Pick<JsDocsPluginTransformedConfig, 'onlyAudits' | 'skipAudits'>,
+  gitRoot: string,
 ): AuditOutputs {
-  return Object.entries(coverageResult)
+  return objectToEntries(coverageResult)
     .filter(([type]) => {
-      const auditSlug = coverageTypeToAuditSlug(type as CoverageType);
+      const auditSlug = coverageTypeToAuditSlug(type);
       if (options.onlyAudits?.length) {
         return options.onlyAudits.includes(auditSlug);
       }
@@ -34,20 +48,22 @@ export function trasformCoverageReportToAuditOutputs(
       }
       return true;
     })
-    .map(([type, item]) => {
-      const { coverage, issues } = item;
+    .map(([type, files]) => {
+      const tree = filesCoverageToTree(files, gitRoot, `Documented ${type}`);
+      const coverage = tree.root.values.coverage;
+      const missingCount = files.reduce(
+        (acc, file) => acc + file.missing.length,
+        0,
+      );
+      const MAX_DECIMAL_PLACES = 4;
 
       return {
         slug: `${type}-coverage`,
-        value: issues.length,
-        score: coverage / 100,
-        displayValue: `${issues.length} undocumented ${type}`,
+        value: missingCount,
+        score: toNumberPrecision(coverage, MAX_DECIMAL_PLACES),
+        displayValue: `${missingCount} undocumented ${type}`,
         details: {
-          issues: item.issues.map(({ file, line, name }) => ({
-            message: `Missing ${type} documentation for ${name}`,
-            source: { file, position: { startLine: line } },
-            severity: 'warning',
-          })),
+          trees: [tree],
         },
       };
     });

@@ -9,7 +9,56 @@ exports[`PLUGIN collect report with jsdocs-plugin NPM package > should run JSDoc
         {
           "description": "Documentation coverage of enums",
           "details": {
-            "issues": [],
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "app.component.spec.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "app.component.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "map-event.function.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 1,
+                      },
+                    },
+                    {
+                      "name": "code-pushup.config.ts",
+                      "values": {
+                        "coverage": 1,
+                        "missing": [],
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 1,
+                  },
+                },
+                "title": "Documented enums",
+                "type": "coverage",
+              },
+            ],
           },
           "displayValue": "0 undocumented enums",
           "score": 1,
@@ -20,7 +69,56 @@ exports[`PLUGIN collect report with jsdocs-plugin NPM package > should run JSDoc
         {
           "description": "Documentation coverage of interfaces",
           "details": {
-            "issues": [],
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "app.component.spec.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "app.component.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "map-event.function.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 1,
+                      },
+                    },
+                    {
+                      "name": "code-pushup.config.ts",
+                      "values": {
+                        "coverage": 1,
+                        "missing": [],
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 1,
+                  },
+                },
+                "title": "Documented interfaces",
+                "type": "coverage",
+              },
+            ],
           },
           "displayValue": "0 undocumented interfaces",
           "score": 1,
@@ -31,7 +129,56 @@ exports[`PLUGIN collect report with jsdocs-plugin NPM package > should run JSDoc
         {
           "description": "Documentation coverage of types",
           "details": {
-            "issues": [],
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "app.component.spec.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "app.component.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "map-event.function.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 1,
+                      },
+                    },
+                    {
+                      "name": "code-pushup.config.ts",
+                      "values": {
+                        "coverage": 1,
+                        "missing": [],
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 1,
+                  },
+                },
+                "title": "Documented types",
+                "type": "coverage",
+              },
+            ],
           },
           "displayValue": "0 undocumented types",
           "score": 1,
@@ -42,26 +189,66 @@ exports[`PLUGIN collect report with jsdocs-plugin NPM package > should run JSDoc
         {
           "description": "Documentation coverage of functions",
           "details": {
-            "issues": [
+            "trees": [
               {
-                "message": "Missing functions documentation for notRealisticFunction",
-                "severity": "warning",
-                "source": {
-                  "file": "tmp/e2e/plugin-jsdocs-e2e/__test__/angular/src/app.component.spec.ts",
-                  "position": {
-                    "startLine": 1,
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "app.component.spec.ts",
+                          "values": {
+                            "coverage": 0,
+                            "missing": [
+                              {
+                                "kind": "function",
+                                "name": "notRealisticFunction",
+                                "startLine": 1,
+                              },
+                            ],
+                          },
+                        },
+                        {
+                          "name": "app.component.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "map-event.function.ts",
+                          "values": {
+                            "coverage": 0.5,
+                            "missing": [
+                              {
+                                "kind": "function",
+                                "name": "mapEventToCustomEvent",
+                                "startLine": 3,
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 0.3333333333333333,
+                      },
+                    },
+                    {
+                      "name": "code-pushup.config.ts",
+                      "values": {
+                        "coverage": 1,
+                        "missing": [],
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 0.3333333333333333,
                   },
                 },
-              },
-              {
-                "message": "Missing functions documentation for mapEventToCustomEvent",
-                "severity": "warning",
-                "source": {
-                  "file": "tmp/e2e/plugin-jsdocs-e2e/__test__/angular/src/map-event.function.ts",
-                  "position": {
-                    "startLine": 3,
-                  },
-                },
+                "title": "Documented functions",
+                "type": "coverage",
               },
             ],
           },
@@ -74,16 +261,60 @@ exports[`PLUGIN collect report with jsdocs-plugin NPM package > should run JSDoc
         {
           "description": "Documentation coverage of variables",
           "details": {
-            "issues": [
+            "trees": [
               {
-                "message": "Missing variables documentation for someVariable",
-                "severity": "warning",
-                "source": {
-                  "file": "tmp/e2e/plugin-jsdocs-e2e/__test__/angular/src/map-event.function.ts",
-                  "position": {
-                    "startLine": 1,
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "app.component.spec.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "app.component.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "map-event.function.ts",
+                          "values": {
+                            "coverage": 0,
+                            "missing": [
+                              {
+                                "kind": "variable",
+                                "name": "someVariable",
+                                "startLine": 1,
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 0,
+                      },
+                    },
+                    {
+                      "name": "code-pushup.config.ts",
+                      "values": {
+                        "coverage": 1,
+                        "missing": [],
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 0,
                   },
                 },
+                "title": "Documented variables",
+                "type": "coverage",
               },
             ],
           },
@@ -96,7 +327,56 @@ exports[`PLUGIN collect report with jsdocs-plugin NPM package > should run JSDoc
         {
           "description": "Documentation coverage of classes",
           "details": {
-            "issues": [],
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "app.component.spec.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "app.component.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "map-event.function.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 1,
+                      },
+                    },
+                    {
+                      "name": "code-pushup.config.ts",
+                      "values": {
+                        "coverage": 1,
+                        "missing": [],
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 1,
+                  },
+                },
+                "title": "Documented classes",
+                "type": "coverage",
+              },
+            ],
           },
           "displayValue": "0 undocumented classes",
           "score": 1,
@@ -107,16 +387,60 @@ exports[`PLUGIN collect report with jsdocs-plugin NPM package > should run JSDoc
         {
           "description": "Documentation coverage of methods",
           "details": {
-            "issues": [
+            "trees": [
               {
-                "message": "Missing methods documentation for sendEvent",
-                "severity": "warning",
-                "source": {
-                  "file": "tmp/e2e/plugin-jsdocs-e2e/__test__/angular/src/app.component.ts",
-                  "position": {
-                    "startLine": 15,
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "app.component.spec.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "app.component.ts",
+                          "values": {
+                            "coverage": 0.5,
+                            "missing": [
+                              {
+                                "kind": "method",
+                                "name": "sendEvent",
+                                "startLine": 15,
+                              },
+                            ],
+                          },
+                        },
+                        {
+                          "name": "map-event.function.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 0.5,
+                      },
+                    },
+                    {
+                      "name": "code-pushup.config.ts",
+                      "values": {
+                        "coverage": 1,
+                        "missing": [],
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 0.5,
                   },
                 },
+                "title": "Documented methods",
+                "type": "coverage",
               },
             ],
           },
@@ -129,16 +453,60 @@ exports[`PLUGIN collect report with jsdocs-plugin NPM package > should run JSDoc
         {
           "description": "Documentation coverage of properties",
           "details": {
-            "issues": [
+            "trees": [
               {
-                "message": "Missing properties documentation for title",
-                "severity": "warning",
-                "source": {
-                  "file": "tmp/e2e/plugin-jsdocs-e2e/__test__/angular/src/app.component.ts",
-                  "position": {
-                    "startLine": 5,
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "app.component.spec.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "app.component.ts",
+                          "values": {
+                            "coverage": 0,
+                            "missing": [
+                              {
+                                "kind": "property",
+                                "name": "title",
+                                "startLine": 5,
+                              },
+                            ],
+                          },
+                        },
+                        {
+                          "name": "map-event.function.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 0,
+                      },
+                    },
+                    {
+                      "name": "code-pushup.config.ts",
+                      "values": {
+                        "coverage": 1,
+                        "missing": [],
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 0,
                   },
                 },
+                "title": "Documented properties",
+                "type": "coverage",
               },
             ],
           },

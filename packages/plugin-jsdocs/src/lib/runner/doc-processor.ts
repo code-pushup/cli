@@ -6,16 +6,17 @@ import {
   SyntaxKind,
   VariableStatement,
 } from 'ts-morph';
-import { objectFromEntries, objectToEntries } from '@code-pushup/utils';
-import type { JsDocsPluginTransformedConfig } from '../config.js';
-import type {
-  DocumentationCoverageReport,
-  DocumentationReport,
-} from './models.js';
 import {
-  calculateCoverage,
-  createEmptyCoverageData,
+  type FileCoverage,
+  objectFromEntries,
+  objectToEntries,
+} from '@code-pushup/utils';
+import type { JsDocsPluginTransformedConfig } from '../config.js';
+import type { CoverageType } from './models.js';
+import {
+  createInitialCoverageTypesRecord,
   getCoverageTypeFromKind,
+  singularCoverageType,
 } from './utils.js';
 
 type Node = {
@@ -56,7 +57,7 @@ export function getVariablesInformation(
  */
 export function processJsDocs(
   config: JsDocsPluginTransformedConfig,
-): DocumentationCoverageReport {
+): Record<CoverageType, FileCoverage[]> {
   const project = new Project();
   project.addSourceFilesAtPaths(config.patterns);
   return getDocumentationReport(project.getSourceFiles());
@@ -82,26 +83,18 @@ export function getAllNodesFromASourceFile(sourceFile: SourceFile) {
  */
 export function getDocumentationReport(
   sourceFiles: SourceFile[],
-): DocumentationCoverageReport {
-  const unprocessedCoverageReport = sourceFiles.reduce(
-    (coverageReportOfAllFiles, sourceFile) => {
-      const filePath = sourceFile.getFilePath();
-      const allNodesFromFile = getAllNodesFromASourceFile(sourceFile);
-
-      const coverageReportOfCurrentFile = getCoverageFromAllNodesOfFile(
-        allNodesFromFile,
-        filePath,
-      );
-
-      return mergeDocumentationReports(
-        coverageReportOfAllFiles,
-        coverageReportOfCurrentFile,
-      );
-    },
-    createEmptyCoverageData(),
-  );
-
-  return calculateCoverage(unprocessedCoverageReport);
+): Record<CoverageType, FileCoverage[]> {
+  return sourceFiles.reduce((acc, sourceFile) => {
+    const filePath = sourceFile.getFilePath();
+    const nodes = getAllNodesFromASourceFile(sourceFile);
+    const coverageTypes = getCoverageFromAllNodesOfFile(nodes, filePath);
+    return objectFromEntries(
+      objectToEntries(coverageTypes).map(([type, file]) => [
+        type,
+        [...acc[type], file],
+      ]),
+    );
+  }, createInitialCoverageTypesRecord<FileCoverage[]>([]));
 }
 
 /**
@@ -111,54 +104,38 @@ export function getDocumentationReport(
  * @returns The coverage report for the nodes
  */
 function getCoverageFromAllNodesOfFile(nodes: Node[], filePath: string) {
-  return nodes.reduce((acc: DocumentationReport, node: Node) => {
-    const nodeType = getCoverageTypeFromKind(node.getKind());
-    const currentTypeReport = acc[nodeType];
-    const updatedIssues =
-      node.getJsDocs().length === 0
-        ? [
-            ...currentTypeReport.issues,
-            {
-              file: filePath,
-              type: nodeType,
-              name: node.getName() || '',
-              line: node.getStartLineNumber(),
-            },
-          ]
-        : currentTypeReport.issues;
+  return nodes.reduce(
+    (acc: Record<CoverageType, FileCoverage>, node: Node) => {
+      const nodeType = getCoverageTypeFromKind(node.getKind());
+      const isCovered = node.getJsDocs().length > 0;
 
-    return {
-      ...acc,
-      [nodeType]: {
-        nodesCount: currentTypeReport.nodesCount + 1,
-        issues: updatedIssues,
-      },
-    };
-  }, createEmptyCoverageData());
-}
-
-/**
- * Merges two documentation results
- * @param accumulatedReport - The first empty documentation result
- * @param currentFileReport - The second documentation result
- * @returns The merged documentation result
- */
-export function mergeDocumentationReports(
-  accumulatedReport: DocumentationReport,
-  currentFileReport: Partial<DocumentationReport>,
-): DocumentationReport {
-  return objectFromEntries(
-    objectToEntries(accumulatedReport).map(([key, value]) => {
-      const node = value;
-      const type = key;
-      return [
-        type,
-        {
-          nodesCount:
-            node.nodesCount + (currentFileReport[type]?.nodesCount ?? 0),
-          issues: [...node.issues, ...(currentFileReport[type]?.issues ?? [])],
+      return {
+        ...acc,
+        [nodeType]: {
+          ...acc[nodeType],
+          total: acc[nodeType].total + 1,
+          ...(isCovered
+            ? {
+                covered: acc[nodeType].covered + 1,
+              }
+            : {
+                missing: [
+                  ...acc[nodeType].missing,
+                  {
+                    kind: singularCoverageType(nodeType),
+                    name: node.getName(),
+                    startLine: node.getStartLineNumber(),
+                  },
+                ],
+              }),
         },
-      ];
+      };
+    },
+    createInitialCoverageTypesRecord<FileCoverage>({
+      path: filePath,
+      covered: 0,
+      total: 0,
+      missing: [],
     }),
   );
 }

@@ -1,25 +1,24 @@
 import { SyntaxKind } from 'ts-morph';
 import { SYNTAX_COVERAGE_MAP } from './constants.js';
-import type {
-  CoverageType,
-  DocumentationCoverageReport,
-  DocumentationReport,
-} from './models.js';
+import type { CoverageType } from './models.js';
 
 /**
  * Creates an empty unprocessed coverage report.
+ * @param initialValue - Initial value for each coverage type
  * @returns The empty unprocessed coverage report.
  */
-export function createEmptyCoverageData(): DocumentationReport {
+export function createInitialCoverageTypesRecord<T>(
+  initialValue: T,
+): Record<CoverageType, T> {
   return {
-    enums: { nodesCount: 0, issues: [] },
-    interfaces: { nodesCount: 0, issues: [] },
-    types: { nodesCount: 0, issues: [] },
-    functions: { nodesCount: 0, issues: [] },
-    variables: { nodesCount: 0, issues: [] },
-    classes: { nodesCount: 0, issues: [] },
-    methods: { nodesCount: 0, issues: [] },
-    properties: { nodesCount: 0, issues: [] },
+    enums: initialValue,
+    interfaces: initialValue,
+    types: initialValue,
+    functions: initialValue,
+    variables: initialValue,
+    classes: initialValue,
+    methods: initialValue,
+    properties: initialValue,
   };
 }
 
@@ -30,34 +29,6 @@ export function createEmptyCoverageData(): DocumentationReport {
  */
 export function coverageTypeToAuditSlug(type: CoverageType) {
   return `${type}-coverage`;
-}
-
-/**
- * Calculates the coverage percentage for each coverage type.
- * @param result - The unprocessed coverage result.
- * @returns The processed coverage result.
- */
-export function calculateCoverage(result: DocumentationReport) {
-  return Object.fromEntries(
-    Object.entries(result).map(([key, value]) => {
-      const type = key as CoverageType;
-      return [
-        type,
-        {
-          coverage:
-            value.nodesCount === 0
-              ? 100
-              : Number(
-                  ((1 - value.issues.length / value.nodesCount) * 100).toFixed(
-                    2,
-                  ),
-                ),
-          issues: value.issues,
-          nodesCount: value.nodesCount,
-        },
-      ];
-    }),
-  ) as DocumentationCoverageReport;
 }
 
 /**
@@ -72,4 +43,30 @@ export function getCoverageTypeFromKind(kind: SyntaxKind): CoverageType {
     throw new Error(`Unsupported syntax kind: ${kind}`);
   }
   return type;
+}
+
+/**
+ * Convert plural coverage type to singular form
+ * @param type Coverage type (plural)
+ * @returns Singular form of coverage type
+ */
+export function singularCoverageType(type: CoverageType): string {
+  switch (type) {
+    case 'classes':
+      return 'class';
+    case 'enums':
+      return 'enum';
+    case 'functions':
+      return 'function';
+    case 'interfaces':
+      return 'interface';
+    case 'methods':
+      return 'method';
+    case 'properties':
+      return 'property';
+    case 'types':
+      return 'type';
+    case 'variables':
+      return 'variable';
+  }
 }

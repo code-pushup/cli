@@ -8,6 +8,7 @@
     "vite.config.unit.ts",
     "vite.config.integration.ts",
     "mocks/**/*.ts",
-    "src/**/*.test.ts"
+    "src/**/*.test.ts",
+    "../../testing/test-setup/src/vitest.d.ts"
   ]
 }
