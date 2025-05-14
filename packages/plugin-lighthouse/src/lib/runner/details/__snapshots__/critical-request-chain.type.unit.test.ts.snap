@@ -1,0 +1,108 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`parseCriticalRequestChainToAuditDetails > should convert chains to basic trees 1`] = `
+[
+  {
+    "root": {
+      "children": [
+        {
+          "children": [
+            {
+              "name": "https://fonts.gstatic.com/s/googlesans/v62/4UasrENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iqcsih3SAyH6cAwhX9RPjIUvbQoi-E.woff2",
+              "values": {
+                "duration": "48.083 ms",
+                "transferSize": "35.89 kB",
+              },
+            },
+            {
+              "name": "https://fonts.gstatic.com/s/robotomono/v23/L0xTDF4xlVMF-BfR8bXMIhJHg45mwgGEFl0_3vrtSM1J-gEPT5Ese6hmHSh0me8iUI0.woff2",
+              "values": {
+                "duration": "63.943 ms",
+                "transferSize": "22.31 kB",
+              },
+            },
+          ],
+          "name": "https://fonts.googleapis.com/css?family=Google+Sans:400,500|Roboto:400,400italic,500,500italic,700,700italic|Roboto+Mono:400,500,700&display=swap",
+          "values": {
+            "duration": "50.656 ms",
+            "transferSize": "3.68 kB",
+          },
+        },
+        {
+          "children": [
+            {
+              "name": "https://fonts.gstatic.com/s/materialicons/v143/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2",
+              "values": {
+                "duration": "86.765 ms",
+                "transferSize": "125.78 kB",
+              },
+            },
+          ],
+          "name": "https://fonts.googleapis.com/css2?family=Material+Icons&family=Material+Symbols+Outlined&display=block",
+          "values": {
+            "duration": "55.102 ms",
+            "transferSize": "615 B",
+          },
+        },
+        {
+          "name": "https://www.gstatic.com/devrel-devsite/prod/ve761bca974e16662f27aa8810df6d144acde5bdbeeca0dfd50e25f86621eaa19/chrome/css/app.css",
+          "values": {
+            "duration": "70.050 ms",
+            "transferSize": "133.58 kB",
+          },
+        },
+        {
+          "name": "https://www.gstatic.com/devrel-devsite/prod/ve761bca974e16662f27aa8810df6d144acde5bdbeeca0dfd50e25f86621eaa19/chrome/css/dark-theme.css",
+          "values": {
+            "duration": "69.755 ms",
+            "transferSize": "3.98 kB",
+          },
+        },
+        {
+          "name": "https://developer.chrome.com/extras.css",
+          "values": {
+            "duration": "199.327 ms",
+            "transferSize": "109 B",
+          },
+        },
+      ],
+      "name": "https://developer.chrome.com/docs/lighthouse/performance/critical-request-chains",
+      "values": {
+        "duration": "472.304 ms",
+        "transferSize": "18.66 kB",
+      },
+    },
+    "type": "basic",
+  },
+]
+`;
+
+exports[`parseCriticalRequestChainToAuditDetails > should convert longest chain to table 1`] = `
+{
+  "columns": [
+    {
+      "align": "right",
+      "key": "duration",
+      "label": "Duration",
+    },
+    {
+      "align": "right",
+      "key": "transferSize",
+      "label": "Transfer size",
+    },
+    {
+      "align": "right",
+      "key": "length",
+      "label": "Length",
+    },
+  ],
+  "rows": [
+    {
+      "duration": "757.072 ms",
+      "length": 3,
+      "transferSize": "125.78 kB",
+    },
+  ],
+  "title": "Longest chain",
+}
+`;
