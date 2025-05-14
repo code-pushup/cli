@@ -201,6 +201,7 @@ exports[`PLUGIN collect report with jsdocs-plugin NPM package > should run JSDoc
                             "coverage": 0,
                             "missing": [
                               {
+                                "endLine": 3,
                                 "kind": "function",
                                 "name": "notRealisticFunction",
                                 "startLine": 1,
@@ -221,6 +222,7 @@ exports[`PLUGIN collect report with jsdocs-plugin NPM package > should run JSDoc
                             "coverage": 0.5,
                             "missing": [
                               {
+                                "endLine": 5,
                                 "kind": "function",
                                 "name": "mapEventToCustomEvent",
                                 "startLine": 3,
@@ -287,6 +289,7 @@ exports[`PLUGIN collect report with jsdocs-plugin NPM package > should run JSDoc
                             "coverage": 0,
                             "missing": [
                               {
+                                "endLine": 1,
                                 "kind": "variable",
                                 "name": "someVariable",
                                 "startLine": 1,
@@ -406,6 +409,7 @@ exports[`PLUGIN collect report with jsdocs-plugin NPM package > should run JSDoc
                             "coverage": 0.5,
                             "missing": [
                               {
+                                "endLine": 17,
                                 "kind": "method",
                                 "name": "sendEvent",
                                 "startLine": 15,
@@ -472,6 +476,7 @@ exports[`PLUGIN collect report with jsdocs-plugin NPM package > should run JSDoc
                             "coverage": 0,
                             "missing": [
                               {
+                                "endLine": 5,
                                 "kind": "property",
                                 "name": "title",
                                 "startLine": 5,

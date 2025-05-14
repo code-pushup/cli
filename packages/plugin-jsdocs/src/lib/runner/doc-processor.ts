@@ -23,6 +23,7 @@ type Node = {
   getKind: () => SyntaxKind;
   getName: () => string | undefined;
   getStartLineNumber: () => number;
+  getEndLineNumber: () => number;
   getJsDocs: () => JSDoc[];
 };
 
@@ -33,13 +34,14 @@ type Node = {
  */
 export function getVariablesInformation(
   variableStatements: VariableStatement[],
-) {
+): Node[] {
   return variableStatements.flatMap(variable => {
     // Get parent-level information
     const parentInfo = {
       getKind: () => variable.getKind(),
       getJsDocs: () => variable.getJsDocs(),
       getStartLineNumber: () => variable.getStartLineNumber(),
+      getEndLineNumber: () => variable.getEndLineNumber(),
     };
 
     // Map each declaration to combine parent info with declaration-specific info
@@ -125,6 +127,7 @@ function getCoverageFromAllNodesOfFile(nodes: Node[], filePath: string) {
                     kind: singularCoverageType(nodeType),
                     name: node.getName(),
                     startLine: node.getStartLineNumber(),
+                    endLine: node.getEndLineNumber(),
                   },
                 ],
               }),
