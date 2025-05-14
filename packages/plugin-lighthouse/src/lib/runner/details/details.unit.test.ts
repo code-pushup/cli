@@ -3,24 +3,23 @@ import type { FormattedIcu } from 'lighthouse';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
 import { describe, expect, it } from 'vitest';
+import type { AuditDetails } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import { logUnsupportedDetails, toAuditDetails } from './details.js';
 
 describe('logUnsupportedDetails', () => {
   it('should log unsupported entries', () => {
-    logUnsupportedDetails([
-      { details: { type: 'screenshot' } },
-    ] as unknown as Result[]);
+    logUnsupportedDetails([{ details: { type: 'screenshot' } }] as Result[]);
     expect(ui()).toHaveLoggedTimes(1);
     expect(ui()).toHaveLogged(
       'debug',
       `${yellow('⚠')} Plugin ${bold(
         'lighthouse',
-      )} skipped parsing of unsupported audit details: ${bold('screenshot')}`,
+      )} skipped parsing of unsupported audit details: ${bold('screenshot')}.`,
     );
   });
 
-  it('should log only 3 details of unsupported entries', () => {
+  it('should log many unsupported entries', () => {
     logUnsupportedDetails([
       { details: { type: 'table' } },
       { details: { type: 'filmstrip' } },
@@ -29,7 +28,7 @@ describe('logUnsupportedDetails', () => {
       { details: { type: 'debugdata' } },
       { details: { type: 'treemap-data' } },
       { details: { type: 'criticalrequestchain' } },
-    ] as unknown as Result[]);
+    ] as Result[]);
     expect(ui()).toHaveLoggedTimes(1);
     expect(ui()).toHaveLogged(
       'debug',
@@ -37,7 +36,7 @@ describe('logUnsupportedDetails', () => {
         'lighthouse',
       )} skipped parsing of unsupported audit details: ${bold(
         'filmstrip, screenshot, debugdata',
-      )} and 2 more.`,
+      )}.`,
     );
   });
 });
@@ -265,7 +264,7 @@ describe('toAuditDetails', () => {
     expect(outputs).toStrictEqual({});
   });
 
-  it('should inform that debugdata detail type is not supported yet', () => {
+  it('should ignore unsupported detail type debugdata', () => {
     const outputs = toAuditDetails({
       type: 'debugdata',
       items: [
@@ -275,12 +274,10 @@ describe('toAuditDetails', () => {
       ],
     });
 
-    // @TODO add check that cliui.logger is called. Resolve TODO after PR #487 is merged.
-
     expect(outputs).toStrictEqual({});
   });
 
-  it('should inform that filmstrip detail type is not supported yet', () => {
+  it('should ignore unsupported detail type filmstrip', () => {
     const outputs = toAuditDetails({
       type: 'filmstrip',
       scale: 3000,
@@ -296,7 +293,7 @@ describe('toAuditDetails', () => {
     expect(outputs).toStrictEqual({});
   });
 
-  it('should inform that screenshot detail type is not supported yet', () => {
+  it('should ignore unsupported detail type screenshot', () => {
     const outputs = toAuditDetails({
       type: 'screenshot',
       timing: 541,
@@ -307,7 +304,7 @@ describe('toAuditDetails', () => {
     expect(outputs).toStrictEqual({});
   });
 
-  it('should inform that treemap-data detail type is not supported yet', () => {
+  it('should ignore unsupported detail type treemap yet', () => {
     const outputs = toAuditDetails({
       type: 'treemap-data',
       nodes: [],
@@ -316,7 +313,7 @@ describe('toAuditDetails', () => {
     expect(outputs).toStrictEqual({});
   });
 
-  it('should inform that criticalrequestchain detail type is not supported yet', () => {
+  it('should render audit details of type criticalrequestchain', () => {
     const outputs = toAuditDetails({
       type: 'criticalrequestchain',
       chains: {
@@ -337,6 +334,34 @@ describe('toAuditDetails', () => {
       },
     });
 
-    expect(outputs).toStrictEqual({});
+    expect(outputs).toStrictEqual<AuditDetails>({
+      trees: [
+        {
+          type: 'basic',
+          root: {
+            name: 'https://example.com/',
+            values: {
+              duration: '508.498 ms',
+              transferSize: '849 B',
+            },
+          },
+        },
+      ],
+      table: {
+        title: 'Longest chain',
+        columns: [
+          { key: 'duration', label: 'Duration', align: 'right' },
+          { key: 'transferSize', label: 'Transfer size', align: 'right' },
+          { key: 'length', label: 'Length', align: 'right' },
+        ],
+        rows: [
+          {
+            duration: '508.498 ms',
+            transferSize: '849 B',
+            length: 1,
+          },
+        ],
+      },
+    });
   });
 });

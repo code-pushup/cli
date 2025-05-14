@@ -5,6 +5,7 @@ import type { Result } from 'lighthouse/types/lhr/audit-result';
 import type { AuditDetails, Table } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import { PLUGIN_SLUG } from '../constants.js';
+import { parseCriticalRequestChainToAuditDetails } from './critical-request-chain.type.js';
 import { parseOpportunityToAuditDetailsTable } from './opportunity.type.js';
 import { parseTableToAuditDetailsTable } from './table.type.js';
 
@@ -25,6 +26,13 @@ export function toAuditDetails<T extends FormattedIcu<Details>>(
       const opportunity: Table | undefined =
         parseOpportunityToAuditDetailsTable(details);
       return opportunity ? { table: opportunity } : {};
+    case 'criticalrequestchain':
+      return parseCriticalRequestChainToAuditDetails(details);
+    case 'treemap-data': // TODO: implement
+
+    // TODO: add 'list' once array of tables supported in audit details
+
+    // TODO: add 'screenshot' and 'filmstrip' once images supported in audit details
   }
   return {};
 }
@@ -32,16 +40,11 @@ export function toAuditDetails<T extends FormattedIcu<Details>>(
 // @TODO implement all details
 export const unsupportedDetailTypes = new Set([
   'debugdata',
-  'treemap-data',
   'screenshot',
   'filmstrip',
-  'criticalrequestchain',
 ]);
 
-export function logUnsupportedDetails(
-  lhrAudits: Result[],
-  { displayCount = 3 }: { displayCount?: number } = {},
-) {
+export function logUnsupportedDetails(lhrAudits: Result[]) {
   const slugsWithDetailParsingErrors = [
     ...new Set(
       lhrAudits
@@ -52,14 +55,12 @@ export function logUnsupportedDetails(
     ),
   ];
   if (slugsWithDetailParsingErrors.length > 0) {
-    const postFix = (count: number) =>
-      count > displayCount ? ` and ${count - displayCount} more.` : '';
     ui().logger.debug(
       `${yellow('⚠')} Plugin ${bold(
         PLUGIN_SLUG,
       )} skipped parsing of unsupported audit details: ${bold(
-        slugsWithDetailParsingErrors.slice(0, displayCount).join(', '),
-      )}${postFix(slugsWithDetailParsingErrors.length)}`,
+        slugsWithDetailParsingErrors.join(', '),
+      )}.`,
     );
   }
 }
