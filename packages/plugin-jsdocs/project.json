@@ -12,7 +12,6 @@
         "outputPath": "dist/packages/plugin-jsdocs",
         "main": "packages/plugin-jsdocs/src/index.ts",
         "tsConfig": "packages/plugin-jsdocs/tsconfig.lib.json",
-        "additionalEntryPoints": ["packages/plugin-jsdocs/src/bin.ts"],
         "assets": ["packages/plugin-jsdocs/*.md"]
       }
     },

@@ -2,91 +2,108 @@
 
 exports[`getDocumentationReport > should produce a full report 1`] = `
 {
-  "classes": {
-    "coverage": 33.33,
-    "issues": [
-      {
-        "file": "test.ts",
-        "line": 4,
-        "name": "test",
-        "type": "classes",
-      },
-      {
-        "file": "test.ts",
-        "line": 5,
-        "name": "test",
-        "type": "classes",
-      },
-    ],
-    "nodesCount": 3,
-  },
-  "enums": {
-    "coverage": 33.33,
-    "issues": [
-      {
-        "file": "test.ts",
-        "line": 8,
-        "name": "test",
-        "type": "enums",
-      },
-      {
-        "file": "test.ts",
-        "line": 9,
-        "name": "test",
-        "type": "enums",
-      },
-    ],
-    "nodesCount": 3,
-  },
-  "functions": {
-    "coverage": 100,
-    "issues": [],
-    "nodesCount": 3,
-  },
-  "interfaces": {
-    "coverage": 66.67,
-    "issues": [
-      {
-        "file": "test.ts",
-        "line": 15,
-        "name": "test",
-        "type": "interfaces",
-      },
-    ],
-    "nodesCount": 3,
-  },
-  "methods": {
-    "coverage": 100,
-    "issues": [],
-    "nodesCount": 0,
-  },
-  "properties": {
-    "coverage": 100,
-    "issues": [],
-    "nodesCount": 0,
-  },
-  "types": {
-    "coverage": 50,
-    "issues": [
-      {
-        "file": "test.ts",
-        "line": 10,
-        "name": "test",
-        "type": "types",
-      },
-      {
-        "file": "test.ts",
-        "line": 11,
-        "name": "test",
-        "type": "types",
-      },
-    ],
-    "nodesCount": 4,
-  },
-  "variables": {
-    "coverage": 100,
-    "issues": [],
-    "nodesCount": 0,
-  },
+  "classes": [
+    {
+      "covered": 1,
+      "missing": [
+        {
+          "kind": "class",
+          "name": "test",
+          "startLine": 4,
+        },
+        {
+          "kind": "class",
+          "name": "test",
+          "startLine": 5,
+        },
+      ],
+      "path": "test.ts",
+      "total": 3,
+    },
+  ],
+  "enums": [
+    {
+      "covered": 1,
+      "missing": [
+        {
+          "kind": "enum",
+          "name": "test",
+          "startLine": 8,
+        },
+        {
+          "kind": "enum",
+          "name": "test",
+          "startLine": 9,
+        },
+      ],
+      "path": "test.ts",
+      "total": 3,
+    },
+  ],
+  "functions": [
+    {
+      "covered": 3,
+      "missing": [],
+      "path": "test.ts",
+      "total": 3,
+    },
+  ],
+  "interfaces": [
+    {
+      "covered": 2,
+      "missing": [
+        {
+          "kind": "interface",
+          "name": "test",
+          "startLine": 15,
+        },
+      ],
+      "path": "test.ts",
+      "total": 3,
+    },
+  ],
+  "methods": [
+    {
+      "covered": 0,
+      "missing": [],
+      "path": "test.ts",
+      "total": 0,
+    },
+  ],
+  "properties": [
+    {
+      "covered": 0,
+      "missing": [],
+      "path": "test.ts",
+      "total": 0,
+    },
+  ],
+  "types": [
+    {
+      "covered": 2,
+      "missing": [
+        {
+          "kind": "type",
+          "name": "test",
+          "startLine": 10,
+        },
+        {
+          "kind": "type",
+          "name": "test",
+          "startLine": 11,
+        },
+      ],
+      "path": "test.ts",
+      "total": 4,
+    },
+  ],
+  "variables": [
+    {
+      "covered": 0,
+      "missing": [],
+      "path": "test.ts",
+      "total": 0,
+    },
+  ],
 }
 `;

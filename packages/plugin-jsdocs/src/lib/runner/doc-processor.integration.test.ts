@@ -1,11 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import type { FileCoverage } from '@code-pushup/utils';
 import { processJsDocs } from './doc-processor.js';
-import type { DocumentationData } from './models.js';
-
-type DocumentationDataCovered = DocumentationData & {
-  coverage: number;
-};
 
 describe('processJsDocs', () => {
   const fixturesDir = path.join(
@@ -19,18 +15,20 @@ describe('processJsDocs', () => {
       'missing-documentation/classes-coverage.ts',
     );
     const results = processJsDocs({ patterns: [sourcePath] });
-    expect(results.classes).toStrictEqual({
-      coverage: 0,
-      nodesCount: 1,
-      issues: [
-        {
-          file: expect.pathToEndWith('classes-coverage.ts'),
-          type: 'classes',
-          name: 'ExampleClass',
-          line: 1,
-        },
-      ],
-    } satisfies DocumentationDataCovered);
+    expect(results.classes).toStrictEqual([
+      {
+        path: expect.pathToEndWith('classes-coverage.ts'),
+        covered: 0,
+        total: 1,
+        missing: [
+          {
+            kind: 'class',
+            name: 'ExampleClass',
+            startLine: 1,
+          },
+        ],
+      },
+    ] satisfies FileCoverage[]);
   });
 
   it('should detect documented class', () => {
@@ -39,11 +37,14 @@ describe('processJsDocs', () => {
       'filled-documentation/classes-coverage.ts',
     );
     const results = processJsDocs({ patterns: [sourcePath] });
-    expect(results.classes).toStrictEqual({
-      coverage: 100,
-      nodesCount: 1,
-      issues: [],
-    } satisfies DocumentationDataCovered);
+    expect(results.classes).toStrictEqual([
+      {
+        path: expect.pathToEndWith('classes-coverage.ts'),
+        covered: 1,
+        total: 1,
+        missing: [],
+      },
+    ] satisfies FileCoverage[]);
   });
 
   it('should detect undocumented method', () => {
@@ -52,18 +53,20 @@ describe('processJsDocs', () => {
       'missing-documentation/methods-coverage.ts',
     );
     const results = processJsDocs({ patterns: [sourcePath] });
-    expect(results.methods).toStrictEqual({
-      coverage: 0,
-      nodesCount: 1,
-      issues: [
-        {
-          file: expect.pathToEndWith('methods-coverage.ts'),
-          type: 'methods',
-          name: 'exampleMethod',
-          line: 5,
-        },
-      ],
-    } satisfies DocumentationDataCovered);
+    expect(results.methods).toStrictEqual([
+      {
+        path: expect.pathToEndWith('methods-coverage.ts'),
+        covered: 0,
+        total: 1,
+        missing: [
+          {
+            kind: 'method',
+            name: 'exampleMethod',
+            startLine: 5,
+          },
+        ],
+      },
+    ] satisfies FileCoverage[]);
   });
 
   it('should detect documented method', () => {
@@ -72,11 +75,14 @@ describe('processJsDocs', () => {
       'filled-documentation/methods-coverage.ts',
     );
     const results = processJsDocs({ patterns: [sourcePath] });
-    expect(results.methods).toStrictEqual({
-      coverage: 100,
-      nodesCount: 1,
-      issues: [],
-    } satisfies DocumentationDataCovered);
+    expect(results.methods).toStrictEqual([
+      {
+        path: expect.pathToEndWith('methods-coverage.ts'),
+        covered: 1,
+        total: 1,
+        missing: [],
+      },
+    ] satisfies FileCoverage[]);
   });
 
   it('should detect undocumented interface', () => {
@@ -85,18 +91,20 @@ describe('processJsDocs', () => {
       'missing-documentation/interfaces-coverage.ts',
     );
     const results = processJsDocs({ patterns: [sourcePath] });
-    expect(results.interfaces).toStrictEqual({
-      coverage: 0,
-      nodesCount: 1,
-      issues: [
-        {
-          file: expect.pathToEndWith('interfaces-coverage.ts'),
-          type: 'interfaces',
-          name: 'ExampleInterface',
-          line: 1,
-        },
-      ],
-    } satisfies DocumentationDataCovered);
+    expect(results.interfaces).toStrictEqual([
+      {
+        path: expect.pathToEndWith('interfaces-coverage.ts'),
+        covered: 0,
+        total: 1,
+        missing: [
+          {
+            kind: 'interface',
+            name: 'ExampleInterface',
+            startLine: 1,
+          },
+        ],
+      },
+    ] satisfies FileCoverage[]);
   });
 
   it('should detect documented interface', () => {
@@ -105,11 +113,14 @@ describe('processJsDocs', () => {
       'filled-documentation/interfaces-coverage.ts',
     );
     const results = processJsDocs({ patterns: [sourcePath] });
-    expect(results.interfaces).toStrictEqual({
-      coverage: 100,
-      nodesCount: 1,
-      issues: [],
-    } satisfies DocumentationDataCovered);
+    expect(results.interfaces).toStrictEqual([
+      {
+        path: expect.pathToEndWith('interfaces-coverage.ts'),
+        covered: 1,
+        total: 1,
+        missing: [],
+      },
+    ] satisfies FileCoverage[]);
   });
 
   it('should detect undocumented variable', () => {
@@ -118,18 +129,20 @@ describe('processJsDocs', () => {
       'missing-documentation/variables-coverage.ts',
     );
     const results = processJsDocs({ patterns: [sourcePath] });
-    expect(results.variables).toStrictEqual({
-      coverage: 0,
-      nodesCount: 1,
-      issues: [
-        {
-          file: expect.pathToEndWith('variables-coverage.ts'),
-          type: 'variables',
-          name: 'exampleVariable',
-          line: 1,
-        },
-      ],
-    } satisfies DocumentationDataCovered);
+    expect(results.variables).toStrictEqual([
+      {
+        path: expect.pathToEndWith('variables-coverage.ts'),
+        covered: 0,
+        total: 1,
+        missing: [
+          {
+            kind: 'variable',
+            name: 'exampleVariable',
+            startLine: 1,
+          },
+        ],
+      },
+    ] satisfies FileCoverage[]);
   });
 
   it('should detect documented variable', () => {
@@ -138,11 +151,14 @@ describe('processJsDocs', () => {
       'filled-documentation/variables-coverage.ts',
     );
     const results = processJsDocs({ patterns: [sourcePath] });
-    expect(results.variables).toStrictEqual({
-      coverage: 100,
-      nodesCount: 1,
-      issues: [],
-    } satisfies DocumentationDataCovered);
+    expect(results.variables).toStrictEqual([
+      {
+        path: expect.pathToEndWith('variables-coverage.ts'),
+        covered: 1,
+        total: 1,
+        missing: [],
+      },
+    ] satisfies FileCoverage[]);
   });
 
   it('should detect undocumented property', () => {
@@ -151,18 +167,20 @@ describe('processJsDocs', () => {
       'missing-documentation/properties-coverage.ts',
     );
     const results = processJsDocs({ patterns: [sourcePath] });
-    expect(results.properties).toStrictEqual({
-      coverage: 0,
-      nodesCount: 1,
-      issues: [
-        {
-          file: expect.pathToEndWith('properties-coverage.ts'),
-          type: 'properties',
-          name: 'exampleProperty',
-          line: 5,
-        },
-      ],
-    } satisfies DocumentationDataCovered);
+    expect(results.properties).toStrictEqual([
+      {
+        path: expect.pathToEndWith('properties-coverage.ts'),
+        covered: 0,
+        total: 1,
+        missing: [
+          {
+            kind: 'property',
+            name: 'exampleProperty',
+            startLine: 5,
+          },
+        ],
+      },
+    ] satisfies FileCoverage[]);
   });
 
   it('should detect documented property', () => {
@@ -171,11 +189,14 @@ describe('processJsDocs', () => {
       'filled-documentation/properties-coverage.ts',
     );
     const results = processJsDocs({ patterns: [sourcePath] });
-    expect(results.properties).toStrictEqual({
-      coverage: 100,
-      nodesCount: 1,
-      issues: [],
-    } satisfies DocumentationDataCovered);
+    expect(results.properties).toStrictEqual([
+      {
+        path: expect.pathToEndWith('properties-coverage.ts'),
+        covered: 1,
+        total: 1,
+        missing: [],
+      },
+    ] satisfies FileCoverage[]);
   });
 
   it('should detect undocumented type', () => {
@@ -184,18 +205,20 @@ describe('processJsDocs', () => {
       'missing-documentation/types-coverage.ts',
     );
     const results = processJsDocs({ patterns: [sourcePath] });
-    expect(results.types).toStrictEqual({
-      coverage: 0,
-      nodesCount: 1,
-      issues: [
-        {
-          file: expect.pathToEndWith('types-coverage.ts'),
-          type: 'types',
-          name: 'ExampleType',
-          line: 1,
-        },
-      ],
-    } satisfies DocumentationDataCovered);
+    expect(results.types).toStrictEqual([
+      {
+        path: expect.pathToEndWith('types-coverage.ts'),
+        covered: 0,
+        total: 1,
+        missing: [
+          {
+            kind: 'type',
+            name: 'ExampleType',
+            startLine: 1,
+          },
+        ],
+      },
+    ] satisfies FileCoverage[]);
   });
 
   it('should detect documented type', () => {
@@ -204,11 +227,14 @@ describe('processJsDocs', () => {
       'filled-documentation/types-coverage.ts',
     );
     const results = processJsDocs({ patterns: [sourcePath] });
-    expect(results.types).toStrictEqual({
-      coverage: 100,
-      nodesCount: 1,
-      issues: [],
-    } satisfies DocumentationDataCovered);
+    expect(results.types).toStrictEqual([
+      {
+        path: expect.pathToEndWith('types-coverage.ts'),
+        covered: 1,
+        total: 1,
+        missing: [],
+      },
+    ] satisfies FileCoverage[]);
   });
 
   it('should detect undocumented enum', () => {
@@ -217,18 +243,20 @@ describe('processJsDocs', () => {
       'missing-documentation/enums-coverage.ts',
     );
     const results = processJsDocs({ patterns: [sourcePath] });
-    expect(results.enums).toStrictEqual({
-      coverage: 0,
-      nodesCount: 1,
-      issues: [
-        {
-          file: expect.pathToEndWith('enums-coverage.ts'),
-          type: 'enums',
-          name: 'ExampleEnum',
-          line: 1,
-        },
-      ],
-    } satisfies DocumentationDataCovered);
+    expect(results.enums).toStrictEqual([
+      {
+        path: expect.pathToEndWith('enums-coverage.ts'),
+        covered: 0,
+        total: 1,
+        missing: [
+          {
+            kind: 'enum',
+            name: 'ExampleEnum',
+            startLine: 1,
+          },
+        ],
+      },
+    ] satisfies FileCoverage[]);
   });
 
   it('should detect documented enum', () => {
@@ -237,10 +265,13 @@ describe('processJsDocs', () => {
       'filled-documentation/enums-coverage.ts',
     );
     const results = processJsDocs({ patterns: [sourcePath] });
-    expect(results.enums).toStrictEqual({
-      coverage: 100,
-      nodesCount: 1,
-      issues: [],
-    } satisfies DocumentationDataCovered);
+    expect(results.enums).toStrictEqual([
+      {
+        path: expect.pathToEndWith('enums-coverage.ts'),
+        covered: 1,
+        total: 1,
+        missing: [],
+      },
+    ] satisfies FileCoverage[]);
   });
 });
