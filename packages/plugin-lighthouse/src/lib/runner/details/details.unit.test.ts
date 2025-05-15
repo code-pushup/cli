@@ -304,13 +304,32 @@ describe('toAuditDetails', () => {
     expect(outputs).toStrictEqual({});
   });
 
-  it('should ignore unsupported detail type treemap yet', () => {
+  it('should render audit details of type treemap', () => {
     const outputs = toAuditDetails({
       type: 'treemap-data',
-      nodes: [],
+      nodes: [
+        {
+          name: 'http://127.0.0.1:8000/js/index.js',
+          resourceBytes: 1_212_311,
+          unusedBytes: 634_854,
+        },
+      ],
     });
 
-    expect(outputs).toStrictEqual({});
+    expect(outputs).toStrictEqual<AuditDetails>({
+      trees: [
+        {
+          type: 'basic',
+          root: {
+            name: 'http://127.0.0.1:8000/js/index.js',
+            values: {
+              resourceBytes: '1.16 MB',
+              unusedBytes: '619.97 kB',
+            },
+          },
+        },
+      ],
+    });
   });
 
   it('should render audit details of type criticalrequestchain', () => {
