@@ -2,12 +2,13 @@ import { bold, yellow } from 'ansis';
 import type { FormattedIcu } from 'lighthouse';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
-import type { AuditDetails, Table } from '@code-pushup/models';
+import type { AuditDetails } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import { PLUGIN_SLUG } from '../constants.js';
 import { parseCriticalRequestChainToAuditDetails } from './critical-request-chain.type.js';
 import { parseOpportunityToAuditDetailsTable } from './opportunity.type.js';
 import { parseTableToAuditDetailsTable } from './table.type.js';
+import { parseTreemapDataToBasicTrees } from './treemap-data.type.js';
 
 export function toAuditDetails<T extends FormattedIcu<Details>>(
   details: T | undefined,
@@ -20,15 +21,16 @@ export function toAuditDetails<T extends FormattedIcu<Details>>(
 
   switch (type) {
     case 'table':
-      const table: Table | undefined = parseTableToAuditDetailsTable(details);
+      const table = parseTableToAuditDetailsTable(details);
       return table ? { table } : {};
     case 'opportunity':
-      const opportunity: Table | undefined =
-        parseOpportunityToAuditDetailsTable(details);
+      const opportunity = parseOpportunityToAuditDetailsTable(details);
       return opportunity ? { table: opportunity } : {};
     case 'criticalrequestchain':
       return parseCriticalRequestChainToAuditDetails(details);
-    case 'treemap-data': // TODO: implement
+    case 'treemap-data':
+      const trees = parseTreemapDataToBasicTrees(details);
+      return { trees };
 
     // TODO: add 'list' once array of tables supported in audit details
 
@@ -38,7 +40,8 @@ export function toAuditDetails<T extends FormattedIcu<Details>>(
 }
 
 // @TODO implement all details
-export const unsupportedDetailTypes = new Set([
+export const unsupportedDetailTypes = new Set<Details['type']>([
+  'list',
   'debugdata',
   'screenshot',
   'filmstrip',
@@ -48,8 +51,8 @@ export function logUnsupportedDetails(lhrAudits: Result[]) {
   const slugsWithDetailParsingErrors = [
     ...new Set(
       lhrAudits
-        .filter(({ details }) =>
-          unsupportedDetailTypes.has(details?.type as string),
+        .filter(
+          ({ details }) => details && unsupportedDetailTypes.has(details.type),
         )
         .map(({ details }) => details?.type),
     ),

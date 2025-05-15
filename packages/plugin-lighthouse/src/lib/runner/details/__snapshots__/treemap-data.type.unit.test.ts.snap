@@ -1,0 +1,102 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`parseTreemapDataToBasicTrees > should convert root nodes to basic trees 1`] = `
+[
+  {
+    "root": {
+      "children": [
+        {
+          "children": [
+            {
+              "name": "failbot/failbot-error.ts",
+              "values": {
+                "resourceBytes": "237 B",
+                "unusedBytes": "113 B",
+              },
+            },
+            {
+              "name": "remove-child-patch/remove-child-patch.ts",
+              "values": {
+                "resourceBytes": "268 B",
+              },
+            },
+            {
+              "name": "fetch-overrides/fetch-overrides.ts",
+              "values": {
+                "resourceBytes": "376 B",
+                "unusedBytes": "263 B",
+              },
+            },
+          ],
+          "name": "ui/packages",
+          "values": {
+            "resourceBytes": "881 B",
+            "unusedBytes": "376 B",
+          },
+        },
+        {
+          "name": "app/assets/modules/environment.ts",
+          "values": {
+            "resourceBytes": "42 B",
+          },
+        },
+        {
+          "name": "(unmapped)",
+          "values": {
+            "resourceBytes": "515 B",
+          },
+        },
+      ],
+      "name": "https://github.githubassets.com/assets/environment-7b93e0f0c8ff.js",
+      "values": {
+        "resourceBytes": "1.4 kB",
+        "unusedBytes": "376 B",
+      },
+    },
+    "type": "basic",
+  },
+  {
+    "root": {
+      "children": [
+        {
+          "children": [
+            {
+              "name": "commenting/edit.ts",
+              "values": {
+                "resourceBytes": "9.07 kB",
+                "unusedBytes": "8.03 kB",
+              },
+            },
+            {
+              "name": "html-validation.ts",
+              "values": {
+                "duplicatedNormalizedModuleName": "app/assets/modules/github/behaviors/html-validation.ts",
+                "resourceBytes": "2.03 kB",
+                "unusedBytes": "2.03 kB",
+              },
+            },
+          ],
+          "name": "app/assets/modules/github/behaviors",
+          "values": {
+            "resourceBytes": "11.1 kB",
+            "unusedBytes": "10.06 kB",
+          },
+        },
+        {
+          "name": "(unmapped)",
+          "values": {
+            "resourceBytes": "534 B",
+            "unusedBytes": "65 B",
+          },
+        },
+      ],
+      "name": "https://github.githubassets.com/assets/app_assets_modules_github_behaviors_commenting_edit_ts-app_assets_modules_github_behaviors_ht-83c235-fb43816ab83c.js",
+      "values": {
+        "resourceBytes": "11.62 kB",
+        "unusedBytes": "10.12 kB",
+      },
+    },
+    "type": "basic",
+  },
+]
+`;
