@@ -1,3 +1,27 @@
+## 0.68.0 (2025-05-19)
+
+### 🚀 Features
+
+- **core:** include trees when uploading audits to portal ([c1c6965e](https://github.com/code-pushup/cli/commit/c1c6965e))
+- **models:** define tree data structure for audit details ([63bf44ca](https://github.com/code-pushup/cli/commit/63bf44ca))
+- **plugin-coverage:** replace issues with tree ([2dc16890](https://github.com/code-pushup/cli/commit/2dc16890))
+- **plugin-jsdocs:** replace issues with tree ([d347c0f2](https://github.com/code-pushup/cli/commit/d347c0f2))
+- **plugin-jsdocs:** include end line number ([f2102eb5](https://github.com/code-pushup/cli/commit/f2102eb5))
+- **plugin-lighthouse:** convert criticalrequestchain details to trees and table ([18d4230e](https://github.com/code-pushup/cli/commit/18d4230e))
+- **plugin-lighthouse:** convert treemap-data details to trees ([19088927](https://github.com/code-pushup/cli/commit/19088927))
+- **utils:** generate ascii tree in full markdown report's audit details ([ab462d42](https://github.com/code-pushup/cli/commit/ab462d42))
+- **utils:** convert files array to tree structure ([211be5bf](https://github.com/code-pushup/cli/commit/211be5bf))
+- **utils:** aggregate coverage per folder ([7ef0c14e](https://github.com/code-pushup/cli/commit/7ef0c14e))
+- **utils:** sort coverage tree alphabetically with folders before files ([f87b869e](https://github.com/code-pushup/cli/commit/f87b869e))
+
+### 🩹 Fixes
+
+- **ci:** use absolute path in print-config --output file ([61ae18e1](https://github.com/code-pushup/cli/commit/61ae18e1))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.67.0 (2025-04-28)
 
 ### 🚀 Features
