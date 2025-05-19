@@ -132,7 +132,7 @@ describe('runInCI', () => {
           ?.find(arg => arg.startsWith('--output='))
           ?.split('=')[1];
         if (outputFile) {
-          await writeFile(path.join(cwd as string, outputFile), content);
+          await writeFile(path.resolve(cwd as string, outputFile), content);
         } else {
           stdout = content;
         }

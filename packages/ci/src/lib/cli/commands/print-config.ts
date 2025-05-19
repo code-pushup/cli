@@ -17,7 +17,7 @@ export async function runPrintConfig({
 }: CommandContext): Promise<unknown> {
   // random file name so command can be run in parallel
   const outputFile = `code-pushup.${generateRandomId()}.config.json`;
-  const outputPath = path.join(directory, outputFile);
+  const outputPath = path.resolve(directory, outputFile);
 
   await executeProcess({
     command: bin,
@@ -25,7 +25,7 @@ export async function runPrintConfig({
       ...(config ? [`--config=${config}`] : []),
       'print-config',
       ...(isVerbose() ? ['--verbose'] : []),
-      `--output=${outputFile}`,
+      `--output=${outputPath}`,
     ],
     cwd: directory,
     observer,
