@@ -132,7 +132,9 @@ describe('runInCI', () => {
           ?.find(arg => arg.startsWith('--output='))
           ?.split('=')[1];
         if (outputFile) {
-          await writeFile(path.resolve(cwd as string, outputFile), content);
+          const outputPath = path.resolve(cwd as string, outputFile);
+          await mkdir(path.dirname(outputPath), { recursive: true });
+          await writeFile(outputPath, content);
         } else {
           stdout = content;
         }

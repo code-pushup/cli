@@ -2,7 +2,6 @@ import { rm } from 'node:fs/promises';
 import path from 'node:path';
 import {
   executeProcess,
-  generateRandomId,
   isVerbose,
   readJsonFile,
   stringifyError,
@@ -13,11 +12,19 @@ export async function runPrintConfig({
   bin,
   config,
   directory,
+  project,
   observer,
 }: CommandContext): Promise<unknown> {
-  // random file name so command can be run in parallel
-  const outputFile = `code-pushup.${generateRandomId()}.config.json`;
-  const outputPath = path.resolve(directory, outputFile);
+  // unique file name per project so command can be run in parallel
+  const outputFile = ['code-pushup', 'config', project, 'json']
+    .filter(Boolean)
+    .join('.');
+  const outputPath =
+    project && directory === process.cwd()
+      ? // cache-friendly path for Nx projects (assuming {workspaceRoot}/.code-pushup/{projectName})
+        path.join(process.cwd(), '.code-pushup', project, outputFile)
+      : // absolute path
+        path.resolve(directory, '.code-pushup', outputFile);
 
   await executeProcess({
     command: bin,
