@@ -137,12 +137,12 @@ describe('turboHandler', () => {
           {
             name: '@example/cli',
             directory: path.join(MEMFS_VOLUME, 'packages', 'cli'),
-            bin: 'npx turbo run code-pushup --no-cache --force --',
+            bin: 'npx turbo run code-pushup --',
           },
           {
             name: '@example/core',
             directory: path.join(MEMFS_VOLUME, 'packages', 'core'),
-            bin: 'npx turbo run code-pushup --no-cache --force --',
+            bin: 'npx turbo run code-pushup --',
           },
         ] satisfies ProjectConfig[]);
       },
@@ -171,19 +171,19 @@ describe('turboHandler', () => {
           name: 'api',
           directory: path.join(MEMFS_VOLUME, 'api'),
           bin: 'npx turbo run code-pushup --',
-          binUncached: 'npx turbo run code-pushup --no-cache --force --',
+          binUncached: 'npx turbo run code-pushup --',
         },
         {
           name: 'cms',
           directory: path.join(MEMFS_VOLUME, 'cms'),
           bin: 'npx turbo run code-pushup --',
-          binUncached: 'npx turbo run code-pushup --no-cache --force --',
+          binUncached: 'npx turbo run code-pushup --',
         },
         {
           name: 'web',
           directory: path.join(MEMFS_VOLUME, 'web'),
           bin: 'npx turbo run code-pushup --',
-          binUncached: 'npx turbo run code-pushup --no-cache --force --',
+          binUncached: 'npx turbo run code-pushup --',
         },
       ],
     };
