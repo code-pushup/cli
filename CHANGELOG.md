@@ -1,3 +1,14 @@
+## 0.69.0 (2025-06-03)
+
+### 🚀 Features
+
+- **ci:** use nx cache friendly output path for print-config command ([35e334f5](https://github.com/code-pushup/cli/commit/35e334f5))
+- **ci:** do not skip nx/turbo cache for print-config and compare commands ([c83ad36d](https://github.com/code-pushup/cli/commit/c83ad36d))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.68.0 (2025-05-19)
 
 ### 🚀 Features
