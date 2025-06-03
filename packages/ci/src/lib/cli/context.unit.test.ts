@@ -63,6 +63,7 @@ describe('createCommandContext', () => {
       bin: 'yarn code-pushup',
       directory: '/test/ui',
       config: null,
+      project: 'ui',
       observer: expectedObserver,
     });
   });

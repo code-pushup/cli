@@ -4,6 +4,7 @@ import type { Settings } from '../models.js';
 import type { ProjectConfig } from '../monorepo/index.js';
 
 export type CommandContext = Pick<Settings, 'bin' | 'config' | 'directory'> & {
+  project?: string;
   observer?: ProcessObserver;
 };
 
@@ -15,6 +16,7 @@ export function createCommandContext(
     bin: project?.bin ?? bin,
     directory: project?.directory ?? directory,
     config,
+    ...(project?.name && { project: project.name }),
     observer: createExecutionObserver({ silent }),
   };
 }
