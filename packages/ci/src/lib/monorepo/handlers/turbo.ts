@@ -32,7 +32,7 @@ export const turboHandler: MonorepoToolHandler = {
           .map(({ name, directory }) => ({
             name,
             directory,
-            bin: `npx turbo run ${options.task} --no-cache --force --`,
+            bin: `npx turbo run ${options.task} --`,
           }));
       }
     }

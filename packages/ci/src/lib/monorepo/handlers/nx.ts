@@ -41,7 +41,7 @@ export const nxHandler: MonorepoToolHandler = {
     const projects = parseProjects(stdout);
     return projects.toSorted().map(project => ({
       name: project,
-      bin: `npx nx run ${project}:${task} --skip-nx-cache --`,
+      bin: `npx nx run ${project}:${task} --`,
     }));
   },
 
