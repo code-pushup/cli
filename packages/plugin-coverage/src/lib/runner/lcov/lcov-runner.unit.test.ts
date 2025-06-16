@@ -39,7 +39,7 @@ SF:kw/__init__.py
 DA:1,1,gG9L/J2A/IwO9tZM1raZxQ
 DA:0,0,gG9L/J2A/IwO9tZM1raZxQ
 LF:2
-LH:1
+LH:3
 BRF:0
 BRH:0
 end_of_record
@@ -125,12 +125,14 @@ end_of_record
       parseLcovFiles([path.join('coverage', 'pytest', 'lcov.info')]),
     ).resolves.toEqual([
       expect.objectContaining({
-        lines: expect.objectContaining({
+        lines: {
+          found: 2,
+          hit: 2, // not 3
           details: [
             { hit: 1, line: 1 },
             // no { hit: 0, line: 0 },
           ],
-        }),
+        },
       }),
     ]);
   });
