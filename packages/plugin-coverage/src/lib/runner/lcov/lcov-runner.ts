@@ -77,13 +77,18 @@ export async function parseLcovFiles(
           );
         }
         const parsedRecords = parseLcov(toUnixNewlines(lcovFileContent));
-        return parsedRecords.map<LCOVRecord>(record => ({
-          ...record,
-          file:
-            typeof result === 'string' || result.pathToProject == null
-              ? record.file
-              : path.join(result.pathToProject, record.file),
-        }));
+        return parsedRecords.map(
+          (record): LCOVRecord => ({
+            title: record.title,
+            file:
+              typeof result === 'string' || result.pathToProject == null
+                ? record.file
+                : path.join(result.pathToProject, record.file),
+            functions: filterOutInvalidLines(record, 'functions'),
+            branches: filterOutInvalidLines(record, 'branches'),
+            lines: filterOutInvalidLines(record, 'lines'),
+          }),
+        );
       }),
     )
   ).flat();
@@ -93,6 +98,26 @@ export async function parseLcovFiles(
   }
 
   return parsedResults;
+}
+
+/**
+ * Filters out invalid line numbers.
+ *
+ * Some tools like pytest-cov emit line number 0. https://github.com/nedbat/coveragepy/issues/1846
+ *
+ * @param record LCOV record
+ * @param type Coverage type
+ * @returns Coverage output from record without invalid line numbers
+ */
+function filterOutInvalidLines<T extends 'branches' | 'functions' | 'lines'>(
+  record: LCOVRecord,
+  type: T,
+): LCOVRecord[T] {
+  const stats = record[type];
+  return {
+    ...stats,
+    details: stats.details.filter(detail => detail.line > 0),
+  };
 }
 
 /**
