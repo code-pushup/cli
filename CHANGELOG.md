@@ -1,3 +1,13 @@
+## 0.69.2 (2025-06-16)
+
+### 🩹 Fixes
+
+- **plugin-coverage:** prevent invalid coverage when lcov has hit > found ([c796f30e](https://github.com/code-pushup/cli/commit/c796f30e))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.69.1 (2025-06-16)
 
 ### 🩹 Fixes
