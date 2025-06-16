@@ -33,11 +33,24 @@ BRH:0
 end_of_record
 `;
 
+  const PYTEST_REPORT = `
+TN:
+SF:kw/__init__.py
+DA:1,1,gG9L/J2A/IwO9tZM1raZxQ
+DA:0,0,gG9L/J2A/IwO9tZM1raZxQ
+LF:2
+LH:1
+BRF:0
+BRH:0
+end_of_record
+`;
+
   beforeEach(() => {
     vol.fromJSON(
       {
         [path.join('integration-tests', 'lcov.info')]: UTILS_REPORT, // file name value under SF used in tests
         [path.join('unit-tests', 'lcov.info')]: CONSTANTS_REPORT, // file name value under SF used in tests
+        [path.join('pytest', 'lcov.info')]: PYTEST_REPORT,
         'lcov.info': '', // empty report file
       },
       'coverage',
@@ -105,5 +118,20 @@ end_of_record
         'lcov.info',
       )}.`,
     );
+  });
+
+  it('should skip lines numbered 0', async () => {
+    await expect(
+      parseLcovFiles([path.join('coverage', 'pytest', 'lcov.info')]),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        lines: expect.objectContaining({
+          details: [
+            { hit: 1, line: 1 },
+            // no { hit: 0, line: 0 },
+          ],
+        }),
+      }),
+    ]);
   });
 });
