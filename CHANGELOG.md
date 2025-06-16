@@ -1,3 +1,13 @@
+## 0.69.1 (2025-06-16)
+
+### 🩹 Fixes
+
+- **plugin-coverage:** skip invalid line numbers from tools like pytest-cov ([ba8b3171](https://github.com/code-pushup/cli/commit/ba8b3171))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.69.0 (2025-06-03)
 
 ### 🚀 Features
