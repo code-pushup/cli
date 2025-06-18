@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { z } from 'zod';
 import {
+  bundleStatsCoreConfig,
   coverageCoreConfigNx,
   eslintCoreConfigNx,
   jsDocsCoreConfig,
@@ -52,4 +53,5 @@ export default mergeConfigs(
     '!**/implementation/**',
     '!**/internal/**',
   ]),
+  await bundleStatsCoreConfig(),
 );

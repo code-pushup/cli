@@ -1,0 +1,115 @@
+{
+  "inputs": {
+    "src/utils.js": {
+      "bytes": 2595,
+      "imports": [],
+      "format": "esm"
+    },
+    "src/side-effects.js": {
+      "bytes": 69,
+      "imports": [],
+      "format": "esm"
+    },
+    "src/theme.css": {
+      "bytes": 32,
+      "imports": []
+    },
+    "src/styles.css": {
+      "bytes": 55,
+      "imports": [
+        {
+          "path": "src/theme.css",
+          "kind": "import-rule",
+          "original": "./theme.css"
+        }
+      ]
+    },
+    "src/cjs.cjs": {
+      "bytes": 56,
+      "imports": [],
+      "format": "cjs"
+    },
+    "src/dynamic.js": {
+      "bytes": 61,
+      "imports": [],
+      "format": "esm"
+    },
+    "src/index.js": {
+      "bytes": 401,
+      "imports": [
+        {
+          "path": "src/utils.js",
+          "kind": "import-statement",
+          "original": "./utils.js"
+        },
+        {
+          "path": "src/side-effects.js",
+          "kind": "import-statement",
+          "original": "./side-effects.js"
+        },
+        {
+          "path": "src/styles.css",
+          "kind": "import-statement",
+          "original": "./styles.css"
+        },
+        {
+          "path": "src/cjs.cjs",
+          "kind": "require-call",
+          "original": "./cjs.cjs"
+        },
+        {
+          "path": "src/dynamic.js",
+          "kind": "dynamic-import",
+          "original": "./dynamic.js"
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    }
+  },
+  "outputs": {
+    "dist/bundle.js": {
+      "imports": [],
+      "exports": [],
+      "entryPoint": "src/index.js",
+      "cssBundle": "dist/bundle.css",
+      "inputs": {
+        "src/cjs.cjs": {
+          "bytesInOutput": 156
+        },
+        "src/dynamic.js": {
+          "bytesInOutput": 225
+        },
+        "src/utils.js": {
+          "bytesInOutput": 59
+        },
+        "src/side-effects.js": {
+          "bytesInOutput": 39
+        },
+        "src/styles.css": {
+          "bytesInOutput": 0
+        },
+        "src/index.js": {
+          "bytesInOutput": 341
+        }
+      },
+      "bytes": 1836
+    },
+    "dist/bundle.css": {
+      "imports": [],
+      "inputs": {
+        "src/theme.css": {
+          "bytesInOutput": 32
+        },
+        "src/styles.css": {
+          "bytesInOutput": 31
+        }
+      },
+      "bytes": 105
+    }
+  }
+}

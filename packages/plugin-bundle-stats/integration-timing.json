@@ -1,0 +1,80 @@
+{
+  "numTotalTestSuites": 8,
+  "numPassedTestSuites": 8,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 7,
+  "numPassedTests": 7,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "startTime": 1750119587936,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["", "esbuild stats generation"],
+          "fullName": " esbuild stats generation should create stats.json using esbuild",
+          "status": "passed",
+          "title": "should create stats.json using esbuild",
+          "duration": 214,
+          "failureMessages": []
+        },
+        {
+          "ancestorTitles": ["", "webpack stats generation"],
+          "fullName": " webpack stats generation should create stats.json using webpack@5",
+          "status": "passed",
+          "title": "should create stats.json using webpack@5",
+          "duration": 273,
+          "failureMessages": []
+        },
+        {
+          "ancestorTitles": ["", "rsbuild stats generation"],
+          "fullName": " rsbuild stats generation should create stats.json using rsbuild",
+          "status": "passed",
+          "title": "should create stats.json using rsbuild",
+          "duration": 145,
+          "failureMessages": []
+        },
+        {
+          "ancestorTitles": ["", "vite stats generation"],
+          "fullName": " vite stats generation should create stats.json using vite",
+          "status": "passed",
+          "title": "should create stats.json using vite",
+          "duration": 163,
+          "failureMessages": []
+        },
+        {
+          "ancestorTitles": ["", "rollup stats generation"],
+          "fullName": " rollup stats generation should create stats.json using rollup",
+          "status": "passed",
+          "title": "should create stats.json using rollup",
+          "duration": 74,
+          "failureMessages": []
+        },
+        {
+          "ancestorTitles": ["", "rolldown stats generation"],
+          "fullName": " rolldown stats generation should create stats.json using rolldown",
+          "status": "passed",
+          "title": "should create stats.json using rolldown",
+          "duration": 85,
+          "failureMessages": []
+        },
+        {
+          "ancestorTitles": ["", "bun stats generation"],
+          "fullName": " bun stats generation should create stats.json using bun",
+          "status": "passed",
+          "title": "should create stats.json using bun",
+          "duration": 284,
+          "failureMessages": []
+        }
+      ],
+      "startTime": 1750119588462,
+      "endTime": 1750119589715,
+      "status": "passed",
+      "message": "",
+      "name": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/plugin-bundle-stats/src/lib/stats-generation.integration.test.ts"
+    }
+  ]
+}

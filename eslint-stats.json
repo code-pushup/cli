@@ -1,0 +1,911 @@
+[
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/mocks/constants.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/package.json",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/index.ts",
+    "messages": [],
+    "suppressedMessages": [
+      {
+        "ruleId": "import/no-unassigned-import",
+        "severity": 1,
+        "message": "Imported module should be assigned",
+        "line": 6,
+        "column": 1,
+        "nodeType": "ImportDeclaration",
+        "endLine": 6,
+        "endColumn": 29,
+        "suppressions": [{ "kind": "directive", "justification": "" }]
+      },
+      {
+        "ruleId": "n/no-process-exit",
+        "severity": 1,
+        "message": "Don't use process.exit(); throw an error instead.",
+        "line": 13,
+        "column": 1,
+        "nodeType": "CallExpression",
+        "messageId": "noProcessExit",
+        "endLine": 13,
+        "endColumn": 16,
+        "suppressions": [{ "kind": "directive", "justification": "" }]
+      }
+    ],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/autorun/autorun-command.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/autorun/autorun-command.unit.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/cli.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/collect/collect-command.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/collect/collect-command.unit.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/commands.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/compare/compare-command.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/compare/compare-command.unit.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/constants.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/history/history-command.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/history/history-command.unit.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/history/history.model.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/history/history.options.ts",
+    "messages": [],
+    "suppressedMessages": [
+      {
+        "ruleId": "@typescript-eslint/no-magic-numbers",
+        "severity": 1,
+        "message": "No magic number: 5.",
+        "line": 34,
+        "column": 16,
+        "nodeType": "Literal",
+        "messageId": "noMagic",
+        "endLine": 34,
+        "endColumn": 17,
+        "suppressions": [{ "kind": "directive", "justification": "" }]
+      }
+    ],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/history/utils.ts",
+    "messages": [],
+    "suppressedMessages": [
+      {
+        "ruleId": "functional/no-let",
+        "severity": 1,
+        "message": "Unexpected let, use const instead.",
+        "line": 16,
+        "column": 3,
+        "nodeType": "VariableDeclaration",
+        "messageId": "generic",
+        "endLine": 16,
+        "endColumn": 45,
+        "suppressions": [{ "kind": "directive", "justification": "" }]
+      },
+      {
+        "ruleId": "prefer-const",
+        "severity": 2,
+        "message": "'processOptions' is never reassigned. Use 'const' instead.",
+        "line": 16,
+        "column": 22,
+        "nodeType": "Identifier",
+        "messageId": "useConst",
+        "endLine": 16,
+        "endColumn": 36,
+        "suppressions": [{ "kind": "directive", "justification": "" }]
+      }
+    ],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/history/utils.unit.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/compare.model.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/compare.options.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/core-config.integration.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/core-config.middleware.integration.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/core-config.middleware.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/core-config.middleware.unit.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/core-config.model.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/core-config.options.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/filter.middleware.ts",
+    "messages": [],
+    "suppressedMessages": [
+      {
+        "ruleId": "max-lines-per-function",
+        "severity": 1,
+        "message": "Function 'filterMiddleware' has too many lines (57). Maximum allowed is 50.",
+        "line": 23,
+        "column": 8,
+        "nodeType": "FunctionDeclaration",
+        "messageId": "exceed",
+        "endLine": 86,
+        "endColumn": 2,
+        "suppressions": [{ "kind": "directive", "justification": "" }]
+      }
+    ],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/filter.middleware.unit.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/filter.middleware.utils.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/filter.middleware.utils.unit.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/filter.model.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/filter.options.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/formatting.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/formatting.unit.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/global.model.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/global.options.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/global.utils.ts",
+    "messages": [],
+    "suppressedMessages": [
+      {
+        "ruleId": "@typescript-eslint/no-explicit-any",
+        "severity": 2,
+        "message": "Unexpected any. Specify a different type.",
+        "line": 30,
+        "column": 57,
+        "nodeType": "TSAnyKeyword",
+        "messageId": "unexpectedAny",
+        "endLine": 30,
+        "endColumn": 60,
+        "suggestions": [
+          {
+            "messageId": "suggestUnknown",
+            "fix": { "range": [1124, 1127], "text": "unknown" },
+            "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+          },
+          {
+            "messageId": "suggestNever",
+            "fix": { "range": [1124, 1127], "text": "never" },
+            "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+          }
+        ],
+        "suppressions": [{ "kind": "directive", "justification": "" }]
+      },
+      {
+        "ruleId": "@typescript-eslint/no-explicit-any",
+        "severity": 2,
+        "message": "Unexpected any. Specify a different type.",
+        "line": 30,
+        "column": 67,
+        "nodeType": "TSAnyKeyword",
+        "messageId": "unexpectedAny",
+        "endLine": 30,
+        "endColumn": 70,
+        "suggestions": [
+          {
+            "messageId": "suggestUnknown",
+            "fix": { "range": [1134, 1137], "text": "unknown" },
+            "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+          },
+          {
+            "messageId": "suggestNever",
+            "fix": { "range": [1134, 1137], "text": "never" },
+            "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+          }
+        ],
+        "suppressions": [{ "kind": "directive", "justification": "" }]
+      },
+      {
+        "ruleId": "@typescript-eslint/no-explicit-any",
+        "severity": 2,
+        "message": "Unexpected any. Specify a different type.",
+        "line": 34,
+        "column": 27,
+        "nodeType": "TSAnyKeyword",
+        "messageId": "unexpectedAny",
+        "endLine": 34,
+        "endColumn": 30,
+        "suggestions": [
+          {
+            "messageId": "suggestUnknown",
+            "fix": { "range": [1247, 1250], "text": "unknown" },
+            "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+          },
+          {
+            "messageId": "suggestNever",
+            "fix": { "range": [1247, 1250], "text": "never" },
+            "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+          }
+        ],
+        "suppressions": [{ "kind": "directive", "justification": "" }]
+      }
+    ],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/global.utils.unit.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/logging.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/merge-diffs.model.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/merge-diffs.options.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/print-config.model.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/print-config.options.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/set-verbose.middleware.integration.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/set-verbose.middleware.ts",
+    "messages": [],
+    "suppressedMessages": [
+      {
+        "ruleId": "functional/immutable-data",
+        "severity": 2,
+        "message": "Modifying an existing object/array is not allowed.",
+        "line": 29,
+        "column": 3,
+        "nodeType": "AssignmentExpression",
+        "messageId": "generic",
+        "endLine": 29,
+        "endColumn": 49,
+        "suppressions": [{ "kind": "directive", "justification": "" }]
+      }
+    ],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/set-verbose.middleware.unit.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/validate-filter-options.utils.ts",
+    "messages": [],
+    "suppressedMessages": [
+      {
+        "ruleId": "max-lines-per-function",
+        "severity": 1,
+        "message": "Function 'validateFilterOption' has too many lines (59). Maximum allowed is 50.",
+        "line": 14,
+        "column": 8,
+        "nodeType": "FunctionDeclaration",
+        "messageId": "exceed",
+        "endLine": 76,
+        "endColumn": 2,
+        "suppressions": [{ "kind": "directive", "justification": "" }]
+      }
+    ],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/implementation/validate-filter-options.utils.unit.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/merge-diffs/merge-diffs-command.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/merge-diffs/merge-diffs-command.unit.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/middlewares.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/options.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/polyfills.ts",
+    "messages": [],
+    "suppressedMessages": [
+      {
+        "ruleId": "functional/immutable-data",
+        "severity": 2,
+        "message": "Modifying an existing object/array is not allowed.",
+        "line": 3,
+        "column": 3,
+        "nodeType": "AssignmentExpression",
+        "messageId": "generic",
+        "endLine": 8,
+        "endColumn": 4,
+        "suppressions": [{ "kind": "directive", "justification": "" }]
+      }
+    ],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/print-config/print-config-command.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/print-config/print-config-command.unit.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/upload/upload-command.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/upload/upload-command.unit.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/yargs-cli.integration.test.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": [
+      { "ruleId": "vitest/no-done-callback", "replacedBy": [] }
+    ]
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/src/lib/yargs-cli.ts",
+    "messages": [],
+    "suppressedMessages": [
+      {
+        "ruleId": "max-lines-per-function",
+        "severity": 1,
+        "message": "Function 'yargsCli' has too many lines (81). Maximum allowed is 50.",
+        "line": 44,
+        "column": 8,
+        "nodeType": "FunctionDeclaration",
+        "messageId": "exceed",
+        "endLine": 146,
+        "endColumn": 2,
+        "suppressions": [{ "kind": "directive", "justification": "" }]
+      }
+    ],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/vite.config.integration.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  },
+  {
+    "filePath": "/Users/michael_hladky/WebstormProjects/quality-metrics-cli/packages/cli/vite.config.unit.ts",
+    "messages": [],
+    "suppressedMessages": [],
+    "errorCount": 0,
+    "fatalErrorCount": 0,
+    "warningCount": 0,
+    "fixableErrorCount": 0,
+    "fixableWarningCount": 0,
+    "usedDeprecatedRules": []
+  }
+]

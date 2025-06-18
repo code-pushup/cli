@@ -94,7 +94,7 @@ The plugin accepts the following parameters:
 Optional parameter. The `tsconfig` option accepts a string that defines the path to your config file and defaults to `tsconfig.json`.
 
 ```js
-await typescriptPlugin({
+await bundleStatsPlugin({
   tsconfig: './tsconfig.json',
 });
 ```
@@ -104,7 +104,7 @@ await typescriptPlugin({
 The `onlyAudits` option allows you to specify which documentation types you want to measure. Only the specified audits will be included in the results. All audits are included by default. Example:
 
 ```js
-await typescriptPlugin({
+await bundleStatsPlugin({
   onlyAudits: ['no-implicit-any'],
 });
 ```

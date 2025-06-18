@@ -1,0 +1,47 @@
+{
+  "name": "plugin-bundle-stats",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/plugin-bundle-stats/src",
+  "projectType": "library",
+  "targets": {
+    "demo": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx code-pushup -- collect --config packages/plugin-bundle-stats/code-pushup.config.ts"
+      }
+    },
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/plugin-bundle-stats",
+        "main": "packages/plugin-bundle-stats/src/index.ts",
+        "tsConfig": "packages/plugin-bundle-stats/tsconfig.lib.json",
+        "assets": ["packages/plugin-bundle-stats/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/plugin-bundle-stats/**/*.ts",
+          "packages/plugin-bundle-stats/package.json"
+        ]
+      }
+    },
+    "unit-test": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "packages/plugin-bundle-stats/vite.config.unit.ts"
+      }
+    },
+    "integration-test": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "packages/plugin-bundle-stats/vite.config.integration.ts"
+      }
+    }
+  },
+  "tags": ["scope:plugin", "type:feature", "publishable"]
+}

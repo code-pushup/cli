@@ -1,0 +1,34 @@
+{
+  "name": "@code-pushup/bundle-stats-plugin",
+  "version": "0.69.2",
+  "license": "MIT",
+  "description": "Code PushUp plugin for incrementally adopting strict compilation flags in TypeScript projects",
+  "homepage": "https://github.com/code-pushup/cli/tree/main/packages/plugin-bundle-stats#readme",
+  "bugs": {
+    "url": "https://github.com/code-pushup/cli/issues?q=is%3Aissue%20state%3Aopen%20type%3ABug%20label%3A\"🧩%20bundle-stats-plugin\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code-pushup/cli.git",
+    "directory": "packages/plugin-bundle-stats"
+  },
+  "keywords": [
+    "CLI",
+    "Code PushUp",
+    "plugin",
+    "typescript"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "dependencies": {
+    "@code-pushup/models": "0.69.2",
+    "@code-pushup/utils": "0.69.2",
+    "zod": "^3.23.8"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.0.0"
+  },
+  "scripts": {}
+}
