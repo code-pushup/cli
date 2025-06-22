@@ -18,8 +18,14 @@ export type ProjectConfigurationWithName = WithRequired<
   'name'
 >;
 
-export type NormalizedCreateNodesContext = CreateNodesContext &
-  CreateTargetsOptions;
+export type NormalizedCreateNodesContext = (
+  | CreateNodesContext
+  | CreateNodesContextV2
+) & {
+  projectJson: ProjectConfigurationWithName;
+  projectRoot: string;
+  createOptions: CreateNodesOptions;
+};
 
-export type NormalizedCreateNodesV2Context = CreateNodesContextV2 &
+export type NormalizedCreateNodesContextV2 = CreateNodesContextV2 &
   CreateTargetsOptions;
