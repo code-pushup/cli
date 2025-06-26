@@ -54,10 +54,10 @@
         "configFile": "packages/nx-plugin/vite.config.unit.ts"
       }
     },
-    "integration-test": {
+    "int-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/nx-plugin/vite.config.integration.ts"
+        "configFile": "packages/nx-plugin/vite.config.int.ts"
       }
     }
   },

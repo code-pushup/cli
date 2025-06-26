@@ -46,7 +46,7 @@
       "!{projectRoot}/src/test-setup.[jt]s",
       "!{projectRoot}/test-setup.[jt]s",
       "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
-      "!{projectRoot}/vite.config.@(unit|integration|e2e).[jt]s",
+      "!{projectRoot}/vite.config.@(unit|int|e2e).[jt]s",
       "!{projectRoot}/@(test|mocks)/**/*",
       "!{projectRoot}/perf/**/*",
       "!{projectRoot}/tools/**/*",

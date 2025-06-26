@@ -23,10 +23,10 @@
         "configFile": "packages/ci/vite.config.unit.ts"
       }
     },
-    "integration-test": {
+    "int-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/ci/vite.config.integration.ts"
+        "configFile": "packages/ci/vite.config.int.ts"
       }
     }
   },

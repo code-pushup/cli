@@ -6,7 +6,7 @@
   },
   "include": [
     "vite.config.unit.ts",
-    "vite.config.integration.ts",
+    "vite.config.int.ts",
     "mocks/**/*.ts",
     "src/**/*.test.ts",
     "../../testing/test-setup/src/vitest.d.ts"

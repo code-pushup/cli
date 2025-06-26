@@ -98,7 +98,7 @@ _A helpful chromium setup is preconfigured with the following settings:_
 
 2. Increase Timeout  
    Lighthouse has a longer runtime which can time out in different environments.
-   **Try increasing the test timeout** in `lighthouse-plugin.integration.test.ts` for `runner creation and execution` test suite.
+   **Try increasing the test timeout** in `lighthouse-plugin.int.test.ts` for `runner creation and execution` test suite.
 
 3. Turn on debug mode  
    Show debug logs of Lighthouse. Set the following environment variable: `DEBUG='*'`

@@ -30,10 +30,10 @@
         "configFile": "packages/plugin-lighthouse/vite.config.unit.ts"
       }
     },
-    "integration-test": {
+    "int-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/plugin-lighthouse/vite.config.integration.ts"
+        "configFile": "packages/plugin-lighthouse/vite.config.int.ts"
       }
     }
   },
