@@ -28,13 +28,13 @@
     "unit-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/plugin-eslint/vite.config.unit.ts"
+        "configFile": "packages/plugin-eslint/vitest.unit.config.ts"
       }
     },
     "int-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/plugin-eslint/vite.config.int.ts"
+        "configFile": "packages/plugin-eslint/vitest.int.config.ts"
       }
     }
   },

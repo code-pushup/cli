@@ -68,7 +68,7 @@ const withNxStandards = (): KnipConfigPlugin => () => {
       // missing knip plugin for now, so this is in the root entry
       'packages/models/zod2md.config.ts',
       '**/code-pushup.*.{js,mjs,ts,cjs,mts,cts}',
-      '**/vite.config.*.ts',
+      '**/vitest.*.config.ts',
       '**/*.d.ts',
       'tools/**/*.{js,mjs,ts,cjs,mts,cts}',
     ],

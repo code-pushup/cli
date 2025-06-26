@@ -14,7 +14,7 @@
     "e2e": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "e2e/cli-e2e/vite.config.e2e.ts"
+        "configFile": "e2e/cli-e2e/vitest.e2e.config.ts"
       }
     }
   },

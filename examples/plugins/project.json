@@ -25,7 +25,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "configFile": "examples/plugins/vite.config.unit.ts",
+        "configFile": "examples/plugins/vitest.unit.config.ts",
         "reportsDirectory": "../../coverage/examples-plugins/unit-tests"
       }
     },
@@ -33,7 +33,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "configFile": "examples/plugins/vite.config.int.ts",
+        "configFile": "examples/plugins/vitest.int.config.ts",
         "reportsDirectory": "../../coverage/examples-plugins/int-tests"
       }
     },

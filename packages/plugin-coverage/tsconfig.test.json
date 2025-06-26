@@ -5,8 +5,8 @@
     "types": ["vitest/globals", "vitest/importMeta", "vite/client", "node"]
   },
   "include": [
-    "vite.config.unit.ts",
-    "vite.config.int.ts",
+    "vitest.unit.config.ts",
+    "vitest.int.config.ts",
     "mocks/**/*.ts",
     "src/**/*.test.ts",
     "../../testing/test-setup/src/vitest.d.ts"
