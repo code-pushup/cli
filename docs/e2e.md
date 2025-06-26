@@ -46,12 +46,12 @@ The `e2e` testing process is complex and involves multiple steps and targets.
 #### Overview:
 
 - `nx run e2e <project-name>`
-  - `global-setup.e2e.ts#setup` (vitest setup script configured in `vite.config.e2e.ts`)
+  - `global-setup.e2e.ts#setup` (vitest setup script configured in `vitest.e2e.config.ts`)
     - setup - `nx start-verdaccio`
     - setup - `nx run-many -t publish`
     - setup - `nx run-many -t npm-install`
   - **run tests**
-  - `global-setup.e2e.ts#teardown` (vitest teardown script configured in `vite.config.e2e.ts`)
+  - `global-setup.e2e.ts#teardown` (vitest teardown script configured in `vitest.e2e.config.ts`)
     - teardown - `nx run-many -t npm-uninstall`
     - teardown - `process.kill(<verdaccio-port>)`
 
@@ -74,7 +74,7 @@ Root/
 │   └── <project-name>-e2e/
 │       ├── tests/
 │       │   └── <file-name>.e2e.ts
-│       ├── vite.config.e2e.ts # uses `global-setup.e2e.ts` for as `globalSetup` script
+│       ├── vitest.e2e.config.ts # uses `global-setup.e2e.ts` for as `globalSetup` script
 │       └── project.json
 ├── packages/
 │   └── <project-name>/
@@ -115,14 +115,14 @@ Root/
     "e2e": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "e2e/<project-name>-e2e/vite.config.e2e.ts",
+        "configFile": "e2e/<project-name>-e2e/vitest.e2e.config.ts",
       },
     },
   },
 }
 ```
 
-2. 1. The `vite.config.e2e.ts` file is used to configure the Vite test runner.
+2. 1. The `vitest.e2e.config.ts` file is used to configure the Vite test runner.
       Inside the file, the `globalSetup` option is set to `global-setup.e2e.ts`:
 
 ```typescript

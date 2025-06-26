@@ -7,7 +7,7 @@
   },
   "include": ["src/**/*.ts"],
   "exclude": [
-    "vite.config.unit.ts",
+    "vitest.unit.config.ts",
     "src/**/*.unit.test.ts",
     "src/lib/fixtures/configs"
   ]

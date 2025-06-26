@@ -7,8 +7,8 @@
   },
   "include": ["src/**/*.ts"],
   "exclude": [
-    "vite.config.unit.ts",
-    "vite.config.int.ts",
+    "vitest.unit.config.ts",
+    "vitest.int.config.ts",
     "src/**/__snapshots__/*.ts",
     "src/**/*.test.ts",
     "src/**/*.mock.ts",
