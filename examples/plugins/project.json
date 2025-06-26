@@ -29,12 +29,12 @@
         "reportsDirectory": "../../coverage/examples-plugins/unit-tests"
       }
     },
-    "integration-test": {
+    "int-test": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "configFile": "examples/plugins/vite.config.integration.ts",
-        "reportsDirectory": "../../coverage/examples-plugins/integration-tests"
+        "configFile": "examples/plugins/vite.config.int.ts",
+        "reportsDirectory": "../../coverage/examples-plugins/int-tests"
       }
     },
     "run-collect": {

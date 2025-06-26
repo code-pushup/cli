@@ -21,7 +21,7 @@ jobs:
           - plugin-coverage
           - plugin-js-packages
           - plugin-lighthouse
-        scope: [unit, integration]
+        scope: [unit, int]
     name: Update code coverage
     runs-on: ubuntu-latest
     steps:

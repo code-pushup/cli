@@ -31,10 +31,10 @@
         "configFile": "packages/plugin-eslint/vite.config.unit.ts"
       }
     },
-    "integration-test": {
+    "int-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/plugin-eslint/vite.config.integration.ts"
+        "configFile": "packages/plugin-eslint/vite.config.int.ts"
       }
     }
   },

@@ -10,6 +10,6 @@
     "vite.config.unit.ts",
     "src/vitest.d.ts",
     "src/**/*.unit.test.ts",
-    "src/**/*.integration.test.ts"
+    "src/**/*.int.test.ts"
   ]
 }

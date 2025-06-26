@@ -15,11 +15,11 @@ export default defineConfig({
     poolOptions: { threads: { singleThread: true } },
     coverage: {
       reporter: ['text', 'lcov'],
-      reportsDirectory: '../../coverage/core/integration-tests',
+      reportsDirectory: '../../coverage/core/int-tests',
       exclude: ['mocks/**', '**/types.ts'],
     },
     environment: 'node',
-    include: ['src/**/*.integration.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    include: ['src/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     globalSetup: ['../../global-setup.ts'],
     setupFiles: [
       '../../testing/test-setup/src/lib/console.mock.ts',

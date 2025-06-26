@@ -30,10 +30,10 @@
         "configFile": "packages/create-cli/vite.config.unit.ts"
       }
     },
-    "integration-test": {
+    "int-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/create-cli/vite.config.integration.ts"
+        "configFile": "packages/create-cli/vite.config.int.ts"
       }
     },
     "exec-node": {
