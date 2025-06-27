@@ -4,5 +4,5 @@
     "outDir": "../../dist/out-tsc",
     "types": ["vitest/globals", "vitest/importMeta", "vite/client", "node"]
   },
-  "include": ["vite.config.unit.ts", "src/**/*.unit.test.ts"]
+  "include": ["vitest.unit.config.ts", "src/**/*.unit.test.ts"]
 }

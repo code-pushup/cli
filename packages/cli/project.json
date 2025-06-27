@@ -27,13 +27,13 @@
     "unit-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/cli/vite.config.unit.ts"
+        "configFile": "packages/cli/vitest.unit.config.ts"
       }
     },
-    "integration-test": {
+    "int-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/cli/vite.config.integration.ts"
+        "configFile": "packages/cli/vitest.int.config.ts"
       }
     },
     "run-help": {

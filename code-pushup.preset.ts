@@ -178,11 +178,10 @@ export const coverageCoreConfigNx = async (
   if (projectName) {
     throw new Error('coverageCoreConfigNx for single projects not implemented');
   }
-  const targetNames = ['unit-test', 'integration-test'];
+  const targetNames = ['unit-test', 'int-test'];
   const targetArgs = [
     '-t',
-    'unit-test',
-    'integration-test',
+    ...targetNames,
     '--coverage.enabled',
     '--skipNxCache',
   ];

@@ -28,13 +28,13 @@
     "unit-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/plugin-jsdocs/vite.config.unit.ts"
+        "configFile": "packages/plugin-jsdocs/vitest.unit.config.ts"
       }
     },
-    "integration-test": {
+    "int-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/plugin-jsdocs/vite.config.integration.ts"
+        "configFile": "packages/plugin-jsdocs/vitest.int.config.ts"
       }
     }
   }

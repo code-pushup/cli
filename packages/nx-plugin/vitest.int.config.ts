@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases.js';
 
 export default defineConfig({
-  cacheDir: '../../node_modules/.vite/utils',
+  cacheDir: '../../node_modules/.vite/nx-plugin',
   test: {
     reporters: ['basic'],
     globals: true,
@@ -15,14 +15,12 @@ export default defineConfig({
     poolOptions: { threads: { singleThread: true } },
     coverage: {
       reporter: ['text', 'lcov'],
-      reportsDirectory: '../../coverage/utils/integration-tests',
-      exclude: ['mocks/**', 'perf/**', '**/types.ts'],
+      reportsDirectory: '../../coverage/nx-plugin/int-tests',
+      exclude: ['mocks/**', '**/types.ts', '**/__snapshots__/**'],
     },
     environment: 'node',
-    include: ['src/**/*.integration.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    globalSetup: ['../../global-setup.ts'],
+    include: ['src/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     setupFiles: [
-      '../../testing/test-setup/src/lib/cliui.mock.ts',
       '../../testing/test-setup/src/lib/console.mock.ts',
       '../../testing/test-setup/src/lib/reset.mocks.ts',
     ],

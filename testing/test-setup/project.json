@@ -17,7 +17,7 @@
     "unit-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "testing/test-setup/vite.config.unit.ts"
+        "configFile": "testing/test-setup/vitest.unit.config.ts"
       }
     },
     "lint": {

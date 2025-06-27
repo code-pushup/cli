@@ -25,16 +25,16 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "configFile": "examples/plugins/vite.config.unit.ts",
+        "configFile": "examples/plugins/vitest.unit.config.ts",
         "reportsDirectory": "../../coverage/examples-plugins/unit-tests"
       }
     },
-    "integration-test": {
+    "int-test": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "configFile": "examples/plugins/vite.config.integration.ts",
-        "reportsDirectory": "../../coverage/examples-plugins/integration-tests"
+        "configFile": "examples/plugins/vitest.int.config.ts",
+        "reportsDirectory": "../../coverage/examples-plugins/int-tests"
       }
     },
     "run-collect": {
