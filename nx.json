@@ -91,7 +91,10 @@
       "options": {
         "environments": {
           "environmentsDir": "tmp/e2e",
-          "targetNames": ["e2e"]
+          "targetNames": ["e2e"],
+          "inferredTargets": {
+            "e2e": "e2e-test"
+          }
         },
         "packages": {
           "filterByTags": ["publishable"]
