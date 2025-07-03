@@ -2,26 +2,24 @@ import { createRequire } from 'node:module';
 import type { PluginConfig } from '@code-pushup/models';
 import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
 import { normalizeFlags } from './normalize-flags.js';
-import {
-  LIGHTHOUSE_GROUPS,
-  LIGHTHOUSE_NAVIGATION_AUDITS,
-} from './runner/constants.js';
+import { normalizeUrlInput, processAuditsAndGroups } from './processing.js';
 import { createRunnerFunction } from './runner/runner.js';
-import type { LighthouseOptions } from './types.js';
-import { markSkippedAuditsAndGroups } from './utils.js';
+import type { LighthouseOptions, LighthouseUrls } from './types.js';
 
 export function lighthousePlugin(
-  url: string,
+  urls: LighthouseUrls,
   flags?: LighthouseOptions,
 ): PluginConfig {
   const { skipAudits, onlyAudits, onlyCategories, ...unparsedFlags } =
     normalizeFlags(flags ?? {});
 
-  const { audits, groups } = markSkippedAuditsAndGroups(
-    LIGHTHOUSE_NAVIGATION_AUDITS,
-    LIGHTHOUSE_GROUPS,
-    { skipAudits, onlyAudits, onlyCategories },
-  );
+  const normalizedUrls = normalizeUrlInput(urls);
+
+  const { audits, groups } = processAuditsAndGroups(normalizedUrls, {
+    skipAudits,
+    onlyAudits,
+    onlyCategories,
+  });
 
   const packageJson = createRequire(import.meta.url)(
     '../../package.json',
@@ -35,7 +33,7 @@ export function lighthousePlugin(
     icon: 'lighthouse',
     audits,
     groups,
-    runner: createRunnerFunction(url, {
+    runner: createRunnerFunction(normalizedUrls, {
       skipAudits,
       onlyAudits,
       onlyCategories,

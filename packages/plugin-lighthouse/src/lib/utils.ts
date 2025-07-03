@@ -1,14 +1,8 @@
 import type { Audit, CategoryRef, Group } from '@code-pushup/models';
 import { toArray } from '@code-pushup/utils';
-import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
+import { LIGHTHOUSE_GROUP_SLUGS, LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
 import type { LighthouseCliFlags } from './runner/types.js';
-
-export type LighthouseGroupSlugs =
-  | 'performance'
-  | 'accessibility'
-  | 'best-practices'
-  | 'seo'
-  | 'pwa';
+import type { LighthouseGroupSlugs } from './types.js';
 
 export function lighthouseGroupRef(
   groupSlug: LighthouseGroupSlugs,
@@ -138,4 +132,13 @@ export function markSkippedAuditsAndGroups(
     audits: markedAudits,
     groups: fullyMarkedGroups,
   };
+}
+
+export function isLighthouseGroupSlug(
+  group: unknown,
+): group is LighthouseGroupSlugs {
+  return (
+    typeof group === 'string' &&
+    LIGHTHOUSE_GROUP_SLUGS.includes(group as LighthouseGroupSlugs)
+  );
 }
