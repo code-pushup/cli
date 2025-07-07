@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { toolCommandSchema } from '@code-pushup/models';
 
 export const coverageTypeSchema = z.enum(['function', 'branch', 'line']);
 export type CoverageType = z.infer<typeof coverageTypeSchema>;
