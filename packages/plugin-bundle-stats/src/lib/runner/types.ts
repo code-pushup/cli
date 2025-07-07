@@ -8,19 +8,20 @@ export type MinMax = [number, number];
 
 export type PatternList = readonly string[];
 
-export type BundleStatsConfig = Pick<
-  Audit,
-  'title' | 'slug' | 'description'
-> & {
+export type ArtefactGroupingOptions = {
   include?: string[];
   exclude?: string[];
-  thresholds: {
-    totalSize: MinMax;
-    artefactSize?: MinMax;
-  };
   includeInputs?: string[];
   excludeInputs?: string[];
 };
+
+export type BundleStatsConfig = Pick<Audit, 'title' | 'slug' | 'description'> &
+  ArtefactGroupingOptions & {
+    thresholds: {
+      totalSize: MinMax;
+      artefactSize?: MinMax;
+    };
+  };
 
 export interface GroupingOptions {
   name: string;
@@ -35,7 +36,6 @@ export interface PruningOptions {
   maxDepth?: number;
 }
 
-// Legacy interfaces - keeping for backwards compatibility
 export interface MinimalBundleStats {
   name: string;
   total: number;
@@ -56,4 +56,11 @@ export interface ModuleBundleStats {
 export interface BundleStatsAuditData {
   total: number;
   chunks: MinimalBundleStats[];
+}
+
+export interface GroupingRule {
+  name: string;
+  patterns: PatternList;
+  icon?: string;
+  depth?: number;
 }

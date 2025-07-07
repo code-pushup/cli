@@ -4,7 +4,7 @@ import type {
   BundleStatsNode,
   ChunkNode,
   GroupNode,
-} from './bundle-stats.types.js';
+} from '../unify/bundle-stats.types.js';
 import { type PruneOptions, applyGroupingToTree, prune } from './reduce.js';
 
 describe('prune', () => {

@@ -3,7 +3,7 @@ import type {
   BundleStatsNode,
   BundleStatsTree,
   SupportedImportKind,
-} from '../processing/bundle-stats.visitor.js';
+} from '../unify/bundle-stats.types.js';
 
 // Enhanced icon mappings for different import types and entry points
 const IMPORT_TYPE_ICONS = {
@@ -153,7 +153,7 @@ export const bytes = (node: BundleStatsNode): number => {
     node.values.type === 'asset' ||
     node.values.type === 'group'
   ) {
-    return node.values.bytes;
+    return node.values.bytes || 0;
   }
 
   if (node.values.type === 'import') {

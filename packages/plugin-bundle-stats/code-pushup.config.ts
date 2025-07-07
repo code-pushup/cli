@@ -7,7 +7,6 @@ const config = {
       generateArtefacts: {
         command: 'npm',
         args: ['run', 'build:stats'],
-        cwd: './packages/plugin-bundle-stats/mocks/fixtures/angular-minimal',
       },
       artefact:
         // minimal angular example
@@ -17,15 +16,17 @@ const config = {
       bundler: 'esbuild',
       configs: [
         {
+          slug: 'initial-bundles',
           title: 'Initial Bundles',
           include: ['main-*.js', 'polyfills-*.js', '*.css'],
           thresholds: {
             totalSize: [300 * 1024, 1 * 1024 * 1024],
-            artefactSize: 500 * 1024,
+            artefactSize: [100 * 1024, 500 * 1024],
           },
         },
 
         {
+          slug: 'shared-chunks',
           title: 'Shared Chunks',
           include: ['**/chunk-*.js'],
           thresholds: {
@@ -33,6 +34,7 @@ const config = {
           },
         },
         {
+          slug: 'css-assets',
           title: 'CSS Assets',
           include: ['**/*.css'],
           thresholds: {

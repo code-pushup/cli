@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import type { BundleStatsNode } from '../unify/bundle-stats.types.js';
 import { short } from './formatting.js';
-import type { BundleStatsNode } from './processing/bundle-stats.types.js';
-import { formatTree, prune } from './processing/reduce.js';
+import { formatTree, prune } from './reduce.js';
 
 describe('formatting utilities', () => {
   describe('short', () => {

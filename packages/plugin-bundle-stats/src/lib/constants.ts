@@ -1,11 +1,10 @@
-import type { PruningOptions } from './bundle-stats-plugin.js';
-import type { GroupingRule } from './runner/types.js';
+import type { GroupingOptions, PruningOptions } from './runner/types.js';
 
 /**
  * Default grouping rules for bundle stats analysis.
  * These rules help categorize and organize bundle assets by common patterns.
  */
-export const DEFAULT_GROUPING: GroupingRule[] = [
+export const DEFAULT_GROUPING: GroupingOptions[] = [
   {
     name: '@angular/*',
     patterns: ['**/node_modules/@angular/**'],
@@ -33,3 +32,8 @@ export const DEFAULT_PRUNING: PruningOptions = {
   startDepth: 0,
   maxDepth: 2,
 };
+
+/**
+ * Plugin slug for bundle stats plugin
+ */
+export const BUNDLE_STATS_PLUGIN_SLUG = 'bundle-stats';

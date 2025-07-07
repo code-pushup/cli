@@ -1,9 +1,12 @@
 import { createRequire } from 'node:module';
 import type { PluginConfig } from '@code-pushup/models';
-import { BUNDLE_STATS_PLUGIN_SLUG } from './constants.js';
+import {
+  BUNDLE_STATS_PLUGIN_SLUG,
+  DEFAULT_GROUPING,
+  DEFAULT_PRUNING,
+} from './constants.js';
 import { normalizeBundleStatsOptions } from './normalize.js';
 import { bundleStatsRunner } from './runner/bundle-stats-runner.js';
-import { DEFAULT_GROUPING, DEFAULT_PRUNING } from './runner/constants.js';
 import { type BundleStatsConfig } from './runner/types.js';
 import type { PluginOptions } from './types.js';
 

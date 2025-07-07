@@ -1,7 +1,10 @@
 import { minimatch } from 'minimatch';
 import { formatBytes } from '@code-pushup/utils';
 import { type GroupingRule } from '../types.js';
-import type { BundleStatsNode, GroupNode } from './bundle-stats.types.js';
+import type {
+  BundleStatsNode,
+  GroupNode,
+} from '../unify/bundle-stats.types.js';
 
 export interface PrunedNode {
   name: string;
@@ -230,64 +233,57 @@ function findMatchingRule(
   rules: GroupingRule[],
   depth: number,
 ): GroupingRule | null {
-  const path = node.values.path || '';
-  const name = node.name || '';
+  const nodePath = node.values.path || node.name;
 
-  return (
-    rules.find(
-      rule =>
-        (rule.depth === undefined || rule.depth === depth) &&
-        rule.patterns.some(pattern =>
-          [path, name]
-            .filter(Boolean)
-            .some(testPath => minimatch(testPath, pattern)),
-        ),
-    ) || null
-  );
+  for (const rule of rules) {
+    if (rule.depth !== undefined && rule.depth !== depth) continue;
+    if (
+      rule.patterns.some((pattern: string) =>
+        minimatch(nodePath, pattern, { matchBase: true }),
+      )
+    ) {
+      return rule;
+    }
+  }
+  return null;
 }
 
 function extractGroupName(node: BundleStatsNode, rule: GroupingRule): string {
-  const path = node.values.path || '';
-  const ruleName = rule.name;
+  const nodePath = node.values.path || node.name;
 
-  // If the rule name doesn't contain wildcards, return it as-is
-  if (!ruleName.includes('*')) {
-    return ruleName;
-  }
-
-  // Find which pattern matched the path
-  const matchingPattern = rule.patterns.find(pattern =>
-    minimatch(path, pattern),
+  // Try to extract specific group name from path using patterns
+  const matchingPattern = rule.patterns.find((pattern: string) =>
+    minimatch(nodePath, pattern, { matchBase: true }),
   );
 
   if (!matchingPattern) {
-    return ruleName;
+    return rule.name;
   }
 
   // Extract the relevant segment from the path based on the rule template
   const extractedSegment = extractSegmentFromPath(
-    path,
+    nodePath,
     matchingPattern,
-    ruleName,
+    rule.name,
   );
 
   if (!extractedSegment) {
-    return ruleName;
+    return rule.name;
   }
 
   // Special handling for @*/* rule with regular packages
-  if (ruleName === '@*/*') {
+  if (rule.name === '@*/*') {
     // Check if this is a regular package (doesn't contain '/')
     if (!extractedSegment.includes('/')) {
       // Return just the package name for regular packages
       return extractedSegment;
     }
     // For scoped packages, use the template
-    return ruleName.replace(/\*/g, extractedSegment);
+    return rule.name.replace(/\*/g, extractedSegment);
   }
 
   // Replace wildcards in the rule name with the extracted segment
-  return ruleName.replace(/\*/g, extractedSegment);
+  return rule.name.replace(/\*/g, extractedSegment);
 }
 
 /**
