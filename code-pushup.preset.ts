@@ -3,7 +3,6 @@ import type {
   CategoryConfig,
   CoreConfig,
 } from './packages/models/src/index.js';
-import bundleStatsPlugin from './packages/plugin-bundle-stats/src/index.js';
 import coveragePlugin, {
   getNxCoveragePaths,
 } from './packages/plugin-coverage/src/index.js';
@@ -203,7 +202,3 @@ export const coverageCoreConfigNx = async (
     categories: coverageCategories,
   };
 };
-
-export const bundleStatsCoreConfig = async (): Promise<CoreConfig> => ({
-  plugins: [await bundleStatsPlugin()],
-});

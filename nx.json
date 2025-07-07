@@ -34,11 +34,6 @@
         "packageRoot": "dist/{projectRoot}",
         "registry": "https://registry.npmjs.org/"
       }
-    },
-    "@angular/build:application": {
-      "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
     }
   },
   "namedInputs": {
@@ -64,14 +59,7 @@
     "appsDir": "examples",
     "libsDir": "packages"
   },
-  "generators": {
-    "@nx/angular:application": {
-      "e2eTestRunner": "none",
-      "linter": "eslint",
-      "style": "css",
-      "unitTestRunner": "none"
-    }
-  },
+  "generators": {},
   "release": {
     "projects": ["packages/*"],
     "projectsRelationship": "fixed",

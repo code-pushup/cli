@@ -1,8 +1,0 @@
----
-description: general coding instructions
-globs: 
-alwaysApply: false
----
-have good naming instead of comments, do not add comments to the code
-make the code very compact
-when writing tests keep them small and onl write 1 test
