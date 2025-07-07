@@ -1,3 +1,13 @@
+## 0.69.3 (2025-07-07)
+
+### 🩹 Fixes
+
+- **plugin-js-packages:** prevent negative scores in yarn v2+ workspaces ([b6f96330](https://github.com/code-pushup/cli/commit/b6f96330))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.69.2 (2025-06-16)
 
 ### 🩹 Fixes
