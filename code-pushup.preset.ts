@@ -2,7 +2,6 @@
 import type {
   CategoryConfig,
   CoreConfig,
-  ToolCommandConfig,
 } from './packages/models/src/index.js';
 import coveragePlugin, {
   getNxCoveragePaths,
@@ -196,7 +195,7 @@ export const coverageCoreConfigNx = async (
             projectName ? `run --project ${projectName}` : 'run-many',
             ...targetArgs,
           ],
-        } satisfies ToolCommandConfig,
+        },
         reports: await getNxCoveragePaths(targetNames),
       }),
     ],
