@@ -34,7 +34,7 @@ export const yarnv2PackageManager: PackageManager = {
     ignoreExitCode: true,
   },
   outdated: {
-    commandArgs: COMMON_OUTDATED_ARGS,
+    commandArgs: [...COMMON_OUTDATED_ARGS, '--workspace=.'], // filter out other packages in case of Yarn workspaces
     unifyResult: yarnv2ToOutdatedResult,
   },
 };

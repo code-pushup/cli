@@ -23,6 +23,7 @@ export type Yarnv2VersionOverview = {
   latest: string;
   name: string;
   type: DependencyGroupLong;
+  workspace?: string;
 };
 
 export type Yarnv2OutdatedResultJson = Yarnv2VersionOverview[];
