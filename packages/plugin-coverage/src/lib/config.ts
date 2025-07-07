@@ -27,7 +27,18 @@ export const coverageResultSchema = z.union([
 export type CoverageResult = z.infer<typeof coverageResultSchema>;
 
 export const coveragePluginConfigSchema = z.object({
-  coverageToolCommand: toolCommandSchema.optional(),
+  coverageToolCommand: z
+    .object({
+      command: z
+        .string({ description: 'Command to run coverage tool.' })
+        .min(1),
+      args: z
+        .array(z.string(), {
+          description: 'Arguments to be passed to the coverage tool.',
+        })
+        .optional(),
+    })
+    .optional(),
   continueOnCommandFail: z
     .boolean({
       description:
