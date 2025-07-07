@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { toolCommandSchema } from '@code-pushup/models';
 
 export const coverageTypeSchema = z.enum(['function', 'branch', 'line']);
 export type CoverageType = z.infer<typeof coverageTypeSchema>;
@@ -26,18 +27,7 @@ export const coverageResultSchema = z.union([
 export type CoverageResult = z.infer<typeof coverageResultSchema>;
 
 export const coveragePluginConfigSchema = z.object({
-  coverageToolCommand: z
-    .object({
-      command: z
-        .string({ description: 'Command to run coverage tool.' })
-        .min(1),
-      args: z
-        .array(z.string(), {
-          description: 'Arguments to be passed to the coverage tool.',
-        })
-        .optional(),
-    })
-    .optional(),
+  coverageToolCommand: toolCommandSchema.optional(),
   continueOnCommandFail: z
     .boolean({
       description:
