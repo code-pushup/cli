@@ -135,4 +135,4 @@ export { uploadConfigSchema, type UploadConfig } from './lib/upload-config.js';
 export {
   artifactGenerationCommand,
   pluginArtefactOptionsSchema,
-} from './lib/configuration';
+} from './lib/configuration.js';
