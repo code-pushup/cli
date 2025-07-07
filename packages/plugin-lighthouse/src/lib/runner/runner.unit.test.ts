@@ -2,7 +2,6 @@ import type { Config } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
 import { expect, vi } from 'vitest';
-import { osAgnosticPath } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
 import { DEFAULT_CLI_FLAGS } from './constants.js';
 import { createRunnerFunction } from './runner.js';
@@ -139,7 +138,7 @@ describe('createRunnerFunction', () => {
     expect(runLighthouse).toHaveBeenCalledWith(
       'https://localhost:8080',
       expect.objectContaining({
-        outputPath: osAgnosticPath(
+        outputPath: expect.pathToMatch(
           '.code-pushup/lighthouse/lighthouse-report-1.json',
         ),
       }),
@@ -148,7 +147,7 @@ describe('createRunnerFunction', () => {
     expect(runLighthouse).toHaveBeenCalledWith(
       'https://localhost:8081',
       expect.objectContaining({
-        outputPath: osAgnosticPath(
+        outputPath: expect.pathToMatch(
           '.code-pushup/lighthouse/lighthouse-report-2.json',
         ),
       }),
@@ -219,7 +218,7 @@ describe('createRunnerFunction', () => {
     expect(runLighthouse).toHaveBeenCalledWith(
       'https://localhost:8080',
       expect.objectContaining({
-        outputPath: osAgnosticPath(
+        outputPath: expect.pathToMatch(
           '.code-pushup/lighthouse/lighthouse-report-1.json',
         ),
       }),
@@ -228,7 +227,7 @@ describe('createRunnerFunction', () => {
     expect(runLighthouse).toHaveBeenCalledWith(
       'https://localhost:8081',
       expect.objectContaining({
-        outputPath: osAgnosticPath(
+        outputPath: expect.pathToMatch(
           '.code-pushup/lighthouse/lighthouse-report-2.json',
         ),
       }),
