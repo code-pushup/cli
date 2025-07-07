@@ -7,9 +7,9 @@
   },
   "include": ["src/**/*.ts"],
   "exclude": [
-    "vite.config.unit.ts",
+    "vitest.unit.config.ts",
     "src/vitest.d.ts",
     "src/**/*.unit.test.ts",
-    "src/**/*.integration.test.ts"
+    "src/**/*.int.test.ts"
   ]
 }

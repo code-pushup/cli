@@ -51,7 +51,7 @@
       "!{projectRoot}/src/test-setup.[jt]s",
       "!{projectRoot}/test-setup.[jt]s",
       "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
-      "!{projectRoot}/vite.config.@(unit|integration|e2e).[jt]s",
+      "!{projectRoot}/vitest.@(unit|int|e2e).config.[jt]s",
       "!{projectRoot}/@(test|mocks)/**/*",
       "!{projectRoot}/perf/**/*",
       "!{projectRoot}/tools/**/*",
@@ -103,7 +103,10 @@
       "options": {
         "environments": {
           "environmentsDir": "tmp/e2e",
-          "targetNames": ["e2e"]
+          "targetNames": ["e2e"],
+          "inferredTargets": {
+            "e2e": "e2e-test"
+          }
         },
         "packages": {
           "filterByTags": ["publishable"]

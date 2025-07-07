@@ -37,7 +37,7 @@ body:
       placeholder: |
         For example:
         - [ ] All packages have a comprehensive documentation in place.
-        - [ ] All unit, integration and e2e tests for the plugin.
+        - [ ] All unit, integration and E2E tests for the plugin.
         - [ ] Cross references to relevant models or files are added as links.
     validations:
       required: true

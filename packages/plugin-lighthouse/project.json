@@ -27,13 +27,13 @@
     "unit-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/plugin-lighthouse/vite.config.unit.ts"
+        "configFile": "packages/plugin-lighthouse/vitest.unit.config.ts"
       }
     },
-    "integration-test": {
+    "int-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/plugin-lighthouse/vite.config.integration.ts"
+        "configFile": "packages/plugin-lighthouse/vitest.int.config.ts"
       }
     }
   },

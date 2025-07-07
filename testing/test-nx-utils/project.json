@@ -24,7 +24,7 @@
     "unit-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "testing/test-nx-utils/vite.config.unit.ts"
+        "configFile": "testing/test-nx-utils/vitest.unit.config.ts"
       }
     }
   },

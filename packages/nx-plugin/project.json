@@ -51,13 +51,13 @@
     "unit-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/nx-plugin/vite.config.unit.ts"
+        "configFile": "packages/nx-plugin/vitest.unit.config.ts"
       }
     },
-    "integration-test": {
+    "int-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/nx-plugin/vite.config.integration.ts"
+        "configFile": "packages/nx-plugin/vitest.int.config.ts"
       }
     }
   },

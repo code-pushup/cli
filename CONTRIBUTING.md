@@ -45,10 +45,10 @@ npx nx graph
 npx nx run-many -t unit-test
 
 # run integration tests for all projects
-npx nx run-many -t integration-test
+npx nx run-many -t int-test
 
 # run E2E tests for CLI
-npx nx e2e cli-e2e
+npx nx e2e-test cli-e2e
 
 # build CLI along with packages it depends on
 npx nx build cli
