@@ -44,7 +44,6 @@ describe('pluginArtefactOptionsSchema', () => {
       success: true,
       data: {
         artefactsPaths: 'dist/report.json',
-        generateArtefacts: undefined,
       },
     });
   });
@@ -55,7 +54,6 @@ describe('pluginArtefactOptionsSchema', () => {
       success: true,
       data: {
         artefactsPaths: ['dist/report.json', 'dist/summary.json'],
-        generateArtefacts: undefined,
       },
     });
   });

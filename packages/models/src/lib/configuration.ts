@@ -18,7 +18,7 @@ export type ArtefactGenerationCommand = z.infer<
 
 export const pluginArtefactOptionsSchema = z.object({
   generateArtefacts: artifactGenerationCommand.optional(),
-  artefactsPaths: z.union([z.string(), z.array(z.string())]),
+  artefactsPaths: z.union([z.string(), z.array(z.string()).min(1)]),
 });
 
 export type PluginArtefactOptions = z.infer<typeof pluginArtefactOptionsSchema>;
