@@ -1,5 +1,16 @@
 # Code PushUp models reference
 
+## ArtifactGenerationCommand
+
+_Object containing the following properties:_
+
+| Property           | Description                                                | Type                       |
+| :----------------- | :--------------------------------------------------------- | :------------------------- |
+| **`command`** (\*) | Generate artifact files                                    | `string` (_min length: 1_) |
+| `args`             | Arguments to be passed to the artifact generation command. | `Array<string>`            |
+
+_(\*) Required._
+
 ## AuditDetails
 
 Detailed information
@@ -1227,14 +1238,14 @@ _Object containing the following properties:_
 
 _All properties are optional._
 
-## PluginArtefactOptions
+## PluginArtifactOptions
 
 _Object containing the following properties:_
 
-| Property                  | Type                        |
-| :------------------------ | :-------------------------- |
-| `generateArtefacts`       | [ToolCommand](#toolcommand) |
-| **`artefactsPaths`** (\*) | `string \| Array<string>`   |
+| Property                  | Type                                                    |
+| :------------------------ | :------------------------------------------------------ |
+| `generateArtifacts`       | [ArtifactGenerationCommand](#artifactgenerationcommand) |
+| **`artifactsPaths`** (\*) | `string` _or_ `Array<string>` (_min: 1_)                |
 
 _(\*) Required._
 
@@ -1441,17 +1452,6 @@ _Object record with dynamic keys:_
 Primitive row
 
 _Array of [TableCellValue](#tablecellvalue) (\_optional & nullable_) items.\_
-
-## ToolCommand
-
-_Object containing the following properties:_
-
-| Property           | Description                         | Type                       |
-| :----------------- | :---------------------------------- | :------------------------- |
-| **`command`** (\*) | Command to run the tool.            | `string` (_min length: 1_) |
-| `args`             | Arguments to be passed to the tool. | `Array<string>`            |
-
-_(\*) Required._
 
 ## Tree
 

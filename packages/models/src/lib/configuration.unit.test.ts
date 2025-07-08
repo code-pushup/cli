@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   artifactGenerationCommand,
-  pluginArtefactOptionsSchema,
+  pluginArtifactOptionsSchema,
 } from './configuration.js';
 
 describe('artifactGenerationCommand', () => {
@@ -37,61 +37,61 @@ describe('artifactGenerationCommand', () => {
   });
 });
 
-describe('pluginArtefactOptionsSchema', () => {
-  it('should validate with only artefactsPaths as string', () => {
-    const data = { artefactsPaths: 'dist/report.json' };
-    expect(pluginArtefactOptionsSchema.safeParse(data)).toStrictEqual({
+describe('pluginArtifactOptionsSchema', () => {
+  it('should validate with only artifactsPaths as string', () => {
+    const data = { artifactsPaths: 'dist/report.json' };
+    expect(pluginArtifactOptionsSchema.safeParse(data)).toStrictEqual({
       success: true,
       data: {
-        artefactsPaths: 'dist/report.json',
+        artifactsPaths: 'dist/report.json',
       },
     });
   });
 
-  it('should validate with artefactsPaths as array of strings', () => {
-    const data = { artefactsPaths: ['dist/report.json', 'dist/summary.json'] };
-    expect(pluginArtefactOptionsSchema.safeParse(data)).toStrictEqual({
+  it('should validate with artifactsPaths as array of strings', () => {
+    const data = { artifactsPaths: ['dist/report.json', 'dist/summary.json'] };
+    expect(pluginArtifactOptionsSchema.safeParse(data)).toStrictEqual({
       success: true,
       data: {
-        artefactsPaths: ['dist/report.json', 'dist/summary.json'],
+        artifactsPaths: ['dist/report.json', 'dist/summary.json'],
       },
     });
   });
 
-  it('should fail if artefactsPaths is an empty array', () => {
-    const data = { artefactsPaths: [] };
-    expect(pluginArtefactOptionsSchema.safeParse(data).success).toBe(false);
+  it('should fail if artifactsPaths is an empty array', () => {
+    const data = { artifactsPaths: [] };
+    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
   });
 
-  it('should validate with generateArtefacts and artefactsPaths', () => {
+  it('should validate with generateArtifacts and artifactsPaths', () => {
     const data = {
-      generateArtefacts: { command: 'npm', args: ['run', 'build'] },
-      artefactsPaths: ['dist/report.json'],
+      generateArtifacts: { command: 'npm', args: ['run', 'build'] },
+      artifactsPaths: ['dist/report.json'],
     };
-    expect(pluginArtefactOptionsSchema.safeParse(data)).toStrictEqual({
+    expect(pluginArtifactOptionsSchema.safeParse(data)).toStrictEqual({
       success: true,
       data: {
-        generateArtefacts: { command: 'npm', args: ['run', 'build'] },
-        artefactsPaths: ['dist/report.json'],
+        generateArtifacts: { command: 'npm', args: ['run', 'build'] },
+        artifactsPaths: ['dist/report.json'],
       },
     });
   });
 
-  it('should fail if artefactsPaths is missing', () => {
-    const data = { generateArtefacts: { command: 'npm' } };
-    expect(pluginArtefactOptionsSchema.safeParse(data).success).toBe(false);
+  it('should fail if artifactsPaths is missing', () => {
+    const data = { generateArtifacts: { command: 'npm' } };
+    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
   });
 
-  it('should fail if artefactsPaths is not string or array of strings', () => {
-    const data = { artefactsPaths: 123 };
-    expect(pluginArtefactOptionsSchema.safeParse(data).success).toBe(false);
+  it('should fail if artifactsPaths is not string or array of strings', () => {
+    const data = { artifactsPaths: 123 };
+    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
   });
 
-  it('should fail if generateArtefacts is invalid', () => {
+  it('should fail if generateArtifacts is invalid', () => {
     const data = {
-      generateArtefacts: { command: '' },
-      artefactsPaths: 'dist/report.json',
+      generateArtifacts: { command: '' },
+      artifactsPaths: 'dist/report.json',
     };
-    expect(pluginArtefactOptionsSchema.safeParse(data).success).toBe(false);
+    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
   });
 });
