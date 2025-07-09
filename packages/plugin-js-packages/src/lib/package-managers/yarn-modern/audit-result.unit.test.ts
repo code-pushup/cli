@@ -1,12 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import type { AuditResult } from '../../runner/audit/types.js';
-import { yarnv2ToAuditResult } from './audit-result.js';
-import type { Yarnv2AuditResultJson } from './types.js';
+import { yarnBerryToAuditResult } from './audit-result.js';
+import type {
+  YarnBerry2or3AuditResultJson,
+  YarnBerry4AuditVulnerability,
+} from './types.js';
 
-describe('yarnv2ToAuditResult', () => {
+describe('yarnBerryToAuditResult', () => {
   it('should transform Yarn v2 audit to unified audit result', () => {
     expect(
-      yarnv2ToAuditResult(
+      yarnBerryToAuditResult(
         JSON.stringify({
           advisories: {
             '123': {
@@ -28,7 +31,7 @@ describe('yarnv2ToAuditResult', () => {
               info: 0,
             },
           },
-        } satisfies Yarnv2AuditResultJson),
+        } satisfies YarnBerry2or3AuditResultJson),
       ),
     ).toEqual<AuditResult>({
       vulnerabilities: [
@@ -46,25 +49,61 @@ describe('yarnv2ToAuditResult', () => {
     });
   });
 
-  it('should return empty report if no vulnerabilities found', () => {
+  it('should transform Yarn v4 audit to unified audit result', () => {
+    const vulnerabilities: YarnBerry4AuditVulnerability[] = [
+      {
+        value: 'express',
+        children: {
+          ID: 1_096_820,
+          Issue: 'Express.js Open Redirect in malformed URLs',
+          URL: 'https://github.com/advisories/GHSA-rv95-896h-c2vc',
+          Severity: 'moderate',
+          'Vulnerable Versions': '<4.19.2',
+          'Tree Versions': ['3.21.2'],
+          Dependents: ['my-project@workspace:.'],
+        },
+      },
+      {
+        value: 'send',
+        children: {
+          ID: 1_100_526,
+          Issue: 'send vulnerable to template injection that can lead to XSS',
+          URL: 'https://github.com/advisories/GHSA-m6fv-jmcg-4jfg',
+          Severity: 'low',
+          'Vulnerable Versions': '<0.19.0',
+          'Tree Versions': ['0.13.0', '0.13.2'],
+          Dependents: ['express@npm:3.21.2', 'serve-static@npm:1.10.3'],
+        },
+      },
+    ];
     expect(
-      yarnv2ToAuditResult(
-        JSON.stringify({
-          advisories: {},
-          metadata: {
-            vulnerabilities: {
-              critical: 0,
-              high: 0,
-              moderate: 0,
-              low: 0,
-              info: 0,
-            },
-          },
-        }),
+      yarnBerryToAuditResult(
+        vulnerabilities
+          .map(vulnerability => `${JSON.stringify(vulnerability)}\n`)
+          .join(''),
       ),
-    ).toStrictEqual({
-      vulnerabilities: [],
-      summary: { critical: 0, high: 0, moderate: 0, low: 0, info: 0, total: 0 },
+    ).toEqual<AuditResult>({
+      vulnerabilities: [
+        {
+          name: 'express',
+          severity: 'moderate',
+          title: 'Express.js Open Redirect in malformed URLs',
+          url: 'https://github.com/advisories/GHSA-rv95-896h-c2vc',
+          id: 1_096_820,
+          versionRange: '<4.19.2',
+          directDependency: true,
+        },
+        {
+          name: 'send',
+          severity: 'low',
+          title: 'send vulnerable to template injection that can lead to XSS',
+          url: 'https://github.com/advisories/GHSA-m6fv-jmcg-4jfg',
+          id: 1_100_526,
+          versionRange: '<0.19.0',
+          directDependency: '',
+        },
+      ],
+      summary: { critical: 0, high: 0, moderate: 1, low: 1, info: 0, total: 2 },
     });
   });
 });

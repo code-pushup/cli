@@ -13,15 +13,15 @@ import {
   outdatedtoFieldMapper,
 } from './constants.js';
 import {
-  type Yarnv1FieldName,
-  type Yarnv1OutdatedResultJson,
-  yarnv1FieldNames,
+  type YarnClassicFieldName,
+  type YarnClassicOutdatedResultJson,
+  yarnClassicFieldNames,
 } from './types.js';
 
-export function yarnv1ToOutdatedResult(output: string): OutdatedResult {
-  const yarnv1Outdated = fromJsonLines<Yarnv1OutdatedResultJson>(output);
-  const fields = yarnv1Outdated[1]?.data.head ?? [];
-  const dependencies = yarnv1Outdated[1]?.data.body ?? [];
+export function yarnClassicToOutdatedResult(output: string): OutdatedResult {
+  const yarnOutdated = fromJsonLines<YarnClassicOutdatedResultJson>(output);
+  const fields = yarnOutdated[1]?.data.head ?? [];
+  const dependencies = yarnOutdated[1]?.data.body ?? [];
 
   // no outdated dependencies
   if (dependencies.length === 0) {
@@ -46,7 +46,7 @@ export function yarnv1ToOutdatedResult(output: string): OutdatedResult {
 }
 
 export function validateOutdatedFields(head: string[]) {
-  const relevantFields = head.filter(isYarnv1FieldName);
+  const relevantFields = head.filter(isYarnClassicFieldName);
   if (hasAllRequiredFields(relevantFields)) {
     return true;
   }
@@ -54,16 +54,16 @@ export function validateOutdatedFields(head: string[]) {
   throw new Error(
     `Yarn v1 outdated: Template [${head.join(
       ', ',
-    )}] does not contain all required fields [${yarnv1FieldNames.join(', ')}]`,
+    )}] does not contain all required fields [${yarnClassicFieldNames.join(', ')}]`,
   );
 }
 
-function isYarnv1FieldName(value: string): value is Yarnv1FieldName {
-  const names: readonly string[] = yarnv1FieldNames;
+function isYarnClassicFieldName(value: string): value is YarnClassicFieldName {
+  const names: readonly string[] = yarnClassicFieldNames;
   return names.includes(value);
 }
 
-function hasAllRequiredFields(head: Yarnv1FieldName[]) {
+function hasAllRequiredFields(head: YarnClassicFieldName[]) {
   return REQUIRED_OUTDATED_FIELDS.every(field => head.includes(field));
 }
 
