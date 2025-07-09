@@ -1,3 +1,13 @@
+## 0.69.4 (2025-07-09)
+
+### 🩹 Fixes
+
+- **plugin-js-packages:** parse yarn 4 audit output correctly ([8041d870](https://github.com/code-pushup/cli/commit/8041d870))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.69.3 (2025-07-07)
 
 ### 🩹 Fixes
