@@ -1,10 +1,10 @@
 import { dependencyGroupToLong } from '../../constants.js';
 import { COMMON_AUDIT_ARGS, COMMON_OUTDATED_ARGS } from '../constants.js';
 import type { PackageManager } from '../types.js';
-import { yarnv1ToAuditResult } from './audit-result.js';
-import { yarnv1ToOutdatedResult } from './outdated-result.js';
+import { yarnClassicToAuditResult } from './audit-result.js';
+import { yarnClassicToOutdatedResult } from './outdated-result.js';
 
-export const yarnv1PackageManager: PackageManager = {
+export const yarnClassicPackageManager: PackageManager = {
   slug: 'yarn-classic',
   name: 'Yarn v1',
   command: 'yarn',
@@ -21,10 +21,10 @@ export const yarnv1PackageManager: PackageManager = {
       dependencyGroupToLong[groupDep],
     ],
     ignoreExitCode: true,
-    unifyResult: yarnv1ToAuditResult,
+    unifyResult: yarnClassicToAuditResult,
   },
   outdated: {
     commandArgs: COMMON_OUTDATED_ARGS,
-    unifyResult: yarnv1ToOutdatedResult,
+    unifyResult: yarnClassicToOutdatedResult,
   },
 };

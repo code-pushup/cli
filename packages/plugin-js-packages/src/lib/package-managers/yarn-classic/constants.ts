@@ -1,9 +1,9 @@
 import type { OutdatedDependency } from '../../runner/outdated/types.js';
-import type { Yarnv1FieldName } from './types.js';
+import type { YarnClassicFieldName } from './types.js';
 
 export const outdatedtoFieldMapper: Record<
   keyof OutdatedDependency,
-  Yarnv1FieldName
+  YarnClassicFieldName
 > = {
   name: 'Package',
   current: 'Current',
@@ -12,7 +12,7 @@ export const outdatedtoFieldMapper: Record<
   url: 'URL',
 };
 
-export const REQUIRED_OUTDATED_FIELDS: Yarnv1FieldName[] = [
+export const REQUIRED_OUTDATED_FIELDS: YarnClassicFieldName[] = [
   'Package',
   'Current',
   'Latest',

@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { toJsonLines } from '@code-pushup/utils';
 import type { AuditResult } from '../../runner/audit/types.js';
-import { yarnv1ToAuditResult } from './audit-result.js';
-import type { Yarnv1AuditAdvisory, Yarnv1AuditSummary } from './types.js';
+import { yarnClassicToAuditResult } from './audit-result.js';
+import type {
+  YarnClassicAuditAdvisory,
+  YarnClassicAuditSummary,
+} from './types.js';
 
-describe('yarnv1ToAuditResult', () => {
+describe('yarnClassicToAuditResult', () => {
   it('should transform Yarn v1 audit to unified audit result', () => {
     const advisory = {
       type: 'auditAdvisory',
@@ -19,7 +22,7 @@ describe('yarnv1ToAuditResult', () => {
           url: 'https://github.com/advisories',
         },
       },
-    } satisfies Yarnv1AuditAdvisory;
+    } satisfies YarnClassicAuditAdvisory;
     const summary = {
       type: 'auditSummary',
       data: {
@@ -31,10 +34,10 @@ describe('yarnv1ToAuditResult', () => {
           info: 0,
         },
       },
-    } satisfies Yarnv1AuditSummary;
+    } satisfies YarnClassicAuditSummary;
 
     expect(
-      yarnv1ToAuditResult(toJsonLines([advisory, summary])),
+      yarnClassicToAuditResult(toJsonLines([advisory, summary])),
     ).toEqual<AuditResult>({
       vulnerabilities: [
         {
@@ -57,7 +60,7 @@ describe('yarnv1ToAuditResult', () => {
       data: {},
       type: 'auditAdvisory',
     };
-    expect(() => yarnv1ToAuditResult(toJsonLines([advisory]))).toThrow(
+    expect(() => yarnClassicToAuditResult(toJsonLines([advisory]))).toThrow(
       'no summary found',
     );
   });

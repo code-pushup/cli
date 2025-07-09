@@ -2,16 +2,16 @@ import { fromJsonLines } from '@code-pushup/utils';
 import type { AuditResult, Vulnerability } from '../../runner/audit/types.js';
 import { filterAuditResult } from '../../runner/utils.js';
 import type {
-  Yarnv1AuditAdvisory,
-  Yarnv1AuditResultJson,
-  Yarnv1AuditSummary,
+  YarnClassicAuditAdvisory,
+  YarnClassicAuditResultJson,
+  YarnClassicAuditSummary,
 } from './types.js';
 
-export function yarnv1ToAuditResult(output: string): AuditResult {
-  const yarnv1Result = fromJsonLines<Yarnv1AuditResultJson>(output);
-  const [yarnv1Advisory, yarnv1Summary] = validateYarnv1Result(yarnv1Result);
+export function yarnClassicToAuditResult(output: string): AuditResult {
+  const yarnResult = fromJsonLines<YarnClassicAuditResultJson>(output);
+  const [yarnAdvisories, yarnSummary] = validateYarnAuditResult(yarnResult);
 
-  const vulnerabilities = yarnv1Advisory.map(
+  const vulnerabilities = yarnAdvisories.map(
     ({ data: { resolution, advisory } }): Vulnerability => {
       const { id, path } = resolution;
       const directDependency = path.slice(0, path.indexOf('>'));
@@ -39,8 +39,8 @@ export function yarnv1ToAuditResult(output: string): AuditResult {
   );
 
   const summary = {
-    ...yarnv1Summary.data.vulnerabilities,
-    total: Object.values(yarnv1Summary.data.vulnerabilities).reduce(
+    ...yarnSummary.data.vulnerabilities,
+    total: Object.values(yarnSummary.data.vulnerabilities).reduce(
       (acc, amount) => acc + amount,
       0,
     ),
@@ -50,17 +50,15 @@ export function yarnv1ToAuditResult(output: string): AuditResult {
   return filterAuditResult({ vulnerabilities, summary }, 'id');
 }
 
-function validateYarnv1Result(
-  result: Yarnv1AuditResultJson,
-): [Yarnv1AuditAdvisory[], Yarnv1AuditSummary] {
+function validateYarnAuditResult(
+  result: YarnClassicAuditResultJson,
+): [YarnClassicAuditAdvisory[], YarnClassicAuditSummary] {
   const summary = result.at(-1);
   if (summary?.type !== 'auditSummary') {
     throw new Error('Invalid Yarn v1 audit result - no summary found.');
   }
 
-  const vulnerabilities = result.filter(
-    (item): item is Yarnv1AuditAdvisory => item.type === 'auditAdvisory',
-  );
+  const vulnerabilities = result.filter(item => item.type === 'auditAdvisory');
 
   return [vulnerabilities, summary];
 }

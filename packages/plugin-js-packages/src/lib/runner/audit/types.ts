@@ -9,7 +9,7 @@ export type Vulnerability = {
   severity: PackageAuditLevel;
   versionRange: string;
   directDependency: string | true; // either name of direct dependency this one affects or true
-  fixInformation: string | false; // either guide on how to fix the vulnerability or false
+  fixInformation?: string | false; // either guide on how to fix the vulnerability or false
 };
 export type AuditSummary = Record<PackageAuditLevel | 'total', number>;
 export type AuditResult = {
