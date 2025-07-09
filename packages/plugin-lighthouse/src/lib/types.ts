@@ -30,4 +30,11 @@ export type LighthouseOptions = ExcludeNullableProps<
 
 export type LighthouseGroupSlugs = (typeof LIGHTHOUSE_GROUP_SLUGS)[number];
 
-export type LighthouseUrls = string | string[];
+export type WeightedUrl = Record<string, number>;
+
+export type LighthouseUrls = string | string[] | WeightedUrl;
+
+export type LighthouseContext = {
+  urlCount: number;
+  weights: Record<number, number>;
+};

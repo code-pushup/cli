@@ -13,7 +13,7 @@ export function lighthousePlugin(
   const { skipAudits, onlyAudits, onlyCategories, ...unparsedFlags } =
     normalizeFlags(flags ?? {});
 
-  const normalizedUrls = normalizeUrlInput(urls);
+  const { urls: normalizedUrls, context } = normalizeUrlInput(urls);
 
   const { audits, groups } = processAuditsAndGroups(normalizedUrls, {
     skipAudits,
@@ -39,5 +39,6 @@ export function lighthousePlugin(
       onlyCategories,
       ...unparsedFlags,
     }),
+    context,
   };
 }

@@ -2,48 +2,73 @@ import type { CategoryConfig, Group, PluginConfig } from '@code-pushup/models';
 import { LIGHTHOUSE_GROUP_SLUGS, LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
 import { orderSlug, shouldExpandForUrls } from './processing.js';
 import { LIGHTHOUSE_GROUPS } from './runner/constants.js';
-import type { LighthouseGroupSlugs } from './types.js';
+import type { LighthouseContext, LighthouseGroupSlugs } from './types.js';
 import { isLighthouseGroupSlug } from './utils.js';
 
+/**
+ * Expands and aggregates categories for multi-URL Lighthouse runs.
+ *
+ * - If user categories are provided, expands all refs (groups and audits) for each URL.
+ * - If not, generates categories from plugin groups only.
+ * - Assigns per-URL weights with correct precedence.
+ *
+ * @public
+ * @param plugin - {@link PluginConfig} object with groups and context
+ * @param categories - {@link CategoryConfig} optional user-defined categories
+ * @returns {CategoryConfig[]} - expanded and agregated categories
+ *
+ * @example
+ * const lhPlugin = await lighthousePlugin(urls);
+ * const lhCoreConfig = {
+ *   plugins: [lhPlugin],
+ *   categories: mergeLighthouseCategories(lhPlugin),
+ * };
+ */
 export function mergeLighthouseCategories(
-  { groups }: Pick<PluginConfig, 'groups'>,
+  plugin: Pick<PluginConfig, 'groups' | 'context'>,
   categories?: CategoryConfig[],
 ): CategoryConfig[] {
-  if (!groups) {
+  if (!plugin.groups || plugin.groups.length === 0) {
     return categories ?? [];
   }
+  const validContext = validateContext(plugin.context);
   if (!categories) {
-    return createCategories(groups);
+    return createCategories(plugin.groups, validContext);
   }
-  return expandCategories(categories, groups);
+  return expandCategories(categories, validContext);
 }
 
-function createCategories(groups: Group[]): CategoryConfig[] {
-  const urlCount = countUrls(groups);
-  if (!shouldExpandForUrls(urlCount)) {
+function createCategories(
+  groups: Group[],
+  context: LighthouseContext,
+): CategoryConfig[] {
+  if (!shouldExpandForUrls(context.urlCount)) {
     return [];
   }
-  return extractGroupSlugs(groups)
-    .filter(isLighthouseGroupSlug)
-    .map(slug => createAggregatedCategory(slug, urlCount));
+  return extractGroupSlugs(groups).map(slug =>
+    createAggregatedCategory(slug, context),
+  );
 }
 
 function expandCategories(
   categories: CategoryConfig[],
-  groups: Group[],
+  context: LighthouseContext,
 ): CategoryConfig[] {
-  const urlCount = countUrls(groups);
-  if (!shouldExpandForUrls(urlCount)) {
+  if (!shouldExpandForUrls(context.urlCount)) {
     return categories;
   }
   return categories.map(category =>
-    expandAggregatedCategory(category, urlCount),
+    expandAggregatedCategory(category, context),
   );
 }
 
+/**
+ * Creates a category config for a Lighthouse group, expanding it for each URL.
+ * Only used when user categories are not provided.
+ */
 export function createAggregatedCategory(
   groupSlug: LighthouseGroupSlugs,
-  urlCount: number,
+  context: LighthouseContext,
 ): CategoryConfig {
   const group = LIGHTHOUSE_GROUPS.find(({ slug }) => slug === groupSlug);
   if (!group) {
@@ -56,26 +81,35 @@ export function createAggregatedCategory(
     slug: group.slug,
     title: group.title,
     ...(group.description && { description: group.description }),
-    refs: Array.from({ length: urlCount }, (_, i) => ({
+    refs: Array.from({ length: context.urlCount }, (_, i) => ({
       plugin: LIGHTHOUSE_PLUGIN_SLUG,
-      slug: orderSlug(group.slug, i),
+      slug: shouldExpandForUrls(context.urlCount)
+        ? orderSlug(group.slug, i)
+        : group.slug,
       type: 'group',
-      weight: 1,
+      weight: resolveWeight(context.weights, i),
     })),
   };
 }
 
+/**
+ * Expands all refs (groups and audits) in a user-defined category for each URL.
+ * Used when user categories are provided.
+ */
 export function expandAggregatedCategory(
   category: CategoryConfig,
-  urlCount: number,
+  context: LighthouseContext,
 ): CategoryConfig {
   return {
     ...category,
     refs: category.refs.flatMap(ref => {
       if (ref.plugin === LIGHTHOUSE_PLUGIN_SLUG) {
-        return Array.from({ length: urlCount }, (_, i) => ({
+        return Array.from({ length: context.urlCount }, (_, i) => ({
           ...ref,
-          slug: orderSlug(ref.slug, i),
+          slug: shouldExpandForUrls(context.urlCount)
+            ? orderSlug(ref.slug, i)
+            : ref.slug,
+          weight: resolveWeight(context.weights, i, ref.weight),
         }));
       }
       return [ref];
@@ -83,15 +117,43 @@ export function expandAggregatedCategory(
   };
 }
 
-export function countUrls(groups: Group[]): number {
-  const suffixes = groups
-    .map(({ slug }) => slug.match(/-(\d+)$/)?.[1])
-    .filter(Boolean)
-    .map(Number)
-    .filter(n => !Number.isNaN(n));
-  return suffixes.length > 0 ? Math.max(...suffixes) : 1;
+/**
+ * Extracts unique, unsuffixed group slugs from a list of groups.
+ * Useful for deduplicating and normalizing group slugs when generating categories.
+ */
+export function extractGroupSlugs(groups: Group[]): LighthouseGroupSlugs[] {
+  const slugs = groups.map(({ slug }) => slug.replace(/-\d+$/, ''));
+  return [...new Set(slugs)].filter(isLighthouseGroupSlug);
 }
 
-export function extractGroupSlugs(groups: Group[]): string[] {
-  return [...new Set(groups.map(({ slug }) => slug.replace(/-\d+$/, '')))];
+export class ContextValidationError extends Error {
+  constructor(message: string) {
+    super(`Invalid Lighthouse context: ${message}`);
+  }
+}
+
+export function validateContext(
+  context: PluginConfig['context'],
+): LighthouseContext {
+  if (!context || typeof context !== 'object') {
+    throw new ContextValidationError('must be an object');
+  }
+  if (typeof context['urlCount'] !== 'number' || context['urlCount'] < 0) {
+    throw new ContextValidationError('urlCount must be a non-negative number');
+  }
+  if (!context['weights'] || typeof context['weights'] !== 'object') {
+    throw new ContextValidationError('weights must be an object');
+  }
+  if (Object.keys(context['weights']).length !== context['urlCount']) {
+    throw new ContextValidationError('urlCount and weights length must match');
+  }
+  return context as LighthouseContext;
+}
+
+function resolveWeight(
+  weights: LighthouseContext['weights'],
+  index: number,
+  userDefinedWeight?: number,
+): number {
+  return weights[index + 1] ?? userDefinedWeight ?? 1;
 }

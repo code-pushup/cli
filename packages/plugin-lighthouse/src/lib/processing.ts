@@ -4,7 +4,7 @@ import {
   LIGHTHOUSE_GROUPS,
   LIGHTHOUSE_NAVIGATION_AUDITS,
 } from './runner/constants.js';
-import type { LighthouseUrls } from './types.js';
+import type { LighthouseContext, LighthouseUrls } from './types.js';
 import { type FilterOptions, markSkippedAuditsAndGroups } from './utils.js';
 
 export function orderSlug(slug: string, index: number): string {
@@ -15,8 +15,38 @@ export function shouldExpandForUrls(urlCount: number): boolean {
   return urlCount > SINGLE_URL_THRESHOLD;
 }
 
-export function normalizeUrlInput(input: LighthouseUrls): string[] {
-  return Array.isArray(input) ? input : [input];
+export function normalizeUrlInput(input: LighthouseUrls): {
+  urls: string[];
+  context: LighthouseContext;
+} {
+  const urls = extractUrls(input);
+  const weights = Object.fromEntries(
+    urls.map((url, index) => [index + 1, getWeightForUrl(input, url)]),
+  );
+  return {
+    urls,
+    context: {
+      urlCount: urls.length,
+      weights,
+    },
+  };
+}
+
+export function extractUrls(input: LighthouseUrls): string[] {
+  if (Array.isArray(input)) {
+    return input;
+  }
+  if (typeof input === 'string') {
+    return [input];
+  }
+  return Object.keys(input);
+}
+
+export function getWeightForUrl(input: LighthouseUrls, url: string): number {
+  if (typeof input === 'object' && !Array.isArray(input)) {
+    return input[url] ?? 1;
+  }
+  return 1;
 }
 
 export function getUrlIdentifier(url: string): string {
