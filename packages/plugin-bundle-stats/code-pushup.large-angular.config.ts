@@ -28,7 +28,7 @@ const config = {
   plugins: [
     await bundleStatsPlugin({
       artefactsPath:
-        './packages/plugin-bundle-stats/mocks/fixtures/stats/entain-bundle-stats.json',
+        './packages/plugin-bundle-stats/mocks/fixtures/stats/entain-host-app-main-bundle-stats.json',
       bundler: 'esbuild',
       grouping: [...DEFAULT_GROUPING],
       configs: [
@@ -40,13 +40,15 @@ const config = {
             artefactSize: [100 * 1024, 500 * 1024],
           },
         },
-        // commented out for later
-        /*
         {
           title: 'Shared Chunks',
           include: ['**\/chunk-*.js'],
           thresholds: {
             totalSize: [10, 100 * 1024],
+          },
+          pruning: {
+            maxChildren: 10,
+            maxDepth: 3,
           },
         },
         {
@@ -55,7 +57,7 @@ const config = {
           thresholds: {
             totalSize: [1 * 1024, 50 * 1024],
           },
-        },*/
+        },
       ],
       penalty: {
         errorWeight: 1,

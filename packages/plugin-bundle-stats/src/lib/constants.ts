@@ -21,10 +21,7 @@ export const DEFAULT_GROUPING: GroupingRule[] = [
   },
   {
     title: 'preact',
-    patterns: [
-      '**/node_modules/preact/**',
-      '**/node_modules/preact-render-to-string/**',
-    ],
+    patterns: ['**/node_modules/preact/**', '**/node_modules/preact-*/**'],
     icon: '🪐',
   },
   {
@@ -34,10 +31,7 @@ export const DEFAULT_GROUPING: GroupingRule[] = [
   },
   {
     title: 'solid',
-    patterns: [
-      '**/node_modules/solid-js/**',
-      '**/node_modules/solid-app-router/**',
-    ],
+    patterns: ['**/node_modules/solid-js/**', '**/node_modules/solid-*/**'],
     icon: '🟢',
   },
   {

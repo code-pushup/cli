@@ -122,23 +122,6 @@ export function formatNodeLabel(node: BundleStatsNode): string {
   return `${icon} ${displayName}${sizeInfo}`;
 }
 
-/**
- * Enhanced tree connector that uses appropriate icons
- */
-export function formatTreeConnector(
-  node: BundleStatsNode,
-  isLast: boolean,
-): string {
-  const baseConnector = isLast ? '└─ ' : '├─ ';
-
-  if (node.values.type === 'import') {
-    const arrow = node.values.importKind === 'dynamic' ? '▷' : '▶';
-    return `${baseConnector}${arrow} `;
-  }
-
-  return baseConnector;
-}
-
 export const short = (p: string): string =>
   truncateText((p || '').replace(process.cwd(), '⟨CWD⟩'), { maxChars: 80 });
 
@@ -214,18 +197,34 @@ export function getNodeIconAndPrefix(
 
   switch (node.values.type) {
     case 'chunk':
+      if (node.values.path?.endsWith('.css') || node.name.endsWith('.css')) {
+        return { icon: '🎨', prefix: '' };
+      }
       return { icon: '📄', prefix: '' };
     case 'import':
-      const arrow = node.values.importKind === 'dynamic' ? '▷' : '▶';
-      return { icon: arrow, prefix: 'imported from ' };
+      if (node.values.path?.endsWith('.css') || node.name.endsWith('.css')) {
+        return { icon: '🎨', prefix: '' };
+      }
+      return { icon: '📄', prefix: '' };
     case 'input':
       if (node.values.path?.endsWith('.css') || node.name.endsWith('.css')) {
         return { icon: '🎨', prefix: '' };
       }
       return { icon: '📄', prefix: '' };
     case 'asset':
+      if (node.values.path?.endsWith('.css') || node.name.endsWith('.css')) {
+        return { icon: '🎨', prefix: '' };
+      }
       return { icon: '📄', prefix: '' };
     case 'group':
+      // Check for CSS-related group names first
+      if (
+        node.name.includes('css-assets') ||
+        node.name.includes('css') ||
+        node.name.includes('styles')
+      ) {
+        return { icon: '🎨', prefix: '' };
+      }
       // Group nodes use custom icons from grouping rules
       return { icon: (node.values as any).icon || '📦', prefix: '' };
     default:
