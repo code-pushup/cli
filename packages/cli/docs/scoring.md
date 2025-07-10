@@ -369,7 +369,7 @@ $`
 
 ```mermaid
 xychart-beta
-    title "Score vs Artifact Size (with penalty shift)"
+    title "Score vs Value (with penalty shift)"
     x-axis [0, 1, 1.25, 1.5, 1.75, 2]
     y-axis "Score" 0 --> 1
     line Original  [1, 1,   0.75, 0.5, 0.25, 0]
