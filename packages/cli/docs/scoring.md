@@ -286,3 +286,76 @@ xychart-beta
     y-axis "Score" 0 --> 1
     line Grade [0,0,0,0,0.5,0.5,0.5,0.75,1,1,1]
 ```
+
+## Advanced Scoring Strategies
+
+### Overview Table
+
+| **Strategy Name**         | **Formula**                                                                                                       | **Description**                                                                |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **Issue Penalty Scoring** | $$\text{finalScore} = \max\left(0, \text{thresholdScore} - \frac{w_e \times E + w_w \times W}{w_e + w_w}\right)$$ | Combines threshold limits with diagnostic penalties for comprehensive scoring. |
+
+---
+
+### Issue Penalty Scoring Details
+
+Combines threshold limits with diagnostic penalties for comprehensive scoring.
+
+**Pros:**
+
+- Combines quantitative limits with quality metrics
+- Configurable penalty weights for different issue types
+- Applicable to any metric with both thresholds and diagnostics
+
+**Cons:**
+
+- More complex than single-metric strategies
+- Requires careful tuning of penalty weights
+
+**Implementation:**
+
+```ts
+function issuePenaltyScore(value: number, threshold: number, errors: number, warnings: number, errorWeight: number = 1, warningWeight: number = 0.5): number {
+  const thresholdScore = value <= threshold ? 1 : Math.max(0, 1 - (value - threshold) / threshold);
+  const penalty = errorWeight * errors + warningWeight * warnings;
+  const totalWeight = errorWeight + warningWeight;
+  const normalizedPenalty = totalWeight > 0 ? penalty / totalWeight : 0;
+  return Math.max(0, thresholdScore - normalizedPenalty);
+}
+```
+
+**When to use it:**
+Ideal for production metrics where you need to balance performance targets with maintainability diagnostics.
+
+**Examples:**
+Bundle size + ESLint errors, page load time + accessibility warnings, complexity thresholds + TypeScript diagnostics.
+
+**Parameters & Formulas:**
+
+| Parameter | Description                                     |
+| --------- | ----------------------------------------------- |
+| `S`       | Actual value (bytes, milliseconds, count, etc.) |
+| `M`       | Maximum threshold value                         |
+| `E`       | Count of **errors** (🚨)                        |
+| `W`       | Count of **warnings** (⚠️)                      |
+| `we`      | Weight per error (default 1)                    |
+| `ww`      | Weight per warning (default 0.5)                |
+
+$$\text{thresholdScore} = \begin{cases} 1, & S \leq M \\[4pt] \max(0, 1 - \frac{S-M}{M}), & S > M \end{cases}$$
+
+$$\text{penalty} = w_e \times E + w_w \times W$$
+
+$$\text{finalScore} = \max\left(0, \text{thresholdScore} - \frac{\text{penalty}}{w_e + w_w}\right)$$
+
+**Example:** Value=15 (threshold: 10), 1 error, 2 warnings → thresholdScore = 0.5, penalty = 2, finalScore = 0
+
+**Chart:**
+
+```mermaid
+xychart-beta
+    title "Issue Penalty Score (M=10, 1 error, 2 warnings)"
+    x-axis "Value" [0,2,4,6,8,10,12,14,16,18,20]
+    y-axis "Score" 0 --> 1
+    line "Threshold Only" [1,1,1,1,1,1,0.83,0.71,0.6,0.5,0.4]
+    line "With Penalties" [0,0,0,0,0,0,0,0,0,0,0]
+```
