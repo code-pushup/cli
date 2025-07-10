@@ -98,10 +98,10 @@ When you want to maintain proportional visibility into how far a metric has exce
 
 ```mermaid
 xychart-beta
-    title "Linear Overshoot (M=10)"
-    x-axis [0,1,2,3,4,5,6,7,8,9,10]
+    title "Linear Overshoot"
+    x-axis [0,5,10,12,14,16,18,20]
     y-axis "Score" 0 --> 1
-    line Linear [1,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0]
+    line Overshoot [1,1,1,0.8,0.6,0.4,0.2,0]
 ```
 
 ---
