@@ -297,15 +297,16 @@ xychart-beta
 
 ---
 
-### Issue Penalty Scoring
+### Issue Penalty Scoring Details
 
-Combines threshold limits with diagnostic penalties for comprehensive scoring.
+Combines threshold limits with diagnostic penalties for comprehensive scoring. **Builds on [Linear Overshoot](#linear-overshoot-details)** by adding penalty deductions based on diagnostic issues.
 
 **Pros:**
 
 - Combines quantitative limits with quality metrics
 - Configurable penalty weights for different issue types
 - Applicable to any metric with both thresholds and diagnostics
+- Familiar [Linear Overshoot](#linear-overshoot-details) behavior for size component
 
 **Cons:**
 
@@ -325,7 +326,7 @@ function issuePenaltyScore(value: number, threshold: number, errors: number, war
 ```
 
 **When to use it:**
-Ideal for production metrics where you need to balance performance targets with maintainability diagnostics.
+Ideal for production metrics where you need to balance performance targets with maintainability diagnostics. Natural extension if you're already using [Linear Overshoot](#linear-overshoot-details) and want to add quality penalties.
 
 **Examples:**
 Bundle size + ESLint errors, page load time + accessibility warnings, complexity thresholds + TypeScript diagnostics.
@@ -351,6 +352,8 @@ $`
 \end{cases}
 `$
 
+_Note: This is [Linear Overshoot](#linear-overshoot-details) with a floor at 0_
+
 ##### Issues penalty
 
 $`
@@ -369,7 +372,7 @@ $`
 
 ```mermaid
 xychart-beta
-    title "Score vs Value (with penalty shift)"
+    title "Issue Penalty Scoring (penalty shift optional)"
     x-axis [0, 1, 1.25, 1.5, 1.75, 2]
     y-axis "Score" 0 --> 1
     line Original  [1, 1,   0.75, 0.5, 0.25, 0]
