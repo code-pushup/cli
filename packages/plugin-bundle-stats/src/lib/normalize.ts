@@ -1,3 +1,5 @@
+import type { Audit } from '@code-pushup/models';
+import { slugify } from '@code-pushup/utils';
 import type { BundleStatsConfig } from './runner/types.js';
 import type { BundleStatsOptions } from './types.js';
 
@@ -8,7 +10,6 @@ export function normalizeBundleStatsOptions(
   options: BundleStatsOptions,
 ): BundleStatsConfig {
   const {
-    slug,
     title,
     description,
     thresholds,
@@ -19,13 +20,23 @@ export function normalizeBundleStatsOptions(
   } = options;
 
   return {
-    slug,
-    title: title || slug,
-    description: description || `Bundle stats analysis for ${slug}`,
+    slug: slugify(title),
+    title,
+    ...(description ? { description } : {}),
     thresholds,
     include,
     exclude,
     includeInputs,
     excludeInputs,
   };
+}
+
+export function getAuditsFromConfigs(configs: BundleStatsConfig[]): Audit[] {
+  return configs.map(({ slug, title, description }) => {
+    return {
+      slug,
+      title,
+      description,
+    };
+  });
 }

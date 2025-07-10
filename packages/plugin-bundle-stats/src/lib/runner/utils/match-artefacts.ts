@@ -83,7 +83,9 @@ export function filterTreeNode(
     }
   }
 
-  const isStructuralNode = ['bundle', 'inputs', 'outputs'].includes(node.name);
+  const isStructuralNode =
+    ['bundle', 'inputs', 'outputs'].includes(node.name) ||
+    node.values.type === 'group';
 
   const shouldInclude = isTopLevel
     ? (matchesPatterns && contributes) ||

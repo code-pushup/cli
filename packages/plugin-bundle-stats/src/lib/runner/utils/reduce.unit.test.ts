@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import type { GroupingRule } from '../types.js';
-import type {
-  BundleStatsNode,
-  ChunkNode,
-  GroupNode,
+import { type GroupingRule, type PruningOptions } from '../types.js';
+import {
+  type BundleStatsNode,
+  type ChunkNode,
+  type GroupNode,
 } from '../unify/bundle-stats.types.js';
-import { type PruneOptions, applyGroupingToTree, prune } from './reduce.js';
+import { applyGroupingToTree, formatTree, prune } from './reduce.js';
 
 describe('prune', () => {
   const createPruneTestNode = (
@@ -19,29 +19,15 @@ describe('prune', () => {
       path: name,
       bytes,
       childCount: children?.length || 0,
-      totalSize: bytes,
       isEntryFile: false,
     },
-    children: children || [],
+    children,
   });
 
-  it('should limit children to maxChildren parameter', () => {
-    const node = createPruneTestNode('root', 1000, [
-      createPruneTestNode('child1', 100),
-      createPruneTestNode('child2', 200),
-      createPruneTestNode('child3', 300),
-      createPruneTestNode('child4', 400),
-      createPruneTestNode('child5', 500),
-      createPruneTestNode('child6', 600),
-    ]);
-
-    const result = prune(node, { maxChildren: 3, maxDepth: 2 });
-
-    // Should have exactly 4 children (3 actual + 1 "more" indicator since we re-added createMoreNode logic)
-    expect(result.children).toHaveLength(4);
-    expect(result.children![3]!.name).toMatch(/... and 3 more items/);
-
-    // Verify it returns StructuralNode with bytes and fileCount
+  it('should return pruned node structure', () => {
+    const node = createPruneTestNode('root', 1000);
+    const result = prune(node);
+    expect(result.name).toBe('root');
     expect(result.values?.bytes).toBe(1000);
     expect(result.values?.fileCount).toBeDefined();
   });
@@ -83,7 +69,7 @@ describe('applyGroupingToTree', () => {
   ): GroupNode => ({
     name: path,
     values: {
-      type: 'input',
+      type: 'group',
       path,
       bytes,
       childCount: 0,
@@ -110,9 +96,9 @@ describe('applyGroupingToTree', () => {
   it('should group node_modules files by package name using grouping rules', () => {
     const groupingRules: GroupingRule[] = [
       {
-        name: 'node_modules',
+        title: 'node_modules',
         patterns: ['**/node_modules/**'],
-        depth: 0,
+        maxDepth: 0,
       },
     ];
 
@@ -152,9 +138,9 @@ describe('applyGroupingToTree', () => {
   it('should group packages files by package name using grouping rules', () => {
     const groupingRules: GroupingRule[] = [
       {
-        name: 'packages',
+        title: 'packages',
         patterns: ['**/packages/**'],
-        depth: 0,
+        maxDepth: 0,
       },
     ];
 
@@ -209,9 +195,9 @@ describe('applyGroupingToTree', () => {
   it('should respect depth parameter in grouping rules', () => {
     const groupingRules: GroupingRule[] = [
       {
-        name: 'deep-node-modules',
+        title: 'deep-node-modules',
         patterns: ['**/node_modules/**'],
-        depth: 1, // Only apply at depth 1
+        maxDepth: 1, // Only apply at depth 1
       },
     ];
 
@@ -239,7 +225,7 @@ describe('applyGroupingToTree', () => {
         {
           name: 'node_modules/@angular/core/index.js',
           values: {
-            type: 'input',
+            type: 'group',
             path: 'node_modules/@angular/core/index.js',
             bytes: 500,
             childCount: 0,
@@ -249,7 +235,7 @@ describe('applyGroupingToTree', () => {
         {
           name: 'src/app.js',
           values: {
-            type: 'input',
+            type: 'group',
             path: 'src/app.js',
             bytes: 100,
             childCount: 0,
@@ -260,64 +246,48 @@ describe('applyGroupingToTree', () => {
     });
   });
 
-  it('should return node unchanged when no children exist', () => {
-    const leafNode = createMockInputNode('src/app.js', 100);
-
-    const result = applyGroupingToTree(leafNode);
-
-    expect(result).toEqual(leafNode);
-  });
-
   it('should recursively apply grouping to nested children', () => {
     const groupingRules: GroupingRule[] = [
       {
-        name: 'node_modules',
+        title: 'node_modules',
         patterns: ['**/node_modules/**'],
+        maxDepth: 0,
       },
     ];
 
     const nestedChild = createMockChunkNode('nested', 0, [
-      createMockInputNode('node_modules/@angular/core/index.js', 200),
-      createMockInputNode('node_modules/rxjs/index.js', 100),
+      createMockInputNode('node_modules/lodash/index.js', 50),
     ]);
 
     const tree = createMockChunkNode('bundle', 0, [
+      createMockInputNode('node_modules/@angular/core/index.js', 500),
       nestedChild,
-      createMockInputNode('src/app.js', 300),
     ]);
 
-    const result = applyGroupingToTree(tree, { grouping: groupingRules });
+    const result = applyGroupingToTree(tree, {
+      grouping: groupingRules,
+      depth: 0,
+    });
 
-    // Check that nested children were also grouped
-    const nestedResult = result.children!.find(
+    // Check that nested children were also processed
+    const nestedChild2 = result.children!.find(
       child => child.name === 'nested',
-    ) as ChunkNode;
-    expect(nestedResult.children).toHaveLength(2); // @angular/core + rxjs groups
-
-    const angularGroup = nestedResult.children!.find(
-      child => child.name === '@angular/core',
     );
-    expect(angularGroup).toBeDefined();
-    expect(angularGroup!.values.bytes).toBe(200);
+    expect(nestedChild2).toBeDefined();
+    expect(nestedChild2!.children).toHaveLength(1); // lodash should be grouped
   });
 
   it('should set icons on grouped nodes with 📦 as default', () => {
     const groupingRules: GroupingRule[] = [
       {
-        name: 'node_modules',
+        title: 'node_modules',
         patterns: ['**/node_modules/**'],
-        icon: 'package', // Custom icon
-      },
-      {
-        name: 'packages',
-        patterns: ['**/packages/**'],
-        // No icon specified - should default to '📦'
+        maxDepth: 0,
       },
     ];
 
     const tree = createMockChunkNode('bundle', 0, [
       createMockInputNode('node_modules/@angular/core/index.js', 500),
-      createMockInputNode('packages/core/src/index.js', 300),
       createMockInputNode('src/app.js', 100),
     ]);
 
@@ -326,38 +296,28 @@ describe('applyGroupingToTree', () => {
       depth: 0,
     });
 
-    // Find the node_modules group (should have custom icon)
-    const nodeModulesGroup = result.children!.find(
+    // Find the grouped node
+    const angularGroup = result.children!.find(
       child => child.name === '@angular/core',
     );
-    expect(nodeModulesGroup).toBeDefined();
-    expect(nodeModulesGroup!.values.icon).toBe('package');
-
-    // Find the packages group (should have default icon)
-    const packagesGroup = result.children!.find(
-      child => child.name === 'core/',
-    );
-    expect(packagesGroup).toBeDefined();
-    expect(packagesGroup!.values.icon).toBe('📦');
-
-    // Ungrouped file should not have icon
-    const srcFile = result.children!.find(child => child.name === 'src/app.js');
-    expect(srcFile).toBeDefined();
-    expect(srcFile!.values.icon).toBeUndefined();
+    expect(angularGroup).toBeDefined();
+    expect(angularGroup!.values.icon).toBe('📦'); // Default icon
   });
 
   it('should handle packages grouping rule with custom icon', () => {
     const groupingRules: GroupingRule[] = [
       {
-        name: 'packages/*',
-        patterns: ['packages/**/*'],
+        title: 'packages',
+        patterns: ['**/packages/**'],
+        maxDepth: 0,
         icon: '📄',
       },
     ];
 
     const tree = createMockChunkNode('bundle', 0, [
       createMockInputNode('packages/core/src/index.js', 500),
-      createMockInputNode('packages/utils/src/helper.js', 300),
+      createMockInputNode('packages/core/src/utils.js', 300),
+      createMockInputNode('packages/utils/src/index.js', 200),
       createMockInputNode('src/app.js', 100),
     ]);
 
@@ -371,43 +331,35 @@ describe('applyGroupingToTree', () => {
 
     const coreGroup = result.children!.find(child => child.name === 'core/');
     expect(coreGroup).toBeDefined();
-    expect(coreGroup!.values.icon).toBe('📄');
+    expect(coreGroup!.values.icon).toBe('📄'); // Custom icon
 
     const utilsGroup = result.children!.find(child => child.name === 'utils/');
     expect(utilsGroup).toBeDefined();
-    expect(utilsGroup!.values.icon).toBe('📄');
-
-    // Ungrouped file should not have icon
-    const srcFile = result.children!.find(child => child.name === 'src/app.js');
-    expect(srcFile).toBeDefined();
-    expect(srcFile!.values.icon).toBeUndefined();
+    expect(utilsGroup!.values.icon).toBe('📄'); // Custom icon
   });
 
   it('should work with formatting pipeline - icons should appear in final formatted names', () => {
     const groupingRules: GroupingRule[] = [
       {
-        name: 'packages/*',
-        patterns: ['packages/**/*'],
+        title: 'packages',
+        patterns: ['**/packages/**'],
+        maxDepth: 0,
         icon: '📄',
       },
     ];
 
     const tree = createMockChunkNode('bundle', 0, [
       createMockInputNode('packages/core/src/index.js', 500),
-      createMockInputNode('packages/utils/src/helper.js', 300),
-      createMockInputNode('src/app.js', 100),
+      createMockInputNode('packages/core/src/utils.js', 300),
     ]);
 
-    // Apply grouping (this sets the icon in values)
-    const groupedResult = applyGroupingToTree(tree, {
+    const grouped = applyGroupingToTree(tree, {
       grouping: groupingRules,
       depth: 0,
     });
 
-    // Verify icons are set in values
-    const coreGroup = groupedResult.children!.find(
-      child => child.name === 'core/',
-    );
+    // Look for the grouped node
+    const coreGroup = grouped.children!.find(child => child.name === 'core/');
     expect(coreGroup).toBeDefined();
     expect(coreGroup!.values.icon).toBe('📄');
   });

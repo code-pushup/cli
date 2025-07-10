@@ -1,15 +1,14 @@
 import type { AuditOutput } from '@code-pushup/models';
-import { executeProcess, formatBytes, readJsonFile } from '@code-pushup/utils';
+import { executeProcess, readJsonFile } from '@code-pushup/utils';
+import { DEFAULT_PENALTY } from '../constants.js';
 import type {
   BundleStatsConfig,
-  GroupingOptions,
+  GroupingRule,
+  PenaltyOptions,
   PruningOptions,
   SupportedBundlers,
 } from './types.js';
-import type {
-  BundleStatsNode,
-  BundleStatsTree,
-} from './unify/bundle-stats.types.js';
+import type { BundleStatsTree } from './unify/bundle-stats.types.js';
 import {
   type EsBuildCoreStats,
   unifyBundlerStats,
@@ -20,6 +19,7 @@ import {
   filterUnifiedTreeByConfigSingle,
   formatTreeForDisplay,
 } from './utils.js';
+import { applyIconsToTree } from './utils/formatting.js';
 import {
   type PrunedNode,
   applyGroupingToTree,
@@ -40,8 +40,9 @@ export type PluginArtefactOptions = {
 export type BundleStatsRunnerOptions = PluginArtefactOptions & {
   bundler: SupportedBundlers;
   configs: BundleStatsConfig[];
-  grouping?: GroupingOptions[];
-  pruning?: PruningOptions;
+  penalty: PenaltyOptions;
+  grouping?: GroupingRule[];
+  pruning?: Omit<PruningOptions, 'startDepth'>;
 };
 
 /**
@@ -80,6 +81,7 @@ export async function bundleStatsRunner(
     configs,
     grouping,
     pruning,
+    penalty,
   } = opts;
 
   return async () => {
@@ -97,8 +99,15 @@ export async function bundleStatsRunner(
       bundler,
     });
 
+    // merge global and audit settings
+    const mergedAuditConfigs = mergeAuditConfigs(configs, {
+      penalty,
+      grouping,
+      pruning,
+    });
+
     const bundleStatsTree = unifieBundleStats as unknown as BundleStatsTree;
-    return generateAudits(bundleStatsTree, configs, { grouping, pruning });
+    return generateAudits(bundleStatsTree, mergedAuditConfigs);
   };
 }
 
@@ -107,18 +116,23 @@ export async function bundleStatsRunner(
  */
 function processTreeForAudit(
   tree: BundleStatsTree,
-  options: { grouping?: GroupingOptions[]; pruning?: PruningOptions },
+  config: BundleStatsConfig,
 ): { processedTree: PrunedNode; totalBytes: number; fileCount: number } {
-  const {
-    grouping = [],
-    pruning = { maxChildren: 10, startDepth: 0, maxDepth: 2 },
-  } = options;
+  const { grouping = [], pruning = { maxChildren: 10, maxDepth: 2 } } = config;
 
   let processedTree = tree.root;
 
   // Apply grouping if specified
   if (grouping.length > 0) {
-    processedTree = applyGroupingToTree(processedTree, { grouping });
+    processedTree = applyGroupingToTree(processedTree, {
+      grouping: config.grouping,
+    });
+  }
+
+  // Apply icon formatting after grouping but before pruning
+  if (grouping.length > 0) {
+    const treeWithIcons = applyIconsToTree({ root: processedTree });
+    processedTree = treeWithIcons.root;
   }
 
   // Calculate totals
@@ -146,13 +160,10 @@ function createAuditOutput(
   totalBytes: number,
   fileCount: number,
 ): AuditOutput {
-  // Convert to Tree format for audit details
-  const tree = formatTreeForDisplay(processedTree, config.title || config.slug);
+  const tree = formatTreeForDisplay(processedTree, config.title);
 
-  // Calculate score using the existing function
   const score = calculateScore(totalBytes, config);
 
-  // Create display value
   const displayValue = createDisplayValue(totalBytes, fileCount);
 
   return {
@@ -172,7 +183,6 @@ function createAuditOutput(
 export function generateAudits(
   bundleStatsTree: BundleStatsTree,
   configs: BundleStatsConfig[],
-  options: { grouping?: GroupingOptions[]; pruning?: PruningOptions },
 ): AuditOutput[] {
   return configs.map(config => {
     const filteredTree = filterUnifiedTreeByConfigSingle(
@@ -186,9 +196,27 @@ export function generateAudits(
 
     const { processedTree, totalBytes, fileCount } = processTreeForAudit(
       filteredTree,
-      options,
+      config,
     );
 
     return createAuditOutput(config, processedTree, totalBytes, fileCount);
+  });
+}
+
+export function mergeAuditConfigs(
+  configs: BundleStatsConfig[],
+  options: {
+    penalty: PenaltyOptions;
+    grouping?: GroupingRule[];
+    pruning?: PruningOptions;
+  },
+): BundleStatsConfig[] {
+  return configs.map(config => {
+    return {
+      ...config,
+      penalty: { ...DEFAULT_PENALTY, ...options.penalty },
+      grouping: options.grouping,
+      pruning: options.pruning,
+    };
   });
 }

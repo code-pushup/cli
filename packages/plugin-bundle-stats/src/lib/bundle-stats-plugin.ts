@@ -3,6 +3,7 @@ import type { PluginConfig } from '@code-pushup/models';
 import {
   BUNDLE_STATS_PLUGIN_SLUG,
   DEFAULT_GROUPING,
+  DEFAULT_PENALTY,
   DEFAULT_PRUNING,
 } from './constants.js';
 import { normalizeBundleStatsOptions } from './normalize.js';
@@ -19,7 +20,7 @@ export async function bundleStatsPlugin(
     configs,
     grouping = DEFAULT_GROUPING,
     pruning = DEFAULT_PRUNING,
-    artefact,
+    penalty = DEFAULT_PENALTY,
     ...restOptions
   } = opts;
 
@@ -35,19 +36,13 @@ export async function bundleStatsPlugin(
     icon: 'folder-rules',
     description: 'Official Code PushUp Bundle Stats plugin.',
     docsUrl: 'https://npm.im/@code-pushup/bundle-stats-plugin',
-    audits: runnerConfigs.map(({ slug, title, description, ..._ }) => {
-      return {
-        slug: slug,
-        title,
-        description: description,
-      };
-    }),
+    audits: runnerConfigs,
     runner: await bundleStatsRunner({
       ...restOptions,
-      artefactsPath: artefact,
       configs: runnerConfigs,
       grouping,
       pruning,
+      penalty,
     }),
   };
 }

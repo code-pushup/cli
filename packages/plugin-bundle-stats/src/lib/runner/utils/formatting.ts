@@ -140,7 +140,7 @@ export function formatTreeConnector(
 }
 
 export const short = (p: string): string =>
-  truncateText(p.replace(process.cwd(), '⟨CWD⟩'), { maxChars: 80 });
+  truncateText((p || '').replace(process.cwd(), '⟨CWD⟩'), { maxChars: 80 });
 
 export const bytes = (node: BundleStatsNode): number => {
   if (!node.values) {
@@ -186,6 +186,11 @@ export function getNodeIconAndPrefix(
     return { icon: (node.values as any).icon, prefix: '' };
   }
 
+  // Special handling for root audit slug nodes
+  if (isEntry && node.values.type === 'group') {
+    return { icon: '🗂️', prefix: '' };
+  }
+
   // Special handling for root bundle nodes (like initial-bundles, shared-chunks, etc.)
   if (
     isEntry &&
@@ -215,9 +220,9 @@ export function getNodeIconAndPrefix(
       return { icon: arrow, prefix: 'imported from ' };
     case 'input':
       if (node.values.path?.endsWith('.css') || node.name.endsWith('.css')) {
-        return { icon: '📄', prefix: '' };
+        return { icon: '🎨', prefix: '' };
       }
-      return { icon: '', prefix: '' };
+      return { icon: '📄', prefix: '' };
     case 'asset':
       return { icon: '📄', prefix: '' };
     case 'group':
@@ -239,7 +244,7 @@ export function formatNodeWithIcon(
 ): string {
   const { icon, prefix } = getNodeIconAndPrefix(node, isLast, isEntry);
 
-  const displayName = short(node.name);
+  const displayName = short(node.name || '');
 
   // File count is now handled in displayBytes formatting in reduce.ts,
   // so we don't include it in the name to avoid duplication
@@ -267,6 +272,8 @@ export function formatNodeWithIcon(
 }
 
 export const scrubPaths = (str: string): string => {
+  if (!str) return '';
+
   const scrubbed = str.replace(
     new RegExp(process.cwd().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
     '<CWD>',

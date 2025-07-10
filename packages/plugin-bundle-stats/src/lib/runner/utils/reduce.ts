@@ -1,6 +1,6 @@
 import { minimatch } from 'minimatch';
 import { formatBytes } from '@code-pushup/utils';
-import { type GroupingRule } from '../types.js';
+import { type GroupingRule, type PruningOptions } from '../types.js';
 import type {
   BundleStatsNode,
   GroupNode,
@@ -24,12 +24,6 @@ export interface StructuralNode {
   children?: StructuralNode[];
 }
 
-export interface PruneOptions {
-  maxChildren?: number;
-  depth?: number;
-  maxDepth?: number;
-}
-
 interface CachedNode {
   node: BundleStatsNode;
   bytes: number;
@@ -46,9 +40,9 @@ interface GroupInfo {
 
 export function prune(
   node: BundleStatsNode,
-  options: PruneOptions = {},
+  options: PruningOptions = {},
 ): StructuralNode {
-  const { maxChildren = 5, depth = 0, maxDepth = 2 } = options;
+  const { maxChildren = 5, startDepth = 0, maxDepth = 2 } = options;
 
   const nodeBytes = node.values.bytes || 0;
   const fileCount = (node.values as any).childCount || 1;
@@ -61,13 +55,13 @@ export function prune(
     },
   };
 
-  if (depth >= maxDepth || !node.children?.length) return head;
+  if (startDepth >= maxDepth || !node.children?.length) return head;
 
   // Process children recursively
   const processedChildren = node.children.slice(0, maxChildren).map(child => {
     return prune(child, {
       maxChildren,
-      depth: depth + 1,
+      startDepth: startDepth + 1,
       maxDepth,
     });
   });
@@ -236,7 +230,7 @@ function findMatchingRule(
   const nodePath = node.values.path || node.name;
 
   for (const rule of rules) {
-    if (rule.depth !== undefined && rule.depth !== depth) continue;
+    if (rule.maxDepth !== undefined && rule.maxDepth !== depth) continue;
     if (
       rule.patterns.some((pattern: string) =>
         minimatch(nodePath, pattern, { matchBase: true }),
@@ -251,39 +245,31 @@ function findMatchingRule(
 function extractGroupName(node: BundleStatsNode, rule: GroupingRule): string {
   const nodePath = node.values.path || node.name;
 
-  // Try to extract specific group name from path using patterns
-  const matchingPattern = rule.patterns.find((pattern: string) =>
-    minimatch(nodePath, pattern, { matchBase: true }),
-  );
-
-  if (!matchingPattern) {
-    return rule.name;
-  }
-
-  // Extract the relevant segment from the path based on the rule template
-  const extractedSegment = extractSegmentFromPath(
-    nodePath,
-    matchingPattern,
-    rule.name,
-  );
-
-  if (!extractedSegment) {
-    return rule.name;
-  }
-
-  // Special handling for @*/* rule with regular packages
-  if (rule.name === '@*/*') {
-    // Check if this is a regular package (doesn't contain '/')
-    if (!extractedSegment.includes('/')) {
-      // Return just the package name for regular packages
-      return extractedSegment;
+  // For node_modules patterns, extract the package name
+  if (rule.patterns.some(pattern => pattern.includes('node_modules'))) {
+    // First try to match scoped packages like @angular/core
+    const scopedMatch = nodePath.match(/node_modules\/(@[^\/]+\/[^\/]+)/);
+    if (scopedMatch && scopedMatch[1]) {
+      return scopedMatch[1];
     }
-    // For scoped packages, use the template
-    return rule.name.replace(/\*/g, extractedSegment);
+
+    // Then try regular packages like rxjs
+    const regularMatch = nodePath.match(/node_modules\/([^\/]+)/);
+    if (regularMatch && regularMatch[1]) {
+      return regularMatch[1];
+    }
   }
 
-  // Replace wildcards in the rule name with the extracted segment
-  return rule.name.replace(/\*/g, extractedSegment);
+  // For packages patterns, extract the package name with trailing slash
+  if (rule.patterns.some(pattern => pattern.includes('packages'))) {
+    const match = nodePath.match(/packages\/([^\/]+)/);
+    if (match && match[1]) {
+      return match[1] + '/';
+    }
+  }
+
+  // Fallback to rule title if no specific extraction works
+  return rule.title;
 }
 
 /**

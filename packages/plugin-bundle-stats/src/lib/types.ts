@@ -1,11 +1,11 @@
 import type { BundleStatsRunnerOptions } from './runner/bundle-stats-runner.js';
-import type { BundleStatsConfig } from './runner/types.js';
+import type { BundleStatsConfig, PenaltyOptions } from './runner/types.js';
 
 export type BundleStatsOptions = Omit<
   BundleStatsConfig,
-  'title' | 'description'
+  'slug' | 'description'
 > & {
-  title?: string;
+  title: string;
   description?: string;
 };
 
@@ -14,5 +14,5 @@ export type PluginOptions = Omit<
   'configs' | 'artefactsPath'
 > & {
   configs: BundleStatsOptions[];
-  artefact: string;
+  artefactsPath: string;
 };

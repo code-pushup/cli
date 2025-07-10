@@ -42,6 +42,7 @@ function groupImportedChunksByParent(root: BundleStatsNode): BundleStatsNode {
     chunks: BundleStatsNode[];
   }> = [];
 
+  // Instead of creating an extra grouping layer, directly add all children to newChildren
   for (const child of root.children) {
     if (child.children) {
       // Separate imported chunks from direct content
@@ -56,23 +57,9 @@ function groupImportedChunksByParent(root: BundleStatsNode): BundleStatsNode {
         }
       }
 
-      // Calculate the size and file count for only direct content
-      const directBytes = directContent.reduce((sum, node) => {
-        return sum + (node.values.bytes || 0);
-      }, 0);
-
-      const directFiles = directContent.reduce((sum, node) => {
-        return sum + (node.values.childCount || 1);
-      }, 0);
-
-      // Add parent with updated size to reflect only direct content
+      // Add the child directly to newChildren (no extra grouping layer)
       newChildren.push({
         ...child,
-        values: {
-          ...child.values,
-          bytes: directBytes,
-          childCount: directFiles,
-        },
         children: directContent.length > 0 ? directContent : undefined,
       } as BundleStatsNode);
 
@@ -161,13 +148,22 @@ export function filterUnifiedTreeByConfigSingle(
   }
 
   // Group imported chunks under "imported from main" for better organization
-  const restructuredRoot = groupImportedChunksByParent(filteredRoot);
+  // const restructuredRoot = groupImportedChunksByParent(filteredRoot);
+
+  // For now, skip the grouping to get a cleaner structure
+  const restructuredRoot = filteredRoot;
+
+  // Update the root name to use the audit slug
+  const rootWithAuditSlug = {
+    ...restructuredRoot,
+    name: config.slug, // Use the audit slug as the root name
+  };
 
   // Create a new tree with the config name as title
   return {
     title: config.title || config.slug,
     type: 'basic',
-    root: restructuredRoot,
+    root: rootWithAuditSlug,
   };
 }
 

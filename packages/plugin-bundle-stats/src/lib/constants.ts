@@ -1,4 +1,8 @@
-import type { GroupingOptions, PruningOptions } from './runner/types.js';
+import type {
+  GroupingOptions,
+  PenaltyOptions,
+  PruningOptions,
+} from './runner/types.js';
 
 /**
  * Default grouping rules for bundle stats analysis.
@@ -31,6 +35,11 @@ export const DEFAULT_PRUNING: PruningOptions = {
   maxChildren: 10,
   startDepth: 0,
   maxDepth: 2,
+};
+
+export const DEFAULT_PENALTY: PenaltyOptions = {
+  warningWeight: 1,
+  errorWeight: 2,
 };
 
 /**
