@@ -34,7 +34,8 @@ const config = {
   plugins: [
     await bundleStatsPlugin({
       artefactsPath:
-        './packages/plugin-bundle-stats/mocks/fixtures/angular-minimal/dist/angular-minimal/stats.json',
+        //  './packages/plugin-bundle-stats/mocks/fixtures/angular-minimal/dist/angular-minimal/stats.json',
+        './packages/plugin-bundle-stats/src/lib/__snapshots__/esbuild.stats.json',
       bundler: 'esbuild',
       configs: [
         // JavaScript bundles - should focus on main and polyfills outputs

@@ -12,7 +12,7 @@ export interface BaseNodeValues {
 
 export interface ChunkValues extends BaseNodeValues {
   type: 'chunk';
-  isEntryFile?: boolean;
+  entryPoint?: string | boolean;
   label?: string;
 }
 
@@ -70,6 +70,10 @@ export interface GroupNode extends BundleStatsNode {
   values: GroupValues;
 }
 
+/**
+ * bundles
+ *   - children: all output children
+ */
 export interface BundleStatsTree {
   title: string;
   type: 'basic';

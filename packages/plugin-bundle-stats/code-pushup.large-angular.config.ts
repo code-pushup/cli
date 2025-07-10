@@ -1,4 +1,4 @@
-import bundleStatsPlugin from './src';
+import bundleStatsPlugin, { DEFAULT_GROUPING } from './src';
 
 /**
  * This is a large config for the bundle stats plugin.
@@ -28,32 +28,34 @@ const config = {
   plugins: [
     await bundleStatsPlugin({
       artefactsPath:
-        './packages/plugin-bundle-stats/mocks/fixtures/stats/large-angular.stats.json',
+        './packages/plugin-bundle-stats/mocks/fixtures/stats/entain-bundle-stats.json',
       bundler: 'esbuild',
+      grouping: [...DEFAULT_GROUPING],
       configs: [
         {
           title: 'Initial Bundles',
-          include: ['main-*.js', 'polyfills-*.js', '*.css'],
+          include: ['main-*.js', 'polyfills-*.js'],
           thresholds: {
             totalSize: [300 * 1024, 1 * 1024 * 1024],
             artefactSize: [100 * 1024, 500 * 1024],
           },
         },
-
+        // commented out for later
+        /*
         {
           title: 'Shared Chunks',
-          include: ['**/chunk-*.js'],
+          include: ['**\/chunk-*.js'],
           thresholds: {
             totalSize: [10, 100 * 1024],
           },
         },
         {
           title: 'CSS Assets',
-          include: ['**/*.css'],
+          include: ['**\/*.css'],
           thresholds: {
             totalSize: [1 * 1024, 50 * 1024],
           },
-        },
+        },*/
       ],
       penalty: {
         errorWeight: 1,
@@ -62,7 +64,7 @@ const config = {
       },
       pruning: {
         maxChildren: 10,
-        maxDepth: 3,
+        maxDepth: 2,
       },
     }),
   ],

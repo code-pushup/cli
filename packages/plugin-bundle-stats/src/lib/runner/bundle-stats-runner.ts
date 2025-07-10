@@ -25,6 +25,7 @@ import {
   applyGroupingToTree,
   calcTotals,
   formatTree,
+  groupExternalImports,
   prune,
 } from './utils/reduce.js';
 import { calculateScore } from './utils/scoring.js';
@@ -121,6 +122,8 @@ function processTreeForAudit(
   const { grouping = [], pruning = { maxChildren: 10, maxDepth: 2 } } = config;
 
   let processedTree = tree.root;
+
+  processedTree = groupExternalImports(processedTree);
 
   // Apply grouping if specified
   if (grouping.length > 0) {

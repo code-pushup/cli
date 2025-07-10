@@ -170,6 +170,263 @@ export function applyGroupingToTree(
   };
 }
 
+/**
+ * Groups external imports under dedicated import groups per file.
+ * This helps understand the true size of your artifact group by showing:
+ * - Input files with their bundled content as direct children
+ * - Static imports groups for external imports that are not bundled
+ * - Chunk-specific external imports groups at the root level
+ *
+ * Creates a structure like:
+ * 🗂️ example-group                         237.17 kB   101 files
+ * ├── 📍 entry-1.js                         138 kB    2 files
+ * │   ├── 📄 src/input-1.ts                 101 kB
+ * │   └── 📄 src/input-2.ts                  37 kB
+ * ├── 📄 entry-2.js                          30 kB    2 files
+ * │   ├── 📄 node_modules/@angular/router/provider.js
+ * │   └── 📄 node_modules/@angular/router/service.js
+ * ├── 🎨 styles.css                          14 kB
+ * ├── 🔗 static imports from 📍 entry-1.js   104 kB
+ * │   └── 📄 file-1.js
+ * └── 🔗 external imports from 📍 entry-1.js
+ *     ├── 📄 chunk-1.js
+ *     └── 📄 chunk-2.js
+ */
+export function groupExternalImports(node: BundleStatsNode): BundleStatsNode {
+  if (!node.children?.length) return node;
+
+  // For root nodes, collect all external imports from all chunks
+  if (
+    node.values.type === 'group' &&
+    node.children.some(child => child.values.type === 'chunk')
+  ) {
+    const processedChildren: BundleStatsNode[] = [];
+    const allExternalImportGroups: BundleStatsNode[] = [];
+
+    // Process each child (likely chunks)
+    for (const child of node.children) {
+      if (child.values.type === 'chunk') {
+        // Process chunk and collect its external imports
+        const { processedChunk, externalImports } =
+          processChunkAndExtractExternalImports(child);
+        processedChildren.push(processedChunk);
+
+        // Create chunk-specific external imports group if there are any
+        if (externalImports.length > 0) {
+          const externalImportsGroup: BundleStatsNode = {
+            name: `external imports from ${child.name}`,
+            values: {
+              type: 'group' as const,
+              bytes: 0, // External imports don't contribute to bundle size
+              path: 'external-imports',
+              childCount: externalImports.length,
+              icon: '🔗',
+            },
+            children: externalImports.map(imp => ({
+              ...imp,
+              name: imp.name.replace('imported from ▶ ', ''), // Remove the prefix
+              values: {
+                ...imp.values,
+                type: 'input' as const, // Change type to show 📄 icon
+              },
+            })),
+          };
+
+          allExternalImportGroups.push(externalImportsGroup);
+        }
+      } else {
+        // Process other types recursively
+        processedChildren.push(groupExternalImports(child));
+      }
+    }
+
+    // Add all external import groups at the end
+    const finalChildren = [...processedChildren, ...allExternalImportGroups];
+
+    return {
+      ...node,
+      children: finalChildren,
+    };
+  }
+
+  // For chunk nodes, process input files but don't include external imports as children
+  if (node.values.type === 'chunk') {
+    const inputFiles: BundleStatsNode[] = [];
+    const externalImportGroups: BundleStatsNode[] = [];
+
+    // Get all bundled input paths for this chunk to distinguish bundled vs external imports
+    const bundledInputPaths = new Set<string>();
+    for (const child of node.children) {
+      if (child.values.type === 'input') {
+        bundledInputPaths.add(child.values.path);
+      }
+    }
+
+    // Process each child of the chunk
+    for (const child of node.children) {
+      if (child.values.type === 'input') {
+        // For input files, separate bundled content from external imports
+        const bundledContent: BundleStatsNode[] = [];
+        const externalImports: BundleStatsNode[] = [];
+
+        if (child.children) {
+          for (const importNode of child.children) {
+            if (bundledInputPaths.has(importNode.values.path)) {
+              // This import is also bundled into this chunk - show as bundled content
+              bundledContent.push(groupExternalImports(importNode));
+            } else {
+              // This import is external to this chunk - collect for external imports group
+              externalImports.push(groupExternalImports(importNode));
+            }
+          }
+        }
+
+        // Add the input file with bundled content as children
+        inputFiles.push({
+          ...child,
+          children: bundledContent.length > 0 ? bundledContent : undefined,
+        });
+
+        // Create external imports group if there are external imports
+        if (externalImports.length > 0) {
+          const externalImportsBytes = externalImports.reduce((sum, imp) => {
+            return sum + (imp.values?.bytes || 0);
+          }, 0);
+
+          const externalImportsCount = externalImports.reduce((sum, imp) => {
+            return sum + (imp.values?.childCount || 1);
+          }, 0);
+
+          const externalImportsGroup: BundleStatsNode = {
+            name: `static imports from ${child.name}`,
+            values: {
+              type: 'group' as const,
+              bytes: externalImportsBytes,
+              path: 'static-imports',
+              childCount: externalImportsCount,
+              icon: '🔗',
+            },
+            children: externalImports,
+          };
+
+          externalImportGroups.push(externalImportsGroup);
+        }
+      } else if (child.values.type === 'import') {
+        // External imports (chunk dependencies) - these will be handled at root level
+        // Skip them here, they'll be collected by processChunkAndExtractExternalImports
+      } else {
+        // Other types (groups, etc.) are bundled content - process recursively
+        inputFiles.push(groupExternalImports(child));
+      }
+    }
+
+    // Return chunk with only input files and external import groups (no chunk imports)
+    return {
+      ...node,
+      children: [...inputFiles, ...externalImportGroups],
+    };
+  }
+
+  // For all other nodes, just process children recursively
+  const processedChildren = node.children.map(child =>
+    groupExternalImports(child),
+  );
+
+  return {
+    ...node,
+    children: processedChildren,
+  };
+}
+
+/**
+ * Helper function to process a chunk and extract its external imports
+ */
+function processChunkAndExtractExternalImports(chunk: BundleStatsNode): {
+  processedChunk: BundleStatsNode;
+  externalImports: BundleStatsNode[];
+} {
+  if (!chunk.children?.length) {
+    return { processedChunk: chunk, externalImports: [] };
+  }
+
+  const inputFiles: BundleStatsNode[] = [];
+  const externalImportGroups: BundleStatsNode[] = [];
+  const externalImports: BundleStatsNode[] = [];
+
+  // Get all bundled input paths for this chunk
+  const bundledInputPaths = new Set<string>();
+  for (const child of chunk.children) {
+    if (child.values.type === 'input') {
+      bundledInputPaths.add(child.values.path);
+    }
+  }
+
+  // Process each child of the chunk
+  for (const child of chunk.children) {
+    if (child.values.type === 'input') {
+      // For input files, separate bundled content from external imports
+      const bundledContent: BundleStatsNode[] = [];
+      const childExternalImports: BundleStatsNode[] = [];
+
+      if (child.children) {
+        for (const importNode of child.children) {
+          if (bundledInputPaths.has(importNode.values.path)) {
+            // This import is also bundled into this chunk - show as bundled content
+            bundledContent.push(groupExternalImports(importNode));
+          } else {
+            // This import is external to this chunk - collect for external imports group
+            childExternalImports.push(groupExternalImports(importNode));
+          }
+        }
+      }
+
+      // Add the input file with bundled content as children
+      inputFiles.push({
+        ...child,
+        children: bundledContent.length > 0 ? bundledContent : undefined,
+      });
+
+      // Create external imports group if there are external imports
+      if (childExternalImports.length > 0) {
+        const externalImportsBytes = childExternalImports.reduce((sum, imp) => {
+          return sum + (imp.values?.bytes || 0);
+        }, 0);
+
+        const externalImportsCount = childExternalImports.reduce((sum, imp) => {
+          return sum + (imp.values?.childCount || 1);
+        }, 0);
+
+        const externalImportsGroup: BundleStatsNode = {
+          name: `static imports from ${child.name}`,
+          values: {
+            type: 'group' as const,
+            bytes: externalImportsBytes,
+            path: 'static-imports',
+            childCount: externalImportsCount,
+            icon: '🔗',
+          },
+          children: childExternalImports,
+        };
+
+        externalImportGroups.push(externalImportsGroup);
+      }
+    } else if (child.values.type === 'import') {
+      // External imports (chunk dependencies) - collect for root level
+      externalImports.push(groupExternalImports(child));
+    } else {
+      // Other types (groups, etc.) are bundled content - process recursively
+      inputFiles.push(groupExternalImports(child));
+    }
+  }
+
+  const processedChunk: BundleStatsNode = {
+    ...chunk,
+    children: [...inputFiles, ...externalImportGroups],
+  };
+
+  return { processedChunk, externalImports };
+}
+
 function cachifyNode(node: BundleStatsNode): CachedNode {
   const nodeBytes = node.values.bytes || 0;
   const fileCount = (node.values as any).childCount || 1;

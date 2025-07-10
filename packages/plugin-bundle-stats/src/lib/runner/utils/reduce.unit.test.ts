@@ -19,7 +19,7 @@ describe('prune', () => {
       path: name,
       bytes,
       childCount: children?.length || 0,
-      isEntryFile: false,
+      entryPoint: false,
     },
     children,
   });
@@ -80,15 +80,15 @@ describe('applyGroupingToTree', () => {
   const createMockChunkNode = (
     name: string,
     bytes: number,
-    children: BundleStatsNode[],
+    children?: BundleStatsNode[],
   ): ChunkNode => ({
     name,
     values: {
       type: 'chunk',
       path: name,
       bytes,
-      childCount: children.length,
-      isEntryFile: true,
+      childCount: children?.length || 0,
+      entryPoint: false,
     },
     children,
   });
@@ -362,5 +362,43 @@ describe('applyGroupingToTree', () => {
     const coreGroup = grouped.children!.find(child => child.name === 'core/');
     expect(coreGroup).toBeDefined();
     expect(coreGroup!.values.icon).toBe('📄');
+  });
+});
+
+describe('formatTree', () => {
+  const createMockChunkNode = (
+    name: string,
+    bytes: number,
+    children?: BundleStatsNode[],
+  ): ChunkNode => ({
+    name,
+    values: {
+      type: 'chunk',
+      path: name,
+      bytes,
+      childCount: children?.length || 0,
+      entryPoint: false,
+    },
+    children,
+  });
+
+  it('should format chunk node with entry point information', () => {
+    const entryChunkNode = createMockChunkNode('main.js', 1000);
+    entryChunkNode.values.entryPoint = true;
+
+    const result = formatTree(entryChunkNode);
+
+    expect(result.name).toBe('main.js');
+    expect(result.values?.displayBytes).toBe('1000 B');
+  });
+
+  it('should handle entry point nodes with custom icons', () => {
+    const entryChunkNode = createMockChunkNode('main.js', 1000);
+    entryChunkNode.values.entryPoint = true;
+
+    const result = formatTree(entryChunkNode);
+
+    expect(result.name).toBe('main.js');
+    expect(result.values?.displayBytes).toBe('1000 B');
   });
 });

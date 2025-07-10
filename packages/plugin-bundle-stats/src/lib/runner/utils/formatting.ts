@@ -59,10 +59,10 @@ const NODE_TYPE_ICONS = {
 export function getImportIcon(
   importKind?: SupportedImportKind,
   specificKind?: string,
-  isEntryPoint?: boolean,
+  entryPoint?: string | boolean,
 ): string {
   // Entry points get special treatment
-  if (isEntryPoint) {
+  if (entryPoint) {
     return IMPORT_TYPE_ICONS['entry-point'];
   }
 
@@ -115,7 +115,7 @@ export function formatNodeLabel(node: BundleStatsNode): string {
 
   // Add context for chunks
   if (node.values.type === 'chunk') {
-    const entryLabel = node.values.isEntryFile ? ' [entry]' : '';
+    const entryLabel = node.values.entryPoint ? ' [entry]' : '';
     return `${icon} ${displayName}${entryLabel}${sizeInfo}`;
   }
 
@@ -205,7 +205,7 @@ export function getNodeIconAndPrefix(
   const isMainEntry =
     isEntry ||
     (node.values.type === 'chunk' &&
-      node.values.isEntryFile &&
+      node.values.entryPoint &&
       (node.name.includes('main') || node.name.includes('polyfills')));
 
   if (isMainEntry) {
