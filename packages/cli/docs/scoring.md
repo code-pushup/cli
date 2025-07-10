@@ -297,7 +297,7 @@ xychart-beta
 
 ---
 
-### Issue Penalty Scoring Details
+### Issue Penalty Scoring
 
 Combines threshold limits with diagnostic penalties for comprehensive scoring.
 
@@ -341,11 +341,27 @@ Bundle size + ESLint errors, page load time + accessibility warnings, complexity
 | `we`      | Weight per error (default 1)                    |
 | `ww`      | Weight per warning (default 0.5)                |
 
-$$\text{thresholdScore} = \begin{cases} 1, & S \leq M \\[4pt] \max(0, 1 - \frac{S-M}{M}), & S > M \end{cases}$$
+##### Size score
 
-$$\text{penalty} = w_e \times E + w_w \times W$$
+$`
+\mathrm{sizeScore} =
+\begin{cases}
+1, & S \le M\\[6pt]
+\max\bigl(0,\;1 - \tfrac{S - M}{M}\bigr), & S > M
+\end{cases}
+`$
 
-$$\text{finalScore} = \max\left(0, \text{thresholdScore} - \frac{\text{penalty}}{w_e + w_w}\right)$$
+##### Issues penalty
+
+$`
+\mathrm{penalty} = we \times E \;+\; ww \times W
+`$
+
+##### Final blended score
+
+$`
+\mathrm{finalScore} = \max\!\Bigl(0,\;\mathrm{sizeScore} - \frac{\mathrm{penalty}}{we + ww}\Bigr)
+`$
 
 **Example:** Value=15 (threshold: 10), 1 error, 2 warnings → thresholdScore = 0.5, penalty = 2, finalScore = 0
 
@@ -353,9 +369,9 @@ $$\text{finalScore} = \max\left(0, \text{thresholdScore} - \frac{\text{penalty}}
 
 ```mermaid
 xychart-beta
-    title "Issue Penalty Score (M=10, 1 error, 2 warnings)"
-    x-axis "Value" [0,2,4,6,8,10,12,14,16,18,20]
+    title "Score vs Artifact Size (with penalty shift)"
+    x-axis [0, 1, 1.25, 1.5, 1.75, 2]
     y-axis "Score" 0 --> 1
-    line "Threshold Only" [1,1,1,1,1,1,0.83,0.71,0.6,0.5,0.4]
-    line "With Penalties" [0,0,0,0,0,0,0,0,0,0,0]
+    line Original  [1, 1,   0.75, 0.5, 0.25, 0]
+    line Penalized [0.5, 0.5, 0.25, 0,   0,    0]
 ```
