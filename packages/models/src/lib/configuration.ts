@@ -1,0 +1,28 @@
+import { z } from 'zod';
+
+/**
+ * Generic schema for a tool command configuration, reusable across plugins.
+ */
+export const artifactGenerationCommand = z.object({
+  command: z.string({ description: 'Generate artifact files' }).min(1),
+  args: z
+    .array(z.string(), {
+      description: 'Arguments to be passed to the artifact generation command.',
+    })
+    .optional(),
+});
+
+export const artifactGenerationCommandSchema = z.union([
+  z.string({ description: 'Command as a single string' }).min(1),
+  z.object({
+    command: z.string({ description: 'Generate artifact files' }).min(1),
+    args: z.array(z.string()).optional(),
+  }),
+]);
+
+export const pluginArtifactOptionsSchema = z.object({
+  generateArtifacts: artifactGenerationCommandSchema.optional(),
+  artifactsPaths: z.union([z.string(), z.array(z.string()).min(1)]),
+});
+
+export type PluginArtifactOptions = z.infer<typeof pluginArtifactOptionsSchema>;
