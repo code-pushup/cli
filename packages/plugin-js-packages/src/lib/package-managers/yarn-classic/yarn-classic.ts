@@ -1,5 +1,4 @@
 import { dependencyGroupToLong } from '../../constants.js';
-import { COMMON_AUDIT_ARGS, COMMON_OUTDATED_ARGS } from '../constants.js';
 import type { PackageManager } from '../types.js';
 import { yarnClassicToAuditResult } from './audit-result.js';
 import { yarnClassicToOutdatedResult } from './outdated-result.js';
@@ -16,15 +15,15 @@ export const yarnClassicPackageManager: PackageManager = {
   },
   audit: {
     getCommandArgs: groupDep => [
-      ...COMMON_AUDIT_ARGS,
-      '--groups',
-      dependencyGroupToLong[groupDep],
+      'audit',
+      `--groups=${dependencyGroupToLong[groupDep]}`,
+      '--json',
     ],
     ignoreExitCode: true,
     unifyResult: yarnClassicToAuditResult,
   },
   outdated: {
-    commandArgs: COMMON_OUTDATED_ARGS,
+    commandArgs: ['outdated', '--json'],
     unifyResult: yarnClassicToOutdatedResult,
   },
 };
