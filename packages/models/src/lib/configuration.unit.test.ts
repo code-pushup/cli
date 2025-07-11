@@ -94,4 +94,34 @@ describe('pluginArtifactOptionsSchema', () => {
     };
     expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
   });
+
+  it('should validate with generateArtifacts as a string', () => {
+    const data = {
+      generateArtifacts: 'yarn test --coverage',
+      artifactsPaths: 'coverage/lcov.info',
+    };
+    expect(pluginArtifactOptionsSchema.safeParse(data)).toStrictEqual({
+      success: true,
+      data: {
+        generateArtifacts: 'yarn test --coverage',
+        artifactsPaths: 'coverage/lcov.info',
+      },
+    });
+  });
+
+  it('should fail if generateArtifacts is an empty string', () => {
+    const data = {
+      generateArtifacts: '',
+      artifactsPaths: 'coverage/lcov.info',
+    };
+    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
+  });
+
+  it('should fail if generateArtifacts is a number', () => {
+    const data = {
+      generateArtifacts: 123,
+      artifactsPaths: 'coverage/lcov.info',
+    };
+    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
+  });
 });

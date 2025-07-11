@@ -12,12 +12,16 @@ export const artifactGenerationCommand = z.object({
     .optional(),
 });
 
-export type ArtifactGenerationCommand = z.infer<
-  typeof artifactGenerationCommand
->;
+export const artifactGenerationCommandSchema = z.union([
+  z.string({ description: 'Command as a single string' }).min(1),
+  z.object({
+    command: z.string({ description: 'Generate artifact files' }).min(1),
+    args: z.array(z.string()).optional(),
+  }),
+]);
 
 export const pluginArtifactOptionsSchema = z.object({
-  generateArtifacts: artifactGenerationCommand.optional(),
+  generateArtifacts: artifactGenerationCommandSchema.optional(),
   artifactsPaths: z.union([z.string(), z.array(z.string()).min(1)]),
 });
 
