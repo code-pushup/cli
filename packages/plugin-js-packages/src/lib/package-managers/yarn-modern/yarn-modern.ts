@@ -1,6 +1,5 @@
 // Yarn v2 does not currently audit optional dependencies
 import type { DependencyGroup } from '../../config.js';
-import { COMMON_AUDIT_ARGS, COMMON_OUTDATED_ARGS } from '../constants.js';
 import type { PackageManager } from '../types.js';
 import { yarnBerryToAuditResult } from './audit-result.js';
 import { yarnBerryToOutdatedResult } from './outdated-result.js';
@@ -23,18 +22,25 @@ export const yarnModernPackageManager: PackageManager = {
     outdated: 'https://github.com/mskelton/yarn-plugin-outdated',
   },
   audit: {
-    getCommandArgs: groupDep => [
-      'npm',
-      ...COMMON_AUDIT_ARGS,
-      '--environment',
-      yarnModernEnvironmentOptions[groupDep],
-    ],
+    getCommandArgs: groupDep => {
+      const environment = yarnModernEnvironmentOptions[groupDep];
+      return [
+        'npm',
+        'audit',
+        ...(environment ? [`--environment=${environment}`] : []),
+        '--json',
+      ];
+    },
     supportedDepGroups: ['prod', 'dev'], // Yarn v2 does not support audit for optional dependencies
     unifyResult: yarnBerryToAuditResult,
     ignoreExitCode: true,
   },
   outdated: {
-    commandArgs: [...COMMON_OUTDATED_ARGS, '--workspace=.'], // filter out other packages in case of Yarn workspaces
+    commandArgs: [
+      'outdated',
+      '--workspace=.', // filter out other packages in case of Yarn workspaces
+      '--json',
+    ],
     unifyResult: yarnBerryToOutdatedResult,
   },
 };
