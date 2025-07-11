@@ -27,6 +27,7 @@ export const yarnModernPackageManager: PackageManager = {
       return [
         'npm',
         'audit',
+        '--recursive',
         ...(environment ? [`--environment=${environment}`] : []),
         '--json',
       ];
