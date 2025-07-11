@@ -135,7 +135,9 @@ export default {
 
 ### Assigning weights to URLs
 
-You can assign custom weights to each URL by passing an object instead of an array. The keys are URLs, and the values are their weights:
+You can assign custom weights to URLs by passing an object instead of an array. This is useful when some pages are more important than others (e.g., your homepage vs. a contact page). The keys are URLs, and the values are their weights.
+
+URLs with higher weights contribute more to the overall category scores. For example, a URL with weight 2 has twice the influence of a URL with weight 1.
 
 ```ts
 import lighthousePlugin from '@code-pushup/lighthouse-plugin';
@@ -152,45 +154,62 @@ export default {
 };
 ```
 
-These weights influence how results from each URL contribute to the overall category scores.
-
 ### Categories with multiple URLs
 
-When running Lighthouse against multiple URLs, it is recommended to use the `mergeLighthouseCategories` utility. This helper ensures that categories are correctly expanded and results are aggregated per URL, whether you provide your own custom categories or use the plugin's default categories.
+When running Lighthouse against multiple URLs, use the `mergeLighthouseCategories` utility to ensure categories are correctly expanded and results are aggregated per URL.
+
+#### Basic usage
+
+```ts
+import lighthousePlugin, { mergeLighthouseCategories } from '@code-pushup/lighthouse-plugin';
+
+const lhPlugin = await lighthousePlugin(urls);
+
+export default {
+  plugins: [
+    // ...
+    lhPlugin,
+  ],
+  categories: [
+    // ...
+    ...mergeLighthouseCategories(lhPlugin),
+  ],
+};
+```
+
+#### Custom categories
 
 If you provide custom categories, you can reference both groups and audits as usual. The merging utility will expand each referenced group or audit for every URL, assigning the correct per-URL weight.
 
 ```ts
-import lighthousePlugin, { lighthouseAuditRef, lighthouseGroupRef } from '@code-pushup/lighthouse-plugin';
+import lighthousePlugin, { lighthouseAuditRef, lighthouseGroupRef, mergeLighthouseCategories } from '@code-pushup/lighthouse-plugin';
 
 const lhPlugin = await lighthousePlugin(urls);
 
 export default {
   // ...
-  plugins: [lhPlugin],
-  categories: mergeLighthouseCategories(lhPlugin, [
-    {
-      slug: 'performance',
-      title: 'Performance',
-      refs: [lighthouseGroupRef('performance'), lighthouseAuditRef('first-contentful-paint', 2)],
-    },
-  ]),
+  plugins: [
+    // ...
+    lhPlugin,
+  ],
+  categories: [
+    // ...
+    ...mergeLighthouseCategories(lhPlugin, [
+      {
+        slug: 'performance',
+        title: 'Performance',
+        refs: [lighthouseGroupRef('performance'), lighthouseAuditRef('first-contentful-paint', 2)],
+      },
+    ]),
+  ],
 };
 ```
 
-If you do not provide custom categories, you can still use the merging utility to generate categories from the plugin's groups for all URLs.
-
-**How weights are assigned:**
-
-- If you assign weights to URLs, those weights take precedence for each expanded reference.
-- If a reference (audit or group) also has a weight, it is used as a fallback.
-- If neither is set, a default weight of `1` is used.
-
 ### Behavior Summary
 
-- If you provide custom categories, the plugin expands all referenced audits and groups for each URL.
-- If you do not provide categories, the plugin auto-generates categories from Lighthouse groups.
-- If you provide an empty array (`categories: []`), no categories are created or expanded.
+- **No categories**: The plugin auto-generates categories from the plugin's default Lighthouse groups.
+- **Custom categories**: The plugin expands all referenced audits and groups for each URL, applying appropriate weights.
+- **Empty array** (`categories: []`): No categories are created or expanded, which is useful when you only want audit data.
 
 ## Flags
 
