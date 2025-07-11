@@ -1,0 +1,518 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+
+In this document you can find information about the CLI test suite and guidelines for writing tests for the CLI.
+
+# Test suites
+On this project, we distinguish three types of functional tests by scope - unit tests, integration tests and E2E tests. All tests are written using [Vitest](mdc:https:/vitest.dev)
+
+## Unit tests
+- Their scope refers to an isolated unit of code.
+- Aim to only test the internal logic and use mocks where needed in order to narrow down the testing scope (file system and other).
+- These tests are located **next to their production code counterpart** and have the `.unit.test.ts` suffix.
+- One can run unit tests for a given package via `npx nx run <package>:unit-test`
+- One can run all unit tests via `npx nx run-many -t unit-test`
+
+## Integration tests
+- Their scope refers to a bigger unit of code in isolation or an integration with a 3rd-party tool.
+- Aim to test the output of the unit as a whole. When communicating with a 3rd-party tool, only tests its usage in CodePushup.
+- These tests are also located **next to their production code counterpart** and have the `.integration.test.ts` suffix.
+- Run integration tests for a given package via `npx nx run <package>:integration-test`
+- Run all integration tests via `npx nx run-many -t integration-test`
+
+# Automation
+
+### run afftected tests
+
+The test suites can be triggered with:
+- `nx run <package>:<unit-test|integration-test>`
+- `nx <unit-test|integration-test> <package>`
+- `nx run-many -t <unit-test|integration-test>`
+
+The test tests can be configured with:
+- `nx <unit-test|integration-test> <package> -t <test-name-pattern>` - fine-grained test selection
+- `nx <unit-test|integration-test> <package> --coverage.enabled` - coverage report
+
+# Testing utilities
+In order to keep the maintenance cost lower, there is a folder dedicated to testing utilities called `testing`. Any fixtures, helper functions, constants or mocks usable by multiple tests should be added to the [test-utils](mdc:https:/github.com/code-pushup/cli/tree/main/testing/test-utils) subfolder.
+
+The folder structure should be `fixtures` for fixed data or examples and `utils` for utility functions.
+
+The exception to this may be a utility which is applicable only to the current package. In this case, each package shall use the `mocks` folder to mirror the hierarchy of the `testing-utils` - fixtures go into `fixtures` subfolder and functions into `utils` subfolder. TypeScript is set up to include this folder only for its test configuration.
+
+## Mocking
+Each test suite has a predefined set of setup files which mock appropriate parts of the logic. These mock setups may be found in the [setup](mdc:https:/github.com/code-pushup/cli/tree/main/testing/test-setup) folder of the `testing-utils` library.
+
+One may apply them inside `vitest.(unit|integration|e2e).config.ts` in the following way:
+
+```typescript
+export default defineConfig({
+  // ...
+  test: {
+    // ...
+    setupFiles: [
+      // any setup files go here, e.g. for mocking the console
+      '../../testing-utils/src/lib/setup/console.mock.ts',
+    ],
+  },
+});
+```
+
+> [!TIP]
+> There is an additional file [reset.mocks.ts](mdc:https:/github.com/code-pushup/cli/blob/main/testing-utils/src/lib/setup/reset.mocks.ts) which may be included in the `setupFiles` to automatically reset your mocks.
+
+The main setup is currently divided between unit and integration tests in the following way:
+- Unit tests always have the console, file system and current working directory (points to the in-memory file system) mocked.
+- Integration tests always have the console mocked.
+
+## Test outputs
+In order to keep the repository clean, test outputs should target ignored folders, such as `node_modules` or `tmp`.
+
+The `tmp` folder flow should be as follows:
+- Any test that needs outputs should create its own subfolder under `tmp`, e.g. in `beforeAll` of a given test suite.
+- After the test suite is run, this subfolder should be removed in `afterAll`.
+
+> [!IMPORTANT]
+> A test suite should not expect the `tmp` folder to be created. Therefore, the subfolder should be created via [mkdir](mdc:https:/nodejs.org/api/fs.html#fspromisesmkdirpath-options) with `{ recursive: true }`.
+> Likewise, a test suite should not remove the `tmp` folder itself, only the subfolder needed for the given test suite.
+
+> [!TIP]
+> `setupTestFolder` and `teardownTestFolder` utility functions from [test-folder-setup](mdc:https:/github.com/code-pushup/cli/blob/main/testing/test-setup/src/lib/test-folder.setup.ts) may be used.
+
+# Test quality
+
+## Good practices
+
+### Motivation
+I found it best to imagine **I am writing tests for a colleague who hasn't implemented that feature**. They are most likely reviewing my code, debugging a failing test or checking the test coverage. So they want to either find out **what behaviour** is being tested (and **how**) or where the tested **values** come from. And the less time they spend on trying to understand the tests, the better.
+
+### Principles for Writing Readable and Maintainable Tests
+
+> [!IMPORTANT]
+> Test code is read and maintained far more than it's written. Optimise for **DAMP** (Descriptive and Meaningful Phrases).
+
+The primary goal of test code is **readability**. Other developers (not just you) will read and maintain these tests. Here are common pitfalls and their improved alternatives:
+
+---
+
+#### ✅ Test Descriptions
+
+Test descriptions should **clearly communicate the use case** being tested. Avoid vague or abstract phrases — they don’t help readers understand intent.
+
+---
+
+**🔴 BAD: Too vague**
+
+//```ts
+it('should return correct data');
+//```
+
+**✅ GOOD: Descriptive and specific**
+
+//```ts
+it('should return the user object for a given user ID');
+//```
+
+---
+
+**🔴 BAD: Abstract and unclear**
+
+//```ts
+it('when X is set to true, Y is returned');
+//```
+
+**✅ GOOD: Explains the actual condition and outcome**
+
+//```ts
+it('should return the user object containing the passed filter property when doFilter is true');
+//```
+
+> A good test name should make the use case obvious without needing to read the implementation.
+
+---
+
+#### ✅ Keep describe blocks flat. Use them for Scoped Context only.
+
+Use `describe` **only** to group tests that share setup or context. Don’t nest for no reason.
+
+---
+
+**🔴 BAD: Unnecessary nesting**
+
+//```ts
+describe('UserService', () => {
+  describe('getUser', () => {
+    it('returns user', () => { /* ... */ });
+  });
+});
+//```
+
+**✅ GOOD: Flat when no shared setup**
+
+//```ts
+describe('UserService.getUser', () => {
+  it('returns user', () => { /* ... */ });
+});
+//```
+
+**✅ GOOD: Nest only with shared context**
+
+//```ts
+describe('UserService', () => {
+  beforeEach(() => initDb());
+  describe('getUser', () => {
+    it('returns user', () => { /* ... */ });
+  });
+});
+//```
+
+
+#### ✅ Test Scope and Relevance
+
+A test should focus on a **single, clearly defined use case**. Avoid mixing concerns or testing implementation details. Let’s look at concise and intuitive examples:
+
+---
+
+**🔴 BAD: Mixing multiple responsibilities in one test**
+
+//```ts
+it('should retrieve the user and check details', () => {
+  const user = getUserById('123');
+
+  expect(user.name).toBe('Alice');           // retrieval
+  expect(user.role).toBe('admin');           // role logic
+  expect(user.permissions).toContain('edit'); // permission logic
+});
+//```
+
+**✅ GOOD: One responsibility per test**
+
+//```ts
+it('should return user by ID', () => {
+  const user = getUserById('123');
+  expect(user.name).toBe('Alice');
+});
+
+it('should assign admin role to user', () => {
+  const user = getUserById('123');
+  expect(user.role).toBe('admin');
+});
+
+it('should grant edit permission to admins', () => {
+  const user = getUserById('123');
+  expect(user.permissions).toContain('edit');
+});
+//```
+
+---
+
+**🔴 BAD: Testing implementation (how), not behavior**
+
+//```ts
+it('should charge the payment API', () => {
+  const spy = vi.spyOn(paymentApi, 'charge'); // too focused on internals
+  processPayment(order);
+
+  expect(spy).toHaveBeenCalledWith(order.total);
+});
+//```
+
+**✅ GOOD: Test what matters to the user (the result)**
+
+//```ts
+it('should return success when payment is processed', () => {
+  const result = processPayment(order);
+  expect(result.status).toBe('success');
+});
+//```
+
+> Keep tests laser-focused. Test *what* the system does, not *how* it does it.
+
+---
+
+#### Test data 
+
+TODO: inline data, minimal data, no setup var data.
+
+#### check data structures
+
+TODO strict equal et  maybe already here
+
+#### ✅ Choosing Between `it.each` and Separate `it` Blocks
+
+Use `it.each` for simple, uniform cases; for complex objects write separate `it` blocks.
+
+---
+
+**🔴 BAD: Complex objects in `it.each`**
+
+//```ts
+it.each([
+  [{ name: 'Alice', role: 'admin', perms: ['read','write'] }],
+  [{ name: 'Bob',   role: 'guest', perms: ['read'] }],
+])('createUser(%o)', async (user) => {
+  const res = await createUser(user);
+  expect(res).toMatchObject({ ...user, id: expect.any(String) });
+});
+//```
+
+**✅ GOOD: Separate `it` blocks for complex cases**
+
+//```ts
+it('creates admin with read/write perms', async () => {
+  const admin = { name: 'Alice', role: 'admin', perms: ['read','write'] };
+  await expect(createUser(admin)).resolves.toMatchObject({ ...admin, id: expect.any(String) });
+});
+
+it('creates guest with read-only perms', async () => {
+  const guest = { name: 'Bob', role: 'guest', perms: ['read'] };
+  await expect(createUser(guest)).resolves.toMatchObject({ ...guest, id: expect.any(String) });
+});
+//```
+
+---
+
+**🔴 BAD: Separate `it` blocks for regex**
+
+//```ts
+it('accepts valid com email', () => {
+  expect(validateEmail('alice@example.com')).toBe(true);
+});
+it('accepts valid io email', () => {
+  expect(validateEmail('alice@example.io')).toBe(false);
+});
+//```
+
+**✅ GOOD: `it.each` for regex cases**
+
+//```ts
+it.each([
+  ['alice@example.com'],
+  ['alice@example.io'],
+])('validateEmail(%s) → true', (input) => {
+  expect(validateEmail(input)).toBe(true);
+});
+//```
+
+
+#### ✅ Test Flow
+
+Tests should be **linear** and **self-contained** — easy to read from top to bottom with no detours or mental overhead.
+
+---
+
+**🔴 BAD: Uses conditionals — adds unnecessary logic**
+
+//```ts
+it('should calculate discount', () => {
+  const isPremium = true;
+  const discount = isPremium ? 20 : 10;
+
+  expect(applyDiscount(100, discount)).toBe(80);
+});
+//```
+
+**✅ GOOD: Clear and direct**
+
+//```ts
+it('should apply 20% discount for premium users', () => {
+  expect(applyDiscount(100, 20)).toBe(80);
+});
+//```
+
+---
+
+**🔴 BAD: Depends on external helper — hides test context**
+
+//```ts
+it('should send welcome email', () => {
+  const user = createTestUser(); // unclear details
+  expectEmailSentTo(user.email);
+});
+//```
+
+**✅ GOOD: All data is in the test itself**
+
+//```ts
+it('should send welcome email', () => {
+  const user = { email: 'alice@example.com' };
+  expectEmailSentTo('alice@example.com');
+});
+//```
+
+> Avoid logic and hidden setup. A test should **tell a story at a glance**.
+
+---
+
+#### ✅ Value Usage
+
+Tests should use **realistic, descriptive, and direct values**. Avoid vague names and overly abstract helpers.
+
+---
+
+**🔴 BAD: Vague names, unclear intent**
+
+//```ts
+it('should return correct result', () => {
+  const temp = getData(mockData);
+  expect(result1).toEqual(temp);
+});
+//```
+
+**✅ GOOD: Clear and meaningful**
+
+//```ts
+it('should return active user', () => {
+  const input = { id: '123', status: 'active' };
+  expect(getUser(input).status).toBe('active');
+});
+//```
+
+---
+
+**🔴 BAD: Helper hides test logic**
+
+//```ts
+it('should reject invalid login', () => {
+  const user = createInvalidUser();
+  expect(authenticate(user)).toBe(false);
+});
+//```
+
+**✅ GOOD: Explicit and readable**
+
+//```ts
+it('should reject wrong password', () => {
+  const user = { username: 'alice', password: 'wrongpass' };
+  expect(authenticate(user)).toBe(false);
+});
+//```
+
+> Prefer direct values over indirection. Clarity beats cleverness in tests.
+
+---
+
+#### ✅ Naming
+
+Names should **immediately convey purpose**. Avoid generic terms that require context to understand.
+
+---
+
+**🔴 BAD**
+
+//```ts
+const data = getData();
+const result = mock(data);
+//```
+
+**✅ GOOD**
+
+//```ts
+const user = createUserWithEmail('alice@example.com');
+const token = generateAdminToken(user);
+//```
+
+---
+
+#### ✅ DRY in Balance with DAMP
+
+---
+
+**🔴 BAD: Repeated tests**
+
+//```ts
+it('adds 1+1', () => expect(add(1,1)).toBe(2));
+it('adds 2+2', () => expect(add(2,2)).toBe(4));
+//```
+
+**✅ GOOD: Dynamic tests with `it.each`**
+
+//```ts
+it.each([
+  [1, 1, 2],
+  [2, 2, 4],
+])('add(%i, %i) → %i', (a, b, expected) => {
+  expect(add(a, b)).toBe(expected);
+});
+//```
+
+---
+
+**🔴 BAD: Duplicating setup in every file**
+
+//```ts
+import { initDb } from './db';
+beforeEach(() => initDb());
+//```
+
+**✅ GOOD: Centralize in config or utils**
+
+//```ts
+// vitest.config.ts
+export default {
+  setupFiles: ['./testing-utils/initDb.ts'],
+};
+
+---
+
+**🔴 BAD: Same behavior tested in two places**
+
+//```ts
+// auth/user.spec.ts
+it('validates email format', () => {
+  expect(validateEmail('alice@example.com')).toBe(true);
+});
+
+// utils/email.spec.ts
+it('validates email format', () => {
+  expect(validateEmail('alice@example.com')).toBe(true);
+});
+//```
+
+**✅ GOOD: One focused test in a single spec**
+
+//```ts
+// tests/validateEmail.spec.ts
+it('returns true for valid email addresses', () => {
+  expect(validateEmail('alice@example.com')).toBe(true);
+});
+//```
+
+---
+
+By writing tests this way, you ensure they're easy to understand, maintain, and extend.
+
+
+## ESLint rules
+
+[![CI](mdc:https:/github.com/code-pushup/cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/code-pushup/cli/actions/workflows/ci.yml?query=branch%3Amain)
+
+Vitest is a powerful tool. Its methods should be fully utilised to serve the tests. In order to ensure the quality of our test code and promote Vitest's good practices, we have a set of ESLint rules in place for our test files. We use our own set of ESLint rules which can be found and reused from [@code-pushup/eslint-config](mdc:https:/github.com/code-pushup/eslint-config). The test rules can be found in [@code-pushup/eslint-config/vitest](mdc:https:/github.com/code-pushup/eslint-config/blob/main/docs/vitest.md).
+
+Run ESLint on a specific package via `npx nx run <package>:lint`.
+
+# Ai Prompts
+
+fix tests after valid code changes 
+
+```text
+first nvm use 23 # A fix for the current setup. IT IS VERY IMPORTANT to have a working setup before using AI. Do not fix a setup in a prompt.
+
+then
+nx integration-test cpu-prof-e2e
+
+for each test suggest a fix i can apporve.
+Do not edit files without my approval.
+
+Dont add commants. Never. 
+
+I edited the code. so the tests will fail. The code is correct. Adjust the tests..
+```
+
+# TODO
+
+nx integration-test cpu-prof --testFile src/lib/merge-cpuprofile-files.integration.test.ts -u
+
