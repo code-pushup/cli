@@ -8,7 +8,7 @@ export {
 } from './lib/constants.js';
 export { lighthouseAuditRef, lighthouseGroupRef } from './lib/utils.js';
 export type {
-  LighthouseGroupSlugs,
+  LighthouseGroupSlug,
   LighthouseOptions,
   LighthouseUrls,
 } from './lib/types.js';

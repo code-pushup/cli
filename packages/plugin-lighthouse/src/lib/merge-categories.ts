@@ -2,7 +2,7 @@ import type { CategoryConfig, Group, PluginConfig } from '@code-pushup/models';
 import { LIGHTHOUSE_GROUP_SLUGS, LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
 import { orderSlug, shouldExpandForUrls } from './processing.js';
 import { LIGHTHOUSE_GROUPS } from './runner/constants.js';
-import type { LighthouseContext, LighthouseGroupSlugs } from './types.js';
+import type { LighthouseContext, LighthouseGroupSlug } from './types.js';
 import { isLighthouseGroupSlug } from './utils.js';
 
 /**
@@ -67,7 +67,7 @@ function expandCategories(
  * Only used when user categories are not provided.
  */
 export function createAggregatedCategory(
-  groupSlug: LighthouseGroupSlugs,
+  groupSlug: LighthouseGroupSlug,
   context: LighthouseContext,
 ): CategoryConfig {
   const group = LIGHTHOUSE_GROUPS.find(({ slug }) => slug === groupSlug);
@@ -121,7 +121,7 @@ export function expandAggregatedCategory(
  * Extracts unique, unsuffixed group slugs from a list of groups.
  * Useful for deduplicating and normalizing group slugs when generating categories.
  */
-export function extractGroupSlugs(groups: Group[]): LighthouseGroupSlugs[] {
+export function extractGroupSlugs(groups: Group[]): LighthouseGroupSlug[] {
   const slugs = groups.map(({ slug }) => slug.replace(/-\d+$/, ''));
   return [...new Set(slugs)].filter(isLighthouseGroupSlug);
 }

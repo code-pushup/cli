@@ -28,7 +28,7 @@ export type LighthouseOptions = ExcludeNullableProps<
   skipAudits?: string | string[];
 };
 
-export type LighthouseGroupSlugs = (typeof LIGHTHOUSE_GROUP_SLUGS)[number];
+export type LighthouseGroupSlug = (typeof LIGHTHOUSE_GROUP_SLUGS)[number];
 
 export type WeightedUrl = Record<string, number>;
 
