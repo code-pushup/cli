@@ -1,3 +1,14 @@
+## 0.69.5 (2025-07-11)
+
+### 🩹 Fixes
+
+- **plugin-js-packages:** include url for outdated packages in modern yarn ([297766d1](https://github.com/code-pushup/cli/commit/297766d1))
+- **plugin-js-packages:** include transitive dependencies in audit for modern yarn ([8e285e93](https://github.com/code-pushup/cli/commit/8e285e93))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.69.4 (2025-07-09)
 
 ### 🩹 Fixes
