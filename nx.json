@@ -18,7 +18,7 @@
     },
     "unit-test": {
       "cache": true,
-      "inputs": ["default", "^production"],
+      "inputs": ["default", "^production", "production", "test-setup"],
       "executor": "@nx/vite:test",
       "options": {
         "configFile": "{projectRoot}/vitest.unit.config.ts",
