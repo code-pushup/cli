@@ -10,6 +10,7 @@ describe('yarnBerryToOutdatedResult', () => {
         current: '16.8.1',
         latest: '17.0.0',
         type: 'dependencies',
+        url: 'https://nx.dev/',
       },
       {
         name: 'vite',

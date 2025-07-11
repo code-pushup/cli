@@ -39,6 +39,7 @@ export const yarnModernPackageManager: PackageManager = {
     commandArgs: [
       'outdated',
       '--workspace=.', // filter out other packages in case of Yarn workspaces
+      '--url',
       '--json',
     ],
     unifyResult: yarnBerryToOutdatedResult,

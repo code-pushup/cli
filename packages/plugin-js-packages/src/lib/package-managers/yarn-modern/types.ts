@@ -36,7 +36,9 @@ export type YarnBerryOutdatedPackage = {
   current: string;
   latest: string;
   name: string;
+  range?: string;
   type: DependencyGroupLong;
+  url?: string;
   workspace?: string;
 };
 
