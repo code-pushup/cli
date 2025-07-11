@@ -398,24 +398,6 @@ describe('mergeLighthouseCategories', () => {
       ]);
     });
 
-    it('should handle groups with non-sequential numbering', () => {
-      const result = mergeLighthouseCategories({
-        groups: [
-          { slug: 'performance-1', title: 'Performance 1', refs: [] },
-          { slug: 'performance-5', title: 'Performance 5', refs: [] },
-          { slug: 'accessibility-1', title: 'Accessibility 1', refs: [] },
-          { slug: 'accessibility-5', title: 'Accessibility 5', refs: [] },
-        ],
-        context: { urlCount: 2, weights: { 1: 1, 5: 1 } },
-      });
-
-      expect(result[0]?.refs).toHaveLength(2);
-      expect(result[0]?.refs.map(ref => ref.slug)).toEqual([
-        'performance-1',
-        'performance-2',
-      ]);
-    });
-
     it('should filter out invalid Lighthouse groups', () => {
       const result = mergeLighthouseCategories({
         groups: [

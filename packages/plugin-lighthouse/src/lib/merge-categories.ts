@@ -31,11 +31,11 @@ export function mergeLighthouseCategories(
   if (!plugin.groups || plugin.groups.length === 0) {
     return categories ?? [];
   }
-  const validContext = validateContext(plugin.context);
+  validateContext(plugin.context);
   if (!categories) {
-    return createCategories(plugin.groups, validContext);
+    return createCategories(plugin.groups, plugin.context);
   }
-  return expandCategories(categories, validContext);
+  return expandCategories(categories, plugin.context);
 }
 
 function createCategories(
@@ -134,20 +134,20 @@ export class ContextValidationError extends Error {
 
 export function validateContext(
   context: PluginConfig['context'],
-): LighthouseContext {
+): asserts context is LighthouseContext {
   if (!context || typeof context !== 'object') {
     throw new ContextValidationError('must be an object');
   }
-  if (typeof context['urlCount'] !== 'number' || context['urlCount'] < 0) {
+  const { urlCount, weights } = context;
+  if (typeof urlCount !== 'number' || urlCount < 0) {
     throw new ContextValidationError('urlCount must be a non-negative number');
   }
-  if (!context['weights'] || typeof context['weights'] !== 'object') {
+  if (!weights || typeof weights !== 'object') {
     throw new ContextValidationError('weights must be an object');
   }
-  if (Object.keys(context['weights']).length !== context['urlCount']) {
-    throw new ContextValidationError('urlCount and weights length must match');
+  if (Object.keys(weights).length !== urlCount) {
+    throw new ContextValidationError('weights count must match urlCount');
   }
-  return context as LighthouseContext;
 }
 
 function resolveWeight(
