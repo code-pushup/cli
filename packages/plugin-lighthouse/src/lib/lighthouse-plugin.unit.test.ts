@@ -19,11 +19,10 @@ describe('lighthousePlugin-config-object', () => {
   });
 
   it('should create valid plugin config with multiple URLs', () => {
-    const urls = [
+    const pluginConfig = lighthousePlugin([
       'https://code-pushup-portal.com',
       'https://code-pushup-portal.com/about',
-    ];
-    const pluginConfig = lighthousePlugin(urls);
+    ]);
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
 
     const { audits, groups } = pluginConfig;
@@ -38,6 +37,18 @@ describe('lighthousePlugin-config-object', () => {
       expect.objectContaining({ slug: 'best-practices-2' }),
       expect.objectContaining({ slug: 'seo-2' }),
     ]);
+  });
+
+  it('should generate context for multiple URLs', () => {
+    const pluginConfig = lighthousePlugin({
+      'https://code-pushup-portal.com': 2,
+      'https://code-pushup-portal.com/about': 1,
+    });
+
+    expect(pluginConfig.context).toStrictEqual({
+      urlCount: 2,
+      weights: { 1: 2, 2: 1 },
+    });
   });
 
   it.each([
