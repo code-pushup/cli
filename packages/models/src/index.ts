@@ -67,8 +67,10 @@ export {
 } from './lib/persist-config.js';
 export {
   pluginConfigSchema,
+  pluginContextSchema,
   pluginMetaSchema,
   type PluginConfig,
+  type PluginContext,
   type PluginMeta,
 } from './lib/plugin-config.js';
 export {

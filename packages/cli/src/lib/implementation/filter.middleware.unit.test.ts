@@ -414,6 +414,44 @@ describe('filterMiddleware', () => {
       ),
     );
   });
+
+  it('should allow onlyPlugins to include plugins not referenced by categories', () => {
+    const { plugins } = filterMiddleware({
+      plugins: [
+        {
+          slug: 'p1',
+          audits: [{ slug: 'a1-p1', isSkipped: false }],
+          groups: [
+            {
+              slug: 'g1-p1',
+              refs: [{ slug: 'a1-p1', weight: 1 }],
+              isSkipped: false,
+            },
+          ],
+        },
+        {
+          slug: 'p2',
+          audits: [{ slug: 'a1-p2', isSkipped: false }],
+          groups: [
+            {
+              slug: 'g1-p2',
+              refs: [{ slug: 'a1-p2', weight: 1 }],
+              isSkipped: false,
+            },
+          ],
+        },
+      ] as PluginConfig[],
+      categories: [
+        {
+          slug: 'c1',
+          refs: [{ type: 'group', plugin: 'p1', slug: 'g1-p1', weight: 1 }],
+        },
+      ] as CategoryConfig[],
+      onlyPlugins: ['p2'],
+    });
+
+    expect(plugins.map(plugin => plugin.slug)).toStrictEqual(['p2']);
+  });
 });
 
 describe('filterSkippedInPlugins', () => {

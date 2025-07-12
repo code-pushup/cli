@@ -20,7 +20,9 @@ import {
 } from './packages/plugin-jsdocs/src/lib/constants.js';
 import { filterGroupsByOnlyAudits } from './packages/plugin-jsdocs/src/lib/utils.js';
 import lighthousePlugin, {
+  type LighthouseUrls,
   lighthouseGroupRef,
+  mergeLighthouseCategories,
 } from './packages/plugin-lighthouse/src/index.js';
 import typescriptPlugin, {
   type TypescriptPluginOptions,
@@ -135,11 +137,14 @@ export const jsPackagesCoreConfig = async (): Promise<CoreConfig> => ({
 });
 
 export const lighthouseCoreConfig = async (
-  url: string,
-): Promise<CoreConfig> => ({
-  plugins: [await lighthousePlugin(url)],
-  categories: lighthouseCategories,
-});
+  urls: LighthouseUrls,
+): Promise<CoreConfig> => {
+  const lhPlugin = await lighthousePlugin(urls);
+  return {
+    plugins: [lhPlugin],
+    categories: mergeLighthouseCategories(lhPlugin, lighthouseCategories),
+  };
+};
 
 export const jsDocsCoreConfig = (
   config: JsDocsPluginConfig | string[],

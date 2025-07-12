@@ -18,6 +18,39 @@ describe('lighthousePlugin-config-object', () => {
     ]);
   });
 
+  it('should create valid plugin config with multiple URLs', () => {
+    const pluginConfig = lighthousePlugin([
+      'https://code-pushup-portal.com',
+      'https://code-pushup-portal.com/about',
+    ]);
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+
+    const { audits, groups } = pluginConfig;
+    expect(audits.length).toBeGreaterThan(100);
+    expect(groups).toStrictEqual([
+      expect.objectContaining({ slug: 'performance-1' }),
+      expect.objectContaining({ slug: 'accessibility-1' }),
+      expect.objectContaining({ slug: 'best-practices-1' }),
+      expect.objectContaining({ slug: 'seo-1' }),
+      expect.objectContaining({ slug: 'performance-2' }),
+      expect.objectContaining({ slug: 'accessibility-2' }),
+      expect.objectContaining({ slug: 'best-practices-2' }),
+      expect.objectContaining({ slug: 'seo-2' }),
+    ]);
+  });
+
+  it('should generate context for multiple URLs', () => {
+    const pluginConfig = lighthousePlugin({
+      'https://code-pushup-portal.com': 2,
+      'https://code-pushup-portal.com/about': 1,
+    });
+
+    expect(pluginConfig.context).toStrictEqual({
+      urlCount: 2,
+      weights: { 1: 2, 2: 1 },
+    });
+  });
+
   it.each([
     [
       { onlyAudits: ['first-contentful-paint'] },

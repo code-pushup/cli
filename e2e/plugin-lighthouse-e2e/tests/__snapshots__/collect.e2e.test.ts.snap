@@ -77,6 +77,12 @@ exports[`PLUGIN collect report with lighthouse-plugin NPM package > should run p
           "title": "Document has a valid \`hreflang\`",
         },
       ],
+      "context": {
+        "urlCount": 1,
+        "weights": {
+          "1": 1,
+        },
+      },
       "groups": [
         {
           "refs": [

@@ -10,6 +10,12 @@ import {
 import { errorItems, hasMissingStrings } from './implementation/utils.js';
 import { runnerConfigSchema, runnerFunctionSchema } from './runner-config.js';
 
+export const pluginContextSchema = z
+  .record(z.unknown())
+  .optional()
+  .describe('Plugin-specific context data for helpers');
+export type PluginContext = z.infer<typeof pluginContextSchema>;
+
 export const pluginMetaSchema = packageVersionSchema()
   .merge(
     metaSchema({
@@ -31,6 +37,7 @@ export const pluginDataSchema = z.object({
   runner: z.union([runnerConfigSchema, runnerFunctionSchema]),
   audits: pluginAuditsSchema,
   groups: groupsSchema,
+  context: pluginContextSchema,
 });
 type PluginData = z.infer<typeof pluginDataSchema>;
 

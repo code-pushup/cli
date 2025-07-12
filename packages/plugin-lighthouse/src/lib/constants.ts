@@ -10,3 +10,13 @@ export const LIGHTHOUSE_OUTPUT_PATH = path.join(
   DEFAULT_PERSIST_OUTPUT_DIR,
   LIGHTHOUSE_PLUGIN_SLUG,
 );
+
+export const LIGHTHOUSE_GROUP_SLUGS = [
+  'performance',
+  'accessibility',
+  'best-practices',
+  'seo',
+  'pwa',
+] as const;
+
+export const SINGLE_URL_THRESHOLD = 1;

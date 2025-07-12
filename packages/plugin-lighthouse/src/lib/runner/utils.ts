@@ -147,3 +147,23 @@ export async function getConfig(
   }
   return undefined;
 }
+
+export function enrichFlags(
+  flags: LighthouseCliFlags,
+  urlIndex?: number,
+): LighthouseOptions {
+  const { outputPath, ...parsedFlags }: Partial<LighthouseCliFlags> = flags;
+
+  const logLevel = determineAndSetLogLevel(parsedFlags);
+
+  const urlSpecificOutputPath =
+    urlIndex && outputPath
+      ? outputPath.replace(/(\.[^.]+)?$/, `-${urlIndex}$1`)
+      : outputPath;
+
+  return {
+    ...parsedFlags,
+    logLevel,
+    outputPath: urlSpecificOutputPath,
+  };
+}
