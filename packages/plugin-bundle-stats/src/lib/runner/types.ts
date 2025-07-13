@@ -1,6 +1,9 @@
 import type { Audit } from '@code-pushup/models';
-import type { BundleStatsOptions } from '../types';
-import type { BundleStatsRunnerOptions } from './bundle-stats-runner';
+import type { PenaltyConfig } from './audits/issues.js';
+import type { ScoringConfig } from './audits/scoring.js';
+import type { SelectionOptions } from './audits/selection';
+import type { InsightsConfig } from './audits/table.js';
+import type { ArtefactTreeOptions } from './audits/tree.js';
 
 export type SupportedBundlers = 'esbuild' | 'webpack' | 'vite' | 'rsbuild';
 
@@ -8,43 +11,22 @@ export type MinMax = [number, number];
 
 export type PatternList = readonly string[];
 
-export type ArtefactSelectionOptions = {
-  include?: string[];
-  exclude?: string[];
-  includeInputs?: string[];
-  excludeInputs?: string[];
+type AuditConfig = Pick<Audit, 'title' | 'slug'> &
+  // @TODO this should be partial already
+  Partial<Pick<Audit, 'description'>>;
+
+export type BundleStatsConfig = AuditConfig & {
+  selection: SelectionOptions;
+  scoring: ScoringConfig;
+  artefactTree?: ArtefactTreeOptions;
+  insights?: InsightsConfig;
 };
 
-export type BundleStatsConfig = Pick<Audit, 'title' | 'slug' | 'description'> &
-  ArtefactSelectionOptions & {
-    penalty?: PenaltyOptions;
-    grouping?: GroupingRule[];
-    pruning?: Omit<PruningOptions, 'startDepth'>;
-    thresholds: {
-      totalSize: MinMax;
-      artefactSize?: MinMax;
-    };
-  };
-
 export interface GroupingRule {
-  title: string;
+  title?: string;
   patterns: PatternList;
   icon?: string;
   maxDepth?: number;
-}
-
-export interface PruningOptions {
-  maxChildren?: number;
-  maxDepth?: number;
-  startDepth?: number;
-}
-
-export interface PenaltyOptions {
-  artefactSize?: MinMax;
-  warningWeight?: number;
-  errorWeight?: number;
-  blacklist?: PatternList;
-  blacklistWeight?: number;
 }
 
 export interface MinimalBundleStats {
@@ -67,4 +49,16 @@ export interface ModuleBundleStats {
 export interface BundleStatsAuditData {
   total: number;
   chunks: MinimalBundleStats[];
+}
+
+export interface Grouping {
+  title: string;
+  patterns: string[];
+  icon?: string;
+  maxDepth?: number;
+}
+
+export interface Insight {
+  pattern: string | string[];
+  label: string;
 }

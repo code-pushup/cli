@@ -1,0 +1,77 @@
+{
+  "inputs": {
+    "src/main.ts": {
+      "bytes": 0,
+      "imports": []
+    },
+    "node_modules/zone.js/fesm2015/zone.js": {
+      "bytes": 135236,
+      "imports": []
+    },
+    "angular:polyfills:angular:polyfills": {
+      "bytes": 17,
+      "imports": [
+        {
+          "path": "node_modules/zone.js/fesm2015/zone.js",
+          "kind": "import-statement",
+          "original": "zone.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/styles.css": {
+      "bytes": 903,
+      "imports": []
+    },
+    "angular:styles/global:styles": {
+      "bytes": 25,
+      "imports": [
+        {
+          "path": "src/styles.css",
+          "kind": "import-rule",
+          "original": "src/styles.css"
+        }
+      ]
+    }
+  },
+  "outputs": {
+    "main-L6P5G76P.js": {
+      "imports": [],
+      "exports": [],
+      "entryPoint": "src/main.ts",
+      "inputs": {
+        "src/main.ts": {
+          "bytesInOutput": 0
+        }
+      },
+      "bytes": 0
+    },
+    "polyfills-B6TNHZQ6.js": {
+      "imports": [],
+      "exports": [],
+      "entryPoint": "angular:polyfills:angular:polyfills",
+      "inputs": {
+        "node_modules/zone.js/fesm2015/zone.js": {
+          "bytesInOutput": 34578
+        },
+        "angular:polyfills:angular:polyfills": {
+          "bytesInOutput": 0
+        }
+      },
+      "bytes": 34579
+    },
+    "styles-EGIV7BA7.css": {
+      "imports": [],
+      "entryPoint": "angular:styles/global:styles",
+      "inputs": {
+        "src/styles.css": {
+          "bytesInOutput": 630
+        },
+        "angular:styles/global:styles": {
+          "bytesInOutput": 0
+        }
+      },
+      "bytes": 631
+    }
+  }
+}

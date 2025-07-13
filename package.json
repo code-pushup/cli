@@ -75,6 +75,7 @@
     "@types/debug": "^4.1.12",
     "@types/eslint": "^8.44.2",
     "@types/node": "^22.13.4",
+    "@types/picomatch": "^4.0.0",
     "@types/react": "18.3.1",
     "@types/react-dom": "18.3.0",
     "@vitejs/plugin-react": "4.2.1",

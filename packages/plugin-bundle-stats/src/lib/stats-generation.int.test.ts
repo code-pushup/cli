@@ -45,15 +45,14 @@ describe('esbuild stats generation', () => {
   });
 
   it('should create stats.json using esbuild', async () => {
+    // Copy esbuild configuration
+    await cp(path.join(FIXTURES_DIR, 'esbuild'), tmpEsbuild, {
+      recursive: true,
+    });
+
     const { code } = await executeProcess({
-      command: 'npx',
-      args: [
-        'esbuild',
-        'src/index.js',
-        '--bundle',
-        '--outfile=dist/bundle.js',
-        '--metafile=dist/stats.json',
-      ],
+      command: 'node',
+      args: ['esbuild.config.cjs'],
       cwd: tmpEsbuild,
     });
 
@@ -64,12 +63,10 @@ describe('esbuild stats generation', () => {
 
     expect(stats).toEqual(
       expect.objectContaining({
-        inputs: expect.objectContaining({
-          'src/index.js': expect.any(Object),
-          'src/utils.js': expect.any(Object),
-        }),
+        inputs: expect.any(Object),
         outputs: expect.objectContaining({
-          'dist/bundle.js': expect.any(Object),
+          'dist/index.js': expect.any(Object),
+          'dist/bin.js': expect.any(Object),
         }),
       }),
     );

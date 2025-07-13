@@ -1,175 +1,113 @@
-// ESBuild Bundle Stats Unification (Limited depth with immediate dependencies)
-import type { BundleStatsNode, BundleStatsTree } from './bundle-stats.types.js';
+import type {
+  UnifiedStats,
+  UnifiedStatsImport,
+  UnifiedStatsOutput,
+} from './unified-stats.types.js';
 
-export interface EsBuildImport {
+export type EsBuildImportKind = 'import-statement' | 'dynamic-import';
+
+export type EsBuildInputImport = {
   path: string;
-  kind: string;
+  kind: EsBuildImportKind;
   original: string;
-}
+};
 
-export interface EsBuildInput {
+export type EsBuildOutputImport = {
+  path: string;
+  kind: EsBuildImportKind;
+  external?: boolean;
+  original?: string;
+};
+
+export type EsBuildInput = {
   bytes: number;
-  imports: EsBuildImport[];
+  imports: EsBuildInputImport[];
   format?: string;
-}
+};
 
-export interface EsBuildOutput {
-  bytes?: number;
-  inputs?: Record<string, { bytesInOutput?: number }>;
+export type EsBuildOutput = {
+  bytes: number;
+  inputs?: Record<string, { bytesInOutput: number }>;
   entryPoint?: string;
-  imports?: any[];
-  exports?: any[];
-  [key: string]: any;
-}
+  imports?: EsBuildOutputImport[];
+  exports?: string[];
+};
 
-export interface EsBuildCoreStats {
+export type EsBuildCoreStats = {
   outputs: Record<string, EsBuildOutput>;
   inputs: Record<string, EsBuildInput>;
-  [key: string]: any;
-}
+};
 
-export interface UnifyBundlerStatsOptions {
-  includeDynamicImports: boolean;
-  bundler: string;
-}
+export function unifyBundlerStats(stats: EsBuildCoreStats): UnifiedStats {
+  const outputKeys = Object.keys(stats.outputs);
+  const result: UnifiedStats = {};
 
-/**
- * Convert ESBuild metafile format to unified BundleStatsTree format
- *
- * Limited depth: shows direct inputs and their immediate dependencies (depth 1).
- * This balances useful information with memory efficiency by avoiding deep recursion.
- */
-export function unifyBundlerStats(
-  stats: EsBuildCoreStats,
-  options: UnifyBundlerStatsOptions,
-): BundleStatsTree {
-  const outputChildren: BundleStatsNode[] = [];
-  let totalBytes = 0;
+  for (let i = 0; i < outputKeys.length; i++) {
+    const outputName = outputKeys[i]!;
+    const outputInfo = stats.outputs[outputName];
+    if (!outputInfo) continue;
 
-  // Process each output chunk
-  for (const [outputName, outputInfo] of Object.entries(stats.outputs)) {
-    // Build input nodes with limited depth (max 1 level of dependencies)
-    const inputNodes: BundleStatsNode[] = [];
-    let totalInputCount = 0;
-    let totalInputBytes = 0;
+    const {
+      bytes,
+      entryPoint,
+      imports,
+      exports,
+      inputs: outputInputs,
+      ...additionalProps
+    } = outputInfo;
 
-    for (const [inputPath, inputRec] of Object.entries(
-      outputInfo.inputs || {},
-    )) {
-      const bytesInOutput = inputRec.bytesInOutput || 0;
-      totalInputBytes += bytesInOutput;
-      const inputInfo = stats.inputs[inputPath];
+    const unifiedOutput: UnifiedStatsOutput = {
+      path: outputName,
+      bytes,
+    };
 
-      // Get immediate dependencies (depth 1 only)
-      const immediateChildren: BundleStatsNode[] = [];
-      let childCount = 0;
+    if (entryPoint !== undefined) {
+      unifiedOutput.entryPoint = entryPoint;
+    }
 
-      if (inputInfo?.imports) {
-        for (const imp of inputInfo.imports) {
-          // Skip dynamic imports if not included
-          if (!options.includeDynamicImports && imp.kind === 'dynamic-import') {
-            continue;
+    unifiedOutput.imports = imports
+      ? imports.map(imp => {
+          const unifiedImport: UnifiedStatsImport = {
+            path: imp.path,
+            kind: imp.kind,
+          };
+
+          if ('original' in imp && typeof imp.original === 'string') {
+            unifiedImport.original = imp.original;
           }
 
-          // Only include if this dependency is also in the output
-          if (outputInfo.inputs?.[imp.path]) {
-            const depBytes = outputInfo.inputs[imp.path]?.bytesInOutput || 0;
-            immediateChildren.push({
-              name: imp.path,
-              values: {
-                type: 'input',
-                path: imp.path,
-                bytes: depBytes,
-                childCount: 0,
-              },
-            });
-            childCount++;
+          return unifiedImport;
+        })
+      : [];
+
+    Object.assign(unifiedOutput, additionalProps);
+
+    if (outputInputs) {
+      const inputKeys = Object.keys(outputInputs);
+      if (inputKeys.length > 0) {
+        const inputs: Record<string, { bytes: number }> = {};
+
+        for (let j = 0; j < inputKeys.length; j++) {
+          const inputPath = inputKeys[j]!;
+          const outputInputInfo = outputInputs[inputPath];
+
+          if (outputInputInfo?.bytesInOutput !== undefined) {
+            inputs[inputPath] = {
+              bytes: outputInputInfo.bytesInOutput,
+            };
           }
         }
+
+        unifiedOutput.inputs = inputs;
+      } else {
+        unifiedOutput.inputs = {};
       }
-
-      inputNodes.push({
-        name: inputPath,
-        values: {
-          type: 'input',
-          path: inputPath,
-          bytes: bytesInOutput,
-          childCount,
-        },
-        children: immediateChildren.length ? immediateChildren : undefined,
-      });
-
-      totalInputCount += childCount + 1; // +1 for the input itself
+    } else {
+      unifiedOutput.inputs = {};
     }
 
-    // Process external imports (dependencies not bundled into this chunk)
-    const externalImports: BundleStatsNode[] = [];
-    if (outputInfo.imports && outputInfo.imports.length > 0) {
-      for (const imp of outputInfo.imports) {
-        // Check if this external import is actually another chunk in our outputs
-        const externalOutput = stats.outputs[imp.path];
-        const externalBytes = externalOutput?.bytes || 0;
-
-        externalImports.push({
-          name: imp.path,
-          values: {
-            type: 'import',
-            path: imp.path,
-            bytes: externalBytes, // Use actual size if it's another chunk, 0 for truly external deps
-            childCount: 0,
-            importKind: imp.kind === 'dynamic-import' ? 'dynamic' : 'static',
-          },
-        });
-      }
-    }
-
-    // Combine bundled inputs and external imports
-    const allChildren: BundleStatsNode[] = [];
-    if (inputNodes.length > 0) {
-      allChildren.push(...inputNodes);
-    }
-    if (externalImports.length > 0) {
-      allChildren.push(...externalImports);
-    }
-
-    // Create chunk node - use total input bytes as the chunk size since inputs are part of the chunk
-    const chunkBytes = totalInputBytes;
-    totalBytes += chunkBytes;
-
-    outputChildren.push({
-      name: outputName,
-      values: {
-        type: 'chunk',
-        path: outputName,
-        bytes: chunkBytes,
-        entryPoint: Boolean(outputInfo.entryPoint),
-        childCount: totalInputCount + externalImports.length,
-      },
-      children: allChildren.length ? allChildren : undefined,
-    });
+    result[outputName] = unifiedOutput;
   }
 
-  // Compute overall child count
-  const totalChildCount = outputChildren.reduce(
-    (sum, node) => sum + (node.values.childCount || 0),
-    0,
-  );
-
-  // Root grouping node
-  const root: BundleStatsNode = {
-    name: 'unified-bundle-stats',
-    values: {
-      type: 'group',
-      path: '',
-      bytes: totalBytes,
-      childCount: totalChildCount,
-    },
-    children: outputChildren,
-  };
-
-  return {
-    title: 'Bundle Stats',
-    type: 'basic',
-    root,
-  };
+  return result;
 }

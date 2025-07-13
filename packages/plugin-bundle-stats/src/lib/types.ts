@@ -1,18 +1,28 @@
+import type { Group } from '@code-pushup/models';
+import type { PenaltyConfig } from './runner/audits/issues.js';
+import type { ScoringConfig } from './runner/audits/scoring.js';
 import type { BundleStatsRunnerOptions } from './runner/bundle-stats-runner.js';
-import type { BundleStatsConfig, PenaltyOptions } from './runner/types.js';
+import type { BundleStatsConfig, MinMax } from './runner/types.js';
 
-export type BundleStatsOptions = Omit<
-  BundleStatsConfig,
-  'slug' | 'description'
-> & {
-  title: string;
-  description?: string;
+export type PenaltyOptions = Omit<PenaltyConfig, 'artefactSize'> & {
+  artefactSize?: PenaltyConfig['artefactSize'] | number;
+};
+
+export type ScoringOptions = Omit<ScoringConfig, 'totalSize' | 'penalty'> & {
+  totalSize: ScoringConfig['totalSize'] | number;
+  penalty?: false | PenaltyOptions;
+};
+
+export type BundleStatsOptions = Omit<BundleStatsConfig, 'slug' | 'scoring'> & {
+  slug?: string;
+  scoring: ScoringOptions;
 };
 
 export type PluginOptions = Omit<
   BundleStatsRunnerOptions,
-  'configs' | 'artefactsPath'
+  'audits' | 'artefactsPath'
 > & {
-  configs: BundleStatsOptions[];
+  audits: BundleStatsOptions[];
+  groups?: Group[];
   artefactsPath: string;
 };

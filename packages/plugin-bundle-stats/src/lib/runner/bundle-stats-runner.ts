@@ -1,34 +1,15 @@
 import type { AuditOutput } from '@code-pushup/models';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
-import { DEFAULT_PENALTY } from '../constants.js';
-import type {
-  BundleStatsConfig,
-  GroupingRule,
-  PenaltyOptions,
-  PruningOptions,
-  SupportedBundlers,
-} from './types.js';
-import type { BundleStatsTree } from './unify/bundle-stats.types.js';
+import { DEFAULT_GROUPING, DEFAULT_PRUNING } from '../constants.js';
+import { generateAuditOutputs } from './audits/audit-outputs.js';
+import { DEFAULT_PENALTY, type ScoringConfig } from './audits/scoring.js';
+import type { InsightsConfig } from './audits/table.js';
+import type { ArtefactTreeOptions } from './audits/tree.js';
+import type { BundleStatsConfig } from './types.js';
 import {
   type EsBuildCoreStats,
   unifyBundlerStats,
 } from './unify/unify.esbuild.js';
-import {
-  createDisplayValue,
-  createEmptyAudit,
-  filterUnifiedTreeByConfigSingle,
-  formatTreeForDisplay,
-} from './utils.js';
-import { applyIconsToTree } from './utils/formatting.js';
-import {
-  type PrunedNode,
-  applyGroupingToTree,
-  calcTotals,
-  formatTree,
-  groupExternalImports,
-  prune,
-} from './utils/reduce.js';
-import { calculateScore } from './utils/scoring.js';
 
 export type PluginArtefactOptions = {
   generateArtefacts?: {
@@ -38,13 +19,36 @@ export type PluginArtefactOptions = {
   artefactsPath: string;
 };
 
-export type BundleStatsRunnerOptions = PluginArtefactOptions & {
-  bundler: SupportedBundlers;
-  configs: BundleStatsConfig[];
-  penalty: PenaltyOptions;
-  grouping?: GroupingRule[];
-  pruning?: Omit<PruningOptions, 'startDepth'>;
-};
+export interface BundleStatsRunnerOptions extends PluginArtefactOptions {
+  audits: BundleStatsConfig[];
+  scoring?: Pick<ScoringConfig, 'penalty'>;
+  artefactTree?: ArtefactTreeOptions;
+  insights?: InsightsConfig;
+}
+
+/**
+ * Validates bundle stats data structure. Ensures stats and outputs are properly defined.
+ */
+function validateBundleStats(
+  stats: unknown,
+  artefactsPath: string,
+): asserts stats is EsBuildCoreStats {
+  if (!stats) {
+    throw new Error(`Bundle stats file is null or undefined: ${artefactsPath}`);
+  }
+
+  if (typeof stats !== 'object' || !('outputs' in stats)) {
+    throw new Error(
+      `Bundle stats file has invalid structure: ${artefactsPath}`,
+    );
+  }
+
+  if (!stats.outputs) {
+    throw new Error(
+      `Bundle stats outputs is null or undefined in file: ${artefactsPath}`,
+    );
+  }
+}
 
 /**
  * Creates a bundle stats audit runner that processes bundler output and generates audit results
@@ -75,151 +79,80 @@ export type BundleStatsRunnerOptions = PluginArtefactOptions & {
 export async function bundleStatsRunner(
   opts: BundleStatsRunnerOptions,
 ): Promise<() => Promise<AuditOutput[]>> {
-  const {
-    artefactsPath,
-    generateArtefacts,
-    bundler,
-    configs,
-    grouping,
-    pruning,
-    penalty,
-  } = opts;
+  const { artefactsPath, generateArtefacts, audits, artefactTree, scoring } =
+    opts;
 
   return async () => {
     if (generateArtefacts) {
       const { command, args } = generateArtefacts;
-      await executeProcess({
-        command,
-        args,
-      });
+      try {
+        await executeProcess({
+          command,
+          args,
+        });
+      } catch (error) {
+        throw new Error(
+          `Failed to generate artefacts for plugin bundle-stats. command: ${command} args: ${args} error: ${error}`,
+        );
+      }
     }
 
     const stats = await readJsonFile<EsBuildCoreStats>(artefactsPath);
-    const unifieBundleStats = unifyBundlerStats(stats, {
-      includeDynamicImports: false,
-      bundler,
+
+    validateBundleStats(stats, artefactsPath);
+
+    const unifieBundleStats = unifyBundlerStats(stats);
+
+    const mergedAuditConfigs = mergeAuditConfigs(audits, {
+      scoring,
+      artefactTree,
     });
 
-    // merge global and audit settings
-    const mergedAuditConfigs = mergeAuditConfigs(configs, {
-      penalty,
-      grouping,
-      pruning,
-    });
-
-    const bundleStatsTree = unifieBundleStats as unknown as BundleStatsTree;
-    return generateAudits(bundleStatsTree, mergedAuditConfigs);
+    const bundleStatsTree = unifieBundleStats;
+    return generateAuditOutputs(bundleStatsTree, mergedAuditConfigs);
   };
-}
-
-/**
- * Processes a bundle stats tree through the complete analysis pipeline
- */
-function processTreeForAudit(
-  tree: BundleStatsTree,
-  config: BundleStatsConfig,
-): { processedTree: PrunedNode; totalBytes: number; fileCount: number } {
-  const { grouping = [], pruning = { maxChildren: 10, maxDepth: 2 } } = config;
-
-  let processedTree = tree.root;
-
-  processedTree = groupExternalImports(processedTree);
-
-  // Apply grouping if specified
-  if (grouping.length > 0) {
-    processedTree = applyGroupingToTree(processedTree, {
-      grouping: config.grouping,
-    });
-  }
-
-  // Apply icon formatting after grouping but before pruning
-  if (grouping.length > 0) {
-    const treeWithIcons = applyIconsToTree({ root: processedTree });
-    processedTree = treeWithIcons.root;
-  }
-
-  // Calculate totals
-  const rootWithTotals = calcTotals(processedTree);
-  const totalBytes = rootWithTotals.values.bytes || 0;
-  const fileCount = rootWithTotals.values.childCount || 0;
-
-  // Apply pruning for display
-  const prunedRoot = prune(rootWithTotals, pruning);
-  const formattedRoot = formatTree(prunedRoot);
-
-  return {
-    processedTree: formattedRoot,
-    totalBytes,
-    fileCount,
-  };
-}
-
-/**
- * Creates a complete audit output from processed tree data
- */
-function createAuditOutput(
-  config: BundleStatsConfig,
-  processedTree: PrunedNode,
-  totalBytes: number,
-  fileCount: number,
-): AuditOutput {
-  const tree = formatTreeForDisplay(processedTree, config.title);
-
-  const score = calculateScore(totalBytes, config);
-
-  const displayValue = createDisplayValue(totalBytes, fileCount);
-
-  return {
-    slug: config.slug,
-    score,
-    value: totalBytes,
-    displayValue,
-    details: {
-      trees: [tree],
-    },
-  };
-}
-
-/**
- * Generates audit outputs from bundle stats tree and configurations
- */
-export function generateAudits(
-  bundleStatsTree: BundleStatsTree,
-  configs: BundleStatsConfig[],
-): AuditOutput[] {
-  return configs.map(config => {
-    const filteredTree = filterUnifiedTreeByConfigSingle(
-      bundleStatsTree,
-      config,
-    );
-
-    if (!filteredTree) {
-      return createEmptyAudit(config);
-    }
-
-    const { processedTree, totalBytes, fileCount } = processTreeForAudit(
-      filteredTree,
-      config,
-    );
-
-    return createAuditOutput(config, processedTree, totalBytes, fileCount);
-  });
 }
 
 export function mergeAuditConfigs(
   configs: BundleStatsConfig[],
-  options: {
-    penalty: PenaltyOptions;
-    grouping?: GroupingRule[];
-    pruning?: PruningOptions;
-  },
+  options: Pick<
+    BundleStatsRunnerOptions,
+    'scoring' | 'artefactTree' | 'insights'
+  >,
 ): BundleStatsConfig[] {
   return configs.map(config => {
+    const mergedArtefactTree: ArtefactTreeOptions | undefined =
+      options.artefactTree || config.artefactTree
+        ? {
+            groups: [
+              // Only include default grouping if no explicit groups are provided
+              ...(config.artefactTree?.groups?.length ||
+              options.artefactTree?.groups?.length
+                ? []
+                : DEFAULT_GROUPING),
+              ...(config.artefactTree?.groups ?? []),
+              ...(options.artefactTree?.groups ?? []),
+            ],
+            pruning: {
+              ...DEFAULT_PRUNING,
+              ...(options.artefactTree?.pruning ?? {}),
+              ...(config.artefactTree?.pruning ?? {}),
+            },
+          }
+        : undefined;
+
     return {
       ...config,
-      penalty: { ...DEFAULT_PENALTY, ...options.penalty },
-      grouping: options.grouping,
-      pruning: options.pruning,
+      scoring: {
+        ...options.scoring,
+        ...config.scoring,
+        penalty: {
+          ...DEFAULT_PENALTY,
+          ...options.scoring?.penalty,
+          ...config.scoring?.penalty,
+        },
+      },
+      artefactTree: mergedArtefactTree,
     };
   });
 }

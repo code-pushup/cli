@@ -1,6 +1,6 @@
-import type { GroupingOptions, PruningOptions } from './types.js';
+import type { GroupingRule } from './types.js';
 
-export type GroupingRule = GroupingOptions;
+export type { GroupingRule };
 
 /**
  * Default grouping rules for bundle stats analysis.
@@ -8,29 +8,35 @@ export type GroupingRule = GroupingOptions;
  */
 export const DEFAULT_GROUPING: GroupingRule[] = [
   {
-    name: '@angular/*',
+    title: '@angular/*',
     patterns: ['**/node_modules/@angular/**'],
-    // icon for angular letter "A"
     icon: '🅰️',
   },
   {
-    name: 'packages/*',
+    title: 'packages/*',
     patterns: ['packages/**/*'],
-    // folder icon
-    icon: '📁',
+    icon: '📦',
   },
   {
-    name: '@*/*',
+    title: 'rx-signals',
+    patterns: ['**/node_modules/rx-signals/**'],
+    icon: '🚦',
+  },
+  {
+    title: 'rxjs',
+    patterns: ['**/node_modules/rxjs/**'],
+    icon: ' rxjs',
+  },
+  {
+    title: '@code-pushup/models',
+    patterns: ['**/node_modules/@code-pushup/models/**'],
+  },
+  {
+    title: '@code-pushup/utils',
+    patterns: ['**/node_modules/@code-pushup/utils/**'],
+  },
+  {
+    title: '@*/*',
     patterns: ['**/node_modules/@*/**', '**/node_modules/**'],
   },
 ];
-
-/**
- * Default pruning options for bundle stats analysis.
- * These settings control how the bundle tree is simplified and organized.
- */
-export const DEFAULT_PRUNING: PruningOptions = {
-  maxChildren: 10,
-  startDepth: 0,
-  maxDepth: 2,
-};

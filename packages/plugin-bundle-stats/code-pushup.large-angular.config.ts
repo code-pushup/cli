@@ -28,10 +28,41 @@ const config = {
   plugins: [
     await bundleStatsPlugin({
       artefactsPath:
-        './packages/plugin-bundle-stats/mocks/fixtures/stats/entain-host-app-main-bundle-stats.json',
+        './packages/plugin-bundle-stats/mocks/fixtures/stats/angular-large.stats.json',
       bundler: 'esbuild',
       grouping: [...DEFAULT_GROUPING],
       configs: [
+        {
+          title: 'Entry Bundle',
+          selection: {
+            includeEntryPoints: ['**/payments.routes.ts'],
+          },
+          thresholds: {
+            totalSize: [300 * 1024, 1 * 1024 * 1024],
+            artefactSize: [100 * 1024, 500 * 1024],
+          },
+        },
+        {
+          title: 'All Chunks',
+          selection: {
+            includeOutputs: ['chunk-*.js'],
+          },
+          thresholds: {
+            totalSize: [300 * 1024, 1 * 1024 * 1024],
+            artefactSize: [100 * 1024, 500 * 1024],
+          },
+        },
+        {
+          title: 'Main Components',
+          selection: {
+            includeInputs: ['**/main/**', '**/main.*'],
+          },
+          thresholds: {
+            totalSize: [300 * 1024, 1 * 1024 * 1024],
+            artefactSize: [100 * 1024, 500 * 1024],
+          },
+        },
+        /* keep commented out
         {
           title: 'Initial Bundles',
           include: ['main-*.js', 'polyfills-*.js'],
@@ -57,16 +88,15 @@ const config = {
           thresholds: {
             totalSize: [1 * 1024, 50 * 1024],
           },
-        },
+        },*/
       ],
       penalty: {
         errorWeight: 1,
         warningWeight: 0.5,
-        blacklistWeight: 0.5,
       },
       pruning: {
-        maxChildren: 10,
-        maxDepth: 2,
+        maxChildren: 30,
+        maxDepth: 4,
       },
     }),
   ],

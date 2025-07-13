@@ -1,26 +1,5 @@
 {
   "inputs": {
-    "src/lib/utils/format.ts": {
-      "bytes": 418,
-      "imports": [],
-      "format": "esm"
-    },
-    "src/lib/feature-1.ts": {
-      "bytes": 417,
-      "imports": [
-        {
-          "path": "src/lib/utils/format.ts",
-          "kind": "import-statement",
-          "original": "./utils/format"
-        }
-      ],
-      "format": "esm"
-    },
-    "src/lib/utils/math.ts": {
-      "bytes": 240,
-      "imports": [],
-      "format": "esm"
-    },
     "../../../../../node_modules/balanced-match/index.js": {
       "bytes": 1219,
       "imports": [],
@@ -119,50 +98,96 @@
       ],
       "format": "esm"
     },
-    "src/lib/feature-2.ts": {
-      "bytes": 154,
+    "../shared-source/node_modules/my-lib/index.js": {
+      "bytes": 94,
+      "imports": [],
+      "format": "esm"
+    },
+    "../shared-source/src/lib/utils/format.ts": {
+      "bytes": 590,
       "imports": [
         {
           "path": "../../../../../node_modules/minimatch/dist/esm/index.js",
           "kind": "import-statement",
           "original": "minimatch"
+        },
+        {
+          "path": "../shared-source/node_modules/my-lib/index.js",
+          "kind": "import-statement",
+          "original": "my-lib"
         }
       ],
       "format": "esm"
     },
-    "src/index.ts": {
-      "bytes": 473,
+    "../shared-source/src/lib/feature-1.ts": {
+      "bytes": 489,
       "imports": [
         {
-          "path": "src/lib/feature-1.ts",
+          "path": "../shared-source/src/lib/utils/format.ts",
+          "kind": "import-statement",
+          "original": "./utils/format"
+        }
+      ],
+      "format": "esm"
+    },
+    "../shared-source/src/lib/utils/math.ts": {
+      "bytes": 240,
+      "imports": [],
+      "format": "esm"
+    },
+    "../shared-source/src/lib/utils/string.ts": {
+      "bytes": 300,
+      "imports": [],
+      "format": "esm"
+    },
+    "../shared-source/src/lib/feature-2.ts": {
+      "bytes": 53,
+      "imports": [],
+      "format": "esm"
+    },
+    "../shared-source/src/index.ts": {
+      "bytes": 673,
+      "imports": [
+        {
+          "path": "../shared-source/src/lib/feature-1.ts",
           "kind": "import-statement",
           "original": "./lib/feature-1"
         },
         {
-          "path": "src/lib/utils/math.ts",
+          "path": "../shared-source/src/lib/utils/math.ts",
           "kind": "import-statement",
           "original": "./lib/utils/math"
         },
         {
-          "path": "src/lib/feature-2.ts",
+          "path": "../shared-source/src/lib/utils/string.ts",
+          "kind": "import-statement",
+          "original": "./lib/utils/string"
+        },
+        {
+          "path": "../shared-source/src/lib/feature-2.ts",
           "kind": "dynamic-import",
           "original": "./lib/feature-2"
         }
       ],
       "format": "esm"
     },
-    "src/bin.ts": {
-      "bytes": 532,
+    "../shared-source/src/bin.ts": {
+      "bytes": 633,
       "imports": [
         {
-          "path": "src/lib/feature-1.ts",
+          "path": "../shared-source/src/lib/feature-1.ts",
           "kind": "import-statement",
           "original": "./lib/feature-1"
         },
         {
-          "path": "src/lib/utils/math.ts",
+          "path": "../shared-source/src/lib/utils/math.ts",
           "kind": "import-statement",
           "original": "./lib/utils/math"
+        },
+        {
+          "path": "../shared-source/src/lib/utils/string.ts",
+          "kind": "import-statement",
+          "original": "./lib/utils/string"
         }
       ],
       "format": "esm"
@@ -172,7 +197,7 @@
     "dist/index.js": {
       "imports": [
         {
-          "path": "dist/chunks/chunk-WIJM4GGD.js",
+          "path": "dist/chunks/chunk-PKX4VJZC.js",
           "kind": "import-statement"
         },
         {
@@ -180,7 +205,7 @@
           "kind": "import-statement"
         },
         {
-          "path": "dist/chunks/feature-2-JRMQOICX.js",
+          "path": "dist/chunks/feature-2-SERQNJVR.js",
           "kind": "dynamic-import"
         }
       ],
@@ -188,18 +213,18 @@
         "default",
         "indexOnlyFunction"
       ],
-      "entryPoint": "src/index.ts",
+      "entryPoint": "../shared-source/src/index.ts",
       "inputs": {
-        "src/index.ts": {
-          "bytesInOutput": 350
+        "../shared-source/src/index.ts": {
+          "bytesInOutput": 386
         }
       },
-      "bytes": 533
+      "bytes": 595
     },
     "dist/bin.js": {
       "imports": [
         {
-          "path": "dist/chunks/chunk-WIJM4GGD.js",
+          "path": "dist/chunks/chunk-PKX4VJZC.js",
           "kind": "import-statement"
         },
         {
@@ -208,34 +233,15 @@
         }
       ],
       "exports": [],
-      "entryPoint": "src/bin.ts",
+      "entryPoint": "../shared-source/src/bin.ts",
       "inputs": {
-        "src/bin.ts": {
-          "bytesInOutput": 366
+        "../shared-source/src/bin.ts": {
+          "bytesInOutput": 373
         }
       },
-      "bytes": 516
+      "bytes": 549
     },
-    "dist/chunks/chunk-WIJM4GGD.js": {
-      "imports": [],
-      "exports": [
-        "calculate",
-        "externalFunction"
-      ],
-      "inputs": {
-        "src/lib/utils/format.ts": {
-          "bytesInOutput": 269
-        },
-        "src/lib/feature-1.ts": {
-          "bytesInOutput": 269
-        },
-        "src/lib/utils/math.ts": {
-          "bytesInOutput": 145
-        }
-      },
-      "bytes": 806
-    },
-    "dist/chunks/feature-2-JRMQOICX.js": {
+    "dist/chunks/chunk-PKX4VJZC.js": {
       "imports": [
         {
           "path": "dist/chunks/chunk-SK6HMZ5B.js",
@@ -243,15 +249,16 @@
         }
       ],
       "exports": [
-        "chart"
+        "calculate",
+        "externalFunction",
+        "greet"
       ],
-      "entryPoint": "src/lib/feature-2.ts",
       "inputs": {
         "../../../../../node_modules/balanced-match/index.js": {
-          "bytesInOutput": 1541
+          "bytesInOutput": 1543
         },
         "../../../../../node_modules/brace-expansion/index.js": {
-          "bytesInOutput": 4782
+          "bytesInOutput": 4784
         },
         "../../../../../node_modules/minimatch/dist/esm/index.js": {
           "bytesInOutput": 23960
@@ -271,11 +278,41 @@
         "../../../../../node_modules/minimatch/dist/esm/escape.js": {
           "bytesInOutput": 165
         },
-        "src/lib/feature-2.ts": {
-          "bytesInOutput": 99
+        "../shared-source/node_modules/my-lib/index.js": {
+          "bytesInOutput": 93
+        },
+        "../shared-source/src/lib/utils/format.ts": {
+          "bytesInOutput": 269
+        },
+        "../shared-source/src/lib/feature-1.ts": {
+          "bytesInOutput": 269
+        },
+        "../shared-source/src/lib/utils/math.ts": {
+          "bytesInOutput": 145
+        },
+        "../shared-source/src/lib/utils/string.ts": {
+          "bytesInOutput": 54
         }
       },
-      "bytes": 50369
+      "bytes": 51348
+    },
+    "dist/chunks/feature-2-SERQNJVR.js": {
+      "imports": [
+        {
+          "path": "dist/chunks/chunk-SK6HMZ5B.js",
+          "kind": "import-statement"
+        }
+      ],
+      "exports": [
+        "chart"
+      ],
+      "entryPoint": "../shared-source/src/lib/feature-2.ts",
+      "inputs": {
+        "../shared-source/src/lib/feature-2.ts": {
+          "bytesInOutput": 38
+        }
+      },
+      "bytes": 130
     },
     "dist/chunks/chunk-SK6HMZ5B.js": {
       "imports": [],
