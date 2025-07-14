@@ -41,11 +41,13 @@ export interface PruningOptions {
   maxChildren?: number;
   maxDepth?: number;
   startDepth?: number;
+  minSize?: number;
 }
 
 export const DEFAULT_PRUNING = {
   maxDepth: 3,
   maxChildren: 5,
+  minSize: 0,
 };
 
 const ARTEFACT_TYPE_ICON_MAP: Record<ArtefactType, string> = {
@@ -185,14 +187,49 @@ function applyGrouping(nodes: TreeNode[], groups: GroupingRule[]): TreeNode[] {
   return finalNodes;
 }
 
+/**
+ * Filters children by minimum size threshold and aggregates filtered entries.
+ * Enables size-based filtering while preserving information about smaller bundles.
+ */
+function filterByMinSize(children: TreeNode[], minSize: number): TreeNode[] {
+  const filteredChildren = children.filter(child => child.bytes >= minSize);
+  const belowThreshold = children.filter(child => child.bytes < minSize);
+  
+  if (belowThreshold.length > 0) {
+    const aggregatedBytes = belowThreshold.reduce(
+      (acc: number, child: TreeNode) => acc + child.bytes,
+      0,
+    );
+    const aggregatedSources = belowThreshold.reduce(
+      (acc: number, child: TreeNode) => acc + child.sources,
+      0,
+    );
+    
+    const summaryNode: TreeNode = {
+      name: `... ${belowThreshold.length} files more`,
+      bytes: aggregatedBytes,
+      sources: aggregatedSources,
+      children: [],
+      type: 'group',
+    };
+    
+    return [...filteredChildren, summaryNode];
+  }
+  
+  return filteredChildren;
+}
+
 function pruneTree(
   node: TreeNode,
   options: Required<PruningOptions>,
 ): TreeNode {
-  const { maxChildren, maxDepth, startDepth = 0 } = options;
+  const { maxChildren, maxDepth, startDepth = 0, minSize } = options;
   
   // Sort children by bytes in descending order before pruning
   node.children.sort((a, b) => b.bytes - a.bytes);
+  
+  // Apply minimum size filtering
+  node.children = filterByMinSize(node.children, minSize);
   
   if (node.children.length > maxChildren) {
     const remainingChildren = node.children.slice(maxChildren);
@@ -222,7 +259,7 @@ function pruneTree(
       return childDepth <= maxDepth;
     })
     .map((child: TreeNode) =>
-      pruneTree(child, { maxDepth, maxChildren, startDepth: startDepth + 1 }),
+      pruneTree(child, { maxDepth, maxChildren, startDepth: startDepth + 1, minSize }),
     );
 
   return node;
