@@ -24,80 +24,119 @@ import bundleStatsPlugin, { DEFAULT_GROUPING } from './src';
  *  nx code-pushup:minimal-angular plugin-bundle-stats
  */
 
+const GROUPING_PACKAGES = [
+  {
+    title: 'Payment',
+    patterns: ['**/payments/**/*'],
+    icon: '🚀',
+  },
+  {
+    title: 'Loaders Library',
+    patterns: ['**/loaders-lib/**/*'],
+    icon: '🔄',
+  },
+  {
+    title: 'Sports Platform',
+    patterns: ['**/sports/**/*'],
+    icon: '⚽',
+  },
+  {
+    title: 'Host App',
+    patterns: ['**/host-app/**/*'],
+    icon: '🏠',
+  },
+  {
+    title: 'Casino',
+    patterns: ['**/casino/**/*'],
+    icon: '🎰',
+  },
+  {
+    title: 'Oxygen Framework',
+    patterns: ['**/oxygen/**/*'],
+    icon: '🔧',
+  },
+];
+
+const GROUPING_ANGULAR_BLOCKS = [
+  {
+    title: 'Components',
+    patterns: ['**/*.component.ts'],
+    icon: '🅰️',
+  },
+  {
+    title: 'Directives',
+    patterns: ['**/*.directive.ts'],
+    icon: '🅰️',
+  },
+  {
+    title: 'Pipes',
+    patterns: ['**/*.pipe.ts'],
+    icon: '🅰️',
+  },
+  {
+    title: 'Modules',
+    patterns: ['**/*.module.ts'],
+    icon: '🅰️',
+  },
+  {
+    title: 'Guards',
+    patterns: ['**/*.guard.ts'],
+    icon: '🅰️',
+  },
+  {
+    title: 'Resolvers',
+    patterns: ['**/*.resolver.ts'],
+    icon: '🅰️',
+  },
+  {
+    title: 'Interceptors',
+    patterns: ['**/*.interceptor.ts'],
+    icon: '🅰️',
+  },
+  {
+    title: 'Providers',
+    patterns: ['**/*.provider.ts'],
+    icon: '🅰️',
+  },
+  {
+    title: 'Services',
+    patterns: ['**/*.service.ts'],
+    icon: '🅰️',
+  },
+];
+
 const config = {
   plugins: [
     await bundleStatsPlugin({
       artefactsPath:
         './packages/plugin-bundle-stats/mocks/fixtures/stats/angular-large.stats.json',
-      bundler: 'esbuild',
-      grouping: [...DEFAULT_GROUPING],
-      configs: [
-        {
-          title: 'Entry Bundle',
-          selection: {
-            includeEntryPoints: ['**/payments.routes.ts'],
-          },
-          thresholds: {
-            totalSize: [300 * 1024, 1 * 1024 * 1024],
-            artefactSize: [100 * 1024, 500 * 1024],
-          },
-        },
-        {
-          title: 'All Chunks',
-          selection: {
-            includeOutputs: ['chunk-*.js'],
-          },
-          thresholds: {
-            totalSize: [300 * 1024, 1 * 1024 * 1024],
-            artefactSize: [100 * 1024, 500 * 1024],
-          },
-        },
-        {
-          title: 'Main Components',
-          selection: {
-            includeInputs: ['**/main/**', '**/main.*'],
-          },
-          thresholds: {
-            totalSize: [300 * 1024, 1 * 1024 * 1024],
-            artefactSize: [100 * 1024, 500 * 1024],
-          },
-        },
-        /* keep commented out
+      audits: [
         {
           title: 'Initial Bundles',
-          include: ['main-*.js', 'polyfills-*.js'],
-          thresholds: {
-            totalSize: [300 * 1024, 1 * 1024 * 1024],
-            artefactSize: [100 * 1024, 500 * 1024],
+          selection: {
+            includeOutputs: [
+              '**/main*.js',
+              '**/polyfills*.js',
+              '**/runtime*.js',
+            ],
           },
+          scoring: {
+            totalSize: 100_000,
+          },
+          artefactTree: {
+            groups: GROUPING_PACKAGES,
+          },
+          insights: [
+            ...GROUPING_PACKAGES,
+            ...GROUPING_ANGULAR_BLOCKS,
+            {
+              title: 'Node Modules',
+              patterns: ['**/node_modules/**/*'],
+              icon: '📚',
+            },
+          ],
         },
-        {
-          title: 'Shared Chunks',
-          include: ['**\/chunk-*.js'],
-          thresholds: {
-            totalSize: [10, 100 * 1024],
-          },
-          pruning: {
-            maxChildren: 10,
-            maxDepth: 3,
-          },
-        },
-        {
-          title: 'CSS Assets',
-          include: ['**\/*.css'],
-          thresholds: {
-            totalSize: [1 * 1024, 50 * 1024],
-          },
-        },*/
       ],
-      penalty: {
-        errorWeight: 1,
-        warningWeight: 0.5,
-      },
-      pruning: {
-        maxChildren: 30,
-        maxDepth: 4,
-      },
     }),
   ],
 };

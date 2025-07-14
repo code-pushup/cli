@@ -1,6 +1,6 @@
 import type { Issue } from '@code-pushup/models';
 import type { MinMax } from '../types.js';
-import type { PenaltyConfig } from './issues.js';
+import type { PenaltyConfig } from './details/issues.js';
 
 export type ScoringConfig = {
   totalSize: MinMax;
@@ -10,8 +10,8 @@ export type ScoringConfig = {
 export type ScoreCalculator = (value: number, issues: Issue[]) => number;
 
 export const DEFAULT_PENALTY: PenaltyConfig = {
-  warningWeight: 1,
-  errorWeight: 2,
+  warningWeight: 0.1,
+  errorWeight: 0.2,
 };
 
 /**

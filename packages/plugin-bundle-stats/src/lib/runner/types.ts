@@ -1,9 +1,9 @@
 import type { Audit } from '@code-pushup/models';
+import type { InsightsConfig } from './audits/details/table.js';
+import type { ArtefactTreeOptions } from './audits/details/tree.js';
 import type { PenaltyConfig } from './audits/issues.js';
 import type { ScoringConfig } from './audits/scoring.js';
 import type { SelectionOptions } from './audits/selection';
-import type { InsightsConfig } from './audits/table.js';
-import type { ArtefactTreeOptions } from './audits/tree.js';
 
 export type SupportedBundlers = 'esbuild' | 'webpack' | 'vite' | 'rsbuild';
 

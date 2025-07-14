@@ -12,6 +12,9 @@ import { BundleStatsOptions } from './src/lib/types';
 const SELECTION_ALL_FILES = {
   includeOutputs: ['**/*'],
 };
+const SELECTION_ONE_FILE = {
+  includeOutputs: ['**/*.js'],
+};
 // ===== Scoring Constants =====
 
 const THRESHOLD_ALWAYS_PASS_MAX = 100_000; // 100KB - much higher than actual bundle size
@@ -88,7 +91,7 @@ const SCORING_PENALTY_AUDITS: BundleStatsOptions[] = [
     title: `${SCORING_AUDIT_ICON} - Penalty Artefact Size Pass`,
     description:
       'Demonstrates penalty passing when all files are within size limits.',
-    ...BASE_AUDIT_ALL_FILES,
+    selection: SELECTION_ONE_FILE,
     scoring: {
       ...SCORING_ALWAYS_PASS,
       penalty: {
@@ -291,7 +294,8 @@ const config: CoreConfig = {
   plugins: [
     await bundleStatsPlugin({
       artefactsPath:
-        'packages/plugin-bundle-stats/mocks/fixtures/stats/esbuild-minimal.stats.json',
+        'packages/plugin-bundle-stats/mocks/fixtures/node-minimal/dist/esbuild/stats.json',
+      bundler: 'esbuild',
       audits: [
         ...SCORING_AUDITS,
         ...SCORING_PENALTY_AUDITS,

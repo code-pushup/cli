@@ -1,16 +1,16 @@
 import type { BasicTree, BasicTreeNode } from '@code-pushup/models';
 import { formatBytes, pluralizeToken } from '@code-pushup/utils';
-import type { GroupingRule } from '../types';
+import type { GroupingRule } from '../../types';
 import type {
   UnifiedStats,
   UnifiedStatsInput,
   UnifiedStatsOutput,
-} from '../unify/unified-stats.types';
+} from '../../unify/unified-stats.types';
 import {
   deriveGroupTitle,
   findCommonPath,
   matchesAnyPattern,
-} from './match-pattern';
+} from '../match-pattern';
 
 export type ArtefactType =
   | 'root'

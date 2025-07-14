@@ -184,7 +184,15 @@ describe('getIssues', () => {
         'a.js': { path: 'a.js', bytes: 1 },
         'b.js': { path: 'b.js', bytes: 2 },
       },
-      { penalty: { blacklist: ['a*'] } } as any,
+      {
+        title: 'Test',
+        slug: 'test',
+        selection: { includeOutputs: ['**/*.js'] },
+        scoring: {
+          totalSize: [0, 1000],
+          penalty: { blacklist: ['a*'] },
+        },
+      } as any,
     );
 
     expect(result).toHaveLength(1);

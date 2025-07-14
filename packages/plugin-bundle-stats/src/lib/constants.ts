@@ -1,4 +1,4 @@
-import type { PruningOptions } from './runner/audits/tree.js';
+import type { PruningOptions } from './runner/audits/details/tree.js';
 import type { GroupingRule } from './runner/types.js';
 
 /**

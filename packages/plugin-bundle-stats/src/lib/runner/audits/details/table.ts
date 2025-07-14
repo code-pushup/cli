@@ -1,8 +1,8 @@
 import type { Table } from '@code-pushup/models';
 import { formatBytes } from '@code-pushup/utils';
-import type { GroupingRule } from '../types.js';
-import type { UnifiedStats } from '../unify/unified-stats.types.js';
-import { deriveGroupTitle, matchesAnyPattern } from './match-pattern';
+import type { GroupingRule } from '../../types.js';
+import type { UnifiedStats } from '../../unify/unified-stats.types.js';
+import { deriveGroupTitle, matchesAnyPattern } from '../match-pattern.js';
 
 export type InsightsConfig = GroupingRule[];
 

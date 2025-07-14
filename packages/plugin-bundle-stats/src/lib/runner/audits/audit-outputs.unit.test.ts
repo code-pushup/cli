@@ -43,7 +43,7 @@ describe('createAuditOutput', () => {
           slug: 'bundle-size',
           description: 'Bundle size analysis',
           selection: { includeOutputs: ['**/*.js'] },
-          thresholds: { totalSize: [1000, 10000] },
+          scoring: { totalSize: [1000, 10000] },
         },
       ),
     ).toStrictEqual({
@@ -71,7 +71,7 @@ describe('createAuditOutput', () => {
           slug: 'bundle-size',
           description: 'Bundle size analysis',
           selection: { includeOutputs: ['**/*.js'] },
-          thresholds: { totalSize: [1000, 10000] },
+          scoring: { totalSize: [1000, 10000] },
         },
       ),
     ).toStrictEqual({
@@ -99,11 +99,13 @@ describe('createAuditOutput', () => {
           slug: 'bundle-size',
           description: 'Bundle size analysis',
           selection: { includeOutputs: ['**/*.js'] },
-          thresholds: { totalSize: [1000, 10000] },
-          penalty: {
-            errorWeight: 0.5,
-            warningWeight: 0.2,
-            blacklist: ['main.js'],
+          scoring: {
+            totalSize: [1000, 10000],
+            penalty: {
+              errorWeight: 0.5,
+              warningWeight: 0.2,
+              blacklist: ['main.js'],
+            },
           },
         },
       ).score,
@@ -142,7 +144,7 @@ describe('generateAuditOutputs', () => {
               includeEntryPoints: [],
               excludeEntryPoints: [],
             },
-            thresholds: { totalSize: [1000, 10000] },
+            scoring: { totalSize: [1000, 10000] },
           },
         ],
       ),
@@ -151,7 +153,7 @@ describe('generateAuditOutputs', () => {
         slug: 'js-bundle',
         score: 0,
         value: 0,
-        displayValue: '0 B',
+        displayValue: '0 B (0 files)',
       }),
     ]);
   });
@@ -176,7 +178,7 @@ describe('generateAuditOutputs', () => {
               includeEntryPoints: [],
               excludeEntryPoints: [],
             },
-            thresholds: { totalSize: [1000, 10000] },
+            scoring: { totalSize: [1000, 10000] },
           },
         ],
       ),
@@ -209,7 +211,7 @@ describe('generateAuditOutputs', () => {
               includeEntryPoints: [],
               excludeEntryPoints: [],
             },
-            thresholds: { totalSize: [1000, 10000] },
+            scoring: { totalSize: [1000, 10000] },
           },
           {
             title: 'CSS Bundle',
@@ -223,7 +225,7 @@ describe('generateAuditOutputs', () => {
               includeEntryPoints: [],
               excludeEntryPoints: [],
             },
-            thresholds: { totalSize: [1000, 10000] },
+            scoring: { totalSize: [1000, 10000] },
           },
           {
             title: 'Image Assets',
@@ -237,7 +239,7 @@ describe('generateAuditOutputs', () => {
               includeEntryPoints: [],
               excludeEntryPoints: [],
             },
-            thresholds: { totalSize: [1000, 10000] },
+            scoring: { totalSize: [1000, 10000] },
           },
         ],
       ),

@@ -11,7 +11,7 @@ const PKG = createRequire(import.meta.url)('../../package.json');
 export async function bundleStatsPlugin(
   opts: PluginOptions,
 ): Promise<PluginConfig> {
-  const { groups, audits, artefactTree, ...restOptions } = opts;
+  const { groups = [], audits, artefactTree, ...restOptions } = opts;
 
   const runnerConfigs: BundleStatsConfig[] = audits.map(
     normalizeBundleStatsOptions,

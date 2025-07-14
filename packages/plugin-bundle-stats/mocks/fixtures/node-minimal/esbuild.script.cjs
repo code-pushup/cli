@@ -1,9 +1,11 @@
 const { build } = require('esbuild');
+const fs = require('fs');
+const path = require('path');
 
 const config = {
   entryPoints: ['src/index.ts', 'src/bin.ts'],
   bundle: true,
-  outdir: 'dist',
+  outdir: 'dist/esbuild',
   entryNames: '[name]', // This ensures entry points keep their original names
   chunkNames: 'chunks/[name]-[hash]', // Put shared chunks in a subfolder
   metafile: true,
@@ -31,9 +33,6 @@ async function buildWithStats() {
     const result = await build(config);
     
     // Write metafile to stats.json
-    const fs = require('fs');
-    const path = require('path');
-    
     if (result.metafile) {
       const statsPath = path.join(config.outdir, 'stats.json');
       fs.writeFileSync(statsPath, JSON.stringify(result.metafile, null, 2));

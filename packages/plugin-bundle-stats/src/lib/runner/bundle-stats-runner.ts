@@ -2,14 +2,15 @@ import type { AuditOutput } from '@code-pushup/models';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 import { DEFAULT_GROUPING, DEFAULT_PRUNING } from '../constants.js';
 import { generateAuditOutputs } from './audits/audit-outputs.js';
+import type { InsightsConfig } from './audits/details/table.js';
+import type { ArtefactTreeOptions } from './audits/details/tree.js';
 import { DEFAULT_PENALTY, type ScoringConfig } from './audits/scoring.js';
-import type { InsightsConfig } from './audits/table.js';
-import type { ArtefactTreeOptions } from './audits/tree.js';
-import type { BundleStatsConfig } from './types.js';
-import {
-  type EsBuildCoreStats,
-  unifyBundlerStats,
-} from './unify/unify.esbuild.js';
+import type { BundleStatsConfig, SupportedBundlers } from './types.js';
+import type { UnifiedStats } from './unify/unified-stats.types.js';
+import { unifyBundlerStats as unifyEsbuildStats } from './unify/unify.esbuild.js';
+import { unifyBundlerStats as unifyRsbuildStats } from './unify/unify.rsbuild.js';
+import { unifyBundlerStats as unifyViteStats } from './unify/unify.vite.js';
+import { unifyBundlerStats as unifyWebpackStats } from './unify/unify.webpack.js';
 
 export type PluginArtefactOptions = {
   generateArtefacts?: {
@@ -17,6 +18,7 @@ export type PluginArtefactOptions = {
     args: string[];
   };
   artefactsPath: string;
+  bundler: SupportedBundlers;
 };
 
 export interface BundleStatsRunnerOptions extends PluginArtefactOptions {
@@ -27,60 +29,105 @@ export interface BundleStatsRunnerOptions extends PluginArtefactOptions {
 }
 
 /**
- * Validates bundle stats data structure. Ensures stats and outputs are properly defined.
+ * Validates bundle stats data structure based on bundler type. Ensures stats and required properties are properly defined.
  */
 function validateBundleStats(
   stats: unknown,
   artefactsPath: string,
-): asserts stats is EsBuildCoreStats {
+  bundler: SupportedBundlers,
+): void {
   if (!stats) {
     throw new Error(`Bundle stats file is null or undefined: ${artefactsPath}`);
   }
 
-  if (typeof stats !== 'object' || !('outputs' in stats)) {
+  if (typeof stats !== 'object') {
     throw new Error(
       `Bundle stats file has invalid structure: ${artefactsPath}`,
     );
   }
 
-  if (!stats.outputs) {
-    throw new Error(
-      `Bundle stats outputs is null or undefined in file: ${artefactsPath}`,
-    );
+  switch (bundler) {
+    case 'esbuild':
+      if (!('outputs' in stats)) {
+        throw new Error(
+          `Bundle stats file missing 'outputs' property for esbuild: ${artefactsPath}`,
+        );
+      }
+      if (!stats.outputs) {
+        throw new Error(
+          `Bundle stats outputs is null or undefined in file: ${artefactsPath}`,
+        );
+      }
+      break;
+    case 'webpack':
+      if (
+        !('assets' in stats) ||
+        !('chunks' in stats) ||
+        !('modules' in stats)
+      ) {
+        throw new Error(
+          `Bundle stats file missing required webpack properties (assets, chunks, modules): ${artefactsPath}`,
+        );
+      }
+      break;
+    case 'rsbuild':
+      if (
+        !('assets' in stats) ||
+        !('chunks' in stats) ||
+        !('modules' in stats)
+      ) {
+        throw new Error(
+          `Bundle stats file missing required rsbuild properties (assets, chunks, modules): ${artefactsPath}`,
+        );
+      }
+      break;
+    case 'vite':
+      if (!('assets' in stats) || !('chunks' in stats)) {
+        throw new Error(
+          `Bundle stats file missing required vite properties (assets, chunks): ${artefactsPath}`,
+        );
+      }
+      break;
+    default:
+      throw new Error(`Unsupported bundler: ${bundler}`);
   }
 }
 
 /**
- * Creates a bundle stats audit runner that processes bundler output and generates audit results
- *
- * @param opts - Configuration options for the bundle stats runner
- * @param opts.artefact - Path to the bundler stats file (JSON)
- * @param opts.bundler - Type of bundler that generated the stats ('esbuild', 'webpack', or 'rsbuild')
- * @param opts.configs - Array of bundle analysis configurations
- * @returns Promise that resolves to a function that returns audit output when called
- *
- * @example
- * ```typescript
- * const runner = await bundleStatsRunner({
- *   artefact: 'dist/stats.json',
- *   bundler: 'webpack',
- *   configs: [
- *     {
- *       name: 'main-bundle',
- *       include: ['src/**'],
- *       thresholds: { totalSize: 1024 * 1024 } // 1MB
- *     }
- *   ]
- * });
- *
- * const auditResults = await runner();
- * ```
+ * Returns the appropriate unify function based on bundler type. Provides bundler-specific stats processing.
+ */
+function getUnifyFunction(
+  bundler: SupportedBundlers,
+): (stats: any) => UnifiedStats {
+  switch (bundler) {
+    case 'esbuild':
+      return unifyEsbuildStats;
+    case 'webpack':
+      return unifyWebpackStats;
+    case 'rsbuild':
+      return unifyRsbuildStats;
+    case 'vite':
+      return unifyViteStats;
+    default:
+      throw new Error(`Unsupported bundler: ${bundler}`);
+  }
+}
+
+/**
+ * Creates a bundle stats audit runner that processes bundler output and generates audit results.
+ * Supports multiple bundlers (esbuild, webpack, rsbuild) with dynamic module loading.
  */
 export async function bundleStatsRunner(
   opts: BundleStatsRunnerOptions,
 ): Promise<() => Promise<AuditOutput[]>> {
-  const { artefactsPath, generateArtefacts, audits, artefactTree, scoring } =
-    opts;
+  const {
+    artefactsPath,
+    generateArtefacts,
+    audits,
+    artefactTree,
+    scoring,
+    bundler,
+  } = opts;
 
   return async () => {
     if (generateArtefacts) {
@@ -97,18 +144,19 @@ export async function bundleStatsRunner(
       }
     }
 
-    const stats = await readJsonFile<EsBuildCoreStats>(artefactsPath);
+    const stats = await readJsonFile(artefactsPath);
+    // @TODO implement zod schema
+    validateBundleStats(stats, artefactsPath, bundler);
 
-    validateBundleStats(stats, artefactsPath);
-
-    const unifieBundleStats = unifyBundlerStats(stats);
+    const unifyBundlerStats = getUnifyFunction(bundler);
+    const unifiedBundleStats = unifyBundlerStats(stats);
 
     const mergedAuditConfigs = mergeAuditConfigs(audits, {
       scoring,
       artefactTree,
     });
 
-    const bundleStatsTree = unifieBundleStats;
+    const bundleStatsTree = unifiedBundleStats;
     return generateAuditOutputs(bundleStatsTree, mergedAuditConfigs);
   };
 }

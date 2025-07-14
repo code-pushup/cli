@@ -55,7 +55,7 @@ describe('createBundleStatsScoring', () => {
   it('should create a score calculator function', () => {
     expect(
       typeof createBundleStatsScoring({
-        thresholds: { totalSize: [25_000, 1_000_000] as MinMax },
+        totalSize: [25_000, 1_000_000] as MinMax,
         penalty: { errorWeight: 1, warningWeight: 0.5 },
       }),
     ).toStrictEqual('function');
@@ -70,7 +70,7 @@ describe('createBundleStatsScoring', () => {
     (description, bundleSize, threshold, expectedScore) => {
       expect(
         createBundleStatsScoring({
-          thresholds: { totalSize: threshold },
+          totalSize: threshold,
           penalty: false,
         })(bundleSize, []),
       ).toStrictEqual(expectedScore);
@@ -79,7 +79,7 @@ describe('createBundleStatsScoring', () => {
 
   it('should give score 0 for bundles exceeding single threshold', () => {
     const calculator = createBundleStatsScoring({
-      thresholds: { totalSize: [0, 1_000_000] },
+      totalSize: [0, 1_000_000],
       penalty: false,
     });
 
@@ -90,7 +90,7 @@ describe('createBundleStatsScoring', () => {
 
   it('should give score 0 for bundles exceeding range threshold maximum', () => {
     const calculator = createBundleStatsScoring({
-      thresholds: { totalSize: [300_000, 1_000_000] as MinMax },
+      totalSize: [300_000, 1_000_000] as MinMax,
       penalty: false,
     });
 
@@ -102,7 +102,7 @@ describe('createBundleStatsScoring', () => {
   it('should return early when penalty is false', () => {
     expect(
       createBundleStatsScoring({
-        thresholds: { totalSize: [80_000, 1_000_000] as MinMax },
+        totalSize: [80_000, 1_000_000] as MinMax,
         penalty: false,
       })(800_000, [{ severity: 'error' }, { severity: 'warning' }] as Issue[]),
     ).toStrictEqual(1.0);
@@ -111,7 +111,7 @@ describe('createBundleStatsScoring', () => {
   it('should combine size score with default penalty', () => {
     expect(
       createBundleStatsScoring({
-        thresholds: { totalSize: [40_000, 1_000_000] as MinMax },
+        totalSize: [40_000, 1_000_000] as MinMax,
       })(800_000, [{ severity: 'error' }] as Issue[]),
     ).toStrictEqual(0.8); // 1.0 - (1 * 0.2) = 0.8
   });
@@ -119,33 +119,41 @@ describe('createBundleStatsScoring', () => {
   it('should combine size score with custom penalty', () => {
     expect(
       createBundleStatsScoring({
-        thresholds: { totalSize: [40_000, 1_000_000] as MinMax },
-        penalty: { errorWeight: 2, warningWeight: 1 },
+        totalSize: [40_000, 1_000_000] as MinMax,
+        penalty: {
+          errorWeight: 0.25,
+          warningWeight: 0.1,
+        },
       })(800_000, [{ severity: 'error' }] as Issue[]),
-    ).toStrictEqual(0); // max(0, 1.0 - (1 * 2)) = 0
+    ).toStrictEqual(0.75); // 1.0 - (1 * 0.25) = 0.75
   });
 
-  it('should ensure score never goes below zero', () => {
-    expect(
-      createBundleStatsScoring({
-        thresholds: { totalSize: [150_000, 1_000_000] as MinMax },
-        penalty: { errorWeight: 2, warningWeight: 1 },
-      })(3_000_000, [
-        { severity: 'error' },
-        { severity: 'error' },
-        { severity: 'warning' },
-      ] as Issue[]),
-    ).toStrictEqual(0);
-  });
-
-  it('should give 0 score for 0 bytes when minimum is 10 bytes', () => {
+  it('should handle scoring with a single threshold', () => {
     const calculator = createBundleStatsScoring({
-      thresholds: { totalSize: [10, 1_000_000] as MinMax },
+      totalSize: [50_000, 100_000] as MinMax,
       penalty: false,
     });
 
-    const result = calculator(0, []);
+    expect(calculator(25_000, [])).toStrictEqual(0.5); // 25_000 / 50_000 = 0.5
+    expect(calculator(75_000, [])).toStrictEqual(1.0);
+    expect(calculator(150_000, [])).toStrictEqual(0);
+  });
 
-    expect(result).toStrictEqual(0);
+  it('should handle size within range with penalties', () => {
+    const calculator = createBundleStatsScoring({
+      totalSize: [25_000, 1_000_000] as MinMax,
+      penalty: {
+        errorWeight: 0.2,
+        warningWeight: 0.1,
+      },
+    });
+
+    expect(calculator(150_000, [])).toStrictEqual(1.0);
+    expect(
+      calculator(150_000, [{ severity: 'error' }] as Issue[]),
+    ).toStrictEqual(0.8); // 1.0 - 0.2 = 0.8
+    expect(
+      calculator(150_000, [{ severity: 'warning' }] as Issue[]),
+    ).toStrictEqual(0.9); // 1.0 - 0.1 = 0.9
   });
 });

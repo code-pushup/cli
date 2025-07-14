@@ -4,11 +4,11 @@
   "sourceRoot": "packages/plugin-bundle-stats/src",
   "projectType": "library",
   "targets": {
-    "code-pushup-minimal": {
+    "code-pushup-minimal-esbuild": {
       "executor": "nx:run-commands",
       "options": {
         "command": "node packages/cli/src/index.ts --no-progress --verbose",
-        "args": "collect --config packages/plugin-bundle-stats/code-pushup.minimal.config.ts",
+        "args": "collect --config packages/plugin-bundle-stats/code-pushup.minimal-esbuild.config.ts",
         "env": {
           "NODE_OPTIONS": "--import tsx",
           "TSX_TSCONFIG_PATH": "tsconfig.base.json"
@@ -20,6 +20,39 @@
       "options": {
         "command": "node packages/cli/src/index.ts --no-progress --verbose",
         "args": "collect --config packages/plugin-bundle-stats/code-pushup.minimal-angular.config.ts",
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-minimal-webpack": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts --no-progress --verbose",
+        "args": "collect --config packages/plugin-bundle-stats/code-pushup.minimal-webpack.config.ts",
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-minimal-rsbuild": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts --no-progress --verbose",
+        "args": "collect --config packages/plugin-bundle-stats/code-pushup.minimal-rsbuild.config.ts",
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-minimal-vite": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts --no-progress --verbose",
+        "args": "collect --config packages/plugin-bundle-stats/code-pushup.minimal-vite.config.ts",
         "env": {
           "NODE_OPTIONS": "--import tsx",
           "TSX_TSCONFIG_PATH": "tsconfig.base.json"

@@ -3,11 +3,11 @@ import type { BundleStatsConfig } from '../types.js';
 import type { UnifiedStats } from '../unify/unified-stats.types.js';
 import { createDisplayValue } from '../utils.js';
 import { createEmptyAudit } from '../utils.js';
-import { getIssues } from './issues.js';
+import { getIssues } from './details/issues.js';
+import { createInsightsTable } from './details/table.js';
+import { DEFAULT_PRUNING, createTree } from './details/tree.js';
 import { createBundleStatsScoring } from './scoring.js';
 import { selectArtefacts } from './selection.js';
-import { createInsightsTable } from './table.js';
-import { DEFAULT_PRUNING, createTree } from './tree.js';
 
 /**
  * Calculates total bytes from unified stats tree. Aggregates byte counts across all artefacts.

@@ -8,7 +8,6 @@
 - **[Features](#features)**
   - [General](#general)
   - [Selection](#selection)
-    - [Type Definitions](#type-definitions)
     - [Selection Behaviour](#selection-behaviour)
       - [Include Specific Output](#include-specific-output)
     - [Include by Input Files](#include-by-input-files)
@@ -17,7 +16,7 @@
     - [Exclude Inputs Patterns](#exclude-inputs-patterns)
     - [Exclude Entry Points Patterns](#exclude-entry-points-patterns)
   - [Scoring](#scoring)
-    - [Total Size Budgets](#total-size-budgets)
+    - [Total Size](#total-size)
     - [Panelties](#panelties)
     - [Scoring Parameters](#scoring-parameters)
       - [Size score](#size-score)
@@ -35,10 +34,12 @@
     - [Tree Pruning](#tree-pruning)
     - [Formatting](#formatting)
       - [Size Formatting](#size-formatting)
-      - [Files Pluralization](#files-pluralization)
+      - [Source Pluralization](#source-pluralization)
       - [Path Shortening](#path-shortening)
       - [Redundant Information Handling](#redundant-information-handling)
   - [Insights Table](#insights-table)
+  - [Plugin Configuration](#plugin-configuration)
+  - [Audit Configuration](#audit-configuration)
 
 ## Metric
 
@@ -50,9 +51,14 @@ Parsed from `--stats-json` output and grouped by file.
 | **value**        |             `132341` | Total size of all chunks.           |
 | **displayValue** | `13.4 MB / 13 Files` | Display value inc. number of files. |
 
-## Artefacts
+## Bundlers
 
-@TODO
+Supported bundlers:
+
+- **`esbuild`**: [esbuild](https://esbuild.github.io/)
+- **`webpack`**: [webpack](https://webpack.js.org/)
+- **`rsbuild`**: [rsbuild](https://rsbuild.dev/)
+- **`vite`**: [vite](https://vite.dev/)
 
 ### Bundle Stats
 
@@ -585,16 +591,19 @@ Artifacts containing imports that match forbidden glob patterns. This helps enfo
 
 ### Artefact Tree
 
+The artefact tree is here to give users a quick understanding of the dependencies graph of the selected artefacts. It should be a replaccement for opening the bundle stats in the browser and search for respective files.
+
 **Complete Example:**
 
 ```txt
-🗂️ example-group                                 237.17 kB   101 files
+🗂️ example-group                                 537.17 kB   101 files
 ├── 📍 entry-1.js                                   138 kB    2 files
 │   ├── 📄 src/input-1.ts                           101 kB
 │   └── 📄 src/input-2.ts                            37 kB
-├── 📄 entry-2.js                                    30 kB   2 files
+├── 📄 entry-2.js                                   330 kB   2 files
 │   ├── 📄 node_modules/@angular/router/provider.js  15 kB
-│   └── 📄 node_modules/@angular/router/service.js   15 kB
+│   ├── 📄 node_modules/@angular/router/service.js  15 kB
+│   └── ... 12 more files                          300 kB
 ├── 🎨 styles.css                                    14 kB
 └── 🔗 static imports from 📍 entry-1.js            104 kB
     └── 📄 file-1.js
@@ -643,18 +652,28 @@ Static imports are loaded together with it's importing parent and therefore will
 🗂️ example-group
 ├── 📍 entry-1.js
 ├── 📄 file-1.js
-├── 🔗 static imports from 📍 entry-1.js
-│    ├── 📄 file-2.ts
-│    └── 📄 file-3.ts
-└── 🔗 static imports from 📄 file-1.js
-    ├── 📄 file-4.ts
-    └── 📄 file-5.ts
+├── 📍 entry-1.js        // imports file-2.ts and file-3.ts
+├── 📄 file-2.ts         // imported from 📍 entry-1.js
+│   └── 📄 file-2.ts
+└── 📄 file-3.ts         // imported from 📍 entry-1.js
+    └── 📄 file-3.ts
 
 ```
 
 #### Artefact Grouping
 
 Artefact inputs can be grouped over the configuration.
+
+**Types**
+
+```ts
+type GroupRule = {
+  title: string;
+  patterns: string[];
+  icon: string;
+  maxDepth: number;
+};
+```
 
 **Ungrouped:**
 
@@ -666,12 +685,19 @@ Artefact inputs can be grouped over the configuration.
         └── 📄 node_modules/@angular/router/utils.ts
 ```
 
-**Grouped by:**
+**Example Configuration**
 
-- `patterns` - [`node_modules/@angular/router`]
-- `title` - `@angular/router`
-- `icon` - "🅰️"
-- `maxDepth` - `1`
+```ts
+const groupRules = [
+  {
+    title: '@angular/router',
+    patterns: ['node_modules/@angular/router'],
+    icon: '🅰️',
+  },
+];
+```
+
+**Report Output:**
 
 ```txt
 🗂️ example-group
@@ -683,6 +709,15 @@ Artefact inputs can be grouped over the configuration.
 #### Tree Pruning
 
 The artefact tree can get quite dense in information. To avoid overload we reduce the amount of visible nodes.
+
+**Types**
+
+```ts
+type PruningOptions = {
+  maxChildren: number;
+  maxDepth: number;
+};
+```
 
 **Unpruned:**
 
@@ -707,12 +742,16 @@ The artefact tree can get quite dense in information. To avoid overload we reduc
 
 ```
 
-**Pruning options:**
+**Example Configuration**
 
-- `maxChildren` - `3`
-- `maxDepth` - `1`
+```ts
+const pruningOptions: PruningOptions = {
+  maxChildren: 3,
+  maxDepth: 1,
+};
+```
 
-**Pruned:**
+**Report Output:**
 
 ```txt
 🗂️ example-group
@@ -727,7 +766,7 @@ The artefact tree can get quite dense in information. To avoid overload we reduc
 
 #### Formatting
 
-The trees text content is formatted to get better readability.
+The Trees text content is formatted to get better readability by default.
 
 ##### Size Formatting
 
@@ -747,9 +786,9 @@ File sizes are calculated to the closest readable unit for better readability.
 └── 📍 main.js                   300 kB
 ```
 
-##### Files Pluralization
+##### Source Pluralization
 
-File counts are properly pluralized based on the number of files.
+Source counts are properly pluralized based on the number of files.
 
 **Unpluralized:**
 
@@ -762,9 +801,9 @@ File counts are properly pluralized based on the number of files.
 **Pluralized:**
 
 ```txt
-🗂️ example-group                     3 files
-├── 📍 main.js                       1 file
-└── 📄 utils.js                      2 files
+🗂️ example-group                     3 sources
+├── 📍 main.js                       1 source
+└── 📄 utils.js                      2 sources
 ```
 
 ##### Path Shortening
@@ -792,10 +831,10 @@ If a node has **only 1** child or file, redundant size and file count informatio
 **With redundancy:**
 
 ```txt
-🗂️ example-group                        300 kB    3 files
-└── 📍 index.js                         100 kB    1 file
-    ├── 📄 src/app.js                   100 kB    1 file
-    └── … 4 more inputs                 200 kB    4 files
+🗂️ example-group                        300 kB    3 sources
+└── 📍 index.js                         100 kB    1 source
+    ├── 📄 src/app.js                   100 kB    1 source
+    └── … 4 more inputs                 200 kB    4 sources
 ```
 
 **Without redundancy:**
@@ -809,29 +848,230 @@ If a node has **only 1** child or file, redundant size and file count informatio
 
 ### Insights Table
 
-The insights table gives an overview of the different areas of the file selection. The information is aggregates from output files, inputs and imports and grouped name.
+The insights table gives an overview of the different areas of the file selection. The information is aggregated from output files, inputs and output overhead and grouped by pattern.
 
-**Grouping:**
+To have correct data, a process needs to be followed:
 
-```json
-[
+1. For each Group
+1. For each Pattern
+1. Iterate over all inputs of all outputs and aggregate its contributing bytes
+1. Iterate over all imports of all outputs and aggregate its contributing bytes
+1. Iterate over all outputs and aggregate its contributing bytes
+1. Aggregate the unmatched bytes of all outputs under a group for the remaining bytes
+
+**Types**
+
+```ts
+type InsightsOptions = {
+  title?: string;
+  patterns: string[];
+  icon?: string;
+}[];
+```
+
+**Example Configuration**
+
+```ts
+const insightsOptions: InsightsOptions = [
   {
-    "patterns": ["packages/host/**"],
-    "title": "host",
-    "icon": "🗂️"
+    patterns: ["**/features/host-app/**"],
+    title: "App Host",
+    icon: "🖥️"
   },
-  {
-    "patterns": ["packages/loaders-lib/**"],
-    "title": "loaders",
-    "icon": "🗂️"
-  }
+  ...
 ]
 ```
 
-| Entry Point        | Size     | File Count |
-| ------------------ | -------- | ---------- |
-| 🗂️ host            | 48.15 kB | 109 files  |
-| 🗂️ loaders         | 30.53 kB | 21 files   |
-| 🗂️ oxygen          | 287 B    | 3 files    |
-| 🅰️ @angular/router | 836 B    | 2 files    |
-| 🗂️ sports          | 6.4 kB   | 61 files   |
+**Report Output:**
+
+```txt
+| Group               | Size     | Sources |
+| ------------------- | -------- | ------- |
+| 📦 Node Modules     | 1.2 MB   | 100     |
+| 🖥️ App Host         | 48.15 kB | 109     |
+| 📁 Loaders          | 30.53 kB | 21      |
+| 📁 Legacy           | 30.53 kB | 21      |
+| 🎯 Sports Feature   | 6.4 kB   | 61      |
+| 🅰️ Angular          | 836 B    | 2       |
+| 🌬️ Oxygen           | 287 B    | 3       |
+| *Rest*               | 1.2 MB   | 100     |
+
+```
+
+### Plugin Configuration
+
+The plugin integrates with supported bundlers to analyze bundle statistics and generate audit reports. Configure the plugin with bundler type, artifact paths, and audit settings.
+
+**Types**
+
+```ts
+export type BundleStatsPluginOptions = {
+  bundler: SUPPORTED_BUNDLERS;
+  artefactsPaths: string;
+  generateArtefacts?: string;
+  audits: BundleStatsAuditOption[];
+  artefactTree?: TreeOptions;
+  insightsTable?: InsightsOptions;
+  scoring?: Omit<ScoringOptions, 'totalSize'>;
+};
+```
+
+**Minimal Example Configuration**
+
+```ts
+const pluginOptions: PluginOptions = {
+  bundler: 'esbuild',
+  artefactsPaths: './dist/stats.json',
+  audits: [
+    {
+      title: 'Initial Bundles',
+      selection: {
+        includeOutputs: ['**/*.js'],
+      },
+      scoring: {
+        totalSize: 500_000,
+      },
+    },
+  ],
+};
+```
+
+#### Artefacts Gathering
+
+The plugin can generate artefacts from the `stats.json` file. The plugin can either use an existing `stats.json` file or generate a new one if the `generateArtefacts` option is provided.
+
+**Types**
+
+```ts
+type ArtefactsOptions = {
+  bundler: SUPPORTED_BUNDLERS;
+  artefactsPaths: string;
+  generateArtefacts?: string;
+};
+```
+
+**Example Configuration:**
+
+```ts
+const options: PluginOptions = {
+  bundler: 'esbuild',
+  artefactsPaths: './dist/stats.json',
+  // ...
+};
+```
+
+**Full Example Configuration:**
+
+```ts
+const options: PluginOptions = {
+  bundler: 'esbuild',
+  artefactsPaths: './dist/stats.json',
+  generateArtefacts: 'esbuild src/index.js --bundle  --outfile=dist/bundle.js  --metafile=stats.json',
+  // ...
+};
+```
+
+#### Options Merging
+
+The Plugin and audit share a set of options:
+
+- `insightsTable` - The insights to use (grouping)
+- `scoring` - The scoring penalty (not the totalSize) to use (penalty)
+- `artefactTree` - The artefact tree to use (pruning, grouping, formatting)
+
+```ts
+const pluginOptions: PluginOptions = {
+    artefactTree: {},                 // 📥 merged into every audit[].artefactTree
+    insightsTable: [],                // 📥 merged into every audit[].insightsTable
+    scoring: {},                      // 📥 merged into every audit[].scoring (not the totalSize)
+    audits: [
+        {
+            scoring: {
+               totalSize: 500_000
+               pelanty: {}              // 🔄 overrides plugin.scoring if set
+            },
+            insightsTable: [],          // 🔄 overrides plugin.insightsTable if set
+            artefactTree: {},           // 🔄 overrides plugin.artefactTree if set
+        }
+    ]
+};
+```
+
+#### Audit Configuration
+
+Each audit defines a specific bundle analysis with its own selection criteria, scoring thresholds, and reporting options. Audits can override plugin-level settings or inherit them for consistency across multiple audits.
+
+**Types**
+
+```ts
+export type BundleStatsAuditOption = {
+  slug?: string;
+  title: string;
+  description?: string;
+  selection: SelectionOptions;
+  scoring: ScoringOptions;
+  artefactTree?: TreeOptions;
+  insightsTable?: InsightsOptions;
+};
+```
+
+**Minimal Example Configuration**
+
+```ts
+const auditConfig: BundleStatsAuditOption = {
+  title: 'All Bundles',
+  selection: { includeOutputs: ['**/*.js'] },
+  scoring: { totalSize: 500_000 },
+};
+```
+
+**Full Example Configuration**
+
+```ts
+const auditConfig: BundleStatsAuditOption = {
+  slug: 'initial-bundles',
+  title: 'Initial Bundle Size',
+  description: 'Monitors the size of initial JavaScript bundles loaded on page load.',
+  selection: {
+    includeOutputs: ['**/main.js', '**/vendor.js'],
+    excludeOutputs: ['**/chunks/**'],
+  },
+  scoring: {
+    totalSize: 500_000,
+    penalty: {
+      artefactSize: [50_000, 200_000],
+      blacklist: ['**/legacy/**', '**/deprecated/**'],
+    },
+  },
+  artefactTree: {
+    groups: [
+      {
+        title: 'App Code',
+        patterns: ['**/src/**'],
+        icon: '🎯',
+      },
+      {
+        title: 'Node Modules',
+        patterns: ['**/node_modules/**'],
+        icon: '📦',
+      },
+    ],
+    pruning: {
+      maxChildren: 3,
+      maxDepth: 1,
+    },
+  },
+  insightsTable: [
+    {
+      title: 'App Code',
+      patterns: ['**/src/**'],
+      icon: '🎯',
+    },
+    {
+      title: 'Node Modules',
+      patterns: ['**/node_modules/**'],
+      icon: '📦',
+    },
+  ],
+};
+```

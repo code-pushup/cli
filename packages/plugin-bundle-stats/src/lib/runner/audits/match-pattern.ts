@@ -148,6 +148,23 @@ export function deriveGroupTitle(
   const normalizedPath = normalizePathForMatching(path);
 
   for (const pattern of patterns) {
+    // Find the first concrete directory in the pattern (not wildcards)
+    const concreteSegments = pattern
+      .split('/')
+      .filter(
+        segment =>
+          segment &&
+          segment !== '**' &&
+          segment !== '*' &&
+          !segment.includes('*'),
+      );
+
+    // If the pattern contains a concrete segment that matches the fallback title,
+    // use the fallback title instead of extracting individual file names
+    if (concreteSegments.includes(fallbackTitle)) {
+      return fallbackTitle;
+    }
+
     // Convert glob pattern to regex and find the "grouping segment"
     const groupName = extractGroupNameFromPattern(
       path,
