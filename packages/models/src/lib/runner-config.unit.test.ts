@@ -64,7 +64,7 @@ describe('runnerFunctionSchema', () => {
 
   it('should throw for a non-function argument', () => {
     expect(() => runnerFunctionSchema.parse({ slug: 'configuration' })).toThrow(
-      `Expected function,`,
+      'Expected function, received object',
     );
   });
 });
@@ -86,7 +86,7 @@ describe('outputTransformSchema', () => {
 
   it('should throw for a non-function argument', () => {
     expect(() => outputTransformSchema.parse('configuration')).toThrow(
-      'Expected function',
+      'Expected function, received string',
     );
   });
 });

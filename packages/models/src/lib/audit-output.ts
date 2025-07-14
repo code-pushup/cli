@@ -1,10 +1,10 @@
 import { z } from 'zod';
+import { createDuplicateSlugsCheck } from './implementation/checks.js';
 import {
   nonnegativeNumberSchema,
   scoreSchema,
   slugSchema,
 } from './implementation/schemas.js';
-import { errorItems, hasDuplicateStrings } from './implementation/utils.js';
 import { issueSchema } from './issue.js';
 import { tableSchema } from './table.js';
 import { treeSchema } from './tree.js';
@@ -42,24 +42,8 @@ export type AuditOutput = z.infer<typeof auditOutputSchema>;
 
 export const auditOutputsSchema = z
   .array(auditOutputSchema)
-  // audit slugs are unique
-  .refine(
-    audits => !getDuplicateSlugsInAudits(audits),
-    audits => ({ message: duplicateSlugsInAuditsErrorMsg(audits) }),
-  )
+  .check(createDuplicateSlugsCheck('Audit'))
   .describe(
     'List of JSON formatted audit output emitted by the runner process of a plugin',
   );
 export type AuditOutputs = z.infer<typeof auditOutputsSchema>;
-
-// helper for validator: audit slugs are unique
-function duplicateSlugsInAuditsErrorMsg(audits: AuditOutput[]) {
-  const duplicateRefs = getDuplicateSlugsInAudits(audits);
-  return `In plugin audits the slugs are not unique: ${errorItems(
-    duplicateRefs,
-  )}`;
-}
-
-function getDuplicateSlugsInAudits(audits: AuditOutput[]) {
-  return hasDuplicateStrings(audits.map(({ slug }) => slug));
-}

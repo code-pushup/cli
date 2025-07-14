@@ -74,6 +74,8 @@ describe('pluginAuditsSchema', () => {
           title: 'Jest unit tests results.',
         },
       ] satisfies Audit[]),
-    ).toThrow('slugs are not unique: jest-unit-test-results');
+    ).toThrow(
+      String.raw`Audit slugs must be unique, but received duplicates: \"jest-unit-test-results\"`,
+    );
   });
 });
