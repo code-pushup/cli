@@ -25,26 +25,28 @@ export function executionMetaSchema(
   },
 ) {
   return z.object({
-    date: z.string({ description: options.descriptionDate }),
-    duration: z.number({ description: options.descriptionDuration }),
+    date: z.string().describe(options.descriptionDate),
+    duration: z.number().describe(options.descriptionDuration),
   });
 }
 
 /** Schema for a slug of a categories, plugins or audits. */
 export const slugSchema = z
-  .string({ description: 'Unique ID (human-readable, URL-safe)' })
+  .string()
   .regex(slugRegex, {
     message:
       'The slug has to follow the pattern [0-9a-z] followed by multiple optional groups of -[0-9a-z]. e.g. my-slug',
   })
   .max(MAX_SLUG_LENGTH, {
     message: `The slug can be max ${MAX_SLUG_LENGTH} characters long`,
-  });
+  })
+  .describe('Unique ID (human-readable, URL-safe)');
 
 /**  Schema for a general description property */
 export const descriptionSchema = z
-  .string({ description: 'Description (markdown)' })
+  .string()
   .max(MAX_DESCRIPTION_LENGTH)
+  .describe('Description (markdown)')
   .optional();
 
 /* Schema for a URL */
@@ -71,16 +73,16 @@ export const docsUrlSchema = urlSchema
 
 /** Schema for a title of a plugin, category and audit */
 export const titleSchema = z
-  .string({ description: 'Descriptive name' })
-  .max(MAX_TITLE_LENGTH);
+  .string()
+  .max(MAX_TITLE_LENGTH)
+  .describe('Descriptive name');
 
 /** Schema for score of audit, category or group */
 export const scoreSchema = z
-  .number({
-    description: 'Value between 0 and 1',
-  })
+  .number()
   .min(0)
-  .max(1);
+  .max(1)
+  .describe('Value between 0 and 1');
 
 /** Schema for a property indicating whether an entity is filtered out */
 export const isSkippedSchema = z.boolean().optional();
@@ -103,23 +105,21 @@ export function metaSchema(options?: {
     description,
     isSkippedDescription,
   } = options ?? {};
-  return z.object(
-    {
-      title: titleDescription
-        ? titleSchema.describe(titleDescription)
-        : titleSchema,
-      description: descriptionDescription
-        ? descriptionSchema.describe(descriptionDescription)
-        : descriptionSchema,
-      docsUrl: docsUrlDescription
-        ? docsUrlSchema.describe(docsUrlDescription)
-        : docsUrlSchema,
-      isSkipped: isSkippedDescription
-        ? isSkippedSchema.describe(isSkippedDescription)
-        : isSkippedSchema,
-    },
-    { description },
-  );
+  const meta = z.object({
+    title: titleDescription
+      ? titleSchema.describe(titleDescription)
+      : titleSchema,
+    description: descriptionDescription
+      ? descriptionSchema.describe(descriptionDescription)
+      : descriptionSchema,
+    docsUrl: docsUrlDescription
+      ? docsUrlSchema.describe(docsUrlDescription)
+      : docsUrlSchema,
+    isSkipped: isSkippedDescription
+      ? isSkippedSchema.describe(isSkippedDescription)
+      : isSkippedSchema,
+  });
+  return description ? meta.describe(description) : meta;
 }
 
 /** Schema for a generalFilePath */
@@ -148,15 +148,16 @@ export function packageVersionSchema<TRequired extends boolean>(options?: {
 }) {
   const { versionDescription = 'NPM version of the package', required } =
     options ?? {};
-  const packageSchema = z.string({ description: 'NPM package name' });
-  const versionSchema = z.string({ description: versionDescription });
-  return z.object(
-    {
+  const packageSchema = z.string().describe('NPM package name');
+  const versionSchema = z.string().describe(versionDescription);
+  return z
+    .object({
       packageName: required ? packageSchema : packageSchema.optional(),
       version: required ? versionSchema : versionSchema.optional(),
-    },
-    { description: 'NPM package name and version of a published package' },
-  ) as ZodObject<{
+    })
+    .describe(
+      'NPM package name and version of a published package',
+    ) as ZodObject<{
     packageName: TRequired extends true ? ZodString : ZodOptional<ZodString>;
     version: TRequired extends true ? ZodString : ZodOptional<ZodString>;
   }>;
@@ -171,13 +172,12 @@ export function weightedRefSchema(
   description: string,
   slugDescription: string,
 ) {
-  return z.object(
-    {
+  return z
+    .object({
       slug: slugSchema.describe(slugDescription),
       weight: weightSchema.describe('Weight used to calculate score'),
-    },
-    { description },
-  );
+    })
+    .describe(description);
 }
 
 export type WeightedRef = z.infer<ReturnType<typeof weightedRefSchema>>;
@@ -188,8 +188,8 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
   duplicateCheckFn: (metrics: z.infer<T>[]) => false | string[],
   duplicateMessageFn: (metrics: z.infer<T>[]) => string,
 ) {
-  return z.object(
-    {
+  return z
+    .object({
       slug: slugSchema.describe('Human-readable unique ID, e.g. "performance"'),
       refs: z
         .array(refSchema)
@@ -208,14 +208,13 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
             message: `In a category, there has to be at least one ref with weight > 0. Affected refs: ${affectedRefs}`,
           };
         }),
-    },
-    { description },
-  );
+    })
+    .describe(description);
 }
 
-export const materialIconSchema = z.enum(MATERIAL_ICONS, {
-  description: 'Icon from VSCode Material Icons extension',
-});
+export const materialIconSchema = z
+  .enum(MATERIAL_ICONS)
+  .describe('Icon from VSCode Material Icons extension');
 export type MaterialIcon = z.infer<typeof materialIconSchema>;
 
 type Ref = { weight: number };
@@ -224,12 +223,11 @@ function hasNonZeroWeightedRef(refs: Ref[]) {
   return refs.reduce((acc, { weight }) => weight + acc, 0) !== 0;
 }
 
-export const filePositionSchema = z.object(
-  {
+export const filePositionSchema = z
+  .object({
     startLine: positiveIntSchema.describe('Start line'),
     startColumn: positiveIntSchema.describe('Start column').optional(),
     endLine: positiveIntSchema.describe('End line').optional(),
     endColumn: positiveIntSchema.describe('End column').optional(),
-  },
-  { description: 'Location in file' },
-);
+  })
+  .describe('Location in file');

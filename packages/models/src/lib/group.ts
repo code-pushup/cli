@@ -37,16 +37,15 @@ export const groupSchema = scorableSchema(
 export type Group = z.infer<typeof groupSchema>;
 
 export const groupsSchema = z
-  .array(groupSchema, {
-    description: 'List of groups',
-  })
+  .array(groupSchema)
   .optional()
   .refine(
     groups => !getDuplicateSlugsInGroups(groups),
     groups => ({
       message: duplicateSlugsInGroupsErrorMsg(groups),
     }),
-  );
+  )
+  .describe('List of groups');
 
 // ============
 

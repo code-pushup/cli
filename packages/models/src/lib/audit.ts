@@ -18,9 +18,7 @@ export const auditSchema = z
 
 export type Audit = z.infer<typeof auditSchema>;
 export const pluginAuditsSchema = z
-  .array(auditSchema, {
-    description: 'List of audits maintained in a plugin',
-  })
+  .array(auditSchema)
   .min(1)
   // audit slugs are unique
   .refine(
@@ -28,7 +26,8 @@ export const pluginAuditsSchema = z
     auditMetadata => ({
       message: duplicateSlugsInAuditsErrorMsg(auditMetadata),
     }),
-  );
+  )
+  .describe('List of audits maintained in a plugin');
 
 // =======================
 

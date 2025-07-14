@@ -3,19 +3,21 @@ import { slugSchema, urlSchema } from './implementation/schemas.js';
 
 export const uploadConfigSchema = z.object({
   server: urlSchema.describe('URL of deployed portal API'),
-  apiKey: z.string({
-    description:
+  apiKey: z
+    .string()
+    .describe(
       'API key with write access to portal (use `process.env` for security)',
-  }),
+    ),
   organization: slugSchema.describe(
     'Organization slug from Code PushUp portal',
   ),
   project: slugSchema.describe('Project slug from Code PushUp portal'),
   timeout: z
-    .number({ description: 'Request timeout in minutes (default is 5)' })
+    .number()
     .positive()
     .int()
-    .optional(),
+    .optional()
+    .describe('Request timeout in minutes (default is 5)'),
 });
 
 export type UploadConfig = z.infer<typeof uploadConfigSchema>;
