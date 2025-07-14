@@ -24,18 +24,8 @@
         ]
       }
     },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/create-cli/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/create-cli/vitest.int.config.ts"
-      }
-    },
+    "unit-test": {},
+    "int-test": {},
     "exec-node": {
       "dependsOn": ["build"],
       "command": "node ./dist/packages/create-cli/src/index.js",

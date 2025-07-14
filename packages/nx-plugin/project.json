@@ -48,18 +48,8 @@
         ]
       }
     },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/nx-plugin/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/nx-plugin/vitest.int.config.ts"
-      }
-    }
+    "unit-test": {},
+    "int-test": {}
   },
   "tags": ["scope:tooling", "type:feature", "publishable"]
 }

@@ -25,18 +25,8 @@
         ]
       }
     },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/models/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/models/vitest.int.config.ts"
-      }
-    },
+    "unit-test": {},
+    "int-test": {},
     "generate-docs": {
       "command": "npx zod2md --config packages/models/zod2md.config.ts",
       "cache": true,
