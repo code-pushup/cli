@@ -9,20 +9,15 @@ export const outputTransformSchema = z
 
 export type OutputTransform = z.infer<typeof outputTransformSchema>;
 
-export const runnerConfigSchema = z.object(
-  {
-    command: z.string({
-      description: 'Shell command to execute',
-    }),
-    args: z.array(z.string({ description: 'Command arguments' })).optional(),
+export const runnerConfigSchema = z
+  .object({
+    command: z.string().describe('Shell command to execute'),
+    args: z.array(z.string()).describe('Command arguments').optional(),
     outputFile: filePathSchema.describe('Runner output path'),
     outputTransform: outputTransformSchema.optional(),
     configFile: filePathSchema.describe('Runner config path').optional(),
-  },
-  {
-    description: 'How to execute runner',
-  },
-);
+  })
+  .describe('How to execute runner');
 
 export type RunnerConfig = z.infer<typeof runnerConfigSchema>;
 

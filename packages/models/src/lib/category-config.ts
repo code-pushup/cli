@@ -12,10 +12,11 @@ export const categoryRefSchema = weightedRefSchema(
   'Slug of an audit or group (depending on `type`)',
 ).merge(
   z.object({
-    type: z.enum(['audit', 'group'], {
-      description:
+    type: z
+      .enum(['audit', 'group'])
+      .describe(
         'Discriminant for reference kind, affects where `slug` is looked up',
-    }),
+      ),
     plugin: slugSchema.describe(
       'Plugin slug (plugin should contain referenced audit or group)',
     ),
@@ -40,10 +41,10 @@ export const categoryConfigSchema = scorableSchema(
   .merge(
     z.object({
       isBinary: z
-        .boolean({
-          description:
-            'Is this a binary category (i.e. only a perfect score considered a "pass")?',
-        })
+        .boolean()
+        .describe(
+          'Is this a binary category (i.e. only a perfect score considered a "pass")?',
+        )
         .optional(),
     }),
   );
@@ -65,15 +66,14 @@ function getDuplicateRefsInCategoryMetrics(metrics: CategoryRef[]) {
 }
 
 export const categoriesSchema = z
-  .array(categoryConfigSchema, {
-    description: 'Categorization of individual audits',
-  })
+  .array(categoryConfigSchema)
   .refine(
     categoryCfg => !getDuplicateSlugCategories(categoryCfg),
     categoryCfg => ({
       message: duplicateSlugCategoriesErrorMsg(categoryCfg),
     }),
-  );
+  )
+  .describe('Categorization of individual audits');
 
 // helper for validator: categories slugs are unique
 function duplicateSlugCategoriesErrorMsg(categories: CategoryConfig[]) {

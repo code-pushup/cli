@@ -12,45 +12,43 @@ import { treeSchema } from './tree.js';
 export const auditValueSchema =
   nonnegativeNumberSchema.describe('Raw numeric value');
 export const auditDisplayValueSchema = z
-  .string({ description: "Formatted value (e.g. '0.9 s', '2.1 MB')" })
+  .string()
+  .describe("Formatted value (e.g. '0.9 s', '2.1 MB')")
   .optional();
 
-export const auditDetailsSchema = z.object(
-  {
-    issues: z
-      .array(issueSchema, { description: 'List of findings' })
-      .optional(),
+export const auditDetailsSchema = z
+  .object({
+    issues: z.array(issueSchema).describe('List of findings').optional(),
     table: tableSchema('Table of related findings').optional(),
     trees: z
-      .array(treeSchema, { description: 'Findings in tree structure' })
+      .array(treeSchema)
+      .describe('Findings in tree structure')
       .optional(),
-  },
-  { description: 'Detailed information' },
-);
+  })
+  .describe('Detailed information');
 export type AuditDetails = z.infer<typeof auditDetailsSchema>;
 
-export const auditOutputSchema = z.object(
-  {
+export const auditOutputSchema = z
+  .object({
     slug: slugSchema.describe('Reference to audit'),
     displayValue: auditDisplayValueSchema,
     value: auditValueSchema,
     score: scoreSchema,
     details: auditDetailsSchema.optional(),
-  },
-  { description: 'Audit information' },
-);
+  })
+  .describe('Audit information');
 
 export type AuditOutput = z.infer<typeof auditOutputSchema>;
 
 export const auditOutputsSchema = z
-  .array(auditOutputSchema, {
-    description:
-      'List of JSON formatted audit output emitted by the runner process of a plugin',
-  })
+  .array(auditOutputSchema)
   // audit slugs are unique
   .refine(
     audits => !getDuplicateSlugsInAudits(audits),
     audits => ({ message: duplicateSlugsInAuditsErrorMsg(audits) }),
+  )
+  .describe(
+    'List of JSON formatted audit output emitted by the runner process of a plugin',
   );
 export type AuditOutputs = z.infer<typeof auditOutputsSchema>;
 
