@@ -1,15 +1,14 @@
 import { z } from 'zod';
 import {
-  type WeightedRef,
+  createDuplicateSlugsCheck,
+  createDuplicatesCheck,
+} from './implementation/checks.js';
+import {
   metaSchema,
   scorableSchema,
   weightedRefSchema,
 } from './implementation/schemas.js';
-import {
-  errorItems,
-  exists,
-  hasDuplicateStrings,
-} from './implementation/utils.js';
+import { formatSlugsList } from './implementation/utils.js';
 
 export const groupRefSchema = weightedRefSchema(
   'Weighted reference to a group',
@@ -30,47 +29,17 @@ export const groupSchema = scorableSchema(
   'A group aggregates a set of audits into a single score which can be referenced from a category. ' +
     'E.g. the group slug "performance" groups audits and can be referenced in a category',
   groupRefSchema,
-  getDuplicateRefsInGroups,
-  duplicateRefsInGroupsErrorMsg,
+  createDuplicatesCheck(
+    ({ slug }) => slug,
+    duplicates =>
+      `Group has duplicate references to audits: ${formatSlugsList(duplicates)}`,
+  ),
 ).merge(groupMetaSchema);
 
 export type Group = z.infer<typeof groupSchema>;
 
 export const groupsSchema = z
   .array(groupSchema)
+  .check(createDuplicateSlugsCheck('Group'))
   .optional()
-  .refine(
-    groups => !getDuplicateSlugsInGroups(groups),
-    groups => ({
-      message: duplicateSlugsInGroupsErrorMsg(groups),
-    }),
-  )
   .describe('List of groups');
-
-// ============
-
-// helper for validator: group refs are unique
-function duplicateRefsInGroupsErrorMsg(groups: WeightedRef[]) {
-  const duplicateRefs = getDuplicateRefsInGroups(groups);
-  return `In plugin groups the following references are not unique: ${errorItems(
-    duplicateRefs,
-  )}`;
-}
-
-function getDuplicateRefsInGroups(groups: WeightedRef[]) {
-  return hasDuplicateStrings(groups.map(({ slug: ref }) => ref).filter(exists));
-}
-
-// helper for validator: group refs are unique
-function duplicateSlugsInGroupsErrorMsg(groups: Group[] | undefined) {
-  const duplicateRefs = getDuplicateSlugsInGroups(groups);
-  return `In groups the following slugs are not unique: ${errorItems(
-    duplicateRefs,
-  )}`;
-}
-
-function getDuplicateSlugsInGroups(groups: Group[] | undefined) {
-  return Array.isArray(groups)
-    ? hasDuplicateStrings(groups.map(({ slug }) => slug))
-    : false;
-}

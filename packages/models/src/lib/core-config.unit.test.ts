@@ -94,7 +94,7 @@ describe('coreConfigSchema', () => {
         ],
       } satisfies CoreConfig),
     ).toThrow(
-      'category references need to point to an audit or group: vitest/unit-tests',
+      String.raw`Category references audits or groups which don't exist: audit \"unit-tests\" (plugin \"vitest\")`,
     );
   });
 
@@ -133,7 +133,7 @@ describe('coreConfigSchema', () => {
         ],
       } satisfies CoreConfig),
     ).toThrow(
-      'category references need to point to an audit or group: eslint#eslint-errors (group)',
+      String.raw`Category references audits or groups which don't exist: group \"eslint-errors\" (plugin \"eslint\")`,
     );
   });
 
@@ -189,7 +189,7 @@ describe('coreConfigSchema', () => {
     } satisfies CoreConfig;
 
     expect(() => coreConfigSchema.parse(config)).toThrow(
-      'In a category, there has to be at least one ref with weight > 0. Affected refs: csp-xss',
+      'A category must have at least 1 ref with weight > 0.',
     );
   });
 });

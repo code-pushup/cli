@@ -1,5 +1,12 @@
 import { MATERIAL_ICONS } from 'vscode-material-icons';
-import { type ZodObject, type ZodOptional, type ZodString, z } from 'zod';
+import {
+  ZodError,
+  type ZodIssue,
+  type ZodObject,
+  type ZodOptional,
+  type ZodString,
+  z,
+} from 'zod';
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_SLUG_LENGTH,
@@ -60,14 +67,17 @@ export const docsUrlSchema = urlSchema
   .catch(ctx => {
     // if only URL validation fails, supress error since this metadata is optional anyway
     if (
-      ctx.error.errors.length === 1 &&
-      ctx.error.errors[0]?.code === 'invalid_string' &&
-      ctx.error.errors[0].validation === 'url'
+      ctx.issues.length === 1 &&
+      (ctx.issues[0]?.errors as ZodIssue[][])
+        .flat()
+        .some(
+          error => error.code === 'invalid_format' && error.format === 'url',
+        )
     ) {
-      console.warn(`Ignoring invalid docsUrl: ${ctx.input}`);
+      console.warn(`Ignoring invalid docsUrl: ${ctx.value}`);
       return '';
     }
-    throw ctx.error;
+    throw new ZodError(ctx.error.issues);
   })
   .describe('Documentation site');
 
@@ -142,10 +152,9 @@ export const positiveIntSchema = z.number().int().positive();
 
 export const nonnegativeNumberSchema = z.number().nonnegative();
 
-export function packageVersionSchema<TRequired extends boolean>(options?: {
-  versionDescription?: string;
-  required?: TRequired;
-}) {
+export function packageVersionSchema<
+  TRequired extends boolean = false,
+>(options?: { versionDescription?: string; required?: TRequired }) {
   const { versionDescription = 'NPM version of the package', required } =
     options ?? {};
   const packageSchema = z.string().describe('NPM package name');
@@ -185,8 +194,7 @@ export type WeightedRef = z.infer<ReturnType<typeof weightedRefSchema>>;
 export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
   description: string,
   refSchema: T,
-  duplicateCheckFn: (metrics: z.infer<T>[]) => false | string[],
-  duplicateMessageFn: (metrics: z.infer<T>[]) => string,
+  duplicateCheckFn: z.core.CheckFn<z.infer<T>[]>,
 ) {
   return z
     .object({
@@ -195,18 +203,10 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
         .array(refSchema)
         .min(1, { message: 'In a category, there has to be at least one ref' })
         // refs are unique
-        .refine(
-          refs => !duplicateCheckFn(refs),
-          refs => ({
-            message: duplicateMessageFn(refs),
-          }),
-        )
+        .check(duplicateCheckFn)
         // category weights are correct
-        .refine(hasNonZeroWeightedRef, refs => {
-          const affectedRefs = refs.map(ref => ref.slug).join(', ');
-          return {
-            message: `In a category, there has to be at least one ref with weight > 0. Affected refs: ${affectedRefs}`,
-          };
+        .refine(hasNonZeroWeightedRef, {
+          error: 'A category must have at least 1 ref with weight > 0.',
         }),
     })
     .describe(description);

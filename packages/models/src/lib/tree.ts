@@ -1,7 +1,10 @@
 import { z } from 'zod';
 import { filePositionSchema } from './implementation/schemas.js';
 
-const basicTreeNodeValuesSchema = z.record(z.union([z.number(), z.string()]));
+const basicTreeNodeValuesSchema = z.record(
+  z.string(),
+  z.union([z.number(), z.string()]),
+);
 const basicTreeNodeDataSchema = z.object({
   name: z.string().min(1).describe('Text label for node'),
   values: basicTreeNodeValuesSchema

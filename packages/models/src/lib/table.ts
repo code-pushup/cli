@@ -17,7 +17,7 @@ export const tableColumnObjectSchema = z.object({
 export type TableColumnObject = z.infer<typeof tableColumnObjectSchema>;
 
 export const tableRowObjectSchema = z
-  .record(tableCellValueSchema)
+  .record(z.string(), tableCellValueSchema)
   .describe('Object row');
 export type TableRowObject = z.infer<typeof tableRowObjectSchema>;
 

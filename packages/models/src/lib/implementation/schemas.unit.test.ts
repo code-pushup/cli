@@ -61,6 +61,8 @@ describe('docsUrlSchema', () => {
   });
 
   it('should throw if not a string', () => {
-    expect(() => docsUrlSchema.parse(false)).toThrow('invalid_type');
+    expect(() => docsUrlSchema.parse(false)).toThrow(
+      'Invalid input: expected string, received boolean',
+    );
   });
 });
