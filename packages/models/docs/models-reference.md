@@ -55,6 +55,8 @@ _(\*) Required._
 
 ## AuditOutputs
 
+List of JSON formatted audit output emitted by the runner process of a plugin
+
 _Array of [AuditOutput](#auditoutput) items._
 
 ## AuditReport
@@ -210,7 +212,7 @@ _Object containing the following properties:_
 | **`plugins`** (\*) | List of plugins to be used (official, community-provided, or custom) | _Array of at least 1 [PluginConfig](#pluginconfig) items_ |
 | `persist`          |                                                                      | [PersistConfig](#persistconfig)                           |
 | `upload`           |                                                                      | [UploadConfig](#uploadconfig)                             |
-| `categories`       |                                                                      | _Array of [CategoryConfig](#categoryconfig) items_        |
+| `categories`       | Categorization of individual audits                                  | _Array of [CategoryConfig](#categoryconfig) items_        |
 
 _(\*) Required._
 
@@ -1260,8 +1262,8 @@ _Object containing the following properties:_
 | **`slug`** (\*)   | Unique plugin slug within core config     | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)    |
 | **`icon`** (\*)   | Icon from VSCode Material Icons extension | [MaterialIcon](#materialicon)                                        |
 | **`runner`** (\*) |                                           | [RunnerConfig](#runnerconfig) _or_ [RunnerFunction](#runnerfunction) |
-| **`audits`** (\*) |                                           | _Array of at least 1 [Audit](#audit) items_                          |
-| `groups`          |                                           | _Array of [Group](#group) items_                                     |
+| **`audits`** (\*) | List of audits maintained in a plugin     | _Array of at least 1 [Audit](#audit) items_                          |
+| `groups`          | List of groups                            | _Array of [Group](#group) items_                                     |
 
 _(\*) Required._
 
@@ -1305,6 +1307,8 @@ _(\*) Required._
 
 ## Report
 
+Collect output data
+
 _Object containing the following properties:_
 
 | Property               | Description                               | Type                                                                                                                                                                                                                                                                                                |
@@ -1347,7 +1351,7 @@ _Object containing the following properties:_
 | Property              | Description              | Type                                                                                                                                                                                                  |
 | :-------------------- | :----------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`command`** (\*)    | Shell command to execute | `string`                                                                                                                                                                                              |
-| `args`                |                          | `Array<string>`                                                                                                                                                                                       |
+| `args`                | Command arguments        | `Array<string>`                                                                                                                                                                                       |
 | **`outputFile`** (\*) | Runner output path       | [FilePath](#filepath)                                                                                                                                                                                 |
 | `outputTransform`     |                          | _Function:_<br /><ul><li>_parameters:_ <ol><li>`unknown` (_optional & nullable_)</li></ol></li><li>_returns:_ [AuditOutputs](#auditoutputs) _or_ _Promise of_ [AuditOutputs](#auditoutputs)</li></ul> |
 | `configFile`          | Runner config path       | [FilePath](#filepath)                                                                                                                                                                                 |

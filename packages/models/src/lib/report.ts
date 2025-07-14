@@ -73,16 +73,13 @@ export const reportSchema = packageVersionSchema({
     }),
   )
   .merge(
-    z.object(
-      {
-        plugins: z.array(pluginReportSchema).min(1),
-        categories: z.array(categoryConfigSchema).optional(),
-        commit: commitSchema
-          .describe('Git commit for which report was collected')
-          .nullable(),
-      },
-      { description: 'Collect output data' },
-    ),
+    z.object({
+      plugins: z.array(pluginReportSchema).min(1),
+      categories: z.array(categoryConfigSchema).optional(),
+      commit: commitSchema
+        .describe('Git commit for which report was collected')
+        .nullable(),
+    }),
   )
   .refine(
     ({ categories, plugins }) =>
@@ -90,6 +87,7 @@ export const reportSchema = packageVersionSchema({
     ({ categories, plugins }) => ({
       message: missingRefsForCategoriesErrorMsg(categories, plugins),
     }),
-  );
+  )
+  .describe('Collect output data');
 
 export type Report = z.infer<typeof reportSchema>;

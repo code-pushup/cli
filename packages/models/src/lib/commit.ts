@@ -1,24 +1,18 @@
 import { z } from 'zod';
 
-export const commitSchema = z.object(
-  {
+export const commitSchema = z
+  .object({
     hash: z
-      .string({ description: 'Commit SHA (full)' })
+      .string()
       .regex(
         /^[\da-f]{40}$/,
         'Commit SHA should be a 40-character hexadecimal string',
-      ),
-    message: z.string({ description: 'Commit message' }),
-    date: z.coerce.date({
-      description: 'Date and time when commit was authored',
-    }),
-    author: z
-      .string({
-        description: 'Commit author name',
-      })
-      .trim(),
-  },
-  { description: 'Git commit' },
-);
+      )
+      .describe('Commit SHA (full)'),
+    message: z.string().describe('Commit message'),
+    date: z.coerce.date().describe('Date and time when commit was authored'),
+    author: z.string().describe('Commit author name').trim(),
+  })
+  .describe('Git commit');
 
 export type Commit = z.infer<typeof commitSchema>;
