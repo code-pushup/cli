@@ -69,7 +69,7 @@ describe('pluginConfigSchema', () => {
         ],
       } satisfies PluginConfig),
     ).toThrow(
-      'group references need to point to an existing audit in this plugin config: cyct',
+      String.raw`Group references audits which don't exist in this plugin: \"cyct\"`,
     );
   });
 
@@ -90,7 +90,7 @@ describe('pluginConfigSchema', () => {
         ],
       } satisfies PluginConfig),
     ).toThrow(
-      'group references need to point to an existing audit in this plugin config: cyct',
+      String.raw`Group references audits which don't exist in this plugin: \"cyct\"`,
     );
   });
 

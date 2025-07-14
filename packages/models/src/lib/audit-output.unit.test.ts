@@ -179,6 +179,8 @@ describe('auditOutputsSchema', () => {
           score: 0.75,
         },
       ] satisfies AuditOutputs),
-    ).toThrow('slugs are not unique: total-blocking-time');
+    ).toThrow(
+      String.raw`Audit slugs must be unique, but received duplicates: \"total-blocking-time\"`,
+    );
   });
 });

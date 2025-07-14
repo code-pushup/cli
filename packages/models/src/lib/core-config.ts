@@ -1,9 +1,7 @@
 import { z } from 'zod';
 import { categoriesSchema } from './category-config.js';
-import {
-  getMissingRefsForCategories,
-  missingRefsForCategoriesErrorMsg,
-} from './implementation/utils.js';
+import { createCheck } from './implementation/checks.js';
+import { findMissingSlugsInCategoryRefs } from './implementation/utils.js';
 import { persistConfigSchema } from './persist-config.js';
 import { pluginConfigSchema } from './plugin-config.js';
 import { uploadConfigSchema } from './upload-config.js';
@@ -31,13 +29,7 @@ export const coreConfigSchema = refineCoreConfig(unrefinedCoreConfigSchema);
  */
 export function refineCoreConfig(schema: typeof unrefinedCoreConfigSchema) {
   // categories point to existing audit or group refs
-  return schema.refine(
-    ({ categories, plugins }) =>
-      !getMissingRefsForCategories(categories, plugins),
-    ({ categories, plugins }) => ({
-      message: missingRefsForCategoriesErrorMsg(categories, plugins),
-    }),
-  );
+  return schema.check(createCheck(findMissingSlugsInCategoryRefs));
 }
 
 export type CoreConfig = z.infer<typeof coreConfigSchema>;

@@ -27,7 +27,7 @@
   },
   "type": "module",
   "dependencies": {
-    "zod": "^3.22.1",
+    "zod": "^4.0.5",
     "vscode-material-icons": "^0.1.0"
   }
 }

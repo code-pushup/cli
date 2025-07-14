@@ -1,17 +1,18 @@
 import { z } from 'zod';
-import { pluginAuditsSchema } from './audit.js';
-import { groupsSchema } from './group.js';
+import { type Audit, pluginAuditsSchema } from './audit.js';
+import { type Group, groupsSchema } from './group.js';
+import { createCheck } from './implementation/checks.js';
 import {
   materialIconSchema,
   metaSchema,
   packageVersionSchema,
   slugSchema,
 } from './implementation/schemas.js';
-import { errorItems, hasMissingStrings } from './implementation/utils.js';
+import { formatSlugsList, hasMissingStrings } from './implementation/utils.js';
 import { runnerConfigSchema, runnerFunctionSchema } from './runner-config.js';
 
 export const pluginContextSchema = z
-  .record(z.unknown())
+  .record(z.string(), z.unknown())
   .optional()
   .describe('Plugin-specific context data for helpers');
 export type PluginContext = z.infer<typeof pluginContextSchema>;
@@ -39,33 +40,30 @@ export const pluginDataSchema = z.object({
   groups: groupsSchema,
   context: pluginContextSchema,
 });
-type PluginData = z.infer<typeof pluginDataSchema>;
 
 export const pluginConfigSchema = pluginMetaSchema
   .merge(pluginDataSchema)
-  // every listed group ref points to an audit within the plugin
-  .refine(
-    pluginCfg => !getMissingRefsFromGroups(pluginCfg),
-    pluginCfg => ({
-      message: missingRefsFromGroupsErrorMsg(pluginCfg),
-    }),
-  );
+  .check(createCheck(findMissingSlugsInGroupRefs));
 
 export type PluginConfig = z.infer<typeof pluginConfigSchema>;
 
-// helper for validator: every listed group ref points to an audit within the plugin
-function missingRefsFromGroupsErrorMsg(pluginCfg: PluginData) {
-  const missingRefs = getMissingRefsFromGroups(pluginCfg);
-  return `The following group references need to point to an existing audit in this plugin config: ${errorItems(
-    missingRefs,
-  )}`;
+// every listed group ref points to an audit within the plugin
+export function findMissingSlugsInGroupRefs<
+  T extends { audits: Audit[]; groups?: Group[] },
+>({ audits, groups = [] }: T) {
+  const missingSlugs = getAuditSlugsFromGroups(audits, groups);
+  return (
+    missingSlugs && {
+      message: `Group references audits which don't exist in this plugin: ${formatSlugsList(
+        missingSlugs,
+      )}`,
+    }
+  );
 }
 
-function getMissingRefsFromGroups(pluginCfg: PluginData) {
+function getAuditSlugsFromGroups(audits: Audit[], groups: Group[]) {
   return hasMissingStrings(
-    pluginCfg.groups?.flatMap(({ refs: audits }) =>
-      audits.map(({ slug: ref }) => ref),
-    ) ?? [],
-    pluginCfg.audits.map(({ slug }) => slug),
+    groups.flatMap(({ refs }) => refs.map(({ slug }) => slug)),
+    audits.map(({ slug }) => slug),
   );
 }
