@@ -13,9 +13,12 @@ import {
 } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
+import { DEFAULT_CLI_FLAGS } from './constants.js';
 import { unsupportedDetailTypes } from './details/details.js';
+import type { LighthouseCliFlags } from './types.js';
 import {
   determineAndSetLogLevel,
+  enrichFlags,
   getConfig,
   normalizeAuditOutputs,
   toAuditOutputs,
@@ -434,5 +437,68 @@ describe('determineAndSetLogLevel', () => {
     expect(log.isVerbose()).toBe(true);
     expect(debugLib.enabled('LH:*')).toBe(true);
     expect(debugLib.enabled('LH:*:verbose')).toBe(false);
+  });
+});
+
+describe('enrichFlags', () => {
+  it('should return enriched flags without URL index for single URL', () => {
+    const flags = {
+      ...DEFAULT_CLI_FLAGS,
+      outputPath: '/path/to/report.json',
+    };
+    expect(enrichFlags(flags).outputPath).toBe('/path/to/report.json');
+  });
+
+  it('should add URL index to output path for multiple URLs', () => {
+    const flags = {
+      ...DEFAULT_CLI_FLAGS,
+      outputPath: '/path/to/report.json',
+    };
+    expect(enrichFlags(flags, 2).outputPath).toBe('/path/to/report-2.json');
+  });
+
+  it('should handle output path with multiple dots', () => {
+    const flags = {
+      ...DEFAULT_CLI_FLAGS,
+      outputPath: '/path/to/report.min.json',
+    };
+    expect(enrichFlags(flags, 1).outputPath).toBe('/path/to/report.min-1.json');
+  });
+
+  it('should handle default output path', () => {
+    expect(enrichFlags(DEFAULT_CLI_FLAGS).outputPath).toBe(
+      DEFAULT_CLI_FLAGS.outputPath,
+    );
+  });
+
+  it('should not modify output path when URL index is 0 or undefined', () => {
+    const flags = {
+      ...DEFAULT_CLI_FLAGS,
+      outputPath: '/path/to/report.json',
+    };
+    expect(enrichFlags(flags, 0).outputPath).toBe('/path/to/report.json');
+    expect(enrichFlags(flags, undefined).outputPath).toBe(
+      '/path/to/report.json',
+    );
+  });
+
+  it('should preserve all other flags', () => {
+    const flags: LighthouseCliFlags = {
+      outputPath: '/path/to/report.json',
+      chromeFlags: ['--headless'],
+      onlyAudits: ['performance'],
+      skipAudits: ['seo'],
+      onlyCategories: [],
+      preset: 'desktop',
+    };
+    expect(enrichFlags(flags, 1)).toEqual({
+      chromeFlags: ['--headless'],
+      onlyAudits: ['performance'],
+      skipAudits: ['seo'],
+      onlyCategories: [],
+      preset: 'desktop',
+      logLevel: 'info',
+      outputPath: '/path/to/report-1.json',
+    });
   });
 });

@@ -1,55 +1,82 @@
-import type { RunnerResult } from 'lighthouse';
+import type { Config, RunnerResult } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
 import path from 'node:path';
 import type { AuditOutputs, RunnerFunction } from '@code-pushup/models';
-import { ensureDirectoryExists } from '@code-pushup/utils';
+import { ensureDirectoryExists, ui } from '@code-pushup/utils';
+import { orderSlug, shouldExpandForUrls } from '../processing.js';
+import type { LighthouseOptions } from '../types.js';
 import { DEFAULT_CLI_FLAGS } from './constants.js';
 import type { LighthouseCliFlags } from './types.js';
 import {
-  determineAndSetLogLevel,
+  enrichFlags,
   getConfig,
   normalizeAuditOutputs,
   toAuditOutputs,
 } from './utils.js';
 
 export function createRunnerFunction(
-  urlUnderTest: string,
+  urls: string[],
   flags: LighthouseCliFlags = DEFAULT_CLI_FLAGS,
 ): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
-    const {
-      configPath,
-      preset,
-      outputPath,
-      ...parsedFlags
-    }: Partial<LighthouseCliFlags> = flags;
+    const config = await getConfig(flags);
+    const normalizationFlags = enrichFlags(flags);
+    const isSingleUrl = !shouldExpandForUrls(urls.length);
 
-    const logLevel = determineAndSetLogLevel(parsedFlags);
+    const allResults = await urls.reduce(async (prev, url, index) => {
+      const acc = await prev;
+      try {
+        const enrichedFlags = isSingleUrl
+          ? normalizationFlags
+          : enrichFlags(flags, index + 1);
 
-    const config = await getConfig({ configPath, preset });
-    if (outputPath) {
-      await ensureDirectoryExists(path.dirname(outputPath));
+        const auditOutputs = await runLighthouseForUrl(
+          url,
+          enrichedFlags,
+          config,
+        );
+
+        const processedOutputs = isSingleUrl
+          ? auditOutputs
+          : auditOutputs.map(audit => ({
+              ...audit,
+              slug: orderSlug(audit.slug, index),
+            }));
+
+        return [...acc, ...processedOutputs];
+      } catch (error) {
+        ui().logger.warning((error as Error).message);
+        return acc;
+      }
+    }, Promise.resolve<AuditOutputs>([]));
+
+    if (allResults.length === 0) {
+      throw new Error(
+        isSingleUrl
+          ? 'Lighthouse did not produce a result.'
+          : 'Lighthouse failed to produce results for all URLs.',
+      );
     }
-
-    const enrichedFlags = {
-      ...parsedFlags,
-      logLevel,
-      outputPath,
-    };
-
-    const runnerResult: unknown = await runLighthouse(
-      urlUnderTest,
-      enrichedFlags,
-      config,
-    );
-
-    if (runnerResult == null) {
-      throw new Error('Lighthouse did not produce a result.');
-    }
-
-    const { lhr } = runnerResult as RunnerResult;
-    const auditOutputs = toAuditOutputs(Object.values(lhr.audits), flags);
-
-    return normalizeAuditOutputs(auditOutputs, enrichedFlags);
+    return normalizeAuditOutputs(allResults, normalizationFlags);
   };
+}
+
+async function runLighthouseForUrl(
+  url: string,
+  flags: LighthouseOptions,
+  config: Config | undefined,
+): Promise<AuditOutputs> {
+  if (flags.outputPath) {
+    await ensureDirectoryExists(path.dirname(flags.outputPath));
+  }
+
+  const runnerResult: unknown = await runLighthouse(url, flags, config);
+
+  if (runnerResult == null) {
+    throw new Error(`Lighthouse did not produce a result for URL: ${url}`);
+  }
+
+  const { lhr } = runnerResult as RunnerResult;
+
+  return toAuditOutputs(Object.values(lhr.audits), flags);
 }
