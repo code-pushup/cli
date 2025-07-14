@@ -7,12 +7,9 @@ import type {
 export type ViteAsset = {
   name: string;
   size: number;
-  emitted: boolean;
-  type: string;
 };
 
 export type ViteModule = {
-  identifier: string;
   name: string;
   size: number;
   chunks: string[];
@@ -22,23 +19,15 @@ export type ViteChunk = {
   id: string;
   names: string[];
   files: string[];
-  size: number;
-  modules: ViteModule[];
   entry: boolean;
   initial: boolean;
 };
 
-export type ViteEntrypoint = {
-  name: string;
-  chunks: string[];
-  assets: Array<{ name: string; size: number }>;
-};
-
 export type ViteCoreStats = {
+  builtAt: number;
   assets: ViteAsset[];
   chunks: ViteChunk[];
   modules: ViteModule[];
-  entrypoints: Record<string, ViteEntrypoint>;
 };
 
 /**
@@ -54,10 +43,13 @@ export function unifyBundlerStats(stats: ViteCoreStats): UnifiedStats {
 
   const modulesMap = new Map<string, ViteModule>();
   for (const module of stats.modules || []) {
-    modulesMap.set(module.identifier, module);
+    modulesMap.set(module.name, module);
   }
 
-  for (const asset of stats.assets) {
+  // Filter out non-JS assets (like source maps)
+  const jsAssets = stats.assets.filter(asset => asset.name.endsWith('.js'));
+
+  for (const asset of jsAssets) {
     const unifiedOutput: UnifiedStatsOutput = {
       path: asset.name,
       bytes: asset.size,
@@ -65,30 +57,23 @@ export function unifyBundlerStats(stats: ViteCoreStats): UnifiedStats {
       inputs: {},
     };
 
-    for (const [entryName, entrypoint] of Object.entries(
-      stats.entrypoints || {},
-    )) {
-      if (
-        entrypoint.assets.some(entryAsset => entryAsset.name === asset.name)
-      ) {
-        unifiedOutput.entryPoint = entryName;
-        break;
+    // Find the chunk that contains this asset
+    const chunk = stats.chunks.find(c => c.files.includes(asset.name));
+    if (chunk) {
+      // Set entry point if it's an entry chunk
+      if (chunk.entry && chunk.names.length > 0) {
+        unifiedOutput.entryPoint = chunk.names[0];
       }
-    }
 
-    // Find chunks that include this asset
-    const relatedChunks = stats.chunks.filter(chunk =>
-      chunk.files.includes(asset.name),
-    );
+      // Find modules that belong to this chunk
+      const chunkModules =
+        stats.modules?.filter(module => module.chunks.includes(chunk.id)) || [];
 
-    for (const chunk of relatedChunks) {
-      for (const module of chunk.modules || []) {
-        const moduleInfo = modulesMap.get(module.identifier);
-        if (moduleInfo) {
-          unifiedOutput.inputs![moduleInfo.name] = {
-            bytes: moduleInfo.size || 0,
-          };
-        }
+      // Add inputs
+      for (const module of chunkModules) {
+        unifiedOutput.inputs![module.name] = {
+          bytes: module.size,
+        };
       }
     }
 
