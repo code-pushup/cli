@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
-  artifactGenerationCommand,
+  artifactGenerationCommandSchema,
   pluginArtifactOptionsSchema,
 } from './configuration.js';
 
-describe('artifactGenerationCommand', () => {
+describe('artifactGenerationCommandSchema', () => {
   it('should validate a command with required fields', () => {
     const data = { command: 'npx' };
-    expect(artifactGenerationCommand.safeParse(data)).toStrictEqual({
+    expect(artifactGenerationCommandSchema.safeParse(data)).toStrictEqual({
       success: true,
       data: { command: 'npx' },
     });
@@ -15,7 +15,7 @@ describe('artifactGenerationCommand', () => {
 
   it('should validate a command with args', () => {
     const data = { command: 'npx', args: ['eslint', 'src/'] };
-    expect(artifactGenerationCommand.safeParse(data)).toStrictEqual({
+    expect(artifactGenerationCommandSchema.safeParse(data)).toStrictEqual({
       success: true,
       data: { command: 'npx', args: ['eslint', 'src/'] },
     });
@@ -23,17 +23,17 @@ describe('artifactGenerationCommand', () => {
 
   it('should fail if command is missing', () => {
     const data = { args: ['eslint', 'src/'] };
-    expect(artifactGenerationCommand.safeParse(data).success).toBe(false);
+    expect(artifactGenerationCommandSchema.safeParse(data).success).toBe(false);
   });
 
   it('should fail if command is empty', () => {
     const data = { command: '' };
-    expect(artifactGenerationCommand.safeParse(data).success).toBe(false);
+    expect(artifactGenerationCommandSchema.safeParse(data).success).toBe(false);
   });
 
   it('should fail if args is not an array of strings', () => {
     const data = { command: 'npx', args: [123, true] };
-    expect(artifactGenerationCommand.safeParse(data).success).toBe(false);
+    expect(artifactGenerationCommandSchema.safeParse(data).success).toBe(false);
   });
 });
 
@@ -63,22 +63,22 @@ describe('pluginArtifactOptionsSchema', () => {
     expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
   });
 
-  it('should validate with generateArtifacts and artifactsPaths', () => {
+  it('should validate with generateArtifactsCommand and artifactsPaths', () => {
     const data = {
-      generateArtifacts: { command: 'npm', args: ['run', 'build'] },
+      generateArtifactsCommand: { command: 'npm', args: ['run', 'build'] },
       artifactsPaths: ['dist/report.json'],
     };
     expect(pluginArtifactOptionsSchema.safeParse(data)).toStrictEqual({
       success: true,
       data: {
-        generateArtifacts: { command: 'npm', args: ['run', 'build'] },
+        generateArtifactsCommand: { command: 'npm', args: ['run', 'build'] },
         artifactsPaths: ['dist/report.json'],
       },
     });
   });
 
   it('should fail if artifactsPaths is missing', () => {
-    const data = { generateArtifacts: { command: 'npm' } };
+    const data = { generateArtifactsCommand: { command: 'npm' } };
     expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
   });
 
@@ -87,39 +87,39 @@ describe('pluginArtifactOptionsSchema', () => {
     expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
   });
 
-  it('should fail if generateArtifacts is invalid', () => {
+  it('should fail if generateArtifactsCommand is invalid', () => {
     const data = {
-      generateArtifacts: { command: '' },
+      generateArtifactsCommand: { command: '' },
       artifactsPaths: 'dist/report.json',
     };
     expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
   });
 
-  it('should validate with generateArtifacts as a string', () => {
+  it('should validate with generateArtifactsCommand as a string', () => {
     const data = {
-      generateArtifacts: 'yarn test --coverage',
+      generateArtifactsCommand: 'yarn test --coverage',
       artifactsPaths: 'coverage/lcov.info',
     };
     expect(pluginArtifactOptionsSchema.safeParse(data)).toStrictEqual({
       success: true,
       data: {
-        generateArtifacts: 'yarn test --coverage',
+        generateArtifactsCommand: 'yarn test --coverage',
         artifactsPaths: 'coverage/lcov.info',
       },
     });
   });
 
-  it('should fail if generateArtifacts is an empty string', () => {
+  it('should fail if generateArtifactsCommand is an empty string', () => {
     const data = {
-      generateArtifacts: '',
+      generateArtifactsCommand: '',
       artifactsPaths: 'coverage/lcov.info',
     };
     expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
   });
 
-  it('should fail if generateArtifacts is a number', () => {
+  it('should fail if generateArtifactsCommand is a number', () => {
     const data = {
-      generateArtifacts: 123,
+      generateArtifactsCommand: 123,
       artifactsPaths: 'coverage/lcov.info',
     };
     expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
