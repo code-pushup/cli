@@ -190,6 +190,10 @@ function pruneTree(
   options: Required<PruningOptions>,
 ): TreeNode {
   const { maxChildren, maxDepth, startDepth = 0 } = options;
+  
+  // Sort children by bytes in descending order before pruning
+  node.children.sort((a, b) => b.bytes - a.bytes);
+  
   if (node.children.length > maxChildren) {
     const remainingChildren = node.children.slice(maxChildren);
     const remainingBytes = remainingChildren.reduce(
@@ -282,6 +286,9 @@ export function createTree(
   const { title, groups, pruning } = options;
   let nodes = convertToTree(statsSlice);
   nodes = applyGrouping(nodes, groups);
+  
+  // Sort nodes by bytes in descending order at the root level
+  nodes.sort((a, b) => b.bytes - a.bytes);
 
   const tempRoot: TreeNode = {
     name: 'temp-root',
