@@ -43,11 +43,9 @@ describe('jsDocsPlugin', () => {
 
   it('should throw for invalid plugin options', () => {
     expect(() =>
-      jsDocsPlugin({
-        // @ts-expect-error testing invalid config
-        patterns: 123,
-      }),
-    ).toThrow('Expected array, received number');
+      // @ts-expect-error testing invalid config
+      jsDocsPlugin({ patterns: 123 }),
+    ).toThrow('Invalid input');
   });
 
   it('should filter groups', () => {

@@ -49,7 +49,7 @@ describe('JsDocsPlugin Configuration', () => {
         jsDocsPluginConfigSchema.parse({
           patterns: 123,
         }),
-      ).toThrow('Expected array');
+      ).toThrow('Invalid input');
     });
   });
 
@@ -85,7 +85,7 @@ describe('JsDocsPlugin Configuration', () => {
           onlyAudits: 'functions-coverage',
           patterns: ['src/**/*.ts'],
         }),
-      ).toThrow('Expected array');
+      ).toThrow('Invalid input');
     });
 
     it('throws for array with non-string elements', () => {
@@ -94,7 +94,7 @@ describe('JsDocsPlugin Configuration', () => {
           onlyAudits: [123, true],
           patterns: ['src/**/*.ts'],
         }),
-      ).toThrow('Expected string, received number');
+      ).toThrow('Invalid input');
     });
   });
 
@@ -130,7 +130,7 @@ describe('JsDocsPlugin Configuration', () => {
           skipAudits: 'functions-coverage',
           patterns: ['src/**/*.ts'],
         }),
-      ).toThrow('Expected array');
+      ).toThrow('Invalid input');
     });
 
     it('throws for array with non-string elements', () => {
@@ -139,7 +139,7 @@ describe('JsDocsPlugin Configuration', () => {
           skipAudits: [123, true],
           patterns: ['src/**/*.ts'],
         }),
-      ).toThrow('Expected string');
+      ).toThrow('Invalid input');
     });
   });
 });
