@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-const patternsSchema = z.union([z.string(), z.array(z.string()).min(1)], {
-  description: 'Glob pattern to match source files to evaluate.',
-});
+const patternsSchema = z
+  .union([z.string(), z.array(z.string()).min(1)])
+  .describe('Glob pattern to match source files to evaluate.');
 
 const jsDocsTargetObjectSchema = z
   .object({
