@@ -25,7 +25,7 @@
   "dependencies": {
     "@code-pushup/models": "0.69.5",
     "@code-pushup/utils": "0.69.5",
-    "zod": "^3.23.8"
+    "zod": "^4.0.5"
   },
   "peerDependencies": {
     "typescript": ">=4.0.0"
