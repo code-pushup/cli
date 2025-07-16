@@ -8,14 +8,12 @@ const auditSlugs = AUDITS.map(({ slug }) => slug) as [
 ];
 export const typescriptPluginConfigSchema = z.object({
   tsconfig: z
-    .string({
-      description: 'Path to a tsconfig file (default is tsconfig.json)',
-    })
-    .default(DEFAULT_TS_CONFIG),
+    .string()
+    .default(DEFAULT_TS_CONFIG)
+    .describe(`Path to a tsconfig file (default is ${DEFAULT_TS_CONFIG})`),
   onlyAudits: z
-    .array(z.enum(auditSlugs), {
-      description: 'Filters TypeScript compiler errors by diagnostic codes',
-    })
+    .array(z.enum(auditSlugs))
+    .describe('Filters TypeScript compiler errors by diagnostic codes')
     .optional(),
 });
 

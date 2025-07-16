@@ -55,7 +55,9 @@ describe('typescriptPluginConfigSchema', () => {
         tsconfig,
         onlyAudits: [123, true],
       }),
-    ).toThrow('invalid_type');
+    ).toThrow(
+      String.raw`Invalid option: expected one of \"syntax-errors\"|\"semantic-errors\"|`,
+    );
   });
 
   it('throws for unknown audit slug', () => {
@@ -64,6 +66,8 @@ describe('typescriptPluginConfigSchema', () => {
         tsconfig,
         onlyAudits: ['unknown-audit'],
       }),
-    ).toThrow(/unknown-audit/);
+    ).toThrow(
+      String.raw`Invalid option: expected one of \"syntax-errors\"|\"semantic-errors\"|`,
+    );
   });
 });
