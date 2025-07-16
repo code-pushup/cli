@@ -53,12 +53,12 @@ export function fillAuditLevelMapping(
 
 export const jsPackagesPluginConfigSchema = z.object({
   checks: z
-    .array(packageCommandSchema, {
-      description:
-        'Package manager commands to be run. Defaults to both audit and outdated.',
-    })
+    .array(packageCommandSchema)
     .min(1)
-    .default(['audit', 'outdated']),
+    .default(['audit', 'outdated'])
+    .describe(
+      'Package manager commands to be run. Defaults to both audit and outdated.',
+    ),
   packageManager: packageManagerIdSchema
     .describe('Package manager to be used.')
     .optional(),
@@ -67,12 +67,12 @@ export const jsPackagesPluginConfigSchema = z.object({
     .min(1)
     .default(['prod', 'dev']),
   auditLevelMapping: z
-    .record(packageAuditLevelSchema, issueSeveritySchema, {
-      description:
-        'Mapping of audit levels to issue severity. Custom mapping or overrides may be entered manually, otherwise has a default preset.',
-    })
+    .partialRecord(packageAuditLevelSchema, issueSeveritySchema)
     .default(defaultAuditLevelMapping)
-    .transform(fillAuditLevelMapping),
+    .transform(fillAuditLevelMapping)
+    .describe(
+      'Mapping of audit levels to issue severity. Custom mapping or overrides may be entered manually, otherwise has a default preset.',
+    ),
   packageJsonPath: packageJsonPathSchema,
 });
 
