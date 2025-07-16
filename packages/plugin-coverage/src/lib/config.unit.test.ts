@@ -71,7 +71,7 @@ describe('coveragePluginConfigSchema', () => {
         coverageTypes: ['line'],
         reports: ['coverage/cli/coverage-final.json'],
       } satisfies CoveragePluginConfig),
-    ).toThrow(/Invalid input: must include.+lcov/);
+    ).toThrow(String.raw`Invalid string: must include \"lcov\"`);
   });
 
   it('throws for missing command', () => {
