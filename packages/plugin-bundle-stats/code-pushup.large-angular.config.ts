@@ -24,117 +24,120 @@ import bundleStatsPlugin, { DEFAULT_GROUPING } from './src';
  *  nx code-pushup:minimal-angular plugin-bundle-stats
  */
 
-const GROUPING_PACKAGES = [
-  {
-    title: 'Payment',
-    patterns: ['**/payments/**/*'],
-    icon: '🚀',
-  },
-  {
-    title: 'Loaders Library',
-    patterns: ['**/loaders-lib/**/*'],
-    icon: '🔄',
-  },
-  {
-    title: 'Sports Platform',
-    patterns: ['**/sports/**/*'],
-    icon: '⚽',
-  },
-  {
-    title: 'Host App',
-    patterns: ['**/host-app/**/*'],
-    icon: '🏠',
-  },
-  {
-    title: 'Casino',
-    patterns: ['**/casino/**/*'],
-    icon: '🎰',
-  },
-  {
-    title: 'Oxygen Framework',
-    patterns: ['**/oxygen/**/*'],
-    icon: '🔧',
-  },
-];
-
-const GROUPING_ANGULAR_BLOCKS = [
-  {
-    title: 'Components',
-    patterns: ['**/*.component.ts'],
-    icon: '🅰️',
-  },
-  {
-    title: 'Directives',
-    patterns: ['**/*.directive.ts'],
-    icon: '🅰️',
-  },
-  {
-    title: 'Pipes',
-    patterns: ['**/*.pipe.ts'],
-    icon: '🅰️',
-  },
-  {
-    title: 'Modules',
-    patterns: ['**/*.module.ts'],
-    icon: '🅰️',
-  },
-  {
-    title: 'Guards',
-    patterns: ['**/*.guard.ts'],
-    icon: '🅰️',
-  },
-  {
-    title: 'Resolvers',
-    patterns: ['**/*.resolver.ts'],
-    icon: '🅰️',
-  },
-  {
-    title: 'Interceptors',
-    patterns: ['**/*.interceptor.ts'],
-    icon: '🅰️',
-  },
-  {
-    title: 'Providers',
-    patterns: ['**/*.provider.ts'],
-    icon: '🅰️',
-  },
-  {
-    title: 'Services',
-    patterns: ['**/*.service.ts'],
-    icon: '🅰️',
-  },
+const groups = [
+  { title: 'Payments Package', patterns: ['**/packages/payments/**'], icon: '💳' },
+  { title: 'Casino Package', patterns: ['**/packages/casino/**'], icon: '🎰' },
+  { title: 'Bingo Package', patterns: ['**/packages/bingo/**'], icon: '🎯' },
+  { title: 'Sports Package', patterns: ['**/packages/sports/**'], icon: '⚽' },
+  { title: 'Poker Package', patterns: ['**/packages/poker/**'], icon: '🃏' },
+  { title: 'Lottery Package', patterns: ['**/packages/lottery/**'], icon: '🎲' },
+  { title: 'Horse Racing Package', patterns: ['**/packages/horseracing/**'], icon: '🐎' },
+  { title: 'Oxygen Package', patterns: ['**/packages/oxygen/**'], icon: '🫧' },
+  { title: 'Engagement Package', patterns: ['**/packages/engagement/**'], icon: '🎯' },
+  { title: 'My Account Package', patterns: ['**/packages/myaccount/**'], icon: '👤' },
+  { title: 'Design System Package', patterns: ['**/packages/design-system/**'], icon: '🎨' },
+  { title: 'Global Search Package', patterns: ['**/packages/global-search/**'], icon: '🔍' },
+  { title: 'Gantry Package', patterns: ['**/packages/gantry/**'], icon: '🏗️' },
+  { title: 'Vanilla Package', patterns: ['**/packages/vanilla/**'], icon: '🍦' },
+  { title: 'Promo Package', patterns: ['**/packages/promo/**'], icon: '🎁' },
+  { title: 'Moka Bingo Package', patterns: ['**/packages/mokabingo/**'], icon: '🎯' },
+  { title: 'Host App Package', patterns: ['**/packages/host-app/**'], icon: '🏠' },
+  { title: 'Test Web App Package', patterns: ['**/packages/testweb-app/**'], icon: '🧪' },
+  { title: 'Theme Park Package', patterns: ['**/packages/themepark/**'], icon: '🎢' },
+  { title: 'Rewards Hub Package', patterns: ['**/packages/rewards-hub/**'], icon: '🏆' },
+  { title: 'Reporting Package', patterns: ['**/packages/reporting/**'], icon: '📊' },
+  { title: 'Migration Kit Package', patterns: ['**/packages/migration-kit/**'], icon: '🔄' },
+  { title: 'Loaders Lib Package', patterns: ['**/packages/loaders-lib/**'], icon: '📦' },
+  { title: 'GitLab Data Access Package', patterns: ['**/packages/gitlab-data-access/**'], icon: '🔗' },
+  { title: 'Geo Coordinator Lib Package', patterns: ['**/packages/geo-coordinator-lib/**'], icon: '🌍' },
+  { title: 'ESBuild Plugins Package', patterns: ['**/packages/esbuild-plugins/**'], icon: '🔌' },
+  { title: 'ESLint Utils Package', patterns: ['**/packages/eslint-utils/**'], icon: '🔧' },
+  { title: 'Extractor App Package', patterns: ['**/packages/extractor-app/**'], icon: '📤' },
+  { title: 'Gantry App Package', patterns: ['**/packages/gantry-app/**'], icon: '🏗️' },
+  { title: 'Moxxi Test Utils Package', patterns: ['**/packages/moxxi-test-utils/**'], icon: '🧪' },
+  { title: 'NX Plugin Package', patterns: ['**/packages/nx-plugin/**'], icon: '⚙️' },
+  { title: 'RTMS Test App Package', patterns: ['**/packages/rtms-test-app/**'], icon: '🧪' },
+  { title: 'SFAPI Smoke Test Package', patterns: ['**/packages/sfapi-smoke-test/**'], icon: '💨' },
+  { title: 'Device Atlas Smoke Test Package', patterns: ['**/packages/device-atlas-smoke-test/**'], icon: '📱' },
+  { title: 'Zendesk Webchat Feature Package', patterns: ['**/packages/zendesk-webchat-feature/**'], icon: '💬' },
+  { title: 'Dev Kit Package', patterns: ['**/packages/dev-kit/**'], icon: '🛠️' },
+  { title: 'E2E Test Framework Package', patterns: ['**/packages/e2e-test-framework/**'], icon: '🧪' },
+  { title: 'Node Modules', patterns: ['**/node_modules/**'], icon: '📦' },
 ];
 
 const config = {
   plugins: [
     await bundleStatsPlugin({
+      bundler: 'esbuild',
       artefactsPath:
-        './packages/plugin-bundle-stats/mocks/fixtures/stats/angular-large.stats.json',
+        './packages/plugin-bundle-stats/mocks/fixtures/angular-large/dist/angular-large/stats.json',
       audits: [
         {
-          title: 'Initial Bundles',
+          title: 'all',
           selection: {
-            includeOutputs: [
-              '**/main*.js',
-              '**/polyfills*.js',
-              '**/runtime*.js',
-            ],
+            includeOutputs: ['**/*'],
+            excludeOutputs: ['**/*.map'], // Only exclude source maps as they're not part of runtime bundle
           },
           scoring: {
-            totalSize: 100_000,
-          },
-          artefactTree: {
-            groups: GROUPING_PACKAGES,
+            // Main bundle size threshold - warn when total exceeds 80MB
+            totalSize: 80000000, // 80MB in bytes
+            penalty: {
+              // Penalty for individual files that are too large
+              // This highlights large files without hiding them
+              artefactSize: [0, 3000000], // 0-3MB range - penalty for files > 3MB
+
+              // NO BLACKLIST - we want to see everything, especially problematic files
+              blacklist: [],
+            },
           },
           insights: [
-            ...GROUPING_PACKAGES,
-            ...GROUPING_ANGULAR_BLOCKS,
+            // 🚨 CRITICAL: Files that shouldn't be in production - these are important findings!
             {
-              title: 'Node Modules',
-              patterns: ['**/node_modules/**/*'],
-              icon: '📚',
+              title: '🚨 Test Files in Production',
+              patterns: [
+                '**/node_modules/**/*.test.js',
+                '**/node_modules/**/*.spec.js',
+                '**/node_modules/**/test/**',
+                '**/node_modules/**/tests/**',
+                '**/node_modules/**/__tests__/**',
+              ],
+              icon: '⚠️',
             },
+            {
+              title: '📚 Documentation in Bundle',
+              patterns: [
+                '**/node_modules/**/demo/**',
+                '**/node_modules/**/examples/**',
+                '**/node_modules/**/docs/**',
+                '**/node_modules/**/*.md',
+                '**/node_modules/**/README*',
+                '**/node_modules/**/CHANGELOG*',
+                '**/node_modules/**/LICENSE*',
+              ],
+              icon: '📄',
+            },
+            {
+              title: '🛠️ Dev Tools in Production',
+              patterns: [
+                '**/node_modules/**/webpack.config.js',
+                '**/node_modules/**/rollup.config.js',
+                '**/node_modules/**/jest.config.js',
+                '**/node_modules/**/.eslintrc*',
+                '**/node_modules/**/.babelrc*',
+                '**/node_modules/**/tsconfig*.json',
+              ],
+              icon: '🔧',
+            },
+            ...groups,
           ],
+          artefactTree: {
+            groups: [...groups],
+            pruning: {
+              maxChildren: 20,
+              maxDepth: 3,
+              minSize: 50_000,
+            },
+          },
         },
       ],
     }),
