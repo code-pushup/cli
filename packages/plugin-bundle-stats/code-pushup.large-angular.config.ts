@@ -182,6 +182,11 @@ const groups = [
     patterns: ['**/packages/e2e-test-framework/**'],
     icon: '🧪',
   },
+  {
+    title: 'Packages',
+    patterns: ['**/packages/**'],
+    icon: '📦',
+  },
   { title: 'Node Modules', patterns: ['**/node_modules/**'], icon: '📦' },
 ];
 
@@ -256,6 +261,26 @@ const config = {
               maxChildren: 20,
               maxDepth: 3,
               minSize: 50_000,
+            },
+          },
+        },
+        // Initial bundle size audit
+        {
+          title: 'Initial Bundle Size',
+          slug: 'initial-bundle-size',
+          selection: {
+            includeOutputs: [
+              '**/main.*.js',
+              '**/polyfill.*.js',
+              '**/styles.*.css',
+            ],
+            excludeOutputs: ['**/*.map'],
+          },
+          scoring: {
+            totalSize: 80000000,
+            penalty: {
+              artefactSize: [0, 3000000],
+              blacklist: [],
             },
           },
         },

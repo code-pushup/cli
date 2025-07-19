@@ -11,6 +11,8 @@ import {
 } from './selection.js';
 
 const emptyPatterns = {
+  include: [],
+  exclude: [],
   includeOutputs: [],
   excludeOutputs: [],
   includeInputs: [],
@@ -268,12 +270,8 @@ describe('shouldSelectOutput', () => {
           bytes: 400,
         },
         {
+          ...emptyPatterns,
           includeEntryPoints: [vi.fn().mockReturnValue(true)],
-          excludeEntryPoints: [],
-          includeOutputs: [],
-          excludeOutputs: [],
-          includeInputs: [],
-          excludeInputs: [],
         },
       ),
     ).toBe(false);
@@ -289,12 +287,8 @@ describe('shouldSelectOutput', () => {
         bytes: 400,
       },
       {
-        includeEntryPoints: [],
-        excludeEntryPoints: [],
+        ...emptyPatterns,
         includeOutputs: [includeOutputsMock],
-        excludeOutputs: [],
-        includeInputs: [],
-        excludeInputs: [],
       },
     );
 
@@ -312,12 +306,8 @@ describe('shouldSelectOutput', () => {
         bytes: 400,
       },
       {
-        includeEntryPoints: [],
-        excludeEntryPoints: [],
+        ...emptyPatterns,
         includeOutputs: [includeOutputsMock],
-        excludeOutputs: [],
-        includeInputs: [],
-        excludeInputs: [],
       },
     );
 
@@ -404,6 +394,31 @@ describe('compileSelectionPatterns', () => {
       includeEntryPoints: [],
       excludeEntryPoints: [],
     });
+  });
+
+  it('should merge global include/exclude patterns into all specific selection types', () => {
+    const result = compileSelectionPatterns({
+      include: ['src/**'],
+      exclude: ['*.test.*'],
+      includeOutputs: ['main.js'],
+      excludeOutputs: ['dev.js'],
+      includeInputs: ['components/**'],
+      excludeInputs: ['temp.js'],
+    });
+
+    // Verify that global patterns are merged with specific patterns
+    expect(result.includeOutputs).toHaveLength(2); // main.js + src/**
+    expect(result.excludeOutputs).toHaveLength(2); // dev.js + *.test.*
+    expect(result.includeInputs).toHaveLength(2); // components/** + src/**
+    expect(result.excludeInputs).toHaveLength(2); // temp.js + *.test.*
+    expect(result.includeEntryPoints).toHaveLength(1); // only src/**
+    expect(result.excludeEntryPoints).toHaveLength(1); // only *.test.*
+
+    // Test that merged patterns work correctly
+    expect(result.includeOutputs[0]!('main.js')).toBe(true);
+    expect(result.includeOutputs[1]!('src/utils.js')).toBe(true);
+    expect(result.excludeOutputs[0]!('dev.js')).toBe(true);
+    expect(result.excludeOutputs[1]!('main.test.js')).toBe(true);
   });
 });
 

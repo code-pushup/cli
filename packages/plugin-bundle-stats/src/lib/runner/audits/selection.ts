@@ -8,6 +8,11 @@ import {
   compilePattern as sharedCompilePattern,
 } from './details/utils/match-pattern.js';
 
+export type Include = {
+  include: string[];
+  exclude: string[];
+};
+
 export type includeOutputs = {
   includeOutputs: string[];
   excludeOutputs: string[];
@@ -24,7 +29,7 @@ export type includeEntryPoints = {
 };
 
 export type SelectionOptions = Partial<
-  includeOutputs & includeInputs & includeEntryPoints
+  Include & includeOutputs & includeInputs & includeEntryPoints
 > &
   (
     | Pick<includeOutputs, 'includeOutputs'>
@@ -248,6 +253,7 @@ export function compilePattern(pattern: string): PatternMatcher {
 /**
  * Compiles all selection patterns into matchers. Enables efficient pattern reuse.
  * Transforms string patterns into cached matcher functions for all selection criteria.
+ * Merges global include/exclude patterns into all specific selection types.
  *
  * @param options - Selection options containing pattern arrays for all filter types
  * @returns Object with compiled pattern matchers for each selection criteria type
@@ -261,7 +267,27 @@ export function compileSelectionPatterns(
 ): CompiledPatterns {
   const compiled: CompiledPatterns = {} as CompiledPatterns;
 
-  for (const [key, patterns] of Object.entries(options)) {
+  // Extract global patterns
+  const globalInclude = options.include || [];
+  const globalExclude = options.exclude || [];
+
+  // Merge global patterns with specific patterns for each selection type
+  const mergedOptions = {
+    includeOutputs: [...(options.includeOutputs || []), ...globalInclude],
+    excludeOutputs: [...(options.excludeOutputs || []), ...globalExclude],
+    includeInputs: [...(options.includeInputs || []), ...globalInclude],
+    excludeInputs: [...(options.excludeInputs || []), ...globalExclude],
+    includeEntryPoints: [
+      ...(options.includeEntryPoints || []),
+      ...globalInclude,
+    ],
+    excludeEntryPoints: [
+      ...(options.excludeEntryPoints || []),
+      ...globalExclude,
+    ],
+  };
+
+  for (const [key, patterns] of Object.entries(mergedOptions)) {
     compiled[key as keyof SelectionOptions] = patterns.map(compilePattern);
   }
 
