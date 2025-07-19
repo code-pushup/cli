@@ -1,0 +1,45 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+## JSDoc Documentation Pattern
+
+**Structure**: Add very short descriptive JSDoc blocks for functions with this format:
+
+```javascript
+/**
+ * [What it does]. [Why it exists].
+ */
+```
+
+**Structure Breakdown**:
+1. **What it does** - Very short description of the function's behavior
+2. **Why it exists** - Very short description of the purpose/benefit
+
+**Examples**:
+```javascript
+/**
+ * Compiles pattern into cached matcher function. Avoids recompilation overhead.
+ */
+export function compilePattern(pattern: string): PatternMatcher
+
+/**
+ * Collects and caches input paths from output. Prevents repeated path extraction.
+ */
+export function getInputPaths(output: UnifiedStatsOutput): string[]
+
+/**
+ * Evaluates paths against include/exclude patterns. Core filtering logic for all path types.
+ * Enables selective filtering by allowing users to focus on specific files while excluding unwanted ones.
+ */
+export function evaluateMatchers(...)
+```
+
+**Key Principles**:
+- **Brevity**: Keep descriptions very short
+- **Clarity**: First sentence = what it does, second sentence = why it's needed
+- **No fluff**: Avoid verbose explanations
+- **Action-oriented**: Start with verbs (Compiles, Collects, Evaluates)
+- **Value-focused**: The "why" explains the benefit (performance, reusability, etc.)
