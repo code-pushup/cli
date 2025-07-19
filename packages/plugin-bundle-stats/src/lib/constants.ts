@@ -347,7 +347,7 @@ export const DEFAULT_GROUPING: GroupingRule[] = [
     icon: '📁',
   },
   {
-    title: '@*/*',
+    title: 'Dependencies',
     patterns: ['**/node_modules/@*/**', '**/node_modules/**'],
   },
 ];

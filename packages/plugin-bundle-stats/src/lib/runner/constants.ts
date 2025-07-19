@@ -8,35 +8,18 @@ export type { GroupingRule };
  */
 export const DEFAULT_GROUPING: GroupingRule[] = [
   {
-    title: '@angular/*',
-    patterns: ['**/node_modules/@angular/**'],
-    icon: '🅰️',
+    title: 'Projects',
+    patterns: ['projects/**/*'],
+    icon: '📦',
   },
   {
-    title: 'packages/*',
+    title: 'Packages',
     patterns: ['packages/**/*'],
     icon: '📦',
   },
   {
-    title: 'rx-signals',
-    patterns: ['**/node_modules/rx-signals/**'],
-    icon: '🚦',
-  },
-  {
-    title: 'rxjs',
-    patterns: ['**/node_modules/rxjs/**'],
-    icon: ' rxjs',
-  },
-  {
-    title: '@code-pushup/models',
-    patterns: ['**/node_modules/@code-pushup/models/**'],
-  },
-  {
-    title: '@code-pushup/utils',
-    patterns: ['**/node_modules/@code-pushup/utils/**'],
-  },
-  {
-    title: '@*/*',
+    title: 'Node Modules',
     patterns: ['**/node_modules/@*/**', '**/node_modules/**'],
+    icon: '📦',
   },
 ];

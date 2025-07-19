@@ -1,36 +1,18 @@
 import type { BasicTree, BasicTreeNode } from '@code-pushup/models';
-import { formatBytes, pluralizeToken } from '@code-pushup/utils';
+import { formatBytes, pluralize, truncateText } from '@code-pushup/utils';
 import type { GroupingRule } from '../../types';
 import type {
   UnifiedStats,
   UnifiedStatsInput,
   UnifiedStatsOutput,
 } from '../../unify/unified-stats.types';
+import { ARTEFACT_TYPE_ICON_MAP, DEFAULT_PRUNING_OPTIONS } from './constants';
 import {
-  deriveGroupTitle,
+  applyGrouping,
   findCommonPath,
-  matchesAnyPattern,
-} from '../match-pattern';
-
-export type ArtefactType =
-  | 'root'
-  | 'script-file'
-  | 'style-file'
-  | 'entry-file'
-  | 'static-import'
-  | 'group';
-
-export interface Node {
-  name: string;
-  bytes: number;
-  sources: number;
-}
-
-export interface TreeNode extends Node {
-  type?: ArtefactType;
-  children: TreeNode[];
-  icon?: string;
-}
+  separateSourcesAndDependencies,
+} from './utils/grouping';
+import type { ArtefactType, Node, TreeNode } from './utils/grouping';
 
 export interface ArtefactTreeOptions {
   groups?: GroupingRule[];
@@ -44,157 +26,87 @@ export interface PruningOptions {
   minSize?: number;
 }
 
-export const DEFAULT_PRUNING = {
-  maxDepth: 3,
-  maxChildren: 5,
-  minSize: 0,
-};
-
-const ARTEFACT_TYPE_ICON_MAP: Record<ArtefactType, string> = {
-  root: '🗂️',
-  'script-file': '📄',
-  'style-file': '🎨',
-  'entry-file': '📍',
-  'static-import': '🔗',
-  group: '📁',
-};
-
-function formatFileCount(count: number): string {
-  if (count === 0) {
-    return '';
-  }
-  return pluralizeToken('source', count);
-}
-
-function formatPath(path: string, maxLength: number): string {
-  if (path.length <= maxLength) {
-    return path;
-  }
-  const parts = path.split('/');
-  if (parts.length > 3) {
-    return `${parts[0]}/.../${parts.slice(-2).join('/')}`;
-  }
-  return path;
-}
-
-function getArtefactType(artefact: UnifiedStatsOutput): ArtefactType {
-  if (artefact.path.endsWith('.css') || artefact.path.endsWith('.scss')) {
-    return 'style-file';
-  }
-  if (artefact.path.endsWith('.js') || artefact.path.endsWith('.ts')) {
-    return artefact.entryPoint ? 'entry-file' : 'script-file';
-  }
-  return 'script-file';
-}
-
 function convertToTree(stats: UnifiedStats): TreeNode[] {
   const root: TreeNode = { name: 'root', children: [], bytes: 0, sources: 0 };
+  const entryFiles: TreeNode[] = [];
+  const externalImports: TreeNode[] = [];
 
   Object.values(stats).forEach((artefact: UnifiedStatsOutput) => {
-    const artefactNode: TreeNode = {
-      name: artefact.path,
-      bytes: artefact.bytes,
-      sources: 1,
-      type: getArtefactType(artefact),
-      children: [],
-    };
-
-    if (artefact.inputs) {
-      const inputs: [string, UnifiedStatsInput][] = Object.entries(
-        artefact.inputs,
-      );
-      artefactNode.sources += inputs.length;
-      artefactNode.children = inputs.map(
-        ([path, input]: [string, UnifiedStatsInput]) => ({
-          name: path,
-          bytes: input.bytes,
-          sources: 1,
-          type: 'script-file',
-          children: [],
-        }),
-      );
-    }
-
-    root.children.push(artefactNode);
-    root.bytes += artefactNode.bytes;
-    root.sources += artefactNode.sources;
-  });
-
-  return root.children;
-}
-
-function applyGrouping(nodes: TreeNode[], groups: GroupingRule[]): TreeNode[] {
-  if (!groups || groups.length === 0) {
-    return nodes;
-  }
-
-  const newNodes = nodes.map(node => ({
-    ...node,
-    children: applyGrouping(node.children, groups),
-  }));
-
-  let finalNodes = [...newNodes];
-
-  for (const group of [...groups].reverse()) {
-    const { title, patterns, icon } = group;
-
-    const nodesToGroup: TreeNode[] = [];
-    const remainingNodes: TreeNode[] = [];
-
-    finalNodes.forEach(node => {
-      if (
-        matchesAnyPattern(node.name, patterns, {
-          matchBase: true,
-          normalizeRelativePaths: true,
-        })
-      ) {
-        nodesToGroup.push(node);
-      } else {
-        remainingNodes.push(node);
-      }
-    });
-
-    if (nodesToGroup.length > 0) {
-      // When user provides explicit title, use it for all matching nodes
-      // When no title is provided, find the common path segment among all matching files
-      const effectiveTitle =
-        title || findCommonPath(nodesToGroup.map(node => node.name));
-
-      const totalBytes = nodesToGroup.reduce(
-        (sum, node) => sum + node.bytes,
-        0,
-      );
-      const totalSources = nodesToGroup.reduce(
-        (sum, node) => sum + node.sources,
-        0,
-      );
-
-      const groupNode: TreeNode = {
-        name: effectiveTitle,
-        bytes: totalBytes,
-        sources: totalSources,
-        type: 'group',
-        children: nodesToGroup,
-        icon,
+    // Check if this is an entry file
+    if (artefact.entryPoint) {
+      const entryName = artefact.path;
+      const artefactNode: TreeNode = {
+        name: entryName,
+        bytes: artefact.bytes,
+        sources: 1,
+        type: 'entry-file',
+        children: [],
       };
 
-      remainingNodes.push(groupNode);
+      if (artefact.inputs) {
+        const inputs: [string, UnifiedStatsInput][] = Object.entries(
+          artefact.inputs,
+        );
+        artefactNode.sources += inputs.length;
+
+        // Create input nodes - these will be the source files
+        artefactNode.children = inputs.map(
+          ([path, input]: [string, UnifiedStatsInput]) => ({
+            name: path,
+            bytes: input.bytes,
+            sources: 1,
+            type: 'script-file' as ArtefactType,
+            children: [],
+          }),
+        );
+      }
+
+      entryFiles.push(artefactNode);
+    } else {
+      // This is an external import/chunk
+      const artefactNode: TreeNode = {
+        name: artefact.path,
+        bytes: artefact.bytes,
+        sources: 1,
+        type: 'script-file',
+        children: [],
+      };
+
+      if (artefact.inputs) {
+        const inputs: [string, UnifiedStatsInput][] = Object.entries(
+          artefact.inputs,
+        );
+        artefactNode.sources += inputs.length;
+        artefactNode.children = inputs.map(
+          ([path, input]: [string, UnifiedStatsInput]) => ({
+            name: path,
+            bytes: input.bytes,
+            sources: 1,
+            type: 'script-file',
+            children: [],
+          }),
+        );
+      }
+
+      externalImports.push(artefactNode);
     }
+  });
 
-    finalNodes = remainingNodes;
-  }
+  // Combine entry files and external imports as siblings
+  const allNodes = [...entryFiles, ...externalImports];
 
-  return finalNodes;
+  allNodes.forEach(node => {
+    root.bytes += node.bytes;
+    root.sources += node.sources;
+  });
+
+  return allNodes;
 }
 
-/**
- * Filters children by minimum size threshold and aggregates filtered entries.
- * Enables size-based filtering while preserving information about smaller bundles.
- */
 function filterByMinSize(children: TreeNode[], minSize: number): TreeNode[] {
   const filteredChildren = children.filter(child => child.bytes >= minSize);
   const belowThreshold = children.filter(child => child.bytes < minSize);
-  
+
   if (belowThreshold.length > 0) {
     const aggregatedBytes = belowThreshold.reduce(
       (acc: number, child: TreeNode) => acc + child.bytes,
@@ -204,7 +116,7 @@ function filterByMinSize(children: TreeNode[], minSize: number): TreeNode[] {
       (acc: number, child: TreeNode) => acc + child.sources,
       0,
     );
-    
+
     const summaryNode: TreeNode = {
       name: `... ${belowThreshold.length} files more`,
       bytes: aggregatedBytes,
@@ -212,10 +124,10 @@ function filterByMinSize(children: TreeNode[], minSize: number): TreeNode[] {
       children: [],
       type: 'group',
     };
-    
+
     return [...filteredChildren, summaryNode];
   }
-  
+
   return filteredChildren;
 }
 
@@ -224,13 +136,13 @@ function pruneTree(
   options: Required<PruningOptions>,
 ): TreeNode {
   const { maxChildren, maxDepth, startDepth = 0, minSize } = options;
-  
+
   // Sort children by bytes in descending order before pruning
   node.children.sort((a, b) => b.bytes - a.bytes);
-  
+
   // Apply minimum size filtering
   node.children = filterByMinSize(node.children, minSize);
-  
+
   if (node.children.length > maxChildren) {
     const remainingChildren = node.children.slice(maxChildren);
     const remainingBytes = remainingChildren.reduce(
@@ -259,7 +171,12 @@ function pruneTree(
       return childDepth <= maxDepth;
     })
     .map((child: TreeNode) =>
-      pruneTree(child, { maxDepth, maxChildren, startDepth: startDepth + 1, minSize }),
+      pruneTree(child, {
+        maxDepth,
+        maxChildren,
+        startDepth: startDepth + 1,
+        minSize,
+      }),
     );
 
   return node;
@@ -267,13 +184,17 @@ function pruneTree(
 
 function toBasicTreeNode(node: TreeNode): BasicTreeNode {
   const icon = node.icon || ARTEFACT_TYPE_ICON_MAP[node.type || 'script-file'];
-  const name = node.name; // formatPath(node.name, 40);
+  const name = truncateText(node.name, {
+    maxChars: 40,
+    position: 'middle',
+  });
   const size = formatBytes(node.bytes);
-  const sources = formatFileCount(node.sources);
 
   const formattedSize = size;
   const formattedSources =
-    node.children.length > 0 || node.sources > 1 ? `${sources}` : '';
+    node.children.length > 0 || node.sources > 1
+      ? `${node.sources} ${pluralize('source', node.sources)}`
+      : '';
 
   return {
     name: `${icon} ${name}`,
@@ -297,7 +218,7 @@ function toBasicTreeNode(node: TreeNode): BasicTreeNode {
  * - `📄` - Script file (JS/TS)
  * - `🎨` - Style file (CSS/SCSS)
  * - `📍` - Entry file (JS/TS)
- * - `📁` - Group
+ * - `��` - Group
  *
  * ### Artefact Inputs & Imports
  * Inputs are listed under each chunk. Static imports that contribute to the size are listed as siblings.
@@ -323,7 +244,8 @@ export function createTree(
   const { title, groups, pruning } = options;
   let nodes = convertToTree(statsSlice);
   nodes = applyGrouping(nodes, groups);
-  
+  nodes = separateSourcesAndDependencies(nodes, groups);
+
   // Sort nodes by bytes in descending order at the root level
   nodes.sort((a, b) => b.bytes - a.bytes);
 
@@ -334,7 +256,7 @@ export function createTree(
     children: nodes,
   };
   const prunedNodes = pruneTree(tempRoot, {
-    ...DEFAULT_PRUNING,
+    ...DEFAULT_PRUNING_OPTIONS,
     ...options?.pruning,
     startDepth: 0,
   }).children;
@@ -352,7 +274,7 @@ export function createTree(
     name: `🗂️ ${title}`,
     values: {
       size: formatBytes(totalBytes),
-      sources: pluralizeToken('source', totalSources),
+      sources: `${totalSources} ${pluralize('source', totalSources)}`,
     },
     children: prunedNodes.map(toBasicTreeNode),
   };

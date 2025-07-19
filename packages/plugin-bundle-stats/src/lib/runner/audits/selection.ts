@@ -6,7 +6,7 @@ import {
   type PatternMatcher,
   clearPatternCache,
   compilePattern as sharedCompilePattern,
-} from './match-pattern';
+} from './details/utils/match-pattern.js';
 
 export type includeOutputs = {
   includeOutputs: string[];

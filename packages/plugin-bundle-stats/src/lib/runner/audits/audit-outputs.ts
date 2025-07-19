@@ -3,9 +3,10 @@ import type { BundleStatsConfig } from '../types.js';
 import type { UnifiedStats } from '../unify/unified-stats.types.js';
 import { createDisplayValue } from '../utils.js';
 import { createEmptyAudit } from '../utils.js';
+import { DEFAULT_PRUNING_OPTIONS } from './details/constants.js';
 import { getIssues } from './details/issues.js';
 import { createInsightsTable } from './details/table.js';
-import { DEFAULT_PRUNING, createTree } from './details/tree.js';
+import { createTree } from './details/tree.js';
 import { createBundleStatsScoring } from './scoring.js';
 import { selectArtefacts } from './selection.js';
 
@@ -59,7 +60,7 @@ export function createAuditOutputDetails(
       createTree(statsSlice, {
         title: config.slug,
         pruning: {
-          ...DEFAULT_PRUNING,
+          ...DEFAULT_PRUNING_OPTIONS,
           ...config.artefactTree.pruning,
         },
         groups: config.artefactTree.groups ?? [],

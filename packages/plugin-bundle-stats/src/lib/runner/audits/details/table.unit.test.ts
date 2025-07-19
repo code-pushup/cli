@@ -8,76 +8,40 @@ describe('aggregateAndSortGroups', () => {
     const stats: UnifiedStats = {
       'dist/main.js': {
         path: 'dist/main.js',
-        bytes: 1001,
+        bytes: 1000,
         inputs: {
-          'src/main.ts': { bytes: 1001 },
+          'src/ui/button.ts': { bytes: 800 }, // matches ui pattern
         },
+        // remaining 200 bytes will match dist/*.js pattern
       },
-      'dist/chunks/ui.js': {
-        path: 'dist/chunks/ui.js',
-        bytes: 3001,
-        inputs: {
-          'src/ui/button.ts': { bytes: 1500 },
-          'src/ui/modal.ts': { bytes: 1501 },
-        },
-      },
-      'dist/chunks/utils.js': {
-        path: 'dist/chunks/utils.js',
+      'dist/chunks/vendor.js': {
+        path: 'dist/chunks/vendor.js',
         bytes: 2000,
         inputs: {
-          'src/utils/helpers.ts': { bytes: 1000 },
-          'src/utils/constants.ts': { bytes: 1000 },
+          'node_modules/react/index.js': { bytes: 2000 }, // matches react pattern
         },
-      },
-      'dist/node_modules/react.js': {
-        path: 'dist/node_modules/react.js',
-        bytes: 3000,
-        inputs: {
-          'node_modules/react/index.js': { bytes: 3000 },
-        },
-      },
-      'dist/node_modules/lodash.js': {
-        path: 'dist/node_modules/lodash.js',
-        bytes: 1500,
-        inputs: {
-          'node_modules/lodash/lodash.js': { bytes: 1500 },
-        },
+        // no remaining bytes
       },
       'dist/other.js': {
         path: 'dist/other.js',
-        bytes: 4498,
-        inputs: {
-          'src/other.ts': { bytes: 4498 },
-        },
-      },
-      'dist/another.js': {
-        path: 'dist/another.js',
-        bytes: 1500,
-        inputs: {
-          'src/another.ts': { bytes: 1500 },
-        },
+        bytes: 500,
+        // no inputs, all 500 bytes remain unmatched (rest group)
       },
     };
 
     const insights: GroupingRule[] = [
       { title: 'ui', patterns: ['**/ui/**'] },
-      { title: 'utils', patterns: ['**/utils/**'] },
       { title: 'react', patterns: ['**/react/**'], icon: '📦' },
-      { title: 'lodash', patterns: ['**/lodash/**'], icon: '📦' },
       { title: 'Source', patterns: ['dist/*.js'], icon: '📄' },
-      { title: 'Bundles', patterns: ['dist/*.js'], icon: '📦' },
     ];
+
     expect(aggregateAndSortGroups(stats, insights)).toStrictEqual({
       groups: [
-        { title: 'other', icon: '📄', totalBytes: 4498 },
-        { title: 'ui', icon: undefined, totalBytes: 3001 },
-        { title: 'react', icon: '📦', totalBytes: 3000 },
-        { title: 'utils', icon: undefined, totalBytes: 2000 },
-        { title: 'lodash', icon: '📦', totalBytes: 1500 },
-        { title: 'another', icon: '📄', totalBytes: 1500 },
-        { title: 'main', icon: '📄', totalBytes: 1001 },
+        { title: 'react', icon: '📦', totalBytes: 2000 },
+        { title: 'ui', icon: undefined, totalBytes: 800 },
+        { title: 'main', icon: '📄', totalBytes: 200 },
       ],
-      restGroup: { totalBytes: 0, title: 'Rest' },
+      restGroup: { totalBytes: 500, title: 'Rest' },
     });
   });
 });

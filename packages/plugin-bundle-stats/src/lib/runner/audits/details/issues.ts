@@ -1,11 +1,12 @@
 import { minimatch } from 'minimatch';
 import type { Issue } from '@code-pushup/models';
 import { formatBytes } from '@code-pushup/utils';
-import type { BundleStatsConfig } from '../types.js';
+import type { BundleStatsConfig } from '../../types.js';
 import type {
   UnifiedStats,
   UnifiedStatsOutput,
-} from '../unify/unified-stats.types.js';
+} from '../../unify/unified-stats.types.js';
+import { ISSUE_ICONS } from './constants.js';
 
 export type PenaltyConfig = {
   artefactSize?: [number, number];
@@ -15,24 +16,18 @@ export type PenaltyConfig = {
 };
 
 /**
- * Checks if a file path matches any of the provided blacklist glob patterns.
- * Uses minimatch for pattern matching with support for wildcards and special characters.
- *
- * @param path - File path to check against blacklist patterns
- * @param patterns - Array of glob patterns to match against (supports *, **, ?, etc.)
- * @returns The first matching pattern if found, or false if no patterns match
- *
+ * Checks if a path matches any of the given blacklist patterns. Enables pattern-based filtering for bundle security and optimization.
  */
 function matchesBlacklistPattern(
   path: string,
   patterns: string[],
-): string | false {
+): string | null {
   for (const pattern of patterns) {
-    if (minimatch(path, pattern)) {
+    if (minimatch(path, pattern, { matchBase: true })) {
       return pattern;
     }
   }
-  return false;
+  return null;
 }
 
 /**
@@ -55,7 +50,7 @@ export function createTooLargeIssue(
   maxSize: number,
 ): Issue {
   return {
-    message: `🔺 \`${outputPath}\` is **${formatBytes(bytes)}** _(> ${formatBytes(maxSize)})_`,
+    message: `${ISSUE_ICONS.TOO_LARGE} \`${outputPath}\` is **${formatBytes(bytes)}** _(> ${formatBytes(maxSize)})_`,
     severity: 'error',
     source: { file: outputPath },
   };
@@ -81,23 +76,23 @@ export function createTooSmallIssue(
   minSize: number,
 ): Issue {
   return {
-    message: `🔻 \`${outputPath}\` is **${formatBytes(bytes)}** _(< ${formatBytes(minSize)})_`,
+    message: `${ISSUE_ICONS.TOO_SMALL} \`${outputPath}\` is **${formatBytes(bytes)}** _(< ${formatBytes(minSize)})_`,
     severity: 'warning',
     source: { file: outputPath },
   };
 }
 
 /**
- * Creates error issue for blacklisted import matching forbidden pattern. Identifies dependencies that should be removed or replaced.
+ * Creates error issue for blacklisted import pattern match. Enforces dependency restrictions for security and architectural compliance.
  *
- * @param importPath - Path to the import that matches blacklist pattern
- * @param outputPath - Path to the output file containing the blacklisted import
- * @param pattern - The specific blacklist pattern that was matched
- * @returns Issue object with error severity and replacement recommendation
+ * @param importPath - Path that matched the blacklist pattern
+ * @param outputPath - Output file containing the blacklisted import
+ * @param pattern - Specific pattern that was matched
+ * @returns Issue object with error severity and compliance requirement
  *
  * @example
  * ```js
- * createBlacklistedIssue('src/math.ts', 'dist/bundle.js', '**\/math.*')
+ * createBlacklistedIssue('src/math.ts', 'bundle.js', '**\/math.*')
  * // Returns: { message: "🚫 `src/math.ts` matches blacklist pattern `**\/math.*`", severity: 'error', ... }
  * ```
  */
@@ -107,7 +102,7 @@ export function createBlacklistedIssue(
   pattern: string,
 ): Issue {
   return {
-    message: `🚫 \`${importPath}\` matches blacklist pattern \`${pattern}\``,
+    message: `${ISSUE_ICONS.BLACKLIST} \`${importPath}\` matches blacklist pattern \`${pattern}\``,
     severity: 'error',
     source: { file: outputPath },
   };

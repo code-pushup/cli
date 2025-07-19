@@ -268,7 +268,12 @@ const TREE_AUDITS: BundleStatsOptions[] = [
     ...BASE_AUDIT_ALL_FILES_ALWAYS_PASS,
     artefactTree: {
       groups: [
-        { title: 'Node Modules', patterns: ['**/node_modules/**'], icon: '📦' },
+        {
+          title: 'Node Modules',
+          patterns: ['**/node_modules/**'],
+          icon: '📦',
+          maxDepth: 2,
+        },
       ],
     },
   },
@@ -280,12 +285,17 @@ const TREE_AUDITS: BundleStatsOptions[] = [
     artefactTree: { groups: [{ patterns: ['**/utils/**'] }] },
   },
   {
-    slug: `${TREE_AUDIT_PREFIX}-groups-max-depth`,
-    title: `${TREE_AUDIT_ICON} - Artefact Tree - Groups Max Depth`,
+    slug: `${TREE_AUDIT_PREFIX}-groups-auto`,
+    title: `${TREE_AUDIT_ICON} - Artefact Tree - Groups auto gtoup node`,
     description: 'Demonstrates per-group maxDepth option.',
     ...BASE_AUDIT_ALL_FILES_ALWAYS_PASS,
     artefactTree: {
-      groups: [{ patterns: ['**/node_modules/**'], maxDepth: 1 }],
+      groups: [
+        {
+          patterns: ['**/node_modules/**', '**/node_modules/@*/**'],
+          maxDepth: 1,
+        },
+      ],
     },
   },
 ];

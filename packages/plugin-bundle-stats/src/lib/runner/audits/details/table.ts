@@ -2,47 +2,44 @@ import type { Table } from '@code-pushup/models';
 import { formatBytes } from '@code-pushup/utils';
 import type { GroupingRule } from '../../types.js';
 import type { UnifiedStats } from '../../unify/unified-stats.types.js';
-import { deriveGroupTitle, matchesAnyPattern } from '../match-pattern.js';
+import { DEFAULT_GROUP_NAME, REST_GROUP_NAME } from './constants.js';
+import {
+  createGroupManager,
+  findMatchingRule,
+  generateGroupKey,
+} from './utils/grouping.js';
+import type { GroupData } from './utils/grouping.js';
 
 export type InsightsConfig = GroupingRule[];
 
-interface GroupData {
-  title: string;
-  totalBytes: number;
-  icon?: string;
-}
-
+/**
+ * Formats group title with optional icon prefix. Provides consistent display formatting for table entries.
+ */
 export function formatEntryPoint(title: string, icon?: string): string {
   return icon ? `${icon} ${title}` : title;
 }
 
+/**
+ * Aggregates input and output bytes by grouping patterns and sorts by size. Creates structured data for insights table with accurate byte attribution.
+ */
 export function aggregateAndSortGroups(
   statsSlice: UnifiedStats,
   insights: InsightsConfig,
 ): { groups: GroupData[]; restGroup: Omit<GroupData, 'icon'> } {
   const groupingRules = insights || [];
-  const groupedData = new Map<
-    string,
-    {
-      totalBytes: number;
-      icon?: string;
-      title: string;
-    }
-  >();
+  const groupManager = createGroupManager<GroupData>();
 
+  // Initialize groups from rules
   for (const rule of groupingRules) {
-    const effectiveTitle = rule.title || 'Group';
-    groupedData.set(effectiveTitle, {
-      totalBytes: 0,
-      icon: rule.icon,
-      title: effectiveTitle,
-    });
+    const effectiveTitle = rule.title || DEFAULT_GROUP_NAME;
+    groupManager.findOrCreateGroup(effectiveTitle, rule, effectiveTitle);
   }
 
   const remainingBytesInChunks: Record<string, number> = Object.fromEntries(
     Object.entries(statsSlice).map(([key, { bytes }]) => [key, bytes]),
   );
 
+  // Process input files
   for (const [outputKey, output] of Object.entries(statsSlice)) {
     if (!output.inputs) {
       continue;
@@ -51,66 +48,41 @@ export function aggregateAndSortGroups(
       if (input.bytes === 0) {
         continue;
       }
-      for (const rule of groupingRules) {
-        if (
-          matchesAnyPattern(inputPath, rule.patterns, {
-            matchBase: true,
-            normalizeRelativePaths: true,
-          })
-        ) {
-          const groupKey = deriveGroupTitle(
-            inputPath,
-            rule.patterns,
-            rule.title || 'Group',
-          );
-          const group =
-            groupedData.get(groupKey) ??
-            groupedData
-              .set(groupKey, {
-                totalBytes: 0,
-                icon: rule.icon,
-                title: groupKey,
-              })
-              .get(groupKey)!;
-          group.totalBytes += input.bytes;
-          remainingBytesInChunks[outputKey] ??= 0;
-          remainingBytesInChunks[outputKey] -= input.bytes;
-          break;
-        }
+
+      const matchingRule = findMatchingRule(inputPath, groupingRules);
+      if (matchingRule) {
+        const groupKey = generateGroupKey(inputPath, matchingRule);
+        const group = groupManager.findOrCreateGroup(
+          groupKey,
+          matchingRule,
+          groupKey,
+        );
+
+        group.totalBytes += input.bytes;
+        remainingBytesInChunks[outputKey] ??= 0;
+        remainingBytesInChunks[outputKey] -= input.bytes;
       }
     }
   }
 
+  // Process output files for remaining bytes
   for (const [outputKey] of Object.entries(statsSlice)) {
     const remainingBytes = remainingBytesInChunks[outputKey];
     if (remainingBytes == null || remainingBytes <= 0) {
       continue;
     }
-    for (const rule of groupingRules) {
-      if (
-        matchesAnyPattern(outputKey, rule.patterns, {
-          matchBase: true,
-          normalizeRelativePaths: true,
-        })
-      ) {
-        const groupKey = deriveGroupTitle(
-          outputKey,
-          rule.patterns,
-          rule.title || 'Group',
-        );
-        const group =
-          groupedData.get(groupKey) ??
-          groupedData
-            .set(groupKey, {
-              totalBytes: 0,
-              icon: rule.icon,
-              title: groupKey,
-            })
-            .get(groupKey)!;
-        group.totalBytes += remainingBytes;
-        remainingBytesInChunks[outputKey] = 0;
-        break;
-      }
+
+    const matchingRule = findMatchingRule(outputKey, groupingRules);
+    if (matchingRule) {
+      const groupKey = generateGroupKey(outputKey, matchingRule);
+      const group = groupManager.findOrCreateGroup(
+        groupKey,
+        matchingRule,
+        groupKey,
+      );
+
+      group.totalBytes += remainingBytes;
+      remainingBytesInChunks[outputKey] = 0;
     }
   }
 
@@ -119,15 +91,18 @@ export function aggregateAndSortGroups(
       (acc, bytes) => acc + bytes,
       0,
     ),
-    title: 'Rest',
+    title: REST_GROUP_NAME,
   };
 
-  const groups = [...groupedData.values()].filter(g => g.totalBytes > 0);
+  const groups = groupManager.getGroupsWithData();
   groups.sort((a, b) => b.totalBytes - a.totalBytes);
 
   return { groups, restGroup };
 }
 
+/**
+ * Converts grouped data into table format with columns and rows. Transforms aggregated insights into displayable table structure.
+ */
 export function formatGroupsAsTable({
   groups,
   restGroup,
@@ -162,6 +137,9 @@ export function formatGroupsAsTable({
   };
 }
 
+/**
+ * Creates complete insights table from stats and grouping rules. Combines aggregation and formatting into single operation.
+ */
 export function createInsightsTable(
   statsSlice: UnifiedStats,
   insights: GroupingRule[],
