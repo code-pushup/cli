@@ -134,3 +134,7 @@ export {
   type Tree,
 } from './lib/tree.js';
 export { uploadConfigSchema, type UploadConfig } from './lib/upload-config.js';
+export {
+  artifactGenerationCommandSchema,
+  pluginArtifactOptionsSchema,
+} from './lib/configuration.js';
