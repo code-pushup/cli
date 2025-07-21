@@ -2,6 +2,7 @@ import type { Audit } from '@code-pushup/models';
 import { slugify } from '@code-pushup/utils';
 import { formatBytes } from '@code-pushup/utils';
 import type { ScoringConfig } from './runner/audits/scoring.js';
+import { normalizeSelectionOptions } from './runner/audits/selection.js';
 import type { BundleStatsConfig, MinMax } from './runner/types.js';
 import type { BundleStatsOptions } from './types.js';
 
@@ -228,15 +229,8 @@ export function normalizeBundleStatsOptions(
     options;
   const { penalty, totalSize } = scoring ?? { penalty: false };
 
-  // Provide defaults for selection options
-  const normalizedSelection = {
-    includeOutputs: selection?.includeOutputs || [],
-    excludeOutputs: selection?.excludeOutputs || [],
-    includeInputs: selection?.includeInputs || [],
-    excludeInputs: selection?.excludeInputs || [],
-    includeEntryPoints: selection?.includeEntryPoints || [],
-    excludeEntryPoints: selection?.excludeEntryPoints || [],
-  };
+  // Use the proper selection normalization helper that merges global patterns
+  const normalizedSelection = normalizeSelectionOptions(selection);
 
   const normalizedScoring: ScoringConfig = {
     totalSize: normalizeRange(totalSize ?? Infinity),

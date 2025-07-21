@@ -16,7 +16,7 @@ export interface UnifiedStatsInput {
   format?: string;
 }
 
-export interface UnifiedStatsOutput {
+export interface UnifiedStatsBundle {
   path: string;
   bytes: number;
   inputs?: Record<string, UnifiedStatsInput>;
@@ -24,4 +24,4 @@ export interface UnifiedStatsOutput {
   imports?: UnifiedStatsImport[];
 }
 
-export type UnifiedStats = Record<string, UnifiedStatsOutput>;
+export type UnifiedStats = Record<string, UnifiedStatsBundle>;

@@ -1,9 +1,8 @@
 import type { Audit } from '@code-pushup/models';
 import type { InsightsConfig } from './audits/details/table.js';
 import type { ArtefactTreeOptions } from './audits/details/tree.js';
-import type { PenaltyConfig } from './audits/issues.js';
 import type { ScoringConfig } from './audits/scoring.js';
-import type { SelectionOptions } from './audits/selection';
+import type { SelectionConfig } from './audits/selection';
 
 export type SupportedBundlers = 'esbuild' | 'webpack' | 'vite' | 'rsbuild';
 
@@ -16,7 +15,7 @@ type AuditConfig = Pick<Audit, 'title' | 'slug'> &
   Partial<Pick<Audit, 'description'>>;
 
 export type BundleStatsConfig = AuditConfig & {
-  selection: SelectionOptions;
+  selection: SelectionConfig;
   scoring: ScoringConfig;
   artefactTree?: ArtefactTreeOptions;
   insights?: InsightsConfig;

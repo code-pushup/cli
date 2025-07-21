@@ -1,7 +1,7 @@
 import type {
   UnifiedStats,
+  UnifiedStatsBundle,
   UnifiedStatsImport,
-  UnifiedStatsOutput,
 } from './unified-stats.types.js';
 
 export type RsbuildImportKind = 'import-statement' | 'dynamic-import';
@@ -152,7 +152,7 @@ export function unifyBundlerStats(stats: RsbuildCoreStats): UnifiedStats {
   for (const asset of stats.assets) {
     if (!asset.name.endsWith('.js')) continue;
 
-    const unifiedOutput: UnifiedStatsOutput = {
+    const unifiedOutput: UnifiedStatsBundle = {
       path: asset.name,
       bytes: asset.size,
       imports: [],

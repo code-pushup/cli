@@ -4,7 +4,7 @@ import { formatBytes } from '@code-pushup/utils';
 import type { BundleStatsConfig } from '../../types.js';
 import type {
   UnifiedStats,
-  UnifiedStatsOutput,
+  UnifiedStatsBundle,
 } from '../../unify/unified-stats.types.js';
 import { ISSUE_ICONS } from './constants.js';
 
@@ -119,7 +119,7 @@ export function createBlacklistedIssue(
  */
 export function checkSizeIssues(
   outputPath: string,
-  output: UnifiedStatsOutput,
+  output: UnifiedStatsBundle,
   minSize?: number,
   maxSize?: number,
 ): Issue[] {
@@ -158,7 +158,7 @@ export function checkSizeIssues(
  */
 export function checkBlacklistIssues(
   outputPath: string,
-  output: UnifiedStatsOutput,
+  output: UnifiedStatsBundle,
   blacklistPatterns: string[],
 ): Issue[] {
   const issues: Issue[] = [];

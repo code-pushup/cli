@@ -1,7 +1,6 @@
 import type {
   UnifiedStats,
-  UnifiedStatsImport,
-  UnifiedStatsOutput,
+  UnifiedStatsBundle,
 } from './unified-stats.types.js';
 
 export type WebpackImportKind = 'import-statement' | 'dynamic-import';
@@ -78,7 +77,7 @@ export function unifyBundlerStats(stats: WebpackCoreStats): UnifiedStats {
   }
 
   for (const asset of stats.assets) {
-    const unifiedOutput: UnifiedStatsOutput = {
+    const unifiedOutput: UnifiedStatsBundle = {
       path: asset.name,
       bytes: asset.size,
       imports: [],

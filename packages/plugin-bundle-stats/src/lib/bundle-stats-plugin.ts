@@ -9,9 +9,9 @@ import type { PluginOptions } from './types.js';
 const PKG = createRequire(import.meta.url)('../../package.json');
 
 export async function bundleStatsPlugin(
-  opts: PluginOptions,
+  options: PluginOptions,
 ): Promise<PluginConfig> {
-  const { groups = [], audits, artefactTree, ...restOptions } = opts;
+  const { groups = [], audits, artefactTree, ...restOptions } = options;
 
   const runnerConfigs: BundleStatsConfig[] = audits.map(
     normalizeBundleStatsOptions,

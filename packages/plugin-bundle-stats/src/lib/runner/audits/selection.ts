@@ -1,6 +1,7 @@
+import type { SelectionOptions } from '../../types.js';
 import type {
   UnifiedStats,
-  UnifiedStatsOutput,
+  UnifiedStatsBundle,
 } from '../unify/unified-stats.types.js';
 import {
   type PatternMatcher,
@@ -8,41 +9,118 @@ import {
   compilePattern as sharedCompilePattern,
 } from './details/utils/match-pattern.js';
 
+// =============================================================================
+// TYPE DEFINITIONS
+// =============================================================================
+
+/**
+ * Generic pattern configuration for include/exclude functionality.
+ * Reduces type repetition across different pattern types.
+ */
+type PatternConfig<TInclude extends string, TExclude extends string> = {
+  [K in TInclude]: string[];
+} & {
+  [K in TExclude]: string[];
+};
+
 export type Include = {
   include: string[];
   exclude: string[];
 };
 
-export type includeOutputs = {
+export type IncludeOutputs = PatternConfig<'includeOutputs', 'excludeOutputs'>;
+export type IncludeInputs = PatternConfig<'includeInputs', 'excludeInputs'>;
+export type IncludeImports = PatternConfig<'includeImports', 'excludeImports'>;
+export type IncludeEntryPoints = PatternConfig<
+  'includeEntryPoints',
+  'excludeEntryPoints'
+>;
+
+/**
+ * Normalized selection configuration with all pattern arrays guaranteed to exist.
+ * Used internally after processing SelectionOptions through normalizeSelectionOptions.
+ */
+export type SelectionConfig = {
   includeOutputs: string[];
   excludeOutputs: string[];
-};
-
-export type includeInputs = {
   includeInputs: string[];
   excludeInputs: string[];
-};
-
-export type includeEntryPoints = {
+  includeImports: string[];
+  excludeImports: string[];
   includeEntryPoints: string[];
   excludeEntryPoints: string[];
 };
 
-export type SelectionOptions = Partial<
-  Include & includeOutputs & includeInputs & includeEntryPoints
-> &
-  (
-    | Pick<includeOutputs, 'includeOutputs'>
-    | Pick<includeInputs, 'includeInputs'>
-    | Pick<includeEntryPoints, 'includeEntryPoints'>
-  );
+type CompiledPatterns = Record<keyof SelectionConfig, PatternMatcher[]>;
 
-type CompiledPatterns = Record<keyof SelectionOptions, PatternMatcher[]>;
-
-const inputPathsCache = new Map<UnifiedStatsOutput, string[]>();
+// =============================================================================
+// UTILITY FUNCTIONS
+// =============================================================================
 
 /**
- * Evaluates paths against include/exclude patterns. Core filtering logic for all path types.
+ * Helper to compile string patterns into matcher functions.
+ * Reduces repetition in pattern compilation.
+ */
+function compilePatterns(patterns: string[]): PatternMatcher[] {
+  return patterns.map(pattern =>
+    sharedCompilePattern(pattern, { normalizeRelativePaths: true }),
+  );
+}
+
+/**
+ * Helper function to evaluate pattern criteria. Reduces repetition in selection logic.
+ * Enables cleaner conditional checks by abstracting pattern matching calls.
+ */
+function evaluatePatternCriteria(
+  paths: string[],
+  includePatterns: PatternMatcher[],
+  excludePatterns: PatternMatcher[],
+): boolean {
+  if (includePatterns.length === 0 && excludePatterns.length === 0) {
+    return true;
+  }
+  return pathsMatch(paths, includePatterns, excludePatterns);
+}
+
+/**
+ * Validates that selection patterns contain at least one pattern. Prevents empty selection.
+ * Ensures users provide meaningful filtering criteria before processing bundles.
+ *
+ * @throws {Error} When no selection patterns are provided
+ */
+function validateSelectionPatterns(patterns: CompiledPatterns): void {
+  const hasAnyPatterns = Object.values(patterns).some(
+    patternArray => patternArray.length > 0,
+  );
+
+  if (!hasAnyPatterns) {
+    throw new Error(
+      'Selection requires at least one include/exclude pattern for outputs, inputs, imports, or entry points. ' +
+        'Provide patterns like: { includeOutputs: ["*.js"] } or { includeInputs: ["src/**"] }',
+    );
+  }
+}
+
+/**
+ * Generic helper for evaluating patterns against extracted paths.
+ * Reduces code duplication between input and import pattern matching.
+ */
+function evaluateBundlePatterns(
+  output: UnifiedStatsBundle,
+  includePatterns: PatternMatcher[],
+  excludePatterns: PatternMatcher[],
+  pathExtractor: (output: UnifiedStatsBundle) => string[],
+): boolean {
+  if (includePatterns.length === 0 && excludePatterns.length === 0) {
+    return true;
+  }
+
+  const paths = pathExtractor(output);
+  return pathsMatch(paths, includePatterns, excludePatterns);
+}
+
+/**
+ * Evaluates paths against include/exclude patterns.
  * Enables selective filtering by allowing users to focus on specific files while excluding unwanted ones.
  *
  * @param paths - Array of file paths to evaluate against patterns
@@ -51,10 +129,10 @@ const inputPathsCache = new Map<UnifiedStatsOutput, string[]>();
  * @returns True if paths should be included based on pattern evaluation
  *
  * @example
- * evaluateMatchers(['src/main.js'], [path => path.includes('src')], []) // → true
- * evaluateMatchers(['src/test.js'], [path => path.includes('src')], [path => path.includes('test')]) // → false
+ * pathsMatch(['src/main.js'], [path => path.includes('src')], []) // → true
+ * pathsMatch(['src/test.js'], [path => path.includes('src')], [path => path.includes('test')]) // → false
  */
-export function evaluateMatchers(
+export function pathsMatch(
   paths: string[],
   include: PatternMatcher[],
   exclude: PatternMatcher[],
@@ -67,216 +145,107 @@ export function evaluateMatchers(
     return true;
   }
 
-  if (exclude.length > 0) {
-    for (let i = 0; i < paths.length; i++) {
-      const path = paths[i]!;
-      for (let j = 0; j < exclude.length; j++) {
-        if (exclude[j]!(path)) {
-          return false;
-        }
-      }
-    }
+  if (
+    exclude.length > 0 &&
+    paths.some(path => exclude.some(matcher => matcher(path)))
+  ) {
+    return false;
   }
 
   if (include.length === 0) {
     return true;
   }
 
-  for (let i = 0; i < paths.length; i++) {
-    const path = paths[i]!;
-    for (let j = 0; j < include.length; j++) {
-      if (include[j]!(path)) {
-        return true;
-      }
-    }
-  }
-
-  return false;
+  return paths.some(path => include.some(matcher => matcher(path)));
 }
 
 /**
- * Collects input paths and imports from bundle output. Prevents repeated path extraction.
- * Centralizes extraction of paths scattered across multiple nested locations in bundle structure.
- *
- * @param output - Bundle output containing inputs and imports to extract paths from
- * @returns Array of all input file paths and import paths found in the output
- *
- * @example
- * getInputPaths(output) // → ['src/main.js', 'src/utils.js', 'node_modules/lodash/index.js']
+ * Collects input file paths from bundle output. Returns only direct input files.
+ * Excludes imported dependencies for precise input-only filtering.
  */
-export function getInputPaths(output: UnifiedStatsOutput): string[] {
-  if (inputPathsCache.has(output)) {
-    return inputPathsCache.get(output)!;
-  }
-
-  const inputPaths: string[] = [];
-
-  if (output.inputs) {
-    const inputKeys = Object.keys(output.inputs);
-
-    const estimatedSize =
-      inputKeys.length +
-      (output.imports?.length || 0) +
-      inputKeys.reduce(
-        (sum, key) => sum + (output.inputs![key]?.imports?.length || 0),
-        0,
-      );
-
-    const paths: string[] = new Array(estimatedSize);
-    let pathIndex = 0;
-
-    for (let i = 0; i < inputKeys.length; i++) {
-      paths[pathIndex++] = inputKeys[i]!;
-
-      const input = output.inputs[inputKeys[i]!];
-      if (input?.imports) {
-        for (let j = 0; j < input.imports.length; j++) {
-          paths[pathIndex++] = input.imports[j]!.path;
-        }
-      }
-    }
-
-    if (output.imports) {
-      for (let i = 0; i < output.imports.length; i++) {
-        paths[pathIndex++] = output.imports[i]!.path;
-      }
-    }
-
-    inputPaths.push(...paths.slice(0, pathIndex));
-  }
-
-  inputPathsCache.set(output, inputPaths);
-  return inputPaths;
+export function getInputPaths(output: UnifiedStatsBundle): string[] {
+  return output.inputs ? Object.keys(output.inputs) : [];
 }
 
 /**
- * Evaluates input patterns against output's inputs. Enables dependency-aware filtering.
- * Determines if bundle output should be included based on its input file paths.
- *
- * @param output - Bundle output containing inputs and imports to evaluate
- * @param includePatterns - Include pattern matchers (empty means allow all)
- * @param excludePatterns - Exclude pattern matchers (empty means exclude none)
- * @returns True if output should be included based on input pattern evaluation
- *
- * @example
- * evaluateInputs(output, [path => path.includes('src')], []) // → true if output has src inputs
- * evaluateInputs(output, [], [path => path.includes('node_modules')]) // → false if output has node_modules inputs
+ * Collects import dependency paths from bundle output. Returns only imported files.
+ * Excludes direct input files for precise import-only filtering.
  */
-export function evaluateInputs(
-  output: UnifiedStatsOutput,
+export function getImportPaths(output: UnifiedStatsBundle): string[] {
+  return output.imports ? output.imports.map(imp => imp.path) : [];
+}
+
+/**
+ * Evaluates input patterns against bundle's input files. Filters based on direct inputs only.
+ * Determines if bundle should be included based on its actual input file paths.
+ *
+ * @param output - Bundle output containing inputs to evaluate
+ * @param includePatterns - Compiled patterns that paths must match (empty means allow all)
+ * @param excludePatterns - Compiled patterns that paths must not match (empty means exclude none)
+ * @returns True if bundle should be included based on input pattern evaluation
+ */
+export function inputsMatchPatterns(
+  output: UnifiedStatsBundle,
   includePatterns: PatternMatcher[],
   excludePatterns: PatternMatcher[],
 ): boolean {
-  if (includePatterns.length === 0 && excludePatterns.length === 0) {
-    return true;
-  }
-
-  const inputPaths = getInputPaths(output);
-  return evaluateMatchers(inputPaths, includePatterns, excludePatterns);
+  return evaluateBundlePatterns(
+    output,
+    includePatterns,
+    excludePatterns,
+    getInputPaths,
+  );
 }
 
 /**
- * Determines if output matches selection criteria. Optimized with early exits.
- * Evaluates entryPoint, output, and input patterns in sequence to decide inclusion.
+ * Evaluates import patterns against bundle's imported dependencies. Filters based on imports only.
+ * Determines if bundle should be included based on its imported dependency paths.
  *
- * @param outputKey - Key identifier for the output in the unified stats
- * @param output - Bundle output containing path, entryPoint, and inputs to evaluate
- * @param patterns - Compiled pattern matchers for all selection criteria
- * @returns True if output should be included based on all pattern evaluations
- *
- * @example
- * shouldSelectOutput('main.js', output, patterns) // → true if output matches all patterns
- * shouldSelectOutput('test.js', output, patterns) // → false if output fails any pattern check
+ * @param output - Bundle output containing imports to evaluate
+ * @param includePatterns - Compiled patterns that paths must match (empty means allow all)
+ * @param excludePatterns - Compiled patterns that paths must not match (empty means exclude none)
+ * @returns True if bundle should be included based on import pattern evaluation
  */
-export function shouldSelectOutput(
-  outputKey: string,
-  output: UnifiedStatsOutput,
-  patterns: CompiledPatterns,
+export function importsMatchPatterns(
+  output: UnifiedStatsBundle,
+  includePatterns: PatternMatcher[],
+  excludePatterns: PatternMatcher[],
 ): boolean {
-  const outputPaths =
-    output.path === outputKey ? [outputKey] : [outputKey, output.path];
-
-  if (
-    patterns.includeEntryPoints.length > 0 ||
-    patterns.excludeEntryPoints.length > 0
-  ) {
-    if (output.entryPoint) {
-      const entryPointsMatch = evaluateMatchers(
-        [output.entryPoint],
-        patterns.includeEntryPoints,
-        patterns.excludeEntryPoints,
-      );
-      if (!entryPointsMatch) {
-        return false;
-      }
-    } else if (patterns.includeEntryPoints.length > 0) {
-      return false;
-    }
-  }
-
-  if (
-    patterns.includeOutputs.length > 0 ||
-    patterns.excludeOutputs.length > 0
-  ) {
-    const outputsMatch = evaluateMatchers(
-      outputPaths,
-      patterns.includeOutputs,
-      patterns.excludeOutputs,
-    );
-    if (!outputsMatch) {
-      return false;
-    }
-  }
-
-  if (patterns.includeInputs.length > 0 || patterns.excludeInputs.length > 0) {
-    const inputsMatch = evaluateInputs(
-      output,
-      patterns.includeInputs,
-      patterns.excludeInputs,
-    );
-    if (!inputsMatch) {
-      return false;
-    }
-  }
-
-  return true;
+  return evaluateBundlePatterns(
+    output,
+    includePatterns,
+    excludePatterns,
+    getImportPaths,
+  );
 }
 
 /**
- * Compiles pattern into cached matcher function. Avoids recompilation overhead.
- * Uses the shared pattern matching logic with support for relative paths.
- */
-export function compilePattern(pattern: string): PatternMatcher {
-  return sharedCompilePattern(pattern, { normalizeRelativePaths: true });
-}
-
-/**
- * Compiles all selection patterns into matchers. Enables efficient pattern reuse.
- * Transforms string patterns into cached matcher functions for all selection criteria.
- * Merges global include/exclude patterns into all specific selection types.
+ * Normalizes selection options by merging global patterns into specific types.
+ * Provides defaults for missing patterns and eliminates global include/exclude from the result.
  *
- * @param options - Selection options containing pattern arrays for all filter types
- * @returns Object with compiled pattern matchers for each selection criteria type
+ * @param options - Raw selection options that may include global patterns
+ * @returns Normalized selection config with global patterns merged into specific types
  *
  * @example
- * compileSelectionPatterns({ includeOutputs: ['*.js'], excludeInputs: ['*.test.ts'] })
- * // → { includeOutputs: [Function], excludeInputs: [Function], ... }
+ * normalizeSelectionOptions({
+ *   include: ['src/**'],
+ *   includeOutputs: ['*.js']
+ * })
+ * // → { includeOutputs: ['*.js', 'src/**'], excludeOutputs: [], ... }
  */
-export function compileSelectionPatterns(
+export function normalizeSelectionOptions(
   options: SelectionOptions,
-): CompiledPatterns {
-  const compiled: CompiledPatterns = {} as CompiledPatterns;
-
-  // Extract global patterns
+): SelectionConfig {
   const globalInclude = options.include || [];
   const globalExclude = options.exclude || [];
 
-  // Merge global patterns with specific patterns for each selection type
-  const mergedOptions = {
+  return {
     includeOutputs: [...(options.includeOutputs || []), ...globalInclude],
     excludeOutputs: [...(options.excludeOutputs || []), ...globalExclude],
     includeInputs: [...(options.includeInputs || []), ...globalInclude],
     excludeInputs: [...(options.excludeInputs || []), ...globalExclude],
+    includeImports: [...(options.includeImports || []), ...globalInclude],
+    excludeImports: [...(options.excludeImports || []), ...globalExclude],
     includeEntryPoints: [
       ...(options.includeEntryPoints || []),
       ...globalInclude,
@@ -286,20 +255,45 @@ export function compileSelectionPatterns(
       ...globalExclude,
     ],
   };
-
-  for (const [key, patterns] of Object.entries(mergedOptions)) {
-    compiled[key as keyof SelectionOptions] = patterns.map(compilePattern);
-  }
-
-  return compiled;
 }
 
 /**
- * Clears all internal performance caches. Prevents memory leaks in long-running processes.
- * Resets pattern compilation cache and input paths cache to free memory.
+ * Compiles all selection patterns into matchers. Enables efficient pattern reuse.
+ * Transforms string patterns into cached matcher functions for all selection criteria.
+ * Merges global include/exclude patterns into all specific selection types.
+ *
+ * @param options - Selection options containing pattern arrays for all filter types
+ * @returns Object with compiled pattern matchers for each selection criteria type
+ * @throws {Error} When options contain invalid pattern syntax
  *
  * @example
- * // Clear caches after processing large bundles
+ * compileSelectionPatterns({ includeOutputs: ['*.js'], excludeInputs: ['*.test.ts'] })
+ * // → { includeOutputs: [Function], excludeInputs: [Function], ... }
+ */
+export function compileSelectionPatterns(
+  options: SelectionOptions,
+): CompiledPatterns {
+  const normalizedOptions = normalizeSelectionOptions(options);
+
+  // Compile all normalized pattern types
+  return {
+    includeOutputs: compilePatterns(normalizedOptions.includeOutputs),
+    excludeOutputs: compilePatterns(normalizedOptions.excludeOutputs),
+    includeInputs: compilePatterns(normalizedOptions.includeInputs),
+    excludeInputs: compilePatterns(normalizedOptions.excludeInputs),
+    includeImports: compilePatterns(normalizedOptions.includeImports),
+    excludeImports: compilePatterns(normalizedOptions.excludeImports),
+    includeEntryPoints: compilePatterns(normalizedOptions.includeEntryPoints),
+    excludeEntryPoints: compilePatterns(normalizedOptions.excludeEntryPoints),
+  };
+}
+
+/**
+ * Clears pattern compilation cache. Prevents memory leaks in long-running processes.
+ * Resets pattern compilation cache to free memory from cached glob matchers.
+ *
+ * @example
+ * // Clear cache after processing large bundles
  * clearSelectionCaches();
  *
  * // Or clear periodically in long-running processes
@@ -307,39 +301,113 @@ export function compileSelectionPatterns(
  */
 export function clearSelectionCaches(): void {
   clearPatternCache();
-  inputPathsCache.clear();
 }
 
 /**
- * Selects artifacts matching selection criteria. Main entry point for bundle filtering.
+ * Determines if bundle matches selection criteria. Optimized with early exits.
+ * Evaluates entryPoint, output, and input patterns in sequence to decide inclusion.
+ *
+ * @param output - Bundle output containing path, entryPoint, and inputs to evaluate
+ * @param patterns - Compiled pattern matchers for all selection criteria
+ * @returns True if bundle should be included based on all pattern evaluations
+ * @throws Never throws, but may return false for invalid inputs
+ *
+ * @example
+ * isBundleSelected(output, patterns) // → true if bundle matches all patterns
+ * isBundleSelected(output, patterns) // → false if bundle fails any pattern check
+ */
+export function isBundleSelected(
+  output: UnifiedStatsBundle,
+  patterns: CompiledPatterns,
+): boolean {
+  // Entry point evaluation - early exit if no entry point but include patterns exist
+  if (
+    patterns.includeEntryPoints.length > 0 ||
+    patterns.excludeEntryPoints.length > 0
+  ) {
+    if (output.entryPoint) {
+      if (
+        !evaluatePatternCriteria(
+          [output.entryPoint],
+          patterns.includeEntryPoints,
+          patterns.excludeEntryPoints,
+        )
+      ) {
+        return false;
+      }
+    } else if (patterns.includeEntryPoints.length > 0) {
+      return false; // No entry point but include patterns require one
+    }
+  }
+
+  // Output path evaluation - check bundle output path
+  if (
+    !evaluatePatternCriteria(
+      [output.path],
+      patterns.includeOutputs,
+      patterns.excludeOutputs,
+    )
+  ) {
+    return false;
+  }
+
+  // Input paths evaluation - check bundle input files
+  if (
+    !inputsMatchPatterns(output, patterns.includeInputs, patterns.excludeInputs)
+  ) {
+    return false;
+  }
+
+  // Import paths evaluation - check bundle imported dependencies
+  if (
+    !importsMatchPatterns(
+      output,
+      patterns.includeImports,
+      patterns.excludeImports,
+    )
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Selects bundles matching selection criteria. Main entry point for bundle filtering.
  * Applies include/exclude patterns across outputs, inputs, and entry points.
  *
  * @param unifiedStats - Bundle statistics containing outputs with their metadata and dependencies
  * @param selectionOptions - Filtering criteria with include/exclude patterns for outputs, inputs, and entry points
  * @returns New UnifiedStats object containing only outputs that match all selection criteria
+ * @throws {Error} When no selection patterns are provided or patterns are invalid
  *
  * @example
- * selectArtefacts(stats, { includeOutputs: ['main.js'], excludeOutputs: [], includeInputs: [], excludeInputs: [], includeEntryPoints: [], excludeEntryPoints: [] })
- * selectArtefacts(stats, { includeOutputs: [], excludeOutputs: [], includeInputs: ['src/main.ts'], excludeInputs: ['test.ts'], includeEntryPoints: [], excludeEntryPoints: [] })
+ * // Select only JavaScript files
+ * selectBundles(stats, { includeOutputs: ['*.js'] })
+ *
+ * // Complex filtering with multiple criteria
+ * selectBundles(stats, {
+ *   includeOutputs: ['dist/*.js'],
+ *   excludeOutputs: ['*.test.js'],
+ *   includeInputs: ['src/**'],
+ *   excludeInputs: ['src/legacy/**']
+ * })
  */
-export function selectArtefacts(
+export function selectBundles(
   unifiedStats: UnifiedStats,
   selectionOptions: SelectionOptions,
 ): UnifiedStats {
   const patterns = compileSelectionPatterns(selectionOptions);
-  const selectedStats: UnifiedStats = {};
 
-  const entries = Object.entries(unifiedStats);
+  validateSelectionPatterns(patterns);
 
-  for (let i = 0; i < entries.length; i++) {
-    const [outputKey, output] = entries[i]!;
-
-    const shouldSelect = shouldSelectOutput(outputKey, output, patterns);
-
-    if (shouldSelect) {
-      selectedStats[outputKey] = output;
-    }
-  }
-
-  return selectedStats;
+  return Object.entries(unifiedStats).reduce<UnifiedStats>(
+    (selectedStats, [outputKey, output]) => {
+      if (isBundleSelected(output, patterns)) {
+        selectedStats[outputKey] = output;
+      }
+      return selectedStats;
+    },
+    {},
+  );
 }

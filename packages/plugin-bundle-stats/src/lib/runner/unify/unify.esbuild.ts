@@ -1,7 +1,7 @@
 import type {
   UnifiedStats,
+  UnifiedStatsBundle,
   UnifiedStatsImport,
-  UnifiedStatsOutput,
 } from './unified-stats.types.js';
 
 export type EsBuildImportKind = 'import-statement' | 'dynamic-import';
@@ -56,7 +56,7 @@ export function unifyBundlerStats(stats: EsBuildCoreStats): UnifiedStats {
       ...additionalProps
     } = outputInfo;
 
-    const unifiedOutput: UnifiedStatsOutput = {
+    const unifiedOutput: UnifiedStatsBundle = {
       path: outputName,
       bytes,
     };

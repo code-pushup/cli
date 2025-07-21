@@ -1,7 +1,7 @@
 import type {
   UnifiedStats,
+  UnifiedStatsBundle,
   UnifiedStatsImport,
-  UnifiedStatsOutput,
 } from './unified-stats.types.js';
 
 export type ViteAsset = {
@@ -50,7 +50,7 @@ export function unifyBundlerStats(stats: ViteCoreStats): UnifiedStats {
   const jsAssets = stats.assets.filter(asset => asset.name.endsWith('.js'));
 
   for (const asset of jsAssets) {
-    const unifiedOutput: UnifiedStatsOutput = {
+    const unifiedOutput: UnifiedStatsBundle = {
       path: asset.name,
       bytes: asset.size,
       imports: [],

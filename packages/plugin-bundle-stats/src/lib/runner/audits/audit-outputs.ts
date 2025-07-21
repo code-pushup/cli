@@ -8,7 +8,7 @@ import { getIssues } from './details/issues.js';
 import { createInsightsTable } from './details/table.js';
 import { createTree } from './details/tree.js';
 import { createBundleStatsScoring } from './scoring.js';
-import { selectArtefacts } from './selection.js';
+import { selectBundles } from './selection.js';
 
 /**
  * Calculates total bytes from unified stats tree. Aggregates byte counts across all artefacts.
@@ -79,7 +79,7 @@ export function generateAuditOutputs(
   configs: BundleStatsConfig[],
 ): AuditOutput[] {
   return configs.map(config => {
-    const filteredTree = selectArtefacts(bundleStatsTree, config.selection);
+    const filteredTree = selectBundles(bundleStatsTree, config.selection);
 
     if (!filteredTree || Object.keys(filteredTree).length === 0) {
       return createEmptyAudit(config);

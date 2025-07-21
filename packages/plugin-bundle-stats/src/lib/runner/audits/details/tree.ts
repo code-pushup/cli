@@ -3,8 +3,8 @@ import { formatBytes, pluralize, truncateText } from '@code-pushup/utils';
 import type { GroupingRule } from '../../types';
 import type {
   UnifiedStats,
+  UnifiedStatsBundle,
   UnifiedStatsInput,
-  UnifiedStatsOutput,
 } from '../../unify/unified-stats.types';
 import { ARTEFACT_TYPE_ICON_MAP, DEFAULT_PRUNING_OPTIONS } from './constants';
 import {
@@ -31,7 +31,7 @@ function convertToTree(stats: UnifiedStats): TreeNode[] {
   const entryFiles: TreeNode[] = [];
   const externalImports: TreeNode[] = [];
 
-  Object.values(stats).forEach((artefact: UnifiedStatsOutput) => {
+  Object.values(stats).forEach((artefact: UnifiedStatsBundle) => {
     // Check if this is an entry file
     if (artefact.entryPoint) {
       const entryName = artefact.path;
