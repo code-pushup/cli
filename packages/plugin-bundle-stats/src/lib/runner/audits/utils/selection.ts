@@ -6,11 +6,48 @@ import type {
 } from '../../unify/unified-stats.types.js';
 import {
   type PatternMatcher,
-  clearPatternCache as clearSelectionCaches,
-  compilePatterns,
-  evaluatePathsWithIncludeExclude,
   compilePattern as sharedCompilePattern,
-} from '../details/utils/match-pattern.js';
+} from '../details/utils/grouping-engine.js';
+
+/**
+ * Compiles multiple patterns into matcher functions. Avoids individual compilation overhead.
+ */
+function compilePatterns(
+  patterns: string[],
+  options = { normalizeRelativePaths: true },
+): PatternMatcher[] {
+  return patterns.map(pattern => sharedCompilePattern(pattern, options));
+}
+
+/**
+ * Evaluates paths against include/exclude patterns. Enables selective filtering with both allow and deny rules.
+ */
+function evaluatePathsWithIncludeExclude(
+  paths: string[],
+  includePatterns: PatternMatcher[],
+  excludePatterns: PatternMatcher[],
+): boolean {
+  if (paths.length === 0) {
+    return includePatterns.length === 0;
+  }
+
+  if (includePatterns.length === 0 && excludePatterns.length === 0) {
+    return true;
+  }
+
+  if (
+    excludePatterns.length > 0 &&
+    paths.some(path => excludePatterns.some(matcher => matcher(path)))
+  ) {
+    return false;
+  }
+
+  if (includePatterns.length === 0) {
+    return true;
+  }
+
+  return paths.some(path => includePatterns.some(matcher => matcher(path)));
+}
 
 /**
  * Generic pattern configuration for include/exclude functionality.
@@ -210,7 +247,7 @@ export function normalizeSelectionOptions(
 
 /**
  * Compiles all selection patterns into matchers. Enables efficient pattern reuse.
- * Transforms string patterns into cached matcher functions for all selection criteria.
+ * Transforms string patterns into matcher functions for all selection criteria.
  * Merges global include/exclude patterns into all specific selection types.
  *
  * @param options - Selection options containing pattern arrays for all filter types
@@ -238,8 +275,6 @@ export function compileSelectionPatterns(
     excludeEntryPoints: compilePatterns(normalizedOptions.excludeEntryPoints),
   };
 }
-
-export { clearSelectionCaches };
 
 /**
  * Determines if bundle matches selection criteria. Optimized with early exits.

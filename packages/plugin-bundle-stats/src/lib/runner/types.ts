@@ -21,14 +21,15 @@ export type BundleStatsConfig = AuditConfig & {
   insights?: InsightsConfig | false;
 };
 
-export type LogicalGroupingRule = {
+export type GroupingRule = {
   title?: string;
   patterns: PatternList;
   icon?: string;
+  maxDepth?: number;
 };
 
-export type GroupingRule = LogicalGroupingRule & {
-  maxDepth?: number;
+export type LogicalGroupingRule = Omit<GroupingRule, 'maxDepth'> & {
+  maxDepth: 1;
 };
 
 export interface MinimalBundleStats {

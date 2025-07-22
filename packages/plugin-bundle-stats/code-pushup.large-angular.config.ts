@@ -1,27 +1,27 @@
 import bundleStatsPlugin, { type GroupingRule } from './src';
 
 const nodeModulesGroup: GroupingRule[] = [
-  // General node_modules group (processed second due to reverse order)
-  { patterns: ['**/node_modules/**', '**/node_modules/@*/**/*'], icon: '📦' },
-  // Angular-specific group (processed first due to reverse order, takes precedence)
+  // General node_modules group (processed third due to reverse order)
+  {
+    patterns: ['**/node_modules/**', '**/node_modules/@*/**/*'],
+    icon: '📦',
+    maxDepth: 2,
+  },
+  // Non-scoped Angular packages (processed second due to reverse order)
   {
     patterns: [
-      '**/node_modules/@angular/**',
       '**/node_modules/ngx-*/**',
-      '**/node_modules/@ngrx/**',
       '**/node_modules/ng-*/**',
       '**/node_modules/*angular*',
     ],
     icon: '🅰️',
-    maxDepth: 3,
+    maxDepth: 2, // Gets ngx-toastr, ng-bootstrap, etc.
   },
-];
-
-const generalGroups: GroupingRule[] = [
+  // Scoped Angular packages (processed first due to reverse order, takes precedence)
   {
-    // auto derived title from result
-    patterns: ['**/packages/**'],
-    icon: '📁',
+    patterns: ['**/node_modules/@angular/**', '**/node_modules/@ngrx/**'],
+    icon: '🅰️',
+    maxDepth: 3, // Gets @angular/router, @angular/common, @ngrx/store, etc.
   },
 ];
 
@@ -243,19 +243,9 @@ const config = {
           blacklist: [],
         },
       },
-      insights: [
-        ...productGroups,
-        ...badGroups,
-        ...generalGroups,
-        ...nodeModulesGroup,
-      ],
+      insights: [...productGroups, ...badGroups, ...nodeModulesGroup],
       artefactTree: {
-        groups: [
-          ...productGroups,
-          ...badGroups,
-          ...generalGroups,
-          ...nodeModulesGroup,
-        ],
+        groups: [...productGroups, ...badGroups, ...nodeModulesGroup],
         pruning: {
           maxDepth: 5,
           minSize: 1_000, // Reduced from 50_000 to show smaller files (1KB threshold)
@@ -298,13 +288,6 @@ const config = {
           },
           artefactTree: {
             groups: [
-              {
-                title: 'Styles',
-                patterns: ['**/styles-*.css'],
-                icon: '🎨', // Add icon for styles group
-                maxDepth: 2, // Enable intermediate folder creation for nested sources
-              },
-              ...generalGroups,
               ...nodeModulesGroup,
               ...badGroups,
               ...productGroups, // Process product groups first for better specificity (last in array = first processed)

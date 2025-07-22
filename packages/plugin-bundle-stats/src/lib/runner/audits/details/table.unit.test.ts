@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { aggregateAndSortGroups, formatGroupsAsTable } from './table.js';
+import { aggregateAndSortGroups, createTable } from './table.js';
+import type { GroupData } from './utils/grouping-engine.js';
 
 describe('aggregateAndSortGroups', () => {
   it('should count input files once across groups', () => {
@@ -28,10 +29,22 @@ describe('aggregateAndSortGroups', () => {
       ),
     ).toStrictEqual({
       groups: [
-        { title: 'Feature 2', totalBytes: 10000, icon: undefined },
-        { title: 'Feature *', totalBytes: 8000, icon: undefined },
+        {
+          title: 'Feature 2',
+          bytes: 10000,
+          icon: undefined,
+          sources: 0,
+          type: 'group',
+        },
+        {
+          title: 'Feature *',
+          bytes: 8000,
+          icon: undefined,
+          sources: 0,
+          type: 'group',
+        },
       ],
-      restGroup: { title: 'Rest', totalBytes: 0 },
+      restGroup: { title: 'Rest', bytes: 0 },
     });
   });
 
@@ -55,8 +68,16 @@ describe('aggregateAndSortGroups', () => {
         ],
       ),
     ).toStrictEqual({
-      groups: [{ title: 'Feature 2', totalBytes: 12000, icon: undefined }],
-      restGroup: { title: 'Rest', totalBytes: 0 },
+      groups: [
+        {
+          title: 'Feature 2',
+          bytes: 12000,
+          icon: undefined,
+          sources: 0,
+          type: 'group',
+        },
+      ],
+      restGroup: { title: 'Rest', bytes: 0 },
     });
   });
 
@@ -81,8 +102,16 @@ describe('aggregateAndSortGroups', () => {
         ],
       ),
     ).toStrictEqual({
-      groups: [{ title: 'Feature 2', totalBytes: 8000, icon: undefined }],
-      restGroup: { title: 'Rest', totalBytes: 12000 },
+      groups: [
+        {
+          title: 'Feature 2',
+          bytes: 8000,
+          icon: undefined,
+          sources: 0,
+          type: 'group',
+        },
+      ],
+      restGroup: { title: 'Rest', bytes: 12000 },
     });
   });
 
@@ -106,8 +135,16 @@ describe('aggregateAndSortGroups', () => {
         ],
       ),
     ).toStrictEqual({
-      groups: [{ title: 'Feature 2', totalBytes: 12000, icon: undefined }],
-      restGroup: { title: 'Rest', totalBytes: 0 },
+      groups: [
+        {
+          title: 'Feature 2',
+          bytes: 10000,
+          icon: undefined,
+          sources: 0,
+          type: 'group',
+        },
+      ],
+      restGroup: { title: 'Rest', bytes: 2000 },
     });
   });
 
@@ -131,40 +168,62 @@ describe('aggregateAndSortGroups', () => {
         ],
       ),
     ).toStrictEqual({
-      groups: [{ title: 'Feature', totalBytes: 8100, icon: undefined }],
-      restGroup: { title: 'Rest', totalBytes: 2000 },
+      groups: [
+        {
+          title: 'Feature',
+          bytes: 8100,
+          icon: undefined,
+          sources: 0,
+          type: 'group',
+        },
+      ],
+      restGroup: { title: 'Rest', bytes: 2000 },
     });
   });
 });
 
-describe('formatGroupsAsTable', () => {
+describe('createTable', () => {
   it('should add icon to group title', () => {
     expect(
-      formatGroupsAsTable({
-        groups: [{ title: 'Feature', totalBytes: 10000, icon: '📁' }],
-        restGroup: { title: 'Rest', totalBytes: 0 },
-      }),
+      createTable(
+        [
+          {
+            title: 'Feature',
+            bytes: 10000,
+            icon: '📁',
+            sources: 0,
+            type: 'group',
+          },
+        ],
+        { title: 'Rest', bytes: 0 },
+      ),
     ).toStrictEqual({
       columns: [
         { key: 'group', label: 'Group', align: 'left' },
-        { key: 'size', label: 'Size', align: 'center' },
+        { key: 'modules', label: 'Modules', align: 'right' },
+        { key: 'size', label: 'Size', align: 'right' },
       ],
-      rows: [{ group: '📁 Feature', size: '9.77 kB' }],
+      rows: [{ group: '📁 Feature', modules: '0', size: '9.77 kB' }],
     });
   });
 
   it('should auto-detect group title from patterns', () => {
-    expect(
-      formatGroupsAsTable({
-        groups: [{ title: 'feature-*', totalBytes: 10000 }],
-        restGroup: { title: 'Rest', totalBytes: 0 },
-      }),
-    ).toStrictEqual({
+    const groups: GroupData[] = [
+      {
+        title: 'feature-*',
+        bytes: 10000,
+        sources: 0,
+        type: 'group',
+      },
+    ];
+
+    expect(createTable(groups, { title: 'Rest', bytes: 0 })).toStrictEqual({
       columns: [
         { key: 'group', label: 'Group', align: 'left' },
-        { key: 'size', label: 'Size', align: 'center' },
+        { key: 'modules', label: 'Modules', align: 'right' },
+        { key: 'size', label: 'Size', align: 'right' },
       ],
-      rows: [{ group: 'feature-*', size: '9.77 kB' }],
+      rows: [{ group: '📁 feature-*', modules: '0', size: '9.77 kB' }],
     });
   });
 });

@@ -1,15 +1,43 @@
-import type { BasicTree, BasicTreeNode } from '@code-pushup/models';
-import { formatBytes, pluralize, truncateText } from '@code-pushup/utils';
+import { formatBytes, truncateText } from '@code-pushup/utils';
 import type { GroupingRule } from '../../types';
 import type { UnifiedStats } from '../../unify/unified-stats.types';
 import {
-  ARTEFACT_TYPE_ICON_MAP,
-  type TreeNode,
-  applyGrouping,
-  separateSourcesAndDependencies,
-} from './utils/tree-utils';
+  type StatsTreeNode,
+  applyGrouping as applyGroupingAndSort,
+  getFileIcon,
+} from './utils/grouping-engine';
+import type { ArtefactType, StatsNodeValues } from './utils/types';
 
-const DEFAULT_PRUNING_OPTIONS: Required<PruningOptions> = {
+/**
+ * Helper type that transforms picked properties by adding "Display" suffix and making them strings.
+ */
+export type AddDisplaySuffix<T> = {
+  [K in keyof T as `${string & K}Display`]: string;
+};
+
+/**
+ * Display values for StatsTreeNode with formatted strings.
+ */
+export type StatsTreeNodeDisplayValues = AddDisplaySuffix<
+  Pick<StatsNodeValues, 'bytes' | 'sources' | 'path'>
+>;
+
+export type FormattedStatsTreeNode = Omit<
+  StatsTreeNode,
+  'values' | 'children'
+> &
+  Pick<StatsNodeValues, 'bytes' | 'sources' | 'path'> & {
+    children: FormattedStatsTreeNode[];
+  };
+
+/**
+ * Display tree structure for bundle statistics output.
+ */
+export interface FormattedStatsTree {
+  root: FormattedStatsTreeNode;
+}
+
+export const DEFAULT_PRUNING_OPTIONS: Required<PruningOptions> = {
   maxDepth: 4,
   maxChildren: 15,
   minSize: 0,
@@ -17,7 +45,7 @@ const DEFAULT_PRUNING_OPTIONS: Required<PruningOptions> = {
   startDepth: 1,
 } as const;
 
-export { DEFAULT_PRUNING_OPTIONS };
+export const DEFAULT_PATH_LENGTH = 40;
 
 export interface ArtefactTreeOptions {
   groups?: GroupingRule[];
@@ -32,84 +60,189 @@ export interface PruningOptions {
   pathLength?: number | false;
 }
 
-const formatCache = new Map<number, string>();
-const truncateCache = new Map<string, string>();
-
-function cachedTruncateText(text: string, maxChars: number): string {
-  const cacheKey = `${text}:${maxChars}`;
-  let truncated = truncateCache.get(cacheKey);
-  if (!truncated) {
-    truncated = truncateText(text, { maxChars, position: 'middle' });
-    truncateCache.set(cacheKey, truncated);
-  }
-  return truncated;
+export interface PruneTreeNode {
+  children: StatsTreeNode[];
 }
 
-export function clearTreeCaches(): void {
-  formatCache.clear();
-  truncateCache.clear();
-}
+/**
+ * Converts statistics to tree structure. Creates initial tree nodes from unified statistics.
+ */
+export function convertStatsToTree(stats: UnifiedStats): StatsTreeNode[] {
+  const artifacts = Object.values(stats);
 
-function convertToTree(stats: UnifiedStats): TreeNode[] {
-  const entryFiles: TreeNode[] = [];
-  const externalImports: TreeNode[] = [];
+  // Process all artifacts in a single pass using reduce
+  const { entryFiles, externalImports } = artifacts.reduce(
+    (acc, artefact) => {
+      const isEntry = Boolean(artefact.entryPoint);
 
-  for (const [, artefact] of Object.entries(stats)) {
-    const isEntry = artefact.entryPoint;
-    const targetArray = isEntry ? entryFiles : externalImports;
+      // Create input nodes using map instead of for loop
+      const inputNodes = artefact.inputs
+        ? Object.entries(artefact.inputs).map(([path, input]) => ({
+            name: path,
+            values: {
+              path: path,
+              bytes: input.bytes,
+              sources: 1,
+              type: 'static-import' as const,
+            },
+            children: [],
+          }))
+        : [];
 
-    const artefactNode: TreeNode = {
-      name: artefact.path,
-      bytes: artefact.bytes,
-      sources: 1,
-      type: isEntry ? 'entry-file' : 'script-file',
-      children: [],
-    };
+      const artefactNode: StatsTreeNode = {
+        name: artefact.path,
+        values: {
+          path: artefact.path,
+          bytes: artefact.bytes,
+          sources: 1 + inputNodes.length,
+          type: isEntry ? 'entry-file' : 'static-import',
+        },
+        children: inputNodes,
+      };
 
-    if (artefact.inputs) {
-      const inputEntries = Object.entries(artefact.inputs);
-      artefactNode.sources += inputEntries.length;
-
-      const inputNodes: TreeNode[] = [];
-      for (const [path, input] of inputEntries) {
-        inputNodes.push({
-          name: path,
-          bytes: input.bytes,
-          sources: 1,
-          type: 'script-file',
-          children: [],
-        });
+      // Add to appropriate array based on entry type
+      if (isEntry) {
+        acc.entryFiles.push(artefactNode);
+      } else {
+        acc.externalImports.push(artefactNode);
       }
-      artefactNode.children = inputNodes;
-    }
 
-    targetArray.push(artefactNode);
-  }
+      return acc;
+    },
+    {
+      entryFiles: [] as StatsTreeNode[],
+      externalImports: [] as StatsTreeNode[],
+    },
+  );
 
   return [...entryFiles, ...externalImports];
 }
 
 /**
+ * Formats tree nodes for display with icons and truncated names. Handles intelligent icon assignment.
+ */
+export function formatStatsTree(
+  node: StatsTreeNode,
+  pathLength: number | false = DEFAULT_PATH_LENGTH,
+): FormattedStatsTreeNode {
+  let icon: string;
+
+  if (node.values.icon) {
+    // Use provided icon if available
+    icon = node.values.icon;
+  } else {
+    // Determine icon based on type and path
+    let artefactType: ArtefactType;
+
+    if (node.values.type === 'entry-file') {
+      artefactType = 'entry-file';
+    } else if (node.values.type === 'group') {
+      artefactType = 'group';
+    } else if (node.values.type === 'root') {
+      artefactType = 'root';
+    } else {
+      artefactType = 'static-import';
+    }
+
+    icon = getFileIcon(artefactType, node.values.path);
+  }
+
+  const maxChars = pathLength !== false ? pathLength : DEFAULT_PATH_LENGTH;
+  const name = truncateText(node.name, { maxChars, position: 'middle' });
+
+  // Format bytes for display
+  const sizeDisplay =
+    node.values.bytes > 0
+      ? ` (${formatBytes(node.values.bytes)}${node.values.sources > 1 ? `, ${node.values.sources} sources` : ''})`
+      : '';
+
+  const children: FormattedStatsTreeNode[] = [];
+  for (const child of node.children) {
+    children.push(formatStatsTree(child, pathLength));
+  }
+
+  return {
+    name: `${icon} ${name}${sizeDisplay}`,
+    bytes: node.values.bytes,
+    sources: node.values.sources,
+    path: node.values.path,
+    children,
+  };
+}
+
+/**
+ * Creates artifact tree with grouping applied to inputs only. Groups source files and dependencies while preserving output structure.
+ */
+export function createTree(
+  statsSlice: UnifiedStats,
+  options: { title: string } & Required<ArtefactTreeOptions>,
+): FormattedStatsTree {
+  const { title, groups, pruning } = options;
+
+  let nodes: StatsTreeNode[] = convertStatsToTree(statsSlice);
+
+  // Apply grouping only to inputs (children), not to outputs (top-level nodes)
+  if (groups && groups.length > 0) {
+    nodes = nodes.map(node => ({
+      ...node,
+      children: applyGroupingAndSort(node.children, groups),
+    }));
+  }
+
+  const prunedRoot = pruneTree(
+    { children: nodes },
+    {
+      ...DEFAULT_PRUNING_OPTIONS,
+      ...pruning,
+    },
+    true,
+  );
+
+  const prunedNodes = prunedRoot.children;
+
+  const totalBytes = prunedNodes.reduce(
+    (acc, node) => acc + node.values.bytes,
+    0,
+  );
+  const totalSources = prunedNodes.reduce(
+    (acc, node) => acc + node.values.sources,
+    0,
+  );
+
+  const root: FormattedStatsTreeNode = {
+    name: `🗂️ ${title}`,
+    bytes: totalBytes,
+    sources: totalSources,
+    path: '',
+    children: prunedNodes.map(node =>
+      formatStatsTree(node, pruning.pathLength),
+    ),
+  };
+
+  return { root };
+}
+
+/**
  * Prunes tree by filtering nodes and limiting children. Optimizes tree structure for display.
  */
-function pruneTree(
-  node: Pick<TreeNode, 'children'>,
+export function pruneTree(
+  node: PruneTreeNode,
   options: Required<PruningOptions>,
   isAlreadySorted = false,
-): Pick<TreeNode, 'children'> {
+): PruneTreeNode {
   const { maxChildren, maxDepth, startDepth = 0, minSize } = options;
   const { children } = node;
 
   if (!isAlreadySorted) {
-    node.children.sort((a, b) => b.bytes - a.bytes);
+    node.children.sort((a, b) => b.values.bytes - a.values.bytes);
   }
 
   // Filter by minimum size (inlined from filterByMinSizeSinglePass)
-  const filteredChildren: TreeNode[] = [];
-  const belowThreshold: TreeNode[] = [];
+  const filteredChildren: StatsTreeNode[] = [];
+  const belowThreshold: StatsTreeNode[] = [];
 
   for (const child of node.children) {
-    if (child.bytes >= minSize) {
+    if (child.values.bytes >= minSize) {
       filteredChildren.push(child);
     } else {
       belowThreshold.push(child);
@@ -121,16 +254,19 @@ function pruneTree(
     let aggregatedSources = 0;
 
     for (const child of belowThreshold) {
-      aggregatedBytes += child.bytes;
-      aggregatedSources += child.sources;
+      aggregatedBytes += child.values.bytes;
+      aggregatedSources += child.values.sources;
     }
 
-    const summaryNode: TreeNode = {
+    const summaryNode: StatsTreeNode = {
       name: `... ${belowThreshold.length} files more`,
-      bytes: aggregatedBytes,
-      sources: aggregatedSources,
+      values: {
+        path: '',
+        bytes: aggregatedBytes,
+        sources: aggregatedSources,
+        type: 'group',
+      },
       children: [],
-      type: 'group',
     };
 
     node.children = [...filteredChildren, summaryNode];
@@ -146,16 +282,19 @@ function pruneTree(
     let remainingSources = 0;
 
     for (const child of removedChildren) {
-      remainingBytes += child.bytes;
-      remainingSources += child.sources;
+      remainingBytes += child.values.bytes;
+      remainingSources += child.values.sources;
     }
 
     keptChildren.push({
       name: `... ${removedChildren.length} more`,
-      bytes: remainingBytes,
-      sources: remainingSources,
+      values: {
+        path: '',
+        bytes: remainingBytes,
+        sources: remainingSources,
+        type: 'group',
+      },
       children: [],
-      type: 'group',
     });
 
     node.children = keptChildren;
@@ -163,11 +302,11 @@ function pruneTree(
 
   const nextDepth = startDepth + 1;
   if (nextDepth <= maxDepth) {
-    const prunedChildren: TreeNode[] = [];
+    const prunedChildren: StatsTreeNode[] = [];
 
     for (const child of node.children) {
       const prunedChild = pruneTree(
-        child,
+        { children: child.children },
         {
           maxChildren,
           maxDepth,
@@ -177,7 +316,11 @@ function pruneTree(
         },
         true,
       );
-      prunedChildren.push(prunedChild as TreeNode);
+      const updatedChild: StatsTreeNode = {
+        ...child,
+        children: prunedChild.children,
+      };
+      prunedChildren.push(updatedChild);
     }
 
     node.children = prunedChildren;
@@ -186,73 +329,4 @@ function pruneTree(
   }
 
   return node;
-}
-
-export const DEFAULT_PATH_LENGTH = 40;
-
-function formatSelectionAsTree(
-  node: TreeNode,
-  pathLength: number | false = DEFAULT_PATH_LENGTH,
-): BasicTreeNode {
-  const icon = node.icon || ARTEFACT_TYPE_ICON_MAP[node.type || 'script-file'];
-
-  const maxChars = pathLength !== false ? pathLength : DEFAULT_PATH_LENGTH;
-  const name = cachedTruncateText(node.name, maxChars);
-  const size = formatBytes(node.bytes);
-
-  const formattedSources =
-    node.children.length > 0 || node.sources > 1
-      ? `${node.sources} ${pluralize('source', node.sources)}`
-      : '';
-
-  const children: BasicTreeNode[] = [];
-  for (const child of node.children) {
-    children.push(formatSelectionAsTree(child, pathLength));
-  }
-
-  return {
-    name: `${icon} ${name}`,
-    values: {
-      size,
-      sources: formattedSources,
-    },
-    children,
-  };
-}
-
-export function createTree(
-  statsSlice: UnifiedStats,
-  options: { title: string } & Required<ArtefactTreeOptions>,
-): BasicTree {
-  const { title, groups, pruning } = options;
-
-  let nodes = convertToTree(statsSlice);
-  nodes = applyGrouping(nodes, groups);
-
-  const prunedRoot = pruneTree(
-    { children: nodes },
-    {
-      ...DEFAULT_PRUNING_OPTIONS,
-      ...pruning,
-    },
-    true,
-  );
-
-  const prunedNodes = prunedRoot.children;
-
-  const totalBytes = prunedNodes.reduce((acc, node) => acc + node.bytes, 0);
-  const totalSources = prunedNodes.reduce((acc, node) => acc + node.sources, 0);
-
-  const root: BasicTreeNode = {
-    name: `🗂️ ${title}`,
-    values: {
-      size: formatBytes(totalBytes),
-      sources: `${totalSources} ${pluralize('source', totalSources)}`,
-    },
-    children: prunedNodes.map(node =>
-      formatSelectionAsTree(node, pruning.pathLength),
-    ),
-  };
-
-  return { root };
 }

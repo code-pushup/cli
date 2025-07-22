@@ -1,25 +1,24 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { SelectionOptions } from '../../types.js';
+import type { SelectionOptions } from '../../../types.js';
 import type {
   UnifiedStats,
   UnifiedStatsBundle,
-} from '../unify/unified-stats.types.js';
-import { compilePattern as sharedCompilePattern } from './details/utils/match-pattern.js';
+} from '../../unify/unified-stats.types.js';
+import { compilePattern as sharedCompilePattern } from '../details/utils/grouping-engine.js';
 import {
   type IncludeEntryPoints,
   type IncludeImports,
   type IncludeInputs,
   type IncludeOutputs,
   type SelectionConfig,
-  clearSelectionCaches,
   compileSelectionPatterns,
+  evaluatePatternCriteria,
   getImportPaths,
   getInputPaths,
   importsMatchPatterns,
   inputsMatchPatterns,
   isBundleSelected,
   normalizeSelectionOptions,
-  pathsMatch,
   selectBundles,
 } from './selection.js';
 
@@ -91,27 +90,29 @@ describe('Type Definitions', () => {
 // CORE PATTERN MATCHING TESTS
 // =============================================================================
 
-describe('pathsMatch', () => {
+describe('evaluatePatternCriteria', () => {
   const createMatcher = (pattern: string) => (path: string) =>
     path.includes(pattern);
 
   it('should return true when no include or exclude patterns are provided', () => {
-    expect(pathsMatch(['src/main.js'], [], [])).toBe(true);
+    expect(evaluatePatternCriteria(['src/main.js'], [], [])).toBe(true);
   });
 
   it('should return true when paths match include patterns', () => {
-    expect(pathsMatch(['src/main.js'], [createMatcher('src')], [])).toBe(true);
+    expect(
+      evaluatePatternCriteria(['src/main.js'], [createMatcher('src')], []),
+    ).toBe(true);
   });
 
   it('should return false when no paths match include patterns', () => {
-    expect(pathsMatch(['dist/main.js'], [createMatcher('src')], [])).toBe(
-      false,
-    );
+    expect(
+      evaluatePatternCriteria(['dist/main.js'], [createMatcher('src')], []),
+    ).toBe(false);
   });
 
   it('should return false when paths match exclude patterns', () => {
     expect(
-      pathsMatch(
+      evaluatePatternCriteria(
         ['node_modules/react.js'],
         [],
         [createMatcher('node_modules')],
@@ -121,13 +122,17 @@ describe('pathsMatch', () => {
 
   it('should return true when no paths match exclude patterns', () => {
     expect(
-      pathsMatch(['src/main.js'], [], [createMatcher('node_modules')]),
+      evaluatePatternCriteria(
+        ['src/main.js'],
+        [],
+        [createMatcher('node_modules')],
+      ),
     ).toBe(true);
   });
 
   it('should return true when paths match include but not exclude patterns', () => {
     expect(
-      pathsMatch(
+      evaluatePatternCriteria(
         ['src/main.js'],
         [createMatcher('src')],
         [createMatcher('test')],
@@ -137,7 +142,7 @@ describe('pathsMatch', () => {
 
   it('should return false when paths match both include and exclude patterns', () => {
     expect(
-      pathsMatch(
+      evaluatePatternCriteria(
         ['src/test/main.js'],
         [createMatcher('src')],
         [createMatcher('test')],
@@ -147,7 +152,7 @@ describe('pathsMatch', () => {
 
   it('should return false when paths match exclude even if they match include', () => {
     expect(
-      pathsMatch(
+      evaluatePatternCriteria(
         ['main.backup.js'],
         [createMatcher('main')],
         [createMatcher('backup')],
@@ -157,13 +162,17 @@ describe('pathsMatch', () => {
 
   it('should handle multiple paths with include patterns', () => {
     expect(
-      pathsMatch(['dist/main.js', 'src/utils.js'], [createMatcher('src')], []),
+      evaluatePatternCriteria(
+        ['dist/main.js', 'src/utils.js'],
+        [createMatcher('src')],
+        [],
+      ),
     ).toBe(true);
   });
 
   it('should handle multiple paths with exclude patterns', () => {
     expect(
-      pathsMatch(
+      evaluatePatternCriteria(
         ['src/main.js', 'node_modules/react.js'],
         [],
         [createMatcher('node_modules')],
@@ -172,15 +181,17 @@ describe('pathsMatch', () => {
   });
 
   it('should return false with empty paths array and include patterns', () => {
-    expect(pathsMatch([], [createMatcher('src')], [])).toBe(false);
+    expect(evaluatePatternCriteria([], [createMatcher('src')], [])).toBe(false);
   });
 
   it('should return true with empty paths array and exclude patterns', () => {
-    expect(pathsMatch([], [], [createMatcher('node_modules')])).toBe(true);
+    expect(
+      evaluatePatternCriteria([], [], [createMatcher('node_modules')]),
+    ).toBe(true);
   });
 
   it('should return true with empty paths array and no patterns', () => {
-    expect(pathsMatch([], [], [])).toBe(true);
+    expect(evaluatePatternCriteria([], [], [])).toBe(true);
   });
 });
 
@@ -458,10 +469,6 @@ describe('isBundleSelected', () => {
 // =============================================================================
 
 describe('sharedCompilePattern', () => {
-  beforeEach(() => {
-    clearSelectionCaches();
-  });
-
   it('should compile glob pattern and return matcher function', () => {
     const matcher = sharedCompilePattern('src/**/*.js', {
       normalizeRelativePaths: true,
@@ -490,18 +497,21 @@ describe('sharedCompilePattern', () => {
     ).toBe(false);
   });
 
-  it('should return cached matcher for same pattern', () => {
-    expect(
-      sharedCompilePattern('src/**', { normalizeRelativePaths: true }),
-    ).toBe(sharedCompilePattern('src/**', { normalizeRelativePaths: true }));
+  it('should create equivalent matchers for same pattern', () => {
+    const matcher1 = sharedCompilePattern('src/**', {
+      normalizeRelativePaths: true,
+    });
+    const matcher2 = sharedCompilePattern('src/**', {
+      normalizeRelativePaths: true,
+    });
+
+    // Both matchers should work the same way
+    expect(matcher1('src/main.js')).toBe(matcher2('src/main.js'));
+    expect(matcher1('dist/main.js')).toBe(matcher2('dist/main.js'));
   });
 });
 
 describe('compileSelectionPatterns', () => {
-  beforeEach(() => {
-    clearSelectionCaches();
-  });
-
   it('should return object with correct structure for all pattern types', () => {
     const result = compileSelectionPatterns({
       includeOutputs: ['dist/**/*.js'],

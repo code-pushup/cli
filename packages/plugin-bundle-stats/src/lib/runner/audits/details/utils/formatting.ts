@@ -4,7 +4,7 @@ import {
   findSegmentIndex,
   normalizePathForMatching,
   splitPathSegments,
-} from './match-pattern';
+} from './grouping-engine';
 
 export function removeFileExtension(name: string): string {
   return name.replace(/\.(js|ts|jsx|tsx|css|scss|json)$/, '');
@@ -58,23 +58,32 @@ export function cleanupGroupName(groupName: string): string {
       : `@${scopedPackage.scope}`;
   }
 
-  if (groupName.includes('node_modules/')) {
-    const parts = groupName.split('node_modules/');
-    const packagePart = parts[1];
-    if (packagePart) {
-      const nodeModulesScoped = extractScopedPackage(packagePart);
-      if (nodeModulesScoped) {
-        return nodeModulesScoped.package
-          ? `${nodeModulesScoped.scope}/${nodeModulesScoped.package}`
-          : nodeModulesScoped.scope;
-      }
-      const packageName = splitPathSegments(packagePart)[0];
-      return packageName || groupName;
+  const segments = splitPathSegments(groupName);
+  if (segments.length === 0) return groupName;
+
+  // For scoped packages, try to extract the scope and package
+  for (let i = 0; i < segments.length; i++) {
+    const segment = segments[i];
+    if (!segment) continue;
+
+    // Handle scoped packages like @angular/router
+    if (segment.startsWith('@') && i + 1 < segments.length) {
+      const scopeName = segment.slice(1);
+      const packageName = segments[i + 1];
+      return packageName ? `@${scopeName}/${packageName}` : `@${scopeName}`;
     }
   }
 
-  const withoutExt = removeFileExtension(groupName);
+  // Extract the last meaningful segment (the actual package/folder name)
+  for (let i = segments.length - 1; i >= 0; i--) {
+    const segment = segments[i];
+    if (!segment || isGenericName(segment)) continue;
 
+    // Return the first meaningful segment we find from the end
+    return segment;
+  }
+
+  const withoutExt = removeFileExtension(groupName);
   if (isGenericName(withoutExt)) {
     return groupName;
   }
