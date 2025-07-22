@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module';
-import type { PluginConfig } from '@code-pushup/models';
+import type { Audit, PluginConfig } from '@code-pushup/models';
 import { BUNDLE_STATS_PLUGIN_SLUG } from './constants.js';
 import { normalizeBundleStatsOptions } from './normalize.js';
 import { bundleStatsRunner } from './runner/bundle-stats-runner.js';
@@ -11,9 +11,9 @@ const PKG = createRequire(import.meta.url)('../../package.json');
 export async function bundleStatsPlugin(
   options: PluginOptions,
 ): Promise<PluginConfig> {
-  const { groups = [], audits, artefactTree, ...restOptions } = options;
+  const { groups = [], audits, ...restOptions } = options;
 
-  const runnerConfigs: BundleStatsConfig[] = audits.map(
+  const auditConfigs: BundleStatsConfig[] = audits.map(
     normalizeBundleStatsOptions,
   );
 
@@ -25,12 +25,18 @@ export async function bundleStatsPlugin(
     icon: 'folder-rules',
     description: 'Official Code PushUp Bundle Stats plugin.',
     docsUrl: 'https://npm.im/@code-pushup/bundle-stats-plugin',
-    audits: runnerConfigs,
+    audits: auditConfigs.map(
+      ({ slug, description, title, ..._ }) =>
+        ({
+          slug,
+          title,
+          description,
+        }) satisfies Audit,
+    ),
     groups: groups ?? [],
     runner: await bundleStatsRunner({
       ...restOptions,
-      audits: runnerConfigs,
-      artefactTree,
+      audits: auditConfigs,
     }),
   };
 }

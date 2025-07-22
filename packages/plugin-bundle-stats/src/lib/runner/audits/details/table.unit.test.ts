@@ -1,47 +1,170 @@
 import { describe, expect, it } from 'vitest';
-import type { GroupingRule } from '../../types.js';
-import type { UnifiedStats } from '../../unify/unified-stats.types.js';
-import { aggregateAndSortGroups } from './table.js';
+import { aggregateAndSortGroups, formatGroupsAsTable } from './table.js';
 
 describe('aggregateAndSortGroups', () => {
-  it('should correctly aggregate, group, and sort stats', () => {
-    const stats: UnifiedStats = {
-      'dist/main.js': {
-        path: 'dist/main.js',
-        bytes: 1000,
-        inputs: {
-          'src/ui/button.ts': { bytes: 800 }, // matches ui pattern
+  it('should count input files once across groups', () => {
+    expect(
+      aggregateAndSortGroups(
+        {
+          'dist/app.js': {
+            path: 'dist/app.js',
+            bytes: 18000,
+            inputs: {
+              'src/feature-1.ts': { bytes: 8000 },
+              'src/feature-2.ts': { bytes: 10000 },
+            },
+          },
         },
-        // remaining 200 bytes will match dist/*.js pattern
-      },
-      'dist/chunks/vendor.js': {
-        path: 'dist/chunks/vendor.js',
-        bytes: 2000,
-        inputs: {
-          'node_modules/react/index.js': { bytes: 2000 }, // matches react pattern
-        },
-        // no remaining bytes
-      },
-      'dist/other.js': {
-        path: 'dist/other.js',
-        bytes: 500,
-        // no inputs, all 500 bytes remain unmatched (rest group)
-      },
-    };
-
-    const insights: GroupingRule[] = [
-      { title: 'ui', patterns: ['**/ui/**'] },
-      { title: 'react', patterns: ['**/react/**'], icon: '📦' },
-      { title: 'Source', patterns: ['dist/*.js'], icon: '📄' },
-    ];
-
-    expect(aggregateAndSortGroups(stats, insights)).toStrictEqual({
+        [
+          {
+            title: 'Feature *',
+            patterns: ['**/feature-*.ts'],
+          },
+          {
+            title: 'Feature 2',
+            patterns: ['**/feature-2.ts'],
+          },
+        ],
+      ),
+    ).toStrictEqual({
       groups: [
-        { title: 'react', icon: '📦', totalBytes: 2000 },
-        { title: 'ui', icon: undefined, totalBytes: 800 },
-        { title: 'main', icon: '📄', totalBytes: 200 },
+        { title: 'Feature 2', totalBytes: 10000, icon: undefined },
+        { title: 'Feature *', totalBytes: 8000, icon: undefined },
       ],
-      restGroup: { totalBytes: 500, title: 'Rest' },
+      restGroup: { title: 'Rest', totalBytes: 0 },
+    });
+  });
+
+  it('should include output file bytes when output path matches pattern', () => {
+    expect(
+      aggregateAndSortGroups(
+        {
+          'dist/feature-2.js': {
+            path: 'dist/feature-2.js',
+            bytes: 12000,
+            inputs: {
+              'src/feature-2.ts': { bytes: 10000 },
+            },
+          },
+        },
+        [
+          {
+            title: 'Feature 2',
+            patterns: ['**/feature-2.js'],
+          },
+        ],
+      ),
+    ).toStrictEqual({
+      groups: [{ title: 'Feature 2', totalBytes: 12000, icon: undefined }],
+      restGroup: { title: 'Rest', totalBytes: 0 },
+    });
+  });
+
+  it('should assign unmatched bytes to Rest group', () => {
+    expect(
+      aggregateAndSortGroups(
+        {
+          'dist/app.js': {
+            path: 'dist/app.js',
+            bytes: 20000,
+            inputs: {
+              'src/feature-1.ts': { bytes: 8000 },
+              'src/feature-2.ts': { bytes: 8000 },
+            },
+          },
+        },
+        [
+          {
+            title: 'Feature 2',
+            patterns: ['**/feature-2.ts'],
+          },
+        ],
+      ),
+    ).toStrictEqual({
+      groups: [{ title: 'Feature 2', totalBytes: 8000, icon: undefined }],
+      restGroup: { title: 'Rest', totalBytes: 12000 },
+    });
+  });
+
+  it('should include bundler overhead in Rest group', () => {
+    expect(
+      aggregateAndSortGroups(
+        {
+          'dist/feature-2.js': {
+            path: 'dist/feature-2.js',
+            bytes: 12000,
+            inputs: {
+              'src/feature-2.ts': { bytes: 10000 },
+            },
+          },
+        },
+        [
+          {
+            title: 'Feature 2',
+            patterns: ['**/feature-2.ts'],
+          },
+        ],
+      ),
+    ).toStrictEqual({
+      groups: [{ title: 'Feature 2', totalBytes: 12000, icon: undefined }],
+      restGroup: { title: 'Rest', totalBytes: 0 },
+    });
+  });
+
+  it('should format bytes in human readable format', () => {
+    expect(
+      aggregateAndSortGroups(
+        {
+          'dist/app.js': {
+            path: 'dist/app.js',
+            bytes: 10100,
+            inputs: {
+              'src/feature.ts': { bytes: 8100 },
+            },
+          },
+        },
+        [
+          {
+            title: 'Feature',
+            patterns: ['**/feature.ts'],
+          },
+        ],
+      ),
+    ).toStrictEqual({
+      groups: [{ title: 'Feature', totalBytes: 8100, icon: undefined }],
+      restGroup: { title: 'Rest', totalBytes: 2000 },
+    });
+  });
+});
+
+describe('formatGroupsAsTable', () => {
+  it('should add icon to group title', () => {
+    expect(
+      formatGroupsAsTable({
+        groups: [{ title: 'Feature', totalBytes: 10000, icon: '📁' }],
+        restGroup: { title: 'Rest', totalBytes: 0 },
+      }),
+    ).toStrictEqual({
+      columns: [
+        { key: 'group', label: 'Group', align: 'left' },
+        { key: 'size', label: 'Size', align: 'center' },
+      ],
+      rows: [{ group: '📁 Feature', size: '9.77 kB' }],
+    });
+  });
+
+  it('should auto-detect group title from patterns', () => {
+    expect(
+      formatGroupsAsTable({
+        groups: [{ title: 'feature-*', totalBytes: 10000 }],
+        restGroup: { title: 'Rest', totalBytes: 0 },
+      }),
+    ).toStrictEqual({
+      columns: [
+        { key: 'group', label: 'Group', align: 'left' },
+        { key: 'size', label: 'Size', align: 'center' },
+      ],
+      rows: [{ group: 'feature-*', size: '9.77 kB' }],
     });
   });
 });

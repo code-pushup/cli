@@ -1,10 +1,12 @@
 import type { AuditOutput } from '@code-pushup/models';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
-import { DEFAULT_GROUPING, DEFAULT_PRUNING } from '../constants.js';
+import { BUNDLE_STATS_PLUGIN_SLUG, DEFAULT_GROUPING } from '../constants.js';
+import type { GlobalSelectionOptions, SelectionOptions } from '../types.js';
 import { generateAuditOutputs } from './audits/audit-outputs.js';
 import type { InsightsConfig } from './audits/details/table.js';
+import { DEFAULT_PRUNING_OPTIONS } from './audits/details/tree.js';
 import type { ArtefactTreeOptions } from './audits/details/tree.js';
-import { DEFAULT_PENALTY, type ScoringConfig } from './audits/scoring.js';
+import { DEFAULT_PENALTY, type ScoringConfig } from './audits/utils/scoring.js';
 import type { BundleStatsConfig, SupportedBundlers } from './types.js';
 import type { UnifiedStats } from './unify/unified-stats.types.js';
 import { unifyBundlerStats as unifyEsbuildStats } from './unify/unify.esbuild.js';
@@ -24,8 +26,9 @@ export type PluginArtefactOptions = {
 export interface BundleStatsRunnerOptions extends PluginArtefactOptions {
   audits: BundleStatsConfig[];
   scoring?: Pick<ScoringConfig, 'penalty'>;
-  artefactTree?: ArtefactTreeOptions;
+  artefactTree?: ArtefactTreeOptions | false;
   insights?: InsightsConfig;
+  selection?: GlobalSelectionOptions;
 }
 
 /**
@@ -127,6 +130,8 @@ export async function bundleStatsRunner(
     artefactTree,
     scoring,
     bundler,
+    insights,
+    selection,
   } = opts;
 
   return async () => {
@@ -152,6 +157,8 @@ export async function bundleStatsRunner(
     const unifiedBundleStats = unifyBundlerStats(stats);
 
     const mergedAuditConfigs = mergeAuditConfigs(audits, {
+      insights,
+      selection,
       scoring,
       artefactTree,
     });
@@ -165,42 +172,83 @@ export function mergeAuditConfigs(
   configs: BundleStatsConfig[],
   options: Pick<
     BundleStatsRunnerOptions,
-    'scoring' | 'artefactTree' | 'insights'
+    'scoring' | 'artefactTree' | 'insights' | 'selection'
   >,
 ): BundleStatsConfig[] {
   return configs.map(config => {
-    const mergedArtefactTree: ArtefactTreeOptions | undefined =
-      options.artefactTree || config.artefactTree
-        ? {
-            groups: [
-              // Only include default grouping if no explicit groups are provided
-              ...(config.artefactTree?.groups?.length ||
-              options.artefactTree?.groups?.length
-                ? []
-                : DEFAULT_GROUPING),
-              ...(config.artefactTree?.groups ?? []),
-              ...(options.artefactTree?.groups ?? []),
-            ],
-            pruning: {
-              ...DEFAULT_PRUNING,
-              ...(options.artefactTree?.pruning ?? {}),
-              ...(config.artefactTree?.pruning ?? {}),
-            },
-          }
-        : undefined;
+    // Handle artefactTree merging with proper support for false values
+    let mergedArtefactTree: ArtefactTreeOptions | false | undefined;
+
+    if (config.artefactTree === false || options.artefactTree === false) {
+      // If either is explicitly false, disable the tree
+      mergedArtefactTree = false;
+    } else if (options.artefactTree || config.artefactTree) {
+      // If either has tree options, merge them
+      mergedArtefactTree = {
+        groups: [
+          ...(config.artefactTree?.groups ?? []),
+          ...(options.artefactTree?.groups ?? []),
+        ],
+        pruning: {
+          ...DEFAULT_PRUNING_OPTIONS,
+          ...(options.artefactTree?.pruning ?? {}),
+          ...(config.artefactTree?.pruning ?? {}),
+        },
+      };
+    } else {
+      // If both are undefined, leave as undefined
+      mergedArtefactTree = undefined;
+    }
 
     return {
       ...config,
+      selection: {
+        ...config.selection,
+        excludeOutputs: [
+          ...(config.selection?.excludeOutputs ?? []),
+          ...(options.selection?.['excludeOutputs'] ?? []),
+        ],
+        excludeInputs: [
+          ...(config.selection?.excludeInputs ?? []),
+          ...(options.selection?.['excludeInputs'] ?? []),
+        ],
+        excludeImports: [
+          ...(config.selection?.excludeImports ?? []),
+          ...(options.selection?.['excludeImports'] ?? []),
+        ],
+        excludeEntryPoints: [
+          ...(config.selection?.excludeEntryPoints ?? []),
+          ...(options.selection?.['excludeEntryPoints'] ?? []),
+        ],
+      },
       scoring: {
         ...options.scoring,
         ...config.scoring,
-        penalty: {
-          ...DEFAULT_PENALTY,
-          ...options.scoring?.penalty,
-          ...config.scoring?.penalty,
-        },
+        ...(config.scoring?.penalty !== false
+          ? {
+              penalty: {
+                ...DEFAULT_PENALTY,
+                ...options.scoring?.penalty,
+                ...config.scoring?.penalty,
+                blacklist: [
+                  ...(config.scoring?.penalty?.blacklist ?? []),
+                  ...(options.scoring?.penalty !== false
+                    ? (options.scoring?.penalty?.blacklist ?? [])
+                    : []),
+                ],
+              },
+            }
+          : {}),
       },
       artefactTree: mergedArtefactTree,
+      ...(config.insights !== false
+        ? {
+            insights: [
+              ...(options.insights ?? []), // Plugin-level insights
+              ...(config.insights ?? []), // Audit-level insights (can override)
+            ],
+          }
+        : {}),
     };
   });
 }

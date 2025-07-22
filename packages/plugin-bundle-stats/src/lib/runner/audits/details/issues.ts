@@ -6,7 +6,14 @@ import type {
   UnifiedStats,
   UnifiedStatsBundle,
 } from '../../unify/unified-stats.types.js';
-import { ISSUE_ICONS } from './constants.js';
+
+// ===== ISSUE ICONS =====
+
+export const ISSUE_ICONS = {
+  TOO_LARGE: '🔺',
+  TOO_SMALL: '🔻',
+  BLACKLIST: '🚫',
+} as const;
 
 export type PenaltyConfig = {
   artefactSize?: [number, number];

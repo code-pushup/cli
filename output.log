@@ -1,0 +1,513 @@
+
+> nx run plugin-bundle-stats:code-pushup-large-angular
+
+> node packages/cli/src/index.ts --no-progress --verbose collect --config packages/plugin-bundle-stats/code-pushup.large-angular.config.ts
+
+[1mCode PushUp CLI[22m
+[ [34minfo[39m ] [90mRun collect...[39m
+[DEBUG] Checking node: node_modules/ngx-lottie/fesm2022/ngx-lottie.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/ngx-lottie/fesm2022/ngx-lottie.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/@angular/platform-browser/fesm2022/animations/async.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/@angular/platform-browser/fesm2022/animations/async.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/@ngrx/effects/fesm2022/ngrx-effects.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/@ngrx/effects/fesm2022/ngrx-effects.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/ngx-scrollbar/fesm2022/ngx-scrollbar-smooth-scroll.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/ngx-scrollbar/fesm2022/ngx-scrollbar-smooth-scroll.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/@ngrx/store/fesm2022/ngrx-store.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/@ngrx/store/fesm2022/ngrx-store.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/@angular/cdk/fesm2022/platform.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/@angular/cdk/fesm2022/platform.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/@angular/platform-browser/fesm2022/dom_renderer-DGKzginR.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/@angular/platform-browser/fesm2022/dom_renderer-DGKzginR.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/@angular/common/fesm2022/module-BHk9jdTn.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/@angular/common/fesm2022/module-BHk9jdTn.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/@angular/core/fesm2022/rxjs-interop.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/@angular/core/fesm2022/rxjs-interop.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/@angular/cdk/fesm2022/layout.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/@angular/cdk/fesm2022/layout.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/@angular/router/fesm2022/router-B-Y85L0c.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/@angular/router/fesm2022/router-B-Y85L0c.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/ngx-float-ui/fesm2022/ngx-float-ui.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/ngx-float-ui/fesm2022/ngx-float-ui.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/@angular/animations/fesm2022/animations.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/@angular/animations/fesm2022/animations.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/ngx-toastr/fesm2022/ngx-toastr.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/ngx-toastr/fesm2022/ngx-toastr.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/@angular/cdk/fesm2022/portal-directives-7cf40471.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/@angular/cdk/fesm2022/portal-directives-7cf40471.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/@angular/material/fesm2022/common-module-43c0ba57.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/@angular/material/fesm2022/common-module-43c0ba57.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/@angular/common/fesm2022/dom_tokens-rA0ACyx7.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/@angular/common/fesm2022/dom_tokens-rA0ACyx7.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/@angular/animations/fesm2022/private_export-CacKMzxJ.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/@angular/animations/fesm2022/private_export-CacKMzxJ.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: node_modules/@angular/core/fesm2022/untracked-BKcld_ew.mjs
+[DEBUG] Node matched rule: {
+  nodeName: [32m'node_modules/@angular/core/fesm2022/untracked-BKcld_ew.mjs'[39m,
+  ruleTitle: [90mundefined[39m,
+  ruleIcon: [32m'📦'[39m,
+  rulePatterns: [ [32m'**/node_modules/**'[39m, [32m'**/node_modules/@*/**/*'[39m ]
+}
+[DEBUG] Checking node: styles-GC5K4Y2I.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-GC5K4Y2I.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-5FPDHVLB.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-5FPDHVLB.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-ZZ2HIR7I.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-ZZ2HIR7I.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-NUGKORHS.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-NUGKORHS.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-GZ4EHY7J.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-GZ4EHY7J.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-Z43PANIN.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-Z43PANIN.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-BZVNFXIU.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-BZVNFXIU.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-QLHNKCO4.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-QLHNKCO4.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-YIWKPZ56.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-YIWKPZ56.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-SKSHP56Z.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-SKSHP56Z.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-CSTILRWM.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-CSTILRWM.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-3EEL5CAD.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-3EEL5CAD.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-ABGLVWDW.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-ABGLVWDW.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-PE45PLON.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-PE45PLON.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-ZSK5DWSH.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-ZSK5DWSH.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-NQBS37XC.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-NQBS37XC.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-E25WI4JT.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-E25WI4JT.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-K74U5MNC.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-K74U5MNC.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-4VZAGG6L.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-4VZAGG6L.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-ZRXRXH4J.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-ZRXRXH4J.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-Z73NCB27.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-Z73NCB27.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-QYX4TOTU.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-QYX4TOTU.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-YVNONLBJ.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-YVNONLBJ.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-G2NHWYV3.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-G2NHWYV3.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-CWSKCRML.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-CWSKCRML.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-VV6P5CCV.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-VV6P5CCV.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-72Q3UEZO.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-72Q3UEZO.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-G43FGKUQ.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-G43FGKUQ.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-WO2GUION.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-WO2GUION.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-3TBEBQSZ.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-3TBEBQSZ.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-QLXT53HQ.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-QLXT53HQ.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-VHWOE7I3.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-VHWOE7I3.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-AXDDHPZ4.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-AXDDHPZ4.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-RH2YPOUA.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-RH2YPOUA.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-BVMEFQ5G.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-BVMEFQ5G.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-WTNIMYTR.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-WTNIMYTR.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-NISR47UW.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-NISR47UW.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-YEP4OQWR.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-YEP4OQWR.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-EWF4MP6C.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-EWF4MP6C.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-NXNFIZQR.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-NXNFIZQR.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-FM6QPR4W.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-FM6QPR4W.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-I4LYXQ4U.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-I4LYXQ4U.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-LX7L5XNB.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-LX7L5XNB.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-7TCR37T6.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-7TCR37T6.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-OWSSRFYP.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-OWSSRFYP.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-4LJL2L42.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-4LJL2L42.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-DBLT6GGW.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-DBLT6GGW.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-QWZT5OTV.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-QWZT5OTV.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[DEBUG] Checking node: styles-FM74W74X.css
+[DEBUG] Node matched rule: {
+  nodeName: [32m'styles-FM74W74X.css'[39m,
+  ruleTitle: [32m'Styles'[39m,
+  ruleIcon: [32m'🎨'[39m,
+  rulePatterns: [ [32m'**/styles-*.css'[39m ]
+}
+[1mCode PushUp Report[22m - @code-pushup/core@0.69.2
+
+
+[1m[95mBundle Stats audits[39m[22m
+
+[32m●[39m Initial Bundle Size                                       [96m1.4 MB (77 files)[39m
+
+Made with ❤ by code-pushup.dev
+
+[ [32msuccess[39m ] Generated reports successfully: 
+[ [32msuccess[39m ] - [1m.code-pushup/report.json[22m ([90m53.34 kB[39m)
+[ [32msuccess[39m ] - [1m.code-pushup/report.md[22m ([90m17.47 kB[39m)
+[ [32msuccess[39m ] Collecting report successful!
+[ [34minfo[39m ] [90m💡 Configure categories to see the scores in an overview table. See: [4m[94mhttps://github.com/code-pushup/cli/blob/main/packages/cli/README.md[90m[24m[39m
+[2m╭[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m╮[22m
+[2m│[22m                                                                                            [2m│[22m
+[2m│[22m    [1m[90m💡 Visualize your reports[39m[22m                                                               [2m│[22m
+[2m│[22m                                                                                            [2m│[22m
+[2m│[22m    [90m❯[39m npx code-pushup upload - [90mRun upload to upload the created report to the server[39m        [2m│[22m
+[2m│[22m      [4m[94mhttps://github.com/code-pushup/cli/tree/main/packages/cli#upload-command[39m[24m              [2m│[22m
+[2m│[22m    [90m❯[39m npx code-pushup autorun - [90mRun collect & upload[39m                                        [2m│[22m
+[2m│[22m      [4m[94mhttps://github.com/code-pushup/cli/tree/main/packages/cli#autorun-command[39m[24m             [2m│[22m
+[2m│[22m                                                                                            [2m│[22m
+[2m╰[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m─[22m[2m╯[22m
+
+
+
+ NX   Successfully ran target code-pushup-large-angular for project plugin-bundle-stats
+
+

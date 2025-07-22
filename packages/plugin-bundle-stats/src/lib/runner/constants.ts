@@ -8,17 +8,14 @@ export type { GroupingRule };
  */
 export const DEFAULT_GROUPING: GroupingRule[] = [
   {
-    title: 'Projects',
     patterns: ['projects/**/*'],
     icon: '📦',
   },
   {
-    title: 'Packages',
     patterns: ['packages/**/*'],
     icon: '📦',
   },
   {
-    title: 'Node Modules',
     patterns: ['**/node_modules/@*/**', '**/node_modules/**'],
     icon: '📦',
   },

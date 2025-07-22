@@ -1,4 +1,8 @@
 import { minimatch } from 'minimatch';
+import type { GroupingRule } from '../../../types.js';
+import { deriveGroupTitle } from './formatting';
+
+const DEFAULT_GROUP_NAME = 'Group';
 
 export type PatternMatcher = (path: string) => boolean;
 
@@ -7,22 +11,16 @@ export interface MatchOptions {
   normalizeRelativePaths?: boolean;
 }
 
-const patternCache = new Map<string, PatternMatcher>();
+export const patternCache = new Map<string, PatternMatcher>();
 
-// ===== CORE PATTERN MATCHING =====
+export function splitPathSegments(path: string): string[] {
+  return path.split('/').filter(part => part !== '');
+}
 
-/**
- * Normalizes path for pattern matching. Resolves relative segments for consistent glob matching.
- */
 export function normalizePathForMatching(path: string): string {
-  // Convert relative path segments to absolute-like paths for glob matching
   return path.replace(/\.\.\//g, '').replace(/^\/+/, '');
 }
 
-/**
- * Compiles pattern into cached matcher function. Avoids recompilation overhead.
- * Supports both normal and relative path matching with configurable options.
- */
 export function compilePattern(
   pattern: string,
   options: MatchOptions = {},
@@ -36,12 +34,10 @@ export function compilePattern(
   const matcher = (path: string) => {
     const minimatchOptions = options.matchBase ? { matchBase: true } : {};
 
-    // Try original path first
     if (minimatch(path, pattern, minimatchOptions)) {
       return true;
     }
 
-    // If normalizeRelativePaths is enabled, try normalized path
     if (options.normalizeRelativePaths) {
       const normalizedPath = normalizePathForMatching(path);
       return minimatch(normalizedPath, pattern, minimatchOptions);
@@ -54,9 +50,6 @@ export function compilePattern(
   return matcher;
 }
 
-/**
- * Checks if a path matches any of the given patterns. Uses configurable matching options.
- */
 export function matchesAnyPattern(
   path: string,
   patterns: readonly string[],
@@ -68,50 +61,66 @@ export function matchesAnyPattern(
   });
 }
 
-/**
- * Clears pattern cache. Prevents memory leaks in long-running processes.
- */
 export function clearPatternCache(): void {
   patternCache.clear();
 }
 
-// ===== PATTERN ANALYSIS UTILITIES =====
+/**
+ * Compiles multiple patterns into matcher functions. Avoids individual compilation overhead.
+ */
+export function compilePatterns(
+  patterns: string[],
+  options: MatchOptions = { normalizeRelativePaths: true },
+): PatternMatcher[] {
+  return patterns.map(pattern => compilePattern(pattern, options));
+}
 
 /**
- * Extracts concrete (non-wildcard) segments from a glob pattern.
- * Provides the meaningful parts of patterns for analysis.
+ * Evaluates paths against include/exclude patterns. Enables selective filtering with both allow and deny rules.
  */
+export function evaluatePathsWithIncludeExclude(
+  paths: string[],
+  includePatterns: PatternMatcher[],
+  excludePatterns: PatternMatcher[],
+): boolean {
+  if (paths.length === 0) {
+    return includePatterns.length === 0;
+  }
+
+  if (includePatterns.length === 0 && excludePatterns.length === 0) {
+    return true;
+  }
+
+  if (
+    excludePatterns.length > 0 &&
+    paths.some(path => excludePatterns.some(matcher => matcher(path)))
+  ) {
+    return false;
+  }
+
+  if (includePatterns.length === 0) {
+    return true;
+  }
+
+  return paths.some(path => includePatterns.some(matcher => matcher(path)));
+}
+
 export function extractConcreteSegments(pattern: string): string[] {
-  return pattern
-    .split('/')
-    .filter(
-      segment =>
-        segment &&
-        segment !== '**' &&
-        segment !== '*' &&
-        !segment.includes('*'),
-    );
+  return splitPathSegments(pattern).filter(
+    segment => segment !== '**' && segment !== '*' && !segment.includes('*'),
+  );
 }
 
-/**
- * Finds the index of a concrete segment within a file path.
- * Enables pattern-based path analysis for grouping purposes.
- */
 export function findSegmentIndex(filePath: string, segment: string): number {
-  const pathParts = filePath.split('/').filter(part => part !== '');
-  return pathParts.findIndex(part => part === segment);
+  return splitPathSegments(filePath).findIndex(part => part === segment);
 }
 
-/**
- * Extracts a subsection of a path between start and end indices.
- * Provides controlled path slicing for grouping operations.
- */
 export function extractPathSlice(
   filePath: string,
   startIndex: number,
   maxDepth?: number,
 ): string {
-  const pathParts = filePath.split('/').filter(part => part !== '');
+  const pathParts = splitPathSegments(filePath);
   const endIndex = maxDepth
     ? Math.min(startIndex + maxDepth, pathParts.length)
     : pathParts.length;
@@ -119,31 +128,31 @@ export function extractPathSlice(
   return pathParts.slice(startIndex, endIndex).join('/');
 }
 
-/**
- * Extracts the most meaningful part from a file path.
- * Handles extension removal and fallback logic for generic names.
- */
-export function extractMeaningfulPathPart(path: string): string | null {
-  const parts = path.split('/').filter(part => part && part !== '.');
-
-  if (parts.length === 0) return null;
-
-  // Try last part first
-  const lastPart = parts[parts.length - 1];
-  if (lastPart) {
-    const withoutExt = lastPart.replace(/\.(js|ts|jsx|tsx|css|scss)$/, '');
-    if (withoutExt && withoutExt !== 'index') {
-      return withoutExt;
+export function findMatchingRule(
+  filePath: string,
+  rules: GroupingRule[],
+  options: MatchOptions = { matchBase: true, normalizeRelativePaths: true },
+): GroupingRule | null {
+  for (const rule of rules) {
+    if (matchesAnyPattern(filePath, rule.patterns, options)) {
+      return rule;
     }
   }
-
-  // If last part is generic (like 'index'), try second-to-last
-  if (parts.length > 1) {
-    const secondLast = parts[parts.length - 2];
-    if (secondLast) {
-      return secondLast;
-    }
-  }
-
   return null;
+}
+
+export function generateGroupKey(
+  filePath: string,
+  rule: GroupingRule,
+  preferRuleTitle = false,
+): string {
+  if (preferRuleTitle && rule.title) {
+    return rule.title;
+  }
+
+  return deriveGroupTitle(
+    filePath,
+    rule.patterns,
+    rule.title || DEFAULT_GROUP_NAME,
+  );
 }

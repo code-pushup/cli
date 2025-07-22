@@ -27,8 +27,10 @@ export function filterUnifiedTreeByConfigSingle(
   for (const [path, stats] of Object.entries(bundleStats)) {
     const included =
       includePatterns.length === 0 ||
-      includePatterns.some(pattern => minimatch(path, pattern));
-    const excluded = excludePatterns.some(pattern => minimatch(path, pattern));
+      includePatterns.some((pattern: string) => minimatch(path, pattern));
+    const excluded = excludePatterns.some((pattern: string) =>
+      minimatch(path, pattern),
+    );
 
     if (included && !excluded) {
       filteredStats[path] = stats;

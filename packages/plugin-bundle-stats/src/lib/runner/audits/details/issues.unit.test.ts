@@ -179,23 +179,22 @@ describe('getIssues', () => {
   });
 
   it('should process multiple outputs and return issues', () => {
-    const result = getIssues(
-      {
-        'a.js': { path: 'a.js', bytes: 1 },
-        'b.js': { path: 'b.js', bytes: 2 },
-      },
-      {
-        title: 'Test',
-        slug: 'test',
-        selection: { includeOutputs: ['**/*.js'] },
-        scoring: {
-          totalSize: [0, 1000],
-          penalty: { blacklist: ['a*'] },
+    expect(
+      getIssues(
+        {
+          'a.js': { path: 'a.js', bytes: 1 },
+          'b.js': { path: 'b.js', bytes: 2 },
         },
-      } as any,
-    );
-
-    expect(result).toHaveLength(1);
-    expect(result[0]).toEqual(expect.objectContaining({ severity: 'error' }));
+        {
+          title: 'Test',
+          slug: 'test',
+          selection: { includeOutputs: ['**/*.js'] },
+          scoring: {
+            totalSize: [0, 1000],
+            penalty: { blacklist: ['a*'] },
+          },
+        } as any,
+      ),
+    ).toStrictEqual([expect.objectContaining({ severity: 'error' })]);
   });
 });

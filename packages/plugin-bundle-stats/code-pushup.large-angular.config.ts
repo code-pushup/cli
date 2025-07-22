@@ -1,6 +1,31 @@
-import bundleStatsPlugin from './src';
+import bundleStatsPlugin, { type GroupingRule } from './src';
 
-const groups = [
+const nodeModulesGroup: GroupingRule[] = [
+  // General node_modules group (processed second due to reverse order)
+  { patterns: ['**/node_modules/**', '**/node_modules/@*/**/*'], icon: '📦' },
+  // Angular-specific group (processed first due to reverse order, takes precedence)
+  {
+    patterns: [
+      '**/node_modules/@angular/**',
+      '**/node_modules/ngx-*/**',
+      '**/node_modules/@ngrx/**',
+      '**/node_modules/ng-*/**',
+      '**/node_modules/*angular*',
+    ],
+    icon: '🅰️',
+    maxDepth: 3,
+  },
+];
+
+const generalGroups: GroupingRule[] = [
+  {
+    // auto derived title from result
+    patterns: ['**/packages/**'],
+    icon: '📁',
+  },
+];
+
+const productGroups: GroupingRule[] = [
   {
     title: 'Payments Package',
     patterns: ['**/packages/payments/**'],
@@ -57,11 +82,6 @@ const groups = [
     title: 'Host App Package',
     patterns: ['**/packages/host-app/**'],
     icon: '🏠',
-  },
-  {
-    title: 'Test Web App Package',
-    patterns: ['**/packages/testweb-app/**'],
-    icon: '🧪',
   },
   {
     title: 'Theme Park Package',
@@ -153,111 +173,142 @@ const groups = [
     patterns: ['**/packages/dev-kit/**'],
     icon: '🛠️',
   },
+];
+
+const badGroups: GroupingRule[] = [
+  {
+    title: 'Test Web App Package',
+    patterns: ['**/packages/testweb-app/**'],
+  },
+  // 🚨 CRITICAL: Files that shouldn't be in production - these are important findings!
+  {
+    title: '🚨 Test Files in Production',
+    patterns: [
+      '**/node_modules/**/*.test.js',
+      '**/node_modules/**/*.spec.js',
+      '**/node_modules/**/test/**',
+      '**/node_modules/**/tests/**',
+      '**/node_modules/**/__tests__/**',
+    ],
+  },
+  {
+    title: '📚 Documentation in Bundle',
+    patterns: [
+      '**/node_modules/**/demo/**',
+      '**/node_modules/**/examples/**',
+      '**/node_modules/**/docs/**',
+      '**/node_modules/**/*.md',
+      '**/node_modules/**/README*',
+      '**/node_modules/**/CHANGELOG*',
+      '**/node_modules/**/LICENSE*',
+    ],
+    icon: '📄',
+  },
+  {
+    title: '🛠️ Dev Tools in Production',
+    patterns: [
+      '**/node_modules/**/webpack.config.js',
+      '**/node_modules/**/rollup.config.js',
+      '**/node_modules/**/jest.config.js',
+      '**/node_modules/**/.eslintrc*',
+      '**/node_modules/**/.babelrc*',
+      '**/node_modules/**/tsconfig*.json',
+    ],
+    icon: '🔧',
+  },
   {
     title: 'E2E Test Framework Package',
     patterns: ['**/packages/e2e-test-framework/**'],
     icon: '🧪',
   },
-  {
-    title: 'Packages',
-    patterns: ['**/packages/**'],
-    icon: '📦',
-  },
-  { title: 'Node Modules', patterns: ['**/node_modules/**'], icon: '📦' },
-];
+].map(group => ({
+  ...group,
+  icon: '⚠️',
+}));
 
 const config = {
   plugins: [
     await bundleStatsPlugin({
       bundler: 'esbuild',
       artefactsPath:
-        './packages/plugin-bundle-stats/mocks/fixtures/angular-large/dist/angular-large/stats.json',
+        './packages/plugin-bundle-stats/mocks/fixtures/stats/angular-large.stats.json',
+      selection: {
+        excludeOutputs: ['**/*.map'], // Only exclude source maps as they're not part of runtime bundle
+      },
+      scoring: {
+        penalty: {
+          // Penalty for individual files that are too large
+          // This highlights large files without hiding them
+          artefactSize: [0, 3000000], // 0-3MB range - penalty for files > 3MB
+          blacklist: [],
+        },
+      },
+      insights: [
+        ...productGroups,
+        ...badGroups,
+        ...generalGroups,
+        ...nodeModulesGroup,
+      ],
+      artefactTree: {
+        groups: [
+          ...productGroups,
+          ...badGroups,
+          ...generalGroups,
+          ...nodeModulesGroup,
+        ],
+        pruning: {
+          maxDepth: 5,
+          minSize: 1_000, // Reduced from 50_000 to show smaller files (1KB threshold)
+        },
+      },
       audits: [
-        {
-          title: 'all',
+        /*  {
+          title: 'All Files',
+          description: 'All files in the bundle',
           selection: {
-            includeOutputs: ['**/*'],
-            excludeOutputs: ['**/*.map'], // Only exclude source maps as they're not part of runtime bundle
+            includeOutputs: ['**\/*'],
           },
           scoring: {
             // Main bundle size threshold - warn when total exceeds 80MB
             totalSize: 80000000, // 80MB in bytes
-            penalty: {
-              // Penalty for individual files that are too large
-              // This highlights large files without hiding them
-              artefactSize: [0, 3000000], // 0-3MB range - penalty for files > 3MB
-
-              // NO BLACKLIST - we want to see everything, especially problematic files
-              blacklist: [],
-            },
           },
-          insights: [
-            // 🚨 CRITICAL: Files that shouldn't be in production - these are important findings!
-            {
-              title: '🚨 Test Files in Production',
-              patterns: [
-                '**/node_modules/**/*.test.js',
-                '**/node_modules/**/*.spec.js',
-                '**/node_modules/**/test/**',
-                '**/node_modules/**/tests/**',
-                '**/node_modules/**/__tests__/**',
-              ],
-              icon: '⚠️',
-            },
-            {
-              title: '📚 Documentation in Bundle',
-              patterns: [
-                '**/node_modules/**/demo/**',
-                '**/node_modules/**/examples/**',
-                '**/node_modules/**/docs/**',
-                '**/node_modules/**/*.md',
-                '**/node_modules/**/README*',
-                '**/node_modules/**/CHANGELOG*',
-                '**/node_modules/**/LICENSE*',
-              ],
-              icon: '📄',
-            },
-            {
-              title: '🛠️ Dev Tools in Production',
-              patterns: [
-                '**/node_modules/**/webpack.config.js',
-                '**/node_modules/**/rollup.config.js',
-                '**/node_modules/**/jest.config.js',
-                '**/node_modules/**/.eslintrc*',
-                '**/node_modules/**/.babelrc*',
-                '**/node_modules/**/tsconfig*.json',
-              ],
-              icon: '🔧',
-            },
-            ...groups,
-          ],
           artefactTree: {
-            groups: [...groups],
             pruning: {
+              pathLength: 100,
               maxChildren: 20,
               maxDepth: 3,
-              minSize: 50_000,
             },
           },
-        },
+        },*/
         // Initial bundle size audit
         {
           title: 'Initial Bundle Size',
           slug: 'initial-bundle-size',
+          description:
+            'Initial bundle size audit for main and polyfills bundles',
           selection: {
             includeOutputs: [
-              '**/main.*.js',
-              '**/polyfill.*.js',
-              '**/styles.*.css',
+              '**/main-*.js',
+              '**/polyfill-*.js',
+              '**/styles-*.css',
             ],
-            excludeOutputs: ['**/*.map'],
           },
           scoring: {
-            totalSize: 80000000,
-            penalty: {
-              artefactSize: [0, 3000000],
-              blacklist: [],
-            },
+            totalSize: 80_000_000,
+          },
+          artefactTree: {
+            groups: [
+              {
+                title: 'Styles',
+                patterns: ['**/styles-*.css'],
+                icon: '🎨', // Add icon for styles group
+                maxDepth: 2, // Enable intermediate folder creation for nested sources
+              },
+              ...generalGroups,
+              ...nodeModulesGroup,
+              ...badGroups,
+              ...productGroups, // Process product groups first for better specificity (last in array = first processed)
+            ],
           },
         },
       ],

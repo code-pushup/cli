@@ -1,8 +1,8 @@
 import type { Audit } from '@code-pushup/models';
 import type { InsightsConfig } from './audits/details/table.js';
 import type { ArtefactTreeOptions } from './audits/details/tree.js';
-import type { ScoringConfig } from './audits/scoring.js';
-import type { SelectionConfig } from './audits/selection';
+import type { ScoringConfig } from './audits/utils/scoring.js';
+import type { SelectionConfig } from './audits/utils/selection.js';
 
 export type SupportedBundlers = 'esbuild' | 'webpack' | 'vite' | 'rsbuild';
 
@@ -17,16 +17,19 @@ type AuditConfig = Pick<Audit, 'title' | 'slug'> &
 export type BundleStatsConfig = AuditConfig & {
   selection: SelectionConfig;
   scoring: ScoringConfig;
-  artefactTree?: ArtefactTreeOptions;
-  insights?: InsightsConfig;
+  artefactTree?: ArtefactTreeOptions | false;
+  insights?: InsightsConfig | false;
 };
 
-export interface GroupingRule {
+export type LogicalGroupingRule = {
   title?: string;
   patterns: PatternList;
   icon?: string;
+};
+
+export type GroupingRule = LogicalGroupingRule & {
   maxDepth?: number;
-}
+};
 
 export interface MinimalBundleStats {
   name: string;

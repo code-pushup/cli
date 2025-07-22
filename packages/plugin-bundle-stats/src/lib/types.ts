@@ -1,7 +1,7 @@
 import type { Group } from '@code-pushup/models';
 import type { PenaltyConfig } from './runner/audits/details/issues.js';
-import type { ScoringConfig } from './runner/audits/scoring.js';
-import type { SelectionConfig } from './runner/audits/selection.js';
+import type { ScoringConfig } from './runner/audits/utils/scoring.js';
+import type { SelectionConfig } from './runner/audits/utils/selection.js';
 import type { BundleStatsRunnerOptions } from './runner/bundle-stats-runner.js';
 import type { BundleStatsConfig, MinMax } from './runner/types.js';
 
@@ -30,9 +30,13 @@ export type SelectionOptions = Partial<SelectionConfig> & {
     | { includeEntryPoints: string[] }
   );
 
-export type BundleStatsOptions = Omit<BundleStatsConfig, 'slug' | 'scoring'> & {
+export type BundleStatsOptions = Omit<
+  BundleStatsConfig,
+  'slug' | 'scoring' | 'selection'
+> & {
   slug?: string;
   scoring: ScoringOptions;
+  selection: SelectionOptions;
 };
 
 export type PluginOptions = Omit<
@@ -42,4 +46,12 @@ export type PluginOptions = Omit<
   audits: BundleStatsOptions[];
   groups?: Group[];
   artefactsPath: string;
+  selection: GlobalSelectionOptions;
 };
+
+export type GlobalSelectionOptions = Partial<
+  Omit<
+    SelectionConfig,
+    'include' | 'includeInputs' | 'includeImports' | 'includeEntryPoints'
+  >
+>;

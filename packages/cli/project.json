@@ -11,7 +11,8 @@
         "outputPath": "dist/packages/cli",
         "main": "packages/cli/src/index.ts",
         "tsConfig": "packages/cli/tsconfig.lib.json",
-        "assets": ["packages/cli/*.md"]
+        "assets": ["packages/cli/*.md"],
+        "stats": true
       }
     },
     "lint": {

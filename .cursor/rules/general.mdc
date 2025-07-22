@@ -3,6 +3,9 @@ description:
 globs: 
 alwaysApply: true
 ---
+# ALWAYS FOLLOW
+- DO not add coments
+
 
 ## JSDoc Documentation Pattern
 

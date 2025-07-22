@@ -1,20 +1,18 @@
-import type { AuditDetails, AuditOutput, Issue } from '@code-pushup/models';
+import type { AuditOutput } from '@code-pushup/models';
 import type { BundleStatsConfig } from '../types.js';
 import type { UnifiedStats } from '../unify/unified-stats.types.js';
 import { createDisplayValue } from '../utils.js';
 import { createEmptyAudit } from '../utils.js';
-import { DEFAULT_PRUNING_OPTIONS } from './details/constants.js';
+import { createAuditOutputDetails } from './details/audit-details.js';
 import { getIssues } from './details/issues.js';
-import { createInsightsTable } from './details/table.js';
-import { createTree } from './details/tree.js';
-import { createBundleStatsScoring } from './scoring.js';
-import { selectBundles } from './selection.js';
+import { createBundleStatsScoring } from './utils/scoring.js';
+import { selectBundles } from './utils/selection.js';
 
 /**
  * Calculates total bytes from unified stats tree. Aggregates byte counts across all artefacts.
  */
-export function calculateTotalBytes(filteredTree: UnifiedStats): number {
-  return Object.values(filteredTree).reduce((acc, curr) => acc + curr.bytes, 0);
+export function calculateTotalBytes(statsSlice: UnifiedStats): number {
+  return Object.values(statsSlice).reduce((acc, curr) => acc + curr.bytes, 0);
 }
 
 /**
@@ -40,35 +38,6 @@ export function createAuditOutput(
     displayValue: createDisplayValue(totalBytes, trees.length),
     details: createAuditOutputDetails(issues, statsSlice, config),
   };
-}
-
-export function createAuditOutputDetails(
-  issues: Issue[],
-  statsSlice: UnifiedStats,
-  config: BundleStatsConfig,
-): AuditDetails {
-  const details: AuditDetails = {
-    issues,
-  };
-
-  if (config.insights && config.insights.length > 0) {
-    details.table = createInsightsTable(statsSlice, config.insights);
-  }
-
-  if (config.artefactTree) {
-    details.trees = [
-      createTree(statsSlice, {
-        title: config.slug,
-        pruning: {
-          ...DEFAULT_PRUNING_OPTIONS,
-          ...config.artefactTree.pruning,
-        },
-        groups: config.artefactTree.groups ?? [],
-      }),
-    ];
-  }
-
-  return details;
 }
 
 /**
