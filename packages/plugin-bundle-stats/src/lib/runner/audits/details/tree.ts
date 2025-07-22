@@ -1,12 +1,12 @@
+import type { BasicTree, BasicTreeNode } from '@code-pushup/models';
 import { formatBytes, truncateText } from '@code-pushup/utils';
 import type { GroupingRule } from '../../types';
 import type { UnifiedStats } from '../../unify/unified-stats.types';
 import {
   type StatsTreeNode,
   applyGrouping as applyGroupingAndSort,
-  getFileIcon,
-} from './utils/grouping-engine';
-import type { ArtefactType, StatsNodeValues } from './utils/types';
+} from './grouping';
+import type { StatsNodeValues } from './types';
 
 /**
  * Helper type that transforms picked properties by adding "Display" suffix and making them strings.
@@ -19,16 +19,14 @@ export type AddDisplaySuffix<T> = {
  * Display values for StatsTreeNode with formatted strings.
  */
 export type StatsTreeNodeDisplayValues = AddDisplaySuffix<
-  Pick<StatsNodeValues, 'bytes' | 'sources' | 'path'>
+  Pick<StatsNodeValues, 'bytes' | 'modules' | 'path'>
 >;
 
-export type FormattedStatsTreeNode = Omit<
-  StatsTreeNode,
-  'values' | 'children'
-> &
-  Pick<StatsNodeValues, 'bytes' | 'sources' | 'path'> & {
-    children: FormattedStatsTreeNode[];
-  };
+export type FormattedStatsTreeNode = {
+  name: string;
+  values?: Record<string, string | number>;
+  children: FormattedStatsTreeNode[];
+};
 
 /**
  * Display tree structure for bundle statistics output.
@@ -46,6 +44,9 @@ export const DEFAULT_PRUNING_OPTIONS: Required<PruningOptions> = {
 } as const;
 
 export const DEFAULT_PATH_LENGTH = 40;
+
+// Simple performance optimization: single cache for formatted strings
+const STRING_FORMAT_CACHE = new Map<string, string>();
 
 export interface ArtefactTreeOptions {
   groups?: GroupingRule[];
@@ -65,268 +66,317 @@ export interface PruneTreeNode {
 }
 
 /**
- * Converts statistics to tree structure. Creates initial tree nodes from unified statistics.
+ * Converts statistics to tree structure. Streamlined for speed.
  */
 export function convertStatsToTree(stats: UnifiedStats): StatsTreeNode[] {
   const artifacts = Object.values(stats);
+  const result: StatsTreeNode[] = [];
 
-  // Process all artifacts in a single pass using reduce
-  const { entryFiles, externalImports } = artifacts.reduce(
-    (acc, artefact) => {
-      const isEntry = Boolean(artefact.entryPoint);
+  for (const artefact of artifacts) {
+    const isEntry = Boolean(artefact.entryPoint);
+    let inputNodes: StatsTreeNode[] = [];
 
-      // Create input nodes using map instead of for loop
-      const inputNodes = artefact.inputs
-        ? Object.entries(artefact.inputs).map(([path, input]) => ({
+    if (artefact.inputs) {
+      const validInputs: StatsTreeNode[] = [];
+
+      for (const [path, input] of Object.entries(artefact.inputs)) {
+        if (input.bytes > 0) {
+          validInputs.push({
             name: path,
             values: {
-              path: path,
+              path,
               bytes: input.bytes,
-              sources: 1,
-              type: 'static-import' as const,
+              modules: 1,
+              type: 'static-import',
             },
             children: [],
-          }))
-        : [];
-
-      const artefactNode: StatsTreeNode = {
-        name: artefact.path,
-        values: {
-          path: artefact.path,
-          bytes: artefact.bytes,
-          sources: 1 + inputNodes.length,
-          type: isEntry ? 'entry-file' : 'static-import',
-        },
-        children: inputNodes,
-      };
-
-      // Add to appropriate array based on entry type
-      if (isEntry) {
-        acc.entryFiles.push(artefactNode);
-      } else {
-        acc.externalImports.push(artefactNode);
+          });
+        }
       }
 
-      return acc;
-    },
-    {
-      entryFiles: [] as StatsTreeNode[],
-      externalImports: [] as StatsTreeNode[],
-    },
-  );
+      if (validInputs.length > 1) {
+        validInputs.sort((a, b) => b.values.bytes - a.values.bytes);
+      }
+      inputNodes = validInputs;
+    }
 
-  return [...entryFiles, ...externalImports];
+    result.push({
+      name: artefact.path,
+      values: {
+        path: artefact.path,
+        bytes: artefact.bytes,
+        modules: inputNodes.length,
+        type: isEntry ? 'entry-file' : 'static-import',
+      },
+      children: inputNodes,
+    });
+  }
+
+  if (result.length > 1) {
+    result.sort((a, b) => b.values.bytes - a.values.bytes);
+  }
+
+  return result;
 }
 
 /**
- * Formats tree nodes for display with icons and truncated names. Handles intelligent icon assignment.
+ * Fast string formatting with simple caching.
  */
-export function formatStatsTree(
+function formatNodeString(
+  name: string,
+  bytes: number,
+  modules: number,
+  icon: string,
+  maxChars: number,
+): string {
+  const cacheKey = `${name}|${bytes}|${modules}|${maxChars}`;
+  let cached = STRING_FORMAT_CACHE.get(cacheKey);
+
+  if (!cached) {
+    const truncatedName =
+      maxChars < name.length
+        ? truncateText(name, { maxChars, position: 'middle' })
+        : name;
+
+    const sizeDisplay =
+      bytes > 0
+        ? ` (${formatBytes(bytes)}${modules > 1 ? `, ${modules} modules` : ''})`
+        : '';
+
+    cached = `${icon} ${truncatedName}${sizeDisplay}`;
+
+    // Simple cache size management
+    if (STRING_FORMAT_CACHE.size < 20000) {
+      STRING_FORMAT_CACHE.set(cacheKey, cached);
+    }
+  }
+
+  return cached;
+}
+
+/**
+ * Formats tree nodes with clean names and separate values for proper alignment.
+ */
+export function formatStatsTreeForDisplay(
   node: StatsTreeNode,
   pathLength: number | false = DEFAULT_PATH_LENGTH,
 ): FormattedStatsTreeNode {
-  let icon: string;
-
-  if (node.values.icon) {
-    // Use provided icon if available
-    icon = node.values.icon;
-  } else {
-    // Determine icon based on type and path
-    let artefactType: ArtefactType;
-
-    if (node.values.type === 'entry-file') {
-      artefactType = 'entry-file';
-    } else if (node.values.type === 'group') {
-      artefactType = 'group';
-    } else if (node.values.type === 'root') {
-      artefactType = 'root';
-    } else {
-      artefactType = 'static-import';
-    }
-
-    icon = getFileIcon(artefactType, node.values.path);
-  }
-
   const maxChars = pathLength !== false ? pathLength : DEFAULT_PATH_LENGTH;
-  const name = truncateText(node.name, { maxChars, position: 'middle' });
 
-  // Format bytes for display
-  const sizeDisplay =
-    node.values.bytes > 0
-      ? ` (${formatBytes(node.values.bytes)}${node.values.sources > 1 ? `, ${node.values.sources} sources` : ''})`
-      : '';
+  // Clean name truncation (no icons or size info)
+  const cleanName =
+    maxChars < node.name.length
+      ? truncateText(node.name, { maxChars, position: 'middle' })
+      : node.name;
 
-  const children: FormattedStatsTreeNode[] = [];
-  for (const child of node.children) {
-    children.push(formatStatsTree(child, pathLength));
+  // Fast icon resolution
+  let icon = node.values.icon;
+  if (!icon) {
+    switch (node.values.type) {
+      case 'entry-file':
+        icon = '📍';
+        break;
+      case 'group':
+        icon = '📁';
+        break;
+      case 'root':
+        icon = '🗂️';
+        break;
+      default:
+        icon = '📄';
+        break;
+    }
   }
+
+  // Recurse through children (keep it simple - recursion is fast in JS)
+  const children = node.children.map(child =>
+    formatStatsTreeForDisplay(child, pathLength),
+  );
 
   return {
-    name: `${icon} ${name}${sizeDisplay}`,
-    bytes: node.values.bytes,
-    sources: node.values.sources,
-    path: node.values.path,
+    name: `${icon} ${cleanName}`, // Clean name with just icon
+    values: {
+      size: formatBytes(node.values.bytes),
+      ...(node.values.modules > 1 && {
+        modules: `${node.values.modules} modules`,
+      }),
+    },
     children,
   };
 }
 
 /**
- * Creates artifact tree with grouping applied to inputs only. Groups source files and dependencies while preserving output structure.
+ * Converts FormattedStatsTreeNode to BasicTreeNode for proper ASCII display.
+ */
+function formattedStatsTreeNodeToBasicTreeNode(
+  node: FormattedStatsTreeNode,
+): BasicTreeNode {
+  return {
+    name: node.name,
+    ...(node.values && { values: node.values }),
+    ...(node.children.length > 0 && {
+      children: node.children.map(formattedStatsTreeNodeToBasicTreeNode),
+    }),
+  };
+}
+
+/**
+ * Creates artifact tree with focused optimizations.
  */
 export function createTree(
   statsSlice: UnifiedStats,
   options: { title: string } & Required<ArtefactTreeOptions>,
-): FormattedStatsTree {
+): BasicTree {
   const { title, groups, pruning } = options;
 
-  let nodes: StatsTreeNode[] = convertStatsToTree(statsSlice);
-
-  // Apply grouping only to inputs (children), not to outputs (top-level nodes)
-  if (groups && groups.length > 0) {
-    nodes = nodes.map(node => ({
-      ...node,
-      children: applyGroupingAndSort(node.children, groups),
-    }));
+  // Simple cache management
+  if (STRING_FORMAT_CACHE.size > 25000) {
+    STRING_FORMAT_CACHE.clear();
   }
 
+  let nodes = convertStatsToTree(statsSlice);
+
+  // Apply grouping if needed
+  if (groups?.length && nodes.length) {
+    for (const node of nodes) {
+      if (node.children.length > 0) {
+        node.children = applyGroupingAndSort(node.children, groups);
+      }
+    }
+  }
+
+  // Efficient pruning
   const prunedRoot = pruneTree(
     { children: nodes },
     {
       ...DEFAULT_PRUNING_OPTIONS,
       ...pruning,
     },
-    true,
   );
 
   const prunedNodes = prunedRoot.children;
 
-  const totalBytes = prunedNodes.reduce(
-    (acc, node) => acc + node.values.bytes,
-    0,
-  );
-  const totalSources = prunedNodes.reduce(
-    (acc, node) => acc + node.values.sources,
-    0,
+  // Calculate totals
+  let totalBytes = 0;
+  let totalModules = 0;
+  for (const node of prunedNodes) {
+    totalBytes += node.values.bytes;
+    totalModules += node.values.modules;
+  }
+
+  // Format nodes
+  const formattedChildren = prunedNodes.map(node =>
+    formatStatsTreeForDisplay(node, pruning.pathLength),
   );
 
-  const root: FormattedStatsTreeNode = {
+  const formattedRoot: FormattedStatsTreeNode = {
     name: `🗂️ ${title}`,
-    bytes: totalBytes,
-    sources: totalSources,
-    path: '',
-    children: prunedNodes.map(node =>
-      formatStatsTree(node, pruning.pathLength),
-    ),
+    values: {
+      'total size': formatBytes(totalBytes),
+      ...(totalModules > 1 && { 'total modules': totalModules }),
+      files: prunedNodes.length,
+    },
+    children: formattedChildren,
   };
 
-  return { root };
+  // Convert to BasicTree for proper ASCII display
+  const root = formattedStatsTreeNodeToBasicTreeNode(formattedRoot);
+
+  return {
+    type: 'basic',
+    title,
+    root,
+  };
 }
 
-/**
- * Prunes tree by filtering nodes and limiting children. Optimizes tree structure for display.
- */
-export function pruneTree(
-  node: PruneTreeNode,
+function pruneTree(
+  rootNode: PruneTreeNode,
   options: Required<PruningOptions>,
-  isAlreadySorted = false,
 ): PruneTreeNode {
   const { maxChildren, maxDepth, startDepth = 0, minSize } = options;
-  const { children } = node;
 
-  if (!isAlreadySorted) {
+  // Start from 1 so that maxDepth: 2 stops at package level, maxDepth: 3 shows individual files
+  return pruneTreeRecursive(rootNode, options, 1);
+}
+
+function pruneTreeRecursive(
+  node: PruneTreeNode,
+  options: Required<PruningOptions>,
+  currentDepth: number,
+): PruneTreeNode {
+  const { maxChildren, maxDepth, minSize } = options;
+
+  if (node.children.length === 0) {
+    return node;
+  }
+
+  // Sort children by size (largest first)
+  if (node.children.length > 1) {
     node.children.sort((a, b) => b.values.bytes - a.values.bytes);
   }
 
-  // Filter by minimum size (inlined from filterByMinSizeSinglePass)
-  const filteredChildren: StatsTreeNode[] = [];
-  const belowThreshold: StatsTreeNode[] = [];
+  // Apply maxChildren and minSize filtering at all levels within maxDepth
+  const keptChildren: StatsTreeNode[] = [];
+  const groupedChildren: StatsTreeNode[] = [];
 
   for (const child of node.children) {
     if (child.values.bytes >= minSize) {
-      filteredChildren.push(child);
-    } else {
-      belowThreshold.push(child);
-    }
-  }
+      // Recursively prune child's subtree if within maxDepth
+      const prunedChild =
+        currentDepth < maxDepth
+          ? pruneTreeRecursive(
+              { children: child.children },
+              options,
+              currentDepth + 1,
+            )
+          : { children: [] };
 
-  if (belowThreshold.length > 0) {
-    let aggregatedBytes = 0;
-    let aggregatedSources = 0;
-
-    for (const child of belowThreshold) {
-      aggregatedBytes += child.values.bytes;
-      aggregatedSources += child.values.sources;
-    }
-
-    const summaryNode: StatsTreeNode = {
-      name: `... ${belowThreshold.length} files more`,
-      values: {
-        path: '',
-        bytes: aggregatedBytes,
-        sources: aggregatedSources,
-        type: 'group',
-      },
-      children: [],
-    };
-
-    node.children = [...filteredChildren, summaryNode];
-  } else {
-    node.children = filteredChildren;
-  }
-
-  if (children.length > maxChildren) {
-    const keptChildren = children.slice(0, maxChildren);
-    const removedChildren = children.slice(maxChildren);
-
-    let remainingBytes = 0;
-    let remainingSources = 0;
-
-    for (const child of removedChildren) {
-      remainingBytes += child.values.bytes;
-      remainingSources += child.values.sources;
-    }
-
-    keptChildren.push({
-      name: `... ${removedChildren.length} more`,
-      values: {
-        path: '',
-        bytes: remainingBytes,
-        sources: remainingSources,
-        type: 'group',
-      },
-      children: [],
-    });
-
-    node.children = keptChildren;
-  }
-
-  const nextDepth = startDepth + 1;
-  if (nextDepth <= maxDepth) {
-    const prunedChildren: StatsTreeNode[] = [];
-
-    for (const child of node.children) {
-      const prunedChild = pruneTree(
-        { children: child.children },
-        {
-          maxChildren,
-          maxDepth,
-          startDepth: nextDepth,
-          minSize,
-          pathLength: options.pathLength,
-        },
-        true,
-      );
-      const updatedChild: StatsTreeNode = {
+      keptChildren.push({
         ...child,
         children: prunedChild.children,
-      };
-      prunedChildren.push(updatedChild);
+      });
+    } else {
+      // Collect small files for grouping
+      groupedChildren.push(child);
     }
-
-    node.children = prunedChildren;
-  } else {
-    node.children = [];
   }
 
-  return node;
+  // Apply maxChildren limit - move overflow to grouped items
+  let finalChildren = keptChildren;
+  if (keptChildren.length > maxChildren) {
+    const kept = keptChildren.slice(0, maxChildren);
+    const overflow = keptChildren.slice(maxChildren);
+
+    // Add overflow files to the grouped items
+    groupedChildren.push(...overflow);
+    finalChildren = kept;
+  }
+
+  // Create empty "..." group if we have items to represent
+  if (groupedChildren.length > 0) {
+    const totalBytes = groupedChildren.reduce(
+      (sum, child) => sum + child.values.bytes,
+      0,
+    );
+    const totalModules = groupedChildren.reduce(
+      (sum, child) => sum + child.values.modules,
+      0,
+    );
+
+    const moreNode = {
+      name: '...',
+      values: {
+        path: '',
+        bytes: totalBytes,
+        modules: totalModules,
+        type: 'group' as const,
+        icon: '📁',
+      },
+      children: [], // Empty - just represents the grouped items
+    };
+
+    finalChildren.push(moreNode);
+  }
+
+  return { children: finalChildren };
 }

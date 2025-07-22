@@ -7,105 +7,170 @@ import {
   createGroupManager,
   findOrCreateGroupFromRule,
   processForTable,
-} from './utils/grouping-engine.js';
+} from './grouping.js';
 
 const DEFAULT_GROUP_NAME = 'Group';
 const REST_GROUP_NAME = 'Rest';
 
+// Performance optimizations: Simple pattern cache only
+const PATTERN_MATCH_CACHE = new Map<
+  string,
+  { rule: GroupingRule | null; groupKey: string | null }
+>();
+
 export type InsightsConfig = GroupingRule[];
 
 /**
- * Simplified aggregation using direct functions. Simple table grouping without engine complexity.
+ * Simplified aggregation with algorithmic optimizations. Eliminates expensive nested operations and redundant pattern matching.
  */
 export function aggregateAndSortGroups(
   statsSlice: UnifiedStats,
   insights: InsightsConfig,
 ): { groups: GroupData[]; restGroup: { title: string; bytes: number } } {
   const groupingRules = insights || [];
-  const groupManager = createGroupManager<GroupData>();
 
-  // Pre-create groups
+  // Early exit optimization
+  if (groupingRules.length === 0) {
+    const totalBytes = Object.values(statsSlice).reduce(
+      (acc, { bytes }) => acc + bytes,
+      0,
+    );
+    return {
+      groups: [],
+      restGroup: { bytes: totalBytes, title: REST_GROUP_NAME },
+    };
+  }
+
+  const groupManager = createGroupManager<GroupData>();
+  PATTERN_MATCH_CACHE.clear();
+
+  // Pre-create all possible groups to avoid repeated lookups
+  const preCreatedGroups = new Map<string, GroupData>();
   for (const rule of groupingRules) {
     const effectiveTitle = rule.title || DEFAULT_GROUP_NAME;
-    findOrCreateGroupFromRule(
+    const group = findOrCreateGroupFromRule(
       groupManager,
       effectiveTitle,
       rule,
       effectiveTitle,
     );
+    preCreatedGroups.set(effectiveTitle, group);
   }
 
-  const remainingBytesInChunks: Record<string, number> = {};
+  let totalRestBytes = 0;
   const outputEntries = Object.entries(statsSlice);
 
-  for (const [key, { bytes }] of outputEntries) {
-    remainingBytesInChunks[key] = bytes;
+  // Single-pass processing: collect all inputs first, then process in batch
+  const inputsToProcess: Array<{
+    inputPath: string;
+    inputBytes: number;
+    outputKey: string;
+  }> = [];
+
+  for (const [outputKey, output] of outputEntries) {
+    totalRestBytes += output.bytes;
+
+    if (output.inputs) {
+      for (const [inputPath, input] of Object.entries(output.inputs)) {
+        if (input.bytes > 0) {
+          inputsToProcess.push({
+            inputPath,
+            inputBytes: input.bytes,
+            outputKey,
+          });
+        }
+      }
+    }
   }
 
-  // Process inputs with simple functions
-  for (const [outputKey, output] of outputEntries) {
-    if (!output.inputs) {
+  // Process all inputs in single optimized loop with early termination
+  const outputBytesConsumed = new Map<string, number>();
+  const processedInputs = new Set<string>(); // Track inputs that have been fully consumed
+
+  for (const { inputPath, inputBytes, outputKey } of inputsToProcess) {
+    // Skip inputs that have already been fully processed by a previous rule
+    if (processedInputs.has(inputPath)) {
       continue;
     }
 
-    const inputEntries = Object.entries(output.inputs);
-    for (const [inputPath, input] of inputEntries) {
-      if (input.bytes === 0) {
-        continue;
-      }
+    // Use cached pattern matching
+    let matchResult = PATTERN_MATCH_CACHE.get(inputPath);
+    if (!matchResult) {
+      matchResult = processForTable(inputPath, groupingRules, true);
+      PATTERN_MATCH_CACHE.set(inputPath, matchResult);
+    }
 
-      // Use simple function for rule matching and key generation
-      const { rule, groupKey } = processForTable(
-        inputPath,
-        groupingRules,
-        true,
-      );
-      if (rule && groupKey) {
-        const group = findOrCreateGroupFromRule(
+    const { rule, groupKey } = matchResult;
+    if (rule && groupKey) {
+      // Use pre-created group or create new
+      let group = preCreatedGroups.get(groupKey);
+      if (!group) {
+        group = findOrCreateGroupFromRule(
           groupManager,
           groupKey,
           rule,
           rule.title || groupKey,
         );
-
-        group.bytes += input.bytes;
-        remainingBytesInChunks[outputKey] =
-          (remainingBytesInChunks[outputKey] || 0) - input.bytes;
+        preCreatedGroups.set(groupKey, group);
       }
+
+      group.bytes += inputBytes;
+      group.modules += 1;
+
+      // Track consumed bytes per output
+      const consumed = outputBytesConsumed.get(outputKey) || 0;
+      outputBytesConsumed.set(outputKey, consumed + inputBytes);
+      totalRestBytes -= inputBytes;
+
+      // Mark input as fully processed - no need to check it against other patterns
+      processedInputs.add(inputPath);
     }
   }
 
-  // Process outputs with simple functions
-  for (const [outputKey] of outputEntries) {
-    const remainingBytes = remainingBytesInChunks[outputKey];
-    if (remainingBytes == null || remainingBytes <= 0) {
+  // Process remaining output bytes efficiently, skipping outputs with no remaining bytes
+  for (const [outputKey, output] of outputEntries) {
+    const consumedBytes = outputBytesConsumed.get(outputKey) || 0;
+    const remainingBytes = output.bytes - consumedBytes;
+
+    // Skip outputs that have been fully consumed by input processing
+    if (remainingBytes <= 0) {
       continue;
     }
 
-    const { rule, groupKey } = processForTable(outputKey, groupingRules, true);
-    if (rule && groupKey) {
-      const group = findOrCreateGroupFromRule(
-        groupManager,
-        groupKey,
-        rule,
-        rule.title || groupKey,
-      );
+    let matchResult = PATTERN_MATCH_CACHE.get(outputKey);
+    if (!matchResult) {
+      matchResult = processForTable(outputKey, groupingRules, true);
+      PATTERN_MATCH_CACHE.set(outputKey, matchResult);
+    }
 
+    const { rule, groupKey } = matchResult;
+    if (rule && groupKey) {
+      let group = preCreatedGroups.get(groupKey);
+      if (!group) {
+        group = findOrCreateGroupFromRule(
+          groupManager,
+          groupKey,
+          rule,
+          rule.title || groupKey,
+        );
+        preCreatedGroups.set(groupKey, group);
+      }
       group.bytes += remainingBytes;
-      remainingBytesInChunks[outputKey] = 0;
+      totalRestBytes -= remainingBytes;
     }
   }
 
   const restGroup = {
-    bytes: Object.values(remainingBytesInChunks).reduce(
-      (acc, bytes) => acc + bytes,
-      0,
-    ),
+    bytes: Math.max(0, totalRestBytes),
     title: REST_GROUP_NAME,
   };
 
   const groups = groupManager.getGroupsWithData();
-  groups.sort((a, b) => b.bytes - a.bytes);
+
+  // Optimized sorting - only sort if we have multiple groups
+  if (groups.length > 1) {
+    groups.sort((a, b) => b.bytes - a.bytes);
+  }
 
   return { groups, restGroup };
 }
@@ -123,7 +188,7 @@ export function createTable(
     if (group.bytes > 0) {
       rows.push({
         group: `${group.icon || '📁'} ${group.title}`,
-        modules: group.sources.toString(),
+        modules: group.modules.toString(),
         size: formatBytes(group.bytes),
       });
     }

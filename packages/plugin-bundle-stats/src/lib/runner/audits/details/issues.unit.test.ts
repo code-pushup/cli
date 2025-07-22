@@ -77,6 +77,18 @@ describe('checkBlacklistIssues', () => {
     ).toStrictEqual([expect.objectContaining({ severity: 'error' })]);
   });
 
+  it('should check output path itself for blacklist patterns with hint', () => {
+    const issues = checkBlacklistIssues('a.js', { path: 'a.js', bytes: 1 }, [
+      { pattern: 'a*', hint: 'Test hint message' },
+    ]);
+    expect(issues).toStrictEqual([
+      expect.objectContaining({
+        severity: 'error',
+        message: expect.stringContaining('Test hint message'),
+      }),
+    ]);
+  });
+
   it('should check entryPoint property for blacklist patterns', () => {
     expect(
       checkBlacklistIssues(

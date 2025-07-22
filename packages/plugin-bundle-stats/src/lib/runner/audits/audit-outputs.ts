@@ -5,8 +5,8 @@ import { createDisplayValue } from '../utils.js';
 import { createEmptyAudit } from '../utils.js';
 import { createAuditOutputDetails } from './details/audit-details.js';
 import { getIssues } from './details/issues.js';
-import { createBundleStatsScoring } from './utils/scoring.js';
-import { selectBundles } from './utils/selection.js';
+import { createBundleStatsScoring } from './scoring.js';
+import { selectBundles } from './selection.js';
 
 /**
  * Calculates total bytes from unified stats tree. Aggregates byte counts across all artefacts.
@@ -24,7 +24,10 @@ export function createAuditOutput(
 ): AuditOutput {
   const trees = Object.values(statsSlice);
   const totalBytes = calculateTotalBytes(statsSlice);
+
+  console.time('⚡ GET_ISSUES');
   const issues = getIssues(statsSlice, config);
+  console.timeEnd('⚡ GET_ISSUES');
 
   const calculateScore = createBundleStatsScoring({
     totalSize: config.scoring.totalSize,
@@ -48,12 +51,18 @@ export function generateAuditOutputs(
   configs: BundleStatsConfig[],
 ): AuditOutput[] {
   return configs.map(config => {
+    console.time(`🔍 SELECT_BUNDLES`);
     const filteredTree = selectBundles(bundleStatsTree, config.selection);
+    console.timeEnd(`🔍 SELECT_BUNDLES`);
 
     if (!filteredTree || Object.keys(filteredTree).length === 0) {
       return createEmptyAudit(config);
     }
 
-    return createAuditOutput(filteredTree, config);
+    console.time(`📝 CREATE_AUDIT_OUTPUT - ${config.slug}`);
+    const result = createAuditOutput(filteredTree, config);
+    console.timeEnd(`📝 CREATE_AUDIT_OUTPUT - ${config.slug}`);
+
+    return result;
   });
 }

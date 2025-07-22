@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { GroupingRule } from '../../types';
 import type { UnifiedStats } from '../../unify/unified-stats.types';
+import { applyGrouping } from './grouping';
 import { DEFAULT_PRUNING_OPTIONS, createTree, pruneTree } from './tree';
-import { applyGrouping } from './utils/grouping-engine';
 
 describe('applyGrouping', () => {
   it('should group inputs by single pattern', () => {
@@ -196,7 +196,7 @@ describe('applyGrouping', () => {
             children: [],
           },
         ],
-        [{ patterns: ['node_modules/**'], maxDepth: 2 }],
+        [{ patterns: ['node_modules/**'], numSegments: 2 }],
       ),
     ).toStrictEqual([
       {
@@ -410,7 +410,7 @@ describe('applyGrouping', () => {
             children: [],
           },
         ],
-        [{ patterns: ['packages/**'], maxDepth: 2 }],
+        [{ patterns: ['packages/**'], numSegments: 2 }],
       ),
     ).toStrictEqual([
       {

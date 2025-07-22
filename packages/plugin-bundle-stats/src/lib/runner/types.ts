@@ -1,14 +1,29 @@
 import type { Audit } from '@code-pushup/models';
 import type { InsightsConfig } from './audits/details/table.js';
 import type { ArtefactTreeOptions } from './audits/details/tree.js';
-import type { ScoringConfig } from './audits/utils/scoring.js';
-import type { SelectionConfig } from './audits/utils/selection.js';
+import type { ScoringConfig } from './audits/scoring.js';
+import type { SelectionConfig } from './audits/selection.js';
 
 export type SupportedBundlers = 'esbuild' | 'webpack' | 'vite' | 'rsbuild';
 
 export type MinMax = [number, number];
 
 export type PatternList = readonly string[];
+
+/**
+ * List of blacklist entries for penalty configuration
+ */
+export type BlacklistPatternList = readonly BlacklistEntry[];
+
+/**
+ * Blacklist entry that can be either a simple pattern string or an object with pattern and optional hint.
+ */
+export type BlacklistEntry =
+  | string
+  | {
+      pattern: string;
+      hint?: string;
+    };
 
 type AuditConfig = Pick<Audit, 'title' | 'slug'> &
   // @TODO this should be partial already
@@ -23,9 +38,9 @@ export type BundleStatsConfig = AuditConfig & {
 
 export type GroupingRule = {
   title?: string;
-  patterns: PatternList;
+  patterns: string | PatternList;
   icon?: string;
-  maxDepth?: number;
+  numSegments?: number;
 };
 
 export type LogicalGroupingRule = Omit<GroupingRule, 'maxDepth'> & {
@@ -56,12 +71,12 @@ export interface BundleStatsAuditData {
 
 export interface Grouping {
   title: string;
-  patterns: string[];
+  patterns: string | PatternList;
   icon?: string;
   maxDepth?: number;
 }
 
 export interface Insight {
-  pattern: string | string[];
+  pattern: string | PatternList;
   label: string;
 }

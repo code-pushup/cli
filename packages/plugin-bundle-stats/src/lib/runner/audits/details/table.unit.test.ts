@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import type { GroupData } from './grouping.js';
 import { aggregateAndSortGroups, createTable } from './table.js';
-import type { GroupData } from './utils/grouping-engine.js';
 
 describe('aggregateAndSortGroups', () => {
   it('should count input files once across groups', () => {

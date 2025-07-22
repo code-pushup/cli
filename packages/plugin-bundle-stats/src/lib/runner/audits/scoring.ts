@@ -1,6 +1,6 @@
 import type { Issue } from '@code-pushup/models';
-import type { MinMax } from '../../types.js';
-import type { PenaltyConfig } from '../details/issues.js';
+import type { MinMax } from '../types.js';
+import type { PenaltyConfig } from './details/issues.js';
 
 export type ScoringConfig = {
   totalSize: MinMax;

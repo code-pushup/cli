@@ -1,7 +1,7 @@
 import type { Group } from '@code-pushup/models';
 import type { PenaltyConfig } from './runner/audits/details/issues.js';
-import type { ScoringConfig } from './runner/audits/utils/scoring.js';
-import type { SelectionConfig } from './runner/audits/utils/selection.js';
+import type { ScoringConfig } from './runner/audits/scoring.js';
+import type { SelectionConfig } from './runner/audits/selection.js';
 import type { BundleStatsRunnerOptions } from './runner/bundle-stats-runner.js';
 import type { BundleStatsConfig, MinMax } from './runner/types.js';
 
@@ -15,8 +15,8 @@ export type ScoringOptions = Omit<ScoringConfig, 'totalSize' | 'penalty'> & {
 };
 
 /**
- * Selection options for bundle filtering. Extends SelectionConfig with global patterns and optional properties.
- * Requires at least one specific pattern type to be provided for filtering.
+ * Selection options for bundle filtering. Supports global patterns or specific pattern types.
+ * Can use only global include/exclude patterns or combine them with specific pattern types.
  */
 export type SelectionOptions = Partial<SelectionConfig> & {
   /** Global patterns applied to all include pattern types */
@@ -28,6 +28,8 @@ export type SelectionOptions = Partial<SelectionConfig> & {
     | { includeInputs: string[] }
     | { includeImports: string[] }
     | { includeEntryPoints: string[] }
+    | { include: string[] } // Allow using only global include patterns
+    | { exclude: string[] } // Allow using only global exclude patterns
   );
 
 export type BundleStatsOptions = Omit<

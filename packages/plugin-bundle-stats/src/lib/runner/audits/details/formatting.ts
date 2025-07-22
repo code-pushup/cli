@@ -4,7 +4,19 @@ import {
   findSegmentIndex,
   normalizePathForMatching,
   splitPathSegments,
-} from './grouping-engine';
+} from './grouping';
+
+// Regex cache to avoid recreating the same regex patterns
+const REGEX_CACHE = new Map<string, RegExp>();
+
+function getCachedRegex(pattern: string): RegExp {
+  const cached = REGEX_CACHE.get(pattern);
+  if (cached) return cached;
+
+  const regex = new RegExp(`${pattern}\\/([^\\/]+)`);
+  REGEX_CACHE.set(pattern, regex);
+  return regex;
+}
 
 export function removeFileExtension(name: string): string {
   return name.replace(/\.(js|ts|jsx|tsx|css|scss|json)$/, '');
@@ -113,7 +125,7 @@ export function extractGroupKeyFromPattern(
   }
 
   for (const segment of concreteSegments) {
-    const regex = new RegExp(`${segment}\/([^\/]+)`);
+    const regex = getCachedRegex(segment); // Use cached regex
     const match = filePath.match(regex) || normalizedPath.match(regex);
 
     if (match?.[1]) {

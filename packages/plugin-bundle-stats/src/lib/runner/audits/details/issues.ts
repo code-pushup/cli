@@ -1,11 +1,27 @@
 import { minimatch } from 'minimatch';
 import type { Issue } from '@code-pushup/models';
 import { formatBytes } from '@code-pushup/utils';
-import type { BundleStatsConfig } from '../../types.js';
+import type {
+  BlacklistEntry,
+  BlacklistPatternList,
+  BundleStatsConfig,
+} from '../../types.js';
 import type {
   UnifiedStats,
   UnifiedStatsBundle,
 } from '../../unify/unified-stats.types.js';
+
+// ===== PERFORMANCE OPTIMIZATIONS =====
+
+// Cache for blacklist pattern matches to avoid repeated minimatch calls
+const BLACKLIST_PATTERN_CACHE = new Map<string, boolean>();
+
+// Clear cache when it gets too large to prevent memory issues
+function clearCacheIfNeeded(): void {
+  if (BLACKLIST_PATTERN_CACHE.size > 50000) {
+    BLACKLIST_PATTERN_CACHE.clear();
+  }
+}
 
 // ===== ISSUE ICONS =====
 
@@ -19,19 +35,58 @@ export type PenaltyConfig = {
   artefactSize?: [number, number];
   warningWeight?: number;
   errorWeight?: number;
-  blacklist?: string[];
+  /**
+   * glob patterns when matching get penalised
+   * e.g. packagenames outdates, should be lazy loaded, etc.
+   * Can be simple strings or objects with pattern and optional hint
+   */
+  blacklist?: BlacklistPatternList;
 };
 
 /**
- * Checks if a path matches any of the given blacklist patterns. Enables pattern-based filtering for bundle security and optimization.
+ * Normalizes blacklist entry to extract pattern string and hint.
+ */
+function normalizeBlacklistEntry(entry: BlacklistEntry): {
+  pattern: string;
+  hint?: string;
+} {
+  if (typeof entry === 'string') {
+    return { pattern: entry };
+  }
+  return { pattern: entry.pattern, hint: entry.hint };
+}
+
+/**
+ * Optimized pattern matching with caching. Avoids repeated minimatch calls for same path-pattern pairs.
+ */
+function matchesPattern(path: string, pattern: string): boolean {
+  const cacheKey = `${path}|${pattern}`;
+
+  const cached = BLACKLIST_PATTERN_CACHE.get(cacheKey);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  const result = minimatch(path, pattern, { matchBase: true });
+  BLACKLIST_PATTERN_CACHE.set(cacheKey, result);
+
+  return result;
+}
+
+/**
+ * Checks if a path matches any of the given blacklist patterns. Enables pattern-based filtering with optimized caching.
  */
 function matchesBlacklistPattern(
   path: string,
-  patterns: string[],
-): string | null {
-  for (const pattern of patterns) {
-    if (minimatch(path, pattern, { matchBase: true })) {
-      return pattern;
+  patterns: BlacklistPatternList,
+): { pattern: string; hint?: string } | null {
+  // Clear cache periodically to prevent memory bloat
+  clearCacheIfNeeded();
+
+  for (const entry of patterns) {
+    const { pattern, hint } = normalizeBlacklistEntry(entry);
+    if (matchesPattern(path, pattern)) {
+      return { pattern, hint };
     }
   }
   return null;
@@ -91,25 +146,18 @@ export function createTooSmallIssue(
 
 /**
  * Creates error issue for blacklisted import pattern match. Enforces dependency restrictions for security and architectural compliance.
- *
- * @param importPath - Path that matched the blacklist pattern
- * @param outputPath - Output file containing the blacklisted import
- * @param pattern - Specific pattern that was matched
- * @returns Issue object with error severity and compliance requirement
- *
- * @example
- * ```js
- * createBlacklistedIssue('src/math.ts', 'bundle.js', '**\/math.*')
- * // Returns: { message: "🚫 `src/math.ts` matches blacklist pattern `**\/math.*`", severity: 'error', ... }
- * ```
  */
 export function createBlacklistedIssue(
   importPath: string,
   outputPath: string,
   pattern: string,
+  hint?: string,
 ): Issue {
+  const baseMessage = `${ISSUE_ICONS.BLACKLIST} \`${importPath}\` matches blacklist pattern \`${pattern}\``;
+  const message = hint ? `${baseMessage} - ${hint}` : baseMessage;
+
   return {
-    message: `${ISSUE_ICONS.BLACKLIST} \`${importPath}\` matches blacklist pattern \`${pattern}\``,
+    message,
     severity: 'error',
     source: { file: outputPath },
   };
@@ -160,13 +208,13 @@ export function checkSizeIssues(
  *
  * @param outputPath - Path to the output file being scanned
  * @param output - Output metadata containing inputs and imports
- * @param blacklistPatterns - Array of glob patterns to match against
+ * @param blacklistPatterns - Array of blacklist patterns (strings or objects with hints)
  * @returns Array of blacklist-related issues found
  */
 export function checkBlacklistIssues(
   outputPath: string,
   output: UnifiedStatsBundle,
-  blacklistPatterns: string[],
+  blacklistPatterns: BlacklistPatternList,
 ): Issue[] {
   const issues: Issue[] = [];
 
@@ -177,7 +225,12 @@ export function checkBlacklistIssues(
   );
   if (outputPathMatch) {
     issues.push(
-      createBlacklistedIssue(outputPath, outputPath, outputPathMatch),
+      createBlacklistedIssue(
+        outputPath,
+        outputPath,
+        outputPathMatch.pattern,
+        outputPathMatch.hint,
+      ),
     );
   }
 
@@ -189,7 +242,12 @@ export function checkBlacklistIssues(
     );
     if (entryPointMatch) {
       issues.push(
-        createBlacklistedIssue(output.entryPoint, outputPath, entryPointMatch),
+        createBlacklistedIssue(
+          output.entryPoint,
+          outputPath,
+          entryPointMatch.pattern,
+          entryPointMatch.hint,
+        ),
       );
     }
   }
@@ -203,7 +261,12 @@ export function checkBlacklistIssues(
       );
       if (matchedPattern) {
         issues.push(
-          createBlacklistedIssue(inputPath, outputPath, matchedPattern),
+          createBlacklistedIssue(
+            inputPath,
+            outputPath,
+            matchedPattern.pattern,
+            matchedPattern.hint,
+          ),
         );
       }
     }
@@ -221,7 +284,12 @@ export function checkBlacklistIssues(
       );
       if (importPathMatch) {
         issues.push(
-          createBlacklistedIssue(importInfo.path, outputPath, importPathMatch),
+          createBlacklistedIssue(
+            importInfo.path,
+            outputPath,
+            importPathMatch.pattern,
+            importPathMatch.hint,
+          ),
         );
       }
 
@@ -236,7 +304,8 @@ export function checkBlacklistIssues(
             createBlacklistedIssue(
               importInfo.original,
               outputPath,
-              originalMatch,
+              originalMatch.pattern,
+              originalMatch.hint,
             ),
           );
         }
@@ -258,6 +327,9 @@ export function getIssues(
   statsSlice: UnifiedStats,
   config: BundleStatsConfig,
 ): Issue[] {
+  // Clear cache at start of each audit run for clean state
+  BLACKLIST_PATTERN_CACHE.clear();
+
   const issues: Issue[] = [];
   const { penalty = false } = config.scoring || { penalty: false };
 
@@ -278,6 +350,12 @@ export function getIssues(
   const hasSizeThresholds =
     minArtifactSize !== undefined || maxArtifactSize !== undefined;
 
+  // Track unique blacklisted patterns per bundle to avoid duplicates
+  const blacklistedPatterns = new Map<
+    string,
+    { pattern: string; hint?: string; files: string[]; outputPath: string }
+  >();
+
   for (const outputPath in statsSlice) {
     const output = statsSlice[outputPath]!;
 
@@ -293,11 +371,151 @@ export function getIssues(
     }
 
     if (hasBlacklist) {
+      // Collect blacklisted patterns without creating issues yet
+      collectBlacklistedPatterns(
+        outputPath,
+        output,
+        blacklistPatterns,
+        blacklistedPatterns,
+      );
+    }
+  }
+
+  // Create unique issues for blacklisted patterns
+  for (const [
+    patternKey,
+    { pattern, hint, files, outputPath },
+  ] of blacklistedPatterns) {
+    if (files.length === 1) {
+      // Single file - show specific file name
+      issues.push(createBlacklistedIssue(files[0]!, outputPath, pattern, hint));
+    } else {
+      // Multiple files - show pattern summary
+      const summaryMessage = `Blacklisted modules matching \`${pattern}\` included in file`;
       issues.push(
-        ...checkBlacklistIssues(outputPath, output, blacklistPatterns),
+        createBlacklistedPatternIssue(
+          summaryMessage,
+          outputPath,
+          pattern,
+          hint,
+          files,
+        ),
       );
     }
   }
 
   return issues;
+}
+
+/**
+ * Creates error issue for multiple blacklisted files from same pattern. Consolidates multiple violations into single issue.
+ */
+export function createBlacklistedPatternIssue(
+  summaryMessage: string,
+  outputPath: string,
+  pattern: string,
+  hint?: string,
+  files?: string[],
+): Issue {
+  const baseMessage = `${ISSUE_ICONS.BLACKLIST} ${summaryMessage}`;
+  const message = hint ? `${baseMessage} - ${hint}` : baseMessage;
+
+  return {
+    message,
+    severity: 'error',
+    source: { file: outputPath },
+  };
+}
+
+/**
+ * Collects blacklisted patterns without creating duplicate issues. Groups by pattern per bundle.
+ */
+function collectBlacklistedPatterns(
+  outputPath: string,
+  output: UnifiedStatsBundle,
+  blacklistPatterns: BlacklistPatternList,
+  blacklistedPatterns: Map<
+    string,
+    { pattern: string; hint?: string; files: string[]; outputPath: string }
+  >,
+): void {
+  const addToPattern = (
+    filePath: string,
+    matchResult: { pattern: string; hint?: string },
+  ) => {
+    const patternKey = `${outputPath}:${matchResult.pattern}`;
+    if (!blacklistedPatterns.has(patternKey)) {
+      blacklistedPatterns.set(patternKey, {
+        pattern: matchResult.pattern,
+        hint: matchResult.hint,
+        files: [filePath],
+        outputPath: outputPath,
+      });
+    } else {
+      const existing = blacklistedPatterns.get(patternKey)!;
+      if (!existing.files.includes(filePath)) {
+        existing.files.push(filePath);
+      }
+    }
+  };
+
+  // 1. Check output path itself (object key in outputs section)
+  const outputPathMatch = matchesBlacklistPattern(
+    outputPath,
+    blacklistPatterns,
+  );
+  if (outputPathMatch) {
+    addToPattern(outputPath, outputPathMatch);
+  }
+
+  // 2. Check entryPoint property
+  if (output.entryPoint) {
+    const entryPointMatch = matchesBlacklistPattern(
+      output.entryPoint,
+      blacklistPatterns,
+    );
+    if (entryPointMatch) {
+      addToPattern(output.entryPoint, entryPointMatch);
+    }
+  }
+
+  // 3. Check input paths (object keys in inputs section)
+  if (output.inputs) {
+    for (const inputPath in output.inputs) {
+      const matchedPattern = matchesBlacklistPattern(
+        inputPath,
+        blacklistPatterns,
+      );
+      if (matchedPattern) {
+        addToPattern(inputPath, matchedPattern);
+      }
+    }
+  }
+
+  // 4. Check import paths and original import statements
+  if (output.imports) {
+    for (let i = 0; i < output.imports.length; i++) {
+      const importInfo = output.imports[i]!;
+
+      // Check resolved import path
+      const importPathMatch = matchesBlacklistPattern(
+        importInfo.path,
+        blacklistPatterns,
+      );
+      if (importPathMatch) {
+        addToPattern(importInfo.path, importPathMatch);
+      }
+
+      // Check original import statement (exact import as written in source code)
+      if (importInfo.original) {
+        const originalMatch = matchesBlacklistPattern(
+          importInfo.original,
+          blacklistPatterns,
+        );
+        if (originalMatch) {
+          addToPattern(importInfo.original, originalMatch);
+        }
+      }
+    }
+  }
 }

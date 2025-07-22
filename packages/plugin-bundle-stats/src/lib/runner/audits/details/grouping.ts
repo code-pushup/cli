@@ -1,5 +1,5 @@
 import { minimatch } from 'minimatch';
-import type { GroupingRule, LogicalGroupingRule } from '../../../types';
+import type { GroupingRule, LogicalGroupingRule } from '../../types';
 import {
   cleanupGroupName,
   deriveGroupTitle,
@@ -8,6 +8,9 @@ import {
 import type { ArtefactType, StatsNodeValues } from './types';
 
 export type PatternMatcher = (path: string) => boolean;
+
+// Pattern cache to avoid recompiling the same patterns
+const PATTERN_CACHE = new Map<string, PatternMatcher>();
 
 export interface MatchOptions {
   matchBase?: boolean;
@@ -60,6 +63,14 @@ export function compilePattern(
   pattern: string,
   options: MatchOptions = {},
 ): PatternMatcher {
+  // Create cache key from pattern and options
+  const cacheKey = `${pattern}|${JSON.stringify(options)}`;
+
+  // Return cached pattern if available
+  const cached = PATTERN_CACHE.get(cacheKey);
+  if (cached) return cached;
+
+  // Compile new pattern
   const matcher = (path: string) => {
     const minimatchOptions = options.matchBase ? { matchBase: true } : {};
     if (minimatch(path, pattern, minimatchOptions)) return true;
@@ -69,6 +80,9 @@ export function compilePattern(
     }
     return false;
   };
+
+  // Cache and return
+  PATTERN_CACHE.set(cacheKey, matcher);
   return matcher;
 }
 
@@ -77,17 +91,22 @@ export function matchesAnyPattern(
   patterns: readonly string[],
   options: MatchOptions = {},
 ): boolean {
-  return patterns.some(pattern => {
+  // Pre-compile all patterns (cached) and test path against all
+  for (const pattern of patterns) {
     const matcher = compilePattern(pattern, options);
-    return matcher(path);
-  });
+    if (matcher(path)) return true;
+  }
+  return false;
 }
 
+/**
+ * Finds first matching rule for path. Processes rules in forward order for top-down precedence.
+ */
 export function findMatchingRule(
   filePath: string,
   rules: GroupingRule[],
 ): GroupingRule | null {
-  for (let i = rules.length - 1; i >= 0; i--) {
+  for (let i = 0; i < rules.length; i++) {
     const rule = rules[i];
     if (
       rule &&
@@ -130,7 +149,7 @@ export function createGroupManager<T extends GroupData>(): GroupManager<T> {
         group = {
           title,
           bytes: 0,
-          sources: 0,
+          modules: 0,
           type: 'group',
           icon: rule.icon,
         } as T;
@@ -148,7 +167,7 @@ export function createGroupManager<T extends GroupData>(): GroupManager<T> {
 }
 
 export function toLogicalGroupingRule(rule: GroupingRule): LogicalGroupingRule {
-  const { maxDepth, ...rest } = rule;
+  const { numSegments: maxDepth, ...rest } = rule;
   return { ...rest, maxDepth: 1 };
 }
 
@@ -339,8 +358,8 @@ export function applyGrouping(
   let finalNodes = [...nodes];
   finalNodes.sort((a, b) => b.values.bytes - a.values.bytes);
 
-  for (const group of [...groups].reverse()) {
-    const { title, patterns, icon, maxDepth } = group;
+  for (const group of groups) {
+    const { title, patterns, icon, numSegments: maxDepth } = group;
     const nodesToGroup: StatsTreeNode[] = [];
     const remainingNodes: StatsTreeNode[] = [];
 
@@ -373,8 +392,8 @@ export function applyGrouping(
             (sum, node) => sum + node.values.bytes,
             0,
           );
-          const totalSources = nodesInGroup.reduce(
-            (sum, node) => sum + node.values.sources,
+          const totalModules = nodesInGroup.reduce(
+            (sum, node) => sum + node.values.modules,
             0,
           );
 
@@ -383,7 +402,7 @@ export function applyGrouping(
             values: {
               path: groupPath,
               bytes: totalBytes,
-              sources: totalSources,
+              modules: totalModules,
               type: 'group',
               icon: icon || ARTEFACT_TYPE_ICON_MAP['group'],
             },
@@ -410,8 +429,8 @@ export function applyGrouping(
           (sum, node) => sum + node.values.bytes,
           0,
         );
-        const totalSources = nodesToGroup.reduce(
-          (sum, node) => sum + node.values.sources,
+        const totalModules = nodesToGroup.reduce(
+          (sum, node) => sum + node.values.modules,
           0,
         );
 
@@ -420,7 +439,7 @@ export function applyGrouping(
           values: {
             path: '',
             bytes: totalBytes,
-            sources: totalSources,
+            modules: totalModules,
             type: 'group',
             icon,
           },

@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { SelectionOptions } from '../../../types.js';
+import type { SelectionOptions } from '../../types.js';
 import type {
   UnifiedStats,
   UnifiedStatsBundle,
-} from '../../unify/unified-stats.types.js';
-import { compilePattern as sharedCompilePattern } from '../details/utils/grouping-engine.js';
+} from '../unify/unified-stats.types.js';
+import { compilePattern } from './details/grouping.js';
 import {
   type IncludeEntryPoints,
   type IncludeImports,
@@ -468,9 +468,9 @@ describe('isBundleSelected', () => {
 // PATTERN COMPILATION TESTS
 // =============================================================================
 
-describe('sharedCompilePattern', () => {
+describe('compilePattern', () => {
   it('should compile glob pattern and return matcher function', () => {
-    const matcher = sharedCompilePattern('src/**/*.js', {
+    const matcher = compilePattern('src/**/*.js', {
       normalizeRelativePaths: true,
     });
     expect(typeof matcher).toBe('function');
@@ -480,9 +480,9 @@ describe('sharedCompilePattern', () => {
     ['src/**/*.js', 'src/main.js'],
     ['*.ts', 'main.ts'],
     ['!node_modules/**', 'src/main.js'],
-  ])('should match: sharedCompilePattern(%s)(%s)', (pattern, path) => {
+  ])('should match: compilePattern(%s)(%s)', (pattern, path) => {
     expect(
-      sharedCompilePattern(pattern, { normalizeRelativePaths: true })(path),
+      compilePattern(pattern, { normalizeRelativePaths: true })(path),
     ).toBe(true);
   });
 
@@ -491,17 +491,17 @@ describe('sharedCompilePattern', () => {
     ['*.ts', 'main.js'],
     ['*.ts', 'src/main.ts'],
     ['!node_modules/**', 'node_modules/react/index.js'],
-  ])('should not match: sharedCompilePattern(%s)(%s)', (pattern, path) => {
+  ])('should not match: compilePattern(%s)(%s)', (pattern, path) => {
     expect(
-      sharedCompilePattern(pattern, { normalizeRelativePaths: true })(path),
+      compilePattern(pattern, { normalizeRelativePaths: true })(path),
     ).toBe(false);
   });
 
   it('should create equivalent matchers for same pattern', () => {
-    const matcher1 = sharedCompilePattern('src/**', {
+    const matcher1 = compilePattern('src/**', {
       normalizeRelativePaths: true,
     });
-    const matcher2 = sharedCompilePattern('src/**', {
+    const matcher2 = compilePattern('src/**', {
       normalizeRelativePaths: true,
     });
 

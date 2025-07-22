@@ -6,7 +6,7 @@ import { generateAuditOutputs } from './audits/audit-outputs.js';
 import type { InsightsConfig } from './audits/details/table.js';
 import { DEFAULT_PRUNING_OPTIONS } from './audits/details/tree.js';
 import type { ArtefactTreeOptions } from './audits/details/tree.js';
-import { DEFAULT_PENALTY, type ScoringConfig } from './audits/utils/scoring.js';
+import { DEFAULT_PENALTY, type ScoringConfig } from './audits/scoring.js';
 import type { BundleStatsConfig, SupportedBundlers } from './types.js';
 import type { UnifiedStats } from './unify/unified-stats.types.js';
 import { unifyBundlerStats as unifyEsbuildStats } from './unify/unify.esbuild.js';

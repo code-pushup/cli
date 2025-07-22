@@ -102,9 +102,12 @@ describe('createAuditOutput', () => {
           scoring: {
             totalSize: [1000, 10000],
             penalty: {
-              errorWeight: 0.5,
-              warningWeight: 0.2,
-              blacklist: ['main.js'],
+              blacklist: [
+                {
+                  pattern: 'main.js',
+                  hint: 'Main bundle should be optimized for size',
+                },
+              ],
             },
           },
         },

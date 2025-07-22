@@ -1,8 +1,8 @@
 import type { Audit } from '@code-pushup/models';
 import { slugify } from '@code-pushup/utils';
 import { formatBytes } from '@code-pushup/utils';
-import type { ScoringConfig } from './runner/audits/utils/scoring.js';
-import { normalizeSelectionOptions } from './runner/audits/utils/selection.js';
+import type { ScoringConfig } from './runner/audits/scoring.js';
+import { normalizeSelectionOptions } from './runner/audits/selection.js';
 import type { BundleStatsConfig, MinMax } from './runner/types.js';
 import type { BundleStatsOptions } from './types.js';
 

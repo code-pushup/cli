@@ -18,10 +18,13 @@ export function createAuditOutputDetails(
   };
 
   if (config.insights && config.insights.length > 0) {
+    console.time('📊 CREATE_INSIGHTS_TABLE');
     details.table = createInsightsTable(statsSlice, config.insights);
+    console.timeEnd('📊 CREATE_INSIGHTS_TABLE');
   }
 
   if (config.artefactTree) {
+    console.time('🌳 CREATE_TREE');
     details.trees = [
       createTree(statsSlice, {
         title: config.slug,
@@ -29,6 +32,7 @@ export function createAuditOutputDetails(
         groups: config.artefactTree.groups ?? [],
       }),
     ];
+    console.timeEnd('🌳 CREATE_TREE');
   }
 
   return details;
