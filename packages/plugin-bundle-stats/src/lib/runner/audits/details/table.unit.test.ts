@@ -15,6 +15,14 @@ describe('aggregateAndSortGroups', () => {
               'src/feature-2.ts': { bytes: 10000 },
             },
           },
+          'dist/utils.js': {
+            path: 'dist/utils.js',
+            bytes: 425,
+            inputs: {
+              'src/feature-1.ts': { bytes: 200 },
+              'src/feature-2.ts': { bytes: 225 },
+            },
+          },
         },
         [
           {
@@ -31,14 +39,14 @@ describe('aggregateAndSortGroups', () => {
       groups: [
         {
           title: 'Feature 2',
-          bytes: 10000,
+          bytes: 10225,
           icon: undefined,
           sources: 0,
           type: 'group',
         },
         {
           title: 'Feature *',
-          bytes: 8000,
+          bytes: 8200,
           icon: undefined,
           sources: 0,
           type: 'group',
