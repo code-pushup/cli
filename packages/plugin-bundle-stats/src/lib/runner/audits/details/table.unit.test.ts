@@ -14,6 +14,14 @@ describe('aggregateAndSortGroups', () => {
               'src/feature-2.ts': { bytes: 10000 },
             },
           },
+          'dist/utils.js': {
+            path: 'dist/utils.js',
+            bytes: 425,
+            inputs: {
+              'src/feature-1.ts': { bytes: 200 },
+              'src/feature-2.ts': { bytes: 225 },
+            },
+          },
         },
         [
           {
@@ -28,8 +36,8 @@ describe('aggregateAndSortGroups', () => {
       ),
     ).toStrictEqual({
       groups: [
-        { title: 'Feature 2', totalBytes: 10000, icon: undefined },
-        { title: 'Feature *', totalBytes: 8000, icon: undefined },
+        { title: 'Feature 2', totalBytes: 10225, icon: undefined },
+        { title: 'Feature *', totalBytes: 8200, icon: undefined },
       ],
       restGroup: { title: 'Rest', totalBytes: 0 },
     });
