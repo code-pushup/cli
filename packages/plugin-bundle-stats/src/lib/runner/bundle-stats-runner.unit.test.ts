@@ -3,8 +3,8 @@ import type { GlobalSelectionOptions } from '../types.js';
 import type { PenaltyConfig } from './audits/details/issues.js';
 import type { SelectionConfig } from './audits/selection.js';
 import {
-  mergeArtefactTreeConfig,
   mergeAuditConfigs,
+  mergeDependencyTreeConfig,
   mergeInsightsConfig,
   mergeScoringConfig,
   mergeSelectionConfig,
@@ -255,14 +255,14 @@ describe('mergeAuditConfigs', () => {
 
 describe('mergeArtefactTreeConfig', () => {
   it('should return undefined when both global and config are undefined', () => {
-    expect(mergeArtefactTreeConfig(undefined, undefined)).toBeUndefined();
+    expect(mergeDependencyTreeConfig(undefined, undefined)).toBeUndefined();
   });
 
   it('should use config when global is undefined', () => {
     const config = {
       groups: [{ patterns: ['**/*.ts'], title: 'TypeScript' } as GroupingRule],
     };
-    const result = mergeArtefactTreeConfig(config, undefined);
+    const result = mergeDependencyTreeConfig(config, undefined);
 
     expect(result?.groups).toHaveLength(1);
     expect(result?.groups?.[0]).toMatchObject({ patterns: ['**/*.ts'] });
@@ -274,14 +274,14 @@ describe('mergeArtefactTreeConfig', () => {
       groups: [{ patterns: ['**/*.js'], title: 'JavaScript' } as GroupingRule],
     };
 
-    expect(mergeArtefactTreeConfig(config, global)).toBeUndefined();
+    expect(mergeDependencyTreeConfig(config, global)).toBeUndefined();
   });
 
   it('should merge when global options provided and config undefined', () => {
     const global = {
       groups: [{ patterns: ['**/*.js'], title: 'JavaScript' } as GroupingRule],
     };
-    const result = mergeArtefactTreeConfig(undefined, global);
+    const result = mergeDependencyTreeConfig(undefined, global);
 
     expect(result?.groups).toHaveLength(1);
     expect(result?.groups?.[0]).toMatchObject({ patterns: ['**/*.js'] });
@@ -294,7 +294,7 @@ describe('mergeArtefactTreeConfig', () => {
     const global = {
       groups: [{ patterns: ['**/*.js'], title: 'JavaScript' } as GroupingRule],
     };
-    const result = mergeArtefactTreeConfig(config, global);
+    const result = mergeDependencyTreeConfig(config, global);
 
     expect(result?.groups).toHaveLength(2);
     expect(result?.groups?.[0]).toMatchObject({ patterns: ['**/*.js'] });
@@ -304,14 +304,14 @@ describe('mergeArtefactTreeConfig', () => {
   it('should overwrite pruning options (config takes precedence)', () => {
     const config = { pruning: { maxDepth: 5 } };
     const global = { pruning: { maxDepth: 3 } };
-    const result = mergeArtefactTreeConfig(config, global);
+    const result = mergeDependencyTreeConfig(config, global);
 
     expect(result?.pruning?.maxDepth).toBe(5);
   });
 
   it('should provide DEFAULT pruning options when no options provided', () => {
     const config = { groups: [] };
-    const result = mergeArtefactTreeConfig(config, undefined);
+    const result = mergeDependencyTreeConfig(config, undefined);
 
     expect(result?.pruning).toBeDefined();
   });

@@ -132,7 +132,7 @@ export function getUnifyFunction(
  * @param optionsTree - Global plugin tree configuration
  * @returns Merged configuration or false/undefined for disabled states
  */
-export function mergeArtefactTreeConfig(
+export function mergeDependencyTreeConfig(
   configTree: AuditTreeOptions | undefined,
   optionsTree: DependencyTreeOptions | false | undefined,
 ): DependencyTreeOptions | undefined {
@@ -242,7 +242,7 @@ export function mergeScoringConfig(
 export function mergeInsightsConfig(
   configInsights: InsightsConfig | false | undefined,
   optionsInsights: InsightsConfig | undefined,
-): InsightsConfig | undefined {
+): InsightsConfig | false | undefined {
   if (configInsights === false) {
     return undefined;
   }
@@ -262,10 +262,10 @@ export async function bundleStatsRunner(
     artefactsPath,
     generateArtefacts,
     audits,
-    dependencyTree: artefactTree,
+    dependencyTree,
     scoring,
     bundler,
-    insightsTable: insights,
+    insightsTable,
     selection,
   } = opts;
 
@@ -292,10 +292,10 @@ export async function bundleStatsRunner(
     const unifiedBundleStats = unifyBundlerStats(stats);
 
     const mergedAuditConfigs = mergeAuditConfigs(audits, {
-      insightsTable: insights,
+      insightsTable,
       selection,
       scoring,
-      dependencyTree: artefactTree,
+      dependencyTree,
     });
 
     const bundleStatsTree = unifiedBundleStats;
@@ -315,7 +315,7 @@ export function mergeAuditConfigs(
 
     return {
       ...configWithoutInsights,
-      artefactTree: mergeArtefactTreeConfig(
+      dependencyTree: mergeDependencyTreeConfig(
         config.dependencyTree,
         options.dependencyTree,
       ),
