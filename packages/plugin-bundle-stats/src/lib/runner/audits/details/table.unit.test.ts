@@ -26,12 +26,12 @@ describe('aggregateAndSortGroups', () => {
         },
         [
           {
-            title: 'Feature *',
-            patterns: ['**/feature-*.ts'],
-          },
-          {
             title: 'Feature 2',
             patterns: ['**/feature-2.ts'],
+          },
+          {
+            title: 'Feature *',
+            patterns: ['**/feature-*.ts'],
           },
         ],
       ),
@@ -39,20 +39,20 @@ describe('aggregateAndSortGroups', () => {
       groups: [
         {
           title: 'Feature 2',
-          bytes: 10225,
+          bytes: 10000,
           icon: undefined,
-          sources: 0,
+          modules: 1,
           type: 'group',
         },
         {
           title: 'Feature *',
-          bytes: 8200,
+          bytes: 8000,
           icon: undefined,
-          sources: 0,
+          modules: 1,
           type: 'group',
         },
       ],
-      restGroup: { title: 'Rest', bytes: 0 },
+      restGroup: { title: 'Rest', bytes: 425 },
     });
   });
 
@@ -81,7 +81,7 @@ describe('aggregateAndSortGroups', () => {
           title: 'Feature 2',
           bytes: 12000,
           icon: undefined,
-          sources: 0,
+          modules: 0,
           type: 'group',
         },
       ],
@@ -115,7 +115,7 @@ describe('aggregateAndSortGroups', () => {
           title: 'Feature 2',
           bytes: 8000,
           icon: undefined,
-          sources: 0,
+          modules: 1,
           type: 'group',
         },
       ],
@@ -148,7 +148,7 @@ describe('aggregateAndSortGroups', () => {
           title: 'Feature 2',
           bytes: 10000,
           icon: undefined,
-          sources: 0,
+          modules: 1,
           type: 'group',
         },
       ],
@@ -181,7 +181,7 @@ describe('aggregateAndSortGroups', () => {
           title: 'Feature',
           bytes: 8100,
           icon: undefined,
-          sources: 0,
+          modules: 1,
           type: 'group',
         },
       ],
@@ -199,7 +199,7 @@ describe('createTable', () => {
             title: 'Feature',
             bytes: 10000,
             icon: '📁',
-            sources: 0,
+            modules: 0,
             type: 'group',
           },
         ],
@@ -220,7 +220,7 @@ describe('createTable', () => {
       {
         title: 'feature-*',
         bytes: 10000,
-        sources: 0,
+        modules: 0,
         type: 'group',
       },
     ];

@@ -182,7 +182,13 @@ export function cleanTitleForSlug(title: string): string {
  * Enhances descriptions with educational content, selection options, and scoring configuration.
  */
 export function prepareDescription(config: BundleStatsConfig): string {
-  const { description, scoring, selection, artefactTree, insights } = config;
+  const {
+    description,
+    scoring,
+    selection,
+    dependencyTree: artefactTree,
+    insightsTable: insights,
+  } = config;
   const { totalSize, penalty } = scoring;
 
   let enhancedDescription = description || '';
@@ -253,8 +259,8 @@ export function normalizeBundleStatsOptions(
     description: description || '', // Include original description
     selection: normalizedSelection,
     scoring: normalizedScoring,
-    artefactTree: restOptions.artefactTree,
-    insights: restOptions.insights,
+    dependencyTree: restOptions.dependencyTree,
+    insightsTable: restOptions.insightsTable,
     ...restOptions,
   };
 

@@ -17,19 +17,26 @@ export function createAuditOutputDetails(
     issues,
   };
 
-  if (config.insights && config.insights.length > 0) {
+  if (config.insightsTable && config.insightsTable.length > 0) {
     console.time('📊 CREATE_INSIGHTS_TABLE');
-    details.table = createInsightsTable(statsSlice, config.insights);
+    details.table = createInsightsTable(statsSlice, config.insightsTable);
     console.timeEnd('📊 CREATE_INSIGHTS_TABLE');
   }
 
-  if (config.artefactTree) {
+  // Check if dependency tree is enabled (default: enabled if config exists)
+  const isTreeEnabled =
+    config.dependencyTree &&
+    typeof config.dependencyTree === 'object' &&
+    (!('enabled' in config.dependencyTree) ||
+      config.dependencyTree.enabled !== false);
+
+  if (isTreeEnabled && typeof config.dependencyTree === 'object') {
     console.time('🌳 CREATE_TREE');
     details.trees = [
       createTree(statsSlice, {
         title: config.slug,
-        pruning: config.artefactTree.pruning ?? {},
-        groups: config.artefactTree.groups ?? [],
+        pruning: config.dependencyTree.pruning ?? {},
+        groups: config.dependencyTree.groups ?? [],
       }),
     ];
     console.timeEnd('🌳 CREATE_TREE');

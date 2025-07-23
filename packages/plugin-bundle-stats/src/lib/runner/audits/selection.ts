@@ -6,7 +6,6 @@ import type {
 } from '../unify/unified-stats.types.js';
 import { type PatternMatcher, compilePattern } from './details/grouping.js';
 
-// Performance optimizations: Caches and indexes
 const COMPILED_PATTERNS_CACHE = new Map<string, PatternMatcher[]>();
 const BUNDLE_PATHS_CACHE = new Map<
   UnifiedStatsBundle,
@@ -14,9 +13,6 @@ const BUNDLE_PATHS_CACHE = new Map<
 >();
 let PATH_TO_KEY_INDEX: Map<string, string> | null = null;
 
-/**
- * Creates index for O(1) path-to-key lookups. Avoids repeated O(n) searches.
- */
 function createPathToKeyIndex(unifiedStats: UnifiedStats): Map<string, string> {
   const index = new Map<string, string>();
   for (const [key, bundle] of Object.entries(unifiedStats)) {
@@ -25,9 +21,6 @@ function createPathToKeyIndex(unifiedStats: UnifiedStats): Map<string, string> {
   return index;
 }
 
-/**
- * Extracts and caches input paths from output. Prevents repeated path extraction.
- */
 function getCachedInputPaths(output: UnifiedStatsBundle): string[] {
   let cached = BUNDLE_PATHS_CACHE.get(output);
   if (!cached) {
@@ -42,9 +35,6 @@ function getCachedInputPaths(output: UnifiedStatsBundle): string[] {
   return cached.inputs;
 }
 
-/**
- * Extracts and caches import paths from output. Prevents repeated path extraction.
- */
 function getCachedImportPaths(output: UnifiedStatsBundle): string[] {
   let cached = BUNDLE_PATHS_CACHE.get(output);
   if (!cached) {
@@ -59,9 +49,6 @@ function getCachedImportPaths(output: UnifiedStatsBundle): string[] {
   return cached.imports;
 }
 
-/**
- * Compiles patterns with caching. Avoids recompilation overhead.
- */
 function compilePatterns(
   patterns: string[],
   options = { normalizeRelativePaths: true },
@@ -77,9 +64,6 @@ function compilePatterns(
   return compiled;
 }
 
-/**
- * Evaluates paths against include/exclude patterns. Core filtering logic with early exits for performance.
- */
 function evaluatePathsWithIncludeExclude(
   paths: string[],
   includePatterns: PatternMatcher[],
@@ -93,7 +77,6 @@ function evaluatePathsWithIncludeExclude(
     return true;
   }
 
-  // Early exit: Check exclusions first as they're typically fewer and can eliminate quickly
   if (excludePatterns.length > 0) {
     for (const path of paths) {
       for (const matcher of excludePatterns) {
@@ -108,7 +91,6 @@ function evaluatePathsWithIncludeExclude(
     return true;
   }
 
-  // Early exit: Return true immediately when first inclusion match is found
   for (const path of paths) {
     for (const matcher of includePatterns) {
       if (matcher(path)) {
@@ -180,9 +162,6 @@ export function validateSelectionPatterns(patterns: CompiledPatterns): void {
   }
 }
 
-/**
- * Evaluates bundle patterns against include/exclude criteria. Optimized with cached path extraction.
- */
 function evaluateBundlePatterns(
   output: UnifiedStatsBundle,
   includePatterns: PatternMatcher[],
@@ -276,9 +255,6 @@ export function compileSelectionPatterns(
   };
 }
 
-/**
- * Checks if bundle matches selection patterns. Optimized with early exits and cached pattern checks.
- */
 export function isBundleSelected(
   output: UnifiedStatsBundle,
   patterns: CompiledPatterns,
@@ -293,35 +269,37 @@ export function isBundleSelected(
     return !isExcluded(output, patterns);
   }
 
-  const hasOutputPatterns = patterns.includeOutputs.length > 0;
-  const hasEntryPatterns = patterns.includeEntryPoints.length > 0;
+  let matchesInclude = false;
 
-  if (hasOutputPatterns || hasEntryPatterns) {
+  if (patterns.includeOutputs.length > 0) {
     if (
-      hasOutputPatterns &&
       evaluatePatternCriteria(
         [output.path],
         patterns.includeOutputs,
         patterns.excludeOutputs,
       )
     ) {
-      return true;
+      matchesInclude = true;
     }
+  }
 
+  if (
+    !matchesInclude &&
+    patterns.includeEntryPoints.length > 0 &&
+    output.entryPoint
+  ) {
     if (
-      hasEntryPatterns &&
-      output.entryPoint &&
       evaluatePatternCriteria(
         [output.entryPoint],
         patterns.includeEntryPoints,
         patterns.excludeEntryPoints,
       )
     ) {
-      return true;
+      matchesInclude = true;
     }
   }
 
-  if (patterns.includeInputs.length > 0) {
+  if (!matchesInclude && patterns.includeInputs.length > 0) {
     if (
       inputsMatchPatterns(
         output,
@@ -329,11 +307,11 @@ export function isBundleSelected(
         patterns.excludeInputs,
       )
     ) {
-      return true;
+      matchesInclude = true;
     }
   }
 
-  if (patterns.includeImports.length > 0) {
+  if (!matchesInclude && patterns.includeImports.length > 0) {
     if (
       importsMatchPatterns(
         output,
@@ -341,16 +319,17 @@ export function isBundleSelected(
         patterns.excludeImports,
       )
     ) {
-      return true;
+      matchesInclude = true;
     }
   }
 
-  return false;
+  if (!matchesInclude) {
+    return false;
+  }
+
+  return !isExcluded(output, patterns);
 }
 
-/**
- * Checks if bundle should be excluded. Optimized with early exits.
- */
 function isExcluded(
   output: UnifiedStatsBundle,
   patterns: CompiledPatterns,
@@ -396,10 +375,6 @@ function isExcluded(
   return false;
 }
 
-/**
- * Selects bundles based on criteria with optimized performance.
- * Includes cycle detection and O(1) path lookups for import resolution.
- */
 export function selectBundles(
   unifiedStats: UnifiedStats,
   selectionOptions: SelectionConfig,
@@ -407,21 +382,17 @@ export function selectBundles(
   const patterns = compileSelectionPatterns(selectionOptions);
   validateSelectionPatterns(patterns);
 
-  // Clear caches for new selection operation
   BUNDLE_PATHS_CACHE.clear();
 
-  // Create O(1) lookup index for path-to-key resolution
   PATH_TO_KEY_INDEX = createPathToKeyIndex(unifiedStats);
 
   const selectedBundles = new Map<string, UnifiedStatsBundle>();
   const staticImportStack: string[] = [];
 
-  // Primary selection phase - process all bundles
   for (const [outputKey, output] of Object.entries(unifiedStats)) {
     if (isBundleSelected(output, patterns)) {
       selectedBundles.set(outputKey, output);
 
-      // Collect static imports for dependency resolution
       if (output.imports) {
         for (const importInfo of output.imports) {
           if (importInfo.kind === 'import-statement') {
@@ -432,27 +403,23 @@ export function selectBundles(
     }
   }
 
-  // Optimized static import dependency resolution with cycle detection
   const processedImports = new Set<string>();
 
   while (staticImportStack.length > 0) {
     const importPath = staticImportStack.pop()!;
 
-    // Cycle detection - skip already processed imports
     if (processedImports.has(importPath)) {
       continue;
     }
 
     processedImports.add(importPath);
 
-    // O(1) lookup using index instead of O(n) search
     const importKey = PATH_TO_KEY_INDEX.get(importPath) || importPath;
     const importedBundle = unifiedStats[importKey];
 
     if (importedBundle && !selectedBundles.has(importKey)) {
       selectedBundles.set(importKey, importedBundle);
 
-      // Add nested static imports to processing stack
       if (importedBundle.imports) {
         for (const nestedImport of importedBundle.imports) {
           if (
@@ -466,21 +433,16 @@ export function selectBundles(
     }
   }
 
-  // Build final result efficiently
   const result: UnifiedStats = {};
   for (const [key, bundle] of selectedBundles) {
     result[key] = bundle;
   }
 
-  // Clear index after use to free memory
   PATH_TO_KEY_INDEX = null;
 
   return result;
 }
 
-/**
- * Gets output key from path using O(1) lookup. Optimized replacement for linear search.
- */
 export function getOutputKeyFromPath(
   unifiedStats: UnifiedStats,
   path: string,
@@ -489,7 +451,6 @@ export function getOutputKeyFromPath(
     return PATH_TO_KEY_INDEX.get(path) || path;
   }
 
-  // Fallback to linear search if index not available (shouldn't happen in normal flow)
   for (const [key, output] of Object.entries(unifiedStats)) {
     if ((output as UnifiedStatsBundle).path === path) {
       return key;

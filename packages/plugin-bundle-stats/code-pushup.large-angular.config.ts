@@ -205,11 +205,6 @@ const productGroups: GroupingRule[] = [
     icon: '🏆',
   },
   {
-    title: 'Reporting Package',
-    patterns: ['**/packages/reporting/**'],
-    icon: '📊',
-  },
-  {
     title: 'Migration Kit Package',
     patterns: ['**/packages/migration-kit/**'],
     icon: '🔄',
@@ -220,24 +215,9 @@ const productGroups: GroupingRule[] = [
     icon: '📦',
   },
   {
-    title: 'GitLab Data Access Package',
-    patterns: ['**/packages/gitlab-data-access/**'],
-    icon: '🔗',
-  },
-  {
     title: 'Geo Coordinator Lib Package',
     patterns: ['**/packages/geo-coordinator-lib/**'],
     icon: '🌍',
-  },
-  {
-    title: 'ESBuild Plugins Package',
-    patterns: ['**/packages/esbuild-plugins/**'],
-    icon: '🔌',
-  },
-  {
-    title: 'ESLint Utils Package',
-    patterns: ['**/packages/eslint-utils/**'],
-    icon: '🔧',
   },
   {
     title: 'Extractor App Package',
@@ -248,26 +228,6 @@ const productGroups: GroupingRule[] = [
     title: 'Gantry App Package',
     patterns: ['**/packages/gantry-app/**'],
     icon: '🏗️',
-  },
-  {
-    title: 'Moxxi Test Utils Package',
-    patterns: ['**/packages/moxxi-test-utils/**'],
-    icon: '🧪',
-  },
-  {
-    title: 'NX Plugin Package',
-    patterns: ['**/packages/nx-plugin/**'],
-    icon: '⚙️',
-  },
-  {
-    title: 'RTMS Test App Package',
-    patterns: ['**/packages/rtms-test-app/**'],
-    icon: '🧪',
-  },
-  {
-    title: 'SFAPI Smoke Test Package',
-    patterns: ['**/packages/sfapi-smoke-test/**'],
-    icon: '💨',
   },
   {
     title: 'Device Atlas Smoke Test Package',
@@ -286,57 +246,6 @@ const productGroups: GroupingRule[] = [
   },
 ];
 
-const badGroups: GroupingRule[] = [
-  {
-    title: 'Test Web App Package',
-    patterns: ['**/packages/testweb-app/**'],
-  },
-  // 🚨 CRITICAL: Files that shouldn't be in production - these are important findings!
-  {
-    title: '🚨 Test Files in Production',
-    patterns: [
-      '**/node_modules/**/*.test.js',
-      '**/node_modules/**/*.spec.js',
-      '**/node_modules/**/test/**',
-      '**/node_modules/**/tests/**',
-      '**/node_modules/**/__tests__/**',
-    ],
-  },
-  {
-    title: '🚨 📚 Documentation in Production',
-    patterns: [
-      '**/node_modules/**/demo/**',
-      '**/node_modules/**/examples/**',
-      '**/node_modules/**/docs/**',
-      '**/node_modules/**/*.md',
-      '**/node_modules/**/README*',
-      '**/node_modules/**/CHANGELOG*',
-      '**/node_modules/**/LICENSE*',
-    ],
-    icon: '📄',
-  },
-  {
-    title: '🛠️ Dev Tools in Production',
-    patterns: [
-      '**/node_modules/**/webpack.config.js',
-      '**/node_modules/**/rollup.config.js',
-      '**/node_modules/**/jest.config.js',
-      '**/node_modules/**/.eslintrc*',
-      '**/node_modules/**/.babelrc*',
-      '**/node_modules/**/tsconfig*.json',
-    ],
-    icon: '🔧',
-  },
-  {
-    title: 'E2E Test Framework Package',
-    patterns: ['**/packages/e2e-test-framework/**'],
-    icon: '🧪',
-  },
-].map(group => ({
-  ...group,
-  icon: '⚠️',
-}));
-
 const config = {
   plugins: [
     await bundleStatsPlugin({
@@ -354,12 +263,11 @@ const config = {
           blacklist,
         },
       },
-      insights: [
+      insightsTable: [
         ...productGroups, // Process product groups first for better specificity
-        ...badGroups, // Process bad/warning groups second
         ...nodeModulesGroup, // Process general node_modules groups last
       ],
-      artefactTree: {
+      dependencyTree: {
         groups: [
           ...productGroups, // Process product groups first for better specificity
           ...nodeModulesGroup, // Process general node_modules groups last
@@ -376,7 +284,7 @@ const config = {
           description: 'All files in the bundle',
           selection: {
             // Use specific includeOutputs instead of global include for better control
-            include: ['**/*.js'],
+            includeOutputs: ['**/*'],
             // Exclude patterns to filter out unwanted files
             excludeOutputs: [
               '**/*.map', // Source maps
@@ -391,9 +299,8 @@ const config = {
         // Initial bundle size audit
         {
           title: 'Initial Bundle Size',
-          slug: 'initial-bundle-size',
           description:
-            'Initial bundle size audit for main and polyfills bundles',
+            'Initial bundle size audit for main and polyfills bundles as well as styles assets',
           selection: {
             includeOutputs: [
               '**/main-*.js',

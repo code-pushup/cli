@@ -48,9 +48,41 @@ export const DEFAULT_PATH_LENGTH = 40;
 // Simple performance optimization: single cache for formatted strings
 const STRING_FORMAT_CACHE = new Map<string, string>();
 
-export interface ArtefactTreeOptions {
+export type GlobalDepencencyTreeOptions =
+  | ({
+      enabled?: boolean;
+    } & DependencyTreeOptions)
+  | undefined;
+
+export interface DependencyTreeOptions {
   groups?: GroupingRule[];
   pruning?: PruningOptions;
+}
+
+/**
+ * Extended tree options for individual audit configurations.
+ *
+ * Supports flexible tree control patterns:
+ * - `dependencyTree: {}` - Enable with default settings
+ * - `dependencyTree: { enabled: false }` - Explicitly disable
+ * - `dependencyTree: undefined` - No tree configuration
+ * - `dependencyTree: false` - Disable completely
+ *
+ * @example
+ * ```ts
+ * // Enable with custom settings
+ * { dependencyTree: { pruning: { maxDepth: 2 } } }
+ *
+ * // Disable explicitly
+ * { dependencyTree: { enabled: false } }
+ *
+ * // No tree at all
+ * { dependencyTree: undefined }
+ * ```
+ */
+export interface AuditTreeOptions extends DependencyTreeOptions {
+  /** Controls whether tree generation is enabled. Defaults to true if config exists. */
+  enabled?: boolean;
 }
 
 export interface PruningOptions {
@@ -225,7 +257,7 @@ function formattedStatsTreeNodeToBasicTreeNode(
  */
 export function createTree(
   statsSlice: UnifiedStats,
-  options: { title: string } & Required<ArtefactTreeOptions>,
+  options: { title: string } & Required<DependencyTreeOptions>,
 ): BasicTree {
   const { title, groups, pruning } = options;
 
@@ -289,7 +321,7 @@ export function createTree(
   };
 }
 
-function pruneTree(
+export function pruneTree(
   rootNode: PruneTreeNode,
   options: Required<PruningOptions>,
 ): PruneTreeNode {

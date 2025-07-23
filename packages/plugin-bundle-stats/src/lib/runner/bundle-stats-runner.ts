@@ -1,12 +1,15 @@
 import type { AuditOutput } from '@code-pushup/models';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
-import { BUNDLE_STATS_PLUGIN_SLUG, DEFAULT_GROUPING } from '../constants.js';
 import type { GlobalSelectionOptions, SelectionOptions } from '../types.js';
 import { generateAuditOutputs } from './audits/audit-outputs.js';
 import type { InsightsConfig } from './audits/details/table.js';
 import { DEFAULT_PRUNING_OPTIONS } from './audits/details/tree.js';
-import type { ArtefactTreeOptions } from './audits/details/tree.js';
+import type {
+  AuditTreeOptions,
+  DependencyTreeOptions,
+} from './audits/details/tree.js';
 import { DEFAULT_PENALTY, type ScoringConfig } from './audits/scoring.js';
+import { type SelectionConfig } from './audits/selection.js';
 import type { BundleStatsConfig, SupportedBundlers } from './types.js';
 import type { UnifiedStats } from './unify/unified-stats.types.js';
 import { unifyBundlerStats as unifyEsbuildStats } from './unify/unify.esbuild.js';
@@ -26,15 +29,15 @@ export type PluginArtefactOptions = {
 export interface BundleStatsRunnerOptions extends PluginArtefactOptions {
   audits: BundleStatsConfig[];
   scoring?: Pick<ScoringConfig, 'penalty'>;
-  artefactTree?: ArtefactTreeOptions | false;
-  insights?: InsightsConfig;
+  dependencyTree?: DependencyTreeOptions | false;
+  insightsTable?: InsightsConfig;
   selection?: GlobalSelectionOptions;
 }
 
 /**
  * Validates bundle stats data structure based on bundler type. Ensures stats and required properties are properly defined.
  */
-function validateBundleStats(
+export function validateBundleStats(
   stats: unknown,
   artefactsPath: string,
   bundler: SupportedBundlers,
@@ -99,7 +102,7 @@ function validateBundleStats(
 /**
  * Returns the appropriate unify function based on bundler type. Provides bundler-specific stats processing.
  */
-function getUnifyFunction(
+export function getUnifyFunction(
   bundler: SupportedBundlers,
 ): (stats: any) => UnifiedStats {
   switch (bundler) {
@@ -117,6 +120,138 @@ function getUnifyFunction(
 }
 
 /**
+ * Merges artefact tree configurations with user-friendly handling.
+ *
+ * Supports these usage patterns:
+ * - `dependencyTree: {}` → Enabled with defaults
+ * - `dependencyTree: { enabled: false }` → Explicitly disabled
+ * - `dependencyTree: undefined` → No tree (inherited from global)
+ * - `dependencyTree: false` → Completely disabled
+ *
+ * @param configTree - Individual audit tree configuration
+ * @param optionsTree - Global plugin tree configuration
+ * @returns Merged configuration or false/undefined for disabled states
+ */
+export function mergeArtefactTreeConfig(
+  configTree: AuditTreeOptions | undefined,
+  optionsTree: DependencyTreeOptions | false | undefined,
+): DependencyTreeOptions | undefined {
+  // Only hide if audit config explicitly disables
+  if (configTree?.enabled === false) {
+    return undefined;
+  }
+
+  // If global options exist, always show them (unless disabled above)
+  if (optionsTree) {
+    return {
+      // Groups merge - users often want to layer groups
+      groups: [...(optionsTree?.groups ?? []), ...(configTree?.groups ?? [])],
+      // Pruning overwrites - only one pruning strategy should apply (shallow merge ok)
+      pruning: {
+        ...DEFAULT_PRUNING_OPTIONS,
+        ...(optionsTree?.pruning ?? {}),
+        ...(configTree?.pruning ?? {}),
+      },
+    };
+  }
+
+  // If no global options but config exists, use config
+  if (configTree) {
+    return {
+      groups: [...(configTree?.groups ?? [])],
+      pruning: {
+        ...DEFAULT_PRUNING_OPTIONS,
+        ...(configTree?.pruning ?? {}),
+      },
+    };
+  }
+
+  // Neither global nor config options exist
+  return undefined;
+}
+
+/**
+ * Merges selection configurations with hybrid strategy. Excludes merge for safety, includes overwrite for scope clarity.
+ */
+export function mergeSelectionConfig(
+  configSelection: SelectionOptions | undefined,
+  optionsSelection: GlobalSelectionOptions | undefined,
+): SelectionConfig {
+  return {
+    // Include arrays overwrite - config takes precedence for scope clarity
+    includeOutputs: configSelection?.includeOutputs ?? [],
+    includeInputs: configSelection?.includeInputs ?? [],
+    includeImports: configSelection?.includeImports ?? [],
+    includeEntryPoints: configSelection?.includeEntryPoints ?? [],
+
+    // Exclude arrays merge - merging exclusions is safe and expected
+    excludeOutputs: [
+      ...(optionsSelection?.['excludeOutputs'] ?? []),
+      ...(configSelection?.excludeOutputs ?? []),
+    ],
+    excludeInputs: [
+      ...(optionsSelection?.['excludeInputs'] ?? []),
+      ...(configSelection?.excludeInputs ?? []),
+    ],
+    excludeImports: [
+      ...(optionsSelection?.['excludeImports'] ?? []),
+      ...(configSelection?.excludeImports ?? []),
+    ],
+    excludeEntryPoints: [
+      ...(optionsSelection?.['excludeEntryPoints'] ?? []),
+      ...(configSelection?.excludeEntryPoints ?? []),
+    ],
+  };
+}
+
+/**
+ * Merges scoring configurations with hybrid strategy. Penalty blacklist merges to combine blocked patterns.
+ */
+export function mergeScoringConfig(
+  configScoring: BundleStatsConfig['scoring'] | undefined,
+  optionsScoring: Pick<ScoringConfig, 'penalty'> | undefined,
+): BundleStatsConfig['scoring'] {
+  if (configScoring?.penalty === false) {
+    return configScoring;
+  }
+
+  if (!configScoring) {
+    return optionsScoring as BundleStatsConfig['scoring'];
+  }
+
+  return {
+    ...configScoring,
+    penalty: {
+      ...DEFAULT_PENALTY,
+      ...optionsScoring?.penalty,
+      ...configScoring?.penalty,
+      // Blacklist merges - combine blocked patterns from both sources
+      blacklist: [
+        ...(optionsScoring?.penalty !== false
+          ? (optionsScoring?.penalty?.blacklist ?? [])
+          : []),
+        ...(configScoring?.penalty?.blacklist ?? []),
+      ],
+    },
+  };
+}
+
+/**
+ * Merges insights configurations with hybrid strategy. Plugin-level provides broad insights, audit-level adds specifics.
+ */
+export function mergeInsightsConfig(
+  configInsights: InsightsConfig | false | undefined,
+  optionsInsights: InsightsConfig | undefined,
+): InsightsConfig | undefined {
+  if (configInsights === false) {
+    return undefined;
+  }
+
+  // Insights merge - plugin-level defines broad insights, audits add specifics
+  return [...(optionsInsights ?? []), ...(configInsights ?? [])];
+}
+
+/**
  * Creates a bundle stats audit runner that processes bundler output and generates audit results.
  * Supports multiple bundlers (esbuild, webpack, rsbuild) with dynamic module loading.
  */
@@ -127,10 +262,10 @@ export async function bundleStatsRunner(
     artefactsPath,
     generateArtefacts,
     audits,
-    artefactTree,
+    dependencyTree: artefactTree,
     scoring,
     bundler,
-    insights,
+    insightsTable: insights,
     selection,
   } = opts;
 
@@ -157,10 +292,10 @@ export async function bundleStatsRunner(
     const unifiedBundleStats = unifyBundlerStats(stats);
 
     const mergedAuditConfigs = mergeAuditConfigs(audits, {
-      insights,
+      insightsTable: insights,
       selection,
       scoring,
-      artefactTree,
+      dependencyTree: artefactTree,
     });
 
     const bundleStatsTree = unifiedBundleStats;
@@ -172,81 +307,26 @@ export function mergeAuditConfigs(
   configs: BundleStatsConfig[],
   options: Pick<
     BundleStatsRunnerOptions,
-    'scoring' | 'artefactTree' | 'insights' | 'selection'
+    'scoring' | 'dependencyTree' | 'insightsTable' | 'selection'
   >,
 ): BundleStatsConfig[] {
   return configs.map(config => {
-    // Handle artefactTree merging with proper support for false values
-    let mergedArtefactTree: ArtefactTreeOptions | false | undefined;
-
-    if (config.artefactTree === false || options.artefactTree === false) {
-      // If either is explicitly false, disable the tree
-      mergedArtefactTree = false;
-    } else if (options.artefactTree || config.artefactTree) {
-      // If either has tree options, merge them
-      mergedArtefactTree = {
-        groups: [
-          ...(config.artefactTree?.groups ?? []),
-          ...(options.artefactTree?.groups ?? []),
-        ],
-        pruning: {
-          ...DEFAULT_PRUNING_OPTIONS,
-          ...(options.artefactTree?.pruning ?? {}),
-          ...(config.artefactTree?.pruning ?? {}),
-        },
-      };
-    } else {
-      // If both are undefined, leave as undefined
-      mergedArtefactTree = undefined;
-    }
+    const { insightsTable: configInsights, ...configWithoutInsights } = config;
 
     return {
-      ...config,
-      selection: {
-        ...config.selection,
-        excludeOutputs: [
-          ...(config.selection?.excludeOutputs ?? []),
-          ...(options.selection?.['excludeOutputs'] ?? []),
-        ],
-        excludeInputs: [
-          ...(config.selection?.excludeInputs ?? []),
-          ...(options.selection?.['excludeInputs'] ?? []),
-        ],
-        excludeImports: [
-          ...(config.selection?.excludeImports ?? []),
-          ...(options.selection?.['excludeImports'] ?? []),
-        ],
-        excludeEntryPoints: [
-          ...(config.selection?.excludeEntryPoints ?? []),
-          ...(options.selection?.['excludeEntryPoints'] ?? []),
-        ],
-      },
-      scoring: {
-        ...options.scoring,
-        ...config.scoring,
-        ...(config.scoring?.penalty !== false
-          ? {
-              penalty: {
-                ...DEFAULT_PENALTY,
-                ...options.scoring?.penalty,
-                ...config.scoring?.penalty,
-                blacklist: [
-                  ...(config.scoring?.penalty?.blacklist ?? []),
-                  ...(options.scoring?.penalty !== false
-                    ? (options.scoring?.penalty?.blacklist ?? [])
-                    : []),
-                ],
-              },
-            }
-          : {}),
-      },
-      artefactTree: mergedArtefactTree,
-      ...(config.insights !== false
+      ...configWithoutInsights,
+      artefactTree: mergeArtefactTreeConfig(
+        config.dependencyTree,
+        options.dependencyTree,
+      ),
+      selection: mergeSelectionConfig(config.selection, options.selection),
+      scoring: mergeScoringConfig(config.scoring, options.scoring),
+      ...(configInsights !== false
         ? {
-            insights: [
-              ...(options.insights ?? []), // Plugin-level insights
-              ...(config.insights ?? []), // Audit-level insights (can override)
-            ],
+            insightsTable: mergeInsightsConfig(
+              configInsights,
+              options.insightsTable,
+            ),
           }
         : {}),
     };

@@ -35,61 +35,6 @@ const emptyPatterns: Required<SelectionOptions> = {
   excludeEntryPoints: [],
 };
 
-// =============================================================================
-// TYPE TESTING
-// =============================================================================
-
-describe('Type Definitions', () => {
-  it('should support new PascalCase types', () => {
-    // Test that new PascalCase types work correctly
-    const outputConfig: IncludeOutputs = {
-      includeOutputs: ['*.js'],
-      excludeOutputs: ['*.test.js'],
-    };
-
-    const inputConfig: IncludeInputs = {
-      includeInputs: ['src/**'],
-      excludeInputs: ['**/*.test.*'],
-    };
-
-    const importConfig: IncludeImports = {
-      includeImports: ['node_modules/**'],
-      excludeImports: ['node_modules/dev-*/**'],
-    };
-
-    const entryPointConfig: IncludeEntryPoints = {
-      includeEntryPoints: ['main.js'],
-      excludeEntryPoints: ['dev.js'],
-    };
-
-    expect(outputConfig.includeOutputs).toEqual(['*.js']);
-    expect(inputConfig.includeInputs).toEqual(['src/**']);
-    expect(importConfig.includeImports).toEqual(['node_modules/**']);
-    expect(entryPointConfig.includeEntryPoints).toEqual(['main.js']);
-  });
-
-  it('should ensure SelectionConfig has required arrays', () => {
-    const config: SelectionConfig = {
-      includeOutputs: ['*.js'],
-      excludeOutputs: [],
-      includeInputs: ['src/**'],
-      excludeInputs: [],
-      includeImports: [],
-      excludeImports: [],
-      includeEntryPoints: [],
-      excludeEntryPoints: [],
-    };
-
-    // All properties should be arrays, not optional
-    expect(Array.isArray(config.includeOutputs)).toBe(true);
-    expect(Array.isArray(config.excludeOutputs)).toBe(true);
-  });
-});
-
-// =============================================================================
-// CORE PATTERN MATCHING TESTS
-// =============================================================================
-
 describe('evaluatePatternCriteria', () => {
   const createMatcher = (pattern: string) => (path: string) =>
     path.includes(pattern);
@@ -195,10 +140,6 @@ describe('evaluatePatternCriteria', () => {
   });
 });
 
-// =============================================================================
-// PATH EXTRACTION TESTS
-// =============================================================================
-
 describe('getInputPaths', () => {
   it('should return only input file paths', () => {
     expect(
@@ -264,10 +205,6 @@ describe('getImportPaths', () => {
     ).toStrictEqual([]);
   });
 });
-
-// =============================================================================
-// PATTERN MATCHING TESTS
-// =============================================================================
 
 describe('inputsMatchPatterns', () => {
   it('should return true when no include or exclude input patterns are provided', () => {
@@ -464,10 +401,6 @@ describe('isBundleSelected', () => {
   });
 });
 
-// =============================================================================
-// PATTERN COMPILATION TESTS
-// =============================================================================
-
 describe('compilePattern', () => {
   it('should compile glob pattern and return matcher function', () => {
     const matcher = compilePattern('src/**/*.js', {
@@ -607,10 +540,6 @@ describe('compileSelectionPatterns', () => {
     expect(result.excludeOutputs[0]!('main.test.js')).toBe(true);
   });
 });
-
-// =============================================================================
-// MAIN SELECTION LOGIC TESTS
-// =============================================================================
 
 describe('selectBundles', () => {
   const emptyPatterns = {

@@ -1,6 +1,6 @@
 import type { Audit } from '@code-pushup/models';
-import type { InsightsConfig } from './audits/details/table.js';
-import type { ArtefactTreeOptions } from './audits/details/tree.js';
+import type { InsightsConfig as InsightsTableConfig } from './audits/details/table.js';
+import type { DependencyTreeOptions } from './audits/details/tree.js';
 import type { ScoringConfig } from './audits/scoring.js';
 import type { SelectionConfig } from './audits/selection.js';
 
@@ -32,8 +32,8 @@ type AuditConfig = Pick<Audit, 'title' | 'slug'> &
 export type BundleStatsConfig = AuditConfig & {
   selection: SelectionConfig;
   scoring: ScoringConfig;
-  artefactTree?: ArtefactTreeOptions | false;
-  insights?: InsightsConfig | false;
+  dependencyTree?: DependencyTreeOptions;
+  insightsTable?: InsightsTableConfig | false;
 };
 
 export type GroupingRule = {

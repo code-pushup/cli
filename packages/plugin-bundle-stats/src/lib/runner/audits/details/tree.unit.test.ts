@@ -14,7 +14,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'src/main.ts',
               bytes: 100,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -24,7 +24,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'src/utils.ts',
               bytes: 50,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -34,7 +34,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'dist/output.js',
               bytes: 200,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -48,7 +48,7 @@ describe('applyGrouping', () => {
         values: {
           path: 'dist/output.js',
           bytes: 200,
-          sources: 1,
+          modules: 1,
           type: 'static-import',
         },
         children: [],
@@ -58,7 +58,7 @@ describe('applyGrouping', () => {
         values: {
           path: '',
           bytes: 150,
-          sources: 2,
+          modules: 2,
           type: 'group',
           icon: undefined,
         },
@@ -68,7 +68,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'src/main.ts',
               bytes: 100,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -78,7 +78,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'src/utils.ts',
               bytes: 50,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -97,7 +97,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'src/components/Button.tsx',
               bytes: 80,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -107,7 +107,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'src/utils/helper.ts',
               bytes: 40,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -117,7 +117,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'tests/unit.test.ts',
               bytes: 60,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -130,7 +130,7 @@ describe('applyGrouping', () => {
         name: 'Project Files',
         values: {
           bytes: 180,
-          sources: 3,
+          modules: 3,
           type: 'group',
           path: '',
           icon: undefined,
@@ -140,7 +140,7 @@ describe('applyGrouping', () => {
             name: 'src/components/Button.tsx',
             values: {
               bytes: 80,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
               path: 'src/components/Button.tsx',
             },
@@ -150,7 +150,7 @@ describe('applyGrouping', () => {
             name: 'tests/unit.test.ts',
             values: {
               bytes: 60,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
               path: 'tests/unit.test.ts',
             },
@@ -160,7 +160,7 @@ describe('applyGrouping', () => {
             name: 'src/utils/helper.ts',
             values: {
               bytes: 40,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
               path: 'src/utils/helper.ts',
             },
@@ -180,7 +180,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'node_modules/react/index.js',
               bytes: 120,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -190,7 +190,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'node_modules/lodash/core.js',
               bytes: 80,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -204,7 +204,7 @@ describe('applyGrouping', () => {
         values: {
           path: 'node_modules/react',
           bytes: 120,
-          sources: 1,
+          modules: 1,
           type: 'group',
           icon: '📁',
         },
@@ -214,7 +214,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'node_modules/react/index.js',
               bytes: 120,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -226,7 +226,7 @@ describe('applyGrouping', () => {
         values: {
           path: 'node_modules/lodash',
           bytes: 80,
-          sources: 1,
+          modules: 1,
           type: 'group',
           icon: '📁',
         },
@@ -236,7 +236,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'node_modules/lodash/core.js',
               bytes: 80,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -255,7 +255,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'src/main.ts',
               bytes: 100,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -269,7 +269,7 @@ describe('applyGrouping', () => {
         values: {
           path: '',
           bytes: 100,
-          sources: 1,
+          modules: 1,
           type: 'group',
           icon: '📦',
         },
@@ -279,7 +279,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'src/main.ts',
               bytes: 100,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -298,7 +298,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'src/main.ts',
               bytes: 100,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -312,7 +312,7 @@ describe('applyGrouping', () => {
         values: {
           path: '',
           bytes: 100,
-          sources: 1,
+          modules: 1,
           type: 'group',
           icon: undefined,
         },
@@ -322,7 +322,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'src/main.ts',
               bytes: 100,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -341,7 +341,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'node_modules/react/index.js',
               bytes: 100,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -355,7 +355,7 @@ describe('applyGrouping', () => {
         values: {
           path: '',
           bytes: 100,
-          sources: 1,
+          modules: 1,
           type: 'group',
           icon: undefined,
         },
@@ -365,7 +365,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'node_modules/react/index.js',
               bytes: 100,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -384,7 +384,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'packages/design-system/ui/button/src/button.component.ts',
               bytes: 100,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -394,7 +394,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'packages/vanilla/lib/core/services/service.ts',
               bytes: 80,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -404,7 +404,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'packages/themepark/components/theme.ts',
               bytes: 60,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -418,7 +418,7 @@ describe('applyGrouping', () => {
         values: {
           path: 'packages/design-system',
           bytes: 100,
-          sources: 1,
+          modules: 1,
           type: 'group',
           icon: '📁',
         },
@@ -428,7 +428,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'packages/design-system/ui/button/src/button.component.ts',
               bytes: 100,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -440,7 +440,7 @@ describe('applyGrouping', () => {
         values: {
           path: 'packages/vanilla',
           bytes: 80,
-          sources: 1,
+          modules: 1,
           type: 'group',
           icon: '📁',
         },
@@ -450,7 +450,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'packages/vanilla/lib/core/services/service.ts',
               bytes: 80,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -462,7 +462,7 @@ describe('applyGrouping', () => {
         values: {
           path: 'packages/themepark',
           bytes: 60,
-          sources: 1,
+          modules: 1,
           type: 'group',
           icon: '📁',
         },
@@ -472,7 +472,7 @@ describe('applyGrouping', () => {
             values: {
               path: 'packages/themepark/components/theme.ts',
               bytes: 60,
-              sources: 1,
+              modules: 1,
               type: 'static-import',
             },
             children: [],
@@ -484,7 +484,7 @@ describe('applyGrouping', () => {
 });
 
 describe('pruneTree', () => {
-  it('should format bytes', () => {
+  it('should add rest group if maxChildren exceeded', () => {
     expect(
       pruneTree(
         {
@@ -494,7 +494,7 @@ describe('pruneTree', () => {
               values: {
                 path: 'lib/moduleA.js',
                 bytes: 150,
-                sources: 2,
+                modules: 2,
                 type: 'static-import',
               },
               children: [],
@@ -504,7 +504,7 @@ describe('pruneTree', () => {
               values: {
                 path: 'lib/moduleB.js',
                 bytes: 100,
-                sources: 1,
+                modules: 1,
                 type: 'static-import',
               },
               children: [],
@@ -520,7 +520,7 @@ describe('pruneTree', () => {
           values: {
             path: 'lib/moduleA.js',
             bytes: 150,
-            sources: 2,
+            modules: 2,
             type: 'static-import',
           },
           children: [],
@@ -530,7 +530,7 @@ describe('pruneTree', () => {
           values: {
             path: 'lib/moduleB.js',
             bytes: 100,
-            sources: 1,
+            modules: 1,
             type: 'static-import',
           },
           children: [],
@@ -539,7 +539,73 @@ describe('pruneTree', () => {
     });
   });
 
-  it('should format sources', () => {
+  it('should add rest group if maxSize is exceeded', () => {
+    expect(
+      pruneTree(
+        {
+          children: [
+            {
+              name: 'large-module.js',
+              values: {
+                path: 'large-module.js',
+                bytes: 1000,
+                modules: 1,
+                type: 'static-import',
+              },
+              children: [],
+            },
+            {
+              name: 'small-file1.js',
+              values: {
+                path: 'small-file1.js',
+                bytes: 50,
+                modules: 1,
+                type: 'static-import',
+              },
+              children: [],
+            },
+            {
+              name: 'small-file2.js',
+              values: {
+                path: 'small-file2.js',
+                bytes: 30,
+                modules: 1,
+                type: 'static-import',
+              },
+              children: [],
+            },
+          ],
+        },
+        { ...DEFAULT_PRUNING_OPTIONS, minSize: 100 },
+      ),
+    ).toStrictEqual({
+      children: [
+        {
+          name: 'large-module.js',
+          values: {
+            path: 'large-module.js',
+            bytes: 1000,
+            modules: 1,
+            type: 'static-import',
+          },
+          children: [],
+        },
+        {
+          name: '...',
+          values: {
+            path: '',
+            bytes: 80,
+            modules: 2,
+            type: 'group',
+            icon: '📁',
+          },
+          children: [],
+        },
+      ],
+    });
+  });
+
+  it('should format modules', () => {
     expect(
       pruneTree(
         {
@@ -549,7 +615,7 @@ describe('pruneTree', () => {
               values: {
                 path: 'components/Header.vue',
                 bytes: 90,
-                sources: 3,
+                modules: 3,
                 type: 'static-import',
               },
               children: [],
@@ -559,7 +625,7 @@ describe('pruneTree', () => {
               values: {
                 path: 'components/Footer.vue',
                 bytes: 70,
-                sources: 2,
+                modules: 2,
                 type: 'static-import',
               },
               children: [],
@@ -575,7 +641,7 @@ describe('pruneTree', () => {
           values: {
             path: 'components/Header.vue',
             bytes: 90,
-            sources: 3,
+            modules: 3,
             type: 'static-import',
           },
           children: [],
@@ -585,7 +651,7 @@ describe('pruneTree', () => {
           values: {
             path: 'components/Footer.vue',
             bytes: 70,
-            sources: 2,
+            modules: 2,
             type: 'static-import',
           },
           children: [],
@@ -603,7 +669,7 @@ describe('pruneTree', () => {
           children: [
             {
               name: path,
-              values: { path, bytes: 100, sources: 1, type: 'static-import' },
+              values: { path, bytes: 100, modules: 1, type: 'static-import' },
               children: [],
             },
           ],
@@ -614,7 +680,7 @@ describe('pruneTree', () => {
       children: [
         {
           name: path,
-          values: { path, bytes: 100, sources: 1, type: 'static-import' },
+          values: { path, bytes: 100, modules: 1, type: 'static-import' },
           children: [],
         },
       ],
@@ -645,11 +711,11 @@ describe('createTree', () => {
     });
 
     expect(result).toMatchObject({
+      type: 'basic',
+      title: 'Test Bundle',
       root: {
         name: '🗂️ Test Bundle',
-        bytes: expect.any(Number),
-        sources: expect.any(Number),
-        path: expect.any(String),
+        values: expect.any(Object),
         children: expect.any(Array),
       },
     });
