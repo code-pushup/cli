@@ -4,6 +4,14 @@
   "sourceRoot": "packages/cli/src",
   "projectType": "library",
   "targets": {
+    "code-pushup": {
+      "options": {
+        "config": "packages/cli/code-pushup.config.ts"
+      },
+      "env": {
+        "TSX_TSCONFIG_PATH": "../../tsconfig.base.json"
+      }
+    },
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],

@@ -1,5 +1,6 @@
 import type { ESLint, Linter } from 'eslint';
 import { platform } from 'node:os';
+import { join } from 'node:path';
 import {
   distinct,
   executeProcess,
@@ -10,20 +11,21 @@ import type { ESLintTarget } from '../config.js';
 import { setupESLint } from '../setup.js';
 import type { LinterOutput, RuleOptionsPerFile } from './types.js';
 
-export async function lint({
-  eslintrc,
-  patterns,
-}: ESLintTarget): Promise<LinterOutput> {
-  const results = await executeLint({ eslintrc, patterns });
+export async function lint(
+  { eslintrc, patterns }: ESLintTarget,
+  opt?: { cwd?: string },
+): Promise<LinterOutput> {
+  const results = await executeLint({ eslintrc, patterns }, opt);
   const eslint = await setupESLint(eslintrc);
   const ruleOptionsPerFile = await loadRuleOptionsPerFile(eslint, results);
   return { results, ruleOptionsPerFile };
 }
 
-async function executeLint({
-  eslintrc,
-  patterns,
-}: ESLintTarget): Promise<ESLint.LintResult[]> {
+async function executeLint(
+  { eslintrc, patterns }: ESLintTarget,
+  opt?: { cwd?: string },
+): Promise<ESLint.LintResult[]> {
+  const { cwd = process.cwd() } = opt ?? {};
   // running as CLI because ESLint#lintFiles() runs out of memory
   const { stdout } = await executeProcess({
     command: 'npx',
@@ -33,13 +35,14 @@ async function executeLint({
       ...(typeof eslintrc === 'object' ? ['--no-eslintrc'] : []),
       '--no-error-on-unmatched-pattern',
       '--format=json',
+      `--output-file=${join(cwd, '.eslint-results.json')}`,
       ...toArray(patterns).map(pattern =>
         // globs need to be escaped on Unix
         platform() === 'win32' ? pattern : `'${pattern}'`,
       ),
     ],
     ignoreExitCode: true,
-    cwd: process.cwd(),
+    cwd,
   });
 
   return JSON.parse(stdout) as ESLint.LintResult[];

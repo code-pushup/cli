@@ -6,6 +6,10 @@ const patternsSchema = z.union([z.string(), z.array(z.string()).min(1)], {
     'Lint target files. May contain file paths, directory paths or glob patterns',
 });
 
+const envSchema = z.object({
+  cwd: z.string({ description: 'CWD path' }).optional(),
+});
+
 const eslintrcSchema = z.string({ description: 'Path to ESLint config file' });
 
 const eslintTargetObjectSchema = z.object({
@@ -62,7 +66,9 @@ const customGroupSchema = z.object({
 });
 export type CustomGroup = z.infer<typeof customGroupSchema>;
 
-export const eslintPluginOptionsSchema = z.object({
-  groups: z.array(customGroupSchema).optional(),
-});
+export const eslintPluginOptionsSchema = z
+  .object({
+    groups: z.array(customGroupSchema).optional(),
+  })
+  .merge(envSchema);
 export type ESLintPluginOptions = z.infer<typeof eslintPluginOptionsSchema>;
