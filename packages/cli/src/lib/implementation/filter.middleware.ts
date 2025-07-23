@@ -116,10 +116,13 @@ function applyPluginFilters(
   options: Pick<FilterOptions, 'skipPlugins' | 'onlyPlugins'>,
 ): CoreConfig['plugins'] {
   const { skipPlugins = [], onlyPlugins = [] } = options;
-  const filteredPlugins = filterPluginsFromCategories({
-    categories,
-    plugins,
-  });
+  const filteredPlugins =
+    onlyPlugins.length === 0
+      ? filterPluginsFromCategories({
+          categories,
+          plugins,
+        })
+      : plugins;
   if (skipPlugins.length === 0 && onlyPlugins.length === 0) {
     return filteredPlugins;
   }

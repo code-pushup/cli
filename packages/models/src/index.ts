@@ -67,8 +67,10 @@ export {
 } from './lib/persist-config.js';
 export {
   pluginConfigSchema,
+  pluginContextSchema,
   pluginMetaSchema,
   type PluginConfig,
+  type PluginContext,
   type PluginMeta,
 } from './lib/plugin-config.js';
 export {
@@ -132,3 +134,7 @@ export {
   type Tree,
 } from './lib/tree.js';
 export { uploadConfigSchema, type UploadConfig } from './lib/upload-config.js';
+export {
+  artifactGenerationCommandSchema,
+  pluginArtifactOptionsSchema,
+} from './lib/configuration.js';

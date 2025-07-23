@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { yarnv2ToOutdatedResult } from './outdated-result.js';
-import type { Yarnv2OutdatedResultJson } from './types.js';
+import { yarnBerryToOutdatedResult } from './outdated-result.js';
+import type { YarnBerryOutdatedResultJson } from './types.js';
 
-describe('yarnv2ToOutdatedResult', () => {
+describe('yarnBerryToOutdatedResult', () => {
   it('should transform Yarn v2 outdated to unified outdated result', () => {
     const outdated = [
       {
@@ -10,6 +10,7 @@ describe('yarnv2ToOutdatedResult', () => {
         current: '16.8.1',
         latest: '17.0.0',
         type: 'dependencies',
+        url: 'https://nx.dev/',
       },
       {
         name: 'vite',
@@ -17,14 +18,14 @@ describe('yarnv2ToOutdatedResult', () => {
         latest: '5.1.4',
         type: 'devDependencies',
       },
-    ] satisfies Yarnv2OutdatedResultJson;
+    ] satisfies YarnBerryOutdatedResultJson;
 
-    expect(yarnv2ToOutdatedResult(JSON.stringify(outdated))).toStrictEqual(
+    expect(yarnBerryToOutdatedResult(JSON.stringify(outdated))).toStrictEqual(
       outdated,
     );
   });
 
   it('should transform no dependencies to empty array', () => {
-    expect(yarnv2ToOutdatedResult('[]')).toEqual([]);
+    expect(yarnBerryToOutdatedResult('[]')).toEqual([]);
   });
 });

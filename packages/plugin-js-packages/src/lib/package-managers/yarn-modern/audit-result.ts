@@ -1,11 +1,34 @@
+import { fromJsonLines } from '@code-pushup/utils';
 import type { AuditResult, Vulnerability } from '../../runner/audit/types.js';
-import { getVulnerabilitiesTotal } from '../../runner/audit/utils.js';
-import type { Yarnv2AuditResultJson } from './types.js';
+import {
+  getVulnerabilitiesTotal,
+  summaryStatsFromVulnerabilities,
+} from '../../runner/audit/utils.js';
+import type {
+  YarnBerry2or3AuditResultJson,
+  YarnBerry4AuditResultJson,
+} from './types.js';
 
-export function yarnv2ToAuditResult(output: string): AuditResult {
-  const yarnv2Audit = JSON.parse(output) as Yarnv2AuditResultJson;
+export function yarnBerryToAuditResult(output: string): AuditResult {
+  const json = fromJsonLines<
+    [YarnBerry2or3AuditResultJson] | YarnBerry4AuditResultJson
+  >(output);
 
-  const vulnerabilities = Object.values(yarnv2Audit.advisories).map(
+  if (json.length === 1 && 'advisories' in json[0] && 'metadata' in json[0]) {
+    return transformYarn2or3(json[0]);
+  }
+
+  if (json.every(item => 'value' in item && 'children' in item)) {
+    return transformYarn4(json);
+  }
+
+  throw new Error(
+    `Unknown output format from 'yarn npm audit --json':\n${output}`,
+  );
+}
+
+function transformYarn2or3(json: YarnBerry2or3AuditResultJson): AuditResult {
+  const vulnerabilities = Object.values(json.advisories).map(
     ({
       module_name: name,
       severity,
@@ -33,8 +56,28 @@ export function yarnv2ToAuditResult(output: string): AuditResult {
   return {
     vulnerabilities,
     summary: {
-      ...yarnv2Audit.metadata.vulnerabilities,
-      total: getVulnerabilitiesTotal(yarnv2Audit.metadata.vulnerabilities),
+      ...json.metadata.vulnerabilities,
+      total: getVulnerabilitiesTotal(json.metadata.vulnerabilities),
     },
   };
+}
+
+function transformYarn4(json: YarnBerry4AuditResultJson): AuditResult {
+  const vulnerabilities = json.map(
+    ({ value, children }): Vulnerability => ({
+      name: value,
+      severity: children['Severity'],
+      title: children['Issue'],
+      url: children['URL'],
+      id: children['ID'],
+      versionRange: children['Vulnerable Versions'],
+      directDependency:
+        children['Dependents'].some(spec => spec.endsWith('@workspace:.')) ||
+        '',
+    }),
+  );
+
+  const summary = summaryStatsFromVulnerabilities(vulnerabilities);
+
+  return { vulnerabilities, summary };
 }

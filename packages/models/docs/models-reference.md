@@ -1,5 +1,12 @@
 # Code PushUp models reference
 
+## ArtifactGenerationCommand
+
+_Union of the following possible types:_
+
+- `string` (_min length: 1_)
+- _Object with properties:_<ul><li>`command`: `string` (_min length: 1_) - Generate artifact files</li><li>`args`: `Array<string>`</li></ul>
+
 ## AuditDetails
 
 Detailed information
@@ -1226,6 +1233,17 @@ _Object containing the following properties:_
 | `format`    |                                         | _Array of [Format](#format) items_ |
 
 _All properties are optional._
+
+## PluginArtifactOptions
+
+_Object containing the following properties:_
+
+| Property                   | Type                                                    |
+| :------------------------- | :------------------------------------------------------ |
+| `generateArtifactsCommand` | [ArtifactGenerationCommand](#artifactgenerationcommand) |
+| **`artifactsPaths`** (\*)  | `string` _or_ `Array<string>` (_min: 1_)                |
+
+_(\*) Required._
 
 ## PluginConfig
 
