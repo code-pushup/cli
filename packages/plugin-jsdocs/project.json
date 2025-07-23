@@ -25,17 +25,7 @@
         ]
       }
     },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-jsdocs/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-jsdocs/vitest.int.config.ts"
-      }
-    }
+    "unit-test": {},
+    "int-test": {}
   }
 }
