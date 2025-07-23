@@ -19,16 +19,19 @@ import type { ESLintPluginRunnerConfig, ESLintTarget } from '../config.js';
 import { lint } from './lint.js';
 import { lintResultsToAudits, mergeLinterOutputs } from './transform.js';
 
-export async function executeRunner({
-  runnerConfigPath,
-  runnerOutputPath,
-}: RunnerFilesPaths): Promise<void> {
+export async function executeRunner(
+  { runnerConfigPath, runnerOutputPath }: RunnerFilesPaths,
+  opt?: { cwd?: string },
+): Promise<void> {
+  const { cwd = process.cwd() } = opt || {};
   const { slugs, targets } =
     await readJsonFile<ESLintPluginRunnerConfig>(runnerConfigPath);
 
-  ui().logger.log(`ESLint plugin executing ${targets.length} lint targets`);
+  ui().logger.log(
+    `ESLint plugin executing ${targets.length} lint targets with cwd: ${cwd}`,
+  );
 
-  const linterOutputs = await asyncSequential(targets, lint);
+  const linterOutputs = await asyncSequential(targets, cfg => lint(cfg, opt));
   const lintResults = mergeLinterOutputs(linterOutputs);
   const failedAudits = lintResultsToAudits(lintResults);
 
@@ -51,6 +54,7 @@ export async function createRunnerConfig(
   scriptPath: string,
   audits: Audit[],
   targets: ESLintTarget[],
+  opt?: { cwd?: string },
 ): Promise<RunnerConfig> {
   const config: ESLintPluginRunnerConfig = {
     targets,
@@ -65,7 +69,11 @@ export async function createRunnerConfig(
     command: 'node',
     args: [
       filePathToCliArg(scriptPath),
-      ...objectToCliArgs({ runnerConfigPath, runnerOutputPath }),
+      ...objectToCliArgs({
+        runnerConfigPath,
+        runnerOutputPath,
+        ...(opt?.cwd ? { cwd: opt.cwd } : {}),
+      }),
     ],
     configFile: runnerConfigPath,
     outputFile: runnerOutputPath,

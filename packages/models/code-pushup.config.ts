@@ -29,7 +29,7 @@ export default mergeConfigs(
   await typescriptPluginConfig({
     tsconfig: `packages/${projectName}/tsconfig.lib.json`,
   }),
-  await eslintCoreConfigNx(projectName),
+  await eslintCoreConfigNx(projectName, { cwd: `./packages/${projectName}` }),
   jsDocsCoreConfig([
     `packages/${projectName}/src/**/*.ts`,
     ...jsDocsExclusionPatterns,
