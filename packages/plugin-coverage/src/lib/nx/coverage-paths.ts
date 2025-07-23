@@ -12,11 +12,15 @@ import { importModule, ui } from '@code-pushup/utils';
 import type { CoverageResult } from '../config.js';
 
 /**
+ * Gathers coverage paths from Nx projects. Filters by specific projects when provided.
  * @param targets nx targets to be used for measuring coverage, test by default
+ * @param projects optional array of project names to filter results for specific projects
+ * @param verbose optional verbose logging
  * @returns An array of coverage result information for the coverage plugin.
  */
 export async function getNxCoveragePaths(
   targets: string[] = ['test'],
+  projects?: string[],
   verbose?: boolean,
 ): Promise<CoverageResult[]> {
   if (verbose) {
@@ -30,8 +34,10 @@ export async function getNxCoveragePaths(
 
   const coverageResults = await Promise.all(
     targets.map(async target => {
-      const relevantNodes = Object.values(nodes).filter(graph =>
-        hasNxTarget(graph, target),
+      const relevantNodes = Object.values(nodes).filter(
+        graph =>
+          hasNxTarget(graph, target) &&
+          (projects ? projects.includes(graph.name) : true),
       );
 
       return await Promise.all(
@@ -162,7 +168,7 @@ export async function getCoveragePathForJest(
   options: JestExecutorOptions,
   project: ProjectConfiguration,
   target: string,
-) {
+): Promise<CoverageResult> {
   const { jestConfig } = options;
 
   const testConfig = await importModule<JestCoverageConfig>({
@@ -186,7 +192,13 @@ export async function getCoveragePathForJest(
   }
 
   if (path.isAbsolute(coverageDirectory)) {
-    return path.join(coverageDirectory, 'lcov.info');
+    return {
+      pathToProject: project.root,
+      resultsPath: path.join(coverageDirectory, 'lcov.info'),
+    };
   }
-  return path.join(project.root, coverageDirectory, 'lcov.info');
+  return {
+    pathToProject: project.root,
+    resultsPath: path.join(project.root, coverageDirectory, 'lcov.info'),
+  };
 }

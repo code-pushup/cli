@@ -1,4 +1,6 @@
 /* eslint-disable @nx/enforce-module-boundaries */
+import 'dotenv/config';
+import { z } from 'zod';
 import type {
   CategoryConfig,
   CoreConfig,
@@ -28,6 +30,46 @@ import typescriptPlugin, {
   type TypescriptPluginOptions,
   getCategories,
 } from './packages/plugin-typescript/src/index.js';
+
+/**
+ * Helper function to load and validate Code PushUp environment variables for upload configuration
+ */
+export async function loadEnv() {
+  const envSchema = z.object({
+    CP_SERVER: z.string().url(),
+    CP_API_KEY: z.string().min(1),
+    CP_ORGANIZATION: z.string().min(1),
+    CP_PROJECT: z.string().min(1),
+  });
+
+  const { data: env, success } = await envSchema.safeParseAsync(process.env);
+
+  if (!success || !env) {
+    return {};
+  }
+  const uploadConfig = {
+    server: env.CP_SERVER,
+    apiKey: env.CP_API_KEY,
+    organization: env.CP_ORGANIZATION,
+    project: env.CP_PROJECT,
+  };
+  return (
+    uploadConfig.apiKey && {
+      upload: uploadConfig,
+    }
+  );
+}
+
+/**
+ * Common exclusion patterns for JSDoc coverage
+ */
+export const jsDocsExclusionPatterns = [
+  '!packages/**/node_modules',
+  '!packages/**/{mocks,mock}',
+  '!**/*.{spec,test}.ts',
+  '!**/implementation/**',
+  '!**/internal/**',
+];
 
 export const jsPackagesCategories: CategoryConfig[] = [
   {
@@ -131,8 +173,12 @@ export const coverageCategories: CategoryConfig[] = [
   },
 ];
 
-export const jsPackagesCoreConfig = async (): Promise<CoreConfig> => ({
-  plugins: [await jsPackagesPlugin()],
+export const jsPackagesCoreConfig = async (
+  packageJsonPath?: string,
+): Promise<CoreConfig> => ({
+  plugins: [
+    await jsPackagesPlugin(packageJsonPath ? { packageJsonPath } : undefined),
+  ],
   categories: jsPackagesCategories,
 });
 
@@ -177,12 +223,12 @@ export const typescriptPluginConfig = async (
   categories: getCategories(),
 });
 
+/**
+ * Generates coverage configuration for Nx projects. Supports both single projects and all projects.
+ */
 export const coverageCoreConfigNx = async (
   projectName?: string,
 ): Promise<CoreConfig> => {
-  if (projectName) {
-    throw new Error('coverageCoreConfigNx for single projects not implemented');
-  }
   const targetNames = ['unit-test', 'int-test'];
   const targetArgs = [
     '-t',
@@ -195,13 +241,14 @@ export const coverageCoreConfigNx = async (
       await coveragePlugin({
         coverageToolCommand: {
           command: 'npx',
-          args: [
-            'nx',
-            projectName ? `run --project ${projectName}` : 'run-many',
-            ...targetArgs,
-          ],
+          args: projectName
+            ? ['nx', 'run-many', '-p', projectName, ...targetArgs]
+            : ['nx', 'run-many', ...targetArgs],
         },
-        reports: await getNxCoveragePaths(targetNames),
+        reports: await getNxCoveragePaths(
+          targetNames,
+          projectName ? [projectName] : undefined,
+        ),
       }),
     ],
     categories: coverageCategories,
