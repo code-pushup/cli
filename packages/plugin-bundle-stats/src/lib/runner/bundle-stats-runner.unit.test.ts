@@ -9,7 +9,6 @@ import {
   mergeScoringConfig,
   mergeSelectionConfig,
 } from './bundle-stats-runner.js';
-import * as bundleStatsRunner from './bundle-stats-runner.js';
 import type { GroupingRule } from './types.js';
 
 const testScoring = {
