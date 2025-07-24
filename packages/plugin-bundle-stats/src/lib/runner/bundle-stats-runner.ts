@@ -13,7 +13,11 @@ import { DEFAULT_PRUNING_CONFIG } from './audits/details/tree.js';
 import type { DependencyTreeConfig } from './audits/details/tree.js';
 import { DEFAULT_PENALTY } from './audits/scoring.js';
 import type { SelectionConfig } from './audits/selection.js';
-import type { BundleStatsConfig, SupportedBundlers } from './types.js';
+import type {
+  BundleStatsConfig,
+  GroupingRule,
+  SupportedBundlers,
+} from './types.js';
 import type { UnifiedStats } from './unify/unified-stats.types.js';
 import { unifyBundlerStats as unifyEsbuildStats } from './unify/unify.esbuild.js';
 import { unifyBundlerStats as unifyRsbuildStats } from './unify/unify.rsbuild.js';
@@ -112,10 +116,7 @@ export function getUnifyFunction(
 
 /**
  * Merges dependency tree configurations from audit and plugin levels.
- *
- * @param auditConfig - Individual audit tree configuration
- * @param pluginOptions - Global plugin tree configuration
- * @returns Merged configuration or false/undefined for disabled states
+ * Groups merge (global + local), pruning overwrites (local takes precedence).
  */
 export function mergeDependencyTreeConfig(
   auditConfig: DependencyTreeConfig | undefined,
@@ -129,12 +130,20 @@ export function mergeDependencyTreeConfig(
   // If global options exist, always show them (unless disabled above)
   if (pluginOptions) {
     return {
-      // Groups merge - users often want to layer groups
-      groups: [
-        ...(pluginOptions?.groups ?? []),
-        ...(auditConfig?.groups ?? []),
-      ],
-      // Pruning overwrites - only one pruning strategy should apply (shallow merge ok)
+      // Groups logic: false = hide, array = overwrite global, undefined = use global
+      groups: (() => {
+        // Only hide if explicitly set to false
+        if (auditConfig?.groups === false) {
+          return [];
+        }
+        // If audit defines groups, use them (overwrite global)
+        if (auditConfig?.groups !== undefined) {
+          return auditConfig.groups as GroupingRule[];
+        }
+        // Otherwise, use global groups
+        return pluginOptions?.groups ?? [];
+      })(),
+      // Pruning overwrites - local takes precedence over global
       pruning: {
         ...DEFAULT_PRUNING_CONFIG,
         ...(pluginOptions?.pruning ?? {}),
@@ -146,7 +155,9 @@ export function mergeDependencyTreeConfig(
   // If no global options but config exists, use config
   if (auditConfig) {
     return {
-      groups: auditConfig?.groups ?? [],
+      // Groups fallback - use audit groups or empty array if false
+      groups: auditConfig.groups === false ? [] : (auditConfig.groups ?? []),
+      // Pruning fallback - use audit pruning with defaults
       pruning: {
         ...DEFAULT_PRUNING_CONFIG,
         ...(auditConfig?.pruning ?? {}),
@@ -232,7 +243,7 @@ export function mergeScoringConfig(
 }
 
 /**
- * Merges insights configurations with hybrid strategy. Plugin-level provides broad insights, audit-level adds specifics.
+ * Merges insights configurations with fallback strategy. Uses audit-level when defined, falls back to global when undefined, hides when false.
  */
 export function mergeInsightsConfig(
   auditConfig: InsightsTableConfig | false | undefined,
@@ -242,8 +253,12 @@ export function mergeInsightsConfig(
     return undefined;
   }
 
-  // Insights merge - plugin-level defines broad insights, audits add specifics
-  return [...(pluginOptions ?? []), ...(auditConfig ?? [])];
+  // Insights override - audit-level completely replaces plugin-level when defined
+  if (auditConfig !== undefined) {
+    return auditConfig;
+  }
+
+  return pluginOptions;
 }
 
 /**

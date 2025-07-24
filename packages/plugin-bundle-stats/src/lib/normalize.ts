@@ -311,12 +311,7 @@ export function normalizeBundleStatsOptions(
     description: description || '',
     selection: normalizedSelection,
     scoring: normalizedScoring,
-    dependencyTree: restOptions.dependencyTree
-      ? {
-          groups: restOptions.dependencyTree.groups || [],
-          pruning: restOptions.dependencyTree.pruning || DEFAULT_PRUNING_CONFIG,
-        }
-      : undefined,
+    dependencyTree: restOptions.dependencyTree,
     insightsTable: restOptions.insightsTable,
   };
 

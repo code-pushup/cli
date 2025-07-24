@@ -80,12 +80,13 @@ export function calculatePenalty(
 }
 
 /**
- * Creates a score calculator function configured with bundle settings. Applies direct penalty subtraction for intuitive scoring behavior.
+ * Creates a score calculator function configured with bundle settings. Applies direct penalty subtraction for intuitive scoring behavior with a maximum penalty cap of 20%.
  *
  * ## Scoring
  * Assigns a score in the range [0 … 1] to each artefact (or artefact selection) based on:
  * - Size vs. configurable minimum and maximum thresholds
  * - Direct penalty subtraction based on issue severity levels (when enabled)
+ * - Penalty is capped at maximum 20% of the size score
  *
  * A perfect score (1) means "within acceptable range"; lower values indicate regressions.
  *
@@ -113,17 +114,19 @@ export function calculatePenalty(
  * ```
  *
  * ## Penalty Calculation
- * Direct subtraction approach for intuitive behavior:
+ * Direct subtraction approach with 20% maximum penalty cap:
  * ```
  * penaltyShift = errors × errorWeight + warnings × warningWeight
+ * cappedPenalty = min(penaltyShift, sizeScore × 0.2)
  * ```
  * Default weights: errorWeight = 0.2, warningWeight = 0.1
  *
  * ## Final Score Calculation
  * ```
- * finalScore = max(0, sizeScore - penaltyShift)
+ * finalScore = max(0, sizeScore - cappedPenalty)
  * ```
- * This creates a penalty shift pattern where issues directly reduce the score by their weight values.
+ * This creates a penalty shift pattern where issues directly reduce the score by their weight values,
+ * but the total penalty reduction is capped at 20% of the original size score.
  * Note: When `penalty` is `false`, only size score is used.
  *
  * @param options - Scoring configuration containing thresholds and penalty weights
@@ -159,7 +162,11 @@ export function createBundleStatsScoring(
     const penaltyOptions = penalty || DEFAULT_PENALTY;
     const penaltyShift = calculatePenaltyShift(issues, penaltyOptions);
 
-    return Math.max(0, sizeScore - penaltyShift);
+    // Cap penalty at maximum 20% of the size score
+    const maxPenalty = sizeScore * 0.2;
+    const cappedPenalty = Math.min(penaltyShift, maxPenalty);
+
+    return Math.max(0, sizeScore - cappedPenalty);
   };
 }
 

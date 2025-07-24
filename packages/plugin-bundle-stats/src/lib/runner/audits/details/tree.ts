@@ -1,5 +1,5 @@
 import type { BasicTree, BasicTreeNode } from '@code-pushup/models';
-import { formatBytes, truncateText } from '@code-pushup/utils';
+import { formatBytes, pluralizeToken, truncateText } from '@code-pushup/utils';
 import type { GroupingRule } from '../../types';
 import type { UnifiedStats } from '../../unify/unified-stats.types';
 import {
@@ -49,7 +49,7 @@ export const DEFAULT_PATH_LENGTH = 40;
 const STRING_FORMAT_CACHE = new Map<string, string>();
 
 export interface DependencyTreeConfig {
-  groups?: GroupingRule[];
+  groups?: GroupingRule[] | false;
   pruning?: PruningConfig;
   enabled?: boolean;
 }
@@ -121,6 +121,34 @@ export function convertStatsToTree(stats: UnifiedStats): StatsTreeNode[] {
 }
 
 /**
+ * Flattens single-child groups to reduce hierarchy and applies group icons to actual files.
+ */
+function flattenSingleChildGroups(nodes: StatsTreeNode[]): StatsTreeNode[] {
+  return nodes.map(node => {
+    // If this is a group with exactly one child, flatten it
+    if (node.values.type === 'group' && node.children.length === 1) {
+      const child = node.children[0]!;
+
+      // Use the group's icon for the child file
+      return {
+        ...child,
+        values: {
+          ...child.values,
+          icon: node.values.icon || '📦', // Use group icon or default package icon
+        },
+        children: flattenSingleChildGroups(child.children), // Recursively flatten children
+      };
+    }
+
+    // For other nodes, just recursively process children
+    return {
+      ...node,
+      children: flattenSingleChildGroups(node.children),
+    };
+  });
+}
+
+/**
  * Formats tree nodes with clean names and separate values for proper alignment.
  */
 export function formatStatsTreeForDisplay(
@@ -159,14 +187,22 @@ export function formatStatsTreeForDisplay(
     formatStatsTreeForDisplay(child, pathLength),
   );
 
+  const values: Record<string, string | number> = {};
+
+  // Show size for all nodes except intermediate nodes in single-child chains
+  // This means: entry files, groups with multiple children, and leaf files all show size
+  if (node.children.length !== 1) {
+    values['size'] = formatBytes(node.values.bytes);
+  }
+
+  // Only show source count if more than 1 source
+  if (node.values.modules > 1) {
+    values['modules'] = pluralizeToken('source', node.values.modules);
+  }
+
   return {
     name: `${icon} ${cleanName}`, // Clean name with just icon
-    values: {
-      size: formatBytes(node.values.bytes),
-      ...(node.values.modules > 1 && {
-        modules: `${node.values.modules} modules`,
-      }),
-    },
+    values,
     children,
   };
 }
@@ -203,12 +239,17 @@ export function createTree(
   let nodes = convertStatsToTree(statsSlice);
 
   // Apply grouping if needed
-  if (groups?.length && nodes.length) {
+  if (Array.isArray(groups) && groups.length && nodes.length) {
+    // Apply grouping only to inputs (children) within each output file
+    // Don't group the output files themselves
     for (const node of nodes) {
       if (node.children.length > 0) {
         node.children = applyGroupingAndSort(node.children, groups);
       }
     }
+
+    // Flatten single-child groups after applying grouping
+    nodes = flattenSingleChildGroups(nodes);
   }
 
   // Efficient pruning
@@ -318,30 +359,36 @@ function pruneTreeRecursive(
     finalChildren = kept;
   }
 
-  // Create empty "..." group if we have items to represent
+  // Create "..." group if we have multiple items to represent, or show single item directly
   if (groupedChildren.length > 0) {
-    const totalBytes = groupedChildren.reduce(
-      (sum, child) => sum + child.values.bytes,
-      0,
-    );
-    const totalModules = groupedChildren.reduce(
-      (sum, child) => sum + child.values.modules,
-      0,
-    );
+    if (groupedChildren.length === 1) {
+      // If there's only one grouped item, show it directly instead of creating "..." group
+      finalChildren.push(groupedChildren[0]!);
+    } else {
+      // Multiple items - create "..." group
+      const totalBytes = groupedChildren.reduce(
+        (sum, child) => sum + child.values.bytes,
+        0,
+      );
+      const totalModules = groupedChildren.reduce(
+        (sum, child) => sum + child.values.modules,
+        0,
+      );
 
-    const moreNode = {
-      name: '...',
-      values: {
-        path: '',
-        bytes: totalBytes,
-        modules: totalModules,
-        type: 'group' as const,
-        icon: '📁',
-      },
-      children: [], // Empty - just represents the grouped items
-    };
+      const moreNode = {
+        name: '...',
+        values: {
+          path: '',
+          bytes: totalBytes,
+          modules: totalModules,
+          type: 'group' as const,
+          icon: '📁',
+        },
+        children: [], // Empty - just represents the grouped items
+      };
 
-    finalChildren.push(moreNode);
+      finalChildren.push(moreNode);
+    }
   }
 
   return { children: finalChildren };

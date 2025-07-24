@@ -365,6 +365,8 @@ export function applyGrouping(
 
   // Process nodes without recursive grouping - caller handles recursion
   let finalNodes = [...nodes];
+  // Track original input nodes vs newly created group nodes
+  const originalNodes = new Set(nodes);
   finalNodes.sort((a, b) => b.values.bytes - a.values.bytes);
 
   for (const group of groups) {
@@ -374,7 +376,8 @@ export function applyGrouping(
 
     finalNodes.forEach(node => {
       const matchingRule = findMatchingRule(node.name, [group]);
-      if (matchingRule) {
+      if (matchingRule && originalNodes.has(node)) {
+        // Only group original input nodes, not previously created group nodes
         nodesToGroup.push(node);
       } else {
         remainingNodes.push(node);
