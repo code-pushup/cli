@@ -1,5 +1,7 @@
-import bundleStatsPlugin, { type GroupingRule } from './src';
-import { BlacklistEntry } from './src/lib/runner/types';
+import bundleStatsPlugin, {
+  type BlacklistEntry,
+  type GroupingRule,
+} from './src/index.js';
 
 const sharedHint =
   'Remove or conditionally load. Supported natively in modern browsers or replace with modern Angular architecture. See: https://blog.angular.io/zone-less-angular-explained-5fa951ce6f6e';
@@ -250,7 +252,7 @@ const config = {
   plugins: [
     await bundleStatsPlugin({
       bundler: 'esbuild',
-      artefactsPath:
+      artifactsPaths:
         './packages/plugin-bundle-stats/mocks/fixtures/stats/angular-large.stats.json',
       selection: {
         excludeOutputs: ['**/*.map', '**/*.d.ts'], // Only exclude source maps as they're not part of runtime bundle

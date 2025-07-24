@@ -1,14 +1,26 @@
 import type { Audit } from '@code-pushup/models';
 import { slugify } from '@code-pushup/utils';
 import { formatBytes } from '@code-pushup/utils';
+import type { BundleStatsConfig as ExportedBundleStatsConfig } from '../index.js';
+import type { InsightsTableConfig } from './runner/audits/details/table.js';
+import {
+  DEFAULT_PRUNING_CONFIG,
+  type DependencyTreeConfig,
+} from './runner/audits/details/tree.js';
 import type { ScoringConfig } from './runner/audits/scoring.js';
-import { normalizeSelectionOptions } from './runner/audits/selection.js';
+import { DEFAULT_PENALTY } from './runner/audits/scoring.js';
+import type { SelectionConfig } from './runner/audits/selection.js';
 import type { BundleStatsConfig, MinMax } from './runner/types.js';
-import type { BundleStatsOptions } from './types.js';
+import type {
+  BundleStatsAuditOptions,
+  PluginBundleStatsAuditOptions,
+  PluginDependencyTreeOptions,
+  PluginInsightsTableOptions,
+  PluginScoringOptions,
+  SelectionGeneralConfig,
+  SelectionOptions,
+} from './types.js';
 
-/**
- * Formats selection configuration as compact bullet points.
- */
 function formatSelectionConfig(selection: any): string {
   const items: string[] = [];
 
@@ -46,9 +58,6 @@ function formatSelectionConfig(selection: any): string {
   return items.length > 0 ? `**Selection**\n${items.join('\n')}` : '';
 }
 
-/**
- * Formats penalty configuration as compact bullet points.
- */
 function formatPenaltyConfig(penalty: any): string {
   const items: string[] = [];
 
@@ -78,9 +87,6 @@ function formatPenaltyConfig(penalty: any): string {
   return items.length > 0 ? `**Penalty**\n${items.join('\n')}` : '';
 }
 
-/**
- * Formats artefact tree configuration as compact bullet points.
- */
 function formatArtefactTreeConfig(artefactTree: any): string {
   const items: string[] = [];
 
@@ -108,9 +114,6 @@ function formatArtefactTreeConfig(artefactTree: any): string {
   return items.length > 0 ? `**Artefact Tree**\n${items.join('\n')}` : '';
 }
 
-/**
- * Formats insights configuration as compact bullet points.
- */
 function formatInsightsConfig(insights: any[]): string {
   const items: string[] = [];
 
@@ -123,9 +126,6 @@ function formatInsightsConfig(insights: any[]): string {
   return items.length > 0 ? `**Insights**\n${items.join('\n')}` : '';
 }
 
-/**
- * Formats scoring configuration as compact bullet points.
- */
 function formatScoringConfig(totalSize: any, penalty: any): string {
   const items: string[] = [];
 
@@ -167,9 +167,6 @@ function formatScoringConfig(totalSize: any, penalty: any): string {
   return items.length > 0 ? `**Scoring**\n${items.join('\n')}` : '';
 }
 
-/**
- * Cleans a title for slug generation by removing emojis and special characters. Ensures valid slug format for audit identification.
- */
 export function cleanTitleForSlug(title: string): string {
   return title
     .replace(/[^\w\s-]/g, '')
@@ -177,10 +174,6 @@ export function cleanTitleForSlug(title: string): string {
     .toLowerCase();
 }
 
-/**
- * Prepares audit description by combining user description with auto-generated technical details.
- * Enhances descriptions with educational content, selection options, and scoring configuration.
- */
 export function prepareDescription(config: BundleStatsConfig): string {
   const {
     description,
@@ -233,12 +226,69 @@ ${configDetails.join('\n\n')}
 
   return enhancedDescription.trim() || '';
 }
+
+/**
+ * Converts SelectionGeneralConfig to SelectionOptions by adding default empty arrays.
+ */
+export function selectionGeneralConfigToOptions(
+  config: SelectionGeneralConfig,
+): SelectionOptions {
+  return {
+    ...config,
+    includeOutputs: [],
+    excludeOutputs: [],
+    includeInputs: [],
+    excludeInputs: [],
+    includeImports: [],
+    excludeImports: [],
+    includeEntryPoints: [],
+    excludeEntryPoints: [],
+  };
+}
+
+export function normalizeSelectionOptions(
+  options: SelectionOptions | undefined,
+): SelectionConfig {
+  if (options === undefined) {
+    return {
+      includeOutputs: [],
+      excludeOutputs: [],
+      includeInputs: [],
+      excludeInputs: [],
+      includeImports: [],
+      excludeImports: [],
+      includeEntryPoints: [],
+      excludeEntryPoints: [],
+    };
+  }
+
+  const globalInclude = options.include || [];
+  const globalExclude = options.exclude || [];
+
+  return {
+    includeOutputs: [...(options.includeOutputs || []), ...globalInclude],
+    excludeOutputs: [...(options.excludeOutputs || []), ...globalExclude],
+    includeInputs: [...(options.includeInputs || []), ...globalInclude],
+    excludeInputs: [...(options.excludeInputs || []), ...globalExclude],
+    includeImports: [...(options.includeImports || []), ...globalInclude],
+    excludeImports: [...(options.excludeImports || []), ...globalExclude],
+    includeEntryPoints: [
+      ...(options.includeEntryPoints || []),
+      ...globalInclude,
+    ],
+    excludeEntryPoints: [
+      ...(options.excludeEntryPoints || []),
+      ...globalExclude,
+    ],
+  };
+}
+
 export function normalizeBundleStatsOptions(
-  options: BundleStatsOptions,
+  auditOptions: BundleStatsAuditOptions,
 ): BundleStatsConfig {
   const { slug, title, description, scoring, selection, ...restOptions } =
-    options;
-  const { penalty, totalSize } = scoring ?? { penalty: false };
+    auditOptions;
+  const { penalty, totalSize } = scoring ?? {};
 
   // Use the proper selection normalization helper that merges global patterns
   const normalizedSelection = normalizeSelectionOptions(selection);
@@ -246,27 +296,88 @@ export function normalizeBundleStatsOptions(
   const normalizedScoring: ScoringConfig = {
     totalSize: normalizeRange(totalSize ?? Infinity),
     penalty: {
-      ...(penalty && penalty.artefactSize
+      ...(penalty && typeof penalty === 'object' && penalty.artefactSize
         ? { artefactSize: normalizeRange(penalty.artefactSize) }
         : {}),
-      ...(penalty && penalty.blacklist ? { blacklist: penalty.blacklist } : {}),
+      ...(penalty && typeof penalty === 'object' && penalty.blacklist
+        ? { blacklist: penalty.blacklist }
+        : {}),
     },
   };
 
   const normalizedConfig: BundleStatsConfig = {
     slug: slug ?? slugify(title),
     title,
-    description: description || '', // Include original description
+    description: description || '',
     selection: normalizedSelection,
     scoring: normalizedScoring,
-    dependencyTree: restOptions.dependencyTree,
+    dependencyTree: restOptions.dependencyTree
+      ? {
+          groups: restOptions.dependencyTree.groups || [],
+          pruning: restOptions.dependencyTree.pruning || DEFAULT_PRUNING_CONFIG,
+        }
+      : undefined,
     insightsTable: restOptions.insightsTable,
-    ...restOptions,
   };
 
   normalizedConfig.description = prepareDescription(normalizedConfig);
 
   return normalizedConfig;
+}
+
+/**
+ * Normalizes scoring options. Converts plugin-level scoring to runner scoring config.
+ */
+export function normalizeScoringOptions(
+  options: PluginScoringOptions | undefined,
+): ScoringConfig | undefined {
+  if (!options) {
+    return undefined;
+  }
+
+  const { penalty } = options;
+
+  return {
+    totalSize: [0, Infinity], // Default range
+    penalty: penalty
+      ? {
+          ...DEFAULT_PENALTY,
+          ...penalty,
+          artefactSize: penalty.artefactSize
+            ? normalizeRange(penalty.artefactSize)
+            : undefined,
+        }
+      : DEFAULT_PENALTY,
+  };
+}
+
+/**
+ * Normalizes dependency tree options. Converts plugin-level options to runner config.
+ */
+export function normalizeDependencyTreeOptions(
+  options: PluginDependencyTreeOptions | undefined,
+): DependencyTreeConfig | undefined {
+  if (!options) {
+    return undefined;
+  }
+
+  return {
+    groups: options.groups || [],
+    pruning: options.pruning || DEFAULT_PRUNING_CONFIG,
+  };
+}
+
+/**
+ * Normalizes insights table options. Converts plugin-level options to runner config.
+ */
+export function normalizeInsightsTableOptions(
+  options: PluginInsightsTableOptions | false | undefined,
+): InsightsTableConfig | undefined {
+  if (options === false || options === undefined) {
+    return undefined;
+  }
+
+  return options;
 }
 
 export function normalizeRange(range: MinMax | number): MinMax {
@@ -285,4 +396,22 @@ export function getAuditsFromConfigs(configs: BundleStatsConfig[]): Audit[] {
       description,
     };
   });
+}
+
+/**
+ * Normalizes complete plugin options. Centralizes all normalization logic.
+ */
+export function normalizeBundleStatsAuditOptions(
+  auditOptions: BundleStatsAuditOptions[],
+  pluginOptions: PluginBundleStatsAuditOptions,
+) {
+  return {
+    bundleStatsConfigs: auditOptions.map(normalizeBundleStatsOptions),
+    scoring: normalizeScoringOptions(pluginOptions.scoring),
+    dependencyTree: normalizeDependencyTreeOptions(
+      pluginOptions.dependencyTree,
+    ),
+    insightsTable: normalizeInsightsTableOptions(pluginOptions.insightsTable),
+    selection: pluginOptions.selection,
+  };
 }

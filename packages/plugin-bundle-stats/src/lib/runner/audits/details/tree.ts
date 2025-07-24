@@ -35,7 +35,7 @@ export interface FormattedStatsTree {
   root: FormattedStatsTreeNode;
 }
 
-export const DEFAULT_PRUNING_OPTIONS: Required<PruningOptions> = {
+export const DEFAULT_PRUNING_CONFIG: Required<PruningConfig> = {
   maxDepth: 4,
   maxChildren: 15,
   minSize: 0,
@@ -48,44 +48,13 @@ export const DEFAULT_PATH_LENGTH = 40;
 // Simple performance optimization: single cache for formatted strings
 const STRING_FORMAT_CACHE = new Map<string, string>();
 
-export type GlobalDepencencyTreeOptions =
-  | ({
-      enabled?: boolean;
-    } & DependencyTreeOptions)
-  | undefined;
-
-export interface DependencyTreeOptions {
+export interface DependencyTreeConfig {
   groups?: GroupingRule[];
-  pruning?: PruningOptions;
-}
-
-/**
- * Extended tree options for individual audit configurations.
- *
- * Supports flexible tree control patterns:
- * - `dependencyTree: {}` - Enable with default settings
- * - `dependencyTree: { enabled: false }` - Explicitly disable
- * - `dependencyTree: undefined` - No tree configuration
- * - `dependencyTree: false` - Disable completely
- *
- * @example
- * ```ts
- * // Enable with custom settings
- * { dependencyTree: { pruning: { maxDepth: 2 } } }
- *
- * // Disable explicitly
- * { dependencyTree: { enabled: false } }
- *
- * // No tree at all
- * { dependencyTree: undefined }
- * ```
- */
-export interface AuditTreeOptions extends DependencyTreeOptions {
-  /** Controls whether tree generation is enabled. Defaults to true if config exists. */
+  pruning?: PruningConfig;
   enabled?: boolean;
 }
 
-export interface PruningOptions {
+export interface PruningConfig {
   maxChildren?: number;
   maxDepth?: number;
   startDepth?: number;
@@ -149,41 +118,6 @@ export function convertStatsToTree(stats: UnifiedStats): StatsTreeNode[] {
   }
 
   return result;
-}
-
-/**
- * Fast string formatting with simple caching.
- */
-function formatNodeString(
-  name: string,
-  bytes: number,
-  modules: number,
-  icon: string,
-  maxChars: number,
-): string {
-  const cacheKey = `${name}|${bytes}|${modules}|${maxChars}`;
-  let cached = STRING_FORMAT_CACHE.get(cacheKey);
-
-  if (!cached) {
-    const truncatedName =
-      maxChars < name.length
-        ? truncateText(name, { maxChars, position: 'middle' })
-        : name;
-
-    const sizeDisplay =
-      bytes > 0
-        ? ` (${formatBytes(bytes)}${modules > 1 ? `, ${modules} modules` : ''})`
-        : '';
-
-    cached = `${icon} ${truncatedName}${sizeDisplay}`;
-
-    // Simple cache size management
-    if (STRING_FORMAT_CACHE.size < 20000) {
-      STRING_FORMAT_CACHE.set(cacheKey, cached);
-    }
-  }
-
-  return cached;
 }
 
 /**
@@ -257,7 +191,7 @@ function formattedStatsTreeNodeToBasicTreeNode(
  */
 export function createTree(
   statsSlice: UnifiedStats,
-  options: { title: string } & Required<DependencyTreeOptions>,
+  options: { title: string } & DependencyTreeConfig,
 ): BasicTree {
   const { title, groups, pruning } = options;
 
@@ -281,7 +215,7 @@ export function createTree(
   const prunedRoot = pruneTree(
     { children: nodes },
     {
-      ...DEFAULT_PRUNING_OPTIONS,
+      ...DEFAULT_PRUNING_CONFIG,
       ...pruning,
     },
   );
@@ -298,7 +232,7 @@ export function createTree(
 
   // Format nodes
   const formattedChildren = prunedNodes.map(node =>
-    formatStatsTreeForDisplay(node, pruning.pathLength),
+    formatStatsTreeForDisplay(node, pruning?.pathLength),
   );
 
   const formattedRoot: FormattedStatsTreeNode = {
@@ -323,7 +257,7 @@ export function createTree(
 
 export function pruneTree(
   rootNode: PruneTreeNode,
-  options: Required<PruningOptions>,
+  options: Required<PruningConfig>,
 ): PruneTreeNode {
   const { maxChildren, maxDepth, startDepth = 0, minSize } = options;
 
@@ -333,7 +267,7 @@ export function pruneTree(
 
 function pruneTreeRecursive(
   node: PruneTreeNode,
-  options: Required<PruningOptions>,
+  options: Required<PruningConfig>,
   currentDepth: number,
 ): PruneTreeNode {
   const { maxChildren, maxDepth, minSize } = options;

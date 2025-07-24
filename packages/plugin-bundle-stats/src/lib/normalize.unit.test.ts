@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getAuditsFromConfigs, prepareDescription } from './normalize.js';
 import type { BundleStatsConfig } from './runner/types.js';
-import type { BundleStatsOptions } from './types.js';
+import type { BundleStatsAuditOptions } from './types.js';
 
 describe('prepareDescription', () => {
   it('should enhance description with all configuration details when all options are present', () => {

@@ -1,15 +1,18 @@
-import type { AuditOutput } from '@code-pushup/models';
+import type { AuditOutput, PluginArtifactOptions } from '@code-pushup/models';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
-import type { GlobalSelectionOptions, SelectionOptions } from '../types.js';
-import { generateAuditOutputs } from './audits/audit-outputs.js';
-import type { InsightsConfig } from './audits/details/table.js';
-import { DEFAULT_PRUNING_OPTIONS } from './audits/details/tree.js';
+import { normalizeRange } from '../normalize.js';
 import type {
-  AuditTreeOptions,
-  DependencyTreeOptions,
-} from './audits/details/tree.js';
-import { DEFAULT_PENALTY, type ScoringConfig } from './audits/scoring.js';
-import { type SelectionConfig } from './audits/selection.js';
+  PluginDependencyTreeOptions,
+  PluginInsightsTableOptions,
+  PluginScoringOptions,
+  PluginSelectionOptions,
+} from '../types.js';
+import { generateAuditOutputs } from './audits/audit-outputs.js';
+import type { InsightsTableConfig } from './audits/details/table.js';
+import { DEFAULT_PRUNING_CONFIG } from './audits/details/tree.js';
+import type { DependencyTreeConfig } from './audits/details/tree.js';
+import { DEFAULT_PENALTY } from './audits/scoring.js';
+import type { SelectionConfig } from './audits/selection.js';
 import type { BundleStatsConfig, SupportedBundlers } from './types.js';
 import type { UnifiedStats } from './unify/unified-stats.types.js';
 import { unifyBundlerStats as unifyEsbuildStats } from './unify/unify.esbuild.js';
@@ -17,21 +20,9 @@ import { unifyBundlerStats as unifyRsbuildStats } from './unify/unify.rsbuild.js
 import { unifyBundlerStats as unifyViteStats } from './unify/unify.vite.js';
 import { unifyBundlerStats as unifyWebpackStats } from './unify/unify.webpack.js';
 
-export type PluginArtefactOptions = {
-  generateArtefacts?: {
-    command: string;
-    args: string[];
-  };
-  artefactsPath: string;
+export interface BundleStatsRunnerConfig extends PluginArtifactOptions {
   bundler: SupportedBundlers;
-};
-
-export interface BundleStatsRunnerOptions extends PluginArtefactOptions {
-  audits: BundleStatsConfig[];
-  scoring?: Pick<ScoringConfig, 'penalty'>;
-  dependencyTree?: DependencyTreeOptions | false;
-  insightsTable?: InsightsConfig;
-  selection?: GlobalSelectionOptions;
+  bundleStatsConfigs: BundleStatsConfig[];
 }
 
 /**
@@ -120,53 +111,49 @@ export function getUnifyFunction(
 }
 
 /**
- * Merges artefact tree configurations with user-friendly handling.
+ * Merges dependency tree configurations from audit and plugin levels.
  *
- * Supports these usage patterns:
- * - `dependencyTree: {}` → Enabled with defaults
- * - `dependencyTree: { enabled: false }` → Explicitly disabled
- * - `dependencyTree: undefined` → No tree (inherited from global)
- * - `dependencyTree: false` → Completely disabled
- *
- * @param configTree - Individual audit tree configuration
- * @param optionsTree - Global plugin tree configuration
+ * @param auditConfig - Individual audit tree configuration
+ * @param pluginOptions - Global plugin tree configuration
  * @returns Merged configuration or false/undefined for disabled states
  */
 export function mergeDependencyTreeConfig(
-  configTree: AuditTreeOptions | undefined,
-  optionsTree: DependencyTreeOptions | false | undefined,
-): DependencyTreeOptions | undefined {
+  auditConfig: DependencyTreeConfig | undefined,
+  pluginOptions: PluginDependencyTreeOptions | undefined,
+): DependencyTreeConfig | undefined {
   // Only hide if audit config explicitly disables
-  if (configTree?.enabled === false) {
+  if (auditConfig?.enabled === false) {
     return undefined;
   }
 
   // If global options exist, always show them (unless disabled above)
-  if (optionsTree) {
+  if (pluginOptions) {
     return {
       // Groups merge - users often want to layer groups
-      groups: [...(optionsTree?.groups ?? []), ...(configTree?.groups ?? [])],
+      groups: [
+        ...(pluginOptions?.groups ?? []),
+        ...(auditConfig?.groups ?? []),
+      ],
       // Pruning overwrites - only one pruning strategy should apply (shallow merge ok)
       pruning: {
-        ...DEFAULT_PRUNING_OPTIONS,
-        ...(optionsTree?.pruning ?? {}),
-        ...(configTree?.pruning ?? {}),
+        ...DEFAULT_PRUNING_CONFIG,
+        ...(pluginOptions?.pruning ?? {}),
+        ...(auditConfig?.pruning ?? {}),
       },
     };
   }
 
   // If no global options but config exists, use config
-  if (configTree) {
+  if (auditConfig) {
     return {
-      groups: [...(configTree?.groups ?? [])],
+      groups: auditConfig?.groups ?? [],
       pruning: {
-        ...DEFAULT_PRUNING_OPTIONS,
-        ...(configTree?.pruning ?? {}),
+        ...DEFAULT_PRUNING_CONFIG,
+        ...(auditConfig?.pruning ?? {}),
       },
     };
   }
 
-  // Neither global nor config options exist
   return undefined;
 }
 
@@ -174,32 +161,32 @@ export function mergeDependencyTreeConfig(
  * Merges selection configurations with hybrid strategy. Excludes merge for safety, includes overwrite for scope clarity.
  */
 export function mergeSelectionConfig(
-  configSelection: SelectionOptions | undefined,
-  optionsSelection: GlobalSelectionOptions | undefined,
+  auditConfig: SelectionConfig | undefined,
+  pluginOptions?: PluginSelectionOptions,
 ): SelectionConfig {
   return {
     // Include arrays overwrite - config takes precedence for scope clarity
-    includeOutputs: configSelection?.includeOutputs ?? [],
-    includeInputs: configSelection?.includeInputs ?? [],
-    includeImports: configSelection?.includeImports ?? [],
-    includeEntryPoints: configSelection?.includeEntryPoints ?? [],
+    includeOutputs: auditConfig?.includeOutputs ?? [],
+    includeInputs: auditConfig?.includeInputs ?? [],
+    includeImports: auditConfig?.includeImports ?? [],
+    includeEntryPoints: auditConfig?.includeEntryPoints ?? [],
 
     // Exclude arrays merge - merging exclusions is safe and expected
     excludeOutputs: [
-      ...(optionsSelection?.['excludeOutputs'] ?? []),
-      ...(configSelection?.excludeOutputs ?? []),
+      ...(pluginOptions?.excludeOutputs ?? []),
+      ...(auditConfig?.excludeOutputs ?? []),
     ],
     excludeInputs: [
-      ...(optionsSelection?.['excludeInputs'] ?? []),
-      ...(configSelection?.excludeInputs ?? []),
+      ...(pluginOptions?.excludeInputs ?? []),
+      ...(auditConfig?.excludeInputs ?? []),
     ],
     excludeImports: [
-      ...(optionsSelection?.['excludeImports'] ?? []),
-      ...(configSelection?.excludeImports ?? []),
+      ...(pluginOptions?.excludeImports ?? []),
+      ...(auditConfig?.excludeImports ?? []),
     ],
     excludeEntryPoints: [
-      ...(optionsSelection?.['excludeEntryPoints'] ?? []),
-      ...(configSelection?.excludeEntryPoints ?? []),
+      ...(pluginOptions?.excludeEntryPoints ?? []),
+      ...(auditConfig?.excludeEntryPoints ?? []),
     ],
   };
 }
@@ -208,29 +195,37 @@ export function mergeSelectionConfig(
  * Merges scoring configurations with hybrid strategy. Penalty blacklist merges to combine blocked patterns.
  */
 export function mergeScoringConfig(
-  configScoring: BundleStatsConfig['scoring'] | undefined,
-  optionsScoring: Pick<ScoringConfig, 'penalty'> | undefined,
+  auditConfig: BundleStatsConfig['scoring'] | undefined,
+  pluginOptions: PluginScoringOptions | undefined,
 ): BundleStatsConfig['scoring'] {
-  if (configScoring?.penalty === false) {
-    return configScoring;
+  if (auditConfig?.penalty === false) {
+    return auditConfig;
   }
 
-  if (!configScoring) {
-    return optionsScoring as BundleStatsConfig['scoring'];
+  if (!auditConfig) {
+    return pluginOptions as BundleStatsConfig['scoring'];
   }
+
+  const pluginPenalty = pluginOptions?.penalty;
+  const normalizedPluginPenalty = pluginPenalty
+    ? {
+        ...pluginPenalty,
+        artefactSize: pluginPenalty.artefactSize
+          ? normalizeRange(pluginPenalty.artefactSize)
+          : undefined,
+      }
+    : undefined;
 
   return {
-    ...configScoring,
+    ...auditConfig,
     penalty: {
       ...DEFAULT_PENALTY,
-      ...optionsScoring?.penalty,
-      ...configScoring?.penalty,
+      ...normalizedPluginPenalty,
+      ...auditConfig?.penalty,
       // Blacklist merges - combine blocked patterns from both sources
       blacklist: [
-        ...(optionsScoring?.penalty !== false
-          ? (optionsScoring?.penalty?.blacklist ?? [])
-          : []),
-        ...(configScoring?.penalty?.blacklist ?? []),
+        ...(normalizedPluginPenalty?.blacklist ?? []),
+        ...(auditConfig?.penalty?.blacklist ?? []),
       ],
     },
   };
@@ -240,15 +235,15 @@ export function mergeScoringConfig(
  * Merges insights configurations with hybrid strategy. Plugin-level provides broad insights, audit-level adds specifics.
  */
 export function mergeInsightsConfig(
-  configInsights: InsightsConfig | false | undefined,
-  optionsInsights: InsightsConfig | undefined,
-): InsightsConfig | false | undefined {
-  if (configInsights === false) {
+  auditConfig: InsightsTableConfig | false | undefined,
+  pluginOptions: InsightsTableConfig | undefined,
+): InsightsTableConfig | false | undefined {
+  if (auditConfig === false) {
     return undefined;
   }
 
   // Insights merge - plugin-level defines broad insights, audits add specifics
-  return [...(optionsInsights ?? []), ...(configInsights ?? [])];
+  return [...(pluginOptions ?? []), ...(auditConfig ?? [])];
 }
 
 /**
@@ -256,22 +251,21 @@ export function mergeInsightsConfig(
  * Supports multiple bundlers (esbuild, webpack, rsbuild) with dynamic module loading.
  */
 export async function bundleStatsRunner(
-  opts: BundleStatsRunnerOptions,
+  opts: BundleStatsRunnerConfig,
 ): Promise<() => Promise<AuditOutput[]>> {
   const {
-    artefactsPath,
-    generateArtefacts,
-    audits,
-    dependencyTree,
-    scoring,
+    artifactsPaths,
+    generateArtifactsCommand,
+    bundleStatsConfigs,
     bundler,
-    insightsTable,
-    selection,
   } = opts;
 
   return async () => {
-    if (generateArtefacts) {
-      const { command, args } = generateArtefacts;
+    if (artifactsPaths && generateArtifactsCommand) {
+      const { command, args } =
+        typeof generateArtifactsCommand === 'string'
+          ? { command: generateArtifactsCommand, args: undefined }
+          : generateArtifactsCommand;
       try {
         await executeProcess({
           command,
@@ -284,31 +278,32 @@ export async function bundleStatsRunner(
       }
     }
 
-    const stats = await readJsonFile(artefactsPath);
+    if (Array.isArray(artifactsPaths)) {
+      throw new Error(
+        'The bundle stats plugin does not support multiple artifact paths. Request feature on GitHub.',
+      );
+    }
+
+    const stats = await readJsonFile(artifactsPaths);
     // @TODO implement zod schema
-    validateBundleStats(stats, artefactsPath, bundler);
+    validateBundleStats(stats, artifactsPaths, bundler);
 
     const unifyBundlerStats = getUnifyFunction(bundler);
     const unifiedBundleStats = unifyBundlerStats(stats);
 
-    const mergedAuditConfigs = mergeAuditConfigs(audits, {
-      insightsTable,
-      selection,
-      scoring,
-      dependencyTree,
-    });
-
     const bundleStatsTree = unifiedBundleStats;
-    return generateAuditOutputs(bundleStatsTree, mergedAuditConfigs);
+    return generateAuditOutputs(bundleStatsTree, bundleStatsConfigs);
   };
 }
 
 export function mergeAuditConfigs(
   configs: BundleStatsConfig[],
-  options: Pick<
-    BundleStatsRunnerOptions,
-    'scoring' | 'dependencyTree' | 'insightsTable' | 'selection'
-  >,
+  options: {
+    dependencyTree?: PluginDependencyTreeOptions;
+    selection?: PluginSelectionOptions;
+    scoring?: PluginScoringOptions;
+    insightsTable?: PluginInsightsTableOptions;
+  },
 ): BundleStatsConfig[] {
   return configs.map(config => {
     const { insightsTable: configInsights, ...configWithoutInsights } = config;

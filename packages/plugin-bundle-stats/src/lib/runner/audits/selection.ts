@@ -1,10 +1,41 @@
-import type { SelectionOptions } from '../../types.js';
 import type {
   UnifiedStats,
   UnifiedStatsBundle,
   UnifiedStatsImport,
 } from '../unify/unified-stats.types.js';
 import { type PatternMatcher, compilePattern } from './details/grouping.js';
+
+/**
+ * Configuration for output file filtering. Controls which generated bundle files are included.
+ */
+export type SelectionOutputsConfig = {
+  includeOutputs: string[];
+  excludeOutputs: string[];
+};
+
+/**
+ * Configuration for input file filtering. Controls which source files are considered.
+ */
+export type SelectionInputsConfig = {
+  includeInputs: string[];
+  excludeInputs: string[];
+};
+
+/**
+ * Configuration for import filtering. Controls which imported modules are analyzed.
+ */
+export type SelectionImportsConfig = {
+  includeImports: string[];
+  excludeImports: string[];
+};
+
+/**
+ * Configuration for entry point filtering. Controls which entry points are processed.
+ */
+export type SelectionEntryPointsConfig = {
+  includeEntryPoints: string[];
+  excludeEntryPoints: string[];
+};
 
 const COMPILED_PATTERNS_CACHE = new Map<string, PatternMatcher[]>();
 const BUNDLE_PATHS_CACHE = new Map<
@@ -102,35 +133,10 @@ function evaluatePathsWithIncludeExclude(
   return false;
 }
 
-type PatternConfig<TInclude extends string, TExclude extends string> = {
-  [K in TInclude]: string[];
-} & {
-  [K in TExclude]: string[];
-};
-
-export type Include = {
-  include: string[];
-  exclude: string[];
-};
-
-export type IncludeOutputs = PatternConfig<'includeOutputs', 'excludeOutputs'>;
-export type IncludeInputs = PatternConfig<'includeInputs', 'excludeInputs'>;
-export type IncludeImports = PatternConfig<'includeImports', 'excludeImports'>;
-export type IncludeEntryPoints = PatternConfig<
-  'includeEntryPoints',
-  'excludeEntryPoints'
->;
-
-export type SelectionConfig = {
-  includeOutputs: string[];
-  excludeOutputs: string[];
-  includeInputs: string[];
-  excludeInputs: string[];
-  includeImports: string[];
-  excludeImports: string[];
-  includeEntryPoints: string[];
-  excludeEntryPoints: string[];
-};
+export type SelectionConfig = SelectionOutputsConfig &
+  SelectionInputsConfig &
+  SelectionImportsConfig &
+  SelectionEntryPointsConfig;
 
 export type CompiledPatterns = Record<keyof SelectionConfig, PatternMatcher[]>;
 
@@ -214,35 +220,9 @@ export function importsMatchPatterns(
   );
 }
 
-export function normalizeSelectionOptions(
-  options: SelectionOptions,
-): SelectionConfig {
-  const globalInclude = options.include || [];
-  const globalExclude = options.exclude || [];
-
-  return {
-    includeOutputs: [...(options.includeOutputs || []), ...globalInclude],
-    excludeOutputs: [...(options.excludeOutputs || []), ...globalExclude],
-    includeInputs: [...(options.includeInputs || []), ...globalInclude],
-    excludeInputs: [...(options.excludeInputs || []), ...globalExclude],
-    includeImports: [...(options.includeImports || []), ...globalInclude],
-    excludeImports: [...(options.excludeImports || []), ...globalExclude],
-    includeEntryPoints: [
-      ...(options.includeEntryPoints || []),
-      ...globalInclude,
-    ],
-    excludeEntryPoints: [
-      ...(options.excludeEntryPoints || []),
-      ...globalExclude,
-    ],
-  };
-}
-
 export function compileSelectionPatterns(
-  options: SelectionOptions,
+  normalizedOptions: SelectionConfig,
 ): CompiledPatterns {
-  const normalizedOptions = normalizeSelectionOptions(options);
-
   return {
     includeOutputs: compilePatterns(normalizedOptions.includeOutputs),
     excludeOutputs: compilePatterns(normalizedOptions.excludeOutputs),
@@ -377,9 +357,9 @@ function isExcluded(
 
 export function selectBundles(
   unifiedStats: UnifiedStats,
-  selectionOptions: SelectionConfig,
+  selectionConfig: SelectionConfig,
 ): UnifiedStats {
-  const patterns = compileSelectionPatterns(selectionOptions);
+  const patterns = compileSelectionPatterns(selectionConfig);
   validateSelectionPatterns(patterns);
 
   BUNDLE_PATHS_CACHE.clear();

@@ -1,6 +1,26 @@
 import type { Issue } from '@code-pushup/models';
 import type { MinMax } from '../types.js';
-import type { PenaltyConfig } from './details/issues.js';
+
+export type BlacklistPatternList = readonly BlacklistEntry[];
+export type BlacklistEntry =
+  | string
+  | {
+      pattern: string;
+      hint?: string;
+    };
+
+export type PenaltyConfig = {
+  enabled?: boolean;
+  artefactSize?: [number, number];
+  warningWeight?: number;
+  errorWeight?: number;
+  /**
+   * glob patterns when matching get penalised
+   * e.g. packagenames outdates, should be lazy loaded, etc.
+   * Can be simple strings or objects with pattern and optional hint
+   */
+  blacklist?: BlacklistPatternList;
+};
 
 export type ScoringConfig = {
   totalSize: MinMax;

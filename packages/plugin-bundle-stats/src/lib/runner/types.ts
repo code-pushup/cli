@@ -1,40 +1,46 @@
 import type { Audit } from '@code-pushup/models';
-import type { InsightsConfig as InsightsTableConfig } from './audits/details/table.js';
-import type { DependencyTreeOptions } from './audits/details/tree.js';
+import type {
+  PluginDependencyTreeOptions,
+  PluginScoringOptions,
+  PluginSelectionOptions,
+} from '../types.js';
+import type { InsightsTableConfig } from './audits/details/table.js';
+import type { DependencyTreeConfig } from './audits/details/tree.js';
 import type { ScoringConfig } from './audits/scoring.js';
 import type { SelectionConfig } from './audits/selection.js';
 
-export type SupportedBundlers = 'esbuild' | 'webpack' | 'vite' | 'rsbuild';
+export type SupportedBundlers = 'webpack' | 'vite' | 'esbuild' | 'rsbuild';
 
 export type MinMax = [number, number];
 
 export type PatternList = readonly string[];
 
-/**
- * List of blacklist entries for penalty configuration
- */
-export type BlacklistPatternList = readonly BlacklistEntry[];
-
-/**
- * Blacklist entry that can be either a simple pattern string or an object with pattern and optional hint.
- */
-export type BlacklistEntry =
-  | string
-  | {
-      pattern: string;
-      hint?: string;
-    };
-
-type AuditConfig = Pick<Audit, 'title' | 'slug'> &
-  // @TODO this should be partial already
+export type AuditOptions = Required<Pick<Audit, 'slug' | 'title'>> &
   Partial<Pick<Audit, 'description'>>;
 
-export type BundleStatsConfig = AuditConfig & {
+export type BundleStatsConfig = AuditOptions & {
   selection: SelectionConfig;
   scoring: ScoringConfig;
-  dependencyTree?: DependencyTreeOptions;
+  dependencyTree?: DependencyTreeConfig;
   insightsTable?: InsightsTableConfig | false;
 };
+
+export interface PluginArtefactOptions {
+  generateArtefacts?: {
+    command: string;
+    args: string[];
+  };
+  artefactsPath: string;
+  bundler: SupportedBundlers;
+}
+
+export interface BundleStatsRunnerConfig extends PluginArtefactOptions {
+  audits: BundleStatsConfig[];
+  scoring?: PluginScoringOptions;
+  dependencyTree?: PluginDependencyTreeOptions;
+  insightsTable?: InsightsTableConfig;
+  selection?: PluginSelectionOptions;
+}
 
 export type GroupingRule = {
   title?: string;
@@ -62,11 +68,6 @@ export interface ChunkBundleStats {
 export interface ModuleBundleStats {
   name: string;
   size: number;
-}
-
-export interface BundleStatsAuditData {
-  total: number;
-  chunks: MinimalBundleStats[];
 }
 
 export interface Grouping {

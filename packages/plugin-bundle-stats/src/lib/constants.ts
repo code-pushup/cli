@@ -1,4 +1,4 @@
-import type { PruningOptions } from './runner/audits/details/tree.js';
+import type { PruningConfig } from './runner/audits/details/tree.js';
 import type { GroupingRule } from './runner/types.js';
 
 /**
@@ -356,7 +356,7 @@ export const DEFAULT_GROUPING: GroupingRule[] = [
  * Default pruning options for bundle stats analysis.
  * These settings control how the bundle tree is simplified and organized.
  */
-export const DEFAULT_PRUNING: PruningOptions = {
+export const DEFAULT_PRUNING: PruningConfig = {
   maxChildren: 10,
   startDepth: 0,
   maxDepth: 4,

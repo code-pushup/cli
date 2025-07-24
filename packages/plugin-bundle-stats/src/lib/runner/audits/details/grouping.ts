@@ -12,6 +12,15 @@ export type PatternMatcher = (path: string) => boolean;
 // Pattern cache to avoid recompiling the same patterns
 const PATTERN_CACHE = new Map<string, PatternMatcher>();
 
+/**
+ * Normalizes patterns from string | PatternList to readonly string[].
+ */
+function normalizePatterns(
+  patterns: string | readonly string[],
+): readonly string[] {
+  return typeof patterns === 'string' ? [patterns] : patterns;
+}
+
 export interface MatchOptions {
   matchBase?: boolean;
   normalizeRelativePaths?: boolean;
@@ -110,7 +119,7 @@ export function findMatchingRule(
     const rule = rules[i];
     if (
       rule &&
-      matchesAnyPattern(filePath, rule.patterns, {
+      matchesAnyPattern(filePath, normalizePatterns(rule.patterns), {
         matchBase: true,
         normalizeRelativePaths: true,
       })
@@ -129,7 +138,7 @@ export function generateGroupKey(
   if (preferRuleTitle && rule.title) return rule.title;
   return deriveGroupTitle(
     filePath,
-    rule.patterns,
+    normalizePatterns(rule.patterns),
     rule.title || DEFAULT_GROUP_NAME,
   );
 }
@@ -380,7 +389,7 @@ export function applyGrouping(
         nodesToGroup.forEach(node => {
           const groupKey = extractIntelligentGroupKey(
             node.name,
-            patterns,
+            normalizePatterns(patterns),
             maxDepth,
           );
           if (!pathGroups.has(groupKey)) pathGroups.set(groupKey, []);
@@ -420,7 +429,7 @@ export function applyGrouping(
           const samplePath = nodesToGroup[0]?.name || '';
           effectiveTitle = deriveGroupTitle(
             samplePath,
-            patterns,
+            typeof patterns === 'string' ? [patterns] : patterns,
             DEFAULT_GROUP_NAME,
           );
         }

@@ -18,14 +18,14 @@ const PATTERN_MATCH_CACHE = new Map<
   { rule: GroupingRule | null; groupKey: string | null }
 >();
 
-export type InsightsConfig = GroupingRule[];
+export type InsightsTableConfig = GroupingRule[];
 
 /**
  * Simplified aggregation with algorithmic optimizations. Eliminates expensive nested operations and redundant pattern matching.
  */
 export function aggregateAndSortGroups(
   statsSlice: UnifiedStats,
-  insights: InsightsConfig,
+  insights: InsightsTableConfig,
 ): { groups: GroupData[]; restGroup: { title: string; bytes: number } } {
   const groupingRules = insights || [];
 
@@ -217,7 +217,7 @@ export function createTable(
  */
 export function createInsightsTable(
   statsSlice: UnifiedStats,
-  insights: InsightsConfig,
+  insights: InsightsTableConfig,
 ): Table {
   const { groups, restGroup } = aggregateAndSortGroups(statsSlice, insights);
   return createTable(groups, restGroup);

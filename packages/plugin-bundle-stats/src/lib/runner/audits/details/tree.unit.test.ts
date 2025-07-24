@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { GroupingRule } from '../../types';
 import type { UnifiedStats } from '../../unify/unified-stats.types';
 import { applyGrouping } from './grouping';
-import { DEFAULT_PRUNING_OPTIONS, createTree, pruneTree } from './tree';
+import { DEFAULT_PRUNING_CONFIG, createTree, pruneTree } from './tree';
 
 describe('applyGrouping', () => {
   it('should group inputs by single pattern', () => {
@@ -511,7 +511,7 @@ describe('pruneTree', () => {
             },
           ],
         },
-        DEFAULT_PRUNING_OPTIONS,
+        DEFAULT_PRUNING_CONFIG,
       ),
     ).toStrictEqual({
       children: [
@@ -576,7 +576,7 @@ describe('pruneTree', () => {
             },
           ],
         },
-        { ...DEFAULT_PRUNING_OPTIONS, minSize: 100 },
+        { ...DEFAULT_PRUNING_CONFIG, minSize: 100 },
       ),
     ).toStrictEqual({
       children: [
@@ -632,7 +632,7 @@ describe('pruneTree', () => {
             },
           ],
         },
-        DEFAULT_PRUNING_OPTIONS,
+        DEFAULT_PRUNING_CONFIG,
       ),
     ).toStrictEqual({
       children: [
@@ -674,7 +674,7 @@ describe('pruneTree', () => {
             },
           ],
         },
-        { ...DEFAULT_PRUNING_OPTIONS, pathLength: 20 },
+        { ...DEFAULT_PRUNING_CONFIG, pathLength: 20 },
       ),
     ).toStrictEqual({
       children: [

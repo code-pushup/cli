@@ -1,15 +1,12 @@
 import { minimatch } from 'minimatch';
 import type { Issue } from '@code-pushup/models';
 import { formatBytes } from '@code-pushup/utils';
-import type {
-  BlacklistEntry,
-  BlacklistPatternList,
-  BundleStatsConfig,
-} from '../../types.js';
+import type { BundleStatsConfig } from '../../types.js';
 import type {
   UnifiedStats,
   UnifiedStatsBundle,
 } from '../../unify/unified-stats.types.js';
+import type { BlacklistEntry, BlacklistPatternList } from '../scoring.js';
 
 // ===== PERFORMANCE OPTIMIZATIONS =====
 
@@ -30,18 +27,6 @@ export const ISSUE_ICONS = {
   TOO_SMALL: '🔻',
   BLACKLIST: '🚫',
 } as const;
-
-export type PenaltyConfig = {
-  artefactSize?: [number, number];
-  warningWeight?: number;
-  errorWeight?: number;
-  /**
-   * glob patterns when matching get penalised
-   * e.g. packagenames outdates, should be lazy loaded, etc.
-   * Can be simple strings or objects with pattern and optional hint
-   */
-  blacklist?: BlacklistPatternList;
-};
 
 /**
  * Normalizes blacklist entry to extract pattern string and hint.

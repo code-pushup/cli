@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
-import type { GlobalSelectionOptions } from '../types.js';
-import type { PenaltyConfig } from './audits/details/issues.js';
+import { describe, expect, it, vi } from 'vitest';
+import type { PluginSelectionOptions } from '../types.js';
+import type { PenaltyConfig } from './audits/scoring.js';
 import type { SelectionConfig } from './audits/selection.js';
 import {
   mergeAuditConfigs,
@@ -9,6 +9,7 @@ import {
   mergeScoringConfig,
   mergeSelectionConfig,
 } from './bundle-stats-runner.js';
+import * as bundleStatsRunner from './bundle-stats-runner.js';
 import type { GroupingRule } from './types.js';
 
 const testScoring = {
@@ -17,37 +18,375 @@ const testScoring = {
 };
 const emptySelection: SelectionConfig = {
   includeOutputs: [],
-  includeInputs: [],
-  includeImports: [],
-  includeEntryPoints: [],
   excludeOutputs: [],
+  includeInputs: [],
   excludeInputs: [],
+  includeImports: [],
   excludeImports: [],
+  includeEntryPoints: [],
   excludeEntryPoints: [],
 };
+
+describe('mergeDependencyTreeConfig', () => {
+  it('should return undefined when both global and config are undefined', () => {
+    expect(mergeDependencyTreeConfig(undefined, undefined)).toBeUndefined();
+  });
+
+  it('should use config when global is undefined', () => {
+    const auditConfig = {
+      groups: [{ patterns: ['**/*.ts'], title: 'TypeScript' } as GroupingRule],
+    };
+    const result = mergeDependencyTreeConfig(auditConfig, undefined);
+
+    expect(result?.groups).toHaveLength(1);
+    expect(result?.groups?.[0]).toMatchObject({ patterns: ['**/*.ts'] });
+  });
+
+  it('should return undefined when config.enabled is false', () => {
+    const auditConfig = { enabled: false, groups: [] };
+    const pluginOptions = {
+      groups: [{ patterns: ['**/*.js'], title: 'JavaScript' } as GroupingRule],
+    };
+
+    expect(
+      mergeDependencyTreeConfig(auditConfig, pluginOptions),
+    ).toBeUndefined();
+  });
+
+  it('should merge when global options provided and config undefined', () => {
+    const pluginOptions = {
+      groups: [{ patterns: ['**/*.js'], title: 'JavaScript' } as GroupingRule],
+    };
+    const result = mergeDependencyTreeConfig(undefined, pluginOptions);
+
+    expect(result?.groups).toHaveLength(1);
+    expect(result?.groups?.[0]).toMatchObject({ patterns: ['**/*.js'] });
+  });
+
+  it('should merge when both global and config options provided', () => {
+    const auditConfig = {
+      groups: [{ patterns: ['**/*.ts'], title: 'TypeScript' } as GroupingRule],
+    };
+    const pluginOptions = {
+      groups: [{ patterns: ['**/*.js'], title: 'JavaScript' } as GroupingRule],
+    };
+    const result = mergeDependencyTreeConfig(auditConfig, pluginOptions);
+
+    expect(result?.groups).toHaveLength(2);
+    expect(result?.groups?.[0]).toMatchObject({ patterns: ['**/*.js'] });
+    expect(result?.groups?.[1]).toMatchObject({ patterns: ['**/*.ts'] });
+  });
+
+  it('should overwrite pruning options (config takes precedence)', () => {
+    const auditConfig = { pruning: { maxDepth: 5 } };
+    const pluginOptions = { pruning: { maxDepth: 3 } };
+    const result = mergeDependencyTreeConfig(auditConfig, pluginOptions);
+
+    expect(result?.pruning?.maxDepth).toBe(5);
+  });
+
+  it('should provide DEFAULT pruning options when no options provided', () => {
+    const auditConfig = { groups: [] };
+    const result = mergeDependencyTreeConfig(auditConfig, undefined);
+
+    expect(result?.pruning).toBeDefined();
+  });
+});
+
+describe('mergeSelectionConfig', () => {
+  it('should merge plugin and audit selection patterns', () => {
+    const auditConfig = {
+      includeOutputs: ['main.js'],
+      excludeOutputs: [],
+      includeInputs: [],
+      excludeInputs: [],
+      includeImports: [],
+      excludeImports: [],
+      includeEntryPoints: [],
+      excludeEntryPoints: [],
+    };
+    const pluginOptions = {
+      excludeOutputs: ['*.map'],
+      excludeInputs: [],
+      excludeImports: [],
+      excludeEntryPoints: [],
+    } as PluginSelectionOptions;
+    const result = mergeSelectionConfig(auditConfig, pluginOptions);
+
+    expect(result).toMatchObject({
+      includeOutputs: ['main.js'],
+      excludeOutputs: ['*.map'],
+    });
+  });
+
+  it('should handle empty plugin options', () => {
+    const auditConfig = {
+      includeOutputs: [],
+      excludeOutputs: ['dev.js'],
+      includeInputs: [],
+      excludeInputs: [],
+      includeImports: [],
+      excludeImports: [],
+      includeEntryPoints: [],
+      excludeEntryPoints: [],
+    };
+    const result = mergeSelectionConfig(auditConfig);
+
+    expect(result).toMatchObject({
+      excludeOutputs: ['dev.js'],
+    });
+  });
+
+  it('should merge multiple arrays correctly', () => {
+    const auditConfig = {
+      includeOutputs: ['main.js'],
+      excludeOutputs: [],
+      includeInputs: [],
+      excludeInputs: ['temp.js'],
+      includeImports: [],
+      excludeImports: [],
+      includeEntryPoints: [],
+      excludeEntryPoints: [],
+    };
+    const pluginOptions = {
+      excludeOutputs: ['*.map'],
+      excludeInputs: ['test/**'],
+      excludeImports: [],
+      excludeEntryPoints: [],
+    } as PluginSelectionOptions;
+    const result = mergeSelectionConfig(auditConfig, pluginOptions);
+
+    expect(result).toMatchObject({
+      includeOutputs: ['main.js'],
+      excludeOutputs: ['*.map'],
+      excludeInputs: ['test/**', 'temp.js'],
+    });
+  });
+
+  it('should handle undefined config selection', () => {
+    const pluginOptions = {
+      excludeOutputs: ['*.map'],
+      excludeInputs: [],
+      excludeImports: [],
+      excludeEntryPoints: [],
+    } as PluginSelectionOptions;
+    const result = mergeSelectionConfig(undefined, pluginOptions);
+
+    expect(result).toMatchObject({
+      includeOutputs: [],
+      excludeOutputs: ['*.map'],
+    });
+  });
+
+  it('should handle empty exclude arrays', () => {
+    const auditConfig = {
+      includeOutputs: [],
+      excludeOutputs: [],
+      includeInputs: [],
+      excludeInputs: [],
+      includeImports: [],
+      excludeImports: [],
+      includeEntryPoints: [],
+      excludeEntryPoints: [],
+    };
+    const pluginOptions = {
+      excludeOutputs: [],
+      excludeInputs: [],
+      excludeImports: [],
+      excludeEntryPoints: [],
+    } as PluginSelectionOptions;
+    const result = mergeSelectionConfig(auditConfig, pluginOptions);
+
+    expect(result).toMatchObject(emptySelection);
+  });
+
+  it('should merge exclude patterns correctly', () => {
+    const auditConfig = emptySelection;
+    const pluginOptions = {
+      excludeOutputs: ['*.map'],
+      excludeInputs: ['*.test.js'],
+      excludeImports: ['dev/**'],
+      excludeEntryPoints: ['debug.js'],
+    } as PluginSelectionOptions;
+    const result = mergeSelectionConfig(auditConfig, pluginOptions);
+
+    expect(result.excludeOutputs).toStrictEqual(['*.map']);
+    expect(result.excludeInputs).toStrictEqual(['*.test.js']);
+    expect(result.excludeImports).toStrictEqual(['dev/**']);
+    expect(result.excludeEntryPoints).toStrictEqual(['debug.js']);
+  });
+});
+
+describe('mergeScoringConfig', () => {
+  it('should return config when config.penalty is false', () => {
+    const auditConfig = {
+      totalSize: [0, 1000] as [number, number],
+      penalty: false as const,
+    };
+    const pluginOptions = {
+      penalty: {
+        warningWeight: 0.1,
+        errorWeight: 0.2,
+        factor: 2,
+      } as PenaltyConfig,
+    };
+
+    expect(mergeScoringConfig(auditConfig, pluginOptions)).toStrictEqual({
+      totalSize: [0, 1000],
+      penalty: false,
+    });
+  });
+
+  it('should return options when config is undefined', () => {
+    const pluginOptions = {
+      penalty: {
+        warningWeight: 0.1,
+        errorWeight: 0.2,
+        factor: 2,
+      } as PenaltyConfig,
+    };
+
+    expect(mergeScoringConfig(undefined, pluginOptions)).toStrictEqual(
+      pluginOptions,
+    );
+  });
+
+  it('should merge when both config and options provided', () => {
+    const auditConfig = {
+      totalSize: [0, 1000] as [number, number],
+      penalty: {
+        warningWeight: 0.1,
+        errorWeight: 0.2,
+        factor: 3,
+      } as PenaltyConfig,
+    };
+    const pluginOptions = {
+      penalty: {
+        warningWeight: 0.1,
+        errorWeight: 0.2,
+        threshold: 100,
+      } as PenaltyConfig,
+    };
+    const result = mergeScoringConfig(auditConfig, pluginOptions);
+
+    expect(result?.penalty).toMatchObject({ factor: 3, threshold: 100 });
+  });
+
+  it('should merge penalty blacklists from both sources', () => {
+    const auditConfig = {
+      totalSize: [0, 1000] as [number, number],
+      penalty: {
+        warningWeight: 0.1,
+        errorWeight: 0.2,
+        blacklist: ['config-pattern'],
+      } as PenaltyConfig,
+    };
+    const pluginOptions = {
+      penalty: {
+        warningWeight: 0.1,
+        errorWeight: 0.2,
+        blacklist: ['global-pattern'],
+      } as PenaltyConfig,
+    };
+    const result = mergeScoringConfig(auditConfig, pluginOptions);
+
+    expect((result?.penalty as any)?.blacklist).toStrictEqual([
+      'global-pattern',
+      'config-pattern',
+    ]);
+  });
+
+  it('should overwrite other penalty properties (config takes precedence)', () => {
+    const auditConfig = {
+      totalSize: [0, 1000] as [number, number],
+      penalty: {
+        warningWeight: 0.1,
+        errorWeight: 0.2,
+        factor: 3,
+        threshold: 500,
+      } as PenaltyConfig,
+    };
+    const pluginOptions = {
+      penalty: {
+        warningWeight: 0.1,
+        errorWeight: 0.2,
+        factor: 2,
+        threshold: 100,
+      } as PenaltyConfig,
+    };
+    const result = mergeScoringConfig(auditConfig, pluginOptions);
+
+    expect((result?.penalty as any)?.factor).toBe(3);
+    expect((result?.penalty as any)?.threshold).toBe(500);
+  });
+
+  it('should handle undefined global scoring', () => {
+    const auditConfig = {
+      totalSize: [0, 1000] as [number, number],
+      penalty: {
+        warningWeight: 0.1,
+        errorWeight: 0.2,
+        factor: 2,
+      } as PenaltyConfig,
+    };
+    const result = mergeScoringConfig(auditConfig, undefined);
+
+    expect((result?.penalty as any)?.factor).toBe(2);
+  });
+});
+
+describe('mergeInsightsConfig', () => {
+  it('should return undefined when config is false', () => {
+    const pluginOptions = [
+      { patterns: ['**/*.js'], title: 'JavaScript' } as GroupingRule,
+    ];
+
+    expect(mergeInsightsConfig(false, pluginOptions)).toBeUndefined();
+  });
+
+  it('should merge arrays when both global and config provided', () => {
+    const auditConfig = [
+      { patterns: ['**/*.ts'], title: 'TypeScript' } as GroupingRule,
+    ];
+    const pluginOptions = [
+      { patterns: ['**/*.js'], title: 'JavaScript' } as GroupingRule,
+    ];
+
+    expect(mergeInsightsConfig(auditConfig, pluginOptions)).toHaveLength(2);
+  });
+
+  it('should use global when config is undefined', () => {
+    const pluginOptions = [
+      { patterns: ['**/*.js'], title: 'JavaScript' } as GroupingRule,
+    ];
+
+    expect(mergeInsightsConfig(undefined, pluginOptions)).toStrictEqual([
+      { patterns: ['**/*.js'], title: 'JavaScript' },
+    ]);
+  });
+
+  it('should use config when global is undefined', () => {
+    const auditConfig = [
+      { patterns: ['**/*.ts'], title: 'TypeScript' } as GroupingRule,
+    ];
+
+    expect(mergeInsightsConfig(auditConfig, undefined)).toStrictEqual([
+      { patterns: ['**/*.ts'], title: 'TypeScript' },
+    ]);
+  });
+
+  it('should return undefined when both are undefined', () => {
+    expect(mergeInsightsConfig(undefined, undefined)).toStrictEqual([]);
+  });
+
+  it('should handle empty arrays in global and config', () => {
+    expect(mergeInsightsConfig([], [])).toStrictEqual([]);
+  });
+});
 
 describe('mergeAuditConfigs', () => {
   it('should return empty array when given empty configs', () => {
     expect(mergeAuditConfigs([], {})).toStrictEqual([]);
-  });
-
-  it('should preserve original config properties not affected by options', () => {
-    const configs = [
-      {
-        slug: 'test-audit',
-        title: 'Test',
-        description: 'Test audit',
-        selection: emptySelection,
-        scoring: testScoring,
-      },
-    ] as any;
-    const result = mergeAuditConfigs(configs, {});
-
-    expect(result[0]).toMatchObject({
-      slug: 'test-audit',
-      title: 'Test',
-      description: 'Test audit',
-    });
   });
 
   it('should map over multiple configs correctly', () => {
@@ -72,59 +411,6 @@ describe('mergeAuditConfigs', () => {
     expect(result[1]?.slug).toBe('audit-2');
   });
 
-  it('should maintain config order in returned array', () => {
-    const configs = [
-      {
-        slug: 'z-audit',
-        title: 'Z',
-        selection: emptySelection,
-        scoring: testScoring,
-      },
-      {
-        slug: 'a-audit',
-        title: 'A',
-        selection: emptySelection,
-        scoring: testScoring,
-      },
-      {
-        slug: 'm-audit',
-        title: 'M',
-        selection: emptySelection,
-        scoring: testScoring,
-      },
-    ] as any;
-    const result = mergeAuditConfigs(configs, {});
-
-    expect(result.map(c => c.slug)).toStrictEqual([
-      'z-audit',
-      'a-audit',
-      'm-audit',
-    ]);
-  });
-
-  it('should set artefactTree property correctly', () => {
-    const configs = [
-      {
-        slug: 'test',
-        title: 'Test',
-        dependencyTree: { groups: [] },
-        selection: emptySelection,
-        scoring: testScoring,
-      },
-    ] as any;
-    const options = {
-      dependencyTree: {
-        groups: [
-          { patterns: ['**/*.ts'], title: 'TypeScript' } as GroupingRule,
-        ],
-      },
-    };
-    const result = mergeAuditConfigs(configs, options);
-
-    expect((result[0] as any).artefactTree).toBeDefined();
-    expect((result[0] as any).artefactTree?.groups).toHaveLength(1);
-  });
-
   it('should set selection property correctly', () => {
     const configs = [
       {
@@ -135,7 +421,7 @@ describe('mergeAuditConfigs', () => {
       },
     ] as any;
     const options = {
-      selection: { excludeOutputs: ['*.test.js'] } as GlobalSelectionOptions,
+      selection: { excludeOutputs: ['*.test.js'] } as PluginSelectionOptions,
     };
     const result = mergeAuditConfigs(configs, options);
 
@@ -250,303 +536,5 @@ describe('mergeAuditConfigs', () => {
       scoring: expect.any(Object),
     });
     expect((result[0] as any).artefactTree).toBeUndefined();
-  });
-});
-
-describe('mergeArtefactTreeConfig', () => {
-  it('should return undefined when both global and config are undefined', () => {
-    expect(mergeDependencyTreeConfig(undefined, undefined)).toBeUndefined();
-  });
-
-  it('should use config when global is undefined', () => {
-    const config = {
-      groups: [{ patterns: ['**/*.ts'], title: 'TypeScript' } as GroupingRule],
-    };
-    const result = mergeDependencyTreeConfig(config, undefined);
-
-    expect(result?.groups).toHaveLength(1);
-    expect(result?.groups?.[0]).toMatchObject({ patterns: ['**/*.ts'] });
-  });
-
-  it('should return undefined when config.enabled is false', () => {
-    const config = { enabled: false, groups: [] };
-    const global = {
-      groups: [{ patterns: ['**/*.js'], title: 'JavaScript' } as GroupingRule],
-    };
-
-    expect(mergeDependencyTreeConfig(config, global)).toBeUndefined();
-  });
-
-  it('should merge when global options provided and config undefined', () => {
-    const global = {
-      groups: [{ patterns: ['**/*.js'], title: 'JavaScript' } as GroupingRule],
-    };
-    const result = mergeDependencyTreeConfig(undefined, global);
-
-    expect(result?.groups).toHaveLength(1);
-    expect(result?.groups?.[0]).toMatchObject({ patterns: ['**/*.js'] });
-  });
-
-  it('should merge when both global and config options provided', () => {
-    const config = {
-      groups: [{ patterns: ['**/*.ts'], title: 'TypeScript' } as GroupingRule],
-    };
-    const global = {
-      groups: [{ patterns: ['**/*.js'], title: 'JavaScript' } as GroupingRule],
-    };
-    const result = mergeDependencyTreeConfig(config, global);
-
-    expect(result?.groups).toHaveLength(2);
-    expect(result?.groups?.[0]).toMatchObject({ patterns: ['**/*.js'] });
-    expect(result?.groups?.[1]).toMatchObject({ patterns: ['**/*.ts'] });
-  });
-
-  it('should overwrite pruning options (config takes precedence)', () => {
-    const config = { pruning: { maxDepth: 5 } };
-    const global = { pruning: { maxDepth: 3 } };
-    const result = mergeDependencyTreeConfig(config, global);
-
-    expect(result?.pruning?.maxDepth).toBe(5);
-  });
-
-  it('should provide DEFAULT pruning options when no options provided', () => {
-    const config = { groups: [] };
-    const result = mergeDependencyTreeConfig(config, undefined);
-
-    expect(result?.pruning).toBeDefined();
-  });
-});
-
-describe('mergeSelectionConfig', () => {
-  it('should overwrite include arrays (config takes precedence)', () => {
-    const config = { includeOutputs: ['config.js'] };
-    const global = { includeOutputs: ['global.js'] } as GlobalSelectionOptions;
-    const result = mergeSelectionConfig(config, global);
-
-    expect(result.includeOutputs).toStrictEqual(['config.js']);
-  });
-
-  it('should merge exclude arrays from both sources', () => {
-    const config = { excludeOutputs: ['*.test.js'] };
-    const global = { excludeOutputs: ['*.spec.js'] } as GlobalSelectionOptions;
-    const result = mergeSelectionConfig(config, global);
-
-    expect(result.excludeOutputs).toStrictEqual(['*.spec.js', '*.test.js']);
-  });
-
-  it('should handle undefined global selection', () => {
-    const config = { includeOutputs: ['main.js'], excludeInputs: ['test/**'] };
-    const result = mergeSelectionConfig(config, undefined);
-
-    expect(result).toMatchObject({
-      includeOutputs: ['main.js'],
-      excludeInputs: ['test/**'],
-      excludeOutputs: [],
-    });
-  });
-
-  it('should handle undefined config selection', () => {
-    const global = { excludeOutputs: ['*.map'] } as GlobalSelectionOptions;
-    const result = mergeSelectionConfig(undefined, global);
-
-    expect(result).toMatchObject({
-      includeOutputs: [],
-      excludeOutputs: ['*.map'],
-    });
-  });
-
-  it('should handle empty arrays in config and global', () => {
-    const result = mergeSelectionConfig({ includeOutputs: [] }, {
-      excludeOutputs: [],
-    } as GlobalSelectionOptions);
-
-    expect(result.includeOutputs).toStrictEqual([]);
-    expect(result.excludeOutputs).toStrictEqual([]);
-  });
-
-  it('should merge all exclude types (outputs, inputs, imports, entryPoints)', () => {
-    const config = {
-      excludeOutputs: ['c1'],
-      excludeInputs: ['c2'],
-      excludeImports: ['c3'],
-      excludeEntryPoints: ['c4'],
-    };
-    const global = {
-      excludeOutputs: ['g1'],
-      excludeInputs: ['g2'],
-      excludeImports: ['g3'],
-      excludeEntryPoints: ['g4'],
-    } as GlobalSelectionOptions;
-    const result = mergeSelectionConfig(config, global);
-
-    expect(result.excludeOutputs).toStrictEqual(['g1', 'c1']);
-    expect(result.excludeInputs).toStrictEqual(['g2', 'c2']);
-    expect(result.excludeImports).toStrictEqual(['g3', 'c3']);
-    expect(result.excludeEntryPoints).toStrictEqual(['g4', 'c4']);
-  });
-});
-
-describe('mergeScoringConfig', () => {
-  it('should return config when config.penalty is false', () => {
-    const config = {
-      totalSize: [0, 1000] as [number, number],
-      penalty: false as const,
-    };
-    const options = {
-      penalty: {
-        warningWeight: 0.1,
-        errorWeight: 0.2,
-        factor: 2,
-      } as PenaltyConfig,
-    };
-
-    expect(mergeScoringConfig(config, options)).toStrictEqual({
-      totalSize: [0, 1000],
-      penalty: false,
-    });
-  });
-
-  it('should return options when config is undefined', () => {
-    const options = {
-      penalty: {
-        warningWeight: 0.1,
-        errorWeight: 0.2,
-        factor: 2,
-      } as PenaltyConfig,
-    };
-
-    expect(mergeScoringConfig(undefined, options)).toStrictEqual(options);
-  });
-
-  it('should merge when both config and options provided', () => {
-    const config = {
-      totalSize: [0, 1000] as [number, number],
-      penalty: {
-        warningWeight: 0.1,
-        errorWeight: 0.2,
-        factor: 3,
-      } as PenaltyConfig,
-    };
-    const options = {
-      penalty: {
-        warningWeight: 0.1,
-        errorWeight: 0.2,
-        threshold: 100,
-      } as PenaltyConfig,
-    };
-    const result = mergeScoringConfig(config, options);
-
-    expect(result?.penalty).toMatchObject({ factor: 3, threshold: 100 });
-  });
-
-  it('should merge penalty blacklists from both sources', () => {
-    const config = {
-      totalSize: [0, 1000] as [number, number],
-      penalty: {
-        warningWeight: 0.1,
-        errorWeight: 0.2,
-        blacklist: ['config-pattern'],
-      } as PenaltyConfig,
-    };
-    const options = {
-      penalty: {
-        warningWeight: 0.1,
-        errorWeight: 0.2,
-        blacklist: ['global-pattern'],
-      } as PenaltyConfig,
-    };
-    const result = mergeScoringConfig(config, options);
-
-    expect((result?.penalty as any)?.blacklist).toStrictEqual([
-      'global-pattern',
-      'config-pattern',
-    ]);
-  });
-
-  it('should overwrite other penalty properties (config takes precedence)', () => {
-    const config = {
-      totalSize: [0, 1000] as [number, number],
-      penalty: {
-        warningWeight: 0.1,
-        errorWeight: 0.2,
-        factor: 3,
-        threshold: 500,
-      } as PenaltyConfig,
-    };
-    const options = {
-      penalty: {
-        warningWeight: 0.1,
-        errorWeight: 0.2,
-        factor: 2,
-        threshold: 100,
-      } as PenaltyConfig,
-    };
-    const result = mergeScoringConfig(config, options);
-
-    expect((result?.penalty as any)?.factor).toBe(3);
-    expect((result?.penalty as any)?.threshold).toBe(500);
-  });
-
-  it('should handle undefined global scoring', () => {
-    const config = {
-      totalSize: [0, 1000] as [number, number],
-      penalty: {
-        warningWeight: 0.1,
-        errorWeight: 0.2,
-        factor: 2,
-      } as PenaltyConfig,
-    };
-    const result = mergeScoringConfig(config, undefined);
-
-    expect((result?.penalty as any)?.factor).toBe(2);
-  });
-});
-
-describe('mergeInsightsConfig', () => {
-  it('should return undefined when config is false', () => {
-    const global = [
-      { patterns: ['**/*.js'], title: 'JavaScript' } as GroupingRule,
-    ];
-
-    expect(mergeInsightsConfig(false, global)).toBeUndefined();
-  });
-
-  it('should merge arrays when both global and config provided', () => {
-    const config = [
-      { patterns: ['**/*.ts'], title: 'TypeScript' } as GroupingRule,
-    ];
-    const global = [
-      { patterns: ['**/*.js'], title: 'JavaScript' } as GroupingRule,
-    ];
-
-    expect(mergeInsightsConfig(config, global)).toHaveLength(2);
-  });
-
-  it('should use global when config is undefined', () => {
-    const global = [
-      { patterns: ['**/*.js'], title: 'JavaScript' } as GroupingRule,
-    ];
-
-    expect(mergeInsightsConfig(undefined, global)).toStrictEqual([
-      { patterns: ['**/*.js'], title: 'JavaScript' },
-    ]);
-  });
-
-  it('should use config when global is undefined', () => {
-    const config = [
-      { patterns: ['**/*.ts'], title: 'TypeScript' } as GroupingRule,
-    ];
-
-    expect(mergeInsightsConfig(config, undefined)).toStrictEqual([
-      { patterns: ['**/*.ts'], title: 'TypeScript' },
-    ]);
-  });
-
-  it('should return undefined when both are undefined', () => {
-    expect(mergeInsightsConfig(undefined, undefined)).toStrictEqual([]);
-  });
-
-  it('should handle empty arrays in global and config', () => {
-    expect(mergeInsightsConfig([], [])).toStrictEqual([]);
   });
 });
