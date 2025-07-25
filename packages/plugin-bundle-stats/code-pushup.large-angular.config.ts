@@ -56,11 +56,6 @@ const blacklist: BlacklistEntry[] = [
     hint: 'Replace with modern alternatives.',
   })),
 
-  ...toReplaceWithDesignSystemUi.map(pattern => ({
-    pattern,
-    hint: 'Replace with Design System UI.',
-  })),
-
   ...toLazyLoad.map(pattern => ({
     pattern,
     hint: 'Use lazy loading for heavy dependencies.',
@@ -475,13 +470,12 @@ const newNodeModulesGroup: GroupingRule = {
 
 const nodeModulesAudit = {
   slug: 'node-modules',
-  title: '🔍 Node Modules',
+  title: '📦 Node Modules',
   description: `
 Detects *newly added packages*, catches **forbidden dependencies**, monitors **3rd party costs**, and prevents **bundle bloat** from unreviewed dependencies.`,
   selection: {
     includeStaticImports: false,
     includeInputs: ['**/node_modules/**'],
-    excludeInputs: knownNodeModules,
   },
   insightsTable: [
     knownNodeModulesBlacklistedGroup,
