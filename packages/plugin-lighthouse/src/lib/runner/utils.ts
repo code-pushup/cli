@@ -1,4 +1,5 @@
 import { bold } from 'ansis';
+import debug from 'debug';
 import type { Config, FormattedIcu } from 'lighthouse';
 import log from 'lighthouse-logger';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
@@ -109,6 +110,18 @@ export function determineAndSetLogLevel({
   }
 
   log.setLevel(logLevel);
+
+  switch (logLevel) {
+    case 'silent':
+      debug.enable('-LH:*');
+      break;
+    case 'verbose':
+      debug.enable('LH:*');
+      break;
+    default: // 'info'
+      debug.enable('LH:*, -LH:*:verbose');
+      break;
+  }
 
   return logLevel;
 }

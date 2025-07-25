@@ -29,6 +29,8 @@ describe('executorContext', () => {
       cwd: '<CWD>',
       isVerbose: false,
       projectName: 'other-lib',
+      projectGraph: { nodes: {}, dependencies: {} },
+      nxJsonConfiguration: {},
       projectsConfigurations: {
         projects: {
           'other-lib': {

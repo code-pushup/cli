@@ -436,7 +436,7 @@ describe('determineAndSetLogLevel', () => {
     );
     expect(log.isVerbose()).toBe(true);
     expect(debugLib.enabled('LH:*')).toBe(true);
-    expect(debugLib.enabled('LH:*:verbose')).toBe(false);
+    expect(debugLib.enabled('LH:*:verbose')).toBe(true);
   });
 });
 

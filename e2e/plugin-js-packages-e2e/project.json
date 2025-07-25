@@ -6,7 +6,7 @@
   "implicitDependencies": ["cli", "plugin-js-packages"],
   "targets": {
     "lint": {
-      "executor": "@nx/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["e2e/plugin-eslint-e2e/**/*.ts"]

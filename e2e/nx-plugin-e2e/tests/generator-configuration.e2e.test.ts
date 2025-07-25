@@ -32,13 +32,14 @@ describe('nx-plugin g configuration', () => {
   });
 
   afterEach(async () => {
-    await teardownTestFolder(testFileDir);
+    // await teardownTestFolder(testFileDir);
   });
 
   it('should generate code-pushup.config.ts file and add target to project.json', async () => {
     const cwd = path.join(testFileDir, 'configure');
     await materializeTree(tree, cwd);
 
+    // npx nx g @code-pushup/nx-plugin:configuration my-lib --targetName=code-pushup
     const { code, stdout, stderr } = await executeProcess({
       command: 'npx',
       args: [
@@ -63,8 +64,8 @@ describe('nx-plugin g configuration', () => {
     expect(cleanedStdout).toContain(
       'NX  Generating @code-pushup/nx-plugin:configuration',
     );
-    expect(cleanedStdout).toMatch(/^CREATE.*code-pushup.config.ts/m);
-    expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
+    expect(cleanedStdout).toBe(/^CREATE.*code-pushup.config.ts/m);
+    expect(cleanedStdout).toBe(/^UPDATE.*project.json/m);
 
     const projectJson = await readFile(
       path.join(cwd, 'libs', project, 'project.json'),

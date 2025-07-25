@@ -18,6 +18,7 @@ module.exports = tseslint.config(
       // Nx plugins don't yet support ESM: https://github.com/nrwl/nx/issues/15682
       'unicorn/prefer-module': 'off',
       // used instead of verbatimModuleSyntax tsconfig flag (requires ESM)
+      'n/file-extension-in-import': 'off',
       '@typescript-eslint/consistent-type-imports': [
         'warn',
         {

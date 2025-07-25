@@ -7,7 +7,7 @@ import {
   updateJson,
 } from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
-import type { LibraryGeneratorSchema } from '@nx/js/src/utils/schema';
+import type { LibraryGeneratorSchema } from '@nx/js/src/generators/library/schema';
 import path from 'node:path';
 import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
 import { executeProcess } from '@code-pushup/utils';
@@ -21,6 +21,8 @@ export function executorContext<
     cwd,
     isVerbose: false,
     projectName,
+    nxJsonConfiguration: {},
+    projectGraph: { nodes: {}, dependencies: {} },
     root: '.',
     projectsConfigurations: {
       projects: {
@@ -53,7 +55,6 @@ export async function generateWorkspaceAndProject(
     testEnvironment: 'node',
     buildable: false,
     publishable: false,
-    projectNameAndRootFormat: 'as-provided',
     ...normalizedOptions,
   });
 
