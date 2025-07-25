@@ -23,7 +23,7 @@ export type PenaltyConfig = {
 };
 
 export type ScoringConfig = {
-  totalSize: MinMax;
+  totalSize?: MinMax;
   penalty?: false | PenaltyConfig;
 };
 
@@ -84,7 +84,7 @@ export function calculatePenalty(
  *
  * ## Scoring
  * Assigns a score in the range [0 … 1] to each artefact (or artefact selection) based on:
- * - Size vs. configurable minimum and maximum thresholds
+ * - Size vs. configurable minimum and maximum thresholds (if totalSize provided, otherwise defaults to 100%)
  * - Direct penalty subtraction based on issue severity levels (when enabled)
  * - Penalty is capped at maximum 20% of the size score
  *
@@ -96,6 +96,11 @@ export function calculatePenalty(
  * - **Max**: Maximum threshold bytes (upper bound)
  *
  * ## Size Score Formula
+ * When totalSize is not provided:
+ * ```
+ * sizeScore = 1 (100%)
+ * ```
+ *
  * For single threshold (number):
  * ```
  * sizeScore = {
@@ -127,9 +132,9 @@ export function calculatePenalty(
  * ```
  * This creates a penalty shift pattern where issues directly reduce the score by their weight values,
  * but the total penalty reduction is capped at 20% of the original size score.
- * Note: When `penalty` is `false`, only size score is used.
+ * Note: When `penalty` is `false` or undefined, only size score is used.
  *
- * @param options - Scoring configuration containing thresholds and penalty weights
+ * @param options - Scoring configuration containing optional thresholds and penalty weights
  * @returns Score calculator function that takes (value, issues) and returns score [0-1]
  */
 export function createBundleStatsScoring(
@@ -140,7 +145,10 @@ export function createBundleStatsScoring(
   return (value: number, issues: Issue[] = []): number => {
     let sizeScore: number;
 
-    if (Array.isArray(totalSize)) {
+    if (!totalSize) {
+      // No size constraints - default to perfect score (100%)
+      sizeScore = 1.0;
+    } else if (Array.isArray(totalSize)) {
       // Range thresholds [min, max]
       const [minThreshold, maxThreshold] = totalSize;
 
@@ -155,7 +163,7 @@ export function createBundleStatsScoring(
       sizeScore = value <= totalSize ? 1.0 : 0;
     }
 
-    if (penalty === false || issues.length === 0) {
+    if (penalty === false || penalty === undefined || issues.length === 0) {
       return sizeScore;
     }
 

@@ -1,4 +1,3 @@
-import { title } from 'process';
 import bundleStatsPlugin, {
   type BlacklistEntry,
   type GroupingRule,
@@ -19,10 +18,7 @@ const toRemoveFromProduction: string[] = [
   '**/node_modules/jest/**',
 ];
 
-const toReplaceWithLodashEs: string[] = [
-  '**/node_modules/lodash/**',
-  '**/node_modules/underscore/**',
-];
+const toReplaceWithLodashEs: string[] = ['**/node_modules/lodash/**'];
 
 const toReplaceWithAlternatives: string[] = [];
 
@@ -50,11 +46,6 @@ const toLazyLoad: string[] = [
 // ===== BLACKLIST =====
 
 const blacklist: BlacklistEntry[] = [
-  ...toRemoveAsSupportedNatively.map(pattern => ({
-    pattern,
-    hint: 'Remove or conditionally load. Supported natively in modern browsers.',
-  })),
-
   ...toReplaceWithLodashEs.map(pattern => ({
     pattern,
     hint: 'Replace with `lodash-es` and use selective imports like `import isEmpty from "lodash-es/isEmpty"`.',
@@ -76,7 +67,21 @@ const blacklist: BlacklistEntry[] = [
   })),
 ];
 
-const angularGroup: GroupingRule[] = [
+// ===== Legacy BLACKLIST =====
+
+const legacyBlacklist: BlacklistEntry[] = [
+  ...toRemoveAsSupportedNatively.map(pattern => ({
+    pattern,
+    hint: 'Remove or conditionally load. Supported natively in modern browsers.',
+  })),
+
+  ...toRemoveFromProduction.map(pattern => ({
+    pattern,
+    hint: 'Remove from production builds.',
+  })),
+];
+
+const angularGroups: GroupingRule[] = [
   // Angular packages (processed first)
   {
     patterns: [
@@ -101,45 +106,125 @@ const angularGroup: GroupingRule[] = [
   },
 ];
 
-const thirdPartyGroup: GroupingRule[] = [
-  // @pixi
+const thirdPartyGroups: GroupingRule[] = [
   {
-    title: '@pixi',
-    patterns: ['**/node_modules/@pixi/**'],
-    icon: '📦',
-  },
-  //lodash-es
-  {
+    title: 'lodash-es',
     patterns: ['**/node_modules/lodash-es/**'],
     icon: '📦',
-    numSegments: 1, // Shows individual unscoped packages
   },
+  {
+    title: '@pixi',
+    patterns: ['**/node_modules/@pixi/**', '**/node_modules/pixi-*/**'],
+    icon: '📦',
+  },
+
+  {
+    title: 'rxjs',
+    patterns: ['**/node_modules/rxjs/**'],
+    icon: '📦',
+  },
+
   // All scoped packages (processed third) - no title allows auto-derivation of individual package names
   {
     patterns: ['**/node_modules/@*/**'],
     icon: '📦',
-    numSegments: 3, // Shows @rx-angular/state, @push-based/test-lib, @ngx-translate/core, etc.
-  },
-  // General node_modules group (processed last - catches everything else)
-  {
-    title: 'Node Modules',
-    patterns: ['**/node_modules/**'],
-    icon: '📁',
-    numSegments: 1, // Shows individual unscoped packages
+    numSegments: 2,
   },
 ];
 
-const internalPackagesGroup: GroupingRule[] = [
-  {
-    title: 'Host App Package',
-    patterns: ['**/packages/host-app/**'],
-    icon: '🟣',
-  },
-  {
-    title: 'Vanilla Package',
-    patterns: ['**/packages/vanilla/**'],
-    icon: '🟣',
-  },
+const knownNodeModules: string[] = [
+  ...toLazyLoad,
+  ...toRemoveAsSupportedNatively,
+  ...toReplaceWithLodashEs,
+  ...toReplaceWithAlternatives,
+  ...toReplaceWithDesignSystemUi,
+  ...toRemoveFromProduction,
+  ...angularGroups.map(group => group.patterns).flat(),
+  ...thirdPartyGroups.map(group => group.patterns).flat(),
+
+  // new findings here
+  '**/node_modules/@incodetech/**',
+  '**/node_modules/scheduler/**',
+  '**/node_modules/@jumio/**',
+  '**/node_modules/gsap/**',
+  '**/node_modules/@img-arena/**',
+  '**/node_modules/@rtms/**',
+  '**/node_modules/@floating-ui/**',
+  '**/node_modules/@push-based/**',
+  '**/node_modules/jspdf/**',
+  '**/node_modules/braintree-web/**',
+  '**/node_modules/html2canvas/**',
+  '**/node_modules/swiper/**',
+  '**/node_modules/canvg/**',
+  '**/node_modules/xml2js/**',
+  '**/node_modules/buffer/**',
+  '**/node_modules/bwin-winwheel/**',
+  '**/node_modules/dompurify/**',
+  '**/node_modules/hammerjs/**',
+  '**/node_modules/sax/**',
+  '**/node_modules/svg-pathdata/**',
+  '**/node_modules/fast-json-patch/**',
+  '**/node_modules/tslib/**',
+  '**/node_modules/url/**',
+
+  '**/node_modules/call-bind-apply-helpers/**',
+  '**/node_modules/performance-now/**',
+  '**/node_modules/custom-event-js/**',
+  '**/node_modules/subsink/**',
+  '**/node_modules/get-proto/**',
+  '**/node_modules/yeast/**',
+  '**/node_modules/es-errors/**',
+  '**/node_modules/dunder-proto/**',
+  '**/node_modules/side-channel/**',
+  '**/node_modules/parseqs/**',
+  '**/node_modules/mitt/**',
+  '**/node_modules/arraybuffer.slice/**',
+  '**/node_modules/component-bind/**',
+  '**/node_modules/after/**',
+  '**/node_modules/call-bound/**',
+  '**/node_modules/gopd/**',
+  '**/node_modules/indexof/**',
+
+  '**/node_modules/stream/**',
+  '**/node_modules/component-emitter/**',
+  '**/node_modules/parseuri/**',
+  '**/node_modules/blob/**',
+  '**/node_modules/ieee754/**',
+  '**/node_modules/has-binary2/**',
+
+  '**/node_modules/primeng/**',
+  '**/node_modules/dexie/**',
+  '**/node_modules/canvas-confetti/**',
+  '**/node_modules/cssfilter/**',
+  '**/node_modules/object-inspect/**',
+  '**/node_modules/xss/**',
+  '**/node_modules/cds-client/**',
+  '**/node_modules/get-intrinsic/**',
+  '**/node_modules/events/**',
+  '**/node_modules/pixi/**',
+  '**/node_modules/css-element-queries/**',
+  '**/node_modules/blueimp-md5/**',
+  '**/node_modules/string_decoder/**',
+  '**/node_modules/dijkstrajs/**',
+  '**/node_modules/has-symbols/**',
+  '**/node_modules/braintree-web/**',
+];
+
+const allNodeModulesInOneGroup: GroupingRule = {
+  title: 'Node Modules',
+  patterns: ['**/node_modules/**'],
+  icon: '📁',
+};
+
+const selectAll = (opt: { title?: string; icon?: string }): GroupingRule => {
+  return {
+    ...(opt.title && { title: opt.title }),
+    ...(opt.icon && { icon: opt.icon }),
+    patterns: ['**/*'],
+  };
+};
+
+const namedInternalPackagesGroups: GroupingRule[] = [
   {
     title: 'Design System Package',
     patterns: ['**/packages/design-system/**'],
@@ -150,37 +235,13 @@ const internalPackagesGroup: GroupingRule[] = [
     patterns: ['**/packages/themepark/**'],
     icon: '🚫',
   },
-  {
-    title: 'Dev Kit Package',
-    patterns: ['**/packages/dev-kit/**'],
-    icon: '🟣',
-  },
-  {
-    title: 'Loaders Lib Package',
-    patterns: ['**/packages/loaders-lib/**'],
-    icon: '🟣',
-  },
-  {
-    title: 'Geo Coordinator Lib Package',
-    patterns: ['**/packages/geo-coordinator-lib/**'],
-    icon: '🟣',
-  },
-  {
-    title: 'Engagement Package',
-    patterns: ['**/packages/engagement/**'],
-    icon: '🟣',
-  },
-  {
-    title: 'Global Search Package',
-    patterns: ['**/packages/global-search/**'],
-    icon: '🟣',
-  },
-  {
-    title: 'Rewards Hub Package',
-    patterns: ['**/packages/rewards-hub/**'],
-    icon: '🟣',
-  },
 ];
+
+const allPackagesGroup: GroupingRule = {
+  patterns: ['**/packages/**'],
+  icon: '🟣',
+  numSegments: 2,
+};
 
 const productGroups: GroupingRule[] = [
   {
@@ -216,38 +277,34 @@ const productGroups: GroupingRule[] = [
   },
 ];
 
-const blacklistGroup: GroupingRule[] = [
-  {
-    title: 'Blacklist',
-    icon: '🚫',
-    patterns: [
-      ...toRemoveAsSupportedNatively,
-      ...toReplaceWithLodashEs,
-      ...toReplaceWithAlternatives,
-      ...toReplaceWithDesignSystemUi,
-      ...toLazyLoad,
-      ...toRemoveFromProduction,
-    ],
-  },
-];
+const allBlacklistGroup: GroupingRule = {
+  title: 'Blacklist',
+  icon: '🚫',
+  patterns: [
+    ...blacklist.map(item => (typeof item === 'string' ? item : item.pattern)),
+    ...legacyBlacklist.map(item =>
+      typeof item === 'string' ? item : item.pattern,
+    ),
+  ],
+};
 
 // === Audits ===
 
 const allFilesAudit = {
   slug: 'all-files',
   title: '🗂️ All Files',
-  description: 'All files in the bundle',
+  description: `
+Analyzes **complete bundle composition**, identifies **architectural patterns**, tracks **package distribution**, and reveals **size contributors** across all bundle artifacts.`,
   selection: {
+    includeStaticImports: false,
     includeInputs: ['**/*'],
     exclude: ['**/*.map', '**/*.d.ts'],
   },
-  scoring: {
-    totalSize: 1_000_000_000,
-  },
   insightsTable: [
-    ...blacklistGroup,
-    ...internalPackagesGroup,
-    angularGroup.reduce((acc, group) => {
+    allBlacklistGroup,
+    ...namedInternalPackagesGroups,
+    allPackagesGroup,
+    angularGroups.reduce((acc, group) => {
       return {
         ...acc,
         title: 'Angular',
@@ -256,16 +313,13 @@ const allFilesAudit = {
       };
     }, {} as GroupingRule),
     ...productGroups,
-    {
-      title: 'Node Modules',
-      patterns: ['**/node_modules/**'],
-      icon: '📁',
-    },
+    allNodeModulesInOneGroup,
   ],
-  dependencyTree: {
+  dependencyTree: false /*{
     groups: [
       ...blacklistGroup,
-      ...internalPackagesGroup,
+          ...namedInternalPackagesGroups,
+      allPackagesGroup,
       angularGroup.reduce((acc, group) => {
         return {
           ...acc,
@@ -275,33 +329,29 @@ const allFilesAudit = {
         };
       }, {} as GroupingRule),
       ...productGroups,
-      {
-        title: 'Node Modules',
-        patterns: ['**/node_modules/**'],
-        icon: '📁',
-        numSegments: 1,
-      },
+      allNodeModulesInOneGroup,
     ],
     pruning: {
       maxChildren: 40,
       maxDepth: 2,
       minSize: 5_000, // Reduced from 50_000 to show smaller files (1KB threshold)
     },
-  },
+  },*/,
 };
 
-const initialBundleSizeGrouping = [
-  ...blacklistGroup,
-  ...angularGroup,
-  ...internalPackagesGroup,
+const initialBundleSizeGroups = [
+  allBlacklistGroup,
+  ...angularGroups,
+  ...namedInternalPackagesGroups,
+  allPackagesGroup,
   ...productGroups,
-  ...thirdPartyGroup,
+  ...thirdPartyGroups,
 ];
 const initialBundleSizeAudit = {
   slug: 'initial-bundle-size',
   title: '🔥 Initial Bundle Size',
-  description:
-    'Initial bundle size audit for main and polyfills bundles as well as styles assets',
+  description: `
+Monitors **critical loading performance**, enforces **size budgets**, detects **bloat sources**, and prevents **slow startup times** in main application bundles.`,
   selection: {
     includeOutputs: ['**/main-*.js', '**/polyfill-*.js', '**/styles-*.css'],
   },
@@ -311,9 +361,9 @@ const initialBundleSizeAudit = {
       artefactSize: [100, 100_000],
     },
   },
-  insightsTable: initialBundleSizeGrouping,
+  insightsTable: initialBundleSizeGroups,
   dependencyTree: {
-    groups: initialBundleSizeGrouping,
+    groups: initialBundleSizeGroups,
     pruning: {
       maxChildren: 20,
       maxDepth: 2,
@@ -324,9 +374,9 @@ const initialBundleSizeAudit = {
 const blacklistedFilesAudit = {
   slug: 'blacklisted',
   title: '🚫 Blacklisted',
-  description: 'All chunks containing blacklisted files',
+  description: `
+Detects **blacklisted dependencies**, enforces **architectural standards**, prevents **security vulnerabilities**, and blocks **performance bottlenecks** from reaching production.`,
   scoring: {
-    totalSize: 1_000_000_000,
     penalty: {
       blacklist,
       warningWeight: 0,
@@ -334,343 +384,128 @@ const blacklistedFilesAudit = {
     },
   },
   selection: {
-    includeInputs: blacklistGroup.at(0)?.patterns ?? [],
+    includeStaticImports: false,
+    includeInputs: allBlacklistGroup.patterns,
     excludeInputs: ['**/*.map', '**/*.d.ts'], // Exclude maps and type files
   },
   insightsTable: [
-    ...blacklistGroup,
-    {
-      title: 'Not Blacklisted',
-      patterns: ['**/*'],
-      icon: '✅',
-    },
+    allBlacklistGroup,
+    selectAll({ title: 'Not Blacklisted', icon: '✅' }),
   ],
-  dependencyTree: {
-    groups: [
-      // derive title per package
-      ...blacklistGroup.map(({ title, ...rest }) => rest),
-      {
-        title: 'Not Blacklisted',
-        patterns: ['**/*'],
-        icon: '✅',
-      },
+  dependencyTree: false,
+};
+
+const legacyAngularGroups: GroupingRule[] = [
+  {
+    patterns: [
+      '**/node_modules/@ng-bootstrap/**',
+      '**/node_modules/ngx-toastr/**',
     ],
-    pruning: {
-      maxChildren: 7,
-      maxDepth: 2,
-    },
+    icon: '🚫',
+    numSegments: 2,
   },
-};
-
-const lazyChunksAudit = {
-  slug: 'lazy-chunks',
-  title: '⏳ Lazy Loaded Chunks',
-  description:
-    'Analyze lazy-loaded chunks and their sizes for performance optimization',
-  selection: {
-    includeOutputs: ['**/*-lazy-*.js', '**/chunk-*.js'],
-    excludeOutputs: ['**/main-*.js', '**/polyfill-*.js', '**/vendor-*.js'],
-  },
-  scoring: {
-    totalSize: 500_000, // 500KB threshold for lazy chunks
-    penalty: {
-      artefactSize: [50_000, 200_000], // Warn at 50KB, error at 200KB
-    },
-  },
-  insightsTable: [
-    ...productGroups,
-    ...internalPackagesGroup,
-    {
-      title: 'Third Party (Lazy)',
-      patterns: ['**/node_modules/**'],
-      icon: '📦',
-    },
-  ],
-  dependencyTree: {
-    groups: [...productGroups, ...internalPackagesGroup, ...thirdPartyGroup],
-    pruning: {
-      maxChildren: 15,
-      maxDepth: 2,
-    },
-  },
-};
-
+];
 const angularSpecificAudit = {
   slug: 'angular-ecosystem',
   title: '🅰️ Angular Ecosystem',
-  description: 'Angular core, common, router, and ecosystem packages analysis',
+  description: `
+Tracks **Angular framework usage**, optimizes **tree-shaking opportunities**, identifies **duplicate Angular modules**, and prevents **framework bloat** in Angular applications.`,
   selection: {
-    includeInputs: [
-      '**/node_modules/@angular/**',
-      '**/node_modules/@ng*/**',
-      '**/node_modules/@ngx-*/**',
-      '**/node_modules/@angular-*/**',
-      '**/node_modules/@*angular*/**',
-      '**/node_modules/ngx-*/**',
-      '**/node_modules/ng-*/**',
-      '**/node_modules/*angular*/**',
-    ],
+    includeStaticImports: false,
+    inputsOnly: true,
+    includeInputs: angularGroups.map(group => group.patterns).flat(),
     excludeInputs: ['**/*.map', '**/*.d.ts'],
   },
-  scoring: {
-    totalSize: 800_000, // 800KB budget for Angular ecosystem
-    penalty: {
-      artefactSize: [200_000, 500_000],
-    },
-  },
-  insightsTable: angularGroup,
+  insightsTable: [
+    ...legacyAngularGroups,
+    ...angularGroups.map(group => ({
+      ...group,
+      icon: ' ',
+    })),
+  ],
   dependencyTree: {
-    groups: angularGroup,
+    groups: [
+      ...legacyAngularGroups,
+      ...angularGroups,
+      selectAll({ title: 'Rest', icon: '📁' }),
+    ],
     pruning: {
       maxChildren: 25,
-      maxDepth: 3,
-    },
-  },
-};
-
-const thirdPartyDependenciesAudit = {
-  slug: 'third-party-deps',
-  title: '📦 Third Party Dependencies',
-  description: 'External node_modules dependencies size analysis',
-  selection: {
-    includeInputs: ['**/node_modules/**'],
-    excludeInputs: [
-      '**/*.map',
-      '**/*.d.ts',
-      // Exclude Angular packages as they have their own audit
-      '**/node_modules/@angular/**',
-      '**/node_modules/@ng*/**',
-      '**/node_modules/@ngx-*/**',
-      '**/node_modules/@angular-*/**',
-      '**/node_modules/@*angular*/**',
-      '**/node_modules/ngx-*/**',
-      '**/node_modules/ng-*/**',
-      '**/node_modules/*angular*/**',
-    ],
-  },
-  scoring: {
-    totalSize: 1_500_000, // 1.5MB budget for third-party deps
-    penalty: {
-      artefactSize: [100_000, 300_000],
-    },
-  },
-  insightsTable: thirdPartyGroup,
-  dependencyTree: {
-    groups: thirdPartyGroup,
-    pruning: {
-      maxChildren: 30,
       maxDepth: 2,
     },
   },
 };
 
-const internalPackagesAudit = {
-  slug: 'internal-packages',
-  title: '🟣 Internal Packages',
-  description: 'Analysis of internal company packages and their dependencies',
-  selection: {
-    includeInputs: ['**/packages/**'],
-    excludeInputs: ['**/*.map', '**/*.d.ts'],
-  },
-  scoring: {
-    totalSize: 2_000_000, // 2MB budget for internal packages
-    penalty: {
-      artefactSize: [200_000, 500_000],
-    },
-  },
-  insightsTable: [...internalPackagesGroup, ...productGroups],
-  dependencyTree: {
-    groups: [...internalPackagesGroup, ...productGroups],
-    pruning: {
-      maxChildren: 20,
-      maxDepth: 3,
-    },
-  },
+const knownNodeModulesBlacklistedGroup: GroupingRule = {
+  title: 'Legacy Packages',
+  icon: '📦🚫',
+  patterns: [
+    ...blacklist.map(item => (typeof item === 'string' ? item : item.pattern)),
+    ...legacyBlacklist.map(item =>
+      typeof item === 'string' ? item : item.pattern,
+    ),
+  ],
+  numSegments: 2,
+};
+const knownNodeModulesApprovedGroup: GroupingRule = {
+  title: 'Packages',
+  icon: '📦',
+  patterns: knownNodeModules,
+  numSegments: undefined,
+};
+const newBlacklistedNodeModulesGroup: GroupingRule = {
+  icon: '🆕🚫',
+  patterns: blacklist
+    .map(item => (typeof item === 'string' ? item : item.pattern))
+    .concat(['**/node_modules/underscore/**']),
+  numSegments: 2,
 };
 
-const largeFilesAudit = {
-  slug: 'large-files',
-  title: '🐘 Large Files',
-  description: 'Files larger than 100KB that may need optimization',
+const everythingElseGroup: GroupingRule = {
+  title: 'Rest',
+  icon: '📁',
+  patterns: ['!**/node_modules/**'],
+  numSegments: undefined,
+};
+const newNodeModulesGroup: GroupingRule = {
+  icon: '🆕',
+  patterns: ['**/node_modules/**'],
+  numSegments: 2,
+};
+
+const nodeModulesAudit = {
+  slug: 'node-modules',
+  title: '🔍 Node Modules',
+  description: `
+Detects *newly added packages*, catches **forbidden dependencies**, monitors **3rd party costs**, and prevents **bundle bloat** from unreviewed dependencies.`,
   selection: {
-    includeInputs: ['**/*'],
-    excludeInputs: ['**/*.map', '**/*.d.ts'],
-  },
-  scoring: {
-    totalSize: 10_000_000, // High threshold since we're looking at large files
-    penalty: {
-      artefactSize: [100_000, 500_000], // Flag files > 100KB, error > 500KB
-    },
+    includeStaticImports: false,
+    includeInputs: ['**/node_modules/**'],
+    excludeInputs: knownNodeModules,
   },
   insightsTable: [
-    ...blacklistGroup,
-    ...internalPackagesGroup,
-    ...productGroups,
-    {
-      title: 'Large Third Party',
-      patterns: ['**/node_modules/**'],
-      icon: '📦',
-    },
-    {
-      title: 'Other Large Files',
-      patterns: ['**/*'],
-      icon: '📄',
-    },
+    knownNodeModulesBlacklistedGroup,
+    knownNodeModulesApprovedGroup,
+    newBlacklistedNodeModulesGroup,
+    newNodeModulesGroup,
   ],
   dependencyTree: {
     groups: [
-      ...blacklistGroup,
-      ...internalPackagesGroup,
-      ...productGroups,
-      ...thirdPartyGroup,
+      knownNodeModulesBlacklistedGroup,
+      knownNodeModulesApprovedGroup,
+      newBlacklistedNodeModulesGroup,
+      {
+        ...everythingElseGroup,
+        patterns: [
+          ...knownNodeModulesApprovedGroup.patterns,
+          ...everythingElseGroup.patterns,
+        ],
+      },
+      newNodeModulesGroup,
     ],
     pruning: {
       maxChildren: 10,
       maxDepth: 2,
-      minSize: 100_000, // Only show files > 100KB
-    },
-  },
-};
-
-const polyfillsAudit = {
-  slug: 'polyfills',
-  title: '🔧 Polyfills',
-  description:
-    'Polyfills analysis - identify what can be removed for modern browsers',
-  selection: {
-    includeOutputs: ['**/polyfill-*.js'],
-    includeInputs: [
-      '**/node_modules/core-js/**',
-      '**/node_modules/zone.js/**',
-      '**/node_modules/smoothscroll-polyfill/**',
-      '**/node_modules/web-animations-js/**',
-      '**/node_modules/decimal.js/**',
-    ],
-  },
-  scoring: {
-    totalSize: 200_000, // 200KB budget for polyfills
-    penalty: {
-      blacklist: toRemoveAsSupportedNatively.map(pattern => ({
-        pattern,
-        hint: 'Remove or conditionally load. Supported natively in modern browsers.',
-      })),
-      artefactSize: [50_000, 150_000],
-    },
-  },
-  insightsTable: [
-    {
-      title: 'Removable Polyfills',
-      patterns: toRemoveAsSupportedNatively,
-      icon: '🚫',
-    },
-    {
-      title: 'Other Polyfills',
-      patterns: ['**/*'],
-      icon: '🔧',
-    },
-  ],
-  dependencyTree: {
-    groups: [
-      {
-        title: 'Removable Polyfills',
-        patterns: toRemoveAsSupportedNatively,
-        icon: '🚫',
-      },
-      {
-        title: 'Other Polyfills',
-        patterns: ['**/*'],
-        icon: '🔧',
-        numSegments: 2,
-      },
-    ],
-    pruning: {
-      maxChildren: 15,
-      maxDepth: 2,
-    },
-  },
-};
-
-const assetsAudit = {
-  slug: 'assets',
-  title: '🖼️ Static Assets',
-  description: 'Images, fonts, and other static assets analysis',
-  selection: {
-    includeOutputs: [
-      '**/*.png',
-      '**/*.jpg',
-      '**/*.jpeg',
-      '**/*.gif',
-      '**/*.svg',
-      '**/*.woff',
-      '**/*.woff2',
-      '**/*.ttf',
-      '**/*.eot',
-      '**/*.ico',
-      '**/*.webp',
-      '**/*.avif',
-    ],
-  },
-  scoring: {
-    totalSize: 3_000_000, // 3MB budget for assets
-    penalty: {
-      artefactSize: [500_000, 1_000_000], // Warn at 500KB, error at 1MB for individual assets
-    },
-  },
-  insightsTable: [
-    {
-      title: 'Images',
-      patterns: [
-        '**/*.png',
-        '**/*.jpg',
-        '**/*.jpeg',
-        '**/*.gif',
-        '**/*.svg',
-        '**/*.webp',
-        '**/*.avif',
-      ],
-      icon: '🖼️',
-    },
-    {
-      title: 'Fonts',
-      patterns: ['**/*.woff', '**/*.woff2', '**/*.ttf', '**/*.eot'],
-      icon: '🔤',
-    },
-    {
-      title: 'Other Assets',
-      patterns: ['**/*.ico', '**/*'],
-      icon: '📄',
-    },
-  ],
-  dependencyTree: {
-    groups: [
-      {
-        title: 'Images',
-        patterns: [
-          '**/*.png',
-          '**/*.jpg',
-          '**/*.jpeg',
-          '**/*.gif',
-          '**/*.svg',
-          '**/*.webp',
-          '**/*.avif',
-        ],
-        icon: '🖼️',
-      },
-      {
-        title: 'Fonts',
-        patterns: ['**/*.woff', '**/*.woff2', '**/*.ttf', '**/*.eot'],
-        icon: '🔤',
-      },
-      {
-        title: 'Other Assets',
-        patterns: ['**/*'],
-        icon: '📄',
-      },
-    ],
-    pruning: {
-      maxChildren: 20,
-      maxDepth: 1,
-      minSize: 10_000, // Show assets > 10KB
     },
   },
 };
@@ -688,13 +523,8 @@ const config = {
         allFilesAudit,
         initialBundleSizeAudit,
         blacklistedFilesAudit,
-        lazyChunksAudit,
         angularSpecificAudit,
-        thirdPartyDependenciesAudit,
-        internalPackagesAudit,
-        largeFilesAudit,
-        polyfillsAudit,
-        assetsAudit,
+        nodeModulesAudit,
       ],
     }),
   ],

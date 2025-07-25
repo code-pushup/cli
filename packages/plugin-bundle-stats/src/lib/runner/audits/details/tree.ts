@@ -197,7 +197,9 @@ export function formatStatsTreeForDisplay(
 
   // Only show source count if more than 1 source
   if (node.values.modules > 1) {
-    values['modules'] = pluralizeToken('source', node.values.modules);
+    // For "..." groups that represent multiple files, show "files" instead of "sources"
+    const token = node.name === '...' ? 'file' : 'module';
+    values['modules'] = pluralizeToken(token, node.values.modules);
   }
 
   return {

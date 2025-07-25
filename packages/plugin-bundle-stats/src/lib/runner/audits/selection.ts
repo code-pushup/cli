@@ -37,6 +37,14 @@ export type SelectionEntryPointsConfig = {
   excludeEntryPoints: string[];
 };
 
+/**
+ * Configuration for static import inclusion. Controls whether static imports are automatically included.
+ */
+export type SelectionStaticImportsConfig = {
+  includeStaticImports?: boolean;
+  inputsOnly?: boolean;
+};
+
 const COMPILED_PATTERNS_CACHE = new Map<string, PatternMatcher[]>();
 const BUNDLE_PATHS_CACHE = new Map<
   UnifiedStatsBundle,
@@ -136,9 +144,13 @@ function evaluatePathsWithIncludeExclude(
 export type SelectionConfig = SelectionOutputsConfig &
   SelectionInputsConfig &
   SelectionImportsConfig &
-  SelectionEntryPointsConfig;
+  SelectionEntryPointsConfig &
+  SelectionStaticImportsConfig;
 
-export type CompiledPatterns = Record<keyof SelectionConfig, PatternMatcher[]>;
+export type CompiledPatterns = Omit<
+  Record<keyof SelectionConfig, PatternMatcher[]>,
+  'includeStaticImports' | 'inputsOnly'
+>;
 
 export function evaluatePatternCriteria(
   paths: string[],
@@ -238,7 +250,24 @@ export function compileSelectionPatterns(
 export function isBundleSelected(
   output: UnifiedStatsBundle,
   patterns: CompiledPatterns,
+  inputsOnly = false,
 ): boolean {
+  // If inputsOnly mode is enabled, only check input patterns
+  if (inputsOnly) {
+    if (patterns.includeInputs.length === 0) {
+      return true; // No input patterns means include everything
+    }
+
+    return (
+      inputsMatchPatterns(
+        output,
+        patterns.includeInputs,
+        patterns.excludeInputs,
+      ) && !isInputsExcluded(output, patterns)
+    );
+  }
+
+  // Original logic for normal mode
   const hasAnyIncludePatterns =
     patterns.includeOutputs.length > 0 ||
     patterns.includeEntryPoints.length > 0 ||
@@ -355,6 +384,23 @@ function isExcluded(
   return false;
 }
 
+function isInputsExcluded(
+  output: UnifiedStatsBundle,
+  patterns: CompiledPatterns,
+): boolean {
+  if (patterns.excludeInputs.length > 0) {
+    const inputPaths = getCachedInputPaths(output);
+    for (const path of inputPaths) {
+      for (const matcher of patterns.excludeInputs) {
+        if (matcher(path)) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
 export function selectBundles(
   unifiedStats: UnifiedStats,
   selectionConfig: SelectionConfig,
@@ -369,11 +415,14 @@ export function selectBundles(
   const selectedBundles = new Map<string, UnifiedStatsBundle>();
   const staticImportStack: string[] = [];
 
+  const shouldIncludeStaticImports =
+    selectionConfig.includeStaticImports ?? true;
+
   for (const [outputKey, output] of Object.entries(unifiedStats)) {
-    if (isBundleSelected(output, patterns)) {
+    if (isBundleSelected(output, patterns, selectionConfig.inputsOnly)) {
       selectedBundles.set(outputKey, output);
 
-      if (output.imports) {
+      if (shouldIncludeStaticImports && output.imports) {
         for (const importInfo of output.imports) {
           if (importInfo.kind === 'import-statement') {
             staticImportStack.push(importInfo.path);
@@ -385,7 +434,7 @@ export function selectBundles(
 
   const processedImports = new Set<string>();
 
-  while (staticImportStack.length > 0) {
+  while (shouldIncludeStaticImports && staticImportStack.length > 0) {
     const importPath = staticImportStack.pop()!;
 
     if (processedImports.has(importPath)) {

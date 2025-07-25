@@ -7,7 +7,7 @@ import {
   DEFAULT_PRUNING_CONFIG,
   type DependencyTreeConfig,
 } from './runner/audits/details/tree.js';
-import type { ScoringConfig } from './runner/audits/scoring.js';
+import type { PenaltyConfig, ScoringConfig } from './runner/audits/scoring.js';
 import { DEFAULT_PENALTY } from './runner/audits/scoring.js';
 import type { SelectionConfig } from './runner/audits/selection.js';
 import type { BundleStatsConfig, MinMax } from './runner/types.js';
@@ -21,150 +21,105 @@ import type {
   SelectionOptions,
 } from './types.js';
 
-function formatSelectionConfig(selection: any): string {
+function formatStandardizedScoringSection(scoring: ScoringConfig): string {
+  const { totalSize, penalty } = scoring;
   const items: string[] = [];
 
-  if (selection.includeOutputs?.length > 0) {
-    items.push(
-      `• \`includeOutputs\`: ${selection.includeOutputs.map((p: string) => `\`${p}\``).join(', ')}`,
-    );
-  }
-  if (selection.excludeOutputs?.length > 0) {
-    items.push(
-      `• \`excludeOutputs\`: ${selection.excludeOutputs.map((p: string) => `\`${p}\``).join(', ')}`,
-    );
-  }
-  if (selection.includeInputs?.length > 0) {
-    items.push(
-      `• \`includeInputs\`: ${selection.includeInputs.map((p: string) => `\`${p}\``).join(', ')}`,
-    );
-  }
-  if (selection.excludeInputs?.length > 0) {
-    items.push(
-      `• \`excludeInputs\`: ${selection.excludeInputs.map((p: string) => `\`${p}\``).join(', ')}`,
-    );
-  }
-  if (selection.includeEntryPoints?.length > 0) {
-    items.push(
-      `• \`includeEntryPoints\`: ${selection.includeEntryPoints.map((p: string) => `\`${p}\``).join(', ')}`,
-    );
-  }
-  if (selection.excludeEntryPoints?.length > 0) {
-    items.push(
-      `• \`excludeEntryPoints\`: ${selection.excludeEntryPoints.map((p: string) => `\`${p}\``).join(', ')}`,
-    );
-  }
-
-  return items.length > 0 ? `**Selection**\n${items.join('\n')}` : '';
-}
-
-function formatPenaltyConfig(penalty: any): string {
-  const items: string[] = [];
-
-  if (penalty.artefactSize) {
+  // Artefact Size section
+  if (penalty && penalty.artefactSize) {
     const [min, max] = penalty.artefactSize;
+    const weight = penalty.errorWeight || 0;
     items.push(
-      `• \`artefactSize\`: \`${formatBytes(min)} – ${formatBytes(max)}\``,
-    );
-  }
-  if (penalty.blacklist?.length > 0) {
-    items.push(
-      `• \`blacklist\`: ${penalty.blacklist.map((p: string) => `\`${p}\``).join(', ')}`,
+      `  - Artefact Size: >\`${formatBytes(min)}\` & <\`${formatBytes(max)}\`; weight: \`${weight}\``,
     );
   }
 
-  const weights: string[] = [];
-  if (penalty.warningWeight !== undefined) {
-    weights.push(`warning ×${penalty.warningWeight}`);
-  }
-  if (penalty.errorWeight !== undefined) {
-    weights.push(`error ×${penalty.errorWeight}`);
-  }
-  if (weights.length > 0) {
-    items.push(`• \`weights\`: \`${weights.join(', ')}\``);
+  // Blacklist section
+  if (penalty && penalty.blacklist) {
+    const count = penalty.blacklist.length;
+    const weight = penalty.errorWeight || 0;
+    items.push(`  - Blacklist: \`${count}\` matches; weight: \`${weight}\``);
   }
 
-  return items.length > 0 ? `**Penalty**\n${items.join('\n')}` : '';
+  // Total Size section (if configured)
+  if (totalSize && totalSize[1] !== Infinity) {
+    items.push(`  - Total Size: >\`${formatBytes(totalSize[1])}\` threshold`);
+  }
+
+  return items.length > 0 ? `- **Scoring:**\n${items.join('\n')}` : '';
 }
 
-function formatArtefactTreeConfig(artefactTree: any): string {
+function formatStandardizedIssuesSection(scoring: ScoringConfig): string {
+  const { penalty } = scoring;
   const items: string[] = [];
 
-  if (artefactTree.groups?.length > 0) {
-    items.push(`• \`groups\`: ${artefactTree.groups.length}`);
-  }
-
-  const pruningOptions: string[] = [];
-  if (artefactTree.pruning?.maxDepth !== undefined) {
-    pruningOptions.push(`maxDepth: ${artefactTree.pruning.maxDepth}`);
-  }
-  if (artefactTree.pruning?.maxChildren !== undefined) {
-    pruningOptions.push(`maxChildren: ${artefactTree.pruning.maxChildren}`);
-  }
-  if (artefactTree.pruning?.startDepth !== undefined) {
-    pruningOptions.push(`startDepth: ${artefactTree.pruning.startDepth}`);
-  }
-
-  if (pruningOptions.length > 0) {
-    items.push(`• \`pruning\`: \`${pruningOptions.join(', ')}\``);
-  } else if (artefactTree.pruning !== undefined) {
-    items.push(`• \`pruning\`: *(none set)*`);
-  }
-
-  return items.length > 0 ? `**Artefact Tree**\n${items.join('\n')}` : '';
-}
-
-function formatInsightsConfig(insights: any[]): string {
-  const items: string[] = [];
-
-  insights.forEach((insight: any) => {
-    const icon = insight.icon || '•';
-    const patterns = insight.patterns?.join(', ') || '';
-    items.push(`• ${icon} \`${patterns}\``);
-  });
-
-  return items.length > 0 ? `**Insights**\n${items.join('\n')}` : '';
-}
-
-function formatScoringConfig(totalSize: any, penalty: any): string {
-  const items: string[] = [];
-
-  if (totalSize) {
-    items.push(
-      `• \`totalSize\`: \`${formatBytes(totalSize[0])} – ${formatBytes(totalSize[1])}\``,
-    );
-  }
-
-  if (penalty && Object.keys(penalty).length > 0) {
-    // Add penalty artefact size information
-    if (penalty.artefactSize) {
-      const [min, max] = penalty.artefactSize;
+  if (penalty) {
+    // Check if this audit generates issues
+    if (penalty.blacklist && penalty.blacklist.length > 0) {
       items.push(
-        `• \`penalty.artefactSize\`: \`${formatBytes(min)} – ${formatBytes(max)}\``,
+        `  - Error: \`1+\` candidates - Violation detected, requires action`,
       );
-    }
-
-    // Add penalty blacklist information
-    if (penalty.blacklist?.length > 0) {
+      items.push(`  - Info: \`0\` candidates - No violations found`);
+    } else if (penalty.artefactSize) {
+      const [, max] = penalty.artefactSize;
       items.push(
-        `• \`penalty.blacklist\`: ${penalty.blacklist.map((p: string) => `\`${p}\``).join(', ')}`,
+        `  - Warning: <\`${formatBytes(max)}\` - Size acceptable but monitor growth`,
       );
+      items.push(`  - Error: >\`${formatBytes(max)}\` - Exceeds size budget`);
+    } else {
+      items.push(`  - Info: \`0\` violations - Analysis only, no penalties`);
     }
+  } else {
+    items.push(`  - Info: \`0\` violations - Analysis only, no penalties`);
+  }
 
-    // Add penalty weights
-    const penaltyParts: string[] = [];
-    if (penalty.warningWeight !== undefined) {
-      penaltyParts.push(`warning ×${penalty.warningWeight}`);
-    }
-    if (penalty.errorWeight !== undefined) {
-      penaltyParts.push(`error ×${penalty.errorWeight}`);
-    }
-    if (penaltyParts.length > 0) {
-      items.push(`• \`penalty.weights\`: \`${penaltyParts.join(', ')}\``);
+  return `- **Issues:**\n${items.join('\n')}`;
+}
+
+function formatStandardizedTableSection(
+  insightsTable: InsightsTableConfig | undefined,
+): string {
+  if (!insightsTable || insightsTable.length === 0) {
+    return ''; // Hide empty table section
+  }
+
+  const groupItems = insightsTable
+    .filter(group => group.title)
+    .map(group => `*${group.icon || ''}${group.title}*`)
+    .slice(0, 5); // Limit to prevent overly long descriptions
+
+  const groupsText =
+    groupItems.length > 0
+      ? `Detail listing of ${groupItems.join(', ')}`
+      : 'Configured groups';
+
+  return `- **Table:**\n  - Groups: ${groupsText}\n  - Rest: Other contributing modules`;
+}
+
+function formatStandardizedTreeSection(
+  dependencyTree: DependencyTreeConfig | undefined,
+): string {
+  if (!dependencyTree) {
+    return ''; // Hide disabled tree section
+  }
+
+  const { pruning } = dependencyTree;
+  let pruningText = 'Default settings';
+
+  if (pruning) {
+    const pruningParts: string[] = [];
+    if (pruning.minSize)
+      pruningParts.push(`\`${formatBytes(pruning.minSize)}\``);
+    if (pruning.maxChildren)
+      pruningParts.push(`\`${pruning.maxChildren} children\``);
+    if (pruning.maxDepth) pruningParts.push(`\`${pruning.maxDepth} depth\``);
+
+    if (pruningParts.length > 0) {
+      pruningText = pruningParts.join(', ');
     }
   }
 
-  return items.length > 0 ? `**Scoring**\n${items.join('\n')}` : '';
+  return `- **Tree:**\n  - Groups: Same as table\n  - Pruning: ${pruningText}\n  - Rest: Remaining items grouped for clarity`;
 }
 
 export function cleanTitleForSlug(title: string): string {
@@ -175,53 +130,38 @@ export function cleanTitleForSlug(title: string): string {
 }
 
 export function prepareDescription(config: BundleStatsConfig): string {
-  const {
-    description,
-    scoring,
-    selection,
-    dependencyTree: artefactTree,
-    insightsTable: insights,
-  } = config;
-  const { totalSize, penalty } = scoring;
+  const { description, scoring, dependencyTree, insightsTable } = config;
 
+  // Start with the action paragraph (preserve existing custom descriptions)
   let enhancedDescription = description || '';
 
-  // Add educational content based on actual configuration
-  const configDetails: string[] = [];
+  // Only add standardized sections if we have a custom description
+  if (enhancedDescription.trim()) {
+    const sections: string[] = [];
 
-  if (
-    selection &&
-    Object.values(selection).some(
-      (arr: any) => Array.isArray(arr) && arr.length > 0,
-    )
-  ) {
-    configDetails.push(formatSelectionConfig(selection));
-  }
+    // Add standardized sections
+    const scoringSection = formatStandardizedScoringSection(scoring);
+    if (scoringSection) sections.push(scoringSection);
 
-  const scoringConfig = formatScoringConfig(totalSize, penalty);
-  if (scoringConfig) {
-    configDetails.push(scoringConfig);
-  }
+    const issuesSection = formatStandardizedIssuesSection(scoring);
+    if (issuesSection) sections.push(issuesSection);
 
-  if (artefactTree && Object.keys(artefactTree).length > 0) {
-    configDetails.push(formatArtefactTreeConfig(artefactTree));
-  }
+    // Handle insightsTable which could be false
+    const normalizedInsightsTable =
+      insightsTable === false ? undefined : insightsTable;
+    const tableSection = formatStandardizedTableSection(
+      normalizedInsightsTable,
+    );
+    if (tableSection) sections.push(tableSection);
 
-  if (insights && insights.length > 0) {
-    configDetails.push(formatInsightsConfig(insights));
-  }
+    const treeSection = formatStandardizedTreeSection(dependencyTree);
+    if (treeSection) sections.push(treeSection);
 
-  if (configDetails.length > 0) {
-    const configSection = `<details>
-<summary>⚙️ Config Summary</summary>
-
-${configDetails.join('\n\n')}
-
-</details>`;
-
-    enhancedDescription += enhancedDescription
-      ? `\n\n${configSection}`
-      : configSection;
+    // Wrap config sections in details if any exist
+    if (sections.length > 0) {
+      const configContent = sections.join('\n\n');
+      enhancedDescription += `\n\n<details>\n<summary>⚙️ Configuration</summary>\n\n${configContent}\n\n</details>`;
+    }
   }
 
   return enhancedDescription.trim() || '';
@@ -293,16 +233,18 @@ export function normalizeBundleStatsOptions(
   // Use the proper selection normalization helper that merges global patterns
   const normalizedSelection = normalizeSelectionOptions(selection);
 
+  let normalizedPenalty: false | PenaltyConfig | undefined = undefined;
+  if (penalty && typeof penalty === 'object') {
+    const { artefactSize, ...restPenalty } = penalty;
+    normalizedPenalty = {
+      ...restPenalty, // Preserve all penalty properties including warningWeight, errorWeight
+      ...(artefactSize ? { artefactSize: normalizeRange(artefactSize) } : {}),
+    } as PenaltyConfig;
+  }
+
   const normalizedScoring: ScoringConfig = {
     totalSize: normalizeRange(totalSize ?? Infinity),
-    penalty: {
-      ...(penalty && typeof penalty === 'object' && penalty.artefactSize
-        ? { artefactSize: normalizeRange(penalty.artefactSize) }
-        : {}),
-      ...(penalty && typeof penalty === 'object' && penalty.blacklist
-        ? { blacklist: penalty.blacklist }
-        : {}),
-    },
+    penalty: normalizedPenalty,
   };
 
   const normalizedConfig: BundleStatsConfig = {

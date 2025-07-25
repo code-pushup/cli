@@ -196,7 +196,7 @@ export function createTable(
 
   if (restGroup.bytes > 0) {
     rows.push({
-      group: '📄 Rest',
+      group: '📁 Rest',
       modules: '-',
       size: formatBytes(restGroup.bytes),
     });
