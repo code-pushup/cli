@@ -13,8 +13,8 @@ export const auditValueSchema =
   nonnegativeNumberSchema.describe('Raw numeric value');
 export const auditDisplayValueSchema = z
   .string()
-  .describe("Formatted value (e.g. '0.9 s', '2.1 MB')")
-  .optional();
+  .optional()
+  .describe("Formatted value (e.g. '0.9 s', '2.1 MB')");
 
 export const auditDetailsSchema = z
   .object({
