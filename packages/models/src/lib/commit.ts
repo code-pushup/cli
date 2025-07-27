@@ -11,7 +11,7 @@ export const commitSchema = z
       .describe('Commit SHA (full)'),
     message: z.string().describe('Commit message'),
     date: z.coerce.date().describe('Date and time when commit was authored'),
-    author: z.string().describe('Commit author name').trim(),
+    author: z.string().trim().describe('Commit author name'),
   })
   .describe('Git commit');
 
