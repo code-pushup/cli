@@ -155,9 +155,9 @@ function validatePersistFormat(persist: PersistConfig) {
     return true;
   } catch {
     throw new Error(
-      `Invalid persist.format option. Valid options are: ${Object.values(
-        formatSchema.Values,
-      ).join(', ')}`,
+      `Invalid persist.format option. Valid options are: ${formatSchema.options.join(
+        ', ',
+      )}`,
     );
   }
 }
