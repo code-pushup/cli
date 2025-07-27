@@ -1,9 +1,9 @@
 import { z } from 'zod/v4';
 import { auditOutputsSchema } from './audit-output.js';
-import { convertZodFunctionToSchema } from './implementation/function.js';
+import { convertAsyncZodFunctionToSchema } from './implementation/function.js';
 import { filePathSchema } from './implementation/schemas.js';
 
-export const outputTransformSchema = convertZodFunctionToSchema(
+export const outputTransformSchema = convertAsyncZodFunctionToSchema(
   z.function({
     input: [z.unknown()],
     output: z.union([auditOutputsSchema, z.promise(auditOutputsSchema)]),
@@ -23,7 +23,7 @@ export const runnerConfigSchema = z
 
 export type RunnerConfig = z.infer<typeof runnerConfigSchema>;
 
-export const runnerFunctionSchema = convertZodFunctionToSchema(
+export const runnerFunctionSchema = convertAsyncZodFunctionToSchema(
   z.function({
     output: z.union([auditOutputsSchema, z.promise(auditOutputsSchema)]),
   }),
