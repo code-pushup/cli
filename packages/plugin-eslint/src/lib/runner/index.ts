@@ -3,9 +3,11 @@ import path from 'node:path';
 import type {
   Audit,
   AuditOutput,
+  PluginArtifactOptions,
   RunnerConfig,
   RunnerFilesPaths,
 } from '@code-pushup/models';
+import { pluginArtifactOptionsSchema } from '@code-pushup/models';
 import {
   asyncSequential,
   createRunnerFiles,
@@ -51,23 +53,60 @@ export async function createRunnerConfig(
   scriptPath: string,
   audits: Audit[],
   targets: ESLintTarget[],
+  artifactOptions?: PluginArtifactOptions,
 ): Promise<RunnerConfig> {
+  const parsedOptions = artifactOptions
+    ? pluginArtifactOptionsSchema.parse(artifactOptions)
+    : undefined;
+
   const config: ESLintPluginRunnerConfig = {
     targets,
-    slugs: audits.map(audit => audit.slug),
+    slugs: audits.map(a => a.slug),
   };
-  const { runnerConfigPath, runnerOutputPath } = await createRunnerFiles(
-    'eslint',
-    JSON.stringify(config),
-  );
+
+  const { runnerConfigPath, runnerOutputPath } = parsedOptions
+    ? await createCustomRunnerPaths(parsedOptions, config)
+    : await createRunnerFiles('eslint', JSON.stringify(config));
+
+  const args = [
+    filePathToCliArg(scriptPath),
+    ...objectToCliArgs({ runnerConfigPath, runnerOutputPath }),
+    ...resolveCommandArgs(parsedOptions?.generateArtifactsCommand),
+  ];
 
   return {
     command: 'node',
-    args: [
-      filePathToCliArg(scriptPath),
-      ...objectToCliArgs({ runnerConfigPath, runnerOutputPath }),
-    ],
+    args,
     configFile: runnerConfigPath,
     outputFile: runnerOutputPath,
   };
+}
+
+async function createCustomRunnerPaths(
+  options: PluginArtifactOptions,
+  config: ESLintPluginRunnerConfig,
+): Promise<RunnerFilesPaths> {
+  const artifactPaths = Array.isArray(options.artifactsPaths)
+    ? options.artifactsPaths
+    : [options.artifactsPaths];
+
+  const runnerOutputPath = artifactPaths[0] ?? '';
+  const runnerConfigPath = path.join(
+    path.dirname(runnerOutputPath),
+    'plugin-config.json',
+  );
+
+  await ensureDirectoryExists(path.dirname(runnerConfigPath));
+  await writeFile(runnerConfigPath, JSON.stringify(config));
+
+  return { runnerConfigPath, runnerOutputPath };
+}
+
+function resolveCommandArgs(
+  command?: string | { command: string; args?: string[] },
+): string[] {
+  if (!command) return [];
+  return typeof command === 'string'
+    ? [command]
+    : [command.command, ...(command.args ?? [])];
 }

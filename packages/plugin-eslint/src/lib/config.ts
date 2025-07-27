@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { pluginArtifactOptionsSchema } from '@code-pushup/models';
 import { toArray } from '@code-pushup/utils';
 
 const patternsSchema = z.union([z.string(), z.array(z.string()).min(1)], {
@@ -64,5 +65,6 @@ export type CustomGroup = z.infer<typeof customGroupSchema>;
 
 export const eslintPluginOptionsSchema = z.object({
   groups: z.array(customGroupSchema).optional(),
+  artifacts: pluginArtifactOptionsSchema.optional(),
 });
 export type ESLintPluginOptions = z.infer<typeof eslintPluginOptionsSchema>;

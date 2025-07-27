@@ -41,11 +41,13 @@ export async function eslintPlugin(
     schemaType: 'ESLint plugin config',
   });
 
-  const customGroups = options
+  const parsedOptions = options
     ? parseSchema(eslintPluginOptionsSchema, options, {
         schemaType: 'ESLint plugin options',
-      }).groups
+      })
     : undefined;
+
+  const customGroups = parsedOptions?.groups;
 
   const { audits, groups } = await listAuditsAndGroups(targets, customGroups);
 
@@ -71,6 +73,11 @@ export async function eslintPlugin(
     audits,
     groups,
 
-    runner: await createRunnerConfig(runnerScriptPath, audits, targets),
+    runner: await createRunnerConfig(
+      runnerScriptPath,
+      audits,
+      targets,
+      parsedOptions?.artifacts,
+    ),
   };
 }
