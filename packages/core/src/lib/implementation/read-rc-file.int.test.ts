@@ -69,12 +69,12 @@ describe('readRcByPath', () => {
   it('should throw if the configuration is empty', async () => {
     await expect(
       readRcByPath(path.join(configDirPath, 'code-pushup.empty.config.js')),
-    ).rejects.toThrow(/invalid_type/);
+    ).rejects.toThrow('Invalid input');
   });
 
   it('should throw if the configuration is invalid', async () => {
     await expect(
       readRcByPath(path.join(configDirPath, 'code-pushup.invalid.config.ts')),
-    ).rejects.toThrow(/refs are duplicates/);
+    ).rejects.toThrow('has duplicate references');
   });
 });
