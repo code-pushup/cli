@@ -5,6 +5,8 @@ const basicTreeNodeValuesSchema = z.record(
   z.string(),
   z.union([z.number(), z.string()]),
 );
+export type BasicTreeNodeValues = z.infer<typeof basicTreeNodeValuesSchema>;
+
 const basicTreeNodeDataSchema = z.object({
   name: z.string().min(1).describe('Text label for node'),
   values: basicTreeNodeValuesSchema
@@ -41,6 +43,10 @@ const coverageTreeNodeValuesSchema = z.object({
     .optional()
     .describe('Uncovered lines of code'),
 });
+export type CoverageTreeNodeValues = z.infer<
+  typeof coverageTreeNodeValuesSchema
+>;
+
 const coverageTreeNodeDataSchema = z.object({
   name: z.string().min(1).describe('File or folder name'),
   values: coverageTreeNodeValuesSchema.describe(
