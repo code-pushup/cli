@@ -114,7 +114,7 @@ describe('parsePersistConfig', () => {
     await expect(
       parsePersistConfig({ persist: { format: ['json', 'html'] } }),
     ).rejects.toThrow(
-      /^Invalid persist config - ZodError:.*Invalid enum value. Expected 'json' \| 'md', received 'html'/s,
+      /^Invalid persist config - ZodError:.*Invalid option: expected one of \\"json\\"\|\\"md\\"/s,
     );
   });
 });

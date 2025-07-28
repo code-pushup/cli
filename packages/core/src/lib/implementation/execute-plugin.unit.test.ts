@@ -134,21 +134,11 @@ describe('executePlugins', () => {
         ] satisfies PluginConfig[],
         { progress: false },
       ),
-    ).rejects.toThrow(`Executing 1 plugin failed.\n\nError: - Plugin ${bold(
-      title,
-    )} (${bold(slug)}) produced the following error:
-  - Audit output is invalid: [
-  {
-    "validation": "regex",
-    "code": "invalid_string",
-    "message": "The slug has to follow the pattern [0-9a-z] followed by multiple optional groups of -[0-9a-z]. e.g. my-slug",
-    "path": [
-      0,
-      "slug"
-    ]
-  }
-]
-`);
+    ).rejects.toThrow(
+      `Executing 1 plugin failed.\n\nError: - Plugin ${bold(
+        title,
+      )} (${bold(slug)}) produced the following error:\n  - Audit output is invalid`,
+    );
   });
 
   it('should throw for one failing plugin', async () => {
