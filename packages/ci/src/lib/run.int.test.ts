@@ -260,12 +260,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
-          args: [
-            '--verbose',
-            '--no-progress',
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: ['--verbose', '--persist.format=json', '--persist.format=md'],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -347,12 +342,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
-          args: [
-            '--verbose',
-            '--no-progress',
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: ['--verbose', '--persist.format=json', '--persist.format=md'],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -368,12 +358,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(4, {
           command: options.bin,
-          args: [
-            '--verbose',
-            '--no-progress',
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: ['--verbose', '--persist.format=json', '--persist.format=md'],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -450,12 +435,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
-          args: [
-            '--verbose',
-            '--no-progress',
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: ['--verbose', '--persist.format=json', '--persist.format=md'],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -647,12 +627,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: runMany,
-          args: [
-            '--verbose',
-            '--no-progress',
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: ['--verbose', '--persist.format=json', '--persist.format=md'],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -814,12 +789,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: runMany,
-          args: [
-            '--verbose',
-            '--no-progress',
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: ['--verbose', '--persist.format=json', '--persist.format=md'],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -1013,12 +983,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: [
-            '--verbose',
-            '--no-progress',
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: ['--verbose', '--persist.format=json', '--persist.format=md'],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -1191,12 +1156,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: [
-            '--verbose',
-            '--no-progress',
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: ['--verbose', '--persist.format=json', '--persist.format=md'],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
