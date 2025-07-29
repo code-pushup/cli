@@ -7,11 +7,15 @@ export function createCheck<T>(
   return ctx => {
     const error = findErrorFn(ctx.value);
     if (error) {
-      ctx.issues.push({
-        code: 'custom',
-        message: error.message,
-        input: ctx.value,
-      });
+      // eslint-disable-next-line functional/immutable-data, no-param-reassign
+      ctx.issues = [
+        ...ctx.issues,
+        {
+          code: 'custom',
+          message: error.message,
+          input: ctx.value,
+        },
+      ];
     }
   };
 }
@@ -33,6 +37,6 @@ export function createDuplicateSlugsCheck<T extends { slug: string }>(
   return createDuplicatesCheck(
     ({ slug }) => slug,
     duplicates =>
-      `${name} slugs must be unique, but received duplicates: ${duplicates.map(slug => `"${slug}"`).join(', ')}`,
+      `${name} slugs must be unique, but received duplicates: ${duplicates.map(slug => JSON.stringify(slug)).join(', ')}`,
   );
 }
