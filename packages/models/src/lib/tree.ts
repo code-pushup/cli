@@ -12,15 +12,18 @@ const basicTreeNodeDataSchema = z.object({
     .describe('Additional values for node'),
 });
 
-export const basicTreeNodeSchema = basicTreeNodeDataSchema.extend({
-  get children() {
-    return z
-      .array(basicTreeNodeSchema)
-      .optional()
-      .describe('Direct descendants of this node (omit if leaf)');
-  },
-});
-export type BasicTreeNode = z.infer<typeof basicTreeNodeSchema>;
+export const basicTreeNodeSchema: z.ZodType<BasicTreeNode> =
+  basicTreeNodeDataSchema.extend({
+    get children() {
+      return z
+        .array(basicTreeNodeSchema)
+        .optional()
+        .describe('Direct descendants of this node (omit if leaf)');
+    },
+  });
+export type BasicTreeNode = z.infer<typeof basicTreeNodeDataSchema> & {
+  children?: BasicTreeNode[];
+};
 
 export const coverageTreeMissingLOCSchema = filePositionSchema
   .extend({
@@ -48,15 +51,18 @@ const coverageTreeNodeDataSchema = z.object({
   ),
 });
 
-export const coverageTreeNodeSchema = coverageTreeNodeDataSchema.extend({
-  get children() {
-    return z
-      .array(coverageTreeNodeSchema)
-      .optional()
-      .describe('Files and folders contained in this folder (omit if file)');
-  },
-});
-export type CoverageTreeNode = z.infer<typeof coverageTreeNodeSchema>;
+export const coverageTreeNodeSchema: z.ZodType<CoverageTreeNode> =
+  coverageTreeNodeDataSchema.extend({
+    get children() {
+      return z
+        .array(coverageTreeNodeSchema)
+        .optional()
+        .describe('Files and folders contained in this folder (omit if file)');
+    },
+  });
+export type CoverageTreeNode = z.infer<typeof coverageTreeNodeDataSchema> & {
+  children?: CoverageTreeNode[];
+};
 
 export const basicTreeSchema = z
   .object({
