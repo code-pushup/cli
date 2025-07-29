@@ -1,4 +1,4 @@
-import type z from 'zod';
+import type { z } from 'zod';
 import type { Audit } from '../audit.js';
 import type { CategoryRef } from '../category-config.js';
 import {
