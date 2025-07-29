@@ -132,8 +132,6 @@ export {
   type CoverageTreeMissingLOC,
   type CoverageTreeNode,
   type Tree,
-  type BasicTreeNodeValues,
-  type CoverageTreeNodeValues,
 } from './lib/tree.js';
 export { uploadConfigSchema, type UploadConfig } from './lib/upload-config.js';
 export {

@@ -1,17 +1,10 @@
 import type {
   CoverageTree,
   CoverageTreeMissingLOC,
-  CoverageTreeNodeValues,
+  CoverageTreeNode,
 } from '@code-pushup/models';
 import { splitFilePath } from './file-system.js';
 import { formatGitPath } from './git/git.js';
-
-// recursive schemas cause compiler problems when using CoverageTreeNode
-type TreeNode = {
-  name: string;
-  values: CoverageTreeNodeValues;
-  children?: TreeNode[];
-};
 
 export type FileCoverage = {
   path: string;
@@ -101,7 +94,7 @@ function addNode(
   };
 }
 
-function calculateTreeCoverage(root: FileTree): TreeNode {
+function calculateTreeCoverage(root: FileTree): CoverageTreeNode {
   if ('children' in root) {
     const stats = aggregateChildCoverage(root.children);
     const coverage = calculateCoverage(stats);
@@ -160,7 +153,7 @@ function getNodeCoverageStats(
   return stats;
 }
 
-function sortCoverageTree(root: TreeNode): TreeNode {
+function sortCoverageTree(root: CoverageTreeNode): CoverageTreeNode {
   if (!root.children?.length) {
     return root;
   }
