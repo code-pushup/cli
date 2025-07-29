@@ -250,17 +250,13 @@ describe('runInCI', () => {
         expect(utils.executeProcess).toHaveBeenCalledTimes(2);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {
           command: options.bin,
-          args: [
-            'print-config',
-            '--verbose',
-            expect.stringMatching(/^--output=.*\.json$/),
-          ],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
-          args: ['--verbose', '--persist.format=json', '--persist.format=md'],
+          args: ['--persist.format=json', '--persist.format=md'],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -332,33 +328,25 @@ describe('runInCI', () => {
         expect(utils.executeProcess).toHaveBeenCalledTimes(5);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {
           command: options.bin,
-          args: [
-            'print-config',
-            '--verbose',
-            expect.stringMatching(/^--output=.*\.json$/),
-          ],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
-          args: ['--verbose', '--persist.format=json', '--persist.format=md'],
+          args: ['--persist.format=json', '--persist.format=md'],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(3, {
           command: options.bin,
-          args: [
-            'print-config',
-            '--verbose',
-            expect.stringMatching(/^--output=.*\.json$/),
-          ],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(4, {
           command: options.bin,
-          args: ['--verbose', '--persist.format=json', '--persist.format=md'],
+          args: ['--persist.format=json', '--persist.format=md'],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -366,7 +354,6 @@ describe('runInCI', () => {
           command: options.bin,
           args: [
             'compare',
-            '--verbose',
             `--before=${path.join(outputDir, '.previous/report.json')}`,
             `--after=${path.join(outputDir, '.current/report.json')}`,
             '--persist.format=json',
@@ -425,17 +412,13 @@ describe('runInCI', () => {
         expect(utils.executeProcess).toHaveBeenCalledTimes(3);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {
           command: options.bin,
-          args: [
-            'print-config',
-            '--verbose',
-            expect.stringMatching(/^--output=.*\.json$/),
-          ],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
-          args: ['--verbose', '--persist.format=json', '--persist.format=md'],
+          args: ['--persist.format=json', '--persist.format=md'],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -443,7 +426,6 @@ describe('runInCI', () => {
           command: options.bin,
           args: [
             'compare',
-            '--verbose',
             `--before=${path.join(outputDir, '.previous/report.json')}`,
             `--after=${path.join(outputDir, '.current/report.json')}`,
             '--persist.format=json',
@@ -617,17 +599,13 @@ describe('runInCI', () => {
         ).toHaveLength(4); // 1 autorun for all projects, 3 print-configs for each project
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: run,
-          args: [
-            'print-config',
-            '--verbose',
-            expect.stringMatching(/^--output=.*\.json$/),
-          ],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: runMany,
-          args: ['--verbose', '--persist.format=json', '--persist.format=md'],
+          args: ['--persist.format=json', '--persist.format=md'],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -779,17 +757,13 @@ describe('runInCI', () => {
         ).toHaveLength(10);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: run,
-          args: [
-            'print-config',
-            '--verbose',
-            expect.stringMatching(/^--output=.*\.json$/),
-          ],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: runMany,
-          args: ['--verbose', '--persist.format=json', '--persist.format=md'],
+          args: ['--persist.format=json', '--persist.format=md'],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -797,7 +771,6 @@ describe('runInCI', () => {
           command: run,
           args: [
             'compare',
-            '--verbose',
             expect.stringMatching(/^--before=.*\.previous[/\\]report\.json$/),
             expect.stringMatching(/^--after=.*\.current[/\\]report\.json$/),
             expect.stringMatching(/^--label=\w+$/),
@@ -811,7 +784,6 @@ describe('runInCI', () => {
           command: run,
           args: [
             'merge-diffs',
-            '--verbose',
             expect.stringMatching(
               /^--files=.*[/\\]cli[/\\]\.comparison[/\\]report-diff\.json$/,
             ),
@@ -973,17 +945,13 @@ describe('runInCI', () => {
         ).toHaveLength(6); // 3 autoruns and 3 print-configs for each project
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: [
-            'print-config',
-            '--verbose',
-            expect.stringMatching(/^--output=.*\.json$/),
-          ],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: ['--verbose', '--persist.format=json', '--persist.format=md'],
+          args: ['--persist.format=json', '--persist.format=md'],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -1146,17 +1114,13 @@ describe('runInCI', () => {
         ).toHaveLength(10);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: [
-            'print-config',
-            '--verbose',
-            expect.stringMatching(/^--output=.*\.json$/),
-          ],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: ['--verbose', '--persist.format=json', '--persist.format=md'],
+          args: ['--persist.format=json', '--persist.format=md'],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -1164,7 +1128,6 @@ describe('runInCI', () => {
           command: options.bin,
           args: [
             'compare',
-            '--verbose',
             expect.stringMatching(/^--before=.*\.previous[/\\]report\.json$/),
             expect.stringMatching(/^--after=.*\.current[/\\]report\.json$/),
             expect.stringMatching(/^--label=\w+$/),
@@ -1178,7 +1141,6 @@ describe('runInCI', () => {
           command: options.bin,
           args: [
             'merge-diffs',
-            '--verbose',
             expect.stringMatching(
               /^--files=.*api[/\\]\.comparison[/\\]report-diff\.json$/,
             ),

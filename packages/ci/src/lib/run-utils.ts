@@ -69,8 +69,11 @@ export async function createRunEnv(
   options: Options | undefined,
   git: SimpleGit,
 ): Promise<RunEnv> {
+  const inferredVerbose: boolean = Boolean(
+    options?.debug === true || options?.silent === false,
+  );
   // eslint-disable-next-line functional/immutable-data
-  process.env['CP_VERBOSE'] = options?.silent ? 'false' : 'true';
+  process.env['CP_VERBOSE'] = `${inferredVerbose}`;
 
   const [head, base] = await Promise.all([
     normalizeGitRef(refs.head, git),
