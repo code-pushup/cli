@@ -12,7 +12,6 @@ export async function runCollect({
     command: bin,
     args: [
       ...(isVerbose() ? ['--verbose'] : []),
-      '--no-progress',
       ...(config ? [`--config=${config}`] : []),
       ...DEFAULT_PERSIST_FORMAT.map(format => `--persist.format=${format}`),
     ],
