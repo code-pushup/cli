@@ -1,5 +1,9 @@
 import { ui } from './logging.js';
 
+export function isCI() {
+  return isEnvVarEnabled('CI');
+}
+
 export function isVerbose() {
   return isEnvVarEnabled('CP_VERBOSE');
 }

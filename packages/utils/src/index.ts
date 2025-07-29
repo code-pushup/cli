@@ -9,7 +9,7 @@ export {
 export { filesCoverageToTree, type FileCoverage } from './lib/coverage-tree.js';
 export { createRunnerFiles } from './lib/create-runner-files.js';
 export { comparePairs, matchArrayItemsByKey, type Diff } from './lib/diff.js';
-export { isEnvVarEnabled, isVerbose } from './lib/env.js';
+export { isCI, isEnvVarEnabled, isVerbose } from './lib/env.js';
 export { stringifyError } from './lib/errors.js';
 export {
   executeProcess,
