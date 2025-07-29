@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { CoreConfig, Format } from '@code-pushup/models';
+import { isCI } from '@code-pushup/utils';
 import { yargsHistoryOptionsDefinition } from './history/history.options.js';
 import type { CompareOptions } from './implementation/compare.model.js';
 import { yargsCompareOptionsDefinition } from './implementation/compare.options.js';
@@ -21,7 +22,7 @@ describe('yargsCli', () => {
       options,
     }).parseAsync();
     expect(parsedArgv.verbose).toBe(false);
-    expect(parsedArgv.progress).toBe(true);
+    expect(parsedArgv.progress).toBe(!isCI());
   });
 
   it('should parse an empty array as a default onlyPlugins option', async () => {
@@ -112,7 +113,6 @@ describe('yargsCli', () => {
         FilterOptions
     >(
       [
-        '--verbose',
         '--persist.format=md',
         '--persist.outputDir=code-pushdown/output/dir',
         '--persist.filename=code-pushdown-report',
@@ -130,9 +130,8 @@ describe('yargsCli', () => {
     expect(parsedArgv).toEqual(
       expect.objectContaining({
         // default values
-        progress: true,
+        verbose: false,
         // overridden arguments
-        verbose: true,
         persist: expect.objectContaining({
           outputDir: 'code-pushdown/output/dir',
           filename: 'code-pushdown-report',
