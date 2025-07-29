@@ -4,6 +4,17 @@
   "sourceRoot": "packages/models/src",
   "projectType": "library",
   "targets": {
+    "code-pushup": {
+      "outputs": ["{options.outputPath}"],
+      "cache": true,
+      "options": {
+        "config": "packages/models/code-pushup.config.ts",
+        "outputPath": "packages/models/.code-pushup"
+      },
+      "env": {
+        "TSX_TSCONFIG_PATH": "../../tsconfig.base.json"
+      }
+    },
     "build": {
       "dependsOn": [{ "projects": "models-transformers", "target": "build" }],
       "executor": "@nx/js:tsc",

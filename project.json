@@ -5,10 +5,10 @@
     "code-pushup": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "node packages/cli/src/index.ts --no-progress --verbose",
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        "config": "code-pushup.config.ts",
+        "persist": {
+          "filename": "{projectName}-report",
+          "outputDir": ".code-pushup"
         }
       }
     }
