@@ -1,32 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import {
-  getNormalizedOptionValue,
-  setVerboseMiddleware,
-} from './set-verbose.middleware.js';
+import { setVerboseMiddleware } from './set-verbose.middleware.js';
 
 describe('setVerboseMiddleware', () => {
-  it.each([
-    [true, true],
-    ['true', true],
-    ['True', true],
-    ['TRUE', true],
-    [false, false],
-    ['false', false],
-    ['False', false],
-    ['FALSE', false],
-    [undefined, undefined],
-    ['undefined', undefined],
-    ['Whatever else', undefined],
-    [0, undefined],
-    [1, undefined],
-    [null, undefined],
-  ])(
-    'should return normalize value of `%j` option set as `%j`',
-    (value, expected) => {
-      expect(getNormalizedOptionValue(value)).toBe(expected);
-    },
-  );
-
   it.each([
     [true, undefined, true],
     [false, undefined, false],
