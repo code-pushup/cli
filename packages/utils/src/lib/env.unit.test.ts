@@ -1,4 +1,4 @@
-import { isEnvVarEnabled } from './env.js';
+import { coerceBooleanValue, isEnvVarEnabled } from './env.js';
 import { ui } from './logging.js';
 
 describe('isEnvVarEnabled', () => {
@@ -37,5 +37,30 @@ describe('isEnvVarEnabled', () => {
       'warn',
       'Environment variable CP_VERBOSE expected to be a boolean (true/false/1/0), but received value unexpected. Treating it as disabled.',
     );
+  });
+});
+
+describe('coerceBooleanValue', () => {
+  it.each([
+    [true, true],
+    [false, false],
+    ['true', true],
+    ['false', false],
+    ['True', true],
+    ['False', false],
+    ['TRUE', true],
+    ['FALSE', false],
+    ['on', true],
+    ['off', false],
+    ['yes', true],
+    ['no', false],
+    ['1', true],
+    ['0', false],
+    ['42', true],
+    ['unknown', undefined],
+    [null, undefined],
+    [undefined, undefined],
+  ])('should coerce value %j to %j', (input, expected) => {
+    expect(coerceBooleanValue(input)).toBe(expected);
   });
 });
