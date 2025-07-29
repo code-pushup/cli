@@ -1,23 +1,16 @@
 import type {
-  BasicTreeNodeValues,
-  CoverageTreeNodeValues,
+  BasicTreeNode,
+  CoverageTreeNode,
   Tree,
 } from '@code-pushup/models';
 
-// recursive schemas cause compiler problems when using BasicTreeNode | CoverageTreeNode
-type TreeNode = {
-  name: string;
-  values?: BasicTreeNodeValues | CoverageTreeNodeValues;
-  children?: TreeNode[];
-};
+type TreeNode = BasicTreeNode | CoverageTreeNode;
 
 const INDENT_CHARS = 4;
 const COL_GAP = 2;
 
 export function formatAsciiTree(tree: Tree): string {
-  const root = tree.root as TreeNode;
-
-  const nodes = flatten(root);
+  const nodes = flatten(tree.root);
   const maxWidth = Math.max(
     ...nodes.map(({ node, level }) => level * INDENT_CHARS + node.name.length),
   );
@@ -37,7 +30,7 @@ export function formatAsciiTree(tree: Tree): string {
           {},
         );
 
-  return formatTreeNode(root, '', maxWidth, keysMaxWidths)
+  return formatTreeNode(tree.root, '', maxWidth, keysMaxWidths)
     .map(line => `${line}\n`)
     .join('');
 }
