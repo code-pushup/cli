@@ -68,6 +68,7 @@ export {
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
 } from './lib/guards.js';
+export { createPatternMatcher } from './lib/lang.js';
 export { logMultipleResults } from './lib/log-results.js';
 export { isVerbose, link, ui, type CliUi, type Column } from './lib/logging.js';
 export { mergeConfigs } from './lib/merge-configs.js';
