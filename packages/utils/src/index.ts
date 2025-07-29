@@ -9,6 +9,7 @@ export {
 export { filesCoverageToTree, type FileCoverage } from './lib/coverage-tree.js';
 export { createRunnerFiles } from './lib/create-runner-files.js';
 export { comparePairs, matchArrayItemsByKey, type Diff } from './lib/diff.js';
+export { isEnvVarEnabled, isVerbose } from './lib/env.js';
 export { stringifyError } from './lib/errors.js';
 export {
   executeProcess,
@@ -69,7 +70,7 @@ export {
   isPromiseRejectedResult,
 } from './lib/guards.js';
 export { logMultipleResults } from './lib/log-results.js';
-export { isVerbose, link, ui, type CliUi, type Column } from './lib/logging.js';
+export { link, ui, type CliUi, type Column } from './lib/logging.js';
 export { mergeConfigs } from './lib/merge-configs.js';
 export { getProgressBar, type ProgressBar } from './lib/progress.js';
 export { asyncSequential, groupByStatus } from './lib/promises.js';

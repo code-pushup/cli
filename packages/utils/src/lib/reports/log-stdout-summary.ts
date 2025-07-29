@@ -1,6 +1,7 @@
 import { bold, cyan, cyanBright, green, red } from 'ansis';
 import type { AuditReport } from '@code-pushup/models';
-import { isVerbose, ui } from '../logging.js';
+import { isVerbose } from '../env.js';
+import { ui } from '../logging.js';
 import {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
