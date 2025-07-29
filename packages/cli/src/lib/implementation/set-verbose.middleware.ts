@@ -1,5 +1,6 @@
 import type { GlobalOptions } from '@code-pushup/core';
 import type { CoreConfig } from '@code-pushup/models';
+import { coerceBooleanValue } from '@code-pushup/utils';
 import type { FilterOptions } from './filter.model.js';
 import type { GeneralCliOptions } from './global.model';
 
@@ -21,8 +22,8 @@ import type { GeneralCliOptions } from './global.model';
 export function setVerboseMiddleware<
   T extends GeneralCliOptions & CoreConfig & FilterOptions & GlobalOptions,
 >(originalProcessArgs: T): T {
-  const envVerbose = getNormalizedOptionValue(process.env['CP_VERBOSE']);
-  const cliVerbose = getNormalizedOptionValue(originalProcessArgs.verbose);
+  const envVerbose = coerceBooleanValue(process.env['CP_VERBOSE']);
+  const cliVerbose = coerceBooleanValue(originalProcessArgs.verbose);
   const verboseEffect = cliVerbose ?? envVerbose ?? false;
 
   // eslint-disable-next-line functional/immutable-data
@@ -32,21 +33,4 @@ export function setVerboseMiddleware<
     ...originalProcessArgs,
     verbose: verboseEffect,
   };
-}
-
-export function getNormalizedOptionValue(value: unknown): boolean | undefined {
-  if (typeof value === 'boolean') {
-    return value;
-  }
-  if (typeof value === 'string') {
-    const lowerCaseValue = value.toLowerCase();
-    if (lowerCaseValue === 'true') {
-      return true;
-    }
-    if (lowerCaseValue === 'false') {
-      return false;
-    }
-  }
-
-  return undefined;
 }
