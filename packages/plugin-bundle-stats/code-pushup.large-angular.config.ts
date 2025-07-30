@@ -704,6 +704,34 @@ Detects *newly added packages*, catches **forbidden dependencies**, monitors **3
   },
 };
 
+const blacklistedFilesAudit: BundleStatsAuditOptions = {
+  slug: 'blacklisted',
+  title: '🚫 Blacklisted Files',
+  description: `
+Monitors **blacklisted dependencies** and **deprecated packages** that are present in the bundle. This helps identify potential security risks and compliance issues.`,
+  selection: {
+    mode: 'matchingOnly',
+    includeInputs: [
+      '**/node_modules/angular2-toaster/**',
+      '**/node_modules/ngx-float-ui/**',
+      '**/node_modules/@angular-slider/ngx-slider/**',
+      '**/node_modules/ngx-slider-v2/**',
+      '**/node_modules/ngx-toastr/**',
+      '**/node_modules/@angular/material/dialog/**',
+      '**/node_modules/@angular/material/slider/**',
+      '**/node_modules/@angular/material/bottom-sheet/**',
+    ],
+  },
+  insightsTable: {
+    mode: 'onlyMatching',
+    groups: blacklistedFilesGroups,
+  },
+  dependencyTree: {
+    mode: 'onlyMatching',
+    groups: blacklistedFilesGroups,
+  },
+};
+
 const config = {
   plugins: [
     await bundleStatsPlugin({
@@ -712,6 +740,7 @@ const config = {
         './packages/plugin-bundle-stats/mocks/fixtures/stats/angular-large.stats.json',
       audits: [
         allFilesAudit,
+        blacklistedFilesAudit,
         angularSpecificAudit,
         dependencyAudit,
         initialBundleSizeAudit,

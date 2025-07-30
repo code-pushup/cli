@@ -1,3 +1,4 @@
+import type { CoreConfig } from '../models/src/index.js';
 import bundleStatsPlugin from './src';
 import { MinMax } from './src/lib/runner/types';
 import { BundleStatsAuditOptions } from './src/lib/types';
@@ -749,7 +750,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
   },
 ];
 
-const config = {
+const config: CoreConfig = {
   plugins: [
     await bundleStatsPlugin({
       artifactsPaths:
@@ -762,7 +763,85 @@ const config = {
         ...INSIGHT_AUDITS,
         ...TREE_AUDITS,
       ],
+      groups: [
+        {
+          slug: 'selection-group',
+          title: '🎯 Selection',
+          description:
+            'Demonstrates different selection modes and pattern matching for bundle analysis.',
+          refs: SELECTION_AUDITS.filter(audit => audit.slug).map(audit => ({
+            slug: audit.slug!,
+            weight: 1,
+          })),
+        },
+        {
+          slug: 'scoring-group',
+          title: '📏 Scoring',
+          description:
+            'Shows scoring mechanisms including thresholds, penalties, and size constraints.',
+          refs: [...SCORING_AUDITS, ...SCORING_PENALTY_AUDITS]
+            .filter(audit => audit.slug)
+            .map(audit => ({
+              slug: audit.slug!,
+              weight: 1,
+            })),
+        },
+        {
+          slug: 'insights-group',
+          title: '📊 Insights Table',
+          description:
+            'Configures insights tables with grouping, pruning, and visualization options.',
+          refs: INSIGHT_AUDITS.filter(audit => audit.slug).map(audit => ({
+            slug: audit.slug!,
+            weight: 1,
+          })),
+        },
+        {
+          slug: 'tree-group',
+          title: '🌳 Dependency Tree',
+          description:
+            'Demonstrates dependency tree configurations with grouping and pruning strategies.',
+          refs: TREE_AUDITS.filter(audit => audit.slug).map(audit => ({
+            slug: audit.slug!,
+            weight: 1,
+          })),
+        },
+      ],
     }),
+  ],
+  categories: [
+    {
+      slug: 'performance',
+      title: '⚡ Performance',
+      description:
+        'Comprehensive bundle performance analysis including selection, scoring, insights, and dependency trees.',
+      refs: [
+        {
+          type: 'group' as const,
+          plugin: 'bundle-stats',
+          slug: 'selection-group',
+          weight: 1,
+        },
+        {
+          type: 'group' as const,
+          plugin: 'bundle-stats',
+          slug: 'scoring-group',
+          weight: 2,
+        },
+        {
+          type: 'group' as const,
+          plugin: 'bundle-stats',
+          slug: 'insights-group',
+          weight: 1,
+        },
+        {
+          type: 'group' as const,
+          plugin: 'bundle-stats',
+          slug: 'tree-group',
+          weight: 1,
+        },
+      ],
+    },
   ],
 };
 
