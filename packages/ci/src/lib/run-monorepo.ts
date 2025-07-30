@@ -32,6 +32,7 @@ import {
   type RunEnv,
   checkPrintConfig,
   compareReports,
+  hasDefaultPersistFormats,
   loadCachedBaseReport,
   printPersistConfig,
   runInBaseBranch,
@@ -116,24 +117,35 @@ async function runProjectsInBulk(
     `Running on ${projects.length} projects in bulk (parallel: ${settings.parallel})`,
   );
 
-  await collectMany(runManyCommand, env);
-
-  const currProjectReports = await asyncSequential(
-    projects,
-    async (project): Promise<ProjectReport> => {
-      const ctx = createCommandContext(settings, project);
-      const config = await printPersistConfig(ctx);
-      const reports = await saveOutputFiles({
-        project,
-        type: 'current',
-        files: persistedFilesFromConfig(config, ctx),
-        settings,
-      });
-      return { project, reports, config, ctx };
-    },
-  );
+  const currProjectConfigs = await asyncSequential(projects, async project => {
+    const ctx = createCommandContext(settings, project);
+    const config = await printPersistConfig(ctx);
+    return { project, config, ctx };
+  });
+  const hasFormats = allProjectsHaveDefaultPersistFormats(currProjectConfigs);
   logger.debug(
-    `Loaded ${currProjectReports.length} persist configs by running print-config command for each project`,
+    [
+      `Loaded ${currProjectConfigs.length} persist configs by running print-config command for each project.`,
+      hasFormats
+        ? 'Every project has default persist formats.'
+        : 'Not all projects have default persist formats.',
+    ].join(' '),
+  );
+
+  await collectMany(runManyCommand, env, { hasFormats });
+
+  const currProjectReports = await Promise.all(
+    currProjectConfigs.map(
+      async ({ project, config, ctx }): Promise<ProjectReport> => {
+        const reports = await saveOutputFiles({
+          project,
+          type: 'current',
+          files: persistedFilesFromConfig(config, ctx),
+          settings,
+        });
+        return { project, reports, config, ctx };
+      },
+    ),
   );
 
   if (base == null) {
@@ -248,10 +260,12 @@ async function collectPreviousReports(
     }
 
     if (onlyProjects.length > 0) {
+      const hasFormats =
+        allProjectsHaveDefaultPersistFormats(validProjectConfigs);
       logger.info(
         `Collecting previous reports for ${onlyProjects.length} projects`,
       );
-      await collectMany(runManyCommand, env, onlyProjects);
+      await collectMany(runManyCommand, env, { hasFormats, onlyProjects });
     }
 
     const projectFiles = validProjectConfigs.map(args =>
@@ -281,16 +295,21 @@ async function savePreviousProjectReport(args: {
 async function collectMany(
   runManyCommand: RunManyCommand,
   env: RunEnv,
-  onlyProjects?: string[],
+  options: {
+    hasFormats: boolean;
+    onlyProjects?: string[];
+  },
 ): Promise<void> {
   const { settings } = env;
+  const { hasFormats, onlyProjects } = options;
+
   const command = await runManyCommand(onlyProjects);
   const ctx: CommandContext = {
     ...createCommandContext(settings, null),
     bin: command,
   };
 
-  await runCollect(ctx);
+  await runCollect(ctx, { hasFormats });
 
   const countText = onlyProjects
     ? `${onlyProjects.length} previous`
@@ -298,4 +317,10 @@ async function collectMany(
   settings.logger.debug(
     `Collected ${countText} reports using command \`${command}\``,
   );
+}
+
+export function allProjectsHaveDefaultPersistFormats(
+  projects: { config: Pick<CoreConfig, 'persist'> }[],
+): boolean {
+  return projects.every(({ config }) => hasDefaultPersistFormats(config));
 }

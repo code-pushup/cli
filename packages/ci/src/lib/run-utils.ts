@@ -1,7 +1,12 @@
 /* eslint-disable max-lines */
 import { readFile } from 'node:fs/promises';
 import type { SimpleGit } from 'simple-git';
-import type { CoreConfig, Report, ReportsDiff } from '@code-pushup/models';
+import {
+  type CoreConfig,
+  DEFAULT_PERSIST_FORMAT,
+  type Report,
+  type ReportsDiff,
+} from '@code-pushup/models';
 import {
   removeUndefinedAndEmptyProps,
   stringifyError,
@@ -112,7 +117,7 @@ export async function runOnProject(
     `Loaded persist config from print-config command - ${JSON.stringify(config.persist)}`,
   );
 
-  await runCollect(ctx);
+  await runCollect(ctx, { hasFormats: hasDefaultPersistFormats(config) });
   const currReport = await saveReportFiles({
     project,
     type: 'current',
@@ -221,7 +226,7 @@ export async function collectPreviousReport(
       return null;
     }
 
-    await runCollect(ctx);
+    await runCollect(ctx, { hasFormats: hasDefaultPersistFormats(config) });
     const report = await saveReportFiles({
       project,
       type: 'previous',
@@ -327,6 +332,16 @@ export async function printPersistConfig(
 ): Promise<Pick<CoreConfig, 'persist'>> {
   const json = await runPrintConfig(ctx);
   return parsePersistConfig(json);
+}
+
+export function hasDefaultPersistFormats(
+  config: Pick<CoreConfig, 'persist'>,
+): boolean {
+  const formats = config.persist?.format;
+  return (
+    formats == null ||
+    DEFAULT_PERSIST_FORMAT.every(format => formats.includes(format))
+  );
 }
 
 export async function findNewIssues(
