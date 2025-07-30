@@ -4,6 +4,7 @@ import type { SelectionGeneralConfig } from '../../types.js';
 import type { UnifiedStats } from '../unify/unified-stats.types.js';
 import { compilePattern } from './details/grouping.js';
 import {
+  type CompiledPatterns,
   type SelectionConfig,
   compileSelectionPatterns,
   evaluatePatternCriteria,
@@ -291,30 +292,27 @@ describe('importsMatchPatterns', () => {
 });
 
 describe('isBundleSelected', () => {
-  const createCompiledPatterns = (overrides: Partial<SelectionConfig> = {}) => {
-    const base = {
+  const createCompiledPatterns = (
+    overrides: Partial<CompiledPatterns> = {},
+  ): CompiledPatterns => {
+    const base: CompiledPatterns = {
       includeOutputs: [],
       excludeOutputs: [],
       includeInputs: [],
       excludeInputs: [],
-      includeImports: [],
-      excludeImports: [],
-      includeEntryPoints: [],
-      excludeEntryPoints: [],
     };
     return { ...base, ...overrides };
   };
 
-  it('should return false when no entryPoint but includeEntryPoints has patterns', () => {
+  it('should return false when no include patterns are provided in feature mode', () => {
     expect(
       isBundleSelected(
         {
           path: 'dist/main.js',
           bytes: 400,
         },
-        createCompiledPatterns({
-          includeEntryPoints: [vi.fn().mockReturnValue(true)],
-        }),
+        createCompiledPatterns(),
+        'feature',
       ),
     ).toBe(false);
   });
@@ -358,19 +356,13 @@ describe('isBundleSelected', () => {
       {
         path: 'dist/main.js',
         bytes: 400,
-        entryPoint: 'src/main.ts',
         inputs: {
           'src/main.ts': { bytes: 400 },
         },
-        imports: [
-          { path: 'node_modules/react/index.js', kind: 'import-statement' },
-        ],
       },
       createCompiledPatterns({
         includeOutputs: [vi.fn().mockReturnValue(true)],
         includeInputs: [vi.fn().mockReturnValue(true)],
-        includeImports: [vi.fn().mockReturnValue(true)],
-        includeEntryPoints: [vi.fn().mockReturnValue(true)],
       }),
     );
 
@@ -424,14 +416,11 @@ describe('compilePattern', () => {
 describe('compileSelectionPatterns', () => {
   it('should return object with correct structure for all pattern types', () => {
     const result = compileSelectionPatterns({
+      mode: 'bundle',
       includeOutputs: ['dist/**/*.js'],
       excludeOutputs: ['dist/**/*.map'],
       includeInputs: ['src/**/*.ts'],
       excludeInputs: ['**/*.test.ts'],
-      includeImports: ['node_modules/**'],
-      excludeImports: ['node_modules/dev-*/**'],
-      includeEntryPoints: ['main.js'],
-      excludeEntryPoints: ['dev.js'],
     });
 
     expect(result).toStrictEqual({
@@ -439,10 +428,6 @@ describe('compileSelectionPatterns', () => {
       excludeOutputs: [expect.any(Function)],
       includeInputs: [expect.any(Function)],
       excludeInputs: [expect.any(Function)],
-      includeImports: [expect.any(Function)],
-      excludeImports: [expect.any(Function)],
-      includeEntryPoints: [expect.any(Function)],
-      excludeEntryPoints: [expect.any(Function)],
     });
 
     const compiled = result.includeOutputs[0]!;
@@ -453,24 +438,17 @@ describe('compileSelectionPatterns', () => {
   it('should handle empty selection options', () => {
     expect(
       compileSelectionPatterns({
+        mode: 'bundle',
         includeOutputs: [],
         excludeOutputs: [],
         includeInputs: [],
         excludeInputs: [],
-        includeImports: [],
-        excludeImports: [],
-        includeEntryPoints: [],
-        excludeEntryPoints: [],
       }),
     ).toStrictEqual({
       includeOutputs: [],
       excludeOutputs: [],
       includeInputs: [],
       excludeInputs: [],
-      includeImports: [],
-      excludeImports: [],
-      includeEntryPoints: [],
-      excludeEntryPoints: [],
     });
   });
 
@@ -482,10 +460,6 @@ describe('compileSelectionPatterns', () => {
       excludeOutputs: ['dev.js'],
       includeInputs: ['components/**'],
       excludeInputs: ['temp.js'],
-      includeImports: ['node_modules/**'],
-      excludeImports: ['node_modules/dev-*/**'],
-      includeEntryPoints: [],
-      excludeEntryPoints: [],
     };
     const normalizedConfig = normalizeSelectionOptions(selectionOptions);
     const result = compileSelectionPatterns(normalizedConfig);
@@ -495,20 +469,15 @@ describe('compileSelectionPatterns', () => {
     expect(result.excludeOutputs).toHaveLength(2); // dev.js + *.test.*
     expect(result.includeInputs).toHaveLength(2); // components/** + src/**
     expect(result.excludeInputs).toHaveLength(2); // temp.js + *.test.*
-    expect(result.includeImports).toHaveLength(2); // node_modules/** + src/**
-    expect(result.excludeImports).toHaveLength(2); // node_modules/dev-*/** + *.test.*
   });
 
   it('should work with new PascalCase type configurations', () => {
     const outputConfig = {
+      mode: 'bundle' as const,
       includeOutputs: ['*.js'],
       excludeOutputs: ['*.test.js'],
       includeInputs: [],
       excludeInputs: [],
-      includeImports: [],
-      excludeImports: [],
-      includeEntryPoints: [],
-      excludeEntryPoints: [],
     };
 
     const result = compileSelectionPatterns(outputConfig);
@@ -522,14 +491,11 @@ describe('compileSelectionPatterns', () => {
 
 describe('selectBundles', () => {
   const emptyPatterns = {
+    mode: 'bundle' as const,
     includeOutputs: [],
     excludeOutputs: [],
     includeInputs: [],
     excludeInputs: [],
-    includeImports: [],
-    excludeImports: [],
-    includeEntryPoints: [],
-    excludeEntryPoints: [],
   };
 
   it('should return empty result for empty unified stats with valid patterns', () => {
@@ -646,51 +612,6 @@ describe('selectBundles', () => {
     });
   });
 
-  it('should include outputs with matching includeEntryPoints patterns', () => {
-    const stats = {
-      'dist/main.js': {
-        path: 'dist/main.js',
-        entryPoint: 'src/main.ts',
-      },
-      'dist/worker.js': {
-        path: 'dist/worker.js',
-        entryPoint: 'src/worker.ts',
-      },
-    } as unknown as UnifiedStats;
-
-    expect(
-      selectBundles(stats, {
-        ...emptyPatterns,
-        includeEntryPoints: ['src/main.ts'],
-      }),
-    ).toStrictEqual({
-      'dist/main.js': stats['dist/main.js'],
-    });
-  });
-
-  it('should exclude outputs with matching excludeEntryPoints patterns', () => {
-    const stats = {
-      'dist/main.js': {
-        path: 'dist/main.js',
-        entryPoint: 'src/main.ts',
-      },
-      'dist/test.js': {
-        path: 'dist/test.js',
-        entryPoint: 'src/test.ts',
-      },
-    } as unknown as UnifiedStats;
-
-    expect(
-      selectBundles(stats, {
-        ...emptyPatterns,
-        includeOutputs: ['dist/*.js'],
-        excludeEntryPoints: ['**/test.ts'],
-      }),
-    ).toStrictEqual({
-      'dist/main.js': stats['dist/main.js'],
-    });
-  });
-
   it('should include outputs with matching includeInputs patterns', () => {
     const stats = {
       'dist/main.js': {
@@ -711,28 +632,6 @@ describe('selectBundles', () => {
       selectBundles(stats, {
         ...emptyPatterns,
         includeInputs: ['src/**'],
-      }),
-    ).toStrictEqual({
-      'dist/main.js': stats['dist/main.js'],
-    });
-  });
-
-  it('should include outputs with matching includeImports patterns', () => {
-    const stats = {
-      'dist/main.js': {
-        path: 'dist/main.js',
-        imports: [{ path: 'node_modules/react.js', kind: 'import-statement' }],
-      },
-      'dist/vendor.js': {
-        path: 'dist/vendor.js',
-        imports: [{ path: 'src/utils.js', kind: 'import-statement' }],
-      },
-    } as unknown as UnifiedStats;
-
-    expect(
-      selectBundles(stats, {
-        ...emptyPatterns,
-        includeImports: ['node_modules/**'],
       }),
     ).toStrictEqual({
       'dist/main.js': stats['dist/main.js'],
@@ -766,69 +665,118 @@ describe('selectBundles', () => {
     });
   });
 
-  it('should exclude outputs with matching excludeImports patterns', () => {
+  it('should apply mode: bundle', () => {
     const stats = {
       'dist/main.js': {
         path: 'dist/main.js',
-        imports: [{ path: 'src/utils.js', kind: 'import-statement' }],
-      },
-      'dist/vendor.js': {
-        path: 'dist/vendor.js',
-        imports: [{ path: 'node_modules/react.js', kind: 'import-statement' }],
+        bytes: 1000,
+        inputs: {
+          'src/main.ts': { bytes: 500 },
+          'src/utils.ts': { bytes: 500 },
+        },
       },
     } as unknown as UnifiedStats;
 
     expect(
       selectBundles(stats, {
         ...emptyPatterns,
+        mode: 'bundle',
         includeOutputs: ['dist/*.js'],
-        excludeImports: ['node_modules/**'],
       }),
     ).toStrictEqual({
       'dist/main.js': stats['dist/main.js'],
     });
   });
 
-  it('should exclude outputs when excludeImports matches despite includeInputs matching', () => {
+  it('should apply mode: feature', () => {
     const stats = {
       'dist/main.js': {
         path: 'dist/main.js',
+        bytes: 1000,
         inputs: {
-          'src/main.ts': {},
+          'src/main.ts': { bytes: 300 },
+          'src/feature.ts': { bytes: 200 },
+          'src/other.ts': { bytes: 500 },
         },
-        imports: [{ path: 'node_modules/react.js', kind: 'import-statement' }],
       },
     } as unknown as UnifiedStats;
 
     expect(
       selectBundles(stats, {
         ...emptyPatterns,
-        includeInputs: ['src/**'],
-        excludeImports: ['node_modules/**'],
+        mode: 'feature',
+        includeInputs: ['**/*feature*'],
       }),
-    ).toStrictEqual({});
+    ).toStrictEqual({
+      'dist/main.js': {
+        ...stats['dist/main.js'],
+        inputs: { 'src/feature.ts': { bytes: 200 } },
+        bytes: 200,
+      },
+    });
   });
 
-  it('should exclude outputs when excludeOutputs matches despite includeImports matching', () => {
+  it('should apply mode: startup', () => {
     const stats = {
       'dist/main.js': {
         path: 'dist/main.js',
-        imports: [{ path: 'node_modules/react.js', kind: 'import-statement' }],
+        bytes: 500,
+        imports: [{ path: 'dist/vendor.js', kind: 'import-statement' }],
+      },
+      'dist/vendor.js': {
+        path: 'dist/vendor.js',
+        bytes: 300,
       },
     } as unknown as UnifiedStats;
 
     expect(
       selectBundles(stats, {
         ...emptyPatterns,
-        includeImports: ['node_modules/**'],
-        excludeOutputs: ['dist/main.js'],
+        mode: 'startup',
+        includeOutputs: ['dist/main.js'],
       }),
-    ).toStrictEqual({});
+    ).toStrictEqual({
+      'dist/main.js': stats['dist/main.js'],
+      'dist/vendor.js': stats['dist/vendor.js'],
+    });
+  });
+
+  it('should apply mode: dependencies', () => {
+    const stats = {
+      'dist/main.js': {
+        path: 'dist/main.js',
+        bytes: 500,
+        imports: [
+          { path: 'dist/vendor.js', kind: 'import-statement' },
+          { path: 'dist/lazy.js', kind: 'dynamic-import' },
+        ],
+      },
+      'dist/vendor.js': {
+        path: 'dist/vendor.js',
+        bytes: 300,
+      },
+      'dist/lazy.js': {
+        path: 'dist/lazy.js',
+        bytes: 100,
+      },
+    } as unknown as UnifiedStats;
+
+    expect(
+      selectBundles(stats, {
+        ...emptyPatterns,
+        mode: 'dependencies',
+        includeOutputs: ['dist/main.js'],
+      }),
+    ).toStrictEqual({
+      'dist/main.js': stats['dist/main.js'],
+      'dist/vendor.js': stats['dist/vendor.js'],
+      'dist/lazy.js': stats['dist/lazy.js'],
+    });
   });
 
   it('should throw descriptive error for empty selection options', () => {
     expect(() => selectBundles({}, emptyPatterns)).toThrow(
-      'Selection requires at least one include/exclude pattern for outputs, inputs, imports, or entry points',
+      'Selection requires at least one include/exclude pattern for outputs or inputs',
     );
     expect(() =>
       selectBundles(
@@ -836,20 +784,18 @@ describe('selectBundles', () => {
           'main.js': {
             path: 'dist/main.js',
             bytes: 0,
-            entryPoint: 'src/main.ts',
             inputs: {},
           },
           'bin.js': {
             path: 'dist/bin.js',
             bytes: 0,
-            entryPoint: 'src/bin.ts',
             inputs: {},
           },
         },
         emptyPatterns,
       ),
     ).toThrow(
-      'Selection requires at least one include/exclude pattern for outputs, inputs, imports, or entry points',
+      'Selection requires at least one include/exclude pattern for outputs or inputs',
     );
   });
 
@@ -857,23 +803,6 @@ describe('selectBundles', () => {
     expect(() => selectBundles({}, emptyPatterns)).toThrow(
       'Provide patterns like: { includeOutputs: ["*.js"] } or { includeInputs: ["src/**"] }',
     );
-  });
-
-  it('should ignore entry point patterns for outputs without entryPoint metadata', () => {
-    const stats = {
-      'dist/main.js': { path: 'dist/main.js' }, // No entryPoint
-      'dist/app.js': { path: 'dist/app.js', entryPoint: 'src/app.ts' },
-    } as unknown as UnifiedStats;
-
-    expect(
-      selectBundles(stats, {
-        ...emptyPatterns,
-        includeOutputs: ['dist/*.js'],
-        excludeEntryPoints: ['src/app.ts'], // Should only affect app.js, not main.js
-      }),
-    ).toStrictEqual({
-      'dist/main.js': stats['dist/main.js'], // Included (no entryPoint to check)
-    });
   });
 
   it('should select only matching outputs when include patterns are specified', () => {

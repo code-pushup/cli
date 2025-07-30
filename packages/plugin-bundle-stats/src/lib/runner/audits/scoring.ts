@@ -23,6 +23,7 @@ export type PenaltyConfig = {
 };
 
 export type ScoringConfig = {
+  mode: 'off' | 'matchingWithStaticImports' | 'onlyMatching';
   totalSize?: MinMax;
   penalty?: false | PenaltyConfig;
 };

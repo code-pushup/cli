@@ -149,6 +149,7 @@ export function mergeDependencyTreeConfig(
         ...(pluginOptions?.pruning ?? {}),
         ...(auditConfig?.pruning ?? {}),
       },
+      mode: auditConfig?.mode ?? 'onlyMatching',
     };
   }
 
@@ -162,6 +163,7 @@ export function mergeDependencyTreeConfig(
         ...DEFAULT_PRUNING_CONFIG,
         ...(auditConfig?.pruning ?? {}),
       },
+      mode: auditConfig.mode ?? 'onlyMatching',
     };
   }
 
@@ -176,6 +178,9 @@ export function mergeSelectionConfig(
   pluginOptions?: PluginSelectionOptions,
 ): SelectionConfig {
   return {
+    // mode from audit config takes precedence
+    mode: auditConfig?.mode ?? 'startup',
+
     // Include arrays overwrite - config takes precedence for scope clarity
     includeOutputs: auditConfig?.includeOutputs ?? [],
     includeInputs: auditConfig?.includeInputs ?? [],
@@ -247,7 +252,7 @@ export function mergeScoringConfig(
  */
 export function mergeInsightsConfig(
   auditConfig: InsightsTableConfig | false | undefined,
-  pluginOptions: InsightsTableConfig | undefined,
+  pluginOptions: InsightsTableConfig | false | undefined,
 ): InsightsTableConfig | false | undefined {
   if (auditConfig === false) {
     return undefined;
@@ -256,6 +261,11 @@ export function mergeInsightsConfig(
   // Insights override - audit-level completely replaces plugin-level when defined
   if (auditConfig !== undefined) {
     return auditConfig;
+  }
+
+  // Handle false plugin options
+  if (pluginOptions === false) {
+    return undefined;
   }
 
   return pluginOptions;

@@ -30,6 +30,7 @@ export function createAuditOutput(
   console.timeEnd('⚡ GET_ISSUES');
 
   const calculateScore = createBundleStatsScoring({
+    mode: config.scoring.mode,
     totalSize: config.scoring.totalSize,
     penalty: config.scoring.penalty,
   });
@@ -51,9 +52,20 @@ export function generateAuditOutputs(
   configs: BundleStatsConfig[],
 ): AuditOutput[] {
   return configs.map(config => {
-    console.time(`🔍 SELECT_BUNDLES`);
-    const filteredTree = selectBundles(bundleStatsTree, config.selection);
-    console.timeEnd(`🔍 SELECT_BUNDLES`);
+    console.time('�� SELECT_BUNDLES');
+
+    // Extract grouping rules for feature mode filtering
+    const groupingRules =
+      config.insightsTable && typeof config.insightsTable === 'object'
+        ? config.insightsTable.groups
+        : undefined;
+
+    const filteredTree = selectBundles(
+      bundleStatsTree,
+      config.selection,
+      groupingRules,
+    );
+    console.timeEnd('🔍 SELECT_BUNDLES');
 
     if (!filteredTree || Object.keys(filteredTree).length === 0) {
       return createEmptyAudit(config);

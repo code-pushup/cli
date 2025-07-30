@@ -18,7 +18,21 @@ const PATTERN_MATCH_CACHE = new Map<
   { rule: GroupingRule | null; groupKey: string | null }
 >();
 
-export type InsightsTableConfig = GroupingRule[];
+export type SharedViewConfig = {
+  enabled?: boolean;
+  mode?: 'onlyMatching' | 'all';
+};
+
+export interface TablePruningConfig {
+  enabled?: boolean;
+  maxChildren?: number;
+  minSize?: number;
+}
+
+export type InsightsTableConfig = SharedViewConfig & {
+  groups: GroupingRule[];
+  pruning?: TablePruningConfig;
+};
 
 /**
  * Simplified aggregation with algorithmic optimizations. Eliminates expensive nested operations and redundant pattern matching.
@@ -27,7 +41,7 @@ export function aggregateAndSortGroups(
   statsSlice: UnifiedStats,
   insights: InsightsTableConfig,
 ): { groups: GroupData[]; restGroup: { title: string; bytes: number } } {
-  const groupingRules = insights || [];
+  const groupingRules = insights.groups || [];
 
   // Early exit optimization
   if (groupingRules.length === 0) {
@@ -181,24 +195,72 @@ export function aggregateAndSortGroups(
 export function createTable(
   groups: GroupData[],
   restGroup: { title: string; bytes: number },
+  viewMode: 'onlyMatching' | 'all' = 'onlyMatching',
+  pruning?: TablePruningConfig,
 ): Table {
   const rows: { group: string; modules: string; size: string }[] = [];
 
-  for (const group of groups) {
-    if (group.bytes > 0) {
-      rows.push({
-        group: `${group.icon || '📁'} ${group.title}`,
-        modules: group.modules.toString(),
-        size: formatBytes(group.bytes),
-      });
+  let processedGroups = groups;
+  let processedRestGroup = restGroup;
+
+  // Apply pruning if enabled
+  if (pruning?.enabled) {
+    const { minSize = 0, maxChildren } = pruning;
+
+    // Filter groups by minimum size
+    const keptGroups: GroupData[] = [];
+    const prunedGroups: GroupData[] = [];
+
+    for (const group of groups) {
+      if (group.bytes >= minSize) {
+        keptGroups.push(group);
+      } else {
+        prunedGroups.push(group);
+      }
     }
+
+    // Apply maxChildren limit
+    let finalGroups = keptGroups;
+    if (maxChildren && keptGroups.length > maxChildren) {
+      finalGroups = keptGroups.slice(0, maxChildren);
+      const excessGroups = keptGroups.slice(maxChildren);
+      prunedGroups.push(...excessGroups);
+    }
+
+    // Add pruned groups to rest
+    if (prunedGroups.length > 0) {
+      const prunedBytes = prunedGroups.reduce(
+        (sum, group) => sum + group.bytes,
+        0,
+      );
+      processedRestGroup = {
+        title: REST_GROUP_NAME,
+        bytes: restGroup.bytes + prunedBytes,
+      };
+    }
+
+    processedGroups = finalGroups;
   }
 
-  if (restGroup.bytes > 0) {
+  for (const group of processedGroups) {
+    // Apply viewMode filtering
+    if (viewMode === 'onlyMatching' && group.bytes === 0) {
+      continue;
+    }
+
     rows.push({
-      group: '📁 Rest',
+      group: group.icon ? `${group.icon} ${group.title}` : group.title,
+      modules: group.modules.toString(),
+      size: formatBytes(group.bytes),
+    });
+  }
+
+  // Apply viewMode filtering to rest group
+  if (processedRestGroup.bytes > 0 || viewMode === 'all') {
+    rows.push({
+      group: 'Rest',
       modules: '-',
-      size: formatBytes(restGroup.bytes),
+      size: formatBytes(processedRestGroup.bytes),
     });
   }
 
@@ -220,5 +282,10 @@ export function createInsightsTable(
   insights: InsightsTableConfig,
 ): Table {
   const { groups, restGroup } = aggregateAndSortGroups(statsSlice, insights);
-  return createTable(groups, restGroup);
+  return createTable(
+    groups,
+    restGroup,
+    insights.mode || 'onlyMatching',
+    insights.pruning,
+  );
 }

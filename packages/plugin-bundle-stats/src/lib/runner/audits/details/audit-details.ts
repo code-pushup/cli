@@ -17,7 +17,11 @@ export function createAuditOutputDetails(
     issues,
   };
 
-  if (config.insightsTable && config.insightsTable.length > 0) {
+  if (
+    config.insightsTable &&
+    config.insightsTable.groups &&
+    config.insightsTable.groups.length > 0
+  ) {
     console.time('📊 CREATE_INSIGHTS_TABLE');
     details.table = createInsightsTable(statsSlice, config.insightsTable);
     console.timeEnd('📊 CREATE_INSIGHTS_TABLE');
@@ -35,8 +39,10 @@ export function createAuditOutputDetails(
     details.trees = [
       createTree(statsSlice, {
         title: config.slug,
+        mode: config.dependencyTree.mode ?? 'onlyMatching',
         pruning: config.dependencyTree.pruning ?? {},
         groups: config.dependencyTree.groups ?? [],
+        selection: config.selection, // Pass selection config for onlyMatching filtering
       }),
     ];
     console.timeEnd('🌳 CREATE_TREE');

@@ -9,14 +9,11 @@ export type { GroupingRule };
 export const DEFAULT_GROUPING: GroupingRule[] = [
   {
     patterns: ['projects/**/*'],
-    icon: '📦',
   },
   {
     patterns: ['packages/**/*'],
-    icon: '📦',
   },
   {
     patterns: ['**/node_modules/@*/**', '**/node_modules/**'],
-    icon: '📦',
   },
 ];

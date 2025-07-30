@@ -79,11 +79,15 @@ function formatStandardizedIssuesSection(scoring: ScoringConfig): string {
 function formatStandardizedTableSection(
   insightsTable: InsightsTableConfig | undefined,
 ): string {
-  if (!insightsTable || insightsTable.length === 0) {
+  if (
+    !insightsTable ||
+    !insightsTable.groups ||
+    insightsTable.groups.length === 0
+  ) {
     return ''; // Hide empty table section
   }
 
-  const groupItems = insightsTable
+  const groupItems = insightsTable.groups
     .filter(group => group.title)
     .map(group => `*${group.icon || ''}${group.title}*`)
     .slice(0, 5); // Limit to prevent overly long descriptions
@@ -103,23 +107,127 @@ function formatStandardizedTreeSection(
     return ''; // Hide disabled tree section
   }
 
-  const { pruning } = dependencyTree;
-  let pruningText = 'Default settings';
+  const { pruning, groups, mode } = dependencyTree;
 
+  // Format pruning settings
+  let pruningText = 'Default settings';
   if (pruning) {
     const pruningParts: string[] = [];
     if (pruning.minSize)
-      pruningParts.push(`\`${formatBytes(pruning.minSize)}\``);
+      pruningParts.push(`Min size: \`${formatBytes(pruning.minSize)}\``);
     if (pruning.maxChildren)
-      pruningParts.push(`\`${pruning.maxChildren} children\``);
-    if (pruning.maxDepth) pruningParts.push(`\`${pruning.maxDepth} depth\``);
+      pruningParts.push(`Max children: \`${pruning.maxChildren}\``);
+    if (pruning.maxDepth)
+      pruningParts.push(`Max depth: \`${pruning.maxDepth}\``);
+    if (pruning.pathLength)
+      pruningParts.push(`Path length: \`${pruning.pathLength}\``);
 
     if (pruningParts.length > 0) {
       pruningText = pruningParts.join(', ');
     }
   }
 
-  return `- **Tree:**\n  - Groups: Same as table\n  - Pruning: ${pruningText}\n  - Rest: Remaining items grouped for clarity`;
+  // Format groups
+  let groupsText = 'None';
+  if (groups && groups.length > 0) {
+    const groupSummaries = groups.map(group => {
+      const parts: string[] = [];
+      if (group.title) parts.push(`"${group.title}"`);
+      if (group.icon) parts.push(`${group.icon}`);
+      if (group.include) {
+        if (Array.isArray(group.include)) {
+          const includePatterns = group.include
+            .slice(0, 2)
+            .map((p: string) => `"${p}"`)
+            .join(', ');
+          const moreCount =
+            group.include.length > 2
+              ? `, +${group.include.length - 2} more`
+              : '';
+          parts.push(`include: [${includePatterns}${moreCount}]`);
+        } else {
+          parts.push(`include: "${group.include}"`);
+        }
+      }
+      if (group.exclude && group.exclude.length > 0) {
+        const excludePatterns = group.exclude
+          .slice(0, 1)
+          .map((p: string) => `"${p}"`)
+          .join(', ');
+        const moreCount =
+          group.exclude.length > 1 ? `, +${group.exclude.length - 1} more` : '';
+        parts.push(`exclude: [${excludePatterns}${moreCount}]`);
+      }
+      return parts.join(' ');
+    });
+    groupsText = groupSummaries.join('; ');
+  }
+
+  // Format mode
+  const modeText = mode || 'onlyMatching';
+
+  return `- **Tree:**\n  - Mode: \`${modeText}\`\n  - Groups: ${groupsText}\n  - Pruning: ${pruningText}`;
+}
+
+function formatStandardizedSelectionSection(
+  selection: SelectionConfig,
+): string {
+  const items: string[] = [];
+
+  // Selection mode
+  items.push(`  - Mode: \`${selection.mode}\``);
+
+  // Output patterns
+  if (selection.includeOutputs.length > 0) {
+    const patterns = selection.includeOutputs
+      .slice(0, 3)
+      .map(p => `\`${p}\``)
+      .join(', ');
+    const extra =
+      selection.includeOutputs.length > 3
+        ? ` (+${selection.includeOutputs.length - 3} more)`
+        : '';
+    items.push(`  - Include Outputs: ${patterns}${extra}`);
+  }
+
+  if (selection.excludeOutputs.length > 0) {
+    const patterns = selection.excludeOutputs
+      .slice(0, 2)
+      .map(p => `\`${p}\``)
+      .join(', ');
+    const extra =
+      selection.excludeOutputs.length > 2
+        ? ` (+${selection.excludeOutputs.length - 2} more)`
+        : '';
+    items.push(`  - Exclude Outputs: ${patterns}${extra}`);
+  }
+
+  // Input patterns
+  if (selection.includeInputs.length > 0) {
+    const patterns = selection.includeInputs
+      .slice(0, 3)
+      .map(p => `\`${p}\``)
+      .join(', ');
+    const extra =
+      selection.includeInputs.length > 3
+        ? ` (+${selection.includeInputs.length - 3} more)`
+        : '';
+    items.push(`  - Include Inputs: ${patterns}${extra}`);
+  }
+
+  if (selection.excludeInputs.length > 0) {
+    const patterns = selection.excludeInputs
+      .slice(0, 2)
+      .map(p => `\`${p}\``)
+      .join(', ');
+    const extra =
+      selection.excludeInputs.length > 2
+        ? ` (+${selection.excludeInputs.length - 2} more)`
+        : '';
+    items.push(`  - Exclude Inputs: ${patterns}${extra}`);
+  }
+
+  return `- **Selection:**\n${items.join('\n')}`;
 }
 
 export function cleanTitleForSlug(title: string): string {
@@ -130,7 +238,8 @@ export function cleanTitleForSlug(title: string): string {
 }
 
 export function prepareDescription(config: BundleStatsConfig): string {
-  const { description, scoring, dependencyTree, insightsTable } = config;
+  const { description, scoring, selection, dependencyTree, insightsTable } =
+    config;
 
   // Start with the action paragraph (preserve existing custom descriptions)
   let enhancedDescription = description || '';
@@ -145,6 +254,9 @@ export function prepareDescription(config: BundleStatsConfig): string {
 
     const issuesSection = formatStandardizedIssuesSection(scoring);
     if (issuesSection) sections.push(issuesSection);
+
+    const selectionSection = formatStandardizedSelectionSection(selection);
+    if (selectionSection) sections.push(selectionSection);
 
     // Handle insightsTable which could be false
     const normalizedInsightsTable =
@@ -175,6 +287,7 @@ export function selectionGeneralConfigToOptions(
 ): SelectionOptions {
   return {
     ...config,
+    mode: 'startup',
     includeOutputs: [],
     excludeOutputs: [],
     includeInputs: [],
@@ -190,15 +303,13 @@ export function normalizeSelectionOptions(
   options: SelectionOptions | undefined,
 ): SelectionConfig {
   if (options === undefined) {
+    // Default: include all outputs for startup mode
     return {
-      includeOutputs: [],
+      mode: 'startup',
+      includeOutputs: ['**/*'],
       excludeOutputs: [],
       includeInputs: [],
       excludeInputs: [],
-      includeImports: [],
-      excludeImports: [],
-      includeEntryPoints: [],
-      excludeEntryPoints: [],
     };
   }
 
@@ -206,20 +317,11 @@ export function normalizeSelectionOptions(
   const globalExclude = options.exclude || [];
 
   return {
+    mode: options.mode || 'startup',
     includeOutputs: [...(options.includeOutputs || []), ...globalInclude],
     excludeOutputs: [...(options.excludeOutputs || []), ...globalExclude],
     includeInputs: [...(options.includeInputs || []), ...globalInclude],
     excludeInputs: [...(options.excludeInputs || []), ...globalExclude],
-    includeImports: [...(options.includeImports || []), ...globalInclude],
-    excludeImports: [...(options.excludeImports || []), ...globalExclude],
-    includeEntryPoints: [
-      ...(options.includeEntryPoints || []),
-      ...globalInclude,
-    ],
-    excludeEntryPoints: [
-      ...(options.excludeEntryPoints || []),
-      ...globalExclude,
-    ],
   };
 }
 
@@ -243,6 +345,7 @@ export function normalizeBundleStatsOptions(
   }
 
   const normalizedScoring: ScoringConfig = {
+    mode: 'all',
     totalSize: normalizeRange(totalSize ?? Infinity),
     penalty: normalizedPenalty,
   };
@@ -275,6 +378,7 @@ export function normalizeScoringOptions(
   const { penalty } = options;
 
   return {
+    mode: 'all',
     totalSize: [0, Infinity], // Default range
     penalty: penalty
       ? {
@@ -299,6 +403,7 @@ export function normalizeDependencyTreeOptions(
   }
 
   return {
+    mode: 'onlyMatching',
     groups: options.groups || [],
     pruning: options.pruning || DEFAULT_PRUNING_CONFIG,
   };
@@ -314,7 +419,17 @@ export function normalizeInsightsTableOptions(
     return undefined;
   }
 
-  return options;
+  return {
+    mode: options.mode || 'onlyMatching',
+    groups: options.groups || [],
+    pruning: options.pruning
+      ? {
+          enabled: options.pruning.enabled ?? false,
+          maxChildren: options.pruning.maxChildren,
+          minSize: options.pruning.minSize,
+        }
+      : undefined,
+  };
 }
 
 export function normalizeRange(range: MinMax | number): MinMax {

@@ -42,11 +42,15 @@ export interface BundleStatsRunnerConfig extends PluginArtefactOptions {
   selection?: PluginSelectionOptions;
 }
 
-export type GroupingRule = {
+type OptionalGroupingRule = {
   title?: string;
-  patterns: string | PatternList;
   icon?: string;
   numSegments?: number;
+};
+
+export type GroupingRule = OptionalGroupingRule & {
+  include: string | PatternList;
+  exclude?: string | PatternList;
 };
 
 export type LogicalGroupingRule = Omit<GroupingRule, 'maxDepth'> & {

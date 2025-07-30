@@ -1,5 +1,8 @@
 import type { Group, PluginArtifactOptions } from '@code-pushup/models';
-import type { InsightsTableConfig } from './runner/audits/details/table.js';
+import type {
+  InsightsTableConfig,
+  TablePruningConfig,
+} from './runner/audits/details/table.js';
 import type { DependencyTreeConfig } from './runner/audits/details/tree.js';
 import type { PenaltyConfig } from './runner/audits/scoring.js';
 import type { ScoringConfig } from './runner/audits/scoring.js';
@@ -18,7 +21,17 @@ export type PluginDependencyTreeOptions = Omit<
 
 export type DependencyTreeOptions = DependencyTreeConfig;
 
-export type SelectionOptions = SelectionGeneralConfig & SelectionConfig;
+export type SelectionOptions = SelectionGeneralConfig & {
+  mode?: 'bundle' | 'matchingOnly' | 'startup' | 'dependencies';
+  includeOutputs?: string[];
+  excludeOutputs?: string[];
+  includeInputs?: string[];
+  excludeInputs?: string[];
+  includeImports?: string[];
+  excludeImports?: string[];
+  includeEntryPoints?: string[];
+  excludeEntryPoints?: string[];
+};
 
 export type PluginSelectionOptions = Omit<
   SelectionOptions,
@@ -34,7 +47,8 @@ export type PenaltyOptions = Omit<PenaltyConfig, 'artefactSize'> & {
 };
 
 export type ScoringOptions = {
-  totalSize: ScoringConfig['totalSize'] & number;
+  enabled?: boolean;
+  totalSize: ScoringConfig['totalSize'] | number;
   penalty?: PenaltyOptions;
 };
 
@@ -44,8 +58,8 @@ export type PluginScoringOptions = {
   penalty?: PluginPenaltyOptions;
 };
 
-export type InsightsTableOptions = InsightsTableConfig;
-export type PluginInsightsTableOptions = InsightsTableConfig;
+export type InsightsTableOptions = InsightsTableConfig | false;
+export type PluginInsightsTableOptions = InsightsTableConfig | false;
 
 export type BundleStatsAuditOptions = {
   slug?: string;
@@ -54,7 +68,7 @@ export type BundleStatsAuditOptions = {
   selection?: SelectionOptions;
   scoring?: ScoringOptions;
   dependencyTree?: DependencyTreeOptions;
-  insightsTable?: InsightsTableOptions | false;
+  insightsTable?: InsightsTableOptions;
 };
 
 export type PluginBundleStatsAuditOptions = {

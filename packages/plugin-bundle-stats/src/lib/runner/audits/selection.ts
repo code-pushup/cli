@@ -1,3 +1,4 @@
+import type { GroupingRule } from '../types.js';
 import type {
   UnifiedStats,
   UnifiedStatsBundle,
@@ -21,29 +22,15 @@ export type SelectionInputsConfig = {
   excludeInputs: string[];
 };
 
-/**
- * Configuration for import filtering. Controls which imported modules are analyzed.
- */
-export type SelectionImportsConfig = {
-  includeImports: string[];
-  excludeImports: string[];
-};
+export type SelectionConfig = {
+  mode: 'bundle' | 'matchingOnly' | 'startup' | 'dependencies';
+} & SelectionOutputsConfig &
+  SelectionInputsConfig;
 
-/**
- * Configuration for entry point filtering. Controls which entry points are processed.
- */
-export type SelectionEntryPointsConfig = {
-  includeEntryPoints: string[];
-  excludeEntryPoints: string[];
-};
-
-/**
- * Configuration for static import inclusion. Controls whether static imports are automatically included.
- */
-export type SelectionStaticImportsConfig = {
-  includeStaticImports?: boolean;
-  inputsOnly?: boolean;
-};
+export type CompiledPatterns = Omit<
+  Record<keyof SelectionConfig, PatternMatcher[]>,
+  'mode'
+>;
 
 const COMPILED_PATTERNS_CACHE = new Map<string, PatternMatcher[]>();
 const BUNDLE_PATHS_CACHE = new Map<
@@ -141,17 +128,6 @@ function evaluatePathsWithIncludeExclude(
   return false;
 }
 
-export type SelectionConfig = SelectionOutputsConfig &
-  SelectionInputsConfig &
-  SelectionImportsConfig &
-  SelectionEntryPointsConfig &
-  SelectionStaticImportsConfig;
-
-export type CompiledPatterns = Omit<
-  Record<keyof SelectionConfig, PatternMatcher[]>,
-  'includeStaticImports' | 'inputsOnly'
->;
-
 export function evaluatePatternCriteria(
   paths: string[],
   includePatterns: PatternMatcher[],
@@ -168,13 +144,15 @@ export function evaluatePatternCriteria(
 }
 
 export function validateSelectionPatterns(patterns: CompiledPatterns): void {
-  const hasAnyPatterns = Object.values(patterns).some(
-    patternArray => patternArray.length > 0,
-  );
+  const hasAnyPatterns =
+    patterns.includeOutputs.length > 0 ||
+    patterns.excludeOutputs.length > 0 ||
+    patterns.includeInputs.length > 0 ||
+    patterns.excludeInputs.length > 0;
 
   if (!hasAnyPatterns) {
     throw new Error(
-      'Selection requires at least one include/exclude pattern for outputs, inputs, imports, or entry points. ' +
+      'Selection requires at least one include/exclude pattern for outputs or inputs. ' +
         'Provide patterns like: { includeOutputs: ["*.js"] } or { includeInputs: ["src/**"] }',
     );
   }
@@ -240,102 +218,59 @@ export function compileSelectionPatterns(
     excludeOutputs: compilePatterns(normalizedOptions.excludeOutputs),
     includeInputs: compilePatterns(normalizedOptions.includeInputs),
     excludeInputs: compilePatterns(normalizedOptions.excludeInputs),
-    includeImports: compilePatterns(normalizedOptions.includeImports),
-    excludeImports: compilePatterns(normalizedOptions.excludeImports),
-    includeEntryPoints: compilePatterns(normalizedOptions.includeEntryPoints),
-    excludeEntryPoints: compilePatterns(normalizedOptions.excludeEntryPoints),
   };
 }
 
 export function isBundleSelected(
   output: UnifiedStatsBundle,
   patterns: CompiledPatterns,
-  inputsOnly = false,
+  mode: 'bundle' | 'matchingOnly' | 'startup' | 'dependencies' = 'bundle',
 ): boolean {
-  // If inputsOnly mode is enabled, only check input patterns
-  if (inputsOnly) {
+  // MatchingOnly mode: only select if inputs match patterns
+  if (mode === 'matchingOnly') {
     if (patterns.includeInputs.length === 0) {
-      return true; // No input patterns means include everything
+      return false; // MatchingOnly mode requires input patterns
     }
-
-    return (
-      inputsMatchPatterns(
-        output,
-        patterns.includeInputs,
-        patterns.excludeInputs,
-      ) && !isInputsExcluded(output, patterns)
+    return inputsMatchPatterns(
+      output,
+      patterns.includeInputs,
+      patterns.excludeInputs,
     );
   }
 
-  // Original logic for normal mode
-  const hasAnyIncludePatterns =
-    patterns.includeOutputs.length > 0 ||
-    patterns.includeEntryPoints.length > 0 ||
-    patterns.includeInputs.length > 0 ||
-    patterns.includeImports.length > 0;
-
-  if (!hasAnyIncludePatterns) {
-    return !isExcluded(output, patterns);
-  }
-
-  let matchesInclude = false;
-
+  // For bundle, startup, and dependencies modes: check output patterns first
   if (patterns.includeOutputs.length > 0) {
-    if (
-      evaluatePatternCriteria(
-        [output.path],
-        patterns.includeOutputs,
-        patterns.excludeOutputs,
-      )
-    ) {
-      matchesInclude = true;
+    const outputMatches = evaluatePatternCriteria(
+      [output.path],
+      patterns.includeOutputs,
+      patterns.excludeOutputs,
+    );
+    if (!outputMatches) {
+      return false;
     }
   }
 
+  // Check input patterns if specified
+  if (patterns.includeInputs.length > 0) {
+    const inputMatches = inputsMatchPatterns(
+      output,
+      patterns.includeInputs,
+      patterns.excludeInputs,
+    );
+    if (!inputMatches) {
+      return false;
+    }
+  }
+
+  // If no include patterns at all, reject
   if (
-    !matchesInclude &&
-    patterns.includeEntryPoints.length > 0 &&
-    output.entryPoint
+    patterns.includeOutputs.length === 0 &&
+    patterns.includeInputs.length === 0
   ) {
-    if (
-      evaluatePatternCriteria(
-        [output.entryPoint],
-        patterns.includeEntryPoints,
-        patterns.excludeEntryPoints,
-      )
-    ) {
-      matchesInclude = true;
-    }
-  }
-
-  if (!matchesInclude && patterns.includeInputs.length > 0) {
-    if (
-      inputsMatchPatterns(
-        output,
-        patterns.includeInputs,
-        patterns.excludeInputs,
-      )
-    ) {
-      matchesInclude = true;
-    }
-  }
-
-  if (!matchesInclude && patterns.includeImports.length > 0) {
-    if (
-      importsMatchPatterns(
-        output,
-        patterns.includeImports,
-        patterns.excludeImports,
-      )
-    ) {
-      matchesInclude = true;
-    }
-  }
-
-  if (!matchesInclude) {
     return false;
   }
 
+  // Final exclusion check
   return !isExcluded(output, patterns);
 }
 
@@ -343,6 +278,7 @@ function isExcluded(
   output: UnifiedStatsBundle,
   patterns: CompiledPatterns,
 ): boolean {
+  // Check output exclusions
   if (patterns.excludeOutputs.length > 0) {
     for (const matcher of patterns.excludeOutputs) {
       if (matcher(output.path)) {
@@ -351,14 +287,7 @@ function isExcluded(
     }
   }
 
-  if (patterns.excludeEntryPoints.length > 0 && output.entryPoint) {
-    for (const matcher of patterns.excludeEntryPoints) {
-      if (matcher(output.entryPoint)) {
-        return true;
-      }
-    }
-  }
-
+  // Check input exclusions
   if (patterns.excludeInputs.length > 0) {
     const inputPaths = getCachedInputPaths(output);
     for (const path of inputPaths) {
@@ -370,34 +299,6 @@ function isExcluded(
     }
   }
 
-  if (patterns.excludeImports.length > 0) {
-    const importPaths = getCachedImportPaths(output);
-    for (const path of importPaths) {
-      for (const matcher of patterns.excludeImports) {
-        if (matcher(path)) {
-          return true;
-        }
-      }
-    }
-  }
-
-  return false;
-}
-
-function isInputsExcluded(
-  output: UnifiedStatsBundle,
-  patterns: CompiledPatterns,
-): boolean {
-  if (patterns.excludeInputs.length > 0) {
-    const inputPaths = getCachedInputPaths(output);
-    for (const path of inputPaths) {
-      for (const matcher of patterns.excludeInputs) {
-        if (matcher(path)) {
-          return true;
-        }
-      }
-    }
-  }
   return false;
 }
 
@@ -405,26 +306,73 @@ export function selectBundles(
   unifiedStats: UnifiedStats,
   selectionConfig: SelectionConfig,
 ): UnifiedStats {
+  // MatchingOnly mode behavior: Only matching input parts are included in output
+  // - Bundles with no matching inputs are completely excluded
+  // - Bundles with matching inputs have all non-matching inputs removed
+  // - Bundle size is recalculated as sum of matching input bytes only
+  // - Import dependencies and other metadata are excluded (matching-focused analysis)
+
   const patterns = compileSelectionPatterns(selectionConfig);
   validateSelectionPatterns(patterns);
 
   BUNDLE_PATHS_CACHE.clear();
-
   PATH_TO_KEY_INDEX = createPathToKeyIndex(unifiedStats);
 
   const selectedBundles = new Map<string, UnifiedStatsBundle>();
   const staticImportStack: string[] = [];
 
-  const shouldIncludeStaticImports =
-    selectionConfig.includeStaticImports ?? true;
-
+  // Select bundles based on mode
   for (const [outputKey, output] of Object.entries(unifiedStats)) {
-    if (isBundleSelected(output, patterns, selectionConfig.inputsOnly)) {
-      selectedBundles.set(outputKey, output);
+    if (isBundleSelected(output, patterns, selectionConfig.mode)) {
+      let processedBundle = output;
 
-      if (shouldIncludeStaticImports && output.imports) {
-        for (const importInfo of output.imports) {
-          if (importInfo.kind === 'import-statement') {
+      // MatchingOnly mode: filter inputs and recalculate size
+      if (selectionConfig.mode === 'matchingOnly' && output.inputs) {
+        const filteredInputs: typeof output.inputs = {};
+        let filteredInputBytes = 0;
+
+        const inputMatchers = patterns.includeInputs;
+        for (const [inputPath, inputData] of Object.entries(output.inputs)) {
+          const matchesPattern = inputMatchers.some(matcher =>
+            matcher(inputPath),
+          );
+          if (matchesPattern) {
+            filteredInputs[inputPath] = inputData;
+            filteredInputBytes += inputData.bytes;
+          }
+        }
+
+        if (Object.keys(filteredInputs).length > 0) {
+          // MatchingOnly mode: ONLY include matching parts, remove everything else
+          processedBundle = {
+            path: output.path, // Keep bundle path
+            bytes: filteredInputBytes, // Recalculated size from matching inputs only
+            inputs: filteredInputs, // ONLY matching inputs
+            // Explicitly exclude:
+            // - imports (not relevant for matching analysis)
+            // - entryPoint (not relevant for matching analysis)
+            // - other metadata (focus only on matching input features)
+          };
+        } else {
+          continue; // Skip bundle entirely - no matching inputs found
+        }
+      }
+
+      selectedBundles.set(outputKey, processedBundle);
+
+      // Add static imports to stack for inclusion (startup and dependencies modes only)
+      // FIX 1: Bundle mode should NOT process imports - it only includes the file + its inputs
+      if (
+        (selectionConfig.mode === 'startup' ||
+          selectionConfig.mode === 'dependencies') &&
+        processedBundle.imports
+      ) {
+        for (const importInfo of processedBundle.imports) {
+          // Dependencies mode includes all imports, startup only static imports
+          if (
+            selectionConfig.mode === 'dependencies' ||
+            importInfo.kind === 'import-statement'
+          ) {
             staticImportStack.push(importInfo.path);
           }
         }
@@ -432,43 +380,52 @@ export function selectBundles(
     }
   }
 
-  const processedImports = new Set<string>();
+  // Process static imports (for startup and dependencies modes only)
+  if (
+    selectionConfig.mode === 'startup' ||
+    selectionConfig.mode === 'dependencies'
+  ) {
+    const processedImports = new Set<string>();
 
-  while (shouldIncludeStaticImports && staticImportStack.length > 0) {
-    const importPath = staticImportStack.pop()!;
+    while (staticImportStack.length > 0) {
+      const importPath = staticImportStack.pop()!;
 
-    if (processedImports.has(importPath)) {
-      continue;
-    }
+      if (processedImports.has(importPath)) {
+        continue;
+      }
+      processedImports.add(importPath);
 
-    processedImports.add(importPath);
+      const importKey = PATH_TO_KEY_INDEX.get(importPath) || importPath;
+      const importedBundle = unifiedStats[importKey];
 
-    const importKey = PATH_TO_KEY_INDEX.get(importPath) || importPath;
-    const importedBundle = unifiedStats[importKey];
+      if (importedBundle && !selectedBundles.has(importKey)) {
+        // FIX 2: Check if imported bundle should be excluded due to excludeInputs
+        if (!isExcluded(importedBundle, patterns)) {
+          selectedBundles.set(importKey, importedBundle);
 
-    if (importedBundle && !selectedBundles.has(importKey)) {
-      selectedBundles.set(importKey, importedBundle);
-
-      if (importedBundle.imports) {
-        for (const nestedImport of importedBundle.imports) {
-          if (
-            nestedImport.kind === 'import-statement' &&
-            !processedImports.has(nestedImport.path)
-          ) {
-            staticImportStack.push(nestedImport.path);
+          // Add nested static imports (only if bundle wasn't excluded)
+          if (importedBundle.imports) {
+            for (const nestedImport of importedBundle.imports) {
+              if (
+                nestedImport.kind === 'import-statement' &&
+                !processedImports.has(nestedImport.path)
+              ) {
+                staticImportStack.push(nestedImport.path);
+              }
+            }
           }
         }
       }
     }
   }
 
+  // Build result
   const result: UnifiedStats = {};
   for (const [key, bundle] of selectedBundles) {
     result[key] = bundle;
   }
 
   PATH_TO_KEY_INDEX = null;
-
   return result;
 }
 

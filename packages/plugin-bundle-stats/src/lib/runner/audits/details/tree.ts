@@ -3,9 +3,15 @@ import { formatBytes, pluralizeToken, truncateText } from '@code-pushup/utils';
 import type { GroupingRule } from '../../types';
 import type { UnifiedStats } from '../../unify/unified-stats.types';
 import {
+  type SelectionConfig,
+  compileSelectionPatterns,
+} from '../selection.js';
+import {
   type StatsTreeNode,
   applyGrouping as applyGroupingAndSort,
+  compilePattern,
 } from './grouping';
+import type { SharedViewConfig } from './table.js';
 import type { StatsNodeValues } from './types';
 
 /**
@@ -48,10 +54,9 @@ export const DEFAULT_PATH_LENGTH = 40;
 // Simple performance optimization: single cache for formatted strings
 const STRING_FORMAT_CACHE = new Map<string, string>();
 
-export interface DependencyTreeConfig {
+export interface DependencyTreeConfig extends SharedViewConfig {
   groups?: GroupingRule[] | false;
   pruning?: PruningConfig;
-  enabled?: boolean;
 }
 
 export interface PruningConfig {
@@ -134,7 +139,7 @@ function flattenSingleChildGroups(nodes: StatsTreeNode[]): StatsTreeNode[] {
         ...child,
         values: {
           ...child.values,
-          icon: node.values.icon || '📦', // Use group icon or default package icon
+          icon: node.values.icon || '', // Use group icon or no icon
         },
         children: flattenSingleChildGroups(child.children), // Recursively flatten children
       };
@@ -163,24 +168,8 @@ export function formatStatsTreeForDisplay(
       ? truncateText(node.name, { maxChars, position: 'middle' })
       : node.name;
 
-  // Fast icon resolution
-  let icon = node.values.icon;
-  if (!icon) {
-    switch (node.values.type) {
-      case 'entry-file':
-        icon = '📍';
-        break;
-      case 'group':
-        icon = '📁';
-        break;
-      case 'root':
-        icon = '🗂️';
-        break;
-      default:
-        icon = '📄';
-        break;
-    }
-  }
+  // Use only explicitly configured icons
+  const icon = node.values.icon || '';
 
   // Recurse through children (keep it simple - recursion is fast in JS)
   const children = node.children.map(child =>
@@ -203,7 +192,7 @@ export function formatStatsTreeForDisplay(
   }
 
   return {
-    name: `${icon} ${cleanName}`, // Clean name with just icon
+    name: icon ? `${icon} ${cleanName}` : cleanName,
     values,
     children,
   };
@@ -225,13 +214,79 @@ function formattedStatsTreeNodeToBasicTreeNode(
 }
 
 /**
+ * Filters tree nodes based on selection patterns when mode is 'onlyMatching'.
+ * Removes chunks with no matching children to show accurate byte counts.
+ */
+function filterTreeNodesBySelection(
+  nodes: StatsTreeNode[],
+  selection: SelectionConfig,
+): StatsTreeNode[] {
+  const patterns = compileSelectionPatterns(selection);
+
+  return nodes
+    .map(node => {
+      // For output nodes (top level), filter their children (inputs) based on patterns
+      const filteredChildren = node.children.filter(child => {
+        // Apply includeInputs patterns
+        if (patterns.includeInputs.length > 0) {
+          const matchesInclude = patterns.includeInputs.some(matcher =>
+            matcher(child.name),
+          );
+          if (!matchesInclude) {
+            return false;
+          }
+        }
+
+        // Apply excludeInputs patterns
+        if (patterns.excludeInputs.length > 0) {
+          const matchesExclude = patterns.excludeInputs.some(matcher =>
+            matcher(child.name),
+          );
+          if (matchesExclude) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+
+      // Recalculate node values based on filtered children
+      const totalBytes = filteredChildren.reduce(
+        (sum, child) => sum + child.values.bytes,
+        0,
+      );
+      const totalModules = filteredChildren.reduce(
+        (sum, child) => sum + child.values.modules,
+        0,
+      );
+
+      return {
+        ...node,
+        values: {
+          ...node.values,
+          bytes: totalBytes,
+          modules: totalModules,
+        },
+        children: filteredChildren,
+      };
+    })
+    .filter(node => {
+      // In matchingOnly mode, remove output nodes that have no children after filtering
+      return node.children.length > 0;
+    });
+}
+
+/**
  * Creates artifact tree with focused optimizations.
  */
 export function createTree(
   statsSlice: UnifiedStats,
-  options: { title: string } & DependencyTreeConfig,
+  options: {
+    title: string;
+    selection?: SelectionConfig;
+  } & DependencyTreeConfig,
 ): BasicTree {
-  const { title, groups, pruning } = options;
+  const { title, groups, pruning, mode, selection } = options;
 
   // Simple cache management
   if (STRING_FORMAT_CACHE.size > 25000) {
@@ -239,6 +294,11 @@ export function createTree(
   }
 
   let nodes = convertStatsToTree(statsSlice);
+
+  // Apply selection filtering when mode is 'onlyMatching' and selection config is provided
+  if (mode === 'onlyMatching' && selection) {
+    nodes = filterTreeNodesBySelection(nodes, selection);
+  }
 
   // Apply grouping if needed
   if (Array.isArray(groups) && groups.length && nodes.length) {
@@ -279,7 +339,7 @@ export function createTree(
   );
 
   const formattedRoot: FormattedStatsTreeNode = {
-    name: `🗂️ ${title}`,
+    name: title,
     values: {
       'total size': formatBytes(totalBytes),
       ...(totalModules > 1 && { 'total modules': totalModules }),
@@ -384,7 +444,6 @@ function pruneTreeRecursive(
           bytes: totalBytes,
           modules: totalModules,
           type: 'group' as const,
-          icon: '📁',
         },
         children: [], // Empty - just represents the grouped items
       };

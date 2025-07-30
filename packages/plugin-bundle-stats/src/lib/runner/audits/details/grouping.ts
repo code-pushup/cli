@@ -16,9 +16,17 @@ const PATTERN_CACHE = new Map<string, PatternMatcher>();
  * Normalizes patterns from string | PatternList to readonly string[].
  */
 function normalizePatterns(
-  patterns: string | readonly string[],
+  patterns?: string | readonly string[],
 ): readonly string[] {
-  return typeof patterns === 'string' ? [patterns] : patterns;
+  if (!patterns) return [];
+
+  const normalizedArray = typeof patterns === 'string' ? [patterns] : patterns;
+
+  // Filter out any undefined, null, or empty string values
+  return normalizedArray.filter(
+    (pattern): pattern is string =>
+      typeof pattern === 'string' && pattern.trim() !== '',
+  );
 }
 
 export interface MatchOptions {
@@ -57,7 +65,7 @@ export const ARTEFACT_TYPE_ICON_MAP: Record<ArtefactType, string> = {
   root: '🗂️',
   'entry-file': '📍',
   'static-import': '📄',
-  group: '📁',
+  group: '',
 };
 
 export function splitPathSegments(path: string): string[] {
@@ -95,17 +103,96 @@ export function compilePattern(
   return matcher;
 }
 
+/**
+ * Checks if path matches a GroupingRule using include/exclude logic
+ */
+function matchesGroupingRule(
+  path: string,
+  rule: GroupingRule,
+  options: MatchOptions = {},
+): boolean {
+  const includePatterns = normalizePatterns(rule.include);
+  const excludePatterns = normalizePatterns(rule.exclude);
+
+  return evaluatePathWithIncludeExclude(
+    path,
+    includePatterns,
+    excludePatterns,
+    options,
+  );
+}
+
+/**
+ * Separates patterns into include and exclude arrays. Exclude patterns start with !
+ * @deprecated - Use the new include/exclude GroupingRule format instead
+ */
+function separateIncludeExcludePatterns(patterns: readonly string[]): {
+  includePatterns: string[];
+  excludePatterns: string[];
+} {
+  const includePatterns: string[] = [];
+  const excludePatterns: string[] = [];
+
+  for (const pattern of patterns) {
+    if (pattern.startsWith('!')) {
+      excludePatterns.push(pattern.slice(1)); // Remove ! prefix
+    } else {
+      includePatterns.push(pattern);
+    }
+  }
+
+  return { includePatterns, excludePatterns };
+}
+
+/**
+ * Evaluates path against include/exclude patterns using the same logic as selection system
+ */
+function evaluatePathWithIncludeExclude(
+  path: string,
+  includePatterns: readonly string[],
+  excludePatterns: readonly string[],
+  options: MatchOptions = {},
+): boolean {
+  // If exclude patterns exist, check if path matches any - if so, exclude it
+  if (excludePatterns.length > 0) {
+    for (const pattern of excludePatterns) {
+      const matcher = compilePattern(pattern, options);
+      if (matcher(path)) {
+        return false;
+      }
+    }
+  }
+
+  // If no include patterns, include everything (after exclusion check)
+  if (includePatterns.length === 0) {
+    return true;
+  }
+
+  // Check if path matches any include pattern
+  for (const pattern of includePatterns) {
+    const matcher = compilePattern(pattern, options);
+    if (matcher(path)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export function matchesAnyPattern(
   path: string,
   patterns: readonly string[],
   options: MatchOptions = {},
 ): boolean {
-  // Pre-compile all patterns (cached) and test path against all
-  for (const pattern of patterns) {
-    const matcher = compilePattern(pattern, options);
-    if (matcher(path)) return true;
-  }
-  return false;
+  // Legacy support for old patterns array format
+  const { includePatterns, excludePatterns } =
+    separateIncludeExcludePatterns(patterns);
+  return evaluatePathWithIncludeExclude(
+    path,
+    includePatterns,
+    excludePatterns,
+    options,
+  );
 }
 
 /**
@@ -119,7 +206,7 @@ export function findMatchingRule(
     const rule = rules[i];
     if (
       rule &&
-      matchesAnyPattern(filePath, normalizePatterns(rule.patterns), {
+      matchesGroupingRule(filePath, rule, {
         matchBase: true,
         normalizeRelativePaths: true,
       })
@@ -136,9 +223,12 @@ export function generateGroupKey(
   preferRuleTitle = false,
 ): string {
   if (preferRuleTitle && rule.title) return rule.title;
+
+  // For new include/exclude format, use the include patterns for title generation
+  const includePatterns = normalizePatterns(rule.include);
   return deriveGroupTitle(
     filePath,
-    normalizePatterns(rule.patterns),
+    includePatterns,
     rule.title || DEFAULT_GROUP_NAME,
   );
 }
@@ -370,7 +460,7 @@ export function applyGrouping(
   finalNodes.sort((a, b) => b.values.bytes - a.values.bytes);
 
   for (const group of groups) {
-    const { title, patterns, icon, numSegments: maxDepth } = group;
+    const { title, include, exclude, icon, numSegments: maxDepth } = group;
     const nodesToGroup: StatsTreeNode[] = [];
     const remainingNodes: StatsTreeNode[] = [];
 
@@ -387,12 +477,15 @@ export function applyGrouping(
     if (nodesToGroup.length > 0) {
       let groupedNodes: StatsTreeNode[] = [];
 
-      if (maxDepth && maxDepth > 0) {
+      // When reduce is true, always create a single consolidated group
+      const shouldCreateSingleGroup = !maxDepth || maxDepth === 0;
+
+      if (!shouldCreateSingleGroup && maxDepth && maxDepth > 0) {
         const pathGroups = new Map<string, StatsTreeNode[]>();
         nodesToGroup.forEach(node => {
           const groupKey = extractIntelligentGroupKey(
             node.name,
-            normalizePatterns(patterns),
+            normalizePatterns(include),
             maxDepth,
           );
           if (!pathGroups.has(groupKey)) pathGroups.set(groupKey, []);
@@ -432,7 +525,7 @@ export function applyGrouping(
           const samplePath = nodesToGroup[0]?.name || '';
           effectiveTitle = deriveGroupTitle(
             samplePath,
-            typeof patterns === 'string' ? [patterns] : patterns,
+            normalizePatterns(include),
             DEFAULT_GROUP_NAME,
           );
         }
@@ -455,6 +548,7 @@ export function applyGrouping(
             type: 'group',
             icon,
           },
+          // When reduce is true, don't show children - collapse to summary only
           children: nodesToGroup.sort(
             (a, b) => b.values.bytes - a.values.bytes,
           ),
@@ -470,5 +564,24 @@ export function applyGrouping(
     finalNodes.sort((a, b) => b.values.bytes - a.values.bytes);
   }
 
-  return finalNodes;
+  // Filter out files that are excluded by any group's exclude patterns
+  return finalNodes.filter(node => {
+    // Keep group nodes (created by grouping process)
+    if (!originalNodes.has(node)) {
+      return true;
+    }
+
+    // For original nodes, check if they're excluded by any group
+    return !groups.some(group => {
+      if (!group.exclude || group.exclude.length === 0) {
+        return false;
+      }
+
+      const excludePatterns = normalizePatterns(group.exclude);
+      return excludePatterns.some(pattern => {
+        const matcher = compilePattern(pattern);
+        return matcher(node.name);
+      });
+    });
+  });
 }
