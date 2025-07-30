@@ -256,7 +256,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
-          args: ['--persist.format=json', '--persist.format=md'],
+          args: [],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -334,7 +334,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
-          args: ['--persist.format=json', '--persist.format=md'],
+          args: [],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -346,7 +346,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(4, {
           command: options.bin,
-          args: ['--persist.format=json', '--persist.format=md'],
+          args: [],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -418,7 +418,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
-          args: ['--persist.format=json', '--persist.format=md'],
+          args: [],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -605,7 +605,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: runMany,
-          args: ['--persist.format=json', '--persist.format=md'],
+          args: [],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -763,7 +763,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: runMany,
-          args: ['--persist.format=json', '--persist.format=md'],
+          args: [],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -951,7 +951,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: ['--persist.format=json', '--persist.format=md'],
+          args: [],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -1120,7 +1120,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: ['--persist.format=json', '--persist.format=md'],
+          args: [],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
