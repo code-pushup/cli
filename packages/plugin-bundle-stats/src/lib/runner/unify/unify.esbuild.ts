@@ -1,3 +1,4 @@
+import { minimatch } from 'minimatch';
 import type {
   UnifiedStats,
   UnifiedStatsBundle,
@@ -38,7 +39,26 @@ export type EsBuildCoreStats = {
   inputs: Record<string, EsBuildInput>;
 };
 
-export function unifyBundlerStats(stats: EsBuildCoreStats): UnifiedStats {
+export type EsBuildUnifyOptions = {
+  excludeOutputs?: string[];
+};
+
+/**
+ * Checks if path matches any exclude pattern. Filters unwanted files from bundle stats.
+ */
+function shouldExcludeOutput(
+  outputPath: string,
+  excludePatterns: string[],
+): boolean {
+  return excludePatterns.some(pattern => minimatch(outputPath, pattern));
+}
+
+export function unifyBundlerStats(
+  stats: EsBuildCoreStats,
+  options: EsBuildUnifyOptions,
+): UnifiedStats {
+  const { excludeOutputs = ['**/*.map', '**/*.d.ts'] } = options;
+
   const outputKeys = Object.keys(stats.outputs);
   const result: UnifiedStats = {};
 
@@ -46,6 +66,11 @@ export function unifyBundlerStats(stats: EsBuildCoreStats): UnifiedStats {
     const outputName = outputKeys[i]!;
     const outputInfo = stats.outputs[outputName];
     if (!outputInfo) continue;
+
+    // Skip outputs that match exclude patterns
+    if (shouldExcludeOutput(outputName, excludeOutputs)) {
+      continue;
+    }
 
     const {
       bytes,

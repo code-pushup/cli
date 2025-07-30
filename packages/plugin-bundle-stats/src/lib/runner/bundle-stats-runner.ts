@@ -9,7 +9,6 @@ import type {
 } from '../types.js';
 import { generateAuditOutputs } from './audits/audit-outputs.js';
 import type { InsightsTableConfig } from './audits/details/table.js';
-import { DEFAULT_PRUNING_CONFIG } from './audits/details/tree.js';
 import type { DependencyTreeConfig } from './audits/details/tree.js';
 import { DEFAULT_PENALTY } from './audits/scoring.js';
 import type { SelectionConfig } from './audits/selection.js';
@@ -99,16 +98,17 @@ export function validateBundleStats(
  */
 export function getUnifyFunction(
   bundler: SupportedBundlers,
-): (stats: any) => UnifiedStats {
+): (stats: any, options?: any) => UnifiedStats {
   switch (bundler) {
     case 'esbuild':
-      return unifyEsbuildStats;
+      return (stats: any, options: any = {}) =>
+        unifyEsbuildStats(stats, options);
     case 'webpack':
-      return unifyWebpackStats;
+      return (stats: any) => unifyWebpackStats(stats);
     case 'rsbuild':
-      return unifyRsbuildStats;
+      return (stats: any) => unifyRsbuildStats(stats);
     case 'vite':
-      return unifyViteStats;
+      return (stats: any) => unifyViteStats(stats);
     default:
       throw new Error(`Unsupported bundler: ${bundler}`);
   }
@@ -145,7 +145,10 @@ export function mergeDependencyTreeConfig(
       })(),
       // Pruning overwrites - local takes precedence over global
       pruning: {
-        ...DEFAULT_PRUNING_CONFIG,
+        maxDepth: 2,
+        maxChildren: 10,
+        minSize: 1000,
+        pathLength: 60,
         ...(pluginOptions?.pruning ?? {}),
         ...(auditConfig?.pruning ?? {}),
       },
@@ -160,7 +163,10 @@ export function mergeDependencyTreeConfig(
       groups: auditConfig.groups === false ? [] : (auditConfig.groups ?? []),
       // Pruning fallback - use audit pruning with defaults
       pruning: {
-        ...DEFAULT_PRUNING_CONFIG,
+        maxDepth: 2,
+        maxChildren: 10,
+        minSize: 1000,
+        pathLength: 60,
         ...(auditConfig?.pruning ?? {}),
       },
       mode: auditConfig.mode ?? 'onlyMatching',
@@ -179,13 +185,11 @@ export function mergeSelectionConfig(
 ): SelectionConfig {
   return {
     // mode from audit config takes precedence
-    mode: auditConfig?.mode ?? 'startup',
+    mode: auditConfig?.mode ?? 'withStartupDeps',
 
     // Include arrays overwrite - config takes precedence for scope clarity
     includeOutputs: auditConfig?.includeOutputs ?? [],
     includeInputs: auditConfig?.includeInputs ?? [],
-    includeImports: auditConfig?.includeImports ?? [],
-    includeEntryPoints: auditConfig?.includeEntryPoints ?? [],
 
     // Exclude arrays merge - merging exclusions is safe and expected
     excludeOutputs: [
@@ -195,14 +199,6 @@ export function mergeSelectionConfig(
     excludeInputs: [
       ...(pluginOptions?.excludeInputs ?? []),
       ...(auditConfig?.excludeInputs ?? []),
-    ],
-    excludeImports: [
-      ...(pluginOptions?.excludeImports ?? []),
-      ...(auditConfig?.excludeImports ?? []),
-    ],
-    excludeEntryPoints: [
-      ...(pluginOptions?.excludeEntryPoints ?? []),
-      ...(auditConfig?.excludeEntryPoints ?? []),
     ],
   };
 }
@@ -314,10 +310,9 @@ export async function bundleStatsRunner(
     validateBundleStats(stats, artifactsPaths, bundler);
 
     const unifyBundlerStats = getUnifyFunction(bundler);
-    const unifiedBundleStats = unifyBundlerStats(stats);
+    const unifiedBundleStats = unifyBundlerStats(stats, {});
 
-    const bundleStatsTree = unifiedBundleStats;
-    return generateAuditOutputs(bundleStatsTree, bundleStatsConfigs);
+    return generateAuditOutputs(unifiedBundleStats, bundleStatsConfigs);
   };
 }
 

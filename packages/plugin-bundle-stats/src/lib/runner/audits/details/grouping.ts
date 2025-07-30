@@ -61,12 +61,6 @@ export interface StatsTree {
 }
 
 const DEFAULT_GROUP_NAME = 'Group';
-export const ARTEFACT_TYPE_ICON_MAP: Record<ArtefactType, string> = {
-  root: '🗂️',
-  'entry-file': '📍',
-  'static-import': '📄',
-  group: '',
-};
 
 export function splitPathSegments(path: string): string[] {
   return path.split('/').filter(part => part !== '');
@@ -76,6 +70,9 @@ export function normalizePathForMatching(path: string): string {
   return path.replace(/\.\.\//g, '').replace(/^\/+/, '');
 }
 
+/**
+ * Compiles pattern into cached matcher function. Avoids recompilation overhead.
+ */
 export function compilePattern(
   pattern: string,
   options: MatchOptions = {},
@@ -111,8 +108,8 @@ function matchesGroupingRule(
   rule: GroupingRule,
   options: MatchOptions = {},
 ): boolean {
-  const includePatterns = normalizePatterns(rule.include);
-  const excludePatterns = normalizePatterns(rule.exclude);
+  const includePatterns = normalizePatterns(rule.includeInputs);
+  const excludePatterns = normalizePatterns(rule.excludeInputs);
 
   return evaluatePathWithIncludeExclude(
     path,
@@ -225,7 +222,7 @@ export function generateGroupKey(
   if (preferRuleTitle && rule.title) return rule.title;
 
   // For new include/exclude format, use the include patterns for title generation
-  const includePatterns = normalizePatterns(rule.include);
+  const includePatterns = normalizePatterns(rule.includeInputs);
   return deriveGroupTitle(
     filePath,
     includePatterns,
@@ -289,20 +286,6 @@ export function processForTable(
   if (!rule) return { rule: null, groupKey: null };
   const groupKey = generateGroupKey(filePath, rule, preferRuleTitle);
   return { rule, groupKey };
-}
-
-export function getFileIcon(type: ArtefactType, path?: string): string {
-  if (type === 'static-import' && path) {
-    const fileType = getFileTypeFromPath(path);
-    return fileType === 'style' ? '🎨' : '📄';
-  }
-  return ARTEFACT_TYPE_ICON_MAP[type];
-}
-
-function getFileTypeFromPath(path: string): 'script' | 'style' | 'unknown' {
-  if (/\.(js|ts|jsx|tsx|mjs|cjs)$/i.test(path)) return 'script';
-  if (/\.(css|scss|sass|less|styl)$/i.test(path)) return 'style';
-  return 'unknown';
 }
 
 export function extractConcreteSegments(pattern: string): string[] {
@@ -460,7 +443,13 @@ export function applyGrouping(
   finalNodes.sort((a, b) => b.values.bytes - a.values.bytes);
 
   for (const group of groups) {
-    const { title, include, exclude, icon, numSegments: maxDepth } = group;
+    const {
+      title,
+      includeInputs,
+      excludeInputs,
+      icon,
+      numSegments: maxDepth,
+    } = group;
     const nodesToGroup: StatsTreeNode[] = [];
     const remainingNodes: StatsTreeNode[] = [];
 
@@ -485,7 +474,7 @@ export function applyGrouping(
         nodesToGroup.forEach(node => {
           const groupKey = extractIntelligentGroupKey(
             node.name,
-            normalizePatterns(include),
+            normalizePatterns(includeInputs),
             maxDepth,
           );
           if (!pathGroups.has(groupKey)) pathGroups.set(groupKey, []);
@@ -509,7 +498,7 @@ export function applyGrouping(
               bytes: totalBytes,
               modules: totalModules,
               type: 'group',
-              icon: icon || ARTEFACT_TYPE_ICON_MAP['group'],
+              icon: icon,
             },
             children: nodesInGroup.sort(
               (a, b) => b.values.bytes - a.values.bytes,
@@ -525,7 +514,7 @@ export function applyGrouping(
           const samplePath = nodesToGroup[0]?.name || '';
           effectiveTitle = deriveGroupTitle(
             samplePath,
-            normalizePatterns(include),
+            normalizePatterns(includeInputs),
             DEFAULT_GROUP_NAME,
           );
         }
@@ -573,11 +562,11 @@ export function applyGrouping(
 
     // For original nodes, check if they're excluded by any group
     return !groups.some(group => {
-      if (!group.exclude || group.exclude.length === 0) {
+      if (!group.excludeInputs || group.excludeInputs.length === 0) {
         return false;
       }
 
-      const excludePatterns = normalizePatterns(group.exclude);
+      const excludePatterns = normalizePatterns(group.excludeInputs);
       return excludePatterns.some(pattern => {
         const matcher = compilePattern(pattern);
         return matcher(node.name);

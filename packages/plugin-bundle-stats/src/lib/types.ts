@@ -22,7 +22,7 @@ export type PluginDependencyTreeOptions = Omit<
 export type DependencyTreeOptions = DependencyTreeConfig;
 
 export type SelectionOptions = SelectionGeneralConfig & {
-  mode?: 'bundle' | 'matchingOnly' | 'startup' | 'dependencies';
+  mode?: 'bundle' | 'matchingOnly' | 'withStartupDeps' | 'withAllDeps';
   includeOutputs?: string[];
   excludeOutputs?: string[];
   includeInputs?: string[];

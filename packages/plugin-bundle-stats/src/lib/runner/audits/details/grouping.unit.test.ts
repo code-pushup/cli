@@ -9,8 +9,11 @@ import {
 describe('GroupingRule exclude logic', () => {
   it('should exclude paths that match exclude patterns even when they match include patterns', () => {
     const rule: GroupingRule = {
-      include: '**/node_modules/**',
-      exclude: ['**/node_modules/react/**', '**/node_modules/@angular/**'],
+      includeInputs: '**/node_modules/**',
+      excludeInputs: [
+        '**/node_modules/react/**',
+        '**/node_modules/@angular/**',
+      ],
     };
 
     // These paths match include but should be excluded
@@ -27,8 +30,8 @@ describe('GroupingRule exclude logic', () => {
 
   it('should handle multiple exclude patterns', () => {
     const rule: GroupingRule = {
-      include: '**/src/**',
-      exclude: ['**/*.test.ts', '**/*.spec.ts', '**/src/legacy/**'],
+      includeInputs: '**/src/**',
+      excludeInputs: ['**/*.test.ts', '**/*.spec.ts', '**/src/legacy/**'],
     };
 
     // These should be excluded

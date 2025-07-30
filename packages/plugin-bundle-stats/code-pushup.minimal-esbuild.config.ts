@@ -1,10 +1,9 @@
-import type { CoreConfig } from '@code-pushup/models';
 import bundleStatsPlugin from './src';
 import { MinMax } from './src/lib/runner/types';
 import { BundleStatsAuditOptions } from './src/lib/types';
 
 /**
- * Execute the code-pushup over Nx:
+ * Execute code-pushup over Nx:
  * nx code-pushup:minimal plugin-bundle-stats
  */
 
@@ -13,7 +12,8 @@ const SELECTION_ALL_OUTPUTS = {
   includeOutputs: ['**/*'],
 };
 const SELECTION_ONE_FILE = {
-  includeOutputs: ['**/feature-2-SERQNJVR.js'],
+  mode: 'bundle' as const,
+  includeOutputs: ['**/feature-2-JRMQOICX.js'],
 };
 // ===== Scoring Constants =====
 
@@ -26,22 +26,24 @@ const THRESHOLD_ALWAYS_PASS_RANGE: MinMax = [
   THRESHOLD_ALWAYS_PASS_MAX,
 ];
 
-const SCORING_DISABLED = {
-  enabled: false,
-};
-
-const SCORING_ALWAYS_PASS = {
+const DISABLED = {
   enabled: false,
   totalSize: THRESHOLD_ALWAYS_PASS_MAX,
 };
 
 const BASE_AUDIT_ALL_FILES = {
-  selection: SELECTION_ALL_OUTPUTS,
+  selection: {
+    mode: 'bundle' as const,
+    includeOutputs: ['**/*.js'],
+  },
 };
 
 const BASE_AUDIT_ALL_FILES_SCORING_DISABLED = {
-  selection: SELECTION_ALL_OUTPUTS,
-  scoring: SCORING_DISABLED,
+  selection: {
+    mode: 'bundle' as const,
+    includeOutputs: ['**/*.js'],
+  },
+  scoring: DISABLED,
 };
 
 // ===== Audit Groups =====
@@ -121,10 +123,6 @@ const SELECTION_AUDITS: BundleStatsAuditOptions[] = [
     description:
       'Demonstrates startup mode - includes static import dependencies.',
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
-    selection: {
-      mode: 'startup',
-      includeOutputs: ['**/index.js'],
-    },
   },
   {
     slug: `${SELECTION_AUDIT_PREFIX}-mode-dependencies`,
@@ -132,10 +130,6 @@ const SELECTION_AUDITS: BundleStatsAuditOptions[] = [
     description:
       'Demonstrates dependencies mode - comprehensive tracking (static + dynamic).',
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
-    selection: {
-      mode: 'dependencies',
-      includeOutputs: ['**/index.js'],
-    },
   },
 
   // ===== Selection - Pattern Audits =====
@@ -191,16 +185,10 @@ const SELECTION_AUDITS: BundleStatsAuditOptions[] = [
       includeOutputs: ['**/chunks/feature-*'],
       excludeInputs: ['**/src/lib/utils/math.ts'],
     },
-    dependencyTree: {
-      mode: 'all',
-      pruning: {
-        maxDepth: 3,
-      },
-    },
   },
   {
     slug: `${SELECTION_AUDIT_PREFIX}-pattern-feature-specific`,
-    title: `${SELECTION_AUDIT_ICON} - Selection - Pattern - Feature Specific`,
+    title: `${SELECTION_AUDIT_ICON} - Selection - Pattern - includeInputs`,
     description:
       'Demonstrates feature mode filtering for utility functions only.',
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
@@ -267,7 +255,7 @@ const SCORING_PENALTY_AUDITS: BundleStatsAuditOptions[] = [
       'Demonstrates penalty passing when all files are within size limits.',
     selection: SELECTION_ONE_FILE,
     scoring: {
-      ...SCORING_DISABLED,
+      ...DISABLED,
       penalty: {
         artefactSize: THRESHOLD_ALWAYS_PASS_MAX,
       },
@@ -364,7 +352,7 @@ const INSIGHT_AUDITS: BundleStatsAuditOptions[] = [
       groups: [
         {
           title: 'Source Files',
-          include: ['**/src/**'],
+          includeInputs: ['**/src/**'],
           icon: '📄',
         },
       ],
@@ -381,7 +369,7 @@ const INSIGHT_AUDITS: BundleStatsAuditOptions[] = [
       groups: [
         {
           title: 'Source Files',
-          include: ['**/src/**'],
+          includeInputs: ['**/src/**'],
           icon: '📄',
         },
       ],
@@ -399,7 +387,7 @@ const INSIGHT_AUDITS: BundleStatsAuditOptions[] = [
       groups: [
         {
           title: 'All Files',
-          include: ['**/*'],
+          includeInputs: ['**/*'],
           icon: '📄',
         },
       ],
@@ -415,7 +403,7 @@ const INSIGHT_AUDITS: BundleStatsAuditOptions[] = [
       groups: [
         {
           title: 'Large Files Only',
-          include: ['**/*'],
+          includeInputs: ['**/*'],
           icon: '📄',
         },
       ],
@@ -433,37 +421,37 @@ const INSIGHT_AUDITS: BundleStatsAuditOptions[] = [
       groups: [
         {
           title: 'Math Utilities',
-          include: ['**/math.ts'],
+          includeInputs: ['**/math.ts'],
           icon: '🔧',
         },
         {
           title: 'Formatting Utilities',
-          include: ['**/format.ts'],
+          includeInputs: ['**/format.ts'],
           icon: '🔧',
         },
         {
           title: 'Feature 2',
-          include: ['**/*feature-2*'],
+          includeInputs: ['**/*feature-2*'],
           icon: '🧩',
         },
         {
           title: 'Entrypoints',
-          include: ['src/index.ts', 'src/bin.ts'],
+          includeInputs: ['src/index.ts', 'src/bin.ts'],
           icon: '🏁',
         },
         {
           title: 'Shared Chunks',
-          include: ['dist/chunks/chunk-*.js'],
+          includeInputs: ['dist/chunks/chunk-*.js'],
           icon: '🤝',
         },
         {
           title: 'Node Modules',
-          include: ['**/node_modules/**'],
+          includeInputs: ['**/node_modules/**'],
           icon: '📦',
         },
         {
           title: 'Distributables',
-          include: ['dist/index.js', 'dist/bin.js'],
+          includeInputs: ['dist/index.js', 'dist/bin.js'],
           icon: '📦',
         },
       ],
@@ -479,7 +467,7 @@ const INSIGHT_AUDITS: BundleStatsAuditOptions[] = [
       groups: [
         {
           title: 'Feature 1',
-          include: ['**/*feature-1*'],
+          includeInputs: ['**/*feature-1*'],
           icon: '🧩',
         },
       ],
@@ -492,7 +480,10 @@ const INSIGHT_AUDITS: BundleStatsAuditOptions[] = [
       'Demonstrates groups with include patterns only (no title or icon).',
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
     insightsTable: {
-      groups: [{ include: ['**/src/**'] }, { include: ['**/dist/**'] }],
+      groups: [
+        { includeInputs: ['**/src/**'] },
+        { includeInputs: ['**/dist/**'] },
+      ],
     },
   },
   {
@@ -504,12 +495,12 @@ const INSIGHT_AUDITS: BundleStatsAuditOptions[] = [
       groups: [
         {
           title: 'Source Files',
-          include: ['**/src/**'],
+          includeInputs: ['**/src/**'],
           icon: '📄',
         },
         {
           title: 'Node Modules',
-          include: ['**/node_modules/**'],
+          includeInputs: ['**/node_modules/**'],
           icon: '📦',
         },
       ],
@@ -524,7 +515,7 @@ const INSIGHT_AUDITS: BundleStatsAuditOptions[] = [
     insightsTable: {
       groups: [
         {
-          include: ['**/node_modules/**', '**/node_modules/@*/**'],
+          includeInputs: ['**/node_modules/**', '**/node_modules/@*/**'],
           numSegments: 1,
         },
       ],
@@ -547,7 +538,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       mode: 'bundle',
       includeOutputs: ['**/feature-2*.js'],
     },
-    scoring: SCORING_DISABLED,
+    scoring: DISABLED,
     dependencyTree: { enabled: false },
   },
 
@@ -561,7 +552,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       mode: 'bundle',
       includeOutputs: ['**/feature-2*.js'],
     },
-    scoring: SCORING_DISABLED,
+    scoring: DISABLED,
     dependencyTree: { mode: 'all' },
   },
   {
@@ -573,7 +564,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       mode: 'bundle',
       includeOutputs: ['**/feature-2*.js'],
     },
-    scoring: SCORING_DISABLED,
+    scoring: DISABLED,
     dependencyTree: { mode: 'onlyMatching' },
   },
 
@@ -587,7 +578,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       mode: 'bundle',
       includeOutputs: ['**/feature-2*.js'],
     },
-    scoring: SCORING_DISABLED,
+    scoring: DISABLED,
     dependencyTree: {
       mode: 'onlyMatching',
       pruning: {
@@ -595,10 +586,9 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       },
       groups: [
         {
-          include: ['**/node_modules/**'],
+          includeInputs: ['**/node_modules/**'],
           title: 'Dependencies',
           icon: '📦',
-          reduce: false, // Show children instead of collapsing to summary
         },
       ],
     },
@@ -612,13 +602,13 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       mode: 'bundle',
       includeOutputs: ['**/feature-2*.js'],
     },
-    scoring: SCORING_DISABLED,
+    scoring: DISABLED,
     dependencyTree: {
       mode: 'onlyMatching',
       groups: [
         {
-          include: ['**/index.js'],
-          exclude: ['**/node_modules/**'],
+          includeInputs: ['**/index.js'],
+          excludeInputs: ['**/node_modules/**'],
         },
       ],
     },
@@ -632,12 +622,12 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       mode: 'bundle',
       includeOutputs: ['**/feature-2*.js'],
     },
-    scoring: SCORING_DISABLED,
+    scoring: DISABLED,
     dependencyTree: {
       groups: [
         {
-          include: ['**/src/**'],
-          exclude: ['**/node_modules/**'],
+          includeInputs: ['**/src/**'],
+          excludeInputs: ['**/node_modules/**'],
         },
       ],
     },
@@ -651,16 +641,16 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       mode: 'bundle',
       includeOutputs: ['**/feature-2*.js'],
     },
-    scoring: SCORING_DISABLED,
+    scoring: DISABLED,
     dependencyTree: {
       groups: [
         {
           title: 'Source Files',
-          include: ['**/src/**'],
+          includeInputs: ['**/src/**'],
         },
         {
           title: 'Dependencies',
-          include: ['**/node_modules/**'],
+          includeInputs: ['**/node_modules/**'],
         },
       ],
     },
@@ -674,15 +664,15 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       mode: 'bundle',
       includeOutputs: ['**/feature-2*.js'],
     },
-    scoring: SCORING_DISABLED,
+    scoring: DISABLED,
     dependencyTree: {
       groups: [
         {
-          include: ['**/src/**'],
+          includeInputs: ['**/src/**'],
           icon: '📄',
         },
         {
-          include: ['**/node_modules/**'],
+          includeInputs: ['**/node_modules/**'],
           icon: '📦',
         },
       ],
@@ -697,11 +687,11 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       mode: 'bundle',
       includeOutputs: ['**/feature-2*.js'],
     },
-    scoring: SCORING_DISABLED,
+    scoring: DISABLED,
     dependencyTree: {
       groups: [
         {
-          include: ['**/node_modules/**', '**/node_modules/@*/**'],
+          includeInputs: ['**/node_modules/**', '**/node_modules/@*/**'],
           numSegments: 1,
         },
       ],
@@ -718,7 +708,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       mode: 'bundle',
       includeOutputs: ['**/feature-2*.js'],
     },
-    scoring: SCORING_DISABLED,
+    scoring: DISABLED,
     dependencyTree: { pruning: { maxChildren: 2 } },
   },
   {
@@ -730,7 +720,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       mode: 'bundle',
       includeOutputs: ['**/feature-2*.js'],
     },
-    scoring: SCORING_DISABLED,
+    scoring: DISABLED,
     dependencyTree: { pruning: { maxDepth: 1 } },
   },
   {
@@ -742,7 +732,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       mode: 'bundle',
       includeOutputs: ['**/feature-2*.js'],
     },
-    scoring: SCORING_DISABLED,
+    scoring: DISABLED,
     dependencyTree: { pruning: { minSize: 1000 } },
   },
   {
@@ -754,12 +744,12 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       mode: 'bundle',
       includeOutputs: ['**/feature-2*.js'],
     },
-    scoring: SCORING_DISABLED,
+    scoring: DISABLED,
     dependencyTree: { pruning: { pathLength: 30 } },
   },
 ];
 
-const config: CoreConfig = {
+const config = {
   plugins: [
     await bundleStatsPlugin({
       artifactsPaths:

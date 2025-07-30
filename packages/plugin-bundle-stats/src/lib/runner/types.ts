@@ -49,8 +49,8 @@ type OptionalGroupingRule = {
 };
 
 export type GroupingRule = OptionalGroupingRule & {
-  include: string | PatternList;
-  exclude?: string | PatternList;
+  includeInputs: string | PatternList;
+  excludeInputs?: string | PatternList;
 };
 
 export type LogicalGroupingRule = Omit<GroupingRule, 'maxDepth'> & {

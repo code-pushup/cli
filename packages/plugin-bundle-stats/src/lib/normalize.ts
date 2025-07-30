@@ -3,10 +3,7 @@ import { slugify } from '@code-pushup/utils';
 import { formatBytes } from '@code-pushup/utils';
 import type { BundleStatsConfig as ExportedBundleStatsConfig } from '../index.js';
 import type { InsightsTableConfig } from './runner/audits/details/table.js';
-import {
-  DEFAULT_PRUNING_CONFIG,
-  type DependencyTreeConfig,
-} from './runner/audits/details/tree.js';
+import { type DependencyTreeConfig } from './runner/audits/details/tree.js';
 import type { PenaltyConfig, ScoringConfig } from './runner/audits/scoring.js';
 import { DEFAULT_PENALTY } from './runner/audits/scoring.js';
 import type { SelectionConfig } from './runner/audits/selection.js';
@@ -134,28 +131,38 @@ function formatStandardizedTreeSection(
       const parts: string[] = [];
       if (group.title) parts.push(`"${group.title}"`);
       if (group.icon) parts.push(`${group.icon}`);
-      if (group.include) {
-        if (Array.isArray(group.include)) {
-          const includePatterns = group.include
+      if (group.includeInputs) {
+        if (Array.isArray(group.includeInputs)) {
+          const includePatterns = group.includeInputs
             .slice(0, 2)
             .map((p: string) => `"${p}"`)
             .join(', ');
           const moreCount =
-            group.include.length > 2
-              ? `, +${group.include.length - 2} more`
+            group.includeInputs.length > 2
+              ? `, +${group.includeInputs.length - 2} more`
               : '';
           parts.push(`include: [${includePatterns}${moreCount}]`);
         } else {
-          parts.push(`include: "${group.include}"`);
+          parts.push(`include: "${group.includeInputs}"`);
         }
       }
-      if (group.exclude && group.exclude.length > 0) {
-        const excludePatterns = group.exclude
+      if (
+        group.excludeInputs &&
+        (typeof group.excludeInputs === 'string'
+          ? [group.excludeInputs]
+          : group.excludeInputs
+        ).length > 0
+      ) {
+        const excludeArray =
+          typeof group.excludeInputs === 'string'
+            ? [group.excludeInputs]
+            : group.excludeInputs;
+        const excludePatterns = excludeArray
           .slice(0, 1)
           .map((p: string) => `"${p}"`)
           .join(', ');
         const moreCount =
-          group.exclude.length > 1 ? `, +${group.exclude.length - 1} more` : '';
+          excludeArray.length > 1 ? `, +${excludeArray.length - 1} more` : '';
         parts.push(`exclude: [${excludePatterns}${moreCount}]`);
       }
       return parts.join(' ');
@@ -393,19 +400,22 @@ export function normalizeScoringOptions(
 }
 
 /**
- * Normalizes dependency tree options. Converts plugin-level options to runner config.
+ * Normalizes dependency tree options from plugin configuration.
+ * Groups array overwrites, pruning merges with defaults.
  */
 export function normalizeDependencyTreeOptions(
   options: PluginDependencyTreeOptions | undefined,
-): DependencyTreeConfig | undefined {
-  if (!options) {
-    return undefined;
-  }
-
+): DependencyTreeConfig {
   return {
-    mode: 'onlyMatching',
-    groups: options.groups || [],
-    pruning: options.pruning || DEFAULT_PRUNING_CONFIG,
+    groups: options?.groups ?? [],
+    pruning: {
+      maxDepth: 2,
+      maxChildren: 10,
+      minSize: 1000,
+      pathLength: 60,
+      ...(options?.pruning ?? {}),
+    },
+    mode: options?.mode ?? 'onlyMatching',
   };
 }
 

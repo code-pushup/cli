@@ -1,53 +1,19 @@
 import bundleStatsPlugin from './src/index.js';
+import { GroupingRule } from './src/lib/runner/types.js';
 import { BundleStatsAuditOptions } from './src/lib/types.js';
 
 type PatternList = string[];
 
-// Only allow numbers greater than 1
-type ValidSegmentDepth = Exclude<number, 0 | 1 | undefined>;
-
-/**
- * Base grouping rule without segment constraints
- */
-type BaseGroupingRule = {
-  icon?: string;
-  include: string | PatternList;
-  exclude?: string | PatternList;
-};
-
-/**
- * Rule that derives title from numSegments (must be > 1)
- */
-type GroupingRuleWithAutoTitle = BaseGroupingRule & {
-  numSegments: ValidSegmentDepth;
-  title?: string; // optional since it's derived
-};
-
-/**
- * Rule that requires a manual title if numSegments is not valid
- */
-type GroupingRuleWithManualTitle = BaseGroupingRule & {
-  numSegments?: 1 | undefined;
-  title: string; // required fallback
-};
-
-/**
- * Final union type to enforce logic
- */
-export type GroupingRule =
-  | GroupingRuleWithAutoTitle
-  | GroupingRuleWithManualTitle;
-
 const allFilesGroups: GroupingRule[] = [
   {
     title: 'Internal Packages',
-    include: ['**/packages/**'],
+    includeInputs: ['**/packages/**'],
     icon: '🟣',
     numSegments: 1,
   },
   {
     title: 'External Dependencies',
-    include: ['**/node_modules/**'],
+    includeInputs: ['**/node_modules/**'],
     icon: '📦',
     numSegments: 1,
   },
@@ -61,7 +27,7 @@ Analyzes **complete bundle composition**, identifies **architectural patterns**,
   selection: {
     mode: 'bundle',
     includeOutputs: ['**/*'],
-    exclude: ['**/*.map', '**/*.d.ts'],
+    excludeOutputs: ['**/*.map', '**/*.d.ts'],
   },
   insightsTable: {
     mode: 'all',
@@ -74,9 +40,8 @@ const initialBundleSizeTableGroups: GroupingRule[] = [
   {
     title: 'Blacklisted/Deprecated',
     icon: '🚫',
-    include: [
+    includeInputs: [
       '**/node_modules/lodash/**',
-      '**/node_modules/core-js/**',
       '**/node_modules/zone.js/**',
       '**/node_modules/smoothscroll-polyfill/**',
       '**/node_modules/web-animations-js/**',
@@ -89,7 +54,7 @@ const initialBundleSizeTableGroups: GroupingRule[] = [
   {
     title: 'Lazy-loaded',
     icon: '⏳',
-    include: [
+    includeInputs: [
       '**/node_modules/socket.io-client/**',
       '**/node_modules/launchdarkly-js-client-sdk/**',
       '**/node_modules/@microsoft/**',
@@ -103,7 +68,7 @@ const initialBundleSizeTableGroups: GroupingRule[] = [
   },
   {
     title: 'Angular',
-    include: [
+    includeInputs: [
       '**/node_modules/*angular*/**',
       '**/node_modules/@ng*/**',
       '**/node_modules/@ngx-*/**',
@@ -116,7 +81,7 @@ const initialBundleSizeTableGroups: GroupingRule[] = [
   {
     title: 'Third-party',
     icon: '📚',
-    include: [
+    includeInputs: [
       '**/node_modules/react/**',
       '**/node_modules/lodash-es/**',
       '**/node_modules/rxjs/**',
@@ -128,7 +93,7 @@ const initialBundleSizeTableGroups: GroupingRule[] = [
   {
     title: 'Product',
     icon: '🎮',
-    include: [
+    includeInputs: [
       '**/packages/payments/**',
       '**/packages/casino/**',
       '**/packages/bingo/**',
@@ -146,7 +111,7 @@ const initialBundleSizeTableGroups: GroupingRule[] = [
   {
     title: 'Internal utils',
     icon: '🔧',
-    include: [
+    includeInputs: [
       '**/packages/design-system/**',
       '**/packages/utils/**',
       '**/packages/shared/**',
@@ -155,100 +120,100 @@ const initialBundleSizeTableGroups: GroupingRule[] = [
   },
   {
     title: 'Node modules',
-    include: ['**/node_modules/**'],
+    includeInputs: ['**/node_modules/**'],
     icon: '📦',
   },
 ];
 
 const initialBundleSizeTreeGroups: GroupingRule[] = [
   {
-    include: ['**/node_modules/*angular*/**'],
+    includeInputs: ['**/node_modules/*angular*/**'],
     icon: '🅰️',
     numSegments: 2,
   },
   {
     title: 'Design System',
-    include: ['**/packages/design-system/**'],
+    includeInputs: ['**/packages/design-system/**'],
     icon: '🟣',
   },
   {
     title: 'Deprecated Theme',
-    include: ['**/packages/themepark/**'],
+    includeInputs: ['**/packages/themepark/**'],
     icon: '🚫',
   },
   {
-    include: ['**/packages/**'],
+    includeInputs: ['**/packages/**'],
     icon: '🟣',
     numSegments: 2,
   },
   {
     title: 'Payments',
-    include: ['**/packages/payments/**'],
+    includeInputs: ['**/packages/payments/**'],
     icon: '💳',
   },
   {
     title: 'Casino',
-    include: ['**/packages/casino/**'],
+    includeInputs: ['**/packages/casino/**'],
     icon: '🎰',
   },
   {
     title: 'Bingo',
-    include: ['**/packages/bingo/**'],
+    includeInputs: ['**/packages/bingo/**'],
     icon: '🎯',
   },
   {
     title: 'Sports',
-    include: ['**/packages/sports/**'],
+    includeInputs: ['**/packages/sports/**'],
     icon: '⚽',
   },
   {
     title: 'Poker',
-    include: ['**/packages/poker/**'],
+    includeInputs: ['**/packages/poker/**'],
     icon: '🃏',
   },
   {
     title: 'Lottery',
-    include: ['**/packages/lottery/**'],
+    includeInputs: ['**/packages/lottery/**'],
     icon: '🎲',
   },
   {
     title: 'Horse Racing',
-    include: ['**/packages/horseracing/**'],
+    includeInputs: ['**/packages/horseracing/**'],
     icon: '🐎',
   },
   {
     title: 'Oxygen',
-    include: ['**/packages/oxygen/**'],
+    includeInputs: ['**/packages/oxygen/**'],
     icon: '🫧',
   },
   {
     title: 'My Account',
-    include: ['**/packages/myaccount/**'],
+    includeInputs: ['**/packages/myaccount/**'],
     icon: '👤',
   },
   {
     title: 'Promotions',
-    include: ['**/packages/promo/**'],
+    includeInputs: ['**/packages/promo/**'],
     icon: '🎁',
   },
   {
     title: 'Moka Bingo',
-    include: ['**/packages/mokabingo/**'],
+    includeInputs: ['**/packages/mokabingo/**'],
     icon: '🎯',
   },
   {
     title: 'React',
-    include: ['**/node_modules/react/**'],
+    includeInputs: ['**/node_modules/react/**'],
     icon: '⚛️',
   },
   {
     title: 'Lodash ES',
-    include: ['**/node_modules/lodash-es/**'],
+    includeInputs: ['**/node_modules/lodash-es/**'],
     icon: '🔧',
   },
   {
     title: 'Node Modules',
-    include: ['**/node_modules/**'],
+    includeInputs: ['**/node_modules/**'],
     numSegments: 2,
   },
 ];
@@ -259,8 +224,9 @@ const initialBundleSizeAudit: BundleStatsAuditOptions = {
   description: `
 Monitors **critical loading performance**, enforces **size budgets**, detects **bloat sources**, and prevents **slow startup times** in main application bundles.`,
   selection: {
-    mode: 'startup',
-    includeOutputs: ['**/main-*.js', '**/polyfill-*.js', '**/styles-*.css'],
+    mode: 'withStartupDeps',
+    includeOutputs: ['**/main*.js', '**/polyfill*.js', '**/styles*.css'],
+    excludeOutputs: ['**/*.map', '**/*.d.ts'],
   },
   scoring: {
     totalSize: 1_000_000,
@@ -271,25 +237,63 @@ Monitors **critical loading performance**, enforces **size budgets**, detects **
   insightsTable: {
     mode: 'all',
     groups: initialBundleSizeTableGroups,
-    pruning: {
-      maxChildren: 20,
-    },
   },
   dependencyTree: {
     groups: initialBundleSizeTreeGroups,
-    pruning: {
-      maxChildren: 20,
-      maxDepth: 2,
-      minSize: 5_000,
-    },
   },
 };
+
+const blacklist = [
+  // IMMEDIATE PRIORITY - Dead dependency, can be removed immediately
+  {
+    pattern: '**/node_modules/angular2-toaster/**',
+    hint: '`angular2-toaster` is deprecated and unused. Please remove from package.json - already replaced by `ds-toast`.',
+  },
+
+  // HIGH PRIORITY - Full DS alternative available
+  {
+    pattern: '**/node_modules/ngx-float-ui/**',
+    hint: '`ngx-float-ui` is being replaced by `ds-tooltip` for consistency and reduced dependencies. The DS tooltip supports 4 positions and 3 arrow positions with advanced overlay integration.',
+  },
+
+  // MEDIUM PRIORITY - DS alternatives available but need extensions
+  {
+    pattern: '**/node_modules/@angular-slider/ngx-slider/**',
+    hint: '`@angular-slider/ngx-slider` adds significant bundle size. `ds-range-selector` is available but needs custom case extensions from HoneyBadgers team. For new code only: use `ds-range-selector`.',
+  },
+
+  {
+    pattern: '**/node_modules/ngx-slider-v2/**',
+    hint: '`ngx-slider-v2` bundle impact unknown and appears less maintained than @angular-slider/ngx-slider. `ds-range-selector` available but needs custom case extensions. For new code only: use `ds-range-selector`.',
+  },
+
+  {
+    pattern: '**/node_modules/ngx-toastr/**',
+    hint: '`ngx-toastr` adds significant bundle size. Consider `ds-toast` for new components. Service pattern migration pending - missing show/hide programmatic API. Contact HoneyBadgers team for service API.',
+  },
+
+  // LOW PRIORITY - Strategic migration candidates
+  {
+    pattern: '**/node_modules/@angular/material/dialog/**',
+    hint: 'Consider `ds-modal` or `ds-dialog` for new components. Existing usage can remain until strategic migration phase due to complexity.',
+  },
+
+  {
+    pattern: '**/node_modules/@angular/material/slider/**',
+    hint: '`ds-range-selector` available but needs validation for Material slider compatibility and feature coverage. For new code only: use `ds-range-selector`.',
+  },
+
+  {
+    pattern: '**/node_modules/@angular/material/bottom-sheet/**',
+    hint: 'Consider `ds-modal` with bottom positioning for new components. Existing bottom-sheet usage can remain until strategic migration.',
+  },
+];
 
 const blacklistedFilesGroups: GroupingRule[] = [
   {
     title: 'Legacy/Deprecated',
     icon: '🕸️',
-    include: [
+    includeInputs: [
       '**/node_modules/core-js/**',
       '**/node_modules/zone.js/**',
       '**/node_modules/smoothscroll-polyfill/**',
@@ -302,51 +306,24 @@ const blacklistedFilesGroups: GroupingRule[] = [
   {
     title: 'Blacklisted',
     icon: '🚫',
-    include: ['**/node_modules/lodash/**'],
+    includeInputs: [
+      '**/node_modules/lodash/**',
+      // New blacklisted dependencies with DS alternatives
+      '**/node_modules/angular2-toaster/**',
+      '**/node_modules/ngx-float-ui/**',
+      '**/node_modules/@angular-slider/ngx-slider/**',
+      '**/node_modules/ngx-slider-v2/**',
+      '**/node_modules/ngx-toastr/**',
+      '**/node_modules/@angular/material/dialog/**',
+      '**/node_modules/@angular/material/slider/**',
+      '**/node_modules/@angular/material/bottom-sheet/**',
+    ],
   },
 ];
 
-const blacklistedFilesAudit: BundleStatsAuditOptions = {
-  slug: 'blacklisted',
-  title: '🚫 Blacklisted',
-  description: `
-Detects **blacklisted dependencies**, enforces **architectural standards**, prevents **security vulnerabilities**, and blocks **performance bottlenecks** from reaching production.`,
-  selection: {
-    mode: 'matchingOnly',
-    includeInputs: [
-      '**/node_modules/lodash/**',
-      '**/node_modules/core-js/**',
-      '**/node_modules/zone.js/**',
-      '**/node_modules/smoothscroll-polyfill/**',
-      '**/node_modules/web-animations-js/**',
-      '**/node_modules/decimal.js/**',
-      '**/node_modules/@storybook/**',
-      '**/node_modules/jest/**',
-    ],
-    excludeInputs: ['**/*.map', '**/*.d.ts'],
-  },
-  insightsTable: {
-    mode: 'onlyMatching',
-    groups: blacklistedFilesGroups,
-    pruning: {
-      enabled: true,
-      maxChildren: 50,
-      minSize: 1000,
-    },
-  },
-  dependencyTree: {
-    mode: 'onlyMatching',
-    groups: blacklistedFilesGroups,
-    pruning: {
-      maxChildren: 30,
-      maxDepth: 2,
-    },
-  },
-};
-
 const angularSpecificTableGroups: GroupingRule[] = [
   {
-    include: [
+    includeInputs: [
       '**/node_modules/ngx-device-detector/**',
       '**/node_modules/angular2-toaster/**',
     ],
@@ -354,7 +331,7 @@ const angularSpecificTableGroups: GroupingRule[] = [
     numSegments: 2,
   },
   {
-    include: [
+    includeInputs: [
       '**/node_modules/ngx-toastr/**',
       '**/node_modules/@angular-slider/**',
     ],
@@ -362,7 +339,7 @@ const angularSpecificTableGroups: GroupingRule[] = [
     numSegments: 2,
   },
   {
-    include: [
+    includeInputs: [
       '**/node_modules/@ng-bootstrap/**',
       '**/node_modules/ng-circle-progress/**',
     ],
@@ -370,12 +347,12 @@ const angularSpecificTableGroups: GroupingRule[] = [
     numSegments: 2,
   },
   {
-    include: ['**/node_modules/ngx-float-ui/**'],
+    includeInputs: ['**/node_modules/ngx-float-ui/**'],
     icon: '⚠️',
     numSegments: 2,
   },
   {
-    include: [
+    includeInputs: [
       '**/node_modules/@angular/core/**',
       '**/node_modules/@angular/common/**',
       '**/node_modules/@angular/platform-browser/**',
@@ -387,18 +364,21 @@ const angularSpecificTableGroups: GroupingRule[] = [
     numSegments: 2,
   },
   {
-    include: [
+    includeInputs: [
       '**/node_modules/@angular/material/**',
       '**/node_modules/@angular/cdk/**',
     ],
     numSegments: 2,
   },
   {
-    include: ['**/node_modules/@ngrx/**', '**/node_modules/@rx-angular/**'],
+    includeInputs: [
+      '**/node_modules/@ngrx/**',
+      '**/node_modules/@rx-angular/**',
+    ],
     numSegments: 2,
   },
   {
-    include: [
+    includeInputs: [
       '**/node_modules/ngx-daterangepicker-material/**',
       '**/node_modules/ngx-slider-v2/**',
       '**/node_modules/ngx-scrollbar/**',
@@ -406,7 +386,7 @@ const angularSpecificTableGroups: GroupingRule[] = [
     numSegments: 2,
   },
   {
-    include: [
+    includeInputs: [
       '**/node_modules/@ngx-translate/**',
       '**/node_modules/ng-dynamic-component/**',
       '**/node_modules/ng-in-viewport/**',
@@ -420,7 +400,8 @@ const angularSpecificTableGroups: GroupingRule[] = [
   },
   {
     title: 'Other Angular Packages',
-    include: [
+    includeInputs: [
+      '**/node_modules/angular*/**',
       '**/node_modules/ng-*/**',
       '**/node_modules/ngx-*/**',
       '**/node_modules/@ng*/**',
@@ -463,15 +444,9 @@ const angularSpecificAudit: BundleStatsAuditOptions = {
       '**/node_modules/@ngx-translate/**',
       '**/node_modules/ng-dynamic-component/**',
       '**/node_modules/ng-in-viewport/**',
-      '**/node_modules/ng-lazyload-image/**',
       '**/node_modules/angularx-qrcode/**',
       '**/node_modules/ngx-lottie/**',
       '**/node_modules/ngx-popperjs/**',
-      '**/node_modules/@ngu/**',
-      '**/node_modules/ng-*/**',
-      '**/node_modules/ngx-*/**',
-      '**/node_modules/@ng*/**',
-      '**/node_modules/*angular*/**',
       '**/node_modules/sports-animations/**',
     ],
     excludeInputs: ['**/*.map', '**/*.d.ts'],
@@ -479,32 +454,38 @@ const angularSpecificAudit: BundleStatsAuditOptions = {
   insightsTable: {
     mode: 'onlyMatching',
     groups: angularSpecificTableGroups,
-    pruning: {
-      enabled: true,
-      maxChildren: 15,
-      minSize: 5_000,
-    },
   },
   dependencyTree: {
     mode: 'onlyMatching',
     groups: angularSpecificTreeGroups,
-    pruning: {
-      maxChildren: 10,
-      maxDepth: 2,
-      minSize: 10_000,
-    },
   },
 };
 
 const dependencyAuditBlacklistedGroup: GroupingRule = {
   icon: '🚫',
-  include: ['**/node_modules/lodash/**'],
+  includeInputs: [
+    '**/node_modules/react/**',
+    '**/node_modules/react-dom/**',
+    '**/node_modules/lodash/**',
+    '**/node_modules/underscore/**',
+    '**/node_modules/@babel/**',
+    '**/node_modules/moment/**',
+    '**/node_modules/ng-lazyload-image/**',
+    '**/node_modules/angular2-toaster/**',
+    '**/node_modules/ngx-float-ui/**',
+    '**/node_modules/@angular-slider/ngx-slider/**',
+    '**/node_modules/ngx-slider-v2/**',
+    '**/node_modules/ngx-toastr/**',
+    '**/node_modules/@angular/material/dialog/**',
+    '**/node_modules/@angular/material/slider/**',
+    '**/node_modules/@angular/material/bottom-sheet/**',
+  ],
   numSegments: 2,
 };
 
 const dependencyAuditLegacyGroup: GroupingRule = {
   icon: '🕸️',
-  include: [
+  includeInputs: [
     '**/node_modules/core-js/**',
     '**/node_modules/zone.js/**',
     '**/node_modules/smoothscroll-polyfill/**',
@@ -516,19 +497,7 @@ const dependencyAuditLegacyGroup: GroupingRule = {
 const dependencyAuditAcceptedGroup: GroupingRule = {
   title: 'Accepted Dependencies',
   icon: '✅',
-  include: [
-    // Angular ecosystem packages
-    '**/node_modules/@angular/**',
-    '**/node_modules/@ng*/**',
-    '**/node_modules/@ngx-*/**',
-    '**/node_modules/ngx-*/**',
-    '**/node_modules/ng-*/**',
-    '**/node_modules/*angular*/**',
-    // Specific Angular packages
-    '**/node_modules/@angular-slider/**',
-    '**/node_modules/ngx-slider-v2/**',
-    '**/node_modules/ngx-scrollbar/**',
-    // New accepted packages
+  includeInputs: [
     '**/node_modules/@module-federation/**',
     '**/node_modules/launchdarkly-js-client-sdk/**',
     '**/node_modules/socket.io-client/**',
@@ -540,9 +509,6 @@ const dependencyAuditAcceptedGroup: GroupingRule = {
     '**/node_modules/ua-parser-js/**',
     '**/node_modules/pixi-multistyle-text/**',
     '**/node_modules/howler/**',
-    // Existing accepted packages
-    '**/node_modules/react/**',
-    '**/node_modules/react-dom/**',
     '**/node_modules/tslib/**',
     '**/node_modules/@incodetech/**',
     '**/node_modules/@emotion/**',
@@ -587,26 +553,111 @@ const dependencyAuditAcceptedGroup: GroupingRule = {
     '**/node_modules/string_decoder/**',
     '**/node_modules/stream/**',
     '**/node_modules/primeng/**',
-    '**/node_modules/moment/**',
     '**/node_modules/ngx-daterangepicker-material/**',
     '**/node_modules/jspdf-autotable/**',
     '**/node_modules/dayjs/**',
     '**/node_modules/dexie/**',
     '**/node_modules/ng-lazyload-image/**',
-    '**/node_modules/@ngrx/**',
     '**/node_modules/@opentelemetry/**',
     '**/node_modules/html2canvas/**',
+    '**/node_modules/fastdom/**',
+    '**/node_modules/base64-js/**',
+    '**/node_modules/component-emitter/**',
+    '**/node_modules/dijkstrajs/**',
+    '**/node_modules/parseuri/**',
+    '**/node_modules/has-symbols/**',
+    '**/node_modules/function-bind/**',
+    '**/node_modules/object-assign/**',
+    '**/node_modules/raf/**',
+    '**/node_modules/blob/**',
+    '**/node_modules/ieee754/**',
+    '**/node_modules/has-binary2/**',
+    '**/node_modules/side-channel-weakmap/**',
+    '**/node_modules/js-levenshtein/**',
+    '**/node_modules/safe-buffer/**',
+    '**/node_modules/detect-it/**',
+    '**/node_modules/side-channel-list/**',
+    '**/node_modules/timers/**',
+    '**/node_modules/backo2/**',
+    '**/node_modules/side-channel-map/**',
+    '**/node_modules/encode-utf8/**',
+    '**/node_modules/math-intrinsics/**',
+    '**/node_modules/call-bind-apply-helpers/**',
+    '**/node_modules/performance-now/**',
+    '**/node_modules/custom-event-js/**',
+    '**/node_modules/subsink/**',
+    '**/node_modules/safe-buffer/**',
+    '**/node_modules/detect-it/**',
+    '**/node_modules/side-channel-list/**',
+    '**/node_modules/timers/**',
+    '**/node_modules/backo2/**',
+    '**/node_modules/side-channel-map/**',
+    '**/node_modules/encode-utf8/**',
+    '**/node_modules/math-intrinsics/**',
+    '**/node_modules/call-bind-apply-helpers/**',
+    '**/node_modules/performance-now/**',
+    '**/node_modules/custom-event-js/**',
+    '**/node_modules/subsink/**',
+    '**/node_modules/get-proto/**',
+    '**/node_modules/yeast/**',
+    '**/node_modules/es-errors/**',
+    '**/node_modules/dunder-proto/**',
+    '**/node_modules/side-channel/**',
+    '**/node_modules/parseqs/**',
+    '**/node_modules/mitt/**',
+    '**/node_modules/arraybuffer.slice/**',
+    '**/node_modules/component-bind/**',
+    '**/node_modules/after/**',
+    '**/node_modules/call-bound/**',
+    '**/node_modules/gopd/**',
+    '**/node_modules/socket.io-client/**',
+    '**/node_modules/indexof/**',
+    '**/node_modules/hasown/**',
+    '**/node_modules/component-inherit/**',
+    '**/node_modules/es-define-property/**',
+    '**/node_modules/has-cors/**',
+    '**/node_modules/to-array/**',
+    '**/node_modules/es-object-atoms/**',
+    '**/node_modules/xhr2/**',
+    '**/node_modules/fast-json-patch/**',
+    '**/node_modules/canvas-confetti/**',
+    '**/node_modules/cssfilter/**',
+    '**/node_modules/xss/**',
+    '**/node_modules/cds-client/**',
+    '**/node_modules/immer/**',
+    '**/node_modules/resize-observer-polyfill/**',
+    '**/node_modules/fontfaceobserver-es/**',
+    '**/node_modules/@cloudflare/**',
+    '**/node_modules/css-element-queries/**',
+    '**/node_modules/blueimp-md5/**',
+    '**/node_modules/isomorphic-rslog/**',
+    '**/node_modules/@swimlane/**',
+    '**/node_modules/lottie-web/**',
+    '**/node_modules/ngx-scrollbar/**',
+    '**/node_modules/ngx-device-detector/**',
+    '**/node_modules/@ngrx/**',
+    '**/node_modules/@ng-bootstrap/**',
+    '**/node_modules/@rx-angular/**',
+    '**/node_modules/@ngu/**',
+    '**/node_modules/@angular/**',
+    '**/node_modules/ng-circle-progress/**',
+    '**/node_modules/ngx-popperjs/**',
+    '**/node_modules/ng-dynamic-component/**',
+    '**/node_modules/ng-in-viewport/**',
+    '**/node_modules/angularx-qrcode/**',
+    '**/node_modules/ngx-lottie/**',
+    '**/node_modules/socket.io-client/**',
   ],
   numSegments: 1,
 };
 
 const dependencyAuditNewGroup: GroupingRule = {
   icon: '🆕',
-  include: '**/node_modules/**',
-  exclude: [
-    ...dependencyAuditAcceptedGroup.include,
-    ...dependencyAuditBlacklistedGroup.include,
-    ...dependencyAuditLegacyGroup.include,
+  includeInputs: '**/node_modules/**',
+  excludeInputs: [
+    ...dependencyAuditAcceptedGroup.includeInputs,
+    ...dependencyAuditBlacklistedGroup.includeInputs,
+    ...dependencyAuditLegacyGroup.includeInputs,
   ],
   numSegments: 2,
 };
@@ -637,8 +688,7 @@ Detects *newly added packages*, catches **forbidden dependencies**, monitors **3
     mode: 'onlyMatching',
     groups: dependencyAuditTableGroups,
     pruning: {
-      maxChildren: 50,
-      minSize: 2000,
+      //  minSize: 2000,
     },
   },
   dependencyTree: {
@@ -649,9 +699,7 @@ Detects *newly added packages*, catches **forbidden dependencies**, monitors **3
       dependencyAuditNewGroup,
     ],
     pruning: {
-      maxChildren: 50,
-      maxDepth: 2,
-      minSize: 2000,
+      maxChildren: 150,
     },
   },
 };
@@ -662,12 +710,8 @@ const config = {
       bundler: 'esbuild',
       artifactsPaths:
         './packages/plugin-bundle-stats/mocks/fixtures/stats/angular-large.stats.json',
-      selection: {
-        excludeOutputs: ['**/*.map', '**/*.d.ts'],
-      },
       audits: [
         allFilesAudit,
-        blacklistedFilesAudit,
         angularSpecificAudit,
         dependencyAudit,
         initialBundleSizeAudit,

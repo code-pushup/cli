@@ -52,7 +52,7 @@ export function generateAuditOutputs(
   configs: BundleStatsConfig[],
 ): AuditOutput[] {
   return configs.map(config => {
-    console.time('�� SELECT_BUNDLES');
+    console.time('🔍 SELECT_BUNDLES');
 
     // Extract grouping rules for feature mode filtering
     const groupingRules =
@@ -60,11 +60,7 @@ export function generateAuditOutputs(
         ? config.insightsTable.groups
         : undefined;
 
-    const filteredTree = selectBundles(
-      bundleStatsTree,
-      config.selection,
-      groupingRules,
-    );
+    const filteredTree = selectBundles(bundleStatsTree, config.selection);
     console.timeEnd('🔍 SELECT_BUNDLES');
 
     if (!filteredTree || Object.keys(filteredTree).length === 0) {

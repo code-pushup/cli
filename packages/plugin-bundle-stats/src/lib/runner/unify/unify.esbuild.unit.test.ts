@@ -12,7 +12,7 @@ describe('unifyBundlerStats', () => {
         },
       },
     };
-    expect(unifyBundlerStats(esbuildStats)).toStrictEqual({
+    expect(unifyBundlerStats(esbuildStats, {})).toStrictEqual({
       'dist/index.js': {
         path: 'dist/index.js',
         bytes: 100,
@@ -24,19 +24,22 @@ describe('unifyBundlerStats', () => {
 
   it('should parse inputs correctly', () => {
     expect(
-      unifyBundlerStats({
-        inputs: {},
-        outputs: {
-          'dist/index.js': {
-            bytes: 100,
-            inputs: {
-              'src/index.ts': {
-                bytesInOutput: 100,
+      unifyBundlerStats(
+        {
+          inputs: {},
+          outputs: {
+            'dist/index.js': {
+              bytes: 100,
+              inputs: {
+                'src/index.ts': {
+                  bytesInOutput: 100,
+                },
               },
             },
           },
         },
-      }),
+        {},
+      ),
     ).toStrictEqual({
       'dist/index.js': expect.objectContaining({
         inputs: {
@@ -50,20 +53,23 @@ describe('unifyBundlerStats', () => {
 
   it('should parse imports correctly', () => {
     expect(
-      unifyBundlerStats({
-        inputs: {},
-        outputs: {
-          'dist/index.js': {
-            bytes: 100,
-            imports: [
-              {
-                path: 'dist/chunks/chunk-WIJM4GGD.js',
-                kind: 'import-statement',
-              },
-            ],
+      unifyBundlerStats(
+        {
+          inputs: {},
+          outputs: {
+            'dist/index.js': {
+              bytes: 100,
+              imports: [
+                {
+                  path: 'dist/chunks/chunk-WIJM4GGD.js',
+                  kind: 'import-statement',
+                },
+              ],
+            },
           },
         },
-      }),
+        {},
+      ),
     ).toStrictEqual({
       'dist/index.js': expect.objectContaining({
         imports: [
@@ -78,25 +84,28 @@ describe('unifyBundlerStats', () => {
 
   it('should preserve original import paths when present', () => {
     expect(
-      unifyBundlerStats({
-        inputs: {},
-        outputs: {
-          'dist/index.js': {
-            bytes: 100,
-            imports: [
-              {
-                path: 'node_modules/rxjs/dist/esm/internal/util/isFunction.js',
-                kind: 'import-statement',
-                original: './util/isFunction',
-              },
-              {
-                path: 'dist/chunks/chunk-WIJM4GGD.js',
-                kind: 'import-statement',
-              },
-            ],
+      unifyBundlerStats(
+        {
+          inputs: {},
+          outputs: {
+            'dist/index.js': {
+              bytes: 100,
+              imports: [
+                {
+                  path: 'node_modules/rxjs/dist/esm/internal/util/isFunction.js',
+                  kind: 'import-statement',
+                  original: './util/isFunction',
+                },
+                {
+                  path: 'dist/chunks/chunk-WIJM4GGD.js',
+                  kind: 'import-statement',
+                },
+              ],
+            },
           },
         },
-      }),
+        {},
+      ),
     ).toStrictEqual({
       'dist/index.js': expect.objectContaining({
         imports: [
@@ -184,7 +193,7 @@ describe('unifyBundlerStats', () => {
       },
     };
 
-    expect(unifyBundlerStats(esbuildStats)).toStrictEqual({
+    expect(unifyBundlerStats(esbuildStats, {})).toStrictEqual({
       'dist/bin.js': {
         bytes: 479,
         entryPoint: 'src/bin.ts',
