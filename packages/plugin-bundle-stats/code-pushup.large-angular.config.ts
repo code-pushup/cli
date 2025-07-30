@@ -666,11 +666,11 @@ const config = {
         excludeOutputs: ['**/*.map', '**/*.d.ts'],
       },
       audits: [
-        /*  allFilesAudit,
+        allFilesAudit,
         blacklistedFilesAudit,
-        angularSpecificAudit,*/
+        angularSpecificAudit,
         dependencyAudit,
-        // initialBundleSizeAudit,
+        initialBundleSizeAudit,
       ],
     }),
   ],
