@@ -48,6 +48,7 @@ export interface DependencyTreeConfig extends SharedViewConfig {
 }
 
 export interface PruningConfig {
+  enabled?: boolean;
   maxChildren?: number;
   maxDepth?: number;
   minSize?: number;
@@ -238,19 +239,15 @@ export function createTree(
     nodes = nodes.filter(node => node.children.length > 0);
   }
 
-  // Efficient pruning
-  const prunedRoot = pruneTree(
-    { children: nodes },
-    {
-      maxDepth: 2,
-      maxChildren: 10,
-      minSize: 1000,
-      pathLength: 60,
-      ...pruning,
-    },
-  );
-
-  const prunedNodes = prunedRoot.children;
+  // Apply pruning only if explicitly configured and enabled
+  let prunedNodes: StatsTreeNode[];
+  if (pruning && pruning.enabled !== false) {
+    const prunedRoot = pruneTree({ children: nodes }, pruning);
+    prunedNodes = prunedRoot.children;
+  } else {
+    // No pruning - show all nodes
+    prunedNodes = nodes;
+  }
 
   // Calculate totals
   let totalBytes = 0;
@@ -287,10 +284,19 @@ export function createTree(
 
 export function pruneTree(
   rootNode: PruneTreeNode,
-  options: Required<PruningConfig>,
+  options: PruningConfig,
 ): PruneTreeNode {
+  // Provide defaults for all required properties
+  const completeOptions: Required<PruningConfig> = {
+    maxDepth: options.maxDepth ?? 999,
+    maxChildren: options.maxChildren ?? 999,
+    minSize: options.minSize ?? 0,
+    pathLength: options.pathLength ?? 999,
+    enabled: options.enabled ?? true,
+  };
+
   // Start from 1 so that maxDepth: 2 stops at package level, maxDepth: 3 shows individual files
-  return pruneTreeRecursive(rootNode, options, 1);
+  return pruneTreeRecursive(rootNode, completeOptions, 1);
 }
 
 function pruneTreeRecursive(

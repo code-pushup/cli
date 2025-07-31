@@ -48,7 +48,7 @@ export type PenaltyOptions = Omit<PenaltyConfig, 'artefactSize'> & {
 
 export type ScoringOptions = {
   enabled?: boolean;
-  totalSize: ScoringConfig['totalSize'] | number;
+  totalSize?: ScoringConfig['totalSize'] | number;
   penalty?: PenaltyOptions;
 };
 

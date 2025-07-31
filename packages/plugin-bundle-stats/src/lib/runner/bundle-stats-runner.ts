@@ -146,8 +146,7 @@ export function mergeDependencyTreeConfig(
       // Pruning overwrites - local takes precedence over global
       pruning: {
         maxDepth: 2,
-        maxChildren: 10,
-        minSize: 1000,
+        maxChildren: 20,
         pathLength: 60,
         ...(pluginOptions?.pruning ?? {}),
         ...(auditConfig?.pruning ?? {}),
@@ -165,7 +164,6 @@ export function mergeDependencyTreeConfig(
       pruning: {
         maxDepth: 2,
         maxChildren: 10,
-        minSize: 1000,
         pathLength: 60,
         ...(auditConfig?.pruning ?? {}),
       },
@@ -185,7 +183,7 @@ export function mergeSelectionConfig(
 ): SelectionConfig {
   return {
     // mode from audit config takes precedence
-    mode: auditConfig?.mode ?? 'withStartupDeps',
+    mode: auditConfig?.mode != null ? auditConfig.mode : 'bundle',
 
     // Include arrays overwrite - config takes precedence for scope clarity
     includeOutputs: auditConfig?.includeOutputs ?? [],

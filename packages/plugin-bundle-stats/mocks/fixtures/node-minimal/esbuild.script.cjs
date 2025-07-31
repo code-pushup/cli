@@ -7,7 +7,7 @@ const config = {
   bundle: true,
   outdir: 'dist/esbuild',
   entryNames: '[name]', // This ensures entry points keep their original names
-  chunkNames: 'chunks/[name]-[hash]', // Put shared chunks in a subfolder
+  chunkNames: 'chunks/[name]', // Put shared chunks in a subfolder without hash
   metafile: true,
   format: 'esm',
   platform: 'node',
@@ -31,14 +31,14 @@ const config = {
 async function buildWithStats() {
   try {
     const result = await build(config);
-    
+
     // Write metafile to stats.json
     if (result.metafile) {
       const statsPath = path.join(config.outdir, 'stats.json');
       fs.writeFileSync(statsPath, JSON.stringify(result.metafile, null, 2));
       console.log(`Stats written to ${statsPath}`);
     }
-    
+
     console.log('Build completed successfully!');
     return result;
   } catch (error) {
@@ -52,4 +52,4 @@ if (require.main === module) {
   buildWithStats();
 }
 
-module.exports = { config, buildWithStats }; 
+module.exports = { config, buildWithStats };

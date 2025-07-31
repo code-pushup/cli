@@ -14,7 +14,7 @@ const SELECTION_ALL_OUTPUTS = {
 };
 const SELECTION_ONE_FILE = {
   mode: 'bundle' as const,
-  includeOutputs: ['**/feature-2-JRMQOICX.js'],
+  includeOutputs: ['**/chunks/chunk-PKX4VJZC.js'],
 };
 // ===== Scoring Constants =====
 
@@ -60,36 +60,37 @@ const SELECTION_AUDIT_PREFIX = 'selection';
  *
  * esbuild-minimal.stats.json
  * └── outputs
- *     ├── dist/index.js                                    // entryPoint: ../shared-source/src/index.ts
+ *     ├── dist/index.js                                    // entryPoint: ../shared-source/src/index.ts (595 B)
  *     │   ├── inputs
- *     │   │   └── ../shared-source/src/index.ts
+ *     │   │   └── ../shared-source/src/index.ts (386 B)
  *     │   └── imports
  *     │       ├── dist/chunks/chunk-PKX4VJZC.js           // import-statement
  *     │       ├── dist/chunks/chunk-SK6HMZ5B.js           // import-statement
  *     │       └── dist/chunks/feature-2-SERQNJVR.js       // dynamic-import
- *     ├── dist/bin.js                                      // entryPoint: ../shared-source/src/bin.ts
+ *     ├── dist/bin.js                                      // entryPoint: ../shared-source/src/bin.ts (549 B)
  *     │   ├── inputs
- *     │   │   └── ../shared-source/src/bin.ts
+ *     │   │   └── ../shared-source/src/bin.ts (373 B)
  *     │   └── imports
  *     │       ├── dist/chunks/chunk-PKX4VJZC.js           // import-statement
  *     │       └── dist/chunks/chunk-SK6HMZ5B.js           // import-statement
- *     ├── dist/chunks/chunk-PKX4VJZC.js                   // Main shared chunk
+ *     ├── dist/chunks/chunk-PKX4VJZC.js                   // Main shared chunk (51.35 kB)
  *     │   ├── inputs (13 files: node_modules + source)
- *     │   │   ├── ../../../../../node_modules/balanced-match/index.js
- *     │   │   ├── ../../../../../node_modules/brace-expansion/index.js
- *     │   │   ├── ../../../../../node_modules/minimatch/dist/esm/*.js (6 files)
- *     │   │   ├── ../shared-source/src/lib/utils/format.ts
- *     │   │   ├── ../shared-source/src/lib/feature-1.ts
- *     │   │   ├── ../shared-source/src/lib/utils/math.ts
- *     │   │   └── ../shared-source/src/lib/utils/string.ts
+ *     │   │   ├── ../../../../../node_modules/balanced-match/index.js (1.51 kB)
+ *     │   │   ├── ../../../../../node_modules/brace-expansion/index.js (4.67 kB)
+ *     │   │   ├── ../../../../../node_modules/minimatch/dist/esm/*.js (6 files, ~42 kB total)
+ *     │   │   ├── ../shared-source/node_modules/my-lib/index.js (93 B)
+ *     │   │   ├── ../shared-source/src/lib/utils/format.ts (269 B)
+ *     │   │   ├── ../shared-source/src/lib/feature-1.ts (269 B)
+ *     │   │   ├── ../shared-source/src/lib/utils/math.ts (145 B)
+ *     │   │   └── ../shared-source/src/lib/utils/string.ts (54 B)
  *     │   └── imports
  *     │       └── dist/chunks/chunk-SK6HMZ5B.js           // import-statement
- *     ├── dist/chunks/feature-2-SERQNJVR.js               // entryPoint: ../shared-source/src/lib/feature-2.ts
+ *     ├── dist/chunks/feature-2-SERQNJVR.js               // entryPoint: ../shared-source/src/lib/feature-2.ts (130 B)
  *     │   ├── inputs
- *     │   │   └── ../shared-source/src/lib/feature-2.ts
+ *     │   │   └── ../shared-source/src/lib/feature-2.ts (38 B)
  *     │   └── imports
  *     │       └── dist/chunks/chunk-SK6HMZ5B.js           // import-statement
- *     └── dist/chunks/chunk-SK6HMZ5B.js                   // ESM runtime helpers
+ *     └── dist/chunks/chunk-SK6HMZ5B.js                   // ESM runtime helpers (1.33 kB)
  *         ├── inputs: (empty - runtime code)
  *         └── imports: (none)
  */
@@ -106,48 +107,62 @@ const SELECTION_AUDITS: BundleStatsAuditOptions[] = [
       mode: 'bundle',
       includeOutputs: ['**/index.js'],
     },
+    dependencyTree: {
+      pruning: {
+        minSize: 1000,
+      },
+    },
   },
   {
-    slug: `${SELECTION_AUDIT_PREFIX}-mode-feature`,
-    title: `${SELECTION_AUDIT_ICON} - Selection - Mode - Feature`,
+    slug: `${SELECTION_AUDIT_PREFIX}-mode-matching-only`,
+    title: `${SELECTION_AUDIT_ICON} - Selection - Mode - Matching Only`,
     description:
-      'Demonstrates feature mode - input filtering with size recalculation.',
+      'Demonstrates matchingOnly mode - input filtering with size recalculation.',
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
     selection: {
       mode: 'matchingOnly',
-      includeInputs: ['**/src/**'],
+      includeInputs: ['**/utils/**'],
     },
   },
   {
     slug: `${SELECTION_AUDIT_PREFIX}-mode-startup`,
-    title: `${SELECTION_AUDIT_ICON} - Selection - Mode - Startup`,
+    title: `${SELECTION_AUDIT_ICON} - Selection - Mode - withStartupDeps`,
     description:
-      'Demonstrates startup mode - includes static import dependencies.',
+      'Demonstrates withStartupDeps mode - includes static import dependencies.',
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
+    selection: {
+      mode: 'withStartupDeps',
+      includeOutputs: ['**/index.js'],
+    },
   },
   {
-    slug: `${SELECTION_AUDIT_PREFIX}-mode-dependencies`,
-    title: `${SELECTION_AUDIT_ICON} - Selection - Mode - Dependencies`,
+    slug: `${SELECTION_AUDIT_PREFIX}-mode-with-all-deps`,
+    title: `${SELECTION_AUDIT_ICON} - Selection - Mode - withAllDeps`,
     description:
-      'Demonstrates dependencies mode - comprehensive tracking (static + dynamic).',
+      'Demonstrates withAllDeps mode - comprehensive tracking (static + dynamic).',
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
+    selection: {
+      mode: 'withAllDeps',
+      includeOutputs: ['**/index.js'],
+    },
   },
 
   // ===== Selection - Pattern Audits =====
   {
     slug: `${SELECTION_AUDIT_PREFIX}-pattern-output-include`,
     title: `${SELECTION_AUDIT_ICON} - Selection - Pattern - Output Include`,
-    description: 'Demonstrates including only entry point outputs.',
+    description: 'Demonstrates including only main chunk files.',
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
     selection: {
-      mode: 'bundle', // Only include files to reduce noise. Irrelevant for include/exclude patterns
-      includeOutputs: ['**/bin.js'],
+      mode: 'bundle',
+      includeOutputs: ['**/chunks/chunk-*.js'],
     },
   },
   {
-    slug: `${SELECTION_AUDIT_PREFIX}-pattern-output-exclude`,
-    title: `${SELECTION_AUDIT_ICON} - Selection - Pattern - Output Exclude`,
-    description: 'Demonstrates excluding chunk files to focus on entry points.',
+    slug: `${SELECTION_AUDIT_PREFIX}-pattern-output-include-exclude`,
+    title: `${SELECTION_AUDIT_ICON} - Selection - Pattern - Output Include and Exclude`,
+    description:
+      'Demonstrates including and excluding chunk files to focus on entry points.',
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
     selection: {
       mode: 'bundle',
@@ -158,17 +173,19 @@ const SELECTION_AUDITS: BundleStatsAuditOptions[] = [
   {
     slug: `${SELECTION_AUDIT_PREFIX}-pattern-input-include`,
     title: `${SELECTION_AUDIT_ICON} - Selection - Pattern - Input Include`,
-    description: 'Demonstrates including only source code files.',
+    description: 'Demonstrates including only source lib files.',
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
     selection: {
-      mode: 'bundle', // Only include files to reduce noise. Irrelevant for include/exclude patterns
-      includeInputs: ['**/node_modules/**'],
+      mode: 'bundle',
+      includeOutputs: ['**/chunks/chunk-PKX4VJZC.js'],
+      includeInputs: ['**/src/lib/**'],
     },
   },
   {
-    slug: `${SELECTION_AUDIT_PREFIX}-pattern-input-exclude`,
-    title: `${SELECTION_AUDIT_ICON} - Selection - Pattern - Input Exclude`,
-    description: 'Demonstrates excluding node_modules dependencies.',
+    slug: `${SELECTION_AUDIT_PREFIX}-pattern-input-include-exclude`,
+    title: `${SELECTION_AUDIT_ICON} - Selection - Pattern - Input Include and Exclude`,
+    description:
+      'Demonstrates including source lib files but excluding node_modules.',
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
     selection: {
       mode: 'bundle',
@@ -179,23 +196,12 @@ const SELECTION_AUDITS: BundleStatsAuditOptions[] = [
   {
     slug: `${SELECTION_AUDIT_PREFIX}-pattern-combined`,
     title: `${SELECTION_AUDIT_ICON} - Selection - Pattern - Combined`,
-    description: 'Demonstrates combining entry points with source-only inputs.',
+    description:
+      'Demonstrates combining multiple chunk types with pattern matching.',
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
     selection: {
       mode: 'bundle',
-      includeOutputs: ['**/chunks/feature-*'],
-      excludeInputs: ['**/src/lib/utils/math.ts'],
-    },
-  },
-  {
-    slug: `${SELECTION_AUDIT_PREFIX}-pattern-feature-specific`,
-    title: `${SELECTION_AUDIT_ICON} - Selection - Pattern - includeInputs`,
-    description:
-      'Demonstrates feature mode filtering for utility functions only.',
-    ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
-    selection: {
-      mode: 'matchingOnly',
-      includeInputs: ['**/utils/**'],
+      includeOutputs: ['**/chunks/chunk-*.js', '**/chunks/feature-*.js'],
     },
   },
 ];
@@ -212,7 +218,6 @@ const SCORING_AUDITS: BundleStatsAuditOptions[] = [
     ...BASE_AUDIT_ALL_FILES,
     scoring: {
       enabled: false,
-      totalSize: THRESHOLD_ALWAYS_PASS_MAX,
     },
   },
 
@@ -223,7 +228,7 @@ const SCORING_AUDITS: BundleStatsAuditOptions[] = [
     description:
       'Demonstrates threshold passing when total size is within range limits.',
     ...BASE_AUDIT_ALL_FILES,
-    scoring: { totalSize: THRESHOLD_ALWAYS_PASS_RANGE },
+    scoring: { totalSize: THRESHOLD_ALWAYS_PASS_MAX },
   },
   {
     slug: `${SCORING_AUDIT_PREFIX}-total-size-too-big`,
@@ -256,7 +261,6 @@ const SCORING_PENALTY_AUDITS: BundleStatsAuditOptions[] = [
       'Demonstrates penalty passing when all files are within size limits.',
     selection: SELECTION_ONE_FILE,
     scoring: {
-      ...DISABLED,
       penalty: {
         artefactSize: THRESHOLD_ALWAYS_PASS_MAX,
       },
@@ -268,7 +272,6 @@ const SCORING_PENALTY_AUDITS: BundleStatsAuditOptions[] = [
     description: 'Demonstrates penalty passing with min/max range constraints.',
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
     scoring: {
-      totalSize: THRESHOLD_ALWAYS_PASS_MAX,
       penalty: {
         artefactSize: [THRESHOLD_ALWAYS_PASS_MIN, THRESHOLD_ALWAYS_PASS_MAX],
       },
@@ -280,7 +283,6 @@ const SCORING_PENALTY_AUDITS: BundleStatsAuditOptions[] = [
     description: 'Demonstrates penalty failure when files exceed maximum size.',
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
     scoring: {
-      totalSize: THRESHOLD_ALWAYS_PASS_MAX,
       penalty: { artefactSize: THRESHOLD_ALWAYS_FAIL_MAX },
     },
   },
@@ -306,7 +308,6 @@ const SCORING_PENALTY_AUDITS: BundleStatsAuditOptions[] = [
       'Demonstrates penalty passing when no blacklisted patterns match.',
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
     scoring: {
-      totalSize: THRESHOLD_ALWAYS_PASS_MAX,
       penalty: { blacklist: ['**/non-existent-pattern/**'] },
     },
   },
@@ -317,8 +318,21 @@ const SCORING_PENALTY_AUDITS: BundleStatsAuditOptions[] = [
       'Demonstrates penalty failure when blacklisted patterns are found.',
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
     scoring: {
-      totalSize: THRESHOLD_ALWAYS_PASS_MAX,
       penalty: { blacklist: ['**/*'] },
+    },
+  },
+
+  {
+    slug: `${SCORING_AUDIT_PREFIX}-mixed-options`,
+    title: `${SCORING_AUDIT_ICON} - Scoring - Mixed Options`,
+    description: 'Demonstrates mixed scoring options.',
+    ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
+    scoring: {
+      totalSize: 1_000_000,
+      penalty: {
+        artefactSize: 2_000_000,
+        blacklist: ['**/src/lib/utils/math.ts'],
+      },
     },
   },
 ];
@@ -537,7 +551,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       'Shows how to explicitly disable dependency trees using enabled: false. You should see audit results but no ASCII tree structure, even when global dependencyTree config exists.',
     selection: {
       mode: 'bundle',
-      includeOutputs: ['**/feature-2*.js'],
+      includeOutputs: ['**/chunks/chunk-*.js'],
     },
     scoring: DISABLED,
     dependencyTree: { enabled: false },
@@ -551,10 +565,12 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       'Demonstrates mode: "all" - shows complete file tree regardless of selection filters. Compare with onlyMatching to see the difference in which files appear in the tree.',
     selection: {
       mode: 'bundle',
-      includeOutputs: ['**/feature-2*.js'],
+      includeOutputs: ['**/*'],
     },
     scoring: DISABLED,
-    dependencyTree: { mode: 'all' },
+    dependencyTree: {
+      mode: 'all',
+    },
   },
   {
     slug: `${TREE_AUDIT_PREFIX}-mode-onlymatching`,
@@ -563,7 +579,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       'Demonstrates mode: "onlyMatching" (default) - tree only shows files that match the selection criteria. Files outside selection are hidden from tree display.',
     selection: {
       mode: 'bundle',
-      includeOutputs: ['**/feature-2*.js'],
+      includeOutputs: ['**/chunks/chunk-*.js'],
     },
     scoring: DISABLED,
     dependencyTree: { mode: 'onlyMatching' },
@@ -577,7 +593,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       'Demonstrates groups.include patterns organizing files by type. Shows how dependencies (📦) are grouped with clear visual separation. Uses selection filtering to focus only on node_modules files for a clean demonstration.',
     selection: {
       mode: 'bundle',
-      includeOutputs: ['**/feature-2*.js'],
+      includeOutputs: ['**/chunks/chunk-*.js'],
     },
     scoring: DISABLED,
     dependencyTree: {
@@ -601,7 +617,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       'Demonstrates the recommended approach: using selection excludeInputs to filter out node_modules files, combined with mode: "onlyMatching". While grouping can organize remaining files, selection filtering is the primary and most reliable way to exclude unwanted files from both table and tree displays.',
     selection: {
       mode: 'bundle',
-      includeOutputs: ['**/feature-2*.js'],
+      includeOutputs: ['**/chunks/chunk-*.js'],
     },
     scoring: DISABLED,
     dependencyTree: {
@@ -621,7 +637,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       'Shows combining include and exclude patterns for precise filtering. First group shows src files but excludes test files, second shows lib files but excludes test directories.',
     selection: {
       mode: 'bundle',
-      includeOutputs: ['**/feature-2*.js'],
+      includeOutputs: ['**/chunks/chunk-*.js'],
     },
     scoring: DISABLED,
     dependencyTree: {
@@ -640,7 +656,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       'Demonstrates groups.title property for custom section headers. Look for "Source Files" and "Dependencies" labels that replace default path-based grouping names.',
     selection: {
       mode: 'bundle',
-      includeOutputs: ['**/feature-2*.js'],
+      includeOutputs: ['**/chunks/chunk-*.js'],
     },
     scoring: DISABLED,
     dependencyTree: {
@@ -663,7 +679,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       'Shows groups.icon property adding visual indicators to grouped sections. Look for 📄 icon next to source files and 📦 icon next to dependencies in the tree display.',
     selection: {
       mode: 'bundle',
-      includeOutputs: ['**/feature-2*.js'],
+      includeOutputs: ['**/chunks/chunk-*.js'],
     },
     scoring: DISABLED,
     dependencyTree: {
@@ -686,7 +702,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       'Demonstrates groups.numSegments for path-based grouping. Node modules are grouped by their top-level package name (1 segment), flattening deep nested structures like @scope/package.',
     selection: {
       mode: 'bundle',
-      includeOutputs: ['**/feature-2*.js'],
+      includeOutputs: ['**/chunks/chunk-*.js'],
     },
     scoring: DISABLED,
     dependencyTree: {
@@ -707,7 +723,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       'Shows pruning.maxChildren: 2 limiting displayed children per node. Large directories will show only first 2 entries plus "...X more items" to prevent overwhelming output.',
     selection: {
       mode: 'bundle',
-      includeOutputs: ['**/feature-2*.js'],
+      includeOutputs: ['**/chunks/chunk-*.js'],
     },
     scoring: DISABLED,
     dependencyTree: { pruning: { maxChildren: 2 } },
@@ -719,7 +735,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       'Demonstrates pruning.maxDepth: 1 limiting tree depth to prevent deep nesting. Only shows immediate children, deeper levels are truncated with continuation indicators.',
     selection: {
       mode: 'bundle',
-      includeOutputs: ['**/feature-2*.js'],
+      includeOutputs: ['**/chunks/chunk-*.js'],
     },
     scoring: DISABLED,
     dependencyTree: { pruning: { maxDepth: 1 } },
@@ -731,7 +747,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       'Shows pruning.minSize: 1000 filtering out files smaller than 1KB. Small utility files and helpers are hidden, displaying only substantial files that impact bundle size.',
     selection: {
       mode: 'bundle',
-      includeOutputs: ['**/feature-2*.js'],
+      includeOutputs: ['**/chunks/chunk-*.js'],
     },
     scoring: DISABLED,
     dependencyTree: { pruning: { minSize: 1000 } },
@@ -743,7 +759,7 @@ const TREE_AUDITS: BundleStatsAuditOptions[] = [
       'Demonstrates pruning.pathLength: 30 truncating long file paths for readability. Paths longer than 30 characters show as "...filename.js" to keep tree display compact.',
     selection: {
       mode: 'bundle',
-      includeOutputs: ['**/feature-2*.js'],
+      includeOutputs: ['**/chunks/chunk-*.js'],
     },
     scoring: DISABLED,
     dependencyTree: { pruning: { pathLength: 30 } },
@@ -754,7 +770,7 @@ const config: CoreConfig = {
   plugins: [
     await bundleStatsPlugin({
       artifactsPaths:
-        'packages/plugin-bundle-stats/mocks/fixtures/node-minimal/dist/esbuild/stats.json',
+        'packages/plugin-bundle-stats/mocks/fixtures/stats/esbuild-minimal.stats.json',
       bundler: 'esbuild',
       audits: [
         ...SCORING_AUDITS,
@@ -826,7 +842,7 @@ const config: CoreConfig = {
           type: 'group' as const,
           plugin: 'bundle-stats',
           slug: 'scoring-group',
-          weight: 2,
+          weight: 1,
         },
         {
           type: 'group' as const,
