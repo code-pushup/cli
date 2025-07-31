@@ -1,3 +1,37 @@
+## 0.70.0 (2025-07-31)
+
+### 🚀 Features
+
+- **ci:** update to zod v4 ([c342dab1](https://github.com/code-pushup/cli/commit/c342dab1))
+- **ci:** remove redundant --no-progress argument ([b0ed2fa9](https://github.com/code-pushup/cli/commit/b0ed2fa9))
+- **ci:** skip persist.format args if defaults already configured ([c11db95e](https://github.com/code-pushup/cli/commit/c11db95e))
+- **cli:** disable progress bar in CI environment ([ecd42c60](https://github.com/code-pushup/cli/commit/ecd42c60))
+- **models:** add generic artifact generation to enable caching ([#1023](https://github.com/code-pushup/cli/pull/1023))
+- **models:** update to zod v4 ([7985c239](https://github.com/code-pushup/cli/commit/7985c239))
+- **nx-plugin:** update to zod v4 ([91774182](https://github.com/code-pushup/cli/commit/91774182))
+- **plugin-coverage:** update to zod v4 ([a0814d31](https://github.com/code-pushup/cli/commit/a0814d31))
+- **plugin-eslint:** update zod to v4 ([4ef657f1](https://github.com/code-pushup/cli/commit/4ef657f1))
+- **plugin-js-packages:** update to zod v4 ([c24b7435](https://github.com/code-pushup/cli/commit/c24b7435))
+- **plugin-jsdocs:** update to zod v4 ([3444e8d3](https://github.com/code-pushup/cli/commit/3444e8d3))
+- **plugin-lighthouse:** implement multiple URL support ([f4db1368](https://github.com/code-pushup/cli/commit/f4db1368))
+- **plugin-typescript:** update to zod v4 ([6de416f4](https://github.com/code-pushup/cli/commit/6de416f4))
+- **utils:** update to zod v4, replace zod-validation-error with z.prettifyError ([b1364d7d](https://github.com/code-pushup/cli/commit/b1364d7d))
+- **utils:** parse boolean environment variables ([be08c188](https://github.com/code-pushup/cli/commit/be08c188))
+- **utils:** detect ci environment ([3430d31b](https://github.com/code-pushup/cli/commit/3430d31b))
+- **utils:** extract boolean value coercion to standalone function ([f76e4fb0](https://github.com/code-pushup/cli/commit/f76e4fb0))
+
+### 🩹 Fixes
+
+- **ci:** do not set --verbose by default ([ab39b050](https://github.com/code-pushup/cli/commit/ab39b050))
+- **cli:** adapt format schema check to zod v4 ([77a384b0](https://github.com/code-pushup/cli/commit/77a384b0))
+- **models:** use implementAsync for async z.function occurrences ([17931228](https://github.com/code-pushup/cli/commit/17931228))
+
+### ❤️ Thank You
+
+- Andrii Siuta
+- Hanna Skryl @hanna-skryl
+- Matěj Chalk
+
 ## 0.69.5 (2025-07-11)
 
 ### 🩹 Fixes
