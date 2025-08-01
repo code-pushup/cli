@@ -3,8 +3,10 @@ import {
   camelCaseToKebabCase,
   capitalize,
   kebabCaseToCamelCase,
+  lowercase,
   toSentenceCase,
   toTitleCase,
+  uppercase,
 } from './case-conversions.js';
 
 describe('capitalize', () => {
@@ -22,6 +24,18 @@ describe('capitalize', () => {
 
   it('should accept empty string', () => {
     expect(capitalize('')).toBe('');
+  });
+});
+
+describe('lowercase', () => {
+  it('should convert string to lower case', () => {
+    expect(lowercase('Warning')).toBe('warning');
+  });
+});
+
+describe('uppercase', () => {
+  it('should convert string to upper case', () => {
+    expect(uppercase('Warning')).toBe('WARNING');
   });
 });
 

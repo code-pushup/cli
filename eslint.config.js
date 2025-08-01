@@ -94,6 +94,12 @@ export default tseslint.config(
     },
   },
   {
+    files: ['**/*.type.test.ts'],
+    rules: {
+      'vitest/expect-expect': 'off',
+    },
+  },
+  {
     files: ['**/*.json'],
     languageOptions: { parser: jsoncParser },
   },
