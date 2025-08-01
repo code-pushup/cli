@@ -36,18 +36,8 @@
         "cwd": "./packages/utils/perf"
       }
     },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/utils/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/utils/vitest.int.config.ts"
-      }
-    }
+    "unit-test": {},
+    "int-test": {}
   },
   "tags": ["scope:shared", "type:util", "publishable"]
 }

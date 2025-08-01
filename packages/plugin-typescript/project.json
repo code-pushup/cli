@@ -24,18 +24,8 @@
         ]
       }
     },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-typescript/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-typescript/vitest.int.config.ts"
-      }
-    }
+    "unit-test": {},
+    "int-test": {}
   },
   "tags": ["scope:plugin", "type:feature", "publishable"]
 }
