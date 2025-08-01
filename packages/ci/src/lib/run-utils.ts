@@ -34,6 +34,7 @@ import type {
 } from './models.js';
 import type { ProjectConfig } from './monorepo/index.js';
 import { saveOutputFiles } from './output-files.js';
+import { downloadReportFromPortal } from './portal/download.js';
 
 export type RunEnv = {
   refs: NormalizedGitRefs;
@@ -58,6 +59,7 @@ export type CompareReportsArgs = {
 
 export type BaseReportArgs = {
   project: ProjectConfig | null;
+  config: EnhancedPersistConfig;
   env: RunEnv;
   base: GitBranch;
   ctx: CommandContext;
@@ -139,7 +141,8 @@ export async function runOnProject(
     `PR/MR detected, preparing to compare base branch ${base.ref} to head ${head.ref}`,
   );
 
-  const prevReport = await collectPreviousReport({ project, env, base, ctx });
+  const baseArgs: BaseReportArgs = { project, env, base, config, ctx };
+  const prevReport = await collectPreviousReport(baseArgs);
   if (!prevReport) {
     return noDiffOutput;
   }
@@ -243,27 +246,12 @@ export async function loadCachedBaseReport(
 ): Promise<ReportData<'previous'> | null> {
   const {
     project,
-    env: { api, settings },
+    env: { settings },
   } = args;
-  const { logger } = settings;
 
-  const cachedBaseReport = await api
-    .downloadReportArtifact?.(project?.name)
-    .catch((error: unknown) => {
-      logger.warn(
-        `Error when downloading previous report artifact, skipping - ${stringifyError(error)}`,
-      );
-    });
-  if (api.downloadReportArtifact != null) {
-    logger.info(
-      `Previous report artifact ${cachedBaseReport ? 'found' : 'not found'}`,
-    );
-    if (cachedBaseReport) {
-      logger.debug(
-        `Previous report artifact downloaded to ${cachedBaseReport}`,
-      );
-    }
-  }
+  const cachedBaseReport =
+    (await loadCachedBaseReportFromPortal(args)) ??
+    (await loadCachedBaseReportFromArtifacts(args));
 
   if (!cachedBaseReport) {
     return null;
@@ -274,6 +262,73 @@ export async function loadCachedBaseReport(
     files: { json: cachedBaseReport },
     settings,
   });
+}
+
+async function loadCachedBaseReportFromArtifacts(
+  args: BaseReportArgs,
+): Promise<string | null> {
+  const {
+    env: { api, settings },
+    project,
+  } = args;
+  const { logger } = settings;
+
+  if (api.downloadReportArtifact == null) {
+    return null;
+  }
+
+  const reportPath = await api
+    .downloadReportArtifact(project?.name)
+    .catch((error: unknown) => {
+      logger.warn(
+        `Error when downloading previous report artifact, skipping - ${stringifyError(error)}`,
+      );
+      return null;
+    });
+
+  logger.info(`Previous report artifact ${reportPath ? 'found' : 'not found'}`);
+  if (reportPath) {
+    logger.debug(`Previous report artifact downloaded to ${reportPath}`);
+  }
+
+  return reportPath;
+}
+
+async function loadCachedBaseReportFromPortal(
+  args: BaseReportArgs,
+): Promise<string | null> {
+  const {
+    config,
+    env: { settings },
+  } = args;
+  const { logger } = settings;
+
+  if (!config.upload) {
+    return null;
+  }
+
+  const reportPath = await downloadReportFromPortal({
+    server: config.upload.server,
+    apiKey: config.upload.apiKey,
+    parameters: {
+      organization: config.upload.organization,
+      project: config.upload.project,
+    },
+  }).catch((error: unknown) => {
+    logger.warn(
+      `Error when downloading previous report from portal, skipping - ${stringifyError(error)}`,
+    );
+    return null;
+  });
+
+  logger.info(
+    `Previous report ${reportPath ? 'found' : 'not found'} in Code PushUp portal`,
+  );
+  if (reportPath) {
+    logger.debug(`Previous report downloaded from portal to ${reportPath}`);
+  }
+
+  return reportPath;
 }
 
 export async function runInBaseBranch<T>(
