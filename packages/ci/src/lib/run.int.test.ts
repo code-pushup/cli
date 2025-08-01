@@ -10,6 +10,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { type SimpleGit, simpleGit } from 'simple-git';
 import { type MockInstance, expect } from 'vitest';
+import {
+  type ReportFragment,
+  downloadFromPortal,
+} from '@code-pushup/portal-client';
 import type { CoreConfig } from '@code-pushup/models';
 import {
   cleanTestFolder,
@@ -29,40 +33,57 @@ import type {
 import type { MonorepoTool } from './monorepo/index.js';
 import { runInCI } from './run.js';
 
-describe('runInCI', () => {
-  const fixturesDir = path.join(
-    fileURLToPath(path.dirname(import.meta.url)),
-    '..',
-    '..',
-    'mocks',
-    'fixtures',
-  );
-  const reportsDir = path.join(fixturesDir, 'outputs');
-  const workDir = path.join(process.cwd(), 'tmp', 'ci', 'run-test');
-
-  const fixturePaths = {
-    reports: {
-      before: {
-        json: path.join(reportsDir, 'report-before.json'),
-        md: path.join(reportsDir, 'report-before.md'),
-      },
-      after: {
-        json: path.join(reportsDir, 'report-after.json'),
-        md: path.join(reportsDir, 'report-after.md'),
-      },
-    },
-    diffs: {
-      project: {
-        json: path.join(reportsDir, 'diff-project.json'),
-        md: path.join(reportsDir, 'diff-project.md'),
-      },
-      merged: {
-        md: path.join(reportsDir, 'diff-merged.md'),
-      },
-    },
-    config: path.join(reportsDir, 'config.json'),
+vi.mock('@code-pushup/portal-client', async importOriginal => {
+  const mod: typeof import('@code-pushup/portal-client') =
+    await importOriginal();
+  return {
+    ...mod,
+    downloadFromPortal: vi.fn(simulateDownloadFromPortal),
   };
+});
 
+const fixturesDir = path.join(
+  fileURLToPath(path.dirname(import.meta.url)),
+  '..',
+  '..',
+  'mocks',
+  'fixtures',
+);
+const reportsDir = path.join(fixturesDir, 'outputs');
+const workDir = path.join(process.cwd(), 'tmp', 'ci', 'run-test');
+
+const fixturePaths = {
+  reports: {
+    before: {
+      json: path.join(reportsDir, 'report-before.json'),
+      md: path.join(reportsDir, 'report-before.md'),
+      portal: path.join(reportsDir, 'report-before.portal.json'),
+    },
+    after: {
+      json: path.join(reportsDir, 'report-after.json'),
+      md: path.join(reportsDir, 'report-after.md'),
+    },
+  },
+  diffs: {
+    project: {
+      json: path.join(reportsDir, 'diff-project.json'),
+      md: path.join(reportsDir, 'diff-project.md'),
+    },
+    merged: {
+      md: path.join(reportsDir, 'diff-merged.md'),
+    },
+  },
+  config: {
+    base: path.join(reportsDir, 'config.json'),
+    portal: path.join(reportsDir, 'config.portal.json'),
+  },
+};
+
+function simulateDownloadFromPortal() {
+  return utils.readJsonFile<ReportFragment>(fixturePaths.reports.before.portal);
+}
+
+describe('runInCI', () => {
   const logger: Logger = {
     error: vi.fn(),
     warn: vi.fn(),
@@ -86,6 +107,8 @@ describe('runInCI', () => {
     onStderr: expect.any(Function),
     onStdout: expect.any(Function),
   });
+
+  let includeUploadConfig: boolean;
 
   let git: SimpleGit;
 
@@ -120,7 +143,12 @@ describe('runInCI', () => {
         break;
 
       case 'print-config':
-        let content = await readFile(fixturePaths.config, 'utf8');
+        let content = await readFile(
+          includeUploadConfig
+            ? fixturePaths.config.portal
+            : fixturePaths.config.base,
+          'utf8',
+        );
         if (nxMatch) {
           // simulate effect of custom persist.outputDir per Nx project
           const config = JSON.parse(content) as CoreConfig;
@@ -184,6 +212,8 @@ describe('runInCI', () => {
   const outputDir = path.join(workDir, '.code-pushup', '.ci');
 
   beforeEach(async () => {
+    includeUploadConfig = false;
+
     const originalExecuteProcess = utils.executeProcess;
     executeProcessSpy = vi
       .spyOn(utils, 'executeProcess')
@@ -408,6 +438,79 @@ describe('runInCI', () => {
         );
         expect(api.createComment).not.toHaveBeenCalled();
         expect(api.downloadReportArtifact).toHaveBeenCalledWith(undefined);
+
+        expect(utils.executeProcess).toHaveBeenCalledTimes(3);
+        expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {
+          command: options.bin,
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
+          cwd: workDir,
+          observer: expectedObserver,
+        } satisfies utils.ProcessConfig);
+        expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
+          command: options.bin,
+          args: [],
+          cwd: workDir,
+          observer: expectedObserver,
+        } satisfies utils.ProcessConfig);
+        expect(utils.executeProcess).toHaveBeenNthCalledWith(3, {
+          command: options.bin,
+          args: [
+            'compare',
+            `--before=${path.join(outputDir, '.previous/report.json')}`,
+            `--after=${path.join(outputDir, '.current/report.json')}`,
+            '--persist.format=json',
+            '--persist.format=md',
+          ],
+          cwd: workDir,
+          observer: expectedObserver,
+        } satisfies utils.ProcessConfig);
+
+        expect(logger.error).not.toHaveBeenCalled();
+        expect(logger.warn).not.toHaveBeenCalled();
+        expect(logger.info).toHaveBeenCalled();
+        expect(logger.debug).toHaveBeenCalled();
+      });
+
+      it('should use cached old report from portal when upload is configured', async () => {
+        includeUploadConfig = true;
+
+        const api: ProviderAPIClient = {
+          maxCommentChars: 1_000_000,
+          createComment: vi.fn().mockResolvedValue(mockComment),
+          updateComment: vi.fn(),
+          listComments: vi.fn().mockResolvedValue([]),
+          downloadReportArtifact: vi.fn(),
+        };
+
+        await expect(runInCI(refs, api, options, git)).resolves.toEqual({
+          mode: 'standalone',
+          commentId: mockComment.id,
+          newIssues: [],
+          files: {
+            current: {
+              json: path.join(outputDir, '.current/report.json'),
+              md: path.join(outputDir, '.current/report.md'),
+            },
+            previous: {
+              json: path.join(outputDir, '.previous/report.json'),
+            },
+            comparison: {
+              json: path.join(outputDir, '.comparison/report-diff.json'),
+              md: path.join(outputDir, '.comparison/report-diff.md'),
+            },
+          },
+        } satisfies RunResult);
+
+        expect(downloadFromPortal).toHaveBeenCalledWith({
+          server: 'https://api.code-pushup.dunder-mifflin.org/graphql',
+          apiKey: 'cp_abcdef0123456789',
+          parameters: {
+            organization: 'dunder-mifflin',
+            project: 'website',
+          },
+        });
+
+        expect(api.downloadReportArtifact).not.toHaveBeenCalled();
 
         expect(utils.executeProcess).toHaveBeenCalledTimes(3);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {

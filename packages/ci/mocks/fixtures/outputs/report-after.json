@@ -3,7 +3,7 @@
     "hash": "99781f731759ef36b2fb7e4a39703965904f5376",
     "message": "Convert JS file to TS",
     "date": "2024-10-14T09:55:21.000Z",
-    "author": "John Doe"
+    "author": "John Doe <john.doe@example.com>"
   },
   "packageName": "@code-pushup/core",
   "version": "0.51.0",

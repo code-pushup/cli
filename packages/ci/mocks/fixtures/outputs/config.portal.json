@@ -1,0 +1,27 @@
+{
+  "persist": {
+    "outputDir": ".code-pushup",
+    "filename": "report",
+    "format": ["json", "md"]
+  },
+  "upload": {
+    "server": "https://api.code-pushup.dunder-mifflin.org/graphql",
+    "apiKey": "cp_abcdef0123456789",
+    "organization": "dunder-mifflin",
+    "project": "website"
+  },
+  "categories": [],
+  "plugins": [
+    {
+      "title": "TypeScript migration",
+      "slug": "ts-migration",
+      "icon": "typescript",
+      "audits": [
+        {
+          "slug": "ts-files",
+          "title": "Source files converted from JavaScript to TypeScript"
+        }
+      ]
+    }
+  ]
+}
