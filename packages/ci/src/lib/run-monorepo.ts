@@ -163,7 +163,7 @@ async function compareProjectsInBulk(
 ): Promise<ProjectRunResult[]> {
   const projectReportsWithCache = await Promise.all(
     currProjectReports.map(async ({ project, ctx, reports, config }) => {
-      const args = { project, base, ctx, env };
+      const args = { project, config, base, ctx, env };
       const [currReport, prevReport] = await Promise.all([
         readFile(reports.json, 'utf8').then(
           (content): ReportData<'current'> => ({
