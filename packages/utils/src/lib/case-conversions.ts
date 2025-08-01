@@ -97,5 +97,13 @@ export function toSentenceCase(input: string): string {
 }
 
 export function capitalize<T extends string>(text: T): Capitalize<T> {
-  return `${text.charAt(0).toLocaleUpperCase()}${text.slice(1).toLowerCase()}` as Capitalize<T>;
+  return `${text.charAt(0).toUpperCase()}${text.slice(1).toLowerCase()}` as Capitalize<T>;
+}
+
+export function lowercase<T extends string>(text: T): Lowercase<T> {
+  return text.toLowerCase() as Lowercase<T>;
+}
+
+export function uppercase<T extends string>(text: T): Uppercase<T> {
+  return text.toUpperCase() as Uppercase<T>;
 }

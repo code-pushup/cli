@@ -3,8 +3,10 @@ export {
   camelCaseToKebabCase,
   capitalize,
   kebabCaseToCamelCase,
+  lowercase,
   toSentenceCase,
   toTitleCase,
+  uppercase,
 } from './lib/case-conversions.js';
 export { filesCoverageToTree, type FileCoverage } from './lib/coverage-tree.js';
 export { createRunnerFiles } from './lib/create-runner-files.js';
