@@ -2,7 +2,6 @@
 import { readFile } from 'node:fs/promises';
 import type { SimpleGit } from 'simple-git';
 import {
-  type CoreConfig,
   DEFAULT_PERSIST_FORMAT,
   type Report,
   type ReportsDiff,
@@ -13,13 +12,14 @@ import {
 } from '@code-pushup/utils';
 import {
   type CommandContext,
+  type EnhancedPersistConfig,
   createCommandContext,
+  parsePersistConfig,
   persistedFilesFromConfig,
   runCollect,
   runCompare,
   runPrintConfig,
 } from './cli/index.js';
-import { parsePersistConfig } from './cli/persist.js';
 import { DEFAULT_SETTINGS } from './constants.js';
 import { listChangedFiles, normalizeGitRef } from './git.js';
 import { type SourceFileIssue, filterRelevantIssues } from './issues.js';
@@ -53,7 +53,7 @@ export type CompareReportsArgs = {
   base: GitBranch;
   currReport: ReportData<'current'>;
   prevReport: ReportData<'previous'>;
-  config: Pick<CoreConfig, 'persist'>;
+  config: EnhancedPersistConfig;
 };
 
 export type BaseReportArgs = {
@@ -114,7 +114,7 @@ export async function runOnProject(
 
   const config = await printPersistConfig(ctx);
   logger.debug(
-    `Loaded persist config from print-config command - ${JSON.stringify(config.persist)}`,
+    `Loaded persist and upload configs from print-config command - ${JSON.stringify(config)}`,
   );
 
   await runCollect(ctx, { hasFormats: hasDefaultPersistFormats(config) });
@@ -300,7 +300,7 @@ export async function runInBaseBranch<T>(
 
 export async function checkPrintConfig(
   args: BaseReportArgs,
-): Promise<Pick<CoreConfig, 'persist'> | null> {
+): Promise<EnhancedPersistConfig | null> {
   const {
     project,
     ctx,
@@ -329,13 +329,13 @@ export async function checkPrintConfig(
 
 export async function printPersistConfig(
   ctx: CommandContext,
-): Promise<Pick<CoreConfig, 'persist'>> {
+): Promise<EnhancedPersistConfig> {
   const json = await runPrintConfig(ctx);
   return parsePersistConfig(json);
 }
 
 export function hasDefaultPersistFormats(
-  config: Pick<CoreConfig, 'persist'>,
+  config: EnhancedPersistConfig,
 ): boolean {
   const formats = config.persist?.format;
   return (

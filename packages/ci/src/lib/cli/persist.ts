@@ -7,11 +7,14 @@ import {
   DEFAULT_PERSIST_OUTPUT_DIR,
   type Format,
   persistConfigSchema,
+  uploadConfigSchema,
 } from '@code-pushup/models';
-import { objectFromEntries, stringifyError } from '@code-pushup/utils';
+import { objectFromEntries } from '@code-pushup/utils';
+
+export type EnhancedPersistConfig = Pick<CoreConfig, 'persist' | 'upload'>;
 
 export function persistedFilesFromConfig(
-  config: Pick<CoreConfig, 'persist'>,
+  config: EnhancedPersistConfig,
   { isDiff, directory }: { isDiff?: boolean; directory: string },
 ): Record<Format, string> {
   const {
@@ -36,11 +39,16 @@ export function persistedFilesFromConfig(
 
 export async function parsePersistConfig(
   json: unknown,
-): Promise<Pick<CoreConfig, 'persist'>> {
-  const schema = z.object({ persist: persistConfigSchema.optional() });
+): Promise<EnhancedPersistConfig> {
+  const schema = z.object({
+    persist: persistConfigSchema.optional(),
+    upload: uploadConfigSchema.optional(),
+  });
   const result = await schema.safeParseAsync(json);
   if (result.error) {
-    throw new Error(`Invalid persist config - ${stringifyError(result.error)}`);
+    throw new Error(
+      `Code PushUp config is invalid:\n${z.prettifyError(result.error)}`,
+    );
   }
   return result.data;
 }
