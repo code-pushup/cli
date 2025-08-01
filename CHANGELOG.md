@@ -1,3 +1,16 @@
+## 0.71.0 (2025-08-01)
+
+### 🚀 Features
+
+- **ci:** download report from graphql api and convert to report.json format ([d35cd7a0](https://github.com/code-pushup/cli/commit/d35cd7a0))
+- **ci:** parse upload along with persist in print-config commands ([a73bf21b](https://github.com/code-pushup/cli/commit/a73bf21b))
+- **ci:** download previous report from portal if available ([918eb0d5](https://github.com/code-pushup/cli/commit/918eb0d5))
+- **utils:** add type helpers for lower/upper case conversions ([50483748](https://github.com/code-pushup/cli/commit/50483748))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.70.0 (2025-07-31)
 
 ### 🚀 Features
