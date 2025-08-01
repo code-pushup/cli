@@ -160,4 +160,30 @@ describe('eslintPlugin', () => {
       eslintPlugin({ eslintrc: '.eslintrc.yml', patterns: '**/*.js' }),
     ).rejects.toThrow(/Failed to load url .*\.eslintrc.yml/);
   });
+
+  it('should initialize with artifact options', async () => {
+    cwdSpy.mockReturnValue(path.join(fixturesDir, 'todos-app'));
+    const plugin = await eslintPlugin(
+      {
+        eslintrc: 'eslint.config.js',
+        patterns: ['src/**/*.js'],
+      },
+      {
+        artifacts: {
+          artifactsPaths: './artifacts/eslint-output.json',
+          generateArtifactsCommand: 'echo "Generating artifacts"',
+        },
+      },
+    );
+
+    expect(typeof plugin.runner).toBe('object');
+    const runnerConfig = plugin.runner as {
+      command: string;
+      args?: string[];
+      outputFile: string;
+    };
+    expect(runnerConfig.command).toBe('node');
+    expect(runnerConfig.args).toContain('echo "Generating artifacts"');
+    expect(runnerConfig.outputFile).toBe('./artifacts/eslint-output.json');
+  });
 });
