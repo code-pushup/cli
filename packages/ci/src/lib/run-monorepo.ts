@@ -1,5 +1,4 @@
 import { readFile } from 'node:fs/promises';
-import type { CoreConfig } from '@code-pushup/models';
 import {
   type ExcludeNullableProps,
   asyncSequential,
@@ -7,6 +6,7 @@ import {
 } from '@code-pushup/utils';
 import {
   type CommandContext,
+  type EnhancedPersistConfig,
   createCommandContext,
   persistedFilesFromConfig,
   runCollect,
@@ -88,7 +88,7 @@ export async function runInMonorepoMode(
 type ProjectReport = {
   project: ProjectConfig;
   reports: OutputFiles;
-  config: Pick<CoreConfig, 'persist'>;
+  config: EnhancedPersistConfig;
   ctx: CommandContext;
 };
 
@@ -125,7 +125,7 @@ async function runProjectsInBulk(
   const hasFormats = allProjectsHaveDefaultPersistFormats(currProjectConfigs);
   logger.debug(
     [
-      `Loaded ${currProjectConfigs.length} persist configs by running print-config command for each project.`,
+      `Loaded ${currProjectConfigs.length} persist and upload configs by running print-config command for each project.`,
       hasFormats
         ? 'Every project has default persist formats.'
         : 'Not all projects have default persist formats.',
@@ -279,7 +279,7 @@ async function collectPreviousReports(
 async function savePreviousProjectReport(args: {
   name: string;
   ctx: CommandContext;
-  config: Pick<CoreConfig, 'persist'>;
+  config: EnhancedPersistConfig;
   settings: Settings;
 }): Promise<[string, ReportData<'previous'>]> {
   const { name, ctx, config, settings } = args;
@@ -320,7 +320,7 @@ async function collectMany(
 }
 
 export function allProjectsHaveDefaultPersistFormats(
-  projects: { config: Pick<CoreConfig, 'persist'> }[],
+  projects: { config: EnhancedPersistConfig }[],
 ): boolean {
   return projects.every(({ config }) => hasDefaultPersistFormats(config));
 }
