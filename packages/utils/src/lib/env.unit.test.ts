@@ -7,6 +7,7 @@ describe('isEnvVarEnabled', () => {
   });
 
   it('should consider missing variable disabled', () => {
+    vi.stubEnv('CP_VERBOSE', undefined!);
     expect(isEnvVarEnabled('CP_VERBOSE')).toBe(false);
   });
 
