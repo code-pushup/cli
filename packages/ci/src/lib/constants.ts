@@ -14,4 +14,5 @@ export const DEFAULT_SETTINGS: Settings = {
   logger: console,
   nxProjectsFilter: '--with-target={task}',
   skipComment: false,
+  configPatterns: null,
 };

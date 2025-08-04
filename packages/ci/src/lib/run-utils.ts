@@ -7,6 +7,7 @@ import {
   type ReportsDiff,
 } from '@code-pushup/models';
 import {
+  interpolate,
   removeUndefinedAndEmptyProps,
   stringifyError,
 } from '@code-pushup/utils';
@@ -24,6 +25,7 @@ import { DEFAULT_SETTINGS } from './constants.js';
 import { listChangedFiles, normalizeGitRef } from './git.js';
 import { type SourceFileIssue, filterRelevantIssues } from './issues.js';
 import type {
+  ConfigPatterns,
   GitBranch,
   GitRefs,
   Options,
@@ -76,9 +78,8 @@ export async function createRunEnv(
   options: Options | undefined,
   git: SimpleGit,
 ): Promise<RunEnv> {
-  const inferredVerbose: boolean = Boolean(
-    options?.debug === true || options?.silent === false,
-  );
+  const inferredVerbose: boolean =
+    options?.debug === true || options?.silent === false;
   // eslint-disable-next-line functional/immutable-data
   process.env['CP_VERBOSE'] = `${inferredVerbose}`;
 
@@ -114,9 +115,13 @@ export async function runOnProject(
     logger.info(`Running Code PushUp on monorepo project ${project.name}`);
   }
 
-  const config = await printPersistConfig(ctx);
+  const config = settings.configPatterns
+    ? configFromPatterns(settings.configPatterns, project)
+    : await printPersistConfig(ctx);
   logger.debug(
-    `Loaded persist and upload configs from print-config command - ${JSON.stringify(config)}`,
+    settings.configPatterns
+      ? `Parsed persist and upload configs from configPatterns option - ${JSON.stringify(config)}`
+      : `Loaded persist and upload configs from print-config command - ${JSON.stringify(config)}`,
   );
 
   await runCollect(ctx, { hasFormats: hasDefaultPersistFormats(config) });
@@ -216,7 +221,7 @@ export async function collectPreviousReport(
 ): Promise<ReportData<'previous'> | null> {
   const { ctx, env, base, project } = args;
   const { settings } = env;
-  const { logger } = settings;
+  const { logger, configPatterns } = settings;
 
   const cachedBaseReport = await loadCachedBaseReport(args);
   if (cachedBaseReport) {
@@ -224,7 +229,9 @@ export async function collectPreviousReport(
   }
 
   return runInBaseBranch(base, env, async () => {
-    const config = await checkPrintConfig(args);
+    const config = configPatterns
+      ? configFromPatterns(configPatterns, project)
+      : await checkPrintConfig(args);
     if (!config) {
       return null;
     }
@@ -397,6 +404,32 @@ export function hasDefaultPersistFormats(
     formats == null ||
     DEFAULT_PERSIST_FORMAT.every(format => formats.includes(format))
   );
+}
+
+export function configFromPatterns(
+  configPatterns: ConfigPatterns,
+  project: ProjectConfig | null,
+): ConfigPatterns {
+  const { persist, upload } = configPatterns;
+  const variables = {
+    projectName: project?.name ?? '',
+  };
+  return {
+    persist: {
+      outputDir: interpolate(persist.outputDir, variables),
+      filename: interpolate(persist.filename, variables),
+      format: persist.format,
+    },
+    ...(upload && {
+      upload: {
+        server: upload.server,
+        apiKey: upload.apiKey,
+        organization: interpolate(upload.organization, variables),
+        project: interpolate(upload.project, variables),
+        ...(upload.timeout != null && { timeout: upload.timeout }),
+      },
+    }),
+  };
 }
 
 export async function findNewIssues(

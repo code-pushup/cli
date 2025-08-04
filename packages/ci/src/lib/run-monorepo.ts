@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { readFile } from 'node:fs/promises';
 import {
   type ExcludeNullableProps,
@@ -32,6 +33,7 @@ import {
   type RunEnv,
   checkPrintConfig,
   compareReports,
+  configFromPatterns,
   hasDefaultPersistFormats,
   loadCachedBaseReport,
   printPersistConfig,
@@ -85,11 +87,14 @@ export async function runInMonorepoMode(
   };
 }
 
-type ProjectReport = {
+type ProjectEnv = {
   project: ProjectConfig;
-  reports: OutputFiles;
   config: EnhancedPersistConfig;
   ctx: CommandContext;
+};
+
+type ProjectReport = ProjectEnv & {
+  reports: OutputFiles;
 };
 
 function runProjectsIndividually(
@@ -117,25 +122,12 @@ async function runProjectsInBulk(
     `Running on ${projects.length} projects in bulk (parallel: ${settings.parallel})`,
   );
 
-  const currProjectConfigs = await asyncSequential(projects, async project => {
-    const ctx = createCommandContext(settings, project);
-    const config = await printPersistConfig(ctx);
-    return { project, config, ctx };
-  });
-  const hasFormats = allProjectsHaveDefaultPersistFormats(currProjectConfigs);
-  logger.debug(
-    [
-      `Loaded ${currProjectConfigs.length} persist and upload configs by running print-config command for each project.`,
-      hasFormats
-        ? 'Every project has default persist formats.'
-        : 'Not all projects have default persist formats.',
-    ].join(' '),
-  );
+  const { projectEnvs, hasFormats } = await loadProjectEnvs(projects, settings);
 
   await collectMany(runManyCommand, env, { hasFormats });
 
   const currProjectReports = await Promise.all(
-    currProjectConfigs.map(
+    projectEnvs.map(
       async ({ project, config, ctx }): Promise<ProjectReport> => {
         const reports = await saveOutputFiles({
           project,
@@ -153,6 +145,45 @@ async function runProjectsInBulk(
   }
 
   return compareProjectsInBulk(currProjectReports, base, runManyCommand, env);
+}
+
+async function loadProjectEnvs(
+  projects: ProjectConfig[],
+  settings: Settings,
+): Promise<{
+  projectEnvs: ProjectEnv[];
+  hasFormats: boolean;
+}> {
+  const { logger, configPatterns } = settings;
+
+  const projectEnvs: ProjectEnv[] = configPatterns
+    ? projects.map(
+        (project): ProjectEnv => ({
+          project,
+          config: configFromPatterns(configPatterns, project),
+          ctx: createCommandContext(settings, project),
+        }),
+      )
+    : await asyncSequential(projects, async (project): Promise<ProjectEnv> => {
+        const ctx = createCommandContext(settings, project);
+        const config = await printPersistConfig(ctx);
+        return { project, config, ctx };
+      });
+
+  const hasFormats = allProjectsHaveDefaultPersistFormats(projectEnvs);
+
+  logger.debug(
+    [
+      configPatterns
+        ? `Parsed ${projectEnvs.length} persist and upload configs by interpolating configPatterns option for each project.`
+        : `Loaded ${projectEnvs.length} persist and upload configs by running print-config command for each project.`,
+      hasFormats
+        ? 'Every project has default persist formats.'
+        : 'Not all projects have default persist formats.',
+    ].join(' '),
+  );
+
+  return { projectEnvs, hasFormats };
 }
 
 async function compareProjectsInBulk(
@@ -228,27 +259,29 @@ async function collectPreviousReports(
   env: RunEnv,
 ): Promise<Record<string, ReportData<'previous'>>> {
   const { settings } = env;
-  const { logger } = settings;
+  const { logger, configPatterns } = settings;
 
   if (uncachedProjectReports.length === 0) {
     return {};
   }
 
   return runInBaseBranch(base, env, async () => {
-    const uncachedProjectConfigs = await asyncSequential(
-      uncachedProjectReports,
-      async args => ({
-        name: args.project.name,
-        ctx: args.ctx,
-        config: await checkPrintConfig(args),
-      }),
-    );
+    const uncachedProjectConfigs = configPatterns
+      ? uncachedProjectReports.map(({ project, ctx }) => {
+          const config = configFromPatterns(configPatterns, project);
+          return { project, ctx, config };
+        })
+      : await asyncSequential(uncachedProjectReports, async args => ({
+          project: args.project,
+          ctx: args.ctx,
+          config: await checkPrintConfig(args),
+        }));
 
     const validProjectConfigs =
       uncachedProjectConfigs.filter(hasNoNullableProps);
-    const onlyProjects = validProjectConfigs.map(({ name }) => name);
-    const invalidProjects = uncachedProjectConfigs
-      .map(({ name }) => name)
+    const onlyProjects = validProjectConfigs.map(({ project }) => project.name);
+    const invalidProjects: string[] = uncachedProjectConfigs
+      .map(({ project }) => project.name)
       .filter(name => !onlyProjects.includes(name));
     if (invalidProjects.length > 0) {
       logger.debug(
@@ -277,19 +310,19 @@ async function collectPreviousReports(
 }
 
 async function savePreviousProjectReport(args: {
-  name: string;
+  project: ProjectConfig;
   ctx: CommandContext;
   config: EnhancedPersistConfig;
   settings: Settings;
 }): Promise<[string, ReportData<'previous'>]> {
-  const { name, ctx, config, settings } = args;
+  const { project, ctx, config, settings } = args;
   const files = await saveReportFiles({
-    project: { name },
+    project,
     type: 'previous',
     files: persistedFilesFromConfig(config, ctx),
     settings,
   });
-  return [name, files];
+  return [project.name, files];
 }
 
 async function collectMany(
