@@ -1,4 +1,4 @@
-import type { Format } from '@code-pushup/models';
+import type { Format, PersistConfig, UploadConfig } from '@code-pushup/models';
 import type { SourceFileIssue } from './issues.js';
 import type { MonorepoTool } from './monorepo/index.js';
 
@@ -20,6 +20,7 @@ export type Options = {
   detectNewIssues?: boolean;
   logger?: Logger;
   skipComment?: boolean;
+  configPatterns?: ConfigPatterns | null;
 };
 
 /**
@@ -72,6 +73,15 @@ export type Logger = {
   warn: (message: string) => void;
   info: (message: string) => void;
   debug: (message: string) => void;
+};
+
+/**
+ * Code PushUp config patterns which hold for every project in monorepo.
+ * Providing this information upfront makes CI runs faster (skips print-config).
+ */
+export type ConfigPatterns = {
+  persist: Required<PersistConfig>;
+  upload?: UploadConfig;
 };
 
 /**

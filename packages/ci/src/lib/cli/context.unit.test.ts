@@ -24,6 +24,7 @@ describe('createCommandContext', () => {
           silent: false,
           task: 'code-pushup',
           skipComment: false,
+          configPatterns: null,
         },
         null,
       ),
@@ -52,6 +53,7 @@ describe('createCommandContext', () => {
           silent: false,
           task: 'code-pushup',
           skipComment: false,
+          configPatterns: null,
         },
         {
           name: 'ui',
