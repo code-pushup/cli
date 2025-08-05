@@ -1,5 +1,5 @@
 import type { Options } from 'yargs';
-import type { CompareOptions } from './compare.model.js';
+import type { CompareOptions } from '@code-pushup/core';
 
 export function yargsCompareOptionsDefinition(): Record<
   keyof CompareOptions,
