@@ -5,7 +5,7 @@
 _Union of the following possible types:_
 
 - `string` (_min length: 1_)
-- _Object with properties:_<ul><li>`command`: `string` (_min length: 1_) - Generate artifact files</li><li>`args`: `Array<string>`</li></ul>
+- _Object with properties:_<ul><li>**`command`** (\*): `string` (_min length: 1_) - Generate artifact files</li><li>`args`: `Array<string>`</li></ul>
 
 ## AuditDetails
 
@@ -13,11 +13,11 @@ Detailed information
 
 _Object containing the following properties:_
 
-| Property | Description                | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| :------- | :------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `issues` | List of findings           | _Array of [Issue](#issue) items_                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `table`  | Table of related findings  | _Object with properties:_<ul><li>`title`: `string` - Display title for table</li><li>`columns`: _Array of [TableAlignment](#tablealignment) items_</li><li>`rows`: _Array of [TableRowPrimitive](#tablerowprimitive) items_</li></ul> _or_ _Object with properties:_<ul><li>`title`: `string` - Display title for table</li><li>`columns`: _Array of [TableAlignment](#tablealignment) items_ _or_ _Array of [TableColumnObject](#tablecolumnobject) items_</li><li>`rows`: _Array of [TableRowObject](#tablerowobject) items_</li></ul> |
-| `trees`  | Findings in tree structure | _Array of [Tree](#tree) items_                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Property | Description                | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| :------- | :------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `issues` | List of findings           | _Array of [Issue](#issue) items_                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `table`  | Table of related findings  | _Object with properties:_<ul><li>`title`: `string` - Display title for table</li><li>`columns`: _Array of [TableAlignment](#tablealignment) items_</li><li>**`rows`** (\*): _Array of [TableRowPrimitive](#tablerowprimitive) items_</li></ul> _or_ _Object with properties:_<ul><li>`title`: `string` - Display title for table</li><li>`columns`: _Array of [TableAlignment](#tablealignment) items_ _or_ _Array of [TableColumnObject](#tablecolumnobject) items_</li><li>**`rows`** (\*): _Array of [TableRowObject](#tablerowobject) items_</li></ul> |
+| `trees`  | Findings in tree structure | _Array of [Tree](#tree) items_                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 _All properties are optional._
 
@@ -25,15 +25,15 @@ _All properties are optional._
 
 _Object containing the following properties:_
 
-| Property                 | Description                          | Type                                                                                                                                                                                                                                                                                                                 |
-| :----------------------- | :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`slug`** (\*)          | Unique ID (human-readable, URL-safe) | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)                                                                                                                                                                                                                                                    |
-| **`title`** (\*)         | Descriptive name                     | `string` (_max length: 256_)                                                                                                                                                                                                                                                                                         |
-| `docsUrl`                | Documentation site                   | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                                                              |
-| **`scores`** (\*)        | Score comparison                     | _Object with properties:_<ul><li>`before`: `number` (_≥0, ≤1_) - Value between 0 and 1 (source commit)</li><li>`after`: `number` (_≥0, ≤1_) - Value between 0 and 1 (target commit)</li><li>`diff`: `number` (_≥-1, ≤1_) - Score change (`scores.after - scores.before`)</li></ul>                                   |
-| **`plugin`** (\*)        | Plugin which defines it              | _Object with properties:_<ul><li>`slug`: `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) - Unique plugin slug within core config</li><li>`title`: `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `string` (_url_) (_optional_) _or_ `''` - Plugin documentation site</li></ul> |
-| **`values`** (\*)        | Audit `value` comparison             | _Object with properties:_<ul><li>`before`: `number` (_≥0_) - Raw numeric value (source commit)</li><li>`after`: `number` (_≥0_) - Raw numeric value (target commit)</li><li>`diff`: `number` - Value change (`values.after - values.before`)</li></ul>                                                               |
-| **`displayValues`** (\*) | Audit `displayValue` comparison      | _Object with properties:_<ul><li>`before`: `string` - Formatted value (e.g. '0.9 s', '2.1 MB') (source commit)</li><li>`after`: `string` - Formatted value (e.g. '0.9 s', '2.1 MB') (target commit)</li></ul>                                                                                                        |
+| Property                 | Description                          | Type                                                                                                                                                                                                                                                                                                                                   |
+| :----------------------- | :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`slug`** (\*)          | Unique ID (human-readable, URL-safe) | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)                                                                                                                                                                                                                                                                      |
+| **`title`** (\*)         | Descriptive name                     | `string` (_max length: 256_)                                                                                                                                                                                                                                                                                                           |
+| `docsUrl`                | Documentation site                   | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                                                                                |
+| **`scores`** (\*)        | Score comparison                     | _Object with properties:_<ul><li>**`before`** (\*): `number` (_≥0, ≤1_) - Value between 0 and 1 (source commit)</li><li>**`after`** (\*): `number` (_≥0, ≤1_) - Value between 0 and 1 (target commit)</li><li>**`diff`** (\*): `number` (_≥-1, ≤1_) - Score change (`scores.after - scores.before`)</li></ul>                          |
+| **`plugin`** (\*)        | Plugin which defines it              | _Object with properties:_<ul><li>**`slug`** (\*): `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) - Unique plugin slug within core config</li><li>**`title`** (\*): `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `string` (_url_) (_optional_) _or_ `''` - Plugin documentation site</li></ul> |
+| **`values`** (\*)        | Audit `value` comparison             | _Object with properties:_<ul><li>**`before`** (\*): `number` (_≥0_) - Raw numeric value (source commit)</li><li>**`after`** (\*): `number` (_≥0_) - Raw numeric value (target commit)</li><li>**`diff`** (\*): `number` - Value change (`values.after - values.before`)</li></ul>                                                      |
+| **`displayValues`** (\*) | Audit `displayValue` comparison      | _Object with properties:_<ul><li>`before`: `string` - Formatted value (e.g. '0.9 s', '2.1 MB') (source commit)</li><li>`after`: `string` - Formatted value (e.g. '0.9 s', '2.1 MB') (target commit)</li></ul>                                                                                                                          |
 
 _(\*) Required._
 
@@ -54,6 +54,8 @@ _Object containing the following properties:_
 _(\*) Required._
 
 ## AuditOutputs
+
+List of JSON formatted audit output emitted by the runner process of a plugin
 
 _Array of [AuditOutput](#auditoutput) items._
 
@@ -79,15 +81,15 @@ _(\*) Required._
 
 _Object containing the following properties:_
 
-| Property          | Description                              | Type                                                                                                                                                                                                                                                                                                                 |
-| :---------------- | :--------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`slug`** (\*)   | Unique ID (human-readable, URL-safe)     | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)                                                                                                                                                                                                                                                    |
-| **`title`** (\*)  | Descriptive name                         | `string` (_max length: 256_)                                                                                                                                                                                                                                                                                         |
-| `docsUrl`         | Documentation site                       | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                                                              |
-| **`plugin`** (\*) | Plugin which defines it                  | _Object with properties:_<ul><li>`slug`: `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) - Unique plugin slug within core config</li><li>`title`: `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `string` (_url_) (_optional_) _or_ `''` - Plugin documentation site</li></ul> |
-| **`score`** (\*)  | Value between 0 and 1                    | `number` (_≥0, ≤1_)                                                                                                                                                                                                                                                                                                  |
-| **`value`** (\*)  | Raw numeric value                        | `number` (_≥0_)                                                                                                                                                                                                                                                                                                      |
-| `displayValue`    | Formatted value (e.g. '0.9 s', '2.1 MB') | `string`                                                                                                                                                                                                                                                                                                             |
+| Property          | Description                              | Type                                                                                                                                                                                                                                                                                                                                   |
+| :---------------- | :--------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`slug`** (\*)   | Unique ID (human-readable, URL-safe)     | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)                                                                                                                                                                                                                                                                      |
+| **`title`** (\*)  | Descriptive name                         | `string` (_max length: 256_)                                                                                                                                                                                                                                                                                                           |
+| `docsUrl`         | Documentation site                       | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                                                                                |
+| **`plugin`** (\*) | Plugin which defines it                  | _Object with properties:_<ul><li>**`slug`** (\*): `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) - Unique plugin slug within core config</li><li>**`title`** (\*): `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `string` (_url_) (_optional_) _or_ `''` - Plugin documentation site</li></ul> |
+| **`score`** (\*)  | Value between 0 and 1                    | `number` (_≥0, ≤1_)                                                                                                                                                                                                                                                                                                                    |
+| **`value`** (\*)  | Raw numeric value                        | `number` (_≥0_)                                                                                                                                                                                                                                                                                                                        |
+| `displayValue`    | Formatted value (e.g. '0.9 s', '2.1 MB') | `string`                                                                                                                                                                                                                                                                                                                               |
 
 _(\*) Required._
 
@@ -151,12 +153,12 @@ _(\*) Required._
 
 _Object containing the following properties:_
 
-| Property          | Description                          | Type                                                                                                                                                                                                                                                                               |
-| :---------------- | :----------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`slug`** (\*)   | Unique ID (human-readable, URL-safe) | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)                                                                                                                                                                                                                  |
-| **`title`** (\*)  | Descriptive name                     | `string` (_max length: 256_)                                                                                                                                                                                                                                                       |
-| `docsUrl`         | Documentation site                   | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                            |
-| **`scores`** (\*) | Score comparison                     | _Object with properties:_<ul><li>`before`: `number` (_≥0, ≤1_) - Value between 0 and 1 (source commit)</li><li>`after`: `number` (_≥0, ≤1_) - Value between 0 and 1 (target commit)</li><li>`diff`: `number` (_≥-1, ≤1_) - Score change (`scores.after - scores.before`)</li></ul> |
+| Property          | Description                          | Type                                                                                                                                                                                                                                                                                                          |
+| :---------------- | :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **`slug`** (\*)   | Unique ID (human-readable, URL-safe) | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)                                                                                                                                                                                                                                             |
+| **`title`** (\*)  | Descriptive name                     | `string` (_max length: 256_)                                                                                                                                                                                                                                                                                  |
+| `docsUrl`         | Documentation site                   | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                                                       |
+| **`scores`** (\*) | Score comparison                     | _Object with properties:_<ul><li>**`before`** (\*): `number` (_≥0, ≤1_) - Value between 0 and 1 (source commit)</li><li>**`after`** (\*): `number` (_≥0, ≤1_) - Value between 0 and 1 (target commit)</li><li>**`diff`** (\*): `number` (_≥-1, ≤1_) - Score change (`scores.after - scores.before`)</li></ul> |
 
 _(\*) Required._
 
@@ -196,7 +198,7 @@ _Object containing the following properties:_
 | :----------------- | :------------------------------------- | :------------------------------------ |
 | **`hash`** (\*)    | Commit SHA (full)                      | `string` (_regex: `/^[\da-f]{40}$/`_) |
 | **`message`** (\*) | Commit message                         | `string`                              |
-| **`date`** (\*)    | Date and time when commit was authored | `Date` (_nullable_)                   |
+| **`date`** (\*)    | Date and time when commit was authored | `Date`                                |
 | **`author`** (\*)  | Commit author name                     | `string`                              |
 
 _(\*) Required._
@@ -210,7 +212,7 @@ _Object containing the following properties:_
 | **`plugins`** (\*) | List of plugins to be used (official, community-provided, or custom) | _Array of at least 1 [PluginConfig](#pluginconfig) items_ |
 | `persist`          |                                                                      | [PersistConfig](#persistconfig)                           |
 | `upload`           |                                                                      | [UploadConfig](#uploadconfig)                             |
-| `categories`       |                                                                      | _Array of [CategoryConfig](#categoryconfig) items_        |
+| `categories`       | Categorization of individual audits                                  | _Array of [CategoryConfig](#categoryconfig) items_        |
 
 _(\*) Required._
 
@@ -235,11 +237,11 @@ _(\*) Required._
 
 _Object containing the following properties:_
 
-| Property          | Description                                               | Type                                                                                                                                                                                                        |
-| :---------------- | :-------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`name`** (\*)   | File or folder name                                       | `string` (_min length: 1_)                                                                                                                                                                                  |
-| **`values`** (\*) | Coverage metrics for file/folder                          | _Object with properties:_<ul><li>`coverage`: `number` (_≥0, ≤1_) - Coverage ratio</li><li>`missing`: _Array of [CoverageTreeMissingLOC](#coveragetreemissingloc) items_ - Uncovered lines of code</li></ul> |
-| `children`        | Files and folders contained in this folder (omit if file) | _Array of [CoverageTreeNode](#coveragetreenode) items_                                                                                                                                                      |
+| Property          | Description                                               | Type                                                                                                                                                                                                                 |
+| :---------------- | :-------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`name`** (\*)   | File or folder name                                       | `string` (_min length: 1_)                                                                                                                                                                                           |
+| **`values`** (\*) | Coverage metrics for file/folder                          | _Object with properties:_<ul><li>**`coverage`** (\*): `number` (_≥0, ≤1_) - Coverage ratio</li><li>`missing`: _Array of [CoverageTreeMissingLOC](#coveragetreemissingloc) items_ - Uncovered lines of code</li></ul> |
+| `children`        | Files and folders contained in this folder (omit if file) | _Array of [CoverageTreeNode](#coveragetreenode) items_                                                                                                                                                               |
 
 _(\*) Required._
 
@@ -267,7 +269,7 @@ _String which has a minimum length of 1._
 
 ## Format
 
-_Enum string, one of the following possible values:_
+_Enum, one of the following possible values:_
 
 - `'json'`
 - `'md'`
@@ -276,13 +278,13 @@ _Enum string, one of the following possible values:_
 
 _Object containing the following properties:_
 
-| Property          | Description                          | Type                                                                                                                                                                                                                                                                                                                 |
-| :---------------- | :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`slug`** (\*)   | Unique ID (human-readable, URL-safe) | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)                                                                                                                                                                                                                                                    |
-| **`title`** (\*)  | Descriptive name                     | `string` (_max length: 256_)                                                                                                                                                                                                                                                                                         |
-| `docsUrl`         | Documentation site                   | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                                                              |
-| **`scores`** (\*) | Score comparison                     | _Object with properties:_<ul><li>`before`: `number` (_≥0, ≤1_) - Value between 0 and 1 (source commit)</li><li>`after`: `number` (_≥0, ≤1_) - Value between 0 and 1 (target commit)</li><li>`diff`: `number` (_≥-1, ≤1_) - Score change (`scores.after - scores.before`)</li></ul>                                   |
-| **`plugin`** (\*) | Plugin which defines it              | _Object with properties:_<ul><li>`slug`: `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) - Unique plugin slug within core config</li><li>`title`: `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `string` (_url_) (_optional_) _or_ `''` - Plugin documentation site</li></ul> |
+| Property          | Description                          | Type                                                                                                                                                                                                                                                                                                                                   |
+| :---------------- | :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`slug`** (\*)   | Unique ID (human-readable, URL-safe) | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)                                                                                                                                                                                                                                                                      |
+| **`title`** (\*)  | Descriptive name                     | `string` (_max length: 256_)                                                                                                                                                                                                                                                                                                           |
+| `docsUrl`         | Documentation site                   | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                                                                                |
+| **`scores`** (\*) | Score comparison                     | _Object with properties:_<ul><li>**`before`** (\*): `number` (_≥0, ≤1_) - Value between 0 and 1 (source commit)</li><li>**`after`** (\*): `number` (_≥0, ≤1_) - Value between 0 and 1 (target commit)</li><li>**`diff`** (\*): `number` (_≥-1, ≤1_) - Score change (`scores.after - scores.before`)</li></ul>                          |
+| **`plugin`** (\*) | Plugin which defines it              | _Object with properties:_<ul><li>**`slug`** (\*): `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) - Unique plugin slug within core config</li><li>**`title`** (\*): `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `string` (_url_) (_optional_) _or_ `''` - Plugin documentation site</li></ul> |
 
 _(\*) Required._
 
@@ -303,13 +305,13 @@ _(\*) Required._
 
 _Object containing the following properties:_
 
-| Property          | Description                          | Type                                                                                                                                                                                                                                                                                                                 |
-| :---------------- | :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`slug`** (\*)   | Unique ID (human-readable, URL-safe) | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)                                                                                                                                                                                                                                                    |
-| **`title`** (\*)  | Descriptive name                     | `string` (_max length: 256_)                                                                                                                                                                                                                                                                                         |
-| `docsUrl`         | Documentation site                   | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                                                              |
-| **`plugin`** (\*) | Plugin which defines it              | _Object with properties:_<ul><li>`slug`: `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) - Unique plugin slug within core config</li><li>`title`: `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `string` (_url_) (_optional_) _or_ `''` - Plugin documentation site</li></ul> |
-| **`score`** (\*)  | Value between 0 and 1                | `number` (_≥0, ≤1_)                                                                                                                                                                                                                                                                                                  |
+| Property          | Description                          | Type                                                                                                                                                                                                                                                                                                                                   |
+| :---------------- | :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`slug`** (\*)   | Unique ID (human-readable, URL-safe) | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)                                                                                                                                                                                                                                                                      |
+| **`title`** (\*)  | Descriptive name                     | `string` (_max length: 256_)                                                                                                                                                                                                                                                                                                           |
+| `docsUrl`         | Documentation site                   | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                                                                                |
+| **`plugin`** (\*) | Plugin which defines it              | _Object with properties:_<ul><li>**`slug`** (\*): `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) - Unique plugin slug within core config</li><li>**`title`** (\*): `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `string` (_url_) (_optional_) _or_ `''` - Plugin documentation site</li></ul> |
+| **`score`** (\*)  | Value between 0 and 1                | `number` (_≥0, ≤1_)                                                                                                                                                                                                                                                                                                                    |
 
 _(\*) Required._
 
@@ -346,7 +348,7 @@ _(\*) Required._
 
 Severity level
 
-_Enum string, one of the following possible values:_
+_Enum, one of the following possible values:_
 
 - `'info'`
 - `'warning'`
@@ -356,7 +358,7 @@ _Enum string, one of the following possible values:_
 
 Icon from VSCode Material Icons extension
 
-_Enum string, one of the following possible values:_
+_Enum, one of the following possible values:_
 
 <details>
 <summary><i>Expand for full list of 858 values</i></summary>
@@ -1260,10 +1262,21 @@ _Object containing the following properties:_
 | **`slug`** (\*)   | Unique plugin slug within core config     | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_)    |
 | **`icon`** (\*)   | Icon from VSCode Material Icons extension | [MaterialIcon](#materialicon)                                        |
 | **`runner`** (\*) |                                           | [RunnerConfig](#runnerconfig) _or_ [RunnerFunction](#runnerfunction) |
-| **`audits`** (\*) |                                           | _Array of at least 1 [Audit](#audit) items_                          |
-| `groups`          |                                           | _Array of [Group](#group) items_                                     |
+| **`audits`** (\*) | List of audits maintained in a plugin     | _Array of at least 1 [Audit](#audit) items_                          |
+| `groups`          | List of groups                            | _Array of [Group](#group) items_                                     |
+| `context`         | Plugin-specific context data for helpers  | [PluginContext](#plugincontext)                                      |
 
 _(\*) Required._
+
+## PluginContext
+
+Plugin-specific context data for helpers
+
+_Object record with dynamic keys:_
+
+- _keys of type_ `string`
+- _values of type_ `unknown`
+  (_optional_)
 
 ## PluginMeta
 
@@ -1305,17 +1318,19 @@ _(\*) Required._
 
 ## Report
 
+Collect output data
+
 _Object containing the following properties:_
 
-| Property               | Description                               | Type                                                                                                                                                                                                                                                                                                |
-| :--------------------- | :---------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`packageName`** (\*) | NPM package name                          | `string`                                                                                                                                                                                                                                                                                            |
-| **`version`** (\*)     | NPM version of the CLI                    | `string`                                                                                                                                                                                                                                                                                            |
-| **`date`** (\*)        | Start date and time of the collect run    | `string`                                                                                                                                                                                                                                                                                            |
-| **`duration`** (\*)    | Duration of the collect run in ms         | `number`                                                                                                                                                                                                                                                                                            |
-| **`plugins`** (\*)     |                                           | _Array of at least 1 [PluginReport](#pluginreport) items_                                                                                                                                                                                                                                           |
-| `categories`           |                                           | _Array of [CategoryConfig](#categoryconfig) items_                                                                                                                                                                                                                                                  |
-| **`commit`** (\*)      | Git commit for which report was collected | _Object with properties:_<ul><li>`hash`: `string` (_regex: `/^[\da-f]{40}$/`_) - Commit SHA (full)</li><li>`message`: `string` - Commit message</li><li>`date`: `Date` (_nullable_) - Date and time when commit was authored</li><li>`author`: `string` - Commit author name</li></ul> (_nullable_) |
+| Property               | Description                               | Type                                                      |
+| :--------------------- | :---------------------------------------- | :-------------------------------------------------------- |
+| **`packageName`** (\*) | NPM package name                          | `string`                                                  |
+| **`version`** (\*)     | NPM version of the CLI                    | `string`                                                  |
+| **`date`** (\*)        | Start date and time of the collect run    | `string`                                                  |
+| **`duration`** (\*)    | Duration of the collect run in ms         | `number`                                                  |
+| **`plugins`** (\*)     |                                           | _Array of at least 1 [PluginReport](#pluginreport) items_ |
+| `categories`           |                                           | _Array of [CategoryConfig](#categoryconfig) items_        |
+| **`commit`** (\*)      | Git commit for which report was collected | [Commit](#commit) (_nullable_)                            |
 
 _(\*) Required._
 
@@ -1323,18 +1338,18 @@ _(\*) Required._
 
 _Object containing the following properties:_
 
-| Property               | Description                                     | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| :--------------------- | :---------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`commits`** (\*)     | Commits identifying compared reports            | _Object with properties:_<ul><li>`before`: _Object with properties:_<ul><li>`hash`: `string` (_regex: `/^[\da-f]{40}$/`_) - Commit SHA (full)</li><li>`message`: `string` - Commit message</li><li>`date`: `Date` (_nullable_) - Date and time when commit was authored</li><li>`author`: `string` - Commit author name</li></ul> - Git commit (source commit)</li><li>`after`: _Object with properties:_<ul><li>`hash`: `string` (_regex: `/^[\da-f]{40}$/`_) - Commit SHA (full)</li><li>`message`: `string` - Commit message</li><li>`date`: `Date` (_nullable_) - Date and time when commit was authored</li><li>`author`: `string` - Commit author name</li></ul> - Git commit (target commit)</li></ul> (_nullable_) |
-| `portalUrl`            | Link to comparison page in Code PushUp portal   | `string` (_url_)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `label`                | Label (e.g. project name)                       | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| **`categories`** (\*)  | Changes affecting categories                    | _Object with properties:_<ul><li>`changed`: _Array of [CategoryDiff](#categorydiff) items_</li><li>`unchanged`: _Array of [CategoryResult](#categoryresult) items_</li><li>`added`: _Array of [CategoryResult](#categoryresult) items_</li><li>`removed`: _Array of [CategoryResult](#categoryresult) items_</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                     |
-| **`groups`** (\*)      | Changes affecting groups                        | _Object with properties:_<ul><li>`changed`: _Array of [GroupDiff](#groupdiff) items_</li><li>`unchanged`: _Array of [GroupResult](#groupresult) items_</li><li>`added`: _Array of [GroupResult](#groupresult) items_</li><li>`removed`: _Array of [GroupResult](#groupresult) items_</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| **`audits`** (\*)      | Changes affecting audits                        | _Object with properties:_<ul><li>`changed`: _Array of [AuditDiff](#auditdiff) items_</li><li>`unchanged`: _Array of [AuditResult](#auditresult) items_</li><li>`added`: _Array of [AuditResult](#auditresult) items_</li><li>`removed`: _Array of [AuditResult](#auditresult) items_</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| **`packageName`** (\*) | NPM package name                                | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| **`version`** (\*)     | NPM version of the CLI (when `compare` was run) | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| **`date`** (\*)        | Start date and time of the compare run          | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| **`duration`** (\*)    | Duration of the compare run in ms               | `number`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Property               | Description                                     | Type                                                                                                                                                                                                                                                                                                                                                       |
+| :--------------------- | :---------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`commits`** (\*)     | Commits identifying compared reports            | _Object with properties:_<ul><li>**`before`** (\*): [Commit](#commit) - Git commit (source commit)</li><li>**`after`** (\*): [Commit](#commit) - Git commit (target commit)</li></ul> (_nullable_)                                                                                                                                                         |
+| `portalUrl`            | Link to comparison page in Code PushUp portal   | `string` (_url_)                                                                                                                                                                                                                                                                                                                                           |
+| `label`                | Label (e.g. project name)                       | `string`                                                                                                                                                                                                                                                                                                                                                   |
+| **`categories`** (\*)  | Changes affecting categories                    | _Object with properties:_<ul><li>**`changed`** (\*): _Array of [CategoryDiff](#categorydiff) items_</li><li>**`unchanged`** (\*): _Array of [CategoryResult](#categoryresult) items_</li><li>**`added`** (\*): _Array of [CategoryResult](#categoryresult) items_</li><li>**`removed`** (\*): _Array of [CategoryResult](#categoryresult) items_</li></ul> |
+| **`groups`** (\*)      | Changes affecting groups                        | _Object with properties:_<ul><li>**`changed`** (\*): _Array of [GroupDiff](#groupdiff) items_</li><li>**`unchanged`** (\*): _Array of [GroupResult](#groupresult) items_</li><li>**`added`** (\*): _Array of [GroupResult](#groupresult) items_</li><li>**`removed`** (\*): _Array of [GroupResult](#groupresult) items_</li></ul>                         |
+| **`audits`** (\*)      | Changes affecting audits                        | _Object with properties:_<ul><li>**`changed`** (\*): _Array of [AuditDiff](#auditdiff) items_</li><li>**`unchanged`** (\*): _Array of [AuditResult](#auditresult) items_</li><li>**`added`** (\*): _Array of [AuditResult](#auditresult) items_</li><li>**`removed`** (\*): _Array of [AuditResult](#auditresult) items_</li></ul>                         |
+| **`packageName`** (\*) | NPM package name                                | `string`                                                                                                                                                                                                                                                                                                                                                   |
+| **`version`** (\*)     | NPM version of the CLI (when `compare` was run) | `string`                                                                                                                                                                                                                                                                                                                                                   |
+| **`date`** (\*)        | Start date and time of the compare run          | `string`                                                                                                                                                                                                                                                                                                                                                   |
+| **`duration`** (\*)    | Duration of the compare run in ms               | `number`                                                                                                                                                                                                                                                                                                                                                   |
 
 _(\*) Required._
 
@@ -1344,13 +1359,13 @@ How to execute runner
 
 _Object containing the following properties:_
 
-| Property              | Description              | Type                                                                                                                                                                                                  |
-| :-------------------- | :----------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`command`** (\*)    | Shell command to execute | `string`                                                                                                                                                                                              |
-| `args`                |                          | `Array<string>`                                                                                                                                                                                       |
-| **`outputFile`** (\*) | Runner output path       | [FilePath](#filepath)                                                                                                                                                                                 |
-| `outputTransform`     |                          | _Function:_<br /><ul><li>_parameters:_ <ol><li>`unknown` (_optional & nullable_)</li></ol></li><li>_returns:_ [AuditOutputs](#auditoutputs) _or_ _Promise of_ [AuditOutputs](#auditoutputs)</li></ul> |
-| `configFile`          | Runner config path       | [FilePath](#filepath)                                                                                                                                                                                 |
+| Property              | Description              | Type                                                                                                                                                                          |
+| :-------------------- | :----------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`command`** (\*)    | Shell command to execute | `string`                                                                                                                                                                      |
+| `args`                | Command arguments        | `Array<string>`                                                                                                                                                               |
+| **`outputFile`** (\*) | Runner output path       | [FilePath](#filepath)                                                                                                                                                         |
+| `outputTransform`     |                          | _Function:_<br /><ul><li>_parameters:_ <ol><li>`unknown`</li></ol></li><li>_returns:_ [AuditOutputs](#auditoutputs) _or_ _Promise of_ [AuditOutputs](#auditoutputs)</li></ul> |
+| `configFile`          | Runner config path       | [FilePath](#filepath)                                                                                                                                                         |
 
 _(\*) Required._
 
@@ -1383,10 +1398,10 @@ Source file location
 
 _Object containing the following properties:_
 
-| Property        | Description                              | Type                                                                                                                                                                                                                                                           |
-| :-------------- | :--------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`file`** (\*) | Relative path to source file in Git repo | [FilePath](#filepath)                                                                                                                                                                                                                                          |
-| `position`      | Location in file                         | _Object with properties:_<ul><li>`startLine`: `number` (_int, >0_) - Start line</li><li>`startColumn`: `number` (_int, >0_) - Start column</li><li>`endLine`: `number` (_int, >0_) - End line</li><li>`endColumn`: `number` (_int, >0_) - End column</li></ul> |
+| Property        | Description                              | Type                                                                                                                                                                                                                                                                    |
+| :-------------- | :--------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`file`** (\*) | Relative path to source file in Git repo | [FilePath](#filepath)                                                                                                                                                                                                                                                   |
+| `position`      | Location in file                         | _Object with properties:_<ul><li>**`startLine`** (\*): `number` (_int, >0_) - Start line</li><li>`startColumn`: `number` (_int, >0_) - Start column</li><li>`endLine`: `number` (_int, >0_) - End line</li><li>`endColumn`: `number` (_int, >0_) - End column</li></ul> |
 
 _(\*) Required._
 
@@ -1394,7 +1409,7 @@ _(\*) Required._
 
 Cell alignment
 
-_Enum string, one of the following possible values:_
+_Enum, one of the following possible values:_
 
 - `'left'`
 - `'center'`
@@ -1407,8 +1422,7 @@ _Union of the following possible types:_
 - `string`
 - `number`
 - `boolean`
-- `null` (_nullable_)
-  (_optional & nullable_)
+- `null`
 
 _Default value:_ `null`
 
@@ -1428,7 +1442,7 @@ _(\*) Required._
 
 Cell alignment
 
-_Enum string, one of the following possible values:_
+_Enum, one of the following possible values:_
 
 - `'left'`
 - `'center'`
@@ -1441,13 +1455,13 @@ Object row
 _Object record with dynamic keys:_
 
 - _keys of type_ `string`
-- _values of type_ [TableCellValue](#tablecellvalue) (_optional & nullable_)
+- _values of type_ [TableCellValue](#tablecellvalue)
 
 ## TableRowPrimitive
 
 Primitive row
 
-_Array of [TableCellValue](#tablecellvalue) (\_optional & nullable_) items.\_
+_Array of [TableCellValue](#tablecellvalue) items._
 
 ## Tree
 

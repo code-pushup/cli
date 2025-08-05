@@ -1,24 +1,31 @@
 /* eslint-disable max-lines */
 import { readFile } from 'node:fs/promises';
 import type { SimpleGit } from 'simple-git';
-import type { CoreConfig, Report, ReportsDiff } from '@code-pushup/models';
 import {
+  DEFAULT_PERSIST_FORMAT,
+  type Report,
+  type ReportsDiff,
+} from '@code-pushup/models';
+import {
+  interpolate,
   removeUndefinedAndEmptyProps,
   stringifyError,
 } from '@code-pushup/utils';
 import {
   type CommandContext,
+  type EnhancedPersistConfig,
   createCommandContext,
+  parsePersistConfig,
   persistedFilesFromConfig,
   runCollect,
   runCompare,
   runPrintConfig,
 } from './cli/index.js';
-import { parsePersistConfig } from './cli/persist.js';
 import { DEFAULT_SETTINGS } from './constants.js';
 import { listChangedFiles, normalizeGitRef } from './git.js';
 import { type SourceFileIssue, filterRelevantIssues } from './issues.js';
 import type {
+  ConfigPatterns,
   GitBranch,
   GitRefs,
   Options,
@@ -29,6 +36,7 @@ import type {
 } from './models.js';
 import type { ProjectConfig } from './monorepo/index.js';
 import { saveOutputFiles } from './output-files.js';
+import { downloadReportFromPortal } from './portal/download.js';
 
 export type RunEnv = {
   refs: NormalizedGitRefs;
@@ -48,11 +56,12 @@ export type CompareReportsArgs = {
   base: GitBranch;
   currReport: ReportData<'current'>;
   prevReport: ReportData<'previous'>;
-  config: Pick<CoreConfig, 'persist'>;
+  config: EnhancedPersistConfig;
 };
 
 export type BaseReportArgs = {
   project: ProjectConfig | null;
+  config: EnhancedPersistConfig;
   env: RunEnv;
   base: GitBranch;
   ctx: CommandContext;
@@ -69,8 +78,10 @@ export async function createRunEnv(
   options: Options | undefined,
   git: SimpleGit,
 ): Promise<RunEnv> {
+  const inferredVerbose: boolean =
+    options?.debug === true || options?.silent === false;
   // eslint-disable-next-line functional/immutable-data
-  process.env['CP_VERBOSE'] = options?.silent ? 'false' : 'true';
+  process.env['CP_VERBOSE'] = `${inferredVerbose}`;
 
   const [head, base] = await Promise.all([
     normalizeGitRef(refs.head, git),
@@ -104,12 +115,16 @@ export async function runOnProject(
     logger.info(`Running Code PushUp on monorepo project ${project.name}`);
   }
 
-  const config = await printPersistConfig(ctx);
+  const config = settings.configPatterns
+    ? configFromPatterns(settings.configPatterns, project)
+    : await printPersistConfig(ctx);
   logger.debug(
-    `Loaded persist config from print-config command - ${JSON.stringify(config.persist)}`,
+    settings.configPatterns
+      ? `Parsed persist and upload configs from configPatterns option - ${JSON.stringify(config)}`
+      : `Loaded persist and upload configs from print-config command - ${JSON.stringify(config)}`,
   );
 
-  await runCollect(ctx);
+  await runCollect(ctx, { hasFormats: hasDefaultPersistFormats(config) });
   const currReport = await saveReportFiles({
     project,
     type: 'current',
@@ -131,7 +146,8 @@ export async function runOnProject(
     `PR/MR detected, preparing to compare base branch ${base.ref} to head ${head.ref}`,
   );
 
-  const prevReport = await collectPreviousReport({ project, env, base, ctx });
+  const baseArgs: BaseReportArgs = { project, env, base, config, ctx };
+  const prevReport = await collectPreviousReport(baseArgs);
   if (!prevReport) {
     return noDiffOutput;
   }
@@ -205,7 +221,7 @@ export async function collectPreviousReport(
 ): Promise<ReportData<'previous'> | null> {
   const { ctx, env, base, project } = args;
   const { settings } = env;
-  const { logger } = settings;
+  const { logger, configPatterns } = settings;
 
   const cachedBaseReport = await loadCachedBaseReport(args);
   if (cachedBaseReport) {
@@ -213,12 +229,14 @@ export async function collectPreviousReport(
   }
 
   return runInBaseBranch(base, env, async () => {
-    const config = await checkPrintConfig(args);
+    const config = configPatterns
+      ? configFromPatterns(configPatterns, project)
+      : await checkPrintConfig(args);
     if (!config) {
       return null;
     }
 
-    await runCollect(ctx);
+    await runCollect(ctx, { hasFormats: hasDefaultPersistFormats(config) });
     const report = await saveReportFiles({
       project,
       type: 'previous',
@@ -235,27 +253,12 @@ export async function loadCachedBaseReport(
 ): Promise<ReportData<'previous'> | null> {
   const {
     project,
-    env: { api, settings },
+    env: { settings },
   } = args;
-  const { logger } = settings;
 
-  const cachedBaseReport = await api
-    .downloadReportArtifact?.(project?.name)
-    .catch((error: unknown) => {
-      logger.warn(
-        `Error when downloading previous report artifact, skipping - ${stringifyError(error)}`,
-      );
-    });
-  if (api.downloadReportArtifact != null) {
-    logger.info(
-      `Previous report artifact ${cachedBaseReport ? 'found' : 'not found'}`,
-    );
-    if (cachedBaseReport) {
-      logger.debug(
-        `Previous report artifact downloaded to ${cachedBaseReport}`,
-      );
-    }
-  }
+  const cachedBaseReport =
+    (await loadCachedBaseReportFromPortal(args)) ??
+    (await loadCachedBaseReportFromArtifacts(args));
 
   if (!cachedBaseReport) {
     return null;
@@ -266,6 +269,73 @@ export async function loadCachedBaseReport(
     files: { json: cachedBaseReport },
     settings,
   });
+}
+
+async function loadCachedBaseReportFromArtifacts(
+  args: BaseReportArgs,
+): Promise<string | null> {
+  const {
+    env: { api, settings },
+    project,
+  } = args;
+  const { logger } = settings;
+
+  if (api.downloadReportArtifact == null) {
+    return null;
+  }
+
+  const reportPath = await api
+    .downloadReportArtifact(project?.name)
+    .catch((error: unknown) => {
+      logger.warn(
+        `Error when downloading previous report artifact, skipping - ${stringifyError(error)}`,
+      );
+      return null;
+    });
+
+  logger.info(`Previous report artifact ${reportPath ? 'found' : 'not found'}`);
+  if (reportPath) {
+    logger.debug(`Previous report artifact downloaded to ${reportPath}`);
+  }
+
+  return reportPath;
+}
+
+async function loadCachedBaseReportFromPortal(
+  args: BaseReportArgs,
+): Promise<string | null> {
+  const {
+    config,
+    env: { settings },
+  } = args;
+  const { logger } = settings;
+
+  if (!config.upload) {
+    return null;
+  }
+
+  const reportPath = await downloadReportFromPortal({
+    server: config.upload.server,
+    apiKey: config.upload.apiKey,
+    parameters: {
+      organization: config.upload.organization,
+      project: config.upload.project,
+    },
+  }).catch((error: unknown) => {
+    logger.warn(
+      `Error when downloading previous report from portal, skipping - ${stringifyError(error)}`,
+    );
+    return null;
+  });
+
+  logger.info(
+    `Previous report ${reportPath ? 'found' : 'not found'} in Code PushUp portal`,
+  );
+  if (reportPath) {
+    logger.debug(`Previous report downloaded from portal to ${reportPath}`);
+  }
+
+  return reportPath;
 }
 
 export async function runInBaseBranch<T>(
@@ -292,7 +362,7 @@ export async function runInBaseBranch<T>(
 
 export async function checkPrintConfig(
   args: BaseReportArgs,
-): Promise<Pick<CoreConfig, 'persist'> | null> {
+): Promise<EnhancedPersistConfig | null> {
   const {
     project,
     ctx,
@@ -321,9 +391,45 @@ export async function checkPrintConfig(
 
 export async function printPersistConfig(
   ctx: CommandContext,
-): Promise<Pick<CoreConfig, 'persist'>> {
+): Promise<EnhancedPersistConfig> {
   const json = await runPrintConfig(ctx);
   return parsePersistConfig(json);
+}
+
+export function hasDefaultPersistFormats(
+  config: EnhancedPersistConfig,
+): boolean {
+  const formats = config.persist?.format;
+  return (
+    formats == null ||
+    DEFAULT_PERSIST_FORMAT.every(format => formats.includes(format))
+  );
+}
+
+export function configFromPatterns(
+  configPatterns: ConfigPatterns,
+  project: ProjectConfig | null,
+): ConfigPatterns {
+  const { persist, upload } = configPatterns;
+  const variables = {
+    projectName: project?.name ?? '',
+  };
+  return {
+    persist: {
+      outputDir: interpolate(persist.outputDir, variables),
+      filename: interpolate(persist.filename, variables),
+      format: persist.format,
+    },
+    ...(upload && {
+      upload: {
+        server: upload.server,
+        apiKey: upload.apiKey,
+        organization: interpolate(upload.organization, variables),
+        project: interpolate(upload.project, variables),
+        ...(upload.timeout != null && { timeout: upload.timeout }),
+      },
+    }),
+  };
 }
 
 export async function findNewIssues(

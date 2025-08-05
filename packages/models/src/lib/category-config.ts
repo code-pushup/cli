@@ -1,21 +1,26 @@
 import { z } from 'zod';
 import {
+  createDuplicateSlugsCheck,
+  createDuplicatesCheck,
+} from './implementation/checks.js';
+import {
   metaSchema,
   scorableSchema,
   slugSchema,
   weightedRefSchema,
 } from './implementation/schemas.js';
-import { errorItems, hasDuplicateStrings } from './implementation/utils.js';
+import { formatRef } from './implementation/utils.js';
 
 export const categoryRefSchema = weightedRefSchema(
   'Weighted references to audits and/or groups for the category',
   'Slug of an audit or group (depending on `type`)',
 ).merge(
   z.object({
-    type: z.enum(['audit', 'group'], {
-      description:
+    type: z
+      .enum(['audit', 'group'])
+      .describe(
         'Discriminant for reference kind, affects where `slug` is looked up',
-    }),
+      ),
     plugin: slugSchema.describe(
       'Plugin slug (plugin should contain referenced audit or group)',
     ),
@@ -26,8 +31,11 @@ export type CategoryRef = z.infer<typeof categoryRefSchema>;
 export const categoryConfigSchema = scorableSchema(
   'Category with a score calculated from audits and groups from various plugins',
   categoryRefSchema,
-  getDuplicateRefsInCategoryMetrics,
-  duplicateRefsInCategoryMetricsErrorMsg,
+  createDuplicatesCheck(
+    serializeCategoryRefTarget,
+    duplicates =>
+      `Category has duplicate references: ${formatSerializedCategoryRefTargets(duplicates)}`,
+  ),
 )
   .merge(
     metaSchema({
@@ -40,49 +48,36 @@ export const categoryConfigSchema = scorableSchema(
   .merge(
     z.object({
       isBinary: z
-        .boolean({
-          description:
-            'Is this a binary category (i.e. only a perfect score considered a "pass")?',
-        })
+        .boolean()
+        .describe(
+          'Is this a binary category (i.e. only a perfect score considered a "pass")?',
+        )
         .optional(),
     }),
   );
 
 export type CategoryConfig = z.infer<typeof categoryConfigSchema>;
 
-// helper for validator: categories have unique refs to audits or groups
-export function duplicateRefsInCategoryMetricsErrorMsg(metrics: CategoryRef[]) {
-  const duplicateRefs = getDuplicateRefsInCategoryMetrics(metrics);
-  return `In the categories, the following audit or group refs are duplicates: ${errorItems(
-    duplicateRefs,
-  )}`;
+const CATEGORY_REF_SEP = '||';
+
+function serializeCategoryRefTarget(ref: CategoryRef): string {
+  return [ref.type, ref.plugin, ref.slug].join(CATEGORY_REF_SEP);
 }
 
-function getDuplicateRefsInCategoryMetrics(metrics: CategoryRef[]) {
-  return hasDuplicateStrings(
-    metrics.map(({ slug, type, plugin }) => `${type} :: ${plugin} / ${slug}`),
-  );
+function formatSerializedCategoryRefTargets(keys: string[]): string {
+  return keys
+    .map(key => {
+      const [type, plugin, slug] = key.split(CATEGORY_REF_SEP) as [
+        'group' | 'audit',
+        string,
+        string,
+      ];
+      return formatRef({ type, plugin, slug });
+    })
+    .join(', ');
 }
 
 export const categoriesSchema = z
-  .array(categoryConfigSchema, {
-    description: 'Categorization of individual audits',
-  })
-  .refine(
-    categoryCfg => !getDuplicateSlugCategories(categoryCfg),
-    categoryCfg => ({
-      message: duplicateSlugCategoriesErrorMsg(categoryCfg),
-    }),
-  );
-
-// helper for validator: categories slugs are unique
-function duplicateSlugCategoriesErrorMsg(categories: CategoryConfig[]) {
-  const duplicateStringSlugs = getDuplicateSlugCategories(categories);
-  return `In the categories, the following slugs are duplicated: ${errorItems(
-    duplicateStringSlugs,
-  )}`;
-}
-
-function getDuplicateSlugCategories(categories: CategoryConfig[]) {
-  return hasDuplicateStrings(categories.map(({ slug }) => slug));
-}
+  .array(categoryConfigSchema)
+  .check(createDuplicateSlugsCheck('Category'))
+  .describe('Categorization of individual audits');

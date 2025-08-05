@@ -4,9 +4,9 @@ import { z } from 'zod';
  * Generic schema for a tool command configuration, reusable across plugins.
  */
 export const artifactGenerationCommandSchema = z.union([
-  z.string({ description: 'Generate artifact files' }).min(1),
+  z.string().min(1).describe('Generate artifact files'),
   z.object({
-    command: z.string({ description: 'Generate artifact files' }).min(1),
+    command: z.string().min(1).describe('Generate artifact files'),
     args: z.array(z.string()).optional(),
   }),
 ]);

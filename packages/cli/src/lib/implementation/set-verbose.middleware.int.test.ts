@@ -14,7 +14,7 @@ describe('setVerboseMiddleware', () => {
     [false, false, false],
     ['True', undefined, true],
     ['TRUE', undefined, true],
-    [42, undefined, false],
+    [0, undefined, false],
     [undefined, 'true', true],
     [true, 'False', false],
   ])(

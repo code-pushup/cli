@@ -1,7 +1,7 @@
 import { assertType, describe, expectTypeOf, it } from 'vitest';
+import { lowercase, uppercase } from './case-conversions.js';
 import type { CamelCaseToKebabCase, KebabCaseToCamelCase } from './types.js';
 
-/* eslint-disable vitest/expect-expect */
 describe('CamelCaseToKebabCase', () => {
   // ✅ CamelCase → kebab-case Type Tests
 
@@ -60,4 +60,37 @@ describe('CamelCaseToKebabCase', () => {
     assertType<KebabCaseToCamelCase<'this-Is-Wrong'>>();
   });
 });
-/* eslint-enable vitest/expect-expect */
+
+describe('lowercase', () => {
+  it('converts string literal to lowercased literal', () => {
+    expectTypeOf(lowercase('Warning' as const)).toEqualTypeOf<'warning'>();
+  });
+
+  it('converts enum value to lowercased string literal', () => {
+    enum Severity {
+      Warning = 'Warning',
+    }
+    expectTypeOf(lowercase(Severity.Warning)).toEqualTypeOf<'warning'>();
+  });
+
+  it('converts string to string', () => {
+    expectTypeOf(lowercase('hello, world')).toBeString();
+  });
+});
+
+describe('uppercase', () => {
+  it('converts string literal to uppercased literal', () => {
+    expectTypeOf(uppercase('Warning' as const)).toEqualTypeOf<'WARNING'>();
+  });
+
+  it('converts enum value to uppercased string literal', () => {
+    enum Severity {
+      Warning = 'Warning',
+    }
+    expectTypeOf(uppercase(Severity.Warning)).toEqualTypeOf<'WARNING'>();
+  });
+
+  it('converts string to string', () => {
+    expectTypeOf(uppercase('hello, world')).toBeString();
+  });
+});

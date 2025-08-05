@@ -82,7 +82,9 @@ describe('groupSchema', () => {
           { slug: 'lighthouse-bug-prevention', weight: 2 },
         ],
       } satisfies Group),
-    ).toThrow('following references are not unique: lighthouse-bug-prevention');
+    ).toThrow(
+      String.raw`Group has duplicate references to audits: \"lighthouse-bug-prevention\"`,
+    );
   });
 });
 
@@ -127,6 +129,8 @@ describe('groupsSchema', () => {
           refs: [{ slug: 'jest-unit-tests', weight: 2 }],
         },
       ] satisfies Group[]),
-    ).toThrow('slugs are not unique: lighthouse');
+    ).toThrow(
+      String.raw`Group slugs must be unique, but received duplicates: \"lighthouse\"`,
+    );
   });
 });
