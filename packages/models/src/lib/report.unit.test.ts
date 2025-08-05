@@ -207,6 +207,7 @@ describe('reportSchema', () => {
         ],
         packageName: 'cli',
         version: '1.0.1',
+        label: 'api',
       } satisfies Report),
     ).not.toThrow();
   });
