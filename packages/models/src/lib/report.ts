@@ -52,6 +52,7 @@ export const reportSchema = packageVersionSchema({
       commit: commitSchema
         .describe('Git commit for which report was collected')
         .nullable(),
+      label: z.string().optional().describe('Label (e.g. project name)'),
     }),
   )
   .check(createCheck(findMissingSlugsInCategoryRefs))

@@ -1331,6 +1331,7 @@ _Object containing the following properties:_
 | **`plugins`** (\*)     |                                           | _Array of at least 1 [PluginReport](#pluginreport) items_ |
 | `categories`           |                                           | _Array of [CategoryConfig](#categoryconfig) items_        |
 | **`commit`** (\*)      | Git commit for which report was collected | [Commit](#commit) (_nullable_)                            |
+| `label`                | Label (e.g. project name)                 | `string`                                                  |
 
 _(\*) Required._
 
