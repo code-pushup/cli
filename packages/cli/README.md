@@ -293,9 +293,11 @@ In addition to the [Common Command Options](#common-command-options), the follow
 | -------------- | -------- | -------------------------------------- | ----------------------------------- |
 | **`--before`** | `string` | `.code-pushup/report-before.json` [^1] | Path to source `report.json`.       |
 | **`--after`**  | `string` | `.code-pushup/report-after.json` [^1]  | Path to target `report.json`.       |
-| **`--label`**  | `string` | n/a                                    | Label for diff (e.g. project name). |
+| **`--label`**  | `string` | n/a [^2]                               | Label for diff (e.g. project name). |
 
 [^1]: Uses `persist` config to determine report paths, so default file paths are actually `${persist.outputDir}/${persist.filename}-before.json` and `${persist.outputDir}/${persist.filename}-after.json`.
+
+[^2]: Uses `label` from input `report.json` files is they both have the same value.
 
 #### `print-config` command
 

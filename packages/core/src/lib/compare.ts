@@ -26,20 +26,27 @@ import {
 } from './implementation/compare-scorables.js';
 import { loadPortalClient } from './load-portal-client.js';
 
+export type CompareOptions = {
+  before?: string;
+  after?: string;
+  label?: string;
+};
+
 export async function compareReportFiles(
-  inputPaths: Partial<Diff<string>>,
-  persistConfig: Required<PersistConfig>,
-  uploadConfig: UploadConfig | undefined,
-  label?: string,
+  config: {
+    persist: Required<PersistConfig>;
+    upload?: UploadConfig;
+  },
+  options?: CompareOptions,
 ): Promise<string[]> {
-  const { outputDir, filename, format } = persistConfig;
+  const { outputDir, filename, format } = config.persist;
 
   const defaultInputPath = (suffix: keyof Diff<string>) =>
     createReportPath({ outputDir, filename, format: 'json', suffix });
 
   const [reportBefore, reportAfter] = await Promise.all([
-    readJsonFile(inputPaths.before ?? defaultInputPath('before')),
-    readJsonFile(inputPaths.after ?? defaultInputPath('after')),
+    readJsonFile(options?.before ?? defaultInputPath('before')),
+    readJsonFile(options?.after ?? defaultInputPath('after')),
   ]);
   const reports: Diff<Report> = {
     before: reportSchema.parse(reportBefore),
@@ -47,17 +54,17 @@ export async function compareReportFiles(
   };
 
   const diff = compareReports(reports);
-  if (label) {
-    // eslint-disable-next-line functional/immutable-data
-    diff.label = label;
-  }
-  if (uploadConfig && diff.commits) {
-    // eslint-disable-next-line functional/immutable-data
-    diff.portalUrl = await fetchPortalComparisonLink(
-      uploadConfig,
-      diff.commits,
-    );
-  }
+
+  const label = options?.label ?? getLabelFromReports(reports);
+  const portalUrl =
+    config.upload &&
+    diff.commits &&
+    (await fetchPortalComparisonLink(config.upload, diff.commits));
+
+  const diffWithLinks: ReportsDiff =
+    label || portalUrl
+      ? { ...diff, ...(label && { label }), ...(portalUrl && { portalUrl }) }
+      : diff;
 
   return Promise.all(
     format.map(async fmt => {
@@ -67,7 +74,7 @@ export async function compareReportFiles(
         format: fmt,
         suffix: 'diff',
       });
-      const content = reportsDiffToFileContent(diff, fmt);
+      const content = reportsDiffToFileContent(diffWithLinks, fmt);
       await ensureDirectoryExists(outputDir);
       await writeFile(outputPath, content);
       return outputPath;
@@ -153,4 +160,15 @@ async function fetchPortalComparisonLink(
     }
     throw error;
   }
+}
+
+function getLabelFromReports(reports: Diff<Report>): string | undefined {
+  if (
+    reports.before.label &&
+    reports.after.label &&
+    reports.before.label === reports.after.label
+  ) {
+    return reports.after.label;
+  }
+  return undefined;
 }
