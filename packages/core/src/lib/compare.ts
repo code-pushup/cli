@@ -27,16 +27,19 @@ import {
 import { loadPortalClient } from './load-portal-client.js';
 
 export async function compareReportFiles(
-  inputPaths: Diff<string>,
+  inputPaths: Partial<Diff<string>>,
   persistConfig: Required<PersistConfig>,
   uploadConfig: UploadConfig | undefined,
   label?: string,
 ): Promise<string[]> {
   const { outputDir, filename, format } = persistConfig;
 
+  const defaultInputPath = (suffix: keyof Diff<string>) =>
+    createReportPath({ outputDir, filename, format: 'json', suffix });
+
   const [reportBefore, reportAfter] = await Promise.all([
-    readJsonFile(inputPaths.before),
-    readJsonFile(inputPaths.after),
+    readJsonFile(inputPaths.before ?? defaultInputPath('before')),
+    readJsonFile(inputPaths.after ?? defaultInputPath('after')),
   ]);
   const reports: Diff<Report> = {
     before: reportSchema.parse(reportBefore),

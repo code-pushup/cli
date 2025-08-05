@@ -9,12 +9,10 @@ export function yargsCompareOptionsDefinition(): Record<
     before: {
       describe: 'Path to source report.json',
       type: 'string',
-      demandOption: true,
     },
     after: {
       describe: 'Path to target report.json',
       type: 'string',
-      demandOption: true,
     },
     label: {
       describe: 'Label for diff (e.g. project name)',

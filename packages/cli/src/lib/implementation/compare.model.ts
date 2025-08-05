@@ -1,3 +1,5 @@
-import type { Diff } from '@code-pushup/utils';
-
-export type CompareOptions = Diff<string> & { label?: string };
+export type CompareOptions = {
+  before?: string;
+  after?: string;
+  label?: string;
+};
