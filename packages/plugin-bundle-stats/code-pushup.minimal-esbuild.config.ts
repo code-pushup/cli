@@ -12,9 +12,12 @@ import { BundleStatsAuditOptions } from './src/lib/types';
 const SELECTION_ALL_OUTPUTS = {
   includeOutputs: ['**/*'],
 };
+
+const SELECTION_OUTPUTS_INDEX_FILE = ['**/index.ts'];
+
 const SELECTION_ONE_FILE = {
   mode: 'bundle' as const,
-  includeOutputs: ['**/chunks/chunk-PKX4VJZC.js'],
+  includeOutputs: SELECTION_OUTPUTS_INDEX_FILE,
 };
 // ===== Scoring Constants =====
 
@@ -105,7 +108,7 @@ const SELECTION_AUDITS: BundleStatsAuditOptions[] = [
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
     selection: {
       mode: 'bundle',
-      includeOutputs: ['**/index.js'],
+      includeOutputs: SELECTION_OUTPUTS_INDEX_FILE,
     },
     dependencyTree: {
       pruning: {
@@ -132,7 +135,7 @@ const SELECTION_AUDITS: BundleStatsAuditOptions[] = [
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
     selection: {
       mode: 'withStartupDeps',
-      includeOutputs: ['**/index.js'],
+      includeOutputs: SELECTION_OUTPUTS_INDEX_FILE,
     },
   },
   {
@@ -143,7 +146,7 @@ const SELECTION_AUDITS: BundleStatsAuditOptions[] = [
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
     selection: {
       mode: 'withAllDeps',
-      includeOutputs: ['**/index.js'],
+      includeOutputs: SELECTION_OUTPUTS_INDEX_FILE,
     },
   },
 
@@ -155,7 +158,7 @@ const SELECTION_AUDITS: BundleStatsAuditOptions[] = [
     ...BASE_AUDIT_ALL_FILES_SCORING_DISABLED,
     selection: {
       mode: 'bundle',
-      includeOutputs: ['**/chunks/chunk-*.js'],
+      includeOutputs: SELECTION_OUTPUTS_INDEX_FILE,
     },
   },
   {
