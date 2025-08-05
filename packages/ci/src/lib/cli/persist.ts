@@ -9,7 +9,7 @@ import {
   persistConfigSchema,
   uploadConfigSchema,
 } from '@code-pushup/models';
-import { objectFromEntries } from '@code-pushup/utils';
+import { createReportPath, objectFromEntries } from '@code-pushup/utils';
 
 export type EnhancedPersistConfig = Pick<CoreConfig, 'persist' | 'upload'>;
 
@@ -27,12 +27,12 @@ export function persistedFilesFromConfig(
   const dir = path.isAbsolute(outputDir)
     ? outputDir
     : path.join(directory, outputDir);
-  const name = isDiff ? `${filename}-diff` : filename;
+  const suffix = isDiff ? 'diff' : undefined;
 
   return objectFromEntries(
     DEFAULT_PERSIST_FORMAT.map(format => [
       format,
-      path.join(dir, `${name}.${format}`),
+      createReportPath({ outputDir: dir, filename, format, suffix }),
     ]),
   );
 }
