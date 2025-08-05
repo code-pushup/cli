@@ -11,6 +11,7 @@ import {
   createCommandContext,
   persistedFilesFromConfig,
   runCollect,
+  runCompare,
   runMergeDiffs,
 } from './cli/index.js';
 import { commentOnPR } from './comment.js';
@@ -29,16 +30,18 @@ import {
 import { saveOutputFiles } from './output-files.js';
 import {
   type BaseReportArgs,
+  type CompareReportsArgs,
   type ReportData,
   type RunEnv,
   checkPrintConfig,
-  compareReports,
   configFromPatterns,
   hasDefaultPersistFormats,
   loadCachedBaseReport,
+  prepareReportFilesToCompare,
   printPersistConfig,
   runInBaseBranch,
   runOnProject,
+  saveDiffFiles,
   saveReportFiles,
 } from './run-utils.js';
 
@@ -226,16 +229,36 @@ async function compareProjectsInBulk(
       ...args,
       prevReport: args.prevReport || collectedPrevReports[args.project.name],
     }))
-    .filter(hasNoNullableProps);
+    .filter(hasNoNullableProps) satisfies CompareReportsArgs[];
 
-  const projectComparisons = Object.fromEntries(
-    await asyncSequential(projectsToCompare, async args => [
-      args.project.name,
-      await compareReports(args),
-    ]),
+  const projectComparisons = await compareManyProjects(
+    projectsToCompare,
+    runManyCommand,
+    env,
   );
 
   return finalizeProjectReports(currProjectReports, projectComparisons);
+}
+
+async function compareManyProjects(
+  projectsToCompare: ExcludeNullableProps<CompareReportsArgs>[],
+  runManyCommand: RunManyCommand,
+  env: RunEnv,
+): Promise<Record<string, ProjectRunResult>> {
+  await Promise.all(projectsToCompare.map(prepareReportFilesToCompare));
+
+  await compareMany(runManyCommand, env, {
+    hasFormats: allProjectsHaveDefaultPersistFormats(projectsToCompare),
+  });
+
+  return Object.fromEntries(
+    await Promise.all(
+      projectsToCompare.map(async args => [
+        args.project.name,
+        await saveDiffFiles(args),
+      ]),
+    ),
+  );
 }
 
 function finalizeProjectReports(
@@ -350,6 +373,26 @@ async function collectMany(
   settings.logger.debug(
     `Collected ${countText} reports using command \`${command}\``,
   );
+}
+
+async function compareMany(
+  runManyCommand: RunManyCommand,
+  env: RunEnv,
+  options: {
+    hasFormats: boolean;
+  },
+): Promise<void> {
+  const { settings } = env;
+  const { hasFormats } = options;
+
+  const ctx: CommandContext = {
+    ...createCommandContext(settings, null),
+    bin: await runManyCommand(),
+  };
+
+  await runCompare(ctx, { hasFormats });
+
+  settings.logger.debug('Compared all project reports');
 }
 
 export function allProjectsHaveDefaultPersistFormats(
