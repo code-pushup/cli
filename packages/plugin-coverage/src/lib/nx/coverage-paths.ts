@@ -18,11 +18,12 @@ import type { CoverageResult } from '../config.js';
  * @param verbose optional verbose logging
  * @returns An array of coverage result information for the coverage plugin.
  */
-export async function getNxCoveragePaths(
-  targets: string[] = ['test'],
-  projects?: string[],
-  verbose?: boolean,
-): Promise<CoverageResult[]> {
+export async function getNxCoveragePaths(options: {
+  targets?: string[];
+  projects?: string[];
+  verbose?: boolean;
+}): Promise<CoverageResult[]> {
+  const { targets = ['test'], verbose, projects } = options;
   if (verbose) {
     ui().logger.info(
       bold('💡 Gathering coverage from the following nx projects:'),
@@ -192,13 +193,7 @@ export async function getCoveragePathForJest(
   }
 
   if (path.isAbsolute(coverageDirectory)) {
-    return {
-      pathToProject: project.root,
-      resultsPath: path.join(coverageDirectory, 'lcov.info'),
-    };
+    return path.join(coverageDirectory, 'lcov.info');
   }
-  return {
-    pathToProject: project.root,
-    resultsPath: path.join(project.root, coverageDirectory, 'lcov.info'),
-  };
+  return path.join(project.root, coverageDirectory, 'lcov.info');
 }

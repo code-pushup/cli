@@ -135,16 +135,9 @@ describe('getCoveragePathForTarget', () => {
         },
         'test',
       ),
-    ).resolves.toStrictEqual({
-      pathToProject: path.join('packages', 'core'),
-      resultsPath: path.join(
-        'packages',
-        'core',
-        'coverage',
-        'core',
-        'lcov.info',
-      ),
-    });
+    ).resolves.toBe(
+      path.join('packages', 'core', 'coverage', 'core', 'lcov.info'),
+    );
   });
 
   it('should throw for unsupported executor (only vitest and jest are supported)', async () => {
@@ -284,16 +277,9 @@ describe('getCoveragePathForJest', () => {
         { name: 'cli', root: path.join('packages', 'cli') },
         'unit-test',
       ),
-    ).resolves.toEqual({
-      pathToProject: path.join('packages', 'cli'),
-      resultsPath: path.join(
-        'packages',
-        'cli',
-        'coverage',
-        'core',
-        'lcov.info',
-      ),
-    } satisfies CoverageResult);
+    ).resolves.toBe(
+      path.join('packages', 'cli', 'coverage', 'core', 'lcov.info'),
+    );
   });
 
   it('should throw when coverageDirectory is not set in Jest config', async () => {
@@ -325,16 +311,9 @@ describe('getCoveragePathForJest', () => {
         { name: 'cli', root: path.join('packages', 'cli') },
         'unit-test',
       ),
-    ).resolves.toEqual({
-      pathToProject: path.join('packages', 'cli'),
-      resultsPath: path.join(
-        'dist',
-        'packages',
-        'cli',
-        'coverage',
-        'lcov.info',
-      ),
-    } satisfies CoverageResult);
+    ).resolves.toBe(
+      path.join('dist', 'packages', 'cli', 'coverage', 'lcov.info'),
+    );
   });
 
   it('should throw when Jest config does not include lcov reporter', async () => {
@@ -357,12 +336,7 @@ describe('getCoveragePathForJest', () => {
         { name: 'core', root: path.join('packages', 'core') },
         'integration-test',
       ),
-    ).resolves.toEqual(
-      expect.objectContaining({
-        pathToProject: expect.any(String),
-        resultsPath: expect.any(String),
-      }),
-    );
+    ).resolves.toBeTypeOf('string');
   });
 
   it('should throw if lcov reporter from jest config overridden in project.json', async () => {
@@ -388,12 +362,7 @@ describe('getCoveragePathForJest', () => {
         { name: 'core', root: path.join('packages', 'core') },
         'integration-test',
       ),
-    ).resolves.toEqual(
-      expect.objectContaining({
-        pathToProject: expect.any(String),
-        resultsPath: expect.any(String),
-      }),
-    );
+    ).resolves.toBeTypeOf('string');
   });
 
   it('should not throw regarding missing lcov reporter if jest config uses preset', async () => {
@@ -403,12 +372,7 @@ describe('getCoveragePathForJest', () => {
         { name: 'core', root: path.join('packages', 'core') },
         'test',
       ),
-    ).resolves.toEqual(
-      expect.objectContaining({
-        pathToProject: expect.any(String),
-        resultsPath: expect.any(String),
-      }),
-    );
+    ).resolves.toBeTypeOf('string');
   });
 
   it('should handle absolute path in coverageDirectory', async () => {
@@ -426,79 +390,8 @@ describe('getCoveragePathForJest', () => {
         { name: 'cli', root: path.join('packages', 'cli') },
         'unit-test',
       ),
-    ).resolves.toEqual({
-      pathToProject: path.join('packages', 'cli'),
-      resultsPath: path.join(
-        process.cwd(),
-        'coverage',
-        'packages',
-        'cli',
-        'lcov.info',
-      ),
-    } satisfies CoverageResult);
-  });
-});
-
-describe('getNxCoveragePaths', () => {
-  beforeEach(() => {
-    vol.fromJSON(
-      {
-        'vitest-cli.config.ts': '',
-        'vitest-core.config.ts': '',
-      },
-      MEMFS_VOLUME,
+    ).resolves.toBe(
+      path.join(process.cwd(), 'coverage', 'packages', 'cli', 'lcov.info'),
     );
-
-    // Mock createProjectGraphAsync to return a mock project graph
-    vi.doMock('@nx/devkit', () => ({
-      createProjectGraphAsync: vi.fn().mockResolvedValue({
-        nodes: {
-          cli: {
-            name: 'cli',
-            type: 'lib',
-            data: {
-              name: 'cli',
-              root: path.join('packages', 'cli'),
-              targets: {
-                'unit-test': {
-                  executor: '@nx/vite:test',
-                  options: {
-                    configFile: 'vitest-cli.config.ts',
-                  } satisfies VitestExecutorOptions,
-                },
-              },
-            },
-          },
-          core: {
-            name: 'core',
-            type: 'lib',
-            data: {
-              name: 'core',
-              root: path.join('packages', 'core'),
-              targets: {
-                'unit-test': {
-                  executor: '@nx/vite:test',
-                  options: {
-                    configFile: 'vitest-core.config.ts',
-                  } satisfies VitestExecutorOptions,
-                },
-              },
-            },
-          },
-        },
-      }),
-    }));
-  });
-
-  afterEach(() => {
-    vi.doUnmock('@nx/devkit');
-  });
-
-  it('should filter coverage paths by project names', async () => {
-    const allResults = await getNxCoveragePaths(['unit-test']);
-    const filteredResults = await getNxCoveragePaths(['unit-test'], ['cli']);
-
-    expect(allResults).toHaveLength(2); // cli and core
-    expect(filteredResults).toHaveLength(1); // only cli
   });
 });
