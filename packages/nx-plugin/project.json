@@ -5,7 +5,9 @@
   "projectType": "library",
   "implicitDependencies": ["cli"],
   "targets": {
-    "code-pushup": {},
+    "code-pushup": {
+      "dependsOn": ["unit-test", "int-test"]
+    },
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],

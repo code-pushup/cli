@@ -4,7 +4,9 @@
   "sourceRoot": "packages/plugin-eslint/src",
   "projectType": "library",
   "targets": {
-    "code-pushup": {},
+    "code-pushup": {
+      "dependsOn": ["unit-test", "int-test"]
+    },
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
