@@ -119,18 +119,11 @@ export default tseslint.config(
   {
     ignores: [
       '**/*.mock.*',
+      '**/code-pushup.config.ts',
       '**/mocks/fixtures/**',
       '**/__snapshots__/**',
       '**/dist',
       '**/*.md',
-      '**/code-pushup.config.ts',
-      'packages/*/code-pushup.config.ts',
-      'examples/*/code-pushup.config.ts',
-      'testing/test-utils/src/lib/fixtures/**',
-      'testing/test-utils/src/lib/utils/omit-report-data.ts',
-      'testing/test-utils/src/lib/utils/os-agnostic-paths.ts',
-      'packages/utils/perf/**',
-      'packages/utils/src/**',
     ],
   },
 );
