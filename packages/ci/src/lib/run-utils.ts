@@ -368,6 +368,7 @@ async function loadCachedBaseReportFromPortal(
   const {
     config,
     env: { settings },
+    base,
   } = args;
   const { logger } = settings;
 
@@ -381,6 +382,8 @@ async function loadCachedBaseReportFromPortal(
     parameters: {
       organization: config.upload.organization,
       project: config.upload.project,
+      commit: base.sha,
+      withDetails: true,
     },
   }).catch((error: unknown) => {
     logger.warn(

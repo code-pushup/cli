@@ -28,6 +28,7 @@ import {
 import * as utils from '@code-pushup/utils';
 import type {
   Comment,
+  GitBranch,
   GitRefs,
   Logger,
   Options,
@@ -309,7 +310,7 @@ describe('runInCI', () => {
     });
 
     describe('pull request event', () => {
-      let refs: GitRefs;
+      let refs: { head: GitBranch; base: GitBranch };
       let diffMdString: string;
 
       beforeEach(async () => {
@@ -499,12 +500,16 @@ describe('runInCI', () => {
           },
         } satisfies RunResult);
 
-        expect(downloadFromPortal).toHaveBeenCalledWith({
+        expect(downloadFromPortal).toHaveBeenCalledWith<
+          Parameters<typeof downloadFromPortal>
+        >({
           server: 'https://api.code-pushup.dunder-mifflin.org/graphql',
           apiKey: 'cp_abcdef0123456789',
           parameters: {
             organization: 'dunder-mifflin',
             project: 'website',
+            commit: refs.base.sha,
+            withDetails: true,
           },
         });
 
