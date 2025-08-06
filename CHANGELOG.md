@@ -1,3 +1,13 @@
+## 0.72.1 (2025-08-06)
+
+### 🩹 Fixes
+
+- **ci:** download portal report for base commit and include details ([21572d52](https://github.com/code-pushup/cli/commit/21572d52))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.72.0 (2025-08-06)
 
 ### 🚀 Features
