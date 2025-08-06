@@ -11,7 +11,6 @@ import {
   getCoveragePathForJest,
   getCoveragePathForVitest,
   getCoveragePathsForTarget,
-  getNxCoveragePaths,
 } from './coverage-paths.js';
 
 vi.mock('bundle-require', () => ({
