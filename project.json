@@ -4,7 +4,8 @@
   "targets": {
     "code-pushup": {
       "options": {
-        "config": "{workspaceRoot}/code-pushup.config.ts"
+        "config": "{workspaceRoot}/code-pushup.config.ts",
+        "upload.project": "cli"
       }
     }
   }
