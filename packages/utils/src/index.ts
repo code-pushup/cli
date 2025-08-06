@@ -27,6 +27,7 @@ export {
 } from './lib/execute-process.js';
 export {
   crawlFileSystem,
+  createReportPath,
   directoryExists,
   ensureDirectoryExists,
   fileExists,

@@ -279,7 +279,7 @@ Refer to the [Common Command Options](#common-command-options) for the list of a
 | **`--from`**             | `string`  | n/a     | Hash to start in history                                         |
 | **`--to`**               | `string`  | n/a     | Hash to end in history                                           |
 
-### `compare` command
+#### `compare` command
 
 Usage:
 `code-pushup compare --before SOURCE_PATH --after TARGET_PATH [options]`
@@ -289,11 +289,15 @@ Compare 2 reports and produce a report diff file.
 
 In addition to the [Common Command Options](#common-command-options), the following options are recognized by the `compare` command:
 
-| Option         | Required | Type     | Description                         |
-| -------------- | :------: | -------- | ----------------------------------- |
-| **`--before`** |   yes    | `string` | Path to source `report.json`.       |
-| **`--after`**  |   yes    | `string` | Path to target `report.json`.       |
-| **`--label`**  |    no    | `string` | Label for diff (e.g. project name). |
+| Option         | Type     | Default                                | Description                         |
+| -------------- | -------- | -------------------------------------- | ----------------------------------- |
+| **`--before`** | `string` | `.code-pushup/report-before.json` [^1] | Path to source `report.json`.       |
+| **`--after`**  | `string` | `.code-pushup/report-after.json` [^1]  | Path to target `report.json`.       |
+| **`--label`**  | `string` | n/a [^2]                               | Label for diff (e.g. project name). |
+
+[^1]: Uses `persist` config to determine report paths, so default file paths are actually `${persist.outputDir}/${persist.filename}-before.json` and `${persist.outputDir}/${persist.filename}-after.json`.
+
+[^2]: Uses `label` from input `report.json` files is they both have the same value.
 
 #### `print-config` command
 
@@ -309,7 +313,7 @@ In addition to the [Common Command Options](#common-command-options), the follow
 | -------------- | :------: | -------- | -------------------------------------------------------- |
 | **`--output`** |    no    | `string` | Path to output file to print config (default is stdout). |
 
-### `merge-diffs` command
+#### `merge-diffs` command
 
 Usage:
 `code-pushup merge-diffs --files PATH_1 PATH_2 ... [options]`

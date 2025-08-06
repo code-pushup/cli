@@ -1,13 +1,20 @@
 /* eslint-disable max-lines */
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
+import path from 'node:path';
 import type { SimpleGit } from 'simple-git';
 import {
+  DEFAULT_PERSIST_FILENAME,
   DEFAULT_PERSIST_FORMAT,
+  DEFAULT_PERSIST_OUTPUT_DIR,
   type Report,
   type ReportsDiff,
 } from '@code-pushup/models';
 import {
+  type Diff,
+  createReportPath,
   interpolate,
+  objectFromEntries,
+  readJsonFile,
   removeUndefinedAndEmptyProps,
   stringifyError,
 } from '@code-pushup/utils';
@@ -53,6 +60,7 @@ type NormalizedGitRefs = {
 export type CompareReportsArgs = {
   project: ProjectConfig | null;
   env: RunEnv;
+  ctx: CommandContext;
   base: GitBranch;
   currReport: ReportData<'current'>;
   prevReport: ReportData<'previous'>;
@@ -152,38 +160,91 @@ export async function runOnProject(
     return noDiffOutput;
   }
 
-  const compareArgs = { project, env, base, config, currReport, prevReport };
+  const compareArgs = { ...baseArgs, currReport, prevReport };
   return compareReports(compareArgs);
 }
 
 export async function compareReports(
   args: CompareReportsArgs,
 ): Promise<ProjectRunResult> {
+  const { ctx, env, config } = args;
+  const { logger } = env.settings;
+
+  await prepareReportFilesToCompare(args);
+  await runCompare(ctx, { hasFormats: hasDefaultPersistFormats(config) });
+
+  logger.info('Compared reports and generated diff files');
+
+  return saveDiffFiles(args);
+}
+
+export async function prepareReportFilesToCompare(
+  args: CompareReportsArgs,
+): Promise<Diff<string>> {
+  const { config, project, env, ctx } = args;
+  const {
+    outputDir = DEFAULT_PERSIST_OUTPUT_DIR,
+    filename = DEFAULT_PERSIST_FILENAME,
+  } = config.persist ?? {};
+  const label = project?.name;
+  const { logger } = env.settings;
+
+  const originalReports = await Promise.all(
+    [args.currReport, args.prevReport].map(({ files }) =>
+      readJsonFile<Report>(files.json),
+    ),
+  );
+  const labeledReports = label
+    ? originalReports.map(report => ({ ...report, label }))
+    : originalReports;
+
+  const reportPaths = labeledReports.map((report, idx) => {
+    const key: keyof Diff<string> = idx === 0 ? 'after' : 'before';
+    const filePath = createReportPath({
+      outputDir: path.resolve(ctx.directory, outputDir),
+      filename,
+      format: 'json',
+      suffix: key,
+    });
+    return { key, report, filePath };
+  });
+
+  await Promise.all(
+    reportPaths.map(({ filePath, report }) =>
+      writeFile(filePath, JSON.stringify(report, null, 2)),
+    ),
+  );
+
+  logger.debug(
+    [
+      'Prepared',
+      project && `"${project.name}" project's`,
+      'report files for comparison',
+      `at ${reportPaths.map(({ filePath }) => filePath).join(' and ')}`,
+    ]
+      .filter(Boolean)
+      .join(' '),
+  );
+
+  return objectFromEntries(
+    reportPaths.map(({ key, filePath }) => [key, filePath]),
+  );
+}
+
+export async function saveDiffFiles(args: CompareReportsArgs) {
   const {
     project,
+    ctx,
     env: { settings },
     currReport,
     prevReport,
     config,
   } = args;
-  const logger = settings.logger;
 
-  const ctx = createCommandContext(settings, project);
-
-  await runCompare(
-    {
-      before: prevReport.files.json,
-      after: currReport.files.json,
-      label: project?.name,
-    },
-    ctx,
-  );
   const diffFiles = persistedFilesFromConfig(config, {
     directory: ctx.directory,
     isDiff: true,
   });
-  logger.info('Compared reports and generated diff files');
-  logger.debug(`Generated diff files at ${diffFiles.json} and ${diffFiles.md}`);
 
   return {
     name: projectToName(project),
@@ -307,6 +368,7 @@ async function loadCachedBaseReportFromPortal(
   const {
     config,
     env: { settings },
+    base,
   } = args;
   const { logger } = settings;
 
@@ -320,6 +382,8 @@ async function loadCachedBaseReportFromPortal(
     parameters: {
       organization: config.upload.organization,
       project: config.upload.project,
+      commit: base.sha,
+      withDetails: true,
     },
   }).catch((error: unknown) => {
     logger.warn(

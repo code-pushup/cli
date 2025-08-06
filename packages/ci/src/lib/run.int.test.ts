@@ -28,6 +28,7 @@ import {
 import * as utils from '@code-pushup/utils';
 import type {
   Comment,
+  GitBranch,
   GitRefs,
   Logger,
   Options,
@@ -139,11 +140,26 @@ describe('runInCI', () => {
     await mkdir(outputDir, { recursive: true });
     let stdout = '';
 
+    const isBulkCommand = /workspaces|concurrency|parallel/.test(command);
+    const projectOutputDirs = ['cli', 'core', 'utils'].map(project =>
+      path.join(workDir, `packages/${project}/.code-pushup`),
+    );
+
     switch (args![0]) {
       case 'compare':
         const diffs = fixturePaths.diffs.project;
-        await copyFile(diffs.json, path.join(outputDir, 'report-diff.json'));
-        await copyFile(diffs.md, path.join(outputDir, 'report-diff.md'));
+        if (isBulkCommand) {
+          await Promise.all(
+            projectOutputDirs.map(async dir => {
+              await mkdir(dir, { recursive: true });
+              await copyFile(diffs.json, path.join(dir, 'report-diff.json'));
+              await copyFile(diffs.md, path.join(dir, 'report-diff.md'));
+            }),
+          );
+        } else {
+          await copyFile(diffs.json, path.join(outputDir, 'report-diff.json'));
+          await copyFile(diffs.md, path.join(outputDir, 'report-diff.md'));
+        }
         break;
 
       case 'print-config':
@@ -186,23 +202,14 @@ describe('runInCI', () => {
         const kind =
           (await git.branch()).current === 'main' ? 'before' : 'after';
         const reports = fixturePaths.reports[kind];
-        if (/workspaces|concurrency|parallel/.test(command)) {
-          // eslint-disable-next-line functional/no-loop-statements
-          for (const project of ['cli', 'core', 'utils']) {
-            const projectOutputDir = path.join(
-              workDir,
-              `packages/${project}/.code-pushup`,
-            );
-            await mkdir(projectOutputDir, { recursive: true });
-            await copyFile(
-              reports.json,
-              path.join(projectOutputDir, 'report.json'),
-            );
-            await copyFile(
-              reports.json,
-              path.join(projectOutputDir, 'report.md'),
-            );
-          }
+        if (isBulkCommand) {
+          await Promise.all(
+            projectOutputDirs.map(async dir => {
+              await mkdir(dir, { recursive: true });
+              await copyFile(reports.json, path.join(dir, 'report.json'));
+              await copyFile(reports.md, path.join(dir, 'report.md'));
+            }),
+          );
         } else {
           await copyFile(reports.json, path.join(outputDir, 'report.json'));
           await copyFile(reports.md, path.join(outputDir, 'report.md'));
@@ -303,7 +310,7 @@ describe('runInCI', () => {
     });
 
     describe('pull request event', () => {
-      let refs: GitRefs;
+      let refs: { head: GitBranch; base: GitBranch };
       let diffMdString: string;
 
       beforeEach(async () => {
@@ -386,13 +393,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(5, {
           command: options.bin,
-          args: [
-            'compare',
-            `--before=${path.join(outputDir, '.previous/report.json')}`,
-            `--after=${path.join(outputDir, '.current/report.json')}`,
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: ['compare'],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -458,13 +459,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(3, {
           command: options.bin,
-          args: [
-            'compare',
-            `--before=${path.join(outputDir, '.previous/report.json')}`,
-            `--after=${path.join(outputDir, '.current/report.json')}`,
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: ['compare'],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -505,12 +500,16 @@ describe('runInCI', () => {
           },
         } satisfies RunResult);
 
-        expect(downloadFromPortal).toHaveBeenCalledWith({
+        expect(downloadFromPortal).toHaveBeenCalledWith<
+          Parameters<typeof downloadFromPortal>
+        >({
           server: 'https://api.code-pushup.dunder-mifflin.org/graphql',
           apiKey: 'cp_abcdef0123456789',
           parameters: {
             organization: 'dunder-mifflin',
             project: 'website',
+            commit: refs.base.sha,
+            withDetails: true,
           },
         });
 
@@ -531,13 +530,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(3, {
           command: options.bin,
-          args: [
-            'compare',
-            `--before=${path.join(outputDir, '.previous/report.json')}`,
-            `--after=${path.join(outputDir, '.current/report.json')}`,
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: ['compare'],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -944,13 +937,13 @@ describe('runInCI', () => {
           // 3 print-configs for each project
           // 1 print-config for uncached project
           // 1 autorun for uncached projects
-          // 3 compares for each project
+          // 1 compare for all projects
           // 1 merge-diffs for all projects
           expect(
             executeProcessSpy.mock.calls.filter(([cfg]) =>
               cfg.command.includes('code-pushup'),
             ),
-          ).toHaveLength(10);
+          ).toHaveLength(8);
           expect(utils.executeProcess).toHaveBeenCalledWith({
             command: run,
             args: [
@@ -967,15 +960,8 @@ describe('runInCI', () => {
             observer: expectedObserver,
           } satisfies utils.ProcessConfig);
           expect(utils.executeProcess).toHaveBeenCalledWith({
-            command: run,
-            args: [
-              'compare',
-              expect.stringMatching(/^--before=.*\.previous[/\\]report\.json$/),
-              expect.stringMatching(/^--after=.*\.current[/\\]report\.json$/),
-              expect.stringMatching(/^--label=\w+$/),
-              '--persist.format=json',
-              '--persist.format=md',
-            ],
+            command: runMany,
+            args: ['compare'],
             cwd: expect.stringContaining(workDir),
             observer: expectedObserver,
           } satisfies utils.ProcessConfig);
@@ -1060,13 +1046,13 @@ describe('runInCI', () => {
 
           // 1 autorun for all projects
           // 1 autorun for uncached projects
-          // 3 compares for each project
+          // 1 compare for all projects
           // 1 merge-diffs for all projects
           expect(
             executeProcessSpy.mock.calls.filter(([cfg]) =>
               cfg.command.includes('code-pushup'),
             ),
-          ).toHaveLength(6);
+          ).toHaveLength(4);
           expect(utils.executeProcess).toHaveBeenCalledWith({
             command: runMany,
             args: [],
@@ -1074,15 +1060,8 @@ describe('runInCI', () => {
             observer: expectedObserver,
           } satisfies utils.ProcessConfig);
           expect(utils.executeProcess).toHaveBeenCalledWith({
-            command: run,
-            args: [
-              'compare',
-              expect.stringMatching(/^--before=.*\.previous[/\\]report\.json$/),
-              expect.stringMatching(/^--after=.*\.current[/\\]report\.json$/),
-              expect.stringMatching(/^--label=\w+$/),
-              '--persist.format=json',
-              '--persist.format=md',
-            ],
+            command: runMany,
+            args: ['compare'],
             cwd: expect.stringContaining(workDir),
             observer: expectedObserver,
           } satisfies utils.ProcessConfig);
@@ -1161,7 +1140,7 @@ describe('runInCI', () => {
             observer: expectedObserver,
           } satisfies utils.ProcessConfig);
           expect(utils.executeProcess).toHaveBeenCalledWith({
-            command: run,
+            command: runMany,
             args: expect.arrayContaining(['compare']),
             cwd: expect.stringContaining(workDir),
             observer: expectedObserver,
@@ -1441,14 +1420,7 @@ describe('runInCI', () => {
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: [
-            'compare',
-            expect.stringMatching(/^--before=.*\.previous[/\\]report\.json$/),
-            expect.stringMatching(/^--after=.*\.current[/\\]report\.json$/),
-            expect.stringMatching(/^--label=\w+$/),
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: ['compare'],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);

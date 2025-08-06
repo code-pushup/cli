@@ -1,3 +1,31 @@
+## 0.72.1 (2025-08-06)
+
+### 🩹 Fixes
+
+- **ci:** download portal report for base commit and include details ([21572d52](https://github.com/code-pushup/cli/commit/21572d52))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.72.0 (2025-08-06)
+
+### 🚀 Features
+
+- **ci:** add configPatterns as optional performance optimization ([823ade1f](https://github.com/code-pushup/cli/commit/823ade1f))
+- **cli:** use default report paths if --before/--after missing in compare command ([61ee2272](https://github.com/code-pushup/cli/commit/61ee2272))
+- **core:** copy label from report.json inputs to report-diff.json output ([2adcf9db](https://github.com/code-pushup/cli/commit/2adcf9db))
+- **models:** add optional label to report.json schema ([77d33b54](https://github.com/code-pushup/cli/commit/77d33b54))
+- **utils:** interpolate variables in strings ([242435e0](https://github.com/code-pushup/cli/commit/242435e0))
+
+### 🔥 Performance
+
+- **ci:** use bulk command to compare reports for all projects ([f9deac78](https://github.com/code-pushup/cli/commit/f9deac78))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.71.0 (2025-08-01)
 
 ### 🚀 Features

@@ -44,7 +44,7 @@ testem.log
 Thumbs.db
 
 # generated Code PushUp reports
-**/.code-pushup
+/.code-pushup
 
 # Nx workspace cache
 .nx

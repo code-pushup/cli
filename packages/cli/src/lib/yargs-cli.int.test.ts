@@ -160,15 +160,6 @@ describe('yargsCli', () => {
     expect(parsedArgv.after).toBe('target-report.json');
   });
 
-  it('should error if required compare option is missing', () => {
-    expect(() =>
-      yargsCli<GeneralCliOptions & CompareOptions>([], {
-        options: { ...options, ...yargsCompareOptionsDefinition() },
-        noExitProcess: true,
-      }).parse(),
-    ).toThrow('Missing required arguments: before, after');
-  });
-
   it('should parse merge-diffs options', async () => {
     const parsedArgv = await yargsCli<GeneralCliOptions & MergeDiffsOptions>(
       [
