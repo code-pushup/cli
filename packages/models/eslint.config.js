@@ -19,6 +19,6 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ['packages/models/transformers/**/*.ts'],
+    ignores: ['packages/models/transformers/**/*.ts', 'code-pushup.config.ts'],
   },
 );
