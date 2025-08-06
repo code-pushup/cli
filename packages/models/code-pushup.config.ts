@@ -9,6 +9,7 @@ import {
   typescriptPluginConfig,
 } from '../../code-pushup.preset.js';
 import type { CoreConfig } from '../../packages/models/src/index.js';
+import { mergeConfigs } from '../../packages/utils/src/index.js';
 
 const projectName = process.env.CP_PROJECT_NAME || 'models';
 
@@ -21,7 +22,7 @@ const config: CoreConfig = {
   plugins: [],
 };
 
-const configs = [
+export default mergeConfigs(
   config,
   await eslintCoreConfigNx(projectName),
   await coverageCoreConfigNx(projectName),
@@ -33,19 +34,4 @@ const configs = [
     `packages/${projectName}/src/**/*.ts`,
     ...jsDocsExclusionPatterns,
   ]),
-];
-
-const mergedConfig = configs.reduce(
-  (result, currentConfig) => ({
-    ...result,
-    ...currentConfig,
-    plugins: [...(result.plugins || []), ...(currentConfig.plugins || [])],
-    categories: [
-      ...(result.categories || []),
-      ...(currentConfig.categories || []),
-    ],
-  }),
-  {} as CoreConfig,
 );
-
-export default mergedConfig;
