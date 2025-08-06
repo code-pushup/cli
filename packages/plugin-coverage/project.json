@@ -4,6 +4,7 @@
   "sourceRoot": "packages/plugin-coverage/src",
   "projectType": "library",
   "targets": {
+    "code-pushup": {},
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],

@@ -1,15 +1,10 @@
 {
-  "name": "@code-pushup/cli-source",
+  "name": "cli-source",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
     "code-pushup": {
-      "executor": "nx:run-commands",
       "options": {
-        "config": "code-pushup.config.ts",
-        "persist": {
-          "filename": "{projectName}-report",
-          "outputDir": ".code-pushup"
-        }
+        "config": "{workspaceRoot}/code-pushup.config.ts"
       }
     }
   }

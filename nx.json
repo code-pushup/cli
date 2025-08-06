@@ -2,23 +2,19 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "targetDefaults": {
     "code-pushup": {
+      "cache": true,
+      "outputs": ["{options.outputPath}"],
       "executor": "nx:run-commands",
       "options": {
         "command": "node packages/cli/src/index.ts --no-progress --verbose",
-        "cache": true,
-        "options": {
-          "config": "packages/{projectName}/code-pushup.config.ts",
-          "persist": {
-            "filename": "{projectName}-report",
-            "outputDir": "packages/{projectName}/.code-pushup"
-          },
-          "upload": {
-            "project": "{projectName}"
-          }
-        },
+        "config": "{projectRoot}/code-pushup.config.ts",
+        "persist.filename": "{projectName}-report",
+        "persist.outputDir": "{projectRoot}/.code-pushup",
+        "outputPath": "{projectRoot}/.code-pushup",
+        "upload.project": "cli-{projectName}",
         "env": {
           "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "{workspaceRoot}/tsconfig.base.json"
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
         }
       }
     },

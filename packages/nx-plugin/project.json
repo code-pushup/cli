@@ -5,6 +5,7 @@
   "projectType": "library",
   "implicitDependencies": ["cli"],
   "targets": {
+    "code-pushup": {},
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],

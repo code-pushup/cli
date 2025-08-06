@@ -5,12 +5,7 @@
   "projectType": "library",
   "targets": {
     "code-pushup": {
-      "options": {
-        "config": "packages/cli/code-pushup.config.ts"
-      },
-      "env": {
-        "TSX_TSCONFIG_PATH": "../../tsconfig.base.json"
-      }
+      "dependsOn": ["unit-test", "int-test"]
     },
     "build": {
       "executor": "@nx/js:tsc",
