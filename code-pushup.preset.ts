@@ -205,14 +205,12 @@ export const jsDocsCoreConfig = (
 
 export const eslintCoreConfigNx = async (
   projectName?: string,
-  opt?: { cwd?: string },
 ): Promise<CoreConfig> => ({
   plugins: [
     await eslintPlugin(
       await (projectName
         ? eslintConfigFromNxProject(projectName)
         : eslintConfigFromAllNxProjects()),
-      opt,
     ),
   ],
   categories: eslintCategories,

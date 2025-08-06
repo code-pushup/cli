@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import { z } from 'zod';
 import {
   coverageCoreConfigNx,
   eslintCoreConfigNx,

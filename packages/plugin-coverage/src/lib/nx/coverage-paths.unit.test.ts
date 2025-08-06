@@ -135,9 +135,16 @@ describe('getCoveragePathForTarget', () => {
         },
         'test',
       ),
-    ).resolves.toBe(
-      path.join('packages', 'core', 'coverage', 'core', 'lcov.info'),
-    );
+    ).resolves.toStrictEqual({
+      pathToProject: path.join('packages', 'core'),
+      resultsPath: path.join(
+        'packages',
+        'core',
+        'coverage',
+        'core',
+        'lcov.info',
+      ),
+    });
   });
 
   it('should throw for unsupported executor (only vitest and jest are supported)', async () => {

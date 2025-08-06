@@ -41,7 +41,6 @@ export async function eslintPlugin(
     schemaType: 'ESLint plugin config',
   });
 
-  const cwd = options?.cwd || process.cwd();
   const customGroups = options
     ? parseSchema(eslintPluginOptionsSchema, options, {
         schemaType: 'ESLint plugin options',
@@ -72,8 +71,6 @@ export async function eslintPlugin(
     audits,
     groups,
 
-    runner: await createRunnerConfig(runnerScriptPath, audits, targets, {
-      cwd,
-    }),
+    runner: await createRunnerConfig(runnerScriptPath, audits, targets),
   };
 }
