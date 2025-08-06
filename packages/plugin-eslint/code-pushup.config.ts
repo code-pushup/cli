@@ -11,7 +11,7 @@ import {
 import type { CoreConfig } from '../../packages/models/src/index.js';
 import { mergeConfigs } from '../../packages/utils/src/index.js';
 
-const projectName = process.env.CP_PROJECT_NAME || 'models';
+const projectName = process.env.CP_PROJECT_NAME || 'plugin-eslint';
 
 const config: CoreConfig = {
   ...(await loadEnv()),
