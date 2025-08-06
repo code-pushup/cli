@@ -245,10 +245,10 @@ export const coverageCoreConfigNx = async (
             ? ['nx', 'run-many', '-p', projectName, ...targetArgs]
             : ['nx', 'run-many', ...targetArgs],
         },
-        reports: await getNxCoveragePaths(
-          targetNames,
-          projectName ? [projectName] : undefined,
-        ),
+        reports: await getNxCoveragePaths({
+          targets: targetNames,
+          projects: projectName ? [projectName] : undefined,
+        }),
       }),
     ],
     categories: coverageCategories,
