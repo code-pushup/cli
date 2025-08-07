@@ -30,7 +30,7 @@ describe('npmHandler', () => {
         },
         MEMFS_VOLUME,
       );
-      await expect(npmHandler.isConfigured(options)).resolves.toBe(true);
+      await expect(npmHandler.isConfigured(options)).resolves.toBeTrue();
     });
 
     it('should NOT detect NPM workspaces when "workspaces" not set in package.json', async () => {
@@ -41,7 +41,7 @@ describe('npmHandler', () => {
         },
         MEMFS_VOLUME,
       );
-      await expect(npmHandler.isConfigured(options)).resolves.toBe(false);
+      await expect(npmHandler.isConfigured(options)).resolves.toBeFalse();
     });
 
     it("should NOT detect NPM workspaces when package-lock.json doesn't exist", async () => {
@@ -55,7 +55,7 @@ describe('npmHandler', () => {
         },
         MEMFS_VOLUME,
       );
-      await expect(npmHandler.isConfigured(options)).resolves.toBe(false);
+      await expect(npmHandler.isConfigured(options)).resolves.toBeFalse();
     });
   });
 

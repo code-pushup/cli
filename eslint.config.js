@@ -1,4 +1,5 @@
 import nxEslintPlugin from '@nx/eslint-plugin';
+import jestExtendedPlugin from 'eslint-plugin-jest-extended';
 import jsoncParser from 'jsonc-eslint-parser';
 import tseslint from 'typescript-eslint';
 import node from '@code-pushup/eslint-config/node.js';
@@ -84,7 +85,9 @@ export default tseslint.config(
   },
   {
     files: ['**/*.test.ts', '**/*.spec.ts'],
+    plugins: { 'jest-extended': jestExtendedPlugin },
     rules: {
+      ...jestExtendedPlugin.configs['flat/all'].rules,
       'vitest/consistent-test-filename': [
         'warn',
         {
