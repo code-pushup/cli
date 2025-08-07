@@ -6,18 +6,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - run: corepack enable
-      - uses: actions/setup-node@v4
         with:
-          cache: 'npm'
-
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Set base and head for Nx affected commands
+        uses: nrwl/nx-set-shas@v4
       - name: Install dependencies
-        run: npm install
-
-      - name: Build
-        run: nx run-many --target=build --all --parallel --maxParallel=3
-
-      - run: npm dlx pkg-pr-new publish
+        run: npm ci
+      - name: Build affected projects
+        run: npx nx run-many --target=build --parallel=3 --with-deps
+      - name: Release packages
+        run: npx pkg-pr-new publish
