@@ -15,8 +15,7 @@
         "^build",
         "generate-docs",
         { "projects": "models-transformers", "target": "build" }
-      ],
-      "executor": "@nx/js:tsc"
+      ]
     },
     "lint": {},
     "unit-test": {
