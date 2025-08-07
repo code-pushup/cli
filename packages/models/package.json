@@ -26,6 +26,10 @@
     "access": "public"
   },
   "type": "module",
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo"
+  ],
   "dependencies": {
     "zod": "^4.0.5",
     "vscode-material-icons": "^0.1.0"
