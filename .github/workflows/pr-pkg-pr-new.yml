@@ -19,7 +19,7 @@ jobs:
         uses: nrwl/nx-set-shas@v4
       - name: Install dependencies
         run: npm ci
-      - name: Build affected projects
+      - name: Build affected packages
         run: npx nx run-many --target=build --parallel=3 --with-deps
       - name: Release packages
-        run: npx pkg-pr-new publish
+        run: npx pkg-pr-new publish 'packages/models'
