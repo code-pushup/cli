@@ -22,4 +22,4 @@ jobs:
       - name: Build affected packages
         run: npx nx run-many --target=build --parallel=3 --with-deps
       - name: Release packages
-        run: npx pkg-pr-new publish 'packages/models'
+        run: npx pkg-pr-new publish 'packages/models/dist' # 'packages/utils' 'packages/core' 'packages/cli' 'packages/create-cli'  'packages/ci'
