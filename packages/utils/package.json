@@ -38,5 +38,9 @@
     "semver": "^7.6.0",
     "simple-git": "^3.20.0",
     "zod": "^4.0.5"
-  }
+  },
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
 }

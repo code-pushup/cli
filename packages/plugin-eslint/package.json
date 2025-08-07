@@ -51,5 +51,9 @@
     "@nx/devkit": {
       "optional": true
     }
-  }
+  },
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
 }

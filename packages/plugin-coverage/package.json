@@ -56,5 +56,9 @@
     "@nx/vite": {
       "optional": true
     }
-  }
+  },
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
 }
