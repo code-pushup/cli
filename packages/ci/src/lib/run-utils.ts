@@ -28,13 +28,18 @@ import {
   runCompare,
   runPrintConfig,
 } from './cli/index.js';
-import { DEFAULT_SETTINGS } from './constants.js';
+import {
+  DEFAULT_SETTINGS,
+  MAX_SEARCH_COMMITS,
+  MIN_SEARCH_COMMITS,
+} from './constants.js';
 import { listChangedFiles, normalizeGitRef } from './git.js';
 import { type SourceFileIssue, filterRelevantIssues } from './issues.js';
 import type {
   ConfigPatterns,
   GitBranch,
   GitRefs,
+  Logger,
   Options,
   OutputFiles,
   ProjectRunResult,
@@ -101,10 +106,38 @@ export async function createRunEnv(
     api,
     settings: {
       ...DEFAULT_SETTINGS,
-      ...(options && removeUndefinedAndEmptyProps(options)),
+      ...(options && sanitizeOptions(options)),
     },
     git,
   };
+}
+
+function sanitizeOptions(options: Options): Options {
+  const logger = options.logger ?? DEFAULT_SETTINGS.logger;
+
+  return removeUndefinedAndEmptyProps({
+    ...options,
+    searchCommits: sanitizeSearchCommits(options.searchCommits, logger),
+  });
+}
+
+function sanitizeSearchCommits(
+  searchCommits: Options['searchCommits'],
+  logger: Logger,
+): Options['searchCommits'] {
+  if (
+    typeof searchCommits === 'number' &&
+    (!Number.isInteger(searchCommits) ||
+      searchCommits < MIN_SEARCH_COMMITS ||
+      searchCommits > MAX_SEARCH_COMMITS)
+  ) {
+    logger.warn(
+      `The searchCommits option must be a boolean or an integer in range ${MIN_SEARCH_COMMITS} to ${MAX_SEARCH_COMMITS}, ignoring invalid value ${searchCommits}.`,
+    );
+    return undefined;
+  }
+
+  return searchCommits;
 }
 
 export async function runOnProject(
@@ -382,8 +415,13 @@ async function loadCachedBaseReportFromPortal(
     parameters: {
       organization: config.upload.organization,
       project: config.upload.project,
-      commit: base.sha,
       withAuditDetails: true,
+      ...(!settings.searchCommits && {
+        commit: base.sha,
+      }),
+      ...(typeof settings.searchCommits === 'number' && {
+        maxCommits: settings.searchCommits,
+      }),
     },
   }).catch((error: unknown) => {
     logger.warn(
