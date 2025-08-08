@@ -138,3 +138,4 @@ export {
   artifactGenerationCommandSchema,
   pluginArtifactOptionsSchema,
 } from './lib/configuration.js';
+export type { PluginArtifactOptions } from './lib/configuration.js';
