@@ -19,6 +19,6 @@ export type ConfigCliOptions = {
   verbose?: string;
 };
 
-export type CoreConfigCliOptions = Pick<CoreConfig, 'persist'> & {
+export type CoreConfigCliOptions = Pick<CoreConfig, 'persist' | 'cache'> & {
   upload?: Partial<Omit<UploadConfig, 'timeout'>>;
 };

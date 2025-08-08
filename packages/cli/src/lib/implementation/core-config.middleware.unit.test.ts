@@ -73,4 +73,14 @@ describe('coreConfigMiddleware', () => {
       'apps/website/tsconfig.json',
     );
   });
+
+  it('should forward normalize --persist.report option', async () => {
+    await coreConfigMiddleware({
+      config: 'apps/website/code-pushup.config.ts',
+    } as GeneralCliOptions & CoreConfigCliOptions & FilterOptions);
+    expect(readRcByPath).toHaveBeenCalledWith(
+      'apps/website/code-pushup.config.ts',
+      'apps/website/tsconfig.json',
+    );
+  });
 });

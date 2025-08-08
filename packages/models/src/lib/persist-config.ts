@@ -10,6 +10,7 @@ export const persistConfigSchema = z.object({
     .describe('Artifacts file name (without extension)')
     .optional(),
   format: z.array(formatSchema).optional(),
+  report: z.boolean().optional(),
 });
 
 export type PersistConfig = z.infer<typeof persistConfigSchema>;

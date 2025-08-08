@@ -23,6 +23,7 @@ export async function coreConfigMiddleware<
     tsconfig,
     persist: cliPersist,
     upload: cliUpload,
+    cache: cliCache,
     ...remainingCliOptions
   } = processArgs;
   // Search for possible configuration file extensions if path is not given
@@ -43,6 +44,11 @@ export async function coreConfigMiddleware<
         });
   return {
     ...(config != null && { config }),
+    cache: {
+      write: false,
+      read: false,
+      ...cliCache,
+    },
     persist: {
       outputDir:
         cliPersist?.outputDir ??
@@ -53,6 +59,7 @@ export async function coreConfigMiddleware<
       format: normalizeFormats(
         cliPersist?.format ?? rcPersist?.format ?? DEFAULT_PERSIST_FORMAT,
       ),
+      report: !('no-report' in (cliPersist ?? {})),
     },
     ...(upload != null && { upload }),
     ...remainingRcConfig,
