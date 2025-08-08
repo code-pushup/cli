@@ -83,8 +83,8 @@ describe('getClassNodes', () => {
 
     getClassNodes([nodeMock1] as unknown as ClassDeclaration[]);
 
-    expect(classNodeSpy).toHaveBeenCalledTimes(1);
-    expect(propertyNodeSpy).toHaveBeenCalledTimes(1);
+    expect(classNodeSpy).toHaveBeenCalledOnce();
+    expect(propertyNodeSpy).toHaveBeenCalledOnce();
   });
 });
 
