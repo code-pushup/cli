@@ -1,0 +1,11 @@
+{
+  "extends": "nx/presets/npm.json",
+  "targets": {
+    "test": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "vitest.config.ts"
+      }
+    }
+  }
+}
