@@ -22,7 +22,6 @@
     "node": ">=22.14"
   },
   "dependencies": {
-    "@code-pushup/models": "https://pkg.pr.new/code-pushup/cli/@code-pushup/models@54857b1",
     "@code-pushup/portal-client": "^0.14.3",
     "@isaacs/cliui": "^8.0.2",
     "@nx/devkit": "19.8.13",
