@@ -87,13 +87,17 @@ export default tseslint.config(
     files: ['**/*.test.ts', '**/*.spec.ts'],
     plugins: { 'jest-extended': jestExtendedPlugin },
     rules: {
-      ...jestExtendedPlugin.configs['flat/all'].rules,
       'vitest/consistent-test-filename': [
         'warn',
         {
           pattern: String.raw`.*\.(bench|type|unit|int|e2e)\.test\.[tj]sx?$`,
         },
       ],
+      'jest-extended/prefer-to-be-array': 'warn',
+      'jest-extended/prefer-to-be-false': 'warn',
+      'jest-extended/prefer-to-be-object': 'warn',
+      'jest-extended/prefer-to-be-true': 'warn',
+      'jest-extended/prefer-to-have-been-called-once': 'warn',
     },
   },
   {
