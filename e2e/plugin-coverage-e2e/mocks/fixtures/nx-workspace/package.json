@@ -1,0 +1,10 @@
+{
+  "name": "test-nx-workspace",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "echo \"build\""
+  },
+  "devDependencies": {
+    "nx": "^17.0.0"
+  }
+}

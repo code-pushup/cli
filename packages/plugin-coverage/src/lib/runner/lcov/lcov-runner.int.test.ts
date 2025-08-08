@@ -52,4 +52,37 @@ describe('lcovResultsToAuditOutputs', () => {
     );
     expect(osAgnosticAuditOutputs(results)).toMatchSnapshot();
   });
+
+  it('should correctly merge duplicate LCOV records from multiple files', async () => {
+    const results = await lcovResultsToAuditOutputs(
+      [
+        {
+          resultsPath: path.join(
+            fileURLToPath(path.dirname(import.meta.url)),
+            '..',
+            '..',
+            '..',
+            '..',
+            'mocks',
+            'single-record-lcov.info',
+          ),
+          pathToProject: 'packages/cli',
+        },
+        {
+          resultsPath: path.join(
+            fileURLToPath(path.dirname(import.meta.url)),
+            '..',
+            '..',
+            '..',
+            '..',
+            'mocks',
+            'duplicate-record-lcov.info',
+          ),
+          pathToProject: 'packages/cli',
+        },
+      ],
+      ['branch', 'function', 'line'],
+    );
+    expect(osAgnosticAuditOutputs(results)).toMatchSnapshot();
+  });
 });

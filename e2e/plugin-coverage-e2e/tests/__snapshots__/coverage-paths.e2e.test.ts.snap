@@ -1,0 +1,629 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PLUGIN collect report with coverage-paths functionality > should handle multiple coverage reports from different projects 1`] = `
+{
+  "categories": [
+    {
+      "refs": [
+        {
+          "plugin": "coverage",
+          "slug": "coverage",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "code-coverage",
+      "title": "Code coverage",
+    },
+  ],
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "audits": [
+        {
+          "description": "Measures how many functions were called in at least one test.",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "children": [
+                            {
+                              "children": [
+                                {
+                                  "children": [
+                                    {
+                                      "children": [
+                                        {
+                                          "children": [
+                                            {
+                                              "children": [
+                                                {
+                                                  "name": "utils.ts",
+                                                  "values": {
+                                                    "coverage": 1,
+                                                    "missing": [],
+                                                  },
+                                                },
+                                              ],
+                                              "name": "src",
+                                              "values": {
+                                                "coverage": 1,
+                                              },
+                                            },
+                                          ],
+                                          "name": "nx-workspace",
+                                          "values": {
+                                            "coverage": 1,
+                                          },
+                                        },
+                                      ],
+                                      "name": "coverage-paths",
+                                      "values": {
+                                        "coverage": 1,
+                                      },
+                                    },
+                                  ],
+                                  "name": "__test__",
+                                  "values": {
+                                    "coverage": 1,
+                                  },
+                                },
+                              ],
+                              "name": "plugin-coverage-e2e",
+                              "values": {
+                                "coverage": 1,
+                              },
+                            },
+                          ],
+                          "name": "e2e",
+                          "values": {
+                            "coverage": 1,
+                          },
+                        },
+                      ],
+                      "name": "tmp",
+                      "values": {
+                        "coverage": 1,
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 1,
+                  },
+                },
+                "title": "Function coverage",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "100 %",
+          "score": 1,
+          "slug": "function-coverage",
+          "title": "Function coverage",
+          "value": 100,
+        },
+        {
+          "description": "Measures how many branches were executed after conditional statements in at least one test.",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "children": [
+                            {
+                              "children": [
+                                {
+                                  "children": [
+                                    {
+                                      "children": [
+                                        {
+                                          "children": [
+                                            {
+                                              "children": [
+                                                {
+                                                  "name": "utils.ts",
+                                                  "values": {
+                                                    "coverage": 1,
+                                                    "missing": [],
+                                                  },
+                                                },
+                                              ],
+                                              "name": "src",
+                                              "values": {
+                                                "coverage": 1,
+                                              },
+                                            },
+                                          ],
+                                          "name": "nx-workspace",
+                                          "values": {
+                                            "coverage": 1,
+                                          },
+                                        },
+                                      ],
+                                      "name": "coverage-paths",
+                                      "values": {
+                                        "coverage": 1,
+                                      },
+                                    },
+                                  ],
+                                  "name": "__test__",
+                                  "values": {
+                                    "coverage": 1,
+                                  },
+                                },
+                              ],
+                              "name": "plugin-coverage-e2e",
+                              "values": {
+                                "coverage": 1,
+                              },
+                            },
+                          ],
+                          "name": "e2e",
+                          "values": {
+                            "coverage": 1,
+                          },
+                        },
+                      ],
+                      "name": "tmp",
+                      "values": {
+                        "coverage": 1,
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 1,
+                  },
+                },
+                "title": "Branch coverage",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "100 %",
+          "score": 1,
+          "slug": "branch-coverage",
+          "title": "Branch coverage",
+          "value": 100,
+        },
+        {
+          "description": "Measures how many lines of code were executed in at least one test.",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "children": [
+                            {
+                              "children": [
+                                {
+                                  "children": [
+                                    {
+                                      "children": [
+                                        {
+                                          "children": [
+                                            {
+                                              "children": [
+                                                {
+                                                  "name": "utils.ts",
+                                                  "values": {
+                                                    "coverage": 1,
+                                                    "missing": [],
+                                                  },
+                                                },
+                                              ],
+                                              "name": "src",
+                                              "values": {
+                                                "coverage": 1,
+                                              },
+                                            },
+                                          ],
+                                          "name": "nx-workspace",
+                                          "values": {
+                                            "coverage": 1,
+                                          },
+                                        },
+                                      ],
+                                      "name": "coverage-paths",
+                                      "values": {
+                                        "coverage": 1,
+                                      },
+                                    },
+                                  ],
+                                  "name": "__test__",
+                                  "values": {
+                                    "coverage": 1,
+                                  },
+                                },
+                              ],
+                              "name": "plugin-coverage-e2e",
+                              "values": {
+                                "coverage": 1,
+                              },
+                            },
+                          ],
+                          "name": "e2e",
+                          "values": {
+                            "coverage": 1,
+                          },
+                        },
+                      ],
+                      "name": "tmp",
+                      "values": {
+                        "coverage": 1,
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 1,
+                  },
+                },
+                "title": "Line coverage",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "100 %",
+          "score": 1,
+          "slug": "line-coverage",
+          "title": "Line coverage",
+          "value": 100,
+        },
+      ],
+      "description": "Official Code PushUp code coverage plugin.",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/coverage-plugin/",
+      "groups": [
+        {
+          "description": "Group containing all defined coverage types as audits.",
+          "refs": [
+            {
+              "slug": "function-coverage",
+              "weight": 6,
+            },
+            {
+              "slug": "branch-coverage",
+              "weight": 3,
+            },
+            {
+              "slug": "line-coverage",
+              "weight": 1,
+            },
+          ],
+          "slug": "coverage",
+          "title": "Code coverage metrics",
+        },
+      ],
+      "icon": "folder-coverage-open",
+      "packageName": "@code-pushup/coverage-plugin",
+      "slug": "coverage",
+      "title": "Code coverage",
+    },
+  ],
+}
+`;
+
+exports[`PLUGIN collect report with coverage-paths functionality > should run coverage plugin with Nx workspace and create report.json 1`] = `
+{
+  "categories": [
+    {
+      "refs": [
+        {
+          "plugin": "coverage",
+          "slug": "coverage",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "code-coverage",
+      "title": "Code coverage",
+    },
+  ],
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "audits": [
+        {
+          "description": "Measures how many functions were called in at least one test.",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "children": [
+                            {
+                              "children": [
+                                {
+                                  "children": [
+                                    {
+                                      "children": [
+                                        {
+                                          "children": [
+                                            {
+                                              "children": [
+                                                {
+                                                  "name": "utils.ts",
+                                                  "values": {
+                                                    "coverage": 1,
+                                                    "missing": [],
+                                                  },
+                                                },
+                                              ],
+                                              "name": "src",
+                                              "values": {
+                                                "coverage": 1,
+                                              },
+                                            },
+                                          ],
+                                          "name": "nx-workspace",
+                                          "values": {
+                                            "coverage": 1,
+                                          },
+                                        },
+                                      ],
+                                      "name": "coverage-paths",
+                                      "values": {
+                                        "coverage": 1,
+                                      },
+                                    },
+                                  ],
+                                  "name": "__test__",
+                                  "values": {
+                                    "coverage": 1,
+                                  },
+                                },
+                              ],
+                              "name": "plugin-coverage-e2e",
+                              "values": {
+                                "coverage": 1,
+                              },
+                            },
+                          ],
+                          "name": "e2e",
+                          "values": {
+                            "coverage": 1,
+                          },
+                        },
+                      ],
+                      "name": "tmp",
+                      "values": {
+                        "coverage": 1,
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 1,
+                  },
+                },
+                "title": "Function coverage",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "100 %",
+          "score": 1,
+          "slug": "function-coverage",
+          "title": "Function coverage",
+          "value": 100,
+        },
+        {
+          "description": "Measures how many branches were executed after conditional statements in at least one test.",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "children": [
+                            {
+                              "children": [
+                                {
+                                  "children": [
+                                    {
+                                      "children": [
+                                        {
+                                          "children": [
+                                            {
+                                              "children": [
+                                                {
+                                                  "name": "utils.ts",
+                                                  "values": {
+                                                    "coverage": 1,
+                                                    "missing": [],
+                                                  },
+                                                },
+                                              ],
+                                              "name": "src",
+                                              "values": {
+                                                "coverage": 1,
+                                              },
+                                            },
+                                          ],
+                                          "name": "nx-workspace",
+                                          "values": {
+                                            "coverage": 1,
+                                          },
+                                        },
+                                      ],
+                                      "name": "coverage-paths",
+                                      "values": {
+                                        "coverage": 1,
+                                      },
+                                    },
+                                  ],
+                                  "name": "__test__",
+                                  "values": {
+                                    "coverage": 1,
+                                  },
+                                },
+                              ],
+                              "name": "plugin-coverage-e2e",
+                              "values": {
+                                "coverage": 1,
+                              },
+                            },
+                          ],
+                          "name": "e2e",
+                          "values": {
+                            "coverage": 1,
+                          },
+                        },
+                      ],
+                      "name": "tmp",
+                      "values": {
+                        "coverage": 1,
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 1,
+                  },
+                },
+                "title": "Branch coverage",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "100 %",
+          "score": 1,
+          "slug": "branch-coverage",
+          "title": "Branch coverage",
+          "value": 100,
+        },
+        {
+          "description": "Measures how many lines of code were executed in at least one test.",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "children": [
+                            {
+                              "children": [
+                                {
+                                  "children": [
+                                    {
+                                      "children": [
+                                        {
+                                          "children": [
+                                            {
+                                              "children": [
+                                                {
+                                                  "name": "utils.ts",
+                                                  "values": {
+                                                    "coverage": 1,
+                                                    "missing": [],
+                                                  },
+                                                },
+                                              ],
+                                              "name": "src",
+                                              "values": {
+                                                "coverage": 1,
+                                              },
+                                            },
+                                          ],
+                                          "name": "nx-workspace",
+                                          "values": {
+                                            "coverage": 1,
+                                          },
+                                        },
+                                      ],
+                                      "name": "coverage-paths",
+                                      "values": {
+                                        "coverage": 1,
+                                      },
+                                    },
+                                  ],
+                                  "name": "__test__",
+                                  "values": {
+                                    "coverage": 1,
+                                  },
+                                },
+                              ],
+                              "name": "plugin-coverage-e2e",
+                              "values": {
+                                "coverage": 1,
+                              },
+                            },
+                          ],
+                          "name": "e2e",
+                          "values": {
+                            "coverage": 1,
+                          },
+                        },
+                      ],
+                      "name": "tmp",
+                      "values": {
+                        "coverage": 1,
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 1,
+                  },
+                },
+                "title": "Line coverage",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "100 %",
+          "score": 1,
+          "slug": "line-coverage",
+          "title": "Line coverage",
+          "value": 100,
+        },
+      ],
+      "description": "Official Code PushUp code coverage plugin.",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/coverage-plugin/",
+      "groups": [
+        {
+          "description": "Group containing all defined coverage types as audits.",
+          "refs": [
+            {
+              "slug": "function-coverage",
+              "weight": 6,
+            },
+            {
+              "slug": "branch-coverage",
+              "weight": 3,
+            },
+            {
+              "slug": "line-coverage",
+              "weight": 1,
+            },
+          ],
+          "slug": "coverage",
+          "title": "Code coverage metrics",
+        },
+      ],
+      "icon": "folder-coverage-open",
+      "packageName": "@code-pushup/coverage-plugin",
+      "slug": "coverage",
+      "title": "Code coverage",
+    },
+  ],
+}
+`;
