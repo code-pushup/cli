@@ -14,12 +14,7 @@
         "assets": ["testing/test-setup/*.md"]
       }
     },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "testing/test-setup/vitest.unit.config.ts"
-      }
-    },
+    "unit-test": {},
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
