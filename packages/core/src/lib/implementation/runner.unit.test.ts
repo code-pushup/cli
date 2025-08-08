@@ -6,6 +6,7 @@ import {
   MINIMAL_PLUGIN_CONFIG_MOCK,
   MINIMAL_RUNNER_CONFIG_MOCK,
   MINIMAL_RUNNER_FUNCTION_MOCK,
+  osAgnosticPath,
 } from '@code-pushup/test-utils';
 import {
   type RunnerResult,
@@ -17,9 +18,9 @@ import {
 
 describe('getAuditOutputsPath', () => {
   it('should read runner results from a file', async () => {
-    expect(getAuditOutputsPath('plugin-with-cache', 'output')).toBe(
-      'output/plugin-with-cache/audit-outputs.json',
-    );
+    expect(
+      osAgnosticPath(getAuditOutputsPath('plugin-with-cache', 'output')),
+    ).toBe(osAgnosticPath('output/plugin-with-cache/audit-outputs.json'));
   });
 });
 
