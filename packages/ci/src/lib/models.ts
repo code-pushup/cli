@@ -21,6 +21,7 @@ export type Options = {
   logger?: Logger;
   skipComment?: boolean;
   configPatterns?: ConfigPatterns | null;
+  searchCommits?: boolean | number;
 };
 
 /**
