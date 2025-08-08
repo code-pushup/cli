@@ -141,3 +141,5 @@ jobs:
         run: npm ci
       - name: Build affected projects
         run: npx nx affected:build --parallel=3
+      - name: Test-release packages
+        run: npx pkg-pr-new publish "packages/models/dist" "packages/utils/dist" "packages/core/dist" "packages/cli/dist" "packages/create-cli/dist"  "packages/ci/dist" "packages/plugin-coverage/dist" "packages/plugin-eslint/dist" "packages/plugin-js-packages/dist" "packages/plugin-jsdocs/dist" "packages/plugin-lighthouse/dist" "packages/plugin-typescript/dist"

@@ -30,5 +30,9 @@
   "peerDependencies": {
     "typescript": ">=4.0.0"
   },
-  "scripts": {}
+  "scripts": {},
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
 }

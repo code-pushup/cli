@@ -33,5 +33,9 @@
     "simple-git": "^3.20.0",
     "yaml": "^2.5.1",
     "zod": "^4.0.5"
-  }
+  },
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
 }

@@ -28,5 +28,9 @@
   "dependencies": {
     "@code-pushup/nx-plugin": "0.72.1",
     "@code-pushup/utils": "0.72.1"
-  }
+  },
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
 }
