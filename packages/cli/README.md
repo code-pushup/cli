@@ -217,8 +217,6 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 | **`--upload.project`**      | `string`             | n/a      | Project slug from portal.                                                        |
 | **`--upload.server`**       | `string`             | n/a      | URL to your portal server.                                                       |
 | **`--upload.apiKey`**       | `string`             | n/a      | API key for the portal server.                                                   |
-| **`--cache.read`**          | `boolean`            | `false`  | If plugin audit outputs should be read from file system cache.                   |
-| **`--cache.write`**         | `boolean`            | `false`  | If plugin audit outputs should be written to file system cache.                  |
 | **`--onlyPlugins`**         | `string[]`           | `[]`     | Only run the specified plugins. Applicable to all commands except `upload`.      |
 | **`--skipPlugins`**         | `string[]`           | `[]`     | Skip the specified plugins. Applicable to all commands except `upload`.          |
 

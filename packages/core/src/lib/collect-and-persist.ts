@@ -19,7 +19,7 @@ import type { GlobalOptions } from './types.js';
 
 export type CollectAndPersistReportsOptions = Pick<
   CoreConfig,
-  'plugins' | 'categories' | 'cache'
+  'plugins' | 'categories'
 > & {
   persist: Required<Omit<PersistConfig, 'report'>> &
     Pick<PersistConfig, 'report'>;
