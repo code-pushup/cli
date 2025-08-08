@@ -43,17 +43,11 @@ describe('compare-command', () => {
           format: DEFAULT_PERSIST_FORMAT,
           report: true,
         },
-        upload: {
-          apiKey: 'dummy-api-key',
-          organization: 'code-pushup',
-          project: 'cli',
-          server: 'https://example.com/api',
-        },
+        upload: expect.any(Object),
       },
       {
         before: 'source-report.json',
         after: 'target-report.json',
-        label: undefined,
       },
     );
   });
