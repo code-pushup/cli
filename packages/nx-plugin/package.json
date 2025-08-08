@@ -41,6 +41,9 @@
   },
   "files": [
     "src",
+    "./*.md",
+    "./generators.json",
+    "./executors.json",
     "!**/*.tsbuildinfo"
   ]
 }
