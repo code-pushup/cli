@@ -17,8 +17,8 @@ export type { ReportsToCompare } from './lib/implementation/compare-scorables.js
 export {
   executePlugin,
   executePlugins,
-  PluginOutputMissingAuditError,
 } from './lib/implementation/execute-plugin.js';
+export { AuditOutputsMissingAuditError } from './lib/implementation/runner.js';
 export {
   PersistDirError,
   PersistError,
