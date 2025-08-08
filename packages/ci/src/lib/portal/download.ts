@@ -1,15 +1,15 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
-  type PortalDownloadArgs,
-  downloadFromPortal,
+  type PortalReportDownloadArgs,
+  downloadReportFromPortal,
 } from '@code-pushup/portal-client';
 import { transformGQLReport } from './transform.js';
 
-export async function downloadReportFromPortal(
-  args: PortalDownloadArgs,
+export async function downloadFromPortal(
+  args: PortalReportDownloadArgs,
 ): Promise<string | null> {
-  const gqlReport = await downloadFromPortal(args);
+  const gqlReport = await downloadReportFromPortal(args);
   if (!gqlReport) {
     return null;
   }

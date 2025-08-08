@@ -43,7 +43,7 @@ import type {
 } from './models.js';
 import type { ProjectConfig } from './monorepo/index.js';
 import { saveOutputFiles } from './output-files.js';
-import { downloadReportFromPortal } from './portal/download.js';
+import { downloadFromPortal } from './portal/download.js';
 
 export type RunEnv = {
   refs: NormalizedGitRefs;
@@ -376,14 +376,14 @@ async function loadCachedBaseReportFromPortal(
     return null;
   }
 
-  const reportPath = await downloadReportFromPortal({
+  const reportPath = await downloadFromPortal({
     server: config.upload.server,
     apiKey: config.upload.apiKey,
     parameters: {
       organization: config.upload.organization,
       project: config.upload.project,
       commit: base.sha,
-      withDetails: true,
+      withAuditDetails: true,
     },
   }).catch((error: unknown) => {
     logger.warn(

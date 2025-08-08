@@ -27,7 +27,7 @@
   "type": "module",
   "dependencies": {
     "@code-pushup/models": "0.72.1",
-    "@code-pushup/portal-client": "^0.14.3",
+    "@code-pushup/portal-client": "^0.15.0",
     "@code-pushup/utils": "0.72.1",
     "glob": "^11.0.1",
     "simple-git": "^3.20.0",
