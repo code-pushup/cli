@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { cacheConfigSchema } from './cache-config.js';
 import { categoriesSchema } from './category-config.js';
 import { createCheck } from './implementation/checks.js';
 import { findMissingSlugsInCategoryRefs } from './implementation/utils.js';
@@ -14,7 +13,6 @@ export const unrefinedCoreConfigSchema = z.object({
     .describe(
       'List of plugins to be used (official, community-provided, or custom)',
     ),
-  cache: cacheConfigSchema.optional(),
   /** portal configuration for persisting results */
   persist: persistConfigSchema.optional(),
   /** portal configuration for uploading results */

@@ -6,7 +6,6 @@ export {
   sourceFileLocationSchema,
   type SourceFileLocation,
 } from './lib/source.js';
-export { cacheConfigSchema, type CacheConfig } from './lib/cache-config.js';
 
 export {
   auditDetailsSchema,

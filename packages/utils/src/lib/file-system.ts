@@ -90,7 +90,7 @@ export function createReportPath({
   filename,
   format,
   suffix,
-}: Omit<Required<PersistConfig>, 'format' | 'report'> & {
+}: Omit<Required<PersistConfig>, 'format'> & {
   format: Format;
   suffix?: string;
 }): string {

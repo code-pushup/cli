@@ -59,7 +59,6 @@ export async function coreConfigMiddleware<
       format: normalizeFormats(
         cliPersist?.format ?? rcPersist?.format ?? DEFAULT_PERSIST_FORMAT,
       ),
-      report: !('no-report' in (cliPersist ?? {})),
     },
     ...(upload != null && { upload }),
     ...remainingRcConfig,
