@@ -26,6 +26,7 @@ import {
  *
  * @public
  * @param pluginConfig - {@link ProcessConfig} object with runner and meta
+ * @param opt
  * @returns {Promise<AuditOutput[]>} - audit outputs from plugin runner
  * @throws {AuditOutputsMissingAuditError} - if plugin runner output is invalid
  *
@@ -45,7 +46,7 @@ import {
 export async function executePlugin(
   pluginConfig: PluginConfig,
   opt: {
-    cache: CacheConfig;
+    cache?: CacheConfig;
     persist: Required<Pick<PersistConfig, 'outputDir'>>;
   },
 ): Promise<PluginReport> {
@@ -58,7 +59,7 @@ export async function executePlugin(
     groups,
     ...pluginMeta
   } = pluginConfig;
-  const { write: cacheWrite = false, read: cacheRead = false } = cache;
+  const { write: cacheWrite = false, read: cacheRead = false } = cache ?? {};
   const { outputDir } = persist;
 
   const { audits, ...executionMeta } = cacheRead
