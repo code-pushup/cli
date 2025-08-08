@@ -1,12 +1,12 @@
 import { bold } from 'ansis';
-import {
-  type Audit,
-  type AuditOutput,
-  type AuditOutputs,
-  type AuditReport,
-  type PluginConfig,
-  type PluginReport,
-  auditOutputsSchema,
+import type {
+  Audit,
+  AuditOutput,
+  AuditReport,
+  CacheConfig,
+  PersistConfig,
+  PluginConfig,
+  PluginReport,
 } from '@code-pushup/models';
 import {
   type ProgressBar,
@@ -15,21 +15,11 @@ import {
   logMultipleResults,
   pluralizeToken,
 } from '@code-pushup/utils';
-import { normalizeAuditOutputs } from '../normalize.js';
-import { executeRunnerConfig, executeRunnerFunction } from './runner.js';
-
-/**
- * Error thrown when plugin output is invalid.
- */
-export class PluginOutputMissingAuditError extends Error {
-  constructor(auditSlug: string) {
-    super(
-      `Audit metadata not present in plugin config. Missing slug: ${bold(
-        auditSlug,
-      )}`,
-    );
-  }
-}
+import {
+  executePluginRunner,
+  readRunnerResults,
+  writeRunnerResults,
+} from './runner.js';
 
 /**
  * Execute a plugin.
@@ -37,7 +27,7 @@ export class PluginOutputMissingAuditError extends Error {
  * @public
  * @param pluginConfig - {@link ProcessConfig} object with runner and meta
  * @returns {Promise<AuditOutput[]>} - audit outputs from plugin runner
- * @throws {PluginOutputMissingAuditError} - if plugin runner output is invalid
+ * @throws {AuditOutputsMissingAuditError} - if plugin runner output is invalid
  *
  * @example
  * // plugin execution
@@ -54,7 +44,12 @@ export class PluginOutputMissingAuditError extends Error {
  */
 export async function executePlugin(
   pluginConfig: PluginConfig,
+  opt: {
+    cache: CacheConfig;
+    persist: Required<Pick<PersistConfig, 'outputDir'>>;
+  },
 ): Promise<PluginReport> {
+  const { cache, persist } = opt;
   const {
     runner,
     audits: pluginConfigAudits,
@@ -63,26 +58,25 @@ export async function executePlugin(
     groups,
     ...pluginMeta
   } = pluginConfig;
+  const { write: cacheWrite = false, read: cacheRead = false } = cache;
+  const { outputDir } = persist;
 
-  // execute plugin runner
-  const runnerResult =
-    typeof runner === 'object'
-      ? await executeRunnerConfig(runner)
-      : await executeRunnerFunction(runner);
-  const { audits: unvalidatedAuditOutputs, ...executionMeta } = runnerResult;
+  const { audits, ...executionMeta } = cacheRead
+    ? // IF not null, take the result from cache
+      ((await readRunnerResults(pluginMeta.slug, outputDir)) ??
+      // ELSE execute the plugin runner
+      (await executePluginRunner(pluginConfig)))
+    : await executePluginRunner(pluginConfig);
 
-  // validate auditOutputs
-  const result = auditOutputsSchema.safeParse(unvalidatedAuditOutputs);
-  if (!result.success) {
-    throw new Error(`Audit output is invalid: ${result.error.message}`);
+  if (cacheWrite) {
+    await writeRunnerResults(pluginMeta.slug, outputDir, {
+      ...executionMeta,
+      audits,
+    });
   }
-  const auditOutputs = result.data;
-  auditOutputsCorrelateWithPluginOutput(auditOutputs, pluginConfigAudits);
-
-  const normalizedAuditOutputs = await normalizeAuditOutputs(auditOutputs);
 
   // enrich `AuditOutputs` to `AuditReport`
-  const auditReports: AuditReport[] = normalizedAuditOutputs.map(
+  const auditReports: AuditReport[] = audits.map(
     (auditOutput: AuditOutput) => ({
       ...auditOutput,
       ...(pluginConfigAudits.find(
@@ -103,13 +97,18 @@ export async function executePlugin(
 }
 
 const wrapProgress = async (
-  pluginCfg: PluginConfig,
+  cfg: {
+    plugin: PluginConfig;
+    persist: Required<Pick<PersistConfig, 'outputDir'>>;
+    cache: CacheConfig;
+  },
   steps: number,
   progressBar: ProgressBar | null,
 ) => {
+  const { plugin: pluginCfg, ...rest } = cfg;
   progressBar?.updateTitle(`Executing ${bold(pluginCfg.title)}`);
   try {
-    const pluginReport = await executePlugin(pluginCfg);
+    const pluginReport = await executePlugin(pluginCfg, rest);
     progressBar?.incrementInSteps(steps);
     return pluginReport;
   } catch (error) {
@@ -146,15 +145,24 @@ const wrapProgress = async (
  *
  */
 export async function executePlugins(
-  plugins: PluginConfig[],
+  cfg: {
+    plugins: PluginConfig[];
+    persist: Required<Pick<PersistConfig, 'outputDir'>>;
+    cache: CacheConfig;
+  },
   options?: { progress?: boolean },
 ): Promise<PluginReport[]> {
+  const { plugins, ...cacheCfg } = cfg;
   const { progress = false } = options ?? {};
 
   const progressBar = progress ? getProgressBar('Run plugins') : null;
 
   const pluginsResult = plugins.map(pluginCfg =>
-    wrapProgress(pluginCfg, plugins.length, progressBar),
+    wrapProgress(
+      { plugin: pluginCfg, ...cacheCfg },
+      plugins.length,
+      progressBar,
+    ),
   );
 
   const errorsTransform = ({ reason }: PromiseRejectedResult) => String(reason);
@@ -178,18 +186,4 @@ export async function executePlugins(
   }
 
   return fulfilled.map(result => result.value);
-}
-
-function auditOutputsCorrelateWithPluginOutput(
-  auditOutputs: AuditOutputs,
-  pluginConfigAudits: PluginConfig['audits'],
-) {
-  auditOutputs.forEach(auditOutput => {
-    const auditMetadata = pluginConfigAudits.find(
-      audit => audit.slug === auditOutput.slug,
-    );
-    if (!auditMetadata) {
-      throw new PluginOutputMissingAuditError(auditOutput.slug);
-    }
-  });
 }
