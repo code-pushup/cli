@@ -53,13 +53,28 @@ export async function coreConfigMiddleware<
       format: normalizeFormats(
         cliPersist?.format ?? rcPersist?.format ?? DEFAULT_PERSIST_FORMAT,
       ),
-      report: !('no-report' in (cliPersist ?? {})),
+      report: normalizeBooleanWithNegation(
+        'report',
+        cliPersist as Record<string, unknown>,
+        rcPersist as Record<string, unknown>,
+      ),
     },
     ...(upload != null && { upload }),
     ...remainingRcConfig,
     ...remainingCliOptions,
   };
 }
+
+export const normalizeBooleanWithNegation = <T extends string>(
+  propertyName: T,
+  cliOptions?: Record<T, unknown>,
+  rcOptions?: Record<T, unknown>,
+): boolean =>
+  propertyName in (cliOptions ?? {})
+    ? (cliOptions?.[propertyName] as boolean)
+    : `no-${propertyName}` in (cliOptions ?? {})
+      ? false
+      : ((rcOptions?.[propertyName] as boolean) ?? true);
 
 export const normalizeFormats = (formats?: string[]): Format[] =>
   (formats ?? []).flatMap(format => format.split(',') as Format[]);
