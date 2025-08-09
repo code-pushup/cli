@@ -115,6 +115,31 @@ describe('collectAndPersistReports', () => {
     expect(logPersistedResults).toHaveBeenCalled();
   });
 
+  it('should call collect and not persistReport if report options is false in verbose mode', async () => {
+    const sortedScoredReport = sortReport(scoreReport(MINIMAL_REPORT_MOCK));
+
+    vi.stubEnv('CP_VERBOSE', 'true');
+
+    const verboseConfig: CollectAndPersistReportsOptions = {
+      ...MINIMAL_CONFIG_MOCK,
+      persist: {
+        outputDir: 'output',
+        filename: 'report',
+        format: ['md'],
+        report: false,
+      },
+      progress: false,
+    };
+    await collectAndPersistReports(verboseConfig);
+
+    expect(collect).toHaveBeenCalledWith(verboseConfig);
+
+    expect(persistReport).not.toHaveBeenCalled();
+    expect(logPersistedResults).not.toHaveBeenCalled();
+
+    expect(logStdoutSummary).toHaveBeenCalledWith(sortedScoredReport);
+  });
+
   it('should print a summary to stdout', async () => {
     await collectAndPersistReports(
       MINIMAL_CONFIG_MOCK as CollectAndPersistReportsOptions,

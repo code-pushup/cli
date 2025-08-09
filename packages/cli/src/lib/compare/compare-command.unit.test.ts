@@ -41,6 +41,7 @@ describe('compare-command', () => {
           outputDir: DEFAULT_PERSIST_OUTPUT_DIR,
           filename: DEFAULT_PERSIST_FILENAME,
           format: DEFAULT_PERSIST_FORMAT,
+          report: true,
         },
         upload: expect.any(Object),
       },

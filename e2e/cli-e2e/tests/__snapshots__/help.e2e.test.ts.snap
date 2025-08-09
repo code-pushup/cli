@@ -43,6 +43,8 @@ Persist Options:
                                                               [string]
       --persist.format     Format of the report output. e.g. \`md\`, \`json\`
                                                                [array]
+      --persist.report     Generate the report files for given formats. (useful
+                           in combination with caching) [boolean]
 
 Upload Options:
       --upload.organization  Organization slug from portal
