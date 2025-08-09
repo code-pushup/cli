@@ -4,6 +4,9 @@
   "sourceRoot": "packages/models/src",
   "projectType": "library",
   "targets": {
+    "code-pushup": {
+      "dependsOn": ["unit-test", "int-test"]
+    },
     "build": {
       "dependsOn": [{ "projects": "models-transformers", "target": "build" }],
       "executor": "@nx/js:tsc",
