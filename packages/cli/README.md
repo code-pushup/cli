@@ -212,7 +212,7 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 | **`--persist.outputDir`**   | `string`             | n/a      | Directory for the produced reports.                                         |
 | **`--persist.filename`**    | `string`             | `report` | Filename for the produced reports without extension.                        |
 | **`--persist.format`**      | `('json' \| 'md')[]` | `json`   | Format(s) of the report file.                                               |
-| **`--persist.skipReports`** | `boolean`            | `false`  | Skip generating report files. (useful in combination wit caching)           |
+| **`--persist.skipReports`** | `boolean`            | `false`  | Skip generating report files. (useful in combination with caching)           |
 | **`--upload.organization`** | `string`             | n/a      | Organization slug from portal.                                              |
 | **`--upload.project`**      | `string`             | n/a      | Project slug from portal.                                                   |
 | **`--upload.server`**       | `string`             | n/a      | URL to your portal server.                                                  |
