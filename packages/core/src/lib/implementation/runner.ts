@@ -48,7 +48,7 @@ export async function executeRunnerConfig(
     },
   });
 
-  // read process output from file system and parse it
+  // read process output from the file system and parse it
   const outputs = await readJsonFile(outputFile);
   // clean up plugin individual runner output directory
   await removeDirectoryIfExists(path.dirname(outputFile));
@@ -132,7 +132,7 @@ function auditOutputsCorrelateWithPluginOutput(
 }
 
 export function getAuditOutputsPath(pluginSlug: string, outputDir: string) {
-  return path.join(outputDir, pluginSlug, `audit-outputs.json`);
+  return path.join(outputDir, pluginSlug, 'runner-output.json');
 }
 
 /**
