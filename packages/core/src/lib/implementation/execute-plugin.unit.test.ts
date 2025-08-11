@@ -22,7 +22,7 @@ describe('executePlugin', () => {
     await expect(
       executePlugin(MINIMAL_PLUGIN_CONFIG_MOCK, {
         persist: { outputDir: '' },
-        cache: {},
+        cache: { read: false, write: false },
       }),
     ).resolves.toStrictEqual({
       slug: 'node',
@@ -60,7 +60,7 @@ describe('executePlugin', () => {
     await expect(
       executePlugin(MINIMAL_PLUGIN_CONFIG_MOCK, {
         persist: { outputDir: 'dummy-path-result-is-mocked' },
-        cache: { read: true },
+        cache: { read: true, write: false },
       }),
     ).resolves.toStrictEqual({
       slug: 'node',
@@ -103,7 +103,7 @@ describe('executePlugin', () => {
     await expect(
       executePlugin(MINIMAL_PLUGIN_CONFIG_MOCK, {
         persist: { outputDir: 'dummy-path-result-is-mocked' },
-        cache: { read: true },
+        cache: { read: true, write: false },
       }),
     ).resolves.toStrictEqual({
       slug: 'node',
@@ -138,7 +138,7 @@ describe('executePlugins', () => {
           },
         ],
         persist: { outputDir: '.code-pushup' },
-        cache: {},
+        cache: { read: false, write: false },
       },
       { progress: false },
     );
@@ -170,7 +170,7 @@ describe('executePlugins', () => {
             },
           ] satisfies PluginConfig[],
           persist: { outputDir: '.code-pushup' },
-          cache: {},
+          cache: { read: false, write: false },
         },
         { progress: false },
       ),
@@ -202,7 +202,7 @@ describe('executePlugins', () => {
             },
           ] satisfies PluginConfig[],
           persist: { outputDir: '.code-pushup' },
-          cache: {},
+          cache: { read: false, write: false },
         },
         { progress: false },
       ),
@@ -243,7 +243,7 @@ describe('executePlugins', () => {
             },
           ] satisfies PluginConfig[],
           persist: { outputDir: '.code-pushup' },
-          cache: {},
+          cache: { read: false, write: false },
         },
         { progress: false },
       ),
@@ -285,7 +285,7 @@ describe('executePlugins', () => {
             },
           ] satisfies PluginConfig[],
           persist: { outputDir: '.code-pushup' },
-          cache: {},
+          cache: { read: false, write: false },
         },
         { progress: false },
       ),
@@ -338,7 +338,7 @@ describe('executePlugins', () => {
           },
         ],
         persist: { outputDir: '.code-pushup' },
-        cache: {},
+        cache: { read: false, write: false },
       },
       { progress: false },
     );

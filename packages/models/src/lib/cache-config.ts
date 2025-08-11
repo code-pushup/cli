@@ -22,7 +22,8 @@ export const cacheConfigShorthandSchema = z
 export type CacheConfigShorthand = z.infer<typeof cacheConfigShorthandSchema>;
 
 export const cacheConfigSchema = z
-  .union(cacheConfigShorthandSchema, cacheConfigObjectSchema)
-  .describe('Cache configuration for read and write operations');
+  .union([cacheConfigShorthandSchema, cacheConfigObjectSchema])
+  .describe('Cache configuration for read and write operations')
+  .default(false);
 
 export type CacheConfig = z.infer<typeof cacheConfigSchema>;

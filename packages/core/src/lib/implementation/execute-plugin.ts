@@ -3,7 +3,7 @@ import type {
   Audit,
   AuditOutput,
   AuditReport,
-  CacheConfig,
+  CacheConfigObject,
   PersistConfig,
   PluginConfig,
   PluginReport,
@@ -46,7 +46,7 @@ import {
 export async function executePlugin(
   pluginConfig: PluginConfig,
   opt: {
-    cache?: CacheConfig;
+    cache: CacheConfigObject;
     persist: Required<Pick<PersistConfig, 'outputDir'>>;
   },
 ): Promise<PluginReport> {
@@ -59,7 +59,7 @@ export async function executePlugin(
     groups,
     ...pluginMeta
   } = pluginConfig;
-  const { write: cacheWrite = false, read: cacheRead = false } = cache ?? {};
+  const { write: cacheWrite = false, read: cacheRead = false } = cache;
   const { outputDir } = persist;
 
   const { audits, ...executionMeta } = cacheRead
@@ -101,7 +101,7 @@ const wrapProgress = async (
   cfg: {
     plugin: PluginConfig;
     persist: Required<Pick<PersistConfig, 'outputDir'>>;
-    cache: CacheConfig;
+    cache: CacheConfigObject;
   },
   steps: number,
   progressBar: ProgressBar | null,
@@ -127,7 +127,7 @@ const wrapProgress = async (
 /**
  * Execute multiple plugins and aggregates their output.
  * @public
- * @param plugins array of {@link PluginConfig} objects
+ * @param cfg
  * @param {Object} [options] execution options
  * @param {boolean} options.progress show progress bar
  * @returns {Promise<PluginReport[]>} plugin report
@@ -149,7 +149,7 @@ export async function executePlugins(
   cfg: {
     plugins: PluginConfig[];
     persist: Required<Pick<PersistConfig, 'outputDir'>>;
-    cache: CacheConfig;
+    cache: CacheConfigObject;
   },
   options?: { progress?: boolean },
 ): Promise<PluginReport[]> {

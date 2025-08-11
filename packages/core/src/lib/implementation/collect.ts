@@ -25,9 +25,9 @@ export async function collect(options: CollectOptions): Promise<Report> {
   const pluginOutputs = await executePlugins(
     {
       plugins,
-      persist: { ...persist, outputDir: DEFAULT_PERSIST_OUTPUT_DIR },
+      persist: { outputDir: DEFAULT_PERSIST_OUTPUT_DIR, ...persist },
       // implement together with CLI option
-      cache: {},
+      cache: { read: false, write: false },
     },
     otherOptions,
   );
