@@ -15,6 +15,24 @@ export type CoreConfigMiddlewareOptions = GeneralCliOptions &
   CoreConfigCliOptions &
   FilterOptions;
 
+function buildPersistConfig(
+  cliPersist: CoreConfigCliOptions['persist'],
+  rcPersist: CoreConfig['persist'],
+): Required<CoreConfig['persist']> {
+  return {
+    outputDir:
+      cliPersist?.outputDir ??
+      rcPersist?.outputDir ??
+      DEFAULT_PERSIST_OUTPUT_DIR,
+    filename:
+      cliPersist?.filename ?? rcPersist?.filename ?? DEFAULT_PERSIST_FILENAME,
+    format: normalizeFormats(
+      cliPersist?.format ?? rcPersist?.format ?? DEFAULT_PERSIST_FORMAT,
+    ),
+    skipReports: cliPersist?.skipReports ?? rcPersist?.skipReports ?? false,
+  };
+}
+
 export async function coreConfigMiddleware<
   T extends CoreConfigMiddlewareOptions,
 >(processArgs: T): Promise<GeneralCliOptions & CoreConfig & FilterOptions> {
@@ -43,18 +61,7 @@ export async function coreConfigMiddleware<
         });
   return {
     ...(config != null && { config }),
-    persist: {
-      outputDir:
-        cliPersist?.outputDir ??
-        rcPersist?.outputDir ??
-        DEFAULT_PERSIST_OUTPUT_DIR,
-      filename:
-        cliPersist?.filename ?? rcPersist?.filename ?? DEFAULT_PERSIST_FILENAME,
-      format: normalizeFormats(
-        cliPersist?.format ?? rcPersist?.format ?? DEFAULT_PERSIST_FORMAT,
-      ),
-      skipReports: cliPersist?.skipReports ?? rcPersist?.skipReports ?? false,
-    },
+    persist: buildPersistConfig(cliPersist, rcPersist),
     ...(upload != null && { upload }),
     ...remainingRcConfig,
     ...remainingCliOptions,

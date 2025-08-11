@@ -35,7 +35,9 @@ export async function collectAndPersistReports(
   const { persist } = options;
   const { skipReports = false, ...persistOptions } = persist ?? {};
 
-  if (skipReports !== true) {
+  if (skipReports === true) {
+    logger.info('Skipping saving reports as `persist.skipReports` is true');
+  } else {
     const persistResults = await persistReport(
       reportResult,
       sortedScoredReport,
@@ -45,8 +47,6 @@ export async function collectAndPersistReports(
     if (isVerbose()) {
       logPersistedResults(persistResults);
     }
-  } else {
-    logger.info('Skipping saving reports as `persist.skipReports` is true');
   }
 
   // terminal output
