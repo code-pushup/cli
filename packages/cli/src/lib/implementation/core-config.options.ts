@@ -6,7 +6,9 @@ import type {
 } from './core-config.model.js';
 
 export function yargsCoreConfigOptionsDefinition(): Record<
-  keyof (PersistConfigCliOptions & UploadConfigCliOptions),
+  keyof (PersistConfigCliOptions &
+    UploadConfigCliOptions &
+    CacheConfigCliOptions),
   Options
 > {
   return {
@@ -65,6 +67,10 @@ export function yargsCacheConfigOptionsDefinition(): Record<
   Options
 > {
   return {
+    cache: {
+      describe: 'Cache runner outputs (both read and write)',
+      type: 'boolean',
+    },
     'cache.read': {
       describe: 'Read runner-output.json to file system',
       type: 'boolean',

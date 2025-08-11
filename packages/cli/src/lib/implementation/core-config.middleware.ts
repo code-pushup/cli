@@ -1,5 +1,7 @@
 import { autoloadRc, readRcByPath } from '@code-pushup/core';
 import {
+  type CacheConfig,
+  type CacheConfigObject,
   type CoreConfig,
   DEFAULT_PERSIST_FILENAME,
   DEFAULT_PERSIST_FORMAT,
@@ -42,13 +44,10 @@ export async function coreConfigMiddleware<
           ...rcUpload,
           ...cliUpload,
         });
+
   return {
     ...(config != null && { config }),
-    cache: {
-      write: false,
-      read: false,
-      ...cliCache,
-    },
+    cache: normalizeCache(cliCache),
     persist: {
       outputDir:
         cliPersist?.outputDir ??
@@ -65,6 +64,16 @@ export async function coreConfigMiddleware<
     ...remainingCliOptions,
   };
 }
+
+export const normalizeCache = (cache?: CacheConfig): CacheConfigObject => {
+  if (cache == null) {
+    return { write: false, read: false };
+  }
+  if (typeof cache === 'boolean') {
+    return { write: cache, read: cache };
+  }
+  return { write: cache.write ?? false, read: cache.read ?? false };
+};
 
 export const normalizeFormats = (formats?: string[]): Format[] =>
   (formats ?? []).flatMap(format => format.split(',') as Format[]);

@@ -146,11 +146,9 @@ export async function writeRunnerResults(
   outputDir: string,
   runnerResult: ValidatedRunnerResult,
 ): Promise<void> {
-  await ensureDirectoryExists(outputDir);
-  await writeFile(
-    getRunnerOutputsPath(pluginSlug, outputDir),
-    JSON.stringify(runnerResult.audits, null, 2),
-  );
+  const cacheFilePath = getRunnerOutputsPath(pluginSlug, outputDir);
+  await ensureDirectoryExists(path.dirname(cacheFilePath));
+  await writeFile(cacheFilePath, JSON.stringify(runnerResult.audits, null, 2));
 }
 
 export async function readRunnerResults(

@@ -1,4 +1,5 @@
 import {
+  type CacheConfigObject,
   type CoreConfig,
   type PersistConfig,
   pluginReportSchema,
@@ -19,7 +20,10 @@ import type { GlobalOptions } from './types.js';
 export type CollectAndPersistReportsOptions = Pick<
   CoreConfig,
   'plugins' | 'categories'
-> & { persist: Required<PersistConfig> } & Partial<GlobalOptions>;
+> & {
+  persist: Required<PersistConfig>;
+  cache: CacheConfigObject;
+} & Partial<GlobalOptions>;
 
 export async function collectAndPersistReports(
   options: CollectAndPersistReportsOptions,

@@ -54,8 +54,14 @@ Upload Options:
                                                               [string]
 
 Options:
-      --version  Show version                       [boolean]
-  -h, --help     Show help                          [boolean]
+      --version      Show version                   [boolean]
+      --cache        Cache runner outputs (both read and write)
+                                                             [boolean]
+      --cache.read   Read runner-output.json to file system
+                                                             [boolean]
+      --cache.write  Write runner-output.json to file system
+                                                             [boolean]
+  -h, --help         Show help                      [boolean]
 
 Examples:
   code-pushup                               Run collect followed by upload based

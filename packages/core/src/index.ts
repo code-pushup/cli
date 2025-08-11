@@ -1,5 +1,3 @@
-import type { ValidatedRunnerResult } from './lib/implementation/runner';
-
 export {
   collectAndPersistReports,
   type CollectAndPersistReportsOptions,

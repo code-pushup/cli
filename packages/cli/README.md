@@ -328,3 +328,28 @@ In addition to the [Common Command Options](#common-command-options), the follow
 | Option        | Required | Type       | Description                       |
 | ------------- | :------: | ---------- | --------------------------------- |
 | **`--files`** |   yes    | `string[]` | List of `report-diff.json` paths. |
+
+## Caching
+
+The CLI supports caching to speed up subsequent runs and is compatible with Nx and turborepo.
+
+Depending on your strategy, you can cache the generated reports files or plugin runner output.
+For fine-grained caching, we suggest caching plugin runner output.
+
+### Caching Example Nx
+
+To cache plugin runner output, you can use the `--cache.write` and `--cache.read` options.
+
+Cache plugin level output files:
+
+```bash
+# CACHE OUTPUTS
+# write cache to persist.outputDir/<pluginName>/runner-output.json
+# npx @code-pushup/cli collect --persist.outputDir {projectRoot}/.code-pushup --persist.skipReports --onlyPlugins coverage --cache
+nx run-many -t code-pushup:collect:coverage
+# npx @code-pushup/cli collect --persist.outputDir {projectRoot}/.code-pushup --persist.skipReports --onlyPlugins eslint --cache
+nx run-many -t code-pushup:collect:eslint
+# READ CACHED OUTPUTS
+# npx @code-pushup/cli collect --cache.read
+nx run-many -t code-pushup:collect
+```

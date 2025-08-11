@@ -21,6 +21,7 @@ export type UploadConfigCliOptions = {
 export type CacheConfigCliOptions = {
   'cache.read'?: boolean;
   'cache.write'?: boolean;
+  cache?: boolean;
 };
 
 export type ConfigCliOptions = {
@@ -31,4 +32,5 @@ export type ConfigCliOptions = {
 
 export type CoreConfigCliOptions = Pick<CoreConfig, 'persist'> & {
   upload?: Partial<Omit<UploadConfig, 'timeout'>>;
-} & CacheConfig;
+  cache?: CacheConfig;
+};
