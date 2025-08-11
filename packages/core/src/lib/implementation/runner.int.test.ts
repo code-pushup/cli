@@ -88,7 +88,7 @@ describe('writeRunnerResults', () => {
     await cleanTestFolder(outputDir);
   });
 
-  it('should write runner results from a file', async () => {
+  it('should write runner results to a file', async () => {
     await expect(
       writeRunnerResults(pluginSlug, outputDir, {
         duration: 1000,
