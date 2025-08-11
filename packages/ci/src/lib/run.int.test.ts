@@ -12,7 +12,7 @@ import { type SimpleGit, simpleGit } from 'simple-git';
 import { type MockInstance, expect } from 'vitest';
 import {
   type ReportFragment,
-  downloadFromPortal,
+  downloadReportFromPortal,
 } from '@code-pushup/portal-client';
 import {
   type CoreConfig,
@@ -43,7 +43,7 @@ vi.mock('@code-pushup/portal-client', async importOriginal => {
     await importOriginal();
   return {
     ...mod,
-    downloadFromPortal: vi.fn(simulateDownloadFromPortal),
+    downloadReportFromPortal: vi.fn(simulateDownloadReportFromPortal),
   };
 });
 
@@ -84,7 +84,7 @@ const fixturePaths = {
   },
 };
 
-function simulateDownloadFromPortal() {
+function simulateDownloadReportFromPortal() {
   return utils.readJsonFile<ReportFragment>(fixturePaths.reports.before.portal);
 }
 
@@ -500,8 +500,8 @@ describe('runInCI', () => {
           },
         } satisfies RunResult);
 
-        expect(downloadFromPortal).toHaveBeenCalledWith<
-          Parameters<typeof downloadFromPortal>
+        expect(downloadReportFromPortal).toHaveBeenCalledWith<
+          Parameters<typeof downloadReportFromPortal>
         >({
           server: 'https://api.code-pushup.dunder-mifflin.org/graphql',
           apiKey: 'cp_abcdef0123456789',
@@ -509,7 +509,7 @@ describe('runInCI', () => {
             organization: 'dunder-mifflin',
             project: 'website',
             commit: refs.base.sha,
-            withDetails: true,
+            withAuditDetails: true,
           },
         });
 

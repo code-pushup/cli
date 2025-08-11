@@ -34,7 +34,7 @@ describe('mergeDiffs', () => {
     const outputPath = await mergeDiffs(files, persistConfig);
 
     expect(outputPath).toBe(path.join(MEMFS_VOLUME, 'report-diff.md'));
-    await expect(fileExists(outputPath)).resolves.toBe(true);
+    await expect(fileExists(outputPath)).resolves.toBeTrue();
     await expect(readFile(outputPath, 'utf8')).resolves.toContain(
       '# Code PushUp',
     );
