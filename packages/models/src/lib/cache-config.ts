@@ -5,8 +5,11 @@ export const cacheConfigObjectSchema = z
     read: z
       .boolean()
       .describe('Whether to read from cache if available')
-      .optional(),
-    write: z.boolean().describe('Whether to write results to cache').optional(),
+      .default(false),
+    write: z
+      .boolean()
+      .describe('Whether to write results to cache')
+      .default(false),
   })
   .describe('Cache configuration object for read and/or write operations');
 export type CacheConfigObject = z.infer<typeof cacheConfigObjectSchema>;
