@@ -28,7 +28,7 @@ describe('pnpmHandler', () => {
         },
         MEMFS_VOLUME,
       );
-      await expect(pnpmHandler.isConfigured(options)).resolves.toBe(true);
+      await expect(pnpmHandler.isConfigured(options)).resolves.toBeTrue();
     });
 
     it("should NOT detect PNPM workspace when pnpm-workspace.yaml doesn't exist", async () => {
@@ -39,7 +39,7 @@ describe('pnpmHandler', () => {
         },
         MEMFS_VOLUME,
       );
-      await expect(pnpmHandler.isConfigured(options)).resolves.toBe(false);
+      await expect(pnpmHandler.isConfigured(options)).resolves.toBeFalse();
     });
 
     it("should NOT detect PNPM workspace when root package.json doesn't exist", async () => {
@@ -52,7 +52,7 @@ describe('pnpmHandler', () => {
         },
         MEMFS_VOLUME,
       );
-      await expect(pnpmHandler.isConfigured(options)).resolves.toBe(false);
+      await expect(pnpmHandler.isConfigured(options)).resolves.toBeFalse();
     });
   });
 

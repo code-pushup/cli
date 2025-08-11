@@ -7,27 +7,8 @@
     "code-pushup": {
       "dependsOn": ["unit-test", "int-test"]
     },
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/plugin-eslint",
-        "main": "packages/plugin-eslint/src/index.ts",
-        "tsConfig": "packages/plugin-eslint/tsconfig.lib.json",
-        "assets": ["packages/plugin-eslint/*.md"],
-        "additionalEntryPoints": ["packages/plugin-eslint/src/bin.ts"]
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/plugin-eslint/**/*.ts",
-          "packages/plugin-eslint/package.json"
-        ]
-      }
-    },
+    "build": {},
+    "lint": {},
     "unit-test": {
       "executor": "@nx/vite:test",
       "options": {

@@ -9,14 +9,9 @@
       "dependsOn": ["unit-test", "int-test"]
     },
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/packages/nx-plugin",
-        "main": "packages/nx-plugin/src/index.ts",
-        "tsConfig": "packages/nx-plugin/tsconfig.lib.json",
         "assets": [
-          "packages/nx-plugin/*.md",
+          "{projectRoot}/*.md",
           {
             "input": "./packages/nx-plugin/src",
             "glob": "**/!(*.ts)",
@@ -41,8 +36,6 @@
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
           "packages/nx-plugin/**/*.ts",
