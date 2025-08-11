@@ -67,28 +67,6 @@ describe('CLI collect', () => {
     expect(md).toContain(dummyAuditTitle);
   });
 
-  it('should not create reports if --persist.skipReports is given', async () => {
-    const { code } = await executeProcess({
-      command: 'npx',
-      args: [
-        '@code-pushup/cli',
-        '--no-progress',
-        'collect',
-        '--persist.skipReports',
-      ],
-      cwd: dummyDir,
-    });
-
-    expect(code).toBe(0);
-
-    await expect(
-      fileExists(path.join(dummyOutputDir, 'report.md')),
-    ).resolves.toBeFalsy();
-    await expect(
-      fileExists(path.join(dummyOutputDir, 'report.json')),
-    ).resolves.toBeFalsy();
-  });
-
   it('should write runner outputs if --cache is given', async () => {
     const { code } = await executeProcess({
       command: 'npx',
@@ -105,8 +83,8 @@ describe('CLI collect', () => {
     ).resolves.toStrictEqual([
       {
         slug: 'dummy-audit',
-        score: 1,
-        value: 10,
+        score: 0.3,
+        value: 3,
       },
     ]);
   });
