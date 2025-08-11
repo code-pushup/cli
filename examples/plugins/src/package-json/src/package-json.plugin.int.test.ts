@@ -49,6 +49,7 @@ describe('create-package-json', () => {
     const pluginConfig = create(baseOptions);
     const pluginOutput = await executePlugin(pluginConfig, {
       persist: { outputDir: '.code-pushup' },
+      cache: { read: false, write: false },
     });
 
     expect(() => pluginReportSchema.parse(pluginOutput)).not.toThrow();
@@ -72,6 +73,7 @@ describe('create-package-json', () => {
     });
     const { audits: auditOutputs } = await executePlugin(pluginConfig, {
       persist: { outputDir: '.code-pushup' },
+      cache: { read: false, write: false },
     });
 
     expect(auditOutputs[0]?.value).toBe(1);
@@ -91,6 +93,7 @@ describe('create-package-json', () => {
     });
     const { audits: auditOutputs } = await executePlugin(pluginConfig, {
       persist: { outputDir: '.code-pushup' },
+      cache: { read: false, write: false },
     });
 
     expect(auditOutputs[1]?.slug).toBe('package-type');
@@ -112,6 +115,7 @@ describe('create-package-json', () => {
     });
     const { audits: auditOutputs } = await executePlugin(pluginConfig, {
       persist: { outputDir: '.code-pushup' },
+      cache: { read: false, write: false },
     });
 
     expect(auditOutputs).toHaveLength(audits.length);
@@ -135,6 +139,7 @@ describe('create-package-json', () => {
     });
     const { audits: auditOutputs } = await executePlugin(pluginConfig, {
       persist: { outputDir: '.code-pushup' },
+      cache: { read: false, write: false },
     });
 
     expect(auditOutputs).toHaveLength(audits.length);
@@ -158,6 +163,7 @@ describe('create-package-json', () => {
     });
     const { audits: auditOutputs } = await executePlugin(pluginConfig, {
       persist: { outputDir: '.code-pushup' },
+      cache: { read: false, write: false },
     });
 
     expect(auditOutputs).toHaveLength(audits.length);

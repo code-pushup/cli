@@ -66,6 +66,7 @@ describe('create', () => {
     await expect(
       executePlugin(pluginConfig, {
         persist: { outputDir: '.code-pushup' },
+        cache: { read: false, write: false },
       }),
     ).resolves.toMatchObject({
       description:
@@ -85,6 +86,7 @@ describe('create', () => {
     });
     const { audits: auditOutputs } = await executePlugin(pluginConfig, {
       persist: { outputDir: '.code-pushup' },
+      cache: { read: false, write: false },
     });
 
     expect(auditOutputs).toHaveLength(1);
@@ -99,6 +101,7 @@ describe('create', () => {
     });
     const { audits: auditOutputs } = await executePlugin(pluginConfig, {
       persist: { outputDir: '.code-pushup' },
+      cache: { read: false, write: false },
     });
 
     expect(auditOutputs).toHaveLength(1);

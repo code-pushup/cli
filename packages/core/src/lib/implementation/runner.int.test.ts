@@ -2,7 +2,11 @@ import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { cleanTestFolder } from '@code-pushup/test-utils';
 import { ensureDirectoryExists } from '@code-pushup/utils';
-import { readRunnerResults, writeRunnerResults } from './runner.js';
+import {
+  getAuditOutputsPath,
+  readRunnerResults,
+  writeRunnerResults,
+} from './runner.js';
 
 describe('readRunnerResults', () => {
   const outputDir = path.join(
@@ -19,7 +23,7 @@ describe('readRunnerResults', () => {
   beforeEach(async () => {
     await ensureDirectoryExists(cacheDir);
     await writeFile(
-      path.join(cacheDir, 'audit-outputs.json'),
+      getAuditOutputsPath(pluginSlug, outputDir),
       JSON.stringify([
         {
           slug: 'node-version',
@@ -73,7 +77,7 @@ describe('writeRunnerResults', () => {
   beforeEach(async () => {
     await ensureDirectoryExists(cacheDir);
     await writeFile(
-      path.join(cacheDir, 'audit-outputs.json'),
+      getAuditOutputsPath(pluginSlug, outputDir),
       JSON.stringify([
         {
           slug: 'node-version',
