@@ -42,5 +42,9 @@
     "chrome-launcher": "^1.1.1",
     "lighthouse": "^12.0.0",
     "lighthouse-logger": "2.0.1"
-  }
+  },
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
 }

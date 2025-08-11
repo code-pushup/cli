@@ -29,5 +29,9 @@
   "dependencies": {
     "zod": "^4.0.5",
     "vscode-material-icons": "^0.1.0"
-  }
+  },
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
 }

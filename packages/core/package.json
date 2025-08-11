@@ -50,5 +50,9 @@
     "@code-pushup/portal-client": {
       "optional": true
     }
-  }
+  },
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
 }
