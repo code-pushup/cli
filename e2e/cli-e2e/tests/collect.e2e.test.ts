@@ -1,10 +1,6 @@
 import { cp } from 'node:fs/promises';
 import path from 'node:path';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
-import {
-  type ValidatedRunnerResult,
-  getRunnerOutputsPath,
-} from '@code-pushup/core';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
   E2E_ENVIRONMENTS_DIR,
@@ -103,8 +99,8 @@ describe('CLI collect', () => {
     expect(code).toBe(0);
 
     await expect(
-      readJsonFile<ValidatedRunnerResult>(
-        getRunnerOutputsPath(dummyPluginSlug, dummyOutputDir),
+      readJsonFile(
+        path.join(dummyOutputDir, dummyPluginSlug, 'runner-output.json'),
       ),
     ).resolves.toStrictEqual([
       {
