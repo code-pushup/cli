@@ -131,7 +131,7 @@ function auditOutputsCorrelateWithPluginOutput(
   });
 }
 
-export function getAuditOutputsPath(pluginSlug: string, outputDir: string) {
+export function getRunnerOutputsPath(pluginSlug: string, outputDir: string) {
   return path.join(outputDir, pluginSlug, 'runner-output.json');
 }
 
@@ -148,7 +148,7 @@ export async function writeRunnerResults(
 ): Promise<void> {
   await ensureDirectoryExists(outputDir);
   await writeFile(
-    getAuditOutputsPath(pluginSlug, outputDir),
+    getRunnerOutputsPath(pluginSlug, outputDir),
     JSON.stringify(runnerResult.audits, null, 2),
   );
 }
@@ -157,7 +157,7 @@ export async function readRunnerResults(
   pluginSlug: string,
   outputDir: string,
 ): Promise<ValidatedRunnerResult | null> {
-  const auditOutputsPath = getAuditOutputsPath(pluginSlug, outputDir);
+  const auditOutputsPath = getRunnerOutputsPath(pluginSlug, outputDir);
   if (await fileExists(auditOutputsPath)) {
     const cachedResult = await readJsonFile<AuditOutputs>(auditOutputsPath);
 

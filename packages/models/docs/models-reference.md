@@ -133,6 +133,36 @@ _Object containing the following properties:_
 
 _(\*) Required._
 
+## CacheConfigObject
+
+Cache configuration object for read and/or write operations
+
+_Object containing the following properties:_
+
+| Property | Description                             | Type      | Default |
+| :------- | :-------------------------------------- | :-------- | :------ |
+| `read`   | Whether to read from cache if available | `boolean` | `false` |
+| `write`  | Whether to write results to cache       | `boolean` | `false` |
+
+_All properties are optional._
+
+## CacheConfig
+
+Cache configuration for read and write operations
+
+_Union of the following possible types:_
+
+- [CacheConfigShorthand](#cacheconfigshorthand)
+- [CacheConfigObject](#cacheconfigobject)
+
+_Default value:_ `false`
+
+## CacheConfigShorthand
+
+Cache configuration shorthand for both, read and write operations
+
+_Boolean._
+
 ## CategoryConfig
 
 _Object containing the following properties:_

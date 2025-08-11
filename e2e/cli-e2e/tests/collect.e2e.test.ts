@@ -1,13 +1,23 @@
 import { cp } from 'node:fs/promises';
 import path from 'node:path';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import {
+  type ValidatedRunnerResult,
+  getRunnerOutputsPath,
+} from '@code-pushup/core';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
-import { executeProcess, fileExists, readTextFile } from '@code-pushup/utils';
+import {
+  executeProcess,
+  fileExists,
+  readJsonFile,
+  readTextFile,
+} from '@code-pushup/utils';
+import { dummyPluginSlug } from '../mocks/fixtures/dummy-setup/dummy.plugin';
 
 describe('CLI collect', () => {
   const dummyPluginTitle = 'Dummy Plugin';
@@ -61,14 +71,14 @@ describe('CLI collect', () => {
     expect(md).toContain(dummyAuditTitle);
   });
 
-  it('should not create reports if --persist.no-report is given', async () => {
+  it('should not create reports if --persist.skipReports is given', async () => {
     const { code } = await executeProcess({
       command: 'npx',
       args: [
         '@code-pushup/cli',
         '--no-progress',
         'collect',
-        '--persist.no-report',
+        '--persist.skipReports',
       ],
       cwd: dummyDir,
     });
@@ -81,6 +91,28 @@ describe('CLI collect', () => {
     await expect(
       fileExists(path.join(dummyOutputDir, 'report.json')),
     ).resolves.toBeFalsy();
+  });
+
+  it('should write runner outputs if --cache is given', async () => {
+    const { code } = await executeProcess({
+      command: 'npx',
+      args: ['@code-pushup/cli', '--no-progress', 'collect', '--cache'],
+      cwd: dummyDir,
+    });
+
+    expect(code).toBe(0);
+
+    await expect(
+      readJsonFile<ValidatedRunnerResult>(
+        getRunnerOutputsPath(dummyPluginSlug, dummyOutputDir),
+      ),
+    ).resolves.toStrictEqual([
+      {
+        slug: 'dummy-audit',
+        score: 1,
+        value: 10,
+      },
+    ]);
   });
 
   it('should print report summary to stdout', async () => {
