@@ -4,27 +4,12 @@
   "sourceRoot": "testing/test-setup/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/testing/test-setup",
-        "main": "testing/test-setup/src/index.ts",
-        "tsConfig": "testing/test-setup/tsconfig.lib.json",
-        "assets": ["testing/test-setup/*.md"]
-      }
-    },
+    "build": {},
+    "lint": {},
     "unit-test": {
       "executor": "@nx/vite:test",
       "options": {
         "configFile": "testing/test-setup/vitest.unit.config.ts"
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["testing/test-setup/**/*.ts"]
       }
     }
   },

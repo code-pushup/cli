@@ -228,7 +228,7 @@ describe('hasWorkspacesEnabled', () => {
       { 'package.json': pkgJsonContent({ name: 'example', private: true }) },
       MEMFS_VOLUME,
     );
-    await expect(hasWorkspacesEnabled(MEMFS_VOLUME)).resolves.toBe(false);
+    await expect(hasWorkspacesEnabled(MEMFS_VOLUME)).resolves.toBeFalse();
   });
 
   it('should identify as NOT enabled if `"private": true` missing in root package.json', async () => {
@@ -241,7 +241,7 @@ describe('hasWorkspacesEnabled', () => {
       },
       MEMFS_VOLUME,
     );
-    await expect(hasWorkspacesEnabled(MEMFS_VOLUME)).resolves.toBe(false);
+    await expect(hasWorkspacesEnabled(MEMFS_VOLUME)).resolves.toBeFalse();
   });
 
   it('should identify as enabled if private and workspaces array set in root package.json', async () => {
@@ -254,7 +254,7 @@ describe('hasWorkspacesEnabled', () => {
       },
       MEMFS_VOLUME,
     );
-    await expect(hasWorkspacesEnabled(MEMFS_VOLUME)).resolves.toBe(true);
+    await expect(hasWorkspacesEnabled(MEMFS_VOLUME)).resolves.toBeTrue();
   });
 
   it('should identify as enabled if private and workspaces object set in root package.json', async () => {
@@ -270,7 +270,7 @@ describe('hasWorkspacesEnabled', () => {
       },
       MEMFS_VOLUME,
     );
-    await expect(hasWorkspacesEnabled(MEMFS_VOLUME)).resolves.toBe(true);
+    await expect(hasWorkspacesEnabled(MEMFS_VOLUME)).resolves.toBeTrue();
   });
 });
 
@@ -313,25 +313,25 @@ describe('hasScript', () => {
         { scripts: { 'code-pushup': 'code-pushup --no-progress' } },
         'code-pushup',
       ),
-    ).toBe(true);
+    ).toBeTrue();
   });
 
   it('should return false if script not in package.json "scripts"', () => {
-    expect(hasScript({}, 'code-pushup')).toBe(false);
+    expect(hasScript({}, 'code-pushup')).toBeFalse();
   });
 });
 
 describe('hasDependency', () => {
   it('should return true if package name in "dependencies"', () => {
-    expect(hasDependency({ dependencies: { react: '^19.0.0' } }, 'react')).toBe(
-      true,
-    );
+    expect(
+      hasDependency({ dependencies: { react: '^19.0.0' } }, 'react'),
+    ).toBeTrue();
   });
 
   it('should return true if package name in "devDependencies"', () => {
-    expect(hasDependency({ devDependencies: { nx: '20.1.3' } }, 'nx')).toBe(
-      true,
-    );
+    expect(
+      hasDependency({ devDependencies: { nx: '20.1.3' } }, 'nx'),
+    ).toBeTrue();
   });
 
   it('should return false if package name is neither in "dependencies" nor "devDependencies"', () => {
@@ -343,7 +343,7 @@ describe('hasDependency', () => {
         },
         'svelte',
       ),
-    ).toBe(false);
+    ).toBeFalse();
   });
 });
 
@@ -353,7 +353,7 @@ describe('hasCodePushUpDependency', () => {
       hasCodePushUpDependency({
         devDependencies: { '@code-pushup/cli': '^0.55.0' },
       }),
-    ).toBe(true);
+    ).toBeTrue();
   });
 
   it('should return true if @code-pushup/cli in "dependencies"', () => {
@@ -361,7 +361,7 @@ describe('hasCodePushUpDependency', () => {
       hasCodePushUpDependency({
         dependencies: { '@code-pushup/cli': 'latest' },
       }),
-    ).toBe(true);
+    ).toBeTrue();
   });
 
   it('should return false if @code-pushup/cli is neither in "dependencies" nor "devDependencies"', () => {
@@ -372,6 +372,6 @@ describe('hasCodePushUpDependency', () => {
           '@code-pushup/utils': 'latest',
         },
       }),
-    ).toBe(false);
+    ).toBeFalse();
   });
 });

@@ -1,3 +1,13 @@
+## 0.73.0 (2025-08-08)
+
+### 🚀 Features
+
+- **ci:** add searchCommits option to extend portal cache range ([0b14111f](https://github.com/code-pushup/cli/commit/0b14111f))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.72.1 (2025-08-06)
 
 ### 🩹 Fixes
