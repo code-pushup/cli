@@ -61,14 +61,14 @@ describe('CLI collect', () => {
     expect(md).toContain(dummyAuditTitle);
   });
 
-  it('should not create reports if --persist.no-report is given', async () => {
+  it('should not create reports if --persist.skipReports is given', async () => {
     const { code } = await executeProcess({
       command: 'npx',
       args: [
         '@code-pushup/cli',
         '--no-progress',
         'collect',
-        '--persist.no-report',
+        '--persist.skipReports',
       ],
       cwd: dummyDir,
     });

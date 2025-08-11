@@ -25,7 +25,7 @@ export class PersistError extends Error {
 export async function persistReport(
   report: Report,
   sortedScoredReport: ScoredReport,
-  options: Required<Omit<PersistConfig, 'report'>>,
+  options: Required<Omit<PersistConfig, 'skipReports'>>,
 ): Promise<MultipleFileResults> {
   const { outputDir, filename, format } = options;
 

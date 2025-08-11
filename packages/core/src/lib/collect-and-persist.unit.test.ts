@@ -115,7 +115,7 @@ describe('collectAndPersistReports', () => {
     expect(logPersistedResults).toHaveBeenCalled();
   });
 
-  it('should call collect and not persistReport if report options is false in verbose mode', async () => {
+  it('should call collect and not persistReport if skipReports options is true in verbose mode', async () => {
     const sortedScoredReport = sortReport(scoreReport(MINIMAL_REPORT_MOCK));
 
     vi.stubEnv('CP_VERBOSE', 'true');
@@ -126,7 +126,7 @@ describe('collectAndPersistReports', () => {
         outputDir: 'output',
         filename: 'report',
         format: ['md'],
-        report: false,
+        skipReports: true,
       },
       progress: false,
     };

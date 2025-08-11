@@ -21,8 +21,8 @@ export type CollectAndPersistReportsOptions = Pick<
   CoreConfig,
   'plugins' | 'categories'
 > & {
-  persist: Required<Omit<PersistConfig, 'report'>> &
-    Pick<PersistConfig, 'report'>;
+  persist: Required<Omit<PersistConfig, 'skipReports'>> &
+    Pick<PersistConfig, 'skipReports'>;
 } & Partial<GlobalOptions>;
 
 export async function collectAndPersistReports(
@@ -33,10 +33,9 @@ export async function collectAndPersistReports(
   const sortedScoredReport = sortReport(scoreReport(reportResult));
 
   const { persist } = options;
-  const { report: shouldGenerateReport = true, ...persistOptions } =
-    persist ?? {};
+  const { skipReports = false, ...persistOptions } = persist ?? {};
 
-  if (shouldGenerateReport === true) {
+  if (skipReports !== true) {
     const persistResults = await persistReport(
       reportResult,
       sortedScoredReport,
@@ -47,7 +46,7 @@ export async function collectAndPersistReports(
       logPersistedResults(persistResults);
     }
   } else {
-    logger.info('Skipping saving reports as `persist.report` is false');
+    logger.info('Skipping saving reports as `persist.skipReports` is true');
   }
 
   // terminal output

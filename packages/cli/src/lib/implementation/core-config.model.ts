@@ -4,7 +4,7 @@ export type PersistConfigCliOptions = {
   'persist.outputDir'?: string;
   'persist.filename'?: string;
   'persist.format'?: Format;
-  'persist.report'?: boolean;
+  'persist.skipReports'?: boolean;
 };
 
 export type UploadConfigCliOptions = {

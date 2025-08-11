@@ -483,7 +483,7 @@ export function configFromPatterns(
       outputDir: interpolate(persist.outputDir, variables),
       filename: interpolate(persist.filename, variables),
       format: persist.format,
-      report: persist.report,
+      skipReports: persist.skipReports,
     },
     ...(upload && {
       upload: {

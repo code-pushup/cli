@@ -207,18 +207,18 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 
 ### Common Command Options
 
-| Option                      | Type                 | Default  | Description                                                                      |
-| --------------------------- | -------------------- | -------- | -------------------------------------------------------------------------------- |
-| **`--persist.outputDir`**   | `string`             | n/a      | Directory for the produced reports.                                              |
-| **`--persist.filename`**    | `string`             | `report` | Filename for the produced reports without extension.                             |
-| **`--persist.format`**      | `('json' \| 'md')[]` | `json`   | Format(s) of the report file.                                                    |
-| **`--persist.report`**      | `boolean`            | `true`   | Generate the report files for given formats. (useful in combination wit caching) |
-| **`--upload.organization`** | `string`             | n/a      | Organization slug from portal.                                                   |
-| **`--upload.project`**      | `string`             | n/a      | Project slug from portal.                                                        |
-| **`--upload.server`**       | `string`             | n/a      | URL to your portal server.                                                       |
-| **`--upload.apiKey`**       | `string`             | n/a      | API key for the portal server.                                                   |
-| **`--onlyPlugins`**         | `string[]`           | `[]`     | Only run the specified plugins. Applicable to all commands except `upload`.      |
-| **`--skipPlugins`**         | `string[]`           | `[]`     | Skip the specified plugins. Applicable to all commands except `upload`.          |
+| Option                      | Type                 | Default  | Description                                                                 |
+| --------------------------- | -------------------- | -------- | --------------------------------------------------------------------------- |
+| **`--persist.outputDir`**   | `string`             | n/a      | Directory for the produced reports.                                         |
+| **`--persist.filename`**    | `string`             | `report` | Filename for the produced reports without extension.                        |
+| **`--persist.format`**      | `('json' \| 'md')[]` | `json`   | Format(s) of the report file.                                               |
+| **`--persist.skipReports`** | `boolean`            | `false`  | Skip generating report files. (useful in combination wit caching)           |
+| **`--upload.organization`** | `string`             | n/a      | Organization slug from portal.                                              |
+| **`--upload.project`**      | `string`             | n/a      | Project slug from portal.                                                   |
+| **`--upload.server`**       | `string`             | n/a      | URL to your portal server.                                                  |
+| **`--upload.apiKey`**       | `string`             | n/a      | API key for the portal server.                                              |
+| **`--onlyPlugins`**         | `string[]`           | `[]`     | Only run the specified plugins. Applicable to all commands except `upload`. |
+| **`--skipPlugins`**         | `string[]`           | `[]`     | Skip the specified plugins. Applicable to all commands except `upload`.     |
 
 > [!NOTE]  
 > All common options, except `--onlyPlugins` and `--skipPlugins`, can be specified in the configuration file as well.

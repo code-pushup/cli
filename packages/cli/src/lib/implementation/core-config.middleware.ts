@@ -53,11 +53,7 @@ export async function coreConfigMiddleware<
       format: normalizeFormats(
         cliPersist?.format ?? rcPersist?.format ?? DEFAULT_PERSIST_FORMAT,
       ),
-      report: normalizeBooleanWithNegation(
-        'report',
-        cliPersist as Record<string, unknown>,
-        rcPersist as Record<string, unknown>,
-      ),
+      skipReports: cliPersist?.skipReports ?? rcPersist?.skipReports ?? false,
     },
     ...(upload != null && { upload }),
     ...remainingRcConfig,
