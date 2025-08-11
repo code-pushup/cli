@@ -7,12 +7,7 @@ import {
   TEST_OUTPUT_DIR,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
-import {
-  executeProcess,
-  fileExists,
-  readJsonFile,
-  readTextFile,
-} from '@code-pushup/utils';
+import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 import { dummyPluginSlug } from '../mocks/fixtures/dummy-setup/dummy.plugin';
 
 describe('CLI collect', () => {
