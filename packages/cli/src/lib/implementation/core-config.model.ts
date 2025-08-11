@@ -1,4 +1,9 @@
-import type { CoreConfig, Format, UploadConfig } from '@code-pushup/models';
+import type {
+  CacheConfig,
+  CoreConfig,
+  Format,
+  UploadConfig,
+} from '@code-pushup/models';
 
 export type PersistConfigCliOptions = {
   'persist.outputDir'?: string;
@@ -13,6 +18,11 @@ export type UploadConfigCliOptions = {
   'upload.server'?: string;
 };
 
+export type CacheConfigCliOptions = {
+  'cache.read'?: boolean;
+  'cache.write'?: boolean;
+};
+
 export type ConfigCliOptions = {
   config?: string;
   tsconfig?: string;
@@ -21,4 +31,4 @@ export type ConfigCliOptions = {
 
 export type CoreConfigCliOptions = Pick<CoreConfig, 'persist'> & {
   upload?: Partial<Omit<UploadConfig, 'timeout'>>;
-};
+} & CacheConfig;
