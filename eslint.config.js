@@ -1,4 +1,5 @@
 import nxEslintPlugin from '@nx/eslint-plugin';
+import jestExtendedPlugin from 'eslint-plugin-jest-extended';
 import jsoncParser from 'jsonc-eslint-parser';
 import tseslint from 'typescript-eslint';
 import node from '@code-pushup/eslint-config/node.js';
@@ -84,6 +85,7 @@ export default tseslint.config(
   },
   {
     files: ['**/*.test.ts', '**/*.spec.ts'],
+    plugins: { 'jest-extended': jestExtendedPlugin },
     rules: {
       'vitest/consistent-test-filename': [
         'warn',
@@ -91,6 +93,11 @@ export default tseslint.config(
           pattern: String.raw`.*\.(bench|type|unit|int|e2e)\.test\.[tj]sx?$`,
         },
       ],
+      'jest-extended/prefer-to-be-array': 'warn',
+      'jest-extended/prefer-to-be-false': 'warn',
+      'jest-extended/prefer-to-be-object': 'warn',
+      'jest-extended/prefer-to-be-true': 'warn',
+      'jest-extended/prefer-to-have-been-called-once': 'warn',
     },
   },
   {

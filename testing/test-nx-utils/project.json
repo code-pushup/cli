@@ -4,23 +4,8 @@
   "sourceRoot": "testing/test-nx-utils/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/testing/test-nx-utils",
-        "main": "testing/test-nx-utils/src/index.ts",
-        "tsConfig": "testing/test-nx-utils/tsconfig.lib.json",
-        "assets": ["testing/test-nx-utils/*.md"]
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["testing/test-nx-utils/**/*.ts"]
-      }
-    },
+    "build": {},
+    "lint": {},
     "unit-test": {
       "executor": "@nx/vite:test",
       "options": {

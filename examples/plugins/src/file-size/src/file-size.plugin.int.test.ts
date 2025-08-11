@@ -63,7 +63,12 @@ describe('create', () => {
 
   it('should return PluginConfig that executes correctly', async () => {
     const pluginConfig = create(baseOptions);
-    await expect(executePlugin(pluginConfig)).resolves.toMatchObject({
+    await expect(
+      executePlugin(pluginConfig, {
+        persist: { outputDir: '.code-pushup' },
+        cache: { read: false, write: false },
+      }),
+    ).resolves.toMatchObject({
       description:
         'A plugin to measure and assert size of files in a directory.',
       slug,
@@ -79,7 +84,10 @@ describe('create', () => {
       ...baseOptions,
       pattern: /\.js$/,
     });
-    const { audits: auditOutputs } = await executePlugin(pluginConfig);
+    const { audits: auditOutputs } = await executePlugin(pluginConfig, {
+      persist: { outputDir: '.code-pushup' },
+      cache: { read: false, write: false },
+    });
 
     expect(auditOutputs).toHaveLength(1);
     expect(auditOutputs[0]?.score).toBe(1);
@@ -91,7 +99,10 @@ describe('create', () => {
       ...baseOptions,
       budget: 0,
     });
-    const { audits: auditOutputs } = await executePlugin(pluginConfig);
+    const { audits: auditOutputs } = await executePlugin(pluginConfig, {
+      persist: { outputDir: '.code-pushup' },
+      cache: { read: false, write: false },
+    });
 
     expect(auditOutputs).toHaveLength(1);
     expect(auditOutputs[0]?.score).toBe(0);

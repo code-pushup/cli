@@ -15,4 +15,8 @@ export const DEFAULT_SETTINGS: Settings = {
   nxProjectsFilter: '--with-target={task}',
   skipComment: false,
   configPatterns: null,
+  searchCommits: false,
 };
+
+export const MIN_SEARCH_COMMITS = 1;
+export const MAX_SEARCH_COMMITS = 100;

@@ -24,7 +24,7 @@ describe('nxHandler', () => {
         stdout: 'NX Report complete - copy this into the issue template',
       } as utils.ProcessResult);
 
-      await expect(nxHandler.isConfigured(options)).resolves.toBe(true);
+      await expect(nxHandler.isConfigured(options)).resolves.toBeTrue();
     });
 
     it("should NOT detect Nx when nx.json doesn't exist", async () => {
@@ -33,7 +33,7 @@ describe('nxHandler', () => {
         code: 0,
       } as utils.ProcessResult);
 
-      await expect(nxHandler.isConfigured(options)).resolves.toBe(false);
+      await expect(nxHandler.isConfigured(options)).resolves.toBeFalse();
     });
 
     it('should NOT detect Nx when `nx report` fails with non-zero exit code', async () => {
@@ -43,7 +43,7 @@ describe('nxHandler', () => {
         stderr: 'Error: ValueExpected in nx.json',
       } as utils.ProcessResult);
 
-      await expect(nxHandler.isConfigured(options)).resolves.toBe(false);
+      await expect(nxHandler.isConfigured(options)).resolves.toBeFalse();
     });
   });
 

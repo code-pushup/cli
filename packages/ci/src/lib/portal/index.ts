@@ -1,1 +1,1 @@
-export { downloadReportFromPortal } from './download.js';
+export { downloadFromPortal } from './download.js';
