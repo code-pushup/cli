@@ -15,9 +15,7 @@ export default {
       reports: ['coverage/lcov.info'],
       coverageTypes: ['function', 'branch', 'line'],
     }),
-    await jsPackagesPlugin({
-      packageManager: 'npm',
-    }),
+    await jsPackagesPlugin(),
   ],
   upload: {
     server: 'https://portal.code-pushup.dev/api',
