@@ -98,7 +98,7 @@ describe('lint', () => {
       errorOnUnmatchedPattern: false,
     });
 
-    expect(executeProcess).toHaveBeenCalledTimes(1);
+    expect(executeProcess).toHaveBeenCalledOnce();
     expect(executeProcess).toHaveBeenCalledWith<
       Parameters<typeof executeProcess>
     >({

@@ -1,10 +1,9 @@
 import { bold, gray } from 'ansis';
 import type { CommandModule } from 'yargs';
-import { compareReportFiles } from '@code-pushup/core';
+import { type CompareOptions, compareReportFiles } from '@code-pushup/core';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants.js';
-import type { CompareOptions } from '../implementation/compare.model.js';
 import { yargsCompareOptionsDefinition } from '../implementation/compare.options.js';
 
 export function yargsCompareCommandObject() {
@@ -25,10 +24,8 @@ export function yargsCompareCommandObject() {
       const { before, after, label, persist, upload } = options;
 
       const outputPaths = await compareReportFiles(
-        { before, after },
-        persist,
-        upload,
-        label,
+        { persist, upload },
+        { before, after, label },
       );
 
       ui().logger.info(

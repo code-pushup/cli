@@ -22,7 +22,7 @@ export async function upload(options: UploadOptions) {
   if (!portalClient) {
     return;
   }
-  const { uploadToPortal } = portalClient;
+  const { uploadReportToPortal } = portalClient;
   const { apiKey, server, organization, project, timeout } = options.upload;
   const report: Report = await loadReport({
     ...options.persist,
@@ -39,5 +39,5 @@ export async function upload(options: UploadOptions) {
     ...reportToGQL(report),
   };
 
-  return uploadToPortal({ apiKey, server, data, timeout });
+  return uploadReportToPortal({ apiKey, server, data, timeout });
 }

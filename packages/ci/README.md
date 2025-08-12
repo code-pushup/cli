@@ -103,11 +103,13 @@ Optionally, you can override default options for further customization:
 | `nxProjectsFilter` | `string \| string[]`      | `'--with-target={task}'`         | Arguments passed to [`nx show projects`](https://nx.dev/nx-api/nx/documents/show#projects), only relevant for Nx in [monorepo mode](#monorepo-mode) [^2] |
 | `directory`        | `string`                  | `process.cwd()`                  | Directory in which Code PushUp CLI should run                                                                                                            |
 | `config`           | `string \| null`          | `null` [^1]                      | Path to config file (`--config` option)                                                                                                                  |
-| `silent`           | `boolean`                 | `false`                          | Hides logs from CLI commands (erros will be printed)                                                                                                     |
+| `silent`           | `boolean`                 | `false`                          | Hides logs from CLI commands (errors will be printed)                                                                                                    |
 | `bin`              | `string`                  | `'npx --no-install code-pushup'` | Command for executing Code PushUp CLI                                                                                                                    |
 | `detectNewIssues`  | `boolean`                 | `true`                           | Toggles if new issues should be detected and returned in `newIssues` property                                                                            |
 | `logger`           | `Logger`                  | `console`                        | Logger for reporting progress and encountered problems                                                                                                   |
 | `skipComment`      | `boolean`                 | `false`                          | Toggles if comparison comment is posted to PR                                                                                                            |
+| `configPatterns`   | `ConfigPatterns \| null`  | `null`                           | Additional configuration which enables [faster CI runs](#faster-ci-runs-with-configpatterns)                                                             |
+| `searchCommits`    | `boolean \| number`       | `false`                          | If base branch has no cached report in portal, [extends search up to 100 recent commits](#search-latest-commits-for-previous-report)                     |
 
 [^1]: By default, the `code-pushup.config` file is autodetected as described in [`@code-pushup/cli` docs](../cli/README.md#configuration).
 
@@ -245,4 +247,49 @@ if (result.mode === 'monorepo') {
     } = project;
   }
 }
+```
+
+## Advanced usage
+
+### Faster CI runs with `configPatterns`
+
+By default, the `print-config` command is run sequentially for each project in order to reliably detect how `code-pushup` is configured - specifically, where to read output files from (`persist` config) and whether portal may be used as a cache (`upload` config). This allows for each project to be configured in its own way without breaking anything, but for large monorepos these extra `code-pushup print-config` executions can accumulate and significantly slow down CI pipelines.
+
+As a more scalable alternative, `configPatterns` may be provided. A user declares upfront how every project is configured, which allows `print-config` to be skipped. It's the user's responsibility to ensure this configuration holds for every project (it won't be checked). The `configPatterns` support string interpolation, substituting `{projectName}` with each project's name. Other than that, each project's `code-pushup.config` must have exactly the same `persist` and `upload` configurations.
+
+```ts
+await runInCI(refs, api, {
+  monorepo: true,
+  configPatterns: {
+    persist: {
+      outputDir: '.code-pushup/{projectName}',
+      filename: 'report',
+      format: ['json', 'md'],
+    },
+    // optional: will use portal as cache when comparing reports in PRs
+    upload: {
+      server: 'https://api.code-pushup.example.com/graphql',
+      apiKey: 'cp_...',
+      organization: 'example',
+      project: '{projectName}',
+    },
+  },
+});
+```
+
+### Search latest commits for previous report
+
+When comparing reports, the report for the base branch can be cached. If a project has an `upload` configuration, then the Portal API is queried for a report matching that commit. If no such report was uploaded, then the report is looked up in CI artifacts (implemented in `downloadReportArtifact` in [`ProviderApiClient`](#provider-api-client)). If there's no report to be found, then the base branch is checked and the previous report is collected.
+
+In some scenarios, there may not be a report for the latest commit in main branch, but some other recent commit may have a usable report - e.g. if `nxProjectsFilter` is used with `--affected` flag. In that case, the `searchCommits` option can be enabled. Then a limited number of recent commits in the main branch will be checked, but.
+
+```ts
+await runInCI(refs, api, {
+  monorepo: 'nx',
+  nxProjectsFilter: '--with-target=code-pushup --affected',
+  // checks 10 most recent commits by default
+  searchCommits: true,
+  // optionally, number of searched commits may be extended up to 100
+  // searchCommits: 30
+});
 ```

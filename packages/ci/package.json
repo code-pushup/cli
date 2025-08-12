@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/ci",
-  "version": "0.69.5",
+  "version": "0.73.0",
   "description": "CI automation logic for Code PushUp (provider-agnostic)",
   "license": "MIT",
   "homepage": "https://github.com/code-pushup/cli/tree/main/packages/ci#readme",
@@ -26,11 +26,16 @@
   },
   "type": "module",
   "dependencies": {
-    "@code-pushup/models": "0.69.5",
-    "@code-pushup/utils": "0.69.5",
+    "@code-pushup/models": "0.73.0",
+    "@code-pushup/portal-client": "^0.15.0",
+    "@code-pushup/utils": "0.73.0",
     "glob": "^11.0.1",
     "simple-git": "^3.20.0",
     "yaml": "^2.5.1",
-    "zod": "^3.22.1"
-  }
+    "zod": "^4.0.5"
+  },
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
 }

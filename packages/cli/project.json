@@ -5,26 +5,11 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/packages/cli",
-        "main": "packages/cli/src/index.ts",
-        "tsConfig": "packages/cli/tsconfig.lib.json",
-        "assets": ["packages/cli/*.md"],
         "stats": true
       }
     },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/cli/**/*.ts",
-          "packages/cli/package.json"
-        ]
-      }
-    },
+    "lint": {},
     "unit-test": {
       "executor": "@nx/vite:test",
       "options": {

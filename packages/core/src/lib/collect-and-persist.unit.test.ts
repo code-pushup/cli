@@ -49,7 +49,7 @@ describe('collectAndPersistReports', () => {
   it('should call collect and persistReport with correct parameters in non-verbose mode', async () => {
     const sortedScoredReport = sortReport(scoreReport(MINIMAL_REPORT_MOCK));
 
-    expect(isVerbose()).toBe(false);
+    expect(isVerbose()).toBeFalse();
 
     const nonVerboseConfig: CollectAndPersistReportsOptions = {
       ...MINIMAL_CONFIG_MOCK,

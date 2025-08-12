@@ -4,12 +4,11 @@ import {
   filePositionSchema,
 } from './implementation/schemas.js';
 
-export const sourceFileLocationSchema = z.object(
-  {
+export const sourceFileLocationSchema = z
+  .object({
     file: filePathSchema.describe('Relative path to source file in Git repo'),
     position: filePositionSchema.optional(),
-  },
-  { description: 'Source file location' },
-);
+  })
+  .describe('Source file location');
 
 export type SourceFileLocation = z.infer<typeof sourceFileLocationSchema>;

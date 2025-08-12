@@ -1,26 +1,45 @@
 /* eslint-disable max-lines */
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
+import path from 'node:path';
 import type { SimpleGit } from 'simple-git';
-import type { CoreConfig, Report, ReportsDiff } from '@code-pushup/models';
 import {
+  DEFAULT_PERSIST_FILENAME,
+  DEFAULT_PERSIST_FORMAT,
+  DEFAULT_PERSIST_OUTPUT_DIR,
+  type Report,
+  type ReportsDiff,
+} from '@code-pushup/models';
+import {
+  type Diff,
+  createReportPath,
+  interpolate,
+  objectFromEntries,
+  readJsonFile,
   removeUndefinedAndEmptyProps,
   stringifyError,
 } from '@code-pushup/utils';
 import {
   type CommandContext,
+  type EnhancedPersistConfig,
   createCommandContext,
+  parsePersistConfig,
   persistedFilesFromConfig,
   runCollect,
   runCompare,
   runPrintConfig,
 } from './cli/index.js';
-import { parsePersistConfig } from './cli/persist.js';
-import { DEFAULT_SETTINGS } from './constants.js';
+import {
+  DEFAULT_SETTINGS,
+  MAX_SEARCH_COMMITS,
+  MIN_SEARCH_COMMITS,
+} from './constants.js';
 import { listChangedFiles, normalizeGitRef } from './git.js';
 import { type SourceFileIssue, filterRelevantIssues } from './issues.js';
 import type {
+  ConfigPatterns,
   GitBranch,
   GitRefs,
+  Logger,
   Options,
   OutputFiles,
   ProjectRunResult,
@@ -29,6 +48,7 @@ import type {
 } from './models.js';
 import type { ProjectConfig } from './monorepo/index.js';
 import { saveOutputFiles } from './output-files.js';
+import { downloadFromPortal } from './portal/download.js';
 
 export type RunEnv = {
   refs: NormalizedGitRefs;
@@ -45,14 +65,16 @@ type NormalizedGitRefs = {
 export type CompareReportsArgs = {
   project: ProjectConfig | null;
   env: RunEnv;
+  ctx: CommandContext;
   base: GitBranch;
   currReport: ReportData<'current'>;
   prevReport: ReportData<'previous'>;
-  config: Pick<CoreConfig, 'persist'>;
+  config: EnhancedPersistConfig;
 };
 
 export type BaseReportArgs = {
   project: ProjectConfig | null;
+  config: EnhancedPersistConfig;
   env: RunEnv;
   base: GitBranch;
   ctx: CommandContext;
@@ -69,8 +91,10 @@ export async function createRunEnv(
   options: Options | undefined,
   git: SimpleGit,
 ): Promise<RunEnv> {
+  const inferredVerbose: boolean =
+    options?.debug === true || options?.silent === false;
   // eslint-disable-next-line functional/immutable-data
-  process.env['CP_VERBOSE'] = options?.silent ? 'false' : 'true';
+  process.env['CP_VERBOSE'] = `${inferredVerbose}`;
 
   const [head, base] = await Promise.all([
     normalizeGitRef(refs.head, git),
@@ -82,10 +106,38 @@ export async function createRunEnv(
     api,
     settings: {
       ...DEFAULT_SETTINGS,
-      ...(options && removeUndefinedAndEmptyProps(options)),
+      ...(options && sanitizeOptions(options)),
     },
     git,
   };
+}
+
+function sanitizeOptions(options: Options): Options {
+  const logger = options.logger ?? DEFAULT_SETTINGS.logger;
+
+  return removeUndefinedAndEmptyProps({
+    ...options,
+    searchCommits: sanitizeSearchCommits(options.searchCommits, logger),
+  });
+}
+
+function sanitizeSearchCommits(
+  searchCommits: Options['searchCommits'],
+  logger: Logger,
+): Options['searchCommits'] {
+  if (
+    typeof searchCommits === 'number' &&
+    (!Number.isInteger(searchCommits) ||
+      searchCommits < MIN_SEARCH_COMMITS ||
+      searchCommits > MAX_SEARCH_COMMITS)
+  ) {
+    logger.warn(
+      `The searchCommits option must be a boolean or an integer in range ${MIN_SEARCH_COMMITS} to ${MAX_SEARCH_COMMITS}, ignoring invalid value ${searchCommits}.`,
+    );
+    return undefined;
+  }
+
+  return searchCommits;
 }
 
 export async function runOnProject(
@@ -104,12 +156,16 @@ export async function runOnProject(
     logger.info(`Running Code PushUp on monorepo project ${project.name}`);
   }
 
-  const config = await printPersistConfig(ctx);
+  const config = settings.configPatterns
+    ? configFromPatterns(settings.configPatterns, project)
+    : await printPersistConfig(ctx);
   logger.debug(
-    `Loaded persist config from print-config command - ${JSON.stringify(config.persist)}`,
+    settings.configPatterns
+      ? `Parsed persist and upload configs from configPatterns option - ${JSON.stringify(config)}`
+      : `Loaded persist and upload configs from print-config command - ${JSON.stringify(config)}`,
   );
 
-  await runCollect(ctx);
+  await runCollect(ctx, { hasFormats: hasDefaultPersistFormats(config) });
   const currReport = await saveReportFiles({
     project,
     type: 'current',
@@ -131,43 +187,97 @@ export async function runOnProject(
     `PR/MR detected, preparing to compare base branch ${base.ref} to head ${head.ref}`,
   );
 
-  const prevReport = await collectPreviousReport({ project, env, base, ctx });
+  const baseArgs: BaseReportArgs = { project, env, base, config, ctx };
+  const prevReport = await collectPreviousReport(baseArgs);
   if (!prevReport) {
     return noDiffOutput;
   }
 
-  const compareArgs = { project, env, base, config, currReport, prevReport };
+  const compareArgs = { ...baseArgs, currReport, prevReport };
   return compareReports(compareArgs);
 }
 
 export async function compareReports(
   args: CompareReportsArgs,
 ): Promise<ProjectRunResult> {
+  const { ctx, env, config } = args;
+  const { logger } = env.settings;
+
+  await prepareReportFilesToCompare(args);
+  await runCompare(ctx, { hasFormats: hasDefaultPersistFormats(config) });
+
+  logger.info('Compared reports and generated diff files');
+
+  return saveDiffFiles(args);
+}
+
+export async function prepareReportFilesToCompare(
+  args: CompareReportsArgs,
+): Promise<Diff<string>> {
+  const { config, project, env, ctx } = args;
+  const {
+    outputDir = DEFAULT_PERSIST_OUTPUT_DIR,
+    filename = DEFAULT_PERSIST_FILENAME,
+  } = config.persist ?? {};
+  const label = project?.name;
+  const { logger } = env.settings;
+
+  const originalReports = await Promise.all(
+    [args.currReport, args.prevReport].map(({ files }) =>
+      readJsonFile<Report>(files.json),
+    ),
+  );
+  const labeledReports = label
+    ? originalReports.map(report => ({ ...report, label }))
+    : originalReports;
+
+  const reportPaths = labeledReports.map((report, idx) => {
+    const key: keyof Diff<string> = idx === 0 ? 'after' : 'before';
+    const filePath = createReportPath({
+      outputDir: path.resolve(ctx.directory, outputDir),
+      filename,
+      format: 'json',
+      suffix: key,
+    });
+    return { key, report, filePath };
+  });
+
+  await Promise.all(
+    reportPaths.map(({ filePath, report }) =>
+      writeFile(filePath, JSON.stringify(report, null, 2)),
+    ),
+  );
+
+  logger.debug(
+    [
+      'Prepared',
+      project && `"${project.name}" project's`,
+      'report files for comparison',
+      `at ${reportPaths.map(({ filePath }) => filePath).join(' and ')}`,
+    ]
+      .filter(Boolean)
+      .join(' '),
+  );
+
+  return objectFromEntries(
+    reportPaths.map(({ key, filePath }) => [key, filePath]),
+  );
+}
+
+export async function saveDiffFiles(args: CompareReportsArgs) {
   const {
     project,
+    ctx,
     env: { settings },
     currReport,
     prevReport,
     config,
   } = args;
-  const logger = settings.logger;
 
-  const ctx = createCommandContext(settings, project);
-
-  await runCompare(
-    {
-      before: prevReport.files.json,
-      after: currReport.files.json,
-      label: project?.name,
-    },
-    ctx,
-  );
   const diffFiles = persistedFilesFromConfig(config, {
     directory: ctx.directory,
     isDiff: true,
   });
-  logger.info('Compared reports and generated diff files');
-  logger.debug(`Generated diff files at ${diffFiles.json} and ${diffFiles.md}`);
 
   return {
     name: projectToName(project),
@@ -205,7 +315,7 @@ export async function collectPreviousReport(
 ): Promise<ReportData<'previous'> | null> {
   const { ctx, env, base, project } = args;
   const { settings } = env;
-  const { logger } = settings;
+  const { logger, configPatterns } = settings;
 
   const cachedBaseReport = await loadCachedBaseReport(args);
   if (cachedBaseReport) {
@@ -213,12 +323,14 @@ export async function collectPreviousReport(
   }
 
   return runInBaseBranch(base, env, async () => {
-    const config = await checkPrintConfig(args);
+    const config = configPatterns
+      ? configFromPatterns(configPatterns, project)
+      : await checkPrintConfig(args);
     if (!config) {
       return null;
     }
 
-    await runCollect(ctx);
+    await runCollect(ctx, { hasFormats: hasDefaultPersistFormats(config) });
     const report = await saveReportFiles({
       project,
       type: 'previous',
@@ -235,27 +347,12 @@ export async function loadCachedBaseReport(
 ): Promise<ReportData<'previous'> | null> {
   const {
     project,
-    env: { api, settings },
+    env: { settings },
   } = args;
-  const { logger } = settings;
 
-  const cachedBaseReport = await api
-    .downloadReportArtifact?.(project?.name)
-    .catch((error: unknown) => {
-      logger.warn(
-        `Error when downloading previous report artifact, skipping - ${stringifyError(error)}`,
-      );
-    });
-  if (api.downloadReportArtifact != null) {
-    logger.info(
-      `Previous report artifact ${cachedBaseReport ? 'found' : 'not found'}`,
-    );
-    if (cachedBaseReport) {
-      logger.debug(
-        `Previous report artifact downloaded to ${cachedBaseReport}`,
-      );
-    }
-  }
+  const cachedBaseReport =
+    (await loadCachedBaseReportFromPortal(args)) ??
+    (await loadCachedBaseReportFromArtifacts(args));
 
   if (!cachedBaseReport) {
     return null;
@@ -266,6 +363,81 @@ export async function loadCachedBaseReport(
     files: { json: cachedBaseReport },
     settings,
   });
+}
+
+async function loadCachedBaseReportFromArtifacts(
+  args: BaseReportArgs,
+): Promise<string | null> {
+  const {
+    env: { api, settings },
+    project,
+  } = args;
+  const { logger } = settings;
+
+  if (api.downloadReportArtifact == null) {
+    return null;
+  }
+
+  const reportPath = await api
+    .downloadReportArtifact(project?.name)
+    .catch((error: unknown) => {
+      logger.warn(
+        `Error when downloading previous report artifact, skipping - ${stringifyError(error)}`,
+      );
+      return null;
+    });
+
+  logger.info(`Previous report artifact ${reportPath ? 'found' : 'not found'}`);
+  if (reportPath) {
+    logger.debug(`Previous report artifact downloaded to ${reportPath}`);
+  }
+
+  return reportPath;
+}
+
+async function loadCachedBaseReportFromPortal(
+  args: BaseReportArgs,
+): Promise<string | null> {
+  const {
+    config,
+    env: { settings },
+    base,
+  } = args;
+  const { logger } = settings;
+
+  if (!config.upload) {
+    return null;
+  }
+
+  const reportPath = await downloadFromPortal({
+    server: config.upload.server,
+    apiKey: config.upload.apiKey,
+    parameters: {
+      organization: config.upload.organization,
+      project: config.upload.project,
+      withAuditDetails: true,
+      ...(!settings.searchCommits && {
+        commit: base.sha,
+      }),
+      ...(typeof settings.searchCommits === 'number' && {
+        maxCommits: settings.searchCommits,
+      }),
+    },
+  }).catch((error: unknown) => {
+    logger.warn(
+      `Error when downloading previous report from portal, skipping - ${stringifyError(error)}`,
+    );
+    return null;
+  });
+
+  logger.info(
+    `Previous report ${reportPath ? 'found' : 'not found'} in Code PushUp portal`,
+  );
+  if (reportPath) {
+    logger.debug(`Previous report downloaded from portal to ${reportPath}`);
+  }
+
+  return reportPath;
 }
 
 export async function runInBaseBranch<T>(
@@ -292,7 +464,7 @@ export async function runInBaseBranch<T>(
 
 export async function checkPrintConfig(
   args: BaseReportArgs,
-): Promise<Pick<CoreConfig, 'persist'> | null> {
+): Promise<EnhancedPersistConfig | null> {
   const {
     project,
     ctx,
@@ -321,9 +493,45 @@ export async function checkPrintConfig(
 
 export async function printPersistConfig(
   ctx: CommandContext,
-): Promise<Pick<CoreConfig, 'persist'>> {
+): Promise<EnhancedPersistConfig> {
   const json = await runPrintConfig(ctx);
   return parsePersistConfig(json);
+}
+
+export function hasDefaultPersistFormats(
+  config: EnhancedPersistConfig,
+): boolean {
+  const formats = config.persist?.format;
+  return (
+    formats == null ||
+    DEFAULT_PERSIST_FORMAT.every(format => formats.includes(format))
+  );
+}
+
+export function configFromPatterns(
+  configPatterns: ConfigPatterns,
+  project: ProjectConfig | null,
+): ConfigPatterns {
+  const { persist, upload } = configPatterns;
+  const variables = {
+    projectName: project?.name ?? '',
+  };
+  return {
+    persist: {
+      outputDir: interpolate(persist.outputDir, variables),
+      filename: interpolate(persist.filename, variables),
+      format: persist.format,
+    },
+    ...(upload && {
+      upload: {
+        server: upload.server,
+        apiKey: upload.apiKey,
+        organization: interpolate(upload.organization, variables),
+        project: interpolate(upload.project, variables),
+        ...(upload.timeout != null && { timeout: upload.timeout }),
+      },
+    }),
+  };
 }
 
 export async function findNewIssues(

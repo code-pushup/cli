@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/cli",
-  "version": "0.69.5",
+  "version": "0.73.0",
   "license": "MIT",
   "description": "A CLI to run all kinds of code quality measurements to align your team with company goals",
   "homepage": "https://code-pushup.dev",
@@ -45,11 +45,15 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@code-pushup/models": "0.69.5",
-    "@code-pushup/core": "0.69.5",
-    "@code-pushup/utils": "0.69.5",
+    "@code-pushup/models": "0.73.0",
+    "@code-pushup/core": "0.73.0",
+    "@code-pushup/utils": "0.73.0",
     "yargs": "^17.7.2",
     "ansis": "^3.3.0",
     "simple-git": "^3.20.0"
-  }
+  },
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
 }

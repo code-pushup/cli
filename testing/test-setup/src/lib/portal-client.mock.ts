@@ -1,8 +1,8 @@
 import { vi } from 'vitest';
 import type {
   PortalComparisonLinkArgs,
-  PortalUploadArgs,
-  ReportFragment,
+  PortalReportUploadArgs,
+  ReportUrlFragment,
 } from '@code-pushup/portal-client';
 
 vi.mock('@code-pushup/portal-client', async () => {
@@ -11,8 +11,8 @@ vi.mock('@code-pushup/portal-client', async () => {
 
   return {
     ...module,
-    uploadToPortal: vi.fn(
-      async ({ data }: PortalUploadArgs): Promise<ReportFragment> => ({
+    uploadReportToPortal: vi.fn(
+      async ({ data }: PortalReportUploadArgs): Promise<ReportUrlFragment> => ({
         url: `https://code-pushup.example.com/portal/${data.organization}/${data.project}/commit/${data.commit}`,
       }),
     ),

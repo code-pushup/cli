@@ -1,6 +1,10 @@
 import path from 'node:path';
 import type { CoreConfig } from '@code-pushup/models';
-import { parsePersistConfig, persistedFilesFromConfig } from './persist.js';
+import {
+  type EnhancedPersistConfig,
+  parsePersistConfig,
+  persistedFilesFromConfig,
+} from './persist.js';
 
 describe('persistedFilesFromConfig', () => {
   it('should return default report paths when no config is set', () => {
@@ -72,7 +76,7 @@ describe('persistedFilesFromConfig', () => {
 });
 
 describe('parsePersistConfig', () => {
-  it('should validate only persist config', async () => {
+  it('should validate only persist and upload config', async () => {
     await expect(
       parsePersistConfig({
         persist: {
@@ -80,9 +84,39 @@ describe('parsePersistConfig', () => {
           filename: 'report',
           format: ['json', 'md'],
         },
+        upload: {
+          server: 'https://code-pushup-api.dunder-mifflin.org/graphql',
+          apiKey: 'cp_abcdef0123456789',
+          organization: 'dunder-mifflin',
+          project: 'website',
+        },
         // missing props (slug, etc.)
         plugins: [{ title: 'some plugin', audits: [{ title: 'some audit' }] }],
       } as CoreConfig),
+    ).resolves.toEqual({
+      persist: {
+        outputDir: '.code-pushup',
+        filename: 'report',
+        format: ['json', 'md'],
+      },
+      upload: {
+        server: 'https://code-pushup-api.dunder-mifflin.org/graphql',
+        apiKey: 'cp_abcdef0123456789',
+        organization: 'dunder-mifflin',
+        project: 'website',
+      },
+    } satisfies EnhancedPersistConfig);
+  });
+
+  it('should accept missing upload config', async () => {
+    await expect(
+      parsePersistConfig({
+        persist: {
+          outputDir: '.code-pushup',
+          filename: 'report',
+          format: ['json', 'md'],
+        },
+      }),
     ).resolves.toEqual({
       persist: {
         outputDir: '.code-pushup',
@@ -114,7 +148,20 @@ describe('parsePersistConfig', () => {
     await expect(
       parsePersistConfig({ persist: { format: ['json', 'html'] } }),
     ).rejects.toThrow(
-      /^Invalid persist config - ZodError:.*Invalid enum value. Expected 'json' \| 'md', received 'html'/s,
+      /^Code PushUp config is invalid.*Invalid option: expected one of "json"\|"md".*at persist\.format\[1]/s,
+    );
+  });
+
+  it('should error if upload config is invalid', async () => {
+    await expect(
+      parsePersistConfig({
+        upload: {
+          organization: 'dunder-mifflin',
+          project: 'website',
+        },
+      }),
+    ).rejects.toThrow(
+      /^Code PushUp config is invalid.*Invalid input: expected string, received undefined.*at upload\.server.*at upload\.apiKey/s,
     );
   });
 });

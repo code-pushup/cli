@@ -3,12 +3,20 @@ export {
   camelCaseToKebabCase,
   capitalize,
   kebabCaseToCamelCase,
+  lowercase,
   toSentenceCase,
   toTitleCase,
+  uppercase,
 } from './lib/case-conversions.js';
 export { filesCoverageToTree, type FileCoverage } from './lib/coverage-tree.js';
 export { createRunnerFiles } from './lib/create-runner-files.js';
 export { comparePairs, matchArrayItemsByKey, type Diff } from './lib/diff.js';
+export {
+  coerceBooleanValue,
+  isCI,
+  isEnvVarEnabled,
+  isVerbose,
+} from './lib/env.js';
 export { stringifyError } from './lib/errors.js';
 export {
   executeProcess,
@@ -19,6 +27,7 @@ export {
 } from './lib/execute-process.js';
 export {
   crawlFileSystem,
+  createReportPath,
   directoryExists,
   ensureDirectoryExists,
   fileExists,
@@ -68,9 +77,10 @@ export {
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
 } from './lib/guards.js';
+export { interpolate } from './lib/interpolate.js';
 export { createPatternMatcher } from './lib/lang.js';
 export { logMultipleResults } from './lib/log-results.js';
-export { isVerbose, link, ui, type CliUi, type Column } from './lib/logging.js';
+export { link, ui, type CliUi, type Column } from './lib/logging.js';
 export { mergeConfigs } from './lib/merge-configs.js';
 export { getProgressBar, type ProgressBar } from './lib/progress.js';
 export { asyncSequential, groupByStatus } from './lib/promises.js';

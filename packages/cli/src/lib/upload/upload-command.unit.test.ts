@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
-import { uploadToPortal } from '@code-pushup/portal-client';
+import { uploadReportToPortal } from '@code-pushup/portal-client';
 import { readRcByPath } from '@code-pushup/core';
 import {
   ISO_STRING_REGEXP,
@@ -52,8 +52,8 @@ describe('upload-command-object', () => {
     );
 
     // values come from CORE_CONFIG_MOCK returned by readRcByPath mock
-    expect(uploadToPortal).toHaveBeenCalledWith<
-      Parameters<typeof uploadToPortal>
+    expect(uploadReportToPortal).toHaveBeenCalledWith<
+      Parameters<typeof uploadReportToPortal>
     >({
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',

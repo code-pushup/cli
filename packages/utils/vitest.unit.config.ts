@@ -19,7 +19,10 @@ export default defineConfig({
       exclude: ['mocks/**', 'perf/**', '**/types.ts'],
     },
     environment: 'node',
-    include: ['src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    include: ['src/**/*.{unit,type}.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    typecheck: {
+      include: ['**/*.type.test.ts'],
+    },
     globalSetup: ['../../global-setup.ts'],
     setupFiles: [
       '../../testing/test-setup/src/lib/cliui.mock.ts',
@@ -28,6 +31,8 @@ export default defineConfig({
       '../../testing/test-setup/src/lib/reset.mocks.ts',
       '../../testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
       '../../testing/test-setup/src/lib/extend/markdown-table.matcher.ts',
+      '../../testing/test-setup/src/lib/extend/path.matcher.ts',
+      '../../testing/test-setup/src/lib/extend/jest-extended.matcher.ts',
     ],
   },
 });

@@ -19,8 +19,6 @@ export type Column = {
 };
 export type CliUi = CliUiBase & CliExtension;
 
-export const isVerbose = () => process.env['CP_VERBOSE'] === 'true';
-
 // eslint-disable-next-line functional/no-let
 let cliUISingleton: CliUiBase | undefined;
 // eslint-disable-next-line functional/no-let

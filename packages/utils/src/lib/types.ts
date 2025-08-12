@@ -1,6 +1,6 @@
-export type ExcludeNullableProps<T> = {
+export type ExcludeNullableProps<T> = Prettify<{
   [P in keyof T]: NonNullable<T[P]>;
-};
+}>;
 
 export type ItemOrArray<T> = T | T[];
 
@@ -14,7 +14,7 @@ export type WithRequired<T, K extends keyof T> = Prettify<
   Omit<T, K> & Required<Pick<T, K>>
 >;
 
-export type Prettify<T> = { [K in keyof T]: T[K] };
+export type Prettify<T> = { [K in keyof T]: T[K] } & {};
 
 export type CamelCaseToKebabCase<T extends string> =
   T extends `${infer First}${infer Rest}`
