@@ -209,10 +209,12 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 
 #### Global Options
 
-| Option              | Type       | Default | Description                                                                 |
-| ------------------- | ---------- | ------- | --------------------------------------------------------------------------- |
-| **`--onlyPlugins`** | `string[]` | `[]`    | Only run the specified plugins. Applicable to all commands except `upload`. |
-| **`--skipPlugins`** | `string[]` | `[]`    | Skip the specified plugins. Applicable to all commands except `upload`.     |
+| Option                 | Type       | Default | Description                                                                    |
+| ---------------------- | ---------- | ------- | ------------------------------------------------------------------------------ |
+| **`--onlyPlugins`**    | `string[]` | `[]`    | Only run the specified plugins. Applicable to all commands except `upload`.    |
+| **`--skipPlugins`**    | `string[]` | `[]`    | Skip the specified plugins. Applicable to all commands except `upload`.        |
+| **`--onlyCategories`** | `string[]` | `[]`    | Only run the specified categories. Applicable to all commands except `upload`. |
+| **`--skipCategories`** | `string[]` | `[]`    | Skip the specified categories. Applicable to all commands except `upload`.     |
 
 #### Cache Options
 
