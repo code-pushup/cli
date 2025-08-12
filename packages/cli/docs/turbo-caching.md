@@ -17,7 +17,7 @@ export default {
     await jsPackagesPlugin(),
   ],
   upload: {
-    server: 'https://portal.code-pushup.dev/api',
+    server: 'https://api.code-pushup.example.com/graphql',
     organization: 'my-org',
     project: 'lib-a',
     apiKey: process.env.CP_API_KEY,
