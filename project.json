@@ -3,10 +3,12 @@
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
     "code-pushup": {
+      "dependsOn": ["code-pushup-coverage"],
       "options": {
         "config": "{workspaceRoot}/code-pushup.config.ts",
         "upload.project": "cli"
       }
-    }
+    },
+    "code-pushup-coverage": {}
   }
 }

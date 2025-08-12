@@ -5,6 +5,9 @@
   "projectType": "library",
   "targets": {
     "code-pushup": {
+      "dependsOn": ["code-pushup-coverage"]
+    },
+    "code-pushup-coverage": {
       "dependsOn": ["unit-test", "int-test"]
     },
     "build": {},

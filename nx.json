@@ -3,19 +3,54 @@
   "targetDefaults": {
     "code-pushup": {
       "cache": true,
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{projectRoot}/.code-pushup/*.md",
+        "{projectRoot}/.code-pushup/*.json"
+      ],
       "executor": "nx:run-commands",
       "options": {
-        "command": "node packages/cli/src/index.ts --no-progress --verbose",
-        "config": "{projectRoot}/code-pushup.config.ts",
-        "persist": {
-          "filename": "{projectName}-report",
-          "outputDir": "{projectRoot}/.code-pushup"
-        },
-        "upload": {
-          "project": "cli-{projectName}"
-        },
+        "command": "npx https://pkg.pr.new/code-pushup/cli/@code-pushup/cli@1059",
+        "args": [
+          "--no-progress",
+          "--verbose",
+          "--config",
+          "{projectRoot}/code-pushup.config.ts",
+          "--persist.filename",
+          "{projectName}-report",
+          "--persist.outputDir",
+          "{projectRoot}/.code-pushup",
+          "--upload.project",
+          "cli-{projectName}"
+        ],
         "outputPath": "{projectRoot}/.code-pushup",
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-coverage": {
+      "cache": true,
+      "outputs": ["{projectRoot}/.code-pushup/coverage"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm install https://pkg.pr.new/code-pushup/cli/@code-pushup/utils@1059 https://pkg.pr.new/code-pushup/cli/@code-pushup/models@1059 && npx --yes https://pkg.pr.new/code-pushup/cli/@code-pushup/cli@1059",
+        "args": [
+          "--no-progress",
+          "--verbose",
+          "--config",
+          "{projectRoot}/code-pushup.config.ts",
+          "--cache.write",
+          "true",
+          "--onlyPlugins",
+          "coverage",
+          "--persist.skipReports",
+          "true",
+          "--persist.outputDir",
+          "{projectRoot}/.code-pushup",
+          "--upload.project",
+          "{projectName}"
+        ],
         "env": {
           "NODE_OPTIONS": "--import tsx",
           "TSX_TSCONFIG_PATH": "tsconfig.base.json"

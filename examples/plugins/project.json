@@ -4,6 +4,12 @@
   "sourceRoot": "examples/plugins/src",
   "projectType": "library",
   "targets": {
+    "code-pushup": {
+      "dependsOn": ["code-pushup-coverage"]
+    },
+    "code-pushup-coverage": {
+      "dependsOn": ["unit-test", "int-test"]
+    },
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],

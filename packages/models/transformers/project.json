@@ -4,6 +4,10 @@
   "sourceRoot": "packages/models/transformers/src",
   "projectType": "library",
   "targets": {
+    "code-pushup": {
+      "dependsOn": ["code-pushup-coverage"]
+    },
+    "code-pushup-coverage": {},
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],

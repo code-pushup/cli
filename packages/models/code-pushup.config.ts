@@ -21,6 +21,7 @@ const config: CoreConfig = {
   plugins: [],
 };
 
+// This part should use mergeConfig in a normal setup, but here we are manually merging to avoid circular dependencies
 export default [
   await eslintCoreConfigNx(projectName),
   await coverageCoreConfigNx(projectName),
@@ -41,20 +42,3 @@ export default [
   });
   return acc;
 }, config);
-/*
-//import { mergeConfigs } from '../../packages/utils/src/index.js';
-
-export default mergeConfigs(
-  config,
-  await eslintCoreConfigNx(projectName),
-  await coverageCoreConfigNx(projectName),
-  await jsPackagesCoreConfig('package.json'), // Use workspace root package.json
-  await typescriptPluginConfig({
-    tsconfig: `packages/${projectName}/tsconfig.lib.json`,
-  }),
-  jsDocsCoreConfig([
-    `packages/${projectName}/src/**\/*.ts`,
-    ...jsDocsExclusionPatterns,
-  ]),
-);
-*/

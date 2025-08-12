@@ -4,6 +4,12 @@
   "sourceRoot": "packages/ci/src",
   "projectType": "library",
   "targets": {
+    "code-pushup": {
+      "dependsOn": ["code-pushup-coverage"]
+    },
+    "code-pushup-coverage": {
+      "dependsOn": ["unit-test", "int-test"]
+    },
     "build": {},
     "lint": {},
     "unit-test": {
