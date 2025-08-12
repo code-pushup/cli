@@ -77,7 +77,7 @@ export function yargsCacheConfigOptionsDefinition(): Record<
       type: 'boolean',
     },
     'cache.read': {
-      describe: 'Read runner-output.json to file system',
+      describe: 'Read runner-output.json from file system',
       type: 'boolean',
     },
     'cache.write': {
