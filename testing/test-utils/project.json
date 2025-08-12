@@ -4,6 +4,12 @@
   "sourceRoot": "testing/test-utils/src",
   "projectType": "library",
   "targets": {
+    "code-pushup": {
+      "dependsOn": ["code-pushup-coverage"]
+    },
+    "code-pushup-coverage": {
+      "dependsOn": ["unit-test"]
+    },
     "build": {},
     "lint": {},
     "unit-test": {
