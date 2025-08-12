@@ -23,8 +23,14 @@ jobs:
     name: Code PushUp
     if: github.event.pull_request.head.repo.fork
     steps:
-      - name: Checkout repository
+      - name: Checkout PR head
         uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - name: Derive Nx SHAs
+        uses: nrwl/nx-set-shas@v4
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -35,4 +41,4 @@ jobs:
       - name: Run Code PushUp action
         uses: code-pushup/github-action@v0
         with:
-          bin: npx nx code-pushup --
+          bin: npx nx affected -t code-pushup --base=${{ env.NX_BASE }} --head=${{ env.NX_HEAD }}

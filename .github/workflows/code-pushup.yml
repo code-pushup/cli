@@ -26,6 +26,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Derive Nx SHAs
+        uses: nrwl/nx-set-shas@v4
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -36,4 +40,4 @@ jobs:
       - name: Run Code PushUp action
         uses: code-pushup/github-action@v0
         with:
-          bin: npx nx affected -t code-pushup
+          bin: npx nx affected -t code-pushup --base=${{ env.NX_BASE }} --head=${{ env.NX_HEAD }}
