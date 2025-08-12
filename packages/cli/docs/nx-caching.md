@@ -25,7 +25,7 @@ export default {
 } satisfies CoreConfig;
 ```
 
-## `{projectRoot}/package.json`
+## `{projectRoot}/project.json`
 
 ```json
 {
