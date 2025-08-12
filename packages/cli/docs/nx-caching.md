@@ -84,7 +84,7 @@ export default {
       "outputs": ["{options.outputPath}"],
       "executor": "nx:run-commands",
       "options": {
-        "command": "node packages/cli/src/index.ts",
+        "command": "npx @code-pushup/cli",
         "config": "{projectRoot}/code-pushup.config.ts",
         "cache.read": true,
         "upload.project": "{projectName}",
