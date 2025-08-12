@@ -51,7 +51,7 @@ export default {
     },
     "code-pushup-coverage": {
       "cache": true,
-      "outputs": ["{options.persist.outputDir}/coverage"],
+      "outputs": ["{projectRoot}/.code-pushup/coverage"],
       "executor": "nx:run-commands",
       "options": {
         "command": "npx @code-pushup/cli collect",
@@ -61,7 +61,7 @@ export default {
     },
     "code-pushup": {
       "cache": true,
-      "outputs": ["{options.persist.outputDir}"],
+      "outputs": ["{projectRoot}/.code-pushup"],
       "executor": "nx:run-commands",
       "options": {
         "command": "npx @code-pushup/cli",
