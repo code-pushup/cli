@@ -12,6 +12,7 @@
     "src/**/*.test.ts",
     "src/**/*.mock.ts",
     "mocks/**/*.ts",
-    "perf/**/*.ts"
+    "perf/**/*.ts",
+    "code-pushup.config.ts"
   ]
 }

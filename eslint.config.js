@@ -27,6 +27,8 @@ export default tseslint.config(
             String.raw`^.*/eslint(\.base)?\.config\.[cm]?js$`,
             String.raw`^.*/code-pushup\.(config|preset)(\.m?[jt]s)?$`,
             '^[./]+/tools/.*$',
+            '^@code-pushup/test-utils(|/.*)$',
+            '^@code-pushup/test-nx-utils(|/.*)$',
           ],
           depConstraints: [
             {

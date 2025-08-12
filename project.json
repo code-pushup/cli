@@ -16,11 +16,6 @@
       }
     },
     "code-pushup-js-packages": {},
-    "code-pushup-lighthouse": {},
-    "nx-cache-epoch": {
-      "cache": true,
-      "inputs": [{ "runtime": "echo $(($(date +%s) / 6))" }],
-      "command": "bash -c 'date && sleep 2'"
-    }
+    "code-pushup-lighthouse": {}
   }
 }

@@ -6,6 +6,7 @@ import {
   jsDocsExclusionPatterns,
   jsPackagesCoreConfig,
   loadEnv,
+  mergeConfigs,
   typescriptPluginConfig,
 } from '../../code-pushup.preset.js';
 import type { CoreConfig } from '../../packages/models/src/index.js';
@@ -18,7 +19,8 @@ const config: CoreConfig = {
 };
 
 // This part should use mergeConfig in a normal setup, but here we are manually merging to avoid circular dependencies
-export default [
+export default mergeConfigs(
+  config,
   await eslintCoreConfigNx(projectName),
   await coverageCoreConfigNx(projectName),
   await jsPackagesCoreConfig('package.json'), // Use workspace root package.json
@@ -26,15 +28,7 @@ export default [
     tsconfig: `packages/${projectName}/tsconfig.lib.json`,
   }),
   jsDocsCoreConfig([
-    `packages/${projectName}/src/**\/*.ts`,
+    `packages/${projectName}/src/**/*.ts`,
     ...jsDocsExclusionPatterns,
   ]),
-].reduce((acc, curr) => {
-  curr.plugins.forEach(plugin => {
-    acc.plugins.push(plugin);
-  });
-  curr.categories?.forEach(category => {
-    acc.categories?.push(category);
-  });
-  return acc;
-}, config);
+);

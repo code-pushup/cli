@@ -6,10 +6,10 @@ import {
   jsDocsExclusionPatterns,
   jsPackagesCoreConfig,
   loadEnv,
+  mergeConfigs,
   typescriptPluginConfig,
 } from '../../code-pushup.preset.js';
 import type { CoreConfig } from '../../packages/models/src/index.js';
-import { mergeConfigs } from '../../packages/utils/src/index.js';
 
 const projectName = process.env.NX_TASK_TARGET_PROJECT;
 

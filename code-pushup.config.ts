@@ -3,9 +3,9 @@ import {
   jsPackagesCoreConfig,
   lighthouseCoreConfig,
   loadEnv,
+  mergeConfigs,
 } from './code-pushup.preset.js';
 import type { CoreConfig } from './packages/models/src/index.js';
-import { mergeConfigs } from './packages/utils/src/index.js';
 
 const projectName = 'cli';
 
