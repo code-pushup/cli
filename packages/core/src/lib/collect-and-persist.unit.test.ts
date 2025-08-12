@@ -58,6 +58,10 @@ describe('collectAndPersistReports', () => {
         filename: 'report',
         format: ['md'],
       },
+      cache: {
+        read: false,
+        write: false,
+      },
       progress: false,
     };
     await collectAndPersistReports(nonVerboseConfig);
@@ -98,6 +102,10 @@ describe('collectAndPersistReports', () => {
         outputDir: 'output',
         filename: 'report',
         format: ['md'],
+      },
+      cache: {
+        read: false,
+        write: false,
       },
       progress: false,
     };

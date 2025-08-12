@@ -3,7 +3,7 @@ import path from 'node:path';
 import { cleanTestFolder } from '@code-pushup/test-utils';
 import { ensureDirectoryExists } from '@code-pushup/utils';
 import {
-  getAuditOutputsPath,
+  getRunnerOutputsPath,
   readRunnerResults,
   writeRunnerResults,
 } from './runner.js';
@@ -23,7 +23,7 @@ describe('readRunnerResults', () => {
   beforeEach(async () => {
     await ensureDirectoryExists(cacheDir);
     await writeFile(
-      getAuditOutputsPath(pluginSlug, outputDir),
+      getRunnerOutputsPath(pluginSlug, outputDir),
       JSON.stringify([
         {
           slug: 'node-version',
@@ -77,7 +77,7 @@ describe('writeRunnerResults', () => {
   beforeEach(async () => {
     await ensureDirectoryExists(cacheDir);
     await writeFile(
-      getAuditOutputsPath(pluginSlug, outputDir),
+      getRunnerOutputsPath(pluginSlug, outputDir),
       JSON.stringify([
         {
           slug: 'node-version',

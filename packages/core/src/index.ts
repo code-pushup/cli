@@ -8,6 +8,11 @@ export {
   type CompareOptions,
 } from './lib/compare.js';
 export {
+  getRunnerOutputsPath,
+  type ValidatedRunnerResult,
+} from './lib/implementation/runner.js';
+
+export {
   history,
   type HistoryOnlyOptions,
   type HistoryOptions,

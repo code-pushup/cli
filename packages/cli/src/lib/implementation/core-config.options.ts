@@ -1,16 +1,20 @@
 import type { Options } from 'yargs';
 import type {
+  CacheConfigCliOptions,
   PersistConfigCliOptions,
   UploadConfigCliOptions,
 } from './core-config.model.js';
 
 export function yargsCoreConfigOptionsDefinition(): Record<
-  keyof (PersistConfigCliOptions & UploadConfigCliOptions),
+  keyof (PersistConfigCliOptions &
+    UploadConfigCliOptions &
+    CacheConfigCliOptions),
   Options
 > {
   return {
     ...yargsPersistConfigOptionsDefinition(),
     ...yargsUploadConfigOptionsDefinition(),
+    ...yargsCacheConfigOptionsDefinition(),
   };
 }
 
@@ -59,6 +63,26 @@ export function yargsUploadConfigOptionsDefinition(): Record<
     'upload.apiKey': {
       describe: 'API key for the portal server',
       type: 'string',
+    },
+  };
+}
+
+export function yargsCacheConfigOptionsDefinition(): Record<
+  keyof CacheConfigCliOptions,
+  Options
+> {
+  return {
+    cache: {
+      describe: 'Cache runner outputs (both read and write)',
+      type: 'boolean',
+    },
+    'cache.read': {
+      describe: 'Read runner-output.json from file system',
+      type: 'boolean',
+    },
+    'cache.write': {
+      describe: 'Write runner-output.json to file system',
+      type: 'boolean',
     },
   };
 }

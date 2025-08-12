@@ -1,5 +1,7 @@
 import { autoloadRc, readRcByPath } from '@code-pushup/core';
 import {
+  type CacheConfig,
+  type CacheConfigObject,
   type CoreConfig,
   DEFAULT_PERSIST_FILENAME,
   DEFAULT_PERSIST_FORMAT,
@@ -41,6 +43,7 @@ export async function coreConfigMiddleware<
     tsconfig,
     persist: cliPersist,
     upload: cliUpload,
+    cache: cliCache,
     ...remainingCliOptions
   } = processArgs;
   // Search for possible configuration file extensions if path is not given
@@ -59,8 +62,10 @@ export async function coreConfigMiddleware<
           ...rcUpload,
           ...cliUpload,
         });
+
   return {
     ...(config != null && { config }),
+    cache: normalizeCache(cliCache),
     persist: buildPersistConfig(cliPersist, rcPersist),
     ...(upload != null && { upload }),
     ...remainingRcConfig,
@@ -78,6 +83,16 @@ export const normalizeBooleanWithNegation = <T extends string>(
     : `no-${propertyName}` in (cliOptions ?? {})
       ? false
       : ((rcOptions?.[propertyName] as boolean) ?? true);
+
+export const normalizeCache = (cache?: CacheConfig): CacheConfigObject => {
+  if (cache == null) {
+    return { write: false, read: false };
+  }
+  if (typeof cache === 'boolean') {
+    return { write: cache, read: cache };
+  }
+  return { write: cache.write ?? false, read: cache.read ?? false };
+};
 
 export const normalizeFormats = (formats?: string[]): Format[] =>
   (formats ?? []).flatMap(format => format.split(',') as Format[]);

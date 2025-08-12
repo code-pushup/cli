@@ -13,13 +13,13 @@ import {
   executePluginRunner,
   executeRunnerConfig,
   executeRunnerFunction,
-  getAuditOutputsPath,
+  getRunnerOutputsPath,
 } from './runner.js';
 
-describe('getAuditOutputsPath', () => {
+describe('getRunnerOutputsPath', () => {
   it('should read runner results from a file', async () => {
     expect(
-      osAgnosticPath(getAuditOutputsPath('plugin-with-cache', 'output')),
+      osAgnosticPath(getRunnerOutputsPath('plugin-with-cache', 'output')),
     ).toBe(osAgnosticPath('output/plugin-with-cache/runner-output.json'));
   });
 });

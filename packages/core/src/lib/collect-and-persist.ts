@@ -1,4 +1,5 @@
 import {
+  type CacheConfigObject,
   type CoreConfig,
   type PersistConfig,
   pluginReportSchema,
@@ -23,6 +24,7 @@ export type CollectAndPersistReportsOptions = Pick<
 > & {
   persist: Required<Omit<PersistConfig, 'skipReports'>> &
     Pick<PersistConfig, 'skipReports'>;
+  cache: CacheConfigObject;
 } & Partial<GlobalOptions>;
 
 export async function collectAndPersistReports(

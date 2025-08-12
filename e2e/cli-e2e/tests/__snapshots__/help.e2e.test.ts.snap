@@ -36,6 +36,14 @@ Global Options:
   -p, --onlyPlugins     List of plugins to run. If not set all plugins are run.
                                                  [array] [default: []]
 
+Cache Options:
+      --cache        Cache runner outputs (both read and write)
+                                                             [boolean]
+      --cache.read   Read runner-output.json from file system
+                                                             [boolean]
+      --cache.write  Write runner-output.json to file system
+                                                             [boolean]
+
 Persist Options:
       --persist.outputDir    Directory for the produced reports
                                                               [string]

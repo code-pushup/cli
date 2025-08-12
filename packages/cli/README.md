@@ -207,18 +207,40 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 
 ### Common Command Options
 
-| Option                      | Type                 | Default  | Description                                                                 |
-| --------------------------- | -------------------- | -------- | --------------------------------------------------------------------------- |
-| **`--persist.outputDir`**   | `string`             | n/a      | Directory for the produced reports.                                         |
-| **`--persist.filename`**    | `string`             | `report` | Filename for the produced reports without extension.                        |
-| **`--persist.format`**      | `('json' \| 'md')[]` | `json`   | Format(s) of the report file.                                               |
-| **`--persist.skipReports`** | `boolean`            | `false`  | Skip generating report files. (useful in combination with caching)          |
-| **`--upload.organization`** | `string`             | n/a      | Organization slug from portal.                                              |
-| **`--upload.project`**      | `string`             | n/a      | Project slug from portal.                                                   |
-| **`--upload.server`**       | `string`             | n/a      | URL to your portal server.                                                  |
-| **`--upload.apiKey`**       | `string`             | n/a      | API key for the portal server.                                              |
-| **`--onlyPlugins`**         | `string[]`           | `[]`     | Only run the specified plugins. Applicable to all commands except `upload`. |
-| **`--skipPlugins`**         | `string[]`           | `[]`     | Skip the specified plugins. Applicable to all commands except `upload`.     |
+#### Global Options
+
+| Option                 | Type       | Default | Description                                                                    |
+| ---------------------- | ---------- | ------- | ------------------------------------------------------------------------------ |
+| **`--onlyPlugins`**    | `string[]` | `[]`    | Only run the specified plugins. Applicable to all commands except `upload`.    |
+| **`--skipPlugins`**    | `string[]` | `[]`    | Skip the specified plugins. Applicable to all commands except `upload`.        |
+| **`--onlyCategories`** | `string[]` | `[]`    | Only run the specified categories. Applicable to all commands except `upload`. |
+| **`--skipCategories`** | `string[]` | `[]`    | Skip the specified categories. Applicable to all commands except `upload`.     |
+
+#### Cache Options
+
+| Option              | Type      | Default | Description                                                     |
+| ------------------- | --------- | ------- | --------------------------------------------------------------- |
+| **`--cache`**       | `boolean` | `false` | Cache runner outputs (both read and write).                     |
+| **`--cache.read`**  | `boolean` | `false` | If plugin audit outputs should be read from file system cache.  |
+| **`--cache.write`** | `boolean` | `false` | If plugin audit outputs should be written to file system cache. |
+
+#### Persist Options
+
+| Option                      | Type                 | Default  | Description                                                        |
+| --------------------------- | -------------------- | -------- | ------------------------------------------------------------------ |
+| **`--persist.outputDir`**   | `string`             | n/a      | Directory for the produced reports.                                |
+| **`--persist.filename`**    | `string`             | `report` | Filename for the produced reports without extension.               |
+| **`--persist.format`**      | `('json' \| 'md')[]` | `json`   | Format(s) of the report file.                                      |
+| **`--persist.skipReports`** | `boolean`            | `false`  | Skip generating report files. (useful in combination with caching) |
+
+#### Upload Options
+
+| Option                      | Type     | Default | Description                    |
+| --------------------------- | -------- | ------- | ------------------------------ |
+| **`--upload.organization`** | `string` | n/a     | Organization slug from portal. |
+| **`--upload.project`**      | `string` | n/a     | Project slug from portal.      |
+| **`--upload.server`**       | `string` | n/a     | URL to your portal server.     |
+| **`--upload.apiKey`**       | `string` | n/a     | API key for the portal server. |
 
 > [!NOTE]  
 > All common options, except `--onlyPlugins` and `--skipPlugins`, can be specified in the configuration file as well.
@@ -327,3 +349,12 @@ In addition to the [Common Command Options](#common-command-options), the follow
 | Option        | Required | Type       | Description                       |
 | ------------- | :------: | ---------- | --------------------------------- |
 | **`--files`** |   yes    | `string[]` | List of `report-diff.json` paths. |
+
+## Caching
+
+The CLI supports caching to speed up subsequent runs and is compatible with Nx and Turborepo.
+
+Depending on your strategy, you can cache the generated reports files or plugin runner output.
+For fine-grained caching, we suggest caching plugin runner output.
+
+The detailed example for [Nx caching](./docs/nx-caching.md) and [Turborepo caching](./docs/turbo-caching.md) is available in the docs.
