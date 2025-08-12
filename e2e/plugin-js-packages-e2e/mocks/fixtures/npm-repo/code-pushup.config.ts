@@ -6,3 +6,11 @@ import type { CoreConfig } from '@code-pushup/models';
 const thisConfigFolder = fileURLToPath(dirname(import.meta.url));
 
 export default {
+  persist: { outputDir: thisConfigFolder, format: ['json'] },
+  plugins: [
+    await jsPackagesPlugin({
+      packageManager: 'npm',
+      packageJsonPath: join(thisConfigFolder, 'package.json'),
+    }),
+  ],
+} satisfies CoreConfig;
