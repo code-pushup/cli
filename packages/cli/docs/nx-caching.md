@@ -55,17 +55,7 @@ export default {
       "executor": "nx:run-commands",
       "options": {
         "command": "npx @code-pushup/cli collect",
-        "config": "{projectRoot}/code-pushup.config.ts",
-        "cache": {
-          "write": true
-        },
-        "persist": {
-          "skipReports": true,
-          "outputDir": "{projectRoot}/.code-pushup"
-        },
-        "upload": {
-          "project": "{projectName}"
-        }
+        "args": ["--config={projectRoot}/code-pushup.config.ts", "--cache.write=true", "--persist.skipReports=true", "--persist.outputDir={projectRoot}/.code-pushup", "--upload.project={projectName}"]
       },
       "dependsOn": ["unit-test", "int-test"]
     },
@@ -75,18 +65,9 @@ export default {
       "executor": "nx:run-commands",
       "options": {
         "command": "npx @code-pushup/cli",
-        "config": "{projectRoot}/code-pushup.config.ts",
-        "cache": {
-          "read": true
-        },
-        "persist": {
-          "outputDir": ".code-pushup"
-        },
-        "upload": {
-          "project": "{projectName}"
-        }
+        "args": ["--config={projectRoot}/code-pushup.config.ts", "--cache.read=true", "--persist.outputDir={projectRoot}/.code-pushup", "--upload.project={projectName}"]
       },
-      "dependsOn": ["code-pushup:coverage"]
+      "dependsOn": ["code-pushup-coverage"]
     }
   }
 }
