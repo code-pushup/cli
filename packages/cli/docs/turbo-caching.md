@@ -31,7 +31,7 @@ export default {
 ```json
 {
   "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
+  "tasks": {
     "unit-test": {
       "outputs": ["coverage/unit-test/**"]
     },
