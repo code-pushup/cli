@@ -39,7 +39,7 @@ export async function loadEnv() {
     CP_SERVER: z.string().url(),
     CP_API_KEY: z.string().min(1),
     CP_ORGANIZATION: z.string().min(1),
-    CP_PROJECT: z.string().min(1),
+    CP_PROJECT: z.string().optional(),
   });
 
   const { data: env, success } = await envSchema.safeParseAsync(process.env);
@@ -48,10 +48,12 @@ export async function loadEnv() {
     return {};
   }
   const uploadConfig = {
-    server: env.CP_SERVER,
     apiKey: env.CP_API_KEY,
+    server: env.CP_SERVER,
     organization: env.CP_ORGANIZATION,
-    project: env.CP_PROJECT,
+    ...(env.CP_PROJECT
+      ? { project: env.CP_PROJECT }
+      : { project: 'missing-project-name' }),
   };
   return (
     uploadConfig.apiKey && {
@@ -185,7 +187,9 @@ export const jsPackagesCoreConfig = async (
 export const lighthouseCoreConfig = async (
   urls: LighthouseUrls,
 ): Promise<CoreConfig> => {
-  const lhPlugin = await lighthousePlugin(urls);
+  const lhPlugin = await lighthousePlugin(urls, {
+    onlyAudits: ['largest-contentful-paint'],
+  });
   return {
     plugins: [lhPlugin],
     categories: mergeLighthouseCategories(lhPlugin, lighthouseCategories),

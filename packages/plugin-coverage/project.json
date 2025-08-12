@@ -10,6 +10,10 @@
     "code-pushup-coverage": {
       "dependsOn": ["unit-test", "int-test"]
     },
+    "code-pushup-eslint": {},
+    "code-pushup-js-packages": {},
+    "code-pushup-jsdocs": {},
+    "code-pushup-typescript": {},
     "build": {},
     "lint": {},
     "unit-test": {

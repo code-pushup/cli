@@ -10,12 +10,14 @@
       "inputs": ["production", "^production", "{projectRoot}/zod2md.config.ts"],
       "outputs": ["{projectRoot}/docs/models-reference.md"]
     },
-    "code-pushup": {
-      "dependsOn": ["code-pushup-coverage"]
-    },
+    "code-pushup": {},
     "code-pushup-coverage": {
       "dependsOn": ["unit-test", "int-test"]
     },
+    "code-pushup-eslint": {},
+    "code-pushup-js-packages": {},
+    "code-pushup-jsdocs": {},
+    "code-pushup-typescript": {},
     "build": {
       "dependsOn": [
         "^build",

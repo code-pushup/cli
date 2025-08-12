@@ -5,11 +5,15 @@
   "projectType": "library",
   "targets": {
     "code-pushup": {
-      "dependsOn": ["code-pushup-coverage"]
+      "dependsOn": [
+        "code-pushup-coverage",
+        "code-pushup-eslint",
+        "code-pushup-typescript"
+      ]
     },
-    "code-pushup-coverage": {
-      "dependsOn": ["unit-test"]
-    },
+    "code-pushup-coverage": {},
+    "code-pushup-eslint": {},
+    "code-pushup-typescript": {},
     "build": {},
     "lint": {},
     "unit-test": {

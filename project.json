@@ -3,12 +3,20 @@
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
     "code-pushup": {
-      "dependsOn": ["code-pushup-coverage"],
+      "executor": "nx:run-commands",
       "options": {
-        "config": "{workspaceRoot}/code-pushup.config.ts",
-        "upload.project": "cli"
+        "command": "node packages/cli/src/index.ts",
+        "args": [
+          "--no-progress",
+          "--verbose",
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--cache.read",
+          "--persist.outputDir={projectRoot}/.code-pushup",
+          "--upload.project=cli"
+        ]
       }
     },
-    "code-pushup-coverage": {}
+
+    "code-pushup-lighthouse": {}
   }
 }
