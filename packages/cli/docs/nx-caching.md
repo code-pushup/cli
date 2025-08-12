@@ -115,8 +115,8 @@ graph TD
 ## Command Line Example
 
 ```bash
-# Run all affected projects e.g. nx run lib-a:code-pushup-coverage
-nx affected --target=code-pushup:*
+# Run all affected project plugins and cache the output if configured
+nx affected --target=code-pushup-coverage,code-pushup-jspackages
 
 # Run all affected projects and upload the report to the portal
 nx affected --target=code-pushup
