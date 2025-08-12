@@ -51,7 +51,7 @@ export default {
     },
     "code-pushup-coverage": {
       "cache": true,
-      "outputs": ["{options.outputPath}"],
+      "outputs": ["{options.persist.outputDir}/coverage"],
       "executor": "nx:run-commands",
       "options": {
         "command": "npx @code-pushup/cli collect",
@@ -65,14 +65,13 @@ export default {
         },
         "upload": {
           "project": "{projectName}"
-        },
-        "outputPath": "{projectRoot}/.code-pushup/coverage"
+        }
       },
       "dependsOn": ["unit-test", "int-test"]
     },
     "code-pushup": {
       "cache": true,
-      "outputs": ["{options.outputPath}"],
+      "outputs": ["{options.persist.outputDir}"],
       "executor": "nx:run-commands",
       "options": {
         "command": "npx @code-pushup/cli",
@@ -80,10 +79,12 @@ export default {
         "cache": {
           "read": true
         },
+        "persist": {
+          "outputDir": ".code-pushup"
+        },
         "upload": {
           "project": "{projectName}"
-        },
-        "outputPath": "{projectRoot}/.code-pushup"
+        }
       },
       "dependsOn": ["code-pushup:coverage"]
     }
