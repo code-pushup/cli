@@ -1,4 +1,5 @@
 /* eslint-disable @nx/enforce-module-boundaries */
+import { z } from 'zod';
 import type {
   CategoryConfig,
   CoreConfig,
@@ -28,6 +29,44 @@ import typescriptPlugin, {
   type TypescriptPluginOptions,
   getCategories,
 } from './packages/plugin-typescript/src/index.js';
+
+/**
+ * Helper function to load and validate Code PushUp environment variables for upload configuration
+ */
+export async function loadEnv(
+  projectName: string | undefined = process.env.NX_TASK_TARGET_PROJECT,
+): Promise<Partial<CoreConfig>> {
+  if (projectName == null || projectName === '') {
+    throw new Error(
+      'loadEnv failed! Project name is not defined. Please run code pushup fit Nx or provide a projectName.',
+    );
+  }
+  const envSchema = z.object({
+    CP_SERVER: z.string().url(),
+    CP_API_KEY: z.string().min(1),
+    CP_ORGANIZATION: z.string().min(1),
+    CP_PROJECT: z.string().optional(),
+  });
+
+  const { data: env, success } = await envSchema.safeParseAsync(process.env);
+
+  if (!success || !env) {
+    return {};
+  }
+  const uploadConfig = {
+    apiKey: env.CP_API_KEY,
+    server: env.CP_SERVER,
+    organization: env.CP_ORGANIZATION,
+    ...(env.CP_PROJECT
+      ? { project: env.CP_PROJECT }
+      : { project: projectName }),
+  };
+  return (
+    uploadConfig.apiKey && {
+      upload: uploadConfig,
+    }
+  );
+}
 
 export const jsPackagesCategories: CategoryConfig[] = [
   {

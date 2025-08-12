@@ -6,6 +6,7 @@ import {
   jsDocsCoreConfig,
   jsPackagesCoreConfig,
   lighthouseCoreConfig,
+  loadEnv,
   typescriptPluginConfig,
 } from './code-pushup.preset.js';
 import type { CoreConfig } from './packages/models/src/index.js';
@@ -18,18 +19,10 @@ const envSchema = z.object({
   CP_ORGANIZATION: z.string().min(1),
   CP_PROJECT: z.string().min(1),
 });
-const { data: env } = await envSchema.safeParseAsync(process.env);
+const projectName = 'cli';
 
 const config: CoreConfig = {
-  ...(env && {
-    upload: {
-      server: env.CP_SERVER,
-      apiKey: env.CP_API_KEY,
-      organization: env.CP_ORGANIZATION,
-      project: env.CP_PROJECT,
-    },
-  }),
-
+  ...(await loadEnv(projectName)),
   plugins: [],
 };
 
