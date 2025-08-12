@@ -3,20 +3,24 @@
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
     "code-pushup": {
+      "dependsOn": ["code-pushup-js-packages", "code-pushup-lighthouse"],
       "executor": "nx:run-commands",
       "options": {
-        "command": "node packages/cli/src/index.ts",
         "args": [
           "--no-progress",
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.read",
-          "--persist.outputDir={projectRoot}/.code-pushup",
-          "--upload.project=cli"
+          "--persist.outputDir={projectRoot}/.code-pushup"
         ]
       }
     },
-
-    "code-pushup-lighthouse": {}
+    "code-pushup-js-packages": {},
+    "code-pushup-lighthouse": {},
+    "nx-cache-epoch": {
+      "cache": true,
+      "inputs": [{ "runtime": "echo $(($(date +%s) / 6))" }],
+      "command": "bash -c 'date && sleep 2'"
+    }
   }
 }

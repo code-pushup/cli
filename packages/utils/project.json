@@ -4,42 +4,27 @@
   "sourceRoot": "packages/utils/src",
   "projectType": "library",
   "targets": {
-    "code-pushup": {
-      "dependsOn": ["code-pushup-coverage"]
-    },
-    "code-pushup-coverage": {
-      "dependsOn": ["unit-test", "int-test"]
-    },
-    "code-pushup-eslint": {},
-    "code-pushup-js-packages": {},
-    "code-pushup-jsdocs": {},
-    "code-pushup-typescript": {},
     "build": {},
     "lint": {},
-    "perf": {
-      "command": "npx tsx --tsconfig=../tsconfig.perf.json",
-      "options": {
-        "cwd": "./packages/utils/perf"
-      }
-    },
-    "perf:list": {
-      "command": "ls -l | grep \"^d\" | awk '{print $9}'",
-      "options": {
-        "cwd": "./packages/utils/perf"
-      }
-    },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/utils/vitest.unit.config.ts"
-      }
-    },
+    "unit-test": {},
     "int-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/utils/vitest.int.config.ts"
+        "configFile": "{projectRoot}/vitest.int.config.ts"
       }
-    }
+    },
+    "code-pushup": {
+      "dependsOn": [
+        "code-pushup-coverage",
+        "code-pushup-jsdocs",
+        "code-pushup-js-packages",
+        "code-pushup-typescript"
+      ]
+    },
+    "code-pushup-coverage": {},
+    "code-pushup-jsdocs": {},
+    "code-pushup-js-packages": {},
+    "code-pushup-typescript": {}
   },
   "tags": ["scope:shared", "type:util", "publishable"]
 }

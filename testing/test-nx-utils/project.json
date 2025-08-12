@@ -4,24 +4,7 @@
   "sourceRoot": "testing/test-nx-utils/src",
   "projectType": "library",
   "targets": {
-    "code-pushup": {
-      "dependsOn": [
-        "code-pushup-coverage",
-        "code-pushup-eslint",
-        "code-pushup-typescript"
-      ]
-    },
-    "code-pushup-coverage": {},
-    "code-pushup-eslint": {},
-    "code-pushup-typescript": {},
-    "build": {},
-    "lint": {},
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "testing/test-nx-utils/vitest.unit.config.ts"
-      }
-    }
+    "unit-test": {}
   },
   "tags": ["scope:shared", "type:testing"]
 }

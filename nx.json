@@ -2,14 +2,6 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "targetDefaults": {
     "code-pushup": {
-      "dependsOn": [
-        "code-pushup-coverage",
-        "code-pushup-eslint",
-        "code-pushup-js-packages",
-        "code-pushup-lighthouse",
-        "code-pushup-jsdocs",
-        "code-pushup-typescript"
-      ],
       "cache": true,
       "outputs": [
         "{projectRoot}/.code-pushup/report.md",
@@ -78,7 +70,12 @@
     },
     "code-pushup-js-packages": {
       "cache": false,
-      "inputs": ["default", "^default", "{projectRoot}/package.json"],
+      "inputs": [
+        "default",
+        "^default",
+        "{projectRoot}/package.json",
+        { "runtime": "echo $(($(date +%s) / 6))" }
+      ],
       "outputs": ["{projectRoot}/.code-pushup/js-packages"],
       "executor": "nx:run-commands",
       "options": {
@@ -99,7 +96,7 @@
       }
     },
     "code-pushup-lighthouse": {
-      "cache": false,
+      "cache": true,
       "outputs": ["{projectRoot}/.code-pushup/lighthouse"],
       "executor": "nx:run-commands",
       "options": {
@@ -187,6 +184,18 @@
           "{projectRoot}/**/*.ts",
           "{projectRoot}/package.json"
         ]
+      }
+    },
+    "unit-test": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "{projectRoot}/vitest.unit.config.ts"
+      }
+    },
+    "int-test": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "{projectRoot}/vitest.int.config.ts"
       }
     },
     "e2e": {

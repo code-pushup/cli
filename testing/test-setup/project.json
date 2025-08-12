@@ -3,25 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "testing/test-setup/src",
   "projectType": "library",
-  "targets": {
-    "code-pushup": {
-      "dependsOn": [
-        "code-pushup-coverage",
-        "code-pushup-eslint",
-        "code-pushup-typescript"
-      ]
-    },
-    "code-pushup-coverage": {},
-    "code-pushup-eslint": {},
-    "code-pushup-typescript": {},
-    "build": {},
-    "lint": {},
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "testing/test-setup/vitest.unit.config.ts"
-      }
-    }
-  },
+  "targets": {},
+  "unit-test": {},
   "tags": ["scope:shared", "type:testing"]
 }

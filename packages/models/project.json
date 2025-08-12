@@ -4,38 +4,40 @@
   "sourceRoot": "packages/models/src",
   "projectType": "library",
   "targets": {
+    "code-pushup": {
+      "dependsOn": [
+        "code-pushup-coverage",
+        "code-pushup-jsdocs",
+        "code-pushup-js-packages",
+        "code-pushup-typescript"
+      ]
+    },
+    "code-pushup-eslint": {},
+    "code-pushup-js-packages": {},
+    "code-pushup-jsdocs": {},
+    "code-pushup-typescript": {},
     "generate-docs": {
       "command": "npx zod2md --config packages/models/zod2md.config.ts",
       "cache": true,
       "inputs": ["production", "^production", "{projectRoot}/zod2md.config.ts"],
       "outputs": ["{projectRoot}/docs/models-reference.md"]
     },
-    "code-pushup": {},
-    "code-pushup-coverage": {
-      "dependsOn": ["unit-test", "int-test"]
-    },
-    "code-pushup-eslint": {},
-    "code-pushup-js-packages": {},
-    "code-pushup-jsdocs": {},
-    "code-pushup-typescript": {},
     "build": {
       "dependsOn": [
         "^build",
         "generate-docs",
-        { "projects": "models-transformers", "target": "build" }
+        {
+          "projects": "models-transformers",
+          "target": "build"
+        }
       ]
     },
     "lint": {},
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/models/vitest.unit.config.ts"
-      }
-    },
+    "unit-test": {},
     "int-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/models/vitest.int.config.ts"
+        "configFile": "{projectRoot}/vitest.int.config.ts"
       }
     }
   },

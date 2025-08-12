@@ -4,30 +4,27 @@
   "sourceRoot": "packages/plugin-typescript/src",
   "projectType": "library",
   "targets": {
-    "code-pushup": {
-      "dependsOn": ["code-pushup-coverage"]
-    },
-    "code-pushup-coverage": {
-      "dependsOn": ["unit-test", "int-test"]
-    },
-    "code-pushup-eslint": {},
-    "code-pushup-js-packages": {},
-    "code-pushup-jsdocs": {},
-    "code-pushup-typescript": {},
     "build": {},
     "lint": {},
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-typescript/vitest.unit.config.ts"
-      }
-    },
+    "unit-test": {},
     "int-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/plugin-typescript/vitest.int.config.ts"
+        "configFile": "{projectRoot}/vitest.int.config.ts"
       }
-    }
+    },
+    "code-pushup": {
+      "dependsOn": [
+        "code-pushup-coverage",
+        "code-pushup-jsdocs",
+        "code-pushup-js-packages",
+        "code-pushup-typescript"
+      ]
+    },
+    "code-pushup-coverage": {},
+    "code-pushup-jsdocs": {},
+    "code-pushup-js-packages": {},
+    "code-pushup-typescript": {}
   },
   "tags": ["scope:plugin", "type:feature", "publishable"]
 }

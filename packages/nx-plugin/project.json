@@ -3,66 +3,28 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/nx-plugin/src",
   "projectType": "library",
-  "implicitDependencies": ["cli"],
   "targets": {
-    "code-pushup": {
-      "dependsOn": ["code-pushup-coverage"]
-    },
-    "code-pushup-coverage": {
-      "dependsOn": ["unit-test", "int-test"]
-    },
-    "code-pushup-eslint": {},
-    "code-pushup-js-packages": {},
-    "code-pushup-jsdocs": {},
-    "code-pushup-typescript": {},
-    "build": {
-      "options": {
-        "assets": [
-          "{projectRoot}/*.md",
-          {
-            "input": "./packages/nx-plugin/src",
-            "glob": "**/!(*.ts)",
-            "output": "./src"
-          },
-          {
-            "input": "./packages/nx-plugin/src",
-            "glob": "**/*.d.ts",
-            "output": "./src"
-          },
-          {
-            "input": "./packages/nx-plugin",
-            "glob": "generators.json",
-            "output": "."
-          },
-          {
-            "input": "./packages/nx-plugin",
-            "glob": "executors.json",
-            "output": "."
-          }
-        ]
-      }
-    },
-    "lint": {
-      "options": {
-        "lintFilePatterns": [
-          "packages/nx-plugin/**/*.ts",
-          "packages/nx-plugin/package.json",
-          "packages/nx-plugin/generators.json"
-        ]
-      }
-    },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/nx-plugin/vitest.unit.config.ts"
-      }
-    },
+    "build": {},
+    "lint": {},
+    "unit-test": {},
     "int-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/nx-plugin/vitest.int.config.ts"
+        "configFile": "{projectRoot}/vitest.int.config.ts"
       }
-    }
+    },
+    "code-pushup": {
+      "dependsOn": [
+        "code-pushup-coverage",
+        "code-pushup-jsdocs",
+        "code-pushup-js-packages",
+        "code-pushup-typescript"
+      ]
+    },
+    "code-pushup-coverage": {},
+    "code-pushup-jsdocs": {},
+    "code-pushup-js-packages": {},
+    "code-pushup-typescript": {}
   },
   "tags": ["scope:tooling", "type:feature", "publishable"]
 }

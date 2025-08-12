@@ -34,7 +34,14 @@ import typescriptPlugin, {
 /**
  * Helper function to load and validate Code PushUp environment variables for upload configuration
  */
-export async function loadEnv() {
+export async function loadEnv(
+  projectName: string | undefined = process.env.NX_TASK_TARGET_PROJECT,
+): Promise<Partial<CoreConfig>> {
+  if (projectName == null || projectName === '') {
+    throw new Error(
+      'loadEnv failed! Project name is not defined. Please run code pushup fit Nx or provide a projectName.',
+    );
+  }
   const envSchema = z.object({
     CP_SERVER: z.string().url(),
     CP_API_KEY: z.string().min(1),
@@ -53,7 +60,7 @@ export async function loadEnv() {
     organization: env.CP_ORGANIZATION,
     ...(env.CP_PROJECT
       ? { project: env.CP_PROJECT }
-      : { project: 'missing-project-name' }),
+      : { project: projectName }),
   };
   return (
     uploadConfig.apiKey && {

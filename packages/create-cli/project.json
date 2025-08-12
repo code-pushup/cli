@@ -4,40 +4,27 @@
   "sourceRoot": "packages/create-cli/src",
   "projectType": "library",
   "targets": {
-    "code-pushup": {
-      "dependsOn": ["code-pushup-coverage"]
-    },
-    "code-pushup-coverage": {
-      "dependsOn": ["unit-test", "int-test"]
-    },
-    "code-pushup-eslint": {},
-    "code-pushup-js-packages": {},
-    "code-pushup-lighthouse": {},
-    "code-pushup-typescript": {},
     "build": {},
     "lint": {},
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/create-cli/vitest.unit.config.ts"
-      }
-    },
+    "unit-test": {},
     "int-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/create-cli/vitest.int.config.ts"
+        "configFile": "{projectRoot}/vitest.int.config.ts"
       }
     },
-    "exec-node": {
-      "dependsOn": ["build"],
-      "command": "node ./dist/packages/create-cli/src/index.js",
-      "options": {}
+    "code-pushup": {
+      "dependsOn": [
+        "code-pushup-coverage",
+        "code-pushup-jsdocs",
+        "code-pushup-js-packages",
+        "code-pushup-typescript"
+      ]
     },
-    "exec-npm": {
-      "dependsOn": ["^build"],
-      "command": "npm exec ./dist/packages/create-cli",
-      "options": {}
-    }
+    "code-pushup-coverage": {},
+    "code-pushup-jsdocs": {},
+    "code-pushup-js-packages": {},
+    "code-pushup-typescript": {}
   },
-  "tags": ["scope:tooling", "type:app", "publishable"]
+  "tags": ["scope:shared", "type:util", "publishable"]
 }

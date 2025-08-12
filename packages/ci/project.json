@@ -4,30 +4,27 @@
   "sourceRoot": "packages/ci/src",
   "projectType": "library",
   "targets": {
-    "code-pushup": {
-      "dependsOn": ["code-pushup-coverage"]
-    },
-    "code-pushup-coverage": {
-      "dependsOn": ["unit-test", "int-test"]
-    },
-    "code-pushup-eslint": {},
-    "code-pushup-js-packages": {},
-    "code-pushup-jsdocs": {},
-    "code-pushup-typescript": {},
     "build": {},
     "lint": {},
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/ci/vitest.unit.config.ts"
-      }
-    },
     "int-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/ci/vitest.int.config.ts"
+        "configFile": "{projectRoot}/vitest.int.config.ts"
       }
-    }
+    },
+    "unit-test": {},
+    "code-pushup": {
+      "dependsOn": [
+        "code-pushup-coverage",
+        "code-pushup-jsdocs",
+        "code-pushup-js-packages",
+        "code-pushup-typescript"
+      ]
+    },
+    "code-pushup-coverage": {},
+    "code-pushup-jsdocs": {},
+    "code-pushup-js-packages": {},
+    "code-pushup-typescript": {}
   },
   "tags": ["scope:tooling", "type:feature", "publishable"]
 }
