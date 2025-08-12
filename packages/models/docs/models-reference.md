@@ -1258,11 +1258,12 @@ _Enum, one of the following possible values:_
 
 _Object containing the following properties:_
 
-| Property    | Description                             | Type                               |
-| :---------- | :-------------------------------------- | :--------------------------------- |
-| `outputDir` | Artifacts folder                        | [FilePath](#filepath)              |
-| `filename`  | Artifacts file name (without extension) | [FileName](#filename)              |
-| `format`    |                                         | _Array of [Format](#format) items_ |
+| Property      | Description                             | Type                               |
+| :------------ | :-------------------------------------- | :--------------------------------- |
+| `outputDir`   | Artifacts folder                        | [FilePath](#filepath)              |
+| `filename`    | Artifacts file name (without extension) | [FileName](#filename)              |
+| `format`      |                                         | _Array of [Format](#format) items_ |
+| `skipReports` |                                         | `boolean`                          |
 
 _All properties are optional._
 
