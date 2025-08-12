@@ -77,8 +77,12 @@ export default {
       "options": {
         "command": "npx @code-pushup/cli",
         "config": "{projectRoot}/code-pushup.config.ts",
-        "cache.read": true,
-        "upload.project": "{projectName}",
+        "cache": {
+          "read": true
+        },
+        "upload": {
+          "project": "{projectName}"
+        },
         "outputPath": "{projectRoot}/.code-pushup"
       },
       "dependsOn": ["code-pushup:coverage"]
