@@ -8,10 +8,14 @@
       "options": {
         "command": "node packages/cli/src/index.ts --no-progress --verbose",
         "config": "{projectRoot}/code-pushup.config.ts",
-        "persist.filename": "{projectName}-report",
-        "persist.outputDir": "{projectRoot}/.code-pushup",
+        "persist": {
+          "filename": "{projectName}-report",
+          "outputDir": "{projectRoot}/.code-pushup"
+        },
+        "upload": {
+          "project": "cli-{projectName}"
+        },
         "outputPath": "{projectRoot}/.code-pushup",
-        "upload.project": "cli-{projectName}",
         "env": {
           "NODE_OPTIONS": "--import tsx",
           "TSX_TSCONFIG_PATH": "tsconfig.base.json"
