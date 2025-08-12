@@ -41,11 +41,8 @@ export default {
       "dependsOn": ["unit-test", "int-test"],
       "outputs": [".code-pushup/coverage/**"]
     },
-    "code-pushup:js-packages": {
-      "outputs": [".code-pushup/js-packages/**"]
-    },
     "code-pushup": {
-      "dependsOn": ["code-pushup:coverage", "code-pushup:js-packages"],
+      "dependsOn": ["code-pushup-coverage"],
       "outputs": [".code-pushup/**"]
     }
   }
@@ -61,7 +58,6 @@ export default {
     "unit-test": "vitest --config packages/lib-a/vitest.unit.config.ts --coverage",
     "int-test": "vitest --config packages/lib-a/vitest.int.config.ts --coverage",
     "code-pushup:coverage": "code-pushup collect --config packages/lib-a/code-pushup.config.ts --cache.write --persist.skipReports --persist.outputDir packages/lib-a/.code-pushup --onlyPlugins=coverage",
-    "code-pushup:js-packages": "code-pushup collect --config packages/lib-a/code-pushup.config.ts --cache.write --persist.skipReports --persist.outputDir packages/lib-a/.code-pushup --onlyPlugins=js-packages",
     "code-pushup": "code-pushup autorun --config packages/lib-a/code-pushup.config.ts --cache.read --persist.outputDir packages/lib-a/.code-pushup"
   }
 }
@@ -80,7 +76,6 @@ This configuration creates the following task dependency graph:
 ```mermaid
 graph TD
   A[lib-a:code-pushup ⚡] --> B[lib-a:code-pushup:coverage]
-  A --> E[lib-a:code-pushup:js-packages]
   B --> C[lib-a:unit-test ⚡]
   B --> D[lib-a:int-test ⚡]
 ```
