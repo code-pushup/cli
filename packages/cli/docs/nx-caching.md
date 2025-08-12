@@ -13,7 +13,6 @@ export default {
   plugins: [
     await coveragePlugin({
       reports: ['coverage/lcov.info'],
-      coverageTypes: ['function', 'branch', 'line'],
     }),
     await jsPackagesPlugin(),
   ],
