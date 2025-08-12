@@ -28,41 +28,6 @@ export default {
 } satisfies CoreConfig;
 ```
 
-## `nx.json`
-
-```json
-{
-  "defaultTarget": {
-    "code-pushup": {
-      "cache": true,
-      "outputs": ["{options.outputPath}"],
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "node packages/cli/src/index.ts",
-        "config": "{projectRoot}/code-pushup.config.ts",
-        "cache.read": true,
-        "upload.project": "{projectName}",
-        "outputPath": "{projectRoot}/.code-pushup"
-      }
-    }
-  },
-  "code-pushup:coverage": {
-    "cache": true,
-    "outputs": ["{options.outputPath}"],
-    "executor": "nx:run-commands",
-    "options": {
-      "command": "npx @code-pushup/cli collect",
-      "config": "{projectRoot}/code-pushup.config.ts",
-      "cache.write": true,
-      "persist.skipReports": true,
-      "persist.outputDir": "{projectRoot}/.code-pushup",
-      "upload.project": "{projectName}",
-      "outputPath": "{projectRoot}/.code-pushup/coverage"
-    }
-  }
-}
-```
-
 ## `{projectRoot}/package.json`
 
 ```json
@@ -88,10 +53,47 @@ export default {
       }
     },
     "code-pushup:coverage": {
+      "cache": true,
+      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx @code-pushup/cli collect",
+        "config": "{projectRoot}/code-pushup.config.ts",
+        "cache.write": true,
+        "persist.skipReports": true,
+        "persist.outputDir": "{projectRoot}/.code-pushup",
+        "upload.project": "{projectName}",
+        "outputPath": "{projectRoot}/.code-pushup/coverage"
+      },
       "dependsOn": ["unit-test", "int-test"]
     },
+    "code-pushup:js-packages": {
+      "cache": true,
+      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx @code-pushup/cli collect",
+        "config": "{projectRoot}/code-pushup.config.ts",
+        "cache.write": true,
+        "persist.skipReports": true,
+        "persist.outputDir": "{projectRoot}/.code-pushup",
+        "upload.project": "{projectName}",
+        "onlyPlugins": "js-packages",
+        "outputPath": "{projectRoot}/.code-pushup/js-packages"
+      }
+    },
     "code-pushup": {
-      "dependsOn": ["code-pushup:coverage"]
+      "cache": true,
+      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts",
+        "config": "{projectRoot}/code-pushup.config.ts",
+        "cache.read": true,
+        "upload.project": "{projectName}",
+        "outputPath": "{projectRoot}/.code-pushup"
+      },
+      "dependsOn": ["code-pushup:coverage", "code-pushup:js-packages"]
     }
   }
 }
@@ -107,7 +109,7 @@ This configuration creates the following task dependency graph:
 
 ```mermaid
 graph TD
-  A[lib-a:code-pushup 🐳] --> B[lib-a:code-pushup:coverage]
+  A[lib-a:code-pushup 🐳] --> B[lib-a:code-pushup:coverage 🐳]
   A --> E[lib-a:code-pushup:js-packages]
   B --> C[lib-a:unit-test 🐳]
   B --> D[lib-a:int-test 🐳]
