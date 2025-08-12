@@ -332,7 +332,7 @@ In addition to the [Common Command Options](#common-command-options), the follow
 
 ## Caching
 
-The CLI supports caching to speed up subsequent runs and is compatible with Nx and turborepo.
+The CLI supports caching to speed up subsequent runs and is compatible with Nx and Turborepo.
 
 Depending on your strategy, you can cache the generated reports files or plugin runner output.
 For fine-grained caching, we suggest caching plugin runner output.
