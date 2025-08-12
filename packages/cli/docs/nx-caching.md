@@ -56,28 +56,19 @@ export default {
       "options": {
         "command": "npx @code-pushup/cli collect",
         "config": "{projectRoot}/code-pushup.config.ts",
-        "cache.write": true,
-        "persist.skipReports": true,
-        "persist.outputDir": "{projectRoot}/.code-pushup",
-        "upload.project": "{projectName}",
+        "cache": {
+          "write": true
+        },
+        "persist": {
+          "skipReports": true,
+          "outputDir": "{projectRoot}/.code-pushup"
+        },
+        "upload": {
+          "project": "{projectName}"
+        },
         "outputPath": "{projectRoot}/.code-pushup/coverage"
       },
       "dependsOn": ["unit-test", "int-test"]
-    },
-    "code-pushup-js-packages": {
-      "cache": true,
-      "outputs": ["{options.outputPath}"],
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @code-pushup/cli collect",
-        "config": "{projectRoot}/code-pushup.config.ts",
-        "cache.write": true,
-        "persist.skipReports": true,
-        "persist.outputDir": "{projectRoot}/.code-pushup",
-        "upload.project": "{projectName}",
-        "onlyPlugins": "js-packages",
-        "outputPath": "{projectRoot}/.code-pushup/js-packages"
-      }
     },
     "code-pushup": {
       "cache": true,
@@ -90,7 +81,7 @@ export default {
         "upload.project": "{projectName}",
         "outputPath": "{projectRoot}/.code-pushup"
       },
-      "dependsOn": ["code-pushup:coverage", "code-pushup:js-packages"]
+      "dependsOn": ["code-pushup:coverage"]
     }
   }
 }
@@ -106,8 +97,7 @@ This configuration creates the following task dependency graph:
 
 ```mermaid
 graph TD
-  A[lib-a:code-pushup 🐳] --> B[lib-a:code-pushup:coverage 🐳]
-  A --> E[lib-a:code-pushup:js-packages]
+  A[lib-a:code-pushup 🐳] --> B[lib-a:code-pushup-coverage 🐳]
   B --> C[lib-a:unit-test 🐳]
   B --> D[lib-a:int-test 🐳]
 ```
@@ -115,10 +105,10 @@ graph TD
 ## Command Line Example
 
 ```bash
-# Run all affected project plugins and cache the output if configured
-nx affected --target=code-pushup-coverage,code-pushup-jspackages
+# Run all affected project plugins `coverage` and cache the output if configured
+nx affected --target=code-pushup-coverage
 
-# Run all affected projects and upload the report to the portal
+# Run all affected projects with plugins `coverage` and `js-packages` and upload the report to the portal
 nx affected --target=code-pushup
 ```
 

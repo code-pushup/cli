@@ -89,10 +89,10 @@ graph TD
 ## Command Line Examples
 
 ```bash
-# Run all affected project plugins and cache the output if configured
-turbo run code-pushup-coverage code-pushup-jspackages --filter=[origin/main]
+# Run all affected project plugins `coverage` and cache the output if configured
+turbo run code-pushup-coverage --filter=[origin/main]
 
-# Run all affected projects and upload the report to the portal
+# Run all affected projects with plugins `coverage` and `js-packages` and upload the report to the portal
 turbo run code-pushup --filter=[origin/main]
 ```
 
