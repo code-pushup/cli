@@ -1,9 +1,14 @@
-name: Code PushUp
+name: Code PushUp (fork)
+
+# separated from code-pushup.yml for security reasons
+# => requires permissions to create PR comment
+# => for PRs from forks, needs to run on `pull_request_target`, not `pull_request`
+# => `pull_request_target` is a security risk when secrets are being used
+# => secrets needed for code-pushup upload
+# => code-pushup for forks runs in separate workflow with no secrets access
 
 on:
-  push:
-    branches: [main]
-  pull_request:
+  pull_request_target:
     branches: [main]
 
 env:
@@ -16,13 +21,7 @@ jobs:
   code-pushup:
     runs-on: ubuntu-latest
     name: Code PushUp
-    # ignore PRs from forks, handled by code-pushup-fork.yml
-    if: ${{ !github.event.pull_request.head.repo.fork }}
-    env:
-      CP_SERVER: ${{ secrets.CP_SERVER }}
-      CP_API_KEY: ${{ secrets.CP_API_KEY }}
-      CP_ORGANIZATION: code-pushup
-      CP_PROJECT: cli
+    if: github.event.pull_request.head.repo.fork
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -36,4 +35,4 @@ jobs:
       - name: Run Code PushUp action
         uses: code-pushup/github-action@v0
         with:
-          bin: npx nx affected -t code-pushup
+          bin: npx nx code-pushup-old --
