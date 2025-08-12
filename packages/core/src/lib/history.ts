@@ -1,4 +1,5 @@
 import type {
+  CacheConfigObject,
   CoreConfig,
   PersistConfig,
   UploadConfig,
@@ -15,6 +16,7 @@ export type HistoryOnlyOptions = {
 };
 export type HistoryOptions = Pick<CoreConfig, 'plugins' | 'categories'> & {
   persist: Required<PersistConfig>;
+  cache: CacheConfigObject;
   upload?: Required<UploadConfig>;
 } & HistoryOnlyOptions &
   Partial<GlobalOptions>;
@@ -39,6 +41,10 @@ export async function history(
         ...persist,
         format: ['json'],
         filename: `${commit}-report`,
+      },
+      cache: {
+        read: false,
+        write: false,
       },
     };
 

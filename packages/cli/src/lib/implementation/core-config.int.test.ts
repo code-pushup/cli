@@ -64,6 +64,7 @@ describe('parsing values from CLI and middleware', () => {
       filename: DEFAULT_PERSIST_FILENAME,
       format: DEFAULT_PERSIST_FORMAT,
       outputDir: DEFAULT_PERSIST_OUTPUT_DIR,
+      skipReports: false,
     });
   });
 
@@ -85,6 +86,7 @@ describe('parsing values from CLI and middleware', () => {
       filename: 'cli-filename',
       format: ['md'],
       outputDir: 'cli-outputDir',
+      skipReports: false,
     });
   });
 
@@ -101,6 +103,7 @@ describe('parsing values from CLI and middleware', () => {
       filename: 'rc-filename',
       format: ['json', 'md'],
       outputDir: 'rc-outputDir',
+      skipReports: false,
     });
   });
 
@@ -122,6 +125,7 @@ describe('parsing values from CLI and middleware', () => {
       filename: 'cli-filename',
       format: ['md'],
       outputDir: 'cli-outputDir',
+      skipReports: false,
     });
   });
 
@@ -141,6 +145,7 @@ describe('parsing values from CLI and middleware', () => {
       filename: 'rc-filename',
       format: DEFAULT_PERSIST_FORMAT,
       outputDir: 'cli-outputdir',
+      skipReports: false,
     });
   });
 

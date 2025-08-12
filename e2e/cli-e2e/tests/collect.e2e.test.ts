@@ -7,7 +7,13 @@ import {
   TEST_OUTPUT_DIR,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
-import { executeProcess, readTextFile } from '@code-pushup/utils';
+import {
+  executeProcess,
+  fileExists,
+  readJsonFile,
+  readTextFile,
+} from '@code-pushup/utils';
+import { dummyPluginSlug } from '../mocks/fixtures/dummy-setup/dummy.plugin';
 
 describe('CLI collect', () => {
   const dummyPluginTitle = 'Dummy Plugin';
@@ -59,6 +65,50 @@ describe('CLI collect', () => {
     expect(md).toContain('# Code PushUp Report');
     expect(md).toContain(dummyPluginTitle);
     expect(md).toContain(dummyAuditTitle);
+  });
+
+  it('should write runner outputs if --cache is given', async () => {
+    const { code } = await executeProcess({
+      command: 'npx',
+      args: ['@code-pushup/cli', '--no-progress', 'collect', '--cache'],
+      cwd: dummyDir,
+    });
+
+    expect(code).toBe(0);
+
+    await expect(
+      readJsonFile(
+        path.join(dummyOutputDir, dummyPluginSlug, 'runner-output.json'),
+      ),
+    ).resolves.toStrictEqual([
+      {
+        slug: 'dummy-audit',
+        score: 0.3,
+        value: 3,
+      },
+    ]);
+  });
+
+  it('should not create reports if --persist.skipReports is given', async () => {
+    const { code } = await executeProcess({
+      command: 'npx',
+      args: [
+        '@code-pushup/cli',
+        '--no-progress',
+        'collect',
+        '--persist.skipReports',
+      ],
+      cwd: dummyDir,
+    });
+
+    expect(code).toBe(0);
+
+    await expect(
+      fileExists(path.join(dummyOutputDir, 'report.md')),
+    ).resolves.toBeFalsy();
+    await expect(
+      fileExists(path.join(dummyOutputDir, 'report.json')),
+    ).resolves.toBeFalsy();
   });
 
   it('should print report summary to stdout', async () => {

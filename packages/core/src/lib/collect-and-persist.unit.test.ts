@@ -58,6 +58,10 @@ describe('collectAndPersistReports', () => {
         filename: 'report',
         format: ['md'],
       },
+      cache: {
+        read: false,
+        write: false,
+      },
       progress: false,
     };
     await collectAndPersistReports(nonVerboseConfig);
@@ -99,6 +103,10 @@ describe('collectAndPersistReports', () => {
         filename: 'report',
         format: ['md'],
       },
+      cache: {
+        read: false,
+        write: false,
+      },
       progress: false,
     };
     await collectAndPersistReports(verboseConfig);
@@ -113,6 +121,31 @@ describe('collectAndPersistReports', () => {
 
     expect(logStdoutSummary).toHaveBeenCalledWith(sortedScoredReport);
     expect(logPersistedResults).toHaveBeenCalled();
+  });
+
+  it('should call collect and not persistReport if skipReports options is true in verbose mode', async () => {
+    const sortedScoredReport = sortReport(scoreReport(MINIMAL_REPORT_MOCK));
+
+    vi.stubEnv('CP_VERBOSE', 'true');
+
+    const verboseConfig: CollectAndPersistReportsOptions = {
+      ...MINIMAL_CONFIG_MOCK,
+      persist: {
+        outputDir: 'output',
+        filename: 'report',
+        format: ['md'],
+        skipReports: true,
+      },
+      progress: false,
+    };
+    await collectAndPersistReports(verboseConfig);
+
+    expect(collect).toHaveBeenCalledWith(verboseConfig);
+
+    expect(persistReport).not.toHaveBeenCalled();
+    expect(logPersistedResults).not.toHaveBeenCalled();
+
+    expect(logStdoutSummary).toHaveBeenCalledWith(sortedScoredReport);
   });
 
   it('should print a summary to stdout', async () => {
