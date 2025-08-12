@@ -37,12 +37,14 @@ Global Options:
                                                  [array] [default: []]
 
 Persist Options:
-      --persist.outputDir  Directory for the produced reports
+      --persist.outputDir    Directory for the produced reports
                                                               [string]
-      --persist.filename   Filename for the produced reports.
+      --persist.filename     Filename for the produced reports.
                                                               [string]
-      --persist.format     Format of the report output. e.g. \`md\`, \`json\`
+      --persist.format       Format of the report output. e.g. \`md\`, \`json\`
                                                                [array]
+      --persist.skipReports  Skip generating report files. (useful in combinatio
+                             n with caching)            [boolean]
 
 Upload Options:
       --upload.organization  Organization slug from portal
