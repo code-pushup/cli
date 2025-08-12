@@ -15,10 +15,6 @@ const projectName = process.env.CP_PROJECT_NAME || 'plugin-coverage';
 
 const config: CoreConfig = {
   ...(await loadEnv()),
-  persist: {
-    filename: `${projectName}-report`,
-    outputDir: `packages/${projectName}/.code-pushup`,
-  },
   plugins: [],
 };
 

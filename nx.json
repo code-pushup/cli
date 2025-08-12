@@ -10,10 +10,10 @@
         "code-pushup-jsdocs",
         "code-pushup-typescript"
       ],
-      "cache": false,
+      "cache": true,
       "outputs": [
-        "{projectRoot}/.code-pushup/*.md",
-        "{projectRoot}/.code-pushup/*.json"
+        "{projectRoot}/.code-pushup/report.md",
+        "{projectRoot}/.code-pushup/report.json"
       ],
       "executor": "nx:run-commands",
       "options": {
@@ -56,6 +56,7 @@
     },
     "code-pushup-eslint": {
       "cache": true,
+      "inputs": ["default", "^default", "{projectRoot}/eslint.config.?(c)js"],
       "outputs": ["{projectRoot}/.code-pushup/eslint"],
       "executor": "nx:run-commands",
       "options": {
@@ -77,6 +78,7 @@
     },
     "code-pushup-js-packages": {
       "cache": false,
+      "inputs": ["default", "^default", "{projectRoot}/package.json"],
       "outputs": ["{projectRoot}/.code-pushup/js-packages"],
       "executor": "nx:run-commands",
       "options": {
@@ -97,7 +99,7 @@
       }
     },
     "code-pushup-lighthouse": {
-      "cache": true,
+      "cache": false,
       "outputs": ["{projectRoot}/.code-pushup/lighthouse"],
       "executor": "nx:run-commands",
       "options": {
@@ -119,6 +121,7 @@
     },
     "code-pushup-jsdocs": {
       "cache": true,
+      "inputs": ["default", "^default", "{projectRoot}/tsconfig.lib.json"],
       "outputs": ["{projectRoot}/.code-pushup/jsdocs"],
       "executor": "nx:run-commands",
       "options": {
@@ -140,6 +143,7 @@
     },
     "code-pushup-typescript": {
       "cache": true,
+      "inputs": ["default", "^default", "{projectRoot}/tsconfig.lib.json"],
       "outputs": ["{projectRoot}/.code-pushup/typescript"],
       "executor": "nx:run-commands",
       "options": {

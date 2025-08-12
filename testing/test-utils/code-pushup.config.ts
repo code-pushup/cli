@@ -15,10 +15,6 @@ const projectName = process.env.CP_PROJECT_NAME || 'test-utils';
 
 const config: CoreConfig = {
   ...(await loadEnv()),
-  persist: {
-    filename: `${projectName}-report`,
-    outputDir: `testing/${projectName}/.code-pushup`,
-  },
   plugins: [],
 };
 
