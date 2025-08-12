@@ -100,12 +100,16 @@ export const eslintCategories: CategoryConfig[] = [
 export function getJsDocsCategories(
   config: JsDocsPluginConfig,
 ): CategoryConfig[] {
+  const filterOptions =
+    typeof config === 'string' || Array.isArray(config)
+      ? {}
+      : { onlyAudits: config.onlyAudits, skipAudits: config.skipAudits };
   return [
     {
       slug: 'docs',
       title: 'Documentation',
       description: 'Measures how much of your code is **documented**.',
-      refs: filterGroupsByOnlyAudits(groups, config).map(group => ({
+      refs: filterGroupsByOnlyAudits(groups, filterOptions).map(group => ({
         weight: 1,
         type: 'group',
         plugin: PLUGIN_SLUG,
@@ -159,12 +163,13 @@ export const jsDocsCoreConfig = (
 
 export const eslintCoreConfigNx = async (
   projectName?: string,
+  options?: { exclude?: string[] },
 ): Promise<CoreConfig> => ({
   plugins: [
     await eslintPlugin(
       await (projectName
         ? eslintConfigFromNxProject(projectName)
-        : eslintConfigFromAllNxProjects()),
+        : eslintConfigFromAllNxProjects(options)),
     ),
   ],
   categories: eslintCategories,
@@ -178,13 +183,42 @@ export const typescriptPluginConfig = async (
 });
 
 export const coverageCoreConfigNx = async (
-  projectName?: string,
+  projectOrConfig?:
+    | string
+    | {
+        projectName: string;
+        targetNames: string[];
+      },
+  options?: { exclude?: string[] },
 ): Promise<CoreConfig> => {
+  const projectName =
+    typeof projectOrConfig === 'string'
+      ? projectOrConfig
+      : projectOrConfig?.projectName;
+  const targetNames =
+    typeof projectOrConfig === 'object' && projectOrConfig?.targetNames?.length
+      ? projectOrConfig.targetNames
+      : ['unit-test', 'int-test'];
+
   if (projectName) {
     throw new Error('coverageCoreConfigNx for single projects not implemented');
   }
-  const targetNames = ['unit-test', 'int-test'];
+
   const targetArgs = ['-t', ...targetNames];
+
+  // Compute projects list and apply exclude for efficient run-many execution
+  const { createProjectGraphAsync } = await import('@nx/devkit');
+  const { nodes } = await createProjectGraphAsync({ exitOnError: false });
+  const projectsWithTargets = Object.values(nodes).filter(node =>
+    targetNames.some(t => node.data.targets && t in node.data.targets),
+  );
+  const filteredProjects = options?.exclude?.length
+    ? projectsWithTargets.filter(node => !options.exclude!.includes(node.name))
+    : projectsWithTargets;
+  const projectsArg = `--projects=${filteredProjects
+    .map(p => p.name)
+    .join(',')}`;
+
   return {
     plugins: [
       await coveragePlugin({
@@ -194,9 +228,10 @@ export const coverageCoreConfigNx = async (
             'nx',
             projectName ? `run --project ${projectName}` : 'run-many',
             ...targetArgs,
+            projectsArg,
           ],
         },
-        reports: await getNxCoveragePaths(targetNames),
+        reports: await getNxCoveragePaths(targetNames, false, options?.exclude),
       }),
     ],
     categories: coverageCategories,

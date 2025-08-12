@@ -16,6 +16,9 @@
     },
     "unit-test": {
       "cache": true,
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectName}/unit-tests/lcov.info"
+      ],
       "executor": "@nx/vite:test",
       "options": {
         "configFile": "{projectRoot}/vitest.unit.config.ts",
@@ -26,12 +29,20 @@
     },
     "int-test": {
       "cache": true,
+      "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
       "executor": "@nx/vite:test",
       "options": {
         "configFile": "{projectRoot}/vitest.int.config.ts",
         "coverage": {
           "enabled": true
         }
+      }
+    },
+    "e2e": {
+      "dependsOn": ["^build"],
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "{projectRoot}/vitest.e2e.config.ts"
       }
     },
     "lint": {
@@ -46,9 +57,6 @@
           "{projectRoot}/package.json"
         ]
       }
-    },
-    "e2e": {
-      "dependsOn": ["^build"]
     },
     "nxv-pkg-install": {
       "parallelism": false
