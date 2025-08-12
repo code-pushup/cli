@@ -18,7 +18,6 @@ import type { CoverageResult } from '../config.js';
 export async function getNxCoveragePaths(
   targets: string[] = ['test'],
   verbose?: boolean,
-  exclude?: string[],
 ): Promise<CoverageResult[]> {
   if (verbose) {
     ui().logger.info(
@@ -35,12 +34,8 @@ export async function getNxCoveragePaths(
         hasNxTarget(graph, target),
       );
 
-      const filteredNodes = exclude?.length
-        ? relevantNodes.filter(node => !exclude.includes(node.name))
-        : relevantNodes;
-
       return await Promise.all(
-        filteredNodes.map<Promise<CoverageResult>>(async ({ name, data }) => {
+        relevantNodes.map<Promise<CoverageResult>>(async ({ name, data }) => {
           const coveragePaths = await getCoveragePathsForTarget(data, target);
           if (verbose) {
             ui().logger.info(`- ${name}: ${target}`);
