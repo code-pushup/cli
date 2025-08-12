@@ -49,7 +49,7 @@ export default {
         "coverage.reportsDirectory": "{projectRoot}/coverage/unit-test"
       }
     },
-    "code-pushup:coverage": {
+    "code-pushup-coverage": {
       "cache": true,
       "outputs": ["{options.outputPath}"],
       "executor": "nx:run-commands",
@@ -64,7 +64,7 @@ export default {
       },
       "dependsOn": ["unit-test", "int-test"]
     },
-    "code-pushup:js-packages": {
+    "code-pushup-js-packages": {
       "cache": true,
       "outputs": ["{options.outputPath}"],
       "executor": "nx:run-commands",
@@ -115,11 +115,11 @@ graph TD
 ## Command Line Example
 
 ```bash
-# Run all affected projects e.g. nx run lib-a:code-pushup:coverage
+# Run all affected projects e.g. nx run lib-a:code-pushup-coverage
 nx affected --target=code-pushup:*
 
 # Run all affected projects and upload the report to the portal
-nx run reop-source:code-pushup autorun
+nx affected --target=code-pushup
 ```
 
 This approach has the following benefits:
