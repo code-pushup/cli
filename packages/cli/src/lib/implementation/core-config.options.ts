@@ -35,6 +35,11 @@ export function yargsPersistConfigOptionsDefinition(): Record<
       describe: 'Format of the report output. e.g. `md`, `json`',
       type: 'array',
     },
+    'persist.skipReports': {
+      describe:
+        'Skip generating report files. (useful in combination with caching)',
+      type: 'boolean',
+    },
   };
 }
 
