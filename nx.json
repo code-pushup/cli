@@ -14,6 +14,20 @@
         "assets": ["{projectRoot}/*.md"]
       }
     },
+    "unit-test": {
+      "cache": true,
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "{projectRoot}/vitest.unit.config.ts"
+      }
+    },
+    "int-test": {
+      "cache": true,
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "{projectRoot}/vitest.int.config.ts"
+      }
+    },
     "lint": {
       "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
       "executor": "@nx/linter:eslint",

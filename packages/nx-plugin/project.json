@@ -41,16 +41,11 @@
         ]
       }
     },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/nx-plugin/vitest.unit.config.ts"
-      }
-    },
+    "unit-test": {},
     "int-test": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "packages/nx-plugin/vitest.int.config.ts"
+        "configFile": "{projectRoot}/vitest.int.config.ts"
       }
     }
   },
