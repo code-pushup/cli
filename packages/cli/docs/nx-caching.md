@@ -101,6 +101,6 @@ nx affected --target=code-pushup
 This approach has the following benefits:
 
 1. **Parallel Execution**: Plugins can run in parallel
-2. **Finegrained Caching**: Code level cache invalidation enables usage of [affected](https://nx.dev/recipes/affected-tasks) command
+2. **Fine-grained Caching**: Code level cache invalidation enables usage of [affected](https://nx.dev/recipes/affected-tasks) command
 3. **Dependency Management**: Leverage Nx task dependencies and its caching strategy
 4. **Clear Separation**: Each plugin has its own target for better debugging and maintainability
