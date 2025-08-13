@@ -1,3 +1,15 @@
+## 0.74.0 (2025-08-13)
+
+### 🚀 Features
+
+- add audit output caching for execute plugin ([#1057](https://github.com/code-pushup/cli/pull/1057))
+- add report option to cli ([#1058](https://github.com/code-pushup/cli/pull/1058))
+- add caching options to cli ([#1059](https://github.com/code-pushup/cli/pull/1059))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.73.0 (2025-08-08)
 
 ### 🚀 Features
