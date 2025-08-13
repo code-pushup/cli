@@ -26,16 +26,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
       - name: Set base and head for Nx affected commands
+        id: nx-set-shas
         uses: nrwl/nx-set-shas@v4
       - name: Install dependencies
         run: npm ci
       - name: Run Code PushUp action
         uses: code-pushup/github-action@v0
         with:
-          bin: npx nx affected -t code-pushup --parallel=3  --
+          bin: npx nx affected -t code-pushup --parallel=3 --base=${{ steps.nx-set-shas.outputs.base }} --head=${{ steps.nx-set-shas.outputs.head }} --
