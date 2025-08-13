@@ -49,9 +49,17 @@ export default {
         "coverage.reportsDirectory": "{projectRoot}/coverage/unit-test"
       }
     },
+    "code-pushup-js-packages": {
+      "cache": false,
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx @code-pushup/cli collect",
+        "args": ["--config={projectRoot}/code-pushup.config.ts", "--cache.write=true", "--persist.skipReports=true", "--persist.outputDir={projectRoot}/.code-pushup", "--upload.project={projectName}"]
+      }
+    },
     "code-pushup-coverage": {
       "cache": true,
-      "outputs": ["{projectRoot}/.code-pushup/coverage"],
+      "outputs": ["{projectRoot}/.code-pushup/coverage/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
         "command": "npx @code-pushup/cli collect",
@@ -61,13 +69,13 @@ export default {
     },
     "code-pushup": {
       "cache": true,
-      "outputs": ["{projectRoot}/.code-pushup"],
+      "outputs": ["{projectRoot}/.code-pushup/report.*"],
       "executor": "nx:run-commands",
       "options": {
         "command": "npx @code-pushup/cli",
         "args": ["--config={projectRoot}/code-pushup.config.ts", "--cache.read=true", "--persist.outputDir={projectRoot}/.code-pushup", "--upload.project={projectName}"]
       },
-      "dependsOn": ["code-pushup-coverage"]
+      "dependsOn": ["code-pushup-coverage", "code-pushup-js-packages"]
     }
   }
 }
@@ -80,12 +88,14 @@ This configuration creates the following task dependency graph:
 **Legend:**
 
 - 🐳 = Cached target
+- 💾 = Parallel execution
 
 ```mermaid
 graph TD
-  A[lib-a:code-pushup 🐳] --> B[lib-a:code-pushup-coverage 🐳]
-  B --> C[lib-a:unit-test 🐳]
-  B --> D[lib-a:int-test 🐳]
+  A[lib-a:code-pushup 🐳] --> B[lib-a:code-pushup-coverage 💾🐳]
+  A --> C[lib-a:code-pushup-js-packages 💾]
+  B --> C[lib-a:unit-test 💾🐳]
+  B --> D[lib-a:int-test 💾🐳]
 ```
 
 ## Command Line Example
@@ -100,7 +110,7 @@ nx affected --target=code-pushup
 
 This approach has the following benefits:
 
-1. **Parallel Execution**: Plugins can run in parallel
-2. **Fine-grained Caching**: Code level cache invalidation enables usage of [affected](https://nx.dev/recipes/affected-tasks) command
+1. **💾 Parallel Execution**: Plugins can run in parallel
+2. **🐳 Fine-grained Caching**: Code level cache invalidation enables usage of [affected](https://nx.dev/recipes/affected-tasks) command
 3. **Dependency Management**: Leverage Nx task dependencies and its caching strategy
 4. **Clear Separation**: Each plugin has its own target for better debugging and maintainability

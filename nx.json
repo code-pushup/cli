@@ -66,7 +66,7 @@
     },
     "code-pushup-coverage": {
       "cache": true,
-      "outputs": ["{projectRoot}/.code-pushup/coverage"],
+      "outputs": ["{projectRoot}/.code-pushup/coverage/runner-output.json"],
       "executor": "nx:run-commands",
       "dependsOn": ["unit-test", "int-test"],
       "options": {
@@ -88,7 +88,7 @@
     },
     "code-pushup-eslint": {
       "cache": true,
-      "outputs": ["{projectRoot}/.code-pushup/eslint"],
+      "outputs": ["{projectRoot}/.code-pushup/eslint/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
         "command": "node packages/cli/src/index.ts collect",
@@ -109,7 +109,7 @@
     },
     "code-pushup-js-packages": {
       "cache": false,
-      "outputs": ["{projectRoot}/.code-pushup/js-packages"],
+      "outputs": ["{projectRoot}/.code-pushup/js-packages/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
         "command": "node packages/cli/src/index.ts collect",
@@ -130,10 +130,10 @@
     },
     "code-pushup-lighthouse": {
       "cache": true,
-      "outputs": ["{projectRoot}/.code-pushup/lighthouse"],
+      "outputs": ["{projectRoot}/.code-pushup/lighthouse/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
-        "command": "node packages/cli/src/index.ts",
+        "command": "node packages/cli/src/index.ts collect",
         "args": [
           "--no-progress",
           "--verbose",
@@ -151,7 +151,7 @@
     },
     "code-pushup-jsdocs": {
       "cache": true,
-      "outputs": ["{projectRoot}/.code-pushup/jsdocs"],
+      "outputs": ["{projectRoot}/.code-pushup/jsdocs/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
         "command": "node packages/cli/src/index.ts collect",
@@ -173,7 +173,7 @@
     "code-pushup-typescript": {
       "cache": true,
       "inputs": ["default", "^default", "{projectRoot}/tsconfig.lib.json"],
-      "outputs": ["{projectRoot}/.code-pushup/typescript"],
+      "outputs": ["{projectRoot}/.code-pushup/typescript/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
         "command": "node packages/cli/src/index.ts collect",
