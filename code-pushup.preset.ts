@@ -17,7 +17,7 @@ import eslintPlugin, {
 } from './packages/plugin-eslint/src/index.js';
 import jsPackagesPlugin from './packages/plugin-js-packages/src/index.js';
 import jsDocsPlugin from './packages/plugin-jsdocs/src/index.js';
-import type { JsDocsPluginConfig } from './packages/plugin-jsdocs/src/index.js';
+import type { JsDocsPluginTransformedConfig } from './packages/plugin-jsdocs/src/lib/config.js';
 import {
   PLUGIN_SLUG,
   groups,
@@ -147,7 +147,7 @@ export const eslintCategories: CategoryConfig[] = [
 ];
 
 export function getJsDocsCategories(
-  config: JsDocsPluginConfig,
+  config: JsDocsPluginTransformedConfig,
 ): CategoryConfig[] {
   return [
     {
@@ -202,7 +202,7 @@ export const lighthouseCoreConfig = async (
 };
 
 export const jsDocsCoreConfig = (
-  config: JsDocsPluginConfig | string[],
+  config: JsDocsPluginTransformedConfig | string[],
 ): CoreConfig => ({
   plugins: [
     jsDocsPlugin(Array.isArray(config) ? { patterns: config } : config),
@@ -257,12 +257,12 @@ export const coverageCoreConfigNx = async (
         },
         reports: projectName
           ? [
-              // Prefer Jest default dir; adjust if your project uses Vitest
-              `packages/${projectName}/coverage/lcov.info`,
+              {
+                pathToProject: `packages/${projectName}`,
+                resultsPath: `packages/${projectName}/coverage/lcov.info`,
+              },
             ]
-          : await getNxCoveragePaths({
-              targets: targetNames,
-            }),
+          : await getNxCoveragePaths(targetNames),
       }),
     ],
     categories: coverageCategories,

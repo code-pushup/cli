@@ -6,10 +6,16 @@
   "targets": {
     "build": {},
     "lint": {},
+    "unit-test": {},
     "int-test": {
+      "cache": true,
+      "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "{projectRoot}/vitest.int.config.ts"
+        "configFile": "{projectRoot}/vitest.int.config.ts",
+        "coverage": {
+          "enabled": true
+        }
       }
     },
     "unit-test": {},

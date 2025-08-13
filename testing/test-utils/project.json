@@ -4,6 +4,8 @@
   "sourceRoot": "testing/test-utils/src",
   "projectType": "library",
   "targets": {
+    "build": {},
+    "lint": {},
     "unit-test": {},
     "nx-release-publish": {
       "executor": "nx:noop"
