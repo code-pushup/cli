@@ -180,12 +180,7 @@ export const coverageCoreConfigNx = async (
   projectName?: string,
 ): Promise<CoreConfig> => {
   const targetNames = ['unit-test', 'int-test'];
-  const targetArgs = [
-    '-t',
-    ...targetNames,
-    '--coverage.enabled',
-    '--skipNxCache',
-  ];
+  const targetArgs = ['-t', ...targetNames];
   return {
     plugins: [
       await coveragePlugin({
