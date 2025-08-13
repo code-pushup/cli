@@ -41,4 +41,4 @@ jobs:
       - name: Run Code PushUp action
         uses: code-pushup/github-action@v0
         with:
-          bin: npx nx affected -t code-pushup --base=${{ env.NX_BASE }} --head=${{ env.NX_HEAD }}
+          bin: npx nx affected -t code-pushup --
