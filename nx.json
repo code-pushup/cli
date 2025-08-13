@@ -69,13 +69,17 @@
       "dependsOn": ["build"],
       "executor": "@nx/js:release-publish",
       "options": {
-        "packageRoot": "dist/{projectRoot}",
+        "packageRoot": "{projectRoot}/dist",
         "registry": "https://registry.npmjs.org/"
       }
     }
   },
   "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals",
+      "!{projectRoot}/dist/**/*"
+    ],
     "production": [
       "default",
       "!{projectRoot}/eslint.config.?(c)js",
