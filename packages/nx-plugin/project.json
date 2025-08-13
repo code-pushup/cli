@@ -46,13 +46,11 @@
       "dependsOn": [
         "code-pushup-coverage",
         "code-pushup-jsdocs",
-        "code-pushup-js-packages",
         "code-pushup-typescript"
       ]
     },
     "code-pushup-coverage": {},
     "code-pushup-jsdocs": {},
-    "code-pushup-js-packages": {},
     "code-pushup-typescript": {}
   },
   "tags": ["scope:tooling", "type:feature", "publishable"]

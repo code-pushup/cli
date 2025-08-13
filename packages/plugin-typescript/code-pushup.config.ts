@@ -4,14 +4,13 @@ import {
   eslintCoreConfigNx,
   jsDocsCoreConfig,
   jsDocsExclusionPatterns,
-  jsPackagesCoreConfig,
   loadEnv,
   mergeConfigs,
   typescriptPluginConfig,
 } from '../../code-pushup.preset.js';
 import type { CoreConfig } from '../../packages/models/src/index.js';
 
-const projectName = process.env.NX_TASK_TARGET_PROJECT;
+const projectName = process.env['NX_TASK_TARGET_PROJECT'];
 
 const config: CoreConfig = {
   ...(await loadEnv()),
@@ -22,7 +21,6 @@ export default mergeConfigs(
   config,
   await eslintCoreConfigNx(projectName),
   await coverageCoreConfigNx(projectName),
-  await jsPackagesCoreConfig('package.json'), // Use workspace root package.json
   await typescriptPluginConfig({
     tsconfig: `packages/${projectName}/tsconfig.lib.json`,
   }),

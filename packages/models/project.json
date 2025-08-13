@@ -8,12 +8,10 @@
       "dependsOn": [
         "code-pushup-coverage",
         "code-pushup-jsdocs",
-        "code-pushup-js-packages",
         "code-pushup-typescript"
       ]
     },
     "code-pushup-eslint": {},
-    "code-pushup-js-packages": {},
     "code-pushup-jsdocs": {},
     "code-pushup-typescript": {},
     "generate-docs": {

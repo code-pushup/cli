@@ -12,13 +12,13 @@
       "dependsOn": [
         "code-pushup-coverage",
         "code-pushup-jsdocs",
-        "code-pushup-js-packages",
         "code-pushup-typescript"
       ]
     },
-    "code-pushup-coverage": {},
+    "code-pushup-coverage": {
+      "dependsOn": ["unit-test"]
+    },
     "code-pushup-jsdocs": {},
-    "code-pushup-js-packages": {},
     "code-pushup-typescript": {}
   },
   "tags": ["scope:plugin", "type:feature", "publishable"]
