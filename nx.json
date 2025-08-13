@@ -45,7 +45,7 @@
       "dependsOn": ["build"],
       "executor": "@nx/js:release-publish",
       "options": {
-        "packageRoot": "dist/{projectRoot}",
+        "packageRoot": "{projectRoot}/dist",
         "registry": "https://registry.npmjs.org/"
       }
     }
