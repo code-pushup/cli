@@ -1,5 +1,6 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "nxCloudId": "YzlhZmFiMzUtNzIwOS00N2ZhLTkzMjItMzk4MGIxNGU4ZDkxfHJlYWQtd3JpdGU=",
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"],
@@ -71,7 +72,7 @@
       "!{projectRoot}/code-pushup.config.?(m)[jt]s",
       "!{projectRoot}/zod2md.config.ts"
     ],
-    "sharedGlobals": []
+    "sharedGlobals": ["{workspaceRoot}/.github/workflows/agents-ci.yml"]
   },
   "workspaceLayout": {
     "appsDir": "examples",
