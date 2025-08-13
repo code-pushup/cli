@@ -45,6 +45,10 @@ Thumbs.db
 
 # generated Code PushUp reports
 /.code-pushup
+/.eslint
+/.coverage
+/.lighthouse
+/.typescript
 
 # Nx workspace cache
 .nx

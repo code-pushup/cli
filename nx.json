@@ -21,10 +21,16 @@
       "cache": true,
       "options": {
         "maxWarnings": 0,
+        "errorOnUnmatchedPattern": false,
+        "format": "json",
+        "outputFile": "{projectRoot}/.eslint/runner-artifacts.json",
         "lintFilePatterns": [
           "{projectRoot}/**/*.ts",
           "{projectRoot}/package.json"
-        ]
+        ],
+        "env": {
+          "TIMING": 10
+        }
       }
     },
     "e2e": {
