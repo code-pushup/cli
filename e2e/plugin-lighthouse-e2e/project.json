@@ -5,7 +5,12 @@
   "projectType": "application",
   "targets": {
     "lint": {},
-    "e2e": {}
+    "e2e": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "{projectRoot}/vitest.e2e.config.ts"
+      }
+    }
   },
   "implicitDependencies": ["cli", "plugin-lighthouse"],
   "tags": ["scope:plugin", "type:e2e"]
