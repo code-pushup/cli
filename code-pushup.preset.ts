@@ -251,13 +251,11 @@ export const coverageCoreConfigNx = async (
             : ['nx', 'run-many', ...targetArgs],
         },
         reports: projectName
-          ? [
-              {
-                pathToProject: `packages/${projectName}`,
-                resultsPath: `packages/${projectName}/coverage/lcov.info`,
-              },
-            ]
-          : await getNxCoveragePaths(targetNames),
+          ? targetNames.map(target => ({
+              pathToProject: `packages/${projectName}`,
+              resultsPath: `coverage/${projectName}/${target}s/lcov.info`,
+            }))
+          : await getNxCoveragePaths({ targets: targetNames }),
       }),
     ],
     categories: coverageCategories,
