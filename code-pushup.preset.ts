@@ -1,5 +1,4 @@
 /* eslint-disable @nx/enforce-module-boundaries */
-import { z } from 'zod';
 import type {
   CategoryConfig,
   CoreConfig,
@@ -9,12 +8,10 @@ import coveragePlugin, {
 } from './packages/plugin-coverage/src/index.js';
 import eslintPlugin, {
   eslintConfigFromAllNxProjects,
-  eslintConfigFromNxProject,
 } from './packages/plugin-eslint/src/index.js';
 import jsPackagesPlugin from './packages/plugin-js-packages/src/index.js';
-import jsDocsPlugin, {
-  JsDocsPluginConfig,
-} from './packages/plugin-jsdocs/src/index.js';
+import jsDocsPlugin from './packages/plugin-jsdocs/src/index.js';
+import type { JsDocsPluginTransformedConfig } from './packages/plugin-jsdocs/src/lib/config.js';
 import {
   PLUGIN_SLUG,
   groups,
@@ -137,7 +134,7 @@ export const eslintCategories: CategoryConfig[] = [
 ];
 
 export function getJsDocsCategories(
-  config: JsDocsPluginConfig,
+  config: JsDocsPluginTransformedConfig,
 ): CategoryConfig[] {
   return [
     {
@@ -186,7 +183,7 @@ export const lighthouseCoreConfig = async (
 };
 
 export const jsDocsCoreConfig = (
-  config: JsDocsPluginConfig | string[],
+  config: JsDocsPluginTransformedConfig | string[],
 ): CoreConfig => ({
   plugins: [
     jsDocsPlugin(Array.isArray(config) ? { patterns: config } : config),
@@ -200,11 +197,12 @@ export const eslintCoreConfigNx = async (
   projectName?: string,
 ): Promise<CoreConfig> => ({
   plugins: [
-    await eslintPlugin(
-      await (projectName
-        ? eslintConfigFromNxProject(projectName)
-        : eslintConfigFromAllNxProjects()),
-    ),
+    projectName
+      ? await eslintPlugin({
+          eslintrc: `packages/${projectName}/eslint.config.js`,
+          patterns: ['.'],
+        })
+      : await eslintPlugin(await eslintConfigFromAllNxProjects()),
   ],
   categories: eslintCategories,
 });
@@ -219,9 +217,6 @@ export const typescriptPluginConfig = async (
 export const coverageCoreConfigNx = async (
   projectName?: string,
 ): Promise<CoreConfig> => {
-  if (projectName) {
-    throw new Error('coverageCoreConfigNx for single projects not implemented');
-  }
   const targetNames = ['unit-test', 'int-test'];
   const targetArgs = [
     '-t',
@@ -234,13 +229,18 @@ export const coverageCoreConfigNx = async (
       await coveragePlugin({
         coverageToolCommand: {
           command: 'npx',
-          args: [
-            'nx',
-            projectName ? `run --project ${projectName}` : 'run-many',
-            ...targetArgs,
-          ],
+          args: projectName
+            ? ['nx', 'run-many', '-p', projectName, ...targetArgs]
+            : ['nx', 'run-many', ...targetArgs],
         },
-        reports: await getNxCoveragePaths(targetNames),
+        reports: projectName
+          ? [
+              {
+                pathToProject: `packages/${projectName}`,
+                resultsPath: `packages/${projectName}/coverage/lcov.info`,
+              },
+            ]
+          : await getNxCoveragePaths(targetNames),
       }),
     ],
     categories: coverageCategories,
