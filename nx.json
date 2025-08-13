@@ -51,7 +51,11 @@
     }
   },
   "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals",
+      "!{projectRoot}/dist/**/*"
+    ],
     "production": [
       "default",
       "!{projectRoot}/eslint.config.?(c)js",
