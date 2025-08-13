@@ -3,3 +3,6 @@
 /coverage
 /.nx
 __snapshots__
+
+/.nx/cache
+/.nx/workspace-data

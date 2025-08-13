@@ -237,10 +237,23 @@ export const typescriptPluginConfig = async (
  * Generates coverage configuration for Nx projects. Supports both single projects and all projects.
  */
 export const coverageCoreConfigNx = async (
-  projectName?: string,
+  projectArg?:
+    | string
+    | {
+        projectName?: string;
+        targetNames?: string | string[];
+      },
 ): Promise<CoreConfig> => {
-  const targetNames = ['unit-test', 'int-test'];
-  const targetArgs = ['-t', ...targetNames];
+  const { projectName, targetNames } =
+    typeof projectArg === 'string'
+      ? { projectName: projectArg }
+      : (projectArg ?? {});
+  const parsedTargetNames = Array.isArray(targetNames)
+    ? targetNames
+    : targetNames != null
+      ? [targetNames]
+      : ['unit-test', 'int-test'];
+  const targetArgs = ['-t', parsedTargetNames.join(',')];
   return {
     plugins: [
       await coveragePlugin({
@@ -251,11 +264,11 @@ export const coverageCoreConfigNx = async (
             : ['nx', 'run-many', ...targetArgs],
         },
         reports: projectName
-          ? targetNames.map(target => ({
+          ? parsedTargetNames.map(target => ({
               pathToProject: `packages/${projectName}`,
               resultsPath: `coverage/${projectName}/${target}s/lcov.info`,
             }))
-          : await getNxCoveragePaths({ targets: targetNames }),
+          : await getNxCoveragePaths({ targets: parsedTargetNames }),
       }),
     ],
     categories: coverageCategories,
@@ -356,7 +369,7 @@ function mergePersist(
   }
 
   if (a) {
-    return b ? { persist: { ...a, ...b } } : {};
+    return b ? { persist: { ...a, ...b } } : { persist: a };
   } else {
     return { persist: b };
   }
@@ -401,7 +414,7 @@ function mergeUpload(
   }
 
   if (a) {
-    return b ? { upload: { ...a, ...b } } : {};
+    return b ? { upload: { ...a, ...b } } : { upload: a };
   } else {
     return { upload: b };
   }

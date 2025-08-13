@@ -3,9 +3,24 @@
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
     "code-pushup-old": {
+      "dependsOn": [
+        "code-pushup-eslint",
+        "code-pushup-coverage",
+        "code-pushup-typescript",
+        "code-pushup-jsdocs",
+        "code-pushup-js-packages",
+        "code-pushup-lighthouse"
+      ],
       "executor": "nx:run-commands",
       "options": {
-        "command": "node packages/cli/src/index.ts --no-progress --verbose",
+        "command": "node packages/cli/src/index.ts",
+        "args": [
+          "--no-progress",
+          "--verbose",
+          "--config={projectRoot}/code-pushup.old.config.ts",
+          "--cache.read",
+          "--persist.outputDir={projectRoot}/.code-pushup"
+        ],
         "env": {
           "NODE_OPTIONS": "--import tsx",
           "TSX_TSCONFIG_PATH": "tsconfig.base.json"
@@ -25,6 +40,10 @@
         ]
       }
     },
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {},
+    "code-pushup-jsdocs": {},
+    "code-pushup-typescript": {},
     "code-pushup-js-packages": {},
     "code-pushup-lighthouse": {}
   }
