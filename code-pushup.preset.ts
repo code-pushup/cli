@@ -1,4 +1,6 @@
 /* eslint-disable @nx/enforce-module-boundaries */
+import 'dotenv/config';
+import { z } from 'zod';
 import type {
   CategoryConfig,
   CoreConfig,
