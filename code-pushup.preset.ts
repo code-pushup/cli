@@ -16,9 +16,8 @@ import eslintPlugin, {
   eslintConfigFromNxProject,
 } from './packages/plugin-eslint/src/index.js';
 import jsPackagesPlugin from './packages/plugin-js-packages/src/index.js';
-import jsDocsPlugin, {
-  JsDocsPluginConfig,
-} from './packages/plugin-jsdocs/src/index.js';
+import jsDocsPlugin from './packages/plugin-jsdocs/src/index.js';
+import type { JsDocsPluginConfig } from './packages/plugin-jsdocs/src/index.js';
 import {
   PLUGIN_SLUG,
   groups,
@@ -65,11 +64,7 @@ export async function loadEnv(
       ? { project: env.CP_PROJECT }
       : { project: projectName }),
   };
-  return (
-    uploadConfig.apiKey && {
-      upload: uploadConfig,
-    }
-  );
+  return uploadConfig.apiKey ? { upload: uploadConfig } : {};
 }
 
 /**
@@ -221,11 +216,12 @@ export const eslintCoreConfigNx = async (
   projectName?: string,
 ): Promise<CoreConfig> => ({
   plugins: [
-    await eslintPlugin(
-      await (projectName
-        ? eslintConfigFromNxProject(projectName)
-        : eslintConfigFromAllNxProjects()),
-    ),
+    projectName
+      ? await eslintPlugin({
+          eslintrc: `packages/${projectName}/eslint.config.js`,
+          patterns: ['.'],
+        })
+      : await eslintPlugin(await eslintConfigFromAllNxProjects()),
   ],
   categories: eslintCategories,
 });
@@ -259,10 +255,14 @@ export const coverageCoreConfigNx = async (
             ? ['nx', 'run-many', '-p', projectName, ...targetArgs]
             : ['nx', 'run-many', ...targetArgs],
         },
-        reports: await getNxCoveragePaths({
-          targets: targetNames,
-          projects: projectName ? [projectName] : undefined,
-        }),
+        reports: projectName
+          ? [
+              // Prefer Jest default dir; adjust if your project uses Vitest
+              `packages/${projectName}/coverage/lcov.info`,
+            ]
+          : await getNxCoveragePaths({
+              targets: targetNames,
+            }),
       }),
     ],
     categories: coverageCategories,
