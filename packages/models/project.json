@@ -18,10 +18,7 @@
       ]
     },
     "lint": {},
-    "unit-test": {},
-    "int-test": {
-      "options": {}
-    }
+    "unit-test": {}
   },
   "tags": ["scope:shared", "type:util", "publishable"]
 }

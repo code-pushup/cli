@@ -6,8 +6,7 @@
   "targets": {
     "build": {},
     "lint": {},
-    "unit-test": {},
-    "int-test": {}
+    "unit-test": {}
   },
   "tags": ["scope:plugin", "type:feature", "publishable"]
 }
