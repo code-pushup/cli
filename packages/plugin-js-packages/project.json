@@ -7,17 +7,7 @@
     "build": {},
     "lint": {},
     "unit-test": {},
-    "int-test": {
-      "cache": true,
-      "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "{projectRoot}/vitest.int.config.ts",
-        "coverage": {
-          "enabled": true
-        }
-      }
-    }
+    "int-test": {}
   },
   "tags": ["scope:plugin", "type:feature", "publishable"],
   "description": "A plugin for JavaScript packages."
