@@ -7,17 +7,6 @@
     "build": {},
     "lint": {},
     "unit-test": {},
-    "int-test": {
-      "cache": true,
-      "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "{projectRoot}/vitest.int.config.ts",
-        "coverage": {
-          "enabled": true
-        }
-      }
-    },
     "code-pushup": {
       "dependsOn": [
         "code-pushup-coverage",
@@ -25,6 +14,11 @@
         "code-pushup-js-packages",
         "code-pushup-typescript"
       ]
+    },
+    "exec-node": {
+      "dependsOn": ["build"],
+      "command": "node ./dist/packages/create-cli/src/index.js",
+      "options": {}
     },
     "code-pushup-coverage": {},
     "code-pushup-jsdocs": {},
