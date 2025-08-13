@@ -3,10 +3,15 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "e2e/nx-plugin-e2e/src",
   "projectType": "application",
-  "tags": ["scope:tooling", "type:e2e"],
-  "implicitDependencies": ["test-utils", "nx-plugin"],
   "targets": {
     "lint": {},
-    "e2e": {}
-  }
+    "e2e": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "{projectRoot}/vitest.e2e.config.ts"
+      }
+    }
+  },
+  "implicitDependencies": ["test-utils", "nx-plugin"],
+  "tags": ["scope:tooling", "type:e2e"]
 }

@@ -39,11 +39,7 @@
       }
     },
     "e2e": {
-      "dependsOn": ["^build"],
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "{projectRoot}/vitest.e2e.config.ts"
-      }
+      "dependsOn": ["^build"]
     },
     "lint": {
       "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
