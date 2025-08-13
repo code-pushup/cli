@@ -41,6 +41,9 @@
       }
     },
     "unit-test": {},
+    "build": {},
+    "lint": {},
+    "unit-test": {},
     "int-test": {
       "cache": true,
       "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
