@@ -7,7 +7,6 @@
     "build": {},
     "lint": {},
     "unit-test": {},
-    "int-test": {},
     "code-pushup": {
       "dependsOn": [
         "code-pushup-coverage",
