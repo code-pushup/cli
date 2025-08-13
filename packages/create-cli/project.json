@@ -7,7 +7,6 @@
     "build": {},
     "lint": {},
     "unit-test": {},
-    "int-test": {},
     "exec-node": {
       "dependsOn": ["build"],
       "command": "node ./dist/packages/create-cli/src/index.js",
