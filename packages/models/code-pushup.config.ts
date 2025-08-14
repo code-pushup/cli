@@ -21,7 +21,7 @@ const config: CoreConfig = {
 export default mergeConfigs(
   config,
   await eslintCoreConfigNx(projectName),
-  await coverageCoreConfigNx(projectName),
+  await coverageCoreConfigNx({ projectName, targetNames: ['unit-test'] }),
   await typescriptPluginConfig({
     tsconfig: `packages/${projectName}/tsconfig.lib.json`,
   }),
