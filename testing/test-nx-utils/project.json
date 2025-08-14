@@ -6,12 +6,7 @@
   "targets": {
     "build": {},
     "lint": {},
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "testing/test-nx-utils/vitest.unit.config.ts"
-      }
-    }
+    "unit-test": {}
   },
   "tags": ["scope:shared", "type:testing"]
 }

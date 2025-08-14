@@ -8,7 +8,7 @@
     "e2e": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "e2e/ci-e2e/vitest.e2e.config.ts"
+        "configFile": "{projectRoot}/vitest.e2e.config.ts"
       }
     }
   },

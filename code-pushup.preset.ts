@@ -11,9 +11,8 @@ import eslintPlugin, {
   eslintConfigFromNxProject,
 } from './packages/plugin-eslint/src/index.js';
 import jsPackagesPlugin from './packages/plugin-js-packages/src/index.js';
-import jsDocsPlugin, {
-  JsDocsPluginConfig,
-} from './packages/plugin-jsdocs/src/index.js';
+import jsDocsPlugin from './packages/plugin-jsdocs/src/index.js';
+import type { JsDocsPluginTransformedConfig } from './packages/plugin-jsdocs/src/lib/config.js';
 import {
   PLUGIN_SLUG,
   groups,
@@ -98,7 +97,7 @@ export const eslintCategories: CategoryConfig[] = [
 ];
 
 export function getJsDocsCategories(
-  config: JsDocsPluginConfig,
+  config: JsDocsPluginTransformedConfig,
 ): CategoryConfig[] {
   return [
     {
@@ -147,7 +146,7 @@ export const lighthouseCoreConfig = async (
 };
 
 export const jsDocsCoreConfig = (
-  config: JsDocsPluginConfig | string[],
+  config: JsDocsPluginTransformedConfig | string[],
 ): CoreConfig => ({
   plugins: [
     jsDocsPlugin(Array.isArray(config) ? { patterns: config } : config),
@@ -180,28 +179,25 @@ export const typescriptPluginConfig = async (
 export const coverageCoreConfigNx = async (
   projectName?: string,
 ): Promise<CoreConfig> => {
-  if (projectName) {
-    throw new Error('coverageCoreConfigNx for single projects not implemented');
-  }
   const targetNames = ['unit-test', 'int-test'];
-  const targetArgs = [
-    '-t',
-    ...targetNames,
-    '--coverage.enabled',
-    '--skipNxCache',
-  ];
+  const targetArgs = ['-t', ...targetNames];
   return {
     plugins: [
       await coveragePlugin({
         coverageToolCommand: {
           command: 'npx',
-          args: [
-            'nx',
-            projectName ? `run --project ${projectName}` : 'run-many',
-            ...targetArgs,
-          ],
+          args: projectName
+            ? ['nx', 'run-many', '-p', projectName, ...targetArgs]
+            : ['nx', 'run-many', ...targetArgs],
         },
-        reports: await getNxCoveragePaths(targetNames),
+        reports: projectName
+          ? [
+              {
+                pathToProject: `packages/${projectName}`,
+                resultsPath: `packages/${projectName}/coverage/lcov.info`,
+              },
+            ]
+          : await getNxCoveragePaths(targetNames),
       }),
     ],
     categories: coverageCategories,

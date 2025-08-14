@@ -18,18 +18,7 @@
       ]
     },
     "lint": {},
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/models/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/models/vitest.int.config.ts"
-      }
-    }
+    "unit-test": {}
   },
   "tags": ["scope:shared", "type:util", "publishable"]
 }
