@@ -217,10 +217,7 @@ export const eslintCoreConfigNx = async (
 ): Promise<CoreConfig> => ({
   plugins: [
     projectName
-      ? await eslintPlugin({
-          eslintrc: `packages/${projectName}/eslint.config.js`,
-          patterns: ['.'],
-        })
+      ? await eslintPlugin(`packages/${projectName}/eslint.config.js`)
       : await eslintPlugin(await eslintConfigFromAllNxProjects()),
   ],
   categories: eslintCategories,

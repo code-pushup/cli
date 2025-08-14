@@ -8,11 +8,15 @@
       "dependsOn": [
         "code-pushup-coverage",
         "code-pushup-jsdocs",
-        "code-pushup-typescript"
+        "code-pushup-typescript",
+        "code-pushup-eslint"
       ]
     },
     "code-pushup-eslint": {},
     "code-pushup-jsdocs": {},
+    "code-pushup-coverage": {
+      "dependsOn": ["unit-test"]
+    },
     "code-pushup-typescript": {},
     "generate-docs": {
       "command": "npx zod2md --config packages/models/zod2md.config.ts",

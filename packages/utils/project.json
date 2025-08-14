@@ -24,12 +24,15 @@
       "dependsOn": [
         "code-pushup-coverage",
         "code-pushup-jsdocs",
-        "code-pushup-typescript"
+        "code-pushup-typescript",
+        "code-pushup-eslint"
       ]
     },
-    "code-pushup-coverage": {},
+    "code-pushup-eslint": {},
     "code-pushup-jsdocs": {},
-    "code-pushup-typescript": {}
+    "code-pushup-coverage": {
+      "dependsOn": ["unit-test", "int-test"]
+    }
   },
   "tags": ["scope:shared", "type:util", "publishable"]
 }

@@ -26,6 +26,7 @@ const merged = mergeConfigs(
   await typescriptPluginConfig({
     tsconfig: 'packages/cli/tsconfig.lib.json',
   }),
+
   await eslintCoreConfigNx(),
   jsDocsCoreConfig([
     'packages/**/src/**/*.ts',

@@ -30,9 +30,11 @@
       "dependsOn": [
         "code-pushup-coverage",
         "code-pushup-jsdocs",
-        "code-pushup-typescript"
+        "code-pushup-typescript",
+        "code-pushup-eslint"
       ]
     },
+    "code-pushup-eslint": {},
     "code-pushup-coverage": {},
     "code-pushup-jsdocs": {},
     "code-pushup-typescript": {}

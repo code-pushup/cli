@@ -11,14 +11,11 @@
       "dependsOn": [
         "code-pushup-coverage",
         "code-pushup-jsdocs",
-        "code-pushup-typescript"
+        "code-pushup-typescript",
+        "code-pushup-eslint"
       ]
     },
-    "exec-node": {
-      "dependsOn": ["build"],
-      "command": "node ./dist/packages/create-cli/src/index.js",
-      "options": {}
-    },
+    "code-pushup-eslint": {},
     "code-pushup-coverage": {},
     "code-pushup-jsdocs": {},
     "code-pushup-typescript": {}

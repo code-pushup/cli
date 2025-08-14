@@ -1,4 +1,4 @@
-name: Code PushUp (fork)
+name: Code PushUp - Monorepo Style (fork)
 
 # separated from code-pushup.yml for security reasons
 # => requires permissions to create PR comment
@@ -20,7 +20,7 @@ permissions:
 jobs:
   code-pushup:
     runs-on: ubuntu-latest
-    name: Code PushUp
+    name: Code PushUp - Monorepo Style
     if: github.event.pull_request.head.repo.fork
     steps:
       - name: Checkout PR head
