@@ -11,6 +11,7 @@
     "vitest.int.config.ts",
     "src/**/*.test.ts",
     "src/**/*.mock.ts",
-    "mocks/**/*.ts"
+    "mocks/**/*.ts",
+    "code-pushup.config.ts"
   ]
 }

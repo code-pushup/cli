@@ -69,6 +69,41 @@ You can control the execution of long-running tests over the `INCLUDE_SLOW_TESTS
 To change this setup, open (or create) the `.env` file in the root folder.
 Edit or add the environment variable there as follows: `INCLUDE_SLOW_TESTS=true`.
 
+### Testing with pkg-new
+
+You can test the CLI using published packages from pull requests via [pkg-new](https://pkg.pr.new/). This is useful for testing changes before they are merged.
+
+To test a specific PR (replace `<PR_NUMBER>` with the actual PR number):
+
+```bash
+# Install required dependencies first
+npm install \
+  https://pkg.pr.new/code-pushup/cli/@code-pushup/utils@<PR_NUMBER> \
+  https://pkg.pr.new/code-pushup/cli/@code-pushup/models@<PR_NUMBER> \
+  https://pkg.pr.new/code-pushup/cli/@code-pushup/core@<PR_NUMBER> \
+  https://pkg.pr.new/code-pushup/cli/@code-pushup/cli@<PR_NUMBER>
+```
+
+Update nx.json to use pkg-new:
+
+```jsonc
+{
+  "targetDefaults": {
+    "code-pushup": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx https://pkg.pr.new/code-pushup/cli/@code-pushup/cli@<PR_NUMBER>", // instead of "command": "node packages/cli/src/index.ts"
+        "args": [
+          // ...
+        ],
+      },
+    },
+  },
+}
+```
+
+**Note:** The `@code-pushup/portal-client` package may not be available via pkg-new, but it's an optional peer dependency and won't affect collect functionality. Only the upload command is not working.
+
 ## Git
 
 Commit messages must follow [conventional commits](https://conventionalcommits.org/) format.

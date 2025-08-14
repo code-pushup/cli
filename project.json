@@ -1,16 +1,38 @@
 {
-  "name": "@code-pushup/cli-source",
+  "name": "cli-source",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
-    "code-pushup": {
+    "code-pushup-central": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "node packages/cli/src/index.ts --no-progress --verbose",
+        "command": "node packages/cli/src/index.ts",
+        "args": [
+          "--no-progress",
+          "--verbose",
+          "--config={projectRoot}/code-pushup.central.config.ts",
+          "--persist.outputDir={projectRoot}/.code-pushup",
+          "--upload.project=cli"
+        ],
         "env": {
           "NODE_OPTIONS": "--import tsx",
           "TSX_TSCONFIG_PATH": "tsconfig.base.json"
         }
       }
-    }
+    },
+    "code-pushup": {
+      "dependsOn": ["code-pushup-js-packages", "code-pushup-lighthouse"],
+      "executor": "nx:run-commands",
+      "options": {
+        "args": [
+          "--no-progress",
+          "--verbose",
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--cache.read",
+          "--persist.outputDir={projectRoot}/.code-pushup"
+        ]
+      }
+    },
+    "code-pushup-js-packages": {},
+    "code-pushup-lighthouse": {}
   }
 }

@@ -1,7 +1,12 @@
 /* eslint-disable @nx/enforce-module-boundaries */
+import 'dotenv/config';
+import { z } from 'zod';
 import type {
   CategoryConfig,
   CoreConfig,
+  PersistConfig,
+  PluginConfig,
+  UploadConfig,
 } from './packages/models/src/index.js';
 import coveragePlugin, {
   getNxCoveragePaths,
@@ -27,6 +32,51 @@ import typescriptPlugin, {
   type TypescriptPluginOptions,
   getCategories,
 } from './packages/plugin-typescript/src/index.js';
+
+/**
+ * Helper function to load and validate Code PushUp environment variables for upload configuration
+ */
+export async function loadEnv(
+  projectName: string | undefined = process.env.NX_TASK_TARGET_PROJECT,
+): Promise<Partial<CoreConfig>> {
+  if (projectName == null || projectName === '') {
+    throw new Error(
+      'loadEnv failed! Project name is not defined. Please run code pushup fit Nx or provide a projectName.',
+    );
+  }
+  const envSchema = z.object({
+    CP_SERVER: z.string().url(),
+    CP_API_KEY: z.string().min(1),
+    CP_ORGANIZATION: z.string().min(1),
+    CP_PROJECT: z.string().optional(),
+  });
+
+  const { data: env, success } = await envSchema.safeParseAsync(process.env);
+
+  if (!success || !env) {
+    return {};
+  }
+  const uploadConfig = {
+    apiKey: env.CP_API_KEY,
+    server: env.CP_SERVER,
+    organization: env.CP_ORGANIZATION,
+    ...(env.CP_PROJECT
+      ? { project: env.CP_PROJECT }
+      : { project: projectName }),
+  };
+  return uploadConfig.apiKey ? { upload: uploadConfig } : {};
+}
+
+/**
+ * Common exclusion patterns for JSDoc coverage
+ */
+export const jsDocsExclusionPatterns = [
+  '!packages/**/node_modules',
+  '!packages/**/{mocks,mock}',
+  '!**/*.{spec,test}.ts',
+  '!**/implementation/**',
+  '!**/internal/**',
+];
 
 export const jsPackagesCategories: CategoryConfig[] = [
   {
@@ -130,15 +180,21 @@ export const coverageCategories: CategoryConfig[] = [
   },
 ];
 
-export const jsPackagesCoreConfig = async (): Promise<CoreConfig> => ({
-  plugins: [await jsPackagesPlugin()],
+export const jsPackagesCoreConfig = async (
+  packageJsonPath?: string,
+): Promise<CoreConfig> => ({
+  plugins: [
+    await jsPackagesPlugin(packageJsonPath ? { packageJsonPath } : undefined),
+  ],
   categories: jsPackagesCategories,
 });
 
 export const lighthouseCoreConfig = async (
   urls: LighthouseUrls,
 ): Promise<CoreConfig> => {
-  const lhPlugin = await lighthousePlugin(urls);
+  const lhPlugin = await lighthousePlugin(urls, {
+    onlyAudits: ['largest-contentful-paint'],
+  });
   return {
     plugins: [lhPlugin],
     categories: mergeLighthouseCategories(lhPlugin, lighthouseCategories),
@@ -160,11 +216,9 @@ export const eslintCoreConfigNx = async (
   projectName?: string,
 ): Promise<CoreConfig> => ({
   plugins: [
-    await eslintPlugin(
-      await (projectName
-        ? eslintConfigFromNxProject(projectName)
-        : eslintConfigFromAllNxProjects()),
-    ),
+    projectName
+      ? await eslintPlugin(`packages/${projectName}/eslint.config.js`)
+      : await eslintPlugin(await eslintConfigFromAllNxProjects()),
   ],
   categories: eslintCategories,
 });
@@ -176,11 +230,27 @@ export const typescriptPluginConfig = async (
   categories: getCategories(),
 });
 
+/**
+ * Generates coverage configuration for Nx projects. Supports both single projects and all projects.
+ */
 export const coverageCoreConfigNx = async (
-  projectName?: string,
+  projectArg?:
+    | string
+    | {
+        projectName?: string;
+        targetNames?: string | string[];
+      },
 ): Promise<CoreConfig> => {
-  const targetNames = ['unit-test', 'int-test'];
-  const targetArgs = ['-t', ...targetNames];
+  const { projectName, targetNames } =
+    typeof projectArg === 'string'
+      ? { projectName: projectArg }
+      : (projectArg ?? {});
+  const parsedTargetNames = Array.isArray(targetNames)
+    ? targetNames
+    : targetNames != null
+      ? [targetNames]
+      : ['unit-test', 'int-test'];
+  const targetArgs = ['-t', parsedTargetNames.join(',')];
   return {
     plugins: [
       await coveragePlugin({
@@ -203,3 +273,148 @@ export const coverageCoreConfigNx = async (
     categories: coverageCategories,
   };
 };
+
+export function mergeConfigs(
+  config: CoreConfig,
+  ...configs: Partial<CoreConfig>[]
+): CoreConfig {
+  return configs.reduce<CoreConfig>(
+    (acc, obj) => ({
+      ...acc,
+      ...mergeCategories(acc.categories, obj.categories),
+      ...mergePlugins(acc.plugins, obj.plugins),
+      ...mergePersist(acc.persist, obj.persist),
+      ...mergeUpload(acc.upload, obj.upload),
+    }),
+    config,
+  );
+}
+
+function mergeCategories(
+  a: CategoryConfig[] | undefined,
+  b: CategoryConfig[] | undefined,
+): Pick<CoreConfig, 'categories'> {
+  if (!a && !b) {
+    return {};
+  }
+
+  const mergedMap = new Map<string, CategoryConfig>();
+
+  const addToMap = (categories: CategoryConfig[]) => {
+    categories.forEach(newObject => {
+      if (mergedMap.has(newObject.slug)) {
+        const existingObject: CategoryConfig | undefined = mergedMap.get(
+          newObject.slug,
+        );
+
+        mergedMap.set(newObject.slug, {
+          ...existingObject,
+          ...newObject,
+
+          refs: mergeByUniqueCategoryRefCombination(
+            existingObject?.refs,
+            newObject.refs,
+          ),
+        });
+      } else {
+        mergedMap.set(newObject.slug, newObject);
+      }
+    });
+  };
+
+  if (a) {
+    addToMap(a);
+  }
+  if (b) {
+    addToMap(b);
+  }
+
+  // Convert the map back to an array
+  return { categories: [...mergedMap.values()] };
+}
+
+function mergePlugins(
+  a: PluginConfig[] | undefined,
+  b: PluginConfig[] | undefined,
+): Pick<CoreConfig, 'plugins'> {
+  if (!a && !b) {
+    return { plugins: [] };
+  }
+
+  const mergedMap = new Map<string, PluginConfig>();
+
+  const addToMap = (plugins: PluginConfig[]) => {
+    plugins.forEach(newObject => {
+      mergedMap.set(newObject.slug, newObject);
+    });
+  };
+
+  if (a) {
+    addToMap(a);
+  }
+  if (b) {
+    addToMap(b);
+  }
+
+  return { plugins: [...mergedMap.values()] };
+}
+
+function mergePersist(
+  a: PersistConfig | undefined,
+  b: PersistConfig | undefined,
+): Pick<CoreConfig, 'persist'> {
+  if (!a && !b) {
+    return {};
+  }
+
+  if (a) {
+    return b ? { persist: { ...a, ...b } } : { persist: a };
+  } else {
+    return { persist: b };
+  }
+}
+
+function mergeByUniqueCategoryRefCombination<
+  T extends { slug: string; type: string; plugin: string },
+>(a: T[] | undefined, b: T[] | undefined) {
+  const map = new Map<string, T>();
+
+  const addToMap = (refs: T[]) => {
+    refs.forEach(ref => {
+      const uniqueIdentification = `${ref.type}:${ref.plugin}:${ref.slug}`;
+      if (map.has(uniqueIdentification)) {
+        map.set(uniqueIdentification, {
+          ...map.get(uniqueIdentification),
+          ...ref,
+        });
+      } else {
+        map.set(uniqueIdentification, ref);
+      }
+    });
+  };
+
+  // Add objects from both arrays to the map
+  if (a) {
+    addToMap(a);
+  }
+  if (b) {
+    addToMap(b);
+  }
+
+  return [...map.values()];
+}
+
+function mergeUpload(
+  a: UploadConfig | undefined,
+  b: UploadConfig | undefined,
+): Pick<CoreConfig, 'upload'> {
+  if (!a && !b) {
+    return {};
+  }
+
+  if (a) {
+    return b ? { upload: { ...a, ...b } } : { upload: a };
+  } else {
+    return { upload: b };
+  }
+}

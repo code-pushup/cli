@@ -7,16 +7,20 @@
     "build": {},
     "lint": {},
     "unit-test": {},
-    "exec-node": {
-      "dependsOn": ["build"],
-      "command": "node ./dist/packages/create-cli/src/index.js",
-      "options": {}
+    "code-pushup": {
+      "dependsOn": [
+        "code-pushup-coverage",
+        "code-pushup-jsdocs",
+        "code-pushup-typescript",
+        "code-pushup-eslint"
+      ]
     },
-    "exec-npm": {
-      "dependsOn": ["^build"],
-      "command": "npm exec ./dist/packages/create-cli",
-      "options": {}
-    }
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {
+      "dependsOn": ["unit-test"]
+    },
+    "code-pushup-jsdocs": {},
+    "code-pushup-typescript": {}
   },
-  "tags": ["scope:tooling", "type:app", "publishable"]
+  "tags": ["scope:shared", "type:util", "publishable"]
 }
