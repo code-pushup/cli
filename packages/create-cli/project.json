@@ -16,7 +16,9 @@
       ]
     },
     "code-pushup-eslint": {},
-    "code-pushup-coverage": {},
+    "code-pushup-coverage": {
+      "dependsOn": ["unit-test"]
+    },
     "code-pushup-jsdocs": {},
     "code-pushup-typescript": {}
   },
