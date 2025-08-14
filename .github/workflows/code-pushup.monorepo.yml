@@ -1,4 +1,4 @@
-name: Code PushUp - Monorepo Style
+name: Code PushUp - Monorepo/Cache
 
 on:
   push:
@@ -15,7 +15,7 @@ permissions:
 jobs:
   code-pushup:
     runs-on: ubuntu-latest
-    name: Code PushUp - Monorepo Style
+    name: Run monorepo layout with caching
     # ignore PRs from forks, handled by code-pushup-fork.yml
     if: ${{ !github.event.pull_request.head.repo.fork }}
     env:
@@ -41,3 +41,5 @@ jobs:
         uses: code-pushup/github-action@v0
         with:
           bin: npx nx affected -t code-pushup --
+          monorepo: nx
+          parallel: 3
