@@ -1,29 +1,27 @@
-/// <reference types="vitest" />
-import { defineConfig } from 'vite';
-import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases.js';
+import { defineConfig } from 'vitest/config';
+import { createSharedIntegrationVitestConfig } from '../../testing/test-vitest-setup/src/utils/project-config.js';
 
-export default defineConfig({
-  cacheDir: '../../node_modules/.vite/cli',
-  test: {
-    reporters: ['basic'],
-    globals: true,
-    cache: {
-      dir: '../../node_modules/.vitest',
-    },
-    alias: tsconfigPathAliases(),
-    pool: 'threads',
-    poolOptions: { threads: { singleThread: true } },
-    coverage: {
-      reporter: ['text', 'lcov'],
-      reportsDirectory: '../../coverage/cli/int-tests',
-      exclude: ['mocks/**', '**/types.ts'],
-    },
-    environment: 'node',
-    include: ['src/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    globalSetup: ['../../global-setup.ts'],
+export default defineConfig(() => {
+  const baseConfig = createSharedIntegrationVitestConfig({
+    projectRoot: __dirname,
+    workspaceRoot: '../..',
     setupFiles: [
       '../../testing/test-setup/src/lib/console.mock.ts',
       '../../testing/test-setup/src/lib/reset.mocks.ts',
     ],
-  },
+  });
+
+  return {
+    ...baseConfig,
+    test: {
+      ...baseConfig.test,
+      coverage: {
+        ...baseConfig.test.coverage,
+        exclude: [
+          ...baseConfig.test.coverage.exclude,
+          // CLI-specific excludes (already has mocks/** and **/types.ts)
+        ],
+      },
+    },
+  };
 });

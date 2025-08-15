@@ -1,24 +1,17 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite';
-import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases.js';
+import { defineConfig } from 'vitest/config';
+import { createSharedUnitVitestConfig } from '../test-vitest-setup/src/utils/project-config.js';
 
-export default defineConfig({
-  cacheDir: '../node_modules/.vite/test-utils',
-  test: {
-    reporters: ['basic'],
-    globals: true,
-    cache: {
-      dir: '../node_modules/.vitest',
+export default defineConfig(() => {
+  const baseConfig = createSharedUnitVitestConfig(
+    {
+      projectRoot: __dirname,
+      workspaceRoot: '../..',
     },
-    alias: tsconfigPathAliases(),
-    pool: 'threads',
-    poolOptions: { threads: { singleThread: true } },
-    coverage: {
-      reporter: ['text', 'lcov'],
-      reportsDirectory: '../../coverage/test-utils/unit-tests',
-      exclude: ['**/*.mock.{mjs,ts}', '**/*.config.{js,mjs,ts}'],
-    },
-    environment: 'node',
-    include: ['src/**/*.unit.test.ts'],
-  },
+    true,
+  ); // noFsCwd = true for test-utils
+
+  return {
+    ...baseConfig,
+  };
 });

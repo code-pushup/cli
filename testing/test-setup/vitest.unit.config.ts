@@ -1,29 +1,21 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite';
-import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases.js';
+import { defineConfig } from 'vitest/config';
+import { createSharedUnitVitestConfig } from '../test-vitest-setup/src/utils/project-config.js';
 
-export default defineConfig({
-  cacheDir: '../node_modules/.vite/test-setup',
-  test: {
-    reporters: ['basic'],
-    globals: true,
-    cache: {
-      dir: '../node_modules/.vitest',
+export default defineConfig(() => {
+  const baseConfig = createSharedUnitVitestConfig({
+    projectRoot: __dirname,
+    workspaceRoot: '../..',
+  });
+
+  return {
+    ...baseConfig,
+    test: {
+      ...baseConfig.test,
+      setupFiles: [
+        ...baseConfig.test.setupFiles,
+        'src/lib/extend/path.matcher.ts',
+      ],
     },
-    alias: tsconfigPathAliases(),
-    pool: 'threads',
-    poolOptions: { threads: { singleThread: true } },
-    coverage: {
-      reporter: ['text', 'lcov'],
-      reportsDirectory: '../../coverage/test-setup/unit-tests',
-      exclude: ['**/*.mock.{mjs,ts}', '**/*.config.{js,mjs,ts}'],
-    },
-    environment: 'node',
-    include: ['src/**/*.unit.test.ts'],
-    setupFiles: [
-      '../test-setup/src/lib/reset.mocks.ts',
-      '../test-setup/src/lib/extend/path.matcher.ts',
-      '../test-setup/src/lib/extend/markdown-table.matcher.ts',
-    ],
-  },
+  };
 });

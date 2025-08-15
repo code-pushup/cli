@@ -37,6 +37,9 @@
       "@code-pushup/test-nx-utils": ["testing/test-nx-utils/src/index.ts"],
       "@code-pushup/test-setup": ["testing/test-setup/src/index.ts"],
       "@code-pushup/test-utils": ["testing/test-utils/src/index.ts"],
+      "@code-pushup/test-vitest-setup": [
+        "testing/test-vitest-setup/src/index.ts"
+      ],
       "@code-pushup/typescript-plugin": [
         "packages/plugin-typescript/src/index.ts"
       ],
