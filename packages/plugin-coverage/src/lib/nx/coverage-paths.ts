@@ -128,10 +128,18 @@ export async function getCoveragePathForVitest(
     );
   }
 
-  const vitestConfig = await importModule<VitestCoverageConfig>({
+  const vitestConfigModule = await importModule<
+    VitestCoverageConfig & { default?: unknown }
+  >({
     filepath: config,
     format: 'esm',
   });
+
+  const vitestConfig = await extractVitestConfig(
+    vitestConfigModule,
+    target,
+    project.name || 'unknown',
+  );
 
   const reportsDirectory =
     options.reportsDirectory ?? vitestConfig.test.coverage?.reportsDirectory;
@@ -156,6 +164,28 @@ export async function getCoveragePathForVitest(
     pathToProject: project.root,
     resultsPath: path.join(project.root, reportsDirectory, 'lcov.info'),
   };
+}
+
+async function extractVitestConfig(
+  vitestConfigModule: VitestCoverageConfig & { default?: unknown },
+  target: string,
+  projectName: string,
+): Promise<VitestCoverageConfig> {
+  if (typeof vitestConfigModule.default === 'function') {
+    try {
+      const result = vitestConfigModule.default();
+      if (result && typeof result === 'object' && result.test?.coverage) {
+        return result as VitestCoverageConfig;
+      }
+      throw new Error('Function export did not return valid configuration');
+    } catch (error) {
+      throw new Error(
+        `Could not execute Vitest config function for target ${target} in project ${projectName}: ${error}`,
+      );
+    }
+  }
+
+  return vitestConfigModule;
 }
 
 export async function getCoveragePathForJest(
