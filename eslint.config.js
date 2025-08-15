@@ -27,6 +27,8 @@ export default tseslint.config(
             String.raw`^.*/eslint(\.base)?\.config\.[cm]?js$`,
             String.raw`^.*/code-pushup\.(config|preset)(\.m?[jt]s)?$`,
             '^[./]+/tools/.*$',
+            '^[./]+/testing/test-vitest-setup/.*$',
+            '^[./]+/test-vitest-setup/.*$',
           ],
           depConstraints: [
             {
@@ -131,6 +133,7 @@ export default tseslint.config(
       '**/__snapshots__/**',
       '**/dist',
       '**/*.md',
+      '**/coverage/**',
     ],
   },
 );
