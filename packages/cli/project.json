@@ -4,38 +4,10 @@
   "sourceRoot": "packages/cli/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/cli",
-        "main": "packages/cli/src/index.ts",
-        "tsConfig": "packages/cli/tsconfig.lib.json",
-        "assets": ["packages/cli/*.md"]
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/cli/**/*.ts",
-          "packages/cli/package.json"
-        ]
-      }
-    },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/cli/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/cli/vitest.int.config.ts"
-      }
-    },
+    "build": {},
+    "lint": {},
+    "unit-test": {},
+    "int-test": {},
     "run-help": {
       "command": "npx dist/packages/cli --help",
       "dependsOn": ["build"]

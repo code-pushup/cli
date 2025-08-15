@@ -4,17 +4,11 @@
   "sourceRoot": "e2e/plugin-eslint-e2e/src",
   "projectType": "application",
   "targets": {
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["e2e/plugin-eslint-e2e/**/*.ts"]
-      }
-    },
+    "lint": {},
     "e2e": {
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "e2e/plugin-eslint-e2e/vitest.e2e.config.ts"
+        "configFile": "{projectRoot}/vitest.e2e.config.ts"
       }
     }
   },

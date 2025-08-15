@@ -4,38 +4,9 @@
   "sourceRoot": "packages/plugin-lighthouse/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/plugin-lighthouse",
-        "main": "packages/plugin-lighthouse/src/index.ts",
-        "tsConfig": "packages/plugin-lighthouse/tsconfig.lib.json",
-        "assets": ["packages/plugin-lighthouse/*.md"]
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/plugin-lighthouse/**/*.ts",
-          "packages/plugin-lighthouse/package.json"
-        ]
-      }
-    },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-lighthouse/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-lighthouse/vitest.int.config.ts"
-      }
-    }
+    "build": {},
+    "lint": {},
+    "unit-test": {}
   },
   "tags": ["scope:plugin", "type:feature", "publishable"]
 }

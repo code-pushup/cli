@@ -4,38 +4,10 @@
   "sourceRoot": "packages/core/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/core",
-        "main": "packages/core/src/index.ts",
-        "tsConfig": "packages/core/tsconfig.lib.json",
-        "assets": ["packages/core/*.md"]
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/core/**/*.ts",
-          "packages/core/package.json"
-        ]
-      }
-    },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/core/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/core/vitest.int.config.ts"
-      }
-    }
+    "build": {},
+    "lint": {},
+    "unit-test": {},
+    "int-test": {}
   },
   "tags": ["scope:core", "type:feature", "publishable"]
 }

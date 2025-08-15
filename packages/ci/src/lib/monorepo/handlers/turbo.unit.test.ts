@@ -37,7 +37,7 @@ describe('turboHandler', () => {
         },
         MEMFS_VOLUME,
       );
-      await expect(turboHandler.isConfigured(options)).resolves.toBe(true);
+      await expect(turboHandler.isConfigured(options)).resolves.toBeTrue();
     });
 
     it("should NOT detect Turborepo when turbo.json doesn't exist", async () => {
@@ -48,7 +48,7 @@ describe('turboHandler', () => {
         },
         MEMFS_VOLUME,
       );
-      await expect(turboHandler.isConfigured(options)).resolves.toBe(false);
+      await expect(turboHandler.isConfigured(options)).resolves.toBeFalse();
     });
 
     it("should NOT detect Turborepo when turbo.json doesn't include code-pushup task", async () => {
@@ -72,7 +72,7 @@ describe('turboHandler', () => {
         },
         MEMFS_VOLUME,
       );
-      await expect(turboHandler.isConfigured(options)).resolves.toBe(false);
+      await expect(turboHandler.isConfigured(options)).resolves.toBeFalse();
     });
   });
 

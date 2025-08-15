@@ -1,4 +1,5 @@
 import {
+  yargsCacheConfigOptionsDefinition,
   yargsCoreConfigOptionsDefinition,
   yargsPersistConfigOptionsDefinition,
   yargsUploadConfigOptionsDefinition,
@@ -17,6 +18,7 @@ export const groups = {
     ...Object.keys(yargsGlobalOptionsDefinition()),
     ...Object.keys(yargsFilterOptionsDefinition()),
   ],
+  'Cache Options:': Object.keys(yargsCacheConfigOptionsDefinition()),
   'Persist Options:': Object.keys(yargsPersistConfigOptionsDefinition()),
   'Upload Options:': Object.keys(yargsUploadConfigOptionsDefinition()),
 };

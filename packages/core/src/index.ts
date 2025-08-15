@@ -8,6 +8,11 @@ export {
   type CompareOptions,
 } from './lib/compare.js';
 export {
+  getRunnerOutputsPath,
+  type ValidatedRunnerResult,
+} from './lib/implementation/runner.js';
+
+export {
   history,
   type HistoryOnlyOptions,
   type HistoryOptions,
@@ -17,8 +22,8 @@ export type { ReportsToCompare } from './lib/implementation/compare-scorables.js
 export {
   executePlugin,
   executePlugins,
-  PluginOutputMissingAuditError,
 } from './lib/implementation/execute-plugin.js';
+export { AuditOutputsMissingAuditError } from './lib/implementation/runner.js';
 export {
   PersistDirError,
   PersistError,

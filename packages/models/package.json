@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/models",
-  "version": "0.72.1",
+  "version": "0.74.0",
   "license": "MIT",
   "description": "Model definitions and validators for the Code PushUp CLI",
   "homepage": "https://github.com/code-pushup/cli/tree/main/packages/models#readme",
@@ -29,5 +29,9 @@
   "dependencies": {
     "zod": "^4.0.5",
     "vscode-material-icons": "^0.1.0"
-  }
+  },
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
 }

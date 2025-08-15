@@ -4,17 +4,57 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"],
-      "cache": true
-    },
-    "lint": {
-      "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
+      "cache": true,
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
       "options": {
-        "maxWarnings": 0
-      },
-      "cache": true
+        "outputPath": "{projectRoot}/dist",
+        "main": "{projectRoot}/src/index.ts",
+        "tsConfig": "{projectRoot}/tsconfig.lib.json",
+        "assets": ["{projectRoot}/*.md"]
+      }
+    },
+    "unit-test": {
+      "cache": true,
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectName}/unit-tests/lcov.info"
+      ],
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "{projectRoot}/vitest.unit.config.ts",
+        "passWithNoTests": true,
+        "coverage": {
+          "enabled": true
+        }
+      }
+    },
+    "int-test": {
+      "cache": true,
+      "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "{projectRoot}/vitest.int.config.ts",
+        "passWithNoTests": true,
+        "coverage": {
+          "enabled": true
+        }
+      }
     },
     "e2e": {
       "dependsOn": ["^build"]
+    },
+    "lint": {
+      "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "cache": true,
+      "options": {
+        "maxWarnings": 0,
+        "lintFilePatterns": [
+          "{projectRoot}/**/*.ts",
+          "{projectRoot}/package.json"
+        ]
+      }
     },
     "nxv-pkg-install": {
       "parallelism": false
@@ -31,13 +71,17 @@
       "dependsOn": ["build"],
       "executor": "@nx/js:release-publish",
       "options": {
-        "packageRoot": "dist/{projectRoot}",
+        "packageRoot": "{projectRoot}/dist",
         "registry": "https://registry.npmjs.org/"
       }
     }
   },
   "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals",
+      "!{projectRoot}/dist/**/*"
+    ],
     "production": [
       "default",
       "!{projectRoot}/eslint.config.?(c)js",

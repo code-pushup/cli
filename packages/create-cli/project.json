@@ -4,38 +4,9 @@
   "sourceRoot": "packages/create-cli/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/create-cli",
-        "main": "packages/create-cli/src/index.ts",
-        "tsConfig": "packages/create-cli/tsconfig.lib.json",
-        "assets": ["packages/create-cli/*.md"]
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/create-cli/**/*.ts",
-          "packages/create-cli/package.json"
-        ]
-      }
-    },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/create-cli/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/create-cli/vitest.int.config.ts"
-      }
-    },
+    "build": {},
+    "lint": {},
+    "unit-test": {},
     "exec-node": {
       "dependsOn": ["build"],
       "command": "node ./dist/packages/create-cli/src/index.js",

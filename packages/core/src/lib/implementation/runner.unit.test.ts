@@ -3,14 +3,26 @@ import { type AuditOutputs, auditOutputsSchema } from '@code-pushup/models';
 import {
   ISO_STRING_REGEXP,
   MEMFS_VOLUME,
+  MINIMAL_PLUGIN_CONFIG_MOCK,
   MINIMAL_RUNNER_CONFIG_MOCK,
   MINIMAL_RUNNER_FUNCTION_MOCK,
+  osAgnosticPath,
 } from '@code-pushup/test-utils';
 import {
   type RunnerResult,
+  executePluginRunner,
   executeRunnerConfig,
   executeRunnerFunction,
+  getRunnerOutputsPath,
 } from './runner.js';
+
+describe('getRunnerOutputsPath', () => {
+  it('should read runner results from a file', async () => {
+    expect(
+      osAgnosticPath(getRunnerOutputsPath('plugin-with-cache', 'output')),
+    ).toBe(osAgnosticPath('output/plugin-with-cache/runner-output.json'));
+  });
+});
 
 describe('executeRunnerConfig', () => {
   beforeEach(() => {
@@ -105,5 +117,73 @@ describe('executeRunnerFunction', () => {
       // @ts-expect-error Testing a use case with invalid type passed as a function.
       executeRunnerFunction(''),
     ).rejects.toThrow('runner is not a function');
+  });
+});
+
+describe('executePluginRunner', () => {
+  it('should execute a valid plugin config', async () => {
+    const pluginResult = await executePluginRunner(MINIMAL_PLUGIN_CONFIG_MOCK);
+    expect(pluginResult.audits[0]?.slug).toBe('node-version');
+  });
+
+  it('should yield audit outputs for valid runner config', async () => {
+    vol.fromJSON(
+      {
+        'output.json': JSON.stringify([
+          {
+            slug: 'node-version',
+            score: 0.3,
+            value: 16,
+          },
+        ]),
+      },
+      MEMFS_VOLUME,
+    );
+
+    await expect(
+      executePluginRunner({
+        ...MINIMAL_PLUGIN_CONFIG_MOCK,
+        runner: {
+          command: 'node',
+          args: ['-v'],
+          outputFile: 'output.json',
+        },
+      }),
+    ).resolves.toStrictEqual({
+      duration: expect.any(Number),
+      date: expect.any(String),
+      audits: expect.arrayContaining([
+        {
+          slug: 'node-version',
+          score: 0.3,
+          value: 16,
+        },
+      ]),
+    });
+  });
+
+  it('should yield audit outputs for a valid runner function', async () => {
+    await expect(
+      executePluginRunner({
+        ...MINIMAL_PLUGIN_CONFIG_MOCK,
+        runner: () => [
+          {
+            slug: 'node-version',
+            score: 0.3,
+            value: 16,
+          },
+        ],
+      }),
+    ).resolves.toStrictEqual({
+      duration: expect.any(Number),
+      date: expect.any(String),
+      audits: expect.arrayContaining([
+        {
+          slug: 'node-version',
+          score: 0.3,
+          value: 16,
+        },
+      ]),
+    });
   });
 });

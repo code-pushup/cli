@@ -17,6 +17,14 @@ export {
 } from './lib/audit-output.js';
 export { auditSchema, type Audit } from './lib/audit.js';
 export {
+  cacheConfigSchema,
+  type CacheConfig,
+  cacheConfigObjectSchema,
+  type CacheConfigObject,
+  cacheConfigShorthandSchema,
+  type CacheConfigShorthand,
+} from './lib/cache-config.js';
+export {
   categoryConfigSchema,
   categoryRefSchema,
   type CategoryConfig,

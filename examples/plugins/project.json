@@ -4,39 +4,10 @@
   "sourceRoot": "examples/plugins/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/examples/plugins",
-        "main": "examples/plugins/src/index.ts",
-        "tsConfig": "examples/plugins/tsconfig.lib.json",
-        "assets": ["examples/plugins/*.md"]
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["examples/plugins/**/*.ts"]
-      }
-    },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
-      "options": {
-        "configFile": "examples/plugins/vitest.unit.config.ts",
-        "reportsDirectory": "../../coverage/examples-plugins/unit-tests"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
-      "options": {
-        "configFile": "examples/plugins/vitest.int.config.ts",
-        "reportsDirectory": "../../coverage/examples-plugins/int-tests"
-      }
-    },
+    "build": {},
+    "lint": {},
+    "unit-test": {},
+    "int-test": {},
     "run-collect": {
       "command": "npx dist/packages/cli collect --config=examples/plugins/code-pushup.config.ts --persist.format=md",
       "dependsOn": [

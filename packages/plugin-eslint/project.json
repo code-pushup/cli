@@ -4,39 +4,10 @@
   "sourceRoot": "packages/plugin-eslint/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/plugin-eslint",
-        "main": "packages/plugin-eslint/src/index.ts",
-        "tsConfig": "packages/plugin-eslint/tsconfig.lib.json",
-        "assets": ["packages/plugin-eslint/*.md"],
-        "additionalEntryPoints": ["packages/plugin-eslint/src/bin.ts"]
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/plugin-eslint/**/*.ts",
-          "packages/plugin-eslint/package.json"
-        ]
-      }
-    },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-eslint/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-eslint/vitest.int.config.ts"
-      }
-    }
+    "build": {},
+    "lint": {},
+    "unit-test": {},
+    "int-test": {}
   },
   "tags": ["scope:plugin", "type:feature", "publishable"]
 }

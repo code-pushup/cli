@@ -4,31 +4,10 @@
   "sourceRoot": "packages/ci/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/ci",
-        "main": "packages/ci/src/index.ts",
-        "tsConfig": "packages/ci/tsconfig.lib.json",
-        "assets": ["packages/ci/*.md"]
-      }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint"
-    },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/ci/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/ci/vitest.int.config.ts"
-      }
-    }
+    "build": {},
+    "lint": {},
+    "unit-test": {},
+    "int-test": {}
   },
   "tags": ["scope:tooling", "type:feature", "publishable"]
 }

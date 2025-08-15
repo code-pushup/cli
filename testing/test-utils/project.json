@@ -4,29 +4,9 @@
   "sourceRoot": "testing/test-utils/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/testing/test-utils",
-        "main": "testing/test-utils/src/index.ts",
-        "tsConfig": "testing/test-utils/tsconfig.lib.json",
-        "assets": ["testing/test-utils/*.md"]
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["testing/test-utils/**/*.ts"]
-      }
-    },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "testing/test-utils/vitest.unit.config.ts"
-      }
-    },
+    "build": {},
+    "lint": {},
+    "unit-test": {},
     "nx-release-publish": {
       "executor": "nx:noop"
     }

@@ -47,7 +47,10 @@ describe('create-package-json', () => {
 
   it('should return PluginConfig that executes correctly', async () => {
     const pluginConfig = create(baseOptions);
-    const pluginOutput = await executePlugin(pluginConfig);
+    const pluginOutput = await executePlugin(pluginConfig, {
+      persist: { outputDir: '.code-pushup' },
+      cache: { read: false, write: false },
+    });
 
     expect(() => pluginReportSchema.parse(pluginOutput)).not.toThrow();
     expect(pluginOutput).toMatchObject(
@@ -68,7 +71,10 @@ describe('create-package-json', () => {
       ...baseOptions,
       license: 'MIT',
     });
-    const { audits: auditOutputs } = await executePlugin(pluginConfig);
+    const { audits: auditOutputs } = await executePlugin(pluginConfig, {
+      persist: { outputDir: '.code-pushup' },
+      cache: { read: false, write: false },
+    });
 
     expect(auditOutputs[0]?.value).toBe(1);
     expect(auditOutputs[0]?.score).toBe(0);
@@ -85,7 +91,10 @@ describe('create-package-json', () => {
       ...baseOptions,
       type: 'module',
     });
-    const { audits: auditOutputs } = await executePlugin(pluginConfig);
+    const { audits: auditOutputs } = await executePlugin(pluginConfig, {
+      persist: { outputDir: '.code-pushup' },
+      cache: { read: false, write: false },
+    });
 
     expect(auditOutputs[1]?.slug).toBe('package-type');
     expect(auditOutputs[1]?.score).toBe(0);
@@ -104,7 +113,10 @@ describe('create-package-json', () => {
         test: '0',
       },
     });
-    const { audits: auditOutputs } = await executePlugin(pluginConfig);
+    const { audits: auditOutputs } = await executePlugin(pluginConfig, {
+      persist: { outputDir: '.code-pushup' },
+      cache: { read: false, write: false },
+    });
 
     expect(auditOutputs).toHaveLength(audits.length);
     expect(auditOutputs[2]?.slug).toBe('package-dependencies');
@@ -125,7 +137,10 @@ describe('create-package-json', () => {
         test: '0',
       },
     });
-    const { audits: auditOutputs } = await executePlugin(pluginConfig);
+    const { audits: auditOutputs } = await executePlugin(pluginConfig, {
+      persist: { outputDir: '.code-pushup' },
+      cache: { read: false, write: false },
+    });
 
     expect(auditOutputs).toHaveLength(audits.length);
     expect(auditOutputs[2]?.score).toBe(0);
@@ -146,7 +161,10 @@ describe('create-package-json', () => {
         test: '0',
       },
     });
-    const { audits: auditOutputs } = await executePlugin(pluginConfig);
+    const { audits: auditOutputs } = await executePlugin(pluginConfig, {
+      persist: { outputDir: '.code-pushup' },
+      cache: { read: false, write: false },
+    });
 
     expect(auditOutputs).toHaveLength(audits.length);
     expect(auditOutputs[2]?.score).toBe(0);
