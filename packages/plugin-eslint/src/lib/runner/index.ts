@@ -22,13 +22,20 @@ import { lintResultsToAudits, mergeLinterOutputs } from './transform.js';
 export async function executeRunner({
   runnerConfigPath,
   runnerOutputPath,
-}: RunnerFilesPaths): Promise<void> {
+  persistOutputDir,
+}: RunnerFilesPaths & { persistOutputDir: string }): Promise<void> {
   const { slugs, targets } =
     await readJsonFile<ESLintPluginRunnerConfig>(runnerConfigPath);
 
   ui().logger.log(`ESLint plugin executing ${targets.length} lint targets`);
 
-  const linterOutputs = await asyncSequential(targets, lint);
+  const linterOutputs = await asyncSequential(
+    targets.map(target => ({
+      ...target,
+      outputDir: persistOutputDir,
+    })),
+    lint,
+  );
   const lintResults = mergeLinterOutputs(linterOutputs);
   const failedAudits = lintResultsToAudits(lintResults);
 
