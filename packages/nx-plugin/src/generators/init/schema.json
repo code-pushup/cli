@@ -1,0 +1,23 @@
+{
+  "cli": "nx",
+  "title": "Initialize Code Pushup in the workspace.",
+  "description": "Initialize Code Pushup in the workspace.",
+  "$id": "init-code-pushup-plugin",
+  "type": "object",
+  "properties": {
+    "skipPackageJson": {
+      "type": "boolean",
+      "description": "Skip adding package.json dependencies",
+      "x-priority": "internal"
+    },
+    "skipInstall": {
+      "type": "boolean",
+      "description": "Skip package installation",
+      "x-priority": "internal"
+    },
+    "skipNxJson": {
+      "type": "boolean",
+      "description": "Skip updating nx.json with configuration"
+    }
+  }
+}

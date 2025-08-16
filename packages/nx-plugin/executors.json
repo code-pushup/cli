@@ -1,0 +1,9 @@
+{
+  "executors": {
+    "cli": {
+      "implementation": "./src/executors/cli/executor",
+      "schema": "./src/executors/cli/schema.json",
+      "description": "CodePushup CLI executor. Executes the @code-pushup/cli command's See: https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#commands"
+    }
+  }
+}

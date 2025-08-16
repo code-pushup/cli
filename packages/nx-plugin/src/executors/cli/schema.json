@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "AutorunExecutorOptions",
+  "title": "CodePushup CLI autorun executor",
+  "description": "Executes the @code-pushup/cli autorun command See: https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#autorun-command",
+  "type": "object",
+  "properties": {
+    "command": {
+      "type": "string",
+      "description": "The command to run.",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    },
+    "dryRun": {
+      "type": "boolean",
+      "description": "Print the commands that would be run, but don't actually run them"
+    },
+    "bin": {
+      "type": "string",
+      "description": "Path to Code PushUp CLI"
+    },
+    "verbose": {
+      "type": "boolean",
+      "description": "Print additional logs"
+    },
+    "progress": {
+      "type": "boolean",
+      "description": "Print additional logs"
+    },
+    "onlyPlugins": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Only run the specified plugins"
+    },
+    "config": {
+      "type": "string",
+      "description": "Path to the configuration file"
+    },
+    "projectPrefix": {
+      "type": "string",
+      "description": "Prefix for project name"
+    },
+    "persist": {
+      "type": "object",
+      "properties": {
+        "filename": {
+          "type": "string",
+          "description": "Filename to save the configuration"
+        },
+        "outputDir": {
+          "type": "string",
+          "description": "Directory to save the configuration"
+        },
+        "format": {
+          "type": "array",
+          "enum": ["json", "md"],
+          "description": "Format to save the report in"
+        }
+      }
+    },
+    "upload": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of deployed portal API"
+        },
+        "apiKey": {
+          "type": "string",
+          "description": "API key with write access to portal (use `process.env` for security)"
+        },
+        "organization": {
+          "type": "string",
+          "pattern": "^[a-z\\d]+(?:-[a-z\\d]+)*$",
+          "maxLength": 128,
+          "description": "Organization slug from Code PushUp portal"
+        },
+        "project": {
+          "type": "string",
+          "pattern": "^[a-z\\d]+(?:-[a-z\\d]+)*$",
+          "maxLength": 128,
+          "description": "Project slug from Code PushUp portal"
+        },
+        "timeout": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "description": "Request timeout in minutes"
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

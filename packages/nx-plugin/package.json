@@ -1,0 +1,48 @@
+{
+  "name": "@code-pushup/nx-plugin",
+  "version": "0.74.0",
+  "license": "MIT",
+  "description": "Nx plugin to integrate the Code PushUp CLI into your workspace 🛠️",
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://code-pushup.dev",
+  "bugs": {
+    "url": "https://github.com/code-pushup/cli/issues?q=is%3Aissue%20state%3Aopen%20type%3ABug%20label%3A\"🧩%20nx-plugin\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code-pushup/cli.git",
+    "directory": "packages/nx-plugin"
+  },
+  "keywords": [
+    "CLI",
+    "Code PushUp",
+    "Nx",
+    "plugin",
+    "automation",
+    "developer tools",
+    "code quality",
+    "conformance",
+    "build tools"
+  ],
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts",
+  "generators": "./generators.json",
+  "executors": "./executors.json",
+  "dependencies": {
+    "@code-pushup/models": "0.74.0",
+    "@code-pushup/utils": "0.74.0",
+    "@nx/devkit": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "ansis": "^3.3.0",
+    "nx": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "zod": "^4.0.5"
+  },
+  "files": [
+    "src",
+    "./generators.json",
+    "./executors.json",
+    "!**/*.tsbuildinfo"
+  ]
+}
