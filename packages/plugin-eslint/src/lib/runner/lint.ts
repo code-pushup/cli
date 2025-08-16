@@ -13,7 +13,7 @@ import type { ESLintTarget } from '../config.js';
 import { setupESLint } from '../setup.js';
 import type { LinterOutput, RuleOptionsPerFile } from './types.js';
 
-import LintResult = ESLint.LintResult;
+type LintResult = ESLint.LintResult;
 
 export async function lint({
   eslintrc,
