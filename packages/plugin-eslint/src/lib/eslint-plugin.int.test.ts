@@ -3,8 +3,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
-import type { Audit, PluginConfig, RunnerConfig } from '@code-pushup/models';
-import { toUnixPath } from '@code-pushup/utils';
+import type { Audit, PluginConfig } from '@code-pushup/models';
 import { eslintPlugin } from './eslint-plugin.js';
 
 describe('eslintPlugin', () => {
@@ -15,26 +14,7 @@ describe('eslintPlugin', () => {
   let cwdSpy: MockInstance<[], string>;
   let platformSpy: MockInstance<[], NodeJS.Platform>;
 
-  const replaceAbsolutePath = (plugin: PluginConfig): PluginConfig => ({
-    ...plugin,
-    runner: {
-      ...(plugin.runner as RunnerConfig),
-      args: (plugin.runner as RunnerConfig).args?.map(arg =>
-        toUnixPath(arg.replace(path.dirname(thisDir), '<dirname>')).replace(
-          /\/eslint\/\d+\//,
-          '/eslint/<timestamp>/',
-        ),
-      ),
-      ...((plugin.runner as RunnerConfig).configFile && {
-        configFile: toUnixPath(
-          (plugin.runner as RunnerConfig).configFile!,
-        ).replace(/\/eslint\/\d+\//, '/eslint/<timestamp>/'),
-      }),
-      outputFile: toUnixPath(
-        (plugin.runner as RunnerConfig).outputFile,
-      ).replace(/\/eslint\/\d+\//, '/eslint/<timestamp>/'),
-    },
-  });
+  const replaceAbsolutePath = (plugin: PluginConfig): PluginConfig => plugin;
 
   beforeAll(() => {
     cwdSpy = vi.spyOn(process, 'cwd');
