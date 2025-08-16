@@ -232,14 +232,7 @@
     }
   },
   "namedInputs": {
-    "default": [
-      "{projectRoot}/**/*",
-      "sharedGlobals",
-      "!{projectRoot}/dist/**/*",
-      "!{projectRoot}/coverage/**/*",
-      "!{projectRoot}/.coverage/**/*",
-      "!{projectRoot}/.code-pushup/**/*"
-    ],
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
       "default",
       "!{projectRoot}/eslint.config.?(c)js",
@@ -261,7 +254,12 @@
     "code-pushup-jsdocs-inputs": ["default", "code-pushup-inputs"],
     "code-pushup-typescript-inputs": ["default", "code-pushup-inputs"],
     "code-pushup-lighthouse-inputs": ["default", "code-pushup-inputs"],
-    "sharedGlobals": []
+    "sharedGlobals": [
+      "!{workspaceRoot}/**/dist/**/*",
+      "!{workspaceRoot}/**/coverage/**/*",
+      "!{workspaceRoot}/**/.coverage/**/*",
+      "!{workspaceRoot}/**/.code-pushup/**/*"
+    ]
   },
   "workspaceLayout": {
     "appsDir": "examples",
