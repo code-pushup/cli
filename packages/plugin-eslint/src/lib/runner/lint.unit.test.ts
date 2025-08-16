@@ -135,7 +135,7 @@ describe('lint', () => {
         '--no-error-on-unmatched-pattern',
         '--format=json',
         expect.stringMatching(/--output-file=.*eslint-report\.\d+\.json/),
-        "'**/*.js'", // wraps in quotes on Unix
+        expect.stringMatching(/^'?\*\*\/\*\.js'?$/),
       ],
       ignoreExitCode: true,
       cwd: '/test',
