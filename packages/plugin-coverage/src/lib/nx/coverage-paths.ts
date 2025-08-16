@@ -8,7 +8,7 @@ import type { JestExecutorOptions } from '@nx/jest/src/executors/jest/schema';
 import type { VitestExecutorOptions } from '@nx/vite/executors';
 import { bold } from 'ansis';
 import path from 'node:path';
-import { importModule, ui } from '@code-pushup/utils';
+import { importModule, stringifyError, ui } from '@code-pushup/utils';
 import type { CoverageResult } from '../config.js';
 
 /**
@@ -21,9 +21,10 @@ async function resolveCachedProjectGraph() {
   );
   try {
     return readCachedProjectGraph();
-  } catch (e) {
+  } catch (error) {
     ui().logger.info(
-      'Could not read cached project graph, falling back to async creation.',
+      `Could not read cached project graph, falling back to async creation.
+      ${stringifyError(error)}`,
     );
     return await createProjectGraphAsync({ exitOnError: false });
   }
