@@ -129,6 +129,38 @@ export default {
 };
 ```
 
+### Using artifacts for better performance
+
+For better performance in CI environments or when dealing with large codebases, you can use pre-generated ESLint report files instead of running ESLint during Code PushUp execution. This is especially useful for separating linting from analysis, caching results, or integrating with existing CI pipelines. Use the `artifacts` option to specify paths to ESLint JSON report files:
+
+```js
+// with artifacts
+await eslintPlugin(
+  { eslintrc: '.eslintrc.js', patterns: ['src/**/*.js'] },
+  {
+    artifacts: {
+      artifactsPaths: ['reports/eslint.json'],
+    },
+  },
+);
+
+// with artifact generation
+await eslintPlugin(
+  { eslintrc: '.eslintrc.js', patterns: ['src/**/*.js'] },
+  {
+    artifacts: {
+      // Optional: generate reports first
+      generateArtifactsCommand: 'npm run lint:json',
+      // Single file or array of files
+      artifactsPaths: ['reports/eslint.json'],
+    },
+  },
+);
+```
+
+If no artifacts are provided, the plugin will run ESLint during Code PushUp analysis.
+It generates the required JSON reports, use ESLint's `--format=json --output-file=report.json` options. When using artifacts, the `eslintrc` (not `patterns`) configuration is still required for audit metadata, but ESLint won't be executed during Code PushUp analysis.
+
 ### Optionally set up categories
 
 1. Reference audits (or groups) which you wish to include in custom categories (use `npx code-pushup print-config` to list audits and groups).
