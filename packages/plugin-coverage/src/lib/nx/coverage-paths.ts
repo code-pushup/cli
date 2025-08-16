@@ -12,6 +12,24 @@ import { importModule, ui } from '@code-pushup/utils';
 import type { CoverageResult } from '../config.js';
 
 /**
+ * Resolves the cached project graph for the current Nx workspace.
+ * First tries to read cache and if not possible, go for the async creation.
+ */
+export async function resolveCachedProjectGraph() {
+  const { readCachedProjectGraph, createProjectGraphAsync } = await import(
+    '@nx/devkit'
+  );
+  try {
+    return readCachedProjectGraph();
+  } catch (e) {
+    ui().logger.warn(
+      'Could not read cached project graph, falling back to async creation.',
+    );
+    return await createProjectGraphAsync({ exitOnError: false });
+  }
+}
+
+/**
  * @param targets nx targets to be used for measuring coverage, test by default
  * @returns An array of coverage result information for the coverage plugin.
  */
@@ -25,8 +43,7 @@ export async function getNxCoveragePaths(
     );
   }
 
-  const { readCachedProjectGraph } = await import('@nx/devkit');
-  const { nodes } = readCachedProjectGraph();
+  const { nodes } = await resolveCachedProjectGraph();
 
   const coverageResults = await Promise.all(
     targets.map(async target => {
