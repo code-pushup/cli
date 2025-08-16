@@ -47,7 +47,7 @@ async function resolveCachedProjectGraph() {
  * @param options.exclude - Array of project names to exclude from the ESLint configuration
  * @returns ESLint config and patterns, intended to be passed to {@link eslintPlugin}
  */
-async function eslintConfigFromAllNxProjects(
+export async function eslintConfigFromAllNxProjects(
   options: { exclude?: string[] } = {},
 ): Promise<ESLintTarget[]> {
   const projectGraph = await resolveCachedProjectGraph();
