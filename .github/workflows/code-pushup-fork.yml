@@ -30,9 +30,11 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      - name: Set base and head for Nx affected commands
+        uses: nrwl/nx-set-shas@v4
       - name: Install dependencies
         run: npm ci
       - name: Run Code PushUp action
         uses: code-pushup/github-action@v0
         with:
-          bin: npx nx code-pushup --
+          bin: npx nx affected -t code-pushup --parallel=3  --

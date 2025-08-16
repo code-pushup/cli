@@ -44,7 +44,7 @@
       "dependsOn": ["^build"]
     },
     "lint": {
-      "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
+      "inputs": ["eslint-inputs"],
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "cache": true,
@@ -67,6 +67,161 @@
         "watch": false
       }
     },
+    "code-pushup": {
+      "cache": false,
+      "outputs": [
+        "{projectRoot}/.code-pushup/report.md",
+        "{projectRoot}/.code-pushup/report.json"
+      ],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts",
+        "args": [
+          "--no-progress",
+          "--verbose",
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--cache.read",
+          "--persist.outputDir={projectRoot}/.code-pushup",
+          "--upload.project=cli-{projectName}"
+        ],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-coverage": {
+      "cache": true,
+      "outputs": ["{projectRoot}/.code-pushup/coverage/runner-output.json"],
+      "executor": "nx:run-commands",
+      "dependsOn": ["unit-test", "int-test"],
+      "options": {
+        "command": "node packages/cli/src/index.ts collect",
+        "args": [
+          "--no-progress",
+          "--verbose",
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--cache.write",
+          "--onlyPlugins=coverage",
+          "--persist.skipReports=true",
+          "--persist.outputDir={projectRoot}/.code-pushup"
+        ],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-eslint": {
+      "cache": true,
+      "inputs": ["code-pushup-eslint-inputs"],
+      "outputs": ["{projectRoot}/.code-pushup/eslint/runner-output.json"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts collect",
+        "args": [
+          "--no-progress",
+          "--verbose",
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--cache.write",
+          "--onlyPlugins=eslint",
+          "--persist.skipReports",
+          "--persist.outputDir={projectRoot}/.code-pushup"
+        ],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-js-packages": {
+      "cache": false,
+      "inputs": [],
+      "outputs": ["{projectRoot}/.code-pushup/js-packages/runner-output.json"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts collect",
+        "args": [
+          "--no-progress",
+          "--verbose",
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--cache.write",
+          "--onlyPlugins=js-packages",
+          "--persist.skipReports",
+          "--persist.outputDir={projectRoot}/.code-pushup"
+        ],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-lighthouse": {
+      "cache": true,
+      "inputs": ["code-pushup-lighthouse-inputs"],
+      "outputs": ["{projectRoot}/.code-pushup/lighthouse/runner-output.json"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts collect",
+        "args": [
+          "--no-progress",
+          "--verbose",
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--cache.write",
+          "--onlyPlugins=lighthouse",
+          "--persist.skipReports",
+          "--persist.outputDir={projectRoot}/.code-pushup"
+        ],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-jsdocs": {
+      "cache": true,
+      "inputs": ["code-pushup-jsdocs-inputs"],
+      "outputs": ["{projectRoot}/.code-pushup/jsdocs/runner-output.json"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts collect",
+        "args": [
+          "--no-progress",
+          "--verbose",
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--cache.write",
+          "--onlyPlugins=jsdocs",
+          "--persist.skipReports",
+          "--persist.outputDir={projectRoot}/.code-pushup"
+        ],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-typescript": {
+      "cache": true,
+      "inputs": ["code-pushup-typescript-inputs"],
+      "outputs": ["{projectRoot}/.code-pushup/typescript/runner-output.json"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts collect",
+        "args": [
+          "--no-progress",
+          "--verbose",
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--cache.write",
+          "--onlyPlugins=typescript",
+          "--persist.skipReports",
+          "--persist.outputDir={projectRoot}/.code-pushup"
+        ],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
     "nx-release-publish": {
       "dependsOn": ["build"],
       "executor": "@nx/js:release-publish",
@@ -77,11 +232,7 @@
     }
   },
   "namedInputs": {
-    "default": [
-      "{projectRoot}/**/*",
-      "sharedGlobals",
-      "!{projectRoot}/dist/**/*"
-    ],
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
       "default",
       "!{projectRoot}/eslint.config.?(c)js",
@@ -97,7 +248,18 @@
       "!{projectRoot}/code-pushup.config.?(m)[jt]s",
       "!{projectRoot}/zod2md.config.ts"
     ],
-    "sharedGlobals": []
+    "eslint-inputs": ["default", "{projectRoot}/eslint.config.?(c)js"],
+    "code-pushup-inputs": ["{projectRoot}/code-pushup.config.?ts"],
+    "code-pushup-eslint-inputs": ["eslint-inputs", "code-pushup-inputs"],
+    "code-pushup-jsdocs-inputs": ["default", "code-pushup-inputs"],
+    "code-pushup-typescript-inputs": ["default", "code-pushup-inputs"],
+    "code-pushup-lighthouse-inputs": ["default", "code-pushup-inputs"],
+    "sharedGlobals": [
+      "!{workspaceRoot}/**/dist/**/*",
+      "!{workspaceRoot}/**/coverage/**/*",
+      "!{workspaceRoot}/**/.coverage/**/*",
+      "!{workspaceRoot}/**/.code-pushup/**/*"
+    ]
   },
   "workspaceLayout": {
     "appsDir": "examples",

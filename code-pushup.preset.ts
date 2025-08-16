@@ -1,4 +1,6 @@
 /* eslint-disable @nx/enforce-module-boundaries */
+import 'dotenv/config';
+import { z } from 'zod';
 import type {
   CategoryConfig,
   CoreConfig,
@@ -8,7 +10,6 @@ import coveragePlugin, {
 } from './packages/plugin-coverage/src/index.js';
 import eslintPlugin, {
   eslintConfigFromAllNxProjects,
-  eslintConfigFromNxProject,
 } from './packages/plugin-eslint/src/index.js';
 import jsPackagesPlugin from './packages/plugin-js-packages/src/index.js';
 import jsDocsPlugin from './packages/plugin-jsdocs/src/index.js';
@@ -27,6 +28,44 @@ import typescriptPlugin, {
   type TypescriptPluginOptions,
   getCategories,
 } from './packages/plugin-typescript/src/index.js';
+
+/**
+ * Helper function to load and validate Code PushUp environment variables for upload configuration
+ */
+export async function loadEnv(
+  projectName: string | undefined = process.env.NX_TASK_TARGET_PROJECT,
+): Promise<Partial<CoreConfig>> {
+  if (projectName == null || projectName === '') {
+    throw new Error(
+      'loadEnv failed! Project name is not defined. Please run code pushup fit Nx or provide a projectName.',
+    );
+  }
+  const envSchema = z.object({
+    CP_SERVER: z.string().url(),
+    CP_API_KEY: z.string().min(1),
+    CP_ORGANIZATION: z.string().min(1),
+    CP_PROJECT: z.string().optional(),
+  });
+
+  const { data: env, success } = await envSchema.safeParseAsync(process.env);
+
+  if (!success || !env) {
+    return {};
+  }
+  const uploadConfig = {
+    apiKey: env.CP_API_KEY,
+    server: env.CP_SERVER,
+    organization: env.CP_ORGANIZATION,
+    ...(env.CP_PROJECT
+      ? { project: env.CP_PROJECT }
+      : { project: projectName }),
+  };
+  return (
+    uploadConfig.apiKey && {
+      upload: uploadConfig,
+    }
+  );
+}
 
 export const jsPackagesCategories: CategoryConfig[] = [
   {
@@ -160,11 +199,12 @@ export const eslintCoreConfigNx = async (
   projectName?: string,
 ): Promise<CoreConfig> => ({
   plugins: [
-    await eslintPlugin(
-      await (projectName
-        ? eslintConfigFromNxProject(projectName)
-        : eslintConfigFromAllNxProjects()),
-    ),
+    projectName
+      ? await eslintPlugin({
+          eslintrc: `packages/${projectName}/eslint.config.js`,
+          patterns: ['.'],
+        })
+      : await eslintPlugin(await eslintConfigFromAllNxProjects()),
   ],
   categories: eslintCategories,
 });
