@@ -134,11 +134,11 @@ describe('lint', () => {
         '--config=".eslintrc.js"',
         '--no-error-on-unmatched-pattern',
         '--format=json',
-        expect.stringMatching(/--output-file=\/test\/eslint-report\.\d+\.json/),
-        expect.stringContaining('**/*.js'), // wraps in quotes on Unix
+        expect.stringMatching(/--output-file=.*eslint-report\.\d+\.json/),
+        "'**/*.js'", // wraps in quotes on Unix
       ],
       ignoreExitCode: true,
-      cwd: MEMFS_VOLUME,
+      cwd: '/test',
     });
 
     expect(eslint.calculateConfigForFile).toHaveBeenCalledTimes(3);
