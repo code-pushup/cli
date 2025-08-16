@@ -22,7 +22,7 @@ async function resolveCachedProjectGraph() {
   try {
     return readCachedProjectGraph();
   } catch (e) {
-    ui().logger.warn(
+    ui().logger.info(
       'Could not read cached project graph, falling back to async creation.',
     );
     return await createProjectGraphAsync({ exitOnError: false });
