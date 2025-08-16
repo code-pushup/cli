@@ -49,6 +49,9 @@
       "outputs": ["{options.outputFile}"],
       "cache": true,
       "options": {
+        "errorOnUnmatchedPattern": false,
+        "format": "json",
+        "outputFile": "{projectRoot}/.code-pushup/eslint/eslint-report.json",
         "maxWarnings": 0,
         "lintFilePatterns": [
           "{projectRoot}/**/*.ts",
