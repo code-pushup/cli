@@ -1,8 +1,8 @@
 /// <reference types="vitest" />
-import {
-  type ProjectConfiguration,
-  type ProjectGraphProjectNode,
-  type Tree,
+import type {
+  ProjectConfiguration,
+  ProjectGraphProjectNode,
+  Tree,
 } from '@nx/devkit';
 import type { JestExecutorOptions } from '@nx/jest/src/executors/jest/schema';
 import type { VitestExecutorOptions } from '@nx/vite/executors';

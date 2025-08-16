@@ -1,5 +1,4 @@
-import { ui } from '@code-pushup/utils';
-import { stringifyError } from '@code-pushup/utils';
+import { stringifyError, ui } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
 import { filterProjectGraph } from './filter-project-graph.js';
 import { nxProjectsToConfig } from './projects-to-config.js';
