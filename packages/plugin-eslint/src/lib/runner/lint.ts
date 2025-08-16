@@ -1,31 +1,45 @@
 import type { ESLint, Linter } from 'eslint';
 import { platform } from 'node:os';
+import path from 'node:path';
+import { DEFAULT_PERSIST_OUTPUT_DIR } from '@code-pushup/models';
 import {
   distinct,
   executeProcess,
   filePathToCliArg,
+  readJsonFile,
   toArray,
 } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
 import { setupESLint } from '../setup.js';
 import type { LinterOutput, RuleOptionsPerFile } from './types.js';
 
+import LintResult = ESLint.LintResult;
+
 export async function lint({
   eslintrc,
   patterns,
-}: ESLintTarget): Promise<LinterOutput> {
-  const results = await executeLint({ eslintrc, patterns });
+  outputDir,
+}: ESLintTarget & { outputDir?: string }): Promise<LinterOutput> {
+  const results = await executeLint({ eslintrc, patterns, outputDir });
   const eslint = await setupESLint(eslintrc);
   const ruleOptionsPerFile = await loadRuleOptionsPerFile(eslint, results);
   return { results, ruleOptionsPerFile };
 }
 
+// eslint-disable-next-line functional/no-let
+let lintFilesRotation = 0;
+
 async function executeLint({
   eslintrc,
   patterns,
-}: ESLintTarget): Promise<ESLint.LintResult[]> {
+  outputDir,
+}: ESLintTarget & { outputDir?: string }): Promise<ESLint.LintResult[]> {
+  const reportOutputPath = path.join(
+    outputDir ?? DEFAULT_PERSIST_OUTPUT_DIR,
+    `eslint-report.${++lintFilesRotation}.json`,
+  );
   // running as CLI because ESLint#lintFiles() runs out of memory
-  const { stdout } = await executeProcess({
+  await executeProcess({
     command: 'npx',
     args: [
       'eslint',
@@ -33,6 +47,7 @@ async function executeLint({
       ...(typeof eslintrc === 'object' ? ['--no-eslintrc'] : []),
       '--no-error-on-unmatched-pattern',
       '--format=json',
+      `--output-file=${reportOutputPath}`,
       ...toArray(patterns).map(pattern =>
         // globs need to be escaped on Unix
         platform() === 'win32' ? pattern : `'${pattern}'`,
@@ -42,7 +57,7 @@ async function executeLint({
     cwd: process.cwd(),
   });
 
-  return JSON.parse(stdout) as ESLint.LintResult[];
+  return readJsonFile<LintResult[]>(reportOutputPath);
 }
 
 function loadRuleOptionsPerFile(
