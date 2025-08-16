@@ -7,7 +7,7 @@ import { nxProjectsToConfig } from './projects-to-config.js';
  * Resolves the cached project graph for the current Nx workspace.
  * First tries to read cache and if not possible, go for the async creation.
  */
-export async function resolveCachedProjectGraph() {
+async function resolveCachedProjectGraph() {
   const { readCachedProjectGraph, createProjectGraphAsync } = await import(
     '@nx/devkit'
   );
@@ -47,7 +47,7 @@ export async function resolveCachedProjectGraph() {
  * @param options.exclude - Array of project names to exclude from the ESLint configuration
  * @returns ESLint config and patterns, intended to be passed to {@link eslintPlugin}
  */
-export async function eslintConfigFromAllNxProjects(
+async function eslintConfigFromAllNxProjects(
   options: { exclude?: string[] } = {},
 ): Promise<ESLintTarget[]> {
   const projectGraph = await resolveCachedProjectGraph();

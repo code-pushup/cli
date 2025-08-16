@@ -15,7 +15,7 @@ import type { CoverageResult } from '../config.js';
  * Resolves the cached project graph for the current Nx workspace.
  * First tries to read cache and if not possible, go for the async creation.
  */
-export async function resolveCachedProjectGraph() {
+async function resolveCachedProjectGraph() {
   const { readCachedProjectGraph, createProjectGraphAsync } = await import(
     '@nx/devkit'
   );
