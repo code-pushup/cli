@@ -68,7 +68,7 @@
       }
     },
     "code-pushup": {
-      "cache": true,
+      "cache": false,
       "outputs": [
         "{projectRoot}/.code-pushup/report.md",
         "{projectRoot}/.code-pushup/report.json"
