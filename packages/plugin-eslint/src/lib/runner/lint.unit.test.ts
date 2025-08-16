@@ -1,6 +1,5 @@
 import { ESLint, type Linter } from 'eslint';
 import { expect } from 'vitest';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 import type { ESLintPluginConfig } from '../config.js';
 import { lint } from './lint.js';
