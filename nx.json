@@ -235,7 +235,10 @@
     "default": [
       "{projectRoot}/**/*",
       "sharedGlobals",
-      "!{projectRoot}/dist/**/*"
+      "!{projectRoot}/dist/**/*",
+      "!{projectRoot}/coverage/**/*",
+      "!{projectRoot}/.coverage/**/*",
+      "!{projectRoot}/.code-pushup/**/*"
     ],
     "production": [
       "default",
