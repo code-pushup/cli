@@ -1,8 +1,8 @@
 /// <reference types="vitest" />
-import type {
-  ProjectConfiguration,
-  ProjectGraphProjectNode,
-  Tree,
+import {
+  type ProjectConfiguration,
+  type ProjectGraphProjectNode,
+  type Tree,
 } from '@nx/devkit';
 import type { JestExecutorOptions } from '@nx/jest/src/executors/jest/schema';
 import type { VitestExecutorOptions } from '@nx/vite/executors';
@@ -25,8 +25,8 @@ export async function getNxCoveragePaths(
     );
   }
 
-  const { createProjectGraphAsync } = await import('@nx/devkit');
-  const { nodes } = await createProjectGraphAsync({ exitOnError: false });
+  const { readCachedProjectGraph } = await import('@nx/devkit');
+  const { nodes } = readCachedProjectGraph();
 
   const coverageResults = await Promise.all(
     targets.map(async target => {

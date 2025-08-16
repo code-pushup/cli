@@ -31,8 +31,8 @@ import { nxProjectsToConfig } from './projects-to-config.js';
 export async function eslintConfigFromAllNxProjects(
   options: { exclude?: string[] } = {},
 ): Promise<ESLintTarget[]> {
-  const { createProjectGraphAsync } = await import('@nx/devkit');
-  const projectGraph = await createProjectGraphAsync({ exitOnError: false });
+  const { readCachedProjectGraph } = await import('@nx/devkit');
+  const projectGraph = readCachedProjectGraph();
   const filteredProjectGraph = filterProjectGraph(
     projectGraph,
     options.exclude,
