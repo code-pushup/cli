@@ -1,11 +1,12 @@
 import { readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { CODE_PUSHUP_UNICODE_LOGO } from '@code-pushup/utils';
 import {
   NX_JSON_CONTENT,
   NX_JSON_FILENAME,
   PROJECT_JSON_CONTENT,
   PROJECT_JSON_FILENAME,
   PROJECT_NAME,
-} from './constants';
+} from './constants.js';
 
 export type SetupResult = {
   filename: string;
@@ -27,14 +28,17 @@ export async function setupFile(
       await writeFile(filename, content);
     }
   } catch (error) {
-    if ((error as Error).message.includes('no such file or directory')) {
+    if (
+      error instanceof Error &&
+      error.message.includes('no such file or directory')
+    ) {
       await writeFile(filename, content);
       return {
         ...setupResult,
         teardown: true,
       };
     } else {
-      console.error((error as Error).toString());
+      console.error(error);
     }
   }
 
@@ -42,7 +46,7 @@ export async function setupFile(
 }
 
 export function parseNxProcessOutput(output: string) {
-  return output.trim().replace('NX', '<↗>');
+  return output.trim().replace('NX', CODE_PUSHUP_UNICODE_LOGO);
 }
 
 export async function setupNxContext(): Promise<{
@@ -59,9 +63,7 @@ export async function setupNxContext(): Promise<{
     PROJECT_JSON_CONTENT,
   );
 
-  const projectJsonContent = (
-    await readFile(PROJECT_JSON_FILENAME, 'utf8')
-  ).toString();
+  const projectJsonContent = await readFile(PROJECT_JSON_FILENAME, 'utf8');
   const { name = PROJECT_NAME } = JSON.parse(projectJsonContent) as {
     name: string;
   };
@@ -80,14 +82,9 @@ export async function teardownNxContext({
   nxJsonTeardown: boolean;
   projectJsonTeardown: boolean;
 }) {
-  const toDelete: Promise<unknown>[] = [];
-  if (nxJsonTeardown) {
-    // eslint-disable-next-line functional/immutable-data
-    toDelete.push(rm(NX_JSON_FILENAME));
-  }
-  if (projectJsonTeardown) {
-    // eslint-disable-next-line functional/immutable-data
-    toDelete.push(rm(PROJECT_JSON_FILENAME));
-  }
-  await Promise.all(toDelete);
+  const filesToDelete = [
+    ...(nxJsonTeardown ? [NX_JSON_FILENAME] : []),
+    ...(projectJsonTeardown ? [PROJECT_JSON_FILENAME] : []),
+  ];
+  await Promise.all(filesToDelete.map(file => rm(file)));
 }

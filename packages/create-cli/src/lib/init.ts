@@ -1,16 +1,15 @@
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import {
-  ProcessConfig,
+  type ProcessConfig,
   executeProcess,
   objectToCliArgs,
-} from '@code-pushup/nx-plugin';
+} from '@code-pushup/utils';
 import {
   parseNxProcessOutput,
   setupNxContext,
   teardownNxContext,
-} from './utils';
+} from './utils.js';
 
-function nxPluginGenerator(
+export function nxPluginGenerator(
   generator: 'init' | 'configuration',
   opt: Record<string, unknown> = {},
 ): ProcessConfig {
@@ -26,13 +25,19 @@ function nxPluginGenerator(
 export async function initCodePushup() {
   const setupResult = await setupNxContext();
 
-  const { stdout: initStdout, stderr: initStderr } = await executeProcess(
-    nxPluginGenerator('init', {
+  await executeProcess({
+    ...nxPluginGenerator('init', {
       skipNxJson: true,
     }),
-  );
-  console.info(parseNxProcessOutput(initStdout));
-  console.warn(parseNxProcessOutput(initStderr));
+    observer: {
+      onStdout: data => {
+        console.info(parseNxProcessOutput(data.toString()));
+      },
+      onError: error => {
+        console.error(parseNxProcessOutput(error.message.toString()));
+      },
+    },
+  });
 
   const { stdout: configStdout, stderr: configStderr } = await executeProcess(
     nxPluginGenerator('configuration', {

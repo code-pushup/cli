@@ -1,4 +1,0 @@
-node_modules
-**/*.mock.*
-**/code-pushup.config.ts
-**/mocks/fixtures/**

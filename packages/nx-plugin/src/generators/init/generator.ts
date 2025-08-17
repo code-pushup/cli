@@ -1,25 +1,25 @@
 /* eslint-disable functional/immutable-data */
 import {
-  NxJsonConfiguration,
-  Tree,
+  type NxJsonConfiguration,
+  type Tree,
   addDependenciesToPackageJson,
   convertNxGenerator,
+  logger,
   readJson,
   readNxJson,
   runTasksInSerial,
   updateJson,
   updateNxJson,
 } from '@nx/devkit';
-import { PackageJson } from 'nx/src/utils/package-json';
+import type { PackageJson } from 'nx/src/utils/package-json';
+import { PACKAGE_NAME } from '../../internal/constants.js';
 import {
   cpCliVersion,
   cpModelVersion,
   cpNxPluginVersion,
   cpUtilsVersion,
-} from '../../internal/versions';
-import { InitGeneratorSchema } from './schema';
-
-const nxPluginPackageName = '@code-pushup/nx-plugin';
+} from '../../internal/versions.js';
+import type { InitGeneratorSchema } from './schema.js';
 
 function checkDependenciesInstalled(host: Tree) {
   const packageJson = readJson<PackageJson>(host, 'package.json');
@@ -29,7 +29,7 @@ function checkDependenciesInstalled(host: Tree) {
   packageJson.devDependencies = packageJson.devDependencies ?? {};
 
   // base deps
-  devDependencies[nxPluginPackageName] = cpNxPluginVersion;
+  devDependencies[PACKAGE_NAME] = cpNxPluginVersion;
   devDependencies['@code-pushup/models'] = cpModelVersion;
   devDependencies['@code-pushup/utils'] = cpUtilsVersion;
   devDependencies['@code-pushup/cli'] = cpCliVersion;
@@ -45,15 +45,15 @@ function moveToDevDependencies(tree: Tree) {
       ...packageJson,
     };
 
-    if (newPackageJson.dependencies?.[nxPluginPackageName] !== undefined) {
-      const { [nxPluginPackageName]: version, ...dependencies } =
+    if (newPackageJson.dependencies?.[PACKAGE_NAME] !== undefined) {
+      const { [PACKAGE_NAME]: version, ...dependencies } =
         newPackageJson.dependencies;
       return {
         ...newPackageJson,
         dependencies,
         devDependencies: {
           ...newPackageJson.devDependencies,
-          [nxPluginPackageName]: version,
+          [PACKAGE_NAME]: version,
         },
       };
     }
@@ -76,17 +76,23 @@ function updateNxJsonConfig(tree: Tree) {
 }
 
 export function initGenerator(tree: Tree, schema: InitGeneratorSchema) {
-  if (!schema.skipPackageJson) {
-    moveToDevDependencies(tree);
-  }
-
-  if (!schema.skipNxJson) {
+  if (schema.skipNxJson) {
+    logger.info(`Skip updating nx.json`);
+  } else {
     updateNxJsonConfig(tree);
   }
 
   const tasks = [];
-  if (!schema.skipPackageJson) {
-    tasks.push(checkDependenciesInstalled(tree));
+  if (schema.skipPackageJson) {
+    logger.info(`Skip updating package.json`);
+  } else {
+    moveToDevDependencies(tree);
+    const installDependencies = checkDependenciesInstalled(tree);
+    if (schema.skipInstall) {
+      logger.info(`Skip installing packages`);
+    } else {
+      tasks.push(installDependencies);
+    }
   }
   return runTasksInSerial(...tasks);
 }

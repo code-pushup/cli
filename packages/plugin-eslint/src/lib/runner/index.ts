@@ -1,34 +1,34 @@
 import { writeFile } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
-import type { Audit, AuditOutput, RunnerConfig } from '@code-pushup/models';
+import path from 'node:path';
+import type {
+  Audit,
+  AuditOutput,
+  RunnerConfig,
+  RunnerFilesPaths,
+} from '@code-pushup/models';
 import {
+  asyncSequential,
+  createRunnerFiles,
   ensureDirectoryExists,
   filePathToCliArg,
-  pluginWorkDir,
+  objectToCliArgs,
   readJsonFile,
+  ui,
 } from '@code-pushup/utils';
-import { ESLintPluginRunnerConfig, type ESLintTarget } from '../config';
-import { lint } from './lint';
-import { lintResultsToAudits, mergeLinterOutputs } from './transform';
-import type { LinterOutput } from './types';
+import type { ESLintPluginRunnerConfig, ESLintTarget } from '../config.js';
+import { lint } from './lint.js';
+import { lintResultsToAudits, mergeLinterOutputs } from './transform.js';
 
-export const WORKDIR = pluginWorkDir('eslint');
-export const RUNNER_OUTPUT_PATH = join(WORKDIR, 'runner-output.json');
-export const PLUGIN_CONFIG_PATH = join(
-  process.cwd(),
-  WORKDIR,
-  'plugin-config.json',
-);
+export async function executeRunner({
+  runnerConfigPath,
+  runnerOutputPath,
+}: RunnerFilesPaths): Promise<void> {
+  const { slugs, targets } =
+    await readJsonFile<ESLintPluginRunnerConfig>(runnerConfigPath);
 
-export async function executeRunner(): Promise<void> {
-  const { slugs, targets } = await readJsonFile<ESLintPluginRunnerConfig>(
-    PLUGIN_CONFIG_PATH,
-  );
+  ui().logger.log(`ESLint plugin executing ${targets.length} lint targets`);
 
-  const linterOutputs = await targets.reduce(
-    async (acc, target) => [...(await acc), await lint(target)],
-    Promise.resolve<LinterOutput[]>([]),
-  );
+  const linterOutputs = await asyncSequential(targets, lint);
   const lintResults = mergeLinterOutputs(linterOutputs);
   const failedAudits = lintResultsToAudits(lintResults);
 
@@ -43,8 +43,8 @@ export async function executeRunner(): Promise<void> {
       },
   );
 
-  await ensureDirectoryExists(dirname(RUNNER_OUTPUT_PATH));
-  await writeFile(RUNNER_OUTPUT_PATH, JSON.stringify(audits));
+  await ensureDirectoryExists(path.dirname(runnerOutputPath));
+  await writeFile(runnerOutputPath, JSON.stringify(audits));
 }
 
 export async function createRunnerConfig(
@@ -56,12 +56,18 @@ export async function createRunnerConfig(
     targets,
     slugs: audits.map(audit => audit.slug),
   };
-  await ensureDirectoryExists(dirname(PLUGIN_CONFIG_PATH));
-  await writeFile(PLUGIN_CONFIG_PATH, JSON.stringify(config));
+  const { runnerConfigPath, runnerOutputPath } = await createRunnerFiles(
+    'eslint',
+    JSON.stringify(config),
+  );
 
   return {
     command: 'node',
-    args: [filePathToCliArg(scriptPath)],
-    outputFile: RUNNER_OUTPUT_PATH,
+    args: [
+      filePathToCliArg(scriptPath),
+      ...objectToCliArgs({ runnerConfigPath, runnerOutputPath }),
+    ],
+    configFile: runnerConfigPath,
+    outputFile: runnerOutputPath,
   };
 }
