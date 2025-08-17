@@ -1,0 +1,276 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`lcovResultsToAuditOutputs > should correctly convert lcov results to AuditOutputs and prepend project paths 1`] = `
+[
+  {
+    "details": {
+      "trees": [
+        {
+          "root": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [
+                              {
+                                "name": "utils.ts",
+                                "values": {
+                                  "coverage": 0.8,
+                                  "missing": [
+                                    {
+                                      "kind": "branch",
+                                      "name": "0",
+                                      "startLine": 6,
+                                    },
+                                    {
+                                      "kind": "branch",
+                                      "name": "0",
+                                      "startLine": 10,
+                                    },
+                                  ],
+                                },
+                              },
+                            ],
+                            "name": "lib",
+                            "values": {
+                              "coverage": 0.8,
+                            },
+                          },
+                        ],
+                        "name": "src",
+                        "values": {
+                          "coverage": 0.8,
+                        },
+                      },
+                    ],
+                    "name": "cli",
+                    "values": {
+                      "coverage": 0.8,
+                    },
+                  },
+                ],
+                "name": "packages",
+                "values": {
+                  "coverage": 0.8,
+                },
+              },
+            ],
+            "name": ".",
+            "values": {
+              "coverage": 0.8,
+            },
+          },
+          "title": "Branch coverage",
+          "type": "coverage",
+        },
+      ],
+    },
+    "displayValue": "80 %",
+    "score": 0.8,
+    "slug": "branch-coverage",
+    "value": 80,
+  },
+  {
+    "details": {
+      "trees": [
+        {
+          "root": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [
+                              {
+                                "name": "utils.ts",
+                                "values": {
+                                  "coverage": 1,
+                                  "missing": [],
+                                },
+                              },
+                            ],
+                            "name": "lib",
+                            "values": {
+                              "coverage": 1,
+                            },
+                          },
+                        ],
+                        "name": "src",
+                        "values": {
+                          "coverage": 1,
+                        },
+                      },
+                    ],
+                    "name": "cli",
+                    "values": {
+                      "coverage": 1,
+                    },
+                  },
+                ],
+                "name": "packages",
+                "values": {
+                  "coverage": 1,
+                },
+              },
+            ],
+            "name": ".",
+            "values": {
+              "coverage": 1,
+            },
+          },
+          "title": "Function coverage",
+          "type": "coverage",
+        },
+      ],
+    },
+    "displayValue": "100 %",
+    "score": 1,
+    "slug": "function-coverage",
+    "value": 100,
+  },
+  {
+    "details": {
+      "trees": [
+        {
+          "root": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [
+                              {
+                                "name": "utils.ts",
+                                "values": {
+                                  "coverage": 0.7,
+                                  "missing": [
+                                    {
+                                      "endLine": 9,
+                                      "startLine": 7,
+                                    },
+                                  ],
+                                },
+                              },
+                            ],
+                            "name": "lib",
+                            "values": {
+                              "coverage": 0.7,
+                            },
+                          },
+                        ],
+                        "name": "src",
+                        "values": {
+                          "coverage": 0.7,
+                        },
+                      },
+                    ],
+                    "name": "cli",
+                    "values": {
+                      "coverage": 0.7,
+                    },
+                  },
+                ],
+                "name": "packages",
+                "values": {
+                  "coverage": 0.7,
+                },
+              },
+            ],
+            "name": ".",
+            "values": {
+              "coverage": 0.7,
+            },
+          },
+          "title": "Line coverage",
+          "type": "coverage",
+        },
+      ],
+    },
+    "displayValue": "70 %",
+    "score": 0.7,
+    "slug": "line-coverage",
+    "value": 70,
+  },
+]
+`;
+
+exports[`lcovResultsToAuditOutputs > should correctly merge all lines for coverage 1`] = `
+[
+  {
+    "details": {
+      "trees": [
+        {
+          "root": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [
+                              {
+                                "name": "index.ts",
+                                "values": {
+                                  "coverage": 0,
+                                  "missing": [
+                                    {
+                                      "endLine": 30,
+                                      "startLine": 1,
+                                    },
+                                  ],
+                                },
+                              },
+                            ],
+                            "name": "lib",
+                            "values": {
+                              "coverage": 0,
+                            },
+                          },
+                        ],
+                        "name": "src",
+                        "values": {
+                          "coverage": 0,
+                        },
+                      },
+                    ],
+                    "name": "cli",
+                    "values": {
+                      "coverage": 0,
+                    },
+                  },
+                ],
+                "name": "packages",
+                "values": {
+                  "coverage": 0,
+                },
+              },
+            ],
+            "name": ".",
+            "values": {
+              "coverage": 0,
+            },
+          },
+          "title": "Line coverage",
+          "type": "coverage",
+        },
+      ],
+    },
+    "displayValue": "0 %",
+    "score": 0,
+    "slug": "line-coverage",
+    "value": 0,
+  },
+]
+`;

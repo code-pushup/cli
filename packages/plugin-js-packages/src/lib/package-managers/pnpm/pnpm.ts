@@ -1,10 +1,9 @@
 import { objectToKeys } from '@code-pushup/utils';
-import { DependencyGroup } from '../../config';
-import { filterAuditResult } from '../../runner/utils';
-import { COMMON_AUDIT_ARGS, COMMON_OUTDATED_ARGS } from '../constants';
-import { AuditResults, PackageManager } from '../types';
-import { pnpmToAuditResult } from './audit-result';
-import { pnpmToOutdatedResult } from './outdated-result';
+import type { DependencyGroup } from '../../config.js';
+import { filterAuditResult } from '../../runner/utils.js';
+import type { AuditResults, PackageManager } from '../types.js';
+import { pnpmToAuditResult } from './audit-result.js';
+import { pnpmToOutdatedResult } from './outdated-result.js';
 
 const pnpmDependencyOptions: Record<DependencyGroup, string[]> = {
   prod: ['--prod', '--no-optional'],
@@ -24,8 +23,9 @@ export const pnpmPackageManager: PackageManager = {
   },
   audit: {
     getCommandArgs: groupDep => [
-      ...COMMON_AUDIT_ARGS,
+      'audit',
       ...pnpmDependencyOptions[groupDep],
+      '--json',
     ],
     ignoreExitCode: true,
     unifyResult: pnpmToAuditResult,
@@ -49,7 +49,7 @@ export const pnpmPackageManager: PackageManager = {
     },
   },
   outdated: {
-    commandArgs: COMMON_OUTDATED_ARGS,
+    commandArgs: ['outdated', '--json'],
     unifyResult: pnpmToOutdatedResult,
   },
 };

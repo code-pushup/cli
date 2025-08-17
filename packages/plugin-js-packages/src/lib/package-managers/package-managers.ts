@@ -1,13 +1,13 @@
-import { PackageManagerId } from '../config';
-import { npmPackageManager } from './npm/npm';
-import { pnpmPackageManager } from './pnpm/pnpm';
-import { PackageManager } from './types';
-import { yarnv1PackageManager } from './yarn-classic/yarn-classic';
-import { yarnv2PackageManager } from './yarn-modern/yarn-modern';
+import type { PackageManagerId } from '../config.js';
+import { npmPackageManager } from './npm/npm.js';
+import { pnpmPackageManager } from './pnpm/pnpm.js';
+import type { PackageManager } from './types.js';
+import { yarnClassicPackageManager } from './yarn-classic/yarn-classic.js';
+import { yarnModernPackageManager } from './yarn-modern/yarn-modern.js';
 
 export const packageManagers: Record<PackageManagerId, PackageManager> = {
   npm: npmPackageManager,
-  'yarn-classic': yarnv1PackageManager,
-  'yarn-modern': yarnv2PackageManager,
+  'yarn-classic': yarnClassicPackageManager,
+  'yarn-modern': yarnModernPackageManager,
   pnpm: pnpmPackageManager,
 };

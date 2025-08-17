@@ -1,4 +1,4 @@
-import { type ReportsDiff, reportsDiffSchema } from './reports-diff';
+import { type ReportsDiff, reportsDiffSchema } from './reports-diff.js';
 
 describe('reportsDiffSchema', () => {
   it('should parse valid reports diff', () => {
@@ -18,6 +18,9 @@ describe('reportsDiffSchema', () => {
             date: new Date(),
           },
         },
+        portalUrl:
+          'https://code-pushup.example.com/portal/example/website/comparison/abcdef0123456789abcdef0123456789abcdef01/0123456789abcdef0123456789abcdef01234567',
+        label: 'website',
         date: new Date().toISOString(),
         duration: 42,
         packageName: '@code-pushup/core',

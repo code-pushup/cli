@@ -1,0 +1,6 @@
+{
+  "name": "cli",
+  "scripts": {
+    "code-pushup": "code-pushup"
+  }
+}

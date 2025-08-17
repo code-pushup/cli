@@ -1,4 +1,4 @@
-import {
+import type {
   BranchesDetails,
   FunctionsDetails,
   LCOVRecord,
@@ -11,7 +11,7 @@ import {
   mergeLcovFunctionsDetails,
   mergeLcovLineDetails,
   mergeLcovResults,
-} from './merge-lcov';
+} from './merge-lcov.js';
 
 describe('mergeLcovResults', () => {
   it('should merge duplicates and keep unique reports', () => {

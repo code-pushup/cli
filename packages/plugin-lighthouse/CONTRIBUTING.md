@@ -15,7 +15,7 @@ To test lighthouse properly we work with a predefined testing setup.
 
 On some OS there could be a problem finding the path to Chrome.
 
-We try to detect it automatically in the [`chrome-path.setup.ts` script](../../testing/test-setup/src/lib/chrome-path.setup.ts).
+We try to detect it automatically in the [`chrome-path.mock.ts` script](../../testing/test-setup/src/lib/chrome-path.mock.ts).
 There we use `getChromePath` and have `chromium` installed as NPM package, so detecting the path should not cause any problem.
 
 However, if no chrome path is detected automatically the error looks like this:
@@ -46,7 +46,7 @@ In the CI you can set a static path if needed over the env variable like this:
 # ...
 ```
 
-We consider this path in our `beforeAll` hook in a [`chrome-path.setup.ts` script](../../testing/test-setup/src/lib/chrome-path.setup.ts).
+We consider this path in our `beforeAll` hook in a [`chrome-path.mock.ts` script](../../testing/test-setup/src/lib/chrome-path.mock.ts).
 
 ### Testing chrome flags
 
@@ -98,7 +98,7 @@ _A helpful chromium setup is preconfigured with the following settings:_
 
 2. Increase Timeout  
    Lighthouse has a longer runtime which can time out in different environments.
-   **Try increasing the test timeout** in `lighthouse-plugin.integration.test.ts` for `runner creation and execution` test suite.
+   **Try increasing the test timeout** in `lighthouse-plugin.int.test.ts` for `runner creation and execution` test suite.
 
 3. Turn on debug mode  
    Show debug logs of Lighthouse. Set the following environment variable: `DEBUG='*'`

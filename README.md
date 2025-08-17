@@ -8,10 +8,21 @@
 
 [![version](https://img.shields.io/github/v/release/code-pushup/cli)](https://github.com/code-pushup/cli/releases/latest)
 [![release date](https://img.shields.io/github/release-date/code-pushup/cli)](https://github.com/code-pushup/cli/releases)
+![NodeJS support](https://img.shields.io/node/v/%40code-pushup%2Fcli)
 [![license](https://img.shields.io/github/license/code-pushup/cli)](https://opensource.org/licenses/MIT)
 [![commit activity](https://img.shields.io/github/commit-activity/m/code-pushup/cli)](https://github.com/code-pushup/cli/pulse/monthly)
 [![CI](https://github.com/code-pushup/cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/code-pushup/cli/actions/workflows/ci.yml?query=branch%3Amain)
 [![Codecov](https://codecov.io/gh/code-pushup/cli/branch/main/graph/badge.svg?token=Y7V489JZ4A)](https://codecov.io/gh/code-pushup/cli)
+
+---
+
+![Type safety](https://api.staging.code-pushup.dev/badges/code-pushup/cli/type-safety?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
+![Bug prevention](https://api.staging.code-pushup.dev/badges/code-pushup/cli/bug-prevention?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
+![Code style](https://api.staging.code-pushup.dev/badges/code-pushup/cli/code-style?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
+![Code coverage](https://api.staging.code-pushup.dev/badges/code-pushup/cli/code-coverage?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
+![Security](https://api.staging.code-pushup.dev/badges/code-pushup/cli/security?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
+![Updates](https://api.staging.code-pushup.dev/badges/code-pushup/cli/updates?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
+![Documentation](https://api.staging.code-pushup.dev/badges/code-pushup/cli/docs?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
 
 ---
 
@@ -45,12 +56,14 @@ _We want to change that!_
 
 ### 🔌 Officially supported plugins
 
-|                                                                |                                                     |                                                                                    |
-| -------------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| <img width="50" src="docs/images/plugin-eslint.icon.png">      | [ESLint](./packages/plugin-eslint#readme)           | Static analysis using **ESLint** rules.                                            |
-| <img width="50" src="docs/images/plugin-coverage.icon.png">    | [Code Coverage](./packages/plugin-coverage#readme)  | Collects code **coverage** from your tests.                                        |
-| <img width="50" src="docs/images/plugin-js-packages.icon.png"> | [JS Packages](./packages/plugin-js-packages#readme) | Checks 3rd party packages for known **vulnerabilities** and **outdated** versions. |
-| <img width="50" src="docs/images/plugin-lighthouse.icon.png">  | [Lighthouse](./packages/plugin-lighthouse#readme)   | Measures web performance and best practices with **Lighthouse**.                   |
+|                              Icon                              | Name                                                | Description                                                                        |
+| :------------------------------------------------------------: | :-------------------------------------------------- | :--------------------------------------------------------------------------------- |
+|   <img width="24" src="docs/images/plugin-eslint.icon.png">    | [ESLint](./packages/plugin-eslint#readme)           | Static analysis using **ESLint** rules.                                            |
+|  <img width="24" src="docs/images/plugin-coverage.icon.png">   | [Code Coverage](./packages/plugin-coverage#readme)  | Collects code **coverage** from your tests.                                        |
+| <img width="24" src="docs/images/plugin-js-packages.icon.png"> | [JS Packages](./packages/plugin-js-packages#readme) | Checks 3rd party packages for known **vulnerabilities** and **outdated** versions. |
+| <img width="24" src="docs/images/plugin-lighthouse.icon.png">  | [Lighthouse](./packages/plugin-lighthouse#readme)   | Measures web performance and best practices with **Lighthouse**.                   |
+|   <img width="24" src="docs/images/plugin-jsdocs.icon.png">    | [JSDocs](./packages/plugin-jsdocs#readme)           | Analyzes how much source code is **documented** using JSDocs comments.             |
+| <img width="24" src="docs/images/plugin-typescript.icon.png">  | [TypeScript](./packages/plugin-typescript#readme)   | Checks for **TypeScript** errors using strict compiler flags.                      |
 
 ---
 

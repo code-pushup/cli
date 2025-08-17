@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT } from './constants';
-import { runnerConfig } from './lighthouse.plugin';
+import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT } from './constants.js';
+import { runnerConfig } from './lighthouse.plugin.js';
 
 describe('lighthouse-runnerConfig', () => {
   it('should execute if url is given', () => {

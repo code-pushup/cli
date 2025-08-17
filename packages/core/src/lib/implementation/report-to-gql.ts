@@ -1,22 +1,29 @@
-import {
-  type AuditReport as PortalAudit,
-  type CategoryConfig as PortalCategory,
+import type {
+  AuditReport as PortalAudit,
+  CategoryConfig as PortalCategory,
   CategoryConfigRefType as PortalCategoryRefType,
-  type GroupConfig as PortalGroup,
-  type AuditReportIssue as PortalIssue,
+  GroupConfig as PortalGroup,
+  AuditReportIssue as PortalIssue,
   IssueSeverity as PortalIssueSeverity,
   IssueSourceType as PortalIssueSourceType,
-  type PluginReport as PortalPlugin,
-  type AuditReportTable as PortalTable,
+  PluginReport as PortalPlugin,
+  AuditReportTable as PortalTable,
   TableAlignment as PortalTableAlignment,
-  type AuditReportTableCell as PortalTableCell,
-  type AuditReportTableColumn as PortalTableColumn,
-  type SaveReportMutationVariables,
+  AuditReportTableCell as PortalTableCell,
+  AuditReportTableColumn as PortalTableColumn,
+  AuditReportTree as PortalTree,
+  AuditReportTreeNode as PortalTreeNode,
+  TreeType as PortalTreeType,
+  SaveReportMutationVariables,
 } from '@code-pushup/portal-client';
 import type {
   AuditReport,
+  BasicTree,
+  BasicTreeNode,
   CategoryConfig,
   CategoryRef,
+  CoverageTree,
+  CoverageTreeNode,
   Group,
   Issue,
   IssueSeverity,
@@ -24,6 +31,7 @@ import type {
   Report,
   Table,
   TableAlignment,
+  Tree,
 } from '@code-pushup/models';
 
 export function reportToGQL(
@@ -35,7 +43,7 @@ export function reportToGQL(
     commandStartDate: report.date,
     commandDuration: report.duration,
     plugins: report.plugins.map(pluginToGQL),
-    categories: report.categories.map(categoryToGQL),
+    categories: (report.categories ?? []).map(categoryToGQL),
   };
 }
 
@@ -75,7 +83,7 @@ function auditToGQL(audit: AuditReport): PortalAudit {
     displayValue: formattedValue,
     details,
   } = audit;
-  const { issues, table } = details ?? {};
+  const { issues, table, trees } = details ?? {};
   return {
     slug,
     title,
@@ -88,6 +96,7 @@ function auditToGQL(audit: AuditReport): PortalAudit {
       details: {
         ...(issues && { issues: issues.map(issueToGQL) }),
         ...(table && { tables: [tableToGQL(table)] }),
+        ...(trees && { trees: trees.map(treeToGQL) }),
       },
     }),
   };
@@ -98,7 +107,7 @@ export function issueToGQL(issue: Issue): PortalIssue {
     message: issue.message,
     severity: issueSeverityToGQL(issue.severity),
     ...(issue.source?.file && {
-      sourceType: PortalIssueSourceType.SourceCode,
+      sourceType: safeEnum<PortalIssueSourceType>('SourceCode'),
       sourceFilePath: issue.source.file,
       sourceStartLine: issue.source.position?.startLine,
       sourceStartColumn: issue.source.position?.startColumn,
@@ -134,6 +143,57 @@ export function tableToGQL(table: Table): PortalTable {
   };
 }
 
+export function treeToGQL(tree: Tree): PortalTree {
+  if (tree.type === 'coverage') {
+    return coverageTreeToGQL(tree);
+  }
+  return basicTreeToGQL(tree);
+}
+
+function basicTreeToGQL(tree: BasicTree): PortalTree {
+  return {
+    type: safeEnum<PortalTreeType>('Basic'),
+    ...(tree.title && { title: tree.title }),
+    root: basicTreeNodeToGQL(tree.root),
+  };
+}
+
+function basicTreeNodeToGQL(node: BasicTreeNode): PortalTreeNode {
+  return {
+    name: node.name,
+    ...(node.values && {
+      values: Object.entries(node.values).map(([key, value]) => ({
+        key,
+        value: value.toString(),
+      })),
+    }),
+    ...(node.children?.length && {
+      children: node.children.map(basicTreeNodeToGQL),
+    }),
+  };
+}
+
+function coverageTreeToGQL(tree: CoverageTree): PortalTree {
+  return {
+    type: safeEnum<PortalTreeType>('Coverage'),
+    ...(tree.title && { title: tree.title }),
+    root: coverageTreeNodeToGQL(tree.root),
+  };
+}
+
+function coverageTreeNodeToGQL(node: CoverageTreeNode): PortalTreeNode {
+  return {
+    name: node.name,
+    coverage: node.values.coverage,
+    ...(node.values.missing?.length && {
+      missing: node.values.missing,
+    }),
+    ...(node.children?.length && {
+      children: node.children.map(coverageTreeNodeToGQL),
+    }),
+  };
+}
+
 function categoryToGQL(category: CategoryConfig): PortalCategory {
   return {
     slug: category.slug,
@@ -154,30 +214,42 @@ function categoryRefTypeToGQL(
 ): PortalCategoryRefType {
   switch (type) {
     case 'audit':
-      return PortalCategoryRefType.Audit;
+      return safeEnum<PortalCategoryRefType>('Audit');
     case 'group':
-      return PortalCategoryRefType.Group;
+      return safeEnum<PortalCategoryRefType>('Group');
   }
 }
 
 function issueSeverityToGQL(severity: IssueSeverity): PortalIssueSeverity {
   switch (severity) {
     case 'info':
-      return PortalIssueSeverity.Info;
+      return safeEnum<PortalIssueSeverity>('Info');
     case 'error':
-      return PortalIssueSeverity.Error;
+      return safeEnum<PortalIssueSeverity>('Error');
     case 'warning':
-      return PortalIssueSeverity.Warning;
+      return safeEnum<PortalIssueSeverity>('Warning');
   }
 }
 
 function tableAlignmentToGQL(alignment: TableAlignment): PortalTableAlignment {
   switch (alignment) {
     case 'left':
-      return PortalTableAlignment.Left;
+      return safeEnum<PortalTableAlignment>('Left');
     case 'center':
-      return PortalTableAlignment.Center;
+      return safeEnum<PortalTableAlignment>('Center');
     case 'right':
-      return PortalTableAlignment.Right;
+      return safeEnum<PortalTableAlignment>('Right');
   }
+}
+
+// validates enum value string, workaround for nominal typing
+function safeEnum<
+  T extends
+    | PortalCategoryRefType
+    | PortalIssueSeverity
+    | PortalIssueSourceType
+    | PortalTableAlignment
+    | PortalTreeType,
+>(value: `${T}`): T {
+  return value as T;
 }

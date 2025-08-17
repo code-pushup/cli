@@ -1,4 +1,4 @@
-import { type Commit, commitSchema } from './commit';
+import { type Commit, commitSchema } from './commit.js';
 
 describe('commitSchema', () => {
   it('should accept valid git commit data', () => {

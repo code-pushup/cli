@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
-  AuditOutput,
-  AuditOutputs,
+  type AuditOutput,
+  type AuditOutputs,
   auditOutputSchema,
   auditOutputsSchema,
-} from './audit-output';
+} from './audit-output.js';
 
 describe('auditOutputSchema', () => {
   it('should accept a valid audit output without details', () => {
@@ -179,6 +179,8 @@ describe('auditOutputsSchema', () => {
           score: 0.75,
         },
       ] satisfies AuditOutputs),
-    ).toThrow('slugs are not unique: total-blocking-time');
+    ).toThrow(
+      String.raw`Audit slugs must be unique, but received duplicates: \"total-blocking-time\"`,
+    );
   });
 });

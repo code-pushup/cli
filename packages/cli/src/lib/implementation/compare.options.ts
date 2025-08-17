@@ -1,5 +1,5 @@
-import { Options } from 'yargs';
-import type { CompareOptions } from './compare.model';
+import type { Options } from 'yargs';
+import type { CompareOptions } from '@code-pushup/core';
 
 export function yargsCompareOptionsDefinition(): Record<
   keyof CompareOptions,
@@ -9,12 +9,14 @@ export function yargsCompareOptionsDefinition(): Record<
     before: {
       describe: 'Path to source report.json',
       type: 'string',
-      demandOption: true,
     },
     after: {
       describe: 'Path to target report.json',
       type: 'string',
-      demandOption: true,
+    },
+    label: {
+      describe: 'Label for diff (e.g. project name)',
+      type: 'string',
     },
   };
 }

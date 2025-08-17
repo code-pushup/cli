@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { IssueSeverity, issueSeveritySchema } from '@code-pushup/models';
-import { defaultAuditLevelMapping } from './constants';
+import { type IssueSeverity, issueSeveritySchema } from '@code-pushup/models';
+import { defaultAuditLevelMapping } from './constants.js';
 
 export const dependencyGroups = ['prod', 'dev', 'optional'] as const;
 const dependencyGroupSchema = z.enum(dependencyGroups);
@@ -18,16 +18,14 @@ const packageManagerIdSchema = z.enum([
 export type PackageManagerId = z.infer<typeof packageManagerIdSchema>;
 
 const packageJsonPathSchema = z
-  .union([
-    z.array(z.string()).min(1),
-    z.object({ autoSearch: z.literal(true) }),
-  ])
+  .string()
+  .regex(/package\.json$/, 'File path must end with package.json')
   .describe(
-    'File paths to package.json. Looks only at root package.json by default',
+    'File path to package.json, tries to use root package.json at CWD by default',
   )
-  .default(['package.json']);
+  .default('package.json');
 
-export type PackageJsonPaths = z.infer<typeof packageJsonPathSchema>;
+export type PackageJsonPath = z.infer<typeof packageJsonPathSchema>;
 
 export const packageAuditLevels = [
   'critical',
@@ -55,33 +53,33 @@ export function fillAuditLevelMapping(
 
 export const jsPackagesPluginConfigSchema = z.object({
   checks: z
-    .array(packageCommandSchema, {
-      description:
-        'Package manager commands to be run. Defaults to both audit and outdated.',
-    })
+    .array(packageCommandSchema)
     .min(1)
-    .default(['audit', 'outdated']),
-  packageManager: packageManagerIdSchema.describe(
-    'Package manager to be used.',
-  ),
+    .default(['audit', 'outdated'])
+    .describe(
+      'Package manager commands to be run. Defaults to both audit and outdated.',
+    ),
+  packageManager: packageManagerIdSchema
+    .describe('Package manager to be used.')
+    .optional(),
   dependencyGroups: z
     .array(dependencyGroupSchema)
     .min(1)
     .default(['prod', 'dev']),
   auditLevelMapping: z
-    .record(packageAuditLevelSchema, issueSeveritySchema, {
-      description:
-        'Mapping of audit levels to issue severity. Custom mapping or overrides may be entered manually, otherwise has a default preset.',
-    })
+    .partialRecord(packageAuditLevelSchema, issueSeveritySchema)
     .default(defaultAuditLevelMapping)
-    .transform(fillAuditLevelMapping),
-  packageJsonPaths: packageJsonPathSchema,
+    .transform(fillAuditLevelMapping)
+    .describe(
+      'Mapping of audit levels to issue severity. Custom mapping or overrides may be entered manually, otherwise has a default preset.',
+    ),
+  packageJsonPath: packageJsonPathSchema,
 });
 
 export type JSPackagesPluginConfig = z.input<
   typeof jsPackagesPluginConfigSchema
 >;
 
-export type FinalJSPackagesPluginConfig = z.infer<
-  typeof jsPackagesPluginConfigSchema
+export type FinalJSPackagesPluginConfig = Required<
+  z.infer<typeof jsPackagesPluginConfigSchema>
 >;

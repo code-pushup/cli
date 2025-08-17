@@ -4,31 +4,31 @@ import type {
   CategoryDiff,
   ReportsDiff,
 } from '@code-pushup/models';
-import { COMMIT_ALT_MOCK, COMMIT_MOCK } from '../commit.mock';
+import { COMMIT_ALT_MOCK, COMMIT_MOCK } from '../commit.mock.js';
 import {
   CATEGORIES_MAP,
   CATEGORY_SLUGS,
-  CategorySlug,
-} from './categories.mock';
+  type CategorySlug,
+} from './categories.mock.js';
 import {
   ESLINT_AUDITS_FIXED_SLUGS,
   ESLINT_AUDITS_MAP,
   ESLINT_AUDIT_SLUGS,
-} from './eslint-audits.mock';
+} from './eslint-audits.mock.js';
 import {
   ESLINT_PLUGIN_GROUP_MAX_LINES,
   ESLINT_PLUGIN_META,
-  ESLintAuditSlug,
-} from './eslint-plugin.mock';
+  type ESLintAuditSlug,
+} from './eslint-plugin.mock.js';
 import {
   LIGHTHOUSE_AUDITS_CHANGES,
   LIGHTHOUSE_AUDITS_MAP,
   LIGHTHOUSE_AUDIT_SLUGS,
-} from './lighthouse-audits.mock';
+} from './lighthouse-audits.mock.js';
 import {
   LH_PLUGIN_GROUP_PERFORMANCE,
   LH_PLUGIN_META,
-} from './lighthouse-plugin.mock';
+} from './lighthouse-plugin.mock.js';
 
 export function reportsDiffMock(): ReportsDiff {
   return {
@@ -183,7 +183,7 @@ export function reportsDiffAltMock(): ReportsDiff {
         {
           slug: 'bug-prevention' satisfies CategorySlug,
           title: CATEGORIES_MAP['bug-prevention'].title,
-          scores: { before: 0.68, after: 0.63, diff: -0.05 },
+          scores: { before: 0.68, after: 0.6795, diff: -0.0005 },
         },
       ],
       unchanged: [
@@ -332,6 +332,31 @@ export function reportsDiffUnchangedMock(): ReportsDiff {
       ],
       added: [],
       removed: [],
+    },
+  };
+}
+
+export function reportsDiffChangedMock(): ReportsDiff {
+  const originalDiff = reportsDiffUnchangedMock();
+  return {
+    ...originalDiff,
+    audits: {
+      ...originalDiff.audits,
+      changed: [
+        {
+          slug: 'no-unused-vars' satisfies ESLintAuditSlug,
+          title: ESLINT_AUDITS_MAP['no-unused-vars'].title,
+          docsUrl: ESLINT_AUDITS_MAP['no-unused-vars'].docsUrl,
+          plugin: {
+            slug: ESLINT_PLUGIN_META.slug,
+            title: ESLINT_PLUGIN_META.title,
+            docsUrl: ESLINT_PLUGIN_META.docsUrl,
+          },
+          scores: { before: 0, after: 0, diff: 0 },
+          values: { before: 12, after: 10, diff: -2 },
+          displayValues: { before: '12 warnings', after: '10 warnings' },
+        },
+      ],
     },
   };
 }

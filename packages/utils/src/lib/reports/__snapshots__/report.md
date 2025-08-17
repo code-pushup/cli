@@ -14,16 +14,16 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
 
 🟢 Score: **92**
 
-- 🟢 Performance (_Lighthouse_)
-  - 🟩 [Total Blocking Time](#total-blocking-time-lighthouse) - **0 ms**
-  - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) - **1.5 s**
-  - 🟩 [Cumulative Layout Shift](#cumulative-layout-shift-lighthouse) - **0**
-  - 🟨 [First Contentful Paint](#first-contentful-paint-lighthouse) - **1.2 s**
-  - 🟩 [Speed Index](#speed-index-lighthouse) - **1.2 s**
 - 🟥 [Disallow missing `key` props in iterators/collection literals](#disallow-missing-key-props-in-iterators-collection-literals-eslint) (_ESLint_) - **1 warning**
 - 🟡 Maximum lines limitation (_ESLint_)
   - 🟥 [Enforce a maximum number of lines of code in a function](#enforce-a-maximum-number-of-lines-of-code-in-a-function-eslint) - **1 warning**
   - 🟩 [Enforce a maximum number of lines per file](#enforce-a-maximum-number-of-lines-per-file-eslint) - **passed**
+- 🟢 Performance (_Lighthouse_)
+  - 🟨 [First Contentful Paint](#first-contentful-paint-lighthouse) - **1.2 s**
+  - 🟨 [Largest Contentful Paint](#largest-contentful-paint-lighthouse) - **1.5 s**
+  - 🟩 [Speed Index](#speed-index-lighthouse) - **1.2 s**
+  - 🟩 [Total Blocking Time](#total-blocking-time-lighthouse) - **0 ms**
+  - 🟩 [Cumulative Layout Shift](#cumulative-layout-shift-lighthouse) - **0**
 
 ### Bug prevention
 
@@ -31,9 +31,9 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
 
 - 🟥 [verifies the list of dependencies for Hooks like useEffect and similar](#verifies-the-list-of-dependencies-for-hooks-like-useeffect-and-similar-eslint) (_ESLint_) - **2 warnings**
 - 🟥 [Disallow missing `key` props in iterators/collection literals](#disallow-missing-key-props-in-iterators-collection-literals-eslint) (_ESLint_) - **1 warning**
-- 🟩 [enforces the Rules of Hooks](#enforces-the-rules-of-hooks-eslint) (_ESLint_) - **passed**
 - 🟥 [Disallow missing props validation in a React component definition](#disallow-missing-props-validation-in-a-react-component-definition-eslint) (_ESLint_) - **6 warnings**
 - 🟥 [Require the use of `===` and `!==`](#require-the-use-of--and--eslint) (_ESLint_) - **1 warning**
+- 🟩 [enforces the Rules of Hooks](#enforces-the-rules-of-hooks-eslint) (_ESLint_) - **passed**
 - 🟩 [Disallow assignment operators in conditional expressions](#disallow-assignment-operators-in-conditional-expressions-eslint) (_ESLint_) - **passed**
 - 🟩 [Disallow invalid regular expression strings in `RegExp` constructors](#disallow-invalid-regular-expression-strings-in-regexp-constructors-eslint) (_ESLint_) - **passed**
 - 🟩 [Disallow loops with a body that allows only one iteration](#disallow-loops-with-a-body-that-allows-only-one-iteration-eslint) (_ESLint_) - **passed**
@@ -448,6 +448,12 @@ ESLint rule **yoda**. [📖 Docs](https://eslint.org/docs/latest/rules/yoda)
 
 ESLint rule **prefer-arrow-callback**. [📖 Docs](https://eslint.org/docs/latest/rules/prefer-arrow-callback)
 
+### Minimize third-party usage (Lighthouse)
+
+🟥 **Third-party code blocked the main thread for 6,850 ms** (score: 0)
+
+Third-party code can significantly impact load performance. Limit the number of redundant third-party providers and try to load third-party code after your page has primarily finished loading. [Learn how to minimize third-party impact](https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/loading-third-party-javascript/).
+
 ### First Contentful Paint (Lighthouse)
 
 🟨 **1.2 s** (score: 76)
@@ -485,11 +491,11 @@ Report was created by [Code PushUp](https://github.com/code-pushup/cli#readme) o
 | Plugin     | Audits | Version | Duration |
 | :--------- | :----: | :-----: | -------: |
 | ESLint     |   47   | `0.1.0` |   368 ms |
-| Lighthouse |   5    | `0.1.0` |   1.23 s |
+| Lighthouse |   6    | `0.1.0` |   1.23 s |
 
 | Commit                                                 | Version | Duration | Plugins | Categories | Audits |
 | :----------------------------------------------------- | :-----: | -------: | :-----: | :--------: | :----: |
-| Minor fixes (abcdef0123456789abcdef0123456789abcdef01) | `0.0.1` |   1.65 s |    2    |     3      |   52   |
+| Minor fixes (abcdef0123456789abcdef0123456789abcdef01) | `0.0.1` |   1.65 s |    2    |     3      |   53   |
 
 ---
 

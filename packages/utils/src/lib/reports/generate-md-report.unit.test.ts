@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { AuditReport, Issue, Table } from '@code-pushup/models';
-import { tableSection } from './formatting';
+import type { AuditReport, Issue, Table } from '@code-pushup/models';
+import { tableSection } from './formatting.js';
 import {
   aboutSection,
   auditDetails,
@@ -8,8 +8,8 @@ import {
   auditDetailsIssues,
   auditsSection,
   generateMdReport,
-} from './generate-md-report';
-import { ScoredReport } from './types';
+} from './generate-md-report.js';
+import type { ScoredReport } from './types.js';
 
 const baseScoredReport = {
   date: '2025.01.01',
@@ -43,6 +43,54 @@ const baseScoredReport = {
       slug: 'performance',
       score: 0.93,
       refs: [{ slug: 'largest-contentful-paint', plugin: 'lighthouse' }],
+    },
+  ],
+} as ScoredReport;
+
+const baseScoredReport2 = {
+  date: '2025.01.01',
+  duration: 4200,
+  version: 'v1.0.0',
+  commit: {
+    message: 'ci: update action',
+    author: 'Michael <michael.hladky@push-based.io>',
+    date: new Date('2025.01.01'),
+    hash: '535b8e9e557336618a764f3fa45609d224a62837',
+  },
+  plugins: [
+    {
+      slug: 'lighthouse',
+      version: '1.0.1',
+      duration: 15_365,
+      title: 'Lighthouse',
+      audits: [
+        {
+          slug: 'largest-contentful-paint',
+          title: 'Largest Contentful Paint',
+          score: 0.6,
+          value: 2700,
+        },
+        {
+          slug: 'cumulative-layout-shift',
+          title: 'Cumulative Layout Shift',
+          score: 1,
+          value: 0,
+        },
+      ],
+    },
+  ],
+  categories: [
+    {
+      title: 'Speed',
+      slug: 'speed',
+      score: 0.93,
+      refs: [{ slug: 'largest-contentful-paint', plugin: 'lighthouse' }],
+    },
+    {
+      title: 'Visual Stability',
+      slug: 'visual-stability',
+      score: 1,
+      refs: [{ slug: 'cumulative-layout-shift', plugin: 'lighthouse' }],
     },
   ],
 } as ScoredReport;
@@ -135,31 +183,39 @@ describe('auditDetailsIssues', () => {
   it('should include source file', () => {
     expect(
       auditDetailsIssues([
-        { source: { file: 'index.js' }, severity: 'error' } as Issue,
+        { source: { file: 'src/index.js' }, severity: 'error' } as Issue,
       ])?.toString(),
-    ).toMatch('`index.js`');
+    ).toMatch('`src/index.js`');
   });
 
-  it('should include source position startLine', () => {
+  it('should include source file linked with position (VS Code)', () => {
+    vi.stubEnv('TERM_PROGRAM', 'vscode');
+    vi.stubEnv('GITHUB_ACTIONS', 'false');
     expect(
-      auditDetailsIssues([
-        {
-          source: {
-            position: {
-              startLine: 4,
+      auditDetailsIssues(
+        [
+          {
+            source: {
+              file: 'src/index.js',
+              position: {
+                startLine: 4,
+                startColumn: 7,
+              },
             },
-          },
-          severity: 'info',
-        } as Issue,
-      ])?.toString(),
-    ).toMatch(/\|\s*4\s*\|/);
+            severity: 'warning',
+          } as Issue,
+        ],
+        { outputDir: '.code-pushup' },
+      )?.toString(),
+    ).toMatch('[`src/index.js`](../src/index.js#L4)');
   });
 
-  it('should include source position startLine and endLine', () => {
+  it('should include formatted line information', () => {
     expect(
       auditDetailsIssues([
         {
           source: {
+            file: 'index.js',
             position: {
               startLine: 4,
               endLine: 7,
@@ -168,7 +224,7 @@ describe('auditDetailsIssues', () => {
           severity: 'warning',
         } as Issue,
       ])?.toString(),
-    ).toMatch(/\|\s*4-7\s*\|/);
+    ).toContainMarkdownTableRow(['⚠️ _warning_', '', '`index.js`', '4-7']);
   });
 });
 
@@ -278,8 +334,58 @@ describe('auditDetails', () => {
     } as AuditReport).toString();
     expect(md).toMatch('<details>');
     expect(md).toMatch('#### Elements');
-    expect(md).toMatch(/\|\s*button\s*\|/);
-    expect(md).toMatch(/\|\s*div\s*\|/);
+    expect(md).toContainMarkdownTableRow(['button']);
+    expect(md).toContainMarkdownTableRow(['div']);
+    expect(md).not.toMatch('#### Issues');
+  });
+
+  it('should display tree section if trees are present', () => {
+    const md = auditDetails({
+      slug: 'line-coverage',
+      title: 'Line coverage',
+      score: 0.7,
+      value: 70,
+      displayValue: '70 %',
+      details: {
+        trees: [
+          {
+            type: 'coverage',
+            title: 'Line coverage',
+            root: {
+              name: '.',
+              values: { coverage: 0.7 },
+              children: [
+                {
+                  name: 'src',
+                  values: { coverage: 0.7 },
+                  children: [
+                    {
+                      name: 'App.tsx',
+                      values: {
+                        coverage: 0.8,
+                        missing: [{ startLine: 42, endLine: 50 }],
+                      },
+                    },
+                    {
+                      name: 'index.ts',
+                      values: {
+                        coverage: 0,
+                        missing: [{ startLine: 1, endLine: 10 }],
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      },
+    } as AuditReport).toString();
+    expect(md).toMatch('<details>');
+    expect(md).toMatch('#### Line coverage');
+    expect(md).toContain('```');
+    expect(md).toContain('└── src');
+    expect(md).toContain('├── App.tsx');
     expect(md).not.toMatch('#### Issues');
   });
 
@@ -351,6 +457,22 @@ describe('auditsSection', () => {
     ).toMatch('🟩 **0** (score: 100)');
   });
 
+  it('should render filtered result', () => {
+    const auditSection = auditsSection(
+      {
+        plugins: [
+          { audits: [{ score: 1, value: 0 }] },
+          { audits: [{ score: 0, value: 1 }] },
+        ],
+      } as ScoredReport,
+      {
+        isScoreListed: (score: number) => score === 1,
+      },
+    ).toString();
+    expect(auditSection).toMatch('(score: 100)');
+    expect(auditSection).not.toMatch('(score: 0)');
+  });
+
   it('should render audit details', () => {
     const md = auditsSection({
       plugins: [
@@ -367,10 +489,13 @@ describe('auditsSection', () => {
       ],
     } as ScoredReport).toString();
     expect(md).toMatch('#### Issues');
-    expect(md).toMatch(
-      /\|\s*Severity\s*\|\s*Message\s*\|\s*Source file\s*\|\s*Line\(s\)\s*\|/,
-    );
-    expect(md).toMatch(/\|\s*value\s*\|/);
+    expect(md).toContainMarkdownTableRow([
+      'Severity',
+      'Message',
+      'Source file',
+      'Line(s)',
+    ]);
+    expect(md).toContainMarkdownTableRow(['value']);
   });
 
   it('should render audit meta information', () => {
@@ -464,12 +589,23 @@ describe('aboutSection', () => {
       ],
       categories: Array.from({ length: 3 }),
     } as ScoredReport).toString();
-    expect(md).toMatch(
-      /\|\s*Commit\s*\|\s*Version\s*\|\s*Duration\s*\|\s*Plugins\s*\|\s*Categories\s*\|\s*Audits\s*\|/,
-    );
-    expect(md).toMatch(
-      /\|\s*ci: update action \(535b8e9e557336618a764f3fa45609d224a62837\)\s*\|\s*`v1.0.0`\s*\|\s*4.20 s\s*\|\s*1\s*\|\s*3\s*\|\s*3\s*\|/,
-    );
+
+    expect(md).toContainMarkdownTableRow([
+      'Commit',
+      'Version',
+      'Duration',
+      'Plugins',
+      'Categories',
+      'Audits',
+    ]);
+    expect(md).toContainMarkdownTableRow([
+      'ci: update action (535b8e9e557336618a764f3fa45609d224a62837)',
+      '`v1.0.0`',
+      '4.20 s',
+      '1',
+      '3',
+      '3',
+    ]);
   });
 
   it('should return plugins section with content', () => {
@@ -490,15 +626,25 @@ describe('aboutSection', () => {
         },
       ],
     } as ScoredReport).toString();
-    expect(md).toMatch(
-      /\|\s*Plugin\s*\|\s*Audits\s*\|\s*Version\s*\|\s*Duration\s*\|/,
-    );
-    expect(md).toMatch(
-      /\|\s*Lighthouse\s*\|\s*78\s*\|\s*`1.0.1`\s*\|\s*15.37 s\s*\|/,
-    );
-    expect(md).toMatch(
-      /\|\s*File Size\s*\|\s*2\s*\|\s*`0.3.12`\s*\|\s*260 ms\s*\|/,
-    );
+
+    expect(md).toContainMarkdownTableRow([
+      'Plugin',
+      'Audits',
+      'Version',
+      'Duration',
+    ]);
+    expect(md).toContainMarkdownTableRow([
+      'Lighthouse',
+      '78',
+      '`1.0.1`',
+      '15.37 s',
+    ]);
+    expect(md).toContainMarkdownTableRow([
+      'File Size',
+      '2',
+      '`0.3.12`',
+      '260 ms',
+    ]);
   });
 
   it('should return full about section', () => {
@@ -526,7 +672,11 @@ describe('generateMdReport', () => {
     // report title
     expect(md).toMatch('# Code PushUp Report');
     // categories section heading
-    expect(md).toMatch(/\|\s*🏷 Category\s*\|\s*⭐ Score\s*\|\s*🛡 Audits\s*\|/);
+    expect(md).toContainMarkdownTableRow([
+      '🏷 Category',
+      '⭐ Score',
+      '🛡 Audits',
+    ]);
     // categories section heading
     expect(md).toMatch('## 🏷 Categories');
     // audits heading
@@ -534,15 +684,30 @@ describe('generateMdReport', () => {
     // about section heading
     expect(md).toMatch('## About');
     // plugin table
-    expect(md).toMatch(
-      /\|\s*Plugin\s*\|\s*Audits\s*\|\s*Version\s*\|\s*Duration\s*\|/,
-    );
+    expect(md).toContainMarkdownTableRow([
+      'Plugin',
+      'Audits',
+      'Version',
+      'Duration',
+    ]);
     // made with <3
     expect(md).toMatch('Made with ❤ by [Code PushUp]');
   });
 
-  it('should skip categories section if empty', () => {
-    const md = generateMdReport({ ...baseScoredReport, categories: [] });
+  it('should render sections filtered by isScoreListed of the report', () => {
+    const md = generateMdReport(baseScoredReport2, {
+      isScoreListed: (score: number) => score === 1,
+    });
+
+    expect(md).toMatch('Visual Stability');
+    expect(md).toMatch('Cumulative Layout Shift');
+
+    expect(md).not.toMatch('Speed');
+    expect(md).not.toMatch('Largest Contentful Paint');
+  });
+
+  it('should skip categories section when categories are missing', () => {
+    const md = generateMdReport({ ...baseScoredReport, categories: undefined });
     expect(md).not.toMatch('## 🏷 Categories');
     expect(md).toMatch('# Code PushUp Report\n\n## 🛡️ Audits');
   });
@@ -737,6 +902,7 @@ module.exports = {
             title: 'SEO',
             slug: 'seo',
             score: 1,
+            isBinary: true,
             refs: [
               {
                 slug: 'is-crawlable',

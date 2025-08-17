@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
-  CategoryConfig,
-  CategoryRef,
+  type CategoryConfig,
+  type CategoryRef,
   categoriesSchema,
   categoryConfigSchema,
   categoryRefSchema,
-} from './category-config';
+} from './category-config.js';
 
 describe('categoryRefSchema', () => {
   it('should accept a valid category reference audit', () => {
@@ -49,7 +49,7 @@ describe('categoryRefSchema', () => {
         type: 'audit',
         weight: -2,
       } satisfies CategoryRef),
-    ).toThrow('Number must be greater than or equal to 0');
+    ).toThrow('Too small: expected number to be >=0');
   });
 
   it('should throw for an invalid reference type', () => {
@@ -60,7 +60,7 @@ describe('categoryRefSchema', () => {
         type: 'issue',
         weight: 1,
       }),
-    ).toThrow('Invalid enum value');
+    ).toThrow(String.raw`Invalid option: expected one of \"audit\"|\"group\"`);
   });
 
   it('should throw for a missing weight', () => {
@@ -129,7 +129,7 @@ describe('categoryConfigSchema', () => {
         title: 'This category is empty for now',
         refs: [],
       } satisfies CategoryConfig),
-    ).toThrow('In a category there has to be at least one ref');
+    ).toThrow('In a category, there has to be at least one ref');
   });
 
   it('should throw for duplicate category references', () => {
@@ -152,7 +152,9 @@ describe('categoryConfigSchema', () => {
           },
         ],
       } satisfies CategoryConfig),
-    ).toThrow('audit or group refs are duplicates');
+    ).toThrow(
+      String.raw`Category has duplicate references: audit \"jest-unit-tests\" (plugin \"jest\")`,
+    );
   });
 
   it('should throw for a category with only zero-weight references', () => {
@@ -175,7 +177,7 @@ describe('categoryConfigSchema', () => {
           },
         ],
       } satisfies CategoryConfig),
-    ).toThrow('In a category there has to be at least one ref with weight > 0');
+    ).toThrow('A category must have at least 1 ref with weight > 0.');
   });
 });
 
@@ -244,7 +246,7 @@ describe('categoriesSchema', () => {
         },
       ] satisfies CategoryConfig[]),
     ).toThrow(
-      'In the categories, the following slugs are duplicated: bug-prevention',
+      String.raw`Category slugs must be unique, but received duplicates: \"bug-prevention\"`,
     );
   });
 });

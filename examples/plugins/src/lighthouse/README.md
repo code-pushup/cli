@@ -30,7 +30,7 @@ You can configure the plugin with the following options:
    Pass in the path on the directory to crawl (relative to `process.cwd()`), as well as patterns and a budget.
 
    ```js
-   import { join } from 'node:path';
+   import path from 'node:path';
    import { LIGHTHOUSE_OUTPUT_FILE_DEFAULT } from './lighthouse-plugin.constants';
    import lighthousePlugin from './lighthouse.plugin';
 
@@ -40,7 +40,7 @@ You can configure the plugin with the following options:
        // ...
        lighthousePlugin({
          url: 'https://example.com',
-         outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
+         outputPath: path.join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
        }),
      ],
    };

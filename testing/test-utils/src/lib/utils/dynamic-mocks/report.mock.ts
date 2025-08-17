@@ -1,14 +1,14 @@
-import { Report } from '@code-pushup/models';
-import { COMMIT_ALT_MOCK, COMMIT_MOCK } from '../commit.mock';
-import { categoryConfigsMock } from './categories.mock';
+import type { Report } from '@code-pushup/models';
+import { COMMIT_ALT_MOCK, COMMIT_MOCK } from '../commit.mock.js';
+import { categoryConfigsMock } from './categories.mock.js';
 import {
   eslintPluginReportAltMock,
   eslintPluginReportMock,
-} from './eslint-plugin.mock';
+} from './eslint-plugin.mock.js';
 import {
   lighthousePluginReportAltMock,
   lighthousePluginReportMock,
-} from './lighthouse-plugin.mock';
+} from './lighthouse-plugin.mock.js';
 
 export function reportMock(): Report {
   return {

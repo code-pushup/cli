@@ -1,33 +1,34 @@
 import { bold, gray } from 'ansis';
 import { type Options, bundleRequire } from 'bundle-require';
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
-import { join } from 'node:path';
-import { formatBytes } from './formatting';
-import { logMultipleResults } from './log-results';
-import { ui } from './logging';
+import path from 'node:path';
+import type { Format, PersistConfig } from '@code-pushup/models';
+import { formatBytes } from './formatting.js';
+import { logMultipleResults } from './log-results.js';
+import { ui } from './logging.js';
 
-export async function readTextFile(path: string): Promise<string> {
-  const buffer = await readFile(path);
+export async function readTextFile(filePath: string): Promise<string> {
+  const buffer = await readFile(filePath);
   return buffer.toString();
 }
 
-export async function readJsonFile<T = unknown>(path: string): Promise<T> {
-  const text = await readTextFile(path);
+export async function readJsonFile<T = unknown>(filePath: string): Promise<T> {
+  const text = await readTextFile(filePath);
   return JSON.parse(text) as T;
 }
 
-export async function fileExists(path: string): Promise<boolean> {
+export async function fileExists(filePath: string): Promise<boolean> {
   try {
-    const stats = await stat(path);
+    const stats = await stat(filePath);
     return stats.isFile();
   } catch {
     return false;
   }
 }
 
-export async function directoryExists(path: string): Promise<boolean> {
+export async function directoryExists(filePath: string): Promise<boolean> {
   try {
-    const stats = await stat(path);
+    const stats = await stat(filePath);
     return stats.isDirectory();
   } catch {
     return false;
@@ -84,9 +85,25 @@ export async function importModule<T = unknown>(options: Options): Promise<T> {
   return mod as T;
 }
 
-export function pluginWorkDir(slug: string): string {
-  return join('node_modules', '.code-pushup', slug);
+export function createReportPath({
+  outputDir,
+  filename,
+  format,
+  suffix,
+}: Pick<Required<PersistConfig>, 'filename' | 'outputDir'> & {
+  format: Format;
+  suffix?: string;
+}): string {
+  return path.join(
+    outputDir,
+    suffix ? `${filename}-${suffix}.${format}` : `${filename}.${format}`,
+  );
 }
+
+export function pluginWorkDir(slug: string): string {
+  return path.join('node_modules', '.code-pushup', slug);
+}
+
 export type CrawlFileSystemOptions<T> = {
   directory: string;
   pattern?: string | RegExp;
@@ -103,7 +120,7 @@ export async function crawlFileSystem<T = string>(
 
   const files = await readdir(directory);
   const promises = files.map(async (file): Promise<T | T[]> => {
-    const filePath = join(directory, file);
+    const filePath = path.join(directory, file);
     const stats = await stat(filePath);
 
     if (stats.isDirectory()) {
@@ -119,6 +136,27 @@ export async function crawlFileSystem<T = string>(
   return resultsNestedArray.flat() as T[];
 }
 
+export async function findNearestFile(
+  fileNames: string[],
+  cwd = process.cwd(),
+): Promise<string | undefined> {
+  // eslint-disable-next-line functional/no-loop-statements
+  for (
+    // eslint-disable-next-line functional/no-let
+    let directory = cwd;
+    directory !== path.dirname(directory);
+    directory = path.dirname(directory)
+  ) {
+    // eslint-disable-next-line functional/no-loop-statements
+    for (const file of fileNames) {
+      if (await fileExists(path.join(directory, file))) {
+        return path.join(directory, file);
+      }
+    }
+  }
+  return undefined;
+}
+
 export function findLineNumberInText(
   content: string,
   pattern: string,
@@ -129,7 +167,32 @@ export function findLineNumberInText(
   return lineNumber === 0 ? null : lineNumber; // If the package isn't found, return null
 }
 
-export function filePathToCliArg(path: string): string {
+export function filePathToCliArg(filePath: string): string {
   // needs to be escaped if spaces included
-  return `"${path}"`;
+  return `"${filePath}"`;
+}
+
+export function projectToFilename(project: string): string {
+  return project.replace(/[/\\\s]+/g, '-').replace(/@/g, '');
+}
+
+type SplitFilePath = {
+  folders: string[];
+  file: string;
+};
+
+export function splitFilePath(filePath: string): SplitFilePath {
+  const file = path.basename(filePath);
+  const folders: string[] = [];
+  // eslint-disable-next-line functional/no-loop-statements
+  for (
+    // eslint-disable-next-line functional/no-let
+    let dirPath = path.dirname(filePath);
+    path.dirname(dirPath) !== dirPath;
+    dirPath = path.dirname(dirPath)
+  ) {
+    // eslint-disable-next-line functional/immutable-data
+    folders.unshift(path.basename(dirPath));
+  }
+  return { folders, file };
 }

@@ -1,6 +1,6 @@
-import type { ESLintTarget } from '../config';
-import { nxProjectsToConfig } from './projects-to-config';
-import { findAllDependencies } from './traverse-graph';
+import type { ESLintTarget } from '../config.js';
+import { nxProjectsToConfig } from './projects-to-config.js';
+import { findAllDependencies } from './traverse-graph.js';
 
 /**
  * Accepts a target Nx projects, finds projects it depends on, and converts lint configurations to Code PushUp ESLint plugin parameters.

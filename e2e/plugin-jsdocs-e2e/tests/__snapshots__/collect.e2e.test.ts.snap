@@ -1,0 +1,574 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PLUGIN collect report with jsdocs-plugin NPM package > should run JSDoc plugin for Angular example dir and create report.json 1`] = `
+{
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "audits": [
+        {
+          "description": "Documentation coverage of enums",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "app.component.spec.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "app.component.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "map-event.function.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 1,
+                      },
+                    },
+                    {
+                      "name": "code-pushup.config.ts",
+                      "values": {
+                        "coverage": 1,
+                        "missing": [],
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 1,
+                  },
+                },
+                "title": "Documented enums",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "0 undocumented enums",
+          "score": 1,
+          "slug": "enums-coverage",
+          "title": "Enums coverage",
+          "value": 0,
+        },
+        {
+          "description": "Documentation coverage of interfaces",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "app.component.spec.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "app.component.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "map-event.function.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 1,
+                      },
+                    },
+                    {
+                      "name": "code-pushup.config.ts",
+                      "values": {
+                        "coverage": 1,
+                        "missing": [],
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 1,
+                  },
+                },
+                "title": "Documented interfaces",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "0 undocumented interfaces",
+          "score": 1,
+          "slug": "interfaces-coverage",
+          "title": "Interfaces coverage",
+          "value": 0,
+        },
+        {
+          "description": "Documentation coverage of types",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "app.component.spec.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "app.component.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "map-event.function.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 1,
+                      },
+                    },
+                    {
+                      "name": "code-pushup.config.ts",
+                      "values": {
+                        "coverage": 1,
+                        "missing": [],
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 1,
+                  },
+                },
+                "title": "Documented types",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "0 undocumented types",
+          "score": 1,
+          "slug": "types-coverage",
+          "title": "Types coverage",
+          "value": 0,
+        },
+        {
+          "description": "Documentation coverage of functions",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "app.component.spec.ts",
+                          "values": {
+                            "coverage": 0,
+                            "missing": [
+                              {
+                                "endLine": 3,
+                                "kind": "function",
+                                "name": "notRealisticFunction",
+                                "startLine": 1,
+                              },
+                            ],
+                          },
+                        },
+                        {
+                          "name": "app.component.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "map-event.function.ts",
+                          "values": {
+                            "coverage": 0.5,
+                            "missing": [
+                              {
+                                "endLine": 5,
+                                "kind": "function",
+                                "name": "mapEventToCustomEvent",
+                                "startLine": 3,
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 0.3333333333333333,
+                      },
+                    },
+                    {
+                      "name": "code-pushup.config.ts",
+                      "values": {
+                        "coverage": 1,
+                        "missing": [],
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 0.3333333333333333,
+                  },
+                },
+                "title": "Documented functions",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "2 undocumented functions",
+          "score": 0.3333,
+          "slug": "functions-coverage",
+          "title": "Functions coverage",
+          "value": 2,
+        },
+        {
+          "description": "Documentation coverage of variables",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "app.component.spec.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "app.component.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "map-event.function.ts",
+                          "values": {
+                            "coverage": 0,
+                            "missing": [
+                              {
+                                "endLine": 1,
+                                "kind": "variable",
+                                "name": "someVariable",
+                                "startLine": 1,
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 0,
+                      },
+                    },
+                    {
+                      "name": "code-pushup.config.ts",
+                      "values": {
+                        "coverage": 1,
+                        "missing": [],
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 0,
+                  },
+                },
+                "title": "Documented variables",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "1 undocumented variables",
+          "score": 0,
+          "slug": "variables-coverage",
+          "title": "Variables coverage",
+          "value": 1,
+        },
+        {
+          "description": "Documentation coverage of classes",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "app.component.spec.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "app.component.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "map-event.function.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 1,
+                      },
+                    },
+                    {
+                      "name": "code-pushup.config.ts",
+                      "values": {
+                        "coverage": 1,
+                        "missing": [],
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 1,
+                  },
+                },
+                "title": "Documented classes",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "0 undocumented classes",
+          "score": 1,
+          "slug": "classes-coverage",
+          "title": "Classes coverage",
+          "value": 0,
+        },
+        {
+          "description": "Documentation coverage of methods",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "app.component.spec.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "app.component.ts",
+                          "values": {
+                            "coverage": 0.5,
+                            "missing": [
+                              {
+                                "endLine": 17,
+                                "kind": "method",
+                                "name": "sendEvent",
+                                "startLine": 15,
+                              },
+                            ],
+                          },
+                        },
+                        {
+                          "name": "map-event.function.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 0.5,
+                      },
+                    },
+                    {
+                      "name": "code-pushup.config.ts",
+                      "values": {
+                        "coverage": 1,
+                        "missing": [],
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 0.5,
+                  },
+                },
+                "title": "Documented methods",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "1 undocumented methods",
+          "score": 0.5,
+          "slug": "methods-coverage",
+          "title": "Methods coverage",
+          "value": 1,
+        },
+        {
+          "description": "Documentation coverage of properties",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "app.component.spec.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                        {
+                          "name": "app.component.ts",
+                          "values": {
+                            "coverage": 0,
+                            "missing": [
+                              {
+                                "endLine": 5,
+                                "kind": "property",
+                                "name": "title",
+                                "startLine": 5,
+                              },
+                            ],
+                          },
+                        },
+                        {
+                          "name": "map-event.function.ts",
+                          "values": {
+                            "coverage": 1,
+                            "missing": [],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 0,
+                      },
+                    },
+                    {
+                      "name": "code-pushup.config.ts",
+                      "values": {
+                        "coverage": 1,
+                        "missing": [],
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 0,
+                  },
+                },
+                "title": "Documented properties",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "1 undocumented properties",
+          "score": 0,
+          "slug": "properties-coverage",
+          "title": "Properties coverage",
+          "value": 1,
+        },
+      ],
+      "description": "Official Code PushUp JSDoc coverage plugin.",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/jsdocs-plugin/",
+      "groups": [
+        {
+          "description": "Documentation coverage",
+          "refs": [
+            {
+              "slug": "classes-coverage",
+              "weight": 2,
+            },
+            {
+              "slug": "methods-coverage",
+              "weight": 2,
+            },
+            {
+              "slug": "functions-coverage",
+              "weight": 2,
+            },
+            {
+              "slug": "interfaces-coverage",
+              "weight": 1,
+            },
+            {
+              "slug": "variables-coverage",
+              "weight": 1,
+            },
+            {
+              "slug": "properties-coverage",
+              "weight": 1,
+            },
+            {
+              "slug": "types-coverage",
+              "weight": 1,
+            },
+            {
+              "slug": "enums-coverage",
+              "weight": 1,
+            },
+          ],
+          "slug": "documentation-coverage",
+          "title": "Documentation coverage",
+        },
+      ],
+      "icon": "folder-docs",
+      "slug": "jsdocs",
+      "title": "JSDoc coverage",
+    },
+  ],
+}
+`;

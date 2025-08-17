@@ -1,45 +1,34 @@
 import { bold } from 'ansis';
-import {
+import type {
   Audit,
   AuditOutput,
-  AuditOutputs,
   AuditReport,
-  OnProgress,
+  CacheConfigObject,
+  PersistConfig,
   PluginConfig,
   PluginReport,
-  auditOutputsSchema,
 } from '@code-pushup/models';
 import {
-  ProgressBar,
+  type ProgressBar,
   getProgressBar,
   groupByStatus,
   logMultipleResults,
   pluralizeToken,
 } from '@code-pushup/utils';
-import { normalizeAuditOutputs } from '../normalize';
-import { executeRunnerConfig, executeRunnerFunction } from './runner';
-
-/**
- * Error thrown when plugin output is invalid.
- */
-export class PluginOutputMissingAuditError extends Error {
-  constructor(auditSlug: string) {
-    super(
-      `Audit metadata not present in plugin config. Missing slug: ${bold(
-        auditSlug,
-      )}`,
-    );
-  }
-}
+import {
+  executePluginRunner,
+  readRunnerResults,
+  writeRunnerResults,
+} from './runner.js';
 
 /**
  * Execute a plugin.
  *
  * @public
  * @param pluginConfig - {@link ProcessConfig} object with runner and meta
- * @param onProgress - progress handler {@link OnProgress}
+ * @param opt
  * @returns {Promise<AuditOutput[]>} - audit outputs from plugin runner
- * @throws {PluginOutputMissingAuditError} - if plugin runner output is invalid
+ * @throws {AuditOutputsMissingAuditError} - if plugin runner output is invalid
  *
  * @example
  * // plugin execution
@@ -56,8 +45,12 @@ export class PluginOutputMissingAuditError extends Error {
  */
 export async function executePlugin(
   pluginConfig: PluginConfig,
-  onProgress?: OnProgress,
+  opt: {
+    cache: CacheConfigObject;
+    persist: Required<Pick<PersistConfig, 'outputDir'>>;
+  },
 ): Promise<PluginReport> {
+  const { cache, persist } = opt;
   const {
     runner,
     audits: pluginConfigAudits,
@@ -66,26 +59,25 @@ export async function executePlugin(
     groups,
     ...pluginMeta
   } = pluginConfig;
+  const { write: cacheWrite = false, read: cacheRead = false } = cache;
+  const { outputDir } = persist;
 
-  // execute plugin runner
-  const runnerResult =
-    typeof runner === 'object'
-      ? await executeRunnerConfig(runner, onProgress)
-      : await executeRunnerFunction(runner, onProgress);
-  const { audits: unvalidatedAuditOutputs, ...executionMeta } = runnerResult;
+  const { audits, ...executionMeta } = cacheRead
+    ? // IF not null, take the result from cache
+      ((await readRunnerResults(pluginMeta.slug, outputDir)) ??
+      // ELSE execute the plugin runner
+      (await executePluginRunner(pluginConfig)))
+    : await executePluginRunner(pluginConfig);
 
-  // validate auditOutputs
-  const result = auditOutputsSchema.safeParse(unvalidatedAuditOutputs);
-  if (!result.success) {
-    throw new Error(`Audit output is invalid: ${result.error.message}`);
+  if (cacheWrite) {
+    await writeRunnerResults(pluginMeta.slug, outputDir, {
+      ...executionMeta,
+      audits,
+    });
   }
-  const auditOutputs = result.data;
-  auditOutputsCorrelateWithPluginOutput(auditOutputs, pluginConfigAudits);
-
-  const normalizedAuditOutputs = await normalizeAuditOutputs(auditOutputs);
 
   // enrich `AuditOutputs` to `AuditReport`
-  const auditReports: AuditReport[] = normalizedAuditOutputs.map(
+  const auditReports: AuditReport[] = audits.map(
     (auditOutput: AuditOutput) => ({
       ...auditOutput,
       ...(pluginConfigAudits.find(
@@ -106,13 +98,18 @@ export async function executePlugin(
 }
 
 const wrapProgress = async (
-  pluginCfg: PluginConfig,
+  cfg: {
+    plugin: PluginConfig;
+    persist: Required<Pick<PersistConfig, 'outputDir'>>;
+    cache: CacheConfigObject;
+  },
   steps: number,
   progressBar: ProgressBar | null,
 ) => {
+  const { plugin: pluginCfg, ...rest } = cfg;
   progressBar?.updateTitle(`Executing ${bold(pluginCfg.title)}`);
   try {
-    const pluginReport = await executePlugin(pluginCfg);
+    const pluginReport = await executePlugin(pluginCfg, rest);
     progressBar?.incrementInSteps(steps);
     return pluginReport;
   } catch (error) {
@@ -130,7 +127,7 @@ const wrapProgress = async (
 /**
  * Execute multiple plugins and aggregates their output.
  * @public
- * @param plugins array of {@link PluginConfig} objects
+ * @param cfg
  * @param {Object} [options] execution options
  * @param {boolean} options.progress show progress bar
  * @returns {Promise<PluginReport[]>} plugin report
@@ -149,25 +146,30 @@ const wrapProgress = async (
  *
  */
 export async function executePlugins(
-  plugins: PluginConfig[],
+  cfg: {
+    plugins: PluginConfig[];
+    persist: Required<Pick<PersistConfig, 'outputDir'>>;
+    cache: CacheConfigObject;
+  },
   options?: { progress?: boolean },
 ): Promise<PluginReport[]> {
+  const { plugins, ...cacheCfg } = cfg;
   const { progress = false } = options ?? {};
 
   const progressBar = progress ? getProgressBar('Run plugins') : null;
 
-  const pluginsResult = await plugins.reduce(
-    async (acc, pluginCfg) => [
-      ...(await acc),
-      wrapProgress(pluginCfg, plugins.length, progressBar),
-    ],
-    Promise.resolve([] as Promise<PluginReport>[]),
+  const pluginsResult = plugins.map(pluginCfg =>
+    wrapProgress(
+      { plugin: pluginCfg, ...cacheCfg },
+      plugins.length,
+      progressBar,
+    ),
   );
-
-  progressBar?.endProgress('Done running plugins');
 
   const errorsTransform = ({ reason }: PromiseRejectedResult) => String(reason);
   const results = await Promise.allSettled(pluginsResult);
+
+  progressBar?.endProgress('Done running plugins');
 
   logMultipleResults(results, 'Plugins', undefined, errorsTransform);
 
@@ -185,18 +187,4 @@ export async function executePlugins(
   }
 
   return fulfilled.map(result => result.value);
-}
-
-function auditOutputsCorrelateWithPluginOutput(
-  auditOutputs: AuditOutputs,
-  pluginConfigAudits: PluginConfig['audits'],
-) {
-  auditOutputs.forEach(auditOutput => {
-    const auditMetadata = pluginConfigAudits.find(
-      audit => audit.slug === auditOutput.slug,
-    );
-    if (!auditMetadata) {
-      throw new PluginOutputMissingAuditError(auditOutput.slug);
-    }
-  });
 }

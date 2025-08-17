@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import {
   LIGHTHOUSE_OUTPUT_FILE_DEFAULT,
   fileSizePlugin,
@@ -9,7 +9,7 @@ import {
   packageJsonPerformanceGroupRef,
   packageJsonPlugin,
   packageJsonVersionControlGroupRef,
-} from '../../dist/examples/plugins';
+} from '../../dist/examples/plugins/index.js';
 
 /**
  * Run it with:
@@ -38,7 +38,7 @@ const config = {
     }),
     await lighthousePlugin({
       url: 'https://staging.code-pushup.dev/login',
-      outputPath: join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
+      outputPath: path.join('.code-pushup', LIGHTHOUSE_OUTPUT_FILE_DEFAULT),
       headless: false,
       verbose: true,
     }),

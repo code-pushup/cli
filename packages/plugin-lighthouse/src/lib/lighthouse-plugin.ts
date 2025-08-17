@@ -1,45 +1,44 @@
+import { createRequire } from 'node:module';
 import type { PluginConfig } from '@code-pushup/models';
-import { name, version } from '../../package.json';
-import { LIGHTHOUSE_PLUGIN_SLUG } from './constants';
-import { normalizeFlags } from './normalize-flags';
-import {
-  LIGHTHOUSE_GROUPS,
-  LIGHTHOUSE_NAVIGATION_AUDITS,
-  createRunnerFunction,
-} from './runner';
-import type { LighthouseOptions } from './types';
-import { filterAuditsAndGroupsByOnlyOptions } from './utils';
+import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
+import { normalizeFlags } from './normalize-flags.js';
+import { normalizeUrlInput, processAuditsAndGroups } from './processing.js';
+import { createRunnerFunction } from './runner/runner.js';
+import type { LighthouseOptions, LighthouseUrls } from './types.js';
 
 export function lighthousePlugin(
-  url: string,
+  urls: LighthouseUrls,
   flags?: LighthouseOptions,
 ): PluginConfig {
-  const {
-    skipAudits = [],
-    onlyAudits = [],
-    onlyCategories = [],
-    ...unparsedFlags
-  } = normalizeFlags(flags ?? {});
+  const { skipAudits, onlyAudits, onlyCategories, ...unparsedFlags } =
+    normalizeFlags(flags ?? {});
 
-  const { audits, groups } = filterAuditsAndGroupsByOnlyOptions(
-    LIGHTHOUSE_NAVIGATION_AUDITS,
-    LIGHTHOUSE_GROUPS,
-    { skipAudits, onlyAudits, onlyCategories },
-  );
+  const { urls: normalizedUrls, context } = normalizeUrlInput(urls);
+
+  const { audits, groups } = processAuditsAndGroups(normalizedUrls, {
+    skipAudits,
+    onlyAudits,
+    onlyCategories,
+  });
+
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
 
   return {
     slug: LIGHTHOUSE_PLUGIN_SLUG,
-    packageName: name,
-    version,
+    packageName: packageJson.name,
+    version: packageJson.version,
     title: 'Lighthouse',
     icon: 'lighthouse',
     audits,
     groups,
-    runner: createRunnerFunction(url, {
+    runner: createRunnerFunction(normalizedUrls, {
       skipAudits,
       onlyAudits,
       onlyCategories,
       ...unparsedFlags,
     }),
+    context,
   };
 }

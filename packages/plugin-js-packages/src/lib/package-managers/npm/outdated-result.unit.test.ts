@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { OutdatedResult } from '../../runner/outdated/types';
-import { npmToOutdatedResult } from './outdated-result';
+import type { OutdatedResult } from '../../runner/outdated/types.js';
+import { npmToOutdatedResult } from './outdated-result.js';
 
 describe('npmToOutdatedResult', () => {
   it('should transform NPM outdated to unified outdated result', () => {
@@ -39,7 +39,7 @@ describe('npmToOutdatedResult', () => {
     ]);
   });
 
-  it('should skip dependencies without current version', () => {
+  it('should not skip dependencies without current version', () => {
     expect(
       npmToOutdatedResult(
         JSON.stringify({
@@ -50,7 +50,14 @@ describe('npmToOutdatedResult', () => {
           },
         }),
       ),
-    ).toEqual([]);
+    ).toEqual([
+      {
+        current: undefined,
+        latest: '5.3.0',
+        name: 'typescript',
+        type: 'dependencies',
+      },
+    ]);
   });
 
   it('should transform no dependencies to empty array', () => {

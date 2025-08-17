@@ -1,13 +1,13 @@
 import type Details from 'lighthouse/types/lhr/audit-details';
 import { describe, expect, it } from 'vitest';
-import { Table } from '@code-pushup/models';
+import type { Table } from '@code-pushup/models';
 import {
   parseTableColumns,
   parseTableEntry,
   parseTableRow,
   parseTableToAuditDetailsTable,
-} from './table.type';
-import { LighthouseAuditDetailsParsingError } from './utils';
+} from './table.type.js';
+import { LighthouseAuditDetailsParsingError } from './utils.js';
 
 describe('parseTableToAuditDetails', () => {
   it('should render complete details of type table', () => {
@@ -93,7 +93,6 @@ describe('parseTableToAuditDetails', () => {
     } satisfies Details.Table);
 
     expect(outputs).toStrictEqual({
-      title: 'Table',
       columns: [
         {
           key: 'statistic',
@@ -219,7 +218,6 @@ describe('parseTableToAuditDetails', () => {
     } as Details.Table);
 
     expect(outputs).toEqual({
-      title: 'Table',
       columns: [
         {
           align: 'left',

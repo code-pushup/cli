@@ -1,0 +1,82 @@
+{
+  "__typename": "Report",
+  "commit": {
+    "__typename": "Commit",
+    "sha": "efed65b3ffab808176c4f8670d77f8d69f71490e",
+    "message": "Initial commit",
+    "date": "2024-10-14T09:00:13.000Z",
+    "author": {
+      "__typename": "CommitAuthor",
+      "name": "John Doe",
+      "email": "john.doe@example.com"
+    }
+  },
+  "packageName": "@code-pushup/core",
+  "packageVersion": "0.51.0",
+  "commandStartDate": "2024-10-14T09:00:14.969Z",
+  "commandDuration": 14,
+  "categories": [],
+  "plugins": [
+    {
+      "__typename": "Plugin",
+      "slug": "ts-migration",
+      "title": "TypeScript migration",
+      "icon": "typescript",
+      "description": null,
+      "docsUrl": null,
+      "packageName": null,
+      "packageVersion": null,
+      "runnerStartDate": "2024-10-14T09:00:14.978Z",
+      "runnerDuration": 2,
+      "audits": {
+        "edges": [
+          {
+            "node": {
+              "__typename": "Audit",
+              "slug": "ts-files",
+              "title": "Source files converted from JavaScript to TypeScript",
+              "description": null,
+              "docsUrl": null,
+              "score": 0.5,
+              "value": 50,
+              "formattedValue": "50% converted",
+              "details": {
+                "enabled": true,
+                "tables": [],
+                "trees": []
+              }
+            }
+          }
+        ]
+      },
+      "groups": []
+    }
+  ],
+  "issues": {
+    "edges": [
+      {
+        "node": {
+          "__typename": "Issue",
+          "message": "Use .ts file extension instead of .js",
+          "severity": "WARNING",
+          "audit": {
+            "__typename": "Audit",
+            "slug": "ts-files",
+            "plugin": {
+              "__typename": "Plugin",
+              "slug": "ts-migration"
+            }
+          },
+          "source": {
+            "__typename": "SourceCodeLocation",
+            "filePath": "index.js",
+            "startLine": null,
+            "startColumn": null,
+            "endLine": null,
+            "endColumn": null
+          }
+        }
+      }
+    ]
+  }
+}

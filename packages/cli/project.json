@@ -2,45 +2,12 @@
   "name": "cli",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/cli/src",
-  "projectType": "application",
+  "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/esbuild:esbuild",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/cli",
-        "main": "packages/cli/src/index.ts",
-        "tsConfig": "packages/cli/tsconfig.lib.json",
-        "assets": ["packages/cli/*.md"],
-        "esbuildConfig": "esbuild.config.js"
-      }
-    },
-    "publish": {
-      "command": "node tools/scripts/publish.mjs cli {args.ver} {args.tag}",
-      "dependsOn": ["build"]
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/cli/**/*.ts",
-          "packages/cli/package.json"
-        ]
-      }
-    },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/cli/vite.config.unit.ts"
-      }
-    },
-    "integration-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/cli/vite.config.integration.ts"
-      }
-    },
+    "build": {},
+    "lint": {},
+    "unit-test": {},
+    "int-test": {},
     "run-help": {
       "command": "npx dist/packages/cli --help",
       "dependsOn": ["build"]
@@ -60,5 +27,5 @@
       "dependsOn": ["build"]
     }
   },
-  "tags": ["scope:core", "type:app"]
+  "tags": ["scope:core", "type:app", "publishable"]
 }

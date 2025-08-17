@@ -1,7 +1,7 @@
-import { platform } from 'os';
+import { platform } from 'node:os';
 import {
-  AuditOutput,
-  RunnerConfig,
+  type AuditOutput,
+  type RunnerConfig,
   runnerConfigSchema,
 } from '@code-pushup/models';
 
@@ -34,7 +34,7 @@ export function echoRunnerConfigMock(
   const auditOutput =
     platform() === 'win32'
       ? JSON.stringify(output)
-      : "'" + JSON.stringify(output) + "'";
+      : `'${JSON.stringify(output)}'`;
   return {
     command: 'echo',
     args: [auditOutput, '>', outputFile],

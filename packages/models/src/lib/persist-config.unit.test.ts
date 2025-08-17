@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PersistConfig, persistConfigSchema } from './persist-config';
+import { type PersistConfig, persistConfigSchema } from './persist-config.js';
 
 describe('persistConfigSchema', () => {
   it('should accept a valid configuration with all information', () => {
@@ -34,7 +34,7 @@ describe('persistConfigSchema', () => {
 
   it('should throw for an invalid format', () => {
     expect(() => persistConfigSchema.parse({ format: ['html'] })).toThrow(
-      'Invalid enum value',
+      String.raw`Invalid option: expected one of \"json\"|\"md\"`,
     );
   });
 });

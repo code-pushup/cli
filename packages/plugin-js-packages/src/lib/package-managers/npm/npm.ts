@@ -1,10 +1,9 @@
 import { objectToKeys } from '@code-pushup/utils';
-import { DependencyGroup } from '../../config';
-import { filterAuditResult } from '../../runner/utils';
-import { COMMON_AUDIT_ARGS, COMMON_OUTDATED_ARGS } from '../constants';
-import { AuditResults, PackageManager } from '../types';
-import { npmToAuditResult } from './audit-result';
-import { npmToOutdatedResult } from './outdated-result';
+import type { DependencyGroup } from '../../config.js';
+import { filterAuditResult } from '../../runner/utils.js';
+import type { AuditResults, PackageManager } from '../types.js';
+import { npmToAuditResult } from './audit-result.js';
+import { npmToOutdatedResult } from './outdated-result.js';
 
 const npmDependencyOptions: Record<DependencyGroup, string[]> = {
   prod: ['--omit=dev', '--omit=optional'],
@@ -24,9 +23,10 @@ export const npmPackageManager: PackageManager = {
   },
   audit: {
     getCommandArgs: groupDep => [
-      ...COMMON_AUDIT_ARGS,
+      'audit',
       ...npmDependencyOptions[groupDep],
       '--audit-level=none',
+      '--json',
     ],
     unifyResult: npmToAuditResult,
     // prod dependencies need to be filtered out manually since v10
@@ -49,7 +49,7 @@ export const npmPackageManager: PackageManager = {
     },
   },
   outdated: {
-    commandArgs: [...COMMON_OUTDATED_ARGS, '--long'],
+    commandArgs: ['outdated', '--long', '--json'],
     unifyResult: npmToOutdatedResult,
   },
 };

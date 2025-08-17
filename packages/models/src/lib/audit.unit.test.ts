@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Audit, auditSchema, pluginAuditsSchema } from './audit';
+import { type Audit, auditSchema, pluginAuditsSchema } from './audit.js';
 
 describe('auditSchema', () => {
   it('should accept a valid audit with all information', () => {
@@ -23,14 +23,18 @@ describe('auditSchema', () => {
     ).not.toThrow();
   });
 
-  it('should throw for an invalid URL', () => {
-    expect(() =>
+  it('should ignore invalid docs URL', () => {
+    expect(
       auditSchema.parse({
         slug: 'consistent-test-it',
         title: 'Use a consistent test function.',
         docsUrl: 'invalid-url',
       } satisfies Audit),
-    ).toThrow('Invalid url');
+    ).toEqual<Audit>({
+      slug: 'consistent-test-it',
+      title: 'Use a consistent test function.',
+      docsUrl: '',
+    });
   });
 });
 
@@ -70,6 +74,8 @@ describe('pluginAuditsSchema', () => {
           title: 'Jest unit tests results.',
         },
       ] satisfies Audit[]),
-    ).toThrow('slugs are not unique: jest-unit-test-results');
+    ).toThrow(
+      String.raw`Audit slugs must be unique, but received duplicates: \"jest-unit-test-results\"`,
+    );
   });
 });

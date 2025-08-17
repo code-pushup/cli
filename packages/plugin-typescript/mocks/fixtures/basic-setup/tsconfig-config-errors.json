@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "strict": true,
+    "verbatimModuleSyntax": false,
+    "target": "ES6",
+    "module": "CommonJS"
+  },
+  "include": ["src/**/*.ts", "./out/**/*.ts", "nonexistent-file.ts"]
+}

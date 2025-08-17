@@ -1,21 +1,13 @@
-import type { ESLint } from 'eslint';
-import { type ZodType, z } from 'zod';
+import { z } from 'zod';
 import { toArray } from '@code-pushup/utils';
 
-const patternsSchema = z.union([z.string(), z.array(z.string()).min(1)], {
-  description:
+const patternsSchema = z
+  .union([z.string(), z.array(z.string()).min(1)])
+  .describe(
     'Lint target files. May contain file paths, directory paths or glob patterns',
-});
+  );
 
-const eslintrcSchema = z.union(
-  [
-    z.string({ description: 'Path to ESLint config file' }),
-    z.record(z.string(), z.unknown(), {
-      description: 'ESLint config object',
-    }) as ZodType<ESLint.ConfigData>,
-  ],
-  { description: 'ESLint config as file path or inline object' },
-);
+const eslintrcSchema = z.string().describe('Path to ESLint config file');
 
 const eslintTargetObjectSchema = z.object({
   eslintrc: eslintrcSchema.optional(),
@@ -42,3 +34,32 @@ export type ESLintPluginRunnerConfig = {
   targets: ESLintTarget[];
   slugs: string[];
 };
+
+const customGroupRulesSchema = z
+  .union([
+    z
+      .array(z.string())
+      .min(1, 'Custom group rules must contain at least 1 element'),
+    z
+      .record(z.string(), z.number())
+      .refine(schema => Object.keys(schema).length > 0, {
+        error: 'Custom group rules must contain at least 1 element',
+      }),
+  ])
+  .describe(
+    'Array of rule IDs with equal weights or object mapping rule IDs to specific weights',
+  );
+
+const customGroupSchema = z.object({
+  slug: z.string().describe('Unique group identifier'),
+  title: z.string().describe('Group display title'),
+  description: z.string().describe('Group metadata').optional(),
+  docsUrl: z.string().describe('Group documentation site').optional(),
+  rules: customGroupRulesSchema,
+});
+export type CustomGroup = z.infer<typeof customGroupSchema>;
+
+export const eslintPluginOptionsSchema = z.object({
+  groups: z.array(customGroupSchema).optional(),
+});
+export type ESLintPluginOptions = z.infer<typeof eslintPluginOptionsSchema>;

@@ -1,0 +1,116 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`getDocumentationReport > should produce a full report 1`] = `
+{
+  "classes": [
+    {
+      "covered": 1,
+      "missing": [
+        {
+          "endLine": 4,
+          "kind": "class",
+          "name": "test",
+          "startLine": 4,
+        },
+        {
+          "endLine": 5,
+          "kind": "class",
+          "name": "test",
+          "startLine": 5,
+        },
+      ],
+      "path": "test.ts",
+      "total": 3,
+    },
+  ],
+  "enums": [
+    {
+      "covered": 1,
+      "missing": [
+        {
+          "endLine": 8,
+          "kind": "enum",
+          "name": "test",
+          "startLine": 8,
+        },
+        {
+          "endLine": 9,
+          "kind": "enum",
+          "name": "test",
+          "startLine": 9,
+        },
+      ],
+      "path": "test.ts",
+      "total": 3,
+    },
+  ],
+  "functions": [
+    {
+      "covered": 3,
+      "missing": [],
+      "path": "test.ts",
+      "total": 3,
+    },
+  ],
+  "interfaces": [
+    {
+      "covered": 2,
+      "missing": [
+        {
+          "endLine": 15,
+          "kind": "interface",
+          "name": "test",
+          "startLine": 15,
+        },
+      ],
+      "path": "test.ts",
+      "total": 3,
+    },
+  ],
+  "methods": [
+    {
+      "covered": 0,
+      "missing": [],
+      "path": "test.ts",
+      "total": 0,
+    },
+  ],
+  "properties": [
+    {
+      "covered": 0,
+      "missing": [],
+      "path": "test.ts",
+      "total": 0,
+    },
+  ],
+  "types": [
+    {
+      "covered": 2,
+      "missing": [
+        {
+          "endLine": 10,
+          "kind": "type",
+          "name": "test",
+          "startLine": 10,
+        },
+        {
+          "endLine": 11,
+          "kind": "type",
+          "name": "test",
+          "startLine": 11,
+        },
+      ],
+      "path": "test.ts",
+      "total": 4,
+    },
+  ],
+  "variables": [
+    {
+      "covered": 0,
+      "missing": [],
+      "path": "test.ts",
+      "total": 0,
+    },
+  ],
+}
+`;

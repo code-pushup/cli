@@ -1,10 +1,9 @@
-import { dependencyGroupToLong } from '../../constants';
-import { COMMON_AUDIT_ARGS, COMMON_OUTDATED_ARGS } from '../constants';
-import { PackageManager } from '../types';
-import { yarnv1ToAuditResult } from './audit-result';
-import { yarnv1ToOutdatedResult } from './outdated-result';
+import { dependencyGroupToLong } from '../../constants.js';
+import type { PackageManager } from '../types.js';
+import { yarnClassicToAuditResult } from './audit-result.js';
+import { yarnClassicToOutdatedResult } from './outdated-result.js';
 
-export const yarnv1PackageManager: PackageManager = {
+export const yarnClassicPackageManager: PackageManager = {
   slug: 'yarn-classic',
   name: 'Yarn v1',
   command: 'yarn',
@@ -16,15 +15,15 @@ export const yarnv1PackageManager: PackageManager = {
   },
   audit: {
     getCommandArgs: groupDep => [
-      ...COMMON_AUDIT_ARGS,
-      '--groups',
-      dependencyGroupToLong[groupDep],
+      'audit',
+      `--groups=${dependencyGroupToLong[groupDep]}`,
+      '--json',
     ],
     ignoreExitCode: true,
-    unifyResult: yarnv1ToAuditResult,
+    unifyResult: yarnClassicToAuditResult,
   },
   outdated: {
-    commandArgs: COMMON_OUTDATED_ARGS,
-    unifyResult: yarnv1ToOutdatedResult,
+    commandArgs: ['outdated', '--json'],
+    unifyResult: yarnClassicToOutdatedResult,
   },
 };

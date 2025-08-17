@@ -1,9 +1,9 @@
 import { describe, expect, vi } from 'vitest';
 import { type HistoryOptions, history } from '@code-pushup/core';
 import { safeCheckout } from '@code-pushup/utils';
-import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
-import { yargsCli } from '../yargs-cli';
-import { yargsHistoryCommandObject } from './history-command';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants.js';
+import { yargsCli } from '../yargs-cli.js';
+import { yargsHistoryCommandObject } from './history-command.js';
 
 vi.mock('@code-pushup/core', async () => {
   const {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CoreConfig, coreConfigSchema } from './core-config';
+import { type CoreConfig, coreConfigSchema } from './core-config.js';
 
 describe('coreConfigSchema', () => {
   it('should accept a valid core configuration with all entities', () => {
@@ -94,7 +94,7 @@ describe('coreConfigSchema', () => {
         ],
       } satisfies CoreConfig),
     ).toThrow(
-      'category references need to point to an audit or group: vitest/unit-tests',
+      String.raw`Category references audits or groups which don't exist: audit \"unit-tests\" (plugin \"vitest\")`,
     );
   });
 
@@ -133,7 +133,63 @@ describe('coreConfigSchema', () => {
         ],
       } satisfies CoreConfig),
     ).toThrow(
-      'category references need to point to an audit or group: eslint#eslint-errors (group)',
+      String.raw`Category references audits or groups which don't exist: group \"eslint-errors\" (plugin \"eslint\")`,
+    );
+  });
+
+  it('should throw for a category with a zero-weight audit', () => {
+    const config = {
+      categories: [
+        {
+          slug: 'performance',
+          title: 'Performance',
+          refs: [
+            {
+              slug: 'performance',
+              weight: 1,
+              type: 'group',
+              plugin: 'lighthouse',
+            },
+          ],
+        },
+        {
+          slug: 'best-practices',
+          title: 'Best practices',
+          refs: [
+            {
+              slug: 'best-practices',
+              weight: 1,
+              type: 'group',
+              plugin: 'lighthouse',
+            },
+          ],
+        },
+      ],
+      plugins: [
+        {
+          slug: 'lighthouse',
+          title: 'Lighthouse',
+          icon: 'lighthouse',
+          runner: { command: 'npm run lint', outputFile: 'output.json' },
+          audits: [
+            {
+              slug: 'csp-xss',
+              title: 'Ensure CSP is effective against XSS attacks',
+            },
+          ],
+          groups: [
+            {
+              slug: 'best-practices',
+              title: 'Best practices',
+              refs: [{ slug: 'csp-xss', weight: 0 }],
+            },
+          ],
+        },
+      ],
+    } satisfies CoreConfig;
+
+    expect(() => coreConfigSchema.parse(config)).toThrow(
+      'A category must have at least 1 ref with weight > 0.',
     );
   });
 });

@@ -1,15 +1,15 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import {
-  Format,
-  PersistConfig,
-  Report,
+  type Format,
+  type PersistConfig,
+  type Report,
   reportSchema,
 } from '@code-pushup/models';
 import {
   ensureDirectoryExists,
   readJsonFile,
   readTextFile,
-} from '../file-system';
+} from '../file-system.js';
 
 type LoadedReportFormat<T extends Format> = T extends 'json' ? Report : string;
 
@@ -20,7 +20,7 @@ export async function loadReport<T extends Format>(
 ): Promise<LoadedReportFormat<T>> {
   const { outputDir, filename, format } = options;
   await ensureDirectoryExists(outputDir);
-  const filePath = join(outputDir, `${filename}.${format}`);
+  const filePath = path.join(outputDir, `${filename}.${format}`);
 
   if (format === 'json') {
     const content = await readJsonFile(filePath);

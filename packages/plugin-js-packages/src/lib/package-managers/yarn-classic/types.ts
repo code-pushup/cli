@@ -1,14 +1,13 @@
-import { PackageAuditLevel } from '../../config';
+import type { PackageAuditLevel } from '../../config.js';
 
 // Subset of Yarn v1 audit JSON type
-export type Yarnv1AuditAdvisory = {
+export type YarnClassicAuditAdvisory = {
   type: 'auditAdvisory';
   data: {
     resolution: {
       id: number;
       path: string;
     };
-    /* eslint-disable @typescript-eslint/naming-convention */
     advisory: {
       module_name: string;
       severity: PackageAuditLevel;
@@ -17,24 +16,22 @@ export type Yarnv1AuditAdvisory = {
       title: string;
       url: string;
     };
-    /* eslint-enable @typescript-eslint/naming-convention */
   };
 };
 
-export type Yarnv1AuditSummary = {
+export type YarnClassicAuditSummary = {
   type: 'auditSummary';
   data: {
     vulnerabilities: Record<PackageAuditLevel, number>;
   };
 };
 
-// NOTE: When rest operator can be at the beginning, the process will be much simpler
-export type Yarnv1AuditResultJson = [
-  ...Yarnv1AuditAdvisory[],
-  Yarnv1AuditSummary,
+export type YarnClassicAuditResultJson = [
+  ...YarnClassicAuditAdvisory[],
+  YarnClassicAuditSummary,
 ];
 
-export const yarnv1FieldNames = [
+export const yarnClassicFieldNames = [
   'Package',
   'Current',
   'Latest',
@@ -42,10 +39,10 @@ export const yarnv1FieldNames = [
   'URL',
 ] as const;
 
-export type Yarnv1FieldName = (typeof yarnv1FieldNames)[number];
+export type YarnClassicFieldName = (typeof yarnClassicFieldNames)[number];
 
-type Yarnv1Info = { type: 'info' };
-type Yarnv1Table = {
+type YarnClassicInfo = { type: 'info' };
+type YarnClassicTable = {
   type: 'table';
   data: {
     head: string[];
@@ -53,4 +50,6 @@ type Yarnv1Table = {
   };
 };
 
-export type Yarnv1OutdatedResultJson = [Yarnv1Info, Yarnv1Table];
+export type YarnClassicOutdatedResultJson =
+  | [YarnClassicInfo, YarnClassicTable]
+  | [];

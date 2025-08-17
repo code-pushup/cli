@@ -1,6 +1,6 @@
-import { PackageAuditLevel } from '../../config';
-import { AuditSummary } from '../../runner/audit/types';
-import { DependencyGroupLong } from '../../runner/outdated/types';
+import type { PackageAuditLevel } from '../../config.js';
+import type { AuditSummary } from '../../runner/audit/types.js';
+import type { DependencyGroupLong } from '../../runner/outdated/types.js';
 
 // Subset of NPM audit JSON type
 export type NpmAdvisory = {
@@ -36,13 +36,10 @@ export type NpmAuditResultJson = {
 // Subset of NPM outdated JSON type
 export type NpmVersionOverview = {
   current?: string;
+  wanted: string;
   latest: string;
   type: DependencyGroupLong;
   homepage?: string;
-};
-
-export type NpmNormalizedOverview = Omit<NpmVersionOverview, 'current'> & {
-  current: string;
 };
 
 export type NpmOutdatedResultJson = Record<string, NpmVersionOverview>;

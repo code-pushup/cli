@@ -4,7 +4,7 @@ import {
   hasDuplicateStrings,
   hasMissingStrings,
   slugRegex,
-} from './utils';
+} from './utils.js';
 
 describe('slugRegex', () => {
   it.each([

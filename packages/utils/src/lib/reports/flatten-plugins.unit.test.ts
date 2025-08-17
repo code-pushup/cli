@@ -1,8 +1,8 @@
-import { Report } from '@code-pushup/models';
+import type { Report } from '@code-pushup/models';
 import {
   listAuditsFromAllPlugins,
   listGroupsFromAllPlugins,
-} from './flatten-plugins';
+} from './flatten-plugins.js';
 
 describe('listGroupsFromAllPlugins', () => {
   it("should flatten plugins' groups", () => {

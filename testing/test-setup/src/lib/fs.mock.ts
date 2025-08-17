@@ -1,4 +1,4 @@
-import { MockInstance, afterEach, beforeEach, vi } from 'vitest';
+import { type MockInstance, afterEach, beforeEach, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 
 vi.mock('fs', async () => {

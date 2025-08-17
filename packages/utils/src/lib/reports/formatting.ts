@@ -1,26 +1,44 @@
-import { HeadingLevel, InlineText, MarkdownDocument, md } from 'build-md';
-import { AuditReport, Table } from '@code-pushup/models';
-import { HIERARCHY } from '../text-formats';
+import {
+  type HeadingLevel,
+  type InlineText,
+  MarkdownDocument,
+  md,
+} from 'build-md';
+import path from 'node:path';
+import type {
+  AuditReport,
+  SourceFileLocation,
+  Table,
+  Tree,
+} from '@code-pushup/models';
+import { formatAsciiTree } from '../text-formats/ascii/tree.js';
 import {
   columnsToStringArray,
   getColumnAlignments,
   rowToStringArray,
-} from '../text-formats/table';
+} from '../text-formats/table.js';
+import { AUDIT_DETAILS_HEADING_LEVEL } from './constants.js';
+import {
+  getEnvironmentType,
+  getGitHubBaseUrl,
+  getGitLabBaseUrl,
+} from './environment-type.js';
+import type { MdReportOptions } from './types.js';
 
 export function tableSection(
-  tableData: Table,
+  table: Table,
   options?: {
     level?: HeadingLevel;
   },
 ): MarkdownDocument | null {
-  if (tableData.rows.length === 0) {
+  if (table.rows.length === 0) {
     return null;
   }
-  const { level = HIERARCHY.level_4 } = options ?? {};
-  const columns = columnsToStringArray(tableData);
-  const alignments = getColumnAlignments(tableData);
-  const rows = rowToStringArray(tableData);
-  return new MarkdownDocument().heading(level, tableData.title).table(
+  const { level = AUDIT_DETAILS_HEADING_LEVEL } = options ?? {};
+  const columns = columnsToStringArray(table);
+  const alignments = getColumnAlignments(table);
+  const rows = rowToStringArray(table);
+  return new MarkdownDocument().heading(level, table.title).table(
     columns.map((heading, i) => {
       const alignment = alignments[i];
       if (alignment) {
@@ -30,6 +48,18 @@ export function tableSection(
     }),
     rows,
   );
+}
+
+export function treeSection(
+  tree: Tree,
+  options?: {
+    level?: HeadingLevel;
+  },
+): MarkdownDocument {
+  const { level = AUDIT_DETAILS_HEADING_LEVEL } = options ?? {};
+  return new MarkdownDocument()
+    .heading(level, tree.title)
+    .code(formatAsciiTree(tree));
 }
 
 // @TODO extract `Pick<AuditReport, 'docsUrl' | 'description'>` to a reusable schema and type
@@ -52,4 +82,92 @@ export function metaDescription(
     return description;
   }
   return '';
+}
+
+/**
+ * Link to local source for IDE
+ * @param source
+ * @param reportLocation
+ *
+ * @example
+ * linkToLocalSourceInIde({ file: 'src/index.ts' }, { outputDir: '.code-pushup' }) // [`src/index.ts`](../src/index.ts)
+ */
+export function linkToLocalSourceForIde(
+  source: SourceFileLocation,
+  options?: Pick<MdReportOptions, 'outputDir'>,
+): InlineText {
+  const { file, position } = source;
+  const { outputDir } = options ?? {};
+
+  // NOT linkable
+  if (!outputDir) {
+    return md.code(file);
+  }
+
+  return md.link(formatFileLink(file, position, outputDir), md.code(file));
+}
+
+export function formatSourceLine(
+  position: SourceFileLocation['position'],
+): string {
+  if (!position) {
+    return '';
+  }
+  const { startLine, endLine } = position;
+  return endLine && startLine !== endLine
+    ? `${startLine}-${endLine}`
+    : `${startLine}`;
+}
+
+export function formatGitHubLink(
+  file: string,
+  position: SourceFileLocation['position'],
+): string {
+  const baseUrl = getGitHubBaseUrl();
+  if (!position) {
+    return `${baseUrl}/${file}`;
+  }
+  const { startLine, endLine, startColumn, endColumn } = position;
+  const start = startColumn ? `L${startLine}C${startColumn}` : `L${startLine}`;
+  const end = endLine
+    ? endColumn
+      ? `L${endLine}C${endColumn}`
+      : `L${endLine}`
+    : '';
+  const lineRange = end && start !== end ? `${start}-${end}` : start;
+  return `${baseUrl}/${file}#${lineRange}`;
+}
+
+export function formatGitLabLink(
+  file: string,
+  position: SourceFileLocation['position'],
+): string {
+  const baseUrl = getGitLabBaseUrl();
+  if (!position) {
+    return `${baseUrl}/${file}`;
+  }
+  const { startLine, endLine } = position;
+  const lineRange =
+    endLine && startLine !== endLine ? `${startLine}-${endLine}` : startLine;
+  return `${baseUrl}/${file}#L${lineRange}`;
+}
+
+export function formatFileLink(
+  file: string,
+  position: SourceFileLocation['position'],
+  outputDir: string,
+): string {
+  const relativePath = path.posix.relative(outputDir, file);
+  const env = getEnvironmentType();
+
+  switch (env) {
+    case 'vscode':
+      return position ? `${relativePath}#L${position.startLine}` : relativePath;
+    case 'github':
+      return formatGitHubLink(file, position);
+    case 'gitlab':
+      return formatGitLabLink(file, position);
+    default:
+      return relativePath;
+  }
 }

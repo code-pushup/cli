@@ -1,11 +1,9 @@
-import {
-  type SaveReportMutationVariables,
-  uploadToPortal,
-} from '@code-pushup/portal-client';
-import { PersistConfig, Report, UploadConfig } from '@code-pushup/models';
+import type { SaveReportMutationVariables } from '@code-pushup/portal-client';
+import type { PersistConfig, Report, UploadConfig } from '@code-pushup/models';
 import { loadReport } from '@code-pushup/utils';
-import { reportToGQL } from './implementation/report-to-gql';
-import { GlobalOptions } from './types';
+import { reportToGQL } from './implementation/report-to-gql.js';
+import { loadPortalClient } from './load-portal-client.js';
+import type { GlobalOptions } from './types.js';
 
 export type UploadOptions = { upload?: UploadConfig } & {
   persist: Required<PersistConfig>;
@@ -16,13 +14,15 @@ export type UploadOptions = { upload?: UploadConfig } & {
  * @param options
  * @param uploadFn
  */
-export async function upload(
-  options: UploadOptions,
-  uploadFn: typeof uploadToPortal = uploadToPortal,
-) {
+export async function upload(options: UploadOptions) {
   if (options.upload == null) {
     throw new Error('Upload configuration is not set.');
   }
+  const portalClient = await loadPortalClient();
+  if (!portalClient) {
+    return;
+  }
+  const { uploadReportToPortal } = portalClient;
   const { apiKey, server, organization, project, timeout } = options.upload;
   const report: Report = await loadReport({
     ...options.persist,
@@ -39,5 +39,5 @@ export async function upload(
     ...reportToGQL(report),
   };
 
-  return uploadFn({ apiKey, server, data, timeout });
+  return uploadReportToPortal({ apiKey, server, data, timeout });
 }

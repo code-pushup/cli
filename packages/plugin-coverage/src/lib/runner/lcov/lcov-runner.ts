@@ -1,15 +1,23 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import type { LCOVRecord } from 'parse-lcov';
-import { AuditOutputs } from '@code-pushup/models';
-import { exists, readTextFile, toUnixNewlines, ui } from '@code-pushup/utils';
-import { CoverageResult, CoverageType } from '../../config';
-import { mergeLcovResults } from './merge-lcov';
-import { parseLcov } from './parse-lcov';
+import type { AuditOutputs } from '@code-pushup/models';
+import {
+  type FileCoverage,
+  exists,
+  getGitRoot,
+  objectFromEntries,
+  objectToEntries,
+  readTextFile,
+  toUnixNewlines,
+  ui,
+} from '@code-pushup/utils';
+import type { CoverageResult, CoverageType } from '../../config.js';
+import { mergeLcovResults } from './merge-lcov.js';
+import { parseLcov } from './parse-lcov.js';
 import {
   lcovCoverageToAuditOutput,
   recordToStatFunctionMapper,
-} from './transform';
-import { LCOVStat, LCOVStats } from './types';
+} from './transform.js';
 
 // Note: condition or statement coverage is not supported in LCOV
 // https://stackoverflow.com/questions/48260434/is-it-possible-to-check-condition-coverage-with-gcov
@@ -31,10 +39,12 @@ export async function lcovResultsToAuditOutputs(
   const mergedResults = mergeLcovResults(lcovResults);
 
   // Calculate code coverage from all coverage results
-  const totalCoverageStats = getTotalCoverageFromLcovRecords(
+  const totalCoverageStats = groupLcovRecordsByCoverageType(
     mergedResults,
     coverageTypes,
   );
+
+  const gitRoot = await getGitRoot();
 
   return coverageTypes
     .map(coverageType => {
@@ -42,7 +52,7 @@ export async function lcovResultsToAuditOutputs(
       if (!stats) {
         return null;
       }
-      return lcovCoverageToAuditOutput(stats, coverageType);
+      return lcovCoverageToAuditOutput(stats, coverageType, gitRoot);
     })
     .filter(exists);
 }
@@ -55,66 +65,76 @@ export async function lcovResultsToAuditOutputs(
 export async function parseLcovFiles(
   results: CoverageResult[],
 ): Promise<LCOVRecord[]> {
-  const parsedResults = await Promise.all(
-    results.map(async result => {
-      const resultsPath =
-        typeof result === 'string' ? result : result.resultsPath;
-      const lcovFileContent = await readTextFile(resultsPath);
-      if (lcovFileContent.trim() === '') {
-        ui().logger.warning(
-          `Coverage plugin: Empty lcov report file detected at ${resultsPath}.`,
+  const parsedResults = (
+    await Promise.all(
+      results.map(async result => {
+        const resultsPath =
+          typeof result === 'string' ? result : result.resultsPath;
+        const lcovFileContent = await readTextFile(resultsPath);
+        if (lcovFileContent.trim() === '') {
+          ui().logger.warning(
+            `Coverage plugin: Empty lcov report file detected at ${resultsPath}.`,
+          );
+        }
+        const parsedRecords = parseLcov(toUnixNewlines(lcovFileContent));
+        return parsedRecords.map(
+          (record): LCOVRecord => ({
+            title: record.title,
+            file:
+              typeof result === 'string' || result.pathToProject == null
+                ? record.file
+                : path.join(result.pathToProject, record.file),
+            functions: patchInvalidStats(record, 'functions'),
+            branches: patchInvalidStats(record, 'branches'),
+            lines: patchInvalidStats(record, 'lines'),
+          }),
         );
-      }
-      const parsedRecords = parseLcov(toUnixNewlines(lcovFileContent));
-      return parsedRecords.map<LCOVRecord>(record => ({
-        ...record,
-        file:
-          typeof result === 'string' || result.pathToProject == null
-            ? record.file
-            : join(result.pathToProject, record.file),
-      }));
-    }),
-  );
-  if (parsedResults.length !== results.length) {
-    throw new Error('Some provided LCOV results were not valid.');
+      }),
+    )
+  ).flat();
+
+  if (parsedResults.length === 0) {
+    throw new Error('All provided coverage results are empty.');
   }
 
-  const flatResults = parsedResults.flat();
-
-  if (flatResults.length === 0) {
-    throw new Error('All provided results are empty.');
-  }
-
-  return flatResults;
+  return parsedResults;
 }
 
 /**
- *
- * @param records This function aggregates coverage stats from all coverage files
+ * Filters out invalid `line` numbers, and ensures `hit <= found`.
+ * @param record LCOV record
+ * @param type Coverage type
+ * @returns Patched stats for type in record
+ */
+function patchInvalidStats<T extends 'branches' | 'functions' | 'lines'>(
+  record: LCOVRecord,
+  type: T,
+): LCOVRecord[T] {
+  const stats = record[type];
+  return {
+    ...stats,
+    hit: Math.min(stats.hit, stats.found),
+    details: stats.details.filter(detail => detail.line > 0),
+  };
+}
+
+/**
+ * This function aggregates coverage stats from all coverage files
+ * @param records LCOV record for each file
  * @param coverageTypes Types of coverage to be gathered
  * @returns Complete coverage stats for all defined types of coverage.
  */
-function getTotalCoverageFromLcovRecords(
+function groupLcovRecordsByCoverageType<T extends CoverageType>(
   records: LCOVRecord[],
-  coverageTypes: CoverageType[],
-): LCOVStats {
-  return records.reduce<LCOVStats>(
-    (acc, report) =>
-      Object.fromEntries([
-        ...Object.entries(acc),
-        ...(
-          Object.entries(
-            getCoverageStatsFromLcovRecord(report, coverageTypes),
-          ) as [CoverageType, LCOVStat][]
-        ).map(([type, stats]): [CoverageType, LCOVStat] => [
-          type,
-          {
-            totalFound: (acc[type]?.totalFound ?? 0) + stats.totalFound,
-            totalHit: (acc[type]?.totalHit ?? 0) + stats.totalHit,
-            issues: [...(acc[type]?.issues ?? []), ...stats.issues],
-          },
-        ]),
-      ]),
+  coverageTypes: T[],
+): Partial<Record<T, FileCoverage[]>> {
+  return records.reduce<Partial<Record<T, FileCoverage[]>>>(
+    (acc, record) =>
+      objectFromEntries(
+        objectToEntries(
+          getCoverageStatsFromLcovRecord(record, coverageTypes),
+        ).map(([type, file]) => [type, [...(acc[type] ?? []), file]]),
+      ),
     {},
   );
 }
@@ -124,12 +144,12 @@ function getTotalCoverageFromLcovRecords(
  * @param coverageTypes types of coverage to be gathered
  * @returns Relevant coverage data from one lcov record file.
  */
-function getCoverageStatsFromLcovRecord(
+function getCoverageStatsFromLcovRecord<T extends CoverageType>(
   record: LCOVRecord,
-  coverageTypes: CoverageType[],
-): LCOVStats {
-  return Object.fromEntries(
-    coverageTypes.map((coverageType): [CoverageType, LCOVStat] => [
+  coverageTypes: T[],
+): Record<T, FileCoverage> {
+  return objectFromEntries(
+    coverageTypes.map(coverageType => [
       coverageType,
       recordToStatFunctionMapper[coverageType](record),
     ]),

@@ -1,15 +1,15 @@
 import { bold, gray } from 'ansis';
-import { ArgumentsCamelCase, CommandModule } from 'yargs';
+import type { ArgumentsCamelCase, CommandModule } from 'yargs';
 import {
-  CollectAndPersistReportsOptions,
+  type CollectAndPersistReportsOptions,
   collectAndPersistReports,
 } from '@code-pushup/core';
 import { link, ui } from '@code-pushup/utils';
-import { CLI_NAME } from '../constants';
+import { CLI_NAME } from '../constants.js';
 import {
   collectSuccessfulLog,
   renderConfigureCategoriesHint,
-} from '../implementation/logging';
+} from '../implementation/logging.js';
 
 export function yargsCollectCommandObject(): CommandModule {
   const command = 'collect';
@@ -24,7 +24,7 @@ export function yargsCollectCommandObject(): CommandModule {
       await collectAndPersistReports(options);
       collectSuccessfulLog();
 
-      if (options.categories.length === 0) {
+      if (!options.categories || options.categories.length === 0) {
         renderConfigureCategoriesHint();
       }
 

@@ -1,10 +1,10 @@
-import * as Benchmark from 'benchmark';
-import { Report } from '@code-pushup/models';
-import { scoreReport } from '../../src/lib/reports/scoring';
-import { scoreReportOptimized0 } from './optimized0';
-import { scoreReportOptimized1 } from './optimized1';
-import { scoreReportOptimized2 } from './optimized2';
-import { scoreReportOptimized3 } from './optimized3';
+import Benchmark from 'benchmark';
+import type { Report } from '@code-pushup/models';
+import { scoreReport } from '../../src/lib/reports/scoring.js';
+import { scoreReportOptimized0 } from './optimized0.js';
+import { scoreReportOptimized1 } from './optimized1.js';
+import { scoreReportOptimized2 } from './optimized2.js';
+import { scoreReportOptimized3 } from './optimized3.js';
 
 type MinimalReportOptions = {
   numAuditsP1?: number;
@@ -52,7 +52,7 @@ const NUM_GROUPS_P2 = PROCESS_ARGUMENT_NUM_GROUPS_P2 || NUM_AUDITS_P2 / 2;
 
 // Add listener
 const listeners = {
-  cycle: function (event: Benchmark.Event) {
+  cycle(event: Benchmark.Event) {
     console.info(String(event.target));
   },
   complete: () => {
@@ -131,8 +131,18 @@ function minimalReport(opt?: MinimalReportOptions): Report {
   const numAuditsP2 = opt?.numAuditsP2 ?? NUM_AUDITS_P2;
   const numGroupRefs2 = opt?.numGroupRefs2 ?? NUM_GROUPS_P2;
 
+  const date = new Date();
+
   return {
-    date: '2022-01-01',
+    date: date.toISOString(),
+    packageName: 'perf-benchmark',
+    version: '0',
+    commit: {
+      date,
+      message: 'perf: benchmark score report',
+      author: 'me',
+      hash: 'mock_hash',
+    },
     duration: 0,
     categories: [
       {

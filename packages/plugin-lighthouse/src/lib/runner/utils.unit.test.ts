@@ -2,24 +2,27 @@ import { bold } from 'ansis';
 import debug from 'debug';
 import log from 'lighthouse-logger';
 import type Details from 'lighthouse/types/lhr/audit-details';
-import { Result } from 'lighthouse/types/lhr/audit-result';
+import type { Result } from 'lighthouse/types/lhr/audit-result';
 import { vol } from 'memfs';
-import { join } from 'node:path';
+import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  AuditOutput,
-  CoreConfig,
+  type AuditOutput,
+  type CoreConfig,
   auditOutputsSchema,
 } from '@code-pushup/models';
-import { MEMFS_VOLUME, getLogMessages } from '@code-pushup/test-utils';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import { unsupportedDetailTypes } from './details/details';
+import { DEFAULT_CLI_FLAGS } from './constants.js';
+import { unsupportedDetailTypes } from './details/details.js';
+import type { LighthouseCliFlags } from './types.js';
 import {
   determineAndSetLogLevel,
+  enrichFlags,
   getConfig,
   normalizeAuditOutputs,
   toAuditOutputs,
-} from './utils';
+} from './utils.js';
 
 // mock bundleRequire inside importEsmModule used for fetching config
 vi.mock('bundle-require', async () => {
@@ -128,6 +131,80 @@ describe('toAuditOutputs', () => {
     );
   });
 
+  it('should set displayValue to "passed" when binary score equals 1', () => {
+    expect(
+      toAuditOutputs([
+        {
+          id: 'image-aspect-ratio',
+          title: 'Displays images with correct aspect ratio',
+          description:
+            'Image display dimensions should match natural aspect ratio. [Learn more about image aspect ratio](https://developer.chrome.com/docs/lighthouse/best-practices/image-aspect-ratio/).',
+          score: 1,
+          scoreDisplayMode: 'binary',
+        },
+      ]),
+    ).toStrictEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ displayValue: 'passed' }),
+      ]),
+    );
+  });
+
+  it('should set displayValue to "failed" when binary score equals 0', () => {
+    expect(
+      toAuditOutputs([
+        {
+          id: 'image-aspect-ratio',
+          title: 'Displays images with correct aspect ratio',
+          description:
+            'Image display dimensions should match natural aspect ratio. [Learn more about image aspect ratio](https://developer.chrome.com/docs/lighthouse/best-practices/image-aspect-ratio/).',
+          score: 0,
+          scoreDisplayMode: 'binary',
+        },
+      ]),
+    ).toStrictEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ displayValue: 'failed' }),
+      ]),
+    );
+  });
+
+  it('should set audit value to its score when numericValue is missing', () => {
+    expect(
+      toAuditOutputs([
+        {
+          id: 'image-aspect-ratio',
+          title: 'Displays images with correct aspect ratio',
+          description:
+            'Image display dimensions should match natural aspect ratio. [Learn more about image aspect ratio](https://developer.chrome.com/docs/lighthouse/best-practices/image-aspect-ratio/).',
+          score: 1,
+          scoreDisplayMode: 'binary',
+        },
+      ]),
+    ).toStrictEqual(
+      expect.arrayContaining([expect.objectContaining({ value: 1 })]),
+    );
+  });
+
+  it('should set audit displayValue to formatted score when displayValue is missing and scoreDisplayMode is not binary', () => {
+    expect(
+      toAuditOutputs([
+        {
+          id: 'unsized-images',
+          title: 'Image elements do not have explicit `width` and `height`',
+          description:
+            'Set an explicit width and height on image elements to reduce layout shifts and improve CLS. [Learn how to set image dimensions](https://web.dev/articles/optimize-cls#images_without_dimensions)',
+          score: 0.5,
+          scoreDisplayMode: 'metricSavings',
+        },
+      ]),
+    ).toStrictEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ displayValue: '50%' }),
+      ]),
+    );
+  });
+
   it('should not parse given audit details', () => {
     expect(
       toAuditOutputs(
@@ -150,7 +227,6 @@ describe('toAuditOutputs', () => {
       table: {
         columns: [{ key: 'number', align: 'left' }],
         rows: [{ number: 42 }],
-        title: 'Table',
       },
     });
   });
@@ -166,10 +242,10 @@ describe('toAuditOutputs', () => {
             score: 0,
             numericValue: 0,
             displayValue: '0 ms',
-          } as Result),
+          }) as Result,
       ),
     );
-    expect(getLogMessages(ui().logger)).toHaveLength(0);
+    expect(ui()).not.toHaveLogs();
   });
 
   it('should inform that for all unsupported details if verbose IS given', () => {
@@ -183,11 +259,11 @@ describe('toAuditOutputs', () => {
             score: 0,
             numericValue: 0,
             displayValue: '0 ms',
-          } as Result),
+          }) as Result,
       ),
       { verbose: true },
     );
-    expect(getLogMessages(ui().logger)).toHaveLength(1);
+    expect(ui()).toHaveLoggedTimes(1);
   });
 
   it('should not parse empty audit details', () => {
@@ -270,9 +346,7 @@ describe('getConfig', () => {
     await expect(
       getConfig({ preset: 'wrong' as 'desktop' }),
     ).resolves.toBeUndefined();
-    expect(getLogMessages(ui().logger).at(0)).toMatch(
-      'Preset "wrong" is not supported',
-    );
+    expect(ui()).toHaveLogged('info', 'Preset "wrong" is not supported');
   });
 
   it('should load config from json file if configPath is specified', async () => {
@@ -303,16 +377,15 @@ describe('getConfig', () => {
 
   it('should return undefined and log if configPath has wrong extension', async () => {
     await expect(
-      getConfig({ configPath: join('wrong.not') }),
+      getConfig({ configPath: path.join('wrong.not') }),
     ).resolves.toBeUndefined();
-    expect(getLogMessages(ui().logger).at(0)).toMatch(
-      'Format of file wrong.not not supported',
-    );
+    expect(ui()).toHaveLogged('info', 'Format of file wrong.not not supported');
   });
 });
 
 describe('determineAndSetLogLevel', () => {
   const debugLib = debug as { enabled: (flag: string) => boolean };
+
   beforeEach(() => {
     log.setLevel('info');
   });
@@ -364,5 +437,68 @@ describe('determineAndSetLogLevel', () => {
     expect(log.isVerbose()).toBe(true);
     expect(debugLib.enabled('LH:*')).toBe(true);
     expect(debugLib.enabled('LH:*:verbose')).toBe(false);
+  });
+});
+
+describe('enrichFlags', () => {
+  it('should return enriched flags without URL index for single URL', () => {
+    const flags = {
+      ...DEFAULT_CLI_FLAGS,
+      outputPath: '/path/to/report.json',
+    };
+    expect(enrichFlags(flags).outputPath).toBe('/path/to/report.json');
+  });
+
+  it('should add URL index to output path for multiple URLs', () => {
+    const flags = {
+      ...DEFAULT_CLI_FLAGS,
+      outputPath: '/path/to/report.json',
+    };
+    expect(enrichFlags(flags, 2).outputPath).toBe('/path/to/report-2.json');
+  });
+
+  it('should handle output path with multiple dots', () => {
+    const flags = {
+      ...DEFAULT_CLI_FLAGS,
+      outputPath: '/path/to/report.min.json',
+    };
+    expect(enrichFlags(flags, 1).outputPath).toBe('/path/to/report.min-1.json');
+  });
+
+  it('should handle default output path', () => {
+    expect(enrichFlags(DEFAULT_CLI_FLAGS).outputPath).toBe(
+      DEFAULT_CLI_FLAGS.outputPath,
+    );
+  });
+
+  it('should not modify output path when URL index is 0 or undefined', () => {
+    const flags = {
+      ...DEFAULT_CLI_FLAGS,
+      outputPath: '/path/to/report.json',
+    };
+    expect(enrichFlags(flags, 0).outputPath).toBe('/path/to/report.json');
+    expect(enrichFlags(flags, undefined).outputPath).toBe(
+      '/path/to/report.json',
+    );
+  });
+
+  it('should preserve all other flags', () => {
+    const flags: LighthouseCliFlags = {
+      outputPath: '/path/to/report.json',
+      chromeFlags: ['--headless'],
+      onlyAudits: ['performance'],
+      skipAudits: ['seo'],
+      onlyCategories: [],
+      preset: 'desktop',
+    };
+    expect(enrichFlags(flags, 1)).toEqual({
+      chromeFlags: ['--headless'],
+      onlyAudits: ['performance'],
+      skipAudits: ['seo'],
+      onlyCategories: [],
+      preset: 'desktop',
+      logLevel: 'info',
+      outputPath: '/path/to/report-1.json',
+    });
   });
 });

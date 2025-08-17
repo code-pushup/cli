@@ -6,7 +6,7 @@ More on this subject as well as all the testing strategy principles can be found
 
 ## Mock setup
 
-In this library you can find all files that can be used in `setupFiles` property of `vitest.config.(unit|integration|e2e).ts` files. Currently include:
+In this library you can find all files that can be used in `setupFiles` property of `vitest.config.(unit|int|e2e).ts` files. Currently include:
 
 - [console](./src/lib/console.mock.ts) mocking
 - [file system](./src/lib/fs.mock.ts) mocking

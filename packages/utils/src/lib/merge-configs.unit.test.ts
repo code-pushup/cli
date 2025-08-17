@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { CoreConfig, PluginConfig } from '@code-pushup/models';
-import { mergeConfigs } from './merge-configs';
+import type { CoreConfig, PluginConfig } from '@code-pushup/models';
+import { mergeConfigs } from './merge-configs.js';
 
 const MOCK_CONFIG_PERSIST = {
   persist: {
@@ -172,7 +172,7 @@ describe('mergeObjects', () => {
     });
   });
 
-  it('should merge add upload to config', () => {
+  it('should merge upload config properties', () => {
     expect(
       mergeConfigs(
         MOCK_CONFIG_PERSIST,

@@ -1,10 +1,11 @@
-import { ReleaseType, clean, diff, neq } from 'semver';
+import { md } from 'build-md';
+import { clean, diff, neq } from 'semver';
 import type { AuditOutput, Issue } from '@code-pushup/models';
 import { objectFromEntries, pluralize } from '@code-pushup/utils';
-import { DependencyGroup, PackageManagerId } from '../../config';
-import { dependencyGroupToLong } from '../../constants';
-import { RELEASE_TYPES, outdatedSeverity } from './constants';
-import { OutdatedResult } from './types';
+import type { DependencyGroup, PackageManagerId } from '../../config.js';
+import { dependencyGroupToLong } from '../../constants.js';
+import { RELEASE_TYPES, outdatedSeverity } from './constants.js';
+import type { OutdatedResult, PackageVersion } from './types.js';
 
 export function outdatedResultToAuditOutput(
   result: OutdatedResult,
@@ -31,13 +32,16 @@ export function outdatedResultToAuditOutput(
     neq(dep.current, dep.latest),
   );
 
-  const outdatedStats = outdatedDependencies.reduce((acc, dep) => {
-    const outdatedLevel = diff(dep.current, dep.latest);
-    if (outdatedLevel == null) {
-      return acc;
-    }
-    return { ...acc, [outdatedLevel]: acc[outdatedLevel] + 1 };
-  }, objectFromEntries(RELEASE_TYPES.map(versionType => [versionType, 0])));
+  const outdatedStats = outdatedDependencies.reduce(
+    (acc, dep) => {
+      const outdatedLevel = diff(dep.current, dep.latest);
+      if (outdatedLevel == null) {
+        return acc;
+      }
+      return { ...acc, [outdatedLevel]: acc[outdatedLevel] + 1 };
+    },
+    objectFromEntries(RELEASE_TYPES.map(versionType => [versionType, 0])),
+  );
 
   const issues =
     outdatedDependencies.length === 0
@@ -60,7 +64,7 @@ export function calculateOutdatedScore(
   return totalDeps > 0 ? (totalDeps - majorOutdated) / totalDeps : 1;
 }
 
-export function outdatedToDisplayValue(stats: Record<ReleaseType, number>) {
+export function outdatedToDisplayValue(stats: PackageVersion) {
   const total = Object.values(stats).reduce((acc, value) => acc + value, 0);
 
   const versionBreakdown = RELEASE_TYPES.map(version =>
@@ -89,10 +93,12 @@ export function outdatedToIssues(dependencies: OutdatedResult): Issue[] {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const outdatedLevel = diff(current, latest)!;
     const packageReference =
-      url == null ? `\`${name}\`` : `[\`${name}\`](${url})`;
+      url == null ? md.code(name) : md.link(url, md.code(name));
 
     return {
-      message: `Package ${packageReference} requires a **${outdatedLevel}** update from **${current}** to **${latest}**.`,
+      message: md`Package ${packageReference} requires a ${md.bold(
+        outdatedLevel,
+      )} update from ${md.bold(current)} to ${md.bold(latest)}.`.toString(),
       severity: outdatedSeverity[outdatedLevel],
     };
   });

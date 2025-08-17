@@ -1,4 +1,4 @@
-import { NumberRange } from './types';
+import type { NumberRange } from './types.js';
 
 /**
  * This function calculates coverage as ratio of tested entities vs total
@@ -11,8 +11,8 @@ export function calculateCoverage(hit: number, found: number): number {
 }
 
 export function mergeConsecutiveNumbers(numberArr: number[]): NumberRange[] {
-  return [...numberArr]
-    .sort((a, b) => a - b)
+  return numberArr
+    .toSorted((a, b) => a - b)
     .reduce<NumberRange[]>((acc, currValue) => {
       const prevValue = acc.at(-1);
       if (

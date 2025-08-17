@@ -1,15 +1,27 @@
-import { describe } from 'vitest';
+import { type MockInstance, describe } from 'vitest';
 import {
   ISO_STRING_REGEXP,
   MINIMAL_CONFIG_MOCK,
   MINIMAL_REPORT_MOCK,
 } from '@code-pushup/test-utils';
 import {
-  CollectAndPersistReportsOptions,
+  type ScoredReport,
+  isVerbose,
+  logStdoutSummary,
+  scoreReport,
+  sortReport,
+  ui,
+} from '@code-pushup/utils';
+import * as utils from '@code-pushup/utils';
+import {
+  type CollectAndPersistReportsOptions,
   collectAndPersistReports,
-} from './collect-and-persist';
-import { collect } from './implementation/collect';
-import { logPersistedResults, persistReport } from './implementation/persist';
+} from './collect-and-persist.js';
+import { collect } from './implementation/collect.js';
+import {
+  logPersistedResults,
+  persistReport,
+} from './implementation/persist.js';
 
 vi.mock('./implementation/collect', () => ({
   collect: vi.fn().mockResolvedValue(MINIMAL_REPORT_MOCK),
@@ -21,16 +33,35 @@ vi.mock('./implementation/persist', () => ({
 }));
 
 describe('collectAndPersistReports', () => {
+  let logStdoutSpy: MockInstance<
+    [report: ScoredReport, verbose?: boolean],
+    void
+  >;
+
+  beforeEach(() => {
+    logStdoutSpy = vi.spyOn(utils, 'logStdoutSummary');
+  });
+
+  afterAll(() => {
+    logStdoutSpy.mockRestore();
+  });
+
   it('should call collect and persistReport with correct parameters in non-verbose mode', async () => {
+    const sortedScoredReport = sortReport(scoreReport(MINIMAL_REPORT_MOCK));
+
+    expect(isVerbose()).toBeFalse();
+
     const nonVerboseConfig: CollectAndPersistReportsOptions = {
-      categories: [],
       ...MINIMAL_CONFIG_MOCK,
       persist: {
         outputDir: 'output',
         filename: 'report',
         format: ['md'],
       },
-      verbose: false,
+      cache: {
+        read: false,
+        write: false,
+      },
       progress: false,
     };
     await collectAndPersistReports(nonVerboseConfig);
@@ -46,9 +77,9 @@ describe('collectAndPersistReports', () => {
         date: expect.stringMatching(ISO_STRING_REGEXP),
         duration: 666,
         commit: expect.any(Object),
-        categories: expect.any(Array),
         plugins: expect.any(Array),
       },
+      sortedScoredReport,
       {
         outputDir: 'output',
         filename: 'report',
@@ -56,19 +87,26 @@ describe('collectAndPersistReports', () => {
       },
     );
 
+    expect(logStdoutSummary).toHaveBeenCalledWith(sortedScoredReport);
     expect(logPersistedResults).not.toHaveBeenCalled();
   });
 
   it('should call collect and persistReport with correct parameters in verbose mode', async () => {
+    const sortedScoredReport = sortReport(scoreReport(MINIMAL_REPORT_MOCK));
+
+    vi.stubEnv('CP_VERBOSE', 'true');
+
     const verboseConfig: CollectAndPersistReportsOptions = {
-      categories: [],
       ...MINIMAL_CONFIG_MOCK,
       persist: {
         outputDir: 'output',
         filename: 'report',
         format: ['md'],
       },
-      verbose: true,
+      cache: {
+        read: false,
+        write: false,
+      },
       progress: false,
     };
     await collectAndPersistReports(verboseConfig);
@@ -77,9 +115,43 @@ describe('collectAndPersistReports', () => {
 
     expect(persistReport).toHaveBeenCalledWith(
       MINIMAL_REPORT_MOCK,
+      sortedScoredReport,
       verboseConfig.persist,
     );
 
+    expect(logStdoutSummary).toHaveBeenCalledWith(sortedScoredReport);
     expect(logPersistedResults).toHaveBeenCalled();
+  });
+
+  it('should call collect and not persistReport if skipReports options is true in verbose mode', async () => {
+    const sortedScoredReport = sortReport(scoreReport(MINIMAL_REPORT_MOCK));
+
+    vi.stubEnv('CP_VERBOSE', 'true');
+
+    const verboseConfig: CollectAndPersistReportsOptions = {
+      ...MINIMAL_CONFIG_MOCK,
+      persist: {
+        outputDir: 'output',
+        filename: 'report',
+        format: ['md'],
+        skipReports: true,
+      },
+      progress: false,
+    };
+    await collectAndPersistReports(verboseConfig);
+
+    expect(collect).toHaveBeenCalledWith(verboseConfig);
+
+    expect(persistReport).not.toHaveBeenCalled();
+    expect(logPersistedResults).not.toHaveBeenCalled();
+
+    expect(logStdoutSummary).toHaveBeenCalledWith(sortedScoredReport);
+  });
+
+  it('should print a summary to stdout', async () => {
+    await collectAndPersistReports(
+      MINIMAL_CONFIG_MOCK as CollectAndPersistReportsOptions,
+    );
+    expect(ui()).toHaveLogged('log', 'Made with ❤ by code-pushup.dev');
   });
 });

@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
-  OutputTransform,
-  RunnerConfig,
-  RunnerFunction,
+  type OutputTransform,
+  type RunnerConfig,
+  type RunnerFunction,
   outputTransformSchema,
   runnerConfigSchema,
   runnerFunctionSchema,
-} from './runner-config';
+} from './runner-config.js';
 
 describe('runnerConfigSchema', () => {
   it('should accept a valid runner configuration', () => {
@@ -64,7 +64,7 @@ describe('runnerFunctionSchema', () => {
 
   it('should throw for a non-function argument', () => {
     expect(() => runnerFunctionSchema.parse({ slug: 'configuration' })).toThrow(
-      `Expected function,`,
+      'Expected function, received object',
     );
   });
 });
@@ -86,7 +86,7 @@ describe('outputTransformSchema', () => {
 
   it('should throw for a non-function argument', () => {
     expect(() => outputTransformSchema.parse('configuration')).toThrow(
-      'Expected function',
+      'Expected function, received string',
     );
   });
 });

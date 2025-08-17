@@ -1,19 +1,19 @@
 import { bold, gray } from 'ansis';
-import { ArgumentsCamelCase, CommandModule } from 'yargs';
+import type { ArgumentsCamelCase, CommandModule } from 'yargs';
 import {
-  CollectOptions,
-  UploadOptions,
+  type CollectOptions,
+  type UploadOptions,
   collectAndPersistReports,
   upload,
 } from '@code-pushup/core';
 import { ui } from '@code-pushup/utils';
-import { CLI_NAME } from '../constants';
+import { CLI_NAME } from '../constants.js';
 import {
   collectSuccessfulLog,
   renderConfigureCategoriesHint,
   renderIntegratePortalHint,
   uploadSuccessfulLog,
-} from '../implementation/logging';
+} from '../implementation/logging.js';
 
 type AutorunOptions = CollectOptions & UploadOptions;
 
@@ -41,13 +41,15 @@ export function yargsAutorunCommandObject() {
       await collectAndPersistReports(optionsWithFormat);
       collectSuccessfulLog();
 
-      if (options.categories.length === 0) {
+      if (!options.categories || options.categories.length === 0) {
         renderConfigureCategoriesHint();
       }
 
       if (options.upload) {
-        const { url } = await upload(options);
-        uploadSuccessfulLog(url);
+        const report = await upload(options);
+        if (report?.url) {
+          uploadSuccessfulLog(report.url);
+        }
       } else {
         ui().logger.warning('Upload skipped because configuration is not set.');
         renderIntegratePortalHint();

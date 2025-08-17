@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "rootDir": "./",
+    "module": "CommonJS",
+    "out": "./dist/bundle.js"
+  },
+  "include": ["src/0-no-diagnostics/**/*.ts"]
+}

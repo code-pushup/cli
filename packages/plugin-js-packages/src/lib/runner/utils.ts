@@ -1,17 +1,14 @@
-import { sep } from 'node:path';
 import {
-  crawlFileSystem,
   objectFromEntries,
   objectToKeys,
   readJsonFile,
 } from '@code-pushup/utils';
-import { AuditResult, Vulnerability } from './audit/types';
+import type { AuditResult, Vulnerability } from './audit/types.js';
 import {
-  DependencyGroupLong,
-  DependencyTotals,
-  PackageJson,
+  type DependencyTotals,
+  type PackageJson,
   dependencyGroupLong,
-} from './outdated/types';
+} from './outdated/types.js';
 
 export function filterAuditResult(
   result: AuditResult,
@@ -54,41 +51,18 @@ export function filterAuditResult(
   };
 }
 
-// TODO: use .gitignore
-export async function findAllPackageJson(): Promise<string[]> {
-  return (
-    await crawlFileSystem({
-      directory: '.',
-      pattern: /(^|[\\/])package\.json$/,
-    })
-  ).filter(
-    path =>
-      !path.startsWith(`node_modules${sep}`) &&
-      !path.includes(`${sep}node_modules${sep}`) &&
-      !path.startsWith(`.nx${sep}`),
-  );
-}
-
 export async function getTotalDependencies(
-  packageJsonPaths: string[],
+  packageJsonPath: string,
 ): Promise<DependencyTotals> {
-  const parsedDeps = await Promise.all(
-    packageJsonPaths.map(readJsonFile<PackageJson>),
+  const parsedDeps = await readJsonFile<PackageJson>(packageJsonPath);
+
+  const mergedDeps = objectFromEntries(
+    dependencyGroupLong.map(group => {
+      const deps = parsedDeps[group];
+      return [group, deps == null ? [] : objectToKeys(deps)];
+    }),
   );
 
-  const mergedDeps = parsedDeps.reduce<Record<DependencyGroupLong, string[]>>(
-    (acc, depMapper) =>
-      objectFromEntries(
-        dependencyGroupLong.map(group => {
-          const deps = depMapper[group];
-          return [
-            group,
-            [...acc[group], ...(deps == null ? [] : objectToKeys(deps))],
-          ];
-        }),
-      ),
-    { dependencies: [], devDependencies: [], optionalDependencies: [] },
-  );
   return objectFromEntries(
     objectToKeys(mergedDeps).map(deps => [
       deps,

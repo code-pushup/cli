@@ -3,8 +3,8 @@ import {
   auditDisplayValueSchema,
   auditOutputSchema,
   auditValueSchema,
-} from './audit-output';
-import { commitSchema } from './commit';
+} from './audit-output.js';
+import { commitSchema } from './commit.js';
 import {
   docsUrlSchema,
   executionMetaSchema,
@@ -12,8 +12,9 @@ import {
   scoreSchema,
   slugSchema,
   titleSchema,
-} from './implementation/schemas';
-import { pluginMetaSchema } from './plugin-config';
+  urlSchema,
+} from './implementation/schemas.js';
+import { pluginMetaSchema } from './plugin-config.js';
 
 function makeComparisonSchema<T extends ZodTypeAny>(schema: T) {
   const sharedDescription = schema.description || 'Result';
@@ -27,15 +28,14 @@ function makeArraysComparisonSchema<
   TDiff extends typeof scorableDiffSchema,
   TResult extends ZodTypeAny,
 >(diffSchema: TDiff, resultSchema: TResult, description: string) {
-  return z.object(
-    {
+  return z
+    .object({
       changed: z.array(diffSchema),
       unchanged: z.array(resultSchema),
       added: z.array(resultSchema),
       removed: z.array(resultSchema),
-    },
-    { description },
-  );
+    })
+    .describe(description);
 }
 
 const scorableMetaSchema = z.object({
@@ -79,7 +79,6 @@ export const auditDiffSchema = scorableWithPluginDiffSchema.merge(
         z.object({
           diff: z
             .number()
-            .int()
             .describe('Value change (`values.after - values.before`)'),
         }),
       )
@@ -112,6 +111,10 @@ export const reportsDiffSchema = z
     commits: makeComparisonSchema(commitSchema)
       .nullable()
       .describe('Commits identifying compared reports'),
+    portalUrl: urlSchema
+      .optional()
+      .describe('Link to comparison page in Code PushUp portal'),
+    label: z.string().optional().describe('Label (e.g. project name)'),
     categories: makeArraysComparisonSchema(
       categoryDiffSchema,
       categoryResultSchema,

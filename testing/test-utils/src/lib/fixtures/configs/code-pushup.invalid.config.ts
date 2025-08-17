@@ -1,4 +1,4 @@
-import { type CoreConfig } from '@code-pushup/models';
+import type { CoreConfig } from '@code-pushup/models';
 
 export default {
   persist: { outputDir: 'tmp' },

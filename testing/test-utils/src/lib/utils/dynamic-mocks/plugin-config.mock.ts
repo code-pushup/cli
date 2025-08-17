@@ -1,20 +1,20 @@
-import { join } from 'node:path';
+import path from 'node:path';
 import {
-  Audit,
-  AuditReport,
-  PluginConfig,
+  type Audit,
+  type AuditReport,
+  type PluginConfig,
   auditReportSchema,
   auditSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
-import { echoRunnerConfigMock } from './runner-config.mock';
+import { echoRunnerConfigMock } from './runner-config.mock.js';
 
 export function pluginConfigMock(
   auditOutputs: AuditReport[],
   opt?: Partial<PluginConfig> & { outputDir?: string; outputFile?: string },
 ): PluginConfig {
   const { outputDir, outputFile } = opt || {};
-  const pluginOutputFile = join(
+  const pluginOutputFile = path.join(
     outputDir || 'tmp',
     outputFile || `out.${Date.now()}.json`,
   );
@@ -26,7 +26,7 @@ export function pluginConfigMock(
     docsUrl: 'https://my-plugin.docs.dev?1',
     audits: auditOutputs.map(auditOutput => auditConfigMock(auditOutput)),
     runner: echoRunnerConfigMock(auditOutputs, pluginOutputFile),
-    ...(opt || {}),
+    ...opt,
   });
 }
 
@@ -51,6 +51,6 @@ export function auditReportMock(opt?: Partial<AuditReport>): AuditReport {
     details: {
       issues: [],
     },
-    ...(opt || {}),
+    ...opt,
   }) as Required<AuditReport>;
 }

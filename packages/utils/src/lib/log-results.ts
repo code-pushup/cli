@@ -1,5 +1,5 @@
-import { isPromiseFulfilledResult, isPromiseRejectedResult } from './guards';
-import { ui } from './logging';
+import { isPromiseFulfilledResult, isPromiseRejectedResult } from './guards.js';
+import { ui } from './logging.js';
 
 export function logMultipleResults<T>(
   results: PromiseSettledResult<T>[],

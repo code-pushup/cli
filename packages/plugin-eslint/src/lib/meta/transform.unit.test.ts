@@ -1,11 +1,11 @@
 import type { Audit } from '@code-pushup/models';
-import { ruleToAudit } from './transform';
+import { ruleToAudit } from './transform.js';
 
 describe('ruleToAudit', () => {
   it('built-in rule without custom options', () => {
     expect(
       ruleToAudit({
-        ruleId: 'no-invalid-regexp',
+        id: 'no-invalid-regexp',
         meta: {
           docs: {
             description:
@@ -27,7 +27,7 @@ describe('ruleToAudit', () => {
   it('plugin rule without custom options', () => {
     expect(
       ruleToAudit({
-        ruleId: '@typescript-eslint/no-explicit-any',
+        id: '@typescript-eslint/no-explicit-any',
         meta: {
           docs: {
             description: 'Disallow the `any` type.',
@@ -48,7 +48,7 @@ describe('ruleToAudit', () => {
   it('plugin rule with custom options object', () => {
     expect(
       ruleToAudit({
-        ruleId: 'max-lines',
+        id: 'max-lines',
         meta: {
           docs: {
             description: 'Enforce a maximum number of lines per file',
@@ -84,7 +84,7 @@ Custom options:
   it('built-in rule with custom options array', () => {
     expect(
       ruleToAudit({
-        ruleId: 'no-restricted-imports',
+        id: 'no-restricted-imports',
         meta: {
           docs: {
             description: 'Disallow specified modules when loaded by import',
@@ -114,7 +114,7 @@ Custom options:
   it('plugin rule with custom options', () => {
     expect(
       ruleToAudit({
-        ruleId: 'import/extensions',
+        id: 'import/extensions',
         meta: {
           docs: {
             description:
@@ -148,7 +148,7 @@ Custom options:
   it('rule with overlong description -> title is truncated', () => {
     expect(
       ruleToAudit({
-        ruleId: '@angular-eslint/template/mouse-events-have-key-events',
+        id: '@angular-eslint/template/mouse-events-have-key-events',
         meta: {
           docs: {
             description:

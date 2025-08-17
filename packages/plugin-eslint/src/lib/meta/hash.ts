@@ -1,5 +1,10 @@
 import { createHash } from 'node:crypto';
 import { slugify } from '@code-pushup/utils';
+import { type RuleData, resolveRuleOptions } from './parse.js';
+
+export function ruleToSlug(rule: RuleData): string {
+  return ruleIdToSlug(rule.id, resolveRuleOptions(rule));
+}
 
 export function ruleIdToSlug(
   ruleId: string,

@@ -1,25 +1,24 @@
 import {
+  yargsCacheConfigOptionsDefinition,
   yargsCoreConfigOptionsDefinition,
   yargsPersistConfigOptionsDefinition,
   yargsUploadConfigOptionsDefinition,
-} from './implementation/core-config.options';
-import { yargsGlobalOptionsDefinition } from './implementation/global.options';
-import { yargsOnlyPluginsOptionsDefinition } from './implementation/only-plugins.options';
-import { yargsSkipPluginsOptionsDefinition } from './implementation/skip-plugins.options';
+} from './implementation/core-config.options.js';
+import { yargsFilterOptionsDefinition } from './implementation/filter.options.js';
+import { yargsGlobalOptionsDefinition } from './implementation/global.options.js';
 
 export const options = {
   ...yargsGlobalOptionsDefinition(),
   ...yargsCoreConfigOptionsDefinition(),
-  ...yargsOnlyPluginsOptionsDefinition(),
-  ...yargsSkipPluginsOptionsDefinition(),
+  ...yargsFilterOptionsDefinition(),
 };
 
 export const groups = {
   'Global Options:': [
     ...Object.keys(yargsGlobalOptionsDefinition()),
-    ...Object.keys(yargsOnlyPluginsOptionsDefinition()),
-    ...Object.keys(yargsSkipPluginsOptionsDefinition()),
+    ...Object.keys(yargsFilterOptionsDefinition()),
   ],
+  'Cache Options:': Object.keys(yargsCacheConfigOptionsDefinition()),
   'Persist Options:': Object.keys(yargsPersistConfigOptionsDefinition()),
   'Upload Options:': Object.keys(yargsUploadConfigOptionsDefinition()),
 };

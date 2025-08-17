@@ -1,0 +1,13 @@
+{
+  "name": "plugin-typescript",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/plugin-typescript/src",
+  "projectType": "library",
+  "targets": {
+    "build": {},
+    "lint": {},
+    "unit-test": {},
+    "int-test": {}
+  },
+  "tags": ["scope:plugin", "type:feature", "publishable"]
+}

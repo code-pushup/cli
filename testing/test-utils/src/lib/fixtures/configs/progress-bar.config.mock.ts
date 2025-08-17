@@ -4,7 +4,7 @@
  * Usage:
  * npx ./dist/packages/cli collect --config=./testing/test-utils/src/lib/fixtures/configs/progress-bar.config.mock.ts
  */
-import { dirname, join } from 'path';
+import path from 'node:path';
 import { fileURLToPath } from 'url';
 
 // Small hack to control the number of plugins while debugging
@@ -16,8 +16,8 @@ const numPlugins = parseInt(
 );
 
 const outputDir = './tmp';
-const pluginProcess = join(
-  fileURLToPath(dirname(import.meta.url)),
+const pluginProcess = path.join(
+  fileURLToPath(path.dirname(import.meta.url)),
   '..',
   '..',
   'utils',
@@ -30,7 +30,7 @@ const pluginTitle = (end: string): string => 'Async Plugin ' + end;
 const auditTitle = (end: string): string => 'Async Audit ' + end;
 const asyncPlugin = (pId: string, duration = 1000) => {
   const aId = '0';
-  const outputFile = join(outputDir, `${pluginSlug(pId)}-output.json`);
+  const outputFile = path.join(outputDir, `${pluginSlug(pId)}-output.json`);
   return {
     slug: pluginSlug(pId),
     title: pluginTitle(pId),

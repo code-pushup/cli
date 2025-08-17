@@ -86,11 +86,4 @@ describe('init generator', () => {
     const targetDefaults = readNxJson(tree)!.targetDefaults!;
     expect(targetDefaults).not.toHaveProperty(cpTargetName);
   });
-
-  it('should skip nx.Json', () => {
-    initGenerator(tree, { ...options, skipNxJson: true });
-    // nx.json
-    const targetDefaults = readNxJson(tree)!.targetDefaults!;
-    expect(targetDefaults).not.toHaveProperty(cpTargetName);
-  });
 });

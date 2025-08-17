@@ -1,0 +1,13 @@
+{
+  "name": "ci",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/ci/src",
+  "projectType": "library",
+  "targets": {
+    "build": {},
+    "lint": {},
+    "unit-test": {},
+    "int-test": {}
+  },
+  "tags": ["scope:tooling", "type:feature", "publishable"]
+}

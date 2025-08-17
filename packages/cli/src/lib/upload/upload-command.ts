@@ -1,12 +1,12 @@
 import { bold, gray } from 'ansis';
-import { ArgumentsCamelCase, CommandModule } from 'yargs';
-import { UploadOptions, upload } from '@code-pushup/core';
+import type { ArgumentsCamelCase, CommandModule } from 'yargs';
+import { type UploadOptions, upload } from '@code-pushup/core';
 import { ui } from '@code-pushup/utils';
-import { CLI_NAME } from '../constants';
+import { CLI_NAME } from '../constants.js';
 import {
   renderIntegratePortalHint,
   uploadSuccessfulLog,
-} from '../implementation/logging';
+} from '../implementation/logging.js';
 
 export function yargsUploadCommandObject() {
   const command = 'upload';
@@ -22,8 +22,10 @@ export function yargsUploadCommandObject() {
         renderIntegratePortalHint();
         throw new Error('Upload configuration not set');
       }
-      const { url } = await upload(options);
-      uploadSuccessfulLog(url);
+      const report = await upload(options);
+      if (report?.url) {
+        uploadSuccessfulLog(report.url);
+      }
     },
   } satisfies CommandModule;
 }

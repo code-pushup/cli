@@ -1,11 +1,11 @@
-import {
+import type {
   Table,
   TableAlignment,
   TableCellValue,
   TableColumnObject,
   TableColumnPrimitive,
 } from '@code-pushup/models';
-import { capitalize } from '../transform';
+import { capitalize } from '../case-conversions.js';
 
 export function rowToStringArray({ rows, columns = [] }: Table): string[][] {
   if (Array.isArray(rows.at(0)) && typeof columns.at(0) === 'object') {
@@ -119,8 +119,8 @@ export function getColumnAlignments(tableData: Table): TableAlignment[] {
     );
   }
 
-  const biggestRow = [...rows]
-    .sort((a, b) => Object.keys(a).length - Object.keys(b).length)
+  const biggestRow = rows
+    .toSorted((a, b) => Object.keys(a).length - Object.keys(b).length)
     .at(-1);
   if (columns.length > 0) {
     return columns.map((column, idx) =>

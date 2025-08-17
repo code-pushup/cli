@@ -25,10 +25,6 @@ export function countOccurrences<T extends PropertyKey>(
   );
 }
 
-export function exists<T>(value: T): value is NonNullable<T> {
-  return value != null;
-}
-
 export function distinct<T extends string | number | boolean>(array: T[]): T[] {
   return [...new Set(array)];
 }
@@ -51,21 +47,19 @@ export function factorOf<T>(items: T[], filterFn: (i: T) => boolean): number {
 type ArgumentValue = number | string | boolean | string[];
 export type CliArgsObject<T extends object = Record<string, ArgumentValue>> =
   T extends never
-    ? // eslint-disable-next-line @typescript-eslint/naming-convention
-      Record<string, ArgumentValue | undefined> | { _: string }
+    ? Record<string, ArgumentValue | undefined> | { _: string }
     : T;
 
 /**
  * Converts an object with different types of values into an array of command-line arguments.
  *
  * @example
- * const args = objectToProcessArgs({
+ * const args = objectToCliArgs({
  *   _: ['node', 'index.js'], // node index.js
  *   name: 'Juanita', // --name=Juanita
  *   formats: ['json', 'md'] // --format=json --format=md
  * });
  */
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export function objectToCliArgs<
   T extends object = Record<string, ArgumentValue>,
 >(params?: CliArgsObject<T>): string[] {
@@ -73,11 +67,9 @@ export function objectToCliArgs<
     return [];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return Object.entries(params).flatMap(([key, value]) => {
     // process/file/script
     if (key === '_') {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return Array.isArray(value) ? value : [`${value}`];
     }
     const prefix = key.length === 1 ? '-' : '--';
@@ -110,8 +102,6 @@ export function objectToCliArgs<
       return [`${prefix}${value ? '' : 'no-'}${key}`];
     }
 
-    // @TODO add support for nested objects `persist.filename`
-
     throw new Error(`Unsupported type ${typeof value} for key ${key}`);
   });
 }
@@ -124,28 +114,23 @@ export function toUnixNewlines(text: string): string {
   return platform() === 'win32' ? text.replace(/\r\n/g, '\n') : text;
 }
 
-export function fromJsonLines<T = unknown>(jsonLines: string) {
+export function fromJsonLines<T extends unknown[]>(jsonLines: string) {
   const unifiedNewLines = toUnixNewlines(jsonLines).trim();
-  return JSON.parse(`[${unifiedNewLines.split('\n').join(',')}]`) as T;
+  const invalid = Symbol('invalid json');
+  return unifiedNewLines
+    .split('\n')
+    .map(line => {
+      try {
+        return JSON.parse(line);
+      } catch {
+        return invalid;
+      }
+    })
+    .filter(line => line !== invalid) as T;
 }
 
 export function toJsonLines<T>(json: T[]) {
   return json.map(item => JSON.stringify(item)).join('\n');
-}
-
-export function capitalize<T extends string>(text: T): Capitalize<T> {
-  return `${text.charAt(0).toLocaleUpperCase()}${text.slice(
-    1,
-  )}` as Capitalize<T>;
-}
-
-export function apostrophize(text: string, upperCase?: boolean) {
-  const lastCharMatch = text.match(/(\w)\W*$/);
-  const lastChar = lastCharMatch?.[1] ?? '';
-
-  return `${text}'${
-    lastChar.toLocaleLowerCase() === 's' ? '' : upperCase ? 'S' : 's'
-  }`;
 }
 
 export function toNumberPrecision(
@@ -159,8 +144,8 @@ export function toNumberPrecision(
   );
 }
 
-/* eslint-disable no-magic-numbers */
 export function toOrdinal(value: number): string {
+  /* eslint-disable @typescript-eslint/no-magic-numbers */
   if (value % 10 === 1 && value % 100 !== 11) {
     return `${value}st`;
   }
@@ -172,8 +157,15 @@ export function toOrdinal(value: number): string {
   if (value % 10 === 3 && value % 100 !== 13) {
     return `${value}rd`;
   }
+  /* eslint-enable @typescript-eslint/no-magic-numbers */
 
   return `${value}th`;
 }
 
-/* eslint-enable no-magic-numbers */
+export function removeUndefinedAndEmptyProps<T extends object>(obj: T): T {
+  return Object.fromEntries(
+    Object.entries(obj).filter(
+      ([, value]) => value !== undefined && value !== '',
+    ),
+  ) as T;
+}

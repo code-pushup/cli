@@ -1,15 +1,37 @@
 /* eslint-disable max-lines-per-function */
-import { bold } from 'ansis';
+import { blue, dim, green } from 'ansis';
+import { createRequire } from 'node:module';
 import yargs, {
-  Argv,
-  CommandModule,
-  MiddlewareFunction,
-  Options,
-  ParserConfigurationOptions,
+  type Argv,
+  type CommandModule,
+  type MiddlewareFunction,
+  type Options,
+  type ParserConfigurationOptions,
 } from 'yargs';
-import { PersistConfig, formatSchema } from '@code-pushup/models';
+import { type PersistConfig, formatSchema } from '@code-pushup/models';
 import { TERMINAL_WIDTH } from '@code-pushup/utils';
-import { logErrorBeforeThrow } from './implementation/global.utils';
+import {
+  descriptionStyle,
+  formatNestedValues,
+  formatObjectValue,
+  headerStyle,
+  titleStyle,
+} from './implementation/formatting.js';
+import { logErrorBeforeThrow } from './implementation/global.utils.js';
+
+export const yargsDecorator = {
+  'Commands:': `${green('Commands')}:`,
+  'Options:': `${green('Options')}:`,
+  'Examples:': `${green('Examples')}:`,
+  boolean: blue('boolean'),
+  count: blue('count'),
+  string: blue('string'),
+  array: blue('array'),
+  required: blue('required'),
+  'default:': `${blue('default')}:`,
+  'choices:': `${blue('choices')}:`,
+  'aliases:': `${blue('aliases')}:`,
+};
 
 /**
  * returns configurable yargs CLI for code-pushup
@@ -43,11 +65,19 @@ export function yargsCli<T = unknown>(
   const examples = cfg.examples ?? [];
   const cli = yargs(argv);
 
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
+
   // setup yargs
   cli
-    .help()
-    .version(false)
+    .updateLocale(yargsDecorator)
+    // take minimum of TERMINAL_WIDTH or full width of the terminal
+    .wrap(Math.max(TERMINAL_WIDTH, cli.terminalWidth()))
+    .help('help', descriptionStyle('Show help'))
     .alias('h', 'help')
+    .showHelpOnFail(false)
+    .version('version', dim`Show version`, packageJson.version)
     .check(args => {
       const persist = args['persist'] as PersistConfig | undefined;
       return persist == null || validatePersistFormat(persist);
@@ -58,13 +88,11 @@ export function yargsCli<T = unknown>(
     .coerce('config', (config: string | string[]) =>
       Array.isArray(config) ? config.at(-1) : config,
     )
-    .options(options)
-    // take full width of the terminal `cli.terminalWidth()`
-    .wrap(TERMINAL_WIDTH);
+    .options(formatNestedValues(options, 'describe'));
 
   // usage message
   if (usageMessage) {
-    cli.usage(bold(usageMessage));
+    cli.usage(titleStyle(usageMessage));
   }
 
   // script name
@@ -74,12 +102,12 @@ export function yargsCli<T = unknown>(
 
   // add examples
   examples.forEach(([exampleName, description]) =>
-    cli.example(exampleName, description),
+    cli.example(exampleName, descriptionStyle(description)),
   );
 
   // add groups
   Object.entries(groups).forEach(([groupName, optionNames]) =>
-    cli.group(optionNames, groupName),
+    cli.group(optionNames, headerStyle(groupName)),
   );
 
   // add middlewares
@@ -92,13 +120,18 @@ export function yargsCli<T = unknown>(
 
   // add commands
   commands.forEach(commandObj => {
-    cli.command({
-      ...commandObj,
-      handler: logErrorBeforeThrow(commandObj.handler),
-      ...(typeof commandObj.builder === 'function' && {
-        builder: logErrorBeforeThrow(commandObj.builder),
-      }),
-    });
+    cli.command(
+      formatObjectValue(
+        {
+          ...commandObj,
+          handler: logErrorBeforeThrow(commandObj.handler),
+          ...(typeof commandObj.builder === 'function' && {
+            builder: logErrorBeforeThrow(commandObj.builder),
+          }),
+        },
+        'describe',
+      ),
+    );
   });
 
   // this flag should be set for tests and debugging purposes
@@ -122,9 +155,9 @@ function validatePersistFormat(persist: PersistConfig) {
     return true;
   } catch {
     throw new Error(
-      `Invalid persist.format option. Valid options are: ${Object.values(
-        formatSchema.Values,
-      ).join(', ')}`,
+      `Invalid persist.format option. Valid options are: ${formatSchema.options.join(
+        ', ',
+      )}`,
     );
   }
 }

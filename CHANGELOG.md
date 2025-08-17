@@ -1,3 +1,663 @@
+## 0.74.0 (2025-08-13)
+
+### 🚀 Features
+
+- add audit output caching for execute plugin ([#1057](https://github.com/code-pushup/cli/pull/1057))
+- add report option to cli ([#1058](https://github.com/code-pushup/cli/pull/1058))
+- add caching options to cli ([#1059](https://github.com/code-pushup/cli/pull/1059))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
+## 0.73.0 (2025-08-08)
+
+### 🚀 Features
+
+- **ci:** add searchCommits option to extend portal cache range ([0b14111f](https://github.com/code-pushup/cli/commit/0b14111f))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.72.1 (2025-08-06)
+
+### 🩹 Fixes
+
+- **ci:** download portal report for base commit and include details ([21572d52](https://github.com/code-pushup/cli/commit/21572d52))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.72.0 (2025-08-06)
+
+### 🚀 Features
+
+- **ci:** add configPatterns as optional performance optimization ([823ade1f](https://github.com/code-pushup/cli/commit/823ade1f))
+- **cli:** use default report paths if --before/--after missing in compare command ([61ee2272](https://github.com/code-pushup/cli/commit/61ee2272))
+- **core:** copy label from report.json inputs to report-diff.json output ([2adcf9db](https://github.com/code-pushup/cli/commit/2adcf9db))
+- **models:** add optional label to report.json schema ([77d33b54](https://github.com/code-pushup/cli/commit/77d33b54))
+- **utils:** interpolate variables in strings ([242435e0](https://github.com/code-pushup/cli/commit/242435e0))
+
+### 🔥 Performance
+
+- **ci:** use bulk command to compare reports for all projects ([f9deac78](https://github.com/code-pushup/cli/commit/f9deac78))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.71.0 (2025-08-01)
+
+### 🚀 Features
+
+- **ci:** download report from graphql api and convert to report.json format ([d35cd7a0](https://github.com/code-pushup/cli/commit/d35cd7a0))
+- **ci:** parse upload along with persist in print-config commands ([a73bf21b](https://github.com/code-pushup/cli/commit/a73bf21b))
+- **ci:** download previous report from portal if available ([918eb0d5](https://github.com/code-pushup/cli/commit/918eb0d5))
+- **utils:** add type helpers for lower/upper case conversions ([50483748](https://github.com/code-pushup/cli/commit/50483748))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.70.0 (2025-07-31)
+
+### 🚀 Features
+
+- **ci:** update to zod v4 ([c342dab1](https://github.com/code-pushup/cli/commit/c342dab1))
+- **ci:** remove redundant --no-progress argument ([b0ed2fa9](https://github.com/code-pushup/cli/commit/b0ed2fa9))
+- **ci:** skip persist.format args if defaults already configured ([c11db95e](https://github.com/code-pushup/cli/commit/c11db95e))
+- **cli:** disable progress bar in CI environment ([ecd42c60](https://github.com/code-pushup/cli/commit/ecd42c60))
+- **models:** add generic artifact generation to enable caching ([#1023](https://github.com/code-pushup/cli/pull/1023))
+- **models:** update to zod v4 ([7985c239](https://github.com/code-pushup/cli/commit/7985c239))
+- **nx-plugin:** update to zod v4 ([91774182](https://github.com/code-pushup/cli/commit/91774182))
+- **plugin-coverage:** update to zod v4 ([a0814d31](https://github.com/code-pushup/cli/commit/a0814d31))
+- **plugin-eslint:** update zod to v4 ([4ef657f1](https://github.com/code-pushup/cli/commit/4ef657f1))
+- **plugin-js-packages:** update to zod v4 ([c24b7435](https://github.com/code-pushup/cli/commit/c24b7435))
+- **plugin-jsdocs:** update to zod v4 ([3444e8d3](https://github.com/code-pushup/cli/commit/3444e8d3))
+- **plugin-lighthouse:** implement multiple URL support ([f4db1368](https://github.com/code-pushup/cli/commit/f4db1368))
+- **plugin-typescript:** update to zod v4 ([6de416f4](https://github.com/code-pushup/cli/commit/6de416f4))
+- **utils:** update to zod v4, replace zod-validation-error with z.prettifyError ([b1364d7d](https://github.com/code-pushup/cli/commit/b1364d7d))
+- **utils:** parse boolean environment variables ([be08c188](https://github.com/code-pushup/cli/commit/be08c188))
+- **utils:** detect ci environment ([3430d31b](https://github.com/code-pushup/cli/commit/3430d31b))
+- **utils:** extract boolean value coercion to standalone function ([f76e4fb0](https://github.com/code-pushup/cli/commit/f76e4fb0))
+
+### 🩹 Fixes
+
+- **ci:** do not set --verbose by default ([ab39b050](https://github.com/code-pushup/cli/commit/ab39b050))
+- **cli:** adapt format schema check to zod v4 ([77a384b0](https://github.com/code-pushup/cli/commit/77a384b0))
+- **models:** use implementAsync for async z.function occurrences ([17931228](https://github.com/code-pushup/cli/commit/17931228))
+
+### ❤️ Thank You
+
+- Andrii Siuta
+- Hanna Skryl @hanna-skryl
+- Matěj Chalk
+
+## 0.69.5 (2025-07-11)
+
+### 🩹 Fixes
+
+- **plugin-js-packages:** include url for outdated packages in modern yarn ([297766d1](https://github.com/code-pushup/cli/commit/297766d1))
+- **plugin-js-packages:** include transitive dependencies in audit for modern yarn ([8e285e93](https://github.com/code-pushup/cli/commit/8e285e93))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.69.4 (2025-07-09)
+
+### 🩹 Fixes
+
+- **plugin-js-packages:** parse yarn 4 audit output correctly ([8041d870](https://github.com/code-pushup/cli/commit/8041d870))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.69.3 (2025-07-07)
+
+### 🩹 Fixes
+
+- **plugin-js-packages:** prevent negative scores in yarn v2+ workspaces ([b6f96330](https://github.com/code-pushup/cli/commit/b6f96330))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.69.2 (2025-06-16)
+
+### 🩹 Fixes
+
+- **plugin-coverage:** prevent invalid coverage when lcov has hit > found ([c796f30e](https://github.com/code-pushup/cli/commit/c796f30e))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.69.1 (2025-06-16)
+
+### 🩹 Fixes
+
+- **plugin-coverage:** skip invalid line numbers from tools like pytest-cov ([ba8b3171](https://github.com/code-pushup/cli/commit/ba8b3171))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.69.0 (2025-06-03)
+
+### 🚀 Features
+
+- **ci:** use nx cache friendly output path for print-config command ([35e334f5](https://github.com/code-pushup/cli/commit/35e334f5))
+- **ci:** do not skip nx/turbo cache for print-config and compare commands ([c83ad36d](https://github.com/code-pushup/cli/commit/c83ad36d))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.68.0 (2025-05-19)
+
+### 🚀 Features
+
+- **core:** include trees when uploading audits to portal ([c1c6965e](https://github.com/code-pushup/cli/commit/c1c6965e))
+- **models:** define tree data structure for audit details ([63bf44ca](https://github.com/code-pushup/cli/commit/63bf44ca))
+- **plugin-coverage:** replace issues with tree ([2dc16890](https://github.com/code-pushup/cli/commit/2dc16890))
+- **plugin-jsdocs:** replace issues with tree ([d347c0f2](https://github.com/code-pushup/cli/commit/d347c0f2))
+- **plugin-jsdocs:** include end line number ([f2102eb5](https://github.com/code-pushup/cli/commit/f2102eb5))
+- **plugin-lighthouse:** convert criticalrequestchain details to trees and table ([18d4230e](https://github.com/code-pushup/cli/commit/18d4230e))
+- **plugin-lighthouse:** convert treemap-data details to trees ([19088927](https://github.com/code-pushup/cli/commit/19088927))
+- **utils:** generate ascii tree in full markdown report's audit details ([ab462d42](https://github.com/code-pushup/cli/commit/ab462d42))
+- **utils:** convert files array to tree structure ([211be5bf](https://github.com/code-pushup/cli/commit/211be5bf))
+- **utils:** aggregate coverage per folder ([7ef0c14e](https://github.com/code-pushup/cli/commit/7ef0c14e))
+- **utils:** sort coverage tree alphabetically with folders before files ([f87b869e](https://github.com/code-pushup/cli/commit/f87b869e))
+
+### 🩹 Fixes
+
+- **ci:** use absolute path in print-config --output file ([61ae18e1](https://github.com/code-pushup/cli/commit/61ae18e1))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.67.0 (2025-04-28)
+
+### 🚀 Features
+
+- **utils:** create helper function for sequential Promise.all ([556d8788](https://github.com/code-pushup/cli/commit/556d8788))
+
+### 🩹 Fixes
+
+- handle repos without git gracefully ([dba3ff58](https://github.com/code-pushup/cli/commit/dba3ff58))
+- lint ([18225ede](https://github.com/code-pushup/cli/commit/18225ede))
+- **ci:** prevent parallel print-config commands ([85ff390c](https://github.com/code-pushup/cli/commit/85ff390c))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael @rx-angular
+
+## 0.66.2 (2025-04-07)
+
+### 🩹 Fixes
+
+- **plugin-typescript:** use consistent casing for plugin metadata (Typescript -> TypeScript) ([8e78e8d8](https://github.com/code-pushup/cli/commit/8e78e8d8))
+- **plugin-typescript:** use same displayValue formatting as eslint ([87dadf33](https://github.com/code-pushup/cli/commit/87dadf33))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.66.1 (2025-04-07)
+
+### 🩹 Fixes
+
+- **plugin-typescript:** use default export ([1aa6211f](https://github.com/code-pushup/cli/commit/1aa6211f))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.66.0 (2025-04-04)
+
+### 🚀 Features
+
+- **plugin-typescript:** prepare for first release ([6b1e39d6](https://github.com/code-pushup/cli/commit/6b1e39d6))
+
+### 🩹 Fixes
+
+- **plugin-js-packages-e2e:** npm outdated fallback to "wanted" if "current" is missing ([ef5c2eee](https://github.com/code-pushup/cli/commit/ef5c2eee))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Vojtech Masek @vmasek
+
+## 0.65.3 (2025-03-31)
+
+### 🩹 Fixes
+
+- **utils:** update esbuild to version patched for GHSA-67mh-4wv8-2f99 ([c5921ab2](https://github.com/code-pushup/cli/commit/c5921ab2))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.65.2 (2025-03-26)
+
+### 🚀 Features
+
+- **plugin-typescript:** adjust logic ([#975](https://github.com/code-pushup/cli/pull/975))
+
+### 🩹 Fixes
+
+- **plugin-js-packages:** handle empty output from yarn outdated ([a8cb0810](https://github.com/code-pushup/cli/commit/a8cb0810))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael Hladky @BioPhoton
+
+## 0.65.1 (2025-03-11)
+
+### 🩹 Fixes
+
+- update pkgs ([#965](https://github.com/code-pushup/cli/pull/965))
+- **ci:** prevent overwriting report artifacts ([3c7fa08f](https://github.com/code-pushup/cli/commit/3c7fa08f))
+- **nx-plugin:** adjust upload config handling ([#937](https://github.com/code-pushup/cli/pull/937))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael Hladky @BioPhoton
+
+## 0.65.0 (2025-03-05)
+
+### 🚀 Features
+
+- **utils:** add score filter to md report generation ([#956](https://github.com/code-pushup/cli/pull/956))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
+## 0.64.2 (2025-03-05)
+
+### 🩹 Fixes
+
+- update nx-verdaccio pkg ([#954](https://github.com/code-pushup/cli/pull/954))
+- **plugin-js-packages:** ignore non-empty stderr ([7936a00c](https://github.com/code-pushup/cli/commit/7936a00c))
+- **utils:** ignore non-json lines in fromJsonLines utility ([7886c572](https://github.com/code-pushup/cli/commit/7886c572))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael Hladky @BioPhoton
+
+## 0.64.1 (2025-03-04)
+
+### 🩹 Fixes
+
+- **ci:** always show execute process errors and log stdout if verbose ([b41de478](https://github.com/code-pushup/cli/commit/b41de478))
+- **utils:** remove partial from mergeConfigs return type ([69c2ef4c](https://github.com/code-pushup/cli/commit/69c2ef4c))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Vojtech Masek @vmasek
+
+## 0.64.0 (2025-02-27)
+
+### 🚀 Features
+
+- **ci:** allow refs without shas, fetch if needed ([2ee0a8d1](https://github.com/code-pushup/cli/commit/2ee0a8d1))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.63.0 (2025-02-26)
+
+### 🚀 Features
+
+- **ci:** use temporary file for print-config instead of stdout ([aa4d0b38](https://github.com/code-pushup/cli/commit/aa4d0b38))
+- **cli:** add --output=<file> option to print-config command ([a1fde20c](https://github.com/code-pushup/cli/commit/a1fde20c))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.62.0 (2025-02-25)
+
+### 🚀 Features
+
+- log process working directory as cwd if undefined ([a0638f8c](https://github.com/code-pushup/cli/commit/a0638f8c))
+
+### 🩹 Fixes
+
+- **utils:** replace misleading commit labels in markdown diff ([21a1f25d](https://github.com/code-pushup/cli/commit/21a1f25d))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Vojtech Masek @vmasek
+
+## 0.61.0 (2025-02-19)
+
+### 🚀 Features
+
+- **ci:** disable nx/turbo cache for non-autorun code-pushup commands ([29a1bc63](https://github.com/code-pushup/cli/commit/29a1bc63))
+- **models:** do not throw if docs url invalid, treat as missing and log warning ([a54295c6](https://github.com/code-pushup/cli/commit/a54295c6))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.60.2 (2025-02-18)
+
+### 🩹 Fixes
+
+- **ci:** prevent unknown pathspec error for custom base ref ([60dfb5b2](https://github.com/code-pushup/cli/commit/60dfb5b2))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.60.1 (2025-02-18)
+
+### 🩹 Fixes
+
+- add toSorted polyfill as hotfix for bug in github actions runner ([55704d18](https://github.com/code-pushup/cli/commit/55704d18))
+- **ci:** prevent ambigious ref when checking head ([f5f226e1](https://github.com/code-pushup/cli/commit/f5f226e1))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Vojtech Masek @vmasek
+
+## 0.60.0 (2025-02-18)
+
+### 🚀 Features
+
+- **ci:** add skipComment option ([9ac2a6ba](https://github.com/code-pushup/cli/commit/9ac2a6ba))
+- **plugin-typescript:** add TS core logic ([#932](https://github.com/code-pushup/cli/pull/932))
+- **plugin-typescript:** add plugin logic ([#936](https://github.com/code-pushup/cli/pull/936))
+
+### 🩹 Fixes
+
+- **ci:** ensure head ref is checked out ([74db9023](https://github.com/code-pushup/cli/commit/74db9023))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael Hladky @BioPhoton
+
+## 0.59.0 (2025-02-14)
+
+### 🚀 Features
+
+- **plugin-coverage:** do not halt plugin execution on fail ([23f1ce5c](https://github.com/code-pushup/cli/commit/23f1ce5c))
+- **utils:** add string helper ([#916](https://github.com/code-pushup/cli/pull/916))
+
+### 🩹 Fixes
+
+- explicitly exit process with successful code to not leave cli hanging ([2cb815bb](https://github.com/code-pushup/cli/commit/2cb815bb))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+- Vojtech Masek @vmasek
+
+## 0.58.0 (2025-02-12)
+
+### 🚀 Features
+
+- **models:** auto-generate JSDoc annotations ([29cf02ad](https://github.com/code-pushup/cli/commit/29cf02ad))
+- **plugin-coverage:** support lcovonly option for vitest ([b230a3d2](https://github.com/code-pushup/cli/commit/b230a3d2))
+- **plugin-eslint:** add support for custom groups ([#925](https://github.com/code-pushup/cli/pull/925))
+- **plugin-jsdocs:** add plugin-jsdocs to analyze documentation in ts/js projects ([#896](https://github.com/code-pushup/cli/pull/896))
+- **plugin-typescript:** setup plugin project base ([#917](https://github.com/code-pushup/cli/pull/917))
+
+### 🩹 Fixes
+
+- handle skipped audits and groups ([#911](https://github.com/code-pushup/cli/pull/911))
+- fix poppinss version ([#921](https://github.com/code-pushup/cli/pull/921))
+- nest files with timestamp for plugin runners ([4ecf9772](https://github.com/code-pushup/cli/commit/4ecf9772))
+- **models:** add missing exports ([#918](https://github.com/code-pushup/cli/pull/918))
+- **nx-plugin:** deep merge executor options ([#927](https://github.com/code-pushup/cli/pull/927))
+
+### ❤️ Thank You
+
+- Alejandro @aramirezj
+- Hanna Skryl @hanna-skryl
+- hanna-skryl
+- Michael Hladky @BioPhoton
+- Vojtech Masek @vmasek
+
+## 0.57.0 (2024-12-17)
+
+### 🚀 Features
+
+- **ci:** detect persist config from print-config ([ad8bd284](https://github.com/code-pushup/cli/commit/ad8bd284))
+- **ci:** remove obsolete output option ([0b9d679e](https://github.com/code-pushup/cli/commit/0b9d679e))
+- **ci:** implement run many command resolution for each monorepo tool ([094797d9](https://github.com/code-pushup/cli/commit/094797d9))
+- **ci:** add parallel option ([85e51864](https://github.com/code-pushup/cli/commit/85e51864))
+- **ci:** filter nx run-many by projects from nx show projects as fallback ([97a603cc](https://github.com/code-pushup/cli/commit/97a603cc))
+- **ci:** sort nx projects alphabetically ([6a6c2f3d](https://github.com/code-pushup/cli/commit/6a6c2f3d))
+- **ci:** copy merged-report-diff.md from project to root ([e1305295](https://github.com/code-pushup/cli/commit/e1305295))
+- **ci:** implement bulk collecting reports for parallel monorepo runs ([e0b4d97f](https://github.com/code-pushup/cli/commit/e0b4d97f))
+- **core:** enhance config validation ([836b242d](https://github.com/code-pushup/cli/commit/836b242d))
+- **utils:** implement type guard for nullable object props ([c3fc549e](https://github.com/code-pushup/cli/commit/c3fc549e))
+
+### 🩹 Fixes
+
+- prevent "ExperimentalWarning: Importing JSON" logged to stderr ([8ce9e635](https://github.com/code-pushup/cli/commit/8ce9e635))
+- update progress bar gradually as plugin run complete ([7a592ebd](https://github.com/code-pushup/cli/commit/7a592ebd))
+- lint import extensions and fix missing .js extensions ([9d6eacf4](https://github.com/code-pushup/cli/commit/9d6eacf4))
+- **ci:** handle non-JSON prefix/suffix lines from print-config ([43ffcf2d](https://github.com/code-pushup/cli/commit/43ffcf2d))
+- **ci:** ensure valid output directory for reports and merged diff ([5e36323d](https://github.com/code-pushup/cli/commit/5e36323d))
+- **ci:** resolve outputDir correctly by running workspace commands in project dir ([94b25f88](https://github.com/code-pushup/cli/commit/94b25f88))
+- **ci:** only copy merged-report-diff.md when paths are different ([f8ac4007](https://github.com/code-pushup/cli/commit/f8ac4007))
+- **nx-plugin:** use wildcard path imports to prevent CJS runtime errors ([31bed82a](https://github.com/code-pushup/cli/commit/31bed82a))
+- **plugin-eslint:** avoid directory imports ([688a4859](https://github.com/code-pushup/cli/commit/688a4859))
+- **plugin-eslint:** consider defaultOptions to ensure rule slugs from runner match ([13de4b57](https://github.com/code-pushup/cli/commit/13de4b57))
+- **plugin-eslint:** handle mismatched slugs for legacy configs ([e324f39d](https://github.com/code-pushup/cli/commit/e324f39d))
+- **plugin-eslint:** parse rule names containing slashes correctly ([f1163d0a](https://github.com/code-pushup/cli/commit/f1163d0a))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- Matěj Chalk
+- Vojtech Masek @vmasek
+
+## 0.56.0 (2024-11-29)
+
+### 🚀 Features
+
+- **ci:** add nxProjectsFilter option, forwards custom filters to Nx CLI ([93a6a428](https://github.com/code-pushup/cli/commit/93a6a428))
+- **plugin-eslint:** support new config format in nx helpers ([effd5d26](https://github.com/code-pushup/cli/commit/effd5d26))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.55.0 (2024-11-25)
+
+### 🚀 Features
+
+- **ci:** accept custom output directory, with project name interpolation ([db3fcced](https://github.com/code-pushup/cli/commit/db3fcced))
+- **plugin-eslint:** drop inline object support for eslintrc (incompatible with flat config) ([ead1c0ad](https://github.com/code-pushup/cli/commit/ead1c0ad))
+- **plugin-eslint:** implement rules loader for flat config ([e9edf0c0](https://github.com/code-pushup/cli/commit/e9edf0c0))
+- **plugin-eslint:** detect version of config format ([a618bf29](https://github.com/code-pushup/cli/commit/a618bf29))
+- **plugin-eslint:** search for flat config files in parent directories ([3e45ac07](https://github.com/code-pushup/cli/commit/3e45ac07))
+- **plugin-eslint:** move eslint to peer deps, add v9 to supported range ([953e3c76](https://github.com/code-pushup/cli/commit/953e3c76))
+- **utils:** implement and test helper function to find nearest file ([2acdb2d8](https://github.com/code-pushup/cli/commit/2acdb2d8))
+
+### 🩹 Fixes
+
+- **plugin-eslint:** remove unsupported parameter for ESLint 9+ ([4b889d66](https://github.com/code-pushup/cli/commit/4b889d66))
+- **plugin-eslint:** use LegacyESLint if ESLINT_USE_FLAT_CONFIG=false in v9 ([e9352808](https://github.com/code-pushup/cli/commit/e9352808))
+- **plugin-eslint:** ensure file url scheme needed for dynamic imports on Windows ([91c7678c](https://github.com/code-pushup/cli/commit/91c7678c))
+- **plugin-js-packages:** add ignoreExitCode option for yarn v2 package manager ([#878](https://github.com/code-pushup/cli/pull/878))
+
+### ❤️ Thank You
+
+- Edouard Maleix
+- Matěj Chalk
+
+## 0.54.0 (2024-11-08)
+
+### 🚀 Features
+
+- **plugin-eslint:** add exclude option for Nx projects ([e9560f56](https://github.com/code-pushup/cli/commit/e9560f56))
+
+### 🩹 Fixes
+
+- **ci:** pass project name to downloadReportArtifact ([647f7e28](https://github.com/code-pushup/cli/commit/647f7e28))
+- **ci:** improve misleading logs ([cfece081](https://github.com/code-pushup/cli/commit/cfece081))
+- **ci:** catch errors from downloadReportArtifact - log warning and proceed ([3df4a71a](https://github.com/code-pushup/cli/commit/3df4a71a))
+- **models:** allow non-integers in audit values diff ([61d49ea4](https://github.com/code-pushup/cli/commit/61d49ea4))
+- **plugin-eslint,plugin-coverage:** future-proof version range of nx peer deps ([52afea5a](https://github.com/code-pushup/cli/commit/52afea5a))
+- **utils:** always log single perfect audit ([d8a7eb25](https://github.com/code-pushup/cli/commit/d8a7eb25))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- hanna-skryl
+- Matěj Chalk
+
+## 0.53.1 (2024-10-18)
+
+### 🚀 Features
+
+- add keywords for NPM to display ([17a0c498](https://github.com/code-pushup/cli/commit/17a0c498))
+
+### 🩹 Fixes
+
+- **ci:** handle monorepo mode in non-PR flow ([d7ba5a3f](https://github.com/code-pushup/cli/commit/d7ba5a3f))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Vojtech Masek @vmasek
+
+## 0.53.0 (2024-10-17)
+
+### 🚀 Features
+
+- **ci:** add useful exports ([844d529c](https://github.com/code-pushup/cli/commit/844d529c))
+- **utils:** support GitLab report links ([27d8a657](https://github.com/code-pushup/cli/commit/27d8a657))
+
+### 🩹 Fixes
+
+- **core:** avoid portal-client import for enum conversions ([1a68636f](https://github.com/code-pushup/cli/commit/1a68636f))
+
+### ❤️ Thank You
+
+- hanna-skryl
+- Matěj Chalk
+
+## 0.52.0 (2024-10-16)
+
+### 🚀 Features
+
+- skip perfect scores in stdout summary ([f423c6c4](https://github.com/code-pushup/cli/commit/f423c6c4))
+- make portal-client dependency optional ([18822a85](https://github.com/code-pushup/cli/commit/18822a85))
+- **ci:** move in monorepo code from github-action ([a9c51d98](https://github.com/code-pushup/cli/commit/a9c51d98))
+- **ci:** move in code from github-action for issues, git diff and commands ([bad87239](https://github.com/code-pushup/cli/commit/bad87239))
+- **ci:** move in code for posting comment, generalized to any provider ([b61d6747](https://github.com/code-pushup/cli/commit/b61d6747))
+- **ci:** move in main run functions from github-action and adapt ([697948eb](https://github.com/code-pushup/cli/commit/697948eb))
+- **cli:** handle invalid plugin filter options ([9d756826](https://github.com/code-pushup/cli/commit/9d756826))
+- **cli:** add skip and only category filters ([149f54b2](https://github.com/code-pushup/cli/commit/149f54b2))
+- **plugin-lighthouse:** export default Chrome flags ([2518b6ca](https://github.com/code-pushup/cli/commit/2518b6ca))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- hanna-skryl
+- Matěj Chalk
+
+## 0.51.0 (2024-10-02)
+
+### 🚀 Features
+
+- **cli:** add command option aliases ([3ae16263](https://github.com/code-pushup/cli/commit/3ae16263))
+- **nx-plugin:** update unicode logo in stdout ([1d5e3ad1](https://github.com/code-pushup/cli/commit/1d5e3ad1))
+- **utils:** support local report links ([f98b10a0](https://github.com/code-pushup/cli/commit/f98b10a0))
+
+### 🩹 Fixes
+
+- **plugin-js-packages:** filter out warnings ([61ab0f75](https://github.com/code-pushup/cli/commit/61ab0f75))
+- **utils:** handle rounding of small trend values ([c23e38e6](https://github.com/code-pushup/cli/commit/c23e38e6))
+- **utils:** format reports with unchanged score ([cddbdd35](https://github.com/code-pushup/cli/commit/cddbdd35))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- hanna-skryl
+- Matěj Chalk
+
+## 0.50.0 (2024-09-10)
+
+### 🚀 Features
+
+- add defaults to js-packages plugin options ([#762](https://github.com/code-pushup/cli/pull/762))
+- **cli:** add optional label option to compare command ([b3494d63](https://github.com/code-pushup/cli/commit/b3494d63))
+- **cli:** scaffold merge-diffs command and test argument parsing ([074c50fb](https://github.com/code-pushup/cli/commit/074c50fb))
+- **cli:** do not show help on error ([7cefdaad](https://github.com/code-pushup/cli/commit/7cefdaad))
+- **core:** include portal link and label in report-diff.json ([e5036f1d](https://github.com/code-pushup/cli/commit/e5036f1d))
+- **core:** implement mergeDiffs logic ([0a3594d5](https://github.com/code-pushup/cli/commit/0a3594d5))
+- **core:** improve error messages for report-diff.json parsing ([85b3cdb1](https://github.com/code-pushup/cli/commit/85b3cdb1))
+- **create-cli:** package to align with package managers init command ([#779](https://github.com/code-pushup/cli/pull/779))
+- **models:** add optional portalUrl and label to reports diff schema ([8a1dacb1](https://github.com/code-pushup/cli/commit/8a1dacb1))
+- **nx-plugin:** extend config generator ([#778](https://github.com/code-pushup/cli/pull/778))
+- **nx-plugin:** implement `bin` property in options ([#773](https://github.com/code-pushup/cli/pull/773))
+- **nx-plugin:** add project prefix to plugin ([#792](https://github.com/code-pushup/cli/pull/792))
+- **plugin-lighthouse:** omit audit details table title ([eb7d6295](https://github.com/code-pushup/cli/commit/eb7d6295))
+- **test-nx-utils:** add testing lib for nx specific logic ([#777](https://github.com/code-pushup/cli/pull/777))
+- **utils:** increase audit value column width ([2d125074](https://github.com/code-pushup/cli/commit/2d125074))
+- **utils:** move groups and audits under details to make diff comment more compact ([7d77b51a](https://github.com/code-pushup/cli/commit/7d77b51a))
+- **utils:** implement diff markdown comment for monorepos ([3cf7b114](https://github.com/code-pushup/cli/commit/3cf7b114))
+- **utils:** skip unchanged categories and projects in report-diff.md ([c834cfa1](https://github.com/code-pushup/cli/commit/c834cfa1))
+- **utils:** sort projects in report-diff.md by most changed ([40d24768](https://github.com/code-pushup/cli/commit/40d24768))
+- **utils:** move project status from heading to paragraph in report-diff.md ([260692e1](https://github.com/code-pushup/cli/commit/260692e1))
+- **utils:** helper function to convert unknown errors to string ([1ac3c231](https://github.com/code-pushup/cli/commit/1ac3c231))
+
+### 🩹 Fixes
+
+- **plugin-lighthouse:** process empty array flags ([2101cf14](https://github.com/code-pushup/cli/commit/2101cf14))
+- **plugin-lighthouse:** process empty array flags ([304b2298](https://github.com/code-pushup/cli/commit/304b2298))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- hanna-skryl
+- Matěj Chalk
+- Michael Hladky @BioPhoton
+- Vojtech Masek @vmasek
+
+## 0.49.0 (2024-07-31)
+
+### 🚀 Features
+
+- replace chalk with ansis ([#750](https://github.com/code-pushup/cli/pull/750))
+- **core:** fetch portal comparison link if available when comparing reports ([a08978e8](https://github.com/code-pushup/cli/commit/a08978e8))
+- **nx-plugin:** add executor to nx-plugin ([#737](https://github.com/code-pushup/cli/pull/737))
+- **nx-plugin:** add crystal utils ([#754](https://github.com/code-pushup/cli/pull/754))
+- **utils:** add nested objects to cli args parsing ([#758](https://github.com/code-pushup/cli/pull/758))
+- **utils:** include optional link to portal in markdown comment ([04455aeb](https://github.com/code-pushup/cli/commit/04455aeb))
+
+### 🩹 Fixes
+
+- **utils:** add is binary icon ([#749](https://github.com/code-pushup/cli/pull/749))
+
+### ❤️ Thank You
+
+- Elderov Ali
+- Matěj Chalk
+- Michael Hladky @BioPhoton
+
 ## 0.48.0 (2024-07-15)
 
 ### 🚀 Features

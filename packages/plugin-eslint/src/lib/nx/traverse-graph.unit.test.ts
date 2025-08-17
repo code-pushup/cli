@@ -1,9 +1,9 @@
 import type { ProjectGraph } from '@nx/devkit';
-import { findAllDependencies } from './traverse-graph';
+import { findAllDependencies } from './traverse-graph.js';
 
 describe('findAllDependencies', () => {
   const mockProjectGraph = (dependencies: ProjectGraph['dependencies']) =>
-    ({ dependencies } as ProjectGraph);
+    ({ dependencies }) as ProjectGraph;
 
   it('should return empty array when a project has no dependencies', () => {
     expect(

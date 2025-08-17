@@ -6,14 +6,9 @@
   "implicitDependencies": ["cli"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/packages/nx-plugin",
-        "main": "packages/nx-plugin/src/index.ts",
-        "tsConfig": "packages/nx-plugin/tsconfig.lib.json",
         "assets": [
-          "packages/nx-plugin/*.md",
+          "{projectRoot}/*.md",
           {
             "input": "./packages/nx-plugin/src",
             "glob": "**/!(*.ts)",
@@ -37,13 +32,7 @@
         ]
       }
     },
-    "publish": {
-      "command": "node tools/scripts/publish.mjs nx-plugin {args.ver} {args.tag}",
-      "dependsOn": ["build"]
-    },
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
           "packages/nx-plugin/**/*.ts",
@@ -52,18 +41,8 @@
         ]
       }
     },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/nx-plugin/vite.config.unit.ts"
-      }
-    },
-    "integration-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/nx-plugin/vite.config.integration.ts"
-      }
-    }
+    "unit-test": {},
+    "int-test": {}
   },
-  "tags": ["scope:tooling", "type:feature"]
+  "tags": ["scope:tooling", "type:feature", "publishable"]
 }

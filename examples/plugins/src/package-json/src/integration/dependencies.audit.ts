@@ -1,12 +1,12 @@
-import { Audit, AuditOutput, Issue } from '@code-pushup/models';
+import type { Audit, AuditOutput, Issue } from '@code-pushup/models';
 import { factorOf } from '@code-pushup/utils';
-import {
+import type {
   DependencyMap,
   DependencyType,
   SourceResult,
   SourceResults,
-} from './types';
-import { filterSeverityError, pluralizePackage } from './utils';
+} from './types.js';
+import { filterSeverityError, pluralizePackage } from './utils.js';
 
 export type RequiredDependencies = DependencyMap;
 

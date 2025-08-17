@@ -1,8 +1,8 @@
-import { commands } from './commands';
-import { CLI_NAME, CLI_SCRIPT_NAME } from './constants';
-import { middlewares } from './middlewares';
-import { groups, options } from './options';
-import { yargsCli } from './yargs-cli';
+import { commands } from './commands.js';
+import { CLI_NAME, CLI_SCRIPT_NAME } from './constants.js';
+import { middlewares } from './middlewares.js';
+import { groups, options } from './options.js';
+import { yargsCli } from './yargs-cli.js';
 
 export const cli = (args: string[]) =>
   yargsCli(args, {
@@ -25,11 +25,11 @@ export const cli = (args: string[]) =>
       ],
       [
         'code-pushup collect --skipPlugins=coverage',
-        'Run collect skiping the coverage plugin, other plugins from config file will be included.',
+        'Run collect skipping the coverage plugin, other plugins from config file will be included.',
       ],
       [
-        'code-pushup upload --persist.outputDir=dist --persist.filename=cp-report --upload.apiKey=$CP_API_KEY',
-        'Upload dist/cp-report.json to portal using API key from environment variable',
+        'code-pushup upload --persist.outputDir=dist --upload.apiKey=$CP_API_KEY',
+        'Upload dist/report.json to portal using API key from environment variable',
       ],
       [
         'code-pushup print-config --config code-pushup.config.test.js',

@@ -5,11 +5,10 @@ import {
   DEFAULT_PERSIST_FORMAT,
   DEFAULT_PERSIST_OUTPUT_DIR,
 } from '@code-pushup/models';
-import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
-import { yargsCli } from '../yargs-cli';
-import { yargsCompareCommandObject } from './compare-command';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants.js';
+import { yargsCli } from '../yargs-cli.js';
+import { yargsCompareCommandObject } from './compare-command.js';
 
 vi.mock('@code-pushup/core', async () => {
   const core: object = await vi.importActual('@code-pushup/core');
@@ -37,23 +36,50 @@ describe('compare-command', () => {
     expect(compareReportFiles).toHaveBeenCalledWith<
       Parameters<typeof compareReportFiles>
     >(
-      { before: 'source-report.json', after: 'target-report.json' },
       {
-        outputDir: DEFAULT_PERSIST_OUTPUT_DIR,
-        filename: DEFAULT_PERSIST_FILENAME,
-        format: DEFAULT_PERSIST_FORMAT,
+        persist: {
+          outputDir: DEFAULT_PERSIST_OUTPUT_DIR,
+          filename: DEFAULT_PERSIST_FILENAME,
+          format: DEFAULT_PERSIST_FORMAT,
+          skipReports: false,
+        },
+        upload: expect.any(Object),
       },
-      expect.any(Object),
+      {
+        before: 'source-report.json',
+        after: 'target-report.json',
+      },
     );
   });
 
-  it('should log output paths to stdout', async () => {
+  it('should forward label from command line', async () => {
     await yargsCli(
-      ['compare', '--before=source-report.json', '--after=target-report.json'],
+      [
+        'compare',
+        '--before=source-report.json',
+        '--after=target-report.json',
+        '--label=core',
+      ],
       { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsCompareCommandObject()] },
     ).parseAsync();
 
-    expect(getLogMessages(ui().logger).at(-1)).toContain(
+    expect(compareReportFiles).toHaveBeenCalledWith<
+      Parameters<typeof compareReportFiles>
+    >(expect.any(Object), {
+      before: 'source-report.json',
+      after: 'target-report.json',
+      label: 'core',
+    });
+  });
+
+  it('should log output paths to stdout', async () => {
+    await yargsCli(['compare'], {
+      ...DEFAULT_CLI_CONFIGURATION,
+      commands: [yargsCompareCommandObject()],
+    }).parseAsync();
+
+    expect(ui()).toHaveLogged(
+      'info',
       `Reports diff written to ${bold(
         '.code-pushup/report-diff.json',
       )} and ${bold('.code-pushup/report-diff.md')}`,

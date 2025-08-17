@@ -1,61 +1,80 @@
 import { writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import {
-  PortalOperationError,
-  getPortalComparisonLink,
-} from '@code-pushup/portal-client';
+import { createRequire } from 'node:module';
 import {
   type Format,
   type PersistConfig,
-  Report,
-  ReportsDiff,
+  type Report,
+  type ReportsDiff,
   type UploadConfig,
   reportSchema,
 } from '@code-pushup/models';
 import {
-  Diff,
+  type Diff,
   calcDuration,
+  createReportPath,
   ensureDirectoryExists,
   generateMdReportsDiff,
   readJsonFile,
   scoreReport,
   ui,
 } from '@code-pushup/utils';
-import { name as packageName, version } from '../../package.json';
 import {
-  ReportsToCompare,
+  type ReportsToCompare,
   compareAudits,
   compareCategories,
   compareGroups,
-} from './implementation/compare-scorables';
+} from './implementation/compare-scorables.js';
+import { loadPortalClient } from './load-portal-client.js';
+
+export type CompareOptions = {
+  before?: string;
+  after?: string;
+  label?: string;
+};
 
 export async function compareReportFiles(
-  inputPaths: Diff<string>,
-  persistConfig: Required<PersistConfig>,
-  uploadConfig: UploadConfig | undefined,
+  config: {
+    persist: Required<PersistConfig>;
+    upload?: UploadConfig;
+  },
+  options?: CompareOptions,
 ): Promise<string[]> {
-  const { outputDir, filename, format } = persistConfig;
+  const { outputDir, filename, format } = config.persist;
+
+  const defaultInputPath = (suffix: keyof Diff<string>) =>
+    createReportPath({ outputDir, filename, format: 'json', suffix });
 
   const [reportBefore, reportAfter] = await Promise.all([
-    readJsonFile(inputPaths.before),
-    readJsonFile(inputPaths.after),
+    readJsonFile(options?.before ?? defaultInputPath('before')),
+    readJsonFile(options?.after ?? defaultInputPath('after')),
   ]);
   const reports: Diff<Report> = {
     before: reportSchema.parse(reportBefore),
     after: reportSchema.parse(reportAfter),
   };
 
-  const reportsDiff = compareReports(reports);
+  const diff = compareReports(reports);
 
+  const label = options?.label ?? getLabelFromReports(reports);
   const portalUrl =
-    uploadConfig && reportsDiff.commits && format.includes('md')
-      ? await fetchPortalComparisonLink(uploadConfig, reportsDiff.commits)
-      : undefined;
+    config.upload &&
+    diff.commits &&
+    (await fetchPortalComparisonLink(config.upload, diff.commits));
+
+  const diffWithLinks: ReportsDiff =
+    label || portalUrl
+      ? { ...diff, ...(label && { label }), ...(portalUrl && { portalUrl }) }
+      : diff;
 
   return Promise.all(
     format.map(async fmt => {
-      const outputPath = join(outputDir, `${filename}-diff.${fmt}`);
-      const content = reportsDiffToFileContent(reportsDiff, fmt, portalUrl);
+      const outputPath = createReportPath({
+        outputDir,
+        filename,
+        format: fmt,
+        suffix: 'diff',
+      });
+      const content = reportsDiffToFileContent(diffWithLinks, fmt);
       await ensureDirectoryExists(outputDir);
       await writeFile(outputPath, content);
       return outputPath;
@@ -83,13 +102,17 @@ export function compareReports(reports: Diff<Report>): ReportsDiff {
 
   const duration = calcDuration(start);
 
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
+
   return {
     commits,
     categories,
     groups,
     audits,
-    packageName,
-    version,
+    packageName: packageJson.name,
+    version: packageJson.version,
     date,
     duration,
   };
@@ -98,13 +121,12 @@ export function compareReports(reports: Diff<Report>): ReportsDiff {
 function reportsDiffToFileContent(
   reportsDiff: ReportsDiff,
   format: Format,
-  portalUrl: string | undefined,
 ): string {
   switch (format) {
     case 'json':
       return JSON.stringify(reportsDiff, null, 2);
     case 'md':
-      return generateMdReportsDiff(reportsDiff, portalUrl ?? undefined);
+      return generateMdReportsDiff(reportsDiff);
   }
 }
 
@@ -113,6 +135,11 @@ async function fetchPortalComparisonLink(
   commits: NonNullable<ReportsDiff['commits']>,
 ): Promise<string | undefined> {
   const { server, apiKey, organization, project } = uploadConfig;
+  const portalClient = await loadPortalClient();
+  if (!portalClient) {
+    return;
+  }
+  const { PortalOperationError, getPortalComparisonLink } = portalClient;
   try {
     return await getPortalComparisonLink({
       server,
@@ -133,4 +160,15 @@ async function fetchPortalComparisonLink(
     }
     throw error;
   }
+}
+
+function getLabelFromReports(reports: Diff<Report>): string | undefined {
+  if (
+    reports.before.label &&
+    reports.after.label &&
+    reports.before.label === reports.after.label
+  ) {
+    return reports.after.label;
+  }
+  return undefined;
 }

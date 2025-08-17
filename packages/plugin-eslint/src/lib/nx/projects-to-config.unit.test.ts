@@ -1,52 +1,10 @@
-import type {
-  ProjectGraph,
-  ProjectGraphDependency,
-  ProjectGraphProjectNode,
-} from '@nx/devkit';
 import { vol } from 'memfs';
 import type { MockInstance } from 'vitest';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import type { ESLintPluginConfig, ESLintTarget } from '../config';
-import { nxProjectsToConfig } from './projects-to-config';
+import { MEMFS_VOLUME, toProjectGraph } from '@code-pushup/test-utils';
+import type { ESLintPluginConfig, ESLintTarget } from '../config.js';
+import { nxProjectsToConfig } from './projects-to-config.js';
 
 describe('nxProjectsToConfig', () => {
-  const toProjectGraph = (
-    nodes: ProjectGraphProjectNode[],
-    dependencies?: Record<string, string[]>,
-  ): ProjectGraph => ({
-    nodes: Object.fromEntries(
-      nodes.map(node => [
-        node.name,
-        {
-          ...node,
-          data: {
-            targets: {
-              lint: {
-                options: {
-                  lintFilePatterns: `${node.data.root}/**/*.ts`,
-                },
-              },
-            },
-            sourceRoot: `${node.data.root}/src`,
-            ...node.data,
-          },
-        },
-      ]),
-    ),
-    dependencies: Object.fromEntries(
-      nodes.map(node => [
-        node.name,
-        dependencies?.[node.name]?.map(
-          (target): ProjectGraphDependency => ({
-            source: node.name,
-            target,
-            type: 'static',
-          }),
-        ) ?? [],
-      ]),
-    ),
-  });
-
   let cwdSpy: MockInstance<[], string>;
 
   beforeAll(() => {
@@ -67,18 +25,9 @@ describe('nxProjectsToConfig', () => {
     const config = await nxProjectsToConfig(projectGraph);
 
     expect(config).toEqual<ESLintPluginConfig>([
-      {
-        eslintrc: './apps/client/.eslintrc.json',
-        patterns: expect.arrayContaining(['apps/client/**/*.ts']),
-      },
-      {
-        eslintrc: './apps/server/.eslintrc.json',
-        patterns: expect.arrayContaining(['apps/server/**/*.ts']),
-      },
-      {
-        eslintrc: './libs/models/.eslintrc.json',
-        patterns: expect.arrayContaining(['libs/models/**/*.ts']),
-      },
+      { patterns: expect.arrayContaining(['apps/client/**/*.ts']) },
+      { patterns: expect.arrayContaining(['apps/server/**/*.ts']) },
+      { patterns: expect.arrayContaining(['libs/models/**/*.ts']) },
     ]);
   });
 
@@ -107,10 +56,7 @@ describe('nxProjectsToConfig', () => {
     );
 
     expect(config).toEqual<ESLintPluginConfig>([
-      {
-        eslintrc: './libs/models/.eslintrc.json',
-        patterns: expect.arrayContaining(['libs/models/**/*.ts']),
-      },
+      { patterns: expect.arrayContaining(['libs/models/**/*.ts']) },
     ]);
   });
 
@@ -149,18 +95,13 @@ describe('nxProjectsToConfig', () => {
     const config = await nxProjectsToConfig(projectGraph);
 
     expect(config).toEqual<ESLintPluginConfig>([
-      {
-        eslintrc: './apps/client/.eslintrc.json',
-        patterns: expect.arrayContaining(['apps/client/**/*.ts']),
-      },
-      {
-        eslintrc: './apps/server/.eslintrc.json',
-        patterns: expect.arrayContaining(['apps/server/**/*.ts']),
-      },
+      { patterns: expect.arrayContaining(['apps/client/**/*.ts']) },
+      { patterns: expect.arrayContaining(['apps/server/**/*.ts']) },
     ]);
   });
 
-  it('should use code-pushup.eslintrc.json if available', async () => {
+  it('should use code-pushup.eslintrc.json if available and using legacy config', async () => {
+    vi.stubEnv('ESLINT_USE_FLAT_CONFIG', 'false');
     vol.fromJSON(
       {
         'apps/client/code-pushup.eslintrc.json':
@@ -179,6 +120,45 @@ describe('nxProjectsToConfig', () => {
         eslintrc: './apps/client/code-pushup.eslintrc.json',
       }),
     ]);
+  });
+
+  it('should use eslint.strict.config.js if available and using flat config', async () => {
+    vi.stubEnv('ESLINT_USE_FLAT_CONFIG', 'true');
+    vol.fromJSON(
+      {
+        'apps/client/eslint.strict.config.js': 'export default [/*...*/]',
+      },
+      MEMFS_VOLUME,
+    );
+    const projectGraph = toProjectGraph([
+      { name: 'client', type: 'app', data: { root: 'apps/client' } },
+    ]);
+
+    const config = await nxProjectsToConfig(projectGraph);
+
+    expect(config).toEqual([
+      expect.objectContaining<Partial<ESLintTarget>>({
+        eslintrc: './apps/client/eslint.strict.config.js',
+      }),
+    ]);
+  });
+
+  it('should NOT use code-pushup.eslintrc.json if available but using flat config', async () => {
+    vi.stubEnv('ESLINT_USE_FLAT_CONFIG', 'true');
+    vol.fromJSON(
+      {
+        'apps/client/code-pushup.eslintrc.json':
+          '{ "eslintrc": "@code-pushup" }',
+      },
+      MEMFS_VOLUME,
+    );
+    const projectGraph = toProjectGraph([
+      { name: 'client', type: 'app', data: { root: 'apps/client' } },
+    ]);
+
+    const config = await nxProjectsToConfig(projectGraph);
+
+    expect(config[0]!.eslintrc).toBeUndefined();
   });
 
   it("should use each project's lint file patterns", async () => {
@@ -218,14 +198,12 @@ describe('nxProjectsToConfig', () => {
 
     await expect(nxProjectsToConfig(projectGraph)).resolves.toEqual([
       {
-        eslintrc: './apps/client/.eslintrc.json',
         patterns: expect.arrayContaining([
           'apps/client/**/*.ts',
           'apps/client/**/*.html',
         ]),
       },
       {
-        eslintrc: './apps/server/.eslintrc.json',
         patterns: expect.arrayContaining(['apps/server/**/*.ts']),
       },
     ] satisfies ESLintPluginConfig);

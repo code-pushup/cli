@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { UploadConfig, uploadConfigSchema } from './upload-config';
+import { type UploadConfig, uploadConfigSchema } from './upload-config.js';
 
 describe('uploadConfigSchema', () => {
   it('should accept a valid upload configuration', () => {
@@ -21,7 +21,7 @@ describe('uploadConfigSchema', () => {
         project: 'cli',
         server: '-invalid-/url',
       } satisfies UploadConfig),
-    ).toThrow('Invalid url');
+    ).toThrow('Invalid URL');
   });
 
   it('should throw for a PascalCase organization name', () => {

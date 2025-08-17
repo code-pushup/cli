@@ -1,16 +1,16 @@
-import { join } from 'node:path';
+import * as path from 'node:path';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
-import { parseEnv } from './env';
-import {
+import { parseEnv } from './env.js';
+import type {
   BaseNormalizedExecutorContext,
   GlobalExecutorOptions,
   ProjectExecutorOnlyOptions,
-} from './types';
+} from './types.js';
 
 export function globalConfig(
   options: Partial<GlobalExecutorOptions & Record<string, unknown>>,
   context: BaseNormalizedExecutorContext,
-): Required<GlobalExecutorOptions> {
+): GlobalExecutorOptions {
   const { projectConfig } = context;
   const { root: projectRoot = '' } = projectConfig ?? {};
   // For better debugging use `--verbose --no-progress` as default
@@ -18,7 +18,7 @@ export function globalConfig(
   return {
     verbose: !!verbose,
     progress: !!progress,
-    config: config ?? join(projectRoot, 'code-pushup.config.ts'),
+    config: config ?? path.join(projectRoot, 'code-pushup.config.ts'),
   };
 }
 
@@ -31,7 +31,7 @@ export function persistConfig(
   const { name: projectName = '' } = projectConfig ?? {};
   const {
     format,
-    outputDir = join(workspaceRoot, '.code-pushup', projectName), // always in <root>/.code-pushup/<project-name>,
+    outputDir = path.join(workspaceRoot, '.code-pushup', projectName), // always in <root>/.code-pushup/<project-name>,
     filename,
   } = options;
 
@@ -56,7 +56,7 @@ export function uploadConfig(
   return {
     ...(projectName
       ? {
-          project: applyPrefix ? `${prefix}${projectName}` : projectName, // provide correct project
+          project: applyPrefix ? `${prefix}${projectName}` : projectName,
         }
       : {}),
     ...parseEnv(process.env),

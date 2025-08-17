@@ -1,0 +1,8 @@
+{
+  "name": "utils",
+  "targets": {
+    "code-pushup": {
+      "command": "npx code-pushup --config=packages/utils/code-pushup.config.js --persist.outputDir=packages/cli/.code-pushup"
+    }
+  }
+}

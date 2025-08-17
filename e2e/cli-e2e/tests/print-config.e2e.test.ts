@@ -1,18 +1,49 @@
-import { join } from 'node:path';
-import { expect } from 'vitest';
+import { cp, readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { beforeAll, expect } from 'vitest';
+import { nxTargetProject } from '@code-pushup/test-nx-utils';
+import {
+  E2E_ENVIRONMENTS_DIR,
+  TEST_OUTPUT_DIR,
+  teardownTestFolder,
+} from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 
-const extensions = ['js', 'mjs', 'ts'] as const;
-export const configFilePath = (ext: (typeof extensions)[number]) =>
-  join(process.cwd(), `e2e/cli-e2e/mocks/fixtures/code-pushup.config.${ext}`);
+describe('CLI print-config', () => {
+  const extensions = ['js', 'mjs', 'ts'] as const;
+  const fixtureDummyDir = path.join(
+    'e2e',
+    nxTargetProject(),
+    'mocks',
+    'fixtures',
+    'dummy-setup',
+  );
 
-describe('print-config', () => {
+  const testFileDir = path.join(
+    E2E_ENVIRONMENTS_DIR,
+    nxTargetProject(),
+    TEST_OUTPUT_DIR,
+    'print-config',
+  );
+  const testFileDummySetup = path.join(testFileDir, 'dummy-setup');
+  const configFilePath = (ext: (typeof extensions)[number]) =>
+    path.join(process.cwd(), testFileDummySetup, `code-pushup.config.${ext}`);
+
+  beforeAll(async () => {
+    await cp(fixtureDummyDir, testFileDummySetup, { recursive: true });
+  });
+
+  afterAll(async () => {
+    await teardownTestFolder(testFileDummySetup);
+  });
+
   it.each(extensions)(
     'should load .%s config file with correct arguments',
     async ext => {
-      const { code, stderr, stdout } = await executeProcess({
-        command: 'code-pushup',
+      const { code, stdout } = await executeProcess({
+        command: 'npx',
         args: [
+          '@code-pushup/cli',
           'print-config',
           '--no-progress',
           `--config=${configFilePath(ext)}`,
@@ -20,41 +51,51 @@ describe('print-config', () => {
           '--persist.outputDir=output-dir',
           '--persist.format=md',
           `--persist.filename=${ext}-report`,
-          '--onlyPlugins=coverage',
-          '--skipPlugins=eslint',
         ],
+        cwd: testFileDummySetup,
       });
 
       expect(code).toBe(0);
-      expect(stderr).toBe('');
 
       expect(JSON.parse(stdout)).toEqual(
         expect.objectContaining({
           config: expect.stringContaining(`code-pushup.config.${ext}`),
           tsconfig: 'tsconfig.base.json',
-          // filled by command options
-          persist: {
-            outputDir: 'output-dir',
-            filename: `${ext}-report`,
-            format: ['md'],
-          },
-          upload: {
-            organization: 'code-pushup',
-            project: `cli-${ext}`,
-            apiKey: 'e2e-api-key',
-            server: 'https://e2e.com/api',
-          },
           plugins: [
             expect.objectContaining({
-              slug: 'coverage',
-              title: 'Code coverage',
+              slug: 'dummy-plugin',
+              title: 'Dummy Plugin',
             }),
           ],
-          categories: [expect.objectContaining({ slug: 'code-coverage' })],
-          onlyPlugins: ['coverage'],
-          skipPlugins: ['eslint'],
+          categories: [expect.objectContaining({ slug: 'dummy-category' })],
         }),
       );
     },
   );
+
+  it('should print config to output file', async () => {
+    const { code, stdout } = await executeProcess({
+      command: 'npx',
+      args: ['@code-pushup/cli', 'print-config', '--output=config.json'],
+      cwd: testFileDummySetup,
+    });
+
+    expect(code).toBe(0);
+
+    const output = await readFile(
+      path.join(testFileDummySetup, 'config.json'),
+      'utf8',
+    );
+    expect(JSON.parse(output)).toEqual(
+      expect.objectContaining({
+        plugins: [
+          expect.objectContaining({
+            slug: 'dummy-plugin',
+            title: 'Dummy Plugin',
+          }),
+        ],
+      }),
+    );
+    expect(stdout).not.toContain('dummy-plugin');
+  });
 });

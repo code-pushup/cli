@@ -1,90 +1,96 @@
 import { writeFile } from 'node:fs/promises';
-import { dirname } from 'node:path';
-import type { RunnerConfig } from '@code-pushup/models';
+import path from 'node:path';
+import type { RunnerConfig, RunnerFilesPaths } from '@code-pushup/models';
 import {
+  createRunnerFiles,
   ensureDirectoryExists,
   executeProcess,
   filePathToCliArg,
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
   objectFromEntries,
+  objectToCliArgs,
   readJsonFile,
 } from '@code-pushup/utils';
 import {
-  AuditSeverity,
-  DependencyGroup,
-  FinalJSPackagesPluginConfig,
-  PackageJsonPaths,
-  PackageManagerId,
+  type AuditSeverity,
+  type DependencyGroup,
+  type FinalJSPackagesPluginConfig,
+  type PackageJsonPath,
+  type PackageManagerId,
   dependencyGroups,
-} from '../config';
-import { dependencyGroupToLong } from '../constants';
-import { packageManagers } from '../package-managers';
-import { auditResultToAuditOutput } from './audit/transform';
-import { AuditResult } from './audit/types';
-import { PLUGIN_CONFIG_PATH, RUNNER_OUTPUT_PATH } from './constants';
-import { outdatedResultToAuditOutput } from './outdated/transform';
-import { findAllPackageJson, getTotalDependencies } from './utils';
+} from '../config.js';
+import { dependencyGroupToLong } from '../constants.js';
+import { packageManagers } from '../package-managers/package-managers.js';
+import { auditResultToAuditOutput } from './audit/transform.js';
+import type { AuditResult } from './audit/types.js';
+import { outdatedResultToAuditOutput } from './outdated/transform.js';
+import { getTotalDependencies } from './utils.js';
 
 export async function createRunnerConfig(
   scriptPath: string,
   config: FinalJSPackagesPluginConfig,
 ): Promise<RunnerConfig> {
-  await ensureDirectoryExists(dirname(PLUGIN_CONFIG_PATH));
-  await writeFile(PLUGIN_CONFIG_PATH, JSON.stringify(config));
+  const { runnerConfigPath, runnerOutputPath } = await createRunnerFiles(
+    'js-packages',
+    JSON.stringify(config),
+  );
 
   return {
     command: 'node',
-    args: [filePathToCliArg(scriptPath)],
-    outputFile: RUNNER_OUTPUT_PATH,
+    args: [
+      filePathToCliArg(scriptPath),
+      ...objectToCliArgs({ runnerConfigPath, runnerOutputPath }),
+    ],
+    configFile: runnerConfigPath,
+    outputFile: runnerOutputPath,
   };
 }
 
-export async function executeRunner(): Promise<void> {
+export async function executeRunner({
+  runnerConfigPath,
+  runnerOutputPath,
+}: RunnerFilesPaths): Promise<void> {
   const {
     packageManager,
     checks,
     auditLevelMapping,
-    packageJsonPaths,
+    packageJsonPath,
     dependencyGroups: depGroups,
-  } = await readJsonFile<FinalJSPackagesPluginConfig>(PLUGIN_CONFIG_PATH);
+  } = await readJsonFile<FinalJSPackagesPluginConfig>(runnerConfigPath);
 
   const auditResults = checks.includes('audit')
-    ? await processAudit(packageManager, depGroups, auditLevelMapping)
+    ? await processAudit(
+        packageManager,
+        depGroups,
+        auditLevelMapping,
+        packageJsonPath,
+      )
     : [];
 
   const outdatedResults = checks.includes('outdated')
-    ? await processOutdated(packageManager, depGroups, packageJsonPaths)
+    ? await processOutdated(packageManager, depGroups, packageJsonPath)
     : [];
   const checkResults = [...auditResults, ...outdatedResults];
 
-  await ensureDirectoryExists(dirname(RUNNER_OUTPUT_PATH));
-  await writeFile(RUNNER_OUTPUT_PATH, JSON.stringify(checkResults));
+  await ensureDirectoryExists(path.dirname(runnerOutputPath));
+  await writeFile(runnerOutputPath, JSON.stringify(checkResults));
 }
 
 async function processOutdated(
   id: PackageManagerId,
   depGroups: DependencyGroup[],
-  packageJsonPaths: PackageJsonPaths,
+  packageJsonPath: PackageJsonPath,
 ) {
   const pm = packageManagers[id];
-  const { stdout, stderr } = await executeProcess({
+  const { stdout } = await executeProcess({
     command: pm.command,
     args: pm.outdated.commandArgs,
-    cwd: process.cwd(),
+    cwd: packageJsonPath ? path.dirname(packageJsonPath) : process.cwd(),
     ignoreExitCode: true, // outdated returns exit code 1 when outdated dependencies are found
   });
 
-  // Successful outdated check has empty stderr
-  if (stderr) {
-    throw new Error(`JS packages plugin: outdated error: ${stderr}`);
-  }
-
-  // Locate all package.json files in the repository if not provided
-  const finalPaths = Array.isArray(packageJsonPaths)
-    ? packageJsonPaths
-    : await findAllPackageJson();
-  const depTotals = await getTotalDependencies(finalPaths);
+  const depTotals = await getTotalDependencies(packageJsonPath);
 
   const normalizedResult = pm.outdated.unifyResult(stdout);
   return depGroups.map(depGroup =>
@@ -101,6 +107,7 @@ async function processAudit(
   id: PackageManagerId,
   depGroups: DependencyGroup[],
   auditLevelMapping: AuditSeverity,
+  packageJsonPath: PackageJsonPath,
 ) {
   const pm = packageManagers[id];
   const supportedAuditDepGroups =
@@ -112,16 +119,12 @@ async function processAudit(
   const auditResults = await Promise.allSettled(
     compatibleAuditDepGroups.map(
       async (depGroup): Promise<[DependencyGroup, AuditResult]> => {
-        const { stdout, stderr } = await executeProcess({
+        const { stdout } = await executeProcess({
           command: pm.command,
           args: pm.audit.getCommandArgs(depGroup),
-          cwd: process.cwd(),
+          cwd: packageJsonPath ? path.dirname(packageJsonPath) : process.cwd(),
           ignoreExitCode: pm.audit.ignoreExitCode,
         });
-        // Successful audit check has empty stderr
-        if (stderr) {
-          throw new Error(`JS packages plugin: audit error: ${stderr}`);
-        }
         return [depGroup, pm.audit.unifyResult(stdout)];
       },
     ),
@@ -129,7 +132,7 @@ async function processAudit(
 
   const rejected = auditResults.filter(isPromiseRejectedResult);
   if (rejected.length > 0) {
-    rejected.map(result => {
+    rejected.forEach(result => {
       console.error(result.reason);
     });
 

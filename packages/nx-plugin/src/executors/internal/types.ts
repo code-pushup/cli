@@ -1,4 +1,4 @@
-import { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
+import type { ProjectConfiguration } from 'nx/src/config/workspace-json-project-json';
 
 /**
  * Types used in the executor only
@@ -19,7 +19,17 @@ export type ProjectExecutorOnlyOptions = {
 /**
  * CLI types that apply globally for all commands.
  */
+export type Command =
+  | 'collect'
+  | 'upload'
+  | 'autorun'
+  | 'print-config'
+  | 'compare'
+  | 'merge-diffs'
+  | 'history';
 export type GlobalExecutorOptions = {
+  command?: Command;
+  bin?: string;
   verbose?: boolean;
   progress?: boolean;
   config?: string;

@@ -1,6 +1,6 @@
 import { describe, expect } from 'vitest';
 import { REPORT_MOCK } from '@code-pushup/test-utils';
-import { calculateScore, scoreReport } from './scoring';
+import { calculateScore, scoreReport } from './scoring.js';
 
 describe('calculateScore', () => {
   it('should calculate the same score for one reference', () => {
@@ -101,13 +101,13 @@ describe('calculateScore', () => {
 
 describe('scoreReport', () => {
   it('should correctly score a valid report', () => {
-    /* 
+    /*
       The report mock has the following data:
       Test results
       -> Cypress E2E: score 0.5 | weight 2
       -> CyCT:        score 1   | weight 1
       => Overall score = 1.5/3 = 0.5
-      
+
       Bug prevention
       -> TypeScript ESLint group:      score 0.25 weight 8
         -> ts-eslint-typing            score 0    weight 3
@@ -130,9 +130,9 @@ describe('scoreReport', () => {
     );
   });
 
-  it('should accept a report with empty categories', () => {
-    expect(scoreReport({ ...REPORT_MOCK, categories: [] })).toEqual(
-      expect.objectContaining({ categories: [] }),
+  it('should accept a report with no categories', () => {
+    expect(scoreReport({ ...REPORT_MOCK, categories: undefined })).toEqual(
+      expect.objectContaining({ categories: undefined }),
     );
   });
 });

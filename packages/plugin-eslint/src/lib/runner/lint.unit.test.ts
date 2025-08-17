@@ -1,8 +1,8 @@
-import { ESLint, Linter } from 'eslint';
+import { ESLint, type Linter } from 'eslint';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
-import { ESLintPluginConfig } from '../config';
-import { lint } from './lint';
+import type { ESLintPluginConfig } from '../config.js';
+import { lint } from './lint.js';
 
 class MockESLint {
   calculateConfigForFile = vi.fn().mockImplementation(
@@ -17,7 +17,7 @@ class MockESLint {
               'max-lines': ['warn', 500],
               '@typescript-eslint/no-explicit-any': 'error',
             },
-      } as Linter.Config),
+      }) as Linter.Config,
   );
 }
 
@@ -32,7 +32,6 @@ vi.mock('eslint', () => ({
 
 vi.mock('@code-pushup/utils', async () => {
   const utils = await vi.importActual('@code-pushup/utils');
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   const testUtils: { MEMFS_VOLUME: string } = await vi.importActual(
     '@code-pushup/test-utils',
   );
@@ -99,7 +98,7 @@ describe('lint', () => {
       errorOnUnmatchedPattern: false,
     });
 
-    expect(executeProcess).toHaveBeenCalledTimes(1);
+    expect(executeProcess).toHaveBeenCalledOnce();
     expect(executeProcess).toHaveBeenCalledWith<
       Parameters<typeof executeProcess>
     >({

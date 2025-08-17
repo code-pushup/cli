@@ -1,5 +1,6 @@
-import { InlineText, md } from 'build-md';
-import {
+import ansis, { type Ansis } from 'ansis';
+import { type InlineText, md } from 'build-md';
+import type {
   AuditDiff,
   AuditReport,
   CategoryRef,
@@ -7,8 +8,20 @@ import {
   Group,
   Issue,
 } from '@code-pushup/models';
-import { SCORE_COLOR_RANGE } from './constants';
-import { ScoredReport, SortableAuditReport, SortableGroup } from './types';
+import { SCORE_COLOR_RANGE } from './constants.js';
+import type {
+  ScoreFilter,
+  ScoredReport,
+  SortableAuditReport,
+  SortableGroup,
+} from './types.js';
+
+export function scoreFilter<T extends { score: number }>(
+  options?: ScoreFilter,
+) {
+  const { isScoreListed = () => true } = options ?? {};
+  return ({ score }: T) => isScoreListed(score);
+}
 
 export function formatReportScore(score: number): string {
   const scaledScore = score * 100;
@@ -96,9 +109,19 @@ export function severityMarker(severity: 'info' | 'warning' | 'error'): string {
   return 'ℹ️';
 }
 
+const MIN_NON_ZERO_RESULT = 0.1;
+
+export function roundValue(value: number): number {
+  const roundedValue = Math.round(value * 10) / 10; // round with max 1 decimal
+  if (roundedValue === 0 && value !== 0) {
+    return MIN_NON_ZERO_RESULT * Math.sign(value);
+  }
+  return roundedValue;
+}
+
 export function formatScoreChange(diff: number): InlineText {
   const marker = getDiffMarker(diff);
-  const text = formatDiffNumber(Math.round(diff * 1000) / 10); // round with max 1 decimal
+  const text = formatDiffNumber(roundValue(diff * 100));
   return colorByScoreDiff(`${marker} ${text}`, diff);
 }
 
@@ -112,7 +135,7 @@ export function formatValueChange({
       ? values.diff > 0
         ? Number.POSITIVE_INFINITY
         : Number.NEGATIVE_INFINITY
-      : Math.round((100 * values.diff) / values.before);
+      : roundValue((values.diff / values.before) * 100);
   // eslint-disable-next-line no-irregular-whitespace
   const text = `${formatDiffNumber(percentage)} %`;
   return colorByScoreDiff(`${marker} ${text}`, scores.diff);
@@ -159,88 +182,16 @@ export function countCategoryAudits(
   }, 0);
 }
 
-export function getSortableAuditByRef(
-  { slug, weight, plugin }: CategoryRef,
-  plugins: ScoredReport['plugins'],
-): SortableAuditReport {
-  const auditPlugin = plugins.find(p => p.slug === plugin);
-  if (!auditPlugin) {
-    throwIsNotPresentError(`Plugin ${plugin}`, 'report');
-  }
-  const audit = auditPlugin.audits.find(
-    ({ slug: auditSlug }) => auditSlug === slug,
-  );
-  if (!audit) {
-    throwIsNotPresentError(`Audit ${slug}`, auditPlugin.slug);
-  }
-  return {
-    ...audit,
-    weight,
-    plugin,
-  };
-}
-
-export function getSortableGroupByRef(
-  { plugin, slug, weight }: CategoryRef,
-  plugins: ScoredReport['plugins'],
-): SortableGroup {
-  const groupPlugin = plugins.find(p => p.slug === plugin);
-  if (!groupPlugin) {
-    throwIsNotPresentError(`Plugin ${plugin}`, 'report');
-  }
-
-  const group = groupPlugin.groups?.find(
-    ({ slug: groupSlug }) => groupSlug === slug,
-  );
-  if (!group) {
-    throwIsNotPresentError(`Group ${slug}`, groupPlugin.slug);
-  }
-
-  const sortedAudits = getSortedGroupAudits(group, groupPlugin.slug, plugins);
-  const sortedAuditRefs = [...group.refs].sort((a, b) => {
-    const aIndex = sortedAudits.findIndex(ref => ref.slug === a.slug);
-    const bIndex = sortedAudits.findIndex(ref => ref.slug === b.slug);
-    return aIndex - bIndex;
-  });
-
-  return {
-    ...group,
-    refs: sortedAuditRefs,
-    plugin,
-    weight,
-  };
-}
-
-export function getSortedGroupAudits(
-  group: Group,
-  plugin: string,
-  plugins: ScoredReport['plugins'],
-): SortableAuditReport[] {
-  return group.refs
-    .map(ref =>
-      getSortableAuditByRef(
-        {
-          plugin,
-          slug: ref.slug,
-          weight: ref.weight,
-          type: 'audit',
-        },
-        plugins,
-      ),
-    )
-    .sort(compareCategoryAuditsAndGroups);
-}
-
 export function compareCategoryAuditsAndGroups(
   a: SortableAuditReport | SortableGroup,
   b: SortableAuditReport | SortableGroup,
 ): number {
-  if (a.weight !== b.weight) {
-    return b.weight - a.weight;
-  }
-
   if (a.score !== b.score) {
     return a.score - b.score;
+  }
+
+  if (a.weight !== b.weight) {
+    return b.weight - a.weight;
   }
 
   if ('value' in a && 'value' in b && a.value !== b.value) {
@@ -294,33 +245,79 @@ export function compareIssues(a: Issue, b: Issue): number {
   if (a.severity !== b.severity) {
     return -compareIssueSeverity(a.severity, b.severity);
   }
-
   if (!a.source && b.source) {
     return -1;
   }
-
   if (a.source && !b.source) {
     return 1;
   }
-
   if (a.source?.file !== b.source?.file) {
     return a.source?.file.localeCompare(b.source?.file || '') ?? 0;
   }
+  return compareSourceFilePosition(a.source?.position, b.source?.position);
+}
 
-  if (!a.source?.position && b.source?.position) {
+function compareSourceFilePosition(
+  a: NonNullable<Issue['source']>['position'],
+  b: NonNullable<Issue['source']>['position'],
+): number {
+  if (!a && b) {
     return -1;
   }
-
-  if (a.source?.position && !b.source?.position) {
+  if (a && !b) {
     return 1;
   }
+  if (a?.startLine !== b?.startLine) {
+    return (a?.startLine ?? 0) - (b?.startLine ?? 0);
+  }
+  return 0;
+}
 
-  if (a.source?.position?.startLine !== b.source?.position?.startLine) {
-    return (
-      (a.source?.position?.startLine ?? 0) -
-      (b.source?.position?.startLine ?? 0)
-    );
+// @TODO rethink implementation
+export function applyScoreColor(
+  { score, text }: { score: number; text?: string },
+  style: Ansis = ansis,
+) {
+  const formattedScore = text ?? formatReportScore(score);
+
+  if (score >= SCORE_COLOR_RANGE.GREEN_MIN) {
+    return text
+      ? style.green(formattedScore)
+      : style.bold(style.green(formattedScore));
   }
 
-  return 0;
+  if (score >= SCORE_COLOR_RANGE.YELLOW_MIN) {
+    return text
+      ? style.yellow(formattedScore)
+      : style.bold(style.yellow(formattedScore));
+  }
+
+  return text
+    ? style.red(formattedScore)
+    : style.bold(style.red(formattedScore));
+}
+
+export function targetScoreIcon(
+  score: number,
+  targetScore?: number,
+  options: {
+    passIcon?: string;
+    failIcon?: string;
+    prefix?: string;
+    postfix?: string;
+  } = {},
+): string {
+  if (targetScore != null) {
+    const {
+      passIcon = '✅',
+      failIcon = '❌',
+      prefix = '',
+      postfix = '',
+    } = options;
+    if (score >= targetScore) {
+      return `${prefix}${passIcon}${postfix}`;
+    }
+    return `${prefix}${failIcon}${postfix}`;
+  }
+  return '';
 }

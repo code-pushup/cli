@@ -1,23 +1,24 @@
 import { bold, yellow } from 'ansis';
-import { join } from 'node:path';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { getLogMessages } from '@code-pushup/test-utils';
 import { ui } from '@code-pushup/utils';
-import { LIGHTHOUSE_OUTPUT_PATH } from './constants';
-import { logUnsupportedFlagsInUse, normalizeFlags } from './normalize-flags';
-import { LIGHTHOUSE_REPORT_NAME } from './runner/constants';
-import { LighthouseOptions } from './types';
+import { DEFAULT_CHROME_FLAGS, LIGHTHOUSE_OUTPUT_PATH } from './constants.js';
+import { logUnsupportedFlagsInUse, normalizeFlags } from './normalize-flags.js';
+import { LIGHTHOUSE_REPORT_NAME } from './runner/constants.js';
+import type { LighthouseOptions } from './types.js';
 
 describe('logUnsupportedFlagsInUse', () => {
   it('should log unsupported entries', () => {
     logUnsupportedFlagsInUse({ 'list-all-audits': true } as LighthouseOptions);
-    expect(getLogMessages(ui().logger)).toHaveLength(1);
-    expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ cyan(debug) ] ${yellow('⚠')} Plugin ${bold(
+    expect(ui()).toHaveLoggedTimes(1);
+    expect(ui()).toHaveLogged(
+      'debug',
+      `${yellow('⚠')} Plugin ${bold(
         'lighthouse',
       )} used unsupported flags: ${bold('list-all-audits')}`,
     );
   });
+
   it('should log only 3 details of unsupported entries', () => {
     const unsupportedFlags = {
       'list-all-audits': true,
@@ -31,9 +32,10 @@ describe('logUnsupportedFlagsInUse', () => {
       // unsupported
       ...unsupportedFlags,
     } as unknown as LighthouseOptions);
-    expect(getLogMessages(ui().logger)).toHaveLength(1);
-    expect(getLogMessages(ui().logger).at(0)).toBe(
-      `[ cyan(debug) ] ${yellow('⚠')} Plugin ${bold(
+    expect(ui()).toHaveLoggedTimes(1);
+    expect(ui()).toHaveLogged(
+      'debug',
+      `${yellow('⚠')} Plugin ${bold(
         'lighthouse',
       )} used unsupported flags: ${bold(
         'list-all-audits, list-locales, list-trace-categories',
@@ -46,20 +48,17 @@ describe('normalizeFlags', () => {
   const normalizedDefaults = {
     verbose: false,
     saveAssets: false,
-    // needed to pass CI on linux and windows (locally it works without headless too)
-    chromeFlags: ['--headless=shell'],
+    chromeFlags: DEFAULT_CHROME_FLAGS,
     port: 0,
     hostname: '127.0.0.1',
     view: false,
     channel: 'cli',
     // custom overwrites in favour of the plugin
     quiet: true,
-    onlyAudits: [],
-    skipAudits: [],
-    onlyCategories: [],
     output: ['json'],
-    outputPath: join(LIGHTHOUSE_OUTPUT_PATH, LIGHTHOUSE_REPORT_NAME),
+    outputPath: path.join(LIGHTHOUSE_OUTPUT_PATH, LIGHTHOUSE_REPORT_NAME),
   };
+
   it('should fill defaults with undefined flags', () => {
     expect(normalizeFlags()).toStrictEqual(normalizedDefaults);
   });
@@ -120,6 +119,18 @@ describe('normalizeFlags', () => {
         ...supportedFlags,
       } as unknown as LighthouseOptions),
     ).toEqual(expect.not.objectContaining({ 'list-all-audits': true }));
-    expect(getLogMessages(ui().logger)).toHaveLength(1);
+    expect(ui()).toHaveLoggedTimes(1);
+  });
+
+  it('should remove any flag with an empty array as a value', () => {
+    const flags = {
+      onlyAudits: [],
+      skipAudits: [],
+      onlyCategories: [],
+    };
+    const result = normalizeFlags(flags);
+    expect(result).not.toHaveProperty('onlyAudits');
+    expect(result).not.toHaveProperty('skipAudits');
+    expect(result).not.toHaveProperty('onlyCategories');
   });
 });

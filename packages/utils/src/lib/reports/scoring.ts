@@ -1,11 +1,11 @@
-import {
+import type {
   AuditReport,
   CategoryRef,
   GroupRef,
   Report,
 } from '@code-pushup/models';
-import { deepClone } from '../transform';
-import { ScoredGroup, ScoredReport } from './types';
+import { deepClone } from '../transform.js';
+import type { ScoredGroup, ScoredReport } from './types.js';
 
 export class GroupRefInvalidError extends Error {
   constructor(auditSlug: string, pluginSlug: string) {
@@ -62,7 +62,7 @@ export function scoreReport(report: Report): ScoredReport {
     return item.score;
   }
 
-  const scoredCategories = report.categories.map(category => ({
+  const scoredCategories = report.categories?.map(category => ({
     ...category,
     score: calculateScore(category.refs, catScoreFn),
   }));

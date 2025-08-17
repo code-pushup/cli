@@ -1,8 +1,10 @@
 import type { Rule } from 'eslint';
 import type { Group, GroupRef } from '@code-pushup/models';
-import { objectToKeys, slugify } from '@code-pushup/utils';
-import { ruleIdToSlug } from './hash';
-import { type RuleData, parseRuleId } from './rules';
+import { objectToKeys, slugify, ui } from '@code-pushup/utils';
+import type { CustomGroup } from '../config.js';
+import { ruleToSlug } from './hash.js';
+import { type RuleData, parseRuleId } from './parse.js';
+import { expandWildcardRules } from './rules.js';
 
 type RuleType = NonNullable<Rule.RuleMetaData['type']>;
 
@@ -32,12 +34,15 @@ export function groupsFromRuleTypes(rules: RuleData[]): Group[] {
   const allTypes = objectToKeys(typeGroups);
 
   const auditSlugsMap = rules.reduce<Partial<Record<RuleType, string[]>>>(
-    (acc, { meta: { type }, ruleId, options }) =>
-      type == null
+    (acc, rule) =>
+      rule.meta.type == null
         ? acc
         : {
             ...acc,
-            [type]: [...(acc[type] ?? []), ruleIdToSlug(ruleId, options)],
+            [rule.meta.type]: [
+              ...(acc[rule.meta.type] ?? []),
+              ruleToSlug(rule),
+            ],
           },
     {},
   );
@@ -54,21 +59,18 @@ export function groupsFromRuleTypes(rules: RuleData[]): Group[] {
 
 export function groupsFromRuleCategories(rules: RuleData[]): Group[] {
   const categoriesMap = rules.reduce<Record<string, Record<string, string[]>>>(
-    (acc, { meta: { docs }, ruleId, options }) => {
+    (acc, rule) => {
       // meta.docs.category still used by some popular plugins (e.g. import, react, functional)
-      const category = docs?.category;
+      const category = rule.meta.docs?.category;
       if (!category) {
         return acc;
       }
-      const { plugin = '' } = parseRuleId(ruleId);
+      const { plugin = '' } = parseRuleId(rule.id);
       return {
         ...acc,
         [plugin]: {
           ...acc[plugin],
-          [category]: [
-            ...(acc[plugin]?.[category] ?? []),
-            ruleIdToSlug(ruleId, options),
-          ],
+          [category]: [...(acc[plugin]?.[category] ?? []), ruleToSlug(rule)],
         },
       };
     },
@@ -85,5 +87,82 @@ export function groupsFromRuleCategories(rules: RuleData[]): Group[] {
     ),
   );
 
-  return [...groups].sort((a, b) => a.slug.localeCompare(b.slug));
+  return groups.toSorted((a, b) => a.slug.localeCompare(b.slug));
+}
+
+export function groupsFromCustomConfig(
+  rules: RuleData[],
+  groups: CustomGroup[],
+): Group[] {
+  const rulesMap = createRulesMap(rules);
+
+  return groups.map(group => {
+    const groupRules = Array.isArray(group.rules)
+      ? Object.fromEntries(group.rules.map(rule => [rule, 1]))
+      : group.rules;
+
+    const { refs, invalidRules } = resolveGroupRefs(groupRules, rulesMap);
+
+    if (invalidRules.length > 0 && Object.entries(groupRules).length > 0) {
+      if (refs.length === 0) {
+        throw new Error(
+          `Invalid rule configuration in group ${group.slug}. All rules are invalid.`,
+        );
+      }
+      ui().logger.warning(
+        `Some rules in group ${group.slug} are invalid: ${invalidRules.join(', ')}`,
+      );
+    }
+
+    return {
+      slug: group.slug,
+      title: group.title,
+      refs,
+    };
+  });
+}
+
+export function createRulesMap(rules: RuleData[]): Record<string, RuleData[]> {
+  return rules.reduce<Record<string, RuleData[]>>(
+    (acc, rule) => ({
+      ...acc,
+      [rule.id]: [...(acc[rule.id] || []), rule],
+    }),
+    {},
+  );
+}
+
+export function resolveGroupRefs(
+  groupRules: Record<string, number>,
+  rulesMap: Record<string, RuleData[]>,
+): { refs: Group['refs']; invalidRules: string[] } {
+  return Object.entries(groupRules).reduce<{
+    refs: Group['refs'];
+    invalidRules: string[];
+  }>(
+    (acc, [rule, weight]) => {
+      const matchedRuleIds = rule.endsWith('*')
+        ? expandWildcardRules(rule, Object.keys(rulesMap))
+        : [rule];
+
+      const matchedRefs = matchedRuleIds.flatMap(ruleId => {
+        const matchingRules = rulesMap[ruleId] || [];
+        const weightPerRule = weight / matchingRules.length;
+
+        return matchingRules.map(ruleData => ({
+          slug: ruleToSlug(ruleData),
+          weight: weightPerRule,
+        }));
+      });
+
+      return {
+        refs: [...acc.refs, ...matchedRefs],
+        invalidRules:
+          matchedRefs.length > 0
+            ? acc.invalidRules
+            : [...acc.invalidRules, rule],
+      };
+    },
+    { refs: [], invalidRules: [] },
+  );
 }

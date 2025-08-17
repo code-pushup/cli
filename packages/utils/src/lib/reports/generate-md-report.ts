@@ -1,15 +1,31 @@
-import { InlineText, MarkdownDocument, md } from 'build-md';
-import { AuditReport, Issue, Report } from '@code-pushup/models';
-import { formatDate, formatDuration } from '../formatting';
-import { HIERARCHY } from '../text-formats';
-import { FOOTER_PREFIX, README_LINK, REPORT_HEADLINE_TEXT } from './constants';
-import { metaDescription, tableSection } from './formatting';
+import { type InlineText, MarkdownDocument, md } from 'build-md';
+import type { AuditReport, Issue, Report } from '@code-pushup/models';
+import { formatDate, formatDuration } from '../formatting.js';
+import { HIERARCHY } from '../text-formats/index.js';
+import {
+  AUDIT_DETAILS_HEADING_LEVEL,
+  FOOTER_PREFIX,
+  README_LINK,
+  REPORT_HEADLINE_TEXT,
+} from './constants.js';
+import {
+  formatSourceLine,
+  linkToLocalSourceForIde,
+  metaDescription,
+  tableSection,
+  treeSection,
+} from './formatting.js';
 import {
   categoriesDetailsSection,
   categoriesOverviewSection,
-} from './generate-md-report-categoy-section';
-import { ScoredReport } from './types';
-import { formatReportScore, scoreMarker, severityMarker } from './utils';
+} from './generate-md-report-category-section.js';
+import type { MdReportOptions, ScoredReport } from './types.js';
+import {
+  formatReportScore,
+  scoreFilter,
+  scoreMarker,
+  severityMarker,
+} from './utils.js';
 
 export function auditDetailsAuditValue({
   score,
@@ -21,16 +37,32 @@ export function auditDetailsAuditValue({
   )} (score: ${formatReportScore(score)})`;
 }
 
-export function generateMdReport(report: ScoredReport): string {
+/**
+ * Check if the report has categories.
+ * @param report
+ */
+function hasCategories(
+  report: ScoredReport,
+): report is ScoredReport & Required<Pick<ScoredReport, 'categories'>> {
+  return !!report.categories && report.categories.length > 0;
+}
+
+export function generateMdReport(
+  report: ScoredReport,
+  options?: MdReportOptions,
+): string {
   return new MarkdownDocument()
     .heading(HIERARCHY.level_1, REPORT_HEADLINE_TEXT)
-    .$if(report.categories.length > 0, doc =>
-      doc.$concat(
-        categoriesOverviewSection(report),
-        categoriesDetailsSection(report),
-      ),
+    .$concat(
+      ...(hasCategories(report)
+        ? [
+            categoriesOverviewSection(report, options),
+            categoriesDetailsSection(report, options),
+          ]
+        : []),
+      auditsSection(report, options),
+      aboutSection(report),
     )
-    .$concat(auditsSection(report), aboutSection(report))
     .rule()
     .paragraph(md`${FOOTER_PREFIX} ${md.link(README_LINK, 'Code PushUp')}`)
     .toString();
@@ -38,67 +70,81 @@ export function generateMdReport(report: ScoredReport): string {
 
 export function auditDetailsIssues(
   issues: Issue[] = [],
+  options?: MdReportOptions,
 ): MarkdownDocument | null {
   if (issues.length === 0) {
     return null;
   }
-  return new MarkdownDocument().heading(HIERARCHY.level_4, 'Issues').table(
-    [
-      { heading: 'Severity', alignment: 'center' },
-      { heading: 'Message', alignment: 'left' },
-      { heading: 'Source file', alignment: 'left' },
-      { heading: 'Line(s)', alignment: 'center' },
-    ],
-    issues.map(({ severity: level, message, source }: Issue) => {
-      const severity = md`${severityMarker(level)} ${md.italic(level)}`;
+  return new MarkdownDocument()
+    .heading(AUDIT_DETAILS_HEADING_LEVEL, 'Issues')
+    .table(
+      [
+        { heading: 'Severity', alignment: 'center' },
+        { heading: 'Message', alignment: 'left' },
+        { heading: 'Source file', alignment: 'left' },
+        { heading: 'Line(s)', alignment: 'center' },
+      ],
+      issues.map(({ severity: level, message, source }: Issue) => {
+        const severity = md`${severityMarker(level)} ${md.italic(level)}`;
 
-      if (!source) {
-        return [severity, message];
-      }
-      // TODO: implement file links, ticket #149
-      const file = md.code(source.file);
-      if (!source.position) {
-        return [severity, message, file];
-      }
-      const { startLine, endLine } = source.position;
-      const line = `${startLine || ''}${
-        endLine && startLine !== endLine ? `-${endLine}` : ''
-      }`;
-      return [severity, message, file, line];
-    }),
-  );
+        if (!source) {
+          return [severity, message];
+        }
+        const file = linkToLocalSourceForIde(source, options);
+        if (!source.position) {
+          return [severity, message, file];
+        }
+        const line = formatSourceLine(source.position);
+        return [severity, message, file, line];
+      }),
+    );
 }
 
-export function auditDetails(audit: AuditReport): MarkdownDocument {
-  const { table, issues = [] } = audit.details ?? {};
+export function auditDetails(
+  audit: AuditReport,
+  options?: MdReportOptions,
+): MarkdownDocument {
+  const { table, issues = [], trees = [] } = audit.details ?? {};
   const detailsValue = auditDetailsAuditValue(audit);
 
   // undefined details OR empty details (undefined issues OR empty issues AND empty table)
-  if (issues.length === 0 && !table?.rows.length) {
+  if (issues.length === 0 && !table?.rows.length && trees.length === 0) {
     return new MarkdownDocument().paragraph(detailsValue);
   }
 
   const tableSectionContent = table && tableSection(table);
-  const issuesSectionContent = issues.length > 0 && auditDetailsIssues(issues);
+  const issuesSectionContent =
+    issues.length > 0 && auditDetailsIssues(issues, options);
+  const treesSectionContent =
+    trees.length > 0 &&
+    new MarkdownDocument().$concat(...trees.map(tree => treeSection(tree)));
 
   return new MarkdownDocument().details(
     detailsValue,
-    new MarkdownDocument().$concat(tableSectionContent, issuesSectionContent),
+    new MarkdownDocument().$concat(
+      tableSectionContent,
+      treesSectionContent,
+      issuesSectionContent,
+    ),
   );
 }
 
-export function auditsSection({
-  plugins,
-}: Pick<ScoredReport, 'plugins'>): MarkdownDocument {
+export function auditsSection(
+  { plugins }: Pick<ScoredReport, 'plugins'>,
+  options?: MdReportOptions,
+): MarkdownDocument {
+  const isScoreDisplayed = scoreFilter(options);
   return new MarkdownDocument()
     .heading(HIERARCHY.level_2, '🛡️ Audits')
     .$foreach(
       plugins.flatMap(plugin =>
-        plugin.audits.map(audit => ({ ...audit, plugin })),
+        plugin.audits
+          .filter(isScoreDisplayed)
+          .map(audit => ({ ...audit, plugin })),
       ),
       (doc, { plugin, ...audit }) => {
         const auditTitle = `${audit.title} (${plugin.title})`;
-        const detailsContent = auditDetails(audit);
+        const detailsContent = auditDetails(audit, options);
         const descriptionContent = metaDescription(audit);
 
         return doc
@@ -169,7 +215,7 @@ export function reportMetaTable({
         md.code(version),
         formatDuration(duration),
         plugins.length.toString(),
-        categories.length.toString(),
+        (categories?.length ?? 0).toString(),
         plugins.reduce((acc, { audits }) => acc + audits.length, 0).toString(),
       ],
     ],

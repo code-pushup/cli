@@ -1,15 +1,15 @@
 import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
-import { uploadToPortal } from '@code-pushup/portal-client';
+import { uploadReportToPortal } from '@code-pushup/portal-client';
 import { readRcByPath } from '@code-pushup/core';
 import {
   ISO_STRING_REGEXP,
   MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,
 } from '@code-pushup/test-utils';
-import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
-import { yargsCli } from '../yargs-cli';
-import { yargsUploadCommandObject } from './upload-command';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants.js';
+import { yargsCli } from '../yargs-cli.js';
+import { yargsUploadCommandObject } from './upload-command.js';
 
 vi.mock('@code-pushup/core', async () => {
   const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =
@@ -52,8 +52,8 @@ describe('upload-command-object', () => {
     );
 
     // values come from CORE_CONFIG_MOCK returned by readRcByPath mock
-    expect(uploadToPortal).toHaveBeenCalledWith<
-      Parameters<typeof uploadToPortal>
+    expect(uploadReportToPortal).toHaveBeenCalledWith<
+      Parameters<typeof uploadReportToPortal>
     >({
       apiKey: 'dummy-api-key',
       server: 'https://example.com/api',

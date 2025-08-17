@@ -1,5 +1,5 @@
-import { Table } from '@code-pushup/models';
-import { table } from './table';
+import type { Table } from '@code-pushup/models';
+import { table } from './table.js';
 
 describe('tableHtml', () => {
   it('should create a complete table', () => {

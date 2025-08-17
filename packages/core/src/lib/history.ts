@@ -1,18 +1,22 @@
-import { CoreConfig, PersistConfig, UploadConfig } from '@code-pushup/models';
+import type {
+  CacheConfigObject,
+  CoreConfig,
+  PersistConfig,
+  UploadConfig,
+} from '@code-pushup/models';
 import { getCurrentBranchOrTag, safeCheckout, ui } from '@code-pushup/utils';
-import { collectAndPersistReports } from './collect-and-persist';
-import { GlobalOptions } from './types';
-import { upload } from './upload';
+import { collectAndPersistReports } from './collect-and-persist.js';
+import type { GlobalOptions } from './types.js';
+import { upload } from './upload.js';
 
 export type HistoryOnlyOptions = {
   targetBranch?: string;
   skipUploads?: boolean;
   forceCleanStatus?: boolean;
 };
-export type HistoryOptions = Required<
-  Pick<CoreConfig, 'plugins'> & Required<Pick<CoreConfig, 'categories'>>
-> & {
+export type HistoryOptions = Pick<CoreConfig, 'plugins' | 'categories'> & {
   persist: Required<PersistConfig>;
+  cache: CacheConfigObject;
   upload?: Required<UploadConfig>;
 } & HistoryOnlyOptions &
   Partial<GlobalOptions>;
@@ -37,6 +41,10 @@ export async function history(
         ...persist,
         format: ['json'],
         filename: `${commit}-report`,
+      },
+      cache: {
+        read: false,
+        write: false,
       },
     };
 

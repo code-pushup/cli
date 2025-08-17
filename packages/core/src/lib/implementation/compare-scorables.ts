@@ -1,4 +1,4 @@
-import {
+import type {
   AuditDiff,
   AuditReport,
   AuditResult,
@@ -10,10 +10,10 @@ import {
   ReportsDiff,
 } from '@code-pushup/models';
 import {
-  Diff,
-  ScoredCategoryConfig,
-  ScoredGroup,
-  ScoredReport,
+  type Diff,
+  type ScoredCategoryConfig,
+  type ScoredGroup,
+  type ScoredReport,
   comparePairs,
   listAuditsFromAllPlugins,
   listGroupsFromAllPlugins,
@@ -26,8 +26,8 @@ export function compareCategories(
   reports: ReportsToCompare,
 ): ReportsDiff['categories'] {
   const { pairs, added, removed } = matchArrayItemsByKey({
-    before: reports.before.categories,
-    after: reports.after.categories,
+    before: reports.before.categories ?? [],
+    after: reports.after.categories ?? [],
     key: 'slug',
   });
   const { changed, unchanged } = comparePairs(

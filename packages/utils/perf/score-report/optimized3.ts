@@ -1,14 +1,17 @@
 /* eslint-disable no-param-reassign, functional/immutable-data */
 // Note: The mutability issues are resolved in production code
-import {
+import type {
   AuditReport,
   CategoryRef,
   GroupRef,
   Report,
 } from '@code-pushup/models';
-import { ScoredReport } from '../../src';
-import { GroupRefInvalidError } from '../../src/lib/reports/scoring';
-import { ScoredCategoryConfig, ScoredGroup } from '../../src/lib/reports/types';
+import type { ScoredReport } from '../../src/index.js';
+import { GroupRefInvalidError } from '../../src/lib/reports/scoring.js';
+import type {
+  ScoredCategoryConfig,
+  ScoredGroup,
+} from '../../src/lib/reports/types.js';
 
 export function calculateScore<T extends { weight: number }>(
   refs: T[],

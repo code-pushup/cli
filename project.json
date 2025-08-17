@@ -2,30 +2,15 @@
   "name": "@code-pushup/cli-source",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
-    "local-registry": {
-      "executor": "@nx/js:verdaccio",
-      "options": {
-        "port": 4873,
-        "config": ".verdaccio/config.yml",
-        "storage": "tmp/local-registry/storage"
-      }
-    },
     "code-pushup": {
-      "command": "npx dist/packages/cli",
-      "dependsOn": [
-        {
-          "projects": [
-            "cli",
-            "plugin-eslint",
-            "plugin-coverage",
-            "plugin-js-packages",
-            "plugin-lighthouse",
-            "examples-plugins",
-            "react-todos-app"
-          ],
-          "target": "build"
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts --no-progress --verbose",
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
         }
-      ]
+      }
     }
   }
 }

@@ -118,7 +118,26 @@ _If you're looking for programmatic usage, then refer to the underlying [@code-p
 
 ## Portal integration
 
-If you have access to the Code PushUp portal, provide credentials in order to upload reports.
+If you have access to the Code PushUp portal, you can enable report uploads by installing the `@code-pushup/portal-client` package.
+
+<details>
+<summary>Installation command for <code>npm</code>, <code>yarn</code> and <code>pnpm</code></summary>
+
+```sh
+npm install --save-dev @code-pushup/portal-client
+```
+
+```sh
+yarn add --dev @code-pushup/portal-client
+```
+
+```sh
+pnpm add --save-dev @code-pushup/portal-client
+```
+
+</details>
+
+Once the package is installed, update your configuration file to include your portal credentials:
 
 ```ts
 const config: CoreConfig = {
@@ -176,29 +195,52 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 
 ### Global Options
 
-| Option           | Type      | Default                                      | Description                                                            |
-| ---------------- | --------- | -------------------------------------------- | ---------------------------------------------------------------------- |
-| **`--progress`** | `boolean` | `true`                                       | Show progress bar in stdout.                                           |
-| **`--verbose`**  | `boolean` | `false`                                      | When true creates more verbose output. This is helpful when debugging. |
-| **`--config`**   | `string`  | looks for `code-pushup.config.{ts\|mjs\|js}` | Path to config file.                                                   |
-| **`--tsconfig`** | `string`  | n/a                                          | Path to a TypeScript config, used to load config file.                 |
+| Option           | Type      | Default                                      | Description                                                                                                                |
+| ---------------- | --------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **`--progress`** | `boolean` | `false` in CI, otherwise `true`              | Show progress bar in stdout.                                                                                               |
+| **`--verbose`**  | `boolean` | `false`                                      | When true creates more verbose output. This is helpful when debugging. You may also set `CP_VERBOSE` env variable instead. |
+| **`--config`**   | `string`  | looks for `code-pushup.config.{ts\|mjs\|js}` | Path to config file.                                                                                                       |
+| **`--tsconfig`** | `string`  | n/a                                          | Path to a TypeScript config, used to load config file.                                                                     |
 
 > [!NOTE]  
 > By default, the CLI loads `code-pushup.config.(ts|mjs|js)` if no config path is provided with `--config`.
 
 ### Common Command Options
 
-| Option                      | Type                 | Default  | Description                                                                 |
-| --------------------------- | -------------------- | -------- | --------------------------------------------------------------------------- |
-| **`--persist.outputDir`**   | `string`             | n/a      | Directory for the produced reports.                                         |
-| **`--persist.filename`**    | `string`             | `report` | Filename for the produced reports without extension.                        |
-| **`--persist.format`**      | `('json' \| 'md')[]` | `json`   | Format(s) of the report file.                                               |
-| **`--upload.organization`** | `string`             | n/a      | Organization slug from portal.                                              |
-| **`--upload.project`**      | `string`             | n/a      | Project slug from portal.                                                   |
-| **`--upload.server`**       | `string`             | n/a      | URL to your portal server.                                                  |
-| **`--upload.apiKey`**       | `string`             | n/a      | API key for the portal server.                                              |
-| **`--onlyPlugins`**         | `string[]`           | `[]`     | Only run the specified plugins. Applicable to all commands except `upload`. |
-| **`--skipPlugins`**         | `string[]`           | `[]`     | Skip the specified plugins. Applicable to all commands except `upload`.     |
+#### Global Options
+
+| Option                 | Type       | Default | Description                                                                    |
+| ---------------------- | ---------- | ------- | ------------------------------------------------------------------------------ |
+| **`--onlyPlugins`**    | `string[]` | `[]`    | Only run the specified plugins. Applicable to all commands except `upload`.    |
+| **`--skipPlugins`**    | `string[]` | `[]`    | Skip the specified plugins. Applicable to all commands except `upload`.        |
+| **`--onlyCategories`** | `string[]` | `[]`    | Only run the specified categories. Applicable to all commands except `upload`. |
+| **`--skipCategories`** | `string[]` | `[]`    | Skip the specified categories. Applicable to all commands except `upload`.     |
+
+#### Cache Options
+
+| Option              | Type      | Default | Description                                                     |
+| ------------------- | --------- | ------- | --------------------------------------------------------------- |
+| **`--cache`**       | `boolean` | `false` | Cache runner outputs (both read and write).                     |
+| **`--cache.read`**  | `boolean` | `false` | If plugin audit outputs should be read from file system cache.  |
+| **`--cache.write`** | `boolean` | `false` | If plugin audit outputs should be written to file system cache. |
+
+#### Persist Options
+
+| Option                      | Type                 | Default  | Description                                                        |
+| --------------------------- | -------------------- | -------- | ------------------------------------------------------------------ |
+| **`--persist.outputDir`**   | `string`             | n/a      | Directory for the produced reports.                                |
+| **`--persist.filename`**    | `string`             | `report` | Filename for the produced reports without extension.               |
+| **`--persist.format`**      | `('json' \| 'md')[]` | `json`   | Format(s) of the report file.                                      |
+| **`--persist.skipReports`** | `boolean`            | `false`  | Skip generating report files. (useful in combination with caching) |
+
+#### Upload Options
+
+| Option                      | Type     | Default | Description                    |
+| --------------------------- | -------- | ------- | ------------------------------ |
+| **`--upload.organization`** | `string` | n/a     | Organization slug from portal. |
+| **`--upload.project`**      | `string` | n/a     | Project slug from portal.      |
+| **`--upload.server`**       | `string` | n/a     | URL to your portal server.     |
+| **`--upload.apiKey`**       | `string` | n/a     | API key for the portal server. |
 
 > [!NOTE]  
 > All common options, except `--onlyPlugins` and `--skipPlugins`, can be specified in the configuration file as well.
@@ -260,7 +302,7 @@ Refer to the [Common Command Options](#common-command-options) for the list of a
 | **`--from`**             | `string`  | n/a     | Hash to start in history                                         |
 | **`--to`**               | `string`  | n/a     | Hash to end in history                                           |
 
-### `compare` command
+#### `compare` command
 
 Usage:
 `code-pushup compare --before SOURCE_PATH --after TARGET_PATH [options]`
@@ -268,12 +310,17 @@ Usage:
 Description:
 Compare 2 reports and produce a report diff file.
 
-In addition to the [Common Command Options](#common-command-options), the following options are required:
+In addition to the [Common Command Options](#common-command-options), the following options are recognized by the `compare` command:
 
-| Option         | Type     | Description                   |
-| -------------- | -------- | ----------------------------- |
-| **`--before`** | `string` | Path to source `report.json`. |
-| **`--after`**  | `string` | Path to target `report.json`. |
+| Option         | Type     | Default                                | Description                         |
+| -------------- | -------- | -------------------------------------- | ----------------------------------- |
+| **`--before`** | `string` | `.code-pushup/report-before.json` [^1] | Path to source `report.json`.       |
+| **`--after`**  | `string` | `.code-pushup/report-after.json` [^1]  | Path to target `report.json`.       |
+| **`--label`**  | `string` | n/a [^2]                               | Label for diff (e.g. project name). |
+
+[^1]: Uses `persist` config to determine report paths, so default file paths are actually `${persist.outputDir}/${persist.filename}-before.json` and `${persist.outputDir}/${persist.filename}-after.json`.
+
+[^2]: Uses `label` from input `report.json` files is they both have the same value.
 
 #### `print-config` command
 
@@ -283,4 +330,31 @@ Usage:
 Description:
 Print the resolved configuration.
 
-Refer to the [Common Command Options](#common-command-options) for the list of available options.
+In addition to the [Common Command Options](#common-command-options), the following options are recognized by the `print-config` command:
+
+| Option         | Required | Type     | Description                                              |
+| -------------- | :------: | -------- | -------------------------------------------------------- |
+| **`--output`** |    no    | `string` | Path to output file to print config (default is stdout). |
+
+#### `merge-diffs` command
+
+Usage:
+`code-pushup merge-diffs --files PATH_1 PATH_2 ... [options]`
+
+Description:
+Combine multiple report diffs into a single `report-diff.md`.
+
+In addition to the [Common Command Options](#common-command-options), the following options are recognized by the `merge-diffs` command:
+
+| Option        | Required | Type       | Description                       |
+| ------------- | :------: | ---------- | --------------------------------- |
+| **`--files`** |   yes    | `string[]` | List of `report-diff.json` paths. |
+
+## Caching
+
+The CLI supports caching to speed up subsequent runs and is compatible with Nx and Turborepo.
+
+Depending on your strategy, you can cache the generated reports files or plugin runner output.
+For fine-grained caching, we suggest caching plugin runner output.
+
+The detailed example for [Nx caching](./docs/nx-caching.md) and [Turborepo caching](./docs/turbo-caching.md) is available in the docs.

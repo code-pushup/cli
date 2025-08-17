@@ -1,4 +1,4 @@
-import { UploadConfig, uploadConfigSchema } from '@code-pushup/models';
+import { type UploadConfig, uploadConfigSchema } from '@code-pushup/models';
 
 export function uploadConfig(opt?: Partial<UploadConfig>): UploadConfig {
   return uploadConfigSchema.parse({

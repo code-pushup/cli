@@ -1,8 +1,12 @@
 import type Details from 'lighthouse/types/lhr/audit-details';
-import { Table, TableRowObject, tableSchema } from '@code-pushup/models';
+import {
+  type Table,
+  type TableRowObject,
+  tableSchema,
+} from '@code-pushup/models';
 import { formatBytes, formatDuration, html } from '@code-pushup/utils';
-import { parseTableColumns, parseTableEntry } from './table.type';
-import { LighthouseAuditDetailsParsingError } from './utils';
+import { parseTableColumns, parseTableEntry } from './table.type.js';
+import { LighthouseAuditDetailsParsingError } from './utils.js';
 
 export function parseOpportunityToAuditDetailsTable(
   details: Details.Opportunity,

@@ -1,10 +1,10 @@
-import {
+import type {
   AuditReport,
   CategoryRef,
   GroupRef,
   Report,
 } from '@code-pushup/models';
-import { ScoredGroup, ScoredReport } from '../../src/lib/reports/types';
+import type { ScoredGroup, ScoredReport } from '../../src/lib/reports/types.js';
 
 function groupRefToScore(audits: AuditReport[]) {
   return (ref: GroupRef) => {
@@ -78,7 +78,7 @@ export function scoreReportOptimized0(report: Report): ScoredReport {
   const allScoredAudits = scoredPlugins.flatMap(({ audits }) => audits);
   const allScoredGroups = scoredPlugins.flatMap(({ groups }) => groups);
 
-  const scoredCategories = report.categories.map(category => ({
+  const scoredCategories = report.categories?.map(category => ({
     ...category,
     score: calculateScore(
       category.refs,

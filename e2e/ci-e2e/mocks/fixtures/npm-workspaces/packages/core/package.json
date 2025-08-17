@@ -1,0 +1,10 @@
+{
+  "name": "@example/core",
+  "version": "1.2.3",
+  "scripts": {
+    "code-pushup": "code-pushup --no-progress"
+  },
+  "dependencies": {
+    "@example/utils": "1.2.3"
+  }
+}

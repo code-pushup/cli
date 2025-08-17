@@ -1,11 +1,14 @@
 # Mocks
+
 /examples/react-todos-app/ @matejchalk
 /testing/test-utils/src/lib/utils/dynamic-mocks/ @matejchalk
 
 # Plugins
+
 /packages/plugin-eslint/ @matejchalk
 /packages/plugin-coverage/ @matejchalk
 /packages/plugin-js-packages/ @matejchalk
 /packages/plugin-lighthouse/ @BioPhoton
+/packages/plugin-typescript/ @BioPhoton
 /packages/nx-plugin/ @BioPhoton
 /examples/plugins/ @BioPhoton

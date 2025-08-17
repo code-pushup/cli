@@ -1,51 +1,31 @@
 import { vol } from 'memfs';
 import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Report } from '@code-pushup/models';
+import type { Report } from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,
   REPORT_MOCK,
-  getLogMessages,
 } from '@code-pushup/test-utils';
-import { ui } from '@code-pushup/utils';
-import { logPersistedResults, persistReport } from './persist';
+import { scoreReport, sortReport, ui } from '@code-pushup/utils';
+import { logPersistedResults, persistReport } from './persist.js';
 
 describe('persistReport', () => {
   beforeEach(() => {
     vol.fromJSON({}, MEMFS_VOLUME);
   });
 
-  it('should print a summary to stdout when no format is specified`', async () => {
-    await persistReport(MINIMAL_REPORT_MOCK, {
-      outputDir: MEMFS_VOLUME,
-      filename: 'report',
-      format: [],
-    });
-    const logs = getLogMessages(ui().logger);
-    expect(logs.at(-2)).toContain('Made with ❤ by code-pushup.dev');
-  });
-
-  it('should print a summary to stdout when all formats are specified`', async () => {
-    await persistReport(MINIMAL_REPORT_MOCK, {
-      outputDir: MEMFS_VOLUME,
-      filename: 'report',
-      format: ['md', 'json'],
-    });
-    const logs = getLogMessages(ui().logger);
-    expect(logs.at(-2)).toContain('Made with ❤ by code-pushup.dev');
-  });
-
   it('should create a report in json format', async () => {
-    await persistReport(MINIMAL_REPORT_MOCK, {
+    const sortedScoredReport = sortReport(scoreReport(MINIMAL_REPORT_MOCK));
+    await persistReport(MINIMAL_REPORT_MOCK, sortedScoredReport, {
       outputDir: MEMFS_VOLUME,
       filename: 'report',
       format: ['json'],
     });
 
     const jsonReport: Report = JSON.parse(
-      await readFile(join(MEMFS_VOLUME, 'report.json'), 'utf8'),
+      await readFile(path.join(MEMFS_VOLUME, 'report.json'), 'utf8'),
     );
     expect(jsonReport).toEqual(
       expect.objectContaining({
@@ -55,40 +35,50 @@ describe('persistReport', () => {
     );
 
     await expect(() =>
-      readFile(join(MEMFS_VOLUME, 'report.md')),
+      readFile(path.join(MEMFS_VOLUME, 'report.md')),
     ).rejects.toThrow('no such file or directory');
   });
 
   it('should create a report in md format', async () => {
-    await persistReport(MINIMAL_REPORT_MOCK, {
+    const sortedScoredReport = sortReport(scoreReport(MINIMAL_REPORT_MOCK));
+    await persistReport(MINIMAL_REPORT_MOCK, sortedScoredReport, {
       outputDir: MEMFS_VOLUME,
       filename: 'report',
       format: ['md'],
     });
 
-    const mdReport = await readFile(join(MEMFS_VOLUME, 'report.md'), 'utf8');
+    const mdReport = await readFile(
+      path.join(MEMFS_VOLUME, 'report.md'),
+      'utf8',
+    );
     expect(mdReport).toContain('Code PushUp Report');
 
     await expect(() =>
-      readFile(join(MEMFS_VOLUME, 'report.json'), 'utf8'),
+      readFile(path.join(MEMFS_VOLUME, 'report.json'), 'utf8'),
     ).rejects.toThrow('no such file or directory');
   });
 
   it('should create a report with categories section in all formats', async () => {
-    await persistReport(REPORT_MOCK, {
+    const sortedScoredReport = sortReport(scoreReport(REPORT_MOCK));
+    await persistReport(REPORT_MOCK, sortedScoredReport, {
       outputDir: MEMFS_VOLUME,
       format: ['md', 'json'],
       filename: 'report',
     });
 
-    const mdReport = await readFile(join(MEMFS_VOLUME, 'report.md'), 'utf8');
-    expect(mdReport).toContain('Code PushUp Report');
-    expect(mdReport).toMatch(
-      /\|\s*🏷 Category\s*\|\s*⭐ Score\s*\|\s*🛡 Audits\s*\|/,
+    const mdReport = await readFile(
+      path.join(MEMFS_VOLUME, 'report.md'),
+      'utf8',
     );
+    expect(mdReport).toContain('Code PushUp Report');
+    expect(mdReport).toContainMarkdownTableRow([
+      '🏷 Category',
+      '⭐ Score',
+      '🛡 Audits',
+    ]);
 
     const jsonReport: Report = JSON.parse(
-      await readFile(join(MEMFS_VOLUME, 'report.json'), 'utf8'),
+      await readFile(path.join(MEMFS_VOLUME, 'report.json'), 'utf8'),
     );
     expect(jsonReport).toEqual(
       expect.objectContaining({
@@ -102,17 +92,27 @@ describe('persistReport', () => {
 describe('logPersistedResults', () => {
   it('should log report sizes correctly`', () => {
     logPersistedResults([{ status: 'fulfilled', value: ['out.json', 10_000] }]);
-    const logs = getLogMessages(ui().logger);
-    expect(logs[0]).toBe('[ green(success) ] Generated reports successfully: ');
-    expect(logs[1]).toContain('9.77 kB');
-    expect(logs[1]).toContain('out.json');
+    expect(ui()).toHaveNthLogged(
+      1,
+      'success',
+      expect.stringContaining('Generated reports successfully: '),
+    );
+    expect(ui()).toHaveNthLogged(
+      2,
+      'success',
+      expect.stringContaining('9.77 kB'),
+    );
+    expect(ui()).toHaveNthLogged(
+      2,
+      'success',
+      expect.stringContaining('out.json'),
+    );
   });
 
   it('should log fails correctly`', () => {
     logPersistedResults([{ status: 'rejected', reason: 'fail' }]);
-    const logs = getLogMessages(ui().logger);
-    expect(logs[0]).toBe('[ yellow(warn) ] Generated reports failed: ');
-    expect(logs[1]).toContain('fail');
+    expect(ui()).toHaveNthLogged(1, 'warn', 'Generated reports failed: ');
+    expect(ui()).toHaveNthLogged(2, 'warn', expect.stringContaining('fail'));
   });
 
   it('should log report sizes and fails correctly`', () => {
@@ -120,12 +120,26 @@ describe('logPersistedResults', () => {
       { status: 'fulfilled', value: ['out.json', 10_000] },
       { status: 'rejected', reason: 'fail' },
     ]);
-    const logs = getLogMessages(ui().logger);
-    expect(logs[0]).toBe('[ green(success) ] Generated reports successfully: ');
-    expect(logs[1]).toContain('out.json');
-    expect(logs[1]).toContain('9.77 kB');
-
-    expect(logs[2]).toContain('Generated reports failed: ');
-    expect(logs[2]).toContain('fail');
+    expect(ui()).toHaveNthLogged(
+      1,
+      'success',
+      'Generated reports successfully: ',
+    );
+    expect(ui()).toHaveNthLogged(
+      2,
+      'success',
+      expect.stringContaining('out.json'),
+    );
+    expect(ui()).toHaveNthLogged(
+      2,
+      'success',
+      expect.stringContaining('9.77 kB'),
+    );
+    expect(ui()).toHaveNthLogged(
+      3,
+      'warn',
+      expect.stringContaining('Generated reports failed: '),
+    );
+    expect(ui()).toHaveNthLogged(3, 'warn', expect.stringContaining('fail'));
   });
 });

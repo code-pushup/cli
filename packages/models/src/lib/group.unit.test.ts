@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
-  Group,
-  GroupRef,
+  type Group,
+  type GroupRef,
   groupRefSchema,
   groupSchema,
   groupsSchema,
-} from './group';
+} from './group.js';
 
 describe('groupRefSchema', () => {
   it('should accept a valid group reference', () => {
@@ -69,7 +69,7 @@ describe('groupSchema', () => {
         title: 'Empty group',
         refs: [],
       } satisfies Group),
-    ).toThrow('In a category there has to be at least one ref');
+    ).toThrow('In a category, there has to be at least one ref');
   });
 
   it('should throw for duplicate group references', () => {
@@ -82,7 +82,9 @@ describe('groupSchema', () => {
           { slug: 'lighthouse-bug-prevention', weight: 2 },
         ],
       } satisfies Group),
-    ).toThrow('following references are not unique: lighthouse-bug-prevention');
+    ).toThrow(
+      String.raw`Group has duplicate references to audits: \"lighthouse-bug-prevention\"`,
+    );
   });
 });
 
@@ -127,6 +129,8 @@ describe('groupsSchema', () => {
           refs: [{ slug: 'jest-unit-tests', weight: 2 }],
         },
       ] satisfies Group[]),
-    ).toThrow('slugs are not unique: lighthouse');
+    ).toThrow(
+      String.raw`Group slugs must be unique, but received duplicates: \"lighthouse\"`,
+    );
   });
 });

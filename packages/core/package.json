@@ -1,13 +1,58 @@
 {
   "name": "@code-pushup/core",
-  "version": "0.48.0",
+  "version": "0.74.0",
   "license": "MIT",
+  "description": "Core business logic for the used by the Code PushUp CLI",
+  "homepage": "https://github.com/code-pushup/cli/tree/main/packages/core#readme",
+  "bugs": {
+    "url": "https://github.com/code-pushup/cli/issues?q=is%3Aissue%20state%3Aopen%20type%3ABug%20label%3A\"🧩%20core\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code-pushup/cli.git",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "CLI",
+    "Code PushUp",
+    "automation",
+    "developer tools",
+    "code quality",
+    "conformance",
+    "build tools",
+    "KPI tracking",
+    "tech debt",
+    "automated feedback",
+    "regression guard",
+    "CI integration",
+    "code management",
+    "actionable feedback",
+    "trend analysis",
+    "static analysis",
+    "linting",
+    "audit",
+    "performance",
+    "score monitoring"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
   "dependencies": {
-    "@code-pushup/models": "0.48.0",
-    "@code-pushup/utils": "0.48.0",
-    "@code-pushup/portal-client": "^0.9.0",
+    "@code-pushup/models": "0.74.0",
+    "@code-pushup/utils": "0.74.0",
     "ansis": "^3.3.0"
   },
-  "type": "commonjs",
-  "main": "./index.cjs"
+  "peerDependencies": {
+    "@code-pushup/portal-client": "^0.15.0"
+  },
+  "peerDependenciesMeta": {
+    "@code-pushup/portal-client": {
+      "optional": true
+    }
+  },
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
 }

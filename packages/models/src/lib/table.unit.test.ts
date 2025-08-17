@@ -1,18 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import {
-  Table,
-  TableAlignment,
-  TableColumnObject,
-  TableColumnPrimitive,
-  TableRowObject,
-  TableRowPrimitive,
+  type Table,
+  type TableAlignment,
+  type TableColumnObject,
+  type TableColumnPrimitive,
+  type TableRowObject,
+  type TableRowPrimitive,
   tableAlignmentSchema,
   tableColumnObjectSchema,
   tableColumnPrimitiveSchema,
   tableRowObjectSchema,
   tableRowPrimitiveSchema,
   tableSchema,
-} from './table';
+} from './table.js';
 
 describe('tableAlignmentSchema', () => {
   it('should accept a valid enum', () => {
@@ -23,7 +23,7 @@ describe('tableAlignmentSchema', () => {
   it('should throw for a invalid enum', () => {
     const alignment = 'crooked';
     expect(() => tableAlignmentSchema.parse(alignment)).toThrow(
-      'invalid_enum_value',
+      String.raw`Invalid option: expected one of \"left\"|\"center\"|\"right\"`,
     );
   });
 });
@@ -37,7 +37,7 @@ describe('tableColumnPrimitiveSchema', () => {
   it('should throw for a invalid enum', () => {
     const column = 'crooked';
     expect(() => tableColumnPrimitiveSchema.parse(column)).toThrow(
-      'invalid_enum_value',
+      String.raw`Invalid option: expected one of \"left\"|\"center\"|\"right\"`,
     );
   });
 });
@@ -63,7 +63,7 @@ describe('tableRowPrimitiveSchema', () => {
   it('should throw for a invalid array', () => {
     const row = [{}];
     expect(() => tableRowPrimitiveSchema.parse(row)).toThrow(
-      'Expected string, received object',
+      'Invalid input: expected string, received object',
     );
   });
 });
@@ -115,7 +115,7 @@ describe('tableSchema', () => {
       rows: [[[] as unknown as string]],
     };
     expect(() => tableSchema().parse(table)).toThrow(
-      'Expected string, received array',
+      'Invalid input: expected string, received array',
     );
   });
 
@@ -124,7 +124,7 @@ describe('tableSchema', () => {
       rows: [['1', { prop1: '2' }]],
     };
     expect(() => tableSchema().parse(table)).toThrow(
-      'Expected string, received object',
+      'Invalid input: expected string, received object',
     );
   });
 

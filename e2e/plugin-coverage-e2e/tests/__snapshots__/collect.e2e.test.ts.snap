@@ -1,0 +1,544 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PLUGIN collect report with coverage-plugin NPM package > should run Code coverage plugin which parses existing lcov report and creates report.json 1`] = `
+{
+  "categories": [
+    {
+      "refs": [
+        {
+          "plugin": "coverage",
+          "slug": "coverage",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "code-coverage",
+      "title": "Code coverage",
+    },
+  ],
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "audits": [
+        {
+          "description": "Measures how many functions were called in at least one test.",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "children": [
+                            {
+                              "children": [
+                                {
+                                  "name": "scoring.ts",
+                                  "values": {
+                                    "coverage": 1,
+                                    "missing": [],
+                                  },
+                                },
+                              ],
+                              "name": "fully-covered",
+                              "values": {
+                                "coverage": 1,
+                              },
+                            },
+                            {
+                              "children": [
+                                {
+                                  "name": "sorting.ts",
+                                  "values": {
+                                    "coverage": 0,
+                                    "missing": [
+                                      {
+                                        "kind": "function",
+                                        "name": "sortReport",
+                                        "startLine": 1,
+                                      },
+                                    ],
+                                  },
+                                },
+                              ],
+                              "name": "not-covered",
+                              "values": {
+                                "coverage": 0,
+                              },
+                            },
+                            {
+                              "children": [
+                                {
+                                  "name": "utils.ts",
+                                  "values": {
+                                    "coverage": 0.5,
+                                    "missing": [
+                                      {
+                                        "kind": "function",
+                                        "name": "formatReportScore",
+                                        "startLine": 2,
+                                      },
+                                    ],
+                                  },
+                                },
+                              ],
+                              "name": "partly-covered",
+                              "values": {
+                                "coverage": 0.5,
+                              },
+                            },
+                          ],
+                          "name": "lib",
+                          "values": {
+                            "coverage": 0.6,
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 0.6,
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 0.6,
+                  },
+                },
+                "title": "Function coverage",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "60 %",
+          "score": 0.6,
+          "slug": "function-coverage",
+          "title": "Function coverage",
+          "value": 60,
+        },
+        {
+          "description": "Measures how many branches were executed after conditional statements in at least one test.",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "children": [
+                            {
+                              "children": [
+                                {
+                                  "name": "scoring.ts",
+                                  "values": {
+                                    "coverage": 1,
+                                    "missing": [],
+                                  },
+                                },
+                              ],
+                              "name": "fully-covered",
+                              "values": {
+                                "coverage": 1,
+                              },
+                            },
+                            {
+                              "children": [
+                                {
+                                  "name": "sorting.ts",
+                                  "values": {
+                                    "coverage": 0,
+                                    "missing": [
+                                      {
+                                        "kind": "branch",
+                                        "name": "0",
+                                        "startLine": 7,
+                                      },
+                                      {
+                                        "kind": "branch",
+                                        "name": "1",
+                                        "startLine": 7,
+                                      },
+                                    ],
+                                  },
+                                },
+                              ],
+                              "name": "not-covered",
+                              "values": {
+                                "coverage": 0,
+                              },
+                            },
+                            {
+                              "children": [
+                                {
+                                  "name": "utils.ts",
+                                  "values": {
+                                    "coverage": 0.8,
+                                    "missing": [
+                                      {
+                                        "kind": "branch",
+                                        "name": "1",
+                                        "startLine": 6,
+                                      },
+                                      {
+                                        "kind": "branch",
+                                        "name": "1",
+                                        "startLine": 10,
+                                      },
+                                    ],
+                                  },
+                                },
+                              ],
+                              "name": "partly-covered",
+                              "values": {
+                                "coverage": 0.8,
+                              },
+                            },
+                          ],
+                          "name": "lib",
+                          "values": {
+                            "coverage": 0.7647058823529411,
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 0.7647058823529411,
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 0.7647058823529411,
+                  },
+                },
+                "title": "Branch coverage",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "76.5 %",
+          "score": 0.7647,
+          "slug": "branch-coverage",
+          "title": "Branch coverage",
+          "value": 76.47058823529412,
+        },
+        {
+          "description": "Measures how many lines of code were executed in at least one test.",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "children": [
+                            {
+                              "children": [
+                                {
+                                  "name": "scoring.ts",
+                                  "values": {
+                                    "coverage": 1,
+                                    "missing": [],
+                                  },
+                                },
+                              ],
+                              "name": "fully-covered",
+                              "values": {
+                                "coverage": 1,
+                              },
+                            },
+                            {
+                              "children": [
+                                {
+                                  "name": "sorting.ts",
+                                  "values": {
+                                    "coverage": 0,
+                                    "missing": [
+                                      {
+                                        "endLine": 5,
+                                        "startLine": 1,
+                                      },
+                                    ],
+                                  },
+                                },
+                              ],
+                              "name": "not-covered",
+                              "values": {
+                                "coverage": 0,
+                              },
+                            },
+                            {
+                              "children": [
+                                {
+                                  "name": "utils.ts",
+                                  "values": {
+                                    "coverage": 0.7,
+                                    "missing": [
+                                      {
+                                        "endLine": 9,
+                                        "startLine": 7,
+                                      },
+                                    ],
+                                  },
+                                },
+                              ],
+                              "name": "partly-covered",
+                              "values": {
+                                "coverage": 0.7,
+                              },
+                            },
+                          ],
+                          "name": "lib",
+                          "values": {
+                            "coverage": 0.68,
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 0.68,
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 0.68,
+                  },
+                },
+                "title": "Line coverage",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "68 %",
+          "score": 0.68,
+          "slug": "line-coverage",
+          "title": "Line coverage",
+          "value": 68,
+        },
+      ],
+      "description": "Official Code PushUp code coverage plugin.",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/coverage-plugin/",
+      "groups": [
+        {
+          "description": "Group containing all defined coverage types as audits.",
+          "refs": [
+            {
+              "slug": "function-coverage",
+              "weight": 6,
+            },
+            {
+              "slug": "branch-coverage",
+              "weight": 3,
+            },
+            {
+              "slug": "line-coverage",
+              "weight": 1,
+            },
+          ],
+          "slug": "coverage",
+          "title": "Code coverage metrics",
+        },
+      ],
+      "icon": "folder-coverage-open",
+      "packageName": "@code-pushup/coverage-plugin",
+      "slug": "coverage",
+      "title": "Code coverage",
+    },
+  ],
+}
+`;
+
+exports[`PLUGIN collect report with coverage-plugin NPM package > should run Code coverage plugin which runs tests and creates report.json 1`] = `
+{
+  "categories": [
+    {
+      "refs": [
+        {
+          "plugin": "coverage",
+          "slug": "coverage",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "code-coverage",
+      "title": "Code coverage",
+    },
+  ],
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "audits": [
+        {
+          "description": "Measures how many functions were called in at least one test.",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "index.mjs",
+                          "values": {
+                            "coverage": 0.6666666666666666,
+                            "missing": [
+                              {
+                                "kind": "function",
+                                "name": "untested",
+                                "startLine": 1,
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 0.6666666666666666,
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 0.6666666666666666,
+                  },
+                },
+                "title": "Function coverage",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "66.7 %",
+          "score": 0.6667,
+          "slug": "function-coverage",
+          "title": "Function coverage",
+          "value": 66.66666666666666,
+        },
+        {
+          "description": "Measures how many branches were executed after conditional statements in at least one test.",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "index.mjs",
+                          "values": {
+                            "coverage": 0.6666666666666666,
+                            "missing": [
+                              {
+                                "kind": "branch",
+                                "name": "0",
+                                "startLine": 10,
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 0.6666666666666666,
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 0.6666666666666666,
+                  },
+                },
+                "title": "Branch coverage",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "66.7 %",
+          "score": 0.6667,
+          "slug": "branch-coverage",
+          "title": "Branch coverage",
+          "value": 66.66666666666666,
+        },
+        {
+          "description": "Measures how many lines of code were executed in at least one test.",
+          "details": {
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "name": "index.mjs",
+                          "values": {
+                            "coverage": 0.7333333333333333,
+                            "missing": [
+                              {
+                                "endLine": 3,
+                                "startLine": 2,
+                              },
+                              {
+                                "endLine": 12,
+                                "startLine": 11,
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                      "name": "src",
+                      "values": {
+                        "coverage": 0.7333333333333333,
+                      },
+                    },
+                  ],
+                  "name": ".",
+                  "values": {
+                    "coverage": 0.7333333333333333,
+                  },
+                },
+                "title": "Line coverage",
+                "type": "coverage",
+              },
+            ],
+          },
+          "displayValue": "73.3 %",
+          "score": 0.7333,
+          "slug": "line-coverage",
+          "title": "Line coverage",
+          "value": 73.33333333333333,
+        },
+      ],
+      "description": "Official Code PushUp code coverage plugin.",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/coverage-plugin/",
+      "groups": [
+        {
+          "description": "Group containing all defined coverage types as audits.",
+          "refs": [
+            {
+              "slug": "function-coverage",
+              "weight": 6,
+            },
+            {
+              "slug": "branch-coverage",
+              "weight": 3,
+            },
+            {
+              "slug": "line-coverage",
+              "weight": 1,
+            },
+          ],
+          "slug": "coverage",
+          "title": "Code coverage metrics",
+        },
+      ],
+      "icon": "folder-coverage-open",
+      "packageName": "@code-pushup/coverage-plugin",
+      "slug": "coverage",
+      "title": "Code coverage",
+    },
+  ],
+}
+`;

@@ -1,19 +1,59 @@
 {
   "name": "@code-pushup/eslint-plugin",
-  "version": "0.48.0",
+  "version": "0.74.0",
   "license": "MIT",
+  "description": "Code PushUp plugin for detecting problems in source code using ESLint.📋",
+  "homepage": "https://github.com/code-pushup/cli/tree/main/packages/plugin-eslint#readme",
+  "bugs": {
+    "url": "https://github.com/code-pushup/cli/issues?q=is%3Aissue%20state%3Aopen%20type%3ABug%20label%3A\"🧩%20eslint-plugin\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code-pushup/cli.git",
+    "directory": "packages/plugin-eslint"
+  },
+  "keywords": [
+    "CLI",
+    "Code PushUp",
+    "ESLint",
+    "JavaScript",
+    "TypeScript",
+    "plugin",
+    "static analysis",
+    "linting",
+    "audit",
+    "performance",
+    "score monitoring",
+    "code quality",
+    "conformance",
+    "KPI tracking",
+    "tech debt",
+    "automated feedback",
+    "regression guard",
+    "actionable feedback",
+    "trend analysis"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
   "dependencies": {
-    "@code-pushup/utils": "0.48.0",
-    "@code-pushup/models": "0.48.0",
-    "eslint": "^8.46.0",
-    "zod": "^3.22.4"
+    "@code-pushup/utils": "0.74.0",
+    "@code-pushup/models": "0.74.0",
+    "yargs": "^17.7.2",
+    "zod": "^4.0.5"
   },
   "peerDependencies": {
-    "@nx/devkit": "^17.0.0 || ^18.0.0 || ^19.0.0"
+    "@nx/devkit": ">=17.0.0",
+    "eslint": "^8.46.0 || ^9.0.0"
   },
   "peerDependenciesMeta": {
     "@nx/devkit": {
       "optional": true
     }
-  }
+  },
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
 }

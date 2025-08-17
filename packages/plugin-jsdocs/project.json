@@ -1,0 +1,13 @@
+{
+  "name": "plugin-jsdocs",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/plugin-jsdocs/src",
+  "projectType": "library",
+  "tags": ["scope:plugin", "type:feature", "publishable"],
+  "targets": {
+    "build": {},
+    "lint": {},
+    "unit-test": {},
+    "int-test": {}
+  }
+}

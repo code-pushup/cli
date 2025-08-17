@@ -1,9 +1,9 @@
 import type { PluginConfig, PluginReport, Report } from '@code-pushup/models';
-import { COMMIT_MOCK } from './commit.mock';
+import { COMMIT_MOCK } from './commit.mock.js';
 import {
   auditReportMock,
   pluginConfigMock,
-} from './dynamic-mocks/plugin-config.mock';
+} from './dynamic-mocks/plugin-config.mock.js';
 
 export const MINIMAL_REPORT_MOCK: Report = {
   packageName: '@code-pushup/core',
@@ -11,7 +11,6 @@ export const MINIMAL_REPORT_MOCK: Report = {
   date: '2023-08-16T09:00:00.000Z',
   duration: 666,
   commit: COMMIT_MOCK,
-  categories: [],
   plugins: [
     {
       slug: 'eslint',

@@ -72,6 +72,12 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
      };
      ```
 
+     You can also exclude specific projects if needed by passing their names in the `exclude` option:
+
+     ```js
+     await eslintConfigFromAllNxProjects({ exclude: ['server'] });
+     ```
+
    - If you wish to target a specific project along with other projects it depends on, use the `eslintConfigFromNxProjectAndDeps` helper and pass in in your project name:
 
      ```js
@@ -86,6 +92,42 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
      ```
 
 5. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
+
+### Custom groups
+
+You can extend the plugin configuration with custom groups to categorize ESLint rules according to your project's specific needs. Custom groups allow you to assign weights to individual rules, influencing their impact on the report. Rules can be defined as an object with explicit weights or as an array where each rule defaults to a weight of 1. Additionally, you can use wildcard patterns (`*`) to include multiple rules with similar prefixes.
+
+```js
+import eslintPlugin from '@code-pushup/eslint-plugin';
+
+export default {
+  // ...
+  plugins: [
+    // ...
+    await eslintPlugin(
+      { eslintrc: '.eslintrc.js', patterns: ['src/**/*.js'] },
+      {
+        groups: [
+          {
+            slug: 'modern-angular',
+            title: 'Modern Angular',
+            rules: {
+              '@angular-eslint/template/prefer-control-flow': 3,
+              '@angular-eslint/template/prefer-ngsrc': 2,
+              '@angular-eslint/component-selector': 1,
+            },
+          },
+          {
+            slug: 'type-safety',
+            title: 'Type safety',
+            rules: ['@typescript-eslint/no-unsafe-*'],
+          },
+        ],
+      },
+    ),
+  ],
+};
+```
 
 ### Optionally set up categories
 

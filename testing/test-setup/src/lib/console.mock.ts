@@ -1,4 +1,4 @@
-import { MockInstance, afterEach, beforeEach, vi } from 'vitest';
+import { type MockInstance, afterEach, beforeEach, vi } from 'vitest';
 
 let consoleInfoSpy: MockInstance<any[], void> | undefined;
 let consoleWarnSpy: MockInstance<any[], void> | undefined;

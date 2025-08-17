@@ -4,44 +4,11 @@
   "sourceRoot": "packages/plugin-js-packages/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/esbuild:esbuild",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/plugin-js-packages",
-        "main": "packages/plugin-js-packages/src/index.ts",
-        "tsConfig": "packages/plugin-js-packages/tsconfig.lib.json",
-        "additionalEntryPoints": ["packages/plugin-js-packages/src/bin.ts"],
-        "assets": ["packages/plugin-js-packages/*.md"],
-        "esbuildConfig": "esbuild.config.js"
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/plugin-js-packages/**/*.ts",
-          "packages/plugin-js-packages/package.json"
-        ]
-      }
-    },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-js-packages/vite.config.unit.ts"
-      }
-    },
-    "integration-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-js-packages/vite.config.integration.ts"
-      }
-    },
-    "publish": {
-      "command": "node tools/scripts/publish.mjs plugin-js-packages {args.ver} {args.tag}",
-      "dependsOn": ["build"]
-    }
+    "build": {},
+    "lint": {},
+    "unit-test": {},
+    "int-test": {}
   },
-  "tags": ["scope:plugin", "type:feature"]
+  "tags": ["scope:plugin", "type:feature", "publishable"],
+  "description": "A plugin for JavaScript packages."
 }

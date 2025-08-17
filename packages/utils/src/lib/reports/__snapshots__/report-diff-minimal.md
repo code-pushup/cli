@@ -1,11 +1,11 @@
 # Code PushUp
 
-😟 Code PushUp report has **regressed** – compared target commit 0123456789abcdef0123456789abcdef01234567 with source commit abcdef0123456789abcdef0123456789abcdef01.
-
-## 🛡️ Audits
+😟 Code PushUp report has **regressed** – compared current commit 0123456789abcdef0123456789abcdef01234567 with previous commit abcdef0123456789abcdef0123456789abcdef01.
 
 <details>
 <summary>👎 <strong>1</strong> audit regressed</summary>
+
+## 🛡️ Audits
 
 | 🔌 Plugin | 🛡️ Audit                       |      📏 Previous value      |         📏 Current value          |                               🔄 Value change                                |
 | :-------- | :------------------------------ | :-------------------------: | :-------------------------------: | :--------------------------------------------------------------------------: |

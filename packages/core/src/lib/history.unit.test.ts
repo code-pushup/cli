@@ -1,9 +1,9 @@
 import { describe, expect, vi } from 'vitest';
 import { MINIMAL_PLUGIN_CONFIG_MOCK } from '@code-pushup/test-utils';
 import { getCurrentBranchOrTag, safeCheckout } from '@code-pushup/utils';
-import { collectAndPersistReports } from './collect-and-persist';
-import { HistoryOptions, history } from './history';
-import { upload } from './upload';
+import { collectAndPersistReports } from './collect-and-persist.js';
+import { type HistoryOptions, history } from './history.js';
+import { upload } from './upload.js';
 
 vi.mock('@code-pushup/utils', async () => {
   const utils: object = await vi.importActual('@code-pushup/utils');
@@ -30,8 +30,8 @@ describe('history', () => {
       format: ['json'],
     },
     plugins: [MINIMAL_PLUGIN_CONFIG_MOCK],
-    categories: [],
   };
+
   it('should check out all passed commits and reset to initial branch or tag', async () => {
     await history(historyBaseOptions, ['abc', 'def']);
 

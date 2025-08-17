@@ -117,26 +117,123 @@ export default {
 };
 ```
 
+## Multiple URLs
+
+The Lighthouse plugin supports running audits against multiple URLs in a single invocation. To do this, provide an array of URLs as the first argument to the plugin:
+
+```ts
+import lighthousePlugin from '@code-pushup/lighthouse-plugin';
+
+export default {
+  // ...
+  plugins: [
+    // ...
+    await lighthousePlugin(['https://example.com', 'https://example.com/contact']),
+  ],
+};
+```
+
+### Assigning weights to URLs
+
+You can assign custom weights to URLs by passing an object instead of an array. This is useful when some pages are more important than others (e.g., your homepage vs. a contact page). The keys are URLs, and the values are their weights.
+
+URLs with higher weights contribute more to the overall category scores. For example, a URL with weight 2 has twice the influence of a URL with weight 1.
+
+```ts
+import lighthousePlugin from '@code-pushup/lighthouse-plugin';
+
+export default {
+  // ...
+  plugins: [
+    // ...
+    await lighthousePlugin({
+      'https://example.com': 2,
+      'https://example.com/contact': 1,
+    })
+  ];
+};
+```
+
+### Categories with multiple URLs
+
+When running Lighthouse against multiple URLs, use the `mergeLighthouseCategories` utility to ensure categories are correctly expanded and results are aggregated per URL.
+
+#### Basic usage
+
+```ts
+import lighthousePlugin, { mergeLighthouseCategories } from '@code-pushup/lighthouse-plugin';
+
+const lhPlugin = await lighthousePlugin(urls);
+
+export default {
+  plugins: [
+    // ...
+    lhPlugin,
+  ],
+  categories: [
+    // ...
+    ...mergeLighthouseCategories(lhPlugin),
+  ],
+};
+```
+
+#### Custom categories
+
+If you provide custom categories, you can reference both groups and audits as usual. The merging utility will expand each referenced group or audit for every URL, assigning the correct per-URL weight.
+
+```ts
+import lighthousePlugin, { lighthouseAuditRef, lighthouseGroupRef, mergeLighthouseCategories } from '@code-pushup/lighthouse-plugin';
+
+const lhPlugin = await lighthousePlugin(urls);
+
+export default {
+  // ...
+  plugins: [
+    // ...
+    lhPlugin,
+  ],
+  categories: [
+    // ...
+    ...mergeLighthouseCategories(lhPlugin, [
+      {
+        slug: 'performance',
+        title: 'Performance',
+        refs: [lighthouseGroupRef('performance'), lighthouseAuditRef('first-contentful-paint', 2)],
+      },
+    ]),
+  ],
+};
+```
+
+### Behavior Summary
+
+- **No categories**: The plugin auto-generates categories from the plugin's default Lighthouse groups.
+- **Custom categories**: The plugin expands all referenced audits and groups for each URL, applying appropriate weights.
+- **Empty array** (`categories: []`): No categories are created or expanded, which is useful when you only want audit data.
+
 ## Flags
 
-The plugin accepts a second optional argument, `flags`.
+The plugin accepts an optional second argument, `flags`.
 
-`flags` is the Lighthouse [CLI flags](https://github.com/GoogleChrome/lighthouse/blob/7d80178c37a1b600ea8f092fc0b098029799a659/cli/cli-flags.js#L80) as a JS object.
+`flags` is a JavaScript object containing Lighthouse [CLI flags](https://github.com/GoogleChrome/lighthouse/blob/7d80178c37a1b600ea8f092fc0b098029799a659/cli/cli-flags.js#L80).
 
-Within the flags object a couple of other external configuration files can be referenced. E.g. `configPath` , `preset` or `budgetPath` reference external `json` or JavaScript files.
+Within the `flags` object, external configuration files can be referenced using options like `configPath` , `preset`, or `budgetPath`. These options allow Lighthouse to load custom configurations, audit presets, or performance budgets from external `json` or JavaScript files.
 
-For a complete list the [official documentation of CLI flags](https://github.com/GoogleChrome/lighthouse/blob/main/readme.md#cli-options)
+For a complete list of available options, refer to [the official Lighthouse documentation](https://github.com/GoogleChrome/lighthouse/blob/main/readme.md#cli-options).
 
 > [!TIP]  
-> If you are not used to work with the Lighthouse CLI you would pass flags like this:
+> If you are new to working with the Lighthouse CLI, flags can be passed like this:
 > `lighthouse https://example.com --output=json --chromeFlags='--headless=shell'`
 >
-> Now with the plugin it would look like this:
+> With the plugin, the configuration would be:
 >
 > ```ts
 > // code-pushup.config.ts
 > ...
-> lighthousePlugin('https://example.com', { output: 'json', chromeFlags: ['--headless=shell']});
+> lighthousePlugin('https://example.com', {
+>   output: 'json',
+>   chromeFlags: ['--headless=shell'],
+> });
 > ```
 
 > [!note]
@@ -149,14 +246,47 @@ For a complete list the [official documentation of CLI flags](https://github.com
 
 ## Chrome Flags for Tooling
 
-We recommend using Chrome flags for more stable runs in a tooling environment.
-The [`chrome-launcher`](https://www.npmjs.com/package/chrome-launcher) package provides a set of flags dedicated to tooling that they also documented very well.
+We recommend using Chrome flags for more stable runs in a tooling environment. The [`chrome-launcher`](https://www.npmjs.com/package/chrome-launcher) package offers a well-documented set of flags specifically designed to ensure reliable execution.
+
+The latest version of `@code-pushup/lighthouse-plugin` provides `DEFAULT_CHROME_FLAGS`, a pre-configured constant that includes Chrome’s default flags for stable, headless execution out of the box. This means you do not need to specify `chromeFlags` manually unless you want to modify them.
+
+### Default Usage
+
+If no `chromeFlags` are provided, the plugin automatically applies the default configuration:
 
 > ```ts
-> // code-pushup.config.ts
-> import { DEFAULT_FLAGS } from 'chrome-launcher/dist/flags.js';
-> ...
-> lighthousePlugin('https://example.com', { output: 'json', chromeFlags: DEFAULT_FLAGS });
+> import lighthousePlugin from '@code-pushup/lighthouse-plugin';
+>
+> lighthousePlugin('https://example.com', {
+>   output: 'json',
+>   // Defaults to DEFAULT_CHROME_FLAGS internally
+> });
+> ```
+
+### Adding Extra Flags
+
+If additional Chrome flags are required (e.g., verbose logging or debugging), they can be appended to the default flags:
+
+> ```ts
+> import lighthousePlugin, { DEFAULT_CHROME_FLAGS } from '@code-pushup/lighthouse-plugin';
+>
+> lighthousePlugin('https://example.com', {
+>   output: 'json',
+>   chromeFlags: DEFAULT_CHROME_FLAGS.concat(['--verbose']),
+> });
+> ```
+
+### Overriding Default Flags
+
+To completely override the default flags and provide a custom configuration:
+
+> ```ts
+> import lighthousePlugin from '@code-pushup/lighthouse-plugin';
+>
+> lighthousePlugin('https://example.com', {
+>   output: 'json',
+>   chromeFlags: ['--verbose'],
+> });
 > ```
 
 ## Config

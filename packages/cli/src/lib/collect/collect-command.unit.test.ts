@@ -4,11 +4,11 @@ import {
   DEFAULT_PERSIST_FILENAME,
   DEFAULT_PERSIST_FORMAT,
   DEFAULT_PERSIST_OUTPUT_DIR,
-  PersistConfig,
+  type PersistConfig,
 } from '@code-pushup/models';
-import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants';
-import { yargsCli } from '../yargs-cli';
-import { yargsCollectCommandObject } from './collect-command';
+import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants.js';
+import { yargsCli } from '../yargs-cli.js';
+import { yargsCollectCommandObject } from './collect-command.js';
 
 vi.mock('@code-pushup/core', async () => {
   const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =
@@ -37,7 +37,7 @@ describe('collect-command', () => {
     expect(collectAndPersistReports).toHaveBeenCalledWith(
       expect.objectContaining({
         config: '/test/code-pushup.config.ts',
-        persist: expect.objectContaining<Required<PersistConfig>>({
+        persist: expect.objectContaining<PersistConfig>({
           filename: DEFAULT_PERSIST_FILENAME,
           outputDir: DEFAULT_PERSIST_OUTPUT_DIR,
           format: DEFAULT_PERSIST_FORMAT,

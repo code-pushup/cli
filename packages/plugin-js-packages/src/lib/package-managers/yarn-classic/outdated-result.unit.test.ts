@@ -1,19 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import { toJsonLines } from '@code-pushup/utils';
-import {
+import type {
   OutdatedDependency,
   OutdatedResult,
-} from '../../runner/outdated/types';
-import { REQUIRED_OUTDATED_FIELDS } from './constants';
+} from '../../runner/outdated/types.js';
+import { REQUIRED_OUTDATED_FIELDS } from './constants.js';
 import {
   getOutdatedFieldIndexes,
   validateOutdatedFields,
-  yarnv1ToOutdatedResult,
-} from './outdated-result';
-import { Yarnv1FieldName } from './types';
+  yarnClassicToOutdatedResult,
+} from './outdated-result.js';
+import type { YarnClassicFieldName } from './types.js';
 
-describe('yarnv1ToOutdatedResult', () => {
+describe('yarnClassicToOutdatedResult', () => {
   const yarnInfo = { type: 'info', data: 'Colours' };
+
   it('should transform Yarn v1 outdated to unified outdated result', () => {
     const table = {
       type: 'table',
@@ -24,13 +25,13 @@ describe('yarnv1ToOutdatedResult', () => {
           'Latest',
           'Package Type',
           'URL',
-        ] satisfies Yarnv1FieldName[],
+        ] satisfies YarnClassicFieldName[],
         body: [['nx', '16.8.1', '17.0.0', 'dependencies', 'https://nx.dev/']],
       },
     };
 
     expect(
-      yarnv1ToOutdatedResult(toJsonLines([yarnInfo, table])),
+      yarnClassicToOutdatedResult(toJsonLines([yarnInfo, table])),
     ).toEqual<OutdatedResult>([
       {
         name: 'nx',
@@ -61,7 +62,7 @@ describe('yarnv1ToOutdatedResult', () => {
     };
 
     expect(
-      yarnv1ToOutdatedResult(toJsonLines([yarnInfo, table])),
+      yarnClassicToOutdatedResult(toJsonLines([yarnInfo, table])),
     ).toEqual<OutdatedResult>([
       {
         name: 'cypress',
@@ -75,7 +76,9 @@ describe('yarnv1ToOutdatedResult', () => {
   it('should transform no dependencies to empty array', () => {
     const table = { type: 'table', data: { head: [], body: [] } };
 
-    expect(yarnv1ToOutdatedResult(toJsonLines([yarnInfo, table]))).toEqual([]);
+    expect(yarnClassicToOutdatedResult(toJsonLines([yarnInfo, table]))).toEqual(
+      [],
+    );
   });
 });
 

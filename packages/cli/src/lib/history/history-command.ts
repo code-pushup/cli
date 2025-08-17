@@ -1,20 +1,19 @@
 import { bold, gray } from 'ansis';
-import { CommandModule } from 'yargs';
-import { HistoryOptions, history } from '@code-pushup/core';
+import type { CommandModule } from 'yargs';
+import { type HistoryOptions, history } from '@code-pushup/core';
 import {
-  LogResult,
+  type LogResult,
   getCurrentBranchOrTag,
   getHashes,
   getSemverTags,
   safeCheckout,
   ui,
 } from '@code-pushup/utils';
-import { CLI_NAME } from '../constants';
-import { yargsOnlyPluginsOptionsDefinition } from '../implementation/only-plugins.options';
-import { yargsSkipPluginsOptionsDefinition } from '../implementation/skip-plugins.options';
-import { HistoryCliOptions } from './history.model';
-import { yargsHistoryOptionsDefinition } from './history.options';
-import { normalizeHashOptions } from './utils';
+import { CLI_NAME } from '../constants.js';
+import { yargsFilterOptionsDefinition } from '../implementation/filter.options.js';
+import type { HistoryCliOptions } from './history.model.js';
+import { yargsHistoryOptionsDefinition } from './history.options.js';
+import { normalizeHashOptions } from './utils.js';
 
 const command = 'history';
 async function handler(args: unknown) {
@@ -65,8 +64,7 @@ export function yargsHistoryCommandObject() {
     builder: yargs => {
       yargs.options({
         ...yargsHistoryOptionsDefinition(),
-        ...yargsOnlyPluginsOptionsDefinition(),
-        ...yargsSkipPluginsOptionsDefinition(),
+        ...yargsFilterOptionsDefinition(),
       });
       yargs.group(
         Object.keys(yargsHistoryOptionsDefinition()),

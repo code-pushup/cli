@@ -1,20 +1,18 @@
 import { z } from 'zod';
-import { categoriesSchema } from './category-config';
-import {
-  getMissingRefsForCategories,
-  missingRefsForCategoriesErrorMsg,
-} from './implementation/utils';
-import { persistConfigSchema } from './persist-config';
-import { pluginConfigSchema } from './plugin-config';
-import { uploadConfigSchema } from './upload-config';
+import { categoriesSchema } from './category-config.js';
+import { createCheck } from './implementation/checks.js';
+import { findMissingSlugsInCategoryRefs } from './implementation/utils.js';
+import { persistConfigSchema } from './persist-config.js';
+import { pluginConfigSchema } from './plugin-config.js';
+import { uploadConfigSchema } from './upload-config.js';
 
 export const unrefinedCoreConfigSchema = z.object({
   plugins: z
-    .array(pluginConfigSchema, {
-      description:
-        'List of plugins to be used (official, community-provided, or custom)',
-    })
-    .min(1),
+    .array(pluginConfigSchema)
+    .min(1)
+    .describe(
+      'List of plugins to be used (official, community-provided, or custom)',
+    ),
   /** portal configuration for persisting results */
   persist: persistConfigSchema.optional(),
   /** portal configuration for uploading results */
@@ -31,16 +29,7 @@ export const coreConfigSchema = refineCoreConfig(unrefinedCoreConfigSchema);
  */
 export function refineCoreConfig(schema: typeof unrefinedCoreConfigSchema) {
   // categories point to existing audit or group refs
-  return schema.refine(
-    coreCfg =>
-      !getMissingRefsForCategories(coreCfg.categories ?? [], coreCfg.plugins),
-    coreCfg => ({
-      message: missingRefsForCategoriesErrorMsg(
-        coreCfg.categories ?? [],
-        coreCfg.plugins,
-      ),
-    }),
-  ) as unknown as typeof unrefinedCoreConfigSchema;
+  return schema.check(createCheck(findMissingSlugsInCategoryRefs));
 }
 
-export type CoreConfig = z.infer<typeof unrefinedCoreConfigSchema>;
+export type CoreConfig = z.infer<typeof coreConfigSchema>;

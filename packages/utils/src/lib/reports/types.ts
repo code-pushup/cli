@@ -1,7 +1,8 @@
-import {
+import type {
   AuditReport,
   CategoryConfig,
   Group,
+  PersistConfig,
   PluginReport,
   Report,
 } from '@code-pushup/models';
@@ -16,7 +17,7 @@ export type ScoredReport = Omit<Report, 'plugins' | 'categories'> & {
   plugins: (Omit<PluginReport, 'groups'> & {
     groups?: ScoredGroup[];
   })[];
-  categories: ScoredCategoryConfig[];
+  categories?: ScoredCategoryConfig[];
 };
 
 export type SortableGroup = ScoredGroup & {
@@ -30,3 +31,17 @@ export type SortableAuditReport = AuditReport & {
 };
 
 export type DiffOutcome = 'positive' | 'negative' | 'mixed' | 'unchanged';
+
+export type ScoreFilter = {
+  isScoreListed?: (score: number) => boolean;
+};
+
+export type MdReportOptions = Pick<PersistConfig, 'outputDir'> & ScoreFilter;
+
+export const SUPPORTED_ENVIRONMENTS = [
+  'vscode',
+  'github',
+  'gitlab',
+  'other',
+] as const;
+export type EnvironmentType = (typeof SUPPORTED_ENVIRONMENTS)[number];

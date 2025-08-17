@@ -1,7 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  apostrophize,
-  capitalize,
   countOccurrences,
   deepClone,
   distinct,
@@ -11,12 +9,13 @@ import {
   objectToCliArgs,
   objectToEntries,
   objectToKeys,
+  removeUndefinedAndEmptyProps,
   toArray,
   toJsonLines,
   toNumberPrecision,
   toOrdinal,
   toUnixPath,
-} from './transform';
+} from './transform.js';
 
 describe('toArray', () => {
   it('should transform non-array value into array with single value', () => {
@@ -25,6 +24,13 @@ describe('toArray', () => {
 
   it('should leave array value unchanged', () => {
     expect(toArray(['*.ts', '*.js'])).toEqual(['*.ts', '*.js']);
+  });
+
+  it('should handle nested arrays', () => {
+    expect(toArray([['*.ts', '*.js'], ['*.json']])).toEqual([
+      ['*.ts', '*.js'],
+      ['*.json'],
+    ]);
   });
 });
 
@@ -37,6 +43,14 @@ describe('objectToKeys', () => {
   it('should transform empty object into empty array', () => {
     const keys: never[] = objectToKeys({});
     expect(keys).toEqual([]);
+  });
+
+  it('should transform nested object into array of keys', () => {
+    const keys = objectToKeys({
+      prop1: 1,
+      nestedProp1: { nestedKey1: 1 },
+    });
+    expect(keys).toEqual(['prop1', 'nestedProp1']);
   });
 });
 
@@ -73,6 +87,17 @@ describe('objectToEntries', () => {
   it('should transform empty object into empty array', () => {
     const keys: [never, never][] = objectToEntries({});
     expect(keys).toEqual([]);
+  });
+
+  it('should transform nested object into array of entries', () => {
+    const keys = objectToEntries({
+      prop1: 1,
+      nestedProp1: { nestedKey1: 1 },
+    });
+    expect(keys).toEqual([
+      ['prop1', 1],
+      ['nestedProp1', { nestedKey1: 1 }],
+    ]);
   });
 });
 
@@ -213,7 +238,7 @@ describe('toUnixPath', () => {
     ['src/main.ts', 'src/main.ts'],
     ['../../relative/unix/path/index.ts', '../../relative/unix/path/index.ts'],
     [
-      '..\\..\\relative\\windows\\path\\index.ts',
+      String.raw`..\..\relative\windows\path\index.ts`,
       '../../relative/windows/path/index.ts',
     ],
   ])('should transform "%s" to valid slug "%s"', (path, unixPath) => {
@@ -233,6 +258,17 @@ describe('JSON lines format', () => {
 
       expect(fromJsonLines(jsonLines)).toEqual([head, body]);
     });
+
+    it('should ignore non-JSON lines', () => {
+      const jsonLines = [
+        '(node:346640) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.',
+        '(Use `node --trace-deprecation ...` to show where the warning was created)',
+        JSON.stringify(head),
+        JSON.stringify(body),
+      ].join('\n');
+
+      expect(fromJsonLines(jsonLines)).toEqual([head, body]);
+    });
   });
 
   describe('toJsonLines', () => {
@@ -245,38 +281,6 @@ describe('JSON lines format', () => {
 
   it('should transform to JSON lines and back', () => {
     expect(fromJsonLines(toJsonLines([head, body]))).toEqual([head, body]);
-  });
-});
-
-describe('capitalize', () => {
-  it('should transform the first string letter to upper case', () => {
-    expect(capitalize('code PushUp')).toBe('Code PushUp');
-  });
-
-  it('should leave the first string letter in upper case', () => {
-    expect(capitalize('Code PushUp')).toBe('Code PushUp');
-  });
-
-  it('should accept empty string', () => {
-    expect(capitalize('')).toBe('');
-  });
-});
-
-describe('apostrophize', () => {
-  it("should add apostrophe and 's'", () => {
-    expect(apostrophize('cli')).toBe("cli's");
-  });
-
-  it("should add apostrophe without 's' for words ending with 's'", () => {
-    expect(apostrophize('yargs')).toBe("yargs'");
-  });
-
-  it("should add capital 'S' when upper case is defined", () => {
-    expect(apostrophize('WORLD', true)).toBe("WORLD'S");
-  });
-
-  it('should leave formatting if provided', () => {
-    expect(apostrophize('`git`')).toBe("`git`'s");
   });
 });
 
@@ -309,5 +313,18 @@ describe('toOrdinal', () => {
     [173, '173rd'],
   ])('should covert %d to ordinal as %s', (value, ordinalValue) => {
     expect(toOrdinal(value)).toBe(ordinalValue);
+  });
+});
+
+describe('removeUndefinedAndEmptyProps', () => {
+  it('should omit empty strings and undefined', () => {
+    expect(
+      removeUndefinedAndEmptyProps({ foo: '', bar: undefined }),
+    ).toStrictEqual({});
+  });
+
+  it('should preserve other values', () => {
+    const obj = { a: 'hello', b: 42, c: [], d: {}, e: null };
+    expect(removeUndefinedAndEmptyProps(obj)).toStrictEqual(obj);
   });
 });

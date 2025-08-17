@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { Table, TableRowObject } from '@code-pushup/models';
+import type { Table, TableRowObject } from '@code-pushup/models';
 import {
   columnsToStringArray,
   getColumnAlignmentForIndex,
   getColumnAlignmentForKeyAndIndex,
   getColumnAlignments,
   rowToStringArray,
-} from './table';
+} from './table.js';
 
 describe('rowToStringArray', () => {
   it('should throw if data shape is incorrect', () => {

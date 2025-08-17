@@ -1,37 +1,20 @@
 import { z } from 'zod';
-import { MAX_ISSUE_MESSAGE_LENGTH } from './implementation/limits';
-import { filePathSchema, positiveIntSchema } from './implementation/schemas';
+import { MAX_ISSUE_MESSAGE_LENGTH } from './implementation/limits.js';
+import { sourceFileLocationSchema } from './source.js';
 
-const sourceFileLocationSchema = z.object(
-  {
-    file: filePathSchema.describe('Relative path to source file in Git repo'),
-    position: z
-      .object(
-        {
-          startLine: positiveIntSchema.describe('Start line'),
-          startColumn: positiveIntSchema.describe('Start column').optional(),
-          endLine: positiveIntSchema.describe('End line').optional(),
-          endColumn: positiveIntSchema.describe('End column').optional(),
-        },
-        { description: 'Location in file' },
-      )
-      .optional(),
-  },
-  { description: 'Source file location' },
-);
-
-export const issueSeveritySchema = z.enum(['info', 'warning', 'error'], {
-  description: 'Severity level',
-});
+export const issueSeveritySchema = z
+  .enum(['info', 'warning', 'error'])
+  .describe('Severity level');
 export type IssueSeverity = z.infer<typeof issueSeveritySchema>;
-export const issueSchema = z.object(
-  {
+
+export const issueSchema = z
+  .object({
     message: z
-      .string({ description: 'Descriptive error message' })
-      .max(MAX_ISSUE_MESSAGE_LENGTH),
+      .string()
+      .max(MAX_ISSUE_MESSAGE_LENGTH)
+      .describe('Descriptive error message'),
     severity: issueSeveritySchema,
     source: sourceFileLocationSchema.optional(),
-  },
-  { description: 'Issue information' },
-);
+  })
+  .describe('Issue information');
 export type Issue = z.infer<typeof issueSchema>;

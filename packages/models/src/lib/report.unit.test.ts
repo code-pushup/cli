@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
-  AuditReport,
-  PluginReport,
-  Report,
+  type AuditReport,
+  type PluginReport,
+  type Report,
   auditReportSchema,
   pluginReportSchema,
   reportSchema,
-} from './report';
+} from './report.js';
 
 describe('auditReportSchema', () => {
   it('should accept a valid audit report with all entities', () => {
@@ -160,7 +160,7 @@ describe('pluginReportSchema', () => {
         ],
       } satisfies PluginReport),
     ).toThrow(
-      'group references need to point to an existing audit in this plugin report: perf-lighthouse',
+      String.raw`Group references audits which don't exist in this plugin: \"perf-lighthouse\"`,
     );
   });
 });
@@ -207,6 +207,7 @@ describe('reportSchema', () => {
         ],
         packageName: 'cli',
         version: '1.0.1',
+        label: 'api',
       } satisfies Report),
     ).not.toThrow();
   });
@@ -219,7 +220,6 @@ describe('reportSchema', () => {
         packageName: 'cli',
         version: '1.0.1',
         plugins: [],
-        categories: [],
       }),
     ).toThrow('too_small');
   });
@@ -267,7 +267,7 @@ describe('reportSchema', () => {
         version: '1.0.1',
       } satisfies Report),
     ).toThrow(
-      'category references need to point to an audit or group: vitest/vitest-unit-test',
+      String.raw`Category references audits or groups which don't exist: audit \"vitest-unit-test\" (plugin \"vitest\")`,
     );
   });
 });

@@ -1,10 +1,10 @@
-import { ReportsDiff } from '@code-pushup/models';
+import type { ReportsDiff } from '@code-pushup/models';
 import {
-  ReportsToCompare,
+  type ReportsToCompare,
   compareAudits,
   compareCategories,
   compareGroups,
-} from './compare-scorables';
+} from './compare-scorables.js';
 
 describe('compareCategories', () => {
   it('should match categories by slug and check for equal scores', () => {

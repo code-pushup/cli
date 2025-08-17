@@ -1,10 +1,51 @@
 {
   "name": "@code-pushup/js-packages-plugin",
-  "version": "0.48.0",
+  "version": "0.74.0",
+  "description": "Code PushUp plugin for JavaScript packages 🛡️",
+  "license": "MIT",
+  "homepage": "https://github.com/code-pushup/cli/tree/main/packages/plugin-js-packages#readme",
+  "bugs": {
+    "url": "https://github.com/code-pushup/cli/issues?q=is%3Aissue%20state%3Aopen%20type%3ABug%20label%3A\"🧩%20js-packages-plugin\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code-pushup/cli.git",
+    "directory": "packages/plugin-js-packages"
+  },
+  "keywords": [
+    "CLI",
+    "Code PushUp",
+    "developer tools",
+    "dependencies",
+    "audit",
+    "outdated",
+    "security",
+    "updates",
+    "npm",
+    "yarn",
+    "pnpm",
+    "conformance",
+    "build tools",
+    "tech debt",
+    "automated feedback",
+    "regression guard",
+    "CI integration",
+    "actionable feedback"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
   "dependencies": {
-    "@code-pushup/models": "0.48.0",
-    "@code-pushup/utils": "0.48.0",
+    "@code-pushup/models": "0.74.0",
+    "@code-pushup/utils": "0.74.0",
+    "build-md": "^0.4.1",
     "semver": "^7.6.0",
-    "zod": "^3.22.4"
-  }
+    "yargs": "^17.7.2",
+    "zod": "^4.0.5"
+  },
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Issue, issueSchema } from './issue';
+import { type Issue, issueSchema } from './issue.js';
 
 describe('issueSchema', () => {
   it('should accept a valid issue without source file information', () => {
@@ -39,7 +39,9 @@ describe('issueSchema', () => {
         message: 'Use const instead of let.',
         severity: 'critical',
       }),
-    ).toThrow('Invalid enum value');
+    ).toThrow(
+      String.raw`Invalid option: expected one of \"info\"|\"warning\"|\"error\"`,
+    );
   });
 
   it('should throw for invalid file position', () => {
@@ -52,6 +54,6 @@ describe('issueSchema', () => {
           position: { startLine: 0, endLine: 3 },
         },
       } satisfies Issue),
-    ).toThrow('Number must be greater than 0');
+    ).toThrow('Too small: expected number to be >0');
   });
 });

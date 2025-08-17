@@ -1,7 +1,7 @@
-import { MockInstance, describe, expect } from 'vitest';
-import { toNormalizedPath } from '@code-pushup/test-utils';
-import { ENV } from '../../../mock/fixtures/env';
-import { globalConfig, persistConfig, uploadConfig } from './config';
+import { type MockInstance, describe, expect } from 'vitest';
+import { osAgnosticPath } from '@code-pushup/test-utils';
+import { ENV } from '../../../mock/fixtures/env.js';
+import { globalConfig, persistConfig, uploadConfig } from './config.js';
 
 describe('globalConfig', () => {
   it('should provide default global verbose options', () => {
@@ -75,9 +75,9 @@ describe('globalConfig', () => {
         },
       },
     );
-    expect(toNormalizedPath(config)).toEqual(
+    expect(osAgnosticPath(String(config))).toStrictEqual(
       expect.stringContaining(
-        toNormalizedPath('project-root/code-pushup.config.ts'),
+        osAgnosticPath('project-root/code-pushup.config.ts'),
       ),
     );
   });
@@ -173,12 +173,8 @@ describe('persistConfig', () => {
         },
       },
     );
-    expect(toNormalizedPath(outputDir)).toEqual(
-      expect.stringContaining(
-        toNormalizedPath(
-          `/test/root/workspace-root/.code-pushup/${projectName}`,
-        ),
-      ),
+    expect(osAgnosticPath(String(outputDir))).toBe(
+      osAgnosticPath(`/test/root/workspace-root/.code-pushup/${projectName}`),
     );
   });
 
@@ -196,8 +192,8 @@ describe('persistConfig', () => {
         },
       },
     );
-    expect(toNormalizedPath(resultingOutDir)).toEqual(
-      expect.stringContaining(toNormalizedPath('../dist/packages/test-folder')),
+    expect(osAgnosticPath(String(resultingOutDir))).toEqual(
+      expect.stringContaining(osAgnosticPath('../dist/packages/test-folder')),
     );
   });
 
@@ -209,8 +205,8 @@ describe('persistConfig', () => {
       },
     );
 
-    expect(toNormalizedPath(outputDir)).toEqual(
-      expect.stringContaining(toNormalizedPath('.code-pushup')),
+    expect(osAgnosticPath(String(outputDir))).toEqual(
+      expect.stringContaining(osAgnosticPath('.code-pushup')),
     );
   });
 
@@ -257,9 +253,11 @@ describe('uploadConfig', () => {
   };
 
   let processEnvSpy: MockInstance<[], NodeJS.ProcessEnv>;
+
   beforeAll(() => {
     processEnvSpy = vi.spyOn(process, 'env', 'get').mockReturnValue({});
   });
+
   afterAll(() => {
     processEnvSpy.mockRestore();
   });

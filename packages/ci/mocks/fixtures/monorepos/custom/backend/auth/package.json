@@ -1,0 +1,6 @@
+{
+  "name": "auth",
+  "devDependencies": {
+    "@code-pushup/cli": "latest"
+  }
+}
