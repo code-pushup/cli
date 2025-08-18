@@ -5,20 +5,13 @@
     "code-pushup-js-packages": {},
     "code-pushup-lighthouse": {},
     "code-pushup-coverage": {
-      "dependsOn": ["^unit-test", "^int-test"]
+      "dependsOn": ["^*-test"]
     },
     "code-pushup-eslint": {},
     "code-pushup-jsdocs": {},
     "code-pushup-typescript": {},
     "code-pushup": {
-      "dependsOn": [
-        "code-pushup-js-packages",
-        "code-pushup-lighthouse",
-        "code-pushup-coverage",
-        "code-pushup-eslint",
-        "code-pushup-jsdocs",
-        "code-pushup-typescript"
-      ],
+      "dependsOn": ["code-pushup-*"],
       "executor": "nx:run-commands",
       "options": {
         "args": [

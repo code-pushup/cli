@@ -94,7 +94,7 @@
       "cache": true,
       "outputs": ["{projectRoot}/.code-pushup/coverage/runner-output.json"],
       "executor": "nx:run-commands",
-      "dependsOn": ["unit-test", "int-test"],
+      "dependsOn": ["*-test"],
       "options": {
         "command": "node packages/cli/src/index.ts collect",
         "args": [
