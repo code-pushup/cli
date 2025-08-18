@@ -91,7 +91,7 @@ describe('categoriesOverviewSection', () => {
     ).toMatchSnapshot();
   });
 
-  it('should render targetScore icon "❌" if score fails', () => {
+  it('should render scoreTarget icon "❌" if score fails', () => {
     expect(
       categoriesOverviewSection({
         plugins: [

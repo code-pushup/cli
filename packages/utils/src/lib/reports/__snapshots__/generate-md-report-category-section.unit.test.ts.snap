@@ -72,7 +72,7 @@ exports[`categoriesOverviewSection > should render filtered categories table 1`]
 "
 `;
 
-exports[`categoriesOverviewSection > should render targetScore icon "❌" if score fails 1`] = `
+exports[`categoriesOverviewSection > should render scoreTarget icon "❌" if score fails 1`] = `
 "| 🏷 Category                       |   ⭐ Score   | 🛡 Audits |
 | :-------------------------------- | :---------: | :-------: |
 | [Bug Prevention](#bug-prevention) | 🟢 **98** ❌ |     1     |

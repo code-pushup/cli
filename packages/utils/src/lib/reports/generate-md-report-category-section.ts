@@ -11,7 +11,7 @@ import {
   getPluginNameFromSlug,
   scoreFilter,
   scoreMarker,
-  targetScoreIcon,
+  scoreTargetIcon,
 } from './utils.js';
 
 export function categoriesOverviewSection(
@@ -28,7 +28,7 @@ export function categoriesOverviewSection(
     categories
       .filter(scoreFilter(options))
       .map(({ title, refs, score, isBinary }) => [
-        // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
+        // @TODO refactor `isBinary: boolean` to `scoreTarget: number` #713
         // The heading "ID" is inferred from the heading text in Markdown.
         md.link(`#${slugify(title)}`, title),
         md`${scoreMarker(score)} ${md.bold(
@@ -130,6 +130,6 @@ export function binaryIconSuffix(
   score: number,
   isBinary: boolean | undefined,
 ): string {
-  // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
-  return targetScoreIcon(score, isBinary ? 1 : undefined, { prefix: ' ' });
+  // @TODO refactor `isBinary: boolean` to `scoreTarget: number` #713
+  return scoreTargetIcon(score, isBinary ? 1 : undefined, { prefix: ' ' });
 }

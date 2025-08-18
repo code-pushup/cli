@@ -13,7 +13,7 @@ import type { ScoredReport } from './types.js';
 import {
   applyScoreColor,
   countCategoryAudits,
-  targetScoreIcon,
+  scoreTargetIcon,
 } from './utils.js';
 
 function log(msg = ''): void {
@@ -130,12 +130,12 @@ export function logCategories({
   log();
 }
 
-// @TODO refactor `isBinary: boolean` to `targetScore: number` #713
+// @TODO refactor `isBinary: boolean` to `scoreTarget: number` #713
 export function binaryIconPrefix(
   score: number,
   isBinary: boolean | undefined,
 ): string {
-  return targetScoreIcon(score, isBinary ? 1 : undefined, {
+  return scoreTargetIcon(score, isBinary ? 1 : undefined, {
     passIcon: bold(green('✓')),
     failIcon: bold(red('✗')),
     postfix: ' ',
