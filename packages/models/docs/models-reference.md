@@ -167,15 +167,15 @@ _Boolean._
 
 _Object containing the following properties:_
 
-| Property         | Description                                                                | Type                                                              |
-| :--------------- | :------------------------------------------------------------------------- | :---------------------------------------------------------------- |
-| **`slug`** (\*)  | Human-readable unique ID, e.g. "performance"                               | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
-| **`refs`** (\*)  |                                                                            | _Array of at least 1 [CategoryRef](#categoryref) items_           |
-| **`title`** (\*) | Category Title                                                             | `string` (_max length: 256_)                                      |
-| `description`    | Category description                                                       | `string` (_max length: 65536_)                                    |
-| `docsUrl`        | Category docs URL                                                          | `string` (_url_) (_optional_) _or_ `''`                           |
-| `isSkipped`      |                                                                            | `boolean`                                                         |
-| `isBinary`       | Is this a binary category (i.e. only a perfect score considered a "pass")? | `boolean`                                                         |
+| Property         | Description                                  | Type                                                              |
+| :--------------- | :------------------------------------------- | :---------------------------------------------------------------- |
+| **`slug`** (\*)  | Human-readable unique ID, e.g. "performance" | `string` (_regex: `/^[a-z\d]+(?:-[a-z\d]+)*$/`, max length: 128_) |
+| **`refs`** (\*)  |                                              | _Array of at least 1 [CategoryRef](#categoryref) items_           |
+| **`title`** (\*) | Category Title                               | `string` (_max length: 256_)                                      |
+| `description`    | Category description                         | `string` (_max length: 65536_)                                    |
+| `docsUrl`        | Category docs URL                            | `string` (_url_) (_optional_) _or_ `''`                           |
+| `isSkipped`      |                                              | `boolean`                                                         |
+| `scoreTarget`    | Pass/fail score threshold (0-1)              | `number` (_≥0, ≤1_)                                               |
 
 _(\*) Required._
 

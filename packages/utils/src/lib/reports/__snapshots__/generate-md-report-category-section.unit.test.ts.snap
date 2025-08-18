@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`categoriesDetailsSection > should render categories details and add "✅" when isBinary is passing 1`] = `
+exports[`categoriesDetailsSection > should render categories details and add "✅" when score >= scoreTarget 1`] = `
 "## 🏷 Categories
 
 ### Bug Prevention
@@ -11,7 +11,7 @@ exports[`categoriesDetailsSection > should render categories details and add "�
 "
 `;
 
-exports[`categoriesDetailsSection > should render categories details and add "❌" when isBinary is failing 1`] = `
+exports[`categoriesDetailsSection > should render categories details and add "❌" when score < scoreTarget 1`] = `
 "## 🏷 Categories
 
 ### Bug Prevention

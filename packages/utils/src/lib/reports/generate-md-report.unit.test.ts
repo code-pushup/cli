@@ -902,7 +902,7 @@ module.exports = {
             title: 'SEO',
             slug: 'seo',
             score: 1,
-            isBinary: true,
+            scoreTarget: 1,
             refs: [
               {
                 slug: 'is-crawlable',
@@ -916,7 +916,7 @@ module.exports = {
             title: 'PWA',
             slug: 'pwa',
             score: 0,
-            isBinary: true,
+            scoreTarget: 1,
             refs: [
               {
                 slug: 'splash-screen',

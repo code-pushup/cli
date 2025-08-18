@@ -72,13 +72,13 @@ describe('logCategories', () => {
     expect(output).toContain('1');
   });
 
-  it('should list categories with failed isBinary', () => {
+  it('should list categories with score < scoreTarget', () => {
     const categories: ScoredReport['categories'] = [
       {
         slug: 'performance',
         score: 0.42,
+        scoreTarget: 1,
         title: 'Performance',
-        isBinary: true,
         refs: [
           {
             slug: 'total-blocking-time',
@@ -116,13 +116,13 @@ describe('logCategories', () => {
     expect(output).toContain('1');
   });
 
-  it('should list categories with passed isBinary', () => {
+  it('should list categories with score >= scoreTarget', () => {
     const categories: ScoredReport['categories'] = [
       {
         slug: 'performance',
         score: 1,
+        scoreTarget: 1,
         title: 'Performance',
-        isBinary: true,
         refs: [
           {
             slug: 'total-blocking-time',
@@ -260,19 +260,15 @@ describe('logPlugins', () => {
 });
 
 describe('binaryIconPrefix', () => {
-  it('should return passing binaryPrefix if score is 1 and isBinary is true', () => {
-    expect(removeColorCodes(binaryIconPrefix(1, true))).toBe('✓ ');
+  it('should return passing binaryPrefix when score >= scoreTarget', () => {
+    expect(removeColorCodes(binaryIconPrefix(1, 1))).toBe('✓ ');
   });
 
-  it('should return failing binaryPrefix if score is < then 1 and isBinary is true', () => {
-    expect(removeColorCodes(binaryIconPrefix(0, true))).toBe('✗ ');
+  it('should return failing binaryPrefix when score < scoreTarget', () => {
+    expect(removeColorCodes(binaryIconPrefix(0, 1))).toBe('✗ ');
   });
 
-  it('should return NO binaryPrefix if score is 1 and isBinary is false', () => {
-    expect(binaryIconPrefix(1, false)).toBe('');
-  });
-
-  it('should return NO binaryPrefix when isBinary is undefined', () => {
+  it('should return NO binaryPrefix when scoreTarget is undefined', () => {
     expect(binaryIconPrefix(1, undefined)).toBe('');
   });
 });

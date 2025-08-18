@@ -4,7 +4,6 @@ exports[`transformGQLReport > should convert full GraphQL report to valid report
 {
   "categories": [
     {
-      "isBinary": false,
       "refs": [
         {
           "plugin": "eslint",
@@ -13,11 +12,11 @@ exports[`transformGQLReport > should convert full GraphQL report to valid report
           "weight": 1,
         },
       ],
+      "scoreTarget": undefined,
       "slug": "code-style",
       "title": "Code style",
     },
     {
-      "isBinary": false,
       "refs": [
         {
           "plugin": "bundle-stats",
@@ -26,6 +25,7 @@ exports[`transformGQLReport > should convert full GraphQL report to valid report
           "weight": 1,
         },
       ],
+      "scoreTarget": undefined,
       "slug": "bundle-size",
       "title": "Bundle size",
     },

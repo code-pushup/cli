@@ -88,8 +88,8 @@ export default {
     },
     {
       slug: 'pwa',
+      scoreTarget: 1,
       title: 'PWA',
-      isBinary: true,
       refs: [lighthouseGroupRef('pwa')],
     },
   ],
@@ -109,8 +109,8 @@ export default {
   categories: [
     {
       slug: 'pwa',
+      scoreTarget: 1,
       title: 'PWA',
-      isBinary: true,
       refs: [lighthouseAuditRef('installable-manifest', 2), lighthouseAuditRef('splash-screen', 1), lighthouseAuditRef('themed-omnibox', 1), lighthouseAuditRef('content-width', 1), lighthouseAuditRef('themed-omnibox', 2), lighthouseAuditRef('viewport', 2), lighthouseAuditRef('maskable-icon', 1), lighthouseAuditRef('pwa-cross-browser', 0), lighthouseAuditRef('pwa-page-transitions', 0), lighthouseAuditRef('pwa-each-page-has-url', 0)],
     },
   ],

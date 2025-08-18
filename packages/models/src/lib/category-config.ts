@@ -5,6 +5,7 @@ import {
 } from './implementation/checks.js';
 import {
   metaSchema,
+  nonnegativeNumberSchema,
   scorableSchema,
   slugSchema,
   weightedRefSchema,
@@ -44,11 +45,9 @@ export const categoryConfigSchema = scorableSchema(
     }).shape,
   )
   .extend({
-    isBinary: z
-      .boolean()
-      .describe(
-        'Is this a binary category (i.e. only a perfect score considered a "pass")?',
-      )
+    scoreTarget: nonnegativeNumberSchema
+      .max(1)
+      .describe('Pass/fail score threshold (0-1)')
       .optional(),
   });
 
