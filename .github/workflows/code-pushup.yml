@@ -1,4 +1,4 @@
-name: Code PushUp
+name: Code PushUp - Centralized
 
 on:
   push:
@@ -15,7 +15,7 @@ permissions:
 jobs:
   code-pushup:
     runs-on: ubuntu-latest
-    name: Code PushUp
+    name: Run central layout
     # ignore PRs from forks, handled by code-pushup-fork.yml
     if: ${{ !github.event.pull_request.head.repo.fork }}
     env:
