@@ -297,9 +297,9 @@ export function applyScoreColor(
     : style.bold(style.red(formattedScore));
 }
 
-export function targetScoreIcon(
+export function scoreTargetIcon(
   score: number,
-  targetScore?: number,
+  scoreTarget?: number,
   options: {
     passIcon?: string;
     failIcon?: string;
@@ -307,14 +307,14 @@ export function targetScoreIcon(
     postfix?: string;
   } = {},
 ): string {
-  if (targetScore != null) {
+  if (scoreTarget != null) {
     const {
       passIcon = '✅',
       failIcon = '❌',
       prefix = '',
       postfix = '',
     } = options;
-    if (score >= targetScore) {
+    if (score >= scoreTarget) {
       return `${prefix}${passIcon}${postfix}`;
     }
     return `${prefix}${failIcon}${postfix}`;
