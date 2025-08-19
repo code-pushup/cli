@@ -199,7 +199,7 @@
     },
     "code-pushup-typescript": {
       "cache": true,
-      "inputs": ["code-pushup-inputs"],
+      "inputs": ["code-pushup-inputs", "typecheck-typescript-inputs"],
       "outputs": ["{projectRoot}/.code-pushup/typescript/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
@@ -251,12 +251,12 @@
     "test-vitest-inputs": ["default", { "externalDependencies": ["vitest"] }],
     "lint-eslint-inputs": [
       "default",
-      "^production",
+      "production",
       { "externalDependencies": ["eslint"] }
     ],
     "typecheck-typescript-inputs": [
       "default",
-      "^production",
+      "production",
       { "externalDependencies": ["typescript"] }
     ],
     "code-pushup-inputs": [

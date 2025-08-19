@@ -19,7 +19,8 @@
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.read",
-          "--persist.outputDir={projectRoot}/.code-pushup"
+          "--persist.outputDir={projectRoot}/.code-pushup",
+          "--upload.project={projectName}"
         ],
         "env": {
           "NODE_OPTIONS": "--import tsx",
