@@ -21,11 +21,7 @@
       ],
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "{projectRoot}/vitest.unit.config.ts",
-        "passWithNoTests": true,
-        "coverage": {
-          "enabled": true
-        }
+        "configFile": "{projectRoot}/vitest.unit.config.ts"
       }
     },
     "int-test": {
@@ -33,18 +29,19 @@
       "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "{projectRoot}/vitest.int.config.ts",
-        "passWithNoTests": true,
-        "coverage": {
-          "enabled": true
-        }
+        "configFile": "{projectRoot}/vitest.int.config.ts"
       }
     },
     "e2e": {
-      "dependsOn": ["^build"]
+      "cache": true,
+      "dependsOn": ["^build"],
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "{projectRoot}/vitest.e2e.config.ts"
+      }
     },
     "lint": {
-      "inputs": ["eslint-inputs"],
+      "inputs": ["lint-eslint-inputs"],
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "cache": true,
@@ -61,7 +58,7 @@
     },
     "@nx/vite:test": {
       "cache": true,
-      "inputs": ["default", "^production"],
+      "inputs": ["test-vitest-inputs"],
       "options": {
         "passWithNoTests": true,
         "watch": false
@@ -92,6 +89,7 @@
     },
     "code-pushup-coverage": {
       "cache": true,
+      "inputs": ["code-pushup-inputs", "test-vitest-inputs"],
       "outputs": ["{projectRoot}/.code-pushup/coverage/runner-output.json"],
       "executor": "nx:run-commands",
       "dependsOn": ["*-test"],
@@ -114,7 +112,7 @@
     },
     "code-pushup-eslint": {
       "cache": true,
-      "inputs": ["code-pushup-eslint-inputs"],
+      "inputs": ["code-pushup-inputs", "lint-eslint-inputs"],
       "outputs": ["{projectRoot}/.code-pushup/eslint/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
@@ -157,7 +155,7 @@
     },
     "code-pushup-lighthouse": {
       "cache": true,
-      "inputs": ["code-pushup-lighthouse-inputs"],
+      "inputs": ["code-pushup-inputs", "production", "^production"],
       "outputs": ["{projectRoot}/.code-pushup/lighthouse/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
@@ -179,7 +177,7 @@
     },
     "code-pushup-jsdocs": {
       "cache": true,
-      "inputs": ["code-pushup-jsdocs-inputs"],
+      "inputs": ["code-pushup-inputs", "typecheck-typescript-inputs"],
       "outputs": ["{projectRoot}/.code-pushup/jsdocs/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
@@ -201,7 +199,7 @@
     },
     "code-pushup-typescript": {
       "cache": true,
-      "inputs": ["code-pushup-typescript-inputs"],
+      "inputs": ["code-pushup-inputs"],
       "outputs": ["{projectRoot}/.code-pushup/typescript/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
@@ -234,29 +232,43 @@
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
       "default",
-      "!{projectRoot}/eslint.config.?(c)js",
-      "!{projectRoot}/**/?(*.)test.[jt]s?(x)?(.snap)",
-      "!{projectRoot}/tsconfig.test.json",
-      "!{projectRoot}/src/test-setup.[jt]s",
-      "!{projectRoot}/test-setup.[jt]s",
-      "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
-      "!{projectRoot}/vitest.@(unit|int|e2e).config.[jt]s",
-      "!{projectRoot}/@(test|mocks)/**/*",
+      "!{projectRoot}/README.md",
+      "!{projectRoot}/CHANGELOG.md",
+
       "!{projectRoot}/perf/**/*",
       "!{projectRoot}/tools/**/*",
-      "!{projectRoot}/code-pushup.config.?(m)[jt]s",
-      "!{projectRoot}/zod2md.config.ts"
+      "!{projectRoot}/zod2md.config.ts",
+      "!{projectRoot}/eslint.config.?(c)js",
+      "!{projectRoot}/code-pushup.config.?(*.).?(m)[jt]s",
+
+      "!{projectRoot}/@(test|mocks|mock)/**/*",
+      "!{projectRoot}/**/?(*.)test.[jt]s?(x)?(.snap)",
+      "!{projectRoot}/**/?(*.)mocks.[jt]s?(x)",
+      "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
+      "!{projectRoot}/vitest.@(unit|int|e2e).config.[jt]s",
+      "!{projectRoot}/tsconfig.@(test|tools).json"
     ],
-    "eslint-inputs": ["default", "{projectRoot}/eslint.config.?(c)js"],
-    "code-pushup-inputs": ["{projectRoot}/code-pushup.config.?ts"],
-    "code-pushup-eslint-inputs": ["eslint-inputs", "code-pushup-inputs"],
-    "code-pushup-jsdocs-inputs": ["default", "code-pushup-inputs"],
-    "code-pushup-typescript-inputs": ["default", "code-pushup-inputs"],
-    "code-pushup-lighthouse-inputs": ["default", "code-pushup-inputs"],
+    "test-vitest-inputs": ["default", { "externalDependencies": ["vitest"] }],
+    "lint-eslint-inputs": [
+      "default",
+      "^production",
+      { "externalDependencies": ["eslint"] }
+    ],
+    "typecheck-typescript-inputs": [
+      "default",
+      "^production",
+      { "externalDependencies": ["typescript"] }
+    ],
+    "code-pushup-inputs": [
+      "default",
+      { "env": "NODE_OPTIONS" },
+      { "env": "TSX_TSCONFIG_PATH" }
+    ],
     "sharedGlobals": [
+      { "runtime": "npm --version" },
+      { "runtime": "node --version" },
       "!{workspaceRoot}/**/dist/**/*",
-      "!{workspaceRoot}/**/coverage/**/*",
-      "!{workspaceRoot}/**/.coverage/**/*",
+      "!{workspaceRoot}/**/(*.)coverage/**/*",
       "!{workspaceRoot}/**/.code-pushup/**/*"
     ]
   },
