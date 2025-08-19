@@ -72,7 +72,7 @@ function transformGQLCategory(category: CategoryFragment): CategoryConfig {
     ),
     // TODO: Portal API migration - convert isBinary to scoreTarget for backward compatibility
     // Remove this conversion when Portal API supports scoreTarget (#713)
-    scoreTarget: category.isBinary ? 1 : undefined,
+    ...(category.isBinary && { scoreTarget: 1 }),
   };
 }
 
