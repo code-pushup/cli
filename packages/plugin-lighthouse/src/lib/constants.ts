@@ -16,7 +16,6 @@ export const LIGHTHOUSE_GROUP_SLUGS = [
   'accessibility',
   'best-practices',
   'seo',
-  'pwa',
 ] as const;
 
 export const SINGLE_URL_THRESHOLD = 1;

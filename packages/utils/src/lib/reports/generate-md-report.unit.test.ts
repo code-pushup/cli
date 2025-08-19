@@ -912,20 +912,6 @@ module.exports = {
               },
             ],
           },
-          {
-            title: 'PWA',
-            slug: 'pwa',
-            score: 0,
-            scoreTarget: 1,
-            refs: [
-              {
-                slug: 'splash-screen',
-                plugin: 'lighthouse',
-                type: 'audit',
-                weight: 1,
-              },
-            ],
-          },
         ],
       }),
     ).toMatchSnapshot();
