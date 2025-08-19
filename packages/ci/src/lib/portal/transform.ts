@@ -150,18 +150,20 @@ function transformGQLIssue(issue: IssueFragment): Issue {
     ...(issue.source?.__typename === 'SourceCodeLocation' && {
       source: {
         file: issue.source.filePath,
-        position: {
-          startLine: issue.source.startLine ?? 0,
-          ...(issue.source.startColumn != null && {
-            startColumn: issue.source.startColumn,
-          }),
-          ...(issue.source.endLine != null && {
-            endLine: issue.source.endLine,
-          }),
-          ...(issue.source.endColumn != null && {
-            endColumn: issue.source.endColumn,
-          }),
-        },
+        ...(issue.source.startLine != null && {
+          position: {
+            startLine: issue.source.startLine,
+            ...(issue.source.startColumn != null && {
+              startColumn: issue.source.startColumn,
+            }),
+            ...(issue.source.endLine != null && {
+              endLine: issue.source.endLine,
+            }),
+            ...(issue.source.endColumn != null && {
+              endColumn: issue.source.endColumn,
+            }),
+          },
+        }),
       },
     }),
   };
