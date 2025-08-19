@@ -13,7 +13,7 @@ import type { ScoredReport } from './types.js';
 import {
   applyScoreColor,
   countCategoryAudits,
-  targetScoreIcon,
+  scoreTargetIcon,
 } from './utils.js';
 
 function log(msg = ''): void {
@@ -101,9 +101,9 @@ export function logCategories({
 }: Required<Pick<ScoredReport, 'plugins' | 'categories'>>): void {
   const hAlign = (idx: number) => (idx === 0 ? 'left' : 'right');
 
-  const rows = categories.map(({ title, score, refs, isBinary }) => [
+  const rows = categories.map(({ title, score, scoreTarget, refs }) => [
     title,
-    `${binaryIconPrefix(score, isBinary)}${applyScoreColor({ score })}`,
+    `${binaryIconPrefix(score, scoreTarget)}${applyScoreColor({ score })}`,
     countCategoryAudits(refs, plugins),
   ]);
   const table = ui().table();
@@ -130,12 +130,11 @@ export function logCategories({
   log();
 }
 
-// @TODO refactor `isBinary: boolean` to `targetScore: number` #713
 export function binaryIconPrefix(
   score: number,
-  isBinary: boolean | undefined,
+  scoreTarget: number | undefined,
 ): string {
-  return targetScoreIcon(score, isBinary ? 1 : undefined, {
+  return scoreTargetIcon(score, scoreTarget, {
     passIcon: bold(green('✓')),
     failIcon: bold(red('✗')),
     postfix: ' ',

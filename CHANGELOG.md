@@ -1,3 +1,13 @@
+## 0.74.1 (2025-08-19)
+
+### 🩹 Fixes
+
+- **ci:** prevent invalid startLine 0 when downloading from portal ([5153c88b](https://github.com/code-pushup/cli/commit/5153c88b))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.74.0 (2025-08-13)
 
 ### 🚀 Features
