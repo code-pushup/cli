@@ -145,7 +145,6 @@
           "--no-progress",
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
-          "--cache.write",
           "--onlyPlugins=js-packages",
           "--persist.skipReports",
           "--persist.outputDir={projectRoot}/.code-pushup"
