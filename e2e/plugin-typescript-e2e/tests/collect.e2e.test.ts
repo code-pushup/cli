@@ -31,7 +31,7 @@ function sanitizeReportPaths(report: Report): Report {
                 },
               }),
               message: issue.message.replace(
-                /['"]([^'"]*\\[^'"]*)['"]/g,
+                /['"]([A-Z]:[/\\][^'"]*|[^'"]*[/\\][^'"]*[/\\][^'"]*)['"]/g,
                 (match, filePath) => {
                   try {
                     const lastSegment = filePath.split(/[/\\]/).pop() || '';
