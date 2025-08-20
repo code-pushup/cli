@@ -40,4 +40,4 @@ jobs:
       - name: Run Code PushUp action
         uses: code-pushup/github-action@v0
         with:
-          bin: npx nx affected -t code-pushup --nx-bail --parallel=3  --
+          bin: npx nx code-pushup --nx-bail --parallel=3  --
