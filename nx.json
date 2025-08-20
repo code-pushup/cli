@@ -251,12 +251,10 @@
     "test-vitest-inputs": ["default", { "externalDependencies": ["vitest"] }],
     "lint-eslint-inputs": [
       "default",
-      "production",
       { "externalDependencies": ["eslint"] }
     ],
     "typecheck-typescript-inputs": [
       "default",
-      "production",
       { "externalDependencies": ["typescript"] }
     ],
     "code-pushup-inputs": [
