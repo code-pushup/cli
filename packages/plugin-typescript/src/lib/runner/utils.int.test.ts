@@ -37,7 +37,6 @@ describe('loadTargetConfig', () => {
       expect.any(Function),
     );
     expect(parseJsonConfigFileContentSpy).toHaveBeenCalledTimes(1);
-    // parseJsonConfigFileContent is called with complex internal objects
   });
 
   it('should return the parsed content of a tsconfig file that extends another config', () => {
