@@ -27,8 +27,8 @@ function sanitizeReportPaths(report: Report): Report {
             if (capturedPath.endsWith('.ts')) {
               return `'${osAgnostic}'`;
             }
-            // on Windows the path starts from "D/" not "./". This normalizes it to "./<segment>"
-            return `'${['.'].concat(osAgnostic.split('/').slice(-1)).join('/')}'`;
+            // on Windows the path starts from "plugin-typescript-e2e/src" not "./". This normalizes it to "./<segment>"
+            return `'${['.', osAgnostic.split('/').slice(-1)].join('/')}'`;
           },
         ),
       ),
