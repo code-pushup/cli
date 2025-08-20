@@ -31,15 +31,8 @@ function sanitizeReportPaths(report: Report): Report {
                 },
               }),
               message: issue.message.replace(
-                /['"]([A-Z]:[/\\][^'"]*|[^'"]*[/\\][^'"]*[/\\][^'"]*)['"]/g,
-                (match, filePath) => {
-                  try {
-                    const lastSegment = filePath.split(/[/\\]/).pop() || '';
-                    return `'<CWD>/${lastSegment}'`;
-                  } catch {
-                    return match;
-                  }
-                },
+                /['"]([^'"]*[/\\][^'"]*)['"]/g,
+                "'<PATH>'",
               ),
             })),
           },
