@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "verbatimModuleSyntax": false
+  },
+  "include": ["src/**/*.ts"]
+}

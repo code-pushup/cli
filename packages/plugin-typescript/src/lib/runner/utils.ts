@@ -1,15 +1,14 @@
-// eslint-disable-next-line unicorn/import-style
-import { dirname } from 'node:path';
+import path from 'node:path';
 import {
   type Diagnostic,
   DiagnosticCategory,
   flattenDiagnosticMessageText,
-  parseConfigFileTextToJson,
   parseJsonConfigFileContent,
+  readConfigFile,
   sys,
 } from 'typescript';
 import type { Issue } from '@code-pushup/models';
-import { readTextFile, truncateIssueMessage } from '@code-pushup/utils';
+import { truncateIssueMessage } from '@code-pushup/utils';
 import { TS_CODE_RANGE_NAMES } from './ts-error-codes.js';
 import type { CodeRangeName } from './types.js';
 
@@ -84,7 +83,7 @@ export function getIssueFromDiagnostic(diag: Diagnostic) {
   return {
     ...issue,
     source: {
-      file: diag.file.fileName,
+      file: path.relative(process.cwd(), diag.file.fileName),
       ...(startLine
         ? {
             position: {
@@ -96,16 +95,22 @@ export function getIssueFromDiagnostic(diag: Diagnostic) {
   } satisfies Issue;
 }
 
-export async function loadTargetConfig(tsConfigPath: string) {
-  const { config } = parseConfigFileTextToJson(
-    tsConfigPath,
-    await readTextFile(tsConfigPath),
-  );
+export function loadTargetConfig(tsConfigPath: string) {
+  const resolvedConfigPath = path.resolve(tsConfigPath);
+  const { config, error } = readConfigFile(resolvedConfigPath, sys.readFile);
+
+  if (error) {
+    throw new Error(
+      `Error reading TypeScript config file: \n${error.messageText}`,
+    );
+  }
 
   const parsedConfig = parseJsonConfigFileContent(
     config,
     sys,
-    dirname(tsConfigPath),
+    path.dirname(resolvedConfigPath),
+    {},
+    resolvedConfigPath,
   );
 
   if (parsedConfig.fileNames.length === 0) {
