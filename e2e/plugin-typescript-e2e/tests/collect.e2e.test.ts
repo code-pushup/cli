@@ -32,7 +32,7 @@ function sanitizeReportPaths(report: Report): Report {
               }),
               message: issue.message.replace(
                 /['"]([^'"]*[/\\][^'"]*)['"]/g,
-                "'<PATH>'",
+                osAgnosticPath,
               ),
             })),
           },
