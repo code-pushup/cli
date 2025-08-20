@@ -1,5 +1,5 @@
 import * as tsModule from 'typescript';
-import { describe, expect } from 'vitest';
+import { describe, expect, vi } from 'vitest';
 import { osAgnosticPath } from '@code-pushup/test-utils';
 import { loadTargetConfig } from './utils.js';
 
@@ -48,11 +48,11 @@ describe('loadTargetConfig', () => {
       expect.objectContaining({
         fileNames: expect.arrayContaining([
           // from tsconfig.extends-base.json#includes and tsconfig.extends-extending.json#excludes
-          expect.stringContaining('src/0-no-diagnostics/'),
+          expect.stringMatching(/src[/\\]0-no-diagnostics[/\\]/),
         ]),
         options: expect.objectContaining({
           // Options from tsconfig.extends-base.json
-          rootDir: expect.stringContaining('src'),
+          rootDir: expect.stringMatching(/basic-setup$/),
           // Options from tsconfig.extends-extending.json
           module: 1,
           configFilePath: expect.stringContaining(
