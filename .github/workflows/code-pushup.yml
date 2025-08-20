@@ -15,7 +15,7 @@ permissions:
 jobs:
   code-pushup:
     runs-on: ubuntu-latest
-    name: Run Code PushUp in standalone mode
+    name: Run Code PushUp
     # ignore PRs from forks, handled by code-pushup-fork.yml
     if: ${{ !github.event.pull_request.head.repo.fork }}
     env:
