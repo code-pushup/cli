@@ -20,11 +20,7 @@
           "--cache.read",
           "--persist.outputDir={projectRoot}/.code-pushup",
           "--upload.project={projectName}"
-        ],
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
+        ]
       }
     }
   }
