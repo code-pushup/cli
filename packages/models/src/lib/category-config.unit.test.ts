@@ -121,6 +121,30 @@ describe('categoryConfigSchema', () => {
     ).not.toThrow();
   });
 
+  it('should accept a valid category configuration with a score target', () => {
+    expect(() =>
+      categoryConfigSchema.parse({
+        slug: 'core-web-vitals',
+        title: 'Core Web Vitals',
+        scoreTarget: 0.9,
+        refs: [
+          {
+            plugin: 'lighthouse',
+            slug: 'largest-contentful-paint',
+            type: 'audit',
+            weight: 3,
+          },
+          {
+            plugin: 'lighthouse',
+            slug: 'first-input-delay',
+            type: 'audit',
+            weight: 2,
+          },
+        ],
+      } satisfies CategoryConfig),
+    ).not.toThrow();
+  });
+
   it('should throw for an empty category', () => {
     expect(() =>
       categoryConfigSchema.parse({
