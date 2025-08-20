@@ -31,7 +31,7 @@ function sanitizeReportPaths(report: Report): Report {
                 },
               }),
               message: issue.message.replace(
-                /['"]([^'"]*[\/\\][^'"]*)['"]/g,
+                /['"]([^'"]*[/\\][^'"]*)['"]/g,
                 (match, filePath) => {
                   try {
                     return `'${osAgnosticPath(filePath)}'`;
