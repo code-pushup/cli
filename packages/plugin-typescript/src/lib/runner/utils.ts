@@ -101,7 +101,7 @@ export function loadTargetConfig(tsConfigPath: string) {
 
   if (error) {
     throw new Error(
-      `Error reading TypeScript config file: \n${error.messageText}`,
+      `Error reading TypeScript config file at ${tsConfigPath}:\n${error.messageText}`,
     );
   }
 
