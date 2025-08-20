@@ -1,5 +1,6 @@
 import * as tsModule from 'typescript';
 import { describe, expect } from 'vitest';
+import { osAgnosticPath } from '@code-pushup/test-utils';
 import { loadTargetConfig } from './utils.js';
 
 describe('loadTargetConfig', () => {
@@ -12,7 +13,9 @@ describe('loadTargetConfig', () => {
   it('should return the parsed content of a tsconfig file and ist TypeScript helper to parse it', () => {
     expect(
       loadTargetConfig(
-        'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.init.json',
+        osAgnosticPath(
+          'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.init.json',
+        ),
       ),
     ).toStrictEqual(
       expect.objectContaining({
