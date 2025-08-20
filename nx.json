@@ -17,20 +17,32 @@
     },
     "unit-test": {
       "cache": true,
+      "inputs": ["test-vitest-inputs"],
       "outputs": [
         "{workspaceRoot}/coverage/{projectName}/unit-tests/lcov.info"
       ],
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "{projectRoot}/vitest.unit.config.ts"
+        "configFile": "{projectRoot}/vitest.unit.config.ts",
+        "passWithNoTests": true,
+        "watch": false,
+        "coverage": {
+          "enabled": true
+        }
       }
     },
     "int-test": {
       "cache": true,
+      "inputs": ["test-vitest-inputs"],
       "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
       "executor": "@nx/vite:test",
       "options": {
-        "configFile": "{projectRoot}/vitest.int.config.ts"
+        "configFile": "{projectRoot}/vitest.int.config.ts",
+        "passWithNoTests": true,
+        "watch": false,
+        "coverage": {
+          "enabled": true
+        }
       }
     },
     "e2e": {
@@ -57,14 +69,7 @@
     "nxv-pkg-install": {
       "parallelism": false
     },
-    "@nx/vite:test": {
-      "cache": true,
-      "inputs": ["test-vitest-inputs"],
-      "options": {
-        "passWithNoTests": true,
-        "watch": false
-      }
-    },
+    "@nx/vite:test": {},
     "code-pushup": {
       "cache": false,
       "outputs": [
@@ -235,13 +240,11 @@
       "default",
       "!{projectRoot}/README.md",
       "!{projectRoot}/CHANGELOG.md",
-
       "!{projectRoot}/perf/**/*",
       "!{projectRoot}/tools/**/*",
       "!{projectRoot}/zod2md.config.ts",
       "!{projectRoot}/eslint.config.?(c)js",
       "!{projectRoot}/code-pushup.config.?(*.).?(m)[jt]s",
-
       "!{projectRoot}/@(test|mocks|mock)/**/*",
       "!{projectRoot}/**/?(*.)test.[jt]s?(x)?(.snap)",
       "!{projectRoot}/**/?(*.)mocks.[jt]s?(x)",
@@ -249,20 +252,40 @@
       "!{projectRoot}/vitest.@(unit|int|e2e).config.[jt]s",
       "!{projectRoot}/tsconfig.@(test|tools).json"
     ],
-    "test-vitest-inputs": ["default", { "externalDependencies": ["vitest"] }],
-    "lint-eslint-inputs": ["default", { "externalDependencies": ["eslint"] }],
+    "test-vitest-inputs": [
+      "default",
+      {
+        "externalDependencies": ["vitest"]
+      }
+    ],
+    "lint-eslint-inputs": [
+      "default",
+      {
+        "externalDependencies": ["eslint"]
+      }
+    ],
     "typecheck-typescript-inputs": [
       "default",
-      { "externalDependencies": ["typescript"] }
+      {
+        "externalDependencies": ["typescript"]
+      }
     ],
     "code-pushup-inputs": [
       "default",
-      { "env": "NODE_OPTIONS" },
-      { "env": "TSX_TSCONFIG_PATH" }
+      {
+        "env": "NODE_OPTIONS"
+      },
+      {
+        "env": "TSX_TSCONFIG_PATH"
+      }
     ],
     "sharedGlobals": [
-      { "runtime": "npm --version" },
-      { "runtime": "node --version" },
+      {
+        "runtime": "npm --version"
+      },
+      {
+        "runtime": "node --version"
+      },
       "!{workspaceRoot}/**/dist/**/*",
       "!{workspaceRoot}/**/(*.)coverage/**/*",
       "!{workspaceRoot}/**/.code-pushup/**/*"
