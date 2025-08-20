@@ -19,7 +19,13 @@ function sanitizeReportPaths(report: Report): Report {
     plugins: report.plugins.map(plugin => ({
       ...plugin,
       audits: osAgnosticAuditOutputs(plugin.audits, message =>
-        message.replace(/['"]([^'"]*[/\\][^'"]*)['"]/g, osAgnosticPath),
+        message.replace(/['"]([^'"]*[/\\][^'"]*)['"]/g, (p: string) => {
+          const osAgnostic = osAgnosticPath(p);
+          if (osAgnostic.endsWith('.ts')) {
+            return osAgnostic;
+          }
+          return osAgnostic.split('/').slice(-2).join('/');
+        }),
       ),
     })),
   };
