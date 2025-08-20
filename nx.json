@@ -50,13 +50,16 @@
       "cache": true,
       "options": {
         "errorOnUnmatchedPattern": false,
-        "format": "json",
+        "format": "./tools/eslint-programmatic-formatter.cjs",
         "outputFile": "{projectRoot}/.code-pushup/eslint/eslint-report.json",
         "maxWarnings": 0,
         "lintFilePatterns": [
           "{projectRoot}/**/*.ts",
           "{projectRoot}/package.json"
         ]
+      },
+      "env": {
+        "ESLINT_EXTRA_FORMATS": "{\"formatters\":[{\"name\":\"stylish\",\"output\":\"console\"},{\"name\":\"json\",\"output\":\"file\",\"path\":\"eslint-report.json\",\"options\":{\"pretty\":false}}],\"globalOptions\":{\"verbose\":false,\"timestamp\":false}}"
       }
     },
     "nxv-pkg-install": {
