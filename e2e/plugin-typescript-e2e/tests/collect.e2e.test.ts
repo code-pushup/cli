@@ -31,10 +31,11 @@ function sanitizeReportPaths(report: Report): Report {
                 },
               }),
               message: issue.message.replace(
-                /['"]([^'"]*[/\\][^'"]*)['"]/g,
+                /['"]([^'"]*\\[^'"]*)['"]/g,
                 (match, filePath) => {
                   try {
-                    return `'${osAgnosticPath(filePath)}'`;
+                    const lastSegment = filePath.split(/[/\\]/).pop() || '';
+                    return `'<CWD>/${lastSegment}'`;
                   } catch {
                     return match;
                   }
