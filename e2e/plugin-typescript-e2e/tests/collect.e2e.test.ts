@@ -7,6 +7,7 @@ import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
   omitVariableReportData,
+  osAgnosticAuditOutputs,
   osAgnosticPath,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
@@ -17,27 +18,9 @@ function sanitizeReportPaths(report: Report): Report {
     ...report,
     plugins: report.plugins.map(plugin => ({
       ...plugin,
-      audits: plugin.audits.map(audit => ({
-        ...audit,
-        ...(audit.details && {
-          details: {
-            ...audit.details,
-            issues: audit.details.issues?.map(issue => ({
-              ...issue,
-              ...(issue.source && {
-                source: {
-                  ...issue.source,
-                  file: osAgnosticPath(issue.source.file),
-                },
-              }),
-              message: issue.message.replace(
-                /['"]([^'"]*[/\\][^'"]*)['"]/g,
-                osAgnosticPath,
-              ),
-            })),
-          },
-        }),
-      })),
+      audits: osAgnosticAuditOutputs(plugin.audits, message =>
+        message.replace(/['"]([^'"]*[/\\][^'"]*)['"]/g, osAgnosticPath),
+      ),
     })),
   };
 }
