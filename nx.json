@@ -249,10 +249,7 @@
       "!{projectRoot}/tsconfig.@(test|tools).json"
     ],
     "test-vitest-inputs": ["default", { "externalDependencies": ["vitest"] }],
-    "lint-eslint-inputs": [
-      "default",
-      { "externalDependencies": ["eslint"] }
-    ],
+    "lint-eslint-inputs": ["default", { "externalDependencies": ["eslint"] }],
     "typecheck-typescript-inputs": [
       "default",
       { "externalDependencies": ["typescript"] }
