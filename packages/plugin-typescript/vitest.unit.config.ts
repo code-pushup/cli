@@ -16,7 +16,12 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'lcov'],
       reportsDirectory: '../../coverage/plugin-typescript/unit-tests',
-      exclude: ['mocks/**', '**/types.ts'],
+      exclude: [
+        'mocks/**',
+        '**/types.ts',
+        '**/index.ts',
+        'vitest.{unit,int}.config.ts',
+      ],
     },
     environment: 'node',
     include: ['src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
