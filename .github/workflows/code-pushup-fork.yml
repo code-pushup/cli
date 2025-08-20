@@ -20,7 +20,7 @@ permissions:
 jobs:
   code-pushup:
     runs-on: ubuntu-latest
-    name: Run code pushUp in standalone mode (fork)
+    name: Run Code PushUp in standalone mode (fork)
     if: github.event.pull_request.head.repo.fork
     steps:
       - name: Checkout repository
