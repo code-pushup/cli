@@ -19,13 +19,18 @@ function sanitizeReportPaths(report: Report): Report {
     plugins: report.plugins.map(plugin => ({
       ...plugin,
       audits: osAgnosticAuditOutputs(plugin.audits, message =>
-        message.replaceAll(/['"]([^'"]*[/\\][^'"]*)['"]/g, (p: string) => {
-          const osAgnostic = osAgnosticPath(p);
-          if (osAgnostic.endsWith('.ts')) {
-            return osAgnostic;
-          }
-          return osAgnostic.split('/').slice(-1).join('/');
-        }),
+        message.replace(
+          /['"]([^'"]*[/\\][^'"]*)['"]/g,
+          (fullMatch: string, capturedPath: string) => {
+            const osAgnostic = osAgnosticPath(capturedPath);
+            // Only replace directory paths, not .ts file paths
+            if (capturedPath.endsWith('.ts')) {
+              return `'${osAgnostic}'`;
+            }
+            // on Windows the path starts from "D/" not "./". This normalizes it to "./<segment>"
+            return `'${['.'].concat(osAgnostic.split('/').slice(-1)).join('/')}'`;
+          },
+        ),
       ),
     })),
   };
