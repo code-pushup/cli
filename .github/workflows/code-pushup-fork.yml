@@ -1,4 +1,4 @@
-name: Code PushUp - Centralized (fork)
+name: Code PushUp - Standalone Mode (fork)
 
 # separated from code-pushup.yml for security reasons
 # => requires permissions to create PR comment
@@ -20,7 +20,7 @@ permissions:
 jobs:
   code-pushup:
     runs-on: ubuntu-latest
-    name: Run central layout (fork)
+    name: Run code pushUp in standalone mode (fork)
     if: github.event.pull_request.head.repo.fork
     steps:
       - name: Checkout repository
