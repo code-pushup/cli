@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "rootDir": "./src",
+    "rootDir": "${configDir}",
     "verbatimModuleSyntax": false
   },
   "include": ["src/**/*.ts"]
