@@ -18,6 +18,7 @@
       ]
     },
     "lint": {},
+    "lint-reporter": {},
     "unit-test": {}
   },
   "tags": ["scope:shared", "type:util", "publishable"]

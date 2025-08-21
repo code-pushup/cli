@@ -3,6 +3,7 @@ import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
   type AuditOutputs,
+  type PersistConfig,
   type PluginConfig,
   type RunnerConfig,
   type RunnerFunction,
@@ -14,6 +15,7 @@ import {
   executeProcess,
   fileExists,
   isVerbose,
+  objectToCliArgs,
   readJsonFile,
   removeDirectoryIfExists,
   ui,
@@ -32,12 +34,13 @@ export type ValidatedRunnerResult = Omit<RunnerResult, 'audits'> & {
 
 export async function executeRunnerConfig(
   cfg: RunnerConfig,
+  config: Required<Pick<PersistConfig, 'outputDir'>>,
 ): Promise<RunnerResult> {
   const { args, command, outputFile, outputTransform } = cfg;
 
   const { duration, date } = await executeProcess({
     command,
-    args,
+    args: [...(args ?? []), ...objectToCliArgs(config)],
     observer: {
       onStdout: stdout => {
         if (isVerbose()) {
@@ -66,12 +69,13 @@ export async function executeRunnerConfig(
 
 export async function executeRunnerFunction(
   runner: RunnerFunction,
+  config: PersistConfig,
 ): Promise<RunnerResult> {
   const date = new Date().toISOString();
   const start = performance.now();
 
   // execute plugin runner
-  const audits = await runner();
+  const audits = await runner(config);
 
   // create runner result
   return {
@@ -96,12 +100,13 @@ export class AuditOutputsMissingAuditError extends Error {
 
 export async function executePluginRunner(
   pluginConfig: Pick<PluginConfig, 'audits' | 'runner'>,
+  persist: Required<Pick<PersistConfig, 'outputDir'>>,
 ): Promise<Omit<RunnerResult, 'audits'> & { audits: AuditOutputs }> {
   const { audits: pluginConfigAudits, runner } = pluginConfig;
   const runnerResult: RunnerResult =
     typeof runner === 'object'
-      ? await executeRunnerConfig(runner)
-      : await executeRunnerFunction(runner);
+      ? await executeRunnerConfig(runner, persist)
+      : await executeRunnerFunction(runner, persist);
   const { audits: unvalidatedAuditOutputs, ...executionMeta } = runnerResult;
 
   const result = auditOutputsSchema.safeParse(unvalidatedAuditOutputs);

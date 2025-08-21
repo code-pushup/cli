@@ -1,31 +1,49 @@
 import type { ESLint, Linter } from 'eslint';
 import { platform } from 'node:os';
+import path from 'node:path';
+import { DEFAULT_PERSIST_OUTPUT_DIR } from '@code-pushup/models';
 import {
   distinct,
   executeProcess,
   filePathToCliArg,
+  readJsonFile,
   toArray,
 } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
 import { setupESLint } from '../setup.js';
 import type { LinterOutput, RuleOptionsPerFile } from './types.js';
 
+/**
+ * Regex pattern to match ESLint report filename format.
+ * Matches: eslint-report.json or eslint-report-{number}.json
+ */
+export const ESLINT_REPORT_FILENAME_PATTERN = /eslint-report(?:-\d+)?\.json"/;
+
 export async function lint({
   eslintrc,
   patterns,
-}: ESLintTarget): Promise<LinterOutput> {
-  const results = await executeLint({ eslintrc, patterns });
+  outputDir,
+}: ESLintTarget & { outputDir?: string }): Promise<LinterOutput> {
+  const results = await executeLint({ eslintrc, patterns, outputDir });
   const eslint = await setupESLint(eslintrc);
   const ruleOptionsPerFile = await loadRuleOptionsPerFile(eslint, results);
   return { results, ruleOptionsPerFile };
 }
 
+// eslint-disable-next-line functional/no-let
+let rotation = 0;
+
 async function executeLint({
   eslintrc,
   patterns,
-}: ESLintTarget): Promise<ESLint.LintResult[]> {
+  outputDir: providedOutputDir,
+}: ESLintTarget & { outputDir?: string }): Promise<ESLint.LintResult[]> {
+  const outputDir =
+    providedOutputDir ?? path.join(DEFAULT_PERSIST_OUTPUT_DIR, 'eslint');
+  const filename = `eslint-report-${++rotation}`;
+  const outputFile = path.join(outputDir, `${filename}.json`);
   // running as CLI because ESLint#lintFiles() runs out of memory
-  const { stdout } = await executeProcess({
+  await executeProcess({
     command: 'npx',
     args: [
       'eslint',
@@ -33,6 +51,7 @@ async function executeLint({
       ...(typeof eslintrc === 'object' ? ['--no-eslintrc'] : []),
       '--no-error-on-unmatched-pattern',
       '--format=json',
+      `--output-file=${filePathToCliArg(outputFile)}`,
       ...toArray(patterns).map(pattern =>
         // globs need to be escaped on Unix
         platform() === 'win32' ? pattern : `'${pattern}'`,
@@ -42,7 +61,7 @@ async function executeLint({
     cwd: process.cwd(),
   });
 
-  return JSON.parse(stdout) as ESLint.LintResult[];
+  return readJsonFile<ESLint.LintResult[]>(outputFile);
 }
 
 function loadRuleOptionsPerFile(

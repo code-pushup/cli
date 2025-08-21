@@ -2,6 +2,7 @@ import { z } from 'zod/v4';
 import { auditOutputsSchema } from './audit-output.js';
 import { convertAsyncZodFunctionToSchema } from './implementation/function.js';
 import { filePathSchema } from './implementation/schemas.js';
+import { persistConfigSchema } from './persist-config.js';
 
 export const outputTransformSchema = convertAsyncZodFunctionToSchema(
   z.function({
@@ -25,6 +26,7 @@ export type RunnerConfig = z.infer<typeof runnerConfigSchema>;
 
 export const runnerFunctionSchema = convertAsyncZodFunctionToSchema(
   z.function({
+    input: [persistConfigSchema],
     output: z.union([auditOutputsSchema, z.promise(auditOutputsSchema)]),
   }),
 );

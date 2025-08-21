@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { filePathSchema, globPathSchema } from './implementation/schemas.js';
 
 /**
  * Generic schema for a tool command configuration, reusable across plugins.
@@ -13,7 +14,14 @@ export const artifactGenerationCommandSchema = z.union([
 
 export const pluginArtifactOptionsSchema = z.object({
   generateArtifactsCommand: artifactGenerationCommandSchema.optional(),
-  artifactsPaths: z.union([z.string(), z.array(z.string()).min(1)]),
+  artifactsPaths: z
+    .union([
+      filePathSchema,
+      z.array(filePathSchema).min(1),
+      globPathSchema,
+      z.array(globPathSchema).min(1),
+    ])
+    .describe('File paths or glob patterns for artifact files'),
 });
 
 export type PluginArtifactOptions = z.infer<typeof pluginArtifactOptionsSchema>;

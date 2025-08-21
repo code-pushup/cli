@@ -66,8 +66,8 @@ export async function executePlugin(
     ? // IF not null, take the result from cache
       ((await readRunnerResults(pluginMeta.slug, outputDir)) ??
       // ELSE execute the plugin runner
-      (await executePluginRunner(pluginConfig)))
-    : await executePluginRunner(pluginConfig);
+      (await executePluginRunner(pluginConfig, persist)))
+    : await executePluginRunner(pluginConfig, persist);
 
   if (cacheWrite) {
     await writeRunnerResults(pluginMeta.slug, outputDir, {

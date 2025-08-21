@@ -6,6 +6,7 @@
   "targets": {
     "build": {},
     "lint": {},
+    "lint-reporter": {},
     "perf": {
       "command": "npx tsx --tsconfig=../tsconfig.perf.json",
       "options": {

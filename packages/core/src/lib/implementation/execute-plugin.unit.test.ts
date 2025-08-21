@@ -102,7 +102,7 @@ describe('executePlugin', () => {
 
     await expect(
       executePlugin(MINIMAL_PLUGIN_CONFIG_MOCK, {
-        persist: { outputDir: 'dummy-path-result-is-mocked' },
+        persist: { outputDir: MEMFS_VOLUME },
         cache: { read: true, write: false },
       }),
     ).resolves.toStrictEqual({
@@ -122,6 +122,7 @@ describe('executePlugin', () => {
 
     expect(executePluginRunnerSpy).toHaveBeenCalledWith(
       MINIMAL_PLUGIN_CONFIG_MOCK,
+      { outputDir: MEMFS_VOLUME },
     );
   });
 });
@@ -322,8 +323,8 @@ describe('executePlugins', () => {
           {
             ...MINIMAL_PLUGIN_CONFIG_MOCK,
             runner: {
-              command: 'node',
-              args: ['-v'],
+              command: 'echo',
+              args: ['16'],
               outputFile: 'output.json',
               outputTransform: (outputs: unknown): Promise<AuditOutputs> =>
                 Promise.resolve([
@@ -337,7 +338,7 @@ describe('executePlugins', () => {
             },
           },
         ],
-        persist: { outputDir: '.code-pushup' },
+        persist: { outputDir: MEMFS_VOLUME },
         cache: { read: false, write: false },
       },
       { progress: false },

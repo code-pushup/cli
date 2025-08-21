@@ -1,8 +1,8 @@
 import { ESLint, type Linter } from 'eslint';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { expect } from 'vitest';
 import { executeProcess } from '@code-pushup/utils';
 import type { ESLintPluginConfig } from '../config.js';
-import { lint } from './lint.js';
+import { ESLINT_REPORT_FILENAME_PATTERN, lint } from './lint.js';
 
 class MockESLint {
   calculateConfigForFile = vi.fn().mockImplementation(
@@ -38,7 +38,32 @@ vi.mock('@code-pushup/utils', async () => {
   const cwd = testUtils.MEMFS_VOLUME;
   return {
     ...utils,
-    executeProcess: vi.fn().mockResolvedValue({
+    readJsonFile: vi.fn(
+      (_: string) =>
+        // Return the ESLint.LintResult[] array that readJsonFile should return
+        [
+          {
+            filePath: `${cwd}/src/app/app.component.ts`,
+            messages: [
+              { ruleId: 'max-lines' },
+              { ruleId: '@typescript-eslint/no-explicit-any' },
+              { ruleId: '@typescript-eslint/no-explicit-any' },
+            ],
+          },
+          {
+            filePath: `${cwd}/src/app/app.component.spec.ts`,
+            messages: [
+              { ruleId: 'max-lines' },
+              { ruleId: '@typescript-eslint/no-explicit-any' },
+            ],
+          },
+          {
+            filePath: `${cwd}/src/app/pages/settings.component.ts`,
+            messages: [{ ruleId: 'max-lines' }],
+          },
+        ] as ESLint.LintResult[],
+    ),
+    executeProcess: vi.fn(async () => ({
       stdout: JSON.stringify([
         {
           filePath: `${cwd}/src/app/app.component.ts`,
@@ -60,7 +85,7 @@ vi.mock('@code-pushup/utils', async () => {
           messages: [{ ruleId: 'max-lines' }],
         },
       ] as ESLint.LintResult[]),
-    }),
+    })),
   };
 });
 
@@ -76,7 +101,7 @@ describe('lint', () => {
 
   it('should get rule options for each file', async () => {
     const { ruleOptionsPerFile } = await lint(config);
-    expect(ruleOptionsPerFile).toEqual({
+    expect(ruleOptionsPerFile).toStrictEqual({
       [`${process.cwd()}/src/app/app.component.ts`]: {
         'max-lines': [500],
         '@typescript-eslint/no-explicit-any': [],
@@ -108,10 +133,11 @@ describe('lint', () => {
         '--config=".eslintrc.js"',
         '--no-error-on-unmatched-pattern',
         '--format=json',
-        expect.stringContaining('**/*.js'), // wraps in quotes on Unix
+        expect.stringMatching(ESLINT_REPORT_FILENAME_PATTERN),
+        expect.stringMatching(/^'?\*\*\/\*\.js'?$/),
       ],
       ignoreExitCode: true,
-      cwd: MEMFS_VOLUME,
+      cwd: '/test',
     });
 
     expect(eslint.calculateConfigForFile).toHaveBeenCalledTimes(3);

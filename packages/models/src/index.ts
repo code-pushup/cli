@@ -57,6 +57,7 @@ export {
 export {
   fileNameSchema,
   filePathSchema,
+  globPathSchema,
   materialIconSchema,
   type MaterialIcon,
 } from './lib/implementation/schemas.js';
@@ -145,4 +146,5 @@ export { uploadConfigSchema, type UploadConfig } from './lib/upload-config.js';
 export {
   artifactGenerationCommandSchema,
   pluginArtifactOptionsSchema,
+  type PluginArtifactOptions,
 } from './lib/configuration.js';
