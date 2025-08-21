@@ -11,7 +11,7 @@ import { lint } from './lint.js';
  * - With number: eslint-report-123.json (with dash and digits)
  */
 const ESLINT_REPORT_FILENAME_PATTERN =
-  /--output-file=\.code-pushup\/eslint\/eslint-report(?:-\d+)?\.json/;
+  /--output-file="\.code-pushup\/eslint\/eslint-report(?:-\d+)?\.json"/;
 
 class MockESLint {
   calculateConfigForFile = vi.fn().mockImplementation(

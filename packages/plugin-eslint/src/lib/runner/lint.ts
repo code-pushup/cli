@@ -45,7 +45,7 @@ async function executeLint({
       ...(typeof eslintrc === 'object' ? ['--no-eslintrc'] : []),
       '--no-error-on-unmatched-pattern',
       '--format=json',
-      `--output-file=${outputFile}`,
+      `--output-file=${filePathToCliArg(outputFile)}`,
       ...toArray(patterns).map(pattern =>
         // globs need to be escaped on Unix
         platform() === 'win32' ? pattern : `'${pattern}'`,
