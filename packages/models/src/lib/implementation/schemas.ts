@@ -145,7 +145,6 @@ export const filePathSchema = z
  */
 const globRegex = /^!?[^<>"|]+$/;
 
-/** Schema for a glob pattern (supports wildcards like *, **, {}, !, etc.) */
 export const globPathSchema = z
   .string()
   .trim()
@@ -154,7 +153,9 @@ export const globPathSchema = z
     message:
       'The path must be a valid file path or glob pattern (supports *, **, {}, [], !, ?)',
   })
-  .describe('File path or glob pattern (supports *, **, {}, !, etc.)');
+  .describe(
+    'Schema for a glob pattern (supports wildcards like *, **, {}, !, etc.)',
+  );
 
 /** Schema for a fileNameSchema */
 export const fileNameSchema = z

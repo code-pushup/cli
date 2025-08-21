@@ -80,14 +80,8 @@ export async function generateAuditOutputs(options: {
   audits: Audit[];
   targets: ESLintTarget[];
   artifacts?: PluginArtifactOptions;
-  outputDir?: string;
 }): Promise<AuditOutputs> {
-  const {
-    audits,
-    targets,
-    artifacts,
-    outputDir = DEFAULT_PERSIST_OUTPUT_DIR,
-  } = options;
+  const { audits, targets, artifacts } = options;
   const config: ESLintPluginRunnerConfig = {
     targets,
     slugs: audits.map(audit => audit.slug),
@@ -100,7 +94,6 @@ export async function generateAuditOutputs(options: {
     : await asyncSequential(
         targets.map(target => ({
           ...target,
-          outputDir,
         })),
         lint,
       );
