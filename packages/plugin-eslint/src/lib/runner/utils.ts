@@ -1,4 +1,5 @@
 import type { ESLint } from 'eslint';
+import { glob } from 'glob';
 import type { PluginArtifactOptions } from '@code-pushup/models';
 import {
   executeProcess,
@@ -7,6 +8,16 @@ import {
   ui,
 } from '@code-pushup/utils';
 import type { LinterOutput } from './types.js';
+
+async function resolveGlobPatterns(patterns: string[]): Promise<string[]> {
+  const resolvedPathArrays = await Promise.all(
+    patterns.map(async pattern => glob(pattern)),
+  );
+
+  const resolvedPaths = resolvedPathArrays.flat();
+
+  return [...new Set(resolvedPaths)].sort();
+}
 
 export async function loadArtifacts(
   artifacts: PluginArtifactOptions,
@@ -30,12 +41,14 @@ export async function loadArtifacts(
     await ui().logger.log(`$ ${commandString}`);
   }
 
-  const artifactPaths = Array.isArray(artifacts.artifactsPaths)
+  const initialArtifactPaths = Array.isArray(artifacts.artifactsPaths)
     ? artifacts.artifactsPaths
     : [artifacts.artifactsPaths];
 
+  const artifactPaths = await resolveGlobPatterns(initialArtifactPaths);
+
   ui().logger.log(
-    `ESLint plugin loading ${artifactPaths.length} eslint ${pluralizeToken('report', artifactPaths.length)}`,
+    `ESLint plugin resolved ${initialArtifactPaths.length} ${pluralizeToken('pattern', initialArtifactPaths.length)} to ${artifactPaths.length} eslint ${pluralizeToken('report', artifactPaths.length)}`,
   );
 
   return await Promise.all(
