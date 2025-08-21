@@ -80,6 +80,7 @@ export {
   type PluginConfig,
   type PluginContext,
   type PluginMeta,
+  type PluginScoreTarget,
 } from './lib/plugin-config.js';
 export {
   auditReportSchema,

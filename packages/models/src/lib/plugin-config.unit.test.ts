@@ -40,6 +40,35 @@ describe('pluginConfigSchema', () => {
     ).not.toThrow();
   });
 
+  it('should accept a valid plugin configuration with a score target', () => {
+    expect(() =>
+      pluginConfigSchema.parse({
+        slug: 'lighthouse',
+        title: 'Lighthouse',
+        icon: 'lighthouse',
+        runner: async () => [
+          {
+            slug: 'first-contentful-paint',
+            score: 0.28,
+            value: 3752,
+            displayValue: '3.8 s',
+          },
+          {
+            slug: 'total-blocking-time',
+            score: 0.91,
+            value: 183.5,
+            displayValue: '180 ms',
+          },
+        ],
+        scoreTarget: { 'total-blocking-time': 0.9 },
+        audits: [
+          { slug: 'first-contentful-paint', title: 'First Contentful Paint' },
+          { slug: 'total-blocking-time', title: 'Total Blocking Time' },
+        ],
+      } satisfies PluginConfig),
+    ).not.toThrow();
+  });
+
   it('should throw for a plugin configuration without audits', () => {
     expect(() =>
       pluginConfigSchema.parse({

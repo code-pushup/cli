@@ -3,6 +3,7 @@ import { createDuplicateSlugsCheck } from './implementation/checks.js';
 import {
   nonnegativeNumberSchema,
   scoreSchema,
+  scoreTargetSchema,
   slugSchema,
 } from './implementation/schemas.js';
 import { issueSchema } from './issue.js';
@@ -34,6 +35,7 @@ export const auditOutputSchema = z
     displayValue: auditDisplayValueSchema,
     value: auditValueSchema,
     score: scoreSchema,
+    scoreTarget: scoreTargetSchema,
     details: auditDetailsSchema.optional(),
   })
   .describe('Audit information');
