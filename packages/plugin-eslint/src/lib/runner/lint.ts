@@ -14,12 +14,10 @@ import { setupESLint } from '../setup.js';
 import type { LinterOutput, RuleOptionsPerFile } from './types.js';
 
 /**
- * Regex pattern to match ESLint report filename format with OS-agnostic path separators.
+ * Regex pattern to match ESLint report filename format.
  * Matches: eslint-report.json or eslint-report-{number}.json
- * Handles both forward slashes (/) and backslashes (\) for cross-platform compatibility
  */
-export const ESLINT_REPORT_FILENAME_PATTERN =
-  /--output-file="\.code-pushup[/\\]eslint[/\\]eslint-report(?:-\d+)?\.json"/; // eslint-disable-line unicorn/better-regex
+export const ESLINT_REPORT_FILENAME_PATTERN = /eslint-report(?:-\d+)?\.json"/;
 
 export async function lint({
   eslintrc,
