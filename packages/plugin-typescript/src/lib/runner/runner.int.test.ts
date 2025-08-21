@@ -14,7 +14,7 @@ describe('createRunnerFunction', () => {
 
     const result = await runnerFunction();
 
-    await expect(
+    expect(
       osAgnosticAuditOutputs(result as AuditOutputs),
     ).toMatchSnapshot();
   }, 35_000);
