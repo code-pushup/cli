@@ -58,7 +58,23 @@
     },
     "lint-reporter": {
       "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
-      "outputs": ["{projectRoot}/.eslint/**/*.json"],
+      "outputs": ["{projectRoot}/.eslint/eslint-report*.json"],
+      "cache": true,
+      "executor": "@nx/linter:eslint",
+      "options": {
+        "errorOnUnmatchedPattern": false,
+        "maxWarnings": 0,
+        "format": "json",
+        "outputFile": "{projectRoot}/.eslint/eslint-report.json",
+        "lintFilePatterns": [
+          "{projectRoot}/**/*.ts",
+          "{projectRoot}/package.json"
+        ]
+      }
+    },
+    "lint-formatter": {
+      "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
+      "outputs": ["{projectRoot}/.eslint/eslint-report*.json"],
       "cache": true,
       "executor": "nx:run-commands",
       "options": {
