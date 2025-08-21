@@ -1,10 +1,13 @@
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import type {
-  Audit,
-  AuditOutput,
-  RunnerConfig,
-  RunnerFilesPaths,
+import {
+  type Audit,
+  type AuditOutput,
+  type AuditOutputs,
+  DEFAULT_PERSIST_OUTPUT_DIR,
+  type PluginArtifactOptions,
+  type RunnerConfig,
+  type RunnerFilesPaths,
 } from '@code-pushup/models';
 import {
   asyncSequential,
@@ -18,6 +21,7 @@ import {
 import type { ESLintPluginRunnerConfig, ESLintTarget } from '../config.js';
 import { lint } from './lint.js';
 import { lintResultsToAudits, mergeLinterOutputs } from './transform.js';
+import { loadArtifacts } from './utils.js';
 
 export async function executeRunner({
   runnerConfigPath,
@@ -70,4 +74,47 @@ export async function createRunnerConfig(
     configFile: runnerConfigPath,
     outputFile: runnerOutputPath,
   };
+}
+
+export async function generateAuditOutputs(options: {
+  audits: Audit[];
+  targets: ESLintTarget[];
+  artifacts?: PluginArtifactOptions;
+  outputDir?: string;
+}): Promise<AuditOutputs> {
+  const {
+    audits,
+    targets,
+    artifacts,
+    outputDir = DEFAULT_PERSIST_OUTPUT_DIR,
+  } = options;
+  const config: ESLintPluginRunnerConfig = {
+    targets,
+    slugs: audits.map(audit => audit.slug),
+  };
+
+  ui().logger.log(`ESLint plugin executing ${targets.length} lint targets`);
+
+  const linterOutputs = artifacts
+    ? await loadArtifacts(artifacts)
+    : await asyncSequential(
+        targets.map(target => ({
+          ...target,
+          outputDir,
+        })),
+        lint,
+      );
+  const lintResults = mergeLinterOutputs(linterOutputs);
+  const failedAudits = lintResultsToAudits(lintResults);
+
+  return config.slugs.map(
+    (slug): AuditOutput =>
+      failedAudits.find(audit => audit.slug === slug) ?? {
+        slug,
+        score: 1,
+        value: 0,
+        displayValue: 'passed',
+        details: { issues: [] },
+      },
+  );
 }
