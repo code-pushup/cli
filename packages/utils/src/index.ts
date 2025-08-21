@@ -102,7 +102,7 @@ export {
 } from './lib/reports/generate-md-reports-diff.js';
 export { loadReport } from './lib/reports/load-report.js';
 export { logStdoutSummary } from './lib/reports/log-stdout-summary.js';
-export { scoreReport } from './lib/reports/scoring.js';
+export { scoreReport, scoreAuditsWithTarget } from './lib/reports/scoring.js';
 export { sortReport } from './lib/reports/sorting.js';
 export type {
   ScoredCategoryConfig,

@@ -1,7 +1,9 @@
 import type {
+  AuditOutput,
   AuditReport,
   CategoryRef,
   GroupRef,
+  PluginScoreTarget,
   Report,
 } from '@code-pushup/models';
 import { deepClone } from '../transform.js';
@@ -116,4 +118,38 @@ function parseScoringParameters<T extends { weight: number }>(
   }
 
   return scoredRefs;
+}
+
+/**
+ * Sets audit score to 1 if it meets target.
+ * @param audit audit output to evaluate
+ * @param scoreTarget threshold for perfect score (0-1)
+ * @returns Audit with scoreTarget field
+ */
+export function scoreAuditWithTarget(
+  audit: AuditOutput,
+  scoreTarget: number,
+): AuditOutput {
+  return audit.score >= scoreTarget
+    ? { ...audit, score: 1, scoreTarget }
+    : { ...audit, scoreTarget };
+}
+
+/**
+ * Sets audit scores to 1 when targets are met.
+ * @param audits audit outputs from plugin execution
+ * @param scoreTarget number or { slug: target } mapping
+ * @returns Transformed audits with scoreTarget field
+ */
+export function scoreAuditsWithTarget(
+  audits: AuditOutput[],
+  scoreTarget: PluginScoreTarget,
+): AuditOutput[] {
+  if (typeof scoreTarget === 'number') {
+    return audits.map(audit => scoreAuditWithTarget(audit, scoreTarget));
+  }
+  return audits.map(audit => {
+    const target = scoreTarget?.[audit.slug];
+    return target == null ? audit : scoreAuditWithTarget(audit, target);
+  });
 }

@@ -124,6 +124,67 @@ describe('executePlugin', () => {
       MINIMAL_PLUGIN_CONFIG_MOCK,
     );
   });
+
+  it('should apply a single score target to all audits', async () => {
+    const pluginConfig: PluginConfig = {
+      ...MINIMAL_PLUGIN_CONFIG_MOCK,
+      scoreTarget: 0.8,
+      audits: [
+        {
+          slug: 'speed-index',
+          title: 'Speed Index',
+        },
+        {
+          slug: 'total-blocking-time',
+          title: 'Total Blocking Time',
+        },
+      ],
+      runner: () => [
+        { slug: 'speed-index', score: 0.9, value: 1300 },
+        { slug: 'total-blocking-time', score: 0.3, value: 600 },
+      ],
+    };
+
+    const result = await executePlugin(pluginConfig, {
+      persist: { outputDir: '' },
+      cache: { read: false, write: false },
+    });
+
+    expect(result.audits).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          slug: 'speed-index',
+          score: 1,
+          scoreTarget: 0.8,
+        }),
+        expect.objectContaining({
+          slug: 'total-blocking-time',
+          score: 0.3,
+          scoreTarget: 0.8,
+        }),
+      ]),
+    );
+  });
+
+  it('should apply per-audit score targets', async () => {
+    const pluginConfig: PluginConfig = {
+      ...MINIMAL_PLUGIN_CONFIG_MOCK, // returns node-version audit with score 0.3
+      scoreTarget: {
+        'node-version': 0.2,
+      },
+    };
+
+    const result = await executePlugin(pluginConfig, {
+      persist: { outputDir: '' },
+      cache: { read: false, write: false },
+    });
+
+    expect(result.audits[0]).toMatchObject({
+      slug: 'node-version',
+      score: 1,
+      scoreTarget: 0.2,
+    });
+  });
 });
 
 describe('executePlugins', () => {
