@@ -69,7 +69,6 @@
     "nxv-pkg-install": {
       "parallelism": false
     },
-    "@nx/vite:test": {},
     "code-pushup": {
       "cache": false,
       "outputs": [
