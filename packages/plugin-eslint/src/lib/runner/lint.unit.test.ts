@@ -2,16 +2,7 @@ import { ESLint, type Linter } from 'eslint';
 import { expect } from 'vitest';
 import { executeProcess } from '@code-pushup/utils';
 import type { ESLintPluginConfig } from '../config.js';
-import { lint } from './lint.js';
-
-/**
- * Regex pattern to match ESLint report filename format.
- * Matches: eslint-report.json or eslint-report-{number}.json
- * - No number: eslint-report.json (no dash)
- * - With number: eslint-report-123.json (with dash and digits)
- */
-const ESLINT_REPORT_FILENAME_PATTERN =
-  /--output-file="\.code-pushup\/eslint\/eslint-report(?:-\d+)?\.json"/;
+import { ESLINT_REPORT_FILENAME_PATTERN, lint } from './lint.js';
 
 class MockESLint {
   calculateConfigForFile = vi.fn().mockImplementation(
