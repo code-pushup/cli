@@ -57,7 +57,6 @@ async function executeLint({
     ignoreExitCode: true,
     cwd: process.cwd(),
     env: {
-      ...process.env,
       ESLINT_FORMATTER_CONFIG: JSON.stringify({
         outputDir,
         filename,
