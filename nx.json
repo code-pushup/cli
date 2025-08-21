@@ -135,8 +135,12 @@
       }
     },
     "code-pushup-js-packages": {
-      "cache": false,
-      "inputs": [],
+      "cache": true,
+      "inputs": [
+        {
+          "runtime": "date +%Y-%m-%d"
+        }
+      ],
       "outputs": ["{projectRoot}/.code-pushup/js-packages/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
