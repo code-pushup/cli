@@ -1,6 +1,7 @@
 import type { ESLint, Linter } from 'eslint';
 import { platform } from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { DEFAULT_PERSIST_OUTPUT_DIR } from '@code-pushup/models';
 import {
   distinct,
@@ -12,8 +13,6 @@ import {
 import type { ESLintTarget } from '../config.js';
 import { setupESLint } from '../setup.js';
 import type { LinterOutput, RuleOptionsPerFile } from './types.js';
-
-type LintResult = ESLint.LintResult;
 
 export async function lint({
   eslintrc,
@@ -27,17 +26,17 @@ export async function lint({
 }
 
 // eslint-disable-next-line functional/no-let
-let lintFilesRotation = 0;
+let rotation = 0;
 
 async function executeLint({
   eslintrc,
   patterns,
-  outputDir,
+  outputDir: providedOutputDir,
 }: ESLintTarget & { outputDir?: string }): Promise<ESLint.LintResult[]> {
-  const reportOutputPath = path.join(
-    outputDir ?? DEFAULT_PERSIST_OUTPUT_DIR,
-    `eslint-report.${++lintFilesRotation}.json`,
-  );
+  const outputDir =
+    providedOutputDir ?? path.join(DEFAULT_PERSIST_OUTPUT_DIR, 'eslint');
+  const filename = `eslint-report-${++rotation}`;
+
   // running as CLI because ESLint#lintFiles() runs out of memory
   await executeProcess({
     command: 'npx',
@@ -46,7 +45,10 @@ async function executeLint({
       ...(eslintrc ? [`--config=${filePathToCliArg(eslintrc)}`] : []),
       ...(typeof eslintrc === 'object' ? ['--no-eslintrc'] : []),
       '--no-error-on-unmatched-pattern',
-      '--format=../../../tools/eslint-programmatic-formatter.cjs',
+      `--format=${path.join(
+        path.dirname(fileURLToPath(import.meta.url)),
+        '../formatter/multiple-formats.js',
+      )}`,
       ...toArray(patterns).map(pattern =>
         // globs need to be escaped on Unix
         platform() === 'win32' ? pattern : `'${pattern}'`,
@@ -54,9 +56,20 @@ async function executeLint({
     ],
     ignoreExitCode: true,
     cwd: process.cwd(),
+    env: {
+      ...process.env,
+      ESLINT_FORMATTER_CONFIG: JSON.stringify({
+        outputDir,
+        filename,
+        formats: ['json'], // Always write JSON to file for tracking
+        terminal: 'stylish', // Always show stylish terminal output for DX
+      }),
+    },
   });
 
-  return readJsonFile<LintResult[]>(reportOutputPath);
+  return readJsonFile<ESLint.LintResult[]>(
+    path.join(outputDir, `${filename}.json`),
+  );
 }
 
 function loadRuleOptionsPerFile(

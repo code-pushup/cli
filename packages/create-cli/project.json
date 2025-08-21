@@ -6,6 +6,7 @@
   "targets": {
     "build": {},
     "lint": {},
+    "lint-reporter": {},
     "unit-test": {},
     "exec-node": {
       "dependsOn": ["build"],

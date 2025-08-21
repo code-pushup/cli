@@ -7,6 +7,7 @@
   "targets": {
     "build": {},
     "lint": {},
+    "lint-reporter": {},
     "unit-test": {},
     "int-test": {}
   }
