@@ -81,7 +81,9 @@ describe('globPathSchema', () => {
   it.each(['path<file.js', 'path>file.js', 'path"file.js', 'path|file.js'])(
     'should throw for invalid path with forbidden character: %s',
     pattern => {
-      expect(() => globPathSchema.parse(pattern)).toThrow();
+      expect(() => globPathSchema.parse(pattern)).toThrow(
+        'valid file path or glob pattern',
+      );
     },
   );
 });
