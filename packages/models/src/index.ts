@@ -57,6 +57,7 @@ export {
 export {
   fileNameSchema,
   filePathSchema,
+  globPathSchema,
   materialIconSchema,
   type MaterialIcon,
 } from './lib/implementation/schemas.js';
