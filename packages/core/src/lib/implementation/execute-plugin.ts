@@ -79,12 +79,12 @@ export async function executePlugin(
   }
 
   // transform audit scores to 1 when they meet/exceed scoreTarget
-  const transformedAudits = scoreTarget
+  const scoredAuditsWithTarget = scoreTarget
     ? scoreAuditsWithTarget(audits, scoreTarget)
     : audits;
 
   // enrich `AuditOutputs` to `AuditReport`
-  const auditReports: AuditReport[] = transformedAudits.map(
+  const auditReports: AuditReport[] = scoredAuditsWithTarget.map(
     (auditOutput: AuditOutput) => ({
       ...auditOutput,
       ...(pluginConfigAudits.find(
