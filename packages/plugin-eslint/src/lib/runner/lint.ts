@@ -36,7 +36,7 @@ async function executeLint({
   const outputDir =
     providedOutputDir ?? path.join(DEFAULT_PERSIST_OUTPUT_DIR, 'eslint');
   const filename = `eslint-report-${++rotation}`;
-
+  const outputFile = path.join(outputDir, `${filename}.json`);
   // running as CLI because ESLint#lintFiles() runs out of memory
   await executeProcess({
     command: 'npx',
@@ -45,10 +45,8 @@ async function executeLint({
       ...(eslintrc ? [`--config=${filePathToCliArg(eslintrc)}`] : []),
       ...(typeof eslintrc === 'object' ? ['--no-eslintrc'] : []),
       '--no-error-on-unmatched-pattern',
-      `--format=${path.join(
-        path.dirname(fileURLToPath(import.meta.url)),
-        '../formatter/multiple-formats.js',
-      )}`,
+      '--format=json',
+      `--output-file=${outputFile}`,
       ...toArray(patterns).map(pattern =>
         // globs need to be escaped on Unix
         platform() === 'win32' ? pattern : `'${pattern}'`,
@@ -56,19 +54,9 @@ async function executeLint({
     ],
     ignoreExitCode: true,
     cwd: process.cwd(),
-    env: {
-      ESLINT_FORMATTER_CONFIG: JSON.stringify({
-        outputDir,
-        filename,
-        formats: ['json'], // Always write JSON to file for tracking
-        terminal: 'stylish', // Always show stylish terminal output for DX
-      }),
-    },
   });
 
-  return readJsonFile<ESLint.LintResult[]>(
-    path.join(outputDir, `${filename}.json`),
-  );
+  return readJsonFile<ESLint.LintResult[]>(outputFile);
 }
 
 function loadRuleOptionsPerFile(

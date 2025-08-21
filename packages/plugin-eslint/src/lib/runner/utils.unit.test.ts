@@ -1,14 +1,27 @@
 import type { ESLint } from 'eslint';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ui } from '@code-pushup/utils';
 import * as utilsModule from '@code-pushup/utils';
 import type { LinterOutput } from './types.js';
 import { loadArtifacts } from './utils.js';
+
+vi.mock('@code-pushup/utils', async () => {
+  const actual = await vi.importActual('@code-pushup/utils');
+  return {
+    ...actual,
+    readJsonFile: vi.fn(),
+    executeProcess: vi.fn(),
+  };
+});
+
+vi.mock('glob', () => ({
+  glob: vi.fn((pattern: string) => Promise.resolve([pattern])),
+}));
 
 describe('loadArtifacts', () => {
   const readJsonFileSpy = vi.spyOn(utilsModule, 'readJsonFile');
   const executeProcessSpy = vi.spyOn(utilsModule, 'executeProcess');
 
-  // Mock data should be raw ESLint.LintResult[] as that's what ESLint CLI outputs
   const mockRawResults1: ESLint.LintResult[] = [
     {
       filePath: '/test/file1.js',
@@ -47,7 +60,6 @@ describe('loadArtifacts', () => {
     },
   ];
 
-  // Expected output after our function wraps raw results in LinterOutput format
   const expectedLinterOutput1: LinterOutput = {
     results: mockRawResults1,
     ruleOptionsPerFile: {},
@@ -60,7 +72,7 @@ describe('loadArtifacts', () => {
 
   const artifactsPaths = ['/path/to/artifact1.json', '/path/to/artifact2.json'];
 
-  beforeEach(async () => {
+  beforeEach(() => {
     vi.clearAllMocks();
     executeProcessSpy.mockResolvedValue({
       stdout: JSON.stringify(mockRawResults1),
@@ -80,6 +92,8 @@ describe('loadArtifacts', () => {
     expect(executeProcessSpy).not.toHaveBeenCalled();
     expect(readJsonFileSpy).toHaveBeenCalledTimes(1);
     expect(readJsonFileSpy).toHaveBeenNthCalledWith(1, artifactsPaths.at(0));
+
+    expect(ui()).not.toHaveLogged('log', expect.stringMatching(/^\$ /));
   });
 
   it('should load multiple artifacts without generateArtifactsCommand', async () => {
@@ -95,6 +109,8 @@ describe('loadArtifacts', () => {
     expect(readJsonFileSpy).toHaveBeenCalledTimes(2);
     expect(readJsonFileSpy).toHaveBeenNthCalledWith(1, artifactsPaths.at(0));
     expect(readJsonFileSpy).toHaveBeenNthCalledWith(2, artifactsPaths.at(1));
+
+    expect(ui()).not.toHaveLogged('log', expect.stringMatching(/^\$ /));
   });
 
   it('should load artifacts with generateArtifactsCommand as string', async () => {
@@ -112,6 +128,7 @@ describe('loadArtifacts', () => {
       command: generateArtifactsCommand,
       ignoreExitCode: true,
     });
+    expect(ui()).toHaveLogged('log', `$ ${generateArtifactsCommand}`);
   });
 
   it('should load artifacts with generateArtifactsCommand as object', async () => {
@@ -131,5 +148,9 @@ describe('loadArtifacts', () => {
       ...generateArtifactsCommand,
       ignoreExitCode: true,
     });
+    expect(ui()).toHaveLogged(
+      'log',
+      '$ nx run-many -t lint --parallel --max-parallel=5',
+    );
   });
 });

@@ -27,11 +27,6 @@ export async function loadArtifacts(
       typeof artifacts.generateArtifactsCommand === 'string'
         ? { command: artifacts.generateArtifactsCommand }
         : artifacts.generateArtifactsCommand;
-    await executeProcess({
-      command,
-      args,
-      ignoreExitCode: true,
-    });
 
     // Log the actual command that was executed
     const commandString =
@@ -39,6 +34,11 @@ export async function loadArtifacts(
         ? artifacts.generateArtifactsCommand
         : `${command} ${args.join(' ')}`;
     await ui().logger.log(`$ ${commandString}`);
+    await executeProcess({
+      command,
+      args,
+      ignoreExitCode: true,
+    });
   }
 
   const initialArtifactPaths = Array.isArray(artifacts.artifactsPaths)
