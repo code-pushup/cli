@@ -1,7 +1,6 @@
 import type { ESLint, Linter } from 'eslint';
 import { platform } from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { DEFAULT_PERSIST_OUTPUT_DIR } from '@code-pushup/models';
 import {
   distinct,
