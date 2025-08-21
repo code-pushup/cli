@@ -1,5 +1,62 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "production": [
+      "default",
+      "!{projectRoot}/README.md",
+      "!{projectRoot}/CHANGELOG.md",
+      "!{projectRoot}/perf/**/*",
+      "!{projectRoot}/tools/**/*",
+      "!{projectRoot}/zod2md.config.ts",
+      "!{projectRoot}/eslint.config.?(c)js",
+      "!{workspaceRoot}/**/.code-pushup/**/*",
+      "!{projectRoot}/code-pushup.config.?(*.).?(m)[jt]s",
+      "!{projectRoot}/@(test|mocks|mock)/**/*",
+      "!{projectRoot}/**/?(*.)test.[jt]s?(x)?(.snap)",
+      "!{projectRoot}/**/?(*.)mocks.[jt]s?(x)",
+      "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
+      "!{projectRoot}/vitest.@(unit|int|e2e).config.[jt]s",
+      "!{workspaceRoot}/**/dist/**/*",
+      "!{projectRoot}/tsconfig.@(test|tools).json",
+      "!{workspaceRoot}/**/(*.)coverage/**/*"
+    ],
+    "test-vitest-inputs": [
+      "default",
+      {
+        "externalDependencies": ["vitest"]
+      }
+    ],
+    "lint-eslint-inputs": [
+      "default",
+      {
+        "externalDependencies": ["eslint"]
+      }
+    ],
+    "typecheck-typescript-inputs": [
+      "default",
+      {
+        "externalDependencies": ["typescript"]
+      }
+    ],
+    "code-pushup-inputs": [
+      "default",
+      {
+        "env": "NODE_OPTIONS"
+      },
+      {
+        "env": "TSX_TSCONFIG_PATH"
+      }
+    ],
+    "sharedGlobals": [
+      {
+        "runtime": "npm --version"
+      },
+      {
+        "runtime": "node --version"
+      }
+    ]
+  },
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"],
@@ -135,7 +192,7 @@
       }
     },
     "code-pushup-js-packages": {
-      "cache": true,
+      "cache": false,
       "inputs": [
         {
           "runtime": "date +%Y-%m-%d"
@@ -150,7 +207,7 @@
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--onlyPlugins=js-packages",
-          "--persist.skipReports",
+
           "--persist.outputDir={projectRoot}/.code-pushup"
         ],
         "env": {
@@ -233,63 +290,6 @@
         "registry": "https://registry.npmjs.org/"
       }
     }
-  },
-  "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
-    "production": [
-      "default",
-      "!{projectRoot}/README.md",
-      "!{projectRoot}/CHANGELOG.md",
-      "!{projectRoot}/perf/**/*",
-      "!{projectRoot}/tools/**/*",
-      "!{projectRoot}/zod2md.config.ts",
-      "!{projectRoot}/eslint.config.?(c)js",
-      "!{projectRoot}/code-pushup.config.?(*.).?(m)[jt]s",
-      "!{projectRoot}/@(test|mocks|mock)/**/*",
-      "!{projectRoot}/**/?(*.)test.[jt]s?(x)?(.snap)",
-      "!{projectRoot}/**/?(*.)mocks.[jt]s?(x)",
-      "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
-      "!{projectRoot}/vitest.@(unit|int|e2e).config.[jt]s",
-      "!{projectRoot}/tsconfig.@(test|tools).json"
-    ],
-    "test-vitest-inputs": [
-      "default",
-      {
-        "externalDependencies": ["vitest"]
-      }
-    ],
-    "lint-eslint-inputs": [
-      "default",
-      {
-        "externalDependencies": ["eslint"]
-      }
-    ],
-    "typecheck-typescript-inputs": [
-      "default",
-      {
-        "externalDependencies": ["typescript"]
-      }
-    ],
-    "code-pushup-inputs": [
-      "default",
-      {
-        "env": "NODE_OPTIONS"
-      },
-      {
-        "env": "TSX_TSCONFIG_PATH"
-      }
-    ],
-    "sharedGlobals": [
-      {
-        "runtime": "npm --version"
-      },
-      {
-        "runtime": "node --version"
-      },
-      "!{workspaceRoot}/**/dist/**/*",
-      "!{workspaceRoot}/**/(*.)coverage/**/*",
-      "!{workspaceRoot}/**/.code-pushup/**/*"
-    ]
   },
   "workspaceLayout": {
     "appsDir": "examples",
