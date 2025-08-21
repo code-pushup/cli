@@ -26,7 +26,7 @@ const config: CoreConfig = {
       server: env.CP_SERVER,
       apiKey: env.CP_API_KEY,
       organization: env.CP_ORGANIZATION,
-      project: env.CP_PROJECT,
+      project: 'cli-workspace',
     },
   }),
 

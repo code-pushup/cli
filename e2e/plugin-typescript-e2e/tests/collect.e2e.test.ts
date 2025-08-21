@@ -7,9 +7,34 @@ import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
   omitVariableReportData,
+  osAgnosticAuditOutputs,
+  osAgnosticPath,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
+
+function sanitizeReportPaths(report: Report): Report {
+  return {
+    ...report,
+    plugins: report.plugins.map(plugin => ({
+      ...plugin,
+      audits: osAgnosticAuditOutputs(plugin.audits, message =>
+        message.replace(
+          /['"]([^'"]*[/\\][^'"]*)['"]/g,
+          (fullMatch: string, capturedPath: string) => {
+            const osAgnostic = osAgnosticPath(capturedPath);
+            // Only replace directory paths, not .ts file paths
+            if (capturedPath.endsWith('.ts')) {
+              return `'${osAgnostic}'`;
+            }
+            // on Windows the path starts from "plugin-typescript-e2e/src" not "./". This normalizes it to "./<segment>"
+            return `'${['.', osAgnostic.split('/').slice(-1)].join('/')}'`;
+          },
+        ),
+      ),
+    })),
+  };
+}
 
 describe('PLUGIN collect report with typescript-plugin NPM package', () => {
   const envRoot = path.join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
@@ -57,6 +82,9 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
       path.join(envRoot, outputDir, 'report.json'),
     );
     expect(() => reportSchema.parse(reportJson)).not.toThrow();
-    expect(omitVariableReportData(reportJson)).toMatchSnapshot();
+
+    expect(
+      omitVariableReportData(sanitizeReportPaths(reportJson)),
+    ).toMatchSnapshot();
   });
 });
