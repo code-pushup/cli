@@ -1,12 +1,7 @@
 import type { ESLint } from 'eslint';
 import { glob } from 'glob';
 import type { PluginArtifactOptions } from '@code-pushup/models';
-import {
-  executeProcess,
-  pluralizeToken,
-  readJsonFile,
-  ui,
-} from '@code-pushup/utils';
+import { executeProcess, readJsonFile, ui } from '@code-pushup/utils';
 import type { LinterOutput } from './types.js';
 
 export async function loadArtifacts(
@@ -35,10 +30,6 @@ export async function loadArtifacts(
     : [artifacts.artifactsPaths];
 
   const artifactPaths = await glob(initialArtifactPaths);
-
-  ui().logger.log(
-    `ESLint plugin resolved ${initialArtifactPaths.length} ${pluralizeToken('pattern', initialArtifactPaths.length)} to ${artifactPaths.length} eslint ${pluralizeToken('report', artifactPaths.length)}`,
-  );
 
   return await Promise.all(
     artifactPaths.map(async artifactPath => {
