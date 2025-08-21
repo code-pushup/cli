@@ -154,7 +154,6 @@ function minimalReport(opt?: MinimalReportOptions): Report {
           slug: `${AUDIT_P1_PREFIX}${idx}`,
           weight: 1,
         })),
-        isBinary: false,
       },
       {
         slug: 'c2_',
@@ -165,7 +164,6 @@ function minimalReport(opt?: MinimalReportOptions): Report {
           slug: `${AUDIT_P2_PREFIX}${idx}`,
           weight: 1,
         })),
-        isBinary: false,
       },
     ],
     plugins: [

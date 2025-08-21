@@ -4,7 +4,6 @@ exports[`transformGQLReport > should convert full GraphQL report to valid report
 {
   "categories": [
     {
-      "isBinary": false,
       "refs": [
         {
           "plugin": "eslint",
@@ -17,7 +16,6 @@ exports[`transformGQLReport > should convert full GraphQL report to valid report
       "title": "Code style",
     },
     {
-      "isBinary": false,
       "refs": [
         {
           "plugin": "bundle-stats",

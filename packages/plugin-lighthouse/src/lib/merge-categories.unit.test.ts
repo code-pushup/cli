@@ -327,7 +327,6 @@ describe('mergeLighthouseCategories', () => {
             title: 'Performance',
             description: 'Website performance metrics',
             docsUrl: 'https://docs.example.com/performance',
-            isBinary: true,
             refs: [
               {
                 type: 'group',
@@ -336,6 +335,7 @@ describe('mergeLighthouseCategories', () => {
                 weight: 1,
               },
             ],
+            scoreTarget: 1,
           },
         ])[0],
       ).toEqual({
@@ -343,7 +343,6 @@ describe('mergeLighthouseCategories', () => {
         title: 'Performance',
         description: 'Website performance metrics',
         docsUrl: 'https://docs.example.com/performance',
-        isBinary: true,
         refs: [
           {
             type: 'group',
@@ -358,6 +357,7 @@ describe('mergeLighthouseCategories', () => {
             weight: 1,
           },
         ],
+        scoreTarget: 1,
       });
     });
   });
@@ -689,7 +689,6 @@ describe('expandAggregatedCategory', () => {
       title: 'Performance',
       description: 'Website performance metrics',
       docsUrl: 'https://docs.example.com',
-      isBinary: true,
       refs: [
         {
           type: 'group',
@@ -698,6 +697,7 @@ describe('expandAggregatedCategory', () => {
           weight: 1,
         },
       ],
+      scoreTarget: 1,
     };
     expect(
       expandAggregatedCategory(category, { urlCount: 1, weights: { 1: 1 } }),

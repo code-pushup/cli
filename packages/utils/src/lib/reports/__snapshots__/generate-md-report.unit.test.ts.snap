@@ -74,7 +74,6 @@ exports[`generateMdReport > should render complete md report 1`] = `
 | :-------------------------- | :----------: | :-------: |
 | [Performance](#performance) |  🟡 **61**   |     2     |
 | [SEO](#seo)                 | 🟢 **100** ✅ |     1     |
-| [PWA](#pwa)                 |  🔴 **0** ❌  |     1     |
 
 ## 🏷 Categories
 
@@ -91,12 +90,6 @@ exports[`generateMdReport > should render complete md report 1`] = `
 🟢 Score: **100** ✅
 
 - 🟥 [Website is crawlable](#website-is-crawlable-lighthouse) (_Lighthouse_) - **0**
-
-### PWA
-
-🔴 Score: **0** ❌
-
-- 🟩 [Splash Screen](#splash-screen-lighthouse) (_Lighthouse_) - **1**
 
 ## 🛡️ Audits
 
@@ -175,7 +168,7 @@ Report was created by [Code PushUp](https://github.com/code-pushup/cli#readme) o
 
 | Commit                                                       | Version  | Duration | Plugins | Categories | Audits |
 | :----------------------------------------------------------- | :------: | -------: | :-----: | :--------: | :----: |
-| ci: update action (535b8e9e557336618a764f3fa45609d224a62837) | \`v1.0.0\` |  42.36 s |    2    |     3      |   5    |
+| ci: update action (535b8e9e557336618a764f3fa45609d224a62837) | \`v1.0.0\` |  42.36 s |    2    |     2      |   5    |
 
 ---
 
