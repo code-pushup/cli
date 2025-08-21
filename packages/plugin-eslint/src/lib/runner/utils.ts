@@ -34,7 +34,7 @@ export async function loadArtifacts(
     ? artifacts.artifactsPaths
     : [artifacts.artifactsPaths];
 
-  const artifactPaths = await glob(initialArtifactPaths, options);
+  const artifactPaths = await glob(initialArtifactPaths);
 
   ui().logger.log(
     `ESLint plugin resolved ${initialArtifactPaths.length} ${pluralizeToken('pattern', initialArtifactPaths.length)} to ${artifactPaths.length} eslint ${pluralizeToken('report', artifactPaths.length)}`,

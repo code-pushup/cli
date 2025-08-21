@@ -87,9 +87,7 @@ describe('loadArtifacts', () => {
   });
 
   it('should load multiple artifacts without generateArtifactsCommand', async () => {
-    globSpy
-      .mockResolvedValueOnce([artifactsPaths.at(0)!])
-      .mockResolvedValueOnce([artifactsPaths.at(1)!]);
+    globSpy.mockResolvedValue(artifactsPaths);
     readJsonFileSpy
       .mockResolvedValueOnce(mockRawResults1)
       .mockResolvedValueOnce(mockRawResults2);
@@ -99,9 +97,8 @@ describe('loadArtifacts', () => {
       expectedLinterOutput2,
     ]);
 
-    expect(globSpy).toHaveBeenCalledTimes(2);
-    expect(globSpy).toHaveBeenNthCalledWith(1, artifactsPaths.at(0));
-    expect(globSpy).toHaveBeenNthCalledWith(2, artifactsPaths.at(1));
+    expect(globSpy).toHaveBeenCalledTimes(1);
+    expect(globSpy).toHaveBeenCalledWith(artifactsPaths);
     expect(readJsonFileSpy).toHaveBeenCalledTimes(2);
     expect(readJsonFileSpy).toHaveBeenNthCalledWith(1, artifactsPaths.at(0));
     expect(readJsonFileSpy).toHaveBeenNthCalledWith(2, artifactsPaths.at(1));
@@ -110,9 +107,7 @@ describe('loadArtifacts', () => {
   });
 
   it('should load artifacts with generateArtifactsCommand as string', async () => {
-    globSpy
-      .mockResolvedValueOnce([artifactsPaths.at(0)!])
-      .mockResolvedValueOnce([artifactsPaths.at(1)!]);
+    globSpy.mockResolvedValue(artifactsPaths);
     readJsonFileSpy.mockResolvedValue([]);
 
     const generateArtifactsCommand = `nx run-many -t lint --parallel --max-parallel=5`;
@@ -128,14 +123,13 @@ describe('loadArtifacts', () => {
       command: generateArtifactsCommand,
       ignoreExitCode: true,
     });
-    expect(globSpy).toHaveBeenCalledTimes(2);
+    expect(globSpy).toHaveBeenCalledTimes(1);
+    expect(globSpy).toHaveBeenCalledWith(artifactsPaths);
     expect(ui()).toHaveLogged('log', `$ ${generateArtifactsCommand}`);
   });
 
   it('should load artifacts with generateArtifactsCommand as object', async () => {
-    globSpy
-      .mockResolvedValueOnce([artifactsPaths.at(0)!])
-      .mockResolvedValueOnce([artifactsPaths.at(1)!]);
+    globSpy.mockResolvedValue(artifactsPaths);
     readJsonFileSpy.mockResolvedValue([]);
 
     const generateArtifactsCommand = {
@@ -153,7 +147,8 @@ describe('loadArtifacts', () => {
       ...generateArtifactsCommand,
       ignoreExitCode: true,
     });
-    expect(globSpy).toHaveBeenCalledTimes(2);
+    expect(globSpy).toHaveBeenCalledTimes(1);
+    expect(globSpy).toHaveBeenCalledWith(artifactsPaths);
     expect(ui()).toHaveLogged(
       'log',
       '$ nx run-many -t lint --parallel --max-parallel=5',
