@@ -44,7 +44,8 @@
   },
   "peerDependencies": {
     "@nx/devkit": ">=17.0.0",
-    "eslint": "^8.46.0 || ^9.0.0"
+    "eslint": "^8.46.0 || ^9.0.0",
+    "glob": "^11.0.1"
   },
   "peerDependenciesMeta": {
     "@nx/devkit": {
