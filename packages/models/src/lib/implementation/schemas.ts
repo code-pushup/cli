@@ -138,6 +138,24 @@ export const filePathSchema = z
   .trim()
   .min(1, { message: 'The path is invalid' });
 
+/**
+ * Regex for glob patterns - validates file paths and glob patterns
+ * Allows normal paths and paths with glob metacharacters: *, **, {}, [], !, ?
+ * Excludes invalid path characters: <>"|
+ */
+const globRegex = /^!?[^<>"|]+$/;
+
+/** Schema for a glob pattern (supports wildcards like *, **, {}, !, etc.) */
+export const globPathSchema = z
+  .string()
+  .trim()
+  .min(1, { message: 'The glob pattern is invalid' })
+  .regex(globRegex, {
+    message:
+      'The path must be a valid file path or glob pattern (supports *, **, {}, [], !, ?)',
+  })
+  .describe('File path or glob pattern (supports *, **, {}, !, etc.)');
+
 /** Schema for a fileNameSchema */
 export const fileNameSchema = z
   .string()
