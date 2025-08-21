@@ -23,7 +23,9 @@
       "options": {
         "configFile": "{projectRoot}/vitest.unit.config.ts",
         "passWithNoTests": true,
-        "coverage": { "enabled": true }
+        "coverage": {
+          "enabled": true
+        }
       }
     },
     "int-test": {
@@ -33,10 +35,14 @@
       "options": {
         "configFile": "{projectRoot}/vitest.int.config.ts",
         "passWithNoTests": true,
-        "coverage": { "enabled": true }
+        "coverage": {
+          "enabled": true
+        }
       }
     },
-    "e2e": { "dependsOn": ["^build"] },
+    "e2e": {
+      "dependsOn": ["^build"]
+    },
     "lint": {
       "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
       "executor": "@nx/linter:eslint",
@@ -50,11 +56,16 @@
         ]
       }
     },
-    "nxv-pkg-install": { "parallelism": false },
+    "nxv-pkg-install": {
+      "parallelism": false
+    },
     "@nx/vite:test": {
       "cache": true,
       "inputs": ["default", "^production"],
-      "options": { "passWithNoTests": true, "watch": false }
+      "options": {
+        "passWithNoTests": true,
+        "watch": false
+      }
     },
     "nx-release-publish": {
       "dependsOn": ["build"],
@@ -88,7 +99,10 @@
     ],
     "sharedGlobals": []
   },
-  "workspaceLayout": { "appsDir": "examples", "libsDir": "packages" },
+  "workspaceLayout": {
+    "appsDir": "examples",
+    "libsDir": "packages"
+  },
   "generators": {},
   "release": {
     "projects": ["packages/*"],
@@ -96,7 +110,9 @@
     "changelog": {
       "automaticFromRef": true,
       "projectChangelogs": false,
-      "workspaceChangelog": { "createRelease": "github" }
+      "workspaceChangelog": {
+        "createRelease": "github"
+      }
     },
     "git": {
       "commit": true,
@@ -107,7 +123,9 @@
     },
     "version": {
       "conventionalCommits": true,
-      "generatorOptions": { "skipLockFileUpdate": true }
+      "generatorOptions": {
+        "skipLockFileUpdate": true
+      }
     },
     "releaseTagPattern": "v{version}"
   },
@@ -118,9 +136,13 @@
         "environments": {
           "environmentsDir": "tmp/e2e",
           "targetNames": ["e2e"],
-          "inferredTargets": { "e2e": "e2e-test" }
+          "inferredTargets": {
+            "e2e": "e2e-test"
+          }
         },
-        "packages": { "filterByTags": ["publishable"] }
+        "packages": {
+          "filterByTags": ["publishable"]
+        }
       }
     }
   ],
