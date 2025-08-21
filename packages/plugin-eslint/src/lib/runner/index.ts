@@ -1,13 +1,12 @@
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import {
-  type Audit,
-  type AuditOutput,
-  type AuditOutputs,
-  DEFAULT_PERSIST_OUTPUT_DIR,
-  type PluginArtifactOptions,
-  type RunnerConfig,
-  type RunnerFilesPaths,
+import type {
+  Audit,
+  AuditOutput,
+  AuditOutputs,
+  PluginArtifactOptions,
+  RunnerConfig,
+  RunnerFilesPaths,
 } from '@code-pushup/models';
 import {
   asyncSequential,
