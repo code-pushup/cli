@@ -6,6 +6,7 @@ import {
   materialIconSchema,
   metaSchema,
   packageVersionSchema,
+  scoreTargetSchema,
   slugSchema,
 } from './implementation/schemas.js';
 import { formatSlugsList, hasMissingStrings } from './implementation/utils.js';
@@ -18,31 +19,42 @@ export const pluginContextSchema = z
 export type PluginContext = z.infer<typeof pluginContextSchema>;
 
 export const pluginMetaSchema = packageVersionSchema()
-  .merge(
+  .extend(
     metaSchema({
       titleDescription: 'Descriptive name',
       descriptionDescription: 'Description (markdown)',
       docsUrlDescription: 'Plugin documentation site',
       description: 'Plugin metadata',
-    }),
+    }).shape,
   )
-  .merge(
-    z.object({
-      slug: slugSchema.describe('Unique plugin slug within core config'),
-      icon: materialIconSchema,
-    }),
-  );
+  .extend({
+    slug: slugSchema.describe('Unique plugin slug within core config'),
+    icon: materialIconSchema,
+  });
 export type PluginMeta = z.infer<typeof pluginMetaSchema>;
+
+export const pluginScoreTargetsSchema = z
+  .union([
+    scoreTargetSchema,
+    z.record(z.string(), scoreTargetSchema.nonoptional()),
+  ])
+  .describe(
+    'Score targets that trigger a perfect score. Number for all audits or record { slug: target } for specific audits',
+  )
+  .optional();
+
+export type PluginScoreTargets = z.infer<typeof pluginScoreTargetsSchema>;
 
 export const pluginDataSchema = z.object({
   runner: z.union([runnerConfigSchema, runnerFunctionSchema]),
   audits: pluginAuditsSchema,
   groups: groupsSchema,
+  scoreTargets: pluginScoreTargetsSchema,
   context: pluginContextSchema,
 });
 
 export const pluginConfigSchema = pluginMetaSchema
-  .merge(pluginDataSchema)
+  .extend(pluginDataSchema.shape)
   .check(createCheck(findMissingSlugsInGroupRefs));
 
 export type PluginConfig = z.infer<typeof pluginConfigSchema>;

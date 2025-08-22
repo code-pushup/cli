@@ -170,7 +170,13 @@ describe('coreConfigSchema', () => {
           slug: 'lighthouse',
           title: 'Lighthouse',
           icon: 'lighthouse',
-          runner: { command: 'npm run lint', outputFile: 'output.json' },
+          runner: async () => [
+            {
+              slug: 'csp-xss',
+              score: 1,
+              value: 1,
+            },
+          ],
           audits: [
             {
               slug: 'csp-xss',
