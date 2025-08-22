@@ -108,6 +108,12 @@ export default tseslint.config(
     },
   },
   {
+    files: ['**/vitest.*.config.ts'],
+    rules: {
+      '@nx/enforce-module-boundaries': 'off',
+    },
+  },
+  {
     files: ['**/*.json'],
     languageOptions: { parser: jsoncParser },
   },
