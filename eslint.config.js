@@ -28,7 +28,6 @@ export default tseslint.config(
             String.raw`^.*/code-pushup\.(config|preset)(\.m?[jt]s)?$`,
             '^[./]+/tools/.*$',
             '^[./]+/testing/test-vitest-setup/.*$',
-            '^[./]+/test-vitest-setup/.*$',
           ],
           depConstraints: [
             {

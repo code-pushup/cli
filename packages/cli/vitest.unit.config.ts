@@ -20,13 +20,6 @@ export default defineConfig(() => {
         '../../testing/test-setup/src/lib/reset.mocks.ts',
         '../../testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
       ],
-      coverage: {
-        ...baseConfig.test.coverage,
-        exclude: [
-          ...baseConfig.test.coverage.exclude,
-          // All defaults already included
-        ],
-      },
     },
   };
 });

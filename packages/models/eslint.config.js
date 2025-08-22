@@ -19,6 +19,6 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ['packages/models/transformers/**/*'],
+    ignores: ['packages/models/transformers/**/*.ts'],
   },
 );

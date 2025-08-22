@@ -11,13 +11,6 @@ export default defineConfig(() => {
     ...baseConfig,
     test: {
       ...baseConfig.test,
-      coverage: {
-        ...baseConfig.test.coverage,
-        exclude: [
-          ...baseConfig.test.coverage.exclude,
-          // Core-specific excludes (already has mocks/** and **/types.ts)
-        ],
-      },
     },
   };
 });

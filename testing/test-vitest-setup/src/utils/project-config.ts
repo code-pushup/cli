@@ -1,16 +1,21 @@
 import { tsconfigPathAliases } from './tsconfig-path-aliases.js';
 
-// Test timeout constants
 const UNIT_TEST_TIMEOUT = 5000;
 const INTEGRATION_TEST_TIMEOUT = 15_000;
 const E2E_TEST_TIMEOUT = 30_000;
+
+export const TYPE_TEST_CONFIG = {
+  include: [`src/**/*.{unit,type}.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}`],
+  typecheck: {
+    include: ['**/*.type.test.ts'],
+  },
+};
 
 export type SharedVitestConfigOptions = {
   projectRoot: string;
   workspaceRoot: string;
 };
 
-// Define a unified coverage config interface
 type CoverageConfig = {
   enabled?: boolean;
   provider: 'v8';
@@ -69,8 +74,8 @@ function getDefaultTestSettings(
     testTimeout: defaultTimeout,
     setupFiles: [
       noFsCwd
-        ? '../../testing/test-setup/src/lib/fs-memfs.setup-file.ts' // Only fs, no cwd
-        : '../../testing/test-setup/src/lib/fs-with-cwd.setup-file.ts', // fs + cwd
+        ? '../../testing/test-setup/src/lib/fs-memfs.setup-file.ts'
+        : '../../testing/test-setup/src/lib/fs-with-cwd.setup-file.ts',
       '../../testing/test-setup/src/lib/cliui.mock.ts',
       '../../testing/test-setup/src/lib/git.mock.ts',
       '../../testing/test-setup/src/lib/console.mock.ts',
