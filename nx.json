@@ -72,30 +72,22 @@
       }
     },
     "unit-test": {
-      "cache": true,
-      "inputs": ["test-vitest-inputs"],
       "outputs": [
         "{workspaceRoot}/coverage/{projectName}/unit-tests/lcov.info"
       ],
       "executor": "@nx/vite:test",
       "options": {
         "configFile": "{projectRoot}/vitest.unit.config.ts",
-        "passWithNoTests": true,
-        "watch": false,
         "coverage": {
           "enabled": true
         }
       }
     },
     "int-test": {
-      "cache": true,
-      "inputs": ["test-vitest-inputs"],
       "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
       "executor": "@nx/vite:test",
       "options": {
         "configFile": "{projectRoot}/vitest.int.config.ts",
-        "passWithNoTests": true,
-        "watch": false,
         "coverage": {
           "enabled": true
         }
@@ -122,7 +114,14 @@
     "nxv-pkg-install": {
       "parallelism": false
     },
-    "@nx/vite:test": {},
+    "@nx/vite:test": {
+      "cache": true,
+      "inputs": ["test-vitest-inputs"],
+      "options": {
+        "passWithNoTests": true,
+        "watch": false
+      }
+    },
     "code-pushup": {
       "cache": false,
       "outputs": [
