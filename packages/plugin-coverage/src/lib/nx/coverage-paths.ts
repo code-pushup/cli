@@ -175,20 +175,20 @@ function ensureHasCoverageConfig(
   projectName: string,
   target: string,
 ): VitestCoverageConfig {
-  return vitestConfig.test?.coverage
-    ? vitestConfig
-    : (() => {
-        return {
-          ...vitestConfig,
-          test: {
-            ...vitestConfig.test,
-            coverage: {
-              reporter: ['text', 'lcov'],
-              reportsDirectory: `../../coverage/${projectName}/${target.replace('-test', '-tests')}`,
-            },
-          },
-        };
-      })();
+  if (vitestConfig.test?.coverage) {
+    return vitestConfig;
+  }
+
+  return {
+    ...vitestConfig,
+    test: {
+      ...vitestConfig.test,
+      coverage: {
+        reporter: ['text', 'lcov'],
+        reportsDirectory: `../../coverage/${projectName}/${target.replace('-test', '-tests')}`,
+      },
+    },
+  };
 }
 
 function buildCoverageResult({
@@ -287,8 +287,6 @@ function addDefaultCoverageIfMissing(
     typedConfig.test?.coverage && typeof typedConfig.test.coverage === 'object';
 
   if (!hasCoverage) {
-    // Only warn for projects that actually need coverage but don't have it
-    // Most projects use shared configs which have coverage, so suppress warnings
     return {
       ...typedConfig,
       test: {
