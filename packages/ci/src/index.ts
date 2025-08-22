@@ -7,4 +7,9 @@ export {
 } from './lib/monorepo/index.js';
 export { runInCI } from './lib/run.js';
 export { configPatternsSchema } from './lib/schemas.js';
-export { parseConfigPatternsFromString } from './lib/settings.js';
+export {
+  DEFAULT_SETTINGS,
+  MAX_SEARCH_COMMITS,
+  MIN_SEARCH_COMMITS,
+  parseConfigPatternsFromString,
+} from './lib/settings.js';
