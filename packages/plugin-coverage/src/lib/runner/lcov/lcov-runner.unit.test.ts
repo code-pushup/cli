@@ -5,7 +5,6 @@ import { getGitRoot, ui } from '@code-pushup/utils';
 import type { CoverageResult, CoverageType } from '../../config.js';
 import { lcovResultsToAuditOutputs, parseLcovFiles } from './lcov-runner.js';
 
-// Mock getGitRoot
 vi.mock('@code-pushup/utils', async () => {
   const actual = await vi.importActual('@code-pushup/utils');
   return {
@@ -140,14 +139,13 @@ end_of_record
   });
 
   it('should warn about an empty lcov file', async () => {
-    const warningSpy = vi.spyOn(ui().logger, 'warning');
-
     await parseLcovFiles([
       path.join('coverage', 'integration-tests', 'lcov.info'),
       path.join('coverage', 'lcov.info'),
     ]);
 
-    expect(warningSpy).toHaveBeenCalledWith(
+    expect(ui()).toHaveLogged(
+      'warn',
       `Coverage plugin: Empty lcov report file detected at ${path.join(
         'coverage',
         'lcov.info',
@@ -172,7 +170,7 @@ end_of_record
     ]);
   });
 
-  it('should handle invalid stats where hit > found', async () => {
+  it('should sanitize hit values to not exceed found values when invalid stats are encountered', async () => {
     const invalidReport = `
 TN:
 SF:${path.join('invalid', 'file.ts')}
@@ -261,9 +259,8 @@ describe('lcovResultsToAuditOutputs', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (getGitRoot as any).mockResolvedValue('/mock/git/root');
+    vi.mocked(getGitRoot).mockResolvedValue('/mock/git/root');
 
-    // Setup mock LCOV file for testing
     const testReport = `
 TN:
 SF:${path.join('src', 'test.ts')}
@@ -311,7 +308,7 @@ end_of_record
   });
 
   it('should handle getGitRoot failure gracefully', async () => {
-    (getGitRoot as any).mockRejectedValue(new Error('Git root not found'));
+    vi.mocked(getGitRoot).mockRejectedValue(new Error('Git root not found'));
 
     await expect(
       lcovResultsToAuditOutputs(mockResults, mockCoverageTypes),
