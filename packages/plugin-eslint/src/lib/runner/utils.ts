@@ -13,11 +13,6 @@ export async function loadArtifacts(
         ? { command: artifacts.generateArtifactsCommand }
         : artifacts.generateArtifactsCommand;
 
-    const commandString =
-      typeof artifacts.generateArtifactsCommand === 'string'
-        ? artifacts.generateArtifactsCommand
-        : `${command} ${args.join(' ')}`;
-    await ui().logger.log(`$ ${commandString}`);
     await executeProcess({
       command,
       args,
