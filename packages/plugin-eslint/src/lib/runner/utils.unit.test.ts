@@ -1,7 +1,6 @@
 import type { ESLint } from 'eslint';
 import * as globModule from 'glob';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ui } from '@code-pushup/utils';
 import * as utilsModule from '@code-pushup/utils';
 import type { LinterOutput } from './types.js';
 import { loadArtifacts } from './utils.js';

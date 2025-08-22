@@ -1,7 +1,7 @@
 import type { ESLint } from 'eslint';
 import { glob } from 'glob';
 import type { PluginArtifactOptions } from '@code-pushup/models';
-import { executeProcess, readJsonFile, ui } from '@code-pushup/utils';
+import { executeProcess, readJsonFile } from '@code-pushup/utils';
 import type { LinterOutput } from './types.js';
 
 export async function loadArtifacts(
