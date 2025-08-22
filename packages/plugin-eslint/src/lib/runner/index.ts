@@ -90,12 +90,7 @@ export async function generateAuditOutputs(options: {
 
   const linterOutputs = artifacts
     ? await loadArtifacts(artifacts)
-    : await asyncSequential(
-        targets.map(target => ({
-          ...target,
-        })),
-        lint,
-      );
+    : await asyncSequential(targets, lint);
   const lintResults = mergeLinterOutputs(linterOutputs);
   const failedAudits = lintResultsToAudits(lintResults);
 
