@@ -17,11 +17,11 @@ export {
 } from './lib/audit-output.js';
 export { auditSchema, type Audit } from './lib/audit.js';
 export {
-  cacheConfigSchema,
-  type CacheConfig,
   cacheConfigObjectSchema,
-  type CacheConfigObject,
+  cacheConfigSchema,
   cacheConfigShorthandSchema,
+  type CacheConfig,
+  type CacheConfigObject,
   type CacheConfigShorthand,
 } from './lib/cache-config.js';
 export {
@@ -31,6 +31,10 @@ export {
   type CategoryRef,
 } from './lib/category-config.js';
 export { commitSchema, type Commit } from './lib/commit.js';
+export {
+  artifactGenerationCommandSchema,
+  pluginArtifactOptionsSchema,
+} from './lib/configuration.js';
 export { coreConfigSchema, type CoreConfig } from './lib/core-config.js';
 export {
   groupRefSchema,
@@ -44,6 +48,7 @@ export {
   SUPPORTED_CONFIG_FILE_FORMATS,
 } from './lib/implementation/configuration.js';
 export {
+  DEFAULT_PERSIST_CONFIG,
   DEFAULT_PERSIST_FILENAME,
   DEFAULT_PERSIST_FORMAT,
   DEFAULT_PERSIST_OUTPUT_DIR,
@@ -143,7 +148,3 @@ export {
   type Tree,
 } from './lib/tree.js';
 export { uploadConfigSchema, type UploadConfig } from './lib/upload-config.js';
-export {
-  artifactGenerationCommandSchema,
-  pluginArtifactOptionsSchema,
-} from './lib/configuration.js';
