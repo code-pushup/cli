@@ -3,10 +3,12 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/cli/src",
   "projectType": "library",
+  "tags": ["scope:core", "type:app", "publishable"],
   "targets": {
     "build": {
+      "outputs": ["{projectRoot}/dist"],
       "options": {
-        "outputPath": "{projectRoot}/dist"
+        "outputPath": "packages/cli/dist"
       }
     },
     "lint": {},
@@ -30,6 +32,5 @@
       },
       "dependsOn": ["build"]
     }
-  },
-  "tags": ["scope:core", "type:app", "publishable"]
+  }
 }

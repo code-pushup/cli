@@ -3,10 +3,11 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/utils/src",
   "projectType": "library",
+  "tags": ["scope:shared", "type:util", "publishable"],
   "targets": {
     "build": {
       "options": {
-        "outputPath": "{projectRoot}/dist"
+        "outputPath": "packages/utils/dist"
       }
     },
     "lint": {},
@@ -24,6 +25,5 @@
     },
     "unit-test": {},
     "int-test": {}
-  },
-  "tags": ["scope:shared", "type:util", "publishable"]
+  }
 }

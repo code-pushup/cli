@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/models/src",
   "projectType": "library",
+  "tags": ["scope:shared", "type:util", "publishable"],
   "targets": {
     "generate-docs": {
       "command": "npx zod2md --config packages/models/zod2md.config.ts",
@@ -20,11 +21,10 @@
         }
       ],
       "options": {
-        "outputPath": "{projectRoot}/dist"
+        "outputPath": "packages/models/dist"
       }
     },
     "lint": {},
     "unit-test": {}
-  },
-  "tags": ["scope:shared", "type:util", "publishable"]
+  }
 }

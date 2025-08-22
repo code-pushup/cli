@@ -3,6 +3,8 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "examples/create-cli-e2e/src",
   "projectType": "application",
+  "tags": ["scope:tooling", "type:e2e"],
+  "implicitDependencies": ["create-cli"],
   "targets": {
     "lint": {},
     "e2e": {
@@ -12,7 +14,5 @@
         "configFile": "{projectRoot}/vitest.e2e.config.ts"
       }
     }
-  },
-  "implicitDependencies": ["create-cli"],
-  "tags": ["scope:tooling", "type:e2e"]
+  }
 }

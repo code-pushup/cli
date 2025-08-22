@@ -7,7 +7,7 @@
   "targets": {
     "build": {
       "options": {
-        "outputPath": "{projectRoot}/dist"
+        "outputPath": "packages/plugin-jsdocs/dist"
       }
     },
     "lint": {},

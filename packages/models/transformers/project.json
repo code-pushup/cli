@@ -7,9 +7,13 @@
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
-      "dependsOn": [{ "target": "pre-build" }],
+      "dependsOn": [
+        {
+          "target": "pre-build"
+        }
+      ],
       "options": {
-        "outputPath": "{projectRoot}/dist",
+        "outputPath": "packages/models/transformers/dist",
         "main": "packages/models/transformers/src/index.ts",
         "tsConfig": "packages/models/transformers/tsconfig.lib.json"
       }

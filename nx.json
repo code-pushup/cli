@@ -17,7 +17,7 @@
       "!{projectRoot}/**/?(*.)mocks.[jt]s?(x)",
       "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
       "!{projectRoot}/vitest.@(unit|int|e2e).config.[jt]s",
-      "!{workspaceRoot}/**/dist/**/*",
+      "!{projectRoot}/dist/**/*",
       "!{projectRoot}/tsconfig.@(test|tools).json",
       "!{workspaceRoot}/**/(*.)coverage/**/*"
     ],
@@ -82,7 +82,9 @@
         "configFile": "{projectRoot}/vitest.unit.config.ts",
         "passWithNoTests": true,
         "watch": false,
-        "coverage": { "enabled": true }
+        "coverage": {
+          "enabled": true
+        }
       }
     },
     "int-test": {
@@ -100,12 +102,7 @@
       }
     },
     "e2e": {
-      "cache": true,
-      "dependsOn": ["^build"],
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "{projectRoot}/vitest.e2e.config.ts"
-      }
+      "dependsOn": ["^build"]
     },
     "lint": {
       "inputs": ["lint-eslint-inputs"],
@@ -207,7 +204,6 @@
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--onlyPlugins=js-packages",
-
           "--persist.outputDir={projectRoot}/.code-pushup"
         ],
         "env": {

@@ -3,10 +3,11 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/create-cli/src",
   "projectType": "library",
+  "tags": ["scope:tooling", "type:app", "publishable"],
   "targets": {
     "build": {
       "options": {
-        "outputPath": "{projectRoot}/dist"
+        "outputPath": "packages/create-cli/dist"
       }
     },
     "lint": {},
@@ -21,6 +22,5 @@
       "command": "npm exec ./dist/packages/create-cli",
       "options": {}
     }
-  },
-  "tags": ["scope:tooling", "type:app", "publishable"]
+  }
 }

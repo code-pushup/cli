@@ -3,14 +3,14 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/plugin-lighthouse/src",
   "projectType": "library",
+  "tags": ["scope:plugin", "type:feature", "publishable"],
   "targets": {
     "build": {
       "options": {
-        "outputPath": "{projectRoot}/dist"
+        "outputPath": "packages/plugin-lighthouse/dist"
       }
     },
     "lint": {},
     "unit-test": {}
-  },
-  "tags": ["scope:plugin", "type:feature", "publishable"]
+  }
 }
