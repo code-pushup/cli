@@ -1,3 +1,34 @@
+## 0.75.0 (2025-08-22)
+
+### 🚀 Features
+
+- implement scoreTarget for categories ([44e49342](https://github.com/code-pushup/cli/commit/44e49342))
+- **nx-cloud:** setup nx cloud workspace ([47f14d3e](https://github.com/code-pushup/cli/commit/47f14d3e))
+
+### 🩹 Fixes
+
+- adjust targets ([77411f39](https://github.com/code-pushup/cli/commit/77411f39))
+- format ([a419aec9](https://github.com/code-pushup/cli/commit/a419aec9))
+- format files ([1a076910](https://github.com/code-pushup/cli/commit/1a076910))
+- **plugin-typescript:** include extended options ([ae7f2736](https://github.com/code-pushup/cli/commit/ae7f2736))
+- **plugin-typescript-e2e:** fix lint ([3b5aea6f](https://github.com/code-pushup/cli/commit/3b5aea6f))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- John Doe @simpleresume
+- Michael Hladky @rx-angular
+
+## 0.74.1 (2025-08-19)
+
+### 🩹 Fixes
+
+- **ci:** prevent invalid startLine 0 when downloading from portal ([5153c88b](https://github.com/code-pushup/cli/commit/5153c88b))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.74.0 (2025-08-13)
 
 ### 🚀 Features

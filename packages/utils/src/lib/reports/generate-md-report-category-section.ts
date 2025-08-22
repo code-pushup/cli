@@ -11,7 +11,7 @@ import {
   getPluginNameFromSlug,
   scoreFilter,
   scoreMarker,
-  targetScoreIcon,
+  scoreTargetIcon,
 } from './utils.js';
 
 export function categoriesOverviewSection(
@@ -27,13 +27,12 @@ export function categoriesOverviewSection(
     ],
     categories
       .filter(scoreFilter(options))
-      .map(({ title, refs, score, isBinary }) => [
-        // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
+      .map(({ title, refs, score, scoreTarget }) => [
         // The heading "ID" is inferred from the heading text in Markdown.
         md.link(`#${slugify(title)}`, title),
         md`${scoreMarker(score)} ${md.bold(
           formatReportScore(score),
-        )}${binaryIconSuffix(score, isBinary)}`,
+        )}${binaryIconSuffix(score, scoreTarget)}`,
         countCategoryAudits(refs, plugins).toString(),
       ]),
   );
@@ -54,7 +53,7 @@ export function categoriesDetailsSection(
         .paragraph(
           md`${scoreMarker(category.score)} Score: ${md.bold(
             formatReportScore(category.score),
-          )}${binaryIconSuffix(category.score, category.isBinary)}`,
+          )}${binaryIconSuffix(category.score, category.scoreTarget)}`,
         )
         .list(
           category.refs.map(ref => {
@@ -128,8 +127,7 @@ export function categoryGroupItem(
 
 export function binaryIconSuffix(
   score: number,
-  isBinary: boolean | undefined,
+  scoreTarget: number | undefined,
 ): string {
-  // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
-  return targetScoreIcon(score, isBinary ? 1 : undefined, { prefix: ' ' });
+  return scoreTargetIcon(score, scoreTarget, { prefix: ' ' });
 }

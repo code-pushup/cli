@@ -92,7 +92,6 @@ describe('categoryConfigSchema', () => {
         title: 'Test results',
         description: 'This category collects test results.',
         docsUrl: 'https://www.cypress.io/',
-        isBinary: false,
         refs: [
           {
             plugin: 'cypress',

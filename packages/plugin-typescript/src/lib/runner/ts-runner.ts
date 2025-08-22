@@ -13,7 +13,7 @@ export type DiagnosticsOptions = {
 export async function getTypeScriptDiagnostics({
   tsconfig,
 }: DiagnosticsOptions): Promise<readonly Diagnostic[]> {
-  const { fileNames, options } = await loadTargetConfig(tsconfig);
+  const { fileNames, options } = loadTargetConfig(tsconfig);
   try {
     const program = createProgram(fileNames, options);
     return getPreEmitDiagnostics(program);

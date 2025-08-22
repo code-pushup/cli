@@ -91,7 +91,7 @@ describe('categoriesOverviewSection', () => {
     ).toMatchSnapshot();
   });
 
-  it('should render targetScore icon "❌" if score fails', () => {
+  it('should render scoreTarget icon "❌" if score fails', () => {
     expect(
       categoriesOverviewSection({
         plugins: [
@@ -105,7 +105,7 @@ describe('categoriesOverviewSection', () => {
             slug: 'bug-prevention',
             title: 'Bug Prevention',
             score: 0.98,
-            isBinary: true,
+            scoreTarget: 1,
             refs: [{ slug: 'no-let', type: 'audit' }],
           },
         ],
@@ -230,7 +230,7 @@ describe('categoriesDetailsSection', () => {
             slug: 'bug-prevention',
             title: 'Bug Prevention',
             score: 1,
-            isBinary: true,
+            scoreTarget: 1,
             refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
           },
           {
@@ -249,7 +249,7 @@ describe('categoriesDetailsSection', () => {
             slug: 'typescript',
             title: 'Typescript',
             score: 0.14,
-            isBinary: true,
+            scoreTarget: 1,
             refs: [{ slug: 'no-any', type: 'audit', plugin: 'eslint' }],
           },
         ],
@@ -288,7 +288,7 @@ describe('categoriesDetailsSection', () => {
               slug: 'bug-prevention',
               title: 'Bug Prevention',
               score: 1,
-              isBinary: true,
+              scoreTarget: 1,
               refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
             },
             {
@@ -307,7 +307,7 @@ describe('categoriesDetailsSection', () => {
               slug: 'typescript',
               title: 'Typescript',
               score: 0.14,
-              isBinary: true,
+              scoreTarget: 1,
               refs: [{ slug: 'no-any', type: 'audit', plugin: 'eslint' }],
             },
           ],
@@ -319,7 +319,7 @@ describe('categoriesDetailsSection', () => {
     ).toMatchSnapshot('filtered');
   });
 
-  it('should render categories details and add "❌" when isBinary is failing', () => {
+  it('should render categories details and add "❌" when score < scoreTarget', () => {
     expect(
       categoriesDetailsSection({
         plugins: [
@@ -334,7 +334,7 @@ describe('categoriesDetailsSection', () => {
             slug: 'bug-prevention',
             title: 'Bug Prevention',
             score: 0.98,
-            isBinary: true,
+            scoreTarget: 1,
             refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
           },
         ],
@@ -342,7 +342,7 @@ describe('categoriesDetailsSection', () => {
     ).toMatchSnapshot();
   });
 
-  it('should render categories details and add "✅" when isBinary is passing', () => {
+  it('should render categories details and add "✅" when score >= scoreTarget', () => {
     expect(
       categoriesDetailsSection({
         plugins: [
@@ -357,7 +357,7 @@ describe('categoriesDetailsSection', () => {
             slug: 'bug-prevention',
             title: 'Bug Prevention',
             score: 1,
-            isBinary: true,
+            scoreTarget: 1,
             refs: [{ slug: 'no-let', type: 'audit', plugin: 'eslint' }],
           },
         ],
@@ -367,15 +367,15 @@ describe('categoriesDetailsSection', () => {
 });
 
 describe('binaryIconSuffix', () => {
-  it('should return passing binarySuffix if score is 1 and isBinary is true', () => {
-    expect(binaryIconSuffix(1, true)).toBe(' ✅');
+  it('should return passing binarySuffix when score >= scoreTarget', () => {
+    expect(binaryIconSuffix(1, 1)).toBe(' ✅');
   });
 
-  it('should return failing binarySuffix if score is < then 1 and isBinary is true', () => {
-    expect(binaryIconSuffix(0, true)).toBe(' ❌');
+  it('should return failing binarySuffix when score < scoreTarget', () => {
+    expect(binaryIconSuffix(0, 1)).toBe(' ❌');
   });
 
-  it('should return NO binarySuffix if score is 1 and isBinary is false', () => {
-    expect(binaryIconSuffix(1, false)).toBe('');
+  it('should return NO binarySuffix when scoreTarget is undefined', () => {
+    expect(binaryIconSuffix(1, undefined)).toBe('');
   });
 });

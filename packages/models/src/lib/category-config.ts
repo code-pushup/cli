@@ -5,6 +5,7 @@ import {
 } from './implementation/checks.js';
 import {
   metaSchema,
+  nonnegativeNumberSchema,
   scorableSchema,
   slugSchema,
   weightedRefSchema,
@@ -14,18 +15,16 @@ import { formatRef } from './implementation/utils.js';
 export const categoryRefSchema = weightedRefSchema(
   'Weighted references to audits and/or groups for the category',
   'Slug of an audit or group (depending on `type`)',
-).merge(
-  z.object({
-    type: z
-      .enum(['audit', 'group'])
-      .describe(
-        'Discriminant for reference kind, affects where `slug` is looked up',
-      ),
-    plugin: slugSchema.describe(
-      'Plugin slug (plugin should contain referenced audit or group)',
+).extend({
+  type: z
+    .enum(['audit', 'group'])
+    .describe(
+      'Discriminant for reference kind, affects where `slug` is looked up',
     ),
-  }),
-);
+  plugin: slugSchema.describe(
+    'Plugin slug (plugin should contain referenced audit or group)',
+  ),
+});
 export type CategoryRef = z.infer<typeof categoryRefSchema>;
 
 export const categoryConfigSchema = scorableSchema(
@@ -37,24 +36,20 @@ export const categoryConfigSchema = scorableSchema(
       `Category has duplicate references: ${formatSerializedCategoryRefTargets(duplicates)}`,
   ),
 )
-  .merge(
+  .extend(
     metaSchema({
       titleDescription: 'Category Title',
       docsUrlDescription: 'Category docs URL',
       descriptionDescription: 'Category description',
       description: 'Meta info for category',
-    }),
+    }).shape,
   )
-  .merge(
-    z.object({
-      isBinary: z
-        .boolean()
-        .describe(
-          'Is this a binary category (i.e. only a perfect score considered a "pass")?',
-        )
-        .optional(),
-    }),
-  );
+  .extend({
+    scoreTarget: nonnegativeNumberSchema
+      .max(1)
+      .describe('Pass/fail score threshold (0-1)')
+      .optional(),
+  });
 
 export type CategoryConfig = z.infer<typeof categoryConfigSchema>;
 
