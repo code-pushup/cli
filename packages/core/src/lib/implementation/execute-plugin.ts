@@ -14,6 +14,7 @@ import {
   groupByStatus,
   logMultipleResults,
   pluralizeToken,
+  scoreAuditsWithTarget,
 } from '@code-pushup/utils';
 import {
   executePluginRunner,
@@ -57,6 +58,7 @@ export async function executePlugin(
     description,
     docsUrl,
     groups,
+    scoreTargets,
     ...pluginMeta
   } = pluginConfig;
   const { write: cacheWrite = false, read: cacheRead = false } = cache;
@@ -76,8 +78,13 @@ export async function executePlugin(
     });
   }
 
+  // transform audit scores to 1 when they meet/exceed their targets
+  const scoredAuditsWithTarget = scoreTargets
+    ? scoreAuditsWithTarget(audits, scoreTargets)
+    : audits;
+
   // enrich `AuditOutputs` to `AuditReport`
-  const auditReports: AuditReport[] = audits.map(
+  const auditReports: AuditReport[] = scoredAuditsWithTarget.map(
     (auditOutput: AuditOutput) => ({
       ...auditOutput,
       ...(pluginConfigAudits.find(
