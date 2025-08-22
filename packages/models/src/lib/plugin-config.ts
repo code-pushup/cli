@@ -33,7 +33,7 @@ export const pluginMetaSchema = packageVersionSchema()
   });
 export type PluginMeta = z.infer<typeof pluginMetaSchema>;
 
-export const pluginScoreTargetSchema = z
+export const pluginScoreTargetsSchema = z
   .union([
     scoreTargetSchema,
     z.record(z.string(), scoreTargetSchema.nonoptional()),
@@ -43,13 +43,13 @@ export const pluginScoreTargetSchema = z
   )
   .optional();
 
-export type PluginScoreTarget = z.infer<typeof pluginScoreTargetSchema>;
+export type PluginScoreTargets = z.infer<typeof pluginScoreTargetsSchema>;
 
 export const pluginDataSchema = z.object({
   runner: z.union([runnerConfigSchema, runnerFunctionSchema]),
   audits: pluginAuditsSchema,
   groups: groupsSchema,
-  scoreTarget: pluginScoreTargetSchema,
+  scoreTargets: pluginScoreTargetsSchema,
   context: pluginContextSchema,
 });
 

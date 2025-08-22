@@ -1297,7 +1297,7 @@ _Object containing the following properties:_
 | **`runner`** (\*) |                                                                                                                  | [RunnerConfig](#runnerconfig) _or_ [RunnerFunction](#runnerfunction)                                                       |
 | **`audits`** (\*) | List of audits maintained in a plugin                                                                            | _Array of at least 1 [Audit](#audit) items_                                                                                |
 | `groups`          | List of groups                                                                                                   | _Array of [Group](#group) items_                                                                                           |
-| `scoreTarget`     | Score targets that trigger a perfect score. Number for all audits or record { slug: target } for specific audits | `number` (_≥0, ≤1_) (_optional_) _or_ _Object with dynamic keys of type_ `string` _and values of type_ `number` (_≥0, ≤1_) |
+| `scoreTargets`    | Score targets that trigger a perfect score. Number for all audits or record { slug: target } for specific audits | `number` (_≥0, ≤1_) (_optional_) _or_ _Object with dynamic keys of type_ `string` _and values of type_ `number` (_≥0, ≤1_) |
 | `context`         | Plugin-specific context data for helpers                                                                         | [PluginContext](#plugincontext)                                                                                            |
 
 _(\*) Required._

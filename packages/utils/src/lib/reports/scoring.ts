@@ -3,7 +3,7 @@ import type {
   AuditReport,
   CategoryRef,
   GroupRef,
-  PluginScoreTarget,
+  PluginScoreTargets,
   Report,
 } from '@code-pushup/models';
 import { deepClone } from '../transform.js';
@@ -138,18 +138,18 @@ export function scoreAuditWithTarget(
 /**
  * Sets audit scores to 1 when targets are met.
  * @param audits audit outputs from plugin execution
- * @param scoreTarget number or { slug: target } mapping
+ * @param scoreTargets number or { slug: target } mapping
  * @returns Transformed audits with scoreTarget field
  */
 export function scoreAuditsWithTarget(
   audits: AuditOutput[],
-  scoreTarget: PluginScoreTarget,
+  scoreTargets: PluginScoreTargets,
 ): AuditOutput[] {
-  if (typeof scoreTarget === 'number') {
-    return audits.map(audit => scoreAuditWithTarget(audit, scoreTarget));
+  if (typeof scoreTargets === 'number') {
+    return audits.map(audit => scoreAuditWithTarget(audit, scoreTargets));
   }
   return audits.map(audit => {
-    const target = scoreTarget?.[audit.slug];
+    const target = scoreTargets?.[audit.slug];
     return target == null ? audit : scoreAuditWithTarget(audit, target);
   });
 }

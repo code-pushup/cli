@@ -58,7 +58,7 @@ export async function executePlugin(
     description,
     docsUrl,
     groups,
-    scoreTarget,
+    scoreTargets,
     ...pluginMeta
   } = pluginConfig;
   const { write: cacheWrite = false, read: cacheRead = false } = cache;
@@ -78,9 +78,9 @@ export async function executePlugin(
     });
   }
 
-  // transform audit scores to 1 when they meet/exceed scoreTarget
-  const scoredAuditsWithTarget = scoreTarget
-    ? scoreAuditsWithTarget(audits, scoreTarget)
+  // transform audit scores to 1 when they meet/exceed their targets
+  const scoredAuditsWithTarget = scoreTargets
+    ? scoreAuditsWithTarget(audits, scoreTargets)
     : audits;
 
   // enrich `AuditOutputs` to `AuditReport`
