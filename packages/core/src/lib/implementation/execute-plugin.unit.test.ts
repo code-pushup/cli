@@ -128,7 +128,7 @@ describe('executePlugin', () => {
   it('should apply a single score target to all audits', async () => {
     const pluginConfig: PluginConfig = {
       ...MINIMAL_PLUGIN_CONFIG_MOCK,
-      scoreTarget: 0.8,
+      scoreTargets: 0.8,
       audits: [
         {
           slug: 'speed-index',
@@ -169,7 +169,7 @@ describe('executePlugin', () => {
   it('should apply per-audit score targets', async () => {
     const pluginConfig: PluginConfig = {
       ...MINIMAL_PLUGIN_CONFIG_MOCK, // returns node-version audit with score 0.3
-      scoreTarget: {
+      scoreTargets: {
         'node-version': 0.2,
       },
     };
