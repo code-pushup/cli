@@ -1,16 +1,35 @@
 import 'dotenv/config';
+import { z } from 'zod';
 import {
+  coverageCoreConfigNx,
+  eslintCoreConfigNx,
+  jsDocsCoreConfig,
   jsPackagesCoreConfig,
   lighthouseCoreConfig,
-  loadEnv,
-  mergeConfigs,
+  typescriptPluginConfig,
 } from './code-pushup.preset.js';
 import type { CoreConfig } from './packages/models/src/index.js';
+import { mergeConfigs } from './packages/utils/src/index.js';
 
-const projectName = 'cli';
+// load upload configuration from environment
+const envSchema = z.object({
+  CP_SERVER: z.string().url(),
+  CP_API_KEY: z.string().min(1),
+  CP_ORGANIZATION: z.string().min(1),
+  CP_PROJECT: z.string().min(1),
+});
+const { data: env } = await envSchema.safeParseAsync(process.env);
 
 const config: CoreConfig = {
-  ...(await loadEnv(projectName)),
+  ...(env && {
+    upload: {
+      server: env.CP_SERVER,
+      apiKey: env.CP_API_KEY,
+      organization: env.CP_ORGANIZATION,
+      project: 'cli-workspace',
+    },
+  }),
+
   plugins: [],
 };
 

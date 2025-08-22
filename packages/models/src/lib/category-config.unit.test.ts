@@ -92,7 +92,6 @@ describe('categoryConfigSchema', () => {
         title: 'Test results',
         description: 'This category collects test results.',
         docsUrl: 'https://www.cypress.io/',
-        isBinary: false,
         refs: [
           {
             plugin: 'cypress',
@@ -116,6 +115,30 @@ describe('categoryConfigSchema', () => {
             slug: 'no-magic-numbers',
             type: 'audit',
             weight: 1,
+          },
+        ],
+      } satisfies CategoryConfig),
+    ).not.toThrow();
+  });
+
+  it('should accept a valid category configuration with a score target', () => {
+    expect(() =>
+      categoryConfigSchema.parse({
+        slug: 'core-web-vitals',
+        title: 'Core Web Vitals',
+        scoreTarget: 0.9,
+        refs: [
+          {
+            plugin: 'lighthouse',
+            slug: 'largest-contentful-paint',
+            type: 'audit',
+            weight: 3,
+          },
+          {
+            plugin: 'lighthouse',
+            slug: 'first-input-delay',
+            type: 'audit',
+            weight: 2,
           },
         ],
       } satisfies CategoryConfig),

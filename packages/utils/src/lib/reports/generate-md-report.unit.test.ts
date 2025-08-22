@@ -902,27 +902,13 @@ module.exports = {
             title: 'SEO',
             slug: 'seo',
             score: 1,
-            isBinary: true,
+            scoreTarget: 1,
             refs: [
               {
                 slug: 'is-crawlable',
                 plugin: 'lighthouse',
                 type: 'audit',
                 weight: 2,
-              },
-            ],
-          },
-          {
-            title: 'PWA',
-            slug: 'pwa',
-            score: 0,
-            isBinary: true,
-            refs: [
-              {
-                slug: 'splash-screen',
-                plugin: 'lighthouse',
-                type: 'audit',
-                weight: 1,
               },
             ],
           },

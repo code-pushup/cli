@@ -87,6 +87,18 @@ describe('auditOutputSchema', () => {
     ).not.toThrow();
   });
 
+  it('should accept a valid audit output with a score target', () => {
+    expect(() =>
+      auditOutputSchema.parse({
+        slug: 'total-blocking-time',
+        score: 0.91,
+        scoreTarget: 0.9,
+        value: 183.5,
+        displayValue: '180 ms',
+      } satisfies AuditOutput),
+    ).not.toThrow();
+  });
+
   it('should accept a decimal value', () => {
     expect(() =>
       auditOutputSchema.parse({
