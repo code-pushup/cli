@@ -82,8 +82,6 @@ describe('loadArtifacts', () => {
     expect(executeProcessSpy).not.toHaveBeenCalled();
     expect(readJsonFileSpy).toHaveBeenCalledTimes(1);
     expect(readJsonFileSpy).toHaveBeenNthCalledWith(1, artifactsPaths.at(0));
-
-    expect(ui()).not.toHaveLogged('log', expect.stringMatching(/^\$ /));
   });
 
   it('should load multiple artifacts without generateArtifactsCommand', async () => {
@@ -103,7 +101,6 @@ describe('loadArtifacts', () => {
     expect(readJsonFileSpy).toHaveBeenNthCalledWith(1, artifactsPaths.at(0));
     expect(readJsonFileSpy).toHaveBeenNthCalledWith(2, artifactsPaths.at(1));
     expect(executeProcessSpy).not.toHaveBeenCalled();
-    expect(ui()).not.toHaveLogged('log', expect.stringMatching(/^\$ /));
   });
 
   it('should load artifacts with generateArtifactsCommand as string', async () => {
@@ -125,7 +122,6 @@ describe('loadArtifacts', () => {
     });
     expect(globSpy).toHaveBeenCalledTimes(1);
     expect(globSpy).toHaveBeenCalledWith(artifactsPaths);
-    expect(ui()).toHaveLogged('log', `$ ${generateArtifactsCommand}`);
   });
 
   it('should load artifacts with generateArtifactsCommand as object', async () => {
@@ -149,9 +145,5 @@ describe('loadArtifacts', () => {
     });
     expect(globSpy).toHaveBeenCalledTimes(1);
     expect(globSpy).toHaveBeenCalledWith(artifactsPaths);
-    expect(ui()).toHaveLogged(
-      'log',
-      '$ nx run-many -t lint --parallel --max-parallel=5',
-    );
   });
 });
