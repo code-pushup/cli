@@ -63,6 +63,8 @@ export {
   fileNameSchema,
   filePathSchema,
   materialIconSchema,
+  scoreSchema,
+  slugSchema,
   type MaterialIcon,
 } from './lib/implementation/schemas.js';
 export { exists } from './lib/implementation/utils.js';
