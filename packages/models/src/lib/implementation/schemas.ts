@@ -172,6 +172,12 @@ export function packageVersionSchema<
   }>;
 }
 
+/** Schema for a binary score threshold */
+export const scoreTargetSchema = nonnegativeNumberSchema
+  .max(1)
+  .describe('Pass/fail score threshold (0-1)')
+  .optional();
+
 /** Schema for a weight */
 export const weightSchema = nonnegativeNumberSchema.describe(
   'Coefficient for the given score (use weight 0 if only for display)',

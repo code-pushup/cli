@@ -5,8 +5,8 @@ import {
 } from './implementation/checks.js';
 import {
   metaSchema,
-  nonnegativeNumberSchema,
   scorableSchema,
+  scoreTargetSchema,
   slugSchema,
   weightedRefSchema,
 } from './implementation/schemas.js';
@@ -44,12 +44,7 @@ export const categoryConfigSchema = scorableSchema(
       description: 'Meta info for category',
     }).shape,
   )
-  .extend({
-    scoreTarget: nonnegativeNumberSchema
-      .max(1)
-      .describe('Pass/fail score threshold (0-1)')
-      .optional(),
-  });
+  .extend({ scoreTarget: scoreTargetSchema });
 
 export type CategoryConfig = z.infer<typeof categoryConfigSchema>;
 

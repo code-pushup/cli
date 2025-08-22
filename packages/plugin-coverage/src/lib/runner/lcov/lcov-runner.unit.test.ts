@@ -1,8 +1,17 @@
 import { vol } from 'memfs';
 import path from 'node:path';
-import { describe, expect, it } from 'vitest';
-import { ui } from '@code-pushup/utils';
-import { parseLcovFiles } from './lcov-runner.js';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { getGitRoot, ui } from '@code-pushup/utils';
+import type { CoverageResult, CoverageType } from '../../config.js';
+import { lcovResultsToAuditOutputs, parseLcovFiles } from './lcov-runner.js';
+
+vi.mock('@code-pushup/utils', async () => {
+  const actual = await vi.importActual('@code-pushup/utils');
+  return {
+    ...actual,
+    getGitRoot: vi.fn(),
+  };
+});
 
 describe('parseLcovFiles', () => {
   const UTILS_REPORT = `
@@ -45,12 +54,36 @@ BRH:0
 end_of_record
 `;
 
+  const MULTI_FILE_REPORT = `
+TN:
+SF:${path.join('file1', 'test.ts')}
+FNF:1
+FNH:1
+DA:1,1
+LF:1
+LH:1
+BRF:0
+BRH:0
+end_of_record
+TN:
+SF:${path.join('file2', 'test.ts')}
+FNF:0
+FNH:0
+DA:1,0
+LF:1
+LH:0
+BRF:1
+BRH:0
+end_of_record
+`;
+
   beforeEach(() => {
     vol.fromJSON(
       {
         [path.join('integration-tests', 'lcov.info')]: UTILS_REPORT, // file name value under SF used in tests
         [path.join('unit-tests', 'lcov.info')]: CONSTANTS_REPORT, // file name value under SF used in tests
         [path.join('pytest', 'lcov.info')]: PYTEST_REPORT,
+        [path.join('multi', 'lcov.info')]: MULTI_FILE_REPORT,
         'lcov.info': '', // empty report file
       },
       'coverage',
@@ -135,5 +168,235 @@ end_of_record
         },
       }),
     ]);
+  });
+
+  it('should sanitize hit values to not exceed found values when invalid stats are encountered', async () => {
+    const invalidReport = `
+TN:
+SF:${path.join('invalid', 'file.ts')}
+FNF:2
+FNH:3
+DA:1,1
+DA:2,1
+LF:2
+LH:3
+BRF:1
+BRH:2
+end_of_record
+`;
+
+    vol.fromJSON(
+      {
+        [path.join('invalid', 'lcov.info')]: invalidReport,
+      },
+      'coverage',
+    );
+
+    const result = await parseLcovFiles([
+      path.join('coverage', 'invalid', 'lcov.info'),
+    ]);
+
+    expect(result[0]?.functions.hit).toBe(2);
+    expect(result[0]?.lines.hit).toBe(2);
+    expect(result[0]?.branches.hit).toBe(1);
+  });
+
+  it('should handle multiple files with different coverage types', async () => {
+    const result = await parseLcovFiles([
+      path.join('coverage', 'multi', 'lcov.info'),
+    ]);
+
+    expect(result).toHaveLength(2);
+    expect(result[0]?.file).toBe(path.join('file1', 'test.ts'));
+    expect(result[1]?.file).toBe(path.join('file2', 'test.ts'));
+    expect(result[0]?.functions.hit).toBe(1);
+    expect(result[1]?.functions.hit).toBe(0);
+  });
+
+  it('should handle edge case with no branches or functions', async () => {
+    const edgeCaseReport = `
+TN:
+SF:${path.join('edge', 'case.ts')}
+FNF:0
+FNH:0
+DA:1,1
+LF:1
+LH:1
+BRF:0
+BRH:0
+end_of_record
+`;
+
+    vol.fromJSON(
+      {
+        [path.join('edge', 'lcov.info')]: edgeCaseReport,
+      },
+      'coverage',
+    );
+
+    const result = await parseLcovFiles([
+      path.join('coverage', 'edge', 'lcov.info'),
+    ]);
+
+    expect(result[0]?.functions.hit).toBe(0);
+    expect(result[0]?.functions.found).toBe(0);
+    expect(result[0]?.branches.hit).toBe(0);
+    expect(result[0]?.branches.found).toBe(0);
+    expect(result[0]?.lines.hit).toBe(1);
+    expect(result[0]?.lines.found).toBe(1);
+  });
+});
+
+describe('lcovResultsToAuditOutputs', () => {
+  const mockResults: CoverageResult[] = [
+    {
+      resultsPath: path.join('coverage', 'test', 'lcov.info'),
+      pathToProject: 'packages/cli',
+    },
+  ];
+
+  const mockCoverageTypes: CoverageType[] = ['function', 'branch', 'line'];
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(getGitRoot).mockResolvedValue('/mock/git/root');
+
+    const testReport = `
+TN:
+SF:${path.join('src', 'test.ts')}
+FNF:1
+FNH:1
+DA:1,1
+LF:1
+LH:1
+BRF:1
+BRH:1
+end_of_record
+`;
+
+    vol.fromJSON(
+      {
+        [path.join('test', 'lcov.info')]: testReport,
+      },
+      'coverage',
+    );
+  });
+
+  it('should return audit outputs for all coverage types', async () => {
+    const result = await lcovResultsToAuditOutputs(
+      mockResults,
+      mockCoverageTypes,
+    );
+
+    expect(result).toHaveLength(3);
+    expect(result[0]).toHaveProperty('slug', 'function-coverage');
+    expect(result[1]).toHaveProperty('slug', 'branch-coverage');
+    expect(result[2]).toHaveProperty('slug', 'line-coverage');
+  });
+
+  it('should handle single coverage type', async () => {
+    const result = await lcovResultsToAuditOutputs(mockResults, ['function']);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toHaveProperty('slug', 'function-coverage');
+  });
+
+  it('should handle empty coverage types array', async () => {
+    const result = await lcovResultsToAuditOutputs(mockResults, []);
+
+    expect(result).toHaveLength(0);
+  });
+
+  it('should handle getGitRoot failure gracefully', async () => {
+    vi.mocked(getGitRoot).mockRejectedValue(new Error('Git root not found'));
+
+    await expect(
+      lcovResultsToAuditOutputs(mockResults, mockCoverageTypes),
+    ).rejects.toThrow('Git root not found');
+  });
+
+  it('should handle multiple results with different project paths', async () => {
+    const multiResults: CoverageResult[] = [
+      {
+        resultsPath: path.join('coverage', 'test', 'lcov.info'),
+        pathToProject: 'packages/cli',
+      },
+      {
+        resultsPath: path.join('coverage', 'test2', 'lcov.info'),
+        pathToProject: 'packages/utils',
+      },
+    ];
+
+    const testReport2 = `
+TN:
+SF:${path.join('src', 'utils.ts')}
+FNF:2
+FNH:1
+DA:1,1
+DA:2,0
+LF:2
+LH:1
+BRF:1
+BRH:0
+end_of_record
+`;
+
+    vol.fromJSON(
+      {
+        [path.join('test2', 'lcov.info')]: testReport2,
+      },
+      'coverage',
+    );
+
+    const result = await lcovResultsToAuditOutputs(multiResults, ['function']);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toHaveProperty('slug', 'function-coverage');
+  });
+
+  it('should handle string results path', async () => {
+    const stringResults: CoverageResult[] = [
+      path.join('coverage', 'test', 'lcov.info'),
+    ];
+
+    const result = await lcovResultsToAuditOutputs(stringResults, ['line']);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toHaveProperty('slug', 'line-coverage');
+  });
+
+  it('should handle mixed results format', async () => {
+    const mixedResults: CoverageResult[] = [
+      path.join('coverage', 'test', 'lcov.info'),
+      {
+        resultsPath: path.join('coverage', 'test2', 'lcov.info'),
+        pathToProject: 'packages/utils',
+      },
+    ];
+
+    const testReport2 = `
+TN:
+SF:${path.join('src', 'utils.ts')}
+FNF:1
+FNH:1
+DA:1,1
+LF:1
+LH:1
+BRF:0
+BRH:0
+end_of_record
+`;
+
+    vol.fromJSON(
+      {
+        [path.join('test2', 'lcov.info')]: testReport2,
+      },
+      'coverage',
+    );
+
+    const result = await lcovResultsToAuditOutputs(mixedResults, ['function']);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toHaveProperty('slug', 'function-coverage');
   });
 });

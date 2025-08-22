@@ -8,6 +8,7 @@ on:
 
 env:
   NX_NON_NATIVE_HASHER: true
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 permissions:
   pull-requests: write

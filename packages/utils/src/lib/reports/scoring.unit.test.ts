@@ -1,6 +1,11 @@
 import { describe, expect } from 'vitest';
 import { REPORT_MOCK } from '@code-pushup/test-utils';
-import { calculateScore, scoreReport } from './scoring.js';
+import {
+  calculateScore,
+  scoreAuditWithTarget,
+  scoreAuditsWithTarget,
+  scoreReport,
+} from './scoring.js';
 
 describe('calculateScore', () => {
   it('should calculate the same score for one reference', () => {
@@ -134,5 +139,110 @@ describe('scoreReport', () => {
     expect(scoreReport({ ...REPORT_MOCK, categories: undefined })).toEqual(
       expect.objectContaining({ categories: undefined }),
     );
+  });
+});
+
+describe('scoreAuditWithTarget', () => {
+  it('should add scoreTarget and increase an audit score to 1 when the target is reached', () => {
+    expect(
+      scoreAuditWithTarget(
+        { slug: 'speed-index', score: 0.9, value: 1300 },
+        0.8,
+      ),
+    ).toEqual({
+      slug: 'speed-index',
+      score: 1,
+      value: 1300,
+      scoreTarget: 0.8,
+    });
+  });
+
+  it('should only add scoreTarget when the target is not reached', () => {
+    expect(
+      scoreAuditWithTarget(
+        { slug: 'largest-contentful-paint', score: 0.6, value: 3000 },
+        0.8,
+      ),
+    ).toEqual({
+      slug: 'largest-contentful-paint',
+      score: 0.6,
+      value: 3000,
+      scoreTarget: 0.8,
+    });
+  });
+});
+
+describe('scoreAuditsWithTarget', () => {
+  it('should apply a single score target to all audits', () => {
+    const audits = [
+      { slug: 'first-contentful-paint', score: 0.8, value: 1200 },
+      { slug: 'largest-contentful-paint', score: 0.6, value: 3000 },
+      { slug: 'speed-index', score: 0.9, value: 1300 },
+    ];
+
+    expect(scoreAuditsWithTarget(audits, 0.75)).toEqual([
+      {
+        slug: 'first-contentful-paint',
+        score: 1,
+        value: 1200,
+        scoreTarget: 0.75,
+      },
+      {
+        slug: 'largest-contentful-paint',
+        score: 0.6,
+        value: 3000,
+        scoreTarget: 0.75,
+      },
+      { slug: 'speed-index', score: 1, value: 1300, scoreTarget: 0.75 },
+    ]);
+  });
+
+  it('should apply per-audit score targets', () => {
+    const audits = [
+      { slug: 'first-contentful-paint', score: 0.8, value: 1200 },
+      { slug: 'largest-contentful-paint', score: 0.6, value: 3000 },
+      { slug: 'speed-index', score: 0.9, value: 1300 },
+    ];
+
+    expect(
+      scoreAuditsWithTarget(audits, {
+        'first-contentful-paint': 0.85,
+        'largest-contentful-paint': 0.5,
+      }),
+    ).toEqual([
+      {
+        slug: 'first-contentful-paint',
+        score: 0.8,
+        value: 1200,
+        scoreTarget: 0.85,
+      },
+      {
+        slug: 'largest-contentful-paint',
+        score: 1,
+        value: 3000,
+        scoreTarget: 0.5,
+      },
+      { slug: 'speed-index', score: 0.9, value: 1300 },
+    ]);
+  });
+
+  it('should set an audit score to 1 when the original score equals the target', () => {
+    const audits = [{ slug: 'speed-index', score: 0.9, value: 1300 }];
+
+    expect(scoreAuditsWithTarget(audits, 0.9)).toEqual([
+      { slug: 'speed-index', score: 1, value: 1300, scoreTarget: 0.9 },
+    ]);
+  });
+
+  it('should handle an empty audits array', () => {
+    expect(scoreAuditsWithTarget([], 0.8)).toEqual([]);
+  });
+
+  it('should handle an empty score target record', () => {
+    const audits = [{ slug: 'speed-index', score: 0.9, value: 1300 }];
+
+    expect(scoreAuditsWithTarget(audits, {})).toEqual([
+      { slug: 'speed-index', score: 0.9, value: 1300 },
+    ]);
   });
 });
