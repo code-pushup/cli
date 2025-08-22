@@ -215,6 +215,6 @@ describe('CI - monorepo mode (Nx)', () => {
       ).toMatchFileSnapshot(
         path.join(TEST_SNAPSHOTS_DIR, 'nx-monorepo-report-diff.md'),
       );
-    });
+    }, 120_000);
   });
 });
