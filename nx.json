@@ -102,7 +102,9 @@
       }
     },
     "e2e": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "inputs": ["default"],
+      "cache": true
     },
     "lint": {
       "inputs": ["lint-eslint-inputs"],
@@ -120,6 +122,7 @@
     "nxv-pkg-install": {
       "parallelism": false
     },
+    "@nx/vite:test": {},
     "code-pushup": {
       "cache": false,
       "outputs": [
