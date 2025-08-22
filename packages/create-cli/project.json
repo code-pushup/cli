@@ -4,7 +4,11 @@
   "sourceRoot": "packages/create-cli/src",
   "projectType": "library",
   "targets": {
-    "build": {},
+    "build": {
+      "options": {
+        "outputPath": "{projectRoot}/dist"
+      }
+    },
     "lint": {},
     "unit-test": {},
     "exec-node": {

@@ -5,7 +5,11 @@
   "projectType": "library",
   "tags": ["scope:plugin", "type:feature", "publishable"],
   "targets": {
-    "build": {},
+    "build": {
+      "options": {
+        "outputPath": "{projectRoot}/dist"
+      }
+    },
     "lint": {},
     "unit-test": {},
     "int-test": {}

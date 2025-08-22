@@ -4,7 +4,11 @@
   "sourceRoot": "packages/plugin-lighthouse/src",
   "projectType": "library",
   "targets": {
-    "build": {},
+    "build": {
+      "options": {
+        "outputPath": "{projectRoot}/dist"
+      }
+    },
     "lint": {},
     "unit-test": {}
   },

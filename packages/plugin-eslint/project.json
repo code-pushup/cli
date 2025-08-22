@@ -4,7 +4,11 @@
   "sourceRoot": "packages/plugin-eslint/src",
   "projectType": "library",
   "targets": {
-    "build": {},
+    "build": {
+      "options": {
+        "outputPath": "{projectRoot}/dist"
+      }
+    },
     "lint": {},
     "unit-test": {},
     "int-test": {}
