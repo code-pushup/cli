@@ -9,7 +9,7 @@
       "outputs": ["{options.outputPath}"],
       "dependsOn": [{ "target": "pre-build" }],
       "options": {
-        "outputPath": "dist/packages/models-transformers",
+        "outputPath": "{projectRoot}/dist",
         "main": "packages/models/transformers/src/index.ts",
         "tsConfig": "packages/models/transformers/tsconfig.lib.json"
       }
