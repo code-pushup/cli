@@ -1,12 +1,8 @@
 import 'dotenv/config';
 import { z } from 'zod';
 import {
-  coverageCoreConfigNx,
-  eslintCoreConfigNx,
-  jsDocsCoreConfig,
   jsPackagesCoreConfig,
   lighthouseCoreConfig,
-  typescriptPluginConfig,
 } from './code-pushup.preset.js';
 import type { CoreConfig } from './packages/models/src/index.js';
 import { mergeConfigs } from './packages/utils/src/index.js';
