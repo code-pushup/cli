@@ -1,4 +1,4 @@
-name: Code PushUp - Centralized/No Cache
+name: Code PushUp - Standalone Mode
 
 on:
   push:
@@ -16,7 +16,7 @@ permissions:
 jobs:
   code-pushup:
     runs-on: ubuntu-latest
-    name: Run central layout no cache
+    name: Run Code PushUp
     # ignore PRs from forks, handled by code-pushup-fork.yml
     if: ${{ !github.event.pull_request.head.repo.fork }}
     env:
@@ -27,14 +27,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
+      - name: Set base and head for Nx affected commands
+        uses: nrwl/nx-set-shas@v4
       - name: Install dependencies
         run: npm ci
       - name: Run Code PushUp action
         uses: code-pushup/github-action@v0
         with:
-          bin: npx nx code-pushup-central --
+          bin: npx nx code-pushup --nx-bail  --

@@ -2,37 +2,26 @@
   "name": "cli-workspace",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
-    "code-pushup-central": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "node packages/cli/src/index.ts",
-        "args": [
-          "--no-progress",
-          "--verbose",
-          "--config={projectRoot}/code-pushup.central.config.ts",
-          "--persist.outputDir={projectRoot}/.code-pushup",
-          "--upload.project=cli"
-        ],
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
-      }
+    "code-pushup-js-packages": {},
+    "code-pushup-lighthouse": {},
+    "code-pushup-coverage": {
+      "dependsOn": ["^*-test"]
     },
+    "code-pushup-eslint": {},
+    "code-pushup-jsdocs": {},
+    "code-pushup-typescript": {},
     "code-pushup": {
-      "dependsOn": ["code-pushup-js-packages", "code-pushup-lighthouse"],
+      "dependsOn": ["code-pushup-*"],
       "executor": "nx:run-commands",
       "options": {
         "args": [
           "--no-progress",
           "--verbose",
-          "--config={projectRoot}/code-pushup.config.ts",
           "--cache.read",
-          "--persist.outputDir={projectRoot}/.code-pushup"
+          "--persist.outputDir={projectRoot}/.code-pushup",
+          "--upload.project={projectName}"
         ]
       }
-    },
-    "code-pushup-js-packages": {},
-    "code-pushup-lighthouse": {}
+    }
   }
 }
