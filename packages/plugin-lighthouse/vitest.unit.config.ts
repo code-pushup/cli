@@ -19,6 +19,7 @@ export default defineConfig(() => {
         '../../testing/test-setup/src/lib/extend/path.matcher.ts',
         '../../testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
       ],
+      coverage: baseConfig.test.coverage,
     },
   };
 });

@@ -18,6 +18,7 @@ export default defineConfig(() => {
         '../../testing/test-setup/src/lib/console.mock.ts',
         '../../testing/test-setup/src/lib/reset.mocks.ts',
       ],
+      coverage: baseConfig.test.coverage,
     },
   };
 });

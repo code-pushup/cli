@@ -141,6 +141,20 @@ export async function getCoveragePathForVitest(
     project.name || 'unknown',
   );
 
+  // Ensure vitestConfig.test.coverage exists
+  if (!vitestConfig.test?.coverage) {
+    ui().logger.warning(
+      `No coverage configuration found for ${project.name}:${target}, providing defaults`,
+    );
+    vitestConfig.test = {
+      ...vitestConfig.test,
+      coverage: {
+        reporter: ['text', 'lcov'],
+        reportsDirectory: `../../coverage/${project.name}/${target.replace('-test', '-tests')}`,
+      },
+    };
+  }
+
   const reportsDirectory =
     options.reportsDirectory ?? vitestConfig.test.coverage?.reportsDirectory;
   const reporter = vitestConfig.test.coverage?.reporter;
@@ -174,7 +188,20 @@ async function extractVitestConfig(
   if (typeof vitestConfigModule.default === 'function') {
     try {
       const result = vitestConfigModule.default();
-      if (result && typeof result === 'object' && result.test?.coverage) {
+      if (result && typeof result === 'object') {
+        // If coverage is missing, provide a minimal default configuration
+        if (!result.test?.coverage) {
+          ui().logger.warning(
+            `Vitest config for ${projectName}:${target} is missing coverage configuration, using defaults`,
+          );
+          result.test = {
+            ...result.test,
+            coverage: {
+              reporter: ['text', 'lcov'],
+              reportsDirectory: `../../coverage/${projectName}/${target.replace('-test', '-tests')}`,
+            },
+          };
+        }
         return result as VitestCoverageConfig;
       }
       throw new Error('Function export did not return valid configuration');
@@ -183,6 +210,23 @@ async function extractVitestConfig(
         `Could not execute Vitest config function for target ${target} in project ${projectName}: ${error}`,
       );
     }
+  }
+
+  // If it's not a function, check if it has the required structure
+  if (vitestConfigModule && typeof vitestConfigModule === 'object') {
+    if (!vitestConfigModule.test?.coverage) {
+      ui().logger.warning(
+        `Vitest config for ${projectName}:${target} is missing coverage configuration, using defaults`,
+      );
+      vitestConfigModule.test = {
+        ...vitestConfigModule.test,
+        coverage: {
+          reporter: ['text', 'lcov'],
+          reportsDirectory: `../../coverage/${projectName}/${target.replace('-test', '-tests')}`,
+        },
+      };
+    }
+    return vitestConfigModule;
   }
 
   return vitestConfigModule;

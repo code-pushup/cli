@@ -13,6 +13,7 @@ export default defineConfig(() => {
     test: {
       ...baseConfig.test,
       globalSetup: './global-setup.ts',
+      coverage: baseConfig.test.coverage,
     },
   };
 });

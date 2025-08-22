@@ -16,6 +16,7 @@ export default defineConfig(() => {
         ...baseConfig.test.setupFiles,
         'src/lib/extend/path.matcher.ts',
       ],
+      coverage: baseConfig.test.coverage,
     },
   };
 });
