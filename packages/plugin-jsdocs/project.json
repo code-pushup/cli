@@ -5,11 +5,7 @@
   "projectType": "library",
   "tags": ["scope:plugin", "type:feature", "publishable"],
   "targets": {
-    "build": {
-      "options": {
-        "outputPath": "packages/plugin-jsdocs/dist"
-      }
-    },
+    "build": {},
     "lint": {},
     "unit-test": {},
     "int-test": {}

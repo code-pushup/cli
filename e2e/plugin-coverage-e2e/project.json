@@ -3,8 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "e2e/plugin-coverage-e2e/src",
   "projectType": "application",
-  "tags": ["scope:plugin", "type:e2e"],
-  "implicitDependencies": ["cli", "plugin-coverage"],
   "targets": {
     "lint": {},
     "e2e": {
@@ -13,5 +11,7 @@
         "configFile": "{projectRoot}/vitest.e2e.config.ts"
       }
     }
-  }
+  },
+  "implicitDependencies": ["cli", "plugin-coverage"],
+  "tags": ["scope:plugin", "type:e2e"]
 }

@@ -3,8 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "e2e/plugin-typescript-e2e/src",
   "projectType": "application",
-  "tags": ["scope:plugin", "type:e2e"],
-  "implicitDependencies": ["cli", "plugin-typescript"],
   "targets": {
     "lint": {},
     "e2e": {
@@ -13,5 +11,7 @@
         "configFile": "e2e/plugin-typescript-e2e/vitest.e2e.config.ts"
       }
     }
-  }
+  },
+  "implicitDependencies": ["cli", "plugin-typescript"],
+  "tags": ["scope:plugin", "type:e2e"]
 }

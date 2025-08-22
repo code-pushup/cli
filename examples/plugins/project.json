@@ -3,7 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "examples/plugins/src",
   "projectType": "library",
-  "tags": ["scope:internal", "type:feature"],
   "targets": {
     "build": {},
     "lint": {},
@@ -42,5 +41,6 @@
         }
       ]
     }
-  }
+  },
+  "tags": ["scope:internal", "type:feature"]
 }

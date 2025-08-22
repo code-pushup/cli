@@ -3,15 +3,11 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/plugin-coverage/src",
   "projectType": "library",
-  "tags": ["scope:plugin", "type:feature", "publishable"],
   "targets": {
-    "build": {
-      "options": {
-        "outputPath": "packages/plugin-coverage/dist"
-      }
-    },
+    "build": {},
     "lint": {},
     "unit-test": {},
     "int-test": {}
-  }
+  },
+  "tags": ["scope:plugin", "type:feature", "publishable"]
 }

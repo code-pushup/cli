@@ -3,16 +3,11 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/plugin-eslint/src",
   "projectType": "library",
-  "tags": ["scope:plugin", "type:feature", "publishable"],
   "targets": {
-    "build": {
-      "outputs": ["{projectRoot}/dist"],
-      "options": {
-        "outputPath": "packages/plugin-eslint/dist"
-      }
-    },
+    "build": {},
     "lint": {},
     "unit-test": {},
     "int-test": {}
-  }
+  },
+  "tags": ["scope:plugin", "type:feature", "publishable"]
 }

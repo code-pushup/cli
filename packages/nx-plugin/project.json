@@ -3,12 +3,10 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/nx-plugin/src",
   "projectType": "library",
-  "tags": ["scope:tooling", "type:feature", "publishable"],
   "implicitDependencies": ["cli"],
   "targets": {
     "build": {
       "options": {
-        "outputPath": "packages/nx-plugin/dist",
         "assets": [
           "{projectRoot}/*.md",
           {
@@ -45,5 +43,6 @@
     },
     "unit-test": {},
     "int-test": {}
-  }
+  },
+  "tags": ["scope:tooling", "type:feature", "publishable"]
 }

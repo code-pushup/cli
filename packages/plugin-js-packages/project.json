@@ -3,16 +3,12 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/plugin-js-packages/src",
   "projectType": "library",
-  "description": "A plugin for JavaScript packages.",
-  "tags": ["scope:plugin", "type:feature", "publishable"],
   "targets": {
-    "build": {
-      "options": {
-        "outputPath": "packages/plugin-js-packages/dist"
-      }
-    },
+    "build": {},
     "lint": {},
     "unit-test": {},
     "int-test": {}
-  }
+  },
+  "tags": ["scope:plugin", "type:feature", "publishable"],
+  "description": "A plugin for JavaScript packages."
 }

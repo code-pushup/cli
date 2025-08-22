@@ -3,7 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/models/src",
   "projectType": "library",
-  "tags": ["scope:shared", "type:util", "publishable"],
   "targets": {
     "generate-docs": {
       "command": "npx zod2md --config packages/models/zod2md.config.ts",
@@ -15,16 +14,11 @@
       "dependsOn": [
         "^build",
         "generate-docs",
-        {
-          "projects": "models-transformers",
-          "target": "build"
-        }
-      ],
-      "options": {
-        "outputPath": "packages/models/dist"
-      }
+        { "projects": "models-transformers", "target": "build" }
+      ]
     },
     "lint": {},
     "unit-test": {}
-  }
+  },
+  "tags": ["scope:shared", "type:util", "publishable"]
 }

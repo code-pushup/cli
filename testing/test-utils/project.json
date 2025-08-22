@@ -3,7 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "testing/test-utils/src",
   "projectType": "library",
-  "tags": ["scope:shared", "type:testing"],
   "targets": {
     "build": {},
     "lint": {},
@@ -11,5 +10,6 @@
     "nx-release-publish": {
       "executor": "nx:noop"
     }
-  }
+  },
+  "tags": ["scope:shared", "type:testing"]
 }
