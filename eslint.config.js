@@ -27,6 +27,7 @@ export default tseslint.config(
             String.raw`^.*/eslint(\.base)?\.config\.[cm]?js$`,
             String.raw`^.*/code-pushup\.(config|preset)(\.m?[jt]s)?$`,
             '^[./]+/tools/.*$',
+            '^[./]+/testing/test-vitest-setup/.*$',
           ],
           depConstraints: [
             {
@@ -107,6 +108,12 @@ export default tseslint.config(
     },
   },
   {
+    files: ['**/vitest.*.config.ts'],
+    rules: {
+      '@nx/enforce-module-boundaries': 'off',
+    },
+  },
+  {
     files: ['**/*.json'],
     languageOptions: { parser: jsoncParser },
   },
@@ -131,6 +138,7 @@ export default tseslint.config(
       '**/__snapshots__/**',
       '**/dist',
       '**/*.md',
+      '**/coverage/**',
     ],
   },
 );

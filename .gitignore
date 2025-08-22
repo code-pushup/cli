@@ -48,3 +48,6 @@ Thumbs.db
 
 # Nx workspace cache
 .nx
+
+# Bundled Vitest configuration files
+**/*.bundled_*.mjs

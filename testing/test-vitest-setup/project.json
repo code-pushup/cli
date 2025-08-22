@@ -1,0 +1,11 @@
+{
+  "name": "test-vitest-setup",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "testing/test-vitest-setup/src",
+  "projectType": "library",
+  "targets": {
+    "build": {},
+    "lint": {}
+  },
+  "tags": ["scope:shared", "type:testing"]
+}
