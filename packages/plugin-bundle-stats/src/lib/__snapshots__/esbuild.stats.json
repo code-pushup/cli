@@ -1,0 +1,290 @@
+{
+  "inputs": {
+    "src/lib/utils/format.ts": {
+      "bytes": 418,
+      "imports": [],
+      "format": "esm"
+    },
+    "src/lib/feature-1.ts": {
+      "bytes": 417,
+      "imports": [
+        {
+          "path": "src/lib/utils/format.ts",
+          "kind": "import-statement",
+          "original": "./utils/format"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/lib/utils/math.ts": {
+      "bytes": 240,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../../../../node_modules/balanced-match/index.js": {
+      "bytes": 1219,
+      "imports": [],
+      "format": "cjs"
+    },
+    "../../../../../node_modules/brace-expansion/index.js": {
+      "bytes": 4992,
+      "imports": [
+        {
+          "path": "../../../../../node_modules/balanced-match/index.js",
+          "kind": "require-call",
+          "original": "balanced-match"
+        }
+      ],
+      "format": "cjs"
+    },
+    "../../../../../node_modules/minimatch/dist/esm/assert-valid-pattern.js": {
+      "bytes": 336,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../../../../node_modules/minimatch/dist/esm/brace-expressions.js": {
+      "bytes": 5631,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../../../../node_modules/minimatch/dist/esm/unescape.js": {
+      "bytes": 847,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../../../../node_modules/minimatch/dist/esm/ast.js": {
+      "bytes": 22588,
+      "imports": [
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/brace-expressions.js",
+          "kind": "import-statement",
+          "original": "./brace-expressions.js"
+        },
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/unescape.js",
+          "kind": "import-statement",
+          "original": "./unescape.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../../../../node_modules/minimatch/dist/esm/escape.js": {
+      "bytes": 848,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../../../../node_modules/minimatch/dist/esm/index.js": {
+      "bytes": 39098,
+      "imports": [
+        {
+          "path": "../../../../../node_modules/brace-expansion/index.js",
+          "kind": "import-statement",
+          "original": "brace-expansion"
+        },
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/assert-valid-pattern.js",
+          "kind": "import-statement",
+          "original": "./assert-valid-pattern.js"
+        },
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/ast.js",
+          "kind": "import-statement",
+          "original": "./ast.js"
+        },
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/escape.js",
+          "kind": "import-statement",
+          "original": "./escape.js"
+        },
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/unescape.js",
+          "kind": "import-statement",
+          "original": "./unescape.js"
+        },
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/ast.js",
+          "kind": "import-statement",
+          "original": "./ast.js"
+        },
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/escape.js",
+          "kind": "import-statement",
+          "original": "./escape.js"
+        },
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/unescape.js",
+          "kind": "import-statement",
+          "original": "./unescape.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/lib/feature-2.ts": {
+      "bytes": 154,
+      "imports": [
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/index.js",
+          "kind": "import-statement",
+          "original": "minimatch"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/index.ts": {
+      "bytes": 473,
+      "imports": [
+        {
+          "path": "src/lib/feature-1.ts",
+          "kind": "import-statement",
+          "original": "./lib/feature-1"
+        },
+        {
+          "path": "src/lib/utils/math.ts",
+          "kind": "import-statement",
+          "original": "./lib/utils/math"
+        },
+        {
+          "path": "src/lib/feature-2.ts",
+          "kind": "dynamic-import",
+          "original": "./lib/feature-2"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/bin.ts": {
+      "bytes": 532,
+      "imports": [
+        {
+          "path": "src/lib/feature-1.ts",
+          "kind": "import-statement",
+          "original": "./lib/feature-1"
+        },
+        {
+          "path": "src/lib/utils/math.ts",
+          "kind": "import-statement",
+          "original": "./lib/utils/math"
+        }
+      ],
+      "format": "esm"
+    }
+  },
+  "outputs": {
+    "dist/index.js": {
+      "imports": [
+        {
+          "path": "dist/chunks/chunk-WIJM4GGD.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "dist/chunks/chunk-SK6HMZ5B.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "dist/chunks/feature-2-JRMQOICX.js",
+          "kind": "dynamic-import"
+        }
+      ],
+      "exports": [
+        "default",
+        "indexOnlyFunction"
+      ],
+      "entryPoint": "src/index.ts",
+      "inputs": {
+        "src/index.ts": {
+          "bytesInOutput": 350
+        }
+      },
+      "bytes": 533
+    },
+    "dist/bin.js": {
+      "imports": [
+        {
+          "path": "dist/chunks/chunk-WIJM4GGD.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "dist/chunks/chunk-SK6HMZ5B.js",
+          "kind": "import-statement"
+        }
+      ],
+      "exports": [],
+      "entryPoint": "src/bin.ts",
+      "inputs": {
+        "src/bin.ts": {
+          "bytesInOutput": 366
+        }
+      },
+      "bytes": 516
+    },
+    "dist/chunks/chunk-WIJM4GGD.js": {
+      "imports": [],
+      "exports": [
+        "calculate",
+        "externalFunction"
+      ],
+      "inputs": {
+        "src/lib/utils/format.ts": {
+          "bytesInOutput": 269
+        },
+        "src/lib/feature-1.ts": {
+          "bytesInOutput": 269
+        },
+        "src/lib/utils/math.ts": {
+          "bytesInOutput": 145
+        }
+      },
+      "bytes": 806
+    },
+    "dist/chunks/feature-2-JRMQOICX.js": {
+      "imports": [
+        {
+          "path": "dist/chunks/chunk-SK6HMZ5B.js",
+          "kind": "import-statement"
+        }
+      ],
+      "exports": [
+        "chart"
+      ],
+      "entryPoint": "src/lib/feature-2.ts",
+      "inputs": {
+        "../../../../../node_modules/balanced-match/index.js": {
+          "bytesInOutput": 1541
+        },
+        "../../../../../node_modules/brace-expansion/index.js": {
+          "bytesInOutput": 4782
+        },
+        "../../../../../node_modules/minimatch/dist/esm/index.js": {
+          "bytesInOutput": 23960
+        },
+        "../../../../../node_modules/minimatch/dist/esm/assert-valid-pattern.js": {
+          "bytesInOutput": 261
+        },
+        "../../../../../node_modules/minimatch/dist/esm/brace-expressions.js": {
+          "bytesInOutput": 3163
+        },
+        "../../../../../node_modules/minimatch/dist/esm/unescape.js": {
+          "bytesInOutput": 210
+        },
+        "../../../../../node_modules/minimatch/dist/esm/ast.js": {
+          "bytesInOutput": 15518
+        },
+        "../../../../../node_modules/minimatch/dist/esm/escape.js": {
+          "bytesInOutput": 165
+        },
+        "src/lib/feature-2.ts": {
+          "bytesInOutput": 99
+        }
+      },
+      "bytes": 50369
+    },
+    "dist/chunks/chunk-SK6HMZ5B.js": {
+      "imports": [],
+      "exports": [
+        "__commonJS",
+        "__toESM"
+      ],
+      "inputs": {},
+      "bytes": 1357
+    }
+  }
+}
