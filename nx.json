@@ -172,7 +172,8 @@
       "options": {
         "targetName": "lint-multi",
         "maxWarnings": 0,
-        "cache": true
+        "cache": true,
+        "include": "**/project.json"
       }
     }
   ],

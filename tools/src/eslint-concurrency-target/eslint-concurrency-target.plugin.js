@@ -2,12 +2,29 @@ import { existsSync } from 'node:fs';
 import { dirname, relative } from 'node:path';
 
 function matchesIncludePattern(filePath, includePattern) {
-  // Simple pattern matching for {packages,e2e,testing,examples}/*/project.json
   const normalizedPath = filePath.replace(/\\/g, '/');
-  const pattern = includePattern
-    .replace(/\{([^}]+)\}/, '($1)')
-    .replace(/,/g, '|')
-    .replace(/\*/g, '[^/]+');
+
+  // Handle special case for **/project.json (match all)
+  if (includePattern === '**/project.json') {
+    return (
+      normalizedPath.endsWith('/project.json') ||
+      normalizedPath === 'project.json'
+    );
+  }
+
+  // Handle {packages,e2e,testing,examples}/*/project.json pattern
+  if (includePattern.includes('{') && includePattern.includes('}')) {
+    const pattern = includePattern
+      .replace(/\{([^}]+)\}/, '($1)')
+      .replace(/,/g, '|')
+      .replace(/\*\*/g, '.*')
+      .replace(/\*/g, '[^/]+');
+    const regex = new RegExp(`^${pattern}$`);
+    return regex.test(normalizedPath);
+  }
+
+  // Simple glob-like matching
+  const pattern = includePattern.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]+');
   const regex = new RegExp(`^${pattern}$`);
   return regex.test(normalizedPath);
 }
