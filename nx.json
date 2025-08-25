@@ -95,7 +95,11 @@
       "!{projectRoot}/code-pushup.config.?(m)[jt]s",
       "!{projectRoot}/zod2md.config.ts"
     ],
-    "sharedGlobals": []
+    "sharedGlobals": [
+      { "runtime": "node -e \"console.log(require('os').platform())\"" },
+      { "runtime": "node -v" },
+      { "runtime": "npm -v" }
+    ]
   },
   "workspaceLayout": {
     "appsDir": "examples",

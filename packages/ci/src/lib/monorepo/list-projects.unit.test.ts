@@ -3,8 +3,8 @@ import path from 'node:path';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
-import { DEFAULT_SETTINGS } from '../constants.js';
 import type { Settings } from '../models.js';
+import { DEFAULT_SETTINGS } from '../settings.js';
 import {
   type MonorepoProjects,
   listMonorepoProjects,
