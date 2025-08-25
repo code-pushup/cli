@@ -8,8 +8,27 @@ import type { JestExecutorOptions } from '@nx/jest/src/executors/jest/schema';
 import type { VitestExecutorOptions } from '@nx/vite/executors';
 import { bold } from 'ansis';
 import path from 'node:path';
-import { importModule, ui } from '@code-pushup/utils';
+import { importModule, stringifyError, ui } from '@code-pushup/utils';
 import type { CoverageResult } from '../config.js';
+
+/**
+ * Resolves the cached project graph for the current Nx workspace.
+ * First tries to read cache and if not possible, go for the async creation.
+ */
+async function resolveCachedProjectGraph() {
+  const { readCachedProjectGraph, createProjectGraphAsync } = await import(
+    '@nx/devkit'
+  );
+  try {
+    return readCachedProjectGraph();
+  } catch (error) {
+    ui().logger.info(
+      `Could not read cached project graph, falling back to async creation.
+      ${stringifyError(error)}`,
+    );
+    return await createProjectGraphAsync({ exitOnError: false });
+  }
+}
 
 /**
  * @param targets nx targets to be used for measuring coverage, test by default
@@ -25,8 +44,7 @@ export async function getNxCoveragePaths(
     );
   }
 
-  const { createProjectGraphAsync } = await import('@nx/devkit');
-  const { nodes } = await createProjectGraphAsync({ exitOnError: false });
+  const { nodes } = await resolveCachedProjectGraph();
 
   const coverageResults = await Promise.all(
     targets.map(async target => {

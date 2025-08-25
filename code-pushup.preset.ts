@@ -7,7 +7,7 @@ import coveragePlugin, {
   getNxCoveragePaths,
 } from './packages/plugin-coverage/src/index.js';
 import eslintPlugin, {
-  eslintConfigFromNxProject,
+  eslintConfigFromAllNxProjects,
 } from './packages/plugin-eslint/src/index.js';
 import type { ESLintTarget } from './packages/plugin-eslint/src/lib/config.js';
 import { nxProjectsToConfig } from './packages/plugin-eslint/src/lib/nx/projects-to-config.js';
@@ -172,11 +172,12 @@ export const eslintCoreConfigNx = async (
   projectName?: string,
 ): Promise<CoreConfig> => ({
   plugins: [
-    await eslintPlugin(
-      await (projectName
-        ? eslintConfigFromNxProject(projectName)
-        : eslintConfigFromPublishableNxProjects()),
-    ),
+    projectName
+      ? await eslintPlugin({
+          eslintrc: `packages/${projectName}/eslint.config.js`,
+          patterns: ['.'],
+        })
+      : await eslintPlugin(await eslintConfigFromAllNxProjects()),
   ],
   categories: eslintCategories,
 });

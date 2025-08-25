@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../dist/packages/models-transformers",
+    "outDir": "./dist",
     "rootDir": "./",
     "module": "commonjs",
     "types": ["node"]
