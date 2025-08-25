@@ -30,6 +30,7 @@ env:
   # Show timing for 15 slowest files
   TIMING: 15
 
+jobs:
   eslint-concurrency-benchmark:
     runs-on: ${{ matrix.os }}
     name: ESLint Perf (${{ matrix.os }} - ${{ matrix.concurrency }})
