@@ -448,6 +448,33 @@
       }
     }
   },
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals",
+      "!{projectRoot}/dist/**/*"
+    ],
+    "production": [
+      "default",
+      "!{projectRoot}/eslint.config.?(c)js",
+      "!{projectRoot}/**/?(*.)test.[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.test.json",
+      "!{projectRoot}/src/test-setup.[jt]s",
+      "!{projectRoot}/test-setup.[jt]s",
+      "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
+      "!{projectRoot}/vitest.@(unit|int|e2e).config.[jt]s",
+      "!{projectRoot}/@(test|mocks)/**/*",
+      "!{projectRoot}/perf/**/*",
+      "!{projectRoot}/tools/**/*",
+      "!{projectRoot}/code-pushup.config.?(m)[jt]s",
+      "!{projectRoot}/zod2md.config.ts"
+    ],
+    "sharedGlobals": [
+      { "runtime": "node -e \"console.log(require('os').platform())\"" },
+      { "runtime": "node -v" },
+      { "runtime": "npm -v" }
+    ]
+  },
   "workspaceLayout": {
     "appsDir": "examples",
     "libsDir": "packages"
