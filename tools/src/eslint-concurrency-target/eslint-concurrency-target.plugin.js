@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs';
 import { dirname, relative } from 'node:path';
 
 const createNodesV2 = [
-  'packages/*/project.json',
+  '*/project.json',
   async (projectConfigurationFiles, opts = {}, context) => {
     const { targetName = 'lint-multi', maxWarnings = 0, cache = true } = opts;
 
