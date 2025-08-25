@@ -33,7 +33,7 @@ jobs:
 
   lint-concurrency-off:
     runs-on: ubuntu-latest
-    name: Linter with multithreading feature set to 4
+    name: Linter with multithreading feature set to off
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -53,7 +53,7 @@ jobs:
 
   lint-concurrency-auto:
     runs-on: ubuntu-latest
-    name: Linter with multithreading feature set to 4
+    name: Linter with multithreading feature set to auto
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
