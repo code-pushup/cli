@@ -6,6 +6,7 @@
   "targets": {
     "build": {},
     "lint": {},
+    "lint-report": {},
     "unit-test": {},
     "int-test": {},
     "run-help": {
