@@ -6,6 +6,5 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     }
-  },
-  "implicitDependencies": ["utils"]
+  }
 }
