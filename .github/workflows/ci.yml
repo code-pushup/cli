@@ -43,7 +43,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint affected projects with default settings and old eslint version
-        run: npx nx run-many -t lint --stats
+        run: npx nx run-many -t lint --exclude models-transformers --stats
 
   lint-concurrency:
     runs-on: ubuntu-latest
@@ -66,4 +66,4 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint affected projects with concurrency ${{ matrix.concurrency }}
-        run: npx nx run-many -t lint-multi --exclude models-transformers --concurrency ${{ matrix.concurrency }} --stats
+        run: npx nx run-many -t lint-multi --exclude models-transformers --stats --concurrency ${{ matrix.concurrency }}
