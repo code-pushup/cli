@@ -48,7 +48,7 @@ export const createNodesV2: CreateNodesV2<CreateNodesOptions> = [
   ): Promise<CreateNodesResultV2> => {
     const parsedCreateNodesOptions = createNodesOptions as CreateNodesOptions;
 
-    const results = await Promise.all(
+    return await Promise.all(
       projectConfigurationFiles.map(async projectConfigurationFile => {
         const normalizedContext = await normalizedCreateNodesV2Context(
           context,
@@ -67,7 +67,5 @@ export const createNodesV2: CreateNodesV2<CreateNodesOptions> = [
         return [projectConfigurationFile, result] as const;
       }),
     );
-
-    return results;
   },
 ];
