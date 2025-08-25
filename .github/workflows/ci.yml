@@ -49,4 +49,4 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint affected projects
-        run: npx nx run-many -t lint-multi --concurrency 5 --skipNxCache --parallel=1
+        run: npx nx run-many -t lint-multi --concurrency auto --skipNxCache --parallel=1
