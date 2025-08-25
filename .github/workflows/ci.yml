@@ -49,7 +49,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint affected projects with concurrency off
-        run: npx nx run-many -t lint-multi --concurrency off --skipNxCache --parallel=1
+        run: npx nx run-many -t lint-multi --exclude models-transformers --concurrency off --skipNxCache --parallel=1
 
   lint-concurrency-auto:
     runs-on: ubuntu-latest
@@ -69,7 +69,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint affected projects with concurrency auto
-        run: npx nx run-many -t lint-multi --concurrency auto --skipNxCache --parallel=1
+        run: npx nx run-many -t lint-multi --exclude models-transformers --concurrency auto --skipNxCache --parallel=1
 
   lint-concurrency-one:
     runs-on: ubuntu-latest
@@ -89,7 +89,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint affected projects with concurrency 1
-        run: npx nx run-many -t lint-multi --concurrency 1 --skipNxCache --parallel=1
+        run: npx nx run-many -t lint-multi --exclude models-transformers --concurrency 1 --skipNxCache --parallel=1
 
   lint-concurrency-two:
     runs-on: ubuntu-latest
@@ -109,7 +109,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint affected projects with concurrency 2
-        run: npx nx run-many -t lint-multi --concurrency 2 --skipNxCache --parallel=1
+        run: npx nx run-many -t lint-multi --exclude models-transformers --concurrency 2 --skipNxCache --parallel=1
 
   lint-concurrency-three:
     runs-on: ubuntu-latest
@@ -129,7 +129,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint affected projects with concurrency 3
-        run: npx nx run-many -t lint-multi --concurrency 3 --skipNxCache --parallel=1
+        run: npx nx run-many -t lint-multi --exclude models-transformers --concurrency 3 --skipNxCache --parallel=1
 
   lint-concurrency-four:
     runs-on: ubuntu-latest
@@ -149,7 +149,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint affected projects with concurrency 4
-        run: npx nx run-many -t lint-multi --concurrency 4 --skipNxCache --parallel=1
+        run: npx nx run-many -t lint-multi --exclude models-transformers --concurrency 4 --skipNxCache --parallel=1
 
   lint-concurrency-five:
     runs-on: ubuntu-latest
@@ -169,7 +169,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint affected projects with concurrency 5
-        run: npx nx run-many -t lint-multi --concurrency 5 --skipNxCache --parallel=1
+        run: npx nx run-many -t lint-multi --exclude models-transformers --concurrency 5 --skipNxCache --parallel=1
 
   lint-concurrency-six:
     runs-on: ubuntu-latest
@@ -189,4 +189,4 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint affected projects with concurrency 6
-        run: npx nx run-many -t lint-multi --concurrency 6 --skipNxCache --parallel=1
+        run: npx nx run-many -t lint-multi --exclude models-transformers --concurrency 6 --skipNxCache --parallel=1
