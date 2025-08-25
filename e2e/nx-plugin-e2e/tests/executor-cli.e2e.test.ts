@@ -18,7 +18,7 @@ import {
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
-import { INLINE_PLUGIN } from './inline-plugin.js';
+import { INLINE_PLUGIN } from '../mocks/inline-plugin.js';
 
 async function addTargetToWorkspace(
   tree: Tree,
