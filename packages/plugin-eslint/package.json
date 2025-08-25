@@ -38,6 +38,7 @@
   },
   "type": "module",
   "dependencies": {
+    "glob": "^11.0.0",
     "@code-pushup/utils": "0.76.0",
     "@code-pushup/models": "0.76.0",
     "yargs": "^17.7.2",
