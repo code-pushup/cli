@@ -124,10 +124,10 @@
     "zod2md": "^0.2.4"
   },
   "optionalDependencies": {
-    "@esbuild/darwin-arm64": "^0.19.12",
-    "@nx/nx-darwin-arm64": "19.8.13",
-    "@nx/nx-darwin-x64": "19.8.13",
-    "@nx/nx-linux-x64-gnu": "19.8.13",
+    "@esbuild/darwin-arm64": "^0.25.9",
+    "@nx/nx-darwin-arm64": "^21.4.1",
+    "@nx/nx-darwin-x64": "^21.4.1",
+    "@nx/nx-linux-x64-gnu": "^21.4.1",
     "@rollup/rollup-darwin-arm64": "^4.0.0",
     "@rollup/rollup-darwin-x64": "^4.0.0",
     "@rollup/rollup-linux-x64-gnu": "^4.0.0",
