@@ -14,13 +14,14 @@ env:
   NX_TASKS_RUNNER_DYNAMIC_OUTPUT: false
   NX_SKIP_LOG_GROUPING: true
   NX_GENERATE_QUIET: true
-  NX_VERBOSE_LOGGING: false
   NX_PERF_LOGGING: false
   NX_SKIP_NX_CACHE: true
   NX_SKIP_REMOTE_CACHE: true
   NX_DAEMON: false
   NX_PARALLEL: 1
   NX_BATCH_MODE: false
+  # Keep this on
+  NX_VERBOSE_LOGGING: true
 
 jobs:
   lint:
