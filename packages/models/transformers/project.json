@@ -19,6 +19,7 @@
       "options": {
         "command": "npx ts-patch install"
       }
-    }
+    },
+    "lint": {}
   }
 }

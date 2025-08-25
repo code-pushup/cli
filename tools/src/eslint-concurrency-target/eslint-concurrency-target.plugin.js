@@ -1,25 +1,50 @@
 import { existsSync } from 'node:fs';
 import { dirname, relative } from 'node:path';
 
+function matchesIncludePattern(filePath, includePattern) {
+  // Simple pattern matching for {packages,e2e,testing,examples}/*/project.json
+  const normalizedPath = filePath.replace(/\\/g, '/');
+  const pattern = includePattern
+    .replace(/\{([^}]+)\}/, '($1)')
+    .replace(/,/g, '|')
+    .replace(/\*/g, '[^/]+');
+  const regex = new RegExp(`^${pattern}$`);
+  return regex.test(normalizedPath);
+}
+
 const createNodesV2 = [
-  '*/project.json',
+  '**/project.json',
   async (projectConfigurationFiles, opts = {}, context) => {
-    const { targetName = 'lint-multi', maxWarnings = 0, cache = true } = opts;
+    const {
+      targetName = 'lint-multi',
+      maxWarnings = 0,
+      cache = true,
+      include = '{packages,e2e,testing,examples}/*/project.json',
+    } = opts;
+
+    // Filter project files based on include pattern
+    const filteredFiles = projectConfigurationFiles.filter(file =>
+      matchesIncludePattern(file, include),
+    );
 
     return await Promise.all(
-      projectConfigurationFiles.map(async projectConfigurationFile => {
+      filteredFiles.map(async projectConfigurationFile => {
         const projectRoot = dirname(projectConfigurationFile);
         const projectName = projectRoot.split('/').pop();
 
-        // Check if project has eslint.config.js
-        const eslintConfigPath = `${projectRoot}/eslint.config.js`;
+        // Check if project has eslint.config.js, fallback to root config
+        const projectEslintConfigPath = `${projectRoot}/eslint.config.js`;
+        const rootEslintConfigPath = 'eslint.config.js';
+        const eslintConfigPath = existsSync(projectEslintConfigPath)
+          ? projectEslintConfigPath
+          : rootEslintConfigPath;
 
         let result = { projects: {} };
 
         if (
           projectName &&
-          projectRoot.startsWith('packages/') &&
-          existsSync(eslintConfigPath)
+          projectRoot !== '.' &&
+          !projectRoot.startsWith('dist/')
         ) {
           // Build the native ESLint command (concurrency will be passed as argument)
           const eslintCommand = [
@@ -52,7 +77,9 @@ const createNodesV2 = [
                     inputs: [
                       'default',
                       '{workspaceRoot}/eslint.config.js',
-                      `{projectRoot}/eslint.config.js`,
+                      ...(existsSync(projectEslintConfigPath)
+                        ? [`{projectRoot}/eslint.config.js`]
+                        : []),
                     ],
                     outputs: [],
                   },
