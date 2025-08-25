@@ -97,7 +97,7 @@
     },
     "lint": {
       "inputs": ["lint-eslint-inputs"],
-      "executor": "@nx/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "cache": true,
       "options": {
