@@ -10,6 +10,7 @@
     "vitest.unit.config.ts",
     "vitest.int.config.ts",
     "src/**/*.test.ts",
-    "test/**/*.ts"
+    "test/**/*.ts",
+    "code-pushup.config.ts"
   ]
 }

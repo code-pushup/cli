@@ -6,7 +6,7 @@
     "types": ["node"],
     "plugins": [
       {
-        "transform": "./dist/packages/models-transformers",
+        "transform": "./packages/models/transformers/dist",
         "afterDeclarations": true
       }
     ]

@@ -1,7 +1,7 @@
 {
   "name": "create-cli-e2e",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "examples/create-cli-e2e/src",
+  "sourceRoot": "e2e/create-cli-e2e/src",
   "projectType": "application",
   "targets": {
     "lint": {},

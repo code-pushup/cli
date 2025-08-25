@@ -12,26 +12,51 @@ import { importModule, ui } from '@code-pushup/utils';
 import type { CoverageResult } from '../config.js';
 
 /**
+ * Resolves the cached project graph for the current Nx workspace.
+ * First tries to read cache and if not possible, go for the async creation.
+ */
+async function resolveCachedProjectGraph() {
+  const { readCachedProjectGraph, createProjectGraphAsync } = await import(
+    '@nx/devkit'
+  );
+  try {
+    return readCachedProjectGraph();
+  } catch (error) {
+    ui().logger.info(
+      `Could not read cached project graph, falling back to async creation.
+      ${stringifyError(error)}`,
+    );
+    return await createProjectGraphAsync({ exitOnError: false });
+  }
+}
+
+/**
+ * Gathers coverage paths from Nx projects. Filters by specific projects when provided.
  * @param targets nx targets to be used for measuring coverage, test by default
+ * @param projects optional array of project names to filter results for specific projects
+ * @param verbose optional verbose logging
  * @returns An array of coverage result information for the coverage plugin.
  */
-export async function getNxCoveragePaths(
-  targets: string[] = ['test'],
-  verbose?: boolean,
-): Promise<CoverageResult[]> {
+export async function getNxCoveragePaths(options: {
+  targets?: string[];
+  projects?: string[];
+  verbose?: boolean;
+}): Promise<CoverageResult[]> {
+  const { targets = ['test'], verbose, projects } = options;
   if (verbose) {
     ui().logger.info(
       bold('💡 Gathering coverage from the following nx projects:'),
     );
   }
 
-  const { createProjectGraphAsync } = await import('@nx/devkit');
-  const { nodes } = await createProjectGraphAsync({ exitOnError: false });
+  const { nodes } = await resolveCachedProjectGraph();
 
   const coverageResults = await Promise.all(
     targets.map(async target => {
-      const relevantNodes = Object.values(nodes).filter(graph =>
-        hasNxTarget(graph, target),
+      const relevantNodes = Object.values(nodes).filter(
+        graph =>
+          hasNxTarget(graph, target) &&
+          (projects ? projects.includes(graph.name) : true),
       );
 
       return await Promise.all(
@@ -162,7 +187,7 @@ export async function getCoveragePathForJest(
   options: JestExecutorOptions,
   project: ProjectConfiguration,
   target: string,
-) {
+): Promise<CoverageResult> {
   const { jestConfig } = options;
 
   const testConfig = await importModule<JestCoverageConfig>({
