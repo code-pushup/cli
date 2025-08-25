@@ -33,11 +33,17 @@ const createNodesV2 = [
   '**/project.json',
   async (projectConfigurationFiles, opts = {}, context) => {
     const {
-      targetName = 'lint-multi',
+      targetName = 'lint',
       maxWarnings = 0,
       cache = true,
-      include = '{packages,e2e,testing,examples}/*/project.json',
+      include = '**/project.json',
+      eslintVersion = undefined,
     } = opts;
+
+    // Derive target name with version postfix
+    const finalTargetName = eslintVersion
+      ? `${targetName}-${eslintVersion.replace(/\./g, '')}`
+      : targetName;
 
     // Filter project files based on include pattern
     const filteredFiles = projectConfigurationFiles.filter(file =>
@@ -64,8 +70,11 @@ const createNodesV2 = [
           !projectRoot.startsWith('dist/')
         ) {
           // Build the native ESLint command (concurrency will be passed as argument)
+          const eslintCmd = eslintVersion
+            ? `npx -y eslint@${eslintVersion}`
+            : 'npx eslint';
           const eslintCommand = [
-            'npx eslint',
+            eslintCmd,
             `--config ${relative(context.workspaceRoot, eslintConfigPath)}`,
             `--max-warnings ${maxWarnings}`,
             '--no-error-on-unmatched-pattern',
@@ -81,13 +90,13 @@ const createNodesV2 = [
             projects: {
               [projectRoot]: {
                 targets: {
-                  [targetName]: {
+                  [finalTargetName]: {
                     executor: 'nx:run-commands',
                     options: {
                       command: eslintCommand,
                     },
                     metadata: {
-                      description: `Run ESLint with native CLI for ${projectName} (use --concurrency flag to set threads)`,
+                      description: `Run ESLint${eslintVersion ? `@${eslintVersion}` : ''} with native CLI for ${projectName} (use --concurrency flag to set threads)`,
                       technologies: ['eslint'],
                     },
                     cache: true,

@@ -1,0 +1,102 @@
+name: ESLint Perf
+
+on:
+  push:
+    branches: [main, research/eslint-muntithreading]
+  pull_request:
+    branches: [main, research/eslint-muntithreading]
+  workflow_dispatch:
+    inputs:
+      concurrency_levels:
+        description: 'Concurrency levels to test (comma-separated)'
+        required: false
+        default: 'off,auto,1,2,3,4,5,6'
+
+env:
+  NX_NON_NATIVE_HASHER: true
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  # Disable Nx optimizations for clean perf measurement
+  NX_TUI: false
+  NX_TASKS_RUNNER_DYNAMIC_OUTPUT: false
+  NX_SKIP_LOG_GROUPING: true
+  NX_GENERATE_QUIET: true
+  NX_PERF_LOGGING: false
+  NX_SKIP_NX_CACHE: true
+  NX_SKIP_REMOTE_CACHE: true
+  NX_DAEMON: false
+  NX_PARALLEL: 1
+  NX_BATCH_MODE: false
+  NX_VERBOSE_LOGGING: false
+  # Show timing for 15 slowest files
+  TIMING: 15
+
+  eslint-concurrency-benchmark:
+    runs-on: ${{ matrix.os }}
+    name: ESLint Perf (${{ matrix.os }} - ${{ matrix.concurrency }})
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        concurrency: ['off', 'auto', '1', '2', '3', '4']
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Set base and head for Nx affected commands
+        uses: nrwl/nx-set-shas@v4
+      - name: Install dependencies
+        run: npm ci
+      - name: ESLint test (${{ matrix.concurrency }})
+        run: npx nx run-many -t lint --exclude models-transformers --stats --concurrency ${{ matrix.concurrency }}
+
+  eslint-v8570-benchmark:
+    runs-on: ${{ matrix.os }}
+    name: ESLint v8570 (${{ matrix.os }})
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Set base and head for Nx affected commands
+        uses: nrwl/nx-set-shas@v4
+      - name: Install dependencies
+        run: npm ci
+      - name: ESLint v8570 test
+        run: npx nx run-many -t lint-8570 --exclude models-transformers --stats
+
+  eslint-v9340-benchmark:
+    runs-on: ${{ matrix.os }}
+    name: ESLint v9340 (${{ matrix.os }} - ${{ matrix.concurrency }})
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        concurrency: ['off', 'auto', '1', '2', '3', '4']
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Set base and head for Nx affected commands
+        uses: nrwl/nx-set-shas@v4
+      - name: Install dependencies
+        run: npm ci
+      - name: ESLint v9340 test (${{ matrix.concurrency }})
+        run: npx nx run-many -t lint-9340 --exclude models-transformers --stats --concurrency ${{ matrix.concurrency }}
