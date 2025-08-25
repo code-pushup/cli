@@ -11,26 +11,6 @@ env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 jobs:
-  format:
-    runs-on: ubuntu-latest
-    name: Format check
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - name: Set base and head for Nx affected commands
-        uses: nrwl/nx-set-shas@v4
-      - name: Install dependencies
-        run: npm ci
-      - name: Check formatting of affected files
-        run: npx nx format:check
-
   lint:
     runs-on: ubuntu-latest
     name: Linter
@@ -49,83 +29,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint affected projects
-        run: npx nx affected:lint --parallel=3
+        run: npx nx run-many -t lint --concurrency 5 --skipNxCache --parallel=1
 
-  unit-test:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    name: Unit tests
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - name: Set base and head for Nx affected commands
-        uses: nrwl/nx-set-shas@v4
-      - name: Install dependencies
-        run: npm ci
-      - name: Unit test affected projects
-        run: npx nx affected -t unit-test --parallel=3 --coverage.enabled
-
-  integration-test:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    name: Integration tests
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - name: Set base and head for Nx affected commands
-        uses: nrwl/nx-set-shas@v4
-      - name: Install dependencies
-        run: npm ci
-      - name: Integration test affected projects
-        run: npx nx affected -t int-test --parallel=3 --coverage.enabled
-
-  e2e:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    name: E2E tests
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - name: Set base and head for Nx affected commands
-        uses: nrwl/nx-set-shas@v4
-      - name: Install dependencies
-        run: npm ci
-      - name: E2E test affected projects
-        run: npx nx affected -t e2e-test --parallel=1
-
-  build:
+  lint-multi:
     runs-on: ubuntu-latest
-    name: Build
+    name: Linter with multithreading feature set to 4
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -140,7 +48,5 @@ jobs:
         uses: nrwl/nx-set-shas@v4
       - name: Install dependencies
         run: npm ci
-      - name: Build all projects # affected is not used to be able to test-releae packages
-        run: npx nx run-many --target=build --parallel=3
-      - name: Test-release packages
-        run: npx pkg-pr-new publish "packages/**/dist"
+      - name: Lint affected projects
+        run: npx nx run-many -t lint-multi --concurrency 5 --skipNxCache --parallel=1

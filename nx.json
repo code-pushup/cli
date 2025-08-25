@@ -166,6 +166,14 @@
           "filterByTags": ["publishable"]
         }
       }
+    },
+    {
+      "plugin": "./tools/src/eslint-concurrency-target/eslint-concurrency-target.plugin.js",
+      "options": {
+        "targetName": "lint-multi",
+        "maxWarnings": 0,
+        "cache": true
+      }
     }
   ],
   "nxCloudId": "65d4d862d2adb16a45a4bc7c"
