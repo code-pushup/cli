@@ -43,8 +43,11 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# generated eslint reports
+.eslint
+
 # generated Code PushUp reports
-/.code-pushup
+.code-pushup
 
 # Nx workspace cache
 .nx

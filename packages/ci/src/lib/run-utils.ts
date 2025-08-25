@@ -28,11 +28,6 @@ import {
   runCompare,
   runPrintConfig,
 } from './cli/index.js';
-import {
-  DEFAULT_SETTINGS,
-  MAX_SEARCH_COMMITS,
-  MIN_SEARCH_COMMITS,
-} from './constants.js';
 import { listChangedFiles, normalizeGitRef } from './git.js';
 import { type SourceFileIssue, filterRelevantIssues } from './issues.js';
 import type {
@@ -49,6 +44,11 @@ import type {
 import type { ProjectConfig } from './monorepo/index.js';
 import { saveOutputFiles } from './output-files.js';
 import { downloadFromPortal } from './portal/download.js';
+import {
+  DEFAULT_SETTINGS,
+  MAX_SEARCH_COMMITS,
+  MIN_SEARCH_COMMITS,
+} from './settings.js';
 
 export type RunEnv = {
   refs: NormalizedGitRefs;

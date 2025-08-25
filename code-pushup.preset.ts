@@ -7,9 +7,10 @@ import coveragePlugin, {
   getNxCoveragePaths,
 } from './packages/plugin-coverage/src/index.js';
 import eslintPlugin, {
-  eslintConfigFromAllNxProjects,
   eslintConfigFromNxProject,
 } from './packages/plugin-eslint/src/index.js';
+import type { ESLintTarget } from './packages/plugin-eslint/src/lib/config.js';
+import { nxProjectsToConfig } from './packages/plugin-eslint/src/lib/nx/projects-to-config.js';
 import jsPackagesPlugin from './packages/plugin-js-packages/src/index.js';
 import jsDocsPlugin from './packages/plugin-jsdocs/src/index.js';
 import type { JsDocsPluginTransformedConfig } from './packages/plugin-jsdocs/src/lib/config.js';
@@ -156,6 +157,17 @@ export const jsDocsCoreConfig = (
   ),
 });
 
+export async function eslintConfigFromPublishableNxProjects(): Promise<
+  ESLintTarget[]
+> {
+  const { createProjectGraphAsync } = await import('@nx/devkit');
+  const projectGraph = await createProjectGraphAsync({ exitOnError: false });
+  return nxProjectsToConfig(
+    projectGraph,
+    project => project.tags?.includes('publishable') ?? false,
+  );
+}
+
 export const eslintCoreConfigNx = async (
   projectName?: string,
 ): Promise<CoreConfig> => ({
@@ -163,7 +175,7 @@ export const eslintCoreConfigNx = async (
     await eslintPlugin(
       await (projectName
         ? eslintConfigFromNxProject(projectName)
-        : eslintConfigFromAllNxProjects()),
+        : eslintConfigFromPublishableNxProjects()),
     ),
   ],
   categories: eslintCategories,
