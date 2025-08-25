@@ -34,9 +34,9 @@
   "dependencies": {
     "@code-pushup/models": "0.76.0",
     "@code-pushup/utils": "0.76.0",
-    "@nx/devkit": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "@nx/devkit": ">=17.0.0",
     "ansis": "^3.3.0",
-    "nx": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "nx": ">=17.0.0",
     "zod": "^4.0.5"
   },
   "files": [
