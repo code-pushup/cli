@@ -3,10 +3,10 @@ import {
   type NxJsonConfiguration,
   type PluginConfiguration,
   type ProjectConfiguration,
+  type ProjectGraph,
   type Tree,
   updateJson,
 } from '@nx/devkit';
-import type { ProjectGraph } from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
 import type { LibraryGeneratorSchema } from '@nx/js/src/generators/library/schema';
 import path from 'node:path';
