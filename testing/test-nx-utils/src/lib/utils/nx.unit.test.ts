@@ -19,6 +19,11 @@ describe('executorContext', () => {
         version: 1,
       },
       root: '.',
+      nxJsonConfiguration: {},
+      projectGraph: {
+        dependencies: {},
+        nodes: {},
+      },
     });
   });
 
@@ -39,6 +44,11 @@ describe('executorContext', () => {
         version: 1,
       },
       root: '.',
+      nxJsonConfiguration: {},
+      projectGraph: {
+        dependencies: {},
+        nodes: {},
+      },
     });
   });
 });

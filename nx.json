@@ -327,7 +327,8 @@
     },
     "version": {
       "conventionalCommits": true,
-      "generatorOptions": {
+      "preserveLocalDependencyProtocols": false,
+      "versionActionsOptions": {
         "skipLockFileUpdate": true
       }
     },

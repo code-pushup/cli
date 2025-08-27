@@ -16,13 +16,13 @@
 
 ---
 
-![Type safety](https://api.staging.code-pushup.dev/badges/code-pushup/cli/type-safety?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
-![Bug prevention](https://api.staging.code-pushup.dev/badges/code-pushup/cli/bug-prevention?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
-![Code style](https://api.staging.code-pushup.dev/badges/code-pushup/cli/code-style?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
-![Code coverage](https://api.staging.code-pushup.dev/badges/code-pushup/cli/code-coverage?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
-![Security](https://api.staging.code-pushup.dev/badges/code-pushup/cli/security?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
-![Updates](https://api.staging.code-pushup.dev/badges/code-pushup/cli/updates?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
-![Documentation](https://api.staging.code-pushup.dev/badges/code-pushup/cli/docs?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
+![Type safety](https://api.staging.code-pushup.dev/badges/code-pushup/cli-workspace/type-safety?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
+![Bug prevention](https://api.staging.code-pushup.dev/badges/code-pushup/cli-workspace/bug-prevention?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
+![Code style](https://api.staging.code-pushup.dev/badges/code-pushup/cli-workspace/code-style?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
+![Code coverage](https://api.staging.code-pushup.dev/badges/code-pushup/cli-workspace/code-coverage?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
+![Security](https://api.staging.code-pushup.dev/badges/code-pushup/cli-workspace/security?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
+![Updates](https://api.staging.code-pushup.dev/badges/code-pushup/cli-workspace/updates?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
+![Documentation](https://api.staging.code-pushup.dev/badges/code-pushup/cli-workspace/docs?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
 
 ---
 
