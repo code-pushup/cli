@@ -59,7 +59,7 @@
       "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
       "outputs": ["{projectRoot}/.eslint/eslint-report*.json"],
       "cache": true,
-      "executor": "@nx/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "options": {
         "errorOnUnmatchedPattern": false,
         "maxWarnings": 0,
@@ -69,6 +69,19 @@
           "{projectRoot}/**/*.ts",
           "{projectRoot}/package.json"
         ]
+      }
+    },
+    "lint-formatter": {
+      "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
+      "outputs": ["{projectRoot}/.eslint/eslint-report*.json"],
+      "cache": true,
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx lint {projectName}",
+        "args": ["--format=./dist/eslint-multi-format/index.js"],
+        "env": {
+          "ESLINT_FORMATTER_CONFIG": "{\"outputDir\":\"{projectRoot}/.eslint\"}"
+        }
       }
     },
     "nxv-pkg-install": {
@@ -163,6 +176,20 @@
         "packages": {
           "filterByTags": ["publishable"]
         }
+      }
+    },
+    {
+      "plugin": "@nx/vite/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "testTargetName": "test",
+        "serveTargetName": "serve",
+        "devTargetName": "dev",
+        "previewTargetName": "preview",
+        "serveStaticTargetName": "serve-static",
+        "typecheckTargetName": "typecheck",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
       }
     }
   ],

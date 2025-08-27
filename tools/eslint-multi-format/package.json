@@ -1,0 +1,37 @@
+{
+  "name": "eslint-formatter-multi-format",
+  "version": "0.0.1",
+  "private": false,
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "description": "ESLint formatter that supports multiple output formats and destinations simultaneously",
+  "author": "Michael Hladky",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/code-pushup/cli.git",
+    "directory": "tools/eslint-multi-format"
+  },
+  "keywords": [
+    "eslint",
+    "eslint-formatter",
+    "eslintformatter",
+    "multi-format",
+    "code-quality",
+    "linting"
+  ],
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "lib/",
+    "README.md",
+    "package.json"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "peerDependencies": {
+    "eslint": "^8.0.0 || ^9.0.0"
+  }
+}
