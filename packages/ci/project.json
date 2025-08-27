@@ -8,7 +8,19 @@
     "lint": {},
     "lint-report": {},
     "unit-test": {},
-    "int-test": {}
+    "int-test": {},
+    "code-pushup": {
+      "dependsOn": [
+        "code-pushup-coverage",
+        "code-pushup-jsdocs",
+        "code-pushup-typescript",
+        "code-pushup-eslint"
+      ]
+    },
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {},
+    "code-pushup-jsdocs": {},
+    "code-pushup-typescript": {}
   },
   "tags": ["scope:tooling", "type:feature", "publishable"]
 }

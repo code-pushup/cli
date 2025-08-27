@@ -3,7 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/nx-plugin/src",
   "projectType": "library",
-  "implicitDependencies": ["cli"],
   "targets": {
     "build": {
       "options": {
@@ -51,7 +50,19 @@
       }
     },
     "unit-test": {},
-    "int-test": {}
+    "int-test": {},
+    "code-pushup": {
+      "dependsOn": [
+        "code-pushup-coverage",
+        "code-pushup-jsdocs",
+        "code-pushup-typescript",
+        "code-pushup-eslint"
+      ]
+    },
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {},
+    "code-pushup-jsdocs": {},
+    "code-pushup-typescript": {}
   },
   "tags": ["scope:tooling", "type:feature", "publishable"]
 }

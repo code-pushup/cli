@@ -7,7 +7,21 @@
     "build": {},
     "lint": {},
     "lint-report": {},
-    "unit-test": {}
+    "unit-test": {},
+    "code-pushup": {
+      "dependsOn": [
+        "code-pushup-coverage",
+        "code-pushup-jsdocs",
+        "code-pushup-typescript",
+        "code-pushup-eslint"
+      ]
+    },
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {
+      "dependsOn": ["unit-test"]
+    },
+    "code-pushup-jsdocs": {},
+    "code-pushup-typescript": {}
   },
   "tags": ["scope:plugin", "type:feature", "publishable"]
 }

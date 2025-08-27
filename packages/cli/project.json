@@ -26,7 +26,19 @@
         "cwd": "examples/react-todos-app"
       },
       "dependsOn": ["build"]
-    }
+    },
+    "code-pushup": {
+      "dependsOn": [
+        "code-pushup-coverage",
+        "code-pushup-jsdocs",
+        "code-pushup-typescript",
+        "code-pushup-eslint"
+      ]
+    },
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {},
+    "code-pushup-jsdocs": {},
+    "code-pushup-typescript": {}
   },
   "tags": ["scope:core", "type:app", "publishable"]
 }

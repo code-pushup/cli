@@ -8,7 +8,8 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["vitest"]
+    "types": ["vitest"],
+    "rootDir": ".."
   },
   "files": [],
   "include": [],
@@ -18,6 +19,9 @@
     },
     {
       "path": "./tsconfig.test.json"
+    },
+    {
+      "path": "../test-utils/tsconfig.lib.json"
     }
   ]
 }

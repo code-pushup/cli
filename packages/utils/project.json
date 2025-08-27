@@ -20,7 +20,20 @@
       }
     },
     "unit-test": {},
-    "int-test": {}
+    "int-test": {},
+    "code-pushup": {
+      "dependsOn": [
+        "code-pushup-coverage",
+        "code-pushup-jsdocs",
+        "code-pushup-typescript",
+        "code-pushup-eslint"
+      ]
+    },
+    "code-pushup-eslint": {},
+    "code-pushup-jsdocs": {},
+    "code-pushup-coverage": {
+      "dependsOn": ["unit-test", "int-test"]
+    }
   },
   "tags": ["scope:shared", "type:util", "publishable"]
 }

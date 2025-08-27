@@ -3,12 +3,24 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/plugin-jsdocs/src",
   "projectType": "library",
-  "tags": ["scope:plugin", "type:feature", "publishable"],
   "targets": {
     "build": {},
     "lint": {},
     "lint-report": {},
     "unit-test": {},
-    "int-test": {}
-  }
+    "int-test": {},
+    "code-pushup": {
+      "dependsOn": [
+        "code-pushup-coverage",
+        "code-pushup-jsdocs",
+        "code-pushup-typescript",
+        "code-pushup-eslint"
+      ]
+    },
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {},
+    "code-pushup-jsdocs": {},
+    "code-pushup-typescript": {}
+  },
+  "tags": ["scope:plugin", "type:feature", "publishable"]
 }
