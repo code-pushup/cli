@@ -1,15 +1,7 @@
+import type { CreateNodesV2, NxPlugin } from '@nx/devkit';
 import { createNodes, createNodesV2 } from './plugin/index.js';
 
-// default export for nx.json#plugins
-const plugin = {
-  name: '@code-pushup/nx-plugin',
-  createNodesV2,
-  // Keep for backwards compatibility with Nx < 21
-  createNodes,
-};
-
-export default plugin;
-
+export { createNodes, createNodesV2 } from './plugin/index.js';
 export type { AutorunCommandExecutorOptions } from './executors/cli/schema.js';
 export { objectToCliArgs } from './executors/internal/cli.js';
 export { generateCodePushupConfig } from './generators/configuration/code-pushup-config.js';
@@ -22,4 +14,9 @@ export {
   type ProcessConfig,
 } from './internal/execute-process.js';
 export * from './internal/versions.js';
-export { createNodes, createNodesV2 } from './plugin/index.js';
+
+export default {
+  name: 'code-pushup',
+  createNodesV2: createNodesV2 as CreateNodesV2,
+  createNodes,
+} satisfies NxPlugin;

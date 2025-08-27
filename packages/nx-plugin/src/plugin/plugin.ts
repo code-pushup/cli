@@ -43,10 +43,11 @@ export const createNodesV2: CreateNodesV2<CreateNodesOptions> = [
   `**/${PROJECT_JSON_FILE_NAME}`,
   async (
     projectConfigurationFiles: readonly string[],
-    createNodesOptions: unknown,
+    createNodesOptions: CreateNodesOptions | undefined,
     context: CreateNodesContextV2,
   ): Promise<CreateNodesResultV2> => {
-    const parsedCreateNodesOptions = createNodesOptions as CreateNodesOptions;
+    const parsedCreateNodesOptions =
+      (createNodesOptions as CreateNodesOptions) ?? {};
 
     return await Promise.all(
       projectConfigurationFiles.map(async projectConfigurationFile => {
