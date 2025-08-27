@@ -40,12 +40,11 @@
         }
       }
     },
-    "e2e": {
-      "dependsOn": ["^build"]
-    },
+    "e2e": { "dependsOn": ["^build"] },
     "lint": {
       "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
-      "executor": "@nx/linter:eslint",
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
       "cache": true,
       "options": {
         "errorOnUnmatchedPattern": false,
@@ -143,7 +142,8 @@
     },
     "version": {
       "conventionalCommits": true,
-      "generatorOptions": {
+      "preserveLocalDependencyProtocols": false,
+      "versionActionsOptions": {
         "skipLockFileUpdate": true
       }
     },
