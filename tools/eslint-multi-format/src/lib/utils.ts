@@ -128,12 +128,15 @@ export function persistEslintReport(
 ): boolean {
   const { outputDir, filename, format, verbose = false } = options;
   try {
+    // eslint-disable-next-line n/no-sync
     mkdirSync(outputDir, { recursive: true });
+    // eslint-disable-next-line n/no-sync
     writeFileSync(
       path.join(outputDir, `${filename}.${getExtensionForFormat(format)}`),
       content,
     );
     if (verbose) {
+      // eslint-disable-next-line no-console
       console.log(`ESLint report (${format}) written to: ${outputDir}`);
     }
     return true;
