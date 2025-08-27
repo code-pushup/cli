@@ -1,6 +1,4 @@
 import { createRequire } from 'node:module';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import type { PluginConfig } from '@code-pushup/models';
 import { parseSchema } from '@code-pushup/utils';
 import {
@@ -11,7 +9,7 @@ import {
 } from './config.js';
 import { ESLINT_PLUGIN_SLUG } from './constants.js';
 import { listAuditsAndGroups } from './meta/index.js';
-import { createRunnerConfig } from './runner/index.js';
+import { createRunnerFunction } from './runner/index.js';
 
 /**
  * Instantiates Code PushUp ESLint plugin for use in core config.
@@ -42,21 +40,13 @@ export async function eslintPlugin(
     schemaType: 'ESLint plugin config',
   });
 
-  const parsedOptions = options
+  const { groups: customGroups, artifacts } = options
     ? parseSchema(eslintPluginOptionsSchema, options, {
         schemaType: 'ESLint plugin options',
       })
-    : undefined;
-
-  const customGroups = parsedOptions?.groups;
+    : {};
 
   const { audits, groups } = await listAuditsAndGroups(targets, customGroups);
-
-  const runnerScriptPath = path.join(
-    fileURLToPath(path.dirname(import.meta.url)),
-    '..',
-    'bin.js',
-  );
 
   const packageJson = createRequire(import.meta.url)(
     '../../package.json',
@@ -74,11 +64,10 @@ export async function eslintPlugin(
     audits,
     groups,
 
-    runner: await createRunnerConfig(
-      runnerScriptPath,
+    runner: await createRunnerFunction({
       audits,
       targets,
-      parsedOptions?.artifacts,
-    ),
+      ...(artifacts ? { artifacts } : {}),
+    }),
   };
 }

@@ -7,12 +7,33 @@ import type {
 } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
-import { generateAuditOutputs } from './index.js';
+import { createRunnerFunction } from './index.js';
 import * as lintModule from './lint.js';
 import type { LinterOutput } from './types.js';
 import * as utilsFileModule from './utils.js';
 
-describe('generateAuditOutputs', () => {
+describe('call createRunnerFunction', () => {
+  it('should create runnerFunction correctly', () => {
+    expect(
+      createRunnerFunction({
+        audits: [
+          { slug: 'max-lines', title: 'Max lines', description: 'Test' },
+          {
+            slug: 'no-unused-vars',
+            title: 'No unused vars',
+            description: 'Test',
+          },
+        ],
+        targets: [{ patterns: ['src/**/*.ts'] }],
+        artifacts: {
+          artifactsPaths: ['path/to/artifacts.json'],
+        },
+      }),
+    ).toStrictEqual(expect.any(Function));
+  });
+});
+
+describe('execute created runnerFunction', () => {
   const loadArtifactsSpy = vi.spyOn(utilsFileModule, 'loadArtifacts');
   const lintSpy = vi.spyOn(lintModule, 'lint');
 
@@ -120,11 +141,11 @@ describe('generateAuditOutputs', () => {
     loadArtifactsSpy.mockResolvedValue(mockLinterOutputs);
 
     await expect(
-      generateAuditOutputs({
+      createRunnerFunction({
         audits: mockAudits,
         targets: mockTargets,
         artifacts,
-      }),
+      })({}),
     ).resolves.toStrictEqual(mockedAuditOutputs);
 
     expect(loadArtifactsSpy).toHaveBeenCalledWith(artifacts);
@@ -137,9 +158,10 @@ describe('generateAuditOutputs', () => {
     lintSpy.mockResolvedValueOnce(mockLinterOutputs.at(0)!);
 
     await expect(
-      generateAuditOutputs({
+      createRunnerFunction({
         audits: mockAudits,
         targets: mockTargets,
+      })({
         outputDir: 'custom-output',
       }),
     ).resolves.toStrictEqual(mockedAuditOutputs);

@@ -4,11 +4,12 @@ import type {
   Audit,
   AuditOutput,
   AuditOutputs,
+  PersistConfig,
   PluginArtifactOptions,
   RunnerConfig,
   RunnerFilesPaths,
+  RunnerFunction,
 } from '@code-pushup/models';
-import { pluginArtifactOptionsSchema } from '@code-pushup/models';
 import {
   asyncSequential,
   createRunnerFiles,
@@ -55,91 +56,62 @@ export async function createRunnerConfig(
   scriptPath: string,
   audits: Audit[],
   targets: ESLintTarget[],
-  artifactOptions?: PluginArtifactOptions,
 ): Promise<RunnerConfig> {
-  const parsedOptions = artifactOptions
-    ? pluginArtifactOptionsSchema.parse(artifactOptions)
-    : undefined;
-
   const config: ESLintPluginRunnerConfig = {
     targets,
-    slugs: audits.map(a => a.slug),
+    slugs: audits.map(audit => audit.slug),
   };
-
-  const { runnerConfigPath, runnerOutputPath } = parsedOptions
-    ? await createCustomRunnerPaths(parsedOptions, config)
-    : await createRunnerFiles('eslint', JSON.stringify(config));
-
-  const args = [
-    filePathToCliArg(scriptPath),
-    ...objectToCliArgs({ runnerConfigPath, runnerOutputPath }),
-    ...resolveCommandArgs(parsedOptions?.generateArtifactsCommand),
-  ];
+  const { runnerConfigPath, runnerOutputPath } = await createRunnerFiles(
+    'eslint',
+    JSON.stringify(config),
+  );
 
   return {
     command: 'node',
-    args,
+    args: [
+      filePathToCliArg(scriptPath),
+      ...objectToCliArgs({ runnerConfigPath, runnerOutputPath }),
+    ],
     configFile: runnerConfigPath,
     outputFile: runnerOutputPath,
   };
 }
 
-export async function generateAuditOutputs(options: {
+export function createRunnerFunction(options: {
   audits: Audit[];
   targets: ESLintTarget[];
   artifacts?: PluginArtifactOptions;
-}): Promise<AuditOutputs> {
+}): RunnerFunction {
   const { audits, targets, artifacts } = options;
   const config: ESLintPluginRunnerConfig = {
     targets,
     slugs: audits.map(audit => audit.slug),
   };
 
-  ui().logger.log(`ESLint plugin executing ${targets.length} lint targets`);
+  return async ({ outputDir }: PersistConfig): Promise<AuditOutputs> => {
+    ui().logger.log(`ESLint plugin executing ${targets.length} lint targets`);
 
-  const linterOutputs = artifacts
-    ? await loadArtifacts(artifacts)
-    : await asyncSequential(targets, lint);
-  const lintResults = mergeLinterOutputs(linterOutputs);
-  const failedAudits = lintResultsToAudits(lintResults);
+    const linterOutputs = artifacts
+      ? await loadArtifacts(artifacts)
+      : await asyncSequential(
+          targets.map(target => ({
+            ...target,
+            outputDir,
+          })),
+          lint,
+        );
+    const lintResults = mergeLinterOutputs(linterOutputs);
+    const failedAudits = lintResultsToAudits(lintResults);
 
-  return config.slugs.map(
-    (slug): AuditOutput =>
-      failedAudits.find(audit => audit.slug === slug) ?? {
-        slug,
-        score: 1,
-        value: 0,
-        displayValue: 'passed',
-        details: { issues: [] },
-      },
-  );
-}
-
-async function createCustomRunnerPaths(
-  options: PluginArtifactOptions,
-  config: ESLintPluginRunnerConfig,
-): Promise<RunnerFilesPaths> {
-  const artifactPaths = Array.isArray(options.artifactsPaths)
-    ? options.artifactsPaths
-    : [options.artifactsPaths];
-
-  const runnerOutputPath = artifactPaths[0] ?? '';
-  const runnerConfigPath = path.join(
-    path.dirname(runnerOutputPath),
-    'plugin-config.json',
-  );
-
-  await ensureDirectoryExists(path.dirname(runnerConfigPath));
-  await writeFile(runnerConfigPath, JSON.stringify(config));
-
-  return { runnerConfigPath, runnerOutputPath };
-}
-
-function resolveCommandArgs(
-  command?: string | { command: string; args?: string[] },
-): string[] {
-  if (!command) return [];
-  return typeof command === 'string'
-    ? [command]
-    : [command.command, ...(command.args ?? [])];
+    return config.slugs.map(
+      (slug): AuditOutput =>
+        failedAudits.find(audit => audit.slug === slug) ?? {
+          slug,
+          score: 1,
+          value: 0,
+          displayValue: 'passed',
+          details: { issues: [] },
+        },
+    );
+  };
 }

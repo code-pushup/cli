@@ -152,7 +152,7 @@ describe('eslintPlugin', () => {
     await expect(
       // @ts-expect-error simulating invalid non-TS config
       eslintPlugin({ eslintrc: '.eslintrc.json' }),
-    ).rejects.toThrow('Invalid input');
+    ).rejects.toThrow('Failed parsing ESLint plugin config');
   });
 
   it("should throw if eslintrc file doesn't exist", async () => {
@@ -176,14 +176,6 @@ describe('eslintPlugin', () => {
       },
     );
 
-    expect(typeof plugin.runner).toBe('object');
-    const runnerConfig = plugin.runner as {
-      command: string;
-      args?: string[];
-      outputFile: string;
-    };
-    expect(runnerConfig.command).toBe('node');
-    expect(runnerConfig.args).toContain('echo "Generating artifacts"');
-    expect(runnerConfig.outputFile).toBe('./artifacts/eslint-output.json');
+    expect(typeof plugin.runner).toBe('function');
   });
 });
