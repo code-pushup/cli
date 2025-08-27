@@ -137,9 +137,7 @@ export async function getCoveragePathForVitest(
   project: ProjectConfiguration,
   target: string,
 ) {
-  const {
-    default: { normalizeViteConfigFilePathWithTree },
-  } = await import('@nx/vite');
+  const { normalizeViteConfigFilePathWithTree } = await import('@nx/vite');
   const config = normalizeViteConfigFilePathWithTree(
     // HACK: only tree.exists is called, so injecting existSync from node:fs instead
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

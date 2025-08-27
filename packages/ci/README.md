@@ -279,9 +279,9 @@ await runInCI(refs, api, {
 
 ### Search latest commits for previous report
 
-When comparing reports, the report for the base branch can be cached. If a project has an `upload` configuration, then the Portal API is queried for a report matching that commit. If no such report was uploaded, then the report is looked up in CI artifacts (implemented in `downloadReportArtifact` in [`ProviderApiClient`](#provider-api-client)). If there's no report to be found, then the base branch is checked and the previous report is collected.
+When comparing reports, the report for the base branch can be cached. If a project has an `upload` configuration, then the Portal API is queried for a report matching that commit. If no such report was uploaded, then the report is looked up in CI artifacts (implemented by `downloadReportArtifact` in [`ProviderApiClient`](#provider-api-client)). If there's no report to be found, then the base branch is checked out and the previous report is collected.
 
-In some scenarios, there may not be a report for the latest commit in main branch, but some other recent commit may have a usable report - e.g. if `nxProjectsFilter` is used with `--affected` flag. In that case, the `searchCommits` option can be enabled. Then a limited number of recent commits in the main branch will be checked, but.
+In some scenarios, there may not be a report for the latest commit in main branch, but some other recent commit may have a usable report - e.g. if `nxProjectsFilter` is used with `--affected` flag. In that case, the `searchCommits` option can be enabled. Then a limited number of recent commits in the main branch will be checked.
 
 ```ts
 await runInCI(refs, api, {

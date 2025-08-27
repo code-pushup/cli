@@ -231,6 +231,7 @@
       }
     },
     "unit-test": {
+      "cache": true,
       "outputs": [
         "{workspaceRoot}/coverage/{projectName}/unit-tests/lcov.info"
       ],
@@ -243,6 +244,7 @@
       }
     },
     "int-test": {
+      "cache": true,
       "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
       "executor": "@nx/vite:test",
       "options": {
@@ -258,12 +260,29 @@
       "cache": true
     },
     "lint": {
-      "inputs": ["lint-eslint-inputs"],
-      "executor": "@nx/linter:eslint",
+      "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "cache": true,
       "options": {
+        "errorOnUnmatchedPattern": false,
         "maxWarnings": 0,
+        "lintFilePatterns": [
+          "{projectRoot}/**/*.ts",
+          "{projectRoot}/package.json"
+        ]
+      }
+    },
+    "lint-report": {
+      "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
+      "outputs": ["{projectRoot}/.eslint/eslint-report*.json"],
+      "cache": true,
+      "executor": "@nx/linter:eslint",
+      "options": {
+        "errorOnUnmatchedPattern": false,
+        "maxWarnings": 0,
+        "format": "json",
+        "outputFile": "{projectRoot}/.eslint/eslint-report.json",
         "lintFilePatterns": [
           "{projectRoot}/**/*.ts",
           "{projectRoot}/package.json"
@@ -499,7 +518,8 @@
     },
     "version": {
       "conventionalCommits": true,
-      "generatorOptions": {
+      "preserveLocalDependencyProtocols": false,
+      "versionActionsOptions": {
         "skipLockFileUpdate": true
       }
     },

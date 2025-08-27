@@ -40,6 +40,15 @@
         ]
       }
     },
+    "lint-report": {
+      "options": {
+        "lintFilePatterns": [
+          "packages/nx-plugin/**/*.ts",
+          "packages/nx-plugin/package.json",
+          "packages/nx-plugin/generators.json"
+        ]
+      }
+    },
     "unit-test": {},
     "int-test": {},
     "code-pushup": {
