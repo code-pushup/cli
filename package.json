@@ -1,5 +1,5 @@
 {
-  "name": "cli-workspace",
+  "name": "@code-pushup/cli-workspace",
   "version": "0.0.0",
   "license": "MIT",
   "description": "A CLI to run all kinds of code quality measurements to align your team with company goals",
