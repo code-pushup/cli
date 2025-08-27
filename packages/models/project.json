@@ -4,45 +4,22 @@
   "sourceRoot": "packages/models/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "dependsOn": [{ "projects": "models-transformers", "target": "build" }],
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/models",
-        "main": "packages/models/src/index.ts",
-        "tsConfig": "packages/models/tsconfig.lib.json",
-        "assets": ["packages/models/*.md"]
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/models/**/*.ts",
-          "packages/models/package.json"
-        ]
-      }
-    },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/models/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/models/vitest.int.config.ts"
-      }
-    },
     "generate-docs": {
       "command": "npx zod2md --config packages/models/zod2md.config.ts",
       "cache": true,
       "inputs": ["production", "^production", "{projectRoot}/zod2md.config.ts"],
-      "outputs": ["{projectRoot}/packages/models/docs/models-reference.md"]
-    }
+      "outputs": ["{projectRoot}/docs/models-reference.md"]
+    },
+    "build": {
+      "dependsOn": [
+        "^build",
+        "generate-docs",
+        { "projects": "models-transformers", "target": "build" }
+      ]
+    },
+    "lint": {},
+    "lint-report": {},
+    "unit-test": {}
   },
   "tags": ["scope:shared", "type:util", "publishable"]
 }

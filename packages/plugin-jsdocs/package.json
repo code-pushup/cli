@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/jsdocs-plugin",
-  "version": "0.69.5",
+  "version": "0.76.0",
   "description": "Code PushUp plugin for tracking documentation coverage 📚",
   "license": "MIT",
   "homepage": "https://github.com/code-pushup/cli/tree/main/packages/plugin-jsdocs#readme",
@@ -35,9 +35,13 @@
   },
   "type": "module",
   "dependencies": {
-    "@code-pushup/models": "0.69.5",
-    "@code-pushup/utils": "0.69.5",
-    "zod": "^3.22.4",
+    "@code-pushup/models": "0.76.0",
+    "@code-pushup/utils": "0.76.0",
+    "zod": "^4.0.5",
     "ts-morph": "^24.0.0"
-  }
+  },
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
 }

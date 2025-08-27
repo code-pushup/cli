@@ -4,39 +4,11 @@
   "sourceRoot": "packages/plugin-js-packages/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/plugin-js-packages",
-        "main": "packages/plugin-js-packages/src/index.ts",
-        "tsConfig": "packages/plugin-js-packages/tsconfig.lib.json",
-        "additionalEntryPoints": ["packages/plugin-js-packages/src/bin.ts"],
-        "assets": ["packages/plugin-js-packages/*.md"]
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/plugin-js-packages/**/*.ts",
-          "packages/plugin-js-packages/package.json"
-        ]
-      }
-    },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-js-packages/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-js-packages/vitest.int.config.ts"
-      }
-    }
+    "build": {},
+    "lint": {},
+    "lint-report": {},
+    "unit-test": {},
+    "int-test": {}
   },
   "tags": ["scope:plugin", "type:feature", "publishable"],
   "description": "A plugin for JavaScript packages."

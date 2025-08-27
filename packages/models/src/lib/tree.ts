@@ -1,7 +1,10 @@
 import { z } from 'zod';
 import { filePositionSchema } from './implementation/schemas.js';
 
-const basicTreeNodeValuesSchema = z.record(z.union([z.number(), z.string()]));
+const basicTreeNodeValuesSchema = z.record(
+  z.string(),
+  z.union([z.number(), z.string()]),
+);
 const basicTreeNodeDataSchema = z.object({
   name: z.string().min(1).describe('Text label for node'),
   values: basicTreeNodeValuesSchema
@@ -11,9 +14,12 @@ const basicTreeNodeDataSchema = z.object({
 
 export const basicTreeNodeSchema: z.ZodType<BasicTreeNode> =
   basicTreeNodeDataSchema.extend({
-    children: z
-      .lazy(() => z.array(basicTreeNodeSchema).optional())
-      .describe('Direct descendants of this node (omit if leaf)'),
+    get children() {
+      return z
+        .array(basicTreeNodeSchema)
+        .optional()
+        .describe('Direct descendants of this node (omit if leaf)');
+    },
   });
 export type BasicTreeNode = z.infer<typeof basicTreeNodeDataSchema> & {
   children?: BasicTreeNode[];
@@ -47,9 +53,12 @@ const coverageTreeNodeDataSchema = z.object({
 
 export const coverageTreeNodeSchema: z.ZodType<CoverageTreeNode> =
   coverageTreeNodeDataSchema.extend({
-    children: z
-      .lazy(() => z.array(coverageTreeNodeSchema).optional())
-      .describe('Files and folders contained in this folder (omit if file)'),
+    get children() {
+      return z
+        .array(coverageTreeNodeSchema)
+        .optional()
+        .describe('Files and folders contained in this folder (omit if file)');
+    },
   });
 export type CoverageTreeNode = z.infer<typeof coverageTreeNodeDataSchema> & {
   children?: CoverageTreeNode[];

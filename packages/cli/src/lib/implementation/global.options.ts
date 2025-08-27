@@ -1,4 +1,5 @@
 import type { Options } from 'yargs';
+import { isCI } from '@code-pushup/utils';
 import type { GeneralCliOptions } from './global.model.js';
 
 export function yargsGlobalOptionsDefinition(): Record<
@@ -9,7 +10,8 @@ export function yargsGlobalOptionsDefinition(): Record<
     progress: {
       describe: 'Show progress bar in stdout.',
       type: 'boolean',
-      default: true,
+      default: !isCI(),
+      defaultDescription: 'false in CI environment, otherwise true',
     },
     verbose: {
       describe:

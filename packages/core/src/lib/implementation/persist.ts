@@ -1,9 +1,9 @@
 import { mkdir, stat, writeFile } from 'node:fs/promises';
-import path from 'node:path';
-import type { PersistConfig, Report } from '@code-pushup/models';
+import type { Format, PersistConfig, Report } from '@code-pushup/models';
 import {
   type MultipleFileResults,
   type ScoredReport,
+  createReportPath,
   directoryExists,
   generateMdReport,
   logMultipleFileResults,
@@ -25,25 +25,27 @@ export class PersistError extends Error {
 export async function persistReport(
   report: Report,
   sortedScoredReport: ScoredReport,
-  options: Required<PersistConfig>,
+  options: Required<Omit<PersistConfig, 'skipReports'>>,
 ): Promise<MultipleFileResults> {
   const { outputDir, filename, format } = options;
 
   // collect physical format outputs
-  const results = format.map(reportType => {
-    switch (reportType) {
-      case 'json':
-        return {
-          format: 'json',
-          content: JSON.stringify(report, null, 2),
-        };
-      case 'md':
-        return {
-          format: 'md',
-          content: generateMdReport(sortedScoredReport, { outputDir }),
-        };
-    }
-  });
+  const results = format.map(
+    (reportType): { format: Format; content: string } => {
+      switch (reportType) {
+        case 'json':
+          return {
+            format: 'json',
+            content: JSON.stringify(report, null, 2),
+          };
+        case 'md':
+          return {
+            format: 'md',
+            content: generateMdReport(sortedScoredReport, { outputDir }),
+          };
+      }
+    },
+  );
 
   if (!(await directoryExists(outputDir))) {
     try {
@@ -58,7 +60,7 @@ export async function persistReport(
   return Promise.allSettled(
     results.map(result =>
       persistResult(
-        path.join(outputDir, `${filename}.${result.format}`),
+        createReportPath({ outputDir, filename, format: result.format }),
         result.content,
       ),
     ),

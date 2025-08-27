@@ -34,7 +34,7 @@ describe('persistConfigSchema', () => {
 
   it('should throw for an invalid format', () => {
     expect(() => persistConfigSchema.parse({ format: ['html'] })).toThrow(
-      'Invalid enum value',
+      String.raw`Invalid option: expected one of \"json\"|\"md\"`,
     );
   });
 });

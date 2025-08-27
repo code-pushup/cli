@@ -28,15 +28,14 @@ function makeArraysComparisonSchema<
   TDiff extends typeof scorableDiffSchema,
   TResult extends ZodTypeAny,
 >(diffSchema: TDiff, resultSchema: TResult, description: string) {
-  return z.object(
-    {
+  return z
+    .object({
       changed: z.array(diffSchema),
       unchanged: z.array(resultSchema),
       added: z.array(resultSchema),
       removed: z.array(resultSchema),
-    },
-    { description },
-  );
+    })
+    .describe(description);
 }
 
 const scorableMetaSchema = z.object({

@@ -39,12 +39,7 @@ describe('CLI compare', () => {
   it('should compare report.json files and create report-diff.json and report-diff.md', async () => {
     await executeProcess({
       command: 'npx',
-      args: [
-        '@code-pushup/cli',
-        'compare',
-        `--before=${path.join('.code-pushup', 'source-report.json')}`,
-        `--after=${path.join('.code-pushup', 'target-report.json')}`,
-      ],
+      args: ['@code-pushup/cli', 'compare'],
       cwd: existingDir,
     });
 

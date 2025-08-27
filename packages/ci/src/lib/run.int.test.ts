@@ -10,7 +10,15 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { type SimpleGit, simpleGit } from 'simple-git';
 import { type MockInstance, expect } from 'vitest';
-import type { CoreConfig } from '@code-pushup/models';
+import {
+  type ReportFragment,
+  downloadReportFromPortal,
+} from '@code-pushup/portal-client';
+import {
+  type CoreConfig,
+  DEFAULT_PERSIST_FILENAME,
+  DEFAULT_PERSIST_FORMAT,
+} from '@code-pushup/models';
 import {
   cleanTestFolder,
   initGitRepo,
@@ -20,6 +28,7 @@ import {
 import * as utils from '@code-pushup/utils';
 import type {
   Comment,
+  GitBranch,
   GitRefs,
   Logger,
   Options,
@@ -29,40 +38,57 @@ import type {
 import type { MonorepoTool } from './monorepo/index.js';
 import { runInCI } from './run.js';
 
-describe('runInCI', () => {
-  const fixturesDir = path.join(
-    fileURLToPath(path.dirname(import.meta.url)),
-    '..',
-    '..',
-    'mocks',
-    'fixtures',
-  );
-  const reportsDir = path.join(fixturesDir, 'outputs');
-  const workDir = path.join(process.cwd(), 'tmp', 'ci', 'run-test');
-
-  const fixturePaths = {
-    reports: {
-      before: {
-        json: path.join(reportsDir, 'report-before.json'),
-        md: path.join(reportsDir, 'report-before.md'),
-      },
-      after: {
-        json: path.join(reportsDir, 'report-after.json'),
-        md: path.join(reportsDir, 'report-after.md'),
-      },
-    },
-    diffs: {
-      project: {
-        json: path.join(reportsDir, 'diff-project.json'),
-        md: path.join(reportsDir, 'diff-project.md'),
-      },
-      merged: {
-        md: path.join(reportsDir, 'diff-merged.md'),
-      },
-    },
-    config: path.join(reportsDir, 'config.json'),
+vi.mock('@code-pushup/portal-client', async importOriginal => {
+  const mod: typeof import('@code-pushup/portal-client') =
+    await importOriginal();
+  return {
+    ...mod,
+    downloadReportFromPortal: vi.fn(simulateDownloadReportFromPortal),
   };
+});
 
+const fixturesDir = path.join(
+  fileURLToPath(path.dirname(import.meta.url)),
+  '..',
+  '..',
+  'mocks',
+  'fixtures',
+);
+const reportsDir = path.join(fixturesDir, 'outputs');
+const workDir = path.join(process.cwd(), 'tmp', 'ci', 'run-test');
+
+const fixturePaths = {
+  reports: {
+    before: {
+      json: path.join(reportsDir, 'report-before.json'),
+      md: path.join(reportsDir, 'report-before.md'),
+      portal: path.join(reportsDir, 'report-before.portal.json'),
+    },
+    after: {
+      json: path.join(reportsDir, 'report-after.json'),
+      md: path.join(reportsDir, 'report-after.md'),
+    },
+  },
+  diffs: {
+    project: {
+      json: path.join(reportsDir, 'diff-project.json'),
+      md: path.join(reportsDir, 'diff-project.md'),
+    },
+    merged: {
+      md: path.join(reportsDir, 'diff-merged.md'),
+    },
+  },
+  config: {
+    base: path.join(reportsDir, 'config.json'),
+    portal: path.join(reportsDir, 'config.portal.json'),
+  },
+};
+
+function simulateDownloadReportFromPortal() {
+  return utils.readJsonFile<ReportFragment>(fixturePaths.reports.before.portal);
+}
+
+describe('runInCI', () => {
   const logger: Logger = {
     error: vi.fn(),
     warn: vi.fn(),
@@ -86,6 +112,8 @@ describe('runInCI', () => {
     onStderr: expect.any(Function),
     onStdout: expect.any(Function),
   });
+
+  let includeUploadConfig: boolean;
 
   let git: SimpleGit;
 
@@ -112,15 +140,35 @@ describe('runInCI', () => {
     await mkdir(outputDir, { recursive: true });
     let stdout = '';
 
+    const isBulkCommand = /workspaces|concurrency|parallel/.test(command);
+    const projectOutputDirs = ['cli', 'core', 'utils'].map(project =>
+      path.join(workDir, `packages/${project}/.code-pushup`),
+    );
+
     switch (args![0]) {
       case 'compare':
         const diffs = fixturePaths.diffs.project;
-        await copyFile(diffs.json, path.join(outputDir, 'report-diff.json'));
-        await copyFile(diffs.md, path.join(outputDir, 'report-diff.md'));
+        if (isBulkCommand) {
+          await Promise.all(
+            projectOutputDirs.map(async dir => {
+              await mkdir(dir, { recursive: true });
+              await copyFile(diffs.json, path.join(dir, 'report-diff.json'));
+              await copyFile(diffs.md, path.join(dir, 'report-diff.md'));
+            }),
+          );
+        } else {
+          await copyFile(diffs.json, path.join(outputDir, 'report-diff.json'));
+          await copyFile(diffs.md, path.join(outputDir, 'report-diff.md'));
+        }
         break;
 
       case 'print-config':
-        let content = await readFile(fixturePaths.config, 'utf8');
+        let content = await readFile(
+          includeUploadConfig
+            ? fixturePaths.config.portal
+            : fixturePaths.config.base,
+          'utf8',
+        );
         if (nxMatch) {
           // simulate effect of custom persist.outputDir per Nx project
           const config = JSON.parse(content) as CoreConfig;
@@ -154,23 +202,14 @@ describe('runInCI', () => {
         const kind =
           (await git.branch()).current === 'main' ? 'before' : 'after';
         const reports = fixturePaths.reports[kind];
-        if (/workspaces|concurrency|parallel/.test(command)) {
-          // eslint-disable-next-line functional/no-loop-statements
-          for (const project of ['cli', 'core', 'utils']) {
-            const projectOutputDir = path.join(
-              workDir,
-              `packages/${project}/.code-pushup`,
-            );
-            await mkdir(projectOutputDir, { recursive: true });
-            await copyFile(
-              reports.json,
-              path.join(projectOutputDir, 'report.json'),
-            );
-            await copyFile(
-              reports.json,
-              path.join(projectOutputDir, 'report.md'),
-            );
-          }
+        if (isBulkCommand) {
+          await Promise.all(
+            projectOutputDirs.map(async dir => {
+              await mkdir(dir, { recursive: true });
+              await copyFile(reports.json, path.join(dir, 'report.json'));
+              await copyFile(reports.md, path.join(dir, 'report.md'));
+            }),
+          );
         } else {
           await copyFile(reports.json, path.join(outputDir, 'report.json'));
           await copyFile(reports.md, path.join(outputDir, 'report.md'));
@@ -184,6 +223,8 @@ describe('runInCI', () => {
   const outputDir = path.join(workDir, '.code-pushup', '.ci');
 
   beforeEach(async () => {
+    includeUploadConfig = false;
+
     const originalExecuteProcess = utils.executeProcess;
     executeProcessSpy = vi
       .spyOn(utils, 'executeProcess')
@@ -250,22 +291,13 @@ describe('runInCI', () => {
         expect(utils.executeProcess).toHaveBeenCalledTimes(2);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {
           command: options.bin,
-          args: [
-            'print-config',
-            '--verbose',
-            expect.stringMatching(/^--output=.*\.json$/),
-          ],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
-          args: [
-            '--verbose',
-            '--no-progress',
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: [],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -278,7 +310,7 @@ describe('runInCI', () => {
     });
 
     describe('pull request event', () => {
-      let refs: GitRefs;
+      let refs: { head: GitBranch; base: GitBranch };
       let diffMdString: string;
 
       beforeEach(async () => {
@@ -337,56 +369,31 @@ describe('runInCI', () => {
         expect(utils.executeProcess).toHaveBeenCalledTimes(5);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {
           command: options.bin,
-          args: [
-            'print-config',
-            '--verbose',
-            expect.stringMatching(/^--output=.*\.json$/),
-          ],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
-          args: [
-            '--verbose',
-            '--no-progress',
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: [],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(3, {
           command: options.bin,
-          args: [
-            'print-config',
-            '--verbose',
-            expect.stringMatching(/^--output=.*\.json$/),
-          ],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(4, {
           command: options.bin,
-          args: [
-            '--verbose',
-            '--no-progress',
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: [],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(5, {
           command: options.bin,
-          args: [
-            'compare',
-            '--verbose',
-            `--before=${path.join(outputDir, '.previous/report.json')}`,
-            `--after=${path.join(outputDir, '.current/report.json')}`,
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: ['compare'],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -440,35 +447,90 @@ describe('runInCI', () => {
         expect(utils.executeProcess).toHaveBeenCalledTimes(3);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {
           command: options.bin,
-          args: [
-            'print-config',
-            '--verbose',
-            expect.stringMatching(/^--output=.*\.json$/),
-          ],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
-          args: [
-            '--verbose',
-            '--no-progress',
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: [],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(3, {
           command: options.bin,
-          args: [
-            'compare',
-            '--verbose',
-            `--before=${path.join(outputDir, '.previous/report.json')}`,
-            `--after=${path.join(outputDir, '.current/report.json')}`,
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: ['compare'],
+          cwd: workDir,
+          observer: expectedObserver,
+        } satisfies utils.ProcessConfig);
+
+        expect(logger.error).not.toHaveBeenCalled();
+        expect(logger.warn).not.toHaveBeenCalled();
+        expect(logger.info).toHaveBeenCalled();
+        expect(logger.debug).toHaveBeenCalled();
+      });
+
+      it('should use cached old report from portal when upload is configured', async () => {
+        includeUploadConfig = true;
+
+        const api: ProviderAPIClient = {
+          maxCommentChars: 1_000_000,
+          createComment: vi.fn().mockResolvedValue(mockComment),
+          updateComment: vi.fn(),
+          listComments: vi.fn().mockResolvedValue([]),
+          downloadReportArtifact: vi.fn(),
+        };
+
+        await expect(runInCI(refs, api, options, git)).resolves.toEqual({
+          mode: 'standalone',
+          commentId: mockComment.id,
+          newIssues: [],
+          files: {
+            current: {
+              json: path.join(outputDir, '.current/report.json'),
+              md: path.join(outputDir, '.current/report.md'),
+            },
+            previous: {
+              json: path.join(outputDir, '.previous/report.json'),
+            },
+            comparison: {
+              json: path.join(outputDir, '.comparison/report-diff.json'),
+              md: path.join(outputDir, '.comparison/report-diff.md'),
+            },
+          },
+        } satisfies RunResult);
+
+        expect(downloadReportFromPortal).toHaveBeenCalledWith<
+          Parameters<typeof downloadReportFromPortal>
+        >({
+          server: 'https://api.code-pushup.dunder-mifflin.org/graphql',
+          apiKey: 'cp_abcdef0123456789',
+          parameters: {
+            organization: 'dunder-mifflin',
+            project: 'website',
+            commit: refs.base.sha,
+            withAuditDetails: true,
+          },
+        });
+
+        expect(api.downloadReportArtifact).not.toHaveBeenCalled();
+
+        expect(utils.executeProcess).toHaveBeenCalledTimes(3);
+        expect(utils.executeProcess).toHaveBeenNthCalledWith(1, {
+          command: options.bin,
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
+          cwd: workDir,
+          observer: expectedObserver,
+        } satisfies utils.ProcessConfig);
+        expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
+          command: options.bin,
+          args: [],
+          cwd: workDir,
+          observer: expectedObserver,
+        } satisfies utils.ProcessConfig);
+        expect(utils.executeProcess).toHaveBeenNthCalledWith(3, {
+          command: options.bin,
+          args: ['compare'],
           cwd: workDir,
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -528,6 +590,7 @@ describe('runInCI', () => {
     tool: MonorepoTool;
     run: string;
     runMany: string;
+    persistOutputDir: string;
     setup?: () => void;
   }>([
     {
@@ -538,24 +601,28 @@ describe('runInCI', () => {
       ),
       runMany:
         'npx nx run-many --targets=code-pushup --parallel=false --projects=cli,core,utils --',
+      persistOutputDir: 'packages/{projectName}/.code-pushup',
     },
     {
       name: 'Turborepo',
       tool: 'turbo',
       run: 'npx turbo run code-pushup --',
       runMany: 'npx turbo run code-pushup --concurrency=1 --',
+      persistOutputDir: '.code-pushup',
     },
     {
       name: 'pnpm workspace',
       tool: 'pnpm',
       run: 'pnpm run code-pushup',
       runMany: 'pnpm --recursive --workspace-concurrency=1 code-pushup',
+      persistOutputDir: '.code-pushup',
     },
     {
       name: 'Yarn workspaces (modern)',
       tool: 'yarn',
       run: 'yarn run code-pushup',
       runMany: 'yarn workspaces foreach --all code-pushup',
+      persistOutputDir: '.code-pushup',
       setup: () => {
         yarnVersion = '2.0.0';
       },
@@ -565,6 +632,7 @@ describe('runInCI', () => {
       tool: 'yarn',
       run: 'yarn run code-pushup',
       runMany: 'yarn workspaces run code-pushup',
+      persistOutputDir: '.code-pushup',
       setup: () => {
         yarnVersion = '1.0.0';
       },
@@ -574,351 +642,519 @@ describe('runInCI', () => {
       tool: 'npm',
       run: 'npm run code-pushup --',
       runMany: 'npm run code-pushup --workspaces --if-present --',
+      persistOutputDir: '.code-pushup',
     },
-  ])('monorepo mode - $name', ({ tool, run, runMany, setup }) => {
-    beforeEach(async () => {
-      const monorepoDir = path.join(fixturesDir, 'monorepos', tool);
-      await cp(monorepoDir, workDir, { recursive: true });
-      await git.add('.');
-      await git.commit(`Create packages in ${tool} monorepo`);
-      setup?.();
-    });
-
-    describe('push event', () => {
+  ])(
+    'monorepo mode - $name',
+    ({ tool, run, runMany, persistOutputDir, setup }) => {
       beforeEach(async () => {
-        await git.checkout('main');
+        const monorepoDir = path.join(fixturesDir, 'monorepos', tool);
+        await cp(monorepoDir, workDir, { recursive: true });
+        await git.add('.');
+        await git.commit(`Create packages in ${tool} monorepo`);
+        setup?.();
       });
 
-      it('should collect reports for all projects', async () => {
-        await expect(
-          runInCI(
-            { head: { ref: 'main', sha: await git.revparse('main') } },
-            {} as ProviderAPIClient,
-            { ...options, monorepo: tool },
-            git,
-          ),
-        ).resolves.toEqual({
-          mode: 'monorepo',
-          projects: [
-            {
-              name: 'cli',
-              files: {
-                current: {
-                  json: path.join(outputDir, 'cli/.current/report.json'),
-                  md: path.join(outputDir, 'cli/.current/report.md'),
-                },
-              },
-            },
-            {
-              name: 'core',
-              files: {
-                current: {
-                  json: path.join(outputDir, 'core/.current/report.json'),
-                  md: path.join(outputDir, 'core/.current/report.md'),
-                },
-              },
-            },
-            {
-              name: 'utils',
-              files: {
-                current: {
-                  json: path.join(outputDir, 'utils/.current/report.json'),
-                  md: path.join(outputDir, 'utils/.current/report.md'),
-                },
-              },
-            },
-          ],
-        } satisfies RunResult);
+      describe('push event', () => {
+        beforeEach(async () => {
+          await git.checkout('main');
+        });
 
-        expect(
-          executeProcessSpy.mock.calls.filter(([cfg]) =>
-            cfg.command.includes('code-pushup'),
-          ),
-        ).toHaveLength(4); // 1 autorun for all projects, 3 print-configs for each project
-        expect(utils.executeProcess).toHaveBeenCalledWith({
-          command: run,
-          args: [
-            'print-config',
-            '--verbose',
-            expect.stringMatching(/^--output=.*\.json$/),
-          ],
-          cwd: expect.stringContaining(workDir),
-          observer: expectedObserver,
-        } satisfies utils.ProcessConfig);
-        expect(utils.executeProcess).toHaveBeenCalledWith({
-          command: runMany,
-          args: [
-            '--verbose',
-            '--no-progress',
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
-          cwd: expect.stringContaining(workDir),
-          observer: expectedObserver,
-        } satisfies utils.ProcessConfig);
-
-        expect(logger.error).not.toHaveBeenCalled();
-        expect(logger.warn).not.toHaveBeenCalled();
-        expect(logger.info).toHaveBeenCalled();
-        expect(logger.debug).toHaveBeenCalled();
-      });
-    });
-
-    describe('pull request event', () => {
-      let refs: GitRefs;
-      let diffMdString: string;
-
-      beforeEach(async () => {
-        await git.checkoutLocalBranch('feature-1');
-
-        await writeFile(path.join(workDir, 'README.md'), '# Hello, world\n');
-        await git.add('README.md');
-        await git.commit('Create README');
-
-        refs = {
-          head: { ref: 'feature-1', sha: await git.revparse('feature-1') },
-          base: { ref: 'main', sha: await git.revparse('main') },
-        };
-
-        diffMdString = await readFile(fixturePaths.diffs.merged.md, 'utf8');
-      });
-
-      it('should collect and compare reports for all projects and comment merged diff', async () => {
-        const api: ProviderAPIClient = {
-          maxCommentChars: 1_000_000,
-          createComment: vi.fn().mockResolvedValue(mockComment),
-          updateComment: vi.fn(),
-          listComments: vi.fn().mockResolvedValue([]),
-          downloadReportArtifact: vi.fn().mockImplementation(async project => {
-            if (project === 'utils') {
-              // simulates a project which has no cached report
-              return null;
-            }
-            const downloadPath = path.join(
-              workDir,
-              'tmp',
-              project,
-              'report.json',
-            );
-            await mkdir(path.dirname(downloadPath), { recursive: true });
-            await copyFile(fixturePaths.reports.before.json, downloadPath);
-            return downloadPath;
-          }),
-        };
-
-        await expect(
-          runInCI(refs, api, { ...options, monorepo: tool }, git),
-        ).resolves.toEqual({
-          mode: 'monorepo',
-          commentId: mockComment.id,
-          files: {
-            comparison: {
-              md: path.join(outputDir, '.comparison/report-diff.md'),
-            },
-          },
-          projects: [
-            {
-              name: 'cli',
-              files: {
-                current: {
-                  json: path.join(outputDir, 'cli/.current/report.json'),
-                  md: path.join(outputDir, 'cli/.current/report.md'),
-                },
-                previous: {
-                  json: path.join(outputDir, 'cli/.previous/report.json'),
-                },
-                comparison: {
-                  json: path.join(
-                    outputDir,
-                    'cli/.comparison/report-diff.json',
-                  ),
-                  md: path.join(outputDir, 'cli/.comparison/report-diff.md'),
-                },
-              },
-              newIssues: [],
-            },
-            {
-              name: 'core',
-              files: {
-                current: {
-                  json: path.join(outputDir, 'core/.current/report.json'),
-                  md: path.join(outputDir, 'core/.current/report.md'),
-                },
-                previous: {
-                  json: path.join(outputDir, 'core/.previous/report.json'),
-                },
-                comparison: {
-                  json: path.join(
-                    outputDir,
-                    'core/.comparison/report-diff.json',
-                  ),
-                  md: path.join(outputDir, 'core/.comparison/report-diff.md'),
-                },
-              },
-              newIssues: [],
-            },
-            {
-              name: 'utils',
-              files: {
-                current: {
-                  json: path.join(outputDir, 'utils/.current/report.json'),
-                  md: path.join(outputDir, 'utils/.current/report.md'),
-                },
-                previous: {
-                  json: path.join(outputDir, 'utils/.previous/report.json'),
-                  md: path.join(outputDir, 'utils/.previous/report.md'),
-                },
-                comparison: {
-                  json: path.join(
-                    outputDir,
-                    'utils/.comparison/report-diff.json',
-                  ),
-                  md: path.join(outputDir, 'utils/.comparison/report-diff.md'),
-                },
-              },
-              newIssues: [],
-            },
-          ],
-        } satisfies RunResult);
-
-        await expect(
-          readFile(path.join(outputDir, '.comparison/report-diff.md'), 'utf8'),
-        ).resolves.toBe(diffMdString);
-
-        expect(api.listComments).toHaveBeenCalledWith();
-        expect(api.createComment).toHaveBeenCalledWith(
-          expect.stringContaining(diffMdString),
-        );
-        expect(api.updateComment).not.toHaveBeenCalled();
-
-        // 1 autorun for all projects
-        // 3 print-configs for each project
-        // 1 print-config for uncached project
-        // 1 autorun for uncached projects
-        // 3 compares for each project
-        // 1 merge-diffs for all projects
-        expect(
-          executeProcessSpy.mock.calls.filter(([cfg]) =>
-            cfg.command.includes('code-pushup'),
-          ),
-        ).toHaveLength(10);
-        expect(utils.executeProcess).toHaveBeenCalledWith({
-          command: run,
-          args: [
-            'print-config',
-            '--verbose',
-            expect.stringMatching(/^--output=.*\.json$/),
-          ],
-          cwd: expect.stringContaining(workDir),
-          observer: expectedObserver,
-        } satisfies utils.ProcessConfig);
-        expect(utils.executeProcess).toHaveBeenCalledWith({
-          command: runMany,
-          args: [
-            '--verbose',
-            '--no-progress',
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
-          cwd: expect.stringContaining(workDir),
-          observer: expectedObserver,
-        } satisfies utils.ProcessConfig);
-        expect(utils.executeProcess).toHaveBeenCalledWith({
-          command: run,
-          args: [
-            'compare',
-            '--verbose',
-            expect.stringMatching(/^--before=.*\.previous[/\\]report\.json$/),
-            expect.stringMatching(/^--after=.*\.current[/\\]report\.json$/),
-            expect.stringMatching(/^--label=\w+$/),
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
-          cwd: expect.stringContaining(workDir),
-          observer: expectedObserver,
-        } satisfies utils.ProcessConfig);
-        expect(utils.executeProcess).toHaveBeenCalledWith({
-          command: run,
-          args: [
-            'merge-diffs',
-            '--verbose',
-            expect.stringMatching(
-              /^--files=.*[/\\]cli[/\\]\.comparison[/\\]report-diff\.json$/,
+        it('should collect reports for all projects', async () => {
+          await expect(
+            runInCI(
+              { head: { ref: 'main', sha: await git.revparse('main') } },
+              {} as ProviderAPIClient,
+              { ...options, monorepo: tool },
+              git,
             ),
-            expect.stringMatching(
-              /^--files=.*[/\\]core[/\\]\.comparison[/\\]report-diff\.json$/,
-            ),
-            expect.stringMatching(
-              /^--files=.*[/\\]utils[/\\]\.comparison[/\\]report-diff\.json$/,
-            ),
-            expect.stringMatching(/^--persist.outputDir=.*\.code-pushup$/),
-            '--persist.filename=merged-report',
-          ],
-          cwd: expect.stringContaining(workDir),
-          observer: expectedObserver,
-        } satisfies utils.ProcessConfig);
+          ).resolves.toEqual({
+            mode: 'monorepo',
+            projects: [
+              {
+                name: 'cli',
+                files: {
+                  current: {
+                    json: path.join(outputDir, 'cli/.current/report.json'),
+                    md: path.join(outputDir, 'cli/.current/report.md'),
+                  },
+                },
+              },
+              {
+                name: 'core',
+                files: {
+                  current: {
+                    json: path.join(outputDir, 'core/.current/report.json'),
+                    md: path.join(outputDir, 'core/.current/report.md'),
+                  },
+                },
+              },
+              {
+                name: 'utils',
+                files: {
+                  current: {
+                    json: path.join(outputDir, 'utils/.current/report.json'),
+                    md: path.join(outputDir, 'utils/.current/report.md'),
+                  },
+                },
+              },
+            ],
+          } satisfies RunResult);
 
-        expect(logger.error).not.toHaveBeenCalled();
-        expect(logger.warn).not.toHaveBeenCalled();
-        expect(logger.info).toHaveBeenCalled();
-        expect(logger.debug).toHaveBeenCalled();
+          expect(
+            executeProcessSpy.mock.calls.filter(([cfg]) =>
+              cfg.command.includes('code-pushup'),
+            ),
+          ).toHaveLength(4); // 1 autorun for all projects, 3 print-configs for each project
+          expect(utils.executeProcess).toHaveBeenCalledWith({
+            command: run,
+            args: [
+              'print-config',
+              expect.stringMatching(/^--output=.*\.json$/),
+            ],
+            cwd: expect.stringContaining(workDir),
+            observer: expectedObserver,
+          } satisfies utils.ProcessConfig);
+          expect(utils.executeProcess).toHaveBeenCalledWith({
+            command: runMany,
+            args: [],
+            cwd: expect.stringContaining(workDir),
+            observer: expectedObserver,
+          } satisfies utils.ProcessConfig);
+
+          expect(logger.error).not.toHaveBeenCalled();
+          expect(logger.warn).not.toHaveBeenCalled();
+          expect(logger.info).toHaveBeenCalled();
+          expect(logger.debug).toHaveBeenCalled();
+        });
+
+        it('should skip print-config if configPatterns provided', async () => {
+          await expect(
+            runInCI(
+              { head: { ref: 'main', sha: await git.revparse('main') } },
+              {} as ProviderAPIClient,
+              {
+                ...options,
+                monorepo: tool,
+                configPatterns: {
+                  persist: {
+                    outputDir: persistOutputDir,
+                    filename: DEFAULT_PERSIST_FILENAME,
+                    format: DEFAULT_PERSIST_FORMAT,
+                  },
+                },
+              },
+              git,
+            ),
+          ).resolves.toEqual({
+            mode: 'monorepo',
+            projects: [
+              {
+                name: 'cli',
+                files: {
+                  current: {
+                    json: path.join(outputDir, 'cli/.current/report.json'),
+                    md: path.join(outputDir, 'cli/.current/report.md'),
+                  },
+                },
+              },
+              {
+                name: 'core',
+                files: {
+                  current: {
+                    json: path.join(outputDir, 'core/.current/report.json'),
+                    md: path.join(outputDir, 'core/.current/report.md'),
+                  },
+                },
+              },
+              {
+                name: 'utils',
+                files: {
+                  current: {
+                    json: path.join(outputDir, 'utils/.current/report.json'),
+                    md: path.join(outputDir, 'utils/.current/report.md'),
+                  },
+                },
+              },
+            ],
+          } satisfies RunResult);
+
+          expect(
+            executeProcessSpy.mock.calls.filter(([cfg]) =>
+              cfg.command.includes('code-pushup'),
+            ),
+          ).toHaveLength(1); // 1 autorun for all projects (0 print-configs)
+          expect(utils.executeProcess).toHaveBeenCalledWith({
+            command: runMany,
+            args: [],
+            cwd: expect.stringContaining(workDir),
+            observer: expectedObserver,
+          } satisfies utils.ProcessConfig);
+
+          expect(logger.error).not.toHaveBeenCalled();
+          expect(logger.warn).not.toHaveBeenCalled();
+          expect(logger.info).toHaveBeenCalled();
+          expect(logger.debug).toHaveBeenCalled();
+        });
       });
 
-      it('should skip comment if disabled', async () => {
-        const api: ProviderAPIClient = {
-          maxCommentChars: 1_000_000,
-          createComment: vi.fn(),
-          updateComment: vi.fn(),
-          listComments: vi.fn(),
-        };
+      describe('pull request event', () => {
+        let refs: GitRefs;
+        let diffMdString: string;
 
-        await expect(
-          runInCI(
-            refs,
-            api,
-            { ...options, monorepo: tool, skipComment: true },
-            git,
-          ),
-        ).resolves.toEqual({
-          mode: 'monorepo',
-          commentId: undefined,
-          files: expect.any(Object),
-          projects: [
-            expect.objectContaining({ name: 'cli' }),
-            expect.objectContaining({ name: 'core' }),
-            expect.objectContaining({ name: 'utils' }),
-          ],
-        } satisfies RunResult);
+        beforeEach(async () => {
+          await git.checkoutLocalBranch('feature-1');
 
-        await expect(
-          readFile(path.join(outputDir, '.comparison/report-diff.md'), 'utf8'),
-        ).resolves.toBe(diffMdString);
+          await writeFile(path.join(workDir, 'README.md'), '# Hello, world\n');
+          await git.add('README.md');
+          await git.commit('Create README');
 
-        expect(api.listComments).not.toHaveBeenCalled();
-        expect(api.createComment).not.toHaveBeenCalled();
-        expect(api.updateComment).not.toHaveBeenCalled();
+          refs = {
+            head: { ref: 'feature-1', sha: await git.revparse('feature-1') },
+            base: { ref: 'main', sha: await git.revparse('main') },
+          };
 
-        expect(utils.executeProcess).toHaveBeenCalledWith({
-          command: runMany,
-          args: expect.any(Array),
-          cwd: expect.stringContaining(workDir),
-          observer: expectedObserver,
-        } satisfies utils.ProcessConfig);
-        expect(utils.executeProcess).toHaveBeenCalledWith({
-          command: run,
-          args: expect.arrayContaining(['compare']),
-          cwd: expect.stringContaining(workDir),
-          observer: expectedObserver,
-        } satisfies utils.ProcessConfig);
-        expect(utils.executeProcess).toHaveBeenCalledWith({
-          command: run,
-          args: expect.arrayContaining(['merge-diffs']),
-          cwd: expect.stringContaining(workDir),
-          observer: expectedObserver,
-        } satisfies utils.ProcessConfig);
+          diffMdString = await readFile(fixturePaths.diffs.merged.md, 'utf8');
+        });
+
+        it('should collect and compare reports for all projects and comment merged diff', async () => {
+          const api: ProviderAPIClient = {
+            maxCommentChars: 1_000_000,
+            createComment: vi.fn().mockResolvedValue(mockComment),
+            updateComment: vi.fn(),
+            listComments: vi.fn().mockResolvedValue([]),
+            downloadReportArtifact: vi
+              .fn()
+              .mockImplementation(async project => {
+                if (project === 'utils') {
+                  // simulates a project which has no cached report
+                  return null;
+                }
+                const downloadPath = path.join(
+                  workDir,
+                  'tmp',
+                  project,
+                  'report.json',
+                );
+                await mkdir(path.dirname(downloadPath), { recursive: true });
+                await copyFile(fixturePaths.reports.before.json, downloadPath);
+                return downloadPath;
+              }),
+          };
+
+          await expect(
+            runInCI(refs, api, { ...options, monorepo: tool }, git),
+          ).resolves.toEqual({
+            mode: 'monorepo',
+            commentId: mockComment.id,
+            files: {
+              comparison: {
+                md: path.join(outputDir, '.comparison/report-diff.md'),
+              },
+            },
+            projects: [
+              {
+                name: 'cli',
+                files: {
+                  current: {
+                    json: path.join(outputDir, 'cli/.current/report.json'),
+                    md: path.join(outputDir, 'cli/.current/report.md'),
+                  },
+                  previous: {
+                    json: path.join(outputDir, 'cli/.previous/report.json'),
+                  },
+                  comparison: {
+                    json: path.join(
+                      outputDir,
+                      'cli/.comparison/report-diff.json',
+                    ),
+                    md: path.join(outputDir, 'cli/.comparison/report-diff.md'),
+                  },
+                },
+                newIssues: [],
+              },
+              {
+                name: 'core',
+                files: {
+                  current: {
+                    json: path.join(outputDir, 'core/.current/report.json'),
+                    md: path.join(outputDir, 'core/.current/report.md'),
+                  },
+                  previous: {
+                    json: path.join(outputDir, 'core/.previous/report.json'),
+                  },
+                  comparison: {
+                    json: path.join(
+                      outputDir,
+                      'core/.comparison/report-diff.json',
+                    ),
+                    md: path.join(outputDir, 'core/.comparison/report-diff.md'),
+                  },
+                },
+                newIssues: [],
+              },
+              {
+                name: 'utils',
+                files: {
+                  current: {
+                    json: path.join(outputDir, 'utils/.current/report.json'),
+                    md: path.join(outputDir, 'utils/.current/report.md'),
+                  },
+                  previous: {
+                    json: path.join(outputDir, 'utils/.previous/report.json'),
+                    md: path.join(outputDir, 'utils/.previous/report.md'),
+                  },
+                  comparison: {
+                    json: path.join(
+                      outputDir,
+                      'utils/.comparison/report-diff.json',
+                    ),
+                    md: path.join(
+                      outputDir,
+                      'utils/.comparison/report-diff.md',
+                    ),
+                  },
+                },
+                newIssues: [],
+              },
+            ],
+          } satisfies RunResult);
+
+          await expect(
+            readFile(
+              path.join(outputDir, '.comparison/report-diff.md'),
+              'utf8',
+            ),
+          ).resolves.toBe(diffMdString);
+
+          expect(api.listComments).toHaveBeenCalledWith();
+          expect(api.createComment).toHaveBeenCalledWith(
+            expect.stringContaining(diffMdString),
+          );
+          expect(api.updateComment).not.toHaveBeenCalled();
+
+          // 1 autorun for all projects
+          // 3 print-configs for each project
+          // 1 print-config for uncached project
+          // 1 autorun for uncached projects
+          // 1 compare for all projects
+          // 1 merge-diffs for all projects
+          expect(
+            executeProcessSpy.mock.calls.filter(([cfg]) =>
+              cfg.command.includes('code-pushup'),
+            ),
+          ).toHaveLength(8);
+          expect(utils.executeProcess).toHaveBeenCalledWith({
+            command: run,
+            args: [
+              'print-config',
+              expect.stringMatching(/^--output=.*\.json$/),
+            ],
+            cwd: expect.stringContaining(workDir),
+            observer: expectedObserver,
+          } satisfies utils.ProcessConfig);
+          expect(utils.executeProcess).toHaveBeenCalledWith({
+            command: runMany,
+            args: [],
+            cwd: expect.stringContaining(workDir),
+            observer: expectedObserver,
+          } satisfies utils.ProcessConfig);
+          expect(utils.executeProcess).toHaveBeenCalledWith({
+            command: runMany,
+            args: ['compare'],
+            cwd: expect.stringContaining(workDir),
+            observer: expectedObserver,
+          } satisfies utils.ProcessConfig);
+          expect(utils.executeProcess).toHaveBeenCalledWith({
+            command: run,
+            args: [
+              'merge-diffs',
+              expect.stringMatching(
+                /^--files=.*[/\\]cli[/\\]\.comparison[/\\]report-diff\.json$/,
+              ),
+              expect.stringMatching(
+                /^--files=.*[/\\]core[/\\]\.comparison[/\\]report-diff\.json$/,
+              ),
+              expect.stringMatching(
+                /^--files=.*[/\\]utils[/\\]\.comparison[/\\]report-diff\.json$/,
+              ),
+              expect.stringMatching(/^--persist.outputDir=.*\.code-pushup$/),
+              '--persist.filename=merged-report',
+            ],
+            cwd: expect.stringContaining(workDir),
+            observer: expectedObserver,
+          } satisfies utils.ProcessConfig);
+
+          expect(logger.error).not.toHaveBeenCalled();
+          expect(logger.warn).not.toHaveBeenCalled();
+          expect(logger.info).toHaveBeenCalled();
+          expect(logger.debug).toHaveBeenCalled();
+        });
+
+        it('should skip print-config for source and target branches if configPatterns provided', async () => {
+          const api: ProviderAPIClient = {
+            maxCommentChars: 1_000_000,
+            createComment: vi.fn().mockResolvedValue(mockComment),
+            updateComment: vi.fn(),
+            listComments: vi.fn().mockResolvedValue([]),
+          };
+
+          await expect(
+            runInCI(
+              refs,
+              api,
+              {
+                ...options,
+                monorepo: tool,
+                configPatterns: {
+                  persist: {
+                    outputDir: persistOutputDir,
+                    filename: DEFAULT_PERSIST_FILENAME,
+                    format: DEFAULT_PERSIST_FORMAT,
+                  },
+                },
+              },
+              git,
+            ),
+          ).resolves.toEqual({
+            mode: 'monorepo',
+            commentId: mockComment.id,
+            files: {
+              comparison: {
+                md: path.join(outputDir, '.comparison/report-diff.md'),
+              },
+            },
+            projects: [
+              expect.objectContaining({ name: 'cli' }),
+              expect.objectContaining({ name: 'core' }),
+              expect.objectContaining({ name: 'utils' }),
+            ],
+          } satisfies RunResult);
+
+          await expect(
+            readFile(
+              path.join(outputDir, '.comparison/report-diff.md'),
+              'utf8',
+            ),
+          ).resolves.toBe(diffMdString);
+
+          expect(api.listComments).toHaveBeenCalledWith();
+          expect(api.createComment).toHaveBeenCalledWith(
+            expect.stringContaining(diffMdString),
+          );
+          expect(api.updateComment).not.toHaveBeenCalled();
+
+          // 1 autorun for all projects
+          // 1 autorun for uncached projects
+          // 1 compare for all projects
+          // 1 merge-diffs for all projects
+          expect(
+            executeProcessSpy.mock.calls.filter(([cfg]) =>
+              cfg.command.includes('code-pushup'),
+            ),
+          ).toHaveLength(4);
+          expect(utils.executeProcess).toHaveBeenCalledWith({
+            command: runMany,
+            args: [],
+            cwd: expect.stringContaining(workDir),
+            observer: expectedObserver,
+          } satisfies utils.ProcessConfig);
+          expect(utils.executeProcess).toHaveBeenCalledWith({
+            command: runMany,
+            args: ['compare'],
+            cwd: expect.stringContaining(workDir),
+            observer: expectedObserver,
+          } satisfies utils.ProcessConfig);
+          expect(utils.executeProcess).toHaveBeenCalledWith({
+            command: run,
+            args: [
+              'merge-diffs',
+              expect.stringMatching(
+                /^--files=.*[/\\]cli[/\\]\.comparison[/\\]report-diff\.json$/,
+              ),
+              expect.stringMatching(
+                /^--files=.*[/\\]core[/\\]\.comparison[/\\]report-diff\.json$/,
+              ),
+              expect.stringMatching(
+                /^--files=.*[/\\]utils[/\\]\.comparison[/\\]report-diff\.json$/,
+              ),
+              expect.stringMatching(/^--persist.outputDir=.*\.code-pushup$/),
+              '--persist.filename=merged-report',
+            ],
+            cwd: expect.stringContaining(workDir),
+            observer: expectedObserver,
+          } satisfies utils.ProcessConfig);
+          expect(utils.executeProcess).not.toHaveBeenCalledWith(
+            expect.objectContaining({
+              args: expect.arrayContaining(['print-config']),
+            }),
+          );
+
+          expect(logger.error).not.toHaveBeenCalled();
+          expect(logger.warn).not.toHaveBeenCalled();
+          expect(logger.info).toHaveBeenCalled();
+          expect(logger.debug).toHaveBeenCalled();
+        });
+
+        it('should skip comment if disabled', async () => {
+          const api: ProviderAPIClient = {
+            maxCommentChars: 1_000_000,
+            createComment: vi.fn(),
+            updateComment: vi.fn(),
+            listComments: vi.fn(),
+          };
+
+          await expect(
+            runInCI(
+              refs,
+              api,
+              { ...options, monorepo: tool, skipComment: true },
+              git,
+            ),
+          ).resolves.toEqual({
+            mode: 'monorepo',
+            commentId: undefined,
+            files: expect.any(Object),
+            projects: [
+              expect.objectContaining({ name: 'cli' }),
+              expect.objectContaining({ name: 'core' }),
+              expect.objectContaining({ name: 'utils' }),
+            ],
+          } satisfies RunResult);
+
+          await expect(
+            readFile(
+              path.join(outputDir, '.comparison/report-diff.md'),
+              'utf8',
+            ),
+          ).resolves.toBe(diffMdString);
+
+          expect(api.listComments).not.toHaveBeenCalled();
+          expect(api.createComment).not.toHaveBeenCalled();
+          expect(api.updateComment).not.toHaveBeenCalled();
+
+          expect(utils.executeProcess).toHaveBeenCalledWith({
+            command: runMany,
+            args: expect.any(Array),
+            cwd: expect.stringContaining(workDir),
+            observer: expectedObserver,
+          } satisfies utils.ProcessConfig);
+          expect(utils.executeProcess).toHaveBeenCalledWith({
+            command: runMany,
+            args: expect.arrayContaining(['compare']),
+            cwd: expect.stringContaining(workDir),
+            observer: expectedObserver,
+          } satisfies utils.ProcessConfig);
+          expect(utils.executeProcess).toHaveBeenCalledWith({
+            command: run,
+            args: expect.arrayContaining(['merge-diffs']),
+            cwd: expect.stringContaining(workDir),
+            observer: expectedObserver,
+          } satisfies utils.ProcessConfig);
+        });
       });
-    });
-  });
+    },
+  );
 
   describe.each<[string, Options]>([
     [
@@ -1003,22 +1239,13 @@ describe('runInCI', () => {
         ).toHaveLength(6); // 3 autoruns and 3 print-configs for each project
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: [
-            'print-config',
-            '--verbose',
-            expect.stringMatching(/^--output=.*\.json$/),
-          ],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: [
-            '--verbose',
-            '--no-progress',
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: [],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -1181,36 +1408,19 @@ describe('runInCI', () => {
         ).toHaveLength(10);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: [
-            'print-config',
-            '--verbose',
-            expect.stringMatching(/^--output=.*\.json$/),
-          ],
+          args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: [
-            '--verbose',
-            '--no-progress',
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: [],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
-          args: [
-            'compare',
-            '--verbose',
-            expect.stringMatching(/^--before=.*\.previous[/\\]report\.json$/),
-            expect.stringMatching(/^--after=.*\.current[/\\]report\.json$/),
-            expect.stringMatching(/^--label=\w+$/),
-            '--persist.format=json',
-            '--persist.format=md',
-          ],
+          args: ['compare'],
           cwd: expect.stringContaining(workDir),
           observer: expectedObserver,
         } satisfies utils.ProcessConfig);
@@ -1218,7 +1428,6 @@ describe('runInCI', () => {
           command: options.bin,
           args: [
             'merge-diffs',
-            '--verbose',
             expect.stringMatching(
               /^--files=.*api[/\\]\.comparison[/\\]report-diff\.json$/,
             ),

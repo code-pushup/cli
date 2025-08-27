@@ -36,14 +36,19 @@ describe('compare-command', () => {
     expect(compareReportFiles).toHaveBeenCalledWith<
       Parameters<typeof compareReportFiles>
     >(
-      { before: 'source-report.json', after: 'target-report.json' },
       {
-        outputDir: DEFAULT_PERSIST_OUTPUT_DIR,
-        filename: DEFAULT_PERSIST_FILENAME,
-        format: DEFAULT_PERSIST_FORMAT,
+        persist: {
+          outputDir: DEFAULT_PERSIST_OUTPUT_DIR,
+          filename: DEFAULT_PERSIST_FILENAME,
+          format: DEFAULT_PERSIST_FORMAT,
+          skipReports: false,
+        },
+        upload: expect.any(Object),
       },
-      expect.any(Object),
-      undefined,
+      {
+        before: 'source-report.json',
+        after: 'target-report.json',
+      },
     );
   });
 
@@ -60,19 +65,18 @@ describe('compare-command', () => {
 
     expect(compareReportFiles).toHaveBeenCalledWith<
       Parameters<typeof compareReportFiles>
-    >(
-      { before: 'source-report.json', after: 'target-report.json' },
-      expect.any(Object),
-      expect.any(Object),
-      'core',
-    );
+    >(expect.any(Object), {
+      before: 'source-report.json',
+      after: 'target-report.json',
+      label: 'core',
+    });
   });
 
   it('should log output paths to stdout', async () => {
-    await yargsCli(
-      ['compare', '--before=source-report.json', '--after=target-report.json'],
-      { ...DEFAULT_CLI_CONFIGURATION, commands: [yargsCompareCommandObject()] },
-    ).parseAsync();
+    await yargsCli(['compare'], {
+      ...DEFAULT_CLI_CONFIGURATION,
+      commands: [yargsCompareCommandObject()],
+    }).parseAsync();
 
     expect(ui()).toHaveLogged(
       'info',

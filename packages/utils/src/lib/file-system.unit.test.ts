@@ -6,6 +6,7 @@ import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
   type FileResult,
   crawlFileSystem,
+  createReportPath,
   ensureDirectoryExists,
   filePathToCliArg,
   findLineNumberInText,
@@ -26,6 +27,29 @@ describe('ensureDirectoryExists', () => {
     await expect(
       stat(dir).then(stats => stats.isDirectory()),
     ).resolves.toBeTruthy();
+  });
+});
+
+describe('createReportPath', () => {
+  it('should create report.json path', () => {
+    expect(
+      createReportPath({
+        outputDir: '.code-pushup',
+        filename: 'report',
+        format: 'json',
+      }),
+    ).toMatchPath('.code-pushup/report.json');
+  });
+
+  it('should create report-diff.md path', () => {
+    expect(
+      createReportPath({
+        outputDir: '.code-pushup',
+        filename: 'report',
+        format: 'md',
+        suffix: 'diff',
+      }),
+    ).toMatchPath('.code-pushup/report-diff.md');
   });
 });
 

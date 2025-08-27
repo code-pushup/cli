@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/create-cli",
-  "version": "0.69.5",
+  "version": "0.76.0",
   "license": "MIT",
   "bin": "index.js",
   "homepage": "https://github.com/code-pushup/cli/tree/main/packages/create-cli#readme",
@@ -26,7 +26,11 @@
   },
   "type": "module",
   "dependencies": {
-    "@code-pushup/nx-plugin": "0.69.5",
-    "@code-pushup/utils": "0.69.5"
-  }
+    "@code-pushup/nx-plugin": "0.76.0",
+    "@code-pushup/utils": "0.76.0"
+  },
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
 }

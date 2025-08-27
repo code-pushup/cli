@@ -1,3 +1,146 @@
+## 0.76.0 (2025-08-25)
+
+### 🚀 Features
+
+- implement scoreTargets for audits ([5db68e2e](https://github.com/code-pushup/cli/commit/5db68e2e))
+- **ci:** add helper function for parsing configPatterns from json string ([fd5edb09](https://github.com/code-pushup/cli/commit/fd5edb09))
+- **ci:** export default settings and min/max limits ([a6a485ee](https://github.com/code-pushup/cli/commit/a6a485ee))
+- **models:** export default persist config ([18e95ff5](https://github.com/code-pushup/cli/commit/18e95ff5))
+- **models:** export default persist.skipReports value ([dfc15aeb](https://github.com/code-pushup/cli/commit/dfc15aeb))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- Matěj Chalk @matejchalk
+
+## 0.75.0 (2025-08-22)
+
+### 🚀 Features
+
+- implement scoreTarget for categories ([44e49342](https://github.com/code-pushup/cli/commit/44e49342))
+- **nx-cloud:** setup nx cloud workspace ([47f14d3e](https://github.com/code-pushup/cli/commit/47f14d3e))
+
+### 🩹 Fixes
+
+- adjust targets ([77411f39](https://github.com/code-pushup/cli/commit/77411f39))
+- format ([a419aec9](https://github.com/code-pushup/cli/commit/a419aec9))
+- format files ([1a076910](https://github.com/code-pushup/cli/commit/1a076910))
+- **plugin-typescript:** include extended options ([ae7f2736](https://github.com/code-pushup/cli/commit/ae7f2736))
+- **plugin-typescript-e2e:** fix lint ([3b5aea6f](https://github.com/code-pushup/cli/commit/3b5aea6f))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- John Doe @simpleresume
+- Michael Hladky @rx-angular
+
+## 0.74.1 (2025-08-19)
+
+### 🩹 Fixes
+
+- **ci:** prevent invalid startLine 0 when downloading from portal ([5153c88b](https://github.com/code-pushup/cli/commit/5153c88b))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.74.0 (2025-08-13)
+
+### 🚀 Features
+
+- add audit output caching for execute plugin ([#1057](https://github.com/code-pushup/cli/pull/1057))
+- add report option to cli ([#1058](https://github.com/code-pushup/cli/pull/1058))
+- add caching options to cli ([#1059](https://github.com/code-pushup/cli/pull/1059))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
+## 0.73.0 (2025-08-08)
+
+### 🚀 Features
+
+- **ci:** add searchCommits option to extend portal cache range ([0b14111f](https://github.com/code-pushup/cli/commit/0b14111f))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.72.1 (2025-08-06)
+
+### 🩹 Fixes
+
+- **ci:** download portal report for base commit and include details ([21572d52](https://github.com/code-pushup/cli/commit/21572d52))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.72.0 (2025-08-06)
+
+### 🚀 Features
+
+- **ci:** add configPatterns as optional performance optimization ([823ade1f](https://github.com/code-pushup/cli/commit/823ade1f))
+- **cli:** use default report paths if --before/--after missing in compare command ([61ee2272](https://github.com/code-pushup/cli/commit/61ee2272))
+- **core:** copy label from report.json inputs to report-diff.json output ([2adcf9db](https://github.com/code-pushup/cli/commit/2adcf9db))
+- **models:** add optional label to report.json schema ([77d33b54](https://github.com/code-pushup/cli/commit/77d33b54))
+- **utils:** interpolate variables in strings ([242435e0](https://github.com/code-pushup/cli/commit/242435e0))
+
+### 🔥 Performance
+
+- **ci:** use bulk command to compare reports for all projects ([f9deac78](https://github.com/code-pushup/cli/commit/f9deac78))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.71.0 (2025-08-01)
+
+### 🚀 Features
+
+- **ci:** download report from graphql api and convert to report.json format ([d35cd7a0](https://github.com/code-pushup/cli/commit/d35cd7a0))
+- **ci:** parse upload along with persist in print-config commands ([a73bf21b](https://github.com/code-pushup/cli/commit/a73bf21b))
+- **ci:** download previous report from portal if available ([918eb0d5](https://github.com/code-pushup/cli/commit/918eb0d5))
+- **utils:** add type helpers for lower/upper case conversions ([50483748](https://github.com/code-pushup/cli/commit/50483748))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.70.0 (2025-07-31)
+
+### 🚀 Features
+
+- **ci:** update to zod v4 ([c342dab1](https://github.com/code-pushup/cli/commit/c342dab1))
+- **ci:** remove redundant --no-progress argument ([b0ed2fa9](https://github.com/code-pushup/cli/commit/b0ed2fa9))
+- **ci:** skip persist.format args if defaults already configured ([c11db95e](https://github.com/code-pushup/cli/commit/c11db95e))
+- **cli:** disable progress bar in CI environment ([ecd42c60](https://github.com/code-pushup/cli/commit/ecd42c60))
+- **models:** add generic artifact generation to enable caching ([#1023](https://github.com/code-pushup/cli/pull/1023))
+- **models:** update to zod v4 ([7985c239](https://github.com/code-pushup/cli/commit/7985c239))
+- **nx-plugin:** update to zod v4 ([91774182](https://github.com/code-pushup/cli/commit/91774182))
+- **plugin-coverage:** update to zod v4 ([a0814d31](https://github.com/code-pushup/cli/commit/a0814d31))
+- **plugin-eslint:** update zod to v4 ([4ef657f1](https://github.com/code-pushup/cli/commit/4ef657f1))
+- **plugin-js-packages:** update to zod v4 ([c24b7435](https://github.com/code-pushup/cli/commit/c24b7435))
+- **plugin-jsdocs:** update to zod v4 ([3444e8d3](https://github.com/code-pushup/cli/commit/3444e8d3))
+- **plugin-lighthouse:** implement multiple URL support ([f4db1368](https://github.com/code-pushup/cli/commit/f4db1368))
+- **plugin-typescript:** update to zod v4 ([6de416f4](https://github.com/code-pushup/cli/commit/6de416f4))
+- **utils:** update to zod v4, replace zod-validation-error with z.prettifyError ([b1364d7d](https://github.com/code-pushup/cli/commit/b1364d7d))
+- **utils:** parse boolean environment variables ([be08c188](https://github.com/code-pushup/cli/commit/be08c188))
+- **utils:** detect ci environment ([3430d31b](https://github.com/code-pushup/cli/commit/3430d31b))
+- **utils:** extract boolean value coercion to standalone function ([f76e4fb0](https://github.com/code-pushup/cli/commit/f76e4fb0))
+
+### 🩹 Fixes
+
+- **ci:** do not set --verbose by default ([ab39b050](https://github.com/code-pushup/cli/commit/ab39b050))
+- **cli:** adapt format schema check to zod v4 ([77a384b0](https://github.com/code-pushup/cli/commit/77a384b0))
+- **models:** use implementAsync for async z.function occurrences ([17931228](https://github.com/code-pushup/cli/commit/17931228))
+
+### ❤️ Thank You
+
+- Andrii Siuta
+- Hanna Skryl @hanna-skryl
+- Matěj Chalk
+
 ## 0.69.5 (2025-07-11)
 
 ### 🩹 Fixes

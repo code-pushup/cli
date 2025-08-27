@@ -32,7 +32,7 @@ describe('yarnHandler', () => {
         },
         MEMFS_VOLUME,
       );
-      await expect(yarnHandler.isConfigured(options)).resolves.toBe(true);
+      await expect(yarnHandler.isConfigured(options)).resolves.toBeTrue();
     });
 
     it('should NOT detect Yarn workspaces when "workspaces" not set in package.json', async () => {
@@ -43,7 +43,7 @@ describe('yarnHandler', () => {
         },
         MEMFS_VOLUME,
       );
-      await expect(yarnHandler.isConfigured(options)).resolves.toBe(false);
+      await expect(yarnHandler.isConfigured(options)).resolves.toBeFalse();
     });
 
     it("should NOT detect Yarn workspaces when yarn.lock doesn't exist", async () => {
@@ -57,7 +57,7 @@ describe('yarnHandler', () => {
         },
         MEMFS_VOLUME,
       );
-      await expect(yarnHandler.isConfigured(options)).resolves.toBe(false);
+      await expect(yarnHandler.isConfigured(options)).resolves.toBeFalse();
     });
   });
 

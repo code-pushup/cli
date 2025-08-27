@@ -4,39 +4,11 @@
   "sourceRoot": "packages/plugin-coverage/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/plugin-coverage",
-        "main": "packages/plugin-coverage/src/index.ts",
-        "tsConfig": "packages/plugin-coverage/tsconfig.lib.json",
-        "additionalEntryPoints": ["packages/plugin-coverage/src/bin.ts"],
-        "assets": ["packages/plugin-coverage/*.md"]
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/plugin-coverage/**/*.ts",
-          "packages/plugin-coverage/package.json"
-        ]
-      }
-    },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-coverage/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-coverage/vitest.int.config.ts"
-      }
-    }
+    "build": {},
+    "lint": {},
+    "lint-report": {},
+    "unit-test": {},
+    "int-test": {}
   },
   "tags": ["scope:plugin", "type:feature", "publishable"]
 }

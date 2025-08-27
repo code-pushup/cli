@@ -47,6 +47,7 @@ describe('merge-diffs-command', () => {
         outputDir: DEFAULT_PERSIST_OUTPUT_DIR,
         filename: DEFAULT_PERSIST_FILENAME,
         format: DEFAULT_PERSIST_FORMAT,
+        skipReports: false,
       },
     );
   });

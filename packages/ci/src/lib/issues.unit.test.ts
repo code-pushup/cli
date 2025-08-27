@@ -31,7 +31,7 @@ describe('issues comparison', () => {
           },
         },
       ),
-    ).toBe(true);
+    ).toBeTrue();
   });
 
   it('should not match issues from different audits', () => {
@@ -63,7 +63,7 @@ describe('issues comparison', () => {
           },
         },
       ),
-    ).toBe(false);
+    ).toBeFalse();
   });
 
   it('should match issues based on adjusted line', () => {
@@ -97,7 +97,7 @@ describe('issues comparison', () => {
           },
         },
       ),
-    ).toBe(true);
+    ).toBeTrue();
   });
 
   it('should match issues from renamed files', () => {
@@ -124,7 +124,7 @@ describe('issues comparison', () => {
           },
         },
       ),
-    ).toBe(true);
+    ).toBeTrue();
   });
 
   it('should match issues based on adjusted line range', () => {
@@ -165,7 +165,7 @@ describe('issues comparison', () => {
           },
         },
       ),
-    ).toBe(true);
+    ).toBeTrue();
   });
 });
 

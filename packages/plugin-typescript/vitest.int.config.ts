@@ -16,7 +16,12 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'lcov'],
       reportsDirectory: '../../coverage/plugin-typescript/int-tests',
-      exclude: ['mocks/**', '**/types.ts'],
+      exclude: [
+        'mocks/**',
+        '**/types.ts',
+        '**/index.ts',
+        'vitest.{unit,int}.config.ts',
+      ],
     },
     environment: 'node',
     include: ['src/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],

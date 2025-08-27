@@ -4,18 +4,12 @@
   "sourceRoot": "examples/create-cli-e2e/src",
   "projectType": "application",
   "targets": {
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["e2e/create-cli-e2e/**/*.ts"]
-      }
-    },
+    "lint": {},
     "e2e": {
       "executor": "@nx/vite:test",
       "options": {
         "keepServerRunning": true,
-        "configFile": "e2e/create-cli-e2e/vitest.e2e.config.ts"
+        "configFile": "{projectRoot}/vitest.e2e.config.ts"
       }
     }
   },

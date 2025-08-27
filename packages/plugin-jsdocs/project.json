@@ -5,37 +5,10 @@
   "projectType": "library",
   "tags": ["scope:plugin", "type:feature", "publishable"],
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/plugin-jsdocs",
-        "main": "packages/plugin-jsdocs/src/index.ts",
-        "tsConfig": "packages/plugin-jsdocs/tsconfig.lib.json",
-        "assets": ["packages/plugin-jsdocs/*.md"]
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/plugin-jsdocs/**/*.ts",
-          "packages/plugin-jsdocs/package.json"
-        ]
-      }
-    },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-jsdocs/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-jsdocs/vitest.int.config.ts"
-      }
-    }
+    "build": {},
+    "lint": {},
+    "lint-report": {},
+    "unit-test": {},
+    "int-test": {}
   }
 }

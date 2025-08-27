@@ -1,5 +1,7 @@
 import { autoloadRc, readRcByPath } from '@code-pushup/core';
 import {
+  type CacheConfig,
+  type CacheConfigObject,
   type CoreConfig,
   DEFAULT_PERSIST_FILENAME,
   DEFAULT_PERSIST_FORMAT,
@@ -15,6 +17,24 @@ export type CoreConfigMiddlewareOptions = GeneralCliOptions &
   CoreConfigCliOptions &
   FilterOptions;
 
+function buildPersistConfig(
+  cliPersist: CoreConfigCliOptions['persist'],
+  rcPersist: CoreConfig['persist'],
+): Required<CoreConfig['persist']> {
+  return {
+    outputDir:
+      cliPersist?.outputDir ??
+      rcPersist?.outputDir ??
+      DEFAULT_PERSIST_OUTPUT_DIR,
+    filename:
+      cliPersist?.filename ?? rcPersist?.filename ?? DEFAULT_PERSIST_FILENAME,
+    format: normalizeFormats(
+      cliPersist?.format ?? rcPersist?.format ?? DEFAULT_PERSIST_FORMAT,
+    ),
+    skipReports: cliPersist?.skipReports ?? rcPersist?.skipReports ?? false,
+  };
+}
+
 export async function coreConfigMiddleware<
   T extends CoreConfigMiddlewareOptions,
 >(processArgs: T): Promise<GeneralCliOptions & CoreConfig & FilterOptions> {
@@ -23,6 +43,7 @@ export async function coreConfigMiddleware<
     tsconfig,
     persist: cliPersist,
     upload: cliUpload,
+    cache: cliCache,
     ...remainingCliOptions
   } = processArgs;
   // Search for possible configuration file extensions if path is not given
@@ -41,24 +62,37 @@ export async function coreConfigMiddleware<
           ...rcUpload,
           ...cliUpload,
         });
+
   return {
     ...(config != null && { config }),
-    persist: {
-      outputDir:
-        cliPersist?.outputDir ??
-        rcPersist?.outputDir ??
-        DEFAULT_PERSIST_OUTPUT_DIR,
-      filename:
-        cliPersist?.filename ?? rcPersist?.filename ?? DEFAULT_PERSIST_FILENAME,
-      format: normalizeFormats(
-        cliPersist?.format ?? rcPersist?.format ?? DEFAULT_PERSIST_FORMAT,
-      ),
-    },
+    cache: normalizeCache(cliCache),
+    persist: buildPersistConfig(cliPersist, rcPersist),
     ...(upload != null && { upload }),
     ...remainingRcConfig,
     ...remainingCliOptions,
   };
 }
+
+export const normalizeBooleanWithNegation = <T extends string>(
+  propertyName: T,
+  cliOptions?: Record<T, unknown>,
+  rcOptions?: Record<T, unknown>,
+): boolean =>
+  propertyName in (cliOptions ?? {})
+    ? (cliOptions?.[propertyName] as boolean)
+    : `no-${propertyName}` in (cliOptions ?? {})
+      ? false
+      : ((rcOptions?.[propertyName] as boolean) ?? true);
+
+export const normalizeCache = (cache?: CacheConfig): CacheConfigObject => {
+  if (cache == null) {
+    return { write: false, read: false };
+  }
+  if (typeof cache === 'boolean') {
+    return { write: cache, read: cache };
+  }
+  return { write: cache.write ?? false, read: cache.read ?? false };
+};
 
 export const normalizeFormats = (formats?: string[]): Format[] =>
   (formats ?? []).flatMap(format => format.split(',') as Format[]);

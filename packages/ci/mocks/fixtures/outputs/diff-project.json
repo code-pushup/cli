@@ -4,13 +4,13 @@
       "hash": "efed65b3ffab808176c4f8670d77f8d69f71490e",
       "message": "Initial commit",
       "date": "2024-10-14T09:00:13.000Z",
-      "author": "John Doe"
+      "author": "John Doe <john.doe@example.com>"
     },
     "after": {
       "hash": "2f3b5365432abb7c9949aa50ff3aa8b7a02256de",
       "message": "Convert JS file to TS",
       "date": "2024-10-14T09:00:13.000Z",
-      "author": "John Doe"
+      "author": "John Doe <john.doe@example.com>"
     }
   },
   "categories": {

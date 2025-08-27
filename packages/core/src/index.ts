@@ -1,30 +1,39 @@
 export {
-  type CollectAndPersistReportsOptions,
   collectAndPersistReports,
+  type CollectAndPersistReportsOptions,
 } from './lib/collect-and-persist.js';
-export { compareReportFiles, compareReports } from './lib/compare.js';
-export { type CollectOptions, collect } from './lib/implementation/collect.js';
+export {
+  compareReportFiles,
+  compareReports,
+  type CompareOptions,
+} from './lib/compare.js';
+export {
+  getRunnerOutputsPath,
+  type ValidatedRunnerResult,
+} from './lib/implementation/runner.js';
+
+export {
+  history,
+  type HistoryOnlyOptions,
+  type HistoryOptions,
+} from './lib/history.js';
+export { collect, type CollectOptions } from './lib/implementation/collect.js';
 export type { ReportsToCompare } from './lib/implementation/compare-scorables.js';
 export {
-  PluginOutputMissingAuditError,
   executePlugin,
   executePlugins,
 } from './lib/implementation/execute-plugin.js';
+export { AuditOutputsMissingAuditError } from './lib/implementation/runner.js';
 export {
   PersistDirError,
   PersistError,
   persistReport,
 } from './lib/implementation/persist.js';
 export {
-  history,
-  type HistoryOptions,
-  type HistoryOnlyOptions,
-} from './lib/history.js';
-export {
-  ConfigPathError,
   autoloadRc,
+  ConfigPathError,
   readRcByPath,
 } from './lib/implementation/read-rc-file.js';
-export type { GlobalOptions } from './lib/types.js';
-export { type UploadOptions, upload } from './lib/upload.js';
 export { mergeDiffs } from './lib/merge-diffs.js';
+export type { GlobalOptions } from './lib/types.js';
+export { upload, type UploadOptions } from './lib/upload.js';

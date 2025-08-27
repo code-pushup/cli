@@ -2,6 +2,7 @@ import { bold, gray } from 'ansis';
 import { type Options, bundleRequire } from 'bundle-require';
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
+import type { Format, PersistConfig } from '@code-pushup/models';
 import { formatBytes } from './formatting.js';
 import { logMultipleResults } from './log-results.js';
 import { ui } from './logging.js';
@@ -82,6 +83,21 @@ export async function importModule<T = unknown>(options: Options): Promise<T> {
     return mod.default as T;
   }
   return mod as T;
+}
+
+export function createReportPath({
+  outputDir,
+  filename,
+  format,
+  suffix,
+}: Pick<Required<PersistConfig>, 'filename' | 'outputDir'> & {
+  format: Format;
+  suffix?: string;
+}): string {
+  return path.join(
+    outputDir,
+    suffix ? `${filename}-${suffix}.${format}` : `${filename}.${format}`,
+  );
 }
 
 export function pluginWorkDir(slug: string): string {

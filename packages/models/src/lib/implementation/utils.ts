@@ -43,11 +43,15 @@ export function hasMissingStrings(
   return nonExisting.length === 0 ? false : nonExisting;
 }
 
+export function formatSlugsList(slugs: string[]): string {
+  return slugs.map(slug => `"${slug}"`).join(', ');
+}
+
 /**
  * helper for error items
  */
 export function errorItems(
-  items: string[] | false,
+  items: string[],
   transform: (itemArr: string[]) => string = itemArr => itemArr.join(', '),
 ): string {
   return transform(items || []);
@@ -72,12 +76,10 @@ export function getMissingRefsForCategories(
   }
 
   const auditRefsFromCategory = categories.flatMap(({ refs }) =>
-    refs
-      .filter(({ type }) => type === 'audit')
-      .map(({ plugin, slug }) => `${plugin}/${slug}`),
+    refs.filter(({ type }) => type === 'audit').map(formatRef),
   );
-  const auditRefsFromPlugins = plugins.flatMap(({ audits, slug: pluginSlug }) =>
-    audits.map(({ slug }) => `${pluginSlug}/${slug}`),
+  const auditRefsFromPlugins = plugins.flatMap(({ audits, slug: plugin }) =>
+    audits.map(({ slug }) => formatRef({ type: 'audit', plugin, slug })),
   );
   const missingAuditRefs = hasMissingStrings(
     auditRefsFromCategory,
@@ -85,15 +87,12 @@ export function getMissingRefsForCategories(
   );
 
   const groupRefsFromCategory = categories.flatMap(({ refs }) =>
-    refs
-      .filter(({ type }) => type === 'group')
-      .map(({ plugin, slug }) => `${plugin}#${slug} (group)`),
+    refs.filter(({ type }) => type === 'group').map(formatRef),
   );
-  const groupRefsFromPlugins = plugins.flatMap(
-    ({ groups, slug: pluginSlug }) =>
-      Array.isArray(groups)
-        ? groups.map(({ slug }) => `${pluginSlug}#${slug} (group)`)
-        : [],
+  const groupRefsFromPlugins = plugins.flatMap(({ groups, slug: plugin }) =>
+    Array.isArray(groups)
+      ? groups.map(({ slug }) => formatRef({ type: 'group', plugin, slug }))
+      : [],
   );
   const missingGroupRefs = hasMissingStrings(
     groupRefsFromCategory,
@@ -107,12 +106,27 @@ export function getMissingRefsForCategories(
   return missingRefs.length > 0 ? missingRefs : false;
 }
 
-export function missingRefsForCategoriesErrorMsg(
-  categories: CategoryConfig[] | undefined,
-  plugins: PluginConfig[] | PluginReport[],
-) {
+export function findMissingSlugsInCategoryRefs({
+  categories,
+  plugins,
+}: {
+  categories?: CategoryConfig[];
+  plugins: PluginConfig[] | PluginReport[];
+}) {
   const missingRefs = getMissingRefsForCategories(categories, plugins);
-  return `The following category references need to point to an audit or group: ${errorItems(
-    missingRefs,
-  )}`;
+  return (
+    missingRefs && {
+      message: `Category references audits or groups which don't exist: ${missingRefs.join(
+        ', ',
+      )}`,
+    }
+  );
+}
+
+export function formatRef(ref: {
+  type: 'audit' | 'group';
+  plugin: string;
+  slug: string;
+}): string {
+  return `${ref.type} "${ref.slug}" (plugin "${ref.plugin}")`;
 }

@@ -4,38 +4,11 @@
   "sourceRoot": "packages/plugin-typescript/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/plugin-typescript",
-        "main": "packages/plugin-typescript/src/index.ts",
-        "tsConfig": "packages/plugin-typescript/tsconfig.lib.json",
-        "assets": ["packages/plugin-typescript/*.md"]
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/plugin-typescript/**/*.ts",
-          "packages/plugin-typescript/package.json"
-        ]
-      }
-    },
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-typescript/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/plugin-typescript/vitest.int.config.ts"
-      }
-    }
+    "build": {},
+    "lint": {},
+    "lint-report": {},
+    "unit-test": {},
+    "int-test": {}
   },
   "tags": ["scope:plugin", "type:feature", "publishable"]
 }

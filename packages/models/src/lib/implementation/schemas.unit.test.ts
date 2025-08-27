@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   type TableCellValue,
   docsUrlSchema,
+  globPathSchema,
   tableCellValueSchema,
   weightSchema,
 } from './schemas.js';
@@ -61,6 +62,28 @@ describe('docsUrlSchema', () => {
   });
 
   it('should throw if not a string', () => {
-    expect(() => docsUrlSchema.parse(false)).toThrow('invalid_type');
+    expect(() => docsUrlSchema.parse(false)).toThrow(
+      'Invalid input: expected string, received boolean',
+    );
   });
+});
+
+describe('globPathSchema', () => {
+  it.each([
+    '**/*.ts',
+    'src/components/*.jsx',
+    '{src,lib,test}/**/*.js',
+    '!node_modules/**',
+  ])('should accept a valid glob pattern: %s', pattern => {
+    expect(() => globPathSchema.parse(pattern)).not.toThrow();
+  });
+
+  it.each(['path<file.js', 'path>file.js', 'path"file.js', 'path|file.js'])(
+    'should throw for invalid path with forbidden character: %s',
+    pattern => {
+      expect(() => globPathSchema.parse(pattern)).toThrow(
+        'valid file path or glob pattern',
+      );
+    },
+  );
 });

@@ -2,6 +2,7 @@ import path from 'node:path';
 import {
   executeProcess,
   fileExists,
+  interpolate,
   stringifyError,
   toArray,
 } from '@code-pushup/utils';
@@ -32,7 +33,7 @@ export const nxHandler: MonorepoToolHandler = {
         'nx',
         'show',
         'projects',
-        ...toArray(nxProjectsFilter).map(arg => arg.replaceAll('{task}', task)),
+        ...toArray(nxProjectsFilter).map(arg => interpolate(arg, { task })),
         '--json',
       ],
       cwd,

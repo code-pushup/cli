@@ -1,0 +1,203 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`transformGQLReport > should convert full GraphQL report to valid report.json format 1`] = `
+{
+  "categories": [
+    {
+      "refs": [
+        {
+          "plugin": "eslint",
+          "slug": "suggestions",
+          "type": "group",
+          "weight": 1,
+        },
+      ],
+      "slug": "code-style",
+      "title": "Code style",
+    },
+    {
+      "refs": [
+        {
+          "plugin": "bundle-stats",
+          "slug": "initial",
+          "type": "audit",
+          "weight": 1,
+        },
+      ],
+      "slug": "bundle-size",
+      "title": "Bundle size",
+    },
+  ],
+  "commit": {
+    "author": "John Doe <john.doe@example.com>",
+    "date": 2025-08-01T00:00:00.000Z,
+    "hash": "4da737d63efcc83d0dd05620801f195968611eb7",
+    "message": "Apply suggestions from code review",
+  },
+  "date": "2025-08-01T00:10:00.000Z",
+  "duration": 30000,
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "audits": [
+        {
+          "details": {
+            "issues": [
+              {
+                "message": "File has too many lines (420). Maximum allowed is 300.",
+                "severity": "warning",
+                "source": {
+                  "file": "src/main.ts",
+                  "position": {
+                    "endLine": 420,
+                    "startLine": 301,
+                  },
+                },
+              },
+            ],
+          },
+          "displayValue": "1 warning",
+          "score": 0,
+          "slug": "max-lines",
+          "title": "Enforce a maximum number of lines per file",
+          "value": 1,
+        },
+        {
+          "details": {},
+          "displayValue": "passed",
+          "score": 1,
+          "slug": "max-lines-per-function",
+          "title": "Enforce a maximum number of lines of code per function",
+          "value": 0,
+        },
+      ],
+      "date": "2025-08-01T00:10:00.000Z",
+      "duration": 20000,
+      "groups": [
+        {
+          "refs": [
+            {
+              "slug": "max-lines",
+              "weight": 1,
+            },
+            {
+              "slug": "max-lines-per-function",
+              "weight": 1,
+            },
+          ],
+          "slug": "suggestions",
+          "title": "Suggestion",
+        },
+      ],
+      "icon": "eslint",
+      "packageName": "@code-pushup/eslint-plugin",
+      "slug": "eslint",
+      "title": "ESLint",
+      "version": "0.42.0",
+    },
+    {
+      "audits": [
+        {
+          "details": {
+            "issues": [
+              {
+                "message": "\`main.js\` is **420 kB**, exceeds warning threshold of 350 kB",
+                "severity": "warning",
+              },
+            ],
+            "table": {
+              "columns": [
+                {
+                  "align": "left",
+                  "key": "0",
+                  "label": "Group",
+                },
+                {
+                  "align": "right",
+                  "key": "1",
+                  "label": "Size",
+                },
+                {
+                  "align": "right",
+                  "key": "2",
+                  "label": "Modules",
+                },
+              ],
+              "rows": [
+                {
+                  "0": "3rd-party packages",
+                  "1": "321.4 kB",
+                  "2": "101",
+                },
+                {
+                  "0": "Application shell",
+                  "1": "98.6 kB",
+                  "2": "7",
+                },
+              ],
+            },
+            "trees": [
+              {
+                "root": {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "children": [
+                            {
+                              "children": [
+                                {
+                                  "name": "src/main.ts",
+                                  "values": {
+                                    "size": "275 kB",
+                                  },
+                                },
+                                {
+                                  "name": "src/utils/format.ts",
+                                  "values": {
+                                    "size": "120 kB",
+                                  },
+                                },
+                                {
+                                  "name": "src/utils/math.ts",
+                                  "values": {
+                                    "size": "25 kB",
+                                  },
+                                },
+                              ],
+                              "name": "inputs",
+                            },
+                          ],
+                          "name": "dist/main.js",
+                          "values": {
+                            "size": "420 kB",
+                          },
+                        },
+                      ],
+                      "name": "outputs",
+                    },
+                  ],
+                  "name": "stats.json",
+                },
+                "type": "basic",
+              },
+            ],
+          },
+          "displayValue": "420 kB",
+          "score": 0.75,
+          "slug": "initial",
+          "title": "Initial JavaScript bundle",
+          "value": 420000,
+        },
+      ],
+      "date": "2025-08-01T00:10:20.000Z",
+      "duration": 10000,
+      "groups": [],
+      "icon": "javascript-map",
+      "slug": "bundle-stats",
+      "title": "Bundle stats",
+    },
+  ],
+  "version": "0.42.0",
+}
+`;

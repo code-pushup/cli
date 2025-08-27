@@ -3,7 +3,7 @@
     "hash": "efed65b3ffab808176c4f8670d77f8d69f71490e",
     "message": "Initial commit",
     "date": "2024-10-14T09:00:13.000Z",
-    "author": "John Doe"
+    "author": "John Doe <john.doe@example.com>"
   },
   "packageName": "@code-pushup/core",
   "version": "0.51.0",

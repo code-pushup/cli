@@ -1,8 +1,4 @@
-import type {
-  AuditOutput,
-  AuditOutputs,
-  AuditReport,
-} from '@code-pushup/models';
+import type { AuditOutput, AuditReport } from '@code-pushup/models';
 
 const AGNOSTIC_PATH_SEP_REGEX = /[/\\]/g;
 const OS_AGNOSTIC_PATH_SEP = '/';
@@ -102,6 +98,7 @@ export function osAgnosticPath(filePath?: string): string | undefined {
 
 export function osAgnosticAudit<T extends AuditOutput | AuditReport>(
   audit: T,
+  transformMessage: (message: string) => string = s => s,
 ): T {
   const { issues = [] } = audit.details ?? {};
   if (issues.every(({ source }) => source == null)) {
@@ -119,12 +116,18 @@ export function osAgnosticAudit<T extends AuditOutput | AuditReport>(
                 ...issue.source,
                 file: osAgnosticPath(issue.source.file),
               },
+              message: transformMessage(issue.message),
             },
       ),
     },
   };
 }
 
-export function osAgnosticAuditOutputs(audits: AuditOutputs): AuditOutputs {
-  return audits.map(osAgnosticAudit);
+export function osAgnosticAuditOutputs<T extends AuditOutput | AuditReport>(
+  audits: T[],
+  transformAuditIssueMessage?: (message: string) => string,
+): T[] {
+  return audits.map(audit =>
+    osAgnosticAudit(audit, transformAuditIssueMessage),
+  );
 }

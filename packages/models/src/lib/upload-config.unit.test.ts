@@ -21,7 +21,7 @@ describe('uploadConfigSchema', () => {
         project: 'cli',
         server: '-invalid-/url',
       } satisfies UploadConfig),
-    ).toThrow('Invalid url');
+    ).toThrow('Invalid URL');
   });
 
   it('should throw for a PascalCase organization name', () => {

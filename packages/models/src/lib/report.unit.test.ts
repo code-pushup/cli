@@ -160,7 +160,7 @@ describe('pluginReportSchema', () => {
         ],
       } satisfies PluginReport),
     ).toThrow(
-      'group references need to point to an existing audit in this plugin report: perf-lighthouse',
+      String.raw`Group references audits which don't exist in this plugin: \"perf-lighthouse\"`,
     );
   });
 });
@@ -207,6 +207,7 @@ describe('reportSchema', () => {
         ],
         packageName: 'cli',
         version: '1.0.1',
+        label: 'api',
       } satisfies Report),
     ).not.toThrow();
   });
@@ -266,7 +267,7 @@ describe('reportSchema', () => {
         version: '1.0.1',
       } satisfies Report),
     ).toThrow(
-      'category references need to point to an audit or group: vitest/vitest-unit-test',
+      String.raw`Category references audits or groups which don't exist: audit \"vitest-unit-test\" (plugin \"vitest\")`,
     );
   });
 });
