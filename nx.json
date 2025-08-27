@@ -190,7 +190,8 @@
         "typecheckTargetName": "typecheck",
         "buildDepsTargetName": "build-deps",
         "watchDepsTargetName": "watch-deps"
-      }
+      },
+      "include": ["tools/eslint-multi-format/**"]
     }
   ],
   "nxCloudId": "65d4d862d2adb16a45a4bc7c"
