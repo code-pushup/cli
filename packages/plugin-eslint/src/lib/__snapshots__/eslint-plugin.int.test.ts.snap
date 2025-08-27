@@ -346,16 +346,7 @@ exports[`eslintPlugin > should initialize ESLint plugin for React application 1`
   ],
   "icon": "eslint",
   "packageName": "@code-pushup/eslint-plugin",
-  "runner": {
-    "args": [
-      ""<dirname>/bin.js"",
-      "--runnerConfigPath="node_modules/.code-pushup/eslint/<timestamp>/plugin-config.json"",
-      "--runnerOutputPath="node_modules/.code-pushup/eslint/<timestamp>/runner-output.json"",
-    ],
-    "command": "node",
-    "configFile": "node_modules/.code-pushup/eslint/<timestamp>/plugin-config.json",
-    "outputFile": "node_modules/.code-pushup/eslint/<timestamp>/runner-output.json",
-  },
+  "runner": [Function],
   "slug": "eslint",
   "title": "ESLint",
   "version": Any<String>,
