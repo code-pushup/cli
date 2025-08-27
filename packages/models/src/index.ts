@@ -34,6 +34,7 @@ export { commitSchema, type Commit } from './lib/commit.js';
 export {
   artifactGenerationCommandSchema,
   pluginArtifactOptionsSchema,
+  type PluginArtifactOptions,
 } from './lib/configuration.js';
 export { coreConfigSchema, type CoreConfig } from './lib/core-config.js';
 export {
@@ -62,6 +63,7 @@ export {
 export {
   fileNameSchema,
   filePathSchema,
+  globPathSchema,
   materialIconSchema,
   scoreSchema,
   slugSchema,

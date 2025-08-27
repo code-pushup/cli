@@ -40,9 +40,7 @@
         }
       }
     },
-    "e2e": {
-      "dependsOn": ["^build"]
-    },
+    "e2e": { "dependsOn": ["^build"] },
     "lint": {
       "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
       "executor": "@nx/linter:eslint",
