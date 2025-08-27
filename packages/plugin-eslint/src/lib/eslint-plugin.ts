@@ -9,6 +9,7 @@ import {
   eslintPluginConfigSchema,
   eslintPluginOptionsSchema,
 } from './config.js';
+import { ESLINT_PLUGIN_SLUG } from './constants.js';
 import { listAuditsAndGroups } from './meta/index.js';
 import { createRunnerConfig } from './runner/index.js';
 
@@ -62,7 +63,7 @@ export async function eslintPlugin(
   ) as typeof import('../../package.json');
 
   return {
-    slug: 'eslint',
+    slug: ESLINT_PLUGIN_SLUG,
     title: 'ESLint',
     icon: 'eslint',
     description: 'Official Code PushUp ESLint plugin',
