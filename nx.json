@@ -151,7 +151,7 @@
   },
   "plugins": [
     {
-      "plugin": "node_modules/@code-pushup/nx-plugin"
+      "plugin": "@code-pushup/nx-plugin"
     },
     {
       "plugin": "@push-based/nx-verdaccio",
