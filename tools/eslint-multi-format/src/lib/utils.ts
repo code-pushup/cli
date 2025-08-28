@@ -136,8 +136,7 @@ export function persistEslintReport(
       content,
     );
     if (verbose) {
-      // eslint-disable-next-line no-console
-      console.log(`ESLint report (${format}) written to: ${outputDir}`);
+      console.info(`ESLint report (${format}) written to: ${outputDir}`);
     }
     return true;
   } catch (error_) {
