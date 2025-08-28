@@ -46,18 +46,17 @@ describe('eslintPlugin', () => {
     });
 
     // expect rule from extended base eslint.config.js
-    expect(plugin.audits).toContainEqual(
-      expect.objectContaining<Audit>({
-        slug: expect.stringMatching(/^nx-enforce-module-boundaries/),
-        title: expect.any(String),
-        description: expect.stringContaining('sourceTag'),
-      }),
-    );
-    // expect rule from nx-plugin project's eslint.config.js
-    expect(plugin.audits).toContainEqual(
-      expect.objectContaining<Partial<Audit>>({
-        slug: 'nx-nx-plugin-checks',
-      }),
+    expect(plugin.audits).toStrictEqual(
+      expect.arrayContaining([
+        expect.objectContaining<Audit>({
+          slug: expect.stringMatching(/^nx-enforce-module-boundaries/),
+          title: expect.any(String),
+          description: expect.stringContaining('sourceTag'),
+        }),
+        expect.objectContaining<Partial<Audit>>({
+          slug: 'nx-nx-plugin-checks',
+        }),
+      ]),
     );
   });
 
