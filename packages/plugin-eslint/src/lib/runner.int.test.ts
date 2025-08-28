@@ -54,7 +54,7 @@ describe('executeRunner', () => {
       ],
     });
     const res = await runnerFn({ outputDir: '' });
-    await expect(osAgnosticAuditOutputs(res)).resolves.toMatchSnapshot();
+    expect(osAgnosticAuditOutputs(res)).toMatchSnapshot();
   });
 
   it.skipIf(process.platform === 'win32')(
