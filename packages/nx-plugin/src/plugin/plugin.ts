@@ -39,11 +39,11 @@ export const createNodes: CreateNodes = [
   },
 ];
 
-export const createNodesV2: CreateNodesV2<CreateNodesOptions> = [
+export const createNodesV2: CreateNodesV2 = [
   `**/${PROJECT_JSON_FILE_NAME}`,
   async (
     projectConfigurationFiles: readonly string[],
-    createNodesOptions: CreateNodesOptions | undefined,
+    createNodesOptions: unknown,
     context: CreateNodesContextV2,
   ): Promise<CreateNodesResultV2> => {
     const parsedCreateNodesOptions =
