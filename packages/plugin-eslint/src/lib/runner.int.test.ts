@@ -3,7 +3,12 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { type MockInstance, describe, expect, it } from 'vitest';
-import type { Audit, AuditOutput, Issue } from '@code-pushup/models';
+import type {
+  Audit,
+  AuditOutput,
+  AuditOutputs,
+  Issue,
+} from '@code-pushup/models';
 import { osAgnosticAuditOutputs } from '@code-pushup/test-utils';
 import type { ESLintTarget } from './config.js';
 import { listAuditsAndGroups } from './meta/index.js';
@@ -53,19 +58,19 @@ describe('executeRunner', () => {
         },
       ],
     });
-    const res = await runnerFn({ outputDir: '' });
+    const res: AuditOutputs = await runnerFn({ outputDir: '' });
     expect(osAgnosticAuditOutputs(res)).toMatchSnapshot();
   });
 
   it.skipIf(process.platform === 'win32')(
     'should execute runner with custom config using @code-pushup/eslint-config',
     async () => {
-      const eslintTarget = 'eslint.config.js';
+      const eslintTarget = 'code-pushup.eslint.config.mjs';
       const runnerFn = await createRunnerFunction({
         audits: await createAudits(eslintTarget),
         targets: [
           {
-            eslintrc: 'code-pushup.eslint.config.mjs',
+            eslintrc: eslintTarget,
             patterns: '.',
           },
         ],
