@@ -8,7 +8,7 @@ Use the `ESLINT_FORMATTER_CONFIG` environment variable to configure the formatte
 
 ### Configuration Schema
 
-```json
+```jsonc
 {
   "outputDir": "./reports", // Optional: Output directory (default: cwd/.eslint)
   "filename": "eslint-report", // Optional: Base filename without extension (default: 'eslint-report')
