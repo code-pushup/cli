@@ -4,9 +4,7 @@
   "targets": {
     "code-pushup-js-packages": {},
     "code-pushup-lighthouse": {},
-    "code-pushup-coverage": {
-      "dependsOn": ["^*-test"]
-    },
+    "code-pushup-coverage": {},
     "code-pushup-eslint": {},
     "code-pushup-jsdocs": {},
     "code-pushup-typescript": {},
