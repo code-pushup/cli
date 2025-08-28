@@ -3,37 +3,23 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { type MockInstance, describe, expect, it } from 'vitest';
-import type {
-  AuditOutput,
-  AuditOutputs,
-  Issue,
-  RunnerFilesPaths,
-} from '@code-pushup/models';
+import type { Audit, AuditOutput, Issue } from '@code-pushup/models';
 import { osAgnosticAuditOutputs } from '@code-pushup/test-utils';
-import { readJsonFile } from '@code-pushup/utils';
 import type { ESLintTarget } from './config.js';
 import { listAuditsAndGroups } from './meta/index.js';
-import { createRunnerConfig, executeRunner } from './runner/index.js';
+import { createRunnerFunction } from './runner/index.js';
 
 describe('executeRunner', () => {
   let cwdSpy: MockInstance<[], string>;
   let platformSpy: MockInstance<[], NodeJS.Platform>;
 
-  const createPluginConfig = async (
+  const createAudits = async (
     eslintrc: ESLintTarget['eslintrc'],
-  ): Promise<RunnerFilesPaths> => {
+  ): Promise<Audit[]> => {
     const patterns = ['src/**/*.js', 'src/**/*.jsx'];
     const targets: ESLintTarget[] = [{ eslintrc, patterns }];
     const { audits } = await listAuditsAndGroups(targets);
-    const { outputFile, configFile } = await createRunnerConfig(
-      'bin.js',
-      audits,
-      targets,
-    );
-    return {
-      runnerOutputPath: outputFile,
-      runnerConfigPath: configFile!,
-    };
+    return audits;
   };
 
   const appDir = path.join(
@@ -57,24 +43,35 @@ describe('executeRunner', () => {
   });
 
   it('should execute ESLint and create audit results for React application', async () => {
-    const runnerPaths = await createPluginConfig('eslint.config.js');
-    await executeRunner(runnerPaths);
-
-    const json = await readJsonFile<AuditOutputs>(runnerPaths.runnerOutputPath);
-    expect(osAgnosticAuditOutputs(json)).toMatchSnapshot();
+    const eslintTarget = 'eslint.config.js';
+    const runnerFn = await createRunnerFunction({
+      audits: await createAudits(eslintTarget),
+      targets: [
+        {
+          eslintrc: eslintTarget,
+          patterns: '.',
+        },
+      ],
+    });
+    const res = await runnerFn({ outputDir: '' });
+    await expect(osAgnosticAuditOutputs(res)).resolves.toMatchSnapshot();
   });
 
   it.skipIf(process.platform === 'win32')(
     'should execute runner with custom config using @code-pushup/eslint-config',
     async () => {
-      const runnerPaths = await createPluginConfig(
-        'code-pushup.eslint.config.mjs',
-      );
-      await executeRunner(runnerPaths);
+      const eslintTarget = 'eslint.config.js';
+      const runnerFn = await createRunnerFunction({
+        audits: await createAudits(eslintTarget),
+        targets: [
+          {
+            eslintrc: 'code-pushup.eslint.config.mjs',
+            patterns: '.',
+          },
+        ],
+      });
 
-      const json = await readJsonFile<AuditOutput[]>(
-        runnerPaths.runnerOutputPath,
-      );
+      const json = await runnerFn({ outputDir: '' });
       // expect warnings from unicorn/filename-case rule from default config
       expect(json).toContainEqual(
         expect.objectContaining<Partial<AuditOutput>>({
