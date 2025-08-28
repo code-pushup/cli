@@ -1,14 +1,7 @@
 import { createNodes, createNodesV2 } from './plugin/index.js';
+import { pluginObject } from './plugin/plugin.js';
 
-// default export for nx.json#plugins
-const plugin = {
-  name: '@code-pushup/nx-plugin',
-  createNodesV2,
-  // Keep for backwards compatibility with Nx < 21
-  createNodes,
-};
-
-export default plugin;
+export default pluginObject;
 
 export type { AutorunCommandExecutorOptions } from './executors/cli/schema.js';
 export { objectToCliArgs } from './executors/internal/cli.js';

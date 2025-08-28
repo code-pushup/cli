@@ -39,7 +39,7 @@ export const createNodes: CreateNodes = [
   },
 ];
 
-export const createNodesV2: CreateNodesV2<CreateNodesOptions> = [
+export const createNodesV2: CreateNodesV2 = [
   `**/${PROJECT_JSON_FILE_NAME}`,
   async (
     projectConfigurationFiles: readonly string[],
@@ -69,3 +69,11 @@ export const createNodesV2: CreateNodesV2<CreateNodesOptions> = [
     );
   },
 ];
+
+export const pluginObject = {
+  name: '@code-pushup/nx-plugin',
+  createNodes,
+  createNodesV2,
+};
+
+export default pluginObject;
