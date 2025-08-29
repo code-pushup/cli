@@ -153,6 +153,6 @@ describe('eslintPlugin', () => {
       },
     );
 
-    expect(typeof plugin.runner).toBe('function');
+    expect(plugin.runner).toBeTypeOf('function');
   });
 });
