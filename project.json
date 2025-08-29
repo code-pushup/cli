@@ -1,5 +1,12 @@
 {
   "name": "cli-workspace",
   "$schema": "node_modules/nx/schemas/project-schema.json",
-  "targets": {}
+  "targets": {
+    "code-pushup-js-packages": {},
+    "code-pushup-lighthouse": {},
+    "code-pushup-coverage": {},
+    "code-pushup-eslint": {},
+    "code-pushup-jsdocs": {},
+    "code-pushup-typescript": {}
+  }
 }

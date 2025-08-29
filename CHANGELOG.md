@@ -1,3 +1,19 @@
+## 0.77.0 (2025-08-28)
+
+### 🚀 Features
+
+- **core:** pass config to plugin runner ([#1087](https://github.com/code-pushup/cli/pull/1087))
+- **plugin-eslint:** add artifact loading logic ([#1077](https://github.com/code-pushup/cli/pull/1077))
+
+### 🩹 Fixes
+
+- **ci:** prevent parallel git diff when detecting new issues in monorepo ([f5f9114d](https://github.com/code-pushup/cli/commit/f5f9114d))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael Hladky @BioPhoton
+
 ## 0.76.0 (2025-08-25)
 
 ### 🚀 Features
