@@ -76,7 +76,7 @@ describe('executeRunner', () => {
         ],
       });
 
-      const json = await runnerFn({ outputDir: '' });
+      const json = await runnerFn({});
       // expect warnings from unicorn/filename-case rule from default config
       expect(json).toContainEqual(
         expect.objectContaining<Partial<AuditOutput>>({
