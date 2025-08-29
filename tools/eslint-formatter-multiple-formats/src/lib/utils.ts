@@ -1,6 +1,7 @@
 import type { ESLint } from 'eslint';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
+import { stringifyError } from '@code-pushup/utils';
 import type { EslintFormat, FormatterConfig } from './types.js';
 
 // Import the stylish formatter - using require, otherwise there is the wrong typing
@@ -28,10 +29,10 @@ export function findConfigFromEnv(
 
   try {
     return JSON.parse(configString) as FormatterConfig;
-  } catch (error_) {
+  } catch (error) {
     console.error(
       'Error parsing ESLINT_FORMATTER_CONFIG environment variable:',
-      (error_ as Error).message,
+      stringifyError(error),
     );
     return null;
   }
@@ -89,9 +90,12 @@ export function persistEslintReport(
       console.info(`ESLint report (${format}) written to: ${outputDir}`);
     }
     return true;
-  } catch (error_) {
+  } catch (error) {
     if (verbose) {
-      console.error('There was a problem writing the output file:\n%s', error_);
+      console.error(
+        'There was a problem writing the output file:\n%s',
+        stringifyError(error),
+      );
     }
     return false;
   }
