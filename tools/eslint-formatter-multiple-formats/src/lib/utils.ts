@@ -108,12 +108,12 @@ export function persistEslintReports(
 ): boolean {
   const { outputDir, filename, verbose } = options;
 
-  return formats.every(format => {
-    return persistEslintReport(results, {
+  return formats.every(format =>
+    persistEslintReport(results, {
       outputDir,
       filename,
       format,
       verbose,
-    });
-  });
+    }),
+  );
 }
