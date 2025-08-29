@@ -16,6 +16,7 @@
       "!{projectRoot}/**/?(*.)test.[jt]s?(x)?(.snap)",
       "!{projectRoot}/**/?(*.)mocks.[jt]s?(x)",
       "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
+      "!{projectRoot}/vite.config.[jt]s",
       "!{projectRoot}/vitest.@(unit|int|e2e).config.[jt]s",
       "!{projectRoot}/dist/**/*",
       "!{projectRoot}/tsconfig.@(test|tools).json",
@@ -113,7 +114,7 @@
       "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
       "outputs": ["{projectRoot}/.eslint/eslint-report*.json"],
       "cache": true,
-      "executor": "@nx/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "options": {
         "errorOnUnmatchedPattern": false,
         "maxWarnings": 0,
@@ -123,6 +124,19 @@
           "{projectRoot}/**/*.ts",
           "{projectRoot}/package.json"
         ]
+      }
+    },
+    "lint-formatter": {
+      "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
+      "outputs": ["{projectRoot}/.eslint/eslint-report*.json"],
+      "cache": true,
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx lint {projectName}",
+        "args": ["--format=./dist/eslint-multi-format/index.js"],
+        "env": {
+          "ESLINT_FORMATTER_CONFIG": "{\"outputDir\":\"{projectRoot}/.eslint\"}"
+        }
       }
     },
     "nxv-pkg-install": {
@@ -349,6 +363,27 @@
           "filterByTags": ["publishable"]
         }
       }
+    },
+    {
+      "plugin": "@nx/eslint",
+      "options": {
+        "config": "{projectRoot}/eslint.config.js"
+      }
+    },
+    {
+      "plugin": "@nx/vite/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "testTargetName": "test",
+        "serveTargetName": "serve",
+        "devTargetName": "dev",
+        "previewTargetName": "preview",
+        "serveStaticTargetName": "serve-static",
+        "typecheckTargetName": "typecheck",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      },
+      "include": ["tools/eslint-multi-format/**"]
     }
   ],
   "nxCloudId": "65d4d862d2adb16a45a4bc7c"
