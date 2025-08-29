@@ -29,7 +29,7 @@ export function createRunnerFunction(options: {
     const linterOutputs = artifacts
       ? await loadArtifacts(artifacts)
       : await asyncSequential(
-           targets.map(target => ({ ...target, outputDir })),
+          targets.map(target => ({ ...target, outputDir })),
           lint,
         );
     const lintResults = mergeLinterOutputs(linterOutputs);

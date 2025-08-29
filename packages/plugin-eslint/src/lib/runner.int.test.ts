@@ -3,11 +3,12 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { type MockInstance, describe, expect, it } from 'vitest';
-import type {
-  Audit,
-  AuditOutput,
-  AuditOutputs,
-  Issue,
+import {
+  type Audit,
+  type AuditOutput,
+  type AuditOutputs,
+  DEFAULT_PERSIST_OUTPUT_DIR,
+  type Issue,
 } from '@code-pushup/models';
 import { osAgnosticAuditOutputs } from '@code-pushup/test-utils';
 import type { ESLintTarget } from './config.js';
@@ -18,13 +19,13 @@ describe('executeRunner', () => {
   let cwdSpy: MockInstance<[], string>;
   let platformSpy: MockInstance<[], NodeJS.Platform>;
 
-  const createAudits = async (
+  const prepareRunnerArgs = async (
     eslintrc: ESLintTarget['eslintrc'],
-  ): Promise<Audit[]> => {
+  ): Promise<{ audits: Audit[]; targets: ESLintTarget[] }> => {
     const patterns = ['src/**/*.js', 'src/**/*.jsx'];
     const targets: ESLintTarget[] = [{ eslintrc, patterns }];
     const { audits } = await listAuditsAndGroups(targets);
-    return audits;
+    return { audits, targets };
   };
 
   const appDir = path.join(
@@ -50,7 +51,9 @@ describe('executeRunner', () => {
   it('should execute ESLint and create audit results for React application', async () => {
     const args = await prepareRunnerArgs('eslint.config.js');
     const runnerFn = await createRunnerFunction(args);
-    const res = (await runnerFn({})) as AuditOutputs;
+    const res = (await runnerFn({
+      outputDir: DEFAULT_PERSIST_OUTPUT_DIR,
+    })) as AuditOutputs;
     expect(osAgnosticAuditOutputs(res)).toMatchSnapshot();
   });
 
@@ -59,16 +62,10 @@ describe('executeRunner', () => {
     async () => {
       const eslintTarget = 'code-pushup.eslint.config.mjs';
       const runnerFn = await createRunnerFunction({
-        audits: await createAudits(eslintTarget),
-        targets: [
-          {
-            eslintrc: eslintTarget,
-            patterns: '.',
-          },
-        ],
+        ...(await prepareRunnerArgs(eslintTarget)),
       });
 
-      const json = await runnerFn({});
+      const json = await runnerFn({ outputDir: DEFAULT_PERSIST_OUTPUT_DIR });
       // expect warnings from unicorn/filename-case rule from default config
       expect(json).toContainEqual(
         expect.objectContaining<Partial<AuditOutput>>({
