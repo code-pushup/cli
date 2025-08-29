@@ -58,7 +58,7 @@ describe('executeRunner', () => {
         },
       ],
     });
-    const res: AuditOutputs = await runnerFn({ outputDir: '' });
+    const res = (await runnerFn({})) as AuditOutputs;
     expect(osAgnosticAuditOutputs(res)).toMatchSnapshot();
   });
 
