@@ -6,7 +6,6 @@ export default defineConfig(() => {
   const baseConfig = createSharedE2eVitestConfig({
     projectRoot: __dirname,
     workspaceRoot: '../..',
-    testTimeout: 20_000,
   });
 
   return {

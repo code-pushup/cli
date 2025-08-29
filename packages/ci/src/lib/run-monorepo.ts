@@ -35,6 +35,7 @@ import {
   type RunEnv,
   checkPrintConfig,
   configFromPatterns,
+  findNewIssues,
   hasDefaultPersistFormats,
   loadCachedBaseReport,
   prepareReportFilesToCompare,
@@ -251,11 +252,20 @@ async function compareManyProjects(
     hasFormats: allProjectsHaveDefaultPersistFormats(projectsToCompare),
   });
 
+  const projectsNewIssues = env.settings.detectNewIssues
+    ? Object.fromEntries(
+        await asyncSequential(projectsToCompare, async args => [
+          args.project.name,
+          await findNewIssues(args),
+        ]),
+      )
+    : {};
+
   return Object.fromEntries(
     await Promise.all(
       projectsToCompare.map(async args => [
         args.project.name,
-        await saveDiffFiles(args),
+        await saveDiffFiles(args, projectsNewIssues[args.project.name]),
       ]),
     ),
   );

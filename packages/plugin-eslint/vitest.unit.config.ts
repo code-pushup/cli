@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vitest/config';
 import { createSharedUnitVitestConfig } from '../../testing/test-vitest-setup/src/utils/project-config.js';
 

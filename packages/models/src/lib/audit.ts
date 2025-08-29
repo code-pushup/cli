@@ -6,14 +6,14 @@ export const auditSchema = z
   .object({
     slug: slugSchema.describe('ID (unique within plugin)'),
   })
-  .merge(
+  .extend(
     metaSchema({
       titleDescription: 'Descriptive name',
       descriptionDescription: 'Description (markdown)',
       docsUrlDescription: 'Link to documentation (rationale)',
       description: 'List of scorable metrics for the given plugin',
       isSkippedDescription: 'Indicates whether the audit is skipped',
-    }),
+    }).shape,
   );
 
 export type Audit = z.infer<typeof auditSchema>;

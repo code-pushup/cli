@@ -8,8 +8,27 @@ import type { JestExecutorOptions } from '@nx/jest/src/executors/jest/schema';
 import type { VitestExecutorOptions } from '@nx/vite/executors';
 import { bold } from 'ansis';
 import path from 'node:path';
-import { importModule, ui } from '@code-pushup/utils';
+import { importModule, stringifyError, ui } from '@code-pushup/utils';
 import type { CoverageResult } from '../config.js';
+
+/**
+ * Resolves the cached project graph for the current Nx workspace.
+ * First tries to read cache and if not possible, go for the async creation.
+ */
+async function resolveCachedProjectGraph() {
+  const { readCachedProjectGraph, createProjectGraphAsync } = await import(
+    '@nx/devkit'
+  );
+  try {
+    return readCachedProjectGraph();
+  } catch (error) {
+    ui().logger.info(
+      `Could not read cached project graph, falling back to async creation.
+      ${stringifyError(error)}`,
+    );
+    return await createProjectGraphAsync({ exitOnError: false });
+  }
+}
 
 /**
  * @param targets nx targets to be used for measuring coverage, test by default
@@ -25,8 +44,7 @@ export async function getNxCoveragePaths(
     );
   }
 
-  const { createProjectGraphAsync } = await import('@nx/devkit');
-  const { nodes } = await createProjectGraphAsync({ exitOnError: false });
+  const { nodes } = await resolveCachedProjectGraph();
 
   const coverageResults = await Promise.all(
     targets.map(async target => {
@@ -116,36 +134,7 @@ export async function getCoveragePathForVitest(
   project: ProjectConfiguration,
   target: string,
 ) {
-  const config = await findVitestConfigFile(project, target, options);
-  const vitestConfigModule = await loadVitestConfigModule(config);
-  const vitestConfig = await extractVitestConfig(
-    vitestConfigModule,
-    target,
-    project.name || 'unknown',
-  );
-  const configWithCoverage = ensureHasCoverageConfig(
-    vitestConfig,
-    project.name || 'unknown',
-    target,
-  );
-
-  return buildCoverageResult({
-    options,
-    configWithCoverage,
-    project,
-    target,
-    configPath: config,
-  });
-}
-
-async function findVitestConfigFile(
-  project: ProjectConfiguration,
-  target: string,
-  options: VitestExecutorOptions,
-): Promise<string> {
-  const {
-    default: { normalizeViteConfigFilePathWithTree },
-  } = await import('@nx/vite');
+  const { normalizeViteConfigFilePathWithTree } = await import('@nx/vite');
   const config = normalizeViteConfigFilePathWithTree(
     // HACK: only tree.exists is called, so injecting existSync from node:fs instead
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -158,66 +147,25 @@ async function findVitestConfigFile(
       `Could not find Vitest config file for target ${target} in project ${project.name}`,
     );
   }
-  return config;
-}
 
-async function loadVitestConfigModule(
-  config: string,
-): Promise<VitestCoverageConfig & { default?: unknown }> {
-  return importModule<VitestCoverageConfig & { default?: unknown }>({
+  const vitestConfig = await importModule<VitestCoverageConfig>({
     filepath: config,
     format: 'esm',
   });
-}
 
-function ensureHasCoverageConfig(
-  vitestConfig: VitestCoverageConfig,
-  projectName: string,
-  target: string,
-): VitestCoverageConfig {
-  if (vitestConfig.test?.coverage) {
-    return vitestConfig;
-  }
-
-  return {
-    ...vitestConfig,
-    test: {
-      ...vitestConfig.test,
-      coverage: {
-        reporter: ['text', 'lcov'],
-        reportsDirectory: `../../coverage/${projectName}/${target.replace('-test', '-tests')}`,
-      },
-    },
-  };
-}
-
-function buildCoverageResult({
-  options,
-  configWithCoverage,
-  project,
-  target,
-  configPath,
-}: {
-  options: VitestExecutorOptions;
-  configWithCoverage: VitestCoverageConfig;
-  project: ProjectConfiguration;
-  target: string;
-  configPath: string;
-}): CoverageResult {
   const reportsDirectory =
-    options.reportsDirectory ??
-    configWithCoverage.test.coverage?.reportsDirectory;
-  const reporter = configWithCoverage.test.coverage?.reporter;
+    options.reportsDirectory ?? vitestConfig.test.coverage?.reportsDirectory;
+  const reporter = vitestConfig.test.coverage?.reporter;
 
   if (reportsDirectory == null) {
     throw new Error(
-      `Vitest coverage configuration at ${configPath} does not include coverage path for target ${target} in project ${project.name}. Add the path under coverage > reportsDirectory.`,
+      `Vitest coverage configuration at ${config} does not include coverage path for target ${target} in project ${project.name}. Add the path under coverage > reportsDirectory.`,
     );
   }
 
   if (!reporter?.some(format => format === 'lcov' || format === 'lcovonly')) {
     throw new Error(
-      `Vitest coverage configuration at ${configPath} does not include LCOV report format for target ${target} in project ${project.name}. Add 'lcov' format under coverage > reporter.`,
+      `Vitest coverage configuration at ${config} does not include LCOV report format for target ${target} in project ${project.name}. Add 'lcov' format under coverage > reporter.`,
     );
   }
 
@@ -228,77 +176,6 @@ function buildCoverageResult({
     pathToProject: project.root,
     resultsPath: path.join(project.root, reportsDirectory, 'lcov.info'),
   };
-}
-
-async function extractVitestConfig(
-  vitestConfigModule: VitestCoverageConfig & { default?: unknown },
-  target: string,
-  projectName: string,
-): Promise<VitestCoverageConfig> {
-  if (typeof vitestConfigModule.default === 'function') {
-    return extractFromFunction(
-      vitestConfigModule.default as () => unknown,
-      target,
-      projectName,
-    );
-  }
-
-  return extractFromObject(vitestConfigModule, target, projectName);
-}
-
-async function extractFromFunction(
-  configFunction: () => unknown,
-  target: string,
-  projectName: string,
-): Promise<VitestCoverageConfig> {
-  try {
-    const result = configFunction();
-    if (result && typeof result === 'object') {
-      return addDefaultCoverageIfMissing(result, target, projectName);
-    }
-    throw new Error('Function export did not return valid configuration');
-  } catch (error) {
-    throw new Error(
-      `Could not execute Vitest config function for target ${target} in project ${projectName}: ${error}`,
-    );
-  }
-}
-
-function extractFromObject(
-  vitestConfigModule: VitestCoverageConfig & { default?: unknown },
-  target: string,
-  projectName: string,
-): VitestCoverageConfig {
-  if (vitestConfigModule && typeof vitestConfigModule === 'object') {
-    return addDefaultCoverageIfMissing(vitestConfigModule, target, projectName);
-  }
-
-  return vitestConfigModule;
-}
-
-function addDefaultCoverageIfMissing(
-  config: unknown,
-  target: string,
-  projectName: string,
-): VitestCoverageConfig {
-  const typedConfig = config as VitestCoverageConfig;
-
-  const hasCoverage =
-    typedConfig.test?.coverage && typeof typedConfig.test.coverage === 'object';
-
-  if (!hasCoverage) {
-    return {
-      ...typedConfig,
-      test: {
-        ...typedConfig.test,
-        coverage: {
-          reporter: ['text', 'lcov'],
-          reportsDirectory: `../../coverage/${projectName}/${target.replace('-test', '-tests')}`,
-        },
-      },
-    };
-  }
-  return typedConfig;
 }
 
 export async function getCoveragePathForJest(

@@ -410,22 +410,22 @@ describe('determineAndSetLogLevel', () => {
   it('should set log level to info and return "info" as level if no options are given', () => {
     expect(determineAndSetLogLevel()).toBe('info');
     expect(log.isVerbose()).toBe(false);
-    expect(debugLib.enabled('LH:*')).toBe(true);
+    expect(debugLib.enabled('LH:*')).toBe(false);
     expect(debugLib.enabled('LH:*:verbose')).toBe(false);
   });
 
   it('should set log level to verbose and return "verbose" as level', () => {
     expect(determineAndSetLogLevel({ verbose: true })).toBe('verbose');
     expect(log.isVerbose()).toBe(true);
-    expect(debugLib.enabled('LH:*')).toBe(true);
+    expect(debugLib.enabled('LH:*')).toBe(false);
     expect(debugLib.enabled('LH:*:verbose')).toBe(false);
   });
 
   it('should set log level to quiet and return "silent" as level', () => {
     expect(determineAndSetLogLevel({ quiet: true })).toBe('silent');
     expect(log.isVerbose()).toBe(false);
-    expect(debugLib.enabled('LH:*')).toBe(true);
-    expect(debugLib.enabled('-LH:*')).toBe(true);
+    expect(debugLib.enabled('LH:*')).toBe(false);
+    expect(debugLib.enabled('-LH:*')).toBe(false);
     expect(debugLib.enabled('LH:*:verbose')).toBe(false);
   });
 
@@ -434,7 +434,7 @@ describe('determineAndSetLogLevel', () => {
       'verbose',
     );
     expect(log.isVerbose()).toBe(true);
-    expect(debugLib.enabled('LH:*')).toBe(true);
+    expect(debugLib.enabled('LH:*')).toBe(false);
     expect(debugLib.enabled('LH:*:verbose')).toBe(false);
   });
 });

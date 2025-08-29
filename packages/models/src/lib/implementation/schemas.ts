@@ -138,6 +138,25 @@ export const filePathSchema = z
   .trim()
   .min(1, { message: 'The path is invalid' });
 
+/**
+ * Regex for glob patterns - validates file paths and glob patterns
+ * Allows normal paths and paths with glob metacharacters: *, **, {}, [], !, ?
+ * Excludes invalid path characters: <>"|
+ */
+const globRegex = /^!?[^<>"|]+$/;
+
+export const globPathSchema = z
+  .string()
+  .trim()
+  .min(1, { message: 'The glob pattern is invalid' })
+  .regex(globRegex, {
+    message:
+      'The path must be a valid file path or glob pattern (supports *, **, {}, [], !, ?)',
+  })
+  .describe(
+    'Schema for a glob pattern (supports wildcards like *, **, {}, !, etc.)',
+  );
+
 /** Schema for a fileNameSchema */
 export const fileNameSchema = z
   .string()
@@ -171,6 +190,12 @@ export function packageVersionSchema<
     version: TRequired extends true ? ZodString : ZodOptional<ZodString>;
   }>;
 }
+
+/** Schema for a binary score threshold */
+export const scoreTargetSchema = nonnegativeNumberSchema
+  .max(1)
+  .describe('Pass/fail score threshold (0-1)')
+  .optional();
 
 /** Schema for a weight */
 export const weightSchema = nonnegativeNumberSchema.describe(

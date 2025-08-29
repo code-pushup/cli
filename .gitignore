@@ -43,11 +43,19 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# generated eslint reports
+.eslint
+
 # generated Code PushUp reports
-/.code-pushup
+.code-pushup
 
 # Nx workspace cache
 .nx
 
 # Bundled Vitest configuration files
 **/*.bundled_*.mjs
+
+vite.config.*.timestamp*
+vitest.config.*.timestamp*
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md

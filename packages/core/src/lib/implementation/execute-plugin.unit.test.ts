@@ -18,7 +18,12 @@ describe('executePlugin', () => {
     vi.restoreAllMocks();
   });
 
-  it('should execute a valid plugin config', async () => {
+  it('should execute a valid plugin config and pass runner params', async () => {
+    const executePluginRunnerSpy = vi.spyOn(
+      runnerModule,
+      'executePluginRunner',
+    );
+
     await expect(
       executePlugin(MINIMAL_PLUGIN_CONFIG_MOCK, {
         persist: { outputDir: '' },
@@ -39,6 +44,11 @@ describe('executePlugin', () => {
         }),
       ]),
     });
+
+    expect(executePluginRunnerSpy).toHaveBeenCalledWith(
+      MINIMAL_PLUGIN_CONFIG_MOCK,
+      { outputDir: '' },
+    );
   });
 
   it('should try to read cache if cache.read is true', async () => {
@@ -102,7 +112,7 @@ describe('executePlugin', () => {
 
     await expect(
       executePlugin(MINIMAL_PLUGIN_CONFIG_MOCK, {
-        persist: { outputDir: 'dummy-path-result-is-mocked' },
+        persist: { outputDir: MEMFS_VOLUME },
         cache: { read: true, write: false },
       }),
     ).resolves.toStrictEqual({
@@ -122,7 +132,69 @@ describe('executePlugin', () => {
 
     expect(executePluginRunnerSpy).toHaveBeenCalledWith(
       MINIMAL_PLUGIN_CONFIG_MOCK,
+      { outputDir: MEMFS_VOLUME },
     );
+  });
+
+  it('should apply a single score target to all audits', async () => {
+    const pluginConfig: PluginConfig = {
+      ...MINIMAL_PLUGIN_CONFIG_MOCK,
+      scoreTargets: 0.8,
+      audits: [
+        {
+          slug: 'speed-index',
+          title: 'Speed Index',
+        },
+        {
+          slug: 'total-blocking-time',
+          title: 'Total Blocking Time',
+        },
+      ],
+      runner: () => [
+        { slug: 'speed-index', score: 0.9, value: 1300 },
+        { slug: 'total-blocking-time', score: 0.3, value: 600 },
+      ],
+    };
+
+    const result = await executePlugin(pluginConfig, {
+      persist: { outputDir: '' },
+      cache: { read: false, write: false },
+    });
+
+    expect(result.audits).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          slug: 'speed-index',
+          score: 1,
+          scoreTarget: 0.8,
+        }),
+        expect.objectContaining({
+          slug: 'total-blocking-time',
+          score: 0.3,
+          scoreTarget: 0.8,
+        }),
+      ]),
+    );
+  });
+
+  it('should apply per-audit score targets', async () => {
+    const pluginConfig: PluginConfig = {
+      ...MINIMAL_PLUGIN_CONFIG_MOCK, // returns node-version audit with score 0.3
+      scoreTargets: {
+        'node-version': 0.2,
+      },
+    };
+
+    const result = await executePlugin(pluginConfig, {
+      persist: { outputDir: '' },
+      cache: { read: false, write: false },
+    });
+
+    expect(result.audits[0]).toMatchObject({
+      slug: 'node-version',
+      score: 1,
+      scoreTarget: 0.2,
+    });
   });
 });
 
@@ -322,8 +394,8 @@ describe('executePlugins', () => {
           {
             ...MINIMAL_PLUGIN_CONFIG_MOCK,
             runner: {
-              command: 'node',
-              args: ['-v'],
+              command: 'echo',
+              args: ['16'],
               outputFile: 'output.json',
               outputTransform: (outputs: unknown): Promise<AuditOutputs> =>
                 Promise.resolve([
@@ -337,7 +409,7 @@ describe('executePlugins', () => {
             },
           },
         ],
-        persist: { outputDir: '.code-pushup' },
+        persist: { outputDir: MEMFS_VOLUME },
         cache: { read: false, write: false },
       },
       { progress: false },

@@ -79,7 +79,7 @@ function createSharedVitestConfig(
     test: {
       coverage: {
         enabled: settings.enabled,
-        provider: 'v8',
+        provider: 'v8' as const,
         reporter: ['text', 'lcov'],
         reportsDirectory: paths.coverageDir,
         include: ['src/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
@@ -97,7 +97,7 @@ function createSharedVitestConfig(
       cache: {
         dir: `${workspaceRoot}/node_modules/.vitest`,
       },
-      pool: 'threads',
+      pool: 'threads' as const,
       poolOptions: {
         threads: {
           singleThread: true,

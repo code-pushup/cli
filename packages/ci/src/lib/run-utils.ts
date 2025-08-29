@@ -28,11 +28,6 @@ import {
   runCompare,
   runPrintConfig,
 } from './cli/index.js';
-import {
-  DEFAULT_SETTINGS,
-  MAX_SEARCH_COMMITS,
-  MIN_SEARCH_COMMITS,
-} from './constants.js';
 import { listChangedFiles, normalizeGitRef } from './git.js';
 import { type SourceFileIssue, filterRelevantIssues } from './issues.js';
 import type {
@@ -41,7 +36,6 @@ import type {
   GitRefs,
   Logger,
   Options,
-  OutputFiles,
   ProjectRunResult,
   ProviderAPIClient,
   Settings,
@@ -49,6 +43,11 @@ import type {
 import type { ProjectConfig } from './monorepo/index.js';
 import { saveOutputFiles } from './output-files.js';
 import { downloadFromPortal } from './portal/download.js';
+import {
+  DEFAULT_SETTINGS,
+  MAX_SEARCH_COMMITS,
+  MIN_SEARCH_COMMITS,
+} from './settings.js';
 
 export type RunEnv = {
   refs: NormalizedGitRefs;
@@ -201,14 +200,19 @@ export async function compareReports(
   args: CompareReportsArgs,
 ): Promise<ProjectRunResult> {
   const { ctx, env, config } = args;
-  const { logger } = env.settings;
+  const { settings } = env;
+  const { logger } = settings;
 
   await prepareReportFilesToCompare(args);
   await runCompare(ctx, { hasFormats: hasDefaultPersistFormats(config) });
 
   logger.info('Compared reports and generated diff files');
 
-  return saveDiffFiles(args);
+  const newIssues = settings.detectNewIssues
+    ? await findNewIssues(args)
+    : undefined;
+
+  return saveDiffFiles(args, newIssues);
 }
 
 export async function prepareReportFilesToCompare(
@@ -264,7 +268,10 @@ export async function prepareReportFilesToCompare(
   );
 }
 
-export async function saveDiffFiles(args: CompareReportsArgs) {
+export async function saveDiffFiles(
+  args: CompareReportsArgs,
+  newIssues: SourceFileIssue[] | undefined,
+) {
   const {
     project,
     ctx,
@@ -291,10 +298,8 @@ export async function saveDiffFiles(args: CompareReportsArgs) {
         settings,
       }),
     },
-    ...(settings.detectNewIssues && {
-      newIssues: await findNewIssues({ ...args, diffFiles }),
-    }),
-  };
+    ...(newIssues && { newIssues }),
+  } satisfies ProjectRunResult;
 }
 
 export async function saveReportFiles<T extends 'current' | 'previous'>(args: {
@@ -536,18 +541,24 @@ export function configFromPatterns(
 }
 
 export async function findNewIssues(
-  args: CompareReportsArgs & { diffFiles: OutputFiles },
+  args: CompareReportsArgs,
 ): Promise<SourceFileIssue[]> {
   const {
     base,
     currReport,
     prevReport,
-    diffFiles,
+    config,
+    ctx,
     env: {
       git,
       settings: { logger },
     },
   } = args;
+
+  const diffFiles = persistedFilesFromConfig(config, {
+    directory: ctx.directory,
+    isDiff: true,
+  });
 
   await git.fetch('origin', base.ref, ['--depth=1']);
   const reportsDiff = await readFile(diffFiles.json, 'utf8');
@@ -555,6 +566,7 @@ export async function findNewIssues(
     { base: 'FETCH_HEAD', head: 'HEAD' },
     git,
   );
+
   const issues = filterRelevantIssues({
     currReport: JSON.parse(currReport.content) as Report,
     prevReport: JSON.parse(prevReport.content) as Report,

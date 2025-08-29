@@ -2,14 +2,23 @@
   "name": "cli-workspace",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
+    "code-pushup-js-packages": {},
+    "code-pushup-lighthouse": {},
+    "code-pushup-coverage": {},
+    "code-pushup-eslint": {},
+    "code-pushup-jsdocs": {},
+    "code-pushup-typescript": {},
     "code-pushup": {
+      "dependsOn": ["code-pushup-*"],
       "executor": "nx:run-commands",
       "options": {
-        "command": "node packages/cli/src/index.ts --no-progress --verbose",
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
+        "args": [
+          "--no-progress",
+          "--verbose",
+          "--cache.read",
+          "--persist.outputDir={projectRoot}/.code-pushup",
+          "--upload.project={projectName}"
+        ]
       }
     }
   }

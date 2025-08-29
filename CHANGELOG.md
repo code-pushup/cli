@@ -1,3 +1,34 @@
+## 0.77.0 (2025-08-28)
+
+### 🚀 Features
+
+- **core:** pass config to plugin runner ([#1087](https://github.com/code-pushup/cli/pull/1087))
+- **plugin-eslint:** add artifact loading logic ([#1077](https://github.com/code-pushup/cli/pull/1077))
+
+### 🩹 Fixes
+
+- **ci:** prevent parallel git diff when detecting new issues in monorepo ([f5f9114d](https://github.com/code-pushup/cli/commit/f5f9114d))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+- Michael Hladky @BioPhoton
+
+## 0.76.0 (2025-08-25)
+
+### 🚀 Features
+
+- implement scoreTargets for audits ([5db68e2e](https://github.com/code-pushup/cli/commit/5db68e2e))
+- **ci:** add helper function for parsing configPatterns from json string ([fd5edb09](https://github.com/code-pushup/cli/commit/fd5edb09))
+- **ci:** export default settings and min/max limits ([a6a485ee](https://github.com/code-pushup/cli/commit/a6a485ee))
+- **models:** export default persist config ([18e95ff5](https://github.com/code-pushup/cli/commit/18e95ff5))
+- **models:** export default persist.skipReports value ([dfc15aeb](https://github.com/code-pushup/cli/commit/dfc15aeb))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- Matěj Chalk @matejchalk
+
 ## 0.75.0 (2025-08-22)
 
 ### 🚀 Features
