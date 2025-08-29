@@ -48,16 +48,8 @@ describe('executeRunner', () => {
   });
 
   it('should execute ESLint and create audit results for React application', async () => {
-    const eslintTarget = 'eslint.config.js';
-    const runnerFn = await createRunnerFunction({
-      audits: await createAudits(eslintTarget),
-      targets: [
-        {
-          eslintrc: eslintTarget,
-          patterns: '.',
-        },
-      ],
-    });
+    const args = await prepareRunnerArgs('eslint.config.js');
+    const runnerFn = await createRunnerFunction(args);
     const res = (await runnerFn({})) as AuditOutputs;
     expect(osAgnosticAuditOutputs(res)).toMatchSnapshot();
   });
