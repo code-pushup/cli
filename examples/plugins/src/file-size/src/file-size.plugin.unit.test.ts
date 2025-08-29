@@ -191,7 +191,7 @@ describe('runnerFunction', () => {
 
   it('should return pass if no files are given and pass', async () => {
     vol.reset();
-    // create empty directory
+
     vol.fromJSON(
       {
         'm.js': '',

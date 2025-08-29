@@ -9,7 +9,6 @@ import { createTargets } from './targets.js';
 
 describe('createTargets', () => {
   beforeEach(async () => {
-    // needed to have the folder present. readdir otherwise it fails
     vol.fromJSON(
       {
         x: '',

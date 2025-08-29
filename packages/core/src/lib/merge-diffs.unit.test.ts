@@ -44,7 +44,7 @@ describe('mergeDiffs', () => {
     const outputPath = await mergeDiffs(files, persistConfig);
 
     const markdown = await readFile(outputPath, 'utf8');
-    // `website` is unchanged, therefore not mentioned by name
+
     expect(markdown).toContain('## 💼 Project `console`');
     expect(markdown).toContain('## 💼 Project `admin`');
     expect(markdown).toContain('## 💼 Project `docs`');

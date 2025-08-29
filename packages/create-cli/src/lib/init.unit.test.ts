@@ -22,7 +22,6 @@ describe('initCodePushup', () => {
   const spyTeardownNxContext = vi.spyOn(createUtils, 'teardownNxContext');
 
   beforeEach(() => {
-    // needed to get test folder set up
     vol.fromJSON(
       {
         'random-file': '',

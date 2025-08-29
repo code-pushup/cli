@@ -22,8 +22,8 @@ describe('createRunnerFunction', () => {
 
   const semanticTsCode = 2322;
   const mockSemanticDiagnostic = {
-    code: semanticTsCode, // "Type 'string' is not assignable to type 'number'"
-    start: 10, // Mocked character position
+    code: semanticTsCode,
+    start: 10,
     messageText: "Type 'string' is not assignable to type 'number'.",
     category: DiagnosticCategory.Error,
     file: {
@@ -34,7 +34,7 @@ describe('createRunnerFunction', () => {
   const syntacticTsCode = 1005;
   const mockSyntacticDiagnostic = {
     code: syntacticTsCode, // "';' expected."
-    start: 25, // Mocked character position
+    start: 25,
     messageText: "';' expected.",
     category: DiagnosticCategory.Error,
     file: {

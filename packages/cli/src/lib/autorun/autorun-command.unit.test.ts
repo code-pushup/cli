@@ -57,7 +57,6 @@ describe('autorun-command', () => {
       }),
     );
 
-    // values come from CORE_CONFIG_MOCK returned by readRcByPath mock
     expect(uploadReportToPortal).toHaveBeenCalledWith<
       Parameters<typeof uploadReportToPortal>
     >({
