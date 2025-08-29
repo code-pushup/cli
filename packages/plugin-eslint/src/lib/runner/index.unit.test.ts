@@ -33,7 +33,7 @@ describe('call createRunnerFunction', () => {
   });
 });
 
-describe('execute created runnerFunction', () => {
+describe('createRunnerFunction', () => {
   const loadArtifactsSpy = vi.spyOn(utilsFileModule, 'loadArtifacts');
   const lintSpy = vi.spyOn(lintModule, 'lint');
 
