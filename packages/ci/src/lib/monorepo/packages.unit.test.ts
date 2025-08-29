@@ -55,7 +55,7 @@ describe('listPackages', () => {
     vol.fromJSON(
       {
         'e2e/package.json': pkgJsonContent({ name: 'e2e' }),
-        'package.json': pkgJsonContent({ name: 'example-monorepo' }), // not in patterns
+        'package.json': pkgJsonContent({ name: 'example-monorepo' }),
         'packages/cli/package.json': pkgJsonContent({ name: '@example/cli' }),
         'packages/core/package.json': pkgJsonContent({ name: '@example/core' }),
         'scripts/docs/index.js': 'console.log("not yet implemented")', // no package.json
@@ -122,7 +122,7 @@ describe('listWorkspaces', () => {
           workspaces: ['ui', 'api'],
         }),
         'api/package.json': pkgJsonContent({ name: 'api' }),
-        'e2e/package.json': pkgJsonContent({ name: 'e2e' }), // not in workspaces
+        'e2e/package.json': pkgJsonContent({ name: 'e2e' }),
         'ui/package.json': pkgJsonContent({ name: 'ui' }),
       },
       MEMFS_VOLUME,
@@ -155,7 +155,7 @@ describe('listWorkspaces', () => {
           private: true,
           workspaces: ['packages/*'],
         }),
-        'e2e/package.json': pkgJsonContent({ name: 'e2e' }), // not in workspaces
+        'e2e/package.json': pkgJsonContent({ name: 'e2e' }),
         'packages/cli/package.json': pkgJsonContent({ name: 'cli' }),
         'packages/core/package.json': pkgJsonContent({ name: 'core' }),
       },

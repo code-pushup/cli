@@ -48,10 +48,10 @@ end_of_record
   beforeEach(() => {
     vol.fromJSON(
       {
-        [path.join('integration-tests', 'lcov.info')]: UTILS_REPORT, // file name value under SF used in tests
-        [path.join('unit-tests', 'lcov.info')]: CONSTANTS_REPORT, // file name value under SF used in tests
+        [path.join('integration-tests', 'lcov.info')]: UTILS_REPORT,
+        [path.join('unit-tests', 'lcov.info')]: CONSTANTS_REPORT,
         [path.join('pytest', 'lcov.info')]: PYTEST_REPORT,
-        'lcov.info': '', // empty report file
+        'lcov.info': '',
       },
       'coverage',
     );
@@ -127,11 +127,8 @@ end_of_record
       expect.objectContaining({
         lines: {
           found: 2,
-          hit: 2, // not 3
-          details: [
-            { hit: 1, line: 1 },
-            // no { hit: 0, line: 0 },
-          ],
+          hit: 2,
+          details: [{ hit: 1, line: 1 }],
         },
       }),
     ]);

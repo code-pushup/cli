@@ -45,11 +45,11 @@ describe('executePlugin', () => {
     const readRunnerResultsSpy = vi.spyOn(runnerModule, 'readRunnerResults');
 
     const validRunnerResult = {
-      duration: 0, // readRunnerResults now automatically sets this to 0 for cache hits
-      date: new Date().toISOString(), // readRunnerResults sets this to current time
+      duration: 0,
+      date: new Date().toISOString(),
       audits: [
         {
-          slug: 'node-version', // Must match the plugin config audit slug for enrichment
+          slug: 'node-version',
           score: 0.3,
           value: 16,
         },

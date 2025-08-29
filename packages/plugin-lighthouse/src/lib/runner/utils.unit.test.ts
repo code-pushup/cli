@@ -24,7 +24,6 @@ import {
   toAuditOutputs,
 } from './utils.js';
 
-// mock bundleRequire inside importEsmModule used for fetching config
 vi.mock('bundle-require', async () => {
   const { CORE_CONFIG_MOCK }: Record<string, CoreConfig> =
     await vi.importActual('@code-pushup/test-utils');

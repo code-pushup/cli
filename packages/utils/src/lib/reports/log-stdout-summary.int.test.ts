@@ -10,7 +10,7 @@ describe('logStdoutSummary', () => {
 
   beforeAll(() => {
     logs = [];
-    // console.log is used inside the logger when in "normal" mode
+
     vi.spyOn(console, 'log').mockImplementation(msg => {
       logs = [...logs, msg];
     });

@@ -68,7 +68,7 @@ describe('lintResultsToAudits', () => {
                 message: 'Specify the rules you want to disable',
                 severity: 1,
                 line: 1,
-                column: 0, // testing we omit non-positive columns
+                column: 0,
               },
             ],
           },

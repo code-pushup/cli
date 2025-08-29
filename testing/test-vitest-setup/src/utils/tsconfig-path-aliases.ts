@@ -1,4 +1,3 @@
-import path from 'node:path';
 import { loadConfig } from 'tsconfig-paths';
 import type { Alias, AliasOptions } from 'vite';
 
@@ -15,7 +14,8 @@ export function tsconfigPathAliases(): AliasOptions {
     .map(
       ([importPath, relativePath]): Alias => ({
         find: importPath,
-        replacement: path.resolve(relativePath),
+        replacement: new URL(`../../../../${relativePath}`, import.meta.url)
+          .pathname,
       }),
     );
 }

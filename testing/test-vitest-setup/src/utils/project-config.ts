@@ -16,45 +16,6 @@ export type SharedVitestConfigOptions = {
   workspaceRoot: string;
 };
 
-type CoverageConfig = {
-  enabled?: boolean;
-  provider: 'v8';
-  reporter: ('text' | 'lcov')[];
-  reportsDirectory: string;
-  include: string[];
-  exclude: string[];
-};
-
-type SharedVitestConfig = {
-  root: string;
-  cacheDir: string;
-  test: {
-    coverage: CoverageConfig;
-    watch: boolean;
-    globals: boolean;
-    environment: 'node' | 'jsdom' | 'happy-dom';
-    include: string[];
-    reporters: 'basic'[];
-    passWithNoTests: boolean;
-    testTimeout: number;
-    alias: ReturnType<typeof tsconfigPathAliases>;
-    setupFiles: string[];
-    cache: {
-      dir: string;
-    };
-    pool: 'threads';
-    poolOptions: {
-      threads: {
-        singleThread: boolean;
-      };
-    };
-    globalSetup: string[];
-    typecheck?: {
-      include: string[];
-    };
-  };
-};
-
 function getDefaultTestSettings(
   testType: string,
   defaultTimeout: number,
@@ -108,25 +69,22 @@ function createSharedVitestConfig(
   testType: 'unit' | 'integration' | 'e2e',
   defaultTimeout: number,
   noFsCwd = false,
-): SharedVitestConfig {
+) {
   const { projectRoot, workspaceRoot } = options;
   const settings = getDefaultTestSettings(testType, defaultTimeout, noFsCwd);
   const paths = getProjectPaths(projectRoot, workspaceRoot, testType);
 
-  const coverage: CoverageConfig = {
-    enabled: settings.enabled,
-    provider: 'v8',
-    reporter: ['text', 'lcov'],
-    reportsDirectory: paths.coverageDir,
-    include: ['src/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    exclude: settings.exclude,
-  };
-
   return {
     root: projectRoot,
-    cacheDir: paths.cacheDir,
     test: {
-      coverage,
+      coverage: {
+        enabled: settings.enabled,
+        provider: 'v8',
+        reporter: ['text', 'lcov'],
+        reportsDirectory: paths.coverageDir,
+        include: ['src/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+        exclude: settings.exclude,
+      },
       watch: false,
       globals: true,
       environment: settings.environment,
@@ -153,13 +111,13 @@ function createSharedVitestConfig(
 export function createSharedUnitVitestConfig(
   options: SharedVitestConfigOptions,
   noFsCwd = false,
-): SharedVitestConfig {
+) {
   return createSharedVitestConfig(options, 'unit', UNIT_TEST_TIMEOUT, noFsCwd);
 }
 
 export function createSharedIntegrationVitestConfig(
   options: SharedVitestConfigOptions,
-): SharedVitestConfig {
+) {
   return createSharedVitestConfig(
     options,
     'integration',
@@ -169,6 +127,6 @@ export function createSharedIntegrationVitestConfig(
 
 export function createSharedE2eVitestConfig(
   options: SharedVitestConfigOptions,
-): SharedVitestConfig {
+) {
   return createSharedVitestConfig(options, 'e2e', E2E_TEST_TIMEOUT);
 }
