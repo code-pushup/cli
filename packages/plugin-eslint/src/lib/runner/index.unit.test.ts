@@ -12,27 +12,6 @@ import * as lintModule from './lint.js';
 import type { LinterOutput } from './types.js';
 import * as utilsFileModule from './utils.js';
 
-describe('call createRunnerFunction', () => {
-  it('should create runnerFunction correctly', () => {
-    expect(
-      createRunnerFunction({
-        audits: [
-          { slug: 'max-lines', title: 'Max lines', description: 'Test' },
-          {
-            slug: 'no-unused-vars',
-            title: 'No unused vars',
-            description: 'Test',
-          },
-        ],
-        targets: [{ patterns: ['src/**/*.ts'] }],
-        artifacts: {
-          artifactsPaths: ['path/to/artifacts.json'],
-        },
-      }),
-    ).toStrictEqual(expect.any(Function));
-  });
-});
-
 describe('createRunnerFunction', () => {
   const loadArtifactsSpy = vi.spyOn(utilsFileModule, 'loadArtifacts');
   const lintSpy = vi.spyOn(lintModule, 'lint');
