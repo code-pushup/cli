@@ -1,5 +1,5 @@
 {
-  "name": "eslint-multi-formatter",
+  "name": "eslint-formatter-multiple-formats",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "tools/eslint-multi-format/src",
   "projectType": "library",
@@ -7,6 +7,7 @@
   "// targets": "to see all targets run: nx show project eslint-multi-format with option --web for humans and --json for AI",
   "targets": {
     "lint": {},
+    "unit-test": {},
     "build": {
       "executor": "@nx/vite:build",
       "outputs": ["{options.outputPath}"],

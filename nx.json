@@ -16,6 +16,7 @@
       "!{projectRoot}/**/?(*.)test.[jt]s?(x)?(.snap)",
       "!{projectRoot}/**/?(*.)mocks.[jt]s?(x)",
       "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
+      "!{projectRoot}/vite.config.[jt]s",
       "!{projectRoot}/vitest.@(unit|int|e2e).config.[jt]s",
       "!{projectRoot}/dist/**/*",
       "!{projectRoot}/tsconfig.@(test|tools).json",
@@ -361,6 +362,12 @@
         "packages": {
           "filterByTags": ["publishable"]
         }
+      }
+    },
+    {
+      "plugin": "@nx/eslint",
+      "options": {
+        "config": "{projectRoot}/eslint.config.js"
       }
     },
     {

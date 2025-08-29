@@ -1,4 +1,4 @@
-# ESLint Multi-Format Formatter
+# ESLint Multiple-Formats Formatter
 
 The ESLint plugin uses a custom formatter that supports multiple output formats and destinations simultaneously.
 
@@ -14,7 +14,7 @@ Use the `ESLINT_FORMATTER_CONFIG` environment variable to configure the formatte
   "filename": "eslint-report", // Optional: Base filename without extension (default: 'eslint-report')
   "formats": ["json"], // Optional: Array of format names for file output (default: ['json'])
   "terminal": "stylish", // Optional: Format for terminal output (default: 'stylish')
-  "verbose": true // Optional: Enable verbose logging (default: false)
+  "verbose": true, // Optional: Enable verbose logging (default: false)
 }
 ```
 

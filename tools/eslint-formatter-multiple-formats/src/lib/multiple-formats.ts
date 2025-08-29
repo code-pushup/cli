@@ -2,8 +2,8 @@ import type { ESLint } from 'eslint';
 import path from 'node:path';
 import type { EslintFormat, FormatterConfig } from './types.js';
 import {
+  formatTerminalOutput,
   findConfigFromEnv as getConfigFromEnv,
-  getTerminalOutput,
   persistEslintReports,
 } from './utils.js';
 
@@ -58,8 +58,6 @@ export default function multipleFormats(
     verbose = false,
   } = config;
 
-  const terminalOutput = getTerminalOutput(terminal, results);
-
   try {
     persistEslintReports(formats, results, {
       outputDir,
@@ -72,5 +70,5 @@ export default function multipleFormats(
     }
   }
 
-  return terminalOutput;
+  return formatTerminalOutput(terminal, results);
 }
