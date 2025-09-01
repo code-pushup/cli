@@ -3,7 +3,11 @@ import { execSync } from 'node:child_process';
 import { createCliCommand } from '../internal/cli.js';
 import { normalizeContext } from '../internal/context.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
-import { mergeExecutorOptions, parseAutorunExecutorOptions } from './utils.js';
+import {
+  mergeExecutorOptions,
+  objectToCliArgs,
+  parseAutorunExecutorOptions,
+} from './utils.js';
 
 export type ExecutorOutput = {
   success: boolean;
@@ -11,7 +15,7 @@ export type ExecutorOutput = {
   error?: Error;
 };
 
-export default function runAutorunExecutor(
+export default async function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
@@ -36,9 +40,20 @@ export default function runAutorunExecutor(
     logger.warn(`DryRun execution of: ${commandString}`);
   } else {
     try {
-      // @TODO use executeProcess instead of execSync -> non blocking, logs #761
-      // eslint-disable-next-line n/no-sync
-      execSync(commandString, commandStringOptions);
+      const { executeProcess }: typeof import('@code-pushup/utils') =
+        await import('@code-pushup/utils');
+      await executeProcess({
+        command: command,
+        args: objectToCliArgs(cliArgumentObject),
+        observer: {
+          error: data => {
+            process.stderr.write(data);
+          },
+          next: data => {
+            process.stdout.write(data);
+          },
+        },
+      });
     } catch (error) {
       logger.error(error);
       return Promise.resolve({
