@@ -1,4 +1,4 @@
-export function createCliCommand(options?: {
+export function createCliCommandString(options?: {
   args?: Record<string, unknown>;
   command?: string;
   bin?: string;
@@ -7,6 +7,22 @@ export function createCliCommand(options?: {
   return `npx ${bin} ${objectToCliArgs({ _: command ?? [], ...args }).join(
     ' ',
   )}`;
+}
+
+export function createCliCommandObject(options?: {
+  args?: Record<string, unknown>;
+  command?: string;
+  bin?: string;
+}): {
+  command: string;
+  args: string[];
+  cwd?: string;
+} {
+  const { bin = '@code-pushup/cli', command, args } = options ?? {};
+  return {
+    command: 'npx',
+    args: [bin, ...objectToCliArgs({ _: command ?? [], ...args })],
+  };
 }
 
 type ArgumentValue = number | string | boolean | string[];

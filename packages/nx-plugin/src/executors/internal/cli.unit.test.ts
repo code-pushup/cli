@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createCliCommand, objectToCliArgs } from './cli.js';
+import { createCliCommandString, objectToCliArgs } from './cli.js';
 
 describe('objectToCliArgs', () => {
   it('should empty params', () => {
@@ -86,14 +86,16 @@ describe('objectToCliArgs', () => {
   });
 });
 
-describe('createCliCommand', () => {
+describe('createCliCommandString', () => {
   it('should create command out of object for arguments', () => {
-    const result = createCliCommand({ args: { verbose: true } });
+    const result = createCliCommandString({ args: { verbose: true } });
     expect(result).toBe('npx @code-pushup/cli --verbose');
   });
 
   it('should create command out of object for arguments with positional', () => {
-    const result = createCliCommand({ args: { _: 'autorun', verbose: true } });
+    const result = createCliCommandString({
+      args: { _: 'autorun', verbose: true },
+    });
     expect(result).toBe('npx @code-pushup/cli autorun --verbose');
   });
 });

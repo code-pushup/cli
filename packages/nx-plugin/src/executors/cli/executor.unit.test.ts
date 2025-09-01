@@ -1,22 +1,9 @@
 import { logger } from '@nx/devkit';
-import { execSync } from 'node:child_process';
 import { afterAll, afterEach, beforeEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import * as executeProcessModule from '../../internal/execute-process.js';
 import runAutorunExecutor from './executor.js';
-
-vi.mock('node:child_process', async () => {
-  const actual = await vi.importActual('node:child_process');
-
-  return {
-    ...actual,
-    execSync: vi.fn((command: string) => {
-      if (command.includes('THROW_ERROR')) {
-        throw new Error(command);
-      }
-    }),
-  };
-});
 
 describe('runAutorunExecutor', () => {
   const processEnvCP = Object.fromEntries(
@@ -24,12 +11,20 @@ describe('runAutorunExecutor', () => {
   );
   const loggerInfoSpy = vi.spyOn(logger, 'info');
   const loggerWarnSpy = vi.spyOn(logger, 'warn');
+  const executeProcessSpy = vi.spyOn(executeProcessModule, 'executeProcess');
 
   /* eslint-disable functional/immutable-data, @typescript-eslint/no-dynamic-delete */
   beforeAll(() => {
     Object.entries(process.env)
       .filter(([k]) => k.startsWith('CP_'))
       .forEach(([k]) => delete process.env[k]);
+    executeProcessSpy.mockResolvedValue({
+      code: 0,
+      stdout: '',
+      stderr: '',
+      date: new Date().toISOString(),
+      duration: 100,
+    });
   });
 
   beforeEach(() => {
@@ -39,6 +34,7 @@ describe('runAutorunExecutor', () => {
   afterEach(() => {
     loggerWarnSpy.mockReset();
     loggerInfoSpy.mockReset();
+    executeProcessSpy.mockReset();
   });
 
   afterAll(() => {
@@ -46,14 +42,20 @@ describe('runAutorunExecutor', () => {
   });
   /* eslint-enable functional/immutable-data, @typescript-eslint/no-dynamic-delete */
 
-  it('should call execSync with return result', async () => {
+  it('should call executeProcess with return result', async () => {
     const output = await runAutorunExecutor({}, executorContext('utils'));
     expect(output.success).toBe(true);
     expect(output.command).toMatch('npx @code-pushup/cli');
-    // eslint-disable-next-line n/no-sync
-    expect(execSync).toHaveBeenCalledWith(
-      expect.stringContaining('npx @code-pushup/cli'),
-      { cwd: MEMFS_VOLUME },
+    expect(executeProcessSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: 'npx',
+        args: expect.arrayContaining(['@code-pushup/cli']),
+        cwd: MEMFS_VOLUME,
+        observer: expect.objectContaining({
+          onError: expect.any(Function),
+          onStdout: expect.any(Function),
+        }),
+      }),
     );
   });
 
@@ -67,10 +69,17 @@ describe('runAutorunExecutor', () => {
     );
     expect(output.success).toBe(true);
     expect(output.command).toMatch('utils');
-    // eslint-disable-next-line n/no-sync
-    expect(execSync).toHaveBeenCalledWith(expect.stringContaining('utils'), {
-      cwd: 'cwd-form-context',
-    });
+    expect(executeProcessSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: 'npx',
+        args: expect.arrayContaining(['@code-pushup/cli']),
+        cwd: 'cwd-form-context',
+        observer: expect.objectContaining({
+          onError: expect.any(Function),
+          onStdout: expect.any(Function),
+        }),
+      }),
+    );
   });
 
   it('should process executorOptions', async () => {
@@ -114,8 +123,7 @@ describe('runAutorunExecutor', () => {
       { verbose: true },
       { ...executorContext('github-action'), cwd: '<CWD>' },
     );
-    // eslint-disable-next-line n/no-sync
-    expect(execSync).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
 
     expect(output.command).toMatch('--verbose');
     expect(loggerWarnSpy).toHaveBeenCalledTimes(0);

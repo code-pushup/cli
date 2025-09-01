@@ -1,13 +1,12 @@
 import { type ExecutorContext, logger } from '@nx/devkit';
-import { execSync } from 'node:child_process';
-import { createCliCommand } from '../internal/cli.js';
+import { executeProcess } from '../../internal/execute-process.js';
+import {
+  createCliCommandObject,
+  createCliCommandString,
+} from '../internal/cli.js';
 import { normalizeContext } from '../internal/context.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
-import {
-  mergeExecutorOptions,
-  objectToCliArgs,
-  parseAutorunExecutorOptions,
-} from './utils.js';
+import { mergeExecutorOptions, parseAutorunExecutorOptions } from './utils.js';
 
 export type ExecutorOutput = {
   success: boolean;
@@ -15,6 +14,7 @@ export type ExecutorOutput = {
   error?: Error;
 };
 
+// eslint-disable-next-line max-lines-per-function
 export default async function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   context: ExecutorContext,
@@ -30,8 +30,10 @@ export default async function runAutorunExecutor(
   );
   const { dryRun, verbose, command } = mergedOptions;
 
-  const commandString = createCliCommand({ command, args: cliArgumentObject });
-  const commandStringOptions = context.cwd ? { cwd: context.cwd } : {};
+  const commandString = createCliCommandString({
+    command,
+    args: cliArgumentObject,
+  });
   if (verbose) {
     logger.info(`Run CLI executor ${command ?? ''}`);
     logger.info(`Command: ${commandString}`);
@@ -40,32 +42,30 @@ export default async function runAutorunExecutor(
     logger.warn(`DryRun execution of: ${commandString}`);
   } else {
     try {
-      const { executeProcess }: typeof import('@code-pushup/utils') =
-        await import('@code-pushup/utils');
       await executeProcess({
-        command: command,
-        args: objectToCliArgs(cliArgumentObject),
+        ...createCliCommandObject({ command, args: cliArgumentObject }),
         observer: {
-          error: data => {
-            process.stderr.write(data);
+          onError: error => {
+            logger.error(error.message);
           },
-          next: data => {
+          onStdout: data => {
             process.stdout.write(data);
           },
         },
+        ...(context.cwd ? { cwd: context.cwd } : {}),
       });
     } catch (error) {
       logger.error(error);
-      return Promise.resolve({
+      return {
         success: false,
         command: commandString,
         error: error as Error,
-      });
+      };
     }
   }
 
-  return Promise.resolve({
+  return {
     success: true,
     command: commandString,
-  });
+  };
 }
