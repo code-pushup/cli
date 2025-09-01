@@ -18,6 +18,10 @@ describe('runAutorunExecutor', () => {
     Object.entries(process.env)
       .filter(([k]) => k.startsWith('CP_'))
       .forEach(([k]) => delete process.env[k]);
+  });
+
+  beforeEach(() => {
+    vi.unstubAllEnvs();
     executeProcessSpy.mockResolvedValue({
       code: 0,
       stdout: '',
@@ -25,10 +29,6 @@ describe('runAutorunExecutor', () => {
       date: new Date().toISOString(),
       duration: 100,
     });
-  });
-
-  beforeEach(() => {
-    vi.unstubAllEnvs();
   });
 
   afterEach(() => {
