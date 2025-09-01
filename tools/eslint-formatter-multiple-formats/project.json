@@ -12,7 +12,7 @@
       "executor": "@nx/vite:build",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/eslint-multi-format"
+        "outputPath": "{projectRoot}/dist"
       }
     }
   }

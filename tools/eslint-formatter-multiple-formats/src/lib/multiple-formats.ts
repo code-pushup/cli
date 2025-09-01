@@ -1,18 +1,25 @@
 import type { ESLint } from 'eslint';
 import path from 'node:path';
-import type { EslintFormat, FormatterConfig } from './types.js';
+import * as process from 'node:process';
+import type { FormatterConfig } from './types.js';
+import type { EslintFormat } from './utils.js';
 import {
   formatTerminalOutput,
   findConfigFromEnv as getConfigFromEnv,
   persistEslintReports,
 } from './utils.js';
 
-export const DEFAULT_OUTPUT_DIR = path.join(process.cwd(), '.eslint');
+export const DEFAULT_OUTPUT_DIR = '.eslint';
 export const DEFAULT_FILENAME = 'eslint-report';
 export const DEFAULT_FORMATS = ['json'] as EslintFormat[];
 export const DEFAULT_TERMINAL = 'stylish' as EslintFormat;
 
-export const DEFAULT_CONFIG: Required<FormatterConfig> = {
+export const DEFAULT_CONFIG: Required<
+  Pick<
+    FormatterConfig,
+    'outputDir' | 'filename' | 'formats' | 'terminal' | 'verbose'
+  >
+> = {
   outputDir: DEFAULT_OUTPUT_DIR,
   filename: DEFAULT_FILENAME,
   formats: DEFAULT_FORMATS,
@@ -48,19 +55,29 @@ export default function multipleFormats(
   results: ESLint.LintResult[],
   _args?: unknown,
 ): string {
-  const config = { ...DEFAULT_CONFIG, ...getConfigFromEnv(process.env) };
+  const config = {
+    ...DEFAULT_CONFIG,
+    ...getConfigFromEnv(process.env),
+  } satisfies FormatterConfig;
 
   const {
     outputDir = DEFAULT_OUTPUT_DIR,
-    filename = DEFAULT_FILENAME,
-    formats = DEFAULT_FORMATS,
+    projectsDir,
+    projectName = process.env['NX_TASK_TARGET_PROJECT'],
+    filename,
+    formats,
     terminal,
     verbose = false,
   } = config;
 
+  const filalOutputDir =
+    typeof projectName === 'string' && typeof projectsDir === 'string'
+      ? path.join(projectsDir ?? '', projectName ?? '', outputDir)
+      : outputDir;
+
   try {
     persistEslintReports(formats, results, {
-      outputDir,
+      outputDir: filalOutputDir,
       filename,
       verbose,
     });

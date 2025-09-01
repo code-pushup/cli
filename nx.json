@@ -97,6 +97,7 @@
       "cache": true
     },
     "lint": {
+      "dependsOn": ["eslint-formatter-multiple-formats:build"],
       "inputs": ["lint-eslint-inputs"],
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
@@ -104,6 +105,7 @@
       "options": {
         "errorOnUnmatchedPattern": false,
         "maxWarnings": 0,
+        "format": "./tools/eslint-formatter-multiple-formats/dist/index.js",
         "lintFilePatterns": [
           "{projectRoot}/**/*.ts",
           "{projectRoot}/package.json"
@@ -127,16 +129,12 @@
       }
     },
     "lint-formatter": {
-      "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
-      "outputs": ["{projectRoot}/.eslint/eslint-report*.json"],
-      "cache": true,
+      "dependsOn": ["eslint-formatter-multiple-formats:build"],
+      "inputs": ["lint-eslint-inputs"],
       "executor": "nx:run-commands",
       "options": {
-        "command": "nx lint {projectName}",
-        "args": ["--format=./dist/eslint-multi-format/index.js"],
-        "env": {
-          "ESLINT_FORMATTER_CONFIG": "{\"outputDir\":\"{projectRoot}/.eslint\"}"
-        }
+        "command": "./tools/scripts/lint-formatter.sh {projectName} {projectRoot}",
+        "cwd": "{workspaceRoot}"
       }
     },
     "nxv-pkg-install": {

@@ -1,13 +1,207 @@
+// Import ansis for colors (similar to chalk)
+import { bold, dim, red, reset, underline, yellow } from 'ansis';
 import type { ESLint } from 'eslint';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { stringifyError } from '@code-pushup/utils';
-import type { EslintFormat, FormatterConfig } from './types.js';
+import type { FormatterConfig } from './types.js';
 
-// Import the stylish formatter - using require, otherwise there is the wrong typing
-const stylishFormatter = require('eslint-formatter-stylish') as (
-  results: ESLint.LintResult[],
-) => string;
+// Helper function to pluralize words
+function pluralize(word: string, count: number): string {
+  return count === 1 ? word : `${word}s`;
+}
+
+// Simple function to strip ANSI codes for length calculation
+function stripAnsi(str: string): string {
+  // eslint-disable-next-line no-control-regex
+  return str.replace(/\u001b\[[0-9;]*m/g, '');
+}
+
+// Simple table formatting function
+function createTable(
+  data: (string | number)[][],
+  options: { align?: string[]; stringLength?: (str: string) => number } = {},
+): string {
+  const { align = [], stringLength = s => s.length } = options;
+
+  if (data.length === 0) return '';
+
+  // Calculate column widths
+  const colWidths: number[] = [];
+  data.forEach(row => {
+    row.forEach((cell, colIndex) => {
+      const cellStr = String(cell);
+      const width = stringLength(cellStr);
+      colWidths[colIndex] = Math.max(colWidths[colIndex] || 0, width);
+    });
+  });
+
+  // Format rows
+  return data
+    .map(row => {
+      return row
+        .map((cell, colIndex) => {
+          const cellStr = String(cell);
+          const width = colWidths[colIndex] || 0;
+          const padding = width - stringLength(cellStr);
+
+          if (align[colIndex] === 'r') {
+            return ' '.repeat(padding) + cellStr;
+          }
+          return cellStr + ' '.repeat(padding);
+        })
+        .join('  ');
+    })
+    .join('\n');
+}
+
+// Inline stylish formatter implementation using ansis
+function stylishFormatter(results: ESLint.LintResult[]): string {
+  let output = '\n';
+  let errorCount = 0;
+  let warningCount = 0;
+  let fixableErrorCount = 0;
+  let fixableWarningCount = 0;
+  let summaryColor = 'yellow' as 'yellow' | 'red';
+
+  results.forEach(result => {
+    const messages = result.messages;
+
+    if (messages.length === 0) {
+      return;
+    }
+
+    errorCount += result.errorCount;
+    warningCount += result.warningCount;
+    fixableErrorCount += result.fixableErrorCount;
+    fixableWarningCount += result.fixableWarningCount;
+
+    output += `${underline(result.filePath)}\n`;
+
+    const tableData = messages.map(message => {
+      let messageType: string;
+
+      if (message.fatal || message.severity === 2) {
+        messageType = red('error');
+        summaryColor = 'red';
+      } else {
+        messageType = yellow('warning');
+      }
+
+      return [
+        '',
+        message.line || 0,
+        message.column || 0,
+        messageType,
+        message.message.replace(/([^ ])\.$/u, '$1'),
+        dim(message.ruleId || ''),
+      ];
+    });
+
+    const table = createTable(tableData, {
+      align: ['', 'r', 'l'],
+      stringLength: (str: string) => stripAnsi(str).length,
+    });
+
+    // Format line:column numbers with dim styling
+    const formattedTable = table
+      .split('\n')
+      .map(line =>
+        line.replace(/(\d+)\s+(\d+)/u, (m, p1, p2) => dim(`${p1}:${p2}`)),
+      )
+      .join('\n');
+
+    output += `${formattedTable}\n\n`;
+  });
+
+  const total = errorCount + warningCount;
+
+  if (total > 0) {
+    if (summaryColor === 'red') {
+      output += bold(
+        red(
+          [
+            '\u2716 ',
+            total,
+            pluralize(' problem', total),
+            ' (',
+            errorCount,
+            pluralize(' error', errorCount),
+            ', ',
+            warningCount,
+            pluralize(' warning', warningCount),
+            ')\n',
+          ].join(''),
+        ),
+      );
+
+      if (fixableErrorCount > 0 || fixableWarningCount > 0) {
+        output += bold(
+          red(
+            [
+              '  ',
+              fixableErrorCount,
+              pluralize(' error', fixableErrorCount),
+              ' and ',
+              fixableWarningCount,
+              pluralize(' warning', fixableWarningCount),
+              ' potentially fixable with the `--fix` option.\n',
+            ].join(''),
+          ),
+        );
+      }
+    } else {
+      output += bold(
+        yellow(
+          [
+            '\u2716 ',
+            total,
+            pluralize(' problem', total),
+            ' (',
+            errorCount,
+            pluralize(' error', errorCount),
+            ', ',
+            warningCount,
+            pluralize(' warning', warningCount),
+            ')\n',
+          ].join(''),
+        ),
+      );
+
+      if (fixableErrorCount > 0 || fixableWarningCount > 0) {
+        output += bold(
+          yellow(
+            [
+              '  ',
+              fixableErrorCount,
+              pluralize(' error', fixableErrorCount),
+              ' and ',
+              fixableWarningCount,
+              pluralize(' warning', fixableWarningCount),
+              ' potentially fixable with the `--fix` option.\n',
+            ].join(''),
+          ),
+        );
+      }
+    }
+  }
+
+  // Reset output color to prevent changes at top level
+  return total > 0 ? reset(output) : '';
+}
+
+export function stringifyError(error: unknown): string {
+  // TODO: special handling for ZodError instances
+  if (error instanceof Error) {
+    if (error.name === 'Error' || error.message.startsWith(error.name)) {
+      return error.message;
+    }
+    return `${error.name}: ${error.message}`;
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  return JSON.stringify(error);
+}
 
 export function getExtensionForFormat(format: EslintFormat): string {
   const extensionMap: Record<string, string> = {
@@ -22,13 +216,20 @@ export function findConfigFromEnv(
   env: NodeJS.ProcessEnv,
 ): FormatterConfig | null {
   const configString = env['ESLINT_FORMATTER_CONFIG'];
+  const projectsDir = env['ESLINT_FORMATTER_PROJECTS_DIR'];
 
-  if (!configString || configString.trim() === '') {
+  if (
+    (!configString || configString.trim() === '') &&
+    (!projectsDir || projectsDir.trim() === '')
+  ) {
     return null;
   }
 
   try {
-    return JSON.parse(configString) as FormatterConfig;
+    return {
+      ...(JSON.parse(configString ?? '{}') as FormatterConfig),
+      projectsDir: env['ESLINT_FORMATTER_PROJECTS_DIR'],
+    };
   } catch (error) {
     console.error(
       'Error parsing ESLINT_FORMATTER_CONFIG environment variable:',
@@ -37,13 +238,6 @@ export function findConfigFromEnv(
     return null;
   }
 }
-
-export type PersistConfig = {
-  outputDir: string;
-  filename: string;
-  format: EslintFormat;
-  verbose?: boolean;
-};
 
 function formatJson(results: ESLint.LintResult[]): string {
   return JSON.stringify(results, null, 2);
@@ -72,6 +266,15 @@ export function formatTerminalOutput(
   }
   return formatContent(results, format);
 }
+
+export type EslintFormat = 'stylish' | 'json' | string;
+
+export type PersistConfig = {
+  outputDir: string; // e.g. './.eslint' to make paths relative to this folder
+  filename: string;
+  format: EslintFormat;
+  verbose: boolean;
+};
 
 export function persistEslintReport(
   results: ESLint.LintResult[],
@@ -104,7 +307,7 @@ export function persistEslintReport(
 export function persistEslintReports(
   formats: EslintFormat[],
   results: ESLint.LintResult[],
-  options: { outputDir: string; filename: string; verbose: boolean },
+  options: Omit<PersistConfig, 'format'>,
 ): boolean {
   const { outputDir, filename, verbose } = options;
 

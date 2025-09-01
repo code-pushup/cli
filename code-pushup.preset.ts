@@ -177,7 +177,13 @@ export const eslintCoreConfigNx = async (
           eslintrc: `packages/${projectName}/eslint.config.js`,
           patterns: ['.'],
         })
-      : await eslintPlugin(await eslintConfigFromAllNxProjects()),
+      : await eslintPlugin(await eslintConfigFromAllNxProjects(), {
+          artifacts: {
+            generateArtifactsCommand:
+              'ESLINT_FORMATTER_PROJECTS_DIR=packages NX_TUI=false npx nx run-many -t lint --include="packages/**"',
+            artifactsPaths: ['packages/**/.eslint/eslint-report.json'],
+          },
+        }),
   ],
   categories: eslintCategories,
 });

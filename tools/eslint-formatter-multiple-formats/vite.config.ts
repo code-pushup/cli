@@ -41,7 +41,19 @@ export default defineConfig(() => ({
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
-      external: ['eslint', 'node:fs', 'node:fs/promises', 'node:path'],
+      external: [
+        'eslint',
+        'ansis',
+        'node:fs',
+        'node:fs/promises',
+        'node:path',
+        'node:process',
+      ],
     },
+  },
+  define: {
+    // Preserve Node.js globals
+    'process.env': 'process.env',
+    'process.cwd': 'process.cwd',
   },
 }));
