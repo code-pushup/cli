@@ -1,0 +1,88 @@
+name: CI Agents
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NX_NON_NATIVE_HASHER: true
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
+jobs:
+  # Main CI job that orchestrates and executes all tasks with Nx Agents
+  main:
+    runs-on: ubuntu-latest
+    name: CI with Nx Agents
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Set base and head for Nx affected commands
+        uses: nrwl/nx-set-shas@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start Nx Cloud CI run with agents
+        run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
+
+      # Run format check
+      - name: Check formatting of affected files
+        run: npx nx format:check
+
+      # Run linting on affected projects
+      - name: Lint affected projects
+        run: npx nx affected:lint --parallel=3
+
+      # Run unit tests on affected projects
+      - name: Unit test affected projects
+        run: npx nx affected -t unit-test --parallel=3 --coverage.enabled
+
+      # Run integration tests on affected projects
+      - name: Integration test affected projects
+        run: npx nx affected -t int-test --parallel=3 --coverage.enabled
+
+      # Run e2e tests on affected projects
+      - name: E2E test affected projects
+        run: npx nx affected -t e2e-test --parallel=1
+
+      # Build all projects for package publishing
+      - name: Build all projects
+        run: npx nx run-many --target=build --parallel=3 --configuration=ci
+
+      # Test-release packages
+      - name: Test-release packages
+        run: npx pkg-pr-new publish "packages/**/dist"
+
+  # Nx Cloud Agents for distributed task execution
+  agents:
+    runs-on: ubuntu-latest
+    name: Nx Cloud Agent
+    timeout-minutes: 60
+    strategy:
+      matrix:
+        agent: [1, 2, 3]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Start Nx Cloud Agent ${{ matrix.agent }}
+        run: npx nx-cloud start-agent --with-deps
+
+      # Optional: Stop agent after completion
+      - name: Stop Nx Cloud Agent ${{ matrix.agent }}
+        if: always()
+        run: npx nx-cloud stop-agent
+        continue-on-error: true
