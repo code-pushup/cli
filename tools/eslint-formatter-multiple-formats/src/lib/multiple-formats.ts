@@ -2,8 +2,8 @@ import type { ESLint } from 'eslint';
 import path from 'node:path';
 import * as process from 'node:process';
 import type { FormatterConfig } from './types.js';
-import type { EslintFormat } from './utils.js';
 import {
+  type EslintFormat,
   formatTerminalOutput,
   findConfigFromEnv as getConfigFromEnv,
   persistEslintReports,

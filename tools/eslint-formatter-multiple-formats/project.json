@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "tools/eslint-multi-format/src",
   "projectType": "library",
-  "tags": [],
+  "tags": ["scope:tooling", "type:util"],
   "// targets": "to see all targets run: nx show project eslint-multi-format with option --web for humans and --json for AI",
   "targets": {
     "lint": {},

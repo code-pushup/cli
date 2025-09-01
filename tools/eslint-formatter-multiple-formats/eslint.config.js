@@ -21,6 +21,7 @@ export default tseslint.config(
           ignoredDependencies: ['@nx/vite', 'vite', 'vite-plugin-dts'],
         },
       ],
+      'n/no-sync': 'off',
     },
   },
 );
