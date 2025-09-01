@@ -336,7 +336,7 @@
   },
   "plugins": [
     {
-      "plugin": "node_modules/@code-pushup/nx-plugin/src/index.js"
+      "plugin": "@code-pushup/nx-plugin"
     },
     {
       "plugin": "@push-based/nx-verdaccio",
