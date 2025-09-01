@@ -20,6 +20,9 @@
     "allowSyntheticDefaultImports": true,
     "verbatimModuleSyntax": true,
     "paths": {
+      "@code-pushup/bundle-stats-plugin": [
+        "packages/plugin-bundle-stats/src/index.ts"
+      ],
       "@code-pushup/ci": ["packages/ci/src/index.ts"],
       "@code-pushup/cli": ["packages/cli/src/index.ts"],
       "@code-pushup/core": ["packages/core/src/index.ts"],

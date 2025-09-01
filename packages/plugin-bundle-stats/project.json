@@ -1,0 +1,14 @@
+{
+  "name": "plugin-bundle-stats",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/plugin-bundle-stats/src",
+  "projectType": "library",
+  "targets": {
+    "build": {},
+    "lint": {},
+    "lint-report": {},
+    "unit-test": {},
+    "integration-test": {}
+  },
+  "tags": ["scope:plugin", "type:feature", "publishable"]
+}
