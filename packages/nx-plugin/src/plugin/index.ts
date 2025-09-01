@@ -1,4 +1,4 @@
-import { NxPlugin } from '@nx/devkit';
+import type { NxPlugin } from '@nx/devkit';
 import { createNodesV2 } from './plugin.js';
 
 export { createNodes, createNodesV2 } from './plugin.js';
