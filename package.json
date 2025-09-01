@@ -108,6 +108,7 @@
     "memfs": "^4.5.0",
     "minimatch": "^10.0.1",
     "moment": "^2.30.1",
+    "nx-cloud": "^19.1.0",
     "pkg-pr-new": "^0.0.54",
     "prettier": "^3.4.1",
     "react": "18.3.1",

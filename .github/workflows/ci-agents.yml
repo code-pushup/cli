@@ -34,7 +34,7 @@ jobs:
         run: npm ci
 
       - name: Start Nx Cloud CI run with agents
-        run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
+        run: ./node_modules/.bin/nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
 
       # Run format check
       - name: Check formatting of affected files
@@ -79,10 +79,10 @@ jobs:
           fetch-depth: 0
 
       - name: Start Nx Cloud Agent ${{ matrix.agent }}
-        run: npx nx-cloud start-agent --with-deps
+        run: ./node_modules/.bin/nx-cloud start-agent --with-deps
 
       # Optional: Stop agent after completion
       - name: Stop Nx Cloud Agent ${{ matrix.agent }}
         if: always()
-        run: npx nx-cloud stop-agent
+        run: ./node_modules/.bin/nx-cloud stop-agent
         continue-on-error: true
