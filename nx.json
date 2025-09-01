@@ -16,7 +16,6 @@
       "!{projectRoot}/**/?(*.)test.[jt]s?(x)?(.snap)",
       "!{projectRoot}/**/?(*.)mocks.[jt]s?(x)",
       "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
-      "!{projectRoot}/vite.config.[jt]s",
       "!{projectRoot}/vitest.@(unit|int|e2e).config.[jt]s",
       "!{projectRoot}/dist/**/*",
       "!{projectRoot}/tsconfig.@(test|tools).json",
@@ -105,7 +104,6 @@
       "options": {
         "errorOnUnmatchedPattern": false,
         "maxWarnings": 0,
-        "format": "./tools/eslint-formatter-multiple-formats/dist/index.js",
         "lintFilePatterns": [
           "{projectRoot}/**/*.ts",
           "{projectRoot}/package.json"
@@ -133,7 +131,7 @@
       "inputs": ["lint-eslint-inputs"],
       "executor": "nx:run-commands",
       "options": {
-        "command": "nx run lint {projectName}",
+        "command": "nx run {projectName}:lint --format=./tools/eslint-formatter-multiple-formats/dist/index.js",
         "env": {
           "ESLINT_FORMATTER_CONFIG": "{\"outputDir\":\"{projectRoot}/.eslint\"}"
         }
