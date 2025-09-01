@@ -133,8 +133,10 @@
       "inputs": ["lint-eslint-inputs"],
       "executor": "nx:run-commands",
       "options": {
-        "command": "./tools/scripts/lint-formatter.sh {projectName} {projectRoot}",
-        "cwd": "{workspaceRoot}"
+        "command": "nx run lint {projectName}",
+        "env": {
+          "ESLINT_FORMATTER_CONFIG": "{\"outputDir\":\"{projectRoot}/.eslint\"}"
+        }
       }
     },
     "nxv-pkg-install": {
