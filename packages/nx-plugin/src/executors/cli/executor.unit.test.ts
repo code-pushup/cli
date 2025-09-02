@@ -46,17 +46,15 @@ describe('runAutorunExecutor', () => {
     const output = await runAutorunExecutor({}, executorContext('utils'));
     expect(output.success).toBe(true);
     expect(output.command).toMatch('npx @code-pushup/cli');
-    expect(executeProcessSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        command: 'npx',
-        args: expect.arrayContaining(['@code-pushup/cli']),
-        cwd: MEMFS_VOLUME,
-        observer: expect.objectContaining({
-          onError: expect.any(Function),
-          onStdout: expect.any(Function),
-        }),
-      }),
-    );
+    expect(executeProcessSpy).toHaveBeenCalledWith({
+      command: 'npx',
+      args: expect.arrayContaining(['@code-pushup/cli']),
+      cwd: MEMFS_VOLUME,
+      observer: {
+        onError: expect.any(Function),
+        onStdout: expect.any(Function),
+      },
+    });
   });
 
   it('should normalize context', async () => {
