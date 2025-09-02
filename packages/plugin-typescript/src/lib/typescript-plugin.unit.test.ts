@@ -37,4 +37,29 @@ describe('typescriptPlugin-config-object', () => {
       } as unknown as TypescriptPluginOptions),
     ).rejects.toThrow(/invalid_type/);
   });
+
+  it('should pass scoreTargets to PluginConfig when provided', async () => {
+    const pluginConfig = await typescriptPlugin({
+      scoreTargets: 0.8,
+    });
+
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+    expect(pluginConfig.scoreTargets).toBe(0.8);
+  });
+
+  it('should pass object scoreTargets to PluginConfig', async () => {
+    const scoreTargets = { 'no-implicit-any-errors': 0.9 };
+    const pluginConfig = await typescriptPlugin({
+      scoreTargets,
+    });
+
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+    expect(pluginConfig.scoreTargets).toStrictEqual(scoreTargets);
+  });
+
+  it('should not have scoreTargets when not provided', async () => {
+    const pluginConfig = await typescriptPlugin();
+
+    expect(pluginConfig.scoreTargets).toBeUndefined();
+  });
 });
