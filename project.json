@@ -19,7 +19,7 @@
     "code-pushup-eslint": {
       "dependsOn": [
         {
-          "target": "lint-report",
+          "target": "lint",
           "projects": "*"
         }
       ]
