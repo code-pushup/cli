@@ -193,16 +193,10 @@ export const coverageCoreConfigNx = async (
   projectName?: string,
 ): Promise<CoreConfig> => {
   const targetNames = ['unit-test', 'int-test'];
-  const targetArgs = ['-t', ...targetNames];
   return {
     plugins: [
       await coveragePlugin({
-        coverageToolCommand: {
-          command: 'npx',
-          args: projectName
-            ? ['nx', 'run-many', '-p', projectName, ...targetArgs]
-            : ['nx', 'run-many', ...targetArgs],
-        },
+        // We do not need to run a coverageToolCommand. This is handled over the Nx task graph.
         reports: projectName
           ? [
               {
