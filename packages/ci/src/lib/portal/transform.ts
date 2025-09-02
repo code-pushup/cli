@@ -62,6 +62,7 @@ function transformGQLCategory(category: CategoryFragment): CategoryConfig {
     slug: category.slug,
     title: category.title,
     ...(category.description && { description: category.description }),
+    ...(category.scoreTarget && { scoreTarget: category.scoreTarget }),
     refs: category.refs.map(
       ({ target, weight }): CategoryRef => ({
         type: lowercase(target.__typename),
@@ -70,9 +71,6 @@ function transformGQLCategory(category: CategoryFragment): CategoryConfig {
         weight,
       }),
     ),
-    // TODO: Portal API migration - convert isBinary to scoreTarget for backward compatibility
-    // Remove this conversion when Portal API supports scoreTarget (#713)
-    ...(category.isBinary && { scoreTarget: 1 }),
   };
 }
 

@@ -199,9 +199,7 @@ function categoryToGQL(category: CategoryConfig): PortalCategory {
     slug: category.slug,
     title: category.title,
     description: category.description,
-    // TODO: Portal API migration - convert scoreTarget to isBinary for backward compatibility
-    // Remove this conversion when Portal API supports scoreTarget (#713)
-    isBinary: category.scoreTarget === 1,
+    ...(category.scoreTarget && { scoreTarget: category.scoreTarget }),
     refs: category.refs.map(ref => ({
       plugin: ref.plugin,
       type: categoryRefTypeToGQL(ref.type),
