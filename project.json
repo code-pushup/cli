@@ -5,7 +5,12 @@
     "code-pushup-js-packages": {},
     "code-pushup-lighthouse": {},
     "code-pushup-coverage": {
-      "dependsOn": ["^*-test"]
+      "dependsOn": [
+        {
+          "target": "^*-test",
+          "projects": "*"
+        }
+      ]
     },
     "code-pushup-eslint": {},
     "code-pushup-jsdocs": {},
