@@ -108,7 +108,7 @@
         ]
       }
     },
-    "lint-formatter": {
+    "lint-report": {
       "dependsOn": ["eslint-formatter-multiple-formats:build"],
       "inputs": ["lint-eslint-inputs"],
       "outputs": ["{projectRoot}/.eslint"],

@@ -7,7 +7,6 @@
     "build": {},
     "lint": {},
     "lint-report": {},
-    "lint-formatter": {},
     "perf": {
       "command": "npx tsx --tsconfig=../tsconfig.perf.json",
       "options": {
