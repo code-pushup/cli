@@ -7,7 +7,11 @@
     "code-pushup-coverage": {
       "dependsOn": [
         {
-          "target": "^*-test",
+          "target": "unit-test",
+          "projects": "*"
+        },
+        {
+          "target": "int-test",
           "projects": "*"
         }
       ]
