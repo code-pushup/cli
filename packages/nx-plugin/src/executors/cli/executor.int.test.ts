@@ -1,25 +1,29 @@
-import { execSync } from 'node:child_process';
 import { afterEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
+import * as executeProcessModule from '../../internal/execute-process.js';
 import runAutorunExecutor from './executor.js';
 import * as utils from './utils.js';
-
-vi.mock('node:child_process', async () => {
-  const actual = await vi.importActual('node:child_process');
-  return {
-    ...actual,
-    execSync: vi.fn(),
-  };
-});
 
 describe('runAutorunExecutor', () => {
   const parseAutorunExecutorOptionsSpy = vi.spyOn(
     utils,
     'parseAutorunExecutorOptions',
   );
+  const executeProcessSpy = vi.spyOn(executeProcessModule, 'executeProcess');
+
+  beforeEach(() => {
+    executeProcessSpy.mockResolvedValue({
+      code: 0,
+      stdout: '',
+      stderr: '',
+      date: new Date().toISOString(),
+      duration: 100,
+    });
+  });
 
   afterEach(() => {
     parseAutorunExecutorOptionsSpy.mockReset();
+    executeProcessSpy.mockReset();
   });
 
   it('should normalize context, parse CLI options and execute command', async () => {
@@ -38,11 +42,15 @@ describe('runAutorunExecutor', () => {
         projectConfig: expect.objectContaining({ name: 'utils' }),
       }),
     );
-    // eslint-disable-next-line n/no-sync
-    expect(execSync).toHaveBeenCalledTimes(1);
-    // eslint-disable-next-line n/no-sync
-    expect(execSync).toHaveBeenCalledWith(expect.stringContaining('utils'), {
+    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledWith({
+      command: 'npx',
+      args: expect.arrayContaining(['@code-pushup/cli']),
       cwd: process.cwd(),
+      observer: {
+        onError: expect.any(Function),
+        onStdout: expect.any(Function),
+      },
     });
   });
 });
