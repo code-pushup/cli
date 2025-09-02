@@ -1,6 +1,11 @@
 import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
-import type { Group, PluginConfig, RunnerConfig } from '@code-pushup/models';
+import {
+  type Group,
+  type PluginConfig,
+  type RunnerConfig,
+  pluginConfigSchema,
+} from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { jsPackagesPlugin } from './js-packages-plugin.js';
 
@@ -178,5 +183,32 @@ describe('jsPackagesPlugin', () => {
         icon: 'pnpm',
       }),
     );
+  });
+
+  it('should pass scoreTargets to PluginConfig when provided', async () => {
+    const pluginConfig = await jsPackagesPlugin({
+      packageManager: 'npm',
+      scoreTargets: 0.8,
+    });
+
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+    expect(pluginConfig.scoreTargets).toBe(0.8);
+  });
+
+  it('should pass object scoreTargets to PluginConfig', async () => {
+    const scoreTargets = { 'npm-outdated-dev': 0.9 };
+    const pluginConfig = await jsPackagesPlugin({
+      packageManager: 'npm',
+      scoreTargets,
+    });
+
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+    expect(pluginConfig.scoreTargets).toStrictEqual(scoreTargets);
+  });
+
+  it('should not have scoreTargets when not provided', async () => {
+    const pluginConfig = await jsPackagesPlugin({ packageManager: 'npm' });
+
+    expect(pluginConfig.scoreTargets).toBeUndefined();
   });
 });
