@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { pluginScoreTargetsSchema } from '@code-pushup/models';
 
 const patternsSchema = z
   .union([z.string(), z.array(z.string()).min(1)])
@@ -19,6 +20,7 @@ const jsDocsTargetObjectSchema = z
         'List of audit slugs to evaluate. When specified, only these audits will be evaluated.',
       ),
     patterns: patternsSchema,
+    scoreTargets: pluginScoreTargetsSchema,
   })
   .refine(data => !(data.skipAudits && data.onlyAudits), {
     message: "You can't define 'skipAudits' and 'onlyAudits' simultaneously",

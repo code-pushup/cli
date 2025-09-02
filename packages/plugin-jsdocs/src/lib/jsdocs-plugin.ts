@@ -32,6 +32,7 @@ export const PLUGIN_DOCS_URL =
  */
 export function jsDocsPlugin(config: JsDocsPluginConfig): PluginConfig {
   const jsDocsConfig = jsDocsPluginConfigSchema.parse(config);
+  const scoreTargets = jsDocsConfig.scoreTargets;
 
   return {
     slug: PLUGIN_SLUG,
@@ -42,5 +43,6 @@ export function jsDocsPlugin(config: JsDocsPluginConfig): PluginConfig {
     groups: filterGroupsByOnlyAudits(groups, jsDocsConfig),
     audits: filterAuditsByPluginConfig(jsDocsConfig),
     runner: createRunnerFunction(jsDocsConfig),
+    ...(scoreTargets && { scoreTargets }),
   };
 }
