@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { createCliCommandString, objectToCliArgs } from './cli.js';
+import {
+  createCliCommandObject,
+  createCliCommandString,
+  objectToCliArgs,
+} from './cli.js';
 
 describe('objectToCliArgs', () => {
   it('should empty params', () => {
@@ -97,5 +101,36 @@ describe('createCliCommandString', () => {
       args: { _: 'autorun', verbose: true },
     });
     expect(result).toBe('npx @code-pushup/cli autorun --verbose');
+  });
+});
+
+describe('createCliCommandObject', () => {
+  it('should create command out of object for arguments', () => {
+    expect(createCliCommandObject({ args: { verbose: true } })).toStrictEqual({
+      args: ['@code-pushup/cli', '--verbose'],
+      command: 'npx',
+    });
+  });
+
+  it('should create command out of object for arguments with positional', () => {
+    expect(
+      createCliCommandObject({
+        args: { _: 'autorun', verbose: true },
+      }),
+    ).toStrictEqual({
+      args: ['@code-pushup/cli', 'autorun', '--verbose'],
+      command: 'npx',
+    });
+  });
+
+  it('should create command out of object for arguments with bin', () => {
+    expect(
+      createCliCommandObject({
+        bin: 'node_modules/@code-pushup/cli/src/bin.js',
+      }),
+    ).toStrictEqual({
+      args: ['node_modules/@code-pushup/cli/src/bin.js'],
+      command: 'npx',
+    });
   });
 });
