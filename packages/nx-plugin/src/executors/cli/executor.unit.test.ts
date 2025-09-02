@@ -69,17 +69,15 @@ describe('runAutorunExecutor', () => {
     );
     expect(output.success).toBe(true);
     expect(output.command).toMatch('utils');
-    expect(executeProcessSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        command: 'npx',
-        args: expect.arrayContaining(['@code-pushup/cli']),
-        cwd: 'cwd-form-context',
-        observer: expect.objectContaining({
-          onError: expect.any(Function),
-          onStdout: expect.any(Function),
-        }),
-      }),
-    );
+    expect(executeProcessSpy).toHaveBeenCalledWith({
+      command: 'npx',
+      args: expect.arrayContaining(['@code-pushup/cli']),
+      cwd: 'cwd-form-context',
+      observer: {
+        onError: expect.any(Function),
+        onStdout: expect.any(Function),
+      },
+    });
   });
 
   it('should process executorOptions', async () => {
