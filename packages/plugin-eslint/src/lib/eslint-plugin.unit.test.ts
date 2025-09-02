@@ -1,17 +1,20 @@
 import { pluginConfigSchema } from '@code-pushup/models';
 import { eslintPlugin } from './eslint-plugin.js';
-
-vi.mock('./meta/index.js', () => ({
-  listAuditsAndGroups: vi.fn().mockResolvedValue({
-    audits: [
-      { slug: 'type-safety', title: 'Type Safety' },
-      { slug: 'no-empty', title: 'Disallow empty block statements' },
-    ],
-    groups: [],
-  }),
-}));
+import * as metaModule from './meta/index.js';
 
 describe('eslintPlugin', () => {
+  const listAuditsAndGroupsSpy = vi.spyOn(metaModule, 'listAuditsAndGroups');
+
+  beforeAll(() => {
+    listAuditsAndGroupsSpy.mockResolvedValue({
+      audits: [
+        { slug: 'type-safety', title: 'Type Safety' },
+        { slug: 'no-empty', title: 'Disallow empty block statements' },
+      ],
+      groups: [],
+    });
+  });
+
   it('should pass scoreTargets to PluginConfig when provided', async () => {
     const pluginConfig = await eslintPlugin(
       {
