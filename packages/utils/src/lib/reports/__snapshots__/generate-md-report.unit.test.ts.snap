@@ -176,6 +176,105 @@ Made with ❤ by [Code PushUp](https://github.com/code-pushup/cli#readme)
 "
 `;
 
+exports[`generateMdReport > should show scoreTargets effect on category scores (before vs after) 1`] = `
+{
+  "withScoreTargets": "# Code PushUp Report
+
+| 🏷 Category                     |  ⭐ Score  | 🛡 Audits |
+| :------------------------------ | :-------: | :-------: |
+| [Code Coverage](#code-coverage) | 🟢 **97** |     3     |
+
+## 🏷 Categories
+
+### Code Coverage
+
+🟢 Score: **97**
+
+- 🟢 Code Coverage (_Code coverage_)
+  - 🟨 [Line Coverage](#line-coverage-code-coverage) - **70%**
+  - 🟩 [Function Coverage](#function-coverage-code-coverage) - **100%**
+  - 🟩 [Branch Coverage](#branch-coverage-code-coverage) - **80%**
+
+## 🛡️ Audits
+
+### Function Coverage (Code coverage)
+
+🟩 **100%** (score: 100)
+
+### Line Coverage (Code coverage)
+
+🟨 **70%** (score: 70)
+
+### Branch Coverage (Code coverage)
+
+🟩 **80%** (score: 100)
+
+## About
+
+Report was created by [Code PushUp](https://github.com/code-pushup/cli#readme) on Wed, Jan 1, 2025, 12:00 AM UTC.
+
+| Plugin        | Audits | Version  | Duration |
+| :------------ | :----: | :------: | -------: |
+| Code coverage |   3    | \`v1.0.0\` |   5.00 s |
+
+| Commit                                                       | Version  | Duration | Plugins | Categories | Audits |
+| :----------------------------------------------------------- | :------: | -------: | :-----: | :--------: | :----: |
+| ci: update action (535b8e9e557336618a764f3fa45609d224a62837) | \`v1.0.0\` |   4.20 s |    1    |     1      |   3    |
+
+---
+
+Made with ❤ by [Code PushUp](https://github.com/code-pushup/cli#readme)
+",
+  "withoutScoreTargets": "# Code PushUp Report
+
+| 🏷 Category                     |  ⭐ Score  | 🛡 Audits |
+| :------------------------------ | :-------: | :-------: |
+| [Code Coverage](#code-coverage) | 🟢 **91** |     3     |
+
+## 🏷 Categories
+
+### Code Coverage
+
+🟢 Score: **91**
+
+- 🟢 Code Coverage (_Code coverage_)
+  - 🟨 [Line Coverage](#line-coverage-code-coverage) - **70%**
+  - 🟨 [Branch Coverage](#branch-coverage-code-coverage) - **80%**
+  - 🟩 [Function Coverage](#function-coverage-code-coverage) - **100%**
+
+## 🛡️ Audits
+
+### Function Coverage (Code coverage)
+
+🟩 **100%** (score: 100)
+
+### Line Coverage (Code coverage)
+
+🟨 **70%** (score: 70)
+
+### Branch Coverage (Code coverage)
+
+🟨 **80%** (score: 80)
+
+## About
+
+Report was created by [Code PushUp](https://github.com/code-pushup/cli#readme) on Wed, Jan 1, 2025, 12:00 AM UTC.
+
+| Plugin        | Audits | Version  | Duration |
+| :------------ | :----: | :------: | -------: |
+| Code coverage |   3    | \`v1.0.0\` |   5.00 s |
+
+| Commit                                                       | Version  | Duration | Plugins | Categories | Audits |
+| :----------------------------------------------------------- | :------: | -------: | :-----: | :--------: | :----: |
+| ci: update action (535b8e9e557336618a764f3fa45609d224a62837) | \`v1.0.0\` |   4.20 s |    1    |     1      |   3    |
+
+---
+
+Made with ❤ by [Code PushUp](https://github.com/code-pushup/cli#readme)
+",
+}
+`;
+
 exports[`tableSection > should render complete section 1`] = `
 "|    Phase     | % of LCP | Timing |
 | :----------: | :------: | :----: |
