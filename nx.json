@@ -159,7 +159,6 @@
       "inputs": ["code-pushup-inputs", "test-vitest-inputs"],
       "outputs": ["{projectRoot}/.code-pushup/coverage/runner-output.json"],
       "executor": "nx:run-commands",
-      "dependsOn": ["*-test"],
       "options": {
         "command": "node packages/cli/src/index.ts collect",
         "args": [
