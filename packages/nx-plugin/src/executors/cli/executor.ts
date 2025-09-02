@@ -28,7 +28,6 @@ export default async function runAutorunExecutor(
     normalizedContext,
   );
   const { dryRun, verbose, command } = mergedOptions;
-
   const commandString = createCliCommandString({
     command,
     args: cliArgumentObject,
@@ -43,10 +42,6 @@ export default async function runAutorunExecutor(
     try {
       await executeProcess({
         ...createCliCommandObject({ command, args: cliArgumentObject }),
-        observer: {
-          onError: logger.error,
-          onStdout: process.stdout.write,
-        },
         ...(context.cwd ? { cwd: context.cwd } : {}),
       });
     } catch (error) {
@@ -58,7 +53,6 @@ export default async function runAutorunExecutor(
       };
     }
   }
-
   return {
     success: true,
     command: commandString,

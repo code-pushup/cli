@@ -1,3 +1,6 @@
+import { logger } from '@nx/devkit';
+import { ProcessConfig } from '../../internal/execute-process.js';
+
 export function createCliCommandString(options?: {
   args?: Record<string, unknown>;
   command?: string;
@@ -13,15 +16,19 @@ export function createCliCommandObject(options?: {
   args?: Record<string, unknown>;
   command?: string;
   bin?: string;
-}): {
-  command: string;
-  args: string[];
-  cwd?: string;
-} {
+}): ProcessConfig {
   const { bin = '@code-pushup/cli', command, args } = options ?? {};
   return {
     command: 'npx',
     args: [bin, ...objectToCliArgs({ _: command ?? [], ...args })],
+    observer: {
+      onError: error => {
+        logger.error(error.message);
+      },
+      onStdout: data => {
+        logger.log(data);
+      },
+    },
   };
 }
 
