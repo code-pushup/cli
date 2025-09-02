@@ -97,21 +97,25 @@
     },
     "lint": {
       "inputs": ["lint-eslint-inputs"],
-      "dependsOn": ["eslint-formatter-multiple-formats:build"],
-      "executor": "nx:run-commands",
+      "executor": "@nx/eslint:lint",
       "cache": true,
       "options": {
-        "command": "npx eslint",
-        "args": [
-          "{projectRoot}",
-          "--config={projectRoot}/eslint.config.js",
-          "--max-warnings=0",
-          "--format=./tools/eslint-formatter-multi/dist/src/index.js",
-          "--error-on-unmatched-pattern=false",
-          "--max-warnings=0"
-        ],
+        "errorOnUnmatchedPattern": false,
+        "maxWarnings": 0,
+        "lintFilePatterns": [
+          "{projectRoot}/**/*.ts",
+          "{projectRoot}/package.json"
+        ]
+      }
+    },
+    "lint-report": {
+      "dependsOn": ["eslint-formatter-multiple-formats:build"],
+      "inputs": ["lint-eslint-inputs"],
+      "outputs": ["{projectRoot}/.eslint"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx run {projectName}:lint --format=./tools/eslint-formatter-multiple-formats/dist/src/index.js",
         "env": {
-          "NX_TUI": "false",
           "ESLINT_FORMATTER_CONFIG": "{\"outputDir\":\"{projectRoot}/.eslint\"}"
         }
       }

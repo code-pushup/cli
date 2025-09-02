@@ -32,10 +32,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-export interface TextTableOptions {
+export type TextTableOptions = {
   align?: (string | undefined)[];
   stringLength?: (str: string) => number;
-}
+};
 
 export function textTable(
   rows_: (string | number)[][],
@@ -50,6 +50,7 @@ export function textTable(
       const n = stringLength(String(c));
 
       if (!acc[ix] || n > acc[ix]) {
+        // eslint-disable-next-line functional/immutable-data,no-param-reassign
         acc[ix] = n;
       }
     });
@@ -62,7 +63,7 @@ export function textTable(
         .map((c: string | number, ix: number) => {
           const cellStr = String(c);
           const n = (sizes[ix] ?? 0) - stringLength(cellStr) || 0;
-          const s = Array(Math.max(n + 1, 1)).join(' ');
+          const s = Array.from({ length: Math.max(n + 1, 1) }).join(' ');
 
           if (align[ix] === 'r') {
             return s + cellStr;

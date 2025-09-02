@@ -27,7 +27,9 @@ function pluralize(word: string, count: number): string {
 // Public Interface
 //------------------------------------------------------------------------------
 
-export default function (results: ESLint.LintResult[]): string {
+// eslint-disable-next-line max-lines-per-function
+export function stylishFormatter(results: ESLint.LintResult[]): string {
+  // eslint-disable-next-line functional/no-let
   let output = '\n',
     errorCount = 0,
     warningCount = 0,
@@ -51,6 +53,7 @@ export default function (results: ESLint.LintResult[]): string {
 
     output += `${textTable(
       messages.map(message => {
+        // eslint-disable-next-line functional/no-let
         let messageType;
 
         if (message.fatal || message.severity === 2) {

@@ -1,7 +1,7 @@
 import type { ESLint } from 'eslint';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import stylishFormatter from './stylish.js';
+import { stylishFormatter } from './stylish.js';
 import type { FormatterConfig } from './types.js';
 
 export function stringifyError(error: unknown): string {
