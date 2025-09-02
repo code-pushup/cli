@@ -6,9 +6,7 @@
   "targets": {
     "build": {},
     "lint": {},
-    "lint-report": {},
-    "unit-test": {},
-    "integration-test": {}
+    "lint-report": {}
   },
   "tags": ["scope:plugin", "type:feature", "publishable"]
 }
