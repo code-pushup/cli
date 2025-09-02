@@ -216,20 +216,13 @@ export function findConfigFromEnv(
   env: NodeJS.ProcessEnv,
 ): FormatterConfig | null {
   const configString = env['ESLINT_FORMATTER_CONFIG'];
-  const projectsDir = env['ESLINT_FORMATTER_PROJECTS_DIR'];
 
-  if (
-    (!configString || configString.trim() === '') &&
-    (!projectsDir || projectsDir.trim() === '')
-  ) {
+  if (!configString || configString.trim() === '') {
     return null;
   }
 
   try {
-    return {
-      ...(JSON.parse(configString ?? '{}') as FormatterConfig),
-      projectsDir: env['ESLINT_FORMATTER_PROJECTS_DIR'],
-    };
+    return JSON.parse(configString ?? '{}') as FormatterConfig;
   } catch (error) {
     console.error(
       'Error parsing ESLINT_FORMATTER_CONFIG environment variable:',

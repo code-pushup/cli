@@ -179,8 +179,7 @@ export const eslintCoreConfigNx = async (
         })
       : await eslintPlugin(await eslintConfigFromAllNxProjects(), {
           artifacts: {
-            generateArtifactsCommand:
-              'ESLINT_FORMATTER_PROJECTS_DIR=packages NX_TUI=false npx nx run-many -t lint --include="packages/**"',
+            generateArtifactsCommand: 'npx nx run-many -t lint-formatter',
             artifactsPaths: ['packages/**/.eslint/eslint-report.json'],
           },
         }),

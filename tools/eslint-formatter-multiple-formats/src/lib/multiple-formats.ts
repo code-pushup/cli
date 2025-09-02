@@ -62,22 +62,15 @@ export default function multipleFormats(
 
   const {
     outputDir = DEFAULT_OUTPUT_DIR,
-    projectsDir,
-    projectName = process.env['NX_TASK_TARGET_PROJECT'],
     filename,
     formats,
     terminal,
     verbose = false,
   } = config;
 
-  const filalOutputDir =
-    typeof projectName === 'string' && typeof projectsDir === 'string'
-      ? path.join(projectsDir ?? '', projectName ?? '', outputDir)
-      : outputDir;
-
   try {
     persistEslintReports(formats, results, {
-      outputDir: filalOutputDir,
+      outputDir,
       filename,
       verbose,
     });
