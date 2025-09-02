@@ -5,7 +5,14 @@
     "code-pushup-js-packages": {},
     "code-pushup-lighthouse": {},
     "code-pushup-coverage": {},
-    "code-pushup-eslint": {},
+    "code-pushup-eslint": {
+      "dependsOn": [
+        {
+          "target": "lint-formatter",
+          "projects": "*"
+        }
+      ]
+    },
     "code-pushup-jsdocs": {},
     "code-pushup-typescript": {},
     "code-pushup": {

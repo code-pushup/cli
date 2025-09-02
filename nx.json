@@ -179,6 +179,12 @@
       }
     },
     "code-pushup-eslint": {
+      "dependsOn": [
+        {
+          "target": "lint-formatter",
+          "projects": "self"
+        }
+      ],
       "cache": true,
       "inputs": ["code-pushup-inputs", "lint-eslint-inputs"],
       "outputs": ["{projectRoot}/.code-pushup/eslint/runner-output.json"],
