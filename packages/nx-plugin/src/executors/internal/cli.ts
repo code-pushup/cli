@@ -1,5 +1,5 @@
 import { logger } from '@nx/devkit';
-import { ProcessConfig } from '../../internal/execute-process.js';
+import type { ProcessConfig } from '../../internal/execute-process.js';
 
 export function createCliCommandString(options?: {
   args?: Record<string, unknown>;
