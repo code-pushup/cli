@@ -96,7 +96,6 @@
       "cache": true
     },
     "lint": {
-      "dependsOn": ["eslint-formatter-multiple-formats:build"],
       "inputs": ["lint-eslint-inputs"],
       "executor": "@nx/eslint:lint",
       "cache": true,
@@ -179,12 +178,6 @@
       }
     },
     "code-pushup-eslint": {
-      "dependsOn": [
-        {
-          "target": "lint-formatter",
-          "projects": "self"
-        }
-      ],
       "cache": true,
       "inputs": ["code-pushup-inputs", "lint-eslint-inputs"],
       "outputs": ["{projectRoot}/.code-pushup/eslint/runner-output.json"],
