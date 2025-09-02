@@ -44,12 +44,8 @@ export default async function runAutorunExecutor(
       await executeProcess({
         ...createCliCommandObject({ command, args: cliArgumentObject }),
         observer: {
-          onError: error => {
-            logger.error(error.message);
-          },
-          onStdout: data => {
-            process.stdout.write(data);
-          },
+          onError: logger.error,
+          onStdout: process.stdout.write,
         },
         ...(context.cwd ? { cwd: context.cwd } : {}),
       });
