@@ -1,4 +1,3 @@
-import type { AuditOutputs } from '@code-pushup/models';
 import type { CoverageType } from './config.js';
 
 export const coverageDescription: Record<CoverageType, string> = {
@@ -7,21 +6,6 @@ export const coverageDescription: Record<CoverageType, string> = {
   line: 'Measures how many lines of code were executed in at least one test.',
   function: 'Measures how many functions were called in at least one test.',
 };
-
-/**
- * Since more code coverage does not necessarily mean better score, this optional override allows for defining custom coverage goals.
- * @param outputs original results
- * @param threshold threshold above which the score is to be 1
- * @returns Outputs with overriden score (not value) to 1 if it reached a defined threshold.
- */
-export function applyMaxScoreAboveThreshold(
-  outputs: AuditOutputs,
-  threshold: number,
-): AuditOutputs {
-  return outputs.map(output =>
-    output.score >= threshold ? { ...output, score: 1 } : output,
-  );
-}
 
 export const coverageTypeWeightMapper: Record<CoverageType, number> = {
   /* eslint-disable @typescript-eslint/no-magic-numbers */

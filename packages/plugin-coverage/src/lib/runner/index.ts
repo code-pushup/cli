@@ -1,11 +1,7 @@
 import { bold } from 'ansis';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import type {
-  AuditOutputs,
-  RunnerConfig,
-  RunnerFilesPaths,
-} from '@code-pushup/models';
+import type { RunnerConfig, RunnerFilesPaths } from '@code-pushup/models';
 import {
   ProcessError,
   createRunnerFiles,
@@ -17,7 +13,6 @@ import {
   ui,
 } from '@code-pushup/utils';
 import type { FinalCoveragePluginConfig } from '../config.js';
-import { applyMaxScoreAboveThreshold } from '../utils.js';
 import { lcovResultsToAuditOutputs } from './lcov/lcov-runner.js';
 
 export async function executeRunner({
@@ -68,8 +63,6 @@ export async function createRunnerConfig(
     JSON.stringify(config),
   );
 
-  const threshold = config.perfectScoreThreshold;
-
   return {
     command: 'node',
     args: [
@@ -78,9 +71,5 @@ export async function createRunnerConfig(
     ],
     configFile: runnerConfigPath,
     outputFile: runnerOutputPath,
-    ...(threshold != null && {
-      outputTransform: outputs =>
-        applyMaxScoreAboveThreshold(outputs as AuditOutputs, threshold),
-    }),
   };
 }
