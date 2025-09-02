@@ -86,6 +86,7 @@ export {
   pluginConfigSchema,
   pluginContextSchema,
   pluginMetaSchema,
+  pluginScoreTargetsSchema,
   type PluginConfig,
   type PluginContext,
   type PluginMeta,
