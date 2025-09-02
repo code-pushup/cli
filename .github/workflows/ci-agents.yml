@@ -36,29 +36,9 @@ jobs:
       - name: Start Nx Cloud CI run with agents
         run: ./node_modules/.bin/nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
 
-      # Run format check
-      - name: Check formatting of affected files
-        run: npx nx format:check
-
-      # Run linting on affected projects
-      - name: Lint affected projects
-        run: npx nx affected:lint --parallel=3
-
-      # Run unit tests on affected projects
-      - name: Unit test affected projects
-        run: npx nx affected -t unit-test --parallel=3 --coverage.enabled
-
-      # Run integration tests on affected projects
-      - name: Integration test affected projects
-        run: npx nx affected -t int-test --parallel=3 --coverage.enabled
-
-      # Run e2e tests on affected projects
-      - name: E2E test affected projects
-        run: npx nx affected -t e2e-test --parallel=1
-
-      # Build all projects for package publishing
-      - name: Build all projects
-        run: npx nx run-many --target=build --parallel=3 --configuration=ci
+      # Run all CI tasks with Nx Cloud distribution
+      - name: Run CI tasks
+        run: npx nx run-many -t format:check lint unit-test int-test e2e-test build  --configuration=ci
 
       # Test-release packages
       - name: Test-release packages
