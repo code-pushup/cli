@@ -106,7 +106,7 @@
           "{projectRoot}",
           "--config={projectRoot}/eslint.config.js",
           "--max-warnings=0",
-          "--format=./tools/eslint-formatter-multiple-formats/dist/src/index.js",
+          "--format=./tools/eslint-formatter-multi/dist/src/index.js",
           "--error-on-unmatched-pattern=false",
           "--max-warnings=0"
         ],
