@@ -1,7 +1,7 @@
 // Import ansis for colors (similar to chalk)
 import { bold, dim, red, reset, underline, yellow } from 'ansis';
 import type { ESLint } from 'eslint';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { FormatterConfig } from './types.js';
 
@@ -269,16 +269,14 @@ export type PersistConfig = {
   verbose: boolean;
 };
 
-export function persistEslintReport(
+export async function persistEslintReport(
   results: ESLint.LintResult[],
   options: PersistConfig,
-): boolean {
+): Promise<boolean> {
   const { outputDir, filename, format, verbose = false } = options;
   try {
-    // eslint-disable-next-line n/no-sync
-    mkdirSync(outputDir, { recursive: true });
-    // eslint-disable-next-line n/no-sync
-    writeFileSync(
+    await mkdir(outputDir, { recursive: true });
+    await writeFile(
       path.join(outputDir, `${filename}.${getExtensionForFormat(format)}`),
       formatContent(results, format),
     );
@@ -297,19 +295,21 @@ export function persistEslintReport(
   }
 }
 
-export function persistEslintReports(
+export async function persistEslintReports(
   formats: EslintFormat[],
   results: ESLint.LintResult[],
   options: Omit<PersistConfig, 'format'>,
-): boolean {
+): Promise<void> {
   const { outputDir, filename, verbose } = options;
 
-  return formats.every(format =>
-    persistEslintReport(results, {
-      outputDir,
-      filename,
-      format,
-      verbose,
-    }),
+  await Promise.all(
+    formats.map(format =>
+      persistEslintReport(results, {
+        outputDir,
+        filename,
+        format,
+        verbose,
+      }),
+    ),
   );
 }

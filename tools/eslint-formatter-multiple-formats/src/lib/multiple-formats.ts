@@ -50,10 +50,10 @@ export const DEFAULT_CONFIG: Required<
  *   "terminal": "stylish"               // Optional: Format for terminal output (default: 'stylish')
  * }
  */
-export default function multipleFormats(
+export default async function multipleFormats(
   results: ESLint.LintResult[],
   _args?: unknown,
-): string {
+): Promise<string> {
   const config = {
     ...DEFAULT_CONFIG,
     ...getConfigFromEnv(process.env),
@@ -68,7 +68,7 @@ export default function multipleFormats(
   } = config;
 
   try {
-    persistEslintReports(formats, results, {
+    await persistEslintReports(formats, results, {
       outputDir,
       filename,
       verbose,
