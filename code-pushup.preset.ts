@@ -196,6 +196,7 @@ export const coverageCoreConfigNx = async (
   return {
     plugins: [
       await coveragePlugin({
+        // We do not need to run a coverageToolCommand. This is handled over the Nx task graph.
         reports: projectName
           ? [
               {
