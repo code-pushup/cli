@@ -1,4 +1,4 @@
-# ESLint Multiple-Formats Formatter
+# ESLint Multi Formatter
 
 The ESLint plugin uses a custom formatter that supports multiple output formats and destinations simultaneously.
 
@@ -59,24 +59,6 @@ ESLINT_FORMATTER_CONFIG='{"formats":[],"terminal":"stylish"}' npx eslint .
 
 # Different terminal format
 ESLINT_FORMATTER_CONFIG='{"formats":[],"terminal":"stylish"}' npx eslint .
-```
-
-### Configuration from File
-
-```bash
-# Create a configuration file
-cat > eslint-config.json << 'EOF'
-{
-  "outputDir": "./ci-reports",
-  "filename": "eslint-report",
-  "formats": ["json", "stylish"],
-  "terminal": "stylish",
-  "verbose": true
-}
-EOF
-
-# Use the configuration file
-ESLINT_FORMATTER_CONFIG="$(cat eslint-config.json)" npx eslint .
 ```
 
 ## Default Behavior

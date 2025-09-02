@@ -1,5 +1,5 @@
 {
-  "name": "eslint-formatter-multiple-formats",
+  "name": "eslint-formatter-multi",
   "version": "0.0.1",
   "private": false,
   "type": "module",
@@ -14,7 +14,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/code-pushup/cli.git",
-    "directory": "tools/eslint-formatter-multiple-formats"
+    "directory": "tools/eslint-formatter-multi"
   },
   "keywords": [
     "eslint",
