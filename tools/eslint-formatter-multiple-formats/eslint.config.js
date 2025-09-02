@@ -15,13 +15,7 @@ export default tseslint.config(
   {
     files: ['**/*.json'],
     rules: {
-      '@nx/dependency-checks': [
-        'error',
-        {
-          ignoredDependencies: ['@nx/vite', 'vite', 'vite-plugin-dts'],
-        },
-      ],
-      'n/no-sync': 'off',
+      '@nx/dependency-checks': ['error'],
     },
   },
 );
