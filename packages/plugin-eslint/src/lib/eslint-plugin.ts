@@ -40,7 +40,11 @@ export async function eslintPlugin(
     schemaType: 'ESLint plugin config',
   });
 
-  const { groups: customGroups, artifacts } = options
+  const {
+    groups: customGroups,
+    artifacts,
+    scoreTargets,
+  } = options
     ? parseSchema(eslintPluginOptionsSchema, options, {
         schemaType: 'ESLint plugin options',
       })
@@ -69,5 +73,6 @@ export async function eslintPlugin(
       targets,
       ...(artifacts ? { artifacts } : {}),
     }),
+    ...(scoreTargets && { scoreTargets }),
   };
 }

@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { pluginArtifactOptionsSchema } from '@code-pushup/models';
+import {
+  pluginArtifactOptionsSchema,
+  pluginScoreTargetsSchema,
+} from '@code-pushup/models';
 import { toArray } from '@code-pushup/utils';
 
 const patternsSchema = z
@@ -63,5 +66,6 @@ export type CustomGroup = z.infer<typeof customGroupSchema>;
 export const eslintPluginOptionsSchema = z.object({
   groups: z.array(customGroupSchema).optional(),
   artifacts: pluginArtifactOptionsSchema.optional(),
+  scoreTargets: pluginScoreTargetsSchema,
 });
 export type ESLintPluginOptions = z.infer<typeof eslintPluginOptionsSchema>;
