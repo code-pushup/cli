@@ -43,16 +43,14 @@ describe('runAutorunExecutor', () => {
       }),
     );
     expect(executeProcessSpy).toHaveBeenCalledTimes(1);
-    expect(executeProcessSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        command: 'npx',
-        args: expect.arrayContaining(['@code-pushup/cli']),
-        cwd: process.cwd(),
-        observer: expect.objectContaining({
-          onError: expect.any(Function),
-          onStdout: expect.any(Function),
-        }),
-      }),
-    );
+    expect(executeProcessSpy).toHaveBeenCalledWith({
+      command: 'npx',
+      args: expect.arrayContaining(['@code-pushup/cli']),
+      cwd: process.cwd(),
+      observer: {
+        onError: expect.any(Function),
+        onStdout: expect.any(Function),
+      },
+    });
   });
 });
