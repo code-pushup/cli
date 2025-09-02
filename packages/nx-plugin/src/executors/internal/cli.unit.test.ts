@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { createCliCommand, objectToCliArgs } from './cli.js';
+import {
+  createCliCommandObject,
+  createCliCommandString,
+  objectToCliArgs,
+} from './cli.js';
 
 describe('objectToCliArgs', () => {
   it('should empty params', () => {
@@ -86,14 +90,59 @@ describe('objectToCliArgs', () => {
   });
 });
 
-describe('createCliCommand', () => {
+describe('createCliCommandString', () => {
   it('should create command out of object for arguments', () => {
-    const result = createCliCommand({ args: { verbose: true } });
+    const result = createCliCommandString({ args: { verbose: true } });
     expect(result).toBe('npx @code-pushup/cli --verbose');
   });
 
   it('should create command out of object for arguments with positional', () => {
-    const result = createCliCommand({ args: { _: 'autorun', verbose: true } });
+    const result = createCliCommandString({
+      args: { _: 'autorun', verbose: true },
+    });
     expect(result).toBe('npx @code-pushup/cli autorun --verbose');
+  });
+});
+
+describe('createCliCommandObject', () => {
+  it('should create command out of object for arguments', () => {
+    expect(createCliCommandObject({ args: { verbose: true } })).toStrictEqual({
+      args: ['@code-pushup/cli', '--verbose'],
+      command: 'npx',
+      observer: {
+        onError: expect.any(Function),
+        onStdout: expect.any(Function),
+      },
+    });
+  });
+
+  it('should create command out of object for arguments with positional', () => {
+    expect(
+      createCliCommandObject({
+        args: { _: 'autorun', verbose: true },
+      }),
+    ).toStrictEqual({
+      args: ['@code-pushup/cli', 'autorun', '--verbose'],
+      command: 'npx',
+      observer: {
+        onError: expect.any(Function),
+        onStdout: expect.any(Function),
+      },
+    });
+  });
+
+  it('should create command out of object for arguments with bin', () => {
+    expect(
+      createCliCommandObject({
+        bin: 'node_modules/@code-pushup/cli/src/bin.js',
+      }),
+    ).toStrictEqual({
+      args: ['node_modules/@code-pushup/cli/src/bin.js'],
+      command: 'npx',
+      observer: {
+        onError: expect.any(Function),
+        onStdout: expect.any(Function),
+      },
+    });
   });
 });
