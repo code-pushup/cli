@@ -109,12 +109,12 @@
       }
     },
     "lint-report": {
-      "dependsOn": ["eslint-formatter-multiple-formats:build"],
+      "dependsOn": ["eslint-formatter-multi:build"],
       "inputs": ["lint-eslint-inputs"],
       "outputs": ["{projectRoot}/.eslint"],
       "executor": "nx:run-commands",
       "options": {
-        "command": "nx run {projectName}:lint --format=./tools/eslint-formatter-multiple-formats/dist/src/index.js",
+        "command": "nx run {projectName}:lint --format=./tools/eslint-formatter-multi/dist/src/index.js",
         "env": {
           "ESLINT_FORMATTER_CONFIG": "{\"outputDir\":\"{projectRoot}/.eslint\"}"
         }

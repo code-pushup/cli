@@ -9,5 +9,5 @@
     "importHelpers": false
   },
   "include": ["**/*.ts"],
-  "exclude": ["eslint-formatter-multiple-formats/**/*"]
+  "exclude": ["eslint-formatter-multi/**/*"]
 }
