@@ -38,7 +38,7 @@ jobs:
 
       # Run all CI tasks with Nx Cloud distribution
       - name: Run CI tasks
-        run: npx nx run-many -t format:check lint unit-test int-test e2e-test build  --configuration=ci
+        run: npx nx affected -t format:check lint unit-test int-test e2e-test build  --configuration=ci
 
       # Test-release packages
       - name: Test-release packages
