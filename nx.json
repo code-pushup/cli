@@ -97,6 +97,7 @@
       }
     },
     "unit-test": {
+      "cache": true,
       "outputs": [
         "{workspaceRoot}/coverage/{projectName}/unit-tests/lcov.info"
       ],
@@ -109,6 +110,7 @@
       }
     },
     "int-test": {
+      "cache": true,
       "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
       "executor": "@nx/vite:test",
       "options": {

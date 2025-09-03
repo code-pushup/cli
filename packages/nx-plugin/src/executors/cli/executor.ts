@@ -1,6 +1,9 @@
 import { type ExecutorContext, logger } from '@nx/devkit';
-import { execSync } from 'node:child_process';
-import { createCliCommand } from '../internal/cli.js';
+import { executeProcess } from '../../internal/execute-process.js';
+import {
+  createCliCommandObject,
+  createCliCommandString,
+} from '../internal/cli.js';
 import { normalizeContext } from '../internal/context.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
 import { mergeExecutorOptions, parseAutorunExecutorOptions } from './utils.js';
@@ -11,7 +14,7 @@ export type ExecutorOutput = {
   error?: Error;
 };
 
-export default function runAutorunExecutor(
+export default async function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
@@ -25,9 +28,10 @@ export default function runAutorunExecutor(
     normalizedContext,
   );
   const { dryRun, verbose, command } = mergedOptions;
-
-  const commandString = createCliCommand({ command, args: cliArgumentObject });
-  const commandStringOptions = context.cwd ? { cwd: context.cwd } : {};
+  const commandString = createCliCommandString({
+    command,
+    args: cliArgumentObject,
+  });
   if (verbose) {
     logger.info(`Run CLI executor ${command ?? ''}`);
     logger.info(`Command: ${commandString}`);
@@ -36,21 +40,21 @@ export default function runAutorunExecutor(
     logger.warn(`DryRun execution of: ${commandString}`);
   } else {
     try {
-      // @TODO use executeProcess instead of execSync -> non blocking, logs #761
-      // eslint-disable-next-line n/no-sync
-      execSync(commandString, commandStringOptions);
+      await executeProcess({
+        ...createCliCommandObject({ command, args: cliArgumentObject }),
+        ...(context.cwd ? { cwd: context.cwd } : {}),
+      });
     } catch (error) {
       logger.error(error);
-      return Promise.resolve({
+      return {
         success: false,
         command: commandString,
         error: error as Error,
-      });
+      };
     }
   }
-
-  return Promise.resolve({
+  return {
     success: true,
     command: commandString,
-  });
+  };
 }
