@@ -16,7 +16,14 @@
         }
       ]
     },
-    "code-pushup-eslint": {},
+    "code-pushup-eslint": {
+      "dependsOn": [
+        {
+          "target": "lint",
+          "projects": "*"
+        }
+      ]
+    },
     "code-pushup-jsdocs": {},
     "code-pushup-typescript": {},
     "code-pushup": {

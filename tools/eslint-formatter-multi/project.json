@@ -1,0 +1,12 @@
+{
+  "name": "eslint-formatter-multi",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/eslint-formatter-multi/src",
+  "projectType": "library",
+  "tags": ["scope:tooling", "type:util"],
+  "targets": {
+    "lint": {},
+    "unit-test": {},
+    "build": {}
+  }
+}

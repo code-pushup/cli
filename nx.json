@@ -49,12 +49,40 @@
       }
     ],
     "sharedGlobals": [
-      { "runtime": "node -e \"console.log(require('os').platform())\"" },
-      { "runtime": "node -v" },
-      { "runtime": "npm -v" }
+      {
+        "runtime": "node -e \"console.log(require('os').platform())\""
+      },
+      {
+        "runtime": "node -v"
+      },
+      {
+        "runtime": "npm -v"
+      }
     ]
   },
   "targetDefaults": {
+    "lint": {
+      "dependsOn": ["eslint-formatter-multi:build"],
+      "inputs": ["lint-eslint-inputs"],
+      "outputs": ["{projectRoot}/.eslint/**/*"],
+      "cache": true,
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint",
+        "args": [
+          "{projectRoot}/**/*.ts",
+          "{projectRoot}/package.json",
+          "--config={projectRoot}/eslint.config.js",
+          "--max-warnings=0",
+          "--no-warn-ignored",
+          "--error-on-unmatched-pattern=false",
+          "--format=./tools/eslint-formatter-multi/dist/src/index.js"
+        ],
+        "env": {
+          "ESLINT_FORMATTER_CONFIG": "{\"outputDir\":\"{projectRoot}/.eslint\"}"
+        }
+      }
+    },
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"],
@@ -96,36 +124,6 @@
       "dependsOn": ["^build"],
       "inputs": ["default"],
       "cache": true
-    },
-    "lint": {
-      "inputs": ["lint-eslint-inputs"],
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
-      "cache": true,
-      "options": {
-        "errorOnUnmatchedPattern": false,
-        "maxWarnings": 0,
-        "lintFilePatterns": [
-          "{projectRoot}/**/*.ts",
-          "{projectRoot}/package.json"
-        ]
-      }
-    },
-    "lint-report": {
-      "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
-      "outputs": ["{projectRoot}/.eslint/eslint-report*.json"],
-      "cache": true,
-      "executor": "@nx/linter:eslint",
-      "options": {
-        "errorOnUnmatchedPattern": false,
-        "maxWarnings": 0,
-        "format": "json",
-        "outputFile": "{projectRoot}/.eslint/eslint-report.json",
-        "lintFilePatterns": [
-          "{projectRoot}/**/*.ts",
-          "{projectRoot}/package.json"
-        ]
-      }
     },
     "nxv-pkg-install": {
       "parallelism": false
