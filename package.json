@@ -52,7 +52,7 @@
     "@beaussan/nx-knip": "^0.0.5-15",
     "@code-pushup/cli": "^0.78.0",
     "@code-pushup/eslint-config": "^0.14.2",
-    "@code-pushup/nx-plugin": "^0.78.0",
+    "@code-pushup/nx-plugin": "https://pkg.pr.new/code-pushup/cli/@code-pushup/nx-plugin@1091",
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
     "@commitlint/config-nx-scopes": "^19.5.0",
