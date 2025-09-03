@@ -1,7 +1,11 @@
 import { bold } from 'ansis';
 import { vol } from 'memfs';
 import { describe, expect, it, vi } from 'vitest';
-import type { AuditOutputs, PluginConfig } from '@code-pushup/models';
+import {
+  type AuditOutputs,
+  DEFAULT_PERSIST_CONFIG,
+  type PluginConfig,
+} from '@code-pushup/models';
 import {
   MEMFS_VOLUME,
   MINIMAL_PLUGIN_CONFIG_MOCK,
@@ -26,7 +30,7 @@ describe('executePlugin', () => {
 
     await expect(
       executePlugin(MINIMAL_PLUGIN_CONFIG_MOCK, {
-        persist: { outputDir: '' },
+        persist: {},
         cache: { read: false, write: false },
       }),
     ).resolves.toStrictEqual({
@@ -47,7 +51,7 @@ describe('executePlugin', () => {
 
     expect(executePluginRunnerSpy).toHaveBeenCalledWith(
       MINIMAL_PLUGIN_CONFIG_MOCK,
-      { outputDir: '' },
+      { persist: DEFAULT_PERSIST_CONFIG },
     );
   });
 
@@ -132,7 +136,7 @@ describe('executePlugin', () => {
 
     expect(executePluginRunnerSpy).toHaveBeenCalledWith(
       MINIMAL_PLUGIN_CONFIG_MOCK,
-      { outputDir: MEMFS_VOLUME },
+      { persist: { ...DEFAULT_PERSIST_CONFIG, outputDir: MEMFS_VOLUME } },
     );
   });
 

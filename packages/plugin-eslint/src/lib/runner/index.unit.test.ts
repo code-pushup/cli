@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { z } from 'zod';
-import type {
-  Audit,
-  AuditOutput,
-  pluginArtifactOptionsSchema,
+import {
+  type Audit,
+  type AuditOutput,
+  DEFAULT_PERSIST_CONFIG,
+  type pluginArtifactOptionsSchema,
 } from '@code-pushup/models';
 import { ui } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
@@ -124,7 +125,7 @@ describe('createRunnerFunction', () => {
         audits: mockAudits,
         targets: mockTargets,
         artifacts,
-      })({}),
+      })({ persist: DEFAULT_PERSIST_CONFIG }),
     ).resolves.toStrictEqual(mockedAuditOutputs);
 
     expect(loadArtifactsSpy).toHaveBeenCalledWith(artifacts);
@@ -140,9 +141,7 @@ describe('createRunnerFunction', () => {
       createRunnerFunction({
         audits: mockAudits,
         targets: mockTargets,
-      })({
-        outputDir: 'custom-output',
-      }),
+      })({ persist: DEFAULT_PERSIST_CONFIG }),
     ).resolves.toStrictEqual(mockedAuditOutputs);
 
     expect(loadArtifactsSpy).not.toHaveBeenCalled();
