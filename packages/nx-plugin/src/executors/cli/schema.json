@@ -44,6 +44,10 @@
       "type": "string",
       "description": "Prefix for project name"
     },
+    "output": {
+      "type": "string",
+      "description": "Config output path"
+    },
     "persist": {
       "type": "object",
       "properties": {

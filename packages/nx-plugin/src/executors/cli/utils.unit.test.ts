@@ -153,6 +153,33 @@ describe('parseAutorunExecutorOptions', () => {
       );
     },
   );
+
+  it.each<Command>(['print-config'])(
+    'should include output config for command %s',
+    command => {
+      const projectName = 'my-app';
+      const executorOptions = parseAutorunExecutorOptions(
+        {
+          command,
+          output: 'code-pushup.config.json',
+        },
+        {
+          projectName,
+          workspaceRoot: 'workspaceRoot',
+          projectConfig: {
+            name: 'my-app',
+            root: 'root',
+          },
+        },
+      );
+
+      expect(executorOptions).toEqual(
+        expect.objectContaining({
+          output: 'code-pushup.config.json',
+        }),
+      );
+    },
+  );
 });
 
 describe('mergeExecutorOptions', () => {
