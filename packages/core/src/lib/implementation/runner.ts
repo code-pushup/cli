@@ -15,9 +15,9 @@ import {
   executeProcess,
   fileExists,
   isVerbose,
-  objectToCliArgs,
   readJsonFile,
   removeDirectoryIfExists,
+  runnerArgsToEnv,
   ui,
 } from '@code-pushup/utils';
 import { normalizeAuditOutputs } from '../normalize.js';
@@ -40,7 +40,7 @@ export async function executeRunnerConfig(
 
   const { duration, date } = await executeProcess({
     command: config.command,
-    args: [...(config.args ?? []), ...objectToCliArgs(args)],
+    args: config.args,
     observer: {
       onStdout: stdout => {
         if (isVerbose()) {
@@ -49,6 +49,7 @@ export async function executeRunnerConfig(
       },
       onStderr: stderr => ui().logger.error(stderr),
     },
+    env: { ...process.env, ...runnerArgsToEnv(args) },
   });
 
   // read process output from the file system and parse it
