@@ -172,6 +172,7 @@ describe('executor command', () => {
     expect(cleanStdout).toContain(
       'nx run my-lib:code-pushup collect --persist.filename=terminal-report',
     );
+    expect(cleanStdout).toContain('Code PushUp CLI');
 
     await expect(
       readJsonFile(path.join(cwd, '.reports', 'terminal-report.json')),

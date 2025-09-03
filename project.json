@@ -4,8 +4,26 @@
   "targets": {
     "code-pushup-js-packages": {},
     "code-pushup-lighthouse": {},
-    "code-pushup-coverage": {},
-    "code-pushup-eslint": {},
+    "code-pushup-coverage": {
+      "dependsOn": [
+        {
+          "target": "unit-test",
+          "projects": "*"
+        },
+        {
+          "target": "int-test",
+          "projects": "*"
+        }
+      ]
+    },
+    "code-pushup-eslint": {
+      "dependsOn": [
+        {
+          "target": "lint",
+          "projects": "*"
+        }
+      ]
+    },
     "code-pushup-jsdocs": {},
     "code-pushup-typescript": {},
     "code-pushup": {

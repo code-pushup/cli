@@ -25,7 +25,7 @@ async function executeLint({
   patterns,
 }: ESLintTarget): Promise<ESLint.LintResult[]> {
   // running as CLI because ESLint#lintFiles() runs out of memory
-  const { stdout } = await executeProcess({
+  const { stdout, stderr, code } = await executeProcess({
     command: 'npx',
     args: [
       'eslint',
@@ -41,6 +41,12 @@ async function executeLint({
     ignoreExitCode: true,
     cwd: process.cwd(),
   });
+
+  if (!stdout.trim()) {
+    throw new Error(
+      `ESLint produced empty output. Exit code: ${code}, STDERR: ${stderr}`,
+    );
+  }
 
   return JSON.parse(stdout) as ESLint.LintResult[];
 }

@@ -177,7 +177,13 @@ export const eslintCoreConfigNx = async (
           eslintrc: `packages/${projectName}/eslint.config.js`,
           patterns: ['.'],
         })
-      : await eslintPlugin(await eslintConfigFromAllNxProjects()),
+      : await eslintPlugin(await eslintConfigFromAllNxProjects(), {
+          artifacts: {
+            // We leverage Nx dependsOn to only run all lint targets before we run code-pushup
+            // generateArtifactsCommand: 'npx nx run-many -t lint',
+            artifactsPaths: ['packages/**/.eslint/eslint-report.json'],
+          },
+        }),
   ],
   categories: eslintCategories,
 });
@@ -193,16 +199,10 @@ export const coverageCoreConfigNx = async (
   projectName?: string,
 ): Promise<CoreConfig> => {
   const targetNames = ['unit-test', 'int-test'];
-  const targetArgs = ['-t', ...targetNames];
   return {
     plugins: [
       await coveragePlugin({
-        coverageToolCommand: {
-          command: 'npx',
-          args: projectName
-            ? ['nx', 'run-many', '-p', projectName, ...targetArgs]
-            : ['nx', 'run-many', ...targetArgs],
-        },
+        // We do not need to run a coverageToolCommand. This is handled over the Nx task graph.
         reports: projectName
           ? [
               {

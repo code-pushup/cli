@@ -1,3 +1,17 @@
+## 0.78.0 (2025-09-03)
+
+### 🚀 Features
+
+- **plugin-eslint:** add artefact options ([#1089](https://github.com/code-pushup/cli/pull/1089))
+
+### 🩹 Fixes
+
+- **nx-plugin:** print process output for CLI command ([#1095](https://github.com/code-pushup/cli/pull/1095))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.77.0 (2025-08-28)
 
 ### 🚀 Features
