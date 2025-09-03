@@ -66,13 +66,21 @@
       "inputs": ["lint-eslint-inputs"],
       "outputs": ["{projectRoot}/.eslint/**/*"],
       "cache": true,
+      "executor": "nx:run-commands",
       "options": {
-        "max-warnings": 0,
-        "error-on-unmatched-pattern": false,
-        "//": "replace the formatter path with the released package @code-pushup/eslint-formatter-multi when available",
-        "//": "this will make the formatter resolve in any target.",
-        "format": "./tools/eslint-formatter-multi/dist/src/index.js",
-        "cwd": "{workspaceRoot}"
+        "command": "eslint",
+        "args": [
+          "{projectRoot}/**/*.ts",
+          "{projectRoot}/package.json",
+          "--config={projectRoot}/eslint.config.js",
+          "--max-warnings=0",
+          "--error-on-unmatched-pattern=false",
+          "--format=./tools/eslint-formatter-multi/dist/src/index.js"
+        ],
+        "cwd": "{workspaceRoot}",
+        "env": {
+          "ESLINT_FORMATTER_CONFIG": "{\"outputDir\":\"{projectRoot}/.eslint\"}"
+        }
       }
     },
     "build": {
@@ -326,12 +334,6 @@
   },
   "plugins": [
     {
-      "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint"
-      }
-    },
-    {
       "plugin": "@push-based/nx-verdaccio",
       "options": {
         "environments": {
@@ -344,12 +346,6 @@
         "packages": {
           "filterByTags": ["publishable"]
         }
-      }
-    },
-    {
-      "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint"
       }
     }
   ],
