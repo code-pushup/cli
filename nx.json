@@ -49,12 +49,32 @@
       }
     ],
     "sharedGlobals": [
-      { "runtime": "node -e \"console.log(require('os').platform())\"" },
-      { "runtime": "node -v" },
-      { "runtime": "npm -v" }
+      {
+        "runtime": "node -e \"console.log(require('os').platform())\""
+      },
+      {
+        "runtime": "node -v"
+      },
+      {
+        "runtime": "npm -v"
+      }
     ]
   },
   "targetDefaults": {
+    "lint": {
+      "dependsOn": ["eslint-formatter-multi:build"],
+      "inputs": ["lint-eslint-inputs"],
+      "outputs": ["{projectRoot}/.eslint/**/*"],
+      "cache": true,
+      "options": {
+        "max-warnings": 0,
+        "error-on-unmatched-pattern": false,
+        "//": "replace the formatter path with the released package @code-pushup/eslint-formatter-multi when available",
+        "//": "this will make the formatter resolve in any target.",
+        "format": "./tools/eslint-formatter-multi/dist/src/index.js",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"],
@@ -94,31 +114,6 @@
       "dependsOn": ["^build"],
       "inputs": ["default"],
       "cache": true
-    },
-    "lint": {
-      "inputs": ["lint-eslint-inputs"],
-      "executor": "@nx/eslint:lint",
-      "cache": true,
-      "options": {
-        "errorOnUnmatchedPattern": false,
-        "maxWarnings": 0,
-        "lintFilePatterns": [
-          "{projectRoot}/**/*.ts",
-          "{projectRoot}/package.json"
-        ]
-      }
-    },
-    "lint-report": {
-      "dependsOn": ["eslint-formatter-multi:build"],
-      "inputs": ["lint-eslint-inputs"],
-      "outputs": ["{projectRoot}/.eslint"],
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "nx run {projectName}:lint --format=./tools/eslint-formatter-multi/dist/src/index.js",
-        "env": {
-          "ESLINT_FORMATTER_CONFIG": "{\"outputDir\":\"{projectRoot}/.eslint\"}"
-        }
-      }
     },
     "nxv-pkg-install": {
       "parallelism": false
@@ -331,6 +326,12 @@
   },
   "plugins": [
     {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    },
+    {
       "plugin": "@push-based/nx-verdaccio",
       "options": {
         "environments": {
@@ -343,6 +344,12 @@
         "packages": {
           "filterByTags": ["publishable"]
         }
+      }
+    },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
       }
     }
   ],
