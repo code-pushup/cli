@@ -12,6 +12,15 @@ export const outputTransformSchema = convertAsyncZodFunctionToSchema(
 );
 export type OutputTransform = z.infer<typeof outputTransformSchema>;
 
+export const runnerArgsSchema = z
+  .object({
+    persist: persistConfigSchema
+      .required()
+      .describe('Persist config with defaults applied'),
+  })
+  .describe('Arguments passed to runner');
+export type RunnerArgs = z.infer<typeof runnerArgsSchema>;
+
 export const runnerConfigSchema = z
   .object({
     command: z.string().describe('Shell command to execute'),
@@ -20,22 +29,19 @@ export const runnerConfigSchema = z
     outputTransform: outputTransformSchema.optional(),
     configFile: filePathSchema.describe('Runner config path').optional(),
   })
-  .describe('How to execute runner');
-
+  .describe('How to execute runner using shell script');
 export type RunnerConfig = z.infer<typeof runnerConfigSchema>;
 
 export const runnerFunctionSchema = convertAsyncZodFunctionToSchema(
   z.function({
-    input: [persistConfigSchema],
+    input: [runnerArgsSchema],
     output: z.union([auditOutputsSchema, z.promise(auditOutputsSchema)]),
   }),
-);
-
+).describe('Callback function for async runner execution in JS/TS');
 export type RunnerFunction = z.infer<typeof runnerFunctionSchema>;
 
 export const runnerFilesPathsSchema = z.object({
   runnerConfigPath: filePathSchema.describe('Runner config path'),
   runnerOutputPath: filePathSchema.describe('Runner output path'),
 });
-
 export type RunnerFilesPaths = z.infer<typeof runnerFilesPathsSchema>;

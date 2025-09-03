@@ -1,12 +1,13 @@
 import { bold } from 'ansis';
-import type {
-  Audit,
-  AuditOutput,
-  AuditReport,
-  CacheConfigObject,
-  PersistConfig,
-  PluginConfig,
-  PluginReport,
+import {
+  type AuditOutput,
+  type AuditReport,
+  type CacheConfigObject,
+  DEFAULT_PERSIST_CONFIG,
+  type PersistConfig,
+  type PluginConfig,
+  type PluginReport,
+  type RunnerArgs,
 } from '@code-pushup/models';
 import {
   type ProgressBar,
@@ -48,10 +49,9 @@ export async function executePlugin(
   pluginConfig: PluginConfig,
   opt: {
     cache: CacheConfigObject;
-    persist: Required<Pick<PersistConfig, 'outputDir'>>;
+    persist: PersistConfig;
   },
 ): Promise<PluginReport> {
-  const { cache, persist } = opt;
   const {
     runner,
     audits: pluginConfigAudits,
@@ -61,15 +61,19 @@ export async function executePlugin(
     scoreTargets,
     ...pluginMeta
   } = pluginConfig;
-  const { write: cacheWrite = false, read: cacheRead = false } = cache;
-  const { outputDir } = persist;
+  const { write: cacheWrite = false, read: cacheRead = false } = opt.cache;
+
+  const args: RunnerArgs = {
+    persist: { ...DEFAULT_PERSIST_CONFIG, ...opt.persist },
+  };
+  const { outputDir } = args.persist;
 
   const { audits, ...executionMeta } = cacheRead
     ? // IF not null, take the result from cache
       ((await readRunnerResults(pluginMeta.slug, outputDir)) ??
       // ELSE execute the plugin runner
-      (await executePluginRunner(pluginConfig, persist)))
-    : await executePluginRunner(pluginConfig, persist);
+      (await executePluginRunner(pluginConfig, args)))
+    : await executePluginRunner(pluginConfig, args);
 
   if (cacheWrite) {
     await writeRunnerResults(pluginMeta.slug, outputDir, {
@@ -87,9 +91,8 @@ export async function executePlugin(
   const auditReports: AuditReport[] = scoredAuditsWithTarget.map(
     (auditOutput: AuditOutput) => ({
       ...auditOutput,
-      ...(pluginConfigAudits.find(
-        audit => audit.slug === auditOutput.slug,
-      ) as Audit),
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      ...pluginConfigAudits.find(audit => audit.slug === auditOutput.slug)!,
     }),
   );
 
@@ -107,7 +110,7 @@ export async function executePlugin(
 const wrapProgress = async (
   cfg: {
     plugin: PluginConfig;
-    persist: Required<Pick<PersistConfig, 'outputDir'>>;
+    persist: PersistConfig;
     cache: CacheConfigObject;
   },
   steps: number,
@@ -155,7 +158,7 @@ const wrapProgress = async (
 export async function executePlugins(
   cfg: {
     plugins: PluginConfig[];
-    persist: Required<Pick<PersistConfig, 'outputDir'>>;
+    persist: PersistConfig;
     cache: CacheConfigObject;
   },
   options?: { progress?: boolean },

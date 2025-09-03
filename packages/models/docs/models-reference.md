@@ -1404,9 +1404,21 @@ _Object containing the following properties:_
 
 _(\*) Required._
 
+## RunnerArgs
+
+Arguments passed to runner
+
+_Object containing the following properties:_
+
+| Property           | Description                          | Type                                                                                                                                                                                                                                                                                             |
+| :----------------- | :----------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`persist`** (\*) | Persist config with defaults applied | _Object with properties:_<ul><li>**`outputDir`** (\*): `string` (_min length: 1_)</li><li>**`filename`** (\*): `string` (_regex: `/^(?!.*[ \\/:*?"<>\|]).+$/`, min length: 1_)</li><li>**`format`** (\*): _Array of [Format](#format) items_</li><li>**`skipReports`** (\*): `boolean`</li></ul> |
+
+_(\*) Required._
+
 ## RunnerConfig
 
-How to execute runner
+How to execute runner using shell script
 
 _Object containing the following properties:_
 
@@ -1433,11 +1445,13 @@ _(\*) Required._
 
 ## RunnerFunction
 
+Callback function for async runner execution in JS/TS
+
 _Function._
 
 _Parameters:_
 
-1. [PersistConfig](#persistconfig)
+1. [RunnerArgs](#runnerargs)
 
 _Returns:_
 

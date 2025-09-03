@@ -53,6 +53,7 @@ export {
   DEFAULT_PERSIST_FILENAME,
   DEFAULT_PERSIST_FORMAT,
   DEFAULT_PERSIST_OUTPUT_DIR,
+  DEFAULT_PERSIST_SKIP_REPORT,
 } from './lib/implementation/constants.js';
 export {
   MAX_DESCRIPTION_LENGTH,
@@ -117,9 +118,11 @@ export {
   type ReportsDiff,
 } from './lib/reports-diff.js';
 export {
+  runnerArgsSchema,
   runnerConfigSchema,
   runnerFilesPathsSchema,
   runnerFunctionSchema,
+  type RunnerArgs,
   type RunnerConfig,
   type RunnerFilesPaths,
   type RunnerFunction,
