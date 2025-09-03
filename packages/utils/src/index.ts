@@ -16,6 +16,8 @@ export {
   isCI,
   isEnvVarEnabled,
   isVerbose,
+  runnerArgsFromEnv,
+  runnerArgsToEnv,
 } from './lib/env.js';
 export { stringifyError } from './lib/errors.js';
 export {
