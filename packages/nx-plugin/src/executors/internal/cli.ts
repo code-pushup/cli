@@ -26,7 +26,7 @@ export function createCliCommandObject(options?: {
         logger.error(error.message);
       },
       onStdout: data => {
-        logger.log(data);
+        process.stdout.write(data);
       },
     },
   };
