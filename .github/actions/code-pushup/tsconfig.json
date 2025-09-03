@@ -1,0 +1,11 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@code-pushup/ci": ["./packages/ci/src/index.ts"],
+      "@code-pushup/models": ["./packages/models/src/index.ts"],
+      "@code-pushup/utils": ["./packages/utils/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*"]
+}

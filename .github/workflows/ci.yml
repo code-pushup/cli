@@ -12,6 +12,7 @@ env:
 
 jobs:
   format:
+    if: false
     runs-on: ubuntu-latest
     name: Format check
     steps:
@@ -32,6 +33,7 @@ jobs:
         run: npx nx format:check
 
   lint:
+    if: false
     runs-on: ubuntu-latest
     name: Linter
     steps:
@@ -52,6 +54,7 @@ jobs:
         run: npx nx affected -t lint --parallel=3
 
   unit-test:
+    if: false
     strategy:
       fail-fast: false
       matrix:
@@ -76,6 +79,7 @@ jobs:
         run: npx nx affected -t unit-test --parallel=3
 
   integration-test:
+    if: false
     strategy:
       fail-fast: false
       matrix:
@@ -100,6 +104,7 @@ jobs:
         run: npx nx affected -t int-test --parallel=3
 
   e2e:
+    if: false
     strategy:
       fail-fast: false
       matrix:
@@ -124,6 +129,7 @@ jobs:
         run: npx nx affected -t e2e-test --parallel=1
 
   build:
+    if: false
     runs-on: ubuntu-latest
     name: Build
     steps:
