@@ -1,5 +1,5 @@
 {
-  "name": "eslint-formatter-multi",
+  "name": "@code-pushup/eslint-formatter-multi",
   "version": "0.0.1",
   "private": false,
   "type": "module",
