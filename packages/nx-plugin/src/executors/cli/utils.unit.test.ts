@@ -5,7 +5,24 @@ import {
   mergeExecutorOptions,
   parseAutorunExecutorOnlyOptions,
   parseAutorunExecutorOptions,
+  parsePrintConfigExecutorOptions,
 } from './utils.js';
+
+describe('parsePrintConfigExecutorOptions', () => {
+  it('should provide NO default projectPrefix', () => {
+    expect(parsePrintConfigExecutorOptions({})).toStrictEqual(
+      expect.not.objectContaining({ output: expect.anything() }),
+    );
+  });
+
+  it('should process given projectPrefix', () => {
+    expect(
+      parsePrintConfigExecutorOptions({ output: 'code-pushup.config.json' }),
+    ).toStrictEqual(
+      expect.objectContaining({ output: 'code-pushup.config.json' }),
+    );
+  });
+});
 
 describe('parseAutorunExecutorOnlyOptions', () => {
   it('should provide NO default projectPrefix', () => {
