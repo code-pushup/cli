@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { pluginScoreTargetsSchema } from '@code-pushup/models';
 import { AUDITS, DEFAULT_TS_CONFIG } from './constants.js';
 import type { AuditSlug } from './types.js';
 
@@ -15,6 +16,7 @@ export const typescriptPluginConfigSchema = z.object({
     .array(z.enum(auditSlugs))
     .describe('Filters TypeScript compiler errors by diagnostic codes')
     .optional(),
+  scoreTargets: pluginScoreTargetsSchema,
 });
 
 export type TypescriptPluginOptions = z.input<

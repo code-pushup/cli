@@ -10,8 +10,13 @@ export function lighthousePlugin(
   urls: LighthouseUrls,
   flags?: LighthouseOptions,
 ): PluginConfig {
-  const { skipAudits, onlyAudits, onlyCategories, ...unparsedFlags } =
-    normalizeFlags(flags ?? {});
+  const {
+    skipAudits,
+    onlyAudits,
+    onlyCategories,
+    scoreTargets,
+    ...unparsedFlags
+  } = normalizeFlags(flags ?? {});
 
   const { urls: normalizedUrls, context } = normalizeUrlInput(urls);
 
@@ -40,5 +45,6 @@ export function lighthousePlugin(
       ...unparsedFlags,
     }),
     context,
+    ...(scoreTargets && { scoreTargets }),
   };
 }

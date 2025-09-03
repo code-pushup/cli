@@ -40,7 +40,7 @@ describe('pluginConfigSchema', () => {
     ).not.toThrow();
   });
 
-  it('should accept a valid plugin configuration with a score target', () => {
+  it('should accept a valid plugin configuration with score targets', () => {
     expect(() =>
       pluginConfigSchema.parse({
         slug: 'lighthouse',
@@ -60,7 +60,7 @@ describe('pluginConfigSchema', () => {
             displayValue: '180 ms',
           },
         ],
-        scoreTarget: { 'total-blocking-time': 0.9 },
+        scoreTargets: { 'total-blocking-time': 0.9 },
         audits: [
           { slug: 'first-contentful-paint', title: 'First Contentful Paint' },
           { slug: 'total-blocking-time', title: 'Total Blocking Time' },

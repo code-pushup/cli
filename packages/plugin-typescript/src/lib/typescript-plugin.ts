@@ -17,9 +17,11 @@ const packageJson = createRequire(import.meta.url)(
 export async function typescriptPlugin(
   options?: TypescriptPluginOptions,
 ): Promise<PluginConfig> {
-  const { tsconfig = DEFAULT_TS_CONFIG, onlyAudits } = parseOptions(
-    options ?? {},
-  );
+  const {
+    tsconfig = DEFAULT_TS_CONFIG,
+    onlyAudits,
+    scoreTargets,
+  } = parseOptions(options ?? {});
 
   const filteredAudits = getAudits({ onlyAudits });
   const filteredGroups = getGroups({ onlyAudits });
@@ -40,6 +42,7 @@ export async function typescriptPlugin(
       tsconfig,
       expectedAudits: filteredAudits,
     }),
+    ...(scoreTargets && { scoreTargets }),
   };
 }
 

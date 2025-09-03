@@ -1,6 +1,11 @@
 import { vol } from 'memfs';
 import { describe, expect, it } from 'vitest';
-import type { Group, PluginConfig, RunnerConfig } from '@code-pushup/models';
+import {
+  type Group,
+  type PluginConfig,
+  type RunnerConfig,
+  pluginConfigSchema,
+} from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { jsPackagesPlugin } from './js-packages-plugin.js';
 
@@ -178,5 +183,16 @@ describe('jsPackagesPlugin', () => {
         icon: 'pnpm',
       }),
     );
+  });
+
+  it('should pass scoreTargets to PluginConfig when provided', async () => {
+    const scoreTargets = { 'npm-outdated-dev': 0.9 };
+    const pluginConfig = await jsPackagesPlugin({
+      packageManager: 'npm',
+      scoreTargets,
+    });
+
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+    expect(pluginConfig.scoreTargets).toStrictEqual(scoreTargets);
   });
 });

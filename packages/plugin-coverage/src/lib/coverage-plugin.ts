@@ -65,6 +65,8 @@ export async function coveragePlugin(
     '../../package.json',
   ) as typeof import('../../package.json');
 
+  const scoreTargets = coverageConfig.scoreTargets;
+
   return {
     slug: 'coverage',
     title: 'Code coverage',
@@ -76,5 +78,6 @@ export async function coveragePlugin(
     audits,
     groups: [group],
     runner: await createRunnerConfig(runnerScriptPath, coverageConfig),
+    ...(scoreTargets && { scoreTargets }),
   };
 }

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { pluginConfigSchema } from '@code-pushup/models';
 import { PLUGIN_SLUG, groups } from './constants.js';
 import {
   PLUGIN_DESCRIPTION,
@@ -13,8 +14,24 @@ import {
 } from './utils.js';
 
 vi.mock('./utils.js', () => ({
-  filterAuditsByPluginConfig: vi.fn().mockReturnValue(['mockAudit']),
-  filterGroupsByOnlyAudits: vi.fn().mockReturnValue(['mockGroup']),
+  filterAuditsByPluginConfig: vi.fn().mockReturnValue([
+    {
+      slug: 'mock-audit',
+      title: 'Mock Audit',
+    },
+  ]),
+  filterGroupsByOnlyAudits: vi.fn().mockReturnValue([
+    {
+      slug: 'mock-group',
+      title: 'Mock Group',
+      refs: [
+        {
+          slug: 'mock-audit',
+          weight: 1,
+        },
+      ],
+    },
+  ]),
 }));
 
 vi.mock('./runner/runner.js', () => ({
@@ -67,5 +84,16 @@ describe('jsDocsPlugin', () => {
     jsDocsPlugin(config);
 
     expect(createRunnerFunction).toHaveBeenCalledWith(config);
+  });
+
+  it('should pass scoreTargets to PluginConfig when provided', () => {
+    const scoreTargets = { 'functions-coverage': 0.9 };
+    const pluginConfig = jsDocsPlugin({
+      patterns: ['src/**/*.ts'],
+      scoreTargets,
+    });
+
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+    expect(pluginConfig.scoreTargets).toStrictEqual(scoreTargets);
   });
 });

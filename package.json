@@ -22,7 +22,7 @@
     "node": ">=22.14"
   },
   "dependencies": {
-    "@code-pushup/portal-client": "^0.15.0",
+    "@code-pushup/portal-client": "^0.16.0",
     "@isaacs/cliui": "^8.0.2",
     "@nx/devkit": "21.4.1",
     "@poppinss/cliui": "6.4.1",

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { pluginScoreTargetsSchema } from '@code-pushup/models';
 
 export const coverageTypeSchema = z.enum(['function', 'branch', 'line']);
 export type CoverageType = z.infer<typeof coverageTypeSchema>;
@@ -50,14 +51,7 @@ export const coveragePluginConfigSchema = z.object({
     .describe(
       'Path to all code coverage report files. Only LCOV format is supported for now.',
     ),
-  perfectScoreThreshold: z
-    .number()
-    .gt(0)
-    .max(1)
-    .describe(
-      'Score will be 1 (perfect) for this coverage and above. Score range is 0 - 1.',
-    )
-    .optional(),
+  scoreTargets: pluginScoreTargetsSchema,
 });
 export type CoveragePluginConfig = z.input<typeof coveragePluginConfigSchema>;
 export type FinalCoveragePluginConfig = z.infer<

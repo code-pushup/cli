@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { type IssueSeverity, issueSeveritySchema } from '@code-pushup/models';
+import {
+  type IssueSeverity,
+  issueSeveritySchema,
+  pluginScoreTargetsSchema,
+} from '@code-pushup/models';
 import { defaultAuditLevelMapping } from './constants.js';
 
 export const dependencyGroups = ['prod', 'dev', 'optional'] as const;
@@ -74,6 +78,7 @@ export const jsPackagesPluginConfigSchema = z.object({
       'Mapping of audit levels to issue severity. Custom mapping or overrides may be entered manually, otherwise has a default preset.',
     ),
   packageJsonPath: packageJsonPathSchema,
+  scoreTargets: pluginScoreTargetsSchema,
 });
 
 export type JSPackagesPluginConfig = z.input<
@@ -81,5 +86,5 @@ export type JSPackagesPluginConfig = z.input<
 >;
 
 export type FinalJSPackagesPluginConfig = Required<
-  z.infer<typeof jsPackagesPluginConfigSchema>
+  Omit<z.infer<typeof jsPackagesPluginConfigSchema>, 'scoreTargets'>
 >;

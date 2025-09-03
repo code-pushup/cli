@@ -120,4 +120,14 @@ describe('lighthousePlugin-config-object', () => {
       }),
     );
   });
+
+  it('should pass scoreTargets to PluginConfig when provided', () => {
+    const scoreTargets = { 'first-contentful-paint': 0.9 };
+    const pluginConfig = lighthousePlugin('https://code-pushup-portal.com', {
+      scoreTargets,
+    });
+
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+    expect(pluginConfig.scoreTargets).toStrictEqual(scoreTargets);
+  });
 });

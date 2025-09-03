@@ -70,4 +70,13 @@ describe('typescriptPluginConfigSchema', () => {
       String.raw`Invalid option: expected one of \"syntax-errors\"|\"semantic-errors\"|`,
     );
   });
+
+  it('should accept valid score targets', () => {
+    expect(() =>
+      typescriptPluginConfigSchema.parse({
+        tsconfig,
+        scoreTargets: { 'no-implicit-any-errors': 0.9 },
+      }),
+    ).not.toThrow();
+  });
 });

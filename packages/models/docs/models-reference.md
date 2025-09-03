@@ -1290,21 +1290,21 @@ _(\*) Required._
 
 _Object containing the following properties:_
 
-| Property          | Description                                                                                                      | Type                                                                                                                       |
-| :---------------- | :--------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------- |
-| `packageName`     | NPM package name                                                                                                 | `string`                                                                                                                   |
-| `version`         | NPM version of the package                                                                                       | `string`                                                                                                                   |
-| **`title`** (\*)  | Descriptive name                                                                                                 | `string` (_max length: 256_)                                                                                               |
-| `description`     | Description (markdown)                                                                                           | `string` (_max length: 65536_)                                                                                             |
-| `docsUrl`         | Plugin documentation site                                                                                        | `string` (_url_) (_optional_) _or_ `''`                                                                                    |
-| `isSkipped`       |                                                                                                                  | `boolean`                                                                                                                  |
-| **`slug`** (\*)   | Unique plugin slug within core config                                                                            | [Slug](#slug)                                                                                                              |
-| **`icon`** (\*)   | Icon from VSCode Material Icons extension                                                                        | [MaterialIcon](#materialicon)                                                                                              |
-| **`runner`** (\*) |                                                                                                                  | [RunnerConfig](#runnerconfig) _or_ [RunnerFunction](#runnerfunction)                                                       |
-| **`audits`** (\*) | List of audits maintained in a plugin                                                                            | _Array of at least 1 [Audit](#audit) items_                                                                                |
-| `groups`          | List of groups                                                                                                   | _Array of [Group](#group) items_                                                                                           |
-| `scoreTargets`    | Score targets that trigger a perfect score. Number for all audits or record { slug: target } for specific audits | `number` (_≥0, ≤1_) (_optional_) _or_ _Object with dynamic keys of type_ `string` _and values of type_ `number` (_≥0, ≤1_) |
-| `context`         | Plugin-specific context data for helpers                                                                         | [PluginContext](#plugincontext)                                                                                            |
+| Property          | Description                                                                                                      | Type                                                                 |
+| :---------------- | :--------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------- |
+| `packageName`     | NPM package name                                                                                                 | `string`                                                             |
+| `version`         | NPM version of the package                                                                                       | `string`                                                             |
+| **`title`** (\*)  | Descriptive name                                                                                                 | `string` (_max length: 256_)                                         |
+| `description`     | Description (markdown)                                                                                           | `string` (_max length: 65536_)                                       |
+| `docsUrl`         | Plugin documentation site                                                                                        | `string` (_url_) (_optional_) _or_ `''`                              |
+| `isSkipped`       |                                                                                                                  | `boolean`                                                            |
+| **`slug`** (\*)   | Unique plugin slug within core config                                                                            | [Slug](#slug)                                                        |
+| **`icon`** (\*)   | Icon from VSCode Material Icons extension                                                                        | [MaterialIcon](#materialicon)                                        |
+| **`runner`** (\*) |                                                                                                                  | [RunnerConfig](#runnerconfig) _or_ [RunnerFunction](#runnerfunction) |
+| **`audits`** (\*) | List of audits maintained in a plugin                                                                            | _Array of at least 1 [Audit](#audit) items_                          |
+| `groups`          | List of groups                                                                                                   | _Array of [Group](#group) items_                                     |
+| `scoreTargets`    | Score targets that trigger a perfect score. Number for all audits or record { slug: target } for specific audits | [PluginScoreTargets](#pluginscoretargets)                            |
+| `context`         | Plugin-specific context data for helpers                                                                         | [PluginContext](#plugincontext)                                      |
 
 _(\*) Required._
 
@@ -1355,6 +1355,16 @@ _Object containing the following properties:_
 | `groups`            |                                           | _Array of [Group](#group) items_                        |
 
 _(\*) Required._
+
+## PluginScoreTargets
+
+Score targets that trigger a perfect score. Number for all audits or record { slug: target } for specific audits
+
+_Union of the following possible types:_
+
+- `number` (_≥0, ≤1_) (_optional_)
+- _Object with dynamic keys of type_ `string` _and values of type_ `number` (_≥0, ≤1_)
+  (_optional_)
 
 ## Report
 
