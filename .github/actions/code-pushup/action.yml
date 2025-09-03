@@ -15,7 +15,8 @@ runs:
       shell: bash
       working-directory: .github/actions/code-pushup
     - name: Run Node script
-      run: npx tsx --tsconfig .github/actions/code-pushup/tsconfig.json .github/actions/code-pushup/src/runner.ts
+      run: npx tsx .github/actions/code-pushup/src/runner.ts
       shell: bash
       env:
+        TSX_TSCONFIG_PATH: .github/actions/code-pushup/tsconfig.json
         GH_TOKEN: ${{ inputs.token }}
