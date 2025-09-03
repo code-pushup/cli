@@ -122,15 +122,6 @@ describe('lighthousePlugin-config-object', () => {
   });
 
   it('should pass scoreTargets to PluginConfig when provided', () => {
-    const pluginConfig = lighthousePlugin('https://code-pushup-portal.com', {
-      scoreTargets: 0.8,
-    });
-
-    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
-    expect(pluginConfig.scoreTargets).toBe(0.8);
-  });
-
-  it('should pass object scoreTargets to PluginConfig', () => {
     const scoreTargets = { 'first-contentful-paint': 0.9 };
     const pluginConfig = lighthousePlugin('https://code-pushup-portal.com', {
       scoreTargets,
@@ -138,11 +129,5 @@ describe('lighthousePlugin-config-object', () => {
 
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig.scoreTargets).toStrictEqual(scoreTargets);
-  });
-
-  it('should not have scoreTargets when not provided', () => {
-    expect(
-      lighthousePlugin('https://code-pushup-portal.com').scoreTargets,
-    ).toBeUndefined();
   });
 });

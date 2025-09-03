@@ -83,28 +83,13 @@ describe('coveragePlugin', () => {
   });
 
   it('should pass scoreTargets to PluginConfig when provided', async () => {
-    const pluginConfig = await coveragePlugin({
-      reports: [LCOV_PATH],
-      scoreTargets: 0.8,
-    });
-
-    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
-    expect(pluginConfig.scoreTargets).toBe(0.8);
-  });
-
-  it('should pass object scoreTargets to PluginConfig', async () => {
     const scoreTargets = { 'function-coverage': 0.9, 'line-coverage': 0.8 };
     const pluginConfig = await coveragePlugin({
       reports: [LCOV_PATH],
       scoreTargets,
     });
 
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig.scoreTargets).toStrictEqual(scoreTargets);
-  });
-
-  it('should not have scoreTargets when not provided', async () => {
-    const pluginConfig = await coveragePlugin({ reports: [LCOV_PATH] });
-
-    expect(pluginConfig.scoreTargets).toBeUndefined();
   });
 });

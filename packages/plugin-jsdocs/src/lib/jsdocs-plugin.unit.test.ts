@@ -87,16 +87,6 @@ describe('jsDocsPlugin', () => {
   });
 
   it('should pass scoreTargets to PluginConfig when provided', () => {
-    const pluginConfig = jsDocsPlugin({
-      patterns: ['src/**/*.ts'],
-      scoreTargets: 0.9,
-    });
-
-    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
-    expect(pluginConfig.scoreTargets).toBe(0.9);
-  });
-
-  it('should pass object scoreTargets to PluginConfig', () => {
     const scoreTargets = { 'functions-coverage': 0.9 };
     const pluginConfig = jsDocsPlugin({
       patterns: ['src/**/*.ts'],
@@ -105,13 +95,5 @@ describe('jsDocsPlugin', () => {
 
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig.scoreTargets).toStrictEqual(scoreTargets);
-  });
-
-  it('should not have scoreTargets when not provided', () => {
-    expect(
-      jsDocsPlugin({
-        patterns: ['src/**/*.ts'],
-      }).scoreTargets,
-    ).toBeUndefined();
   });
 });

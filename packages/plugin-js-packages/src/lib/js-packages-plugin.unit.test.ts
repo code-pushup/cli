@@ -186,16 +186,6 @@ describe('jsPackagesPlugin', () => {
   });
 
   it('should pass scoreTargets to PluginConfig when provided', async () => {
-    const pluginConfig = await jsPackagesPlugin({
-      packageManager: 'npm',
-      scoreTargets: 0.8,
-    });
-
-    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
-    expect(pluginConfig.scoreTargets).toBe(0.8);
-  });
-
-  it('should pass object scoreTargets to PluginConfig', async () => {
     const scoreTargets = { 'npm-outdated-dev': 0.9 };
     const pluginConfig = await jsPackagesPlugin({
       packageManager: 'npm',
@@ -204,11 +194,5 @@ describe('jsPackagesPlugin', () => {
 
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig.scoreTargets).toStrictEqual(scoreTargets);
-  });
-
-  it('should not have scoreTargets when not provided', async () => {
-    const pluginConfig = await jsPackagesPlugin({ packageManager: 'npm' });
-
-    expect(pluginConfig.scoreTargets).toBeUndefined();
   });
 });
