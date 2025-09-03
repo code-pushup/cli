@@ -199,7 +199,7 @@ function categoryToGQL(category: CategoryConfig): PortalCategory {
     slug: category.slug,
     title: category.title,
     description: category.description,
-    ...(category.scoreTarget && { scoreTarget: category.scoreTarget }),
+    ...(category.scoreTarget != null && { scoreTarget: category.scoreTarget }),
     refs: category.refs.map(ref => ({
       plugin: ref.plugin,
       type: categoryRefTypeToGQL(ref.type),

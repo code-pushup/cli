@@ -62,7 +62,7 @@ function transformGQLCategory(category: CategoryFragment): CategoryConfig {
     slug: category.slug,
     title: category.title,
     ...(category.description && { description: category.description }),
-    ...(category.scoreTarget && { scoreTarget: category.scoreTarget }),
+    ...(category.scoreTarget != null && { scoreTarget: category.scoreTarget }),
     refs: category.refs.map(
       ({ target, weight }): CategoryRef => ({
         type: lowercase(target.__typename),
