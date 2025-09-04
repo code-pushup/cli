@@ -81,7 +81,7 @@ function createAnnotationsFromIssues(issues: SourceFileIssue[]): void {
   }
 }
 
-async function createGitHubApiClient(): Promise<ProviderAPIClient> {
+function createGitHubApiClient(): ProviderAPIClient {
   const token = process.env.GH_TOKEN;
 
   if (!token) {
@@ -132,7 +132,7 @@ async function run(): Promise<void> {
 
     const gitRefs = parseGitRefs();
 
-    const apiClient = await createGitHubApiClient();
+    const apiClient = createGitHubApiClient();
 
     const result = await runInCI(gitRefs, apiClient, options);
 
