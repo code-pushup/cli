@@ -90,16 +90,13 @@ We use nx release command to create releases for GitHub as well as publish to np
 **Preconditions:**
 
 - `npm login` - Only users with write access to [code-pushup](https://www.npmjs.com/org/code-pushup) can publish
+- (optional) `GITHUB_TOKEN=ghp_...` in `.env` - [Personal access token](https://github.com/settings/personal-access-tokens/new) to create a GitHub release.
 
 **Steps:**
 
 - `git checkout main`, `git pull`
 - (recommended optional) `npx nx release --dryRun`
 - `npx nx release` and confirm publish prompt
-
-**Env variable in `.env`:**
-
-- `GITHUB_TOKEN=ghp_...` - to create a GitHub Release
 
 ## Project tags
 
