@@ -83,6 +83,20 @@ Therefore, PRs are merged via one of two strategies:
 - rebase - branch cannot contain merge commits ([rebase instead of merge](https://www.atlassian.com/git/tutorials/merging-vs-rebasing)),
 - squash - single commit whose message is the PR title (should be in conventional commit format).
 
+## Releases
+
+We use nx release command to create releases for GitHub as well as publish to npm.
+
+**Steps:**
+
+- `git checkout main`, `git pull`
+- (recommended optional) `npx nx release --dryRun`
+- `npx nx release` and confirm publish prompt
+
+**Env variable in `.env`:**
+
+- `GITHUB_TOKEN=ghp_...` - to create a GitHub Release
+
 ## Project tags
 
 [Nx tags](https://nx.dev/core-features/enforce-module-boundaries) are used to enforce module boundaries in the project graph when linting.
