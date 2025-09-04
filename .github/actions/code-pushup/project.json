@@ -1,0 +1,8 @@
+{
+  "name": "local-action",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": ".github/actions/code-pushup/src",
+  "projectType": "application",
+  "targets": {},
+  "tags": ["type:app"]
+}

@@ -49,6 +49,8 @@
     "zod": "^4.0.5"
   },
   "devDependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.1",
     "@beaussan/nx-knip": "^0.0.5-15",
     "@code-pushup/eslint-config": "^0.14.2",
     "@commitlint/cli": "^19.5.0",

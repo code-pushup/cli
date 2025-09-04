@@ -39,6 +39,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run Code PushUp action
-        uses: code-pushup/github-action@v0
+        uses: ./.github/actions/code-pushup
         with:
-          bin: npx nx code-pushup --nx-bail  --
+          token: ${{ secrets.GITHUB_TOKEN }}
