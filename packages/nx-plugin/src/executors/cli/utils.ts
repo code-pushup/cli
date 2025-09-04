@@ -7,6 +7,7 @@ import type { NormalizedExecutorContext } from '../internal/context.js';
 import type {
   AutorunCommandExecutorOnlyOptions,
   AutorunCommandExecutorOptions,
+  PrintConfigCommandExecutorOptions,
 } from './schema.js';
 
 export function parseAutorunExecutorOnlyOptions(
@@ -17,6 +18,15 @@ export function parseAutorunExecutorOnlyOptions(
     ...(projectPrefix && { projectPrefix }),
     ...(dryRun != null && { dryRun }),
     ...(onlyPlugins && { onlyPlugins }),
+  };
+}
+
+export function parsePrintConfigExecutorOptions(
+  options: Partial<PrintConfigCommandExecutorOptions>,
+): PrintConfigCommandExecutorOptions {
+  const { output } = options;
+  return {
+    ...(output && { output }),
   };
 }
 
@@ -33,6 +43,7 @@ export function parseAutorunExecutorOptions(
   );
   const hasApiToken = uploadCfg?.apiKey != null;
   return {
+    ...parsePrintConfigExecutorOptions(options),
     ...parseAutorunExecutorOnlyOptions(options),
     ...globalConfig(options, normalizedContext),
     persist: persistConfig({ projectPrefix, ...persist }, normalizedContext),

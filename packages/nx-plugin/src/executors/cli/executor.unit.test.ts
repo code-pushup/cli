@@ -80,11 +80,12 @@ describe('runAutorunExecutor', () => {
 
   it('should process executorOptions', async () => {
     const output = await runAutorunExecutor(
-      { persist: { filename: 'REPORT' } },
+      { output: 'code-pushup.config.json', persist: { filename: 'REPORT' } },
       executorContext('testing-utils'),
     );
     expect(output.success).toBe(true);
-    expect(output.command).toMatch('--persist.filename="REPORT"');
+    expect(output.command).toContain('--output="code-pushup.config.json"');
+    expect(output.command).toContain('--persist.filename="REPORT"');
   });
 
   it('should create command from context and options if no api key is set', async () => {

@@ -116,6 +116,31 @@ describe('executor command', () => {
     ).rejects.toThrow('');
   });
 
+  it('should execute print-config executor with output', async () => {
+    const cwd = path.join(testFileDir, 'execute-print-config-command');
+    await addTargetToWorkspace(tree, { cwd, project });
+
+    const { stdout, code } = await executeProcess({
+      command: 'npx',
+      args: [
+        'nx',
+        'run',
+        `${project}:code-pushup`,
+        'print-config',
+        '--output=code-pushup.config.json',
+      ],
+      cwd,
+    });
+
+    expect(code).toBe(0);
+    const cleanStdout = removeColorCodes(stdout);
+    expect(cleanStdout).toContain('nx run my-lib:code-pushup print-config');
+
+    await expect(
+      readJsonFile(path.join(cwd, 'code-pushup.config.json')),
+    ).resolves.not.toThrow();
+  });
+
   it('should execute print-config executor with api key', async () => {
     const cwd = path.join(testFileDir, 'execute-print-config-command');
     await addTargetToWorkspace(tree, { cwd, project });
