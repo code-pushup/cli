@@ -12,10 +12,15 @@ export type AutorunCommandExecutorOnlyOptions = ProjectExecutorOnlyOptions &
   CollectExecutorOnlyOptions &
   GeneralExecutorOnlyOptions;
 
+export type AutorunCommandExecutorPersistConfig = Required<
+  Pick<PersistConfig, 'outputDir'>
+> &
+  Partial<Omit<PersistConfig, 'outputDir'>>;
+
 export type AutorunCommandExecutorOptions = Partial<
   {
-    upload: Partial<UploadConfig>;
-    persist: Partial<PersistConfig>;
+    upload?: Partial<UploadConfig>;
+    persist: AutorunCommandExecutorPersistConfig;
   } & AutorunCommandExecutorOnlyOptions &
     GlobalExecutorOptions
 > &

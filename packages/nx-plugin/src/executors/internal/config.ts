@@ -1,37 +1,26 @@
-import * as path from 'node:path';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
+import { AutorunCommandExecutorPersistConfig } from '../cli/schema';
 import { parseEnv } from './env.js';
-import type {
-  BaseNormalizedExecutorContext,
-  GlobalExecutorOptions,
-  ProjectExecutorOnlyOptions,
-} from './types.js';
+import type { GlobalExecutorOptions } from './types.js';
 
 export function globalConfig(
   options: Partial<GlobalExecutorOptions & Record<string, unknown>>,
-  context: BaseNormalizedExecutorContext,
 ): GlobalExecutorOptions {
-  const { projectConfig } = context;
-  const { root: projectRoot = '' } = projectConfig ?? {};
   // For better debugging use `--verbose --no-progress` as default
   const { verbose, progress, config } = options;
   return {
     verbose: !!verbose,
     progress: !!progress,
-    config: config ?? path.join(projectRoot, 'code-pushup.config.ts'),
+    config: config ?? '{projectRoot}/code-pushup.config.ts',
   };
 }
 
 export function persistConfig(
-  options: Partial<PersistConfig & ProjectExecutorOnlyOptions>,
-  context: BaseNormalizedExecutorContext,
-): Partial<PersistConfig> {
-  const { projectConfig, workspaceRoot } = context;
-
-  const { name: projectName = '' } = projectConfig ?? {};
+  options: Partial<PersistConfig>,
+): AutorunCommandExecutorPersistConfig {
   const {
     format,
-    outputDir = path.join(workspaceRoot, '.code-pushup', projectName), // always in <root>/.code-pushup/<project-name>,
+    outputDir = '{projectRoot}/.code-pushup',
     filename,
   } = options;
 
@@ -43,27 +32,21 @@ export function persistConfig(
 }
 
 export function uploadConfig(
-  options: Partial<UploadConfig & ProjectExecutorOnlyOptions>,
-  context: BaseNormalizedExecutorContext,
+  options: Partial<UploadConfig>,
 ): Partial<UploadConfig> {
-  const { projectConfig, workspaceRoot } = context;
-
-  const { name: projectName } = projectConfig ?? {};
-  const { projectPrefix, server, apiKey, organization, project, timeout } =
-    options;
-  const applyPrefix = workspaceRoot === '.';
-  const prefix = projectPrefix ? `${projectPrefix}-` : '';
-  return {
-    ...(projectName
-      ? {
-          project: applyPrefix ? `${prefix}${projectName}` : projectName,
-        }
-      : {}),
+  const { server, apiKey, organization, project, timeout } = {
+    ...options,
     ...parseEnv(process.env),
+  };
+  return {
     ...Object.fromEntries(
-      Object.entries({ server, apiKey, organization, project, timeout }).filter(
-        ([_, v]) => v !== undefined,
-      ),
+      Object.entries({
+        server,
+        apiKey,
+        organization,
+        project,
+        timeout,
+      }).filter(([_, v]) => v !== undefined),
     ),
   };
 }

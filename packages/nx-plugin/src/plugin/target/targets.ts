@@ -4,6 +4,7 @@ import type {
   CreateNodesOptions,
   ProjectConfigurationWithName,
 } from '../types.js';
+import { getPrefixedProjectName } from '../utils';
 import { createConfigurationTarget } from './configuration-target.js';
 import { CODE_PUSHUP_CONFIG_REGEX } from './constants.js';
 import { createExecutorTarget } from './executor-target.js';
@@ -21,9 +22,20 @@ export async function createTargets(normalizedContext: CreateTargetsOptions) {
     projectPrefix,
   } = normalizedContext.createOptions;
   const rootFiles = await readdir(normalizedContext.projectRoot);
+
+  const isRoot = normalizedContext.projectRoot === '.';
+
   return rootFiles.some(filename => filename.match(CODE_PUSHUP_CONFIG_REGEX))
     ? {
-        [targetName]: createExecutorTarget({ bin, projectPrefix }),
+        [targetName]: createExecutorTarget({
+          bin,
+          upload: {
+            project: getPrefixedProjectName({
+              isRoot,
+              projectPrefix,
+            }),
+          },
+        }),
       }
     : // if NO code-pushup.config.*.(ts|js|mjs) is present return configuration target
       {

@@ -1,5 +1,6 @@
 import type { TargetConfiguration } from '@nx/devkit';
 import type { RunCommandsOptions } from 'nx/src/executors/run-commands/run-commands.impl';
+import { parseAutorunExecutorOptions } from '../../executors/cli/utils';
 import { objectToCliArgs } from '../../executors/internal/cli.js';
 import { PACKAGE_NAME } from '../../internal/constants.js';
 import { CP_TARGET_NAME } from '../constants.js';

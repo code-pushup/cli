@@ -4,9 +4,8 @@ import {
   createCliCommandObject,
   createCliCommandString,
 } from '../internal/cli.js';
-import { normalizeContext } from '../internal/context.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
-import { mergeExecutorOptions, parseAutorunExecutorOptions } from './utils.js';
+import { mergeExecutorOptions } from './utils.js';
 
 export type ExecutorOutput = {
   success: boolean;
@@ -18,19 +17,18 @@ export default async function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
-  const normalizedContext = normalizeContext(context);
-  const mergedOptions = mergeExecutorOptions(
+  const { dryRun, verbose, command, ...opts } = mergeExecutorOptions(
     context.target?.options,
     terminalAndExecutorOptions,
   );
-  const cliArgumentObject = parseAutorunExecutorOptions(
-    mergedOptions,
-    normalizedContext,
-  );
-  const { dryRun, verbose, command } = mergedOptions;
+  const commandArgs = {
+    ...opts,
+    dryRun,
+    verbose,
+  };
   const commandString = createCliCommandString({
     command,
-    args: cliArgumentObject,
+    args: commandArgs,
   });
   if (verbose) {
     logger.info(`Run CLI executor ${command ?? ''}`);
@@ -41,7 +39,7 @@ export default async function runAutorunExecutor(
   } else {
     try {
       await executeProcess({
-        ...createCliCommandObject({ command, args: cliArgumentObject }),
+        ...createCliCommandObject({ command, args: commandArgs }),
         ...(context.cwd ? { cwd: context.cwd } : {}),
       });
     } catch (error) {

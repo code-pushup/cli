@@ -3,7 +3,6 @@ import {
   persistConfig,
   uploadConfig,
 } from '../internal/config.js';
-import type { NormalizedExecutorContext } from '../internal/context.js';
 import type {
   AutorunCommandExecutorOnlyOptions,
   AutorunCommandExecutorOptions,
@@ -32,21 +31,17 @@ export function parsePrintConfigExecutorOptions(
 
 export function parseAutorunExecutorOptions(
   options: Partial<AutorunCommandExecutorOptions>,
-  normalizedContext: NormalizedExecutorContext,
 ): AutorunCommandExecutorOptions {
-  const { projectPrefix, persist, upload, command } = options;
+  const { persist, upload, command } = options;
   const needsUploadParams =
     command === 'upload' || command === 'autorun' || command === undefined;
-  const uploadCfg = uploadConfig(
-    { projectPrefix, ...upload },
-    normalizedContext,
-  );
+  const uploadCfg = uploadConfig(upload ?? {});
   const hasApiToken = uploadCfg?.apiKey != null;
   return {
     ...parsePrintConfigExecutorOptions(options),
     ...parseAutorunExecutorOnlyOptions(options),
-    ...globalConfig(options, normalizedContext),
-    persist: persistConfig({ projectPrefix, ...persist }, normalizedContext),
+    ...globalConfig(options),
+    persist: persistConfig(persist ?? {}),
     // @TODO This is a hack to avoid validation errors of upload config for commands that dont need it.
     // Fix: use utils and execute the core logic directly
     // Blocked by Nx plugins can't compile to es6
@@ -76,6 +71,7 @@ export function mergeExecutorOptions(
     ...(targetOptions?.persist || cliOptions?.persist
       ? {
           persist: {
+            outputDir: '.code-pushup',
             ...targetOptions?.persist,
             ...cliOptions?.persist,
           },

@@ -63,3 +63,12 @@ export async function normalizedCreateNodesV2Context(
     );
   }
 }
+
+export function getPrefixedProjectName(options: {
+  isRoot: boolean;
+  projectPrefix?: string;
+}): string {
+  const { projectPrefix, isRoot } = options;
+  const prefix = projectPrefix ? `${projectPrefix}-` : '';
+  return isRoot ? `${prefix}{projectName}` : '{projectName}';
+}
