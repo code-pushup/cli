@@ -22,7 +22,6 @@
     "node": ">=22.14"
   },
   "dependencies": {
-    "@code-pushup/portal-client": "^0.16.0",
     "@isaacs/cliui": "^8.0.2",
     "@nx/devkit": "21.4.1",
     "@poppinss/cliui": "6.4.1",
@@ -49,10 +48,11 @@
     "zod": "^4.0.5"
   },
   "devDependencies": {
+    "@code-pushup/portal-client": "^0.16.0",
     "@beaussan/nx-knip": "^0.0.5-15",
-    "@code-pushup/cli": "^0.78.0",
+    "@code-pushup/cli": "^0.79.0",
     "@code-pushup/eslint-config": "^0.14.2",
-    "@code-pushup/nx-plugin": "https://pkg.pr.new/code-pushup/cli/@code-pushup/nx-plugin@1091",
+    "@code-pushup/nx-plugin": "^0.79.0",
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
     "@commitlint/config-nx-scopes": "^19.5.0",
