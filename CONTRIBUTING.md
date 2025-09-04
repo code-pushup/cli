@@ -87,6 +87,10 @@ Therefore, PRs are merged via one of two strategies:
 
 We use nx release command to create releases for GitHub as well as publish to npm.
 
+**Preconditions:**
+
+- `npm login` - Only users with write access to [code-pushup](https://www.npmjs.com/org/code-pushup) can publish
+
 **Steps:**
 
 - `git checkout main`, `git pull`
