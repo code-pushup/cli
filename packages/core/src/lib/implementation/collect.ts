@@ -1,17 +1,16 @@
 import { createRequire } from 'node:module';
-import {
-  type CacheConfigObject,
-  type CoreConfig,
-  DEFAULT_PERSIST_OUTPUT_DIR,
-  type PersistConfig,
-  type Report,
+import type {
+  CacheConfigObject,
+  CoreConfig,
+  PersistConfig,
+  Report,
 } from '@code-pushup/models';
 import { calcDuration, getLatestCommit } from '@code-pushup/utils';
 import type { GlobalOptions } from '../types.js';
 import { executePlugins } from './execute-plugin.js';
 
 export type CollectOptions = Pick<CoreConfig, 'plugins' | 'categories'> & {
-  persist?: Required<Pick<PersistConfig, 'outputDir'>>;
+  persist?: PersistConfig;
   cache: CacheConfigObject;
 } & Partial<GlobalOptions>;
 
@@ -20,16 +19,12 @@ export type CollectOptions = Pick<CoreConfig, 'plugins' | 'categories'> & {
  * @param options
  */
 export async function collect(options: CollectOptions): Promise<Report> {
-  const { plugins, categories, persist, cache, ...otherOptions } = options;
+  const { plugins, categories, persist = {}, cache, ...otherOptions } = options;
   const date = new Date().toISOString();
   const start = performance.now();
   const commit = await getLatestCommit();
   const pluginOutputs = await executePlugins(
-    {
-      plugins,
-      persist: { outputDir: DEFAULT_PERSIST_OUTPUT_DIR, ...persist },
-      cache,
-    },
+    { plugins, persist, cache },
     otherOptions,
   );
   const packageJson = createRequire(import.meta.url)(

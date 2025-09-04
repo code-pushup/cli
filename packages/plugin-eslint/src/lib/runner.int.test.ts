@@ -7,7 +7,7 @@ import {
   type Audit,
   type AuditOutput,
   type AuditOutputs,
-  DEFAULT_PERSIST_OUTPUT_DIR,
+  DEFAULT_PERSIST_CONFIG,
   type Issue,
 } from '@code-pushup/models';
 import { osAgnosticAuditOutputs } from '@code-pushup/test-utils';
@@ -50,9 +50,9 @@ describe('executeRunner', () => {
 
   it('should execute ESLint and create audit results for React application', async () => {
     const args = await prepareRunnerArgs('eslint.config.js');
-    const runnerFn = await createRunnerFunction(args);
+    const runnerFn = createRunnerFunction(args);
     const res = (await runnerFn({
-      outputDir: DEFAULT_PERSIST_OUTPUT_DIR,
+      persist: DEFAULT_PERSIST_CONFIG,
     })) as AuditOutputs;
     expect(osAgnosticAuditOutputs(res)).toMatchSnapshot();
   });
@@ -61,11 +61,11 @@ describe('executeRunner', () => {
     'should execute runner with custom config using @code-pushup/eslint-config',
     async () => {
       const eslintTarget = 'code-pushup.eslint.config.mjs';
-      const runnerFn = await createRunnerFunction({
+      const runnerFn = createRunnerFunction({
         ...(await prepareRunnerArgs(eslintTarget)),
       });
 
-      const json = await runnerFn({ outputDir: DEFAULT_PERSIST_OUTPUT_DIR });
+      const json = await runnerFn({ persist: DEFAULT_PERSIST_CONFIG });
       // expect warnings from unicorn/filename-case rule from default config
       expect(json).toContainEqual(
         expect.objectContaining<Partial<AuditOutput>>({

@@ -7,6 +7,7 @@ import type {
 } from '../internal/types.js';
 
 export type PrintConfigOptions = { output?: string };
+export type PrintConfigCommandExecutorOptions = PrintConfigOptions;
 export type AutorunCommandExecutorOnlyOptions = ProjectExecutorOnlyOptions &
   CollectExecutorOnlyOptions &
   GeneralExecutorOnlyOptions;

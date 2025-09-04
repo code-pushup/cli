@@ -20,7 +20,7 @@ describe('coveragePluginConfigSchema', () => {
           command: 'npx nx run-many',
           args: ['-t', 'test', '--coverage'],
         },
-        perfectScoreThreshold: 0.85,
+        scoreTargets: 0.85,
       } satisfies CoveragePluginConfig),
     ).not.toThrow();
   });
@@ -29,6 +29,24 @@ describe('coveragePluginConfigSchema', () => {
     expect(() =>
       coveragePluginConfigSchema.parse({
         reports: ['coverage/cli/lcov.info'],
+      } satisfies CoveragePluginConfig),
+    ).not.toThrow();
+  });
+
+  it('accepts number scoreTargets', () => {
+    expect(() =>
+      coveragePluginConfigSchema.parse({
+        reports: ['coverage/cli/lcov.info'],
+        scoreTargets: 0.8,
+      } satisfies CoveragePluginConfig),
+    ).not.toThrow();
+  });
+
+  it('accepts object scoreTargets', () => {
+    expect(() =>
+      coveragePluginConfigSchema.parse({
+        reports: ['coverage/cli/lcov.info'],
+        scoreTargets: { 'function-coverage': 0.9 },
       } satisfies CoveragePluginConfig),
     ).not.toThrow();
   });
@@ -86,12 +104,12 @@ describe('coveragePluginConfigSchema', () => {
     ).toThrow('invalid_type');
   });
 
-  it('throws for invalid score threshold', () => {
+  it('throws for invalid score targets', () => {
     expect(() =>
       coveragePluginConfigSchema.parse({
         coverageTypes: ['line'],
         reports: ['coverage/cli/lcov.info'],
-        perfectScoreThreshold: 1.1,
+        scoreTargets: 1.1,
       } satisfies CoveragePluginConfig),
     ).toThrow('too_big');
   });

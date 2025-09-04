@@ -3,8 +3,8 @@ import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
   type AuditOutputs,
-  type PersistConfig,
   type PluginConfig,
+  type RunnerArgs,
   type RunnerConfig,
   type RunnerFunction,
   auditOutputsSchema,
@@ -15,9 +15,9 @@ import {
   executeProcess,
   fileExists,
   isVerbose,
-  objectToCliArgs,
   readJsonFile,
   removeDirectoryIfExists,
+  runnerArgsToEnv,
   ui,
 } from '@code-pushup/utils';
 import { normalizeAuditOutputs } from '../normalize.js';
@@ -33,14 +33,14 @@ export type ValidatedRunnerResult = Omit<RunnerResult, 'audits'> & {
 };
 
 export async function executeRunnerConfig(
-  cfg: RunnerConfig,
-  config: Required<Pick<PersistConfig, 'outputDir'>>,
+  config: RunnerConfig,
+  args: RunnerArgs,
 ): Promise<RunnerResult> {
-  const { args, command, outputFile, outputTransform } = cfg;
+  const { outputFile, outputTransform } = config;
 
   const { duration, date } = await executeProcess({
-    command,
-    args: [...(args ?? []), ...objectToCliArgs(config)],
+    command: config.command,
+    args: config.args,
     observer: {
       onStdout: stdout => {
         if (isVerbose()) {
@@ -49,6 +49,7 @@ export async function executeRunnerConfig(
       },
       onStderr: stderr => ui().logger.error(stderr),
     },
+    env: { ...process.env, ...runnerArgsToEnv(args) },
   });
 
   // read process output from the file system and parse it
@@ -69,13 +70,13 @@ export async function executeRunnerConfig(
 
 export async function executeRunnerFunction(
   runner: RunnerFunction,
-  config: PersistConfig,
+  args: RunnerArgs,
 ): Promise<RunnerResult> {
   const date = new Date().toISOString();
   const start = performance.now();
 
   // execute plugin runner
-  const audits = await runner(config);
+  const audits = await runner(args);
 
   // create runner result
   return {
@@ -100,13 +101,13 @@ export class AuditOutputsMissingAuditError extends Error {
 
 export async function executePluginRunner(
   pluginConfig: Pick<PluginConfig, 'audits' | 'runner'>,
-  persist: Required<Pick<PersistConfig, 'outputDir'>>,
+  args: RunnerArgs,
 ): Promise<Omit<RunnerResult, 'audits'> & { audits: AuditOutputs }> {
   const { audits: pluginConfigAudits, runner } = pluginConfig;
   const runnerResult: RunnerResult =
     typeof runner === 'object'
-      ? await executeRunnerConfig(runner, persist)
-      : await executeRunnerFunction(runner, persist);
+      ? await executeRunnerConfig(runner, args)
+      : await executeRunnerFunction(runner, args);
   const { audits: unvalidatedAuditOutputs, ...executionMeta } = runnerResult;
 
   const result = auditOutputsSchema.safeParse(unvalidatedAuditOutputs);

@@ -88,4 +88,13 @@ describe('fillAuditLevelMapping', () => {
       info: 'info',
     });
   });
+
+  it('should accept valid score targets', () => {
+    expect(() =>
+      jsPackagesPluginConfigSchema.parse({
+        packageManager: 'npm',
+        scoreTargets: { 'npm-outdated-dev': 0.9 },
+      }),
+    ).not.toThrow();
+  });
 });

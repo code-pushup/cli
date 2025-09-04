@@ -1,3 +1,34 @@
+## 0.79.0 (2025-09-03)
+
+### 🚀 Features
+
+- implement scoreTargets configuration for all plugins ([#1099](https://github.com/code-pushup/cli/pull/1099), [#713](https://github.com/code-pushup/cli/issues/713), [#721](https://github.com/code-pushup/cli/issues/721))
+- **models,core:** make runner args extensible by nesting persist config ([fcb7aa3b](https://github.com/code-pushup/cli/commit/fcb7aa3b))
+- **utils:** convert runner args to and from environment variables ([5e7f4b78](https://github.com/code-pushup/cli/commit/5e7f4b78))
+
+### 🩹 Fixes
+
+- **core:** use env vars instead of cli args for runner config ([fd792173](https://github.com/code-pushup/cli/commit/fd792173))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- Matěj Chalk
+
+## 0.78.0 (2025-09-03)
+
+### 🚀 Features
+
+- **plugin-eslint:** add artefact options ([#1089](https://github.com/code-pushup/cli/pull/1089))
+
+### 🩹 Fixes
+
+- **nx-plugin:** print process output for CLI command ([#1095](https://github.com/code-pushup/cli/pull/1095))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.77.0 (2025-08-28)
 
 ### 🚀 Features

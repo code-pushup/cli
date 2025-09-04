@@ -34,8 +34,13 @@ import { normalizeConfig } from './utils.js';
 export async function jsPackagesPlugin(
   config?: JSPackagesPluginConfig,
 ): Promise<PluginConfig> {
-  const { packageManager, checks, depGroups, ...jsPackagesPluginConfigRest } =
-    await normalizeConfig(config);
+  const {
+    packageManager,
+    checks,
+    depGroups,
+    scoreTargets,
+    ...jsPackagesPluginConfigRest
+  } = await normalizeConfig(config);
 
   const runnerScriptPath = path.join(
     fileURLToPath(path.dirname(import.meta.url)),
@@ -64,6 +69,7 @@ export async function jsPackagesPlugin(
       packageManager: packageManager.slug,
       dependencyGroups: depGroups,
     }),
+    ...(scoreTargets && { scoreTargets }),
   };
 }
 

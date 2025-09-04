@@ -2,7 +2,6 @@ import type {
   Audit,
   AuditOutput,
   AuditOutputs,
-  PersistConfig,
   PluginArtifactOptions,
   RunnerFunction,
 } from '@code-pushup/models';
@@ -23,15 +22,12 @@ export function createRunnerFunction(options: {
     slugs: audits.map(audit => audit.slug),
   };
 
-  return async ({ outputDir }: PersistConfig): Promise<AuditOutputs> => {
+  return async (): Promise<AuditOutputs> => {
     ui().logger.log(`ESLint plugin executing ${targets.length} lint targets`);
 
     const linterOutputs = artifacts
       ? await loadArtifacts(artifacts)
-      : await asyncSequential(
-          targets.map(target => ({ ...target, outputDir })),
-          lint,
-        );
+      : await asyncSequential(targets, lint);
     const lintResults = mergeLinterOutputs(linterOutputs);
     const failedAudits = lintResultsToAudits(lintResults);
 

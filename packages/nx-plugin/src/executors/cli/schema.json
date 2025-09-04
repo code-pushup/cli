@@ -46,7 +46,7 @@
     },
     "output": {
       "type": "string",
-      "description": "Config output path"
+      "description": "Config output path of print-config command"
     },
     "persist": {
       "type": "object",
