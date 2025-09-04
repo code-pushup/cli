@@ -9,13 +9,13 @@ import {
 } from './utils.js';
 
 describe('parsePrintConfigExecutorOptions', () => {
-  it('should provide NO default projectPrefix', () => {
+  it('should provide NO default output path', () => {
     expect(parsePrintConfigExecutorOptions({})).toStrictEqual(
       expect.not.objectContaining({ output: expect.anything() }),
     );
   });
 
-  it('should process given projectPrefix', () => {
+  it('should process given output path', () => {
     expect(
       parsePrintConfigExecutorOptions({ output: 'code-pushup.config.json' }),
     ).toStrictEqual(
