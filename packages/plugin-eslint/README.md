@@ -310,7 +310,7 @@ export default {
 
 ### Caching artifact generation
 
-To leverage Nx's caching capabilities, you need to generate a JSON artifact for caching while still being able to see the eslint violations in the terminal, to fix them.
+To leverage Nx's caching capabilities, you need to generate a JSON artifact for caching, while still being able to see the ESLint violations in the terminal or CI logs, so you can fix them.
 This can be done by leveraging eslint formatter.
 
 _lint target from nx.json_
