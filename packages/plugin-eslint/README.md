@@ -371,4 +371,4 @@ export default {
 
 ---
 
-Find more all details in our [Nx setup guide](https://github.com/code-pushup/cli/wiki/Code-PushUp-integration-guide-for-Nx-monorepos#eslint-config).
+Find more details in our [Nx setup guide](https://github.com/code-pushup/cli/wiki/Code-PushUp-integration-guide-for-Nx-monorepos#eslint-config).
