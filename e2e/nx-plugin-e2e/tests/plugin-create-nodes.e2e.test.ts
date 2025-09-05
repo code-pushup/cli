@@ -192,15 +192,14 @@ describe('nx-plugin', () => {
 
     const { stdout, stderr } = await executeProcess({
       command: 'npx',
-      args: ['nx', 'run', `${project}:code-pushup`, '--dryRun'],
+      args: ['nx', 'run', `${project}:code-pushup`, '--dryRun', '--verbose'],
       cwd,
     });
 
-    const cleanStderr = removeColorCodes(stderr);
-    // @TODO create test environment for working plugin. This here misses package-lock.json to execute correctly
-    expect(cleanStderr).toContain('DryRun execution of: npx @code-pushup/cli');
-
     const cleanStdout = removeColorCodes(stdout);
+    // @TODO create test environment for working plugin. This here misses package-lock.json to execute correctly
+    expect(cleanStdout).toContain('Executing command:');
+    expect(cleanStdout).toContain('npx @code-pushup/cli');
     expect(cleanStdout).toContain(
       'NX   Successfully ran target code-pushup for project my-lib',
     );
