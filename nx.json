@@ -2,6 +2,11 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "os": [
+      {
+        "runtime": "node -e \"console.log(require('os').platform())\""
+      }
+    ],
     "production": [
       "default",
       "!{projectRoot}/README.md",
@@ -22,25 +27,22 @@
       "!{workspaceRoot}/**/(*.)coverage/**/*"
     ],
     "test-vitest-inputs": [
-      "default",
+      "os",
       {
         "externalDependencies": ["vitest"]
       }
     ],
     "lint-eslint-inputs": [
-      "default",
       {
         "externalDependencies": ["eslint"]
       }
     ],
     "typecheck-typescript-inputs": [
-      "default",
       {
         "externalDependencies": ["typescript"]
       }
     ],
     "code-pushup-inputs": [
-      "default",
       {
         "env": "NODE_OPTIONS"
       },
@@ -49,9 +51,6 @@
       }
     ],
     "sharedGlobals": [
-      {
-        "runtime": "node -e \"console.log(require('os').platform())\""
-      },
       {
         "runtime": "node -v"
       },
@@ -63,7 +62,7 @@
   "targetDefaults": {
     "lint": {
       "dependsOn": ["eslint-formatter-multi:build"],
-      "inputs": ["lint-eslint-inputs"],
+      "inputs": ["default", "lint-eslint-inputs"],
       "outputs": ["{projectRoot}/.eslint/**/*"],
       "cache": true,
       "executor": "nx:run-commands",
@@ -98,6 +97,7 @@
     },
     "unit-test": {
       "cache": true,
+      "inputs": ["default", "test-vitest-inputs"],
       "outputs": [
         "{workspaceRoot}/coverage/{projectName}/unit-tests/lcov.info"
       ],
@@ -111,6 +111,7 @@
     },
     "int-test": {
       "cache": true,
+      "inputs": ["default", "test-vitest-inputs"],
       "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
       "executor": "@nx/vite:test",
       "options": {
@@ -121,16 +122,16 @@
       }
     },
     "e2e": {
-      "dependsOn": ["^build"],
-      "inputs": ["default"],
-      "cache": true
+      "cache": true,
+      "inputs": ["default", "test-vitest-inputs"],
+      "dependsOn": ["^build"]
     },
     "nxv-pkg-install": {
       "parallelism": false
     },
     "@nx/vite:test": {
       "cache": true,
-      "inputs": ["test-vitest-inputs"],
+      "inputs": ["default", "test-vitest-inputs"],
       "options": {
         "passWithNoTests": true,
         "watch": false
@@ -161,7 +162,7 @@
     },
     "code-pushup-coverage": {
       "cache": true,
-      "inputs": ["code-pushup-inputs", "test-vitest-inputs"],
+      "inputs": ["default", "code-pushup-inputs"],
       "outputs": ["{projectRoot}/.code-pushup/coverage/runner-output.json"],
       "executor": "nx:run-commands",
       "dependsOn": ["*-test"],
@@ -184,7 +185,7 @@
     },
     "code-pushup-eslint": {
       "cache": true,
-      "inputs": ["code-pushup-inputs", "lint-eslint-inputs"],
+      "inputs": ["default", "code-pushup-inputs", "lint-eslint-inputs"],
       "outputs": ["{projectRoot}/.code-pushup/eslint/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
@@ -230,7 +231,7 @@
     },
     "code-pushup-lighthouse": {
       "cache": true,
-      "inputs": ["code-pushup-inputs", "production", "^production"],
+      "inputs": ["production", "^production", "code-pushup-inputs"],
       "outputs": ["{projectRoot}/.code-pushup/lighthouse/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
@@ -252,7 +253,11 @@
     },
     "code-pushup-jsdocs": {
       "cache": true,
-      "inputs": ["code-pushup-inputs", "typecheck-typescript-inputs"],
+      "inputs": [
+        "default",
+        "code-pushup-inputs",
+        "typecheck-typescript-inputs"
+      ],
       "outputs": ["{projectRoot}/.code-pushup/jsdocs/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
@@ -274,7 +279,11 @@
     },
     "code-pushup-typescript": {
       "cache": true,
-      "inputs": ["code-pushup-inputs", "typecheck-typescript-inputs"],
+      "inputs": [
+        "default",
+        "code-pushup-inputs",
+        "typecheck-typescript-inputs"
+      ],
       "outputs": ["{projectRoot}/.code-pushup/typescript/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
