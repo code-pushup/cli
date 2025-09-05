@@ -1,5 +1,5 @@
 import { logger } from '@nx/devkit';
-import ansis from 'ansis';
+import chalk from 'chalk';
 import type { ProcessConfig } from '../../internal/execute-process.js';
 
 export function createCliCommandString(options?: {
@@ -22,13 +22,16 @@ export function formatCommandLog(
   if (env) {
     const envVars = Object.entries(env).map(
       ([key, value]) =>
-        `${ansis.green(key)}="${ansis.blueBright(value.replaceAll('"', ''))}"`,
+        `${chalk.green(key)}="${chalk.blueBright(value.replaceAll('"', ''))}"`,
     );
+    // eslint-disable-next-line functional/immutable-data
     logElements.push(...envVars);
   }
-  logElements.push(ansis.cyan(command));
+  // eslint-disable-next-line functional/immutable-data
+  logElements.push(chalk.cyan(command));
   if (args.length > 0) {
-    logElements.push(ansis.white(args.join(' ')));
+    // eslint-disable-next-line functional/immutable-data
+    logElements.push(chalk.white(args.join(' ')));
   }
   return logElements.join(' ');
 }
