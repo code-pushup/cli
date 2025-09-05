@@ -7,7 +7,7 @@ export default {
       {
         artifacts: {
           generateArtifactsCommand:
-            "npx eslint 'src/*.js' --fix --format json --output-file eslint-report.json",
+            "npx eslint 'src/*.js' --fix --format json --output-file ./code-pushup/eslint-report.json",
           artifactsPaths: ['./code-pushup/eslint-report.json'],
         },
       },
