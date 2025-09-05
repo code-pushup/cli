@@ -235,14 +235,28 @@ exports[`PLUGIN collect report with eslint-plugin NPM package > should run ESLin
         {
           "description": "ESLint rule **eqeqeq**.",
           "details": {
-            "issues": [],
+            "issues": [
+              {
+                "message": "Expected '===' and instead saw '=='.",
+                "severity": "error",
+                "source": {
+                  "file": "tmp/e2e/plugin-eslint-e2e/__test__/artifacts-config/src/index.js",
+                  "position": {
+                    "endColumn": 15,
+                    "endLine": 6,
+                    "startColumn": 13,
+                    "startLine": 6,
+                  },
+                },
+              },
+            ],
           },
-          "displayValue": "passed",
+          "displayValue": "1 error",
           "docsUrl": "https://eslint.org/docs/latest/rules/eqeqeq",
-          "score": 1,
+          "score": 0,
           "slug": "eqeqeq",
           "title": "Require the use of \`===\` and \`!==\`",
-          "value": 0,
+          "value": 1,
         },
         {
           "description": "ESLint rule **max-lines**.
@@ -265,14 +279,28 @@ Custom options:
         {
           "description": "ESLint rule **no-unused-vars**.",
           "details": {
-            "issues": [],
+            "issues": [
+              {
+                "message": "'unusedFn' is defined but never used.",
+                "severity": "warning",
+                "source": {
+                  "file": "tmp/e2e/plugin-eslint-e2e/__test__/artifacts-config/src/index.js",
+                  "position": {
+                    "endColumn": 18,
+                    "endLine": 1,
+                    "startColumn": 10,
+                    "startLine": 1,
+                  },
+                },
+              },
+            ],
           },
-          "displayValue": "passed",
+          "displayValue": "1 warning",
           "docsUrl": "https://eslint.org/docs/latest/rules/no-unused-vars",
-          "score": 1,
+          "score": 0,
           "slug": "no-unused-vars",
           "title": "Disallow unused variables",
-          "value": 0,
+          "value": 1,
         },
       ],
       "description": "Official Code PushUp ESLint plugin",
