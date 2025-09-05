@@ -126,6 +126,9 @@
       "inputs": ["default", "test-vitest-inputs"],
       "dependsOn": ["^build"]
     },
+    "nxv-env-setup": {
+      "cache": true
+    },
     "nxv-pkg-install": {
       "parallelism": false
     },
