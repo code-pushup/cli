@@ -190,7 +190,7 @@ describe('nx-plugin', () => {
 
     await materializeTree(tree, cwd);
 
-    const { stdout, stderr } = await executeProcess({
+    const { stdout } = await executeProcess({
       command: 'npx',
       args: ['nx', 'run', `${project}:code-pushup`, '--dryRun', '--verbose'],
       cwd,
