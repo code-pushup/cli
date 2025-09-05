@@ -124,32 +124,25 @@ describe('runAutorunExecutor', () => {
 
     expect(output.command).toMatch('--verbose');
     expect(loggerWarnSpy).toHaveBeenCalledTimes(0);
-    expect(loggerInfoSpy).toHaveBeenCalledTimes(2);
+    expect(loggerInfoSpy).toHaveBeenCalledTimes(1);
     expect(loggerInfoSpy).toHaveBeenCalledWith(
       expect.stringContaining(`Run CLI executor`),
     );
-    const logs = loggerInfoSpy.mock.calls.map((call: any) =>
-      removeColorCodes(call[0]),
-    );
-    expect(
-      logs.some((log: string) =>
-        log.includes('Command: npx @code-pushup/cli --verbose'),
-      ),
-    ).toBe(true);
   });
 
-  it('should log command if dryRun is set', async () => {
-    await runAutorunExecutor({ dryRun: true }, executorContext('utils'));
-
-    expect(loggerInfoSpy).toHaveBeenCalledTimes(0);
-    expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
-    const logs = loggerWarnSpy.mock.calls.map((call: any) =>
-      removeColorCodes(call[0]),
+  it('should call executeProcess with dryRun option', async () => {
+    const output = await runAutorunExecutor(
+      { dryRun: true },
+      executorContext('utils'),
     );
-    expect(
-      logs.some((log: string) =>
-        log.includes('DryRun execution of: npx @code-pushup/cli --dryRun'),
-      ),
-    ).toBe(true);
+
+    expect(output.success).toBe(true);
+    expect(executeProcessSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dryRun: true,
+      }),
+    );
+    expect(loggerInfoSpy).toHaveBeenCalledTimes(0);
+    expect(loggerWarnSpy).toHaveBeenCalledTimes(0);
   });
 });
