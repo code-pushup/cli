@@ -1,18 +1,25 @@
 import type { TargetConfiguration } from '@nx/devkit';
+import type { AutorunCommandExecutorOptions } from '../../executors/cli/schema.js';
 import { PACKAGE_NAME } from '../../internal/constants.js';
-import type { ProjectPrefixOptions } from '../types.js';
+import type { CreateNodesOptions } from '../types.js';
 
-export function createExecutorTarget(options?: {
-  bin?: string;
-  projectPrefix?: string;
-}): TargetConfiguration<ProjectPrefixOptions> {
-  const { bin = PACKAGE_NAME, projectPrefix } = options ?? {};
+export function createExecutorTarget(
+  options?: CreateNodesOptions,
+): TargetConfiguration<AutorunCommandExecutorOptions> {
+  const {
+    pluginBin = PACKAGE_NAME,
+    projectPrefix,
+    cliBin,
+    env,
+  } = options ?? {};
   return {
-    executor: `${bin}:cli`,
+    executor: `${pluginBin}:cli`,
     ...(projectPrefix
       ? {
           options: {
             projectPrefix,
+            ...(cliBin ? { bin: cliBin } : {}),
+            ...(env ? { env } : {}),
           },
         }
       : {}),

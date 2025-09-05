@@ -19,7 +19,7 @@ export default async function runAutorunExecutor(
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
   const normalizedContext = normalizeContext(context);
-  const mergedOptions = mergeExecutorOptions(
+  const { env, ...mergedOptions } = mergeExecutorOptions(
     context.target?.options,
     terminalAndExecutorOptions,
   );
@@ -43,6 +43,7 @@ export default async function runAutorunExecutor(
       await executeProcess({
         ...createCliCommandObject({ command, args: cliArgumentObject }),
         ...(context.cwd ? { cwd: context.cwd } : {}),
+        env,
       });
     } catch (error) {
       logger.error(error);

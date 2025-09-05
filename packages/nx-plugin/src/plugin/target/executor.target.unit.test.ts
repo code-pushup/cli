@@ -9,7 +9,7 @@ describe('createExecutorTarget', () => {
   });
 
   it('should use bin if provides', () => {
-    expect(createExecutorTarget({ bin: 'xyz' })).toStrictEqual({
+    expect(createExecutorTarget({ pluginBin: 'xyz' })).toStrictEqual({
       executor: 'xyz:cli',
     });
   });

@@ -86,6 +86,7 @@ export type ProcessConfig = {
   command: string;
   args?: string[];
   cwd?: string;
+  env?: Record<string, string>;
   observer?: ProcessObserver;
   ignoreExitCode?: boolean;
 };
@@ -138,7 +139,7 @@ export type ProcessObserver = {
  * @param cfg - see {@link ProcessConfig}
  */
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
-  const { observer, cwd, command, args, ignoreExitCode = false } = cfg;
+  const { observer, cwd, command, args, ignoreExitCode = false, env } = cfg;
   const { onStdout, onError, onComplete } = observer ?? {};
   const date = new Date().toISOString();
   const start = performance.now();
@@ -152,7 +153,7 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
 
   return new Promise((resolve, reject) => {
     // shell:true tells Windows to use shell command for spawning a child process
-    const process = spawn(command, args, { cwd, shell: true });
+    const process = spawn(command, args, { cwd, shell: true, env });
     // eslint-disable-next-line functional/no-let
     let stdout = '';
     // eslint-disable-next-line functional/no-let
