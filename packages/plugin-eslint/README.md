@@ -93,86 +93,6 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
 
 5. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
 
-## Artifacts generation and loading
-
-In addition to running ESLint from the plugin implementation, you can configure the plugin to consume pre-generated ESLint reports (artifacts). This is particularly useful for:
-
-- **CI/CD pipelines**: Use cached lint results from your build system
-- **Monorepo setups**: Aggregate results from multiple projects or targets
-- **Performance optimization**: Skip ESLint execution when reports are already available
-- **Custom workflows**: Integrate with existing linting infrastructure
-
-The artifacts feature supports loading ESLint JSON reports that follow the standard `ESLint.LintResult[]` format.
-
-### Basic artifact configuration
-
-Specify the path(s) to your ESLint JSON report files:
-
-```js
-import eslintPlugin from '@code-pushup/eslint-plugin';
-
-export default {
-  plugins: [
-    await eslintPlugin({
-      artifacts: {
-        artifactsPaths: './eslint-report.json',
-      },
-    }),
-  ],
-};
-```
-
-### Multiple artifact files
-
-Use glob patterns to aggregate results from multiple files:
-
-```js
-export default {
-  plugins: [
-    await eslintPlugin({
-      artifacts: {
-        artifactsPaths: ['packages/**/eslint-report.json', 'apps/**/.eslint/*.json'],
-      },
-    }),
-  ],
-};
-```
-
-### Generate artifacts with custom command
-
-If you need to generate the artifacts before loading them, use the `generateArtifactsCommand` option:
-
-```js
-export default {
-  plugins: [
-    await eslintPlugin({
-      artifacts: {
-        generateArtifactsCommand: 'npm run lint:report',
-        artifactsPaths: './eslint-report.json',
-      },
-    }),
-  ],
-};
-```
-
-You can also specify the command with arguments:
-
-```js
-export default {
-  plugins: [
-    await eslintPlugin({
-      artifacts: {
-        generateArtifactsCommand: {
-          command: 'eslint',
-          args: ['src/**/*.{js,ts}', '--format=json', '--output-file=eslint-report.json'],
-        },
-        artifactsPaths: './eslint-report.json',
-      },
-    }),
-  ],
-};
-```
-
 ### Custom groups
 
 You can extend the plugin configuration with custom groups to categorize ESLint rules according to your project's specific needs. Custom groups allow you to assign weights to individual rules, influencing their impact on the report. Rules can be defined as an object with explicit weights or as an array where each rule defaults to a weight of 1. Additionally, you can use wildcard patterns (`*`) to include multiple rules with similar prefixes.
@@ -305,6 +225,86 @@ export default {
    ```
 
 2. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
+
+## Artifacts generation and loading
+
+In addition to running ESLint from the plugin implementation, you can configure the plugin to consume pre-generated ESLint reports (artifacts). This is particularly useful for:
+
+- **CI/CD pipelines**: Use cached lint results from your build system
+- **Monorepo setups**: Aggregate results from multiple projects or targets
+- **Performance optimization**: Skip ESLint execution when reports are already available
+- **Custom workflows**: Integrate with existing linting infrastructure
+
+The artifacts feature supports loading ESLint JSON reports that follow the standard `ESLint.LintResult[]` format.
+
+### Basic artifact configuration
+
+Specify the path(s) to your ESLint JSON report files:
+
+```js
+import eslintPlugin from '@code-pushup/eslint-plugin';
+
+export default {
+  plugins: [
+    await eslintPlugin({
+      artifacts: {
+        artifactsPaths: './eslint-report.json',
+      },
+    }),
+  ],
+};
+```
+
+### Multiple artifact files
+
+Use glob patterns to aggregate results from multiple files:
+
+```js
+export default {
+  plugins: [
+    await eslintPlugin({
+      artifacts: {
+        artifactsPaths: ['packages/**/eslint-report.json', 'apps/**/.eslint/*.json'],
+      },
+    }),
+  ],
+};
+```
+
+### Generate artifacts with custom command
+
+If you need to generate the artifacts before loading them, use the `generateArtifactsCommand` option:
+
+```js
+export default {
+  plugins: [
+    await eslintPlugin({
+      artifacts: {
+        generateArtifactsCommand: 'npm run lint:report',
+        artifactsPaths: './eslint-report.json',
+      },
+    }),
+  ],
+};
+```
+
+You can also specify the command with arguments:
+
+```js
+export default {
+  plugins: [
+    await eslintPlugin({
+      artifacts: {
+        generateArtifactsCommand: {
+          command: 'eslint',
+          args: ['src/**/*.{js,ts}', '--format=json', '--output-file=eslint-report.json'],
+        },
+        artifactsPaths: './eslint-report.json',
+      },
+    }),
+  ],
+};
+```
 
 ## Nx Monorepo Setup
 
