@@ -31,7 +31,7 @@ export function formatCommandLog(
   logElements.push(chalk.cyan(command));
   if (args.length > 0) {
     // eslint-disable-next-line functional/immutable-data
-    logElements.push(chalk.white(args.join(' ')));
+    logElements.push(chalk.dim.gray(args.join(' ')));
   }
   return logElements.join(' ');
 }
