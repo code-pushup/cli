@@ -1,6 +1,7 @@
 import { gray } from 'ansis';
 import { spawn } from 'node:child_process';
 import { ui } from '@code-pushup/utils';
+import { formatCommandLog } from '../executors/internal/cli.js';
 
 export function calcDuration(start: number, stop?: number): number {
   return Math.round((stop ?? performance.now()) - start);
@@ -88,6 +89,7 @@ export type ProcessConfig = {
   cwd?: string;
   env?: Record<string, string>;
   observer?: ProcessObserver;
+  dryRun?: boolean;
   ignoreExitCode?: boolean;
 };
 
@@ -139,17 +141,38 @@ export type ProcessObserver = {
  * @param cfg - see {@link ProcessConfig}
  */
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
-  const { observer, cwd, command, args, ignoreExitCode = false, env } = cfg;
+  const {
+    observer,
+    cwd,
+    command,
+    args,
+    ignoreExitCode = false,
+    env,
+    dryRun,
+  } = cfg;
   const { onStdout, onError, onComplete } = observer ?? {};
   const date = new Date().toISOString();
   const start = performance.now();
 
-  const logCommand = [command, ...(args || [])].join(' ');
   ui().logger.log(
     gray(
-      `Executing command:\n${logCommand}\nIn working directory:\n${cfg.cwd ?? process.cwd()}`,
+      `Executing command:\n${formatCommandLog(
+        'npx',
+        [command, ...(args ?? [])],
+        env,
+      )}\nIn working directory:\n${cfg.cwd ?? process.cwd()}`,
     ),
   );
+
+  if (dryRun) {
+    return Promise.resolve({
+      code: 0,
+      stdout: '@code-pushup executed in dry run mode',
+      stderr: '',
+      date,
+      duration: calcDuration(start),
+    });
+  }
 
   return new Promise((resolve, reject) => {
     // shell:true tells Windows to use shell command for spawning a child process
