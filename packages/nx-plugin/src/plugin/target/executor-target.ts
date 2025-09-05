@@ -12,10 +12,7 @@ export function createExecutorTarget(
   const { pluginBin = PACKAGE_NAME, ...opts } = options ?? {};
   return {
     executor: `${pluginBin}:cli`,
-    outputs: [
-      `{options.persist.outputDir}/report.md`,
-      `{options.persist.outputDir}/report.json`,
-    ],
+    outputs: [`{options.persist.outputDir}/report.*`],
     options: parseAutorunExecutorOptions(opts),
   };
 }

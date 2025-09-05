@@ -5,7 +5,18 @@ exports[`nx-plugin > should NOT add config targets dynamically if the project is
   "code-pushup": {
     "configurations": {},
     "executor": "@code-pushup/nx-plugin:cli",
-    "options": {},
+    "options": {
+      "config": "libs/my-lib/code-pushup.config.ts",
+      "persist": {
+        "outputDir": "libs/my-lib/.code-pushup",
+      },
+      "progress": false,
+      "verbose": false,
+    },
+    "outputs": [
+      "{options.persist.outputDir}/report.md",
+      "{options.persist.outputDir}/report.json",
+    ],
     "parallelism": true,
   },
 }
@@ -17,7 +28,7 @@ exports[`nx-plugin > should add configuration target dynamically 1`] = `
     "configurations": {},
     "executor": "nx:run-commands",
     "options": {
-      "command": "nx g @code-pushup/nx-plugin:configuration --skipTarget --targetName="code-pushup" --project="my-lib"",
+      "command": "nx g @code-pushup/nx-plugin:configuration --project="my-lib"",
     },
     "parallelism": true,
   },
@@ -29,7 +40,39 @@ exports[`nx-plugin > should add executor target dynamically if the project is co
   "code-pushup": {
     "configurations": {},
     "executor": "@code-pushup/nx-plugin:cli",
-    "options": {},
+    "options": {
+      "config": "libs/my-lib/code-pushup.config.ts",
+      "persist": {
+        "outputDir": "libs/my-lib/.code-pushup",
+      },
+      "progress": false,
+      "verbose": false,
+    },
+    "outputs": [
+      "{options.persist.outputDir}/report.*",
+    ],
+    "parallelism": true,
+  },
+}
+`;
+
+exports[`nx-plugin > should add executor target dynamically if the project is configured 2`] = `
+{
+  "code-pushup": {
+    "configurations": {},
+    "executor": "@code-pushup/nx-plugin:cli",
+    "options": {
+      "config": "libs/my-lib/code-pushup.config.ts",
+      "persist": {
+        "outputDir": "libs/my-lib/.code-pushup",
+      },
+      "progress": false,
+      "verbose": false,
+    },
+    "outputs": [
+      "{options.persist.outputDir}/report.md",
+      "{options.persist.outputDir}/report.json",
+    ],
     "parallelism": true,
   },
 }

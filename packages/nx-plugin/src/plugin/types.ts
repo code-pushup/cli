@@ -11,7 +11,10 @@ export type ProjectPrefixOptions = {
   projectPrefix?: string;
 };
 
-export type CreateNodesOptions = DynamicTargetOptions & ProjectPrefixOptions;
+export type CreateNodesOptions = DynamicTargetOptions &
+  ProjectPrefixOptions & {
+    bin?: string;
+  };
 
 export type ProjectConfigurationWithName = WithRequired<
   ProjectConfiguration,

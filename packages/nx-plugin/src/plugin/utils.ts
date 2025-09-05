@@ -21,14 +21,15 @@ export async function normalizedCreateNodesContext(
       (await readFile(projectConfigurationFile)).toString(),
     ) as ProjectConfigurationWithName;
 
-    const { targetName = DEFAULT_TARGET_NAME } = createOptions;
+    const { targetName = DEFAULT_TARGET_NAME, bin, ...options } = createOptions;
     return {
       ...context,
       projectJson,
       projectRoot,
       createOptions: {
-        ...createOptions,
+        ...options,
         targetName,
+        ...(bin && { pluginBin: bin }),
       },
     };
   } catch {
@@ -50,12 +51,16 @@ export async function normalizedCreateNodesV2Context(
       (await readFile(projectConfigurationFile)).toString(),
     ) as ProjectConfigurationWithName;
 
-    const { targetName = DEFAULT_TARGET_NAME } = createOptions;
+    const { targetName = DEFAULT_TARGET_NAME, bin, ...options } = createOptions;
     return {
       ...context,
       projectJson,
       projectRoot,
-      createOptions: { ...createOptions, targetName },
+      createOptions: {
+        ...options,
+        targetName,
+        ...(bin && { pluginBin: bin }),
+      },
     };
   } catch {
     throw new Error(

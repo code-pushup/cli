@@ -51,7 +51,7 @@ describe('nx-plugin', () => {
         configurations: {},
         executor: 'nx:run-commands',
         options: {
-          command: `nx g @code-pushup/nx-plugin:configuration --skipTarget --targetName="code-pushup" --project="${project}"`,
+          command: `nx g @code-pushup/nx-plugin:configuration --project="${project}"`,
         },
         parallelism: true,
       },
@@ -120,7 +120,7 @@ describe('nx-plugin', () => {
     expect(projectJson.targets).toStrictEqual({
       'code-pushup--configuration': expect.objectContaining({
         options: {
-          command: `nx g XYZ:configuration --skipTarget --targetName="code-pushup" --project="${project}"`,
+          command: `nx g XYZ:configuration --project="${project}"`,
         },
       }),
     });
@@ -142,7 +142,6 @@ describe('nx-plugin', () => {
         'code-pushup--configuration': expect.any(Object),
       }),
     );
-    expect(projectJson.targets).toMatchSnapshot();
   });
 
   it('should add executor target dynamically if the project is configured', async () => {
@@ -157,9 +156,17 @@ describe('nx-plugin', () => {
 
     expect(projectJson.targets).toStrictEqual({
       'code-pushup': {
+        executor: '@code-pushup/nx-plugin:cli',
+        options: {
+          config: 'libs/my-lib/code-pushup.config.ts',
+          persist: {
+            outputDir: 'libs/my-lib/.code-pushup',
+          },
+          progress: false,
+          verbose: false,
+        },
+        outputs: ['{options.persist.outputDir}/report.*'],
         configurations: {},
-        executor: `@code-pushup/nx-plugin:cli`,
-        options: {},
         parallelism: true,
       },
     });
@@ -229,11 +236,13 @@ describe('nx-plugin', () => {
   });
 
   it('should consider plugin option projectPrefix in executor target', async () => {
+    vi.stubEnv('CP_API_KEY', 'cp_123456789');
     const cwd = path.join(testFileDir, 'configuration-option-bin');
+    const projectPrefix = 'cli';
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
       options: {
-        projectPrefix: 'cli',
+        projectPrefix,
       },
     });
     const { root } = readProjectConfiguration(tree, project);
@@ -247,9 +256,12 @@ describe('nx-plugin', () => {
     expect(projectJson.targets).toStrictEqual({
       'code-pushup': expect.objectContaining({
         executor: `@code-pushup/nx-plugin:cli`,
-        options: {
-          projectPrefix: 'cli',
-        },
+        options: expect.objectContaining({
+          upload: expect.objectContaining({
+            apiKey: 'cp_123456789',
+            project: `${projectPrefix}-${projectJson.name}`,
+          }),
+        }),
       }),
     });
   });

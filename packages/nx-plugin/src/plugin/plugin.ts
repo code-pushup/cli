@@ -6,6 +6,7 @@ import type {
   CreateNodesResultV2,
   CreateNodesV2,
 } from '@nx/devkit';
+import { combineGlobPatterns } from 'nx/src/utils/globs';
 import { PROJECT_JSON_FILE_NAME } from '../internal/constants.js';
 import { createTargets } from './target/targets.js';
 import type { CreateNodesOptions } from './types.js';
@@ -14,9 +15,15 @@ import {
   normalizedCreateNodesV2Context,
 } from './utils.js';
 
+const PROJECT_JSON_FILE_GLOB = '**/project.json';
+const PACKAGE_JSON_FILE_GLOB = '**/package.json';
+const FILE_GLOB = combineGlobPatterns(
+  PROJECT_JSON_FILE_GLOB,
+  PACKAGE_JSON_FILE_GLOB,
+);
 // name has to be "createNodes" to get picked up by Nx <v20
 export const createNodes: CreateNodes = [
-  `**/${PROJECT_JSON_FILE_NAME}`,
+  PROJECT_JSON_FILE_GLOB,
   async (
     projectConfigurationFile: string,
     createNodesOptions: unknown,
@@ -40,13 +47,15 @@ export const createNodes: CreateNodes = [
 ];
 
 export const createNodesV2: CreateNodesV2<CreateNodesOptions> = [
-  `**/${PROJECT_JSON_FILE_NAME}`,
+  FILE_GLOB,
   async (
     projectConfigurationFiles: readonly string[],
     createNodesOptions: unknown,
     context: CreateNodesContextV2,
   ): Promise<CreateNodesResultV2> => {
     const parsedCreateNodesOptions = createNodesOptions as CreateNodesOptions;
+    // projectRoot:true
+    const projectConfig = new Map<string, boolean>();
 
     return await Promise.all(
       projectConfigurationFiles.map(async projectConfigurationFile => {
@@ -55,6 +64,17 @@ export const createNodesV2: CreateNodesV2<CreateNodesOptions> = [
           projectConfigurationFile,
           parsedCreateNodesOptions,
         );
+        if (projectConfig.has(projectConfigurationFile)) {
+          return [
+            projectConfigurationFile,
+            {
+              projects: {
+                [normalizedContext.projectRoot]: {},
+              },
+            } satisfies CreateNodesResult,
+          ];
+        }
+        projectConfig.set(normalizedContext.projectRoot, true);
 
         const result: CreateNodesResult = {
           projects: {

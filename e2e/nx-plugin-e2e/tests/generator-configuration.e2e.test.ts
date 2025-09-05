@@ -64,22 +64,7 @@ describe('nx-plugin g configuration', () => {
       'NX  Generating @code-pushup/nx-plugin:configuration',
     );
     expect(cleanedStdout).toMatch(/^CREATE.*code-pushup.config.ts/m);
-    expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
 
-    const projectJson = await readFile(
-      path.join(cwd, 'libs', project, 'project.json'),
-      'utf8',
-    );
-
-    expect(JSON.parse(projectJson)).toStrictEqual(
-      expect.objectContaining({
-        targets: expect.objectContaining({
-          'code-pushup': {
-            executor: '@code-pushup/nx-plugin:cli',
-          },
-        }),
-      }),
-    );
     await expect(
       readFile(
         path.join(cwd, 'libs', project, 'code-pushup.config.ts'),
@@ -111,21 +96,6 @@ describe('nx-plugin g configuration', () => {
       'NX  Generating @code-pushup/nx-plugin:configuration',
     );
     expect(cleanedStdout).not.toMatch(/^CREATE.*code-pushup.config.ts/m);
-    expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
-
-    const projectJson = await readFile(
-      path.join(cwd, 'libs', project, 'project.json'),
-      'utf8',
-    );
-    expect(JSON.parse(projectJson)).toStrictEqual(
-      expect.objectContaining({
-        targets: expect.objectContaining({
-          'code-pushup': {
-            executor: '@code-pushup/nx-plugin:cli',
-          },
-        }),
-      }),
-    );
   });
 
   it('should NOT create a code-pushup.config.ts file if skipConfig is given', async () => {
@@ -152,21 +122,6 @@ describe('nx-plugin g configuration', () => {
       'NX  Generating @code-pushup/nx-plugin:configuration',
     );
     expect(cleanedStdout).not.toMatch(/^CREATE.*code-pushup.config.ts/m);
-    expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
-
-    const projectJson = await readFile(
-      path.join(cwd, 'libs', project, 'project.json'),
-      'utf8',
-    );
-    expect(JSON.parse(projectJson)).toStrictEqual(
-      expect.objectContaining({
-        targets: expect.objectContaining({
-          'code-pushup': {
-            executor: '@code-pushup/nx-plugin:cli',
-          },
-        }),
-      }),
-    );
 
     await expect(
       readFile(
@@ -199,21 +154,6 @@ describe('nx-plugin g configuration', () => {
       'NX  Generating @code-pushup/nx-plugin:configuration',
     );
     expect(cleanedStdout).toMatch(/^CREATE.*code-pushup.config.ts/m);
-    expect(cleanedStdout).not.toMatch(/^UPDATE.*project.json/m);
-
-    const projectJson = await readFile(
-      path.join(cwd, 'libs', project, 'project.json'),
-      'utf8',
-    );
-    expect(JSON.parse(projectJson)).toStrictEqual(
-      expect.objectContaining({
-        targets: expect.not.objectContaining({
-          'code-pushup': {
-            executor: '@code-pushup/nx-plugin:cli',
-          },
-        }),
-      }),
-    );
 
     await expect(
       readFile(

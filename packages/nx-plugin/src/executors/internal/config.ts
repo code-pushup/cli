@@ -46,7 +46,7 @@ export function uploadConfig(
         organization,
         project,
         timeout,
-      }).filter(([_, v]) => v !== undefined),
+      }).filter(([_, v]) => v != null && v !== ''),
     ),
   };
 }
