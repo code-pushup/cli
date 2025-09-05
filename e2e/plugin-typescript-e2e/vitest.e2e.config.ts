@@ -1,26 +1,9 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vitest/config';
-import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases.js';
+import { createE2eConfig } from '../../tools/vitest-config-factory.js';
 
-export default defineConfig({
-  cacheDir: '../../node_modules/.vite/plugin-typescript-e2e',
-  test: {
-    reporters: ['basic'],
-    testTimeout: 20_000,
-    globals: true,
-    alias: tsconfigPathAliases(),
-    pool: 'threads',
-    poolOptions: { threads: { singleThread: true } },
-    coverage: {
-      reporter: ['text', 'lcov'],
-      reportsDirectory: '../../coverage/plugin-typescript-e2e/e2e-tests',
-      exclude: ['mocks/**', '**/types.ts'],
-    },
-    cache: {
-      dir: '../../node_modules/.vitest',
-    },
-    environment: 'node',
-    include: ['tests/**/*.e2e.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    setupFiles: ['../../testing/test-setup/src/lib/reset.mocks.ts'],
-  },
+export default createE2eConfig('plugin-typescript-e2e', {
+  projectRoot: new URL('../../', import.meta.url),
+  testTimeout: 20_000,
+  coverage: { enabled: true, reportsSubdir: 'e2e-tests' },
+  cacheKey: 'plugin-typescript-e2e',
 });
