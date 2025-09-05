@@ -3,6 +3,8 @@ import { executeProcess } from '../../internal/execute-process.js';
 import {
   createCliCommandObject,
   createCliCommandString,
+  formatCommandLog,
+  objectToCliArgs,
 } from '../internal/cli.js';
 import { normalizeContext } from '../internal/context.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
@@ -19,10 +21,11 @@ export default async function runAutorunExecutor(
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
   const normalizedContext = normalizeContext(context);
-  const { env, bin, ...mergedOptions } = mergeExecutorOptions(
-    context.target?.options,
-    terminalAndExecutorOptions,
-  );
+  const {
+    env,
+    bin = '@code-pushup/cli',
+    ...mergedOptions
+  } = mergeExecutorOptions(context.target?.options, terminalAndExecutorOptions);
   const cliArgumentObject = parseAutorunExecutorOptions(
     mergedOptions,
     normalizedContext,
@@ -33,12 +36,20 @@ export default async function runAutorunExecutor(
     bin,
     args: cliArgumentObject,
   });
+  const coloredCommandString = formatCommandLog(
+    'npx',
+    [
+      bin,
+      ...objectToCliArgs({ _: command ? [command] : [], ...cliArgumentObject }),
+    ],
+    env,
+  );
   if (verbose) {
     logger.info(`Run CLI executor ${command ?? ''}`);
-    logger.info(`Command: ${commandString}`);
+    logger.info(`Command: ${coloredCommandString}`);
   }
   if (dryRun) {
-    logger.warn(`DryRun execution of: ${commandString}`);
+    logger.warn(`DryRun execution of: ${coloredCommandString}`);
   } else {
     try {
       await executeProcess({

@@ -1,4 +1,5 @@
 import { logger } from '@nx/devkit';
+import ansis from 'ansis';
 import type { ProcessConfig } from '../../internal/execute-process.js';
 
 export function createCliCommandString(options?: {
@@ -10,6 +11,26 @@ export function createCliCommandString(options?: {
   return `npx ${bin} ${objectToCliArgs({ _: command ?? [], ...args }).join(
     ' ',
   )}`;
+}
+
+export function formatCommandLog(
+  command: string,
+  args: string[] = [],
+  env?: Record<string, string>,
+): string {
+  const logElements: string[] = [];
+  if (env) {
+    const envVars = Object.entries(env).map(
+      ([key, value]) =>
+        `${ansis.green(key)}="${ansis.blueBright(value.replaceAll('"', ''))}"`,
+    );
+    logElements.push(...envVars);
+  }
+  logElements.push(ansis.cyan(command));
+  if (args.length > 0) {
+    logElements.push(ansis.white(args.join(' ')));
+  }
+  return logElements.join(' ');
 }
 
 export function createCliCommandObject(options?: {
