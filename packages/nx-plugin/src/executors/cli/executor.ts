@@ -19,7 +19,7 @@ export default async function runAutorunExecutor(
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
   const normalizedContext = normalizeContext(context);
-  const { env, ...mergedOptions } = mergeExecutorOptions(
+  const { env, bin, ...mergedOptions } = mergeExecutorOptions(
     context.target?.options,
     terminalAndExecutorOptions,
   );
@@ -30,6 +30,7 @@ export default async function runAutorunExecutor(
   const { dryRun, verbose, command } = mergedOptions;
   const commandString = createCliCommandString({
     command,
+    bin,
     args: cliArgumentObject,
   });
   if (verbose) {
@@ -41,7 +42,7 @@ export default async function runAutorunExecutor(
   } else {
     try {
       await executeProcess({
-        ...createCliCommandObject({ command, args: cliArgumentObject }),
+        ...createCliCommandObject({ command, args: cliArgumentObject, bin }),
         ...(context.cwd ? { cwd: context.cwd } : {}),
         env,
       });

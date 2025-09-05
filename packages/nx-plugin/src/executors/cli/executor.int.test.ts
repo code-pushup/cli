@@ -54,6 +54,25 @@ describe('runAutorunExecutor', () => {
     });
   });
 
+  it('should execute command with provided bin', async () => {
+    const bin = 'packages/cli/dist';
+    const output = await runAutorunExecutor(
+      {
+        verbose: true,
+        bin,
+      },
+      executorContext('utils'),
+    );
+    expect(output.success).toBe(true);
+
+    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        args: expect.arrayContaining([bin]),
+      }),
+    );
+  });
+
   it('should execute command with provided env vars', async () => {
     const output = await runAutorunExecutor(
       {
