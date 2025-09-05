@@ -225,3 +225,91 @@ exports[`PLUGIN collect report with eslint-plugin NPM package > should run ESLin
   ],
 }
 `;
+
+exports[`PLUGIN collect report with eslint-plugin NPM package > should run ESLint plugin with artifacts options 1`] = `
+{
+  "packageName": "@code-pushup/core",
+  "plugins": [
+    {
+      "audits": [
+        {
+          "description": "ESLint rule **eqeqeq**.",
+          "details": {
+            "issues": [],
+          },
+          "displayValue": "passed",
+          "docsUrl": "https://eslint.org/docs/latest/rules/eqeqeq",
+          "score": 1,
+          "slug": "eqeqeq",
+          "title": "Require the use of \`===\` and \`!==\`",
+          "value": 0,
+        },
+        {
+          "description": "ESLint rule **max-lines**.
+
+Custom options:
+
+\`\`\`json
+100
+\`\`\`",
+          "details": {
+            "issues": [],
+          },
+          "displayValue": "passed",
+          "docsUrl": "https://eslint.org/docs/latest/rules/max-lines",
+          "score": 1,
+          "slug": "max-lines-71b54366cb01f77b",
+          "title": "Enforce a maximum number of lines per file",
+          "value": 0,
+        },
+        {
+          "description": "ESLint rule **no-unused-vars**.",
+          "details": {
+            "issues": [],
+          },
+          "displayValue": "passed",
+          "docsUrl": "https://eslint.org/docs/latest/rules/no-unused-vars",
+          "score": 1,
+          "slug": "no-unused-vars",
+          "title": "Disallow unused variables",
+          "value": 0,
+        },
+      ],
+      "description": "Official Code PushUp ESLint plugin",
+      "docsUrl": "https://www.npmjs.com/package/@code-pushup/eslint-plugin",
+      "groups": [
+        {
+          "description": "Code that either will cause an error or may cause confusing behavior. Developers should consider this a high priority to resolve.",
+          "refs": [
+            {
+              "slug": "no-unused-vars",
+              "weight": 1,
+            },
+          ],
+          "slug": "problems",
+          "title": "Problems",
+        },
+        {
+          "description": "Something that could be done in a better way but no errors will occur if the code isn't changed.",
+          "refs": [
+            {
+              "slug": "eqeqeq",
+              "weight": 1,
+            },
+            {
+              "slug": "max-lines-71b54366cb01f77b",
+              "weight": 1,
+            },
+          ],
+          "slug": "suggestions",
+          "title": "Suggestions",
+        },
+      ],
+      "icon": "eslint",
+      "packageName": "@code-pushup/eslint-plugin",
+      "slug": "eslint",
+      "title": "ESLint",
+    },
+  ],
+}
+`;
