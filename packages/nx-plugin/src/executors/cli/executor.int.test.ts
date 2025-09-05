@@ -53,4 +53,28 @@ describe('runAutorunExecutor', () => {
       },
     });
   });
+
+  it('should execute command with provided env vars', async () => {
+    const output = await runAutorunExecutor(
+      {
+        verbose: true,
+        env: {
+          NODE_OPTIONS: '--import tsx',
+          TSX_TSCONFIG_PATH: 'tsconfig.base.json',
+        },
+      },
+      executorContext('utils'),
+    );
+    expect(output.success).toBe(true);
+
+    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        env: {
+          NODE_OPTIONS: '--import tsx',
+          TSX_TSCONFIG_PATH: 'tsconfig.base.json',
+        },
+      }),
+    );
+  });
 });
