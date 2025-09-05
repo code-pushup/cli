@@ -14,11 +14,11 @@ export function createExecutorTarget(
   } = options ?? {};
   return {
     executor: `${pluginBin}:cli`,
-    ...(projectPrefix
+    ...(cliBin || projectPrefix || env
       ? {
           options: {
-            projectPrefix,
             ...(cliBin ? { bin: cliBin } : {}),
+            ...(projectPrefix ? { projectPrefix } : {}),
             ...(env ? { env } : {}),
           },
         }
