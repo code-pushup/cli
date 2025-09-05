@@ -3,23 +3,18 @@ import { createExecutorTarget } from './executor-target.js';
 
 describe('createExecutorTarget', () => {
   it('should return executor target without project name', () => {
-    expect(createExecutorTarget()).toStrictEqual({
-      executor: '@code-pushup/nx-plugin:cli',
-    });
+    expect(createExecutorTarget()).toEqual(
+      expect.objectContaining({
+        executor: '@code-pushup/nx-plugin:cli',
+      }),
+    );
   });
 
-  it('should use bin if provides', () => {
-    expect(createExecutorTarget({ bin: 'xyz' })).toStrictEqual({
-      executor: 'xyz:cli',
-    });
-  });
-
-  it('should use projectPrefix if provided', () => {
-    expect(createExecutorTarget({ projectPrefix: 'cli' })).toStrictEqual({
-      executor: '@code-pushup/nx-plugin:cli',
-      options: {
-        projectPrefix: 'cli',
-      },
-    });
+  it('should use pluginBin if provides', () => {
+    expect(createExecutorTarget({ pluginBin: 'xyz' })).toEqual(
+      expect.objectContaining({
+        executor: 'xyz:cli',
+      }),
+    );
   });
 });

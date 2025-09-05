@@ -79,7 +79,7 @@ describe('parseAutorunExecutorOptions', () => {
       },
     });
     expect(osAgnosticPath(executorOptions.config ?? '')).toBe(
-      osAgnosticPath('root/code-pushup.config.ts'),
+      osAgnosticPath('{projectRoot}/code-pushup.config.ts'),
     );
     expect(executorOptions).toEqual(
       expect.objectContaining({

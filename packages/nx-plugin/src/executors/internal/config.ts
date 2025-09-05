@@ -1,5 +1,5 @@
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
-import { AutorunCommandExecutorPersistConfig } from '../cli/schema';
+import type { AutorunCommandExecutorPersistConfig } from '../cli/schema.js';
 import { parseEnv } from './env.js';
 import type { GlobalExecutorOptions } from './types.js';
 

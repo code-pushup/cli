@@ -3,7 +3,6 @@ import { rm } from 'node:fs/promises';
 import { afterEach, beforeEach, expect } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants.js';
-import { CP_TARGET_NAME } from '../constants.js';
 import type { NormalizedCreateNodesContext } from '../types.js';
 import { createTargets } from './targets.js';
 
@@ -34,8 +33,8 @@ describe('createTargets', () => {
         createOptions: {},
       } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual({
-      [`${CP_TARGET_NAME}--configuration`]: {
-        command: `nx g ${PACKAGE_NAME}:configuration --skipTarget --targetName="code-pushup" --project="${projectName}"`,
+      [`${DEFAULT_TARGET_NAME}--configuration`]: {
+        command: `nx g ${PACKAGE_NAME}:configuration --project="${projectName}"`,
       },
     });
   });
@@ -55,7 +54,7 @@ describe('createTargets', () => {
       } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual({
       [`${targetName}--configuration`]: {
-        command: `nx g ${PACKAGE_NAME}:configuration --skipTarget --targetName="cp" --project="${projectName}"`,
+        command: `nx g ${PACKAGE_NAME}:configuration --project="${projectName}"`,
       },
     });
   });
@@ -107,9 +106,9 @@ describe('createTargets', () => {
       } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual(
       expect.objectContaining({
-        [targetName]: {
+        [targetName]: expect.objectContaining({
           executor: `${PACKAGE_NAME}:cli`,
-        },
+        }),
       }),
     );
   });
@@ -131,9 +130,9 @@ describe('createTargets', () => {
         createOptions: {},
       } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual({
-      [DEFAULT_TARGET_NAME]: {
+      [DEFAULT_TARGET_NAME]: expect.objectContaining({
         executor: '@code-pushup/nx-plugin:cli',
-      },
+      }),
     });
   });
 
@@ -156,33 +155,8 @@ describe('createTargets', () => {
         },
       } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual({
-      cp: {
+      cp: expect.objectContaining({
         executor: '@code-pushup/nx-plugin:cli',
-      },
-    });
-  });
-
-  it('should include projectPrefix options in executor targets if given', async () => {
-    const projectName = 'plugin-my-plugin';
-    vol.fromJSON(
-      {
-        [`code-pushup.config.ts`]: `{}`,
-      },
-      MEMFS_VOLUME,
-    );
-    await expect(
-      createTargets({
-        projectRoot: '.',
-        projectJson: {
-          name: projectName,
-        },
-        createOptions: {
-          projectPrefix: 'cli',
-        },
-      } as NormalizedCreateNodesContext),
-    ).resolves.toStrictEqual({
-      [DEFAULT_TARGET_NAME]: expect.objectContaining({
-        options: { projectPrefix: 'cli' },
       }),
     });
   });

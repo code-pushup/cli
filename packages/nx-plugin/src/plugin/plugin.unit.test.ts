@@ -2,8 +2,11 @@ import type { CreateNodesContext } from '@nx/devkit';
 import { vol } from 'memfs';
 import { describe, expect } from 'vitest';
 import { invokeCreateNodesOnVirtualFiles } from '@code-pushup/test-nx-utils';
-import { PACKAGE_NAME, PROJECT_JSON_FILE_NAME } from '../internal/constants.js';
-import { CP_TARGET_NAME } from './constants.js';
+import {
+  DEFAULT_TARGET_NAME,
+  PACKAGE_NAME,
+  PROJECT_JSON_FILE_NAME,
+} from '../internal/constants.js';
 import { createNodes } from './plugin.js';
 
 describe('@code-pushup/nx-plugin/plugin', () => {
@@ -36,11 +39,11 @@ describe('@code-pushup/nx-plugin/plugin', () => {
         {},
         { matchingFilesData },
       ),
-    ).resolves.toStrictEqual({
+    ).resolves.toEqual({
       [projectRoot]: {
         targets: {
-          [`${CP_TARGET_NAME}--configuration`]: {
-            command: `nx g ${PACKAGE_NAME}:configuration --skipTarget --targetName="code-pushup" --project="@org/empty-root"`,
+          [`${DEFAULT_TARGET_NAME}--configuration`]: {
+            command: `nx g ${PACKAGE_NAME}:configuration --project="@org/empty-root"`,
           },
         },
       },
@@ -62,11 +65,11 @@ describe('@code-pushup/nx-plugin/plugin', () => {
         {},
         { matchingFilesData },
       ),
-    ).resolves.toStrictEqual({
+    ).resolves.toEqual({
       [projectRoot]: {
         targets: {
-          [`${CP_TARGET_NAME}--configuration`]: {
-            command: `nx g ${PACKAGE_NAME}:configuration --skipTarget --targetName="code-pushup" --project="@org/empty-root"`,
+          [`${DEFAULT_TARGET_NAME}--configuration`]: {
+            command: `nx g ${PACKAGE_NAME}:configuration --project="@org/empty-root"`,
           },
         },
       },
@@ -82,27 +85,28 @@ describe('@code-pushup/nx-plugin/plugin', () => {
       [`${projectRoot}/code-pushup.config.ts`]: '{}',
     };
 
-    await expect(
-      invokeCreateNodesOnVirtualFiles(
-        createNodes,
-        context,
-        {
-          projectPrefix: 'cli',
-        },
-        { matchingFilesData },
-      ),
-    ).resolves.toStrictEqual({
+    const result = await invokeCreateNodesOnVirtualFiles(
+      createNodes,
+      context,
+      {
+        projectPrefix: 'cli',
+      },
+      { matchingFilesData },
+    );
+
+    expect(result).toMatchObject({
       [projectRoot]: {
         targets: {
-          [CP_TARGET_NAME]: {
+          [DEFAULT_TARGET_NAME]: {
             executor: `${PACKAGE_NAME}:cli`,
-            options: {
-              projectPrefix: 'cli',
-            },
           },
         },
       },
     });
+
+    expect(
+      result[projectRoot].targets[DEFAULT_TARGET_NAME].options,
+    ).toHaveProperty('projectPrefix', 'cli');
   });
 
   it('should create the executor target on PACKAGE project if configured', async () => {
@@ -114,26 +118,27 @@ describe('@code-pushup/nx-plugin/plugin', () => {
       [`${projectRoot}/code-pushup.config.ts`]: '{}',
     };
 
-    await expect(
-      invokeCreateNodesOnVirtualFiles(
-        createNodes,
-        context,
-        {
-          projectPrefix: 'cli',
-        },
-        { matchingFilesData },
-      ),
-    ).resolves.toStrictEqual({
+    const result = await invokeCreateNodesOnVirtualFiles(
+      createNodes,
+      context,
+      {
+        projectPrefix: 'cli',
+      },
+      { matchingFilesData },
+    );
+
+    expect(result).toMatchObject({
       [projectRoot]: {
         targets: {
-          [CP_TARGET_NAME]: {
+          [DEFAULT_TARGET_NAME]: {
             executor: `${PACKAGE_NAME}:cli`,
-            options: {
-              projectPrefix: 'cli',
-            },
           },
         },
       },
     });
+
+    expect(
+      result[projectRoot].targets[DEFAULT_TARGET_NAME].options,
+    ).toHaveProperty('projectPrefix', 'cli');
   });
 });

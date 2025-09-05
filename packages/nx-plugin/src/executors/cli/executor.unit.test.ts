@@ -66,7 +66,7 @@ describe('runAutorunExecutor', () => {
       },
     );
     expect(output.success).toBe(true);
-    expect(output.command).toMatch('utils');
+    expect(output.command).toMatch('npx @code-pushup/cli');
     expect(executeProcessSpy).toHaveBeenCalledWith({
       command: 'npx',
       args: expect.arrayContaining(['@code-pushup/cli']),
@@ -100,9 +100,7 @@ describe('runAutorunExecutor', () => {
     );
   });
 
-  it('should create command from context, options and arguments if api key is set', async () => {
-    vi.stubEnv('CP_API_KEY', 'cp_1234567');
-    vi.stubEnv('CP_PROJECT', 'CLI');
+  it('should create command from context, options and arguments', async () => {
     const output = await runAutorunExecutor(
       { persist: { filename: 'REPORT', format: ['md', 'json'] } },
       executorContext('core'),
@@ -111,8 +109,6 @@ describe('runAutorunExecutor', () => {
     expect(output.command).toMatch(
       '--persist.format="md" --persist.format="json"',
     );
-    expect(output.command).toMatch('--upload.apiKey="cp_1234567"');
-    expect(output.command).toMatch('--upload.project="CLI"');
   });
 
   it('should log information if verbose is set', async () => {

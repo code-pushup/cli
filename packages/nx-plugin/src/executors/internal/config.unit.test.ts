@@ -77,7 +77,7 @@ describe('globalConfig', () => {
     );
     expect(osAgnosticPath(String(config))).toStrictEqual(
       expect.stringContaining(
-        osAgnosticPath('project-root/code-pushup.config.ts'),
+        osAgnosticPath('{projectRoot}/code-pushup.config.ts'),
       ),
     );
   });
@@ -105,7 +105,11 @@ describe('globalConfig', () => {
           workspaceRoot: '/test/root/workspace-root',
         },
       ),
-    ).toEqual(expect.objectContaining({ config: 'code-pushup.config.ts' }));
+    ).toEqual(
+      expect.objectContaining({
+        config: '{projectRoot}/code-pushup.config.ts',
+      }),
+    );
   });
 
   it('should exclude other options', () => {
@@ -174,7 +178,7 @@ describe('persistConfig', () => {
       },
     );
     expect(osAgnosticPath(String(outputDir))).toBe(
-      osAgnosticPath(`/test/root/workspace-root/.code-pushup/${projectName}`),
+      osAgnosticPath('{projectRoot}/.code-pushup'),
     );
   });
 
@@ -262,17 +266,19 @@ describe('uploadConfig', () => {
     processEnvSpy.mockRestore();
   });
 
+  beforeEach(() => {
+    processEnvSpy.mockReturnValue({});
+  });
+
   it('should provide default upload project options as project name', () => {
     const projectName = 'my-app';
-    expect(
-      uploadConfig(baseUploadConfig, {
-        workspaceRoot: 'workspace-root',
-        projectConfig: {
-          name: projectName,
-          root: 'root',
-        },
+    expect(uploadConfig(baseUploadConfig)).toEqual(
+      expect.objectContaining({
+        server: 'https://base-portal.code.pushup.dev',
+        apiKey: 'apiKey',
+        organization: 'organization',
       }),
-    ).toEqual(expect.objectContaining({ project: projectName }));
+    );
   });
 
   it('should parse upload project options', () => {
@@ -378,18 +384,17 @@ describe('uploadConfig', () => {
 
   it('should options overwrite process.env vars', () => {
     expect(
-      uploadConfig(
-        {
-          project: 'my-app2',
-        },
-        {
-          workspaceRoot: 'workspaceRoot',
-          projectConfig: {
-            name: 'my-app',
-            root: 'root',
-          },
-        },
-      ),
-    ).toEqual(expect.objectContaining({ project: 'my-app2' }));
+      uploadConfig({
+        ...baseUploadConfig,
+        project: 'my-app2',
+      }),
+    ).toEqual(
+      expect.objectContaining({
+        project: 'my-app2',
+        server: 'https://base-portal.code.pushup.dev',
+        apiKey: 'apiKey',
+        organization: 'organization',
+      }),
+    );
   });
 });

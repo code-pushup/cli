@@ -1,7 +1,7 @@
 import type { CreateNodesContext, CreateNodesContextV2 } from '@nx/devkit';
 import { readFile } from 'node:fs/promises';
 import * as path from 'node:path';
-import { CP_TARGET_NAME } from './constants.js';
+import { DEFAULT_TARGET_NAME } from '../internal/constants.js';
 import type {
   CreateNodesOptions,
   NormalizedCreateNodesContext,
@@ -21,7 +21,7 @@ export async function normalizedCreateNodesContext(
       (await readFile(projectConfigurationFile)).toString(),
     ) as ProjectConfigurationWithName;
 
-    const { targetName = CP_TARGET_NAME } = createOptions;
+    const { targetName = DEFAULT_TARGET_NAME } = createOptions;
     return {
       ...context,
       projectJson,
@@ -50,7 +50,7 @@ export async function normalizedCreateNodesV2Context(
       (await readFile(projectConfigurationFile)).toString(),
     ) as ProjectConfigurationWithName;
 
-    const { targetName = CP_TARGET_NAME } = createOptions;
+    const { targetName = DEFAULT_TARGET_NAME } = createOptions;
     return {
       ...context,
       projectJson,

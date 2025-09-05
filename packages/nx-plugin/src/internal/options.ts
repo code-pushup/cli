@@ -3,7 +3,11 @@ import {
   AutorunCommandExecutorOptions,
   PrintConfigCommandExecutorOptions,
 } from '../executors/cli/schema.js';
-import { globalConfig, persistConfig, uploadConfig } from './config';
+import {
+  globalConfig,
+  persistConfig,
+  uploadConfig,
+} from '../executors/internal/config.js';
 
 export function parseAutorunExecutorOnlyOptions(
   options: Partial<AutorunCommandExecutorOnlyOptions>,

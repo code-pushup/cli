@@ -71,6 +71,10 @@ function updateNxJsonConfig(tree: Tree) {
     inputs: ['default', '^production'],
     cache: true,
   };
+  nxJson.plugins ??= [];
+  nxJson.plugins.unshift({
+    plugin: '@code-pushup/nx-plugin',
+  });
 
   updateNxJson(tree, nxJson);
 }
