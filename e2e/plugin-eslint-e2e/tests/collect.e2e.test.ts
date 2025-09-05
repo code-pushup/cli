@@ -20,6 +20,7 @@ describe('PLUGIN collect report with eslint-plugin NPM package', () => {
   );
   const fixturesFlatConfigDir = path.join(fixturesDir, 'flat-config');
   const fixturesLegacyConfigDir = path.join(fixturesDir, 'legacy-config');
+  const fixturesArtifactsConfigDir = path.join(fixturesDir, 'artifacts-config');
 
   const envRoot = path.join(
     E2E_ENVIRONMENTS_DIR,
@@ -28,22 +29,32 @@ describe('PLUGIN collect report with eslint-plugin NPM package', () => {
   );
   const flatConfigDir = path.join(envRoot, 'flat-config');
   const legacyConfigDir = path.join(envRoot, 'legacy-config');
+  const artifactsConfigDir = path.join(envRoot, 'artifacts-config');
   const flatConfigOutputDir = path.join(flatConfigDir, '.code-pushup');
   const legacyConfigOutputDir = path.join(legacyConfigDir, '.code-pushup');
+  const artifactsConfigOutputDir = path.join(
+    artifactsConfigDir,
+    '.code-pushup',
+  );
 
   beforeAll(async () => {
     await cp(fixturesFlatConfigDir, flatConfigDir, { recursive: true });
     await cp(fixturesLegacyConfigDir, legacyConfigDir, { recursive: true });
+    await cp(fixturesArtifactsConfigDir, artifactsConfigDir, {
+      recursive: true,
+    });
   });
 
   afterAll(async () => {
     await teardownTestFolder(flatConfigDir);
     await teardownTestFolder(legacyConfigDir);
+    await teardownTestFolder(artifactsConfigDir);
   });
 
   afterEach(async () => {
     await teardownTestFolder(flatConfigOutputDir);
     await teardownTestFolder(legacyConfigOutputDir);
+    await teardownTestFolder(artifactsConfigOutputDir);
   });
 
   it('should run ESLint plugin for flat config and create report.json', async () => {
@@ -75,6 +86,23 @@ describe('PLUGIN collect report with eslint-plugin NPM package', () => {
 
     const report = await readJsonFile(
       path.join(legacyConfigOutputDir, 'report.json'),
+    );
+
+    expect(() => reportSchema.parse(report)).not.toThrow();
+    expect(omitVariableReportData(report as Report)).toMatchSnapshot();
+  });
+
+  it('should run ESLint plugin with artifacts options', async () => {
+    const { code } = await executeProcess({
+      command: 'npx',
+      args: ['@code-pushup/cli', 'collect', '--no-progress'],
+      cwd: artifactsConfigDir,
+    });
+
+    expect(code).toBe(0);
+
+    const report = await readJsonFile(
+      path.join(artifactsConfigOutputDir, 'report.json'),
     );
 
     expect(() => reportSchema.parse(report)).not.toThrow();

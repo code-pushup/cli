@@ -185,7 +185,7 @@
     },
     "code-pushup-eslint": {
       "cache": true,
-      "inputs": ["default", "code-pushup-inputs", "lint-eslint-inputs"],
+      "inputs": ["default", "code-pushup-inputs"],
       "outputs": ["{projectRoot}/.code-pushup/eslint/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
