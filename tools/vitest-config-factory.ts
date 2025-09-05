@@ -20,7 +20,6 @@ export interface CreateVitestConfigOptions {
   coverage?: {
     enabled?: boolean;
     exclude?: string[];
-    reportsSubdir?: string;
   };
   testTimeout?: number;
   typecheckInclude?: string[];
@@ -39,8 +38,6 @@ export function createVitestConfig(
         )
       : options.projectRoot;
   const cacheDirName = options.cacheKey ?? options.projectKey;
-  const reportsSubdir =
-    options.coverage?.reportsSubdir ?? `${options.kind}-tests`;
   const coverageEnabled = options.coverage?.enabled ?? options.kind !== 'e2e';
   const defaultGlobalSetup =
     options.kind === 'e2e'
@@ -95,7 +92,9 @@ export function createVitestConfig(
             coverage: {
               reporter: ['text', 'lcov'],
               reportsDirectory: new URL(
-                `coverage/${options.projectKey}/${reportsSubdir}`,
+                options.kind === 'e2e'
+                  ? `e2e/${options.projectKey}/.coverage`
+                  : `packages/${options.projectKey}/.coverage`,
                 projectRootUrl,
               ).pathname,
               exclude: defaultExclude,

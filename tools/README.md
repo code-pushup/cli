@@ -45,8 +45,8 @@ Common to all kinds:
 
 Coverage:
 
-- Unit/Int: enabled by default, reports to `<projectRoot>/coverage/<project>/<kind>-tests`
-- E2E: disabled by default
+- Unit/Int: enabled by default, reports to `<projectRoot>/packages/<project>/.coverage`
+- E2E: disabled by default, reports to `<projectRoot>/e2e/<project>/.coverage` if enabled
 - Default exclude: `['mocks/**', '**/types.ts']`
 
 Global setup:
@@ -117,7 +117,7 @@ Preset keys:
 - `setupFiles?: string[]`: extra setup files (appended to baseline; project-root-relative).
 - `overrideSetupFiles?: boolean`: skip baseline and use only provided list.
 - `globalSetup?: string[]`: override default global setup (project-root-relative).
-- `coverage?: { enabled?, exclude?, reportsSubdir? }`
+- `coverage?: { enabled?, exclude? }`
 - `testTimeout?: number`: e.g., for E2E.
 - `typecheckInclude?: string[]`: include patterns for Vitest typecheck.
 - `cacheKey?: string`: custom cache dir suffix.
