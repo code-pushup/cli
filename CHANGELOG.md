@@ -1,3 +1,13 @@
+## 0.79.1 (2025-09-04)
+
+### 🩹 Fixes
+
+- **nx-plugin:** process output argument ([#1105](https://github.com/code-pushup/cli/pull/1105))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.79.0 (2025-09-03)
 
 ### 🚀 Features

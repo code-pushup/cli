@@ -49,6 +49,8 @@
   },
   "devDependencies": {
     "@code-pushup/portal-client": "^0.16.0",
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.1",
     "@beaussan/nx-knip": "^0.0.5-15",
     "@code-pushup/cli": "^0.79.1",
     "@code-pushup/eslint-config": "^0.14.2",
