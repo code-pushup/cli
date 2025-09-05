@@ -345,17 +345,6 @@
   },
   "plugins": [
     {
-      "plugin": "@code-pushup/nx-plugin",
-      "options": {
-        "pluginBin": "packages/nx-plugin/dist",
-        "cliBin": "packages/cli/src/index.ts",
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
-      }
-    },
-    {
       "plugin": "@push-based/nx-verdaccio",
       "options": {
         "environments": {
