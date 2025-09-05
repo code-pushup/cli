@@ -27,7 +27,6 @@ describe('formatGitPath', () => {
   });
 
   it('returns relative Unix path for a relative path within current working directory', () => {
-    // Mocking process.cwd() to return a specific path
     vi.spyOn(process, 'cwd').mockReturnValue('/Users/user/Projects/myProject');
     const path = 'src/index.js';
     const gitRoot = '/Users/user/Projects/myProject';

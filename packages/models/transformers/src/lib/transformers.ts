@@ -41,9 +41,8 @@ function annotateTypeDefinitions(
       }
       return tsLib.visitEachChild(node, visitor, context);
     };
-    return (sourceFile: ts.SourceFile) => {
-      return tsLib.visitNode(sourceFile, visitor, tsLib.isSourceFile);
-    };
+    return (sourceFile: ts.SourceFile) =>
+      tsLib.visitNode(sourceFile, visitor, tsLib.isSourceFile);
   };
 }
 

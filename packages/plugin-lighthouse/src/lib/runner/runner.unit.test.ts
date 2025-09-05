@@ -8,16 +8,14 @@ import { createRunnerFunction } from './runner.js';
 import type { LighthouseCliFlags } from './types.js';
 import { enrichFlags, getConfig } from './utils.js';
 
-// used for createRunnerMocking
 vi.mock('./utils', async () => {
-  // Import the actual 'lighthouse' module
   const actual = await vi.importActual('./utils');
 
   const actualEnrichFlags = actual['enrichFlags'] as (
     f: LighthouseCliFlags,
     i?: number,
   ) => string;
-  // Return the mocked module, merging the actual module with overridden parts
+
   return {
     ...actual,
     enrichFlags: vi.fn().mockImplementation(actualEnrichFlags),
@@ -27,9 +25,8 @@ vi.mock('./utils', async () => {
 });
 
 vi.mock('lighthouse/cli/run.js', async () => {
-  // Import the actual 'lighthouse' module
   const actual = await import('lighthouse/cli/run.js');
-  // Define the mock implementation
+
   const mockRunLighthouse = vi.fn(
     (url: string, flags: LighthouseCliFlags, config: Config) =>
       url.includes('fail')
@@ -54,10 +51,9 @@ vi.mock('lighthouse/cli/run.js', async () => {
           },
   );
 
-  // Return the mocked module, merging the actual module with overridden parts
   return {
     ...actual,
-    runLighthouse: mockRunLighthouse, // Mock the default export if 'lighthouse' is imported as default
+    runLighthouse: mockRunLighthouse,
   };
 });
 

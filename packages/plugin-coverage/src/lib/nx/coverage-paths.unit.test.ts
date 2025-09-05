@@ -86,7 +86,6 @@ describe('getCoveragePathForTarget', () => {
   beforeEach(() => {
     vol.fromJSON(
       {
-        // values come from bundle-require mock above
         'vitest-valid.config.ts': '',
         'jest-valid.config.ts': '',
       },
@@ -162,7 +161,6 @@ describe('getCoveragePathForVitest', () => {
   beforeEach(() => {
     vol.fromJSON(
       {
-        // values come from bundle-require mock above
         'vitest-valid.config.unit.ts': '',
         'vitest-no-dir.config.integration.ts': '',
         'vitest-no-lcov.config.integration.ts': '',
@@ -260,7 +258,6 @@ describe('getCoveragePathForJest', () => {
   beforeEach(() => {
     vol.fromJSON(
       {
-        // values come from bundle-require mock above
         'jest-valid.config.unit.ts': '',
         'jest-no-dir.config.integration.ts': '',
         'jest-no-lcov.config.integration.ts': '',

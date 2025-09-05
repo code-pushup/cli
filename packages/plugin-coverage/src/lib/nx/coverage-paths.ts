@@ -81,8 +81,12 @@ function hasNxTarget(
 export type VitestCoverageConfig = {
   test: {
     coverage?: {
+      enabled?: boolean;
+      provider?: string;
       reporter?: string[];
       reportsDirectory?: string;
+      include?: string[];
+      exclude?: string[];
     };
   };
 };
