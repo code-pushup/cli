@@ -1,4 +1,6 @@
 export type DynamicTargetOptions = {
   targetName?: string;
-  bin?: string;
+  pluginBin?: string;
+  cliBin?: string;
+  env?: Record<string, string>;
 };

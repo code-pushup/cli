@@ -1,9 +1,68 @@
 import { gray } from 'ansis';
 import { spawn } from 'node:child_process';
 import { ui } from '@code-pushup/utils';
+import { formatCommandLog } from '../executors/internal/cli.js';
 
 export function calcDuration(start: number, stop?: number): number {
   return Math.round((stop ?? performance.now()) - start);
+}
+
+/**
+ * Processes Node.js specific environment variables that can't be passed via NODE_OPTIONS.
+ * Extracts flags like --import from NODE_OPTIONS and adds them directly to the command arguments.
+ */
+function processNodeOptions({
+  command,
+  args,
+  env,
+}: {
+  command: string;
+  args: string[];
+  env?: Record<string, string>;
+}): {
+  processedCommand: string;
+  processedArgs: string[];
+  processedEnv?: Record<string, string>;
+} {
+  if (!env || command !== 'node') {
+    return {
+      processedCommand: command,
+      processedArgs: args,
+      processedEnv: env,
+    };
+  }
+
+  const processedEnv = { ...env };
+  const processedArgs = [...args];
+
+  // Handle NODE_OPTIONS that contain flags not allowed in environment variables
+  if (processedEnv.NODE_OPTIONS) {
+    const nodeOptions = processedEnv.NODE_OPTIONS;
+
+    // Extract --import flag which is not allowed in NODE_OPTIONS
+    const importMatch = nodeOptions.match(/--import[=\s]+([^\s]+)/);
+    if (importMatch) {
+      // Add --import flag directly to node arguments
+      processedArgs.unshift(`--import=${importMatch[1]}`);
+
+      // Remove --import from NODE_OPTIONS
+      processedEnv.NODE_OPTIONS = nodeOptions
+        .replace(/--import[=\s]+[^\s]+/, '')
+        .trim();
+
+      // If NODE_OPTIONS is now empty, remove it entirely
+      if (!processedEnv.NODE_OPTIONS) {
+        delete processedEnv.NODE_OPTIONS;
+      }
+    }
+  }
+
+  return {
+    processedCommand: command,
+    processedArgs: processedArgs,
+    processedEnv:
+      Object.keys(processedEnv).length > 0 ? processedEnv : undefined,
+  };
 }
 
 /**
@@ -86,7 +145,9 @@ export type ProcessConfig = {
   command: string;
   args?: string[];
   cwd?: string;
+  env?: Record<string, string>;
   observer?: ProcessObserver;
+  dryRun?: boolean;
   ignoreExitCode?: boolean;
 };
 
@@ -138,21 +199,53 @@ export type ProcessObserver = {
  * @param cfg - see {@link ProcessConfig}
  */
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
-  const { observer, cwd, command, args, ignoreExitCode = false } = cfg;
+  const {
+    observer,
+    cwd,
+    command,
+    args,
+    ignoreExitCode = false,
+    env,
+    dryRun,
+  } = cfg;
   const { onStdout, onError, onComplete } = observer ?? {};
   const date = new Date().toISOString();
   const start = performance.now();
 
-  const logCommand = [command, ...(args || [])].join(' ');
+  // Handle Node.js specific environment variables that can't be passed via NODE_OPTIONS
+  const { processedCommand, processedArgs, processedEnv } = processNodeOptions({
+    command,
+    args: args ?? [],
+    env,
+  });
+
   ui().logger.log(
     gray(
-      `Executing command:\n${logCommand}\nIn working directory:\n${cfg.cwd ?? process.cwd()}`,
+      `Executing command:\n${formatCommandLog({
+        command: processedCommand,
+        args: processedArgs,
+        env: processedEnv,
+      })}\nIn working directory:\n${cfg.cwd ?? process.cwd()}`,
     ),
   );
 
+  if (dryRun) {
+    return Promise.resolve({
+      code: 0,
+      stdout: '@code-pushup executed in dry run mode',
+      stderr: '',
+      date,
+      duration: calcDuration(start),
+    });
+  }
+
   return new Promise((resolve, reject) => {
     // shell:true tells Windows to use shell command for spawning a child process
-    const process = spawn(command, args, { cwd, shell: true });
+    const process = spawn(processedCommand, processedArgs, {
+      cwd,
+      shell: true,
+      env: processedEnv,
+    });
     // eslint-disable-next-line functional/no-let
     let stdout = '';
     // eslint-disable-next-line functional/no-let
