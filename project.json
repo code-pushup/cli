@@ -2,44 +2,6 @@
   "name": "cli-workspace",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
-    "cp-local-cli": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "node packages/cli/src/index.ts",
-        "args": ["--no-progress", "--verbose", "--onlyPlugins=js-packages"],
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
-      }
-    },
-    "cp-local-executor-cpplugins": {
-      "dependsOn": ["nx-plugin:build"],
-      "executor": "./packages/nx-plugin/dist:cli",
-      "options": {
-        "verbose": true,
-        "progress": false,
-        "onlyPlugins": ["js-packages"],
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
-      }
-    },
-    "cp-local-executor-cli-cpplugins": {
-      "dependsOn": ["nx-plugin:build"],
-      "executor": "./packages/nx-plugin/dist:cli",
-      "options": {
-        "bin": "node packages/cli/src/index.ts",
-        "verbose": true,
-        "progress": false,
-        "onlyPlugins": ["js-packages"],
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
-      }
-    },
     "code-pushup-js-packages": {},
     "code-pushup-lighthouse": {},
     "code-pushup-coverage": {
@@ -63,6 +25,19 @@
       ]
     },
     "code-pushup-jsdocs": {},
-    "code-pushup-typescript": {}
+    "code-pushup-typescript": {},
+    "code-pushup": {
+      "dependsOn": ["code-pushup-*"],
+      "executor": "nx:run-commands",
+      "options": {
+        "args": [
+          "--no-progress",
+          "--verbose",
+          "--cache.read",
+          "--persist.outputDir={projectRoot}/.code-pushup",
+          "--upload.project={projectName}"
+        ]
+      }
+    }
   }
 }
