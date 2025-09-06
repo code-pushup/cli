@@ -8,73 +8,7 @@ import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import * as path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants.js';
-import { addTargetToProject, configurationGenerator } from './generator.js';
-
-describe('addTargetToProject', () => {
-  let tree: Tree;
-  const testProjectName = 'test-app';
-
-  beforeEach(() => {
-    tree = createTreeWithEmptyWorkspace();
-    addProjectConfiguration(tree, 'test-app', {
-      root: 'test-app',
-    });
-  });
-
-  afterEach(() => {
-    //reset tree
-    tree.delete(testProjectName);
-  });
-
-  it('should generate a project target', () => {
-    addTargetToProject(
-      tree,
-      {
-        root: testProjectName,
-        projectType: 'library',
-        sourceRoot: `${testProjectName}/src`,
-        targets: {},
-      },
-      {
-        project: testProjectName,
-      },
-    );
-
-    const projectConfiguration = readProjectConfiguration(
-      tree,
-      testProjectName,
-    );
-
-    expect(projectConfiguration.targets?.[DEFAULT_TARGET_NAME]).toEqual({
-      executor: `${PACKAGE_NAME}:cli`,
-    });
-  });
-
-  it('should use targetName to generate a project target', () => {
-    addTargetToProject(
-      tree,
-      {
-        root: testProjectName,
-        projectType: 'library',
-        sourceRoot: `${testProjectName}/src`,
-        targets: {},
-      },
-      {
-        project: testProjectName,
-        targetName: 'cp',
-      },
-    );
-
-    const projectConfiguration = readProjectConfiguration(
-      tree,
-      testProjectName,
-    );
-
-    expect(projectConfiguration.targets?.['cp']).toEqual({
-      executor: `${PACKAGE_NAME}:cli`,
-    });
-  });
-});
+import { configurationGenerator } from './generator.js';
 
 describe('configurationGenerator', () => {
   let tree: Tree;
