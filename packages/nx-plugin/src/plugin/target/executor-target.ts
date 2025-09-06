@@ -6,14 +6,9 @@ import type { CreateNodesOptions } from '../types.js';
 export function createExecutorTarget(
   options?: CreateNodesOptions,
 ): TargetConfiguration<AutorunCommandExecutorOptions> {
-  const {
-    pluginBin = PACKAGE_NAME,
-    projectPrefix,
-    cliBin,
-    env,
-  } = options ?? {};
+  const { projectPrefix, cliBin, env } = options ?? {};
   return {
-    executor: `${pluginBin}:cli`,
+    executor: `${PACKAGE_NAME}:cli`,
     ...(cliBin || projectPrefix || env
       ? {
           options: {

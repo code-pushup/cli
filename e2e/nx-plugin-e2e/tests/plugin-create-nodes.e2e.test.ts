@@ -103,30 +103,6 @@ describe('nx-plugin', () => {
     });
   });
 
-  it('should consider plugin option pluginBin in configuration target', async () => {
-    const cwd = path.join(testFileDir, 'configuration-option-pluginBin');
-    const pluginBinPath = `packages/nx-plugin/dist`;
-    registerPluginInWorkspace(tree, {
-      plugin: '@code-pushup/nx-plugin',
-      options: {
-        pluginBin: pluginBinPath,
-      },
-    });
-    await materializeTree(tree, cwd);
-
-    const { code, projectJson } = await nxShowProjectJson(cwd, project);
-
-    expect(code).toBe(0);
-
-    expect(projectJson.targets).toStrictEqual({
-      'code-pushup--configuration': expect.objectContaining({
-        options: {
-          command: `nx g ${pluginBinPath}:configuration --skipTarget --targetName="code-pushup" --project="${project}"`,
-        },
-      }),
-    });
-  });
-
   it('should NOT add config targets dynamically if the project is configured', async () => {
     const cwd = path.join(testFileDir, 'configuration-already-configured');
     registerPluginInWorkspace(tree, '@code-pushup/nx-plugin');
@@ -203,30 +179,6 @@ describe('nx-plugin', () => {
     expect(cleanStdout).toContain(
       'NX   Successfully ran target code-pushup for project my-lib',
     );
-  });
-
-  it('should consider plugin option pluginBin in executor target', async () => {
-    const cwd = path.join(testFileDir, 'executor-option-pluginBin');
-    const pluginBinPath = `packages/nx-plugin/dist`;
-    registerPluginInWorkspace(tree, {
-      plugin: '@code-pushup/nx-plugin',
-      options: {
-        pluginBin: pluginBinPath,
-      },
-    });
-    const { root } = readProjectConfiguration(tree, project);
-    generateCodePushupConfig(tree, root);
-    await materializeTree(tree, cwd);
-
-    const { code, projectJson } = await nxShowProjectJson(cwd, project);
-
-    expect(code).toBe(0);
-
-    expect(projectJson.targets).toStrictEqual({
-      'code-pushup': expect.objectContaining({
-        executor: `${pluginBinPath}:cli`,
-      }),
-    });
   });
 
   it('should consider plugin option cliBin in executor target', async () => {

@@ -7,15 +7,10 @@ import { CP_TARGET_NAME } from '../constants.js';
 export function createConfigurationTarget(options?: {
   targetName?: string;
   projectName?: string;
-  pluginBin?: string;
 }): TargetConfiguration<RunCommandsOptions> {
-  const {
-    projectName,
-    pluginBin = PACKAGE_NAME,
-    targetName = CP_TARGET_NAME,
-  } = options ?? {};
+  const { projectName, targetName = CP_TARGET_NAME } = options ?? {};
   return {
-    command: `nx g ${pluginBin}:configuration ${objectToCliArgs({
+    command: `nx g ${PACKAGE_NAME}:configuration ${objectToCliArgs({
       skipTarget: true,
       targetName,
       ...(projectName ? { project: projectName } : {}),

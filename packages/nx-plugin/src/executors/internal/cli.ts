@@ -47,13 +47,15 @@ export function createCliCommandObject(options?: {
 }): ProcessConfig {
   const { bin = 'npx @code-pushup/cli', command, args } = options ?? {};
   const binArr = bin.split(' ');
-  const finalCommand = binArr.at(0) as string;
+
+  // If bin contains spaces, use the first part as command and rest as args
+  // If bin is a single path, default to 'npx' and use the bin as first arg
+  const finalCommand = binArr.length > 1 ? binArr[0] : 'npx';
+  const binArgs = binArr.length > 1 ? binArr.slice(1) : [bin];
+
   return {
     command: finalCommand,
-    args: [
-      ...binArr.slice(1),
-      ...objectToCliArgs({ _: command ?? [], ...args }),
-    ],
+    args: [...binArgs, ...objectToCliArgs({ _: command ?? [], ...args })],
     observer: {
       onError: error => {
         logger.error(error.message);

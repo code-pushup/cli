@@ -2,15 +2,9 @@ import { expect } from 'vitest';
 import { createExecutorTarget } from './executor-target.js';
 
 describe('createExecutorTarget', () => {
-  it('should return executor target without project name', () => {
+  it('should return executor target with default package name', () => {
     expect(createExecutorTarget()).toStrictEqual({
       executor: '@code-pushup/nx-plugin:cli',
-    });
-  });
-
-  it('should use bin if provides', () => {
-    expect(createExecutorTarget({ pluginBin: 'xyz' })).toStrictEqual({
-      executor: 'xyz:cli',
     });
   });
 

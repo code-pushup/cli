@@ -17,7 +17,6 @@ export type CreateTargetsOptions = {
 export async function createTargets(normalizedContext: CreateTargetsOptions) {
   const {
     targetName = CP_TARGET_NAME,
-    pluginBin,
     projectPrefix,
     env,
     cliBin,
@@ -26,7 +25,6 @@ export async function createTargets(normalizedContext: CreateTargetsOptions) {
   return rootFiles.some(filename => filename.match(CODE_PUSHUP_CONFIG_REGEX))
     ? {
         [targetName]: createExecutorTarget({
-          pluginBin: pluginBin,
           projectPrefix,
           env,
           cliBin,
@@ -37,7 +35,6 @@ export async function createTargets(normalizedContext: CreateTargetsOptions) {
         [`${targetName}--configuration`]: createConfigurationTarget({
           targetName,
           projectName: normalizedContext.projectJson.name,
-          pluginBin: pluginBin,
         }),
       };
 }

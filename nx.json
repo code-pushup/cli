@@ -140,29 +140,6 @@
         "watch": false
       }
     },
-    "code-pushup": {
-      "cache": false,
-      "outputs": [
-        "{projectRoot}/.code-pushup/report.md",
-        "{projectRoot}/.code-pushup/report.json"
-      ],
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "node packages/cli/src/index.ts",
-        "args": [
-          "--no-progress",
-          "--verbose",
-          "--config={projectRoot}/code-pushup.config.ts",
-          "--cache.read",
-          "--persist.outputDir={projectRoot}/.code-pushup",
-          "--upload.project=cli-{projectName}"
-        ],
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
-      }
-    },
     "code-pushup-coverage": {
       "cache": true,
       "inputs": ["default", "code-pushup-inputs"],
@@ -347,6 +324,16 @@
     "releaseTagPattern": "v{version}"
   },
   "plugins": [
+    {
+      "plugin": "@code-pushup/nx-plugin",
+      "options": {
+        "cliBin": "node ./packages/cli/src/index.ts",
+        "env": {
+          "NODE_OPTIONS": "--import=tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
     {
       "plugin": "@push-based/nx-verdaccio",
       "options": {

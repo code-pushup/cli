@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getAsyncProcessRunnerConfig } from '@code-pushup/test-utils';
 import { type ProcessObserver, executeProcess } from './execute-process.js';
 

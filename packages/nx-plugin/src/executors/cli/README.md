@@ -73,6 +73,5 @@ Show what will be executed without actually executing it:
 | **projectPrefix** | `string`  | prefix for upload.project on non root projects                     |
 | **dryRun**        | `boolean` | To debug the executor, dry run the command without real execution. |
 | **cliBin**        | `string`  | Path to Code PushUp CLI                                            |
-| **pluginBin**     | `string`  | Path to Code PushUp Nx Plugin                                      |
 
 For all other options see the [CLI autorun documentation](../../../../cli/README.md#autorun-command).

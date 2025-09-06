@@ -69,6 +69,56 @@ You can control the execution of long-running tests over the `INCLUDE_SLOW_TESTS
 To change this setup, open (or create) the `.env` file in the root folder.
 Edit or add the environment variable there as follows: `INCLUDE_SLOW_TESTS=true`.
 
+### Executing local code
+
+_Execute the latest CLI source_
+
+```jsonc
+// project.json
+{
+  "targets": {
+    "exec-local-cli-source": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts",
+        "args": ["--no-progress", "--verbose", "--help"],
+      }
+    },
+    "exec-local-cli-source-and-local-plugin-source": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts",
+        "args": ["--no-progress", "--verbose", "--onlyPlugins=js-packages"],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    }
+ }
+```
+
+_Setup code-pushup targets with the nx plugin_
+
+```jsonc
+// nx.json
+{
+  "plugins": [
+    {
+      "plugin": "@code-pushup/nx-plugin",
+      "options": {
+        "cliBin": "node ./packages/cli/src/index.ts",
+        "env": {
+          // nx.json
+          "NODE_OPTIONS": "--import=tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json",
+        },
+      },
+    },
+  ],
+}
+```
+
 ## Git
 
 Commit messages must follow [conventional commits](https://conventionalcommits.org/) format.

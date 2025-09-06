@@ -1,5 +1,5 @@
 import { gray } from 'ansis';
-import { spawn } from 'node:child_process';
+import { exec } from 'node:child_process';
 import { ui } from '@code-pushup/utils';
 import { formatCommandLog } from '../executors/internal/cli.js';
 
@@ -7,62 +7,19 @@ export function calcDuration(start: number, stop?: number): number {
   return Math.round((stop ?? performance.now()) - start);
 }
 
-/**
- * Processes Node.js specific environment variables that can't be passed via NODE_OPTIONS.
- * Extracts flags like --import from NODE_OPTIONS and adds them directly to the command arguments.
- */
-function processNodeOptions({
-  command,
-  args,
-  env,
-}: {
-  command: string;
-  args: string[];
-  env?: Record<string, string>;
-}): {
-  processedCommand: string;
-  processedArgs: string[];
-  processedEnv?: Record<string, string>;
-} {
-  if (!env || command !== 'node') {
-    return {
-      processedCommand: command,
-      processedArgs: args,
-      processedEnv: env,
-    };
+function buildCommandString(command: string, args: string[] = []): string {
+  if (args.length === 0) {
+    return command;
   }
 
-  const processedEnv = { ...env };
-  const processedArgs = [...args];
-
-  // Handle NODE_OPTIONS that contain flags not allowed in environment variables
-  if (processedEnv.NODE_OPTIONS) {
-    const nodeOptions = processedEnv.NODE_OPTIONS;
-
-    // Extract --import flag which is not allowed in NODE_OPTIONS
-    const importMatch = nodeOptions.match(/--import[=\s]+([^\s]+)/);
-    if (importMatch) {
-      // Add --import flag directly to node arguments
-      processedArgs.unshift(`--import=${importMatch[1]}`);
-
-      // Remove --import from NODE_OPTIONS
-      processedEnv.NODE_OPTIONS = nodeOptions
-        .replace(/--import[=\s]+[^\s]+/, '')
-        .trim();
-
-      // If NODE_OPTIONS is now empty, remove it entirely
-      if (!processedEnv.NODE_OPTIONS) {
-        delete processedEnv.NODE_OPTIONS;
-      }
+  const escapedArgs = args.map(arg => {
+    if (arg.includes(' ') || arg.includes('"') || arg.includes("'")) {
+      return `"${arg.replace(/"/g, '\\"')}"`;
     }
-  }
+    return arg;
+  });
 
-  return {
-    processedCommand: command,
-    processedArgs: processedArgs,
-    processedEnv:
-      Object.keys(processedEnv).length > 0 ? processedEnv : undefined,
-  };
+  return `${command} ${escapedArgs.join(' ')}`;
 }
 
 /**
@@ -212,19 +169,15 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   const date = new Date().toISOString();
   const start = performance.now();
 
-  // Handle Node.js specific environment variables that can't be passed via NODE_OPTIONS
-  const { processedCommand, processedArgs, processedEnv } = processNodeOptions({
-    command,
-    args: args ?? [],
-    env,
-  });
+  // Build the complete command string
+  const commandString = buildCommandString(command, args ?? []);
 
   ui().logger.log(
     gray(
       `Executing command:\n${formatCommandLog({
-        command: processedCommand,
-        args: processedArgs,
-        env: processedEnv,
+        command,
+        args: args ?? [],
+        env,
       })}\nIn working directory:\n${cfg.cwd ?? process.cwd()}`,
     ),
   );
@@ -240,31 +193,35 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   }
 
   return new Promise((resolve, reject) => {
-    // shell:true tells Windows to use shell command for spawning a child process
-    const process = spawn(processedCommand, processedArgs, {
+    const childProcess = exec(commandString, {
       cwd,
-      shell: true,
-      env: processedEnv,
+      env: env ? { ...process.env, ...env } : process.env,
+      maxBuffer: 1024 * 1000000, // 1GB buffer like nx:run-commands
+      windowsHide: false,
     });
     // eslint-disable-next-line functional/no-let
     let stdout = '';
     // eslint-disable-next-line functional/no-let
     let stderr = '';
 
-    process.stdout.on('data', data => {
-      stdout += String(data);
-      onStdout?.(String(data));
-    });
+    if (childProcess.stdout) {
+      childProcess.stdout.on('data', data => {
+        stdout += String(data);
+        onStdout?.(String(data));
+      });
+    }
 
-    process.stderr.on('data', data => {
-      stderr += String(data);
-    });
+    if (childProcess.stderr) {
+      childProcess.stderr.on('data', data => {
+        stderr += String(data);
+      });
+    }
 
-    process.on('error', err => {
+    childProcess.on('error', err => {
       stderr += err.toString();
     });
 
-    process.on('close', code => {
+    childProcess.on('close', code => {
       const timings = { date, duration: calcDuration(start) };
       if (code === 0 || ignoreExitCode) {
         onComplete?.();
