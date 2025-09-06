@@ -71,6 +71,8 @@ Edit or add the environment variable there as follows: `INCLUDE_SLOW_TESTS=true`
 
 ### Executing local code
 
+We use the current version of CodePushup and its plugins, to measure itself and its plugins.
+
 _Execute the latest CLI source_
 
 ```jsonc
