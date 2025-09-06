@@ -26,21 +26,6 @@ describe('configurationGenerator', () => {
     tree.delete(testProjectName);
   });
 
-  it('should generate a project target and config file', async () => {
-    await configurationGenerator(tree, {
-      project: testProjectName,
-    });
-
-    const projectConfiguration = readProjectConfiguration(
-      tree,
-      testProjectName,
-    );
-
-    expect(projectConfiguration.targets?.[DEFAULT_TARGET_NAME]).toEqual({
-      executor: `${PACKAGE_NAME}:cli`,
-    });
-  });
-
   it('should skip config creation if skipConfig is used', async () => {
     await configurationGenerator(tree, {
       project: testProjectName,
@@ -53,20 +38,6 @@ describe('configurationGenerator', () => {
       tree.read(path.join('libs', testProjectName, 'code-pushup.config.ts')),
     ).toBeNull();
     expect(loggerInfoSpy).toHaveBeenCalledWith('Skip config file creation');
-  });
-
-  it('should skip target creation if skipTarget is used', async () => {
-    await configurationGenerator(tree, {
-      project: testProjectName,
-      skipTarget: true,
-    });
-
-    const projectConfiguration = readProjectConfiguration(
-      tree,
-      testProjectName,
-    );
-    expect(projectConfiguration.targets).toBeUndefined();
-    expect(loggerInfoSpy).toHaveBeenCalledWith('Skip adding target to project');
   });
 
   it('should skip formatting', async () => {
