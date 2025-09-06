@@ -8,10 +8,10 @@ export function createConfigurationTarget(options?: {
   bin?: string;
 }): TargetConfiguration<RunCommandsOptions> {
   const { projectName, bin = PACKAGE_NAME } = options ?? {};
+  const args = objectToCliArgs({
+    ...(projectName ? { project: projectName } : {}),
+  });
   return {
-    command: `nx g ${bin}:configuration ${objectToCliArgs({
-      skipTarget: true,
-      ...(projectName ? { project: projectName } : {}),
-    }).join(' ')}`,
+    command: `nx g ${bin}:configuration${args.length > 0 ? ` ${args.join(' ')}` : ''}`,
   };
 }
