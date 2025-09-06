@@ -50,7 +50,7 @@ export function createCliCommandObject(options?: {
 
   // If bin contains spaces, use the first part as command and rest as args
   // If bin is a single path, default to 'npx' and use the bin as first arg
-  const finalCommand = binArr.length > 1 ? binArr[0] : 'npx';
+  const finalCommand = binArr.length > 1 ? (binArr[0] ?? 'npx') : 'npx';
   const binArgs = binArr.length > 1 ? binArr.slice(1) : [bin];
 
   return {
