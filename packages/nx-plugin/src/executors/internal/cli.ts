@@ -13,11 +13,15 @@ export function createCliCommandString(options?: {
   )}`;
 }
 
-export function formatCommandLog(
-  command: string,
-  args: string[] = [],
-  env?: Record<string, string>,
-): string {
+export function formatCommandLog({
+  command,
+  args = [],
+  env,
+}: {
+  command: string;
+  args: string[];
+  env?: Record<string, string>;
+}): string {
   const logElements: string[] = [];
   if (env) {
     const envVars = Object.entries(env).map(
@@ -41,10 +45,10 @@ export function createCliCommandObject(options?: {
   command?: string;
   bin?: string;
 }): ProcessConfig {
-  const { bin = '@code-pushup/cli', command, args } = options ?? {};
+  const { bin = 'npx @code-pushup/cli', command, args } = options ?? {};
   return {
-    command: 'npx',
-    args: [bin, ...objectToCliArgs({ _: command ?? [], ...args })],
+    command: bin,
+    args: [...objectToCliArgs({ _: command ?? [], ...args })],
     observer: {
       onError: error => {
         logger.error(error.message);

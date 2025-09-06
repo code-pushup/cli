@@ -156,11 +156,11 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
 
   ui().logger.log(
     gray(
-      `Executing command:\n${formatCommandLog(
-        'npx',
-        [command, ...(args ?? [])],
+      `Executing command:\n${formatCommandLog({
+        command,
+        args: args ?? [],
         env,
-      )}\nIn working directory:\n${cfg.cwd ?? process.cwd()}`,
+      })}\nIn working directory:\n${cfg.cwd ?? process.cwd()}`,
     ),
   );
 

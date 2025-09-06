@@ -21,11 +21,10 @@ export default async function runAutorunExecutor(
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
   const normalizedContext = normalizeContext(context);
-  const {
-    env,
-    bin = '@code-pushup/cli',
-    ...mergedOptions
-  } = mergeExecutorOptions(context.target?.options, terminalAndExecutorOptions);
+  const { env, bin, ...mergedOptions } = mergeExecutorOptions(
+    context.target?.options,
+    terminalAndExecutorOptions,
+  );
   const cliArgumentObject = parseAutorunExecutorOptions(
     mergedOptions,
     normalizedContext,
