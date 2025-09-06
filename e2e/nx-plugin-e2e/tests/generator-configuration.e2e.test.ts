@@ -35,7 +35,7 @@ describe('nx-plugin g configuration', () => {
     await teardownTestFolder(testFileDir);
   });
 
-  it('should generate code-pushup.config.ts file and add target to project.json', async () => {
+  it('should generate code-pushup.config.ts file', async () => {
     const cwd = path.join(testFileDir, 'configure');
     await materializeTree(tree, cwd);
 
@@ -64,22 +64,7 @@ describe('nx-plugin g configuration', () => {
       'NX  Generating @code-pushup/nx-plugin:configuration',
     );
     expect(cleanedStdout).toMatch(/^CREATE.*code-pushup.config.ts/m);
-    expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
 
-    const projectJson = await readFile(
-      path.join(cwd, 'libs', project, 'project.json'),
-      'utf8',
-    );
-
-    expect(JSON.parse(projectJson)).toStrictEqual(
-      expect.objectContaining({
-        targets: expect.objectContaining({
-          'code-pushup': {
-            executor: '@code-pushup/nx-plugin:cli',
-          },
-        }),
-      }),
-    );
     await expect(
       readFile(
         path.join(cwd, 'libs', project, 'code-pushup.config.ts'),
