@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getAsyncProcessRunnerConfig } from '@code-pushup/test-utils';
-import { type ProcessObserver, executeProcess } from './execute-process.js';
+import {
+  type ProcessObserver,
+  buildCommandString,
+  executeProcess,
+} from './execute-process.js';
 
 describe('executeProcess', () => {
   const spyObserver: ProcessObserver = {
@@ -88,5 +92,45 @@ describe('executeProcess', () => {
     expect(spyObserver.onStdout).toHaveBeenCalledTimes(2); // intro + 1 run before error
     expect(spyObserver.onError).not.toHaveBeenCalled();
     expect(spyObserver.onComplete).toHaveBeenCalledOnce();
+  });
+});
+
+describe('buildCommandString', () => {
+  it('should return command when no args provided', () => {
+    expect(buildCommandString('node')).toBe('node');
+  });
+
+  it('should return command when empty args array provided', () => {
+    expect(buildCommandString('node', [])).toBe('node');
+  });
+
+  it('should return command with simple args', () => {
+    expect(buildCommandString('npm', ['install', 'package'])).toBe(
+      'npm install package',
+    );
+  });
+
+  it('should escape args with spaces', () => {
+    expect(buildCommandString('echo', ['hello world'])).toBe(
+      'echo "hello world"',
+    );
+  });
+
+  it('should escape args with double quotes for shell safety and cross-platform compatibility', () => {
+    expect(buildCommandString('echo', ['say "hello"'])).toBe(
+      'echo "say \\"hello\\""',
+    );
+  });
+
+  it('should escape args with single quotes for shell safety and cross-platform compatibility', () => {
+    expect(buildCommandString('echo', ["it's working"])).toBe(
+      'echo "it\'s working"',
+    );
+  });
+
+  it('should handle mixed escaped and non-escaped args', () => {
+    expect(
+      buildCommandString('node', ['script.js', 'hello world', '--flag']),
+    ).toBe('node script.js "hello world" --flag');
   });
 });

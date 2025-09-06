@@ -7,7 +7,10 @@ export function calcDuration(start: number, stop?: number): number {
   return Math.round((stop ?? performance.now()) - start);
 }
 
-function buildCommandString(command: string, args: string[] = []): string {
+export function buildCommandString(
+  command: string,
+  args: string[] = [],
+): string {
   if (args.length === 0) {
     return command;
   }
@@ -169,9 +172,6 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   const date = new Date().toISOString();
   const start = performance.now();
 
-  // Build the complete command string
-  const commandString = buildCommandString(command, args ?? []);
-
   ui().logger.log(
     gray(
       `Executing command:\n${formatCommandLog({
@@ -193,6 +193,8 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   }
 
   return new Promise((resolve, reject) => {
+    const commandString = buildCommandString(command, args ?? []);
+
     const childProcess = exec(commandString, {
       cwd,
       env: env ? { ...process.env, ...env } : process.env,
