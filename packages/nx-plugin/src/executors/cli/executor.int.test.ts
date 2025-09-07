@@ -1,7 +1,7 @@
 import { afterEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
 import * as executeProcessModule from '../../internal/execute-process.js';
-import runAutorunExecutor from './executor.js';
+import runCliExecutor from './executor.js';
 
 describe('runAutorunExecutor', () => {
   const executeProcessSpy = vi.spyOn(executeProcessModule, 'executeProcess');
@@ -21,7 +21,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should execute command with proper arguments', async () => {
-    const output = await runAutorunExecutor(
+    const output = await runCliExecutor(
       { verbose: true },
       executorContext('utils'),
     );

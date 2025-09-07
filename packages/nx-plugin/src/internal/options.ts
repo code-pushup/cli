@@ -1,6 +1,6 @@
 import {
   AutorunCommandExecutorOnlyOptions,
-  AutorunCommandExecutorOptions,
+  CliExecutorOptions,
   PrintConfigCommandExecutorOptions,
 } from '../executors/cli/schema.js';
 import {
@@ -30,8 +30,8 @@ export function parsePrintConfigExecutorOptions(
 }
 
 export function parseAutorunExecutorOptions(
-  options: Partial<AutorunCommandExecutorOptions>,
-): AutorunCommandExecutorOptions {
+  options: Partial<CliExecutorOptions>,
+): CliExecutorOptions {
   const { persist, upload, command } = options;
   const needsUploadParams =
     command === 'upload' || command === 'autorun' || command === undefined;

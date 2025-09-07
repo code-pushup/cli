@@ -3,7 +3,7 @@ import path from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
 import { afterEach, beforeEach, expect } from 'vitest';
 import {
-  type AutorunCommandExecutorOptions,
+  type CliExecutorOptions,
   generateCodePushupConfig,
 } from '@code-pushup/nx-plugin';
 import {
@@ -23,7 +23,7 @@ import { INLINE_PLUGIN } from '../mocks/inline-plugin.js';
 async function addTargetToWorkspace(
   tree: Tree,
   options: { cwd: string; project: string },
-  executorOptions?: AutorunCommandExecutorOptions,
+  executorOptions?: CliExecutorOptions,
 ) {
   const { cwd, project } = options;
   const projectCfg = readProjectConfiguration(tree, project);

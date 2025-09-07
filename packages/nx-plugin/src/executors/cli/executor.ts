@@ -4,8 +4,7 @@ import {
   createCliCommandObject,
   createCliCommandString,
 } from '../internal/cli.js';
-import type { AutorunCommandExecutorOptions } from './schema.js';
-import { mergeExecutorOptions } from './utils.js';
+import type { CliExecutorOptions } from './schema.js';
 
 export type ExecutorOutput = {
   success: boolean;
@@ -13,15 +12,12 @@ export type ExecutorOutput = {
   error?: Error;
 };
 
-export default async function runAutorunExecutor(
-  terminalAndExecutorOptions: AutorunCommandExecutorOptions,
+export default async function runCliExecutor(
+  terminalAndExecutorOptions: CliExecutorOptions,
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
-  // @TODO this should not be needed
-  const { dryRun, verbose, command, ...opts } = mergeExecutorOptions(
-    context.target?.options,
-    terminalAndExecutorOptions,
-  );
+  const { cwd } = context;
+  const { dryRun, verbose, command, ...opts } = terminalAndExecutorOptions;
   const commandArgs = {
     ...opts,
     dryRun,
@@ -41,7 +37,7 @@ export default async function runAutorunExecutor(
     try {
       await executeProcess({
         ...createCliCommandObject({ command, args: commandArgs }),
-        ...(context.cwd ? { cwd: context.cwd } : {}),
+        ...(cwd ? { cwd } : {}),
       });
     } catch (error) {
       logger.error(error);

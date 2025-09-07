@@ -1,4 +1,4 @@
-import type { AutorunCommandExecutorOptions } from './schema.js';
+import type { CliExecutorOptions } from './schema.js';
 
 /**
  * Deeply merges executor options.
@@ -13,9 +13,9 @@ import type { AutorunCommandExecutorOptions } from './schema.js';
  * preserving the original target options where CLI arguments are not provided.
  */
 export function mergeExecutorOptions(
-  targetOptions: Partial<AutorunCommandExecutorOptions>,
-  cliOptions: Partial<AutorunCommandExecutorOptions>,
-): AutorunCommandExecutorOptions {
+  targetOptions: Partial<CliExecutorOptions>,
+  cliOptions: Partial<CliExecutorOptions>,
+): CliExecutorOptions {
   return {
     ...targetOptions,
     ...cliOptions,

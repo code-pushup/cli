@@ -17,7 +17,7 @@
       "type": "boolean",
       "description": "Print the commands that would be run, but don't actually run them"
     },
-    "cliBin": {
+    "bin": {
       "type": "string",
       "description": "Path to Code PushUp CLI"
     },

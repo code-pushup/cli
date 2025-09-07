@@ -3,7 +3,7 @@ import { afterAll, afterEach, beforeEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as executeProcessModule from '../../internal/execute-process.js';
-import runAutorunExecutor from './executor.js';
+import runCliExecutor from './executor.js';
 
 describe('runAutorunExecutor', () => {
   const processEnvCP = Object.fromEntries(
@@ -43,7 +43,7 @@ describe('runAutorunExecutor', () => {
   /* eslint-enable functional/immutable-data, @typescript-eslint/no-dynamic-delete */
 
   it('should call executeProcess with return result', async () => {
-    const output = await runAutorunExecutor({}, executorContext('utils'));
+    const output = await runCliExecutor({}, executorContext('utils'));
     expect(output.success).toBe(true);
     expect(output.command).toMatch('npx @code-pushup/cli');
     expect(executeProcessSpy).toHaveBeenCalledWith({
@@ -58,7 +58,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should normalize context', async () => {
-    const output = await runAutorunExecutor(
+    const output = await runCliExecutor(
       {},
       {
         ...executorContext('utils'),
@@ -79,7 +79,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should process executorOptions', async () => {
-    const output = await runAutorunExecutor(
+    const output = await runCliExecutor(
       { output: 'code-pushup.config.json', persist: { filename: 'REPORT' } },
       executorContext('testing-utils'),
     );
@@ -90,7 +90,7 @@ describe('runAutorunExecutor', () => {
 
   it('should create command from context and options if no api key is set', async () => {
     vi.stubEnv('CP_PROJECT', 'CLI');
-    const output = await runAutorunExecutor(
+    const output = await runCliExecutor(
       { persist: { filename: 'REPORT', format: ['md', 'json'] } },
       executorContext('core'),
     );
@@ -101,7 +101,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should create command from context, options and arguments', async () => {
-    const output = await runAutorunExecutor(
+    const output = await runCliExecutor(
       { persist: { filename: 'REPORT', format: ['md', 'json'] } },
       executorContext('core'),
     );
@@ -112,7 +112,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should log information if verbose is set', async () => {
-    const output = await runAutorunExecutor(
+    const output = await runCliExecutor(
       { verbose: true },
       { ...executorContext('github-action'), cwd: '<CWD>' },
     );
@@ -130,7 +130,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should log command if dryRun is set', async () => {
-    await runAutorunExecutor({ dryRun: true }, executorContext('utils'));
+    await runCliExecutor({ dryRun: true }, executorContext('utils'));
 
     expect(loggerInfoSpy).toHaveBeenCalledTimes(0);
     expect(loggerWarnSpy).toHaveBeenCalledTimes(1);

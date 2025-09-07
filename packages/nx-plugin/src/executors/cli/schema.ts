@@ -17,7 +17,7 @@ export type AutorunCommandExecutorPersistConfig = Required<
 > &
   Partial<Omit<PersistConfig, 'outputDir'>>;
 
-export type AutorunCommandExecutorOptions = {
+export type CliExecutorOptions = {
   upload?: Partial<UploadConfig>;
   persist?: Partial<PersistConfig>;
 } & AutorunCommandExecutorOnlyOptions &
