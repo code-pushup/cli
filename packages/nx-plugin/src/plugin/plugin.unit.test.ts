@@ -1,6 +1,6 @@
 import type { CreateNodesContext } from '@nx/devkit';
 import { vol } from 'memfs';
-import { describe, expect } from 'vitest';
+import { afterEach, beforeEach, describe, expect } from 'vitest';
 import { invokeCreateNodesOnVirtualFiles } from '@code-pushup/test-nx-utils';
 import {
   DEFAULT_TARGET_NAME,
@@ -43,7 +43,7 @@ describe('@code-pushup/nx-plugin/plugin', () => {
       [projectRoot]: {
         targets: {
           [`${DEFAULT_TARGET_NAME}--configuration`]: {
-            command: `nx g ${PACKAGE_NAME}:configuration --project="@org/empty-root"`,
+            command: `nx g ${PACKAGE_NAME}:configuration --skipTarget --targetName="${DEFAULT_TARGET_NAME}" --project="@org/empty-root"`,
           },
         },
       },
@@ -69,7 +69,7 @@ describe('@code-pushup/nx-plugin/plugin', () => {
       [projectRoot]: {
         targets: {
           [`${DEFAULT_TARGET_NAME}--configuration`]: {
-            command: `nx g ${PACKAGE_NAME}:configuration --project="@org/empty-root"`,
+            command: `nx g ${PACKAGE_NAME}:configuration --skipTarget --targetName="${DEFAULT_TARGET_NAME}" --project="@org/empty-root"`,
           },
         },
       },
@@ -105,7 +105,7 @@ describe('@code-pushup/nx-plugin/plugin', () => {
     });
 
     expect(
-      result[projectRoot].targets[DEFAULT_TARGET_NAME].options,
+      result[projectRoot]?.targets?.[DEFAULT_TARGET_NAME]?.options,
     ).toHaveProperty('projectPrefix', 'cli');
   });
 
@@ -138,7 +138,7 @@ describe('@code-pushup/nx-plugin/plugin', () => {
     });
 
     expect(
-      result[projectRoot].targets[DEFAULT_TARGET_NAME].options,
+      result[projectRoot].targets?.[DEFAULT_TARGET_NAME]?.options,
     ).toHaveProperty('projectPrefix', 'cli');
   });
 });

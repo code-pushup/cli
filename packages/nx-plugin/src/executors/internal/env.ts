@@ -14,31 +14,26 @@ const envSchema = z
 
 type UploadEnvVars = z.infer<typeof envSchema>;
 
-const envToConfigMap = {
-  CP_SERVER: 'server',
-  CP_API_KEY: 'apiKey',
-  CP_ORGANIZATION: 'organization',
-  CP_PROJECT: 'project',
-  CP_TIMEOUT: 'timeout',
-} as const;
-
 export function parseEnv(env: unknown = {}): Partial<UploadConfig> {
   const upload: UploadEnvVars = envSchema.parse(env);
-
   return Object.fromEntries(
     Object.entries(upload)
-      .filter(([_, value]) => value != null && value !== '')
       .map(([envKey, value]) => {
-        const configKey = envToConfigMap[envKey as keyof typeof envToConfigMap];
-        if (configKey === 'timeout') {
-          const timeout = Number(value);
-          if (timeout >= 0) {
-            return [configKey, timeout] as const;
-          }
-          return null;
+        switch (envKey) {
+          case 'CP_SERVER':
+            return ['server', value];
+          case 'CP_API_KEY':
+            return ['apiKey', value];
+          case 'CP_ORGANIZATION':
+            return ['organization', value];
+          case 'CP_PROJECT':
+            return ['project', value];
+          case 'CP_TIMEOUT':
+            return Number(value) >= 0 ? ['timeout', Number(value)] : [];
+          default:
+            return [];
         }
-        return [configKey, value] as const;
       })
-      .filter((entry): entry is NonNullable<typeof entry> => entry !== null),
+      .filter((entry): entry is NonNullable<typeof entry> => entry != null),
   );
 }

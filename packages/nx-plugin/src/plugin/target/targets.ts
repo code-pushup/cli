@@ -1,5 +1,5 @@
 import { readdir } from 'node:fs/promises';
-import { DEFAULT_TARGET_NAME } from '../../internal/constants';
+import { DEFAULT_TARGET_NAME } from '../../internal/constants.js';
 import type {
   CreateNodesOptions,
   ProjectConfigurationWithName,
@@ -18,8 +18,7 @@ export type CreateTargetsOptions = {
 export async function createTargets(normalizedContext: CreateTargetsOptions) {
   const {
     targetName = DEFAULT_TARGET_NAME,
-    cliBin,
-    pluginBin,
+    bin,
     projectPrefix,
     ...createOptions
   } = normalizedContext.createOptions;
@@ -31,7 +30,6 @@ export async function createTargets(normalizedContext: CreateTargetsOptions) {
     ? {
         [targetName]: createExecutorTarget({
           ...createOptions,
-          pluginBin,
           projectPrefix,
           upload: {
             project: getPrefixedProjectName({
@@ -46,7 +44,7 @@ export async function createTargets(normalizedContext: CreateTargetsOptions) {
         [`${targetName}--configuration`]: createConfigurationTarget({
           targetName,
           projectName: normalizedContext.projectJson.name,
-          pluginBin,
+          bin,
         }),
       };
 }

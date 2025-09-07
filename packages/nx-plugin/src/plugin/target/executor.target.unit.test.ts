@@ -3,18 +3,23 @@ import { createExecutorTarget } from './executor-target.js';
 
 describe('createExecutorTarget', () => {
   it('should return executor target without project name', () => {
-    expect(createExecutorTarget()).toEqual(
-      expect.objectContaining({
-        executor: '@code-pushup/nx-plugin:cli',
-      }),
-    );
+    const result = createExecutorTarget();
+    expect(result.executor).toBe('@code-pushup/nx-plugin:cli');
+    expect(result.outputs).toEqual(['{options.persist.outputDir}/report.*']);
+    expect(result.options).toBeDefined();
   });
 
-  it('should use pluginBin if provides', () => {
-    expect(createExecutorTarget({ pluginBin: 'xyz' })).toEqual(
-      expect.objectContaining({
-        executor: 'xyz:cli',
-      }),
-    );
+  it('should use bin if provides', () => {
+    const result = createExecutorTarget({ pluginBin: 'xyz' });
+    expect(result.executor).toBe('xyz:cli');
+    expect(result.outputs).toEqual(['{options.persist.outputDir}/report.*']);
+    expect(result.options).toBeDefined();
+  });
+
+  it('should use projectPrefix if provided', () => {
+    const result = createExecutorTarget({ projectPrefix: 'cli' });
+    expect(result.executor).toBe('@code-pushup/nx-plugin:cli');
+    expect(result.outputs).toEqual(['{options.persist.outputDir}/report.*']);
+    expect(result.options?.projectPrefix).toBe('cli');
   });
 });

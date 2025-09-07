@@ -1,5 +1,10 @@
 import { afterAll, beforeAll, beforeEach, vi } from 'vitest';
 
+/**
+ * Local environment files infer with the test environment. To avoid unexpected changes and reduce test setupcode, include this file.
+ * This setup file removes all CodePushup variables form process.env before all tests are run, and restores them after all cases ran
+ */
+
 /* eslint-disable functional/immutable-data, @typescript-eslint/no-dynamic-delete */
 const processEnvCP = Object.fromEntries(
   Object.entries(process.env).filter(([k]) => k.startsWith('CP_')),

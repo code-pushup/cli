@@ -18,7 +18,7 @@ export default defineConfig({
     include: ['tests/**/*.e2e.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     setupFiles: [
       '../../testing/test-setup/src/lib/reset.mocks.ts',
-      '../../testing/test-setup/src/lib/code-pushup-cli.setup.file.ts',
+      '../../testing/test-setup/src/lib/process.env.code-pushup-cli.setup-file.ts',
     ],
   },
 });

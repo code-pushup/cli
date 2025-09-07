@@ -29,7 +29,7 @@ export type Command =
   | 'history';
 export type GlobalExecutorOptions = {
   command?: Command;
-  cliBin?: string;
+  bin?: string;
   verbose?: boolean;
   progress?: boolean;
   config?: string;

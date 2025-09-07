@@ -64,7 +64,7 @@ describe('executor command', () => {
   });
 
   afterEach(async () => {
-    // await teardownTestFolder(testFileDir);
+    await teardownTestFolder(testFileDir);
   });
 
   it('should execute no specific command by default', async () => {

@@ -57,8 +57,7 @@
         },
         "outputDir": {
           "type": "string",
-          "description": "Directory to save the configuration",
-          "default": "{projectRoot}/.code-pushup"
+          "description": "Directory to save the configuration"
         },
         "format": {
           "type": "array",

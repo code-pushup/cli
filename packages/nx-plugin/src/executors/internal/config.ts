@@ -11,6 +11,7 @@ export function globalConfig(
   return {
     verbose: !!verbose,
     progress: !!progress,
+    // @TODO should be handled in plugin
     config: config ?? '{projectRoot}/code-pushup.config.ts',
   };
 }
@@ -20,6 +21,7 @@ export function persistConfig(
 ): AutorunCommandExecutorPersistConfig {
   const {
     format,
+    // @TODO should be handled in plugin
     outputDir = '{projectRoot}/.code-pushup',
     filename,
   } = options;

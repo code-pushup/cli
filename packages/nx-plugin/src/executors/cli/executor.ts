@@ -17,6 +17,7 @@ export default async function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
+  // @TODO this should not be needed
   const { dryRun, verbose, command, ...opts } = mergeExecutorOptions(
     context.target?.options,
     terminalAndExecutorOptions,

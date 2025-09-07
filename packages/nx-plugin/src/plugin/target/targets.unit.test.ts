@@ -34,7 +34,7 @@ describe('createTargets', () => {
       } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual({
       [`${DEFAULT_TARGET_NAME}--configuration`]: {
-        command: `nx g ${PACKAGE_NAME}:configuration --project="${projectName}"`,
+        command: `nx g ${PACKAGE_NAME}:configuration --skipTarget --targetName="${DEFAULT_TARGET_NAME}" --project="${projectName}"`,
       },
     });
   });
@@ -54,7 +54,7 @@ describe('createTargets', () => {
       } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual({
       [`${targetName}--configuration`]: {
-        command: `nx g ${PACKAGE_NAME}:configuration --project="${projectName}"`,
+        command: `nx g ${PACKAGE_NAME}:configuration --skipTarget --targetName="${targetName}" --project="${projectName}"`,
       },
     });
   });
