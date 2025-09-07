@@ -92,7 +92,7 @@ describe('PLUGIN collect report with eslint-plugin NPM package', () => {
     expect(omitVariableReportData(report as Report)).toMatchSnapshot();
   });
 
-  it('should run ESLint plugin with artifacts options', async () => {
+  it('should run ESLint plugin with artifacts options and create eslint-report.json and report.json', async () => {
     const { code } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'collect', '--no-progress'],
