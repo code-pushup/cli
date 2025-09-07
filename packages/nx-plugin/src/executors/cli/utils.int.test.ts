@@ -1,9 +1,9 @@
 import { expect, vi } from 'vitest';
 import type { UploadConfig } from '@code-pushup/models';
-import { parseAutorunExecutorOptions } from '../../internal/options.js';
+import { parseCliExecutorOptions } from '../../internal/options.js';
 import * as config from '../internal/config.js';
 
-describe('parseAutorunExecutorOptions', () => {
+describe('parseCliExecutorOptions', () => {
   const persistConfigSpy = vi.spyOn(config, 'persistConfig');
   const uploadConfigSpy = vi.spyOn(config, 'uploadConfig');
   const globalConfigSpy = vi.spyOn(config, 'globalConfig');
@@ -15,7 +15,7 @@ describe('parseAutorunExecutorOptions', () => {
   });
 
   it('should call child config functions with options', () => {
-    parseAutorunExecutorOptions({
+    parseCliExecutorOptions({
       verbose: true,
       persist: { filename: 'my-name' },
       upload: {

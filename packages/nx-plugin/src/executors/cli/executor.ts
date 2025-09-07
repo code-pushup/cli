@@ -13,11 +13,11 @@ export type ExecutorOutput = {
 };
 
 export default async function runCliExecutor(
-  terminalAndExecutorOptions: CliExecutorOptions,
+  finalOptions: CliExecutorOptions,
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
   const { cwd } = context;
-  const { dryRun, verbose, command, ...opts } = terminalAndExecutorOptions;
+  const { dryRun, verbose, command, ...opts } = finalOptions;
   const commandArgs = {
     ...opts,
     dryRun,

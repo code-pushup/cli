@@ -1,8 +1,9 @@
 import { type MockInstance, expect, vi } from 'vitest';
 import { osAgnosticPath } from '@code-pushup/test-utils';
+import { Command } from '../executors/internal/types.js';
 import {
   parseAutorunExecutorOnlyOptions,
-  parseAutorunExecutorOptions,
+  parseCliExecutorOptions,
   parsePrintConfigExecutorOptions,
 } from './options.js';
 
@@ -72,7 +73,7 @@ describe('parseAutorunExecutorOptions', () => {
   });
 
   it('should leverage other config helper to assemble the executor config', () => {
-    const executorOptions = parseAutorunExecutorOptions({
+    const executorOptions = parseCliExecutorOptions({
       persist: {
         filename: 'from-options',
       },
@@ -103,7 +104,7 @@ describe('parseAutorunExecutorOptions', () => {
   it.each<Command | undefined>(['upload', 'autorun', undefined])(
     'should include upload config for command %s if API key is provided',
     command => {
-      const executorOptions = parseAutorunExecutorOptions({
+      const executorOptions = parseCliExecutorOptions({
         command,
         upload: {
           apiKey: '123456789',
@@ -121,7 +122,7 @@ describe('parseAutorunExecutorOptions', () => {
   it.each<Command>(['collect'])(
     'should not include upload config for command %s',
     command => {
-      const executorOptions = parseAutorunExecutorOptions({
+      const executorOptions = parseCliExecutorOptions({
         command,
         upload: {
           organization: 'code-pushup',

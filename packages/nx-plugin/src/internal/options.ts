@@ -29,7 +29,7 @@ export function parsePrintConfigExecutorOptions(
   };
 }
 
-export function parseAutorunExecutorOptions(
+export function parseCliExecutorOptions(
   options: Partial<CliExecutorOptions>,
 ): CliExecutorOptions {
   const { persist, upload, command } = options;

@@ -1,7 +1,7 @@
 import type { TargetConfiguration } from '@nx/devkit';
 import type { CliExecutorOptions } from '../../executors/cli/schema.js';
 import { PACKAGE_NAME } from '../../internal/constants.js';
-import { parseAutorunExecutorOptions } from '../../internal/options.js';
+import { parseCliExecutorOptions } from '../../internal/options.js';
 import type { ProjectPrefixOptions } from '../types.js';
 
 export function createExecutorTarget(
@@ -13,6 +13,6 @@ export function createExecutorTarget(
   return {
     executor: `${pluginBin}:cli`,
     outputs: [`{options.persist.outputDir}/report.*`],
-    options: parseAutorunExecutorOptions(opts),
+    options: parseCliExecutorOptions(opts),
   };
 }

@@ -7,7 +7,8 @@ import type {
   CreateNodesV2,
 } from '@nx/devkit';
 import { combineGlobPatterns } from 'nx/src/utils/globs';
-import { PROJECT_JSON_FILE_NAME } from '../internal/constants.js';
+import { PACKAGE_JSON_FILE_GLOB } from '../internal/constants.js';
+import { PROJECT_JSON_FILE_GLOB } from '../internal/constants.js';
 import { createTargets } from './target/targets.js';
 import type { CreateNodesOptions } from './types.js';
 import {
@@ -15,8 +16,6 @@ import {
   normalizedCreateNodesV2Context,
 } from './utils.js';
 
-const PROJECT_JSON_FILE_GLOB = '**/project.json';
-const PACKAGE_JSON_FILE_GLOB = '**/package.json';
 const FILE_GLOB = combineGlobPatterns(
   PROJECT_JSON_FILE_GLOB,
   PACKAGE_JSON_FILE_GLOB,
@@ -54,7 +53,6 @@ export const createNodesV2: CreateNodesV2<CreateNodesOptions> = [
     context: CreateNodesContextV2,
   ): Promise<CreateNodesResultV2> => {
     const parsedCreateNodesOptions = createNodesOptions as CreateNodesOptions;
-    // projectRoot:true
     const projectConfig = new Map<string, boolean>();
 
     return await Promise.all(
