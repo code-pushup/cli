@@ -6,7 +6,6 @@ export {
   sourceFileLocationSchema,
   type SourceFileLocation,
 } from './lib/source.js';
-
 export {
   auditDetailsSchema,
   auditOutputSchema,
@@ -68,6 +67,7 @@ export {
   materialIconSchema,
   scoreSchema,
   slugSchema,
+  urlSchema,
   type MaterialIcon,
 } from './lib/implementation/schemas.js';
 export { exists } from './lib/implementation/utils.js';

@@ -5,7 +5,30 @@
   "projectType": "library",
   "implicitDependencies": ["cli"],
   "targets": {
+    "pre-build": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["zod-to-nx-schema:build"],
+      "options": {
+        "command": "node",
+        "args": [
+          "tools/zod-to-nx-schema/dist/src/bin.js",
+          "packages/nx-plugin/src/executors/cli/schema.ts",
+          "packages/nx-plugin/src/executors/cli/schema.json",
+          "--export-name",
+          "AutorunExecutorOptions",
+          "--title",
+          "CodePushup CLI autorun executor",
+          "--description",
+          "Executes the @code-pushup/cli autorun command. See: https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#autorun-command"
+        ],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
     "build": {
+      "dependsOn": ["pre-build"],
       "options": {
         "assets": [
           "{projectRoot}/*.md",
