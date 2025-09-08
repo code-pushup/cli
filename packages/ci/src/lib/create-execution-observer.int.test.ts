@@ -9,7 +9,7 @@ describe('createExecutionObserver', () => {
   it('should use execute process and use observer to capture stdout message and stderr will be empty', async () => {
     const { stdout, stderr } = await executeProcess({
       command: 'node',
-      args: ['-e', `"console.log('${message}');"`],
+      args: ['-e', `console.log('${message}');`],
       observer: createExecutionObserver(),
     });
 
@@ -20,7 +20,7 @@ describe('createExecutionObserver', () => {
   it('should use execute process and use observer to capture stdout message and stderr will be error', async () => {
     const { stdout, stderr } = await executeProcess({
       command: 'node',
-      args: ['-e', `"console.log('${message}'); console.error('${error}');"`],
+      args: ['-e', `console.log('${message}'); console.error('${error}');`],
       observer: createExecutionObserver(),
     });
 
@@ -31,7 +31,7 @@ describe('createExecutionObserver', () => {
   it('should use execute process and use observer to capture stderr error and ignore stdout message', async () => {
     const { stdout, stderr } = await executeProcess({
       command: 'node',
-      args: ['-e', `"console.log('${message}'); console.error('${error}');"`],
+      args: ['-e', `console.log('${message}'); console.error('${error}');`],
       observer: createExecutionObserver({ silent: true }),
     });
 
