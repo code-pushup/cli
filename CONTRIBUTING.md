@@ -104,7 +104,6 @@ _Setup code-pushup targets with the nx plugin_
       "options": {
         "cliBin": "node ./packages/cli/src/index.ts",
         "env": {
-          // nx.json
           "NODE_OPTIONS": "--import=tsx",
           "TSX_TSCONFIG_PATH": "tsconfig.base.json",
         },
