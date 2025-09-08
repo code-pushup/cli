@@ -55,9 +55,9 @@ export default async function runAutorunExecutor(
     await executeProcess({
       ...createCliCommandObject({ command, args: cliArgumentObject, bin }),
       ...(context.cwd ? { cwd: context.cwd } : {}),
-      env,
-      dryRun,
-      verbose,
+      ...(env ? { env } : {}),
+      ...(dryRun != null ? { dryRun } : {}),
+      ...(verbose ? { verbose } : {}),
     });
   } catch (error) {
     logger.error(error);

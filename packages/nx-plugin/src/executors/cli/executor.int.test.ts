@@ -45,8 +45,13 @@ describe('runAutorunExecutor', () => {
     expect(executeProcessSpy).toHaveBeenCalledTimes(1);
     expect(executeProcessSpy).toHaveBeenCalledWith({
       command: 'npx',
-      args: expect.arrayContaining(['@code-pushup/cli']),
+      args: expect.arrayContaining([
+        '@code-pushup/cli',
+        '--verbose',
+        '--no-progress',
+      ]),
       cwd: process.cwd(),
+      verbose: true,
       observer: {
         onError: expect.any(Function),
         onStdout: expect.any(Function),
