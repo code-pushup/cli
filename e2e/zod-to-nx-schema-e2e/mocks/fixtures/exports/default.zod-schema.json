@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "type": "object",
+  "required": ["command"],
+  "additionalProperties": true,
+  "$id": "DefaultSchema",
+  "title": "DefaultSchema",
+  "properties": {
+    "command": {
+      "type": "string",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    },
+    "verbose": {
+      "type": "boolean"
+    },
+    "config": {
+      "type": "string"
+    }
+  }
+}

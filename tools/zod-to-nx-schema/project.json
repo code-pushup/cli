@@ -1,0 +1,20 @@
+{
+  "name": "zod-to-nx-schema",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/zod-to-nx-schema/src",
+  "projectType": "library",
+  "tags": ["scope:tooling", "type:util", "publishable"],
+  "targets": {
+    "lint": {},
+    "unit-test": {},
+    "int-test": {},
+    "build": {},
+    "demo": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx run @code-pushup/zod-to-nx-schema-e2e:convert -- --inputFile=./tools/zod-to-nx-schema/demo/input-schema.ts --outputFile=./tools/zod-to-nx-schema/demo/output-schema.ts"
+      },
+      "dependsOn": ["build"]
+    }
+  }
+}

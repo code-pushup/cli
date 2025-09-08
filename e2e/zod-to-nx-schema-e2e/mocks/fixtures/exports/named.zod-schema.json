@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "type": "object",
+  "required": ["name", "count"],
+  "additionalProperties": true,
+  "$id": "BasicExecutorOptionsSchema",
+  "title": "BasicExecutorOptionsSchema",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "count": {
+      "type": "number",
+      "minimum": 0
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

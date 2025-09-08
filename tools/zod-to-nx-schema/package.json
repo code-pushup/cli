@@ -1,0 +1,50 @@
+{
+  "name": "@code-pushup/zod-to-nx-schema",
+  "version": "0.0.1",
+  "private": false,
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "bin": {
+    "zod-to-nx-schema": "./src/bin.js"
+  },
+  "engines": {
+    "node": ">=17.0.0"
+  },
+  "scripts": {},
+  "description": "Convert Zod schemas to Nx executor schema.json files",
+  "author": "Michael Hladky",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/code-pushup/cli.git",
+    "directory": "tools/zod-to-nx-schema"
+  },
+  "keywords": [
+    "zod",
+    "nx",
+    "schema",
+    "json-schema",
+    "executor"
+  ],
+  "files": [
+    "src/*",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "tslib": "^2.8.1",
+    "json-schema": "0.4.0"
+  },
+  "peerDependencies": {
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/json-schema": "^7.0.15",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0",
+    "zod": "^4.0.0"
+  }
+}
