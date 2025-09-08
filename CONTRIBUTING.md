@@ -69,50 +69,6 @@ You can control the execution of long-running tests over the `INCLUDE_SLOW_TESTS
 To change this setup, open (or create) the `.env` file in the root folder.
 Edit or add the environment variable there as follows: `INCLUDE_SLOW_TESTS=true`.
 
-### Executing local code
-
-We use the current version of Code PushUp and its plugins, to measure itself and its plugins.
-
-_Execute the latest CLI source_
-
-```jsonc
-// project.json
-{
-  "targets": {
-    "code-pushup": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "node packages/cli/src/index.ts",
-        "args": ["--no-progress", "--verbose"],
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
-      }
-    }
- }
-```
-
-_Setup code-pushup targets with the nx plugin_
-
-```jsonc
-// nx.json
-{
-  "plugins": [
-    {
-      "plugin": "@code-pushup/nx-plugin",
-      "options": {
-        "cliBin": "node ./packages/cli/src/index.ts",
-        "env": {
-          "NODE_OPTIONS": "--import=tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json",
-        },
-      },
-    },
-  ],
-}
-```
-
 ## Git
 
 Commit messages must follow [conventional commits](https://conventionalcommits.org/) format.
