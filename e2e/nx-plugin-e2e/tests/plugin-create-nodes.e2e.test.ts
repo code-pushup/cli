@@ -51,7 +51,7 @@ describe('nx-plugin', () => {
         configurations: {},
         executor: 'nx:run-commands',
         options: {
-          command: `nx g @code-pushup/nx-plugin:configuration --skipTarget --targetName="code-pushup" --project="${project}"`,
+          command: `nx g @code-pushup/nx-plugin:configuration --project="${project}"`,
         },
         parallelism: true,
       },
@@ -120,7 +120,7 @@ describe('nx-plugin', () => {
     expect(projectJson.targets).toStrictEqual({
       'code-pushup--configuration': expect.objectContaining({
         options: {
-          command: `nx g XYZ:configuration --skipTarget --targetName="code-pushup" --project="${project}"`,
+          command: `nx g XYZ:configuration --project="${project}"`,
         },
       }),
     });
