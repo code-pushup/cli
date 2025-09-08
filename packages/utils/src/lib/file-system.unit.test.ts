@@ -3,12 +3,12 @@ import { stat } from 'node:fs/promises';
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { filePathToCliArg } from './command.js';
 import {
   type FileResult,
   crawlFileSystem,
   createReportPath,
   ensureDirectoryExists,
-  filePathToCliArg,
   findLineNumberInText,
   findNearestFile,
   logMultipleFileResults,
@@ -267,14 +267,6 @@ describe('findLineNumberInText', () => {
 
   it('should return null if pattern not in content', () => {
     expect(findLineNumberInText(``, 'x')).toBeNull();
-  });
-});
-
-describe('filePathToCliArg', () => {
-  it('should wrap path in quotes', () => {
-    expect(filePathToCliArg('My Project/index.js')).toBe(
-      '"My Project/index.js"',
-    );
   });
 });
 
