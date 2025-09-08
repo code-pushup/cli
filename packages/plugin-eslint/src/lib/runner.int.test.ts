@@ -39,8 +39,8 @@ describe('executeRunner', () => {
 
   beforeAll(() => {
     cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(appDir);
-    // Windows does not require additional quotation marks for globs
-    platformSpy = vi.spyOn(os, 'platform').mockReturnValue('win32');
+    // Use the actual platform for proper glob handling
+    platformSpy = vi.spyOn(os, 'platform').mockReturnValue(process.platform);
   });
 
   afterAll(() => {
