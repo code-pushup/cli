@@ -1,7 +1,7 @@
 import { logger } from '@nx/devkit';
 import { afterAll, afterEach, beforeEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
-import { MEMFS_VOLUME, removeColorCodes } from '@code-pushup/test-utils';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as executeProcessModule from '../../internal/execute-process.js';
 import runAutorunExecutor from './executor.js';
 
@@ -124,25 +124,24 @@ describe('runAutorunExecutor', () => {
 
     expect(output.command).toMatch('--verbose');
     expect(loggerWarnSpy).toHaveBeenCalledTimes(0);
-    expect(loggerInfoSpy).toHaveBeenCalledTimes(1);
+    expect(loggerInfoSpy).toHaveBeenCalledTimes(2);
     expect(loggerInfoSpy).toHaveBeenCalledWith(
       expect.stringContaining(`Run CLI executor`),
     );
+    expect(loggerInfoSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Command: npx @code-pushup/cli'),
+    );
   });
 
-  it('should call executeProcess with dryRun option', async () => {
-    const output = await runAutorunExecutor(
-      { dryRun: true },
-      executorContext('utils'),
-    );
+  it('should log command if dryRun is set', async () => {
+    await runAutorunExecutor({ dryRun: true }, executorContext('utils'));
 
-    expect(output.success).toBe(true);
-    expect(executeProcessSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        dryRun: true,
-      }),
-    );
     expect(loggerInfoSpy).toHaveBeenCalledTimes(0);
-    expect(loggerWarnSpy).toHaveBeenCalledTimes(0);
+    expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
+    expect(loggerWarnSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'DryRun execution of: npx @code-pushup/cli --dryRun',
+      ),
+    );
   });
 });

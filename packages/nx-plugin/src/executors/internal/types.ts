@@ -15,17 +15,21 @@ export type GeneralExecutorOnlyOptions = {
 export type ProjectExecutorOnlyOptions = {
   projectPrefix?: string;
 };
-type LooseAutocomplete<T extends string> = T | (string & {});
+
 /**
  * CLI types that apply globally for all commands.
  */
-export type Command = LooseAutocomplete<
-  'collect' | 'upload' | 'autorun' | 'print-config' | 'compare' | 'merge-diffs'
->;
+export type Command =
+  | 'collect'
+  | 'upload'
+  | 'autorun'
+  | 'print-config'
+  | 'compare'
+  | 'merge-diffs'
+  | 'history';
 export type GlobalExecutorOptions = {
   command?: Command;
   bin?: string;
-  env?: Record<string, string>;
   verbose?: boolean;
   progress?: boolean;
   config?: string;

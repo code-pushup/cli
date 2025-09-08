@@ -84,7 +84,7 @@ export async function nxShowProjectJson<T extends ProjectConfiguration>(
 ) {
   const { code, stderr, stdout } = await executeProcess({
     command: 'npx',
-    args: ['nx', 'show', 'project', '--json', project],
+    args: ['nx', 'show', `project --json  ${project}`],
     cwd,
   });
 

@@ -1,10 +1,10 @@
-/*
- * COPY OF @code-pusup/utils
- * This is needed until dual-build is set up for all packages
- */
-import { logger } from '@nx/devkit';
-import { type ChildProcess, exec } from 'node:child_process';
-import { buildCommandString, formatCommandLog } from './command.js';
+import { gray } from 'ansis';
+import { spawn } from 'node:child_process';
+import { ui } from '@code-pushup/utils';
+
+export function calcDuration(start: number, stop?: number): number {
+  return Math.round((stop ?? performance.now()) - start);
+}
 
 /**
  * Represents the process result.
@@ -18,6 +18,8 @@ export type ProcessResult = {
   stdout: string;
   stderr: string;
   code: number | null;
+  date: string;
+  duration: number;
 };
 
 /**
@@ -84,7 +86,6 @@ export type ProcessConfig = {
   command: string;
   args?: string[];
   cwd?: string;
-  env?: Record<string, string>;
   observer?: ProcessObserver;
   ignoreExitCode?: boolean;
 };
@@ -99,12 +100,11 @@ export type ProcessConfig = {
  *
  * @example
  * const observer = {
- *  onStdout: (stdout, childProcess) => console.info(stdout)
+ *  onStdout: (stdout) => console.info(stdout)
  *  }
  */
 export type ProcessObserver = {
-  onStdout?: (stdout: string, childProcess: ChildProcess) => void;
-  onStderr?: (stderr: string, childProcess: ChildProcess) => void;
+  onStdout?: (stdout: string) => void;
   onError?: (error: ProcessError) => void;
   onComplete?: () => void;
 };
@@ -125,7 +125,7 @@ export type ProcessObserver = {
  * // async process execution
  * const result = await executeProcess({
  *    command: 'node',
- *    args: ['download-data.js'],
+ *    args: ['download-data'],
  *    observer: {
  *      onStdout: updateProgress,
  *      error: handleError,
@@ -137,69 +137,47 @@ export type ProcessObserver = {
  *
  * @param cfg - see {@link ProcessConfig}
  */
-export function executeProcess(
-  cfg: ProcessConfig & { verbose?: boolean; dryRun?: boolean },
-): Promise<ProcessResult> {
-  const {
-    observer,
-    cwd,
-    command,
-    args,
-    ignoreExitCode = false,
-    env,
-    verbose,
-  } = cfg;
-  const { onStdout, onStderr, onError, onComplete } = observer ?? {};
+export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
+  const { observer, cwd, command, args, ignoreExitCode = false } = cfg;
+  const { onStdout, onError, onComplete } = observer ?? {};
+  const date = new Date().toISOString();
+  const start = performance.now();
 
-  if (verbose) {
-    logger.log(
-      formatCommandLog({
-        command,
-        args,
-        cwd: cfg.cwd ?? process.cwd(),
-        env,
-      }),
-    );
-  }
+  const logCommand = [command, ...(args || [])].join(' ');
+  ui().logger.log(
+    gray(
+      `Executing command:\n${logCommand}\nIn working directory:\n${cfg.cwd ?? process.cwd()}`,
+    ),
+  );
 
   return new Promise((resolve, reject) => {
-    const commandString = buildCommandString(command, args ?? []);
-
-    const childProcess = exec(commandString, {
-      cwd,
-      env: env ? { ...process.env, ...env } : process.env,
-      maxBuffer: 1024 * 1000000, // 1GB buffer like nx:run-commands
-      windowsHide: false,
-    });
+    // shell:true tells Windows to use shell command for spawning a child process
+    const process = spawn(command, args, { cwd, shell: true });
     // eslint-disable-next-line functional/no-let
     let stdout = '';
     // eslint-disable-next-line functional/no-let
     let stderr = '';
 
-    if (childProcess.stdout) {
-      childProcess.stdout.on('data', data => {
-        stdout += String(data);
-        onStdout?.(String(data), childProcess);
-      });
-    }
+    process.stdout.on('data', data => {
+      stdout += String(data);
+      onStdout?.(String(data));
+    });
 
-    if (childProcess.stderr) {
-      childProcess.stderr.on('data', data => {
-        stderr += String(data);
-        onStderr?.(String(data), childProcess);
-      });
-    }
+    process.stderr.on('data', data => {
+      stderr += String(data);
+    });
 
-    childProcess.on('error', err => {
+    process.on('error', err => {
       stderr += err.toString();
     });
 
-    childProcess.on('close', code => {
+    process.on('close', code => {
+      const timings = { date, duration: calcDuration(start) };
       if (code === 0 || ignoreExitCode) {
         onComplete?.();
-        resolve({ code, stdout, stderr });
+        resolve({ code, stdout, stderr, ...timings });
       } else {
-        const errorMsg = new ProcessError({ code, stdout, stderr });
+        const errorMsg = new ProcessError({ code, stdout, stderr, ...timings });
         onError?.(errorMsg);
         reject(errorMsg);
       }

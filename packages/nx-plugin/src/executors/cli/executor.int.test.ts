@@ -45,60 +45,12 @@ describe('runAutorunExecutor', () => {
     expect(executeProcessSpy).toHaveBeenCalledTimes(1);
     expect(executeProcessSpy).toHaveBeenCalledWith({
       command: 'npx',
-      args: expect.arrayContaining([
-        '@code-pushup/cli',
-        '--verbose',
-        '--no-progress',
-      ]),
+      args: expect.arrayContaining(['@code-pushup/cli']),
       cwd: process.cwd(),
-      verbose: true,
       observer: {
         onError: expect.any(Function),
         onStdout: expect.any(Function),
       },
     });
-  });
-
-  it('should execute command with provided bin', async () => {
-    const bin = 'packages/cli/dist';
-    const output = await runAutorunExecutor(
-      {
-        verbose: true,
-        bin,
-      },
-      executorContext('utils'),
-    );
-    expect(output.success).toBe(true);
-
-    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
-    expect(executeProcessSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        args: expect.arrayContaining([bin]),
-      }),
-    );
-  });
-
-  it('should execute command with provided env vars', async () => {
-    const output = await runAutorunExecutor(
-      {
-        verbose: true,
-        env: {
-          NODE_OPTIONS: '--import tsx',
-          TSX_TSCONFIG_PATH: 'tsconfig.base.json',
-        },
-      },
-      executorContext('utils'),
-    );
-    expect(output.success).toBe(true);
-
-    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
-    expect(executeProcessSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        env: {
-          NODE_OPTIONS: '--import tsx',
-          TSX_TSCONFIG_PATH: 'tsconfig.base.json',
-        },
-      }),
-    );
   });
 });

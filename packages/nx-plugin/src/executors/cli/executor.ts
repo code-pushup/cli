@@ -8,19 +8,6 @@ import { normalizeContext } from '../internal/context.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
 import { mergeExecutorOptions, parseAutorunExecutorOptions } from './utils.js';
 
-export function stringifyError(error: unknown): string {
-  if (error instanceof Error) {
-    if (error.name === 'Error' || error.message.startsWith(error.name)) {
-      return error.message;
-    }
-    return `${error.name}: ${error.message}`;
-  }
-  if (typeof error === 'string') {
-    return error;
-  }
-  return JSON.stringify(error);
-}
-
 export type ExecutorOutput = {
   success: boolean;
   command?: string;
@@ -32,7 +19,7 @@ export default async function runAutorunExecutor(
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
   const normalizedContext = normalizeContext(context);
-  const { env, bin, ...mergedOptions } = mergeExecutorOptions(
+  const mergedOptions = mergeExecutorOptions(
     context.target?.options,
     terminalAndExecutorOptions,
   );
@@ -43,31 +30,29 @@ export default async function runAutorunExecutor(
   const { dryRun, verbose, command } = mergedOptions;
   const commandString = createCliCommandString({
     command,
-    bin,
     args: cliArgumentObject,
   });
-
   if (verbose) {
     logger.info(`Run CLI executor ${command ?? ''}`);
+    logger.info(`Command: ${commandString}`);
   }
-
-  try {
-    await executeProcess({
-      ...createCliCommandObject({ command, args: cliArgumentObject, bin }),
-      ...(context.cwd ? { cwd: context.cwd } : {}),
-      ...(env ? { env } : {}),
-      ...(dryRun != null ? { dryRun } : {}),
-      ...(verbose ? { verbose } : {}),
-    });
-  } catch (error) {
-    logger.error(error);
-    return {
-      success: false,
-      command: commandString,
-      error: error instanceof Error ? error : new Error(stringifyError(error)),
-    };
+  if (dryRun) {
+    logger.warn(`DryRun execution of: ${commandString}`);
+  } else {
+    try {
+      await executeProcess({
+        ...createCliCommandObject({ command, args: cliArgumentObject }),
+        ...(context.cwd ? { cwd: context.cwd } : {}),
+      });
+    } catch (error) {
+      logger.error(error);
+      return {
+        success: false,
+        command: commandString,
+        error: error as Error,
+      };
+    }
   }
-
   return {
     success: true,
     command: commandString,

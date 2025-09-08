@@ -103,6 +103,29 @@ describe('nx-plugin', () => {
     });
   });
 
+  it('should consider plugin option bin in configuration target', async () => {
+    const cwd = path.join(testFileDir, 'configuration-option-bin');
+    registerPluginInWorkspace(tree, {
+      plugin: '@code-pushup/nx-plugin',
+      options: {
+        bin: 'XYZ',
+      },
+    });
+    await materializeTree(tree, cwd);
+
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
+
+    expect(code).toBe(0);
+
+    expect(projectJson.targets).toStrictEqual({
+      'code-pushup--configuration': expect.objectContaining({
+        options: {
+          command: `nx g XYZ:configuration --skipTarget --targetName="code-pushup" --project="${project}"`,
+        },
+      }),
+    });
+  });
+
   it('should NOT add config targets dynamically if the project is configured', async () => {
     const cwd = path.join(testFileDir, 'configuration-already-configured');
     registerPluginInWorkspace(tree, '@code-pushup/nx-plugin');
@@ -166,26 +189,28 @@ describe('nx-plugin', () => {
 
     await materializeTree(tree, cwd);
 
-    const { stdout } = await executeProcess({
+    const { stdout, stderr } = await executeProcess({
       command: 'npx',
-      args: ['nx', 'run', `${project}:code-pushup`, '--dryRun', '--verbose'],
+      args: ['nx', 'run', `${project}:code-pushup`, '--dryRun'],
       cwd,
     });
 
+    const cleanStderr = removeColorCodes(stderr);
+    // @TODO create test environment for working plugin. This here misses package-lock.json to execute correctly
+    expect(cleanStderr).toContain('DryRun execution of: npx @code-pushup/cli');
+
     const cleanStdout = removeColorCodes(stdout);
-    expect(cleanStdout).toContain('nx run my-lib:code-pushup');
-    expect(cleanStdout).toContain('$ npx @code-pushup/cli ');
-    expect(cleanStdout).toContain('--dryRun --verbose');
-    expect(cleanStdout).toContain(`--upload.project=\\"${project}\\"`);
+    expect(cleanStdout).toContain(
+      'NX   Successfully ran target code-pushup for project my-lib',
+    );
   });
 
-  it('should consider plugin option cliBin in executor target', async () => {
-    const cwd = path.join(testFileDir, 'executor-option-cliBin');
-    const cliBinPath = `packages/cli/dist`;
+  it('should consider plugin option bin in executor target', async () => {
+    const cwd = path.join(testFileDir, 'configuration-option-bin');
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
       options: {
-        cliBin: cliBinPath,
+        bin: 'XYZ',
       },
     });
     const { root } = readProjectConfiguration(tree, project);
@@ -198,15 +223,13 @@ describe('nx-plugin', () => {
 
     expect(projectJson.targets).toStrictEqual({
       'code-pushup': expect.objectContaining({
-        options: {
-          bin: cliBinPath,
-        },
+        executor: 'XYZ:cli',
       }),
     });
   });
 
   it('should consider plugin option projectPrefix in executor target', async () => {
-    const cwd = path.join(testFileDir, 'executor-option-projectPrefix');
+    const cwd = path.join(testFileDir, 'configuration-option-bin');
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
       options: {

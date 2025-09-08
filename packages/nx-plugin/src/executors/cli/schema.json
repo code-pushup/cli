@@ -21,13 +21,6 @@
       "type": "string",
       "description": "Path to Code PushUp CLI"
     },
-    "env": {
-      "type": "object",
-      "description": "Environment variables to set when running the command",
-      "additionalProperties": {
-        "type": "string"
-      }
-    },
     "verbose": {
       "type": "boolean",
       "description": "Print additional logs"
