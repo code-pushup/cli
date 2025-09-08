@@ -3,12 +3,24 @@ import { executeProcess } from '../../internal/execute-process.js';
 import {
   createCliCommandObject,
   createCliCommandString,
-  formatCommandLog,
-  objectToCliArgs,
 } from '../internal/cli.js';
 import { normalizeContext } from '../internal/context.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
 import { mergeExecutorOptions, parseAutorunExecutorOptions } from './utils.js';
+
+export function stringifyError(error: unknown): string {
+  // TODO: special handling for ZodError instances
+  if (error instanceof Error) {
+    if (error.name === 'Error' || error.message.startsWith(error.name)) {
+      return error.message;
+    }
+    return `${error.name}: ${error.message}`;
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  return JSON.stringify(error);
+}
 
 export type ExecutorOutput = {
   success: boolean;
