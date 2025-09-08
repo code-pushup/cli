@@ -67,6 +67,19 @@ export interface FormatCommandLogOptions {
  *
  * @param {FormatCommandLogOptions} options - Command formatting options.
  * @returns {string} - ANSI-colored formatted command string.
+ *
+ * @example
+ *
+ * formatCommandLog({cwd: 'tools/api', env: {API_KEY='•••' NODE_ENV='prod'}, command: 'node', args: ['cli.js', '--do', 'thing', 'fast']})
+ * ┌──────────────────────────────────────────────────────────────────────────┐
+ * │ tools/api  $ API_KEY="•••" NODE_ENV="prod" node cli.js --do thing fast   │
+ * │ │          │ │                             │    │                        │
+ * │ └ cwd      │ │                             │    └ args.                  │
+ * │            │ │                             └ command                     │
+ * │            │ └ env variables                                             │
+ * │            └ prompt symbol ($)                                           │
+ * └──────────────────────────────────────────────────────────────────────────┘
+ *
  */
 export function formatCommandLog(options: FormatCommandLogOptions): string {
   const { command, args = [], cwd = process.cwd(), env } = options;
