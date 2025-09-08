@@ -79,18 +79,11 @@ _Execute the latest CLI source_
 // project.json
 {
   "targets": {
-    "exec-local-cli-source": {
+    "code-pushup": {
       "executor": "nx:run-commands",
       "options": {
         "command": "node packages/cli/src/index.ts",
-        "args": ["--no-progress", "--verbose", "--help"],
-      }
-    },
-    "exec-local-cli-source-and-local-plugin-source": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "node packages/cli/src/index.ts",
-        "args": ["--no-progress", "--verbose", "--onlyPlugins=js-packages"],
+        "args": ["--no-progress", "--verbose"],
         "env": {
           "NODE_OPTIONS": "--import tsx",
           "TSX_TSCONFIG_PATH": "tsconfig.base.json"
