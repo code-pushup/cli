@@ -71,14 +71,14 @@ export interface FormatCommandLogOptions {
  * @example
  *
  * formatCommandLog({cwd: 'tools/api', env: {API_KEY='•••' NODE_ENV='prod'}, command: 'node', args: ['cli.js', '--do', 'thing', 'fast']})
- * ┌──────────────────────────────────────────────────────────────────────────┐
- * │ tools/api  $ API_KEY="•••" NODE_ENV="prod" node cli.js --do thing fast   │
- * │ │          │ │                             │    │                        │
- * │ └ cwd      │ │                             │    └ args.                  │
- * │            │ │                             └ command                     │
- * │            │ └ env variables                                             │
- * │            └ prompt symbol ($)                                           │
- * └──────────────────────────────────────────────────────────────────────────┘
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ tools/api $ API_KEY="•••" NODE_ENV="prod" node cli.js --do thing fast   │
+ * │ │          │ │                             │    │                       │
+ * │ └ cwd      │ │                             │    └ args.                 │
+ * │            │ │                             └ command                    │
+ * │            │ └ env variables                                            │
+ * │            └ prompt symbol ($)                                          │
+ * └─────────────────────────────────────────────────────────────────────────┘
  *
  */
 export function formatCommandLog(options: FormatCommandLogOptions): string {
