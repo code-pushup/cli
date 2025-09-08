@@ -9,7 +9,6 @@ import type { AutorunCommandExecutorOptions } from './schema.js';
 import { mergeExecutorOptions, parseAutorunExecutorOptions } from './utils.js';
 
 export function stringifyError(error: unknown): string {
-  // TODO: special handling for ZodError instances
   if (error instanceof Error) {
     if (error.name === 'Error' || error.message.startsWith(error.name)) {
       return error.message;
@@ -58,6 +57,7 @@ export default async function runAutorunExecutor(
       ...(context.cwd ? { cwd: context.cwd } : {}),
       env,
       dryRun,
+      verbose,
     });
   } catch (error) {
     logger.error(error);

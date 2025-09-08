@@ -173,12 +173,10 @@ describe('nx-plugin', () => {
     });
 
     const cleanStdout = removeColorCodes(stdout);
-    // @TODO create test environment for working plugin. This here misses package-lock.json to execute correctly
-    expect(cleanStdout).toContain('Executing command:');
-    expect(cleanStdout).toContain('npx @code-pushup/cli');
-    expect(cleanStdout).toContain(
-      'NX   Successfully ran target code-pushup for project my-lib',
-    );
+    expect(cleanStdout).toContain('nx run my-lib:code-pushup');
+    expect(cleanStdout).toContain('$ npx @code-pushup/cli ');
+    expect(cleanStdout).toContain('--dryRun --verbose');
+    expect(cleanStdout).toContain(`--upload.project=\\"${project}\\"`);
   });
 
   it('should consider plugin option cliBin in executor target', async () => {

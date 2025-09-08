@@ -1,5 +1,5 @@
 import ansis from 'ansis';
-import path from 'node:path';
+import * as path from 'node:path';
 
 type ArgumentValue = number | string | boolean | string[] | undefined;
 export type CliArgsObject<T extends object = Record<string, ArgumentValue>> =
