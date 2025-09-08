@@ -1,6 +1,6 @@
 import type { TargetConfiguration } from '@nx/devkit';
 import type { RunCommandsOptions } from 'nx/src/executors/run-commands/run-commands.impl';
-import { objectToCliArgs } from '../../executors/internal/cli.js';
+import { objectToCliArgs } from '../../internal/command.js';
 import { PACKAGE_NAME } from '../../internal/constants.js';
 import { CP_TARGET_NAME } from '../constants.js';
 

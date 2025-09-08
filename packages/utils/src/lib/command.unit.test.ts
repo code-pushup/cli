@@ -97,6 +97,11 @@ describe('escapeCliArgs', () => {
 });
 
 describe('objectToCliArgs', () => {
+  it('should handle undefined', () => {
+    const params = { unsupported: undefined as any };
+    expect(objectToCliArgs(params)).toStrictEqual([]);
+  });
+
   it('should handle the "_" argument as script', () => {
     const params = { _: 'bin.js' };
     const result = objectToCliArgs(params);
@@ -158,8 +163,9 @@ describe('objectToCliArgs', () => {
   });
 
   it('should throw error for unsupported type', () => {
-    const params = { unsupported: undefined as any };
-    expect(() => objectToCliArgs(params)).toThrow('Unsupported type');
+    expect(() => objectToCliArgs({ param: Symbol('') })).toThrow(
+      'Unsupported type',
+    );
   });
 });
 
@@ -218,6 +224,12 @@ describe('buildCommandString', () => {
     const args = ['arg with "double" and \'single\' quotes'];
     const result = buildCommandString(command, args);
     expect(result).toBe('test "arg with \\"double\\" and \'single\' quotes"');
+  });
+
+  it('should handle objects with undefined', () => {
+    const params = { format: undefined };
+    const result = objectToCliArgs(params);
+    expect(result).toStrictEqual([]);
   });
 
   it('should handle empty string arguments', () => {

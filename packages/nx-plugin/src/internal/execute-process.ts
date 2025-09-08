@@ -1,29 +1,10 @@
-import { gray } from 'ansis';
-import { exec } from 'node:child_process';
-import { ui } from '@code-pushup/utils';
-import { formatCommandLog } from '../executors/internal/cli.js';
-
-export function calcDuration(start: number, stop?: number): number {
-  return Math.round((stop ?? performance.now()) - start);
-}
-
-export function buildCommandString(
-  command: string,
-  args: string[] = [],
-): string {
-  if (args.length === 0) {
-    return command;
-  }
-
-  const escapedArgs = args.map(arg => {
-    if (arg.includes(' ') || arg.includes('"') || arg.includes("'")) {
-      return `"${arg.replace(/"/g, '\\"')}"`;
-    }
-    return arg;
-  });
-
-  return `${command} ${escapedArgs.join(' ')}`;
-}
+/*
+ * COPY OF @code-pusup/utils
+ * This is needed until dual-build is set up for all packages
+ */
+import { logger } from '@nx/devkit';
+import { type ChildProcess, exec } from 'node:child_process';
+import { buildCommandString, formatCommandLog } from './command.js';
 
 /**
  * Represents the process result.
@@ -37,8 +18,6 @@ export type ProcessResult = {
   stdout: string;
   stderr: string;
   code: number | null;
-  date: string;
-  duration: number;
 };
 
 /**
@@ -107,7 +86,6 @@ export type ProcessConfig = {
   cwd?: string;
   env?: Record<string, string>;
   observer?: ProcessObserver;
-  dryRun?: boolean;
   ignoreExitCode?: boolean;
 };
 
@@ -121,11 +99,12 @@ export type ProcessConfig = {
  *
  * @example
  * const observer = {
- *  onStdout: (stdout) => console.info(stdout)
+ *  onStdout: (stdout, childProcess) => console.info(stdout)
  *  }
  */
 export type ProcessObserver = {
-  onStdout?: (stdout: string) => void;
+  onStdout?: (stdout: string, childProcess: ChildProcess) => void;
+  onStderr?: (stderr: string, childProcess: ChildProcess) => void;
   onError?: (error: ProcessError) => void;
   onComplete?: () => void;
 };
@@ -146,7 +125,7 @@ export type ProcessObserver = {
  * // async process execution
  * const result = await executeProcess({
  *    command: 'node',
- *    args: ['download-data'],
+ *    args: ['download-data.js'],
  *    observer: {
  *      onStdout: updateProgress,
  *      error: handleError,
@@ -158,7 +137,9 @@ export type ProcessObserver = {
  *
  * @param cfg - see {@link ProcessConfig}
  */
-export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
+export function executeProcess(
+  cfg: ProcessConfig & { verbose?: boolean; dryRun?: boolean },
+): Promise<ProcessResult> {
   const {
     observer,
     cwd,
@@ -166,30 +147,19 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
     args,
     ignoreExitCode = false,
     env,
-    dryRun,
+    verbose,
   } = cfg;
-  const { onStdout, onError, onComplete } = observer ?? {};
-  const date = new Date().toISOString();
-  const start = performance.now();
+  const { onStdout, onStderr, onError, onComplete } = observer ?? {};
 
-  ui().logger.log(
-    gray(
-      `Executing command:\n${formatCommandLog({
+  if (verbose) {
+    logger.log(
+      formatCommandLog({
         command,
-        args: args ?? [],
+        args,
+        cwd: cfg.cwd ?? process.cwd(),
         env,
-      })}\nIn working directory:\n${cfg.cwd ?? process.cwd()}`,
-    ),
-  );
-
-  if (dryRun) {
-    return Promise.resolve({
-      code: 0,
-      stdout: '@code-pushup executed in dry run mode',
-      stderr: '',
-      date,
-      duration: calcDuration(start),
-    });
+      }),
+    );
   }
 
   return new Promise((resolve, reject) => {
@@ -209,13 +179,14 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
     if (childProcess.stdout) {
       childProcess.stdout.on('data', data => {
         stdout += String(data);
-        onStdout?.(String(data));
+        onStdout?.(String(data), childProcess);
       });
     }
 
     if (childProcess.stderr) {
       childProcess.stderr.on('data', data => {
         stderr += String(data);
+        onStderr?.(String(data), childProcess);
       });
     }
 
@@ -224,12 +195,11 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
     });
 
     childProcess.on('close', code => {
-      const timings = { date, duration: calcDuration(start) };
       if (code === 0 || ignoreExitCode) {
         onComplete?.();
-        resolve({ code, stdout, stderr, ...timings });
+        resolve({ code, stdout, stderr });
       } else {
-        const errorMsg = new ProcessError({ code, stdout, stderr, ...timings });
+        const errorMsg = new ProcessError({ code, stdout, stderr });
         onError?.(errorMsg);
         reject(errorMsg);
       }
