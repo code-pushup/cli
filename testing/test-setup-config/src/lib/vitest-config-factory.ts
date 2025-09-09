@@ -71,7 +71,7 @@ function toAbsolutePaths(
   return paths && paths.length > 0
     ? paths
         .filter(Boolean)
-        .map(p => path.resolve(fileURLToPath(projectRootUrl), p))
+        .map(p => path.resolve(getProjectRootPath(projectRootUrl), p))
     : [];
 }
 
@@ -95,7 +95,7 @@ function defaultGlobalSetup(
 ): string[] | undefined {
   return kind === 'e2e'
     ? undefined
-    : [path.resolve(fileURLToPath(projectRootUrl), 'global-setup.ts')];
+    : [path.resolve(getProjectRootPath(projectRootUrl), 'global-setup.ts')];
 }
 
 function buildCoverageConfig(params: {
@@ -106,7 +106,7 @@ function buildCoverageConfig(params: {
 }): CoverageOptions {
   const defaultExclude = ['mocks/**', '**/types.ts'];
   const reportsDirectory = path.resolve(
-    fileURLToPath(params.projectRootUrl),
+    getProjectRootPath(params.projectRootUrl),
     params.kind === 'e2e'
       ? `e2e/${params.projectKey}/.coverage`
       : `packages/${params.projectKey}/.coverage/${params.kind}-tests`,
@@ -132,7 +132,7 @@ function buildBaseConfig(params: {
 }): VitestOverrides {
   const cfg: VitestOverrides = {
     cacheDir: path.resolve(
-      fileURLToPath(params.projectRootUrl),
+      getProjectRootPath(params.projectRootUrl),
       `node_modules/.vite/${params.cacheDirName}`,
     ),
     test: {
@@ -140,7 +140,7 @@ function buildBaseConfig(params: {
       globals: true,
       cache: {
         dir: path.resolve(
-          fileURLToPath(params.projectRootUrl),
+          getProjectRootPath(params.projectRootUrl),
           'node_modules/.vitest',
         ),
       },
@@ -198,4 +198,14 @@ function sanitizeOverrides(overrides: VitestOverrides): VitestOverrides {
     : restTest;
 
   return { ...overrides, test: sanitizedTest };
+}
+
+function getProjectRootPath(projectRootUrl: URL): string {
+  try {
+    return fileURLToPath(projectRootUrl);
+  } catch {
+    // Fallback for non-file:// URLs or invalid URLs
+    const pathname = projectRootUrl.pathname;
+    return pathname.startsWith('/') ? pathname : `/${pathname}`;
+  }
 }
