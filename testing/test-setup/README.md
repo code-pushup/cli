@@ -4,6 +4,10 @@ This library contains test setup.
 
 More on this subject as well as all the testing strategy principles can be found on the GitHub [wiki](https://github.com/code-pushup/cli/wiki/Testing-Strategy#mocking).
 
+## Shared config
+
+[README](./src/lib/config/README.md) how to use vitest config factory.
+
 ## Mock setup
 
 In this library you can find all files that can be used in `setupFiles` property of `vitest.config.(unit|int|e2e).ts` files. Currently include:
