@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { defineConfig } from 'vite';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -25,6 +26,18 @@ vi.mock('./vitest-tsconfig-path-aliases.js', () => ({
 
 const MOCK_PROJECT_ROOT_STRING = '/Users/test/project';
 const MOCK_PROJECT_ROOT_URL = pathToFileURL(`${MOCK_PROJECT_ROOT_STRING}/`);
+
+// Cross-platform path helpers to match what the actual code generates
+const mockPath = (...segments: string[]) =>
+  path.resolve(MOCK_PROJECT_ROOT_STRING, ...segments);
+const mockCacheDir = (name: string) => mockPath('node_modules', '.vite', name);
+const mockVitestCacheDir = () => mockPath('node_modules', '.vitest');
+const mockGlobalSetup = () => mockPath('global-setup.ts');
+const mockReportsDir = (projectKey: string, kind: string) =>
+  kind === 'e2e'
+    ? mockPath('e2e', projectKey, '.coverage')
+    : mockPath('packages', projectKey, '.coverage', `${kind}-tests`);
+const mockSetupFile = mockPath;
 
 const TEST_TIMEOUTS = {
   SHORT: 5000,
@@ -61,23 +74,23 @@ describe('createVitestConfig', () => {
 
       expect(config).toEqual(
         expect.objectContaining({
-          cacheDir: `${MOCK_PROJECT_ROOT_STRING}/node_modules/.vite/test-package`,
+          cacheDir: mockCacheDir('test-package'),
           test: expect.objectContaining({
             reporters: ['basic'],
             globals: true,
             cache: {
-              dir: `${MOCK_PROJECT_ROOT_STRING}/node_modules/.vitest`,
+              dir: mockVitestCacheDir(),
             },
             alias: expect.any(Object),
             pool: 'threads',
             poolOptions: { threads: { singleThread: true } },
             environment: 'node',
             include: EXPECTED_INCLUDES.unit,
-            globalSetup: [`${MOCK_PROJECT_ROOT_STRING}/global-setup.ts`],
+            globalSetup: [mockGlobalSetup()],
             setupFiles: [],
             coverage: expect.objectContaining({
               reporter: ['text', 'lcov'],
-              reportsDirectory: `${MOCK_PROJECT_ROOT_STRING}/packages/test-package/.coverage/unit-tests`,
+              reportsDirectory: mockReportsDir('test-package', 'unit'),
               exclude: DEFAULT_EXCLUDES,
             }),
           }),
@@ -98,10 +111,10 @@ describe('createVitestConfig', () => {
 
       expect(config).toEqual(
         expect.objectContaining({
-          cacheDir: `${MOCK_PROJECT_ROOT_STRING}/node_modules/.vite/test-package`,
+          cacheDir: mockCacheDir('test-package'),
           test: expect.objectContaining({
             include: EXPECTED_INCLUDES.unit,
-            globalSetup: [`${MOCK_PROJECT_ROOT_STRING}/global-setup.ts`],
+            globalSetup: [mockGlobalSetup()],
           }),
         }),
       );
@@ -148,9 +161,9 @@ describe('createVitestConfig', () => {
         expect.objectContaining({
           test: expect.objectContaining({
             include: EXPECTED_INCLUDES.int,
-            globalSetup: [`${MOCK_PROJECT_ROOT_STRING}/global-setup.ts`],
+            globalSetup: [mockGlobalSetup()],
             coverage: expect.objectContaining({
-              reportsDirectory: `${MOCK_PROJECT_ROOT_STRING}/packages/test-package/.coverage/int-tests`,
+              reportsDirectory: mockReportsDir('test-package', 'int'),
             }),
           }),
         }),
@@ -202,7 +215,7 @@ describe('createVitestConfig', () => {
             globalSetup: undefined,
             coverage: expect.objectContaining({
               reporter: ['text', 'lcov'],
-              reportsDirectory: `${MOCK_PROJECT_ROOT_STRING}/e2e/test-package/.coverage`,
+              reportsDirectory: mockReportsDir('test-package', 'e2e'),
               exclude: DEFAULT_EXCLUDES,
             }),
           }),
@@ -224,7 +237,7 @@ describe('createVitestConfig', () => {
 
       expect(config).toEqual(
         expect.objectContaining({
-          cacheDir: `${MOCK_PROJECT_ROOT_STRING}/node_modules/.vite/custom-cache-key`,
+          cacheDir: mockCacheDir('custom-cache-key'),
         }),
       );
     });
@@ -240,7 +253,7 @@ describe('createVitestConfig', () => {
 
       expect(config).toEqual(
         expect.objectContaining({
-          cacheDir: `${MOCK_PROJECT_ROOT_STRING}/node_modules/.vite/test-package`,
+          cacheDir: mockCacheDir('test-package'),
         }),
       );
     });
@@ -265,7 +278,7 @@ describe('createVitestConfig', () => {
       expect(config).toEqual(
         expect.objectContaining({
           test: expect.objectContaining({
-            setupFiles: [`${MOCK_PROJECT_ROOT_STRING}/setup.ts`],
+            setupFiles: [mockSetupFile('setup.ts')],
           }),
         }),
       );
@@ -290,8 +303,8 @@ describe('createVitestConfig', () => {
         expect.objectContaining({
           test: expect.objectContaining({
             setupFiles: [
-              `${MOCK_PROJECT_ROOT_STRING}/setup1.ts`,
-              `${MOCK_PROJECT_ROOT_STRING}/setup2.ts`,
+              mockSetupFile('setup1.ts'),
+              mockSetupFile('setup2.ts'),
             ],
           }),
         }),
@@ -317,9 +330,9 @@ describe('createVitestConfig', () => {
         expect.objectContaining({
           test: expect.objectContaining({
             setupFiles: [
-              `${MOCK_PROJECT_ROOT_STRING}/setup1.ts`,
-              `${MOCK_PROJECT_ROOT_STRING}/setup2.ts`,
-              `${MOCK_PROJECT_ROOT_STRING}/setup3.ts`,
+              mockSetupFile('setup1.ts'),
+              mockSetupFile('setup2.ts'),
+              mockSetupFile('setup3.ts'),
             ],
           }),
         }),
@@ -392,7 +405,7 @@ describe('createVitestConfig', () => {
           test: expect.objectContaining({
             coverage: expect.objectContaining({
               reporter: ['text', 'lcov'],
-              reportsDirectory: `${MOCK_PROJECT_ROOT_STRING}/packages/test-package/.coverage/unit-tests`,
+              reportsDirectory: mockReportsDir('test-package', 'unit'),
               exclude: [...DEFAULT_EXCLUDES, 'custom/**', 'ignore/**'],
             }),
           }),
@@ -422,7 +435,7 @@ describe('createVitestConfig', () => {
           test: expect.objectContaining({
             coverage: expect.objectContaining({
               reporter: ['text', 'lcov'],
-              reportsDirectory: `${MOCK_PROJECT_ROOT_STRING}/packages/test-package/.coverage/unit-tests`,
+              reportsDirectory: mockReportsDir('test-package', 'unit'),
               exclude: DEFAULT_EXCLUDES,
             }),
           }),
@@ -479,7 +492,7 @@ describe('createVitestConfig', () => {
       const config = createVitestConfig(options, overrides);
       expectCoverageConfig(config, {
         reporter: ['text', 'lcov', 'html', 'json'],
-        reportsDirectory: `${MOCK_PROJECT_ROOT_STRING}/packages/test-package/.coverage/unit-tests`,
+        reportsDirectory: mockReportsDir('test-package', 'unit'),
         exclude: [...DEFAULT_EXCLUDES, 'custom/**'],
         thresholds: {
           global: {
@@ -536,7 +549,7 @@ describe('createVitestConfig', () => {
 
       const testConfig = (config as any).test;
       expect(testConfig.setupFiles).toEqual([
-        `${MOCK_PROJECT_ROOT_STRING}/should-be-removed.ts`,
+        mockSetupFile('should-be-removed.ts'),
       ]);
       expect(testConfig.testTimeout).toBe(TEST_TIMEOUTS.SHORT);
       expect(testConfig.pool).toBe('forks');
@@ -579,7 +592,7 @@ describe('createVitestConfig', () => {
       expect((config as any).test.testTimeout).toBe(TEST_TIMEOUTS.SHORT);
       expectCoverageConfig(config, {
         reporter: ['text', 'lcov'],
-        reportsDirectory: `${MOCK_PROJECT_ROOT_STRING}/packages/test-package/.coverage/unit-tests`,
+        reportsDirectory: mockReportsDir('test-package', 'unit'),
         exclude: DEFAULT_EXCLUDES,
       });
     });
@@ -603,7 +616,7 @@ describe('createVitestConfig', () => {
       expect((config as any).test.testTimeout).toBe(TEST_TIMEOUTS.SHORT);
       expectCoverageConfig(config, {
         reporter: ['text', 'lcov'],
-        reportsDirectory: `${MOCK_PROJECT_ROOT_STRING}/packages/test-package/.coverage/unit-tests`,
+        reportsDirectory: mockReportsDir('test-package', 'unit'),
         exclude: DEFAULT_EXCLUDES,
       });
     });
@@ -632,9 +645,7 @@ describe('createVitestConfig', () => {
           expectedIncludes[kind],
         );
         expect((config as any).test.globalSetup).toStrictEqual(
-          kind === 'e2e'
-            ? undefined
-            : [`${MOCK_PROJECT_ROOT_STRING}/global-setup.ts`],
+          kind === 'e2e' ? undefined : [mockGlobalSetup()],
         );
       });
     });
@@ -681,15 +692,15 @@ describe('createVitestConfig', () => {
           },
           test: expect.objectContaining({
             setupFiles: [
-              `${MOCK_PROJECT_ROOT_STRING}/setup1.ts`,
-              `${MOCK_PROJECT_ROOT_STRING}/setup2.ts`,
+              mockSetupFile('setup1.ts'),
+              mockSetupFile('setup2.ts'),
             ],
             testTimeout: TEST_TIMEOUTS.LONG,
             environment: 'jsdom',
             include: EXPECTED_INCLUDES.int,
             coverage: expect.objectContaining({
               exclude: ['mocks/**', '**/types.ts', 'e2e/**', 'dist/**'],
-              reportsDirectory: `${MOCK_PROJECT_ROOT_STRING}/packages/test-package/.coverage/int-tests`,
+              reportsDirectory: mockReportsDir('test-package', 'int'),
             }),
           }),
         }),
