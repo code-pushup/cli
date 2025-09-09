@@ -200,7 +200,7 @@ function sanitizeOverrides(overrides: VitestOverrides): VitestOverrides {
   return { ...overrides, test: sanitizedTest };
 }
 
-function getProjectRootPath(projectRootUrl: URL): string {
+export function getProjectRootPath(projectRootUrl: URL): string {
   try {
     return fileURLToPath(projectRootUrl);
   } catch {
