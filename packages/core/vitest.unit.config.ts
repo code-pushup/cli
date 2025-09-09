@@ -1,15 +1,22 @@
 /// <reference types="vitest" />
-import { createUnitConfig } from '../../tools/vitest-config-factory.js';
+import {
+  createUnitConfig,
+  setupPresets,
+} from '../../testing/test-setup/src/lib/config/vitest-setup-presets.js';
 
-export default createUnitConfig('core', {
-  projectRoot: new URL('../../', import.meta.url),
-  setupFiles: [
-    'testing/test-setup/src/lib/cliui.mock.ts',
-    'testing/test-setup/src/lib/fs.mock.ts',
-    'testing/test-setup/src/lib/git.mock.ts',
-    'testing/test-setup/src/lib/portal-client.mock.ts',
-    'testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
-    'testing/test-setup/src/lib/extend/markdown-table.matcher.ts',
-    'testing/test-setup/src/lib/extend/jest-extended.matcher.ts',
-  ],
-});
+export default createUnitConfig(
+  'core',
+  {
+    projectRoot: new URL('../../', import.meta.url),
+  },
+  {
+    test: {
+      setupFiles: [
+        ...setupPresets.unit.base,
+        ...setupPresets.unit.git,
+        ...setupPresets.unit.portalClient,
+        ...setupPresets.unit.matchersCore,
+      ],
+    },
+  },
+);
