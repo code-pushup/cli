@@ -1,6 +1,13 @@
-import { type ChildProcess, exec } from 'node:child_process';
-import { buildCommandString, formatCommandLog } from './command.js';
+import {
+  type ChildProcess,
+  type ChildProcessByStdio,
+  type SpawnOptionsWithStdioTuple,
+  type StdioPipe,
+  spawn,
+} from 'node:child_process';
+import type { Readable, Writable } from 'node:stream';
 import { isVerbose } from './env.js';
+import { formatCommandLog } from './format-command-log.js';
 import { ui } from './logging.js';
 import { calcDuration } from './reports/utils.js';
 
@@ -80,11 +87,12 @@ export class ProcessError extends Error {
  * args: ['--version']
  *
  */
-export type ProcessConfig = {
+export type ProcessConfig = Omit<
+  SpawnOptionsWithStdioTuple<StdioPipe, StdioPipe, StdioPipe>,
+  'stdio'
+> & {
   command: string;
   args?: string[];
-  cwd?: string;
-  env?: Record<string, string>;
   observer?: ProcessObserver;
   ignoreExitCode?: boolean;
 };
@@ -99,12 +107,12 @@ export type ProcessConfig = {
  *
  * @example
  * const observer = {
- *  onStdout: (stdout, childProcess) => console.info(stdout)
+ *  onStdout: (stdout) => console.info(stdout)
  *  }
  */
 export type ProcessObserver = {
-  onStdout?: (stdout: string, childProcess: ChildProcess) => void;
-  onStderr?: (stderr: string, childProcess: ChildProcess) => void;
+  onStdout?: (stdout: string, sourceProcess?: ChildProcess) => void;
+  onStderr?: (stderr: string, sourceProcess?: ChildProcess) => void;
   onError?: (error: ProcessError) => void;
   onComplete?: () => void;
 };
@@ -138,54 +146,45 @@ export type ProcessObserver = {
  * @param cfg - see {@link ProcessConfig}
  */
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
-  const { observer, cwd, command, args, ignoreExitCode = false, env } = cfg;
+  const { command, args, observer, ignoreExitCode = false, ...options } = cfg;
   const { onStdout, onStderr, onError, onComplete } = observer ?? {};
   const date = new Date().toISOString();
   const start = performance.now();
 
   if (isVerbose()) {
     ui().logger.log(
-      formatCommandLog({
-        command,
-        args,
-        cwd: cfg.cwd ?? process.cwd(),
-        env,
-      }),
+      formatCommandLog(command, args, `${cfg.cwd ?? process.cwd()}`),
     );
   }
 
   return new Promise((resolve, reject) => {
-    const commandString = buildCommandString(command, args ?? []);
+    // shell:true tells Windows to use shell command for spawning a child process
+    const spawnedProcess = spawn(command, args ?? [], {
+      shell: true,
+      windowsHide: true,
+      ...options,
+    }) as ChildProcessByStdio<Writable, Readable, Readable>;
 
-    const childProcess = exec(commandString, {
-      cwd,
-      env: env ? { ...process.env, ...env } : process.env,
-      windowsHide: false,
-    });
     // eslint-disable-next-line functional/no-let
     let stdout = '';
     // eslint-disable-next-line functional/no-let
     let stderr = '';
 
-    if (childProcess.stdout) {
-      childProcess.stdout.on('data', data => {
-        stdout += String(data);
-        onStdout?.(String(data), childProcess);
-      });
-    }
+    spawnedProcess.stdout.on('data', data => {
+      stdout += String(data);
+      onStdout?.(String(data), spawnedProcess);
+    });
 
-    if (childProcess.stderr) {
-      childProcess.stderr.on('data', data => {
-        stderr += String(data);
-        onStderr?.(String(data), childProcess);
-      });
-    }
+    spawnedProcess.stderr.on('data', data => {
+      stderr += String(data);
+      onStderr?.(String(data), spawnedProcess);
+    });
 
-    childProcess.on('error', err => {
+    spawnedProcess.on('error', err => {
       stderr += err.toString();
     });
 
-    childProcess.on('close', code => {
+    spawnedProcess.on('close', code => {
       const timings = { date, duration: calcDuration(start) };
       if (code === 0 || ignoreExitCode) {
         onComplete?.();
