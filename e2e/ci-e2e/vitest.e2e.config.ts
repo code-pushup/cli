@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-import { createE2eConfig } from '../../testing/test-setup/src/lib/config/vitest-setup-presets.js';
+import { createE2eConfig } from '../../testing/test-setup-config/src/lib/vitest-setup-presets.js';
 
 export default createE2eConfig(
   'ci-e2e',

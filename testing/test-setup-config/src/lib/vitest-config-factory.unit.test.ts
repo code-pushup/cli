@@ -19,7 +19,7 @@ vi.mock('vite', async importOriginal => {
 });
 
 // Mock tsconfigPathAliases since it reads from filesystem and our fake paths don't exist
-vi.mock('../../../../../tools/vitest-tsconfig-path-aliases.js', () => ({
+vi.mock('./vitest-tsconfig-path-aliases.js', () => ({
   tsconfigPathAliases: vi.fn().mockReturnValue({ '@mock/alias': '/mock/path' }),
 }));
 

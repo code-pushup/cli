@@ -2,7 +2,7 @@
 import {
   createIntConfig,
   setupPresets,
-} from '../../testing/test-setup/src/lib/config/vitest-setup-presets.js';
+} from '../../testing/test-setup-config/src/lib/vitest-setup-presets.js';
 
 export default createIntConfig(
   'utils',
