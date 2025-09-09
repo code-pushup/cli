@@ -1,8 +1,11 @@
 import { loadConfig } from 'tsconfig-paths';
 import type { Alias, AliasOptions } from 'vite';
 
-export function tsconfigPathAliases(): AliasOptions {
-  const result = loadConfig('tsconfig.base.json');
+export function tsconfigPathAliases(projectRootUrl?: URL): AliasOptions {
+  const tsconfigPath = projectRootUrl
+    ? new URL('tsconfig.base.json', projectRootUrl).pathname
+    : 'tsconfig.base.json';
+  const result = loadConfig(tsconfigPath);
   if (result.resultType === 'failed') {
     throw new Error(
       `Failed to load path aliases from tsconfig for Vitest: ${result.message}`,
