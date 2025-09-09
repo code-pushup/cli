@@ -1,4 +1,5 @@
-import { pathToFileURL } from 'node:url';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
   type UserConfig as ViteUserConfig,
   defineConfig,
@@ -68,7 +69,9 @@ function toAbsolutePaths(
   paths?: readonly string[],
 ): string[] {
   return paths && paths.length > 0
-    ? paths.filter(Boolean).map(p => new URL(p, projectRootUrl).pathname)
+    ? paths
+        .filter(Boolean)
+        .map(p => path.resolve(fileURLToPath(projectRootUrl), p))
     : [];
 }
 
@@ -92,7 +95,7 @@ function defaultGlobalSetup(
 ): string[] | undefined {
   return kind === 'e2e'
     ? undefined
-    : [new URL('global-setup.ts', projectRootUrl).pathname];
+    : [path.resolve(fileURLToPath(projectRootUrl), 'global-setup.ts')];
 }
 
 function buildCoverageConfig(params: {
@@ -102,12 +105,12 @@ function buildCoverageConfig(params: {
   overrideExclude?: string[];
 }): CoverageOptions {
   const defaultExclude = ['mocks/**', '**/types.ts'];
-  const reportsDirectory = new URL(
+  const reportsDirectory = path.resolve(
+    fileURLToPath(params.projectRootUrl),
     params.kind === 'e2e'
       ? `e2e/${params.projectKey}/.coverage`
       : `packages/${params.projectKey}/.coverage/${params.kind}-tests`,
-    params.projectRootUrl,
-  ).pathname;
+  );
   return {
     reporter: ['text', 'lcov'],
     reportsDirectory,
@@ -128,15 +131,18 @@ function buildBaseConfig(params: {
   overrideExclude: string[];
 }): VitestOverrides {
   const cfg: VitestOverrides = {
-    cacheDir: new URL(
+    cacheDir: path.resolve(
+      fileURLToPath(params.projectRootUrl),
       `node_modules/.vite/${params.cacheDirName}`,
-      params.projectRootUrl,
-    ).pathname,
+    ),
     test: {
       reporters: ['basic'],
       globals: true,
       cache: {
-        dir: new URL('node_modules/.vitest', params.projectRootUrl).pathname,
+        dir: path.resolve(
+          fileURLToPath(params.projectRootUrl),
+          'node_modules/.vitest',
+        ),
       },
       alias: tsconfigPathAliases(params.projectRootUrl),
       pool: 'threads',

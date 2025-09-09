@@ -1,9 +1,11 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { loadConfig } from 'tsconfig-paths';
 import type { Alias, AliasOptions } from 'vite';
 
 export function tsconfigPathAliases(projectRootUrl?: URL): AliasOptions {
   const tsconfigPath = projectRootUrl
-    ? new URL('tsconfig.base.json', projectRootUrl).pathname
+    ? path.resolve(fileURLToPath(projectRootUrl), 'tsconfig.base.json')
     : 'tsconfig.base.json';
   const result = loadConfig(tsconfigPath);
   if (result.resultType === 'failed') {
@@ -17,7 +19,9 @@ export function tsconfigPathAliases(projectRootUrl?: URL): AliasOptions {
     .map(
       ([importPath, relativePath]): Alias => ({
         find: importPath,
-        replacement: new URL(`../${relativePath}`, import.meta.url).pathname,
+        replacement: projectRootUrl
+          ? path.resolve(fileURLToPath(projectRootUrl), relativePath)
+          : new URL(`../${relativePath}`, import.meta.url).pathname,
       }),
     );
 }
