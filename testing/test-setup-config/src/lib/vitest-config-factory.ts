@@ -5,7 +5,7 @@ import {
   mergeConfig,
 } from 'vite';
 import type { CoverageOptions, InlineConfig } from 'vitest';
-import { tsconfigPathAliases } from '../../../../../tools/vitest-tsconfig-path-aliases.js';
+import { tsconfigPathAliases } from './vitest-tsconfig-path-aliases.js';
 
 export type TestKind = 'unit' | 'int' | 'e2e';
 
