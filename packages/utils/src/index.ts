@@ -8,6 +8,15 @@ export {
   toTitleCase,
   uppercase,
 } from './lib/case-conversions.js';
+export {
+  buildCommandString,
+  filePathToCliArg,
+  formatCommandLog,
+  type FormatCommandLogOptions,
+  formatEnvValue,
+  objectToCliArgs,
+  type CliArgsObject,
+} from './lib/command.js';
 export { filesCoverageToTree, type FileCoverage } from './lib/coverage-tree.js';
 export { createRunnerFiles } from './lib/create-runner-files.js';
 export { comparePairs, matchArrayItemsByKey, type Diff } from './lib/diff.js';
@@ -33,7 +42,6 @@ export {
   directoryExists,
   ensureDirectoryExists,
   fileExists,
-  filePathToCliArg,
   findLineNumberInText,
   findNearestFile,
   importModule,
@@ -124,7 +132,6 @@ export {
   factorOf,
   fromJsonLines,
   objectFromEntries,
-  objectToCliArgs,
   objectToEntries,
   objectToKeys,
   removeUndefinedAndEmptyProps,
@@ -134,7 +141,6 @@ export {
   toOrdinal,
   toUnixNewlines,
   toUnixPath,
-  type CliArgsObject,
 } from './lib/transform.js';
 export type {
   CamelCaseToKebabCase,

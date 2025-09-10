@@ -6,8 +6,8 @@ import {
   spawn,
 } from 'node:child_process';
 import type { Readable, Writable } from 'node:stream';
+import { formatCommandLog } from './command.js';
 import { isVerbose } from './env.js';
-import { formatCommandLog } from './format-command-log.js';
 import { ui } from './logging.js';
 import { calcDuration } from './reports/utils.js';
 
@@ -93,6 +93,8 @@ export type ProcessConfig = Omit<
 > & {
   command: string;
   args?: string[];
+  cwd?: string;
+  env?: Record<string, string>;
   observer?: ProcessObserver;
   ignoreExitCode?: boolean;
 };
@@ -146,14 +148,28 @@ export type ProcessObserver = {
  * @param cfg - see {@link ProcessConfig}
  */
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
-  const { command, args, observer, ignoreExitCode = false, ...options } = cfg;
+  const {
+    observer,
+    cwd,
+    command,
+    args,
+    ignoreExitCode = false,
+    env,
+    ...options
+  } = cfg;
   const { onStdout, onStderr, onError, onComplete } = observer ?? {};
   const date = new Date().toISOString();
   const start = performance.now();
 
   if (isVerbose()) {
     ui().logger.log(
-      formatCommandLog(command, args, `${cfg.cwd ?? process.cwd()}`),
+      formatCommandLog({
+        command,
+        args,
+        cwd: cfg.cwd ?? process.cwd(),
+        env,
+        ...options,
+      }),
     );
   }
 
