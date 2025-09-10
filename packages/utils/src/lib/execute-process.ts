@@ -138,7 +138,15 @@ export type ProcessObserver = {
  * @param cfg - see {@link ProcessConfig}
  */
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
-  const { observer, cwd, command, args, ignoreExitCode = false, env } = cfg;
+  const {
+    observer,
+    cwd,
+    command,
+    args,
+    ignoreExitCode = false,
+    env,
+    ...options
+  } = cfg;
   const { onStdout, onStderr, onError, onComplete } = observer ?? {};
   const date = new Date().toISOString();
   const start = performance.now();
@@ -150,6 +158,7 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
         args,
         cwd: cfg.cwd ?? process.cwd(),
         env,
+        ...options,
       }),
     );
   }
