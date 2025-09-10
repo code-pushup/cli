@@ -1,5 +1,5 @@
-import { type ChildProcess, exec } from 'node:child_process';
-import { buildCommandString, formatCommandLog } from './command.js';
+import { type ChildProcess, spawn } from 'node:child_process';
+import { formatCommandLog } from './command.js';
 import { isVerbose } from './env.js';
 import { ui } from './logging.js';
 import { calcDuration } from './reports/utils.js';
@@ -164,9 +164,7 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   }
 
   return new Promise((resolve, reject) => {
-    const commandString = buildCommandString(command, args ?? []);
-
-    const childProcess = exec(commandString, {
+    const childProcess = spawn(command, args ?? [], {
       cwd,
       env: env ? { ...process.env, ...env } : process.env,
       windowsHide: false,
