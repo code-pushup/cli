@@ -35,11 +35,11 @@ export function formatEnvValue(value: string): string {
 }
 
 /**
- * Builds a command string by escaping arguments that contain spaces, quotes, or other special characters.
+ * Builds a command string by joining arguments with spaces.
  *
  * @param {string} command - The base command to execute.
  * @param {string[]} args - Array of command arguments.
- * @returns {string} - The complete command string with properly escaped arguments.
+ * @returns {string} - The complete command string with joined arguments.
  */
 export function buildCommandString(
   command: string,

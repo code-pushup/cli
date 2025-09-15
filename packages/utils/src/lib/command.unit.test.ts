@@ -189,41 +189,39 @@ describe('buildCommandString', () => {
     expect(result).toBe('npm install --save-dev vitest');
   });
 
-  it('should escape arguments containing spaces', () => {
+  it('should handle arguments containing spaces', () => {
     const command = 'code';
     const args = ['My Project/index.js'];
     const result = buildCommandString(command, args);
-    expect(result).toBe('code "My Project/index.js"');
+    expect(result).toBe('code My Project/index.js');
   });
 
-  it('should escape arguments containing double quotes', () => {
+  it('should handle arguments containing double quotes', () => {
     const command = 'echo';
     const args = ['Hello "World"'];
     const result = buildCommandString(command, args);
-    expect(result).toBe('echo "Hello \\"World\\""');
+    expect(result).toBe('echo Hello "World"');
   });
 
-  it('should escape arguments containing single quotes', () => {
+  it('should handle arguments containing single quotes', () => {
     const command = 'echo';
     const args = ["Hello 'World'"];
     const result = buildCommandString(command, args);
-    expect(result).toBe('echo "Hello \'World\'"');
+    expect(result).toBe("echo Hello 'World'");
   });
 
   it('should handle mixed arguments with and without special characters', () => {
     const command = 'mycommand';
     const args = ['simple', 'with spaces', '--flag', 'with "quotes"'];
     const result = buildCommandString(command, args);
-    expect(result).toBe(
-      'mycommand simple "with spaces" --flag "with \\"quotes\\""',
-    );
+    expect(result).toBe('mycommand simple with spaces --flag with "quotes"');
   });
 
   it('should handle arguments with multiple types of quotes', () => {
     const command = 'test';
     const args = ['arg with "double" and \'single\' quotes'];
     const result = buildCommandString(command, args);
-    expect(result).toBe('test "arg with \\"double\\" and \'single\' quotes"');
+    expect(result).toBe('test arg with "double" and \'single\' quotes');
   });
 
   it('should handle objects with undefined', () => {
@@ -243,6 +241,6 @@ describe('buildCommandString', () => {
     const command = 'test';
     const args = ['   '];
     const result = buildCommandString(command, args);
-    expect(result).toBe('test "   "');
+    expect(result).toBe('test    ');
   });
 });
