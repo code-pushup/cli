@@ -49,7 +49,7 @@ export function buildCommandString(
     return command;
   }
 
-  return `${command} ${escapeCliArgs(args).join(' ')}`;
+  return `${command} ${args.join(' ')}`;
 }
 
 /**
