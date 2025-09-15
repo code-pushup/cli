@@ -96,7 +96,7 @@ export function formatCommandLog(options: FormatCommandLogOptions): string {
         })
       : []),
     ansis.gray(command),
-    ansis.gray(escapeCliArgs(args).join(' ')),
+    ansis.gray(args.join(' ')),
   ].join(' ');
 }
 
