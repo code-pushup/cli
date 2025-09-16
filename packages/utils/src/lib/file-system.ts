@@ -167,6 +167,11 @@ export function findLineNumberInText(
   return lineNumber === 0 ? null : lineNumber; // If the package isn't found, return null
 }
 
+export function filePathToCliArg(filePath: string): string {
+  // needs to be escaped if spaces included
+  return `"${filePath}"`;
+}
+
 export function projectToFilename(project: string): string {
   return project.replace(/[/\\\s]+/g, '-').replace(/@/g, '');
 }

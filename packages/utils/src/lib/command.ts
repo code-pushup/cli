@@ -35,11 +35,11 @@ export function formatEnvValue(value: string): string {
 }
 
 /**
- * Builds a command string by joining arguments with spaces.
+ * Builds a command string by escaping arguments that contain spaces, quotes, or other special characters.
  *
  * @param {string} command - The base command to execute.
  * @param {string[]} args - Array of command arguments.
- * @returns {string} - The complete command string with joined arguments.
+ * @returns {string} - The complete command string with properly escaped arguments.
  */
 export function buildCommandString(
   command: string,
@@ -49,7 +49,7 @@ export function buildCommandString(
     return command;
   }
 
-  return `${command} ${args.join(' ')}`;
+  return `${command} ${escapeCliArgs(args).join(' ')}`;
 }
 
 /**
@@ -79,7 +79,6 @@ export interface FormatCommandLogOptions {
  * │            │ └ env variables                                            │
  * │            └ prompt symbol ($)                                          │
  * └─────────────────────────────────────────────────────────────────────────┘
- *
  */
 export function formatCommandLog(options: FormatCommandLogOptions): string {
   const { command, args = [], cwd = process.cwd(), env } = options;
