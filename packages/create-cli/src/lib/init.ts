@@ -1,6 +1,7 @@
 import {
   type ProcessConfig,
   executeProcess,
+  isVerbose,
   objectToCliArgs,
 } from '@code-pushup/utils';
 import {
@@ -29,6 +30,7 @@ export async function initCodePushup() {
     ...nxPluginGenerator('init', {
       skipNxJson: true,
     }),
+    verbose: isVerbose(),
     observer: {
       onStdout: data => {
         console.info(parseNxProcessOutput(data.toString()));

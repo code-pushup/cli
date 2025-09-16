@@ -39,6 +39,7 @@ export async function executeRunnerConfig(
   const { outputFile, outputTransform } = config;
 
   const { duration, date } = await executeProcess({
+    verbose: isVerbose(),
     command: config.command,
     args: config.args,
     observer: {

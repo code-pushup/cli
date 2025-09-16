@@ -1,4 +1,5 @@
 import { type ExecutorContext, logger } from '@nx/devkit';
+import { isVerbose } from '@code-pushup/utils';
 import { executeProcess } from '../../internal/execute-process.js';
 import {
   createCliCommandObject,

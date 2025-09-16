@@ -27,6 +27,7 @@ export async function runPrintConfig({
         path.resolve(directory, '.code-pushup', outputFile);
 
   await executeProcess({
+    verbose: isVerbose(),
     command: bin,
     args: [
       ...(config ? [`--config=${config}`] : []),
