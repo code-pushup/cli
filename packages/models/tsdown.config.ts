@@ -1,0 +1,31 @@
+export default {
+  entry: {
+    // Main entry point
+    index: 'packages/models/src/index.ts',
+    // Individual module entry points
+    audit: 'packages/models/src/lib/audit.ts',
+    'audit-output': 'packages/models/src/lib/audit-output.ts',
+    'cache-config': 'packages/models/src/lib/cache-config.ts',
+    'category-config': 'packages/models/src/lib/category-config.ts',
+    commit: 'packages/models/src/lib/commit.ts',
+    configuration: 'packages/models/src/lib/configuration.ts',
+    'core-config': 'packages/models/src/lib/core-config.ts',
+    group: 'packages/models/src/lib/group.ts',
+    issue: 'packages/models/src/lib/issue.ts',
+    'persist-config': 'packages/models/src/lib/persist-config.ts',
+    'plugin-config': 'packages/models/src/lib/plugin-config.ts',
+    report: 'packages/models/src/lib/report.ts',
+    'reports-diff': 'packages/models/src/lib/reports-diff.ts',
+    'runner-config': 'packages/models/src/lib/runner-config.ts',
+    source: 'packages/models/src/lib/source.ts',
+    table: 'packages/models/src/lib/table.ts',
+    tree: 'packages/models/src/lib/tree.ts',
+    'upload-config': 'packages/models/src/lib/upload-config.ts',
+  },
+  format: ['cjs', 'esm'],
+  dts: true,
+  outDir: 'packages/models/dist',
+  clean: true,
+  external: ['zod', 'vscode-material-icons'],
+  tsconfig: 'packages/models/tsconfig.lib.json',
+};

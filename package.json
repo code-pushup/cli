@@ -116,6 +116,7 @@
     "react-dom": "18.3.1",
     "ts-patch": "^3.3.0",
     "tsconfig-paths": "^4.2.0",
+    "tsdown": "^0.15.1",
     "tsx": "^4.19.0",
     "type-fest": "^4.26.1",
     "typescript": "5.7.3",
