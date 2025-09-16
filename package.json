@@ -114,6 +114,7 @@
     "prettier": "^3.4.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "rolldown": "^1.0.0-beta.38",
     "ts-patch": "^3.3.0",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.19.0",
@@ -126,6 +127,7 @@
     "zod2md": "^0.2.4"
   },
   "optionalDependencies": {
+    "@rolldown/binding-darwin-arm64": "^1.0.0-beta.38",
     "@esbuild/darwin-arm64": "^0.25.9",
     "@nx/nx-darwin-arm64": "^21.4.1",
     "@nx/nx-darwin-x64": "^21.4.1",

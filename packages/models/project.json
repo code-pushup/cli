@@ -11,11 +11,35 @@
       "outputs": ["{projectRoot}/docs/models-reference.md"]
     },
     "build": {
-      "dependsOn": [
-        "^build",
-        "generate-docs",
-        { "projects": "models-transformers", "target": "build" }
-      ]
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx --yes rolldown -c rolldown.config.mjs",
+        "cwd": "packages/models"
+      },
+      "inputs": [
+        "production",
+        "^production",
+        "{projectRoot}/rolldown.config.mjs"
+      ],
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true,
+      "dependsOn": ["generate-docs", "types"]
+    },
+    "types": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "outputPath": "{projectRoot}/dist",
+        "main": "{projectRoot}/src/index.ts",
+        "tsConfig": "{projectRoot}/tsconfig.lib.json",
+        "assets": []
+      },
+      "inputs": [
+        "production",
+        "^production",
+        "{projectRoot}/tsconfig.lib.json"
+      ],
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true
     },
     "lint": {},
     "lint-report": {},
