@@ -78,6 +78,7 @@ describe('executeRunnerConfig', () => {
         onStdout: expect.any(Function),
         onStderr: expect.any(Function),
       },
+      verbose: false,
     });
   });
 

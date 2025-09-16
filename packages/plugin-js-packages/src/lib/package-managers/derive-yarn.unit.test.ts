@@ -22,6 +22,7 @@ describe('deriveYarnVersion', () => {
     expect(executeProcessSpy).toHaveBeenCalledWith({
       command: 'yarn',
       args: ['-v'],
+      verbose: false,
     });
   });
 
@@ -33,6 +34,7 @@ describe('deriveYarnVersion', () => {
     expect(executeProcessSpy).toHaveBeenCalledWith({
       command: 'yarn',
       args: ['-v'],
+      verbose: false,
     });
   });
 
@@ -46,6 +48,7 @@ describe('deriveYarnVersion', () => {
     expect(executeProcessSpy).toHaveBeenCalledWith({
       command: 'yarn',
       args: ['-v'],
+      verbose: false,
     });
   });
 });
