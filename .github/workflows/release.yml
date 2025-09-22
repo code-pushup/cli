@@ -1,76 +1,34 @@
-name: Release Packages
+name: Release
 
 on:
-  pull_request:
-    branches:
-      - main
   push:
-    branches:
-      - main
-  workflow_dispatch:
-    inputs:
-      dryRun:
-        type: choice
-        description: 'Dry run'
-        required: true
-        default: 'false'
-        options:
-          - 'true'
-          - 'false'
+    # TODO
+    # branches:
+    #   - main
+
+permissions:
+  contents: write
+  id-token: write
 
 env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   NX_NON_NATIVE_HASHER: true
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 jobs:
-  dry-run-release:
-    if: |
-      github.repository == 'code-pushup/cli' && (
-        github.event_name == 'pull_request' ||
-        (github.event_name == 'workflow_dispatch' && github.event.inputs.dryRun == 'true')
-      )
-    name: Dry run release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-          cache: npm
-      - name: Install dependencies
-        run: npm ci
-      - name: Version, release and publish packages
-        run: npx nx release --yes --dry-run
   release:
-    if: |
-      github.repository == 'code-pushup/cli' && (
-        (github.event_name == 'workflow_dispatch' && github.event.inputs.dryRun == 'false') ||
-        (github.event_name == 'push')
-      )
-    name: Release packages
+    name: Publish packages
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - name: Generate a token
-        id: generate_token
-        uses: actions/create-github-app-token@v1
-        with:
-          app-id: ${{ secrets.GH_APP_ID }}
-          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
-      - name: Checkout the repository
+      - name: Clone the repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ steps.generate_token.outputs.token }}
-      - name: Set up Git
+      - name: Configure Git user
+        # https://github.com/actions/checkout/blob/main/README.md#push-a-commit-using-the-built-in-token
         run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -79,19 +37,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Version, release and publish packages
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc
-          npx nx release --yes
-          git push --follow-tags
-      - name: Run Code PushUp on release commit
-        uses: code-pushup/github-action@v0
-        with:
-          bin: npx nx code-pushup --
-        env:
-          CP_SERVER: ${{ secrets.CP_SERVER }}
-          CP_API_KEY: ${{ secrets.CP_API_KEY }}
-          CP_ORGANIZATION: code-pushup
-          CP_PROJECT: cli
+        # TODO
+        # run: npx nx release --yes
+        run: npx nx release --yes 0.79.2-alpha.1
