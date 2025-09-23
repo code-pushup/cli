@@ -1,3 +1,13 @@
+## 0.79.2-alpha.1 (2025-09-23)
+
+### 🚀 Features
+
+- add local GitHub Action for testing CI changes ([#1104](https://github.com/code-pushup/cli/pull/1104), [#1093](https://github.com/code-pushup/cli/issues/1093))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.79.1 (2025-09-04)
 
 ### 🩹 Fixes
