@@ -2,8 +2,9 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
+    # TODO: revert
+    # branches:
+    #   - main
 
 concurrency:
   group: release
@@ -40,4 +41,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Version, release and publish packages
-        run: npx nx release --yes
+        # TODO: revert
+        run: npx nx release --yes 0.79.2
+        # run: npx nx release --yes
