@@ -1,3 +1,7 @@
+## 0.79.2 (2025-09-23)
+
+This was a version bump only, there were no code changes.
+
 ## 0.79.2-alpha.1 (2025-09-23)
 
 ### 🚀 Features
