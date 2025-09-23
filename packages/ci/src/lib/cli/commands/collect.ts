@@ -7,6 +7,7 @@ export async function runCollect(
   { hasFormats }: { hasFormats: boolean },
 ): Promise<void> {
   await executeProcess({
+    verbose: isVerbose(),
     command: bin,
     args: [
       ...(isVerbose() ? ['--verbose'] : []),

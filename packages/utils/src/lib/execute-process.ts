@@ -94,6 +94,7 @@ export type ProcessConfig = Omit<
   command: string;
   args?: string[];
   observer?: ProcessObserver;
+  verbose?: boolean;
   ignoreExitCode?: boolean;
 };
 
@@ -145,16 +146,24 @@ export type ProcessObserver = {
  *
  * @param cfg - see {@link ProcessConfig}
  */
-export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
-  const { command, args, observer, ignoreExitCode = false, ...options } = cfg;
+export function executeProcess(
+  cfg: ProcessConfig,
+  logger: { log: (str: string) => void } = ui().logger,
+): Promise<ProcessResult> {
+  const {
+    command,
+    args,
+    observer,
+    ignoreExitCode = false,
+    verbose,
+    ...options
+  } = cfg;
   const { onStdout, onStderr, onError, onComplete } = observer ?? {};
   const date = new Date().toISOString();
   const start = performance.now();
 
-  if (isVerbose()) {
-    ui().logger.log(
-      formatCommandLog(command, args, `${cfg.cwd ?? process.cwd()}`),
-    );
+  if (verbose === true) {
+    logger.log(formatCommandLog(command, args, `${cfg.cwd ?? process.cwd()}`));
   }
 
   return new Promise((resolve, reject) => {
