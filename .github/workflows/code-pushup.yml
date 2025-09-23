@@ -20,10 +20,7 @@ jobs:
     # ignore PRs from forks, handled by code-pushup-fork.yml
     if: ${{ !github.event.pull_request.head.repo.fork }}
     env:
-      CP_SERVER: ${{ secrets.CP_SERVER }}
       CP_API_KEY: ${{ secrets.CP_API_KEY }}
-      CP_ORGANIZATION: code-pushup
-      CP_PROJECT: cli
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
