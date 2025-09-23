@@ -15,20 +15,9 @@
         "index": 0
       }
     },
-    "targetName": {
-      "type": "string",
-      "description": "The name of the target.",
-      "x-prompt": "Which name should the target get? default is code-pushup.",
-      "default": "code-pushup"
-    },
     "bin": {
       "type": "string",
       "description": "Path to Code PushUp CLI"
-    },
-    "skipTarget": {
-      "type": "boolean",
-      "description": "Skip adding the target to project.json.",
-      "$default": "false"
     },
     "skipConfig": {
       "type": "boolean",

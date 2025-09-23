@@ -35,7 +35,7 @@ describe('createTargets', () => {
       } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual({
       [`${CP_TARGET_NAME}--configuration`]: {
-        command: `nx g ${PACKAGE_NAME}:configuration --skipTarget --targetName="code-pushup" --project="${projectName}"`,
+        command: `nx g ${PACKAGE_NAME}:configuration --project="${projectName}"`,
       },
     });
   });
@@ -55,7 +55,7 @@ describe('createTargets', () => {
       } as NormalizedCreateNodesContext),
     ).resolves.toStrictEqual({
       [`${targetName}--configuration`]: {
-        command: `nx g ${PACKAGE_NAME}:configuration --skipTarget --targetName="cp" --project="${projectName}"`,
+        command: `nx g ${PACKAGE_NAME}:configuration --project="${projectName}"`,
       },
     });
   });
