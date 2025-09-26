@@ -12,13 +12,14 @@ import {
   getConfig,
   normalizeAuditOutputs,
   toAuditOutputs,
+  withLocalTmpDir,
 } from './utils.js';
 
 export function createRunnerFunction(
   urls: string[],
   flags: LighthouseCliFlags = DEFAULT_CLI_FLAGS,
 ): RunnerFunction {
-  return async (): Promise<AuditOutputs> => {
+  return withLocalTmpDir(async (): Promise<AuditOutputs> => {
     const config = await getConfig(flags);
     const normalizationFlags = enrichFlags(flags);
     const isSingleUrl = !shouldExpandForUrls(urls.length);
@@ -58,7 +59,7 @@ export function createRunnerFunction(
       );
     }
     return normalizeAuditOutputs(allResults, normalizationFlags);
-  };
+  });
 }
 
 async function runLighthouseForUrl(
