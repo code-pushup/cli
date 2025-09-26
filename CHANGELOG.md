@@ -1,3 +1,13 @@
+## 0.80.1 (2025-09-26)
+
+### 🩹 Fixes
+
+- **nx-plugin:** remove undocument env vars parsing from executor ([c2f0fe4b](https://github.com/code-pushup/cli/commit/c2f0fe4b))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.80.0 (2025-09-24)
 
 ### 🚀 Features
