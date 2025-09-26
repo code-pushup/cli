@@ -1,3 +1,13 @@
+## 0.80.2 (2025-09-26)
+
+### 🩹 Fixes
+
+- **plugin-lighthouse:** prevent cleanup permissions error on windows ([ac43d411](https://github.com/code-pushup/cli/commit/ac43d411))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.80.1 (2025-09-26)
 
 ### 🩹 Fixes
