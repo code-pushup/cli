@@ -15,6 +15,10 @@ export default defineConfig({
   exports: false, // manually manage exports via onSuccess
   copy: [
     {
+      from: `packages/${projectName}/package.json`,
+      to: `packages/${projectName}/dist/package.json`,
+    },
+    {
       from: `packages/${projectName}/README.md`,
       to: `packages/${projectName}/dist/README.md`,
     },
