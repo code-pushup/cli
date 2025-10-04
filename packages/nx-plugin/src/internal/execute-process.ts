@@ -146,7 +146,7 @@ export type ProcessObserver = {
  */
 export function executeProcess(
   cfg: ProcessConfig,
-  logger: { log: (str: string) => void } = ui().logger,
+  logger: { log: (str: string) => void } = { log: console.log },
 ): Promise<ProcessResult> {
   const {
     command,
