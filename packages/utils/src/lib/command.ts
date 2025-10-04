@@ -16,7 +16,7 @@ export type CliArgsObject<T extends object = Record<string, ArgumentValue>> =
 export function escapeCliArgs(args: string[]): string[] {
   return args.map(arg => {
     if (arg.includes(' ') || arg.includes('"') || arg.includes("'")) {
-      return `"${arg.replace(/"/g, '\\"')}"`;
+      return `"${arg.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
     }
     return arg;
   });
