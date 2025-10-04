@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/nx-plugin",
-  "version": "0.79.1",
+  "version": "0.80.2",
   "license": "MIT",
   "description": "Nx plugin to integrate the Code PushUp CLI into your workspace 🛠️",
   "publishConfig": {
@@ -32,12 +32,11 @@
   "generators": "./generators.json",
   "executors": "./executors.json",
   "dependencies": {
-    "@code-pushup/models": "0.79.1",
-    "@code-pushup/utils": "0.79.1",
+    "@code-pushup/models": "0.80.2",
+    "@code-pushup/utils": "0.80.2",
     "@nx/devkit": ">=17.0.0",
     "ansis": "^3.3.0",
-    "nx": ">=17.0.0",
-    "zod": "^4.0.5"
+    "nx": ">=17.0.0"
   },
   "files": [
     "src",

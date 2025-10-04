@@ -13,11 +13,14 @@ describe('runAutorunExecutor', () => {
   const loggerWarnSpy = vi.spyOn(logger, 'warn');
   const executeProcessSpy = vi.spyOn(executeProcessModule, 'executeProcess');
 
-  /* eslint-disable functional/immutable-data, @typescript-eslint/no-dynamic-delete */
   beforeAll(() => {
     Object.entries(process.env)
       .filter(([k]) => k.startsWith('CP_'))
       .forEach(([k]) => delete process.env[k]);
+  });
+
+  afterAll(() => {
+    Object.entries(processEnvCP).forEach(([k, v]) => (process.env[k] = v));
   });
 
   beforeEach(() => {
@@ -36,11 +39,6 @@ describe('runAutorunExecutor', () => {
     loggerInfoSpy.mockReset();
     executeProcessSpy.mockReset();
   });
-
-  afterAll(() => {
-    Object.entries(processEnvCP).forEach(([k, v]) => (process.env[k] = v));
-  });
-  /* eslint-enable functional/immutable-data, @typescript-eslint/no-dynamic-delete */
 
   it('should call executeProcess with return result', async () => {
     const output = await runAutorunExecutor({}, executorContext('utils'));
@@ -91,7 +89,6 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should create command from context and options if no api key is set', async () => {
-    vi.stubEnv('CP_PROJECT', 'CLI');
     const output = await runAutorunExecutor(
       { persist: { filename: 'REPORT', format: ['md', 'json'] } },
       executorContext('core'),
@@ -104,9 +101,11 @@ describe('runAutorunExecutor', () => {
 
   it('should create command from context, options and arguments if api key is set', async () => {
     vi.stubEnv('CP_API_KEY', 'cp_1234567');
-    vi.stubEnv('CP_PROJECT', 'CLI');
     const output = await runAutorunExecutor(
-      { persist: { filename: 'REPORT', format: ['md', 'json'] } },
+      {
+        persist: { filename: 'REPORT', format: ['md', 'json'] },
+        upload: { project: 'CLI' },
+      },
       executorContext('core'),
     );
     expect(output.command).toMatch('--persist.filename="REPORT"');

@@ -1,3 +1,49 @@
+## 0.80.2 (2025-09-26)
+
+### 🩹 Fixes
+
+- **plugin-lighthouse:** prevent cleanup permissions error on windows ([ac43d411](https://github.com/code-pushup/cli/commit/ac43d411))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.80.1 (2025-09-26)
+
+### 🩹 Fixes
+
+- **nx-plugin:** remove undocument env vars parsing from executor ([c2f0fe4b](https://github.com/code-pushup/cli/commit/c2f0fe4b))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.80.0 (2025-09-24)
+
+### 🚀 Features
+
+- add local GitHub Action for testing CI changes ([#1104](https://github.com/code-pushup/cli/pull/1104), [#1093](https://github.com/code-pushup/cli/issues/1093))
+- **utils:** export loose autocomplete type helper ([d56a8463](https://github.com/code-pushup/cli/commit/d56a8463))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- Matěj Chalk
+
+## 0.79.2 (2025-09-23)
+
+This was a version bump only, there were no code changes.
+
+## 0.79.2-alpha.1 (2025-09-23)
+
+### 🚀 Features
+
+- add local GitHub Action for testing CI changes ([#1104](https://github.com/code-pushup/cli/pull/1104), [#1093](https://github.com/code-pushup/cli/issues/1093))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.79.1 (2025-09-04)
 
 ### 🩹 Fixes

@@ -4,6 +4,7 @@ import log from 'lighthouse-logger';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
 import { vol } from 'memfs';
+import os from 'node:os';
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
@@ -22,6 +23,7 @@ import {
   getConfig,
   normalizeAuditOutputs,
   toAuditOutputs,
+  withLocalTmpDir,
 } from './utils.js';
 
 // mock bundleRequire inside importEsmModule used for fetching config
@@ -500,5 +502,65 @@ describe('enrichFlags', () => {
       logLevel: 'info',
       outputPath: '/path/to/report-1.json',
     });
+  });
+});
+
+describe('withLocalTmpDir', () => {
+  it('should return unchanged function on Linux', () => {
+    vi.spyOn(os, 'platform').mockReturnValue('linux');
+    const runner = vi.fn().mockResolvedValue('result');
+
+    expect(withLocalTmpDir(runner)).toBe(runner);
+  });
+
+  it('should return unchanged function on MacOS', () => {
+    vi.spyOn(os, 'platform').mockReturnValue('darwin');
+    const runner = vi.fn().mockResolvedValue('result');
+
+    expect(withLocalTmpDir(runner)).toBe(runner);
+  });
+
+  it('should wrap function on Windows', async () => {
+    vi.spyOn(os, 'platform').mockReturnValue('win32');
+    const runner = vi.fn().mockResolvedValue('result');
+
+    const transformed = withLocalTmpDir(runner);
+
+    expect(transformed).not.toBe(runner);
+    await expect(transformed()).resolves.toBe('result');
+    expect(runner).toHaveBeenCalled();
+  });
+
+  it('should override TEMP environment variable before function call', async () => {
+    vi.spyOn(os, 'platform').mockReturnValue('win32');
+    const runner = vi
+      .fn()
+      .mockImplementation(
+        async () => `TEMP directory is ${process.env['TEMP']}`,
+      );
+
+    await expect(withLocalTmpDir(runner)()).resolves.toBe(
+      `TEMP directory is ${path.join('node_modules', '.code-pushup', 'lighthouse', 'tmp')}`,
+    );
+  });
+
+  it('should reset TEMP environment variable after function resolves', async () => {
+    const originalTmpDir = String.raw`\\?\C:\Users\RUNNER~1\AppData\Local\Temp`;
+    const runner = vi.fn().mockResolvedValue('result');
+    vi.spyOn(os, 'platform').mockReturnValue('win32');
+    vi.stubEnv('TEMP', originalTmpDir);
+
+    await withLocalTmpDir(runner)();
+
+    expect(process.env['TEMP']).toBe(originalTmpDir);
+  });
+
+  it('should reset TEMP environment variable after function rejects', async () => {
+    const runner = vi.fn().mockRejectedValue('error');
+    vi.spyOn(os, 'platform').mockReturnValue('win32');
+    vi.stubEnv('TEMP', '');
+
+    await expect(withLocalTmpDir(runner)()).rejects.toBe('error');
+    expect(process.env['TEMP']).toBe('');
   });
 });
