@@ -6,13 +6,17 @@ import experimentalConfig from 'lighthouse/core/config/experimental-config.js';
 import perfConfig from 'lighthouse/core/config/perf-config.js';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
+import os from 'node:os';
+import path from 'node:path';
 import type { AuditOutput, AuditOutputs } from '@code-pushup/models';
 import {
   formatReportScore,
   importModule,
+  pluginWorkDir,
   readJsonFile,
   ui,
 } from '@code-pushup/utils';
+import { LIGHTHOUSE_PLUGIN_SLUG } from '../constants.js';
 import type { LighthouseOptions } from '../types.js';
 import { logUnsupportedDetails, toAuditDetails } from './details/details.js';
 import type { LighthouseCliFlags } from './types.js';
@@ -165,5 +169,33 @@ export function enrichFlags(
     ...parsedFlags,
     logLevel,
     outputPath: urlSpecificOutputPath,
+  };
+}
+
+/**
+ * Wraps Lighthouse runner with `TEMP` directory override for Windows, to prevent permissions error on cleanup.
+ *
+ * `Runtime error encountered: EPERM, Permission denied: \\?\C:\Users\RUNNER~1\AppData\Local\Temp\lighthouse.57724617 '\\?\C:\Users\RUNNER~1\AppData\Local\Temp\lighthouse.57724617'`
+ *
+ * @param fn Async function which runs Lighthouse.
+ * @returns Wrapped function which overrides `TEMP` environment variable, before cleaning up afterwards.
+ */
+export function withLocalTmpDir<T>(fn: () => Promise<T>): () => Promise<T> {
+  if (os.platform() !== 'win32') {
+    return fn;
+  }
+
+  return async () => {
+    const originalTmpDir = process.env['TEMP'];
+    process.env['TEMP'] = path.join(
+      pluginWorkDir(LIGHTHOUSE_PLUGIN_SLUG),
+      'tmp',
+    );
+
+    try {
+      return await fn();
+    } finally {
+      process.env['TEMP'] = originalTmpDir;
+    }
   };
 }
