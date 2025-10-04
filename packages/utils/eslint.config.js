@@ -17,7 +17,12 @@ export default tseslint.config(
     rules: {
       '@nx/dependency-checks': [
         'error',
-        { ignoredDependencies: ['esbuild'] }, // esbuild is a peer dependency of bundle-require
+        {
+          ignoredDependencies: [
+            'esbuild', // esbuild is a peer dependency of bundle-require
+            'tsdown',
+          ],
+        },
       ],
     },
   },

@@ -110,6 +110,14 @@ export default tseslint.config(
   {
     files: ['**/*.json'],
     languageOptions: { parser: jsoncParser },
+    rules: {
+      '@nx/dependency-checks': [
+        'error',
+        {
+          ignoredDependencies: ['tsdown'],
+        },
+      ],
+    },
   },
   {
     files: ['**/*.ts', '**/*.js'],
@@ -138,6 +146,7 @@ export default tseslint.config(
     ignores: [
       '**/*.mock.*',
       '**/code-pushup.config.ts',
+      '**/tsdown.config.ts',
       '**/mocks/fixtures/**',
       '**/__snapshots__/**',
       '**/dist',
