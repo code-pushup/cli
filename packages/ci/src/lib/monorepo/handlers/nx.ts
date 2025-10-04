@@ -30,6 +30,7 @@ export const nxHandler: MonorepoToolHandler = {
 
   async listProjects({ cwd, task, nxProjectsFilter, observer }) {
     const { stdout } = await executeProcess({
+      verbose: isVerbose(),
       command: 'npx',
       args: [
         'nx',

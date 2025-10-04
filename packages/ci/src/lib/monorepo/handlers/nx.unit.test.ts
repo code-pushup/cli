@@ -77,8 +77,8 @@ describe('nxHandler', () => {
           '--exclude=*-e2e',
           '--json',
         ],
-        cwd: MEMFS_VOLUME,
         verbose: false,
+        cwd: MEMFS_VOLUME,
       } satisfies utils.ProcessConfig);
     });
 
