@@ -44,6 +44,7 @@ export default async function runAutorunExecutor(
       await executeProcess({
         ...createCliCommandObject({ command, args: cliArgumentObject }),
         ...(context.cwd ? { cwd: context.cwd } : {}),
+        ...(isVerbose() || verbose ? { verbose: true } : {}),
       });
     } catch (error) {
       logger.error(error);

@@ -86,6 +86,7 @@ export type ProcessConfig = {
   command: string;
   args?: string[];
   cwd?: string;
+  verbose?: boolean;
   observer?: ProcessObserver;
   ignoreExitCode?: boolean;
 };

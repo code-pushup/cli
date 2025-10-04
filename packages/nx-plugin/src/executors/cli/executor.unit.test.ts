@@ -52,7 +52,6 @@ describe('runAutorunExecutor', () => {
         onError: expect.any(Function),
         onStdout: expect.any(Function),
       },
-      verbose: false,
     });
   });
 
@@ -74,7 +73,6 @@ describe('runAutorunExecutor', () => {
         onError: expect.any(Function),
         onStdout: expect.any(Function),
       },
-      verbose: false,
     });
   });
 
