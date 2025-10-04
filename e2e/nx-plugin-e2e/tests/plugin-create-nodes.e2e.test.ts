@@ -174,18 +174,18 @@ describe('nx-plugin', () => {
 
     const cleanStdout = removeColorCodes(stdout);
     expect(cleanStdout).toContain('nx run my-lib:code-pushup');
-    expect(cleanStdout).toContain('$ npx @code-pushup/cli ');
+    expect(cleanStdout).toContain('npx @code-pushup/cli');
     expect(cleanStdout).toContain('--dryRun --verbose');
-    expect(cleanStdout).toContain(`--upload.project=\\"${project}\\"`);
+    expect(cleanStdout).toContain(`--upload.project="${project}"`);
   });
 
-  it('should consider plugin option cliBin in executor target', async () => {
-    const cwd = path.join(testFileDir, 'executor-option-cliBin');
-    const cliBinPath = `packages/cli/dist`;
+  it('should consider plugin option bin in executor target', async () => {
+    const cwd = path.join(testFileDir, 'executor-option-bin');
+    const binPath = `packages/cli/dist`;
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
       options: {
-        cliBin: cliBinPath,
+        bin: binPath,
       },
     });
     const { root } = readProjectConfiguration(tree, project);
@@ -199,7 +199,7 @@ describe('nx-plugin', () => {
     expect(projectJson.targets).toStrictEqual({
       'code-pushup': expect.objectContaining({
         options: {
-          bin: cliBinPath,
+          bin: binPath,
         },
       }),
     });
