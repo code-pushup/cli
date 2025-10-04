@@ -6,7 +6,7 @@ import {
   spawn,
 } from 'node:child_process';
 import type { Readable, Writable } from 'node:stream';
-import { formatCommandLog } from './format-command-log.js';
+import { formatCommandLog } from './command.js';
 import { ui } from './logging.js';
 import { calcDuration } from './reports/utils.js';
 
@@ -162,7 +162,13 @@ export function executeProcess(
   const start = performance.now();
 
   if (verbose === true) {
-    logger.log(formatCommandLog(command, args, `${cfg.cwd ?? process.cwd()}`));
+    logger.log(
+      formatCommandLog({
+        command,
+        args,
+        cwd: cfg.cwd ? String(cfg.cwd) : process.cwd(),
+      }),
+    );
   }
 
   return new Promise((resolve, reject) => {

@@ -1,10 +1,13 @@
-import { gray } from 'ansis';
-import { spawn } from 'node:child_process';
-import { ui } from '@code-pushup/utils';
-
-export function calcDuration(start: number, stop?: number): number {
-  return Math.round((stop ?? performance.now()) - start);
-}
+/* COPY OF /Users/michael_hladky/WebstormProjects/cli/packages/utils/src/lib/execute-process.ts */
+import {
+  type ChildProcess,
+  type ChildProcessByStdio,
+  type SpawnOptionsWithStdioTuple,
+  type StdioPipe,
+  spawn,
+} from 'node:child_process';
+import type { Readable, Writable } from 'node:stream';
+import { formatCommandLog } from './command.js';
 
 /**
  * Represents the process result.
@@ -82,12 +85,14 @@ export class ProcessError extends Error {
  * args: ['--version']
  *
  */
-export type ProcessConfig = {
+export type ProcessConfig = Omit<
+  SpawnOptionsWithStdioTuple<StdioPipe, StdioPipe, StdioPipe>,
+  'stdio'
+> & {
   command: string;
   args?: string[];
-  cwd?: string;
-  verbose?: boolean;
   observer?: ProcessObserver;
+  verbose?: boolean;
   ignoreExitCode?: boolean;
 };
 
@@ -105,7 +110,8 @@ export type ProcessConfig = {
  *  }
  */
 export type ProcessObserver = {
-  onStdout?: (stdout: string) => void;
+  onStdout?: (stdout: string, sourceProcess?: ChildProcess) => void;
+  onStderr?: (stderr: string, sourceProcess?: ChildProcess) => void;
   onError?: (error: ProcessError) => void;
   onComplete?: () => void;
 };
@@ -126,7 +132,7 @@ export type ProcessObserver = {
  * // async process execution
  * const result = await executeProcess({
  *    command: 'node',
- *    args: ['download-data'],
+ *    args: ['download-data.js'],
  *    observer: {
  *      onStdout: updateProgress,
  *      error: handleError,
@@ -138,41 +144,60 @@ export type ProcessObserver = {
  *
  * @param cfg - see {@link ProcessConfig}
  */
-export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
-  const { observer, cwd, command, args, ignoreExitCode = false } = cfg;
-  const { onStdout, onError, onComplete } = observer ?? {};
+export function executeProcess(
+  cfg: ProcessConfig,
+  logger: { log: (str: string) => void } = ui().logger,
+): Promise<ProcessResult> {
+  const {
+    command,
+    args,
+    observer,
+    ignoreExitCode = false,
+    verbose,
+    ...options
+  } = cfg;
+  const { onStdout, onStderr, onError, onComplete } = observer ?? {};
   const date = new Date().toISOString();
   const start = performance.now();
 
-  const logCommand = [command, ...(args || [])].join(' ');
-  ui().logger.log(
-    gray(
-      `Executing command:\n${logCommand}\nIn working directory:\n${cfg.cwd ?? process.cwd()}`,
-    ),
-  );
+  if (verbose === true) {
+    logger.log(
+      formatCommandLog({
+        command,
+        args,
+        cwd: cfg.cwd ? String(cfg.cwd) : process.cwd(),
+      }),
+    );
+  }
 
   return new Promise((resolve, reject) => {
     // shell:true tells Windows to use shell command for spawning a child process
-    const process = spawn(command, args, { cwd, shell: true });
+    const spawnedProcess = spawn(command, args ?? [], {
+      shell: true,
+      windowsHide: true,
+      ...options,
+    }) as ChildProcessByStdio<Writable, Readable, Readable>;
+
     // eslint-disable-next-line functional/no-let
     let stdout = '';
     // eslint-disable-next-line functional/no-let
     let stderr = '';
 
-    process.stdout.on('data', data => {
+    spawnedProcess.stdout.on('data', data => {
       stdout += String(data);
-      onStdout?.(String(data));
+      onStdout?.(String(data), spawnedProcess);
     });
 
-    process.stderr.on('data', data => {
+    spawnedProcess.stderr.on('data', data => {
       stderr += String(data);
+      onStderr?.(String(data), spawnedProcess);
     });
 
-    process.on('error', err => {
+    spawnedProcess.on('error', err => {
       stderr += err.toString();
     });
 
-    process.on('close', code => {
+    spawnedProcess.on('close', code => {
       const timings = { date, duration: calcDuration(start) };
       if (code === 0 || ignoreExitCode) {
         onComplete?.();
@@ -184,4 +209,8 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
       }
     });
   });
+}
+
+export function calcDuration(start: number, stop?: number): number {
+  return Math.round((stop ?? performance.now()) - start);
 }
