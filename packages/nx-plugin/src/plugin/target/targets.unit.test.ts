@@ -109,6 +109,7 @@ describe('createTargets', () => {
       expect.objectContaining({
         [targetName]: {
           executor: `${PACKAGE_NAME}:cli`,
+          options: {},
         },
       }),
     );
@@ -133,6 +134,7 @@ describe('createTargets', () => {
     ).resolves.toStrictEqual({
       [DEFAULT_TARGET_NAME]: {
         executor: '@code-pushup/nx-plugin:cli',
+        options: {},
       },
     });
   });
@@ -158,6 +160,7 @@ describe('createTargets', () => {
     ).resolves.toStrictEqual({
       cp: {
         executor: '@code-pushup/nx-plugin:cli',
+        options: {},
       },
     });
   });
