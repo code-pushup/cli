@@ -6,7 +6,6 @@ import {
   spawn,
 } from 'node:child_process';
 import type { Readable, Writable } from 'node:stream';
-import { isVerbose } from './env.js';
 import { formatCommandLog } from './format-command-log.js';
 import { ui } from './logging.js';
 import { calcDuration } from './reports/utils.js';
