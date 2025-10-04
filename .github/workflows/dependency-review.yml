@@ -1,0 +1,19 @@
+name: Dependency Review
+
+on: pull_request
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    name: Scan new dependencies
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      - name: Check for vulnerabilities in new dependencies
+        uses: actions/dependency-review-action@v4
+        with:
+          comment-summary-in-pr: on-failure

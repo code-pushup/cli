@@ -18,9 +18,6 @@
     "knip": "knip"
   },
   "private": true,
-  "engines": {
-    "node": ">=22.14"
-  },
   "dependencies": {
     "@code-pushup/portal-client": "^0.16.0",
     "@isaacs/cliui": "^8.0.2",
