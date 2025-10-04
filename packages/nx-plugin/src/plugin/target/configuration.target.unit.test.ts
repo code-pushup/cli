@@ -7,13 +7,13 @@ describe('createConfigurationTarget', () => {
     expect(
       createConfigurationTarget({ projectName: 'my-project' }),
     ).toStrictEqual({
-      command: `nx g ${PACKAGE_NAME}:configuration --skipTarget --targetName="code-pushup" --project="my-project"`,
+      command: `nx g ${PACKAGE_NAME}:configuration --project="my-project"`,
     });
   });
 
   it('should return code-pushup--configuration target without project name', () => {
     expect(createConfigurationTarget()).toStrictEqual({
-      command: `nx g ${PACKAGE_NAME}:configuration --skipTarget --targetName="code-pushup"`,
+      command: `nx g ${PACKAGE_NAME}:configuration`,
     });
   });
 });
