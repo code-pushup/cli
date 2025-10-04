@@ -41,12 +41,13 @@ export async function initCodePushup() {
     },
   });
 
-  const { stdout: configStdout, stderr: configStderr } = await executeProcess(
-    nxPluginGenerator('configuration', {
+  const { stdout: configStdout, stderr: configStderr } = await executeProcess({
+    ...nxPluginGenerator('configuration', {
       skipTarget: true,
       project: setupResult.projectName,
     }),
-  );
+    verbose: isVerbose(),
+  });
   console.info(parseNxProcessOutput(configStdout));
   console.warn(parseNxProcessOutput(configStderr));
 
