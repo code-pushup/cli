@@ -26,6 +26,7 @@
       "!{projectRoot}/tsconfig.@(test|tools).json",
       "!{workspaceRoot}/**/(*.)coverage/**/*"
     ],
+    "tsdownConfigs": ["{projectRoot}/tsdown.config.ts"],
     "test-vitest-inputs": [
       "os",
       {
@@ -82,7 +83,7 @@
         }
       }
     },
-    "build": {
+    "build-old": {
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"],
       "cache": true,
@@ -94,6 +95,18 @@
         "tsConfig": "{projectRoot}/tsconfig.lib.json",
         "assets": ["{projectRoot}/*.md"]
       }
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production", "tsdownConfigs"],
+      "cache": true,
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "node_modules/.bin/tsdown --config {projectRoot}/tsdown.config.ts"
+        ]
+      },
+      "outputs": ["{projectRoot}/dist"]
     },
     "unit-test": {
       "cache": true,
@@ -358,7 +371,8 @@
           "filterByTags": ["publishable"]
         }
       }
-    }
+    },
+    "./tools/src/ts-down.plugin.mjs"
   ],
   "nxCloudId": "65d4d862d2adb16a45a4bc7c"
 }

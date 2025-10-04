@@ -13,10 +13,5 @@ export default defineConfig({
   hash: false,
   external: ['zod', 'vscode-material-icons'],
   exports: false, // manually manage exports via onSuccess
-  copy: [
-    {
-      from: `packages/${projectName}/README.md`,
-      to: `packages/${projectName}/dist/README.md`,
-    },
-  ],
+  // No copy needed - this is an internal build tool, not a published package
 });

@@ -11,7 +11,7 @@ export default defineConfig({
   fixedExtension: true, // emit .mjs for esm and .cjs for cjs
   dts: true,
   hash: false,
-  external: ['zod', 'vscode-material-icons'],
+  external: ['zod', 'typescript'],
   exports: false, // manually manage exports via onSuccess
   copy: [
     {

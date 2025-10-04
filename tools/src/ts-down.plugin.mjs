@@ -1,25 +1,22 @@
-import type {
-  CreateNodesContextV2,
-  CreateNodesResultV2,
-  CreateNodesV2,
-  TargetConfiguration,
-} from '@nx/devkit';
 import { existsSync } from 'fs';
 import { dirname, join } from 'path';
 
-export interface TsdownPluginOptions {
-  targetName?: string;
-}
-
 const TSDOWN_CONFIG_GLOB = '**/tsdown.config.{ts,js,mjs}';
 
-export const createNodesV2: CreateNodesV2<TsdownPluginOptions> = [
+/**
+ * Nx plugin to integrate TSDown into the build process.
+ *
+ * @example
+ * ```json
+ * {
+ * "plugins": ["./tools/src/ts-down.plugin.mjs"]
+ * }
+ * ```
+ * This will automatically add a build target to any project containing a `tsdown.config.ts`, `tsdown.config.js`, or `tsdown.config.mjs` file.
+ */
+const createNodesV2 = [
   TSDOWN_CONFIG_GLOB,
-  async (
-    configFiles: readonly string[],
-    options: TsdownPluginOptions | undefined,
-    context: CreateNodesContextV2,
-  ): Promise<CreateNodesResultV2> => {
+  async (configFiles, options, context) => {
     return await Promise.all(
       configFiles.map(async configFile => {
         const projectRoot = dirname(configFile);
@@ -34,12 +31,12 @@ export const createNodesV2: CreateNodesV2<TsdownPluginOptions> = [
         );
 
         if (!hasPackageJson && !hasProjectJson) {
-          return [configFile, { projects: {} }] as const;
+          return [configFile, { projects: {} }];
         }
 
         const targetName = options?.targetName ?? 'tsd-build';
 
-        const targets: Record<string, TargetConfiguration> = {
+        const targets = {
           [targetName]: createTsdownBuildTarget(configFile, projectRoot),
         };
 
@@ -51,31 +48,28 @@ export const createNodesV2: CreateNodesV2<TsdownPluginOptions> = [
           },
         };
 
-        return [configFile, result] as const;
+        return [configFile, result];
       }),
     );
   },
 ];
 
-function createTsdownBuildTarget(
-  configFile: string,
-  projectRoot: string,
-): TargetConfiguration {
+function createTsdownBuildTarget(configFile, projectRoot) {
   return {
     executor: 'nx:run-commands',
     options: {
-      command: `./node_modules/.bin/tsdown --config ${configFile}`,
+      command: `node_modules/.bin/tsdown --config ${configFile}`,
       cwd: '{workspaceRoot}',
     },
     cache: true,
     inputs: [
-      'default',
-      '^default',
+      'production',
+      '^production',
       {
         externalDependencies: ['tsdown'],
       },
     ],
-    outputs: ['{options.outDir}', '{projectRoot}/dist'],
+    outputs: ['{projectRoot}/dist'],
     metadata: {
       description: 'Build the project using TSDown',
       technologies: ['tsdown'],

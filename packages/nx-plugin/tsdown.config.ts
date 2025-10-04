@@ -7,16 +7,31 @@ export default defineConfig({
   tsconfig: `packages/${projectName}/tsconfig.lib.json`,
   outDir: `packages/${projectName}/dist/src`, // Output to src/ subdirectory to match tsc
   unbundle: true, // Preserve directory structure like tsc
-  format: ['esm', 'cjs'], // dual build
+  format: ['cjs'], // commonjs only
   fixedExtension: true, // emit .mjs for esm and .cjs for cjs
   dts: true,
   hash: false,
-  external: ['zod', 'vscode-material-icons'],
+  external: [
+    '@code-pushup/models',
+    '@code-pushup/utils',
+    '@nx/devkit',
+    'ansis',
+    'nx',
+  ],
   exports: false, // manually manage exports via onSuccess
   copy: [
     {
       from: `packages/${projectName}/README.md`,
       to: `packages/${projectName}/dist/README.md`,
     },
+    {
+      from: `packages/${projectName}/generators.json`,
+      to: `packages/${projectName}/dist/generators.json`,
+    },
+    {
+      from: `packages/${projectName}/executors.json`,
+      to: `packages/${projectName}/dist/executors.json`,
+    },
+    // Schema files and templates are handled by Nx assets configuration in project.json
   ],
 });

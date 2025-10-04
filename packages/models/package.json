@@ -26,113 +26,11 @@
     "access": "public"
   },
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    },
-    "./audit": {
-      "types": "./dist/audit.d.ts",
-      "import": "./dist/audit.js",
-      "require": "./dist/audit.cjs"
-    },
-    "./audit-output": {
-      "types": "./dist/audit-output.d.ts",
-      "import": "./dist/audit-output.js",
-      "require": "./dist/audit-output.cjs"
-    },
-    "./cache-config": {
-      "types": "./dist/cache-config.d.ts",
-      "import": "./dist/cache-config.js",
-      "require": "./dist/cache-config.cjs"
-    },
-    "./category-config": {
-      "types": "./dist/category-config.d.ts",
-      "import": "./dist/category-config.js",
-      "require": "./dist/category-config.cjs"
-    },
-    "./commit": {
-      "types": "./dist/commit.d.ts",
-      "import": "./dist/commit.js",
-      "require": "./dist/commit.cjs"
-    },
-    "./configuration": {
-      "types": "./dist/configuration.d.ts",
-      "import": "./dist/configuration.js",
-      "require": "./dist/configuration.cjs"
-    },
-    "./core-config": {
-      "types": "./dist/core-config.d.ts",
-      "import": "./dist/core-config.js",
-      "require": "./dist/core-config.cjs"
-    },
-    "./group": {
-      "types": "./dist/group.d.ts",
-      "import": "./dist/group.js",
-      "require": "./dist/group.cjs"
-    },
-    "./issue": {
-      "types": "./dist/issue.d.ts",
-      "import": "./dist/issue.js",
-      "require": "./dist/issue.cjs"
-    },
-    "./persist-config": {
-      "types": "./dist/persist-config.d.ts",
-      "import": "./dist/persist-config.js",
-      "require": "./dist/persist-config.cjs"
-    },
-    "./plugin-config": {
-      "types": "./dist/plugin-config.d.ts",
-      "import": "./dist/plugin-config.js",
-      "require": "./dist/plugin-config.cjs"
-    },
-    "./report": {
-      "types": "./dist/report.d.ts",
-      "import": "./dist/report.js",
-      "require": "./dist/report.cjs"
-    },
-    "./reports-diff": {
-      "types": "./dist/reports-diff.d.ts",
-      "import": "./dist/reports-diff.js",
-      "require": "./dist/reports-diff.cjs"
-    },
-    "./runner-config": {
-      "types": "./dist/runner-config.d.ts",
-      "import": "./dist/runner-config.js",
-      "require": "./dist/runner-config.cjs"
-    },
-    "./source": {
-      "types": "./dist/source.d.ts",
-      "import": "./dist/source.js",
-      "require": "./dist/source.cjs"
-    },
-    "./table": {
-      "types": "./dist/table.d.ts",
-      "import": "./dist/table.js",
-      "require": "./dist/table.cjs"
-    },
-    "./tree": {
-      "types": "./dist/tree.d.ts",
-      "import": "./dist/tree.js",
-      "require": "./dist/tree.cjs"
-    },
-    "./upload-config": {
-      "types": "./dist/upload-config.d.ts",
-      "import": "./dist/upload-config.js",
-      "require": "./dist/upload-config.cjs"
-    }
-  },
-  "sideEffects": false,
   "dependencies": {
     "zod": "^4.0.5",
     "vscode-material-icons": "^0.1.0"
   },
   "files": [
-    "dist",
     "src",
     "!**/*.tsbuildinfo"
   ]

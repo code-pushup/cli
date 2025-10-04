@@ -22,18 +22,7 @@
         "^build",
         "generate-docs",
         { "projects": "models-transformers", "target": "build" }
-      ],
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx tsdown --config packages/models/tsdown.config.ts",
-          "node packages/models/scripts/generate-dist-package-json.mjs"
-        ],
-        "parallel": false
-      },
-      "inputs": ["production", "^production", "{projectRoot}/tsdown.config.ts"],
-      "outputs": ["{projectRoot}/dist"],
-      "cache": true
+      ]
     },
     "lint": {},
     "lint-report": {},

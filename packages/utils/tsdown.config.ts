@@ -11,7 +11,18 @@ export default defineConfig({
   fixedExtension: true, // emit .mjs for esm and .cjs for cjs
   dts: true,
   hash: false,
-  external: ['zod', 'vscode-material-icons'],
+  external: [
+    '@isaacs/cliui',
+    '@poppinss/cliui',
+    'ansis',
+    'build-md',
+    'bundle-require',
+    'esbuild',
+    'multi-progress-bars',
+    'semver',
+    'simple-git',
+    'zod',
+  ],
   exports: false, // manually manage exports via onSuccess
   copy: [
     {

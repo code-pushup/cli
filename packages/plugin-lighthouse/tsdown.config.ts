@@ -7,11 +7,11 @@ export default defineConfig({
   tsconfig: `packages/${projectName}/tsconfig.lib.json`,
   outDir: `packages/${projectName}/dist/src`, // Output to src/ subdirectory to match tsc
   unbundle: true, // Preserve directory structure like tsc
-  format: ['esm', 'cjs'], // dual build
-  fixedExtension: true, // emit .mjs for esm and .cjs for cjs
+  format: ['esm'], // ESM only - uses top-level await
+  fixedExtension: true, // emit .mjs for esm
   dts: true,
   hash: false,
-  external: ['zod', 'vscode-material-icons'],
+  external: ['ansis', 'chrome-launcher', 'lighthouse', 'lighthouse-logger'],
   exports: false, // manually manage exports via onSuccess
   copy: [
     {
