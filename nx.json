@@ -104,7 +104,8 @@
       "options": {
         "commands": [
           "node_modules/.bin/tsdown --config {projectRoot}/tsdown.config.ts"
-        ]
+        ],
+        "outputPath": "{projectRoot}/dist"
       },
       "outputs": ["{projectRoot}/dist"]
     },
