@@ -2,7 +2,7 @@
   "name": "@code-pushup/create-cli",
   "version": "0.80.2",
   "license": "MIT",
-  "bin": "index.js",
+  "bin": "src/index.mjs",
   "homepage": "https://github.com/code-pushup/cli/tree/main/packages/create-cli#readme",
   "bugs": {
     "url": "https://github.com/code-pushup/cli/issues?q=is%3Aissue%20state%3Aopen%20type%3ABug%20label%3A\"🧩%20create-cli\""

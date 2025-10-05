@@ -5,5 +5,7 @@ const __dirname = import.meta.dirname;
 
 export default defineConfig({
   ...baseConfig({ projectRoot: __dirname }),
+  // Override format to ESM only - this package uses top-level await in constants.ts
+  format: ['esm'],
   external: await getExternalDependencies(__dirname),
 });

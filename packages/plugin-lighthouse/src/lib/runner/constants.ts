@@ -13,60 +13,44 @@ const { audits, categories } = defaultConfig;
 
 export const PLUGIN_SLUG = 'lighthouse';
 
-// Initialize with empty arrays - will be populated by initializeLighthouseConstants()
-export let LIGHTHOUSE_NAVIGATION_AUDITS: Audit[] = [];
-export let LIGHTHOUSE_GROUPS: Group[] = [];
+const allRawLighthouseAudits = await Promise.all(
+  (audits ?? []).map(loadLighthouseAudit),
+);
 
-// Lazy initialization flag
-let initialized = false;
+export const LIGHTHOUSE_NAVIGATION_AUDITS: Audit[] = allRawLighthouseAudits
+  // This plugin only supports the "navigation" mode of Lighthouse in the current implementation
+  // If we don't exclude other audits we throw in the plugin output validation as some of the provided audits are not included in `lighthouse-report.json`
+  .filter(
+    audit =>
+      audit.meta.supportedModes == null ||
+      (Array.isArray(audit.meta.supportedModes) &&
+        audit.meta.supportedModes.includes('navigation')),
+  )
+  .map(audit => ({
+    slug: audit.meta.id,
+    title: getMetaString(audit.meta.title),
+    description: getMetaString(audit.meta.description),
+  }));
 
-// Call this once before using the constants
-export async function initializeLighthouseConstants(): Promise<void> {
-  if (initialized) {
-    return;
-  }
+const navigationAuditSlugs = new Set(
+  LIGHTHOUSE_NAVIGATION_AUDITS.map(({ slug }) => slug),
+);
 
-  const allRawLighthouseAudits = await Promise.all(
-    (audits ?? []).map(loadLighthouseAudit),
-  );
-
-  LIGHTHOUSE_NAVIGATION_AUDITS = allRawLighthouseAudits
-    // This plugin only supports the "navigation" mode of Lighthouse in the current implementation
-    // If we don't exclude other audits we throw in the plugin output validation as some of the provided audits are not included in `lighthouse-report.json`
-    .filter(
-      audit =>
-        audit.meta.supportedModes == null ||
-        (Array.isArray(audit.meta.supportedModes) &&
-          audit.meta.supportedModes.includes('navigation')),
-    )
-    .map(audit => ({
-      slug: audit.meta.id,
-      title: getMetaString(audit.meta.title),
-      description: getMetaString(audit.meta.description),
-    }));
-
-  const navigationAuditSlugs = new Set(
-    LIGHTHOUSE_NAVIGATION_AUDITS.map(({ slug }) => slug),
-  );
-
-  LIGHTHOUSE_GROUPS = Object.entries(categories ?? {}).map(
-    ([id, category]) => ({
-      slug: id,
-      title: getMetaString(category.title),
-      ...(category.description && {
-        description: getMetaString(category.description),
-      }),
-      refs: category.auditRefs
-        .filter(({ id: auditSlug }) => navigationAuditSlugs.has(auditSlug))
-        .map(ref => ({
-          slug: ref.id,
-          weight: ref.weight,
-        })),
+export const LIGHTHOUSE_GROUPS: Group[] = Object.entries(categories ?? {}).map(
+  ([id, category]) => ({
+    slug: id,
+    title: getMetaString(category.title),
+    ...(category.description && {
+      description: getMetaString(category.description),
     }),
-  );
-
-  initialized = true;
-}
+    refs: category.auditRefs
+      .filter(({ id: auditSlug }) => navigationAuditSlugs.has(auditSlug))
+      .map(ref => ({
+        slug: ref.id,
+        weight: ref.weight,
+      })),
+  }),
+);
 
 function getMetaString(value: string | IcuMessage): string {
   if (typeof value === 'string') {
