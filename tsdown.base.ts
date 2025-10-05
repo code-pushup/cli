@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { type UserConfig, defineConfig } from 'tsdown';
 
@@ -18,6 +18,7 @@ export function baseConfig(options: {
     dts: true,
     hash: false,
     external: [],
+    exports: true,
     copy: [
       {
         from: `${projectRoot}/package.json`,
@@ -28,6 +29,73 @@ export function baseConfig(options: {
         to: `${projectRoot}/dist/README.md`,
       },
     ],
+    async onSuccess() {
+      const distPackageJsonPath = join(projectRoot, 'dist', 'package.json');
+
+      try {
+        const packageJson = JSON.parse(
+          await readFile(distPackageJsonPath, 'utf8'),
+        );
+
+        // Remove fields not needed in published package
+        delete packageJson.devDependencies;
+        delete packageJson.scripts;
+        delete packageJson.nx;
+
+        // Update files field to include built output
+        if (packageJson.files) {
+          packageJson.files = packageJson.files.map((file: string) =>
+            file === 'src' ? 'src' : file,
+          );
+        }
+
+        // Adjust paths for the dist directory
+        if (packageJson.main) {
+          packageJson.main = packageJson.main.replace(/^dist\//, '');
+        }
+        if (packageJson.module) {
+          packageJson.module = packageJson.module.replace(/^dist\//, '');
+        }
+        if (packageJson.types) {
+          packageJson.types = packageJson.types.replace(/^dist\//, '');
+        }
+
+        // Generate exports field for dual ESM/CJS support
+        packageJson.exports = {
+          '.': {
+            import: './src/index.mjs',
+            require: './src/index.cjs',
+            types: './src/index.d.mts',
+          },
+          './*': {
+            import: './src/*/index.mjs',
+            require: './src/*/index.cjs',
+            types: './src/*/index.d.mts',
+          },
+          './*/': {
+            import: './src/*/index.mjs',
+            require: './src/*/index.cjs',
+            types: './src/*/index.d.mts',
+          },
+          './*.js': {
+            import: './src/*.mjs',
+            require: './src/*.cjs',
+            types: './src/*.d.mts',
+          },
+        };
+
+        await writeFile(
+          distPackageJsonPath,
+          JSON.stringify(packageJson, null, 2),
+          'utf8',
+        );
+      } catch (error) {
+        // If package.json doesn't exist in dist (e.g., copy was overridden), skip modification
+        if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+          throw error;
+        }
+      }
+    },
   });
 }
 

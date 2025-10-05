@@ -6,5 +6,4 @@ const __dirname = import.meta.dirname;
 export default defineConfig({
   ...baseConfig({ projectRoot: __dirname }),
   external: await getExternalDependencies(__dirname),
-  copy: [],
 });

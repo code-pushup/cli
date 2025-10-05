@@ -9,6 +9,10 @@ export default defineConfig({
   external: await getExternalDependencies(__dirname),
   copy: [
     {
+      from: `${__dirname}/package.json`,
+      to: `${__dirname}/dist/package.json`,
+    },
+    {
       from: `${__dirname}/README.md`,
       to: `${__dirname}/dist/README.md`,
     },

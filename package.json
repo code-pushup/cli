@@ -165,201 +165,73 @@
       "path": "@commitlint/cz-commitlint"
     }
   },
-  "main": "./packages/utils/dist/src/index.cjs",
-  "module": "./packages/utils/dist/src/index.mjs",
-  "types": "./packages/utils/dist/src/index.d.cts",
+  "main": "./packages/core/dist/src/index.cjs",
+  "module": "./packages/core/dist/src/index.mjs",
+  "types": "./packages/core/dist/src/index.d.cts",
   "exports": {
     ".": {
-      "import": "./packages/utils/dist/src/index.mjs",
-      "require": "./packages/utils/dist/src/index.cjs"
+      "import": "./packages/core/dist/src/index.mjs",
+      "require": "./packages/core/dist/src/index.cjs"
     },
-    "./lib/case-conversions": {
-      "import": "./packages/utils/dist/src/lib/case-conversions.mjs",
-      "require": "./packages/utils/dist/src/lib/case-conversions.cjs"
+    "./lib/collect-and-persist": {
+      "import": "./packages/core/dist/src/lib/collect-and-persist.mjs",
+      "require": "./packages/core/dist/src/lib/collect-and-persist.cjs"
     },
-    "./lib/coverage-tree": {
-      "import": "./packages/utils/dist/src/lib/coverage-tree.mjs",
-      "require": "./packages/utils/dist/src/lib/coverage-tree.cjs"
+    "./lib/compare": {
+      "import": "./packages/core/dist/src/lib/compare.mjs",
+      "require": "./packages/core/dist/src/lib/compare.cjs"
     },
-    "./lib/create-runner-files": {
-      "import": "./packages/utils/dist/src/lib/create-runner-files.mjs",
-      "require": "./packages/utils/dist/src/lib/create-runner-files.cjs"
+    "./lib/history": {
+      "import": "./packages/core/dist/src/lib/history.mjs",
+      "require": "./packages/core/dist/src/lib/history.cjs"
     },
-    "./lib/diff": {
-      "import": "./packages/utils/dist/src/lib/diff.mjs",
-      "require": "./packages/utils/dist/src/lib/diff.cjs"
+    "./lib/implementation/collect": {
+      "import": "./packages/core/dist/src/lib/implementation/collect.mjs",
+      "require": "./packages/core/dist/src/lib/implementation/collect.cjs"
     },
-    "./lib/env": {
-      "import": "./packages/utils/dist/src/lib/env.mjs",
-      "require": "./packages/utils/dist/src/lib/env.cjs"
+    "./lib/implementation/compare-scorables": {
+      "import": "./packages/core/dist/src/lib/implementation/compare-scorables.mjs",
+      "require": "./packages/core/dist/src/lib/implementation/compare-scorables.cjs"
     },
-    "./lib/errors": {
-      "import": "./packages/utils/dist/src/lib/errors.mjs",
-      "require": "./packages/utils/dist/src/lib/errors.cjs"
+    "./lib/implementation/execute-plugin": {
+      "import": "./packages/core/dist/src/lib/implementation/execute-plugin.mjs",
+      "require": "./packages/core/dist/src/lib/implementation/execute-plugin.cjs"
     },
-    "./lib/execute-process": {
-      "import": "./packages/utils/dist/src/lib/execute-process.mjs",
-      "require": "./packages/utils/dist/src/lib/execute-process.cjs"
+    "./lib/implementation/persist": {
+      "import": "./packages/core/dist/src/lib/implementation/persist.mjs",
+      "require": "./packages/core/dist/src/lib/implementation/persist.cjs"
     },
-    "./lib/file-system": {
-      "import": "./packages/utils/dist/src/lib/file-system.mjs",
-      "require": "./packages/utils/dist/src/lib/file-system.cjs"
+    "./lib/implementation/read-rc-file": {
+      "import": "./packages/core/dist/src/lib/implementation/read-rc-file.mjs",
+      "require": "./packages/core/dist/src/lib/implementation/read-rc-file.cjs"
     },
-    "./lib/filter": {
-      "import": "./packages/utils/dist/src/lib/filter.mjs",
-      "require": "./packages/utils/dist/src/lib/filter.cjs"
+    "./lib/implementation/report-to-gql": {
+      "import": "./packages/core/dist/src/lib/implementation/report-to-gql.mjs",
+      "require": "./packages/core/dist/src/lib/implementation/report-to-gql.cjs"
     },
-    "./lib/format-command-log": {
-      "import": "./packages/utils/dist/src/lib/format-command-log.mjs",
-      "require": "./packages/utils/dist/src/lib/format-command-log.cjs"
+    "./lib/implementation/runner": {
+      "import": "./packages/core/dist/src/lib/implementation/runner.mjs",
+      "require": "./packages/core/dist/src/lib/implementation/runner.cjs"
     },
-    "./lib/formatting": {
-      "import": "./packages/utils/dist/src/lib/formatting.mjs",
-      "require": "./packages/utils/dist/src/lib/formatting.cjs"
+    "./lib/load-portal-client": {
+      "import": "./packages/core/dist/src/lib/load-portal-client.mjs",
+      "require": "./packages/core/dist/src/lib/load-portal-client.cjs"
     },
-    "./lib/git/git": {
-      "import": "./packages/utils/dist/src/lib/git/git.mjs",
-      "require": "./packages/utils/dist/src/lib/git/git.cjs"
+    "./lib/merge-diffs": {
+      "import": "./packages/core/dist/src/lib/merge-diffs.mjs",
+      "require": "./packages/core/dist/src/lib/merge-diffs.cjs"
     },
-    "./lib/git/git.commits-and-tags": {
-      "import": "./packages/utils/dist/src/lib/git/git.commits-and-tags.mjs",
-      "require": "./packages/utils/dist/src/lib/git/git.commits-and-tags.cjs"
-    },
-    "./lib/guards": {
-      "import": "./packages/utils/dist/src/lib/guards.mjs",
-      "require": "./packages/utils/dist/src/lib/guards.cjs"
-    },
-    "./lib/interpolate": {
-      "import": "./packages/utils/dist/src/lib/interpolate.mjs",
-      "require": "./packages/utils/dist/src/lib/interpolate.cjs"
-    },
-    "./lib/log-results": {
-      "import": "./packages/utils/dist/src/lib/log-results.mjs",
-      "require": "./packages/utils/dist/src/lib/log-results.cjs"
-    },
-    "./lib/logging": {
-      "import": "./packages/utils/dist/src/lib/logging.mjs",
-      "require": "./packages/utils/dist/src/lib/logging.cjs"
-    },
-    "./lib/merge-configs": {
-      "import": "./packages/utils/dist/src/lib/merge-configs.mjs",
-      "require": "./packages/utils/dist/src/lib/merge-configs.cjs"
-    },
-    "./lib/progress": {
-      "import": "./packages/utils/dist/src/lib/progress.mjs",
-      "require": "./packages/utils/dist/src/lib/progress.cjs"
-    },
-    "./lib/promises": {
-      "import": "./packages/utils/dist/src/lib/promises.mjs",
-      "require": "./packages/utils/dist/src/lib/promises.cjs"
-    },
-    "./lib/random": {
-      "import": "./packages/utils/dist/src/lib/random.mjs",
-      "require": "./packages/utils/dist/src/lib/random.cjs"
-    },
-    "./lib/reports/constants": {
-      "import": "./packages/utils/dist/src/lib/reports/constants.mjs",
-      "require": "./packages/utils/dist/src/lib/reports/constants.cjs"
-    },
-    "./lib/reports/environment-type": {
-      "import": "./packages/utils/dist/src/lib/reports/environment-type.mjs",
-      "require": "./packages/utils/dist/src/lib/reports/environment-type.cjs"
-    },
-    "./lib/reports/flatten-plugins": {
-      "import": "./packages/utils/dist/src/lib/reports/flatten-plugins.mjs",
-      "require": "./packages/utils/dist/src/lib/reports/flatten-plugins.cjs"
-    },
-    "./lib/reports/formatting": {
-      "import": "./packages/utils/dist/src/lib/reports/formatting.mjs",
-      "require": "./packages/utils/dist/src/lib/reports/formatting.cjs"
-    },
-    "./lib/reports/generate-md-report": {
-      "import": "./packages/utils/dist/src/lib/reports/generate-md-report.mjs",
-      "require": "./packages/utils/dist/src/lib/reports/generate-md-report.cjs"
-    },
-    "./lib/reports/generate-md-report-category-section": {
-      "import": "./packages/utils/dist/src/lib/reports/generate-md-report-category-section.mjs",
-      "require": "./packages/utils/dist/src/lib/reports/generate-md-report-category-section.cjs"
-    },
-    "./lib/reports/generate-md-reports-diff": {
-      "import": "./packages/utils/dist/src/lib/reports/generate-md-reports-diff.mjs",
-      "require": "./packages/utils/dist/src/lib/reports/generate-md-reports-diff.cjs"
-    },
-    "./lib/reports/generate-md-reports-diff-utils": {
-      "import": "./packages/utils/dist/src/lib/reports/generate-md-reports-diff-utils.mjs",
-      "require": "./packages/utils/dist/src/lib/reports/generate-md-reports-diff-utils.cjs"
-    },
-    "./lib/reports/load-report": {
-      "import": "./packages/utils/dist/src/lib/reports/load-report.mjs",
-      "require": "./packages/utils/dist/src/lib/reports/load-report.cjs"
-    },
-    "./lib/reports/log-stdout-summary": {
-      "import": "./packages/utils/dist/src/lib/reports/log-stdout-summary.mjs",
-      "require": "./packages/utils/dist/src/lib/reports/log-stdout-summary.cjs"
-    },
-    "./lib/reports/scoring": {
-      "import": "./packages/utils/dist/src/lib/reports/scoring.mjs",
-      "require": "./packages/utils/dist/src/lib/reports/scoring.cjs"
-    },
-    "./lib/reports/sorting": {
-      "import": "./packages/utils/dist/src/lib/reports/sorting.mjs",
-      "require": "./packages/utils/dist/src/lib/reports/sorting.cjs"
-    },
-    "./lib/reports/types": {
-      "import": "./packages/utils/dist/src/lib/reports/types.mjs",
-      "require": "./packages/utils/dist/src/lib/reports/types.cjs"
-    },
-    "./lib/reports/utils": {
-      "import": "./packages/utils/dist/src/lib/reports/utils.mjs",
-      "require": "./packages/utils/dist/src/lib/reports/utils.cjs"
-    },
-    "./lib/semver": {
-      "import": "./packages/utils/dist/src/lib/semver.mjs",
-      "require": "./packages/utils/dist/src/lib/semver.cjs"
-    },
-    "./lib/text-formats": {
-      "import": "./packages/utils/dist/src/lib/text-formats/index.mjs",
-      "require": "./packages/utils/dist/src/lib/text-formats/index.cjs"
-    },
-    "./lib/text-formats/ascii/tree": {
-      "import": "./packages/utils/dist/src/lib/text-formats/ascii/tree.mjs",
-      "require": "./packages/utils/dist/src/lib/text-formats/ascii/tree.cjs"
-    },
-    "./lib/text-formats/constants": {
-      "import": "./packages/utils/dist/src/lib/text-formats/constants.mjs",
-      "require": "./packages/utils/dist/src/lib/text-formats/constants.cjs"
-    },
-    "./lib/text-formats/html/details": {
-      "import": "./packages/utils/dist/src/lib/text-formats/html/details.mjs",
-      "require": "./packages/utils/dist/src/lib/text-formats/html/details.cjs"
-    },
-    "./lib/text-formats/html/font-style": {
-      "import": "./packages/utils/dist/src/lib/text-formats/html/font-style.mjs",
-      "require": "./packages/utils/dist/src/lib/text-formats/html/font-style.cjs"
-    },
-    "./lib/text-formats/html/link": {
-      "import": "./packages/utils/dist/src/lib/text-formats/html/link.mjs",
-      "require": "./packages/utils/dist/src/lib/text-formats/html/link.cjs"
-    },
-    "./lib/text-formats/html/table": {
-      "import": "./packages/utils/dist/src/lib/text-formats/html/table.mjs",
-      "require": "./packages/utils/dist/src/lib/text-formats/html/table.cjs"
-    },
-    "./lib/text-formats/table": {
-      "import": "./packages/utils/dist/src/lib/text-formats/table.mjs",
-      "require": "./packages/utils/dist/src/lib/text-formats/table.cjs"
-    },
-    "./lib/transform": {
-      "import": "./packages/utils/dist/src/lib/transform.mjs",
-      "require": "./packages/utils/dist/src/lib/transform.cjs"
+    "./lib/normalize": {
+      "import": "./packages/core/dist/src/lib/normalize.mjs",
+      "require": "./packages/core/dist/src/lib/normalize.cjs"
     },
     "./lib/types": {
-      "import": "./packages/utils/dist/src/lib/types.mjs",
-      "require": "./packages/utils/dist/src/lib/types.cjs"
+      "import": "./packages/core/dist/src/lib/types.mjs",
+      "require": "./packages/core/dist/src/lib/types.cjs"
     },
-    "./lib/zod-validation": {
-      "import": "./packages/utils/dist/src/lib/zod-validation.mjs",
-      "require": "./packages/utils/dist/src/lib/zod-validation.cjs"
+    "./lib/upload": {
+      "import": "./packages/core/dist/src/lib/upload.mjs",
+      "require": "./packages/core/dist/src/lib/upload.cjs"
     },
     "./package.json": "./package.json"
   }
