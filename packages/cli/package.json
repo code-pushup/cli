@@ -38,33 +38,8 @@
     "access": "public"
   },
   "type": "module",
-  "main": "./src/index.cjs",
-  "module": "./src/index.mjs",
-  "types": "./src/index.d.ts",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./src/index.d.mts",
-        "default": "./src/index.mjs"
-      },
-      "require": {
-        "types": "./src/index.d.cts",
-        "default": "./src/index.cjs"
-      }
-    },
-    "./*": {
-      "import": {
-        "types": "./src/*.d.mts",
-        "default": "./src/*.mjs"
-      },
-      "require": {
-        "types": "./src/*.d.cts",
-        "default": "./src/*.cjs"
-      }
-    }
-  },
   "bin": {
-    "code-pushup": "./src/index.mjs"
+    "code-pushup": "./src/index.js"
   },
   "engines": {
     "node": ">=20"

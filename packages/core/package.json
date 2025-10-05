@@ -38,31 +38,6 @@
     "access": "public"
   },
   "type": "module",
-  "main": "./src/index.cjs",
-  "module": "./src/index.mjs",
-  "types": "./src/index.d.ts",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./src/index.d.mts",
-        "default": "./src/index.mjs"
-      },
-      "require": {
-        "types": "./src/index.d.cts",
-        "default": "./src/index.cjs"
-      }
-    },
-    "./*": {
-      "import": {
-        "types": "./src/*.d.mts",
-        "default": "./src/*.mjs"
-      },
-      "require": {
-        "types": "./src/*.d.cts",
-        "default": "./src/*.cjs"
-      }
-    }
-  },
   "dependencies": {
     "@code-pushup/models": "0.80.2",
     "@code-pushup/utils": "0.80.2",

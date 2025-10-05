@@ -29,22 +29,6 @@
   "type": "commonjs",
   "main": "./src/index.js",
   "typings": "./src/index.d.ts",
-  "exports": {
-    ".": {
-      "require": {
-        "types": "./src/index.d.ts",
-        "default": "./src/index.js"
-      }
-    },
-    "./*": {
-      "require": {
-        "types": "./src/*.d.ts",
-        "default": "./src/*.js"
-      }
-    },
-    "./generators.json": "./generators.json",
-    "./executors.json": "./executors.json"
-  },
   "generators": "./generators.json",
   "executors": "./executors.json",
   "dependencies": {
