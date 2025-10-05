@@ -49,15 +49,32 @@ export function baseConfig(options: {
           );
         }
 
+        // Detect if this is a CJS-only build by checking if .mjs files exist
+        const { existsSync } = await import('node:fs');
+        const indexMjsPath = join(projectRoot, 'dist', 'src', 'index.mjs');
+        const isCjsOnly = !existsSync(indexMjsPath);
+
         // Adjust paths for the dist directory
         if (packageJson.main) {
           packageJson.main = packageJson.main.replace(/^dist\//, '');
+          if (isCjsOnly) {
+            packageJson.main = packageJson.main.replace(/\.js$/, '.cjs');
+          }
         }
         if (packageJson.module) {
           packageJson.module = packageJson.module.replace(/^dist\//, '');
         }
         if (packageJson.types) {
           packageJson.types = packageJson.types.replace(/^dist\//, '');
+        }
+        if (packageJson.typings) {
+          packageJson.typings = packageJson.typings.replace(/^dist\//, '');
+          if (isCjsOnly) {
+            packageJson.typings = packageJson.typings.replace(
+              /\.d\.ts$/,
+              '.d.cts',
+            );
+          }
         }
 
         // Update bin field to use correct extension for built files
@@ -80,29 +97,52 @@ export function baseConfig(options: {
           }
         }
 
-        // Generate exports field for dual ESM/CJS support
-        packageJson.exports = {
-          '.': {
-            import: './src/index.mjs',
-            require: './src/index.cjs',
-            types: './src/index.d.mts',
-          },
-          './*': {
-            import: './src/*/index.mjs',
-            require: './src/*/index.cjs',
-            types: './src/*/index.d.mts',
-          },
-          './*/': {
-            import: './src/*/index.mjs',
-            require: './src/*/index.cjs',
-            types: './src/*/index.d.mts',
-          },
-          './*.js': {
-            import: './src/*.mjs',
-            require: './src/*.cjs',
-            types: './src/*.d.mts',
-          },
-        };
+        // Generate exports field based on format
+        if (isCjsOnly) {
+          // CJS-only exports
+          packageJson.exports = {
+            '.': {
+              require: './src/index.cjs',
+              types: './src/index.d.cts',
+            },
+            './*': {
+              require: './src/*/index.cjs',
+              types: './src/*/index.d.cts',
+            },
+            './*/': {
+              require: './src/*/index.cjs',
+              types: './src/*/index.d.cts',
+            },
+            './*.js': {
+              require: './src/*.cjs',
+              types: './src/*.d.cts',
+            },
+          };
+        } else {
+          // Dual ESM/CJS exports
+          packageJson.exports = {
+            '.': {
+              import: './src/index.mjs',
+              require: './src/index.cjs',
+              types: './src/index.d.mts',
+            },
+            './*': {
+              import: './src/*/index.mjs',
+              require: './src/*/index.cjs',
+              types: './src/*/index.d.mts',
+            },
+            './*/': {
+              import: './src/*/index.mjs',
+              require: './src/*/index.cjs',
+              types: './src/*/index.d.mts',
+            },
+            './*.js': {
+              import: './src/*.mjs',
+              require: './src/*.cjs',
+              types: './src/*.d.mts',
+            },
+          };
+        }
 
         await writeFile(
           distPackageJsonPath,

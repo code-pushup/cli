@@ -45,7 +45,7 @@ export async function jsPackagesPlugin(
   const runnerScriptPath = path.join(
     fileURLToPath(path.dirname(import.meta.url)),
     '..',
-    'bin.js',
+    'bin.mjs',
   );
 
   const packageJson = createRequire(import.meta.url)(
