@@ -73,7 +73,7 @@ async function safeCopyFile(
 }
 
 /**
- * Updates package.json paths by removing the dist/ prefix
+ * Updates package.json paths by removing the dist/ and src/ prefixes
  */
 function updatePackageJsonPaths(
   packageJson: Record<string, any>,
@@ -84,7 +84,9 @@ function updatePackageJsonPaths(
 
   for (const field of pathFields) {
     if (packageJson[field]) {
-      packageJson[field] = packageJson[field].replace(/^dist\//, '');
+      packageJson[field] = packageJson[field]
+        .replace(/^(\.\/)?dist\//, './')
+        .replace(/^(\.\/)?src\//, './');
       // Only adjust main to .cjs for CJS-only builds
       if (field === 'main' && hasCjs && !hasEsm) {
         packageJson[field] = packageJson[field].replace(/\.js$/, '.cjs');
@@ -94,7 +96,7 @@ function updatePackageJsonPaths(
 }
 
 /**
- * Updates bin field with correct extensions
+ * Updates bin field with correct extensions and paths
  */
 function updateBinField(
   packageJson: Record<string, any>,
@@ -104,14 +106,16 @@ function updateBinField(
 
   if (typeof packageJson.bin === 'string') {
     packageJson.bin = packageJson.bin
-      .replace(/^dist\//, '')
+      .replace(/^(\.\/)?dist\//, './')
+      .replace(/^(\.\/)?src\//, './')
       .replace(/\.js$/, hasEsm ? '.js' : '.cjs');
   } else {
     packageJson.bin = Object.fromEntries(
       Object.entries(packageJson.bin).map(([name, path]) => [
         name,
         (path as string)
-          .replace(/^dist\//, '')
+          .replace(/^(\.\/)?dist\//, './')
+          .replace(/^(\.\/)?src\//, './')
           .replace(/\.js$/, hasEsm ? '.js' : '.cjs'),
       ]),
     );
@@ -147,10 +151,10 @@ function generateExportsField(
   hasCjs: boolean,
 ): Record<string, any> {
   const exportPatterns = {
-    '.': './src/index.js',
-    './*': './src/*/index.js',
-    './*/': './src/*/index.js',
-    './*.js': './src/*.js',
+    '.': './index.js',
+    './*': './*/index.js',
+    './*/': './*/index.js',
+    './*.js': './*.js',
   };
 
   return Object.fromEntries(
@@ -175,7 +179,7 @@ export interface BaseConfigOptions {
   preserveModulesRoot?: string;
   /**
    * Output directory
-   * @default `${projectRoot}/dist/src`
+   * @default `${projectRoot}/dist`
    */
   outDir?: string;
   /**
@@ -200,7 +204,7 @@ export function baseConfig(options: BaseConfigOptions): RolldownOptions {
     projectRoot,
     entry = `${projectRoot}/src/index.ts`,
     preserveModulesRoot = 'src',
-    outDir = `${projectRoot}/dist/src`,
+    outDir = `${projectRoot}/dist`,
     additionalExternals = [],
     formats = ['es'],
     sourcemap = true,
@@ -240,32 +244,48 @@ export function baseConfig(options: BaseConfigOptions): RolldownOptions {
     output: outputs.length > 0 ? outputs : undefined,
     external,
     plugins: [
+      // Plugin to transform relative paths to package.json
+      {
+        name: 'transform-package-json-paths',
+        transform(code, id) {
+          // Transform relative paths to package.json by removing one ../ level
+          // This is needed because we build to dist/ instead of dist/src/
+          if (code.includes('package.json')) {
+            // Match any number of ../ and reduce by one level
+            return code.replace(
+              /(['"`])((?:\.\.\/)+)(package\.json)\1/g,
+              (match, quote, dots, file) => {
+                // Remove one ../ from the path
+                const newDots = dots.replace(/\.\.\//, '');
+                return `${quote}${newDots}${file}${quote}`;
+              },
+            );
+          }
+          return null;
+        },
+      },
       // Custom plugin to copy files and modify package.json after build
       {
         name: 'copy-files-and-update-package-json',
         async closeBundle() {
-          const distRoot = join(projectRoot, 'dist');
-
-          // Ensure output directories exist
+          // Ensure output directory exists
           await mkdir(outDir, { recursive: true });
-          await mkdir(distRoot, { recursive: true });
 
-          // Copy standard files and additional files
-          // For package.json, copy to the dist root for npm publishing compatibility
+          // Copy standard files and additional files to dist root
           const filesToCopy = [
-            { file: 'package.json', dest: distRoot },
-            { file: 'README.md', dest: distRoot },
-            ...additionalCopyFiles.map(file => ({ file, dest: distRoot })),
+            'package.json',
+            'README.md',
+            ...additionalCopyFiles,
           ];
 
           await Promise.all(
-            filesToCopy.map(({ file, dest }) =>
-              safeCopyFile(join(projectRoot, file), join(dest, file), file),
+            filesToCopy.map(file =>
+              safeCopyFile(join(projectRoot, file), join(outDir, file), file),
             ),
           );
 
-          // Update package.json in dist root
-          const distPackageJsonPath = join(distRoot, 'package.json');
+          // Update package.json in dist
+          const distPackageJsonPath = join(outDir, 'package.json');
           try {
             const packageJson = JSON.parse(
               await readFile(distPackageJsonPath, 'utf8'),
@@ -279,12 +299,9 @@ export function baseConfig(options: BaseConfigOptions): RolldownOptions {
             ] as const;
             fieldsToRemove.forEach(field => delete packageJson[field]);
 
-            // Update files field to include built output
-            if (packageJson.files) {
-              packageJson.files = packageJson.files.map((file: string) =>
-                file === 'src' ? 'src' : file,
-              );
-            }
+            // Remove files field to include all built output
+            // (npm will include everything in dist except what's in .npmignore)
+            delete packageJson.files;
 
             // Detect which formats were built
             const hasEsm = formats.includes('es');
