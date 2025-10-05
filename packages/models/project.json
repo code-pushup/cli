@@ -5,7 +5,14 @@
   "projectType": "library",
   "targets": {
     "generate-docs": {
-      "command": "npx zod2md --config packages/models/zod2md.config.ts",
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "zod2md --config {projectRoot}/zod2md.config.ts",
+          "prettier --write {projectRoot}/docs/models-reference.md"
+        ],
+        "parallel": false
+      },
       "cache": true,
       "inputs": ["production", "^production", "{projectRoot}/zod2md.config.ts"],
       "outputs": ["{projectRoot}/docs/models-reference.md"]

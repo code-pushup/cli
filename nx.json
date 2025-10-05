@@ -330,7 +330,7 @@
       "push": true,
       "pushRemote": "origin",
       "tag": true,
-      "commitMessage": "release: {version} [skip ci]"
+      "commitMessage": "release: {version}"
     },
     "version": {
       "conventionalCommits": true,
