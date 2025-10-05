@@ -1,12 +1,36 @@
+import { readFileSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { type UserConfig, defineConfig } from 'tsdown';
 
-export function baseConfig(options: {
-  projectRoot: string;
-  projectName?: string;
-}): UserConfig {
+export function baseConfig(options: { projectRoot: string }): UserConfig {
   const { projectRoot } = options;
+
+  // Read package.json to get additional files to copy
+  const packageJsonPath = join(projectRoot, 'package.json');
+  let additionalCopyFiles: Array<{ from: string; to: string }> = [];
+
+  try {
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+
+    if (packageJson.files && Array.isArray(packageJson.files)) {
+      additionalCopyFiles = packageJson.files
+        .filter((file: string) => {
+          // Skip negation patterns (starting with !)
+          if (file.startsWith('!')) return false;
+          // Skip 'src' as it's already handled by the build output
+          if (file === 'src') return false;
+          // Include files that start with ./ or are specific files
+          return file.startsWith('./') || !file.includes('/');
+        })
+        .map((file: string) => ({
+          from: join(projectRoot, file),
+          to: join(projectRoot, 'dist', file),
+        }));
+    }
+  } catch (error) {
+    // If package.json doesn't exist or can't be read, continue without additional files
+  }
 
   return defineConfig({
     entry: `${projectRoot}/src/**/!(*.test|*.mock).ts`,
@@ -28,6 +52,7 @@ export function baseConfig(options: {
         from: `${projectRoot}/README.md`,
         to: `${projectRoot}/dist/README.md`,
       },
+      ...additionalCopyFiles,
     ],
     async onSuccess() {
       const distPackageJsonPath = join(projectRoot, 'dist', 'package.json');
