@@ -20,6 +20,10 @@ export function baseConfig(options: {
     external: [],
     copy: [
       {
+        from: `${projectRoot}/package.json`,
+        to: `${projectRoot}/dist/package.json`,
+      },
+      {
         from: `${projectRoot}/README.md`,
         to: `${projectRoot}/dist/README.md`,
       },
