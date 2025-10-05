@@ -60,6 +60,26 @@ export function baseConfig(options: {
           packageJson.types = packageJson.types.replace(/^dist\//, '');
         }
 
+        // Update bin field to use correct extension for built files
+        if (packageJson.bin) {
+          if (typeof packageJson.bin === 'string') {
+            // Single bin entry
+            packageJson.bin = packageJson.bin
+              .replace(/^dist\//, '')
+              .replace(/\.js$/, '.mjs');
+          } else {
+            // Multiple bin entries
+            packageJson.bin = Object.fromEntries(
+              Object.entries(packageJson.bin).map(([name, path]) => [
+                name,
+                (path as string)
+                  .replace(/^dist\//, '')
+                  .replace(/\.js$/, '.mjs'),
+              ]),
+            );
+          }
+        }
+
         // Generate exports field for dual ESM/CJS support
         packageJson.exports = {
           '.': {
