@@ -18,7 +18,6 @@ export function baseConfig(options: {
     dts: true,
     hash: false,
     external: [],
-    exports: false,
     copy: [
       {
         from: `${projectRoot}/README.md`,
