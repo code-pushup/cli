@@ -83,17 +83,15 @@
       }
     },
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"],
       "cache": true,
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "{projectRoot}/dist",
-        "main": "{projectRoot}/src/index.ts",
-        "tsConfig": "{projectRoot}/tsconfig.lib.json",
-        "assets": ["{projectRoot}/*.md"]
-      }
+      "inputs": [
+        "production",
+        "^production",
+        {
+          "externalDependencies": ["rolldown"]
+        }
+      ],
+      "outputs": ["{projectRoot}/dist"]
     },
     "unit-test": {
       "cache": true,
@@ -358,7 +356,8 @@
           "filterByTags": ["publishable"]
         }
       }
-    }
+    },
+    "./tools/src/rolldown.plugin.mjs"
   ],
   "nxCloudId": "65d4d862d2adb16a45a4bc7c"
 }

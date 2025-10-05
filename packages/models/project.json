@@ -10,21 +10,7 @@
       "inputs": ["production", "^production", "{projectRoot}/zod2md.config.ts"],
       "outputs": ["{projectRoot}/docs/models-reference.md"]
     },
-    "build": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx --yes rolldown -c rolldown.config.mjs",
-        "cwd": "packages/models"
-      },
-      "inputs": [
-        "production",
-        "^production",
-        "{projectRoot}/rolldown.config.mjs"
-      ],
-      "outputs": ["{projectRoot}/dist"],
-      "cache": true,
-      "dependsOn": ["generate-docs", "types"]
-    },
+    "build": {},
     "types": {
       "executor": "@nx/js:tsc",
       "options": {
