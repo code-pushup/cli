@@ -75,7 +75,7 @@
           "--max-warnings=0",
           "--no-warn-ignored",
           "--error-on-unmatched-pattern=false",
-          "--format=./tools/eslint-formatter-multi/dist/src/index.js"
+          "--format=./tools/eslint-formatter-multi/dist/index.js"
         ],
         "env": {
           "ESLINT_FORMATTER_CONFIG": "{\"outputDir\":\"{projectRoot}/.eslint\"}"

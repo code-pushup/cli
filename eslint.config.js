@@ -27,6 +27,7 @@ export default tseslint.config(
           allow: [
             String.raw`^.*/eslint(\.base)?\.config\.[cm]?js$`,
             String.raw`^.*/code-pushup\.(config|preset)(\.m?[jt]s)?$`,
+            String.raw`^.*/rolldown(\.base)?\.config\.[cm]?js$`,
             '^[./]+/tools/.*$',
           ],
           depConstraints: [

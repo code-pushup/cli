@@ -168,10 +168,13 @@ function generateExportsField(
 export interface BaseConfigOptions {
   projectRoot: string;
   /**
-   * Entry point pattern or file path
+   * Entry point pattern or file path. Can be:
+   * - A string for a single entry point
+   * - An array of strings for multiple entry points
+   * - An object mapping entry names to file paths
    * @default `${projectRoot}/src/index.ts`
    */
-  entry?: string;
+  entry?: string | string[] | Record<string, string>;
   /**
    * Root directory for preserving module structure
    * @default 'src'

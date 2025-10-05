@@ -2,6 +2,7 @@ import { bold, gray } from 'ansis';
 import { type Options, bundleRequire } from 'bundle-require';
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import type { Format, PersistConfig } from '@code-pushup/models';
 import { formatBytes } from './formatting.js';
 import { logMultipleResults } from './log-results.js';
@@ -77,7 +78,15 @@ export function logMultipleFileResults(
 }
 
 export async function importModule<T = unknown>(options: Options): Promise<T> {
-  const { mod } = await bundleRequire<object>(options);
+  // Convert filepath to URL for proper ESM loading on Windows
+  const filepath = path.isAbsolute(options.filepath)
+    ? pathToFileURL(options.filepath).toString()
+    : options.filepath;
+
+  const { mod } = await bundleRequire<object>({
+    ...options,
+    filepath,
+  });
 
   if (typeof mod === 'object' && 'default' in mod) {
     return mod.default as T;
