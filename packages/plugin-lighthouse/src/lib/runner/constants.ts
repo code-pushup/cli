@@ -11,45 +11,62 @@ import { DEFAULT_CHROME_FLAGS, LIGHTHOUSE_OUTPUT_PATH } from '../constants.js';
 
 const { audits, categories } = defaultConfig;
 
-// internal intermediate variable to derive the relevant audits
-const allRawLighthouseAudits = await Promise.all(
-  (audits ?? []).map(loadLighthouseAudit),
-);
-
 export const PLUGIN_SLUG = 'lighthouse';
-export const LIGHTHOUSE_NAVIGATION_AUDITS: Audit[] = allRawLighthouseAudits
-  // This plugin only supports the "navigation" mode of Lighthouse in the current implementation
-  // If we don't exclude other audits we throw in the plugin output validation as some of the provided audits are not included in `lighthouse-report.json`
-  .filter(
-    audit =>
-      audit.meta.supportedModes == null ||
-      (Array.isArray(audit.meta.supportedModes) &&
-        audit.meta.supportedModes.includes('navigation')),
-  )
-  .map(audit => ({
-    slug: audit.meta.id,
-    title: getMetaString(audit.meta.title),
-    description: getMetaString(audit.meta.description),
-  }));
 
-const navigationAuditSlugs = new Set(
-  LIGHTHOUSE_NAVIGATION_AUDITS.map(({ slug }) => slug),
-);
-export const LIGHTHOUSE_GROUPS: Group[] = Object.entries(categories ?? {}).map(
-  ([id, category]) => ({
-    slug: id,
-    title: getMetaString(category.title),
-    ...(category.description && {
-      description: getMetaString(category.description),
+// Initialize with empty arrays - will be populated by initializeLighthouseConstants()
+export let LIGHTHOUSE_NAVIGATION_AUDITS: Audit[] = [];
+export let LIGHTHOUSE_GROUPS: Group[] = [];
+
+// Lazy initialization flag
+let initialized = false;
+
+// Call this once before using the constants
+export async function initializeLighthouseConstants(): Promise<void> {
+  if (initialized) {
+    return;
+  }
+
+  const allRawLighthouseAudits = await Promise.all(
+    (audits ?? []).map(loadLighthouseAudit),
+  );
+
+  LIGHTHOUSE_NAVIGATION_AUDITS = allRawLighthouseAudits
+    // This plugin only supports the "navigation" mode of Lighthouse in the current implementation
+    // If we don't exclude other audits we throw in the plugin output validation as some of the provided audits are not included in `lighthouse-report.json`
+    .filter(
+      audit =>
+        audit.meta.supportedModes == null ||
+        (Array.isArray(audit.meta.supportedModes) &&
+          audit.meta.supportedModes.includes('navigation')),
+    )
+    .map(audit => ({
+      slug: audit.meta.id,
+      title: getMetaString(audit.meta.title),
+      description: getMetaString(audit.meta.description),
+    }));
+
+  const navigationAuditSlugs = new Set(
+    LIGHTHOUSE_NAVIGATION_AUDITS.map(({ slug }) => slug),
+  );
+
+  LIGHTHOUSE_GROUPS = Object.entries(categories ?? {}).map(
+    ([id, category]) => ({
+      slug: id,
+      title: getMetaString(category.title),
+      ...(category.description && {
+        description: getMetaString(category.description),
+      }),
+      refs: category.auditRefs
+        .filter(({ id: auditSlug }) => navigationAuditSlugs.has(auditSlug))
+        .map(ref => ({
+          slug: ref.id,
+          weight: ref.weight,
+        })),
     }),
-    refs: category.auditRefs
-      .filter(({ id: auditSlug }) => navigationAuditSlugs.has(auditSlug))
-      .map(ref => ({
-        slug: ref.id,
-        weight: ref.weight,
-      })),
-  }),
-);
+  );
+
+  initialized = true;
+}
 
 function getMetaString(value: string | IcuMessage): string {
   if (typeof value === 'string') {

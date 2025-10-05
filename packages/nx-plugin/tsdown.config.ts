@@ -1,37 +1,24 @@
 import { defineConfig } from 'tsdown';
+import { baseConfig, getExternalDependencies } from '../../tsdown.base';
 
-const projectName = process.env['NX_TASK_TARGET_PROJECT'];
+const __dirname = import.meta.dirname;
 
 export default defineConfig({
-  entry: `packages/${projectName}/src/**/!(*.test|*.spec|*.unit.test|*.int.test|*.e2e.test|*.mock).ts`,
-  tsconfig: `packages/${projectName}/tsconfig.lib.json`,
-  outDir: `packages/${projectName}/dist/src`, // Output to src/ subdirectory to match tsc
-  unbundle: true, // Preserve directory structure like tsc
-  format: ['cjs'], // commonjs only
-  fixedExtension: true, // emit .mjs for esm and .cjs for cjs
-  dts: true,
-  hash: false,
-  external: [
-    '@code-pushup/models',
-    '@code-pushup/utils',
-    '@nx/devkit',
-    'ansis',
-    'nx',
-  ],
-  exports: false, // manually manage exports via onSuccess
+  ...baseConfig({ projectRoot: __dirname }),
+  format: ['cjs'], // NX supports only commonjs
+  external: await getExternalDependencies(__dirname),
   copy: [
     {
-      from: `packages/${projectName}/README.md`,
-      to: `packages/${projectName}/dist/README.md`,
+      from: `${__dirname}/README.md`,
+      to: `${__dirname}/dist/README.md`,
     },
     {
-      from: `packages/${projectName}/generators.json`,
-      to: `packages/${projectName}/dist/generators.json`,
+      from: `${__dirname}/generators.json`,
+      to: `${__dirname}/dist/generators.json`,
     },
     {
-      from: `packages/${projectName}/executors.json`,
-      to: `packages/${projectName}/dist/executors.json`,
+      from: `${__dirname}/executors.json`,
+      to: `${__dirname}/dist/executors.json`,
     },
-    // Schema files and templates are handled by Nx assets configuration in project.json
   ],
 });

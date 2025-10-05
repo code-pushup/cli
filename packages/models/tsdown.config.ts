@@ -1,26 +1,19 @@
 import { defineConfig } from 'tsdown';
+import { baseConfig, getExternalDependencies } from '../../tsdown.base';
 
-const projectName = process.env['NX_TASK_TARGET_PROJECT'];
+const __dirname = import.meta.dirname;
 
 export default defineConfig({
-  entry: `packages/${projectName}/src/**/!(*.test|*.spec|*.unit.test|*.int.test|*.e2e.test|*.mock).ts`,
-  tsconfig: `packages/${projectName}/tsconfig.lib.json`,
-  outDir: `packages/${projectName}/dist/src`, // Output to src/ subdirectory to match tsc
-  unbundle: true, // Preserve directory structure like tsc
-  format: ['esm', 'cjs'], // dual build
-  fixedExtension: true, // emit .mjs for esm and .cjs for cjs
-  dts: true,
-  hash: false,
-  external: ['zod', 'vscode-material-icons'],
-  exports: false, // manually manage exports via onSuccess
+  ...baseConfig({ projectRoot: __dirname }),
+  external: await getExternalDependencies(__dirname),
   copy: [
     {
-      from: `packages/${projectName}/package.json`,
-      to: `packages/${projectName}/dist/package.json`,
+      from: `${__dirname}/package.json`,
+      to: `${__dirname}/dist/package.json`,
     },
     {
-      from: `packages/${projectName}/README.md`,
-      to: `packages/${projectName}/dist/README.md`,
+      from: `${__dirname}/README.md`,
+      to: `${__dirname}/dist/README.md`,
     },
   ],
 });

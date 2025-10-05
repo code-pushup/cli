@@ -4,4 +4,7 @@ import { executeRunner } from './lib/runner/index.js';
 
 const { runnerConfigPath, runnerOutputPath } = Parser(process.argv);
 
-await executeRunner({ runnerConfigPath, runnerOutputPath });
+// eslint-disable-next-line unicorn/prefer-top-level-await
+(async () => {
+  await executeRunner({ runnerConfigPath, runnerOutputPath });
+})();

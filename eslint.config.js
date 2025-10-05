@@ -26,6 +26,7 @@ export default tseslint.config(
           enforceBuildableLibDependency: true,
           allow: [
             String.raw`^.*/eslint(\.base)?\.config\.[cm]?js$`,
+            String.raw`^.*/tsdown\.base\.[cm]?js$`,
             String.raw`^.*/code-pushup\.(config|preset)(\.m?[jt]s)?$`,
             '^[./]+/tools/.*$',
           ],
