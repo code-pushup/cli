@@ -11,9 +11,21 @@ import { tsconfigPathAliases } from './vitest-tsconfig-path-aliases.js';
 export type TestKind = 'unit' | 'int' | 'e2e';
 
 export type VitestConfigFactoryOptions = {
+  /**
+   * Used for cache and coverage directory naming
+   */
   projectKey: string;
+  /**
+   * Required path/URL to the project root for resolving all paths
+   */
   kind: TestKind;
+  /**
+   * The root directory of the project
+   */
   projectRoot: string | URL;
+  /**
+   * Optional test cache directory name
+   */
   cacheKey?: string;
 };
 
@@ -35,7 +47,7 @@ export function createVitestConfig(
             : `${options.projectRoot}/`,
         )
       : options.projectRoot;
-  const cacheDirName = options.cacheKey ?? options.projectKey;
+  const cacheDirName = options.cacheKey ?? `cache-${options.projectKey}`;
 
   const coverageEnabled =
     overrides.test?.coverage?.enabled ?? options.kind !== 'e2e';

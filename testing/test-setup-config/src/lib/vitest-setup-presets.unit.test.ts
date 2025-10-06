@@ -72,47 +72,42 @@ describe('setupPresets', () => {
   });
 });
 
-// Parameterized tests to eliminate duplication
-describe.each([
-  ['unit', setupPresets.unit.base, createUnitConfig],
-  ['int', setupPresets.int.base, createIntConfig],
-  ['e2e', setupPresets.e2e.base, createE2eConfig],
-] as const)('%s config creation', (kind, baseSetupFiles, createFn) => {
+describe('createUnitConfig', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('should call createVitestConfig with correct parameters and default setupFiles', () => {
-    createFn(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS);
+    createUnitConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS);
 
     expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
       {
         projectKey: MOCK_PROJECT_KEY,
-        kind,
+        kind: 'unit',
         ...MOCK_CONFIG_REST_PARAMS,
       },
       {
         test: {
-          setupFiles: baseSetupFiles,
+          setupFiles: setupPresets.unit.base,
         },
       },
     );
   });
 
   it('should use custom setupFiles from overrides when provided', () => {
-    const customSetupFiles = [`${kind}-setup1.ts`, `${kind}-setup2.ts`];
+    const customSetupFiles = ['unit-setup1.ts', 'unit-setup2.ts'];
     const overrides: VitestOverrides = {
       test: {
         setupFiles: customSetupFiles,
       },
     };
 
-    createFn(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, overrides);
+    createUnitConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, overrides);
 
     expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
       {
         projectKey: MOCK_PROJECT_KEY,
-        kind,
+        kind: 'unit',
         ...MOCK_CONFIG_REST_PARAMS,
       },
       {
@@ -124,16 +119,9 @@ describe.each([
   });
 
   it('should merge other overrides correctly while using default setupFiles', () => {
-    const testTimeout =
-      kind === 'unit'
-        ? TEST_TIMEOUTS.MEDIUM
-        : kind === 'int'
-          ? TEST_TIMEOUTS.LONG
-          : TEST_TIMEOUTS.E2E;
-
     const overrides: VitestOverrides = {
       test: {
-        testTimeout,
+        testTimeout: TEST_TIMEOUTS.MEDIUM,
         globals: false,
       },
       build: {
@@ -141,19 +129,19 @@ describe.each([
       },
     };
 
-    createFn(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, overrides);
+    createUnitConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, overrides);
 
     expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
       {
         projectKey: MOCK_PROJECT_KEY,
-        kind,
+        kind: 'unit',
         ...MOCK_CONFIG_REST_PARAMS,
       },
       {
         test: {
-          testTimeout,
+          testTimeout: TEST_TIMEOUTS.MEDIUM,
           globals: false,
-          setupFiles: baseSetupFiles,
+          setupFiles: setupPresets.unit.base,
         },
         build: {
           target: 'es2020',
@@ -163,7 +151,7 @@ describe.each([
   });
 
   it('should handle overrides with custom setupFiles and other test options', () => {
-    const customSetupFiles = [`${kind}-custom.ts`];
+    const customSetupFiles = ['unit-custom.ts'];
     const overrides: VitestOverrides = {
       test: {
         setupFiles: customSetupFiles,
@@ -172,12 +160,12 @@ describe.each([
       },
     };
 
-    createFn(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, overrides);
+    createUnitConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, overrides);
 
     expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
       {
         projectKey: MOCK_PROJECT_KEY,
-        kind,
+        kind: 'unit',
         ...MOCK_CONFIG_REST_PARAMS,
       },
       {
@@ -191,17 +179,17 @@ describe.each([
   });
 
   it('should handle undefined overrides', () => {
-    createFn(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, undefined);
+    createUnitConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, undefined);
 
     expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
       {
         projectKey: MOCK_PROJECT_KEY,
-        kind,
+        kind: 'unit',
         ...MOCK_CONFIG_REST_PARAMS,
       },
       {
         test: {
-          setupFiles: baseSetupFiles,
+          setupFiles: setupPresets.unit.base,
         },
       },
     );
@@ -214,12 +202,12 @@ describe.each([
       },
     };
 
-    createFn(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, overrides);
+    createUnitConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, overrides);
 
     expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
       {
         projectKey: MOCK_PROJECT_KEY,
-        kind,
+        kind: 'unit',
         ...MOCK_CONFIG_REST_PARAMS,
       },
       {
@@ -227,30 +215,378 @@ describe.each([
           target: 'es2020',
         },
         test: {
-          setupFiles: baseSetupFiles,
+          setupFiles: setupPresets.unit.base,
         },
       },
     );
   });
 
   it('should return the result from createVitestConfig', () => {
-    const result = createFn(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS);
+    const result = createUnitConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS);
 
     expect(result).toBe('mocked-config');
   });
 
   it('should handle empty projectKey gracefully', () => {
-    const result = createFn('', MOCK_CONFIG_REST_PARAMS);
+    const result = createUnitConfig('', MOCK_CONFIG_REST_PARAMS);
 
     expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
       {
         projectKey: '',
-        kind,
+        kind: 'unit',
         ...MOCK_CONFIG_REST_PARAMS,
       },
       {
         test: {
-          setupFiles: baseSetupFiles,
+          setupFiles: setupPresets.unit.base,
+        },
+      },
+    );
+    expect(result).toBe('mocked-config');
+  });
+});
+
+describe('createIntConfig', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should call createVitestConfig with correct parameters and default setupFiles', () => {
+    createIntConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS);
+
+    expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
+      {
+        projectKey: MOCK_PROJECT_KEY,
+        kind: 'int',
+        ...MOCK_CONFIG_REST_PARAMS,
+      },
+      {
+        test: {
+          setupFiles: setupPresets.int.base,
+        },
+      },
+    );
+  });
+
+  it('should use custom setupFiles from overrides when provided', () => {
+    const customSetupFiles = ['int-setup1.ts', 'int-setup2.ts'];
+    const overrides: VitestOverrides = {
+      test: {
+        setupFiles: customSetupFiles,
+      },
+    };
+
+    createIntConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, overrides);
+
+    expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
+      {
+        projectKey: MOCK_PROJECT_KEY,
+        kind: 'int',
+        ...MOCK_CONFIG_REST_PARAMS,
+      },
+      {
+        test: {
+          setupFiles: customSetupFiles,
+        },
+      },
+    );
+  });
+
+  it('should merge other overrides correctly while using default setupFiles', () => {
+    const overrides: VitestOverrides = {
+      test: {
+        testTimeout: TEST_TIMEOUTS.MEDIUM,
+        globals: false,
+      },
+      build: {
+        target: 'es2020',
+      },
+    };
+
+    createIntConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, overrides);
+
+    expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
+      {
+        projectKey: MOCK_PROJECT_KEY,
+        kind: 'int',
+        ...MOCK_CONFIG_REST_PARAMS,
+      },
+      {
+        test: {
+          testTimeout: TEST_TIMEOUTS.MEDIUM,
+          globals: false,
+          setupFiles: setupPresets.int.base,
+        },
+        build: {
+          target: 'es2020',
+        },
+      },
+    );
+  });
+
+  it('should handle overrides with custom setupFiles and other test options', () => {
+    const customSetupFiles = ['int-custom.ts'];
+    const overrides: VitestOverrides = {
+      test: {
+        setupFiles: customSetupFiles,
+        testTimeout: TEST_TIMEOUTS.SHORT,
+        environment: 'jsdom' as any,
+      },
+    };
+
+    createIntConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, overrides);
+
+    expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
+      {
+        projectKey: MOCK_PROJECT_KEY,
+        kind: 'int',
+        ...MOCK_CONFIG_REST_PARAMS,
+      },
+      {
+        test: {
+          setupFiles: customSetupFiles,
+          testTimeout: TEST_TIMEOUTS.SHORT,
+          environment: 'jsdom',
+        },
+      },
+    );
+  });
+
+  it('should handle undefined overrides', () => {
+    createIntConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, undefined);
+
+    expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
+      {
+        projectKey: MOCK_PROJECT_KEY,
+        kind: 'int',
+        ...MOCK_CONFIG_REST_PARAMS,
+      },
+      {
+        test: {
+          setupFiles: setupPresets.int.base,
+        },
+      },
+    );
+  });
+
+  it('should handle overrides without test config', () => {
+    const overrides: VitestOverrides = {
+      build: {
+        target: 'es2020',
+      },
+    };
+
+    createIntConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, overrides);
+
+    expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
+      {
+        projectKey: MOCK_PROJECT_KEY,
+        kind: 'int',
+        ...MOCK_CONFIG_REST_PARAMS,
+      },
+      {
+        build: {
+          target: 'es2020',
+        },
+        test: {
+          setupFiles: setupPresets.int.base,
+        },
+      },
+    );
+  });
+
+  it('should return the result from createVitestConfig', () => {
+    const result = createIntConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS);
+
+    expect(result).toBe('mocked-config');
+  });
+
+  it('should handle empty projectKey gracefully', () => {
+    const result = createIntConfig('', MOCK_CONFIG_REST_PARAMS);
+
+    expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
+      {
+        projectKey: '',
+        kind: 'int',
+        ...MOCK_CONFIG_REST_PARAMS,
+      },
+      {
+        test: {
+          setupFiles: setupPresets.int.base,
+        },
+      },
+    );
+    expect(result).toBe('mocked-config');
+  });
+});
+
+describe('createE2eConfig', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should call createVitestConfig with correct parameters and default setupFiles', () => {
+    createE2eConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS);
+
+    expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
+      {
+        projectKey: MOCK_PROJECT_KEY,
+        kind: 'e2e',
+        ...MOCK_CONFIG_REST_PARAMS,
+      },
+      {
+        test: {
+          setupFiles: setupPresets.e2e.base,
+        },
+      },
+    );
+  });
+
+  it('should use custom setupFiles from overrides when provided', () => {
+    const customSetupFiles = ['e2e-setup1.ts', 'e2e-setup2.ts'];
+    const overrides: VitestOverrides = {
+      test: {
+        setupFiles: customSetupFiles,
+      },
+    };
+
+    createE2eConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, overrides);
+
+    expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
+      {
+        projectKey: MOCK_PROJECT_KEY,
+        kind: 'e2e',
+        ...MOCK_CONFIG_REST_PARAMS,
+      },
+      {
+        test: {
+          setupFiles: customSetupFiles,
+        },
+      },
+    );
+  });
+
+  it('should merge other overrides correctly while using default setupFiles', () => {
+    const overrides: VitestOverrides = {
+      test: {
+        testTimeout: TEST_TIMEOUTS.MEDIUM,
+        globals: false,
+      },
+      build: {
+        target: 'es2020',
+      },
+    };
+
+    createE2eConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, overrides);
+
+    expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
+      {
+        projectKey: MOCK_PROJECT_KEY,
+        kind: 'e2e',
+        ...MOCK_CONFIG_REST_PARAMS,
+      },
+      {
+        test: {
+          testTimeout: TEST_TIMEOUTS.MEDIUM,
+          globals: false,
+          setupFiles: setupPresets.e2e.base,
+        },
+        build: {
+          target: 'es2020',
+        },
+      },
+    );
+  });
+
+  it('should handle overrides with custom setupFiles and other test options', () => {
+    const customSetupFiles = ['e2e-custom.ts'];
+    const overrides: VitestOverrides = {
+      test: {
+        setupFiles: customSetupFiles,
+        testTimeout: TEST_TIMEOUTS.SHORT,
+        environment: 'jsdom' as any,
+      },
+    };
+
+    createE2eConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, overrides);
+
+    expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
+      {
+        projectKey: MOCK_PROJECT_KEY,
+        kind: 'e2e',
+        ...MOCK_CONFIG_REST_PARAMS,
+      },
+      {
+        test: {
+          setupFiles: customSetupFiles,
+          testTimeout: TEST_TIMEOUTS.SHORT,
+          environment: 'jsdom',
+        },
+      },
+    );
+  });
+
+  it('should handle undefined overrides', () => {
+    createE2eConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, undefined);
+
+    expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
+      {
+        projectKey: MOCK_PROJECT_KEY,
+        kind: 'e2e',
+        ...MOCK_CONFIG_REST_PARAMS,
+      },
+      {
+        test: {
+          setupFiles: setupPresets.e2e.base,
+        },
+      },
+    );
+  });
+
+  it('should handle overrides without test config', () => {
+    const overrides: VitestOverrides = {
+      build: {
+        target: 'es2020',
+      },
+    };
+
+    createE2eConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS, overrides);
+
+    expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
+      {
+        projectKey: MOCK_PROJECT_KEY,
+        kind: 'e2e',
+        ...MOCK_CONFIG_REST_PARAMS,
+      },
+      {
+        build: {
+          target: 'es2020',
+        },
+        test: {
+          setupFiles: setupPresets.e2e.base,
+        },
+      },
+    );
+  });
+
+  it('should return the result from createVitestConfig', () => {
+    const result = createE2eConfig(MOCK_PROJECT_KEY, MOCK_CONFIG_REST_PARAMS);
+
+    expect(result).toBe('mocked-config');
+  });
+
+  it('should handle empty projectKey gracefully', () => {
+    const result = createE2eConfig('', MOCK_CONFIG_REST_PARAMS);
+
+    expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
+      {
+        projectKey: '',
+        kind: 'e2e',
+        ...MOCK_CONFIG_REST_PARAMS,
+      },
+      {
+        test: {
+          setupFiles: setupPresets.e2e.base,
         },
       },
     );
