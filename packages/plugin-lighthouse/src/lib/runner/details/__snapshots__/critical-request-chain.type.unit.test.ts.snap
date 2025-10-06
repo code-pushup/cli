@@ -47,7 +47,7 @@ exports[`parseCriticalRequestChainToAuditDetails > should convert chains to basi
         {
           "name": "https://www.gstatic.com/devrel-devsite/prod/ve761bca974e16662f27aa8810df6d144acde5bdbeeca0dfd50e25f86621eaa19/chrome/css/app.css",
           "values": {
-            "duration": "70.050 ms",
+            "duration": "70.05 ms",
             "transferSize": "133.58 kB",
           },
         },
