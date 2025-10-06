@@ -5,9 +5,38 @@ import {
   formatDuration,
   pluralize,
   pluralizeToken,
+  roundDecimals,
   slugify,
   truncateText,
 } from './formatting.js';
+
+describe('roundDecimals', () => {
+  it('should remove extra decimals', () => {
+    expect(roundDecimals(1.2345, 2)).toBe(1.23);
+  });
+
+  it('should round last decimal', () => {
+    expect(roundDecimals(123.456, 2)).toBe(123.46);
+  });
+
+  it('should return number to prevent unnecessary trailing 0s in decimals', () => {
+    const result = roundDecimals(42.500001, 3);
+    expect(result).toBeTypeOf('number');
+    expect(result.toString()).toBe('42.5');
+    expect(result.toString()).not.toBe('42.50');
+  });
+
+  it('should leave integers unchanged', () => {
+    const value = 42;
+    const result = roundDecimals(value, 3);
+    expect(result).toBe(value);
+    expect(result.toString()).toBe('42');
+  });
+
+  it('should round to integer if max decimals set to 0', () => {
+    expect(roundDecimals(100.5, 0)).toBe(101);
+  });
+});
 
 describe('slugify', () => {
   it.each([
@@ -76,15 +105,13 @@ describe('formatDuration', () => {
   it.each([
     [-1, '-1 ms'],
     [0, '0 ms'],
-    [1, '1 ms'],
-    [2, '2 ms'],
-    [1200, '1.20 s'],
-  ])('should log correctly formatted duration for %s', (ms, displayValue) => {
+    [23, '23 ms'],
+    [891, '891 ms'],
+    [1200, '1.2 s'],
+    [56789, '56.79 s'],
+    [60_000, '60 s'],
+  ])('should format duration of %s milliseconds as %s', (ms, displayValue) => {
     expect(formatDuration(ms)).toBe(displayValue);
-  });
-
-  it('should log formatted duration with 1 digit after the decimal point', () => {
-    expect(formatDuration(120.255_555, 1)).toBe('120.3 ms');
   });
 });
 

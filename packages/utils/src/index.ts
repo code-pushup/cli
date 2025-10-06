@@ -53,6 +53,7 @@ export {
   formatDuration,
   pluralize,
   pluralizeToken,
+  roundDecimals,
   slugify,
   truncateDescription,
   truncateIssueMessage,

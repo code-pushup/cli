@@ -11,7 +11,7 @@ Report was created by [Code PushUp](https://github.com/code-pushup/cli#readme) o
 
 | Commit                                                       | Version  | Duration | Plugins | Categories | Audits |
 | :----------------------------------------------------------- | :------: | -------: | :-----: | :--------: | :----: |
-| ci: update action (535b8e9e557336618a764f3fa45609d224a62837) | \`v1.0.0\` |   4.20 s |    1    |     3      |   3    |
+| ci: update action (535b8e9e557336618a764f3fa45609d224a62837) | \`v1.0.0\` |    4.2 s |    1    |     3      |   3    |
 "
 `;
 
