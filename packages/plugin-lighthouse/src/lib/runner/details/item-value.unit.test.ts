@@ -260,13 +260,13 @@ describe('formatTableItemPropertyValue', () => {
         { type: 'numeric', value: 2142 },
         'timespanMs',
       ),
-    ).toBe('2.14 s');
+    ).toBe('2.142 s');
   });
 
   it('should format value based on itemValueFormat "ms"', () => {
     expect(
       formatTableItemPropertyValue({ type: 'numeric', value: 2142 }, 'ms'),
-    ).toBe('2.14 s');
+    ).toBe('2.142 s');
   });
 
   it('should format value based on itemValueFormat "node"', () => {
@@ -318,7 +318,7 @@ describe('formatTableItemPropertyValue', () => {
         { type: 'numeric', value: 42.1 } as Details.ItemValue,
         'numeric',
       ),
-    ).toBe('42.100');
+    ).toBe('42.1');
   });
 
   it('should format value based on itemValueFormat "numeric" as int if float has only 0 post comma', () => {
