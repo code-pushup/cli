@@ -69,7 +69,7 @@ describe('createVitestConfig', () => {
 
       expect(config).toEqual(
         expect.objectContaining({
-          cacheDir: mockPath('node_modules', '.vite', 'test-package'),
+          cacheDir: mockPath('node_modules', '.vite', 'cache-test-package'),
           test: expect.objectContaining({
             reporters: ['basic'],
             globals: true,
@@ -115,7 +115,7 @@ describe('createVitestConfig', () => {
             MOCK_PROJECT_ROOT_URL,
             'node_modules',
             '.vite',
-            'test-package',
+            'cache-test-package',
           ),
           test: expect.objectContaining({
             include: EXPECTED_INCLUDES.unit,
@@ -254,7 +254,7 @@ describe('createVitestConfig', () => {
       );
     });
 
-    it('should fallback to projectKey when cacheKey is not provided', () => {
+    it('should fallback to cache-{projectKey} when cacheKey is not provided', () => {
       const options: VitestConfigFactoryOptions = {
         projectKey: 'test-package',
         kind: 'unit',
@@ -265,7 +265,7 @@ describe('createVitestConfig', () => {
 
       expect(config).toEqual(
         expect.objectContaining({
-          cacheDir: mockPath('node_modules', '.vite', 'test-package'),
+          cacheDir: mockPath('node_modules', '.vite', 'cache-test-package'),
         }),
       );
     });
