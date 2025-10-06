@@ -10,6 +10,7 @@ export {
 } from './lib/case-conversions.js';
 export { filesCoverageToTree, type FileCoverage } from './lib/coverage-tree.js';
 export { createRunnerFiles } from './lib/create-runner-files.js';
+export { dateToUnixTimestamp } from './lib/dates.js';
 export { comparePairs, matchArrayItemsByKey, type Diff } from './lib/diff.js';
 export {
   coerceBooleanValue,
