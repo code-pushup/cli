@@ -7,6 +7,7 @@ export async function runCompare(
   { hasFormats }: { hasFormats: boolean },
 ): Promise<void> {
   await executeProcess({
+    verbose: isVerbose(),
     command: bin,
     args: [
       'compare',

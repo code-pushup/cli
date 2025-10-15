@@ -1,4 +1,5 @@
 import { type ExecutorContext, logger } from '@nx/devkit';
+import { isVerbose } from '@code-pushup/utils';
 import { executeProcess } from '../../internal/execute-process.js';
 import {
   createCliCommandObject,
@@ -43,6 +44,7 @@ export default async function runAutorunExecutor(
       await executeProcess({
         ...createCliCommandObject({ command, args: cliArgumentObject }),
         ...(context.cwd ? { cwd: context.cwd } : {}),
+        ...(isVerbose() || verbose ? { verbose: true } : {}),
       });
     } catch (error) {
       logger.error(error);
