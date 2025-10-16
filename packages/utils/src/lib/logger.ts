@@ -1,5 +1,5 @@
 import ansis, { type AnsiColors } from 'ansis';
-import { platform } from 'node:os';
+import os from 'node:os';
 import ora, { type Ora } from 'ora';
 import { dateToUnixTimestamp } from './dates.js';
 import { isEnvVarEnabled } from './env.js';
@@ -53,7 +53,7 @@ export class Logger {
     }
     this.newline();
     this.error(ansis.bold('Cancelled by SIGINT'));
-    process.exit(platform() === 'win32' ? 2 : 130);
+    process.exit(os.platform() === 'win32' ? 2 : 130);
   };
 
   error(message: string): void {
@@ -243,19 +243,21 @@ export class Logger {
           ].join(' ')
         : messages.failure(result.reason);
 
-    if (this.#groupColor) {
-      this.#activeSpinner.stopAndPersist({
-        text,
-        symbol: this.#colorize(this.#groupSymbols.middle, this.#groupColor),
-      });
-    } else {
-      if (result.status === 'fulfilled') {
-        this.#activeSpinner.succeed(text);
+    if (this.#activeSpinner) {
+      if (this.#groupColor) {
+        this.#activeSpinner.stopAndPersist({
+          text,
+          symbol: this.#colorize(this.#groupSymbols.middle, this.#groupColor),
+        });
       } else {
-        this.#activeSpinner.fail(text);
+        if (result.status === 'fulfilled') {
+          this.#activeSpinner.succeed(text);
+        } else {
+          this.#activeSpinner.fail(text);
+        }
       }
+      this.#endsWithBlankLine = false;
     }
-    this.#endsWithBlankLine = false;
 
     this.#activeSpinner = undefined;
     this.#activeSpinnerLogs.forEach(message => {
