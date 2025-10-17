@@ -3,7 +3,7 @@ import os from 'node:os';
 import ora, { type Ora } from 'ora';
 import { dateToUnixTimestamp } from './dates.js';
 import { isEnvVarEnabled } from './env.js';
-import { formatDuration } from './formatting.js';
+import { formatDuration, indentLines, transformLines } from './formatting.js';
 import { settlePromise } from './promises.js';
 
 type GroupColor = Extract<AnsiColors, 'cyan' | 'magenta'>;
@@ -261,7 +261,7 @@ export class Logger {
 
     this.#activeSpinner = undefined;
     this.#activeSpinnerLogs.forEach(message => {
-      this.#log(`  ${message}`);
+      this.#log(indentLines(message, 2));
     });
     this.#activeSpinnerLogs = [];
     process.removeListener('SIGINT', this.#sigintListener);
@@ -276,7 +276,7 @@ export class Logger {
       if (this.#activeSpinner.isSpinning) {
         this.#activeSpinnerLogs.push(this.#format(message, color));
       } else {
-        console.log(this.#format(`  ${message}`, color));
+        console.log(this.#format(indentLines(message, 2), color));
       }
     } else {
       console.log(this.#format(message, color));
@@ -288,15 +288,11 @@ export class Logger {
     if (!this.#groupColor || this.#activeSpinner?.isSpinning) {
       return this.#colorize(message, color);
     }
-    return message
-      .split(/\r?\n/)
-      .map(line =>
-        [
-          this.#colorize('│', this.#groupColor),
-          this.#colorize(line, color),
-        ].join(' '),
-      )
-      .join('\n');
+    return transformLines(
+      message,
+      line =>
+        `${this.#colorize('│', this.#groupColor)} ${this.#colorize(line, color)}`,
+    );
   }
 
   #colorize(text: string, color: AnsiColors | undefined): string {
