@@ -82,7 +82,7 @@ describe('toAuditDetails', () => {
         },
         {
           name: 'Zone:ZoneAwarePromise',
-          duration: 0.783,
+          duration: 1.783,
         },
       ],
     });
@@ -104,11 +104,11 @@ describe('toAuditDetails', () => {
         rows: [
           {
             name: 'Zone',
-            duration: '0.634 ms',
+            duration: '1 ms',
           },
           {
             name: 'Zone:ZoneAwarePromise',
-            duration: '0.783 ms',
+            duration: '2 ms',
           },
         ],
       },
@@ -360,7 +360,7 @@ describe('toAuditDetails', () => {
           root: {
             name: 'https://example.com/',
             values: {
-              duration: '508.498 ms',
+              duration: '508 ms',
               transferSize: '849 B',
             },
           },
@@ -375,7 +375,7 @@ describe('toAuditDetails', () => {
         ],
         rows: [
           {
-            duration: '508.498 ms',
+            duration: '508 ms',
             transferSize: '849 B',
             length: 1,
           },
