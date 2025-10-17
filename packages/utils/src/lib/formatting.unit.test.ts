@@ -1,12 +1,15 @@
+import ansis from 'ansis';
 import { describe, expect, it } from 'vitest';
 import {
   formatBytes,
   formatDate,
   formatDuration,
+  indentLines,
   pluralize,
   pluralizeToken,
   roundDecimals,
   slugify,
+  transformLines,
   truncateText,
 } from './formatting.js';
 
@@ -178,6 +181,51 @@ describe('truncateText', () => {
   it('should produce truncated text with custom ellipsis', () => {
     expect(truncateText("I'm Johnny!", { maxChars: 10, ellipsis: '*' })).toBe(
       "I'm Johnn*",
+    );
+  });
+});
+
+describe('transformLines', () => {
+  it('should apply custom transformation to each line', () => {
+    let count = 0;
+    expect(
+      transformLines(
+        `export function greet(name = 'World') {\n  console.log('Hello, ' + name + '!');\n}\n`,
+        line => `${ansis.gray(`${++count} | `)}${line}`,
+      ),
+    ).toBe(
+      `
+${ansis.gray('1 | ')}export function greet(name = 'World') {
+${ansis.gray('2 | ')}  console.log('Hello, ' + name + '!');
+${ansis.gray('3 | ')}}
+${ansis.gray('4 | ')}`.trimStart(),
+    );
+  });
+
+  it('should support CRLF line endings', () => {
+    expect(
+      transformLines(
+        'ESLint v9.16.0\r\n\r\nAll files pass linting.\r\n',
+        line => `> ${line}`,
+      ),
+    ).toBe(
+      `
+> ESLint v9.16.0
+> 
+> All files pass linting.
+> `.trimStart(),
+    );
+  });
+});
+
+describe('indentLines', () => {
+  it('should indent each line by given number of spaces', () => {
+    expect(indentLines('ESLint v9.16.0\n\nAll files pass linting.\n', 2)).toBe(
+      `
+  ESLint v9.16.0
+  
+  All files pass linting.
+  `.slice(1), // ignore first line break
     );
   });
 });
