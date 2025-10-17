@@ -601,7 +601,7 @@ describe('aboutSection', () => {
     expect(md).toContainMarkdownTableRow([
       'ci: update action (535b8e9e557336618a764f3fa45609d224a62837)',
       '`v1.0.0`',
-      '4.20 s',
+      '4.2 s',
       '1',
       '3',
       '3',

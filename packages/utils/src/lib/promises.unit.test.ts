@@ -1,5 +1,5 @@
 import { describe } from 'vitest';
-import { asyncSequential, groupByStatus } from './promises.js';
+import { asyncSequential, groupByStatus, settlePromise } from './promises.js';
 
 describe('groupByStatus', () => {
   it('should group results by status', () => {
@@ -48,5 +48,22 @@ describe('asyncSequential', () => {
     const parallelResult = await Promise.all(items.map(work)); // [4, 4, 4, 4]
 
     expect(sequentialResult).not.toEqual(parallelResult);
+  });
+});
+
+describe('settlePromise', () => {
+  it('should wrap resolved value in object with status (as in `Promise.allSettled`)', async () => {
+    await expect(settlePromise(Promise.resolve(42))).resolves.toEqual({
+      status: 'fulfilled',
+      value: 42,
+    });
+  });
+
+  it('should resolve rejected promise', async () => {
+    const error = new Error('something went wrong');
+    await expect(settlePromise(Promise.reject(error))).resolves.toEqual({
+      status: 'rejected',
+      reason: error,
+    });
   });
 });
