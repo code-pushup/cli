@@ -11,6 +11,11 @@ type CiPlatform = 'GitHub Actions' | 'GitLab CI/CD';
 
 const GROUP_COLOR_ENV_VAR_NAME = 'CP_LOGGER_GROUP_COLOR';
 
+/**
+ * Rich logging implementation for Code PushUp CLI, plugins, etc.
+ *
+ * Use {@link logger} singleton.
+ */
 export class Logger {
   #isVerbose = isEnvVarEnabled('CP_VERBOSE');
   #isCI = isEnvVarEnabled('CI');
@@ -56,37 +61,181 @@ export class Logger {
     process.exit(os.platform() === 'win32' ? 2 : 130);
   };
 
+  /**
+   * Logs an error to the console (red).
+   *
+   * Automatically adapts to logger state if called within {@link task}, {@link group}, etc.
+   *
+   * @example
+   * logger.error('Config file is invalid');
+   *
+   * @param message Error text
+   */
   error(message: string): void {
     this.#log(message, 'red');
   }
 
+  /**
+   * Logs a warning to the console (yellow).
+   *
+   * Automatically adapts to logger state if called within {@link task}, {@link group}, etc.
+   *
+   * @example
+   * logger.warn('Skipping invalid audits');
+   *
+   * @param message Warning text
+   */
   warn(message: string): void {
     this.#log(message, 'yellow');
   }
 
+  /**
+   * Logs an informational message to the console (unstyled).
+   *
+   * Automatically adapts to logger state if called within {@link task}, {@link group}, etc.
+   *
+   * @example
+   * logger.info('Code PushUp CLI v0.80.2');
+   *
+   * @param message Info text
+   */
   info(message: string): void {
     this.#log(message);
   }
 
+  /**
+   * Logs a debug message to the console (gray), but **only if verbose** flag is set (see {@link isVerbose}).
+   *
+   * Automatically adapts to logger state if called within {@link task}, {@link group}, etc.
+   *
+   * @example
+   * logger.debug('Running ESLint version 9.16.0');
+   *
+   * @param message Debug text
+   */
   debug(message: string): void {
     if (this.#isVerbose) {
       this.#log(message, 'gray');
     }
   }
 
+  /**
+   * Print a blank line to the console, used to separate logs for readability.
+   *
+   * Automatically adapts to logger state if called within {@link task}, {@link group}, etc.
+   *
+   * @example
+   * logger.newline();
+   */
   newline(): void {
     this.#log('');
   }
 
+  /**
+   * Is verbose flag set?
+   *
+   * Verbosity is configured by {@link setVerbose} call or `CP_VERBOSE` environment variable.
+   *
+   * @example
+   * if (logger.isVerbose()) {
+   *   // ...
+   * }
+   */
   isVerbose(): boolean {
     return this.#isVerbose;
   }
 
+  /**
+   * Sets verbose flag for this logger.
+   *
+   * Also sets the `CP_VERBOSE` environment variable.
+   * This means any future {@link Logger} instantiations (including child processes) will use the same verbosity level.
+   *
+   * @example
+   * logger.setVerbose(process.argv.includes('--verbose'));
+   *
+   * @param isVerbose Verbosity level
+   */
   setVerbose(isVerbose: boolean): void {
     process.env['CP_VERBOSE'] = `${isVerbose}`;
     this.#isVerbose = isVerbose;
   }
 
+  /**
+   * Animates asynchronous work using a spinner.
+   *
+   * Basic logs are supported within the worker function, they will be printed with indentation once the spinner completes.
+   *
+   * In CI environments, the spinner animation is disabled, and inner logs are printed immediately.
+   *
+   * Spinners may be nested within a {@link group} call, in which case line symbols are used instead of dots, as well the group's color.
+   *
+   * The task's duration is included in the logged output as a suffix.
+   *
+   * Listens for `SIGINT` event in order to cancel and restore spinner before exiting.
+   *
+   * Concurrent or nested spinners are not supported, nor can groups be nested in spinners.
+   *
+   * @example
+   * await logger.task('Uploading report to portal', async () => {
+   *   // ...
+   *   return 'Uploaded report to portal';
+   * });
+   *
+   * @param title Display text used as pending message.
+   * @param worker Asynchronous implementation. Returned promise determines spinner status and final message. Support for inner logs has some limitations (described above).
+   */
+  task(title: string, worker: () => Promise<string>): Promise<void> {
+    return this.#spinner(worker, {
+      pending: title,
+      success: value => value,
+      failure: error => `${title} → ${ansis.red(`${error}`)}`,
+    });
+  }
+
+  /**
+   * Similar to {@link task}, but spinner texts are formatted as shell commands.
+   *
+   * A `$`-prefix is added. Its color indicates the status (blue=pending, green=success, red=failure).
+   *
+   * @example
+   * await logger.command('npx eslint . --format=json', async () => {
+   *   // ...
+   * });
+   *
+   * @param bin Command string with arguments.
+   * @param worker Asynchronous execution of the command (not implemented by the logger).
+   */
+  command(bin: string, worker: () => Promise<void>): Promise<void> {
+    return this.#spinner(worker, {
+      pending: `${ansis.blue('$')} ${bin}`,
+      success: () => `${ansis.green('$')} ${bin}`,
+      failure: () => `${ansis.red('$')} ${bin}`,
+    });
+  }
+
+  /**
+   * Groups many logs into a visually distinct section.
+   *
+   * Groups alternate prefix colors between cyan and magenta.
+   *
+   * The group's total duration is included in the logged output.
+   *
+   * Nested groups are not supported.
+   *
+   * @example
+   * await logger.group('Running plugin "ESLint"', async () => {
+   *   logger.debug('ESLint version is 9.16.0');
+   *   await logger.command('npx eslint . --format=json', () => {
+   *     // ...
+   *   })
+   *   logger.info('Found 42 lint errors.');
+   *   return 'Completed "ESLint" plugin execution';
+   * });
+   *
+   * @param title Display title for the group.
+   * @param worker Asynchronous implementation. Returned promise determines group status and ending message. Inner logs are attached to the group.
+   */
   async group(title: string, worker: () => Promise<string>): Promise<void> {
     if (this.#groupColor) {
       throw new Error(
@@ -195,22 +344,6 @@ export class Logger {
     } else {
       delete process.env[GROUP_COLOR_ENV_VAR_NAME];
     }
-  }
-
-  task(title: string, worker: () => Promise<string>): Promise<void> {
-    return this.#spinner(worker, {
-      pending: title,
-      success: value => value,
-      failure: error => `${title} → ${ansis.red(`${error}`)}`,
-    });
-  }
-
-  command(bin: string, worker: () => Promise<void>): Promise<void> {
-    return this.#spinner(worker, {
-      pending: `${ansis.blue('$')} ${bin}`,
-      success: () => `${ansis.green('$')} ${bin}`,
-      failure: () => `${ansis.red('$')} ${bin}`,
-    });
   }
 
   async #spinner<T>(
@@ -331,4 +464,12 @@ export class Logger {
   }
 }
 
+/**
+ * Shared {@link Logger} instance.
+ *
+ * @example
+ * import { logger } from '@code-pushup/utils';
+ *
+ * logger.info('Made with ❤️ by Code PushUp');
+ */
 export const logger = new Logger();
