@@ -1,7 +1,7 @@
 import ansis from 'ansis';
 import cliSpinners from 'cli-spinners';
-import logSymbols from 'log-symbols';
 import os from 'node:os';
+import process from 'node:process';
 import type { MockInstance } from 'vitest';
 import { Logger } from './logger.js';
 
@@ -10,15 +10,26 @@ vi.mock('ora', async (): Promise<typeof import('ora')> => {
   const exports = await vi.importActual<typeof import('ora')>('ora');
   return {
     ...exports,
-    default: options =>
-      exports.default({
+    default: options => {
+      const spinner = exports.default({
         // skip cli-cursor package
         hideCursor: false,
         // skip is-interactive package
         isEnabled: process.env['CI'] !== 'true',
+        // skip is-unicode-supported package
+        spinner: cliSpinners.dots,
         // preserve other options
         ...(typeof options === 'string' ? { text: options } : options),
-      }),
+      });
+      // skip log-symbols package
+      vi.spyOn(spinner, 'succeed').mockImplementation(text =>
+        spinner.stopAndPersist({ text, symbol: ansis.green('✔') }),
+      );
+      vi.spyOn(spinner, 'fail').mockImplementation(text =>
+        spinner.stopAndPersist({ text, symbol: ansis.red('✖') }),
+      );
+      return spinner;
+    },
   };
 });
 
@@ -308,7 +319,7 @@ ${ansis.magenta('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%'
       await expect(task).resolves.toBeUndefined();
 
       expect(output).toBe(
-        `${logSymbols.success} Uploaded report to portal ${ansis.gray('(42 ms)')}\n`,
+        `${ansis.green('✔')} Uploaded report to portal ${ansis.gray('(42 ms)')}\n`,
       );
     });
 
@@ -322,7 +333,7 @@ ${ansis.magenta('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%'
       await expect(task).rejects.toThrow('GraphQL error: Invalid API key');
 
       expect(output).toBe(
-        `${logSymbols.error} Uploading report to portal → ${ansis.red('Error: GraphQL error: Invalid API key')}\n`,
+        `${ansis.red('✖')} Uploading report to portal → ${ansis.red('Error: GraphQL error: Invalid API key')}\n`,
       );
     });
 
@@ -341,7 +352,7 @@ ${ansis.magenta('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%'
       expect(output).toBe(
         `
 - Uploading report to portal
-${logSymbols.success} Uploaded report to portal ${ansis.gray('(42 ms)')}
+${ansis.green('✔')} Uploaded report to portal ${ansis.gray('(42 ms)')}
 `.trimStart(),
       );
     });
@@ -361,7 +372,7 @@ ${logSymbols.success} Uploaded report to portal ${ansis.gray('(42 ms)')}
 
       expect(output).toBe(
         `
-${logSymbols.error} Uploading report to portal ${ansis.red.bold('[SIGINT]')}
+${ansis.red('✖')} Uploading report to portal ${ansis.red.bold('[SIGINT]')}
 
 ${ansis.red.bold('Cancelled by SIGINT')}
 `.trimStart(),
@@ -390,7 +401,7 @@ ${ansis.red.bold('Cancelled by SIGINT')}
 
       expect(output).toBe(
         `
-${logSymbols.success} Uploaded report to portal ${ansis.gray('(42 ms)')}
+${ansis.green('✔')} Uploaded report to portal ${ansis.gray('(42 ms)')}
   ${ansis.gray('Sent request to Portal API')}
   ${ansis.gray('Received response from Portal API')}
 `.trimStart(),
@@ -417,7 +428,7 @@ ${logSymbols.success} Uploaded report to portal ${ansis.gray('(42 ms)')}
 
       expect(output).toBe(
         `
-${logSymbols.error} Uploading report to portal → ${ansis.red('Error: GraphQL error: Invalid API key')}
+${ansis.red('✖')} Uploading report to portal → ${ansis.red('Error: GraphQL error: Invalid API key')}
   ${ansis.gray('Sent request to Portal API')}
   ${ansis.gray('Received response from Portal API')}
 `.trimStart(),
@@ -470,7 +481,7 @@ ${logSymbols.error} Uploading report to portal → ${ansis.red('Error: GraphQL e
       await expect(command).resolves.toBeUndefined();
 
       expect(output).toBe(
-        `${logSymbols.success} ${ansis.green('$')} npx eslint . --format=json ${ansis.gray('(42 ms)')}\n`,
+        `${ansis.green('✔')} ${ansis.green('$')} npx eslint . --format=json ${ansis.gray('(42 ms)')}\n`,
       );
     });
 
@@ -489,7 +500,7 @@ ${logSymbols.error} Uploading report to portal → ${ansis.red('Error: GraphQL e
       await expect(command).rejects.toThrow('Process failed with exit code 1');
 
       expect(output).toBe(
-        `${logSymbols.error} ${ansis.red('$')} npx eslint . --format=json\n`,
+        `${ansis.red('✖')} ${ansis.red('$')} npx eslint . --format=json\n`,
       );
     });
   });
