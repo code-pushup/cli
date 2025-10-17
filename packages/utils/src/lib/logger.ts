@@ -330,3 +330,5 @@ export class Logger {
     return ansis.gray(`(${duration})`);
   }
 }
+
+export const logger = new Logger();
