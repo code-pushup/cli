@@ -781,4 +781,59 @@ ${ansis.red.bold('Cancelled by SIGINT')}
       );
     });
   });
+
+  describe('invalid usage', () => {
+    it('should throw if nesting group in another group', async () => {
+      const logger = new Logger();
+
+      await expect(
+        logger.group('Outer group', async () => {
+          await logger.group('Inner group', async () => 'Inner group complete');
+          return 'Outer group complete';
+        }),
+      ).rejects.toThrow(
+        'Internal Logger error - nested groups are not supported',
+      );
+    });
+
+    it('should throw if nesting groups across logger instances', async () => {
+      await expect(
+        new Logger().group('Outer group', async () => {
+          await new Logger().group(
+            'Inner group',
+            async () => 'Inner group complete',
+          );
+          return 'Outer group complete';
+        }),
+      ).rejects.toThrow(
+        'Internal Logger error - nested groups are not supported',
+      );
+    });
+
+    it('should throw if creating group while spinner is running', async () => {
+      const logger = new Logger();
+
+      await expect(
+        logger.task('Some async process', async () => {
+          await logger.group('Some group', async () => 'Group completed');
+          return 'Async process completed';
+        }),
+      ).rejects.toThrow(
+        'Internal Logger error - creating group in active spinner is not supported',
+      );
+    });
+
+    it('should throw if starting new spinner while another is still active', async () => {
+      const logger = new Logger();
+
+      await expect(
+        Promise.all([
+          logger.task('Task 1', async () => 'DONE'),
+          logger.task('Task 2', async () => 'DONE'),
+        ]),
+      ).rejects.toThrow(
+        'Internal Logger error - concurrent spinners are not supported',
+      );
+    });
+  });
 });
