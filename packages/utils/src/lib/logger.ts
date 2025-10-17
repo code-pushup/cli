@@ -88,6 +88,17 @@ export class Logger {
   }
 
   async group(title: string, worker: () => Promise<string>): Promise<void> {
+    if (this.#groupColor) {
+      throw new Error(
+        'Internal Logger error - nested groups are not supported',
+      );
+    }
+    if (this.#activeSpinner) {
+      throw new Error(
+        'Internal Logger error - creating group in active spinner is not supported',
+      );
+    }
+
     if (!this.#endsWithBlankLine) {
       this.newline();
     }
@@ -210,6 +221,12 @@ export class Logger {
       failure: (error: unknown) => string;
     },
   ): Promise<void> {
+    if (this.#activeSpinner) {
+      throw new Error(
+        'Internal Logger error - concurrent spinners are not supported',
+      );
+    }
+
     process.removeListener('SIGINT', this.#sigintListener);
     process.addListener('SIGINT', this.#sigintListener);
 
