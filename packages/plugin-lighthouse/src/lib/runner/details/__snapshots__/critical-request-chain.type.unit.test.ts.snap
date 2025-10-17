@@ -10,21 +10,21 @@ exports[`parseCriticalRequestChainToAuditDetails > should convert chains to basi
             {
               "name": "https://fonts.gstatic.com/s/googlesans/v62/4UasrENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iqcsih3SAyH6cAwhX9RPjIUvbQoi-E.woff2",
               "values": {
-                "duration": "48.083 ms",
+                "duration": "48 ms",
                 "transferSize": "35.89 kB",
               },
             },
             {
               "name": "https://fonts.gstatic.com/s/robotomono/v23/L0xTDF4xlVMF-BfR8bXMIhJHg45mwgGEFl0_3vrtSM1J-gEPT5Ese6hmHSh0me8iUI0.woff2",
               "values": {
-                "duration": "63.943 ms",
+                "duration": "64 ms",
                 "transferSize": "22.31 kB",
               },
             },
           ],
           "name": "https://fonts.googleapis.com/css?family=Google+Sans:400,500|Roboto:400,400italic,500,500italic,700,700italic|Roboto+Mono:400,500,700&display=swap",
           "values": {
-            "duration": "50.656 ms",
+            "duration": "51 ms",
             "transferSize": "3.68 kB",
           },
         },
@@ -33,42 +33,42 @@ exports[`parseCriticalRequestChainToAuditDetails > should convert chains to basi
             {
               "name": "https://fonts.gstatic.com/s/materialicons/v143/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2",
               "values": {
-                "duration": "86.765 ms",
+                "duration": "87 ms",
                 "transferSize": "125.78 kB",
               },
             },
           ],
           "name": "https://fonts.googleapis.com/css2?family=Material+Icons&family=Material+Symbols+Outlined&display=block",
           "values": {
-            "duration": "55.102 ms",
+            "duration": "55 ms",
             "transferSize": "615 B",
           },
         },
         {
           "name": "https://www.gstatic.com/devrel-devsite/prod/ve761bca974e16662f27aa8810df6d144acde5bdbeeca0dfd50e25f86621eaa19/chrome/css/app.css",
           "values": {
-            "duration": "70.05 ms",
+            "duration": "70 ms",
             "transferSize": "133.58 kB",
           },
         },
         {
           "name": "https://www.gstatic.com/devrel-devsite/prod/ve761bca974e16662f27aa8810df6d144acde5bdbeeca0dfd50e25f86621eaa19/chrome/css/dark-theme.css",
           "values": {
-            "duration": "69.755 ms",
+            "duration": "70 ms",
             "transferSize": "3.98 kB",
           },
         },
         {
           "name": "https://developer.chrome.com/extras.css",
           "values": {
-            "duration": "199.327 ms",
+            "duration": "199 ms",
             "transferSize": "109 B",
           },
         },
       ],
       "name": "https://developer.chrome.com/docs/lighthouse/performance/critical-request-chains",
       "values": {
-        "duration": "472.304 ms",
+        "duration": "472 ms",
         "transferSize": "18.66 kB",
       },
     },
@@ -98,7 +98,7 @@ exports[`parseCriticalRequestChainToAuditDetails > should convert longest chain 
   ],
   "rows": [
     {
-      "duration": "757.072 ms",
+      "duration": "757 ms",
       "length": 3,
       "transferSize": "125.78 kB",
     },

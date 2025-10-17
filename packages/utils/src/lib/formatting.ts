@@ -54,7 +54,7 @@ export function pluralizeToken(token: string, times: number): string {
 
 export function formatDuration(ms: number, maxDecimals: number = 2): string {
   if (ms < 1000) {
-    return `${roundDecimals(ms, maxDecimals)} ms`;
+    return `${Math.round(ms)} ms`;
   }
   return `${roundDecimals(ms / 1000, maxDecimals)} s`;
 }
