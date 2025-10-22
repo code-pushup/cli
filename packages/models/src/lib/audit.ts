@@ -14,11 +14,15 @@ export const auditSchema = z
       description: 'List of scorable metrics for the given plugin',
       isSkippedDescription: 'Indicates whether the audit is skipped',
     }).shape,
-  );
+  )
+  .meta({ title: 'Audit' });
 
 export type Audit = z.infer<typeof auditSchema>;
 export const pluginAuditsSchema = z
   .array(auditSchema)
   .min(1)
   .check(createDuplicateSlugsCheck('Audit'))
-  .meta({ description: 'List of audits maintained in a plugin' });
+  .meta({
+    title: 'PluginAudits',
+    description: 'List of audits maintained in a plugin',
+  });
