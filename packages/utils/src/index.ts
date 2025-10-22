@@ -155,4 +155,3 @@ export type {
   Prettify,
   WithRequired,
 } from './lib/types.js';
-export { parseSchema, SchemaValidationError } from './lib/zod-validation.js';

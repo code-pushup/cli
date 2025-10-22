@@ -1,6 +1,5 @@
 import { createRequire } from 'node:module';
-import type { PluginConfig } from '@code-pushup/models';
-import { parseSchema } from '@code-pushup/utils';
+import { type PluginConfig, validate } from '@code-pushup/models';
 import {
   type ESLintPluginConfig,
   type ESLintPluginOptions,
@@ -36,7 +35,7 @@ export async function eslintPlugin(
   config: ESLintPluginConfig,
   options?: ESLintPluginOptions,
 ): Promise<PluginConfig> {
-  const targets = parseSchema(eslintPluginConfigSchema, config, {
+  const targets = validate(eslintPluginConfigSchema, config, {
     schemaType: 'ESLint plugin config',
   });
 
@@ -45,7 +44,7 @@ export async function eslintPlugin(
     artifacts,
     scoreTargets,
   } = options
-    ? parseSchema(eslintPluginOptionsSchema, options, {
+    ? validate(eslintPluginOptionsSchema, options, {
         schemaType: 'ESLint plugin options',
       })
     : {};

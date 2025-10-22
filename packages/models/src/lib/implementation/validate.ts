@@ -20,7 +20,7 @@ export class SchemaValidationError extends Error {
   }
 }
 
-export function parseSchema<T extends z.ZodTypeAny>(
+export function validate<T extends z.ZodTypeAny>(
   schema: T,
   data: z.input<T>,
   { schemaType, sourcePath }: SchemaValidationContext,
