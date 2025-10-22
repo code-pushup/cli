@@ -4,8 +4,9 @@ import {
   type CoreConfig,
   SUPPORTED_CONFIG_FILE_FORMATS,
   coreConfigSchema,
+  validate,
 } from '@code-pushup/models';
-import { fileExists, importModule, parseSchema } from '@code-pushup/utils';
+import { fileExists, importModule } from '@code-pushup/utils';
 
 export class ConfigPathError extends Error {
   constructor(configPath: string) {
@@ -31,7 +32,7 @@ export async function readRcByPath(
     format: 'esm',
   });
 
-  return parseSchema(coreConfigSchema, cfg, {
+  return validate(coreConfigSchema, cfg, {
     schemaType: 'core config',
     sourcePath: filepath,
   });
