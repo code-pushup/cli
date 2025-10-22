@@ -47,13 +47,13 @@ export const slugSchema = z
   .max(MAX_SLUG_LENGTH, {
     message: `The slug can be max ${MAX_SLUG_LENGTH} characters long`,
   })
-  .describe('Unique ID (human-readable, URL-safe)');
+  .meta({ description: 'Unique ID (human-readable, URL-safe)' });
 
 /**  Schema for a general description property */
 export const descriptionSchema = z
   .string()
   .max(MAX_DESCRIPTION_LENGTH)
-  .describe('Description (markdown)')
+  .meta({ description: 'Description (markdown)' })
   .optional();
 
 /* Schema for a URL */
@@ -79,20 +79,20 @@ export const docsUrlSchema = urlSchema
     }
     throw new ZodError(ctx.error.issues);
   })
-  .describe('Documentation site');
+  .meta({ description: 'Documentation site' });
 
 /** Schema for a title of a plugin, category and audit */
 export const titleSchema = z
   .string()
   .max(MAX_TITLE_LENGTH)
-  .describe('Descriptive name');
+  .meta({ description: 'Descriptive name' });
 
 /** Schema for score of audit, category or group */
 export const scoreSchema = z
   .number()
   .min(0)
   .max(1)
-  .describe('Value between 0 and 1');
+  .meta({ description: 'Value between 0 and 1' });
 
 /** Schema for a property indicating whether an entity is filtered out */
 export const isSkippedSchema = z.boolean().optional();
@@ -153,9 +153,10 @@ export const globPathSchema = z
     message:
       'The path must be a valid file path or glob pattern (supports *, **, {}, [], !, ?)',
   })
-  .describe(
-    'Schema for a glob pattern (supports wildcards like *, **, {}, !, etc.)',
-  );
+  .meta({
+    description:
+      'Schema for a glob pattern (supports wildcards like *, **, {}, !, etc.)',
+  });
 
 /** Schema for a fileNameSchema */
 export const fileNameSchema = z
@@ -176,16 +177,16 @@ export function packageVersionSchema<
 >(options?: { versionDescription?: string; required?: TRequired }) {
   const { versionDescription = 'NPM version of the package', required } =
     options ?? {};
-  const packageSchema = z.string().describe('NPM package name');
-  const versionSchema = z.string().describe(versionDescription);
+  const packageSchema = z.string().meta({ description: 'NPM package name' });
+  const versionSchema = z.string().meta({ description: versionDescription });
   return z
     .object({
       packageName: required ? packageSchema : packageSchema.optional(),
       version: required ? versionSchema : versionSchema.optional(),
     })
-    .describe(
-      'NPM package name and version of a published package',
-    ) as ZodObject<{
+    .meta({
+      description: 'NPM package name and version of a published package',
+    }) as ZodObject<{
     packageName: TRequired extends true ? ZodString : ZodOptional<ZodString>;
     version: TRequired extends true ? ZodString : ZodOptional<ZodString>;
   }>;
@@ -194,13 +195,14 @@ export function packageVersionSchema<
 /** Schema for a binary score threshold */
 export const scoreTargetSchema = nonnegativeNumberSchema
   .max(1)
-  .describe('Pass/fail score threshold (0-1)')
+  .meta({ description: 'Pass/fail score threshold (0-1)' })
   .optional();
 
 /** Schema for a weight */
-export const weightSchema = nonnegativeNumberSchema.describe(
-  'Coefficient for the given score (use weight 0 if only for display)',
-);
+export const weightSchema = nonnegativeNumberSchema.meta({
+  description:
+    'Coefficient for the given score (use weight 0 if only for display)',
+});
 
 export function weightedRefSchema(
   description: string,
@@ -208,10 +210,12 @@ export function weightedRefSchema(
 ) {
   return z
     .object({
-      slug: slugSchema.describe(slugDescription),
-      weight: weightSchema.describe('Weight used to calculate score'),
+      slug: slugSchema.meta({ description: slugDescription }),
+      weight: weightSchema.meta({
+        description: 'Weight used to calculate score',
+      }),
     })
-    .describe(description);
+    .meta({ description });
 }
 
 export type WeightedRef = z.infer<ReturnType<typeof weightedRefSchema>>;
@@ -223,7 +227,9 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
 ) {
   return z
     .object({
-      slug: slugSchema.describe('Human-readable unique ID, e.g. "performance"'),
+      slug: slugSchema.meta({
+        description: 'Human-readable unique ID, e.g. "performance"',
+      }),
       refs: z
         .array(refSchema)
         .min(1, { message: 'In a category, there has to be at least one ref' })
@@ -239,7 +245,7 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
 
 export const materialIconSchema = z
   .enum(MATERIAL_ICONS)
-  .describe('Icon from VSCode Material Icons extension');
+  .meta({ description: 'Icon from VSCode Material Icons extension' });
 export type MaterialIcon = z.infer<typeof materialIconSchema>;
 
 type Ref = { weight: number };
@@ -250,9 +256,11 @@ function hasNonZeroWeightedRef(refs: Ref[]) {
 
 export const filePositionSchema = z
   .object({
-    startLine: positiveIntSchema.describe('Start line'),
-    startColumn: positiveIntSchema.describe('Start column').optional(),
-    endLine: positiveIntSchema.describe('End line').optional(),
-    endColumn: positiveIntSchema.describe('End column').optional(),
+    startLine: positiveIntSchema.meta({ description: 'Start line' }),
+    startColumn: positiveIntSchema
+      .meta({ description: 'Start column' })
+      .optional(),
+    endLine: positiveIntSchema.meta({ description: 'End line' }).optional(),
+    endColumn: positiveIntSchema.meta({ description: 'End column' }).optional(),
   })
-  .describe('Location in file');
+  .meta({ description: 'Location in file' });

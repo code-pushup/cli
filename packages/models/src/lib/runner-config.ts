@@ -16,20 +16,25 @@ export const runnerArgsSchema = z
   .object({
     persist: persistConfigSchema
       .required()
-      .describe('Persist config with defaults applied'),
+      .meta({ description: 'Persist config with defaults applied' }),
   })
-  .describe('Arguments passed to runner');
+  .meta({ description: 'Arguments passed to runner' });
 export type RunnerArgs = z.infer<typeof runnerArgsSchema>;
 
 export const runnerConfigSchema = z
   .object({
-    command: z.string().describe('Shell command to execute'),
-    args: z.array(z.string()).describe('Command arguments').optional(),
-    outputFile: filePathSchema.describe('Runner output path'),
+    command: z.string().meta({ description: 'Shell command to execute' }),
+    args: z
+      .array(z.string())
+      .meta({ description: 'Command arguments' })
+      .optional(),
+    outputFile: filePathSchema.meta({ description: 'Runner output path' }),
     outputTransform: outputTransformSchema.optional(),
-    configFile: filePathSchema.describe('Runner config path').optional(),
+    configFile: filePathSchema
+      .meta({ description: 'Runner config path' })
+      .optional(),
   })
-  .describe('How to execute runner using shell script');
+  .meta({ description: 'How to execute runner using shell script' });
 export type RunnerConfig = z.infer<typeof runnerConfigSchema>;
 
 export const runnerFunctionSchema = convertAsyncZodFunctionToSchema(
@@ -37,11 +42,13 @@ export const runnerFunctionSchema = convertAsyncZodFunctionToSchema(
     input: [runnerArgsSchema],
     output: z.union([auditOutputsSchema, z.promise(auditOutputsSchema)]),
   }),
-).describe('Callback function for async runner execution in JS/TS');
+).meta({
+  description: 'Callback function for async runner execution in JS/TS',
+});
 export type RunnerFunction = z.infer<typeof runnerFunctionSchema>;
 
 export const runnerFilesPathsSchema = z.object({
-  runnerConfigPath: filePathSchema.describe('Runner config path'),
-  runnerOutputPath: filePathSchema.describe('Runner output path'),
+  runnerConfigPath: filePathSchema.meta({ description: 'Runner config path' }),
+  runnerOutputPath: filePathSchema.meta({ description: 'Runner output path' }),
 });
 export type RunnerFilesPaths = z.infer<typeof runnerFilesPathsSchema>;

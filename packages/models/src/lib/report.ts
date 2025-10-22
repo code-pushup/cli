@@ -50,12 +50,15 @@ export const reportSchema = packageVersionSchema({
       plugins: z.array(pluginReportSchema).min(1),
       categories: z.array(categoryConfigSchema).optional(),
       commit: commitSchema
-        .describe('Git commit for which report was collected')
+        .meta({ description: 'Git commit for which report was collected' })
         .nullable(),
-      label: z.string().optional().describe('Label (e.g. project name)'),
+      label: z
+        .string()
+        .optional()
+        .meta({ description: 'Label (e.g. project name)' }),
     }),
   )
   .check(createCheck(findMissingSlugsInCategoryRefs))
-  .describe('Collect output data');
+  .meta({ description: 'Collect output data' });
 
 export type Report = z.infer<typeof reportSchema>;
