@@ -16,11 +16,10 @@ export const categoryRefSchema = weightedRefSchema(
   'Weighted references to audits and/or groups for the category',
   'Slug of an audit or group (depending on `type`)',
 ).extend({
-  type: z
-    .enum(['audit', 'group'])
-    .describe(
+  type: z.enum(['audit', 'group']).meta({
+    description:
       'Discriminant for reference kind, affects where `slug` is looked up',
-    ),
+  }),
   plugin: slugSchema.describe(
     'Plugin slug (plugin should contain referenced audit or group)',
   ),
@@ -70,4 +69,4 @@ function formatSerializedCategoryRefTargets(keys: string[]): string {
 export const categoriesSchema = z
   .array(categoryConfigSchema)
   .check(createDuplicateSlugsCheck('Category'))
-  .describe('Categorization of individual audits');
+  .meta({ description: 'Categorization of individual audits' });

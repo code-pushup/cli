@@ -5,9 +5,11 @@ export const formatSchema = z.enum(['json', 'md']);
 export type Format = z.infer<typeof formatSchema>;
 
 export const persistConfigSchema = z.object({
-  outputDir: filePathSchema.describe('Artifacts folder').optional(),
+  outputDir: filePathSchema
+    .meta({ description: 'Artifacts folder' })
+    .optional(),
   filename: fileNameSchema
-    .describe('Artifacts file name (without extension)')
+    .meta({ description: 'Artifacts file name (without extension)' })
     .optional(),
   format: z.array(formatSchema).optional(),
   skipReports: z.boolean().optional(),

@@ -24,9 +24,10 @@ export type PackageManagerId = z.infer<typeof packageManagerIdSchema>;
 const packageJsonPathSchema = z
   .string()
   .regex(/package\.json$/, 'File path must end with package.json')
-  .describe(
-    'File path to package.json, tries to use root package.json at CWD by default',
-  )
+  .meta({
+    description:
+      'File path to package.json, tries to use root package.json at CWD by default',
+  })
   .default('package.json');
 
 export type PackageJsonPath = z.infer<typeof packageJsonPathSchema>;
@@ -60,11 +61,12 @@ export const jsPackagesPluginConfigSchema = z.object({
     .array(packageCommandSchema)
     .min(1)
     .default(['audit', 'outdated'])
-    .describe(
-      'Package manager commands to be run. Defaults to both audit and outdated.',
-    ),
+    .meta({
+      description:
+        'Package manager commands to be run. Defaults to both audit and outdated.',
+    }),
   packageManager: packageManagerIdSchema
-    .describe('Package manager to be used.')
+    .meta({ description: 'Package manager to be used.' })
     .optional(),
   dependencyGroups: z
     .array(dependencyGroupSchema)

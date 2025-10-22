@@ -9,42 +9,45 @@ export const coverageResultSchema = z.union([
     resultsPath: z
       .string()
       .includes('lcov')
-      .describe('Path to coverage results for Nx setup.'),
+      .meta({ description: 'Path to coverage results for Nx setup.' }),
     pathToProject: z
       .string()
-      .describe(
-        'Path from workspace root to project root. Necessary for LCOV reports which provide a relative path.',
-      )
+      .meta({
+        description:
+          'Path from workspace root to project root. Necessary for LCOV reports which provide a relative path.',
+      })
       .optional(),
   }),
-  z
-    .string()
-    .includes('lcov')
-    .describe('Path to coverage results for a single project setup.'),
+  z.string().includes('lcov').meta({
+    description: 'Path to coverage results for a single project setup.',
+  }),
 ]);
 export type CoverageResult = z.infer<typeof coverageResultSchema>;
 
 export const coveragePluginConfigSchema = z.object({
   coverageToolCommand: z
     .object({
-      command: z.string().min(1).describe('Command to run coverage tool.'),
+      command: z
+        .string()
+        .min(1)
+        .meta({ description: 'Command to run coverage tool.' }),
       args: z
         .array(z.string())
         .optional()
-        .describe('Arguments to be passed to the coverage tool.'),
+        .meta({ description: 'Arguments to be passed to the coverage tool.' }),
     })
     .optional(),
-  continueOnCommandFail: z
-    .boolean()
-    .default(true)
-    .describe(
+  continueOnCommandFail: z.boolean().default(true).meta({
+    description:
       'Continue on coverage tool command failure or error. Defaults to true.',
-    ),
+  }),
   coverageTypes: z
     .array(coverageTypeSchema)
     .min(1)
     .default(['function', 'branch', 'line'])
-    .describe('Coverage types measured. Defaults to all available types.'),
+    .meta({
+      description: 'Coverage types measured. Defaults to all available types.',
+    }),
   reports: z
     .array(coverageResultSchema)
     .min(1)

@@ -15,7 +15,7 @@ import { runnerConfigSchema, runnerFunctionSchema } from './runner-config.js';
 export const pluginContextSchema = z
   .record(z.string(), z.unknown())
   .optional()
-  .describe('Plugin-specific context data for helpers');
+  .meta({ description: 'Plugin-specific context data for helpers' });
 export type PluginContext = z.infer<typeof pluginContextSchema>;
 
 export const pluginMetaSchema = packageVersionSchema()
@@ -28,7 +28,9 @@ export const pluginMetaSchema = packageVersionSchema()
     }).shape,
   )
   .extend({
-    slug: slugSchema.describe('Unique plugin slug within core config'),
+    slug: slugSchema.meta({
+      description: 'Unique plugin slug within core config',
+    }),
     icon: materialIconSchema,
   });
 export type PluginMeta = z.infer<typeof pluginMetaSchema>;

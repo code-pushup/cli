@@ -11,10 +11,14 @@ export const typescriptPluginConfigSchema = z.object({
   tsconfig: z
     .string()
     .default(DEFAULT_TS_CONFIG)
-    .describe(`Path to a tsconfig file (default is ${DEFAULT_TS_CONFIG})`),
+    .meta({
+      description: `Path to a tsconfig file (default is ${DEFAULT_TS_CONFIG})`,
+    }),
   onlyAudits: z
     .array(z.enum(auditSlugs))
-    .describe('Filters TypeScript compiler errors by diagnostic codes')
+    .meta({
+      description: 'Filters TypeScript compiler errors by diagnostic codes',
+    })
     .optional(),
   scoreTargets: pluginScoreTargetsSchema,
 });

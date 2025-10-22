@@ -42,4 +42,4 @@ export const groupsSchema = z
   .array(groupSchema)
   .check(createDuplicateSlugsCheck('Group'))
   .optional()
-  .describe('List of groups');
+  .meta({ description: 'List of groups' });

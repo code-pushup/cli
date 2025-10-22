@@ -4,7 +4,7 @@ import { metaSchema, slugSchema } from './implementation/schemas.js';
 
 export const auditSchema = z
   .object({
-    slug: slugSchema.describe('ID (unique within plugin)'),
+    slug: slugSchema.meta({ description: 'ID (unique within plugin)' }),
   })
   .extend(
     metaSchema({
@@ -21,4 +21,4 @@ export const pluginAuditsSchema = z
   .array(auditSchema)
   .min(1)
   .check(createDuplicateSlugsCheck('Audit'))
-  .describe('List of audits maintained in a plugin');
+  .meta({ description: 'List of audits maintained in a plugin' });

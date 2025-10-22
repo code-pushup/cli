@@ -5,13 +5,14 @@ import {
 } from '@code-pushup/models';
 import { toArray } from '@code-pushup/utils';
 
-const patternsSchema = z
-  .union([z.string(), z.array(z.string()).min(1)])
-  .describe(
+const patternsSchema = z.union([z.string(), z.array(z.string()).min(1)]).meta({
+  description:
     'Lint target files. May contain file paths, directory paths or glob patterns',
-  );
+});
 
-const eslintrcSchema = z.string().describe('Path to ESLint config file');
+const eslintrcSchema = z
+  .string()
+  .meta({ description: 'Path to ESLint config file' });
 
 const eslintTargetObjectSchema = z.object({
   eslintrc: eslintrcSchema.optional(),
@@ -50,15 +51,19 @@ const customGroupRulesSchema = z
         error: 'Custom group rules must contain at least 1 element',
       }),
   ])
-  .describe(
-    'Array of rule IDs with equal weights or object mapping rule IDs to specific weights',
-  );
+  .meta({
+    description:
+      'Array of rule IDs with equal weights or object mapping rule IDs to specific weights',
+  });
 
 const customGroupSchema = z.object({
-  slug: z.string().describe('Unique group identifier'),
-  title: z.string().describe('Group display title'),
-  description: z.string().describe('Group metadata').optional(),
-  docsUrl: z.string().describe('Group documentation site').optional(),
+  slug: z.string().meta({ description: 'Unique group identifier' }),
+  title: z.string().meta({ description: 'Group display title' }),
+  description: z.string().meta({ description: 'Group metadata' }).optional(),
+  docsUrl: z
+    .string()
+    .meta({ description: 'Group documentation site' })
+    .optional(),
   rules: customGroupRulesSchema,
 });
 export type CustomGroup = z.infer<typeof customGroupSchema>;

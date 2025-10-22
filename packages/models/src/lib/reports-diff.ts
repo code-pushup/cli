@@ -19,8 +19,10 @@ import { pluginMetaSchema } from './plugin-config.js';
 function makeComparisonSchema<T extends ZodTypeAny>(schema: T) {
   const sharedDescription = schema.description || 'Result';
   return z.object({
-    before: schema.describe(`${sharedDescription} (source commit)`),
-    after: schema.describe(`${sharedDescription} (target commit)`),
+    before: schema.meta({
+      description: `${sharedDescription} (source commit)`,
+    }),
+    after: schema.meta({ description: `${sharedDescription} (target commit)` }),
   });
 }
 
@@ -47,7 +49,7 @@ const scorableWithPluginMetaSchema = scorableMetaSchema.merge(
   z.object({
     plugin: pluginMetaSchema
       .pick({ slug: true, title: true, docsUrl: true })
-      .describe('Plugin which defines it'),
+      .meta({ description: 'Plugin which defines it' }),
   }),
 );
 
@@ -56,14 +58,12 @@ const scorableDiffSchema = scorableMetaSchema.merge(
     scores: makeComparisonSchema(scoreSchema)
       .merge(
         z.object({
-          diff: z
-            .number()
-            .min(-1)
-            .max(1)
-            .describe('Score change (`scores.after - scores.before`)'),
+          diff: z.number().min(-1).max(1).meta({
+            description: 'Score change (`scores.after - scores.before`)',
+          }),
         }),
       )
-      .describe('Score comparison'),
+      .meta({ description: 'Score comparison' }),
   }),
 );
 const scorableWithPluginDiffSchema = scorableDiffSchema.merge(
@@ -77,15 +77,15 @@ export const auditDiffSchema = scorableWithPluginDiffSchema.merge(
     values: makeComparisonSchema(auditValueSchema)
       .merge(
         z.object({
-          diff: z
-            .number()
-            .describe('Value change (`values.after - values.before`)'),
+          diff: z.number().meta({
+            description: 'Value change (`values.after - values.before`)',
+          }),
         }),
       )
-      .describe('Audit `value` comparison'),
-    displayValues: makeComparisonSchema(auditDisplayValueSchema).describe(
-      'Audit `displayValue` comparison',
-    ),
+      .meta({ description: 'Audit `value` comparison' }),
+    displayValues: makeComparisonSchema(auditDisplayValueSchema).meta({
+      description: 'Audit `displayValue` comparison',
+    }),
   }),
 );
 
@@ -110,11 +110,14 @@ export const reportsDiffSchema = z
   .object({
     commits: makeComparisonSchema(commitSchema)
       .nullable()
-      .describe('Commits identifying compared reports'),
+      .meta({ description: 'Commits identifying compared reports' }),
     portalUrl: urlSchema
       .optional()
-      .describe('Link to comparison page in Code PushUp portal'),
-    label: z.string().optional().describe('Label (e.g. project name)'),
+      .meta({ description: 'Link to comparison page in Code PushUp portal' }),
+    label: z
+      .string()
+      .optional()
+      .meta({ description: 'Label (e.g. project name)' }),
     categories: makeArraysComparisonSchema(
       categoryDiffSchema,
       categoryResultSchema,
