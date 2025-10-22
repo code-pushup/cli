@@ -30,7 +30,10 @@ export const auditDetailsSchema = z
       .meta({ description: 'Findings in tree structure' })
       .optional(),
   })
-  .meta({ description: 'Detailed information' });
+  .meta({
+    title: 'AuditDetails',
+    description: 'Detailed information',
+  });
 export type AuditDetails = z.infer<typeof auditDetailsSchema>;
 
 export const auditOutputSchema = z
@@ -42,14 +45,19 @@ export const auditOutputSchema = z
     scoreTarget: scoreTargetSchema,
     details: auditDetailsSchema.optional(),
   })
-  .meta({ description: 'Audit information' });
+  .meta({
+    title: 'AuditOutput',
+    description: 'Audit information',
+  });
 
 export type AuditOutput = z.infer<typeof auditOutputSchema>;
 
 export const auditOutputsSchema = z
   .array(auditOutputSchema)
   .check(createDuplicateSlugsCheck('Audit'))
-  .describe(
-    'List of JSON formatted audit output emitted by the runner process of a plugin',
-  );
+  .meta({
+    title: 'AuditOutputs',
+    description:
+      'List of JSON formatted audit output emitted by the runner process of a plugin',
+  });
 export type AuditOutputs = z.infer<typeof auditOutputsSchema>;

@@ -11,6 +11,9 @@ export const sourceFileLocationSchema = z
     }),
     position: filePositionSchema.optional(),
   })
-  .meta({ description: 'Source file location' });
+  .meta({
+    title: 'SourceFileLocation',
+    description: 'Source file location',
+  });
 
 export type SourceFileLocation = z.infer<typeof sourceFileLocationSchema>;

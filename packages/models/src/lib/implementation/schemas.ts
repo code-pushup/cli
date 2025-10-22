@@ -16,7 +16,9 @@ import { filenameRegex, slugRegex } from './utils.js';
 
 export const tableCellValueSchema = z
   .union([z.string(), z.number(), z.boolean(), z.null()])
-  .default(null);
+  .default(null)
+  .meta({ title: 'TableCellValue' });
+
 export type TableCellValue = z.infer<typeof tableCellValueSchema>;
 
 /**
@@ -47,17 +49,23 @@ export const slugSchema = z
   .max(MAX_SLUG_LENGTH, {
     message: `The slug can be max ${MAX_SLUG_LENGTH} characters long`,
   })
-  .meta({ description: 'Unique ID (human-readable, URL-safe)' });
+  .meta({
+    title: 'Slug',
+    description: 'Unique ID (human-readable, URL-safe)',
+  });
 
 /**  Schema for a general description property */
 export const descriptionSchema = z
   .string()
   .max(MAX_DESCRIPTION_LENGTH)
-  .meta({ description: 'Description (markdown)' })
+  .meta({
+    title: 'Description',
+    description: 'Description (markdown)',
+  })
   .optional();
 
 /* Schema for a URL */
-export const urlSchema = z.string().url();
+export const urlSchema = z.string().url().meta({ title: 'URL' });
 
 /**  Schema for a docsUrl */
 export const docsUrlSchema = urlSchema
@@ -79,23 +87,25 @@ export const docsUrlSchema = urlSchema
     }
     throw new ZodError(ctx.error.issues);
   })
-  .meta({ description: 'Documentation site' });
+  .meta({ title: 'DocsUrl', description: 'Documentation site' });
 
 /** Schema for a title of a plugin, category and audit */
-export const titleSchema = z
-  .string()
-  .max(MAX_TITLE_LENGTH)
-  .meta({ description: 'Descriptive name' });
+export const titleSchema = z.string().max(MAX_TITLE_LENGTH).meta({
+  title: 'Title',
+  description: 'Descriptive name',
+});
 
 /** Schema for score of audit, category or group */
-export const scoreSchema = z
-  .number()
-  .min(0)
-  .max(1)
-  .meta({ description: 'Value between 0 and 1' });
+export const scoreSchema = z.number().min(0).max(1).meta({
+  title: 'Score',
+  description: 'Value between 0 and 1',
+});
 
 /** Schema for a property indicating whether an entity is filtered out */
-export const isSkippedSchema = z.boolean().optional();
+export const isSkippedSchema = z
+  .boolean()
+  .optional()
+  .meta({ title: 'IsSkipped' });
 
 /**
  * Used for categories, plugins and audits
@@ -136,7 +146,8 @@ export function metaSchema(options?: {
 export const filePathSchema = z
   .string()
   .trim()
-  .min(1, { message: 'The path is invalid' });
+  .min(1, { message: 'The path is invalid' })
+  .meta({ title: 'FilePath' });
 
 /**
  * Regex for glob patterns - validates file paths and glob patterns
@@ -149,11 +160,9 @@ export const globPathSchema = z
   .string()
   .trim()
   .min(1, { message: 'The glob pattern is invalid' })
-  .regex(globRegex, {
-    message:
-      'The path must be a valid file path or glob pattern (supports *, **, {}, [], !, ?)',
-  })
+  .regex(globRegex)
   .meta({
+    title: 'GlobPath',
     description:
       'Schema for a glob pattern (supports wildcards like *, **, {}, !, etc.)',
   });
@@ -162,15 +171,21 @@ export const globPathSchema = z
 export const fileNameSchema = z
   .string()
   .trim()
-  .regex(filenameRegex, {
-    message: `The filename has to be valid`,
-  })
-  .min(1, { message: 'The file name is invalid' });
+  .regex(filenameRegex)
+  .min(1)
+  .meta({ title: 'FileName' });
 
 /** Schema for a positiveInt */
-export const positiveIntSchema = z.number().int().positive();
+export const positiveIntSchema = z
+  .number()
+  .int()
+  .positive()
+  .meta({ title: 'PositiveInt' });
 
-export const nonnegativeNumberSchema = z.number().nonnegative();
+export const nonnegativeNumberSchema = z
+  .number()
+  .nonnegative()
+  .meta({ title: 'NonnegativeNumber' });
 
 export function packageVersionSchema<
   TRequired extends boolean = false,
@@ -195,11 +210,15 @@ export function packageVersionSchema<
 /** Schema for a binary score threshold */
 export const scoreTargetSchema = nonnegativeNumberSchema
   .max(1)
-  .meta({ description: 'Pass/fail score threshold (0-1)' })
+  .meta({
+    title: 'ScoreTarget',
+    description: 'Pass/fail score threshold (0-1)',
+  })
   .optional();
 
 /** Schema for a weight */
 export const weightSchema = nonnegativeNumberSchema.meta({
+  title: 'Weight',
   description:
     'Coefficient for the given score (use weight 0 if only for display)',
 });
@@ -243,9 +262,10 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
     .describe(description);
 }
 
-export const materialIconSchema = z
-  .enum(MATERIAL_ICONS)
-  .meta({ description: 'Icon from VSCode Material Icons extension' });
+export const materialIconSchema = z.enum(MATERIAL_ICONS).meta({
+  title: 'MaterialIcon',
+  description: 'Icon from VSCode Material Icons extension',
+});
 export type MaterialIcon = z.infer<typeof materialIconSchema>;
 
 type Ref = { weight: number };
@@ -263,4 +283,7 @@ export const filePositionSchema = z
     endLine: positiveIntSchema.meta({ description: 'End line' }).optional(),
     endColumn: positiveIntSchema.meta({ description: 'End column' }).optional(),
   })
-  .meta({ description: 'Location in file' });
+  .meta({
+    title: 'FilePosition',
+    description: 'Location in file',
+  });

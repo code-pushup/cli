@@ -13,7 +13,7 @@ import { formatSlugsList } from './implementation/utils.js';
 export const groupRefSchema = weightedRefSchema(
   'Weighted reference to a group',
   "Reference slug to a group within this plugin (e.g. 'max-lines')",
-);
+).meta({ title: 'GroupRef' });
 export type GroupRef = z.infer<typeof groupRefSchema>;
 
 export const groupMetaSchema = metaSchema({
@@ -22,7 +22,7 @@ export const groupMetaSchema = metaSchema({
   docsUrlDescription: 'Group documentation site',
   description: 'Group metadata',
   isSkippedDescription: 'Indicates whether the group is skipped',
-});
+}).meta({ title: 'GroupMeta' });
 export type GroupMeta = z.infer<typeof groupMetaSchema>;
 
 export const groupSchema = scorableSchema(
@@ -34,7 +34,9 @@ export const groupSchema = scorableSchema(
     duplicates =>
       `Group has duplicate references to audits: ${formatSlugsList(duplicates)}`,
   ),
-).merge(groupMetaSchema);
+)
+  .merge(groupMetaSchema)
+  .meta({ title: 'Group' });
 
 export type Group = z.infer<typeof groupSchema>;
 
@@ -42,4 +44,7 @@ export const groupsSchema = z
   .array(groupSchema)
   .check(createDuplicateSlugsCheck('Group'))
   .optional()
-  .meta({ description: 'List of groups' });
+  .meta({
+    title: 'Groups',
+    description: 'List of groups',
+  });

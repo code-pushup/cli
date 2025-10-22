@@ -27,12 +27,16 @@ export const eslintTargetSchema = z
       typeof target === 'string' || Array.isArray(target)
         ? { patterns: target }
         : target,
-  );
+  )
+  .meta({ title: 'ESLintTarget' });
+
 export type ESLintTarget = z.infer<typeof eslintTargetSchema>;
 
 export const eslintPluginConfigSchema = z
   .union([eslintTargetSchema, z.array(eslintTargetSchema).min(1)])
-  .transform(toArray);
+  .transform(toArray)
+  .meta({ title: 'ESLintPluginConfig' });
+
 export type ESLintPluginConfig = z.input<typeof eslintPluginConfigSchema>;
 
 export type ESLintPluginRunnerConfig = {
@@ -68,9 +72,12 @@ const customGroupSchema = z.object({
 });
 export type CustomGroup = z.infer<typeof customGroupSchema>;
 
-export const eslintPluginOptionsSchema = z.object({
-  groups: z.array(customGroupSchema).optional(),
-  artifacts: pluginArtifactOptionsSchema.optional(),
-  scoreTargets: pluginScoreTargetsSchema,
-});
+export const eslintPluginOptionsSchema = z
+  .object({
+    groups: z.array(customGroupSchema).optional(),
+    artifacts: pluginArtifactOptionsSchema.optional(),
+    scoreTargets: pluginScoreTargetsSchema,
+  })
+  .meta({ title: 'ESLintPluginOptions' });
+
 export type ESLintPluginOptions = z.infer<typeof eslintPluginOptionsSchema>;

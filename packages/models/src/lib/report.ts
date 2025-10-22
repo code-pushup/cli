@@ -15,7 +15,10 @@ import {
   pluginMetaSchema,
 } from './plugin-config.js';
 
-export const auditReportSchema = auditSchema.merge(auditOutputSchema);
+export const auditReportSchema = auditSchema
+  .merge(auditOutputSchema)
+  .meta({ title: 'AuditReport' });
+
 export type AuditReport = z.infer<typeof auditReportSchema>;
 
 export const pluginReportSchema = pluginMetaSchema
@@ -31,7 +34,8 @@ export const pluginReportSchema = pluginMetaSchema
       groups: z.array(groupSchema).optional(),
     }),
   )
-  .check(createCheck(findMissingSlugsInGroupRefs));
+  .check(createCheck(findMissingSlugsInGroupRefs))
+  .meta({ title: 'PluginReport' });
 
 export type PluginReport = z.infer<typeof pluginReportSchema>;
 
@@ -59,6 +63,9 @@ export const reportSchema = packageVersionSchema({
     }),
   )
   .check(createCheck(findMissingSlugsInCategoryRefs))
-  .meta({ description: 'Collect output data' });
+  .meta({
+    title: 'Report',
+    description: 'Collect output data',
+  });
 
 export type Report = z.infer<typeof reportSchema>;

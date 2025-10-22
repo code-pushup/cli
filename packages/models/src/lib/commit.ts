@@ -15,6 +15,9 @@ export const commitSchema = z
       .meta({ description: 'Date and time when commit was authored' }),
     author: z.string().trim().meta({ description: 'Commit author name' }),
   })
-  .meta({ description: 'Git commit' });
+  .meta({
+    title: 'Commit',
+    description: 'Git commit',
+  });
 
 export type Commit = z.infer<typeof commitSchema>;

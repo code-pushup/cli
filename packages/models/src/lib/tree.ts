@@ -13,13 +13,16 @@ const basicTreeNodeDataSchema = z.object({
 });
 
 export const basicTreeNodeSchema: z.ZodType<BasicTreeNode> =
-  basicTreeNodeDataSchema.extend({
-    get children() {
-      return z.array(basicTreeNodeSchema).optional().meta({
-        description: 'Direct descendants of this node (omit if leaf)',
-      });
-    },
-  });
+  basicTreeNodeDataSchema
+    .extend({
+      get children() {
+        return z.array(basicTreeNodeSchema).optional().meta({
+          description: 'Direct descendants of this node (omit if leaf)',
+        });
+      },
+    })
+    .meta({ title: 'BasicTreeNode' });
+
 export type BasicTreeNode = z.infer<typeof basicTreeNodeDataSchema> & {
   children?: BasicTreeNode[];
 };
@@ -36,6 +39,7 @@ export const coverageTreeMissingLOCSchema = filePositionSchema
       .meta({ description: 'E.g. "function", "class"' }),
   })
   .meta({
+    title: 'CoverageTreeMissingLOC',
     description:
       'Uncovered line of code, optionally referring to a named function/class/etc.',
   });
@@ -58,14 +62,17 @@ const coverageTreeNodeDataSchema = z.object({
 });
 
 export const coverageTreeNodeSchema: z.ZodType<CoverageTreeNode> =
-  coverageTreeNodeDataSchema.extend({
-    get children() {
-      return z.array(coverageTreeNodeSchema).optional().meta({
-        description:
-          'Files and folders contained in this folder (omit if file)',
-      });
-    },
-  });
+  coverageTreeNodeDataSchema
+    .extend({
+      get children() {
+        return z.array(coverageTreeNodeSchema).optional().meta({
+          description:
+            'Files and folders contained in this folder (omit if file)',
+        });
+      },
+    })
+    .meta({ title: 'CoverageTreeNode' });
+
 export type CoverageTreeNode = z.infer<typeof coverageTreeNodeDataSchema> & {
   children?: CoverageTreeNode[];
 };
@@ -76,7 +83,10 @@ export const basicTreeSchema = z
     type: z.literal('basic').optional().meta({ description: 'Discriminant' }),
     root: basicTreeNodeSchema.meta({ description: 'Root node' }),
   })
-  .meta({ description: 'Generic tree' });
+  .meta({
+    title: 'BasicTree',
+    description: 'Generic tree',
+  });
 export type BasicTree = z.infer<typeof basicTreeSchema>;
 
 export const coverageTreeSchema = z
@@ -85,8 +95,13 @@ export const coverageTreeSchema = z
     type: z.literal('coverage').meta({ description: 'Discriminant' }),
     root: coverageTreeNodeSchema.meta({ description: 'Root folder' }),
   })
-  .meta({ description: 'Coverage for files and folders' });
+  .meta({
+    title: 'CoverageTree',
+    description: 'Coverage for files and folders',
+  });
 export type CoverageTree = z.infer<typeof coverageTreeSchema>;
 
-export const treeSchema = z.union([basicTreeSchema, coverageTreeSchema]);
+export const treeSchema = z
+  .union([basicTreeSchema, coverageTreeSchema])
+  .meta({ title: 'Tree' });
 export type Tree = z.infer<typeof treeSchema>;

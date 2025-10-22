@@ -70,24 +70,30 @@ const scorableWithPluginDiffSchema = scorableDiffSchema.merge(
   scorableWithPluginMetaSchema,
 );
 
-export const categoryDiffSchema = scorableDiffSchema;
-export const groupDiffSchema = scorableWithPluginDiffSchema;
-export const auditDiffSchema = scorableWithPluginDiffSchema.merge(
-  z.object({
-    values: makeComparisonSchema(auditValueSchema)
-      .merge(
-        z.object({
-          diff: z.number().meta({
-            description: 'Value change (`values.after - values.before`)',
+export const categoryDiffSchema = scorableDiffSchema.meta({
+  title: 'CategoryDiff',
+});
+export const groupDiffSchema = scorableWithPluginDiffSchema.meta({
+  title: 'GroupDiff',
+});
+export const auditDiffSchema = scorableWithPluginDiffSchema
+  .merge(
+    z.object({
+      values: makeComparisonSchema(auditValueSchema)
+        .merge(
+          z.object({
+            diff: z.number().meta({
+              description: 'Value change (`values.after - values.before`)',
+            }),
           }),
-        }),
-      )
-      .meta({ description: 'Audit `value` comparison' }),
-    displayValues: makeComparisonSchema(auditDisplayValueSchema).meta({
-      description: 'Audit `displayValue` comparison',
+        )
+        .meta({ description: 'Audit `value` comparison' }),
+      displayValues: makeComparisonSchema(auditDisplayValueSchema).meta({
+        description: 'Audit `displayValue` comparison',
+      }),
     }),
-  }),
-);
+  )
+  .meta({ title: 'AuditDiff' });
 
 export const categoryResultSchema = scorableMetaSchema.merge(
   z.object({ score: scoreSchema }),
@@ -145,6 +151,7 @@ export const reportsDiffSchema = z
       descriptionDate: 'Start date and time of the compare run',
       descriptionDuration: 'Duration of the compare run in ms',
     }),
-  );
+  )
+  .meta({ title: 'ReportsDiff' });
 
 export type ReportsDiff = z.infer<typeof reportsDiffSchema>;
