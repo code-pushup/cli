@@ -1,3 +1,23 @@
+## 0.81.0 (2025-10-22)
+
+### 🚀 Features
+
+- **utils:** add utility for rounding to max decimals, use in formatDuration ([be80d99c](https://github.com/code-pushup/cli/commit/be80d99c))
+- **utils:** add settlePromise helper for convenient rejected promise handling ([9fa7df9e](https://github.com/code-pushup/cli/commit/9fa7df9e))
+- **utils:** add unix timestamp conversion ([b95877e9](https://github.com/code-pushup/cli/commit/b95877e9))
+- **utils:** implement custom logger with groups and tasks ([3d158ff6](https://github.com/code-pushup/cli/commit/3d158ff6))
+- **utils:** throw if invalid group/spinner combinations used in logger ([899ab764](https://github.com/code-pushup/cli/commit/899ab764))
+- **utils:** export shared logger instance ([009bc0eb](https://github.com/code-pushup/cli/commit/009bc0eb))
+
+### 🩹 Fixes
+
+- **utils:** ensure multiline logs during spinner are indented properly ([2ca91c08](https://github.com/code-pushup/cli/commit/2ca91c08))
+- **utils:** avoid formatting milliseconds with decimals ([3c22e5d0](https://github.com/code-pushup/cli/commit/3c22e5d0))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.80.2 (2025-09-26)
 
 ### 🩹 Fixes
