@@ -1,22 +1,17 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite';
-import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases.js';
+import { createE2eConfig } from '../../testing/test-setup-config/src/lib/vitest-setup-presets.js';
 
-export default defineConfig({
-  cacheDir: '../../node_modules/.vite/ci-e2e',
-  test: {
-    reporters: ['basic'],
-    testTimeout: 60_000,
-    globals: true,
-    alias: tsconfigPathAliases(),
-    pool: 'threads',
-    poolOptions: { threads: { singleThread: true } },
-    cache: {
-      dir: '../../node_modules/.vitest',
-    },
-    environment: 'node',
-    include: ['tests/**/*.e2e.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    globalSetup: './global-setup.ts',
-    setupFiles: ['../../testing/test-setup/src/lib/reset.mocks.ts'],
+export default createE2eConfig(
+  'ci-e2e',
+  {
+    projectRoot: new URL('../../', import.meta.url),
+    cacheKey: 'ci-e2e',
   },
-});
+  {
+    test: {
+      testTimeout: 60_000,
+      globalSetup: ['./global-setup.ts'],
+      coverage: { enabled: false },
+    },
+  },
+);
