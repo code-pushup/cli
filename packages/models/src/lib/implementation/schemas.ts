@@ -146,7 +146,7 @@ export function metaSchema(options?: {
 export const filePathSchema = z
   .string()
   .trim()
-  .min(1, { message: 'The path is invalid' })
+  .min(1)
   .meta({ title: 'FilePath' });
 
 /**
@@ -156,16 +156,11 @@ export const filePathSchema = z
  */
 const globRegex = /^!?[^<>"|]+$/;
 
-export const globPathSchema = z
-  .string()
-  .trim()
-  .min(1, { message: 'The glob pattern is invalid' })
-  .regex(globRegex)
-  .meta({
-    title: 'GlobPath',
-    description:
-      'Schema for a glob pattern (supports wildcards like *, **, {}, !, etc.)',
-  });
+export const globPathSchema = z.string().trim().min(1).regex(globRegex).meta({
+  title: 'GlobPath',
+  description:
+    'Schema for a glob pattern (supports wildcards like *, **, {}, !, etc.)',
+});
 
 /** Schema for a fileNameSchema */
 export const fileNameSchema = z
