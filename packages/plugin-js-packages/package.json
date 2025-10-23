@@ -45,7 +45,7 @@
     "zod": "^4.0.5"
   },
   "files": [
-    "src",
+    "dist",
     "!**/*.tsbuildinfo"
   ]
 }
