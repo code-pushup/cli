@@ -27,11 +27,9 @@ describe('validate', () => {
         dateOfBirth: z.iso.date().optional(),
       })
       .meta({ title: 'User' });
-    type User = z.infer<typeof userSchema>;
 
-    expect(() =>
-      validate(userSchema, { name: '', dateOfBirth: 'Jul 1, 1980' } as User),
-    ).toThrow(`Invalid ${ansis.bold('User')}
+    expect(() => validate(userSchema, { name: '', dateOfBirth: 'Jul 1, 1980' }))
+      .toThrow(`Invalid ${ansis.bold('User')}
 ✖ Too small: expected string to have >=1 characters
   → at name
 ✖ Invalid input: expected string, received undefined

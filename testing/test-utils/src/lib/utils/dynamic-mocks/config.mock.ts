@@ -1,4 +1,8 @@
-import { type CoreConfig, coreConfigSchema } from '@code-pushup/models';
+import {
+  type CoreConfig,
+  coreConfigSchema,
+  validate,
+} from '@code-pushup/models';
 import { categoryConfigsMock } from './categories.mock.js';
 import { eslintPluginConfigMock } from './eslint-plugin.mock.js';
 import { lighthousePluginConfigMock } from './lighthouse-plugin.mock.js';
@@ -6,7 +10,7 @@ import { persistConfigMock } from './persist-config.mock.js';
 import { auditReportMock, pluginConfigMock } from './plugin-config.mock.js';
 
 export function configMock(outputDir = 'tmp'): CoreConfig {
-  return coreConfigSchema.parse({
+  return validate(coreConfigSchema, {
     persist: persistConfigMock({ outputDir }),
     upload: {
       organization: 'code-pushup',
@@ -29,7 +33,7 @@ export function minimalConfigMock(
   const AUDIT_1_SLUG = 'audit-1';
   const outputFile = `${PLUGIN_1_SLUG}.${Date.now()}.json`;
 
-  const cfg = coreConfigSchema.parse({
+  const cfg = validate(coreConfigSchema, {
     persist: persistConfigMock({ outputDir }),
     upload: {
       organization: 'code-pushup',

@@ -28,7 +28,7 @@ export class SchemaValidationError extends Error {
 
 export function validate<T extends ZodType>(
   schema: T,
-  data: z.input<T>,
+  data: z.input<T> | {} | null | undefined, // loose autocomplete
   context: SchemaValidationContext = {},
 ): z.output<T> {
   const result = schema.safeParse(data);
