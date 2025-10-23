@@ -8,7 +8,7 @@ describe('createExecutorTarget', () => {
     });
   });
 
-  it('should use bin if provides', () => {
+  it('should use bin if provided', () => {
     expect(
       createExecutorTarget({ bin: 'packages/cli/src/index.ts' }),
     ).toStrictEqual({
