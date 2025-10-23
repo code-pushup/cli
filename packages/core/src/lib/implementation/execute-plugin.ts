@@ -34,16 +34,16 @@ import {
  *
  * @example
  * // plugin execution
- * const pluginCfg = pluginConfigSchema.parse({...});
+ * const pluginCfg = validate(pluginConfigSchema, {...});
  * const output = await executePlugin(pluginCfg);
  *
- *  @example
- *  // error handling
- *  try {
- *  await executePlugin(pluginCfg);
- *  } catch (e) {
- *  console.error(e.message);
- *  }
+ * @example
+ * // error handling
+ * try {
+ *   await executePlugin(pluginCfg);
+ * } catch (e) {
+ *   console.error(e.message);
+ * }
  */
 export async function executePlugin(
   pluginConfig: PluginConfig,
@@ -144,14 +144,14 @@ const wrapProgress = async (
  *
  * @example
  * // plugin execution
- * const plugins = [pluginConfigSchema.parse({...})];
+ * const plugins = [validate(pluginConfigSchema, {...})];
  *
  * @example
  * // error handling
  * try {
- * await executePlugins(plugins);
+ *   await executePlugins(plugins);
  * } catch (e) {
- * console.error(e.message); // Plugin output is invalid
+ *   console.error(e.message); // Plugin output is invalid
  * }
  *
  */

@@ -6,6 +6,7 @@ import {
   auditReportSchema,
   auditSchema,
   pluginConfigSchema,
+  validate,
 } from '@code-pushup/models';
 import { echoRunnerConfigMock } from './runner-config.mock.js';
 
@@ -18,7 +19,7 @@ export function pluginConfigMock(
     outputDir || 'tmp',
     outputFile || `out.${Date.now()}.json`,
   );
-  return pluginConfigSchema.parse({
+  return validate(pluginConfigSchema, {
     slug: 'mock-plugin-slug',
     title: 'Plugin Title',
     icon: 'nrwl',
@@ -31,7 +32,7 @@ export function pluginConfigMock(
 }
 
 export function auditConfigMock(opt?: Partial<Audit>): Audit {
-  return auditSchema.parse({
+  return validate(auditSchema, {
     slug: opt?.slug || 'mock-audit-slug',
     title: opt?.title || 'Audit Title',
     description: opt?.description || 'audit description',
@@ -40,7 +41,7 @@ export function auditConfigMock(opt?: Partial<Audit>): Audit {
 }
 
 export function auditReportMock(opt?: Partial<AuditReport>): AuditReport {
-  return auditReportSchema.parse({
+  return validate(auditReportSchema, {
     slug: 'mock-audit-slug',
     title: 'Audit Title',
     description: 'audit description',
