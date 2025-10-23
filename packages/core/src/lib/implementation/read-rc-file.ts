@@ -15,27 +15,24 @@ export class ConfigPathError extends Error {
 }
 
 export async function readRcByPath(
-  filepath: string,
+  filePath: string,
   tsconfig?: string,
 ): Promise<CoreConfig> {
-  if (filepath.length === 0) {
+  if (filePath.length === 0) {
     throw new Error('The path to the configuration file is empty.');
   }
 
-  if (!(await fileExists(filepath))) {
-    throw new ConfigPathError(filepath);
+  if (!(await fileExists(filePath))) {
+    throw new ConfigPathError(filePath);
   }
 
   const cfg: CoreConfig = await importModule({
-    filepath,
+    filepath: filePath,
     tsconfig,
     format: 'esm',
   });
 
-  return validate(coreConfigSchema, cfg, {
-    schemaType: 'core config',
-    sourcePath: filepath,
-  });
+  return validate(coreConfigSchema, cfg, { filePath });
 }
 
 export async function autoloadRc(tsconfig?: string): Promise<CoreConfig> {
