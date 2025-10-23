@@ -9,9 +9,9 @@ export function createExecutorTarget(options?: {
   const { bin, projectPrefix } = options ?? {};
 
   const executor = `${PACKAGE_NAME}:cli`;
-  const options = (bin || projectPrefix) && {    
+  const executorOptions = (bin || projectPrefix) && {
     ...(bin && { bin }),
     ...(projectPrefix && { projectPrefix }),
   };
-  return { executor, ...(options && { options })};
+  return { executor, ...(executorOptions && { options: executorOptions }) };
 }
