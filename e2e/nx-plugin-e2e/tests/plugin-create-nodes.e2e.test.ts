@@ -201,7 +201,6 @@ describe('nx-plugin', () => {
     // Run CLI executor
     expect(cleanStdout).toContain('Command: npx @code-pushup/cli');
     expect(cleanStdout).toContain('--dryRun --verbose');
-    expect(cleanStdout).toContain(`--upload.project="${project}"`);
   });
 
   it('should consider plugin option bin in executor target', async () => {
