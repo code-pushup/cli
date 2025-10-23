@@ -199,7 +199,7 @@ describe('nx-plugin', () => {
     expect(cleanStdout).toContain('nx run my-lib:code-pushup');
     expect(cleanStdout).toContain('npx @code-pushup/cli');
     expect(cleanStdout).toContain('--dryRun --verbose');
-    expect(cleanStdout).toContain(`--upload.project="${project}"`);
+    expect(cleanStdout).toBe(`--upload.project="${project}"`);
   });
 
   it('should consider plugin option bin in executor target', async () => {
