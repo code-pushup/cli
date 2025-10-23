@@ -11,7 +11,7 @@ import { LighthouseAuditDetailsParsingError } from './utils.js';
 export function parseOpportunityToAuditDetailsTable(
   details: Details.Opportunity,
 ): Table | undefined {
-  const { headings: rawHeadings, items } = details;
+  const { headings, items } = details;
 
   if (items.length === 0) {
     return undefined;
@@ -20,14 +20,14 @@ export function parseOpportunityToAuditDetailsTable(
   try {
     return tableSchema().parse({
       title: 'Opportunity',
-      columns: parseTableColumns(rawHeadings),
-      rows: items.map(row => parseOpportunityItemToTableRow(row, rawHeadings)),
+      columns: parseTableColumns(headings),
+      rows: items.map(row => parseOpportunityItemToTableRow(row, headings)),
     });
   } catch (error) {
     throw new LighthouseAuditDetailsParsingError(
       'opportunity',
-      { items, headings: rawHeadings },
-      (error as Error).message.toString(),
+      { items, headings },
+      error,
     );
   }
 }

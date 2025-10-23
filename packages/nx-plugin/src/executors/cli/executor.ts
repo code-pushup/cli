@@ -49,7 +49,7 @@ export default async function runAutorunExecutor(
       return {
         success: false,
         command: commandString,
-        error: error as Error,
+        error: error instanceof Error ? error : new Error(`${error}`),
       };
     }
   }

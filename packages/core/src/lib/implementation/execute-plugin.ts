@@ -16,6 +16,7 @@ import {
   logMultipleResults,
   pluralizeToken,
   scoreAuditsWithTarget,
+  stringifyError,
 } from '@code-pushup/utils';
 import {
   executePluginRunner,
@@ -41,8 +42,8 @@ import {
  * // error handling
  * try {
  *   await executePlugin(pluginCfg);
- * } catch (e) {
- *   console.error(e.message);
+ * } catch (error) {
+ *   console.error(error);
  * }
  */
 export async function executePlugin(
@@ -125,11 +126,9 @@ const wrapProgress = async (
   } catch (error) {
     progressBar?.incrementInSteps(steps);
     throw new Error(
-      error instanceof Error
-        ? `- Plugin ${bold(pluginCfg.title)} (${bold(
-            pluginCfg.slug,
-          )}) produced the following error:\n  - ${error.message}`
-        : String(error),
+      `- Plugin ${bold(pluginCfg.title)} (${bold(
+        pluginCfg.slug,
+      )}) produced the following error:\n  - ${stringifyError(error)}`,
     );
   }
 };
@@ -150,8 +149,8 @@ const wrapProgress = async (
  * // error handling
  * try {
  *   await executePlugins(plugins);
- * } catch (e) {
- *   console.error(e.message); // Plugin output is invalid
+ * } catch (error) {
+ *   console.error(error); // Plugin output is invalid
  * }
  *
  */

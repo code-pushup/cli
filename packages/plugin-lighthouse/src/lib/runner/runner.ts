@@ -2,7 +2,7 @@ import type { Config, RunnerResult } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
 import path from 'node:path';
 import type { AuditOutputs, RunnerFunction } from '@code-pushup/models';
-import { ensureDirectoryExists, ui } from '@code-pushup/utils';
+import { ensureDirectoryExists, stringifyError, ui } from '@code-pushup/utils';
 import { orderSlug, shouldExpandForUrls } from '../processing.js';
 import type { LighthouseOptions } from '../types.js';
 import { DEFAULT_CLI_FLAGS } from './constants.js';
@@ -46,7 +46,7 @@ export function createRunnerFunction(
 
         return [...acc, ...processedOutputs];
       } catch (error) {
-        ui().logger.warning((error as Error).message);
+        ui().logger.warning(stringifyError(error));
         return acc;
       }
     }, Promise.resolve<AuditOutputs>([]));
