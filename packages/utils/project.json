@@ -20,7 +20,29 @@
       }
     },
     "unit-test": {},
-    "int-test": {}
+    "int-test": {},
+    "demo-logger": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsx --tsconfig=tsconfig.base.json packages/utils/mocks/logger-demo.ts"
+      },
+      "configurations": {
+        "ci": {
+          "env": {
+            "CI": "true"
+          }
+        },
+        "verbose": {
+          "args": ["--verbose"]
+        },
+        "error-core": {
+          "args": ["--error=core"]
+        },
+        "error-plugin": {
+          "args": ["--error=plugin"]
+        }
+      }
+    }
   },
   "tags": ["scope:shared", "type:util", "publishable"]
 }

@@ -4,6 +4,11 @@ import {
   MAX_TITLE_LENGTH,
 } from '@code-pushup/models';
 
+export function roundDecimals(value: number, maxDecimals: number) {
+  const multiplier = Math.pow(10, maxDecimals);
+  return Math.round(value * multiplier) / multiplier;
+}
+
 export function slugify(text: string): string {
   return text
     .trim()
@@ -40,20 +45,18 @@ export function formatBytes(bytes: number, decimals = 2) {
 
   const i = Math.floor(Math.log(positiveBytes) / Math.log(k));
 
-  return `${Number.parseFloat((positiveBytes / Math.pow(k, i)).toFixed(dm))} ${
-    sizes[i]
-  }`;
+  return `${roundDecimals(positiveBytes / Math.pow(k, i), dm)} ${sizes[i]}`;
 }
 
 export function pluralizeToken(token: string, times: number): string {
   return `${times} ${Math.abs(times) === 1 ? token : pluralize(token)}`;
 }
 
-export function formatDuration(duration: number, granularity = 0): string {
-  if (duration < 1000) {
-    return `${granularity ? duration.toFixed(granularity) : duration} ms`;
+export function formatDuration(ms: number, maxDecimals: number = 2): string {
+  if (ms < 1000) {
+    return `${Math.round(ms)} ms`;
   }
-  return `${(duration / 1000).toFixed(2)} s`;
+  return `${roundDecimals(ms / 1000, maxDecimals)} s`;
 }
 
 export function formatDate(date: Date): string {
@@ -116,4 +119,15 @@ export function truncateDescription(text: string): string {
 
 export function truncateIssueMessage(text: string): string {
   return truncateText(text, MAX_ISSUE_MESSAGE_LENGTH);
+}
+
+export function transformLines(
+  text: string,
+  fn: (line: string) => string,
+): string {
+  return text.split(/\r?\n/).map(fn).join('\n');
+}
+
+export function indentLines(text: string, identation: number): string {
+  return transformLines(text, line => `${' '.repeat(identation)}${line}`);
 }

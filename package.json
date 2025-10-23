@@ -34,6 +34,7 @@
     "lighthouse-logger": "2.0.1",
     "multi-progress-bars": "^5.0.3",
     "nx": "21.4.1",
+    "ora": "^9.0.0",
     "parse-lcov": "^1.0.4",
     "rimraf": "^6.0.1",
     "semver": "^7.6.3",
