@@ -1,36 +1,39 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import path from 'node:path';
-import { ZodError, z } from 'zod';
+import { ZodError, type ZodType, z } from 'zod';
 
 type SchemaValidationContext = {
-  schemaType: string;
-  sourcePath?: string;
+  filePath?: string;
 };
 
 export class SchemaValidationError extends Error {
   constructor(
-    { schemaType, sourcePath }: SchemaValidationContext,
     error: ZodError,
+    schema: ZodType,
+    { filePath }: SchemaValidationContext,
   ) {
     const formattedError = z.prettifyError(error);
-    const pathDetails = sourcePath
-      ? ` in ${bold(path.relative(process.cwd(), sourcePath))}`
-      : '';
-    super(`Failed parsing ${schemaType}${pathDetails}.\n\n${formattedError}`);
+    const schemaTitle = z.globalRegistry.get(schema)?.title;
+    const summary = [
+      'Invalid',
+      schemaTitle ? ansis.bold(schemaTitle) : 'data',
+      filePath &&
+        `in ${ansis.bold(path.relative(process.cwd(), filePath))} file`,
+    ]
+      .filter(Boolean)
+      .join(' ');
+    super(`${summary}\n${formattedError}\n`);
   }
 }
 
-export function validate<T extends z.ZodTypeAny>(
+export function validate<T extends ZodType>(
   schema: T,
   data: z.input<T>,
-  { schemaType, sourcePath }: SchemaValidationContext,
+  context: SchemaValidationContext = {},
 ): z.output<T> {
-  try {
-    return schema.parse(data);
-  } catch (error) {
-    if (error instanceof ZodError) {
-      throw new SchemaValidationError({ schemaType, sourcePath }, error);
-    }
-    throw error;
+  const result = schema.safeParse(data);
+  if (result.success) {
+    return result.data;
   }
+  throw new SchemaValidationError(result.error, schema, context);
 }
