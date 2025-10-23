@@ -267,8 +267,8 @@ describe('uploadConfig', () => {
     expect(
       uploadConfig(baseUploadConfig, {
         workspaceRoot: 'workspace-root',
+        projectName: projectName,
         projectConfig: {
-          name: projectName,
           root: 'root',
         },
       }),
