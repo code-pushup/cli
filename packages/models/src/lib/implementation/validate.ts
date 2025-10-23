@@ -23,6 +23,7 @@ export class SchemaValidationError extends Error {
       .filter(Boolean)
       .join(' ');
     super(`${summary}\n${formattedError}\n`);
+    this.name = SchemaValidationError.name;
   }
 }
 

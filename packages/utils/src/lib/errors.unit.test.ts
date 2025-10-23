@@ -1,3 +1,6 @@
+import ansis from 'ansis';
+import { z } from 'zod';
+import { SchemaValidationError } from '@code-pushup/models';
 import { stringifyError } from './errors.js';
 
 describe('stringifyError', () => {
@@ -21,5 +24,53 @@ describe('stringifyError', () => {
     expect(stringifyError({ status: 400, statusText: 'Bad Request' })).toBe(
       '{"status":400,"statusText":"Bad Request"}',
     );
+  });
+
+  it('should prettify ZodError instances spanning multiple lines', () => {
+    const schema = z.object({
+      name: z.string().min(1),
+      address: z.string(),
+      dateOfBirth: z.iso.date().optional(),
+    });
+    const { error } = schema.safeParse({ name: '', dateOfBirth: '' });
+
+    expect(stringifyError(error)).toBe(`ZodError:
+✖ Too small: expected string to have >=1 characters
+  → at name
+✖ Invalid input: expected string, received undefined
+  → at address
+✖ Invalid ISO date
+  → at dateOfBirth
+`);
+  });
+
+  it('should prettify ZodError instances on one line if possible', () => {
+    const schema = z.enum(['json', 'md']);
+    const { error } = schema.safeParse('html');
+
+    expect(stringifyError(error)).toBe(
+      'ZodError: ✖ Invalid option: expected one of "json"|"md"',
+    );
+  });
+
+  it('should use custom SchemaValidationError formatted messages', () => {
+    const schema = z
+      .object({
+        name: z.string().min(1),
+        address: z.string(),
+        dateOfBirth: z.iso.date().optional(),
+      })
+      .meta({ title: 'User' });
+    const { error } = schema.safeParse({ name: '', dateOfBirth: '' });
+
+    expect(stringifyError(new SchemaValidationError(error!, schema, {})))
+      .toBe(`SchemaValidationError: Invalid ${ansis.bold('User')}
+✖ Too small: expected string to have >=1 characters
+  → at name
+✖ Invalid input: expected string, received undefined
+  → at address
+✖ Invalid ISO date
+  → at dateOfBirth
+`);
   });
 });
