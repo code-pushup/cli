@@ -5,6 +5,7 @@ import {
   formatBytes,
   formatDuration,
   html,
+  roundDecimals,
   truncateText,
   ui,
 } from '@code-pushup/utils';
@@ -72,17 +73,14 @@ export function formatTableItemPropertyValue(
       return html.link(url);
     case 'timespanMs':
     case 'ms':
-      return formatDuration(Number(parsedItemValue));
+      return formatDuration(Number(parsedItemValue), 3);
     case 'node':
       return parseNodeValue(itemValue as Details.NodeValue);
     case 'source-location':
       return truncateText(String(parsedItemValue), 200);
     case 'numeric':
       const num = Number(parsedItemValue);
-      if (num.toFixed(3).toString().endsWith('.000')) {
-        return String(num);
-      }
-      return String(num.toFixed(3));
+      return roundDecimals(num, 3).toString();
     case 'text':
       return truncateText(String(parsedItemValue), 500);
     case 'multi': // @TODO

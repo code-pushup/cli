@@ -17,7 +17,7 @@ exports[`nx-plugin > should add configuration target dynamically 1`] = `
     "configurations": {},
     "executor": "nx:run-commands",
     "options": {
-      "command": "nx g @code-pushup/nx-plugin:configuration --skipTarget --targetName="code-pushup" --project="my-lib"",
+      "command": "nx g @code-pushup/nx-plugin:configuration --project="my-lib"",
     },
     "parallelism": true,
   },

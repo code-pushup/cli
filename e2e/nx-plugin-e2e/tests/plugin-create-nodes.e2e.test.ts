@@ -51,7 +51,7 @@ describe('nx-plugin', () => {
         configurations: {},
         executor: 'nx:run-commands',
         options: {
-          command: `nx g @code-pushup/nx-plugin:configuration --skipTarget --targetName="code-pushup" --project="${project}"`,
+          command: `nx g @code-pushup/nx-plugin:configuration --project="${project}"`,
         },
         parallelism: true,
       },
@@ -100,6 +100,29 @@ describe('nx-plugin', () => {
 
     expect(projectJson.targets).toStrictEqual({
       'cp--configuration': expect.any(Object),
+    });
+  });
+
+  it('should consider plugin option bin in configuration target', async () => {
+    const cwd = path.join(testFileDir, 'configuration-option-bin');
+    registerPluginInWorkspace(tree, {
+      plugin: '@code-pushup/nx-plugin',
+      options: {
+        bin: 'XYZ',
+      },
+    });
+    await materializeTree(tree, cwd);
+
+    const { code, projectJson } = await nxShowProjectJson(cwd, project);
+
+    expect(code).toBe(0);
+
+    expect(projectJson.targets).toStrictEqual({
+      'code-pushup--configuration': expect.objectContaining({
+        options: {
+          command: `nx g XYZ:configuration --project="${project}"`,
+        },
+      }),
     });
   });
 
