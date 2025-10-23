@@ -48,5 +48,4 @@ export type CollectExecutorOnlyOptions = {
  */
 export type BaseNormalizedExecutorContext = {
   projectConfig?: ProjectConfiguration;
-  projectName?: string;
 } & { workspaceRoot: string };
