@@ -1,8 +1,7 @@
-import { executeProcess, isVerbose } from '@code-pushup/utils';
+import { executeProcess } from '@code-pushup/utils';
 
 export async function deriveYarnVersion() {
   const { stdout } = await executeProcess({
-    verbose: isVerbose(),
     command: 'yarn',
     args: ['-v'],
   });
