@@ -46,9 +46,8 @@ export function uploadConfig(
   options: Partial<UploadConfig & ProjectExecutorOnlyOptions>,
   context: BaseNormalizedExecutorContext,
 ): Partial<UploadConfig> {
-  const { projectConfig, workspaceRoot } = context;
+  const { workspaceRoot, projectName } = context;
 
-  const { name: projectName } = projectConfig ?? {};
   const { projectPrefix, server, apiKey, organization, project, timeout } =
     options;
   const applyPrefix = workspaceRoot === '.';

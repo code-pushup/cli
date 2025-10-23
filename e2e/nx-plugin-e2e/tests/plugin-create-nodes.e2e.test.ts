@@ -196,10 +196,12 @@ describe('nx-plugin', () => {
     });
 
     const cleanStdout = removeColorCodes(stdout);
+    // Nx command
     expect(cleanStdout).toContain('nx run my-lib:code-pushup');
-    expect(cleanStdout).toContain('npx @code-pushup/cli');
+    // Run CLI executor
+    expect(cleanStdout).toContain('Command: npx @code-pushup/cli');
     expect(cleanStdout).toContain('--dryRun --verbose');
-    expect(cleanStdout).toBe(`--upload.project="${project}"`);
+    expect(cleanStdout).toContain(`--upload.project="${project}"`);
   });
 
   it('should consider plugin option bin in executor target', async () => {
