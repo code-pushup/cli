@@ -3,7 +3,6 @@ import {
   executeProcess,
   fileExists,
   interpolate,
-  isVerbose,
   stringifyError,
   toArray,
 } from '@code-pushup/utils';
@@ -17,7 +16,6 @@ export const nxHandler: MonorepoToolHandler = {
       (await fileExists(path.join(options.cwd, 'nx.json'))) &&
       (
         await executeProcess({
-          verbose: isVerbose(),
           command: 'npx',
           args: ['nx', 'report'],
           cwd: options.cwd,
@@ -30,7 +28,6 @@ export const nxHandler: MonorepoToolHandler = {
 
   async listProjects({ cwd, task, nxProjectsFilter, observer }) {
     const { stdout } = await executeProcess({
-      verbose: isVerbose(),
       command: 'npx',
       args: [
         'nx',

@@ -112,7 +112,6 @@ describe('lint', () => {
       ],
       ignoreExitCode: true,
       cwd: MEMFS_VOLUME,
-      verbose: false,
     });
 
     expect(eslint.calculateConfigForFile).toHaveBeenCalledTimes(3);

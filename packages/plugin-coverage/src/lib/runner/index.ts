@@ -8,7 +8,6 @@ import {
   ensureDirectoryExists,
   executeProcess,
   filePathToCliArg,
-  isVerbose,
   objectToCliArgs,
   readJsonFile,
   ui,
@@ -27,7 +26,7 @@ export async function executeRunner({
   if (coverageToolCommand != null) {
     const { command, args } = coverageToolCommand;
     try {
-      await executeProcess({ command, args, verbose: isVerbose() });
+      await executeProcess({ command, args });
     } catch (error) {
       if (error instanceof ProcessError) {
         const loggingFn = continueOnCommandFail

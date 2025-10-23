@@ -2,7 +2,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
-import { executeProcess, isVerbose } from '@code-pushup/utils';
+import { executeProcess } from '@code-pushup/utils';
 import type { ESLintTarget } from './config.js';
 import { eslintConfigFromNxProject } from './nx/find-project-without-deps.js';
 import {
@@ -29,7 +29,6 @@ describe.skipIf(process.platform === 'win32')('Nx helpers', () => {
 
     // HACK: somehow prevents "Failed to process project graph" errors
     await executeProcess({
-      verbose: isVerbose(),
       command: 'npx nx graph --file=.nx/graph.json',
       cwd: workspaceDir,
     });

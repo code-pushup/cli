@@ -77,7 +77,6 @@ describe('nxHandler', () => {
           '--exclude=*-e2e',
           '--json',
         ],
-        verbose: false,
         cwd: MEMFS_VOLUME,
       } satisfies utils.ProcessConfig);
     });
@@ -93,7 +92,6 @@ describe('nxHandler', () => {
         command: 'npx',
         args: ['nx', 'show', 'projects', '--with-target=code-pushup', '--json'],
         cwd: MEMFS_VOLUME,
-        verbose: false,
       } satisfies utils.ProcessConfig);
     });
 

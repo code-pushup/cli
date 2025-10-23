@@ -71,7 +71,6 @@ describe('listMonorepoProjects', () => {
       args: ['nx', 'show', 'projects', '--with-target=code-pushup', '--json'],
       cwd: process.cwd(),
       observer: expect.any(Object),
-      verbose: false,
     });
   });
 

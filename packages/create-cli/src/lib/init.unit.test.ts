@@ -60,7 +60,6 @@ describe('initCodePushup', () => {
       command: 'npx',
       args: ['nx', 'g', '@code-pushup/nx-plugin:init', '--skipNxJson'],
       observer: expect.any(Object),
-      verbose: false,
     });
     expect(spyParseNxProcessOutput).toHaveBeenNthCalledWith(1, 'stdout-mock');
     expect(spyExecuteProcess).toHaveBeenNthCalledWith(2, {
@@ -72,7 +71,6 @@ describe('initCodePushup', () => {
         '--skipTarget',
         `--project="${projectJson.name}"`,
       ],
-      verbose: false,
     });
     expect(spyParseNxProcessOutput).toHaveBeenNthCalledWith(1, 'stdout-mock');
     expect(spyParseNxProcessOutput).toHaveBeenCalledTimes(2);

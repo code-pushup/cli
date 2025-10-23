@@ -7,6 +7,7 @@ import {
 } from 'node:child_process';
 import type { Readable, Writable } from 'node:stream';
 import { formatCommandLog } from './command.js';
+import { isVerbose } from './env.js';
 import { ui } from './logging.js';
 import { calcDuration } from './reports/utils.js';
 
@@ -161,7 +162,7 @@ export function executeProcess(
   const date = new Date().toISOString();
   const start = performance.now();
 
-  if (verbose === true) {
+  if (isVerbose() || verbose === true) {
     logger.log(
       formatCommandLog({
         command,

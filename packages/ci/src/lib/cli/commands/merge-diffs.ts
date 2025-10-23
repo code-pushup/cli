@@ -14,7 +14,6 @@ export async function runMergeDiffs(
   const filename = `merged-${DEFAULT_PERSIST_FILENAME}`;
 
   await executeProcess({
-    verbose: isVerbose(),
     command: bin,
     args: [
       'merge-diffs',

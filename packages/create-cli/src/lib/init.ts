@@ -1,7 +1,6 @@
 import {
   type ProcessConfig,
   executeProcess,
-  isVerbose,
   objectToCliArgs,
 } from '@code-pushup/utils';
 import {
@@ -30,7 +29,6 @@ export async function initCodePushup() {
     ...nxPluginGenerator('init', {
       skipNxJson: true,
     }),
-    verbose: isVerbose(),
     observer: {
       onStdout: data => {
         console.info(parseNxProcessOutput(data.toString()));
@@ -41,13 +39,12 @@ export async function initCodePushup() {
     },
   });
 
-  const { stdout: configStdout, stderr: configStderr } = await executeProcess({
-    ...nxPluginGenerator('configuration', {
+  const { stdout: configStdout, stderr: configStderr } = await executeProcess(
+    nxPluginGenerator('configuration', {
       skipTarget: true,
       project: setupResult.projectName,
     }),
-    verbose: isVerbose(),
-  });
+  );
   console.info(parseNxProcessOutput(configStdout));
   console.warn(parseNxProcessOutput(configStderr));
 

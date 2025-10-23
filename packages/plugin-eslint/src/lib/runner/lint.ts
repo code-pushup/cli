@@ -4,7 +4,6 @@ import {
   distinct,
   executeProcess,
   filePathToCliArg,
-  isVerbose,
   toArray,
 } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
@@ -27,7 +26,6 @@ async function executeLint({
 }: ESLintTarget): Promise<ESLint.LintResult[]> {
   // running as CLI because ESLint#lintFiles() runs out of memory
   const { stdout, stderr, code } = await executeProcess({
-    verbose: isVerbose(),
     command: 'npx',
     args: [
       'eslint',
