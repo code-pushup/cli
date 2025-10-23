@@ -14,6 +14,7 @@ import {
   importModule,
   pluginWorkDir,
   readJsonFile,
+  stringifyError,
   ui,
 } from '@code-pushup/utils';
 import { LIGHTHOUSE_PLUGIN_SLUG } from '../constants.js';
@@ -30,8 +31,10 @@ export function normalizeAuditOutputs(
 }
 
 export class LighthouseAuditParsingError extends Error {
-  constructor(slug: string, error: Error) {
-    super(`\nAudit ${bold(slug)} failed parsing details: \n${error.message}`);
+  constructor(slug: string, error: unknown) {
+    super(
+      `\nAudit ${bold(slug)} failed parsing details: \n${stringifyError(error)}`,
+    );
   }
 }
 
@@ -69,7 +72,7 @@ function processAuditDetails(
       ? { ...auditOutput, details: parsedDetails }
       : auditOutput;
   } catch (error) {
-    throw new LighthouseAuditParsingError(auditOutput.slug, error as Error);
+    throw new LighthouseAuditParsingError(auditOutput.slug, error);
   }
 }
 
