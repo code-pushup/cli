@@ -5,7 +5,6 @@ describe('createExecutorTarget', () => {
   it('should return executor target without project name', () => {
     expect(createExecutorTarget()).toStrictEqual({
       executor: '@code-pushup/nx-plugin:cli',
-      options: {},
     });
   });
 

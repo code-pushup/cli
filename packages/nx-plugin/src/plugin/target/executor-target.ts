@@ -8,11 +8,16 @@ export function createExecutorTarget(options?: {
 }): TargetConfiguration<ProjectPrefixOptions> {
   const { bin, projectPrefix } = options ?? {};
 
-  return {
+  const targetConfig: TargetConfiguration<ProjectPrefixOptions> = {
     executor: `${PACKAGE_NAME}:cli`,
-    options: {
+  };
+
+  if (bin || projectPrefix) {
+    targetConfig.options = {
       ...(bin ? { bin } : {}),
       ...(projectPrefix ? { projectPrefix } : {}),
-    },
-  };
+    };
+  }
+
+  return targetConfig;
 }
