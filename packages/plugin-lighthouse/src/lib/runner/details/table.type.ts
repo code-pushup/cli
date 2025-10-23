@@ -4,6 +4,7 @@ import {
   type TableColumnObject,
   type TableRowObject,
   tableSchema,
+  validate,
 } from '@code-pushup/models';
 import { formatTableItemPropertyValue } from './item-value.js';
 import { LighthouseAuditDetailsParsingError } from './utils.js';
@@ -18,7 +19,7 @@ export function parseTableToAuditDetailsTable(
   }
 
   try {
-    return tableSchema().parse({
+    return validate(tableSchema(), {
       columns: parseTableColumns(headings),
       rows: items.map(row => parseTableRow(row, headings)),
     });

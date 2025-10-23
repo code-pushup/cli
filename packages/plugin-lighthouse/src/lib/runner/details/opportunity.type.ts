@@ -3,6 +3,7 @@ import {
   type Table,
   type TableRowObject,
   tableSchema,
+  validate,
 } from '@code-pushup/models';
 import { formatBytes, formatDuration, html } from '@code-pushup/utils';
 import { parseTableColumns, parseTableEntry } from './table.type.js';
@@ -18,7 +19,7 @@ export function parseOpportunityToAuditDetailsTable(
   }
 
   try {
-    return tableSchema().parse({
+    return validate(tableSchema(), {
       title: 'Opportunity',
       columns: parseTableColumns(headings),
       rows: items.map(row => parseOpportunityItemToTableRow(row, headings)),
