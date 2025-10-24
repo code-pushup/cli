@@ -1,4 +1,5 @@
 import ansis from 'ansis';
+import { coreConfigSchema, validate } from '@code-pushup/models';
 import { logger } from '../src/index.js';
 
 async function sleep(delay: number) {
@@ -19,6 +20,10 @@ try {
 
   await logger.task('Importing code-pushup.config.ts', async () => {
     await sleep(500);
+
+    if (errorStage === 'config') {
+      validate(coreConfigSchema, {}, { filePath: 'code-pushup.config.ts' });
+    }
 
     return 'Loaded configuration from code-pushup.config.ts';
   });
@@ -76,7 +81,7 @@ try {
       'Sent GraphQL mutation to https://api.code-pushup.example.com/graphql (organization: "example", project: "website")',
     );
     await sleep(2000);
-    if (errorStage === 'core') {
+    if (errorStage === 'upload') {
       throw new Error('GraphQL error');
     }
     return ansis.bold('Uploaded report to portal');
