@@ -26,6 +26,17 @@ describe('stringifyError', () => {
     );
   });
 
+  it('should truncate multiline error messages if one-liner requested', () => {
+    expect(
+      stringifyError(
+        new Error(
+          'Failed to execute 2 out of 5 plugins:\n- ESLint\n- Lighthouse',
+        ),
+        { oneline: true },
+      ),
+    ).toBe('Failed to execute 2 out of 5 plugins: […]');
+  });
+
   it('should prettify ZodError instances spanning multiple lines', () => {
     const schema = z.object({
       name: z.string().min(1),
@@ -42,6 +53,17 @@ describe('stringifyError', () => {
 ✖ Invalid ISO date
   → at dateOfBirth
 `);
+  });
+
+  it('should omit multiline ZodError message if one-liner requested', () => {
+    const schema = z.object({
+      name: z.string().min(1),
+      address: z.string(),
+      dateOfBirth: z.iso.date().optional(),
+    });
+    const { error } = schema.safeParse({ name: '', dateOfBirth: '' });
+
+    expect(stringifyError(error, { oneline: true })).toBe('ZodError […]');
   });
 
   it('should prettify ZodError instances on one line if possible', () => {
@@ -72,5 +94,22 @@ describe('stringifyError', () => {
 ✖ Invalid ISO date
   → at dateOfBirth
 `);
+  });
+
+  it('should truncate SchemaValidationError if one-liner requested', () => {
+    const schema = z
+      .object({
+        name: z.string().min(1),
+        address: z.string(),
+        dateOfBirth: z.iso.date().optional(),
+      })
+      .meta({ title: 'User' });
+    const { error } = schema.safeParse({ name: '', dateOfBirth: '' });
+
+    expect(
+      stringifyError(new SchemaValidationError(error!, schema, {}), {
+        oneline: true,
+      }),
+    ).toBe(`SchemaValidationError: Invalid ${ansis.bold('User')} […]`);
   });
 });
