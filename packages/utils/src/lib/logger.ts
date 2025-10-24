@@ -3,6 +3,7 @@ import os from 'node:os';
 import ora, { type Ora } from 'ora';
 import { dateToUnixTimestamp } from './dates.js';
 import { isEnvVarEnabled } from './env.js';
+import { stringifyError } from './errors.js';
 import { formatDuration, indentLines, transformLines } from './formatting.js';
 import { settlePromise } from './promises.js';
 
@@ -19,12 +20,11 @@ const GROUP_COLOR_ENV_VAR_NAME = 'CP_LOGGER_GROUP_COLOR';
 export class Logger {
   #isVerbose = isEnvVarEnabled('CP_VERBOSE');
   #isCI = isEnvVarEnabled('CI');
-  #ciPlatform: CiPlatform | undefined =
-    process.env['GITHUB_ACTIONS'] === 'true'
-      ? 'GitHub Actions'
-      : process.env['GITLAB_CI'] === 'true'
-        ? 'GitLab CI/CD'
-        : undefined;
+  #ciPlatform: CiPlatform | undefined = isEnvVarEnabled('GITHUB_ACTIONS')
+    ? 'GitHub Actions'
+    : isEnvVarEnabled('GITLAB_CI')
+      ? 'GitLab CI/CD'
+      : undefined;
   #groupColor: GroupColor | undefined =
     process.env[GROUP_COLOR_ENV_VAR_NAME] === 'cyan' ||
     process.env[GROUP_COLOR_ENV_VAR_NAME] === 'magenta'
@@ -275,7 +275,10 @@ export class Logger {
       console.log(
         [
           this.#colorize(this.#groupSymbols.end, this.#groupColor),
-          this.#colorize(`${result.reason}`, 'red'),
+          this.#colorize(
+            `${stringifyError(result.reason, { oneline: true })}`,
+            'red',
+          ),
         ].join(' '),
       );
     }
@@ -391,7 +394,7 @@ export class Logger {
             messages.success(result.value),
             this.#formatDurationSuffix({ start, end }),
           ].join(' ')
-        : messages.failure(result.reason);
+        : messages.failure(stringifyError(result.reason, { oneline: true }));
 
     if (this.#activeSpinner) {
       if (this.#groupColor) {
