@@ -60,8 +60,10 @@ export {
   transformLines,
   truncateDescription,
   truncateIssueMessage,
+  truncateMultilineText,
   truncateText,
   truncateTitle,
+  UNICODE_ELLIPSIS,
 } from './lib/formatting.js';
 export {
   getCurrentBranchOrTag,
