@@ -1,3 +1,13 @@
+## 0.82.0 (2025-10-25)
+
+### 🚀 Features
+
+- **nx-plugin:** adjust bin path handling ([#1109](https://github.com/code-pushup/cli/pull/1109))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.81.0 (2025-10-22)
 
 ### 🚀 Features
