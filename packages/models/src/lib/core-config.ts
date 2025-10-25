@@ -20,7 +20,9 @@ export const unrefinedCoreConfigSchema = z.object({
   categories: categoriesSchema.optional(),
 });
 
-export const coreConfigSchema = refineCoreConfig(unrefinedCoreConfigSchema);
+export const coreConfigSchema = refineCoreConfig(
+  unrefinedCoreConfigSchema,
+).meta({ title: 'CoreConfig' });
 
 /**
  * Add refinements to coreConfigSchema

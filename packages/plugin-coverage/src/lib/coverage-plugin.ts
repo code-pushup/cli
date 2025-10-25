@@ -1,7 +1,12 @@
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { Audit, Group, PluginConfig } from '@code-pushup/models';
+import {
+  type Audit,
+  type Group,
+  type PluginConfig,
+  validate,
+} from '@code-pushup/models';
 import { capitalize } from '@code-pushup/utils';
 import {
   type CoveragePluginConfig,
@@ -32,7 +37,7 @@ import { coverageDescription, coverageTypeWeightMapper } from './utils.js';
 export async function coveragePlugin(
   config: CoveragePluginConfig,
 ): Promise<PluginConfig> {
-  const coverageConfig = coveragePluginConfigSchema.parse(config);
+  const coverageConfig = validate(coveragePluginConfigSchema, config);
 
   const audits = coverageConfig.coverageTypes.map(
     (type): Audit => ({

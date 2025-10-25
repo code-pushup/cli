@@ -26,16 +26,18 @@ export const interpolatedSlugSchema = slugSchema.catch(ctx => {
   throw new ZodError(ctx.error.issues);
 });
 
-export const configPatternsSchema = z.object({
-  persist: persistConfigSchema.transform(persist => ({
-    ...DEFAULT_PERSIST_CONFIG,
-    ...persist,
-  })),
-  upload: uploadConfigSchema
-    .omit({ organization: true, project: true })
-    .extend({
-      organization: interpolatedSlugSchema,
-      project: interpolatedSlugSchema,
-    })
-    .optional(),
-});
+export const configPatternsSchema = z
+  .object({
+    persist: persistConfigSchema.transform(persist => ({
+      ...DEFAULT_PERSIST_CONFIG,
+      ...persist,
+    })),
+    upload: uploadConfigSchema
+      .omit({ organization: true, project: true })
+      .extend({
+        organization: interpolatedSlugSchema,
+        project: interpolatedSlugSchema,
+      })
+      .optional(),
+  })
+  .meta({ title: 'ConfigPatterns' });

@@ -4,6 +4,7 @@ import {
   type PersistConfig,
   type Report,
   reportSchema,
+  validate,
 } from '@code-pushup/models';
 import {
   ensureDirectoryExists,
@@ -24,9 +25,10 @@ export async function loadReport<T extends Format>(
 
   if (format === 'json') {
     const content = await readJsonFile(filePath);
-    return reportSchema.parse(content) as LoadedReportFormat<T>;
+    const report: Report = validate(reportSchema, content);
+    return report as LoadedReportFormat<T>;
   }
 
-  const text = await readTextFile(filePath);
+  const text: string = await readTextFile(filePath);
   return text as LoadedReportFormat<T>;
 }

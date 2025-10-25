@@ -3,6 +3,7 @@ import {
   type CoreConfig,
   type PersistConfig,
   pluginReportSchema,
+  validate,
 } from '@code-pushup/models';
 import {
   isVerbose,
@@ -57,6 +58,6 @@ export async function collectAndPersistReports(
   // validate report and throw if invalid
   reportResult.plugins.forEach(plugin => {
     // Running checks after persisting helps while debugging as you can check the invalid output after the error is thrown
-    pluginReportSchema.parse(plugin);
+    validate(pluginReportSchema, plugin);
   });
 }

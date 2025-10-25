@@ -35,11 +35,14 @@
         "verbose": {
           "args": ["--verbose"]
         },
-        "error-core": {
-          "args": ["--error=core"]
+        "error-config": {
+          "args": ["--error=config"]
         },
         "error-plugin": {
           "args": ["--error=plugin"]
+        },
+        "error-upload": {
+          "args": ["--error=upload"]
         }
       }
     }

@@ -3,6 +3,7 @@ import {
   type Table,
   type TableRowObject,
   tableSchema,
+  validate,
 } from '@code-pushup/models';
 import { formatBytes, formatDuration, html } from '@code-pushup/utils';
 import { parseTableColumns, parseTableEntry } from './table.type.js';
@@ -11,23 +12,23 @@ import { LighthouseAuditDetailsParsingError } from './utils.js';
 export function parseOpportunityToAuditDetailsTable(
   details: Details.Opportunity,
 ): Table | undefined {
-  const { headings: rawHeadings, items } = details;
+  const { headings, items } = details;
 
   if (items.length === 0) {
     return undefined;
   }
 
   try {
-    return tableSchema().parse({
+    return validate(tableSchema(), {
       title: 'Opportunity',
-      columns: parseTableColumns(rawHeadings),
-      rows: items.map(row => parseOpportunityItemToTableRow(row, rawHeadings)),
+      columns: parseTableColumns(headings),
+      rows: items.map(row => parseOpportunityItemToTableRow(row, headings)),
     });
   } catch (error) {
     throw new LighthouseAuditDetailsParsingError(
       'opportunity',
-      { items, headings: rawHeadings },
-      (error as Error).message.toString(),
+      { items, headings },
+      error,
     );
   }
 }

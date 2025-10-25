@@ -16,6 +16,7 @@ import {
   logMultipleResults,
   pluralizeToken,
   scoreAuditsWithTarget,
+  stringifyError,
 } from '@code-pushup/utils';
 import {
   executePluginRunner,
@@ -34,16 +35,16 @@ import {
  *
  * @example
  * // plugin execution
- * const pluginCfg = pluginConfigSchema.parse({...});
+ * const pluginCfg = validate(pluginConfigSchema, {...});
  * const output = await executePlugin(pluginCfg);
  *
- *  @example
- *  // error handling
- *  try {
- *  await executePlugin(pluginCfg);
- *  } catch (e) {
- *  console.error(e.message);
- *  }
+ * @example
+ * // error handling
+ * try {
+ *   await executePlugin(pluginCfg);
+ * } catch (error) {
+ *   console.error(error);
+ * }
  */
 export async function executePlugin(
   pluginConfig: PluginConfig,
@@ -125,11 +126,9 @@ const wrapProgress = async (
   } catch (error) {
     progressBar?.incrementInSteps(steps);
     throw new Error(
-      error instanceof Error
-        ? `- Plugin ${bold(pluginCfg.title)} (${bold(
-            pluginCfg.slug,
-          )}) produced the following error:\n  - ${error.message}`
-        : String(error),
+      `- Plugin ${bold(pluginCfg.title)} (${bold(
+        pluginCfg.slug,
+      )}) produced the following error:\n  - ${stringifyError(error)}`,
     );
   }
 };
@@ -144,14 +143,14 @@ const wrapProgress = async (
  *
  * @example
  * // plugin execution
- * const plugins = [pluginConfigSchema.parse({...})];
+ * const plugins = [validate(pluginConfigSchema, {...})];
  *
  * @example
  * // error handling
  * try {
- * await executePlugins(plugins);
- * } catch (e) {
- * console.error(e.message); // Plugin output is invalid
+ *   await executePlugins(plugins);
+ * } catch (error) {
+ *   console.error(error); // Plugin output is invalid
  * }
  *
  */

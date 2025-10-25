@@ -301,7 +301,7 @@ describe('parseTableToAuditDetails', () => {
           items: [null],
           headings,
         },
-        'Cannot convert undefined or null to object',
+        'TypeError: Cannot convert undefined or null to object',
       ),
     );
   });

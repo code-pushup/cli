@@ -60,8 +60,10 @@ export {
   transformLines,
   truncateDescription,
   truncateIssueMessage,
+  truncateMultilineText,
   truncateText,
   truncateTitle,
+  UNICODE_ELLIPSIS,
 } from './lib/formatting.js';
 export {
   getCurrentBranchOrTag,
@@ -155,4 +157,3 @@ export type {
   Prettify,
   WithRequired,
 } from './lib/types.js';
-export { parseSchema, SchemaValidationError } from './lib/zod-validation.js';

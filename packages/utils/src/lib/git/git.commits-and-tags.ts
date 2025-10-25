@@ -1,5 +1,5 @@
 import { type LogOptions as SimpleGitLogOptions, simpleGit } from 'simple-git';
-import { type Commit, commitSchema } from '@code-pushup/models';
+import { type Commit, commitSchema, validate } from '@code-pushup/models';
 import { stringifyError } from '../errors.js';
 import { ui } from '../logging.js';
 import { isSemver } from '../semver.js';
@@ -13,7 +13,7 @@ export async function getLatestCommit(
       // git log -1 --pretty=format:"%H %s %an %aI" - See: https://git-scm.com/docs/pretty-formats
       format: { hash: '%H', message: '%s', author: '%an', date: '%aI' },
     });
-    return commitSchema.parse(log.latest);
+    return validate(commitSchema, log.latest);
   } catch (error) {
     ui().logger.error(stringifyError(error));
     return null;

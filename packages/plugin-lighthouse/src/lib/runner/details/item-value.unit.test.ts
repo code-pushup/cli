@@ -300,7 +300,7 @@ describe('formatTableItemPropertyValue', () => {
     ) as string;
 
     expect(formattedStr.length).toBeLessThanOrEqual(200);
-    expect(formattedStr.slice(-3)).toBe('...');
+    expect(formattedStr.slice(-1)).toBe('…');
   });
 
   it('should format value based on itemValueFormat "numeric" as int', () => {
@@ -352,7 +352,7 @@ describe('formatTableItemPropertyValue', () => {
     ) as string;
 
     expect(formattedStr.length).toBeLessThanOrEqual(500);
-    expect(formattedStr.slice(-3)).toBe('...');
+    expect(formattedStr.slice(-1)).toBe('…');
   });
 
   it('should format value based on itemValueFormat "multi"', () => {

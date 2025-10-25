@@ -15,7 +15,11 @@ import { runnerConfigSchema, runnerFunctionSchema } from './runner-config.js';
 export const pluginContextSchema = z
   .record(z.string(), z.unknown())
   .optional()
-  .describe('Plugin-specific context data for helpers');
+  .meta({
+    title: 'PluginContext',
+    description: 'Plugin-specific context data for helpers',
+  });
+
 export type PluginContext = z.infer<typeof pluginContextSchema>;
 
 export const pluginMetaSchema = packageVersionSchema()
@@ -28,9 +32,13 @@ export const pluginMetaSchema = packageVersionSchema()
     }).shape,
   )
   .extend({
-    slug: slugSchema.describe('Unique plugin slug within core config'),
+    slug: slugSchema.meta({
+      description: 'Unique plugin slug within core config',
+    }),
     icon: materialIconSchema,
-  });
+  })
+  .meta({ title: 'PluginMeta' });
+
 export type PluginMeta = z.infer<typeof pluginMetaSchema>;
 
 export const pluginScoreTargetsSchema = z
@@ -38,24 +46,29 @@ export const pluginScoreTargetsSchema = z
     scoreTargetSchema,
     z.record(z.string(), scoreTargetSchema.nonoptional()),
   ])
-  .describe(
-    'Score targets that trigger a perfect score. Number for all audits or record { slug: target } for specific audits',
-  )
-  .optional();
+  .optional()
+  .meta({
+    title: 'PluginScoreTargets',
+    description:
+      'Score targets that trigger a perfect score. Number for all audits or record { slug: target } for specific audits',
+  });
 
 export type PluginScoreTargets = z.infer<typeof pluginScoreTargetsSchema>;
 
-export const pluginDataSchema = z.object({
-  runner: z.union([runnerConfigSchema, runnerFunctionSchema]),
-  audits: pluginAuditsSchema,
-  groups: groupsSchema,
-  scoreTargets: pluginScoreTargetsSchema,
-  context: pluginContextSchema,
-});
+export const pluginDataSchema = z
+  .object({
+    runner: z.union([runnerConfigSchema, runnerFunctionSchema]),
+    audits: pluginAuditsSchema,
+    groups: groupsSchema,
+    scoreTargets: pluginScoreTargetsSchema,
+    context: pluginContextSchema,
+  })
+  .meta({ title: 'PluginData' });
 
 export const pluginConfigSchema = pluginMetaSchema
   .extend(pluginDataSchema.shape)
-  .check(createCheck(findMissingSlugsInGroupRefs));
+  .check(createCheck(findMissingSlugsInGroupRefs))
+  .meta({ title: 'PluginConfig' });
 
 export type PluginConfig = z.infer<typeof pluginConfigSchema>;
 

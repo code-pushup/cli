@@ -65,8 +65,8 @@ Import the type definitions if using TypeScript:
 If you need runtime validation, use the underlying Zod schemas:
 
 ```ts
-import { coreConfigSchema } from '@code-pushup/models';
+import { coreConfigSchema, validate } from '@code-pushup/models';
 
 const json = JSON.parse(readFileSync('code-pushup.config.json'));
-const config = coreConfigSchema.parse(json); // throws ZodError if invalid
+const config = validate(coreConfigSchema, json); // throws SchemaValidationError if invalid
 ```

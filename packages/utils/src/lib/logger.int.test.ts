@@ -166,7 +166,7 @@ ${ansis.red('Failed to load config')}
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('│')} $ npx eslint . --format=json --output-file=.code-pushup/eslint/results.json
-${ansis.cyan('└')} ${ansis.red("Error: ENOENT: no such file or directory, open '.code-pushup/eslint/results.json'")}
+${ansis.cyan('└')} ${ansis.red("ENOENT: no such file or directory, open '.code-pushup/eslint/results.json'")}
 
 `,
       );
@@ -333,7 +333,7 @@ ${ansis.magenta('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%'
       await expect(task).rejects.toThrow('GraphQL error: Invalid API key');
 
       expect(output).toBe(
-        `${ansis.red('✖')} Uploading report to portal → ${ansis.red('Error: GraphQL error: Invalid API key')}\n`,
+        `${ansis.red('✖')} Uploading report to portal → ${ansis.red('GraphQL error: Invalid API key')}\n`,
       );
     });
 
@@ -428,7 +428,7 @@ ${ansis.green('✔')} Uploaded report to portal ${ansis.gray('(42 ms)')}
 
       expect(output).toBe(
         `
-${ansis.red('✖')} Uploading report to portal → ${ansis.red('Error: GraphQL error: Invalid API key')}
+${ansis.red('✖')} Uploading report to portal → ${ansis.red('GraphQL error: Invalid API key')}
   ${ansis.gray('Sent request to Portal API')}
   ${ansis.gray('Received response from Portal API')}
 `.trimStart(),
@@ -689,7 +689,7 @@ ${ansis.cyan('-')} ${ansis.blue('$')} npx eslint . --format=json`,
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('│')} ${ansis.red('$')} npx eslint . --format=json
-${ansis.cyan('└')} ${ansis.red('Error: Process failed with exit code 1')}
+${ansis.cyan('└')} ${ansis.red('Process failed with exit code 1')}
 
 `,
       );
@@ -786,7 +786,7 @@ ${ansis.red.bold('Cancelled by SIGINT')}
 │   ESLint couldn't find a configuration file.
 │   
 │ $ npx eslint . --format=json
-└ Error: Process failed with exit code 2
+└ Process failed with exit code 2
 
 `,
       );

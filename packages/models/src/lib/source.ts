@@ -6,9 +6,14 @@ import {
 
 export const sourceFileLocationSchema = z
   .object({
-    file: filePathSchema.describe('Relative path to source file in Git repo'),
+    file: filePathSchema.meta({
+      description: 'Relative path to source file in Git repo',
+    }),
     position: filePositionSchema.optional(),
   })
-  .describe('Source file location');
+  .meta({
+    title: 'SourceFileLocation',
+    description: 'Source file location',
+  });
 
 export type SourceFileLocation = z.infer<typeof sourceFileLocationSchema>;

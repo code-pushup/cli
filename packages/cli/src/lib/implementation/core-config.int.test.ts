@@ -1,3 +1,4 @@
+import ansis from 'ansis';
 import { describe, expect, vi } from 'vitest';
 import {
   type CoreConfig,
@@ -203,6 +204,11 @@ describe('parsing values from CLI and middleware', () => {
           middlewares: [{ middlewareFunction: coreConfigMiddleware }],
         },
       ).parseAsync(),
-    ).rejects.toThrow('invalid_type');
+    ).rejects.toThrow(`Invalid ${ansis.bold('UploadConfig')}
+✖ Invalid input: expected string, received undefined
+  → at server
+✖ Invalid input: expected string, received undefined
+  → at apiKey
+`);
   });
 });

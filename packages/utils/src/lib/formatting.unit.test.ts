@@ -10,6 +10,7 @@ import {
   roundDecimals,
   slugify,
   transformLines,
+  truncateMultilineText,
   truncateText,
 } from './formatting.js';
 
@@ -135,7 +136,7 @@ describe('formatDate', () => {
 describe('truncateText', () => {
   it('should replace overflowing text with ellipsis at the end', () => {
     expect(truncateText('All work and no play makes Jack a dull boy', 32)).toBe(
-      'All work and no play makes Ja...',
+      'All work and no play makes Jack…',
     );
   });
 
@@ -161,28 +162,47 @@ describe('truncateText', () => {
         maxChars: 10,
         position: 'start',
       }),
-    ).toBe('...dy day.');
+    ).toBe('…oudy day.');
   });
 
   it('should produce truncated text with ellipsis at the middle', () => {
     expect(
       truncateText('Horrendous amounts of lint issues are present Tony!', {
-        maxChars: 10,
+        maxChars: 8,
         position: 'middle',
       }),
-    ).toBe('Hor...ny!');
+    ).toBe('Hor…ny!');
   });
 
   it('should produce truncated text with ellipsis at the end', () => {
     expect(truncateText("I'm Johnny!", { maxChars: 10, position: 'end' })).toBe(
-      "I'm Joh...",
+      "I'm Johnn…",
     );
   });
 
   it('should produce truncated text with custom ellipsis', () => {
-    expect(truncateText("I'm Johnny!", { maxChars: 10, ellipsis: '*' })).toBe(
-      "I'm Johnn*",
+    expect(truncateText("I'm Johnny!", { maxChars: 10, ellipsis: '...' })).toBe(
+      "I'm Joh...",
     );
+  });
+});
+
+describe('transformMultilineText', () => {
+  it('should replace additional lines with an ellipsis', () => {
+    const error = `SchemaValidationError: Invalid CoreConfig in code-pushup.config.ts file
+✖ Invalid input: expected array, received undefined
+  → at plugins`;
+    expect(truncateMultilineText(error)).toBe(
+      'SchemaValidationError: Invalid CoreConfig in code-pushup.config.ts file […]',
+    );
+  });
+
+  it('should leave one-liner texts unchanged', () => {
+    expect(truncateMultilineText('Hello, world!')).toBe('Hello, world!');
+  });
+
+  it('should omit ellipsis if additional lines have no non-whitespace characters', () => {
+    expect(truncateMultilineText('- item 1\n  \n\n')).toBe('- item 1');
   });
 });
 
