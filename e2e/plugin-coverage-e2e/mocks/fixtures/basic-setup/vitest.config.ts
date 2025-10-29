@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   root: fileURLToPath(dirname(import.meta.url)),
