@@ -30,7 +30,6 @@ export default createE2ETestConfig('my-e2e');
 // With options:
 export default createE2ETestConfig('my-e2e', {
   testTimeout: 60_000,
-  disableCoverage: true,
 });
 ```
 

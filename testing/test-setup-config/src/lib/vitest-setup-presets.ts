@@ -1,4 +1,4 @@
-import type { UserConfig as ViteUserConfig } from 'vite';
+import type { UserConfig as ViteUserConfig } from 'vitest/config';
 import {
   type E2ETestOptions,
   createVitestConfig,
@@ -49,7 +49,6 @@ export function createIntTestConfig(projectKey: string): ViteUserConfig {
  * // With options
  * export default createE2ETestConfig('my-e2e', {
  *   testTimeout: 60_000,
- *   disableCoverage: true,
  * });
  *
  * // Override any config using spread operator

@@ -80,7 +80,6 @@ describe('vitest-setup-presets', () => {
     it('should pass options to createVitestConfig', () => {
       const options = {
         testTimeout: 60_000,
-        disableCoverage: true,
       };
 
       createE2ETestConfig(MOCK_PROJECT_KEY, options);
@@ -99,31 +98,6 @@ describe('vitest-setup-presets', () => {
         MOCK_PROJECT_KEY,
         'e2e',
         { testTimeout: 30_000 },
-      );
-    });
-
-    it('should handle disableCoverage option', () => {
-      createE2ETestConfig(MOCK_PROJECT_KEY, { disableCoverage: true });
-
-      expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
-        MOCK_PROJECT_KEY,
-        'e2e',
-        { disableCoverage: true },
-      );
-    });
-
-    it('should handle multiple options', () => {
-      const options = {
-        testTimeout: 45_000,
-        disableCoverage: false,
-      };
-
-      createE2ETestConfig(MOCK_PROJECT_KEY, options);
-
-      expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
-        MOCK_PROJECT_KEY,
-        'e2e',
-        options,
       );
     });
   });

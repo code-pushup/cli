@@ -1,6 +1,5 @@
-import path from 'node:path';
-import { type UserConfig as ViteUserConfig, defineConfig } from 'vite';
 import type { CoverageOptions, InlineConfig } from 'vitest';
+import { type UserConfig as ViteUserConfig, defineConfig } from 'vitest/config';
 import { getSetupFiles } from './vitest-setup-files.js';
 import { tsconfigPathAliases } from './vitest-tsconfig-path-aliases.js';
 
@@ -8,7 +7,6 @@ export type TestKind = 'unit' | 'int' | 'e2e';
 
 export type E2ETestOptions = {
   testTimeout?: number;
-  disableCoverage?: boolean;
 };
 
 export type VitestConfig = ViteUserConfig & { test?: InlineConfig };
@@ -34,9 +32,8 @@ function getGlobalSetup(kind: TestKind): string[] | undefined {
 function buildCoverageConfig(
   projectKey: string,
   kind: TestKind,
-  disableCoverage?: boolean,
 ): CoverageOptions | undefined {
-  if (disableCoverage || kind === 'e2e') {
+  if (kind === 'e2e') {
     return undefined;
   }
 
@@ -55,11 +52,7 @@ export function createVitestConfig(
   kind: TestKind,
   options?: E2ETestOptions,
 ): ViteUserConfig {
-  const coverage = buildCoverageConfig(
-    projectKey,
-    kind,
-    options?.disableCoverage,
-  );
+  const coverage = buildCoverageConfig(projectKey, kind);
 
   const config: VitestConfig = {
     cacheDir: `../../node_modules/.vite/${projectKey}`,

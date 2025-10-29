@@ -1,10 +1,10 @@
-import { defineConfig } from 'vite';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { defineConfig } from 'vitest/config';
 import type { E2ETestOptions, TestKind } from './vitest-config-factory.js';
 import { createVitestConfig } from './vitest-config-factory.js';
 
-vi.mock('vite', async importOriginal => {
-  const actual = await importOriginal<typeof import('vite')>();
+vi.mock('vitest/config', async importOriginal => {
+  const actual = await importOriginal<typeof import('vitest/config')>();
   return {
     ...actual,
     defineConfig: vi.fn(config => config),
@@ -215,17 +215,9 @@ describe('createVitestConfig', () => {
       expect((config as any).test.testTimeout).toBe(60_000);
     });
 
-    it('should support disableCoverage option', () => {
-      const options: E2ETestOptions = { disableCoverage: true };
-      const config = createVitestConfig('test-package', 'e2e', options);
-
-      expect((config as any).test.coverage).toBeUndefined();
-    });
-
     it('should support multiple options together', () => {
       const options: E2ETestOptions = {
         testTimeout: 30_000,
-        disableCoverage: true,
       };
       const config = createVitestConfig('test-package', 'e2e', options);
 
