@@ -17,12 +17,22 @@
       "inputs": ["production", "^production", "{projectRoot}/zod2md.config.ts"],
       "outputs": ["{projectRoot}/docs/models-reference.md"]
     },
-    "build": {
-      "dependsOn": [
-        "^build",
-        "generate-docs",
-        { "projects": "models-transformers", "target": "build" }
-      ]
+    "build": {},
+    "types": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "outputPath": "{projectRoot}/dist",
+        "main": "{projectRoot}/src/index.ts",
+        "tsConfig": "{projectRoot}/tsconfig.lib.json",
+        "assets": []
+      },
+      "inputs": [
+        "production",
+        "^production",
+        "{projectRoot}/tsconfig.lib.json"
+      ],
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true
     },
     "lint": {},
     "lint-report": {},
