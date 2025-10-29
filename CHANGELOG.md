@@ -1,3 +1,22 @@
+## 0.83.0 (2025-10-29)
+
+### 🚀 Features
+
+- use formatted zod schema validation errors ([68fe123d](https://github.com/code-pushup/cli/commit/68fe123d))
+- **plugin-lighthouse:** prettify table validation errors ([ab2fe542](https://github.com/code-pushup/cli/commit/ab2fe542))
+- **utils:** prettify zod errors in stringifyError utility ([5e7456f7](https://github.com/code-pushup/cli/commit/5e7456f7))
+- **utils:** add option to truncate error messages to one-liner ([487ac865](https://github.com/code-pushup/cli/commit/487ac865))
+- **utils:** truncate group/spinner inline errors to one-liner ([ee31b9e8](https://github.com/code-pushup/cli/commit/ee31b9e8))
+- **utils:** provide validateAsync alternative to synchronous validate ([fb236e19](https://github.com/code-pushup/cli/commit/fb236e19))
+
+### 🩹 Fixes
+
+- use safe error to string conversions ([c78c7264](https://github.com/code-pushup/cli/commit/c78c7264))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.82.0 (2025-10-25)
 
 ### 🚀 Features
