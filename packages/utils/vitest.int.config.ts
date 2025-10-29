@@ -1,18 +1,4 @@
 /// <reference types="vitest" />
-import {
-  createIntConfig,
-  setupPresets,
-} from '../../testing/test-setup-config/src/lib/vitest-setup-presets.js';
+import { createIntTestConfig } from '../../testing/test-setup-config/src/index.js';
 
-export default createIntConfig(
-  'utils',
-  {
-    projectRoot: new URL('../../', import.meta.url),
-  },
-  {
-    test: {
-      coverage: { exclude: ['perf/**'] },
-      setupFiles: [...setupPresets.int.base, ...setupPresets.int.cliui],
-    },
-  },
-);
+export default createIntTestConfig('utils');

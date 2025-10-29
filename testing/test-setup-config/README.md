@@ -1,24 +1,50 @@
-## Vitest config factory and setup presets
+## Vitest Config Factory
 
-Utilities to centralize and standardize Vitest configuration across the monorepo.
+Standardized Vitest configuration for the Code PushUp monorepo.
 
-- `vitest-config-factory.ts`: builds typed Vitest configs with sensible defaults
-- `vitest-setup-presets.ts`: provides create functions and exportable setup file groups
+### Usage
 
-The create functions (`createUnitConfig`, `createIntConfig`, `createE2eConfig`) automatically include appropriate setup files for each test type. See the unit tests for detailed documentation of defaults, coverage settings, and setup file presets.
+**Unit tests:**
 
-### Examples
+```typescript
+import { createUnitTestConfig } from '@code-pushup/test-setup-config';
 
-**Using defaults:**
-
-```ts
-export default createUnitConfig('my-package', import.meta.url);
+export default createUnitTestConfig('my-package');
 ```
 
-**Extending default setup files:**
+**Integration tests:**
 
-```ts
-export default createIntConfig('my-package', import.meta.url, {
-  setupFiles: [...setupPresets.int.base, ...setupPresets.int.git, './custom-setup.ts'],
+```typescript
+import { createIntTestConfig } from '@code-pushup/test-setup-config';
+
+export default createIntTestConfig('my-package');
+```
+
+**E2E tests:**
+
+```typescript
+import { createE2ETestConfig } from '@code-pushup/test-setup-config';
+
+export default createE2ETestConfig('my-e2e');
+
+// With options:
+export default createE2ETestConfig('my-e2e', {
+  testTimeout: 60_000,
+  disableCoverage: true,
 });
+```
+
+### Advanced: Overriding Config
+
+For edge cases, use the spread operator to override any property:
+
+```typescript
+const baseConfig = createE2ETestConfig('my-e2e');
+export default {
+  ...baseConfig,
+  test: {
+    ...(baseConfig as any).test,
+    globalSetup: ['./custom-setup.ts'],
+  },
+};
 ```

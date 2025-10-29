@@ -1,17 +1,8 @@
-import path from 'node:path';
-import { pathToFileURL } from 'node:url';
 import { defineConfig } from 'vite';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  type TestKind,
-  type VitestConfigFactoryOptions,
-  type VitestOverrides,
-  createVitestConfig,
-  getProjectRootPath,
-} from './vitest-config-factory.js';
+import type { E2ETestOptions, TestKind } from './vitest-config-factory.js';
+import { createVitestConfig } from './vitest-config-factory.js';
 
-// Only mock defineConfig - assume it works correctly, we're not testing Vite
-// Use importOriginal to keep mergeConfig real while mocking defineConfig
 vi.mock('vite', async importOriginal => {
   const actual = await importOriginal<typeof import('vite')>();
   return {
@@ -20,655 +11,257 @@ vi.mock('vite', async importOriginal => {
   };
 });
 
-// Mock tsconfigPathAliases since it reads from filesystem and our fake paths don't exist
 vi.mock('./vitest-tsconfig-path-aliases.js', () => ({
-  tsconfigPathAliases: vi.fn().mockReturnValue({ '@mock/alias': '/mock/path' }),
+  tsconfigPathAliases: vi
+    .fn()
+    .mockReturnValue([{ find: '@test/alias', replacement: '/mock/path' }]),
 }));
-
-const MOCK_PROJECT_ROOT_STRING = '/Users/test/project';
-const MOCK_PROJECT_ROOT_URL = pathToFileURL(`${MOCK_PROJECT_ROOT_STRING}/`);
-
-// Simple path helpers - just use them directly in tests!
-const mockPath = (...segments: string[]) =>
-  path.resolve(MOCK_PROJECT_ROOT_STRING, ...segments);
-const mockUrlPath = (url: URL, ...segments: string[]) =>
-  path.resolve(getProjectRootPath(url), ...segments);
-
-const TEST_TIMEOUTS = {
-  SHORT: 5000,
-  MEDIUM: 10_000,
-  LONG: 30_000,
-} as const;
-
-const EXPECTED_INCLUDES = {
-  unit: ['src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-  int: ['src/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-  e2e: ['tests/**/*.e2e.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-} as const;
-
-const DEFAULT_EXCLUDES = ['mocks/**', '**/types.ts'] as const;
-
-const expectCoverageConfig = (config: any, expectedProps: Partial<any>) => {
-  expect(config.test.coverage).toEqual(expect.objectContaining(expectedProps));
-};
 
 describe('createVitestConfig', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('basic functionality', () => {
-    it('should create a basic unit test config with string projectRoot', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
-
-      const config = createVitestConfig(options);
+  describe('unit test configuration', () => {
+    it('should create a complete unit test config with all defaults', () => {
+      const config = createVitestConfig('test-package', 'unit');
 
       expect(config).toEqual(
         expect.objectContaining({
-          cacheDir: mockPath('node_modules', '.vite', 'cache-test-package'),
+          cacheDir: '../../node_modules/.vite/test-package',
           test: expect.objectContaining({
             reporters: ['basic'],
             globals: true,
-            cache: {
-              dir: mockPath('node_modules', '.vitest'),
-            },
-            alias: expect.any(Object),
+            cache: { dir: '../../node_modules/.vitest' },
+            alias: expect.any(Array),
             pool: 'threads',
             poolOptions: { threads: { singleThread: true } },
             environment: 'node',
-            include: EXPECTED_INCLUDES.unit,
-            globalSetup: [mockPath('global-setup.ts')],
-            setupFiles: [],
+            include: [
+              'src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+              'src/**/*.type.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+            ],
+            globalSetup: ['../../global-setup.ts'],
+            setupFiles: expect.arrayContaining([
+              '../../testing/test-setup/src/lib/console.mock.ts',
+              '../../testing/test-setup/src/lib/reset.mocks.ts',
+              '../../testing/test-setup/src/lib/fs.mock.ts',
+            ]),
             coverage: expect.objectContaining({
               reporter: ['text', 'lcov'],
-              reportsDirectory: mockPath(
-                'packages',
-                'test-package',
-                '.coverage',
-                'unit-tests',
-              ),
-              exclude: DEFAULT_EXCLUDES,
+              reportsDirectory: '../../coverage/test-package/unit-tests',
+              exclude: ['mocks/**', '**/types.ts', 'perf/**'],
             }),
+            typecheck: { include: ['**/*.type.test.ts'] },
           }),
         }),
       );
       expect(defineConfig).toHaveBeenCalledWith(config);
-      expect(defineConfig).toHaveBeenCalledTimes(1);
     });
 
-    it('should create a basic unit test config with URL projectRoot', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_URL,
-      };
+    it('should include all required setup files for unit tests', () => {
+      const config = createVitestConfig('test-package', 'unit');
 
-      const config = createVitestConfig(options);
-
-      expect(config).toEqual(
-        expect.objectContaining({
-          cacheDir: mockUrlPath(
-            MOCK_PROJECT_ROOT_URL,
-            'node_modules',
-            '.vite',
-            'cache-test-package',
-          ),
-          test: expect.objectContaining({
-            include: EXPECTED_INCLUDES.unit,
-            globalSetup: [
-              mockUrlPath(MOCK_PROJECT_ROOT_URL, 'global-setup.ts'),
-            ],
-          }),
-        }),
+      const setupFiles = (config as any).test.setupFiles;
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/console.mock.ts',
+      );
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/reset.mocks.ts',
+      );
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/cliui.mock.ts',
+      );
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/fs.mock.ts',
+      );
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/git.mock.ts',
+      );
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/portal-client.mock.ts',
+      );
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
+      );
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/extend/markdown-table.matcher.ts',
+      );
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/extend/jest-extended.matcher.ts',
+      );
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/extend/path.matcher.ts',
       );
     });
 
-    it('should handle projectRoot string without trailing slash', () => {
-      const projectRoot = '/Users/test/project';
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot,
-      };
+    it('should include type test pattern in unit tests', () => {
+      const config = createVitestConfig('test-package', 'unit');
 
-      const config = createVitestConfig(options);
-
-      expect((config as any).test.alias).toBeDefined();
+      expect((config as any).test.include).toContain(
+        'src/**/*.type.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+      );
     });
 
-    it('should handle projectRoot string with trailing slash', () => {
-      const projectRoot = '/Users/test/project/';
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot,
-      };
+    it('should enable typecheck for unit tests', () => {
+      const config = createVitestConfig('test-package', 'unit');
 
-      const config = createVitestConfig(options);
+      expect((config as any).test.typecheck).toEqual({
+        include: ['**/*.type.test.ts'],
+      });
+    });
 
-      expect((config as any).test.alias).toBeDefined();
+    it('should always include perf/** in coverage exclusions', () => {
+      const config = createVitestConfig('test-package', 'unit');
+
+      expect((config as any).test.coverage.exclude).toContain('perf/**');
     });
   });
 
-  describe('test kind variations', () => {
-    it('should create integration test config', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'int',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
-
-      const config = createVitestConfig(options);
+  describe('integration test configuration', () => {
+    it('should create a complete integration test config', () => {
+      const config = createVitestConfig('test-package', 'int');
 
       expect(config).toEqual(
         expect.objectContaining({
+          cacheDir: '../../node_modules/.vite/test-package',
           test: expect.objectContaining({
-            include: EXPECTED_INCLUDES.int,
-            globalSetup: [mockPath('global-setup.ts')],
+            reporters: ['basic'],
+            globals: true,
+            include: ['src/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+            globalSetup: ['../../global-setup.ts'],
             coverage: expect.objectContaining({
-              reportsDirectory: mockPath(
-                'packages',
-                'test-package',
-                '.coverage',
-                'int-tests',
-              ),
+              reportsDirectory: '../../coverage/test-package/int-tests',
             }),
           }),
         }),
       );
     });
 
-    it('should create e2e test config without coverage by default', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'e2e',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
+    it('should include correct setup files for integration tests', () => {
+      const config = createVitestConfig('test-package', 'int');
 
-      const config = createVitestConfig(options);
+      const setupFiles = (config as any).test.setupFiles;
+      // Should include console mock
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/console.mock.ts',
+      );
+      // Should NOT include fs, cliui, or git mocks (integration tests need real implementations)
+      expect(setupFiles).not.toContain(
+        '../../testing/test-setup/src/lib/fs.mock.ts',
+      );
+      expect(setupFiles).not.toContain(
+        '../../testing/test-setup/src/lib/cliui.mock.ts',
+      );
+      expect(setupFiles).not.toContain(
+        '../../testing/test-setup/src/lib/git.mock.ts',
+      );
+      // Should include all matchers
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/extend/path.matcher.ts',
+      );
+    });
+
+    it('should not enable typecheck for integration tests', () => {
+      const config = createVitestConfig('test-package', 'int');
+
+      expect((config as any).test.typecheck).toBeUndefined();
+    });
+  });
+
+  describe('e2e test configuration', () => {
+    it('should create e2e config without coverage by default', () => {
+      const config = createVitestConfig('test-package', 'e2e');
 
       expect(config).toEqual(
         expect.objectContaining({
+          cacheDir: '../../node_modules/.vite/test-package',
           test: expect.objectContaining({
-            include: EXPECTED_INCLUDES.e2e,
+            reporters: ['basic'],
+            globals: true,
+            include: ['tests/**/*.e2e.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
             globalSetup: undefined,
           }),
         }),
       );
+      expect((config as any).test.coverage).toBeUndefined();
+    });
+
+    it('should include minimal setup files for e2e tests', () => {
+      const config = createVitestConfig('test-package', 'e2e');
+
+      const setupFiles = (config as any).test.setupFiles;
+      // Should only include reset mocks
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/reset.mocks.ts',
+      );
+      // Should NOT include console, fs, git, etc.
+      expect(setupFiles).not.toContain(
+        '../../testing/test-setup/src/lib/console.mock.ts',
+      );
+      expect(setupFiles).not.toContain(
+        '../../testing/test-setup/src/lib/fs.mock.ts',
+      );
+      // Should include all matchers
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/extend/path.matcher.ts',
+      );
+    });
+
+    it('should support custom testTimeout option', () => {
+      const options: E2ETestOptions = { testTimeout: 60_000 };
+      const config = createVitestConfig('test-package', 'e2e', options);
+
+      expect((config as any).test.testTimeout).toBe(60_000);
+    });
+
+    it('should support disableCoverage option', () => {
+      const options: E2ETestOptions = { disableCoverage: true };
+      const config = createVitestConfig('test-package', 'e2e', options);
 
       expect((config as any).test.coverage).toBeUndefined();
     });
 
-    it('should create e2e test config with coverage when explicitly enabled', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'e2e',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
+    it('should support multiple options together', () => {
+      const options: E2ETestOptions = {
+        testTimeout: 30_000,
+        disableCoverage: true,
       };
+      const config = createVitestConfig('test-package', 'e2e', options);
 
-      const overrides: VitestOverrides = {
-        test: {
-          coverage: {
-            enabled: true,
-          },
-        },
-      };
+      expect((config as any).test.testTimeout).toBe(30_000);
+      expect((config as any).test.coverage).toBeUndefined();
+    });
+  });
 
-      const config = createVitestConfig(options, overrides);
+  describe('cacheDir naming', () => {
+    it('should use projectKey for cacheDir', () => {
+      const config = createVitestConfig('my-custom-name', 'unit');
 
-      expect(config).toEqual(
-        expect.objectContaining({
-          test: expect.objectContaining({
-            include: EXPECTED_INCLUDES.e2e,
-            globalSetup: undefined,
-            coverage: expect.objectContaining({
-              reporter: ['text', 'lcov'],
-              reportsDirectory: mockPath('e2e', 'test-package', '.coverage'),
-              exclude: DEFAULT_EXCLUDES,
-            }),
-          }),
-        }),
+      expect(config.cacheDir).toBe('../../node_modules/.vite/my-custom-name');
+    });
+
+    it('should use projectKey for coverage directory', () => {
+      const config = createVitestConfig('my-package', 'unit');
+
+      expect((config as any).test.coverage.reportsDirectory).toBe(
+        '../../coverage/my-package/unit-tests',
       );
     });
   });
 
-  describe('cacheKey option', () => {
-    it('should use cacheKey when provided', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-        cacheKey: 'custom-cache-key',
-      };
-
-      const config = createVitestConfig(options);
-
-      expect(config).toEqual(
-        expect.objectContaining({
-          cacheDir: mockPath('node_modules', '.vite', 'custom-cache-key'),
-        }),
-      );
-    });
-
-    it('should fallback to cache-{projectKey} when cacheKey is not provided', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
-
-      const config = createVitestConfig(options);
-
-      expect(config).toEqual(
-        expect.objectContaining({
-          cacheDir: mockPath('node_modules', '.vite', 'cache-test-package'),
-        }),
-      );
-    });
-  });
-
-  describe('setupFiles handling', () => {
-    it('should handle setupFiles as string in overrides', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
-
-      const overrides: VitestOverrides = {
-        test: {
-          setupFiles: 'setup.ts',
-        },
-      };
-
-      const config = createVitestConfig(options, overrides);
-
-      expect(config).toEqual(
-        expect.objectContaining({
-          test: expect.objectContaining({
-            setupFiles: [mockPath('setup.ts')],
-          }),
-        }),
-      );
-    });
-
-    it('should handle setupFiles as array in overrides', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
-
-      const overrides: VitestOverrides = {
-        test: {
-          setupFiles: ['setup1.ts', 'setup2.ts'],
-        },
-      };
-
-      const config = createVitestConfig(options, overrides);
-
-      expect(config).toEqual(
-        expect.objectContaining({
-          test: expect.objectContaining({
-            setupFiles: [mockPath('setup1.ts'), mockPath('setup2.ts')],
-          }),
-        }),
-      );
-    });
-
-    it('should filter out falsy values from setupFiles', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
-
-      const overrides: VitestOverrides = {
-        test: {
-          setupFiles: ['setup1.ts', '', 'setup2.ts', null as any, 'setup3.ts'],
-        },
-      };
-
-      const config = createVitestConfig(options, overrides);
-
-      expect(config).toEqual(
-        expect.objectContaining({
-          test: expect.objectContaining({
-            setupFiles: [
-              mockPath('setup1.ts'),
-              mockPath('setup2.ts'),
-              mockPath('setup3.ts'),
-            ],
-          }),
-        }),
-      );
-    });
-
-    it('should handle empty setupFiles array', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
-
-      const overrides: VitestOverrides = {
-        test: {
-          setupFiles: [],
-        },
-      };
-
-      const config = createVitestConfig(options, overrides);
-
-      expect(config).toEqual(
-        expect.objectContaining({
-          test: expect.objectContaining({
-            setupFiles: [],
-          }),
-        }),
-      );
-    });
-
-    it('should use empty setupFiles when not provided in overrides', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
-
-      const config = createVitestConfig(options, {});
-
-      expect(config).toEqual(
-        expect.objectContaining({
-          test: expect.objectContaining({
-            setupFiles: [],
-          }),
-        }),
-      );
-    });
-  });
-
-  describe('coverage configuration', () => {
-    it('should apply custom coverage exclude paths', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
-
-      const overrides: VitestOverrides = {
-        test: {
-          coverage: {
-            exclude: ['custom/**', 'ignore/**'],
-          },
-        },
-      };
-
-      const config = createVitestConfig(options, overrides);
-
-      expect(config).toEqual(
-        expect.objectContaining({
-          test: expect.objectContaining({
-            coverage: expect.objectContaining({
-              reporter: ['text', 'lcov'],
-              reportsDirectory: mockPath(
-                'packages',
-                'test-package',
-                '.coverage',
-                'unit-tests',
-              ),
-              exclude: [...DEFAULT_EXCLUDES, 'custom/**', 'ignore/**'],
-            }),
-          }),
-        }),
-      );
-    });
-
-    it('should use default exclude when no custom excludes provided', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
-
-      const overrides: VitestOverrides = {
-        test: {
-          coverage: {
-            exclude: [],
-          },
-        },
-      };
-
-      const config = createVitestConfig(options, overrides);
-
-      expect(config).toEqual(
-        expect.objectContaining({
-          test: expect.objectContaining({
-            coverage: expect.objectContaining({
-              reporter: ['text', 'lcov'],
-              reportsDirectory: mockPath(
-                'packages',
-                'test-package',
-                '.coverage',
-                'unit-tests',
-              ),
-              exclude: DEFAULT_EXCLUDES,
-            }),
-          }),
-        }),
-      );
-    });
-
-    it('should disable coverage when explicitly disabled', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
-
-      const overrides: VitestOverrides = {
-        test: {
-          coverage: {
-            enabled: false,
-          },
-        },
-      };
-
-      const config = createVitestConfig(options, overrides);
-
-      expect((config as any).test.coverage).toStrictEqual({});
-      expect(config).toBeDefined();
-    });
-
-    it('should sanitize coverage options by removing enabled and exclude from overrides', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
-
-      const overrides: VitestOverrides = {
-        test: {
-          coverage: {
-            enabled: true,
-            exclude: ['custom/**'],
-            reporter: ['html', 'json'],
-            thresholds: {
-              global: {
-                branches: 80,
-                functions: 80,
-                lines: 80,
-                statements: 80,
-              },
-            },
-          },
-        },
-      };
-
-      const config = createVitestConfig(options, overrides);
-      expectCoverageConfig(config, {
-        reporter: ['text', 'lcov', 'html', 'json'],
-        reportsDirectory: mockPath(
-          'packages',
-          'test-package',
-          '.coverage',
-          'unit-tests',
-        ),
-        exclude: [...DEFAULT_EXCLUDES, 'custom/**'],
-        thresholds: {
-          global: {
-            branches: 80,
-            functions: 80,
-            lines: 80,
-            statements: 80,
-          },
-        },
-      });
-
-      expect(config).toBeDefined();
-    });
-  });
-
-  describe('config merging and sanitization', () => {
-    it('should merge base config with overrides', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
-
-      const overrides: VitestOverrides = {
-        test: {
-          testTimeout: TEST_TIMEOUTS.MEDIUM,
-          pool: 'forks' as any,
-        },
-      };
-
-      const config = createVitestConfig(options, overrides);
-
-      const testConfig = (config as any).test;
-      expect(testConfig.testTimeout).toBe(TEST_TIMEOUTS.MEDIUM);
-      expect(testConfig.pool).toBe('forks');
-    });
-
-    it('should sanitize overrides by removing setupFiles from test config', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
-
-      const overrides: VitestOverrides = {
-        test: {
-          setupFiles: ['should-be-removed.ts'],
-          testTimeout: TEST_TIMEOUTS.SHORT,
-          pool: 'forks' as any,
-        },
-      };
-
-      const config = createVitestConfig(options, overrides);
-
-      const testConfig = (config as any).test;
-      expect(testConfig.setupFiles).toEqual([mockPath('should-be-removed.ts')]);
-      expect(testConfig.testTimeout).toBe(TEST_TIMEOUTS.SHORT);
-      expect(testConfig.pool).toBe('forks');
-    });
-
-    it('should handle overrides without test config', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
-
-      const overrides: VitestOverrides = {
-        build: {
-          target: 'node14',
-        },
-      };
-
-      const config = createVitestConfig(options, overrides);
-
-      expect((config as any).build.target).toBe('node14');
-    });
-
-    it('should handle coverage options as undefined', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
-
-      const overrides: VitestOverrides = {
-        test: {
-          coverage: undefined,
-          testTimeout: TEST_TIMEOUTS.SHORT,
-        },
-      };
-
-      const config = createVitestConfig(options, overrides);
-
-      expect((config as any).test.testTimeout).toBe(TEST_TIMEOUTS.SHORT);
-      expectCoverageConfig(config, {
-        reporter: ['text', 'lcov'],
-        reportsDirectory: mockPath(
-          'packages',
-          'test-package',
-          '.coverage',
-          'unit-tests',
-        ),
-        exclude: DEFAULT_EXCLUDES,
-      });
-    });
-
-    it('should handle coverage options as null', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'unit',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-      };
-
-      const overrides: VitestOverrides = {
-        test: {
-          coverage: null as any,
-          testTimeout: TEST_TIMEOUTS.SHORT,
-        },
-      };
-
-      const config = createVitestConfig(options, overrides);
-
-      expect((config as any).test.testTimeout).toBe(TEST_TIMEOUTS.SHORT);
-      expectCoverageConfig(config, {
-        reporter: ['text', 'lcov'],
-        reportsDirectory: mockPath(
-          'packages',
-          'test-package',
-          '.coverage',
-          'unit-tests',
-        ),
-        exclude: DEFAULT_EXCLUDES,
-      });
-    });
-  });
-
-  describe('edge cases and error handling', () => {
+  describe('test kind variations', () => {
     it('should handle all test kinds correctly', () => {
       const testKinds: TestKind[] = ['unit', 'int', 'e2e'];
 
       testKinds.forEach(kind => {
-        const options: VitestConfigFactoryOptions = {
-          projectKey: 'test-package',
-          kind,
-          projectRoot: MOCK_PROJECT_ROOT_STRING,
-        };
-
-        const config = createVitestConfig(options);
+        const config = createVitestConfig('test-package', kind);
 
         const expectedIncludes = {
-          unit: ['src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+          unit: [
+            'src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+            'src/**/*.type.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+          ],
           int: ['src/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
           e2e: ['tests/**/*.e2e.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
         };
@@ -676,69 +269,96 @@ describe('createVitestConfig', () => {
         expect((config as any).test.include).toStrictEqual(
           expectedIncludes[kind],
         );
+
+        const expectedGlobalSetup = {
+          unit: ['../../global-setup.ts'],
+          int: ['../../global-setup.ts'],
+          e2e: undefined,
+        };
+
         expect((config as any).test.globalSetup).toStrictEqual(
-          kind === 'e2e' ? undefined : [mockPath('global-setup.ts')],
+          expectedGlobalSetup[kind],
         );
       });
     });
+  });
 
-    it('should handle complex override scenarios', () => {
-      const options: VitestConfigFactoryOptions = {
-        projectKey: 'test-package',
-        kind: 'int',
-        projectRoot: MOCK_PROJECT_ROOT_STRING,
-        cacheKey: 'complex-scenario',
-      };
+  describe('coverage configuration', () => {
+    it('should enable coverage for unit tests by default', () => {
+      const config = createVitestConfig('test-package', 'unit');
 
-      const overrides: VitestOverrides = {
-        test: {
-          setupFiles: ['setup1.ts', 'setup2.ts'],
-          coverage: {
-            enabled: true,
-            exclude: ['e2e/**', 'dist/**'],
-            reporter: ['lcov', 'text-summary'],
-            thresholds: {
-              global: {
-                statements: 90,
-                branches: 85,
-                functions: 90,
-                lines: 90,
-              },
-            },
-          },
-          testTimeout: TEST_TIMEOUTS.LONG,
-          environment: 'jsdom' as any,
-        },
-        build: {
-          target: 'es2020',
-        },
-      };
+      expect((config as any).test.coverage).toBeDefined();
+      expect((config as any).test.coverage.reporter).toEqual(['text', 'lcov']);
+    });
 
-      const config = createVitestConfig(options, overrides);
+    it('should enable coverage for integration tests by default', () => {
+      const config = createVitestConfig('test-package', 'int');
 
-      expect(config).toEqual(
-        expect.objectContaining({
-          cacheDir: mockPath('node_modules', '.vite', 'complex-scenario'),
-          build: {
-            target: 'es2020',
-          },
-          test: expect.objectContaining({
-            setupFiles: [mockPath('setup1.ts'), mockPath('setup2.ts')],
-            testTimeout: TEST_TIMEOUTS.LONG,
-            environment: 'jsdom',
-            include: EXPECTED_INCLUDES.int,
-            coverage: expect.objectContaining({
-              exclude: ['mocks/**', '**/types.ts', 'e2e/**', 'dist/**'],
-              reportsDirectory: mockPath(
-                'packages',
-                'test-package',
-                '.coverage',
-                'int-tests',
-              ),
-            }),
-          }),
-        }),
+      expect((config as any).test.coverage).toBeDefined();
+    });
+
+    it('should disable coverage for e2e tests by default', () => {
+      const config = createVitestConfig('test-package', 'e2e');
+
+      expect((config as any).test.coverage).toBeUndefined();
+    });
+
+    it('should always exclude mocks, types.ts, and perf folders', () => {
+      const config = createVitestConfig('test-package', 'unit');
+
+      expect((config as any).test.coverage.exclude).toEqual([
+        'mocks/**',
+        '**/types.ts',
+        'perf/**',
+      ]);
+    });
+  });
+
+  describe('relative paths', () => {
+    it('should use relative paths for all file references', () => {
+      const config = createVitestConfig('test-package', 'unit');
+
+      // Setup files should be relative
+      const setupFiles = (config as any).test.setupFiles;
+      expect(setupFiles[0]).toMatch(/^\.\.\/\.\.\//);
+
+      // GlobalSetup should be relative
+      expect((config as any).test.globalSetup[0]).toBe('../../global-setup.ts');
+
+      // Cache dirs should be relative
+      expect(config.cacheDir).toMatch(/^\.\.\/\.\.\//);
+      expect((config as any).test.cache.dir).toMatch(/^\.\.\/\.\.\//);
+
+      // Coverage directory should be relative
+      expect((config as any).test.coverage.reportsDirectory).toMatch(
+        /^\.\.\/\.\.\//,
       );
+    });
+  });
+
+  describe('edge cases', () => {
+    it('should handle empty projectKey gracefully', () => {
+      const config = createVitestConfig('', 'unit');
+
+      expect(config.cacheDir).toBe('../../node_modules/.vite/');
+      expect((config as any).test.coverage.reportsDirectory).toBe(
+        '../../coverage//unit-tests',
+      );
+    });
+
+    it('should handle projectKey with special characters', () => {
+      const config = createVitestConfig('my-special_package.v2', 'unit');
+
+      expect(config.cacheDir).toBe(
+        '../../node_modules/.vite/my-special_package.v2',
+      );
+    });
+
+    it('should not modify config when no options provided to e2e', () => {
+      const config = createVitestConfig('test-package', 'e2e');
+
+      expect((config as any).test.testTimeout).toBeUndefined();
+      expect((config as any).test.globalSetup).toBeUndefined();
     });
   });
 });

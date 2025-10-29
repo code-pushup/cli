@@ -1,17 +1,16 @@
 /// <reference types="vitest" />
-import { createE2eConfig } from '../../testing/test-setup-config/src/lib/vitest-setup-presets.js';
+import type { UserConfig } from 'vite';
+import { createE2ETestConfig } from '../../testing/test-setup-config/src/index.js';
 
-export default createE2eConfig(
-  'ci-e2e',
-  {
-    projectRoot: new URL('../../', import.meta.url),
-    cacheKey: 'ci-e2e',
+const baseConfig = createE2ETestConfig('ci-e2e', {
+  testTimeout: 60_000,
+  disableCoverage: true,
+});
+
+export default {
+  ...baseConfig,
+  test: {
+    ...(baseConfig as any).test,
+    globalSetup: ['./global-setup.ts'],
   },
-  {
-    test: {
-      testTimeout: 60_000,
-      globalSetup: ['./global-setup.ts'],
-      coverage: { enabled: false },
-    },
-  },
-);
+} as UserConfig;

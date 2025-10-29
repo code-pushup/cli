@@ -1,16 +1,6 @@
 /// <reference types="vitest" />
-import { createE2eConfig } from '../../testing/test-setup-config/src/lib/vitest-setup-presets.js';
+import { createE2ETestConfig } from '../../testing/test-setup-config/src/index.js';
 
-export default createE2eConfig(
-  'plugin-typescript-e2e',
-  {
-    projectRoot: new URL('../../', import.meta.url),
-    cacheKey: 'plugin-typescript-e2e',
-  },
-  {
-    test: {
-      testTimeout: 20_000,
-      coverage: { enabled: true },
-    },
-  },
-);
+export default createE2ETestConfig('plugin-typescript-e2e', {
+  testTimeout: 20_000,
+});

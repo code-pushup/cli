@@ -1,84 +1,71 @@
+import type { UserConfig as ViteUserConfig } from 'vite';
 import {
-  type ConfigRestParams,
-  type VitestOverrides,
+  type E2ETestOptions,
   createVitestConfig,
 } from './vitest-config-factory.js';
 
-const CONSOLE_MOCK_PATH = 'testing/test-setup/src/lib/console.mock.ts';
-const RESET_MOCKS_PATH = 'testing/test-setup/src/lib/reset.mocks.ts';
+/**
+ * Creates a standardized Vitest configuration for unit tests.
+ *
+ * @param projectKey - The project name (used for cache and coverage directory naming)
+ * @returns Vitest configuration object
+ *
+ * @example
+ * ```typescript
+ * export default createUnitTestConfig('my-package');
+ * ```
+ */
+export function createUnitTestConfig(projectKey: string): ViteUserConfig {
+  return createVitestConfig(projectKey, 'unit');
+}
 
-export const setupPresets = {
-  unit: {
-    base: [
-      CONSOLE_MOCK_PATH,
-      RESET_MOCKS_PATH,
-      'testing/test-setup/src/lib/cliui.mock.ts',
-      'testing/test-setup/src/lib/fs.mock.ts',
-      'testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
-    ],
-    git: ['testing/test-setup/src/lib/git.mock.ts'],
-    portalClient: ['testing/test-setup/src/lib/portal-client.mock.ts'],
-    matchersCore: [
-      'testing/test-setup/src/lib/extend/markdown-table.matcher.ts',
-      'testing/test-setup/src/lib/extend/jest-extended.matcher.ts',
-    ],
-    matcherPath: ['testing/test-setup/src/lib/extend/path.matcher.ts'],
-  },
-  int: {
-    base: [CONSOLE_MOCK_PATH, RESET_MOCKS_PATH],
-    cliui: ['testing/test-setup/src/lib/cliui.mock.ts'],
-    fs: ['testing/test-setup/src/lib/fs.mock.ts'],
-    git: ['testing/test-setup/src/lib/git.mock.ts'],
-    portalClient: ['testing/test-setup/src/lib/portal-client.mock.ts'],
-    matcherPath: ['testing/test-setup/src/lib/extend/path.matcher.ts'],
-    chromePath: ['testing/test-setup/src/lib/chrome-path.mock.ts'],
-  },
-  e2e: {
-    base: [RESET_MOCKS_PATH],
-  },
-} as const;
+/**
+ * Creates a standardized Vitest configuration for integration tests.
+ *
+ * @param projectKey - The project name (used for cache and coverage directory naming)
+ * @returns Vitest configuration object
+ *
+ * @example
+ * ```typescript
+ * export default createIntTestConfig('my-package');
+ * ```
+ */
+export function createIntTestConfig(projectKey: string): ViteUserConfig {
+  return createVitestConfig(projectKey, 'int');
+}
 
-export const createUnitConfig = (
+/**
+ * Creates a standardized Vitest configuration for E2E tests.
+ *
+ * @param projectKey - The project name (used for cache and coverage directory naming)
+ * @param options - Optional configuration for E2E tests
+ * @returns Vitest configuration object
+ *
+ * @example
+ * ```typescript
+ * // Basic usage
+ * export default createE2ETestConfig('my-e2e');
+ *
+ * // With options
+ * export default createE2ETestConfig('my-e2e', {
+ *   testTimeout: 60_000,
+ *   disableCoverage: true,
+ * });
+ *
+ * // Override any config using spread operator
+ * const baseConfig = createE2ETestConfig('my-e2e', { testTimeout: 60_000 });
+ * export default {
+ *   ...baseConfig,
+ *   test: {
+ *     ...(baseConfig as any).test,
+ *     globalSetup: ['./custom-setup.ts'],
+ *   },
+ * };
+ * ```
+ */
+export function createE2ETestConfig(
   projectKey: string,
-  rest: ConfigRestParams,
-  overrides?: VitestOverrides,
-) => {
-  const finalSetupFiles = overrides?.test?.setupFiles ?? [
-    ...setupPresets.unit.base,
-  ];
-
-  return createVitestConfig(
-    { projectKey, kind: 'unit', ...rest },
-    { ...overrides, test: { ...overrides?.test, setupFiles: finalSetupFiles } },
-  );
-};
-
-export const createIntConfig = (
-  projectKey: string,
-  rest: ConfigRestParams,
-  overrides?: VitestOverrides,
-) => {
-  const finalSetupFiles = overrides?.test?.setupFiles ?? [
-    ...setupPresets.int.base,
-  ];
-
-  return createVitestConfig(
-    { projectKey, kind: 'int', ...rest },
-    { ...overrides, test: { ...overrides?.test, setupFiles: finalSetupFiles } },
-  );
-};
-
-export const createE2eConfig = (
-  projectKey: string,
-  rest: ConfigRestParams,
-  overrides?: VitestOverrides,
-) => {
-  const finalSetupFiles = overrides?.test?.setupFiles ?? [
-    ...setupPresets.e2e.base,
-  ];
-
-  return createVitestConfig(
-    { projectKey, kind: 'e2e', ...rest },
-    { ...overrides, test: { ...overrides?.test, setupFiles: finalSetupFiles } },
-  );
-};
+  options?: E2ETestOptions,
+): ViteUserConfig {
+  return createVitestConfig(projectKey, 'e2e', options);
+}
