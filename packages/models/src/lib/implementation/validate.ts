@@ -6,6 +6,15 @@ type SchemaValidationContext = {
   filePath?: string;
 };
 
+/**
+ * Autocompletes valid Zod Schema input for convience, but will accept any other data as well
+ */
+type ZodInputLooseAutocomplete<T extends ZodType> =
+  | z.input<T>
+  | {}
+  | null
+  | undefined;
+
 export class SchemaValidationError extends Error {
   constructor(
     error: ZodError,
@@ -29,10 +38,22 @@ export class SchemaValidationError extends Error {
 
 export function validate<T extends ZodType>(
   schema: T,
-  data: z.input<T> | {} | null | undefined, // loose autocomplete
+  data: ZodInputLooseAutocomplete<T>,
   context: SchemaValidationContext = {},
 ): z.output<T> {
   const result = schema.safeParse(data);
+  if (result.success) {
+    return result.data;
+  }
+  throw new SchemaValidationError(result.error, schema, context);
+}
+
+export async function validateAsync<T extends ZodType>(
+  schema: T,
+  data: ZodInputLooseAutocomplete<T>,
+  context: SchemaValidationContext = {},
+): Promise<z.output<T>> {
+  const result = await schema.safeParseAsync(data);
   if (result.success) {
     return result.data;
   }

@@ -1,7 +1,9 @@
 import ansis from 'ansis';
+import { vol } from 'memfs';
+import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
-import z, { ZodError } from 'zod';
-import { SchemaValidationError, validate } from './validate.js';
+import { ZodError, z } from 'zod';
+import { SchemaValidationError, validate, validateAsync } from './validate.js';
 
 describe('validate', () => {
   it('should return parsed data if valid', () => {
@@ -36,6 +38,76 @@ describe('validate', () => {
   → at address
 ✖ Invalid ISO date
   → at dateOfBirth`);
+  });
+
+  it('should throw if async schema provided (handled by validateAsync)', () => {
+    const projectNameSchema = z
+      .string()
+      .optional()
+      .transform(
+        async name =>
+          name || JSON.parse(await readFile('package.json', 'utf8')).name,
+      )
+      .meta({ title: 'ProjectName' });
+
+    expect(() => validate(projectNameSchema, undefined)).toThrow(
+      'Encountered Promise during synchronous parse. Use .parseAsync() instead.',
+    );
+  });
+});
+
+describe('validateAsync', () => {
+  it('should parse schema with async transform', async () => {
+    vol.fromJSON({ 'package.json': '{ "name": "core" }' }, '/test');
+    const projectNameSchema = z
+      .string()
+      .optional()
+      .transform(
+        async name =>
+          name || JSON.parse(await readFile('package.json', 'utf8')).name,
+      )
+      .meta({ title: 'ProjectName' });
+
+    await expect(validateAsync(projectNameSchema, undefined)).resolves.toBe(
+      'core',
+    );
+  });
+
+  it('should parse schema with async refinement', async () => {
+    vol.fromJSON({ 'package.json': '{}' }, '/test');
+    const filePathSchema = z
+      .string()
+      .refine(
+        file =>
+          stat(file)
+            .then(stats => stats.isFile())
+            .catch(() => false),
+        { error: 'File does not exist' },
+      )
+      .transform(file => path.resolve(process.cwd(), file))
+      .meta({ title: 'FilePath' });
+
+    await expect(validateAsync(filePathSchema, 'package.json')).resolves.toBe(
+      path.join(process.cwd(), 'package.json'),
+    );
+  });
+
+  it('should reject with formatted error if async schema is invalid', async () => {
+    vol.fromJSON({}, '/test');
+    const filePathSchema = z
+      .string()
+      .refine(
+        file =>
+          stat(file)
+            .then(stats => stats.isFile())
+            .catch(() => false),
+        { error: 'File does not exist' },
+      )
+      .meta({ title: 'FilePath' });
+
+    await expect(validateAsync(filePathSchema, 'package.json')).rejects.toThrow(
+      `Invalid ${ansis.bold('FilePath')}\n✖ File does not exist`,
+    );
   });
 });
 
