@@ -4,6 +4,7 @@ import {
   type ExcludeNullableProps,
   asyncSequential,
   hasNoNullableProps,
+  logger,
 } from '@code-pushup/utils';
 import {
   type CommandContext,
@@ -50,7 +51,6 @@ export async function runInMonorepoMode(
   env: RunEnv,
 ): Promise<MonorepoRunResult> {
   const { api, settings } = env;
-  const { logger } = settings;
 
   logger.info('Running Code PushUp in monorepo mode');
 
@@ -81,7 +81,7 @@ export async function runInMonorepoMode(
 
   const commentId = settings.skipComment
     ? null
-    : await commentOnPR(diffPath, api, logger);
+    : await commentOnPR(diffPath, api);
 
   return {
     mode: 'monorepo',
@@ -105,9 +105,7 @@ function runProjectsIndividually(
   projects: ProjectConfig[],
   env: RunEnv,
 ): Promise<ProjectRunResult[]> {
-  env.settings.logger.info(
-    `Running on ${projects.length} projects individually`,
-  );
+  logger.info(`Running on ${projects.length} projects individually`);
   return asyncSequential(projects, project => runOnProject(project, env));
 }
 
@@ -120,7 +118,6 @@ async function runProjectsInBulk(
     refs: { base },
     settings,
   } = env;
-  const { logger } = settings;
 
   logger.info(
     `Running on ${projects.length} projects in bulk (parallel: ${settings.parallel})`,
@@ -158,7 +155,7 @@ async function loadProjectEnvs(
   projectEnvs: ProjectEnv[];
   hasFormats: boolean;
 }> {
-  const { logger, configPatterns } = settings;
+  const { configPatterns } = settings;
 
   const projectEnvs: ProjectEnv[] = configPatterns
     ? projects.map(
@@ -214,7 +211,7 @@ async function compareProjectsInBulk(
   const uncachedProjectReports = projectReportsWithCache.filter(
     ({ prevReport }) => !prevReport,
   );
-  env.settings.logger.info(
+  logger.info(
     `${currProjectReports.length - uncachedProjectReports.length} out of ${currProjectReports.length} projects loaded previous report from artifact cache`,
   );
 
@@ -292,7 +289,7 @@ async function collectPreviousReports(
   env: RunEnv,
 ): Promise<Record<string, ReportData<'previous'>>> {
   const { settings } = env;
-  const { logger, configPatterns } = settings;
+  const { configPatterns } = settings;
 
   if (uncachedProjectReports.length === 0) {
     return {};
@@ -380,9 +377,7 @@ async function collectMany(
   const countText = onlyProjects
     ? `${onlyProjects.length} previous`
     : 'all current';
-  settings.logger.debug(
-    `Collected ${countText} reports using command \`${command}\``,
-  );
+  logger.debug(`Collected ${countText} reports using command \`${command}\``);
 }
 
 async function compareMany(
@@ -402,7 +397,7 @@ async function compareMany(
 
   await runCompare(ctx, { hasFormats });
 
-  settings.logger.debug('Compared all project reports');
+  logger.debug('Compared all project reports');
 }
 
 export function allProjectsHaveDefaultPersistFormats(

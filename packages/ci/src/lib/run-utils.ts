@@ -13,6 +13,7 @@ import {
   type Diff,
   createReportPath,
   interpolate,
+  logger,
   objectFromEntries,
   readJsonFile,
   removeUndefinedAndEmptyProps,
@@ -34,7 +35,6 @@ import type {
   ConfigPatterns,
   GitBranch,
   GitRefs,
-  Logger,
   Options,
   ProjectRunResult,
   ProviderAPIClient,
@@ -90,10 +90,7 @@ export async function createRunEnv(
   options: Options | undefined,
   git: SimpleGit,
 ): Promise<RunEnv> {
-  const inferredVerbose: boolean =
-    options?.debug === true || options?.silent === false;
-  // eslint-disable-next-line functional/immutable-data
-  process.env['CP_VERBOSE'] = `${inferredVerbose}`;
+  logger.setVerbose(options?.debug === true || options?.silent === false);
 
   const [head, base] = await Promise.all([
     normalizeGitRef(refs.head, git),
@@ -112,17 +109,14 @@ export async function createRunEnv(
 }
 
 function sanitizeOptions(options: Options): Options {
-  const logger = options.logger ?? DEFAULT_SETTINGS.logger;
-
   return removeUndefinedAndEmptyProps({
     ...options,
-    searchCommits: sanitizeSearchCommits(options.searchCommits, logger),
+    searchCommits: sanitizeSearchCommits(options.searchCommits),
   });
 }
 
 function sanitizeSearchCommits(
   searchCommits: Options['searchCommits'],
-  logger: Logger,
 ): Options['searchCommits'] {
   if (
     typeof searchCommits === 'number' &&
@@ -147,7 +141,6 @@ export async function runOnProject(
     refs: { head, base },
     settings,
   } = env;
-  const logger = settings.logger;
 
   const ctx = createCommandContext(settings, project);
 
@@ -201,7 +194,6 @@ export async function compareReports(
 ): Promise<ProjectRunResult> {
   const { ctx, env, config } = args;
   const { settings } = env;
-  const { logger } = settings;
 
   await prepareReportFilesToCompare(args);
   await runCompare(ctx, { hasFormats: hasDefaultPersistFormats(config) });
@@ -218,13 +210,12 @@ export async function compareReports(
 export async function prepareReportFilesToCompare(
   args: CompareReportsArgs,
 ): Promise<Diff<string>> {
-  const { config, project, env, ctx } = args;
+  const { config, project, ctx } = args;
   const {
     outputDir = DEFAULT_PERSIST_OUTPUT_DIR,
     filename = DEFAULT_PERSIST_FILENAME,
   } = config.persist ?? {};
   const label = project?.name;
-  const { logger } = env.settings;
 
   const originalReports = await Promise.all(
     [args.currReport, args.prevReport].map(({ files }) =>
@@ -320,7 +311,7 @@ export async function collectPreviousReport(
 ): Promise<ReportData<'previous'> | null> {
   const { ctx, env, base, project } = args;
   const { settings } = env;
-  const { logger, configPatterns } = settings;
+  const { configPatterns } = settings;
 
   const cachedBaseReport = await loadCachedBaseReport(args);
   if (cachedBaseReport) {
@@ -374,10 +365,9 @@ async function loadCachedBaseReportFromArtifacts(
   args: BaseReportArgs,
 ): Promise<string | null> {
   const {
-    env: { api, settings },
+    env: { api },
     project,
   } = args;
-  const { logger } = settings;
 
   if (api.downloadReportArtifact == null) {
     return null;
@@ -408,7 +398,6 @@ async function loadCachedBaseReportFromPortal(
     env: { settings },
     base,
   } = args;
-  const { logger } = settings;
 
   if (!config.upload) {
     return null;
@@ -450,10 +439,7 @@ export async function runInBaseBranch<T>(
   env: RunEnv,
   fn: () => Promise<T>,
 ): Promise<T> {
-  const {
-    git,
-    settings: { logger },
-  } = env;
+  const { git } = env;
 
   await git.fetch('origin', base.ref, ['--depth=1']);
   await git.checkout(['-f', base.sha]);
@@ -470,13 +456,7 @@ export async function runInBaseBranch<T>(
 export async function checkPrintConfig(
   args: BaseReportArgs,
 ): Promise<EnhancedPersistConfig | null> {
-  const {
-    project,
-    ctx,
-    base,
-    env: { settings },
-  } = args;
-  const { logger } = settings;
+  const { project, ctx, base } = args;
 
   const operation = project
     ? `Executing print-config for project ${project.name}`
@@ -549,10 +529,7 @@ export async function findNewIssues(
     prevReport,
     config,
     ctx,
-    env: {
-      git,
-      settings: { logger },
-    },
+    env: { git },
   } = args;
 
   const diffFiles = persistedFilesFromConfig(config, {

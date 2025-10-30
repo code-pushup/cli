@@ -18,6 +18,7 @@ import {
   type CoreConfig,
   DEFAULT_PERSIST_FILENAME,
   DEFAULT_PERSIST_FORMAT,
+  DEFAULT_PERSIST_SKIP_REPORT,
 } from '@code-pushup/models';
 import {
   cleanTestFolder,
@@ -26,11 +27,11 @@ import {
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import type {
   Comment,
   GitBranch,
   GitRefs,
-  Logger,
   Options,
   ProviderAPIClient,
   RunResult,
@@ -89,17 +90,9 @@ function simulateDownloadReportFromPortal() {
 }
 
 describe('runInCI', () => {
-  const logger: Logger = {
-    error: vi.fn(),
-    warn: vi.fn(),
-    info: vi.fn(),
-    debug: vi.fn(),
-  };
-
   const options = {
     bin: 'npx code-pushup',
     directory: workDir,
-    logger,
   } satisfies Options;
 
   const mockComment: Comment = {
@@ -741,6 +734,7 @@ describe('runInCI', () => {
                     outputDir: persistOutputDir,
                     filename: DEFAULT_PERSIST_FILENAME,
                     format: DEFAULT_PERSIST_FORMAT,
+                    skipReports: DEFAULT_PERSIST_SKIP_REPORT,
                   },
                 },
               },
@@ -1011,6 +1005,7 @@ describe('runInCI', () => {
                     outputDir: persistOutputDir,
                     filename: DEFAULT_PERSIST_FILENAME,
                     format: DEFAULT_PERSIST_FORMAT,
+                    skipReports: DEFAULT_PERSIST_SKIP_REPORT,
                   },
                 },
               },
