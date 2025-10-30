@@ -42,16 +42,24 @@ describe('vitest-setup-files', () => {
     });
 
     describe('integration test setup files', () => {
-      it('should return exactly 6 setup files with correct includes', () => {
+      it('should return exactly 7 setup files with essential mocks and custom matchers', () => {
         const setupFiles = getSetupFiles('int');
 
-        expect(setupFiles).toHaveLength(6);
+        expect(setupFiles).toHaveLength(7);
         expect(setupFiles).toContain(
           '../../testing/test-setup/src/lib/console.mock.ts',
         );
         expect(setupFiles).toContain(
           '../../testing/test-setup/src/lib/reset.mocks.ts',
         );
+        expect(setupFiles).toContain(
+          '../../testing/test-setup/src/lib/chrome-path.mock.ts',
+        );
+      });
+
+      it('should include custom matchers for integration tests', () => {
+        const setupFiles = getSetupFiles('int');
+
         expect(setupFiles).toContain(
           '../../testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
         );
@@ -133,7 +141,6 @@ describe('vitest-setup-files', () => {
         const intFiles = getSetupFiles('int');
         const e2eFiles = getSetupFiles('e2e');
 
-        // All paths should start with ../../
         [...unitFiles, ...intFiles, ...e2eFiles].forEach(path => {
           expect(path).toMatch(/^\.\.\/\.\.\//);
         });
@@ -144,8 +151,6 @@ describe('vitest-setup-files', () => {
       it('should return a readonly array', () => {
         const setupFiles = getSetupFiles('unit');
 
-        // TypeScript will enforce readonly at compile time,
-        // but we can verify it's an array at runtime
         expect(Array.isArray(setupFiles)).toBe(true);
       });
     });
@@ -156,7 +161,6 @@ describe('vitest-setup-files', () => {
         const intFiles = getSetupFiles('int');
         const e2eFiles = getSetupFiles('e2e');
 
-        // Different lengths means different setup files
         expect(unitFiles.length).not.toBe(intFiles.length);
         expect(intFiles.length).not.toBe(e2eFiles.length);
         expect(unitFiles.length).not.toBe(e2eFiles.length);

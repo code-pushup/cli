@@ -20,10 +20,10 @@ const CUSTOM_MATCHERS = [
  * which is why they use `../../` to navigate to the workspace root first.
  */
 const UNIT_TEST_SETUP_FILES = [
+  '../../testing/test-setup/src/lib/fs.mock.ts',
   '../../testing/test-setup/src/lib/console.mock.ts',
   '../../testing/test-setup/src/lib/reset.mocks.ts',
   '../../testing/test-setup/src/lib/cliui.mock.ts',
-  '../../testing/test-setup/src/lib/fs.mock.ts',
   '../../testing/test-setup/src/lib/git.mock.ts',
   '../../testing/test-setup/src/lib/portal-client.mock.ts',
   ...CUSTOM_MATCHERS,
@@ -34,10 +34,12 @@ const UNIT_TEST_SETUP_FILES = [
  *
  * These paths are relative to the config file location (typically `packages/<project>/vitest.int.config.ts`),
  * which is why they use `../../` to navigate to the workspace root first.
+
  */
 const INT_TEST_SETUP_FILES = [
   '../../testing/test-setup/src/lib/console.mock.ts',
   '../../testing/test-setup/src/lib/reset.mocks.ts',
+  '../../testing/test-setup/src/lib/chrome-path.mock.ts',
   ...CUSTOM_MATCHERS,
 ] as const;
 

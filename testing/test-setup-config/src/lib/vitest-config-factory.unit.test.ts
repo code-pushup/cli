@@ -134,11 +134,9 @@ describe('createVitestConfig', () => {
       const config = createVitestConfig('test-package', 'int');
 
       const setupFiles = config.test!.setupFiles;
-      // Should include console mock
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/console.mock.ts',
       );
-      // Should NOT include fs, cliui, or git mocks (integration tests need real implementations)
       expect(setupFiles).not.toContain(
         '../../testing/test-setup/src/lib/fs.mock.ts',
       );
@@ -148,9 +146,11 @@ describe('createVitestConfig', () => {
       expect(setupFiles).not.toContain(
         '../../testing/test-setup/src/lib/git.mock.ts',
       );
-      // Should include all matchers
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/extend/path.matcher.ts',
+      );
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
       );
     });
 
