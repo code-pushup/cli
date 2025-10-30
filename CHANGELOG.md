@@ -1,3 +1,13 @@
+## 0.84.0 (2025-10-30)
+
+### 🚀 Features
+
+- **ci:** use new shared logger, remove option ([6f134e62](https://github.com/code-pushup/cli/commit/6f134e62))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.83.0 (2025-10-29)
 
 ### 🚀 Features
