@@ -1,5 +1,5 @@
 import { DEFAULT_PERSIST_FORMAT } from '@code-pushup/models';
-import { executeProcess, isVerbose } from '@code-pushup/utils';
+import { executeProcess } from '@code-pushup/utils';
 import type { CommandContext } from '../context.js';
 
 export async function runCompare(
@@ -10,7 +10,6 @@ export async function runCompare(
     command: bin,
     args: [
       'compare',
-      ...(isVerbose() ? ['--verbose'] : []),
       ...(config ? [`--config=${config}`] : []),
       ...(hasFormats
         ? []

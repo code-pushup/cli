@@ -2,7 +2,6 @@ import { rm } from 'node:fs/promises';
 import path from 'node:path';
 import {
   executeProcess,
-  isVerbose,
   readJsonFile,
   stringifyError,
 } from '@code-pushup/utils';
@@ -31,7 +30,6 @@ export async function runPrintConfig({
     args: [
       ...(config ? [`--config=${config}`] : []),
       'print-config',
-      ...(isVerbose() ? ['--verbose'] : []),
       `--output=${outputPath}`,
     ],
     cwd: directory,

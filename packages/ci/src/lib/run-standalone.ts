@@ -1,3 +1,4 @@
+import { logger } from '@code-pushup/utils';
 import { commentOnPR } from './comment.js';
 import type { StandaloneRunResult } from './models.js';
 import { type RunEnv, runOnProject } from './run-utils.js';
@@ -6,7 +7,6 @@ export async function runInStandaloneMode(
   env: RunEnv,
 ): Promise<StandaloneRunResult> {
   const { api, settings } = env;
-  const { logger } = settings;
 
   logger.info('Running Code PushUp in standalone project mode');
 
@@ -14,7 +14,7 @@ export async function runInStandaloneMode(
 
   const commentMdPath = files.comparison?.md;
   if (!settings.skipComment && commentMdPath) {
-    const commentId = await commentOnPR(commentMdPath, api, logger);
+    const commentId = await commentOnPR(commentMdPath, api);
     return {
       mode: 'standalone',
       files,

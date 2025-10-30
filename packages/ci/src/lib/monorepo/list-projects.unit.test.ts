@@ -19,12 +19,6 @@ describe('listMonorepoProjects', () => {
     nxProjectsFilter: '--with-target={task}',
     directory: MEMFS_VOLUME,
     bin: 'npx --no-install code-pushup',
-    logger: {
-      error: vi.fn(),
-      warn: vi.fn(),
-      info: vi.fn(),
-      debug: vi.fn(),
-    },
   };
 
   const pkgJsonContent = (content: PackageJson): string =>

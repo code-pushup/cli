@@ -13,7 +13,6 @@ export const DEFAULT_SETTINGS: Settings = {
   silent: false,
   debug: false,
   detectNewIssues: true,
-  logger: console,
   nxProjectsFilter: '--with-target={task}',
   skipComment: false,
   configPatterns: null,

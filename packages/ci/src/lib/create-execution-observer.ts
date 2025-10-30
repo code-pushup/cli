@@ -1,4 +1,4 @@
-import { type ProcessObserver, isVerbose } from '@code-pushup/utils';
+import { type ProcessObserver, logger } from '@code-pushup/utils';
 
 export function createExecutionObserver(
   {
@@ -9,11 +9,11 @@ export function createExecutionObserver(
 ): ProcessObserver {
   return {
     onStderr: stderr => {
-      console.warn(stderr);
+      logger.warn(stderr);
     },
-    ...((!silent || isVerbose()) && {
+    ...((!silent || logger.isVerbose()) && {
       onStdout: stdout => {
-        console.info(stdout);
+        logger.info(stdout);
       },
     }),
   };

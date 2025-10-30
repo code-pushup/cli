@@ -1,5 +1,5 @@
 import { DEFAULT_PERSIST_FORMAT } from '@code-pushup/models';
-import { executeProcess, isVerbose } from '@code-pushup/utils';
+import { executeProcess } from '@code-pushup/utils';
 import type { CommandContext } from '../context.js';
 
 export async function runCollect(
@@ -9,7 +9,6 @@ export async function runCollect(
   await executeProcess({
     command: bin,
     args: [
-      ...(isVerbose() ? ['--verbose'] : []),
       ...(config ? [`--config=${config}`] : []),
       ...(hasFormats
         ? []
