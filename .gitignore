@@ -32,7 +32,6 @@ node_modules
 /.sass-cache
 /connect.lock
 /coverage
-**/.coverage/**
 /examples/react-todos-app/coverage
 /libpeerconnection.log
 npm-debug.log

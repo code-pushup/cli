@@ -6,7 +6,7 @@ More on this subject as well as all the testing strategy principles can be found
 
 ## Shared config
 
-[README](./src/lib/config/README.md) how to use vitest config factory.
+See [`@code-pushup/test-setup-config` docs](../test-setup-config/README.md) on how to use our Vitest config factory.
 
 ## Mock setup
 

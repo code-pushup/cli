@@ -1,6 +1,19 @@
 import type { TestKind } from './vitest-config-factory.js';
 
 /**
+ * Custom matchers that extend Vitest's assertion library.
+ *
+ * These paths are relative to the config file location,
+ * which is why they use `../../` to navigate to the workspace root first.
+ */
+const CUSTOM_MATCHERS = [
+  '../../testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
+  '../../testing/test-setup/src/lib/extend/markdown-table.matcher.ts',
+  '../../testing/test-setup/src/lib/extend/jest-extended.matcher.ts',
+  '../../testing/test-setup/src/lib/extend/path.matcher.ts',
+] as const;
+
+/**
  * Setup files for unit tests.
  *
  * These paths are relative to the config file location (typically `packages/<project>/vitest.unit.config.ts`),
@@ -13,10 +26,7 @@ const UNIT_TEST_SETUP_FILES = [
   '../../testing/test-setup/src/lib/fs.mock.ts',
   '../../testing/test-setup/src/lib/git.mock.ts',
   '../../testing/test-setup/src/lib/portal-client.mock.ts',
-  '../../testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
-  '../../testing/test-setup/src/lib/extend/markdown-table.matcher.ts',
-  '../../testing/test-setup/src/lib/extend/jest-extended.matcher.ts',
-  '../../testing/test-setup/src/lib/extend/path.matcher.ts',
+  ...CUSTOM_MATCHERS,
 ] as const;
 
 /**
@@ -28,10 +38,7 @@ const UNIT_TEST_SETUP_FILES = [
 const INT_TEST_SETUP_FILES = [
   '../../testing/test-setup/src/lib/console.mock.ts',
   '../../testing/test-setup/src/lib/reset.mocks.ts',
-  '../../testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
-  '../../testing/test-setup/src/lib/extend/markdown-table.matcher.ts',
-  '../../testing/test-setup/src/lib/extend/jest-extended.matcher.ts',
-  '../../testing/test-setup/src/lib/extend/path.matcher.ts',
+  ...CUSTOM_MATCHERS,
 ] as const;
 
 /**
@@ -42,10 +49,7 @@ const INT_TEST_SETUP_FILES = [
  */
 const E2E_TEST_SETUP_FILES = [
   '../../testing/test-setup/src/lib/reset.mocks.ts',
-  '../../testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
-  '../../testing/test-setup/src/lib/extend/markdown-table.matcher.ts',
-  '../../testing/test-setup/src/lib/extend/jest-extended.matcher.ts',
-  '../../testing/test-setup/src/lib/extend/path.matcher.ts',
+  ...CUSTOM_MATCHERS,
 ] as const;
 
 /**

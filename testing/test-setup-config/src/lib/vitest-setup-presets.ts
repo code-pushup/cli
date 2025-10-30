@@ -50,17 +50,6 @@ export function createIntTestConfig(projectKey: string): ViteUserConfig {
  * export default createE2ETestConfig('my-e2e', {
  *   testTimeout: 60_000,
  * });
- *
- * // Override any config using spread operator
- * const baseConfig = createE2ETestConfig('my-e2e', { testTimeout: 60_000 });
- * export default {
- *   ...baseConfig,
- *   test: {
- *     ...(baseConfig as any).test,
- *     globalSetup: ['./custom-setup.ts'],
- *   },
- * };
- * ```
  */
 export function createE2ETestConfig(
   projectKey: string,

@@ -1,4 +1,4 @@
-import type { CoverageOptions, InlineConfig } from 'vitest';
+import type { CoverageOptions } from 'vitest';
 import { type UserConfig as ViteUserConfig, defineConfig } from 'vitest/config';
 import { getSetupFiles } from './vitest-setup-files.js';
 import { tsconfigPathAliases } from './vitest-tsconfig-path-aliases.js';
@@ -8,8 +8,6 @@ export type TestKind = 'unit' | 'int' | 'e2e';
 export type E2ETestOptions = {
   testTimeout?: number;
 };
-
-export type VitestConfig = ViteUserConfig & { test?: InlineConfig };
 
 function getIncludePatterns(kind: TestKind): string[] {
   switch (kind) {
@@ -25,10 +23,6 @@ function getIncludePatterns(kind: TestKind): string[] {
   }
 }
 
-function getGlobalSetup(kind: TestKind): string[] | undefined {
-  return kind === 'e2e' ? undefined : ['../../global-setup.ts'];
-}
-
 function buildCoverageConfig(
   projectKey: string,
   kind: TestKind,
@@ -37,13 +31,13 @@ function buildCoverageConfig(
     return undefined;
   }
 
-  const defaultExclude = ['mocks/**', '**/types.ts', 'perf/**'];
+  const exclude = ['mocks/**', '**/types.ts', 'perf/**'];
   const reportsDirectory = `../../coverage/${projectKey}/${kind}-tests`;
 
   return {
     reporter: ['text', 'lcov'],
     reportsDirectory,
-    exclude: defaultExclude,
+    exclude: exclude,
   };
 }
 
@@ -54,7 +48,7 @@ export function createVitestConfig(
 ): ViteUserConfig {
   const coverage = buildCoverageConfig(projectKey, kind);
 
-  const config: VitestConfig = {
+  const config: ViteUserConfig = {
     cacheDir: `../../node_modules/.vite/${projectKey}`,
     test: {
       reporters: ['basic'],
@@ -67,7 +61,7 @@ export function createVitestConfig(
       poolOptions: { threads: { singleThread: true } },
       environment: 'node',
       include: getIncludePatterns(kind),
-      globalSetup: getGlobalSetup(kind),
+      globalSetup: ['../../global-setup.ts'],
       setupFiles: [...getSetupFiles(kind)],
       ...(options?.testTimeout ? { testTimeout: options.testTimeout } : {}),
       ...(coverage ? { coverage } : {}),
