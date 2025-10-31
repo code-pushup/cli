@@ -1,5 +1,5 @@
-import * as process from 'node:process';
 import { describe, expect } from 'vitest';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
   createNodesContext,
   invokeCreateNodesOnVirtualFiles,
@@ -23,7 +23,7 @@ describe('createNodesContext', () => {
     const context = createNodesContext();
     expect(context).toStrictEqual(
       expect.objectContaining({
-        workspaceRoot: process.cwd(),
+        workspaceRoot: MEMFS_VOLUME,
         nxJsonConfiguration: {},
       }),
     );

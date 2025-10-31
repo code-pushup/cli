@@ -10,7 +10,7 @@ import {
 import { osAgnosticPath } from './os-agnostic-paths.js';
 
 describe('osAgnosticPath', () => {
-  const cwdSpy: MockInstance<[], string> = vi.spyOn(process, 'cwd');
+  let cwdSpy: MockInstance<[], string>;
 
   it('should forward nullish paths on Linux/macOS and Windows', () => {
     expect(osAgnosticPath(undefined)).toBeUndefined();
@@ -20,11 +20,12 @@ describe('osAgnosticPath', () => {
     const unixCwd = '/Users/jerry';
 
     beforeEach(() => {
+      cwdSpy = vi.spyOn(process, 'cwd');
       cwdSpy.mockReturnValue(unixCwd);
     });
 
     afterEach(() => {
-      cwdSpy.mockReset();
+      cwdSpy.mockRestore();
     });
 
     it('should convert a path within the CWD to an OS-agnostic path on Linux/macOS', () => {
@@ -74,11 +75,12 @@ describe('osAgnosticPath', () => {
     const windowsCWD = String.raw`D:\users\jerry`;
 
     beforeEach(() => {
+      cwdSpy = vi.spyOn(process, 'cwd');
       cwdSpy.mockReturnValue(windowsCWD);
     });
 
     afterEach(() => {
-      cwdSpy.mockReset();
+      cwdSpy.mockRestore();
     });
 
     it('should return paths outside of CWD on Windows', () => {

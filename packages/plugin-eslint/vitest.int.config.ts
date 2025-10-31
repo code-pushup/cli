@@ -1,29 +1,32 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vitest/config';
-import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases.js';
+// import { tsconfigPathAliases } from '../../testing/test-setup-config/src/lib/vitest-tsconfig-path-aliases';
+// import { defineConfig } from 'vitest/config';
+// // import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases.js';
+// export default defineConfig({
+//   cacheDir: '../../node_modules/.vite/plugin-eslint',
+//   test: {
+//     reporters: ['basic'],
+//     globals: true,
+//     cache: {
+//       dir: '../../node_modules/.vitest',
+//     },
+//     alias: tsconfigPathAliases(),
+//     pool: 'threads',
+//     poolOptions: { threads: { singleThread: true } },
+//     coverage: {
+//       reporter: ['text', 'lcov'],
+//       reportsDirectory: '../../coverage/plugin-eslint/int-tests',
+//       exclude: ['mocks/**', '**/types.ts'],
+//     },
+//     environment: 'node',
+//     include: ['src/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+//     globalSetup: ['../../global-setup.ts'],
+//     setupFiles: [
+//       '../../testing/test-setup/src/lib/console.mock.ts',
+//       '../../testing/test-setup/src/lib/reset.mocks.ts',
+//     ],
+//   },
+// });
+import { createIntTestConfig } from '../../testing/test-setup-config/src/index.js';
 
-export default defineConfig({
-  cacheDir: '../../node_modules/.vite/plugin-eslint',
-  test: {
-    reporters: ['basic'],
-    globals: true,
-    cache: {
-      dir: '../../node_modules/.vitest',
-    },
-    alias: tsconfigPathAliases(),
-    pool: 'threads',
-    poolOptions: { threads: { singleThread: true } },
-    coverage: {
-      reporter: ['text', 'lcov'],
-      reportsDirectory: '../../coverage/plugin-eslint/int-tests',
-      exclude: ['mocks/**', '**/types.ts'],
-    },
-    environment: 'node',
-    include: ['src/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    globalSetup: ['../../global-setup.ts'],
-    setupFiles: [
-      '../../testing/test-setup/src/lib/console.mock.ts',
-      '../../testing/test-setup/src/lib/reset.mocks.ts',
-    ],
-  },
-});
+export default createIntTestConfig('plugin-eslint');

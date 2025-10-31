@@ -6,6 +6,18 @@ import { ZodError, z } from 'zod';
 import { SchemaValidationError, validate, validateAsync } from './validate.js';
 
 describe('validate', () => {
+  beforeEach(() => {
+    // Set up memfs with package.json for tests that use async transforms
+    // This prevents unhandled rejections when async operations continue after validation errors
+    vol.fromJSON({ 'package.json': '{ "name": "test" }' }, '/test');
+  });
+
+  afterEach(async () => {
+    // Allow any lingering async operations from transforms to complete
+    // This prevents unhandled rejections in subsequent tests
+    await new Promise(resolve => setImmediate(resolve));
+  });
+
   it('should return parsed data if valid', () => {
     const configSchema = z
       .object({
