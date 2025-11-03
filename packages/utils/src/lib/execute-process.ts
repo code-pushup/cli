@@ -9,22 +9,19 @@ import type { Readable, Writable } from 'node:stream';
 import { isVerbose } from './env.js';
 import { formatCommandLog } from './format-command-log.js';
 import { ui } from './logging.js';
-import { calcDuration } from './reports/utils.js';
 
 /**
  * Represents the process result.
  * @category Types
  * @public
+ * @property {number | null} code - The exit code of the process.
  * @property {string} stdout - The stdout of the process.
  * @property {string} stderr - The stderr of the process.
- * @property {number | null} code - The exit code of the process.
  */
 export type ProcessResult = {
+  code: number | null;
   stdout: string;
   stderr: string;
-  code: number | null;
-  date: string;
-  duration: number;
 };
 
 /**
@@ -148,8 +145,6 @@ export type ProcessObserver = {
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   const { command, args, observer, ignoreExitCode = false, ...options } = cfg;
   const { onStdout, onStderr, onError, onComplete } = observer ?? {};
-  const date = new Date().toISOString();
-  const start = performance.now();
 
   if (isVerbose()) {
     ui().logger.log(
@@ -185,12 +180,11 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
     });
 
     spawnedProcess.on('close', code => {
-      const timings = { date, duration: calcDuration(start) };
       if (code === 0 || ignoreExitCode) {
         onComplete?.();
-        resolve({ code, stdout, stderr, ...timings });
+        resolve({ code, stdout, stderr });
       } else {
-        const errorMsg = new ProcessError({ code, stdout, stderr, ...timings });
+        const errorMsg = new ProcessError({ code, stdout, stderr });
         onError?.(errorMsg);
         reject(errorMsg);
       }
