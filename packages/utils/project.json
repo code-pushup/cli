@@ -43,6 +43,9 @@
         },
         "error-upload": {
           "args": ["--error=upload"]
+        },
+        "custom-cwd": {
+          "args": ["--cwd=src"]
         }
       }
     }

@@ -1,5 +1,6 @@
 import ansis, { type AnsiColors } from 'ansis';
 import os from 'node:os';
+import path from 'node:path';
 import ora, { type Ora } from 'ora';
 import { dateToUnixTimestamp } from './dates.js';
 import { isEnvVarEnabled } from './env.js';
@@ -198,6 +199,8 @@ export class Logger {
    *
    * A `$`-prefix is added. Its color indicates the status (blue=pending, green=success, red=failure).
    *
+   * If the command's working directory isn't `process.cwd()`, a relative path is prefixed to the output.
+   *
    * @example
    * await logger.command('npx eslint . --format=json', async () => {
    *   // ...
@@ -205,12 +208,19 @@ export class Logger {
    *
    * @param bin Command string with arguments.
    * @param worker Asynchronous execution of the command (not implemented by the logger).
+   * @param options Custom CWD path where the command is executed (default is `process.cwd()`).
    */
-  command(bin: string, worker: () => Promise<void>): Promise<void> {
+  command(
+    bin: string,
+    worker: () => Promise<void>,
+    options?: { cwd?: string },
+  ): Promise<void> {
+    const cwd = options?.cwd && path.relative(process.cwd(), options.cwd);
+    const cwdPrefix = cwd ? `${ansis.blue(cwd)} ` : '';
     return this.#spinner(worker, {
-      pending: `${ansis.blue('$')} ${bin}`,
-      success: () => `${ansis.green('$')} ${bin}`,
-      failure: () => `${ansis.red('$')} ${bin}`,
+      pending: `${cwdPrefix}${ansis.blue('$')} ${bin}`,
+      success: () => `${cwdPrefix}${ansis.green('$')} ${bin}`,
+      failure: () => `${cwdPrefix}${ansis.red('$')} ${bin}`,
     });
   }
 

@@ -1,6 +1,7 @@
 import ansis from 'ansis';
 import cliSpinners from 'cli-spinners';
 import os from 'node:os';
+import path from 'node:path';
 import process from 'node:process';
 import type { MockInstance } from 'vitest';
 import { Logger } from './logger.js';
@@ -501,6 +502,42 @@ ${ansis.red('✖')} Uploading report to portal → ${ansis.red('GraphQL error: I
 
       expect(output).toBe(
         `${ansis.red('✖')} ${ansis.red('$')} npx eslint . --format=json\n`,
+      );
+    });
+
+    it("should print command's working directory if it differs from `process.cwd()`", async () => {
+      const command = new Logger().command(
+        'npx eslint . --format=json',
+        async () => {},
+        { cwd: 'src' },
+      );
+
+      expect(output).toBe(
+        `${ansis.cyan('⠋')} ${ansis.blue('src')} ${ansis.blue('$')} npx eslint . --format=json`,
+      );
+
+      await expect(command).resolves.toBeUndefined();
+
+      expect(output).toBe(
+        `${ansis.green('✔')} ${ansis.blue('src')} ${ansis.green('$')} npx eslint . --format=json ${ansis.gray('(42 ms)')}\n`,
+      );
+    });
+
+    it('should print relative working directory if absoluted path provided', async () => {
+      const command = new Logger().command(
+        'npx eslint . --format=json',
+        async () => {},
+        { cwd: path.join(process.cwd(), 'src') },
+      );
+
+      expect(output).toBe(
+        `${ansis.cyan('⠋')} ${ansis.blue('src')} ${ansis.blue('$')} npx eslint . --format=json`,
+      );
+
+      await expect(command).resolves.toBeUndefined();
+
+      expect(output).toBe(
+        `${ansis.green('✔')} ${ansis.blue('src')} ${ansis.green('$')} npx eslint . --format=json ${ansis.gray('(42 ms)')}\n`,
       );
     });
   });
