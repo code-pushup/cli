@@ -9,7 +9,6 @@ import {
   auditOutputsSchema,
 } from '@code-pushup/models';
 import {
-  ISO_STRING_REGEXP,
   MEMFS_VOLUME,
   MINIMAL_PLUGIN_CONFIG_MOCK,
   MINIMAL_RUNNER_CONFIG_MOCK,
@@ -18,7 +17,6 @@ import {
 } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
 import {
-  type RunnerResult,
   executePluginRunner,
   executeRunnerConfig,
   executeRunnerFunction,
@@ -52,17 +50,18 @@ describe('executeRunnerConfig', () => {
   });
 
   it('should execute valid runner config', async () => {
-    const runnerResult = await executeRunnerConfig(MINIMAL_RUNNER_CONFIG_MOCK, {
-      persist: DEFAULT_PERSIST_CONFIG,
-    });
+    const auditOutputs = (await executeRunnerConfig(
+      MINIMAL_RUNNER_CONFIG_MOCK,
+      {
+        persist: DEFAULT_PERSIST_CONFIG,
+      },
+    )) as AuditOutputs;
 
     // data sanity
-    expect((runnerResult.audits as AuditOutputs)[0]?.slug).toBe('node-version');
-    expect(runnerResult.date).toMatch(ISO_STRING_REGEXP);
-    expect(runnerResult.duration).toBeGreaterThanOrEqual(0);
+    expect(auditOutputs[0]?.slug).toBe('node-version');
 
     // schema validation
-    expect(() => auditOutputsSchema.parse(runnerResult.audits)).not.toThrow();
+    expect(() => auditOutputsSchema.parse(auditOutputs)).not.toThrow();
 
     // executed process configuration
     expect(utils.executeProcess).toHaveBeenCalledWith<[utils.ProcessConfig]>({
@@ -82,7 +81,7 @@ describe('executeRunnerConfig', () => {
   });
 
   it('should use outputTransform when provided', async () => {
-    const runnerResult = await executeRunnerConfig(
+    const auditOutputs = (await executeRunnerConfig(
       {
         command: 'node',
         args: ['-v'],
@@ -98,8 +97,7 @@ describe('executeRunnerConfig', () => {
           ]),
       },
       { persist: DEFAULT_PERSIST_CONFIG },
-    );
-    const auditOutputs = runnerResult.audits as AuditOutputs;
+    )) as AuditOutputs;
 
     expect(auditOutputs[0]?.slug).toBe('node-version');
     expect(auditOutputs[0]?.displayValue).toBe('16.0.0');
@@ -123,11 +121,10 @@ describe('executeRunnerConfig', () => {
 
 describe('executeRunnerFunction', () => {
   it('should execute a valid runner function', async () => {
-    const runnerResult: RunnerResult = await executeRunnerFunction(
+    const auditOutputs = (await executeRunnerFunction(
       MINIMAL_RUNNER_FUNCTION_MOCK,
       { persist: DEFAULT_PERSIST_CONFIG },
-    );
-    const auditOutputs = runnerResult.audits as AuditOutputs;
+    )) as AuditOutputs;
 
     expect(auditOutputs[0]?.slug).toBe('node-version');
     expect(auditOutputs[0]?.details?.issues).toEqual([
