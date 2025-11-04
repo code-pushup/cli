@@ -40,7 +40,6 @@ const INT_TEST_SETUP_FILES = [
   '../../testing/test-setup/src/lib/console.mock.ts',
   '../../testing/test-setup/src/lib/reset.mocks.ts',
   '../../testing/test-setup/src/lib/chrome-path.mock.ts',
-  '../../testing/test-setup/src/lib/logger.mock.ts',
   ...CUSTOM_MATCHERS,
 ] as const;
 
