@@ -1,0 +1,13 @@
+{
+  "name": "plugin-axe",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/plugin-axe/src",
+  "projectType": "library",
+  "tags": ["scope:plugin", "type:feature", "publishable"],
+  "// targets": "to see all targets run: nx show project plugin-axe --web",
+  "targets": {
+    "build": {},
+    "lint": {},
+    "unit-test": {}
+  }
+}
