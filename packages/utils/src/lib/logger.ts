@@ -113,9 +113,11 @@ export class Logger {
    * logger.debug('Running ESLint version 9.16.0');
    *
    * @param message Debug text
+   * @param options Additional options
+   * @param options.force Print debug message even if verbose flag is not set
    */
-  debug(message: string): void {
-    if (this.#isVerbose) {
+  debug(message: string, options?: { force?: boolean }): void {
+    if (this.#isVerbose || options?.force) {
       this.#log(message, 'gray');
     }
   }
@@ -186,8 +188,8 @@ export class Logger {
    * @param title Display text used as pending message.
    * @param worker Asynchronous implementation. Returned promise determines spinner status and final message. Support for inner logs has some limitations (described above).
    */
-  task(title: string, worker: () => Promise<string>): Promise<void> {
-    return this.#spinner(worker, {
+  async task(title: string, worker: () => Promise<string>): Promise<void> {
+    await this.#spinner(worker, {
       pending: title,
       success: value => value,
       failure: error => `${title} → ${ansis.red(`${error}`)}`,
@@ -209,12 +211,13 @@ export class Logger {
    * @param bin Command string with arguments.
    * @param worker Asynchronous execution of the command (not implemented by the logger).
    * @param options Custom CWD path where the command is executed (default is `process.cwd()`).
+   * @template T Type of resolved worker value.
    */
-  command(
+  command<T>(
     bin: string,
-    worker: () => Promise<void>,
+    worker: () => Promise<T>,
     options?: { cwd?: string },
-  ): Promise<void> {
+  ): Promise<T> {
     const cwd = options?.cwd && path.relative(process.cwd(), options.cwd);
     const cwdPrefix = cwd ? `${ansis.blue(cwd)} ` : '';
     return this.#spinner(worker, {
@@ -366,7 +369,7 @@ export class Logger {
       success: (value: T) => string;
       failure: (error: unknown) => string;
     },
-  ): Promise<void> {
+  ): Promise<T> {
     if (this.#activeSpinner) {
       throw new Error(
         'Internal Logger error - concurrent spinners are not supported',
@@ -432,6 +435,8 @@ export class Logger {
     if (result.status === 'rejected') {
       throw result.reason;
     }
+
+    return result.value;
   }
 
   #log(message: string, color?: AnsiColors): void {

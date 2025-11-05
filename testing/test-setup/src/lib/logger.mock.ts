@@ -34,9 +34,7 @@ beforeAll(async () => {
       vi.spyOn(logger, 'task').mockImplementation(async (_, worker) => {
         await worker();
       }),
-      vi.spyOn(logger, 'command').mockImplementation(async (_, worker) => {
-        await worker();
-      }),
+      vi.spyOn(logger, 'command').mockImplementation((_, worker) => worker()),
     );
   }
 });
