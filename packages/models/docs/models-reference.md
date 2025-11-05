@@ -1366,6 +1366,16 @@ _Union of the following possible types:_
 - _Object with dynamic keys of type_ `string` _and values of type_ `number` (_≥0, ≤1_)
   (_optional_)
 
+## PluginUrls
+
+URL(s) to analyze. Single URL, array of URLs, or record of URLs with custom weights
+
+_Union of the following possible types:_
+
+- `string` (_url_)
+- `Array<string (_url_)>`
+- _Object with dynamic keys of type_ `string` (_url_) _and values of type_ `number` (_>0_)
+
 ## Report
 
 Collect output data

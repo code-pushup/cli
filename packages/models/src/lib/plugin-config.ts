@@ -72,6 +72,16 @@ export const pluginConfigSchema = pluginMetaSchema
 
 export type PluginConfig = z.infer<typeof pluginConfigSchema>;
 
+export const pluginUrlsSchema = z
+  .union([z.url(), z.array(z.url()), z.record(z.url(), z.number().positive())])
+  .meta({
+    title: 'PluginUrls',
+    description:
+      'URL(s) to analyze. Single URL, array of URLs, or record of URLs with custom weights',
+  });
+
+export type PluginUrls = z.infer<typeof pluginUrlsSchema>;
+
 // every listed group ref points to an audit within the plugin
 export function findMissingSlugsInGroupRefs<
   T extends { audits: Audit[]; groups?: Group[] },

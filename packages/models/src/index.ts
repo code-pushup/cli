@@ -93,10 +93,12 @@ export {
   pluginContextSchema,
   pluginMetaSchema,
   pluginScoreTargetsSchema,
+  pluginUrlsSchema,
   type PluginConfig,
   type PluginContext,
   type PluginMeta,
   type PluginScoreTargets,
+  type PluginUrls,
 } from './lib/plugin-config.js';
 export {
   auditReportSchema,

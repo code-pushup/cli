@@ -2,8 +2,13 @@ import type { Config, RunnerResult } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
 import path from 'node:path';
 import type { AuditOutputs, RunnerFunction } from '@code-pushup/models';
-import { ensureDirectoryExists, stringifyError, ui } from '@code-pushup/utils';
-import { orderSlug, shouldExpandForUrls } from '../processing.js';
+import {
+  addIndex,
+  ensureDirectoryExists,
+  shouldExpandForUrls,
+  stringifyError,
+  ui,
+} from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types.js';
 import { DEFAULT_CLI_FLAGS } from './constants.js';
 import type { LighthouseCliFlags } from './types.js';
@@ -41,7 +46,7 @@ export function createRunnerFunction(
           ? auditOutputs
           : auditOutputs.map(audit => ({
               ...audit,
-              slug: orderSlug(audit.slug, index),
+              slug: addIndex(audit.slug, index),
             }));
 
         return [...acc, ...processedOutputs];

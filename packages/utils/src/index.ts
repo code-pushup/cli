@@ -90,6 +90,21 @@ export { logMultipleResults } from './lib/log-results.js';
 export { Logger, logger } from './lib/logger.js';
 export { link, ui, type CliUi, type Column } from './lib/logging.js';
 export { mergeConfigs } from './lib/merge-configs.js';
+export {
+  normalizeUrlInput,
+  type PluginUrlContext,
+} from './lib/plugin-url-config.js';
+export {
+  addIndex,
+  ContextValidationError,
+  createCategoryRefs,
+  expandAuditsForUrls,
+  expandCategoryRefs,
+  expandGroupsForUrls,
+  removeIndex,
+  shouldExpandForUrls,
+  validateUrlContext,
+} from './lib/plugin-url-aggregation.js';
 export { getProgressBar, type ProgressBar } from './lib/progress.js';
 export {
   asyncSequential,

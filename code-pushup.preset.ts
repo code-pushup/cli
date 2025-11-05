@@ -2,6 +2,7 @@
 import type {
   CategoryConfig,
   CoreConfig,
+  PluginUrls,
 } from './packages/models/src/index.js';
 import coveragePlugin, {
   getNxCoveragePaths,
@@ -20,7 +21,6 @@ import {
 } from './packages/plugin-jsdocs/src/lib/constants.js';
 import { filterGroupsByOnlyAudits } from './packages/plugin-jsdocs/src/lib/utils.js';
 import lighthousePlugin, {
-  type LighthouseUrls,
   lighthouseGroupRef,
   mergeLighthouseCategories,
 } from './packages/plugin-lighthouse/src/index.js';
@@ -137,7 +137,7 @@ export const jsPackagesCoreConfig = async (): Promise<CoreConfig> => ({
 });
 
 export const lighthouseCoreConfig = async (
-  urls: LighthouseUrls,
+  urls: PluginUrls,
 ): Promise<CoreConfig> => {
   const lhPlugin = await lighthousePlugin(urls);
   return {
