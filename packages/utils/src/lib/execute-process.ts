@@ -6,6 +6,7 @@ import {
   spawn,
 } from 'node:child_process';
 import type { Readable, Writable } from 'node:stream';
+import { quote } from 'shell-quote';
 import { isVerbose } from './env.js';
 import { formatCommandLog } from './format-command-log.js';
 import { ui } from './logging.js';
@@ -157,9 +158,11 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
     );
   }
 
+  const bin = [command, quote(args ?? [])].join(' ');
+
   return new Promise((resolve, reject) => {
     // shell:true tells Windows to use shell command for spawning a child process
-    const spawnedProcess = spawn(command, args ?? [], {
+    const spawnedProcess = spawn(bin, {
       shell: true,
       windowsHide: true,
       ...options,
