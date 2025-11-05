@@ -73,10 +73,6 @@ describe('executeRunnerConfig', () => {
         CP_PERSIST_FORMAT: DEFAULT_PERSIST_FORMAT.join(','),
         CP_PERSIST_SKIP_REPORTS: `${DEFAULT_PERSIST_SKIP_REPORT}`,
       }),
-      observer: {
-        onStdout: expect.any(Function),
-        onStderr: expect.any(Function),
-      },
     });
   });
 

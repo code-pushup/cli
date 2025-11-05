@@ -14,11 +14,9 @@ import {
   ensureDirectoryExists,
   executeProcess,
   fileExists,
-  isVerbose,
   readJsonFile,
   removeDirectoryIfExists,
   runnerArgsToEnv,
-  ui,
 } from '@code-pushup/utils';
 import { normalizeAuditOutputs } from '../normalize.js';
 
@@ -37,14 +35,6 @@ export async function executeRunnerConfig(
   await executeProcess({
     command: config.command,
     args: config.args,
-    observer: {
-      onStdout: stdout => {
-        if (isVerbose()) {
-          ui().logger.log(stdout);
-        }
-      },
-      onStderr: stderr => ui().logger.error(stderr),
-    },
     env: { ...process.env, ...runnerArgsToEnv(args) },
   });
 

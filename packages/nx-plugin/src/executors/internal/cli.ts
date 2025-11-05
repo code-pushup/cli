@@ -20,14 +20,6 @@ export function createCliCommandObject(options?: {
   return {
     command: 'npx',
     args: [bin, ...objectToCliArgs({ _: command ?? [], ...args })],
-    observer: {
-      onError: error => {
-        logger.error(error.message);
-      },
-      onStdout: data => {
-        logger.log(data);
-      },
-    },
   };
 }
 

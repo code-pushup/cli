@@ -3,7 +3,7 @@ import { executeProcess } from '@code-pushup/utils';
 import type { CommandContext } from '../context.js';
 
 export async function runCompare(
-  { bin, config, directory, observer }: CommandContext,
+  { bin, config, directory }: CommandContext,
   { hasFormats }: { hasFormats: boolean },
 ): Promise<void> {
   await executeProcess({
@@ -16,6 +16,5 @@ export async function runCompare(
         : DEFAULT_PERSIST_FORMAT.map(format => `--persist.format=${format}`)),
     ],
     cwd: directory,
-    observer,
   });
 }

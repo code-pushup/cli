@@ -2,29 +2,22 @@ import { expect } from 'vitest';
 import { type CommandContext, createCommandContext } from './context.js';
 
 describe('createCommandContext', () => {
-  const expectedObserver = expect.objectContaining({
-    onStderr: expect.any(Function),
-    onStdout: expect.any(Function),
-  });
-
   it('should pick CLI-related settings in standalone mode', () => {
     expect(
       createCommandContext(
         {
           bin: 'npx --no-install code-pushup',
           config: null,
-          debug: false,
           detectNewIssues: true,
           directory: '/test',
-          logger: console,
           monorepo: false,
           parallel: false,
           nxProjectsFilter: '--with-target={task}',
           projects: null,
-          silent: false,
           task: 'code-pushup',
           skipComment: false,
           configPatterns: null,
+          searchCommits: false,
         },
         null,
       ),
@@ -32,7 +25,6 @@ describe('createCommandContext', () => {
       bin: 'npx --no-install code-pushup',
       directory: '/test',
       config: null,
-      observer: expectedObserver,
     });
   });
 
@@ -42,18 +34,16 @@ describe('createCommandContext', () => {
         {
           bin: 'npx --no-install code-pushup',
           config: null,
-          debug: false,
           detectNewIssues: true,
           directory: '/test',
-          logger: console,
           monorepo: false,
           parallel: false,
           nxProjectsFilter: '--with-target={task}',
           projects: null,
-          silent: false,
           task: 'code-pushup',
           skipComment: false,
           configPatterns: null,
+          searchCommits: false,
         },
         {
           name: 'ui',
@@ -66,7 +56,6 @@ describe('createCommandContext', () => {
       directory: '/test/ui',
       config: null,
       project: 'ui',
-      observer: expectedObserver,
     });
   });
 });

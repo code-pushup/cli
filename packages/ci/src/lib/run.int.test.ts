@@ -101,11 +101,6 @@ describe('runInCI', () => {
     url: 'https://fake.hosted.git/comments/42',
   };
 
-  const expectedObserver = expect.objectContaining({
-    onStderr: expect.any(Function),
-    onStdout: expect.any(Function),
-  });
-
   let includeUploadConfig: boolean;
 
   let git: SimpleGit;
@@ -286,13 +281,11 @@ describe('runInCI', () => {
           command: options.bin,
           args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: workDir,
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
           args: [],
           cwd: workDir,
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
 
         expect(logger.error).not.toHaveBeenCalled();
@@ -364,31 +357,26 @@ describe('runInCI', () => {
           command: options.bin,
           args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: workDir,
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
           args: [],
           cwd: workDir,
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(3, {
           command: options.bin,
           args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: workDir,
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(4, {
           command: options.bin,
           args: [],
           cwd: workDir,
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(5, {
           command: options.bin,
           args: ['compare'],
           cwd: workDir,
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
 
         expect(logger.error).not.toHaveBeenCalled();
@@ -442,19 +430,16 @@ describe('runInCI', () => {
           command: options.bin,
           args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: workDir,
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
           args: [],
           cwd: workDir,
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(3, {
           command: options.bin,
           args: ['compare'],
           cwd: workDir,
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
 
         expect(logger.error).not.toHaveBeenCalled();
@@ -513,19 +498,16 @@ describe('runInCI', () => {
           command: options.bin,
           args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: workDir,
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(2, {
           command: options.bin,
           args: [],
           cwd: workDir,
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenNthCalledWith(3, {
           command: options.bin,
           args: ['compare'],
           cwd: workDir,
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
 
         expect(logger.error).not.toHaveBeenCalled();
@@ -572,7 +554,6 @@ describe('runInCI', () => {
           command: options.bin,
           args: expect.arrayContaining(['compare']),
           cwd: workDir,
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
       });
     });
@@ -706,13 +687,11 @@ describe('runInCI', () => {
               expect.stringMatching(/^--output=.*\.json$/),
             ],
             cwd: expect.stringContaining(workDir),
-            observer: expectedObserver,
           } satisfies utils.ProcessConfig);
           expect(utils.executeProcess).toHaveBeenCalledWith({
             command: runMany,
             args: [],
             cwd: expect.stringContaining(workDir),
-            observer: expectedObserver,
           } satisfies utils.ProcessConfig);
 
           expect(logger.error).not.toHaveBeenCalled();
@@ -782,7 +761,6 @@ describe('runInCI', () => {
             command: runMany,
             args: [],
             cwd: expect.stringContaining(workDir),
-            observer: expectedObserver,
           } satisfies utils.ProcessConfig);
 
           expect(logger.error).not.toHaveBeenCalled();
@@ -945,19 +923,16 @@ describe('runInCI', () => {
               expect.stringMatching(/^--output=.*\.json$/),
             ],
             cwd: expect.stringContaining(workDir),
-            observer: expectedObserver,
           } satisfies utils.ProcessConfig);
           expect(utils.executeProcess).toHaveBeenCalledWith({
             command: runMany,
             args: [],
             cwd: expect.stringContaining(workDir),
-            observer: expectedObserver,
           } satisfies utils.ProcessConfig);
           expect(utils.executeProcess).toHaveBeenCalledWith({
             command: runMany,
             args: ['compare'],
             cwd: expect.stringContaining(workDir),
-            observer: expectedObserver,
           } satisfies utils.ProcessConfig);
           expect(utils.executeProcess).toHaveBeenCalledWith({
             command: run,
@@ -976,7 +951,6 @@ describe('runInCI', () => {
               '--persist.filename=merged-report',
             ],
             cwd: expect.stringContaining(workDir),
-            observer: expectedObserver,
           } satisfies utils.ProcessConfig);
 
           expect(logger.error).not.toHaveBeenCalled();
@@ -1052,13 +1026,11 @@ describe('runInCI', () => {
             command: runMany,
             args: [],
             cwd: expect.stringContaining(workDir),
-            observer: expectedObserver,
           } satisfies utils.ProcessConfig);
           expect(utils.executeProcess).toHaveBeenCalledWith({
             command: runMany,
             args: ['compare'],
             cwd: expect.stringContaining(workDir),
-            observer: expectedObserver,
           } satisfies utils.ProcessConfig);
           expect(utils.executeProcess).toHaveBeenCalledWith({
             command: run,
@@ -1077,7 +1049,6 @@ describe('runInCI', () => {
               '--persist.filename=merged-report',
             ],
             cwd: expect.stringContaining(workDir),
-            observer: expectedObserver,
           } satisfies utils.ProcessConfig);
           expect(utils.executeProcess).not.toHaveBeenCalledWith(
             expect.objectContaining({
@@ -1132,19 +1103,16 @@ describe('runInCI', () => {
             command: runMany,
             args: expect.any(Array),
             cwd: expect.stringContaining(workDir),
-            observer: expectedObserver,
           } satisfies utils.ProcessConfig);
           expect(utils.executeProcess).toHaveBeenCalledWith({
             command: runMany,
             args: expect.arrayContaining(['compare']),
             cwd: expect.stringContaining(workDir),
-            observer: expectedObserver,
           } satisfies utils.ProcessConfig);
           expect(utils.executeProcess).toHaveBeenCalledWith({
             command: run,
             args: expect.arrayContaining(['merge-diffs']),
             cwd: expect.stringContaining(workDir),
-            observer: expectedObserver,
           } satisfies utils.ProcessConfig);
         });
       });
@@ -1236,13 +1204,11 @@ describe('runInCI', () => {
           command: options.bin,
           args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: expect.stringContaining(workDir),
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
           args: [],
           cwd: expect.stringContaining(workDir),
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
 
         expect(logger.error).not.toHaveBeenCalled();
@@ -1405,19 +1371,16 @@ describe('runInCI', () => {
           command: options.bin,
           args: ['print-config', expect.stringMatching(/^--output=.*\.json$/)],
           cwd: expect.stringContaining(workDir),
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
           args: [],
           cwd: expect.stringContaining(workDir),
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
           args: ['compare'],
           cwd: expect.stringContaining(workDir),
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
         expect(utils.executeProcess).toHaveBeenCalledWith({
           command: options.bin,
@@ -1436,7 +1399,6 @@ describe('runInCI', () => {
             '--persist.filename=merged-report',
           ],
           cwd: expect.stringContaining(workDir),
-          observer: expectedObserver,
         } satisfies utils.ProcessConfig);
 
         expect(logger.error).not.toHaveBeenCalled();

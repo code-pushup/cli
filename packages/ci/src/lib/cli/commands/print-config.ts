@@ -12,7 +12,6 @@ export async function runPrintConfig({
   config,
   directory,
   project,
-  observer,
 }: CommandContext): Promise<unknown> {
   // unique file name per project so command can be run in parallel
   const outputFile = ['code-pushup', 'config', project, 'json']
@@ -33,7 +32,6 @@ export async function runPrintConfig({
       `--output=${outputPath}`,
     ],
     cwd: directory,
-    observer,
   });
 
   try {
