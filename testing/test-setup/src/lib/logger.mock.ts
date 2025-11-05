@@ -1,9 +1,11 @@
 import { type MockInstance, afterAll, beforeAll, vi } from 'vitest';
-import { logger } from '@code-pushup/utils';
 
 const loggerSpies: MockInstance[] = [];
 
-beforeAll(() => {
+beforeAll(async () => {
+  const { logger }: typeof import('@code-pushup/utils') =
+    await vi.importActual('@code-pushup/utils');
+
   // TODO: use vi.mockObject after Vitest update: https://vitest.dev/api/vi.html#vi-mockobject-3-2-0
   if (process.env['NX_VERBOSE_LOGGING'] === 'true') {
     // only track calls, but preserve original implementation so logs are printed
