@@ -1,7 +1,6 @@
 import { glob } from 'glob';
 import path from 'node:path';
 import { logger } from '@code-pushup/utils';
-import { createExecutionObserver } from '../create-execution-observer.js';
 import type { Settings } from '../models.js';
 import { detectMonorepoTool } from './detect-tool.js';
 import { getToolHandler } from './handlers/index.js';
@@ -90,14 +89,12 @@ function createMonorepoHandlerOptions({
   directory,
   parallel,
   nxProjectsFilter,
-  silent,
 }: Settings): MonorepoHandlerOptions {
   return {
     task,
     cwd: directory,
     parallel,
     nxProjectsFilter,
-    observer: createExecutionObserver({ silent }),
   };
 }
 

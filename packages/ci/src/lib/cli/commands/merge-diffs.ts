@@ -8,7 +8,7 @@ import type { CommandContext } from '../context.js';
 
 export async function runMergeDiffs(
   files: string[],
-  { bin, config, directory, observer }: CommandContext,
+  { bin, config, directory }: CommandContext,
 ): Promise<string> {
   const outputDir = path.join(directory, DEFAULT_PERSIST_OUTPUT_DIR);
   const filename = `merged-${DEFAULT_PERSIST_FILENAME}`;
@@ -23,7 +23,6 @@ export async function runMergeDiffs(
       `--persist.filename=${filename}`,
     ],
     cwd: directory,
-    observer,
   });
 
   return path.join(outputDir, `${filename}-diff.md`);
