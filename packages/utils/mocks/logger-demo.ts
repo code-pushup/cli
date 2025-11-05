@@ -44,7 +44,7 @@ try {
         async () => {
           await sleep(3000);
           if (errorStage === 'plugin') {
-            logger.info('Configuration file not found.');
+            logger.debug('Configuration file not found.', { force: true });
             throw new Error(`Command ${ansis.bold(bin)} exited with code 1`);
           }
           logger.debug('All files pass linting.');

@@ -1,6 +1,10 @@
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const asyncProcessPath = path.join(__dirname, './execute-process.mock.mjs');
+const asyncProcessPath = path.join(
+  fileURLToPath(path.dirname(import.meta.url)),
+  './execute-process.mock.mjs',
+);
 
 /**
  * Helps to get an async process runner config for testing.

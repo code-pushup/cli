@@ -116,6 +116,18 @@ ${ansis.red('Failed to load config')}
       expect(output).toBe('');
     });
 
+    it('should print debug logs if not verbose but force flag is used', () => {
+      vi.stubEnv('CP_VERBOSE', 'false');
+
+      new Logger().debug('Found config file code-pushup.config.js', {
+        force: true,
+      });
+
+      expect(output).toBe(
+        `${ansis.gray('Found config file code-pushup.config.js')}\n`,
+      );
+    });
+
     it('should set verbose flag and environment variable', () => {
       vi.stubEnv('CP_VERBOSE', 'false');
       const logger = new Logger();
@@ -472,14 +484,14 @@ ${ansis.red('✖')} Uploading report to portal → ${ansis.red('GraphQL error: I
     it('should use colored dollar prefix for commands (success)', async () => {
       const command = new Logger().command(
         'npx eslint . --format=json',
-        async () => {},
+        async () => ({ code: 0 }),
       );
 
       expect(output).toBe(
         `${ansis.cyan('⠋')} ${ansis.blue('$')} npx eslint . --format=json`,
       );
 
-      await expect(command).resolves.toBeUndefined();
+      await expect(command).resolves.toEqual({ code: 0 });
 
       expect(output).toBe(
         `${ansis.green('✔')} ${ansis.green('$')} npx eslint . --format=json ${ansis.gray('(42 ms)')}\n`,
