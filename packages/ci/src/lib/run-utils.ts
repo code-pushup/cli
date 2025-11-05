@@ -90,8 +90,6 @@ export async function createRunEnv(
   options: Options | undefined,
   git: SimpleGit,
 ): Promise<RunEnv> {
-  logger.setVerbose(options?.debug === true || options?.silent === false);
-
   const [head, base] = await Promise.all([
     normalizeGitRef(refs.head, git),
     refs.base && normalizeGitRef(refs.base, git),
