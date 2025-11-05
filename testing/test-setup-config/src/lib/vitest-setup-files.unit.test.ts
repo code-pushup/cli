@@ -7,7 +7,7 @@ describe('vitest-setup-files', () => {
       it('should return all required setup files for unit tests', () => {
         const setupFiles = getSetupFiles('unit');
 
-        expect(setupFiles).toHaveLength(10);
+        expect(setupFiles).toHaveLength(11);
         expect(setupFiles).toContain(
           '../../testing/test-setup/src/lib/console.mock.ts',
         );
@@ -27,6 +27,9 @@ describe('vitest-setup-files', () => {
           '../../testing/test-setup/src/lib/portal-client.mock.ts',
         );
         expect(setupFiles).toContain(
+          '../../testing/test-setup/src/lib/logger.mock.ts',
+        );
+        expect(setupFiles).toContain(
           '../../testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
         );
         expect(setupFiles).toContain(
@@ -42,10 +45,10 @@ describe('vitest-setup-files', () => {
     });
 
     describe('integration test setup files', () => {
-      it('should return exactly 7 setup files with essential mocks and custom matchers', () => {
+      it('should return exactly 8 setup files with essential mocks and custom matchers', () => {
         const setupFiles = getSetupFiles('int');
 
-        expect(setupFiles).toHaveLength(7);
+        expect(setupFiles).toHaveLength(8);
         expect(setupFiles).toContain(
           '../../testing/test-setup/src/lib/console.mock.ts',
         );
@@ -54,6 +57,9 @@ describe('vitest-setup-files', () => {
         );
         expect(setupFiles).toContain(
           '../../testing/test-setup/src/lib/chrome-path.mock.ts',
+        );
+        expect(setupFiles).toContain(
+          '../../testing/test-setup/src/lib/logger.mock.ts',
         );
       });
 

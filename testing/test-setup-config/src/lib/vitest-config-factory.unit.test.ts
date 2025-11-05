@@ -1,15 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { defineConfig } from 'vitest/config';
 import type { E2ETestOptions, TestKind } from './vitest-config-factory.js';
 import { createVitestConfig } from './vitest-config-factory.js';
-
-vi.mock('vitest/config', async importOriginal => {
-  const actual = await importOriginal<typeof import('vitest/config')>();
-  return {
-    ...actual,
-    defineConfig: vi.fn(config => config),
-  };
-});
 
 vi.mock('./vitest-tsconfig-path-aliases.js', () => ({
   tsconfigPathAliases: vi
@@ -50,7 +41,6 @@ describe('createVitestConfig', () => {
           typecheck: { include: ['**/*.type.test.ts'] },
         }),
       });
-      expect(defineConfig).toHaveBeenCalledWith(config);
     });
 
     it('should include all required setup files for unit tests', () => {
@@ -74,6 +64,9 @@ describe('createVitestConfig', () => {
       );
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/portal-client.mock.ts',
+      );
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/logger.mock.ts',
       );
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
@@ -136,6 +129,9 @@ describe('createVitestConfig', () => {
       const setupFiles = config.test!.setupFiles;
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/console.mock.ts',
+      );
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/logger.mock.ts',
       );
       expect(setupFiles).not.toContain(
         '../../testing/test-setup/src/lib/fs.mock.ts',
