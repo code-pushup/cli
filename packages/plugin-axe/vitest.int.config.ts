@@ -15,14 +15,15 @@ export default defineConfig({
     poolOptions: { threads: { singleThread: true } },
     coverage: {
       reporter: ['text', 'lcov'],
-      reportsDirectory: '../../coverage/plugin-axe/unit-tests',
+      reportsDirectory: '../../coverage/plugin-axe/int-tests',
       exclude: ['mocks/**', 'vitest.{unit,int}.config.ts'],
     },
     environment: 'node',
-    include: ['src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    include: ['src/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     globalSetup: ['../../global-setup.ts'],
     setupFiles: [
       '../../testing/test-setup/src/lib/console.mock.ts',
+      '../../testing/test-setup/src/lib/logger.mock.ts',
       '../../testing/test-setup/src/lib/reset.mocks.ts',
     ],
   },
