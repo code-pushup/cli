@@ -1,4 +1,3 @@
-import ansis from 'ansis';
 import {
   type ChildProcess,
   type ChildProcessByStdio,
@@ -28,9 +27,11 @@ export type ProcessResult = {
 /**
  * Error class for process errors.
  * Contains additional information about the process result.
+ *
  * @example
- * const result = await executeProcess({}).catch((error) => {
+ * const result = await executeProcess({ ... }).catch((error) => {
  *   if (error instanceof ProcessError) {
+ *     console.error(error.message);
  *     console.error(error.code);
  *     console.error(error.stderr);
  *     console.error(error.stdout);
@@ -39,18 +40,31 @@ export type ProcessResult = {
  *
  */
 export class ProcessError extends Error {
+  bin: string;
   code: number | null;
-  stderr: string;
-  stdout: string;
+  signal: NodeJS.Signals | null;
+  // attributes hidden behind getters so they're not printed in uncaught errors (too verbose)
+  #stdout: string;
+  #stderr: string;
 
   constructor(result: ProcessResult) {
     const message = result.signal
-      ? `Process ${ansis.bold(result.bin)} terminated by ${result.signal}`
-      : `Process ${ansis.bold(result.bin)} failed with exit code ${result.code}`;
+      ? `Process terminated by ${result.signal}`
+      : `Process failed with exit code ${result.code}`;
     super(message);
+    this.bin = result.bin;
     this.code = result.code;
-    this.stderr = result.stderr;
-    this.stdout = result.stdout;
+    this.signal = result.signal;
+    this.#stdout = result.stdout;
+    this.#stderr = result.stderr;
+  }
+
+  get stdout() {
+    return this.#stdout;
+  }
+
+  get stderr() {
+    return this.#stderr;
   }
 }
 
