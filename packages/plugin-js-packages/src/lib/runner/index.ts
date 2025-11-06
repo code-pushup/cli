@@ -5,7 +5,6 @@ import {
   createRunnerFiles,
   ensureDirectoryExists,
   executeProcess,
-  filePathToCliArg,
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
   objectFromEntries,
@@ -39,7 +38,7 @@ export async function createRunnerConfig(
   return {
     command: 'node',
     args: [
-      filePathToCliArg(scriptPath),
+      scriptPath,
       ...objectToCliArgs({ runnerConfigPath, runnerOutputPath }),
     ],
     configFile: runnerConfigPath,

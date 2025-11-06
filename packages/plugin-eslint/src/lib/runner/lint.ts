@@ -1,11 +1,5 @@
 import type { ESLint, Linter } from 'eslint';
-import { platform } from 'node:os';
-import {
-  distinct,
-  executeProcess,
-  filePathToCliArg,
-  toArray,
-} from '@code-pushup/utils';
+import { distinct, executeProcess, toArray } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
 import { setupESLint } from '../setup.js';
 import type { LinterOutput, RuleOptionsPerFile } from './types.js';
@@ -29,14 +23,11 @@ async function executeLint({
     command: 'npx',
     args: [
       'eslint',
-      ...(eslintrc ? [`--config=${filePathToCliArg(eslintrc)}`] : []),
+      ...(eslintrc ? [`--config=${eslintrc}`] : []),
       ...(typeof eslintrc === 'object' ? ['--no-eslintrc'] : []),
       '--no-error-on-unmatched-pattern',
       '--format=json',
-      ...toArray(patterns).map(pattern =>
-        // globs need to be escaped on Unix
-        platform() === 'win32' ? pattern : `'${pattern}'`,
-      ),
+      ...toArray(patterns),
     ],
     ignoreExitCode: true,
     cwd: process.cwd(),
