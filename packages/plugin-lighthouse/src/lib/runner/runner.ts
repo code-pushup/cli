@@ -2,7 +2,12 @@ import type { Config, RunnerResult } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
 import path from 'node:path';
 import type { AuditOutputs, RunnerFunction } from '@code-pushup/models';
-import { ensureDirectoryExists, stringifyError, ui } from '@code-pushup/utils';
+import {
+  ensureDirectoryExists,
+  link,
+  logger,
+  stringifyError,
+} from '@code-pushup/utils';
 import { orderSlug, shouldExpandForUrls } from '../processing.js';
 import type { LighthouseOptions } from '../types.js';
 import { DEFAULT_CLI_FLAGS } from './constants.js';
@@ -46,7 +51,7 @@ export function createRunnerFunction(
 
         return [...acc, ...processedOutputs];
       } catch (error) {
-        ui().logger.warning(stringifyError(error));
+        logger.warn(stringifyError(error));
         return acc;
       }
     }, Promise.resolve<AuditOutputs>([]));
@@ -74,7 +79,9 @@ async function runLighthouseForUrl(
   const runnerResult: unknown = await runLighthouse(url, flags, config);
 
   if (runnerResult == null) {
-    throw new Error(`Lighthouse did not produce a result for URL: ${url}`);
+    throw new Error(
+      `Lighthouse did not produce a result for URL: ${link(url)}`,
+    );
   }
 
   const { lhr } = runnerResult as RunnerResult;

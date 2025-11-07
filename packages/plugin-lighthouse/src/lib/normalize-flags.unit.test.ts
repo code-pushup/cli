@@ -1,7 +1,7 @@
-import { bold, yellow } from 'ansis';
+import ansis from 'ansis';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import { DEFAULT_CHROME_FLAGS, LIGHTHOUSE_OUTPUT_PATH } from './constants.js';
 import { logUnsupportedFlagsInUse, normalizeFlags } from './normalize-flags.js';
 import { LIGHTHOUSE_REPORT_NAME } from './runner/constants.js';
@@ -10,12 +10,9 @@ import type { LighthouseOptions } from './types.js';
 describe('logUnsupportedFlagsInUse', () => {
   it('should log unsupported entries', () => {
     logUnsupportedFlagsInUse({ 'list-all-audits': true } as LighthouseOptions);
-    expect(ui()).toHaveLoggedTimes(1);
-    expect(ui()).toHaveLogged(
-      'debug',
-      `${yellow('⚠')} Plugin ${bold(
-        'lighthouse',
-      )} used unsupported flags: ${bold('list-all-audits')}`,
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      `Used unsupported flags: ${ansis.bold('list-all-audits')}`,
     );
   });
 
@@ -32,12 +29,9 @@ describe('logUnsupportedFlagsInUse', () => {
       // unsupported
       ...unsupportedFlags,
     } as unknown as LighthouseOptions);
-    expect(ui()).toHaveLoggedTimes(1);
-    expect(ui()).toHaveLogged(
-      'debug',
-      `${yellow('⚠')} Plugin ${bold(
-        'lighthouse',
-      )} used unsupported flags: ${bold(
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      `Used unsupported flags: ${ansis.bold(
         'list-all-audits, list-locales, list-trace-categories',
       )} and 3 more.`,
     );
@@ -119,7 +113,7 @@ describe('normalizeFlags', () => {
         ...supportedFlags,
       } as unknown as LighthouseOptions),
     ).toEqual(expect.not.objectContaining({ 'list-all-audits': true }));
-    expect(ui()).toHaveLoggedTimes(1);
+    expect(logger.warn).toHaveBeenCalledTimes(1);
   });
 
   it('should remove any flag with an empty array as a value', () => {

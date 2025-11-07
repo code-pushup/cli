@@ -13,7 +13,7 @@ import {
   auditOutputsSchema,
 } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { ui } from '@code-pushup/utils';
+import { logger, ui } from '@code-pushup/utils';
 import { DEFAULT_CLI_FLAGS } from './constants.js';
 import { unsupportedDetailTypes } from './details/details.js';
 import type { LighthouseCliFlags } from './types.js';
@@ -265,7 +265,7 @@ describe('toAuditOutputs', () => {
       ),
       { verbose: true },
     );
-    expect(ui()).toHaveLoggedTimes(1);
+    expect(logger.warn).toHaveBeenCalledTimes(1);
   });
 
   it('should not parse empty audit details', () => {
@@ -348,7 +348,7 @@ describe('getConfig', () => {
     await expect(
       getConfig({ preset: 'wrong' as 'desktop' }),
     ).resolves.toBeUndefined();
-    expect(ui()).toHaveLogged('info', 'Preset "wrong" is not supported');
+    expect(logger.warn).toHaveBeenCalledWith('Preset "wrong" is not supported');
   });
 
   it('should load config from json file if configPath is specified', async () => {
@@ -381,7 +381,9 @@ describe('getConfig', () => {
     await expect(
       getConfig({ configPath: path.join('wrong.not') }),
     ).resolves.toBeUndefined();
-    expect(ui()).toHaveLogged('info', 'Format of file wrong.not not supported');
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Format of file wrong.not not supported',
+    );
   });
 });
 
