@@ -4,12 +4,12 @@ import {
   expandGroupsForUrls,
   shouldExpandForUrls,
 } from '@code-pushup/utils';
-import type { AxePreset } from './constants';
+import type { AxePreset } from './constants.js';
 import {
   loadAxeRules,
   transformRulesToAudits,
   transformRulesToGroups,
-} from './meta/transform';
+} from './meta/transform.js';
 
 export function processAuditsAndGroups(
   urls: string[],

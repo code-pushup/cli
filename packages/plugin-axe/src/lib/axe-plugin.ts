@@ -1,10 +1,10 @@
 import { createRequire } from 'node:module';
 import type { PluginConfig, PluginUrls } from '@code-pushup/models';
 import { normalizeUrlInput } from '@code-pushup/utils';
-import type { AxePluginOptions } from './config';
-import { AXE_DEFAULT_PRESET, AXE_PLUGIN_SLUG } from './constants';
-import { processAuditsAndGroups } from './processing';
-import { createRunnerFunction } from './runner/runner';
+import type { AxePluginOptions } from './config.js';
+import { AXE_DEFAULT_PRESET, AXE_PLUGIN_SLUG } from './constants.js';
+import { processAuditsAndGroups } from './processing.js';
+import { createRunnerFunction } from './runner/runner.js';
 
 /**
  * Code PushUp plugin for accessibility testing using axe-core.

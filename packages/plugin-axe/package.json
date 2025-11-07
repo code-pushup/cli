@@ -40,6 +40,9 @@
     "access": "public"
   },
   "type": "module",
+  "scripts": {
+    "postinstall": "playwright-core install chromium --with-deps || playwright-core install chromium"
+  },
   "dependencies": {
     "@axe-core/playwright": "^4.11.0",
     "@code-pushup/models": "0.84.0",

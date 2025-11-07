@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { pluginScoreTargetsSchema } from '@code-pushup/models';
-import { AXE_DEFAULT_PRESET, AXE_PRESETS } from './constants';
+import { AXE_DEFAULT_PRESET, AXE_PRESETS } from './constants.js';
 
 export const axePluginOptionsSchema = z
   .object({
