@@ -1,6 +1,6 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import { vol } from 'memfs';
-import { describe, expect, it, vi } from 'vitest';
+import { type MockInstance, describe, expect, it, vi } from 'vitest';
 import {
   type AuditOutputs,
   DEFAULT_PERSIST_CONFIG,
@@ -14,12 +14,23 @@ import { executePlugin, executePlugins } from './execute-plugin.js';
 import * as runnerModule from './runner.js';
 
 describe('executePlugin', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+  let readRunnerResultsSpy: MockInstance<
+    Parameters<(typeof runnerModule)['readRunnerResults']>,
+    ReturnType<(typeof runnerModule)['readRunnerResults']>
+  >;
+  let executePluginRunnerSpy: MockInstance<
+    Parameters<(typeof runnerModule)['executePluginRunner']>,
+    ReturnType<(typeof runnerModule)['executePluginRunner']>
+  >;
+
+  beforeAll(() => {
+    readRunnerResultsSpy = vi.spyOn(runnerModule, 'readRunnerResults');
+    executePluginRunnerSpy = vi.spyOn(runnerModule, 'executePluginRunner');
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    readRunnerResultsSpy.mockRestore();
+    executePluginRunnerSpy.mockRestore();
   });
 
   it('should execute a valid plugin config and pass runner params', async () => {
@@ -251,9 +262,9 @@ describe('executePlugins', () => {
         { progress: false },
       ),
     ).rejects.toThrow(
-      `Executing 1 plugin failed.\n\nError: - Plugin ${bold(
+      `Executing 1 plugin failed.\n\nError: - Plugin ${ansis.bold(
         title,
-      )} (${bold(slug)}) produced the following error:\n  - Audit output is invalid`,
+      )} (${ansis.bold(slug)}) produced the following error:\n  - Audit output is invalid`,
     );
   });
 
@@ -366,13 +377,13 @@ describe('executePlugins', () => {
         { progress: false },
       ),
     ).rejects.toThrow(
-      `Error: - Plugin ${bold('plg1')} (${bold(
+      `Error: - Plugin ${ansis.bold('plg1')} (${ansis.bold(
         'plg1',
-      )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${bold(
+      )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${ansis.bold(
         'missing-audit-slug-a',
-      )}\nError: - Plugin ${bold('plg2')} (${bold(
+      )}\nError: - Plugin ${ansis.bold('plg2')} (${ansis.bold(
         'plg2',
-      )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${bold(
+      )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${ansis.bold(
         'missing-audit-slug-b',
       )}`,
     );

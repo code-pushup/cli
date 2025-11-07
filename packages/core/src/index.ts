@@ -23,11 +23,7 @@ export {
   executePlugin,
   executePlugins,
 } from './lib/implementation/execute-plugin.js';
-export {
-  PersistDirError,
-  PersistError,
-  persistReport,
-} from './lib/implementation/persist.js';
+export { persistReport } from './lib/implementation/persist.js';
 export {
   autoloadRc,
   ConfigPathError,

@@ -1,10 +1,10 @@
-import { bold, gray } from 'ansis';
+import ansis from 'ansis';
 import type { ArgumentsCamelCase, CommandModule } from 'yargs';
 import {
   type CollectAndPersistReportsOptions,
   collectAndPersistReports,
 } from '@code-pushup/core';
-import { link, ui } from '@code-pushup/utils';
+import { link, logger, ui } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants.js';
 import {
   collectSuccessfulLog,
@@ -18,8 +18,8 @@ export function yargsCollectCommandObject(): CommandModule {
     describe: 'Run Plugins and collect results',
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
       const options = args as unknown as CollectAndPersistReportsOptions;
-      ui().logger.log(bold(CLI_NAME));
-      ui().logger.info(gray(`Run ${command}...`));
+      logger.info(ansis.bold(CLI_NAME));
+      logger.debug(`Running ${ansis.bold(command)} command`);
 
       await collectAndPersistReports(options);
       collectSuccessfulLog();
@@ -40,12 +40,13 @@ export function yargsCollectCommandObject(): CommandModule {
 }
 
 export function renderUploadAutorunHint(): void {
+  // TODO: replace @poppinss/cliui
   ui()
     .sticker()
-    .add(bold.gray('💡 Visualize your reports'))
+    .add(ansis.bold.gray('💡 Visualize your reports'))
     .add('')
     .add(
-      `${gray('❯')} npx code-pushup upload - ${gray(
+      `${ansis.gray('❯')} npx code-pushup upload - ${ansis.gray(
         'Run upload to upload the created report to the server',
       )}`,
     )
@@ -55,7 +56,7 @@ export function renderUploadAutorunHint(): void {
       )}`,
     )
     .add(
-      `${gray('❯')} npx code-pushup autorun - ${gray('Run collect & upload')}`,
+      `${ansis.gray('❯')} npx code-pushup autorun - ${ansis.gray('Run collect & upload')}`,
     )
     .add(
       `  ${link(

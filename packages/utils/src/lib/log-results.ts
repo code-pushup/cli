@@ -1,5 +1,5 @@
 import { isPromiseFulfilledResult, isPromiseRejectedResult } from './guards.js';
-import { ui } from './logging.js';
+import { logger } from './logger.js';
 
 export function logMultipleResults<T>(
   results: PromiseSettledResult<T>[],
@@ -29,16 +29,16 @@ export function logMultipleResults<T>(
 }
 
 export function logPromiseResults<
-  T extends PromiseFulfilledResult<unknown> | PromiseRejectedResult,
->(results: T[], logMessage: string, getMsg: (result: T) => string): void {
+  T extends PromiseFulfilledResult<unknown>[] | PromiseRejectedResult[],
+>(results: T, logMessage: string, getMsg: (result: T[number]) => string): void {
   if (results.length > 0) {
     const log =
       results[0]?.status === 'fulfilled'
-        ? (m: string) => {
-            ui().logger.success(m);
+        ? (message: string) => {
+            logger.debug(message);
           }
-        : (m: string) => {
-            ui().logger.warning(m);
+        : (message: string) => {
+            logger.warn(message);
           };
 
     log(logMessage);

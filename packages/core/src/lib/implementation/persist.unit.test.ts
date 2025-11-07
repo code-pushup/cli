@@ -8,7 +8,7 @@ import {
   MINIMAL_REPORT_MOCK,
   REPORT_MOCK,
 } from '@code-pushup/test-utils';
-import { scoreReport, sortReport, ui } from '@code-pushup/utils';
+import { logger, scoreReport, sortReport } from '@code-pushup/utils';
 import { logPersistedResults, persistReport } from './persist.js';
 
 describe('persistReport', () => {
@@ -92,27 +92,30 @@ describe('persistReport', () => {
 describe('logPersistedResults', () => {
   it('should log report sizes correctly`', () => {
     logPersistedResults([{ status: 'fulfilled', value: ['out.json', 10_000] }]);
-    expect(ui()).toHaveNthLogged(
+    expect(logger.debug).toHaveBeenNthCalledWith(
       1,
-      'success',
       expect.stringContaining('Generated reports successfully: '),
     );
-    expect(ui()).toHaveNthLogged(
+    expect(logger.debug).toHaveBeenNthCalledWith(
       2,
-      'success',
       expect.stringContaining('9.77 kB'),
     );
-    expect(ui()).toHaveNthLogged(
+    expect(logger.debug).toHaveBeenNthCalledWith(
       2,
-      'success',
       expect.stringContaining('out.json'),
     );
   });
 
   it('should log fails correctly`', () => {
     logPersistedResults([{ status: 'rejected', reason: 'fail' }]);
-    expect(ui()).toHaveNthLogged(1, 'warn', 'Generated reports failed: ');
-    expect(ui()).toHaveNthLogged(2, 'warn', expect.stringContaining('fail'));
+    expect(logger.warn).toHaveBeenNthCalledWith(
+      1,
+      'Generated reports failed: ',
+    );
+    expect(logger.warn).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('fail'),
+    );
   });
 
   it('should log report sizes and fails correctly`', () => {
@@ -120,26 +123,25 @@ describe('logPersistedResults', () => {
       { status: 'fulfilled', value: ['out.json', 10_000] },
       { status: 'rejected', reason: 'fail' },
     ]);
-    expect(ui()).toHaveNthLogged(
+    expect(logger.debug).toHaveBeenNthCalledWith(
       1,
-      'success',
       'Generated reports successfully: ',
     );
-    expect(ui()).toHaveNthLogged(
+    expect(logger.debug).toHaveBeenNthCalledWith(
       2,
-      'success',
       expect.stringContaining('out.json'),
     );
-    expect(ui()).toHaveNthLogged(
+    expect(logger.debug).toHaveBeenNthCalledWith(
       2,
-      'success',
       expect.stringContaining('9.77 kB'),
     );
-    expect(ui()).toHaveNthLogged(
-      3,
-      'warn',
+    expect(logger.warn).toHaveBeenNthCalledWith(
+      1,
       expect.stringContaining('Generated reports failed: '),
     );
-    expect(ui()).toHaveNthLogged(3, 'warn', expect.stringContaining('fail'));
+    expect(logger.warn).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining('fail'),
+    );
   });
 });

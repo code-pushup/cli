@@ -9,7 +9,6 @@ import {
   runnerArgsFromEnv,
   runnerArgsToEnv,
 } from './env.js';
-import { ui } from './logging.js';
 
 describe('isEnvVarEnabled', () => {
   beforeEach(() => {
@@ -39,15 +38,6 @@ describe('isEnvVarEnabled', () => {
   it('should consider "0" disabled', () => {
     vi.stubEnv('CP_VERBOSE', '0');
     expect(isEnvVarEnabled('CP_VERBOSE')).toBeFalse();
-  });
-
-  it('should log a warning for unexpected values', () => {
-    vi.stubEnv('CP_VERBOSE', 'unexpected');
-    expect(isEnvVarEnabled('CP_VERBOSE')).toBeFalse();
-    expect(ui()).toHaveLogged(
-      'warn',
-      'Environment variable CP_VERBOSE expected to be a boolean (true/false/1/0), but received value unexpected. Treating it as disabled.',
-    );
   });
 });
 

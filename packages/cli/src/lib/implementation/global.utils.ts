@@ -1,5 +1,5 @@
 import yargs from 'yargs';
-import { toArray, ui } from '@code-pushup/utils';
+import { logger, stringifyError, toArray } from '@code-pushup/utils';
 import { OptionValidationError } from './validate-filter-options.utils.js';
 
 export function filterKebabCaseKeys<T extends Record<string, unknown>>(
@@ -36,11 +36,11 @@ export function logErrorBeforeThrow<T extends (...args: any[]) => any>(
       return await fn(...args);
     } catch (error) {
       if (error instanceof OptionValidationError) {
-        ui().logger.error(error.message);
+        logger.error(error.message);
         await new Promise(resolve => process.stdout.write('', resolve));
         yargs().exit(1, error);
       } else {
-        console.error(error);
+        logger.error(stringifyError(error));
         await new Promise(resolve => process.stdout.write('', resolve));
         throw error;
       }
