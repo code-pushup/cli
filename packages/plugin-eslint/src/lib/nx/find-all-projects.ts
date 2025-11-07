@@ -1,4 +1,4 @@
-import { stringifyError, ui } from '@code-pushup/utils';
+import { logger, stringifyError } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
 import { filterProjectGraph } from './filter-project-graph.js';
 import { nxProjectsToConfig } from './projects-to-config.js';
@@ -14,9 +14,8 @@ async function resolveCachedProjectGraph() {
   try {
     return readCachedProjectGraph();
   } catch (error) {
-    ui().logger.info(
-      `Could not read cached project graph, falling back to async creation.
-      ${stringifyError(error)}`,
+    logger.info(
+      `Could not read cached project graph, falling back to async creation.\n${stringifyError(error)}`,
     );
     return await createProjectGraphAsync({ exitOnError: false });
   }
