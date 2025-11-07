@@ -2,7 +2,7 @@ import type { Linter, Rule } from 'eslint';
 import { builtinRules } from 'eslint/use-at-your-own-risk';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { exists, findNearestFile, toArray, ui } from '@code-pushup/utils';
+import { exists, findNearestFile, logger, toArray } from '@code-pushup/utils';
 import type { ESLintTarget } from '../../config.js';
 import { jsonHash } from '../hash.js';
 import {
@@ -25,7 +25,7 @@ export async function loadRulesForFlatConfig({
     .map(rule => {
       const meta = findRuleMeta(rule.id, configs);
       if (!meta) {
-        ui().logger.warning(`Cannot find metadata for rule ${rule.id}`);
+        logger.warn(`Cannot find metadata for rule ${rule.id}`);
         return null;
       }
       return { ...rule, meta };
@@ -106,7 +106,7 @@ function findPluginRuleMeta(
   const rule = config?.plugins?.[plugin]?.rules?.[name];
 
   if (typeof rule === 'function') {
-    ui().logger.warning(
+    logger.warn(
       `Cannot parse metadata for rule ${plugin}/${name}, plugin registers it as a function`,
     );
     return undefined;
