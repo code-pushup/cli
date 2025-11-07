@@ -8,6 +8,7 @@ import {
   linkToLocalSourceForIde,
   metaDescription,
   tableSection,
+  wrapTags,
 } from './formatting.js';
 
 describe('tableSection', () => {
@@ -358,5 +359,23 @@ describe('formatFileLink', () => {
         toUnixPath('.code-pushup'),
       ),
     ).toBe('../src/index.ts');
+  });
+});
+
+describe('wrapTags', () => {
+  it.each([
+    ['<label>', '`<label>`'],
+    ['<img src="test.jpg">', '`<img src="test.jpg">`'],
+    [
+      '<li> elements must be contained in a <ul> or <ol>',
+      '`<li>` elements must be contained in a `<ul>` or `<ol>`',
+    ],
+    ['x < 5', 'x < 5'],
+    ['x < 5 and y > 3', 'x < 5 and y > 3'],
+    ['body > button', 'body > button'],
+    ['', ''],
+    [undefined, ''],
+  ])('should transform %j to %j', (input, expected) => {
+    expect(wrapTags(input)).toBe(expected);
   });
 });

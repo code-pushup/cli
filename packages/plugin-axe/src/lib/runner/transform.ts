@@ -1,4 +1,5 @@
 import type { AxeResults, ImpactValue, NodeResult, Result } from 'axe-core';
+import type axe from 'axe-core';
 import type {
   AuditOutput,
   AuditOutputs,
@@ -75,8 +76,15 @@ function formatSeverityCounts(issues: Issue[]): string {
     .join(', ');
 }
 
+function formatSelector(selector: axe.CrossTreeSelector): string {
+  if (typeof selector === 'string') {
+    return selector;
+  }
+  return selector.join(' >> ');
+}
+
 function toIssue(node: NodeResult, result: Result, url: string): Issue {
-  const selector = node.target?.[0] || node.html;
+  const selector = formatSelector(node.target?.[0] || node.html);
   const rawMessage = node.failureSummary || result.help;
   const cleanedMessage = rawMessage.replace(/\s+/g, ' ').trim();
 

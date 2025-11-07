@@ -14,6 +14,7 @@ import {
   metaDescription,
   tableSection,
   treeSection,
+  wrapTags,
 } from './formatting.js';
 import {
   categoriesDetailsSection,
@@ -86,16 +87,17 @@ export function auditDetailsIssues(
       ],
       issues.map(({ severity: level, message, source }: Issue) => {
         const severity = md`${severityMarker(level)} ${md.italic(level)}`;
+        const formattedMessage = wrapTags(message);
 
         if (!source) {
-          return [severity, message];
+          return [severity, formattedMessage];
         }
         const file = linkToLocalSourceForIde(source, options);
         if (!source.position) {
-          return [severity, message, file];
+          return [severity, formattedMessage, file];
         }
         const line = formatSourceLine(source.position);
-        return [severity, message, file, line];
+        return [severity, formattedMessage, file, line];
       }),
     );
 }
@@ -143,7 +145,7 @@ export function auditsSection(
           .map(audit => ({ ...audit, plugin })),
       ),
       (doc, { plugin, ...audit }) => {
-        const auditTitle = `${audit.title} (${plugin.title})`;
+        const auditTitle = `${wrapTags(audit.title)} (${plugin.title})`;
         const detailsContent = auditDetails(audit, options);
         const descriptionContent = metaDescription(audit);
 

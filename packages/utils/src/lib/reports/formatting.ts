@@ -73,13 +73,14 @@ export function metaDescription(
     if (!description) {
       return docsLink;
     }
-    const parsedDescription = description.endsWith('```')
-      ? `${description}\n\n`
-      : `${description} `;
+    const formattedDescription = wrapTags(description);
+    const parsedDescription = formattedDescription.endsWith('```')
+      ? `${formattedDescription}\n\n`
+      : `${formattedDescription} `;
     return md`${parsedDescription}${docsLink}`;
   }
   if (description && description.trim().length > 0) {
-    return description;
+    return wrapTags(description);
   }
   return '';
 }
@@ -170,4 +171,15 @@ export function formatFileLink(
     default:
       return relativePath;
   }
+}
+
+/**
+ * Wraps HTML tags in backticks to prevent markdown parsers
+ * from interpreting them as actual HTML.
+ */
+export function wrapTags(text?: string): string {
+  if (!text) {
+    return '';
+  }
+  return text.replace(/<[a-z][a-z0-9]*[^>]*>/gi, '`$&`');
 }

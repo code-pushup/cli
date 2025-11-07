@@ -228,4 +228,71 @@ describe('toAuditOutputs', () => {
       displayValue: '2 errors, 1 warning, 1 info',
     });
   });
+
+  it('should format shadow DOM selectors with >> notation', () => {
+    const results = createMockAxeResults({
+      violations: [
+        createMockResult('color-contrast', [
+          createMockNode({
+            html: '<button></button>',
+            target: [['#app', 'my-component', 'button']],
+            impact: 'critical',
+            failureSummary: 'Fix this: Element has insufficient color contrast',
+          }),
+        ]),
+      ],
+    });
+
+    expect(toAuditOutputs(results, testUrl)).toEqual<AuditOutput[]>([
+      {
+        slug: 'color-contrast',
+        score: 0,
+        value: 1,
+        displayValue: '1 error',
+        details: {
+          issues: [
+            {
+              message:
+                '[#app >> my-component >> button] Fix this: Element has insufficient color contrast (https://example.com)',
+              severity: 'error',
+            },
+          ],
+        },
+      },
+    ]);
+  });
+
+  it('should fall back to html when target is missing', () => {
+    const results = createMockAxeResults({
+      violations: [
+        createMockResult('aria-roles', [
+          createMockNode({
+            html: '<div role="invalid-role">Content</div>',
+            target: undefined,
+            impact: 'serious',
+            failureSummary:
+              'Fix this: Ensure all values assigned to role="" correspond to valid ARIA roles',
+          }),
+        ]),
+      ],
+    });
+
+    expect(toAuditOutputs(results, testUrl)).toEqual<AuditOutput[]>([
+      {
+        slug: 'aria-roles',
+        score: 0,
+        value: 1,
+        displayValue: '1 error',
+        details: {
+          issues: [
+            {
+              message:
+                '[<div role="invalid-role">Content</div>] Fix this: Ensure all values assigned to role="" correspond to valid ARIA roles (https://example.com)',
+              severity: 'error',
+            },
+          ],
+        },
+      },
+    ]);
+  });
 });
