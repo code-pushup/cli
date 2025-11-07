@@ -1,4 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
+import { logger } from '@code-pushup/utils';
 import { setVerboseMiddleware } from './set-verbose.middleware.js';
 
 describe('setVerboseMiddleware', () => {
@@ -7,6 +8,7 @@ describe('setVerboseMiddleware', () => {
     [false, undefined, false],
     [undefined, undefined, false],
     [undefined, true, true],
+    [undefined, false, false],
     [true, true, true],
     [false, true, true],
     [true, false, false],
@@ -14,11 +16,13 @@ describe('setVerboseMiddleware', () => {
   ])(
     'should set verbosity based on env variable `%j` and cli argument `%j` to perform verbose effect as `%j`',
     (envValue, cliFlag, expected) => {
-      vi.stubEnv('CP_VERBOSE', `${envValue}`);
+      logger.setVerbose(envValue ?? false);
 
       expect(setVerboseMiddleware({ verbose: cliFlag } as any).verbose).toBe(
         expected,
       );
+      expect(process.env['CP_VERBOSE']).toBe(`${expected}`);
+      expect(logger.isVerbose()).toBe(expected);
     },
   );
 });

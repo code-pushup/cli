@@ -1,6 +1,7 @@
-import { bold, cyan, cyanBright, green, red } from 'ansis';
+import cliui from '@isaacs/cliui';
+import ansis from 'ansis';
 import type { AuditReport } from '@code-pushup/models';
-import { isVerbose } from '../env.js';
+import { logger } from '../logger.js';
 import { ui } from '../logging.js';
 import {
   CODE_PUSHUP_DOMAIN,
@@ -16,34 +17,30 @@ import {
   scoreTargetIcon,
 } from './utils.js';
 
-function log(msg = ''): void {
-  ui().logger.log(msg);
-}
-
 export function logStdoutSummary(report: ScoredReport): void {
   const { plugins, categories, packageName, version } = report;
-  log(reportToHeaderSection({ packageName, version }));
-  log();
+  logger.info(reportToHeaderSection({ packageName, version }));
+  logger.newline();
   logPlugins(plugins);
   if (categories && categories.length > 0) {
     logCategories({ plugins, categories });
   }
-  log(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
-  log();
+  logger.info(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
+  logger.newline();
 }
 
 function reportToHeaderSection({
   packageName,
   version,
 }: Pick<ScoredReport, 'packageName' | 'version'>): string {
-  return `${bold(REPORT_HEADLINE_TEXT)} - ${packageName}@${version}`;
+  return `${ansis.bold(REPORT_HEADLINE_TEXT)} - ${packageName}@${version}`;
 }
 
 export function logPlugins(plugins: ScoredReport['plugins']): void {
   plugins.forEach(plugin => {
     const { title, audits } = plugin;
     const filteredAudits =
-      isVerbose() || audits.length === 1
+      logger.isVerbose() || audits.length === 1
         ? audits
         : audits.filter(({ score }) => score !== 1);
     const diff = audits.length - filteredAudits.length;
@@ -57,21 +54,22 @@ export function logPlugins(plugins: ScoredReport['plugins']): void {
           : `... ${diff} audits with perfect scores omitted for brevity ...`;
       logRow(1, notice);
     }
-    log();
+    logger.newline();
   });
 }
 
 function logAudits(pluginTitle: string, audits: AuditReport[]): void {
-  log();
-  log(bold.magentaBright(`${pluginTitle} audits`));
-  log();
+  logger.newline();
+  logger.info(ansis.bold.magentaBright(`${pluginTitle} audits`));
+  logger.newline();
   audits.forEach(({ score, title, displayValue, value }) => {
     logRow(score, title, displayValue || `${value}`);
   });
 }
 
 function logRow(score: number, title: string, value?: string): void {
-  ui().row([
+  const ui = cliui({ width: TERMINAL_WIDTH });
+  ui.div(
     {
       text: applyScoreColor({ score, text: '●' }),
       width: 2,
@@ -85,14 +83,15 @@ function logRow(score: number, title: string, value?: string): void {
     ...(value
       ? [
           {
-            text: cyanBright(value),
+            text: ansis.cyanBright(value),
             // eslint-disable-next-line @typescript-eslint/no-magic-numbers
             width: 20,
             padding: [0, 0, 0, 0],
           },
         ]
       : []),
-  ]);
+  );
+  logger.info(ui.toString());
 }
 
 export function logCategories({
@@ -106,12 +105,13 @@ export function logCategories({
     `${binaryIconPrefix(score, scoreTarget)}${applyScoreColor({ score })}`,
     countCategoryAudits(refs, plugins),
   ]);
+  // TODO: replace @poppinss/cliui
   const table = ui().table();
   // eslint-disable-next-line @typescript-eslint/no-magic-numbers
   table.columnWidths([TERMINAL_WIDTH - 9 - 10 - 4, 9, 10]);
   table.head(
     REPORT_RAW_OVERVIEW_TABLE_HEADERS.map((heading, idx) => ({
-      content: cyan(heading),
+      content: ansis.cyan(heading),
       hAlign: hAlign(idx),
     })),
   );
@@ -124,10 +124,10 @@ export function logCategories({
     ),
   );
 
-  log(bold.magentaBright('Categories'));
-  log();
+  logger.info(ansis.bold.magentaBright('Categories'));
+  logger.newline();
   table.render();
-  log();
+  logger.newline();
 }
 
 export function binaryIconPrefix(
@@ -135,8 +135,8 @@ export function binaryIconPrefix(
   scoreTarget: number | undefined,
 ): string {
   return scoreTargetIcon(score, scoreTarget, {
-    passIcon: bold(green('✓')),
-    failIcon: bold(red('✗')),
+    passIcon: ansis.bold(ansis.green('✓')),
+    failIcon: ansis.bold(ansis.red('✗')),
     postfix: ' ',
   });
 }

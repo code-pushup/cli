@@ -15,9 +15,9 @@ import {
   createReportPath,
   ensureDirectoryExists,
   generateMdReportsDiff,
+  logger,
   readJsonFile,
   scoreReport,
-  ui,
 } from '@code-pushup/utils';
 import {
   type ReportsToCompare,
@@ -154,9 +154,7 @@ async function fetchPortalComparisonLink(
     });
   } catch (error) {
     if (error instanceof PortalOperationError) {
-      ui().logger.warning(
-        `Failed to fetch portal comparison link - ${error.message}`,
-      );
+      logger.warn(`Failed to fetch portal comparison link - ${error.message}`);
       return undefined;
     }
     throw error;

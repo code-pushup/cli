@@ -1,7 +1,7 @@
-import { bold, gray } from 'ansis';
+import ansis from 'ansis';
 import type { ArgumentsCamelCase, CommandModule } from 'yargs';
 import { type UploadOptions, upload } from '@code-pushup/core';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants.js';
 import {
   renderIntegratePortalHint,
@@ -14,8 +14,8 @@ export function yargsUploadCommandObject() {
     command,
     describe: 'Upload report results to the portal',
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
-      ui().logger.log(bold(CLI_NAME));
-      ui().logger.info(gray(`Run ${command}...`));
+      logger.info(ansis.bold(CLI_NAME));
+      logger.debug(`Running ${ansis.bold(command)} command`);
 
       const options = args as unknown as UploadOptions;
       if (options.upload == null) {

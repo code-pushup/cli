@@ -1,31 +1,31 @@
-import { bold, gray } from 'ansis';
-import { link, ui } from '@code-pushup/utils';
+import ansis from 'ansis';
+import { link, logger, ui } from '@code-pushup/utils';
 
 export function renderConfigureCategoriesHint(): void {
-  ui().logger.info(
-    gray(
-      `💡 Configure categories to see the scores in an overview table. See: ${link(
-        'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md',
-      )}`,
-    ),
+  logger.debug(
+    `💡 Configure categories to see the scores in an overview table. See: ${link(
+      'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md',
+    )}`,
+    { force: true },
   );
 }
 export function uploadSuccessfulLog(url: string): void {
-  ui().logger.success('Upload successful!');
-  ui().logger.success(link(url));
+  logger.info(ansis.green('Upload successful!'));
+  logger.info(link(url));
 }
 
 export function collectSuccessfulLog(): void {
-  ui().logger.success('Collecting report successful!');
+  logger.info(ansis.green('Collecting report successful!'));
 }
 
 export function renderIntegratePortalHint(): void {
+  // TODO: replace @poppinss/cliui
   ui()
     .sticker()
-    .add(bold.gray('💡 Integrate the portal'))
+    .add(ansis.bold.gray('💡 Integrate the portal'))
     .add('')
     .add(
-      `${gray('❯')} Upload a report to the server - ${gray(
+      `${ansis.gray('❯')} Upload a report to the server - ${ansis.gray(
         'npx code-pushup upload',
       )}`,
     )
@@ -35,12 +35,12 @@ export function renderIntegratePortalHint(): void {
       )}`,
     )
     .add(
-      `${gray('❯')} ${gray('Portal Integration')} - ${link(
+      `${ansis.gray('❯')} ${ansis.gray('Portal Integration')} - ${link(
         'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
       )}`,
     )
     .add(
-      `${gray('❯')} ${gray('Upload Command')} - ${link(
+      `${ansis.gray('❯')} ${ansis.gray('Upload Command')} - ${link(
         'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
       )}`,
     )

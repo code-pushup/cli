@@ -1,8 +1,8 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { CommandModule } from 'yargs';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import { filterKebabCaseKeys } from '../implementation/global.utils.js';
 import type { PrintConfigOptions } from '../implementation/print-config.model.js';
 import { yargsPrintConfigOptionsDefinition } from '../implementation/print-config.options.js';
@@ -25,9 +25,9 @@ export function yargsPrintConfigCommandObject() {
       if (output) {
         await mkdir(path.dirname(output), { recursive: true });
         await writeFile(output, content);
-        ui().logger.info(`Config printed to file ${bold(output)}`);
+        logger.info(`Config printed to file ${ansis.bold(output)}`);
       } else {
-        ui().logger.log(content);
+        logger.info(content);
       }
     },
   } satisfies CommandModule;

@@ -1,6 +1,6 @@
 import isaacs_cliui from '@isaacs/cliui';
 import { cliui } from '@poppinss/cliui';
-import { underline } from 'ansis';
+import ansis from 'ansis';
 import { TERMINAL_WIDTH } from './reports/constants.js';
 
 // TODO: remove once logger is used everywhere
@@ -56,5 +56,5 @@ export function logListItem(args: ArgumentsType<UI['div']>) {
 }
 
 export function link(text: string) {
-  return underline.blueBright(text);
+  return ansis.underline.blueBright(text);
 }
