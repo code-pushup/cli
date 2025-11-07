@@ -36,7 +36,6 @@
   "dependencies": {
     "@code-pushup/models": "0.85.0",
     "@code-pushup/utils": "0.85.0",
-    "ansis": "^3.3.0",
     "parse-lcov": "^1.0.4",
     "yargs": "^17.7.2",
     "zod": "^4.0.5"

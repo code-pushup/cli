@@ -6,9 +6,8 @@ import type {
 } from '@nx/devkit';
 import type { JestExecutorOptions } from '@nx/jest/src/executors/jest/schema';
 import type { VitestExecutorOptions } from '@nx/vite/executors';
-import { bold } from 'ansis';
 import path from 'node:path';
-import { importModule, stringifyError, ui } from '@code-pushup/utils';
+import { importModule, logger, stringifyError } from '@code-pushup/utils';
 import type { CoverageResult } from '../config.js';
 
 /**
@@ -22,7 +21,7 @@ async function resolveCachedProjectGraph() {
   try {
     return readCachedProjectGraph();
   } catch (error) {
-    ui().logger.info(
+    logger.info(
       `Could not read cached project graph, falling back to async creation.
       ${stringifyError(error)}`,
     );
@@ -36,13 +35,8 @@ async function resolveCachedProjectGraph() {
  */
 export async function getNxCoveragePaths(
   targets: string[] = ['test'],
-  verbose?: boolean,
 ): Promise<CoverageResult[]> {
-  if (verbose) {
-    ui().logger.info(
-      bold('💡 Gathering coverage from the following nx projects:'),
-    );
-  }
+  logger.debug('💡 Gathering coverage from the following nx projects:');
 
   const { nodes } = await resolveCachedProjectGraph();
 
@@ -55,18 +49,14 @@ export async function getNxCoveragePaths(
       return await Promise.all(
         relevantNodes.map<Promise<CoverageResult>>(async ({ name, data }) => {
           const coveragePaths = await getCoveragePathsForTarget(data, target);
-          if (verbose) {
-            ui().logger.info(`- ${name}: ${target}`);
-          }
+          logger.debug(`- ${name}: ${target}`);
           return coveragePaths;
         }),
       );
     }),
   );
 
-  if (verbose) {
-    ui().logger.info('\n');
-  }
+  logger.debug('');
 
   return coverageResults.flat();
 }
