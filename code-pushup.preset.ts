@@ -4,6 +4,7 @@ import type {
   CoreConfig,
   PluginUrls,
 } from './packages/models/src/index.js';
+import axePlugin from './packages/plugin-axe/src/index.js';
 import coveragePlugin, {
   getNxCoveragePaths,
 } from './packages/plugin-coverage/src/index.js';
@@ -216,3 +217,7 @@ export const coverageCoreConfigNx = async (
     categories: coverageCategories,
   };
 };
+
+export const axeCoreConfig = (urls: PluginUrls): CoreConfig => ({
+  plugins: [axePlugin(urls)],
+});
