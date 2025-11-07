@@ -1,15 +1,15 @@
-import { bold, dim, green } from 'ansis';
+import ansis from 'ansis';
 
 export function titleStyle(title: string) {
-  return `${bold(title)}`;
+  return `${ansis.bold(title)}`;
 }
 
 export function headerStyle(title: string) {
-  return `${green(title)}`;
+  return `${ansis.green(title)}`;
 }
 
 export function descriptionStyle(title: string) {
-  return `${dim(title)}`;
+  return `${ansis.dim(title)}`;
 }
 
 export function formatObjectValue<T>(opts: T, propName: keyof T) {

@@ -1,19 +1,19 @@
-import { black, bold, gray, green } from 'ansis';
+import ansis from 'ansis';
 import { type CtorOptions, MultiProgressBars } from 'multi-progress-bars';
 import { TERMINAL_WIDTH } from './reports/constants.js';
 
 type BarStyles = 'active' | 'done' | 'idle';
 type StatusStyles = Record<BarStyles, (s: string) => string>;
 export const barStyles: StatusStyles = {
-  active: (s: string) => green(s),
-  done: (s: string) => gray(s),
-  idle: (s: string) => gray(s),
+  active: (s: string) => ansis.green(s),
+  done: (s: string) => ansis.gray(s),
+  idle: (s: string) => ansis.gray(s),
 };
 
 export const messageStyles: StatusStyles = {
-  active: (s: string) => black(s),
-  done: (s: string) => bold.green(s),
-  idle: (s: string) => gray(s),
+  active: (s: string) => ansis.black(s),
+  done: (s: string) => ansis.bold.green(s),
+  idle: (s: string) => ansis.gray(s),
 };
 
 export type ProgressBar = {
