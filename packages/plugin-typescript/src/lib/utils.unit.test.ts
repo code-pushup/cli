@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { type Audit, categoryRefSchema } from '@code-pushup/models';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import { AUDITS } from './constants.js';
 import {
   filterAuditsByCompilerOptions,
@@ -124,8 +124,7 @@ describe('logSkippedAudits', () => {
   it('should warn about skipped audits', () => {
     logSkippedAudits(AUDITS.slice(0, -1));
 
-    expect(ui()).toHaveLogged(
-      'info',
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining(`Skipped audits: [`),
     );
   });
@@ -133,6 +132,8 @@ describe('logSkippedAudits', () => {
   it('should camel case the slugs in the audit message', () => {
     logSkippedAudits(AUDITS.slice(0, -1));
 
-    expect(ui()).toHaveLogged('info', expect.stringContaining(`unknownCodes`));
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining(`unknownCodes`),
+    );
   });
 });

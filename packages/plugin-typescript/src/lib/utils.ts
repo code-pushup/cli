@@ -1,6 +1,6 @@
 import type { CompilerOptions } from 'typescript';
 import type { Audit, CategoryConfig, CategoryRef } from '@code-pushup/models';
-import { kebabCaseToCamelCase, ui } from '@code-pushup/utils';
+import { kebabCaseToCamelCase, logger } from '@code-pushup/utils';
 import { AUDITS, GROUPS, TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
 import type {
   TypescriptPluginConfig,
@@ -146,6 +146,6 @@ export function logSkippedAudits(audits: Audit[]) {
     audit => !audits.some(filtered => filtered.slug === audit.slug),
   ).map(audit => kebabCaseToCamelCase(audit.slug));
   if (skippedAudits.length > 0) {
-    ui().logger.info(`Skipped audits: [${skippedAudits.join(', ')}]`);
+    logger.info(`Skipped audits: [${skippedAudits.join(', ')}]`);
   }
 }
