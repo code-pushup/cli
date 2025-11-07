@@ -1,6 +1,5 @@
-import { bold, yellow } from 'ansis';
-import { ui } from '@code-pushup/utils';
-import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
+import ansis from 'ansis';
+import { logger } from '@code-pushup/utils';
 import { DEFAULT_CLI_FLAGS } from './runner/constants.js';
 import type { LighthouseCliFlags } from './runner/types.js';
 import type { LighthouseOptions } from './types.js';
@@ -73,10 +72,8 @@ export function logUnsupportedFlagsInUse(
   if (unsupportedFlagsInUse.length > 0) {
     const postFix = (count: number) =>
       count > displayCount ? ` and ${count - displayCount} more.` : '';
-    ui().logger.debug(
-      `${yellow('⚠')} Plugin ${bold(
-        LIGHTHOUSE_PLUGIN_SLUG,
-      )} used unsupported flags: ${bold(
+    logger.warn(
+      `Used unsupported flags: ${ansis.bold(
         unsupportedFlagsInUse.slice(0, displayCount).join(', '),
       )}${postFix(unsupportedFlagsInUse.length)}`,
     );
