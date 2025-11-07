@@ -1,3 +1,21 @@
+## 0.85.0 (2025-11-07)
+
+### 🚀 Features
+
+- **utils:** print custom cwd in logger command spinner ([52dc118c](https://github.com/code-pushup/cli/commit/52dc118c))
+- **utils:** integrate logger with executeProcess ([eb04da8f](https://github.com/code-pushup/cli/commit/eb04da8f))
+
+### 🩹 Fixes
+
+- **ci:** remove redundant silent and debug options, use CP_VERBOSE env ([62a48b01](https://github.com/code-pushup/cli/commit/62a48b01))
+- **ci,core,nx-plugin,create-cli:** prevent duplicate process logs ([edfd95d5](https://github.com/code-pushup/cli/commit/edfd95d5))
+- **plugin-js-packages:** avoid parallel process execution (concurrent spinners not supported) ([455043e3](https://github.com/code-pushup/cli/commit/455043e3))
+- **utils:** hide verbose stdout/stderr attributes in ProcessError object ([7b9b6a94](https://github.com/code-pushup/cli/commit/7b9b6a94))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.84.0 (2025-10-30)
 
 ### 🚀 Features
