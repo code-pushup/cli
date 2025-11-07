@@ -38,6 +38,9 @@ export function axePlugin(
     version: packageJson.version,
     title: 'Axe Accessibility',
     icon: 'folder-syntax',
+    description:
+      'Official Code PushUp Axe plugin for automated accessibility testing',
+    docsUrl: 'https://www.npmjs.com/package/@code-pushup/axe-plugin',
     audits,
     groups,
     runner: createRunnerFunction(normalizedUrls, ruleIds),
