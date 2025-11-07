@@ -1,4 +1,4 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import {
   type AuditOutput,
   type AuditReport,
@@ -120,7 +120,7 @@ const wrapProgress = async (
   progressBar: ProgressBar | null,
 ) => {
   const { plugin: pluginCfg, ...rest } = cfg;
-  progressBar?.updateTitle(`Executing ${bold(pluginCfg.title)}`);
+  progressBar?.updateTitle(`Executing ${ansis.bold(pluginCfg.title)}`);
   try {
     const pluginReport = await executePlugin(pluginCfg, rest);
     progressBar?.incrementInSteps(steps);
@@ -128,7 +128,7 @@ const wrapProgress = async (
   } catch (error) {
     progressBar?.incrementInSteps(steps);
     throw new Error(
-      `- Plugin ${bold(pluginCfg.title)} (${bold(
+      `- Plugin ${ansis.bold(pluginCfg.title)} (${ansis.bold(
         pluginCfg.slug,
       )}) produced the following error:\n  - ${stringifyError(error)}`,
     );

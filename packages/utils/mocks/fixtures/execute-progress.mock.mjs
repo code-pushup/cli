@@ -1,4 +1,4 @@
-import { bold, gray } from 'ansis';
+import ansis from 'ansis';
 import { getProgressBar } from '../../../../dist/packages/utils';
 
 const _arg = (name, fallback = '') =>
@@ -27,8 +27,8 @@ const verbose = Boolean(_arg('verbose', false));
 (async () => {
   verbose &&
     console.info(
-      gray(
-        `Start progress with duration: ${bold(duration)}, steps: ${bold(
+      ansis.gray(
+        `Start progress with duration: ${ansis.bold(duration)}, steps: ${ansis.bold(
           steps,
         )}`,
       ),

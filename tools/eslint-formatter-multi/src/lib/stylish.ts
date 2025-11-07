@@ -4,7 +4,7 @@
  * @fileoverview Stylish reporter
  * @author Sindre Sorhus
  */
-import { bold, dim, red, reset, underline, yellow } from 'ansis';
+import ansis from 'ansis';
 import type { ESLint } from 'eslint';
 import { stripVTControlCharacters } from 'node:util';
 import { textTable } from './text-table.js';
@@ -49,7 +49,7 @@ export function stylishFormatter(results: ESLint.LintResult[]): string {
     fixableErrorCount += result.fixableErrorCount;
     fixableWarningCount += result.fixableWarningCount;
 
-    output += `${underline(result.filePath)}\n`;
+    output += `${ansis.underline(result.filePath)}\n`;
 
     output += `${textTable(
       messages.map(message => {
@@ -57,10 +57,10 @@ export function stylishFormatter(results: ESLint.LintResult[]): string {
         let messageType;
 
         if (message.fatal || message.severity === 2) {
-          messageType = red('error');
+          messageType = ansis.red('error');
           summaryColor = 'red';
         } else {
-          messageType = yellow('warning');
+          messageType = ansis.yellow('warning');
         }
 
         return [
@@ -69,7 +69,7 @@ export function stylishFormatter(results: ESLint.LintResult[]): string {
           String(message.column || 0),
           messageType,
           message.message.replace(/([^ ])\.$/u, '$1'),
-          dim(message.ruleId || ''),
+          ansis.dim(message.ruleId || ''),
         ];
       }),
       {
@@ -81,7 +81,7 @@ export function stylishFormatter(results: ESLint.LintResult[]): string {
     )
       .split('\n')
       .map(el =>
-        el.replace(/(\d+)\s+(\d+)/u, (m, p1, p2) => dim(`${p1}:${p2}`)),
+        el.replace(/(\d+)\s+(\d+)/u, (m, p1, p2) => ansis.dim(`${p1}:${p2}`)),
       )
       .join('\n')}\n\n`;
   });
@@ -89,8 +89,8 @@ export function stylishFormatter(results: ESLint.LintResult[]): string {
   const total = errorCount + warningCount;
 
   if (total > 0) {
-    const colorFn = summaryColor === 'red' ? red : yellow;
-    output += bold(
+    const colorFn = summaryColor === 'red' ? ansis.red : ansis.yellow;
+    output += ansis.bold(
       colorFn(
         [
           '\u2716 ',
@@ -108,7 +108,7 @@ export function stylishFormatter(results: ESLint.LintResult[]): string {
     );
 
     if (fixableErrorCount > 0 || fixableWarningCount > 0) {
-      output += bold(
+      output += ansis.bold(
         colorFn(
           [
             '  ',
@@ -125,5 +125,5 @@ export function stylishFormatter(results: ESLint.LintResult[]): string {
   }
 
   // Resets output color, for prevent change on top level
-  return total > 0 ? reset(output) : '';
+  return total > 0 ? ansis.reset(output) : '';
 }
