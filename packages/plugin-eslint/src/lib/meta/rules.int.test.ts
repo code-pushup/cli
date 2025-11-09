@@ -1,12 +1,6 @@
-import { cp } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
-import {
-  NX_IGNORED_FILES_TO_RESTORE,
-  restoreRenamedFiles,
-  teardownTestFolder,
-} from '@code-pushup/test-utils';
 import type { ESLintTarget } from '../config.js';
 import type { RuleData } from './parse.js';
 import { listRules } from './rules.js';
@@ -95,30 +89,14 @@ describe('listRules', () => {
   });
 
   describe('Nx monorepo project', () => {
-    const fixtureNxMonorepoDir = path.join(fixturesDir, 'nx-monorepo');
-    const testNxMonorepoDir = path.join(
-      process.cwd(),
-      'tmp',
-      'plugin-eslint',
-      'rules-test',
-      'nx-monorepo',
-    );
-    const eslintrc = path.join(
-      testNxMonorepoDir,
-      'packages/utils/eslint.config.js',
-    );
+    const nxRootDir = path.join(fixturesDir, 'nx-monorepo');
+    const eslintrc = path.join(nxRootDir, 'packages/utils/eslint.config.js');
 
     const patterns = ['packages/utils/**/*.ts', 'packages/utils/**/*.json'];
     const targets: ESLintTarget[] = [{ eslintrc, patterns }];
 
-    beforeAll(async () => {
-      await cp(fixtureNxMonorepoDir, testNxMonorepoDir, { recursive: true });
-      await restoreRenamedFiles(testNxMonorepoDir, NX_IGNORED_FILES_TO_RESTORE);
-      cwdSpy.mockReturnValue(testNxMonorepoDir);
-    });
-
-    afterAll(async () => {
-      await teardownTestFolder(testNxMonorepoDir);
+    beforeAll(() => {
+      cwdSpy.mockReturnValue(nxRootDir);
     });
 
     it('should list expected number of rules', async () => {

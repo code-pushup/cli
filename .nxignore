@@ -31,4 +31,4 @@
 
 # e2e/ci-e2e/mocks/fixtures/nx-monorepo
 # packages/ci/mocks/fixtures/monorepos/nx
-# packages/plugin-eslint/mocks/fixtures/nx-monorepo
+packages/plugin-eslint/mocks/fixtures/nx-monorepo
