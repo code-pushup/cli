@@ -5,6 +5,7 @@ import type {
   CreateNodesResult,
   CreateNodesResultV2,
   CreateNodesV2,
+  NxPlugin,
 } from '@nx/devkit';
 import { PROJECT_JSON_FILE_NAME } from '../internal/constants.js';
 import { createTargets } from './target/targets.js';
@@ -70,3 +71,9 @@ export const createNodesV2: CreateNodesV2 = [
     );
   },
 ];
+
+export const plugin = {
+  name: 'code-pushup',
+  createNodesV2: createNodesV2 as CreateNodesV2,
+  createNodes,
+} satisfies NxPlugin;

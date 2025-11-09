@@ -1,5 +1,4 @@
-import type { CreateNodesV2, NxPlugin } from '@nx/devkit';
-import { createNodes, createNodesV2 } from './plugin/index.js';
+import { plugin } from './plugin/index.js';
 
 export { createNodes, createNodesV2 } from './plugin/index.js';
 export type { AutorunCommandExecutorOptions } from './executors/cli/schema.js';
@@ -11,8 +10,4 @@ export { initGenerator, initSchematic } from './generators/init/generator.js';
 export { type InitGeneratorSchema } from './generators/init/schema.js';
 export * from './internal/versions.js';
 
-export default {
-  name: 'code-pushup',
-  createNodesV2: createNodesV2 as CreateNodesV2,
-  createNodes,
-} satisfies NxPlugin;
+export default plugin;
