@@ -3,6 +3,8 @@ import { cliui } from '@poppinss/cliui';
 import { underline } from 'ansis';
 import { TERMINAL_WIDTH } from './reports/constants.js';
 
+// TODO: remove once logger is used everywhere
+
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 type ArgumentsType<T> = T extends (...args: infer U) => any ? U : never;
 export type CliUiBase = ReturnType<typeof cliui>;

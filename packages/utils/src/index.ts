@@ -10,6 +10,7 @@ export {
 } from './lib/case-conversions.js';
 export { filesCoverageToTree, type FileCoverage } from './lib/coverage-tree.js';
 export { createRunnerFiles } from './lib/create-runner-files.js';
+export { dateToUnixTimestamp } from './lib/dates.js';
 export { comparePairs, matchArrayItemsByKey, type Diff } from './lib/diff.js';
 export {
   coerceBooleanValue,
@@ -51,13 +52,18 @@ export { filterItemRefsBy } from './lib/filter.js';
 export {
   formatBytes,
   formatDuration,
+  indentLines,
   pluralize,
   pluralizeToken,
+  roundDecimals,
   slugify,
+  transformLines,
   truncateDescription,
   truncateIssueMessage,
+  truncateMultilineText,
   truncateText,
   truncateTitle,
+  UNICODE_ELLIPSIS,
 } from './lib/formatting.js';
 export {
   getCurrentBranchOrTag,
@@ -81,10 +87,15 @@ export {
 } from './lib/guards.js';
 export { interpolate } from './lib/interpolate.js';
 export { logMultipleResults } from './lib/log-results.js';
+export { Logger, logger } from './lib/logger.js';
 export { link, ui, type CliUi, type Column } from './lib/logging.js';
 export { mergeConfigs } from './lib/merge-configs.js';
 export { getProgressBar, type ProgressBar } from './lib/progress.js';
-export { asyncSequential, groupByStatus } from './lib/promises.js';
+export {
+  asyncSequential,
+  groupByStatus,
+  settlePromise,
+} from './lib/promises.js';
 export { generateRandomId } from './lib/random.js';
 export {
   CODE_PUSHUP_DOMAIN,
@@ -104,7 +115,7 @@ export {
 } from './lib/reports/generate-md-reports-diff.js';
 export { loadReport } from './lib/reports/load-report.js';
 export { logStdoutSummary } from './lib/reports/log-stdout-summary.js';
-export { scoreReport, scoreAuditsWithTarget } from './lib/reports/scoring.js';
+export { scoreAuditsWithTarget, scoreReport } from './lib/reports/scoring.js';
 export { sortReport } from './lib/reports/sorting.js';
 export type {
   ScoredCategoryConfig,
@@ -142,7 +153,7 @@ export type {
   ExtractArray,
   ExtractArrays,
   ItemOrArray,
+  LooseAutocomplete,
   Prettify,
   WithRequired,
 } from './lib/types.js';
-export { parseSchema, SchemaValidationError } from './lib/zod-validation.js';

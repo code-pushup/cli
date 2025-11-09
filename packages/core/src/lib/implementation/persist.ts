@@ -7,6 +7,7 @@ import {
   directoryExists,
   generateMdReport,
   logMultipleFileResults,
+  stringifyError,
   ui,
 } from '@code-pushup/utils';
 
@@ -51,7 +52,7 @@ export async function persistReport(
     try {
       await mkdir(outputDir, { recursive: true });
     } catch (error) {
-      ui().logger.warning((error as Error).toString());
+      ui().logger.warning(stringifyError(error));
       throw new PersistDirError(outputDir);
     }
   }

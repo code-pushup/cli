@@ -226,6 +226,149 @@ export default {
 
 2. Run the CLI with `npx code-pushup collect` and view or upload report (refer to [CLI docs](../cli/README.md)).
 
+## Artifacts generation and loading
+
+In addition to running ESLint from the plugin implementation, you can configure the plugin to consume pre-generated ESLint reports (artifacts). This is particularly useful for:
+
+- **CI/CD pipelines**: Use cached lint results from your build system
+- **Monorepo setups**: Aggregate results from multiple projects or targets
+- **Performance optimization**: Skip ESLint execution when reports are already available
+- **Custom workflows**: Integrate with existing linting infrastructure
+
+The artifacts feature supports loading ESLint JSON reports that follow the standard `ESLint.LintResult[]` format.
+
+### Basic artifact configuration
+
+Specify the path(s) to your ESLint JSON report files:
+
+```js
+import eslintPlugin from '@code-pushup/eslint-plugin';
+
+export default {
+  plugins: [
+    await eslintPlugin({
+      artifacts: {
+        artifactsPaths: './eslint-report.json',
+      },
+    }),
+  ],
+};
+```
+
+### Multiple artifact files
+
+Use glob patterns to aggregate results from multiple files:
+
+```js
+export default {
+  plugins: [
+    await eslintPlugin({
+      artifacts: {
+        artifactsPaths: ['packages/**/eslint-report.json', 'apps/**/.eslint/*.json'],
+      },
+    }),
+  ],
+};
+```
+
+### Generate artifacts with custom command
+
+If you need to generate the artifacts before loading them, use the `generateArtifactsCommand` option:
+
+```js
+export default {
+  plugins: [
+    await eslintPlugin({
+      artifacts: {
+        generateArtifactsCommand: 'npm run lint:report',
+        artifactsPaths: './eslint-report.json',
+      },
+    }),
+  ],
+};
+```
+
+You can also specify the command with arguments:
+
+```js
+export default {
+  plugins: [
+    await eslintPlugin({
+      artifacts: {
+        generateArtifactsCommand: {
+          command: 'eslint',
+          args: ['src/**/*.{js,ts}', '--format=json', '--output-file=eslint-report.json'],
+        },
+        artifactsPaths: './eslint-report.json',
+      },
+    }),
+  ],
+};
+```
+
 ## Nx Monorepo Setup
 
-Find all details in our [Nx setup guide](https://github.com/code-pushup/cli/wiki/Code-PushUp-integration-guide-for-Nx-monorepos#eslint-config).
+### Caching artifact generation
+
+To leverage Nx's caching capabilities, you need to generate a JSON artifact for caching, while still being able to see the ESLint violations in the terminal or CI logs, so you can fix them.
+This can be done by leveraging eslint formatter.
+
+_lint target from nx.json_
+
+```json
+{
+  "lint": {
+    "inputs": ["lint-eslint-inputs"],
+    "outputs": ["{projectRoot}/.eslint/**/*"],
+    "cache": true,
+    "executor": "nx:run-commands",
+    "options": {
+      "command": "eslint",
+      "args": ["{projectRoot}/**/*.ts", "{projectRoot}/package.json", "--config={projectRoot}/eslint.config.js", "--max-warnings=0", "--no-warn-ignored", "--error-on-unmatched-pattern=false", "--format=@code-pushup/eslint-formatter-multi"],
+      "env": {
+        "ESLINT_FORMATTER_CONFIG": "{\"outputDir\":\"{projectRoot}/.eslint\"}"
+      }
+    }
+  }
+}
+```
+
+As you can now generate the `eslint-report.json` from cache your plugin configuration can directly consume them.
+
+_code-pushup.config.ts target from nx.json_
+
+```jsonc
+{
+  "code-pushup": {
+    "dependsOn": ["lint"],
+    // also multiple targets can be merged into one report
+    //     "dependsOn": ["lint", "lint-next"],
+    "executor": "nx:run-commands",
+    "options": {
+      "command": "npx code-pushup",
+    },
+  },
+}
+```
+
+and the project configuration leverages `dependsOn` to ensure the artefacts are generated when running code-pushup.
+
+Your `code-pushup.config.ts` can then be configured to consume the cached artifacts:
+
+```js
+import eslintPlugin from '@code-pushup/eslint-plugin';
+
+export default {
+  plugins: [
+    await eslintPlugin({
+      artifacts: {
+        artifactsPaths: 'packages/**/.eslint/eslint-report-*.json',
+      },
+    }),
+  ],
+};
+```
+
+---
+
+Find more details in our [Nx setup guide](https://github.com/code-pushup/cli/wiki/Code-PushUp-integration-guide-for-Nx-monorepos#eslint-config).

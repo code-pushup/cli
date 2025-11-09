@@ -1,3 +1,4 @@
+import ansis from 'ansis';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
@@ -129,7 +130,7 @@ describe('eslintPlugin', () => {
     await expect(
       // @ts-expect-error simulating invalid non-TS config
       eslintPlugin({ eslintrc: '.eslintrc.json' }),
-    ).rejects.toThrow('Failed parsing ESLint plugin config');
+    ).rejects.toThrow(`Invalid ${ansis.bold('ESLintPluginConfig')}`);
   });
 
   it("should throw if eslintrc file doesn't exist", async () => {

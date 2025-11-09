@@ -2,12 +2,11 @@ import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { RunnerConfig, RunnerFilesPaths } from '@code-pushup/models';
 import {
+  asyncSequential,
   createRunnerFiles,
   ensureDirectoryExists,
   executeProcess,
   filePathToCliArg,
-  isPromiseFulfilledResult,
-  isPromiseRejectedResult,
   objectFromEntries,
   objectToCliArgs,
   readJsonFile,
@@ -116,34 +115,21 @@ async function processAudit(
     supportedAuditDepGroups.includes(group),
   );
 
-  const auditResults = await Promise.allSettled(
-    compatibleAuditDepGroups.map(
-      async (depGroup): Promise<[DependencyGroup, AuditResult]> => {
-        const { stdout } = await executeProcess({
-          command: pm.command,
-          args: pm.audit.getCommandArgs(depGroup),
-          cwd: packageJsonPath ? path.dirname(packageJsonPath) : process.cwd(),
-          ignoreExitCode: pm.audit.ignoreExitCode,
-        });
-        return [depGroup, pm.audit.unifyResult(stdout)];
-      },
-    ),
+  const auditResults = await asyncSequential(
+    compatibleAuditDepGroups,
+    async (depGroup): Promise<[DependencyGroup, AuditResult]> => {
+      const { stdout } = await executeProcess({
+        command: pm.command,
+        args: pm.audit.getCommandArgs(depGroup),
+        cwd: packageJsonPath ? path.dirname(packageJsonPath) : process.cwd(),
+        ignoreExitCode: pm.audit.ignoreExitCode,
+      });
+      return [depGroup, pm.audit.unifyResult(stdout)];
+    },
   );
 
-  const rejected = auditResults.filter(isPromiseRejectedResult);
-  if (rejected.length > 0) {
-    rejected.forEach(result => {
-      console.error(result.reason);
-    });
-
-    throw new Error(`JS Packages plugin: Running ${pm.name} audit failed.`);
-  }
-
-  const fulfilled = objectFromEntries(
-    auditResults.filter(isPromiseFulfilledResult).map(x => x.value),
-  );
-
-  const uniqueResults = pm.audit.postProcessResult?.(fulfilled) ?? fulfilled;
+  const resultsMap = objectFromEntries(auditResults);
+  const uniqueResults = pm.audit.postProcessResult?.(resultsMap) ?? resultsMap;
 
   return compatibleAuditDepGroups.map(depGroup =>
     auditResultToAuditOutput(

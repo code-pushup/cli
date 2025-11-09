@@ -8,7 +8,11 @@ import yargs, {
   type Options,
   type ParserConfigurationOptions,
 } from 'yargs';
-import { type PersistConfig, formatSchema } from '@code-pushup/models';
+import {
+  type PersistConfig,
+  formatSchema,
+  validate,
+} from '@code-pushup/models';
 import { TERMINAL_WIDTH } from '@code-pushup/utils';
 import {
   descriptionStyle,
@@ -37,9 +41,8 @@ export const yargsDecorator = {
  * returns configurable yargs CLI for code-pushup
  *
  * @example
- * yargsCli(hideBin(process.argv))
- *   // bootstrap CLI; format arguments
- *   .argv;
+ * // bootstrap CLI; format arguments
+ * yargsCli(hideBin(process.argv)).argv;
  */
 export function yargsCli<T = unknown>(
   argv: string[],
@@ -150,11 +153,13 @@ function validatePersistFormat(persist: PersistConfig) {
     if (persist.format != null) {
       persist.format
         .flatMap(format => format.split(','))
-        .forEach(format => formatSchema.parse(format));
+        .forEach(format => {
+          validate(formatSchema, format);
+        });
     }
     return true;
   } catch {
-    throw new Error(
+    throw new TypeError(
       `Invalid persist.format option. Valid options are: ${formatSchema.options.join(
         ', ',
       )}`,

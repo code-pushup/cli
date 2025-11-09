@@ -4,7 +4,7 @@
 
 Prerequisites:
 
-- Node.js installed (LTS version)
+- Node.js installed (version specified in [`.node-version`](./.node-version))
 
 Make sure to install dependencies:
 

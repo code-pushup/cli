@@ -1,12 +1,12 @@
-import { vol } from 'memfs';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { describe, expect, it } from 'vitest';
 import { executePlugin } from '@code-pushup/core';
 import {
   auditSchema,
   categoryRefSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
   type PluginOptions,
   audits,
@@ -27,24 +27,31 @@ const projectJson = JSON.stringify(
   2,
 );
 const testJs = `
-    const str = 'Hello World'
-    const num = 42;
-    const obj = ${projectJson};
-  `;
+const str = 'Hello World';
+const num = 42;
+const obj = ${projectJson};
+`;
 
 describe('create', () => {
+  const workDir = path.join(
+    'tmp',
+    'int-tests',
+    'examples-plugins',
+    'package-json',
+  );
+
   const baseOptions: PluginOptions = {
-    directory: '/',
+    directory: workDir,
   };
 
-  beforeEach(() => {
-    vol.fromJSON(
-      {
-        'project.json': projectJson,
-        'src/test.js': testJs,
-      },
-      MEMFS_VOLUME,
-    );
+  beforeAll(async () => {
+    await mkdir(workDir, { recursive: true });
+    await writeFile(path.join(workDir, 'project.json'), projectJson);
+    await writeFile(path.join(workDir, 'test.js'), testJs);
+  });
+
+  afterAll(async () => {
+    await rm(workDir, { recursive: true, force: true });
   });
 
   it('should return valid PluginConfig', () => {

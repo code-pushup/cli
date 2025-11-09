@@ -3,7 +3,7 @@ import { pluginScoreTargetsSchema } from '@code-pushup/models';
 
 const patternsSchema = z
   .union([z.string(), z.array(z.string()).min(1)])
-  .describe('Glob pattern to match source files to evaluate.');
+  .meta({ description: 'Glob pattern to match source files to evaluate.' });
 
 const jsDocsTargetObjectSchema = z
   .object({
@@ -33,7 +33,8 @@ export const jsDocsPluginConfigSchema = z
     typeof target === 'string' || Array.isArray(target)
       ? { patterns: target }
       : target,
-  );
+  )
+  .meta({ title: 'JsDocsPluginConfig' });
 
 /** Type of the config that is passed to the plugin */
 export type JsDocsPluginConfig = z.input<typeof jsDocsPluginConfigSchema>;

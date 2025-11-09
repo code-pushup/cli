@@ -10,23 +10,24 @@ export const dependencyGroups = ['prod', 'dev', 'optional'] as const;
 const dependencyGroupSchema = z.enum(dependencyGroups);
 export type DependencyGroup = (typeof dependencyGroups)[number];
 
-const packageCommandSchema = z.enum(['audit', 'outdated']);
+const packageCommandSchema = z.enum(['audit', 'outdated']).meta({
+  title: 'PackageCommand',
+});
 export type PackageCommand = z.infer<typeof packageCommandSchema>;
 
-const packageManagerIdSchema = z.enum([
-  'npm',
-  'yarn-classic',
-  'yarn-modern',
-  'pnpm',
-]);
+const packageManagerIdSchema = z
+  .enum(['npm', 'yarn-classic', 'yarn-modern', 'pnpm'])
+  .meta({ title: 'PackageManagerId' });
 export type PackageManagerId = z.infer<typeof packageManagerIdSchema>;
 
 const packageJsonPathSchema = z
   .string()
   .regex(/package\.json$/, 'File path must end with package.json')
-  .describe(
-    'File path to package.json, tries to use root package.json at CWD by default',
-  )
+  .meta({
+    title: 'PackageJsonPath',
+    description:
+      'File path to package.json, tries to use root package.json at CWD by default',
+  })
   .default('package.json');
 
 export type PackageJsonPath = z.infer<typeof packageJsonPathSchema>;
@@ -38,7 +39,9 @@ export const packageAuditLevels = [
   'low',
   'info',
 ] as const;
-const packageAuditLevelSchema = z.enum(packageAuditLevels);
+const packageAuditLevelSchema = z.enum(packageAuditLevels).meta({
+  title: 'PackageAuditLevel',
+});
 export type PackageAuditLevel = z.infer<typeof packageAuditLevelSchema>;
 
 export type AuditSeverity = Record<PackageAuditLevel, IssueSeverity>;
@@ -55,31 +58,34 @@ export function fillAuditLevelMapping(
   };
 }
 
-export const jsPackagesPluginConfigSchema = z.object({
-  checks: z
-    .array(packageCommandSchema)
-    .min(1)
-    .default(['audit', 'outdated'])
-    .describe(
-      'Package manager commands to be run. Defaults to both audit and outdated.',
-    ),
-  packageManager: packageManagerIdSchema
-    .describe('Package manager to be used.')
-    .optional(),
-  dependencyGroups: z
-    .array(dependencyGroupSchema)
-    .min(1)
-    .default(['prod', 'dev']),
-  auditLevelMapping: z
-    .partialRecord(packageAuditLevelSchema, issueSeveritySchema)
-    .default(defaultAuditLevelMapping)
-    .transform(fillAuditLevelMapping)
-    .describe(
-      'Mapping of audit levels to issue severity. Custom mapping or overrides may be entered manually, otherwise has a default preset.',
-    ),
-  packageJsonPath: packageJsonPathSchema,
-  scoreTargets: pluginScoreTargetsSchema,
-});
+export const jsPackagesPluginConfigSchema = z
+  .object({
+    checks: z
+      .array(packageCommandSchema)
+      .min(1)
+      .default(['audit', 'outdated'])
+      .meta({
+        description:
+          'Package manager commands to be run. Defaults to both audit and outdated.',
+      }),
+    packageManager: packageManagerIdSchema
+      .meta({ description: 'Package manager to be used.' })
+      .optional(),
+    dependencyGroups: z
+      .array(dependencyGroupSchema)
+      .min(1)
+      .default(['prod', 'dev']),
+    auditLevelMapping: z
+      .partialRecord(packageAuditLevelSchema, issueSeveritySchema)
+      .default(defaultAuditLevelMapping)
+      .transform(fillAuditLevelMapping)
+      .describe(
+        'Mapping of audit levels to issue severity. Custom mapping or overrides may be entered manually, otherwise has a default preset.',
+      ),
+    packageJsonPath: packageJsonPathSchema,
+    scoreTargets: pluginScoreTargetsSchema,
+  })
+  .meta({ title: 'JSPackagesPluginConfig' });
 
 export type JSPackagesPluginConfig = z.input<
   typeof jsPackagesPluginConfigSchema

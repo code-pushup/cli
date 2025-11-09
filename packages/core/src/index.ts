@@ -9,7 +9,7 @@ export {
 } from './lib/compare.js';
 export {
   getRunnerOutputsPath,
-  type ValidatedRunnerResult,
+  type RunnerResult,
 } from './lib/implementation/runner.js';
 
 export {
@@ -23,7 +23,6 @@ export {
   executePlugin,
   executePlugins,
 } from './lib/implementation/execute-plugin.js';
-export { AuditOutputsMissingAuditError } from './lib/implementation/runner.js';
 export {
   PersistDirError,
   PersistError,
@@ -34,6 +33,7 @@ export {
   ConfigPathError,
   readRcByPath,
 } from './lib/implementation/read-rc-file.js';
+export { AuditOutputsMissingAuditError } from './lib/implementation/runner.js';
 export { mergeDiffs } from './lib/merge-diffs.js';
 export type { GlobalOptions } from './lib/types.js';
 export { upload, type UploadOptions } from './lib/upload.js';

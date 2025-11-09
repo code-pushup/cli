@@ -8,6 +8,7 @@ import {
   DEFAULT_PERSIST_OUTPUT_DIR,
   type Format,
   uploadConfigSchema,
+  validate,
 } from '@code-pushup/models';
 import type { CoreConfigCliOptions } from './core-config.model.js';
 import type { FilterOptions } from './filter.model.js';
@@ -58,10 +59,7 @@ export async function coreConfigMiddleware<
   const upload =
     rcUpload == null && cliUpload == null
       ? undefined
-      : uploadConfigSchema.parse({
-          ...rcUpload,
-          ...cliUpload,
-        });
+      : validate(uploadConfigSchema, { ...rcUpload, ...cliUpload });
 
   return {
     ...(config != null && { config }),

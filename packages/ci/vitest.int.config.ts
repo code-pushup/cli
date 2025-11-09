@@ -1,29 +1,16 @@
-/// <reference types="vitest" />
-import { defineConfig } from 'vite';
-import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases.js';
+import { createIntTestConfig } from '../../testing/test-setup-config/src/index.js';
 
-export default defineConfig({
-  cacheDir: '../../node_modules/.vite/ci',
+let config = createIntTestConfig('ci');
+
+config = {
+  ...config,
   test: {
-    reporters: ['basic'],
-    globals: true,
-    cache: {
-      dir: '../../node_modules/.vitest',
-    },
-    alias: tsconfigPathAliases(),
-    pool: 'threads',
-    poolOptions: { threads: { singleThread: true } },
-    coverage: {
-      reporter: ['text', 'lcov'],
-      reportsDirectory: '../../coverage/ci/int-tests',
-      exclude: ['mocks/**', '**/types.ts'],
-    },
-    environment: 'node',
-    include: ['src/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    globalSetup: ['../../global-setup.ts'],
+    ...config.test,
     setupFiles: [
-      '../../testing/test-setup/src/lib/console.mock.ts',
-      '../../testing/test-setup/src/lib/reset.mocks.ts',
+      ...(config.test!.setupFiles || []),
+      '../../testing/test-setup/src/lib/logger.mock.ts',
     ],
   },
-});
+};
+
+export default config;

@@ -8,6 +8,8 @@ import {
   hasExpectedMessage,
 } from './ui-logger.matcher.utils';
 
+// TODO: remove once logger is used everywhere
+
 type CliUi = ReturnType<typeof cliui>;
 
 export type CustomUiLoggerMatchers = {

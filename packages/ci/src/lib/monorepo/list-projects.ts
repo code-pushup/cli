@@ -1,7 +1,7 @@
 import { glob } from 'glob';
 import path from 'node:path';
-import { createExecutionObserver } from '../create-execution-observer.js';
-import type { Logger, Settings } from '../models.js';
+import { logger } from '@code-pushup/utils';
+import type { Settings } from '../models.js';
 import { detectMonorepoTool } from './detect-tool.js';
 import { getToolHandler } from './handlers/index.js';
 import { listPackages } from './packages.js';
@@ -24,7 +24,6 @@ export type RunManyCommand = (
 export async function listMonorepoProjects(
   settings: Settings,
 ): Promise<MonorepoProjects> {
-  const logger = settings.logger;
   const options = createMonorepoHandlerOptions(settings);
 
   const tool = await resolveMonorepoTool(settings, options);
@@ -50,7 +49,6 @@ export async function listMonorepoProjects(
       patterns: settings.projects,
       cwd: options.cwd,
       bin: settings.bin,
-      logger,
     });
     return { tool, projects };
   }
@@ -58,7 +56,6 @@ export async function listMonorepoProjects(
   const projects = await listProjectsByNpmPackages({
     cwd: options.cwd,
     bin: settings.bin,
-    logger,
   });
   return { tool, projects };
 }
@@ -71,7 +68,6 @@ async function resolveMonorepoTool(
     // shouldn't happen, handled by caller
     throw new Error('Monorepo mode not enabled');
   }
-  const logger = settings.logger;
 
   if (typeof settings.monorepo === 'string') {
     logger.info(`Using monorepo tool "${settings.monorepo}" from inputs`);
@@ -93,14 +89,12 @@ function createMonorepoHandlerOptions({
   directory,
   parallel,
   nxProjectsFilter,
-  silent,
 }: Settings): MonorepoHandlerOptions {
   return {
     task,
     cwd: directory,
     parallel,
     nxProjectsFilter,
-    observer: createExecutionObserver({ silent }),
   };
 }
 
@@ -108,9 +102,8 @@ async function listProjectsByGlobs(args: {
   patterns: string[];
   cwd: string;
   bin: string;
-  logger: Logger;
 }): Promise<ProjectConfig[]> {
-  const { patterns, cwd, bin, logger } = args;
+  const { patterns, cwd, bin } = args;
 
   const directories = await glob(
     patterns.map(pattern => pattern.replace(/\/$/, '/')),
@@ -134,9 +127,8 @@ async function listProjectsByGlobs(args: {
 async function listProjectsByNpmPackages(args: {
   cwd: string;
   bin: string;
-  logger: Logger;
 }): Promise<ProjectConfig[]> {
-  const { cwd, bin, logger } = args;
+  const { cwd, bin } = args;
 
   const packages = await listPackages(cwd);
 

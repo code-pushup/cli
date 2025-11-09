@@ -2,8 +2,9 @@ import { vol } from 'memfs';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { logger } from '@code-pushup/utils';
 import { commentOnPR } from './comment.js';
-import type { Comment, Logger, ProviderAPIClient } from './models.js';
+import type { Comment, ProviderAPIClient } from './models.js';
 
 describe('commentOnPR', () => {
   const diffText = '# Code PushUp\n\nNo changes to report.\n';
@@ -28,13 +29,6 @@ describe('commentOnPR', () => {
     listComments: vi.fn(),
   } satisfies ProviderAPIClient;
 
-  const logger: Logger = {
-    error: vi.fn(),
-    warn: vi.fn(),
-    info: vi.fn(),
-    debug: vi.fn(),
-  };
-
   beforeEach(() => {
     vol.fromJSON({ [diffFile]: diffText }, MEMFS_VOLUME);
     api.listComments.mockResolvedValue([]);
@@ -43,7 +37,7 @@ describe('commentOnPR', () => {
   it('should create new comment if none existing', async () => {
     api.listComments.mockResolvedValue([]);
 
-    await expect(commentOnPR(diffPath, api, logger)).resolves.toBe(comment.id);
+    await expect(commentOnPR(diffPath, api)).resolves.toBe(comment.id);
 
     expect(api.listComments).toHaveBeenCalled();
     expect(api.createComment).toHaveBeenCalledWith(comment.body);
@@ -53,7 +47,7 @@ describe('commentOnPR', () => {
   it("should create new comment if existing comments don't match", async () => {
     api.listComments.mockResolvedValue([otherComment]);
 
-    await expect(commentOnPR(diffPath, api, logger)).resolves.toBe(comment.id);
+    await expect(commentOnPR(diffPath, api)).resolves.toBe(comment.id);
 
     expect(api.listComments).toHaveBeenCalled();
     expect(api.createComment).toHaveBeenCalledWith(comment.body);
@@ -63,7 +57,7 @@ describe('commentOnPR', () => {
   it('should update previous comment if it matches', async () => {
     api.listComments.mockResolvedValue([comment]);
 
-    await expect(commentOnPR(diffPath, api, logger)).resolves.toBe(comment.id);
+    await expect(commentOnPR(diffPath, api)).resolves.toBe(comment.id);
 
     expect(api.listComments).toHaveBeenCalled();
     expect(api.createComment).not.toHaveBeenCalled();
@@ -73,7 +67,7 @@ describe('commentOnPR', () => {
   it('should update previous comment which matches and ignore other comments', async () => {
     api.listComments.mockResolvedValue([otherComment, comment]);
 
-    await expect(commentOnPR(diffPath, api, logger)).resolves.toBe(comment.id);
+    await expect(commentOnPR(diffPath, api)).resolves.toBe(comment.id);
 
     expect(api.listComments).toHaveBeenCalled();
     expect(api.createComment).not.toHaveBeenCalled();
@@ -86,7 +80,7 @@ describe('commentOnPR', () => {
       .join('\n');
     await writeFile(diffPath, longDiffText);
 
-    await expect(commentOnPR(diffPath, api, logger)).resolves.toBe(comment.id);
+    await expect(commentOnPR(diffPath, api)).resolves.toBe(comment.id);
 
     expect(api.createComment).toHaveBeenCalledWith(
       expect.stringContaining('...*[Comment body truncated]*'),

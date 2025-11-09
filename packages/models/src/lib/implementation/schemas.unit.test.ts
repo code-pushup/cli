@@ -82,7 +82,7 @@ describe('globPathSchema', () => {
     'should throw for invalid path with forbidden character: %s',
     pattern => {
       expect(() => globPathSchema.parse(pattern)).toThrow(
-        'valid file path or glob pattern',
+        'Invalid string: must match pattern',
       );
     },
   );

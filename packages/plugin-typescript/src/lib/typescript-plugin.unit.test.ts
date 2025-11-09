@@ -1,3 +1,4 @@
+import ansis from 'ansis';
 import { expect } from 'vitest';
 import { pluginConfigSchema } from '@code-pushup/models';
 import { AUDITS, GROUPS } from './constants.js';
@@ -35,7 +36,11 @@ describe('typescriptPlugin-config-object', () => {
       typescriptPlugin({
         tsconfig: 42,
       } as unknown as TypescriptPluginOptions),
-    ).rejects.toThrow(/invalid_type/);
+    ).rejects
+      .toThrow(`Error parsing TypeScript Plugin options: SchemaValidationError: Invalid ${ansis.bold('TypescriptPluginConfig')}
+✖ Invalid input: expected string, received number
+  → at tsconfig
+`);
   });
 
   it('should pass scoreTargets to PluginConfig when provided', async () => {

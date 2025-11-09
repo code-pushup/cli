@@ -2,7 +2,6 @@ import { rm } from 'node:fs/promises';
 import path from 'node:path';
 import {
   executeProcess,
-  isVerbose,
   readJsonFile,
   stringifyError,
 } from '@code-pushup/utils';
@@ -13,7 +12,6 @@ export async function runPrintConfig({
   config,
   directory,
   project,
-  observer,
 }: CommandContext): Promise<unknown> {
   // unique file name per project so command can be run in parallel
   const outputFile = ['code-pushup', 'config', project, 'json']
@@ -31,11 +29,9 @@ export async function runPrintConfig({
     args: [
       ...(config ? [`--config=${config}`] : []),
       'print-config',
-      ...(isVerbose() ? ['--verbose'] : []),
       `--output=${outputPath}`,
     ],
     cwd: directory,
-    observer,
   });
 
   try {

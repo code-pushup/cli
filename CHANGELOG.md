@@ -1,3 +1,126 @@
+## 0.85.0 (2025-11-07)
+
+### 🚀 Features
+
+- **utils:** print custom cwd in logger command spinner ([52dc118c](https://github.com/code-pushup/cli/commit/52dc118c))
+- **utils:** integrate logger with executeProcess ([eb04da8f](https://github.com/code-pushup/cli/commit/eb04da8f))
+
+### 🩹 Fixes
+
+- **ci:** remove redundant silent and debug options, use CP_VERBOSE env ([62a48b01](https://github.com/code-pushup/cli/commit/62a48b01))
+- **ci,core,nx-plugin,create-cli:** prevent duplicate process logs ([edfd95d5](https://github.com/code-pushup/cli/commit/edfd95d5))
+- **plugin-js-packages:** avoid parallel process execution (concurrent spinners not supported) ([455043e3](https://github.com/code-pushup/cli/commit/455043e3))
+- **utils:** hide verbose stdout/stderr attributes in ProcessError object ([7b9b6a94](https://github.com/code-pushup/cli/commit/7b9b6a94))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.84.0 (2025-10-30)
+
+### 🚀 Features
+
+- **ci:** use new shared logger, remove option ([6f134e62](https://github.com/code-pushup/cli/commit/6f134e62))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.83.0 (2025-10-29)
+
+### 🚀 Features
+
+- use formatted zod schema validation errors ([68fe123d](https://github.com/code-pushup/cli/commit/68fe123d))
+- **plugin-lighthouse:** prettify table validation errors ([ab2fe542](https://github.com/code-pushup/cli/commit/ab2fe542))
+- **utils:** prettify zod errors in stringifyError utility ([5e7456f7](https://github.com/code-pushup/cli/commit/5e7456f7))
+- **utils:** add option to truncate error messages to one-liner ([487ac865](https://github.com/code-pushup/cli/commit/487ac865))
+- **utils:** truncate group/spinner inline errors to one-liner ([ee31b9e8](https://github.com/code-pushup/cli/commit/ee31b9e8))
+- **utils:** provide validateAsync alternative to synchronous validate ([fb236e19](https://github.com/code-pushup/cli/commit/fb236e19))
+
+### 🩹 Fixes
+
+- use safe error to string conversions ([c78c7264](https://github.com/code-pushup/cli/commit/c78c7264))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.82.0 (2025-10-25)
+
+### 🚀 Features
+
+- **nx-plugin:** adjust bin path handling ([#1109](https://github.com/code-pushup/cli/pull/1109))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
+## 0.81.0 (2025-10-22)
+
+### 🚀 Features
+
+- **utils:** add utility for rounding to max decimals, use in formatDuration ([be80d99c](https://github.com/code-pushup/cli/commit/be80d99c))
+- **utils:** add settlePromise helper for convenient rejected promise handling ([9fa7df9e](https://github.com/code-pushup/cli/commit/9fa7df9e))
+- **utils:** add unix timestamp conversion ([b95877e9](https://github.com/code-pushup/cli/commit/b95877e9))
+- **utils:** implement custom logger with groups and tasks ([3d158ff6](https://github.com/code-pushup/cli/commit/3d158ff6))
+- **utils:** throw if invalid group/spinner combinations used in logger ([899ab764](https://github.com/code-pushup/cli/commit/899ab764))
+- **utils:** export shared logger instance ([009bc0eb](https://github.com/code-pushup/cli/commit/009bc0eb))
+
+### 🩹 Fixes
+
+- **utils:** ensure multiline logs during spinner are indented properly ([2ca91c08](https://github.com/code-pushup/cli/commit/2ca91c08))
+- **utils:** avoid formatting milliseconds with decimals ([3c22e5d0](https://github.com/code-pushup/cli/commit/3c22e5d0))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.80.2 (2025-09-26)
+
+### 🩹 Fixes
+
+- **plugin-lighthouse:** prevent cleanup permissions error on windows ([ac43d411](https://github.com/code-pushup/cli/commit/ac43d411))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.80.1 (2025-09-26)
+
+### 🩹 Fixes
+
+- **nx-plugin:** remove undocument env vars parsing from executor ([c2f0fe4b](https://github.com/code-pushup/cli/commit/c2f0fe4b))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.80.0 (2025-09-24)
+
+### 🚀 Features
+
+- add local GitHub Action for testing CI changes ([#1104](https://github.com/code-pushup/cli/pull/1104), [#1093](https://github.com/code-pushup/cli/issues/1093))
+- **utils:** export loose autocomplete type helper ([d56a8463](https://github.com/code-pushup/cli/commit/d56a8463))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- Matěj Chalk
+
+## 0.79.2 (2025-09-23)
+
+This was a version bump only, there were no code changes.
+
+## 0.79.2-alpha.1 (2025-09-23)
+
+### 🚀 Features
+
+- add local GitHub Action for testing CI changes ([#1104](https://github.com/code-pushup/cli/pull/1104), [#1093](https://github.com/code-pushup/cli/issues/1093))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.79.1 (2025-09-04)
 
 ### 🩹 Fixes

@@ -27,3 +27,14 @@ export type KebabCaseToCamelCase<T extends string> =
   T extends `${infer First}-${infer Rest}`
     ? `${First}${Capitalize<KebabCaseToCamelCase<Rest>>}`
     : T;
+
+/**
+ * Autocompletes string from union, while allowing any other string to be assigned.
+ *
+ * @example
+ * let color: LooseAutocomplete< 'red' | 'green' | 'blue'>;
+ *
+ * color = 'green'; // IDE autocompletes 'red', 'green', 'blue'
+ * color = '#516bc6'; // any string passes type check
+ */
+export type LooseAutocomplete<T extends string> = T | (string & {});

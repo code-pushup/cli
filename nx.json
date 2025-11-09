@@ -29,6 +29,9 @@
     "test-vitest-inputs": [
       "os",
       {
+        "env": "NX_VERBOSE_LOGGING"
+      },
+      {
         "externalDependencies": ["vitest"]
       }
     ],
@@ -185,7 +188,7 @@
     },
     "code-pushup-eslint": {
       "cache": true,
-      "inputs": ["default", "code-pushup-inputs", "lint-eslint-inputs"],
+      "inputs": ["default", "code-pushup-inputs"],
       "outputs": ["{projectRoot}/.code-pushup/eslint/runner-output.json"],
       "executor": "nx:run-commands",
       "options": {
@@ -332,7 +335,7 @@
       "push": true,
       "pushRemote": "origin",
       "tag": true,
-      "commitMessage": "release: {version} [skip ci]"
+      "commitMessage": "release: {version}"
     },
     "version": {
       "conventionalCommits": true,

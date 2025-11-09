@@ -13,21 +13,24 @@ describe('runAutorunExecutor', () => {
   const loggerWarnSpy = vi.spyOn(logger, 'warn');
   const executeProcessSpy = vi.spyOn(executeProcessModule, 'executeProcess');
 
-  /* eslint-disable functional/immutable-data, @typescript-eslint/no-dynamic-delete */
   beforeAll(() => {
     Object.entries(process.env)
       .filter(([k]) => k.startsWith('CP_'))
       .forEach(([k]) => delete process.env[k]);
   });
 
+  afterAll(() => {
+    Object.entries(processEnvCP).forEach(([k, v]) => (process.env[k] = v));
+  });
+
   beforeEach(() => {
     vi.unstubAllEnvs();
     executeProcessSpy.mockResolvedValue({
+      bin: 'npx ...',
       code: 0,
+      signal: null,
       stdout: '',
       stderr: '',
-      date: new Date().toISOString(),
-      duration: 100,
     });
   });
 
@@ -37,11 +40,6 @@ describe('runAutorunExecutor', () => {
     executeProcessSpy.mockReset();
   });
 
-  afterAll(() => {
-    Object.entries(processEnvCP).forEach(([k, v]) => (process.env[k] = v));
-  });
-  /* eslint-enable functional/immutable-data, @typescript-eslint/no-dynamic-delete */
-
   it('should call executeProcess with return result', async () => {
     const output = await runAutorunExecutor({}, executorContext('utils'));
     expect(output.success).toBe(true);
@@ -50,10 +48,6 @@ describe('runAutorunExecutor', () => {
       command: 'npx',
       args: expect.arrayContaining(['@code-pushup/cli']),
       cwd: MEMFS_VOLUME,
-      observer: {
-        onError: expect.any(Function),
-        onStdout: expect.any(Function),
-      },
     });
   });
 
@@ -71,10 +65,6 @@ describe('runAutorunExecutor', () => {
       command: 'npx',
       args: expect.arrayContaining(['@code-pushup/cli']),
       cwd: 'cwd-form-context',
-      observer: {
-        onError: expect.any(Function),
-        onStdout: expect.any(Function),
-      },
     });
   });
 
@@ -89,7 +79,6 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should create command from context and options if no api key is set', async () => {
-    vi.stubEnv('CP_PROJECT', 'CLI');
     const output = await runAutorunExecutor(
       { persist: { filename: 'REPORT', format: ['md', 'json'] } },
       executorContext('core'),
@@ -102,9 +91,11 @@ describe('runAutorunExecutor', () => {
 
   it('should create command from context, options and arguments if api key is set', async () => {
     vi.stubEnv('CP_API_KEY', 'cp_1234567');
-    vi.stubEnv('CP_PROJECT', 'CLI');
     const output = await runAutorunExecutor(
-      { persist: { filename: 'REPORT', format: ['md', 'json'] } },
+      {
+        persist: { filename: 'REPORT', format: ['md', 'json'] },
+        upload: { project: 'CLI' },
+      },
       executorContext('core'),
     );
     expect(output.command).toMatch('--persist.filename="REPORT"');

@@ -16,7 +16,9 @@ import { filenameRegex, slugRegex } from './utils.js';
 
 export const tableCellValueSchema = z
   .union([z.string(), z.number(), z.boolean(), z.null()])
-  .default(null);
+  .default(null)
+  .meta({ title: 'TableCellValue' });
+
 export type TableCellValue = z.infer<typeof tableCellValueSchema>;
 
 /**
@@ -47,17 +49,23 @@ export const slugSchema = z
   .max(MAX_SLUG_LENGTH, {
     message: `The slug can be max ${MAX_SLUG_LENGTH} characters long`,
   })
-  .describe('Unique ID (human-readable, URL-safe)');
+  .meta({
+    title: 'Slug',
+    description: 'Unique ID (human-readable, URL-safe)',
+  });
 
 /**  Schema for a general description property */
 export const descriptionSchema = z
   .string()
   .max(MAX_DESCRIPTION_LENGTH)
-  .describe('Description (markdown)')
+  .meta({
+    title: 'Description',
+    description: 'Description (markdown)',
+  })
   .optional();
 
 /* Schema for a URL */
-export const urlSchema = z.string().url();
+export const urlSchema = z.string().url().meta({ title: 'URL' });
 
 /**  Schema for a docsUrl */
 export const docsUrlSchema = urlSchema
@@ -79,23 +87,25 @@ export const docsUrlSchema = urlSchema
     }
     throw new ZodError(ctx.error.issues);
   })
-  .describe('Documentation site');
+  .meta({ title: 'DocsUrl', description: 'Documentation site' });
 
 /** Schema for a title of a plugin, category and audit */
-export const titleSchema = z
-  .string()
-  .max(MAX_TITLE_LENGTH)
-  .describe('Descriptive name');
+export const titleSchema = z.string().max(MAX_TITLE_LENGTH).meta({
+  title: 'Title',
+  description: 'Descriptive name',
+});
 
 /** Schema for score of audit, category or group */
-export const scoreSchema = z
-  .number()
-  .min(0)
-  .max(1)
-  .describe('Value between 0 and 1');
+export const scoreSchema = z.number().min(0).max(1).meta({
+  title: 'Score',
+  description: 'Value between 0 and 1',
+});
 
 /** Schema for a property indicating whether an entity is filtered out */
-export const isSkippedSchema = z.boolean().optional();
+export const isSkippedSchema = z
+  .boolean()
+  .optional()
+  .meta({ title: 'IsSkipped' });
 
 /**
  * Used for categories, plugins and audits
@@ -136,7 +146,8 @@ export function metaSchema(options?: {
 export const filePathSchema = z
   .string()
   .trim()
-  .min(1, { message: 'The path is invalid' });
+  .min(1)
+  .meta({ title: 'FilePath' });
 
 /**
  * Regex for glob patterns - validates file paths and glob patterns
@@ -145,47 +156,47 @@ export const filePathSchema = z
  */
 const globRegex = /^!?[^<>"|]+$/;
 
-export const globPathSchema = z
-  .string()
-  .trim()
-  .min(1, { message: 'The glob pattern is invalid' })
-  .regex(globRegex, {
-    message:
-      'The path must be a valid file path or glob pattern (supports *, **, {}, [], !, ?)',
-  })
-  .describe(
+export const globPathSchema = z.string().trim().min(1).regex(globRegex).meta({
+  title: 'GlobPath',
+  description:
     'Schema for a glob pattern (supports wildcards like *, **, {}, !, etc.)',
-  );
+});
 
 /** Schema for a fileNameSchema */
 export const fileNameSchema = z
   .string()
   .trim()
-  .regex(filenameRegex, {
-    message: `The filename has to be valid`,
-  })
-  .min(1, { message: 'The file name is invalid' });
+  .regex(filenameRegex)
+  .min(1)
+  .meta({ title: 'FileName' });
 
 /** Schema for a positiveInt */
-export const positiveIntSchema = z.number().int().positive();
+export const positiveIntSchema = z
+  .number()
+  .int()
+  .positive()
+  .meta({ title: 'PositiveInt' });
 
-export const nonnegativeNumberSchema = z.number().nonnegative();
+export const nonnegativeNumberSchema = z
+  .number()
+  .nonnegative()
+  .meta({ title: 'NonnegativeNumber' });
 
 export function packageVersionSchema<
   TRequired extends boolean = false,
 >(options?: { versionDescription?: string; required?: TRequired }) {
   const { versionDescription = 'NPM version of the package', required } =
     options ?? {};
-  const packageSchema = z.string().describe('NPM package name');
-  const versionSchema = z.string().describe(versionDescription);
+  const packageSchema = z.string().meta({ description: 'NPM package name' });
+  const versionSchema = z.string().meta({ description: versionDescription });
   return z
     .object({
       packageName: required ? packageSchema : packageSchema.optional(),
       version: required ? versionSchema : versionSchema.optional(),
     })
-    .describe(
-      'NPM package name and version of a published package',
-    ) as ZodObject<{
+    .meta({
+      description: 'NPM package name and version of a published package',
+    }) as ZodObject<{
     packageName: TRequired extends true ? ZodString : ZodOptional<ZodString>;
     version: TRequired extends true ? ZodString : ZodOptional<ZodString>;
   }>;
@@ -194,13 +205,18 @@ export function packageVersionSchema<
 /** Schema for a binary score threshold */
 export const scoreTargetSchema = nonnegativeNumberSchema
   .max(1)
-  .describe('Pass/fail score threshold (0-1)')
+  .meta({
+    title: 'ScoreTarget',
+    description: 'Pass/fail score threshold (0-1)',
+  })
   .optional();
 
 /** Schema for a weight */
-export const weightSchema = nonnegativeNumberSchema.describe(
-  'Coefficient for the given score (use weight 0 if only for display)',
-);
+export const weightSchema = nonnegativeNumberSchema.meta({
+  title: 'Weight',
+  description:
+    'Coefficient for the given score (use weight 0 if only for display)',
+});
 
 export function weightedRefSchema(
   description: string,
@@ -208,10 +224,12 @@ export function weightedRefSchema(
 ) {
   return z
     .object({
-      slug: slugSchema.describe(slugDescription),
-      weight: weightSchema.describe('Weight used to calculate score'),
+      slug: slugSchema.meta({ description: slugDescription }),
+      weight: weightSchema.meta({
+        description: 'Weight used to calculate score',
+      }),
     })
-    .describe(description);
+    .meta({ description });
 }
 
 export type WeightedRef = z.infer<ReturnType<typeof weightedRefSchema>>;
@@ -223,7 +241,9 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
 ) {
   return z
     .object({
-      slug: slugSchema.describe('Human-readable unique ID, e.g. "performance"'),
+      slug: slugSchema.meta({
+        description: 'Human-readable unique ID, e.g. "performance"',
+      }),
       refs: z
         .array(refSchema)
         .min(1, { message: 'In a category, there has to be at least one ref' })
@@ -237,9 +257,10 @@ export function scorableSchema<T extends ReturnType<typeof weightedRefSchema>>(
     .describe(description);
 }
 
-export const materialIconSchema = z
-  .enum(MATERIAL_ICONS)
-  .describe('Icon from VSCode Material Icons extension');
+export const materialIconSchema = z.enum(MATERIAL_ICONS).meta({
+  title: 'MaterialIcon',
+  description: 'Icon from VSCode Material Icons extension',
+});
 export type MaterialIcon = z.infer<typeof materialIconSchema>;
 
 type Ref = { weight: number };
@@ -250,9 +271,14 @@ function hasNonZeroWeightedRef(refs: Ref[]) {
 
 export const filePositionSchema = z
   .object({
-    startLine: positiveIntSchema.describe('Start line'),
-    startColumn: positiveIntSchema.describe('Start column').optional(),
-    endLine: positiveIntSchema.describe('End line').optional(),
-    endColumn: positiveIntSchema.describe('End column').optional(),
+    startLine: positiveIntSchema.meta({ description: 'Start line' }),
+    startColumn: positiveIntSchema
+      .meta({ description: 'Start column' })
+      .optional(),
+    endLine: positiveIntSchema.meta({ description: 'End line' }).optional(),
+    endColumn: positiveIntSchema.meta({ description: 'End column' }).optional(),
   })
-  .describe('Location in file');
+  .meta({
+    title: 'FilePosition',
+    description: 'Location in file',
+  });

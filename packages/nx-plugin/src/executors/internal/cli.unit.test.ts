@@ -109,10 +109,6 @@ describe('createCliCommandObject', () => {
     expect(createCliCommandObject({ args: { verbose: true } })).toStrictEqual({
       args: ['@code-pushup/cli', '--verbose'],
       command: 'npx',
-      observer: {
-        onError: expect.any(Function),
-        onStdout: expect.any(Function),
-      },
     });
   });
 
@@ -124,10 +120,6 @@ describe('createCliCommandObject', () => {
     ).toStrictEqual({
       args: ['@code-pushup/cli', 'autorun', '--verbose'],
       command: 'npx',
-      observer: {
-        onError: expect.any(Function),
-        onStdout: expect.any(Function),
-      },
     });
   });
 
@@ -139,10 +131,6 @@ describe('createCliCommandObject', () => {
     ).toStrictEqual({
       args: ['node_modules/@code-pushup/cli/src/bin.js'],
       command: 'npx',
-      observer: {
-        onError: expect.any(Function),
-        onStdout: expect.any(Function),
-      },
     });
   });
 });

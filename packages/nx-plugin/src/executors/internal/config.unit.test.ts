@@ -267,8 +267,8 @@ describe('uploadConfig', () => {
     expect(
       uploadConfig(baseUploadConfig, {
         workspaceRoot: 'workspace-root',
+        projectName,
         projectConfig: {
-          name: projectName,
           root: 'root',
         },
       }),
@@ -367,11 +367,7 @@ describe('uploadConfig', () => {
       ),
     ).toEqual(
       expect.objectContaining({
-        server: ENV.CP_SERVER,
         apiKey: ENV.CP_API_KEY,
-        organization: ENV.CP_ORGANIZATION,
-        project: ENV.CP_PROJECT,
-        timeout: Number(ENV.CP_TIMEOUT),
       }),
     );
   });
