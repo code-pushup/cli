@@ -7,11 +7,11 @@ export function createConfigurationTarget(options?: {
   projectName?: string;
   bin?: string;
 }): TargetConfiguration<RunCommandsOptions> {
-  const { projectName, bin = PACKAGE_NAME } = options ?? {};
+  const { projectName } = options ?? {};
   const args = objectToCliArgs({
     ...(projectName ? { project: projectName } : {}),
   });
   return {
-    command: `nx g ${bin}:configuration${args.length > 0 ? ` ${args.join(' ')}` : ''}`,
+    command: `nx g ${PACKAGE_NAME}:configuration${args.length > 0 ? ` ${args.join(' ')}` : ''}`,
   };
 }

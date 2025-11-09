@@ -1,5 +1,3 @@
-import { logger } from '@nx/devkit';
-
 export function createCliCommandString(options?: {
   args?: Record<string, unknown>;
   command?: string;
