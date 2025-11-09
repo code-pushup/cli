@@ -1,34 +1,3 @@
-# exclude mock Nx monorepos used for testing
-# mocks
-
-# explicit paths excluded by "mocks" glob
-# e2e/ci-e2e/mocks
-# e2e/cli-e2e/mocks
-# e2e/nx-plugin-e2e/mocks
-# e2e/packages/ci/mocks
-# e2e/packages/cli/mocks
-# e2e/packages/plugin-coverage/mocks
-# e2e/packages/plugin-eslint/mocks
-# e2e/packages/plugin-jsdocs/mocks
-# e2e/packages/plugin-typescript/mocks
-# e2e/packages/utils/mocks
-# e2e/plugin-coverage-e2e/mocks
-# e2e/plugin-eslint-e2e/mocks
-# e2e/plugin-js-packages-e2e/mocks
-# e2e/plugin-jsdocs-e2e/mocks
-# e2e/plugin-lighthouse-e2e/mocks
-# e2e/plugin-typescript-e2e/mocks
-# examples/plugins/mocks
-# packages/ci/mocks
-# packages/cli/mocks
-# packages/plugin-coverage/mocks
-# packages/plugin-eslint/mocks
-# packages/plugin-jsdocs/mocks
-# packages/plugin-typescript/mocks
-# packages/utils/mocks
-
-# explicit paths excluded containing Nx workspace mock assets
-
-# e2e/ci-e2e/mocks/fixtures/nx-monorepo
-# packages/ci/mocks/fixtures/monorepos/nx
+# HACK: exclude mock Nx monorepos used for testing (this makes test working but changed in our mocks are ignored and don't invalidate caching)
+# @TODO prefix Nx related files with "_" (not detected by Nx or test) and copy/rename them under folder `tmp` (excluded by Nx, detected by test) see #1102
 packages/plugin-eslint/mocks/fixtures/nx-monorepo
