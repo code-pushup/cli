@@ -5,8 +5,10 @@ import { simpleGit } from 'simple-git';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
   E2E_ENVIRONMENTS_DIR,
+  NX_IGNORED_FILES_TO_RESTORE,
   TEST_OUTPUT_DIR,
   initGitRepo,
+  restoreRenamedFiles,
   simulateGitFetch,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
@@ -28,6 +30,7 @@ export async function setupTestRepo(folder: string) {
   );
 
   await cp(fixturesDir, baseDir, { recursive: true });
+  await restoreRenamedFiles(baseDir, NX_IGNORED_FILES_TO_RESTORE);
 
   const git = await initGitRepo(simpleGit, { baseDir });
   await simulateGitFetch(git);

@@ -4,7 +4,9 @@ import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
   E2E_ENVIRONMENTS_DIR,
+  NX_IGNORED_FILES_TO_RESTORE,
   TEST_OUTPUT_DIR,
+  restoreRenamedFiles,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import {
@@ -36,6 +38,7 @@ describe('CLI collect', () => {
 
   beforeAll(async () => {
     await cp(fixtureDummyDir, dummyDir, { recursive: true });
+    await restoreRenamedFiles(dummyDir, NX_IGNORED_FILES_TO_RESTORE);
   });
 
   afterAll(async () => {
