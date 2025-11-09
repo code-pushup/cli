@@ -15,10 +15,7 @@ export type Options = {
   bin?: string;
   config?: string | null;
   directory?: string;
-  silent?: boolean;
-  debug?: boolean;
   detectNewIssues?: boolean;
-  logger?: Logger;
   skipComment?: boolean;
   configPatterns?: ConfigPatterns | null;
   searchCommits?: boolean | number;
@@ -64,16 +61,6 @@ export type Comment = {
 export type GitBranch = {
   ref: string;
   sha: string;
-};
-
-/**
- * Logger instance (e.g. `console`) for reporting progress and problems
- */
-export type Logger = {
-  error: (message: string) => void;
-  warn: (message: string) => void;
-  info: (message: string) => void;
-  debug: (message: string) => void;
 };
 
 /**

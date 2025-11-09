@@ -1,6 +1,7 @@
 import ansis from 'ansis';
 import cliSpinners from 'cli-spinners';
 import os from 'node:os';
+import path from 'node:path';
 import process from 'node:process';
 import type { MockInstance } from 'vitest';
 import { Logger } from './logger.js';
@@ -115,6 +116,18 @@ ${ansis.red('Failed to load config')}
       expect(output).toBe('');
     });
 
+    it('should print debug logs if not verbose but force flag is used', () => {
+      vi.stubEnv('CP_VERBOSE', 'false');
+
+      new Logger().debug('Found config file code-pushup.config.js', {
+        force: true,
+      });
+
+      expect(output).toBe(
+        `${ansis.gray('Found config file code-pushup.config.js')}\n`,
+      );
+    });
+
     it('should set verbose flag and environment variable', () => {
       vi.stubEnv('CP_VERBOSE', 'false');
       const logger = new Logger();
@@ -166,7 +179,7 @@ ${ansis.red('Failed to load config')}
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('│')} $ npx eslint . --format=json --output-file=.code-pushup/eslint/results.json
-${ansis.cyan('└')} ${ansis.red("Error: ENOENT: no such file or directory, open '.code-pushup/eslint/results.json'")}
+${ansis.cyan('└')} ${ansis.red("ENOENT: no such file or directory, open '.code-pushup/eslint/results.json'")}
 
 `,
       );
@@ -333,7 +346,7 @@ ${ansis.magenta('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%'
       await expect(task).rejects.toThrow('GraphQL error: Invalid API key');
 
       expect(output).toBe(
-        `${ansis.red('✖')} Uploading report to portal → ${ansis.red('Error: GraphQL error: Invalid API key')}\n`,
+        `${ansis.red('✖')} Uploading report to portal → ${ansis.red('GraphQL error: Invalid API key')}\n`,
       );
     });
 
@@ -428,7 +441,7 @@ ${ansis.green('✔')} Uploaded report to portal ${ansis.gray('(42 ms)')}
 
       expect(output).toBe(
         `
-${ansis.red('✖')} Uploading report to portal → ${ansis.red('Error: GraphQL error: Invalid API key')}
+${ansis.red('✖')} Uploading report to portal → ${ansis.red('GraphQL error: Invalid API key')}
   ${ansis.gray('Sent request to Portal API')}
   ${ansis.gray('Received response from Portal API')}
 `.trimStart(),
@@ -471,14 +484,14 @@ ${ansis.red('✖')} Uploading report to portal → ${ansis.red('Error: GraphQL e
     it('should use colored dollar prefix for commands (success)', async () => {
       const command = new Logger().command(
         'npx eslint . --format=json',
-        async () => {},
+        async () => ({ code: 0 }),
       );
 
       expect(output).toBe(
         `${ansis.cyan('⠋')} ${ansis.blue('$')} npx eslint . --format=json`,
       );
 
-      await expect(command).resolves.toBeUndefined();
+      await expect(command).resolves.toEqual({ code: 0 });
 
       expect(output).toBe(
         `${ansis.green('✔')} ${ansis.green('$')} npx eslint . --format=json ${ansis.gray('(42 ms)')}\n`,
@@ -501,6 +514,42 @@ ${ansis.red('✖')} Uploading report to portal → ${ansis.red('Error: GraphQL e
 
       expect(output).toBe(
         `${ansis.red('✖')} ${ansis.red('$')} npx eslint . --format=json\n`,
+      );
+    });
+
+    it("should print command's working directory if it differs from `process.cwd()`", async () => {
+      const command = new Logger().command(
+        'npx eslint . --format=json',
+        async () => {},
+        { cwd: 'src' },
+      );
+
+      expect(output).toBe(
+        `${ansis.cyan('⠋')} ${ansis.blue('src')} ${ansis.blue('$')} npx eslint . --format=json`,
+      );
+
+      await expect(command).resolves.toBeUndefined();
+
+      expect(output).toBe(
+        `${ansis.green('✔')} ${ansis.blue('src')} ${ansis.green('$')} npx eslint . --format=json ${ansis.gray('(42 ms)')}\n`,
+      );
+    });
+
+    it('should print relative working directory if absoluted path provided', async () => {
+      const command = new Logger().command(
+        'npx eslint . --format=json',
+        async () => {},
+        { cwd: path.join(process.cwd(), 'src') },
+      );
+
+      expect(output).toBe(
+        `${ansis.cyan('⠋')} ${ansis.blue('src')} ${ansis.blue('$')} npx eslint . --format=json`,
+      );
+
+      await expect(command).resolves.toBeUndefined();
+
+      expect(output).toBe(
+        `${ansis.green('✔')} ${ansis.blue('src')} ${ansis.green('$')} npx eslint . --format=json ${ansis.gray('(42 ms)')}\n`,
       );
     });
   });
@@ -689,7 +738,7 @@ ${ansis.cyan('-')} ${ansis.blue('$')} npx eslint . --format=json`,
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('│')} ${ansis.red('$')} npx eslint . --format=json
-${ansis.cyan('└')} ${ansis.red('Error: Process failed with exit code 1')}
+${ansis.cyan('└')} ${ansis.red('Process failed with exit code 1')}
 
 `,
       );
@@ -786,7 +835,7 @@ ${ansis.red.bold('Cancelled by SIGINT')}
 │   ESLint couldn't find a configuration file.
 │   
 │ $ npx eslint . --format=json
-└ Error: Process failed with exit code 2
+└ Process failed with exit code 2
 
 `,
       );

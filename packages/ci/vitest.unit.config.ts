@@ -1,32 +1,16 @@
-/// <reference types="vitest" />
-import { defineConfig } from 'vite';
-import { tsconfigPathAliases } from '../../tools/vitest-tsconfig-path-aliases.js';
+import { createUnitTestConfig } from '../../testing/test-setup-config/src/index.js';
 
-export default defineConfig({
-  cacheDir: '../../node_modules/.vite/ci',
+let config = createUnitTestConfig('ci');
+
+config = {
+  ...config,
   test: {
-    reporters: ['basic'],
-    globals: true,
-    cache: {
-      dir: '../../node_modules/.vitest',
-    },
-    alias: tsconfigPathAliases(),
-    pool: 'threads',
-    poolOptions: { threads: { singleThread: true } },
-    coverage: {
-      reporter: ['text', 'lcov'],
-      reportsDirectory: '../../coverage/ci/unit-tests',
-      exclude: ['mocks/**', '**/types.ts'],
-    },
-    environment: 'node',
-    include: ['src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    globalSetup: ['../../global-setup.ts'],
+    ...config.test,
     setupFiles: [
-      '../../testing/test-setup/src/lib/fs.mock.ts',
-      '../../testing/test-setup/src/lib/git.mock.ts',
-      '../../testing/test-setup/src/lib/console.mock.ts',
-      '../../testing/test-setup/src/lib/reset.mocks.ts',
-      '../../testing/test-setup/src/lib/extend/jest-extended.matcher.ts',
+      ...(config.test!.setupFiles || []),
+      '../../testing/test-setup/src/lib/logger.mock.ts',
     ],
   },
-});
+};
+
+export default config;

@@ -189,28 +189,27 @@ describe('nx-plugin', () => {
 
     await materializeTree(tree, cwd);
 
-    const { stdout, stderr } = await executeProcess({
+    const { stdout } = await executeProcess({
       command: 'npx',
-      args: ['nx', 'run', `${project}:code-pushup`, '--dryRun'],
+      args: ['nx', 'run', `${project}:code-pushup`, '--dryRun', '--verbose'],
       cwd,
     });
 
-    const cleanStderr = removeColorCodes(stderr);
-    // @TODO create test environment for working plugin. This here misses package-lock.json to execute correctly
-    expect(cleanStderr).toContain('DryRun execution of: npx @code-pushup/cli');
-
     const cleanStdout = removeColorCodes(stdout);
-    expect(cleanStdout).toContain(
-      'NX   Successfully ran target code-pushup for project my-lib',
-    );
+    // Nx command
+    expect(cleanStdout).toContain('nx run my-lib:code-pushup');
+    // Run CLI executor
+    expect(cleanStdout).toContain('Command: npx @code-pushup/cli');
+    expect(cleanStdout).toContain('--dryRun --verbose');
   });
 
   it('should consider plugin option bin in executor target', async () => {
-    const cwd = path.join(testFileDir, 'configuration-option-bin');
+    const cwd = path.join(testFileDir, 'executor-option-bin');
+    const binPath = `packages/cli/dist`;
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
       options: {
-        bin: 'XYZ',
+        bin: binPath,
       },
     });
     const { root } = readProjectConfiguration(tree, project);
@@ -223,13 +222,15 @@ describe('nx-plugin', () => {
 
     expect(projectJson.targets).toStrictEqual({
       'code-pushup': expect.objectContaining({
-        executor: 'XYZ:cli',
+        options: {
+          bin: binPath,
+        },
       }),
     });
   });
 
   it('should consider plugin option projectPrefix in executor target', async () => {
-    const cwd = path.join(testFileDir, 'configuration-option-bin');
+    const cwd = path.join(testFileDir, 'executor-option-projectPrefix');
     registerPluginInWorkspace(tree, {
       plugin: '@code-pushup/nx-plugin',
       options: {

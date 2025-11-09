@@ -4,6 +4,8 @@ import {
   MAX_TITLE_LENGTH,
 } from '@code-pushup/models';
 
+export const UNICODE_ELLIPSIS = '…';
+
 export function roundDecimals(value: number, maxDecimals: number) {
   const multiplier = Math.pow(10, maxDecimals);
   return Math.round(value * multiplier) / multiplier;
@@ -87,7 +89,7 @@ export function truncateText(
   const {
     maxChars,
     position = 'end',
-    ellipsis = '...',
+    ellipsis = UNICODE_ELLIPSIS,
   } = typeof options === 'number' ? { maxChars: options } : options;
   if (text.length <= maxChars) {
     return text;
@@ -119,6 +121,27 @@ export function truncateDescription(text: string): string {
 
 export function truncateIssueMessage(text: string): string {
   return truncateText(text, MAX_ISSUE_MESSAGE_LENGTH);
+}
+
+export function truncateMultilineText(
+  text: string,
+  options?: { ellipsis?: string },
+): string {
+  const { ellipsis = `[${UNICODE_ELLIPSIS}]` } = options ?? {};
+
+  const crlfIndex = text.indexOf('\r\n');
+  const lfIndex = text.indexOf('\n');
+  const index = crlfIndex >= 0 ? crlfIndex : lfIndex;
+
+  if (index < 0) {
+    return text;
+  }
+
+  const firstLine = text.slice(0, index);
+  if (text.slice(index).trim().length === 0) {
+    return firstLine;
+  }
+  return `${firstLine} ${ellipsis}`;
 }
 
 export function transformLines(

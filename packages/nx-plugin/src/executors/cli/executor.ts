@@ -28,10 +28,11 @@ export default async function runAutorunExecutor(
     mergedOptions,
     normalizedContext,
   );
-  const { dryRun, verbose, command } = mergedOptions;
+  const { dryRun, verbose, command, bin } = mergedOptions;
   const commandString = createCliCommandString({
     command,
     args: cliArgumentObject,
+    bin,
   });
   if (verbose) {
     logger.info(`Run CLI executor ${command ?? ''}`);
@@ -42,7 +43,7 @@ export default async function runAutorunExecutor(
   } else {
     try {
       await executeProcess({
-        ...createCliCommandObject({ command, args: cliArgumentObject }),
+        ...createCliCommandObject({ command, args: cliArgumentObject, bin }),
         ...(context.cwd ? { cwd: context.cwd } : {}),
         ...(isVerbose() || verbose ? { verbose: true } : {}),
       });
@@ -51,7 +52,7 @@ export default async function runAutorunExecutor(
       return {
         success: false,
         command: commandString,
-        error: error as Error,
+        error: error instanceof Error ? error : new Error(`${error}`),
       };
     }
   }

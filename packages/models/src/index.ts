@@ -72,6 +72,11 @@ export {
 } from './lib/implementation/schemas.js';
 export { exists } from './lib/implementation/utils.js';
 export {
+  SchemaValidationError,
+  validate,
+  validateAsync,
+} from './lib/implementation/validate.js';
+export {
   issueSchema,
   issueSeveritySchema,
   type Issue,

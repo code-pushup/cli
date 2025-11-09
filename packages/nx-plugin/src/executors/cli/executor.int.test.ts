@@ -13,11 +13,11 @@ describe('runAutorunExecutor', () => {
 
   beforeEach(() => {
     executeProcessSpy.mockResolvedValue({
+      bin: 'npx ...',
       code: 0,
+      signal: null,
       stdout: '',
       stderr: '',
-      date: new Date().toISOString(),
-      duration: 100,
     });
   });
 
@@ -51,7 +51,6 @@ describe('runAutorunExecutor', () => {
         onError: expect.any(Function),
         onStdout: expect.any(Function),
       },
-      verbose: true,
     });
   });
 });

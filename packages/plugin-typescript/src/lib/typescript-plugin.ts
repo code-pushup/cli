@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module';
-import type { PluginConfig } from '@code-pushup/models';
+import { type PluginConfig, validate } from '@code-pushup/models';
 import { stringifyError } from '@code-pushup/utils';
 import { DEFAULT_TS_CONFIG, TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
 import { createRunnerFunction } from './runner/runner.js';
@@ -50,7 +50,7 @@ function parseOptions(
   tsPluginOptions: TypescriptPluginOptions,
 ): TypescriptPluginConfig {
   try {
-    return typescriptPluginConfigSchema.parse(tsPluginOptions);
+    return validate(typescriptPluginConfigSchema, tsPluginOptions);
   } catch (error) {
     throw new Error(
       `Error parsing TypeScript Plugin options: ${stringifyError(error)}`,

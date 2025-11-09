@@ -1,5 +1,6 @@
 import * as path from 'node:path';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
+import type { NormalizedExecutorContext } from './context.js';
 import { parseEnv } from './env.js';
 import type {
   BaseNormalizedExecutorContext,
@@ -44,26 +45,32 @@ export function persistConfig(
 
 export function uploadConfig(
   options: Partial<UploadConfig & ProjectExecutorOnlyOptions>,
-  context: BaseNormalizedExecutorContext,
+  context: NormalizedExecutorContext,
 ): Partial<UploadConfig> {
-  const { projectConfig, workspaceRoot } = context;
+  const { workspaceRoot, projectName } = context;
 
-  const { name: projectName } = projectConfig ?? {};
   const { projectPrefix, server, apiKey, organization, project, timeout } =
     options;
   const applyPrefix = workspaceRoot === '.';
   const prefix = projectPrefix ? `${projectPrefix}-` : '';
+
+  const derivedProject =
+    projectName && !project
+      ? applyPrefix
+        ? `${prefix}${projectName}`
+        : projectName
+      : project;
+
   return {
-    ...(projectName
-      ? {
-          project: applyPrefix ? `${prefix}${projectName}` : projectName,
-        }
-      : {}),
     ...parseEnv(process.env),
     ...Object.fromEntries(
-      Object.entries({ server, apiKey, organization, project, timeout }).filter(
-        ([_, v]) => v !== undefined,
-      ),
+      Object.entries({
+        server,
+        apiKey,
+        organization,
+        ...(derivedProject ? { project: derivedProject } : {}),
+        timeout,
+      }).filter(([_, v]) => v !== undefined),
     ),
   };
 }

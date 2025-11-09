@@ -1,4 +1,5 @@
 import ansis from 'ansis';
+import { coreConfigSchema, validate } from '@code-pushup/models';
 import { logger } from '../src/index.js';
 
 async function sleep(delay: number) {
@@ -10,7 +11,11 @@ async function sleep(delay: number) {
 logger.setVerbose(process.argv.includes('--verbose'));
 
 const errorStage = process.argv
-  .find(arg => arg.startsWith('--error='))
+  .findLast(arg => arg.startsWith('--error='))
+  ?.split('=')[1];
+
+const cwd = process.argv
+  .findLast(arg => arg.startsWith('--cwd='))
   ?.split('=')[1];
 
 try {
@@ -19,6 +24,10 @@ try {
 
   await logger.task('Importing code-pushup.config.ts', async () => {
     await sleep(500);
+
+    if (errorStage === 'config') {
+      validate(coreConfigSchema, {}, { filePath: 'code-pushup.config.ts' });
+    }
 
     return 'Loaded configuration from code-pushup.config.ts';
   });
@@ -30,14 +39,18 @@ try {
     `Running plugin "ESLint" ${ansis.gray('[1/2]')}`,
     async () => {
       const bin = 'npx eslint . --format=json';
-      await logger.command(bin, async () => {
-        await sleep(3000);
-        if (errorStage === 'plugin') {
-          logger.info('Configuration file not found.');
-          throw new Error(`Command ${ansis.bold(bin)} exited with code 1`);
-        }
-        logger.debug('All files pass linting.');
-      });
+      await logger.command(
+        bin,
+        async () => {
+          await sleep(3000);
+          if (errorStage === 'plugin') {
+            logger.debug('Configuration file not found.', { force: true });
+            throw new Error(`Command ${ansis.bold(bin)} exited with code 1`);
+          }
+          logger.debug('All files pass linting.');
+        },
+        { cwd },
+      );
 
       logger.info('Found 0 lint problems');
 
@@ -76,7 +89,7 @@ try {
       'Sent GraphQL mutation to https://api.code-pushup.example.com/graphql (organization: "example", project: "website")',
     );
     await sleep(2000);
-    if (errorStage === 'core') {
+    if (errorStage === 'upload') {
       throw new Error('GraphQL error');
     }
     return ansis.bold('Uploaded report to portal');

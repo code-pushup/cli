@@ -5,8 +5,9 @@ export async function ensureDirectoryExists(baseDir: string) {
     await mkdir(baseDir, { recursive: true });
     return;
   } catch (error) {
-    console.error((error as { code: string; message: string }).message);
-    if ((error as { code: string }).code !== 'EEXIST') {
+    const fsError = error as NodeJS.ErrnoException;
+    console.error(fsError.message);
+    if (fsError.code !== 'EEXIST') {
       throw error;
     }
   }
