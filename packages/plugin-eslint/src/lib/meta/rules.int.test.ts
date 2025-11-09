@@ -1,6 +1,10 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
+import {
+  NX_IGNORED_FILES_TO_RESTORE,
+  restoreRenamedFiles,
+} from '@code-pushup/test-utils';
 import type { ESLintTarget } from '../config.js';
 import type { RuleData } from './parse.js';
 import { listRules } from './rules.js';
@@ -95,7 +99,8 @@ describe('listRules', () => {
     const patterns = ['packages/utils/**/*.ts', 'packages/utils/**/*.json'];
     const targets: ESLintTarget[] = [{ eslintrc, patterns }];
 
-    beforeAll(() => {
+    beforeAll(async () => {
+      await restoreRenamedFiles(nxRootDir, NX_IGNORED_FILES_TO_RESTORE);
       cwdSpy.mockReturnValue(nxRootDir);
     });
 
