@@ -10,7 +10,7 @@ import {
   type SourceFileIssue,
   runInCI,
 } from '@code-pushup/ci';
-import { CODE_PUSHUP_UNICODE_LOGO } from '@code-pushup/utils';
+import { CODE_PUSHUP_UNICODE_LOGO, stringifyError } from '@code-pushup/utils';
 
 type GitHubRefs = {
   head: GitBranch;
@@ -150,7 +150,7 @@ async function run(): Promise<void> {
 
     core.info(`${LOG_PREFIX} Finished running successfully`);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
+    const message = stringifyError(error);
     core.error(`${LOG_PREFIX} Failed: ${message}`);
     core.setFailed(message);
   }

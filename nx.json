@@ -30,6 +30,9 @@
     "test-vitest-inputs": [
       "os",
       {
+        "env": "NX_VERBOSE_LOGGING"
+      },
+      {
         "externalDependencies": ["vitest"]
       }
     ],

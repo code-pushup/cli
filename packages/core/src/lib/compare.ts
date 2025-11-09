@@ -7,6 +7,7 @@ import {
   type ReportsDiff,
   type UploadConfig,
   reportSchema,
+  validate,
 } from '@code-pushup/models';
 import {
   type Diff,
@@ -49,8 +50,8 @@ export async function compareReportFiles(
     readJsonFile(options?.after ?? defaultInputPath('after')),
   ]);
   const reports: Diff<Report> = {
-    before: reportSchema.parse(reportBefore),
-    after: reportSchema.parse(reportAfter),
+    before: validate(reportSchema, reportBefore),
+    after: validate(reportSchema, reportAfter),
   };
 
   const diff = compareReports(reports);

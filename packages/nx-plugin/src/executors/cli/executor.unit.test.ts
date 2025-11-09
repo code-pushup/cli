@@ -26,11 +26,11 @@ describe('runAutorunExecutor', () => {
   beforeEach(() => {
     vi.unstubAllEnvs();
     executeProcessSpy.mockResolvedValue({
+      bin: 'npx ...',
       code: 0,
+      signal: null,
       stdout: '',
       stderr: '',
-      date: new Date().toISOString(),
-      duration: 100,
     });
   });
 
@@ -48,10 +48,6 @@ describe('runAutorunExecutor', () => {
       command: 'npx',
       args: expect.arrayContaining(['@code-pushup/cli']),
       cwd: MEMFS_VOLUME,
-      observer: {
-        onError: expect.any(Function),
-        onStdout: expect.any(Function),
-      },
     });
   });
 
@@ -69,10 +65,6 @@ describe('runAutorunExecutor', () => {
       command: 'npx',
       args: expect.arrayContaining(['@code-pushup/cli']),
       cwd: 'cwd-form-context',
-      observer: {
-        onError: expect.any(Function),
-        onStdout: expect.any(Function),
-      },
     });
   });
 

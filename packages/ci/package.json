@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/ci",
-  "version": "0.80.2",
+  "version": "0.85.0",
   "description": "CI automation logic for Code PushUp (provider-agnostic)",
   "license": "MIT",
   "homepage": "https://github.com/code-pushup/cli/tree/main/packages/ci#readme",
@@ -26,9 +26,9 @@
   },
   "type": "module",
   "dependencies": {
-    "@code-pushup/models": "0.80.2",
+    "@code-pushup/models": "0.85.0",
     "@code-pushup/portal-client": "^0.16.0",
-    "@code-pushup/utils": "0.80.2",
+    "@code-pushup/utils": "0.85.0",
     "glob": "^11.0.1",
     "simple-git": "^3.20.0",
     "yaml": "^2.5.1",

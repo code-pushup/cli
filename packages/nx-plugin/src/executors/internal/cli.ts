@@ -1,5 +1,4 @@
 import { logger } from '@nx/devkit';
-import type { ProcessConfig } from '../../internal/execute-process.js';
 
 export function createCliCommandString(options?: {
   args?: Record<string, unknown>;
@@ -16,19 +15,11 @@ export function createCliCommandObject(options?: {
   args?: Record<string, unknown>;
   command?: string;
   bin?: string;
-}): ProcessConfig {
+}): import('@code-pushup/utils').ProcessConfig {
   const { bin = '@code-pushup/cli', command, args } = options ?? {};
   return {
     command: 'npx',
     args: [bin, ...objectToCliArgs({ _: command ?? [], ...args })],
-    observer: {
-      onError: error => {
-        logger.error(error.message);
-      },
-      onStdout: data => {
-        logger.log(data);
-      },
-    },
   };
 }
 

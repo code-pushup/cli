@@ -2,18 +2,16 @@ import { vol } from 'memfs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { logger } from '@code-pushup/utils';
 import type { Settings } from './models.js';
 import { saveOutputFiles } from './output-files.js';
 
 describe('saveOutputFiles', () => {
-  const settings: Pick<Settings, 'logger' | 'directory'> = {
-    logger: console,
+  const settings: Pick<Settings, 'directory'> = {
     directory: MEMFS_VOLUME,
   };
 
   beforeEach(() => {
-    vi.spyOn(settings.logger, 'debug').mockImplementation(() => {});
-
     vol.fromJSON(
       {
         'report.json': '{ "score": 1 }',
@@ -121,10 +119,10 @@ describe('saveOutputFiles', () => {
       settings,
     });
 
-    expect(settings.logger.debug).toHaveBeenCalledWith(
+    expect(logger.debug).toHaveBeenCalledWith(
       `Copied current report from ${path.join(MEMFS_VOLUME, 'report.json')} to ${path.join(MEMFS_VOLUME, '.code-pushup/.ci/.current/report.json')}`,
     );
-    expect(settings.logger.debug).toHaveBeenCalledWith(
+    expect(logger.debug).toHaveBeenCalledWith(
       `Copied current report from ${path.join(MEMFS_VOLUME, 'report.md')} to ${path.join(MEMFS_VOLUME, '.code-pushup/.ci/.current/report.md')}`,
     );
   });

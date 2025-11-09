@@ -15,16 +15,18 @@ import { formatRef } from './implementation/utils.js';
 export const categoryRefSchema = weightedRefSchema(
   'Weighted references to audits and/or groups for the category',
   'Slug of an audit or group (depending on `type`)',
-).extend({
-  type: z
-    .enum(['audit', 'group'])
-    .describe(
-      'Discriminant for reference kind, affects where `slug` is looked up',
+)
+  .extend({
+    type: z.enum(['audit', 'group']).meta({
+      description:
+        'Discriminant for reference kind, affects where `slug` is looked up',
+    }),
+    plugin: slugSchema.describe(
+      'Plugin slug (plugin should contain referenced audit or group)',
     ),
-  plugin: slugSchema.describe(
-    'Plugin slug (plugin should contain referenced audit or group)',
-  ),
-});
+  })
+  .meta({ title: 'CategoryRef' });
+
 export type CategoryRef = z.infer<typeof categoryRefSchema>;
 
 export const categoryConfigSchema = scorableSchema(
@@ -44,7 +46,8 @@ export const categoryConfigSchema = scorableSchema(
       description: 'Meta info for category',
     }).shape,
   )
-  .extend({ scoreTarget: scoreTargetSchema });
+  .extend({ scoreTarget: scoreTargetSchema })
+  .meta({ title: 'CategoryConfig' });
 
 export type CategoryConfig = z.infer<typeof categoryConfigSchema>;
 
@@ -70,4 +73,7 @@ function formatSerializedCategoryRefTargets(keys: string[]): string {
 export const categoriesSchema = z
   .array(categoryConfigSchema)
   .check(createDuplicateSlugsCheck('Category'))
-  .describe('Categorization of individual audits');
+  .meta({
+    title: 'Categories',
+    description: 'Categorization of individual audits',
+  });

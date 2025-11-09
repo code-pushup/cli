@@ -1,22 +1,21 @@
+import { ChildProcess } from 'node:child_process';
 import { describe, expect, it, vi } from 'vitest';
 import { getAsyncProcessRunnerConfig } from '@code-pushup/test-utils';
 import { type ProcessObserver, executeProcess } from './execute-process.js';
+import { logger } from './logger.js';
 
 describe('executeProcess', () => {
   const spyObserver: ProcessObserver = {
     onStdout: vi.fn(),
+    onStderr: vi.fn(),
     onError: vi.fn(),
     onComplete: vi.fn(),
   };
   const errorSpy = vi.fn();
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it('should work with node command `node -v`', async () => {
     const processResult = await executeProcess({
-      command: `node`,
+      command: 'node',
       args: ['-v'],
       observer: spyObserver,
     });
@@ -30,7 +29,7 @@ describe('executeProcess', () => {
 
   it('should work with npx command `npx --help`', async () => {
     const processResult = await executeProcess({
-      command: `npx`,
+      command: 'npx',
       args: ['--help'],
       observer: spyObserver,
     });
@@ -66,6 +65,15 @@ describe('executeProcess', () => {
     expect(errorSpy).toHaveBeenCalledOnce();
     expect(processResult).toBeUndefined();
     expect(spyObserver.onStdout).toHaveBeenCalledTimes(2); // intro + 1 run before error
+    expect(spyObserver.onStdout).toHaveBeenLastCalledWith(
+      'process:update\n',
+      expect.any(ChildProcess),
+    );
+    expect(spyObserver.onStderr).toHaveBeenCalled();
+    expect(spyObserver.onStderr).toHaveBeenCalledWith(
+      expect.stringContaining('dummy-error'),
+      expect.any(ChildProcess),
+    );
     expect(spyObserver.onError).toHaveBeenCalledOnce();
     expect(spyObserver.onComplete).not.toHaveBeenCalled();
   });
@@ -86,7 +94,46 @@ describe('executeProcess', () => {
     expect(processResult.stdout).toContain('process:update');
     expect(processResult.stderr).toContain('dummy-error');
     expect(spyObserver.onStdout).toHaveBeenCalledTimes(2); // intro + 1 run before error
+    expect(spyObserver.onStderr).toHaveBeenCalled();
     expect(spyObserver.onError).not.toHaveBeenCalled();
     expect(spyObserver.onComplete).toHaveBeenCalledOnce();
+  });
+
+  it('should show spinner with serialized command and args', async () => {
+    await executeProcess({ command: 'echo', args: ['hello'] });
+    expect(logger.command).toHaveBeenCalledWith(
+      'echo hello',
+      expect.any(Function),
+    );
+  });
+
+  it('should log stdout and stderr if verbose', async () => {
+    await executeProcess(
+      getAsyncProcessRunnerConfig({ interval: 10, runs: 2, throwError: false }),
+    );
+    expect(logger.debug).toHaveBeenCalledWith(
+      `
+process:start with interval: 10, runs: 2, throwError: false
+process:update
+process:update
+process:complete
+`.trimStart(),
+    );
+  });
+
+  it('should log stdout and stderr if process failed', async () => {
+    await expect(
+      executeProcess(
+        getAsyncProcessRunnerConfig({
+          interval: 10,
+          runs: 1,
+          throwError: true,
+        }),
+      ),
+    ).rejects.toThrow();
+    expect(logger.debug).toHaveBeenCalledWith(
+      expect.stringMatching(/process:start.*Error: dummy-error/s),
+      { force: true },
+    );
   });
 });

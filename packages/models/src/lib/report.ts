@@ -15,7 +15,10 @@ import {
   pluginMetaSchema,
 } from './plugin-config.js';
 
-export const auditReportSchema = auditSchema.merge(auditOutputSchema);
+export const auditReportSchema = auditSchema
+  .merge(auditOutputSchema)
+  .meta({ title: 'AuditReport' });
+
 export type AuditReport = z.infer<typeof auditReportSchema>;
 
 export const pluginReportSchema = pluginMetaSchema
@@ -31,7 +34,8 @@ export const pluginReportSchema = pluginMetaSchema
       groups: z.array(groupSchema).optional(),
     }),
   )
-  .check(createCheck(findMissingSlugsInGroupRefs));
+  .check(createCheck(findMissingSlugsInGroupRefs))
+  .meta({ title: 'PluginReport' });
 
 export type PluginReport = z.infer<typeof pluginReportSchema>;
 
@@ -50,12 +54,18 @@ export const reportSchema = packageVersionSchema({
       plugins: z.array(pluginReportSchema).min(1),
       categories: z.array(categoryConfigSchema).optional(),
       commit: commitSchema
-        .describe('Git commit for which report was collected')
+        .meta({ description: 'Git commit for which report was collected' })
         .nullable(),
-      label: z.string().optional().describe('Label (e.g. project name)'),
+      label: z
+        .string()
+        .optional()
+        .meta({ description: 'Label (e.g. project name)' }),
     }),
   )
   .check(createCheck(findMissingSlugsInCategoryRefs))
-  .describe('Collect output data');
+  .meta({
+    title: 'Report',
+    description: 'Collect output data',
+  });
 
 export type Report = z.infer<typeof reportSchema>;

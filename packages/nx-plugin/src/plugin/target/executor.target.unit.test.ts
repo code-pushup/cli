@@ -1,4 +1,4 @@
-import { expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { createExecutorTarget } from './executor-target.js';
 
 describe('createExecutorTarget', () => {
@@ -8,9 +8,14 @@ describe('createExecutorTarget', () => {
     });
   });
 
-  it('should use bin if provides', () => {
-    expect(createExecutorTarget({ bin: 'xyz' })).toStrictEqual({
-      executor: 'xyz:cli',
+  it('should use bin if provided', () => {
+    expect(
+      createExecutorTarget({ bin: 'packages/cli/src/index.ts' }),
+    ).toStrictEqual({
+      executor: '@code-pushup/nx-plugin:cli',
+      options: {
+        bin: 'packages/cli/src/index.ts',
+      },
     });
   });
 

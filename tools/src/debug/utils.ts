@@ -133,9 +133,7 @@ export function getNpmrcPath(scope: NpmScope = 'user'): string {
     const npmConfigArg = scope === 'global' ? 'globalconfig' : 'userconfig';
     return execSync(`npm config get ${npmConfigArg}`).toString().trim();
   } catch (error) {
-    throw new Error(
-      `Failed to retrieve .npmrc path: ${(error as Error).message}`,
-    );
+    throw new Error(`Failed to retrieve .npmrc path: ${error}`);
   }
 }
 

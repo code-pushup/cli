@@ -1,4 +1,5 @@
-import { vol } from 'memfs';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { executePlugin } from '@code-pushup/core';
 import {
@@ -7,7 +8,6 @@ import {
   pluginConfigSchema,
   pluginReportSchema,
 } from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { audits, pluginSlug as slug } from './constants.js';
 import { type PluginOptions, create } from './package-json.plugin.js';
 import {
@@ -18,17 +18,24 @@ import {
 } from './scoring.js';
 
 describe('create-package-json', () => {
+  const workDir = path.join(
+    'tmp',
+    'int-tests',
+    'examples-plugins',
+    'package-json',
+  );
+
   const baseOptions: PluginOptions = {
-    directory: '/',
+    directory: workDir,
   };
 
-  beforeEach(() => {
-    vol.fromJSON(
-      {
-        'package.json': '{}',
-      },
-      MEMFS_VOLUME,
-    );
+  beforeAll(async () => {
+    await mkdir(workDir, { recursive: true });
+    await writeFile(path.join(workDir, 'package.json'), '{}');
+  });
+
+  afterAll(async () => {
+    await rm(workDir, { recursive: true, force: true });
   });
 
   it('should return valid PluginConfig', () => {

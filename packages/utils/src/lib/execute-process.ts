@@ -6,63 +6,71 @@ import {
   spawn,
 } from 'node:child_process';
 import type { Readable, Writable } from 'node:stream';
-import { isVerbose } from './env.js';
-import { formatCommandLog } from './format-command-log.js';
-import { ui } from './logging.js';
-import { calcDuration } from './reports/utils.js';
+import { logger } from './logger.js';
 
 /**
  * Represents the process result.
- * @category Types
- * @public
- * @property {string} stdout - The stdout of the process.
- * @property {string} stderr - The stderr of the process.
- * @property {number | null} code - The exit code of the process.
  */
 export type ProcessResult = {
-  stdout: string;
-  stderr: string;
+  /** The full command with args that was executed. */
+  bin: string;
+  /** The exit code of the process (`null` if terminated by signal). */
   code: number | null;
-  date: string;
-  duration: number;
+  /** The signal which terminated the process, if any. */
+  signal: NodeJS.Signals | null;
+  /** The standard output from the process. */
+  stdout: string;
+  /** The standard error from the process. */
+  stderr: string;
 };
 
 /**
  * Error class for process errors.
  * Contains additional information about the process result.
- * @category Error
- * @public
- * @class
- * @extends Error
+ *
  * @example
- * const result = await executeProcess({})
- * .catch((error) => {
+ * const result = await executeProcess({ ... }).catch((error) => {
  *   if (error instanceof ProcessError) {
- *   console.error(error.code);
- *   console.error(error.stderr);
- *   console.error(error.stdout);
+ *     console.error(error.message);
+ *     console.error(error.code);
+ *     console.error(error.stderr);
+ *     console.error(error.stdout);
  *   }
  * });
  *
  */
 export class ProcessError extends Error {
+  bin: string;
   code: number | null;
-  stderr: string;
-  stdout: string;
+  signal: NodeJS.Signals | null;
+  // attributes hidden behind getters so they're not printed in uncaught errors (too verbose)
+  #stdout: string;
+  #stderr: string;
 
   constructor(result: ProcessResult) {
-    super(result.stderr);
+    const message = result.signal
+      ? `Process terminated by ${result.signal}`
+      : `Process failed with exit code ${result.code}`;
+    super(message);
+    this.bin = result.bin;
     this.code = result.code;
-    this.stderr = result.stderr;
-    this.stdout = result.stdout;
+    this.signal = result.signal;
+    this.#stdout = result.stdout;
+    this.#stderr = result.stderr;
+  }
+
+  get stdout() {
+    return this.#stdout;
+  }
+
+  get stderr() {
+    return this.#stderr;
   }
 }
 
 /**
  * Process config object. Contains the command, args and observer.
- * @param cfg - process config object with command, args and observer (optional)
- * @category Types
- * @public
+ * @param cfg Process config object with command, args and observer (optional)
  * @property {string} command - The command to execute.
  * @property {string[]} args - The arguments for the command.
  * @property {ProcessObserver} observer - The observer for the process.
@@ -77,15 +85,15 @@ export class ProcessError extends Error {
  *
  * // node command
  * const cfg = {
- * command: 'node',
- * args: ['--version']
+ *  command: 'node',
+ *  args: ['--version']
  * };
  *
  * // npx command
  * const cfg = {
- * command: 'npx',
- * args: ['--version']
- *
+ *   command: 'npx',
+ *   args: ['--version']
+ * };
  */
 export type ProcessConfig = Omit<
   SpawnOptionsWithStdioTuple<StdioPipe, StdioPipe, StdioPipe>,
@@ -98,22 +106,21 @@ export type ProcessConfig = Omit<
 };
 
 /**
- * Process observer object. Contains the onStdout, error and complete function.
- * @category Types
- * @public
- * @property {function} onStdout - The onStdout function of the observer (optional).
- * @property {function} onError - The error function of the observer (optional).
- * @property {function} onComplete - The complete function of the observer (optional).
+ * Process observer object.
  *
  * @example
  * const observer = {
- *  onStdout: (stdout) => console.info(stdout)
- *  }
+ *   onStdout: (stdout) => console.info(stdout)
+ * }
  */
 export type ProcessObserver = {
+  /** Called when the `stdout` stream receives new data (optional). */
   onStdout?: (stdout: string, sourceProcess?: ChildProcess) => void;
+  /** Called when the `stdout` stream receives new data (optional). */
   onStderr?: (stderr: string, sourceProcess?: ChildProcess) => void;
+  /** Called when the process ends in an error (optional). */
   onError?: (error: ProcessError) => void;
+  /** Called when the process ends successfully (optional). */
   onComplete?: () => void;
 };
 
@@ -148,52 +155,60 @@ export type ProcessObserver = {
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   const { command, args, observer, ignoreExitCode = false, ...options } = cfg;
   const { onStdout, onStderr, onError, onComplete } = observer ?? {};
-  const date = new Date().toISOString();
-  const start = performance.now();
 
-  if (isVerbose()) {
-    ui().logger.log(
-      formatCommandLog(command, args, `${cfg.cwd ?? process.cwd()}`),
-    );
-  }
+  const bin = [command, ...(args ?? [])].join(' ');
 
-  return new Promise((resolve, reject) => {
-    // shell:true tells Windows to use shell command for spawning a child process
-    const spawnedProcess = spawn(command, args ?? [], {
-      shell: true,
-      windowsHide: true,
-      ...options,
-    }) as ChildProcessByStdio<Writable, Readable, Readable>;
+  return logger.command(
+    bin,
+    () =>
+      new Promise((resolve, reject) => {
+        const spawnedProcess = spawn(command, args ?? [], {
+          // shell:true tells Windows to use shell command for spawning a child process
+          // https://stackoverflow.com/questions/60386867/node-spawn-child-process-not-working-in-windows
+          shell: true,
+          windowsHide: true,
+          ...options,
+        }) as ChildProcessByStdio<Writable, Readable, Readable>;
 
-    // eslint-disable-next-line functional/no-let
-    let stdout = '';
-    // eslint-disable-next-line functional/no-let
-    let stderr = '';
+        // eslint-disable-next-line functional/no-let
+        let stdout = '';
+        // eslint-disable-next-line functional/no-let
+        let stderr = '';
+        // eslint-disable-next-line functional/no-let
+        let output = ''; // interleaved stdout and stderr
 
-    spawnedProcess.stdout.on('data', data => {
-      stdout += String(data);
-      onStdout?.(String(data), spawnedProcess);
-    });
+        spawnedProcess.stdout.on('data', (data: unknown) => {
+          const message = String(data);
+          stdout += message;
+          output += message;
+          onStdout?.(message, spawnedProcess);
+        });
 
-    spawnedProcess.stderr.on('data', data => {
-      stderr += String(data);
-      onStderr?.(String(data), spawnedProcess);
-    });
+        spawnedProcess.stderr.on('data', (data: unknown) => {
+          const message = String(data);
+          stderr += message;
+          output += message;
+          onStderr?.(message, spawnedProcess);
+        });
 
-    spawnedProcess.on('error', err => {
-      stderr += err.toString();
-    });
+        spawnedProcess.on('error', error => {
+          reject(error);
+        });
 
-    spawnedProcess.on('close', code => {
-      const timings = { date, duration: calcDuration(start) };
-      if (code === 0 || ignoreExitCode) {
-        onComplete?.();
-        resolve({ code, stdout, stderr, ...timings });
-      } else {
-        const errorMsg = new ProcessError({ code, stdout, stderr, ...timings });
-        onError?.(errorMsg);
-        reject(errorMsg);
-      }
-    });
-  });
+        spawnedProcess.on('close', (code, signal) => {
+          const result: ProcessResult = { bin, code, signal, stdout, stderr };
+          if (code === 0 || ignoreExitCode) {
+            logger.debug(output);
+            onComplete?.();
+            resolve(result);
+          } else {
+            // ensure stdout and stderr are logged to help debug failure
+            logger.debug(output, { force: true });
+            const error = new ProcessError(result);
+            onError?.(error);
+            reject(error);
+          }
+        });
+      }),
+  );
 }

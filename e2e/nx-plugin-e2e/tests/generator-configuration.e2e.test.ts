@@ -35,7 +35,7 @@ describe('nx-plugin g configuration', () => {
     await teardownTestFolder(testFileDir);
   });
 
-  it('should generate code-pushup.config.ts file and add target to project.json', async () => {
+  it('should generate code-pushup.config.ts file', async () => {
     const cwd = path.join(testFileDir, 'configure');
     await materializeTree(tree, cwd);
 
@@ -64,22 +64,7 @@ describe('nx-plugin g configuration', () => {
       'NX  Generating @code-pushup/nx-plugin:configuration',
     );
     expect(cleanedStdout).toMatch(/^CREATE.*code-pushup.config.ts/m);
-    expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
 
-    const projectJson = await readFile(
-      path.join(cwd, 'libs', project, 'project.json'),
-      'utf8',
-    );
-
-    expect(JSON.parse(projectJson)).toStrictEqual(
-      expect.objectContaining({
-        targets: expect.objectContaining({
-          'code-pushup': {
-            executor: '@code-pushup/nx-plugin:cli',
-          },
-        }),
-      }),
-    );
     await expect(
       readFile(
         path.join(cwd, 'libs', project, 'code-pushup.config.ts'),
@@ -111,21 +96,6 @@ describe('nx-plugin g configuration', () => {
       'NX  Generating @code-pushup/nx-plugin:configuration',
     );
     expect(cleanedStdout).not.toMatch(/^CREATE.*code-pushup.config.ts/m);
-    expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
-
-    const projectJson = await readFile(
-      path.join(cwd, 'libs', project, 'project.json'),
-      'utf8',
-    );
-    expect(JSON.parse(projectJson)).toStrictEqual(
-      expect.objectContaining({
-        targets: expect.objectContaining({
-          'code-pushup': {
-            executor: '@code-pushup/nx-plugin:cli',
-          },
-        }),
-      }),
-    );
   });
 
   it('should NOT create a code-pushup.config.ts file if skipConfig is given', async () => {
@@ -152,21 +122,6 @@ describe('nx-plugin g configuration', () => {
       'NX  Generating @code-pushup/nx-plugin:configuration',
     );
     expect(cleanedStdout).not.toMatch(/^CREATE.*code-pushup.config.ts/m);
-    expect(cleanedStdout).toMatch(/^UPDATE.*project.json/m);
-
-    const projectJson = await readFile(
-      path.join(cwd, 'libs', project, 'project.json'),
-      'utf8',
-    );
-    expect(JSON.parse(projectJson)).toStrictEqual(
-      expect.objectContaining({
-        targets: expect.objectContaining({
-          'code-pushup': {
-            executor: '@code-pushup/nx-plugin:cli',
-          },
-        }),
-      }),
-    );
 
     await expect(
       readFile(
@@ -174,53 +129,6 @@ describe('nx-plugin g configuration', () => {
         'utf8',
       ),
     ).rejects.toThrow('no such file or directory');
-  });
-
-  it('should NOT add target to project.json if skipTarget is given', async () => {
-    const cwd = path.join(testFileDir, 'configure-skip-target');
-    await materializeTree(tree, cwd);
-
-    const { code, stdout } = await executeProcess({
-      command: 'npx',
-      args: [
-        'nx',
-        'g',
-        '@code-pushup/nx-plugin:configuration',
-        project,
-        '--skipTarget',
-      ],
-      cwd,
-    });
-    expect(code).toBe(0);
-
-    const cleanedStdout = removeColorCodes(stdout);
-
-    expect(cleanedStdout).toContain(
-      'NX  Generating @code-pushup/nx-plugin:configuration',
-    );
-    expect(cleanedStdout).toMatch(/^CREATE.*code-pushup.config.ts/m);
-    expect(cleanedStdout).not.toMatch(/^UPDATE.*project.json/m);
-
-    const projectJson = await readFile(
-      path.join(cwd, 'libs', project, 'project.json'),
-      'utf8',
-    );
-    expect(JSON.parse(projectJson)).toStrictEqual(
-      expect.objectContaining({
-        targets: expect.not.objectContaining({
-          'code-pushup': {
-            executor: '@code-pushup/nx-plugin:cli',
-          },
-        }),
-      }),
-    );
-
-    await expect(
-      readFile(
-        path.join(cwd, 'libs', project, 'code-pushup.config.ts'),
-        'utf8',
-      ),
-    ).resolves.toStrictEqual(expect.any(String));
   });
 
   it('should inform about dry run', async () => {
