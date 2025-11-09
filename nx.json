@@ -373,7 +373,10 @@
         }
       }
     },
-    "./tools/src/ts-down.plugin.mjs"
+    {
+      "plugin": "./tools/src/ts-down.plugin.mjs",
+      "exclude": ["nx-plugin"]
+    }
   ],
   "nxCloudId": "65d4d862d2adb16a45a4bc7c"
 }
