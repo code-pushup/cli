@@ -5,7 +5,6 @@ import { PACKAGE_NAME } from '../../internal/constants.js';
 
 export function createConfigurationTarget(options?: {
   projectName?: string;
-  bin?: string;
 }): TargetConfiguration<RunCommandsOptions> {
   const { projectName } = options ?? {};
   const args = objectToCliArgs({

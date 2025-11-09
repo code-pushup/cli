@@ -29,7 +29,6 @@ export async function createTargets(normalizedContext: CreateTargetsOptions) {
       {
         [`${targetName}--configuration`]: createConfigurationTarget({
           projectName: normalizedContext.projectJson.name,
-          bin,
         }),
       };
 }

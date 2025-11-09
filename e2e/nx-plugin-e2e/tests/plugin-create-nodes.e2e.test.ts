@@ -3,6 +3,7 @@ import path from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
 import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
+import { PACKAGE_NAME } from '@code-pushup/nx-plugin/src/internal/constants.js';
 import {
   generateWorkspaceAndProject,
   materializeTree,
@@ -120,7 +121,7 @@ describe('nx-plugin', () => {
     expect(projectJson.targets).toStrictEqual({
       'code-pushup--configuration': expect.objectContaining({
         options: {
-          command: `nx g XYZ:configuration --project="${project}"`,
+          command: `nx g ${PACKAGE_NAME}:configuration --project="${project}"`,
         },
       }),
     });
