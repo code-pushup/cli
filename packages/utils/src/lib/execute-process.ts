@@ -8,7 +8,7 @@ import {
 import type { Readable, Writable } from 'node:stream';
 import { formatCommandLog } from './command.js';
 import { isVerbose } from './env.js';
-import { logger } from './logger.js';
+import { type Logger, logger } from './logger.js';
 import { calcDuration } from './reports/utils.js';
 
 /**
@@ -106,6 +106,7 @@ export type ProcessConfig = Omit<
   args?: string[];
   observer?: ProcessObserver;
   ignoreExitCode?: boolean;
+  verbose?: boolean;
 };
 
 /**
@@ -157,7 +158,7 @@ export type ProcessObserver = {
  */
 export function executeProcess(
   cfg: ProcessConfig,
-  logger: { log: (str: string) => void } = ui().logger,
+  loggerInstance: Logger = logger,
 ): Promise<ProcessResult> {
   const {
     command,
@@ -170,7 +171,7 @@ export function executeProcess(
   const { onStdout, onStderr, onError, onComplete } = observer ?? {};
 
   if (isVerbose() || verbose === true) {
-    logger.log(
+    loggerInstance.info(
       formatCommandLog({
         command,
         args,
@@ -179,7 +180,7 @@ export function executeProcess(
     );
   }
   const bin = [command, ...(args ?? [])].join(' ');
-  return logger.command(
+  return loggerInstance.command(
     bin,
     () =>
       new Promise((resolve, reject) => {
@@ -219,12 +220,12 @@ export function executeProcess(
         spawnedProcess.on('close', (code, signal) => {
           const result: ProcessResult = { bin, code, signal, stdout, stderr };
           if (code === 0 || ignoreExitCode) {
-            logger.debug(output);
+            loggerInstance.debug(output);
             onComplete?.();
             resolve(result);
           } else {
             // ensure stdout and stderr are logged to help debug failure
-            logger.debug(output, { force: true });
+            loggerInstance.debug(output, { force: true });
             const error = new ProcessError(result);
             onError?.(error);
             reject(error);
