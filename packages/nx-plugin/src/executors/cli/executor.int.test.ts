@@ -1,17 +1,34 @@
-import { afterEach, expect, vi } from 'vitest';
+import { afterEach, beforeEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
-import * as executeProcessModule from '../../internal/execute-process.js';
 import runAutorunExecutor from './executor.js';
 import * as utils from './utils.js';
+
+const { executeProcessSpy } = vi.hoisted(() => ({
+  executeProcessSpy: vi.fn().mockResolvedValue({
+    code: 0,
+    stdout: '',
+    stderr: '',
+    date: new Date().toISOString(),
+    duration: 100,
+  }),
+}));
+
+vi.mock('@code-pushup/utils', async () => {
+  const utils = await vi.importActual('@code-pushup/utils');
+  return {
+    ...utils,
+    executeProcess: executeProcessSpy,
+  };
+});
 
 describe('runAutorunExecutor', () => {
   const parseAutorunExecutorOptionsSpy = vi.spyOn(
     utils,
     'parseAutorunExecutorOptions',
   );
-  const executeProcessSpy = vi.spyOn(executeProcessModule, 'executeProcess');
 
   beforeEach(() => {
+    executeProcessSpy.mockClear();
     executeProcessSpy.mockResolvedValue({
       bin: 'npx ...',
       code: 0,

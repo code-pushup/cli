@@ -2,8 +2,25 @@ import { logger } from '@nx/devkit';
 import { afterAll, afterEach, beforeEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import * as executeProcessModule from '../../internal/execute-process.js';
 import runAutorunExecutor from './executor.js';
+
+const { executeProcessSpy } = vi.hoisted(() => ({
+  executeProcessSpy: vi.fn().mockResolvedValue({
+    code: 0,
+    stdout: '',
+    stderr: '',
+    date: new Date().toISOString(),
+    duration: 100,
+  }),
+}));
+
+vi.mock('@code-pushup/utils', async () => {
+  const utils = await vi.importActual('@code-pushup/utils');
+  return {
+    ...utils,
+    executeProcess: executeProcessSpy,
+  };
+});
 
 describe('runAutorunExecutor', () => {
   const processEnvCP = Object.fromEntries(
@@ -11,7 +28,6 @@ describe('runAutorunExecutor', () => {
   );
   const loggerInfoSpy = vi.spyOn(logger, 'info');
   const loggerWarnSpy = vi.spyOn(logger, 'warn');
-  const executeProcessSpy = vi.spyOn(executeProcessModule, 'executeProcess');
 
   beforeAll(() => {
     Object.entries(process.env)
@@ -25,6 +41,7 @@ describe('runAutorunExecutor', () => {
 
   beforeEach(() => {
     vi.unstubAllEnvs();
+    executeProcessSpy.mockClear();
     executeProcessSpy.mockResolvedValue({
       bin: 'npx ...',
       code: 0,

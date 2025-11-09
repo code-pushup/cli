@@ -1,6 +1,4 @@
 import { type ExecutorContext, logger } from '@nx/devkit';
-import { isVerbose } from '@code-pushup/utils';
-import { executeProcess } from '../../internal/execute-process.js';
 import {
   createCliCommandObject,
   createCliCommandString,
@@ -42,10 +40,10 @@ export default async function runAutorunExecutor(
     logger.warn(`DryRun execution of: ${commandString}`);
   } else {
     try {
+      const { executeProcess } = await import('@code-pushup/utils');
       await executeProcess({
         ...createCliCommandObject({ command, args: cliArgumentObject, bin }),
         ...(context.cwd ? { cwd: context.cwd } : {}),
-        ...(isVerbose() || verbose ? { verbose: true } : {}),
       });
     } catch (error) {
       logger.error(error);

@@ -17,7 +17,9 @@ export default tseslint.config(
     rules: {
       '@nx/dependency-checks': [
         'error',
-        { ignoredDependencies: ['esbuild'] }, // esbuild is a peer dependency of bundle-require
+        {
+          ignoredDependencies: ['esbuild', 'ora'], // esbuild is a peer dependency of bundle-require, ora has transitive dependencies with different versions
+        },
       ],
     },
   },
