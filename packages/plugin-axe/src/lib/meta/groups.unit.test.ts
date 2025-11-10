@@ -1,128 +1,105 @@
 import type { RuleMetadata } from 'axe-core';
 import { describe, expect, it } from 'vitest';
+import type { Group } from '@code-pushup/models';
 import { loadAxeRules, transformRulesToGroups } from './transform.js';
 
 describe('transformRulesToGroups', () => {
-  describe('wcag21aa preset', () => {
-    it('should create WCAG 2.1 Level A and AA groups', () => {
-      const groups = transformRulesToGroups(
-        loadAxeRules('wcag21aa'),
-        'wcag21aa',
-      );
+  it('should create WCAG 2.1 Level A and AA groups for "wcag21aa" preset', () => {
+    const groups = transformRulesToGroups(loadAxeRules('wcag21aa'), 'wcag21aa');
 
-      expect(groups.map(({ slug }) => slug)).toEqual([
-        'wcag21-level-a',
-        'wcag21-level-aa',
-      ]);
-      expect(groups.map(({ title }) => title)).toEqual([
-        'WCAG 2.1 Level A',
-        'WCAG 2.1 Level AA',
-      ]);
+    expect(groups).toBeArrayOfSize(2);
+    expect(groups).toPartiallyContain({
+      slug: 'wcag21-level-a',
+      title: 'WCAG 2.1 Level A',
     });
-
-    it('should have refs in WCAG groups', () => {
-      transformRulesToGroups(loadAxeRules('wcag21aa'), 'wcag21aa').forEach(
-        ({ refs }) => {
-          expect(refs.length).toBeGreaterThan(0);
-        },
-      );
+    expect(groups).toPartiallyContain({
+      slug: 'wcag21-level-aa',
+      title: 'WCAG 2.1 Level AA',
     });
   });
 
-  describe('wcag22aa preset', () => {
-    it('should create WCAG 2.2 Level A and AA groups', () => {
-      const groups = transformRulesToGroups(
-        loadAxeRules('wcag22aa'),
-        'wcag22aa',
-      );
+  it('should populate group refs with audit references for "wcag21aa" preset', () => {
+    const groups = transformRulesToGroups(loadAxeRules('wcag21aa'), 'wcag21aa');
 
-      expect(groups.map(({ slug }) => slug)).toEqual([
-        'wcag22-level-a',
-        'wcag22-level-aa',
-      ]);
-      expect(groups.map(({ title }) => title)).toEqual([
-        'WCAG 2.2 Level A',
-        'WCAG 2.2 Level AA',
-      ]);
+    expect(groups[0]!.refs).not.toBeEmpty();
+    expect(groups[1]!.refs).not.toBeEmpty();
+  });
+
+  it('should create WCAG 2.2 Level A and AA groups for "wcag22aa" preset', () => {
+    const groups = transformRulesToGroups(loadAxeRules('wcag22aa'), 'wcag22aa');
+
+    expect(groups).toBeArrayOfSize(2);
+    expect(groups).toPartiallyContain({
+      slug: 'wcag22-level-a',
+      title: 'WCAG 2.2 Level A',
+    });
+    expect(groups).toPartiallyContain({
+      slug: 'wcag22-level-aa',
+      title: 'WCAG 2.2 Level AA',
     });
   });
 
-  describe('best-practice preset', () => {
-    it('should create multiple category groups', () => {
-      expect(
-        transformRulesToGroups(loadAxeRules('best-practice'), 'best-practice')
-          .length,
-      ).toBeGreaterThan(5);
-    });
+  it('should create multiple category groups for "best-practice" preset', () => {
+    expect(
+      transformRulesToGroups(loadAxeRules('best-practice'), 'best-practice')
+        .length,
+    ).toBeGreaterThan(5);
+  });
 
-    it('should format category titles correctly', () => {
-      const groups = transformRulesToGroups(
-        loadAxeRules('best-practice'),
-        'best-practice',
-      );
+  it('should format category titles using display names', () => {
+    const groups = transformRulesToGroups(
+      loadAxeRules('best-practice'),
+      'best-practice',
+    );
 
-      expect(groups.find(({ slug }) => slug === 'aria')?.title).toBe('ARIA');
-      expect(groups.find(({ slug }) => slug === 'name-role-value')?.title).toBe(
-        'Names & Labels',
-      );
-    });
-
-    it('should format unknown category titles with title case', () => {
-      const groups = transformRulesToGroups(
-        [{ tags: ['cat.some-new-category', 'best-practice'] } as RuleMetadata],
-        'best-practice',
-      );
-
-      expect(
-        groups.find(({ slug }) => slug === 'some-new-category')?.title,
-      ).toBe('Some New Category');
-    });
-
-    it('should remove "cat." prefix from category slugs', () => {
-      transformRulesToGroups(
-        loadAxeRules('best-practice'),
-        'best-practice',
-      ).forEach(({ slug }) => {
-        expect(slug).not.toMatch(/^cat\./);
-      });
+    expect(groups).toPartiallyContain({ slug: 'aria', title: 'ARIA' });
+    expect(groups).toPartiallyContain({
+      slug: 'name-role-value',
+      title: 'Names & Labels',
     });
   });
 
-  describe('all preset', () => {
-    it('should combine WCAG and category groups', () => {
-      const groups = transformRulesToGroups(loadAxeRules('all'), 'all');
+  it('should format unknown category titles with title case', () => {
+    const groups = transformRulesToGroups(
+      [{ tags: ['cat.some-new-category', 'best-practice'] } as RuleMetadata],
+      'best-practice',
+    );
 
-      expect(groups.filter(({ slug }) => slug.startsWith('wcag'))).toHaveLength(
-        2,
-      );
-      expect(
-        groups.filter(({ slug }) => !slug.startsWith('wcag')).length,
-      ).toBeGreaterThan(5);
-    });
-
-    it('should use WCAG 2.2 for all preset', () => {
-      const groups = transformRulesToGroups(loadAxeRules('all'), 'all');
-
-      expect(groups.some(({ slug }) => slug === 'wcag22-level-a')).toBe(true);
-      expect(groups.some(({ slug }) => slug === 'wcag22-level-aa')).toBe(true);
+    expect(groups).toPartiallyContain({
+      slug: 'some-new-category',
+      title: 'Some New Category',
     });
   });
 
-  describe('group structure', () => {
-    it('should have all refs with weight 1', () => {
-      transformRulesToGroups(loadAxeRules('wcag21aa'), 'wcag21aa').forEach(
-        ({ refs }) => {
-          refs.forEach(({ weight }) => {
-            expect(weight).toBe(1);
-          });
-        },
-      );
-    });
+  it('should remove "cat." prefix from category slugs', () => {
+    const groups = transformRulesToGroups(
+      loadAxeRules('best-practice'),
+      'best-practice',
+    );
 
-    it('should filter out empty groups', () => {
-      transformRulesToGroups(loadAxeRules('all'), 'all').forEach(({ refs }) => {
-        expect(refs.length).toBeGreaterThan(0);
-      });
-    });
+    expect(groups).toSatisfyAll<Group>(({ slug }) => !slug.match(/^cat\./));
+  });
+
+  it('should include both WCAG 2.2 and category groups for "all" preset', () => {
+    const groups = transformRulesToGroups(loadAxeRules('all'), 'all');
+
+    expect(groups).toPartiallyContain({ slug: 'wcag22-level-a' });
+    expect(groups).toPartiallyContain({ slug: 'wcag22-level-aa' });
+
+    expect(groups).toSatisfyAny(({ slug }) => !slug.startsWith('wcag'));
+  });
+
+  it('should assign equal weight to all audit references within groups', () => {
+    const groups = transformRulesToGroups(loadAxeRules('wcag21aa'), 'wcag21aa');
+
+    expect(groups).toSatisfyAll<Group>(({ refs }) =>
+      refs.every(({ weight }) => weight === 1),
+    );
+  });
+
+  it('should filter out empty groups', () => {
+    const groups = transformRulesToGroups(loadAxeRules('all'), 'all');
+
+    expect(groups).toSatisfyAll<Group>(({ refs }) => refs.length > 0);
   });
 });

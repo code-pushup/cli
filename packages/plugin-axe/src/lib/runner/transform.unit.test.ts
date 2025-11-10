@@ -194,7 +194,7 @@ describe('toAuditOutputs', () => {
 
     const outputs = toAuditOutputs(results, testUrl);
 
-    expect(outputs).toHaveLength(1);
+    expect(outputs).toBeArrayOfSize(1);
     expect(outputs[0]).toMatchObject({
       slug: 'color-contrast',
       score: 0,
@@ -204,7 +204,7 @@ describe('toAuditOutputs', () => {
   });
 
   it('should handle empty results', () => {
-    expect(toAuditOutputs(createMockAxeResults(), testUrl)).toEqual([]);
+    expect(toAuditOutputs(createMockAxeResults(), testUrl)).toBeEmpty();
   });
 
   it('should format severity counts when multiple impacts exist', () => {

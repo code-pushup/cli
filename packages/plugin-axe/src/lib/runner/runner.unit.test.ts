@@ -71,7 +71,7 @@ describe('createRunnerFunction', () => {
     );
     expect(mockCloseBrowser).toHaveBeenCalled();
 
-    expect(results).toHaveLength(4);
+    expect(results).toBeArrayOfSize(4);
     expect(results.map(({ slug }) => slug)).toEqual([
       'image-alt-1',
       'html-has-lang-1',
@@ -80,7 +80,7 @@ describe('createRunnerFunction', () => {
     ]);
   });
 
-  it('should pass ruleIds to runAxeForUrl', async () => {
+  it('should run only specified rules when ruleIds filter is provided', async () => {
     const mockResults = [
       createMockAuditOutput('image-alt'),
       createMockAuditOutput('html-has-lang'),
@@ -89,12 +89,13 @@ describe('createRunnerFunction', () => {
 
     const ruleIds = ['image-alt', 'html-has-lang'];
     const runnerFn = createRunnerFunction(['https://example.com'], ruleIds);
-    await runnerFn({ persist: DEFAULT_PERSIST_CONFIG });
+    const results = await runnerFn({ persist: DEFAULT_PERSIST_CONFIG });
 
     expect(mockRunAxeForUrl).toHaveBeenCalledWith(
       'https://example.com',
       ruleIds,
     );
+    expect(results).toEqual(mockResults);
   });
 
   it('should continue with other URLs when one fails in multiple URL scenario', async () => {
@@ -112,8 +113,8 @@ describe('createRunnerFunction', () => {
 
     expect(mockRunAxeForUrl).toHaveBeenCalledTimes(2);
     expect(mockCloseBrowser).toHaveBeenCalled();
-    expect(results).toHaveLength(1);
-    expect(results[0]?.slug).toBe('image-alt-2');
+    expect(results).toBeArrayOfSize(1);
+    expect(results[0]!.slug).toBe('image-alt-2');
   });
 
   it('should throw error if all URLs fail in multiple URL scenario', async () => {
