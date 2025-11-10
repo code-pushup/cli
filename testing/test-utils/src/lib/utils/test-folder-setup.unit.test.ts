@@ -93,7 +93,9 @@ describe('cleanTestFolder', () => {
 
     await expect(cleanTestFolder('/tmp/unit')).resolves.not.toThrow();
 
-    expect(vol.existsSync('/tmp/unit')).toBe(true);
+    expect(vol.toJSON()).toStrictEqual({
+      '/tmp/unit': null,
+    });
   });
 });
 
