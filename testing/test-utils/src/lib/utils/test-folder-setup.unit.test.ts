@@ -35,6 +35,7 @@ describe('restoreNxIgnoredFiles', () => {
       '/projects/lib2/project.json': '',
     });
   });
+
   it('should rename Nx ignored files in a folder', async () => {
     vol.fromJSON(
       {
