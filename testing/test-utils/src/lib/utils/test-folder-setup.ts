@@ -42,20 +42,11 @@ export async function teardownTestFolder(dirName: string) {
  * File names that need to be restored by removing the "_" prefix.
  * These files are prefixed with "_" in mock fixtures to avoid Nx detection.
  */
-export const NX_IGNORED_FILES_TO_RESTORE = [
+export const NX_IGNORED_FILES_TO_RESTORE: string[] = [
   '_package.json',
   '_nx.json',
   '_project.json',
-] as const;
-
-/**
- * File names that need to be prefixed with "_" to avoid Nx detection.
- */
-export const NX_IGNORED_FILES_TO_PREFIX = [
-  'package.json',
-  'nx.json',
-  'project.json',
-] as const;
+];
 
 /**
  * Recursively renames specific files by removing the "_" prefix.
@@ -63,62 +54,18 @@ export const NX_IGNORED_FILES_TO_PREFIX = [
  * but tests need the original filenames.
  *
  * @param dir - Directory to process recursively
- * @param fileNames - Array of file names to restore (e.g., ['_package.json', '_nx.json', '_project.json'])
  */
-export async function restoreRenamedFiles(
-  dir: string,
-  fileNames: readonly string[],
-): Promise<void> {
-  try {
-    const entries = await readdir(dir, { withFileTypes: true });
-    for (const entry of entries) {
-      const fullPath = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
-        await restoreRenamedFiles(fullPath, fileNames);
-      } else if (entry.isFile() && fileNames.includes(entry.name)) {
-        const newName = entry.name.slice(1); // Remove leading "_"
-        const newPath = path.join(dir, newName);
-        try {
-          await rename(fullPath, newPath);
-        } catch (error) {
-          // Ignore errors if file doesn't exist or can't be renamed
-        }
-      }
+export async function restoreNxIgnoredFiles(dir: string): Promise<void> {
+  const entries = await readdir(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      await restoreNxIgnoredFiles(fullPath);
+    } else if (
+      entry.isFile() &&
+      NX_IGNORED_FILES_TO_RESTORE.includes(entry.name)
+    ) {
+      await rename(fullPath, path.join(dir, entry.name.slice(1)));
     }
-  } catch (error) {
-    // Ignore errors if directory doesn't exist
-  }
-}
-
-/**
- * Recursively renames specific files by adding the "_" prefix.
- * This is needed to restore files back to their prefixed state after tests,
- * so they are excluded from Nx detection.
- *
- * @param dir - Directory to process recursively
- * @param fileNames - Array of file names to prefix (e.g., ['package.json', 'nx.json', 'project.json'])
- */
-export async function prefixRenamedFiles(
-  dir: string,
-  fileNames: readonly string[],
-): Promise<void> {
-  try {
-    const entries = await readdir(dir, { withFileTypes: true });
-    for (const entry of entries) {
-      const fullPath = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
-        await prefixRenamedFiles(fullPath, fileNames);
-      } else if (entry.isFile() && fileNames.includes(entry.name)) {
-        const newName = `_${entry.name}`;
-        const newPath = path.join(dir, newName);
-        try {
-          await rename(fullPath, newPath);
-        } catch (error) {
-          // Ignore errors if file doesn't exist or can't be renamed
-        }
-      }
-    }
-  } catch (error) {
-    // Ignore errors if directory doesn't exist
   }
 }
