@@ -19,11 +19,11 @@ describe('eslintPlugin', () => {
 
   beforeAll(async () => {
     await cp(
-      path.join(fixturesDir, 'nx-workspace'),
-      path.join(tmpDir, 'nx-workspace'),
+      path.join(fixturesDir, 'nx-monorepo'),
+      path.join(tmpDir, 'nx-monorepo'),
       { recursive: true },
     );
-    await restoreNxIgnoredFiles(path.join(tmpDir, 'nx-workspace'));
+    await restoreNxIgnoredFiles(path.join(tmpDir, 'nx-monorepo'));
     cwdSpy = vi.spyOn(process, 'cwd');
     // Linux produces extra quotation marks for globs
     platformSpy = vi.spyOn(os, 'platform').mockReturnValue('linux');
@@ -48,7 +48,7 @@ describe('eslintPlugin', () => {
   });
 
   it('should initialize ESLint plugin for Nx project', async () => {
-    cwdSpy.mockReturnValue(path.join(tmpDir, 'nx-workspace'));
+    cwdSpy.mockReturnValue(path.join(tmpDir, 'nx-monorepo'));
     const plugin = await eslintPlugin({
       eslintrc: './packages/nx-plugin/eslint.config.js',
       patterns: ['packages/nx-plugin/**/*.ts', 'packages/nx-plugin/**/*.json'],
@@ -70,7 +70,7 @@ describe('eslintPlugin', () => {
   });
 
   it('should initialize with plugin options for custom groups', async () => {
-    cwdSpy.mockReturnValue(path.join(tmpDir, 'nx-workspace'));
+    cwdSpy.mockReturnValue(path.join(tmpDir, 'nx-monorepo'));
     const plugin = await eslintPlugin(
       {
         eslintrc: './packages/nx-plugin/eslint.config.js',

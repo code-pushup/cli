@@ -1,4 +1,0 @@
-# HACK: exclude mock Nx monorepos used for testing (this makes test working but changed in our mocks are ignored and don't invalidate caching)
-# @TODO prefix Nx related files with "_" (not detected by Nx or test) and copy/rename them under folder `tmp` (excluded by Nx, detected by test) see #1102
-# Note: nx-workspace uses "_" prefix pattern (like other e2e folders), so Nx won't detect it, but keeping entry for backwards compatibility
-packages/plugin-eslint/mocks/fixtures/nx-monorepo

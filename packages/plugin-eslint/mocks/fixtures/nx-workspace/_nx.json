@@ -1,8 +1,0 @@
-{
-  "pluginsConfig": {
-    "@nx/js": {
-      "analyzeSourceFiles": true
-    }
-  },
-  "useDaemonProcess": false
-}

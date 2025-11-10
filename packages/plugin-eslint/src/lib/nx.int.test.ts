@@ -1,7 +1,9 @@
+import { cp } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
+import { restoreNxIgnoredFiles } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 import type { ESLintTarget } from './config.js';
 import { eslintConfigFromNxProject } from './nx/find-project-without-deps.js';
@@ -14,17 +16,17 @@ type Project = 'cli' | 'core' | 'nx-plugin' | 'utils';
 
 // skipping tests on Windows due to a problem with createProjectGraphAsync that hangs forever, issue seems to be connected to nested git or some other Nx graph related problem https://github.com/nrwl/nx/issues/27494#issuecomment-2633836688
 describe.skipIf(process.platform === 'win32')('Nx helpers', () => {
+  const thisDir = fileURLToPath(path.dirname(import.meta.url));
+  const fixturesDir = path.join(thisDir, '..', '..', 'mocks', 'fixtures');
+  const tmpDir = path.join(process.cwd(), 'tmp', 'int', 'plugin-eslint');
   let cwdSpy: MockInstance<[], string>;
 
   beforeAll(async () => {
-    const workspaceDir = path.join(
-      fileURLToPath(path.dirname(import.meta.url)),
-      '..',
-      '..',
-      'mocks',
-      'fixtures',
-      'nx-monorepo',
-    );
+    const workspaceDir = path.join(tmpDir, 'nx-monorepo');
+    await cp(path.join(fixturesDir, 'nx-monorepo'), workspaceDir, {
+      recursive: true,
+    });
+    await restoreNxIgnoredFiles(workspaceDir);
     cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(workspaceDir);
 
     // HACK: somehow prevents "Failed to process project graph" errors
