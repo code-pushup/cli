@@ -177,7 +177,7 @@ export function formatFileLink(
  * Wraps HTML tags in backticks to prevent markdown parsers
  * from interpreting them as actual HTML.
  */
-export function wrapTags(text?: string): string {
+export function wrapTags(text: string | undefined): string {
   if (!text) {
     return '';
   }

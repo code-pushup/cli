@@ -1,8 +1,12 @@
 import { createRequire } from 'node:module';
-import type { PluginConfig, PluginUrls } from '@code-pushup/models';
+import {
+  type PluginConfig,
+  type PluginUrls,
+  validate,
+} from '@code-pushup/models';
 import { normalizeUrlInput } from '@code-pushup/utils';
-import type { AxePluginOptions } from './config.js';
-import { AXE_DEFAULT_PRESET, AXE_PLUGIN_SLUG } from './constants.js';
+import { type AxePluginOptions, axePluginOptionsSchema } from './config.js';
+import { AXE_PLUGIN_SLUG } from './constants.js';
 import { processAuditsAndGroups } from './processing.js';
 import { createRunnerFunction } from './runner/runner.js';
 
@@ -16,10 +20,9 @@ import { createRunnerFunction } from './runner/runner.js';
  */
 export function axePlugin(
   urls: PluginUrls,
-  options?: AxePluginOptions,
+  options: AxePluginOptions = {},
 ): PluginConfig {
-  const scoreTargets = options?.scoreTargets;
-  const preset = options?.preset ?? AXE_DEFAULT_PRESET;
+  const { preset, scoreTargets } = validate(axePluginOptionsSchema, options);
 
   const { urls: normalizedUrls, context } = normalizeUrlInput(urls);
 

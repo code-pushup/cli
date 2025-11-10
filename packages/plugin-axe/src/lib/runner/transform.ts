@@ -96,7 +96,7 @@ function toIssue(node: NodeResult, result: Result, url: string): Issue {
   };
 }
 
-function impactToSeverity(impact?: ImpactValue): IssueSeverity {
+function impactToSeverity(impact: ImpactValue | undefined): IssueSeverity {
   switch (impact) {
     case 'critical':
     case 'serious':
@@ -104,7 +104,8 @@ function impactToSeverity(impact?: ImpactValue): IssueSeverity {
     case 'moderate':
       return 'warning';
     case 'minor':
-    default:
+    case null:
+    case undefined:
       return 'info';
   }
 }

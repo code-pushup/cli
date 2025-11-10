@@ -8,6 +8,7 @@ import {
   packageVersionSchema,
   scoreTargetSchema,
   slugSchema,
+  weightSchema,
 } from './implementation/schemas.js';
 import { formatSlugsList, hasMissingStrings } from './implementation/utils.js';
 import { runnerConfigSchema, runnerFunctionSchema } from './runner-config.js';
@@ -73,7 +74,7 @@ export const pluginConfigSchema = pluginMetaSchema
 export type PluginConfig = z.infer<typeof pluginConfigSchema>;
 
 export const pluginUrlsSchema = z
-  .union([z.url(), z.array(z.url()), z.record(z.url(), z.number().positive())])
+  .union([z.url(), z.array(z.url()), z.record(z.url(), weightSchema)])
   .meta({
     title: 'PluginUrls',
     description:

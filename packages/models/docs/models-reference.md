@@ -1374,7 +1374,7 @@ _Union of the following possible types:_
 
 - `string` (_url_)
 - `Array<string (_url_)>`
-- _Object with dynamic keys of type_ `string` (_url_) _and values of type_ `number` (_>0_)
+- _Object with dynamic keys of type_ `string` (_url_) _and values of type_ `number` (_≥0_)
 
 ## Report
 
