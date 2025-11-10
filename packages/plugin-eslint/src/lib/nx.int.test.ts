@@ -3,7 +3,10 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
-import { restoreNxIgnoredFiles } from '@code-pushup/test-utils';
+import {
+  restoreNxIgnoredFiles,
+  teardownTestFolder,
+} from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
 import type { ESLintTarget } from './config.js';
 import { eslintConfigFromNxProject } from './nx/find-project-without-deps.js';
@@ -36,8 +39,9 @@ describe.skipIf(process.platform === 'win32')('Nx helpers', () => {
     });
   });
 
-  afterAll(() => {
+  afterAll(async () => {
     cwdSpy.mockRestore();
+    await teardownTestFolder(tmpDir);
   });
 
   describe('create config from all Nx projects', () => {

@@ -3,7 +3,10 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
-import { restoreNxIgnoredFiles } from '@code-pushup/test-utils';
+import {
+  restoreNxIgnoredFiles,
+  teardownTestFolder,
+} from '@code-pushup/test-utils';
 import type { ESLintTarget } from '../config.js';
 import type { RuleData } from './parse.js';
 import { listRules } from './rules.js';
@@ -25,18 +28,23 @@ describe('listRules', () => {
     cwdSpy = vi.spyOn(process, 'cwd');
   });
 
-  afterAll(() => {
+  afterAll(async () => {
     cwdSpy.mockRestore();
+    await teardownTestFolder(tmpDir);
   });
 
   describe('React app', () => {
-    const appRootDir = path.join(fixturesDir, 'todos-app');
+    const appRootDir = path.join(tmpDir, 'todos-app');
     const eslintrc = path.join(appRootDir, 'eslint.config.js');
 
     const patterns = ['src/**/*.js', 'src/**/*.jsx'];
     const targets: ESLintTarget[] = [{ eslintrc, patterns }];
 
-    beforeAll(() => {
+    beforeAll(async () => {
+      await cp(path.join(fixturesDir, 'todos-app'), appRootDir, {
+        recursive: true,
+      });
+      await restoreNxIgnoredFiles(appRootDir);
       cwdSpy.mockReturnValue(appRootDir);
     });
 
