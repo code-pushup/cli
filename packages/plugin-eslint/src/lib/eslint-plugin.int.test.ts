@@ -1,21 +1,29 @@
 import ansis from 'ansis';
+import { cp } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
 import type { Audit } from '@code-pushup/models';
+import { restoreNxIgnoredFiles } from '@code-pushup/test-utils';
 import { eslintPlugin } from './eslint-plugin.js';
 
 describe('eslintPlugin', () => {
   const thisDir = fileURLToPath(path.dirname(import.meta.url));
 
   const fixturesDir = path.join(thisDir, '..', '..', 'mocks', 'fixtures');
-
+  const tmpDir = path.join(process.cwd(), 'tmp', 'int', 'plugin-eslint');
   let cwdSpy: MockInstance<[], string>;
   let platformSpy: MockInstance<[], NodeJS.Platform>;
 
-  beforeAll(() => {
+  beforeAll(async () => {
+    await cp(
+      path.join(fixturesDir, 'nx-workspace'),
+      path.join(tmpDir, 'nx-workspace'),
+      { recursive: true },
+    );
+    await restoreNxIgnoredFiles(path.join(tmpDir, 'nx-workspace'));
     cwdSpy = vi.spyOn(process, 'cwd');
     // Linux produces extra quotation marks for globs
     platformSpy = vi.spyOn(os, 'platform').mockReturnValue('linux');
@@ -40,7 +48,7 @@ describe('eslintPlugin', () => {
   });
 
   it('should initialize ESLint plugin for Nx project', async () => {
-    cwdSpy.mockReturnValue(path.join(fixturesDir, 'nx-monorepo'));
+    cwdSpy.mockReturnValue(path.join(tmpDir, 'nx-workspace'));
     const plugin = await eslintPlugin({
       eslintrc: './packages/nx-plugin/eslint.config.js',
       patterns: ['packages/nx-plugin/**/*.ts', 'packages/nx-plugin/**/*.json'],
@@ -62,7 +70,7 @@ describe('eslintPlugin', () => {
   });
 
   it('should initialize with plugin options for custom groups', async () => {
-    cwdSpy.mockReturnValue(path.join(fixturesDir, 'nx-monorepo'));
+    cwdSpy.mockReturnValue(path.join(tmpDir, 'nx-workspace'));
     const plugin = await eslintPlugin(
       {
         eslintrc: './packages/nx-plugin/eslint.config.js',

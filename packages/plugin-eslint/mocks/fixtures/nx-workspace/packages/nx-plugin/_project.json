@@ -1,0 +1,10 @@
+{
+  "name": "nx-plugin",
+  "sourceRoot": "packages/nx-plugin/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

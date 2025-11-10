@@ -1,0 +1,10 @@
+{
+  "name": "cli",
+  "sourceRoot": "packages/cli/src",
+  "projectType": "application",
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

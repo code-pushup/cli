@@ -1,0 +1,10 @@
+{
+  "name": "utils",
+  "sourceRoot": "packages/utils/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
