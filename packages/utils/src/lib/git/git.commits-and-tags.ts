@@ -1,7 +1,7 @@
 import { type LogOptions as SimpleGitLogOptions, simpleGit } from 'simple-git';
 import { type Commit, commitSchema, validate } from '@code-pushup/models';
 import { stringifyError } from '../errors.js';
-import { ui } from '../logging.js';
+import { logger } from '../logger.js';
 import { isSemver } from '../semver.js';
 
 export async function getLatestCommit(
@@ -15,7 +15,7 @@ export async function getLatestCommit(
     });
     return validate(commitSchema, log.latest);
   } catch (error) {
-    ui().logger.error(stringifyError(error));
+    logger.error(stringifyError(error));
     return null;
   }
 }

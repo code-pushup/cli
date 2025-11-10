@@ -8,6 +8,7 @@ import {
   TEST_OUTPUT_DIR,
   omitVariableReportData,
   removeColorCodes,
+  restoreNxIgnoredFiles,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
@@ -25,6 +26,7 @@ describe('PLUGIN collect report with lighthouse-plugin NPM package', () => {
 
   beforeAll(async () => {
     await cp(fixturesDir, testFileDir, { recursive: true });
+    await restoreNxIgnoredFiles(testFileDir);
   });
 
   afterAll(async () => {

@@ -6,7 +6,7 @@ import {
   DEFAULT_PERSIST_CONFIG,
   type pluginArtifactOptionsSchema,
 } from '@code-pushup/models';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
 import { createRunnerFunction } from './index.js';
 import * as lintModule from './lint.js';
@@ -130,7 +130,9 @@ describe('createRunnerFunction', () => {
 
     expect(loadArtifactsSpy).toHaveBeenCalledWith(artifacts);
     expect(lintSpy).not.toHaveBeenCalled();
-    expect(ui()).toHaveLogged('log', 'ESLint plugin executing 2 lint targets');
+    expect(logger.info).toHaveBeenCalledWith(
+      'ESLint plugin executing 2 lint targets',
+    );
   });
 
   it('should use internal linting logic when artifacts are not provided', async () => {

@@ -6,6 +6,7 @@ import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
+  restoreNxIgnoredFiles,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
@@ -30,6 +31,7 @@ describe('CLI compare', () => {
 
   beforeAll(async () => {
     await cp(fixtureDummyDir, existingDir, { recursive: true });
+    await restoreNxIgnoredFiles(existingDir);
   });
 
   afterAll(async () => {

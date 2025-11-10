@@ -5,11 +5,11 @@ import {
   type FileCoverage,
   exists,
   getGitRoot,
+  logger,
   objectFromEntries,
   objectToEntries,
   readTextFile,
   toUnixNewlines,
-  ui,
 } from '@code-pushup/utils';
 import type { CoverageResult, CoverageType } from '../../config.js';
 import { mergeLcovResults } from './merge-lcov.js';
@@ -72,9 +72,7 @@ export async function parseLcovFiles(
           typeof result === 'string' ? result : result.resultsPath;
         const lcovFileContent = await readTextFile(resultsPath);
         if (lcovFileContent.trim() === '') {
-          ui().logger.warning(
-            `Coverage plugin: Empty lcov report file detected at ${resultsPath}.`,
-          );
+          logger.warn(`Empty lcov report file detected at ${resultsPath}.`);
         }
         const parsedRecords = parseLcov(toUnixNewlines(lcovFileContent));
         return parsedRecords.map(

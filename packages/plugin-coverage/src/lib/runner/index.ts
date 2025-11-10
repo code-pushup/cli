@@ -1,16 +1,13 @@
-import { bold } from 'ansis';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { RunnerConfig, RunnerFilesPaths } from '@code-pushup/models';
 import {
-  ProcessError,
   createRunnerFiles,
   ensureDirectoryExists,
   executeProcess,
   filePathToCliArg,
   objectToCliArgs,
   readJsonFile,
-  ui,
 } from '@code-pushup/utils';
 import type { FinalCoveragePluginConfig } from '../config.js';
 import { lcovResultsToAuditOutputs } from './lcov/lcov-runner.js';
@@ -28,16 +25,6 @@ export async function executeRunner({
     try {
       await executeProcess({ command, args });
     } catch (error) {
-      if (error instanceof ProcessError) {
-        const loggingFn = continueOnCommandFail
-          ? ui().logger.warning.bind(ui().logger)
-          : ui().logger.error.bind(ui().logger);
-        loggingFn(bold('stdout from failed coverage tool process:'));
-        loggingFn(error.stdout);
-        loggingFn(bold('stderr from failed coverage tool process:'));
-        loggingFn(error.stderr);
-      }
-
       if (!continueOnCommandFail) {
         throw new Error(
           'Coverage plugin: Running coverage tool failed. Make sure all your provided tests are passing.',

@@ -1,6 +1,6 @@
 import type { Rule } from 'eslint';
 import type { Group, GroupRef } from '@code-pushup/models';
-import { objectToKeys, slugify, ui } from '@code-pushup/utils';
+import { logger, objectToKeys, slugify } from '@code-pushup/utils';
 import type { CustomGroup } from '../config.js';
 import { ruleToSlug } from './hash.js';
 import { type RuleData, parseRuleId } from './parse.js';
@@ -109,7 +109,7 @@ export function groupsFromCustomConfig(
           `Invalid rule configuration in group ${group.slug}. All rules are invalid.`,
         );
       }
-      ui().logger.warning(
+      logger.warn(
         `Some rules in group ${group.slug} are invalid: ${invalidRules.join(', ')}`,
       );
     }

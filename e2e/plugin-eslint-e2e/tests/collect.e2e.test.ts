@@ -7,6 +7,7 @@ import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
   omitVariableReportData,
+  restoreNxIgnoredFiles,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
@@ -39,10 +40,13 @@ describe('PLUGIN collect report with eslint-plugin NPM package', () => {
 
   beforeAll(async () => {
     await cp(fixturesFlatConfigDir, flatConfigDir, { recursive: true });
+    await restoreNxIgnoredFiles(flatConfigDir);
     await cp(fixturesLegacyConfigDir, legacyConfigDir, { recursive: true });
+    await restoreNxIgnoredFiles(legacyConfigDir);
     await cp(fixturesArtifactsConfigDir, artifactsConfigDir, {
       recursive: true,
     });
+    await restoreNxIgnoredFiles(artifactsConfigDir);
   });
 
   afterAll(async () => {

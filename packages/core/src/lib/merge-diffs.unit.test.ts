@@ -9,7 +9,7 @@ import {
   reportsDiffMock,
   reportsDiffUnchangedMock,
 } from '@code-pushup/test-utils';
-import { fileExists, ui } from '@code-pushup/utils';
+import { fileExists, logger } from '@code-pushup/utils';
 import { mergeDiffs } from './merge-diffs.js';
 
 describe('mergeDiffs', () => {
@@ -24,6 +24,7 @@ describe('mergeDiffs', () => {
     outputDir: MEMFS_VOLUME,
     filename: 'report',
     format: ['json', 'md'],
+    skipReports: false,
   };
 
   beforeEach(() => {
@@ -63,16 +64,14 @@ describe('mergeDiffs', () => {
       ),
     ).resolves.toBe(path.join(MEMFS_VOLUME, 'report-diff.md'));
 
-    expect(ui()).toHaveNthLogged(
+    expect(logger.warn).toHaveBeenNthCalledWith(
       1,
-      'warn',
       expect.stringContaining(
         'Skipped invalid report diff - Failed to read JSON file missing-report-diff.json',
       ),
     );
-    expect(ui()).toHaveNthLogged(
+    expect(logger.warn).toHaveBeenNthCalledWith(
       2,
-      'warn',
       expect.stringContaining(
         'Skipped invalid report diff - Invalid reports diff in invalid-report-diff.json',
       ),
