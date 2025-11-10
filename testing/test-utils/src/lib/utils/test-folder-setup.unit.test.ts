@@ -1,6 +1,5 @@
 import { bold } from 'ansis';
 import { vol } from 'memfs';
-import * as fsPromises from 'node:fs/promises';
 import { describe, expect, it, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
@@ -39,9 +38,9 @@ describe('restoreNxIgnoredFiles', () => {
   it('should rename Nx ignored files in a folder', async () => {
     vol.fromJSON(
       {
-        '/_nx.json': '{}',
-        '/_package.json': '{}',
-        '/_project.json': '{}',
+        '/_nx.json': '',
+        '/_package.json': '',
+        '/_project.json': '',
       },
       MEMFS_VOLUME,
     );
@@ -87,7 +86,7 @@ describe('cleanTestFolder', () => {
   it('should clean and create a test folder', async () => {
     vol.fromJSON(
       {
-        '/tmp/unit/package.json': '{}',
+        '/tmp/unit/package.json': '',
       },
       MEMFS_VOLUME,
     );
@@ -99,77 +98,50 @@ describe('cleanTestFolder', () => {
 });
 
 describe('teardownTestFolder', () => {
-  const statSpy = vi.spyOn(fsPromises, 'stat');
-  const rmSpy = vi.spyOn(fsPromises, 'rm');
-
   it('should handle non-existent folder', async () => {
     vol.fromJSON({}, MEMFS_VOLUME);
 
-    statSpy.mockRejectedValue(new Error('ENOENT: no such file or directory'));
-
     await expect(teardownTestFolder('/tmp/unit')).resolves.not.toThrow();
+
+    expect(vol.toJSON()).toStrictEqual({});
   });
 
   it('should delete existing directory', async () => {
-    statSpy.mockResolvedValue({
-      isDirectory: () => true,
-    } as Awaited<ReturnType<typeof fsPromises.stat>>);
-    rmSpy.mockResolvedValue(undefined);
+    vol.fromJSON(
+      {
+        '/tmp/unit/package.json': '',
+        '/tmp/unit/src/index.ts': '',
+        '/tmp/unit/README.md': '',
+      },
+      MEMFS_VOLUME,
+    );
 
     await expect(teardownTestFolder('/tmp/unit')).resolves.toEqual(undefined);
 
-    expect(statSpy).toHaveBeenCalledWith('/tmp/unit');
-    expect(rmSpy).toHaveBeenCalledWith('/tmp/unit', {
-      recursive: true,
-      force: true,
-      maxRetries: 2,
-      retryDelay: 100,
+    // memfs represents empty directories as null, so /tmp remains as null after deletion
+    expect(vol.toJSON()).toStrictEqual({
+      '/tmp': null,
     });
   });
 
   it('should warn when path is a file instead of directory', async () => {
-    statSpy.mockResolvedValue({
-      isDirectory: () => false,
-    } as Awaited<ReturnType<typeof fsPromises.stat>>);
-    rmSpy.mockResolvedValue(undefined);
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vol.fromJSON(
+      {
+        '/tmp/unit/package.json': '',
+      },
+      MEMFS_VOLUME,
+    );
 
     await expect(teardownTestFolder('/tmp/unit/package.json')).resolves.toEqual(
       undefined,
     );
 
-    expect(statSpy).toHaveBeenCalledWith('/tmp/unit/package.json');
-    expect(console.warn).toHaveBeenCalledWith(
-      `⚠️ You are trying to delete a file instead of a directory - ${bold('/tmp/unit/package.json')}.`,
-    );
-  });
-
-  it('should ignore stat failure', async () => {
-    statSpy.mockResolvedValue({
-      isDirectory: () => true,
-    } as Awaited<ReturnType<typeof fsPromises.stat>>);
-
-    await expect(teardownTestFolder('/tmp/unit')).resolves.toEqual(undefined);
-
-    expect(statSpy).toHaveBeenCalledWith('/tmp/unit');
-  });
-
-  it('should handle deletion failure', async () => {
-    statSpy.mockResolvedValue({
-      isDirectory: () => true,
-    } as Awaited<ReturnType<typeof fsPromises.stat>>);
-    rmSpy.mockRejectedValue(new Error('Deletion failed'));
-
-    await expect(teardownTestFolder('/tmp/unit')).resolves.toEqual(undefined);
-
-    expect(statSpy).toHaveBeenCalledWith('/tmp/unit');
-    expect(rmSpy).toHaveBeenCalledWith('/tmp/unit', {
-      recursive: true,
-      force: true,
-      maxRetries: 2,
-      retryDelay: 100,
+    expect(vol.toJSON()).toStrictEqual({
+      '/tmp/unit': null,
     });
-    expect(console.warn).toHaveBeenCalledWith(
-      `⚠️ Failed to delete test artefact ${bold('/tmp/unit')} so the folder is still in the file system!\nIt may require a deletion before running e2e tests again.`,
+    expect(warnSpy).toHaveBeenCalledWith(
+      `⚠️ You are trying to delete a file instead of a directory - ${bold('/tmp/unit/package.json')}.`,
     );
   });
 });
