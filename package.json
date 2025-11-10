@@ -165,5 +165,35 @@
     "commitizen": {
       "path": "@commitlint/cz-commitlint"
     }
+  },
+  "main": "./packages/plugin-typescript/dist/src/index.cjs",
+  "module": "./packages/plugin-typescript/dist/src/index.mjs",
+  "types": "./packages/plugin-typescript/dist/src/index.d.cts",
+  "exports": {
+    "./lib/extend/jest-extended.matcher": {
+      "import": "./testing/test-setup/dist/src/lib/extend/jest-extended.matcher.mjs",
+      "require": "./testing/test-setup/dist/src/lib/extend/jest-extended.matcher.cjs"
+    },
+    "./lib/extend/markdown-table.matcher": {
+      "import": "./testing/test-setup/dist/src/lib/extend/markdown-table.matcher.mjs",
+      "require": "./testing/test-setup/dist/src/lib/extend/markdown-table.matcher.cjs"
+    },
+    "./lib/extend/path.matcher": {
+      "import": "./testing/test-setup/dist/src/lib/extend/path.matcher.mjs",
+      "require": "./testing/test-setup/dist/src/lib/extend/path.matcher.cjs"
+    },
+    "./lib/extend/ui-logger.matcher": {
+      "import": "./testing/test-setup/dist/src/lib/extend/ui-logger.matcher.mjs",
+      "require": "./testing/test-setup/dist/src/lib/extend/ui-logger.matcher.cjs"
+    },
+    "./lib/extend/ui-logger.matcher.utils": {
+      "import": "./testing/test-setup/dist/src/lib/extend/ui-logger.matcher.utils.mjs",
+      "require": "./testing/test-setup/dist/src/lib/extend/ui-logger.matcher.utils.cjs"
+    },
+    "./lib/reset.mocks": {
+      "import": "./testing/test-setup/dist/src/lib/reset.mocks.mjs",
+      "require": "./testing/test-setup/dist/src/lib/reset.mocks.cjs"
+    },
+    "./package.json": "./package.json"
   }
 }

@@ -3,7 +3,7 @@ import { baseConfig, getExternalDependencies } from '../../tsdown.base';
 
 const __dirname = import.meta.dirname;
 
-export default defineConfig({
+export default defineConfig(async () => ({
   ...baseConfig({ projectRoot: __dirname }),
   external: [
     ...(await getExternalDependencies(__dirname)),
@@ -13,4 +13,4 @@ export default defineConfig({
     '@code-pushup/utils',
   ],
   copy: [],
-});
+}));
