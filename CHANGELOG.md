@@ -1,3 +1,17 @@
+## 0.86.0 (2025-11-10)
+
+### 🚀 Features
+
+- **cli,core,utils:** replace basic logs with new logger ([83b9b7b0](https://github.com/code-pushup/cli/commit/83b9b7b0))
+- **plugin-coverage:** replace @poppinss/cliui with new logger ([0292c9fd](https://github.com/code-pushup/cli/commit/0292c9fd))
+- **plugin-eslint:** replace @poppinss/cliui with new logger ([8311628a](https://github.com/code-pushup/cli/commit/8311628a))
+- **plugin-lighthouse:** replace @poppinss/cliui with new logger ([d3888a1b](https://github.com/code-pushup/cli/commit/d3888a1b))
+- **plugin-typescript:** replace @poppinss/cliui with new logger ([57bf1c1e](https://github.com/code-pushup/cli/commit/57bf1c1e))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.85.0 (2025-11-07)
 
 ### 🚀 Features
