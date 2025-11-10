@@ -164,12 +164,28 @@ describe('pluginUrlsSchema', () => {
   });
 
   it('should throw for invalid URL', () => {
-    expect(() => pluginUrlsSchema.parse('not-a-url')).toThrow();
+    expect(() => pluginUrlsSchema.parse('invalid')).toThrow();
   });
 
   it('should throw for array with invalid URL', () => {
     expect(() =>
       pluginUrlsSchema.parse(['https://example.com', 'invalid']),
+    ).toThrow();
+  });
+
+  it('should throw for object with invalid URL', () => {
+    expect(() => pluginUrlsSchema.parse({ invalid: 1 })).toThrow();
+  });
+
+  it('should throw for invalid negative weight', () => {
+    expect(() =>
+      pluginUrlsSchema.parse({ 'https://example.com': -1 }),
+    ).toThrow();
+  });
+
+  it('should throw for invalid string weight', () => {
+    expect(() =>
+      pluginUrlsSchema.parse({ 'https://example.com': '1' }),
     ).toThrow();
   });
 });
