@@ -10,6 +10,32 @@ import {
 } from './test-folder-setup.js';
 
 describe('restoreNxIgnoredFiles', () => {
+  it('should rename Nx ignored files target folder and keep the rest unchanged', async () => {
+    vol.fromJSON(
+      {
+        '/_nx.json': '',
+        '/_package.json': '',
+        '/_project.json': '',
+        '/projects/lib1/_package.json': '',
+        '/projects/lib1/_project.json': '',
+        '/projects/lib2/_package.json': '',
+        '/projects/lib2/_project.json': '',
+      },
+      MEMFS_VOLUME,
+    );
+
+    await expect(restoreNxIgnoredFiles('/')).resolves.not.toThrow();
+
+    expect(vol.toJSON()).toStrictEqual({
+      '/nx.json': '',
+      '/package.json': '',
+      '/project.json': '',
+      '/projects/lib1/package.json': '',
+      '/projects/lib1/project.json': '',
+      '/projects/lib2/package.json': '',
+      '/projects/lib2/project.json': '',
+    });
+  });
   it('should rename Nx ignored files in a folder', async () => {
     vol.fromJSON(
       {
@@ -22,12 +48,11 @@ describe('restoreNxIgnoredFiles', () => {
 
     await expect(restoreNxIgnoredFiles('/')).resolves.not.toThrow();
 
-    expect(vol.existsSync('/nx.json')).toBe(true);
-    expect(vol.existsSync('/_nx.json')).toBe(false);
-    expect(vol.existsSync('/package.json')).toBe(true);
-    expect(vol.existsSync('/_package.json')).toBe(false);
-    expect(vol.existsSync('/project.json')).toBe(true);
-    expect(vol.existsSync('/_project.json')).toBe(false);
+    expect(vol.toJSON()).toStrictEqual({
+      '/nx.json': '',
+      '/package.json': '',
+      '/project.json': '',
+    });
   });
 
   it('should throw if target folder does not exist', async () => {
@@ -41,25 +66,20 @@ describe('restoreNxIgnoredFiles', () => {
   it('should rename Nx ignored files in nested folders', async () => {
     vol.fromJSON(
       {
-        '/workspaces/workspace1/_nx.json': '{}',
-        '/workspaces/workspace1/_package.json': '{}',
-        '/workspaces/workspace1/lib1/_project.json': '{}',
+        '/workspaces/workspace1/_nx.json': '',
+        '/workspaces/workspace1/_package.json': '',
+        '/workspaces/workspace1/lib1/_project.json': '',
       },
       MEMFS_VOLUME,
     );
 
     await expect(restoreNxIgnoredFiles('/')).resolves.not.toThrow();
 
-    expect(vol.existsSync('/workspaces/workspace1/nx.json')).toBe(true);
-    expect(vol.existsSync('/workspaces/workspace1/_nx.json')).toBe(false);
-    expect(vol.existsSync('/workspaces/workspace1/package.json')).toBe(true);
-    expect(vol.existsSync('/workspaces/workspace1/_package.json')).toBe(false);
-    expect(vol.existsSync('/workspaces/workspace1/lib1/project.json')).toBe(
-      true,
-    );
-    expect(vol.existsSync('/workspaces/workspace1/lib1/_project.json')).toBe(
-      false,
-    );
+    expect(vol.toJSON()).toStrictEqual({
+      '/workspaces/workspace1/nx.json': '',
+      '/workspaces/workspace1/package.json': '',
+      '/workspaces/workspace1/lib1/project.json': '',
+    });
   });
 });
 
