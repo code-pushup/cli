@@ -1,6 +1,12 @@
+import { cp } from 'node:fs/promises';
 import path from 'node:path';
+import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import type { MockInstance } from 'vitest';
+import {
+  restoreNxIgnoredFiles,
+  teardownTestFolder,
+} from '@code-pushup/test-utils';
 import type { ESLintTarget } from '../config.js';
 import type { RuleData } from './parse.js';
 import { listRules } from './rules.js';
@@ -14,6 +20,7 @@ describe('listRules', () => {
     'mocks',
     'fixtures',
   );
+  const tmpDir = path.join(process.cwd(), 'tmp', 'int', 'plugin-eslint');
 
   let cwdSpy: MockInstance<[], string>;
 
@@ -21,18 +28,23 @@ describe('listRules', () => {
     cwdSpy = vi.spyOn(process, 'cwd');
   });
 
-  afterAll(() => {
+  afterAll(async () => {
     cwdSpy.mockRestore();
+    await teardownTestFolder(tmpDir);
   });
 
   describe('React app', () => {
-    const appRootDir = path.join(fixturesDir, 'todos-app');
+    const appRootDir = path.join(tmpDir, 'todos-app');
     const eslintrc = path.join(appRootDir, 'eslint.config.js');
 
     const patterns = ['src/**/*.js', 'src/**/*.jsx'];
     const targets: ESLintTarget[] = [{ eslintrc, patterns }];
 
-    beforeAll(() => {
+    beforeAll(async () => {
+      await cp(path.join(fixturesDir, 'todos-app'), appRootDir, {
+        recursive: true,
+      });
+      await restoreNxIgnoredFiles(appRootDir);
       cwdSpy.mockReturnValue(appRootDir);
     });
 
@@ -89,13 +101,17 @@ describe('listRules', () => {
   });
 
   describe('Nx monorepo project', () => {
-    const nxRootDir = path.join(fixturesDir, 'nx-monorepo');
+    const nxRootDir = path.join(tmpDir, 'nx-monorepo');
     const eslintrc = path.join(nxRootDir, 'packages/utils/eslint.config.js');
 
     const patterns = ['packages/utils/**/*.ts', 'packages/utils/**/*.json'];
     const targets: ESLintTarget[] = [{ eslintrc, patterns }];
 
-    beforeAll(() => {
+    beforeAll(async () => {
+      await cp(path.join(fixturesDir, 'nx-monorepo'), nxRootDir, {
+        recursive: true,
+      });
+      await restoreNxIgnoredFiles(nxRootDir);
       cwdSpy.mockReturnValue(nxRootDir);
     });
 

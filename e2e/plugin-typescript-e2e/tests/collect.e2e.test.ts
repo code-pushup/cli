@@ -9,6 +9,7 @@ import {
   omitVariableReportData,
   osAgnosticAuditOutputs,
   osAgnosticPath,
+  restoreNxIgnoredFiles,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
@@ -50,6 +51,7 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
 
   beforeAll(async () => {
     await cp(fixturesDir, envRoot, { recursive: true });
+    await restoreNxIgnoredFiles(envRoot);
   });
 
   afterAll(async () => {
