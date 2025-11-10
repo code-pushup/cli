@@ -5,11 +5,10 @@ import { type Report, reportSchema } from '@code-pushup/models';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
   E2E_ENVIRONMENTS_DIR,
-  NX_IGNORED_FILES_TO_RESTORE,
   TEST_OUTPUT_DIR,
   omitVariableReportData,
   removeColorCodes,
-  restoreRenamedFiles,
+  restoreNxIgnoredFiles,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
@@ -27,7 +26,7 @@ describe('PLUGIN collect report with lighthouse-plugin NPM package', () => {
 
   beforeAll(async () => {
     await cp(fixturesDir, testFileDir, { recursive: true });
-    await restoreRenamedFiles(testFileDir, NX_IGNORED_FILES_TO_RESTORE);
+    await restoreNxIgnoredFiles(testFileDir);
   });
 
   afterAll(async () => {

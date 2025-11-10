@@ -5,10 +5,9 @@ import { type Report, reportSchema } from '@code-pushup/models';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
   E2E_ENVIRONMENTS_DIR,
-  NX_IGNORED_FILES_TO_RESTORE,
   TEST_OUTPUT_DIR,
   omitVariableReportData,
-  restoreRenamedFiles,
+  restoreNxIgnoredFiles,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
@@ -41,13 +40,13 @@ describe('PLUGIN collect report with eslint-plugin NPM package', () => {
 
   beforeAll(async () => {
     await cp(fixturesFlatConfigDir, flatConfigDir, { recursive: true });
+    await restoreNxIgnoredFiles(flatConfigDir);
     await cp(fixturesLegacyConfigDir, legacyConfigDir, { recursive: true });
+    await restoreNxIgnoredFiles(legacyConfigDir);
     await cp(fixturesArtifactsConfigDir, artifactsConfigDir, {
       recursive: true,
     });
-    await restoreRenamedFiles(flatConfigDir, NX_IGNORED_FILES_TO_RESTORE);
-    await restoreRenamedFiles(legacyConfigDir, NX_IGNORED_FILES_TO_RESTORE);
-    await restoreRenamedFiles(artifactsConfigDir, NX_IGNORED_FILES_TO_RESTORE);
+    await restoreNxIgnoredFiles(artifactsConfigDir);
   });
 
   afterAll(async () => {

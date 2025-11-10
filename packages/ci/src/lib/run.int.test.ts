@@ -21,10 +21,9 @@ import {
   DEFAULT_PERSIST_SKIP_REPORT,
 } from '@code-pushup/models';
 import {
-  NX_IGNORED_FILES_TO_RESTORE,
   cleanTestFolder,
   initGitRepo,
-  restoreRenamedFiles,
+  restoreNxIgnoredFiles,
   simulateGitFetch,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
@@ -626,7 +625,7 @@ describe('runInCI', () => {
       beforeEach(async () => {
         const monorepoDir = path.join(fixturesDir, 'monorepos', tool);
         await cp(monorepoDir, workDir, { recursive: true });
-        await restoreRenamedFiles(workDir, NX_IGNORED_FILES_TO_RESTORE);
+        await restoreNxIgnoredFiles(workDir);
         await git.add('.');
         await git.commit(`Create packages in ${tool} monorepo`);
         setup?.();
@@ -1140,7 +1139,7 @@ describe('runInCI', () => {
     beforeEach(async () => {
       const monorepoDir = path.join(fixturesDir, 'monorepos', 'custom');
       await cp(monorepoDir, workDir, { recursive: true });
-      await restoreRenamedFiles(workDir, NX_IGNORED_FILES_TO_RESTORE);
+      await restoreNxIgnoredFiles(workDir);
       await git.add('.');
       await git.commit('Create projects in monorepo');
     });
