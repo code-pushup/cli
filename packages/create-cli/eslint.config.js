@@ -17,7 +17,12 @@ export default tseslint.config(
     rules: {
       '@nx/dependency-checks': [
         'error',
-        { ignoredDependencies: ['@code-pushup/nx-plugin'] }, // nx-plugin is run via CLI
+        {
+          ignoredDependencies: [
+            '@code-pushup/nx-plugin', // nx-plugin is run via CLI
+            'tsdown',
+          ],
+        },
       ],
     },
   },

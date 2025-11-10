@@ -26,6 +26,7 @@ export default tseslint.config(
           enforceBuildableLibDependency: true,
           allow: [
             String.raw`^.*/eslint(\.base)?\.config\.[cm]?js$`,
+            String.raw`^.*/tsdown\.base\.[cm]?js$`,
             String.raw`^.*/code-pushup\.(config|preset)(\.m?[jt]s)?$`,
             '^[./]+/tools/.*$',
           ],
@@ -110,6 +111,14 @@ export default tseslint.config(
   {
     files: ['**/*.json'],
     languageOptions: { parser: jsoncParser },
+    rules: {
+      '@nx/dependency-checks': [
+        'error',
+        {
+          ignoredDependencies: ['tsdown'],
+        },
+      ],
+    },
   },
   {
     files: ['**/*.ts', '**/*.js'],
@@ -138,6 +147,7 @@ export default tseslint.config(
     ignores: [
       '**/*.mock.*',
       '**/code-pushup.config.ts',
+      '**/tsdown.config.ts',
       '**/mocks/fixtures/**',
       '**/__snapshots__/**',
       '**/dist',

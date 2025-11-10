@@ -11,12 +11,12 @@ import { DEFAULT_CHROME_FLAGS, LIGHTHOUSE_OUTPUT_PATH } from '../constants.js';
 
 const { audits, categories } = defaultConfig;
 
-// internal intermediate variable to derive the relevant audits
+export const PLUGIN_SLUG = 'lighthouse';
+
 const allRawLighthouseAudits = await Promise.all(
   (audits ?? []).map(loadLighthouseAudit),
 );
 
-export const PLUGIN_SLUG = 'lighthouse';
 export const LIGHTHOUSE_NAVIGATION_AUDITS: Audit[] = allRawLighthouseAudits
   // This plugin only supports the "navigation" mode of Lighthouse in the current implementation
   // If we don't exclude other audits we throw in the plugin output validation as some of the provided audits are not included in `lighthouse-report.json`
@@ -35,6 +35,7 @@ export const LIGHTHOUSE_NAVIGATION_AUDITS: Audit[] = allRawLighthouseAudits
 const navigationAuditSlugs = new Set(
   LIGHTHOUSE_NAVIGATION_AUDITS.map(({ slug }) => slug),
 );
+
 export const LIGHTHOUSE_GROUPS: Group[] = Object.entries(categories ?? {}).map(
   ([id, category]) => ({
     slug: id,
