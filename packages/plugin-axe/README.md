@@ -64,7 +64,7 @@ axePlugin(urls: PluginUrls, options?: AxePluginOptions)
 | `preset`       | `AxePreset` | `'wcag21aa'` | Accessibility ruleset preset              |
 | `scoreTargets` | `object`    | `undefined`  | Pass/fail thresholds for audits or groups |
 
-See [Presets](#presets) section for available preset values and details.
+See [Presets](#presets) for the list of available presets and [Preset details](#preset-details) for what each preset includes.
 
 ## Multiple URLs
 
