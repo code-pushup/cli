@@ -102,6 +102,27 @@ describe('createCliCommandString', () => {
     });
     expect(result).toBe('npx @code-pushup/cli autorun --verbose');
   });
+
+  it('should use node for file paths', () => {
+    const result = createCliCommandString({
+      bin: 'packages/cli/src/index.ts',
+      args: { verbose: true },
+    });
+    expect(result).toBe('node packages/cli/src/index.ts --verbose');
+  });
+
+  it('should include env variables in command string', () => {
+    const result = createCliCommandString({
+      args: { verbose: true },
+      env: {
+        NODE_OPTIONS: '--import tsx',
+        TSX_TSCONFIG_PATH: 'tsconfig.base.json',
+      },
+    });
+    expect(result).toBe(
+      'NODE_OPTIONS=--import tsx TSX_TSCONFIG_PATH=tsconfig.base.json npx @code-pushup/cli --verbose',
+    );
+  });
 });
 
 describe('createCliCommandObject', () => {
@@ -130,6 +151,18 @@ describe('createCliCommandObject', () => {
       }),
     ).toStrictEqual({
       args: ['node_modules/@code-pushup/cli/src/bin.js'],
+      command: 'node',
+    });
+  });
+
+  it('should create command out of object for arguments with env', () => {
+    expect(
+      createCliCommandObject({
+        args: { verbose: true },
+        env: { NODE_ENV: 'production', DEBUG: 'true' },
+      }),
+    ).toStrictEqual({
+      args: ['NODE_ENV=production DEBUG=true', '@code-pushup/cli', '--verbose'],
       command: 'npx',
     });
   });

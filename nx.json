@@ -140,7 +140,7 @@
         "watch": false
       }
     },
-    "code-pushup": {
+    "old-code-pushup": {
       "cache": false,
       "outputs": [
         "{projectRoot}/.code-pushup/report.md",

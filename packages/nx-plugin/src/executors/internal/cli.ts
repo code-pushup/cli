@@ -2,22 +2,48 @@ export function createCliCommandString(options?: {
   args?: Record<string, unknown>;
   command?: string;
   bin?: string;
+  env?: Record<string, string>;
 }): string {
-  const { bin = '@code-pushup/cli', command, args } = options ?? {};
-  return `npx ${bin} ${objectToCliArgs({ _: command ?? [], ...args }).join(
-    ' ',
-  )}`;
+  const { bin = '@code-pushup/cli', command, args, env } = options ?? {};
+  const isFile = isFilePath(bin);
+  const envTerminalString = Object.entries(env ?? {})
+    .map(([key, value]) => `${key}=${value}`)
+    .join(' ');
+  const commandPrefix = isFile ? 'node' : 'npx';
+  const envPrefix = envTerminalString ? `${envTerminalString} ` : '';
+  return `${envPrefix}${commandPrefix} ${bin} ${objectToCliArgs({
+    _: command ?? [],
+    ...args,
+  }).join(' ')}`;
+}
+
+function isFilePath(bin: string): boolean {
+  return (
+    /\.(js|ts|mjs|cjs)$/.test(bin) ||
+    bin.startsWith('./') ||
+    bin.startsWith('../') ||
+    (bin.includes('/') && !bin.startsWith('@'))
+  );
 }
 
 export function createCliCommandObject(options?: {
   args?: Record<string, unknown>;
   command?: string;
   bin?: string;
+  env?: Record<string, string>;
 }): import('@code-pushup/utils').ProcessConfig {
-  const { bin = '@code-pushup/cli', command, args } = options ?? {};
+  const { bin = '@code-pushup/cli', command, args, env } = options ?? {};
+  const isFile = isFilePath(bin);
+  const envTerminalString = Object.entries(env ?? {})
+    .map(([key, value]) => `${key}=${value}`)
+    .join(' ');
   return {
-    command: 'npx',
-    args: [bin, ...objectToCliArgs({ _: command ?? [], ...args })],
+    command: isFile ? 'node' : 'npx',
+    args: [
+      ...(envTerminalString ? [envTerminalString] : []),
+      bin,
+      ...objectToCliArgs({ _: command ?? [], ...args }),
+    ],
   };
 }
 

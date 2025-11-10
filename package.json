@@ -46,13 +46,13 @@
     "zod": "^4.0.5"
   },
   "devDependencies": {
-    "@code-pushup/portal-client": "^0.16.0",
     "@actions/core": "^1.11.1",
     "@actions/github": "^6.0.1",
     "@beaussan/nx-knip": "^0.0.5-15",
-    "@code-pushup/cli": "^0.85.0",
+    "@code-pushup/cli": "https://pkg.pr.new/code-pushup/cli/@code-pushup/cli@1091",
     "@code-pushup/eslint-config": "^0.14.2",
-    "@code-pushup/nx-plugin": "^0.85.0",
+    "@code-pushup/nx-plugin": "https://pkg.pr.new/code-pushup/cli/@code-pushup/nx-plugin@1091",
+    "@code-pushup/portal-client": "^0.16.0",
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
     "@commitlint/config-nx-scopes": "^19.5.0",
