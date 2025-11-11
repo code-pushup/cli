@@ -159,6 +159,7 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
     observer,
     ignoreExitCode = false,
     env,
+    cwd,
     ...options
   } = cfg;
   const { onStdout, onStderr, onError, onComplete } = observer ?? {};
@@ -173,7 +174,8 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
           // shell:true tells Windows to use shell command for spawning a child process
           // https://stackoverflow.com/questions/60386867/node-spawn-child-process-not-working-in-windows
           shell: true,
-          windowsHide: true,
+          ...(env && { env: env as Record<string, string> }),
+          ...(cwd && { cwd: cwd as string }),
           ...options,
         }) as ChildProcessByStdio<Writable, Readable, Readable>;
 
@@ -218,6 +220,7 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
         });
       }),
     {
+      ...(cwd && { cwd: cwd as string }),
       ...(env ? { env: env as Record<string, string> } : {}),
     },
   );
