@@ -548,11 +548,12 @@ export function formatCommand(
   const cwdPrefix = cwd ? `${ansis.blue(cwd)} ` : '';
   const envString =
     options?.env && Object.keys(options.env).length > 0
-      ? Object.entries(options.env)
-          .map(([key, value]) => {
+      ? [
+          ...Object.entries(options.env).map(([key, value]) => {
             return ansis.gray(`${key}=${value}`);
-          })
-          .join(' ')
+          }),
+          ' ',
+        ].join(' ')
       : '';
   const statusColor =
     status === 'pending'
