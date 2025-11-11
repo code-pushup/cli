@@ -19,7 +19,6 @@
   },
   "private": true,
   "dependencies": {
-    "@code-pushup/portal-client": "^0.16.0",
     "@isaacs/cliui": "^8.0.2",
     "@nx/devkit": "21.4.1",
     "@poppinss/cliui": "6.4.1",
@@ -51,6 +50,9 @@
     "@actions/github": "^6.0.1",
     "@beaussan/nx-knip": "^0.0.5-15",
     "@code-pushup/eslint-config": "^0.14.2",
+    "@code-pushup/cli": "0.86.0",
+    "@code-pushup/nx-plugin": "0.86.0",
+    "@code-pushup/portal-client": "^0.16.0",
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
     "@commitlint/config-nx-scopes": "^19.5.0",

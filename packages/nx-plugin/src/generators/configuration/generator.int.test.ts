@@ -7,7 +7,6 @@ import {
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import * as path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants.js';
 import { configurationGenerator } from './generator.js';
 
 describe('configurationGenerator', () => {

@@ -27,17 +27,20 @@ export function persistConfig(
   options: Partial<PersistConfig & ProjectExecutorOnlyOptions>,
   context: BaseNormalizedExecutorContext,
 ): Partial<PersistConfig> {
-  const { projectConfig, workspaceRoot } = context;
-
-  const { name: projectName = '' } = projectConfig ?? {};
   const {
     format,
-    outputDir = path.join(workspaceRoot, '.code-pushup', projectName), // always in <root>/.code-pushup/<project-name>,
+    outputDir = '{workspaceRoot}/.code-pushup/{projectName}',
     filename,
   } = options;
 
+  const { workspaceRoot, projectConfig } = context;
+  const projectName = projectConfig?.name ?? '';
+  const resolvedOutputDir = outputDir
+    .replace('{workspaceRoot}', workspaceRoot)
+    .replace('{projectName}', projectName);
+
   return {
-    outputDir,
+    outputDir: resolvedOutputDir,
     ...(format ? { format } : {}),
     ...(filename ? { filename } : {}),
   };

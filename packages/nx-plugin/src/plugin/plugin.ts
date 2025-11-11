@@ -5,6 +5,7 @@ import type {
   CreateNodesResult,
   CreateNodesResultV2,
   CreateNodesV2,
+  NxPlugin,
 } from '@nx/devkit';
 import { PROJECT_JSON_FILE_NAME } from '../internal/constants.js';
 import { createTargets } from './target/targets.js';
@@ -39,14 +40,15 @@ export const createNodes: CreateNodes = [
   },
 ];
 
-export const createNodesV2: CreateNodesV2<CreateNodesOptions> = [
+export const createNodesV2: CreateNodesV2 = [
   `**/${PROJECT_JSON_FILE_NAME}`,
   async (
     projectConfigurationFiles: readonly string[],
     createNodesOptions: unknown,
     context: CreateNodesContextV2,
   ): Promise<CreateNodesResultV2> => {
-    const parsedCreateNodesOptions = createNodesOptions as CreateNodesOptions;
+    const parsedCreateNodesOptions =
+      (createNodesOptions as CreateNodesOptions) ?? {};
 
     return await Promise.all(
       projectConfigurationFiles.map(async projectConfigurationFile => {
@@ -69,3 +71,9 @@ export const createNodesV2: CreateNodesV2<CreateNodesOptions> = [
     );
   },
 ];
+
+export const plugin = {
+  name: 'code-pushup',
+  createNodesV2: createNodesV2 as CreateNodesV2,
+  createNodes,
+} satisfies NxPlugin;
