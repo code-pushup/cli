@@ -197,41 +197,6 @@ export class Logger {
   }
 
   /**
-   * Formats a command string for display with status indicator.
-   *
-   * @param bin Command string with arguments.
-   * @param options Command options (cwd, env).
-   * @param status Command status ('pending' | 'success' | 'failure').
-   * @returns Formatted command string with colored status indicator.
-   */
-  #formatCommandStatus(
-    bin: string,
-    options?: {
-      env?: Record<string, string | number | boolean>;
-      cwd?: string;
-    },
-    status: 'pending' | 'success' | 'failure' = 'pending',
-  ): string {
-    const cwd = options?.cwd && path.relative(process.cwd(), options.cwd);
-    const cwdPrefix = cwd ? `${ansis.blue(cwd)} ` : '';
-    const envString =
-      options?.env && Object.keys(options.env).length > 0
-        ? Object.entries(options.env)
-            .map(([key, value]) => {
-              return ansis.gray(`${key}=${value}`);
-            })
-            .join(' ')
-        : '';
-    const statusColor =
-      status === 'pending'
-        ? ansis.blue('$')
-        : status === 'success'
-          ? ansis.green('$')
-          : ansis.red('$');
-    return `${cwdPrefix}${statusColor} ${envString}${bin}`;
-  }
-
-  /**
    * Similar to {@link task}, but spinner texts are formatted as shell commands.
    *
    * A `$`-prefix is added. Its color indicates the status (blue=pending, green=success, red=failure).
@@ -545,21 +510,24 @@ export function formatCommand(
   status: 'pending' | 'success' | 'failure' = 'pending',
 ): string {
   const cwd = options?.cwd && path.relative(process.cwd(), options.cwd);
-  const cwdPrefix = cwd ? `${ansis.blue(cwd)} ` : '';
+  const cwdPrefix = cwd ? ansis.blue(cwd) : '';
   const envString =
     options?.env && Object.keys(options.env).length > 0
-      ? [
-          ...Object.entries(options.env).map(([key, value]) => {
-            return ansis.gray(`${key}=${value}`);
-          }),
-          ' ',
-        ].join(' ')
-      : '';
+      ? Object.entries(options.env).map(([key, value]) => {
+          return ansis.gray(`${key}="${value}"`);
+        })
+      : [];
   const statusColor =
     status === 'pending'
       ? ansis.blue('$')
       : status === 'success'
         ? ansis.green('$')
         : ansis.red('$');
-  return `${cwdPrefix}${statusColor} ${envString}${bin}`;
+
+  return [
+    ...(cwdPrefix ? [cwdPrefix] : []),
+    statusColor,
+    ...envString,
+    bin,
+  ].join(' ');
 }

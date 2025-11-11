@@ -22,19 +22,19 @@ describe('formatCommand', () => {
         'failure',
       ),
     ).toBe(
-      `${ansis.blue('<CWD>')} ${ansis.red('$')} ${ansis.gray('CP_VERBOSE=true')}  npx eslint . --format=json`,
+      `${ansis.blue('<CWD>')} ${ansis.red('$')} ${ansis.gray('CP_VERBOSE="true"')} npx eslint . --format=json`,
     );
   });
 
   it.each([
     [undefined, ansis.blue], // default to pending
-    ['pending', ansis.blue],
-    ['success', ansis.green],
-    ['failure', ansis.red],
+    ['pending' as const, ansis.blue],
+    ['success' as const, ansis.green],
+    ['failure' as const, ansis.red],
   ])(`should format command status %s explicitly`, (status, color) => {
-    expect(
-      formatCommand('npx eslint . --format=json', {}, 'pending'),
-    ).toContain(`${color('$')}`);
+    expect(formatCommand('npx eslint . --format=json', {}, status)).toContain(
+      `${color('$')}`,
+    );
   });
 
   it('should include cwd prefix when cwd is provided and different from process.cwd()', () => {
@@ -53,12 +53,21 @@ describe('formatCommand', () => {
     );
   });
 
-  it('should format command with single environment variable', () => {
+  it('should format command with multiple environment variables', () => {
     const result = formatCommand('npx eslint .', {
-      env: { NODE_ENV: 'test' },
+      env: { NODE_ENV: 'test', NODE_OPTIONS: '--import tsx' },
+    });
+    expect(result).toStartWith(
+      `${ansis.blue('$')} ${ansis.gray('NODE_ENV="test"')} ${ansis.gray('NODE_OPTIONS="--import tsx"')}`,
+    );
+  });
+
+  it('should format command with environment variable containing spaces', () => {
+    const result = formatCommand('node packages/cli/src/index.ts', {
+      env: { NODE_OPTIONS: '--import tsx' },
     });
     expect(result).toBe(
-      `${ansis.blue('$')} ${ansis.gray('NODE_ENV=test')}  npx eslint .`,
+      `${ansis.blue('$')} ${ansis.gray('NODE_OPTIONS="--import tsx"')} node packages/cli/src/index.ts`,
     );
   });
 });

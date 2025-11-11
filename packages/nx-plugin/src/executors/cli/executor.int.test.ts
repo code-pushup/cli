@@ -35,7 +35,7 @@ describe('runAutorunExecutor', () => {
     expect(success).toBe(true);
     const cleanCommand = removeColorCodes(command || '');
     expect(cleanCommand).toMatch('npx @code-pushup/cli');
-    expect(cleanCommand).toMatch('CP_VERBOSE=true');
+    expect(cleanCommand).toMatch('CP_VERBOSE="true"');
     expect(executeProcessSpy).toHaveBeenCalledTimes(1);
     expect(executeProcessSpy).toHaveBeenCalledWith(
       expect.objectContaining({

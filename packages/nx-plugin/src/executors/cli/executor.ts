@@ -44,30 +44,21 @@ export default async function runAutorunExecutor(
   if (dryRun) {
     logger.warn(`DryRun execution of: \n ${formattedBinString}`);
   } else {
-    logger.command(
-      binString,
-      async () => {
-        try {
-          await executeProcess({
-            command,
-            args: [...positionals, ...args],
-            ...(envVariables && { env: envVariables }),
-            ...(cwd ? { cwd } : {}),
-          });
-        } catch (error) {
-          logger.error(stringifyError(error));
-          return {
-            success: false,
-            command: formattedBinString,
-            error: error instanceof Error ? error : new Error(`${error}`),
-          };
-        }
-      },
-      {
-        env: envVariables,
-        cwd,
-      },
-    );
+    try {
+      await executeProcess({
+        command,
+        args: [...positionals, ...args],
+        ...(envVariables && { env: envVariables }),
+        ...(cwd ? { cwd } : {}),
+      });
+    } catch (error) {
+      logger.error(stringifyError(error));
+      return {
+        success: false,
+        command: formattedBinString,
+        error: error instanceof Error ? error : new Error(`${error}`),
+      };
+    }
   }
 
   return {

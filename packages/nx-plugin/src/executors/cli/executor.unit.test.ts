@@ -58,13 +58,12 @@ describe('runAutorunExecutor', () => {
 
     expect(success).toBe(true);
     expect(removeColorCodes(command || '')).toMatch('npx @code-pushup/cli');
-    // The executor doesn't await logger.command, so executeProcess is called asynchronously
-    // We verify logger.command was called, which will execute executeProcess
-    expect(loggerCommandSpy).toHaveBeenCalledTimes(1);
-    expect(loggerCommandSpy).toHaveBeenCalledWith(
-      expect.stringContaining('npx @code-pushup/cli'),
-      expect.any(Function),
+    // The executor now calls executeProcess directly
+    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledWith(
       expect.objectContaining({
+        command: 'npx',
+        args: expect.arrayContaining(['@code-pushup/cli']),
         cwd: MEMFS_VOLUME,
         env: expect.any(Object),
       }),
@@ -83,7 +82,12 @@ describe('runAutorunExecutor', () => {
     expect(output.success).toBe(true);
     const commandWithoutAnsi = removeColorCodes(output.command || '');
     expect(commandWithoutAnsi).toMatch('cwd-form-context');
-    expect(loggerCommandSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        cwd: 'cwd-form-context',
+      }),
+    );
   });
 
   it('should get env variables from options', async () => {
@@ -97,8 +101,16 @@ describe('runAutorunExecutor', () => {
       executorContext('utils'),
     );
     const commandWithoutAnsi = removeColorCodes(command || '');
-    expect(commandWithoutAnsi).toMatch('CP_API_KEY=123456789');
-    expect(commandWithoutAnsi).toMatch('CP_PROJECT=cli');
+    expect(commandWithoutAnsi).toMatch('CP_API_KEY="123456789"');
+    expect(commandWithoutAnsi).toMatch('CP_PROJECT="cli"');
+    expect(executeProcessSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        env: expect.objectContaining({
+          CP_API_KEY: '123456789',
+          CP_PROJECT: 'cli',
+        }),
+      }),
+    );
   });
 
   it('should process executorOptions', async () => {
@@ -147,12 +159,12 @@ describe('runAutorunExecutor', () => {
       { ...executorContext('github-action'), cwd: '<CWD>' },
     );
 
-    expect(removeColorCodes(command || '')).toMatch('CP_VERBOSE=true');
-    expect(loggerCommandSpy).toHaveBeenCalledTimes(1);
-    expect(loggerCommandSpy).toHaveBeenCalledWith(
-      expect.stringContaining('npx @code-pushup/cli'),
-      expect.any(Function),
-      expect.objectContaining({ env: { CP_VERBOSE: 'true' } }),
+    expect(removeColorCodes(command || '')).toMatch('CP_VERBOSE="true"');
+    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        env: expect.objectContaining({ CP_VERBOSE: 'true' }),
+      }),
     );
   });
 
