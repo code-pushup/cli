@@ -178,4 +178,69 @@ describe('runAutorunExecutor', () => {
     expect(warnMessage).toContain('DryRun execution of:');
     expect(warnMessage).toContain('npx @code-pushup/cli');
   });
+
+  it('should extract --import from NODE_OPTIONS and pass as direct argument when bin is set', async () => {
+    const { command } = await runAutorunExecutor(
+      {
+        bin: 'packages/cli/src/index.ts',
+        env: {
+          NODE_OPTIONS: '--import tsx',
+          TSX_TSCONFIG_PATH: 'tsconfig.base.json',
+        },
+      },
+      executorContext('utils'),
+    );
+
+    const commandWithoutAnsi = removeColorCodes(command || '');
+    expect(commandWithoutAnsi).toMatch(
+      'node --import tsx packages/cli/src/index.ts',
+    );
+    expect(executeProcessSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: 'node',
+        args: expect.arrayContaining([
+          '--import',
+          'tsx',
+          'packages/cli/src/index.ts',
+        ]),
+        env: expect.objectContaining({
+          TSX_TSCONFIG_PATH: 'tsconfig.base.json',
+        }),
+      }),
+    );
+    // NODE_OPTIONS should be removed since it only contained --import
+    expect(executeProcessSpy.mock.calls[0]?.[0]?.env).not.toHaveProperty(
+      'NODE_OPTIONS',
+    );
+  });
+
+  it('should preserve other NODE_OPTIONS when extracting --import', async () => {
+    const { command } = await runAutorunExecutor(
+      {
+        bin: 'packages/cli/src/index.ts',
+        env: {
+          NODE_OPTIONS: '--max-old-space-size=4096 --import tsx',
+        },
+      },
+      executorContext('utils'),
+    );
+
+    const commandWithoutAnsi = removeColorCodes(command || '');
+    expect(commandWithoutAnsi).toMatch(
+      'node --import tsx packages/cli/src/index.ts',
+    );
+    expect(executeProcessSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: 'node',
+        args: expect.arrayContaining([
+          '--import',
+          'tsx',
+          'packages/cli/src/index.ts',
+        ]),
+        env: expect.objectContaining({
+          NODE_OPTIONS: '--max-old-space-size=4096',
+        }),
+      }),
+    );
+  });
 });
