@@ -7,7 +7,6 @@ import { isEnvVarEnabled } from './env.js';
 import { stringifyError } from './errors.js';
 import { formatDuration, indentLines, transformLines } from './formatting.js';
 import { settlePromise } from './promises.js';
-import { objectToCliArgs } from './transform';
 
 type GroupColor = Extract<AnsiColors, 'cyan' | 'magenta'>;
 type CiPlatform = 'GitHub Actions' | 'GitLab CI/CD';
