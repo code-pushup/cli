@@ -1,25 +1,32 @@
 import { beforeAll, describe, expect, vi } from 'vitest';
 import { removeColorCodes, reportMock } from '@code-pushup/test-utils';
+import { logger } from '../logger.js';
 import { ui } from '../logging.js';
 import { logStdoutSummary } from './log-stdout-summary.js';
 import { scoreReport } from './scoring.js';
 import { sortReport } from './sorting.js';
 
 describe('logStdoutSummary', () => {
-  let logs: string[];
+  let stdout: string;
 
   beforeAll(() => {
-    logs = [];
-    // console.log is used inside the logger when in "normal" mode
-    vi.spyOn(console, 'log').mockImplementation(msg => {
-      logs = [...logs, msg];
+    vi.mocked(logger.info).mockImplementation(message => {
+      stdout += `${message}\n`;
+    });
+    vi.mocked(logger.newline).mockImplementation(() => {
+      stdout += '\n';
+    });
+    // console.log is used inside the @poppinss/cliui logger when in "normal" mode
+    vi.spyOn(console, 'log').mockImplementation(message => {
+      stdout += `${message}\n`;
     });
     // we want to see table and sticker logs in the final style ("raw" don't show borders etc so we use `console.log` here)
     ui().switchMode('normal');
   });
 
-  afterEach(() => {
-    logs = [];
+  beforeEach(() => {
+    stdout = '';
+    logger.setVerbose(false);
   });
 
   afterAll(() => {
@@ -29,10 +36,8 @@ describe('logStdoutSummary', () => {
   it('should contain all sections when using the fixture report', async () => {
     logStdoutSummary(sortReport(scoreReport(reportMock())));
 
-    const output = logs.join('\n');
-
-    expect(output).toContain('Categories');
-    await expect(removeColorCodes(output)).toMatchFileSnapshot(
+    expect(stdout).toContain('Categories');
+    await expect(removeColorCodes(stdout)).toMatchFileSnapshot(
       '__snapshots__/report-stdout.txt',
     );
   });
@@ -41,22 +46,19 @@ describe('logStdoutSummary', () => {
     logStdoutSummary(
       sortReport(scoreReport({ ...reportMock(), categories: undefined })),
     );
-    const output = logs.join('\n');
 
-    expect(output).not.toContain('Categories');
-    await expect(removeColorCodes(output)).toMatchFileSnapshot(
+    expect(stdout).not.toContain('Categories');
+    await expect(removeColorCodes(stdout)).toMatchFileSnapshot(
       '__snapshots__/report-stdout-no-categories.txt',
     );
   });
 
   it('should include all audits when verbose is true', async () => {
-    vi.stubEnv('CP_VERBOSE', 'true');
+    logger.setVerbose(true);
 
     logStdoutSummary(sortReport(scoreReport(reportMock())));
 
-    const output = logs.join('\n');
-
-    await expect(removeColorCodes(output)).toMatchFileSnapshot(
+    await expect(removeColorCodes(stdout)).toMatchFileSnapshot(
       '__snapshots__/report-stdout-verbose.txt',
     );
   });
@@ -77,10 +79,8 @@ describe('logStdoutSummary', () => {
 
     logStdoutSummary(sortReport(scoreReport(reportWithPerfectScores)));
 
-    const output = logs.join('\n');
-
-    expect(output).toContain('All 47 audits have perfect scores');
-    await expect(removeColorCodes(output)).toMatchFileSnapshot(
+    expect(stdout).toContain('All 47 audits have perfect scores');
+    await expect(removeColorCodes(stdout)).toMatchFileSnapshot(
       '__snapshots__/report-stdout-all-perfect-scores.txt',
     );
   });

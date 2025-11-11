@@ -1,9 +1,13 @@
 import type { Linter } from 'eslint';
 import type { AuditOutput, Issue, IssueSeverity } from '@code-pushup/models';
 import {
+  compareIssueSeverity,
+  countOccurrences,
   formatIssueSeverities,
+  logger,
+  objectToEntries,
+  pluralizeToken,
   truncateIssueMessage,
-  ui,
 } from '@code-pushup/utils';
 import { ruleIdToSlug } from '../meta/index.js';
 import type { LinterOutput } from './types.js';
@@ -33,9 +37,7 @@ export function lintResultsToAudits({
     .reduce<Record<string, LintIssue[]>>((acc, issue) => {
       const { ruleId, message, filePath } = issue;
       if (!ruleId) {
-        ui().logger.warning(
-          `ESLint core error - ${message} (file: ${filePath})`,
-        );
+        logger.warn(`ESLint core error - ${message} (file: ${filePath})`);
         return acc;
       }
       const options = ruleOptionsPerFile[filePath]?.[ruleId] ?? [];

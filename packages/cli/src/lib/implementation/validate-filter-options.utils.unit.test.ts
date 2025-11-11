@@ -1,6 +1,6 @@
 import { describe, expect } from 'vitest';
 import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import type { FilterOptionType, Filterables } from './filter.model.js';
 import {
   OptionValidationError,
@@ -50,7 +50,7 @@ describe('validateFilterOption', () => {
         },
         { itemsToFilter, skippedItems: [] },
       );
-      expect(ui()).toHaveLogged('warn', expected);
+      expect(logger.warn).toHaveBeenCalledWith(expected);
     },
   );
 
@@ -93,7 +93,7 @@ describe('validateFilterOption', () => {
         },
         { itemsToFilter, skippedItems: [] },
       );
-      expect(ui()).toHaveLogged('warn', expected);
+      expect(logger.warn).toHaveBeenCalledWith(expected);
     },
   );
 
@@ -108,7 +108,8 @@ describe('validateFilterOption', () => {
       },
       { itemsToFilter: ['p1'], skippedItems: [] },
     );
-    expect(ui()).not.toHaveLogs();
+    expect(logger.warn).not.toHaveBeenCalled();
+    expect(logger.info).not.toHaveBeenCalled();
   });
 
   it('should log a category ignored as a result of plugin filtering', () => {
@@ -129,9 +130,9 @@ describe('validateFilterOption', () => {
       },
       { itemsToFilter: ['p1'], skippedItems: [] },
     );
-    expect(ui()).toHaveLoggedTimes(1);
-    expect(ui()).toHaveLogged(
-      'info',
+    expect(logger.warn).not.toHaveBeenCalled();
+    expect(logger.info).toHaveBeenCalledTimes(1);
+    expect(logger.info).toHaveBeenCalledWith(
       'The --onlyPlugins argument removed the following categories: c1, c3.',
     );
   });
@@ -223,14 +224,10 @@ describe('validateFilterOption', () => {
       { plugins, categories },
       { itemsToFilter: ['p1'], skippedItems: ['p1'] },
     );
-    expect(ui()).toHaveNthLogged(
-      1,
-      'warn',
+    expect(logger.warn).toHaveBeenCalledWith(
       'The --skipPlugins argument references a skipped plugin: p1.',
     );
-    expect(ui()).toHaveNthLogged(
-      2,
-      'info',
+    expect(logger.info).toHaveBeenCalledWith(
       'The --skipPlugins argument removed the following categories: c1.',
     );
   });
@@ -462,16 +459,14 @@ describe('validateSkippedCategories', () => {
         refs: [{ type: 'audit', plugin: 'p2', slug: 'a1', weight: 1 }],
       },
     ] as NonNullable<Filterables['categories']>);
-    expect(ui()).toHaveLogged(
-      'info',
+    expect(logger.info).toHaveBeenCalledWith(
       'Category c1 was removed because all its refs were skipped. Affected refs: g1 (group)',
     );
   });
 
   it('should not log anything when categories are not removed', () => {
-    const loggerSpy = vi.spyOn(ui().logger, 'info');
     validateSkippedCategories(categories, categories);
-    expect(loggerSpy).not.toHaveBeenCalled();
+    expect(logger.info).not.toHaveBeenCalled();
   });
 
   it('should throw an error when no categories remain after filtering', () => {

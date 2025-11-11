@@ -5,6 +5,8 @@ import type { AuditOutputs, RunnerFunction } from '@code-pushup/models';
 import {
   addIndex,
   ensureDirectoryExists,
+  link,
+  logger,
   shouldExpandForUrls,
   stringifyError,
   ui,
@@ -51,7 +53,7 @@ export function createRunnerFunction(
 
         return [...acc, ...processedOutputs];
       } catch (error) {
-        ui().logger.warning(stringifyError(error));
+        logger.warn(stringifyError(error));
         return acc;
       }
     }, Promise.resolve<AuditOutputs>([]));
@@ -79,7 +81,9 @@ async function runLighthouseForUrl(
   const runnerResult: unknown = await runLighthouse(url, flags, config);
 
   if (runnerResult == null) {
-    throw new Error(`Lighthouse did not produce a result for URL: ${url}`);
+    throw new Error(
+      `Lighthouse did not produce a result for URL: ${link(url)}`,
+    );
   }
 
   const { lhr } = runnerResult as RunnerResult;

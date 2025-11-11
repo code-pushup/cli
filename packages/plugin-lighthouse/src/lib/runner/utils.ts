@@ -1,4 +1,4 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import type { Config, FormattedIcu } from 'lighthouse';
 import log from 'lighthouse-logger';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
@@ -12,10 +12,10 @@ import type { AuditOutput, AuditOutputs } from '@code-pushup/models';
 import {
   formatReportScore,
   importModule,
+  logger,
   pluginWorkDir,
   readJsonFile,
   stringifyError,
-  ui,
 } from '@code-pushup/utils';
 import { LIGHTHOUSE_PLUGIN_SLUG } from '../constants.js';
 import type { LighthouseOptions } from '../types.js';
@@ -33,7 +33,7 @@ export function normalizeAuditOutputs(
 export class LighthouseAuditParsingError extends Error {
   constructor(slug: string, error: unknown) {
     super(
-      `\nAudit ${bold(slug)} failed parsing details: \n${stringifyError(error)}`,
+      `\nAudit ${ansis.bold(slug)} failed parsing details: \n${stringifyError(error)}`,
     );
   }
 }
@@ -136,7 +136,7 @@ export async function getConfig(
     } else if (/\.(ts|js|mjs)$/.test(filepath)) {
       return importModule<Config>({ filepath, format: 'esm' });
     } else {
-      ui().logger.info(`Format of file ${filepath} not supported`);
+      logger.warn(`Format of file ${filepath} not supported`);
     }
   } else if (preset != null) {
     switch (preset) {
@@ -149,7 +149,7 @@ export async function getConfig(
       default:
         // as preset is a string literal the default case here is normally caught by TS and not possible to happen. Now in reality it can happen and preset could be a string not included in the literal.
         // Therefore, we have to use `as string`. Otherwise, it will consider preset as type never
-        ui().logger.info(`Preset "${preset as string}" is not supported`);
+        logger.warn(`Preset "${preset as string}" is not supported`);
     }
   }
   return undefined;

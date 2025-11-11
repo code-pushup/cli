@@ -1,3 +1,4 @@
+import { cp } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
@@ -10,7 +11,11 @@ import {
   DEFAULT_PERSIST_CONFIG,
   type Issue,
 } from '@code-pushup/models';
-import { osAgnosticAuditOutputs } from '@code-pushup/test-utils';
+import {
+  osAgnosticAuditOutputs,
+  restoreNxIgnoredFiles,
+  teardownTestFolder,
+} from '@code-pushup/test-utils';
 import type { ESLintTarget } from './config.js';
 import { listAuditsAndGroups } from './meta/index.js';
 import { createRunnerFunction } from './runner/index.js';
@@ -28,24 +33,25 @@ describe('executeRunner', () => {
     return { audits, targets };
   };
 
-  const appDir = path.join(
-    fileURLToPath(path.dirname(import.meta.url)),
-    '..',
-    '..',
-    'mocks',
-    'fixtures',
-    'todos-app',
-  );
+  const thisDir = fileURLToPath(path.dirname(import.meta.url));
+  const fixturesDir = path.join(thisDir, '..', '..', 'mocks', 'fixtures');
+  const tmpDir = path.join(process.cwd(), 'tmp', 'int', 'plugin-eslint');
+  const appDir = path.join(tmpDir, 'todos-app');
 
-  beforeAll(() => {
+  beforeAll(async () => {
+    await cp(path.join(fixturesDir, 'todos-app'), appDir, {
+      recursive: true,
+    });
+    await restoreNxIgnoredFiles(appDir);
     cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(appDir);
     // Windows does not require additional quotation marks for globs
     platformSpy = vi.spyOn(os, 'platform').mockReturnValue('win32');
   });
 
-  afterAll(() => {
+  afterAll(async () => {
     cwdSpy.mockRestore();
     platformSpy.mockRestore();
+    await teardownTestFolder(tmpDir);
   });
 
   it('should execute ESLint and create audit results for React application', async () => {
