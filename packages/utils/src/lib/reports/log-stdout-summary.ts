@@ -3,12 +3,12 @@ import ansis from 'ansis';
 import type { AuditReport } from '@code-pushup/models';
 import { logger } from '../logger.js';
 import { ui } from '../logging.js';
+import { TERMINAL_WIDTH } from '../text-formats/constants.js';
 import {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
   REPORT_HEADLINE_TEXT,
   REPORT_RAW_OVERVIEW_TABLE_HEADERS,
-  TERMINAL_WIDTH,
 } from './constants.js';
 import type { ScoredReport } from './types.js';
 import {

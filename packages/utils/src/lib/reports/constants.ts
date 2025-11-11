@@ -1,8 +1,5 @@
 import { HIERARCHY } from '../text-formats/index.js';
 
-// https://stackoverflow.com/questions/4651012/why-is-the-default-terminal-width-80-characters/4651037#4651037
-export const TERMINAL_WIDTH = 80;
-
 export const SCORE_COLOR_RANGE = {
   /* eslint-disable @typescript-eslint/no-magic-numbers */
   GREEN_MIN: 0.9,
