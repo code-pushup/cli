@@ -49,7 +49,7 @@ export default async function runAutorunExecutor(
       await executeProcess({
         command,
         args: [...positionals, ...args],
-        ...(envVariables && { env: envVariables }),
+        env: envVariables,
         ...(cwd ? { cwd } : {}),
       });
     } catch (error) {
