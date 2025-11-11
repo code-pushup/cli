@@ -87,7 +87,7 @@ export {
 } from './lib/guards.js';
 export { interpolate } from './lib/interpolate.js';
 export { logMultipleResults } from './lib/log-results.js';
-export { Logger, logger } from './lib/logger.js';
+export { Logger, logger, formatCommand } from './lib/logger.js';
 export { link, ui, type CliUi, type Column } from './lib/logging.js';
 export { mergeConfigs } from './lib/merge-configs.js';
 export { getProgressBar, type ProgressBar } from './lib/progress.js';

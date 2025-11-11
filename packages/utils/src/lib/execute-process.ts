@@ -153,7 +153,14 @@ export type ProcessObserver = {
  * @param cfg - see {@link ProcessConfig}
  */
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
-  const { command, args, observer, ignoreExitCode = false, ...options } = cfg;
+  const {
+    command,
+    args,
+    observer,
+    ignoreExitCode = false,
+    env,
+    ...options
+  } = cfg;
   const { onStdout, onStderr, onError, onComplete } = observer ?? {};
 
   const bin = [command, ...(args ?? [])].join(' ');
@@ -210,5 +217,8 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
           }
         });
       }),
+    {
+      ...(env ? { env: env as Record<string, string> } : {}),
+    },
   );
 }

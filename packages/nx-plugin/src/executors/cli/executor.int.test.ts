@@ -1,5 +1,6 @@
 import { afterEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
+import { removeColorCodes } from '@code-pushup/test-utils';
 import * as executeProcessModule from '../../internal/execute-process.js';
 import runAutorunExecutor from './executor.js';
 import * as utils from './utils.js';
@@ -26,27 +27,25 @@ describe('runAutorunExecutor', () => {
     executeProcessSpy.mockReset();
   });
 
-  it('should normalize context, parse CLI options and execute command', async () => {
-    const output = await runAutorunExecutor(
+  it('should parse CLI options and execute command', async () => {
+    const { success, command } = await runAutorunExecutor(
       { verbose: true },
       executorContext('utils'),
     );
-    expect(output.success).toBe(true);
-
-    expect(parseAutorunExecutorOptionsSpy).toHaveBeenCalledTimes(1);
-
-    //is context normalized
-    expect(parseAutorunExecutorOptionsSpy).toHaveBeenCalledWith(
-      { verbose: true },
+    expect(success).toBe(true);
+    const cleanCommand = removeColorCodes(command || '');
+    expect(cleanCommand).toMatch('npx @code-pushup/cli');
+    expect(cleanCommand).toMatch('CP_VERBOSE=true');
+    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledWith(
       expect.objectContaining({
-        projectConfig: expect.objectContaining({ name: 'utils' }),
+        command: 'npx',
+        args: expect.arrayContaining(['@code-pushup/cli']),
+        cwd: expect.any(String),
+        env: expect.objectContaining({
+          CP_VERBOSE: 'true',
+        }),
       }),
     );
-    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
-    expect(executeProcessSpy).toHaveBeenCalledWith({
-      command: 'npx',
-      args: expect.arrayContaining(['@code-pushup/cli']),
-      cwd: process.cwd(),
-    });
   });
 });

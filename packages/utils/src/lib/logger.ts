@@ -7,6 +7,7 @@ import { isEnvVarEnabled } from './env.js';
 import { stringifyError } from './errors.js';
 import { formatDuration, indentLines, transformLines } from './formatting.js';
 import { settlePromise } from './promises.js';
+import { objectToCliArgs } from './transform';
 
 type GroupColor = Extract<AnsiColors, 'cyan' | 'magenta'>;
 type CiPlatform = 'GitHub Actions' | 'GitLab CI/CD';
@@ -197,6 +198,41 @@ export class Logger {
   }
 
   /**
+   * Formats a command string for display with status indicator.
+   *
+   * @param bin Command string with arguments.
+   * @param options Command options (cwd, env).
+   * @param status Command status ('pending' | 'success' | 'failure').
+   * @returns Formatted command string with colored status indicator.
+   */
+  #formatCommandStatus(
+    bin: string,
+    options?: {
+      env?: Record<string, string | number | boolean>;
+      cwd?: string;
+    },
+    status: 'pending' | 'success' | 'failure' = 'pending',
+  ): string {
+    const cwd = options?.cwd && path.relative(process.cwd(), options.cwd);
+    const cwdPrefix = cwd ? `${ansis.blue(cwd)} ` : '';
+    const envString =
+      options?.env && Object.keys(options.env).length > 0
+        ? Object.entries(options.env)
+            .map(([key, value]) => {
+              return ansis.gray(`${key}=${value}`);
+            })
+            .join(' ')
+        : '';
+    const statusColor =
+      status === 'pending'
+        ? ansis.blue('$')
+        : status === 'success'
+          ? ansis.green('$')
+          : ansis.red('$');
+    return `${cwdPrefix}${statusColor} ${envString}${bin}`;
+  }
+
+  /**
    * Similar to {@link task}, but spinner texts are formatted as shell commands.
    *
    * A `$`-prefix is added. Its color indicates the status (blue=pending, green=success, red=failure).
@@ -216,14 +252,15 @@ export class Logger {
   command<T>(
     bin: string,
     worker: () => Promise<T>,
-    options?: { cwd?: string },
+    options?: {
+      env?: Record<string, string | number | boolean>;
+      cwd?: string;
+    },
   ): Promise<T> {
-    const cwd = options?.cwd && path.relative(process.cwd(), options.cwd);
-    const cwdPrefix = cwd ? `${ansis.blue(cwd)} ` : '';
     return this.#spinner(worker, {
-      pending: `${cwdPrefix}${ansis.blue('$')} ${bin}`,
-      success: () => `${cwdPrefix}${ansis.green('$')} ${bin}`,
-      failure: () => `${cwdPrefix}${ansis.red('$')} ${bin}`,
+      pending: formatCommand(bin, options, 'pending'),
+      success: () => formatCommand(bin, options, 'success'),
+      failure: () => formatCommand(bin, options, 'failure'),
     });
   }
 
@@ -491,3 +528,38 @@ export class Logger {
  * logger.info('Made with ❤️ by Code PushUp');
  */
 export const logger = new Logger();
+
+/**
+ * Formats a command string for display with status indicator.
+ *
+ * @param bin Command string with arguments.
+ * @param options Command options (cwd, env).
+ * @param status Command status ('pending' | 'success' | 'failure').
+ * @returns Formatted command string with colored status indicator.
+ */
+export function formatCommand(
+  bin: string,
+  options?: {
+    env?: Record<string, string | number | boolean>;
+    cwd?: string;
+  },
+  status: 'pending' | 'success' | 'failure' = 'pending',
+): string {
+  const cwd = options?.cwd && path.relative(process.cwd(), options.cwd);
+  const cwdPrefix = cwd ? `${ansis.blue(cwd)} ` : '';
+  const envString =
+    options?.env && Object.keys(options.env).length > 0
+      ? Object.entries(options.env)
+          .map(([key, value]) => {
+            return ansis.gray(`${key}=${value}`);
+          })
+          .join(' ')
+      : '';
+  const statusColor =
+    status === 'pending'
+      ? ansis.blue('$')
+      : status === 'success'
+        ? ansis.green('$')
+        : ansis.red('$');
+  return `${cwdPrefix}${statusColor} ${envString}${bin}`;
+}
