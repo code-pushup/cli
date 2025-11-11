@@ -91,6 +91,7 @@ export { Logger, logger } from './lib/logger.js';
 export { link, ui, type CliUi, type Column } from './lib/logging.js';
 export { mergeConfigs } from './lib/merge-configs.js';
 export {
+  getUrlIdentifier,
   normalizeUrlInput,
   type PluginUrlContext,
 } from './lib/plugin-url-config.js';
@@ -123,6 +124,7 @@ export {
   listAuditsFromAllPlugins,
   listGroupsFromAllPlugins,
 } from './lib/reports/flatten-plugins.js';
+export { formatIssueSeverities } from './lib/reports/formatting.js';
 export { generateMdReport } from './lib/reports/generate-md-report.js';
 export {
   generateMdReportsDiff,

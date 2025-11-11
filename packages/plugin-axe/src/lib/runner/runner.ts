@@ -6,6 +6,7 @@ import type {
 import {
   addIndex,
   logger,
+  pluralizeToken,
   shouldExpandForUrls,
   stringifyError,
 } from '@code-pushup/utils';
@@ -16,17 +17,18 @@ export function createRunnerFunction(
   ruleIds: string[],
 ): RunnerFunction {
   return async (_runnerArgs?: RunnerArgs): Promise<AuditOutputs> => {
-    const isSingleUrl = !shouldExpandForUrls(urls.length);
+    const urlCount = urls.length;
+    const isSingleUrl = !shouldExpandForUrls(urlCount);
 
     logger.info(
-      `Running Axe accessibility checks for ${urls.length} URL(s)...`,
+      `Running Axe accessibility checks for ${pluralizeToken('URL', urlCount)}...`,
     );
 
     try {
       const allResults = await urls.reduce(async (prev, url, index) => {
         const acc = await prev;
 
-        logger.debug(`Testing URL ${index + 1}/${urls.length}: ${url}`);
+        logger.debug(`Testing URL ${index + 1}/${urlCount}: ${url}`);
 
         try {
           const auditOutputs = await runAxeForUrl(url, ruleIds);
@@ -45,7 +47,9 @@ export function createRunnerFunction(
         }
       }, Promise.resolve<AuditOutputs>([]));
 
-      if (allResults.length === 0) {
+      const totalAuditCount = allResults.length;
+
+      if (totalAuditCount === 0) {
         throw new Error(
           isSingleUrl
             ? 'Axe did not produce any results.'
@@ -54,7 +58,7 @@ export function createRunnerFunction(
       }
 
       logger.info(
-        `Completed Axe accessibility checks with ${allResults.length} audit(s)`,
+        `Completed Axe accessibility checks with ${pluralizeToken('audit', totalAuditCount)}`,
       );
 
       return allResults;

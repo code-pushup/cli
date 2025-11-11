@@ -7,8 +7,8 @@ import type {
   IssueSeverity,
 } from '@code-pushup/models';
 import {
-  countOccurrences,
-  objectToEntries,
+  formatIssueSeverities,
+  getUrlIdentifier,
   pluralizeToken,
   truncateIssueMessage,
 } from '@code-pushup/utils';
@@ -51,7 +51,7 @@ function toAuditOutput(
 
     return {
       ...base,
-      displayValue: formatSeverityCounts(issues),
+      displayValue: formatIssueSeverities(issues),
       details: { issues },
     };
   }
@@ -60,20 +60,6 @@ function toAuditOutput(
     ...base,
     displayValue: pluralizeToken('element', result.nodes.length),
   };
-}
-
-function formatSeverityCounts(issues: Issue[]): string {
-  const severityCounts = countOccurrences(
-    issues.map(({ severity }) => severity),
-  );
-
-  return objectToEntries(severityCounts)
-    .toSorted(([a], [b]) => {
-      const order = { error: 0, warning: 1, info: 2 };
-      return order[a] - order[b];
-    })
-    .map(([severity, count = 0]) => pluralizeToken(severity, count))
-    .join(', ');
 }
 
 function formatSelector(selector: axe.CrossTreeSelector): string {
@@ -88,7 +74,7 @@ function toIssue(node: NodeResult, result: Result, url: string): Issue {
   const rawMessage = node.failureSummary || result.help;
   const cleanedMessage = rawMessage.replace(/\s+/g, ' ').trim();
 
-  const message = `[${selector}] ${cleanedMessage} (${url})`;
+  const message = `[\`${selector}\`] ${cleanedMessage} ([${getUrlIdentifier(url)}](${url}))`;
 
   return {
     message: truncateIssueMessage(message),

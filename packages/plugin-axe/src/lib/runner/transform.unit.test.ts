@@ -91,17 +91,17 @@ describe('toAuditOutputs', () => {
           issues: [
             {
               message:
-                '[img] Fix this: Element does not have an alt attribute (https://example.com)',
+                '[`img`] Fix this: Element does not have an alt attribute ([example.com](https://example.com))',
               severity: 'error',
             },
             {
               message:
-                '[.header > img:nth-child(2)] Fix this: Element does not have an alt attribute (https://example.com)',
+                '[`.header > img:nth-child(2)`] Fix this: Element does not have an alt attribute ([example.com](https://example.com))',
               severity: 'error',
             },
             {
               message:
-                '[#main img] Mock help for image-alt (https://example.com)',
+                '[`#main img`] Mock help for image-alt ([example.com](https://example.com))',
               severity: 'error',
             },
           ],
@@ -140,12 +140,12 @@ describe('toAuditOutputs', () => {
           issues: [
             {
               message:
-                '[button] Fix this: Element has insufficient color contrast (https://example.com)',
+                '[`button`] Fix this: Element has insufficient color contrast ([example.com](https://example.com))',
               severity: 'warning',
             },
             {
               message:
-                '[a] Review: Unable to determine contrast ratio (https://example.com)',
+                '[`a`] Review: Unable to determine contrast ratio ([example.com](https://example.com))',
               severity: 'warning',
             },
           ],
@@ -253,7 +253,7 @@ describe('toAuditOutputs', () => {
           issues: [
             {
               message:
-                '[#app >> my-component >> button] Fix this: Element has insufficient color contrast (https://example.com)',
+                '[`#app >> my-component >> button`] Fix this: Element has insufficient color contrast ([example.com](https://example.com))',
               severity: 'error',
             },
           ],
@@ -287,7 +287,7 @@ describe('toAuditOutputs', () => {
           issues: [
             {
               message:
-                '[<div role="invalid-role">Content</div>] Fix this: Ensure all values assigned to role="" correspond to valid ARIA roles (https://example.com)',
+                '[`<div role=\"invalid-role\">Content</div>`] Fix this: Ensure all values assigned to role=\"\" correspond to valid ARIA roles ([example.com](https://example.com))',
               severity: 'error',
             },
           ],

@@ -79,11 +79,15 @@ function getPresetTags(preset: AxePreset): string[] {
   }
 }
 
-function createGroup(slug: string, title: string, ruleIds: string[]): Group {
+function createGroup(
+  slug: string,
+  title: string,
+  rules: axe.RuleMetadata[],
+): Group {
   return {
     slug,
     title,
-    refs: ruleIds.map(ruleId => ({ slug: ruleId, weight: 1 })),
+    refs: rules.map(({ ruleId }) => ({ slug: ruleId, weight: 1 })),
   };
 }
 
@@ -95,13 +99,13 @@ function createWcagGroups(
   const aaTags =
     version === '2.1' ? WCAG_LEVEL_AA_TAGS_21 : WCAG_LEVEL_AA_TAGS_22;
 
-  const levelARuleIds = rules
-    .filter(({ tags }) => tags.some(tag => aTags.includes(tag)))
-    .map(({ ruleId }) => ruleId);
+  const levelARules = rules.filter(({ tags }) =>
+    tags.some(tag => aTags.includes(tag)),
+  );
 
-  const levelAARuleIds = rules
-    .filter(({ tags }) => tags.some(tag => aaTags.includes(tag)))
-    .map(({ ruleId }) => ruleId);
+  const levelAARules = rules.filter(({ tags }) =>
+    tags.some(tag => aaTags.includes(tag)),
+  );
 
   const versionSlug = version.replace('.', '');
 
@@ -109,12 +113,12 @@ function createWcagGroups(
     createGroup(
       `wcag${versionSlug}-level-a`,
       `WCAG ${version} Level A`,
-      levelARuleIds,
+      levelARules,
     ),
     createGroup(
       `wcag${versionSlug}-level-aa`,
       `WCAG ${version} Level AA`,
-      levelAARuleIds,
+      levelAARules,
     ),
   ];
 }
@@ -127,11 +131,9 @@ function createCategoryGroups(rules: axe.RuleMetadata[]): Group[] {
   return Array.from(categoryTags).map(tag => {
     const slug = tag.replace('cat.', '');
     const title = formatCategoryTitle(tag, slug);
-    const ruleIds = rules
-      .filter(({ tags }) => tags.includes(tag))
-      .map(({ ruleId }) => ruleId);
+    const categoryRules = rules.filter(({ tags }) => tags.includes(tag));
 
-    return createGroup(slug, title, ruleIds);
+    return createGroup(slug, title, categoryRules);
   });
 }
 
@@ -139,8 +141,5 @@ function formatCategoryTitle(tag: string, slug: string): string {
   if (CATEGORY_TITLES[tag]) {
     return CATEGORY_TITLES[tag];
   }
-  return slug
-    .split('-')
-    .map(word => capitalize(word))
-    .join(' ');
+  return slug.split('-').map(capitalize).join(' ');
 }

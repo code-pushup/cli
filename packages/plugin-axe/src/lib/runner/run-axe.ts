@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { type Browser, chromium } from 'playwright-core';
 import type { AuditOutputs } from '@code-pushup/models';
-import { logger, stringifyError } from '@code-pushup/utils';
+import { logger, pluralizeToken, stringifyError } from '@code-pushup/utils';
 import { toAuditOutputs } from './transform.js';
 
 let browser: Browser | undefined;
@@ -35,9 +35,11 @@ export async function runAxeForUrl(
 
         const results = await axeBuilder.analyze();
 
-        if (results.incomplete.length > 0) {
+        const incompleteCount = results.incomplete.length;
+
+        if (incompleteCount > 0) {
           logger.warn(
-            `Axe returned ${results.incomplete.length} incomplete result(s) for ${url}`,
+            `Axe returned ${pluralizeToken('incomplete result', incompleteCount)} for ${url}`,
           );
         }
 
