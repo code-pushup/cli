@@ -1,10 +1,16 @@
 import AxeBuilder from '@axe-core/playwright';
 import { type Browser, chromium } from 'playwright-core';
 import type { AuditOutputs } from '@code-pushup/models';
-import { logger, pluralizeToken, stringifyError } from '@code-pushup/utils';
+import {
+  executeProcess,
+  logger,
+  pluralizeToken,
+  stringifyError,
+} from '@code-pushup/utils';
 import { toAuditOutputs } from './transform.js';
 
 let browser: Browser | undefined;
+let browserChecked = false;
 
 export async function runAxeForUrl(
   url: string,
@@ -13,6 +19,7 @@ export async function runAxeForUrl(
 ): Promise<AuditOutputs> {
   try {
     if (!browser) {
+      await ensureBrowserInstalled();
       logger.debug('Launching Chromium browser...');
       browser = await chromium.launch({ headless: true });
     }
@@ -62,4 +69,19 @@ export async function closeBrowser(): Promise<void> {
     await browser.close();
     browser = undefined;
   }
+}
+
+async function ensureBrowserInstalled(): Promise<void> {
+  if (browserChecked) {
+    return;
+  }
+
+  logger.debug('Checking Chromium browser installation...');
+
+  await executeProcess({
+    command: 'npx',
+    args: ['playwright-core', 'install', 'chromium'],
+  });
+
+  browserChecked = true;
 }

@@ -40,18 +40,13 @@
     "access": "public"
   },
   "type": "module",
-  "scripts": {
-    "postinstall": "playwright-core install chromium --with-deps || playwright-core install chromium"
-  },
   "dependencies": {
     "@axe-core/playwright": "^4.11.0",
     "@code-pushup/models": "0.86.0",
     "@code-pushup/utils": "0.86.0",
     "axe-core": "^4.11.0",
+    "playwright-core": "^1.56.1",
     "zod": "^4.1.12"
-  },
-  "peerDependencies": {
-    "playwright-core": "^1.56.1"
   },
   "files": [
     "src",

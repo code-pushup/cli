@@ -46,6 +46,8 @@ The plugin runs accessibility audits on web pages using [axe-core](https://githu
 
 4. Run the CLI with `npx code-pushup collect` and view or upload the report (refer to [CLI docs](../cli/README.md)).
 
+   > **Note:** The plugin uses Playwright to run tests in Chromium. The browser will be installed automatically if not already present.
+
 ## Configuration
 
 ```ts

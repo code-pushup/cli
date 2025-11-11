@@ -497,7 +497,7 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "details": {
             "issues": [
               {
-                "message": "[body > button] Fix any of the following: Element does not have inner text that is visible to screen readers aria-label attribute does not exist or is empty aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty Element has no title attribute Element does not have an implicit (wrapped) <label> Element does not have an explicit <label> Element's default semantics were not overridden with role="none" or role="presentation" (file:///<TEST_DIR>/index.html)",
+                "message": "[\`body > button\`] Fix any of the following: Element does not have inner text that is visible to screen readers aria-label attribute does not exist or is empty aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty Element has no title attribute Element does not have an implicit (wrapped) <label> Element does not have an explicit <label> Element's default semantics were not overridden with role="none" or role="presentation" ([/<TEST_DIR>/index.html](file:///<TEST_DIR>/index.html))",
                 "severity": "error",
               },
             ],
@@ -523,7 +523,7 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "details": {
             "issues": [
               {
-                "message": "[.low-contrast] Fix any of the following: Element has insufficient color contrast of 1.57 (foreground color: #777777, background color: #999999, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1 (file:///<TEST_DIR>/index.html)",
+                "message": "[\`.low-contrast\`] Fix any of the following: Element has insufficient color contrast of 1.57 (foreground color: #777777, background color: #999999, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1 ([/<TEST_DIR>/index.html](file:///<TEST_DIR>/index.html))",
                 "severity": "error",
               },
             ],
@@ -612,7 +612,7 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "details": {
             "issues": [
               {
-                "message": "[div[role="button"]] Fix any of the following: Invalid ARIA attribute name: aria-invalid-attribute (file:///<TEST_DIR>/index.html)",
+                "message": "[\`div[role="button"]\`] Fix any of the following: Invalid ARIA attribute name: aria-invalid-attribute ([/<TEST_DIR>/index.html](file:///<TEST_DIR>/index.html))",
                 "severity": "error",
               },
             ],
@@ -629,7 +629,7 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "details": {
             "issues": [
               {
-                "message": "[img] Fix any of the following: Element does not have an alt attribute aria-label attribute does not exist or is empty aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty Element has no title attribute Element's default semantics were not overridden with role="none" or role="presentation" (file:///<TEST_DIR>/index.html)",
+                "message": "[\`img\`] Fix any of the following: Element does not have an alt attribute aria-label attribute does not exist or is empty aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty Element has no title attribute Element's default semantics were not overridden with role="none" or role="presentation" ([/<TEST_DIR>/index.html](file:///<TEST_DIR>/index.html))",
                 "severity": "error",
               },
             ],
@@ -646,7 +646,7 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "details": {
             "issues": [
               {
-                "message": "[a] Fix all of the following: Element is in tab order and does not have accessible text Fix any of the following: Element does not have text that is visible to screen readers aria-label attribute does not exist or is empty aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty Element has no title attribute (file:///<TEST_DIR>/index.html)",
+                "message": "[\`a\`] Fix all of the following: Element is in tab order and does not have accessible text Fix any of the following: Element does not have text that is visible to screen readers aria-label attribute does not exist or is empty aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty Element has no title attribute ([/<TEST_DIR>/index.html](file:///<TEST_DIR>/index.html))",
                 "severity": "error",
               },
             ],

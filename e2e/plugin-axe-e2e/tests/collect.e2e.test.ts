@@ -15,10 +15,10 @@ function sanitizeReportPaths(report: Report): Report {
   // Convert to JSON, replace paths, and parse back
   const reportJson = JSON.stringify(report);
   const sanitized = reportJson.replace(
-    /file:\/{3}.+?\/index\.html/g,
-    'file:///<TEST_DIR>/index.html',
+    /\/(?:[^/\s"]+\/)+index\.html/g,
+    '/<TEST_DIR>/index.html',
   );
-  return JSON.parse(sanitized) as Report;
+  return JSON.parse(sanitized);
 }
 
 describe('PLUGIN collect report with axe-plugin NPM package', () => {

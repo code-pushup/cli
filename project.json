@@ -26,7 +26,9 @@
     },
     "code-pushup-jsdocs": {},
     "code-pushup-typescript": {},
-    "code-pushup-axe": {},
+    "code-pushup-axe": {
+      "dependsOn": ["^install-browser"]
+    },
     "code-pushup": {
       "dependsOn": ["code-pushup-*"],
       "executor": "nx:run-commands",
