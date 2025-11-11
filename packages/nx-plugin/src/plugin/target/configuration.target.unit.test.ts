@@ -3,16 +3,16 @@ import { PACKAGE_NAME } from '../../internal/constants.js';
 import { createConfigurationTarget } from './configuration-target.js';
 
 describe('createConfigurationTarget', () => {
-  it('should return code-pushup--configuration target for given project', () => {
+  it('should return code-pushup--configuration target for given project', async () => {
     expect(
-      createConfigurationTarget({ projectName: 'my-project' }),
+      await createConfigurationTarget({ projectName: 'my-project' }),
     ).toStrictEqual({
       command: `nx g ${PACKAGE_NAME}:configuration --project="my-project"`,
     });
   });
 
-  it('should return code-pushup--configuration target without project name', () => {
-    expect(createConfigurationTarget()).toStrictEqual({
+  it('should return code-pushup--configuration target without project name', async () => {
+    expect(await createConfigurationTarget()).toStrictEqual({
       command: `nx g ${PACKAGE_NAME}:configuration`,
     });
   });
