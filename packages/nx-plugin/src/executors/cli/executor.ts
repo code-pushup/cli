@@ -31,6 +31,7 @@ export default async function runAutorunExecutor(
   ];
   const args = objectToCliArgs(argsObj);
   const envVariables = {
+    ...process.env,
     ...env,
     ...(verbose && { CP_VERBOSE: 'true' }),
   };
