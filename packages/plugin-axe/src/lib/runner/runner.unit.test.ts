@@ -30,10 +30,14 @@ describe('createRunnerFunction', () => {
     ];
     mockRunAxeForUrl.mockResolvedValue(mockResults);
 
-    const runnerFn = createRunnerFunction(['https://example.com'], []);
+    const runnerFn = createRunnerFunction(['https://example.com'], [], 30_000);
     const results = await runnerFn({ persist: DEFAULT_PERSIST_CONFIG });
 
-    expect(mockRunAxeForUrl).toHaveBeenCalledWith('https://example.com', []);
+    expect(mockRunAxeForUrl).toHaveBeenCalledWith(
+      'https://example.com',
+      [],
+      30_000,
+    );
     expect(mockCloseBrowser).toHaveBeenCalled();
     expect(results).toEqual(mockResults);
   });
@@ -55,6 +59,7 @@ describe('createRunnerFunction', () => {
     const runnerFn = createRunnerFunction(
       ['https://example.com', 'https://another-example.org'],
       [],
+      30_000,
     );
     const results = await runnerFn({ persist: DEFAULT_PERSIST_CONFIG });
 
@@ -63,11 +68,13 @@ describe('createRunnerFunction', () => {
       1,
       'https://example.com',
       [],
+      30_000,
     );
     expect(mockRunAxeForUrl).toHaveBeenNthCalledWith(
       2,
       'https://another-example.org',
       [],
+      30_000,
     );
     expect(mockCloseBrowser).toHaveBeenCalled();
 
@@ -88,12 +95,17 @@ describe('createRunnerFunction', () => {
     mockRunAxeForUrl.mockResolvedValue(mockResults);
 
     const ruleIds = ['image-alt', 'html-has-lang'];
-    const runnerFn = createRunnerFunction(['https://example.com'], ruleIds);
+    const runnerFn = createRunnerFunction(
+      ['https://example.com'],
+      ruleIds,
+      30_000,
+    );
     const results = await runnerFn({ persist: DEFAULT_PERSIST_CONFIG });
 
     expect(mockRunAxeForUrl).toHaveBeenCalledWith(
       'https://example.com',
       ruleIds,
+      30_000,
     );
     expect(results).toEqual(mockResults);
   });
@@ -108,6 +120,7 @@ describe('createRunnerFunction', () => {
     const runnerFn = createRunnerFunction(
       ['https://broken.com', 'https://working.com'],
       [],
+      30_000,
     );
     const results = await runnerFn({ persist: DEFAULT_PERSIST_CONFIG });
 
@@ -123,6 +136,7 @@ describe('createRunnerFunction', () => {
     const runnerFn = createRunnerFunction(
       ['https://example.com', 'https://another-example.com'],
       [],
+      30_000,
     );
 
     await expect(runnerFn({ persist: DEFAULT_PERSIST_CONFIG })).rejects.toThrow(
@@ -133,7 +147,7 @@ describe('createRunnerFunction', () => {
   it('should throw error when single URL fails', async () => {
     mockRunAxeForUrl.mockRejectedValue(new Error('Failed to load page'));
 
-    const runnerFn = createRunnerFunction(['https://example.com'], []);
+    const runnerFn = createRunnerFunction(['https://example.com'], [], 30_000);
 
     await expect(runnerFn({ persist: DEFAULT_PERSIST_CONFIG })).rejects.toThrow(
       'Axe did not produce any results.',

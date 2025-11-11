@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { pluginScoreTargetsSchema } from '@code-pushup/models';
+import {
+  pluginScoreTargetsSchema,
+  positiveIntSchema,
+} from '@code-pushup/models';
 import { AXE_DEFAULT_PRESET, AXE_PRESETS } from './constants.js';
 
 export const axePluginOptionsSchema = z
@@ -9,6 +12,10 @@ export const axePluginOptionsSchema = z
         'Accessibility ruleset preset (default: wcag21aa for WCAG 2.1 Level AA compliance)',
     }),
     scoreTargets: pluginScoreTargetsSchema.optional(),
+    timeout: positiveIntSchema.default(30_000).meta({
+      description:
+        'Page navigation timeout in milliseconds (default: 30000ms / 30s)',
+    }),
   })
   .meta({
     title: 'AxePluginOptions',

@@ -15,6 +15,7 @@ import { closeBrowser, runAxeForUrl } from './run-axe.js';
 export function createRunnerFunction(
   urls: string[],
   ruleIds: string[],
+  timeout: number,
 ): RunnerFunction {
   return async (_runnerArgs?: RunnerArgs): Promise<AuditOutputs> => {
     const urlCount = urls.length;
@@ -31,7 +32,7 @@ export function createRunnerFunction(
         logger.debug(`Testing URL ${index + 1}/${urlCount}: ${url}`);
 
         try {
-          const auditOutputs = await runAxeForUrl(url, ruleIds);
+          const auditOutputs = await runAxeForUrl(url, ruleIds, timeout);
 
           const processedOutputs = isSingleUrl
             ? auditOutputs

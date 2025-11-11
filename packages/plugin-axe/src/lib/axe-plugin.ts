@@ -22,7 +22,10 @@ export function axePlugin(
   urls: PluginUrls,
   options: AxePluginOptions = {},
 ): PluginConfig {
-  const { preset, scoreTargets } = validate(axePluginOptionsSchema, options);
+  const { preset, scoreTargets, timeout } = validate(
+    axePluginOptionsSchema,
+    options,
+  );
 
   const { urls: normalizedUrls, context } = normalizeUrlInput(urls);
 
@@ -46,7 +49,7 @@ export function axePlugin(
     docsUrl: 'https://www.npmjs.com/package/@code-pushup/axe-plugin',
     audits,
     groups,
-    runner: createRunnerFunction(normalizedUrls, ruleIds),
+    runner: createRunnerFunction(normalizedUrls, ruleIds, timeout),
     context,
     ...(scoreTargets && { scoreTargets }),
   };

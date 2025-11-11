@@ -66,6 +66,7 @@ export {
   filePathSchema,
   globPathSchema,
   materialIconSchema,
+  positiveIntSchema,
   scoreSchema,
   slugSchema,
   type MaterialIcon,

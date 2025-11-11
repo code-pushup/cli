@@ -9,6 +9,7 @@ let browser: Browser | undefined;
 export async function runAxeForUrl(
   url: string,
   ruleIds: string[],
+  timeout: number,
 ): Promise<AuditOutputs> {
   try {
     if (!browser) {
@@ -23,7 +24,7 @@ export async function runAxeForUrl(
       try {
         await page.goto(url, {
           waitUntil: 'networkidle',
-          timeout: 30_000,
+          timeout,
         });
 
         const axeBuilder = new AxeBuilder({ page });

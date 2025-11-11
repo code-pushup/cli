@@ -254,14 +254,14 @@ Uncovered line of code, optionally referring to a named function/class/etc.
 
 _Object containing the following properties:_
 
-| Property             | Description                       | Type                 |
-| :------------------- | :-------------------------------- | :------------------- |
-| **`startLine`** (\*) | Start line                        | `number` (_int, >0_) |
-| `startColumn`        | Start column                      | `number` (_int, >0_) |
-| `endLine`            | End line                          | `number` (_int, >0_) |
-| `endColumn`          | End column                        | `number` (_int, >0_) |
-| `name`               | Identifier of function/class/etc. | `string`             |
-| `kind`               | E.g. "function", "class"          | `string`             |
+| Property             | Description                       | Type                        |
+| :------------------- | :-------------------------------- | :-------------------------- |
+| **`startLine`** (\*) | Start line                        | [PositiveInt](#positiveint) |
+| `startColumn`        | Start column                      | [PositiveInt](#positiveint) |
+| `endLine`            | End line                          | [PositiveInt](#positiveint) |
+| `endColumn`          | End column                        | [PositiveInt](#positiveint) |
+| `name`               | Identifier of function/class/etc. | `string`                    |
+| `kind`               | E.g. "function", "class"          | `string`                    |
 
 _(\*) Required._
 
@@ -1376,6 +1376,10 @@ _Union of the following possible types:_
 - `Array<string (_url_)>`
 - _Object with dynamic keys of type_ `string` (_url_) _and values of type_ `number` (_≥0_)
 
+## PositiveInt
+
+_Number which is a safe integer (i.e. between `Number.MIN_SAFE_INTEGER` and `Number.MAX_SAFE_INTEGER`) and is greater than 0._
+
 ## Report
 
 Collect output data
@@ -1485,10 +1489,10 @@ Source file location
 
 _Object containing the following properties:_
 
-| Property        | Description                              | Type                                                                                                                                                                                                                                                                    |
-| :-------------- | :--------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`file`** (\*) | Relative path to source file in Git repo | [FilePath](#filepath)                                                                                                                                                                                                                                                   |
-| `position`      | Location in file                         | _Object with properties:_<ul><li>**`startLine`** (\*): `number` (_int, >0_) - Start line</li><li>`startColumn`: `number` (_int, >0_) - Start column</li><li>`endLine`: `number` (_int, >0_) - End line</li><li>`endColumn`: `number` (_int, >0_) - End column</li></ul> |
+| Property        | Description                              | Type                                                                                                                                                                                                                                                                                                |
+| :-------------- | :--------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`file`** (\*) | Relative path to source file in Git repo | [FilePath](#filepath)                                                                                                                                                                                                                                                                               |
+| `position`      | Location in file                         | _Object with properties:_<ul><li>**`startLine`** (\*): [PositiveInt](#positiveint) - Start line</li><li>`startColumn`: [PositiveInt](#positiveint) - Start column</li><li>`endLine`: [PositiveInt](#positiveint) - End line</li><li>`endColumn`: [PositiveInt](#positiveint) - End column</li></ul> |
 
 _(\*) Required._
 

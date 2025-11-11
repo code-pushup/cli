@@ -2,8 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { axePluginOptionsSchema } from './config.js';
 
 describe('axePluginOptionsSchema', () => {
-  it('should accept empty options object with default preset', () => {
-    expect(axePluginOptionsSchema.parse({}).preset).toBe('wcag21aa');
+  it('should accept empty options object with default preset and timeout', () => {
+    const parsed = axePluginOptionsSchema.parse({});
+
+    expect(parsed.preset).toBe('wcag21aa');
+    expect(parsed.timeout).toBe(30_000);
   });
 
   it.each(['wcag21aa', 'wcag22aa', 'best-practice', 'all'])(
@@ -39,5 +42,20 @@ describe('axePluginOptionsSchema', () => {
     expect(() =>
       axePluginOptionsSchema.parse({ scoreTargets: -0.1 }),
     ).toThrow();
+  });
+
+  it('should accept custom timeout value', () => {
+    expect(axePluginOptionsSchema.parse({ timeout: 60_000 }).timeout).toBe(
+      60_000,
+    );
+  });
+
+  it('should reject non-positive timeout values', () => {
+    expect(() => axePluginOptionsSchema.parse({ timeout: 0 })).toThrow();
+    expect(() => axePluginOptionsSchema.parse({ timeout: -1000 })).toThrow();
+  });
+
+  it('should reject non-integer timeout values', () => {
+    expect(() => axePluginOptionsSchema.parse({ timeout: 1000.5 })).toThrow();
   });
 });
