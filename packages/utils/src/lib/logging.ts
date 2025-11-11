@@ -1,7 +1,7 @@
 import isaacs_cliui from '@isaacs/cliui';
 import { cliui } from '@poppinss/cliui';
 import ansis from 'ansis';
-import { TERMINAL_WIDTH } from './reports/constants.js';
+import { TERMINAL_WIDTH } from './text-formats/constants.js';
 
 // TODO: remove once logger is used everywhere
 

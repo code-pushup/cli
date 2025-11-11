@@ -118,7 +118,6 @@ export {
   CODE_PUSHUP_UNICODE_LOGO,
   FOOTER_PREFIX,
   README_LINK,
-  TERMINAL_WIDTH,
 } from './lib/reports/constants.js';
 export {
   listAuditsFromAllPlugins,
