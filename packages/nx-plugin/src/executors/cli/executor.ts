@@ -48,11 +48,7 @@ export default async function runAutorunExecutor(
       await executeProcess({
         command,
         args: [...positionals, ...args],
-        ...(envVariables && {
-          env: Object.fromEntries(
-            Object.entries(envVariables).map(([v, k]) => [v, `"${k}"`]),
-          ),
-        }),
+        ...(envVariables && { env: envVariables }),
         ...(cwd ? { cwd } : {}),
       });
     } catch (error) {
