@@ -37,6 +37,7 @@
     "multi-progress-bars": "^5.0.3",
     "semver": "^7.6.0",
     "simple-git": "^3.20.0",
+    "string-width": "^8.1.0",
     "ora": "^9.0.0",
     "zod": "^4.0.5"
   },

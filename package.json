@@ -41,6 +41,7 @@
     "rimraf": "^6.0.1",
     "semver": "^7.6.3",
     "simple-git": "^3.26.0",
+    "string-width": "^8.1.0",
     "ts-morph": "^24.0.0",
     "tslib": "^2.6.2",
     "vscode-material-icons": "^0.1.1",

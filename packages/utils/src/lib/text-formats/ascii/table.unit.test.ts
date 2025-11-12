@@ -333,4 +333,21 @@ Code coverage:
 `.trim(),
     );
   });
+
+  it('should align columns with unicode characters correctly', () => {
+    const output = formatAsciiTable({
+      rows: [
+        ['❌', '/', '1.2 s'],
+        ['✅', '/contact', '612 ms'],
+      ],
+    });
+    expect(ansis.strip(output)).toBe(
+      `
+┌────┬──────────┬────────┐
+│ ❌ │ /        │ 1.2 s  │
+│ ✅ │ /contact │ 612 ms │
+└────┴──────────┴────────┘
+`.trim(),
+    );
+  });
 });

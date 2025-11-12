@@ -1,5 +1,6 @@
 import ansis from 'ansis';
 import type { TableCellAlignment } from 'build-md';
+import stringWidth from 'string-width';
 import type {
   Table,
   TableAlignment,
@@ -133,7 +134,7 @@ function alignText(
   if (!width) {
     return text;
   }
-  const missing = width - getTextWidth(text);
+  const missing = width - stringWidth(text);
   switch (alignment) {
     case 'left':
       return `${text}${' '.repeat(missing)}`;
@@ -154,13 +155,9 @@ function getColumnWidths(table: NormalizedTable): number[] {
       ...table.rows.map(row => row[index]),
     ].filter(cell => cell != null);
     const texts = cells.map(cell => cell.text);
-    const widths = texts.map(getTextWidth);
+    const widths = texts.map(text => stringWidth(text));
     return Math.max(...widths);
   });
-}
-
-function getTextWidth(text: string): number {
-  return ansis.strip(text).length;
 }
 
 function normalizeTable(table: Table): NormalizedTable {
