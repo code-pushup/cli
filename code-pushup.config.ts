@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import {
+  axeCoreConfig,
   coverageCoreConfigNx,
   eslintCoreConfigNx,
   jsDocsCoreConfig,
@@ -43,4 +44,7 @@ export default mergeConfigs(
     '!**/implementation/**',
     '!**/internal/**',
   ]),
+  axeCoreConfig(
+    'https://github.com/code-pushup/cli?tab=readme-ov-file#code-pushup-cli/',
+  ),
 );

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accessibility Test Page</title>
+    <style>
+      /* Poor color contrast for testing */
+      .low-contrast {
+        color: #777;
+        background-color: #999;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Accessibility Test Page</h1>
+
+    <!-- Missing alt text on image -->
+    <img src="test-image.jpg" width="200" height="150" />
+
+    <!-- Poor color contrast -->
+    <div class="low-contrast">
+      This text has poor color contrast and may be hard to read.
+    </div>
+
+    <!-- Invalid ARIA attribute -->
+    <div role="button" aria-invalid-attribute="true">
+      Button with invalid ARIA attribute
+    </div>
+
+    <!-- Form input missing label -->
+    <form>
+      <input type="text" name="username" placeholder="Enter username" />
+      <button type="submit">Submit</button>
+    </form>
+
+    <!-- Button without accessible name -->
+    <button></button>
+
+    <!-- Link without accessible name -->
+    <a href="#"></a>
+  </body>
+</html>

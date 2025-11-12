@@ -8,6 +8,7 @@ import {
   packageVersionSchema,
   scoreTargetSchema,
   slugSchema,
+  weightSchema,
 } from './implementation/schemas.js';
 import { formatSlugsList, hasMissingStrings } from './implementation/utils.js';
 import { runnerConfigSchema, runnerFunctionSchema } from './runner-config.js';
@@ -71,6 +72,16 @@ export const pluginConfigSchema = pluginMetaSchema
   .meta({ title: 'PluginConfig' });
 
 export type PluginConfig = z.infer<typeof pluginConfigSchema>;
+
+export const pluginUrlsSchema = z
+  .union([z.url(), z.array(z.url()), z.record(z.url(), weightSchema)])
+  .meta({
+    title: 'PluginUrls',
+    description:
+      'URL(s) to analyze. Single URL, array of URLs, or record of URLs with custom weights',
+  });
+
+export type PluginUrls = z.infer<typeof pluginUrlsSchema>;
 
 // every listed group ref points to an audit within the plugin
 export function findMissingSlugsInGroupRefs<

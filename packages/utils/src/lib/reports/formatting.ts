@@ -7,16 +7,20 @@ import {
 import path from 'node:path';
 import type {
   AuditReport,
+  Issue,
+  IssueSeverity,
   SourceFileLocation,
   Table,
   Tree,
 } from '@code-pushup/models';
+import { pluralizeToken } from '../formatting.js';
 import { formatAsciiTree } from '../text-formats/ascii/tree.js';
 import {
   columnsToStringArray,
   getColumnAlignments,
   rowToStringArray,
 } from '../text-formats/table.js';
+import { countOccurrences, objectToEntries } from '../transform.js';
 import { AUDIT_DETAILS_HEADING_LEVEL } from './constants.js';
 import {
   getEnvironmentType,
@@ -24,6 +28,7 @@ import {
   getGitLabBaseUrl,
 } from './environment-type.js';
 import type { MdReportOptions } from './types.js';
+import { compareIssueSeverity } from './utils.js';
 
 export function tableSection(
   table: Table,
@@ -73,13 +78,14 @@ export function metaDescription(
     if (!description) {
       return docsLink;
     }
-    const parsedDescription = description.endsWith('```')
-      ? `${description}\n\n`
-      : `${description} `;
+    const formattedDescription = wrapTags(description);
+    const parsedDescription = formattedDescription.endsWith('```')
+      ? `${formattedDescription}\n\n`
+      : `${formattedDescription} `;
     return md`${parsedDescription}${docsLink}`;
   }
   if (description && description.trim().length > 0) {
-    return description;
+    return wrapTags(description);
   }
   return '';
 }
@@ -170,4 +176,39 @@ export function formatFileLink(
     default:
       return relativePath;
   }
+}
+
+export function formatSeverityCounts(
+  severityCounts: Partial<Record<IssueSeverity, number>>,
+): string {
+  return objectToEntries(severityCounts)
+    .toSorted(([a], [b]) => -compareIssueSeverity(a, b))
+    .map(([severity, count = 0]) => pluralizeToken(severity, count))
+    .join(', ');
+}
+
+/**
+ * Formats issues into a human-readable severity summary string.
+ *
+ * @param issues - Array of issues with severity property
+ * @returns Formatted string like "3 errors, 5 warnings, 2 infos"
+ */
+export function formatIssueSeverities(
+  issues: Pick<Issue, 'severity'>[],
+): string {
+  const severityCounts = countOccurrences(
+    issues.map(({ severity }) => severity),
+  );
+  return formatSeverityCounts(severityCounts);
+}
+
+/**
+ * Wraps HTML tags in backticks to prevent markdown parsers
+ * from interpreting them as actual HTML.
+ */
+export function wrapTags(text: string | undefined): string {
+  if (!text) {
+    return '';
+  }
+  return text.replace(/<[a-z][a-z0-9]*[^>]*>/gi, '`$&`');
 }

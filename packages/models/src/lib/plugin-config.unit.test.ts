@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { type PluginConfig, pluginConfigSchema } from './plugin-config.js';
+import {
+  type PluginConfig,
+  pluginConfigSchema,
+  pluginUrlsSchema,
+} from './plugin-config.js';
 
 describe('pluginConfigSchema', () => {
   it('should accept a valid plugin configuration with all entities', () => {
@@ -133,5 +137,55 @@ describe('pluginConfigSchema', () => {
         audits: [],
       } satisfies PluginConfig),
     ).toThrow('slug has to follow the pattern');
+  });
+});
+
+describe('pluginUrlsSchema', () => {
+  it('should accept a single URL string', () => {
+    expect(() => pluginUrlsSchema.parse('https://example.com')).not.toThrow();
+  });
+
+  it('should accept an array of URLs', () => {
+    expect(() =>
+      pluginUrlsSchema.parse([
+        'https://example.com',
+        'https://example.com/about',
+      ]),
+    ).not.toThrow();
+  });
+
+  it('should accept a weighted object of URLs', () => {
+    expect(() =>
+      pluginUrlsSchema.parse({
+        'https://example.com': 2,
+        'https://example.com/about': 1,
+      }),
+    ).not.toThrow();
+  });
+
+  it('should throw for invalid URL', () => {
+    expect(() => pluginUrlsSchema.parse('invalid')).toThrow();
+  });
+
+  it('should throw for array with invalid URL', () => {
+    expect(() =>
+      pluginUrlsSchema.parse(['https://example.com', 'invalid']),
+    ).toThrow();
+  });
+
+  it('should throw for object with invalid URL', () => {
+    expect(() => pluginUrlsSchema.parse({ invalid: 1 })).toThrow();
+  });
+
+  it('should throw for invalid negative weight', () => {
+    expect(() =>
+      pluginUrlsSchema.parse({ 'https://example.com': -1 }),
+    ).toThrow();
+  });
+
+  it('should throw for invalid string weight', () => {
+    expect(() =>
+      pluginUrlsSchema.parse({ 'https://example.com': '1' }),
+    ).toThrow();
   });
 });

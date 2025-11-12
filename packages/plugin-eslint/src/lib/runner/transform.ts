@@ -3,6 +3,7 @@ import type { AuditOutput, Issue, IssueSeverity } from '@code-pushup/models';
 import {
   compareIssueSeverity,
   countOccurrences,
+  formatIssueSeverities,
   logger,
   objectToEntries,
   pluralizeToken,
@@ -49,20 +50,12 @@ export function lintResultsToAudits({
 
 function toAudit(slug: string, issues: LintIssue[]): AuditOutput {
   const auditIssues = issues.map(convertIssue);
-  const severityCounts = countOccurrences(
-    auditIssues.map(({ severity }) => severity),
-  );
-  const severities = objectToEntries(severityCounts);
-  const summaryText = severities
-    .toSorted((a, b) => -compareIssueSeverity(a[0], b[0]))
-    .map(([severity, count = 0]) => pluralizeToken(severity, count))
-    .join(', ');
 
   return {
     slug,
     score: Number(auditIssues.length === 0),
     value: auditIssues.length,
-    displayValue: summaryText,
+    displayValue: formatIssueSeverities(auditIssues),
     details: {
       issues: auditIssues,
     },
