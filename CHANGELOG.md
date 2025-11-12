@@ -1,3 +1,13 @@
+## 0.87.0 (2025-11-12)
+
+### 🚀 Features
+
+- **plugin-axe:** implement core plugin functionality ([#1141](https://github.com/code-pushup/cli/pull/1141))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.86.0 (2025-11-10)
 
 ### 🚀 Features
