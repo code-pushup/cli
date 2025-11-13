@@ -136,4 +136,15 @@ process:complete
       { force: true },
     );
   });
+
+  it('should successfully execute process with silent flag without spinner', async () => {
+    const result = await executeProcess({
+      command: 'node',
+      args: ['-v'],
+      silent: true,
+    });
+    expect(result.code).toBe(0);
+    expect(result.stdout).toMatch(/v\d{1,2}(\.\d{1,2}){0,2}/);
+    expect(logger.command).not.toHaveBeenCalled();
+  });
 });

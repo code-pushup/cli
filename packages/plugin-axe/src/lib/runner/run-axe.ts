@@ -81,6 +81,7 @@ async function ensureBrowserInstalled(): Promise<void> {
   await executeProcess({
     command: 'npx',
     args: ['playwright-core', 'install', 'chromium'],
+    silent: true,
   });
 
   browserChecked = true;
