@@ -1,3 +1,13 @@
+## 0.87.1 (2025-11-13)
+
+### 🩹 Fixes
+
+- **plugin-axe:** update plugin name references in README ([de026554](https://github.com/code-pushup/cli/commit/de026554))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
 ## 0.87.0 (2025-11-12)
 
 ### 🚀 Features
