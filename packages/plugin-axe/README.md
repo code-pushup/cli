@@ -1,4 +1,8 @@
-# @code-pushup/plugin-axe
+# @code-pushup/axe-plugin
+
+[![npm](https://img.shields.io/npm/v/%40code-pushup%2Faxe-plugin.svg)](https://www.npmjs.com/package/@code-pushup/axe-plugin)
+[![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Faxe-plugin)](https://npmtrends.com/@code-pushup/axe-plugin)
+[![dependencies](https://img.shields.io/librariesio/release/npm/%40code-pushup/axe-plugin)](https://www.npmjs.com/package/@code-pushup/axe-plugin?activeTab=dependencies)
 
 🕵️ **Code PushUp plugin for automated accessibility testing with Axe.** 🌐
 
@@ -15,15 +19,15 @@ The plugin runs accessibility audits on web pages using [axe-core](https://githu
 2. Install as a dev dependency with your package manager:
 
    ```sh
-   npm install --save-dev @code-pushup/plugin-axe
+   npm install --save-dev @code-pushup/axe-plugin
    ```
 
    ```sh
-   yarn add --dev @code-pushup/plugin-axe
+   yarn add --dev @code-pushup/axe-plugin
    ```
 
    ```sh
-   pnpm add --save-dev @code-pushup/plugin-axe
+   pnpm add --save-dev @code-pushup/axe-plugin
    ```
 
 3. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.ts`).
@@ -31,7 +35,7 @@ The plugin runs accessibility audits on web pages using [axe-core](https://githu
    Pass in the URL you want to test:
 
    ```ts
-   import axePlugin from '@code-pushup/plugin-axe';
+   import axePlugin from '@code-pushup/axe-plugin';
 
    export default {
      // ...
