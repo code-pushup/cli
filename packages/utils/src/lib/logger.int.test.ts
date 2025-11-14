@@ -370,6 +370,48 @@ ${ansis.green('✔')} Uploaded report to portal ${ansis.gray('(42 ms)')}
       );
     });
 
+    it('should allow spinners to be run in sequence', async () => {
+      performanceNowSpy
+        .mockReset()
+        .mockReturnValueOnce(0)
+        .mockReturnValueOnce(30_000) // 1st task duration: 30 s
+        .mockReturnValueOnce(0)
+        .mockReturnValueOnce(1_000); // 2nd task duration: 1 s
+
+      const task1 = new Logger().task(
+        'Collecting report',
+        async () => 'Collected report',
+      );
+
+      expect(output).toBe(`${ansis.cyan('⠋')} Collecting report`);
+
+      await expect(task1).resolves.toBeUndefined();
+
+      expect(output).toBe(
+        `${ansis.green('✔')} Collected report ${ansis.gray('(30 s)')}\n`,
+      );
+
+      const task2 = new Logger().task(
+        'Uploading report to portal',
+        async () => 'Uploaded report to portal',
+      );
+
+      expect(output).toBe(
+        `
+${ansis.green('✔')} Collected report ${ansis.gray('(30 s)')}
+${ansis.cyan('⠋')} Uploading report to portal`.trimStart(),
+      );
+
+      await expect(task2).resolves.toBeUndefined();
+
+      expect(output).toBe(
+        `
+${ansis.green('✔')} Collected report ${ansis.gray('(30 s)')}
+${ansis.green('✔')} Uploaded report to portal ${ansis.gray('(1 s)')}
+`.trimStart(),
+      );
+    });
+
     it('should fail spinner and exit if SIGINT received', async () => {
       vi.spyOn(process, 'exit').mockReturnValue(undefined as never);
       vi.spyOn(os, 'platform').mockReturnValue('linux');
@@ -895,5 +937,18 @@ ${ansis.red.bold('Cancelled by SIGINT')}
         'Internal Logger error - concurrent spinners are not supported',
       );
     });
+  });
+
+  it('should throw if spinners are nested', async () => {
+    const logger = new Logger();
+
+    await expect(
+      logger.task('Task 1', async () => {
+        await logger.task('Task 2', async () => 'DONE');
+        return 'DONE';
+      }),
+    ).rejects.toThrow(
+      'Internal Logger error - concurrent spinners are not supported',
+    );
   });
 });
