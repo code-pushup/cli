@@ -1,8 +1,8 @@
-import cliui from '@isaacs/cliui';
 import ansis from 'ansis';
 import type { AuditReport } from '@code-pushup/models';
 import { logger } from '../logger.js';
 import { ui } from '../logging.js';
+import { formatAsciiTable } from '../text-formats/ascii/table.js';
 import { TERMINAL_WIDTH } from '../text-formats/constants.js';
 import {
   CODE_PUSHUP_DOMAIN,
@@ -45,53 +45,47 @@ export function logPlugins(plugins: ScoredReport['plugins']): void {
         : audits.filter(({ score }) => score !== 1);
     const diff = audits.length - filteredAudits.length;
 
-    logAudits(title, filteredAudits);
-
-    if (diff > 0) {
-      const notice =
-        filteredAudits.length === 0
+    const footer =
+      diff > 0
+        ? filteredAudits.length === 0
           ? `... All ${diff} audits have perfect scores ...`
-          : `... ${diff} audits with perfect scores omitted for brevity ...`;
-      logRow(1, notice);
-    }
-    logger.newline();
+          : `... + ${diff} audits with perfect scores ...`
+        : null;
+
+    logAudits(title, filteredAudits, footer);
   });
 }
 
-function logAudits(pluginTitle: string, audits: AuditReport[]): void {
-  logger.newline();
-  logger.info(ansis.bold.magentaBright(`${pluginTitle} audits`));
-  logger.newline();
-  audits.forEach(({ score, title, displayValue, value }) => {
-    logRow(score, title, displayValue || `${value}`);
-  });
-}
+function logAudits(
+  pluginTitle: string,
+  audits: AuditReport[],
+  footer: string | null,
+): void {
+  const marker = '●';
 
-function logRow(score: number, title: string, value?: string): void {
-  const ui = cliui({ width: TERMINAL_WIDTH });
-  ui.div(
-    {
-      text: applyScoreColor({ score, text: '●' }),
-      width: 2,
-      padding: [0, 1, 0, 0],
-    },
-    {
-      text: title,
-      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-      padding: [0, 3, 0, 0],
-    },
-    ...(value
-      ? [
-          {
-            text: ansis.cyanBright(value),
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            width: 20,
-            padding: [0, 0, 0, 0],
-          },
-        ]
-      : []),
+  logger.newline();
+
+  logger.info(
+    formatAsciiTable(
+      {
+        title: ansis.bold.magentaBright(`${pluginTitle} audits`),
+        columns: ['center', 'left', 'right'],
+        rows: [
+          ...audits.map(({ score, title, displayValue, value }) => [
+            applyScoreColor({ score, text: marker }),
+            title,
+            ansis.cyanBright(displayValue || value.toString()),
+          ]),
+          ...(footer
+            ? [[applyScoreColor({ score: 1, text: marker }), footer]]
+            : []),
+        ],
+      },
+      { borderless: true },
+    ),
   );
-  logger.info(ui.toString());
+
+  logger.newline();
 }
 
 export function logCategories({

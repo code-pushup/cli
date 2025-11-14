@@ -191,7 +191,7 @@ describe('logPlugins', () => {
 
     expect(stdout).toContain('Audit 1');
     expect(stdout).not.toContain('Audit 2');
-    expect(stdout).toContain('audits with perfect scores omitted for brevity');
+    expect(stdout).toContain('audits with perfect scores');
   });
 
   it('should log all audits when verbose is true', () => {
