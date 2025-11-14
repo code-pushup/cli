@@ -1,9 +1,9 @@
 import ansis from 'ansis';
-import { link, logger, ui } from '@code-pushup/utils';
+import { formatAsciiLink, logger, ui } from '@code-pushup/utils';
 
 export function renderConfigureCategoriesHint(): void {
   logger.debug(
-    `💡 Configure categories to see the scores in an overview table. See: ${link(
+    `💡 Configure categories to see the scores in an overview table. See: ${formatAsciiLink(
       'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md',
     )}`,
     { force: true },
@@ -11,7 +11,7 @@ export function renderConfigureCategoriesHint(): void {
 }
 export function uploadSuccessfulLog(url: string): void {
   logger.info(ansis.green('Upload successful!'));
-  logger.info(link(url));
+  logger.info(formatAsciiLink(url));
 }
 
 export function collectSuccessfulLog(): void {
@@ -30,17 +30,17 @@ export function renderIntegratePortalHint(): void {
       )}`,
     )
     .add(
-      `  ${link(
+      `  ${formatAsciiLink(
         'https://github.com/code-pushup/cli/tree/main/packages/cli#upload-command',
       )}`,
     )
     .add(
-      `${ansis.gray('❯')} ${ansis.gray('Portal Integration')} - ${link(
+      `${ansis.gray('❯')} ${ansis.gray('Portal Integration')} - ${formatAsciiLink(
         'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
       )}`,
     )
     .add(
-      `${ansis.gray('❯')} ${ansis.gray('Upload Command')} - ${link(
+      `${ansis.gray('❯')} ${ansis.gray('Upload Command')} - ${formatAsciiLink(
         'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
       )}`,
     )

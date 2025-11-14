@@ -4,7 +4,7 @@ import {
   type CollectAndPersistReportsOptions,
   collectAndPersistReports,
 } from '@code-pushup/core';
-import { link, logger, ui } from '@code-pushup/utils';
+import { formatAsciiLink, logger, ui } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants.js';
 import {
   collectSuccessfulLog,
@@ -51,7 +51,7 @@ export function renderUploadAutorunHint(): void {
       )}`,
     )
     .add(
-      `  ${link(
+      `  ${formatAsciiLink(
         'https://github.com/code-pushup/cli/tree/main/packages/cli#upload-command',
       )}`,
     )
@@ -59,7 +59,7 @@ export function renderUploadAutorunHint(): void {
       `${ansis.gray('❯')} npx code-pushup autorun - ${ansis.gray('Run collect & upload')}`,
     )
     .add(
-      `  ${link(
+      `  ${formatAsciiLink(
         'https://github.com/code-pushup/cli/tree/main/packages/cli#autorun-command',
       )}`,
     )
