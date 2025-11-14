@@ -206,30 +206,27 @@ describe('formatAsciiTable', () => {
   });
 
   it('should ignore color codes when aligning columns', () => {
-    expect(
-      ansis.strip(
-        formatAsciiTable({
-          columns: [
-            { key: 'category', label: ansis.bold('Category'), align: 'left' },
-            { key: 'score', label: ansis.bold('Score'), align: 'right' },
-          ],
-          rows: [
-            {
-              category: ansis.bold('Performance'),
-              score: `${ansis.red('42')} → ${ansis.yellow('51')}`,
-            },
-            {
-              category: 'Accessibility',
-              score: ansis.green('100'),
-            },
-            {
-              category: 'Coverage',
-              score: ansis.yellow('66'),
-            },
-          ],
-        }),
-      ),
-    ).toBe(
+    const output = formatAsciiTable({
+      columns: [
+        { key: 'category', label: ansis.bold('Category'), align: 'left' },
+        { key: 'score', label: ansis.bold('Score'), align: 'right' },
+      ],
+      rows: [
+        {
+          category: ansis.bold('Performance'),
+          score: `${ansis.red('42')} → ${ansis.yellow('51')}`,
+        },
+        {
+          category: 'Accessibility',
+          score: ansis.green('100'),
+        },
+        {
+          category: 'Coverage',
+          score: ansis.yellow('66'),
+        },
+      ],
+    });
+    expect(ansis.strip(output)).toBe(
       `
 ┌───────────────┬─────────┐
 │ Category      │   Score │
@@ -347,6 +344,115 @@ Code coverage:
 │ ❌ │ /        │ 1.2 s  │
 │ ✅ │ /contact │ 612 ms │
 └────┴──────────┴────────┘
+`.trim(),
+    );
+  });
+
+  it('should wrap columns to enforce a maximum width', () => {
+    const output = formatAsciiTable({
+      rows: [
+        ['Audit production dependencies', '0 vulnerabilities'],
+        [
+          'Audit development dependencies',
+          '12 vulnerabilities (1 critical, 3 high, 7 moderate, 5 low)',
+        ],
+        [
+          'Outdated production dependencies',
+          '2 outdated packages (1 minor, 1 patch)',
+        ],
+        [
+          'Outdated development dependencies',
+          '8 outdated packages (2 major, 2 minor, 4 patch)',
+        ],
+      ],
+    });
+    expect(ansis.strip(output)).toBe(
+      `
+┌───────────────────────────────────┬──────────────────────────────────────────┐
+│ Audit production dependencies     │ 0 vulnerabilities                        │
+│ Audit development dependencies    │ 12 vulnerabilities (1 critical, 3 high,  │
+│                                   │ 7 moderate, 5 low)                       │
+│ Outdated production dependencies  │ 2 outdated packages (1 minor, 1 patch)   │
+│ Outdated development dependencies │ 8 outdated packages (2 major, 2 minor, 4 │
+│                                   │ patch)                                   │
+└───────────────────────────────────┴──────────────────────────────────────────┘
+`.trim(),
+    );
+  });
+
+  it('should wrap columns in border-less tables', () => {
+    const output = formatAsciiTable(
+      {
+        columns: ['center', 'left', 'right'],
+        rows: [
+          [
+            ansis.green('●'),
+            'Audit production dependencies',
+            '0 vulnerabilities',
+          ],
+          [
+            ansis.red('●'),
+            'Audit development dependencies',
+            '12 vulnerabilities (1 critical, 3 high, 7 moderate, 5 low)',
+          ],
+          [
+            ansis.green('●'),
+            'Outdated production dependencies',
+            '2 outdated packages (1 minor, 1 patch)',
+          ],
+          [
+            ansis.yellow('●'),
+            'Outdated development dependencies',
+            '8 outdated packages (2 major, 2 minor, 4 patch)',
+          ],
+        ],
+      },
+      { borderless: true },
+    );
+    expect(ansis.strip(output)).toBe(
+      `
+●  Audit production dependencies                               0 vulnerabilities
+●  Audit development dependencies      12 vulnerabilities (1 critical, 3 high, 7
+                                                                moderate, 5 low)
+●  Outdated production dependencies       2 outdated packages (1 minor, 1 patch)
+●  Outdated development dependencies    8 outdated packages (2 major, 2 minor, 4
+                                                                          patch)
+`.trim(),
+    );
+  });
+
+  it('should wrap columns in header and break long words', () => {
+    const output = formatAsciiTable({
+      columns: [
+        { key: 'a11y', label: 'Accessibility', align: 'center' },
+        { key: 'coverage', label: 'Code coverage', align: 'center' },
+        { key: 'bug-prevention', label: 'Bug prevention', align: 'center' },
+        { key: 'code-style', label: 'Code style', align: 'center' },
+        { key: 'security', label: 'Security', align: 'center' },
+        { key: 'updates', label: 'Updates', align: 'center' },
+        { key: 'docs', label: 'Documentation', align: 'center' },
+      ],
+      rows: [
+        {
+          a11y: 81,
+          coverage: 64,
+          'bug-prevention': 92,
+          'code-style': 100,
+          security: 95,
+          updates: 62,
+          docs: 6,
+        },
+      ],
+    });
+    expect(ansis.strip(output)).toBe(
+      `
+┌──────────┬────────────┬─────────┬────────────┬──────────┬─────────┬──────────┐
+│ Accessi- │    Code    │   Bug   │ Code style │ Security │ Updates │ Documen- │
+│  bility  │  coverage  │ preven- │            │          │         │  tation  │
+│          │            │  tion   │            │          │         │          │
+├──────────┼────────────┼─────────┼────────────┼──────────┼─────────┼──────────┤
+│    81    │     64     │   92    │    100     │    95    │   62    │    6     │
+└──────────┴────────────┴─────────┴────────────┴──────────┴─────────┴──────────┘
 `.trim(),
     );
   });
