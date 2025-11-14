@@ -54,9 +54,6 @@ describe('createVitestConfig', () => {
         '../../testing/test-setup/src/lib/reset.mocks.ts',
       );
       expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/cliui.mock.ts',
-      );
-      expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/fs.mock.ts',
       );
       expect(setupFiles).toContain(
@@ -67,9 +64,6 @@ describe('createVitestConfig', () => {
       );
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/logger.mock.ts',
-      );
-      expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
       );
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/extend/markdown-table.matcher.ts',
@@ -144,9 +138,6 @@ describe('createVitestConfig', () => {
       );
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/extend/path.matcher.ts',
-      );
-      expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
       );
     });
 
