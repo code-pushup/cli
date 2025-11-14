@@ -1,3 +1,13 @@
+## 0.87.2 (2025-11-14)
+
+### 🩹 Fixes
+
+- **core:** run plugins sequentially ([4ad94d76](https://github.com/code-pushup/cli/commit/4ad94d76))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.87.1 (2025-11-13)
 
 ### 🩹 Fixes
