@@ -1,14 +1,11 @@
 import ansis from 'ansis';
 import type { AuditReport } from '@code-pushup/models';
 import { logger } from '../logger.js';
-import { ui } from '../logging.js';
 import { formatAsciiTable } from '../text-formats/ascii/table.js';
-import { TERMINAL_WIDTH } from '../text-formats/constants.js';
 import {
   CODE_PUSHUP_DOMAIN,
   FOOTER_PREFIX,
   REPORT_HEADLINE_TEXT,
-  REPORT_RAW_OVERVIEW_TABLE_HEADERS,
 } from './constants.js';
 import type { ScoredReport } from './types.js';
 import {
@@ -92,35 +89,25 @@ export function logCategories({
   plugins,
   categories,
 }: Required<Pick<ScoredReport, 'plugins' | 'categories'>>): void {
-  const hAlign = (idx: number) => (idx === 0 ? 'left' : 'right');
-
-  const rows = categories.map(({ title, score, scoreTarget, refs }) => [
-    title,
-    `${binaryIconPrefix(score, scoreTarget)}${applyScoreColor({ score })}`,
-    countCategoryAudits(refs, plugins),
-  ]);
-  // TODO: replace @poppinss/cliui
-  const table = ui().table();
-  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-  table.columnWidths([TERMINAL_WIDTH - 9 - 10 - 4, 9, 10]);
-  table.head(
-    REPORT_RAW_OVERVIEW_TABLE_HEADERS.map((heading, idx) => ({
-      content: ansis.cyan(heading),
-      hAlign: hAlign(idx),
-    })),
-  );
-  rows.forEach(row =>
-    table.row(
-      row.map((content, idx) => ({
-        content: content.toString(),
-        hAlign: hAlign(idx),
-      })),
+  logger.info(
+    formatAsciiTable(
+      {
+        title: ansis.bold.magentaBright('Categories'),
+        columns: [
+          { key: 'title', label: ansis.cyan('Category'), align: 'left' },
+          { key: 'score', label: ansis.cyan('Score'), align: 'right' },
+          { key: 'audits', label: ansis.cyan('Audits'), align: 'right' },
+        ],
+        rows: categories.map(({ title, score, scoreTarget, refs }) => ({
+          title,
+          score: `${binaryIconPrefix(score, scoreTarget)}${applyScoreColor({ score })}`,
+          audits: countCategoryAudits(refs, plugins),
+        })),
+      },
+      { padding: 2 },
     ),
   );
 
-  logger.info(ansis.bold.magentaBright('Categories'));
-  logger.newline();
-  table.render();
   logger.newline();
 }
 
