@@ -11,11 +11,13 @@ import {
 } from '@code-pushup/models';
 import {
   type ProgressBar,
+  asyncSequential,
   getProgressBar,
   groupByStatus,
   logMultipleResults,
   pluralizeToken,
   scoreAuditsWithTarget,
+  settlePromise,
   stringifyError,
 } from '@code-pushup/utils';
 import {
@@ -176,7 +178,7 @@ export async function executePlugins(
   );
 
   const errorsTransform = ({ reason }: PromiseRejectedResult) => String(reason);
-  const results = await Promise.allSettled(pluginsResult);
+  const results = await asyncSequential(pluginsResult, settlePromise);
 
   progressBar?.endProgress('Done running plugins');
 
