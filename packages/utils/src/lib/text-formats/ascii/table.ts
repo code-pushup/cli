@@ -142,7 +142,7 @@ function wrapRow(cells: TableCell[], columnWidths: number[]): TableCell[][] {
     const wrapped: string = wrapText(cell.text, columnWidths[colIndex]);
     const lines = wrapped.split('\n').filter(Boolean);
 
-    const rowCount = Math.max(acc.length, lines.length);
+    const rowCount = Math.max(acc.length, lines.length, 1);
 
     return Array.from({ length: rowCount }).map((_, rowIndex) => {
       const prevCols =
@@ -154,7 +154,7 @@ function wrapRow(cells: TableCell[], columnWidths: number[]): TableCell[][] {
 }
 
 function wrapText(text: string, width: number | undefined): string {
-  if (!width || stringWidth(text) <= width) {
+  if (!width || getTextWidth(text) <= width) {
     return text;
   }
   const words = extractWords(text);
@@ -171,6 +171,10 @@ function wrapText(text: string, width: number | undefined): string {
     text,
   );
   return wrapAnsi(textWithSplitLongWords, width);
+}
+
+function getTextWidth(text: string): number {
+  return Math.max(...text.split('\n').map(line => stringWidth(line)));
 }
 
 function extractWords(text: string): string[] {
@@ -234,7 +238,7 @@ function getColumnTexts(table: NormalizedTable): string[][] {
 
 function aggregateColumnsStats(columnTexts: string[][]): ColumnStats[] {
   return columnTexts.map(texts => {
-    const widths = texts.map(text => stringWidth(text));
+    const widths = texts.map(getTextWidth);
     const longestWords = texts
       .flatMap(extractWords)
       .toSorted((a, b) => b.length - a.length);

@@ -145,6 +145,7 @@ export {
 } from './lib/reports/utils.js';
 export { isSemver, normalizeSemver, sortSemvers } from './lib/semver.js';
 export { formatAsciiLink } from './lib/text-formats/ascii/link.js';
+export { formatAsciiSticker } from './lib/text-formats/ascii/sticker.js';
 export { formatAsciiTable } from './lib/text-formats/ascii/table.js';
 export { formatAsciiTree } from './lib/text-formats/ascii/tree.js';
 export * from './lib/text-formats/index.js';

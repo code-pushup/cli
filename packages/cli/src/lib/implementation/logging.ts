@@ -1,5 +1,9 @@
 import ansis from 'ansis';
-import { formatAsciiLink, logger, ui } from '@code-pushup/utils';
+import {
+  formatAsciiLink,
+  formatAsciiSticker,
+  logger,
+} from '@code-pushup/utils';
 
 export function renderConfigureCategoriesHint(): void {
   logger.debug(
@@ -19,30 +23,22 @@ export function collectSuccessfulLog(): void {
 }
 
 export function renderIntegratePortalHint(): void {
-  // TODO: replace @poppinss/cliui
-  ui()
-    .sticker()
-    .add(ansis.bold.gray('💡 Integrate the portal'))
-    .add('')
-    .add(
+  logger.info(
+    formatAsciiSticker([
+      ansis.bold.gray('💡 Integrate the portal'),
+      '',
       `${ansis.gray('❯')} Upload a report to the server - ${ansis.gray(
         'npx code-pushup upload',
       )}`,
-    )
-    .add(
       `  ${formatAsciiLink(
         'https://github.com/code-pushup/cli/tree/main/packages/cli#upload-command',
       )}`,
-    )
-    .add(
       `${ansis.gray('❯')} ${ansis.gray('Portal Integration')} - ${formatAsciiLink(
         'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
       )}`,
-    )
-    .add(
       `${ansis.gray('❯')} ${ansis.gray('Upload Command')} - ${formatAsciiLink(
         'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
       )}`,
-    )
-    .render();
+    ]),
+  );
 }
