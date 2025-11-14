@@ -88,13 +88,8 @@ export {
 export { interpolate } from './lib/interpolate.js';
 export { logMultipleResults } from './lib/log-results.js';
 export { Logger, logger } from './lib/logger.js';
-export { link, ui, type CliUi, type Column } from './lib/logging.js';
+export { link, ui, type CliUi } from './lib/logging.js';
 export { mergeConfigs } from './lib/merge-configs.js';
-export {
-  getUrlIdentifier,
-  normalizeUrlInput,
-  type PluginUrlContext,
-} from './lib/plugin-url-config.js';
 export {
   addIndex,
   ContextValidationError,
@@ -106,6 +101,11 @@ export {
   shouldExpandForUrls,
   validateUrlContext,
 } from './lib/plugin-url-aggregation.js';
+export {
+  getUrlIdentifier,
+  normalizeUrlInput,
+  type PluginUrlContext,
+} from './lib/plugin-url-config.js';
 export { getProgressBar, type ProgressBar } from './lib/progress.js';
 export {
   asyncSequential,
