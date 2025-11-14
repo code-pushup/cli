@@ -1,4 +1,4 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import { mkdir, readdir, rename, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -12,7 +12,7 @@ export async function teardownTestFolder(dirName: string) {
     const stats = await stat(dirName);
     if (!stats.isDirectory()) {
       console.warn(
-        `⚠️ You are trying to delete a file instead of a directory - ${bold(
+        `⚠️ You are trying to delete a file instead of a directory - ${ansis.bold(
           dirName,
         )}.`,
       );
@@ -31,7 +31,7 @@ export async function teardownTestFolder(dirName: string) {
     });
   } catch {
     console.warn(
-      `⚠️ Failed to delete test artefact ${bold(
+      `⚠️ Failed to delete test artefact ${ansis.bold(
         dirName,
       )} so the folder is still in the file system!\nIt may require a deletion before running e2e tests again.`,
     );

@@ -88,13 +88,7 @@ export {
 export { interpolate } from './lib/interpolate.js';
 export { logMultipleResults } from './lib/log-results.js';
 export { Logger, logger } from './lib/logger.js';
-export { link, ui, type CliUi, type Column } from './lib/logging.js';
 export { mergeConfigs } from './lib/merge-configs.js';
-export {
-  getUrlIdentifier,
-  normalizeUrlInput,
-  type PluginUrlContext,
-} from './lib/plugin-url-config.js';
 export {
   addIndex,
   ContextValidationError,
@@ -106,6 +100,11 @@ export {
   shouldExpandForUrls,
   validateUrlContext,
 } from './lib/plugin-url-aggregation.js';
+export {
+  getUrlIdentifier,
+  normalizeUrlInput,
+  type PluginUrlContext,
+} from './lib/plugin-url-config.js';
 export { getProgressBar, type ProgressBar } from './lib/progress.js';
 export {
   asyncSequential,
@@ -118,7 +117,6 @@ export {
   CODE_PUSHUP_UNICODE_LOGO,
   FOOTER_PREFIX,
   README_LINK,
-  TERMINAL_WIDTH,
 } from './lib/reports/constants.js';
 export {
   listAuditsFromAllPlugins,
@@ -145,6 +143,10 @@ export {
   formatReportScore,
 } from './lib/reports/utils.js';
 export { isSemver, normalizeSemver, sortSemvers } from './lib/semver.js';
+export { formatAsciiLink } from './lib/text-formats/ascii/link.js';
+export { formatAsciiSticker } from './lib/text-formats/ascii/sticker.js';
+export { formatAsciiTable } from './lib/text-formats/ascii/table.js';
+export { formatAsciiTree } from './lib/text-formats/ascii/tree.js';
 export * from './lib/text-formats/index.js';
 export {
   countOccurrences,

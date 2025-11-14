@@ -1,4 +1,4 @@
-import { bold, dim, green } from 'ansis';
+import ansis from 'ansis';
 import { describe, expect } from 'vitest';
 import {
   descriptionStyle,
@@ -10,13 +10,13 @@ import {
 
 describe('titleStyle', () => {
   it('should return a string with green color', () => {
-    expect(titleStyle('Code Pushup CLI')).toBe(bold('Code Pushup CLI'));
+    expect(titleStyle('Code Pushup CLI')).toBe(ansis.bold('Code Pushup CLI'));
   });
 });
 
 describe('headerStyle', () => {
   it('should return a string with green color', () => {
-    expect(headerStyle('Options')).toBe(green('Options'));
+    expect(headerStyle('Options')).toBe(ansis.green('Options'));
   });
 });
 
@@ -27,7 +27,7 @@ describe('descriptionStyle', () => {
         'Run collect using custom tsconfig to parse code-pushup.config.ts file.',
       ),
     ).toBe(
-      dim(
+      ansis.dim(
         'Run collect using custom tsconfig to parse code-pushup.config.ts file.',
       ),
     );
@@ -44,7 +44,7 @@ describe('formatObjectValue', () => {
         'describe',
       ),
     ).toEqual({
-      describe: dim('Directory for the produced reports'),
+      describe: ansis.dim('Directory for the produced reports'),
     });
   });
 });
@@ -62,7 +62,7 @@ describe('formatNestedValues', () => {
       ),
     ).toEqual({
       outputDir: {
-        describe: dim('Directory for the produced reports'),
+        describe: ansis.dim('Directory for the produced reports'),
       },
     });
   });

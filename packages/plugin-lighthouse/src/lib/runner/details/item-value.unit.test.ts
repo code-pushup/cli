@@ -1,7 +1,7 @@
 import ansis from 'ansis';
 import type Details from 'lighthouse/types/lhr/audit-details';
-import { beforeAll, describe, expect, it } from 'vitest';
-import { logger, ui } from '@code-pushup/utils';
+import { describe, expect, it } from 'vitest';
+import { logger } from '@code-pushup/utils';
 import {
   type SimpleItemValue,
   formatTableItemPropertyValue,
@@ -49,10 +49,6 @@ describe('parseSimpleItemValue', () => {
 });
 
 describe('parseTableItemPropertyValue', () => {
-  beforeAll(() => {
-    ui().switchMode('raw');
-  });
-
   it('should parse undefined', () => {
     expect(parseTableItemPropertyValue(undefined)).toBe('');
   });
@@ -183,10 +179,6 @@ describe('formatTableItemPropertyValue', () => {
 
     return result;
   };
-
-  beforeAll(() => {
-    ui().switchMode('raw');
-  });
 
   it('should format undefined to empty string', () => {
     expect(formatTableItemPropertyValue(undefined)).toBe('');

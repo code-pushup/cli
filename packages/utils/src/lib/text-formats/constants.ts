@@ -12,3 +12,6 @@ export const HIERARCHY = {
   level_6: 6,
   /* eslint-enable @typescript-eslint/no-magic-numbers */
 } as const;
+
+// https://stackoverflow.com/questions/4651012/why-is-the-default-terminal-width-80-characters/4651037#4651037
+export const TERMINAL_WIDTH = 80;

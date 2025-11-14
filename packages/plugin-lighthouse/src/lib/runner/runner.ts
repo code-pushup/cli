@@ -5,11 +5,10 @@ import type { AuditOutputs, RunnerFunction } from '@code-pushup/models';
 import {
   addIndex,
   ensureDirectoryExists,
-  link,
+  formatAsciiLink,
   logger,
   shouldExpandForUrls,
   stringifyError,
-  ui,
 } from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types.js';
 import { DEFAULT_CLI_FLAGS } from './constants.js';
@@ -82,7 +81,7 @@ async function runLighthouseForUrl(
 
   if (runnerResult == null) {
     throw new Error(
-      `Lighthouse did not produce a result for URL: ${link(url)}`,
+      `Lighthouse did not produce a result for URL: ${formatAsciiLink(url)}`,
     );
   }
 

@@ -1,5 +1,5 @@
 /* eslint-disable max-lines-per-function */
-import { blue, dim, green } from 'ansis';
+import ansis from 'ansis';
 import { createRequire } from 'node:module';
 import yargs, {
   type Argv,
@@ -24,17 +24,17 @@ import {
 import { logErrorBeforeThrow } from './implementation/global.utils.js';
 
 export const yargsDecorator = {
-  'Commands:': `${green('Commands')}:`,
-  'Options:': `${green('Options')}:`,
-  'Examples:': `${green('Examples')}:`,
-  boolean: blue('boolean'),
-  count: blue('count'),
-  string: blue('string'),
-  array: blue('array'),
-  required: blue('required'),
-  'default:': `${blue('default')}:`,
-  'choices:': `${blue('choices')}:`,
-  'aliases:': `${blue('aliases')}:`,
+  'Commands:': `${ansis.green('Commands')}:`,
+  'Options:': `${ansis.green('Options')}:`,
+  'Examples:': `${ansis.green('Examples')}:`,
+  boolean: ansis.blue('boolean'),
+  count: ansis.blue('count'),
+  string: ansis.blue('string'),
+  array: ansis.blue('array'),
+  required: ansis.blue('required'),
+  'default:': `${ansis.blue('default')}:`,
+  'choices:': `${ansis.blue('choices')}:`,
+  'aliases:': `${ansis.blue('aliases')}:`,
 };
 
 /**
@@ -80,7 +80,7 @@ export function yargsCli<T = unknown>(
     .help('help', descriptionStyle('Show help'))
     .alias('h', 'help')
     .showHelpOnFail(false)
-    .version('version', dim`Show version`, packageJson.version)
+    .version('version', ansis.dim('Show version'), packageJson.version)
     .check(args => {
       const persist = args['persist'] as PersistConfig | undefined;
       return persist == null || validatePersistFormat(persist);

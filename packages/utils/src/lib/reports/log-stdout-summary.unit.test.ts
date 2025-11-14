@@ -1,7 +1,7 @@
+import ansis from 'ansis';
 import { beforeAll, describe, expect, vi } from 'vitest';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { logger } from '../logger.js';
-import { ui } from '../logging.js';
 import {
   binaryIconPrefix,
   logCategories,
@@ -10,24 +10,16 @@ import {
 import type { ScoredReport } from './types.js';
 
 describe('logCategories', () => {
-  let logs: string[];
+  let stdout: string;
+
+  beforeEach(() => {
+    stdout = '';
+  });
 
   beforeAll(() => {
-    logs = [];
-    // console.log is used inside the logger when in "normal" mode
-    vi.spyOn(console, 'log').mockImplementation(msg => {
-      logs = [...logs, msg];
+    vi.mocked(logger.info).mockImplementation(message => {
+      stdout += `${message}\n`;
     });
-    // we want to see table and sticker logs in the final style ("raw" don't show borders etc so we use `console.log` here)
-    ui().switchMode('normal');
-  });
-
-  afterEach(() => {
-    logs = [];
-  });
-
-  afterAll(() => {
-    ui().switchMode('raw');
   });
 
   it('should list categories', () => {
@@ -64,13 +56,18 @@ describe('logCategories', () => {
 
     logCategories({ plugins, categories });
 
-    const output = logs.join('\n');
+    expect(logger.info).toHaveBeenCalledTimes(1);
+    expect(ansis.strip(stdout)).toBe(
+      `
+Categories
 
-    expect(output).not.toContain('✅');
-    expect(output).not.toContain('❌');
-    expect(output).toContain('Performance');
-    expect(output).toContain('42');
-    expect(output).toContain('1');
+┌───────────────┬─────────┬──────────┐
+│  Category     │  Score  │  Audits  │
+├───────────────┼─────────┼──────────┤
+│  Performance  │     42  │       1  │
+└───────────────┴─────────┴──────────┘
+`.trimStart(),
+    );
   });
 
   it('should list categories with score < scoreTarget', () => {
@@ -108,13 +105,18 @@ describe('logCategories', () => {
 
     logCategories({ plugins, categories });
 
-    const output = logs.join('\n');
+    expect(logger.info).toHaveBeenCalledTimes(1);
+    expect(ansis.strip(stdout)).toBe(
+      `
+Categories
 
-    expect(output).not.toContain('✓');
-    expect(output).toContain('✗');
-    expect(output).toContain('Performance');
-    expect(output).toContain('42');
-    expect(output).toContain('1');
+┌───────────────┬─────────┬──────────┐
+│  Category     │  Score  │  Audits  │
+├───────────────┼─────────┼──────────┤
+│  Performance  │   ✗ 42  │       1  │
+└───────────────┴─────────┴──────────┘
+`.trimStart(),
+    );
   });
 
   it('should list categories with score >= scoreTarget', () => {
@@ -152,13 +154,18 @@ describe('logCategories', () => {
 
     logCategories({ plugins, categories });
 
-    const output = logs.join('\n');
+    expect(logger.info).toHaveBeenCalledTimes(1);
+    expect(ansis.strip(stdout)).toBe(
+      `
+Categories
 
-    expect(output).toContain('✓');
-    expect(output).not.toContain('✗');
-    expect(output).toContain('Performance');
-    expect(output).toContain('100');
-    expect(output).toContain('1');
+┌───────────────┬─────────┬──────────┐
+│  Category     │  Score  │  Audits  │
+├───────────────┼─────────┼──────────┤
+│  Performance  │  ✓ 100  │       1  │
+└───────────────┴─────────┴──────────┘
+`.trimStart(),
+    );
   });
 });
 
@@ -191,7 +198,7 @@ describe('logPlugins', () => {
 
     expect(stdout).toContain('Audit 1');
     expect(stdout).not.toContain('Audit 2');
-    expect(stdout).toContain('audits with perfect scores omitted for brevity');
+    expect(stdout).toContain('audits with perfect scores');
   });
 
   it('should log all audits when verbose is true', () => {

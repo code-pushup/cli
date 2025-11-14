@@ -1,4 +1,4 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
@@ -64,7 +64,7 @@ export async function executeRunnerFunction(
 export class AuditOutputsMissingAuditError extends Error {
   constructor(auditSlug: string) {
     super(
-      `Audit metadata not present in plugin config. Missing slug: ${bold(
+      `Audit metadata not present in plugin config. Missing slug: ${ansis.bold(
         auditSlug,
       )}`,
     );

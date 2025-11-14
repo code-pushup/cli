@@ -13,7 +13,7 @@ import {
   auditOutputsSchema,
 } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { logger, ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import { DEFAULT_CLI_FLAGS } from './constants.js';
 import { unsupportedDetailTypes } from './details/details.js';
 import type { LighthouseCliFlags } from './types.js';
@@ -247,7 +247,7 @@ describe('toAuditOutputs', () => {
           }) as Result,
       ),
     );
-    expect(ui()).not.toHaveLogs();
+    expect(logger.warn).not.toHaveBeenCalled();
   });
 
   it('should inform that for all unsupported details if verbose IS given', () => {
