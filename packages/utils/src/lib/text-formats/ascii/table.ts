@@ -1,6 +1,7 @@
 import ansis from 'ansis';
 import type { TableCellAlignment } from 'build-md';
 import stringWidth from 'string-width';
+import wrapAnsi from 'wrap-ansi';
 import type {
   Table,
   TableAlignment,
@@ -12,6 +13,7 @@ import { TERMINAL_WIDTH } from '../constants.js';
 type AsciiTableOptions = {
   borderless?: boolean;
   padding?: number;
+  maxWidth?: number;
 };
 
 type NormalizedOptions = Required<AsciiTableOptions>;
@@ -23,12 +25,14 @@ type NormalizedTable = {
 
 type TableCell = { text: string; alignment: TableAlignment };
 
+type ColumnStats = { maxWidth: number; maxWord: string };
+
 const DEFAULT_PADDING = 1;
 const DEFAULT_ALIGNMENT = 'left' satisfies TableAlignment;
-const MAX_WIDTH = TERMINAL_WIDTH; // TODO: use process.stdout.columns?
 const DEFAULT_OPTIONS: NormalizedOptions = {
   borderless: false,
   padding: DEFAULT_PADDING,
+  maxWidth: TERMINAL_WIDTH, // TODO: use process.stdout.columns?
 };
 
 const BORDERS = {
@@ -67,18 +71,23 @@ function formatTable(
   table: NormalizedTable,
   options: NormalizedOptions,
 ): string {
-  // TODO: enforce MAX_WIDTH
-  const columnWidths = getColumnWidths(table);
+  const columnWidths = getColumnWidths(table, options);
 
   return [
     formatBorderRow('top', columnWidths, options),
     ...(table.columns
       ? [
-          formatContentRow(table.columns, columnWidths, options),
+          ...wrapRow(table.columns, columnWidths).map(row =>
+            formatContentRow(row, columnWidths, options),
+          ),
           formatBorderRow('middle', columnWidths, options),
         ]
       : []),
-    ...table.rows.map(cells => formatContentRow(cells, columnWidths, options)),
+    ...table.rows.flatMap(row =>
+      wrapRow(row, columnWidths).map(cells =>
+        formatContentRow(cells, columnWidths, options),
+      ),
+    ),
     formatBorderRow('bottom', columnWidths, options),
   ]
     .filter(Boolean)
@@ -126,6 +135,62 @@ function formatContentRow(
   return `${ansis.dim(BORDERS.single.vertical)}${spaces}${inner}${spaces}${ansis.dim(BORDERS.single.vertical)}`;
 }
 
+function wrapRow(cells: TableCell[], columnWidths: number[]): TableCell[][] {
+  const emptyCell: TableCell = { text: '', alignment: DEFAULT_ALIGNMENT };
+
+  return cells.reduce<TableCell[][]>((acc, cell, colIndex) => {
+    const wrapped: string = wrapText(cell.text, columnWidths[colIndex]);
+    const lines = wrapped.split('\n').filter(Boolean);
+
+    const rowCount = Math.max(acc.length, lines.length);
+
+    return Array.from({ length: rowCount }).map((_, rowIndex) => {
+      const prevCols =
+        acc[rowIndex] ?? Array.from({ length: colIndex }).map(() => emptyCell);
+      const currCol = { ...cell, text: lines[rowIndex] ?? '' };
+      return [...prevCols, currCol];
+    });
+  }, []);
+}
+
+function wrapText(text: string, width: number | undefined): string {
+  if (!width || stringWidth(text) <= width) {
+    return text;
+  }
+  const words = extractWords(text);
+  const longWords = words.filter(word => word.length > width);
+  const replacements = longWords.map(original => {
+    const parts = original.includes('-')
+      ? original.split('-')
+      : partitionString(original, width - 1);
+    const replacement = parts.join('-\n');
+    return { original, replacement };
+  });
+  const textWithSplitLongWords = replacements.reduce(
+    (acc, { original, replacement }) => acc.replace(original, replacement),
+    text,
+  );
+  return wrapAnsi(textWithSplitLongWords, width);
+}
+
+function extractWords(text: string): string[] {
+  return ansis
+    .strip(text)
+    .split(' ')
+    .map(word => word.trim());
+}
+
+function partitionString(text: string, maxChars: number): string[] {
+  const groups = [...text].reduce<Record<number, string[]>>(
+    (acc, char, index) => {
+      const key = Math.floor(index / maxChars);
+      return { ...acc, [key]: [...(acc[key] ?? []), char] };
+    },
+    {},
+  );
+  return Object.values(groups).map(chars => chars.join(''));
+}
+
 function alignText(
   text: string,
   alignment: TableAlignment,
@@ -147,17 +212,90 @@ function alignText(
   }
 }
 
-function getColumnWidths(table: NormalizedTable): number[] {
+function getColumnWidths(
+  table: NormalizedTable,
+  options: NormalizedOptions,
+): number[] {
+  const columnTexts = getColumnTexts(table);
+  const columnStats = aggregateColumnsStats(columnTexts);
+  return adjustColumnWidthsToMax(columnStats, options);
+}
+
+function getColumnTexts(table: NormalizedTable): string[][] {
   const columnCount = table.columns?.length ?? table.rows[0]?.length ?? 0;
   return Array.from({ length: columnCount }).map((_, index) => {
     const cells: TableCell[] = [
       table.columns?.[index],
       ...table.rows.map(row => row[index]),
     ].filter(cell => cell != null);
-    const texts = cells.map(cell => cell.text);
-    const widths = texts.map(text => stringWidth(text));
-    return Math.max(...widths);
+    return cells.map(cell => cell.text);
   });
+}
+
+function aggregateColumnsStats(columnTexts: string[][]): ColumnStats[] {
+  return columnTexts.map(texts => {
+    const widths = texts.map(text => stringWidth(text));
+    const longestWords = texts
+      .flatMap(extractWords)
+      .toSorted((a, b) => b.length - a.length);
+    return {
+      maxWidth: Math.max(...widths),
+      maxWord: longestWords[0] ?? '',
+    };
+  });
+}
+
+function adjustColumnWidthsToMax(
+  columnStats: ColumnStats[],
+  options: NormalizedOptions,
+): number[] {
+  const tableWidth = getTableWidth(columnStats, options);
+  if (tableWidth <= options.maxWidth) {
+    return columnStats.map(({ maxWidth }) => maxWidth);
+  }
+  const overflow = tableWidth - options.maxWidth;
+
+  return truncateColumns(columnStats, overflow);
+}
+
+function truncateColumns(
+  columnStats: ColumnStats[],
+  overflow: number,
+): number[] {
+  const sortedColumns = columnStats
+    .map((stats, index) => ({ ...stats, index }))
+    .toSorted(
+      (a, b) => b.maxWidth - a.maxWidth || b.maxWord.length - a.maxWord.length,
+    );
+
+  let remaining = overflow;
+  const newWidths = new Map<number, number>();
+  for (const { index, maxWidth, maxWord } of sortedColumns) {
+    const newWidth = Math.max(
+      maxWidth - remaining,
+      Math.ceil(maxWidth / 2),
+      Math.ceil(maxWord.length / 2) + 1,
+    );
+    newWidths.set(index, newWidth);
+    remaining -= maxWidth - newWidth;
+    if (remaining <= 0) {
+      break;
+    }
+  }
+  return columnStats.map(
+    ({ maxWidth }, index) => newWidths.get(index) ?? maxWidth,
+  );
+}
+
+function getTableWidth(
+  columnStats: ColumnStats[],
+  options: NormalizedOptions,
+): number {
+  const contents = columnStats.reduce((acc, { maxWidth }) => acc + maxWidth, 0);
+  const paddings =
+    options.padding * columnStats.length * 2 - (options.borderless ? 2 : 0);
+  const borders = options.borderless ? 0 : columnStats.length + 1;
+  return contents + paddings + borders;
 }
 
 function normalizeTable(table: Table): NormalizedTable {
