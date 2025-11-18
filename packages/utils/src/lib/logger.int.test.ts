@@ -229,6 +229,19 @@ ${ansis.cyan('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%')}`
       );
     });
 
+    it('should return result from worker', async () => {
+      const result = { stats: { errors: 0, warnings: 0 }, problems: [] };
+
+      await expect(
+        new Logger().group('Running plugin "ESLint"', async () => ({
+          message: 'Completed "ESLint" plugin execution',
+          result,
+        })),
+      ).resolves.toBe(result);
+
+      expect(output).toContain('Completed "ESLint" plugin execution');
+    });
+
     it('should use log group prefix in child loggers', async () => {
       performanceNowSpy.mockReturnValueOnce(0).mockReturnValueOnce(1234); // group duration: 1.23 s
 

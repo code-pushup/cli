@@ -29,7 +29,8 @@ beforeAll(async () => {
       vi.spyOn(logger, 'newline').mockImplementation(() => {}),
       // make sure worker still gets executed
       vi.spyOn(logger, 'group').mockImplementation(async (_, worker) => {
-        await worker();
+        const value = await worker();
+        return typeof value === 'object' ? value.result : undefined;
       }),
       vi.spyOn(logger, 'task').mockImplementation(async (_, worker) => {
         await worker();
