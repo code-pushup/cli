@@ -127,7 +127,7 @@ function createGitHubApiClient(): ProviderAPIClient {
 async function run(): Promise<void> {
   try {
     const options: Options = {
-      bin: 'npx nx code-pushup --nx-bail  --',
+      bin: 'npx nx code-pushup --nx-bail --',
     };
 
     const gitRefs = parseGitRefs();
