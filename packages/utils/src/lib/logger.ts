@@ -237,19 +237,25 @@ export class Logger {
    * Nested groups are not supported.
    *
    * @example
-   * await logger.group('Running plugin "ESLint"', async () => {
+   * const eslintResult = await logger.group('Running plugin "ESLint"', async () => {
    *   logger.debug('ESLint version is 9.16.0');
-   *   await logger.command('npx eslint . --format=json', () => {
+   *   const result = await logger.command('npx eslint . --format=json', () => {
    *     // ...
    *   })
    *   logger.info('Found 42 lint errors.');
-   *   return 'Completed "ESLint" plugin execution';
+   *   return {
+   *     message: 'Completed "ESLint" plugin execution',
+   *     result,
+   *   };
    * });
    *
    * @param title Display title for the group.
    * @param worker Asynchronous implementation. Returned promise determines group status and ending message. Inner logs are attached to the group.
    */
-  async group(title: string, worker: () => Promise<string>): Promise<void> {
+  async group<T = undefined>(
+    title: string,
+    worker: () => Promise<string | { message: string; result: T }>,
+  ): Promise<T> {
     if (this.#groupColor) {
       throw new Error(
         'Internal Logger error - nested groups are not supported',
@@ -277,10 +283,12 @@ export class Logger {
     const end = performance.now();
 
     if (result.status === 'fulfilled') {
+      const message =
+        typeof result.value === 'string' ? result.value : result.value.message;
       console.log(
         [
           this.#colorize(this.#groupSymbols.end, this.#groupColor),
-          this.#colorize(result.value, 'green'),
+          this.#colorize(message, 'green'),
           this.#formatDurationSuffix({ start, end }),
         ].join(' '),
       );
@@ -306,6 +314,11 @@ export class Logger {
     if (result.status === 'rejected') {
       throw result.reason;
     }
+
+    if (typeof result.value === 'object') {
+      return result.value.result;
+    }
+    return undefined as T;
   }
 
   #createGroupMarkers(): {
