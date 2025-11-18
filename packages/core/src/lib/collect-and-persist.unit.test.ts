@@ -50,7 +50,6 @@ describe('collectAndPersistReports', () => {
       ...MINIMAL_CONFIG_MOCK,
       persist: { outputDir: 'output', filename: 'report', format: ['md'] },
       cache: { read: false, write: false },
-      progress: false,
     };
     await collectAndPersistReports(config);
 
@@ -75,7 +74,6 @@ describe('collectAndPersistReports', () => {
         format: ['md'],
         skipReports: true,
       },
-      progress: false,
       cache: { read: false, write: false },
     };
     await collectAndPersistReports(verboseConfig);

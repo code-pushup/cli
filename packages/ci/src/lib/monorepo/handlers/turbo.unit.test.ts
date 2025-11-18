@@ -116,12 +116,12 @@ describe('turboHandler', () => {
             'e2e/package.json': pkgJsonContent({ name: 'e2e' }), // not in workspace patterns
             'packages/cli/package.json': pkgJsonContent({
               name: '@example/cli',
-              scripts: { 'code-pushup': 'code-pushup --no-progress' },
+              scripts: { 'code-pushup': 'code-pushup' },
               devDependencies: { '@code-pushup/cli': 'latest' },
             }),
             'packages/core/package.json': pkgJsonContent({
               name: '@example/core',
-              scripts: { 'code-pushup': 'code-pushup --no-progress' },
+              scripts: { 'code-pushup': 'code-pushup' },
               devDependencies: { '@code-pushup/cli': 'latest' },
             }),
             'packages/utils/package.json': pkgJsonContent({

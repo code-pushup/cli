@@ -215,20 +215,17 @@ describe('executePlugin', () => {
 
 describe('executePlugins', () => {
   it('should execute valid plugins', async () => {
-    const pluginResult = await executePlugins(
-      {
-        plugins: [
-          MINIMAL_PLUGIN_CONFIG_MOCK,
-          {
-            ...MINIMAL_PLUGIN_CONFIG_MOCK,
-            icon: 'nodejs',
-          },
-        ],
-        persist: { outputDir: '.code-pushup' },
-        cache: { read: false, write: false },
-      },
-      { progress: false },
-    );
+    const pluginResult = await executePlugins({
+      plugins: [
+        MINIMAL_PLUGIN_CONFIG_MOCK,
+        {
+          ...MINIMAL_PLUGIN_CONFIG_MOCK,
+          icon: 'nodejs',
+        },
+      ],
+      persist: { outputDir: '.code-pushup' },
+      cache: { read: false, write: false },
+    });
 
     expect(pluginResult[0]?.icon).toBe('javascript');
     expect(pluginResult[1]?.icon).toBe('nodejs');
@@ -239,30 +236,27 @@ describe('executePlugins', () => {
     const slug = 'simulate-invalid-audit-slug';
     const title = 'Simulate an invalid audit slug in outputs';
     await expect(() =>
-      executePlugins(
-        {
-          plugins: [
-            {
-              ...MINIMAL_PLUGIN_CONFIG_MOCK,
-              slug,
-              title,
-              runner: () => [
-                {
-                  slug: 'invalid-audit-slug-',
-                  score: 0.3,
-                  value: 16,
-                  displayValue: '16.0.0',
-                },
-              ],
-            },
-          ] satisfies PluginConfig[],
-          persist: { outputDir: '.code-pushup' },
-          cache: { read: false, write: false },
-        },
-        { progress: false },
-      ),
+      executePlugins({
+        plugins: [
+          {
+            ...MINIMAL_PLUGIN_CONFIG_MOCK,
+            slug,
+            title,
+            runner: () => [
+              {
+                slug: 'invalid-audit-slug-',
+                score: 0.3,
+                value: 16,
+                displayValue: '16.0.0',
+              },
+            ],
+          },
+        ] satisfies PluginConfig[],
+        persist: { outputDir: '.code-pushup' },
+        cache: { read: false, write: false },
+      }),
     ).rejects.toThrow(
-      `Executing 1 plugin failed.\n\nError: - Plugin ${ansis.bold(
+      `Executing 1 plugin failed.\n\n- Plugin ${ansis.bold(
         title,
       )} (${ansis.bold(slug)}) produced the following error:\n  - Audit output is invalid`,
     );
@@ -271,69 +265,63 @@ describe('executePlugins', () => {
   it('should throw for one failing plugin', async () => {
     const missingAuditSlug = 'missing-audit-slug';
     await expect(() =>
-      executePlugins(
-        {
-          plugins: [
-            {
-              ...MINIMAL_PLUGIN_CONFIG_MOCK,
-              slug: 'plg1',
-              title: 'plg1',
-              runner: () => [
-                {
-                  slug: `${missingAuditSlug}-a`,
-                  score: 0.3,
-                  value: 16,
-                  displayValue: '16.0.0',
-                },
-              ],
-            },
-          ] satisfies PluginConfig[],
-          persist: { outputDir: '.code-pushup' },
-          cache: { read: false, write: false },
-        },
-        { progress: false },
-      ),
+      executePlugins({
+        plugins: [
+          {
+            ...MINIMAL_PLUGIN_CONFIG_MOCK,
+            slug: 'plg1',
+            title: 'plg1',
+            runner: () => [
+              {
+                slug: `${missingAuditSlug}-a`,
+                score: 0.3,
+                value: 16,
+                displayValue: '16.0.0',
+              },
+            ],
+          },
+        ] satisfies PluginConfig[],
+        persist: { outputDir: '.code-pushup' },
+        cache: { read: false, write: false },
+      }),
     ).rejects.toThrow('Executing 1 plugin failed.\n\n');
   });
 
   it('should throw for multiple failing plugins', async () => {
     const missingAuditSlug = 'missing-audit-slug';
     await expect(() =>
-      executePlugins(
-        {
-          plugins: [
-            {
-              ...MINIMAL_PLUGIN_CONFIG_MOCK,
-              slug: 'plg1',
-              title: 'plg1',
-              runner: () => [
-                {
-                  slug: `${missingAuditSlug}-a`,
-                  score: 0.3,
-                  value: 16,
-                  displayValue: '16.0.0',
-                },
-              ],
-            },
-            {
-              ...MINIMAL_PLUGIN_CONFIG_MOCK,
-              slug: 'plg2',
-              title: 'plg2',
-              runner: () => [
-                {
-                  slug: `${missingAuditSlug}-b`,
-                  score: 0.3,
-                  value: 16,
-                  displayValue: '16.0.0',
-                },
-              ],
-            },
-          ] satisfies PluginConfig[],
-          persist: { outputDir: '.code-pushup' },
-          cache: { read: false, write: false },
-        },
-        { progress: false },
-      ),
+      executePlugins({
+        plugins: [
+          {
+            ...MINIMAL_PLUGIN_CONFIG_MOCK,
+            slug: 'plg1',
+            title: 'plg1',
+            runner: () => [
+              {
+                slug: `${missingAuditSlug}-a`,
+                score: 0.3,
+                value: 16,
+                displayValue: '16.0.0',
+              },
+            ],
+          },
+          {
+            ...MINIMAL_PLUGIN_CONFIG_MOCK,
+            slug: 'plg2',
+            title: 'plg2',
+            runner: () => [
+              {
+                slug: `${missingAuditSlug}-b`,
+                score: 0.3,
+                value: 16,
+                displayValue: '16.0.0',
+              },
+            ],
+          },
+        ] satisfies PluginConfig[],
+        persist: { outputDir: '.code-pushup' },
+        cache: { read: false, write: false },
+      }),
     ).rejects.toThrow('Executing 2 plugins failed.\n\n');
   });
 
@@ -341,51 +329,48 @@ describe('executePlugins', () => {
     const missingAuditSlug = 'missing-audit-slug';
 
     await expect(() =>
-      executePlugins(
-        {
-          plugins: [
-            {
-              ...MINIMAL_PLUGIN_CONFIG_MOCK,
-              slug: 'plg1',
-              title: 'plg1',
-              runner: () => [
-                {
-                  slug: `${missingAuditSlug}-a`,
-                  score: 0.3,
-                  value: 16,
-                  displayValue: '16.0.0',
-                },
-              ],
-            },
-            {
-              ...MINIMAL_PLUGIN_CONFIG_MOCK,
-              slug: 'plg2',
-              title: 'plg2',
-              runner: () => [
-                {
-                  slug: `${missingAuditSlug}-b`,
-                  score: 0.3,
-                  value: 16,
-                  displayValue: '16.0.0',
-                },
-              ],
-            },
-          ] satisfies PluginConfig[],
-          persist: { outputDir: '.code-pushup' },
-          cache: { read: false, write: false },
-        },
-        { progress: false },
-      ),
+      executePlugins({
+        plugins: [
+          {
+            ...MINIMAL_PLUGIN_CONFIG_MOCK,
+            slug: 'plg1',
+            title: 'plg1',
+            runner: () => [
+              {
+                slug: `${missingAuditSlug}-a`,
+                score: 0.3,
+                value: 16,
+                displayValue: '16.0.0',
+              },
+            ],
+          },
+          {
+            ...MINIMAL_PLUGIN_CONFIG_MOCK,
+            slug: 'plg2',
+            title: 'plg2',
+            runner: () => [
+              {
+                slug: `${missingAuditSlug}-b`,
+                score: 0.3,
+                value: 16,
+                displayValue: '16.0.0',
+              },
+            ],
+          },
+        ] satisfies PluginConfig[],
+        persist: { outputDir: '.code-pushup' },
+        cache: { read: false, write: false },
+      }),
     ).rejects.toThrow(
-      `Error: - Plugin ${ansis.bold('plg1')} (${ansis.bold(
+      `- Plugin ${ansis.bold('plg1')} (${ansis.bold(
         'plg1',
       )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${ansis.bold(
         'missing-audit-slug-a',
-      )}\nError: - Plugin ${ansis.bold('plg2')} (${ansis.bold(
+      )}\n- Plugin ${ansis.bold('plg2')} (${ansis.bold(
         'plg2',
       )}) produced the following error:\n  - Audit metadata not present in plugin config. Missing slug: ${ansis.bold(
         'missing-audit-slug-b',
-      )}`,
+      )}\n\n`,
     );
   });
 
@@ -403,32 +388,29 @@ describe('executePlugins', () => {
       MEMFS_VOLUME,
     );
 
-    const pluginResult = await executePlugins(
-      {
-        plugins: [
-          {
-            ...MINIMAL_PLUGIN_CONFIG_MOCK,
-            runner: {
-              command: 'echo',
-              args: ['16'],
-              outputFile: 'output.json',
-              outputTransform: (outputs: unknown): Promise<AuditOutputs> =>
-                Promise.resolve([
-                  {
-                    slug: (outputs as AuditOutputs)[0]!.slug,
-                    score: 0.3,
-                    value: 16,
-                    displayValue: '16.0.0',
-                  },
-                ]),
-            },
+    const pluginResult = await executePlugins({
+      plugins: [
+        {
+          ...MINIMAL_PLUGIN_CONFIG_MOCK,
+          runner: {
+            command: 'echo',
+            args: ['16'],
+            outputFile: 'output.json',
+            outputTransform: (outputs: unknown): Promise<AuditOutputs> =>
+              Promise.resolve([
+                {
+                  slug: (outputs as AuditOutputs)[0]!.slug,
+                  score: 0.3,
+                  value: 16,
+                  displayValue: '16.0.0',
+                },
+              ]),
           },
-        ],
-        persist: { outputDir: MEMFS_VOLUME },
-        cache: { read: false, write: false },
-      },
-      { progress: false },
-    );
+        },
+      ],
+      persist: { outputDir: MEMFS_VOLUME },
+      cache: { read: false, write: false },
+    });
     expect(pluginResult[0]?.audits[0]?.slug).toBe('node-version');
     expect(pluginResult[0]?.audits[0]?.displayValue).toBe('16.0.0');
   });

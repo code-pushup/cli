@@ -1,18 +1,11 @@
 import type { Options } from 'yargs';
-import { isCI } from '@code-pushup/utils';
-import type { GeneralCliOptions } from './global.model.js';
+import type { GlobalOptions } from './global.model.js';
 
 export function yargsGlobalOptionsDefinition(): Record<
-  keyof GeneralCliOptions,
+  keyof GlobalOptions,
   Options
 > {
   return {
-    progress: {
-      describe: 'Show progress bar in stdout.',
-      type: 'boolean',
-      default: !isCI(),
-      defaultDescription: 'false in CI environment, otherwise true',
-    },
     verbose: {
       describe:
         'When true creates more verbose output. This is helpful when debugging. You may also set CP_VERBOSE env variable instead.',

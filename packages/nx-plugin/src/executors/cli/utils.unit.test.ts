@@ -95,7 +95,6 @@ describe('parseAutorunExecutorOptions', () => {
     );
     expect(executorOptions).toEqual(
       expect.objectContaining({
-        progress: false,
         verbose: false,
       }),
     );

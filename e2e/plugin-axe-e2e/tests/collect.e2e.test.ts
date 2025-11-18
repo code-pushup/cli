@@ -42,7 +42,7 @@ describe('PLUGIN collect report with axe-plugin NPM package', () => {
   it('should run plugin over CLI and create report.json', async () => {
     const { code } = await executeProcess({
       command: 'npx',
-      args: ['@code-pushup/cli', 'collect', '--no-progress'],
+      args: ['@code-pushup/cli', 'collect'],
       cwd: defaultSetupDir,
     });
 

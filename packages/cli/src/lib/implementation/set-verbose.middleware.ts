@@ -1,8 +1,7 @@
-import type { GlobalOptions } from '@code-pushup/core';
 import type { CoreConfig } from '@code-pushup/models';
 import { coerceBooleanValue, logger } from '@code-pushup/utils';
 import type { FilterOptions } from './filter.model.js';
-import type { GeneralCliOptions } from './global.model';
+import type { GlobalOptions } from './global.model';
 
 /**
  *
@@ -21,7 +20,7 @@ import type { GeneralCliOptions } from './global.model';
  * @param originalProcessArgs
  */
 export function setVerboseMiddleware<
-  T extends GeneralCliOptions & CoreConfig & FilterOptions & GlobalOptions,
+  T extends GlobalOptions & CoreConfig & FilterOptions,
 >(originalProcessArgs: T): T {
   const cliVerbose = coerceBooleanValue(originalProcessArgs.verbose);
   if (cliVerbose != null) {

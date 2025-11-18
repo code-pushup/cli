@@ -10,11 +10,8 @@ import {
   type RunnerArgs,
 } from '@code-pushup/models';
 import {
-  type ProgressBar,
   asyncSequential,
-  getProgressBar,
   groupByStatus,
-  logMultipleResults,
   pluralizeToken,
   scoreAuditsWithTarget,
   settlePromise,
@@ -110,84 +107,38 @@ export async function executePlugin(
   };
 }
 
-const wrapProgress = async (
-  cfg: {
-    plugin: PluginConfig;
-    persist: PersistConfig;
-    cache: CacheConfigObject;
-  },
-  steps: number,
-  progressBar: ProgressBar | null,
-) => {
-  const { plugin: pluginCfg, ...rest } = cfg;
-  progressBar?.updateTitle(`Executing ${ansis.bold(pluginCfg.title)}`);
-  try {
-    const pluginReport = await executePlugin(pluginCfg, rest);
-    progressBar?.incrementInSteps(steps);
-    return pluginReport;
-  } catch (error) {
-    progressBar?.incrementInSteps(steps);
-    throw new Error(
-      `- Plugin ${ansis.bold(pluginCfg.title)} (${ansis.bold(
-        pluginCfg.slug,
-      )}) produced the following error:\n  - ${stringifyError(error)}`,
-    );
-  }
-};
-
 /**
  * Execute multiple plugins and aggregates their output.
- * @public
- * @param cfg
- * @param {Object} [options] execution options
- * @param {boolean} options.progress show progress bar
- * @returns {Promise<PluginReport[]>} plugin report
+ *
+ * @param config
+ * @returns plugin reports
  *
  * @example
- * // plugin execution
- * const plugins = [validate(pluginConfigSchema, {...})];
- *
- * @example
- * // error handling
  * try {
- *   await executePlugins(plugins);
+ *   await executePlugins(config);
  * } catch (error) {
  *   console.error(error); // Plugin output is invalid
  * }
- *
  */
-export async function executePlugins(
-  cfg: {
-    plugins: PluginConfig[];
-    persist: PersistConfig;
-    cache: CacheConfigObject;
-  },
-  options?: { progress?: boolean },
-): Promise<PluginReport[]> {
-  const { plugins, ...cacheCfg } = cfg;
-  const { progress = false } = options ?? {};
-
-  const progressBar = progress ? getProgressBar('Run plugins') : null;
-
-  const pluginsResult = plugins.map(pluginCfg =>
-    wrapProgress(
-      { plugin: pluginCfg, ...cacheCfg },
-      plugins.length,
-      progressBar,
+export async function executePlugins(config: {
+  plugins: PluginConfig[];
+  persist: PersistConfig;
+  cache: CacheConfigObject;
+}): Promise<PluginReport[]> {
+  const results = await asyncSequential(config.plugins, pluginConfig =>
+    settlePromise(
+      executePlugin(pluginConfig, config).catch((error: unknown) => {
+        throw new Error(
+          `- Plugin ${ansis.bold(pluginConfig.title)} (${ansis.bold(pluginConfig.slug)}) produced the following error:\n  - ${stringifyError(error)}`,
+        );
+      }),
     ),
   );
-
-  const errorsTransform = ({ reason }: PromiseRejectedResult) => String(reason);
-  const results = await asyncSequential(pluginsResult, settlePromise);
-
-  progressBar?.endProgress('Done running plugins');
-
-  logMultipleResults(results, 'Plugins', undefined, errorsTransform);
 
   const { fulfilled, rejected } = groupByStatus(results);
   if (rejected.length > 0) {
     const errorMessages = rejected
-      .map(({ reason }) => String(reason))
+      .map(({ reason }) => stringifyError(reason))
       .join('\n');
     throw new Error(
       `Executing ${pluralizeToken(

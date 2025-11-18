@@ -86,22 +86,22 @@ describe('listMonorepoProjects', () => {
         }),
         'backend/api/package.json': pkgJsonContent({
           name: 'api',
-          scripts: { 'code-pushup': 'code-pushup --no-progress' },
+          scripts: { 'code-pushup': 'code-pushup' },
         }),
         'backend/auth/package.json': pkgJsonContent({
           name: 'auth',
-          scripts: { 'code-pushup': 'code-pushup --no-progress' },
+          scripts: { 'code-pushup': 'code-pushup' },
         }),
         'e2e/package.json': pkgJsonContent({
           name: 'e2e',
         }),
         'frontend/cms/package.json': pkgJsonContent({
           name: 'cms',
-          scripts: { 'code-pushup': 'code-pushup --no-progress' },
+          scripts: { 'code-pushup': 'code-pushup' },
         }),
         'frontend/web/package.json': pkgJsonContent({
           name: 'web',
-          scripts: { 'code-pushup': 'code-pushup --no-progress' },
+          scripts: { 'code-pushup': 'code-pushup' },
         }),
       },
       MEMFS_VOLUME,

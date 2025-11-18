@@ -36,7 +36,7 @@ describe('PLUGIN collect report with lighthouse-plugin NPM package', () => {
     const { code, stdout } = await executeProcess({
       command: 'npx',
       // verbose exposes audits with perfect scores that are hidden in the default stdout
-      args: ['@code-pushup/cli', 'collect', '--no-progress', '--verbose'],
+      args: ['@code-pushup/cli', 'collect', '--verbose'],
       cwd: defaultSetupDir,
     });
 

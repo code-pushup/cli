@@ -45,7 +45,6 @@ describe('CLI print-config', () => {
         args: [
           '@code-pushup/cli',
           'print-config',
-          '--no-progress',
           `--config=${configFilePath(ext)}`,
           '--tsconfig=tsconfig.base.json',
           '--persist.outputDir=output-dir',

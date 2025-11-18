@@ -16,7 +16,6 @@ import {
   logPersistedResults,
   persistReport,
 } from './implementation/persist.js';
-import type { GlobalOptions } from './types.js';
 
 export type CollectAndPersistReportsOptions = Pick<
   CoreConfig,
@@ -25,7 +24,7 @@ export type CollectAndPersistReportsOptions = Pick<
   persist: Required<Omit<PersistConfig, 'skipReports'>> &
     Pick<PersistConfig, 'skipReports'>;
   cache: CacheConfigObject;
-} & Partial<GlobalOptions>;
+};
 
 export async function collectAndPersistReports(
   options: CollectAndPersistReportsOptions,

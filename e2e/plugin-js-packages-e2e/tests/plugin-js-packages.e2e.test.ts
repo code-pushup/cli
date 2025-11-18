@@ -47,7 +47,6 @@ describe('plugin-js-packages', () => {
         '@code-pushup/cli',
         'collect',
         '--verbose',
-        '--no-progress',
         `--config=${path.join(
           TEST_OUTPUT_DIR,
           'npm-repo',

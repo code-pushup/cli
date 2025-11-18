@@ -15,12 +15,9 @@ beforeEach(async () => {
         error.message.includes('No Chrome installations found.')
       ) {
         const chromium = await import('chromium');
-        // console.info may be overridden by multi-progress-bars or other libraries
-        if (typeof console.info === 'function') {
-          console.info(
-            `${error.message} Using chromium from node_modules instead: ${chromium.path}`,
-          );
-        }
+        console.info(
+          `${error.message} Using chromium from node_modules instead: ${chromium.path}`,
+        );
         vi.stubEnv('CHROME_PATH', chromium.path);
       } else {
         throw error;

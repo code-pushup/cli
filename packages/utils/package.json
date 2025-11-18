@@ -32,7 +32,6 @@
     "build-md": "^0.4.2",
     "bundle-require": "^5.1.0",
     "esbuild": "^0.25.2",
-    "multi-progress-bars": "^5.0.3",
     "ora": "^9.0.0",
     "semver": "^7.6.0",
     "simple-git": "^3.20.0",

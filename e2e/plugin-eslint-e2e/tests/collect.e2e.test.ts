@@ -64,7 +64,7 @@ describe('PLUGIN collect report with eslint-plugin NPM package', () => {
   it('should run ESLint plugin for flat config and create report.json', async () => {
     const { code } = await executeProcess({
       command: 'npx',
-      args: ['@code-pushup/cli', 'collect', '--no-progress'],
+      args: ['@code-pushup/cli', 'collect'],
       cwd: flatConfigDir,
     });
 
@@ -81,7 +81,7 @@ describe('PLUGIN collect report with eslint-plugin NPM package', () => {
   it('should run ESLint plugin for legacy config and create report.json', async () => {
     const { code } = await executeProcess({
       command: 'npx',
-      args: ['@code-pushup/cli', 'collect', '--no-progress'],
+      args: ['@code-pushup/cli', 'collect'],
       cwd: legacyConfigDir,
       env: { ...process.env, ESLINT_USE_FLAT_CONFIG: 'false' },
     });
@@ -99,7 +99,7 @@ describe('PLUGIN collect report with eslint-plugin NPM package', () => {
   it('should run ESLint plugin with artifacts options and create eslint-report.json and report.json', async () => {
     const { code } = await executeProcess({
       command: 'npx',
-      args: ['@code-pushup/cli', 'collect', '--no-progress'],
+      args: ['@code-pushup/cli', 'collect'],
       cwd: artifactsConfigDir,
     });
 

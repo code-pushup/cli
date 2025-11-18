@@ -51,12 +51,7 @@ describe('CLI collect', () => {
   it('should create report.md', async () => {
     const { code } = await executeProcess({
       command: 'npx',
-      args: [
-        '@code-pushup/cli',
-        '--no-progress',
-        'collect',
-        '--persist.format=md',
-      ],
+      args: ['@code-pushup/cli', 'collect', '--persist.format=md'],
       cwd: dummyDir,
     });
 
@@ -72,7 +67,7 @@ describe('CLI collect', () => {
   it('should write runner outputs if --cache is given', async () => {
     const { code } = await executeProcess({
       command: 'npx',
-      args: ['@code-pushup/cli', '--no-progress', 'collect', '--cache'],
+      args: ['@code-pushup/cli', 'collect', '--cache'],
       cwd: dummyDir,
     });
 
@@ -94,12 +89,7 @@ describe('CLI collect', () => {
   it('should not create reports if --persist.skipReports is given', async () => {
     const { code } = await executeProcess({
       command: 'npx',
-      args: [
-        '@code-pushup/cli',
-        '--no-progress',
-        'collect',
-        '--persist.skipReports',
-      ],
+      args: ['@code-pushup/cli', 'collect', '--persist.skipReports'],
       cwd: dummyDir,
     });
 
@@ -116,7 +106,7 @@ describe('CLI collect', () => {
   it('should print report summary to stdout', async () => {
     const { code, stdout } = await executeProcess({
       command: 'npx',
-      args: ['@code-pushup/cli', '--no-progress', 'collect'],
+      args: ['@code-pushup/cli', 'collect'],
       cwd: dummyDir,
     });
 

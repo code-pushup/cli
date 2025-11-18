@@ -31,5 +31,4 @@ export {
 } from './lib/implementation/read-rc-file.js';
 export { AuditOutputsMissingAuditError } from './lib/implementation/runner.js';
 export { mergeDiffs } from './lib/merge-diffs.js';
-export type { GlobalOptions } from './lib/types.js';
 export { upload, type UploadOptions } from './lib/upload.js';
