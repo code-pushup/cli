@@ -8,6 +8,7 @@ import {
   type RunnerConfig,
   type RunnerFunction,
   auditOutputsSchema,
+  validate,
 } from '@code-pushup/models';
 import {
   calcDuration,
@@ -87,11 +88,7 @@ export async function executePluginRunner(
 
   const duration = calcDuration(start);
 
-  const result = auditOutputsSchema.safeParse(unvalidatedAuditOutputs);
-  if (!result.success) {
-    throw new Error(`Audit output is invalid: ${result.error.message}`);
-  }
-  const auditOutputs = result.data;
+  const auditOutputs = validate(auditOutputsSchema, unvalidatedAuditOutputs);
   auditOutputsCorrelateWithPluginOutput(auditOutputs, pluginConfigAudits);
 
   return {
