@@ -1,4 +1,4 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import { vol } from 'memfs';
 import { describe, expect, it, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
@@ -144,7 +144,7 @@ describe('teardownTestFolder', () => {
       '/tmp/unit': null,
     });
     expect(warnSpy).toHaveBeenCalledWith(
-      `⚠️ You are trying to delete a file instead of a directory - ${bold('/tmp/unit/package.json')}.`,
+      `⚠️ You are trying to delete a file instead of a directory - ${ansis.bold('/tmp/unit/package.json')}.`,
     );
   });
 });

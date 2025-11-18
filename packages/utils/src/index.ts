@@ -16,7 +16,6 @@ export {
   coerceBooleanValue,
   isCI,
   isEnvVarEnabled,
-  isVerbose,
   runnerArgsFromEnv,
   runnerArgsToEnv,
 } from './lib/env.js';
