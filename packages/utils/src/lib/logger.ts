@@ -11,8 +11,6 @@ import { settlePromise } from './promises.js';
 type GroupColor = Extract<AnsiColors, 'cyan' | 'magenta'>;
 type CiPlatform = 'GitHub Actions' | 'GitLab CI/CD';
 
-const GROUP_COLOR_ENV_VAR_NAME = 'CP_LOGGER_GROUP_COLOR';
-
 /**
  * Rich logging implementation for Code PushUp CLI, plugins, etc.
  *
@@ -26,11 +24,7 @@ export class Logger {
     : isEnvVarEnabled('GITLAB_CI')
       ? 'GitLab CI/CD'
       : undefined;
-  #groupColor: GroupColor | undefined =
-    process.env[GROUP_COLOR_ENV_VAR_NAME] === 'cyan' ||
-    process.env[GROUP_COLOR_ENV_VAR_NAME] === 'magenta'
-      ? process.env[GROUP_COLOR_ENV_VAR_NAME]
-      : undefined;
+  #groupColor: GroupColor | undefined;
 
   #groupsCount = 0;
   #activeSpinner: Ora | undefined;
@@ -51,7 +45,7 @@ export class Logger {
           text,
           symbol: this.#colorize(this.#groupSymbols.end, this.#groupColor),
         });
-        this.#setGroupColor(undefined);
+        this.#groupColor = undefined;
       } else {
         this.#activeSpinner.fail(text);
       }
@@ -271,7 +265,7 @@ export class Logger {
       this.newline();
     }
 
-    this.#setGroupColor(this.#groupsCount % 2 === 0 ? 'cyan' : 'magenta');
+    this.#groupColor = this.#groupsCount % 2 === 0 ? 'cyan' : 'magenta';
     this.#groupsCount++;
 
     const groupMarkers = this.#createGroupMarkers();
@@ -308,7 +302,7 @@ export class Logger {
     if (endMarker) {
       console.log(endMarker);
     }
-    this.#setGroupColor(undefined);
+    this.#groupColor = undefined;
     this.newline();
 
     if (result.status === 'rejected') {
@@ -364,15 +358,6 @@ export class Logger {
       ? `${this.#groupSymbols.start} ${title}`
       : title;
     return ansis.bold(this.#colorize(text, this.#groupColor));
-  }
-
-  #setGroupColor(groupColor: GroupColor | undefined) {
-    this.#groupColor = groupColor;
-    if (groupColor) {
-      process.env[GROUP_COLOR_ENV_VAR_NAME] = groupColor;
-    } else {
-      delete process.env[GROUP_COLOR_ENV_VAR_NAME];
-    }
   }
 
   async #spinner<T>(

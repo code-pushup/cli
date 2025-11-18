@@ -242,22 +242,6 @@ ${ansis.cyan('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%')}`
       expect(output).toContain('Completed "ESLint" plugin execution');
     });
 
-    it('should use log group prefix in child loggers', async () => {
-      performanceNowSpy.mockReturnValueOnce(0).mockReturnValueOnce(1234); // group duration: 1.23 s
-
-      await new Logger().group('Running plugin "ESLint"', async () => {
-        new Logger().info(`${ansis.blue('$')} npx eslint . --format=json`);
-        return 'ESLint reported 4 errors and 11 warnings';
-      });
-
-      expect(output).toBe(`
-${ansis.bold.cyan('❯ Running plugin "ESLint"')}
-${ansis.cyan('│')} ${ansis.blue('$')} npx eslint . --format=json
-${ansis.cyan('└')} ${ansis.green('ESLint reported 4 errors and 11 warnings')} ${ansis.gray('(1.23 s)')}
-
-`);
-    });
-
     it('should use workflow commands to group logs in GitHub Actions environment', async () => {
       vi.stubEnv('CI', 'true');
       vi.stubEnv('GITHUB_ACTIONS', 'true');
@@ -904,20 +888,6 @@ ${ansis.red.bold('Cancelled by SIGINT')}
       await expect(
         logger.group('Outer group', async () => {
           await logger.group('Inner group', async () => 'Inner group complete');
-          return 'Outer group complete';
-        }),
-      ).rejects.toThrow(
-        'Internal Logger error - nested groups are not supported',
-      );
-    });
-
-    it('should throw if nesting groups across logger instances', async () => {
-      await expect(
-        new Logger().group('Outer group', async () => {
-          await new Logger().group(
-            'Inner group',
-            async () => 'Inner group complete',
-          );
           return 'Outer group complete';
         }),
       ).rejects.toThrow(
