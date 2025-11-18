@@ -29,7 +29,6 @@ describe('createVitestConfig', () => {
           ],
           globalSetup: ['../../global-setup.ts'],
           setupFiles: expect.arrayContaining([
-            '../../testing/test-setup/src/lib/console.mock.ts',
             '../../testing/test-setup/src/lib/reset.mocks.ts',
             '../../testing/test-setup/src/lib/fs.mock.ts',
           ]),
@@ -47,9 +46,6 @@ describe('createVitestConfig', () => {
       const config = createVitestConfig('test-package', 'unit');
 
       const setupFiles = config.test!.setupFiles;
-      expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/console.mock.ts',
-      );
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/reset.mocks.ts',
       );
@@ -122,9 +118,6 @@ describe('createVitestConfig', () => {
 
       const setupFiles = config.test!.setupFiles;
       expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/console.mock.ts',
-      );
-      expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/logger.mock.ts',
       );
       expect(setupFiles).not.toContain(
@@ -172,9 +165,9 @@ describe('createVitestConfig', () => {
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/reset.mocks.ts',
       );
-      // Should NOT include console, fs, git, etc.
+      // Should NOT include fs, git, etc.
       expect(setupFiles).not.toContain(
-        '../../testing/test-setup/src/lib/console.mock.ts',
+        '../../testing/test-setup/src/lib/git.mock.ts',
       );
       expect(setupFiles).not.toContain(
         '../../testing/test-setup/src/lib/fs.mock.ts',
