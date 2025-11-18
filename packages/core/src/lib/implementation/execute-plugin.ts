@@ -11,11 +11,8 @@ import {
 } from '@code-pushup/models';
 import {
   asyncSequential,
-  groupByStatus,
-  pluralizeToken,
+  logger,
   scoreAuditsWithTarget,
-  settlePromise,
-  stringifyError,
 } from '@code-pushup/utils';
 import {
   executePluginRunner,
@@ -120,33 +117,18 @@ export async function executePlugin(
  *   console.error(error); // Plugin output is invalid
  * }
  */
-export async function executePlugins(config: {
+export function executePlugins(config: {
   plugins: PluginConfig[];
   persist: PersistConfig;
   cache: CacheConfigObject;
 }): Promise<PluginReport[]> {
-  const results = await asyncSequential(config.plugins, pluginConfig =>
-    settlePromise(
-      executePlugin(pluginConfig, config).catch((error: unknown) => {
-        throw new Error(
-          `- Plugin ${ansis.bold(pluginConfig.title)} (${ansis.bold(pluginConfig.slug)}) produced the following error:\n  - ${stringifyError(error)}`,
-        );
-      }),
-    ),
-  );
-
-  const { fulfilled, rejected } = groupByStatus(results);
-  if (rejected.length > 0) {
-    const errorMessages = rejected
-      .map(({ reason }) => stringifyError(reason))
-      .join('\n');
-    throw new Error(
-      `Executing ${pluralizeToken(
-        'plugin',
-        rejected.length,
-      )} failed.\n\n${errorMessages}\n\n`,
-    );
-  }
-
-  return fulfilled.map(result => result.value);
+  return asyncSequential(config.plugins, async (pluginConfig, index) => {
+    const suffix = ansis.gray(`[${index + 1}/${config.plugins.length}]`);
+    const title = `Running plugin "${pluginConfig.title}" ${suffix}`;
+    const message = `Completed "${pluginConfig.title}" plugin execution`;
+    return logger.group(title, async () => {
+      const result = await executePlugin(pluginConfig, config);
+      return { message, result };
+    });
+  });
 }
