@@ -104,7 +104,6 @@ export {
   normalizeUrlInput,
   type PluginUrlContext,
 } from './lib/plugin-url-config.js';
-export { getProgressBar, type ProgressBar } from './lib/progress.js';
 export {
   asyncSequential,
   groupByStatus,

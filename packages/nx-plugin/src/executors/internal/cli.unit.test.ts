@@ -44,15 +44,15 @@ describe('objectToCliArgs', () => {
   });
 
   it('should handle boolean arguments', () => {
-    const params = { progress: true };
+    const params = { verbose: true };
     const result = objectToCliArgs(params);
-    expect(result).toEqual(['--progress']);
+    expect(result).toEqual(['--verbose']);
   });
 
   it('should handle negated boolean arguments', () => {
-    const params = { progress: false };
+    const params = { verbose: false };
     const result = objectToCliArgs(params);
-    expect(result).toEqual(['--no-progress']);
+    expect(result).toEqual(['--no-verbose']);
   });
 
   it('should handle array of string arguments', () => {
@@ -68,12 +68,12 @@ describe('objectToCliArgs', () => {
   });
 
   it('should handle nested objects', () => {
-    const params = { persist: { format: ['json', 'md'], verbose: false } };
+    const params = { persist: { format: ['json', 'md'], skipReports: false } };
     const result = objectToCliArgs(params);
     expect(result).toEqual([
       '--persist.format="json"',
       '--persist.format="md"',
-      '--no-persist.verbose',
+      '--no-persist.skipReports',
     ]);
   });
 

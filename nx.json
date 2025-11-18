@@ -150,7 +150,6 @@
       "options": {
         "command": "node packages/cli/src/index.ts",
         "args": [
-          "--no-progress",
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.read",
@@ -172,7 +171,6 @@
       "options": {
         "command": "node packages/cli/src/index.ts collect",
         "args": [
-          "--no-progress",
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.write",
@@ -194,7 +192,6 @@
       "options": {
         "command": "node packages/cli/src/index.ts collect",
         "args": [
-          "--no-progress",
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.write",
@@ -220,7 +217,6 @@
       "options": {
         "command": "node packages/cli/src/index.ts collect",
         "args": [
-          "--no-progress",
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--onlyPlugins=js-packages",
@@ -240,7 +236,6 @@
       "options": {
         "command": "node packages/cli/src/index.ts collect",
         "args": [
-          "--no-progress",
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.write",
@@ -266,7 +261,6 @@
       "options": {
         "command": "node packages/cli/src/index.ts collect",
         "args": [
-          "--no-progress",
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.write",
@@ -292,7 +286,6 @@
       "options": {
         "command": "node packages/cli/src/index.ts collect",
         "args": [
-          "--no-progress",
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.write",
@@ -314,7 +307,6 @@
       "options": {
         "command": "node packages/cli/src/index.ts collect",
         "args": [
-          "--no-progress",
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.write",

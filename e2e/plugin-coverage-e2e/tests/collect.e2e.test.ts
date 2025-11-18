@@ -43,7 +43,7 @@ describe('PLUGIN collect report with coverage-plugin NPM package', () => {
   it('should run Code coverage plugin which runs tests and creates report.json', async () => {
     const { code } = await executeProcess({
       command: 'npx',
-      args: ['code-pushup', 'collect', '--no-progress'],
+      args: ['code-pushup', 'collect'],
       cwd: basicDir,
     });
 
@@ -60,7 +60,7 @@ describe('PLUGIN collect report with coverage-plugin NPM package', () => {
   it('should run Code coverage plugin which parses existing lcov report and creates report.json', async () => {
     const { code } = await executeProcess({
       command: 'npx',
-      args: ['@code-pushup/cli', 'collect', '--no-progress'],
+      args: ['@code-pushup/cli', 'collect'],
       cwd: existingDir,
     });
 

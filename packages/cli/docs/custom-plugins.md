@@ -365,7 +365,7 @@ function lhrOutputTransform(audits: string[]): OutputTransform {
 }
 ```
 
-Now we can execute the CLI with `npx code-pushup collect --no-progress` and see a similar output as the following:
+Now we can execute the CLI with `npx code-pushup collect` and see a similar output as the following:
 
 <details>
 <summary> <b>stdout of CLI for the above code</b> (collapsed for brevity) </summary>
@@ -682,7 +682,4 @@ Following options are helpful in debugging:
 
 - use [`--config`](../README.md#global-options) to point to a different config file
 - use [`--verbose`](../README.md#global-options) to get more information printed in the terminal
-- use [`--no-progress`](../README.md#global-options) to get better readability of logs.  
-  The progressbar would otherwise interfere with your logs and makes them harder to read.
-- use [`--format=md`](../README.md#common-command-options) to see all information provided by plugin outputs
 - use [`--onlyPlugin`](../README.md#common-command-options) to restrict the execution of plugins to only the listed ones

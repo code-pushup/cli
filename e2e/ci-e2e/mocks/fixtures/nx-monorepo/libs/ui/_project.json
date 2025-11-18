@@ -3,7 +3,7 @@
   "projectType": "library",
   "targets": {
     "code-pushup": {
-      "command": "npx @code-pushup/cli --no-progress --config=libs/ui/code-pushup.config.js"
+      "command": "npx @code-pushup/cli --config=libs/ui/code-pushup.config.js"
     }
   }
 }

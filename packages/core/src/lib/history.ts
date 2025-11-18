@@ -10,7 +10,6 @@ import {
   safeCheckout,
 } from '@code-pushup/utils';
 import { collectAndPersistReports } from './collect-and-persist.js';
-import type { GlobalOptions } from './types.js';
 import { upload } from './upload.js';
 
 export type HistoryOnlyOptions = {
@@ -22,8 +21,7 @@ export type HistoryOptions = Pick<CoreConfig, 'plugins' | 'categories'> & {
   persist: Required<PersistConfig>;
   cache: CacheConfigObject;
   upload?: Required<UploadConfig>;
-} & HistoryOnlyOptions &
-  Partial<GlobalOptions>;
+} & HistoryOnlyOptions;
 
 export async function history(
   config: HistoryOptions,
