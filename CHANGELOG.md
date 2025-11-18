@@ -1,3 +1,22 @@
+## 0.88.0 (2025-11-18)
+
+### 🚀 Features
+
+- **cli:** replace @poppinss/cliui sticker for upload hints ([263aea5f](https://github.com/code-pushup/cli/commit/263aea5f))
+- **utils:** implement and test ascii table formatting ([7a981817](https://github.com/code-pushup/cli/commit/7a981817))
+- **utils:** wrap columns in ascii table ([76730518](https://github.com/code-pushup/cli/commit/76730518))
+- **utils:** replace @isaacs/cliui for printing audits to stdout ([00293a9e](https://github.com/code-pushup/cli/commit/00293a9e))
+- **utils:** replace @poppinss/cliui table for printing categories ([522fd663](https://github.com/code-pushup/cli/commit/522fd663))
+- **utils:** remove @poppinss/cliui dependency ([47f934a2](https://github.com/code-pushup/cli/commit/47f934a2))
+
+### 🩹 Fixes
+
+- **utils:** align table columns with unicode characters ([7d4eb71c](https://github.com/code-pushup/cli/commit/7d4eb71c))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.87.2 (2025-11-14)
 
 ### 🩹 Fixes
