@@ -16,3 +16,4 @@ runs:
       env:
         TSX_TSCONFIG_PATH: .github/actions/code-pushup/tsconfig.json
         GH_TOKEN: ${{ inputs.token }}
+        CP_VERBOSE: true
