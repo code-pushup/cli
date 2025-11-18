@@ -16,13 +16,13 @@ export function groupByStatus<T>(results: PromiseSettledResult<T>[]): {
 
 export async function asyncSequential<TInput, TOutput>(
   items: TInput[],
-  work: (item: TInput) => Promise<TOutput>,
+  work: (item: TInput, index: number) => Promise<TOutput>,
 ): Promise<TOutput[]> {
   // for-loop used instead of reduce for performance
   const results: TOutput[] = [];
   // eslint-disable-next-line functional/no-loop-statements
-  for (const item of items) {
-    const result = await work(item);
+  for (const [index, item] of items.entries()) {
+    const result = await work(item, index);
     // eslint-disable-next-line functional/immutable-data
     results.push(result);
   }
