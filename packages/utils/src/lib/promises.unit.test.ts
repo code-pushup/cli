@@ -49,6 +49,17 @@ describe('asyncSequential', () => {
 
     expect(sequentialResult).not.toEqual(parallelResult);
   });
+
+  it('should provide array item and index to callback', async () => {
+    const callback = vi.fn();
+    await expect(
+      asyncSequential(['a', 'b', 'c'], callback),
+    ).resolves.toBeArrayOfSize(3);
+    expect(callback).toHaveBeenCalledTimes(3);
+    expect(callback).toHaveBeenNthCalledWith(1, 'a', 0);
+    expect(callback).toHaveBeenNthCalledWith(2, 'b', 1);
+    expect(callback).toHaveBeenNthCalledWith(3, 'c', 2);
+  });
 });
 
 describe('settlePromise', () => {
