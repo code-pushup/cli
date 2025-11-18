@@ -291,7 +291,7 @@ describe('filterMiddleware', () => {
   );
 
   it('should trigger verbose logging when skipPlugins or onlyPlugins removes categories', () => {
-    vi.stubEnv('CP_VERBOSE', 'true');
+    logger.setVerbose(true);
 
     filterMiddleware({
       onlyPlugins: ['p1'],

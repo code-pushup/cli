@@ -1,4 +1,4 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import debug from 'debug';
 import log from 'lighthouse-logger';
 import type Details from 'lighthouse/types/lhr/audit-details';
@@ -308,7 +308,7 @@ describe('toAuditOutputs', () => {
         { verbose: true },
       ),
     ).toThrow(
-      `Audit ${bold('cumulative-layout-shift')} failed parsing details:`,
+      `Audit ${ansis.bold('cumulative-layout-shift')} failed parsing details:`,
     );
   });
 });

@@ -11,10 +11,6 @@ export function isCI() {
   return isEnvVarEnabled('CI');
 }
 
-export function isVerbose() {
-  return isEnvVarEnabled('CP_VERBOSE');
-}
-
 export function isEnvVarEnabled(name: string): boolean {
   const value = coerceBooleanValue(process.env[name]);
 
