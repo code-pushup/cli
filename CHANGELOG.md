@@ -1,3 +1,20 @@
+## 0.89.0 (2025-11-19)
+
+### 🚀 Features
+
+- **cli:** remove multi-progress-bars and progress argument ([68c04cbe](https://github.com/code-pushup/cli/commit/68c04cbe))
+- **core:** log group for each plugin execution ([72a4a06b](https://github.com/code-pushup/cli/commit/72a4a06b))
+- **utils:** pass index parameter to asyncSequential callback ([ef3d3b00](https://github.com/code-pushup/cli/commit/ef3d3b00))
+- **utils:** return custom data from logger.group method ([aaeed361](https://github.com/code-pushup/cli/commit/aaeed361))
+
+### 🩹 Fixes
+
+- **utils:** prevent duplicate log group prefixes in sub-processes ([6c74e7f8](https://github.com/code-pushup/cli/commit/6c74e7f8))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.88.0 (2025-11-18)
 
 ### 🚀 Features
