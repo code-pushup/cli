@@ -1,7 +1,7 @@
 {
   "name": "test-setup-config",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "testing/test-setup/src",
+  "sourceRoot": "testing/test-setup-config/src",
   "projectType": "library",
   "targets": {
     "build": {},
