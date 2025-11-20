@@ -1,6 +1,6 @@
-import AxeBuilder from '@axe-core/playwright';
+import { AxeBuilder } from '@axe-core/playwright';
 import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 import { type Browser, chromium } from 'playwright-core';
 import type { AuditOutputs } from '@code-pushup/models';
 import {
@@ -11,8 +11,10 @@ import {
 } from '@code-pushup/utils';
 import { toAuditOutputs } from './transform.js';
 
+/* eslint-disable functional/no-let */
 let browser: Browser | undefined;
 let browserChecked = false;
+/* eslint-enable functional/no-let */
 
 export async function runAxeForUrl(
   url: string,
@@ -89,7 +91,7 @@ async function ensureBrowserInstalled(): Promise<void> {
   const require = createRequire(import.meta.url);
   const pkgPath = require.resolve('playwright-core/package.json');
   const pkg = require(pkgPath);
-  const cliPath = join(dirname(pkgPath), pkg.bin['playwright-core']);
+  const cliPath = path.join(path.dirname(pkgPath), pkg.bin['playwright-core']);
 
   await executeProcess({
     command: 'node',
