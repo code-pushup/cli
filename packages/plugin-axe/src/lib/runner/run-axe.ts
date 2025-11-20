@@ -1,4 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
 import { type Browser, chromium } from 'playwright-core';
 import type { AuditOutputs } from '@code-pushup/models';
 import {
@@ -71,6 +73,12 @@ export async function closeBrowser(): Promise<void> {
   }
 }
 
+/**
+ * Ensures Chromium browser binary is installed before running accessibility audits.
+ *
+ * Uses Node's module resolution and npm's bin specification to locate playwright-core CLI,
+ * working reliably with all package managers (npm, pnpm, yarn).
+ */
 async function ensureBrowserInstalled(): Promise<void> {
   if (browserChecked) {
     return;
@@ -78,9 +86,14 @@ async function ensureBrowserInstalled(): Promise<void> {
 
   logger.debug('Checking Chromium browser installation...');
 
+  const require = createRequire(import.meta.url);
+  const pkgPath = require.resolve('playwright-core/package.json');
+  const pkg = require(pkgPath);
+  const cliPath = join(dirname(pkgPath), pkg.bin['playwright-core']);
+
   await executeProcess({
-    command: 'npx',
-    args: ['playwright-core', 'install', 'chromium'],
+    command: 'node',
+    args: [cliPath, 'install', 'chromium'],
   });
 
   browserChecked = true;
