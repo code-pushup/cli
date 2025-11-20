@@ -1,3 +1,13 @@
+## 0.89.1 (2025-11-20)
+
+### 🩹 Fixes
+
+- **plugin-axe:** resolve pnpm install issue ([#1150](https://github.com/code-pushup/cli/pull/1150))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.89.0 (2025-11-19)
 
 ### 🚀 Features
