@@ -1,5 +1,5 @@
 import ansis from 'ansis';
-import { formatAsciiSticker } from './sticker';
+import { formatAsciiSticker } from './sticker.js';
 
 describe('formatAsciiSticker', () => {
   it('should frame lines with border and padding', () => {

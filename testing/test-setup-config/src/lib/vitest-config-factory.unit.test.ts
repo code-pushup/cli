@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { E2ETestOptions, TestKind } from './vitest-config-factory.js';
-import { createVitestConfig } from './vitest-config-factory.js';
+import {
+  type E2ETestOptions,
+  type TestKind,
+  createVitestConfig,
+} from './vitest-config-factory.js';
 
 vi.mock('./vitest-tsconfig-path-aliases.js', () => ({
   tsconfigPathAliases: vi

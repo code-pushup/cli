@@ -32,9 +32,9 @@ describe('getSetupFiles', () => {
       const intFiles = getSetupFiles('int');
       const e2eFiles = getSetupFiles('e2e');
 
-      expect(unitFiles.length).not.toBe(intFiles.length);
-      expect(intFiles.length).not.toBe(e2eFiles.length);
-      expect(unitFiles.length).not.toBe(e2eFiles.length);
+      expect(unitFiles).not.toHaveLength(intFiles.length);
+      expect(intFiles).not.toHaveLength(e2eFiles.length);
+      expect(unitFiles).not.toHaveLength(e2eFiles.length);
     });
 
     it('should show hierarchy: unit has most, e2e has least', () => {

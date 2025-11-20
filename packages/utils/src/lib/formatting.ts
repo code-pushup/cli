@@ -131,7 +131,7 @@ export function truncateMultilineText(
 
   const crlfIndex = text.indexOf('\r\n');
   const lfIndex = text.indexOf('\n');
-  const index = crlfIndex >= 0 ? crlfIndex : lfIndex;
+  const index = crlfIndex === -1 ? lfIndex : crlfIndex;
 
   if (index < 0) {
     return text;

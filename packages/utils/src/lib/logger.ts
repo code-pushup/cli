@@ -1,3 +1,4 @@
+/* eslint-disable max-lines, no-console */
 import ansis, { type AnsiColors } from 'ansis';
 import os from 'node:os';
 import path from 'node:path';
@@ -10,6 +11,10 @@ import { settlePromise } from './promises.js';
 
 type GroupColor = Extract<AnsiColors, 'cyan' | 'magenta'>;
 type CiPlatform = 'GitHub Actions' | 'GitLab CI/CD';
+
+const HEX_RADIX = 16;
+const SIGINT_EXIT_CODE_UNIX = 130;
+const SIGINT_EXIT_CODE_WINDOWS = 2;
 
 /**
  * Rich logging implementation for Code PushUp CLI, plugins, etc.
@@ -53,7 +58,12 @@ export class Logger {
     }
     this.newline();
     this.error(ansis.bold('Cancelled by SIGINT'));
-    process.exit(os.platform() === 'win32' ? 2 : 130);
+    // eslint-disable-next-line n/no-process-exit, unicorn/no-process-exit
+    process.exit(
+      os.platform() === 'win32'
+        ? SIGINT_EXIT_CODE_WINDOWS
+        : SIGINT_EXIT_CODE_UNIX,
+    );
   };
 
   /**
@@ -186,7 +196,10 @@ export class Logger {
     await this.#spinner(worker, {
       pending: title,
       success: value => value,
-      failure: error => `${title} → ${ansis.red(`${error}`)}`,
+      failure: error => {
+        const errorMessage = String(error);
+        return `${title} → ${ansis.red(errorMessage)}`;
+      },
     });
   }
 
@@ -246,6 +259,7 @@ export class Logger {
    * @param title Display title for the group.
    * @param worker Asynchronous implementation. Returned promise determines group status and ending message. Inner logs are attached to the group.
    */
+  // eslint-disable-next-line max-lines-per-function
   async group<T = undefined>(
     title: string,
     worker: () => Promise<string | { message: string; result: T }>,
@@ -329,8 +343,8 @@ export class Logger {
         };
       case 'GitLab CI/CD':
         // https://docs.gitlab.com/ci/jobs/job_logs/#custom-collapsible-sections
-        const ansiEscCode = '\x1b[0K'; // '\e' ESC character only works for `echo -e`, Node console must use '\x1b'
-        const id = Math.random().toString(16).slice(2);
+        const ansiEscCode = '\u001B[0K'; // '\e' ESC character only works for `echo -e`, Node console must use '\u001B'
+        const id = Math.random().toString(HEX_RADIX).slice(2);
         const sectionId = `code_pushup_logs_group_${id}`;
         return {
           start: title => {
@@ -360,6 +374,7 @@ export class Logger {
     return ansis.bold(this.#colorize(text, this.#groupColor));
   }
 
+  // eslint-disable-next-line max-lines-per-function
   async #spinner<T>(
     worker: () => Promise<T>,
     messages: {
@@ -461,6 +476,7 @@ export class Logger {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   #colorize(text: string, color: AnsiColors | undefined): string {
     if (!color) {
       return text;
@@ -468,6 +484,7 @@ export class Logger {
     return ansis[color](text);
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   #formatDurationSuffix({
     start,
     end,

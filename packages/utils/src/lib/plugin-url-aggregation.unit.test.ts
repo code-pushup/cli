@@ -9,7 +9,7 @@ import {
   resolveUrlWeight,
   shouldExpandForUrls,
   validateUrlContext,
-} from './plugin-url-aggregation';
+} from './plugin-url-aggregation.js';
 
 describe('shouldExpandForUrls', () => {
   it.each([

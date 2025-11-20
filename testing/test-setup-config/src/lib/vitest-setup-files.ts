@@ -19,6 +19,7 @@ const CUSTOM_MATCHERS = [
  * which is why they use `../../` to navigate to the workspace root first.
  */
 const UNIT_TEST_SETUP_FILES = [
+  // eslint-disable-next-line sonarjs/no-duplicate-string
   '../../testing/test-setup/src/lib/reset.mocks.ts',
   '../../testing/test-setup/src/lib/fs.mock.ts',
   '../../testing/test-setup/src/lib/logger.mock.ts',

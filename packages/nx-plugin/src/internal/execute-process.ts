@@ -6,6 +6,8 @@
 export async function executeProcess(
   cfg: import('@code-pushup/utils').ProcessConfig,
 ): Promise<import('@code-pushup/utils').ProcessResult> {
-  const { executeProcess } = await import('@code-pushup/utils');
-  return executeProcess(cfg);
+  const { executeProcess: executeProcessFromUtils } = await import(
+    '@code-pushup/utils'
+  );
+  return executeProcessFromUtils(cfg);
 }

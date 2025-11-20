@@ -130,7 +130,7 @@ process:complete
           throwError: true,
         }),
       ),
-    ).rejects.toThrow();
+    ).rejects.toThrow('Process failed with exit code 1');
     expect(logger.debug).toHaveBeenCalledWith(
       expect.stringMatching(/process:start.*Error: dummy-error/s),
       { force: true },

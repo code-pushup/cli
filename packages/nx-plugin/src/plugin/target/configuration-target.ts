@@ -11,7 +11,9 @@ export function createConfigurationTarget(options?: {
   const args = objectToCliArgs({
     ...(projectName ? { project: projectName } : {}),
   });
+  const argsString = args.length > 0 ? args.join(' ') : '';
+  const baseCommand = `nx g ${bin}:configuration`;
   return {
-    command: `nx g ${bin}:configuration${args.length > 0 ? ` ${args.join(' ')}` : ''}`,
+    command: argsString ? `${baseCommand} ${argsString}` : baseCommand,
   };
 }

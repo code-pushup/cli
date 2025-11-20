@@ -15,7 +15,7 @@ describe('validate', () => {
   afterEach(async () => {
     // Allow any lingering async operations from transforms to complete
     // This prevents unhandled rejections in subsequent tests
-    await new Promise(resolve => setImmediate(resolve));
+    await new Promise(setImmediate);
   });
 
   it('should return parsed data if valid', () => {

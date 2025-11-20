@@ -190,6 +190,7 @@ export function withLocalTmpDir<T>(fn: () => Promise<T>): () => Promise<T> {
 
   return async () => {
     const originalTmpDir = process.env['TEMP'];
+    // eslint-disable-next-line functional/immutable-data
     process.env['TEMP'] = path.join(
       pluginWorkDir(LIGHTHOUSE_PLUGIN_SLUG),
       'tmp',
@@ -198,6 +199,7 @@ export function withLocalTmpDir<T>(fn: () => Promise<T>): () => Promise<T> {
     try {
       return await fn();
     } finally {
+      // eslint-disable-next-line functional/immutable-data
       process.env['TEMP'] = originalTmpDir;
     }
   };

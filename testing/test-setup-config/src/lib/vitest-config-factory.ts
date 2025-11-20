@@ -1,5 +1,5 @@
 import type { CoverageOptions } from 'vitest';
-import { type UserConfig as ViteUserConfig } from 'vitest/config';
+import type { UserConfig as ViteUserConfig } from 'vitest/config';
 import { getSetupFiles } from './vitest-setup-files.js';
 import { tsconfigPathAliases } from './vitest-tsconfig-path-aliases.js';
 
@@ -37,7 +37,7 @@ function buildCoverageConfig(
   return {
     reporter: ['text', 'lcov'],
     reportsDirectory,
-    exclude: exclude,
+    exclude,
   };
 }
 

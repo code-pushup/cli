@@ -24,7 +24,7 @@ describe('executePlugin', () => {
     ReturnType<(typeof runnerModule)['executePluginRunner']>
   >;
 
-  beforeAll(() => {
+  beforeEach(() => {
     readRunnerResultsSpy = vi.spyOn(runnerModule, 'readRunnerResults');
     executePluginRunnerSpy = vi.spyOn(runnerModule, 'executePluginRunner');
   });
@@ -35,11 +35,6 @@ describe('executePlugin', () => {
   });
 
   it('should execute a valid plugin config and pass runner params', async () => {
-    const executePluginRunnerSpy = vi.spyOn(
-      runnerModule,
-      'executePluginRunner',
-    );
-
     await expect(
       executePlugin(MINIMAL_PLUGIN_CONFIG_MOCK, {
         persist: {},
@@ -68,8 +63,6 @@ describe('executePlugin', () => {
   });
 
   it('should try to read cache if cache.read is true', async () => {
-    const readRunnerResultsSpy = vi.spyOn(runnerModule, 'readRunnerResults');
-
     const validRunnerResult = {
       duration: 0, // readRunnerResults now automatically sets this to 0 for cache hits
       date: new Date().toISOString(), // readRunnerResults sets this to current time
@@ -106,12 +99,6 @@ describe('executePlugin', () => {
   });
 
   it('should try to execute runner if cache.read is true and file not present', async () => {
-    const readRunnerResultsSpy = vi.spyOn(runnerModule, 'readRunnerResults');
-    const executePluginRunnerSpy = vi.spyOn(
-      runnerModule,
-      'executePluginRunner',
-    );
-
     readRunnerResultsSpy.mockResolvedValue(null);
     const runnerResult = {
       duration: 1000,

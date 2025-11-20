@@ -1,13 +1,13 @@
 import { createUnitTestConfig } from '../../testing/test-setup-config/src/index.js';
 
-let config = createUnitTestConfig('ci');
+const baseConfig = createUnitTestConfig('ci');
 
-config = {
-  ...config,
+const config = {
+  ...baseConfig,
   test: {
-    ...config.test,
+    ...baseConfig.test,
     setupFiles: [
-      ...(config.test!.setupFiles || []),
+      ...(baseConfig.test!.setupFiles || []),
       '../../testing/test-setup/src/lib/logger.mock.ts',
     ],
   },

@@ -11,6 +11,7 @@ type SchemaValidationContext = {
  */
 type ZodInputLooseAutocomplete<T extends ZodType> =
   | z.input<T>
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   | {}
   | null
   | undefined;

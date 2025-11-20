@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import ansis from 'ansis';
 import type { TableCellAlignment } from 'build-md';
 import stringWidth from 'string-width';
@@ -272,20 +273,25 @@ function truncateColumns(
       (a, b) => b.maxWidth - a.maxWidth || b.maxWord.length - a.maxWord.length,
     );
 
-  let remaining = overflow;
-  const newWidths = new Map<number, number>();
-  for (const { index, maxWidth, maxWord } of sortedColumns) {
-    const newWidth = Math.max(
-      maxWidth - remaining,
-      Math.ceil(maxWidth / 2),
-      Math.ceil(maxWord.length / 2) + 1,
-    );
-    newWidths.set(index, newWidth);
-    remaining -= maxWidth - newWidth;
-    if (remaining <= 0) {
-      break;
-    }
-  }
+  const { newWidths } = sortedColumns.reduce(
+    (acc, { index, maxWidth, maxWord }) => {
+      if (acc.remaining <= 0) {
+        return acc;
+      }
+      const newWidth = Math.max(
+        maxWidth - acc.remaining,
+        Math.ceil(maxWidth / 2),
+        Math.ceil(maxWord.length / 2) + 1,
+      );
+      const updatedWidths = new Map(acc.newWidths);
+      updatedWidths.set(index, newWidth);
+      return {
+        remaining: acc.remaining - (maxWidth - newWidth),
+        newWidths: updatedWidths,
+      };
+    },
+    { remaining: overflow, newWidths: new Map<number, number>() },
+  );
   return columnStats.map(
     ({ maxWidth }, index) => newWidths.get(index) ?? maxWidth,
   );
@@ -313,7 +319,6 @@ function normalizeTableColumns(
 ): TableCell[] | undefined {
   if (
     columns == null ||
-    columns.length === 0 ||
     columns.every(column => typeof column === 'string') ||
     columns.every(column => !normalizeColumnTitle(column))
   ) {

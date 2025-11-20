@@ -1,8 +1,10 @@
 import { formatAsciiTable } from './table.js';
 
+const STICKER_PADDING = 4;
+
 export function formatAsciiSticker(lines: string[]): string {
   return formatAsciiTable(
     { rows: ['', ...lines, ''].map(line => [line]) },
-    { padding: 4 },
+    { padding: STICKER_PADDING },
   );
 }
