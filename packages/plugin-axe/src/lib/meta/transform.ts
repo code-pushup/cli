@@ -47,6 +47,7 @@ export function transformRulesToGroups(
         return createWcagGroups(rules, '2.1');
       case 'wcag22aa':
         return createWcagGroups(rules, '2.2');
+      // eslint-disable-next-line sonarjs/no-duplicate-string
       case 'best-practice':
         return createCategoryGroups(rules);
       case 'all':
@@ -128,7 +129,7 @@ function createCategoryGroups(rules: axe.RuleMetadata[]): Group[] {
     rules.flatMap(({ tags }) => tags.filter(tag => tag.startsWith('cat.'))),
   );
 
-  return Array.from(categoryTags).map(tag => {
+  return [...categoryTags].map(tag => {
     const slug = tag.replace('cat.', '');
     const title = formatCategoryTitle(tag, slug);
     const categoryRules = rules.filter(({ tags }) => tags.includes(tag));

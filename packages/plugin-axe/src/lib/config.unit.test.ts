@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { ZodError } from 'zod';
 import { axePluginOptionsSchema } from './config.js';
 
 describe('axePluginOptionsSchema', () => {
@@ -31,17 +32,21 @@ describe('axePluginOptionsSchema', () => {
   });
 
   it('should reject invalid preset values', () => {
-    expect(() => axePluginOptionsSchema.parse({ preset: 'wcag3aa' })).toThrow();
+    expect(() => axePluginOptionsSchema.parse({ preset: 'wcag3aa' })).toThrow(
+      ZodError,
+    );
   });
 
   it('should reject scoreTargets values greater than 1', () => {
-    expect(() => axePluginOptionsSchema.parse({ scoreTargets: 1.5 })).toThrow();
+    expect(() => axePluginOptionsSchema.parse({ scoreTargets: 1.5 })).toThrow(
+      ZodError,
+    );
   });
 
   it('should reject negative scoreTargets', () => {
-    expect(() =>
-      axePluginOptionsSchema.parse({ scoreTargets: -0.1 }),
-    ).toThrow();
+    expect(() => axePluginOptionsSchema.parse({ scoreTargets: -0.1 })).toThrow(
+      ZodError,
+    );
   });
 
   it('should accept custom timeout value', () => {
@@ -51,11 +56,17 @@ describe('axePluginOptionsSchema', () => {
   });
 
   it('should reject non-positive timeout values', () => {
-    expect(() => axePluginOptionsSchema.parse({ timeout: 0 })).toThrow();
-    expect(() => axePluginOptionsSchema.parse({ timeout: -1000 })).toThrow();
+    expect(() => axePluginOptionsSchema.parse({ timeout: 0 })).toThrow(
+      ZodError,
+    );
+    expect(() => axePluginOptionsSchema.parse({ timeout: -1000 })).toThrow(
+      ZodError,
+    );
   });
 
   it('should reject non-integer timeout values', () => {
-    expect(() => axePluginOptionsSchema.parse({ timeout: 1000.5 })).toThrow();
+    expect(() => axePluginOptionsSchema.parse({ timeout: 1000.5 })).toThrow(
+      ZodError,
+    );
   });
 });
