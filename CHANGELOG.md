@@ -1,3 +1,13 @@
+## 0.89.2 (2025-11-21)
+
+### 🩹 Fixes
+
+- resolve incomplete linting across projects ([#1151](https://github.com/code-pushup/cli/pull/1151))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.89.1 (2025-11-20)
 
 ### 🩹 Fixes
