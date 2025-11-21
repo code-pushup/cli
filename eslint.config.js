@@ -116,6 +116,7 @@ export default tseslint.config(
     files: ['**/*.ts', '**/*.js'],
     rules: {
       'n/file-extension-in-import': ['error', 'always'],
+      'unicorn/number-literal-case': 'off',
     },
   },
   {

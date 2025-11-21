@@ -275,9 +275,7 @@ ${ansis.cyan('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%')}`
         .mockReturnValueOnce(0)
         .mockReturnValue(45); // 2nd group duration: 45 ms
       mathRandomSpy
-        // eslint-disable-next-line unicorn/number-literal-case
         .mockReturnValueOnce(0x1a / Math.pow(2, 8)) // 1st group's random ID: "1a"
-        // eslint-disable-next-line unicorn/number-literal-case
         .mockReturnValueOnce(0x1b / Math.pow(2, 8)); // 2nd group's random ID: "1b"
       const logger = new Logger();
 
