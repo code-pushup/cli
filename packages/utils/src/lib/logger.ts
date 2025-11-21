@@ -398,6 +398,7 @@ export class Logger {
         text: messages.pending,
         spinner: 'line',
         color: this.#groupColor,
+        stream: process.stdout,
       });
       if (this.#isCI) {
         console.log(this.#format(messages.pending, undefined));
@@ -405,7 +406,10 @@ export class Logger {
         this.#activeSpinner.start();
       }
     } else {
-      this.#activeSpinner = ora(messages.pending);
+      this.#activeSpinner = ora({
+        text: messages.pending,
+        stream: process.stdout,
+      });
       this.#activeSpinner.start();
     }
 
