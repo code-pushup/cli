@@ -1,4 +1,4 @@
-/* eslint-disable max-lines, no-console */
+/* eslint-disable max-lines, no-console, @typescript-eslint/class-methods-use-this */
 import ansis, { type AnsiColors } from 'ansis';
 import os from 'node:os';
 import path from 'node:path';
@@ -13,8 +13,12 @@ type GroupColor = Extract<AnsiColors, 'cyan' | 'magenta'>;
 type CiPlatform = 'GitHub Actions' | 'GitLab CI/CD';
 
 const HEX_RADIX = 16;
-const SIGINT_EXIT_CODE_UNIX = 130;
-const SIGINT_EXIT_CODE_WINDOWS = 2;
+
+const SIGINT_CODE = 2;
+// https://www.gnu.org/software/bash/manual/html_node/Exit-Status.html#:~:text=When%20a%20command%20terminates%20on%20a%20fatal%20signal%20whose%20number%20is%20N%2C%20Bash%20uses%20the%20value%20128%2BN%20as%20the%20exit%20status.
+const SIGNALS_CODE_OFFSET_UNIX = 128;
+const SIGINT_EXIT_CODE_UNIX = SIGNALS_CODE_OFFSET_UNIX + SIGINT_CODE;
+const SIGINT_EXIT_CODE_WINDOWS = SIGINT_CODE;
 
 /**
  * Rich logging implementation for Code PushUp CLI, plugins, etc.
@@ -196,10 +200,7 @@ export class Logger {
     await this.#spinner(worker, {
       pending: title,
       success: value => value,
-      failure: error => {
-        const errorMessage = String(error);
-        return `${title} → ${ansis.red(errorMessage)}`;
-      },
+      failure: error => `${title} → ${ansis.red(String(error))}`,
     });
   }
 
@@ -476,7 +477,6 @@ export class Logger {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   #colorize(text: string, color: AnsiColors | undefined): string {
     if (!color) {
       return text;
@@ -484,7 +484,6 @@ export class Logger {
     return ansis[color](text);
   }
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   #formatDurationSuffix({
     start,
     end,
