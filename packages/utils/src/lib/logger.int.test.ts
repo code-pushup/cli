@@ -129,6 +129,19 @@ ${ansis.red('Failed to load config')}
       );
     });
 
+    it('should skip line-break if requested', () => {
+      const logger = new Logger();
+
+      logger.info('Code PushUp CLI', { noLineBreak: true });
+      logger.debug(' - v1.2.3', { noLineBreak: true, force: true });
+      logger.warn(' (Config file in CommonJS format)', { noLineBreak: true });
+      logger.error(' => Failed to load config', { noLineBreak: true });
+
+      expect(stdout).toBe(
+        `Code PushUp CLI${ansis.gray(' - v1.2.3')}${ansis.yellow(' (Config file in CommonJS format)')}${ansis.red(' => Failed to load config')}`,
+      );
+    });
+
     it('should set verbose flag and environment variable', () => {
       vi.stubEnv('CP_VERBOSE', 'false');
       const logger = new Logger();
@@ -590,6 +603,40 @@ ${ansis.red('✖')} Uploading report to portal → ${ansis.red('GraphQL error: I
 
       expect(stdout).toBe(
         `${ansis.green('✔')} ${ansis.blue('src')} ${ansis.green('$')} npx eslint . --format=json ${ansis.gray('(42 ms)')}\n`,
+      );
+    });
+
+    it('should skip indentation for inner logs in CI if requested', async () => {
+      vi.stubEnv('CI', 'true');
+      const logger = new Logger();
+
+      await logger.command('npx code-pushup', async () => {
+        logger.newline();
+        logger.info(
+          '::group::npx nx lint\nAll files pass linting.\n::endgroup\n',
+          { noIndent: true },
+        );
+        logger.info(
+          'Collected report:\n- .code-pushup/report.json\n- .code-pushup/report.md',
+          { noIndent: true },
+        );
+        logger.newline();
+      });
+
+      expect(ansis.strip(stdout)).toBe(
+        `
+- $ npx code-pushup
+
+::group::npx nx lint
+All files pass linting.
+::endgroup
+
+Collected report:
+- .code-pushup/report.json
+- .code-pushup/report.md
+
+✔ $ npx code-pushup (42 ms)
+`.trimStart(),
       );
     });
   });

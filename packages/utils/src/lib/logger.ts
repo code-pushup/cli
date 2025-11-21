@@ -12,6 +12,20 @@ import { settlePromise } from './promises.js';
 type GroupColor = Extract<AnsiColors, 'cyan' | 'magenta'>;
 type CiPlatform = 'GitHub Actions' | 'GitLab CI/CD';
 
+/** Additional options for log methods */
+export type LogOptions = {
+  /** Do not append line-feed to message (`process.stdout.write` instead of `console.log`) */
+  noLineBreak?: boolean;
+  /** Do not indent lines even if logged while a spinner is active */
+  noIndent?: boolean;
+};
+
+/** Additional options for {@link Logger.debug} method */
+export type DebugLogOptions = LogOptions & {
+  /** Print debug message even if verbose flag is not set */
+  force?: boolean;
+};
+
 const HEX_RADIX = 16;
 
 const SIGINT_CODE = 2;
@@ -79,9 +93,10 @@ export class Logger {
    * logger.error('Config file is invalid');
    *
    * @param message Error text
+   * @param options Additional options
    */
-  error(message: string): void {
-    this.#log(message, 'red');
+  error(message: string, options?: LogOptions): void {
+    this.#log(message, 'red', options);
   }
 
   /**
@@ -93,9 +108,10 @@ export class Logger {
    * logger.warn('Skipping invalid audits');
    *
    * @param message Warning text
+   * @param options Additional options
    */
-  warn(message: string): void {
-    this.#log(message, 'yellow');
+  warn(message: string, options?: LogOptions): void {
+    this.#log(message, 'yellow', options);
   }
 
   /**
@@ -107,9 +123,10 @@ export class Logger {
    * logger.info('Code PushUp CLI v0.80.2');
    *
    * @param message Info text
+   * @param options Additional options
    */
-  info(message: string): void {
-    this.#log(message);
+  info(message: string, options?: LogOptions): void {
+    this.#log(message, undefined, options);
   }
 
   /**
@@ -122,11 +139,10 @@ export class Logger {
    *
    * @param message Debug text
    * @param options Additional options
-   * @param options.force Print debug message even if verbose flag is not set
    */
-  debug(message: string, options?: { force?: boolean }): void {
+  debug(message: string, options?: DebugLogOptions): void {
     if (this.#isVerbose || options?.force) {
-      this.#log(message, 'gray');
+      this.#log(message, 'gray', options);
     }
   }
 
@@ -457,17 +473,24 @@ export class Logger {
     return result.value;
   }
 
-  #log(message: string, color?: AnsiColors): void {
+  #log(message: string, color?: AnsiColors, options?: LogOptions): void {
+    const print: (text: string) => void = options?.noLineBreak
+      ? text => process.stdout.write(text)
+      : console.log;
+
     if (this.#activeSpinner) {
       if (this.#activeSpinner.isSpinning) {
         this.#activeSpinnerLogs.push(this.#format(message, color));
       } else {
-        console.log(this.#format(indentLines(message, 2), color));
+        const indented =
+          options?.noIndent || !message ? message : indentLines(message, 2);
+        print(this.#format(indented, color));
       }
     } else {
-      console.log(this.#format(message, color));
+      print(this.#format(message, color));
     }
-    this.#endsWithBlankLine = !message || message.endsWith('\n');
+    this.#endsWithBlankLine =
+      (!message || message.endsWith('\n')) && !options?.noIndent;
   }
 
   #format(message: string, color: AnsiColors | undefined): string {
