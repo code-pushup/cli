@@ -287,7 +287,7 @@ describe('toAuditOutputs', () => {
           issues: [
             {
               message:
-                '[`<div role=\"invalid-role\">Content</div>`] Fix this: Ensure all values assigned to role=\"\" correspond to valid ARIA roles ([example.com](https://example.com))',
+                '[`<div role="invalid-role">Content</div>`] Fix this: Ensure all values assigned to role="" correspond to valid ARIA roles ([example.com](https://example.com))',
               severity: 'error',
             },
           ],

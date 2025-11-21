@@ -8,11 +8,11 @@ import { Logger } from './logger.js';
 
 // customize ora options for test environment
 vi.mock('ora', async (): Promise<typeof import('ora')> => {
-  const exports = await vi.importActual<typeof import('ora')>('ora');
+  const oraModule = await vi.importActual<typeof import('ora')>('ora');
   return {
-    ...exports,
+    ...oraModule,
     default: options => {
-      const spinner = exports.default({
+      const spinner = oraModule.default({
         // skip cli-cursor package
         hideCursor: false,
         // skip is-interactive package
@@ -35,13 +35,14 @@ vi.mock('ora', async (): Promise<typeof import('ora')> => {
 });
 
 describe('Logger', () => {
-  let output = '';
+  let output: string;
   let consoleLogSpy: MockInstance<unknown[], void>;
   let processStderrSpy: MockInstance<[], typeof process.stderr>;
   let performanceNowSpy: MockInstance<[], number>;
   let mathRandomSpy: MockInstance<[], number>;
 
   beforeAll(() => {
+    output = '';
     vi.useFakeTimers();
 
     consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(message => {
@@ -61,7 +62,7 @@ describe('Logger', () => {
       moveCursor: () => true,
       clearLine: () => {
         const idx = output.lastIndexOf('\n');
-        output = idx >= 0 ? output.substring(0, idx + 1) : '';
+        output = idx === -1 ? '' : output.slice(0, Math.max(0, idx + 1));
         return true;
       },
     };
@@ -134,9 +135,9 @@ ${ansis.red('Failed to load config')}
 
       logger.setVerbose(true);
 
-      expect(logger.isVerbose()).toBe(true);
+      expect(logger.isVerbose()).toBeTrue();
       expect(process.env['CP_VERBOSE']).toBe('true');
-      expect(new Logger().isVerbose()).toBe(true);
+      expect(new Logger().isVerbose()).toBeTrue();
     });
   });
 
@@ -267,7 +268,7 @@ ${ansis.cyan('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%')}`
     it('should use collapsible sections in GitLab CI/CD environment, initial collapse depends on verbosity', async () => {
       vi.stubEnv('CI', 'true');
       vi.stubEnv('GITLAB_CI', 'true');
-      vi.setSystemTime(new Date(123456789000)); // current Unix timestamp: 123456789 seconds since epoch
+      vi.setSystemTime(new Date(123_456_789_000)); // current Unix timestamp: 123456789 seconds since epoch
       performanceNowSpy
         .mockReturnValueOnce(0)
         .mockReturnValueOnce(123) // 1st group duration: 123 ms
@@ -292,16 +293,16 @@ ${ansis.cyan('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%')}`
 
       // debugging tip: temporarily remove '\r' character from original implementation
       expect(output).toBe(`
-\x1b[0Ksection_start:123456789:code_pushup_logs_group_1a[collapsed=true]\r\x1b[0K${ansis.bold.cyan('❯ Running plugin "ESLint"')}
+\u001B[0Ksection_start:123456789:code_pushup_logs_group_1a[collapsed=true]\r\u001B[0K${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('│')} ${ansis.blue('$')} npx eslint . --format=json
 ${ansis.cyan('│')} ${ansis.yellow('Skipping unknown rule "deprecation/deprecation"')}
 ${ansis.cyan('└')} ${ansis.green('ESLint reported 4 errors and 11 warnings')} ${ansis.gray('(123 ms)')}
-\x1b[0Ksection_end:123456789:code_pushup_logs_group_1a\r\x1b[0K
+\u001B[0Ksection_end:123456789:code_pushup_logs_group_1a\r\u001B[0K
 
-\x1b[0Ksection_start:123456789:code_pushup_logs_group_1b\r\x1b[0K${ansis.bold.magenta('❯ Running plugin "Code coverage"')}
+\u001B[0Ksection_start:123456789:code_pushup_logs_group_1b\r\u001B[0K${ansis.bold.magenta('❯ Running plugin "Code coverage"')}
 ${ansis.magenta('│')} ${ansis.blue('$')} npx vitest --coverage.enabled
 ${ansis.magenta('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%')}`)} ${ansis.gray('(45 ms)')}
-\x1b[0Ksection_end:123456789:code_pushup_logs_group_1b\r\x1b[0K
+\u001B[0Ksection_end:123456789:code_pushup_logs_group_1b\r\u001B[0K
 
 `);
     });
@@ -373,7 +374,7 @@ ${ansis.green('✔')} Uploaded report to portal ${ansis.gray('(42 ms)')}
         .mockReturnValueOnce(0)
         .mockReturnValueOnce(30_000) // 1st task duration: 30 s
         .mockReturnValueOnce(0)
-        .mockReturnValueOnce(1_000); // 2nd task duration: 1 s
+        .mockReturnValueOnce(1000); // 2nd task duration: 1 s
 
       const task1 = new Logger().task(
         'Collecting report',

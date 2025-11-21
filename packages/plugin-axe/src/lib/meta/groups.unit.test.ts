@@ -77,7 +77,7 @@ describe('transformRulesToGroups', () => {
       'best-practice',
     );
 
-    expect(groups).toSatisfyAll<Group>(({ slug }) => !slug.match(/^cat\./));
+    expect(groups).toSatisfyAll<Group>(({ slug }) => !/^cat\./.test(slug));
   });
 
   it('should include both WCAG 2.2 and category groups for "all" preset', () => {

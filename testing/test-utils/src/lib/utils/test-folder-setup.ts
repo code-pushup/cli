@@ -57,7 +57,8 @@ export const NX_IGNORED_FILES_TO_RESTORE: string[] = [
  */
 export async function restoreNxIgnoredFiles(dir: string): Promise<void> {
   const entries = await readdir(dir, { withFileTypes: true });
-  for (const entry of entries) {
+  await entries.reduce(async (previousPromise, entry) => {
+    await previousPromise;
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       await restoreNxIgnoredFiles(fullPath);
@@ -67,5 +68,5 @@ export async function restoreNxIgnoredFiles(dir: string): Promise<void> {
     ) {
       await rename(fullPath, path.join(dir, entry.name.slice(1)));
     }
-  }
+  }, Promise.resolve());
 }

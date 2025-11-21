@@ -72,7 +72,7 @@
       "options": {
         "command": "eslint",
         "args": [
-          "{projectRoot}/**/*.ts",
+          "'{projectRoot}/**/*.ts'",
           "{projectRoot}/package.json",
           "--config={projectRoot}/eslint.config.js",
           "--max-warnings=0",

@@ -1,4 +1,4 @@
-import { getUrlIdentifier, normalizeUrlInput } from './plugin-url-config';
+import { getUrlIdentifier, normalizeUrlInput } from './plugin-url-config.js';
 
 describe('getUrlIdentifier', () => {
   it.each([

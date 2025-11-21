@@ -45,9 +45,7 @@ export async function executeRunnerConfig(
   await removeDirectoryIfExists(path.dirname(outputFile));
 
   // transform unknownAuditOutputs to auditOutputs
-  const audits = outputTransform ? await outputTransform(outputs) : outputs;
-
-  return audits;
+  return outputTransform ? await outputTransform(outputs) : outputs;
 }
 
 export async function executeRunnerFunction(
@@ -55,8 +53,7 @@ export async function executeRunnerFunction(
   args: RunnerArgs,
 ): Promise<unknown> {
   // execute plugin runner
-  const audits = await runner(args);
-  return audits;
+  return runner(args);
 }
 
 /**

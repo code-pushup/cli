@@ -1,4 +1,3 @@
-import type { Audit, Group } from '@code-pushup/models';
 import {
   addIndex,
   expandAuditsForUrls,

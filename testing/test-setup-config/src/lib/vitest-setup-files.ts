@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import type { TestKind } from './vitest-config-factory.js';
 
 /**

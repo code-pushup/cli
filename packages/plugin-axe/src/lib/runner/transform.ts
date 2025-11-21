@@ -1,5 +1,4 @@
-import type { AxeResults, ImpactValue, NodeResult, Result } from 'axe-core';
-import type axe from 'axe-core';
+import axe from 'axe-core';
 import type {
   AuditOutput,
   AuditOutputs,
@@ -18,7 +17,7 @@ import {
  * Priority: violations > incomplete > passes > inapplicable
  */
 export function toAuditOutputs(
-  { passes, violations, incomplete, inapplicable }: AxeResults,
+  { passes, violations, incomplete, inapplicable }: axe.AxeResults,
   url: string,
 ): AuditOutputs {
   const auditMap = new Map<string, AuditOutput>([
@@ -28,7 +27,7 @@ export function toAuditOutputs(
     ...violations.map(res => [res.id, toAuditOutput(res, url, 0)] as const),
   ]);
 
-  return Array.from(auditMap.values());
+  return [...auditMap.values()];
 }
 
 /**
@@ -36,7 +35,7 @@ export function toAuditOutputs(
  * For passing audits (score 1), only includes element count.
  */
 function toAuditOutput(
-  result: Result,
+  result: axe.Result,
   url: string,
   score: number,
 ): AuditOutput {
@@ -69,7 +68,7 @@ function formatSelector(selector: axe.CrossTreeSelector): string {
   return selector.join(' >> ');
 }
 
-function toIssue(node: NodeResult, result: Result, url: string): Issue {
+function toIssue(node: axe.NodeResult, result: axe.Result, url: string): Issue {
   const selector = formatSelector(node.target?.[0] || node.html);
   const rawMessage = node.failureSummary || result.help;
   const cleanedMessage = rawMessage.replace(/\s+/g, ' ').trim();
@@ -82,7 +81,7 @@ function toIssue(node: NodeResult, result: Result, url: string): Issue {
   };
 }
 
-function impactToSeverity(impact: ImpactValue | undefined): IssueSeverity {
+function impactToSeverity(impact: axe.ImpactValue | undefined): IssueSeverity {
   switch (impact) {
     case 'critical':
     case 'serious':

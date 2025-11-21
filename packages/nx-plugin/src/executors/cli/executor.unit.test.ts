@@ -16,11 +16,13 @@ describe('runAutorunExecutor', () => {
   beforeAll(() => {
     Object.entries(process.env)
       .filter(([k]) => k.startsWith('CP_'))
-      .forEach(([k]) => delete process.env[k]);
+      .forEach(([k]) => Reflect.deleteProperty(process.env, k));
   });
 
   afterAll(() => {
-    Object.entries(processEnvCP).forEach(([k, v]) => (process.env[k] = v));
+    Object.entries(processEnvCP).forEach(([k, v]) =>
+      Reflect.set(process.env, k, v),
+    );
   });
 
   beforeEach(() => {

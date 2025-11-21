@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { processAuditsAndGroups } from './processing';
+import { processAuditsAndGroups } from './processing.js';
 
 describe('processAuditsAndGroups', () => {
   it('should return audits and groups without expansion when analyzing single URL', () => {

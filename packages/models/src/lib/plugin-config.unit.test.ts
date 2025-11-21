@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { ZodError } from 'zod';
 import {
   type PluginConfig,
   pluginConfigSchema,
@@ -164,28 +165,28 @@ describe('pluginUrlsSchema', () => {
   });
 
   it('should throw for invalid URL', () => {
-    expect(() => pluginUrlsSchema.parse('invalid')).toThrow();
+    expect(() => pluginUrlsSchema.parse('invalid')).toThrow(ZodError);
   });
 
   it('should throw for array with invalid URL', () => {
     expect(() =>
       pluginUrlsSchema.parse(['https://example.com', 'invalid']),
-    ).toThrow();
+    ).toThrow(ZodError);
   });
 
   it('should throw for object with invalid URL', () => {
-    expect(() => pluginUrlsSchema.parse({ invalid: 1 })).toThrow();
+    expect(() => pluginUrlsSchema.parse({ invalid: 1 })).toThrow(ZodError);
   });
 
   it('should throw for invalid negative weight', () => {
-    expect(() =>
-      pluginUrlsSchema.parse({ 'https://example.com': -1 }),
-    ).toThrow();
+    expect(() => pluginUrlsSchema.parse({ 'https://example.com': -1 })).toThrow(
+      ZodError,
+    );
   });
 
   it('should throw for invalid string weight', () => {
     expect(() =>
       pluginUrlsSchema.parse({ 'https://example.com': '1' }),
-    ).toThrow();
+    ).toThrow(ZodError);
   });
 });

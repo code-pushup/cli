@@ -1,12 +1,8 @@
 import type { Linter } from 'eslint';
 import type { AuditOutput, Issue, IssueSeverity } from '@code-pushup/models';
 import {
-  compareIssueSeverity,
-  countOccurrences,
   formatIssueSeverities,
   logger,
-  objectToEntries,
-  pluralizeToken,
   truncateIssueMessage,
 } from '@code-pushup/utils';
 import { ruleIdToSlug } from '../meta/index.js';

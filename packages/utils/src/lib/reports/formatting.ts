@@ -210,5 +210,5 @@ export function wrapTags(text: string | undefined): string {
   if (!text) {
     return '';
   }
-  return text.replace(/<[a-z][a-z0-9]*[^>]*>/gi, '`$&`');
+  return text.replace(/<[a-z][a-z\d]*[^>]*>/gi, '`$&`');
 }
