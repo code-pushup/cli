@@ -1,0 +1,95 @@
+{
+  "name": "examples-plugins",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./src/index.cjs",
+  "module": "./src/index.mjs",
+  "types": "./src/index.d.cts",
+  "exports": {
+    ".": {
+      "import": "./src/index.mjs",
+      "require": "./src/index.cjs",
+      "types": "./src/index.d.mts"
+    },
+    "./file-size/src/file-size.plugin": {
+      "import": "./src/file-size/src/file-size.plugin.mjs",
+      "require": "./src/file-size/src/file-size.plugin.cjs",
+      "types": "./src/file-size/src/file-size.plugin.d.mts"
+    },
+    "./lighthouse/mock/fixtures/lhr": {
+      "import": "./src/lighthouse/mock/fixtures/lhr.mjs",
+      "require": "./src/lighthouse/mock/fixtures/lhr.cjs",
+      "types": "./src/lighthouse/mock/fixtures/lhr.d.mts"
+    },
+    "./lighthouse/src": {
+      "import": "./src/lighthouse/src/index.mjs",
+      "require": "./src/lighthouse/src/index.cjs",
+      "types": "./src/lighthouse/src/index.d.mts"
+    },
+    "./lighthouse/src/constants": {
+      "import": "./src/lighthouse/src/constants.mjs",
+      "require": "./src/lighthouse/src/constants.cjs",
+      "types": "./src/lighthouse/src/constants.d.mts"
+    },
+    "./lighthouse/src/lighthouse.plugin": {
+      "import": "./src/lighthouse/src/lighthouse.plugin.mjs",
+      "require": "./src/lighthouse/src/lighthouse.plugin.cjs",
+      "types": "./src/lighthouse/src/lighthouse.plugin.d.mts"
+    },
+    "./lighthouse/src/types": {
+      "import": "./src/lighthouse/src/types.mjs",
+      "require": "./src/lighthouse/src/types.cjs",
+      "types": "./src/lighthouse/src/types.d.mts"
+    },
+    "./lighthouse/src/utils": {
+      "import": "./src/lighthouse/src/utils.mjs",
+      "require": "./src/lighthouse/src/utils.cjs",
+      "types": "./src/lighthouse/src/utils.d.mts"
+    },
+    "./package-json/src": {
+      "import": "./src/package-json/src/index.mjs",
+      "require": "./src/package-json/src/index.cjs",
+      "types": "./src/package-json/src/index.d.mts"
+    },
+    "./package-json/src/constants": {
+      "import": "./src/package-json/src/constants.mjs",
+      "require": "./src/package-json/src/constants.cjs",
+      "types": "./src/package-json/src/constants.d.mts"
+    },
+    "./package-json/src/integration/dependencies.audit": {
+      "import": "./src/package-json/src/integration/dependencies.audit.mjs",
+      "require": "./src/package-json/src/integration/dependencies.audit.cjs",
+      "types": "./src/package-json/src/integration/dependencies.audit.d.mts"
+    },
+    "./package-json/src/integration/license.audit": {
+      "import": "./src/package-json/src/integration/license.audit.mjs",
+      "require": "./src/package-json/src/integration/license.audit.cjs",
+      "types": "./src/package-json/src/integration/license.audit.d.mts"
+    },
+    "./package-json/src/integration/type.audit": {
+      "import": "./src/package-json/src/integration/type.audit.mjs",
+      "require": "./src/package-json/src/integration/type.audit.cjs",
+      "types": "./src/package-json/src/integration/type.audit.d.mts"
+    },
+    "./package-json/src/integration/types": {
+      "import": "./src/package-json/src/integration/types.mjs",
+      "require": "./src/package-json/src/integration/types.cjs",
+      "types": "./src/package-json/src/integration/types.d.mts"
+    },
+    "./package-json/src/integration/utils": {
+      "import": "./src/package-json/src/integration/utils.mjs",
+      "require": "./src/package-json/src/integration/utils.cjs",
+      "types": "./src/package-json/src/integration/utils.d.mts"
+    },
+    "./package-json/src/package-json.plugin": {
+      "import": "./src/package-json/src/package-json.plugin.mjs",
+      "require": "./src/package-json/src/package-json.plugin.cjs",
+      "types": "./src/package-json/src/package-json.plugin.d.mts"
+    },
+    "./package-json/src/scoring": {
+      "import": "./src/package-json/src/scoring.mjs",
+      "require": "./src/package-json/src/scoring.cjs",
+      "types": "./src/package-json/src/scoring.d.mts"
+    }
+  }
+}

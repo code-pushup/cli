@@ -26,6 +26,7 @@
       "!{projectRoot}/tsconfig.@(test|tools).json",
       "!{workspaceRoot}/**/(*.)coverage/**/*"
     ],
+    "tsdownConfigs": ["{projectRoot}/tsdown.config.ts"],
     "test-vitest-inputs": [
       "os",
       {
@@ -78,14 +79,14 @@
           "--max-warnings=0",
           "--no-warn-ignored",
           "--error-on-unmatched-pattern=false",
-          "--format=./tools/eslint-formatter-multi/dist/src/index.js"
+          "--format=./tools/eslint-formatter-multi/dist/src/index.mjs"
         ],
         "env": {
           "ESLINT_FORMATTER_CONFIG": "{\"outputDir\":\"{projectRoot}/.eslint\"}"
         }
       }
     },
-    "build": {
+    "build-old": {
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"],
       "cache": true,
@@ -97,6 +98,19 @@
         "tsConfig": "{projectRoot}/tsconfig.lib.json",
         "assets": ["{projectRoot}/*.md"]
       }
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production", "tsdownConfigs"],
+      "cache": true,
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "node_modules/.bin/tsdown --config {projectRoot}/tsdown.config.ts"
+        ],
+        "outputPath": "{projectRoot}/dist"
+      },
+      "outputs": ["{projectRoot}/dist"]
     },
     "unit-test": {
       "cache": true,
@@ -374,6 +388,10 @@
           "filterByTags": ["publishable"]
         }
       }
+    },
+    {
+      "plugin": "./tools/src/ts-down.plugin.mjs",
+      "exclude": ["nx-plugin"]
     }
   ],
   "nxCloudId": "65d4d862d2adb16a45a4bc7c"
