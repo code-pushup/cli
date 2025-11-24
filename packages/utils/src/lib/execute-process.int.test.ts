@@ -136,4 +136,12 @@ process:complete
       { force: true },
     );
   });
+
+  it('should not log anything if silent flag is set', async () => {
+    await executeProcess({ ...getAsyncProcessRunnerConfig(), silent: true });
+
+    expect(logger.debug).not.toHaveBeenCalled();
+    expect(logger.info).not.toHaveBeenCalled();
+    expect(logger.command).not.toHaveBeenCalled();
+  });
 });

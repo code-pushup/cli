@@ -103,6 +103,7 @@ export type ProcessConfig = Omit<
   args?: string[];
   observer?: ProcessObserver;
   ignoreExitCode?: boolean;
+  silent?: boolean;
 };
 
 /**
@@ -153,62 +154,65 @@ export type ProcessObserver = {
  * @param cfg - see {@link ProcessConfig}
  */
 export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
-  const { command, args, observer, ignoreExitCode = false, ...options } = cfg;
+  const { command, args, observer, ignoreExitCode, silent, ...options } = cfg;
   const { onStdout, onStderr, onError, onComplete } = observer ?? {};
 
   const bin = [command, ...(args ?? [])].join(' ');
 
-  return logger.command(
-    bin,
-    () =>
-      new Promise((resolve, reject) => {
-        const spawnedProcess = spawn(command, args ?? [], {
-          // shell:true tells Windows to use shell command for spawning a child process
-          // https://stackoverflow.com/questions/60386867/node-spawn-child-process-not-working-in-windows
-          shell: true,
-          windowsHide: true,
-          ...options,
-        }) as ChildProcessByStdio<Writable, Readable, Readable>;
+  const worker = () =>
+    new Promise<ProcessResult>((resolve, reject) => {
+      const spawnedProcess = spawn(command, args ?? [], {
+        // shell:true tells Windows to use shell command for spawning a child process
+        // https://stackoverflow.com/questions/60386867/node-spawn-child-process-not-working-in-windows
+        shell: true,
+        windowsHide: true,
+        ...options,
+      }) as ChildProcessByStdio<Writable, Readable, Readable>;
 
-        // eslint-disable-next-line functional/no-let
-        let stdout = '';
-        // eslint-disable-next-line functional/no-let
-        let stderr = '';
-        // eslint-disable-next-line functional/no-let
-        let output = ''; // interleaved stdout and stderr
+      // eslint-disable-next-line functional/no-let
+      let stdout = '';
+      // eslint-disable-next-line functional/no-let
+      let stderr = '';
+      // eslint-disable-next-line functional/no-let
+      let output = ''; // interleaved stdout and stderr
 
-        spawnedProcess.stdout.on('data', (data: unknown) => {
-          const message = String(data);
-          stdout += message;
-          output += message;
-          onStdout?.(message, spawnedProcess);
-        });
+      spawnedProcess.stdout.on('data', (data: unknown) => {
+        const message = String(data);
+        stdout += message;
+        output += message;
+        onStdout?.(message, spawnedProcess);
+      });
 
-        spawnedProcess.stderr.on('data', (data: unknown) => {
-          const message = String(data);
-          stderr += message;
-          output += message;
-          onStderr?.(message, spawnedProcess);
-        });
+      spawnedProcess.stderr.on('data', (data: unknown) => {
+        const message = String(data);
+        stderr += message;
+        output += message;
+        onStderr?.(message, spawnedProcess);
+      });
 
-        spawnedProcess.on('error', error => {
-          reject(error);
-        });
+      spawnedProcess.on('error', error => {
+        reject(error);
+      });
 
-        spawnedProcess.on('close', (code, signal) => {
-          const result: ProcessResult = { bin, code, signal, stdout, stderr };
-          if (code === 0 || ignoreExitCode) {
+      spawnedProcess.on('close', (code, signal) => {
+        const result: ProcessResult = { bin, code, signal, stdout, stderr };
+        if (code === 0 || ignoreExitCode) {
+          if (!silent) {
             logger.debug(output);
-            onComplete?.();
-            resolve(result);
-          } else {
+          }
+          onComplete?.();
+          resolve(result);
+        } else {
+          if (!silent) {
             // ensure stdout and stderr are logged to help debug failure
             logger.debug(output, { force: true });
-            const error = new ProcessError(result);
-            onError?.(error);
-            reject(error);
           }
-        });
-      }),
-  );
+          const error = new ProcessError(result);
+          onError?.(error);
+          reject(error);
+        }
+      });
+    });
+
+  return silent ? worker() : logger.command(bin, worker);
 }
