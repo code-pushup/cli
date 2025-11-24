@@ -3,27 +3,25 @@ import {
   DEFAULT_PERSIST_FILENAME,
   DEFAULT_PERSIST_OUTPUT_DIR,
 } from '@code-pushup/models';
-import { executeProcess } from '@code-pushup/utils';
 import type { CommandContext } from '../context.js';
+import { executeCliCommand } from '../exec.js';
 
 export async function runMergeDiffs(
   files: string[],
-  { bin, config, directory }: CommandContext,
+  context: CommandContext,
 ): Promise<string> {
-  const outputDir = path.join(directory, DEFAULT_PERSIST_OUTPUT_DIR);
+  const outputDir = path.join(context.directory, DEFAULT_PERSIST_OUTPUT_DIR);
   const filename = `merged-${DEFAULT_PERSIST_FILENAME}`;
 
-  await executeProcess({
-    command: bin,
-    args: [
+  await executeCliCommand(
+    [
       'merge-diffs',
       ...files.map(file => `--files=${file}`),
-      ...(config ? [`--config=${config}`] : []),
       `--persist.outputDir=${outputDir}`,
       `--persist.filename=${filename}`,
     ],
-    cwd: directory,
-  });
+    context,
+  );
 
   return path.join(outputDir, `${filename}-diff.md`);
 }
