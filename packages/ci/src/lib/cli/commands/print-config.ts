@@ -1,38 +1,24 @@
 import { rm } from 'node:fs/promises';
 import path from 'node:path';
-import {
-  executeProcess,
-  readJsonFile,
-  stringifyError,
-} from '@code-pushup/utils';
+import { readJsonFile, stringifyError } from '@code-pushup/utils';
 import type { CommandContext } from '../context.js';
+import { executeCliCommand } from '../exec.js';
 
-export async function runPrintConfig({
-  bin,
-  config,
-  directory,
-  project,
-}: CommandContext): Promise<unknown> {
+export async function runPrintConfig(
+  context: CommandContext,
+): Promise<unknown> {
   // unique file name per project so command can be run in parallel
-  const outputFile = ['code-pushup', 'config', project, 'json']
+  const outputFile = ['code-pushup', 'config', context.project, 'json']
     .filter(Boolean)
     .join('.');
   const outputPath =
-    project && directory === process.cwd()
+    context.project && context.directory === process.cwd()
       ? // cache-friendly path for Nx projects (assuming {workspaceRoot}/.code-pushup/{projectName})
-        path.join(process.cwd(), '.code-pushup', project, outputFile)
+        path.join(process.cwd(), '.code-pushup', context.project, outputFile)
       : // absolute path
-        path.resolve(directory, '.code-pushup', outputFile);
+        path.resolve(context.directory, '.code-pushup', outputFile);
 
-  await executeProcess({
-    command: bin,
-    args: [
-      ...(config ? [`--config=${config}`] : []),
-      'print-config',
-      `--output=${outputPath}`,
-    ],
-    cwd: directory,
-  });
+  await executeCliCommand(['print-config', `--output=${outputPath}`], context);
 
   try {
     const content = await readJsonFile(outputPath);
