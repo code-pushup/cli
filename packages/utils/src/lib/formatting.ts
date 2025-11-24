@@ -154,3 +154,13 @@ export function transformLines(
 export function indentLines(text: string, identation: number): string {
   return transformLines(text, line => `${' '.repeat(identation)}${line}`);
 }
+
+export function serializeCommandWithArgs({
+  command,
+  args,
+}: {
+  command: string;
+  args?: string[];
+}): string {
+  return [command, ...(args ?? [])].join(' ');
+}
