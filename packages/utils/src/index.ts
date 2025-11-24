@@ -55,6 +55,7 @@ export {
   pluralize,
   pluralizeToken,
   roundDecimals,
+  serializeCommandWithArgs,
   slugify,
   transformLines,
   truncateDescription,

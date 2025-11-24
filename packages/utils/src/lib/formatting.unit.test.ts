@@ -8,6 +8,7 @@ import {
   pluralize,
   pluralizeToken,
   roundDecimals,
+  serializeCommandWithArgs,
   slugify,
   transformLines,
   truncateMultilineText,
@@ -251,5 +252,20 @@ describe('indentLines', () => {
   All files pass linting.
   `.slice(1), // ignore first line break
     );
+  });
+});
+
+describe('serializeCommandWithArgs', () => {
+  it('should serialize command and args into an equivalent shell string', () => {
+    expect(
+      serializeCommandWithArgs({
+        command: 'npx',
+        args: ['eslint', '.', '--format=json'],
+      }),
+    ).toBe('npx eslint . --format=json');
+  });
+
+  it('should omit args if missing', () => {
+    expect(serializeCommandWithArgs({ command: 'ls' })).toBe('ls');
   });
 });
