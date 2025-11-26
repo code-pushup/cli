@@ -9,6 +9,11 @@
     "lint": {},
     "lint-report": {},
     "unit-test": {},
-    "int-test": {}
+    "int-test": {},
+    "code-pushup": {},
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {},
+    "code-pushup-typescript": {},
+    "code-pushup-jsdocs": {}
   }
 }

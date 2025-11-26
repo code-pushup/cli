@@ -27,14 +27,14 @@ import typescriptPlugin, {
   getCategories,
 } from './packages/plugin-typescript/src/index.js';
 
-export function configureUpload(): CoreConfig {
+export function configureUpload(projectName?: string): CoreConfig {
   return {
     ...(process.env['CP_API_KEY'] && {
       upload: {
         server: 'https://api.staging.code-pushup.dev/graphql',
         apiKey: process.env['CP_API_KEY'],
         organization: 'code-pushup',
-        project: process.env['NX_TASK_TARGET_PROJECT'] ?? 'cli-workspace',
+        project: projectName ? `cli-${projectName}` : 'cli-workspace',
       },
     }),
     plugins: [],
@@ -89,20 +89,19 @@ export async function configureEslintPlugin(
 export async function configureCoveragePlugin(
   projectName?: string,
 ): Promise<CoreConfig> {
+  const targets = ['unit-test', 'int-test'];
   const config: CoveragePluginConfig = projectName
     ? // We do not need to run a coverageToolCommand. This is handled over the Nx task graph.
       {
-        reports: [
-          {
-            pathToProject: `packages/${projectName}`,
-            resultsPath: `packages/${projectName}/coverage/lcov.info`,
-          },
-        ],
+        reports: targets.map(target => ({
+          pathToProject: `packages/${projectName}`,
+          resultsPath: `coverage/${projectName}/${target}s/lcov.info`,
+        })),
       }
     : {
-        reports: await getNxCoveragePaths(['unit-test', 'int-test']),
+        reports: await getNxCoveragePaths(targets),
         coverageToolCommand: {
-          command: 'npx nx run-many -t unit-test,int-test',
+          command: `npx nx run-many -t ${targets.join(',')}`,
         },
       };
   return {

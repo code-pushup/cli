@@ -8,7 +8,12 @@
     "lint": {},
     "lint-report": {},
     "unit-test": {},
-    "int-test": {}
+    "int-test": {},
+    "code-pushup": {},
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {},
+    "code-pushup-typescript": {},
+    "code-pushup-jsdocs": {}
   },
   "tags": ["scope:plugin", "type:feature", "publishable"],
   "description": "A plugin for JavaScript packages."

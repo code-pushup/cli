@@ -12,7 +12,7 @@
       "!{projectRoot}/zod2md.config.ts",
       "!{projectRoot}/eslint.config.?(c)js",
       "!{workspaceRoot}/**/.code-pushup/**/*",
-      "!{projectRoot}/code-pushup.config.?(*.).?(m)[jt]s",
+      "!{projectRoot}/code-pushup.config.?(m)[jt]s",
       "!{projectRoot}/@(test|mocks|mock)/**/*",
       "!{projectRoot}/**/?(*.)test.[jt]s?(x)?(.snap)",
       "!{projectRoot}/**/?(*.)mocks.[jt]s?(x)",
@@ -122,8 +122,7 @@
         "args": [
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.read",
-          "--persist.outputDir={projectRoot}/.code-pushup",
-          "--upload.project=cli-{projectName}"
+          "--persist.outputDir={projectRoot}/.code-pushup"
         ],
         "env": {
           "NODE_OPTIONS": "--import tsx",
@@ -132,11 +131,11 @@
       }
     },
     "code-pushup-coverage": {
+      "dependsOn": ["*-test"],
       "cache": true,
       "inputs": ["default", "code-pushup-inputs"],
       "outputs": ["{projectRoot}/.code-pushup/coverage/runner-output.json"],
       "executor": "nx:run-commands",
-      "dependsOn": ["*-test"],
       "options": {
         "command": "node packages/cli/src/index.ts collect",
         "args": [
@@ -153,6 +152,7 @@
       }
     },
     "code-pushup-eslint": {
+      "dependsOn": ["lint"],
       "cache": true,
       "inputs": ["default", "code-pushup-inputs"],
       "outputs": ["{projectRoot}/.code-pushup/eslint/runner-output.json"],

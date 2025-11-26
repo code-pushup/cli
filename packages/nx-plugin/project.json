@@ -51,7 +51,12 @@
       }
     },
     "unit-test": {},
-    "int-test": {}
+    "int-test": {},
+    "code-pushup": {},
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {},
+    "code-pushup-typescript": {},
+    "code-pushup-jsdocs": {}
   },
   "tags": ["scope:tooling", "type:feature", "publishable"]
 }
