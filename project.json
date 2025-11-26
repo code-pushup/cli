@@ -32,7 +32,6 @@
       "executor": "nx:run-commands",
       "options": {
         "args": [
-          "--verbose",
           "--cache.read",
           "--persist.outputDir={projectRoot}/.code-pushup",
           "--upload.project={projectName}"
