@@ -2,11 +2,7 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
-    "os": [
-      {
-        "runtime": "node -e \"console.log(require('os').platform())\""
-      }
-    ],
+    "os": [{ "runtime": "node -e \"console.log(require('os').platform())\"" }],
     "production": [
       "default",
       "!{projectRoot}/README.md",
@@ -28,39 +24,16 @@
     ],
     "test-vitest-inputs": [
       "os",
-      {
-        "env": "NX_VERBOSE_LOGGING"
-      },
-      {
-        "externalDependencies": ["vitest"]
-      }
+      { "env": "NX_VERBOSE_LOGGING" },
+      { "externalDependencies": ["vitest"] }
     ],
-    "lint-eslint-inputs": [
-      {
-        "externalDependencies": ["eslint"]
-      }
-    ],
-    "typecheck-typescript-inputs": [
-      {
-        "externalDependencies": ["typescript"]
-      }
-    ],
+    "lint-eslint-inputs": [{ "externalDependencies": ["eslint"] }],
+    "typecheck-typescript-inputs": [{ "externalDependencies": ["typescript"] }],
     "code-pushup-inputs": [
-      {
-        "env": "NODE_OPTIONS"
-      },
-      {
-        "env": "TSX_TSCONFIG_PATH"
-      }
+      { "env": "NODE_OPTIONS" },
+      { "env": "TSX_TSCONFIG_PATH" }
     ],
-    "sharedGlobals": [
-      {
-        "runtime": "node -v"
-      },
-      {
-        "runtime": "npm -v"
-      }
-    ]
+    "sharedGlobals": [{ "runtime": "node -v" }, { "runtime": "npm -v" }]
   },
   "targetDefaults": {
     "lint": {
