@@ -116,6 +116,7 @@
     "code-pushup": {
       "cache": false,
       "executor": "nx:run-commands",
+      "dependsOn": ["code-pushup-*"],
       "options": {
         "command": "node packages/cli/src/index.ts",
         "args": [
