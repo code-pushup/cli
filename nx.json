@@ -115,10 +115,6 @@
     },
     "code-pushup": {
       "cache": false,
-      "outputs": [
-        "{projectRoot}/.code-pushup/report.md",
-        "{projectRoot}/.code-pushup/report.json"
-      ],
       "executor": "nx:run-commands",
       "options": {
         "command": "node packages/cli/src/index.ts",
