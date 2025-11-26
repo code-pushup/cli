@@ -135,7 +135,7 @@ async function run(): Promise<void> {
     }
 
     const options: Options = {
-      bin: 'npx nx code-pushup --nx-bail --',
+      monorepo: true,
     };
 
     const gitRefs = parseGitRefs();

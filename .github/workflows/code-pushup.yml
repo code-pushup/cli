@@ -1,4 +1,4 @@
-name: Code PushUp - Standalone Mode
+name: Code PushUp
 
 on:
   push:
