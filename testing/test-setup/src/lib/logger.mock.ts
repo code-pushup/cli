@@ -1,3 +1,5 @@
+import ansis from 'ansis';
+import cliSpinners from 'cli-spinners';
 import { type MockInstance, afterAll, beforeAll, vi } from 'vitest';
 
 const loggerSpies: MockInstance[] = [];
@@ -44,4 +46,32 @@ afterAll(() => {
   loggerSpies.forEach(loggerSpy => {
     loggerSpy.mockRestore();
   });
+});
+
+// customize ora options for test environment
+vi.mock('ora', async (): Promise<typeof import('ora')> => {
+  const oraModule = await vi.importActual<typeof import('ora')>('ora');
+  return {
+    ...oraModule,
+    default: options => {
+      const spinner = oraModule.default({
+        // skip cli-cursor package
+        hideCursor: false,
+        // skip is-interactive package
+        isEnabled: process.env['CI'] !== 'true',
+        // skip is-unicode-supported package
+        spinner: cliSpinners.dots,
+        // preserve other options
+        ...(typeof options === 'string' ? { text: options } : options),
+      });
+      // skip log-symbols package
+      vi.spyOn(spinner, 'succeed').mockImplementation(text =>
+        spinner.stopAndPersist({ text, symbol: ansis.green('✔') }),
+      );
+      vi.spyOn(spinner, 'fail').mockImplementation(text =>
+        spinner.stopAndPersist({ text, symbol: ansis.red('✖') }),
+      );
+      return spinner;
+    },
+  };
 });
