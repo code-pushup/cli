@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/models",
-  "version": "0.89.2",
+  "version": "0.90.0",
   "license": "MIT",
   "description": "Model definitions and validators for the Code PushUp CLI",
   "homepage": "https://github.com/code-pushup/cli/tree/main/packages/models#readme",

@@ -1,3 +1,19 @@
+## 0.90.0 (2025-11-26)
+
+### 🚀 Features
+
+- **ci:** improve code-pushup command logs ([5eeaf541](https://github.com/code-pushup/cli/commit/5eeaf541))
+- **utils:** add noLineBreak and noIndent options to logger methods ([4d07995c](https://github.com/code-pushup/cli/commit/4d07995c))
+- **utils:** add silent flag to executeProcess ([4b9a2d3f](https://github.com/code-pushup/cli/commit/4b9a2d3f))
+
+### 🩹 Fixes
+
+- **utils:** log spinner to stdout instead of stderr ([77991974](https://github.com/code-pushup/cli/commit/77991974))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.89.2 (2025-11-21)
 
 ### 🩹 Fixes
