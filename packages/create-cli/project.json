@@ -6,7 +6,7 @@
   "targets": {
     "build": {},
     "lint": {},
-    "lint-report": {},
+
     "unit-test": {},
     "code-pushup": {},
     "code-pushup-eslint": {},
