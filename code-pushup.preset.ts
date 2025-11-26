@@ -6,6 +6,7 @@ import type {
 } from './packages/models/src/index.js';
 import axePlugin from './packages/plugin-axe/src/index.js';
 import coveragePlugin, {
+  type CoveragePluginConfig,
   getNxCoveragePaths,
 } from './packages/plugin-coverage/src/index.js';
 import eslintPlugin, {
@@ -174,17 +175,22 @@ export const eslintCoreConfigNx = async (
 ): Promise<CoreConfig> => ({
   plugins: [
     projectName
-      ? await eslintPlugin({
-          eslintrc: `packages/${projectName}/eslint.config.js`,
-          patterns: ['.'],
-        })
-      : await eslintPlugin(await eslintConfigFromAllNxProjects(), {
-          artifacts: {
-            // We leverage Nx dependsOn to only run all lint targets before we run code-pushup
-            // generateArtifactsCommand: 'npx nx run-many -t lint',
-            artifactsPaths: ['packages/**/.eslint/eslint-report.json'],
+      ? await eslintPlugin(
+          {
+            eslintrc: `packages/${projectName}/eslint.config.js`,
+            patterns: ['.'],
           },
-        }),
+          {
+            artifacts: {
+              // We leverage Nx dependsOn to only run all lint targets before we run code-pushup
+              // generateArtifactsCommand: 'npx nx run-many -t lint',
+              artifactsPaths: [
+                `packages/${projectName}/.eslint/eslint-report.json`,
+              ],
+            },
+          },
+        )
+      : await eslintPlugin(await eslintConfigFromAllNxProjects()),
   ],
   categories: eslintCategories,
 });
@@ -199,21 +205,24 @@ export const typescriptPluginConfig = async (
 export const coverageCoreConfigNx = async (
   projectName?: string,
 ): Promise<CoreConfig> => {
-  const targetNames = ['unit-test', 'int-test'];
+  const config: CoveragePluginConfig = projectName
+    ? // We do not need to run a coverageToolCommand. This is handled over the Nx task graph.
+      {
+        reports: [
+          {
+            pathToProject: `packages/${projectName}`,
+            resultsPath: `packages/${projectName}/coverage/lcov.info`,
+          },
+        ],
+      }
+    : {
+        reports: await getNxCoveragePaths(['unit-test', 'int-test']),
+        coverageToolCommand: {
+          command: 'npx nx run-many -t unit-test,int-test',
+        },
+      };
   return {
-    plugins: [
-      await coveragePlugin({
-        // We do not need to run a coverageToolCommand. This is handled over the Nx task graph.
-        reports: projectName
-          ? [
-              {
-                pathToProject: `packages/${projectName}`,
-                resultsPath: `packages/${projectName}/coverage/lcov.info`,
-              },
-            ]
-          : await getNxCoveragePaths(targetNames),
-      }),
-    ],
+    plugins: [await coveragePlugin(config)],
     categories: coverageCategories,
   };
 };
