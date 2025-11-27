@@ -1,3 +1,13 @@
+## 0.90.1 (2025-11-27)
+
+### 🩹 Fixes
+
+- **plugin-js-packages:** pnpm outdated fallback ([d893cb22](https://github.com/code-pushup/cli/commit/d893cb22))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
 ## 0.90.0 (2025-11-26)
 
 ### 🚀 Features
