@@ -1,4 +1,5 @@
 /* eslint-disable @nx/enforce-module-boundaries */
+import { createProjectGraphAsync } from '@nx/devkit';
 import type {
   CategoryConfig,
   CoreConfig,
@@ -93,10 +94,15 @@ export async function configureCoveragePlugin(
   const config: CoveragePluginConfig = projectName
     ? // We do not need to run a coverageToolCommand. This is handled over the Nx task graph.
       {
-        reports: targets.map(target => ({
-          pathToProject: `packages/${projectName}`,
-          resultsPath: `coverage/${projectName}/${target}s/lcov.info`,
-        })),
+        reports: Object.keys(
+          (await createProjectGraphAsync()).nodes[projectName]?.data.targets ??
+            {},
+        )
+          .filter(target => targets.includes(target))
+          .map(target => ({
+            pathToProject: `packages/${projectName}`,
+            resultsPath: `coverage/${projectName}/${target}s/lcov.info`,
+          })),
       }
     : {
         reports: await getNxCoveragePaths(targets),
