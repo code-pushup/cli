@@ -28,14 +28,14 @@ import typescriptPlugin, {
   getCategories,
 } from './packages/plugin-typescript/src/index.js';
 
-export function configureUpload(projectName?: string): CoreConfig {
+export function configureUpload(projectName: string = 'workspace'): CoreConfig {
   return {
     ...(process.env['CP_API_KEY'] && {
       upload: {
         server: 'https://api.staging.code-pushup.dev/graphql',
         apiKey: process.env['CP_API_KEY'],
         organization: 'code-pushup',
-        project: projectName ? `cli-${projectName}` : 'cli-workspace',
+        project: `cli-${projectName}`,
       },
     }),
     plugins: [],
