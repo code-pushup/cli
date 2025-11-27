@@ -10,6 +10,7 @@ import {
   type SourceFileIssue,
   runInCI,
 } from '@code-pushup/ci';
+import { DEFAULT_PERSIST_CONFIG } from '@code-pushup/models';
 import {
   CODE_PUSHUP_UNICODE_LOGO,
   logger,
@@ -136,6 +137,20 @@ async function run(): Promise<void> {
 
     const options: Options = {
       monorepo: true,
+      configPatterns: {
+        persist: {
+          ...DEFAULT_PERSIST_CONFIG,
+          outputDir: '.code-pushup/{projectName}',
+        },
+        ...(process.env['CP_API_KEY'] && {
+          upload: {
+            server: 'https://api.staging.code-pushup.dev/graphql',
+            apiKey: process.env['CP_API_KEY'],
+            organization: 'code-pushup',
+            project: 'cli-{projectName}',
+          },
+        }),
+      },
     };
 
     const gitRefs = parseGitRefs();
