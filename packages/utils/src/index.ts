@@ -84,6 +84,7 @@ export {
   hasNoNullableProps,
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
+  isRecord,
 } from './lib/guards.js';
 export { interpolate } from './lib/interpolate.js';
 export { logMultipleResults } from './lib/log-results.js';
