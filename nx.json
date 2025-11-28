@@ -13,6 +13,7 @@
       "!{projectRoot}/eslint.config.?(c)js",
       "!{workspaceRoot}/**/.code-pushup/**/*",
       "!{projectRoot}/code-pushup.config.?(m)[jt]s",
+      "!{projectRoot}/code-pushup.config.bundled_*.mjs",
       "!{projectRoot}/@(test|mocks|mock)/**/*",
       "!{projectRoot}/**/?(*.)test.[jt]s?(x)?(.snap)",
       "!{projectRoot}/**/?(*.)mocks.[jt]s?(x)",
