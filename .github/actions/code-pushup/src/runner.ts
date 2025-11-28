@@ -87,7 +87,7 @@ function createAnnotationsFromIssues(issues: SourceFileIssue[]): void {
 }
 
 function createGitHubApiClient(): ProviderAPIClient {
-  const token = process.env.GH_TOKEN;
+  const token = process.env['GH_TOKEN'];
 
   if (!token) {
     throw new Error('No GitHub token found');
@@ -135,23 +135,32 @@ async function run(): Promise<void> {
       logger.setVerbose(true);
     }
 
-    const options: Options = {
-      monorepo: true,
-      configPatterns: {
-        persist: {
-          ...DEFAULT_PERSIST_CONFIG,
-          outputDir: '.code-pushup/{projectName}',
-        },
-        ...(process.env['CP_API_KEY'] && {
-          upload: {
-            server: 'https://api.staging.code-pushup.dev/graphql',
-            apiKey: process.env['CP_API_KEY'],
-            organization: 'code-pushup',
-            project: 'cli-{projectName}',
+    const isMonorepo = process.env['MODE'] === 'monorepo';
+
+    const options: Options = isMonorepo
+      ? {
+          jobId: 'monorepo-mode',
+          monorepo: 'nx',
+          nxProjectsFilter: '--with-target=code-pushup --exclude=workspace',
+          configPatterns: {
+            persist: {
+              ...DEFAULT_PERSIST_CONFIG,
+              outputDir: '.code-pushup/{projectName}',
+            },
+            ...(process.env['CP_API_KEY'] && {
+              upload: {
+                server: 'https://api.staging.code-pushup.dev/graphql',
+                apiKey: process.env['CP_API_KEY'],
+                organization: 'code-pushup',
+                project: 'cli-{projectName}',
+              },
+            }),
           },
-        }),
-      },
-    };
+        }
+      : {
+          jobId: 'standalone-mode',
+          bin: 'npx nx code-pushup --',
+        };
 
     const gitRefs = parseGitRefs();
 

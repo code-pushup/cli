@@ -6,6 +6,9 @@ inputs:
     description: GitHub token for API access
     required: true
     default: ${{ github.token }}
+  mode:
+    description: Is `standalone` or `monorepo` mode?
+    required: true
 
 runs:
   using: composite
@@ -16,3 +19,4 @@ runs:
       env:
         TSX_TSCONFIG_PATH: .github/actions/code-pushup/tsconfig.json
         GH_TOKEN: ${{ inputs.token }}
+        MODE: ${{ inputs.mode }}
