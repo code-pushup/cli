@@ -3,6 +3,7 @@ import {
   hasNoNullableProps,
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
+  isRecord,
 } from './guards.js';
 
 describe('promise-result', () => {
@@ -40,5 +41,31 @@ describe('hasNoNullableProps', () => {
 
   it('should return true for empty object', () => {
     expect(hasNoNullableProps({})).toBeTrue();
+  });
+});
+
+describe('isRecord', () => {
+  it('should return true for an object', () => {
+    expect(isRecord({ foo: 'bar' })).toBeTrue();
+  });
+
+  it('should return true for an empty object', () => {
+    expect(isRecord({})).toBeTrue();
+  });
+
+  it('should return true for an array', () => {
+    expect(isRecord([1, 2, 3])).toBeTrue();
+  });
+
+  it('should return false for a string', () => {
+    expect(isRecord('foo')).toBeFalse();
+  });
+
+  it('should return false for null', () => {
+    expect(isRecord(null)).toBeFalse();
+  });
+
+  it('should return false for undefined', () => {
+    expect(isRecord(undefined)).toBeFalse();
   });
 });

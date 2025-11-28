@@ -18,7 +18,7 @@ vi.mock('@code-pushup/core', async () => {
   return {
     ...(core as object),
     readRcByPath: vi.fn().mockImplementation((filepath: string): CoreConfig => {
-      const allPersistOptions = {
+      const allPersistOptions: CoreConfig = {
         ...CORE_CONFIG_MOCK,
         persist: {
           filename: 'rc-filename',
@@ -26,7 +26,7 @@ vi.mock('@code-pushup/core', async () => {
           outputDir: 'rc-outputDir',
         },
       };
-      const persistOnlyFilename = {
+      const persistOnlyFilename: CoreConfig = {
         ...CORE_CONFIG_MOCK,
         persist: {
           filename: 'rc-filename',
