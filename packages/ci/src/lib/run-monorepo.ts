@@ -81,7 +81,7 @@ export async function runInMonorepoMode(
 
   const commentId = settings.skipComment
     ? null
-    : await commentOnPR(diffPath, api);
+    : await commentOnPR(diffPath, api, settings);
 
   return {
     mode: 'monorepo',

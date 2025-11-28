@@ -20,6 +20,7 @@ export type Options = {
   skipComment?: boolean;
   configPatterns?: ConfigPatterns | null;
   searchCommits?: boolean | number;
+  jobId?: string | number | null;
 };
 
 /**

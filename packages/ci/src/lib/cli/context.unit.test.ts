@@ -1,4 +1,5 @@
 import { expect } from 'vitest';
+import { DEFAULT_SETTINGS } from '../settings.js';
 import { type CommandContext, createCommandContext } from './context.js';
 
 describe('createCommandContext', () => {
@@ -6,19 +7,11 @@ describe('createCommandContext', () => {
     expect(
       createCommandContext(
         {
+          ...DEFAULT_SETTINGS,
           bin: 'npx --no-install code-pushup',
           config: null,
-          detectNewIssues: true,
           directory: '/test',
           silent: false,
-          monorepo: false,
-          parallel: false,
-          nxProjectsFilter: '--with-target={task}',
-          projects: null,
-          task: 'code-pushup',
-          skipComment: false,
-          configPatterns: null,
-          searchCommits: false,
         },
         null,
       ),
@@ -34,19 +27,11 @@ describe('createCommandContext', () => {
     expect(
       createCommandContext(
         {
+          ...DEFAULT_SETTINGS,
           bin: 'npx --no-install code-pushup',
           config: null,
-          detectNewIssues: true,
           directory: '/test',
           silent: false,
-          monorepo: false,
-          parallel: false,
-          nxProjectsFilter: '--with-target={task}',
-          projects: null,
-          task: 'code-pushup',
-          skipComment: false,
-          configPatterns: null,
-          searchCommits: false,
         },
         {
           name: 'ui',

@@ -16,6 +16,7 @@ export const DEFAULT_SETTINGS: Settings = {
   skipComment: false,
   configPatterns: null,
   searchCommits: false,
+  jobId: null,
 };
 
 export const MIN_SEARCH_COMMITS = 1;
