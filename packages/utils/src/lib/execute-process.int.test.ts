@@ -104,7 +104,6 @@ describe('executeProcess', () => {
     expect(logger.command).toHaveBeenCalledWith(
       'echo hello',
       expect.any(Function),
-      {},
     );
   });
 

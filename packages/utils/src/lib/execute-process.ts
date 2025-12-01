@@ -158,7 +158,7 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   const { onStdout, onStderr, onError, onComplete } = observer ?? {};
 
   const bin = [command, ...(args ?? [])].join(' ');
-  logger.debug(JSON.stringify(options), { force: true });
+
   const worker = () =>
     new Promise<ProcessResult>((resolve, reject) => {
       const spawnedProcess = spawn(command, args ?? [], {

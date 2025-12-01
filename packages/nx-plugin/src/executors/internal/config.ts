@@ -27,18 +27,12 @@ export function persistConfig(
 ): Partial<PersistConfig> {
   const {
     format,
-    outputDir = '{workspaceRoot}/.code-pushup/{projectName}',
+    outputDir = '{projectRoot}/.code-pushup',
     filename,
   } = options;
 
-  const { workspaceRoot, projectConfig } = context;
-  const projectName = projectConfig?.name ?? '';
-  const resolvedOutputDir = outputDir
-    .replace('{workspaceRoot}', workspaceRoot)
-    .replace('{projectName}', projectName);
-
   return {
-    outputDir: resolvedOutputDir,
+    outputDir,
     ...(format ? { format } : {}),
     ...(filename ? { filename } : {}),
   };

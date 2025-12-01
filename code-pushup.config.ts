@@ -21,9 +21,6 @@ const config: CoreConfig = {
       server: 'https://api.staging.code-pushup.dev/graphql',
       apiKey: process.env['CP_API_KEY'],
     },
-    persist: {
-      outputDir: '.code-pushup',
-    },
   }),
   plugins: [],
 };
