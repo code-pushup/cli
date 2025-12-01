@@ -27,17 +27,21 @@ async function addTargetToWorkspace(
 ) {
   const { cwd, project } = options;
   const projectCfg = readProjectConfiguration(tree, project);
+  const { root } = projectCfg;
+  const configPath = path.join(root, 'code-pushup.config.ts');
   updateProjectConfiguration(tree, project, {
     ...projectCfg,
     targets: {
       ...projectCfg.targets,
       'code-pushup': {
         executor: '@code-pushup/nx-plugin:cli',
-        ...(executorOptions && { options: executorOptions }),
+        options: {
+          config: configPath,
+          ...executorOptions,
+        },
       },
     },
   });
-  const { root } = projectCfg;
   generateCodePushupConfig(tree, root, {
     plugins: [
       {
