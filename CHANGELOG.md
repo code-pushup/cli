@@ -1,3 +1,18 @@
+## 0.91.0 (2025-12-01)
+
+### 🚀 Features
+
+- **ci:** add jobId option to prevent conflicting PR comments ([d00606fa](https://github.com/code-pushup/cli/commit/d00606fa))
+- **plugin-typescript:** make init function synchronous ([62df7a67](https://github.com/code-pushup/cli/commit/62df7a67))
+
+### 🩹 Fixes
+
+- **cli:** handle multiple --persist.outputDir arguments ([a9ca7f94](https://github.com/code-pushup/cli/commit/a9ca7f94))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.90.1 (2025-11-27)
 
 ### 🩹 Fixes
