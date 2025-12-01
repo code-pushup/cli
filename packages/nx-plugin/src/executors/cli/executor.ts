@@ -12,10 +12,8 @@ export default async function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   { cwd }: ExecutorContext,
 ): Promise<ExecutorOutput> {
-  const { logger, stringifyError, formatCommand } = await import(
-    '@code-pushup/utils'
-  );
-  const { objectToCliArgs } = await import('@code-pushup/utils');
+  const { logger, stringifyError, objectToCliArgs, formatCommand } =
+    await import('@code-pushup/utils');
 
   const {
     dryRun,

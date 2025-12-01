@@ -11,7 +11,7 @@ export async function createConfigurationTarget(options?: {
     ...(projectName ? { project: projectName } : {}),
   });
   const argsString = args.length > 0 ? args.join(' ') : '';
-  const baseCommand = `nx g ${bin}:configuration`;
+  const baseCommand = `nx g ${PACKAGE_NAME}:configuration`;
   return {
     command: `nx g ${PACKAGE_NAME}:configuration${args.length > 0 ? ` ${args.join(' ')}` : ''}`,
   };
