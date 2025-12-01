@@ -34,7 +34,7 @@ export function parseAutorunExecutorOptions(
   options: Partial<AutorunCommandExecutorOptions>,
   normalizedContext: NormalizedExecutorContext,
 ): AutorunCommandExecutorOptions {
-  const { projectPrefix, persist, upload, command, output } = options;
+  const { projectPrefix, persist, upload, command } = options;
   const needsUploadParams =
     command === 'upload' || command === 'autorun' || command === undefined;
   const uploadCfg = uploadConfig(
@@ -46,11 +46,48 @@ export function parseAutorunExecutorOptions(
     ...parsePrintConfigExecutorOptions(options),
     ...parseAutorunExecutorOnlyOptions(options),
     ...globalConfig(options, normalizedContext),
-    ...(output ? { output } : {}),
     persist: persistConfig({ projectPrefix, ...persist }, normalizedContext),
     // @TODO This is a hack to avoid validation errors of upload config for commands that dont need it.
     // Fix: use utils and execute the core logic directly
     // Blocked by Nx plugins can't compile to es6
     ...(needsUploadParams && hasApiToken ? { upload: uploadCfg } : {}),
+  };
+}
+
+/**
+ * Deeply merges executor options.
+ *
+ * @param targetOptions - The original options from the target configuration.
+ * @param cliOptions - The options from Nx, combining target options and CLI arguments.
+ * @returns A new object with deeply merged properties.
+ *
+ * Nx performs a shallow merge by default, where command-line arguments can override entire objects
+ * (e.g., `--persist.filename` replaces the entire `persist` object).
+ * This function ensures that nested properties are deeply merged,
+ * preserving the original target options where CLI arguments are not provided.
+ */
+export function mergeExecutorOptions(
+  targetOptions: Partial<AutorunCommandExecutorOptions>,
+  cliOptions: Partial<AutorunCommandExecutorOptions>,
+): AutorunCommandExecutorOptions {
+  return {
+    ...targetOptions,
+    ...cliOptions,
+    ...(targetOptions?.persist || cliOptions?.persist
+      ? {
+          persist: {
+            ...targetOptions?.persist,
+            ...cliOptions?.persist,
+          },
+        }
+      : {}),
+    ...(targetOptions?.upload || cliOptions?.upload
+      ? {
+          upload: {
+            ...targetOptions?.upload,
+            ...cliOptions?.upload,
+          },
+        }
+      : {}),
   };
 }

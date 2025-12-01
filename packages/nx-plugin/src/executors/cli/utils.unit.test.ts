@@ -2,6 +2,7 @@ import { type MockInstance, expect, vi } from 'vitest';
 import { osAgnosticPath } from '@code-pushup/test-utils';
 import type { Command } from '../internal/types.js';
 import {
+  mergeExecutorOptions,
   parseAutorunExecutorOnlyOptions,
   parseAutorunExecutorOptions,
   parsePrintConfigExecutorOptions,
@@ -107,7 +108,7 @@ describe('parseAutorunExecutorOptions', () => {
     );
 
     expect(osAgnosticPath(executorOptions.persist?.outputDir ?? '')).toBe(
-      osAgnosticPath('{projectRoot}/.code-pushup'),
+      osAgnosticPath('workspaceRoot/.code-pushup/my-app'),
     );
   });
 
@@ -168,4 +169,27 @@ describe('parseAutorunExecutorOptions', () => {
       );
     },
   );
+});
+
+describe('mergeExecutorOptions', () => {
+  it('should deeply merge target and CLI options', () => {
+    const targetOptions = {
+      persist: {
+        outputDir: '.reports',
+        filename: 'report',
+      },
+    };
+    const cliOptions = {
+      persist: {
+        filename: 'report-file',
+      },
+    };
+    const expected = {
+      persist: {
+        outputDir: '.reports',
+        filename: 'report-file',
+      },
+    };
+    expect(mergeExecutorOptions(targetOptions, cliOptions)).toEqual(expected);
+  });
 });

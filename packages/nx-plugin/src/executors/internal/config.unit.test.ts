@@ -143,7 +143,9 @@ describe('persistConfig', () => {
         },
       },
     );
-    expect(String(outputDir)).toBe('{projectRoot}/.code-pushup');
+    expect(osAgnosticPath(String(outputDir))).toBe(
+      osAgnosticPath(`/test/root/workspace-root/.code-pushup/${projectName}`),
+    );
   });
 
   it('should parse given outputDir options', () => {

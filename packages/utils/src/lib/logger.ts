@@ -241,7 +241,6 @@ export class Logger {
     bin: string,
     worker: () => Promise<T>,
     options?: {
-      env?: Record<string, string | number | boolean>;
       cwd?: string;
     },
   ): Promise<T> {
