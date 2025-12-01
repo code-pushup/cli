@@ -235,7 +235,6 @@ describe('executor command', () => {
     const cleanStdout = removeColorCodes(stdout);
     expect(cleanStdout).toContain('nx run my-lib:code-pushup collect');
 
-    // Check for report in project root's .code-pushup directory
     const report = await readJsonFile(
       path.join(cwd, 'libs', project, '.code-pushup', 'report.json'),
     );
