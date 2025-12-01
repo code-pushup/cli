@@ -1,3 +1,4 @@
+import ansis from 'ansis';
 import { vol } from 'memfs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -120,10 +121,10 @@ describe('saveOutputFiles', () => {
     });
 
     expect(logger.debug).toHaveBeenCalledWith(
-      `Copied current report from ${path.join(MEMFS_VOLUME, 'report.json')} to ${path.join(MEMFS_VOLUME, '.code-pushup/.ci/.current/report.json')}`,
+      `${ansis.bold.blue('<✓>')} Copied current report from ${path.join(MEMFS_VOLUME, 'report.json')} to ${path.join(MEMFS_VOLUME, '.code-pushup/.ci/.current/report.json')}\n`,
     );
     expect(logger.debug).toHaveBeenCalledWith(
-      `Copied current report from ${path.join(MEMFS_VOLUME, 'report.md')} to ${path.join(MEMFS_VOLUME, '.code-pushup/.ci/.current/report.md')}`,
+      `${ansis.bold.blue('<✓>')} Copied current report from ${path.join(MEMFS_VOLUME, 'report.md')} to ${path.join(MEMFS_VOLUME, '.code-pushup/.ci/.current/report.md')}\n`,
     );
   });
 

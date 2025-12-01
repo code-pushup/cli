@@ -130,6 +130,7 @@ describe('executeCliCommand', () => {
       `
 - $ npx code-pushup
 ✔ $ npx code-pushup (42 ms)
+
 `.trimStart(),
     );
   });
@@ -152,6 +153,7 @@ WARN: API key is missing, skipping upload
 Collected report files in .code-pushup directory
 
 ✔ $ npx code-pushup (42 ms)
+
 `.trimStart(),
     );
   });
@@ -197,6 +199,7 @@ Collected report
 Uploaded report to portal
 
 ✔ $ npx code-pushup (42 ms)
+
 `.trimStart(),
     );
   });
@@ -222,6 +225,7 @@ Code PushUp CLI v0.42.0
 ERROR: Config file not found
 
 ✖ $ npx code-pushup
+
 `.trimStart(),
     );
   });
@@ -236,6 +240,7 @@ ERROR: Config file not found
       `
 - $ npx code-pushup
 ✔ $ npx code-pushup (42 ms)
+
 `.trimStart(),
     );
   });
@@ -261,6 +266,7 @@ Code PushUp CLI v0.42.0
 ERROR: Config file not found
 
 ✖ $ npx code-pushup
+
 `.trimStart(),
     );
   });

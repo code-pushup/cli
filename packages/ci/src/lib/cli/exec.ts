@@ -48,21 +48,25 @@ export async function executeCliCommand(
   };
   const bin = serializeCommandWithArgs(config);
 
-  await logger.command(bin, async () => {
-    try {
-      await executeProcess(config);
-    } catch (error) {
-      // ensure output of failed process is always logged for debugging
-      if (context.silent) {
-        logger.newline();
-        logger.info(output, { noIndent: true });
-        if (!output.endsWith('\n')) {
+  try {
+    await logger.command(bin, async () => {
+      try {
+        await executeProcess(config);
+      } catch (error) {
+        // ensure output of failed process is always logged for debugging
+        if (context.silent) {
           logger.newline();
+          logger.info(output, { noIndent: true });
+          if (!output.endsWith('\n')) {
+            logger.newline();
+          }
         }
+        throw error;
       }
-      throw error;
-    }
-  });
+    });
+  } finally {
+    logger.newline();
+  }
 }
 
 function combineArgs(

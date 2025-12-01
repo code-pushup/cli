@@ -1,3 +1,4 @@
+import ansis from 'ansis';
 import { vol } from 'memfs';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -112,7 +113,7 @@ describe('commentOnPR', () => {
       expect.stringContaining('...*[Comment body truncated]*'),
     );
     expect(logger.warn).toHaveBeenCalledWith(
-      'Comment body is too long. Truncating to 1000000 characters.',
+      `${ansis.bold.blue('<✓>')} Comment body is too long. Truncating to 1000000 characters.\n`,
     );
   });
 });

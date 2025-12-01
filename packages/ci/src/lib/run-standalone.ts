@@ -1,5 +1,5 @@
-import { logger } from '@code-pushup/utils';
 import { commentOnPR } from './comment.js';
+import { logInfo } from './log.js';
 import type { StandaloneRunResult } from './models.js';
 import { type RunEnv, runOnProject } from './run-utils.js';
 
@@ -8,7 +8,7 @@ export async function runInStandaloneMode(
 ): Promise<StandaloneRunResult> {
   const { api, settings } = env;
 
-  logger.info('Running Code PushUp in standalone project mode');
+  logInfo('Running Code PushUp in standalone project mode');
 
   const { files, newIssues } = await runOnProject(null, env);
 
