@@ -148,7 +148,7 @@ describe('executor command', () => {
     ).resolves.not.toThrow();
   });
 
-  it('should execute print-config executor with api key', async () => {
+  it('should execute print-config executor with upload config', async () => {
     const cwd = path.join(testFileDir, 'execute-print-config-command');
     await addTargetToWorkspace(tree, { cwd, project });
 
@@ -160,6 +160,9 @@ describe('executor command', () => {
         `${project}:code-pushup`,
         'print-config',
         '--upload.apiKey=a123a',
+        '--upload.server=https://example.com',
+        '--upload.organization=test-org',
+        '--upload.project=test-project',
       ],
       cwd,
     });
@@ -207,9 +210,15 @@ describe('executor command', () => {
     );
     expect(cleanStdout).toContain('Code PushUp CLI');
 
-    await expect(
-      readJsonFile(path.join(cwd, '.reports', 'terminal-report.json')),
-    ).resolves.not.toThrow();
+    // Check for report in project root's .reports directory
+    const reportPath = path.join(
+      cwd,
+      'libs',
+      project,
+      '.reports',
+      'terminal-report.json',
+    );
+    await expect(readJsonFile(reportPath)).resolves.not.toThrow();
   });
 
   it('should execute collect executor and add report to sub folder named by project', async () => {
@@ -226,8 +235,9 @@ describe('executor command', () => {
     const cleanStdout = removeColorCodes(stdout);
     expect(cleanStdout).toContain('nx run my-lib:code-pushup collect');
 
+    // Check for report in project root's .code-pushup directory
     const report = await readJsonFile(
-      path.join(cwd, '.code-pushup', project, 'report.json'),
+      path.join(cwd, 'libs', project, '.code-pushup', 'report.json'),
     );
     expect(report).toStrictEqual(
       expect.objectContaining({

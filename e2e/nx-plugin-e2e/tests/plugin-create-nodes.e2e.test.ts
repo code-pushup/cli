@@ -199,8 +199,9 @@ describe('nx-plugin', () => {
     const cleanStdout = removeColorCodes(stdout);
     // Nx command
     expect(cleanStdout).toContain('nx run my-lib:code-pushup');
-    // Run CLI executor
-    expect(cleanStdout).toContain('Command: npx @code-pushup/cli');
+    // Run CLI executor - check for DryRun execution message
+    expect(cleanStdout).toContain('DryRun execution of:');
+    expect(cleanStdout).toContain('npx @code-pushup/cli');
     expect(cleanStdout).toContain('--dryRun --verbose');
   });
 
