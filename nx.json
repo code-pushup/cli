@@ -337,6 +337,7 @@
     "releaseTagPattern": "v{version}"
   },
   "plugins": [
+    "@code-pushup/nx-plugin",
     {
       "plugin": "@push-based/nx-verdaccio",
       "options": {
