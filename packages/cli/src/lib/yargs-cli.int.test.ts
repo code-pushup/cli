@@ -103,6 +103,14 @@ describe('yargsCli', () => {
     expect(parsedArgv.config).toBe('./config.b.ts');
   });
 
+  it('should use the last occurrence of an argument if persist.outputDir is passed multiple times', async () => {
+    const parsedArgv = await yargsCli<Pick<CoreConfig, 'persist'>>(
+      ['--persist.outputDir=output-a', '--persist.outputDir=output-b'],
+      { options },
+    ).parseAsync();
+    expect(parsedArgv.persist!.outputDir).toBe('output-b');
+  });
+
   it('should ignore unknown options', async () => {
     const parsedArgv = await yargsCli<GlobalOptions>(
       ['--no-progress', '--verbose'],

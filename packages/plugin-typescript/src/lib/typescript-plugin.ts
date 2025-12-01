@@ -14,9 +14,9 @@ const packageJson = createRequire(import.meta.url)(
   '../../package.json',
 ) as typeof import('../../package.json');
 
-export async function typescriptPlugin(
+export function typescriptPlugin(
   options?: TypescriptPluginOptions,
-): Promise<PluginConfig> {
+): PluginConfig {
   const {
     tsconfig = DEFAULT_TS_CONFIG,
     onlyAudits,

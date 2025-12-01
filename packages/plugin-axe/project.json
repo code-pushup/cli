@@ -8,6 +8,11 @@
   "targets": {
     "build": {},
     "lint": {},
-    "unit-test": {}
+    "unit-test": {},
+    "code-pushup": {},
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {},
+    "code-pushup-typescript": {},
+    "code-pushup-jsdocs": {}
   }
 }

@@ -14,7 +14,7 @@ export async function runInStandaloneMode(
 
   const commentMdPath = files.comparison?.md;
   if (!settings.skipComment && commentMdPath) {
-    const commentId = await commentOnPR(commentMdPath, api);
+    const commentId = await commentOnPR(commentMdPath, api, settings);
     return {
       mode: 'standalone',
       files,

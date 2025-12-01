@@ -39,19 +39,19 @@ TypeScript compiler diagnostics are mapped to Code PushUp audits in the followin
 
 3. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.ts`).
 
-By default, a root `tsconfig.json` is used to compile your codebase. Based on those compiler options, the plugin will generate audits.
+   By default, a root `tsconfig.json` is used to compile your codebase. Based on those compiler options, the plugin will generate audits.
 
-```ts
-import typescriptPlugin from '@code-pushup/typescript-plugin';
+   ```ts
+   import typescriptPlugin from '@code-pushup/typescript-plugin';
 
-export default {
-  // ...
-  plugins: [
-    // ...
-    await typescriptPlugin(),
-  ],
-};
-```
+   export default {
+     // ...
+     plugins: [
+       // ...
+       typescriptPlugin(),
+     ],
+   };
+   ```
 
 4. Run the CLI with `npx code-pushup collect` and view or upload the report (refer to [CLI docs](../cli/README.md)).
 
@@ -94,7 +94,7 @@ The plugin accepts the following parameters:
 Optional parameter. The `tsconfig` option accepts a string that defines the path to your config file and defaults to `tsconfig.json`.
 
 ```js
-await typescriptPlugin({
+typescriptPlugin({
   tsconfig: './tsconfig.json',
 });
 ```
@@ -104,7 +104,7 @@ await typescriptPlugin({
 The `onlyAudits` option allows you to specify which documentation types you want to measure. Only the specified audits will be included in the results. All audits are included by default. Example:
 
 ```js
-await typescriptPlugin({
+typescriptPlugin({
   onlyAudits: ['no-implicit-any'],
 });
 ```
