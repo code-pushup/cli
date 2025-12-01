@@ -19,7 +19,7 @@ export default async function runAutorunExecutor(
     dryRun,
     verbose,
     command: cliCommand,
-    env,
+    env: targetEnv,
     bin,
     ...argsObj
   } = terminalAndExecutorOptions;
@@ -29,14 +29,13 @@ export default async function runAutorunExecutor(
     ...(cliCommand ? [cliCommand] : []),
   ];
   const args = objectToCliArgs(argsObj);
-  const envVariables = {
-    ...process.env,
-    ...env,
+  const executorEnvVariables = {
+    ...targetEnv,
     ...(verbose && { CP_VERBOSE: 'true' }),
   };
   const binString = `${command} ${positionals.join(' ')} ${args.join(' ')}`;
   const formattedBinString = formatCommand(binString, {
-    env: envVariables,
+    env: executorEnvVariables,
     cwd,
   });
 
@@ -47,7 +46,10 @@ export default async function runAutorunExecutor(
       await executeProcess({
         command,
         args: [...positionals, ...args],
-        env: envVariables,
+        env: {
+          ...process.env,
+          ...executorEnvVariables,
+        },
         ...(cwd ? { cwd } : {}),
       });
     } catch (error) {
