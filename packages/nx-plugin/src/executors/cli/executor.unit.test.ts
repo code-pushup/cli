@@ -1,7 +1,7 @@
 import { logger } from '@nx/devkit';
 import { afterAll, afterEach, beforeEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
-import { MEMFS_VOLUME, removeColorCodes } from '@code-pushup/test-utils';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as executeProcessModule from '../../internal/execute-process.js';
 import runAutorunExecutor from './executor.js';
 
