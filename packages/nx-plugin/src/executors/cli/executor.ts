@@ -19,7 +19,6 @@ export default async function runAutorunExecutor(
     dryRun,
     verbose,
     command: cliCommand,
-    env: targetEnv,
     bin,
     ...argsObj
   } = terminalAndExecutorOptions;
@@ -30,7 +29,6 @@ export default async function runAutorunExecutor(
   ];
   const args = objectToCliArgs(argsObj);
   const executorEnvVariables = {
-    ...targetEnv,
     ...(verbose && { CP_VERBOSE: 'true' }),
   };
   const binString = `${command} ${positionals.join(' ')} ${args.join(' ')}`;
