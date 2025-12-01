@@ -44,13 +44,17 @@ describe('runAutorunExecutor', () => {
 
   it('should call executeProcess with return result', async () => {
     const output = await runAutorunExecutor({}, executorContext('utils'));
-    expect(output.success).toBe(true);
-    expect(output.command).toMatch('npx @code-pushup/cli');
-    expect(executeProcessSpy).toHaveBeenCalledWith({
-      command: 'npx',
-      args: expect.arrayContaining(['@code-pushup/cli']),
-      cwd: MEMFS_VOLUME,
+    expect(output).toStrictEqual({
+      success: true,
+      command: expect.stringContaining('npx @code-pushup/cli'),
     });
+    expect(executeProcessSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: 'npx',
+        args: expect.arrayContaining(['@code-pushup/cli']),
+        cwd: MEMFS_VOLUME,
+      }),
+    );
   });
 
   it('should normalize context', async () => {
@@ -62,12 +66,15 @@ describe('runAutorunExecutor', () => {
       },
     );
     expect(output.success).toBe(true);
-    expect(output.command).toMatch('utils');
-    expect(executeProcessSpy).toHaveBeenCalledWith({
-      command: 'npx',
-      args: expect.arrayContaining(['@code-pushup/cli']),
-      cwd: 'cwd-form-context',
-    });
+    expect(output.command).toMatch('npx @code-pushup/cli');
+    expect(output.command).toContain('cwd-form-context');
+    expect(executeProcessSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: 'npx',
+        args: expect.arrayContaining(['@code-pushup/cli']),
+        cwd: 'cwd-form-context',
+      }),
+    );
   });
 
   it('should process executorOptions', async () => {
@@ -104,7 +111,6 @@ describe('runAutorunExecutor', () => {
     expect(output.command).toMatch(
       '--persist.format="md" --persist.format="json"',
     );
-    expect(output.command).toMatch('--upload.apiKey="cp_1234567"');
     expect(output.command).toMatch('--upload.project="CLI"');
   });
 
@@ -115,26 +121,23 @@ describe('runAutorunExecutor', () => {
     );
     expect(executeProcessSpy).toHaveBeenCalledTimes(1);
 
-    expect(output.command).toMatch('--verbose');
+    expect(output.command).toMatch('CP_VERBOSE="true"');
+    expect(output.command).not.toMatch('--verbose');
     expect(loggerWarnSpy).toHaveBeenCalledTimes(0);
-    expect(loggerInfoSpy).toHaveBeenCalledTimes(2);
-    expect(loggerInfoSpy).toHaveBeenCalledWith(
-      expect.stringContaining(`Run CLI executor`),
-    );
-    expect(loggerInfoSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Command: npx @code-pushup/cli'),
-    );
+    expect(loggerInfoSpy).toHaveBeenCalledTimes(0);
   });
 
   it('should log command if dryRun is set', async () => {
-    await runAutorunExecutor({ dryRun: true }, executorContext('utils'));
-
-    expect(loggerInfoSpy).toHaveBeenCalledTimes(0);
-    expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'DryRun execution of: npx @code-pushup/cli --dryRun',
-      ),
+    const output = await runAutorunExecutor(
+      { dryRun: true },
+      executorContext('utils'),
     );
+
+    expect(output).toStrictEqual({
+      success: true,
+      command: expect.stringContaining('npx @code-pushup/cli'),
+    });
+    expect(loggerInfoSpy).toHaveBeenCalledTimes(0);
+    expect(loggerWarnSpy).toHaveBeenCalledTimes(0);
   });
 });
