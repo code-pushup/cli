@@ -197,7 +197,6 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 
 | Option           | Type      | Default                                      | Description                                                                                                                |
 | ---------------- | --------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| **`--progress`** | `boolean` | `false` in CI, otherwise `true`              | Show progress bar in stdout.                                                                                               |
 | **`--verbose`**  | `boolean` | `false`                                      | When true creates more verbose output. This is helpful when debugging. You may also set `CP_VERBOSE` env variable instead. |
 | **`--config`**   | `string`  | looks for `code-pushup.config.{ts\|mjs\|js}` | Path to config file.                                                                                                       |
 | **`--tsconfig`** | `string`  | n/a                                          | Path to a TypeScript config, used to load config file.                                                                     |

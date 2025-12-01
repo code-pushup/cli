@@ -1,0 +1,55 @@
+{
+  "name": "@code-pushup/axe-plugin",
+  "version": "0.90.1",
+  "license": "MIT",
+  "description": "Code PushUp plugin for detecting accessibility issues using Axe 🌐",
+  "homepage": "https://github.com/code-pushup/cli/tree/main/packages/plugin-axe#readme",
+  "bugs": {
+    "url": "https://github.com/code-pushup/cli/issues?q=is%3Aissue%20state%3Aopen%20type%3ABug%20label%3A%22🧩%20axe-plugin%22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code-pushup/cli.git",
+    "directory": "packages/plugin-axe"
+  },
+  "keywords": [
+    "CLI",
+    "Code PushUp",
+    "plugin",
+    "axe",
+    "axe-core",
+    "accessibility",
+    "a11y",
+    "WCAG",
+    "compliance",
+    "testing",
+    "quality",
+    "automation",
+    "runtime analysis",
+    "audit",
+    "score monitoring",
+    "developer tools",
+    "conformance",
+    "KPI tracking",
+    "tech debt",
+    "automated feedback",
+    "regression guard",
+    "actionable feedback"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "dependencies": {
+    "@axe-core/playwright": "^4.11.0",
+    "@code-pushup/models": "0.90.1",
+    "@code-pushup/utils": "0.90.1",
+    "axe-core": "^4.11.0",
+    "playwright-core": "^1.56.1",
+    "zod": "^4.1.12"
+  },
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
+}

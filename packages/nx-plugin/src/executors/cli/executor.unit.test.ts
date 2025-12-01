@@ -1,6 +1,7 @@
+import { logger } from '@nx/devkit';
 import { afterAll, afterEach, beforeEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
-import { MEMFS_VOLUME, removeColorCodes } from '@code-pushup/test-utils';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as executeProcessModule from '../../internal/execute-process.js';
 import runAutorunExecutor from './executor.js';
 
@@ -8,29 +9,20 @@ describe('runAutorunExecutor', () => {
   const processEnvCP = Object.fromEntries(
     Object.entries(process.env).filter(([k]) => k.startsWith('CP_')),
   );
-  let loggerCommandSpy: any;
-  let loggerWarnSpy: any;
+  const loggerInfoSpy = vi.spyOn(logger, 'info');
+  const loggerWarnSpy = vi.spyOn(logger, 'warn');
   const executeProcessSpy = vi.spyOn(executeProcessModule, 'executeProcess');
 
-  beforeAll(async () => {
+  beforeAll(() => {
     Object.entries(process.env)
       .filter(([k]) => k.startsWith('CP_'))
-      .forEach(([k]) => delete process.env[k]);
-
-    const { logger } = await import('@code-pushup/utils');
-    loggerCommandSpy = vi
-      .spyOn(logger, 'command')
-      .mockImplementation(async (bin, worker, options) => {
-        // Execute worker immediately since executor doesn't await logger.command
-        // We await it here to ensure executeProcess is called in tests
-        await worker();
-        return undefined;
-      });
-    loggerWarnSpy = vi.spyOn(logger, 'warn');
+      .forEach(([k]) => Reflect.deleteProperty(process.env, k));
   });
 
   afterAll(() => {
-    Object.entries(processEnvCP).forEach(([k, v]) => (process.env[k] = v));
+    Object.entries(processEnvCP).forEach(([k, v]) =>
+      Reflect.set(process.env, k, v),
+    );
   });
 
   beforeEach(() => {
@@ -46,31 +38,22 @@ describe('runAutorunExecutor', () => {
 
   afterEach(() => {
     loggerWarnSpy.mockReset();
-    loggerCommandSpy.mockReset();
+    loggerInfoSpy.mockReset();
     executeProcessSpy.mockReset();
   });
 
   it('should call executeProcess with return result', async () => {
-    const { success, command } = await runAutorunExecutor(
-      {},
-      executorContext('utils'),
-    );
-
-    expect(success).toBe(true);
-    expect(removeColorCodes(command || '')).toMatch('npx @code-pushup/cli');
-    // The executor now calls executeProcess directly
-    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
-    expect(executeProcessSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        command: 'npx',
-        args: expect.arrayContaining(['@code-pushup/cli']),
-        cwd: MEMFS_VOLUME,
-        env: expect.any(Object),
-      }),
-    );
+    const output = await runAutorunExecutor({}, executorContext('utils'));
+    expect(output.success).toBe(true);
+    expect(output.command).toMatch('npx @code-pushup/cli');
+    expect(executeProcessSpy).toHaveBeenCalledWith({
+      command: 'npx',
+      args: expect.arrayContaining(['@code-pushup/cli']),
+      cwd: MEMFS_VOLUME,
+    });
   });
 
-  it('should get CWD from context', async () => {
+  it('should normalize context', async () => {
     const output = await runAutorunExecutor(
       {},
       {
@@ -78,39 +61,13 @@ describe('runAutorunExecutor', () => {
         cwd: 'cwd-form-context',
       },
     );
-
     expect(output.success).toBe(true);
-    const commandWithoutAnsi = removeColorCodes(output.command || '');
-    expect(commandWithoutAnsi).toMatch('cwd-form-context');
-    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
-    expect(executeProcessSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        cwd: 'cwd-form-context',
-      }),
-    );
-  });
-
-  it('should get env variables from options', async () => {
-    const { command } = await runAutorunExecutor(
-      {
-        env: {
-          CP_API_KEY: '123456789',
-          CP_PROJECT: 'cli',
-        },
-      },
-      executorContext('utils'),
-    );
-    const commandWithoutAnsi = removeColorCodes(command || '');
-    expect(commandWithoutAnsi).toMatch('CP_API_KEY="123456789"');
-    expect(commandWithoutAnsi).toMatch('CP_PROJECT="cli"');
-    expect(executeProcessSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        env: expect.objectContaining({
-          CP_API_KEY: '123456789',
-          CP_PROJECT: 'cli',
-        }),
-      }),
-    );
+    expect(output.command).toMatch('utils');
+    expect(executeProcessSpy).toHaveBeenCalledWith({
+      command: 'npx',
+      args: expect.arrayContaining(['@code-pushup/cli']),
+      cwd: 'cwd-form-context',
+    });
   });
 
   it('should process executorOptions', async () => {
@@ -119,9 +76,8 @@ describe('runAutorunExecutor', () => {
       executorContext('testing-utils'),
     );
     expect(output.success).toBe(true);
-    const commandWithoutAnsi = removeColorCodes(output.command || '');
-    expect(commandWithoutAnsi).toContain('--output="code-pushup.config.json"');
-    expect(commandWithoutAnsi).toContain('--persist.filename="REPORT"');
+    expect(output.command).toContain('--output="code-pushup.config.json"');
+    expect(output.command).toContain('--persist.filename="REPORT"');
   });
 
   it('should create command from context and options if no api key is set', async () => {
@@ -129,53 +85,56 @@ describe('runAutorunExecutor', () => {
       { persist: { filename: 'REPORT', format: ['md', 'json'] } },
       executorContext('core'),
     );
-    const commandWithoutAnsi = removeColorCodes(output.command || '');
-    expect(commandWithoutAnsi).toMatch('--persist.filename="REPORT"');
-    expect(commandWithoutAnsi).toMatch(
+    expect(output.command).toMatch('--persist.filename="REPORT"');
+    expect(output.command).toMatch(
       '--persist.format="md" --persist.format="json"',
     );
   });
 
   it('should create command from context, options and arguments if api key is set', async () => {
+    vi.stubEnv('CP_API_KEY', 'cp_1234567');
     const output = await runAutorunExecutor(
       {
         persist: { filename: 'REPORT', format: ['md', 'json'] },
-        upload: { apiKey: 'cp_1234567', project: 'CLI' },
+        upload: { project: 'CLI' },
       },
       executorContext('core'),
     );
-    const commandWithoutAnsi = removeColorCodes(output.command || '');
-    expect(commandWithoutAnsi).toMatch('--persist.filename="REPORT"');
-    expect(commandWithoutAnsi).toMatch(
+    expect(output.command).toMatch('--persist.filename="REPORT"');
+    expect(output.command).toMatch(
       '--persist.format="md" --persist.format="json"',
     );
-    expect(commandWithoutAnsi).toMatch('--upload.apiKey="cp_1234567"');
-    expect(commandWithoutAnsi).toMatch('--upload.project="CLI"');
+    expect(output.command).toMatch('--upload.apiKey="cp_1234567"');
+    expect(output.command).toMatch('--upload.project="CLI"');
   });
 
-  it('should log information and set CP_VERBOSE if verbose is set ', async () => {
-    const { command } = await runAutorunExecutor(
+  it('should log information if verbose is set', async () => {
+    const output = await runAutorunExecutor(
       { verbose: true },
       { ...executorContext('github-action'), cwd: '<CWD>' },
     );
-
-    expect(removeColorCodes(command || '')).toMatch('CP_VERBOSE="true"');
     expect(executeProcessSpy).toHaveBeenCalledTimes(1);
-    expect(executeProcessSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        env: expect.objectContaining({ CP_VERBOSE: 'true' }),
-      }),
+
+    expect(output.command).toMatch('--verbose');
+    expect(loggerWarnSpy).toHaveBeenCalledTimes(0);
+    expect(loggerInfoSpy).toHaveBeenCalledTimes(2);
+    expect(loggerInfoSpy).toHaveBeenCalledWith(
+      expect.stringContaining(`Run CLI executor`),
+    );
+    expect(loggerInfoSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Command: npx @code-pushup/cli'),
     );
   });
 
   it('should log command if dryRun is set', async () => {
     await runAutorunExecutor({ dryRun: true }, executorContext('utils'));
 
-    expect(loggerCommandSpy).toHaveBeenCalledTimes(0);
+    expect(loggerInfoSpy).toHaveBeenCalledTimes(0);
     expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
-    const warnCall = loggerWarnSpy.mock.calls[0]?.[0] as string | undefined;
-    const warnMessage = removeColorCodes(warnCall || '');
-    expect(warnMessage).toContain('DryRun execution of:');
-    expect(warnMessage).toContain('npx @code-pushup/cli');
+    expect(loggerWarnSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'DryRun execution of: npx @code-pushup/cli --dryRun',
+      ),
+    );
   });
 });

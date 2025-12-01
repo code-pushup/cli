@@ -4,7 +4,11 @@ import {
   type CollectAndPersistReportsOptions,
   collectAndPersistReports,
 } from '@code-pushup/core';
-import { link, logger, ui } from '@code-pushup/utils';
+import {
+  formatAsciiLink,
+  formatAsciiSticker,
+  logger,
+} from '@code-pushup/utils';
 import { CLI_NAME } from '../constants.js';
 import {
   collectSuccessfulLog,
@@ -40,28 +44,20 @@ export function yargsCollectCommandObject(): CommandModule {
 }
 
 export function renderUploadAutorunHint(): void {
-  // TODO: replace @poppinss/cliui
-  ui()
-    .sticker()
-    .add(ansis.bold.gray('💡 Visualize your reports'))
-    .add('')
-    .add(
+  logger.info(
+    formatAsciiSticker([
+      ansis.bold.gray('💡 Visualize your reports'),
+      '',
       `${ansis.gray('❯')} npx code-pushup upload - ${ansis.gray(
         'Run upload to upload the created report to the server',
       )}`,
-    )
-    .add(
-      `  ${link(
+      `  ${formatAsciiLink(
         'https://github.com/code-pushup/cli/tree/main/packages/cli#upload-command',
       )}`,
-    )
-    .add(
       `${ansis.gray('❯')} npx code-pushup autorun - ${ansis.gray('Run collect & upload')}`,
-    )
-    .add(
-      `  ${link(
+      `  ${formatAsciiLink(
         'https://github.com/code-pushup/cli/tree/main/packages/cli#autorun-command',
       )}`,
-    )
-    .render();
+    ]),
+  );
 }

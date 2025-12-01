@@ -38,6 +38,10 @@ describe('weightSchema', () => {
 });
 
 describe('docsUrlSchema', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   it('should accept a valid URL', () => {
     expect(() =>
       docsUrlSchema.parse(

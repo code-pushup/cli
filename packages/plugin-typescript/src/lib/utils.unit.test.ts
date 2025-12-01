@@ -115,10 +115,10 @@ describe('getCategoryRefsFromGroups', () => {
 });
 
 describe('logSkippedAudits', () => {
-  it('should not warn when all audits are included', () => {
+  it('should not print anything when all audits are included', () => {
     logSkippedAudits(AUDITS);
 
-    expect(console.warn).not.toHaveBeenCalled();
+    expect(logger.info).not.toHaveBeenCalled();
   });
 
   it('should warn about skipped audits', () => {

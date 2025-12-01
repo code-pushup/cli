@@ -9,6 +9,7 @@
     "src/vitest.d.ts",
     "src/**/*.unit.test.ts",
     "src/**/*.d.ts",
-    "src/**/*.int.test.ts"
+    "src/**/*.int.test.ts",
+    "../../testing/test-setup/src/vitest.d.ts"
   ]
 }

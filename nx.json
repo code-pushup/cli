@@ -72,7 +72,7 @@
       "options": {
         "command": "eslint",
         "args": [
-          "{projectRoot}/**/*.ts",
+          "'{projectRoot}/**/*.ts'",
           "{projectRoot}/package.json",
           "--config={projectRoot}/eslint.config.js",
           "--max-warnings=0",
@@ -150,7 +150,6 @@
       "options": {
         "command": "node packages/cli/src/index.ts",
         "args": [
-          "--no-progress",
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.read",
@@ -172,7 +171,6 @@
       "options": {
         "command": "node packages/cli/src/index.ts collect",
         "args": [
-          "--no-progress",
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.write",
@@ -194,7 +192,6 @@
       "options": {
         "command": "node packages/cli/src/index.ts collect",
         "args": [
-          "--no-progress",
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.write",
@@ -220,7 +217,6 @@
       "options": {
         "command": "node packages/cli/src/index.ts collect",
         "args": [
-          "--no-progress",
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--onlyPlugins=js-packages",
@@ -240,7 +236,6 @@
       "options": {
         "command": "node packages/cli/src/index.ts collect",
         "args": [
-          "--no-progress",
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.write",
@@ -266,7 +261,6 @@
       "options": {
         "command": "node packages/cli/src/index.ts collect",
         "args": [
-          "--no-progress",
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.write",
@@ -292,12 +286,31 @@
       "options": {
         "command": "node packages/cli/src/index.ts collect",
         "args": [
-          "--no-progress",
           "--verbose",
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.write",
           "--onlyPlugins=typescript",
           "--persist.skipReports",
+          "--persist.outputDir={projectRoot}/.code-pushup"
+        ],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-axe": {
+      "cache": true,
+      "inputs": ["default", "code-pushup-inputs"],
+      "outputs": ["{projectRoot}/.code-pushup/axe/runner-output.json"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts collect",
+        "args": [
+          "--verbose",
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--cache.write",
+          "--onlyPlugins=axe",
           "--persist.outputDir={projectRoot}/.code-pushup"
         ],
         "env": {

@@ -10,7 +10,11 @@ import {
   type SourceFileIssue,
   runInCI,
 } from '@code-pushup/ci';
-import { CODE_PUSHUP_UNICODE_LOGO, stringifyError } from '@code-pushup/utils';
+import {
+  CODE_PUSHUP_UNICODE_LOGO,
+  logger,
+  stringifyError,
+} from '@code-pushup/utils';
 
 type GitHubRefs = {
   head: GitBranch;
@@ -126,8 +130,12 @@ function createGitHubApiClient(): ProviderAPIClient {
 
 async function run(): Promise<void> {
   try {
+    if (core.isDebug()) {
+      logger.setVerbose(true);
+    }
+
     const options: Options = {
-      bin: 'npx nx code-pushup --nx-bail  --',
+      bin: 'npx nx code-pushup --nx-bail --',
     };
 
     const gitRefs = parseGitRefs();

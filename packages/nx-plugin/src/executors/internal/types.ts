@@ -32,7 +32,6 @@ export type GlobalExecutorOptions = {
   bin?: string;
   env?: Record<string, string>;
   verbose?: boolean;
-  progress?: boolean;
   config?: string;
 };
 

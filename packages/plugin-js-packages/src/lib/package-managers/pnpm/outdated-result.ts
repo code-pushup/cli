@@ -8,10 +8,12 @@ export function pnpmToOutdatedResult(output: string): OutdatedResult {
     filterOutWarnings(output),
   ) as PnpmOutdatedResultJson;
 
+  // "current" may be missing if package is not installed
+  // Fallback to "wanted" - same approach as npm
   return objectToEntries(pnpmOutdated).map(
-    ([name, { current, latest, dependencyType: type }]) => ({
+    ([name, { current, latest, wanted, dependencyType: type }]) => ({
       name,
-      current,
+      current: current || wanted,
       latest,
       type,
     }),

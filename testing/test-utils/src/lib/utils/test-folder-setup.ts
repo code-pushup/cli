@@ -1,4 +1,4 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import { mkdir, readdir, rename, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -12,7 +12,7 @@ export async function teardownTestFolder(dirName: string) {
     const stats = await stat(dirName);
     if (!stats.isDirectory()) {
       console.warn(
-        `⚠️ You are trying to delete a file instead of a directory - ${bold(
+        `⚠️ You are trying to delete a file instead of a directory - ${ansis.bold(
           dirName,
         )}.`,
       );
@@ -31,7 +31,7 @@ export async function teardownTestFolder(dirName: string) {
     });
   } catch {
     console.warn(
-      `⚠️ Failed to delete test artefact ${bold(
+      `⚠️ Failed to delete test artefact ${ansis.bold(
         dirName,
       )} so the folder is still in the file system!\nIt may require a deletion before running e2e tests again.`,
     );
@@ -57,7 +57,8 @@ export const NX_IGNORED_FILES_TO_RESTORE: string[] = [
  */
 export async function restoreNxIgnoredFiles(dir: string): Promise<void> {
   const entries = await readdir(dir, { withFileTypes: true });
-  for (const entry of entries) {
+  await entries.reduce(async (previousPromise, entry) => {
+    await previousPromise;
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       await restoreNxIgnoredFiles(fullPath);
@@ -67,5 +68,5 @@ export async function restoreNxIgnoredFiles(dir: string): Promise<void> {
     ) {
       await rename(fullPath, path.join(dir, entry.name.slice(1)));
     }
-  }
+  }, Promise.resolve());
 }

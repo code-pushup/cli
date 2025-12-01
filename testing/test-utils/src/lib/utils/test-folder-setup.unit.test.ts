@@ -1,7 +1,7 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import { vol } from 'memfs';
 import { describe, expect, it, vi } from 'vitest';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { MEMFS_VOLUME } from '../constants.js';
 import {
   cleanTestFolder,
   restoreNxIgnoredFiles,
@@ -119,7 +119,7 @@ describe('teardownTestFolder', () => {
       MEMFS_VOLUME,
     );
 
-    await expect(teardownTestFolder('/tmp/unit')).resolves.toEqual(undefined);
+    await expect(teardownTestFolder('/tmp/unit')).resolves.toBeUndefined();
 
     // memfs represents empty directories as null, so /tmp remains as null after deletion
     expect(vol.toJSON()).toStrictEqual({
@@ -136,15 +136,15 @@ describe('teardownTestFolder', () => {
       MEMFS_VOLUME,
     );
 
-    await expect(teardownTestFolder('/tmp/unit/package.json')).resolves.toEqual(
-      undefined,
-    );
+    await expect(
+      teardownTestFolder('/tmp/unit/package.json'),
+    ).resolves.toBeUndefined();
 
     expect(vol.toJSON()).toStrictEqual({
       '/tmp/unit': null,
     });
     expect(warnSpy).toHaveBeenCalledWith(
-      `⚠️ You are trying to delete a file instead of a directory - ${bold('/tmp/unit/package.json')}.`,
+      `⚠️ You are trying to delete a file instead of a directory - ${ansis.bold('/tmp/unit/package.json')}.`,
     );
   });
 });

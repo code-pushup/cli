@@ -32,10 +32,6 @@
       "type": "boolean",
       "description": "Print additional logs"
     },
-    "progress": {
-      "type": "boolean",
-      "description": "Print additional logs"
-    },
     "onlyPlugins": {
       "type": "array",
       "items": {

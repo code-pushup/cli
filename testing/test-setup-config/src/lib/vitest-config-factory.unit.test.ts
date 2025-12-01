@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { E2ETestOptions, TestKind } from './vitest-config-factory.js';
-import { createVitestConfig } from './vitest-config-factory.js';
+import {
+  type E2ETestOptions,
+  type TestKind,
+  createVitestConfig,
+} from './vitest-config-factory.js';
 
 vi.mock('./vitest-tsconfig-path-aliases.js', () => ({
   tsconfigPathAliases: vi
@@ -29,7 +32,6 @@ describe('createVitestConfig', () => {
           ],
           globalSetup: ['../../global-setup.ts'],
           setupFiles: expect.arrayContaining([
-            '../../testing/test-setup/src/lib/console.mock.ts',
             '../../testing/test-setup/src/lib/reset.mocks.ts',
             '../../testing/test-setup/src/lib/fs.mock.ts',
           ]),
@@ -48,13 +50,7 @@ describe('createVitestConfig', () => {
 
       const setupFiles = config.test!.setupFiles;
       expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/console.mock.ts',
-      );
-      expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/reset.mocks.ts',
-      );
-      expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/cliui.mock.ts',
       );
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/fs.mock.ts',
@@ -67,9 +63,6 @@ describe('createVitestConfig', () => {
       );
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/logger.mock.ts',
-      );
-      expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
       );
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/extend/markdown-table.matcher.ts',
@@ -128,9 +121,6 @@ describe('createVitestConfig', () => {
 
       const setupFiles = config.test!.setupFiles;
       expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/console.mock.ts',
-      );
-      expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/logger.mock.ts',
       );
       expect(setupFiles).not.toContain(
@@ -144,9 +134,6 @@ describe('createVitestConfig', () => {
       );
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/extend/path.matcher.ts',
-      );
-      expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/extend/ui-logger.matcher.ts',
       );
     });
 
@@ -181,9 +168,9 @@ describe('createVitestConfig', () => {
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/reset.mocks.ts',
       );
-      // Should NOT include console, fs, git, etc.
+      // Should NOT include fs, git, etc.
       expect(setupFiles).not.toContain(
-        '../../testing/test-setup/src/lib/console.mock.ts',
+        '../../testing/test-setup/src/lib/git.mock.ts',
       );
       expect(setupFiles).not.toContain(
         '../../testing/test-setup/src/lib/fs.mock.ts',

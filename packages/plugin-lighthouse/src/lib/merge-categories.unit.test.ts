@@ -2,12 +2,10 @@ import { describe, expect, it } from 'vitest';
 import type { CategoryConfig } from '@code-pushup/models';
 import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
 import {
-  ContextValidationError,
   createAggregatedCategory,
   expandAggregatedCategory,
   extractGroupSlugs,
   mergeLighthouseCategories,
-  validateContext,
 } from './merge-categories.js';
 
 describe('mergeLighthouseCategories', () => {
@@ -828,37 +826,5 @@ describe('expandAggregatedCategory', () => {
         weight: 5,
       },
     ]);
-  });
-});
-
-describe('validateContext', () => {
-  it('should throw error for invalid context (undefined)', () => {
-    expect(() => validateContext(undefined)).toThrow(
-      new ContextValidationError('must be an object'),
-    );
-  });
-
-  it('should throw error for invalid context (missing urlCount)', () => {
-    expect(() => validateContext({ weights: {} })).toThrow(
-      new ContextValidationError('urlCount must be a non-negative number'),
-    );
-  });
-
-  it('should throw error for invalid context (negative urlCount)', () => {
-    expect(() => validateContext({ urlCount: -1, weights: {} })).toThrow(
-      new ContextValidationError('urlCount must be a non-negative number'),
-    );
-  });
-
-  it('should throw error for invalid context (missing weights)', () => {
-    expect(() => validateContext({ urlCount: 2 })).toThrow(
-      new ContextValidationError('weights must be an object'),
-    );
-  });
-
-  it('should accept valid context', () => {
-    expect(() =>
-      validateContext({ urlCount: 2, weights: { 1: 1, 2: 1 } }),
-    ).not.toThrow();
   });
 });

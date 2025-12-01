@@ -1,0 +1,17 @@
+{
+  "name": "plugin-axe-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "e2e/plugin-axe-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "lint": {},
+    "e2e": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "{projectRoot}/vitest.e2e.config.ts"
+      }
+    }
+  },
+  "implicitDependencies": ["cli", "plugin-axe"],
+  "tags": ["scope:plugin", "type:e2e"]
+}

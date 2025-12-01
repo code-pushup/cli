@@ -1,4 +1,4 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
@@ -8,6 +8,7 @@ import {
   type RunnerConfig,
   type RunnerFunction,
   auditOutputsSchema,
+  validate,
 } from '@code-pushup/models';
 import {
   calcDuration,
@@ -44,9 +45,7 @@ export async function executeRunnerConfig(
   await removeDirectoryIfExists(path.dirname(outputFile));
 
   // transform unknownAuditOutputs to auditOutputs
-  const audits = outputTransform ? await outputTransform(outputs) : outputs;
-
-  return audits;
+  return outputTransform ? await outputTransform(outputs) : outputs;
 }
 
 export async function executeRunnerFunction(
@@ -54,8 +53,7 @@ export async function executeRunnerFunction(
   args: RunnerArgs,
 ): Promise<unknown> {
   // execute plugin runner
-  const audits = await runner(args);
-  return audits;
+  return runner(args);
 }
 
 /**
@@ -64,7 +62,7 @@ export async function executeRunnerFunction(
 export class AuditOutputsMissingAuditError extends Error {
   constructor(auditSlug: string) {
     super(
-      `Audit metadata not present in plugin config. Missing slug: ${bold(
+      `Audit metadata not present in plugin config. Missing slug: ${ansis.bold(
         auditSlug,
       )}`,
     );
@@ -87,11 +85,7 @@ export async function executePluginRunner(
 
   const duration = calcDuration(start);
 
-  const result = auditOutputsSchema.safeParse(unvalidatedAuditOutputs);
-  if (!result.success) {
-    throw new Error(`Audit output is invalid: ${result.error.message}`);
-  }
-  const auditOutputs = result.data;
+  const auditOutputs = validate(auditOutputsSchema, unvalidatedAuditOutputs);
   auditOutputsCorrelateWithPluginOutput(auditOutputs, pluginConfigAudits);
 
   return {

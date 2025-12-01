@@ -15,6 +15,7 @@ export type Options = {
   bin?: string;
   config?: string | null;
   directory?: string;
+  silent?: boolean;
   detectNewIssues?: boolean;
   skipComment?: boolean;
   configPatterns?: ConfigPatterns | null;

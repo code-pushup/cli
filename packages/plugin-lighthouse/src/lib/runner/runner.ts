@@ -3,12 +3,13 @@ import { runLighthouse } from 'lighthouse/cli/run.js';
 import path from 'node:path';
 import type { AuditOutputs, RunnerFunction } from '@code-pushup/models';
 import {
+  addIndex,
   ensureDirectoryExists,
-  link,
+  formatAsciiLink,
   logger,
+  shouldExpandForUrls,
   stringifyError,
 } from '@code-pushup/utils';
-import { orderSlug, shouldExpandForUrls } from '../processing.js';
 import type { LighthouseOptions } from '../types.js';
 import { DEFAULT_CLI_FLAGS } from './constants.js';
 import type { LighthouseCliFlags } from './types.js';
@@ -46,7 +47,7 @@ export function createRunnerFunction(
           ? auditOutputs
           : auditOutputs.map(audit => ({
               ...audit,
-              slug: orderSlug(audit.slug, index),
+              slug: addIndex(audit.slug, index),
             }));
 
         return [...acc, ...processedOutputs];
@@ -80,7 +81,7 @@ async function runLighthouseForUrl(
 
   if (runnerResult == null) {
     throw new Error(
-      `Lighthouse did not produce a result for URL: ${link(url)}`,
+      `Lighthouse did not produce a result for URL: ${formatAsciiLink(url)}`,
     );
   }
 

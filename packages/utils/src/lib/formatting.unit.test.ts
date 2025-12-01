@@ -8,6 +8,7 @@ import {
   pluralize,
   pluralizeToken,
   roundDecimals,
+  serializeCommandWithArgs,
   slugify,
   transformLines,
   truncateMultilineText,
@@ -24,7 +25,7 @@ describe('roundDecimals', () => {
   });
 
   it('should return number to prevent unnecessary trailing 0s in decimals', () => {
-    const result = roundDecimals(42.500001, 3);
+    const result = roundDecimals(42.500_001, 3);
     expect(result).toBeTypeOf('number');
     expect(result.toString()).toBe('42.5');
     expect(result.toString()).not.toBe('42.50');
@@ -113,7 +114,7 @@ describe('formatDuration', () => {
     [891, '891 ms'],
     [499.85, '500 ms'],
     [1200, '1.2 s'],
-    [56789, '56.79 s'],
+    [56_789, '56.79 s'],
     [60_000, '60 s'],
   ])('should format duration of %s milliseconds as %s', (ms, displayValue) => {
     expect(formatDuration(ms)).toBe(displayValue);
@@ -212,7 +213,10 @@ describe('transformLines', () => {
     expect(
       transformLines(
         `export function greet(name = 'World') {\n  console.log('Hello, ' + name + '!');\n}\n`,
-        line => `${ansis.gray(`${++count} | `)}${line}`,
+        line => {
+          const prefix = `${++count} | `;
+          return `${ansis.gray(prefix)}${line}`;
+        },
       ),
     ).toBe(
       `
@@ -248,5 +252,20 @@ describe('indentLines', () => {
   All files pass linting.
   `.slice(1), // ignore first line break
     );
+  });
+});
+
+describe('serializeCommandWithArgs', () => {
+  it('should serialize command and args into an equivalent shell string', () => {
+    expect(
+      serializeCommandWithArgs({
+        command: 'npx',
+        args: ['eslint', '.', '--format=json'],
+      }),
+    ).toBe('npx eslint . --format=json');
+  });
+
+  it('should omit args if missing', () => {
+    expect(serializeCommandWithArgs({ command: 'ls' })).toBe('ls');
   });
 });

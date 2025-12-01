@@ -131,7 +131,7 @@ export function truncateMultilineText(
 
   const crlfIndex = text.indexOf('\r\n');
   const lfIndex = text.indexOf('\n');
-  const index = crlfIndex >= 0 ? crlfIndex : lfIndex;
+  const index = crlfIndex === -1 ? lfIndex : crlfIndex;
 
   if (index < 0) {
     return text;
@@ -153,4 +153,14 @@ export function transformLines(
 
 export function indentLines(text: string, identation: number): string {
   return transformLines(text, line => `${' '.repeat(identation)}${line}`);
+}
+
+export function serializeCommandWithArgs({
+  command,
+  args,
+}: {
+  command: string;
+  args?: string[];
+}): string {
+  return [command, ...(args ?? [])].join(' ');
 }

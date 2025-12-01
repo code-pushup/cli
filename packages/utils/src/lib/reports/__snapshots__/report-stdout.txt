@@ -3,45 +3,41 @@ Code PushUp Report - @code-pushup/core@0.0.1
 
 ESLint audits
 
-● Disallow missing props validation in a React component    6 warnings
-  definition
-● Disallow variable declarations from shadowing variables   3 warnings
-  declared in the outer scope
-● Require or disallow method and property shorthand         3 warnings
-  syntax for object literals
-● verifies the list of dependencies for Hooks like          2 warnings
-  useEffect and similar
-● Disallow missing `key` props in iterators/collection      1 warning
-  literals
-● Disallow unused variables                                 1 warning
-● Enforce a maximum number of lines of code in a function   1 warning
-● Require `const` declarations for variables that are       1 warning
-  never reassigned after declared
-● Require braces around arrow function bodies               1 warning
-● Require the use of `===` and `!==`                        1 warning
-● ... 37 audits with perfect scores omitted for brevity ...
+●  Disallow missing props validation in a React component definition  6 warnings
+●  Disallow variable declarations from shadowing variables declared   3 warnings
+   in the outer scope
+●  Require or disallow method and property shorthand syntax for       3 warnings
+   object literals
+●  verifies the list of dependencies for Hooks like useEffect and     2 warnings
+   similar
+●  Disallow missing `key` props in iterators/collection literals       1 warning
+●  Disallow unused variables                                           1 warning
+●  Enforce a maximum number of lines of code in a function             1 warning
+●  Require `const` declarations for variables that are never           1 warning
+   reassigned after declared
+●  Require braces around arrow function bodies                         1 warning
+●  Require the use of `===` and `!==`                                  1 warning
+●  ... + 37 audits with perfect scores ...
 
 
 Lighthouse audits
 
-● Minimize third-party usage                                Third-party code
-                                                            blocked the main
-                                                            thread for 6,850 ms
-● First Contentful Paint                                    1.2 s
-● Largest Contentful Paint                                  1.5 s
-● Speed Index                                               1.2 s
-● ... 2 audits with perfect scores omitted for brevity ...
+●  Minimize third-party usage                  Third-party code blocked the main
+                                                             thread for 6,850 ms
+●  First Contentful Paint                                                  1.2 s
+●  Largest Contentful Paint                                                1.5 s
+●  Speed Index                                                             1.2 s
+●  ... + 2 audits with perfect scores ...
 
 Categories
 
-┌─────────────────────────────────────────────────────────┬─────────┬──────────┐
-│  Category                                               │  Score  │  Audits  │
-├─────────────────────────────────────────────────────────┼─────────┼──────────┤
-│  Performance                                            │     92  │       8  │
-├─────────────────────────────────────────────────────────┼─────────┼──────────┤
-│  Bug prevention                                         │     68  │      16  │
-├─────────────────────────────────────────────────────────┼─────────┼──────────┤
-│  Code style                                             │     54  │      13  │
-└─────────────────────────────────────────────────────────┴─────────┴──────────┘
+┌──────────────────┬─────────┬──────────┐
+│  Category        │  Score  │  Audits  │
+├──────────────────┼─────────┼──────────┤
+│  Performance     │     92  │       8  │
+│  Bug prevention  │     68  │      16  │
+│  Code style      │     54  │      13  │
+└──────────────────┴─────────┴──────────┘
 
 Made with ❤ by code-pushup.dev
+

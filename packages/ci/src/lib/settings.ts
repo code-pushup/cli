@@ -10,6 +10,7 @@ export const DEFAULT_SETTINGS: Settings = {
   bin: 'npx --no-install code-pushup',
   config: null,
   directory: process.cwd(),
+  silent: false,
   detectNewIssues: true,
   nxProjectsFilter: '--with-target={task}',
   skipComment: false,

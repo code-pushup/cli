@@ -1,3 +1,115 @@
+## 0.90.1 (2025-11-27)
+
+### 🩹 Fixes
+
+- **plugin-js-packages:** pnpm outdated fallback ([d893cb22](https://github.com/code-pushup/cli/commit/d893cb22))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
+## 0.90.0 (2025-11-26)
+
+### 🚀 Features
+
+- **ci:** improve code-pushup command logs ([5eeaf541](https://github.com/code-pushup/cli/commit/5eeaf541))
+- **utils:** add noLineBreak and noIndent options to logger methods ([4d07995c](https://github.com/code-pushup/cli/commit/4d07995c))
+- **utils:** add silent flag to executeProcess ([4b9a2d3f](https://github.com/code-pushup/cli/commit/4b9a2d3f))
+
+### 🩹 Fixes
+
+- **utils:** log spinner to stdout instead of stderr ([77991974](https://github.com/code-pushup/cli/commit/77991974))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.89.2 (2025-11-21)
+
+### 🩹 Fixes
+
+- resolve incomplete linting across projects ([#1151](https://github.com/code-pushup/cli/pull/1151))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
+## 0.89.1 (2025-11-20)
+
+### 🩹 Fixes
+
+- **plugin-axe:** resolve pnpm install issue ([#1150](https://github.com/code-pushup/cli/pull/1150))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
+## 0.89.0 (2025-11-19)
+
+### 🚀 Features
+
+- **cli:** remove multi-progress-bars and progress argument ([68c04cbe](https://github.com/code-pushup/cli/commit/68c04cbe))
+- **core:** log group for each plugin execution ([72a4a06b](https://github.com/code-pushup/cli/commit/72a4a06b))
+- **utils:** pass index parameter to asyncSequential callback ([ef3d3b00](https://github.com/code-pushup/cli/commit/ef3d3b00))
+- **utils:** return custom data from logger.group method ([aaeed361](https://github.com/code-pushup/cli/commit/aaeed361))
+
+### 🩹 Fixes
+
+- **utils:** prevent duplicate log group prefixes in sub-processes ([6c74e7f8](https://github.com/code-pushup/cli/commit/6c74e7f8))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.88.0 (2025-11-18)
+
+### 🚀 Features
+
+- **cli:** replace @poppinss/cliui sticker for upload hints ([263aea5f](https://github.com/code-pushup/cli/commit/263aea5f))
+- **utils:** implement and test ascii table formatting ([7a981817](https://github.com/code-pushup/cli/commit/7a981817))
+- **utils:** wrap columns in ascii table ([76730518](https://github.com/code-pushup/cli/commit/76730518))
+- **utils:** replace @isaacs/cliui for printing audits to stdout ([00293a9e](https://github.com/code-pushup/cli/commit/00293a9e))
+- **utils:** replace @poppinss/cliui table for printing categories ([522fd663](https://github.com/code-pushup/cli/commit/522fd663))
+- **utils:** remove @poppinss/cliui dependency ([47f934a2](https://github.com/code-pushup/cli/commit/47f934a2))
+
+### 🩹 Fixes
+
+- **utils:** align table columns with unicode characters ([7d4eb71c](https://github.com/code-pushup/cli/commit/7d4eb71c))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.87.2 (2025-11-14)
+
+### 🩹 Fixes
+
+- **core:** run plugins sequentially ([4ad94d76](https://github.com/code-pushup/cli/commit/4ad94d76))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.87.1 (2025-11-13)
+
+### 🩹 Fixes
+
+- **plugin-axe:** update plugin name references in README ([de026554](https://github.com/code-pushup/cli/commit/de026554))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
+## 0.87.0 (2025-11-12)
+
+### 🚀 Features
+
+- **plugin-axe:** implement core plugin functionality ([#1141](https://github.com/code-pushup/cli/pull/1141))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.86.0 (2025-11-10)
 
 ### 🚀 Features

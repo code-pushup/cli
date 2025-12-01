@@ -14,11 +14,9 @@ export function globalConfig(
 ): GlobalExecutorOptions {
   const { projectConfig } = context;
   const { root: projectRoot = '' } = projectConfig ?? {};
-  // For better debugging use `--verbose --no-progress` as default
-  const { verbose, progress, config } = options;
+  const { verbose, config } = options;
   return {
     verbose: !!verbose,
-    progress: !!progress,
     config: config ?? path.join(projectRoot, 'code-pushup.config.ts'),
   };
 }

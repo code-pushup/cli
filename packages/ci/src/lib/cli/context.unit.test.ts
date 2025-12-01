@@ -10,6 +10,7 @@ describe('createCommandContext', () => {
           config: null,
           detectNewIssues: true,
           directory: '/test',
+          silent: false,
           monorepo: false,
           parallel: false,
           nxProjectsFilter: '--with-target={task}',
@@ -24,6 +25,7 @@ describe('createCommandContext', () => {
     ).toStrictEqual<CommandContext>({
       bin: 'npx --no-install code-pushup',
       directory: '/test',
+      silent: false,
       config: null,
     });
   });
@@ -36,6 +38,7 @@ describe('createCommandContext', () => {
           config: null,
           detectNewIssues: true,
           directory: '/test',
+          silent: false,
           monorepo: false,
           parallel: false,
           nxProjectsFilter: '--with-target={task}',
@@ -54,6 +57,7 @@ describe('createCommandContext', () => {
     ).toStrictEqual<CommandContext>({
       bin: 'yarn code-pushup',
       directory: '/test/ui',
+      silent: false,
       config: null,
       project: 'ui',
     });

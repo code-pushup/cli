@@ -1,7 +1,6 @@
 import { beforeAll, describe, expect, vi } from 'vitest';
 import { removeColorCodes, reportMock } from '@code-pushup/test-utils';
 import { logger } from '../logger.js';
-import { ui } from '../logging.js';
 import { logStdoutSummary } from './log-stdout-summary.js';
 import { scoreReport } from './scoring.js';
 import { sortReport } from './sorting.js';
@@ -16,21 +15,11 @@ describe('logStdoutSummary', () => {
     vi.mocked(logger.newline).mockImplementation(() => {
       stdout += '\n';
     });
-    // console.log is used inside the @poppinss/cliui logger when in "normal" mode
-    vi.spyOn(console, 'log').mockImplementation(message => {
-      stdout += `${message}\n`;
-    });
-    // we want to see table and sticker logs in the final style ("raw" don't show borders etc so we use `console.log` here)
-    ui().switchMode('normal');
   });
 
   beforeEach(() => {
     stdout = '';
     logger.setVerbose(false);
-  });
-
-  afterAll(() => {
-    ui().switchMode('raw');
   });
 
   it('should contain all sections when using the fixture report', async () => {

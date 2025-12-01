@@ -71,7 +71,6 @@ describe('PLUGIN collect report with typescript-plugin NPM package', () => {
       args: [
         '@code-pushup/cli',
         'collect',
-        '--no-progress',
         '--verbose',
         `--persist.outputDir=${outputDir}`,
       ],

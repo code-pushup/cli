@@ -67,7 +67,7 @@ export function logMultipleFileResults(
     return `- ${ansis.bold(fileName)}${formattedSize}`;
   };
   const failedTransform = (result: PromiseRejectedResult) =>
-    `- ${ansis.bold(`${result.reason}`)}`;
+    `- ${ansis.bold(String(result.reason))}`;
 
   logMultipleResults<FileResult>(
     fileResults,

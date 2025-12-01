@@ -2,7 +2,6 @@ import type { PluginConfig } from '@code-pushup/models';
 import {
   capitalize,
   filterItemRefsBy,
-  isVerbose,
   logger,
   pluralize,
 } from '@code-pushup/utils';
@@ -51,14 +50,14 @@ export function validateFilterOption(
     }
     logger.warn(message);
   }
-  if (skippedValidItems.length > 0 && isVerbose()) {
+  if (skippedValidItems.length > 0 && logger.isVerbose()) {
     const item = getItemType(option, skippedValidItems.length);
     const prefix = skippedValidItems.length === 1 ? `a skipped` : `skipped`;
     logger.warn(
       `The --${option} argument references ${prefix} ${item}: ${skippedValidItems.join(', ')}.`,
     );
   }
-  if (isPluginOption(option) && categories.length > 0 && isVerbose()) {
+  if (isPluginOption(option) && categories.length > 0 && logger.isVerbose()) {
     const removedCategories = filterItemRefsBy(categories, ({ plugin }) =>
       isOnlyOption(option)
         ? !itemsToFilterSet.has(plugin)
@@ -82,7 +81,7 @@ export function validateSkippedCategories(
   const skippedCategories = originalCategories.filter(
     original => !filteredCategories.some(({ slug }) => slug === original.slug),
   );
-  if (skippedCategories.length > 0 && isVerbose()) {
+  if (skippedCategories.length > 0 && logger.isVerbose()) {
     skippedCategories.forEach(category => {
       logger.info(
         `Category ${category.slug} was removed because all its refs were skipped. Affected refs: ${category.refs

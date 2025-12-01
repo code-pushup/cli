@@ -24,7 +24,7 @@ export async function executeRunner({
     const { command, args } = coverageToolCommand;
     try {
       await executeProcess({ command, args });
-    } catch (error) {
+    } catch {
       if (!continueOnCommandFail) {
         throw new Error(
           'Coverage plugin: Running coverage tool failed. Make sure all your provided tests are passing.',

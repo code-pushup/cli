@@ -54,7 +54,6 @@ The following things happen:
       "options": {
         "projectPrefix": "cli", // upload.project = cli-my-project
         "verbose": true,
-        "progress": false,
         // persist and upload options as defined in CoreConfig
       },
     },

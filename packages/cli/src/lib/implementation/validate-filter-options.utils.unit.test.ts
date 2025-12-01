@@ -113,7 +113,7 @@ describe('validateFilterOption', () => {
   });
 
   it('should log a category ignored as a result of plugin filtering', () => {
-    vi.stubEnv('CP_VERBOSE', 'true');
+    logger.setVerbose(true);
 
     validateFilterOption(
       'onlyPlugins',
@@ -210,7 +210,7 @@ describe('validateFilterOption', () => {
   });
 
   it('should log skipped items if verbose mode is enabled', () => {
-    vi.stubEnv('CP_VERBOSE', 'true');
+    logger.setVerbose(true);
 
     const plugins = [
       { slug: 'p1', audits: [{ slug: 'a1-p1' }] },
@@ -451,7 +451,7 @@ describe('validateSkippedCategories', () => {
   ] as NonNullable<Filterables['categories']>;
 
   it('should log info when categories are removed', () => {
-    vi.stubEnv('CP_VERBOSE', 'true');
+    logger.setVerbose(true);
 
     validateSkippedCategories(categories, [
       {

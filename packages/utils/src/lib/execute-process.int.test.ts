@@ -131,10 +131,18 @@ process:complete
           throwError: true,
         }),
       ),
-    ).rejects.toThrow();
+    ).rejects.toThrow('Process failed with exit code 1');
     expect(logger.debug).toHaveBeenCalledWith(
       expect.stringMatching(/process:start.*Error: dummy-error/s),
       { force: true },
     );
+  });
+
+  it('should not log anything if silent flag is set', async () => {
+    await executeProcess({ ...getAsyncProcessRunnerConfig(), silent: true });
+
+    expect(logger.debug).not.toHaveBeenCalled();
+    expect(logger.info).not.toHaveBeenCalled();
+    expect(logger.command).not.toHaveBeenCalled();
   });
 });

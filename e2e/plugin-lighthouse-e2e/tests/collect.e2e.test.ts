@@ -7,7 +7,6 @@ import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
   omitVariableReportData,
-  removeColorCodes,
   restoreNxIgnoredFiles,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
@@ -37,13 +36,12 @@ describe('PLUGIN collect report with lighthouse-plugin NPM package', () => {
     const { code, stdout } = await executeProcess({
       command: 'npx',
       // verbose exposes audits with perfect scores that are hidden in the default stdout
-      args: ['@code-pushup/cli', 'collect', '--no-progress', '--verbose'],
+      args: ['@code-pushup/cli', 'collect', '--verbose'],
       cwd: defaultSetupDir,
     });
 
     expect(code).toBe(0);
-    const cleanStdout = removeColorCodes(stdout);
-    expect(cleanStdout).toContain('● Largest Contentful Paint');
+    expect(stdout).toContain('Largest Contentful Paint');
 
     const report = await readJsonFile(
       path.join(defaultSetupDir, '.code-pushup', 'report.json'),

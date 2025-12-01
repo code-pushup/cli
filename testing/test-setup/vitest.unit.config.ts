@@ -1,3 +1,3 @@
-import { createUnitTestConfig } from '../../testing/test-setup-config/src/index.js';
+import { createUnitTestConfig } from '../test-setup-config/src/index.js';
 
 export default createUnitTestConfig('test-setup');
