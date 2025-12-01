@@ -1,4 +1,4 @@
-import { type ExecutorContext } from '@nx/devkit';
+import type { ExecutorContext } from '@nx/devkit';
 import { executeProcess } from '../../internal/execute-process.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
 
@@ -8,13 +8,13 @@ export type ExecutorOutput = {
   error?: Error;
 };
 
+/* eslint-disable max-lines-per-function */
 export default async function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   { cwd }: ExecutorContext,
 ): Promise<ExecutorOutput> {
   const { logger, stringifyError, objectToCliArgs, formatCommand } =
     await import('@code-pushup/utils');
-
   const {
     dryRun,
     verbose,
@@ -23,7 +23,6 @@ export default async function runAutorunExecutor(
     bin,
     ...argsObj
   } = terminalAndExecutorOptions;
-
   const command = bin ? `node` : 'npx';
   const positionals = [
     bin ?? '@code-pushup/cli',
@@ -35,7 +34,6 @@ export default async function runAutorunExecutor(
     ...env,
     ...(verbose && { CP_VERBOSE: 'true' }),
   };
-
   const binString = `${command} ${positionals.join(' ')} ${args.join(' ')}`;
   const formattedBinString = formatCommand(binString, {
     env: envVariables,
@@ -67,3 +65,4 @@ export default async function runAutorunExecutor(
     command: formattedBinString,
   };
 }
+/* eslint-enable max-lines-per-function */

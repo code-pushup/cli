@@ -102,7 +102,7 @@ export function objectToCliArgs<
       return [`${prefix}${value ? '' : 'no-'}${key}`];
     }
 
-    if (value === null || value === undefined) {
+    if (value == null) {
       return [];
     }
 

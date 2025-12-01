@@ -23,7 +23,7 @@ export function globalConfig(
 
 export function persistConfig(
   options: Partial<PersistConfig & ProjectExecutorOnlyOptions>,
-  context: BaseNormalizedExecutorContext,
+  _context: BaseNormalizedExecutorContext,
 ): Partial<PersistConfig> {
   const {
     format,
