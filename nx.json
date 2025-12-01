@@ -114,7 +114,7 @@
         "watch": false
       }
     },
-    "old-code-pushup": {
+    "code-pushup": {
       "cache": false,
       "executor": "nx:run-commands",
       "dependsOn": ["code-pushup-*"],
@@ -337,6 +337,7 @@
     "releaseTagPattern": "v{version}"
   },
   "plugins": [
+    "@code-pushup/nx-plugin",
     {
       "plugin": "@push-based/nx-verdaccio",
       "options": {
