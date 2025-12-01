@@ -1,17 +1,19 @@
 import type { TargetConfiguration } from '@nx/devkit';
 import type { RunCommandsOptions } from 'nx/src/executors/run-commands/run-commands.impl';
+import { objectToCliArgs } from '../../executors/internal/cli.js';
 import { PACKAGE_NAME } from '../../internal/constants.js';
 
-export async function createConfigurationTarget(options?: {
+export function createConfigurationTarget(options?: {
   projectName?: string;
-}): Promise<TargetConfiguration<RunCommandsOptions>> {
-  const { projectName } = options ?? {};
-  const { objectToCliArgs } = await import('@code-pushup/utils');
+  bin?: string;
+}): TargetConfiguration<RunCommandsOptions> {
+  const { projectName, bin = PACKAGE_NAME } = options ?? {};
   const args = objectToCliArgs({
     ...(projectName ? { project: projectName } : {}),
   });
-  const argsString = args.length > 0 ? ` ${args.join(' ')}` : '';
+  const argsString = args.length > 0 ? args.join(' ') : '';
+  const baseCommand = `nx g ${bin}:configuration`;
   return {
-    command: `nx g ${PACKAGE_NAME}:configuration${argsString}`,
+    command: argsString ? `${baseCommand} ${argsString}` : baseCommand,
   };
 }
