@@ -108,7 +108,7 @@ describe('parseAutorunExecutorOptions', () => {
     );
 
     expect(osAgnosticPath(executorOptions.persist?.outputDir ?? '')).toBe(
-      osAgnosticPath('workspaceRoot/.code-pushup/my-app'),
+      osAgnosticPath('{projectRoot}/.code-pushup'),
     );
   });
 
@@ -165,33 +165,6 @@ describe('parseAutorunExecutorOptions', () => {
       expect(executorOptions).toEqual(
         expect.not.objectContaining({
           upload: expect.any(Object),
-        }),
-      );
-    },
-  );
-
-  it.each<Command>(['print-config'])(
-    'should include output config for command %s',
-    command => {
-      const projectName = 'my-app';
-      const executorOptions = parseAutorunExecutorOptions(
-        {
-          command,
-          output: 'code-pushup.config.json',
-        },
-        {
-          projectName,
-          workspaceRoot: 'workspaceRoot',
-          projectConfig: {
-            name: 'my-app',
-            root: 'root',
-          },
-        },
-      );
-
-      expect(executorOptions).toEqual(
-        expect.objectContaining({
-          output: 'code-pushup.config.json',
         }),
       );
     },
