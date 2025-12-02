@@ -109,7 +109,29 @@ describe('runAutorunExecutor', () => {
   it('should set env var information if verbose is set', async () => {
     const output = await runAutorunExecutor(
       {
-        dryRun: true, // here to produce log
+        verbose: true,
+      },
+      { ...executorContext('github-action'), cwd: '<CWD>' },
+    );
+
+    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledWith({
+      command: 'npx',
+      args: expect.arrayContaining(['@code-pushup/cli']),
+      cwd: '<CWD>',
+      env: expect.objectContaining({
+        CP_VERBOSE: 'true',
+      }),
+    });
+
+    expect(output.command).not.toContain('--verbose');
+    expect(loggerSpy.warn).toHaveBeenCalledTimes(0);
+  });
+
+  it('should log env var in dryRun information if verbose is set', async () => {
+    const output = await runAutorunExecutor(
+      {
+        dryRun: true,
         verbose: true,
       },
       { ...executorContext('github-action'), cwd: '<CWD>' },
