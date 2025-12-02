@@ -1,4 +1,4 @@
-import type { ExecutorContext } from '@nx/devkit';
+import { type ExecutorContext, logger } from '@nx/devkit';
 import { executeProcess } from '../../internal/execute-process.js';
 import { normalizeContext } from '../internal/context.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
@@ -10,13 +10,11 @@ export type ExecutorOutput = {
   error?: Error;
 };
 
-/* eslint-disable max-lines-per-function */
 export default async function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
-  const { logger, stringifyError, objectToCliArgs, formatCommand } =
-    await import('@code-pushup/utils');
+  const { objectToCliArgs, formatCommand } = await import('@code-pushup/utils');
   const normalizedContext = normalizeContext(context);
   const mergedOptions = mergeExecutorOptions(
     context.target?.options,
@@ -26,50 +24,40 @@ export default async function runAutorunExecutor(
     mergedOptions,
     normalizedContext,
   );
-  const {
-    dryRun,
-    verbose,
-    command: cliCommand,
-    bin,
-    ...argsObj
-  } = terminalAndExecutorOptions;
+  const { dryRun, verbose, command: cliCommand, bin } = mergedOptions;
   const command = bin ? `node` : 'npx';
   const positionals = [
     bin ?? '@code-pushup/cli',
     ...(cliCommand ? [cliCommand] : []),
   ];
-  const args = objectToCliArgs(argsObj);
-  const executorEnvVariables = {
-    ...(verbose && { CP_VERBOSE: 'true' }),
-  };
-  const binString = `${command} ${positionals.join(' ')} ${args.join(' ')}`;
-  const formattedBinString = formatCommand(binString, {
-    env: executorEnvVariables,
+  const args = [...positionals, ...objectToCliArgs(cliArgumentObject)];
+  const commandString = formatCommand([command, ...args].join(' '), {
     cwd: context.cwd,
   });
-
+  if (verbose) {
+    logger.info(`Run CLI executor ${command ?? ''}`);
+    logger.info(`Command: ${commandString}`);
+  }
   if (dryRun) {
-    logger.warn(`DryRun execution of: \n ${formattedBinString}`);
+    logger.warn(`DryRun execution of: ${commandString}`);
   } else {
     try {
       await executeProcess({
         command,
-        args: [...positionals, ...args],
+        args,
         ...(context.cwd ? { cwd: context.cwd } : {}),
-        env: executorEnvVariables,
       });
     } catch (error) {
-      logger.error(stringifyError(error));
+      logger.error(error);
       return {
         success: false,
-        command: formattedBinString,
+        command: commandString,
         error: error instanceof Error ? error : new Error(`${error}`),
       };
     }
   }
   return {
     success: true,
-    command: formattedBinString,
+    command: commandString,
   };
 }
-/* eslint-enable max-lines-per-function */
