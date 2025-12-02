@@ -150,13 +150,13 @@ describe('executor command', () => {
 
     const { stdout, code } = await executeProcess({
       command: 'npx',
-      args: expect.arrayContaining([
+      args: [
         'nx',
         'run',
         `${project}:code-pushup`,
         'print-config',
         '--upload.apiKey=a123a',
-      ]),
+      ],
       cwd,
     });
 

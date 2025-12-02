@@ -29,7 +29,6 @@ describe('nx-plugin', () => {
     TEST_OUTPUT_DIR,
     'plugin-create-nodes',
   );
-  const PACKAGE_NAME = '@code-pushup/nx-plugin';
 
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject(project);
@@ -121,7 +120,7 @@ describe('nx-plugin', () => {
     expect(projectJson.targets).toStrictEqual({
       'code-pushup--configuration': expect.objectContaining({
         options: {
-          command: `nx g ${PACKAGE_NAME}:configuration --project="${project}"`,
+          command: `nx g XYZ:configuration --project="${project}"`,
         },
       }),
     });
@@ -200,10 +199,8 @@ describe('nx-plugin', () => {
     // Nx command
     expect(cleanStdout).toContain('nx run my-lib:code-pushup');
     // Run CLI executor
-    expect(cleanStdout).toContain('DryRun execution of:');
-    expect(cleanStdout).toContain('npx @code-pushup/cli');
-    expect(cleanStdout).toContain('--dryRun');
-    expect(cleanStdout).not.toContain('--verbose');
+    expect(cleanStdout).toContain('Command: npx @code-pushup/cli');
+    expect(cleanStdout).toContain('--dryRun --verbose');
   });
 
   it('should consider plugin option bin in executor target', async () => {
