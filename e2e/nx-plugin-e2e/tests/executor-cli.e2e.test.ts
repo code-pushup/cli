@@ -27,21 +27,17 @@ async function addTargetToWorkspace(
 ) {
   const { cwd, project } = options;
   const projectCfg = readProjectConfiguration(tree, project);
-  const { root } = projectCfg;
-  const configPath = path.join(root, 'code-pushup.config.ts');
   updateProjectConfiguration(tree, project, {
     ...projectCfg,
     targets: {
       ...projectCfg.targets,
       'code-pushup': {
         executor: '@code-pushup/nx-plugin:cli',
-        options: {
-          config: configPath,
-          ...executorOptions,
-        },
+        ...(executorOptions && { options: executorOptions }),
       },
     },
   });
+  const { root } = projectCfg;
   generateCodePushupConfig(tree, root, {
     plugins: [
       {
@@ -148,22 +144,19 @@ describe('executor command', () => {
     ).resolves.not.toThrow();
   });
 
-  it('should execute print-config executor with upload config', async () => {
+  it('should execute print-config executor with api key', async () => {
     const cwd = path.join(testFileDir, 'execute-print-config-command');
     await addTargetToWorkspace(tree, { cwd, project });
 
     const { stdout, code } = await executeProcess({
       command: 'npx',
-      args: [
+      args: expect.arrayContaining([
         'nx',
         'run',
         `${project}:code-pushup`,
         'print-config',
         '--upload.apiKey=a123a',
-        '--upload.server=https://example.com',
-        '--upload.organization=test-org',
-        '--upload.project=test-project',
-      ],
+      ]),
       cwd,
     });
 
@@ -184,7 +177,7 @@ describe('executor command', () => {
       { cwd, project },
       {
         persist: {
-          outputDir: path.join('libs', project, '.reports'),
+          outputDir: '.reports',
           filename: 'report',
         },
       },
@@ -210,15 +203,9 @@ describe('executor command', () => {
     );
     expect(cleanStdout).toContain('Code PushUp CLI');
 
-    // Check for report in project root's .reports directory
-    const reportPath = path.join(
-      cwd,
-      'libs',
-      project,
-      '.reports',
-      'terminal-report.json',
-    );
-    await expect(readJsonFile(reportPath)).resolves.not.toThrow();
+    await expect(
+      readJsonFile(path.join(cwd, '.reports', 'terminal-report.json')),
+    ).resolves.not.toThrow();
   });
 
   it('should execute collect executor and add report to sub folder named by project', async () => {
@@ -236,7 +223,7 @@ describe('executor command', () => {
     expect(cleanStdout).toContain('nx run my-lib:code-pushup collect');
 
     const report = await readJsonFile(
-      path.join(cwd, 'libs', project, '.code-pushup', project, 'report.json'),
+      path.join(cwd, '.code-pushup', project, 'report.json'),
     );
     expect(report).toStrictEqual(
       expect.objectContaining({
