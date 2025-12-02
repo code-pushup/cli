@@ -184,7 +184,7 @@ describe('executor command', () => {
       { cwd, project },
       {
         persist: {
-          outputDir: '.reports',
+          outputDir: path.join('libs', project, '.reports'),
           filename: 'report',
         },
       },
@@ -236,7 +236,7 @@ describe('executor command', () => {
     expect(cleanStdout).toContain('nx run my-lib:code-pushup collect');
 
     const report = await readJsonFile(
-      path.join(cwd, 'libs', project, '.code-pushup', 'report.json'),
+      path.join(cwd, '.code-pushup', project, 'report.json'),
     );
     expect(report).toStrictEqual(
       expect.objectContaining({
