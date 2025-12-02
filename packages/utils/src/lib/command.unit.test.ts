@@ -4,7 +4,7 @@ import process from 'node:process';
 import { describe, expect, it, vi } from 'vitest';
 import { formatCommandStatus } from './command.js';
 
-describe('formatCommand', () => {
+describe('formatCommandStatus', () => {
   it('should format complex command with cwd, env, and status', () => {
     expect(
       formatCommandStatus(
@@ -32,10 +32,15 @@ describe('formatCommand', () => {
   });
 
   it('should not include cwd prefix when cwd is same as process.cwd()', () => {
-    vi.spyOn(path, 'relative').mockReturnValue('');
     expect(formatCommandStatus('npx -v', { cwd: process.cwd() })).toStartWith(
       `${ansis.blue('$')}`,
     );
+  });
+
+  it('should include cwd prefix when cwd is provided and different from process.cwd()', () => {
+    expect(
+      formatCommandStatus('npx -v', { cwd: path.join(process.cwd(), 'src') }),
+    ).toStartWith(`${ansis.blue('src')} `);
   });
 
   it('should format command with multiple environment variables', () => {
