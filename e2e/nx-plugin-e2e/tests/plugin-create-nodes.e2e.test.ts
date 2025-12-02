@@ -1,5 +1,6 @@
 import type { Tree } from '@nx/devkit';
 import path from 'node:path';
+import * as process from 'node:process';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
 import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
@@ -197,11 +198,14 @@ describe('nx-plugin', () => {
 
     const cleanStdout = removeColorCodes(stdout);
     // Nx command
+    process.stdout.write(cleanStdout); // For easier debugging
     expect(cleanStdout).toContain('nx run my-lib:code-pushup');
     // Run CLI executor
     expect(cleanStdout).toContain('DryRun execution of:');
     expect(cleanStdout).toContain('npx @code-pushup/cli');
-    expect(cleanStdout).toContain('--dryRun --verbose');
+    expect(cleanStdout).toContain('--dryRun');
+    expect(cleanStdout).not.toContain('--verbose');
+    expect(cleanStdout).toContain('CP_VERBOSE=true');
   });
 
   it('should consider plugin option bin in executor target', async () => {
