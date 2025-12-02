@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { logger } from '@code-pushup/utils';
+import { logDebug, logInfo, logWarning } from './log.js';
 import type { ProviderAPIClient, Settings } from './models.js';
 
 export async function commentOnPR(
@@ -17,12 +17,12 @@ export async function commentOnPR(
   );
 
   const comments = await api.listComments();
-  logger.debug(`Fetched ${comments.length} comments for pull request`);
+  logDebug(`Fetched ${comments.length} comments for pull request`);
 
   const prevComment = comments.find(comment =>
     comment.body.includes(identifier),
   );
-  logger.debug(
+  logDebug(
     prevComment
       ? `Found previous comment ${prevComment.id} from Code PushUp`
       : 'Previous Code PushUp comment not found',
@@ -30,19 +30,19 @@ export async function commentOnPR(
 
   if (prevComment) {
     const updatedComment = await api.updateComment(prevComment.id, body);
-    logger.info(`Updated body of comment ${updatedComment.url}`);
+    logInfo(`Updated body of comment ${updatedComment.url}`);
     return updatedComment.id;
   }
 
   const createdComment = await api.createComment(body);
-  logger.info(`Created new comment ${createdComment.url}`);
+  logInfo(`Created new comment ${createdComment.url}`);
   return createdComment.id;
 }
 
 function truncateBody(body: string, max: number): string {
   const truncateWarning = '...*[Comment body truncated]*';
   if (body.length > max) {
-    logger.warn(`Comment body is too long. Truncating to ${max} characters.`);
+    logWarning(`Comment body is too long. Truncating to ${max} characters.`);
     return body.slice(0, max - truncateWarning.length) + truncateWarning;
   }
   return body;

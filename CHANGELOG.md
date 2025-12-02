@@ -1,3 +1,13 @@
+## 0.92.0 (2025-12-02)
+
+### 🚀 Features
+
+- **ci:** style top-level logs ([5da74215](https://github.com/code-pushup/cli/commit/5da74215))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.91.0 (2025-12-01)
 
 ### 🚀 Features

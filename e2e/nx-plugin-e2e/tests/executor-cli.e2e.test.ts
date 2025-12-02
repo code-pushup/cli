@@ -210,15 +210,11 @@ describe('executor command', () => {
     );
     expect(cleanStdout).toContain('Code PushUp CLI');
 
-    // Check for report in project root's .reports directory
-    const reportPath = path.join(
-      cwd,
-      'libs',
-      project,
-      '.reports',
-      'terminal-report.json',
-    );
-    await expect(readJsonFile(reportPath)).resolves.not.toThrow();
+    await expect(
+      readJsonFile(
+        path.join(cwd, '.code-pushup', project, 'terminal-report.json'),
+      ),
+    ).resolves.not.toThrow();
   });
 
   it('should execute collect executor and add report to sub folder named by project', async () => {
