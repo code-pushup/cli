@@ -10,7 +10,7 @@ export type ExecutorOutput = {
   error?: Error;
 };
 
-/* eslint-disable max-lines-per-function */
+/* eslint-disable-next-line max-lines-per-function */
 export default async function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   context: ExecutorContext,
@@ -65,4 +65,3 @@ export default async function runAutorunExecutor(
     command: commandString,
   };
 }
-/* eslint-enable max-lines-per-function */
