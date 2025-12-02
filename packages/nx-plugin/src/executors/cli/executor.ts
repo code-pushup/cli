@@ -25,6 +25,7 @@ export default async function runAutorunExecutor(
   );
   const { dryRun, verbose, command, bin, ...args } = cliArgumentObject;
   const executorEnvVariables = {
+    ...process.env,
     ...(verbose && { CP_VERBOSE: 'true' }),
   };
   const commandString = createCliCommandString({
