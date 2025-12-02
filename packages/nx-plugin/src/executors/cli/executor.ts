@@ -6,7 +6,7 @@ import {
 } from '../internal/cli.js';
 import { normalizeContext } from '../internal/context.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
-import { mergeExecutorOptions, parseAutorunExecutorOptions } from './utils.js';
+import { parseAutorunExecutorOptions } from './utils.js';
 
 export type ExecutorOutput = {
   success: boolean;
@@ -19,15 +19,11 @@ export default async function runAutorunExecutor(
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
   const normalizedContext = normalizeContext(context);
-  const mergedOptions = mergeExecutorOptions(
-    context.target?.options,
-    terminalAndExecutorOptions,
-  );
   const cliArgumentObject = parseAutorunExecutorOptions(
-    mergedOptions,
+    terminalAndExecutorOptions,
     normalizedContext,
   );
-  const { dryRun, verbose, command, bin } = mergedOptions;
+  const { dryRun, verbose, command, bin } = terminalAndExecutorOptions;
   const commandString = createCliCommandString({
     command,
     args: cliArgumentObject,
