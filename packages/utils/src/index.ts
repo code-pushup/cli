@@ -89,6 +89,7 @@ export {
 export { interpolate } from './lib/interpolate.js';
 export { logMultipleResults } from './lib/log-results.js';
 export { Logger, logger } from './lib/logger.js';
+export { formatCommandStatus } from './lib/command.js';
 export { mergeConfigs } from './lib/merge-configs.js';
 export {
   addIndex,

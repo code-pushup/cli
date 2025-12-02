@@ -1,9 +1,5 @@
 import { type ExecutorContext, logger } from '@nx/devkit';
 import { executeProcess } from '../../internal/execute-process.js';
-import {
-  createCliCommandObject,
-  createCliCommandString,
-} from '../internal/cli.js';
 import { normalizeContext } from '../internal/context.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
 import { parseAutorunExecutorOptions } from './utils.js';
@@ -14,20 +10,33 @@ export type ExecutorOutput = {
   error?: Error;
 };
 
+/* eslint-disable-next-line max-lines-per-function */
 export default async function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
+  const { objectToCliArgs, formatCommandStatus } = await import(
+    '@code-pushup/utils'
+  );
   const normalizedContext = normalizeContext(context);
   const cliArgumentObject = parseAutorunExecutorOptions(
     terminalAndExecutorOptions,
     normalizedContext,
   );
-  const { dryRun, verbose, command, bin } = terminalAndExecutorOptions;
-  const commandString = createCliCommandString({
-    command,
-    args: cliArgumentObject,
+  const {
+    dryRun,
+    verbose,
+    command: cliCommand,
     bin,
+  } = terminalAndExecutorOptions;
+  const command = bin ? `node` : 'npx';
+  const positionals = [
+    bin ?? '@code-pushup/cli',
+    ...(cliCommand ? [cliCommand] : []),
+  ];
+  const args = [...positionals, ...objectToCliArgs(cliArgumentObject)];
+  const commandString = formatCommandStatus([command, ...args].join(' '), {
+    cwd: context.cwd,
   });
   if (verbose) {
     logger.info(`Run CLI executor ${command ?? ''}`);
@@ -38,7 +47,8 @@ export default async function runAutorunExecutor(
   } else {
     try {
       await executeProcess({
-        ...createCliCommandObject({ command, args: cliArgumentObject, bin }),
+        command,
+        args,
         ...(context.cwd ? { cwd: context.cwd } : {}),
       });
     } catch (error) {
