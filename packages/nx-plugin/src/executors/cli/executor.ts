@@ -23,35 +23,42 @@ export default async function runAutorunExecutor(
     normalizedContext,
   );
   const { command: cliCommand } = terminalAndExecutorOptions;
-  const { dryRun, verbose, bin, ...restArgs } = cliArgumentObject;
+  const {
+    dryRun,
+    verbose,
+    env: executorEnv,
+    bin,
+    ...restArgs
+  } = cliArgumentObject;
   const command = bin ? `node` : 'npx';
   const positionals = [
     bin ?? '@code-pushup/cli',
     ...(cliCommand ? [cliCommand] : []),
   ];
   const args = [...positionals, ...objectToCliArgs(restArgs)];
-  const executorEnvVariables = {
+  const env = {
+    ...executorEnv,
     ...(verbose && { CP_VERBOSE: 'true' }),
   };
   const commandString = formatCommandStatus([command, ...args].join(' '), {
     cwd: context.cwd,
-    env: executorEnvVariables,
+    env,
   });
 
   if (dryRun) {
     logger.warn(`DryRun execution of: ${commandString}`);
   } else {
     try {
-      logger.debug(`With env vars: ${executorEnvVariables}`);
+      logger.debug(`With env vars: ${env}`);
       await executeProcess({
         command,
         args,
         ...(context.cwd ? { cwd: context.cwd } : {}),
-        ...(verbose
+        ...(Object.keys(env).length > 0
           ? {
               env: {
                 ...process.env,
-                ...executorEnvVariables,
+                ...env,
               },
             }
           : {}),

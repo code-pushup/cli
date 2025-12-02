@@ -30,6 +30,7 @@ export type Command =
 export type GlobalExecutorOptions = {
   command?: Command;
   bin?: string;
+  env?: Record<string, string>;
   verbose?: boolean;
   config?: string;
 };
