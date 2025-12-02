@@ -29,7 +29,7 @@ or with options:
     {
       "plugin": "./tools/zod2md-nx-plugin/src/lib/plugin.js",
       "options": {
-        "targetName": "docs",
+        "targetName": "zod-docs",
       },
     },
   ],
@@ -57,6 +57,26 @@ The generated target:
 1. Runs `zod2md` with the project's configuration
 2. Formats the generated markdown with Prettier
 3. Caches the result for better performance
+
+### Options
+
+You can override the config and output paths when running the target:
+
+```bash
+# Use custom output file
+nx generate-docs my-project --output=docs/custom-api.md
+
+# Use custom config file
+nx generate-docs my-project --config=custom-zod2md.config.ts
+
+# Use both
+nx generate-docs my-project --config=custom.config.ts --output=docs/api.md
+```
+
+Default values:
+
+- `config`: `{projectRoot}/zod2md.config.ts`
+- `output`: `{projectRoot}/docs/{projectName}-reference.md`
 
 ## Options
 
