@@ -1,38 +1,25 @@
 import { expect } from 'vitest';
+import { DEFAULT_SETTINGS } from '../settings.js';
 import { type CommandContext, createCommandContext } from './context.js';
 
 describe('createCommandContext', () => {
-  const expectedObserver = expect.objectContaining({
-    onStderr: expect.any(Function),
-    onStdout: expect.any(Function),
-  });
-
   it('should pick CLI-related settings in standalone mode', () => {
     expect(
       createCommandContext(
         {
+          ...DEFAULT_SETTINGS,
           bin: 'npx --no-install code-pushup',
           config: null,
-          debug: false,
-          detectNewIssues: true,
           directory: '/test',
-          logger: console,
-          monorepo: false,
-          parallel: false,
-          nxProjectsFilter: '--with-target={task}',
-          projects: null,
           silent: false,
-          task: 'code-pushup',
-          skipComment: false,
-          configPatterns: null,
         },
         null,
       ),
     ).toStrictEqual<CommandContext>({
       bin: 'npx --no-install code-pushup',
       directory: '/test',
+      silent: false,
       config: null,
-      observer: expectedObserver,
     });
   });
 
@@ -40,20 +27,11 @@ describe('createCommandContext', () => {
     expect(
       createCommandContext(
         {
+          ...DEFAULT_SETTINGS,
           bin: 'npx --no-install code-pushup',
           config: null,
-          debug: false,
-          detectNewIssues: true,
           directory: '/test',
-          logger: console,
-          monorepo: false,
-          parallel: false,
-          nxProjectsFilter: '--with-target={task}',
-          projects: null,
           silent: false,
-          task: 'code-pushup',
-          skipComment: false,
-          configPatterns: null,
         },
         {
           name: 'ui',
@@ -64,9 +42,9 @@ describe('createCommandContext', () => {
     ).toStrictEqual<CommandContext>({
       bin: 'yarn code-pushup',
       directory: '/test/ui',
+      silent: false,
       config: null,
       project: 'ui',
-      observer: expectedObserver,
     });
   });
 });

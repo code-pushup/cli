@@ -2,9 +2,10 @@ import { z } from 'zod';
 import { MAX_ISSUE_MESSAGE_LENGTH } from './implementation/limits.js';
 import { sourceFileLocationSchema } from './source.js';
 
-export const issueSeveritySchema = z
-  .enum(['info', 'warning', 'error'])
-  .describe('Severity level');
+export const issueSeveritySchema = z.enum(['info', 'warning', 'error']).meta({
+  title: 'IssueSeverity',
+  description: 'Severity level',
+});
 export type IssueSeverity = z.infer<typeof issueSeveritySchema>;
 
 export const issueSchema = z
@@ -12,9 +13,12 @@ export const issueSchema = z
     message: z
       .string()
       .max(MAX_ISSUE_MESSAGE_LENGTH)
-      .describe('Descriptive error message'),
+      .meta({ description: 'Descriptive error message' }),
     severity: issueSeveritySchema,
     source: sourceFileLocationSchema.optional(),
   })
-  .describe('Issue information');
+  .meta({
+    title: 'Issue',
+    description: 'Issue information',
+  });
 export type Issue = z.infer<typeof issueSchema>;

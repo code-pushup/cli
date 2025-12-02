@@ -1,105 +1,98 @@
 {
   "$schema": "http://json-schema.org/schema",
-  "type": "object",
-  "additionalProperties": true,
   "$id": "AutorunExecutorOptions",
   "title": "CodePushup CLI autorun executor",
-  "description": "Executes the @code-pushup/cli autorun command. See: https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#autorun-command",
+  "description": "Executes the @code-pushup/cli autorun command See: https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#autorun-command",
+  "type": "object",
   "properties": {
     "command": {
       "type": "string",
-      "enum": [
-        "collect",
-        "upload",
-        "autorun",
-        "print-config",
-        "compare",
-        "merge-diffs"
-      ],
+      "description": "The command to run.",
       "$default": {
         "$source": "argv",
         "index": 0
       }
     },
     "dryRun": {
-      "type": "boolean"
+      "type": "boolean",
+      "description": "Print the commands that would be run, but don't actually run them"
     },
     "bin": {
-      "type": "string"
-    },
-    "projectPrefix": {
-      "type": "string"
-    },
-    "output": {
-      "type": "string"
+      "type": "string",
+      "description": "Path to Code PushUp CLI"
     },
     "verbose": {
-      "type": "boolean"
-    },
-    "progress": {
-      "type": "boolean"
+      "type": "boolean",
+      "description": "Print additional logs"
     },
     "onlyPlugins": {
       "type": "array",
       "items": {
         "type": "string"
-      }
+      },
+      "description": "Only run the specified plugins"
     },
     "config": {
-      "type": "string"
+      "type": "string",
+      "description": "Path to the configuration file"
+    },
+    "projectPrefix": {
+      "type": "string",
+      "description": "Prefix for project name"
+    },
+    "output": {
+      "type": "string",
+      "description": "Config output path of print-config command"
     },
     "persist": {
       "type": "object",
       "properties": {
-        "outputDir": {
-          "type": "string",
-          "minLength": 1
-        },
         "filename": {
           "type": "string",
-          "minLength": 1,
-          "pattern": "^(?!.*[ \\\\/:*?\"<>|]).+$"
+          "description": "Filename to save the configuration"
+        },
+        "outputDir": {
+          "type": "string",
+          "description": "Directory to save the configuration"
         },
         "format": {
           "type": "array",
-          "items": {
-            "type": "string",
-            "enum": ["json", "md"]
-          }
-        },
-        "skipReports": {
-          "type": "boolean"
+          "enum": ["json", "md"],
+          "description": "Format to save the report in"
         }
-      },
-      "additionalProperties": false
+      }
     },
     "upload": {
       "type": "object",
       "properties": {
         "server": {
           "type": "string",
-          "format": "uri"
+          "format": "uri",
+          "description": "URL of deployed portal API"
         },
         "apiKey": {
-          "type": "string"
+          "type": "string",
+          "description": "API key with write access to portal (use `process.env` for security)"
         },
         "organization": {
           "type": "string",
+          "pattern": "^[a-z\\d]+(?:-[a-z\\d]+)*$",
           "maxLength": 128,
-          "pattern": "^[a-z\\d]+(?:-[a-z\\d]+)*$"
+          "description": "Organization slug from Code PushUp portal"
         },
         "project": {
           "type": "string",
+          "pattern": "^[a-z\\d]+(?:-[a-z\\d]+)*$",
           "maxLength": 128,
-          "pattern": "^[a-z\\d]+(?:-[a-z\\d]+)*$"
+          "description": "Project slug from Code PushUp portal"
         },
         "timeout": {
           "type": "integer",
           "exclusiveMinimum": 0,
-          "maximum": 9007199254740991
+          "description": "Request timeout in minutes"
         }
-      },
-      "additionalProperties": false
+      }
     }
-  }
+  },
+  "additionalProperties": true
 }

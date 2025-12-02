@@ -1,6 +1,7 @@
 import nxEslintPlugin from '@nx/eslint-plugin';
 import jestExtendedPlugin from 'eslint-plugin-jest-extended';
 import jsoncParser from 'jsonc-eslint-parser';
+import fs from 'node:fs';
 import tseslint from 'typescript-eslint';
 import node from '@code-pushup/eslint-config/node.js';
 import typescript from '@code-pushup/eslint-config/typescript.js';
@@ -27,6 +28,7 @@ export default tseslint.config(
             String.raw`^.*/eslint(\.base)?\.config\.[cm]?js$`,
             String.raw`^.*/code-pushup\.(config|preset)(\.m?[jt]s)?$`,
             '^[./]+/tools/.*$',
+            String.raw`^[./]+/(testing/)?test-setup-config/src/index\.js$`,
           ],
           depConstraints: [
             {
@@ -114,6 +116,7 @@ export default tseslint.config(
     files: ['**/*.ts', '**/*.js'],
     rules: {
       'n/file-extension-in-import': ['error', 'always'],
+      'unicorn/number-literal-case': 'off',
     },
   },
   {
@@ -121,6 +124,16 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-magic-numbers': 'off',
       'sonarjs/no-duplicate-string': 'off',
+    },
+  },
+  {
+    // tests need only be compatible with local Node version
+    // publishable packages should pick up version range from "engines" in their package.json
+    files: ['e2e/**/*.ts', 'testing/**/*.ts', '**/*.test.ts'],
+    settings: {
+      node: {
+        version: fs.readFileSync('.node-version', 'utf8'),
+      },
     },
   },
   {

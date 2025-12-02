@@ -1,10 +1,9 @@
-import { bold, yellow } from 'ansis';
+import ansis from 'ansis';
 import type { FormattedIcu } from 'lighthouse';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
 import type { AuditDetails } from '@code-pushup/models';
-import { ui } from '@code-pushup/utils';
-import { PLUGIN_SLUG } from '../constants.js';
+import { logger } from '@code-pushup/utils';
 import { parseCriticalRequestChainToAuditDetails } from './critical-request-chain.type.js';
 import { parseOpportunityToAuditDetailsTable } from './opportunity.type.js';
 import { parseTableToAuditDetailsTable } from './table.type.js';
@@ -58,10 +57,8 @@ export function logUnsupportedDetails(lhrAudits: Result[]) {
     ),
   ];
   if (slugsWithDetailParsingErrors.length > 0) {
-    ui().logger.debug(
-      `${yellow('⚠')} Plugin ${bold(
-        PLUGIN_SLUG,
-      )} skipped parsing of unsupported audit details: ${bold(
+    logger.warn(
+      `Skipped parsing of unsupported audit details: ${ansis.bold(
         slugsWithDetailParsingErrors.join(', '),
       )}.`,
     );

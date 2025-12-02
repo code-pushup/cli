@@ -38,6 +38,10 @@ describe('weightSchema', () => {
 });
 
 describe('docsUrlSchema', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   it('should accept a valid URL', () => {
     expect(() =>
       docsUrlSchema.parse(
@@ -82,7 +86,7 @@ describe('globPathSchema', () => {
     'should throw for invalid path with forbidden character: %s',
     pattern => {
       expect(() => globPathSchema.parse(pattern)).toThrow(
-        'valid file path or glob pattern',
+        'Invalid string: must match pattern',
       );
     },
   );

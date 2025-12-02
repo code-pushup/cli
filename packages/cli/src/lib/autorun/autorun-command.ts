@@ -1,4 +1,4 @@
-import { bold, gray } from 'ansis';
+import ansis from 'ansis';
 import type { ArgumentsCamelCase, CommandModule } from 'yargs';
 import {
   type CollectOptions,
@@ -6,7 +6,7 @@ import {
   collectAndPersistReports,
   upload,
 } from '@code-pushup/core';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants.js';
 import {
   collectSuccessfulLog,
@@ -23,8 +23,8 @@ export function yargsAutorunCommandObject() {
     command,
     describe: 'Shortcut for running collect followed by upload',
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
-      ui().logger.log(bold(CLI_NAME));
-      ui().logger.info(gray(`Run ${command}...`));
+      logger.info(ansis.bold(CLI_NAME));
+      logger.debug(`Running ${ansis.bold(command)} command`);
       const options = args as unknown as AutorunOptions;
 
       // we need to ensure `json` is part of the formats as we want to upload
@@ -51,7 +51,7 @@ export function yargsAutorunCommandObject() {
           uploadSuccessfulLog(report.url);
         }
       } else {
-        ui().logger.warning('Upload skipped because configuration is not set.');
+        logger.warn('Upload skipped because configuration is not set.');
         renderIntegratePortalHint();
       }
     },

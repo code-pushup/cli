@@ -1,5 +1,5 @@
 import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import {
   filterMiddleware,
   filterSkippedCategories,
@@ -291,7 +291,7 @@ describe('filterMiddleware', () => {
   );
 
   it('should trigger verbose logging when skipPlugins or onlyPlugins removes categories', () => {
-    vi.stubEnv('CP_VERBOSE', 'true');
+    logger.setVerbose(true);
 
     filterMiddleware({
       onlyPlugins: ['p1'],
@@ -315,14 +315,12 @@ describe('filterMiddleware', () => {
       ] as CategoryConfig[],
     });
 
-    expect(ui()).toHaveNthLogged(
+    expect(logger.info).toHaveBeenNthCalledWith(
       1,
-      'info',
       'The --skipPlugins argument removed the following categories: c1, c2.',
     );
-    expect(ui()).toHaveNthLogged(
+    expect(logger.info).toHaveBeenNthCalledWith(
       2,
-      'info',
       'The --onlyPlugins argument removed the following categories: c1, c2.',
     );
   });

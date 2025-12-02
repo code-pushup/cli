@@ -29,14 +29,6 @@ export async function initCodePushup() {
     ...nxPluginGenerator('init', {
       skipNxJson: true,
     }),
-    observer: {
-      onStdout: data => {
-        console.info(parseNxProcessOutput(data.toString()));
-      },
-      onError: error => {
-        console.error(parseNxProcessOutput(error.message.toString()));
-      },
-    },
   });
 
   const { stdout: configStdout, stderr: configStderr } = await executeProcess(

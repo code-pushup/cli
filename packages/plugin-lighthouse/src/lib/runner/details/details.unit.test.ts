@@ -1,21 +1,18 @@
-import { bold, yellow } from 'ansis';
+import ansis from 'ansis';
 import type { FormattedIcu } from 'lighthouse';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
 import { describe, expect, it } from 'vitest';
 import type { AuditDetails } from '@code-pushup/models';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import { logUnsupportedDetails, toAuditDetails } from './details.js';
 
 describe('logUnsupportedDetails', () => {
   it('should log unsupported entries', () => {
     logUnsupportedDetails([{ details: { type: 'screenshot' } }] as Result[]);
-    expect(ui()).toHaveLoggedTimes(1);
-    expect(ui()).toHaveLogged(
-      'debug',
-      `${yellow('⚠')} Plugin ${bold(
-        'lighthouse',
-      )} skipped parsing of unsupported audit details: ${bold('screenshot')}.`,
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      `Skipped parsing of unsupported audit details: ${ansis.bold('screenshot')}.`,
     );
   });
 
@@ -29,12 +26,9 @@ describe('logUnsupportedDetails', () => {
       { details: { type: 'treemap-data' } },
       { details: { type: 'criticalrequestchain' } },
     ] as Result[]);
-    expect(ui()).toHaveLoggedTimes(1);
-    expect(ui()).toHaveLogged(
-      'debug',
-      `${yellow('⚠')} Plugin ${bold(
-        'lighthouse',
-      )} skipped parsing of unsupported audit details: ${bold(
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      `Skipped parsing of unsupported audit details: ${ansis.bold(
         'filmstrip, screenshot, debugdata',
       )}.`,
     );
@@ -82,7 +76,7 @@ describe('toAuditDetails', () => {
         },
         {
           name: 'Zone:ZoneAwarePromise',
-          duration: 0.783,
+          duration: 1.783,
         },
       ],
     });
@@ -104,11 +98,11 @@ describe('toAuditDetails', () => {
         rows: [
           {
             name: 'Zone',
-            duration: '0.634 ms',
+            duration: '1 ms',
           },
           {
             name: 'Zone:ZoneAwarePromise',
-            duration: '0.783 ms',
+            duration: '2 ms',
           },
         ],
       },
@@ -360,7 +354,7 @@ describe('toAuditDetails', () => {
           root: {
             name: 'https://example.com/',
             values: {
-              duration: '508.498 ms',
+              duration: '508 ms',
               transferSize: '849 B',
             },
           },
@@ -375,7 +369,7 @@ describe('toAuditDetails', () => {
         ],
         rows: [
           {
-            duration: '508.498 ms',
+            duration: '508 ms',
             transferSize: '849 B',
             length: 1,
           },

@@ -8,12 +8,13 @@ import {
   DEFAULT_PERSIST_OUTPUT_DIR,
   type Format,
   uploadConfigSchema,
+  validate,
 } from '@code-pushup/models';
 import type { CoreConfigCliOptions } from './core-config.model.js';
 import type { FilterOptions } from './filter.model.js';
-import type { GeneralCliOptions } from './global.model.js';
+import type { GlobalOptions } from './global.model.js';
 
-export type CoreConfigMiddlewareOptions = GeneralCliOptions &
+export type CoreConfigMiddlewareOptions = GlobalOptions &
   CoreConfigCliOptions &
   FilterOptions;
 
@@ -37,7 +38,7 @@ function buildPersistConfig(
 
 export async function coreConfigMiddleware<
   T extends CoreConfigMiddlewareOptions,
->(processArgs: T): Promise<GeneralCliOptions & CoreConfig & FilterOptions> {
+>(processArgs: T): Promise<GlobalOptions & CoreConfig & FilterOptions> {
   const {
     config,
     tsconfig,
@@ -58,10 +59,7 @@ export async function coreConfigMiddleware<
   const upload =
     rcUpload == null && cliUpload == null
       ? undefined
-      : uploadConfigSchema.parse({
-          ...rcUpload,
-          ...cliUpload,
-        });
+      : validate(uploadConfigSchema, { ...rcUpload, ...cliUpload });
 
   return {
     ...(config != null && { config }),

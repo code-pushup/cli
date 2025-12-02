@@ -18,8 +18,6 @@ Commands:
 
 
 Global Options:
-      --progress        Show progress bar in stdout.
-          [boolean] [default: false in CI environment, otherwise true]
       --verbose         When true creates more verbose output. This is helpful w
                         hen debugging. You may also set CP_VERBOSE env variable
                         instead.       [boolean] [default: false]

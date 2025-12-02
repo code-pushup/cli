@@ -1,5 +1,5 @@
 import type { Group } from '@code-pushup/models';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import {
   createRulesMap,
   groupsFromCustomConfig,
@@ -306,8 +306,7 @@ describe('groupsFromCustomConfig', () => {
         refs: [{ slug: 'react-jsx-key', weight: 3 }],
       },
     ]);
-    expect(ui()).toHaveLogged(
-      'warn',
+    expect(logger.warn).toHaveBeenCalledWith(
       'Some rules in group custom-group are invalid: invalid-rule',
     );
   });

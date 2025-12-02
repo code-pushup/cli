@@ -1,3 +1,277 @@
+## 0.92.0 (2025-12-02)
+
+### 🚀 Features
+
+- **ci:** style top-level logs ([5da74215](https://github.com/code-pushup/cli/commit/5da74215))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.91.0 (2025-12-01)
+
+### 🚀 Features
+
+- **ci:** add jobId option to prevent conflicting PR comments ([d00606fa](https://github.com/code-pushup/cli/commit/d00606fa))
+- **plugin-typescript:** make init function synchronous ([62df7a67](https://github.com/code-pushup/cli/commit/62df7a67))
+
+### 🩹 Fixes
+
+- **cli:** handle multiple --persist.outputDir arguments ([a9ca7f94](https://github.com/code-pushup/cli/commit/a9ca7f94))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.90.1 (2025-11-27)
+
+### 🩹 Fixes
+
+- **plugin-js-packages:** pnpm outdated fallback ([d893cb22](https://github.com/code-pushup/cli/commit/d893cb22))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
+## 0.90.0 (2025-11-26)
+
+### 🚀 Features
+
+- **ci:** improve code-pushup command logs ([5eeaf541](https://github.com/code-pushup/cli/commit/5eeaf541))
+- **utils:** add noLineBreak and noIndent options to logger methods ([4d07995c](https://github.com/code-pushup/cli/commit/4d07995c))
+- **utils:** add silent flag to executeProcess ([4b9a2d3f](https://github.com/code-pushup/cli/commit/4b9a2d3f))
+
+### 🩹 Fixes
+
+- **utils:** log spinner to stdout instead of stderr ([77991974](https://github.com/code-pushup/cli/commit/77991974))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.89.2 (2025-11-21)
+
+### 🩹 Fixes
+
+- resolve incomplete linting across projects ([#1151](https://github.com/code-pushup/cli/pull/1151))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
+## 0.89.1 (2025-11-20)
+
+### 🩹 Fixes
+
+- **plugin-axe:** resolve pnpm install issue ([#1150](https://github.com/code-pushup/cli/pull/1150))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
+## 0.89.0 (2025-11-19)
+
+### 🚀 Features
+
+- **cli:** remove multi-progress-bars and progress argument ([68c04cbe](https://github.com/code-pushup/cli/commit/68c04cbe))
+- **core:** log group for each plugin execution ([72a4a06b](https://github.com/code-pushup/cli/commit/72a4a06b))
+- **utils:** pass index parameter to asyncSequential callback ([ef3d3b00](https://github.com/code-pushup/cli/commit/ef3d3b00))
+- **utils:** return custom data from logger.group method ([aaeed361](https://github.com/code-pushup/cli/commit/aaeed361))
+
+### 🩹 Fixes
+
+- **utils:** prevent duplicate log group prefixes in sub-processes ([6c74e7f8](https://github.com/code-pushup/cli/commit/6c74e7f8))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.88.0 (2025-11-18)
+
+### 🚀 Features
+
+- **cli:** replace @poppinss/cliui sticker for upload hints ([263aea5f](https://github.com/code-pushup/cli/commit/263aea5f))
+- **utils:** implement and test ascii table formatting ([7a981817](https://github.com/code-pushup/cli/commit/7a981817))
+- **utils:** wrap columns in ascii table ([76730518](https://github.com/code-pushup/cli/commit/76730518))
+- **utils:** replace @isaacs/cliui for printing audits to stdout ([00293a9e](https://github.com/code-pushup/cli/commit/00293a9e))
+- **utils:** replace @poppinss/cliui table for printing categories ([522fd663](https://github.com/code-pushup/cli/commit/522fd663))
+- **utils:** remove @poppinss/cliui dependency ([47f934a2](https://github.com/code-pushup/cli/commit/47f934a2))
+
+### 🩹 Fixes
+
+- **utils:** align table columns with unicode characters ([7d4eb71c](https://github.com/code-pushup/cli/commit/7d4eb71c))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.87.2 (2025-11-14)
+
+### 🩹 Fixes
+
+- **core:** run plugins sequentially ([4ad94d76](https://github.com/code-pushup/cli/commit/4ad94d76))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.87.1 (2025-11-13)
+
+### 🩹 Fixes
+
+- **plugin-axe:** update plugin name references in README ([de026554](https://github.com/code-pushup/cli/commit/de026554))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
+## 0.87.0 (2025-11-12)
+
+### 🚀 Features
+
+- **plugin-axe:** implement core plugin functionality ([#1141](https://github.com/code-pushup/cli/pull/1141))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
+## 0.86.0 (2025-11-10)
+
+### 🚀 Features
+
+- **cli,core,utils:** replace basic logs with new logger ([83b9b7b0](https://github.com/code-pushup/cli/commit/83b9b7b0))
+- **plugin-coverage:** replace @poppinss/cliui with new logger ([0292c9fd](https://github.com/code-pushup/cli/commit/0292c9fd))
+- **plugin-eslint:** replace @poppinss/cliui with new logger ([8311628a](https://github.com/code-pushup/cli/commit/8311628a))
+- **plugin-lighthouse:** replace @poppinss/cliui with new logger ([d3888a1b](https://github.com/code-pushup/cli/commit/d3888a1b))
+- **plugin-typescript:** replace @poppinss/cliui with new logger ([57bf1c1e](https://github.com/code-pushup/cli/commit/57bf1c1e))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.85.0 (2025-11-07)
+
+### 🚀 Features
+
+- **utils:** print custom cwd in logger command spinner ([52dc118c](https://github.com/code-pushup/cli/commit/52dc118c))
+- **utils:** integrate logger with executeProcess ([eb04da8f](https://github.com/code-pushup/cli/commit/eb04da8f))
+
+### 🩹 Fixes
+
+- **ci:** remove redundant silent and debug options, use CP_VERBOSE env ([62a48b01](https://github.com/code-pushup/cli/commit/62a48b01))
+- **ci,core,nx-plugin,create-cli:** prevent duplicate process logs ([edfd95d5](https://github.com/code-pushup/cli/commit/edfd95d5))
+- **plugin-js-packages:** avoid parallel process execution (concurrent spinners not supported) ([455043e3](https://github.com/code-pushup/cli/commit/455043e3))
+- **utils:** hide verbose stdout/stderr attributes in ProcessError object ([7b9b6a94](https://github.com/code-pushup/cli/commit/7b9b6a94))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.84.0 (2025-10-30)
+
+### 🚀 Features
+
+- **ci:** use new shared logger, remove option ([6f134e62](https://github.com/code-pushup/cli/commit/6f134e62))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.83.0 (2025-10-29)
+
+### 🚀 Features
+
+- use formatted zod schema validation errors ([68fe123d](https://github.com/code-pushup/cli/commit/68fe123d))
+- **plugin-lighthouse:** prettify table validation errors ([ab2fe542](https://github.com/code-pushup/cli/commit/ab2fe542))
+- **utils:** prettify zod errors in stringifyError utility ([5e7456f7](https://github.com/code-pushup/cli/commit/5e7456f7))
+- **utils:** add option to truncate error messages to one-liner ([487ac865](https://github.com/code-pushup/cli/commit/487ac865))
+- **utils:** truncate group/spinner inline errors to one-liner ([ee31b9e8](https://github.com/code-pushup/cli/commit/ee31b9e8))
+- **utils:** provide validateAsync alternative to synchronous validate ([fb236e19](https://github.com/code-pushup/cli/commit/fb236e19))
+
+### 🩹 Fixes
+
+- use safe error to string conversions ([c78c7264](https://github.com/code-pushup/cli/commit/c78c7264))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.82.0 (2025-10-25)
+
+### 🚀 Features
+
+- **nx-plugin:** adjust bin path handling ([#1109](https://github.com/code-pushup/cli/pull/1109))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
+## 0.81.0 (2025-10-22)
+
+### 🚀 Features
+
+- **utils:** add utility for rounding to max decimals, use in formatDuration ([be80d99c](https://github.com/code-pushup/cli/commit/be80d99c))
+- **utils:** add settlePromise helper for convenient rejected promise handling ([9fa7df9e](https://github.com/code-pushup/cli/commit/9fa7df9e))
+- **utils:** add unix timestamp conversion ([b95877e9](https://github.com/code-pushup/cli/commit/b95877e9))
+- **utils:** implement custom logger with groups and tasks ([3d158ff6](https://github.com/code-pushup/cli/commit/3d158ff6))
+- **utils:** throw if invalid group/spinner combinations used in logger ([899ab764](https://github.com/code-pushup/cli/commit/899ab764))
+- **utils:** export shared logger instance ([009bc0eb](https://github.com/code-pushup/cli/commit/009bc0eb))
+
+### 🩹 Fixes
+
+- **utils:** ensure multiline logs during spinner are indented properly ([2ca91c08](https://github.com/code-pushup/cli/commit/2ca91c08))
+- **utils:** avoid formatting milliseconds with decimals ([3c22e5d0](https://github.com/code-pushup/cli/commit/3c22e5d0))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.80.2 (2025-09-26)
+
+### 🩹 Fixes
+
+- **plugin-lighthouse:** prevent cleanup permissions error on windows ([ac43d411](https://github.com/code-pushup/cli/commit/ac43d411))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.80.1 (2025-09-26)
+
+### 🩹 Fixes
+
+- **nx-plugin:** remove undocument env vars parsing from executor ([c2f0fe4b](https://github.com/code-pushup/cli/commit/c2f0fe4b))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.80.0 (2025-09-24)
+
+### 🚀 Features
+
+- add local GitHub Action for testing CI changes ([#1104](https://github.com/code-pushup/cli/pull/1104), [#1093](https://github.com/code-pushup/cli/issues/1093))
+- **utils:** export loose autocomplete type helper ([d56a8463](https://github.com/code-pushup/cli/commit/d56a8463))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+- Matěj Chalk
+
+## 0.79.2 (2025-09-23)
+
+This was a version bump only, there were no code changes.
+
+## 0.79.2-alpha.1 (2025-09-23)
+
+### 🚀 Features
+
+- add local GitHub Action for testing CI changes ([#1104](https://github.com/code-pushup/cli/pull/1104), [#1093](https://github.com/code-pushup/cli/issues/1093))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.79.1 (2025-09-04)
 
 ### 🩹 Fixes

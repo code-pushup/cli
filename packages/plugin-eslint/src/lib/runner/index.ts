@@ -5,7 +5,7 @@ import type {
   PluginArtifactOptions,
   RunnerFunction,
 } from '@code-pushup/models';
-import { asyncSequential, ui } from '@code-pushup/utils';
+import { asyncSequential, logger } from '@code-pushup/utils';
 import type { ESLintPluginRunnerConfig, ESLintTarget } from '../config.js';
 import { lint } from './lint.js';
 import { lintResultsToAudits, mergeLinterOutputs } from './transform.js';
@@ -23,7 +23,7 @@ export function createRunnerFunction(options: {
   };
 
   return async (): Promise<AuditOutputs> => {
-    ui().logger.log(`ESLint plugin executing ${targets.length} lint targets`);
+    logger.info(`ESLint plugin executing ${targets.length} lint targets`);
 
     const linterOutputs = artifacts
       ? await loadArtifacts(artifacts)

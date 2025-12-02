@@ -7,6 +7,7 @@ import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
   initGitRepo,
+  restoreNxIgnoredFiles,
   simulateGitFetch,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
@@ -28,6 +29,7 @@ export async function setupTestRepo(folder: string) {
   );
 
   await cp(fixturesDir, baseDir, { recursive: true });
+  await restoreNxIgnoredFiles(baseDir);
 
   const git = await initGitRepo(simpleGit, { baseDir });
   await simulateGitFetch(git);

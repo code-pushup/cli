@@ -1,4 +1,4 @@
-import { ZodError, z } from 'zod';
+import { SchemaValidationError, validate } from '@code-pushup/models';
 import type { ConfigPatterns, Settings } from './models.js';
 import { configPatternsSchema } from './schemas.js';
 
@@ -11,13 +11,12 @@ export const DEFAULT_SETTINGS: Settings = {
   config: null,
   directory: process.cwd(),
   silent: false,
-  debug: false,
   detectNewIssues: true,
-  logger: console,
   nxProjectsFilter: '--with-target={task}',
   skipComment: false,
   configPatterns: null,
   searchCommits: false,
+  jobId: null,
 };
 
 export const MIN_SEARCH_COMMITS = 1;
@@ -32,17 +31,15 @@ export function parseConfigPatternsFromString(
 
   try {
     const json = JSON.parse(value);
-    return configPatternsSchema.parse(json);
+    return validate(configPatternsSchema, json);
   } catch (error) {
     if (error instanceof SyntaxError) {
       throw new TypeError(
         `Invalid JSON value for configPatterns input - ${error.message}`,
       );
     }
-    if (error instanceof ZodError) {
-      throw new TypeError(
-        `Invalid shape of configPatterns input:\n${z.prettifyError(error)}`,
-      );
+    if (error instanceof SchemaValidationError) {
+      throw new TypeError(`Invalid shape of configPatterns input:\n${error}`);
     }
     throw error;
   }

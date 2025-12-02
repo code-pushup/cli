@@ -9,6 +9,7 @@ import {
   TEST_OUTPUT_DIR,
   initGitRepo,
   omitVariableReportData,
+  restoreNxIgnoredFiles,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
@@ -24,6 +25,7 @@ describe('PLUGIN collect report with coverage-plugin NPM package', () => {
 
   beforeAll(async () => {
     await cp(fixtureDir, testFileDir, { recursive: true });
+    await restoreNxIgnoredFiles(testFileDir);
     await initGitRepo(simpleGit, { baseDir: basicDir });
     await initGitRepo(simpleGit, { baseDir: existingDir });
   });
@@ -41,7 +43,7 @@ describe('PLUGIN collect report with coverage-plugin NPM package', () => {
   it('should run Code coverage plugin which runs tests and creates report.json', async () => {
     const { code } = await executeProcess({
       command: 'npx',
-      args: ['code-pushup', 'collect', '--no-progress'],
+      args: ['code-pushup', 'collect'],
       cwd: basicDir,
     });
 
@@ -58,7 +60,7 @@ describe('PLUGIN collect report with coverage-plugin NPM package', () => {
   it('should run Code coverage plugin which parses existing lcov report and creates report.json', async () => {
     const { code } = await executeProcess({
       command: 'npx',
-      args: ['@code-pushup/cli', 'collect', '--no-progress'],
+      args: ['@code-pushup/cli', 'collect'],
       cwd: existingDir,
     });
 

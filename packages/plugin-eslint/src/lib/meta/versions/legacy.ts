@@ -3,8 +3,8 @@ import {
   asyncSequential,
   distinct,
   exists,
+  logger,
   toArray,
-  ui,
 } from '@code-pushup/utils';
 import type { ESLintTarget } from '../../config.js';
 import { setupESLint } from '../../setup.js';
@@ -41,7 +41,7 @@ export async function loadRulesForLegacyConfig({
       }
       const ruleMeta = rulesMeta[id];
       if (!ruleMeta) {
-        ui().logger.warning(`Metadata not found for ESLint rule ${id}`);
+        logger.warn(`Metadata not found for ESLint rule ${id}`);
         return null;
       }
       // ignoring meta.defaultOptions to match legacy config handling in calculateConfigForFile

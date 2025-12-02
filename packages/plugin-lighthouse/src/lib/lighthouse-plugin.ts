@@ -1,13 +1,14 @@
 import { createRequire } from 'node:module';
-import type { PluginConfig } from '@code-pushup/models';
+import type { PluginConfig, PluginUrls } from '@code-pushup/models';
+import { normalizeUrlInput } from '@code-pushup/utils';
 import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
 import { normalizeFlags } from './normalize-flags.js';
-import { normalizeUrlInput, processAuditsAndGroups } from './processing.js';
+import { processAuditsAndGroups } from './processing.js';
 import { createRunnerFunction } from './runner/runner.js';
-import type { LighthouseOptions, LighthouseUrls } from './types.js';
+import type { LighthouseOptions } from './types.js';
 
 export function lighthousePlugin(
-  urls: LighthouseUrls,
+  urls: PluginUrls,
   flags?: LighthouseOptions,
 ): PluginConfig {
   const {

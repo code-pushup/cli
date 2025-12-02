@@ -31,7 +31,6 @@ export type GlobalExecutorOptions = {
   command?: Command;
   bin?: string;
   verbose?: boolean;
-  progress?: boolean;
   config?: string;
 };
 

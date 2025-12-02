@@ -25,12 +25,6 @@ export type CacheConfigCliOptions = {
   cache?: boolean;
 };
 
-export type ConfigCliOptions = {
-  config?: string;
-  tsconfig?: string;
-  verbose?: string;
-};
-
 export type CoreConfigCliOptions = Pick<CoreConfig, 'persist'> & {
   upload?: Partial<Omit<UploadConfig, 'timeout'>>;
   cache?: CacheConfig;

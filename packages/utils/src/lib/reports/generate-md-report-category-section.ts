@@ -2,7 +2,7 @@ import { type InlineText, MarkdownDocument, md } from 'build-md';
 import type { AuditReport } from '@code-pushup/models';
 import { slugify } from '../formatting.js';
 import { HIERARCHY } from '../text-formats/index.js';
-import { metaDescription } from './formatting.js';
+import { metaDescription, wrapTags } from './formatting.js';
 import { getSortableAuditByRef, getSortableGroupByRef } from './sorting.js';
 import type { ScoreFilter, ScoredGroup, ScoredReport } from './types.js';
 import {
@@ -90,7 +90,7 @@ export function categoryRef(
 ): InlineText {
   const auditTitleAsLink = md.link(
     `#${slugify(title)}-${slugify(pluginTitle)}`,
-    title,
+    wrapTags(title),
   );
   const marker = scoreMarker(score, 'square');
   return md`${marker} ${auditTitleAsLink} (${md.italic(

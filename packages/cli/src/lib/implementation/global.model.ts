@@ -1,4 +1,5 @@
-import type { GlobalOptions } from '@code-pushup/core';
-import type { ConfigCliOptions } from './core-config.model.js';
-
-export type GeneralCliOptions = ConfigCliOptions & GlobalOptions;
+export type GlobalOptions = {
+  config?: string;
+  tsconfig?: string;
+  verbose?: string;
+};

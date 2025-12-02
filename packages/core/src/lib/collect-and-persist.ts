@@ -3,20 +3,19 @@ import {
   type CoreConfig,
   type PersistConfig,
   pluginReportSchema,
+  validate,
 } from '@code-pushup/models';
 import {
-  isVerbose,
   logStdoutSummary,
+  logger,
   scoreReport,
   sortReport,
-  ui,
 } from '@code-pushup/utils';
 import { collect } from './implementation/collect.js';
 import {
   logPersistedResults,
   persistReport,
 } from './implementation/persist.js';
-import type { GlobalOptions } from './types.js';
 
 export type CollectAndPersistReportsOptions = Pick<
   CoreConfig,
@@ -25,19 +24,18 @@ export type CollectAndPersistReportsOptions = Pick<
   persist: Required<Omit<PersistConfig, 'skipReports'>> &
     Pick<PersistConfig, 'skipReports'>;
   cache: CacheConfigObject;
-} & Partial<GlobalOptions>;
+};
 
 export async function collectAndPersistReports(
   options: CollectAndPersistReportsOptions,
 ): Promise<void> {
-  const logger = ui().logger;
   const reportResult = await collect(options);
   const sortedScoredReport = sortReport(scoreReport(reportResult));
 
   const { persist } = options;
   const { skipReports = false, ...persistOptions } = persist ?? {};
 
-  if (skipReports === true) {
+  if (skipReports) {
     logger.info('Skipping saving reports as `persist.skipReports` is true');
   } else {
     const persistResults = await persistReport(
@@ -45,10 +43,7 @@ export async function collectAndPersistReports(
       sortedScoredReport,
       persistOptions,
     );
-
-    if (isVerbose()) {
-      logPersistedResults(persistResults);
-    }
+    logPersistedResults(persistResults);
   }
 
   // terminal output
@@ -57,6 +52,6 @@ export async function collectAndPersistReports(
   // validate report and throw if invalid
   reportResult.plugins.forEach(plugin => {
     // Running checks after persisting helps while debugging as you can check the invalid output after the error is thrown
-    pluginReportSchema.parse(plugin);
+    validate(pluginReportSchema, plugin);
   });
 }

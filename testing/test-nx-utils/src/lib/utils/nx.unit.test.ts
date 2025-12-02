@@ -1,12 +1,12 @@
-import * as process from 'node:process';
 import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
 import { describe, expect } from 'vitest';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { executorContext, registerPluginInWorkspace } from './nx.js';
 
 describe('executorContext', () => {
   it('should create context for given project name', () => {
     expect(executorContext('my-lib')).toStrictEqual({
-      cwd: process.cwd(),
+      cwd: MEMFS_VOLUME,
       isVerbose: false,
       projectName: 'my-lib',
       projectsConfigurations: {

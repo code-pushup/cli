@@ -1,8 +1,9 @@
+import ansis from 'ansis';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { describe, expect, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants.js';
 import { yargsCli } from '../yargs-cli.js';
 import { yargsPrintConfigCommandObject } from './print-config-command.js';
@@ -24,7 +25,9 @@ describe('print-config-command', () => {
       commands: [yargsPrintConfigCommandObject()],
     }).parseAsync();
 
-    expect(ui()).toHaveLogged('log', expect.stringContaining('"plugins": ['));
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('"plugins": ['),
+    );
   });
 
   it('should write config to file if output option is given', async () => {
@@ -37,11 +40,12 @@ describe('print-config-command', () => {
     await expect(readFile(outputPath, 'utf8')).resolves.toContain(
       '"plugins": [',
     );
-    expect(ui()).not.toHaveLogged(
-      'log',
+    expect(logger.info).not.toHaveBeenCalledWith(
       expect.stringContaining('"plugins": ['),
     );
-    expect(ui()).toHaveLogged('info', `Config printed to file ${outputPath}`);
+    expect(logger.info).toHaveBeenCalledWith(
+      `Config printed to file ${ansis.bold(outputPath)}`,
+    );
   });
 
   it('should filter out meta arguments and kebab duplicates', async () => {
@@ -50,15 +54,17 @@ describe('print-config-command', () => {
       commands: [yargsPrintConfigCommandObject()],
     }).parseAsync();
 
-    expect(ui()).not.toHaveLogged('log', expect.stringContaining('"$0":'));
-    expect(ui()).not.toHaveLogged('log', expect.stringContaining('"_":'));
+    expect(logger.info).not.toHaveBeenCalledWith(
+      expect.stringContaining('"$0":'),
+    );
+    expect(logger.info).not.toHaveBeenCalledWith(
+      expect.stringContaining('"_":'),
+    );
 
-    expect(ui()).toHaveLogged(
-      'log',
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining('"outputDir": "destinationDir"'),
     );
-    expect(ui()).not.toHaveLogged(
-      'log',
+    expect(logger.info).not.toHaveBeenCalledWith(
       expect.stringContaining('"output-dir":'),
     );
   });

@@ -1,11 +1,11 @@
-import { bold, gray } from 'ansis';
+import ansis from 'ansis';
 import { type Options, bundleRequire } from 'bundle-require';
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
 import type { Format, PersistConfig } from '@code-pushup/models';
 import { formatBytes } from './formatting.js';
 import { logMultipleResults } from './log-results.js';
-import { ui } from './logging.js';
+import { logger } from './logger.js';
 
 export async function readTextFile(filePath: string): Promise<string> {
   const buffer = await readFile(filePath);
@@ -40,8 +40,9 @@ export async function ensureDirectoryExists(baseDir: string) {
     await mkdir(baseDir, { recursive: true });
     return;
   } catch (error) {
-    ui().logger.info((error as { code: string; message: string }).message);
-    if ((error as { code: string }).code !== 'EEXIST') {
+    const fsError = error as NodeJS.ErrnoException;
+    logger.warn(fsError.message);
+    if (fsError.code !== 'EEXIST') {
       throw error;
     }
   }
@@ -62,11 +63,11 @@ export function logMultipleFileResults(
 ): void {
   const succeededTransform = (result: PromiseFulfilledResult<FileResult>) => {
     const [fileName, size] = result.value;
-    const formattedSize = size ? ` (${gray(formatBytes(size))})` : '';
-    return `- ${bold(fileName)}${formattedSize}`;
+    const formattedSize = size ? ` (${ansis.gray(formatBytes(size))})` : '';
+    return `- ${ansis.bold(fileName)}${formattedSize}`;
   };
   const failedTransform = (result: PromiseRejectedResult) =>
-    `- ${bold(result.reason as string)}`;
+    `- ${ansis.bold(String(result.reason))}`;
 
   logMultipleResults<FileResult>(
     fileResults,

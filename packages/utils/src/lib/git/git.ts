@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { type StatusResult, simpleGit } from 'simple-git';
-import { ui } from '../logging.js';
+import { logger } from '../logger.js';
 import { toUnixPath } from '../transform.js';
 
 export function getGitRoot(git = simpleGit()): Promise<string> {
@@ -82,7 +82,7 @@ export async function safeCheckout(
   if (forceCleanStatus) {
     await git.raw(['reset', '--hard']);
     await git.clean(['f', 'd']);
-    ui().logger.info(`git status cleaned`);
+    logger.info(`git status cleaned`);
   }
   await guardAgainstLocalChanges(git);
   await git.checkout(branchOrHash);

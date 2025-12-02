@@ -43,7 +43,7 @@ describe('runnerConfigSchema', () => {
         command: 'node',
         outputFile: '',
       }),
-    ).toThrow('path is invalid');
+    ).toThrow('Too small: expected string to have >=1 characters');
   });
 });
 
