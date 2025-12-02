@@ -173,7 +173,7 @@ describe('nx-plugin', () => {
     });
 
     const cleanStdout = removeColorCodes(stdout);
-    throw new Error(cleanStdout);
+
     // Nx command
     expect(cleanStdout).toContain('nx run my-lib:code-pushup --dryRun');
     // Run CLI executor
