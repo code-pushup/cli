@@ -22,13 +22,8 @@ export default async function runAutorunExecutor(
     terminalAndExecutorOptions,
     normalizedContext,
   );
-  const {
-    dryRun,
-    verbose,
-    command: cliCommand,
-    bin,
-    ...restArgs
-  } = cliArgumentObject;
+  const { command: cliCommand } = terminalAndExecutorOptions;
+  const { dryRun, verbose, bin, ...restArgs } = cliArgumentObject;
   const command = bin ? `node` : 'npx';
   const positionals = [
     bin ?? '@code-pushup/cli',
