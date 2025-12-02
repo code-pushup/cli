@@ -1,4 +1,4 @@
-import { type ExecutorContext } from '@nx/devkit';
+import type { ExecutorContext } from '@nx/devkit';
 import { executeProcess } from '../../internal/execute-process.js';
 import { normalizeContext } from '../internal/context.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
@@ -36,11 +36,11 @@ export default async function runAutorunExecutor(
   ];
   const args = [...positionals, ...objectToCliArgs(restArgs)];
   const executorEnvVariables = {
-    ...process.env,
     ...(verbose && { CP_VERBOSE: 'true' }),
   };
   const commandString = formatCommandStatus([command, ...args].join(' '), {
     cwd: context.cwd,
+    env: executorEnvVariables,
   });
 
   if (dryRun) {
@@ -51,7 +51,14 @@ export default async function runAutorunExecutor(
         command,
         args,
         ...(context.cwd ? { cwd: context.cwd } : {}),
-        ...(verbose ? { env: executorEnvVariables } : {}),
+        ...(verbose
+          ? {
+              env: {
+                ...process.env,
+                ...executorEnvVariables,
+              },
+            }
+          : {}),
       });
     } catch (error) {
       logger.error(stringifyError(error));

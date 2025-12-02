@@ -1,7 +1,7 @@
-import { logger } from '@nx/devkit';
 import { afterAll, afterEach, beforeEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { logger } from '@code-pushup/utils';
 import * as executeProcessModule from '../../internal/execute-process.js';
 import runAutorunExecutor from './executor.js';
 
@@ -9,8 +9,6 @@ describe('runAutorunExecutor', () => {
   const processEnvCP = Object.fromEntries(
     Object.entries(process.env).filter(([k]) => k.startsWith('CP_')),
   );
-  const loggerInfoSpy = vi.spyOn(logger, 'info');
-  const loggerWarnSpy = vi.spyOn(logger, 'warn');
   const executeProcessSpy = vi.spyOn(executeProcessModule, 'executeProcess');
 
   beforeAll(() => {
@@ -37,8 +35,6 @@ describe('runAutorunExecutor', () => {
   });
 
   afterEach(() => {
-    loggerWarnSpy.mockReset();
-    loggerInfoSpy.mockReset();
     executeProcessSpy.mockReset();
   });
 
@@ -110,24 +106,28 @@ describe('runAutorunExecutor', () => {
 
   it('should set env var information if verbose is set', async () => {
     const output = await runAutorunExecutor(
-      { verbose: true },
+      {
+        dryRun: true, // here to produce log
+        verbose: true,
+      },
       { ...executorContext('github-action'), cwd: '<CWD>' },
     );
-    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+
+    expect(executeProcessSpy).toHaveBeenCalledTimes(0);
 
     expect(output.command).not.toContain('--verbose');
-    expect(loggerWarnSpy).toHaveBeenCalledTimes(0);
-    expect(loggerInfoSpy).toHaveBeenCalledWith(
-      expect.stringContaining('CP_VERBOSE=true'),
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining('CP_VERBOSE=\"true\"'),
     );
   });
 
   it('should log command if dryRun is set', async () => {
     await runAutorunExecutor({ dryRun: true }, executorContext('utils'));
 
-    expect(loggerInfoSpy).toHaveBeenCalledTimes(0);
-    expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
+    expect(logger.command).toHaveBeenCalledTimes(0);
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
       expect.stringContaining('DryRun execution of'),
     );
   });
