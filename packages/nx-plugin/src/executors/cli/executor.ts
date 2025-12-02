@@ -56,6 +56,7 @@ export default async function runAutorunExecutor(
         command,
         args: [...positionals, ...args],
         ...(context.cwd ? { cwd: context.cwd } : {}),
+        env: executorEnvVariables,
       });
     } catch (error) {
       logger.error(stringifyError(error));

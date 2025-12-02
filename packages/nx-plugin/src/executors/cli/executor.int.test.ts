@@ -27,7 +27,7 @@ describe('runAutorunExecutor', () => {
     executeProcessSpy.mockReset();
   });
 
-  it('should parse CLI options and execute command', async () => {
+  it('should normalize context, parse CLI options and execute command', async () => {
     const { success, command } = await runAutorunExecutor(
       { verbose: true },
       executorContext('utils'),
