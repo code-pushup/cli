@@ -1,7 +1,6 @@
 /* eslint-disable max-lines, no-console, @typescript-eslint/class-methods-use-this */
 import ansis, { type AnsiColors } from 'ansis';
 import os from 'node:os';
-import path from 'node:path';
 import ora, { type Ora } from 'ora';
 import { formatCommandStatus } from './command.js';
 import { dateToUnixTimestamp } from './dates.js';
