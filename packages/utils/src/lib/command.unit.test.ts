@@ -1,7 +1,7 @@
 import ansis from 'ansis';
 import path from 'node:path';
 import process from 'node:process';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { formatCommandStatus } from './command.js';
 
 describe('formatCommandStatus', () => {
