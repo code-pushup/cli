@@ -1,7 +1,6 @@
 import { afterAll, afterEach, beforeEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { logger } from '@code-pushup/utils';
 import * as executeProcessModule from '../../internal/execute-process.js';
 import runAutorunExecutor from './executor.js';
 
@@ -10,6 +9,7 @@ describe('runAutorunExecutor', () => {
     Object.entries(process.env).filter(([k]) => k.startsWith('CP_')),
   );
   const executeProcessSpy = vi.spyOn(executeProcessModule, 'executeProcess');
+  let loggerSpy: Awaited<typeof import('@code-pushup/utils')>['logger'];
 
   beforeAll(() => {
     Object.entries(process.env)
@@ -23,7 +23,9 @@ describe('runAutorunExecutor', () => {
     );
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    const { logger } = await import('@code-pushup/utils');
+    loggerSpy = logger;
     vi.unstubAllEnvs();
     executeProcessSpy.mockResolvedValue({
       bin: 'npx ...',
@@ -116,8 +118,8 @@ describe('runAutorunExecutor', () => {
     expect(executeProcessSpy).toHaveBeenCalledTimes(0);
 
     expect(output.command).not.toContain('--verbose');
-    expect(logger.warn).toHaveBeenCalledTimes(1);
-    expect(logger.warn).toHaveBeenCalledWith(
+    expect(loggerSpy.warn).toHaveBeenCalledTimes(1);
+    expect(loggerSpy.warn).toHaveBeenCalledWith(
       expect.stringContaining('CP_VERBOSE="true"'),
     );
   });
@@ -125,9 +127,9 @@ describe('runAutorunExecutor', () => {
   it('should log command if dryRun is set', async () => {
     await runAutorunExecutor({ dryRun: true }, executorContext('utils'));
 
-    expect(logger.command).toHaveBeenCalledTimes(0);
-    expect(logger.warn).toHaveBeenCalledTimes(1);
-    expect(logger.warn).toHaveBeenCalledWith(
+    expect(loggerSpy.command).toHaveBeenCalledTimes(0);
+    expect(loggerSpy.warn).toHaveBeenCalledTimes(1);
+    expect(loggerSpy.warn).toHaveBeenCalledWith(
       expect.stringContaining('DryRun execution of'),
     );
   });
