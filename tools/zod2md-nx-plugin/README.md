@@ -58,7 +58,7 @@ The generated target:
 2. Formats the generated markdown with Prettier
 3. Caches the result for better performance
 
-### Options
+### Passing zod2md options
 
 You can override the config and output paths when running the target:
 
