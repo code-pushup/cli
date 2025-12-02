@@ -202,6 +202,8 @@ describe('nx-plugin', () => {
     // Run CLI executor - check for DryRun execution message
     expect(cleanStdout).toContain('DryRun execution of:');
     expect(cleanStdout).toContain('npx @code-pushup/cli');
+    expect(cleanStdout).not.toContain('--dryRun');
+    expect(cleanStdout).not.toContain('--verbose');
   });
 
   it('should consider plugin option bin in executor target', async () => {
