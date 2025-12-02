@@ -1,4 +1,3 @@
-import { logger } from '@nx/devkit';
 import { afterAll, afterEach, beforeEach, expect, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
@@ -9,9 +8,8 @@ describe('runAutorunExecutor', () => {
   const processEnvCP = Object.fromEntries(
     Object.entries(process.env).filter(([k]) => k.startsWith('CP_')),
   );
-  const loggerInfoSpy = vi.spyOn(logger, 'info');
-  const loggerWarnSpy = vi.spyOn(logger, 'warn');
   const executeProcessSpy = vi.spyOn(executeProcessModule, 'executeProcess');
+  let loggerSpy: Awaited<typeof import('@code-pushup/utils')>['logger'];
 
   beforeAll(() => {
     Object.entries(process.env)
@@ -25,7 +23,9 @@ describe('runAutorunExecutor', () => {
     );
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    const { logger } = await import('@code-pushup/utils');
+    loggerSpy = logger;
     vi.unstubAllEnvs();
     executeProcessSpy.mockResolvedValue({
       bin: 'npx ...',
@@ -37,8 +37,6 @@ describe('runAutorunExecutor', () => {
   });
 
   afterEach(() => {
-    loggerWarnSpy.mockReset();
-    loggerInfoSpy.mockReset();
     executeProcessSpy.mockReset();
   });
 
@@ -113,30 +111,30 @@ describe('runAutorunExecutor', () => {
     expect(output.command).toMatch('--upload.project="CLI"');
   });
 
-  it('should log information if verbose is set', async () => {
+  it('should set env var information if verbose is set', async () => {
     const output = await runAutorunExecutor(
-      { verbose: true },
+      {
+        dryRun: true, // here to produce log
+        verbose: true,
+      },
       { ...executorContext('github-action'), cwd: '<CWD>' },
     );
-    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
 
-    expect(output.command).toMatch('--verbose');
-    expect(loggerWarnSpy).toHaveBeenCalledTimes(0);
-    expect(loggerInfoSpy).toHaveBeenCalledTimes(2);
-    expect(loggerInfoSpy).toHaveBeenCalledWith(
-      expect.stringContaining(`Run CLI executor`),
-    );
-    expect(loggerInfoSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Command:'),
+    expect(executeProcessSpy).toHaveBeenCalledTimes(0);
+
+    expect(output.command).not.toContain('--verbose');
+    expect(loggerSpy.warn).toHaveBeenCalledTimes(1);
+    expect(loggerSpy.warn).toHaveBeenCalledWith(
+      expect.stringContaining('CP_VERBOSE="true"'),
     );
   });
 
   it('should log command if dryRun is set', async () => {
     await runAutorunExecutor({ dryRun: true }, executorContext('utils'));
 
-    expect(loggerInfoSpy).toHaveBeenCalledTimes(0);
-    expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
-    expect(loggerWarnSpy).toHaveBeenCalledWith(
+    expect(loggerSpy.command).toHaveBeenCalledTimes(0);
+    expect(loggerSpy.warn).toHaveBeenCalledTimes(1);
+    expect(loggerSpy.warn).toHaveBeenCalledWith(
       expect.stringContaining('DryRun execution of'),
     );
   });
