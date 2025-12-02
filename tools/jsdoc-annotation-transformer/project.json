@@ -1,7 +1,7 @@
 {
-  "name": "models-transformers",
+  "name": "jsdoc-annotation-transformer",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/models/transformers/src",
+  "sourceRoot": "tools/jsdoc-annotation-transformer/src",
   "projectType": "library",
   "targets": {
     "build": {
@@ -9,9 +9,9 @@
       "outputs": ["{options.outputPath}"],
       "dependsOn": ["pre-build"],
       "options": {
-        "outputPath": "packages/models/transformers/dist",
-        "main": "packages/models/transformers/src/index.ts",
-        "tsConfig": "packages/models/transformers/tsconfig.lib.json"
+        "outputPath": "tools/jsdoc-annotation-transformer/dist",
+        "main": "tools/jsdoc-annotation-transformer/src/index.ts",
+        "tsConfig": "tools/jsdoc-annotation-transformer/tsconfig.lib.json"
       }
     },
     "pre-build": {
