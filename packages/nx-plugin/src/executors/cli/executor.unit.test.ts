@@ -108,21 +108,17 @@ describe('runAutorunExecutor', () => {
     expect(output.command).toMatch('--upload.project="CLI"');
   });
 
-  it('should log information if verbose is set', async () => {
+  it('should set env var information if verbose is set', async () => {
     const output = await runAutorunExecutor(
       { verbose: true },
       { ...executorContext('github-action'), cwd: '<CWD>' },
     );
     expect(executeProcessSpy).toHaveBeenCalledTimes(1);
 
-    expect(output.command).toMatch('--verbose');
+    expect(output.command).not.toContain('--verbose');
     expect(loggerWarnSpy).toHaveBeenCalledTimes(0);
-    expect(loggerInfoSpy).toHaveBeenCalledTimes(2);
     expect(loggerInfoSpy).toHaveBeenCalledWith(
-      expect.stringContaining(`Run CLI executor`),
-    );
-    expect(loggerInfoSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Command: npx @code-pushup/cli'),
+      expect.stringContaining('CP_VERBOSE=true'),
     );
   });
 
@@ -132,9 +128,7 @@ describe('runAutorunExecutor', () => {
     expect(loggerInfoSpy).toHaveBeenCalledTimes(0);
     expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
     expect(loggerWarnSpy).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'DryRun execution of: npx @code-pushup/cli --dryRun',
-      ),
+      expect.stringContaining('DryRun execution of'),
     );
   });
 });

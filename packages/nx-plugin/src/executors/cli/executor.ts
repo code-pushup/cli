@@ -23,23 +23,26 @@ export default async function runAutorunExecutor(
     terminalAndExecutorOptions,
     normalizedContext,
   );
-  const { dryRun, verbose, command, bin } = terminalAndExecutorOptions;
+  const { dryRun, verbose, command, bin, ...args } = cliArgumentObject;
+  const executorEnvVariables = {
+    ...(verbose && { CP_VERBOSE: 'true' }),
+  };
   const commandString = createCliCommandString({
     command,
-    args: cliArgumentObject,
+    args: args,
     bin,
   });
-  if (verbose) {
-    logger.info(`Run CLI executor ${command ?? ''}`);
-    logger.info(`Command: ${commandString}`);
-  }
+
   if (dryRun) {
     logger.warn(`DryRun execution of: ${commandString}`);
   } else {
     try {
       await executeProcess({
-        ...createCliCommandObject({ command, args: cliArgumentObject, bin }),
+        ...createCliCommandObject({ command, args, bin }),
         ...(context.cwd ? { cwd: context.cwd } : {}),
+        ...(Object.keys(executorEnvVariables).length
+          ? { env: executorEnvVariables }
+          : {}),
       });
     } catch (error) {
       logger.error(error);
