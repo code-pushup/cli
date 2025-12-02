@@ -1,40 +1,100 @@
 # @code-pushup/zod2md-nx-plugin
 
-[![npm](https://img.shields.io/npm/v/%40code-pushup%2Futils.svg)](https://www.npmjs.com/package/@code-pushup/zod2md-nx-plugin)
-[![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Futils)](https://npmtrends.com/@code-pushup/zod2md-nx-plugin)
-[![dependencies](https://img.shields.io/librariesio/release/npm/%40code-pushup/utils)](https://www.npmjs.com/package/@code-pushup/zod2md-nx-plugin?activeTab=dependencies)
+The Nx Plugin for [zod2md](https://github.com/code-pushup/zod2md), a tool for generating documentation from Zod schemas.
 
-Low-level **utilities** (helper functions, etc.) used by [Code PushUp CLI](../cli/README.md).
+Why should you use this plugin?
 
-## Setup
-
-If you've already installed another `@code-pushup/*` package, then you may have already installed `@code-pushup/zod2md-nx-plugin` indirectly.
-
-If not, you can always install it separately:
-
-```sh
-npm install --save-dev @code-pushup/zod2md-nx-plugin
-```
-
-```sh
-yarn add --dev @code-pushup/zod2md-nx-plugin
-```
-
-```sh
-pnpm add --save-dev @code-pushup/zod2md-nx-plugin
-```
+- Zero setup cost. Just add a `zod2md.config.ts` file and you're good to go.
+- Automatic target generation
+- Minimal configuration
+- Automated caching and dependency tracking
 
 ## Usage
 
-```ts
-import { executeProcess, readJsonFile, slugify } from '@code-pushup/zod2md-nx-plugin';
-
-await executeProcess({
-  command: 'npx',
-  args: ['eslint', '--format=json', '--output-file=output.json', '**/*.js'],
-});
-
-const data = await readJsonFile('output.json');
-
-const slug = slugify('Hello, world!'); // "hello-world"
+```jsonc
+// nx.json
+{
+  //...
+  "plugins": ["./tools/zod2md-nx-plugin/src/lib/plugin.js"],
+}
 ```
+
+or with options:
+
+```jsonc
+// nx.json
+{
+  //...
+  "plugins": [
+    {
+      "plugin": "./tools/zod2md-nx-plugin/src/lib/plugin.js",
+      "options": {
+        "targetName": "docs",
+      },
+    },
+  ],
+}
+```
+
+Now every project with a `zod2md.config.ts` file will have a `generate-docs` target automatically created.
+
+- `nx run <project-name>:generate-docs`
+
+Run it and the project will automatically generate documentation from your Zod schemas.
+
+```text
+Root/
+├── project-name/
+│   ├── zod2md.config.ts
+│   ├── docs/
+│   │   └── project-name-reference.md 👈 generated
+│   └── ...
+└── ...
+```
+
+The generated target:
+
+1. Runs `zod2md` with the project's configuration
+2. Formats the generated markdown with Prettier
+3. Caches the result for better performance
+
+## Options
+
+| Name           | type                               | description                                            |
+| -------------- | ---------------------------------- | ------------------------------------------------------ |
+| **targetName** | `string` (DEFAULT 'generate-docs') | The id used to identify a target in your project.json. |
+
+All options are optional and provided in the `nx.json` file.
+
+```jsonc
+// nx.json
+{
+  //...
+  "plugins": [
+    {
+      "plugin": "./tools/zod2md-nx-plugin/src/lib/plugin.js",
+      "options": {
+        "targetName": "docs",
+      },
+    },
+  ],
+}
+```
+
+## Configuration
+
+Create a `zod2md.config.ts` file in your project:
+
+```ts
+import type { Config } from 'zod2md';
+
+export default {
+  entry: 'packages/models/src/index.ts',
+  tsconfig: 'packages/models/tsconfig.lib.json',
+  format: 'esm',
+  title: 'Models reference',
+  output: 'packages/models/docs/models-reference.md',
+} satisfies Config;
+```
+
+For a full list of configuration options visit the [zod2md documentation](https://github.com/code-pushup/zod2md#readme).

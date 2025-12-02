@@ -3,6 +3,9 @@ import { dirname } from 'node:path';
 export const createNodesV2 = [
   `**/zod2md.config.ts`,
   async (zod2MdConfigurationFiles, createNodesOptions, context) => {
+    const options = createNodesOptions ?? {};
+    const targetName = options.targetName ?? 'generate-docs';
+
     return Promise.all(
       zod2MdConfigurationFiles.map(async zod2MdConfigurationFile => {
         const projectRoot = dirname(zod2MdConfigurationFile);
@@ -11,14 +14,16 @@ export const createNodesV2 = [
           projects: {
             [normalizedProjectRoot]: {
               targets: {
-                'generate-docs': {
+                [targetName]: {
                   executor: 'nx:run-commands',
                   options: {
                     commands: [
-                      'zod2md --config {projectRoot}/zod2md.config.ts',
-                      'prettier --write {projectRoot}/docs/{projectName}-reference.md',
+                      'zod2md --config {args.config} --output {args.output}',
+                      'prettier --write {args.output}',
                     ],
                     parallel: false,
+                    config: '{projectRoot}/zod2md.config.ts',
+                    output: '{projectRoot}/docs/{projectName}-reference.md',
                   },
                   cache: true,
                   inputs: [
@@ -26,7 +31,7 @@ export const createNodesV2 = [
                     '^production',
                     '{projectRoot}/zod2md.config.ts',
                   ],
-                  outputs: ['{projectRoot}/docs/{projectName}-reference.md'],
+                  outputs: ['{projectRoot}/docs/{outputFile}'],
                 },
               },
             },
