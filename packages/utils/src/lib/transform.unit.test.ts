@@ -226,8 +226,14 @@ describe('objectToCliArgs', () => {
     ]);
   });
 
+  it('should handle objects with undefined or null', () => {
+    const params = { format: undefined };
+    const result = objectToCliArgs(params);
+    expect(result).toStrictEqual([]);
+  });
+
   it('should throw error for unsupported type', () => {
-    const params = { unsupported: undefined as any };
+    const params = { unsupported: Symbol('test') as any };
     expect(() => objectToCliArgs(params)).toThrow('Unsupported type');
   });
 });

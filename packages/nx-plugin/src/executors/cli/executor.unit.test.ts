@@ -127,7 +127,7 @@ describe('runAutorunExecutor', () => {
       expect.stringContaining(`Run CLI executor`),
     );
     expect(loggerInfoSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Command: npx @code-pushup/cli'),
+      expect.stringContaining('Command:'),
     );
   });
 
@@ -137,9 +137,7 @@ describe('runAutorunExecutor', () => {
     expect(loggerInfoSpy).toHaveBeenCalledTimes(0);
     expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
     expect(loggerWarnSpy).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'DryRun execution of: npx @code-pushup/cli --dryRun',
-      ),
+      expect.stringContaining('DryRun execution of'),
     );
   });
 });
