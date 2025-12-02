@@ -1,5 +1,5 @@
 {
-  "name": "@code-pushup/jsdocs-annotation-transformer",
+  "name": "@code-pushup/models-transformers",
   "version": "0.0.0",
   "description": "TypeScript transformers enhancing models with JSDoc and schema metadata",
   "type": "commonjs",
