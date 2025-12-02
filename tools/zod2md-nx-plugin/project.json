@@ -6,5 +6,5 @@
   "targets": {
     "lint": {}
   },
-  "tags": ["scope:shared", "type:util", "publishable"]
+  "tags": ["scope:shared", "type:util"]
 }
