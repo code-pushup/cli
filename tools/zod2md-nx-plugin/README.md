@@ -117,4 +117,4 @@ export default {
 } satisfies Config;
 ```
 
-For a full list of configuration options visit the [zod2md documentation](https://github.com/code-pushup/zod2md#readme).
+For a full list of configuration options visit the [zod2md documentation](https://github.com/matejchalk/zod2md?tab=readme-ov-file#configuration).
