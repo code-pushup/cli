@@ -1,6 +1,8 @@
 import type { ExecutorContext } from '@nx/devkit';
 import { executeProcess } from '../../internal/execute-process.js';
+import { normalizeContext } from '../internal/context.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
+import { mergeExecutorOptions, parseAutorunExecutorOptions } from './utils.js';
 
 export type ExecutorOutput = {
   success: boolean;
@@ -11,10 +13,19 @@ export type ExecutorOutput = {
 /* eslint-disable max-lines-per-function */
 export default async function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
-  { cwd }: ExecutorContext,
+  context: ExecutorContext,
 ): Promise<ExecutorOutput> {
   const { logger, stringifyError, objectToCliArgs, formatCommand } =
     await import('@code-pushup/utils');
+  const normalizedContext = normalizeContext(context);
+  const mergedOptions = mergeExecutorOptions(
+    context.target?.options,
+    terminalAndExecutorOptions,
+  );
+  const cliArgumentObject = parseAutorunExecutorOptions(
+    mergedOptions,
+    normalizedContext,
+  );
   const {
     dryRun,
     verbose,
@@ -34,7 +45,7 @@ export default async function runAutorunExecutor(
   const binString = `${command} ${positionals.join(' ')} ${args.join(' ')}`;
   const formattedBinString = formatCommand(binString, {
     env: executorEnvVariables,
-    cwd,
+    cwd: context.cwd,
   });
 
   if (dryRun) {
@@ -44,7 +55,7 @@ export default async function runAutorunExecutor(
       await executeProcess({
         command,
         args: [...positionals, ...args],
-        ...(cwd ? { cwd } : {}),
+        ...(context.cwd ? { cwd: context.cwd } : {}),
       });
     } catch (error) {
       logger.error(stringifyError(error));
@@ -55,7 +66,6 @@ export default async function runAutorunExecutor(
       };
     }
   }
-
   return {
     success: true,
     command: formattedBinString,
