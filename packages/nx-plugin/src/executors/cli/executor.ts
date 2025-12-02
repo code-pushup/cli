@@ -29,7 +29,7 @@ export default async function runAutorunExecutor(
   };
   const commandString = createCliCommandString({
     command,
-    args: args,
+    args,
     bin,
   });
 
@@ -40,7 +40,7 @@ export default async function runAutorunExecutor(
       await executeProcess({
         ...createCliCommandObject({ command, args, bin }),
         ...(context.cwd ? { cwd: context.cwd } : {}),
-        ...(Object.keys(executorEnvVariables).length
+        ...(Object.keys(executorEnvVariables).length > 0
           ? { env: executorEnvVariables }
           : {}),
       });

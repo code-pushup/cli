@@ -199,7 +199,8 @@ describe('nx-plugin', () => {
     // Nx command
     expect(cleanStdout).toContain('nx run my-lib:code-pushup');
     // Run CLI executor
-    expect(cleanStdout).toContain('Command: npx @code-pushup/cli');
+    expect(cleanStdout).toContain('DryRun execution of:');
+    expect(cleanStdout).toContain('npx @code-pushup/cli');
     expect(cleanStdout).toContain('--dryRun --verbose');
   });
 
