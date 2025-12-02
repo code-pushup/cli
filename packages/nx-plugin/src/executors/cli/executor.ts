@@ -44,10 +44,6 @@ export default async function runAutorunExecutor(
       await executeProcess({
         command,
         args: [...positionals, ...args],
-        env: {
-          ...process.env,
-          ...executorEnvVariables,
-        },
         ...(cwd ? { cwd } : {}),
       });
     } catch (error) {
