@@ -118,7 +118,7 @@ describe('runAutorunExecutor', () => {
     expect(output.command).not.toContain('--verbose');
     expect(logger.warn).toHaveBeenCalledTimes(1);
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('CP_VERBOSE=\"true\"'),
+      expect.stringContaining('CP_VERBOSE="true"'),
     );
   });
 
