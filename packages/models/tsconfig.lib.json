@@ -3,7 +3,13 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "declaration": true,
-    "types": ["node"]
+    "types": ["node"],
+    "plugins": [
+      {
+        "transform": "./tools/jsdoc-annotation-transformer/dist",
+        "afterDeclarations": true
+      }
+    ]
   },
   "include": ["src/**/*.ts"],
   "exclude": [
