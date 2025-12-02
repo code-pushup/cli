@@ -1,19 +1,13 @@
 import ansis from 'ansis';
 import path from 'node:path';
+import process from 'node:process';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { formatCommand } from './logger.js';
+import { formatCommandStatus } from './command.js';
 
 describe('formatCommand', () => {
-  const originalCwd = process.cwd();
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('should format complex command with cwd, env, and status', () => {
-    vi.spyOn(path, 'relative').mockReturnValue('<CWD>');
     expect(
-      formatCommand(
+      formatCommandStatus(
         'npx eslint . --format=json',
         {
           cwd: '<CWD>',
@@ -32,29 +26,20 @@ describe('formatCommand', () => {
     ['success' as const, ansis.green],
     ['failure' as const, ansis.red],
   ])(`should format command status %s explicitly`, (status, color) => {
-    expect(formatCommand('npx eslint . --format=json', {}, status)).toContain(
-      `${color('$')}`,
-    );
-  });
-
-  it('should include cwd prefix when cwd is provided and different from process.cwd()', () => {
-    const mockCwd = path.join(originalCwd, 'src');
-    vi.spyOn(path, 'relative').mockReturnValue('src');
-
-    expect(formatCommand('npx -v', { cwd: mockCwd })).toStartWith(
-      `${ansis.blue('src')} `,
-    );
+    expect(
+      formatCommandStatus('npx eslint . --format=json', {}, status),
+    ).toContain(`${color('$')}`);
   });
 
   it('should not include cwd prefix when cwd is same as process.cwd()', () => {
     vi.spyOn(path, 'relative').mockReturnValue('');
-    expect(formatCommand('npx -v', { cwd: originalCwd })).toStartWith(
+    expect(formatCommandStatus('npx -v', { cwd: process.cwd() })).toStartWith(
       `${ansis.blue('$')}`,
     );
   });
 
   it('should format command with multiple environment variables', () => {
-    const result = formatCommand('npx eslint .', {
+    const result = formatCommandStatus('npx eslint .', {
       env: { NODE_ENV: 'test', NODE_OPTIONS: '--import tsx' },
     });
     expect(result).toStartWith(
@@ -63,7 +48,7 @@ describe('formatCommand', () => {
   });
 
   it('should format command with environment variable containing spaces', () => {
-    const result = formatCommand('node packages/cli/src/index.ts', {
+    const result = formatCommandStatus('node packages/cli/src/index.ts', {
       env: { NODE_OPTIONS: '--import tsx' },
     });
     expect(result).toBe(

@@ -15,7 +15,9 @@ export default async function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
-  const { objectToCliArgs, formatCommand } = await import('@code-pushup/utils');
+  const { objectToCliArgs, formatCommandStatus } = await import(
+    '@code-pushup/utils'
+  );
   const normalizedContext = normalizeContext(context);
   const cliArgumentObject = parseAutorunExecutorOptions(
     terminalAndExecutorOptions,
@@ -33,7 +35,7 @@ export default async function runAutorunExecutor(
     ...(cliCommand ? [cliCommand] : []),
   ];
   const args = [...positionals, ...objectToCliArgs(cliArgumentObject)];
-  const commandString = formatCommand([command, ...args].join(' '), {
+  const commandString = formatCommandStatus([command, ...args].join(' '), {
     cwd: context.cwd,
   });
   if (verbose) {

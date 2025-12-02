@@ -3,6 +3,7 @@ import ansis, { type AnsiColors } from 'ansis';
 import os from 'node:os';
 import path from 'node:path';
 import ora, { type Ora } from 'ora';
+import { formatCommandStatus } from './command.js';
 import { dateToUnixTimestamp } from './dates.js';
 import { isEnvVarEnabled } from './env.js';
 import { stringifyError } from './errors.js';
@@ -245,9 +246,9 @@ export class Logger {
     },
   ): Promise<T> {
     return this.#spinner(worker, {
-      pending: formatCommand(bin, options, 'pending'),
-      success: () => formatCommand(bin, options, 'success'),
-      failure: () => formatCommand(bin, options, 'failure'),
+      pending: formatCommandStatus(bin, options, 'pending'),
+      success: () => formatCommandStatus(bin, options, 'success'),
+      failure: () => formatCommandStatus(bin, options, 'failure'),
     });
   }
 
@@ -532,42 +533,3 @@ export class Logger {
  * logger.info('Made with ❤️ by Code PushUp');
  */
 export const logger = new Logger();
-
-/**
- * Formats a command string for display with status indicator.
- *
- * @param bin Command string with arguments.
- * @param options Command options (cwd, env).
- * @param status Command status ('pending' | 'success' | 'failure').
- * @returns Formatted command string with colored status indicator.
- */
-export function formatCommand(
-  bin: string,
-  options?: {
-    env?: Record<string, string | number | boolean>;
-    cwd?: string;
-  },
-  status: 'pending' | 'success' | 'failure' = 'pending',
-): string {
-  const cwd = options?.cwd && path.relative(process.cwd(), options.cwd);
-  const cwdPrefix = cwd ? ansis.blue(cwd) : '';
-  const envString =
-    options?.env && Object.keys(options.env).length > 0
-      ? Object.entries(options.env).map(([key, value]) =>
-          ansis.gray(`${key}="${value}"`),
-        )
-      : [];
-  const statusColor =
-    status === 'pending'
-      ? ansis.blue('$')
-      : status === 'success'
-        ? ansis.green('$')
-        : ansis.red('$');
-
-  return [
-    ...(cwdPrefix ? [cwdPrefix] : []),
-    statusColor,
-    ...envString,
-    bin,
-  ].join(' ');
-}
