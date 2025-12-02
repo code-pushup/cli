@@ -23,7 +23,13 @@ export default async function runAutorunExecutor(
     terminalAndExecutorOptions,
     normalizedContext,
   );
-  const { dryRun, verbose, command, bin } = terminalAndExecutorOptions;
+  const {
+    dryRun,
+    verbose,
+    command,
+    bin,
+    env: targetEnv,
+  } = terminalAndExecutorOptions;
   const commandString = createCliCommandString({
     command,
     args: cliArgumentObject,
@@ -40,6 +46,7 @@ export default async function runAutorunExecutor(
       await executeProcess({
         ...createCliCommandObject({ command, args: cliArgumentObject, bin }),
         ...(context.cwd ? { cwd: context.cwd } : {}),
+        ...(targetEnv ? { env: targetEnv } : {}),
       });
     } catch (error) {
       logger.error(error);

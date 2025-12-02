@@ -19,17 +19,17 @@ export async function createTargets(normalizedContext: CreateTargetsOptions) {
     targetName = CP_TARGET_NAME,
     bin,
     projectPrefix,
+    env,
   } = normalizedContext.createOptions;
   const rootFiles = await readdir(normalizedContext.projectRoot);
   return rootFiles.some(filename => filename.match(CODE_PUSHUP_CONFIG_REGEX))
     ? {
-        [targetName]: createExecutorTarget({ bin, projectPrefix }),
+        [targetName]: createExecutorTarget({ bin, projectPrefix, env }),
       }
     : // if NO code-pushup.config.*.(ts|js|mjs) is present return configuration target
       {
-        [`${targetName}--configuration`]: createConfigurationTarget({
+        [`${targetName}--configuration`]: await createConfigurationTarget({
           projectName: normalizedContext.projectJson.name,
-          bin,
         }),
       };
 }

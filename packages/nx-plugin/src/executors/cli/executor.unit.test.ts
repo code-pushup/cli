@@ -46,11 +46,13 @@ describe('runAutorunExecutor', () => {
     const output = await runAutorunExecutor({}, executorContext('utils'));
     expect(output.success).toBe(true);
     expect(output.command).toMatch('npx @code-pushup/cli');
-    expect(executeProcessSpy).toHaveBeenCalledWith({
-      command: 'npx',
-      args: expect.arrayContaining(['@code-pushup/cli']),
-      cwd: MEMFS_VOLUME,
-    });
+    expect(executeProcessSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: 'npx',
+        args: expect.arrayContaining(['@code-pushup/cli']),
+        cwd: MEMFS_VOLUME,
+      }),
+    );
   });
 
   it('should normalize context', async () => {
@@ -62,12 +64,15 @@ describe('runAutorunExecutor', () => {
       },
     );
     expect(output.success).toBe(true);
-    expect(output.command).toMatch('utils');
-    expect(executeProcessSpy).toHaveBeenCalledWith({
-      command: 'npx',
-      args: expect.arrayContaining(['@code-pushup/cli']),
-      cwd: 'cwd-form-context',
-    });
+    expect(output.command).toMatch('npx @code-pushup/cli');
+    expect(output.command).toContain('cwd-form-context');
+    expect(executeProcessSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: 'npx',
+        args: expect.arrayContaining(['@code-pushup/cli']),
+        cwd: 'cwd-form-context',
+      }),
+    );
   });
 
   it('should process executorOptions', async () => {
