@@ -47,6 +47,9 @@ describe('runAutorunExecutor', () => {
       command: 'npx',
       args: expect.arrayContaining(['@code-pushup/cli']),
       cwd: process.cwd(),
+      env: {
+        CP_VERBOSE: 'true',
+      },
     });
   });
 });
