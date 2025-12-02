@@ -1,4 +1,4 @@
-import { type ExecutorContext, logger } from '@nx/devkit';
+import { type ExecutorContext } from '@nx/devkit';
 import { executeProcess } from '../../internal/execute-process.js';
 import {
   createCliCommandObject,
@@ -18,6 +18,7 @@ export default async function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
+  const { logger, stringifyError } = await import('@code-pushup/utils');
   const normalizedContext = normalizeContext(context);
   const cliArgumentObject = parseAutorunExecutorOptions(
     terminalAndExecutorOptions,
@@ -41,12 +42,10 @@ export default async function runAutorunExecutor(
       await executeProcess({
         ...createCliCommandObject({ command, args, bin }),
         ...(context.cwd ? { cwd: context.cwd } : {}),
-        ...(Object.keys(executorEnvVariables).length > 0
-          ? { env: executorEnvVariables }
-          : {}),
+        ...(verbose ? { env: executorEnvVariables } : {}),
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(stringifyError(error));
       return {
         success: false,
         command: commandString,
