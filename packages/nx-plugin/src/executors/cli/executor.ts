@@ -47,6 +47,7 @@ export default async function runAutorunExecutor(
     logger.warn(`DryRun execution of: ${commandString}`);
   } else {
     try {
+      logger.debug(`With env vars: ${executorEnvVariables}`);
       await executeProcess({
         command,
         args,
