@@ -2,7 +2,7 @@ import { type ExecutorContext, logger } from '@nx/devkit';
 import { executeProcess } from '../../internal/execute-process.js';
 import { normalizeContext } from '../internal/context.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
-import { mergeExecutorOptions, parseAutorunExecutorOptions } from './utils.js';
+import { parseAutorunExecutorOptions } from './utils.js';
 
 export type ExecutorOutput = {
   success: boolean;
@@ -16,15 +16,16 @@ export default async function runAutorunExecutor(
 ): Promise<ExecutorOutput> {
   const { objectToCliArgs, formatCommand } = await import('@code-pushup/utils');
   const normalizedContext = normalizeContext(context);
-  const mergedOptions = mergeExecutorOptions(
-    context.target?.options,
-    terminalAndExecutorOptions,
-  );
   const cliArgumentObject = parseAutorunExecutorOptions(
-    mergedOptions,
+    terminalAndExecutorOptions,
     normalizedContext,
   );
-  const { dryRun, verbose, command: cliCommand, bin } = mergedOptions;
+  const {
+    dryRun,
+    verbose,
+    command: cliCommand,
+    bin,
+  } = terminalAndExecutorOptions;
   const command = bin ? `node` : 'npx';
   const positionals = [
     bin ?? '@code-pushup/cli',
