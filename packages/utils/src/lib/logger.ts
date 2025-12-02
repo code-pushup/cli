@@ -1,8 +1,8 @@
 /* eslint-disable max-lines, no-console, @typescript-eslint/class-methods-use-this */
 import ansis, { type AnsiColors } from 'ansis';
 import os from 'node:os';
-import path from 'node:path';
 import ora, { type Ora } from 'ora';
+import { formatCommandStatus } from './command.js';
 import { dateToUnixTimestamp } from './dates.js';
 import { isEnvVarEnabled } from './env.js';
 import { stringifyError } from './errors.js';
@@ -240,14 +240,14 @@ export class Logger {
   command<T>(
     bin: string,
     worker: () => Promise<T>,
-    options?: { cwd?: string },
+    options?: {
+      cwd?: string;
+    },
   ): Promise<T> {
-    const cwd = options?.cwd && path.relative(process.cwd(), options.cwd);
-    const cwdPrefix = cwd ? `${ansis.blue(cwd)} ` : '';
     return this.#spinner(worker, {
-      pending: `${cwdPrefix}${ansis.blue('$')} ${bin}`,
-      success: () => `${cwdPrefix}${ansis.green('$')} ${bin}`,
-      failure: () => `${cwdPrefix}${ansis.red('$')} ${bin}`,
+      pending: formatCommandStatus(bin, options, 'pending'),
+      success: () => formatCommandStatus(bin, options, 'success'),
+      failure: () => formatCommandStatus(bin, options, 'failure'),
     });
   }
 

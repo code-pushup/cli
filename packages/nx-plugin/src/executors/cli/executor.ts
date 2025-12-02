@@ -1,9 +1,5 @@
 import { type ExecutorContext } from '@nx/devkit';
 import { executeProcess } from '../../internal/execute-process.js';
-import {
-  createCliCommandObject,
-  createCliCommandString,
-} from '../internal/cli.js';
 import { normalizeContext } from '../internal/context.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
 import { parseAutorunExecutorOptions } from './utils.js';
@@ -14,25 +10,37 @@ export type ExecutorOutput = {
   error?: Error;
 };
 
+/* eslint-disable-next-line max-lines-per-function */
 export default async function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
-  const { logger, stringifyError } = await import('@code-pushup/utils');
+  const { objectToCliArgs, formatCommandStatus, logger, stringifyError } =
+    await import('@code-pushup/utils');
   const normalizedContext = normalizeContext(context);
   const cliArgumentObject = parseAutorunExecutorOptions(
     terminalAndExecutorOptions,
     normalizedContext,
   );
-  const { dryRun, verbose, command, bin, ...args } = cliArgumentObject;
+  const {
+    dryRun,
+    verbose,
+    command: cliCommand,
+    bin,
+    ...restArgs
+  } = cliArgumentObject;
+  const command = bin ? `node` : 'npx';
+  const positionals = [
+    bin ?? '@code-pushup/cli',
+    ...(cliCommand ? [cliCommand] : []),
+  ];
+  const args = [...positionals, ...objectToCliArgs(restArgs)];
   const executorEnvVariables = {
     ...process.env,
     ...(verbose && { CP_VERBOSE: 'true' }),
   };
-  const commandString = createCliCommandString({
-    command,
-    args,
-    bin,
+  const commandString = formatCommandStatus([command, ...args].join(' '), {
+    cwd: context.cwd,
   });
 
   if (dryRun) {
@@ -40,7 +48,8 @@ export default async function runAutorunExecutor(
   } else {
     try {
       await executeProcess({
-        ...createCliCommandObject({ command, args, bin }),
+        command,
+        args,
         ...(context.cwd ? { cwd: context.cwd } : {}),
         ...(verbose ? { env: executorEnvVariables } : {}),
       });

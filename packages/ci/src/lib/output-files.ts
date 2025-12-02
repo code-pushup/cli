@@ -1,7 +1,8 @@
 import { copyFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { DEFAULT_PERSIST_FILENAME, type Format } from '@code-pushup/models';
-import { logger, objectFromEntries, objectToKeys } from '@code-pushup/utils';
+import { objectFromEntries, objectToKeys } from '@code-pushup/utils';
+import { logDebug } from './log.js';
 import type { OutputFiles, Settings } from './models.js';
 import type { ProjectConfig } from './monorepo/tools.js';
 
@@ -45,7 +46,7 @@ export async function saveOutputFiles<T extends Partial<OutputFiles>>({
       const src = files[format]!;
       const dest = outputs[format];
       await copyFile(src, dest);
-      logger.debug(`Copied ${type} report from ${src} to ${dest}`);
+      logDebug(`Copied ${type} report from ${src} to ${dest}`);
     }),
   );
 

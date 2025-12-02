@@ -1,6 +1,6 @@
 import { glob } from 'glob';
 import path from 'node:path';
-import { logger } from '@code-pushup/utils';
+import { logDebug, logInfo } from '../log.js';
 import type { Settings } from '../models.js';
 import { detectMonorepoTool } from './detect-tool.js';
 import { getToolHandler } from './handlers/index.js';
@@ -31,8 +31,8 @@ export async function listMonorepoProjects(
   if (tool) {
     const handler = getToolHandler(tool);
     const projects = await handler.listProjects(options);
-    logger.info(`Found ${projects.length} projects in ${tool} monorepo`);
-    logger.debug(`Projects: ${projects.map(({ name }) => name).join(', ')}`);
+    logInfo(`Found ${projects.length} projects in ${tool} monorepo`);
+    logDebug(`Projects: ${projects.map(({ name }) => name).join(', ')}`);
     return {
       tool,
       projects,
@@ -70,15 +70,15 @@ async function resolveMonorepoTool(
   }
 
   if (typeof settings.monorepo === 'string') {
-    logger.info(`Using monorepo tool "${settings.monorepo}" from inputs`);
+    logInfo(`Using monorepo tool "${settings.monorepo}" from inputs`);
     return settings.monorepo;
   }
 
   const tool = await detectMonorepoTool(options);
   if (tool) {
-    logger.info(`Auto-detected monorepo tool ${tool}`);
+    logInfo(`Auto-detected monorepo tool ${tool}`);
   } else {
-    logger.info("Couldn't auto-detect any supported monorepo tool");
+    logInfo("Couldn't auto-detect any supported monorepo tool");
   }
 
   return tool;
@@ -110,12 +110,12 @@ async function listProjectsByGlobs(args: {
     { cwd },
   );
 
-  logger.info(
+  logInfo(
     `Found ${directories.length} project folders matching "${patterns.join(
       ', ',
     )}" from configuration`,
   );
-  logger.debug(`Projects: ${directories.join(', ')}`);
+  logDebug(`Projects: ${directories.join(', ')}`);
 
   return directories.toSorted().map(directory => ({
     name: directory,
@@ -132,8 +132,8 @@ async function listProjectsByNpmPackages(args: {
 
   const packages = await listPackages(cwd);
 
-  logger.info(`Found ${packages.length} NPM packages in repository`);
-  logger.debug(`Projects: ${packages.map(({ name }) => name).join(', ')}`);
+  logInfo(`Found ${packages.length} NPM packages in repository`);
+  logDebug(`Projects: ${packages.map(({ name }) => name).join(', ')}`);
 
   return packages.map(({ name, directory }) => ({
     name,

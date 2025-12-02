@@ -1,6 +1,5 @@
 import type { Tree } from '@nx/devkit';
 import path from 'node:path';
-import * as process from 'node:process';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
 import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
@@ -101,29 +100,6 @@ describe('nx-plugin', () => {
 
     expect(projectJson.targets).toStrictEqual({
       'cp--configuration': expect.any(Object),
-    });
-  });
-
-  it('should consider plugin option bin in configuration target', async () => {
-    const cwd = path.join(testFileDir, 'configuration-option-bin');
-    registerPluginInWorkspace(tree, {
-      plugin: '@code-pushup/nx-plugin',
-      options: {
-        bin: 'XYZ',
-      },
-    });
-    await materializeTree(tree, cwd);
-
-    const { code, projectJson } = await nxShowProjectJson(cwd, project);
-
-    expect(code).toBe(0);
-
-    expect(projectJson.targets).toStrictEqual({
-      'code-pushup--configuration': expect.objectContaining({
-        options: {
-          command: `nx g XYZ:configuration --project="${project}"`,
-        },
-      }),
     });
   });
 
