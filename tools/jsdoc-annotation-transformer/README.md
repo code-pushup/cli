@@ -12,7 +12,7 @@ The transformer hooks into the TypeScript compilation process using `ts-patch` a
 
 - The type name
 - A description explaining the type is derived from a Zod schema
-- A link to the models reference documentation
+- A link to the type reference documentation
 
 ## Example
 
@@ -51,7 +51,7 @@ export type Report = {
   "compilerOptions": {
     "plugins": [
       {
-        "transform": "./packages/models/transformers/dist",
+        "transform": "./path/to/transformer/dist",
         "afterDeclarations": true
       }
     ]
