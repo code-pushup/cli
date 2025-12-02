@@ -204,7 +204,9 @@ describe('executor command', () => {
     expect(cleanStdout).toContain('Code PushUp CLI');
 
     await expect(
-      readJsonFile(path.join(cwd, '.reports', 'terminal-report.json')),
+      readJsonFile(
+        path.join(cwd, '.code-pushup', project, 'terminal-report.json'),
+      ),
     ).resolves.not.toThrow();
   });
 
