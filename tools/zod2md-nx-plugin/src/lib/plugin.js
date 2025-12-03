@@ -1,4 +1,4 @@
-import { dirname } from 'node:path';
+import path from 'node:path';
 
 export const createNodesV2 = [
   `**/zod2md.config.ts`,
@@ -8,7 +8,7 @@ export const createNodesV2 = [
 
     return Promise.all(
       zod2MdConfigurationFiles.map(async zod2MdConfigurationFile => {
-        const projectRoot = dirname(zod2MdConfigurationFile);
+        const projectRoot = path.dirname(zod2MdConfigurationFile);
         const normalizedProjectRoot = projectRoot === '.' ? '' : projectRoot;
         const result = {
           projects: {
