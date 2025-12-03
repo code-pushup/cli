@@ -27,6 +27,11 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should normalize context, parse CLI options and execute command', async () => {
+    expect(process.env).toStrictEqual(
+      expect.not.objectContaining({
+        CP_VERBOSE: 'true',
+      }),
+    );
     const output = await runAutorunExecutor(
       { verbose: true },
       executorContext('utils'),
@@ -47,9 +52,12 @@ describe('runAutorunExecutor', () => {
       command: 'npx',
       args: expect.arrayContaining(['@code-pushup/cli']),
       cwd: process.cwd(),
-      env: expect.objectContaining({
+    });
+
+    expect(process.env).toStrictEqual(
+      expect.objectContaining({
         CP_VERBOSE: 'true',
       }),
-    });
+    );
   });
 });

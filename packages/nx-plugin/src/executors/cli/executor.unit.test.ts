@@ -119,10 +119,13 @@ describe('runAutorunExecutor', () => {
       command: 'npx',
       args: expect.arrayContaining(['@code-pushup/cli']),
       cwd: '<CWD>',
-      env: expect.objectContaining({
+    });
+
+    expect(process.env).toStrictEqual(
+      expect.objectContaining({
         CP_VERBOSE: 'true',
       }),
-    });
+    );
 
     expect(output.command).not.toContain('--verbose');
     expect(logger.warn).toHaveBeenCalledTimes(0);
