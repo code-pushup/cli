@@ -1,6 +1,6 @@
 # Codecov Matrix Generator
 
-This tool generates a GitHub Actions matrix configuration for running code coverage across all packages in the monorepo.
+This tool generates a matrix configuration used in GitHub Actions for running code coverage across all packages in the monorepo.
 
 ## Overview
 
