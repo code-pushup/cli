@@ -2,7 +2,7 @@ import path from 'node:path';
 
 export const createNodesV2 = [
   `**/zod2md.config.ts`,
-  async (zod2MdConfigurationFiles, createNodesOptions, context) => {
+  async (zod2MdConfigurationFiles, createNodesOptions) => {
     const options = createNodesOptions ?? {};
     const targetName = options.targetName ?? 'generate-docs';
 
