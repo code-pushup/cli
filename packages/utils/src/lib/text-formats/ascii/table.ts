@@ -158,6 +158,9 @@ function wrapText(text: string, width: number | undefined): string {
   if (!width || getTextWidth(text) <= width) {
     return text;
   }
+  if (text !== ansis.strip(text)) {
+    return wrapAnsi(text, width, { hard: true });
+  }
   const words = extractWords(text);
   const longWords = words.filter(word => word.length > width);
   const replacements = longWords.map(original => {
