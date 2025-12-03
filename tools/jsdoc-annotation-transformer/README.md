@@ -42,7 +42,7 @@ export type Report = {
 
 ## Usage
 
-1. ts-patch install
+1. `ts-patch install`
 
 2. Add the transformer to your `tsconfig.json`:
 
