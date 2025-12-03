@@ -31,7 +31,7 @@ export const createNodesV2 = [
                     '^production',
                     '{projectRoot}/zod2md.config.ts',
                   ],
-                  outputs: ['{projectRoot}/docs/{outputFile}'],
+                  outputs: ['{projectRoot}/docs/{projectName}-reference.md'],
                 },
               },
             },
