@@ -199,7 +199,7 @@ describe('createRunnerFunction', () => {
     );
 
     expect(logger.warn).toHaveBeenCalledWith(
-      `Lighthouse did not produce a result for URL: ${ansis.blueBright('fail')}`,
+      `Lighthouse did not produce a result for URL: ${ansis.underline.blueBright('fail')}`,
     );
   });
 
