@@ -1,0 +1,17 @@
+{
+  "name": "mcp-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "e2e/mcp-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "lint": {},
+    "e2e": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "{projectRoot}/vitest.e2e.config.ts"
+      }
+    }
+  },
+  "implicitDependencies": ["mcp", "cli"],
+  "tags": ["scope:core", "scope:plugin", "type:e2e"]
+}
