@@ -23,7 +23,9 @@ export default async function runAutorunExecutor(
     normalizedContext,
   );
   const { command: cliCommand } = terminalAndExecutorOptions;
-  const { dryRun, verbose, bin, ...restArgs } = cliArgumentObject;
+  const { verbose = false, dryRun, bin, ...restArgs } = cliArgumentObject;
+  logger.setVerbose(verbose);
+
   const command = bin ? `node` : 'npx';
   const positionals = [
     bin ?? '@code-pushup/cli',
@@ -47,14 +49,6 @@ export default async function runAutorunExecutor(
         command,
         args,
         ...(context.cwd ? { cwd: context.cwd } : {}),
-        ...(verbose
-          ? {
-              env: {
-                ...process.env,
-                ...executorEnvVariables,
-              },
-            }
-          : {}),
       });
     } catch (error) {
       logger.error(stringifyError(error));
