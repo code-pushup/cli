@@ -12,10 +12,4 @@ export default tseslint.config(
       },
     },
   },
-  {
-    files: ['**/*.json'],
-    rules: {
-      '@nx/dependency-checks': ['error', { ignoredDependencies: [] }],
-    },
-  },
 );
