@@ -192,6 +192,7 @@ describe('executor command', () => {
         `${project}:code-pushup`,
         'collect',
         '--persist.filename=terminal-report',
+        '--verbose',
       ],
       cwd,
     });
@@ -201,7 +202,6 @@ describe('executor command', () => {
     expect(cleanStdout).toContain(
       'nx run my-lib:code-pushup collect --persist.filename=terminal-report',
     );
-    throw new Error(cleanStdout);
     expect(cleanStdout).toContain('Code PushUp CLI');
 
     await expect(
