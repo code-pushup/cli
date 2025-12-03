@@ -71,9 +71,3 @@ The script outputs a JSON object with the following structure:
 - `project`: Array of all package names found in `packages/`
 - `target`: Array of test targets to run
 - `exclude`: Array of project/target combinations to skip (when a project doesn't have that target defined)
-
-## Requirements
-
-- Node.js >= 17.0.0
-- Nx workspace with project graph
-- Projects must be located in `packages/` directory
