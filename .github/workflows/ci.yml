@@ -8,6 +8,7 @@ on:
 
 env:
   NX_NON_NATIVE_HASHER: true
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 jobs:
   format:
@@ -21,7 +22,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version-file: .node-version
           cache: npm
       - name: Set base and head for Nx affected commands
         uses: nrwl/nx-set-shas@v4
@@ -41,14 +42,14 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version-file: .node-version
           cache: npm
       - name: Set base and head for Nx affected commands
         uses: nrwl/nx-set-shas@v4
       - name: Install dependencies
         run: npm ci
       - name: Lint affected projects
-        run: npx nx affected:lint --parallel=3
+        run: npx nx affected -t lint --parallel=3
 
   unit-test:
     strategy:
@@ -65,14 +66,14 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version-file: .node-version
           cache: npm
       - name: Set base and head for Nx affected commands
         uses: nrwl/nx-set-shas@v4
       - name: Install dependencies
         run: npm ci
       - name: Unit test affected projects
-        run: npx nx affected -t unit-test --parallel=3 --coverage.enabled
+        run: npx nx affected -t unit-test --parallel=3
 
   integration-test:
     strategy:
@@ -89,14 +90,14 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version-file: .node-version
           cache: npm
       - name: Set base and head for Nx affected commands
         uses: nrwl/nx-set-shas@v4
       - name: Install dependencies
         run: npm ci
       - name: Integration test affected projects
-        run: npx nx affected -t int-test --parallel=3 --coverage.enabled
+        run: npx nx affected -t int-test --parallel=3
 
   e2e:
     strategy:
@@ -113,7 +114,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version-file: .node-version
           cache: npm
       - name: Set base and head for Nx affected commands
         uses: nrwl/nx-set-shas@v4
@@ -133,7 +134,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version-file: .node-version
           cache: npm
       - name: Set base and head for Nx affected commands
         uses: nrwl/nx-set-shas@v4

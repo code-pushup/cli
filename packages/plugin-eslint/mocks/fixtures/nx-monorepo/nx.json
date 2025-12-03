@@ -1,8 +1,0 @@
-{
-  "pluginsConfig": {
-    "@nrwl/js": {
-      "analyzeSourceFiles": true
-    }
-  },
-  "useDaemonProcess": false
-}

@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import type { RunnerConfig } from '@code-pushup/models';
+import { type RunnerConfig, pluginConfigSchema } from '@code-pushup/models';
 import { coveragePlugin } from './coverage-plugin.js';
 
 vi.mock('./runner/index.ts', () => ({
@@ -80,5 +80,16 @@ describe('coveragePlugin', () => {
         ],
       }),
     );
+  });
+
+  it('should pass scoreTargets to PluginConfig when provided', async () => {
+    const scoreTargets = { 'function-coverage': 0.9, 'line-coverage': 0.8 };
+    const pluginConfig = await coveragePlugin({
+      reports: [LCOV_PATH],
+      scoreTargets,
+    });
+
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+    expect(pluginConfig.scoreTargets).toStrictEqual(scoreTargets);
   });
 });

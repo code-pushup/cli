@@ -41,18 +41,22 @@
         ]
       }
     },
-    "unit-test": {
-      "executor": "@nx/vite:test",
+    "lint-report": {
       "options": {
-        "configFile": "packages/nx-plugin/vitest.unit.config.ts"
+        "lintFilePatterns": [
+          "packages/nx-plugin/**/*.ts",
+          "packages/nx-plugin/package.json",
+          "packages/nx-plugin/generators.json"
+        ]
       }
     },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/nx-plugin/vitest.int.config.ts"
-      }
-    }
+    "unit-test": {},
+    "int-test": {},
+    "code-pushup": {},
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {},
+    "code-pushup-typescript": {},
+    "code-pushup-jsdocs": {}
   },
   "tags": ["scope:tooling", "type:feature", "publishable"]
 }

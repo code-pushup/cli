@@ -16,7 +16,7 @@ import {
  * `nx run-collect examples-plugins`
  *
  * - For all formats use `--persist.format=md,json`
- * - For better debugging use `--verbose --no-progress`
+ * - For better debugging, use `--verbose`
  *
  */
 

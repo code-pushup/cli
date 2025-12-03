@@ -1,11 +1,11 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import { mergeDiffs } from '@code-pushup/core';
 import {
   DEFAULT_PERSIST_FILENAME,
   DEFAULT_PERSIST_FORMAT,
   DEFAULT_PERSIST_OUTPUT_DIR,
 } from '@code-pushup/models';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants.js';
 import { yargsCli } from '../yargs-cli.js';
 import { yargsMergeDiffsCommandObject } from './merge-diffs-command.js';
@@ -47,6 +47,7 @@ describe('merge-diffs-command', () => {
         outputDir: DEFAULT_PERSIST_OUTPUT_DIR,
         filename: DEFAULT_PERSIST_FILENAME,
         format: DEFAULT_PERSIST_FORMAT,
+        skipReports: false,
       },
     );
   });
@@ -64,9 +65,8 @@ describe('merge-diffs-command', () => {
       },
     ).parseAsync();
 
-    expect(ui()).toHaveLogged(
-      'info',
-      `Reports diff written to ${bold('.code-pushup/report-diff.md')}`,
+    expect(logger.info).toHaveBeenCalledWith(
+      `Reports diff written to ${ansis.bold('.code-pushup/report-diff.md')}`,
     );
   });
 });

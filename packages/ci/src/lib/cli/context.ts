@@ -1,11 +1,11 @@
-import type { ProcessObserver } from '@code-pushup/utils';
-import { createExecutionObserver } from '../create-execution-observer.js';
 import type { Settings } from '../models.js';
 import type { ProjectConfig } from '../monorepo/index.js';
 
-export type CommandContext = Pick<Settings, 'bin' | 'config' | 'directory'> & {
+export type CommandContext = Pick<
+  Settings,
+  'bin' | 'config' | 'directory' | 'silent'
+> & {
   project?: string;
-  observer?: ProcessObserver;
 };
 
 export function createCommandContext(
@@ -15,8 +15,8 @@ export function createCommandContext(
   return {
     bin: project?.bin ?? bin,
     directory: project?.directory ?? directory,
+    silent,
     config,
     ...(project?.name && { project: project.name }),
-    observer: createExecutionObserver({ silent }),
   };
 }

@@ -161,7 +161,7 @@ Custom options:
     ).toEqual<Audit>({
       slug: 'angular-eslint-template-mouse-events-have-key-events',
       title:
-        '[Accessibility] Ensures that the mouse events `mouseout` and `mouseover` are accompanied by `focus` and `blur` events respectively. Coding for the keyboard is important for users with physical disabilities who cannot use a mouse, AT compatibility, and s...',
+        '[Accessibility] Ensures that the mouse events `mouseout` and `mouseover` are accompanied by `focus` and `blur` events respectively. Coding for the keyboard is important for users with physical disabilities who cannot use a mouse, AT compatibility, and scr…',
       description:
         'ESLint rule **mouse-events-have-key-events**, from _@angular-eslint/template_ plugin.',
       docsUrl:

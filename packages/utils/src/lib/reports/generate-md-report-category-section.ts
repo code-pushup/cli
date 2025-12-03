@@ -2,7 +2,7 @@ import { type InlineText, MarkdownDocument, md } from 'build-md';
 import type { AuditReport } from '@code-pushup/models';
 import { slugify } from '../formatting.js';
 import { HIERARCHY } from '../text-formats/index.js';
-import { metaDescription } from './formatting.js';
+import { metaDescription, wrapTags } from './formatting.js';
 import { getSortableAuditByRef, getSortableGroupByRef } from './sorting.js';
 import type { ScoreFilter, ScoredGroup, ScoredReport } from './types.js';
 import {
@@ -11,7 +11,7 @@ import {
   getPluginNameFromSlug,
   scoreFilter,
   scoreMarker,
-  targetScoreIcon,
+  scoreTargetIcon,
 } from './utils.js';
 
 export function categoriesOverviewSection(
@@ -27,13 +27,12 @@ export function categoriesOverviewSection(
     ],
     categories
       .filter(scoreFilter(options))
-      .map(({ title, refs, score, isBinary }) => [
-        // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
+      .map(({ title, refs, score, scoreTarget }) => [
         // The heading "ID" is inferred from the heading text in Markdown.
         md.link(`#${slugify(title)}`, title),
         md`${scoreMarker(score)} ${md.bold(
           formatReportScore(score),
-        )}${binaryIconSuffix(score, isBinary)}`,
+        )}${binaryIconSuffix(score, scoreTarget)}`,
         countCategoryAudits(refs, plugins).toString(),
       ]),
   );
@@ -54,7 +53,7 @@ export function categoriesDetailsSection(
         .paragraph(
           md`${scoreMarker(category.score)} Score: ${md.bold(
             formatReportScore(category.score),
-          )}${binaryIconSuffix(category.score, category.isBinary)}`,
+          )}${binaryIconSuffix(category.score, category.scoreTarget)}`,
         )
         .list(
           category.refs.map(ref => {
@@ -91,7 +90,7 @@ export function categoryRef(
 ): InlineText {
   const auditTitleAsLink = md.link(
     `#${slugify(title)}-${slugify(pluginTitle)}`,
-    title,
+    wrapTags(title),
   );
   const marker = scoreMarker(score, 'square');
   return md`${marker} ${auditTitleAsLink} (${md.italic(
@@ -128,8 +127,7 @@ export function categoryGroupItem(
 
 export function binaryIconSuffix(
   score: number,
-  isBinary: boolean | undefined,
+  scoreTarget: number | undefined,
 ): string {
-  // @TODO refactor `isBinary: boolean` to `targetScore: number` #713
-  return targetScoreIcon(score, isBinary ? 1 : undefined, { prefix: ' ' });
+  return scoreTargetIcon(score, scoreTarget, { prefix: ' ' });
 }

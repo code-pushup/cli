@@ -28,8 +28,8 @@ import {
   roundValue,
   scoreFilter,
   scoreMarker,
+  scoreTargetIcon,
   severityMarker,
-  targetScoreIcon,
 } from './utils.js';
 
 describe('scoreFilter', () => {
@@ -497,42 +497,42 @@ describe('applyScoreColor', () => {
   });
 });
 
-describe('targetScoreIcon', () => {
-  it('should return target score icon "✅" for passed score', () => {
-    expect(targetScoreIcon(0.42, 0.4)).toBe('✅');
+describe('scoreTargetIcon', () => {
+  it('should return score target icon "✅" for passed score', () => {
+    expect(scoreTargetIcon(0.42, 0.4)).toBe('✅');
   });
 
-  it('should return target score icon "❌" for failed score', () => {
-    expect(targetScoreIcon(0.42, 0.5)).toBe('❌');
+  it('should return score target icon "❌" for failed score', () => {
+    expect(scoreTargetIcon(0.42, 0.5)).toBe('❌');
   });
 
-  it('should return prefixed target score icon if prefix is provided', () => {
+  it('should return prefixed score target icon if prefix is provided', () => {
     expect(
-      targetScoreIcon(0.42, 0.1, {
+      scoreTargetIcon(0.42, 0.1, {
         prefix: '<',
       }),
     ).toBe('<✅');
   });
 
-  it('should return prefixed target score icon if postfix is provided', () => {
+  it('should return prefixed score target icon if postfix is provided', () => {
     expect(
-      targetScoreIcon(0.42, 0.1, {
+      scoreTargetIcon(0.42, 0.1, {
         postfix: '>',
       }),
     ).toBe('✅>');
   });
 
-  it('should return pre and postfixed target score icon if both are provided', () => {
+  it('should return pre and postfixed score target icon if both are provided', () => {
     expect(
-      targetScoreIcon(0.42, 0.1, {
+      scoreTargetIcon(0.42, 0.1, {
         prefix: '<',
         postfix: '>',
       }),
     ).toBe('<✅>');
   });
 
-  it('should return no target score icon if no targetScore is provided', () => {
-    expect(targetScoreIcon(0.42)).toBe('');
+  it('should return no score target icon if no scoreTarget is provided', () => {
+    expect(scoreTargetIcon(0.42)).toBe('');
   });
 });
 

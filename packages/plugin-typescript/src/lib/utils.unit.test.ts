@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { type Audit, categoryRefSchema } from '@code-pushup/models';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import { AUDITS } from './constants.js';
 import {
   filterAuditsByCompilerOptions,
@@ -115,17 +115,16 @@ describe('getCategoryRefsFromGroups', () => {
 });
 
 describe('logSkippedAudits', () => {
-  it('should not warn when all audits are included', () => {
+  it('should not print anything when all audits are included', () => {
     logSkippedAudits(AUDITS);
 
-    expect(console.warn).not.toHaveBeenCalled();
+    expect(logger.info).not.toHaveBeenCalled();
   });
 
   it('should warn about skipped audits', () => {
     logSkippedAudits(AUDITS.slice(0, -1));
 
-    expect(ui()).toHaveLogged(
-      'info',
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining(`Skipped audits: [`),
     );
   });
@@ -133,6 +132,8 @@ describe('logSkippedAudits', () => {
   it('should camel case the slugs in the audit message', () => {
     logSkippedAudits(AUDITS.slice(0, -1));
 
-    expect(ui()).toHaveLogged('info', expect.stringContaining(`unknownCodes`));
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining(`unknownCodes`),
+    );
   });
 });

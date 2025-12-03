@@ -72,7 +72,7 @@ describe('yarnHandler', () => {
           'yarn.lock': '',
           'apps/backend/package.json': pkgJsonContent({
             name: 'backend',
-            scripts: { 'code-pushup': 'code-pushup --no-progress' },
+            scripts: { 'code-pushup': 'code-pushup' },
             devDependencies: { '@code-pushup/cli': 'latest' },
           }),
           'apps/frontend/package.json': pkgJsonContent({
@@ -81,7 +81,7 @@ describe('yarnHandler', () => {
           }),
           'libs/shared/package.json': pkgJsonContent({
             name: 'shared',
-            scripts: { 'code-pushup': 'code-pushup --no-progress' },
+            scripts: { 'code-pushup': 'code-pushup' },
             devDependencies: { '@code-pushup/cli': 'latest' },
           }),
         },

@@ -25,10 +25,6 @@
       "type": "boolean",
       "description": "Print additional logs"
     },
-    "progress": {
-      "type": "boolean",
-      "description": "Print additional logs"
-    },
     "onlyPlugins": {
       "type": "array",
       "items": {
@@ -43,6 +39,10 @@
     "projectPrefix": {
       "type": "string",
       "description": "Prefix for project name"
+    },
+    "output": {
+      "type": "string",
+      "description": "Config output path of print-config command"
     },
     "persist": {
       "type": "object",

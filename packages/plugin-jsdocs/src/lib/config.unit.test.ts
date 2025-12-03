@@ -142,4 +142,15 @@ describe('JsDocsPlugin Configuration', () => {
       ).toThrow('Invalid input');
     });
   });
+
+  describe('scoreTargets', () => {
+    it('should accept valid score targets', () => {
+      expect(() =>
+        jsDocsPluginConfigSchema.parse({
+          patterns: ['src/**/*.ts'],
+          scoreTargets: { 'functions-coverage': 0.9 },
+        }),
+      ).not.toThrow();
+    });
+  });
 });

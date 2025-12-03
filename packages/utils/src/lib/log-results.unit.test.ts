@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { FileResult } from './file-system.js';
 import { logMultipleResults, logPromiseResults } from './log-results.js';
-import { ui } from './logging.js';
+import { logger } from './logger.js';
 
 describe('logMultipleResults', () => {
   const succeededCallbackMock = vi.fn();
@@ -67,12 +67,11 @@ describe('logPromiseResults', () => {
       'Uploaded reports successfully:',
       (result): string => result.value.toString(),
     );
-    expect(ui()).toHaveNthLogged(
+    expect(logger.debug).toHaveBeenNthCalledWith(
       1,
-      'success',
       'Uploaded reports successfully:',
     );
-    expect(ui()).toHaveNthLogged(2, 'success', 'out.json');
+    expect(logger.debug).toHaveBeenNthCalledWith(2, 'out.json');
   });
 
   it('should log on fail', () => {
@@ -81,7 +80,7 @@ describe('logPromiseResults', () => {
       'Generated reports failed:',
       (result: { reason: string }) => result.reason,
     );
-    expect(ui()).toHaveNthLogged(1, 'warn', 'Generated reports failed:');
-    expect(ui()).toHaveNthLogged(2, 'warn', 'fail');
+    expect(logger.warn).toHaveBeenNthCalledWith(1, 'Generated reports failed:');
+    expect(logger.warn).toHaveBeenNthCalledWith(2, 'fail');
   });
 });

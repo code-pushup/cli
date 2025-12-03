@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module';
-import type { PluginConfig } from '@code-pushup/models';
+import { type PluginConfig, validate } from '@code-pushup/models';
 import { stringifyError } from '@code-pushup/utils';
 import { DEFAULT_TS_CONFIG, TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
 import { createRunnerFunction } from './runner/runner.js';
@@ -14,12 +14,14 @@ const packageJson = createRequire(import.meta.url)(
   '../../package.json',
 ) as typeof import('../../package.json');
 
-export async function typescriptPlugin(
+export function typescriptPlugin(
   options?: TypescriptPluginOptions,
-): Promise<PluginConfig> {
-  const { tsconfig = DEFAULT_TS_CONFIG, onlyAudits } = parseOptions(
-    options ?? {},
-  );
+): PluginConfig {
+  const {
+    tsconfig = DEFAULT_TS_CONFIG,
+    onlyAudits,
+    scoreTargets,
+  } = parseOptions(options ?? {});
 
   const filteredAudits = getAudits({ onlyAudits });
   const filteredGroups = getGroups({ onlyAudits });
@@ -40,6 +42,7 @@ export async function typescriptPlugin(
       tsconfig,
       expectedAudits: filteredAudits,
     }),
+    ...(scoreTargets && { scoreTargets }),
   };
 }
 
@@ -47,7 +50,7 @@ function parseOptions(
   tsPluginOptions: TypescriptPluginOptions,
 ): TypescriptPluginConfig {
   try {
-    return typescriptPluginConfigSchema.parse(tsPluginOptions);
+    return validate(typescriptPluginConfigSchema, tsPluginOptions);
   } catch (error) {
     throw new Error(
       `Error parsing TypeScript Plugin options: ${stringifyError(error)}`,

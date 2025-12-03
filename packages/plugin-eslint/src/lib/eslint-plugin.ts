@@ -1,16 +1,14 @@
 import { createRequire } from 'node:module';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import type { PluginConfig } from '@code-pushup/models';
-import { parseSchema } from '@code-pushup/utils';
+import { type PluginConfig, validate } from '@code-pushup/models';
 import {
   type ESLintPluginConfig,
   type ESLintPluginOptions,
   eslintPluginConfigSchema,
   eslintPluginOptionsSchema,
 } from './config.js';
+import { ESLINT_PLUGIN_SLUG } from './constants.js';
 import { listAuditsAndGroups } from './meta/index.js';
-import { createRunnerConfig } from './runner/index.js';
+import { createRunnerFunction } from './runner/index.js';
 
 /**
  * Instantiates Code PushUp ESLint plugin for use in core config.
@@ -37,30 +35,22 @@ export async function eslintPlugin(
   config: ESLintPluginConfig,
   options?: ESLintPluginOptions,
 ): Promise<PluginConfig> {
-  const targets = parseSchema(eslintPluginConfigSchema, config, {
-    schemaType: 'ESLint plugin config',
-  });
+  const targets = validate(eslintPluginConfigSchema, config);
 
-  const customGroups = options
-    ? parseSchema(eslintPluginOptionsSchema, options, {
-        schemaType: 'ESLint plugin options',
-      }).groups
-    : undefined;
+  const {
+    groups: customGroups,
+    artifacts,
+    scoreTargets,
+  } = options ? validate(eslintPluginOptionsSchema, options) : {};
 
   const { audits, groups } = await listAuditsAndGroups(targets, customGroups);
-
-  const runnerScriptPath = path.join(
-    fileURLToPath(path.dirname(import.meta.url)),
-    '..',
-    'bin.js',
-  );
 
   const packageJson = createRequire(import.meta.url)(
     '../../package.json',
   ) as typeof import('../../package.json');
 
   return {
-    slug: 'eslint',
+    slug: ESLINT_PLUGIN_SLUG,
     title: 'ESLint',
     icon: 'eslint',
     description: 'Official Code PushUp ESLint plugin',
@@ -71,6 +61,11 @@ export async function eslintPlugin(
     audits,
     groups,
 
-    runner: await createRunnerConfig(runnerScriptPath, audits, targets),
+    runner: await createRunnerFunction({
+      audits,
+      targets,
+      ...(artifacts ? { artifacts } : {}),
+    }),
+    ...(scoreTargets && { scoreTargets }),
   };
 }

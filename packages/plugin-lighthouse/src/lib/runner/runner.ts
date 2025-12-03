@@ -2,8 +2,14 @@ import type { Config, RunnerResult } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
 import path from 'node:path';
 import type { AuditOutputs, RunnerFunction } from '@code-pushup/models';
-import { ensureDirectoryExists, ui } from '@code-pushup/utils';
-import { orderSlug, shouldExpandForUrls } from '../processing.js';
+import {
+  addIndex,
+  ensureDirectoryExists,
+  formatAsciiLink,
+  logger,
+  shouldExpandForUrls,
+  stringifyError,
+} from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types.js';
 import { DEFAULT_CLI_FLAGS } from './constants.js';
 import type { LighthouseCliFlags } from './types.js';
@@ -12,13 +18,14 @@ import {
   getConfig,
   normalizeAuditOutputs,
   toAuditOutputs,
+  withLocalTmpDir,
 } from './utils.js';
 
 export function createRunnerFunction(
   urls: string[],
   flags: LighthouseCliFlags = DEFAULT_CLI_FLAGS,
 ): RunnerFunction {
-  return async (): Promise<AuditOutputs> => {
+  return withLocalTmpDir(async (): Promise<AuditOutputs> => {
     const config = await getConfig(flags);
     const normalizationFlags = enrichFlags(flags);
     const isSingleUrl = !shouldExpandForUrls(urls.length);
@@ -40,12 +47,12 @@ export function createRunnerFunction(
           ? auditOutputs
           : auditOutputs.map(audit => ({
               ...audit,
-              slug: orderSlug(audit.slug, index),
+              slug: addIndex(audit.slug, index),
             }));
 
         return [...acc, ...processedOutputs];
       } catch (error) {
-        ui().logger.warning((error as Error).message);
+        logger.warn(stringifyError(error));
         return acc;
       }
     }, Promise.resolve<AuditOutputs>([]));
@@ -58,7 +65,7 @@ export function createRunnerFunction(
       );
     }
     return normalizeAuditOutputs(allResults, normalizationFlags);
-  };
+  });
 }
 
 async function runLighthouseForUrl(
@@ -73,7 +80,9 @@ async function runLighthouseForUrl(
   const runnerResult: unknown = await runLighthouse(url, flags, config);
 
   if (runnerResult == null) {
-    throw new Error(`Lighthouse did not produce a result for URL: ${url}`);
+    throw new Error(
+      `Lighthouse did not produce a result for URL: ${formatAsciiLink(url)}`,
+    );
   }
 
   const { lhr } = runnerResult as RunnerResult;

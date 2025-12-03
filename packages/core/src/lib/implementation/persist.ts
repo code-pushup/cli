@@ -1,3 +1,4 @@
+import ansis from 'ansis';
 import { mkdir, stat, writeFile } from 'node:fs/promises';
 import type { Format, PersistConfig, Report } from '@code-pushup/models';
 import {
@@ -7,25 +8,13 @@ import {
   directoryExists,
   generateMdReport,
   logMultipleFileResults,
-  ui,
+  stringifyError,
 } from '@code-pushup/utils';
-
-export class PersistDirError extends Error {
-  constructor(outputDir: string) {
-    super(`outPath: ${outputDir} is no directory.`);
-  }
-}
-
-export class PersistError extends Error {
-  constructor(reportPath: string) {
-    super(`fileName: ${reportPath} could not be saved.`);
-  }
-}
 
 export async function persistReport(
   report: Report,
   sortedScoredReport: ScoredReport,
-  options: Required<PersistConfig>,
+  options: Required<Omit<PersistConfig, 'skipReports'>>,
 ): Promise<MultipleFileResults> {
   const { outputDir, filename, format } = options;
 
@@ -51,8 +40,9 @@ export async function persistReport(
     try {
       await mkdir(outputDir, { recursive: true });
     } catch (error) {
-      ui().logger.warning((error as Error).toString());
-      throw new PersistDirError(outputDir);
+      throw new Error(
+        `Failed to create output directory in ${ansis.bold(outputDir)} - ${stringifyError(error)}`,
+      );
     }
   }
 
@@ -67,15 +57,16 @@ export async function persistReport(
   );
 }
 
-async function persistResult(reportPath: string, content: string) {
+function persistResult(reportPath: string, content: string) {
   return (
     writeFile(reportPath, content)
       // return reportPath instead of void
       .then(() => stat(reportPath))
       .then(stats => [reportPath, stats.size] as const)
-      .catch(error => {
-        ui().logger.warning((error as Error).toString());
-        throw new PersistError(reportPath);
+      .catch((error: unknown) => {
+        throw new Error(
+          `Failed to persist report in ${ansis.bold(reportPath)} - ${stringifyError(error)}`,
+        );
       })
   );
 }

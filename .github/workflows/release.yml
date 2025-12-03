@@ -1,96 +1,51 @@
-name: Release Packages
+name: Release
 
 on:
-  pull_request:
-    branches:
-      - main
   push:
     branches:
       - main
-  workflow_dispatch:
-    inputs:
-      dryRun:
-        type: choice
-        description: 'Dry run'
-        required: true
-        default: 'false'
-        options:
-          - 'true'
-          - 'false'
 
-env:
-  NX_NON_NATIVE_HASHER: true
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
-  dry-run-release:
-    if: |
-      github.repository == 'code-pushup/cli' && (
-        github.event_name == 'pull_request' ||
-        (github.event_name == 'workflow_dispatch' && github.event.inputs.dryRun == 'true')
-      )
-    name: Dry run release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - name: Install dependencies
-        run: npm ci
-      - name: Version, release and publish packages
-        run: npx nx release --yes --dry-run
   release:
-    if: |
-      github.repository == 'code-pushup/cli' && (
-        (github.event_name == 'workflow_dispatch' && github.event.inputs.dryRun == 'false') ||
-        (github.event_name == 'push')
-      )
-    name: Release packages
+    name: Version and release
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    environment: release
+    env:
+      NX_NON_NATIVE_HASHER: true
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     steps:
-      - name: Generate a token
-        id: generate_token
-        uses: actions/create-github-app-token@v1
+      - name: Authenticate as "Code PushUp Bot" GitHub App
+        uses: actions/create-github-app-token@v2
+        id: app-token
         with:
-          app-id: ${{ secrets.GH_APP_ID }}
+          app-id: ${{ vars.GH_APP_ID }}
           private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
-      - name: Checkout the repository
+      - name: Fetch GitHub App's user ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      - name: Configure Git user
+        run: |
+          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
+      - name: Clone the repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ steps.generate_token.outputs.token }}
-      - name: Set up Git
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
+          token: ${{ steps.app-token.outputs.token }}
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version-file: .node-version
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Version, release and publish packages
+      - name: Version, release and generate changelog
+        run: npx nx release --skip-publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc
-          npx nx release --yes
-          git push --follow-tags
-      - name: Run Code PushUp on release commit
-        uses: code-pushup/github-action@v0
-        with:
-          bin: npx nx code-pushup --
-        env:
-          CP_SERVER: ${{ secrets.CP_SERVER }}
-          CP_API_KEY: ${{ secrets.CP_API_KEY }}
-          CP_ORGANIZATION: code-pushup
-          CP_PROJECT: cli
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}

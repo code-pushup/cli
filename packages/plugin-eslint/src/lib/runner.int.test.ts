@@ -1,80 +1,77 @@
+import { cp } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { type MockInstance, describe, expect, it } from 'vitest';
-import type {
-  AuditOutput,
-  AuditOutputs,
-  Issue,
-  RunnerFilesPaths,
+import {
+  type Audit,
+  type AuditOutput,
+  type AuditOutputs,
+  DEFAULT_PERSIST_CONFIG,
+  type Issue,
 } from '@code-pushup/models';
-import { osAgnosticAuditOutputs } from '@code-pushup/test-utils';
-import { readJsonFile } from '@code-pushup/utils';
+import {
+  osAgnosticAuditOutputs,
+  restoreNxIgnoredFiles,
+  teardownTestFolder,
+} from '@code-pushup/test-utils';
 import type { ESLintTarget } from './config.js';
 import { listAuditsAndGroups } from './meta/index.js';
-import { createRunnerConfig, executeRunner } from './runner/index.js';
+import { createRunnerFunction } from './runner/index.js';
 
 describe('executeRunner', () => {
   let cwdSpy: MockInstance<[], string>;
   let platformSpy: MockInstance<[], NodeJS.Platform>;
 
-  const createPluginConfig = async (
+  const prepareRunnerArgs = async (
     eslintrc: ESLintTarget['eslintrc'],
-  ): Promise<RunnerFilesPaths> => {
+  ): Promise<{ audits: Audit[]; targets: ESLintTarget[] }> => {
     const patterns = ['src/**/*.js', 'src/**/*.jsx'];
     const targets: ESLintTarget[] = [{ eslintrc, patterns }];
     const { audits } = await listAuditsAndGroups(targets);
-    const { outputFile, configFile } = await createRunnerConfig(
-      'bin.js',
-      audits,
-      targets,
-    );
-    return {
-      runnerOutputPath: outputFile,
-      runnerConfigPath: configFile!,
-    };
+    return { audits, targets };
   };
 
-  const appDir = path.join(
-    fileURLToPath(path.dirname(import.meta.url)),
-    '..',
-    '..',
-    'mocks',
-    'fixtures',
-    'todos-app',
-  );
+  const thisDir = fileURLToPath(path.dirname(import.meta.url));
+  const fixturesDir = path.join(thisDir, '..', '..', 'mocks', 'fixtures');
+  const tmpDir = path.join(process.cwd(), 'tmp', 'int', 'plugin-eslint');
+  const appDir = path.join(tmpDir, 'todos-app');
 
-  beforeAll(() => {
+  beforeAll(async () => {
+    await cp(path.join(fixturesDir, 'todos-app'), appDir, {
+      recursive: true,
+    });
+    await restoreNxIgnoredFiles(appDir);
     cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(appDir);
     // Windows does not require additional quotation marks for globs
     platformSpy = vi.spyOn(os, 'platform').mockReturnValue('win32');
   });
 
-  afterAll(() => {
+  afterAll(async () => {
     cwdSpy.mockRestore();
     platformSpy.mockRestore();
+    await teardownTestFolder(tmpDir);
   });
 
   it('should execute ESLint and create audit results for React application', async () => {
-    const runnerPaths = await createPluginConfig('eslint.config.js');
-    await executeRunner(runnerPaths);
-
-    const json = await readJsonFile<AuditOutputs>(runnerPaths.runnerOutputPath);
-    expect(osAgnosticAuditOutputs(json)).toMatchSnapshot();
+    const args = await prepareRunnerArgs('eslint.config.js');
+    const runnerFn = createRunnerFunction(args);
+    const res = (await runnerFn({
+      persist: DEFAULT_PERSIST_CONFIG,
+    })) as AuditOutputs;
+    expect(osAgnosticAuditOutputs(res)).toMatchSnapshot();
   });
 
   it.skipIf(process.platform === 'win32')(
     'should execute runner with custom config using @code-pushup/eslint-config',
     async () => {
-      const runnerPaths = await createPluginConfig(
-        'code-pushup.eslint.config.mjs',
-      );
-      await executeRunner(runnerPaths);
+      const eslintTarget = 'code-pushup.eslint.config.mjs';
+      const runnerFn = createRunnerFunction({
+        ...(await prepareRunnerArgs(eslintTarget)),
+      });
 
-      const json = await readJsonFile<AuditOutput[]>(
-        runnerPaths.runnerOutputPath,
-      );
+      const json = await runnerFn({ persist: DEFAULT_PERSIST_CONFIG });
       // expect warnings from unicorn/filename-case rule from default config
       expect(json).toContainEqual(
         expect.objectContaining<Partial<AuditOutput>>({

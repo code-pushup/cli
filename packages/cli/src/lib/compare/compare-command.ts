@@ -1,8 +1,8 @@
-import { bold, gray } from 'ansis';
+import ansis from 'ansis';
 import type { CommandModule } from 'yargs';
 import { type CompareOptions, compareReportFiles } from '@code-pushup/core';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import { CLI_NAME } from '../constants.js';
 import { yargsCompareOptionsDefinition } from '../implementation/compare.options.js';
 
@@ -13,8 +13,8 @@ export function yargsCompareCommandObject() {
     describe: 'Compare 2 report files and create a diff file',
     builder: yargsCompareOptionsDefinition(),
     handler: async (args: unknown) => {
-      ui().logger.log(bold(CLI_NAME));
-      ui().logger.info(gray(`Run ${command}...`));
+      logger.info(ansis.bold(CLI_NAME));
+      logger.debug(`Running ${ansis.bold(command)} command`);
 
       const options = args as CompareOptions & {
         persist: Required<PersistConfig>;
@@ -28,9 +28,9 @@ export function yargsCompareCommandObject() {
         { before, after, label },
       );
 
-      ui().logger.info(
+      logger.info(
         `Reports diff written to ${outputPaths
-          .map(path => bold(path))
+          .map(path => ansis.bold(path))
           .join(' and ')}`,
       );
     },

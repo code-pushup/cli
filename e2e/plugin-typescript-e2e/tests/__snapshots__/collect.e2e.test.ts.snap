@@ -59,6 +59,26 @@ exports[`PLUGIN collect report with typescript-plugin NPM package > should run p
           "details": {
             "issues": [
               {
+                "message": "TS2694: Namespace ''./index'' has no exported member 'IOptions'.",
+                "severity": "error",
+                "source": {
+                  "file": "node_modules/@types/glob/index.d.ts",
+                  "position": {
+                    "startLine": 29,
+                  },
+                },
+              },
+              {
+                "message": "TS2724: ''./index'' has no exported member named 'IMinimatch'. Did you mean 'Minimatch'?",
+                "severity": "error",
+                "source": {
+                  "file": "node_modules/@types/glob/index.d.ts",
+                  "position": {
+                    "startLine": 74,
+                  },
+                },
+              },
+              {
                 "message": "TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.",
                 "severity": "error",
                 "source": {
@@ -80,11 +100,11 @@ exports[`PLUGIN collect report with typescript-plugin NPM package > should run p
               },
             ],
           },
-          "displayValue": "2 errors",
+          "displayValue": "4 errors",
           "score": 0,
           "slug": "semantic-errors",
           "title": "Semantic errors",
-          "value": 2,
+          "value": 4,
         },
         {
           "description": "Errors that occur during TypeScript language service operations",
@@ -121,7 +141,7 @@ exports[`PLUGIN collect report with typescript-plugin NPM package > should run p
           "details": {
             "issues": [
               {
-                "message": "TS6059: File './exclude/utils.ts' is not under 'rootDir' 'src'. 'rootDir' is expected to contain all source files.",
+                "message": "TS6059: File './exclude/utils.ts' is not under 'rootDir' './src'. 'rootDir' is expected to contain all source files.",
                 "severity": "error",
                 "source": {
                   "file": "tmp/e2e/plugin-typescript-e2e/src/6-configuration-errors.ts",

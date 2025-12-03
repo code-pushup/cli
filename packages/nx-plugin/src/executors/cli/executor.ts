@@ -1,9 +1,8 @@
 import { type ExecutorContext, logger } from '@nx/devkit';
-import { execSync } from 'node:child_process';
-import { createCliCommand } from '../internal/cli.js';
+import { executeProcess } from '../../internal/execute-process.js';
 import { normalizeContext } from '../internal/context.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
-import { mergeExecutorOptions, parseAutorunExecutorOptions } from './utils.js';
+import { parseAutorunExecutorOptions } from './utils.js';
 
 export type ExecutorOutput = {
   success: boolean;
@@ -11,23 +10,34 @@ export type ExecutorOutput = {
   error?: Error;
 };
 
-export default function runAutorunExecutor(
+/* eslint-disable-next-line max-lines-per-function */
+export default async function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
-  const normalizedContext = normalizeContext(context);
-  const mergedOptions = mergeExecutorOptions(
-    context.target?.options,
-    terminalAndExecutorOptions,
+  const { objectToCliArgs, formatCommandStatus } = await import(
+    '@code-pushup/utils'
   );
+  const normalizedContext = normalizeContext(context);
   const cliArgumentObject = parseAutorunExecutorOptions(
-    mergedOptions,
+    terminalAndExecutorOptions,
     normalizedContext,
   );
-  const { dryRun, verbose, command } = mergedOptions;
-
-  const commandString = createCliCommand({ command, args: cliArgumentObject });
-  const commandStringOptions = context.cwd ? { cwd: context.cwd } : {};
+  const {
+    dryRun,
+    verbose,
+    command: cliCommand,
+    bin,
+  } = terminalAndExecutorOptions;
+  const command = bin ? `node` : 'npx';
+  const positionals = [
+    bin ?? '@code-pushup/cli',
+    ...(cliCommand ? [cliCommand] : []),
+  ];
+  const args = [...positionals, ...objectToCliArgs(cliArgumentObject)];
+  const commandString = formatCommandStatus([command, ...args].join(' '), {
+    cwd: context.cwd,
+  });
   if (verbose) {
     logger.info(`Run CLI executor ${command ?? ''}`);
     logger.info(`Command: ${commandString}`);
@@ -36,21 +46,22 @@ export default function runAutorunExecutor(
     logger.warn(`DryRun execution of: ${commandString}`);
   } else {
     try {
-      // @TODO use executeProcess instead of execSync -> non blocking, logs #761
-      // eslint-disable-next-line n/no-sync
-      execSync(commandString, commandStringOptions);
+      await executeProcess({
+        command,
+        args,
+        ...(context.cwd ? { cwd: context.cwd } : {}),
+      });
     } catch (error) {
       logger.error(error);
-      return Promise.resolve({
+      return {
         success: false,
         command: commandString,
-        error: error as Error,
-      });
+        error: error instanceof Error ? error : new Error(`${error}`),
+      };
     }
   }
-
-  return Promise.resolve({
+  return {
     success: true,
     command: commandString,
-  });
+  };
 }

@@ -274,3 +274,191 @@ exports[`lcovResultsToAuditOutputs > should correctly merge all lines for covera
   },
 ]
 `;
+
+exports[`lcovResultsToAuditOutputs > should correctly merge duplicate LCOV records from multiple files 1`] = `
+[
+  {
+    "details": {
+      "trees": [
+        {
+          "root": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [
+                              {
+                                "name": "utils.ts",
+                                "values": {
+                                  "coverage": 1,
+                                  "missing": [],
+                                },
+                              },
+                            ],
+                            "name": "lib",
+                            "values": {
+                              "coverage": 1,
+                            },
+                          },
+                        ],
+                        "name": "src",
+                        "values": {
+                          "coverage": 1,
+                        },
+                      },
+                    ],
+                    "name": "cli",
+                    "values": {
+                      "coverage": 1,
+                    },
+                  },
+                ],
+                "name": "packages",
+                "values": {
+                  "coverage": 1,
+                },
+              },
+            ],
+            "name": ".",
+            "values": {
+              "coverage": 1,
+            },
+          },
+          "title": "Branch coverage",
+          "type": "coverage",
+        },
+      ],
+    },
+    "displayValue": "100 %",
+    "score": 1,
+    "slug": "branch-coverage",
+    "value": 100,
+  },
+  {
+    "details": {
+      "trees": [
+        {
+          "root": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [
+                              {
+                                "name": "utils.ts",
+                                "values": {
+                                  "coverage": 1,
+                                  "missing": [],
+                                },
+                              },
+                            ],
+                            "name": "lib",
+                            "values": {
+                              "coverage": 1,
+                            },
+                          },
+                        ],
+                        "name": "src",
+                        "values": {
+                          "coverage": 1,
+                        },
+                      },
+                    ],
+                    "name": "cli",
+                    "values": {
+                      "coverage": 1,
+                    },
+                  },
+                ],
+                "name": "packages",
+                "values": {
+                  "coverage": 1,
+                },
+              },
+            ],
+            "name": ".",
+            "values": {
+              "coverage": 1,
+            },
+          },
+          "title": "Function coverage",
+          "type": "coverage",
+        },
+      ],
+    },
+    "displayValue": "100 %",
+    "score": 1,
+    "slug": "function-coverage",
+    "value": 100,
+  },
+  {
+    "details": {
+      "trees": [
+        {
+          "root": {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [
+                              {
+                                "name": "utils.ts",
+                                "values": {
+                                  "coverage": 1,
+                                  "missing": [],
+                                },
+                              },
+                            ],
+                            "name": "lib",
+                            "values": {
+                              "coverage": 1,
+                            },
+                          },
+                        ],
+                        "name": "src",
+                        "values": {
+                          "coverage": 1,
+                        },
+                      },
+                    ],
+                    "name": "cli",
+                    "values": {
+                      "coverage": 1,
+                    },
+                  },
+                ],
+                "name": "packages",
+                "values": {
+                  "coverage": 1,
+                },
+              },
+            ],
+            "name": ".",
+            "values": {
+              "coverage": 1,
+            },
+          },
+          "title": "Line coverage",
+          "type": "coverage",
+        },
+      ],
+    },
+    "displayValue": "100 %",
+    "score": 1,
+    "slug": "line-coverage",
+    "value": 100,
+  },
+]
+`;

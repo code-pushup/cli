@@ -6,10 +6,28 @@ import type {
 } from '@nx/devkit';
 import type { JestExecutorOptions } from '@nx/jest/src/executors/jest/schema';
 import type { VitestExecutorOptions } from '@nx/vite/executors';
-import { bold } from 'ansis';
 import path from 'node:path';
-import { importModule, ui } from '@code-pushup/utils';
+import { importModule, logger, stringifyError } from '@code-pushup/utils';
 import type { CoverageResult } from '../config.js';
+
+/**
+ * Resolves the cached project graph for the current Nx workspace.
+ * First tries to read cache and if not possible, go for the async creation.
+ */
+async function resolveCachedProjectGraph() {
+  const { readCachedProjectGraph, createProjectGraphAsync } = await import(
+    '@nx/devkit'
+  );
+  try {
+    return readCachedProjectGraph();
+  } catch (error) {
+    logger.info(
+      `Could not read cached project graph, falling back to async creation.
+      ${stringifyError(error)}`,
+    );
+    return await createProjectGraphAsync({ exitOnError: false });
+  }
+}
 
 /**
  * @param targets nx targets to be used for measuring coverage, test by default
@@ -17,16 +35,10 @@ import type { CoverageResult } from '../config.js';
  */
 export async function getNxCoveragePaths(
   targets: string[] = ['test'],
-  verbose?: boolean,
 ): Promise<CoverageResult[]> {
-  if (verbose) {
-    ui().logger.info(
-      bold('💡 Gathering coverage from the following nx projects:'),
-    );
-  }
+  logger.debug('💡 Gathering coverage from the following nx projects:');
 
-  const { createProjectGraphAsync } = await import('@nx/devkit');
-  const { nodes } = await createProjectGraphAsync({ exitOnError: false });
+  const { nodes } = await resolveCachedProjectGraph();
 
   const coverageResults = await Promise.all(
     targets.map(async target => {
@@ -37,18 +49,14 @@ export async function getNxCoveragePaths(
       return await Promise.all(
         relevantNodes.map<Promise<CoverageResult>>(async ({ name, data }) => {
           const coveragePaths = await getCoveragePathsForTarget(data, target);
-          if (verbose) {
-            ui().logger.info(`- ${name}: ${target}`);
-          }
+          logger.debug(`- ${name}: ${target}`);
           return coveragePaths;
         }),
       );
     }),
   );
 
-  if (verbose) {
-    ui().logger.info('\n');
-  }
+  logger.debug('');
 
   return coverageResults.flat();
 }
@@ -112,9 +120,7 @@ export async function getCoveragePathForVitest(
   project: ProjectConfiguration,
   target: string,
 ) {
-  const {
-    default: { normalizeViteConfigFilePathWithTree },
-  } = await import('@nx/vite');
+  const { normalizeViteConfigFilePathWithTree } = await import('@nx/vite');
   const config = normalizeViteConfigFilePathWithTree(
     // HACK: only tree.exists is called, so injecting existSync from node:fs instead
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

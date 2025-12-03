@@ -10,12 +10,14 @@ export {
 } from './lib/case-conversions.js';
 export { filesCoverageToTree, type FileCoverage } from './lib/coverage-tree.js';
 export { createRunnerFiles } from './lib/create-runner-files.js';
+export { dateToUnixTimestamp } from './lib/dates.js';
 export { comparePairs, matchArrayItemsByKey, type Diff } from './lib/diff.js';
 export {
   coerceBooleanValue,
   isCI,
   isEnvVarEnabled,
-  isVerbose,
+  runnerArgsFromEnv,
+  runnerArgsToEnv,
 } from './lib/env.js';
 export { stringifyError } from './lib/errors.js';
 export {
@@ -49,13 +51,19 @@ export { filterItemRefsBy } from './lib/filter.js';
 export {
   formatBytes,
   formatDuration,
+  indentLines,
   pluralize,
   pluralizeToken,
+  roundDecimals,
+  serializeCommandWithArgs,
   slugify,
+  transformLines,
   truncateDescription,
   truncateIssueMessage,
+  truncateMultilineText,
   truncateText,
   truncateTitle,
+  UNICODE_ELLIPSIS,
 } from './lib/formatting.js';
 export {
   getCurrentBranchOrTag,
@@ -76,26 +84,47 @@ export {
   hasNoNullableProps,
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
+  isRecord,
 } from './lib/guards.js';
 export { interpolate } from './lib/interpolate.js';
 export { createPatternMatcher } from './lib/lang.js';
 export { logMultipleResults } from './lib/log-results.js';
-export { link, ui, type CliUi, type Column } from './lib/logging.js';
+export { Logger, logger } from './lib/logger.js';
+export { formatCommandStatus } from './lib/command.js';
 export { mergeConfigs } from './lib/merge-configs.js';
-export { getProgressBar, type ProgressBar } from './lib/progress.js';
-export { asyncSequential, groupByStatus } from './lib/promises.js';
+export {
+  addIndex,
+  ContextValidationError,
+  createCategoryRefs,
+  expandAuditsForUrls,
+  expandCategoryRefs,
+  expandGroupsForUrls,
+  removeIndex,
+  shouldExpandForUrls,
+  validateUrlContext,
+} from './lib/plugin-url-aggregation.js';
+export {
+  getUrlIdentifier,
+  normalizeUrlInput,
+  type PluginUrlContext,
+} from './lib/plugin-url-config.js';
+export {
+  asyncSequential,
+  groupByStatus,
+  settlePromise,
+} from './lib/promises.js';
 export { generateRandomId } from './lib/random.js';
 export {
   CODE_PUSHUP_DOMAIN,
   CODE_PUSHUP_UNICODE_LOGO,
   FOOTER_PREFIX,
   README_LINK,
-  TERMINAL_WIDTH,
 } from './lib/reports/constants.js';
 export {
   listAuditsFromAllPlugins,
   listGroupsFromAllPlugins,
 } from './lib/reports/flatten-plugins.js';
+export { formatIssueSeverities } from './lib/reports/formatting.js';
 export { generateMdReport } from './lib/reports/generate-md-report.js';
 export {
   generateMdReportsDiff,
@@ -103,7 +132,7 @@ export {
 } from './lib/reports/generate-md-reports-diff.js';
 export { loadReport } from './lib/reports/load-report.js';
 export { logStdoutSummary } from './lib/reports/log-stdout-summary.js';
-export { scoreReport } from './lib/reports/scoring.js';
+export { scoreAuditsWithTarget, scoreReport } from './lib/reports/scoring.js';
 export { sortReport } from './lib/reports/sorting.js';
 export type {
   ScoredCategoryConfig,
@@ -116,6 +145,10 @@ export {
   formatReportScore,
 } from './lib/reports/utils.js';
 export { isSemver, normalizeSemver, sortSemvers } from './lib/semver.js';
+export { formatAsciiLink } from './lib/text-formats/ascii/link.js';
+export { formatAsciiSticker } from './lib/text-formats/ascii/sticker.js';
+export { formatAsciiTable } from './lib/text-formats/ascii/table.js';
+export { formatAsciiTree } from './lib/text-formats/ascii/tree.js';
 export * from './lib/text-formats/index.js';
 export {
   countOccurrences,
@@ -141,7 +174,7 @@ export type {
   ExtractArray,
   ExtractArrays,
   ItemOrArray,
+  LooseAutocomplete,
   Prettify,
   WithRequired,
 } from './lib/types.js';
-export { parseSchema, SchemaValidationError } from './lib/zod-validation.js';

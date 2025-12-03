@@ -1,0 +1,9 @@
+{
+  "name": "cms",
+  "projectType": "application",
+  "targets": {
+    "code-pushup": {
+      "command": "npx @code-pushup/cli --config=apps/cms/code-pushup.config.js"
+    }
+  }
+}

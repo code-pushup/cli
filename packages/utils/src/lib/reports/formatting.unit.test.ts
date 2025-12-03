@@ -4,10 +4,13 @@ import {
   formatFileLink,
   formatGitHubLink,
   formatGitLabLink,
+  formatIssueSeverities,
+  formatSeverityCounts,
   formatSourceLine,
   linkToLocalSourceForIde,
   metaDescription,
   tableSection,
+  wrapTags,
 } from './formatting.js';
 
 describe('tableSection', () => {
@@ -358,5 +361,71 @@ describe('formatFileLink', () => {
         toUnixPath('.code-pushup'),
       ),
     ).toBe('../src/index.ts');
+  });
+});
+
+describe('formatSeverityCounts', () => {
+  it.each([
+    [{ error: 3 }, '3 errors'],
+    [{ warning: 5 }, '5 warnings'],
+    [{ info: 2 }, '2 infos'],
+    [{ error: 1 }, '1 error'],
+    [{ error: 3, warning: 5, info: 2 }, '3 errors, 5 warnings, 2 infos'],
+    [{ info: 1, error: 2, warning: 3 }, '2 errors, 3 warnings, 1 info'],
+    [{}, ''],
+    [{ error: 0 }, '0 errors'],
+  ])('should format %o as %j', (counts, expected) => {
+    expect(formatSeverityCounts(counts)).toBe(expected);
+  });
+});
+
+describe('formatIssueSeverities', () => {
+  it('should return empty string for empty array', () => {
+    expect(formatIssueSeverities([])).toBe('');
+  });
+
+  it('should format single error', () => {
+    expect(formatIssueSeverities([{ severity: 'error' }])).toBe('1 error');
+  });
+
+  it('should format multiple errors with plural', () => {
+    expect(
+      formatIssueSeverities([
+        { severity: 'error' },
+        { severity: 'error' },
+        { severity: 'error' },
+      ]),
+    ).toBe('3 errors');
+  });
+
+  it('should format mixed severities in correct order', () => {
+    expect(
+      formatIssueSeverities([
+        { severity: 'info' },
+        { severity: 'error' },
+        { severity: 'warning' },
+        { severity: 'error' },
+        { severity: 'error' },
+        { severity: 'warning' },
+      ]),
+    ).toBe('3 errors, 2 warnings, 1 info');
+  });
+});
+
+describe('wrapTags', () => {
+  it.each([
+    ['<label>', '`<label>`'],
+    ['<img src="test.jpg">', '`<img src="test.jpg">`'],
+    [
+      '<li> elements must be contained in a <ul> or <ol>',
+      '`<li>` elements must be contained in a `<ul>` or `<ol>`',
+    ],
+    ['x < 5', 'x < 5'],
+    ['x < 5 and y > 3', 'x < 5 and y > 3'],
+    ['body > button', 'body > button'],
+    ['', ''],
+    [undefined, ''],
+  ])('should transform %j to %j', (input, expected) => {
+    expect(wrapTags(input)).toBe(expected);
   });
 });

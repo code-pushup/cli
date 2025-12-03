@@ -1,11 +1,11 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import { compareReportFiles } from '@code-pushup/core';
 import {
   DEFAULT_PERSIST_FILENAME,
   DEFAULT_PERSIST_FORMAT,
   DEFAULT_PERSIST_OUTPUT_DIR,
 } from '@code-pushup/models';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants.js';
 import { yargsCli } from '../yargs-cli.js';
 import { yargsCompareCommandObject } from './compare-command.js';
@@ -41,6 +41,7 @@ describe('compare-command', () => {
           outputDir: DEFAULT_PERSIST_OUTPUT_DIR,
           filename: DEFAULT_PERSIST_FILENAME,
           format: DEFAULT_PERSIST_FORMAT,
+          skipReports: false,
         },
         upload: expect.any(Object),
       },
@@ -77,11 +78,10 @@ describe('compare-command', () => {
       commands: [yargsCompareCommandObject()],
     }).parseAsync();
 
-    expect(ui()).toHaveLogged(
-      'info',
-      `Reports diff written to ${bold(
+    expect(logger.info).toHaveBeenCalledWith(
+      `Reports diff written to ${ansis.bold(
         '.code-pushup/report-diff.json',
-      )} and ${bold('.code-pushup/report-diff.md')}`,
+      )} and ${ansis.bold('.code-pushup/report-diff.md')}`,
     );
   });
 });

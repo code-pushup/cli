@@ -9,7 +9,7 @@
       "executor": "@nx/vite:test",
       "options": {
         "keepServerRunning": true,
-        "configFile": "e2e/create-cli-e2e/vitest.e2e.config.ts"
+        "configFile": "{projectRoot}/vitest.e2e.config.ts"
       }
     }
   },

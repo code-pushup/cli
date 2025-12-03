@@ -10,36 +10,13 @@
       }
     },
     "lint": {},
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/cli/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/cli/vitest.int.config.ts"
-      }
-    },
-    "run-help": {
-      "command": "npx dist/packages/cli --help",
-      "dependsOn": ["build"]
-    },
-    "run-collect": {
-      "command": "npx ../../dist/packages/cli collect --persist.format=json --persist.format=md",
-      "options": {
-        "cwd": "examples/react-todos-app"
-      },
-      "dependsOn": ["build"]
-    },
-    "run-print-config": {
-      "command": "npx ../../dist/packages/cli print-config",
-      "options": {
-        "cwd": "examples/react-todos-app"
-      },
-      "dependsOn": ["build"]
-    }
+    "unit-test": {},
+    "int-test": {},
+    "code-pushup": {},
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {},
+    "code-pushup-typescript": {},
+    "code-pushup-jsdocs": {}
   },
   "tags": ["scope:core", "type:app", "publishable"]
 }

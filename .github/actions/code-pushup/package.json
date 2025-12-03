@@ -1,0 +1,7 @@
+{
+  "name": "@code-pushup/local-action",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Minimalist GitHub Action that executes Code PushUp using local @code-pushup/ci source code for testing CI changes"
+}

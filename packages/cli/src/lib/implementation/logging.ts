@@ -1,48 +1,44 @@
-import { bold, gray } from 'ansis';
-import { link, ui } from '@code-pushup/utils';
+import ansis from 'ansis';
+import {
+  formatAsciiLink,
+  formatAsciiSticker,
+  logger,
+} from '@code-pushup/utils';
 
 export function renderConfigureCategoriesHint(): void {
-  ui().logger.info(
-    gray(
-      `💡 Configure categories to see the scores in an overview table. See: ${link(
-        'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md',
-      )}`,
-    ),
+  logger.debug(
+    `💡 Configure categories to see the scores in an overview table. See: ${formatAsciiLink(
+      'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md',
+    )}`,
+    { force: true },
   );
 }
 export function uploadSuccessfulLog(url: string): void {
-  ui().logger.success('Upload successful!');
-  ui().logger.success(link(url));
+  logger.info(ansis.green('Upload successful!'));
+  logger.info(formatAsciiLink(url));
 }
 
 export function collectSuccessfulLog(): void {
-  ui().logger.success('Collecting report successful!');
+  logger.info(ansis.green('Collecting report successful!'));
 }
 
 export function renderIntegratePortalHint(): void {
-  ui()
-    .sticker()
-    .add(bold.gray('💡 Integrate the portal'))
-    .add('')
-    .add(
-      `${gray('❯')} Upload a report to the server - ${gray(
+  logger.info(
+    formatAsciiSticker([
+      ansis.bold.gray('💡 Integrate the portal'),
+      '',
+      `${ansis.gray('❯')} Upload a report to the server - ${ansis.gray(
         'npx code-pushup upload',
       )}`,
-    )
-    .add(
-      `  ${link(
+      `  ${formatAsciiLink(
         'https://github.com/code-pushup/cli/tree/main/packages/cli#upload-command',
       )}`,
-    )
-    .add(
-      `${gray('❯')} ${gray('Portal Integration')} - ${link(
+      `${ansis.gray('❯')} ${ansis.gray('Portal Integration')} - ${formatAsciiLink(
         'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
       )}`,
-    )
-    .add(
-      `${gray('❯')} ${gray('Upload Command')} - ${link(
+      `${ansis.gray('❯')} ${ansis.gray('Upload Command')} - ${formatAsciiLink(
         'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
       )}`,
-    )
-    .render();
+    ]),
+  );
 }

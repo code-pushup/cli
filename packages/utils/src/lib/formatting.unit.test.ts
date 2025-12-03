@@ -1,13 +1,47 @@
+import ansis from 'ansis';
 import { describe, expect, it } from 'vitest';
 import {
   formatBytes,
   formatDate,
   formatDuration,
+  indentLines,
   pluralize,
   pluralizeToken,
+  roundDecimals,
+  serializeCommandWithArgs,
   slugify,
+  transformLines,
+  truncateMultilineText,
   truncateText,
 } from './formatting.js';
+
+describe('roundDecimals', () => {
+  it('should remove extra decimals', () => {
+    expect(roundDecimals(1.2345, 2)).toBe(1.23);
+  });
+
+  it('should round last decimal', () => {
+    expect(roundDecimals(123.456, 2)).toBe(123.46);
+  });
+
+  it('should return number to prevent unnecessary trailing 0s in decimals', () => {
+    const result = roundDecimals(42.500_001, 3);
+    expect(result).toBeTypeOf('number');
+    expect(result.toString()).toBe('42.5');
+    expect(result.toString()).not.toBe('42.50');
+  });
+
+  it('should leave integers unchanged', () => {
+    const value = 42;
+    const result = roundDecimals(value, 3);
+    expect(result).toBe(value);
+    expect(result.toString()).toBe('42');
+  });
+
+  it('should round to integer if max decimals set to 0', () => {
+    expect(roundDecimals(100.5, 0)).toBe(101);
+  });
+});
 
 describe('slugify', () => {
   it.each([
@@ -76,15 +110,14 @@ describe('formatDuration', () => {
   it.each([
     [-1, '-1 ms'],
     [0, '0 ms'],
-    [1, '1 ms'],
-    [2, '2 ms'],
-    [1200, '1.20 s'],
-  ])('should log correctly formatted duration for %s', (ms, displayValue) => {
+    [23, '23 ms'],
+    [891, '891 ms'],
+    [499.85, '500 ms'],
+    [1200, '1.2 s'],
+    [56_789, '56.79 s'],
+    [60_000, '60 s'],
+  ])('should format duration of %s milliseconds as %s', (ms, displayValue) => {
     expect(formatDuration(ms)).toBe(displayValue);
-  });
-
-  it('should log formatted duration with 1 digit after the decimal point', () => {
-    expect(formatDuration(120.255_555, 1)).toBe('120.3 ms');
   });
 });
 
@@ -104,7 +137,7 @@ describe('formatDate', () => {
 describe('truncateText', () => {
   it('should replace overflowing text with ellipsis at the end', () => {
     expect(truncateText('All work and no play makes Jack a dull boy', 32)).toBe(
-      'All work and no play makes Ja...',
+      'All work and no play makes Jack…',
     );
   });
 
@@ -130,27 +163,109 @@ describe('truncateText', () => {
         maxChars: 10,
         position: 'start',
       }),
-    ).toBe('...dy day.');
+    ).toBe('…oudy day.');
   });
 
   it('should produce truncated text with ellipsis at the middle', () => {
     expect(
       truncateText('Horrendous amounts of lint issues are present Tony!', {
-        maxChars: 10,
+        maxChars: 8,
         position: 'middle',
       }),
-    ).toBe('Hor...ny!');
+    ).toBe('Hor…ny!');
   });
 
   it('should produce truncated text with ellipsis at the end', () => {
     expect(truncateText("I'm Johnny!", { maxChars: 10, position: 'end' })).toBe(
-      "I'm Joh...",
+      "I'm Johnn…",
     );
   });
 
   it('should produce truncated text with custom ellipsis', () => {
-    expect(truncateText("I'm Johnny!", { maxChars: 10, ellipsis: '*' })).toBe(
-      "I'm Johnn*",
+    expect(truncateText("I'm Johnny!", { maxChars: 10, ellipsis: '...' })).toBe(
+      "I'm Joh...",
     );
+  });
+});
+
+describe('transformMultilineText', () => {
+  it('should replace additional lines with an ellipsis', () => {
+    const error = `SchemaValidationError: Invalid CoreConfig in code-pushup.config.ts file
+✖ Invalid input: expected array, received undefined
+  → at plugins`;
+    expect(truncateMultilineText(error)).toBe(
+      'SchemaValidationError: Invalid CoreConfig in code-pushup.config.ts file […]',
+    );
+  });
+
+  it('should leave one-liner texts unchanged', () => {
+    expect(truncateMultilineText('Hello, world!')).toBe('Hello, world!');
+  });
+
+  it('should omit ellipsis if additional lines have no non-whitespace characters', () => {
+    expect(truncateMultilineText('- item 1\n  \n\n')).toBe('- item 1');
+  });
+});
+
+describe('transformLines', () => {
+  it('should apply custom transformation to each line', () => {
+    let count = 0;
+    expect(
+      transformLines(
+        `export function greet(name = 'World') {\n  console.log('Hello, ' + name + '!');\n}\n`,
+        line => {
+          const prefix = `${++count} | `;
+          return `${ansis.gray(prefix)}${line}`;
+        },
+      ),
+    ).toBe(
+      `
+${ansis.gray('1 | ')}export function greet(name = 'World') {
+${ansis.gray('2 | ')}  console.log('Hello, ' + name + '!');
+${ansis.gray('3 | ')}}
+${ansis.gray('4 | ')}`.trimStart(),
+    );
+  });
+
+  it('should support CRLF line endings', () => {
+    expect(
+      transformLines(
+        'ESLint v9.16.0\r\n\r\nAll files pass linting.\r\n',
+        line => `> ${line}`,
+      ),
+    ).toBe(
+      `
+> ESLint v9.16.0
+> 
+> All files pass linting.
+> `.trimStart(),
+    );
+  });
+});
+
+describe('indentLines', () => {
+  it('should indent each line by given number of spaces', () => {
+    expect(indentLines('ESLint v9.16.0\n\nAll files pass linting.\n', 2)).toBe(
+      `
+  ESLint v9.16.0
+  
+  All files pass linting.
+  `.slice(1), // ignore first line break
+    );
+  });
+});
+
+describe('serializeCommandWithArgs', () => {
+  it('should serialize command and args into an equivalent shell string', () => {
+    expect(
+      serializeCommandWithArgs({
+        command: 'npx',
+        args: ['eslint', '.', '--format=json'],
+      }),
+    ).toBe('npx eslint . --format=json');
+  });
+
+  it('should omit args if missing', () => {
+    expect(serializeCommandWithArgs({ command: 'ls' })).toBe('ls');
   });
 });

@@ -1,36 +1,28 @@
 import { createRequire } from 'node:module';
-import {
-  type CoreConfig,
-  DEFAULT_PERSIST_OUTPUT_DIR,
-  type PersistConfig,
-  type Report,
+import type {
+  CacheConfigObject,
+  CoreConfig,
+  PersistConfig,
+  Report,
 } from '@code-pushup/models';
 import { calcDuration, getLatestCommit } from '@code-pushup/utils';
-import type { GlobalOptions } from '../types.js';
 import { executePlugins } from './execute-plugin.js';
 
 export type CollectOptions = Pick<CoreConfig, 'plugins' | 'categories'> & {
-  persist?: Required<Pick<PersistConfig, 'outputDir'>>;
-} & Partial<GlobalOptions>;
+  persist?: PersistConfig;
+  cache: CacheConfigObject;
+};
 
 /**
  * Run audits, collect plugin output and aggregate it into a JSON object
  * @param options
  */
 export async function collect(options: CollectOptions): Promise<Report> {
-  const { plugins, categories, persist, ...otherOptions } = options;
+  const { plugins, categories, persist = {}, cache } = options;
   const date = new Date().toISOString();
   const start = performance.now();
   const commit = await getLatestCommit();
-  const pluginOutputs = await executePlugins(
-    {
-      plugins,
-      persist: { outputDir: DEFAULT_PERSIST_OUTPUT_DIR, ...persist },
-      // implement together with CLI option
-      cache: { read: false, write: false },
-    },
-    otherOptions,
-  );
+  const pluginOutputs = await executePlugins({ plugins, persist, cache });
   const packageJson = createRequire(import.meta.url)(
     '../../../package.json',
   ) as typeof import('../../../package.json');

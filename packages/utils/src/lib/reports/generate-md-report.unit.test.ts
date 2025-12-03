@@ -601,7 +601,7 @@ describe('aboutSection', () => {
     expect(md).toContainMarkdownTableRow([
       'ci: update action (535b8e9e557336618a764f3fa45609d224a62837)',
       '`v1.0.0`',
-      '4.20 s',
+      '4.2 s',
       '1',
       '3',
       '3',
@@ -902,27 +902,13 @@ module.exports = {
             title: 'SEO',
             slug: 'seo',
             score: 1,
-            isBinary: true,
+            scoreTarget: 1,
             refs: [
               {
                 slug: 'is-crawlable',
                 plugin: 'lighthouse',
                 type: 'audit',
                 weight: 2,
-              },
-            ],
-          },
-          {
-            title: 'PWA',
-            slug: 'pwa',
-            score: 0,
-            isBinary: true,
-            refs: [
-              {
-                slug: 'splash-screen',
-                plugin: 'lighthouse',
-                type: 'audit',
-                weight: 1,
               },
             ],
           },

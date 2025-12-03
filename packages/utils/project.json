@@ -18,16 +18,39 @@
         "cwd": "./packages/utils/perf"
       }
     },
-    "unit-test": {
-      "executor": "@nx/vite:test",
+    "unit-test": {},
+    "int-test": {},
+    "code-pushup": {},
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {},
+    "code-pushup-typescript": {},
+    "code-pushup-jsdocs": {},
+    "demo-logger": {
+      "executor": "nx:run-commands",
       "options": {
-        "configFile": "packages/utils/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/utils/vitest.int.config.ts"
+        "command": "npx tsx --tsconfig=tsconfig.base.json packages/utils/mocks/logger-demo.ts"
+      },
+      "configurations": {
+        "ci": {
+          "env": {
+            "CI": "true"
+          }
+        },
+        "verbose": {
+          "args": ["--verbose"]
+        },
+        "error-config": {
+          "args": ["--error=config"]
+        },
+        "error-plugin": {
+          "args": ["--error=plugin"]
+        },
+        "error-upload": {
+          "args": ["--error=upload"]
+        },
+        "custom-cwd": {
+          "args": ["--cwd=src"]
+        }
       }
     }
   },

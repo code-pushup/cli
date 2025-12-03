@@ -1,3 +1,4 @@
+import ansis from 'ansis';
 import { describe, expect, vi } from 'vitest';
 import {
   type CoreConfig,
@@ -17,7 +18,7 @@ vi.mock('@code-pushup/core', async () => {
   return {
     ...(core as object),
     readRcByPath: vi.fn().mockImplementation((filepath: string): CoreConfig => {
-      const allPersistOptions = {
+      const allPersistOptions: CoreConfig = {
         ...CORE_CONFIG_MOCK,
         persist: {
           filename: 'rc-filename',
@@ -25,7 +26,7 @@ vi.mock('@code-pushup/core', async () => {
           outputDir: 'rc-outputDir',
         },
       };
-      const persistOnlyFilename = {
+      const persistOnlyFilename: CoreConfig = {
         ...CORE_CONFIG_MOCK,
         persist: {
           filename: 'rc-filename',
@@ -64,6 +65,7 @@ describe('parsing values from CLI and middleware', () => {
       filename: DEFAULT_PERSIST_FILENAME,
       format: DEFAULT_PERSIST_FORMAT,
       outputDir: DEFAULT_PERSIST_OUTPUT_DIR,
+      skipReports: false,
     });
   });
 
@@ -85,6 +87,7 @@ describe('parsing values from CLI and middleware', () => {
       filename: 'cli-filename',
       format: ['md'],
       outputDir: 'cli-outputDir',
+      skipReports: false,
     });
   });
 
@@ -101,6 +104,7 @@ describe('parsing values from CLI and middleware', () => {
       filename: 'rc-filename',
       format: ['json', 'md'],
       outputDir: 'rc-outputDir',
+      skipReports: false,
     });
   });
 
@@ -122,6 +126,7 @@ describe('parsing values from CLI and middleware', () => {
       filename: 'cli-filename',
       format: ['md'],
       outputDir: 'cli-outputDir',
+      skipReports: false,
     });
   });
 
@@ -141,6 +146,7 @@ describe('parsing values from CLI and middleware', () => {
       filename: 'rc-filename',
       format: DEFAULT_PERSIST_FORMAT,
       outputDir: 'cli-outputdir',
+      skipReports: false,
     });
   });
 
@@ -198,6 +204,11 @@ describe('parsing values from CLI and middleware', () => {
           middlewares: [{ middlewareFunction: coreConfigMiddleware }],
         },
       ).parseAsync(),
-    ).rejects.toThrow('invalid_type');
+    ).rejects.toThrow(`Invalid ${ansis.bold('UploadConfig')}
+✖ Invalid input: expected string, received undefined
+  → at server
+✖ Invalid input: expected string, received undefined
+  → at apiKey
+`);
   });
 });

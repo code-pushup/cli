@@ -20,7 +20,6 @@ describe('upload', () => {
 
   it('should call upload with correct data', async () => {
     const result = await upload({
-      progress: false,
       upload: {
         apiKey: 'dummy-api-key',
         server: 'https://example.com/api',
@@ -31,6 +30,7 @@ describe('upload', () => {
         outputDir: MEMFS_VOLUME,
         filename: 'report',
         format: ['json'],
+        skipReports: false,
       },
     });
 
@@ -58,11 +58,11 @@ describe('upload', () => {
   it('should throw for missing upload configuration', async () => {
     await expect(
       upload({
-        progress: false,
         persist: {
           outputDir: MEMFS_VOLUME,
           filename: 'report',
           format: ['json'],
+          skipReports: false,
         },
         upload: undefined,
       }),

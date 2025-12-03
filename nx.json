@@ -1,13 +1,61 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "os": [{ "runtime": "node -e \"console.log(require('os').platform())\"" }],
+    "production": [
+      "default",
+      "!{projectRoot}/README.md",
+      "!{projectRoot}/CHANGELOG.md",
+      "!{projectRoot}/perf/**/*",
+      "!{projectRoot}/tools/**/*",
+      "!{projectRoot}/zod2md.config.ts",
+      "!{projectRoot}/eslint.config.?(c)js",
+      "!{workspaceRoot}/**/.code-pushup/**/*",
+      "!{projectRoot}/code-pushup.config.?(m)[jt]s",
+      "!{projectRoot}/code-pushup.config.bundled_*.mjs",
+      "!{projectRoot}/@(test|mocks|mock)/**/*",
+      "!{projectRoot}/**/?(*.)test.[jt]s?(x)?(.snap)",
+      "!{projectRoot}/**/?(*.)mocks.[jt]s?(x)",
+      "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
+      "!{projectRoot}/vitest.@(unit|int|e2e).config.[jt]s",
+      "!{projectRoot}/dist/**/*",
+      "!{projectRoot}/tsconfig.@(test|tools).json",
+      "!{workspaceRoot}/**/(*.)coverage/**/*"
+    ],
+    "test-vitest-inputs": [
+      "os",
+      { "env": "NX_VERBOSE_LOGGING" },
+      { "externalDependencies": ["vitest"] }
+    ],
+    "lint-eslint-inputs": [{ "externalDependencies": ["eslint"] }],
+    "typecheck-typescript-inputs": [{ "externalDependencies": ["typescript"] }],
+    "code-pushup-inputs": [
+      { "env": "NODE_OPTIONS" },
+      { "env": "TSX_TSCONFIG_PATH" }
+    ],
+    "sharedGlobals": [{ "runtime": "node -v" }, { "runtime": "npm -v" }]
+  },
   "targetDefaults": {
-    "code-pushup": {
+    "lint": {
+      "dependsOn": ["eslint-formatter-multi:build"],
+      "inputs": ["default", "lint-eslint-inputs"],
+      "outputs": ["{projectRoot}/.eslint/**/*"],
+      "cache": true,
       "executor": "nx:run-commands",
       "options": {
-        "command": "node packages/cli/src/index.ts --no-progress --verbose",
+        "command": "eslint",
+        "args": [
+          "'{projectRoot}/**/*.ts'",
+          "{projectRoot}/package.json",
+          "--config={projectRoot}/eslint.config.js",
+          "--max-warnings=0",
+          "--no-warn-ignored",
+          "--error-on-unmatched-pattern=false",
+          "--format=./tools/eslint-formatter-multi/dist/src/index.js"
+        ],
         "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+          "ESLINT_FORMATTER_CONFIG": "{\"outputDir\":\"{projectRoot}/.eslint\"}"
         }
       }
     },
@@ -24,20 +72,35 @@
         "assets": ["{projectRoot}/*.md"]
       }
     },
-    "lint": {
-      "inputs": ["default", "{workspaceRoot}/eslint.config.?(c)js"],
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
+    "unit-test": {
       "cache": true,
+      "inputs": ["default", "test-vitest-inputs"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectName}/unit-tests/lcov.info"
+      ],
+      "executor": "@nx/vite:test",
       "options": {
-        "maxWarnings": 0,
-        "lintFilePatterns": [
-          "{projectRoot}/**/*.ts",
-          "{projectRoot}/package.json"
-        ]
+        "configFile": "{projectRoot}/vitest.unit.config.ts",
+        "coverage": {
+          "enabled": true
+        }
+      }
+    },
+    "int-test": {
+      "cache": true,
+      "inputs": ["default", "test-vitest-inputs"],
+      "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
+      "executor": "@nx/vite:test",
+      "options": {
+        "configFile": "{projectRoot}/vitest.int.config.ts",
+        "coverage": {
+          "enabled": true
+        }
       }
     },
     "e2e": {
+      "cache": true,
+      "inputs": ["default", "test-vitest-inputs"],
       "dependsOn": ["^build"]
     },
     "nxv-pkg-install": {
@@ -45,39 +108,202 @@
     },
     "@nx/vite:test": {
       "cache": true,
-      "inputs": ["default", "^production"],
+      "inputs": ["default", "test-vitest-inputs"],
       "options": {
         "passWithNoTests": true,
         "watch": false
+      }
+    },
+    "code-pushup": {
+      "cache": false,
+      "executor": "nx:run-commands",
+      "dependsOn": ["code-pushup-*"],
+      "options": {
+        "command": "node packages/cli/src/index.ts",
+        "args": [
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--cache.read",
+          "--persist.outputDir=.code-pushup/{projectName}"
+        ],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-coverage": {
+      "dependsOn": ["*-test"],
+      "cache": true,
+      "inputs": ["default", "code-pushup-inputs"],
+      "outputs": [
+        "{workspaceRoot}/.code-pushup/{projectName}/coverage/runner-output.json"
+      ],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts collect",
+        "args": [
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--cache.write",
+          "--onlyPlugins=coverage",
+          "--persist.skipReports=true",
+          "--persist.outputDir=.code-pushup/{projectName}"
+        ],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-eslint": {
+      "dependsOn": ["lint"],
+      "cache": true,
+      "inputs": ["default", "code-pushup-inputs"],
+      "outputs": [
+        "{workspaceRoot}/.code-pushup/{projectName}/eslint/runner-output.json"
+      ],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts collect",
+        "args": [
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--cache.write",
+          "--onlyPlugins=eslint",
+          "--persist.skipReports",
+          "--persist.outputDir=.code-pushup/{projectName}"
+        ],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-js-packages": {
+      "cache": false,
+      "inputs": [
+        {
+          "runtime": "date +%Y-%m-%d"
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/.code-pushup/{projectName}/js-packages/runner-output.json"
+      ],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts collect",
+        "args": [
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--onlyPlugins=js-packages",
+          "--persist.outputDir=.code-pushup/{projectName}"
+        ],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-lighthouse": {
+      "cache": true,
+      "inputs": ["production", "^production", "code-pushup-inputs"],
+      "outputs": [
+        "{workspaceRoot}/.code-pushup/{projectName}/lighthouse/runner-output.json"
+      ],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts collect",
+        "args": [
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--cache.write",
+          "--onlyPlugins=lighthouse",
+          "--persist.skipReports",
+          "--persist.outputDir=.code-pushup/{projectName}"
+        ],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-jsdocs": {
+      "cache": true,
+      "inputs": [
+        "default",
+        "code-pushup-inputs",
+        "typecheck-typescript-inputs"
+      ],
+      "outputs": [
+        "{workspaceRoot}/.code-pushup/{projectName}/jsdocs/runner-output.json"
+      ],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts collect",
+        "args": [
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--cache.write",
+          "--onlyPlugins=jsdocs",
+          "--persist.skipReports",
+          "--persist.outputDir=.code-pushup/{projectName}"
+        ],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-typescript": {
+      "cache": true,
+      "inputs": [
+        "default",
+        "code-pushup-inputs",
+        "typecheck-typescript-inputs"
+      ],
+      "outputs": [
+        "{workspaceRoot}/.code-pushup/{projectName}/typescript/runner-output.json"
+      ],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts collect",
+        "args": [
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--cache.write",
+          "--onlyPlugins=typescript",
+          "--persist.skipReports",
+          "--persist.outputDir=.code-pushup/{projectName}"
+        ],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-axe": {
+      "cache": true,
+      "inputs": ["default", "code-pushup-inputs"],
+      "outputs": [
+        "{workspaceRoot}/.code-pushup/{projectName}/axe/runner-output.json"
+      ],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts collect",
+        "args": [
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--cache.write",
+          "--onlyPlugins=axe",
+          "--persist.outputDir=.code-pushup/{projectName}"
+        ],
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
       }
     },
     "nx-release-publish": {
       "dependsOn": ["build"],
       "executor": "@nx/js:release-publish",
       "options": {
-        "packageRoot": "dist/{projectRoot}",
+        "packageRoot": "{projectRoot}/dist",
         "registry": "https://registry.npmjs.org/"
       }
     }
-  },
-  "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
-    "production": [
-      "default",
-      "!{projectRoot}/eslint.config.?(c)js",
-      "!{projectRoot}/**/?(*.)test.[jt]s?(x)?(.snap)",
-      "!{projectRoot}/tsconfig.test.json",
-      "!{projectRoot}/src/test-setup.[jt]s",
-      "!{projectRoot}/test-setup.[jt]s",
-      "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
-      "!{projectRoot}/vitest.@(unit|int|e2e).config.[jt]s",
-      "!{projectRoot}/@(test|mocks)/**/*",
-      "!{projectRoot}/perf/**/*",
-      "!{projectRoot}/tools/**/*",
-      "!{projectRoot}/code-pushup.config.?(m)[jt]s",
-      "!{projectRoot}/zod2md.config.ts"
-    ],
-    "sharedGlobals": []
   },
   "workspaceLayout": {
     "appsDir": "examples",
@@ -99,11 +325,12 @@
       "push": true,
       "pushRemote": "origin",
       "tag": true,
-      "commitMessage": "release: {version} [skip ci]"
+      "commitMessage": "release: {version}"
     },
     "version": {
       "conventionalCommits": true,
-      "generatorOptions": {
+      "preserveLocalDependencyProtocols": false,
+      "versionActionsOptions": {
         "skipLockFileUpdate": true
       }
     },
@@ -125,5 +352,6 @@
         }
       }
     }
-  ]
+  ],
+  "nxCloudId": "65d4d862d2adb16a45a4bc7c"
 }

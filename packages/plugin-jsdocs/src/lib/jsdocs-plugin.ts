@@ -1,4 +1,4 @@
-import type { PluginConfig } from '@code-pushup/models';
+import { type PluginConfig, validate } from '@code-pushup/models';
 import { type JsDocsPluginConfig, jsDocsPluginConfigSchema } from './config.js';
 import { PLUGIN_SLUG, groups } from './constants.js';
 import { createRunnerFunction } from './runner/runner.js';
@@ -31,7 +31,8 @@ export const PLUGIN_DOCS_URL =
  * @returns Plugin configuration.
  */
 export function jsDocsPlugin(config: JsDocsPluginConfig): PluginConfig {
-  const jsDocsConfig = jsDocsPluginConfigSchema.parse(config);
+  const jsDocsConfig = validate(jsDocsPluginConfigSchema, config);
+  const scoreTargets = jsDocsConfig.scoreTargets;
 
   return {
     slug: PLUGIN_SLUG,
@@ -42,5 +43,6 @@ export function jsDocsPlugin(config: JsDocsPluginConfig): PluginConfig {
     groups: filterGroupsByOnlyAudits(groups, jsDocsConfig),
     audits: filterAuditsByPluginConfig(jsDocsConfig),
     runner: createRunnerFunction(jsDocsConfig),
+    ...(scoreTargets && { scoreTargets }),
   };
 }

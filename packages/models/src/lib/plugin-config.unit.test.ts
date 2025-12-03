@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { type PluginConfig, pluginConfigSchema } from './plugin-config.js';
+import { ZodError } from 'zod';
+import {
+  type PluginConfig,
+  pluginConfigSchema,
+  pluginUrlsSchema,
+} from './plugin-config.js';
 
 describe('pluginConfigSchema', () => {
   it('should accept a valid plugin configuration with all entities', () => {
@@ -36,6 +41,35 @@ describe('pluginConfigSchema', () => {
         icon: 'cypress',
         runner: { command: 'npx cypress run', outputFile: 'e2e-output.json' },
         audits: [{ slug: 'cypress-e2e', title: 'Cypress E2E results' }],
+      } satisfies PluginConfig),
+    ).not.toThrow();
+  });
+
+  it('should accept a valid plugin configuration with score targets', () => {
+    expect(() =>
+      pluginConfigSchema.parse({
+        slug: 'lighthouse',
+        title: 'Lighthouse',
+        icon: 'lighthouse',
+        runner: async () => [
+          {
+            slug: 'first-contentful-paint',
+            score: 0.28,
+            value: 3752,
+            displayValue: '3.8 s',
+          },
+          {
+            slug: 'total-blocking-time',
+            score: 0.91,
+            value: 183.5,
+            displayValue: '180 ms',
+          },
+        ],
+        scoreTargets: { 'total-blocking-time': 0.9 },
+        audits: [
+          { slug: 'first-contentful-paint', title: 'First Contentful Paint' },
+          { slug: 'total-blocking-time', title: 'Total Blocking Time' },
+        ],
       } satisfies PluginConfig),
     ).not.toThrow();
   });
@@ -104,5 +138,55 @@ describe('pluginConfigSchema', () => {
         audits: [],
       } satisfies PluginConfig),
     ).toThrow('slug has to follow the pattern');
+  });
+});
+
+describe('pluginUrlsSchema', () => {
+  it('should accept a single URL string', () => {
+    expect(() => pluginUrlsSchema.parse('https://example.com')).not.toThrow();
+  });
+
+  it('should accept an array of URLs', () => {
+    expect(() =>
+      pluginUrlsSchema.parse([
+        'https://example.com',
+        'https://example.com/about',
+      ]),
+    ).not.toThrow();
+  });
+
+  it('should accept a weighted object of URLs', () => {
+    expect(() =>
+      pluginUrlsSchema.parse({
+        'https://example.com': 2,
+        'https://example.com/about': 1,
+      }),
+    ).not.toThrow();
+  });
+
+  it('should throw for invalid URL', () => {
+    expect(() => pluginUrlsSchema.parse('invalid')).toThrow(ZodError);
+  });
+
+  it('should throw for array with invalid URL', () => {
+    expect(() =>
+      pluginUrlsSchema.parse(['https://example.com', 'invalid']),
+    ).toThrow(ZodError);
+  });
+
+  it('should throw for object with invalid URL', () => {
+    expect(() => pluginUrlsSchema.parse({ invalid: 1 })).toThrow(ZodError);
+  });
+
+  it('should throw for invalid negative weight', () => {
+    expect(() => pluginUrlsSchema.parse({ 'https://example.com': -1 })).toThrow(
+      ZodError,
+    );
+  });
+
+  it('should throw for invalid string weight', () => {
+    expect(() =>
+      pluginUrlsSchema.parse({ 'https://example.com': '1' }),
+    ).toThrow(ZodError);
   });
 });

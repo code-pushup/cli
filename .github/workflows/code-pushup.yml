@@ -8,32 +8,62 @@ on:
 
 env:
   NX_NON_NATIVE_HASHER: true
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 permissions:
   pull-requests: write
 
 jobs:
-  code-pushup:
+  standalone:
     runs-on: ubuntu-latest
-    name: Code PushUp
+    name: Standalone mode
     # ignore PRs from forks, handled by code-pushup-fork.yml
     if: ${{ !github.event.pull_request.head.repo.fork }}
     env:
-      CP_SERVER: ${{ secrets.CP_SERVER }}
       CP_API_KEY: ${{ secrets.CP_API_KEY }}
-      CP_ORGANIZATION: code-pushup
-      CP_PROJECT: cli
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          node-version-file: .node-version
           cache: npm
+      - name: Set base and head for Nx affected commands
+        uses: nrwl/nx-set-shas@v4
       - name: Install dependencies
         run: npm ci
       - name: Run Code PushUp action
-        uses: code-pushup/github-action@v0
+        uses: ./.github/actions/code-pushup
         with:
-          bin: npx nx code-pushup --
+          token: ${{ secrets.GITHUB_TOKEN }}
+          mode: standalone
+
+  monorepo:
+    runs-on: ubuntu-latest
+    name: Monorepo mode
+    # ignore PRs from forks, handled by code-pushup-fork.yml
+    if: ${{ !github.event.pull_request.head.repo.fork }}
+    env:
+      CP_API_KEY: ${{ secrets.CP_API_KEY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Set base and head for Nx affected commands
+        uses: nrwl/nx-set-shas@v4
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Code PushUp action
+        uses: ./.github/actions/code-pushup
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          mode: monorepo

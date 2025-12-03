@@ -6,28 +6,13 @@
   "targets": {
     "build": {},
     "lint": {},
-    "unit-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/create-cli/vitest.unit.config.ts"
-      }
-    },
-    "int-test": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "packages/create-cli/vitest.int.config.ts"
-      }
-    },
-    "exec-node": {
-      "dependsOn": ["build"],
-      "command": "node ./dist/packages/create-cli/src/index.js",
-      "options": {}
-    },
-    "exec-npm": {
-      "dependsOn": ["^build"],
-      "command": "npm exec ./dist/packages/create-cli",
-      "options": {}
-    }
+
+    "unit-test": {},
+    "code-pushup": {},
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {},
+    "code-pushup-typescript": {},
+    "code-pushup-jsdocs": {}
   },
   "tags": ["scope:tooling", "type:app", "publishable"]
 }

@@ -1,9 +1,10 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import debug from 'debug';
 import log from 'lighthouse-logger';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
 import { vol } from 'memfs';
+import os from 'node:os';
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
@@ -12,7 +13,7 @@ import {
   auditOutputsSchema,
 } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import { DEFAULT_CLI_FLAGS } from './constants.js';
 import { unsupportedDetailTypes } from './details/details.js';
 import type { LighthouseCliFlags } from './types.js';
@@ -22,6 +23,7 @@ import {
   getConfig,
   normalizeAuditOutputs,
   toAuditOutputs,
+  withLocalTmpDir,
 } from './utils.js';
 
 // mock bundleRequire inside importEsmModule used for fetching config
@@ -245,7 +247,7 @@ describe('toAuditOutputs', () => {
           }) as Result,
       ),
     );
-    expect(ui()).not.toHaveLogs();
+    expect(logger.warn).not.toHaveBeenCalled();
   });
 
   it('should inform that for all unsupported details if verbose IS given', () => {
@@ -263,7 +265,7 @@ describe('toAuditOutputs', () => {
       ),
       { verbose: true },
     );
-    expect(ui()).toHaveLoggedTimes(1);
+    expect(logger.warn).toHaveBeenCalledTimes(1);
   });
 
   it('should not parse empty audit details', () => {
@@ -306,7 +308,7 @@ describe('toAuditOutputs', () => {
         { verbose: true },
       ),
     ).toThrow(
-      `Audit ${bold('cumulative-layout-shift')} failed parsing details:`,
+      `Audit ${ansis.bold('cumulative-layout-shift')} failed parsing details:`,
     );
   });
 });
@@ -346,7 +348,7 @@ describe('getConfig', () => {
     await expect(
       getConfig({ preset: 'wrong' as 'desktop' }),
     ).resolves.toBeUndefined();
-    expect(ui()).toHaveLogged('info', 'Preset "wrong" is not supported');
+    expect(logger.warn).toHaveBeenCalledWith('Preset "wrong" is not supported');
   });
 
   it('should load config from json file if configPath is specified', async () => {
@@ -379,7 +381,9 @@ describe('getConfig', () => {
     await expect(
       getConfig({ configPath: path.join('wrong.not') }),
     ).resolves.toBeUndefined();
-    expect(ui()).toHaveLogged('info', 'Format of file wrong.not not supported');
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Format of file wrong.not not supported',
+    );
   });
 });
 
@@ -411,22 +415,22 @@ describe('determineAndSetLogLevel', () => {
   it('should set log level to info and return "info" as level if no options are given', () => {
     expect(determineAndSetLogLevel()).toBe('info');
     expect(log.isVerbose()).toBe(false);
-    expect(debugLib.enabled('LH:*')).toBe(true);
+    expect(debugLib.enabled('LH:*')).toBe(false);
     expect(debugLib.enabled('LH:*:verbose')).toBe(false);
   });
 
   it('should set log level to verbose and return "verbose" as level', () => {
     expect(determineAndSetLogLevel({ verbose: true })).toBe('verbose');
     expect(log.isVerbose()).toBe(true);
-    expect(debugLib.enabled('LH:*')).toBe(true);
+    expect(debugLib.enabled('LH:*')).toBe(false);
     expect(debugLib.enabled('LH:*:verbose')).toBe(false);
   });
 
   it('should set log level to quiet and return "silent" as level', () => {
     expect(determineAndSetLogLevel({ quiet: true })).toBe('silent');
     expect(log.isVerbose()).toBe(false);
-    expect(debugLib.enabled('LH:*')).toBe(true);
-    expect(debugLib.enabled('-LH:*')).toBe(true);
+    expect(debugLib.enabled('LH:*')).toBe(false);
+    expect(debugLib.enabled('-LH:*')).toBe(false);
     expect(debugLib.enabled('LH:*:verbose')).toBe(false);
   });
 
@@ -435,7 +439,7 @@ describe('determineAndSetLogLevel', () => {
       'verbose',
     );
     expect(log.isVerbose()).toBe(true);
-    expect(debugLib.enabled('LH:*')).toBe(true);
+    expect(debugLib.enabled('LH:*')).toBe(false);
     expect(debugLib.enabled('LH:*:verbose')).toBe(false);
   });
 });
@@ -500,5 +504,65 @@ describe('enrichFlags', () => {
       logLevel: 'info',
       outputPath: '/path/to/report-1.json',
     });
+  });
+});
+
+describe('withLocalTmpDir', () => {
+  it('should return unchanged function on Linux', () => {
+    vi.spyOn(os, 'platform').mockReturnValue('linux');
+    const runner = vi.fn().mockResolvedValue('result');
+
+    expect(withLocalTmpDir(runner)).toBe(runner);
+  });
+
+  it('should return unchanged function on MacOS', () => {
+    vi.spyOn(os, 'platform').mockReturnValue('darwin');
+    const runner = vi.fn().mockResolvedValue('result');
+
+    expect(withLocalTmpDir(runner)).toBe(runner);
+  });
+
+  it('should wrap function on Windows', async () => {
+    vi.spyOn(os, 'platform').mockReturnValue('win32');
+    const runner = vi.fn().mockResolvedValue('result');
+
+    const transformed = withLocalTmpDir(runner);
+
+    expect(transformed).not.toBe(runner);
+    await expect(transformed()).resolves.toBe('result');
+    expect(runner).toHaveBeenCalled();
+  });
+
+  it('should override TEMP environment variable before function call', async () => {
+    vi.spyOn(os, 'platform').mockReturnValue('win32');
+    const runner = vi
+      .fn()
+      .mockImplementation(
+        async () => `TEMP directory is ${process.env['TEMP']}`,
+      );
+
+    await expect(withLocalTmpDir(runner)()).resolves.toBe(
+      `TEMP directory is ${path.join('node_modules', '.code-pushup', 'lighthouse', 'tmp')}`,
+    );
+  });
+
+  it('should reset TEMP environment variable after function resolves', async () => {
+    const originalTmpDir = String.raw`\\?\C:\Users\RUNNER~1\AppData\Local\Temp`;
+    const runner = vi.fn().mockResolvedValue('result');
+    vi.spyOn(os, 'platform').mockReturnValue('win32');
+    vi.stubEnv('TEMP', originalTmpDir);
+
+    await withLocalTmpDir(runner)();
+
+    expect(process.env['TEMP']).toBe(originalTmpDir);
+  });
+
+  it('should reset TEMP environment variable after function rejects', async () => {
+    const runner = vi.fn().mockRejectedValue('error');
+    vi.spyOn(os, 'platform').mockReturnValue('win32');
+    vi.stubEnv('TEMP', '');
+
+    await expect(withLocalTmpDir(runner)()).rejects.toBe('error');
+    expect(process.env['TEMP']).toBe('');
   });
 });

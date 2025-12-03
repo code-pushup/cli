@@ -1,5 +1,14 @@
-import { coerceBooleanValue, isEnvVarEnabled } from './env.js';
-import { ui } from './logging.js';
+import {
+  DEFAULT_PERSIST_FILENAME,
+  DEFAULT_PERSIST_FORMAT,
+  DEFAULT_PERSIST_SKIP_REPORT,
+} from '@code-pushup/models';
+import {
+  coerceBooleanValue,
+  isEnvVarEnabled,
+  runnerArgsFromEnv,
+  runnerArgsToEnv,
+} from './env.js';
 
 describe('isEnvVarEnabled', () => {
   beforeEach(() => {
@@ -30,15 +39,6 @@ describe('isEnvVarEnabled', () => {
     vi.stubEnv('CP_VERBOSE', '0');
     expect(isEnvVarEnabled('CP_VERBOSE')).toBeFalse();
   });
-
-  it('should log a warning for unexpected values', () => {
-    vi.stubEnv('CP_VERBOSE', 'unexpected');
-    expect(isEnvVarEnabled('CP_VERBOSE')).toBeFalse();
-    expect(ui()).toHaveLogged(
-      'warn',
-      'Environment variable CP_VERBOSE expected to be a boolean (true/false/1/0), but received value unexpected. Treating it as disabled.',
-    );
-  });
 });
 
 describe('coerceBooleanValue', () => {
@@ -63,5 +63,63 @@ describe('coerceBooleanValue', () => {
     [undefined, undefined],
   ])('should coerce value %j to %j', (input, expected) => {
     expect(coerceBooleanValue(input)).toBe(expected);
+  });
+});
+
+describe('runnerArgsToEnv', () => {
+  it('should convert runner args object to namespaced environment variables', () => {
+    expect(
+      runnerArgsToEnv({
+        persist: {
+          outputDir: '.code-pushup',
+          filename: 'report',
+          format: ['json', 'md'],
+          skipReports: false,
+        },
+      }),
+    ).toEqual({
+      CP_PERSIST_OUTPUT_DIR: '.code-pushup',
+      CP_PERSIST_FILENAME: 'report',
+      CP_PERSIST_FORMAT: 'json,md',
+      CP_PERSIST_SKIP_REPORTS: 'false',
+    });
+  });
+});
+
+describe('runnerArgsFromEnv', () => {
+  it('should parse environment variables and create runner args object', () => {
+    expect(
+      runnerArgsFromEnv({
+        CP_PERSIST_OUTPUT_DIR: '.code-pushup',
+        CP_PERSIST_FILENAME: 'report',
+        CP_PERSIST_FORMAT: 'json,md',
+        CP_PERSIST_SKIP_REPORTS: 'false',
+      }),
+    ).toEqual({
+      persist: {
+        outputDir: '.code-pushup',
+        filename: 'report',
+        format: ['json', 'md'],
+        skipReports: false,
+      },
+    });
+  });
+
+  it('should fallback to defaults instead of empty or invalid values', () => {
+    expect(
+      runnerArgsFromEnv({
+        CP_PERSIST_OUTPUT_DIR: '.code-pushup',
+        CP_PERSIST_FILENAME: '',
+        CP_PERSIST_FORMAT: 'html',
+        CP_PERSIST_SKIP_REPORTS: 'yup',
+      }),
+    ).toEqual({
+      persist: {
+        outputDir: '.code-pushup',
+        filename: DEFAULT_PERSIST_FILENAME,
+        format: DEFAULT_PERSIST_FORMAT,
+        skipReports: DEFAULT_PERSIST_SKIP_REPORT,
+      },
+    });
   });
 });

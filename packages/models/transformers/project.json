@@ -7,18 +7,17 @@
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
-      "dependsOn": [{ "target": "pre-build" }],
+      "dependsOn": ["pre-build"],
       "options": {
-        "outputPath": "dist/packages/models-transformers",
+        "outputPath": "packages/models/transformers/dist",
         "main": "packages/models/transformers/src/index.ts",
         "tsConfig": "packages/models/transformers/tsconfig.lib.json"
       }
     },
     "pre-build": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx ts-patch install"
-      }
+      "command": "ts-patch install",
+      "cache": true,
+      "inputs": ["sharedGlobals", { "runtime": "ts-patch check" }]
     }
   }
 }

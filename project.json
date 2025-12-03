@@ -1,15 +1,11 @@
 {
-  "name": "@code-pushup/cli-source",
+  "name": "workspace",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
     "code-pushup": {
-      "executor": "nx:run-commands",
+      "dependsOn": [],
       "options": {
-        "command": "node packages/cli/src/index.ts --no-progress --verbose",
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
+        "args": []
       }
     }
   }

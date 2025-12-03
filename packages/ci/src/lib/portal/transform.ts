@@ -61,8 +61,8 @@ function transformGQLCategory(category: CategoryFragment): CategoryConfig {
   return {
     slug: category.slug,
     title: category.title,
-    isBinary: category.isBinary,
     ...(category.description && { description: category.description }),
+    ...(category.scoreTarget != null && { scoreTarget: category.scoreTarget }),
     refs: category.refs.map(
       ({ target, weight }): CategoryRef => ({
         type: lowercase(target.__typename),
@@ -150,18 +150,20 @@ function transformGQLIssue(issue: IssueFragment): Issue {
     ...(issue.source?.__typename === 'SourceCodeLocation' && {
       source: {
         file: issue.source.filePath,
-        position: {
-          startLine: issue.source.startLine ?? 0,
-          ...(issue.source.startColumn != null && {
-            startColumn: issue.source.startColumn,
-          }),
-          ...(issue.source.endLine != null && {
-            endLine: issue.source.endLine,
-          }),
-          ...(issue.source.endColumn != null && {
-            endColumn: issue.source.endColumn,
-          }),
-        },
+        ...(issue.source.startLine != null && {
+          position: {
+            startLine: issue.source.startLine,
+            ...(issue.source.startColumn != null && {
+              startColumn: issue.source.startColumn,
+            }),
+            ...(issue.source.endLine != null && {
+              endLine: issue.source.endLine,
+            }),
+            ...(issue.source.endColumn != null && {
+              endColumn: issue.source.endColumn,
+            }),
+          },
+        }),
       },
     }),
   };

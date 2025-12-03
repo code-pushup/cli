@@ -1,0 +1,9 @@
+{
+  "name": "ui",
+  "projectType": "library",
+  "targets": {
+    "code-pushup": {
+      "command": "npx @code-pushup/cli --config=libs/ui/code-pushup.config.js"
+    }
+  }
+}

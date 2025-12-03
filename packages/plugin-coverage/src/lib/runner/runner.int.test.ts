@@ -11,7 +11,7 @@ describe('createRunnerConfig', () => {
     const runnerConfig = await createRunnerConfig('executeRunner.ts', {
       reports: ['coverage/lcov.info'],
       coverageTypes: ['branch'],
-      perfectScoreThreshold: 85,
+      scoreTargets: 0.85,
       continueOnCommandFail: true,
     });
     expect(runnerConfig).toStrictEqual<RunnerConfig>({
@@ -21,7 +21,6 @@ describe('createRunnerConfig', () => {
         expect.stringContaining('plugin-config.json'),
         expect.stringContaining('runner-output.json'),
       ],
-      outputTransform: expect.any(Function),
       outputFile: expect.stringContaining('runner-output.json'),
       configFile: expect.stringContaining('plugin-config.json'),
     });
@@ -32,7 +31,7 @@ describe('createRunnerConfig', () => {
       coverageTypes: ['line'],
       reports: ['coverage/lcov.info'],
       coverageToolCommand: { command: 'npm', args: ['run', 'test'] },
-      perfectScoreThreshold: 85,
+      scoreTargets: 0.85,
       continueOnCommandFail: true,
     };
 

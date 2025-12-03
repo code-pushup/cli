@@ -4,6 +4,13 @@ import {
   MAX_TITLE_LENGTH,
 } from '@code-pushup/models';
 
+export const UNICODE_ELLIPSIS = '…';
+
+export function roundDecimals(value: number, maxDecimals: number) {
+  const multiplier = Math.pow(10, maxDecimals);
+  return Math.round(value * multiplier) / multiplier;
+}
+
 export function slugify(text: string): string {
   return text
     .trim()
@@ -40,20 +47,18 @@ export function formatBytes(bytes: number, decimals = 2) {
 
   const i = Math.floor(Math.log(positiveBytes) / Math.log(k));
 
-  return `${Number.parseFloat((positiveBytes / Math.pow(k, i)).toFixed(dm))} ${
-    sizes[i]
-  }`;
+  return `${roundDecimals(positiveBytes / Math.pow(k, i), dm)} ${sizes[i]}`;
 }
 
 export function pluralizeToken(token: string, times: number): string {
   return `${times} ${Math.abs(times) === 1 ? token : pluralize(token)}`;
 }
 
-export function formatDuration(duration: number, granularity = 0): string {
-  if (duration < 1000) {
-    return `${granularity ? duration.toFixed(granularity) : duration} ms`;
+export function formatDuration(ms: number, maxDecimals: number = 2): string {
+  if (ms < 1000) {
+    return `${Math.round(ms)} ms`;
   }
-  return `${(duration / 1000).toFixed(2)} s`;
+  return `${roundDecimals(ms / 1000, maxDecimals)} s`;
 }
 
 export function formatDate(date: Date): string {
@@ -84,7 +89,7 @@ export function truncateText(
   const {
     maxChars,
     position = 'end',
-    ellipsis = '...',
+    ellipsis = UNICODE_ELLIPSIS,
   } = typeof options === 'number' ? { maxChars: options } : options;
   if (text.length <= maxChars) {
     return text;
@@ -116,4 +121,46 @@ export function truncateDescription(text: string): string {
 
 export function truncateIssueMessage(text: string): string {
   return truncateText(text, MAX_ISSUE_MESSAGE_LENGTH);
+}
+
+export function truncateMultilineText(
+  text: string,
+  options?: { ellipsis?: string },
+): string {
+  const { ellipsis = `[${UNICODE_ELLIPSIS}]` } = options ?? {};
+
+  const crlfIndex = text.indexOf('\r\n');
+  const lfIndex = text.indexOf('\n');
+  const index = crlfIndex === -1 ? lfIndex : crlfIndex;
+
+  if (index < 0) {
+    return text;
+  }
+
+  const firstLine = text.slice(0, index);
+  if (text.slice(index).trim().length === 0) {
+    return firstLine;
+  }
+  return `${firstLine} ${ellipsis}`;
+}
+
+export function transformLines(
+  text: string,
+  fn: (line: string) => string,
+): string {
+  return text.split(/\r?\n/).map(fn).join('\n');
+}
+
+export function indentLines(text: string, identation: number): string {
+  return transformLines(text, line => `${' '.repeat(identation)}${line}`);
+}
+
+export function serializeCommandWithArgs({
+  command,
+  args,
+}: {
+  command: string;
+  args?: string[];
+}): string {
+  return [command, ...(args ?? [])].join(' ');
 }

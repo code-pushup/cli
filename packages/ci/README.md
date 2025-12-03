@@ -94,35 +94,26 @@ A `Comment` object has the following required properties:
 
 Optionally, you can override default options for further customization:
 
-| Property           | Type                      | Default                          | Description                                                                                                                                              |
-| :----------------- | :------------------------ | :------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `monorepo`         | `boolean \| MonorepoTool` | `false`                          | Enables [monorepo mode](#monorepo-mode)                                                                                                                  |
-| `parallel`         | `boolean \| number`       | `false`                          | Enables parallel execution in [monorepo mode](#monorepo-mode)                                                                                            |
-| `projects`         | `string[] \| null`        | `null`                           | Custom projects configuration for [monorepo mode](#monorepo-mode)                                                                                        |
-| `task`             | `string`                  | `'code-pushup'`                  | Name of command to run Code PushUp per project in [monorepo mode](#monorepo-mode)                                                                        |
-| `nxProjectsFilter` | `string \| string[]`      | `'--with-target={task}'`         | Arguments passed to [`nx show projects`](https://nx.dev/nx-api/nx/documents/show#projects), only relevant for Nx in [monorepo mode](#monorepo-mode) [^2] |
-| `directory`        | `string`                  | `process.cwd()`                  | Directory in which Code PushUp CLI should run                                                                                                            |
-| `config`           | `string \| null`          | `null` [^1]                      | Path to config file (`--config` option)                                                                                                                  |
-| `silent`           | `boolean`                 | `false`                          | Hides logs from CLI commands (errors will be printed)                                                                                                    |
-| `bin`              | `string`                  | `'npx --no-install code-pushup'` | Command for executing Code PushUp CLI                                                                                                                    |
-| `detectNewIssues`  | `boolean`                 | `true`                           | Toggles if new issues should be detected and returned in `newIssues` property                                                                            |
-| `logger`           | `Logger`                  | `console`                        | Logger for reporting progress and encountered problems                                                                                                   |
-| `skipComment`      | `boolean`                 | `false`                          | Toggles if comparison comment is posted to PR                                                                                                            |
-| `configPatterns`   | `ConfigPatterns \| null`  | `null`                           | Additional configuration which enables [faster CI runs](#faster-ci-runs-with-configpatterns)                                                             |
-| `searchCommits`    | `boolean \| number`       | `false`                          | If base branch has no cached report in portal, [extends search up to 100 recent commits](#search-latest-commits-for-previous-report)                     |
+| Property           | Type                       | Default                          | Description                                                                                                                                              |
+| :----------------- | :------------------------- | :------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `monorepo`         | `boolean \| MonorepoTool`  | `false`                          | Enables [monorepo mode](#monorepo-mode)                                                                                                                  |
+| `parallel`         | `boolean \| number`        | `false`                          | Enables parallel execution in [monorepo mode](#monorepo-mode)                                                                                            |
+| `projects`         | `string[] \| null`         | `null`                           | Custom projects configuration for [monorepo mode](#monorepo-mode)                                                                                        |
+| `task`             | `string`                   | `'code-pushup'`                  | Name of command to run Code PushUp per project in [monorepo mode](#monorepo-mode)                                                                        |
+| `nxProjectsFilter` | `string \| string[]`       | `'--with-target={task}'`         | Arguments passed to [`nx show projects`](https://nx.dev/nx-api/nx/documents/show#projects), only relevant for Nx in [monorepo mode](#monorepo-mode) [^2] |
+| `directory`        | `string`                   | `process.cwd()`                  | Directory in which Code PushUp CLI should run                                                                                                            |
+| `config`           | `string \| null`           | `null` [^1]                      | Path to config file (`--config` option)                                                                                                                  |
+| `silent`           | `boolean`                  | `false`                          | Hides logs from CLI commands (errors will be printed)                                                                                                    |
+| `bin`              | `string`                   | `'npx --no-install code-pushup'` | Command for executing Code PushUp CLI                                                                                                                    |
+| `detectNewIssues`  | `boolean`                  | `true`                           | Toggles if new issues should be detected and returned in `newIssues` property                                                                            |
+| `skipComment`      | `boolean`                  | `false`                          | Toggles if comparison comment is posted to PR                                                                                                            |
+| `configPatterns`   | `ConfigPatterns \| null`   | `null`                           | Additional configuration which enables [faster CI runs](#faster-ci-runs-with-configpatterns)                                                             |
+| `searchCommits`    | `boolean \| number`        | `false`                          | If base branch has no cached report in portal, [extends search up to 100 recent commits](#search-latest-commits-for-previous-report)                     |
+| `jobId`            | `string \| number \| null` | `null`                           | Differentiate PR comments (useful if multiple jobs run Code PushUp)                                                                                      |
 
 [^1]: By default, the `code-pushup.config` file is autodetected as described in [`@code-pushup/cli` docs](../cli/README.md#configuration).
 
 [^2]: The `{task}` pattern is replaced with the `task` value, so the default behaviour is to list projects using `npx nx show projects --with-target=code-pushup --json`. The `nxProjectsFilter` options gives Nx users the flexibility to filter projects in alternative ways supported by the Nx CLI (e.g. `--affected`, `--projects`, `--exclude`, `--type`) - refer to [options in Nx docs](https://nx.dev/nx-api/nx/documents/show#options) for details.
-
-The `Logger` object has the following required properties:
-
-| Property | Type                        | Description        |
-| :------- | :-------------------------- | :----------------- |
-| `error`  | `(message: string) => void` | Prints error log   |
-| `warn`   | `(message: string) => void` | Prints warning log |
-| `info`   | `(message: string) => void` | Prints info log    |
-| `debug`  | `(message: string) => void` | Prints debug log   |
 
 ## Standalone mode
 
@@ -279,9 +270,9 @@ await runInCI(refs, api, {
 
 ### Search latest commits for previous report
 
-When comparing reports, the report for the base branch can be cached. If a project has an `upload` configuration, then the Portal API is queried for a report matching that commit. If no such report was uploaded, then the report is looked up in CI artifacts (implemented in `downloadReportArtifact` in [`ProviderApiClient`](#provider-api-client)). If there's no report to be found, then the base branch is checked and the previous report is collected.
+When comparing reports, the report for the base branch can be cached. If a project has an `upload` configuration, then the Portal API is queried for a report matching that commit. If no such report was uploaded, then the report is looked up in CI artifacts (implemented by `downloadReportArtifact` in [`ProviderApiClient`](#provider-api-client)). If there's no report to be found, then the base branch is checked out and the previous report is collected.
 
-In some scenarios, there may not be a report for the latest commit in main branch, but some other recent commit may have a usable report - e.g. if `nxProjectsFilter` is used with `--affected` flag. In that case, the `searchCommits` option can be enabled. Then a limited number of recent commits in the main branch will be checked, but.
+In some scenarios, there may not be a report for the latest commit in main branch, but some other recent commit may have a usable report - e.g. if `nxProjectsFilter` is used with `--affected` flag. In that case, the `searchCommits` option can be enabled. Then a limited number of recent commits in the main branch will be checked.
 
 ```ts
 await runInCI(refs, api, {

@@ -1,36 +1,34 @@
-import type { GlobalOptions } from '@code-pushup/core';
 import type { CoreConfig } from '@code-pushup/models';
-import { coerceBooleanValue } from '@code-pushup/utils';
+import { coerceBooleanValue, logger } from '@code-pushup/utils';
 import type { FilterOptions } from './filter.model.js';
-import type { GeneralCliOptions } from './global.model';
+import type { GlobalOptions } from './global.model';
 
 /**
  *
- * | CP_VERBOSE value | CLI `--verbose` flag        | Effect     |
- * |------------------|-----------------------------|------------|
- * | true             | Not provided                | enabled    |
- * | false            | Not provided                | disabled   |
- * | Not provided     | Not provided                | disabled   |
- * | Not provided     | Explicitly set (true)       | enabled    |
- * | true             | Explicitly set (true)       | enabled    |
- * | false            | Explicitly set (true)       | enabled    |
- * | true             | Explicitly negated (false)  | disabled   |
- * | false            | Explicitly negated (false)  | disabled   |
+ * | CP_VERBOSE value | CLI `--verbose` flag | Effect |
+ * |------------------|----------------------|--------|
+ * | true             | -                    | true   |
+ * | false            | -                    | false  |
+ * | -                | -                    | false  |
+ * | -                | true                 | true   |
+ * | -                | false                | false  |
+ * | true             | true                 | true   |
+ * | false            | true                 | true   |
+ * | true             | false                | false  |
+ * | false            | false                | false  |
  *
  * @param originalProcessArgs
  */
 export function setVerboseMiddleware<
-  T extends GeneralCliOptions & CoreConfig & FilterOptions & GlobalOptions,
+  T extends GlobalOptions & CoreConfig & FilterOptions,
 >(originalProcessArgs: T): T {
-  const envVerbose = coerceBooleanValue(process.env['CP_VERBOSE']);
   const cliVerbose = coerceBooleanValue(originalProcessArgs.verbose);
-  const verboseEffect = cliVerbose ?? envVerbose ?? false;
-
-  // eslint-disable-next-line functional/immutable-data
-  process.env['CP_VERBOSE'] = `${verboseEffect}`;
+  if (cliVerbose != null) {
+    logger.setVerbose(cliVerbose);
+  }
 
   return {
     ...originalProcessArgs,
-    verbose: verboseEffect,
+    verbose: logger.isVerbose(),
   };
 }

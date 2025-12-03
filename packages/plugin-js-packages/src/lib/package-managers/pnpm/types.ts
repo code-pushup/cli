@@ -20,8 +20,9 @@ export type PnpmAuditResultJson = {
 
 // Subset of PNPM outdated JSON type
 export type PnpmVersionOverview = {
-  current: string;
+  current?: string;
   latest: string;
+  wanted: string;
   dependencyType: DependencyGroupLong;
 };
 export type PnpmOutdatedResultJson = Record<string, PnpmVersionOverview>;

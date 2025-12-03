@@ -20,10 +20,14 @@
     "allowSyntheticDefaultImports": true,
     "verbatimModuleSyntax": true,
     "paths": {
+      "@code-pushup/axe-plugin": ["packages/plugin-axe/src/index.ts"],
       "@code-pushup/ci": ["packages/ci/src/index.ts"],
       "@code-pushup/cli": ["packages/cli/src/index.ts"],
       "@code-pushup/core": ["packages/core/src/index.ts"],
       "@code-pushup/coverage-plugin": ["packages/plugin-coverage/src/index.ts"],
+      "@code-pushup/eslint-formatter-multi": [
+        "tools/eslint-formatter-multi/src/index.ts"
+      ],
       "@code-pushup/eslint-plugin": ["packages/plugin-eslint/src/index.ts"],
       "@code-pushup/js-packages-plugin": [
         "packages/plugin-js-packages/src/index.ts"
@@ -36,6 +40,9 @@
       "@code-pushup/nx-plugin": ["packages/nx-plugin/src/index.ts"],
       "@code-pushup/test-nx-utils": ["testing/test-nx-utils/src/index.ts"],
       "@code-pushup/test-setup": ["testing/test-setup/src/index.ts"],
+      "@code-pushup/test-setup-config": [
+        "testing/test-setup-config/src/index.ts"
+      ],
       "@code-pushup/test-utils": ["testing/test-utils/src/index.ts"],
       "@code-pushup/typescript-plugin": [
         "packages/plugin-typescript/src/index.ts"

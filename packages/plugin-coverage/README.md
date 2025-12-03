@@ -128,7 +128,7 @@ The plugin accepts the following parameters:
   - For a single project, providing paths to results as strings is enough.
   - If you have a monorepo, both path to results (`resultsPath`) and path from the root to project the results belong to (`pathToProject`) need to be provided for the LCOV format. For Nx monorepos, you can use our helper function `getNxCoveragePaths` to get the path information automatically.
 - (optional) `coverageToolCommand`: If you wish to run your coverage tool to generate the results first, you may define it here.
-- (optional) `perfectScoreThreshold`: If your coverage goal is not 100%, you may define it here in range 0-1. Any score above the defined threshold will be given the perfect score. The value will stay unaffected.
+- (optional) `scoreTargets`: If your coverage goal is not 100%, you may define it here in range 0-1. Any score above the defined threshold will be given the perfect score. The value will stay unaffected.
 
 ### Audits and group
 

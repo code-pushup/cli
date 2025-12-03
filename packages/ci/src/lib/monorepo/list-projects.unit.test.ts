@@ -3,8 +3,8 @@ import path from 'node:path';
 import type { PackageJson } from 'type-fest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
-import { DEFAULT_SETTINGS } from '../constants.js';
 import type { Settings } from '../models.js';
+import { DEFAULT_SETTINGS } from '../settings.js';
 import {
   type MonorepoProjects,
   listMonorepoProjects,
@@ -19,12 +19,6 @@ describe('listMonorepoProjects', () => {
     nxProjectsFilter: '--with-target={task}',
     directory: MEMFS_VOLUME,
     bin: 'npx --no-install code-pushup',
-    logger: {
-      error: vi.fn(),
-      warn: vi.fn(),
-      info: vi.fn(),
-      debug: vi.fn(),
-    },
   };
 
   const pkgJsonContent = (content: PackageJson): string =>
@@ -70,7 +64,6 @@ describe('listMonorepoProjects', () => {
       command: 'npx',
       args: ['nx', 'show', 'projects', '--with-target=code-pushup', '--json'],
       cwd: process.cwd(),
-      observer: expect.any(Object),
     });
   });
 
@@ -93,22 +86,22 @@ describe('listMonorepoProjects', () => {
         }),
         'backend/api/package.json': pkgJsonContent({
           name: 'api',
-          scripts: { 'code-pushup': 'code-pushup --no-progress' },
+          scripts: { 'code-pushup': 'code-pushup' },
         }),
         'backend/auth/package.json': pkgJsonContent({
           name: 'auth',
-          scripts: { 'code-pushup': 'code-pushup --no-progress' },
+          scripts: { 'code-pushup': 'code-pushup' },
         }),
         'e2e/package.json': pkgJsonContent({
           name: 'e2e',
         }),
         'frontend/cms/package.json': pkgJsonContent({
           name: 'cms',
-          scripts: { 'code-pushup': 'code-pushup --no-progress' },
+          scripts: { 'code-pushup': 'code-pushup' },
         }),
         'frontend/web/package.json': pkgJsonContent({
           name: 'web',
-          scripts: { 'code-pushup': 'code-pushup --no-progress' },
+          scripts: { 'code-pushup': 'code-pushup' },
         }),
       },
       MEMFS_VOLUME,

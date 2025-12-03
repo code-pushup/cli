@@ -15,6 +15,7 @@ import {
   runMergeDiffs,
 } from './cli/index.js';
 import { commentOnPR } from './comment.js';
+import { logDebug, logInfo } from './log.js';
 import type {
   GitBranch,
   MonorepoRunResult,
@@ -35,6 +36,7 @@ import {
   type RunEnv,
   checkPrintConfig,
   configFromPatterns,
+  findNewIssues,
   hasDefaultPersistFormats,
   loadCachedBaseReport,
   prepareReportFilesToCompare,
@@ -49,9 +51,8 @@ export async function runInMonorepoMode(
   env: RunEnv,
 ): Promise<MonorepoRunResult> {
   const { api, settings } = env;
-  const { logger } = settings;
 
-  logger.info('Running Code PushUp in monorepo mode');
+  logInfo('Running Code PushUp in monorepo mode');
 
   const { projects, runManyCommand } = await listMonorepoProjects(settings);
   const projectResults = runManyCommand
@@ -70,7 +71,7 @@ export async function runInMonorepoMode(
     diffJsonPaths,
     createCommandContext(settings, projects[0]),
   );
-  logger.debug(`Merged ${diffJsonPaths.length} diffs into ${tmpDiffPath}`);
+  logDebug(`Merged ${diffJsonPaths.length} diffs into ${tmpDiffPath}`);
   const { md: diffPath } = await saveOutputFiles({
     project: null,
     type: 'comparison',
@@ -80,7 +81,7 @@ export async function runInMonorepoMode(
 
   const commentId = settings.skipComment
     ? null
-    : await commentOnPR(diffPath, api, logger);
+    : await commentOnPR(diffPath, api, settings);
 
   return {
     mode: 'monorepo',
@@ -104,9 +105,7 @@ function runProjectsIndividually(
   projects: ProjectConfig[],
   env: RunEnv,
 ): Promise<ProjectRunResult[]> {
-  env.settings.logger.info(
-    `Running on ${projects.length} projects individually`,
-  );
+  logInfo(`Running on ${projects.length} projects individually`);
   return asyncSequential(projects, project => runOnProject(project, env));
 }
 
@@ -119,9 +118,8 @@ async function runProjectsInBulk(
     refs: { base },
     settings,
   } = env;
-  const { logger } = settings;
 
-  logger.info(
+  logInfo(
     `Running on ${projects.length} projects in bulk (parallel: ${settings.parallel})`,
   );
 
@@ -157,7 +155,7 @@ async function loadProjectEnvs(
   projectEnvs: ProjectEnv[];
   hasFormats: boolean;
 }> {
-  const { logger, configPatterns } = settings;
+  const { configPatterns } = settings;
 
   const projectEnvs: ProjectEnv[] = configPatterns
     ? projects.map(
@@ -175,7 +173,7 @@ async function loadProjectEnvs(
 
   const hasFormats = allProjectsHaveDefaultPersistFormats(projectEnvs);
 
-  logger.debug(
+  logDebug(
     [
       configPatterns
         ? `Parsed ${projectEnvs.length} persist and upload configs by interpolating configPatterns option for each project.`
@@ -213,7 +211,7 @@ async function compareProjectsInBulk(
   const uncachedProjectReports = projectReportsWithCache.filter(
     ({ prevReport }) => !prevReport,
   );
-  env.settings.logger.info(
+  logInfo(
     `${currProjectReports.length - uncachedProjectReports.length} out of ${currProjectReports.length} projects loaded previous report from artifact cache`,
   );
 
@@ -251,11 +249,20 @@ async function compareManyProjects(
     hasFormats: allProjectsHaveDefaultPersistFormats(projectsToCompare),
   });
 
+  const projectsNewIssues = env.settings.detectNewIssues
+    ? Object.fromEntries(
+        await asyncSequential(projectsToCompare, async args => [
+          args.project.name,
+          await findNewIssues(args),
+        ]),
+      )
+    : {};
+
   return Object.fromEntries(
     await Promise.all(
       projectsToCompare.map(async args => [
         args.project.name,
-        await saveDiffFiles(args),
+        await saveDiffFiles(args, projectsNewIssues[args.project.name]),
       ]),
     ),
   );
@@ -282,7 +289,7 @@ async function collectPreviousReports(
   env: RunEnv,
 ): Promise<Record<string, ReportData<'previous'>>> {
   const { settings } = env;
-  const { logger, configPatterns } = settings;
+  const { configPatterns } = settings;
 
   if (uncachedProjectReports.length === 0) {
     return {};
@@ -307,10 +314,10 @@ async function collectPreviousReports(
       .map(({ project }) => project.name)
       .filter(name => !onlyProjects.includes(name));
     if (invalidProjects.length > 0) {
-      logger.debug(
+      logDebug(
         `Printing config failed for ${invalidProjects.length} projects - ${invalidProjects.join(', ')}`,
       );
-      logger.info(
+      logInfo(
         `Skipping ${invalidProjects.length} projects which aren't configured in base branch ${base.ref}`,
       );
     }
@@ -318,7 +325,7 @@ async function collectPreviousReports(
     if (onlyProjects.length > 0) {
       const hasFormats =
         allProjectsHaveDefaultPersistFormats(validProjectConfigs);
-      logger.info(
+      logInfo(
         `Collecting previous reports for ${onlyProjects.length} projects`,
       );
       await collectMany(runManyCommand, env, { hasFormats, onlyProjects });
@@ -370,9 +377,7 @@ async function collectMany(
   const countText = onlyProjects
     ? `${onlyProjects.length} previous`
     : 'all current';
-  settings.logger.debug(
-    `Collected ${countText} reports using command \`${command}\``,
-  );
+  logDebug(`Collected ${countText} reports using command \`${command}\``);
 }
 
 async function compareMany(
@@ -392,7 +397,7 @@ async function compareMany(
 
   await runCompare(ctx, { hasFormats });
 
-  settings.logger.debug('Compared all project reports');
+  logDebug('Compared all project reports');
 }
 
 export function allProjectsHaveDefaultPersistFormats(

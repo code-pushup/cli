@@ -1,51 +1,42 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
   type AuditOutputs,
   type PluginConfig,
+  type RunnerArgs,
   type RunnerConfig,
   type RunnerFunction,
   auditOutputsSchema,
+  validate,
 } from '@code-pushup/models';
 import {
   calcDuration,
   ensureDirectoryExists,
   executeProcess,
   fileExists,
-  isVerbose,
   readJsonFile,
   removeDirectoryIfExists,
-  ui,
+  runnerArgsToEnv,
 } from '@code-pushup/utils';
 import { normalizeAuditOutputs } from '../normalize.js';
 
 export type RunnerResult = {
   date: string;
   duration: number;
-  audits: unknown;
-};
-
-export type ValidatedRunnerResult = Omit<RunnerResult, 'audits'> & {
   audits: AuditOutputs;
 };
 
 export async function executeRunnerConfig(
-  cfg: RunnerConfig,
-): Promise<RunnerResult> {
-  const { args, command, outputFile, outputTransform } = cfg;
+  config: RunnerConfig,
+  args: RunnerArgs,
+): Promise<unknown> {
+  const { outputFile, outputTransform } = config;
 
-  const { duration, date } = await executeProcess({
-    command,
-    args,
-    observer: {
-      onStdout: stdout => {
-        if (isVerbose()) {
-          ui().logger.log(stdout);
-        }
-      },
-      onStderr: stderr => ui().logger.error(stderr),
-    },
+  await executeProcess({
+    command: config.command,
+    args: config.args,
+    env: { ...process.env, ...runnerArgsToEnv(args) },
   });
 
   // read process output from the file system and parse it
@@ -54,31 +45,15 @@ export async function executeRunnerConfig(
   await removeDirectoryIfExists(path.dirname(outputFile));
 
   // transform unknownAuditOutputs to auditOutputs
-  const audits = outputTransform ? await outputTransform(outputs) : outputs;
-
-  // create runner result
-  return {
-    duration,
-    date,
-    audits,
-  };
+  return outputTransform ? await outputTransform(outputs) : outputs;
 }
 
 export async function executeRunnerFunction(
   runner: RunnerFunction,
-): Promise<RunnerResult> {
-  const date = new Date().toISOString();
-  const start = performance.now();
-
+  args: RunnerArgs,
+): Promise<unknown> {
   // execute plugin runner
-  const audits = await runner();
-
-  // create runner result
-  return {
-    date,
-    duration: calcDuration(start),
-    audits,
-  };
+  return runner(args);
 }
 
 /**
@@ -87,7 +62,7 @@ export async function executeRunnerFunction(
 export class AuditOutputsMissingAuditError extends Error {
   constructor(auditSlug: string) {
     super(
-      `Audit metadata not present in plugin config. Missing slug: ${bold(
+      `Audit metadata not present in plugin config. Missing slug: ${ansis.bold(
         auditSlug,
       )}`,
     );
@@ -96,23 +71,26 @@ export class AuditOutputsMissingAuditError extends Error {
 
 export async function executePluginRunner(
   pluginConfig: Pick<PluginConfig, 'audits' | 'runner'>,
-): Promise<Omit<RunnerResult, 'audits'> & { audits: AuditOutputs }> {
+  args: RunnerArgs,
+): Promise<RunnerResult> {
   const { audits: pluginConfigAudits, runner } = pluginConfig;
-  const runnerResult: RunnerResult =
-    typeof runner === 'object'
-      ? await executeRunnerConfig(runner)
-      : await executeRunnerFunction(runner);
-  const { audits: unvalidatedAuditOutputs, ...executionMeta } = runnerResult;
 
-  const result = auditOutputsSchema.safeParse(unvalidatedAuditOutputs);
-  if (!result.success) {
-    throw new Error(`Audit output is invalid: ${result.error.message}`);
-  }
-  const auditOutputs = result.data;
+  const date = new Date().toISOString();
+  const start = performance.now();
+
+  const unvalidatedAuditOutputs =
+    typeof runner === 'object'
+      ? await executeRunnerConfig(runner, args)
+      : await executeRunnerFunction(runner, args);
+
+  const duration = calcDuration(start);
+
+  const auditOutputs = validate(auditOutputsSchema, unvalidatedAuditOutputs);
   auditOutputsCorrelateWithPluginOutput(auditOutputs, pluginConfigAudits);
 
   return {
-    ...executionMeta,
+    date,
+    duration,
     audits: await normalizeAuditOutputs(auditOutputs),
   };
 }
@@ -131,7 +109,7 @@ function auditOutputsCorrelateWithPluginOutput(
   });
 }
 
-export function getAuditOutputsPath(pluginSlug: string, outputDir: string) {
+export function getRunnerOutputsPath(pluginSlug: string, outputDir: string) {
   return path.join(outputDir, pluginSlug, 'runner-output.json');
 }
 
@@ -144,20 +122,18 @@ export function getAuditOutputsPath(pluginSlug: string, outputDir: string) {
 export async function writeRunnerResults(
   pluginSlug: string,
   outputDir: string,
-  runnerResult: ValidatedRunnerResult,
+  runnerResult: RunnerResult,
 ): Promise<void> {
-  await ensureDirectoryExists(outputDir);
-  await writeFile(
-    getAuditOutputsPath(pluginSlug, outputDir),
-    JSON.stringify(runnerResult.audits, null, 2),
-  );
+  const cacheFilePath = getRunnerOutputsPath(pluginSlug, outputDir);
+  await ensureDirectoryExists(path.dirname(cacheFilePath));
+  await writeFile(cacheFilePath, JSON.stringify(runnerResult.audits, null, 2));
 }
 
 export async function readRunnerResults(
   pluginSlug: string,
   outputDir: string,
-): Promise<ValidatedRunnerResult | null> {
-  const auditOutputsPath = getAuditOutputsPath(pluginSlug, outputDir);
+): Promise<RunnerResult | null> {
+  const auditOutputsPath = getRunnerOutputsPath(pluginSlug, outputDir);
   if (await fileExists(auditOutputsPath)) {
     const cachedResult = await readJsonFile<AuditOutputs>(auditOutputsPath);
 

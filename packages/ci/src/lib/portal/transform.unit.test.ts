@@ -25,7 +25,6 @@ describe('transformGQLReport', () => {
       {
         slug: 'code-style',
         title: 'Code style',
-        isBinary: false,
         score: 0.5,
         refs: [
           {
@@ -41,7 +40,6 @@ describe('transformGQLReport', () => {
       {
         slug: 'bundle-size',
         title: 'Bundle size',
-        isBinary: false,
         score: 0.75,
         refs: [
           {

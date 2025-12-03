@@ -1,12 +1,13 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import type { IcuMessage } from 'lighthouse';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import {
   formatBytes,
   formatDuration,
   html,
+  logger,
+  roundDecimals,
   truncateText,
-  ui,
 } from '@code-pushup/utils';
 
 export type PrimitiveItemValue = string | number | boolean;
@@ -72,26 +73,23 @@ export function formatTableItemPropertyValue(
       return html.link(url);
     case 'timespanMs':
     case 'ms':
-      return formatDuration(Number(parsedItemValue));
+      return formatDuration(Number(parsedItemValue), 3);
     case 'node':
       return parseNodeValue(itemValue as Details.NodeValue);
     case 'source-location':
       return truncateText(String(parsedItemValue), 200);
     case 'numeric':
       const num = Number(parsedItemValue);
-      if (num.toFixed(3).toString().endsWith('.000')) {
-        return String(num);
-      }
-      return String(num.toFixed(3));
+      return roundDecimals(num, 3).toString();
     case 'text':
       return truncateText(String(parsedItemValue), 500);
     case 'multi': // @TODO
       // @TODO log verbose first, then implement data type
-      ui().logger.info(`Format type ${bold('multi')} is not implemented`);
+      logger.debug(`Format type ${ansis.bold('multi')} is not implemented`);
       return '';
     case 'thumbnail': // @TODO
       // @TODO log verbose first, then implement data type
-      ui().logger.info(`Format type ${bold('thumbnail')} is not implemented`);
+      logger.debug(`Format type ${ansis.bold('thumbnail')} is not implemented`);
       return '';
   }
   /* eslint-enable @typescript-eslint/no-magic-numbers */
@@ -147,13 +145,11 @@ export function parseTableItemPropertyValue(
       return String(url);
     case 'subitems':
       // @TODO log verbose first, then implement data type
-      ui().logger.info(`Value type ${bold('subitems')} is not implemented`);
+      logger.debug(`Value type ${ansis.bold('subitems')} is not implemented`);
       return '';
     case 'debugdata':
       // @TODO log verbose first, then implement data type
-      ui().logger.info(`Value type ${bold('debugdata')} is not implemented`, {
-        silent: true,
-      });
+      logger.debug(`Value type ${ansis.bold('debugdata')} is not implemented`);
       return '';
   }
   // IcuMessage

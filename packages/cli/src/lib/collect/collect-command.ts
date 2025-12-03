@@ -1,10 +1,14 @@
-import { bold, gray } from 'ansis';
+import ansis from 'ansis';
 import type { ArgumentsCamelCase, CommandModule } from 'yargs';
 import {
   type CollectAndPersistReportsOptions,
   collectAndPersistReports,
 } from '@code-pushup/core';
-import { link, ui } from '@code-pushup/utils';
+import {
+  formatAsciiLink,
+  formatAsciiSticker,
+  logger,
+} from '@code-pushup/utils';
 import { CLI_NAME } from '../constants.js';
 import {
   collectSuccessfulLog,
@@ -18,8 +22,8 @@ export function yargsCollectCommandObject(): CommandModule {
     describe: 'Run Plugins and collect results',
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
       const options = args as unknown as CollectAndPersistReportsOptions;
-      ui().logger.log(bold(CLI_NAME));
-      ui().logger.info(gray(`Run ${command}...`));
+      logger.info(ansis.bold(CLI_NAME));
+      logger.debug(`Running ${ansis.bold(command)} command`);
 
       await collectAndPersistReports(options);
       collectSuccessfulLog();
@@ -40,27 +44,20 @@ export function yargsCollectCommandObject(): CommandModule {
 }
 
 export function renderUploadAutorunHint(): void {
-  ui()
-    .sticker()
-    .add(bold.gray('💡 Visualize your reports'))
-    .add('')
-    .add(
-      `${gray('❯')} npx code-pushup upload - ${gray(
+  logger.info(
+    formatAsciiSticker([
+      ansis.bold.gray('💡 Visualize your reports'),
+      '',
+      `${ansis.gray('❯')} npx code-pushup upload - ${ansis.gray(
         'Run upload to upload the created report to the server',
       )}`,
-    )
-    .add(
-      `  ${link(
+      `  ${formatAsciiLink(
         'https://github.com/code-pushup/cli/tree/main/packages/cli#upload-command',
       )}`,
-    )
-    .add(
-      `${gray('❯')} npx code-pushup autorun - ${gray('Run collect & upload')}`,
-    )
-    .add(
-      `  ${link(
+      `${ansis.gray('❯')} npx code-pushup autorun - ${ansis.gray('Run collect & upload')}`,
+      `  ${formatAsciiLink(
         'https://github.com/code-pushup/cli/tree/main/packages/cli#autorun-command',
       )}`,
-    )
-    .render();
+    ]),
+  );
 }

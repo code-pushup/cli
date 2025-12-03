@@ -2,6 +2,7 @@ import { describe, expect, vi } from 'vitest';
 import { autoloadRc, readRcByPath } from '@code-pushup/core';
 import {
   coreConfigMiddleware,
+  normalizeBooleanWithNegation,
   normalizeFormats,
 } from './core-config.middleware.js';
 import type { CoreConfigCliOptions } from './core-config.model.js';
@@ -17,6 +18,36 @@ vi.mock('@code-pushup/core', async () => {
     readRcByPath: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
     autoloadRc: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
   };
+});
+
+describe('normalizeBooleanWithNegation', () => {
+  it('should return true when CLI property is true', () => {
+    expect(normalizeBooleanWithNegation('report', { report: true }, {})).toBe(
+      true,
+    );
+  });
+
+  it('should return false when CLI property is false', () => {
+    expect(normalizeBooleanWithNegation('report', { report: false }, {})).toBe(
+      false,
+    );
+  });
+
+  it('should return false when no-property exists in CLI persist', () => {
+    expect(
+      normalizeBooleanWithNegation('report', { 'no-report': true }, {}),
+    ).toBe(false);
+  });
+
+  it('should fallback to RC persist when no CLI property', () => {
+    expect(normalizeBooleanWithNegation('report', {}, { report: false })).toBe(
+      false,
+    );
+  });
+
+  it('should return default true when no property anywhere', () => {
+    expect(normalizeBooleanWithNegation('report', {}, {})).toBe(true);
+  });
 });
 
 describe('normalizeFormats', () => {
