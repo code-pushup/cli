@@ -8,7 +8,7 @@ This package provides a TypeScript compiler transformer that automatically adds 
 
 ## How It Works
 
-The transformer hooks into the TypeScript compilation process using `ts-patch` and automatically adds JSDoc comments above type definitions. Each comment includes:
+The [TS transformer](https://github.com/itsdouges/typescript-transformer-handbook) hooks into the TypeScript compilation process using `ts-patch` and automatically adds JSDoc comments above type definitions. Each comment includes:
 
 - The type name
 - A description explaining the type is derived from a Zod schema
