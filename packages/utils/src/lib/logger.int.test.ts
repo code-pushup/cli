@@ -51,6 +51,7 @@ describe('Logger', () => {
     vi.stubEnv('CI', 'false');
     vi.stubEnv('GITHUB_ACTIONS', 'false');
     vi.stubEnv('GITLAB_CI', 'false');
+    vi.stubEnv('NX_TASK_TARGET_TARGET', '');
   });
 
   afterAll(() => {
@@ -246,6 +247,28 @@ ${ansis.cyan('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%')}`
 │ Skipping unknown rule "deprecation/deprecation"
 └ ESLint reported 4 errors and 11 warnings (1.23 s)
 ::endgroup::
+
+`);
+    });
+
+    it('should NOT use native GitHub Actions log groups if run within Nx target', async () => {
+      vi.stubEnv('CI', 'true');
+      vi.stubEnv('GITHUB_ACTIONS', 'true');
+      vi.stubEnv('NX_TASK_TARGET_TARGET', 'code-pushup');
+      performanceNowSpy.mockReturnValueOnce(0).mockReturnValueOnce(1234); // group duration: 1.23 s
+      const logger = new Logger();
+
+      await logger.group('Running plugin "ESLint"', async () => {
+        logger.info('$ npx eslint . --format=json');
+        logger.warn('Skipping unknown rule "deprecation/deprecation"');
+        return 'ESLint reported 4 errors and 11 warnings';
+      });
+
+      expect(ansis.strip(stdout)).toBe(`
+❯ Running plugin "ESLint"
+│ $ npx eslint . --format=json
+│ Skipping unknown rule "deprecation/deprecation"
+└ ESLint reported 4 errors and 11 warnings (1.23 s)
 
 `);
     });

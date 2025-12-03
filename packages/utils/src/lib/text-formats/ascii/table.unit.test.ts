@@ -456,4 +456,67 @@ Code coverage:
 `.trim(),
     );
   });
+
+  it('should wrap ansi styles correctly', () => {
+    const output = formatAsciiTable(
+      {
+        rows: [
+          [''],
+          [ansis.bold('💡 Integrate the Portal')],
+          [''],
+          [`${ansis.gray('❯')} Configure upload in code-pushup.config.ts`],
+          [
+            ansis.underline(
+              'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
+            ),
+          ],
+          [
+            `${ansis.gray('❯')} npx code-pushup upload${ansis.gray(' - Upload previously collected report to the Portal')}`,
+          ],
+          [
+            ansis.underline(
+              'https://github.com/code-pushup/cli/tree/main/packages/cli#upload-command',
+            ),
+          ],
+          [''],
+        ],
+      },
+      { padding: 4 },
+    );
+
+    expect(ansis.strip(output)).toBe(
+      `
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│    💡 Integrate the Portal                                                   │
+│                                                                              │
+│    ❯ Configure upload in code-pushup.config.ts                               │
+│    https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#po    │
+│    rtal-integration                                                          │
+│    ❯ npx code-pushup upload - Upload previously collected report to the      │
+│    Portal                                                                    │
+│    https://github.com/code-pushup/cli/tree/main/packages/cli#upload-comma    │
+│    nd                                                                        │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+`.trim(),
+    );
+    expect(output).toBe(
+      `
+${ansis.dim('┌──────────────────────────────────────────────────────────────────────────────┐')}
+${ansis.dim('│')}                                                                              ${ansis.dim('│')}
+${ansis.dim('│')}    ${ansis.bold('💡 Integrate the Portal')}                                                   ${ansis.dim('│')}
+${ansis.dim('│')}                                                                              ${ansis.dim('│')}
+${ansis.dim('│')}    ${ansis.gray('❯')} Configure upload in code-pushup.config.ts                               ${ansis.dim('│')}
+${ansis.dim('│')}    ${ansis.underline('https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#po')}    ${ansis.dim('│')}
+${ansis.dim('│')}    ${ansis.underline('rtal-integration')}                                                          ${ansis.dim('│')}
+${ansis.dim('│')}    ${ansis.gray('❯')} npx code-pushup upload${ansis.gray(' - Upload previously collected report to the')}      ${ansis.dim('│')}
+${ansis.dim('│')}    ${ansis.gray('Portal')}                                                                    ${ansis.dim('│')}
+${ansis.dim('│')}    ${ansis.underline('https://github.com/code-pushup/cli/tree/main/packages/cli#upload-comma')}    ${ansis.dim('│')}
+${ansis.dim('│')}    ${ansis.underline('nd')}                                                                        ${ansis.dim('│')}
+${ansis.dim('│')}                                                                              ${ansis.dim('│')}
+${ansis.dim('└──────────────────────────────────────────────────────────────────────────────┘')}
+`.trim(),
+    );
+  });
 });

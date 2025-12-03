@@ -1,3 +1,14 @@
+## 0.92.1 (2025-12-03)
+
+### 🩹 Fixes
+
+- **utils:** prevent nested github actions log groups when run within nx target ([cb9ffd52](https://github.com/code-pushup/cli/commit/cb9ffd52))
+- **utils:** fix long word wrapping with ansis styles in tables ([f20b3b87](https://github.com/code-pushup/cli/commit/f20b3b87))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.92.0 (2025-12-02)
 
 ### 🚀 Features
