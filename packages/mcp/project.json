@@ -1,0 +1,58 @@
+{
+  "name": "mcp",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/mcp/src",
+  "projectType": "library",
+  "targets": {
+    "build": {},
+    "lint": {},
+    "perf": {
+      "command": "npx tsx --tsconfig=../tsconfig.perf.json",
+      "options": {
+        "cwd": "./packages/mcp/perf"
+      }
+    },
+    "perf:list": {
+      "command": "ls -l | grep \"^d\" | awk '{print $9}'",
+      "options": {
+        "cwd": "./packages/mcp/perf"
+      }
+    },
+    "unit-test": {},
+    "int-test": {},
+    "code-pushup": {},
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {},
+    "code-pushup-typescript": {},
+    "code-pushup-jsdocs": {},
+    "demo-logger": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsx --tsconfig=tsconfig.base.json packages/mcp/mocks/logger-demo.ts"
+      },
+      "configurations": {
+        "ci": {
+          "env": {
+            "CI": "true"
+          }
+        },
+        "verbose": {
+          "args": ["--verbose"]
+        },
+        "error-config": {
+          "args": ["--error=config"]
+        },
+        "error-plugin": {
+          "args": ["--error=plugin"]
+        },
+        "error-upload": {
+          "args": ["--error=upload"]
+        },
+        "custom-cwd": {
+          "args": ["--cwd=src"]
+        }
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:util", "publishable"]
+}

@@ -1,0 +1,34 @@
+{
+  "name": "@code-pushup/mcp",
+  "version": "0.92.0",
+  "description": "MCP server utilizing the Code PushUp CLI and for fast feedback plugins directly",
+  "license": "MIT",
+  "homepage": "https://github.com/code-pushup/cli/tree/main/packages/mcp#readme",
+  "bugs": {
+    "url": "https://github.com/code-pushup/cli/issues?q=is%3Aissue%20state%3Aopen%20type%3ABug%20label%3A\"🧩%20mcp\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code-pushup/cli.git",
+    "directory": "packages/mcp"
+  },
+  "keywords": [
+    "MCP",
+    "Code PushUp",
+    "developer tools",
+    "conformance",
+    "ai"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=17.0.0"
+  },
+  "dependencies": {},
+  "files": [
+    "src",
+    "!**/*.tsbuildinfo"
+  ]
+}
