@@ -1,0 +1,26 @@
+{
+  "name": "@code-pushup/tools-codecov",
+  "version": "0.0.0",
+  "private": false,
+  "type": "module",
+  "main": "./src/bin.js",
+  "types": "./src/bin.d.ts",
+  "engines": {
+    "node": ">=17.0.0"
+  },
+  "author": "Michael Hladky",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/code-pushup/cli.git",
+    "directory": "tools/codecov"
+  },
+  "files": [
+    "src/*",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {}
+}

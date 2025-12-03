@@ -1,0 +1,11 @@
+{
+  "name": "tools-codecov",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/codecov/src",
+  "projectType": "library",
+  "tags": ["scope:tooling", "type:util"],
+  "targets": {
+    "lint": {},
+    "unit-test": {}
+  }
+}
