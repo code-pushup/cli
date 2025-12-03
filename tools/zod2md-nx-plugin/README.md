@@ -1,6 +1,6 @@
 # @code-pushup/zod2md-nx-plugin
 
-The Nx Plugin for [zod2md](https://github.com/code-pushup/zod2md), a tool for generating documentation from Zod schemas.
+The Nx Plugin for [zod2md](https://github.com/matejchalk/zod2md), a tool for generating documentation from Zod schemas.
 
 Why should you use this plugin?
 
