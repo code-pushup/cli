@@ -212,12 +212,16 @@ export class Logger {
    * @param title Display text used as pending message.
    * @param worker Asynchronous implementation. Returned promise determines spinner status and final message. Support for inner logs has some limitations (described above).
    */
-  async task(title: string, worker: () => Promise<string>): Promise<void> {
-    await this.#spinner(worker, {
+  async task<T = undefined>(
+    title: string,
+    worker: () => Promise<string | { message: string; result: T }>,
+  ): Promise<T> {
+    const result = await this.#spinner(worker, {
       pending: title,
-      success: value => value,
+      success: value => (typeof value === 'string' ? value : value.message),
       failure: error => `${title} → ${ansis.red(String(error))}`,
     });
+    return typeof result === 'object' ? result.result : (undefined as T);
   }
 
   /**

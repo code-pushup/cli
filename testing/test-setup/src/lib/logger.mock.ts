@@ -35,7 +35,8 @@ beforeAll(async () => {
         return typeof value === 'object' ? value.result : undefined;
       }),
       vi.spyOn(logger, 'task').mockImplementation(async (_, worker) => {
-        await worker();
+        const value = await worker();
+        return typeof value === 'object' ? value.result : undefined;
       }),
       vi.spyOn(logger, 'command').mockImplementation((_, worker) => worker()),
     );
