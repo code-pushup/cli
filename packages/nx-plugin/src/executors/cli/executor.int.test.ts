@@ -27,11 +27,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should normalize context, parse CLI options and execute command', async () => {
-    expect(process.env).toStrictEqual(
-      expect.not.objectContaining({
-        CP_VERBOSE: 'true',
-      }),
-    );
+    expect(process.env).not.toHaveProperty('CP_VERBOSE', 'true');
     const output = await runAutorunExecutor(
       { verbose: true },
       executorContext('utils'),
