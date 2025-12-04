@@ -1,4 +1,3 @@
-import ansis from 'ansis';
 import type { CommandModule } from 'yargs';
 import { type HistoryOptions, history } from '@code-pushup/core';
 import {
@@ -9,16 +8,15 @@ import {
   logger,
   safeCheckout,
 } from '@code-pushup/utils';
-import { CLI_NAME } from '../constants.js';
 import { yargsFilterOptionsDefinition } from '../implementation/filter.options.js';
+import { printCliCommand } from '../implementation/logging.js';
 import type { HistoryCliOptions } from './history.model.js';
 import { yargsHistoryOptionsDefinition } from './history.options.js';
 import { normalizeHashOptions } from './utils.js';
 
 const command = 'history';
 async function handler(args: unknown) {
-  logger.info(ansis.bold(CLI_NAME));
-  logger.debug(`Running ${ansis.bold(command)} command`);
+  printCliCommand(command);
 
   const currentBranch = await getCurrentBranchOrTag();
   const { targetBranch: rawTargetBranch, ...opt } = args as HistoryCliOptions &

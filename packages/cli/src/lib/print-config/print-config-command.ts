@@ -4,6 +4,7 @@ import path from 'node:path';
 import type { CommandModule } from 'yargs';
 import { logger } from '@code-pushup/utils';
 import { filterKebabCaseKeys } from '../implementation/global.utils.js';
+import { printCliCommand } from '../implementation/logging.js';
 import type { PrintConfigOptions } from '../implementation/print-config.model.js';
 import { yargsPrintConfigOptionsDefinition } from '../implementation/print-config.options.js';
 
@@ -19,6 +20,11 @@ export function yargsPrintConfigCommandObject() {
       const { _, $0, ...args } = filterKebabCaseKeys(yargsArgs);
       const { output, ...config } = args as PrintConfigOptions &
         Record<string, unknown>;
+
+      // stdout should be valid JSON
+      if (output) {
+        printCliCommand(command);
+      }
 
       const content = JSON.stringify(config, null, 2);
 
