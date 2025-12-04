@@ -110,7 +110,6 @@ describe('runAutorunExecutor', () => {
   it('should set env var information if verbose is set', async () => {
     const output = await runAutorunExecutor(
       {
-        dryRun: true, // here to produce log
         verbose: true,
       },
       { ...executorContext('github-action'), cwd: '<CWD>' },
