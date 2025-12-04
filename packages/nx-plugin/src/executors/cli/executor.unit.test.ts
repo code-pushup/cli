@@ -132,7 +132,7 @@ describe('runAutorunExecutor', () => {
     expect(logger.warn).toHaveBeenCalledTimes(0);
   });
 
-  it('should log env var in dryRun information if verbose is set', async () => {
+  it('should log CP_VERBOSE env var in dryRun information if verbose is set', async () => {
     const output = await runAutorunExecutor(
       {
         dryRun: true,

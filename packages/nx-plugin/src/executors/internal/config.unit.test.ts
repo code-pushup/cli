@@ -67,6 +67,20 @@ describe('globalConfig', () => {
     ).toEqual(expect.objectContaining({ config: 'my.config.ts' }));
   });
 
+  it('should include the command options', () => {
+    const { command } = globalConfig(
+      { command: 'collect' },
+      {
+        workspaceRoot: '/test/root/workspace-root',
+        projectConfig: {
+          name: 'my-app',
+          root: 'packages/project-root',
+        },
+      },
+    );
+    expect(command).toBe('collect');
+  });
+
   it('should work with empty projectConfig', () => {
     expect(
       globalConfig(

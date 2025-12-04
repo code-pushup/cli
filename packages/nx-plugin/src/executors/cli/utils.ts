@@ -13,11 +13,12 @@ import type {
 export function parseAutorunExecutorOnlyOptions(
   options: Partial<AutorunCommandExecutorOnlyOptions>,
 ): AutorunCommandExecutorOnlyOptions {
-  const { projectPrefix, dryRun, onlyPlugins } = options;
+  const { projectPrefix, dryRun, onlyPlugins, env } = options;
   return {
     ...(projectPrefix && { projectPrefix }),
     ...(dryRun != null && { dryRun }),
     ...(onlyPlugins && { onlyPlugins }),
+    ...(env && { env }),
   };
 }
 

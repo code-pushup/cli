@@ -1,6 +1,8 @@
 import { type MockInstance, expect, vi } from 'vitest';
+import { executorContext } from '@code-pushup/test-nx-utils';
 import { osAgnosticPath } from '@code-pushup/test-utils';
 import type { Command } from '../internal/types.js';
+import runAutorunExecutor from './executor';
 import {
   parseAutorunExecutorOnlyOptions,
   parseAutorunExecutorOptions,
@@ -59,6 +61,12 @@ describe('parseAutorunExecutorOnlyOptions', () => {
       parseAutorunExecutorOnlyOptions({ onlyPlugins: ['md', 'json'] }),
     ).toStrictEqual(expect.objectContaining({ onlyPlugins: ['md', 'json'] }));
   });
+
+  it('should log env variables options if given', async () => {
+    expect(
+      parseAutorunExecutorOnlyOptions({ env: { TEST_ENV_VAR: '42' } }),
+    ).toStrictEqual(expect.objectContaining({ env: { TEST_ENV_VAR: '42' } }));
+  });
 });
 
 describe('parseAutorunExecutorOptions', () => {
@@ -84,7 +92,7 @@ describe('parseAutorunExecutorOptions', () => {
         projectName,
         workspaceRoot: 'workspaceRoot',
         projectConfig: {
-          name: 'my-app',
+          name: projectName,
           root: 'root',
         },
       },
@@ -109,6 +117,28 @@ describe('parseAutorunExecutorOptions', () => {
     expect(osAgnosticPath(executorOptions.persist?.outputDir ?? '')).toBe(
       osAgnosticPath('workspaceRoot/.code-pushup/my-app'),
     );
+  });
+
+  it('should include the env options', () => {
+    const projectName = 'my-app';
+    const env = {
+      NODE_OPTIONS: '--import tsx',
+      TSX_TSCONFIG_PATH: 'tsconfig.base.json',
+    };
+
+    const executorOptions = parseAutorunExecutorOptions(
+      { env },
+      {
+        projectName,
+        workspaceRoot: 'workspaceRoot',
+        projectConfig: {
+          name: projectName,
+          root: 'root',
+        },
+      },
+    );
+
+    expect(executorOptions.env).toStrictEqual(env);
   });
 
   it.each<Command | undefined>(['upload', 'autorun', undefined])(

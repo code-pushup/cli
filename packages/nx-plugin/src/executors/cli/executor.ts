@@ -22,8 +22,8 @@ export default async function runAutorunExecutor(
     terminalAndExecutorOptions,
     normalizedContext,
   );
-  const { command: cliCommand } = terminalAndExecutorOptions;
   const {
+    command: cliCommand,
     verbose = false,
     dryRun,
     env: executorEnv,

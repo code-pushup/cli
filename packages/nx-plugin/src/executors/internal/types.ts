@@ -5,6 +5,7 @@ import type { ProjectConfiguration } from 'nx/src/config/workspace-json-project-
  */
 export type GeneralExecutorOnlyOptions = {
   dryRun?: boolean;
+  env?: Record<string, string>;
 };
 
 /**

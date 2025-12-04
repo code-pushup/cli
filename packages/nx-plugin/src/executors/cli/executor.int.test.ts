@@ -22,7 +22,7 @@ describe('runAutorunExecutor', () => {
   });
 
   afterEach(() => {
-    parseAutorunExecutorOptionsSpy.mockReset();
+    parseAutorunExecutorOptionsSpy.mockRestore();
     executeProcessSpy.mockReset();
   });
 
@@ -48,11 +48,25 @@ describe('runAutorunExecutor', () => {
       command: 'npx',
       args: expect.arrayContaining(['@code-pushup/cli']),
       cwd: process.cwd(),
-      env: expect.objectContaining({
-        CP_VERBOSE: 'true',
-      }),
     });
+  });
 
-    expect(process.env).toHaveProperty('CP_VERBOSE', 'true');
+  it('should forward env options to executeProcess', async () => {
+    const output = await runAutorunExecutor(
+      {
+        verbose: true,
+        env: { TEST_VALUE: '42' },
+      },
+      executorContext('utils'),
+    );
+    expect(output.success).toBe(true);
+    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        env: expect.objectContaining({
+          TEST_VALUE: '42',
+        }),
+      }),
+    );
   });
 });
