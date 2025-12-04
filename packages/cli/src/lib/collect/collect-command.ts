@@ -9,9 +9,9 @@ import {
   formatAsciiSticker,
   logger,
 } from '@code-pushup/utils';
-import { CLI_NAME } from '../constants.js';
 import {
   collectSuccessfulLog,
+  printCliCommand,
   renderConfigureCategoriesHint,
 } from '../implementation/logging.js';
 
@@ -21,9 +21,9 @@ export function yargsCollectCommandObject(): CommandModule {
     command,
     describe: 'Run Plugins and collect results',
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
+      printCliCommand(command);
+
       const options = args as unknown as CollectAndPersistReportsOptions;
-      logger.info(ansis.bold(CLI_NAME));
-      logger.debug(`Running ${ansis.bold(command)} command`);
 
       await collectAndPersistReports(options);
       collectSuccessfulLog();

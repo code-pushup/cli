@@ -3,7 +3,7 @@ import type { CommandModule } from 'yargs';
 import { mergeDiffs } from '@code-pushup/core';
 import type { PersistConfig } from '@code-pushup/models';
 import { logger } from '@code-pushup/utils';
-import { CLI_NAME } from '../constants.js';
+import { printCliCommand } from '../implementation/logging.js';
 import type { MergeDiffsOptions } from '../implementation/merge-diffs.model.js';
 import { yargsMergeDiffsOptionsDefinition } from '../implementation/merge-diffs.options.js';
 
@@ -14,8 +14,7 @@ export function yargsMergeDiffsCommandObject() {
     describe: 'Combine many report diffs into a single diff file',
     builder: yargsMergeDiffsOptionsDefinition(),
     handler: async (args: unknown) => {
-      logger.info(ansis.bold(CLI_NAME));
-      logger.debug(`Running ${ansis.bold(command)} command`);
+      printCliCommand(command);
 
       const options = args as MergeDiffsOptions & {
         persist: Required<PersistConfig>;

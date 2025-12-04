@@ -1,12 +1,12 @@
 import { commands } from './commands.js';
-import { CLI_NAME, CLI_SCRIPT_NAME } from './constants.js';
+import { CLI_DISPLAY_NAME, CLI_SCRIPT_NAME } from './constants.js';
 import { middlewares } from './middlewares.js';
 import { groups, options } from './options.js';
 import { yargsCli } from './yargs-cli.js';
 
 export const cli = (args: string[]) =>
   yargsCli(args, {
-    usageMessage: CLI_NAME,
+    usageMessage: CLI_DISPLAY_NAME,
     scriptName: CLI_SCRIPT_NAME,
     options,
     groups,

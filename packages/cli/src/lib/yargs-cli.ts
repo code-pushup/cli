@@ -1,6 +1,5 @@
 /* eslint-disable max-lines-per-function */
 import ansis from 'ansis';
-import { createRequire } from 'node:module';
 import yargs, {
   type Argv,
   type CommandModule,
@@ -22,6 +21,7 @@ import {
   titleStyle,
 } from './implementation/formatting.js';
 import { logErrorBeforeThrow } from './implementation/global.utils.js';
+import { getVersion } from './implementation/version.js';
 
 export const yargsDecorator = {
   'Commands:': `${ansis.green('Commands')}:`,
@@ -54,7 +54,7 @@ export function yargsCli<T = unknown>(
     groups?: { [key: string]: string[] };
     examples?: [string, string][];
     middlewares?: {
-      middlewareFunction: unknown;
+      middlewareFunction: MiddlewareFunction;
       applyBeforeValidation?: boolean;
     }[];
     noExitProcess?: boolean;
@@ -68,10 +68,6 @@ export function yargsCli<T = unknown>(
   const examples = cfg.examples ?? [];
   const cli = yargs(argv);
 
-  const packageJson = createRequire(import.meta.url)(
-    '../../package.json',
-  ) as typeof import('../../package.json');
-
   // setup yargs
   cli
     .updateLocale(yargsDecorator)
@@ -80,7 +76,7 @@ export function yargsCli<T = unknown>(
     .help('help', descriptionStyle('Show help'))
     .alias('h', 'help')
     .showHelpOnFail(false)
-    .version('version', ansis.dim('Show version'), packageJson.version)
+    .version('version', ansis.dim('Show version'), getVersion())
     .check(args => {
       const persist = args['persist'] as PersistConfig | undefined;
       return persist == null || validatePersistFormat(persist);
@@ -116,7 +112,7 @@ export function yargsCli<T = unknown>(
   // add middlewares
   middlewares.forEach(({ middlewareFunction, applyBeforeValidation }) => {
     cli.middleware(
-      logErrorBeforeThrow(middlewareFunction as MiddlewareFunction),
+      logErrorBeforeThrow(middlewareFunction),
       applyBeforeValidation,
     );
   });
