@@ -18,10 +18,6 @@ export default async function runCliExecutor(
   const { objectToCliArgs, formatCommandStatus, logger, stringifyError } =
     await import('@code-pushup/utils');
   const normalizedContext = normalizeContext(context);
-  const cliArgumentObject = parseCliExecutorOptions(
-    terminalAndExecutorOptions,
-    normalizedContext,
-  );
   const {
     command: cliCommand,
     verbose = false,
@@ -29,15 +25,15 @@ export default async function runCliExecutor(
     env: executorEnv,
     bin,
     ...restArgs
-  } = cliArgumentObject;
+  } = parseCliExecutorOptions(terminalAndExecutorOptions, normalizedContext);
+
   logger.setVerbose(verbose);
 
   const command = bin ? `node` : 'npx';
-  const positionals = [
-    bin ?? '@code-pushup/cli',
-    ...(cliCommand ? [cliCommand] : []),
+  const args = [
+    ...[bin ?? '@code-pushup/cli', ...(cliCommand ? [cliCommand] : [])],
+    ...objectToCliArgs(restArgs),
   ];
-  const args = [...positionals, ...objectToCliArgs(restArgs)];
   const commandString = formatCommandStatus([command, ...args].join(' '), {
     cwd: context.cwd,
     env: {
