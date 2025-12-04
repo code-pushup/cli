@@ -5,14 +5,14 @@ import {
 } from '../internal/config.js';
 import type { NormalizedExecutorContext } from '../internal/context.js';
 import type {
-  AutorunCommandExecutorOnlyOptions,
-  AutorunCommandExecutorOptions,
+  CliCommandExecutorOnlyOptions,
+  CliCommandExecutorOptions,
   PrintConfigCommandExecutorOptions,
 } from './schema.js';
 
-export function parseAutorunExecutorOnlyOptions(
-  options: Partial<AutorunCommandExecutorOnlyOptions>,
-): AutorunCommandExecutorOnlyOptions {
+export function parseCliExecutorOnlyOptions(
+  options: Partial<CliCommandExecutorOnlyOptions>,
+): CliCommandExecutorOnlyOptions {
   const { projectPrefix, dryRun, onlyPlugins, env, bin } = options;
   return {
     ...(projectPrefix && { projectPrefix }),
@@ -32,10 +32,10 @@ export function parsePrintConfigExecutorOptions(
   };
 }
 
-export function parseAutorunExecutorOptions(
-  options: Partial<AutorunCommandExecutorOptions>,
+export function parseCliExecutorOptions(
+  options: Partial<CliCommandExecutorOptions>,
   normalizedContext: NormalizedExecutorContext,
-): AutorunCommandExecutorOptions {
+): CliCommandExecutorOptions {
   const { projectPrefix, persist, upload, command, output } = options;
   const needsUploadParams =
     command === 'upload' || command === 'autorun' || command === undefined;
@@ -46,7 +46,7 @@ export function parseAutorunExecutorOptions(
   const hasApiToken = uploadCfg?.apiKey != null;
   return {
     ...parsePrintConfigExecutorOptions(options),
-    ...parseAutorunExecutorOnlyOptions(options),
+    ...parseCliExecutorOnlyOptions(options),
     ...globalConfig(options, normalizedContext),
     ...(output ? { output } : {}),
     persist: persistConfig({ projectPrefix, ...persist }, normalizedContext),

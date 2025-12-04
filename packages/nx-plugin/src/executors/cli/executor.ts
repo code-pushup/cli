@@ -1,8 +1,8 @@
 import type { ExecutorContext } from '@nx/devkit';
 import { executeProcess } from '../../internal/execute-process.js';
 import { normalizeContext } from '../internal/context.js';
-import type { AutorunCommandExecutorOptions } from './schema.js';
-import { parseAutorunExecutorOptions } from './utils.js';
+import type { CliCommandExecutorOptions } from './schema.js';
+import { parseCliExecutorOptions } from './utils.js';
 
 export type ExecutorOutput = {
   success: boolean;
@@ -11,14 +11,14 @@ export type ExecutorOutput = {
 };
 
 /* eslint-disable-next-line max-lines-per-function */
-export default async function runAutorunExecutor(
-  terminalAndExecutorOptions: AutorunCommandExecutorOptions,
+export default async function runCliExecutor(
+  terminalAndExecutorOptions: CliCommandExecutorOptions,
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
   const { objectToCliArgs, formatCommandStatus, logger, stringifyError } =
     await import('@code-pushup/utils');
   const normalizedContext = normalizeContext(context);
-  const cliArgumentObject = parseAutorunExecutorOptions(
+  const cliArgumentObject = parseCliExecutorOptions(
     terminalAndExecutorOptions,
     normalizedContext,
   );
