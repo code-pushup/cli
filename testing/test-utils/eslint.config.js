@@ -1,12 +1,33 @@
 import tseslint from 'typescript-eslint';
 import baseConfig from '../../eslint.config.js';
 
-export default tseslint.config(...baseConfig, {
-  files: ['**/*.ts'],
-  languageOptions: {
-    parserOptions: {
-      projectService: true,
-      tsconfigRootDir: import.meta.dirname,
+export default tseslint.config(
+  ...baseConfig,
+  {
+    files: ['**/*.ts'],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
   },
-});
+  {
+    files: ['**/*.json'],
+    rules: {
+      '@nx/dependency-checks': [
+        'error',
+        {
+          ignoredDependencies: [
+            '@code-pushup/models',
+            'simple-git',
+            'vitest',
+            '@nx/devkit',
+            'ansis',
+            'tsdown',
+          ],
+        },
+      ],
+    },
+  },
+);
