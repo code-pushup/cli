@@ -1,4 +1,13 @@
-import { afterAll, afterEach, beforeEach, expect, vi } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as executeProcessModule from '../../internal/execute-process.js';

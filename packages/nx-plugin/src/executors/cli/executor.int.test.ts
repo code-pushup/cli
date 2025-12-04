@@ -1,4 +1,4 @@
-import { afterEach, expect, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
 import * as executeProcessModule from '../../internal/execute-process.js';
 import runCliExecutor from './executor.js';
