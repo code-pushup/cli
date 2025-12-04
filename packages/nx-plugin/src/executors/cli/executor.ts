@@ -1,9 +1,5 @@
-import { type ExecutorContext, logger } from '@nx/devkit';
+import type { ExecutorContext } from '@nx/devkit';
 import { executeProcess } from '../../internal/execute-process.js';
-import {
-  createCliCommandObject,
-  createCliCommandString,
-} from '../internal/cli.js';
 import { normalizeContext } from '../internal/context.js';
 import type { AutorunCommandExecutorOptions } from './schema.js';
 import { parseAutorunExecutorOptions } from './utils.js';
@@ -14,35 +10,48 @@ export type ExecutorOutput = {
   error?: Error;
 };
 
+/* eslint-disable-next-line max-lines-per-function */
 export default async function runAutorunExecutor(
   terminalAndExecutorOptions: AutorunCommandExecutorOptions,
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
+  const { objectToCliArgs, formatCommandStatus, logger, stringifyError } =
+    await import('@code-pushup/utils');
   const normalizedContext = normalizeContext(context);
   const cliArgumentObject = parseAutorunExecutorOptions(
     terminalAndExecutorOptions,
     normalizedContext,
   );
-  const { dryRun, verbose, command, bin } = terminalAndExecutorOptions;
-  const commandString = createCliCommandString({
-    command,
-    args: cliArgumentObject,
-    bin,
+  const { command: cliCommand } = terminalAndExecutorOptions;
+  const { verbose = false, dryRun, bin, ...restArgs } = cliArgumentObject;
+  logger.setVerbose(verbose);
+
+  const command = bin ? `node` : 'npx';
+  const positionals = [
+    bin ?? '@code-pushup/cli',
+    ...(cliCommand ? [cliCommand] : []),
+  ];
+  const args = [...positionals, ...objectToCliArgs(restArgs)];
+  const executorEnvVariables = {
+    ...(verbose && { CP_VERBOSE: 'true' }),
+  };
+  const commandString = formatCommandStatus([command, ...args].join(' '), {
+    cwd: context.cwd,
+    env: executorEnvVariables,
   });
-  if (verbose) {
-    logger.info(`Run CLI executor ${command ?? ''}`);
-    logger.info(`Command: ${commandString}`);
-  }
+
   if (dryRun) {
     logger.warn(`DryRun execution of: ${commandString}`);
   } else {
     try {
+      logger.debug(`With env vars: ${executorEnvVariables}`);
       await executeProcess({
-        ...createCliCommandObject({ command, args: cliArgumentObject, bin }),
+        command,
+        args,
         ...(context.cwd ? { cwd: context.cwd } : {}),
       });
     } catch (error) {
-      logger.error(error);
+      logger.error(stringifyError(error));
       return {
         success: false,
         command: commandString,

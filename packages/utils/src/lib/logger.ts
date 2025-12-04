@@ -1,8 +1,8 @@
 /* eslint-disable max-lines, no-console, @typescript-eslint/class-methods-use-this */
 import ansis, { type AnsiColors } from 'ansis';
 import os from 'node:os';
-import path from 'node:path';
 import ora, { type Ora } from 'ora';
+import { formatCommandStatus } from './command.js';
 import { dateToUnixTimestamp } from './dates.js';
 import { isEnvVarEnabled } from './env.js';
 import { stringifyError } from './errors.js';
@@ -10,7 +10,7 @@ import { formatDuration, indentLines, transformLines } from './formatting.js';
 import { settlePromise } from './promises.js';
 
 type GroupColor = Extract<AnsiColors, 'cyan' | 'magenta'>;
-type CiPlatform = 'GitHub Actions' | 'GitLab CI/CD';
+type CiPlatform = 'GitHub' | 'GitLab';
 
 /** Additional options for log methods */
 export type LogOptions = {
@@ -43,9 +43,9 @@ export class Logger {
   #isVerbose = isEnvVarEnabled('CP_VERBOSE');
   #isCI = isEnvVarEnabled('CI');
   #ciPlatform: CiPlatform | undefined = isEnvVarEnabled('GITHUB_ACTIONS')
-    ? 'GitHub Actions'
+    ? 'GitHub'
     : isEnvVarEnabled('GITLAB_CI')
-      ? 'GitLab CI/CD'
+      ? 'GitLab'
       : undefined;
   #groupColor: GroupColor | undefined;
 
@@ -241,14 +241,13 @@ export class Logger {
     bin: string,
     worker: () => Promise<T>,
     options?: {
-      env?: Record<string, string | number | boolean>;
       cwd?: string;
     },
   ): Promise<T> {
     return this.#spinner(worker, {
-      pending: formatCommand(bin, options, 'pending'),
-      success: () => formatCommand(bin, options, 'success'),
-      failure: () => formatCommand(bin, options, 'failure'),
+      pending: formatCommandStatus(bin, options, 'pending'),
+      success: () => formatCommandStatus(bin, options, 'success'),
+      failure: () => formatCommandStatus(bin, options, 'failure'),
     });
   }
 
@@ -351,15 +350,23 @@ export class Logger {
     start: (title: string) => string;
     end: () => string;
   } {
-    switch (this.#ciPlatform) {
-      case 'GitHub Actions':
+    // Nx typically renders native log groups for each target in GitHub
+    // + GitHub doesn't support nested log groups: https://github.com/actions/toolkit/issues/1001
+    // => skip native GitHub log groups if run within Nx target
+    const platform =
+      this.#ciPlatform === 'GitHub' && process.env['NX_TASK_TARGET_TARGET'] // https://nx.dev/docs/reference/environment-variables
+        ? undefined
+        : this.#ciPlatform;
+
+    switch (platform) {
+      case 'GitHub':
         // https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-commands#grouping-log-lines
         return {
           start: title =>
             `::group::${this.#formatGroupTitle(title, { prefix: false })}`,
           end: () => '::endgroup::',
         };
-      case 'GitLab CI/CD':
+      case 'GitLab':
         // https://docs.gitlab.com/ci/jobs/job_logs/#custom-collapsible-sections
         const ansiEscCode = '\u001B[0K'; // '\e' ESC character only works for `echo -e`, Node console must use '\u001B'
         const id = Math.random().toString(HEX_RADIX).slice(2);
@@ -533,42 +540,3 @@ export class Logger {
  * logger.info('Made with ❤️ by Code PushUp');
  */
 export const logger = new Logger();
-
-/**
- * Formats a command string for display with status indicator.
- *
- * @param bin Command string with arguments.
- * @param options Command options (cwd, env).
- * @param status Command status ('pending' | 'success' | 'failure').
- * @returns Formatted command string with colored status indicator.
- */
-export function formatCommand(
-  bin: string,
-  options?: {
-    env?: Record<string, string | number | boolean>;
-    cwd?: string;
-  },
-  status: 'pending' | 'success' | 'failure' = 'pending',
-): string {
-  const cwd = options?.cwd && path.relative(process.cwd(), options.cwd);
-  const cwdPrefix = cwd ? ansis.blue(cwd) : '';
-  const envString =
-    options?.env && Object.keys(options.env).length > 0
-      ? Object.entries(options.env).map(([key, value]) =>
-          ansis.gray(`${key}="${value}"`),
-        )
-      : [];
-  const statusColor =
-    status === 'pending'
-      ? ansis.blue('$')
-      : status === 'success'
-        ? ansis.green('$')
-        : ansis.red('$');
-
-  return [
-    ...(cwdPrefix ? [cwdPrefix] : []),
-    statusColor,
-    ...envString,
-    bin,
-  ].join(' ');
-}

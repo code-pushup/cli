@@ -199,6 +199,7 @@ describe('executor command', () => {
         `${project}:code-pushup`,
         'collect',
         '--persist.filename=terminal-report',
+        '--verbose',
       ],
       cwd,
     });
