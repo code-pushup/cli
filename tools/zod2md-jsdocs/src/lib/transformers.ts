@@ -7,10 +7,10 @@ function generateJSDocComment(typeName: string, baseUrl: string): string {
   const markdownLink = `${baseUrl}#${typeName.toLowerCase()}`;
   return `*
  * Type Definition: \`${typeName}\`
- * 
- * This type is derived from a Zod schema and represents 
+ *
+ * This type is derived from a Zod schema and represents
  * the validated structure of \`${typeName}\` used within the application.
- * 
+ *
  * @see {@link ${markdownLink}}
  `;
 }
@@ -24,7 +24,7 @@ function annotateTypeDefinitions(
 
   if (!baseUrl) {
     throw new Error(
-      'jsdoc-annotation-transformer: "baseUrl" option is required. ' +
+      'zod2md-jsdocs: "baseUrl" option is required. ' +
         'Please configure it in your tsconfig.json plugins section.',
     );
   }
