@@ -6,7 +6,7 @@
     "types": ["node"],
     "plugins": [
       {
-        "transform": "./tools/jsdoc-annotation-transformer/dist",
+        "transform": "./tools/zod2md-jsdocs/dist",
         "afterDeclarations": true,
         "baseUrl": "https://github.com/code-pushup/cli/blob/main/packages/models/docs/models-reference.md"
       }
