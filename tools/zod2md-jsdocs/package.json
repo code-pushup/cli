@@ -1,5 +1,5 @@
 {
-  "name": "@code-pushup/jsdocs-annotation-transformer",
+  "name": "@code-pushup/zod2md-jsdocs",
   "version": "0.0.0",
   "description": "TypeScript transformers enhancing models with JSDoc and schema metadata",
   "type": "commonjs",

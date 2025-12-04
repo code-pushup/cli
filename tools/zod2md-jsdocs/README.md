@@ -1,4 +1,4 @@
-# @code-pushup/jsdocs-annotation-transformer
+# @code-pushup/zod2md-jsdocs
 
 TypeScript transformer plugin that automatically enhances type definitions with JSDoc comments and schema metadata.
 
