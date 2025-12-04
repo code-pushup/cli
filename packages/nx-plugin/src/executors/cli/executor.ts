@@ -31,7 +31,8 @@ export default async function runCliExecutor(
 
   const command = bin ? `node` : 'npx';
   const args = [
-    ...[bin ?? '@code-pushup/cli', ...(cliCommand ? [cliCommand] : [])],
+    bin ?? '@code-pushup/cli',
+    ...(cliCommand ? [cliCommand] : []),
     ...objectToCliArgs(restArgs),
   ];
   const commandString = formatCommandStatus([command, ...args].join(' '), {
