@@ -1,8 +1,6 @@
 import { type MockInstance, expect, vi } from 'vitest';
-import { executorContext } from '@code-pushup/test-nx-utils';
 import { osAgnosticPath } from '@code-pushup/test-utils';
 import type { Command } from '../internal/types.js';
-import runAutorunExecutor from './executor';
 import {
   parseAutorunExecutorOnlyOptions,
   parseAutorunExecutorOptions,
