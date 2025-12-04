@@ -50,10 +50,6 @@ describe('runAutorunExecutor', () => {
       cwd: process.cwd(),
     });
 
-    expect(process.env).toStrictEqual(
-      expect.objectContaining({
-        CP_VERBOSE: 'true',
-      }),
-    );
+    expect(process.env).toHaveProperty('CP_VERBOSE', 'true');
   });
 });
