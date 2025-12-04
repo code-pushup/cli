@@ -6,6 +6,7 @@ import type { ProjectConfiguration } from 'nx/src/config/workspace-json-project-
 export type GeneralExecutorOnlyOptions = {
   dryRun?: boolean;
   env?: Record<string, string>;
+  bin?: string;
 };
 
 /**
@@ -30,8 +31,6 @@ export type Command =
   | 'history';
 export type GlobalExecutorOptions = {
   command?: Command;
-  bin?: string;
-  env?: Record<string, string>;
   verbose?: boolean;
   config?: string;
 };

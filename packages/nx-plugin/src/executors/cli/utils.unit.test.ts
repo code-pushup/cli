@@ -65,6 +65,12 @@ describe('parseAutorunExecutorOnlyOptions', () => {
       parseAutorunExecutorOnlyOptions({ env: { TEST_ENV_VAR: '42' } }),
     ).toStrictEqual(expect.objectContaining({ env: { TEST_ENV_VAR: '42' } }));
   });
+
+  it('should process given bin', () => {
+    expect(parseAutorunExecutorOnlyOptions({ bin: 'index.js' })).toStrictEqual(
+      expect.objectContaining({ bin: 'index.js' }),
+    );
+  });
 });
 
 describe('parseAutorunExecutorOptions', () => {
