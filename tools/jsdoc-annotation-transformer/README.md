@@ -52,7 +52,8 @@ export type Report = {
     "plugins": [
       {
         "transform": "./path/to/transformer/dist",
-        "afterDeclarations": true
+        "afterDeclarations": true,
+        "baseUrl": "https://example.com/docs/api-reference.md"
       }
     ]
   }
@@ -67,3 +68,4 @@ export type Report = {
 | ------------------- | --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `transform`         | `string`  | Yes      | Path to the transformer module                                                                                                                                      |
 | `afterDeclarations` | `boolean` | No       | Set to `true` to run the transformer after TypeScript generates declaration files (`.d.ts`). This ensures JSDoc comments are added to the emitted type definitions. |
+| `baseUrl`           | `string`  | Yes      | Base URL for documentation links (e.g., `https://example.com/docs/api-reference.md`)                                                                                |
