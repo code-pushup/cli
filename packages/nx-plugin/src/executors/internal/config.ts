@@ -23,11 +23,14 @@ export function globalConfig(
 
 export function persistConfig(
   options: Partial<PersistConfig & ProjectExecutorOnlyOptions>,
-  _context: BaseNormalizedExecutorContext,
+  context: BaseNormalizedExecutorContext,
 ): Partial<PersistConfig> {
+  const { projectConfig, workspaceRoot } = context;
+
+  const { name: projectName = '' } = projectConfig ?? {};
   const {
     format,
-    outputDir = '{projectRoot}/.code-pushup',
+    outputDir = path.join(workspaceRoot, '.code-pushup', projectName), // always in <root>/.code-pushup/<project-name>,
     filename,
   } = options;
 

@@ -107,7 +107,7 @@ describe('parseAutorunExecutorOptions', () => {
     );
 
     expect(osAgnosticPath(executorOptions.persist?.outputDir ?? '')).toBe(
-      osAgnosticPath('{projectRoot}/.code-pushup'),
+      osAgnosticPath('workspaceRoot/.code-pushup/my-app'),
     );
   });
 

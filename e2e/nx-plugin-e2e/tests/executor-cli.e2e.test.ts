@@ -27,21 +27,17 @@ async function addTargetToWorkspace(
 ) {
   const { cwd, project } = options;
   const projectCfg = readProjectConfiguration(tree, project);
-  const { root } = projectCfg;
-  const configPath = path.join(root, 'code-pushup.config.ts');
   updateProjectConfiguration(tree, project, {
     ...projectCfg,
     targets: {
       ...projectCfg.targets,
       'code-pushup': {
         executor: '@code-pushup/nx-plugin:cli',
-        options: {
-          config: configPath,
-          ...executorOptions,
-        },
+        ...(executorOptions && { options: executorOptions }),
       },
     },
   });
+  const { root } = projectCfg;
   generateCodePushupConfig(tree, root, {
     plugins: [
       {
@@ -148,7 +144,7 @@ describe('executor command', () => {
     ).resolves.not.toThrow();
   });
 
-  it('should execute print-config executor with upload config', async () => {
+  it('should execute print-config executor with api key', async () => {
     const cwd = path.join(testFileDir, 'execute-print-config-command');
     await addTargetToWorkspace(tree, { cwd, project });
 
@@ -160,9 +156,6 @@ describe('executor command', () => {
         `${project}:code-pushup`,
         'print-config',
         '--upload.apiKey=a123a',
-        '--upload.server=https://example.com',
-        '--upload.organization=test-org',
-        '--upload.project=test-project',
       ],
       cwd,
     });
@@ -233,7 +226,7 @@ describe('executor command', () => {
     expect(cleanStdout).toContain('nx run my-lib:code-pushup collect');
 
     const report = await readJsonFile(
-      path.join(cwd, 'libs', project, '.code-pushup', 'report.json'),
+      path.join(cwd, '.code-pushup', project, 'report.json'),
     );
     expect(report).toStrictEqual(
       expect.objectContaining({
