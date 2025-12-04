@@ -6,6 +6,7 @@ import type { Format, PersistConfig } from '@code-pushup/models';
 import { formatBytes } from './formatting.js';
 import { logMultipleResults } from './log-results.js';
 import { logger } from './logger.js';
+import { settlePromise } from './promises.js';
 
 export async function readTextFile(filePath: string): Promise<string> {
   const buffer = await readFile(filePath);
@@ -78,6 +79,14 @@ export function logMultipleFileResults(
 }
 
 export async function importModule<T = unknown>(options: Options): Promise<T> {
+  const resolvedStats = await settlePromise(stat(options.filepath));
+  if (resolvedStats.status === 'rejected') {
+    throw new Error(`File '${options.filepath}' does not exist`);
+  }
+  if (!resolvedStats.value.isFile()) {
+    throw new Error(`Expected '${options.filepath}' to be a file`);
+  }
+
   const { mod } = await bundleRequire<object>(options);
 
   if (typeof mod === 'object' && 'default' in mod) {
