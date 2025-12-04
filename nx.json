@@ -74,7 +74,7 @@
     },
     "unit-test": {
       "cache": true,
-      "inputs": ["default", "test-vitest-inputs"],
+      "inputs": ["default", "^production", "test-vitest-inputs"],
       "outputs": [
         "{workspaceRoot}/coverage/{projectName}/unit-tests/lcov.info"
       ],
@@ -88,7 +88,7 @@
     },
     "int-test": {
       "cache": true,
-      "inputs": ["default", "test-vitest-inputs"],
+      "inputs": ["default", "^production", "test-vitest-inputs"],
       "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
       "executor": "@nx/vite:test",
       "options": {
