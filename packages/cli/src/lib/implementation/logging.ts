@@ -5,6 +5,10 @@ import {
   logger,
 } from '@code-pushup/utils';
 
+export function printCliCommand(command: string): void {
+  logger.debug(`Running ${ansis.bold(command)} command\n`);
+}
+
 export function renderConfigureCategoriesHint(): void {
   logger.debug(
     `💡 Configure categories to see the scores in an overview table. See: ${formatAsciiLink(
