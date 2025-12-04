@@ -27,6 +27,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should normalize context, parse CLI options and execute command', async () => {
+    expect(process.env).not.toHaveProperty('CP_VERBOSE', 'true');
     const output = await runAutorunExecutor(
       { verbose: true },
       executorContext('utils'),
@@ -51,5 +52,7 @@ describe('runAutorunExecutor', () => {
         CP_VERBOSE: 'true',
       }),
     });
+
+    expect(process.env).toHaveProperty('CP_VERBOSE', 'true');
   });
 });
