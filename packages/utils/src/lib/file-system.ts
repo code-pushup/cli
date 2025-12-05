@@ -1,5 +1,5 @@
 import ansis from 'ansis';
-import { type Options, bundleRequire } from 'bundle-require';
+import { type JitiOptions, createJiti } from 'jiti';
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
 import type { Format, PersistConfig } from '@code-pushup/models';
@@ -77,8 +77,11 @@ export function logMultipleFileResults(
   );
 }
 
-export async function importModule<T = unknown>(options: Options): Promise<T> {
-  const { mod } = await bundleRequire<object>(options);
+const jitiImport = createJiti(process.cwd());
+export async function importModule<T = unknown>({
+  filepath,
+}: JitiOptions): Promise<T> {
+  const { mod } = await jitiImport(filepath);
 
   if (typeof mod === 'object' && 'default' in mod) {
     return mod.default as T;
