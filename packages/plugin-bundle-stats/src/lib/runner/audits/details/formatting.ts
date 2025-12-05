@@ -4,14 +4,16 @@ import {
   findSegmentIndex,
   normalizePathForMatching,
   splitPathSegments,
-} from './grouping';
+} from './grouping.js';
 
 // Regex cache to avoid recreating the same regex patterns
 const REGEX_CACHE = new Map<string, RegExp>();
 
 function getCachedRegex(pattern: string): RegExp {
   const cached = REGEX_CACHE.get(pattern);
-  if (cached) return cached;
+  if (cached) {
+    return cached;
+  }
 
   const regex = new RegExp(`${pattern}\\/([^\\/]+)`);
   REGEX_CACHE.set(pattern, regex);
@@ -42,9 +44,11 @@ export function extractScopedPackage(
 export function extractMeaningfulPathPart(path: string): string | null {
   const parts = splitPathSegments(path.replace(/^\.\//, ''));
 
-  if (parts.length === 0) return null;
+  if (parts.length === 0) {
+    return null;
+  }
 
-  const lastPart = parts[parts.length - 1];
+  const lastPart = parts.at(-1);
   if (lastPart) {
     const withoutExt = removeFileExtension(lastPart);
     if (withoutExt && !isGenericName(withoutExt)) {
@@ -53,7 +57,7 @@ export function extractMeaningfulPathPart(path: string): string | null {
   }
 
   if (parts.length > 1) {
-    const secondLast = parts[parts.length - 2];
+    const secondLast = parts.at(-2);
     if (secondLast && !isGenericName(secondLast)) {
       return secondLast;
     }
@@ -71,12 +75,16 @@ export function cleanupGroupName(groupName: string): string {
   }
 
   const segments = splitPathSegments(groupName);
-  if (segments.length === 0) return groupName;
+  if (segments.length === 0) {
+    return groupName;
+  }
 
   // For scoped packages, try to extract the scope and package
   for (let i = 0; i < segments.length; i++) {
     const segment = segments[i];
-    if (!segment) continue;
+    if (!segment) {
+      continue;
+    }
 
     // Handle scoped packages like @angular/router
     if (segment.startsWith('@') && i + 1 < segments.length) {
@@ -89,7 +97,9 @@ export function cleanupGroupName(groupName: string): string {
   // Extract the last meaningful segment (the actual package/folder name)
   for (let i = segments.length - 1; i >= 0; i--) {
     const segment = segments[i];
-    if (!segment || isGenericName(segment)) continue;
+    if (!segment || isGenericName(segment)) {
+      continue;
+    }
 
     // Return the first meaningful segment we find from the end
     return segment;

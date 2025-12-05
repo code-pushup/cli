@@ -23,11 +23,11 @@ export type SharedViewConfig = {
   mode?: 'onlyMatching' | 'all';
 };
 
-export interface TablePruningConfig {
+export type TablePruningConfig = {
   enabled?: boolean;
   maxChildren?: number;
   minSize?: number;
-}
+};
 
 export type InsightsTableConfig = SharedViewConfig & {
   groups: GroupingRule[];
@@ -75,11 +75,11 @@ export function aggregateAndSortGroups(
   const outputEntries = Object.entries(statsSlice);
 
   // Single-pass processing: collect all inputs first, then process in batch
-  const inputsToProcess: Array<{
+  const inputsToProcess: {
     inputPath: string;
     inputBytes: number;
     outputKey: string;
-  }> = [];
+  }[] = [];
 
   for (const [outputKey, output] of outputEntries) {
     totalRestBytes += output.bytes;

@@ -1,6 +1,6 @@
 export type SupportedImportKind = 'static' | 'dynamic';
 
-export interface UnifiedStatsImport {
+export type UnifiedStatsImport = {
   path: string;
   kind: string;
   /**
@@ -8,20 +8,20 @@ export interface UnifiedStatsImport {
    * while "path" contains the resolved absolute file path after webpack processing.
    */
   original?: string;
-}
+};
 
-export interface UnifiedStatsInput {
+export type UnifiedStatsInput = {
   bytes: number;
   imports?: UnifiedStatsImport[];
   format?: string;
-}
+};
 
-export interface UnifiedStatsBundle {
+export type UnifiedStatsBundle = {
   path: string;
   bytes: number;
   inputs?: Record<string, UnifiedStatsInput>;
   entryPoint?: string;
   imports?: UnifiedStatsImport[];
-}
+};
 
 export type UnifiedStats = Record<string, UnifiedStatsBundle>;

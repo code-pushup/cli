@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import type { GroupingRule } from '../../types';
+import type { GroupingRule } from '../../types.js';
 import {
   type StatsTreeNode,
   applyGrouping,
   findMatchingRule,
-} from './grouping';
+} from './grouping.js';
 
 describe('GroupingRule exclude logic', () => {
   it('should exclude paths that match exclude patterns even when they match include patterns', () => {

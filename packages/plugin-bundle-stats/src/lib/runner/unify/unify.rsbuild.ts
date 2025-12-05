@@ -52,11 +52,11 @@ export type RsbuildModule = {
   dependent?: boolean;
   issuer?: string | null;
   issuerName?: string | null;
-  issuerPath?: Array<{
+  issuerPath?: {
     identifier: string;
     name: string;
     id: string;
-  }>;
+  }[];
   failed: boolean;
   errors: number;
   warnings: number;
@@ -91,23 +91,23 @@ export type RsbuildChunk = {
   parents: string[];
   children: string[];
   modules: RsbuildModule[];
-  origins: Array<{
+  origins: {
     module: string;
     moduleIdentifier: string;
     moduleName: string;
     loc: string;
     request: string;
     moduleId: string;
-  }>;
+  }[];
 };
 
 export type RsbuildEntrypoint = {
   name: string;
   chunks: string[];
-  assets: Array<{ name: string; size: number }>;
+  assets: { name: string; size: number }[];
   filteredAssets: number;
   assetsSize: number;
-  auxiliaryAssets: Array<{ name: string; size: number }>;
+  auxiliaryAssets: { name: string; size: number }[];
   auxiliaryAssetsSize: number;
   children: Record<string, unknown>;
   childAssets: Record<string, unknown>;
@@ -150,7 +150,9 @@ export function unifyBundlerStats(stats: RsbuildCoreStats): UnifiedStats {
   }
 
   for (const asset of stats.assets) {
-    if (!asset.name.endsWith('.js')) continue;
+    if (!asset.name.endsWith('.js')) {
+      continue;
+    }
 
     const unifiedOutput: UnifiedStatsBundle = {
       path: asset.name,
@@ -182,10 +184,14 @@ export function unifyBundlerStats(stats: RsbuildCoreStats): UnifiedStats {
 
     for (const chunkId of asset.chunks) {
       const chunk = chunksMap.get(chunkId);
-      if (!chunk) continue;
+      if (!chunk) {
+        continue;
+      }
 
       for (const module of chunk.modules) {
-        if (module.moduleType === 'runtime') continue;
+        if (module.moduleType === 'runtime') {
+          continue;
+        }
 
         if (unifiedOutput.inputs) {
           unifiedOutput.inputs[module.name] = {
@@ -203,16 +209,15 @@ export function unifyBundlerStats(stats: RsbuildCoreStats): UnifiedStats {
               });
             }
           } else if (
-            reason.type === 'esm import' ||
-            reason.type === 'esm import specifier'
+            (reason.type === 'esm import' ||
+              reason.type === 'esm import specifier') &&
+            unifiedOutput.imports
           ) {
-            if (unifiedOutput.imports) {
-              unifiedOutput.imports.push({
-                path: reason.userRequest,
-                kind: 'import-statement',
-                original: reason.userRequest,
-              });
-            }
+            unifiedOutput.imports.push({
+              path: reason.userRequest,
+              kind: 'import-statement',
+              original: reason.userRequest,
+            });
           }
         }
       }

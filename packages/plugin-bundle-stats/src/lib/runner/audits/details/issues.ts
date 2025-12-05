@@ -15,7 +15,7 @@ const BLACKLIST_PATTERN_CACHE = new Map<string, boolean>();
 
 // Clear cache when it gets too large to prevent memory issues
 function clearCacheIfNeeded(): void {
-  if (BLACKLIST_PATTERN_CACHE.size > 50000) {
+  if (BLACKLIST_PATTERN_CACHE.size > 50_000) {
     BLACKLIST_PATTERN_CACHE.clear();
   }
 }
@@ -429,18 +429,18 @@ function collectBlacklistedPatterns(
     matchResult: { pattern: string; hint?: string },
   ) => {
     const patternKey = `${outputPath}:${matchResult.pattern}`;
-    if (!blacklistedPatterns.has(patternKey)) {
-      blacklistedPatterns.set(patternKey, {
-        pattern: matchResult.pattern,
-        hint: matchResult.hint,
-        files: [filePath],
-        outputPath: outputPath,
-      });
-    } else {
+    if (blacklistedPatterns.has(patternKey)) {
       const existing = blacklistedPatterns.get(patternKey)!;
       if (!existing.files.includes(filePath)) {
         existing.files.push(filePath);
       }
+    } else {
+      blacklistedPatterns.set(patternKey, {
+        pattern: matchResult.pattern,
+        hint: matchResult.hint,
+        files: [filePath],
+        outputPath,
+      });
     }
   };
 

@@ -1,9 +1,8 @@
 import type { Audit } from '@code-pushup/models';
-import { slugify } from '@code-pushup/utils';
-import { formatBytes } from '@code-pushup/utils';
+import { formatBytes, slugify } from '@code-pushup/utils';
 import type { BundleStatsConfig as ExportedBundleStatsConfig } from '../index.js';
 import type { InsightsTableConfig } from './runner/audits/details/table.js';
-import { type DependencyTreeConfig } from './runner/audits/details/tree.js';
+import type { DependencyTreeConfig } from './runner/audits/details/tree.js';
 import type { PenaltyConfig, ScoringConfig } from './runner/audits/scoring.js';
 import { DEFAULT_PENALTY } from './runner/audits/scoring.js';
 import type { SelectionConfig } from './runner/audits/selection.js';
@@ -55,8 +54,8 @@ function formatStandardizedIssuesSection(scoring: ScoringConfig): string {
     if (penalty.blacklist && penalty.blacklist.length > 0) {
       items.push(
         `  - Error: \`1+\` candidates - Violation detected, requires action`,
+        `  - Info: \`0\` candidates - No violations found`,
       );
-      items.push(`  - Info: \`0\` candidates - No violations found`);
     } else if (penalty.artefactSize) {
       const [, max] = penalty.artefactSize;
       items.push(
@@ -110,14 +109,18 @@ function formatStandardizedTreeSection(
   let pruningText = 'Default settings';
   if (pruning) {
     const pruningParts: string[] = [];
-    if (pruning.minSize)
+    if (pruning.minSize) {
       pruningParts.push(`Min size: \`${formatBytes(pruning.minSize)}\``);
-    if (pruning.maxChildren)
+    }
+    if (pruning.maxChildren) {
       pruningParts.push(`Max children: \`${pruning.maxChildren}\``);
-    if (pruning.maxDepth)
+    }
+    if (pruning.maxDepth) {
       pruningParts.push(`Max depth: \`${pruning.maxDepth}\``);
-    if (pruning.pathLength)
+    }
+    if (pruning.pathLength) {
       pruningParts.push(`Path length: \`${pruning.pathLength}\``);
+    }
 
     if (pruningParts.length > 0) {
       pruningText = pruningParts.join(', ');
@@ -129,8 +132,12 @@ function formatStandardizedTreeSection(
   if (groups && groups.length > 0) {
     const groupSummaries = groups.map(group => {
       const parts: string[] = [];
-      if (group.title) parts.push(`"${group.title}"`);
-      if (group.icon) parts.push(`${group.icon}`);
+      if (group.title) {
+        parts.push(`"${group.title}"`);
+      }
+      if (group.icon) {
+        parts.push(`${group.icon}`);
+      }
       if (group.includeInputs) {
         if (Array.isArray(group.includeInputs)) {
           const includePatterns = group.includeInputs
@@ -257,13 +264,19 @@ export function prepareDescription(config: BundleStatsConfig): string {
 
     // Add standardized sections
     const scoringSection = formatStandardizedScoringSection(scoring);
-    if (scoringSection) sections.push(scoringSection);
+    if (scoringSection) {
+      sections.push(scoringSection);
+    }
 
     const issuesSection = formatStandardizedIssuesSection(scoring);
-    if (issuesSection) sections.push(issuesSection);
+    if (issuesSection) {
+      sections.push(issuesSection);
+    }
 
     const selectionSection = formatStandardizedSelectionSection(selection);
-    if (selectionSection) sections.push(selectionSection);
+    if (selectionSection) {
+      sections.push(selectionSection);
+    }
 
     // Handle insightsTable which could be false
     const normalizedInsightsTable =
@@ -271,10 +284,14 @@ export function prepareDescription(config: BundleStatsConfig): string {
     const tableSection = formatStandardizedTableSection(
       normalizedInsightsTable,
     );
-    if (tableSection) sections.push(tableSection);
+    if (tableSection) {
+      sections.push(tableSection);
+    }
 
     const treeSection = formatStandardizedTreeSection(dependencyTree);
-    if (treeSection) sections.push(treeSection);
+    if (treeSection) {
+      sections.push(treeSection);
+    }
 
     // Wrap config sections in details if any exist
     if (sections.length > 0) {
@@ -342,7 +359,7 @@ export function normalizeBundleStatsOptions(
   // Use the proper selection normalization helper that merges global patterns
   const normalizedSelection = normalizeSelectionOptions(selection);
 
-  let normalizedPenalty: false | PenaltyConfig | undefined = undefined;
+  let normalizedPenalty: false | PenaltyConfig | undefined;
   if (penalty && typeof penalty === 'object') {
     const { artefactSize, ...restPenalty } = penalty;
     normalizedPenalty = {
@@ -413,7 +430,7 @@ export function normalizeDependencyTreeOptions(
       maxChildren: 10,
       minSize: 1000,
       pathLength: 60,
-      ...(options?.pruning ?? {}),
+      ...options?.pruning,
     },
     mode: options?.mode ?? 'onlyMatching',
   };
@@ -451,13 +468,11 @@ export function normalizeRange(range: MinMax | number): MinMax {
 }
 
 export function getAuditsFromConfigs(configs: BundleStatsConfig[]): Audit[] {
-  return configs.map(({ slug, title, description }) => {
-    return {
-      slug,
-      title,
-      description,
-    };
-  });
+  return configs.map(({ slug, title, description }) => ({
+    slug,
+    title,
+    description,
+  }));
 }
 
 /**

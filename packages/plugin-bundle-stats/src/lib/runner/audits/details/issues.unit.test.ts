@@ -10,7 +10,7 @@ import {
 
 describe('createTooLargeIssue', () => {
   it('should create error issue for oversized artifact', () => {
-    expect(createTooLargeIssue('bundle.js', 1048576, 500000)).toStrictEqual({
+    expect(createTooLargeIssue('bundle.js', 1_048_576, 500_000)).toStrictEqual({
       severity: 'error',
       message: '🔺 `bundle.js` is **1 MB** _(> 488.28 kB)_',
       source: { file: 'bundle.js' },

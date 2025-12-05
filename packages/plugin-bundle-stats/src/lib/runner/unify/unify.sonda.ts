@@ -181,17 +181,23 @@ function isPartOfDependencyTree(
   entryPoint: string,
   connections: SondaConnection[],
 ): boolean {
-  if (source === entryPoint) return true;
+  if (source === entryPoint) {
+    return true;
+  }
 
   const visited = new Set<string>();
   const queue = [entryPoint];
 
   while (queue.length > 0) {
     const current = queue.shift()!;
-    if (visited.has(current)) continue;
+    if (visited.has(current)) {
+      continue;
+    }
     visited.add(current);
 
-    if (current === source) return true;
+    if (current === source) {
+      return true;
+    }
 
     // Find all imports from current
     for (const conn of connections) {
@@ -220,7 +226,9 @@ function getAllDependencies(
 
   while (queue.length > 0) {
     const current = queue.shift()!;
-    if (visited.has(current)) continue;
+    if (visited.has(current)) {
+      continue;
+    }
     visited.add(current);
 
     for (const conn of connections) {
@@ -234,5 +242,5 @@ function getAllDependencies(
     }
   }
 
-  return Array.from(deps);
+  return [...deps];
 }

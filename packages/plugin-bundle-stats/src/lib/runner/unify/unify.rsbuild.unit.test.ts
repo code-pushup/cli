@@ -10,7 +10,7 @@ describe('unifyBundlerStats', () => {
       version: '5.75.0',
       rspackVersion: '1.4.6',
       time: 18,
-      builtAt: 1752462348764,
+      builtAt: 1_752_462_348_764,
       publicPath: '/',
       outputPath: '/dist/rsbuild',
       assetsByChunkName: {
@@ -20,7 +20,7 @@ describe('unifyBundlerStats', () => {
         {
           type: 'asset',
           name: 'static/js/async/vendors-node_modules_minimatch_dist_esm_index_js.js',
-          size: 79545,
+          size: 79_545,
           emitted: true,
           cached: false,
           chunkNames: [],
@@ -31,7 +31,7 @@ describe('unifyBundlerStats', () => {
         {
           type: 'asset',
           name: 'static/js/index.js',
-          size: 38142,
+          size: 38_142,
           emitted: true,
           cached: false,
           chunkNames: ['index'],
@@ -71,7 +71,7 @@ describe('unifyBundlerStats', () => {
           size: 1384,
           sizes: {
             javascript: 1384,
-            runtime: 32421,
+            runtime: 32_421,
           },
           names: ['index'],
           idHints: [],
@@ -368,9 +368,9 @@ describe('unifyBundlerStats', () => {
           initial: false,
           entry: false,
           reason: 'split chunk (cache group: defaultVendors)',
-          size: 75559,
+          size: 75_559,
           sizes: {
-            javascript: 75559,
+            javascript: 75_559,
           },
           names: [],
           idHints: ['vendors'],
@@ -391,9 +391,9 @@ describe('unifyBundlerStats', () => {
             {
               type: 'module',
               moduleType: 'javascript/esm',
-              size: 39098,
+              size: 39_098,
               sizes: {
-                javascript: 39098,
+                javascript: 39_098,
               },
               built: true,
               codeGenerated: true,
@@ -485,11 +485,11 @@ describe('unifyBundlerStats', () => {
         index: {
           name: 'index',
           chunks: ['index'],
-          assets: [{ name: 'static/js/index.js', size: 38142 }],
+          assets: [{ name: 'static/js/index.js', size: 38_142 }],
           filteredAssets: 0,
-          assetsSize: 38142,
-          auxiliaryAssets: [{ name: 'static/js/index.js.map', size: 45982 }],
-          auxiliaryAssetsSize: 45982,
+          assetsSize: 38_142,
+          auxiliaryAssets: [{ name: 'static/js/index.js.map', size: 45_982 }],
+          auxiliaryAssetsSize: 45_982,
           children: {},
           childAssets: {},
           isOverSizeLimit: false,
@@ -499,11 +499,11 @@ describe('unifyBundlerStats', () => {
         index: {
           name: 'index',
           chunks: ['index'],
-          assets: [{ name: 'static/js/index.js', size: 38142 }],
+          assets: [{ name: 'static/js/index.js', size: 38_142 }],
           filteredAssets: 0,
-          assetsSize: 38142,
-          auxiliaryAssets: [{ name: 'static/js/index.js.map', size: 45982 }],
-          auxiliaryAssetsSize: 45982,
+          assetsSize: 38_142,
+          auxiliaryAssets: [{ name: 'static/js/index.js.map', size: 45_982 }],
+          auxiliaryAssetsSize: 45_982,
           children: {},
           childAssets: {},
           isOverSizeLimit: false,
@@ -521,7 +521,7 @@ describe('unifyBundlerStats', () => {
     expect(result).toEqual({
       'static/js/index.js': {
         path: 'static/js/index.js',
-        bytes: 38142,
+        bytes: 38_142,
         imports: [
           {
             path: './lib/feature-1',
@@ -565,7 +565,7 @@ describe('unifyBundlerStats', () => {
       },
       'static/js/async/vendors-node_modules_minimatch_dist_esm_index_js.js': {
         path: 'static/js/async/vendors-node_modules_minimatch_dist_esm_index_js.js',
-        bytes: 79545,
+        bytes: 79_545,
         imports: [
           {
             path: 'minimatch',
@@ -575,7 +575,7 @@ describe('unifyBundlerStats', () => {
         ],
         inputs: {
           '../../../../../node_modules/minimatch/dist/esm/index.js': {
-            bytes: 39098,
+            bytes: 39_098,
           },
         },
       },

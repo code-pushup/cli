@@ -51,7 +51,7 @@ describe('generateAuditOutputs', () => {
             },
             scoring: {
               mode: 'onlyMatching',
-              totalSize: [1000, 10000],
+              totalSize: [1000, 10_000],
             },
           },
         ],

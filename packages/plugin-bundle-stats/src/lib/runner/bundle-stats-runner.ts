@@ -24,10 +24,10 @@ import { unifyBundlerStats as unifySondaStats } from './unify/unify.sonda.js';
 import { unifyBundlerStats as unifyViteStats } from './unify/unify.vite.js';
 import { unifyBundlerStats as unifyWebpackStats } from './unify/unify.webpack.js';
 
-export interface BundleStatsRunnerConfig extends PluginArtifactOptions {
+export type BundleStatsRunnerConfig = {
   bundler: SupportedBundlers;
   bundleStatsConfigs: BundleStatsConfig[];
-}
+} & PluginArtifactOptions;
 
 /**
  * Validates bundle stats data structure based on bundler type. Ensures stats and required properties are properly defined.
@@ -42,7 +42,7 @@ export function validateBundleStats(
   }
 
   if (typeof stats !== 'object') {
-    throw new Error(
+    throw new TypeError(
       `Bundle stats file has invalid structure: ${artefactsPath}`,
     );
   }
@@ -158,8 +158,8 @@ export function mergeDependencyTreeConfig(
         maxDepth: 2,
         maxChildren: 20,
         pathLength: 60,
-        ...(pluginOptions?.pruning ?? {}),
-        ...(auditConfig?.pruning ?? {}),
+        ...pluginOptions?.pruning,
+        ...auditConfig?.pruning,
       },
       mode: auditConfig?.mode ?? 'onlyMatching',
     };
@@ -175,7 +175,7 @@ export function mergeDependencyTreeConfig(
         maxDepth: 2,
         maxChildren: 10,
         pathLength: 60,
-        ...(auditConfig?.pruning ?? {}),
+        ...auditConfig?.pruning,
       },
       mode: auditConfig.mode ?? 'onlyMatching',
     };
@@ -193,7 +193,7 @@ export function mergeSelectionConfig(
 ): SelectionConfig {
   return {
     // mode from audit config takes precedence
-    mode: auditConfig?.mode != null ? auditConfig.mode : 'bundle',
+    mode: auditConfig?.mode == null ? 'bundle' : auditConfig.mode,
 
     // Include arrays overwrite - config takes precedence for scope clarity
     includeOutputs: auditConfig?.includeOutputs ?? [],
@@ -308,7 +308,7 @@ export async function bundleStatsRunner(
     }
 
     if (Array.isArray(artifactsPaths)) {
-      throw new Error(
+      throw new TypeError(
         'The bundle stats plugin does not support multiple artifact paths. Request feature on GitHub.',
       );
     }
@@ -344,14 +344,14 @@ export function mergeAuditConfigs(
       ),
       selection: mergeSelectionConfig(config.selection, options.selection),
       scoring: mergeScoringConfig(config.scoring, options.scoring),
-      ...(configInsights !== false
-        ? {
+      ...(configInsights === false
+        ? {}
+        : {
             insightsTable: mergeInsightsConfig(
               configInsights,
               options.insightsTable,
             ),
-          }
-        : {}),
+          }),
     };
   });
 }

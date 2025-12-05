@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { unifyBundlerStats } from './unify.sonda.js';
-import type { SondaCoreStats } from './unify.sonda.js';
+import { type SondaCoreStats, unifyBundlerStats } from './unify.sonda.js';
 
 describe('unifyBundlerStats (Sonda)', () => {
   it('should handle minimal stats with single asset', () => {

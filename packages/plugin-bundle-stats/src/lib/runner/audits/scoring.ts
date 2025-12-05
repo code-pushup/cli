@@ -70,8 +70,11 @@ export function calculatePenalty(
   let warningCount = 0;
 
   for (const issue of issues) {
-    if (issue.severity === 'error') errorCount++;
-    else if (issue.severity === 'warning') warningCount++;
+    if (issue.severity === 'error') {
+      errorCount++;
+    } else if (issue.severity === 'warning') {
+      warningCount++;
+    }
   }
 
   const penaltyValue = errorWeight * errorCount + warningWeight * warningCount;
@@ -148,7 +151,7 @@ export function createBundleStatsScoring(
 
     if (!totalSize) {
       // No size constraints - default to perfect score (100%)
-      sizeScore = 1.0;
+      sizeScore = 1;
     } else if (Array.isArray(totalSize)) {
       // Range thresholds [min, max]
       const [minThreshold, maxThreshold] = totalSize;
@@ -156,12 +159,12 @@ export function createBundleStatsScoring(
       if (value < minThreshold) {
         sizeScore = Math.max(0, value / minThreshold);
       } else if (value <= maxThreshold) {
-        sizeScore = 1.0;
+        sizeScore = 1;
       } else {
         sizeScore = 0;
       }
     } else {
-      sizeScore = value <= totalSize ? 1.0 : 0;
+      sizeScore = value <= totalSize ? 1 : 0;
     }
 
     if (penalty === false || penalty === undefined || issues.length === 0) {

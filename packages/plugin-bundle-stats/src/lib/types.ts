@@ -4,8 +4,7 @@ import type {
   TablePruningConfig,
 } from './runner/audits/details/table.js';
 import type { DependencyTreeConfig } from './runner/audits/details/tree.js';
-import type { PenaltyConfig } from './runner/audits/scoring.js';
-import type { ScoringConfig } from './runner/audits/scoring.js';
+import type { PenaltyConfig, ScoringConfig } from './runner/audits/scoring.js';
 import type { SelectionConfig } from './runner/audits/selection.js';
 import type { SupportedBundlers } from './runner/types.js';
 

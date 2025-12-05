@@ -23,13 +23,12 @@
   },
   "type": "module",
   "dependencies": {
-    "@code-pushup/models": "0.69.2",
-    "@code-pushup/utils": "0.69.2",
-    "zod": "^3.23.8"
+    "@code-pushup/models": "0.92.1",
+    "@code-pushup/utils": "0.92.1",
+    "minimatch": "^10.0.1",
+    "vite": "6.3.5"
   },
-  "peerDependencies": {
-    "typescript": ">=4.0.0"
-  },
+  "peerDependencies": {},
   "scripts": {},
   "devDependencies": {
     "@angular/cli": "^20.0.3",

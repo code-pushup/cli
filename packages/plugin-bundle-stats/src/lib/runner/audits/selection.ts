@@ -40,20 +40,26 @@ function compilePatterns(patterns: string[]): PatternMatcher[] {
 
 function matchesAnyPattern(path: string, patterns: PatternMatcher[]): boolean {
   for (const pattern of patterns) {
-    if (pattern(path)) return true; // Early exit on first match
+    if (pattern(path)) {
+      return true;
+    } // Early exit on first match
   }
   return false;
 }
 
 function* getInputPaths(bundle: UnifiedStatsBundle): Generator<string> {
-  if (!bundle.inputs) return;
+  if (!bundle.inputs) {
+    return;
+  }
   for (const path of Object.keys(bundle.inputs)) {
     yield path;
   }
 }
 
 function* getImportPaths(bundle: UnifiedStatsBundle): Generator<string> {
-  if (!bundle.imports) return;
+  if (!bundle.imports) {
+    return;
+  }
   for (const imp of bundle.imports) {
     yield imp.path;
   }
@@ -63,9 +69,13 @@ function hasMatchingInput(
   bundle: UnifiedStatsBundle,
   patterns: PatternMatcher[],
 ): boolean {
-  if (patterns.length === 0) return false;
+  if (patterns.length === 0) {
+    return false;
+  }
   for (const path of getInputPaths(bundle)) {
-    if (matchesAnyPattern(path, patterns)) return true; // Stop on first match
+    if (matchesAnyPattern(path, patterns)) {
+      return true;
+    } // Stop on first match
   }
   return false;
 }
@@ -74,9 +84,13 @@ function hasExcludedInput(
   bundle: UnifiedStatsBundle,
   patterns: PatternMatcher[],
 ): boolean {
-  if (patterns.length === 0) return false;
+  if (patterns.length === 0) {
+    return false;
+  }
   for (const path of getInputPaths(bundle)) {
-    if (matchesAnyPattern(path, patterns)) return true; // Stop on first exclusion
+    if (matchesAnyPattern(path, patterns)) {
+      return true;
+    } // Stop on first exclusion
   }
   return false;
 }
@@ -86,28 +100,38 @@ function pathsMatchPatterns(
   includePatterns: PatternMatcher[],
   excludePatterns: PatternMatcher[],
 ): boolean {
-  if (includePatterns.length === 0 && excludePatterns.length === 0) return true;
+  if (includePatterns.length === 0 && excludePatterns.length === 0) {
+    return true;
+  }
 
   const pathArray: string[] = [];
   for (const path of paths) {
     pathArray.push(path);
   }
 
-  if (pathArray.length === 0) return includePatterns.length === 0;
+  if (pathArray.length === 0) {
+    return includePatterns.length === 0;
+  }
 
   // Check excludes first (early exit)
   if (excludePatterns.length > 0) {
     for (const path of pathArray) {
-      if (matchesAnyPattern(path, excludePatterns)) return false;
+      if (matchesAnyPattern(path, excludePatterns)) {
+        return false;
+      }
     }
   }
 
   // If no includes specified, and nothing excluded, include it
-  if (includePatterns.length === 0) return true;
+  if (includePatterns.length === 0) {
+    return true;
+  }
 
   // Check includes
   for (const path of pathArray) {
-    if (matchesAnyPattern(path, includePatterns)) return true;
+    if (matchesAnyPattern(path, includePatterns)) {
+      return true;
+    }
   }
 
   return false;
@@ -118,32 +142,40 @@ const bundleSelectors = {
   matchingOnly: (
     bundle: UnifiedStatsBundle,
     patterns: CompiledPatterns,
-  ): boolean => {
-    return (
-      patterns.includeInputs.length > 0 &&
-      hasMatchingInput(bundle, patterns.includeInputs)
-    );
-  },
+  ): boolean =>
+    patterns.includeInputs.length > 0 &&
+    hasMatchingInput(bundle, patterns.includeInputs),
 
   bundle: (bundle: UnifiedStatsBundle, patterns: CompiledPatterns): boolean => {
     const hasIncludePatterns =
       patterns.includeOutputs.length > 0 || patterns.includeInputs.length > 0;
-    if (!hasIncludePatterns) return false;
+    if (!hasIncludePatterns) {
+      return false;
+    }
 
     // Check output patterns
-    if (patterns.includeOutputs.length > 0) {
-      if (!matchesAnyPattern(bundle.path, patterns.includeOutputs))
-        return false;
+    if (
+      patterns.includeOutputs.length > 0 &&
+      !matchesAnyPattern(bundle.path, patterns.includeOutputs)
+    ) {
+      return false;
     }
 
     // Check input patterns
-    if (patterns.includeInputs.length > 0) {
-      if (!hasMatchingInput(bundle, patterns.includeInputs)) return false;
+    if (
+      patterns.includeInputs.length > 0 &&
+      !hasMatchingInput(bundle, patterns.includeInputs)
+    ) {
+      return false;
     }
 
     // Check exclusions
-    if (matchesAnyPattern(bundle.path, patterns.excludeOutputs)) return false;
-    if (hasExcludedInput(bundle, patterns.excludeInputs)) return false;
+    if (matchesAnyPattern(bundle.path, patterns.excludeOutputs)) {
+      return false;
+    }
+    if (hasExcludedInput(bundle, patterns.excludeInputs)) {
+      return false;
+    }
 
     return true;
   },
@@ -151,23 +183,21 @@ const bundleSelectors = {
   withStartupDeps: (
     bundle: UnifiedStatsBundle,
     patterns: CompiledPatterns,
-  ): boolean => {
-    return bundleSelectors.bundle(bundle, patterns);
-  },
+  ): boolean => bundleSelectors.bundle(bundle, patterns),
 
   withAllDeps: (
     bundle: UnifiedStatsBundle,
     patterns: CompiledPatterns,
-  ): boolean => {
-    return bundleSelectors.bundle(bundle, patterns);
-  },
+  ): boolean => bundleSelectors.bundle(bundle, patterns),
 };
 
 function processMatchingOnlyBundle(
   bundle: UnifiedStatsBundle,
   patterns: CompiledPatterns,
 ): UnifiedStatsBundle | null {
-  if (!bundle.inputs) return null;
+  if (!bundle.inputs) {
+    return null;
+  }
 
   const filteredInputs: typeof bundle.inputs = {};
   let filteredBytes = 0;
@@ -194,7 +224,9 @@ function collectImportsForMode(
   bundle: UnifiedStatsBundle,
   mode: SelectionMode,
 ): string[] {
-  if (!bundle.imports) return [];
+  if (!bundle.imports) {
+    return [];
+  }
 
   const imports: string[] = [];
   for (const imp of bundle.imports) {
@@ -311,16 +343,23 @@ export function selectBundles(
     // Process imports with optimized lookups and early exits
     while (importsToProcess.length > 0) {
       const importPath = importsToProcess.pop()!;
-      if (processed.has(importPath)) continue; // Early exit
+      if (processed.has(importPath)) {
+        continue;
+      } // Early exit
       processed.add(importPath);
 
       const found = findBundleByPath(importPath);
-      if (!found || selectedBundles.has(found.key)) continue; // Early exit
+      if (!found || selectedBundles.has(found.key)) {
+        continue;
+      } // Early exit
 
       // Check if import should be excluded
-      if (matchesAnyPattern(found.bundle.path, patterns.excludeOutputs))
+      if (matchesAnyPattern(found.bundle.path, patterns.excludeOutputs)) {
         continue;
-      if (hasExcludedInput(found.bundle, patterns.excludeInputs)) continue;
+      }
+      if (hasExcludedInput(found.bundle, patterns.excludeInputs)) {
+        continue;
+      }
 
       selectedBundles.set(found.key, found.bundle);
 

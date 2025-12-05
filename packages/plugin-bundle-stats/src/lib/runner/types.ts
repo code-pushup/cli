@@ -30,22 +30,22 @@ export type BundleStatsConfig = AuditOptions & {
   insightsTable?: InsightsTableConfig | false;
 };
 
-export interface PluginArtefactOptions {
+export type PluginArtefactOptions = {
   generateArtefacts?: {
     command: string;
     args: string[];
   };
   artefactsPath: string;
   bundler: SupportedBundlers;
-}
+};
 
-export interface BundleStatsRunnerConfig extends PluginArtefactOptions {
+export type BundleStatsRunnerConfig = {
   audits: BundleStatsConfig[];
   scoring?: PluginScoringOptions;
   dependencyTree?: PluginDependencyTreeOptions;
   insightsTable?: InsightsTableConfig;
   selection?: PluginSelectionOptions;
-}
+} & PluginArtefactOptions;
 
 type OptionalGroupingRule = {
   title?: string;
@@ -62,31 +62,31 @@ export type LogicalGroupingRule = Omit<GroupingRule, 'maxDepth'> & {
   maxDepth: 1;
 };
 
-export interface MinimalBundleStats {
+export type MinimalBundleStats = {
   name: string;
   total: number;
   chunks: ChunkBundleStats[];
-}
+};
 
-export interface ChunkBundleStats {
+export type ChunkBundleStats = {
   name: string;
   size: number;
   modules: ModuleBundleStats[];
-}
+};
 
-export interface ModuleBundleStats {
+export type ModuleBundleStats = {
   name: string;
   size: number;
-}
+};
 
-export interface Grouping {
+export type Grouping = {
   title: string;
   patterns: string | PatternList;
   icon?: string;
   maxDepth?: number;
-}
+};
 
-export interface Insight {
+export type Insight = {
   pattern: string | PatternList;
   label: string;
-}
+};

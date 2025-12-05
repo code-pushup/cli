@@ -1,11 +1,11 @@
 import { minimatch } from 'minimatch';
-import type { GroupingRule, LogicalGroupingRule } from '../../types';
+import type { GroupingRule, LogicalGroupingRule } from '../../types.js';
 import {
   cleanupGroupName,
   deriveGroupTitle,
   extractGroupKeyFromPattern,
-} from './formatting';
-import type { ArtefactType, StatsNodeValues } from './types';
+} from './formatting.js';
+import type { ArtefactType, StatsNodeValues } from './types.js';
 
 export type PatternMatcher = (path: string) => boolean;
 
@@ -18,7 +18,9 @@ const PATTERN_CACHE = new Map<string, PatternMatcher>();
 function normalizePatterns(
   patterns?: string | readonly string[],
 ): readonly string[] {
-  if (!patterns) return [];
+  if (!patterns) {
+    return [];
+  }
 
   const normalizedArray = typeof patterns === 'string' ? [patterns] : patterns;
 
@@ -29,26 +31,26 @@ function normalizePatterns(
   );
 }
 
-export interface MatchOptions {
+export type MatchOptions = {
   matchBase?: boolean;
   normalizeRelativePaths?: boolean;
-}
+};
 
 export type GroupData = Omit<StatsNodeValues, 'type' | 'path'> & {
   title: string;
   type: 'group';
 };
 
-export interface GroupManager<T extends GroupData = GroupData> {
+export type GroupManager<T extends GroupData = GroupData> = {
   groups: Map<string, T>;
-  findOrCreateGroup(
+  findOrCreateGroup: (
     key: string,
     rule: LogicalGroupingRule,
     defaultTitle?: string,
-  ): T;
-  getAllGroups(): T[];
-  getGroupsWithData(): T[];
-}
+  ) => T;
+  getAllGroups: () => T[];
+  getGroupsWithData: () => T[];
+};
 
 export type StatsTreeNode = {
   children: StatsTreeNode[];
@@ -56,9 +58,9 @@ export type StatsTreeNode = {
   values: StatsNodeValues;
 };
 
-export interface StatsTree {
+export type StatsTree = {
   root: StatsTreeNode;
-}
+};
 
 const DEFAULT_GROUP_NAME = 'Group';
 
@@ -82,12 +84,16 @@ export function compilePattern(
 
   // Return cached pattern if available
   const cached = PATTERN_CACHE.get(cacheKey);
-  if (cached) return cached;
+  if (cached) {
+    return cached;
+  }
 
   // Compile new pattern
   const matcher = (path: string) => {
     const minimatchOptions = options.matchBase ? { matchBase: true } : {};
-    if (minimatch(path, pattern, minimatchOptions)) return true;
+    if (minimatch(path, pattern, minimatchOptions)) {
+      return true;
+    }
     if (options.normalizeRelativePaths) {
       const normalizedPath = normalizePathForMatching(path);
       return minimatch(normalizedPath, pattern, minimatchOptions);
@@ -199,8 +205,7 @@ export function findMatchingRule(
   filePath: string,
   rules: GroupingRule[],
 ): GroupingRule | null {
-  for (let i = 0; i < rules.length; i++) {
-    const rule = rules[i];
+  for (const rule of rules) {
     if (
       rule &&
       matchesGroupingRule(filePath, rule, {
@@ -219,7 +224,9 @@ export function generateGroupKey(
   rule: GroupingRule,
   preferRuleTitle = false,
 ): string {
-  if (preferRuleTitle && rule.title) return rule.title;
+  if (preferRuleTitle && rule.title) {
+    return rule.title;
+  }
 
   // For new include/exclude format, use the include patterns for title generation
   const includePatterns = normalizePatterns(rule.includeInputs);
@@ -283,7 +290,9 @@ export function processForTable(
   preferRuleTitle = true,
 ): { rule: GroupingRule | null; groupKey: string | null } {
   const rule = findMatchingRule(filePath, rules);
-  if (!rule) return { rule: null, groupKey: null };
+  if (!rule) {
+    return { rule: null, groupKey: null };
+  }
   const groupKey = generateGroupKey(filePath, rule, preferRuleTitle);
   return { rule, groupKey };
 }
@@ -295,7 +304,7 @@ export function extractConcreteSegments(pattern: string): string[] {
 }
 
 export function findSegmentIndex(filePath: string, segment: string): number {
-  return splitPathSegments(filePath).findIndex(part => part === segment);
+  return splitPathSegments(filePath).indexOf(segment);
 }
 
 export function extractPathSlice(
@@ -320,7 +329,9 @@ function extractIntelligentGroupKey(
   // Try pattern-based extraction first
   for (const pattern of patterns) {
     const patternKey = extractGroupKeyFromPattern(filePath, pattern, maxDepth);
-    if (patternKey) return patternKey;
+    if (patternKey) {
+      return patternKey;
+    }
   }
 
   // Fallback to simple depth-based extraction from the beginning of path
@@ -358,12 +369,17 @@ function checkForScopedPackages(paths: string[]): string | null {
 }
 
 function findCommonPath(paths: string[]): string {
-  if (paths.length === 0) return DEFAULT_GROUP_NAME;
-  if (paths.length === 1)
+  if (paths.length === 0) {
+    return DEFAULT_GROUP_NAME;
+  }
+  if (paths.length === 1) {
     return deriveGroupTitle(paths[0]!, [], DEFAULT_GROUP_NAME);
+  }
 
   const scopedPackagePattern = checkForScopedPackages(paths);
-  if (scopedPackagePattern) return scopedPackagePattern;
+  if (scopedPackagePattern) {
+    return scopedPackagePattern;
+  }
 
   const commonRelativePrefix = paths.every(path => path.startsWith('../'))
     ? '../'
@@ -376,12 +392,15 @@ function findCommonPath(paths: string[]): string {
   });
 
   const firstPath = normalizedPaths[0];
-  if (!firstPath || firstPath.length === 0) return DEFAULT_GROUP_NAME;
+  if (!firstPath || firstPath.length === 0) {
+    return DEFAULT_GROUP_NAME;
+  }
 
-  let commonSegments: string[] = [];
-  for (let i = 0; i < firstPath.length; i++) {
-    const segment = firstPath[i];
-    if (!segment) continue;
+  const commonSegments: string[] = [];
+  for (const [i, segment] of firstPath.entries()) {
+    if (!segment) {
+      continue;
+    }
     const isCommonToAll = normalizedPaths.every(
       pathSegments => pathSegments && pathSegments[i] === segment,
     );
@@ -393,9 +412,10 @@ function findCommonPath(paths: string[]): string {
   }
 
   if (commonSegments.length > 0) {
-    const commonPath = commonRelativePrefix + commonSegments.join('/') + '/**';
-    if (commonPath.includes('@*/') || commonPath.includes('*/'))
+    const commonPath = `${commonRelativePrefix + commonSegments.join('/')}/**`;
+    if (commonPath.includes('@*/') || commonPath.includes('*/')) {
       return DEFAULT_GROUP_NAME;
+    }
     return commonPath;
   }
 
@@ -411,7 +431,9 @@ function findCommonPath(paths: string[]): string {
 
   const dirCounts = parentDirs.reduce(
     (acc, dir) => {
-      if (dir) acc[dir] = (acc[dir] || 0) + 1;
+      if (dir) {
+        acc[dir] = (acc[dir] || 0) + 1;
+      }
       return acc;
     },
     {} as Record<string, number>,
@@ -421,7 +443,7 @@ function findCommonPath(paths: string[]): string {
     ([, a], [, b]) => (b as number) - (a as number),
   )[0]?.[0];
   return mostCommonDir
-    ? commonRelativePrefix + mostCommonDir + '/**'
+    ? `${commonRelativePrefix + mostCommonDir}/**`
     : DEFAULT_GROUP_NAME;
 }
 
@@ -464,7 +486,7 @@ export function applyGrouping(
     });
 
     if (nodesToGroup.length > 0) {
-      let groupedNodes: StatsTreeNode[] = [];
+      const groupedNodes: StatsTreeNode[] = [];
 
       // When reduce is true, always create a single consolidated group
       const shouldCreateSingleGroup = !maxDepth || maxDepth === 0;
@@ -477,7 +499,9 @@ export function applyGrouping(
             normalizePatterns(includeInputs),
             maxDepth,
           );
-          if (!pathGroups.has(groupKey)) pathGroups.set(groupKey, []);
+          if (!pathGroups.has(groupKey)) {
+            pathGroups.set(groupKey, []);
+          }
           pathGroups.get(groupKey)!.push(node);
         });
 
@@ -498,7 +522,7 @@ export function applyGrouping(
               bytes: totalBytes,
               modules: totalModules,
               type: 'group',
-              icon: icon,
+              icon,
             },
             children: nodesInGroup.sort(
               (a, b) => b.values.bytes - a.values.bytes,

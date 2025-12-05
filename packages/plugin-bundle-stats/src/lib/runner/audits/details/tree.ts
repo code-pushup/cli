@@ -1,14 +1,14 @@
 import type { BasicTree, BasicTreeNode } from '@code-pushup/models';
 import { formatBytes, pluralizeToken, truncateText } from '@code-pushup/utils';
-import type { GroupingRule } from '../../types';
+import type { GroupingRule } from '../../types.js';
 import type { UnifiedStats } from '../../unify/unified-stats.types';
-import { type SelectionConfig } from '../selection.js';
+import type { SelectionConfig } from '../selection.js';
 import {
   type StatsTreeNode,
   applyGrouping as applyGroupingAndSort,
-} from './grouping';
+} from './grouping.js';
 import type { SharedViewConfig } from './table.js';
-import type { StatsNodeValues } from './types';
+import type { StatsNodeValues } from './types.js';
 
 /**
  * Helper type that transforms picked properties by adding "Display" suffix and making them strings.
@@ -33,31 +33,31 @@ export type FormattedStatsTreeNode = {
 /**
  * Display tree structure for bundle statistics output.
  */
-export interface FormattedStatsTree {
+export type FormattedStatsTree = {
   root: FormattedStatsTreeNode;
-}
+};
 
 export const DEFAULT_PATH_LENGTH = 40;
 
 // Simple performance optimization: single cache for formatted strings
 const STRING_FORMAT_CACHE = new Map<string, string>();
 
-export interface DependencyTreeConfig extends SharedViewConfig {
+export type DependencyTreeConfig = {
   groups?: GroupingRule[] | false;
   pruning?: PruningConfig;
-}
+} & SharedViewConfig;
 
-export interface PruningConfig {
+export type PruningConfig = {
   enabled?: boolean;
   maxChildren?: number;
   maxDepth?: number;
   minSize?: number;
   pathLength?: number | false;
-}
+};
 
-export interface PruneTreeNode {
+export type PruneTreeNode = {
   children: StatsTreeNode[];
-}
+};
 
 /**
  * Converts statistics to tree structure. Streamlined for speed.
@@ -148,7 +148,7 @@ export function formatStatsTreeForDisplay(
   node: StatsTreeNode,
   pathLength: number | false = DEFAULT_PATH_LENGTH,
 ): FormattedStatsTreeNode {
-  const maxChars = pathLength !== false ? pathLength : DEFAULT_PATH_LENGTH;
+  const maxChars = pathLength === false ? DEFAULT_PATH_LENGTH : pathLength;
 
   // Clean name truncation (no icons or size info)
   const cleanName =
@@ -214,14 +214,14 @@ export function createTree(
   const { title, groups, pruning, mode, selection } = options;
 
   // Simple cache management
-  if (STRING_FORMAT_CACHE.size > 25000) {
+  if (STRING_FORMAT_CACHE.size > 25_000) {
     STRING_FORMAT_CACHE.clear();
   }
 
   let nodes = convertStatsToTree(statsSlice);
 
   // Apply grouping if needed
-  if (Array.isArray(groups) && groups.length && nodes.length) {
+  if (Array.isArray(groups) && groups.length > 0 && nodes.length > 0) {
     // Apply grouping only to inputs (children) within each output file
     // Don't group the output files themselves
     for (const node of nodes) {

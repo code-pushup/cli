@@ -1,8 +1,7 @@
 import type { AuditOutput } from '@code-pushup/models';
 import type { BundleStatsConfig } from '../types.js';
 import type { UnifiedStats } from '../unify/unified-stats.types.js';
-import { createDisplayValue } from '../utils.js';
-import { createEmptyAudit } from '../utils.js';
+import { createDisplayValue, createEmptyAudit } from '../utils.js';
 import { createAuditOutputDetails } from './details/audit-details.js';
 import { getIssues } from './details/issues.js';
 import { createBundleStatsScoring } from './scoring.js';

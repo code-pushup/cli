@@ -1,4 +1,4 @@
-import { bundleStatsPlugin } from './lib/bundle-stats-plugin';
+import { bundleStatsPlugin } from './lib/bundle-stats-plugin.js';
 
 export type {
   BundleStatsAuditOptions as BundleStatsOptions,
@@ -7,7 +7,7 @@ export type {
 export type {
   GroupingRule,
   PatternList,
-  BundleStatsConfig as BundleStatsConfig,
+  BundleStatsConfig,
 } from './lib/runner/types.js';
 export type { BlacklistEntry } from './lib/runner/audits/scoring.js';
 

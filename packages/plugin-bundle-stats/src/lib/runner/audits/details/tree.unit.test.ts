@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { GroupingRule } from '../../types';
-import { type StatsTreeNode, applyGrouping } from './grouping';
+import type { GroupingRule } from '../../types.js';
+import { type StatsTreeNode, applyGrouping } from './grouping.js';
 
 describe('applyGrouping', () => {
   it('should group inputs by single pattern', () => {

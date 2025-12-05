@@ -53,7 +53,7 @@ export type WebpackChunk = {
 export type WebpackEntrypoint = {
   name: string;
   chunks: string[];
-  assets: Array<{ name: string; size: number }>;
+  assets: { name: string; size: number }[];
 };
 
 export type WebpackCoreStats = {
@@ -107,10 +107,14 @@ export function unifyBundlerStats(stats: WebpackCoreStats): UnifiedStats {
 
     for (const chunkId of asset.chunks) {
       const chunk = chunksMap.get(chunkId);
-      if (!chunk) continue;
+      if (!chunk) {
+        continue;
+      }
 
       for (const module of chunk.modules) {
-        if (module.type === 'runtime') continue;
+        if (module.type === 'runtime') {
+          continue;
+        }
 
         if (unifiedOutput.inputs) {
           unifiedOutput.inputs[module.name] = {
@@ -128,16 +132,15 @@ export function unifyBundlerStats(stats: WebpackCoreStats): UnifiedStats {
               });
             }
           } else if (
-            reason.type === 'harmony side effect evaluation' ||
-            reason.type === 'harmony import specifier'
+            (reason.type === 'harmony side effect evaluation' ||
+              reason.type === 'harmony import specifier') &&
+            unifiedOutput.imports
           ) {
-            if (unifiedOutput.imports) {
-              unifiedOutput.imports.push({
-                path: reason.userRequest,
-                kind: 'import-statement',
-                original: reason.userRequest,
-              });
-            }
+            unifiedOutput.imports.push({
+              path: reason.userRequest,
+              kind: 'import-statement',
+              original: reason.userRequest,
+            });
           }
         }
       }

@@ -62,10 +62,12 @@ export function unifyBundlerStats(
   const outputKeys = Object.keys(stats.outputs);
   const result: UnifiedStats = {};
 
-  for (let i = 0; i < outputKeys.length; i++) {
-    const outputName = outputKeys[i]!;
+  for (const outputKey of outputKeys) {
+    const outputName = outputKey!;
     const outputInfo = stats.outputs[outputName];
-    if (!outputInfo) continue;
+    if (!outputInfo) {
+      continue;
+    }
 
     // Skip outputs that match exclude patterns
     if (shouldExcludeOutput(outputName, excludeOutputs)) {
@@ -112,8 +114,8 @@ export function unifyBundlerStats(
       if (inputKeys.length > 0) {
         const inputs: Record<string, { bytes: number }> = {};
 
-        for (let j = 0; j < inputKeys.length; j++) {
-          const inputPath = inputKeys[j]!;
+        for (const inputKey of inputKeys) {
+          const inputPath = inputKey!;
           const outputInputInfo = outputInputs[inputPath];
 
           if (outputInputInfo?.bytesInOutput !== undefined) {

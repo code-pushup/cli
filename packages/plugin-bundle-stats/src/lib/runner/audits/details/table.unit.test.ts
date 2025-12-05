@@ -8,10 +8,10 @@ describe('aggregateAndSortGroups', () => {
         {
           'dist/app.js': {
             path: 'dist/app.js',
-            bytes: 18000,
+            bytes: 18_000,
             inputs: {
               'src/feature-1.ts': { bytes: 8000 },
-              'src/feature-2.ts': { bytes: 10000 },
+              'src/feature-2.ts': { bytes: 10_000 },
             },
           },
           'dist/utils.js': {
@@ -40,7 +40,7 @@ describe('aggregateAndSortGroups', () => {
       groups: [
         {
           title: 'Feature 2',
-          bytes: 10000,
+          bytes: 10_000,
           icon: undefined,
           modules: 1,
           type: 'group',
@@ -63,9 +63,9 @@ describe('aggregateAndSortGroups', () => {
         {
           'dist/feature-2.js': {
             path: 'dist/feature-2.js',
-            bytes: 12000,
+            bytes: 12_000,
             inputs: {
-              'src/feature-2.ts': { bytes: 10000 },
+              'src/feature-2.ts': { bytes: 10_000 },
             },
           },
         },
@@ -82,7 +82,7 @@ describe('aggregateAndSortGroups', () => {
       groups: [
         {
           title: 'Feature 2',
-          bytes: 12000,
+          bytes: 12_000,
           icon: undefined,
           modules: 0,
           type: 'group',
@@ -98,7 +98,7 @@ describe('aggregateAndSortGroups', () => {
         {
           'dist/app.js': {
             path: 'dist/app.js',
-            bytes: 20000,
+            bytes: 20_000,
             inputs: {
               'src/feature-1.ts': { bytes: 8000 },
               'src/feature-2.ts': { bytes: 8000 },
@@ -124,7 +124,7 @@ describe('aggregateAndSortGroups', () => {
           type: 'group',
         },
       ],
-      restGroup: { title: 'Rest', bytes: 12000 },
+      restGroup: { title: 'Rest', bytes: 12_000 },
     });
   });
 
@@ -134,9 +134,9 @@ describe('aggregateAndSortGroups', () => {
         {
           'dist/feature-2.js': {
             path: 'dist/feature-2.js',
-            bytes: 12000,
+            bytes: 12_000,
             inputs: {
-              'src/feature-2.ts': { bytes: 10000 },
+              'src/feature-2.ts': { bytes: 10_000 },
             },
           },
         },
@@ -153,7 +153,7 @@ describe('aggregateAndSortGroups', () => {
       groups: [
         {
           title: 'Feature 2',
-          bytes: 10000,
+          bytes: 10_000,
           icon: undefined,
           modules: 1,
           type: 'group',
@@ -169,7 +169,7 @@ describe('aggregateAndSortGroups', () => {
         {
           'dist/app.js': {
             path: 'dist/app.js',
-            bytes: 10100,
+            bytes: 10_100,
             inputs: {
               'src/feature.ts': { bytes: 8100 },
             },
@@ -204,10 +204,10 @@ describe('aggregateAndSortGroups', () => {
         {
           'dist/app.js': {
             path: 'dist/app.js',
-            bytes: 25000,
+            bytes: 25_000,
             inputs: {
               'src/index.ts': { bytes: 5000 },
-              'src/feature-1.ts': { bytes: 10000 },
+              'src/feature-1.ts': { bytes: 10_000 },
               'src/feature-2.ts': { bytes: 7500 },
               'src/utils/format.ts': { bytes: 2500 },
             },
@@ -227,7 +227,7 @@ describe('aggregateAndSortGroups', () => {
       groups: [
         {
           title: 'Application Code',
-          bytes: 22500, // 5000 + 10000 + 7500 (excluding utils)
+          bytes: 22_500, // 5000 + 10000 + 7500 (excluding utils)
           icon: undefined,
           modules: 3,
           type: 'group',
@@ -243,11 +243,11 @@ describe('aggregateAndSortGroups', () => {
         {
           'dist/app.js': {
             path: 'dist/app.js',
-            bytes: 50000,
+            bytes: 50_000,
             inputs: {
-              'src/feature-1.ts': { bytes: 10000 },
+              'src/feature-1.ts': { bytes: 10_000 },
               'src/utils/format.ts': { bytes: 5000 },
-              'node_modules/lodash/index.js': { bytes: 15000 },
+              'node_modules/lodash/index.js': { bytes: 15_000 },
             },
           },
         },
@@ -275,14 +275,14 @@ describe('aggregateAndSortGroups', () => {
       groups: [
         {
           title: 'Dependencies',
-          bytes: 15000,
+          bytes: 15_000,
           icon: '📦',
           modules: 1,
           type: 'group',
         },
         {
           title: 'Features',
-          bytes: 10000,
+          bytes: 10_000,
           icon: '🎯',
           modules: 1,
           type: 'group',
@@ -295,7 +295,7 @@ describe('aggregateAndSortGroups', () => {
           type: 'group',
         },
       ],
-      restGroup: { title: 'Rest', bytes: 20000 },
+      restGroup: { title: 'Rest', bytes: 20_000 },
     });
   });
 });
@@ -307,7 +307,7 @@ describe('createTable', () => {
         [
           {
             title: 'Feature',
-            bytes: 10000,
+            bytes: 10_000,
             icon: '📁',
             modules: 0,
             type: 'group',
@@ -331,7 +331,7 @@ describe('createTable', () => {
         [
           {
             title: 'Feature',
-            bytes: 10000,
+            bytes: 10_000,
             modules: 2,
             type: 'group',
           },
@@ -357,7 +357,7 @@ describe('createTable', () => {
         [
           {
             title: 'Feature 1',
-            bytes: 10000,
+            bytes: 10_000,
             modules: 1,
             type: 'group',
           },
@@ -387,7 +387,7 @@ describe('createTable', () => {
         [
           {
             title: 'Feature 1',
-            bytes: 10000,
+            bytes: 10_000,
             modules: 1,
             type: 'group',
           },
@@ -419,7 +419,7 @@ describe('createTable', () => {
     expect(
       createTable(
         [
-          { title: 'Feature 1', bytes: 10000, modules: 1, type: 'group' },
+          { title: 'Feature 1', bytes: 10_000, modules: 1, type: 'group' },
           { title: 'Feature 2', bytes: 8000, modules: 1, type: 'group' },
           { title: 'Feature 3', bytes: 6000, modules: 1, type: 'group' },
           { title: 'Feature 4', bytes: 4000, modules: 1, type: 'group' },
@@ -446,13 +446,13 @@ describe('createTable', () => {
     expect(
       createTable(
         [
-          { title: 'Large Feature', bytes: 50000, modules: 1, type: 'group' },
-          { title: 'Medium Feature', bytes: 30000, modules: 1, type: 'group' },
+          { title: 'Large Feature', bytes: 50_000, modules: 1, type: 'group' },
+          { title: 'Medium Feature', bytes: 30_000, modules: 1, type: 'group' },
           { title: 'Small Feature', bytes: 5000, modules: 1, type: 'group' },
         ],
         { title: 'Rest', bytes: 1000 },
         'all',
-        { enabled: true, minSize: 25000 },
+        { enabled: true, minSize: 25_000 },
       ),
     ).toStrictEqual({
       columns: [

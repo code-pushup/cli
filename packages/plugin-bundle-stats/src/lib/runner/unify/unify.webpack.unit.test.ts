@@ -8,7 +8,7 @@ describe('unifyBundlerStats', () => {
       assets: [
         {
           name: 'bundle.js',
-          size: 16823,
+          size: 16_823,
           chunks: ['main'],
           chunkNames: ['main'],
           emitted: true,
@@ -80,7 +80,7 @@ describe('unifyBundlerStats', () => {
         main: {
           name: 'main',
           chunks: ['main'],
-          assets: [{ name: 'bundle.js', size: 16823 }],
+          assets: [{ name: 'bundle.js', size: 16_823 }],
         },
       },
     };
@@ -88,7 +88,7 @@ describe('unifyBundlerStats', () => {
     expect(unifyBundlerStats(webpackStats)).toStrictEqual({
       'bundle.js': {
         path: 'bundle.js',
-        bytes: 16823,
+        bytes: 16_823,
         imports: [],
         inputs: {
           './src/index.ts': {
