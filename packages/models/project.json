@@ -21,7 +21,7 @@
       "dependsOn": [
         "^build",
         "generate-docs",
-        { "projects": "models-transformers", "target": "build" }
+        { "projects": "zod2md-jsdocs", "target": "build" }
       ]
     },
     "lint": {},

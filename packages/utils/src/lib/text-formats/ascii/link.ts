@@ -1,5 +1,6 @@
 import ansis from 'ansis';
 
 export function formatAsciiLink(url: string): string {
-  return ansis.underline.blueBright(url);
+  // no underline because terminals recognize URLs, and nested ansis styles aren't handled by wrap-ansi
+  return ansis.blueBright(url);
 }

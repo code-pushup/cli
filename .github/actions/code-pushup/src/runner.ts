@@ -129,42 +129,51 @@ function createGitHubApiClient(): ProviderAPIClient {
   };
 }
 
+function setupOptions(): Options {
+  const isMonorepo = process.env['MODE'] === 'monorepo';
+
+  if (isMonorepo) {
+    return {
+      jobId: 'monorepo-mode',
+      monorepo: 'nx',
+      nxProjectsFilter: '--with-target=code-pushup --exclude=workspace',
+      configPatterns: {
+        persist: {
+          ...DEFAULT_PERSIST_CONFIG,
+          outputDir: '.code-pushup/{projectName}',
+        },
+        ...(process.env['CP_API_KEY'] && {
+          upload: {
+            server: 'https://api.staging.code-pushup.dev/graphql',
+            apiKey: process.env['CP_API_KEY'],
+            organization: 'code-pushup',
+            project: 'cli-{projectName}',
+          },
+        }),
+      },
+    };
+  }
+
+  // tsx importer need to resolve plugin runner scripts
+  // eslint-disable-next-line functional/immutable-data
+  process.env['NODE_OPTIONS'] = '--import=tsx';
+
+  return {
+    jobId: 'standalone-mode',
+    // run without Nx to demonstrate native GitHub Actions log groups
+    bin: 'node packages/cli/src/index.ts',
+  };
+}
+
 async function run(): Promise<void> {
   try {
     if (core.isDebug()) {
       logger.setVerbose(true);
     }
 
-    const isMonorepo = process.env['MODE'] === 'monorepo';
-
-    const options: Options = isMonorepo
-      ? {
-          jobId: 'monorepo-mode',
-          monorepo: 'nx',
-          nxProjectsFilter: '--with-target=code-pushup --exclude=workspace',
-          configPatterns: {
-            persist: {
-              ...DEFAULT_PERSIST_CONFIG,
-              outputDir: '.code-pushup/{projectName}',
-            },
-            ...(process.env['CP_API_KEY'] && {
-              upload: {
-                server: 'https://api.staging.code-pushup.dev/graphql',
-                apiKey: process.env['CP_API_KEY'],
-                organization: 'code-pushup',
-                project: 'cli-{projectName}',
-              },
-            }),
-          },
-        }
-      : {
-          jobId: 'standalone-mode',
-          bin: 'npx nx code-pushup --',
-        };
-
     const gitRefs = parseGitRefs();
-
     const apiClient = createGitHubApiClient();
+    const options = setupOptions();
 
     const result = await runInCI(gitRefs, apiClient, options);
 
