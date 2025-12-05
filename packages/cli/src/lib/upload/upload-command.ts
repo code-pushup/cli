@@ -1,8 +1,9 @@
 import type { ArgumentsCamelCase, CommandModule } from 'yargs';
 import { type UploadOptions, upload } from '@code-pushup/core';
+import { logger } from '@code-pushup/utils';
 import {
   printCliCommand,
-  renderIntegratePortalHint,
+  renderPortalHint,
   uploadSuccessfulLog,
 } from '../implementation/logging.js';
 
@@ -16,8 +17,10 @@ export function yargsUploadCommandObject() {
 
       const options = args as unknown as UploadOptions;
       if (options.upload == null) {
-        renderIntegratePortalHint();
-        throw new Error('Upload configuration not set');
+        logger.newline();
+        renderPortalHint();
+        logger.newline();
+        throw new Error('Upload to Portal is missing configuration');
       }
       const report = await upload(options);
       if (report?.url) {

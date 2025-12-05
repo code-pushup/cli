@@ -8,7 +8,7 @@ Commands:
                                                                        [default]
   code-pushup autorun       Shortcut for running collect followed by upload
 
-  code-pushup collect       Run Plugins and collect results
+  code-pushup collect       Run plugins and collect results
   code-pushup upload        Upload report results to the portal
   code-pushup history       Collect reports for commit history
   code-pushup compare       Compare 2 report files and create a diff file
