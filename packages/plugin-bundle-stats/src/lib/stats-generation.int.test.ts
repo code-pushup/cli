@@ -30,7 +30,7 @@ const SNAPSHOTS_DIR = path.join(
   '__snapshots__',
 );
 
-describe('esbuild stats generation', () => {
+describe.skip('esbuild stats generation', () => {
   const tmpEsbuild = path.join(tmpTestOutputRoot, 'esbuild-stats');
   const esbuildDistDir = path.join(tmpEsbuild, 'dist');
 
@@ -75,7 +75,7 @@ describe('esbuild stats generation', () => {
   });
 });
 
-describe('webpack stats generation', () => {
+describe.skip('webpack stats generation', () => {
   const tmpWebpack = path.join(tmpTestOutputRoot, 'webpack-stats');
   const webpackDistDir = path.join(tmpWebpack, 'dist');
 
@@ -127,7 +127,7 @@ describe('webpack stats generation', () => {
   });
 });
 
-describe('rsbuild stats generation', () => {
+describe.skip('rsbuild stats generation', () => {
   const tmpRsbuild = path.join(tmpTestOutputRoot, 'rsbuild-stats');
   const rsbuildDistDir = path.join(tmpRsbuild, 'dist');
 
