@@ -26,10 +26,6 @@ describe('calculateTotalBytes', () => {
   });
 });
 
-describe('createAuditOutput', () => {
-  // All tests removed
-});
-
 describe('generateAuditOutputs', () => {
   it('should generate empty audit when no artifacts match selection', () => {
     expect(

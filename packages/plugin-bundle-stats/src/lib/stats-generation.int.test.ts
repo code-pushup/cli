@@ -20,7 +20,7 @@ const tmpRoot = path.join(E2E_ENVIRONMENTS_DIR, 'plugin-bundle-stats');
 
 const tmpTestOutputRoot = path.join(tmpRoot, TEST_OUTPUT_DIR);
 
-const fixtureSharedRoot = path.join(FIXTURES_DIR, 'shared-source');
+const fixtureSharedRoot = path.join(FIXTURES_DIR, 'node-minimal');
 
 const SNAPSHOTS_DIR = path.join(
   'packages',
