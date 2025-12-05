@@ -8,7 +8,12 @@ const configDirPath = path.join(
   '..',
   '..',
   '..',
-  'mocks',
+  '..',
+  '..',
+  'testing',
+  'test-utils',
+  'src',
+  'lib',
   'fixtures',
   'configs',
 );

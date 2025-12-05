@@ -1,0 +1,14 @@
+{
+  "name": "test-fixtures",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "testing/test-fixtures/src",
+  "projectType": "library",
+  "targets": {
+    "build": {},
+    "lint": {},
+    "nx-release-publish": {
+      "executor": "nx:noop"
+    }
+  },
+  "tags": ["scope:shared", "type:testing"]
+}
