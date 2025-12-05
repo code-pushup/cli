@@ -21,6 +21,13 @@
       "type": "string",
       "description": "Path to Code PushUp CLI"
     },
+    "env": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Environment variables added to Code PushUp CLI process"
+    },
     "verbose": {
       "type": "boolean",
       "description": "Print additional logs"
