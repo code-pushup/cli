@@ -1,6 +1,6 @@
-import path from 'node:path';
+const path = require('node:path');
 
-export const createNodesV2 = [
+const createNodesV2 = [
   `**/zod2md.config.ts`,
   async (zod2MdConfigurationFiles, createNodesOptions) => {
     const options = createNodesOptions ?? {};
@@ -50,4 +50,5 @@ const nxPlugin = {
   createNodesV2,
 };
 
-export default nxPlugin;
+module.exports = nxPlugin;
+module.exports.createNodesV2 = createNodesV2;
