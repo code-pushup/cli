@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { generateJSDocComment } from './transformers';
+import { generateJSDocComment } from './transformers.js';
 
 describe('generateJSDocComment', () => {
   it('should generate JSDoc comment with type name and base URL', () => {

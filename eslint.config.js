@@ -140,6 +140,7 @@ export default tseslint.config(
     ignores: [
       '**/*.mock.*',
       '**/code-pushup.config.ts',
+      '**/zod2md.config.ts',
       '**/mocks/fixtures/**',
       '**/__snapshots__/**',
       '**/dist',
