@@ -4,7 +4,7 @@ import {
   expandGroupsForUrls,
   shouldExpandForUrls,
 } from '@code-pushup/utils';
-import type { AxePreset } from './constants.js';
+import type { AxePreset } from './config.js';
 import {
   loadAxeRules,
   transformRulesToAudits,
@@ -22,7 +22,7 @@ export function processAuditsAndGroups(
   const rules = loadAxeRules(preset);
   const ruleIds = rules.map(({ ruleId }) => ruleId);
   const audits = transformRulesToAudits(rules);
-  const groups = transformRulesToGroups(rules, preset);
+  const groups = transformRulesToGroups(rules);
 
   if (!shouldExpandForUrls(urls.length)) {
     return { audits, groups, ruleIds };

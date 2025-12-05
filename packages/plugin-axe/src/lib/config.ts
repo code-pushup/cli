@@ -3,13 +3,21 @@ import {
   pluginScoreTargetsSchema,
   positiveIntSchema,
 } from '@code-pushup/models';
-import { AXE_DEFAULT_PRESET, AXE_PRESETS } from './constants.js';
+import { AXE_DEFAULT_PRESET, DEFAULT_TIMEOUT_MS } from './constants.js';
 
-const DEFAULT_TIMEOUT_MS = 30_000;
+export const axePresets = [
+  'wcag21aa',
+  'wcag22aa',
+  'best-practice',
+  'all',
+] as const;
+
+export const axePresetSchema = z.enum(axePresets).meta({ title: 'AxePreset' });
+export type AxePreset = z.infer<typeof axePresetSchema>;
 
 export const axePluginOptionsSchema = z
   .object({
-    preset: z.enum(AXE_PRESETS).default(AXE_DEFAULT_PRESET).meta({
+    preset: axePresetSchema.default(AXE_DEFAULT_PRESET).meta({
       description:
         'Accessibility ruleset preset (default: wcag21aa for WCAG 2.1 Level AA compliance)',
     }),

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { AxePreset } from '../constants.js';
+import type { AxePreset } from '../config.js';
 import { loadAxeRules, transformRulesToAudits } from './transform.js';
 
 describe('transformRulesToAudits', () => {

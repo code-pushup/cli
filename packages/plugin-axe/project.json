@@ -9,6 +9,7 @@
     "build": {},
     "lint": {},
     "unit-test": {},
+    "int-test": {},
     "code-pushup": {},
     "code-pushup-eslint": {},
     "code-pushup-coverage": {},

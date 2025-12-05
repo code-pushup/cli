@@ -7,12 +7,12 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
     {
       "audits": [
         {
-          "description": "Ensure <area> elements of image maps have alternative text",
+          "description": "Ensure \`<area>\` elements of image maps have alternative text",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/area-alt?application=axeAPI",
           "score": 1,
           "slug": "area-alt",
-          "title": "Active <area> elements must have alternative text",
+          "title": "Active \`<area>\` elements must have alternative text",
           "value": 0,
         },
         {
@@ -106,12 +106,12 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "value": 0,
         },
         {
-          "description": "Ensure <audio> elements have captions",
+          "description": "Ensure \`<audio>\` elements have captions",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/audio-caption?application=axeAPI",
           "score": 1,
           "slug": "audio-caption",
-          "title": "<audio> elements must have a captions track",
+          "title": "\`<audio>\` elements must have a captions track",
           "value": 0,
         },
         {
@@ -133,30 +133,30 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "value": 0,
         },
         {
-          "description": "Ensure <blink> elements are not used",
+          "description": "Ensure \`<blink>\` elements are not used",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/blink?application=axeAPI",
           "score": 1,
           "slug": "blink",
-          "title": "<blink> elements are deprecated and must not be used",
+          "title": "\`<blink>\` elements are deprecated and must not be used",
           "value": 0,
         },
         {
-          "description": "Ensure <dl> elements are structured correctly",
+          "description": "Ensure \`<dl>\` elements are structured correctly",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/definition-list?application=axeAPI",
           "score": 1,
           "slug": "definition-list",
-          "title": "<dl> elements must only directly contain properly-ordered <dt> and <dd> groups, <script>, <template> or <div> elements",
+          "title": "\`<dl>\` elements must only directly contain properly-ordered \`<dt>\` and \`<dd>\` groups, \`<script>\`, \`<template>\` or \`<div>\` elements",
           "value": 0,
         },
         {
-          "description": "Ensure <dt> and <dd> elements are contained by a <dl>",
+          "description": "Ensure \`<dt>\` and \`<dd>\` elements are contained by a \`<dl>\`",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/dlitem?application=axeAPI",
           "score": 1,
           "slug": "dlitem",
-          "title": "<dt> and <dd> elements must be contained by a <dl>",
+          "title": "\`<dt>\` and \`<dd>\` elements must be contained by a \`<dl>\`",
           "value": 0,
         },
         {
@@ -169,7 +169,7 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "value": 0,
         },
         {
-          "description": "Ensure <frame> and <iframe> elements with focusable content do not have tabindex=-1",
+          "description": "Ensure \`<frame>\` and \`<iframe>\` elements with focusable content do not have tabindex=-1",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/frame-focusable-content?application=axeAPI",
           "score": 1,
@@ -178,7 +178,7 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "value": 0,
         },
         {
-          "description": "Ensure <iframe> and <frame> elements contain a unique title attribute",
+          "description": "Ensure \`<iframe>\` and \`<frame>\` elements contain a unique title attribute",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/frame-title-unique?application=axeAPI",
           "score": 1,
@@ -187,7 +187,7 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "value": 0,
         },
         {
-          "description": "Ensure <iframe> and <frame> elements have an accessible name",
+          "description": "Ensure \`<iframe>\` and \`<frame>\` elements have an accessible name",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/frame-title?application=axeAPI",
           "score": 1,
@@ -214,7 +214,7 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "value": 0,
         },
         {
-          "description": "Ensure <input type="image"> elements have alternative text",
+          "description": "Ensure \`<input type="image">\` elements have alternative text",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/input-image-alt?application=axeAPI",
           "score": 1,
@@ -246,29 +246,29 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/list?application=axeAPI",
           "score": 1,
           "slug": "list",
-          "title": "<ul> and <ol> must only directly contain <li>, <script> or <template> elements",
+          "title": "\`<ul>\` and \`<ol>\` must only directly contain \`<li>\`, \`<script>\` or \`<template>\` elements",
           "value": 0,
         },
         {
-          "description": "Ensure <li> elements are used semantically",
+          "description": "Ensure \`<li>\` elements are used semantically",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/listitem?application=axeAPI",
           "score": 1,
           "slug": "listitem",
-          "title": "<li> elements must be contained in a <ul> or <ol>",
+          "title": "\`<li>\` elements must be contained in a \`<ul>\` or \`<ol>\`",
           "value": 0,
         },
         {
-          "description": "Ensure <marquee> elements are not used",
+          "description": "Ensure \`<marquee>\` elements are not used",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/marquee?application=axeAPI",
           "score": 1,
           "slug": "marquee",
-          "title": "<marquee> elements are deprecated and must not be used",
+          "title": "\`<marquee>\` elements are deprecated and must not be used",
           "value": 0,
         },
         {
-          "description": "Ensure <meta http-equiv="refresh"> is not used for delayed refresh",
+          "description": "Ensure \`<meta http-equiv="refresh">\` is not used for delayed refresh",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/meta-refresh?application=axeAPI",
           "score": 1,
@@ -277,21 +277,21 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "value": 0,
         },
         {
-          "description": "Ensure <object> elements have alternative text",
+          "description": "Ensure \`<object>\` elements have alternative text",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/object-alt?application=axeAPI",
           "score": 1,
           "slug": "object-alt",
-          "title": "<object> elements must have alternative text",
+          "title": "\`<object>\` elements must have alternative text",
           "value": 0,
         },
         {
-          "description": "Ensure bold, italic text and font-size is not used to style <p> elements as a heading",
+          "description": "Ensure bold, italic text and font-size is not used to style \`<p>\` elements as a heading",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/p-as-heading?application=axeAPI",
           "score": 1,
           "slug": "p-as-heading",
-          "title": "Styled <p> elements must not be used as headings",
+          "title": "Styled \`<p>\` elements must not be used as headings",
           "value": 0,
         },
         {
@@ -340,16 +340,16 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "value": 0,
         },
         {
-          "description": "Ensure <svg> elements with an img, graphics-document or graphics-symbol role have accessible text",
+          "description": "Ensure \`<svg>\` elements with an img, graphics-document or graphics-symbol role have accessible text",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/svg-img-alt?application=axeAPI",
           "score": 1,
           "slug": "svg-img-alt",
-          "title": "<svg> elements with an img role must have alternative text",
+          "title": "\`<svg>\` elements with an img role must have alternative text",
           "value": 0,
         },
         {
-          "description": "Ensure that tables with a caption use the <caption> element.",
+          "description": "Ensure that tables with a caption use the \`<caption>\` element.",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/table-fake-caption?application=axeAPI",
           "score": 1,
@@ -358,25 +358,25 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "value": 0,
         },
         {
-          "description": "Ensure that each non-empty data cell in a <table> larger than 3 by 3  has one or more table headers",
+          "description": "Ensure that each non-empty data cell in a \`<table>\` larger than 3 by 3  has one or more table headers",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/td-has-header?application=axeAPI",
           "score": 1,
           "slug": "td-has-header",
-          "title": "Non-empty <td> elements in larger <table> must have an associated table header",
+          "title": "Non-empty \`<td>\` elements in larger \`<table>\` must have an associated table header",
           "value": 0,
         },
         {
-          "description": "Ensure that each cell in a table that uses the headers attribute refers only to other <th> elements in that table",
+          "description": "Ensure that each cell in a table that uses the headers attribute refers only to other \`<th>\` elements in that table",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/td-headers-attr?application=axeAPI",
           "score": 1,
           "slug": "td-headers-attr",
-          "title": "Table cell headers attributes must refer to other <th> elements in the same table",
+          "title": "Table cell headers attributes must refer to other \`<th>\` elements in the same table",
           "value": 0,
         },
         {
-          "description": "Ensure that <th> elements and elements with role=columnheader/rowheader have data cells they describe",
+          "description": "Ensure that \`<th>\` elements and elements with role=columnheader/rowheader have data cells they describe",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/th-has-data-cells?application=axeAPI",
           "score": 1,
@@ -394,21 +394,21 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "value": 0,
         },
         {
-          "description": "Ensure <video> elements have captions",
+          "description": "Ensure \`<video>\` elements have captions",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/video-caption?application=axeAPI",
           "score": 1,
           "slug": "video-caption",
-          "title": "<video> elements must have captions",
+          "title": "\`<video>\` elements must have captions",
           "value": 0,
         },
         {
-          "description": "Ensure <video> or <audio> elements do not autoplay audio for more than 3 seconds without a control mechanism to stop or mute the audio",
+          "description": "Ensure \`<video>\` or \`<audio>\` elements do not autoplay audio for more than 3 seconds without a control mechanism to stop or mute the audio",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/no-autoplay-audio?application=axeAPI",
           "score": 1,
           "slug": "no-autoplay-audio",
-          "title": "<video> or <audio> elements must not play automatically",
+          "title": "\`<video>\` or \`<audio>\` elements must not play automatically",
           "value": 0,
         },
         {
@@ -536,12 +536,12 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "value": 1,
         },
         {
-          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "description": "Ensure each HTML document contains a non-empty \`<title>\` element",
           "displayValue": "1 element",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/document-title?application=axeAPI",
           "score": 1,
           "slug": "document-title",
-          "title": "Documents must have <title> element to aid in navigation",
+          "title": "Documents must have \`<title>\` element to aid in navigation",
           "value": 1,
         },
         {
@@ -559,16 +559,16 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/html-has-lang?application=axeAPI",
           "score": 1,
           "slug": "html-has-lang",
-          "title": "<html> element must have a lang attribute",
+          "title": "\`<html>\` element must have a lang attribute",
           "value": 1,
         },
         {
-          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "description": "Ensure the lang attribute of the \`<html>\` element has a valid value",
           "displayValue": "1 element",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/html-lang-valid?application=axeAPI",
           "score": 1,
           "slug": "html-lang-valid",
-          "title": "<html> element must have a valid value for the lang attribute",
+          "title": "\`<html>\` element must have a valid value for the lang attribute",
           "value": 1,
         },
         {
@@ -581,7 +581,7 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "value": 1,
         },
         {
-          "description": "Ensure <meta name="viewport"> does not disable text scaling and zooming",
+          "description": "Ensure \`<meta name="viewport">\` does not disable text scaling and zooming",
           "displayValue": "1 element",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/meta-viewport?application=axeAPI",
           "score": 1,
@@ -625,7 +625,7 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "value": 1,
         },
         {
-          "description": "Ensure <img> elements have alternative text or a role of none or presentation",
+          "description": "Ensure \`<img>\` elements have alternative text or a role of none or presentation",
           "details": {
             "issues": [
               {
@@ -671,10 +671,6 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
         {
           "refs": [
             {
-              "slug": "area-alt",
-              "weight": 1,
-            },
-            {
               "slug": "aria-allowed-attr",
               "weight": 1,
             },
@@ -696,10 +692,6 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
             },
             {
               "slug": "aria-hidden-body",
-              "weight": 1,
-            },
-            {
-              "slug": "aria-hidden-focus",
               "weight": 1,
             },
             {
@@ -754,36 +746,28 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
               "slug": "aria-valid-attr",
               "weight": 1,
             },
+          ],
+          "slug": "aria",
+          "title": "ARIA",
+        },
+        {
+          "refs": [
             {
-              "slug": "audio-caption",
+              "slug": "color-contrast",
               "weight": 1,
             },
             {
-              "slug": "blink",
+              "slug": "link-in-text-block",
               "weight": 1,
             },
+          ],
+          "slug": "color",
+          "title": "Color & Contrast",
+        },
+        {
+          "refs": [
             {
-              "slug": "button-name",
-              "weight": 1,
-            },
-            {
-              "slug": "bypass",
-              "weight": 1,
-            },
-            {
-              "slug": "definition-list",
-              "weight": 1,
-            },
-            {
-              "slug": "dlitem",
-              "weight": 1,
-            },
-            {
-              "slug": "document-title",
-              "weight": 1,
-            },
-            {
-              "slug": "duplicate-id-aria",
+              "slug": "autocomplete-valid",
               "weight": 1,
             },
             {
@@ -791,17 +775,41 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
               "weight": 1,
             },
             {
+              "slug": "label",
+              "weight": 1,
+            },
+            {
+              "slug": "select-name",
+              "weight": 1,
+            },
+          ],
+          "slug": "forms",
+          "title": "Forms",
+        },
+        {
+          "refs": [
+            {
+              "slug": "bypass",
+              "weight": 1,
+            },
+            {
               "slug": "frame-focusable-content",
               "weight": 1,
             },
             {
-              "slug": "frame-title-unique",
+              "slug": "nested-interactive",
               "weight": 1,
             },
             {
-              "slug": "frame-title",
+              "slug": "scrollable-region-focusable",
               "weight": 1,
             },
+          ],
+          "slug": "keyboard",
+          "title": "Keyboard",
+        },
+        {
+          "refs": [
             {
               "slug": "html-has-lang",
               "weight": 1,
@@ -815,7 +823,21 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
               "weight": 1,
             },
             {
-              "slug": "image-alt",
+              "slug": "valid-lang",
+              "weight": 1,
+            },
+          ],
+          "slug": "language",
+          "title": "Language",
+        },
+        {
+          "refs": [
+            {
+              "slug": "aria-hidden-focus",
+              "weight": 1,
+            },
+            {
+              "slug": "button-name",
               "weight": 1,
             },
             {
@@ -823,23 +845,71 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
               "weight": 1,
             },
             {
-              "slug": "input-image-alt",
+              "slug": "link-name",
               "weight": 1,
             },
+            {
+              "slug": "summary-name",
+              "weight": 1,
+            },
+          ],
+          "slug": "name-role-value",
+          "title": "Names & Labels",
+        },
+        {
+          "refs": [
+            {
+              "slug": "duplicate-id-aria",
+              "weight": 1,
+            },
+            {
+              "slug": "marquee",
+              "weight": 1,
+            },
+          ],
+          "slug": "parsing",
+          "title": "Parsing",
+        },
+        {
+          "refs": [
             {
               "slug": "label-content-name-mismatch",
               "weight": 1,
             },
             {
-              "slug": "label",
+              "slug": "p-as-heading",
+              "weight": 1,
+            },
+          ],
+          "slug": "semantics",
+          "title": "Semantics",
+        },
+        {
+          "refs": [
+            {
+              "slug": "meta-viewport",
+              "weight": 1,
+            },
+          ],
+          "slug": "sensory-and-visual-cues",
+          "title": "Visual Cues",
+        },
+        {
+          "refs": [
+            {
+              "slug": "avoid-inline-spacing",
               "weight": 1,
             },
             {
-              "slug": "link-in-text-block",
+              "slug": "css-orientation-lock",
               "weight": 1,
             },
             {
-              "slug": "link-name",
+              "slug": "definition-list",
+              "weight": 1,
+            },
+            {
+              "slug": "dlitem",
               "weight": 1,
             },
             {
@@ -850,54 +920,12 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
               "slug": "listitem",
               "weight": 1,
             },
-            {
-              "slug": "marquee",
-              "weight": 1,
-            },
-            {
-              "slug": "meta-refresh",
-              "weight": 1,
-            },
-            {
-              "slug": "nested-interactive",
-              "weight": 1,
-            },
-            {
-              "slug": "no-autoplay-audio",
-              "weight": 1,
-            },
-            {
-              "slug": "object-alt",
-              "weight": 1,
-            },
-            {
-              "slug": "p-as-heading",
-              "weight": 1,
-            },
-            {
-              "slug": "role-img-alt",
-              "weight": 1,
-            },
-            {
-              "slug": "scrollable-region-focusable",
-              "weight": 1,
-            },
-            {
-              "slug": "select-name",
-              "weight": 1,
-            },
-            {
-              "slug": "server-side-image-map",
-              "weight": 1,
-            },
-            {
-              "slug": "summary-name",
-              "weight": 1,
-            },
-            {
-              "slug": "svg-img-alt",
-              "weight": 1,
-            },
+          ],
+          "slug": "structure",
+          "title": "Structure",
+        },
+        {
+          "refs": [
             {
               "slug": "table-fake-caption",
               "weight": 1,
@@ -914,43 +942,81 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
               "slug": "th-has-data-cells",
               "weight": 1,
             },
+          ],
+          "slug": "tables",
+          "title": "Tables",
+        },
+        {
+          "refs": [
+            {
+              "slug": "area-alt",
+              "weight": 1,
+            },
+            {
+              "slug": "document-title",
+              "weight": 1,
+            },
+            {
+              "slug": "frame-title-unique",
+              "weight": 1,
+            },
+            {
+              "slug": "frame-title",
+              "weight": 1,
+            },
+            {
+              "slug": "image-alt",
+              "weight": 1,
+            },
+            {
+              "slug": "input-image-alt",
+              "weight": 1,
+            },
+            {
+              "slug": "object-alt",
+              "weight": 1,
+            },
+            {
+              "slug": "role-img-alt",
+              "weight": 1,
+            },
+            {
+              "slug": "server-side-image-map",
+              "weight": 1,
+            },
+            {
+              "slug": "svg-img-alt",
+              "weight": 1,
+            },
             {
               "slug": "video-caption",
               "weight": 1,
             },
           ],
-          "slug": "wcag21-level-a",
-          "title": "WCAG 2.1 Level A",
+          "slug": "text-alternatives",
+          "title": "Text Alternatives",
         },
         {
           "refs": [
             {
-              "slug": "autocomplete-valid",
+              "slug": "audio-caption",
               "weight": 1,
             },
             {
-              "slug": "avoid-inline-spacing",
+              "slug": "blink",
               "weight": 1,
             },
             {
-              "slug": "color-contrast",
+              "slug": "meta-refresh",
               "weight": 1,
             },
             {
-              "slug": "css-orientation-lock",
-              "weight": 1,
-            },
-            {
-              "slug": "meta-viewport",
-              "weight": 1,
-            },
-            {
-              "slug": "valid-lang",
+              "slug": "no-autoplay-audio",
               "weight": 1,
             },
           ],
-          "slug": "wcag21-level-aa",
-          "title": "WCAG 2.1 Level AA",
+          "slug": "time-and-media",
+          "title": "Media",
         },
       ],
       "icon": "folder-syntax",
