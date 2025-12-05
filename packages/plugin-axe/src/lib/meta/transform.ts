@@ -1,6 +1,6 @@
 import axe from 'axe-core';
 import type { Audit, Group } from '@code-pushup/models';
-import { objectToEntries } from '@code-pushup/utils';
+import { objectToEntries, wrapTags } from '@code-pushup/utils';
 import type { AxePreset } from '../config.js';
 import {
   type AxeGroupSlug,
@@ -16,8 +16,8 @@ export function loadAxeRules(preset: AxePreset): axe.RuleMetadata[] {
 export function transformRulesToAudits(rules: axe.RuleMetadata[]): Audit[] {
   return rules.map(rule => ({
     slug: rule.ruleId,
-    title: rule.help,
-    description: rule.description,
+    title: wrapTags(rule.help),
+    description: wrapTags(rule.description),
     docsUrl: rule.helpUrl,
   }));
 }
