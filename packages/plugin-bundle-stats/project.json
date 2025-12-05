@@ -1,0 +1,90 @@
+{
+  "name": "plugin-bundle-stats",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/plugin-bundle-stats/src",
+  "projectType": "library",
+  "targets": {
+    "code-pushup-minimal-esbuild": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts --no-progress --verbose",
+        "args": "collect --config packages/plugin-bundle-stats/code-pushup.minimal-esbuild.config.ts",
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-minimal-angular": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts --no-progress --verbose",
+        "args": "collect --config packages/plugin-bundle-stats/code-pushup.minimal-angular.config.ts",
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-minimal-webpack": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts --no-progress --verbose",
+        "args": "collect --config packages/plugin-bundle-stats/code-pushup.minimal-webpack.config.ts",
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-minimal-rsbuild": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts --no-progress --verbose",
+        "args": "collect --config packages/plugin-bundle-stats/code-pushup.minimal-rsbuild.config.ts",
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-minimal-vite": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts --no-progress --verbose",
+        "args": "collect --config packages/plugin-bundle-stats/code-pushup.minimal-vite.config.ts",
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-minimal-esbuild-sonda": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts --no-progress --verbose",
+        "args": "collect --config packages/plugin-bundle-stats/code-pushup.minimal-esbuild-sonda.config.ts",
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "code-pushup-large-angular": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts --no-progress --verbose",
+        "args": "collect --config packages/plugin-bundle-stats/code-pushup.large-angular.config.ts",
+        "env": {
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
+    "build": {},
+    "lint": {},
+    "unit-test": {},
+    "int-test": {}
+  },
+  "tags": ["scope:plugin", "type:feature", "publishable"]
+}

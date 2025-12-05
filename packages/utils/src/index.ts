@@ -87,6 +87,7 @@ export {
   isRecord,
 } from './lib/guards.js';
 export { interpolate } from './lib/interpolate.js';
+export { createPatternMatcher } from './lib/lang.js';
 export { logMultipleResults } from './lib/log-results.js';
 export { Logger, logger } from './lib/logger.js';
 export { formatCommandStatus } from './lib/command.js';

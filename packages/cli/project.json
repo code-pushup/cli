@@ -4,7 +4,11 @@
   "sourceRoot": "packages/cli/src",
   "projectType": "library",
   "targets": {
-    "build": {},
+    "build": {
+      "options": {
+        "stats": true
+      }
+    },
     "lint": {},
     "unit-test": {},
     "int-test": {},

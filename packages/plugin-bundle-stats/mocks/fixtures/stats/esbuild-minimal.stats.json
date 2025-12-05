@@ -1,0 +1,315 @@
+{
+  "inputs": {
+    "../../../../../node_modules/balanced-match/index.js": {
+      "bytes": 1219,
+      "imports": [],
+      "format": "cjs"
+    },
+    "../../../../../node_modules/brace-expansion/index.js": {
+      "bytes": 4992,
+      "imports": [
+        {
+          "path": "../../../../../node_modules/balanced-match/index.js",
+          "kind": "require-call",
+          "original": "balanced-match"
+        }
+      ],
+      "format": "cjs"
+    },
+    "../../../../../node_modules/minimatch/dist/esm/assert-valid-pattern.js": {
+      "bytes": 336,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../../../../node_modules/minimatch/dist/esm/brace-expressions.js": {
+      "bytes": 5631,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../../../../node_modules/minimatch/dist/esm/unescape.js": {
+      "bytes": 847,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../../../../node_modules/minimatch/dist/esm/ast.js": {
+      "bytes": 22588,
+      "imports": [
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/brace-expressions.js",
+          "kind": "import-statement",
+          "original": "./brace-expressions.js"
+        },
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/unescape.js",
+          "kind": "import-statement",
+          "original": "./unescape.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../../../../node_modules/minimatch/dist/esm/escape.js": {
+      "bytes": 848,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../../../../node_modules/minimatch/dist/esm/index.js": {
+      "bytes": 39098,
+      "imports": [
+        {
+          "path": "../../../../../node_modules/brace-expansion/index.js",
+          "kind": "import-statement",
+          "original": "brace-expansion"
+        },
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/assert-valid-pattern.js",
+          "kind": "import-statement",
+          "original": "./assert-valid-pattern.js"
+        },
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/ast.js",
+          "kind": "import-statement",
+          "original": "./ast.js"
+        },
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/escape.js",
+          "kind": "import-statement",
+          "original": "./escape.js"
+        },
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/unescape.js",
+          "kind": "import-statement",
+          "original": "./unescape.js"
+        },
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/ast.js",
+          "kind": "import-statement",
+          "original": "./ast.js"
+        },
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/escape.js",
+          "kind": "import-statement",
+          "original": "./escape.js"
+        },
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/unescape.js",
+          "kind": "import-statement",
+          "original": "./unescape.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "../shared-source/node_modules/my-lib/index.js": {
+      "bytes": 94,
+      "imports": [],
+      "format": "esm"
+    },
+    "../shared-source/src/lib/utils/format.ts": {
+      "bytes": 590,
+      "imports": [
+        {
+          "path": "../../../../../node_modules/minimatch/dist/esm/index.js",
+          "kind": "import-statement",
+          "original": "minimatch"
+        },
+        {
+          "path": "../shared-source/node_modules/my-lib/index.js",
+          "kind": "import-statement",
+          "original": "my-lib"
+        }
+      ],
+      "format": "esm"
+    },
+    "../shared-source/src/lib/feature-1.ts": {
+      "bytes": 489,
+      "imports": [
+        {
+          "path": "../shared-source/src/lib/utils/format.ts",
+          "kind": "import-statement",
+          "original": "./utils/format"
+        }
+      ],
+      "format": "esm"
+    },
+    "../shared-source/src/lib/utils/math.ts": {
+      "bytes": 240,
+      "imports": [],
+      "format": "esm"
+    },
+    "../shared-source/src/lib/utils/string.ts": {
+      "bytes": 300,
+      "imports": [],
+      "format": "esm"
+    },
+    "../shared-source/src/lib/feature-2.ts": {
+      "bytes": 53,
+      "imports": [],
+      "format": "esm"
+    },
+    "../shared-source/src/index.ts": {
+      "bytes": 673,
+      "imports": [
+        {
+          "path": "../shared-source/src/lib/feature-1.ts",
+          "kind": "import-statement",
+          "original": "./lib/feature-1"
+        },
+        {
+          "path": "../shared-source/src/lib/utils/math.ts",
+          "kind": "import-statement",
+          "original": "./lib/utils/math"
+        },
+        {
+          "path": "../shared-source/src/lib/utils/string.ts",
+          "kind": "import-statement",
+          "original": "./lib/utils/string"
+        },
+        {
+          "path": "../shared-source/src/lib/feature-2.ts",
+          "kind": "dynamic-import",
+          "original": "./lib/feature-2"
+        }
+      ],
+      "format": "esm"
+    },
+    "../shared-source/src/bin.ts": {
+      "bytes": 633,
+      "imports": [
+        {
+          "path": "../shared-source/src/lib/feature-1.ts",
+          "kind": "import-statement",
+          "original": "./lib/feature-1"
+        },
+        {
+          "path": "../shared-source/src/lib/utils/math.ts",
+          "kind": "import-statement",
+          "original": "./lib/utils/math"
+        },
+        {
+          "path": "../shared-source/src/lib/utils/string.ts",
+          "kind": "import-statement",
+          "original": "./lib/utils/string"
+        }
+      ],
+      "format": "esm"
+    }
+  },
+  "outputs": {
+    "dist/index.js": {
+      "imports": [
+        {
+          "path": "dist/chunks/chunk-PKX4VJZC.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "dist/chunks/chunk-SK6HMZ5B.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "dist/chunks/feature-2-SERQNJVR.js",
+          "kind": "dynamic-import"
+        }
+      ],
+      "exports": ["default", "indexOnlyFunction"],
+      "entryPoint": "../shared-source/src/index.ts",
+      "inputs": {
+        "../shared-source/src/index.ts": {
+          "bytesInOutput": 386
+        }
+      },
+      "bytes": 595
+    },
+    "dist/bin.js": {
+      "imports": [
+        {
+          "path": "dist/chunks/chunk-PKX4VJZC.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "dist/chunks/chunk-SK6HMZ5B.js",
+          "kind": "import-statement"
+        }
+      ],
+      "exports": [],
+      "entryPoint": "../shared-source/src/bin.ts",
+      "inputs": {
+        "../shared-source/src/bin.ts": {
+          "bytesInOutput": 373
+        }
+      },
+      "bytes": 549
+    },
+    "dist/chunks/chunk-PKX4VJZC.js": {
+      "imports": [
+        {
+          "path": "dist/chunks/chunk-SK6HMZ5B.js",
+          "kind": "import-statement"
+        }
+      ],
+      "exports": ["calculate", "externalFunction", "greet"],
+      "inputs": {
+        "../../../../../node_modules/balanced-match/index.js": {
+          "bytesInOutput": 1543
+        },
+        "../../../../../node_modules/brace-expansion/index.js": {
+          "bytesInOutput": 4784
+        },
+        "../../../../../node_modules/minimatch/dist/esm/index.js": {
+          "bytesInOutput": 23960
+        },
+        "../../../../../node_modules/minimatch/dist/esm/assert-valid-pattern.js": {
+          "bytesInOutput": 261
+        },
+        "../../../../../node_modules/minimatch/dist/esm/brace-expressions.js": {
+          "bytesInOutput": 3163
+        },
+        "../../../../../node_modules/minimatch/dist/esm/unescape.js": {
+          "bytesInOutput": 210
+        },
+        "../../../../../node_modules/minimatch/dist/esm/ast.js": {
+          "bytesInOutput": 15518
+        },
+        "../../../../../node_modules/minimatch/dist/esm/escape.js": {
+          "bytesInOutput": 165
+        },
+        "../shared-source/node_modules/my-lib/index.js": {
+          "bytesInOutput": 93
+        },
+        "../shared-source/src/lib/utils/format.ts": {
+          "bytesInOutput": 269
+        },
+        "../shared-source/src/lib/feature-1.ts": {
+          "bytesInOutput": 269
+        },
+        "../shared-source/src/lib/utils/math.ts": {
+          "bytesInOutput": 145
+        },
+        "../shared-source/src/lib/utils/string.ts": {
+          "bytesInOutput": 54
+        }
+      },
+      "bytes": 51348
+    },
+    "dist/chunks/feature-2-SERQNJVR.js": {
+      "imports": [
+        {
+          "path": "dist/chunks/chunk-SK6HMZ5B.js",
+          "kind": "import-statement"
+        }
+      ],
+      "exports": ["chart"],
+      "entryPoint": "../shared-source/src/lib/feature-2.ts",
+      "inputs": {
+        "../shared-source/src/lib/feature-2.ts": {
+          "bytesInOutput": 38
+        }
+      },
+      "bytes": 130
+    },
+    "dist/chunks/chunk-SK6HMZ5B.js": {
+      "imports": [],
+      "exports": ["__commonJS", "__toESM"],
+      "inputs": {},
+      "bytes": 1357
+    }
+  }
+}

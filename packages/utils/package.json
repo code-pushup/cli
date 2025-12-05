@@ -37,7 +37,8 @@
     "simple-git": "^3.20.0",
     "string-width": "^8.1.0",
     "wrap-ansi": "^9.0.2",
-    "zod": "^4.0.5"
+    "zod": "^4.0.5",
+    "picomatch": "4.0.3"
   },
   "files": [
     "src",
