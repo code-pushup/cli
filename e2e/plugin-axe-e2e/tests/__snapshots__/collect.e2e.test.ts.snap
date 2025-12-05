@@ -671,10 +671,6 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
         {
           "refs": [
             {
-              "slug": "area-alt",
-              "weight": 1,
-            },
-            {
               "slug": "aria-allowed-attr",
               "weight": 1,
             },
@@ -696,10 +692,6 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
             },
             {
               "slug": "aria-hidden-body",
-              "weight": 1,
-            },
-            {
-              "slug": "aria-hidden-focus",
               "weight": 1,
             },
             {
@@ -754,36 +746,28 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
               "slug": "aria-valid-attr",
               "weight": 1,
             },
+          ],
+          "slug": "aria",
+          "title": "ARIA",
+        },
+        {
+          "refs": [
             {
-              "slug": "audio-caption",
+              "slug": "color-contrast",
               "weight": 1,
             },
             {
-              "slug": "blink",
+              "slug": "link-in-text-block",
               "weight": 1,
             },
+          ],
+          "slug": "color",
+          "title": "Color & Contrast",
+        },
+        {
+          "refs": [
             {
-              "slug": "button-name",
-              "weight": 1,
-            },
-            {
-              "slug": "bypass",
-              "weight": 1,
-            },
-            {
-              "slug": "definition-list",
-              "weight": 1,
-            },
-            {
-              "slug": "dlitem",
-              "weight": 1,
-            },
-            {
-              "slug": "document-title",
-              "weight": 1,
-            },
-            {
-              "slug": "duplicate-id-aria",
+              "slug": "autocomplete-valid",
               "weight": 1,
             },
             {
@@ -791,17 +775,41 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
               "weight": 1,
             },
             {
+              "slug": "label",
+              "weight": 1,
+            },
+            {
+              "slug": "select-name",
+              "weight": 1,
+            },
+          ],
+          "slug": "forms",
+          "title": "Forms",
+        },
+        {
+          "refs": [
+            {
+              "slug": "bypass",
+              "weight": 1,
+            },
+            {
               "slug": "frame-focusable-content",
               "weight": 1,
             },
             {
-              "slug": "frame-title-unique",
+              "slug": "nested-interactive",
               "weight": 1,
             },
             {
-              "slug": "frame-title",
+              "slug": "scrollable-region-focusable",
               "weight": 1,
             },
+          ],
+          "slug": "keyboard",
+          "title": "Keyboard",
+        },
+        {
+          "refs": [
             {
               "slug": "html-has-lang",
               "weight": 1,
@@ -815,7 +823,21 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
               "weight": 1,
             },
             {
-              "slug": "image-alt",
+              "slug": "valid-lang",
+              "weight": 1,
+            },
+          ],
+          "slug": "language",
+          "title": "Language",
+        },
+        {
+          "refs": [
+            {
+              "slug": "aria-hidden-focus",
+              "weight": 1,
+            },
+            {
+              "slug": "button-name",
               "weight": 1,
             },
             {
@@ -823,23 +845,71 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
               "weight": 1,
             },
             {
-              "slug": "input-image-alt",
+              "slug": "link-name",
               "weight": 1,
             },
+            {
+              "slug": "summary-name",
+              "weight": 1,
+            },
+          ],
+          "slug": "name-role-value",
+          "title": "Names & Labels",
+        },
+        {
+          "refs": [
+            {
+              "slug": "duplicate-id-aria",
+              "weight": 1,
+            },
+            {
+              "slug": "marquee",
+              "weight": 1,
+            },
+          ],
+          "slug": "parsing",
+          "title": "Parsing",
+        },
+        {
+          "refs": [
             {
               "slug": "label-content-name-mismatch",
               "weight": 1,
             },
             {
-              "slug": "label",
+              "slug": "p-as-heading",
+              "weight": 1,
+            },
+          ],
+          "slug": "semantics",
+          "title": "Semantics",
+        },
+        {
+          "refs": [
+            {
+              "slug": "meta-viewport",
+              "weight": 1,
+            },
+          ],
+          "slug": "sensory-and-visual-cues",
+          "title": "Visual Cues",
+        },
+        {
+          "refs": [
+            {
+              "slug": "avoid-inline-spacing",
               "weight": 1,
             },
             {
-              "slug": "link-in-text-block",
+              "slug": "css-orientation-lock",
               "weight": 1,
             },
             {
-              "slug": "link-name",
+              "slug": "definition-list",
+              "weight": 1,
+            },
+            {
+              "slug": "dlitem",
               "weight": 1,
             },
             {
@@ -850,54 +920,12 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
               "slug": "listitem",
               "weight": 1,
             },
-            {
-              "slug": "marquee",
-              "weight": 1,
-            },
-            {
-              "slug": "meta-refresh",
-              "weight": 1,
-            },
-            {
-              "slug": "nested-interactive",
-              "weight": 1,
-            },
-            {
-              "slug": "no-autoplay-audio",
-              "weight": 1,
-            },
-            {
-              "slug": "object-alt",
-              "weight": 1,
-            },
-            {
-              "slug": "p-as-heading",
-              "weight": 1,
-            },
-            {
-              "slug": "role-img-alt",
-              "weight": 1,
-            },
-            {
-              "slug": "scrollable-region-focusable",
-              "weight": 1,
-            },
-            {
-              "slug": "select-name",
-              "weight": 1,
-            },
-            {
-              "slug": "server-side-image-map",
-              "weight": 1,
-            },
-            {
-              "slug": "summary-name",
-              "weight": 1,
-            },
-            {
-              "slug": "svg-img-alt",
-              "weight": 1,
-            },
+          ],
+          "slug": "structure",
+          "title": "Structure",
+        },
+        {
+          "refs": [
             {
               "slug": "table-fake-caption",
               "weight": 1,
@@ -914,43 +942,81 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
               "slug": "th-has-data-cells",
               "weight": 1,
             },
+          ],
+          "slug": "tables",
+          "title": "Tables",
+        },
+        {
+          "refs": [
+            {
+              "slug": "area-alt",
+              "weight": 1,
+            },
+            {
+              "slug": "document-title",
+              "weight": 1,
+            },
+            {
+              "slug": "frame-title-unique",
+              "weight": 1,
+            },
+            {
+              "slug": "frame-title",
+              "weight": 1,
+            },
+            {
+              "slug": "image-alt",
+              "weight": 1,
+            },
+            {
+              "slug": "input-image-alt",
+              "weight": 1,
+            },
+            {
+              "slug": "object-alt",
+              "weight": 1,
+            },
+            {
+              "slug": "role-img-alt",
+              "weight": 1,
+            },
+            {
+              "slug": "server-side-image-map",
+              "weight": 1,
+            },
+            {
+              "slug": "svg-img-alt",
+              "weight": 1,
+            },
             {
               "slug": "video-caption",
               "weight": 1,
             },
           ],
-          "slug": "wcag21-level-a",
-          "title": "WCAG 2.1 Level A",
+          "slug": "text-alternatives",
+          "title": "Text Alternatives",
         },
         {
           "refs": [
             {
-              "slug": "autocomplete-valid",
+              "slug": "audio-caption",
               "weight": 1,
             },
             {
-              "slug": "avoid-inline-spacing",
+              "slug": "blink",
               "weight": 1,
             },
             {
-              "slug": "color-contrast",
+              "slug": "meta-refresh",
               "weight": 1,
             },
             {
-              "slug": "css-orientation-lock",
-              "weight": 1,
-            },
-            {
-              "slug": "meta-viewport",
-              "weight": 1,
-            },
-            {
-              "slug": "valid-lang",
+              "slug": "no-autoplay-audio",
               "weight": 1,
             },
           ],
-          "slug": "wcag21-level-aa",
-          "title": "WCAG 2.1 Level AA",
+          "slug": "time-and-media",
+          "title": "Media",
         },
       ],
       "icon": "folder-syntax",
