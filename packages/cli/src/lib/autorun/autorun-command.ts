@@ -9,8 +9,8 @@ import { logger } from '@code-pushup/utils';
 import {
   collectSuccessfulLog,
   printCliCommand,
-  renderConfigureCategoriesHint,
-  renderIntegratePortalHint,
+  renderCategoriesHint,
+  renderPortalHint,
   uploadSuccessfulLog,
 } from '../implementation/logging.js';
 
@@ -40,8 +40,10 @@ export function yargsAutorunCommandObject() {
       await collectAndPersistReports(optionsWithFormat);
       collectSuccessfulLog();
 
-      if (!options.categories || options.categories.length === 0) {
-        renderConfigureCategoriesHint();
+      if (!options.categories?.length) {
+        logger.newline();
+        renderCategoriesHint();
+        logger.newline();
       }
 
       if (options.upload) {
@@ -50,8 +52,9 @@ export function yargsAutorunCommandObject() {
           uploadSuccessfulLog(report.url);
         }
       } else {
-        logger.warn('Upload skipped because configuration is not set.');
-        renderIntegratePortalHint();
+        logger.warn('Upload skipped because Portal is not configured.');
+        logger.newline();
+        renderPortalHint();
       }
     },
   } satisfies CommandModule;

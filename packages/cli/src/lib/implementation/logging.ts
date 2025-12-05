@@ -6,17 +6,9 @@ import {
 } from '@code-pushup/utils';
 
 export function printCliCommand(command: string): void {
-  logger.debug(`Running ${ansis.bold(command)} command\n`);
+  logger.debug(`Running ${ansis.bold(command)} command`);
 }
 
-export function renderConfigureCategoriesHint(): void {
-  logger.debug(
-    `💡 Configure categories to see the scores in an overview table. See: ${formatAsciiLink(
-      'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md',
-    )}`,
-    { force: true },
-  );
-}
 export function uploadSuccessfulLog(url: string): void {
   logger.info(ansis.green('Upload successful!'));
   logger.info(formatAsciiLink(url));
@@ -26,23 +18,35 @@ export function collectSuccessfulLog(): void {
   logger.info(ansis.green('Collecting report successful!'));
 }
 
-export function renderIntegratePortalHint(): void {
+export function renderCategoriesHint(): void {
   logger.info(
     formatAsciiSticker([
-      ansis.bold.gray('💡 Integrate the portal'),
+      ansis.bold.gray('💡 Configure categories'),
       '',
-      `${ansis.gray('❯')} Upload a report to the server - ${ansis.gray(
-        'npx code-pushup upload',
-      )}`,
-      `  ${formatAsciiLink(
-        'https://github.com/code-pushup/cli/tree/main/packages/cli#upload-command',
-      )}`,
-      `${ansis.gray('❯')} ${ansis.gray('Portal Integration')} - ${formatAsciiLink(
-        'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
-      )}`,
-      `${ansis.gray('❯')} ${ansis.gray('Upload Command')} - ${formatAsciiLink(
-        'https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#portal-integration',
-      )}`,
+      ansis.gray('❯ Aggregate audit scores to get a high-level overview'),
+      `${ansis.gray('❯')} ${formatAsciiLink('https://www.npmjs.com/package/@code-pushup/cli')}`,
+    ]),
+  );
+}
+
+export function renderPortalHint(): void {
+  logger.info(
+    formatAsciiSticker([
+      ansis.bold.gray('💡 Upload report to Portal'),
+      '',
+      ansis.gray('❯ Visualize reports in an interactive UI'),
+      ansis.gray('❯ Track long-term progress via reports history'),
+      `${ansis.gray('❯')} ${formatAsciiLink('https://code-pushup.dev/')}`,
+    ]),
+  );
+}
+
+export function renderUploadHint(): void {
+  logger.info(
+    formatAsciiSticker([
+      ansis.bold.gray('💡 Upload report to Portal'),
+      '',
+      `${ansis.gray('❯')} npx code-pushup upload`,
     ]),
   );
 }
