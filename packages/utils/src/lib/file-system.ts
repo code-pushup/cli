@@ -2,6 +2,7 @@ import ansis from 'ansis';
 import { createJiti } from 'jiti';
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
+import { parseJsonConfigFileContent, readConfigFile, sys } from 'typescript';
 import type { Format, PersistConfig } from '@code-pushup/models';
 import { formatBytes } from './formatting.js';
 import { logMultipleResults } from './log-results.js';
@@ -77,16 +78,80 @@ export function logMultipleFileResults(
   );
 }
 
-const jitiImport = createJiti(process.cwd());
+export function loadTargetConfig(tsConfigPath: string) {
+  const resolvedConfigPath = path.resolve(tsConfigPath);
+  const { config, error } = readConfigFile(resolvedConfigPath, sys.readFile);
+
+  if (error) {
+    throw new Error(
+      `Error reading TypeScript config file at ${tsConfigPath}:\n${error.messageText}`,
+    );
+  }
+
+  const parsedConfig = parseJsonConfigFileContent(
+    config,
+    sys,
+    path.dirname(resolvedConfigPath),
+    {},
+    resolvedConfigPath,
+  );
+
+  if (parsedConfig.fileNames.length === 0) {
+    throw new Error(
+      'No files matched by the TypeScript configuration. Check your "include", "exclude" or "files" settings.',
+    );
+  }
+
+  return parsedConfig;
+}
+
 type JitiOptions = Parameters<typeof createJiti>[1];
 
-export async function importModule<T = unknown>(
-  options: JitiOptions & { filepath: string },
-): Promise<T> {
-  const { filepath } = options;
-  const { mod } = await jitiImport(filepath);
+export function tsConfigToJitiOptionsTransformer(
+  tsConfigPath: string,
+): JitiOptions {
+  const parsedConfig = loadTargetConfig(tsConfigPath);
+  const compilerOptions = parsedConfig.options;
 
-  if (typeof mod === 'object' && 'default' in mod) {
+  const jitiOptions: JitiOptions = {};
+
+  if (compilerOptions.paths) {
+    const aliases: Record<string, string> = {};
+    const basePath = compilerOptions.baseUrl || path.dirname(tsConfigPath);
+
+    for (const alias in compilerOptions.paths) {
+      const paths = compilerOptions.paths[alias];
+      if (paths && paths.length > 0) {
+        aliases[alias] = path.resolve(basePath, paths[0] as string);
+      }
+    }
+    jitiOptions.alias = aliases;
+  }
+
+  if (compilerOptions.jsx) {
+    jitiOptions.jsx = true;
+  }
+
+  return jitiOptions;
+}
+
+export async function importModule<T = unknown>(
+  options: JitiOptions & { filepath: string; tsconfig?: string },
+): Promise<T> {
+  const { filepath, tsconfig, ...jitiOptions } = options;
+
+  const jitiOptionsFromTsConfig = tsconfig
+    ? tsConfigToJitiOptionsTransformer(tsconfig)
+    : {};
+
+  const jiti = createJiti(process.cwd(), {
+    ...jitiOptions,
+    ...jitiOptionsFromTsConfig,
+  });
+
+  const mod = await jiti.import(filepath);
+
+  if (mod && typeof mod === 'object' && 'default' in mod) {
     return mod.default as T;
   }
   return mod as T;

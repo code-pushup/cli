@@ -29,7 +29,6 @@ export async function readRcByPath(
   const cfg: CoreConfig = await importModule({
     filepath: filePath,
     tsconfig,
-    format: 'esm',
   });
 
   return validate(coreConfigSchema, cfg, { filePath });
