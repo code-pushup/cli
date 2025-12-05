@@ -15,7 +15,7 @@ This project supports multiple build tools:
 
 The Vite build configuration includes:
 
-- **Entry Points**: 
+- **Entry Points**:
   - `index.html` → `main.js` (main application)
   - `src/bin.ts` → `bin.js` (CLI entry point)
 - **Output Directory**: `dist/vite/`

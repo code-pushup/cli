@@ -7,20 +7,20 @@ const path = require('path');
  */
 function build() {
   console.log('Building with Vite...');
-  
+
   try {
     // Clean the dist directory
     const distDir = path.join(__dirname, 'dist', 'vite');
     if (fs.existsSync(distDir)) {
       fs.rmSync(distDir, { recursive: true });
     }
-    
+
     // Run Vite build
-    execSync('npx vite build', { 
+    execSync('npx vite build', {
       stdio: 'inherit',
-      cwd: __dirname 
+      cwd: __dirname,
     });
-    
+
     console.log('Vite build completed successfully!');
   } catch (error) {
     console.error('Vite build failed:', error.message);
@@ -32,4 +32,4 @@ if (require.main === module) {
   build();
 }
 
-module.exports = { build }; 
+module.exports = { build };
