@@ -1,7 +1,9 @@
 const path = require('node:path');
 
+const ZOD2MD_CONFIG_FILE = 'zod2md.config.ts';
+
 const createNodesV2 = [
-  `**/zod2md.config.ts`,
+  `**/${ZOD2MD_CONFIG_FILE}`,
   async (zod2MdConfigurationFiles, createNodesOptions) => {
     const options = createNodesOptions ?? {};
     const targetName = options.targetName ?? 'generate-docs';
@@ -10,6 +12,8 @@ const createNodesV2 = [
       zod2MdConfigurationFiles.map(async zod2MdConfigurationFile => {
         const projectRoot = path.dirname(zod2MdConfigurationFile);
         const normalizedProjectRoot = projectRoot === '.' ? '' : projectRoot;
+        const output = '{projectRoot}/docs/{projectName}-reference.md';
+        const config = `{projectRoot}/${ZOD2MD_CONFIG_FILE}`;
         const result = {
           projects: {
             [normalizedProjectRoot]: {
@@ -18,20 +22,14 @@ const createNodesV2 = [
                   executor: 'nx:run-commands',
                   options: {
                     commands: [
-                      'zod2md --config {args.config} --output {args.output}',
-                      'prettier --write {args.output}',
+                      `zod2md --config ${config} --output ${output}`,
+                      `prettier --write ${output}`,
                     ],
                     parallel: false,
-                    config: '{projectRoot}/zod2md.config.ts',
-                    output: '{projectRoot}/docs/{projectName}-reference.md',
                   },
                   cache: true,
-                  inputs: [
-                    'production',
-                    '^production',
-                    '{projectRoot}/zod2md.config.ts',
-                  ],
-                  outputs: ['{projectRoot}/docs/{projectName}-reference.md'],
+                  inputs: ['production', '^production', config],
+                  outputs: [output],
                 },
               },
             },
