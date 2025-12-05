@@ -144,7 +144,8 @@ export async function importModule<T = unknown>(
     ? tsConfigToJitiOptionsTransformer(tsconfig)
     : {};
 
-  const jiti = createJiti(process.cwd(), {
+  const jiti = createJiti(import.meta.url, {
+    interopDefault: true,
     ...jitiOptions,
     ...jitiOptionsFromTsConfig,
   });

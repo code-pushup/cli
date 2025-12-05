@@ -119,16 +119,13 @@
       "executor": "nx:run-commands",
       "dependsOn": ["code-pushup-*"],
       "options": {
-        "command": "node packages/cli/src/index.ts",
+        "command": "npx jiti packages/cli/src/index.ts",
         "args": [
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.read",
           "--persist.outputDir=.code-pushup/{projectName}"
         ],
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
+        "env": {}
       }
     },
     "code-pushup-coverage": {
