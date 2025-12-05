@@ -294,7 +294,7 @@ export function selectionGeneralConfigToOptions(
 ): SelectionOptions {
   return {
     ...config,
-    mode: 'startup',
+    mode: 'withStartupDeps',
     includeOutputs: [],
     excludeOutputs: [],
     includeInputs: [],
@@ -312,7 +312,7 @@ export function normalizeSelectionOptions(
   if (options === undefined) {
     // Default: include all outputs for startup mode
     return {
-      mode: 'startup',
+      mode: 'withStartupDeps',
       includeOutputs: ['**/*'],
       excludeOutputs: [],
       includeInputs: [],
@@ -324,7 +324,7 @@ export function normalizeSelectionOptions(
   const globalExclude = options.exclude || [];
 
   return {
-    mode: options.mode || 'startup',
+    mode: options.mode || 'withStartupDeps',
     includeOutputs: [...(options.includeOutputs || []), ...globalInclude],
     excludeOutputs: [...(options.excludeOutputs || []), ...globalExclude],
     includeInputs: [...(options.includeInputs || []), ...globalInclude],
@@ -352,7 +352,7 @@ export function normalizeBundleStatsOptions(
   }
 
   const normalizedScoring: ScoringConfig = {
-    mode: 'all',
+    mode: 'matchingWithStaticImports',
     totalSize: normalizeRange(totalSize ?? Infinity),
     penalty: normalizedPenalty,
   };
@@ -385,7 +385,7 @@ export function normalizeScoringOptions(
   const { penalty } = options;
 
   return {
-    mode: 'all',
+    mode: 'matchingWithStaticImports',
     totalSize: [0, Infinity], // Default range
     penalty: penalty
       ? {

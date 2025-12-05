@@ -8,12 +8,12 @@ export type { GroupingRule };
  */
 export const DEFAULT_GROUPING: GroupingRule[] = [
   {
-    patterns: ['projects/**/*'],
+    includeInputs: ['projects/**/*'],
   },
   {
-    patterns: ['packages/**/*'],
+    includeInputs: ['packages/**/*'],
   },
   {
-    patterns: ['**/node_modules/@*/**', '**/node_modules/**'],
+    includeInputs: ['**/node_modules/@*/**', '**/node_modules/**'],
   },
 ];
