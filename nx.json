@@ -46,7 +46,7 @@
       "options": {
         "command": "eslint",
         "args": [
-          "'{projectRoot}/**/*.ts'",
+          "'{projectRoot}/**/*.{ts,cjs,mjs,js}'",
           "{projectRoot}/package.json",
           "--config={projectRoot}/eslint.config.js",
           "--max-warnings=0",

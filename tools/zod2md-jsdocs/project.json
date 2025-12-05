@@ -4,15 +4,9 @@
   "sourceRoot": "tools/zod2md-jsdocs/src",
   "projectType": "library",
   "targets": {
+    "lint": {},
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "dependsOn": ["pre-build"],
-      "options": {
-        "outputPath": "tools/zod2md-jsdocs/dist",
-        "main": "tools/zod2md-jsdocs/src/index.ts",
-        "tsConfig": "tools/zod2md-jsdocs/tsconfig.lib.json"
-      }
+      "dependsOn": ["pre-build"]
     },
     "pre-build": {
       "command": "ts-patch install",
