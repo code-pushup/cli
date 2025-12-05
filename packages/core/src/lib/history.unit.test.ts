@@ -1,5 +1,5 @@
 import { describe, expect, vi } from 'vitest';
-import { MINIMAL_PLUGIN_CONFIG_MOCK } from '@code-pushup/test-utils';
+import { MINIMAL_PLUGIN_CONFIG_MOCK } from '@code-pushup/test-fixtures';
 import { getCurrentBranchOrTag, safeCheckout } from '@code-pushup/utils';
 import { collectAndPersistReports } from './collect-and-persist.js';
 import { type HistoryOptions, history } from './history.js';
