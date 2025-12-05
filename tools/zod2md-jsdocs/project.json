@@ -5,13 +5,7 @@
   "projectType": "library",
   "targets": {
     "lint": {},
-    "build": {
-      "dependsOn": ["pre-build"]
-    },
-    "pre-build": {
-      "command": "ts-patch install",
-      "cache": true,
-      "inputs": ["sharedGlobals", { "runtime": "ts-patch check" }]
-    }
+    "build": {},
+    "unit-test": {}
   }
 }

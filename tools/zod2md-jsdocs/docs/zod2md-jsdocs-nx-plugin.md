@@ -80,9 +80,10 @@ Default values:
 
 ## Options
 
-| Name           | type                               | description                                            |
-| -------------- | ---------------------------------- | ------------------------------------------------------ |
-| **targetName** | `string` (DEFAULT 'generate-docs') | The id used to identify a target in your project.json. |
+| Name                        | type                               | description                                                         |
+| --------------------------- | ---------------------------------- | ------------------------------------------------------------------- |
+| **docsTargetName**          | `string` (DEFAULT 'generate-docs') | The name of the docs generation target.                             |
+| **jsDocsTypesAugmentation** | `boolean` (DEFAULT `true`)         | Whether to enable TypeScript transformer integration with ts-patch. |
 
 All options are optional and provided in the `nx.json` file.
 
@@ -94,7 +95,8 @@ All options are optional and provided in the `nx.json` file.
     {
       "plugin": "./tools/zod2md-jsdocs-nx-plugin/src/lib/plugin.js",
       "options": {
-        "targetName": "docs",
+        "docsTargetName": "docs",
+        "jsDocsTypesAugmentation": true,
       },
     },
   ],

@@ -8,6 +8,7 @@
       "dependsOn": [
         "^build",
         "generate-docs",
+        "ts-patch",
         { "projects": "zod2md-jsdocs", "target": "build" }
       ]
     },
