@@ -9,7 +9,12 @@ import type { DependencyTreeConfig } from './audits/details/tree.js';
 import type { ScoringConfig } from './audits/scoring.js';
 import type { SelectionConfig } from './audits/selection.js';
 
-export type SupportedBundlers = 'webpack' | 'vite' | 'esbuild' | 'rsbuild';
+export type SupportedBundlers =
+  | 'webpack'
+  | 'vite'
+  | 'esbuild'
+  | 'rsbuild'
+  | 'sonda';
 
 export type MinMax = [number, number];
 

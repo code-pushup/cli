@@ -20,6 +20,7 @@ import type {
 import type { UnifiedStats } from './unify/unified-stats.types.js';
 import { unifyBundlerStats as unifyEsbuildStats } from './unify/unify.esbuild.js';
 import { unifyBundlerStats as unifyRsbuildStats } from './unify/unify.rsbuild.js';
+import { unifyBundlerStats as unifySondaStats } from './unify/unify.sonda.js';
 import { unifyBundlerStats as unifyViteStats } from './unify/unify.vite.js';
 import { unifyBundlerStats as unifyWebpackStats } from './unify/unify.webpack.js';
 
@@ -88,6 +89,13 @@ export function validateBundleStats(
         );
       }
       break;
+    case 'sonda':
+      if (!('resources' in stats) || !('connections' in stats)) {
+        throw new Error(
+          `Bundle stats file missing required sonda properties (resources, connections): ${artefactsPath}`,
+        );
+      }
+      break;
     default:
       throw new Error(`Unsupported bundler: ${bundler}`);
   }
@@ -109,6 +117,8 @@ export function getUnifyFunction(
       return (stats: any) => unifyRsbuildStats(stats);
     case 'vite':
       return (stats: any) => unifyViteStats(stats);
+    case 'sonda':
+      return (stats: any, options: any = {}) => unifySondaStats(stats, options);
     default:
       throw new Error(`Unsupported bundler: ${bundler}`);
   }

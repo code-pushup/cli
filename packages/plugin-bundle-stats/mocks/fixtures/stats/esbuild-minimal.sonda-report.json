@@ -1,0 +1,111 @@
+{
+  "metadata": {
+    "version": "0.10.1",
+    "integration": "esbuild",
+    "sources": false,
+    "gzip": false,
+    "brotli": false
+  },
+  "resources": [
+    {
+      "kind": "asset",
+      "name": "dist/esbuild-sonda/bin.js",
+      "type": "script",
+      "uncompressed": 104,
+      "gzip": 0,
+      "brotli": 0
+    },
+    {
+      "kind": "asset",
+      "name": "dist/esbuild-sonda/chunks/chunk.js",
+      "type": "script",
+      "uncompressed": 2234,
+      "gzip": 0,
+      "brotli": 0
+    },
+    {
+      "kind": "asset",
+      "name": "dist/esbuild-sonda/index.js",
+      "type": "script",
+      "uncompressed": 63,
+      "gzip": 0,
+      "brotli": 0
+    },
+    {
+      "kind": "filesystem",
+      "name": "src/bin.ts",
+      "type": "script",
+      "format": "esm",
+      "uncompressed": 78
+    },
+    {
+      "kind": "filesystem",
+      "name": "src/index.ts",
+      "type": "script",
+      "format": "esm",
+      "uncompressed": 147
+    },
+    {
+      "kind": "filesystem",
+      "name": "src/lib/feature-1.ts",
+      "type": "script",
+      "format": "esm",
+      "uncompressed": 70
+    },
+    {
+      "kind": "filesystem",
+      "name": "src/lib/utils/format.ts",
+      "type": "script",
+      "format": "esm",
+      "uncompressed": 1035
+    },
+    {
+      "kind": "filesystem",
+      "name": "src/lib/utils/math.ts",
+      "type": "script",
+      "format": "esm",
+      "uncompressed": 1035
+    }
+  ],
+  "connections": [
+    {
+      "kind": "import",
+      "source": "src/lib/feature-1.ts",
+      "target": "src/lib/utils/format.ts",
+      "original": "./utils/format"
+    },
+    {
+      "kind": "import",
+      "source": "src/index.ts",
+      "target": "src/lib/feature-1.ts",
+      "original": "./lib/feature-1"
+    },
+    {
+      "kind": "import",
+      "source": "src/index.ts",
+      "target": "src/lib/utils/math.ts",
+      "original": "./lib/utils/math"
+    },
+    {
+      "kind": "import",
+      "source": "src/bin.ts",
+      "target": "src/index.ts",
+      "original": "./index"
+    },
+    {
+      "kind": "entrypoint",
+      "source": "src/index.ts",
+      "target": "dist/esbuild-sonda/index.js",
+      "original": null
+    },
+    {
+      "kind": "entrypoint",
+      "source": "src/bin.ts",
+      "target": "dist/esbuild-sonda/bin.js",
+      "original": null
+    }
+  ],
+  "dependencies": [],
+  "issues": [],
+  "sourcemaps": []
+}

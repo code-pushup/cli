@@ -14,10 +14,11 @@ cd packages/plugin-bundle-stats/mocks/fixtures/node-minimal
 npm run build
 
 # Or generate artifacts for specific bundlers
-npm run build:esbuild    # → dist/esbuild/stats.json
-npm run build:webpack    # → dist/webpack/stats.json
-npm run build:rsbuild    # → dist/rsbuild/stats.json
-npm run build:vite       # → dist/vite/stats.json
+npm run build:esbuild        # → dist/esbuild/stats.json
+npm run build:esbuild-sonda  # → dist/esbuild-sonda/sonda-report.json
+npm run build:webpack        # → dist/webpack/stats.json
+npm run build:rsbuild        # → dist/rsbuild/stats.json
+npm run build:vite           # → dist/vite/stats.json
 ```
 
 ### Running the Plugin
@@ -27,6 +28,7 @@ Once the artifacts are generated, you can run the Code PushUp plugin to analyze 
 ```bash
 # Run plugin analysis for each bundler
 nx run plugin-bundle-stats:code-pushup-minimal-esbuild
+nx run plugin-bundle-stats:code-pushup-minimal-esbuild-sonda
 nx run plugin-bundle-stats:code-pushup-minimal-webpack
 nx run plugin-bundle-stats:code-pushup-minimal-rsbuild
 nx run plugin-bundle-stats:code-pushup-minimal-vite
