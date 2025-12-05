@@ -136,7 +136,6 @@ export async function getCoveragePathForVitest(
 
   const vitestConfig = await importModule<VitestCoverageConfig>({
     filepath: config,
-    format: 'esm',
   });
 
   const reportsDirectory =

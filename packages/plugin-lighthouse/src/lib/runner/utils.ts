@@ -134,7 +134,7 @@ export async function getConfig(
       // Resolve the config file path relative to where cli was called.
       return readJsonFile<Config>(filepath);
     } else if (/\.(ts|js|mjs)$/.test(filepath)) {
-      return importModule<Config>({ filepath, format: 'esm' });
+      return importModule<Config>({ filepath });
     } else {
       logger.warn(`Format of file ${filepath} not supported`);
     }
