@@ -9,12 +9,7 @@ describe('readRcByPath', () => {
     '..',
     '..',
     '..',
-    '..',
-    '..',
-    'testing',
-    'test-utils',
-    'src',
-    'lib',
+    'mocks',
     'fixtures',
     'configs',
   );
