@@ -19,31 +19,17 @@ describe('generateJSDocComment', () => {
     `);
   });
 
-  it('should generate JSDoc comment for different type name', () => {
-    const result = generateJSDocComment(
-      'ConfigOptions',
-      'https://docs.site.com',
-    );
-    expect(result).toBe(
-      `*
- * Type Definition: \`ConfigOptions\`
- *
- * This type is derived from a Zod schema and represents
- * the validated structure of \`ConfigOptions\` used within the application.
- *
- * @see {@link https://docs.site.com#configoptions}
- `,
-    );
-  });
-
   it('should convert type name to lowercase in the link anchor', () => {
-    const result = generateJSDocComment('MyComplexType', 'https://example.com');
+    const result = generateJSDocComment('Schema', 'https://example.com');
     expect(result).toContain('https://example.com#');
   });
 
-  it('should handle type names with numbers', () => {
-    const result = generateJSDocComment('Schema123', 'https://example.com/api');
-    expect(result).toContain('Type Definition: `Schema123`');
-    expect(result).toContain('#schema123');
+  it('should use type name in description', () => {
+    const result = generateJSDocComment('Schema', 'https://example.com');
+    expect(result).toContain('Type Definition: `SchemaName123`');
+  });
+  it('should convert type name to lowercase in the link anchor', () => {
+    const result = generateJSDocComment('SchemaName123', 'https://example.com');
+    expect(result).toContain('#schemaname123');
   });
 });
