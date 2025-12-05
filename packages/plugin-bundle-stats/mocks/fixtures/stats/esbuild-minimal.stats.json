@@ -209,10 +209,7 @@
           "kind": "dynamic-import"
         }
       ],
-      "exports": [
-        "default",
-        "indexOnlyFunction"
-      ],
+      "exports": ["default", "indexOnlyFunction"],
       "entryPoint": "../shared-source/src/index.ts",
       "inputs": {
         "../shared-source/src/index.ts": {
@@ -248,11 +245,7 @@
           "kind": "import-statement"
         }
       ],
-      "exports": [
-        "calculate",
-        "externalFunction",
-        "greet"
-      ],
+      "exports": ["calculate", "externalFunction", "greet"],
       "inputs": {
         "../../../../../node_modules/balanced-match/index.js": {
           "bytesInOutput": 1543
@@ -303,9 +296,7 @@
           "kind": "import-statement"
         }
       ],
-      "exports": [
-        "chart"
-      ],
+      "exports": ["chart"],
       "entryPoint": "../shared-source/src/lib/feature-2.ts",
       "inputs": {
         "../shared-source/src/lib/feature-2.ts": {
@@ -316,10 +307,7 @@
     },
     "dist/chunks/chunk-SK6HMZ5B.js": {
       "imports": [],
-      "exports": [
-        "__commonJS",
-        "__toESM"
-      ],
+      "exports": ["__commonJS", "__toESM"],
       "inputs": {},
       "bytes": 1357
     }
