@@ -45,9 +45,9 @@ export const createNodesV2 = [
 ];
 
 // default export for nx.json#plugins
-const plugin = {
-  name: 'zod2md-nx-plugin',
+const nxPlugin = {
+  name: 'zod2md-jsdocs-nx-plugin',
   createNodesV2,
 };
 
-export default plugin;
+export default nxPlugin;

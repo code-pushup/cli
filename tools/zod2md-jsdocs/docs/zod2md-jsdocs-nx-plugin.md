@@ -1,4 +1,4 @@
-# @code-pushup/zod2md-nx-plugin
+# @code-pushup/zod2md-jsdocs-nx-plugin
 
 The Nx Plugin for [zod2md](https://github.com/matejchalk/zod2md), a tool for generating documentation from Zod schemas.
 
@@ -15,7 +15,7 @@ Why should you use this plugin?
 // nx.json
 {
   //...
-  "plugins": ["./tools/zod2md-nx-plugin/src/lib/plugin.js"],
+  "plugins": ["./tools/zod2md-jsdocs-nx-plugin/src/lib/plugin.js"],
 }
 ```
 
@@ -27,7 +27,7 @@ or with options:
   //...
   "plugins": [
     {
-      "plugin": "./tools/zod2md-nx-plugin/src/lib/plugin.js",
+      "plugin": "./tools/zod2md-jsdocs-nx-plugin/src/lib/plugin.js",
       "options": {
         "targetName": "zod-docs",
       },
@@ -92,7 +92,7 @@ All options are optional and provided in the `nx.json` file.
   //...
   "plugins": [
     {
-      "plugin": "./tools/zod2md-nx-plugin/src/lib/plugin.js",
+      "plugin": "./tools/zod2md-jsdocs-nx-plugin/src/lib/plugin.js",
       "options": {
         "targetName": "docs",
       },
