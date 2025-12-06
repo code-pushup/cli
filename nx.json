@@ -9,7 +9,6 @@
       "!{projectRoot}/CHANGELOG.md",
       "!{projectRoot}/perf/**/*",
       "!{projectRoot}/tools/**/*",
-      "!{projectRoot}/zod2md.config.ts",
       "!{projectRoot}/eslint.config.?(c)js",
       "!{workspaceRoot}/**/.code-pushup/**/*",
       "!{projectRoot}/code-pushup.config.?(m)[jt]s",
@@ -46,7 +45,7 @@
       "options": {
         "command": "eslint",
         "args": [
-          "'{projectRoot}/**/*.ts'",
+          "'{projectRoot}/**/*.{ts,cjs,mjs,js}'",
           "{projectRoot}/package.json",
           "--config={projectRoot}/eslint.config.js",
           "--max-warnings=0",
@@ -337,6 +336,7 @@
     "releaseTagPattern": "v{version}"
   },
   "plugins": [
+    "./tools/zod2md-jsdocs/src/nx-plugin.cjs",
     {
       "plugin": "@push-based/nx-verdaccio",
       "options": {

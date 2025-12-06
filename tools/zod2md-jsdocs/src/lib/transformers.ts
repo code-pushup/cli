@@ -3,7 +3,15 @@ import type * as ts from 'typescript';
 
 const tsInstance: typeof ts = require('typescript');
 
-function generateJSDocComment(typeName: string, baseUrl: string): string {
+/**
+ * Generates a JSDoc comment for a given type name and base URL.
+ * @param typeName
+ * @param baseUrl
+ */
+export function generateJSDocComment(
+  typeName: string,
+  baseUrl: string,
+): string {
   const markdownLink = `${baseUrl}#${typeName.toLowerCase()}`;
   return `*
  * Type Definition: \`${typeName}\`
@@ -46,9 +54,8 @@ function annotateTypeDefinitions(
       }
       return tsLib.visitEachChild(node, visitor, context);
     };
-    return (sourceFile: ts.SourceFile) => {
-      return tsLib.visitNode(sourceFile, visitor, tsLib.isSourceFile);
-    };
+    return (sourceFile: ts.SourceFile) =>
+      tsLib.visitNode(sourceFile, visitor, tsLib.isSourceFile);
   };
 }
 
