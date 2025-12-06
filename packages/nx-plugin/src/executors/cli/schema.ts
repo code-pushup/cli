@@ -8,15 +8,15 @@ import type {
 
 export type PrintConfigOptions = { output?: string };
 export type PrintConfigCommandExecutorOptions = PrintConfigOptions;
-export type AutorunCommandExecutorOnlyOptions = ProjectExecutorOnlyOptions &
+export type CliCommandExecutorOnlyOptions = ProjectExecutorOnlyOptions &
   CollectExecutorOnlyOptions &
   GeneralExecutorOnlyOptions;
 
-export type AutorunCommandExecutorOptions = Partial<
+export type CliCommandExecutorOptions = Partial<
   {
     upload: Partial<UploadConfig>;
     persist: Partial<PersistConfig>;
-  } & AutorunCommandExecutorOnlyOptions &
+  } & CliCommandExecutorOnlyOptions &
     GlobalExecutorOptions
 > &
   PrintConfigOptions;

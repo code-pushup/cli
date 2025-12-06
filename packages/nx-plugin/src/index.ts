@@ -10,7 +10,7 @@ const plugin = {
 
 export default plugin;
 
-export type { AutorunCommandExecutorOptions } from './executors/cli/schema.js';
+export type { CliCommandExecutorOptions } from './executors/cli/schema.js';
 export { generateCodePushupConfig } from './generators/configuration/code-pushup-config.js';
 export { configurationGenerator } from './generators/configuration/generator.js';
 export type { ConfigurationGeneratorOptions } from './generators/configuration/schema.js';

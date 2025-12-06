@@ -14,8 +14,9 @@ export function globalConfig(
 ): GlobalExecutorOptions {
   const { projectConfig } = context;
   const { root: projectRoot = '' } = projectConfig ?? {};
-  const { verbose, config } = options;
+  const { verbose, config, command } = options;
   return {
+    command,
     verbose: !!verbose,
     config: config ?? path.join(projectRoot, 'code-pushup.config.ts'),
   };

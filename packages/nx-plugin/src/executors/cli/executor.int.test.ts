@@ -1,14 +1,11 @@
-import { afterEach, expect, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
 import * as executeProcessModule from '../../internal/execute-process.js';
-import runAutorunExecutor from './executor.js';
+import runCliExecutor from './executor.js';
 import * as utils from './utils.js';
 
-describe('runAutorunExecutor', () => {
-  const parseAutorunExecutorOptionsSpy = vi.spyOn(
-    utils,
-    'parseAutorunExecutorOptions',
-  );
+describe('runCliExecutor', () => {
+  const parseCliExecutorOptionsSpy = vi.spyOn(utils, 'parseCliExecutorOptions');
   const executeProcessSpy = vi.spyOn(executeProcessModule, 'executeProcess');
 
   beforeEach(() => {
@@ -22,22 +19,22 @@ describe('runAutorunExecutor', () => {
   });
 
   afterEach(() => {
-    parseAutorunExecutorOptionsSpy.mockReset();
+    parseCliExecutorOptionsSpy.mockRestore();
     executeProcessSpy.mockReset();
   });
 
   it('should normalize context, parse CLI options and execute command', async () => {
     expect(process.env).not.toHaveProperty('CP_VERBOSE', 'true');
-    const output = await runAutorunExecutor(
+    const output = await runCliExecutor(
       { verbose: true },
       executorContext('utils'),
     );
     expect(output.success).toBe(true);
 
-    expect(parseAutorunExecutorOptionsSpy).toHaveBeenCalledTimes(1);
+    expect(parseCliExecutorOptionsSpy).toHaveBeenCalledTimes(1);
 
     //is context normalized
-    expect(parseAutorunExecutorOptionsSpy).toHaveBeenCalledWith(
+    expect(parseCliExecutorOptionsSpy).toHaveBeenCalledWith(
       { verbose: true },
       expect.objectContaining({
         projectConfig: expect.objectContaining({ name: 'utils' }),
@@ -49,7 +46,24 @@ describe('runAutorunExecutor', () => {
       args: expect.arrayContaining(['@code-pushup/cli']),
       cwd: process.cwd(),
     });
+  });
 
-    expect(process.env).toHaveProperty('CP_VERBOSE', 'true');
+  it('should forward env options to executeProcess', async () => {
+    const output = await runCliExecutor(
+      {
+        verbose: true,
+        env: { TEST_VALUE: '42' },
+      },
+      executorContext('utils'),
+    );
+    expect(output.success).toBe(true);
+    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        env: expect.objectContaining({
+          TEST_VALUE: '42',
+        }),
+      }),
+    );
   });
 });

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/schema",
-  "$id": "AutorunExecutorOptions",
+  "$id": "CliExecutorOptions",
   "title": "CodePushup CLI autorun executor",
   "description": "Executes the @code-pushup/cli autorun command See: https://github.com/code-pushup/cli/blob/main/packages/cli/README.md#autorun-command",
   "type": "object",
@@ -20,6 +20,13 @@
     "bin": {
       "type": "string",
       "description": "Path to Code PushUp CLI"
+    },
+    "env": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Environment variables added to Code PushUp CLI process"
     },
     "verbose": {
       "type": "boolean",

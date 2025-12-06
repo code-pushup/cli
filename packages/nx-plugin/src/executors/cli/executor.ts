@@ -1,8 +1,8 @@
 import type { ExecutorContext } from '@nx/devkit';
 import { executeProcess } from '../../internal/execute-process.js';
 import { normalizeContext } from '../internal/context.js';
-import type { AutorunCommandExecutorOptions } from './schema.js';
-import { parseAutorunExecutorOptions } from './utils.js';
+import type { CliCommandExecutorOptions } from './schema.js';
+import { parseCliExecutorOptions } from './utils.js';
 
 export type ExecutorOutput = {
   success: boolean;
@@ -11,44 +11,55 @@ export type ExecutorOutput = {
 };
 
 /* eslint-disable-next-line max-lines-per-function */
-export default async function runAutorunExecutor(
-  terminalAndExecutorOptions: AutorunCommandExecutorOptions,
+export default async function runCliExecutor(
+  terminalAndExecutorOptions: CliCommandExecutorOptions,
   context: ExecutorContext,
 ): Promise<ExecutorOutput> {
   const { objectToCliArgs, formatCommandStatus, logger, stringifyError } =
     await import('@code-pushup/utils');
   const normalizedContext = normalizeContext(context);
-  const cliArgumentObject = parseAutorunExecutorOptions(
-    terminalAndExecutorOptions,
-    normalizedContext,
-  );
-  const { command: cliCommand } = terminalAndExecutorOptions;
-  const { verbose = false, dryRun, bin, ...restArgs } = cliArgumentObject;
+  const {
+    command: cliCommand,
+    verbose = false,
+    dryRun,
+    env: executorEnv,
+    bin,
+    ...restArgs
+  } = parseCliExecutorOptions(terminalAndExecutorOptions, normalizedContext);
+
   logger.setVerbose(verbose);
 
   const command = bin ? `node` : 'npx';
-  const positionals = [
+  const args = [
     bin ?? '@code-pushup/cli',
     ...(cliCommand ? [cliCommand] : []),
+    ...objectToCliArgs(restArgs),
   ];
-  const args = [...positionals, ...objectToCliArgs(restArgs)];
-  const executorEnvVariables = {
-    ...(verbose && { CP_VERBOSE: 'true' }),
-  };
   const commandString = formatCommandStatus([command, ...args].join(' '), {
     cwd: context.cwd,
-    env: executorEnvVariables,
+    env: {
+      ...executorEnv,
+      ...(verbose && { CP_VERBOSE: 'true' }),
+    },
   });
 
   if (dryRun) {
     logger.warn(`DryRun execution of: ${commandString}`);
   } else {
     try {
-      logger.debug(`With env vars: ${executorEnvVariables}`);
+      logger.debug(`With env vars: ${executorEnv}`);
       await executeProcess({
         command,
         args,
         ...(context.cwd ? { cwd: context.cwd } : {}),
+        ...(executorEnv && Object.keys(executorEnv).length > 0
+          ? {
+              env: {
+                ...process.env,
+                ...executorEnv,
+              },
+            }
+          : {}),
       });
     } catch (error) {
       logger.error(stringifyError(error));

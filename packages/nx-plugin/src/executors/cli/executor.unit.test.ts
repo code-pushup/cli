@@ -1,10 +1,19 @@
-import { afterAll, afterEach, beforeEach, expect, vi } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as executeProcessModule from '../../internal/execute-process.js';
-import runAutorunExecutor from './executor.js';
+import runCliExecutor from './executor.js';
 
-describe('runAutorunExecutor', () => {
+describe('runCliExecutor', () => {
   const processEnvCP = Object.fromEntries(
     Object.entries(process.env).filter(([k]) => k.startsWith('CP_')),
   );
@@ -41,7 +50,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should call executeProcess with return result', async () => {
-    const output = await runAutorunExecutor({}, executorContext('utils'));
+    const output = await runCliExecutor({}, executorContext('utils'));
     expect(output.success).toBe(true);
     expect(output.command).toMatch('npx @code-pushup/cli');
     expect(executeProcessSpy).toHaveBeenCalledWith({
@@ -52,7 +61,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should normalize context', async () => {
-    const output = await runAutorunExecutor(
+    const output = await runCliExecutor(
       {},
       {
         ...executorContext('utils'),
@@ -60,7 +69,8 @@ describe('runAutorunExecutor', () => {
       },
     );
     expect(output.success).toBe(true);
-    expect(output.command).toMatch('utils');
+    expect(output.command).toMatch('npx @code-pushup/cli');
+    expect(output.command).toContain('cwd-form-context');
     expect(executeProcessSpy).toHaveBeenCalledWith({
       command: 'npx',
       args: expect.arrayContaining(['@code-pushup/cli']),
@@ -69,7 +79,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should process executorOptions', async () => {
-    const output = await runAutorunExecutor(
+    const output = await runCliExecutor(
       { output: 'code-pushup.config.json', persist: { filename: 'REPORT' } },
       executorContext('testing-utils'),
     );
@@ -79,7 +89,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should create command from context and options if no api key is set', async () => {
-    const output = await runAutorunExecutor(
+    const output = await runCliExecutor(
       { persist: { filename: 'REPORT', format: ['md', 'json'] } },
       executorContext('core'),
     );
@@ -91,7 +101,7 @@ describe('runAutorunExecutor', () => {
 
   it('should create command from context, options and arguments if api key is set', async () => {
     vi.stubEnv('CP_API_KEY', 'cp_1234567');
-    const output = await runAutorunExecutor(
+    const output = await runCliExecutor(
       {
         persist: { filename: 'REPORT', format: ['md', 'json'] },
         upload: { project: 'CLI' },
@@ -107,7 +117,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should set env var information if verbose is set', async () => {
-    const output = await runAutorunExecutor(
+    const output = await runCliExecutor(
       {
         verbose: true,
       },
@@ -131,8 +141,8 @@ describe('runAutorunExecutor', () => {
     expect(logger.warn).toHaveBeenCalledTimes(0);
   });
 
-  it('should log env var in dryRun information if verbose is set', async () => {
-    const output = await runAutorunExecutor(
+  it('should log CP_VERBOSE env var in dryRun information if verbose is set', async () => {
+    const output = await runCliExecutor(
       {
         dryRun: true,
         verbose: true,
@@ -150,7 +160,7 @@ describe('runAutorunExecutor', () => {
   });
 
   it('should log command if dryRun is set', async () => {
-    await runAutorunExecutor({ dryRun: true }, executorContext('utils'));
+    await runCliExecutor({ dryRun: true }, executorContext('utils'));
 
     expect(logger.command).toHaveBeenCalledTimes(0);
     expect(logger.warn).toHaveBeenCalledTimes(1);
