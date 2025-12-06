@@ -5,9 +5,8 @@ describe('MCP Server', () => {
   let rpc: ReturnType<typeof createRpcClient>;
 
   beforeEach(async () => {
-    rpc = createRpcClient('node', [
-      'tmp/e2e/mcp-e2e/node_modules/@code-pushup/mcp/src/index.js',
-    ]);
+    // Use npx to run the local workspace package
+    rpc = createRpcClient('npx', ['@code-pushup/mcp']);
   });
 
   afterEach(() => {
