@@ -2,7 +2,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { spawn } from 'node:child_process';
-import * as z from 'zod';
+import { z } from 'zod';
 
 const mcpServer = new McpServer({
   name: 'code-pushup-mcp',
@@ -109,7 +109,7 @@ mcpServer.registerTool(
         .optional(),
     },
   },
-  async args => {
+  async (args: any) => {
     try {
       const cliArgs = buildCliArgs('collect', args);
       const { stdout, stderr } = await execCommand('npx', [
@@ -119,7 +119,7 @@ mcpServer.registerTool(
       return {
         content: [
           {
-            type: 'text',
+            type: 'text' as const,
             text: stdout || stderr || 'Command executed successfully',
           },
         ],
@@ -128,7 +128,7 @@ mcpServer.registerTool(
       return {
         content: [
           {
-            type: 'text',
+            type: 'text' as const,
             text: `Error: ${error instanceof Error ? error.message : String(error)}`,
           },
         ],
@@ -151,7 +151,7 @@ mcpServer.registerTool(
         .describe('Output directory for comparison report'),
     },
   },
-  async args => {
+  async (args: any) => {
     try {
       const cliArgs = buildCliArgs('compare', args);
       const { stdout, stderr } = await execCommand('npx', [
@@ -161,7 +161,7 @@ mcpServer.registerTool(
       return {
         content: [
           {
-            type: 'text',
+            type: 'text' as const,
             text: stdout || stderr || 'Comparison completed successfully',
           },
         ],
@@ -170,7 +170,7 @@ mcpServer.registerTool(
       return {
         content: [
           {
-            type: 'text',
+            type: 'text' as const,
             text: `Error: ${error instanceof Error ? error.message : String(error)}`,
           },
         ],
@@ -188,7 +188,7 @@ mcpServer.registerTool(
       config: z.string().optional().describe('Path to config file'),
     },
   },
-  async args => {
+  async (args: any) => {
     try {
       const cliArgs = buildCliArgs('print-config', args);
       const { stdout, stderr } = await execCommand('npx', [
@@ -198,7 +198,7 @@ mcpServer.registerTool(
       return {
         content: [
           {
-            type: 'text',
+            type: 'text' as const,
             text: stdout || stderr || 'Config printed successfully',
           },
         ],
@@ -207,7 +207,7 @@ mcpServer.registerTool(
       return {
         content: [
           {
-            type: 'text',
+            type: 'text' as const,
             text: `Error: ${error instanceof Error ? error.message : String(error)}`,
           },
         ],

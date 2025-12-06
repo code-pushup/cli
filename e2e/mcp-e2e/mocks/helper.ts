@@ -1,52 +1,47 @@
-import { spawn } from 'node:child_process';
+import { type ChildProcess, spawn } from 'node:child_process';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+
+async function readMessage(proc: ChildProcess, signal: AbortSignal) {
+  return new Promise((resolve, reject) => {
+    let buffer = '';
+    const onData = (chunk: Buffer) => {
+      buffer += chunk.toString();
+      const newlineIndex = buffer.indexOf('\n');
+      if (newlineIndex === -1) {
+        return;
+      }
+      proc.stdout!.off('data', onData);
+      const line = buffer.slice(0, newlineIndex).replace(/\r$/, '');
+      const message = JSON.parse(line);
+      resolve(message);
+    };
+    const onAbort = () => {
+      proc.stdout!.off('data', onData);
+      reject(new Error('Aborted waiting for JSON-RPC message'));
+    };
+    signal.addEventListener('abort', onAbort, { once: true });
+    proc.stdout!.on('data', onData);
+  });
+}
 
 export function createRpcClient(cmd: string, args: string[]) {
   const proc = spawn(cmd, args, { stdio: ['pipe', 'pipe', 'pipe'] });
 
-  let buffer = '';
-
-  const messageStream = new Promise<never>(() => {}); // unused but keeps type happy
-
-  const readMessage = (): Promise<any> =>
-    new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error('RPC timeout')), 5000);
-
-      const onData = (chunk: Buffer) => {
-        buffer += chunk.toString();
-
-        const headerEnd = buffer.indexOf('\r\n\r\n');
-        if (headerEnd === -1) return;
-
-        const header = buffer.slice(0, headerEnd);
-        const match = header.match(/Content-Length:\s*(\d+)/i);
-        if (!match) return;
-
-        const length = Number(match[1]);
-        const bodyStart = headerEnd + 4;
-        const bodyEnd = bodyStart + length;
-
-        if (buffer.length < bodyEnd) return;
-
-        const json = JSON.parse(buffer.slice(bodyStart, bodyEnd));
-        buffer = buffer.slice(bodyEnd);
-
-        clearTimeout(timeout);
-        proc.stdout.off('data', onData);
-        resolve(json);
-      };
-
-      proc.stdout.on('data', onData);
-    });
-
   const sendMessage = (msg: any) => {
-    const json = JSON.stringify(msg);
-    const payload = `Content-Length: ${Buffer.byteLength(json)}\r\n\r\n${json}`;
-    proc.stdin.write(payload);
+    const json = JSON.stringify(msg) + '\n';
+    proc.stdin.write(json);
   };
 
-  return { proc, send: sendMessage, recv: readMessage };
+  const recvMessage = (timeoutMs = 10000) => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    return readMessage(proc, controller.signal).finally(() =>
+      clearTimeout(timeout),
+    );
+  };
+
+  return { proc, send: sendMessage, recv: recvMessage };
 }
 
 describe('MCP Server', () => {
