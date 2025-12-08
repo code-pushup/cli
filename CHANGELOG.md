@@ -1,3 +1,17 @@
+## 0.93.0 (2025-12-08)
+
+### 🚀 Features
+
+- **plugin-axe:** use category-based groups ([aa7b7f63](https://github.com/code-pushup/cli/commit/aa7b7f63))
+
+### 🩹 Fixes
+
+- **plugin-axe:** wrap HTML tags in audit metadata ([9ac95d60](https://github.com/code-pushup/cli/commit/9ac95d60))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
 ## 0.92.1 (2025-12-03)
 
 ### 🩹 Fixes
