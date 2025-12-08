@@ -43,5 +43,8 @@ export async function collectAndPersistReports(
 
   // terminal output
   logger.newline();
+  logger.newline();
   logStdoutSummary(sortedScoredReport);
+  logger.newline();
+  logger.newline();
 }

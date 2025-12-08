@@ -1,4 +1,4 @@
-# Code PushUp Report
+# Code PushUp report
 
 ## 🛡️ Audits
 
