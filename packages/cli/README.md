@@ -331,9 +331,9 @@ Print the resolved configuration.
 
 In addition to the [Common Command Options](#common-command-options), the following options are recognized by the `print-config` command:
 
-| Option         | Required | Type     | Description                                              |
-| -------------- | :------: | -------- | -------------------------------------------------------- |
-| **`--output`** |    no    | `string` | Path to output file to print config (default is stdout). |
+| Option         | Required | Type     | Description                          |
+| -------------- | :------: | -------- | ------------------------------------ |
+| **`--output`** |   yes    | `string` | Path to output file to print config. |
 
 #### `merge-diffs` command
 

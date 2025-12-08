@@ -15,26 +15,19 @@ export function yargsPrintConfigCommandObject() {
     describe: 'Print config',
     builder: yargsPrintConfigOptionsDefinition(),
     handler: async yargsArgs => {
+      printCliCommand(command);
+
       // it is important to filter out kebab case keys
       // because yargs duplicates options in camel case and kebab case
       const { _, $0, ...args } = filterKebabCaseKeys(yargsArgs);
       const { output, ...config } = args as PrintConfigOptions &
         Record<string, unknown>;
 
-      // stdout should be valid JSON
-      if (output) {
-        printCliCommand(command);
-      }
-
       const content = JSON.stringify(config, null, 2);
 
-      if (output) {
-        await mkdir(path.dirname(output), { recursive: true });
-        await writeFile(output, content);
-        logger.info(`Config printed to file ${ansis.bold(output)}`);
-      } else {
-        logger.info(content);
-      }
+      await mkdir(path.dirname(output), { recursive: true });
+      await writeFile(output, content);
+      logger.info(`Config printed to file ${ansis.bold(output)}`);
     },
   } satisfies CommandModule;
 }
