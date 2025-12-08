@@ -5,7 +5,6 @@ import {
 } from '@code-pushup/core';
 import { logger } from '@code-pushup/utils';
 import {
-  collectSuccessfulLog,
   printCliCommand,
   renderCategoriesHint,
   renderPortalHint,
@@ -23,7 +22,6 @@ export function yargsCollectCommandObject(): CommandModule {
       const options = args as unknown as CollectAndPersistReportsOptions;
 
       await collectAndPersistReports(options);
-      collectSuccessfulLog();
 
       if (!options.categories?.length) {
         logger.newline();

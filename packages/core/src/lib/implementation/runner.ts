@@ -15,6 +15,7 @@ import {
   ensureDirectoryExists,
   executeProcess,
   fileExists,
+  logger,
   readJsonFile,
   removeDirectoryIfExists,
   runnerArgsToEnv,
@@ -127,21 +128,33 @@ export async function writeRunnerResults(
   const cacheFilePath = getRunnerOutputsPath(pluginSlug, outputDir);
   await ensureDirectoryExists(path.dirname(cacheFilePath));
   await writeFile(cacheFilePath, JSON.stringify(runnerResult.audits, null, 2));
+  logger.info(
+    `Wrote runner output to cache ${formatCachePathSuffix(cacheFilePath)}`,
+  );
 }
 
 export async function readRunnerResults(
   pluginSlug: string,
   outputDir: string,
 ): Promise<RunnerResult | null> {
-  const auditOutputsPath = getRunnerOutputsPath(pluginSlug, outputDir);
-  if (await fileExists(auditOutputsPath)) {
-    const cachedResult = await readJsonFile<AuditOutputs>(auditOutputsPath);
-
+  const cachePath = getRunnerOutputsPath(pluginSlug, outputDir);
+  if (await fileExists(cachePath)) {
+    const cachedResult = await readJsonFile<AuditOutputs>(cachePath);
+    logger.info(
+      `Read runner output from cache ${formatCachePathSuffix(cachePath)}`,
+    );
     return {
       audits: cachedResult,
       duration: 0,
       date: new Date().toISOString(),
     };
   }
+  logger.info(
+    `Cached runner output is not available ${formatCachePathSuffix(cachePath)}`,
+  );
   return null;
+}
+
+function formatCachePathSuffix(cacheFilePath: string): string {
+  return ansis.gray(`(${cacheFilePath})`);
 }

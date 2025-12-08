@@ -6,7 +6,7 @@ import { setVerboseMiddleware } from './implementation/set-verbose.middleware.js
 
 export const middlewares = [
   {
-    middlewareFunction: logIntroMiddleware,
+    middlewareFunction: logIntroMiddleware as unknown as MiddlewareFunction,
     applyBeforeValidation: true,
   },
   {

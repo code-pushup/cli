@@ -7,11 +7,9 @@ import {
 } from '@code-pushup/core';
 import { logger } from '@code-pushup/utils';
 import {
-  collectSuccessfulLog,
   printCliCommand,
   renderCategoriesHint,
   renderPortalHint,
-  uploadSuccessfulLog,
 } from '../implementation/logging.js';
 
 type AutorunOptions = CollectOptions & UploadOptions;
@@ -38,19 +36,15 @@ export function yargsAutorunCommandObject() {
       };
 
       await collectAndPersistReports(optionsWithFormat);
-      collectSuccessfulLog();
+      logger.newline();
 
       if (!options.categories?.length) {
-        logger.newline();
         renderCategoriesHint();
         logger.newline();
       }
 
       if (options.upload) {
-        const report = await upload(options);
-        if (report?.url) {
-          uploadSuccessfulLog(report.url);
-        }
+        await upload(options);
       } else {
         logger.warn('Upload skipped because Portal is not configured.');
         logger.newline();

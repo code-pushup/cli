@@ -1,17 +1,17 @@
+import ansis from 'ansis';
 import { logger, stringifyError } from '@code-pushup/utils';
 
 export async function loadPortalClient(): Promise<
-  typeof import('@code-pushup/portal-client') | null
+  typeof import('@code-pushup/portal-client')
 > {
   try {
     return await import('@code-pushup/portal-client');
   } catch (error) {
-    logger.warn(
+    logger.error(
       `Failed to import @code-pushup/portal-client - ${stringifyError(error)}`,
     );
-    logger.error(
-      'Optional peer dependency @code-pushup/portal-client is not available. Make sure it is installed to enable upload functionality.',
+    throw new Error(
+      `The ${ansis.bold('@code-pushup/portal-client')} peer dependency must be installed to enable uploading to Portal.`,
     );
-    return null;
   }
 }

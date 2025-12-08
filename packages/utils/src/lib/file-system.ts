@@ -1,10 +1,7 @@
-import ansis from 'ansis';
 import { type Options, bundleRequire } from 'bundle-require';
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
 import type { Format, PersistConfig } from '@code-pushup/models';
-import { formatBytes } from './formatting.js';
-import { logMultipleResults } from './log-results.js';
 import { logger } from './logger.js';
 import { settlePromise } from './promises.js';
 
@@ -53,29 +50,6 @@ export async function removeDirectoryIfExists(dir: string) {
   if (await directoryExists(dir)) {
     await rm(dir, { recursive: true, force: true });
   }
-}
-
-export type FileResult = readonly [string] | readonly [string, number];
-export type MultipleFileResults = PromiseSettledResult<FileResult>[];
-
-export function logMultipleFileResults(
-  fileResults: MultipleFileResults,
-  messagePrefix: string,
-): void {
-  const succeededTransform = (result: PromiseFulfilledResult<FileResult>) => {
-    const [fileName, size] = result.value;
-    const formattedSize = size ? ` (${ansis.gray(formatBytes(size))})` : '';
-    return `- ${ansis.bold(fileName)}${formattedSize}`;
-  };
-  const failedTransform = (result: PromiseRejectedResult) =>
-    `- ${ansis.bold(String(result.reason))}`;
-
-  logMultipleResults<FileResult>(
-    fileResults,
-    messagePrefix,
-    succeededTransform,
-    failedTransform,
-  );
 }
 
 export async function importModule<T = unknown>(options: Options): Promise<T> {

@@ -9,15 +9,6 @@ export function printCliCommand(command: string): void {
   logger.debug(`Running ${ansis.bold(command)} command`);
 }
 
-export function uploadSuccessfulLog(url: string): void {
-  logger.info(ansis.green('Upload successful!'));
-  logger.info(formatAsciiLink(url));
-}
-
-export function collectSuccessfulLog(): void {
-  logger.info(ansis.green('Collecting report successful!'));
-}
-
 export function renderCategoriesHint(): void {
   logger.info(
     formatAsciiSticker([

@@ -4,7 +4,6 @@ import { logger } from '@code-pushup/utils';
 import {
   printCliCommand,
   renderPortalHint,
-  uploadSuccessfulLog,
 } from '../implementation/logging.js';
 
 export function yargsUploadCommandObject() {
@@ -22,10 +21,7 @@ export function yargsUploadCommandObject() {
         logger.newline();
         throw new Error('Upload to Portal is missing configuration');
       }
-      const report = await upload(options);
-      if (report?.url) {
-        uploadSuccessfulLog(report.url);
-      }
+      await upload(options);
     },
   } satisfies CommandModule;
 }

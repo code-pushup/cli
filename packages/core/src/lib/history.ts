@@ -5,6 +5,7 @@ import type {
   UploadConfig,
 } from '@code-pushup/models';
 import {
+  type WithRequired,
   getCurrentBranchOrTag,
   logger,
   safeCheckout,
@@ -55,7 +56,7 @@ export async function history(
     if (skipUploads) {
       logger.info('Upload is skipped because skipUploads is set to true.');
     } else {
-      if (currentConfig.upload) {
+      if (hasUpload(currentConfig)) {
         await upload(currentConfig);
       } else {
         logger.info('Upload is skipped because upload config is undefined.');
@@ -69,4 +70,10 @@ export async function history(
   await safeCheckout(initialBranch, forceCleanStatus);
 
   return reports;
+}
+
+function hasUpload(
+  config: HistoryOptions,
+): config is WithRequired<HistoryOptions, 'upload'> {
+  return config.upload != null;
 }
