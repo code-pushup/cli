@@ -36,7 +36,6 @@ export function yargsAutorunCommandObject() {
       };
 
       await collectAndPersistReports(optionsWithFormat);
-      logger.newline();
 
       if (!options.categories?.length) {
         renderCategoriesHint();

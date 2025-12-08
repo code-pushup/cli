@@ -1,5 +1,4 @@
-Code PushUp Report - @code-pushup/core@0.0.1
-
+Code PushUp report
 
 ESLint audits
 
@@ -19,7 +18,6 @@ ESLint audits
 ●  Require the use of `===` and `!==`                                  1 warning
 ●  ... + 37 audits with perfect scores ...
 
-
 Lighthouse audits
 
 ●  Minimize third-party usage                  Third-party code blocked the main
@@ -30,4 +28,3 @@ Lighthouse audits
 ●  ... + 2 audits with perfect scores ...
 
 Made with ❤ by code-pushup.dev
-

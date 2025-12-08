@@ -59,7 +59,7 @@ describe('CLI collect', () => {
 
     const md = await readTextFile(path.join(dummyOutputDir, 'report.md'));
 
-    expect(md).toContain('# Code PushUp Report');
+    expect(md).toContain('# Code PushUp report');
     expect(md).toContain(dummyPluginTitle);
     expect(md).toContain(dummyAuditTitle);
   });
@@ -112,7 +112,7 @@ describe('CLI collect', () => {
 
     expect(code).toBe(0);
 
-    expect(stdout).toContain('Code PushUp Report');
+    expect(stdout).toContain('Code PushUp report');
     expect(stdout).not.toContain('Generated reports');
     expect(stdout).toContain(dummyPluginTitle);
     expect(stdout).toContain(dummyAuditTitle);

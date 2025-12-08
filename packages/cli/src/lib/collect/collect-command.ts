@@ -3,7 +3,6 @@ import {
   type CollectAndPersistReportsOptions,
   collectAndPersistReports,
 } from '@code-pushup/core';
-import { logger } from '@code-pushup/utils';
 import {
   printCliCommand,
   renderCategoriesHint,
@@ -24,7 +23,6 @@ export function yargsCollectCommandObject(): CommandModule {
       await collectAndPersistReports(options);
 
       if (!options.categories?.length) {
-        logger.newline();
         renderCategoriesHint();
       }
 
@@ -32,7 +30,6 @@ export function yargsCollectCommandObject(): CommandModule {
         'upload',
         object | undefined
       >;
-      logger.newline();
       if (upload) {
         renderUploadHint();
       } else {
