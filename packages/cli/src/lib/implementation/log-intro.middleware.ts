@@ -7,10 +7,6 @@ import { getVersion } from './version.js';
 export function logIntroMiddleware(
   args: ArgumentsCamelCase,
 ): ArgumentsCamelCase {
-  // prevent interference with JSON output
-  if (args._.includes('print-config') && !('output' in args)) {
-    return args;
-  }
   logger.info(
     ansis.bold.blue(
       `${CODE_PUSHUP_UNICODE_LOGO} ${CLI_DISPLAY_NAME} v${getVersion()}`,

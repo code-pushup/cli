@@ -7,8 +7,9 @@ export function yargsPrintConfigOptionsDefinition(): Record<
 > {
   return {
     output: {
-      describe: 'Output file path to use instead of stdout',
+      describe: 'Output file path for resolved JSON config',
       type: 'string',
+      demandOption: true,
     },
   };
 }
