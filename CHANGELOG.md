@@ -1,3 +1,19 @@
+## 0.94.0 (2025-12-09)
+
+### 🚀 Features
+
+- **cli:** include logo and version in initial log ([52266a7f](https://github.com/code-pushup/cli/commit/52266a7f))
+- **cli:** log config import and validation steps ([f3cebd3b](https://github.com/code-pushup/cli/commit/f3cebd3b))
+- **cli:** simplify sticker hints ([db44dff0](https://github.com/code-pushup/cli/commit/db44dff0))
+- **cli:** improve collect and upload logs ([239c7c7e](https://github.com/code-pushup/cli/commit/239c7c7e))
+- **cli:** drop print-config to stdout, output arg is now required ([88096844](https://github.com/code-pushup/cli/commit/88096844))
+- **utils:** support custom return values in logger.task ([e0793eeb](https://github.com/code-pushup/cli/commit/e0793eeb))
+- **utils:** ensure consistent line breaks in stdout report ([7093fe4d](https://github.com/code-pushup/cli/commit/7093fe4d))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.93.0 (2025-12-08)
 
 ### 🚀 Features
