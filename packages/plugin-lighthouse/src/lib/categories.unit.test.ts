@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import type { CategoryConfig } from '@code-pushup/models';
-import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
 import {
   createAggregatedCategory,
   expandAggregatedCategory,
   extractGroupSlugs,
-  mergeLighthouseCategories,
-} from './merge-categories.js';
+  lighthouseCategories,
+} from './categories.js';
+import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
 
-describe('mergeLighthouseCategories', () => {
+describe('lighthouseCategories', () => {
   const mockMultiUrlPlugin = {
     groups: [
       {
@@ -68,12 +68,12 @@ describe('mergeLighthouseCategories', () => {
 
   describe('with no groups', () => {
     it('should return empty array when no groups and no categories provided', () => {
-      expect(mergeLighthouseCategories({ groups: undefined })).toEqual([]);
+      expect(lighthouseCategories({ groups: undefined })).toEqual([]);
     });
 
     it('should return provided categories when no groups provided', () => {
       expect(
-        mergeLighthouseCategories({ groups: undefined }, mockUserCategories),
+        lighthouseCategories({ groups: undefined }, mockUserCategories),
       ).toEqual(mockUserCategories);
     });
   });
@@ -99,7 +99,7 @@ describe('mergeLighthouseCategories', () => {
     };
 
     it('should create categories from groups when no categories provided', () => {
-      expect(mergeLighthouseCategories(plugin)).toEqual([
+      expect(lighthouseCategories(plugin)).toEqual([
         expect.objectContaining({
           slug: 'performance',
           refs: [expect.objectContaining({ slug: 'performance', weight: 1 })],
@@ -112,7 +112,7 @@ describe('mergeLighthouseCategories', () => {
     });
 
     it('should return provided categories unchanged', () => {
-      expect(mergeLighthouseCategories(plugin, mockUserCategories)).toEqual(
+      expect(lighthouseCategories(plugin, mockUserCategories)).toEqual(
         mockUserCategories,
       );
     });
@@ -120,7 +120,7 @@ describe('mergeLighthouseCategories', () => {
 
   describe('with multiple URLs', () => {
     it('should create default aggregated categories when no categories provided', () => {
-      const result = mergeLighthouseCategories(mockMultiUrlPlugin);
+      const result = lighthouseCategories(mockMultiUrlPlugin);
 
       expect(result).toHaveLength(2);
       expect(result[0]).toEqual({
@@ -163,7 +163,7 @@ describe('mergeLighthouseCategories', () => {
     });
 
     it('should expand user-provided categories', () => {
-      const result = mergeLighthouseCategories(
+      const result = lighthouseCategories(
         mockMultiUrlPlugin,
         mockUserCategories,
       );
@@ -210,7 +210,7 @@ describe('mergeLighthouseCategories', () => {
 
     it('should handle mixed group and audit refs', () => {
       expect(
-        mergeLighthouseCategories(mockMultiUrlPlugin, [
+        lighthouseCategories(mockMultiUrlPlugin, [
           {
             slug: 'mixed-performance',
             title: 'Mixed Performance',
@@ -260,7 +260,7 @@ describe('mergeLighthouseCategories', () => {
 
     it('should preserve non-Lighthouse refs unchanged', () => {
       expect(
-        mergeLighthouseCategories(mockMultiUrlPlugin, [
+        lighthouseCategories(mockMultiUrlPlugin, [
           {
             slug: 'mixed-category',
             title: 'Mixed Category',
@@ -321,14 +321,14 @@ describe('mergeLighthouseCategories', () => {
         },
       ];
 
-      expect(
-        mergeLighthouseCategories(mockMultiUrlPlugin, categories)[0],
-      ).toEqual(categories[0]);
+      expect(lighthouseCategories(mockMultiUrlPlugin, categories)[0]).toEqual(
+        categories[0],
+      );
     });
 
     it('should preserve all category properties', () => {
       expect(
-        mergeLighthouseCategories(mockMultiUrlPlugin, [
+        lighthouseCategories(mockMultiUrlPlugin, [
           {
             slug: 'performance',
             title: 'Performance',
@@ -395,7 +395,7 @@ describe('mergeLighthouseCategories', () => {
         },
       ];
 
-      const result = mergeLighthouseCategories(plugin, categories);
+      const result = lighthouseCategories(plugin, categories);
 
       expect(result[0]?.refs).toHaveLength(3);
       expect(result[0]?.refs.map(({ slug }) => slug)).toEqual([
@@ -406,7 +406,7 @@ describe('mergeLighthouseCategories', () => {
     });
 
     it('should filter out invalid Lighthouse groups', () => {
-      const result = mergeLighthouseCategories({
+      const result = lighthouseCategories({
         groups: [
           { slug: 'performance-1', title: 'Performance 1', refs: [] },
           { slug: 'invalid-group-1', title: 'Invalid Group 1', refs: [] },
@@ -463,12 +463,12 @@ describe('mergeLighthouseCategories', () => {
 
   describe('edge cases', () => {
     it('should handle empty categories array', () => {
-      expect(mergeLighthouseCategories(mockMultiUrlPlugin, [])).toEqual([]);
+      expect(lighthouseCategories(mockMultiUrlPlugin, [])).toEqual([]);
     });
 
     it('should handle plugin with empty groups array', () => {
       expect(
-        mergeLighthouseCategories(
+        lighthouseCategories(
           { groups: [], context: { urlCount: 0, weights: {} } },
           mockUserCategories,
         ),
@@ -484,9 +484,9 @@ describe('mergeLighthouseCategories', () => {
         },
       ];
 
-      expect(
-        mergeLighthouseCategories(mockMultiUrlPlugin, category)[0],
-      ).toEqual(category[0]);
+      expect(lighthouseCategories(mockMultiUrlPlugin, category)[0]).toEqual(
+        category[0],
+      );
     });
   });
 });
