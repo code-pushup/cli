@@ -6,7 +6,7 @@ import {
   eslintPluginConfigSchema,
   eslintPluginOptionsSchema,
 } from './config.js';
-import { ESLINT_PLUGIN_SLUG } from './constants.js';
+import { ESLINT_PLUGIN_SLUG, ESLINT_PLUGIN_TITLE } from './constants.js';
 import { listAuditsAndGroups } from './meta/index.js';
 import { createRunnerFunction } from './runner/index.js';
 
@@ -51,7 +51,7 @@ export async function eslintPlugin(
 
   return {
     slug: ESLINT_PLUGIN_SLUG,
-    title: 'ESLint',
+    title: ESLINT_PLUGIN_TITLE,
     icon: 'eslint',
     description: 'Official Code PushUp ESLint plugin',
     docsUrl: 'https://www.npmjs.com/package/@code-pushup/eslint-plugin',
@@ -61,7 +61,7 @@ export async function eslintPlugin(
     audits,
     groups,
 
-    runner: await createRunnerFunction({
+    runner: createRunnerFunction({
       audits,
       targets,
       ...(artifacts ? { artifacts } : {}),
