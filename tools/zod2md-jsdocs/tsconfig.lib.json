@@ -4,7 +4,8 @@
     "outDir": "./dist",
     "rootDir": "./",
     "module": "commonjs",
-    "types": ["node"]
+    "types": ["node"],
+    "esModuleInterop": true
   },
   "include": ["src/**/*.ts"]
 }

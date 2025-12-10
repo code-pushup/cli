@@ -10,7 +10,7 @@ import { formatDuration, indentLines, transformLines } from './formatting.js';
 import { settlePromise } from './promises.js';
 
 type GroupColor = Extract<AnsiColors, 'cyan' | 'magenta'>;
-type CiPlatform = 'GitHub Actions' | 'GitLab CI/CD';
+type CiPlatform = 'GitHub' | 'GitLab';
 
 /** Additional options for log methods */
 export type LogOptions = {
@@ -43,9 +43,9 @@ export class Logger {
   #isVerbose = isEnvVarEnabled('CP_VERBOSE');
   #isCI = isEnvVarEnabled('CI');
   #ciPlatform: CiPlatform | undefined = isEnvVarEnabled('GITHUB_ACTIONS')
-    ? 'GitHub Actions'
+    ? 'GitHub'
     : isEnvVarEnabled('GITLAB_CI')
-      ? 'GitLab CI/CD'
+      ? 'GitLab'
       : undefined;
   #groupColor: GroupColor | undefined;
 
@@ -212,12 +212,16 @@ export class Logger {
    * @param title Display text used as pending message.
    * @param worker Asynchronous implementation. Returned promise determines spinner status and final message. Support for inner logs has some limitations (described above).
    */
-  async task(title: string, worker: () => Promise<string>): Promise<void> {
-    await this.#spinner(worker, {
+  async task<T = undefined>(
+    title: string,
+    worker: () => Promise<string | { message: string; result: T }>,
+  ): Promise<T> {
+    const result = await this.#spinner(worker, {
       pending: title,
-      success: value => value,
+      success: value => (typeof value === 'string' ? value : value.message),
       failure: error => `${title} → ${ansis.red(String(error))}`,
     });
+    return typeof result === 'object' ? result.result : (undefined as T);
   }
 
   /**
@@ -350,15 +354,23 @@ export class Logger {
     start: (title: string) => string;
     end: () => string;
   } {
-    switch (this.#ciPlatform) {
-      case 'GitHub Actions':
+    // Nx typically renders native log groups for each target in GitHub
+    // + GitHub doesn't support nested log groups: https://github.com/actions/toolkit/issues/1001
+    // => skip native GitHub log groups if run within Nx target
+    const platform =
+      this.#ciPlatform === 'GitHub' && process.env['NX_TASK_TARGET_TARGET'] // https://nx.dev/docs/reference/environment-variables
+        ? undefined
+        : this.#ciPlatform;
+
+    switch (platform) {
+      case 'GitHub':
         // https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-commands#grouping-log-lines
         return {
           start: title =>
             `::group::${this.#formatGroupTitle(title, { prefix: false })}`,
           end: () => '::endgroup::',
         };
-      case 'GitLab CI/CD':
+      case 'GitLab':
         // https://docs.gitlab.com/ci/jobs/job_logs/#custom-collapsible-sections
         const ansiEscCode = '\u001B[0K'; // '\e' ESC character only works for `echo -e`, Node console must use '\u001B'
         const id = Math.random().toString(HEX_RADIX).slice(2);

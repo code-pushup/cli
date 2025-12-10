@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/typescript-plugin",
-  "version": "0.92.0",
+  "version": "0.94.0",
   "license": "MIT",
   "description": "Code PushUp plugin for incrementally adopting strict compilation flags in TypeScript projects",
   "homepage": "https://github.com/code-pushup/cli/tree/main/packages/plugin-typescript#readme",
@@ -23,8 +23,8 @@
   },
   "type": "module",
   "dependencies": {
-    "@code-pushup/models": "0.92.0",
-    "@code-pushup/utils": "0.92.0",
+    "@code-pushup/models": "0.94.0",
+    "@code-pushup/utils": "0.94.0",
     "zod": "^4.0.5"
   },
   "peerDependencies": {

@@ -368,6 +368,7 @@ describe('getConfig', () => {
   });
 
   it('should load config from lh-config.js file if configPath is specified', async () => {
+    vol.fromJSON({ 'lh-config.js': '// mocked above' }, MEMFS_VOLUME);
     await expect(getConfig({ configPath: 'lh-config.js' })).resolves.toEqual(
       expect.objectContaining({
         upload: expect.objectContaining({

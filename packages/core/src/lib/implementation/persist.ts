@@ -1,24 +1,30 @@
 import ansis from 'ansis';
 import { mkdir, stat, writeFile } from 'node:fs/promises';
+import path from 'node:path';
 import type { Format, PersistConfig, Report } from '@code-pushup/models';
 import {
-  type MultipleFileResults,
   type ScoredReport,
   createReportPath,
   directoryExists,
+  formatBytes,
   generateMdReport,
-  logMultipleFileResults,
+  logger,
   stringifyError,
 } from '@code-pushup/utils';
+
+type FileSize = {
+  file: string;
+  size: number;
+};
 
 export async function persistReport(
   report: Report,
   sortedScoredReport: ScoredReport,
   options: Required<Omit<PersistConfig, 'skipReports'>>,
-): Promise<MultipleFileResults> {
+): Promise<FileSize[]> {
   const { outputDir, filename, format } = options;
 
-  // collect physical format outputs
+  // format report
   const results = format.map(
     (reportType): { format: Format; content: string } => {
       switch (reportType) {
@@ -47,7 +53,7 @@ export async function persistReport(
   }
 
   // write relevant format outputs to file system
-  return Promise.allSettled(
+  return Promise.all(
     results.map(result =>
       persistResult(
         createReportPath({ outputDir, filename, format: result.format }),
@@ -57,20 +63,25 @@ export async function persistReport(
   );
 }
 
-function persistResult(reportPath: string, content: string) {
+function persistResult(reportPath: string, content: string): Promise<FileSize> {
   return (
     writeFile(reportPath, content)
       // return reportPath instead of void
       .then(() => stat(reportPath))
-      .then(stats => [reportPath, stats.size] as const)
+      .then((stats): FileSize => ({ file: reportPath, size: stats.size }))
       .catch((error: unknown) => {
         throw new Error(
-          `Failed to persist report in ${ansis.bold(reportPath)} - ${stringifyError(error)}`,
+          `Failed to save report in ${ansis.bold(reportPath)} - ${stringifyError(error)}`,
         );
       })
   );
 }
 
-export function logPersistedResults(persistResults: MultipleFileResults) {
-  logMultipleFileResults(persistResults, 'Generated reports');
+export function logPersistedReport(reportFiles: FileSize[]) {
+  logger.info(`Persisted report to file system:`);
+  reportFiles.forEach(({ file, size }) => {
+    const name = ansis.bold(path.relative(process.cwd(), file));
+    const suffix = ansis.gray(`(${formatBytes(size)})`);
+    logger.info(`• ${name} ${suffix}`);
+  });
 }

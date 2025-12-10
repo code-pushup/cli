@@ -100,25 +100,6 @@ describe('executor command', () => {
     expect(cleanStdout).toContain('nx run my-lib:code-pushup');
   });
 
-  it('should execute print-config executor', async () => {
-    const cwd = path.join(testFileDir, 'execute-print-config-command');
-    await addTargetToWorkspace(tree, { cwd, project });
-
-    const { stdout, code } = await executeProcess({
-      command: 'npx',
-      args: ['nx', 'run', `${project}:code-pushup`, 'print-config'],
-      cwd,
-    });
-
-    expect(code).toBe(0);
-    const cleanStdout = removeColorCodes(stdout);
-    expect(cleanStdout).toContain('nx run my-lib:code-pushup print-config');
-
-    await expect(() =>
-      readJsonFile(path.join(cwd, '.code-pushup', project, 'report.json')),
-    ).rejects.toThrow('');
-  });
-
   it('should execute print-config executor with output', async () => {
     const cwd = path.join(testFileDir, 'execute-print-config-command');
     await addTargetToWorkspace(tree, { cwd, project });
@@ -144,32 +125,6 @@ describe('executor command', () => {
     ).resolves.not.toThrow();
   });
 
-  it('should execute print-config executor with api key', async () => {
-    const cwd = path.join(testFileDir, 'execute-print-config-command');
-    await addTargetToWorkspace(tree, { cwd, project });
-
-    const { stdout, code } = await executeProcess({
-      command: 'npx',
-      args: [
-        'nx',
-        'run',
-        `${project}:code-pushup`,
-        'print-config',
-        '--upload.apiKey=a123a',
-      ],
-      cwd,
-    });
-
-    expect(code).toBe(0);
-    const cleanStdout = removeColorCodes(stdout);
-    expect(cleanStdout).toContain('nx run my-lib:code-pushup print-config');
-    expect(cleanStdout).toContain('a123a');
-
-    await expect(() =>
-      readJsonFile(path.join(cwd, '.code-pushup', project, 'report.json')),
-    ).rejects.toThrow('');
-  });
-
   it('should execute collect executor and merge target and command-line options', async () => {
     const cwd = path.join(testFileDir, 'execute-collect-with-merged-options');
     await addTargetToWorkspace(
@@ -192,6 +147,7 @@ describe('executor command', () => {
         `${project}:code-pushup`,
         'collect',
         '--persist.filename=terminal-report',
+        '--verbose',
       ],
       cwd,
     });

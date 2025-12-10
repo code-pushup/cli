@@ -141,16 +141,7 @@ Available presets:
 
 ### Groups
 
-The plugin automatically creates groups to organize audits:
-
-**WCAG presets** (`wcag21aa`, `wcag22aa`):
-
-- `wcag21-level-a` - WCAG 2.1 Level A audits
-- `wcag21-level-aa` - WCAG 2.1 Level AA audits
-- `wcag22-level-a` - WCAG 2.2 Level A audits (wcag22aa only)
-- `wcag22-level-aa` - WCAG 2.2 Level AA audits (wcag22aa only)
-
-**Best practice preset** (`best-practice`):
+The plugin organizes audits into category groups based on axe-core's accessibility categories:
 
 - `aria` - ARIA
 - `color` - Color & Contrast
@@ -165,10 +156,6 @@ The plugin automatically creates groups to organize audits:
 - `tables` - Tables
 - `text-alternatives` - Text Alternatives
 - `time-and-media` - Media
-
-**All preset** (`all`):
-
-- Combines all WCAG groups and best practice category groups
 
 Use `npx code-pushup print-config --onlyPlugins=axe` to list all audits and groups for your configuration.
 

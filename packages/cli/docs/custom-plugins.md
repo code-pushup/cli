@@ -92,7 +92,7 @@ Execute the CLI with `npx code-pushup collect` and you should the following outp
 <summary> <b>stdout of CLI for the above code</b> (collapsed for brevity) </summary>
 
 ```sh
-Code PushUp Report - @code-pushup/core@x.y.z
+Code PushUp report
 
 My plugin audits
 ● My audit                                                            0
@@ -240,7 +240,7 @@ Now we can execute the CLI with `npx code-pushup collect` and see a similar outp
 <summary> <b>stdout of CLI for the above code</b> (collapsed for brevity) </summary>
 
 ```sh
-Code PushUp Report - @code-pushup/core@x.y.z
+Code PushUp report
 
 File size plugin audits
 ● File size audit                                                            2 files
@@ -371,7 +371,7 @@ Now we can execute the CLI with `npx code-pushup collect` and see a similar outp
 <summary> <b>stdout of CLI for the above code</b> (collapsed for brevity) </summary>
 
 ```sh
-Code PushUp Report - @code-pushup/core@x.y.z
+Code PushUp report
 
 Chrome Lighthosue audits
 ● Largest Contentful Paint                                                0
@@ -656,7 +656,7 @@ Test the output by running `npx code-pushup collect`.
 <summary> <b>stdout of basic lighthouse plugin</b> (collapsed for brevity) </summary>
 
 ```sh
-Code PushUp Report - @code-pushup/core@x.y.z
+Code PushUp report
 
 Chrome Lighthouse audits
 ● Largest Contentful Paint                                                1,3 s

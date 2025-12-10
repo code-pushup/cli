@@ -19,22 +19,22 @@ describe('upload', () => {
   });
 
   it('should call upload with correct data', async () => {
-    const result = await upload({
-      upload: {
-        apiKey: 'dummy-api-key',
-        server: 'https://example.com/api',
-        organization: 'code-pushup',
-        project: 'cli',
-      },
-      persist: {
-        outputDir: MEMFS_VOLUME,
-        filename: 'report',
-        format: ['json'],
-        skipReports: false,
-      },
-    });
-
-    expect(result).toEqual({ url: expect.stringContaining('code-pushup/cli') });
+    await expect(
+      upload({
+        upload: {
+          apiKey: 'dummy-api-key',
+          server: 'https://example.com/api',
+          organization: 'code-pushup',
+          project: 'cli',
+        },
+        persist: {
+          outputDir: MEMFS_VOLUME,
+          filename: 'report',
+          format: ['json'],
+          skipReports: false,
+        },
+      }),
+    ).resolves.toBeUndefined();
 
     expect(uploadReportToPortal).toHaveBeenCalledWith<
       Parameters<typeof uploadReportToPortal>
@@ -54,21 +54,4 @@ describe('upload', () => {
       },
     });
   });
-
-  it('should throw for missing upload configuration', async () => {
-    await expect(
-      upload({
-        persist: {
-          outputDir: MEMFS_VOLUME,
-          filename: 'report',
-          format: ['json'],
-          skipReports: false,
-        },
-        upload: undefined,
-      }),
-    ).rejects.toThrow('Upload configuration is not set.');
-  });
-
-  // @TODO add tests for failed upload
-  // @TODO add tests for multiple uploads
 });

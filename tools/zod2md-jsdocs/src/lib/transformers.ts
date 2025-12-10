@@ -3,26 +3,31 @@ import type * as ts from 'typescript';
 
 const tsInstance: typeof ts = require('typescript');
 
-const BASE_URL =
-  'https://github.com/code-pushup/cli/blob/main/packages/models/docs/models-reference.md';
-
-function generateJSDocComment(typeName: string): string {
-  const markdownLink = `${BASE_URL}#${typeName.toLowerCase()}`;
+function generateJSDocComment(typeName: string, baseUrl: string): string {
+  const markdownLink = `${baseUrl}#${typeName.toLowerCase()}`;
   return `*
  * Type Definition: \`${typeName}\`
- * 
- * This type is derived from a Zod schema and represents 
+ *
+ * This type is derived from a Zod schema and represents
  * the validated structure of \`${typeName}\` used within the application.
- * 
+ *
  * @see {@link ${markdownLink}}
  `;
 }
 
 function annotateTypeDefinitions(
   _program: ts.Program,
-  _pluginConfig: PluginConfig,
+  pluginConfig: PluginConfig,
   extras?: TransformerExtras,
 ): ts.TransformerFactory<ts.SourceFile> {
+  const baseUrl = pluginConfig.baseUrl as string | undefined;
+
+  if (!baseUrl) {
+    throw new Error(
+      'zod2md-jsdocs: "baseUrl" option is required. ' +
+        'Please configure it in your tsconfig.json plugins section.',
+    );
+  }
   const tsLib = extras?.ts ?? tsInstance;
   return (context: ts.TransformationContext) => {
     const visitor = (node: ts.Node): ts.Node => {
@@ -30,7 +35,7 @@ function annotateTypeDefinitions(
         tsLib.isTypeAliasDeclaration(node) ||
         tsLib.isInterfaceDeclaration(node)
       ) {
-        const jsDocComment = generateJSDocComment(node.name.text);
+        const jsDocComment = generateJSDocComment(node.name.text, baseUrl);
         tsLib.addSyntheticLeadingComment(
           node,
           tsLib.SyntaxKind.MultiLineCommentTrivia,

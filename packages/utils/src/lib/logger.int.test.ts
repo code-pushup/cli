@@ -51,6 +51,7 @@ describe('Logger', () => {
     vi.stubEnv('CI', 'false');
     vi.stubEnv('GITHUB_ACTIONS', 'false');
     vi.stubEnv('GITLAB_CI', 'false');
+    vi.stubEnv('NX_TASK_TARGET_TARGET', '');
   });
 
   afterAll(() => {
@@ -250,6 +251,28 @@ ${ansis.cyan('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%')}`
 `);
     });
 
+    it('should NOT use native GitHub Actions log groups if run within Nx target', async () => {
+      vi.stubEnv('CI', 'true');
+      vi.stubEnv('GITHUB_ACTIONS', 'true');
+      vi.stubEnv('NX_TASK_TARGET_TARGET', 'code-pushup');
+      performanceNowSpy.mockReturnValueOnce(0).mockReturnValueOnce(1234); // group duration: 1.23 s
+      const logger = new Logger();
+
+      await logger.group('Running plugin "ESLint"', async () => {
+        logger.info('$ npx eslint . --format=json');
+        logger.warn('Skipping unknown rule "deprecation/deprecation"');
+        return 'ESLint reported 4 errors and 11 warnings';
+      });
+
+      expect(ansis.strip(stdout)).toBe(`
+❯ Running plugin "ESLint"
+│ $ npx eslint . --format=json
+│ Skipping unknown rule "deprecation/deprecation"
+└ ESLint reported 4 errors and 11 warnings (1.23 s)
+
+`);
+    });
+
     it('should use collapsible sections in GitLab CI/CD environment, initial collapse depends on verbosity', async () => {
       vi.stubEnv('CI', 'true');
       vi.stubEnv('GITLAB_CI', 'true');
@@ -349,6 +372,23 @@ ${ansis.magenta('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%'
         `
 - Uploading report to portal
 ${ansis.green('✔')} Uploaded report to portal ${ansis.gray('(42 ms)')}
+`.trimStart(),
+      );
+    });
+
+    it('should resolve value from worker', async () => {
+      const config = { plugins: ['eslint'] };
+
+      await expect(
+        new Logger().task('Loading configuration', async () => ({
+          message: 'Loaded configuration',
+          result: config,
+        })),
+      ).resolves.toBe(config);
+
+      expect(stdout).toBe(
+        `
+${ansis.green('✔')} Loaded configuration ${ansis.gray('(42 ms)')}
 `.trimStart(),
       );
     });
