@@ -95,11 +95,11 @@ export async function nxShowProjectJson<T extends ProjectConfiguration>(
     return { code: 0, stderr, projectJson: JSON.parse(stdout) as T };
   } catch (error) {
     const execError = error as { code?: number; stderr?: string };
-    const fallbackProject: T = { name: project, root: '' } as T;
+    const fallbackProject = { name: project, root: '' };
     return {
       code: execError.code ?? 1,
       stderr: execError.stderr ?? String(error),
-      projectJson: fallbackProject,
+      projectJson: fallbackProject as T,
     };
   }
 }
