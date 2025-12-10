@@ -55,15 +55,13 @@ describe('readRcByPath', () => {
   });
 
   it('should throw if the path is empty', async () => {
-    await expect(readRcByPath('')).rejects.toThrow(
-      'The path to the configuration file is empty.',
-    );
+    await expect(readRcByPath('')).rejects.toThrow("File '' does not exist");
   });
 
   it('should throw if the file does not exist', async () => {
     await expect(
       readRcByPath(path.join('non-existent', 'config.file.js')),
-    ).rejects.toThrow(/Provided path .* is not valid./);
+    ).rejects.toThrow(/File '.*' does not exist/);
   });
 
   it('should throw if the configuration is empty', async () => {

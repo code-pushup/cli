@@ -15,10 +15,7 @@ import {
   collectAndPersistReports,
 } from './collect-and-persist.js';
 import { collect } from './implementation/collect.js';
-import {
-  logPersistedResults,
-  persistReport,
-} from './implementation/persist.js';
+import { logPersistedReport, persistReport } from './implementation/persist.js';
 
 vi.mock('./implementation/collect', () => ({
   collect: vi.fn().mockResolvedValue(MINIMAL_REPORT_MOCK),
@@ -26,7 +23,7 @@ vi.mock('./implementation/collect', () => ({
 
 vi.mock('./implementation/persist', () => ({
   persistReport: vi.fn(),
-  logPersistedResults: vi.fn(),
+  logPersistedReport: vi.fn(),
 }));
 
 describe('collectAndPersistReports', () => {
@@ -60,7 +57,7 @@ describe('collectAndPersistReports', () => {
     >(MINIMAL_REPORT_MOCK, sortedScoredReport, config.persist);
 
     expect(logStdoutSummary).toHaveBeenCalledWith(sortedScoredReport);
-    expect(logPersistedResults).toHaveBeenCalled();
+    expect(logPersistedReport).toHaveBeenCalled();
   });
 
   it('should call collect and not persistReport if skipReports options is true', async () => {
@@ -81,7 +78,7 @@ describe('collectAndPersistReports', () => {
     expect(collect).toHaveBeenCalledWith(verboseConfig);
 
     expect(persistReport).not.toHaveBeenCalled();
-    expect(logPersistedResults).not.toHaveBeenCalled();
+    expect(logPersistedReport).not.toHaveBeenCalled();
 
     expect(logStdoutSummary).toHaveBeenCalledWith(sortedScoredReport);
   });

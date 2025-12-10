@@ -261,7 +261,9 @@ describe('getCoveragePathForJest', () => {
     vol.fromJSON(
       {
         // values come from bundle-require mock above
+        'jest-preset.config.ts': '',
         'jest-valid.config.unit.ts': '',
+        'jest-valid.config.integration.ts': '',
         'jest-no-dir.config.integration.ts': '',
         'jest-no-lcov.config.integration.ts': '',
       },
