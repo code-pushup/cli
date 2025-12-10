@@ -15,26 +15,20 @@ import {
 } from './utils.js';
 
 export function logStdoutSummary(report: ScoredReport): void {
-  const { plugins, categories, packageName, version } = report;
-  logger.info(reportToHeaderSection({ packageName, version }));
+  const { plugins, categories } = report;
+  logger.info(ansis.bold.blue(REPORT_HEADLINE_TEXT));
   logger.newline();
   logPlugins(plugins);
   if (categories && categories.length > 0) {
+    logger.newline();
     logCategories({ plugins, categories });
   }
-  logger.info(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
   logger.newline();
-}
-
-function reportToHeaderSection({
-  packageName,
-  version,
-}: Pick<ScoredReport, 'packageName' | 'version'>): string {
-  return `${ansis.bold(REPORT_HEADLINE_TEXT)} - ${packageName}@${version}`;
+  logger.info(`${FOOTER_PREFIX} ${CODE_PUSHUP_DOMAIN}`);
 }
 
 export function logPlugins(plugins: ScoredReport['plugins']): void {
-  plugins.forEach(plugin => {
+  plugins.forEach((plugin, idx) => {
     const { title, audits } = plugin;
     const filteredAudits =
       logger.isVerbose() || audits.length === 1
@@ -49,6 +43,10 @@ export function logPlugins(plugins: ScoredReport['plugins']): void {
           : `... + ${diff} audits with perfect scores ...`
         : null;
 
+    if (idx > 0) {
+      logger.newline();
+    }
+
     logAudits(title, filteredAudits, footer);
   });
 }
@@ -59,8 +57,6 @@ function logAudits(
   footer: string | null,
 ): void {
   const marker = '●';
-
-  logger.newline();
 
   logger.info(
     formatAsciiTable(
@@ -81,8 +77,6 @@ function logAudits(
       { borderless: true },
     ),
   );
-
-  logger.newline();
 }
 
 export function logCategories({
@@ -107,8 +101,6 @@ export function logCategories({
       { padding: 2 },
     ),
   );
-
-  logger.newline();
 }
 
 export function binaryIconPrefix(

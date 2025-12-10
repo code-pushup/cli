@@ -1,12 +1,10 @@
-import ansis from 'ansis';
 import { createJiti } from 'jiti';
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { parseJsonConfigFileContent, readConfigFile, sys } from 'typescript';
 import type { Format, PersistConfig } from '@code-pushup/models';
-import { formatBytes } from './formatting.js';
-import { logMultipleResults } from './log-results.js';
 import { logger } from './logger.js';
+import { settlePromise } from './promises.js';
 
 export async function readTextFile(filePath: string): Promise<string> {
   const buffer = await readFile(filePath);
@@ -53,29 +51,6 @@ export async function removeDirectoryIfExists(dir: string) {
   if (await directoryExists(dir)) {
     await rm(dir, { recursive: true, force: true });
   }
-}
-
-export type FileResult = readonly [string] | readonly [string, number];
-export type MultipleFileResults = PromiseSettledResult<FileResult>[];
-
-export function logMultipleFileResults(
-  fileResults: MultipleFileResults,
-  messagePrefix: string,
-): void {
-  const succeededTransform = (result: PromiseFulfilledResult<FileResult>) => {
-    const [fileName, size] = result.value;
-    const formattedSize = size ? ` (${ansis.gray(formatBytes(size))})` : '';
-    return `- ${ansis.bold(fileName)}${formattedSize}`;
-  };
-  const failedTransform = (result: PromiseRejectedResult) =>
-    `- ${ansis.bold(String(result.reason))}`;
-
-  logMultipleResults<FileResult>(
-    fileResults,
-    messagePrefix,
-    succeededTransform,
-    failedTransform,
-  );
 }
 
 export function loadTargetConfig(tsConfigPath: string) {
@@ -139,6 +114,14 @@ export async function importModule<T = unknown>(
   options: JitiOptions & { filepath: string; tsconfig?: string },
 ): Promise<T> {
   const { filepath, tsconfig, ...jitiOptions } = options;
+
+  const resolvedStats = await settlePromise(stat(filepath));
+  if (resolvedStats.status === 'rejected') {
+    throw new Error(`File '${filepath}' does not exist`);
+  }
+  if (!resolvedStats.value.isFile()) {
+    throw new Error(`Expected '${filepath}' to be a file`);
+  }
 
   const jitiOptionsFromTsConfig = tsconfig
     ? tsConfigToJitiOptionsTransformer(tsconfig)

@@ -1,10 +1,8 @@
-Code PushUp Report - @code-pushup/core@0.0.1
-
+Code PushUp report
 
 ESLint audits
 
 ●  ... All 47 audits have perfect scores ...
-
 
 Lighthouse audits
 
@@ -26,4 +24,3 @@ Categories
 └──────────────────┴─────────┴──────────┘
 
 Made with ❤ by code-pushup.dev
-

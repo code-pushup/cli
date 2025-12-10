@@ -15,7 +15,7 @@ export async function getLatestCommit(
     });
     return validate(commitSchema, log.latest);
   } catch (error) {
-    logger.error(stringifyError(error));
+    logger.warn(stringifyError(error));
     return null;
   }
 }

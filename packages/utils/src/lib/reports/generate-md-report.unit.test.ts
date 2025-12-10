@@ -670,7 +670,7 @@ describe('generateMdReport', () => {
   it('should render all sections of the report', () => {
     const md = generateMdReport(baseScoredReport);
     // report title
-    expect(md).toMatch('# Code PushUp Report');
+    expect(md).toMatch('# Code PushUp report');
     // categories section heading
     expect(md).toContainMarkdownTableRow([
       '🏷 Category',
@@ -709,7 +709,7 @@ describe('generateMdReport', () => {
   it('should skip categories section when categories are missing', () => {
     const md = generateMdReport({ ...baseScoredReport, categories: undefined });
     expect(md).not.toMatch('## 🏷 Categories');
-    expect(md).toMatch('# Code PushUp Report\n\n## 🛡️ Audits');
+    expect(md).toMatch('# Code PushUp report\n\n## 🛡️ Audits');
   });
 
   it('should render complete md report', () => {

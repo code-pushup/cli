@@ -376,6 +376,23 @@ ${ansis.green('✔')} Uploaded report to portal ${ansis.gray('(42 ms)')}
       );
     });
 
+    it('should resolve value from worker', async () => {
+      const config = { plugins: ['eslint'] };
+
+      await expect(
+        new Logger().task('Loading configuration', async () => ({
+          message: 'Loaded configuration',
+          result: config,
+        })),
+      ).resolves.toBe(config);
+
+      expect(stdout).toBe(
+        `
+${ansis.green('✔')} Loaded configuration ${ansis.gray('(42 ms)')}
+`.trimStart(),
+      );
+    });
+
     it('should allow spinners to be run in sequence', async () => {
       performanceNowSpy
         .mockReset()

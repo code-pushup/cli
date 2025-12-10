@@ -68,7 +68,7 @@ No unsafe any assignment [📖 Docs](https://web.dev/lcp)
 `;
 
 exports[`generateMdReport > should render complete md report 1`] = `
-"# Code PushUp Report
+"# Code PushUp report
 
 | 🏷 Category                 |   ⭐ Score    | 🛡 Audits |
 | :-------------------------- | :----------: | :-------: |

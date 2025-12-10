@@ -1,21 +1,18 @@
 import { vol } from 'memfs';
 import { stat } from 'node:fs/promises';
 import path from 'node:path';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
-  type FileResult,
   crawlFileSystem,
   createReportPath,
   ensureDirectoryExists,
   filePathToCliArg,
   findLineNumberInText,
   findNearestFile,
-  logMultipleFileResults,
   projectToFilename,
   splitFilePath,
 } from './file-system.js';
-import * as logResults from './log-results.js';
 
 describe('ensureDirectoryExists', () => {
   it('should create a nested folder', async () => {
@@ -50,32 +47,6 @@ describe('createReportPath', () => {
         suffix: 'diff',
       }),
     ).toMatchPath('.code-pushup/report-diff.md');
-  });
-});
-
-describe('logMultipleFileResults', () => {
-  it('should call logMultipleResults with the correct arguments', () => {
-    const logMultipleResultsSpy = vi.spyOn(
-      logResults,
-      'logMultipleResults' as never,
-    );
-    const persistResult = [
-      {
-        status: 'fulfilled',
-        value: ['out.json', 10_000],
-      } as PromiseFulfilledResult<FileResult>,
-    ];
-    const messagePrefix = 'Generated reports';
-
-    logMultipleFileResults(persistResult, messagePrefix);
-
-    expect(logMultipleResultsSpy).toHaveBeenCalled();
-    expect(logMultipleResultsSpy).toHaveBeenCalledWith(
-      persistResult,
-      messagePrefix,
-      expect.any(Function),
-      expect.any(Function),
-    );
   });
 });
 
