@@ -1,3 +1,13 @@
+## 0.95.2 (2025-12-10)
+
+### 🩹 Fixes
+
+- ensure CLI bin directory is included in published package with executable permissions ([#1183](https://github.com/code-pushup/cli/pull/1183))
+
+### ❤️ Thank You
+
+- Nicolas Beaussart @beaussan
+
 ## 0.95.1 (2025-12-10)
 
 ### 🩹 Fixes
