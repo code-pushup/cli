@@ -195,11 +195,11 @@ Each example is fully tested to demonstrate best practices for plugin testing as
 
 ### Global Options
 
-| Option           | Type      | Default                                      | Description                                                                                                                |
-| ---------------- | --------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| **`--verbose`**  | `boolean` | `false`                                      | When true creates more verbose output. This is helpful when debugging. You may also set `CP_VERBOSE` env variable instead. |
-| **`--config`**   | `string`  | looks for `code-pushup.config.{ts\|mjs\|js}` | Path to config file.                                                                                                       |
-| **`--tsconfig`** | `string`  | n/a                                          | Path to a TypeScript config, used to load config file.                                                                     |
+| Option           | Type      | Default                                               | Description                                            |
+| ---------------- | --------- | ----------------------------------------------------- | ------------------------------------------------------ |
+| **`--verbose`**  | `boolean` | `process.env['CP_VERBOSE']` if set, otherwise `false` | Toggles whether to print debug logs.                   |
+| **`--config`**   | `string`  | looks for `code-pushup.config.{ts\|mjs\|js}`          | Path to config file.                                   |
+| **`--tsconfig`** | `string`  | n/a                                                   | Path to a TypeScript config, used to load config file. |
 
 > [!NOTE]  
 > By default, the CLI loads `code-pushup.config.(ts|mjs|js)` if no config path is provided with `--config`.
