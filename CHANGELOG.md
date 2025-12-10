@@ -1,3 +1,15 @@
+## 0.95.0 (2025-12-10)
+
+### 🚀 Features
+
+- **plugin-eslint:** log initializer steps (rules discovery, group creation, nx helpers) ([64d40a16](https://github.com/code-pushup/cli/commit/64d40a16))
+- **plugin-eslint:** log runner steps (lint results stats, artifacts usage) ([9c9b3ac7](https://github.com/code-pushup/cli/commit/9c9b3ac7))
+- **utils:** provide helper for consistent plugin meta logs formatting ([29e80390](https://github.com/code-pushup/cli/commit/29e80390))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.94.0 (2025-12-09)
 
 ### 🚀 Features

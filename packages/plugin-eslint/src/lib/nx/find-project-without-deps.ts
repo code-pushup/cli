@@ -1,4 +1,6 @@
+import { logger } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
+import { formatMetaLog } from '../meta/format.js';
 import { nxProjectsToConfig } from './projects-to-config.js';
 
 /**
@@ -40,6 +42,10 @@ export async function eslintConfigFromNxProject(
   if (!project) {
     throw new Error(`Couldn't find Nx project named "${projectName}"`);
   }
+
+  logger.info(
+    formatMetaLog(`Inferred lint target for Nx project "${projectName}"`),
+  );
 
   return project;
 }

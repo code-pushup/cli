@@ -1,7 +1,14 @@
 import type { ESLint } from 'eslint';
 import { glob } from 'glob';
 import type { PluginArtifactOptions } from '@code-pushup/models';
-import { executeProcess, readJsonFile } from '@code-pushup/utils';
+import {
+  executeProcess,
+  logger,
+  pluralize,
+  pluralizeToken,
+  readJsonFile,
+  toArray,
+} from '@code-pushup/utils';
 import type { LinterOutput } from './types.js';
 
 export async function loadArtifacts(
@@ -20,13 +27,11 @@ export async function loadArtifacts(
     });
   }
 
-  const initialArtifactPaths = Array.isArray(artifacts.artifactsPaths)
-    ? artifacts.artifactsPaths
-    : [artifacts.artifactsPaths];
+  const artifactPatterns = toArray(artifacts.artifactsPaths);
 
-  const artifactPaths = await glob(initialArtifactPaths);
+  const artifactPaths = await glob(artifactPatterns);
 
-  return await Promise.all(
+  const outputs = await Promise.all(
     artifactPaths.map(async artifactPath => {
       // ESLint CLI outputs raw ESLint.LintResult[], but we need LinterOutput format
       const results = await readJsonFile<ESLint.LintResult[]>(artifactPath);
@@ -36,4 +41,10 @@ export async function loadArtifacts(
       };
     }),
   );
+
+  logger.info(
+    `Loaded lint outputs from ${pluralizeToken('artifact', artifactPaths.length)} matching ${pluralize('pattern', artifactPatterns.length)}: ${artifactPatterns.join(' ')}`,
+  );
+
+  return outputs;
 }
