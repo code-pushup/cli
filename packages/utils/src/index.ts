@@ -50,6 +50,7 @@ export {
   formatBytes,
   formatDuration,
   indentLines,
+  pluginMetaLogFormatter,
   pluralize,
   pluralizeToken,
   roundDecimals,

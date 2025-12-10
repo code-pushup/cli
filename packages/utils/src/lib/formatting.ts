@@ -1,3 +1,5 @@
+import ansis from 'ansis';
+import stringWidth from 'string-width';
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_ISSUE_MESSAGE_LENGTH,
@@ -146,7 +148,7 @@ export function truncateMultilineText(
 
 export function transformLines(
   text: string,
-  fn: (line: string) => string,
+  fn: (line: string, index: number) => string,
 ): string {
   return text.split(/\r?\n/).map(fn).join('\n');
 }
@@ -163,4 +165,16 @@ export function serializeCommandWithArgs({
   args?: string[];
 }): string {
   return [command, ...(args ?? [])].join(' ');
+}
+
+export function pluginMetaLogFormatter(
+  title: string,
+): (message: string) => string {
+  const prefix = ansis.blue(`[${title}]`);
+  const padding = ' '.repeat(stringWidth(prefix));
+  return message =>
+    transformLines(
+      message,
+      (line, idx) => `${idx === 0 ? prefix : padding} ${line}`,
+    );
 }
