@@ -1,6 +1,6 @@
 import { describe, expect } from 'vitest';
 import type { AuditOutputs } from '@code-pushup/models';
-import { osAgnosticAuditOutputs } from '@code-pushup/test-utils';
+import { osAgnosticAuditOutputs } from '@code-pushup/test-fixtures';
 import { getAudits } from '../utils.js';
 import { createRunnerFunction } from './runner.js';
 

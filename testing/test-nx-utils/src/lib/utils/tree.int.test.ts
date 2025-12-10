@@ -15,7 +15,7 @@ describe('materializeTree', () => {
 
     await materializeTree(tree, root);
     const nxJson = JSON.parse(
-      await readFile(path.join(root, 'nx.json'), 'utf-8'),
+      await readFile(path.join(root, 'nx.json'), 'utf8'),
     );
     expect(nxJson).toStrictEqual({
       affected: {

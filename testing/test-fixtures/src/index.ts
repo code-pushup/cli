@@ -1,4 +1,5 @@
 export * from './lib/utils/omit-report-data.js';
+export * from './lib/utils/os-agnostic.js';
 
 // static mocks
 export * from './lib/utils/commit.mock.js';

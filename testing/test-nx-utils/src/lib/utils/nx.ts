@@ -98,7 +98,7 @@ export async function nxShowProjectJson<T extends ProjectConfiguration>(
     return {
       code: execError.code ?? 1,
       stderr: execError.stderr ?? String(error),
-      projectJson: {} as T,
+      projectJson: { name: project, root: '' } as T,
     };
   }
 }

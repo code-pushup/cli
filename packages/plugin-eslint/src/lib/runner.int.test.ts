@@ -11,8 +11,8 @@ import {
   DEFAULT_PERSIST_CONFIG,
   type Issue,
 } from '@code-pushup/models';
+import { osAgnosticAuditOutputs } from '@code-pushup/test-fixtures';
 import {
-  osAgnosticAuditOutputs,
   restoreNxIgnoredFiles,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
