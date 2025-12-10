@@ -1,3 +1,13 @@
+## 0.95.1 (2025-12-10)
+
+### 🩹 Fixes
+
+- **cli:** respect CP_VERBOSE if --verbose argument not given ([26a13c6c](https://github.com/code-pushup/cli/commit/26a13c6c))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.95.0 (2025-12-10)
 
 ### 🚀 Features
