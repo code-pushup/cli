@@ -20,9 +20,9 @@ import {
   groups,
 } from './packages/plugin-jsdocs/src/lib/constants.js';
 import {
+  lighthouseCategories,
   lighthouseGroupRef,
   lighthousePlugin,
-  mergeLighthouseCategories,
 } from './packages/plugin-lighthouse/src/index.js';
 import typescriptPlugin, {
   getCategories,
@@ -224,7 +224,7 @@ export async function configureLighthousePlugin(
   ];
   return {
     plugins: [lhPlugin],
-    categories: mergeLighthouseCategories(lhPlugin, lhCategories),
+    categories: lighthouseCategories(lhPlugin, lhCategories),
   };
 }
 
