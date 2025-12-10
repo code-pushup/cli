@@ -49,9 +49,6 @@ function createCategories(
   groups: Group[],
   context: PluginUrlContext,
 ): CategoryConfig[] {
-  if (!shouldExpandForUrls(context.urlCount)) {
-    return [];
-  }
   return extractGroupSlugs(groups).map(slug =>
     createAggregatedCategory(slug, context),
   );

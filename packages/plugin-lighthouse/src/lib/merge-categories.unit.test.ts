@@ -98,8 +98,17 @@ describe('mergeLighthouseCategories', () => {
       },
     };
 
-    it('should return empty array when no categories provided', () => {
-      expect(mergeLighthouseCategories(plugin)).toEqual([]);
+    it('should create categories from groups when no categories provided', () => {
+      expect(mergeLighthouseCategories(plugin)).toEqual([
+        expect.objectContaining({
+          slug: 'performance',
+          refs: [expect.objectContaining({ slug: 'performance', weight: 1 })],
+        }),
+        expect.objectContaining({
+          slug: 'accessibility',
+          refs: [expect.objectContaining({ slug: 'accessibility', weight: 1 })],
+        }),
+      ]);
     });
 
     it('should return provided categories unchanged', () => {
