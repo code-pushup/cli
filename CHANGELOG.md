@@ -1,3 +1,15 @@
+## 0.96.1 (2025-12-11)
+
+### 🩹 Fixes
+
+- **plugin-eslint:** replace static @nx/devkit import ([c4c9f2a2](https://github.com/code-pushup/cli/commit/c4c9f2a2))
+- **plugin-lighthouse:** generate categories for single URL ([827be4de](https://github.com/code-pushup/cli/commit/827be4de))
+
+### ❤️ Thank You
+
+- hanna-skryl
+- Matěj Chalk
+
 ## 0.96.0 (2025-12-11)
 
 ### 🚀 Features
