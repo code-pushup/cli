@@ -26,7 +26,7 @@ export default async function runCliExecutor(
     bin,
     ...restArgs
   } = parseCliExecutorOptions(terminalAndExecutorOptions, normalizedContext);
-
+  // this sets `CP_VERBOSE=true` on process.env
   logger.setVerbose(verbose);
 
   const command = bin ? `node` : 'npx';
@@ -35,19 +35,20 @@ export default async function runCliExecutor(
     ...(cliCommand ? [cliCommand] : []),
     ...objectToCliArgs(restArgs),
   ];
+  const loggedEnvVars = {
+    ...executorEnv,
+    ...(verbose && { CP_VERBOSE: 'true' }),
+  };
   const commandString = formatCommandStatus([command, ...args].join(' '), {
     cwd: context.cwd,
-    env: {
-      ...executorEnv,
-      ...(verbose && { CP_VERBOSE: 'true' }),
-    },
+    env: loggedEnvVars,
   });
 
   if (dryRun) {
     logger.warn(`DryRun execution of: ${commandString}`);
   } else {
     try {
-      logger.debug(`With env vars: ${executorEnv}`);
+      logger.debug(`With env vars: ${loggedEnvVars}`);
       await executeProcess({
         command,
         args,
@@ -55,7 +56,9 @@ export default async function runCliExecutor(
         ...(executorEnv && Object.keys(executorEnv).length > 0
           ? {
               env: {
+                // if env is undefined, executeProcess extends process.env by default
                 ...process.env,
+                // we don't pass `CP_VERBOSE=true` as it is handled inside logger.setVerbose
                 ...executorEnv,
               },
             }
