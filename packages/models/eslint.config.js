@@ -18,7 +18,4 @@ export default tseslint.config(
       '@nx/dependency-checks': 'error',
     },
   },
-  {
-    ignores: ['packages/models/transformers/**/*.ts'],
-  },
 );
