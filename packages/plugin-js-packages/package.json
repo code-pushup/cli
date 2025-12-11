@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/js-packages-plugin",
-  "version": "0.95.2",
+  "version": "0.96.0",
   "description": "Code PushUp plugin for JavaScript packages 🛡️",
   "license": "MIT",
   "homepage": "https://github.com/code-pushup/cli/tree/main/packages/plugin-js-packages#readme",
@@ -37,8 +37,8 @@
   },
   "type": "module",
   "dependencies": {
-    "@code-pushup/models": "0.95.2",
-    "@code-pushup/utils": "0.95.2",
+    "@code-pushup/models": "0.96.0",
+    "@code-pushup/utils": "0.96.0",
     "build-md": "^0.4.1",
     "semver": "^7.6.0",
     "yargs": "^17.7.2",

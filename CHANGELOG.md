@@ -1,3 +1,13 @@
+## 0.96.0 (2025-12-11)
+
+### 🚀 Features
+
+- **plugin-axe:** aggregate categories ([84bb067a](https://github.com/code-pushup/cli/commit/84bb067a))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.95.2 (2025-12-10)
 
 ### 🩹 Fixes
