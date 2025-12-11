@@ -48,7 +48,7 @@ export default async function runCliExecutor(
     logger.warn(`DryRun execution of: ${commandString}`);
   } else {
     try {
-      logger.debug(`With env vars: ${loggedEnvVars}`);
+      logger.debug(`Run CLI with env vars: ${loggedEnvVars}`);
       await executeProcess({
         command,
         args,
