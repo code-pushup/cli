@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { validate } from '@code-pushup/models';
 import { axePresetSchema } from './config.js';
 
 /* WCAG presets for rule loading */
@@ -72,12 +71,7 @@ export const CATEGORY_GROUPS: Record<AxeCategoryGroupSlug, string> = {
 };
 
 export function isAxeGroupSlug(slug: unknown): slug is AxeCategoryGroupSlug {
-  try {
-    validate(axeCategoryGroupSlugSchema, slug);
-    return true;
-  } catch {
-    return false;
-  }
+  return axeCategoryGroupSlugSchema.safeParse(slug).success;
 }
 
 /* Combined exports */
