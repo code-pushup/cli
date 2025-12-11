@@ -51,9 +51,9 @@ export type Report = {
   "compilerOptions": {
     "plugins": [
       {
-        "transform": "./path/to/transformer/dist",
+        "transform": "./tools/zod2md-jsdocs/dist",
         "afterDeclarations": true,
-        "baseUrl": "https://example.com/docs/api-reference.md"
+        "baseUrl": "https://github.com/code-pushup/cli/blob/main/packages/<PROJECT-NAME>/docs/models-reference.md"
       }
     ]
   }
