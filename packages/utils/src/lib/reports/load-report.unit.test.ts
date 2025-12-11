@@ -1,6 +1,7 @@
 import { vol } from 'memfs';
 import type { Report } from '@code-pushup/models';
-import { MEMFS_VOLUME, REPORT_MOCK, reportMock } from '@code-pushup/test-utils';
+import { REPORT_MOCK, reportMock } from '@code-pushup/test-fixtures';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { loadReport } from './load-report.js';
 
 describe('loadReport', () => {

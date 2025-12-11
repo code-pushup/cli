@@ -4,11 +4,8 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { Report } from '@code-pushup/models';
-import {
-  MEMFS_VOLUME,
-  MINIMAL_REPORT_MOCK,
-  REPORT_MOCK,
-} from '@code-pushup/test-utils';
+import { MINIMAL_REPORT_MOCK, REPORT_MOCK } from '@code-pushup/test-fixtures';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { logger, scoreReport, sortReport } from '@code-pushup/utils';
 import { logPersistedReport, persistReport } from './persist.js';
 

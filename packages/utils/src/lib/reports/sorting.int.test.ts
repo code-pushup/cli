@@ -1,4 +1,4 @@
-import { REPORT_MOCK } from '@code-pushup/test-utils';
+import { REPORT_MOCK } from '@code-pushup/test-fixtures';
 import { scoreReport } from './scoring.js';
 import { sortReport } from './sorting.js';
 

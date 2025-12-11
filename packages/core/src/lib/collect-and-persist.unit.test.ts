@@ -2,7 +2,7 @@ import { type MockInstance, describe } from 'vitest';
 import {
   MINIMAL_CONFIG_MOCK,
   MINIMAL_REPORT_MOCK,
-} from '@code-pushup/test-utils';
+} from '@code-pushup/test-fixtures';
 import * as utils from '@code-pushup/utils';
 import {
   type ScoredReport,

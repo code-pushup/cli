@@ -8,8 +8,8 @@ import {
 import { OptionValidationError } from './validate-filter-options.utils.js';
 
 vi.mock('@code-pushup/core', async () => {
-  const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =
-    await vi.importActual('@code-pushup/test-utils');
+  const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-fixtures') =
+    await vi.importActual('@code-pushup/test-fixtures');
   const core: object = await vi.importActual('@code-pushup/core');
   return {
     ...core,

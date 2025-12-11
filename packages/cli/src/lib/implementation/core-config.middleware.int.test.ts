@@ -11,7 +11,7 @@ const configDirPath = path.join(
   '..',
   '..',
   'testing',
-  'test-utils',
+  'test-fixtures',
   'src',
   'lib',
   'fixtures',

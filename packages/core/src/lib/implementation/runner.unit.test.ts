@@ -9,12 +9,11 @@ import {
   auditOutputsSchema,
 } from '@code-pushup/models';
 import {
-  MEMFS_VOLUME,
   MINIMAL_PLUGIN_CONFIG_MOCK,
   MINIMAL_RUNNER_CONFIG_MOCK,
   MINIMAL_RUNNER_FUNCTION_MOCK,
-  osAgnosticPath,
-} from '@code-pushup/test-utils';
+} from '@code-pushup/test-fixtures';
+import { MEMFS_VOLUME, osAgnosticPath } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
 import {
   executePluginRunner,

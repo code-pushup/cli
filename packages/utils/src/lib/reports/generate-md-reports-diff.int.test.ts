@@ -6,7 +6,7 @@ import {
   reportsDiffChangedMock,
   reportsDiffMock,
   reportsDiffUnchangedMock,
-} from '@code-pushup/test-utils';
+} from '@code-pushup/test-fixtures';
 import {
   generateMdReportsDiff,
   generateMdReportsDiffForMonorepo,

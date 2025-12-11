@@ -38,6 +38,7 @@
       ],
       "@code-pushup/models": ["packages/models/src/index.ts"],
       "@code-pushup/nx-plugin": ["packages/nx-plugin/src/index.ts"],
+      "@code-pushup/test-fixtures": ["testing/test-fixtures/src/index.ts"],
       "@code-pushup/test-nx-utils": ["testing/test-nx-utils/src/index.ts"],
       "@code-pushup/test-setup": ["testing/test-setup/src/index.ts"],
       "@code-pushup/test-setup-config": [
