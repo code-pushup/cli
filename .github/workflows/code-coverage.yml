@@ -25,7 +25,7 @@ jobs:
       - name: List packages using Nx CLI
         id: list-packages
         run: |
-          matrix=$(node tools/codecov/src/bin.js)
+          matrix=$(node tools/scripts/create-codecov-matrix.js)
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
     outputs:
       matrix: ${{ steps.list-packages.outputs.matrix }}
