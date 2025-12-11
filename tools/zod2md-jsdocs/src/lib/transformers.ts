@@ -1,7 +1,6 @@
 import type { PluginConfig, TransformerExtras } from 'ts-patch';
 import type * as ts from 'typescript';
-
-const tsInstance: typeof ts = require('typescript');
+import tsInstance from 'typescript';
 
 /**
  * Generates a JSDoc comment for a given type name and base URL.
@@ -23,7 +22,7 @@ export function generateJSDocComment(
  `;
 }
 
-function annotateTypeDefinitions(
+export function annotateTypeDefinitions(
   _program: ts.Program,
   pluginConfig: PluginConfig,
   extras?: TransformerExtras,
@@ -58,5 +57,4 @@ function annotateTypeDefinitions(
       tsLib.visitNode(sourceFile, visitor, tsLib.isSourceFile);
   };
 }
-
-module.exports = annotateTypeDefinitions;
+export default annotateTypeDefinitions;
