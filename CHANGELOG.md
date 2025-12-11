@@ -1,3 +1,75 @@
+## 0.96.0 (2025-12-11)
+
+### 🚀 Features
+
+- **plugin-axe:** aggregate categories ([84bb067a](https://github.com/code-pushup/cli/commit/84bb067a))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
+## 0.95.2 (2025-12-10)
+
+### 🩹 Fixes
+
+- ensure CLI bin directory is included in published package with executable permissions ([#1183](https://github.com/code-pushup/cli/pull/1183))
+
+### ❤️ Thank You
+
+- Nicolas Beaussart @beaussan
+
+## 0.95.1 (2025-12-10)
+
+### 🩹 Fixes
+
+- **cli:** respect CP_VERBOSE if --verbose argument not given ([26a13c6c](https://github.com/code-pushup/cli/commit/26a13c6c))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.95.0 (2025-12-10)
+
+### 🚀 Features
+
+- **plugin-eslint:** log initializer steps (rules discovery, group creation, nx helpers) ([64d40a16](https://github.com/code-pushup/cli/commit/64d40a16))
+- **plugin-eslint:** log runner steps (lint results stats, artifacts usage) ([9c9b3ac7](https://github.com/code-pushup/cli/commit/9c9b3ac7))
+- **utils:** provide helper for consistent plugin meta logs formatting ([29e80390](https://github.com/code-pushup/cli/commit/29e80390))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.94.0 (2025-12-09)
+
+### 🚀 Features
+
+- **cli:** include logo and version in initial log ([52266a7f](https://github.com/code-pushup/cli/commit/52266a7f))
+- **cli:** log config import and validation steps ([f3cebd3b](https://github.com/code-pushup/cli/commit/f3cebd3b))
+- **cli:** simplify sticker hints ([db44dff0](https://github.com/code-pushup/cli/commit/db44dff0))
+- **cli:** improve collect and upload logs ([239c7c7e](https://github.com/code-pushup/cli/commit/239c7c7e))
+- **cli:** drop print-config to stdout, output arg is now required ([88096844](https://github.com/code-pushup/cli/commit/88096844))
+- **utils:** support custom return values in logger.task ([e0793eeb](https://github.com/code-pushup/cli/commit/e0793eeb))
+- **utils:** ensure consistent line breaks in stdout report ([7093fe4d](https://github.com/code-pushup/cli/commit/7093fe4d))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.93.0 (2025-12-08)
+
+### 🚀 Features
+
+- **plugin-axe:** use category-based groups ([aa7b7f63](https://github.com/code-pushup/cli/commit/aa7b7f63))
+
+### 🩹 Fixes
+
+- **plugin-axe:** wrap HTML tags in audit metadata ([9ac95d60](https://github.com/code-pushup/cli/commit/9ac95d60))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
 ## 0.92.1 (2025-12-03)
 
 ### 🩹 Fixes

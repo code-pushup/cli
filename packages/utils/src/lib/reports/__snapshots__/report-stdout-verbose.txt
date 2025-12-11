@@ -1,5 +1,4 @@
-Code PushUp Report - @code-pushup/core@0.0.1
-
+Code PushUp report
 
 ESLint audits
 
@@ -60,7 +59,6 @@ ESLint audits
 ●  Require or disallow "Yoda" conditions                                  passed
 ●  Require using arrow functions for callbacks                            passed
 
-
 Lighthouse audits
 
 ●  Minimize third-party usage       Third-party code blocked the main thread for
@@ -82,4 +80,3 @@ Categories
 └──────────────────┴─────────┴──────────┘
 
 Made with ❤ by code-pushup.dev
-

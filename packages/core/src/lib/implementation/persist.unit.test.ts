@@ -1,3 +1,4 @@
+import ansis from 'ansis';
 import { vol } from 'memfs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -9,7 +10,7 @@ import {
   REPORT_MOCK,
 } from '@code-pushup/test-utils';
 import { logger, scoreReport, sortReport } from '@code-pushup/utils';
-import { logPersistedResults, persistReport } from './persist.js';
+import { logPersistedReport, persistReport } from './persist.js';
 
 describe('persistReport', () => {
   beforeEach(() => {
@@ -51,7 +52,7 @@ describe('persistReport', () => {
       path.join(MEMFS_VOLUME, 'report.md'),
       'utf8',
     );
-    expect(mdReport).toContain('Code PushUp Report');
+    expect(mdReport).toContain('Code PushUp report');
 
     await expect(() =>
       readFile(path.join(MEMFS_VOLUME, 'report.json'), 'utf8'),
@@ -70,7 +71,7 @@ describe('persistReport', () => {
       path.join(MEMFS_VOLUME, 'report.md'),
       'utf8',
     );
-    expect(mdReport).toContain('Code PushUp Report');
+    expect(mdReport).toContain('Code PushUp report');
     expect(mdReport).toContainMarkdownTableRow([
       '🏷 Category',
       '⭐ Score',
@@ -89,59 +90,30 @@ describe('persistReport', () => {
   });
 });
 
-describe('logPersistedResults', () => {
+describe('logPersistedReport', () => {
   it('should log report sizes correctly`', () => {
-    logPersistedResults([{ status: 'fulfilled', value: ['out.json', 10_000] }]);
-    expect(logger.debug).toHaveBeenNthCalledWith(
-      1,
-      expect.stringContaining('Generated reports successfully: '),
-    );
-    expect(logger.debug).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('9.77 kB'),
-    );
-    expect(logger.debug).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('out.json'),
-    );
-  });
+    let output = '';
+    vi.spyOn(logger, 'info').mockImplementation(msg => {
+      output += `${msg}\n`;
+    });
 
-  it('should log fails correctly`', () => {
-    logPersistedResults([{ status: 'rejected', reason: 'fail' }]);
-    expect(logger.warn).toHaveBeenNthCalledWith(
-      1,
-      'Generated reports failed: ',
-    );
-    expect(logger.warn).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('fail'),
-    );
-  });
-
-  it('should log report sizes and fails correctly`', () => {
-    logPersistedResults([
-      { status: 'fulfilled', value: ['out.json', 10_000] },
-      { status: 'rejected', reason: 'fail' },
+    logPersistedReport([
+      {
+        file: path.join('.code-pushup', 'report.json'),
+        size: 2 * Math.pow(2, 20),
+      },
+      {
+        file: path.join('.code-pushup', 'report.md'),
+        size: 3 * Math.pow(2, 20),
+      },
     ]);
-    expect(logger.debug).toHaveBeenNthCalledWith(
-      1,
-      'Generated reports successfully: ',
-    );
-    expect(logger.debug).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('out.json'),
-    );
-    expect(logger.debug).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('9.77 kB'),
-    );
-    expect(logger.warn).toHaveBeenNthCalledWith(
-      1,
-      expect.stringContaining('Generated reports failed: '),
-    );
-    expect(logger.warn).toHaveBeenNthCalledWith(
-      1,
-      expect.stringContaining('fail'),
+
+    expect(ansis.strip(output)).toBe(
+      `
+Persisted report to file system:
+• ${path.join('.code-pushup', 'report.json')} (2 MB)
+• ${path.join('.code-pushup', 'report.md')} (3 MB)
+`.trimStart(),
     );
   });
 });

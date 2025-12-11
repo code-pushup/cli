@@ -5,7 +5,7 @@ import type {
   CoreConfig,
   PluginUrls,
 } from './packages/models/src/index.js';
-import axePlugin from './packages/plugin-axe/src/index.js';
+import axePlugin, { axeCategories } from './packages/plugin-axe/src/index.js';
 import coveragePlugin, {
   type CoveragePluginConfig,
   getNxCoveragePaths,
@@ -20,9 +20,9 @@ import {
   groups,
 } from './packages/plugin-jsdocs/src/lib/constants.js';
 import {
+  lighthouseCategories,
   lighthouseGroupRef,
   lighthousePlugin,
-  mergeLighthouseCategories,
 } from './packages/plugin-lighthouse/src/index.js';
 import typescriptPlugin, {
   getCategories,
@@ -224,12 +224,14 @@ export async function configureLighthousePlugin(
   ];
   return {
     plugins: [lhPlugin],
-    categories: mergeLighthouseCategories(lhPlugin, lhCategories),
+    categories: lighthouseCategories(lhPlugin, lhCategories),
   };
 }
 
-export function axeCoreConfig(urls: PluginUrls): CoreConfig {
+export function configureAxePlugin(urls: PluginUrls): CoreConfig {
+  const axe = axePlugin(urls);
   return {
-    plugins: [axePlugin(urls)],
+    plugins: [axe],
+    categories: axeCategories(axe),
   };
 }

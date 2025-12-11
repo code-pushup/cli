@@ -50,6 +50,10 @@
   - changed-files:
       - any-glob-to-any-file: 'packages/plugin-typescript/src/**'
 
+🧩 axe-plugin:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/plugin-axe/src/**'
+
 🔬 testing:
   - changed-files:
       - any-glob-to-any-file:

@@ -1,9 +1,7 @@
-import {
-  type CacheConfigObject,
-  type CoreConfig,
-  type PersistConfig,
-  pluginReportSchema,
-  validate,
+import type {
+  CacheConfigObject,
+  CoreConfig,
+  PersistConfig,
 } from '@code-pushup/models';
 import {
   logStdoutSummary,
@@ -12,10 +10,7 @@ import {
   sortReport,
 } from '@code-pushup/utils';
 import { collect } from './implementation/collect.js';
-import {
-  logPersistedResults,
-  persistReport,
-} from './implementation/persist.js';
+import { logPersistedReport, persistReport } from './implementation/persist.js';
 
 export type CollectAndPersistReportsOptions = Pick<
   CoreConfig,
@@ -36,22 +31,20 @@ export async function collectAndPersistReports(
   const { skipReports = false, ...persistOptions } = persist ?? {};
 
   if (skipReports) {
-    logger.info('Skipping saving reports as `persist.skipReports` is true');
+    logger.info('Skipped saving report as persist.skipReports flag is set');
   } else {
-    const persistResults = await persistReport(
+    const reportFiles = await persistReport(
       reportResult,
       sortedScoredReport,
       persistOptions,
     );
-    logPersistedResults(persistResults);
+    logPersistedReport(reportFiles);
   }
 
   // terminal output
+  logger.newline();
+  logger.newline();
   logStdoutSummary(sortedScoredReport);
-
-  // validate report and throw if invalid
-  reportResult.plugins.forEach(plugin => {
-    // Running checks after persisting helps while debugging as you can check the invalid output after the error is thrown
-    validate(pluginReportSchema, plugin);
-  });
+  logger.newline();
+  logger.newline();
 }

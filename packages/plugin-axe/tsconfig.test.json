@@ -6,6 +6,7 @@
   },
   "include": [
     "vitest.unit.config.ts",
+    "vitest.int.config.ts",
     "src/**/*.test.ts",
     "../../testing/test-setup/src/vitest.d.ts"
   ]
