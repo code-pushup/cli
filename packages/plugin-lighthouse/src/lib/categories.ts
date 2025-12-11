@@ -28,10 +28,10 @@ import { isLighthouseGroupSlug } from './utils.js';
  * const lhPlugin = await lighthousePlugin(urls);
  * const lhCoreConfig = {
  *   plugins: [lhPlugin],
- *   categories: mergeLighthouseCategories(lhPlugin),
+ *   categories: lighthouseCategories(lhPlugin),
  * };
  */
-export function mergeLighthouseCategories(
+export function lighthouseCategories(
   plugin: Pick<PluginConfig, 'groups' | 'context'>,
   categories?: CategoryConfig[],
 ): CategoryConfig[] {
@@ -45,13 +45,16 @@ export function mergeLighthouseCategories(
   return expandCategories(categories, plugin.context);
 }
 
+/**
+ * @deprecated
+ * Helper is renamed, please use `lighthouseCategories` function instead.
+ */
+export const mergeLighthouseCategories = lighthouseCategories;
+
 function createCategories(
   groups: Group[],
   context: PluginUrlContext,
 ): CategoryConfig[] {
-  if (!shouldExpandForUrls(context.urlCount)) {
-    return [];
-  }
   return extractGroupSlugs(groups).map(slug =>
     createAggregatedCategory(slug, context),
   );

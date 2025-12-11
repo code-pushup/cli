@@ -141,16 +141,7 @@ Available presets:
 
 ### Groups
 
-The plugin automatically creates groups to organize audits:
-
-**WCAG presets** (`wcag21aa`, `wcag22aa`):
-
-- `wcag21-level-a` - WCAG 2.1 Level A audits
-- `wcag21-level-aa` - WCAG 2.1 Level AA audits
-- `wcag22-level-a` - WCAG 2.2 Level A audits (wcag22aa only)
-- `wcag22-level-aa` - WCAG 2.2 Level AA audits (wcag22aa only)
-
-**Best practice preset** (`best-practice`):
+The plugin organizes audits into category groups based on axe-core's accessibility categories:
 
 - `aria` - ARIA
 - `color` - Color & Contrast
@@ -166,11 +157,67 @@ The plugin automatically creates groups to organize audits:
 - `text-alternatives` - Text Alternatives
 - `time-and-media` - Media
 
-**All preset** (`all`):
-
-- Combines all WCAG groups and best practice category groups
-
 Use `npx code-pushup print-config --onlyPlugins=axe` to list all audits and groups for your configuration.
+
+## Category integration
+
+The plugin provides helpers to integrate Axe results into your categories.
+
+### Auto-generate accessibility category
+
+Use `axeCategories` to automatically create an accessibility category from all plugin groups:
+
+```ts
+import axePlugin, { axeCategories } from '@code-pushup/axe-plugin';
+
+const axe = axePlugin('https://example.com');
+
+export default {
+  plugins: [axe],
+  categories: axeCategories(axe),
+};
+```
+
+This configuration works with both single-URL and multi-URL configurations. For multi-URL setups, refs are automatically expanded for each URL with appropriate weights.
+
+### Custom categories
+
+For fine-grained control, provide your own categories with specific groups:
+
+```ts
+import axePlugin, { axeCategories, axeGroupRef } from '@code-pushup/axe-plugin';
+
+const axe = axePlugin(['https://example.com', 'https://example.com/about']);
+
+export default {
+  plugins: [axe],
+  categories: axeCategories(axe, [
+    {
+      slug: 'axe-a11y',
+      title: 'Axe Accessibility',
+      refs: [axeGroupRef('aria', 2), axeGroupRef('color'), axeGroupRef('keyboard')],
+    },
+  ]),
+};
+```
+
+### Helper functions
+
+| Function        | Description                            |
+| --------------- | -------------------------------------- |
+| `axeCategories` | Auto-generates or expands categories   |
+| `axeGroupRef`   | Creates a category ref to an Axe group |
+| `axeAuditRef`   | Creates a category ref to an Axe audit |
+
+### Type safety
+
+The `AxeGroupSlug` type is exported for discovering valid group slugs:
+
+```ts
+import type { AxeGroupSlug } from '@code-pushup/axe-plugin';
+
+const group: AxeGroupSlug = 'aria';
+```
 
 ## Resources
 

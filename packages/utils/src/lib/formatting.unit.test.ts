@@ -5,6 +5,7 @@ import {
   formatDate,
   formatDuration,
   indentLines,
+  pluginMetaLogFormatter,
   pluralize,
   pluralizeToken,
   roundDecimals,
@@ -267,5 +268,30 @@ describe('serializeCommandWithArgs', () => {
 
   it('should omit args if missing', () => {
     expect(serializeCommandWithArgs({ command: 'ls' })).toBe('ls');
+  });
+});
+
+describe('pluginMetaLogFormatter', () => {
+  it('should prefix plugin title', () => {
+    expect(pluginMetaLogFormatter('ESLint')('Found 42 rules in total')).toBe(
+      `${ansis.blue('[ESLint]')} Found 42 rules in total`,
+    );
+  });
+
+  it('should align multiline message with prefix', () => {
+    expect(
+      ansis.strip(
+        pluginMetaLogFormatter('Coverage')(
+          'Created 3 groups:\n- Line coverage\n- Branch coverage\n- Function coverage',
+        ),
+      ),
+    ).toBe(
+      `
+[Coverage] Created 3 groups:
+           - Line coverage
+           - Branch coverage
+           - Function coverage
+`.trim(),
+    );
   });
 });

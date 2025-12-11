@@ -8,6 +8,7 @@ export {
   toTitleCase,
   uppercase,
 } from './lib/case-conversions.js';
+export { formatCommandStatus } from './lib/command.js';
 export { filesCoverageToTree, type FileCoverage } from './lib/coverage-tree.js';
 export { createRunnerFiles } from './lib/create-runner-files.js';
 export { dateToUnixTimestamp } from './lib/dates.js';
@@ -37,21 +38,19 @@ export {
   findLineNumberInText,
   findNearestFile,
   importModule,
-  logMultipleFileResults,
   pluginWorkDir,
   projectToFilename,
   readJsonFile,
   readTextFile,
   removeDirectoryIfExists,
   type CrawlFileSystemOptions,
-  type FileResult,
-  type MultipleFileResults,
 } from './lib/file-system.js';
 export { filterItemRefsBy } from './lib/filter.js';
 export {
   formatBytes,
   formatDuration,
   indentLines,
+  pluginMetaLogFormatter,
   pluralize,
   pluralizeToken,
   roundDecimals,
@@ -87,9 +86,7 @@ export {
   isRecord,
 } from './lib/guards.js';
 export { interpolate } from './lib/interpolate.js';
-export { logMultipleResults } from './lib/log-results.js';
 export { Logger, logger } from './lib/logger.js';
-export { formatCommandStatus } from './lib/command.js';
 export { mergeConfigs } from './lib/merge-configs.js';
 export {
   addIndex,
@@ -123,7 +120,7 @@ export {
   listAuditsFromAllPlugins,
   listGroupsFromAllPlugins,
 } from './lib/reports/flatten-plugins.js';
-export { formatIssueSeverities } from './lib/reports/formatting.js';
+export { formatIssueSeverities, wrapTags } from './lib/reports/formatting.js';
 export { generateMdReport } from './lib/reports/generate-md-report.js';
 export {
   generateMdReportsDiff,

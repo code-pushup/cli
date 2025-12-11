@@ -1,4 +1,6 @@
+import { logger, pluralizeToken } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
+import { formatMetaLog } from '../meta/format.js';
 import { nxProjectsToConfig } from './projects-to-config.js';
 import { findAllDependencies } from './traverse-graph.js';
 
@@ -35,10 +37,18 @@ export async function eslintConfigFromNxProjectAndDeps(
 
   const dependencies = findAllDependencies(projectName, projectGraph);
 
-  return nxProjectsToConfig(
+  const targets = await nxProjectsToConfig(
     projectGraph,
     project =>
       !!project.name &&
       (project.name === projectName || dependencies.has(project.name)),
   );
+
+  logger.info(
+    formatMetaLog(
+      `Inferred ${pluralizeToken('lint target', targets.length)} for Nx project "${projectName}" and its dependencies`,
+    ),
+  );
+
+  return targets;
 }
