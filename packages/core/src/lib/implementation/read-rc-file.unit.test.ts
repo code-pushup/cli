@@ -1,42 +1,24 @@
 import { vol } from 'memfs';
-import { describe, expect, vi } from 'vitest';
-import { CONFIG_FILE_NAME, type CoreConfig } from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { describe, expect } from 'vitest';
+import type { CoreConfig } from '@code-pushup/models';
+import { CORE_CONFIG_MOCK, MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { autoloadRc } from './read-rc-file.js';
 
-// mock bundleRequire inside importEsmModule used for fetching config
-vi.mock('bundle-require', async () => {
-  const { CORE_CONFIG_MOCK }: Record<string, CoreConfig> =
-    await vi.importActual('@code-pushup/test-utils');
-
-  return {
-    bundleRequire: vi
-      .fn()
-      .mockImplementation((options: { filepath: string }) => {
-        const extension = options.filepath.split('.').at(-1);
-        return {
-          mod: {
-            default: {
-              ...CORE_CONFIG_MOCK,
-              upload: {
-                ...CORE_CONFIG_MOCK?.upload,
-                project: extension, // returns loaded file extension to check format precedence
-              },
-            },
-          },
-        };
-      }),
-  };
-});
-
-// Note: memfs files are only listed to satisfy a system check, value is used from bundle-require mock
 describe('autoloadRc', () => {
+  const serializeConfig = (project: string) => {
+    const config: CoreConfig = {
+      ...CORE_CONFIG_MOCK,
+      upload: { ...CORE_CONFIG_MOCK.upload, project },
+    };
+    return `export default ${JSON.stringify(config, null, 2)}`;
+  };
+
   it('prioritise a .ts configuration file', async () => {
     vol.fromJSON(
       {
-        [`${CONFIG_FILE_NAME}.js`]: '',
-        [`${CONFIG_FILE_NAME}.mjs`]: '',
-        [`${CONFIG_FILE_NAME}.ts`]: '',
+        'code-pushup.config.js': serializeConfig('js'),
+        'code-pushup.config.mjs': serializeConfig('mjs'),
+        'code-pushup.config.ts': serializeConfig('ts'),
       },
       MEMFS_VOLUME,
     );
@@ -51,8 +33,8 @@ describe('autoloadRc', () => {
   it('should prioritise .mjs configuration file over .js', async () => {
     vol.fromJSON(
       {
-        [`${CONFIG_FILE_NAME}.js`]: '',
-        [`${CONFIG_FILE_NAME}.mjs`]: '',
+        'code-pushup.config.js': serializeConfig('js'),
+        'code-pushup.config.mjs': serializeConfig('mjs'),
       },
       MEMFS_VOLUME,
     );
@@ -65,7 +47,10 @@ describe('autoloadRc', () => {
   });
 
   it('should load a .js configuration file if no other valid extension exists', async () => {
-    vol.fromJSON({ [`${CONFIG_FILE_NAME}.js`]: '' }, MEMFS_VOLUME);
+    vol.fromJSON(
+      { 'code-pushup.config.js': serializeConfig('js') },
+      MEMFS_VOLUME,
+    );
 
     await expect(autoloadRc()).resolves.toEqual(
       expect.objectContaining({

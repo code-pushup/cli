@@ -1,7 +1,10 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect } from 'vitest';
-import { coreConfigMiddleware } from './core-config.middleware.js';
+import {
+  type CoreConfigMiddlewareOptions,
+  coreConfigMiddleware,
+} from './core-config.middleware.js';
 
 const configDirPath = path.join(
   fileURLToPath(path.dirname(import.meta.url)),
@@ -19,7 +22,7 @@ const configDirPath = path.join(
 );
 
 describe('coreConfigMiddleware', () => {
-  const CLI_DEFAULTS = {
+  const CLI_DEFAULTS: CoreConfigMiddlewareOptions = {
     plugins: [],
     onlyPlugins: [],
     skipPlugins: [],
@@ -65,6 +68,6 @@ describe('coreConfigMiddleware', () => {
         ),
         ...CLI_DEFAULTS,
       }),
-    ).rejects.toThrow("Cannot find package '@example/custom-plugin'");
+    ).rejects.toThrow("Cannot find module '@example/custom-plugin'");
   });
 });

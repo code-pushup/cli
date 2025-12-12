@@ -7,11 +7,7 @@ import { vol } from 'memfs';
 import os from 'node:os';
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  type AuditOutput,
-  type CoreConfig,
-  auditOutputsSchema,
-} from '@code-pushup/models';
+import { type AuditOutput, auditOutputsSchema } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { logger } from '@code-pushup/utils';
 import { DEFAULT_CLI_FLAGS } from './constants.js';
@@ -25,31 +21,6 @@ import {
   toAuditOutputs,
   withLocalTmpDir,
 } from './utils.js';
-
-// mock bundleRequire inside importEsmModule used for fetching config
-vi.mock('bundle-require', async () => {
-  const { CORE_CONFIG_MOCK }: Record<string, CoreConfig> =
-    await vi.importActual('@code-pushup/test-utils');
-
-  return {
-    bundleRequire: vi
-      .fn()
-      .mockImplementation((options: { filepath: string }) => {
-        const project = options.filepath.split('.').at(-2);
-        return {
-          mod: {
-            default: {
-              ...CORE_CONFIG_MOCK,
-              upload: {
-                ...CORE_CONFIG_MOCK?.upload,
-                project, // returns loaded file extension to check in test
-              },
-            },
-          },
-        };
-      }),
-  };
-});
 
 describe('normalizeAuditOutputs', () => {
   it('should filter audits listed under skipAudits', () => {
@@ -354,11 +325,7 @@ describe('getConfig', () => {
   it('should load config from json file if configPath is specified', async () => {
     vol.fromJSON(
       {
-        'lh-config.json': JSON.stringify(
-          { extends: 'lighthouse:default' },
-          null,
-          2,
-        ),
+        'lh-config.json': JSON.stringify({ extends: 'lighthouse:default' }),
       },
       MEMFS_VOLUME,
     );
@@ -368,22 +335,41 @@ describe('getConfig', () => {
   });
 
   it('should load config from lh-config.js file if configPath is specified', async () => {
-    vol.fromJSON({ 'lh-config.js': '// mocked above' }, MEMFS_VOLUME);
-    await expect(getConfig({ configPath: 'lh-config.js' })).resolves.toEqual(
-      expect.objectContaining({
-        upload: expect.objectContaining({
-          project: expect.stringContaining('lh-config'),
-        }),
-      }),
+    vol.fromJSON(
+      {
+        'lh-config.js': `export default ${JSON.stringify({
+          extends: 'lighthouse:default',
+          settings: { onlyAudits: ['speed-index', 'interactive'] },
+        })}`,
+      },
+      MEMFS_VOLUME,
+    );
+    await expect(getConfig({ configPath: 'lh-config.js' })).resolves.toEqual({
+      extends: 'lighthouse:default',
+      settings: { onlyAudits: ['speed-index', 'interactive'] },
+    });
+  });
+
+  it('should return undefined and log if configPath does not exist', async () => {
+    vol.fromJSON({}, MEMFS_VOLUME);
+    await expect(
+      getConfig({ configPath: 'lh-config.js' }),
+    ).resolves.toBeUndefined();
+    expect(logger.warn).toHaveBeenCalledWith(
+      "Failed to load Lighthouse config - File 'lh-config.js' does not exist",
     );
   });
 
   it('should return undefined and log if configPath has wrong extension', async () => {
+    vol.fromJSON(
+      { 'lh-config.yml': "extends: 'lighthouse:default'" },
+      MEMFS_VOLUME,
+    );
     await expect(
-      getConfig({ configPath: path.join('wrong.not') }),
+      getConfig({ configPath: 'lh-config.yml' }),
     ).resolves.toBeUndefined();
     expect(logger.warn).toHaveBeenCalledWith(
-      'Format of file wrong.not not supported',
+      'Failed to load Lighthouse config - Unknown file extension ".yml" for \'lh-config.yml\'',
     );
   });
 });

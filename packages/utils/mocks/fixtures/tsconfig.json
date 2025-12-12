@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "$lib": ["./valid-ts-custom-paths-lib.ts"]
+    }
+  }
+}

@@ -1,6 +1,7 @@
-import { type Options, bundleRequire } from 'bundle-require';
+import { createJiti } from 'jiti';
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
+import ts from 'typescript';
 import type { Format, PersistConfig } from '@code-pushup/models';
 import { logger } from './logger.js';
 import { settlePromise } from './promises.js';
@@ -52,21 +53,76 @@ export async function removeDirectoryIfExists(dir: string) {
   }
 }
 
-export async function importModule<T = unknown>(options: Options): Promise<T> {
-  const resolvedStats = await settlePromise(stat(options.filepath));
+export async function importModule<T = unknown>(
+  filePath: string,
+  options?: { tsconfig?: string },
+): Promise<T> {
+  const fullPath = path.resolve(process.cwd(), filePath);
+  const resolvedStats = await settlePromise(stat(fullPath));
   if (resolvedStats.status === 'rejected') {
-    throw new Error(`File '${options.filepath}' does not exist`);
+    throw new Error(`File '${filePath}' does not exist`);
   }
   if (!resolvedStats.value.isFile()) {
-    throw new Error(`Expected '${options.filepath}' to be a file`);
+    throw new Error(`Expected '${filePath}' to be a file`);
   }
 
-  const { mod } = await bundleRequire<object>(options);
+  // paths like 'code-pushup.config.ts' must be converted to './code-pushup.config.ts'
+  const modulePath = path.isAbsolute(filePath)
+    ? filePath
+    : path.format({ dir: '.', base: filePath });
+  const alias = options?.tsconfig
+    ? loadAliasFromTsconfigPaths(options.tsconfig)
+    : undefined;
 
-  if (typeof mod === 'object' && 'default' in mod) {
-    return mod.default as T;
+  const jiti = createJiti(process.cwd(), { alias });
+  return jiti.import<T>(modulePath, { default: true });
+}
+
+export function loadTsconfig(tsconfig: string): ts.ParsedCommandLine {
+  const { config, error } = ts.readConfigFile(tsconfig, ts.sys.readFile);
+  if (error) {
+    throw new Error(
+      `Error reading TypeScript config file at ${tsconfig}:\n${error.messageText}`,
+    );
   }
-  return mod as T;
+
+  return ts.parseJsonConfigFileContent(
+    config,
+    ts.sys,
+    path.dirname(tsconfig),
+    {},
+    tsconfig,
+  );
+}
+
+function tsconfigPathsToAlias(
+  tsconfigPath: string,
+  compilerOptions: ts.CompilerOptions,
+): Record<string, string> | undefined {
+  if (!compilerOptions.paths) {
+    return undefined;
+  }
+
+  // resolve relative paths to absolute just like TypeScript does it
+  // https://www.typescriptlang.org/docs/handbook/modules/reference.html#paths
+  const tsconfigDir = path.dirname(tsconfigPath);
+  const baseDir = compilerOptions.baseUrl
+    ? path.resolve(tsconfigDir, compilerOptions.baseUrl)
+    : tsconfigDir;
+
+  return Object.fromEntries(
+    Object.entries(compilerOptions.paths)
+      .map(([key, value]) => [key, value[0]] as const)
+      .filter((pair): pair is [string, string] => pair[1] != null)
+      .map(([key, value]) => [key, path.join(baseDir, value)]),
+  );
+}
+
+function loadAliasFromTsconfigPaths(
+  tsconfig: string,
+): Record<string, string> | undefined {
+  const config = loadTsconfig(tsconfig);
+  return tsconfigPathsToAlias(tsconfig, config.options);
 }
 
 export function createReportPath({

@@ -13,82 +13,53 @@ import {
   getCoveragePathsForTarget,
 } from './coverage-paths.js';
 
-vi.mock('bundle-require', () => ({
-  bundleRequire: vi.fn().mockImplementation((options: { filepath: string }) => {
-    const VITEST_VALID: VitestCoverageConfig = {
-      test: {
-        coverage: {
-          reporter: ['lcov'],
-          reportsDirectory: path.join('coverage', 'cli'),
-        },
-      },
-    };
+function serializeConfig(
+  config: VitestCoverageConfig | JestCoverageConfig,
+): string {
+  return `export default ${JSON.stringify(config, null, 2)}`;
+}
 
-    const VITEST_NO_DIR: VitestCoverageConfig = {
-      test: { coverage: { reporter: ['lcov'] } },
-    };
-
-    const VITEST_NO_LCOV: VitestCoverageConfig = {
-      test: {
-        coverage: {
-          reporter: ['json'],
-          reportsDirectory: 'coverage',
-        },
-      },
-    };
-
-    const JEST_VALID: JestCoverageConfig = {
-      coverageReporters: ['lcov'],
-      coverageDirectory: path.join('coverage', 'core'),
-    };
-
-    const JEST_NO_DIR: JestCoverageConfig = {
-      coverageReporters: ['lcov'],
-    };
-
-    const JEST_NO_LCOV: JestCoverageConfig = {
-      coverageReporters: ['json'],
-      coverageDirectory: 'coverage',
-    };
-
-    const JEST_PRESET: JestCoverageConfig & { preset?: string } = {
-      preset: '../../jest.preset.ts',
-      coverageDirectory: 'coverage',
-    };
-
-    const wrapReturnValue = (
-      value: VitestCoverageConfig | JestCoverageConfig,
-    ) => ({ mod: { default: value } });
-
-    const config = options.filepath.split('.')[0];
-    switch (config) {
-      case 'vitest-valid':
-        return wrapReturnValue(VITEST_VALID);
-      case 'vitest-no-lcov':
-        return wrapReturnValue(VITEST_NO_LCOV);
-      case 'vitest-no-dir':
-        return wrapReturnValue(VITEST_NO_DIR);
-      case 'jest-valid':
-        return wrapReturnValue(JEST_VALID);
-      case 'jest-no-lcov':
-        return wrapReturnValue(JEST_NO_LCOV);
-      case 'jest-no-dir':
-        return wrapReturnValue(JEST_NO_DIR);
-      case 'jest-preset':
-        return wrapReturnValue(JEST_PRESET);
-      default:
-        return wrapReturnValue({});
-    }
-  }),
-}));
+const VITEST_VALID_CONFIG: VitestCoverageConfig = {
+  test: {
+    coverage: {
+      reporter: ['lcov'],
+      reportsDirectory: path.join('coverage', 'cli'),
+    },
+  },
+};
+const VITEST_NO_DIR_CONFIG: VitestCoverageConfig = {
+  test: { coverage: { reporter: ['lcov'] } },
+};
+const VITEST_NO_LCOV_CONFIG: VitestCoverageConfig = {
+  test: {
+    coverage: {
+      reporter: ['json'],
+      reportsDirectory: 'coverage',
+    },
+  },
+};
+const JEST_VALID_CONFIG: JestCoverageConfig = {
+  coverageReporters: ['lcov'],
+  coverageDirectory: path.join('coverage', 'core'),
+};
+const JEST_NO_DIR_CONFIG: JestCoverageConfig = {
+  coverageReporters: ['lcov'],
+};
+const JEST_NO_LCOV_CONFIG: JestCoverageConfig = {
+  coverageReporters: ['json'],
+  coverageDirectory: 'coverage',
+};
+const JEST_PRESET_CONFIG: JestCoverageConfig & { preset?: string } = {
+  preset: '../../jest.preset.ts',
+  coverageDirectory: 'coverage',
+};
 
 describe('getCoveragePathForTarget', () => {
   beforeEach(() => {
     vol.fromJSON(
       {
-        // values come from bundle-require mock above
-        'vitest-valid.config.ts': '',
-        'jest-valid.config.ts': '',
+        'vitest-valid.config.ts': serializeConfig(VITEST_VALID_CONFIG),
+        'jest-valid.config.ts': serializeConfig(JEST_VALID_CONFIG),
       },
       MEMFS_VOLUME,
     );
@@ -162,10 +133,9 @@ describe('getCoveragePathForVitest', () => {
   beforeEach(() => {
     vol.fromJSON(
       {
-        // values come from bundle-require mock above
-        'vitest-valid.config.unit.ts': '',
-        'vitest-no-dir.config.integration.ts': '',
-        'vitest-no-lcov.config.integration.ts': '',
+        'vitest-valid.config.unit.ts': serializeConfig(VITEST_VALID_CONFIG),
+        'vitest-no-dir.config.int.ts': serializeConfig(VITEST_NO_DIR_CONFIG),
+        'vitest-no-lcov.config.int.ts': serializeConfig(VITEST_NO_LCOV_CONFIG),
       },
       MEMFS_VOLUME,
     );
@@ -187,7 +157,7 @@ describe('getCoveragePathForVitest', () => {
   it('should throw when reportsDirectory is not set in Vitest config', async () => {
     await expect(() =>
       getCoveragePathForVitest(
-        { configFile: 'vitest-no-dir.config.integration.ts' },
+        { configFile: 'vitest-no-dir.config.int.ts' },
         { name: 'cli', root: path.join('packages', 'cli') },
         'integration-test',
       ),
@@ -228,7 +198,7 @@ describe('getCoveragePathForVitest', () => {
   it('should throw when Vitest config does not include lcov reporter', async () => {
     await expect(() =>
       getCoveragePathForVitest(
-        { configFile: 'vitest-no-lcov.config.integration.ts' },
+        { configFile: 'vitest-no-lcov.config.int.ts' },
         { name: 'core', root: path.join('packages', 'core') },
         'integration-test',
       ),
@@ -260,12 +230,11 @@ describe('getCoveragePathForJest', () => {
   beforeEach(() => {
     vol.fromJSON(
       {
-        // values come from bundle-require mock above
-        'jest-preset.config.ts': '',
-        'jest-valid.config.unit.ts': '',
-        'jest-valid.config.integration.ts': '',
-        'jest-no-dir.config.integration.ts': '',
-        'jest-no-lcov.config.integration.ts': '',
+        'jest-preset.config.ts': serializeConfig(JEST_PRESET_CONFIG),
+        'jest-valid.config.unit.ts': serializeConfig(JEST_VALID_CONFIG),
+        'jest-valid.config.int.ts': serializeConfig(JEST_VALID_CONFIG),
+        'jest-no-dir.config.int.ts': serializeConfig(JEST_NO_DIR_CONFIG),
+        'jest-no-lcov.config.int.ts': serializeConfig(JEST_NO_LCOV_CONFIG),
       },
       MEMFS_VOLUME,
     );
@@ -286,7 +255,7 @@ describe('getCoveragePathForJest', () => {
   it('should throw when coverageDirectory is not set in Jest config', async () => {
     await expect(() =>
       getCoveragePathForJest(
-        { jestConfig: 'jest-no-dir.config.integration.ts' },
+        { jestConfig: 'jest-no-dir.config.int.ts' },
         { name: 'core', root: path.join('packages', 'core') },
         'integration-test',
       ),
@@ -320,7 +289,7 @@ describe('getCoveragePathForJest', () => {
   it('should throw when Jest config does not include lcov reporter', async () => {
     await expect(() =>
       getCoveragePathForJest(
-        { jestConfig: 'jest-no-lcov.config.integration.ts' },
+        { jestConfig: 'jest-no-lcov.config.int.ts' },
         { name: 'core', root: path.join('packages', 'core') },
         'integration-test',
       ),
@@ -331,7 +300,7 @@ describe('getCoveragePathForJest', () => {
     await expect(
       getCoveragePathForJest(
         {
-          jestConfig: 'jest-no-lcov.config.integration.ts',
+          jestConfig: 'jest-no-lcov.config.int.ts',
           coverageReporters: ['lcov'],
         },
         { name: 'core', root: path.join('packages', 'core') },
@@ -344,7 +313,7 @@ describe('getCoveragePathForJest', () => {
     await expect(
       getCoveragePathForJest(
         {
-          jestConfig: 'jest-valid.config.integration.ts',
+          jestConfig: 'jest-valid.config.int.ts',
           coverageReporters: ['text', 'html'],
         },
         { name: 'core', root: path.join('packages', 'core') },
@@ -357,7 +326,7 @@ describe('getCoveragePathForJest', () => {
     await expect(
       getCoveragePathForJest(
         {
-          jestConfig: 'jest-valid.config.integration.ts',
+          jestConfig: 'jest-valid.config.int.ts',
           coverageReporters: ['lcov'],
         },
         { name: 'core', root: path.join('packages', 'core') },

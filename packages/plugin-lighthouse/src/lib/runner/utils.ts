@@ -14,7 +14,6 @@ import {
   importModule,
   logger,
   pluginWorkDir,
-  readJsonFile,
   stringifyError,
 } from '@code-pushup/utils';
 import { LIGHTHOUSE_PLUGIN_SLUG } from '../constants.js';
@@ -127,16 +126,15 @@ export type ConfigOptions = Partial<
 export async function getConfig(
   options: ConfigOptions = {},
 ): Promise<Config | undefined> {
-  const { configPath: filepath, preset } = options;
+  const { configPath, preset } = options;
 
-  if (filepath != null) {
-    if (filepath.endsWith('.json')) {
-      // Resolve the config file path relative to where cli was called.
-      return readJsonFile<Config>(filepath);
-    } else if (/\.(ts|js|mjs)$/.test(filepath)) {
-      return importModule<Config>({ filepath, format: 'esm' });
-    } else {
-      logger.warn(`Format of file ${filepath} not supported`);
+  if (configPath != null) {
+    try {
+      return await importModule(configPath);
+    } catch (error) {
+      logger.warn(
+        `Failed to load Lighthouse config - ${stringifyError(error, { oneline: true })}`,
+      );
     }
   } else if (preset != null) {
     switch (preset) {

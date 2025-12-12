@@ -24,11 +24,7 @@ export async function readRcByPath(
   const value = await logger.task(
     `Importing config from ${formattedTarget}`,
     async () => {
-      const result = await importModule({
-        filepath: filePath,
-        tsconfig,
-        format: 'esm',
-      });
+      const result = await importModule(filePath, { tsconfig });
       return { result, message: `Imported config from ${formattedTarget}` };
     },
   );

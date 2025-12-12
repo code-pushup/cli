@@ -55,7 +55,7 @@ describe('readRcByPath', () => {
   });
 
   it('should throw if the path is empty', async () => {
-    await expect(readRcByPath('')).rejects.toThrow("File '' does not exist");
+    await expect(readRcByPath('')).rejects.toThrow("Expected '' to be a file");
   });
 
   it('should throw if the file does not exist', async () => {
