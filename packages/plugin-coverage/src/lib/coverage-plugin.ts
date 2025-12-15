@@ -5,12 +5,14 @@ import {
   type PluginConfig,
   validate,
 } from '@code-pushup/models';
-import { capitalize } from '@code-pushup/utils';
+import { capitalize, logger, pluralizeToken } from '@code-pushup/utils';
 import {
   type CoveragePluginConfig,
   type CoverageType,
   coveragePluginConfigSchema,
 } from './config.js';
+import { COVERAGE_PLUGIN_SLUG, COVERAGE_PLUGIN_TITLE } from './constants.js';
+import { formatMetaLog } from './format.js';
 import { createRunnerFunction } from './runner/runner.js';
 import { coverageDescription, coverageTypeWeightMapper } from './utils.js';
 
@@ -58,6 +60,12 @@ export async function coveragePlugin(
     })),
   };
 
+  logger.info(
+    formatMetaLog(
+      `Created ${pluralizeToken('audit', audits.length)} (${coverageConfig.coverageTypes.join('/')} coverage) and 1 group`,
+    ),
+  );
+
   const packageJson = createRequire(import.meta.url)(
     '../../package.json',
   ) as typeof import('../../package.json');
@@ -65,8 +73,8 @@ export async function coveragePlugin(
   const scoreTargets = coverageConfig.scoreTargets;
 
   return {
-    slug: 'coverage',
-    title: 'Code coverage',
+    slug: COVERAGE_PLUGIN_SLUG,
+    title: COVERAGE_PLUGIN_TITLE,
     icon: 'folder-coverage-open',
     description: 'Official Code PushUp code coverage plugin.',
     docsUrl: 'https://www.npmjs.com/package/@code-pushup/coverage-plugin/',
