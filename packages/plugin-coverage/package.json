@@ -37,7 +37,6 @@
     "@code-pushup/models": "0.96.1",
     "@code-pushup/utils": "0.96.1",
     "parse-lcov": "^1.0.4",
-    "yargs": "^17.7.2",
     "zod": "^4.0.5"
   },
   "peerDependencies": {
