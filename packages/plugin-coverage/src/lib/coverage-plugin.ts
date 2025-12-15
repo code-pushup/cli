@@ -11,7 +11,7 @@ import {
   type CoverageType,
   coveragePluginConfigSchema,
 } from './config.js';
-import { createRunnerFunction } from './runner/index.js';
+import { createRunnerFunction } from './runner/runner.js';
 import { coverageDescription, coverageTypeWeightMapper } from './utils.js';
 
 /**
