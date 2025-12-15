@@ -1,5 +1,5 @@
 import type { CreateNodesV2, NxPlugin, TargetConfiguration } from '@nx/devkit';
-import * as path from 'node:path';
+import path from 'node:path';
 
 const TSCONFIG_LIB_FILE = 'tsconfig.lib.json';
 const BUILD_TARGET_NAME = 'build';
@@ -22,8 +22,8 @@ export function createBuildTargetConfig(): TargetConfiguration {
 
 const createNodesV2: CreateNodesV2 = [
   `**/${TSCONFIG_LIB_FILE}`,
-  async configFilePaths => {
-    return Promise.all(
+  async configFilePaths =>
+    Promise.all(
       configFilePaths.map(async configFilePath => {
         const projectRoot = path.dirname(configFilePath);
         const normalizedProjectRoot = projectRoot === '.' ? '' : projectRoot;
@@ -41,8 +41,7 @@ const createNodesV2: CreateNodesV2 = [
           },
         ] as const;
       }),
-    );
-  },
+    ),
 ];
 
 const buildTargetPlugin: NxPlugin = {
