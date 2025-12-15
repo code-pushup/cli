@@ -1,4 +1,4 @@
-import type { CreateNodesV2, NxPlugin } from '@nx/devkit';
+import type { CreateNodesV2, NxPlugin, TargetConfiguration } from '@nx/devkit';
 import * as path from 'node:path';
 
 const ZOD2MD_CONFIG_FILE = 'zod2md.config.ts';
@@ -12,7 +12,7 @@ interface DocsTargetConfigParams {
 function createDocsTargetConfig({
   config,
   output,
-}: DocsTargetConfigParams): Record<string, unknown> {
+}: DocsTargetConfigParams): TargetConfiguration {
   return {
     executor: 'nx:run-commands',
     options: {
@@ -30,29 +30,31 @@ function createDocsTargetConfig({
 
 const createNodesV2: CreateNodesV2 = [
   `**/${ZOD2MD_CONFIG_FILE}`,
-  configFilePaths => {
-    return configFilePaths.map(configFilePath => {
-      const projectRoot = path.dirname(configFilePath);
-      const normalizedProjectRoot = projectRoot === '.' ? '' : projectRoot;
-      const output = '{projectRoot}/docs/{projectName}-reference.md';
-      const config = `{projectRoot}/${ZOD2MD_CONFIG_FILE}`;
+  async configFilePaths => {
+    return Promise.all(
+      configFilePaths.map(async configFilePath => {
+        const projectRoot = path.dirname(configFilePath);
+        const normalizedProjectRoot = projectRoot === '.' ? '' : projectRoot;
+        const output = '{projectRoot}/docs/{projectName}-reference.md';
+        const config = `{projectRoot}/${ZOD2MD_CONFIG_FILE}`;
 
-      return [
-        configFilePath,
-        {
-          projects: {
-            [normalizedProjectRoot]: {
-              targets: {
-                [GENERATE_DOCS_TARGET_NAME]: createDocsTargetConfig({
-                  config,
-                  output,
-                }),
+        return [
+          configFilePath,
+          {
+            projects: {
+              [normalizedProjectRoot]: {
+                targets: {
+                  [GENERATE_DOCS_TARGET_NAME]: createDocsTargetConfig({
+                    config,
+                    output,
+                  }),
+                },
               },
             },
           },
-        },
-      ];
-    });
+        ] as const;
+      }),
+    );
   },
 ];
 
