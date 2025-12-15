@@ -1,6 +1,4 @@
 import { createRequire } from 'node:module';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import type { Audit, Group, PluginConfig } from '@code-pushup/models';
 import {
   type DependencyGroup,
@@ -11,7 +9,7 @@ import {
 } from './config.js';
 import { dependencyDocs, dependencyGroupWeights } from './constants.js';
 import { packageManagers } from './package-managers/package-managers.js';
-import { createRunnerConfig } from './runner/index.js';
+import { createRunnerFunction } from './runner/index.js';
 import { normalizeConfig } from './utils.js';
 
 /**
@@ -42,12 +40,6 @@ export async function jsPackagesPlugin(
     ...jsPackagesPluginConfigRest
   } = await normalizeConfig(config);
 
-  const runnerScriptPath = path.join(
-    fileURLToPath(path.dirname(import.meta.url)),
-    '..',
-    'bin.js',
-  );
-
   const packageJson = createRequire(import.meta.url)(
     '../../package.json',
   ) as typeof import('../../package.json');
@@ -63,7 +55,7 @@ export async function jsPackagesPlugin(
     version: packageJson.version,
     audits: createAudits(packageManager.slug, checks, depGroups),
     groups: createGroups(packageManager.slug, checks, depGroups),
-    runner: await createRunnerConfig(runnerScriptPath, {
+    runner: createRunnerFunction({
       ...jsPackagesPluginConfigRest,
       checks,
       packageManager: packageManager.slug,
