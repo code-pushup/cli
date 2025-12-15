@@ -91,4 +91,38 @@ describe('registerPluginInWorkspace', () => {
       }),
     );
   });
+
+  it('should register pluginsConfig when provided', () => {
+    const tree = createTreeWithEmptyWorkspace({ layout: 'apps-libs' });
+
+    registerPluginInWorkspace(
+      tree,
+      {
+        plugin: '@code-pushup/nx-plugin',
+        options: { targetName: 'code-pushup' },
+      },
+      {
+        projectPrefix: 'cli',
+        bin: 'packages/cli/src/index.ts',
+      },
+    );
+
+    const nxJson = JSON.parse(tree.read('nx.json')?.toString() ?? '{}');
+    expect(nxJson).toStrictEqual(
+      expect.objectContaining({
+        plugins: [
+          {
+            plugin: '@code-pushup/nx-plugin',
+            options: { targetName: 'code-pushup' },
+          },
+        ],
+        pluginsConfig: {
+          '@code-pushup/nx-plugin': {
+            projectPrefix: 'cli',
+            bin: 'packages/cli/src/index.ts',
+          },
+        },
+      }),
+    );
+  });
 });
