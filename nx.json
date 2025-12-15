@@ -134,12 +134,11 @@
       "configurations": {
         "print-config": {
           "command": "print-config",
-          "output": "{projectRoot}/code-pushup.config.json"
+          "output": "{projectRoot}/.code-pushup/code-pushup.config.json"
         }
       }
     },
     "code-pushup-coverage": {
-      "executor": "@code-pushup/nx-plugin:cli",
       "dependsOn": ["*-test"],
       "cache": true,
       "inputs": ["default", "code-pushup-inputs"],
@@ -156,7 +155,6 @@
       }
     },
     "code-pushup-eslint": {
-      "executor": "@code-pushup/nx-plugin:cli",
       "dependsOn": ["lint"],
       "cache": true,
       "inputs": ["default", "code-pushup-inputs"],
@@ -173,8 +171,7 @@
       }
     },
     "code-pushup-js-packages": {
-      "executor": "@code-pushup/nx-plugin:cli",
-      "cache": false,
+      "cache": true,
       "inputs": [
         {
           "runtime": "date +%Y-%m-%d"
@@ -193,7 +190,6 @@
       }
     },
     "code-pushup-lighthouse": {
-      "executor": "@code-pushup/nx-plugin:cli",
       "cache": true,
       "inputs": ["production", "^production", "code-pushup-inputs"],
       "outputs": [
@@ -209,7 +205,6 @@
       }
     },
     "code-pushup-jsdocs": {
-      "executor": "@code-pushup/nx-plugin:cli",
       "cache": true,
       "inputs": [
         "default",
@@ -229,7 +224,6 @@
       }
     },
     "code-pushup-typescript": {
-      "executor": "@code-pushup/nx-plugin:cli",
       "cache": true,
       "inputs": [
         "default",
@@ -249,7 +243,6 @@
       }
     },
     "code-pushup-axe": {
-      "executor": "@code-pushup/nx-plugin:cli",
       "cache": true,
       "inputs": ["default", "code-pushup-inputs"],
       "outputs": [
@@ -284,6 +277,16 @@
     "appsDir": "examples",
     "libsDir": "packages"
   },
+  "pluginsConfig": {
+    "@code-pushup/nx-plugin": {
+      "projectPrefix": "cli",
+      "bin": "packages/cli/src/index.ts",
+      "env": {
+        "NODE_OPTIONS": "--import tsx",
+        "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+      }
+    }
+  },
   "generators": {},
   "release": {
     "projects": ["packages/*"],
@@ -316,48 +319,28 @@
       "plugin": "@code-pushup/nx-plugin",
       "options": {
         "targetName": "code-pushup",
-        "bin": "packages/cli/src/index.ts",
-        "projectPrefix": "cli",
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
+        "projectPrefix": "cli"
       },
       "exclude": ["tools/**", "testing/**", "examples/**"]
     },
     {
       "plugin": "@code-pushup/nx-plugin",
       "options": {
-        "targetName": "code-pushup-coverage",
-        "bin": "packages/cli/src/index.ts",
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
+        "targetName": "code-pushup-coverage"
       },
       "exclude": ["tools/**", "testing/**", "examples/**"]
     },
     {
       "plugin": "@code-pushup/nx-plugin",
       "options": {
-        "targetName": "code-pushup-eslint",
-        "bin": "packages/cli/src/index.ts",
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
+        "targetName": "code-pushup-eslint"
       },
       "exclude": ["testing/**", "examples/**"]
     },
     {
       "plugin": "@code-pushup/nx-plugin",
       "options": {
-        "targetName": "code-pushup-typescript",
-        "bin": "packages/cli/src/index.ts",
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
+        "targetName": "code-pushup-typescript"
       },
       "exclude": [
         "packages/models/**",
@@ -371,12 +354,7 @@
     {
       "plugin": "@code-pushup/nx-plugin",
       "options": {
-        "targetName": "code-pushup-jsdocs",
-        "bin": "packages/cli/src/index.ts",
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
+        "targetName": "code-pushup-jsdocs"
       },
       "exclude": [
         "packages/models",
@@ -389,36 +367,21 @@
     {
       "plugin": "@code-pushup/nx-plugin",
       "options": {
-        "targetName": "code-pushup-js-packages",
-        "bin": "packages/cli/src/index.ts",
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
+        "targetName": "code-pushup-js-packages"
       },
       "exclude": ["packages/**", "tools/**", "testing/**", "examples/**"]
     },
     {
       "plugin": "@code-pushup/nx-plugin",
       "options": {
-        "targetName": "code-pushup-lighthouse",
-        "bin": "packages/cli/src/index.ts",
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
+        "targetName": "code-pushup-lighthouse"
       },
       "exclude": ["packages/**", "tools/**", "testing/**", "examples/**"]
     },
     {
       "plugin": "@code-pushup/nx-plugin",
       "options": {
-        "targetName": "code-pushup-axe",
-        "bin": "packages/cli/src/index.ts",
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
-        }
+        "targetName": "code-pushup-axe"
       },
       "exclude": ["packages/**", "tools/**", "testing/**", "examples/**"]
     },
