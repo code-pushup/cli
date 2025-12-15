@@ -1,11 +1,21 @@
-const baseConfig = require('../../eslint.config.js').default;
+import tseslint from 'typescript-eslint';
+import baseConfig from '../../eslint.config.js';
 
-module.exports = [
+export default tseslint.config(
   ...baseConfig,
+  {
+    files: ['**/*.ts'],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
   {
     files: ['**/*.json'],
     rules: {
       '@nx/dependency-checks': 'error',
     },
   },
-];
+);
