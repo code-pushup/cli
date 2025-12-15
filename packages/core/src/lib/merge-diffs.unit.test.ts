@@ -3,12 +3,12 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { PersistConfig } from '@code-pushup/models';
 import {
-  MEMFS_VOLUME,
   reportsDiffAddedPluginMock,
   reportsDiffAltMock,
   reportsDiffMock,
   reportsDiffUnchangedMock,
-} from '@code-pushup/test-utils';
+} from '@code-pushup/test-fixtures';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { fileExists, logger } from '@code-pushup/utils';
 import { mergeDiffs } from './merge-diffs.js';
 

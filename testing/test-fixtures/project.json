@@ -1,13 +1,14 @@
 {
-  "name": "test-nx-utils",
+  "name": "test-fixtures",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "testing/test-nx-utils/src",
+  "sourceRoot": "testing/test-fixtures/src",
   "projectType": "library",
   "targets": {
     "build": {},
     "lint": {},
-    "unit-test": {},
-    "int-test": {}
+    "nx-release-publish": {
+      "executor": "nx:noop"
+    }
   },
   "tags": ["scope:shared", "type:testing"]
 }

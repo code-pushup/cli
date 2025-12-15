@@ -6,10 +6,8 @@ import {
   DEFAULT_PERSIST_CONFIG,
   type PluginConfig,
 } from '@code-pushup/models';
-import {
-  MEMFS_VOLUME,
-  MINIMAL_PLUGIN_CONFIG_MOCK,
-} from '@code-pushup/test-utils';
+import { MINIMAL_PLUGIN_CONFIG_MOCK } from '@code-pushup/test-fixtures';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { logger } from '@code-pushup/utils';
 import { executePlugin, executePlugins } from './execute-plugin.js';
 import * as runnerModule from './runner.js';

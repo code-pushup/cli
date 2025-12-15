@@ -2,7 +2,8 @@ import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { commitSchema } from '@code-pushup/models';
-import { MINIMAL_CONFIG_MOCK, cleanTestFolder } from '@code-pushup/test-utils';
+import { MINIMAL_CONFIG_MOCK } from '@code-pushup/test-fixtures';
+import { cleanTestFolder } from '@code-pushup/test-utils';
 import {
   ensureDirectoryExists,
   fileExists,

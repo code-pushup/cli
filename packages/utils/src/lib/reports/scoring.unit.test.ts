@@ -1,5 +1,5 @@
 import { describe, expect } from 'vitest';
-import { REPORT_MOCK } from '@code-pushup/test-utils';
+import { REPORT_MOCK } from '@code-pushup/test-fixtures';
 import {
   calculateScore,
   scoreAuditWithTarget,

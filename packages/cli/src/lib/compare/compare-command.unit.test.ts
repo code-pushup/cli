@@ -12,8 +12,8 @@ import { yargsCompareCommandObject } from './compare-command.js';
 
 vi.mock('@code-pushup/core', async () => {
   const core: object = await vi.importActual('@code-pushup/core');
-  const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-utils') =
-    await vi.importActual('@code-pushup/test-utils');
+  const { CORE_CONFIG_MOCK }: typeof import('@code-pushup/test-fixtures') =
+    await vi.importActual('@code-pushup/test-fixtures');
   return {
     ...core,
     autoloadRc: vi.fn().mockResolvedValue(CORE_CONFIG_MOCK),
