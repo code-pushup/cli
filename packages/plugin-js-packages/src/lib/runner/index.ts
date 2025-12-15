@@ -1,15 +1,9 @@
-import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import type { RunnerConfig, RunnerFilesPaths } from '@code-pushup/models';
+import type { RunnerFunction } from '@code-pushup/models';
 import {
   asyncSequential,
-  createRunnerFiles,
-  ensureDirectoryExists,
   executeProcess,
-  filePathToCliArg,
   objectFromEntries,
-  objectToCliArgs,
-  readJsonFile,
 } from '@code-pushup/utils';
 import {
   type AuditSeverity,
@@ -26,54 +20,33 @@ import type { AuditResult } from './audit/types.js';
 import { outdatedResultToAuditOutput } from './outdated/transform.js';
 import { getTotalDependencies } from './utils.js';
 
-export async function createRunnerConfig(
-  scriptPath: string,
+export function createRunnerFunction(
   config: FinalJSPackagesPluginConfig,
-): Promise<RunnerConfig> {
-  const { runnerConfigPath, runnerOutputPath } = await createRunnerFiles(
-    'js-packages',
-    JSON.stringify(config),
-  );
+): RunnerFunction {
+  return async () => {
+    const {
+      packageManager,
+      checks,
+      auditLevelMapping,
+      packageJsonPath,
+      dependencyGroups: depGroups,
+    } = config;
 
-  return {
-    command: 'node',
-    args: [
-      filePathToCliArg(scriptPath),
-      ...objectToCliArgs({ runnerConfigPath, runnerOutputPath }),
-    ],
-    configFile: runnerConfigPath,
-    outputFile: runnerOutputPath,
+    const auditResults = checks.includes('audit')
+      ? await processAudit(
+          packageManager,
+          depGroups,
+          auditLevelMapping,
+          packageJsonPath,
+        )
+      : [];
+
+    const outdatedResults = checks.includes('outdated')
+      ? await processOutdated(packageManager, depGroups, packageJsonPath)
+      : [];
+
+    return [...auditResults, ...outdatedResults];
   };
-}
-
-export async function executeRunner({
-  runnerConfigPath,
-  runnerOutputPath,
-}: RunnerFilesPaths): Promise<void> {
-  const {
-    packageManager,
-    checks,
-    auditLevelMapping,
-    packageJsonPath,
-    dependencyGroups: depGroups,
-  } = await readJsonFile<FinalJSPackagesPluginConfig>(runnerConfigPath);
-
-  const auditResults = checks.includes('audit')
-    ? await processAudit(
-        packageManager,
-        depGroups,
-        auditLevelMapping,
-        packageJsonPath,
-      )
-    : [];
-
-  const outdatedResults = checks.includes('outdated')
-    ? await processOutdated(packageManager, depGroups, packageJsonPath)
-    : [];
-  const checkResults = [...auditResults, ...outdatedResults];
-
-  await ensureDirectoryExists(path.dirname(runnerOutputPath));
-  await writeFile(runnerOutputPath, JSON.stringify(checkResults));
 }
 
 async function processOutdated(
