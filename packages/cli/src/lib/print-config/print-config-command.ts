@@ -4,6 +4,7 @@ import path from 'node:path';
 import type { CommandModule } from 'yargs';
 import { logger } from '@code-pushup/utils';
 import { filterKebabCaseKeys } from '../implementation/global.utils.js';
+import { printCliCommand } from '../implementation/logging.js';
 import type { PrintConfigOptions } from '../implementation/print-config.model.js';
 import { yargsPrintConfigOptionsDefinition } from '../implementation/print-config.options.js';
 
@@ -14,6 +15,8 @@ export function yargsPrintConfigCommandObject() {
     describe: 'Print config',
     builder: yargsPrintConfigOptionsDefinition(),
     handler: async yargsArgs => {
+      printCliCommand(command);
+
       // it is important to filter out kebab case keys
       // because yargs duplicates options in camel case and kebab case
       const { _, $0, ...args } = filterKebabCaseKeys(yargsArgs);
@@ -22,13 +25,9 @@ export function yargsPrintConfigCommandObject() {
 
       const content = JSON.stringify(config, null, 2);
 
-      if (output) {
-        await mkdir(path.dirname(output), { recursive: true });
-        await writeFile(output, content);
-        logger.info(`Config printed to file ${ansis.bold(output)}`);
-      } else {
-        logger.info(content);
-      }
+      await mkdir(path.dirname(output), { recursive: true });
+      await writeFile(output, content);
+      logger.info(`Config printed to file ${ansis.bold(output)}`);
     },
   } satisfies CommandModule;
 }

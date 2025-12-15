@@ -179,8 +179,6 @@ describe('nx-plugin', () => {
     // Run CLI executor
     expect(cleanStdout).toContain('DryRun execution of:');
     expect(cleanStdout).toContain('npx @code-pushup/cli');
-    expect(cleanStdout).not.toContain('--verbose');
-    expect(cleanStdout).toContain('CP_VERBOSE="true"');
   });
 
   it('should consider plugin option bin in executor target', async () => {

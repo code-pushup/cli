@@ -1,5 +1,6 @@
-import { logger, stringifyError } from '@code-pushup/utils';
+import { logger, pluralizeToken, stringifyError } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
+import { formatMetaLog } from '../meta/format.js';
 import { filterProjectGraph } from './filter-project-graph.js';
 import { nxProjectsToConfig } from './projects-to-config.js';
 
@@ -14,7 +15,7 @@ async function resolveCachedProjectGraph() {
   try {
     return readCachedProjectGraph();
   } catch (error) {
-    logger.info(
+    logger.warn(
       `Could not read cached project graph, falling back to async creation.\n${stringifyError(error)}`,
     );
     return await createProjectGraphAsync({ exitOnError: false });
@@ -55,7 +56,21 @@ export async function eslintConfigFromAllNxProjects(
     projectGraph,
     options.exclude,
   );
-  return nxProjectsToConfig(filteredProjectGraph);
+  const targets = await nxProjectsToConfig(filteredProjectGraph);
+
+  logger.info(
+    formatMetaLog(
+      [
+        `Inferred ${pluralizeToken('lint target', targets.length)} for all Nx projects`,
+        options.exclude?.length &&
+          `(excluding ${pluralizeToken('project', options.exclude.length)})`,
+      ]
+        .filter(Boolean)
+        .join(' '),
+    ),
+  );
+
+  return targets;
 }
 
 /**

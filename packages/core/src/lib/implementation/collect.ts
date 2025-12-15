@@ -1,3 +1,4 @@
+import ansis from 'ansis';
 import { createRequire } from 'node:module';
 import type {
   CacheConfigObject,
@@ -5,7 +6,12 @@ import type {
   PersistConfig,
   Report,
 } from '@code-pushup/models';
-import { calcDuration, getLatestCommit } from '@code-pushup/utils';
+import {
+  calcDuration,
+  getLatestCommit,
+  logger,
+  pluralizeToken,
+} from '@code-pushup/utils';
 import { executePlugins } from './execute-plugin.js';
 
 export type CollectOptions = Pick<CoreConfig, 'plugins' | 'categories'> & {
@@ -19,13 +25,26 @@ export type CollectOptions = Pick<CoreConfig, 'plugins' | 'categories'> & {
  */
 export async function collect(options: CollectOptions): Promise<Report> {
   const { plugins, categories, persist = {}, cache } = options;
+
   const date = new Date().toISOString();
   const start = performance.now();
-  const commit = await getLatestCommit();
-  const pluginOutputs = await executePlugins({ plugins, persist, cache });
   const packageJson = createRequire(import.meta.url)(
     '../../../package.json',
   ) as typeof import('../../../package.json');
+
+  const commit = await getLatestCommit();
+  logger.debug(
+    commit
+      ? `Found latest commit ${commit.hash} ("${commit.message}" by ${commit.author})`
+      : 'Latest commit not found',
+  );
+
+  logger.info(
+    `Collecting report from ${pluralizeToken('plugin', plugins.length)} ...`,
+  );
+  const pluginOutputs = await executePlugins({ plugins, persist, cache });
+  logger.info(ansis.green('Collected report ✓'));
+
   return {
     commit,
     packageName: packageJson.name,

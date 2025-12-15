@@ -8,9 +8,8 @@ export function yargsGlobalOptionsDefinition(): Record<
   return {
     verbose: {
       describe:
-        'When true creates more verbose output. This is helpful when debugging. You may also set CP_VERBOSE env variable instead.',
+        'Toggles whether to print debug logs. The default value is derived from the CP_VERBOSE environment variable (false if not set).',
       type: 'boolean',
-      default: false,
     },
     config: {
       describe:

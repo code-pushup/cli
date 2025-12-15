@@ -34,6 +34,8 @@ module.exports = tseslint.config(
         'warn',
         { styles: { 'node:path': { namespace: true } } },
       ],
+      // `import { logger } from '@nx/devkit' is OK here
+      'no-restricted-imports': 'off',
     },
   },
   {

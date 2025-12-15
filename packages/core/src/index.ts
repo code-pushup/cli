@@ -24,11 +24,7 @@ export {
   executePlugins,
 } from './lib/implementation/execute-plugin.js';
 export { persistReport } from './lib/implementation/persist.js';
-export {
-  autoloadRc,
-  ConfigPathError,
-  readRcByPath,
-} from './lib/implementation/read-rc-file.js';
+export { autoloadRc, readRcByPath } from './lib/implementation/read-rc-file.js';
 export { AuditOutputsMissingAuditError } from './lib/implementation/runner.js';
 export { mergeDiffs } from './lib/merge-diffs.js';
 export { upload, type UploadOptions } from './lib/upload.js';

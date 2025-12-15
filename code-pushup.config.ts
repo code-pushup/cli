@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import {
-  axeCoreConfig,
+  configureAxePlugin,
   configureCoveragePlugin,
   configureEslintPlugin,
   configureJsDocsPlugin,
@@ -23,5 +23,5 @@ export default mergeConfigs(
   configureTypescriptPlugin(),
   configureJsDocsPlugin(),
   await configureLighthousePlugin(TARGET_URL),
-  axeCoreConfig(TARGET_URL),
+  configureAxePlugin(TARGET_URL),
 );

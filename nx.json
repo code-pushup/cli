@@ -27,9 +27,16 @@
       { "env": "NX_VERBOSE_LOGGING" },
       { "externalDependencies": ["vitest"] }
     ],
-    "lint-eslint-inputs": [{ "externalDependencies": ["eslint"] }],
-    "typecheck-typescript-inputs": [{ "externalDependencies": ["typescript"] }],
+    "lint-eslint-inputs": [
+      "{workspaceRoot}/eslint.config.js",
+      { "externalDependencies": ["eslint"] }
+    ],
+    "typecheck-typescript-inputs": [
+      "{workspaceRoot}/tsconfig.base.json",
+      { "externalDependencies": ["typescript"] }
+    ],
     "code-pushup-inputs": [
+      "{workspaceRoot}/code-pushup.preset.ts",
       { "env": "NODE_OPTIONS" },
       { "env": "TSX_TSCONFIG_PATH" }
     ],

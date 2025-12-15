@@ -16,13 +16,6 @@ import { options } from './options.js';
 import { yargsCli } from './yargs-cli.js';
 
 describe('yargsCli', () => {
-  it('should provide correct default values for global options', async () => {
-    const parsedArgv = await yargsCli<GlobalOptions>([], {
-      options,
-    }).parseAsync();
-    expect(parsedArgv.verbose).toBe(false);
-  });
-
   it('should parse an empty array as a default onlyPlugins option', async () => {
     const parsedArgv = await yargsCli<GlobalOptions & FilterOptions>([], {
       options: { ...options, ...yargsFilterOptionsDefinition() },
@@ -144,7 +137,8 @@ describe('yargsCli', () => {
     expect(parsedArgv).toEqual(
       expect.objectContaining({
         // default values
-        verbose: false,
+        onlyCategories: [],
+        skipCategories: [],
         // overridden arguments
         persist: expect.objectContaining({
           outputDir: 'code-pushdown/output/dir',
