@@ -6,7 +6,6 @@
   "tags": ["scope:tooling", "type:util"],
   "targets": {
     "lint": {},
-    "unit-test": {},
-    "build": {}
+    "unit-test": {}
   }
 }

@@ -4,7 +4,6 @@
   "sourceRoot": "testing/test-setup-config/src",
   "projectType": "library",
   "targets": {
-    "build": {},
     "lint": {},
     "unit-test": {}
   },

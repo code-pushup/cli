@@ -4,7 +4,6 @@
   "sourceRoot": "packages/plugin-js-packages/src",
   "projectType": "library",
   "targets": {
-    "build": {},
     "lint": {},
     "unit-test": {},
     "code-pushup": {},
