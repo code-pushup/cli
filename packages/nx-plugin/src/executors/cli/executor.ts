@@ -24,6 +24,7 @@ export default async function runCliExecutor(
     dryRun,
     env: executorEnv,
     bin,
+    projectPrefix, // @TODO do not forward to CLI. Handle in plugin logic only
     ...restArgs
   } = parseCliExecutorOptions(terminalAndExecutorOptions, normalizedContext);
   // this sets `CP_VERBOSE=true` on process.env
