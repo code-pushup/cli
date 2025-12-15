@@ -11,12 +11,7 @@
     },
     "lint": {},
     "unit-test": {},
-    "int-test": {},
-    "code-pushup": {},
-    "code-pushup-eslint": {},
-    "code-pushup-coverage": {},
-    "code-pushup-typescript": {},
-    "code-pushup-jsdocs": {}
+    "int-test": {}
   },
   "tags": ["scope:core", "type:app", "publishable"]
 }

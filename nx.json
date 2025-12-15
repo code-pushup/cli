@@ -2,7 +2,11 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
-    "os": [{ "runtime": "node -e \"console.log(require('os').platform())\"" }],
+    "os": [
+      {
+        "runtime": "node -e \"console.log(require('os').platform())\""
+      }
+    ],
     "production": [
       "default",
       "!{projectRoot}/README.md",
@@ -25,23 +29,42 @@
     ],
     "test-vitest-inputs": [
       "os",
-      { "env": "NX_VERBOSE_LOGGING" },
-      { "externalDependencies": ["vitest"] }
+      {
+        "env": "NX_VERBOSE_LOGGING"
+      },
+      {
+        "externalDependencies": ["vitest"]
+      }
     ],
     "lint-eslint-inputs": [
       "{workspaceRoot}/eslint.config.js",
-      { "externalDependencies": ["eslint"] }
+      {
+        "externalDependencies": ["eslint"]
+      }
     ],
     "typecheck-typescript-inputs": [
       "{workspaceRoot}/tsconfig.base.json",
-      { "externalDependencies": ["typescript"] }
+      {
+        "externalDependencies": ["typescript"]
+      }
     ],
     "code-pushup-inputs": [
       "{workspaceRoot}/code-pushup.preset.ts",
-      { "env": "NODE_OPTIONS" },
-      { "env": "TSX_TSCONFIG_PATH" }
+      {
+        "env": "NODE_OPTIONS"
+      },
+      {
+        "env": "TSX_TSCONFIG_PATH"
+      }
     ],
-    "sharedGlobals": [{ "runtime": "node -v" }, { "runtime": "npm -v" }]
+    "sharedGlobals": [
+      {
+        "runtime": "node -v"
+      },
+      {
+        "runtime": "npm -v"
+      }
+    ]
   },
   "targetDefaults": {
     "lint": {
@@ -123,68 +146,51 @@
     },
     "code-pushup": {
       "cache": false,
-      "executor": "nx:run-commands",
       "dependsOn": ["code-pushup-*"],
       "options": {
-        "command": "node packages/cli/src/index.ts",
-        "args": [
-          "--config={projectRoot}/code-pushup.config.ts",
-          "--cache.read",
-          "--persist.outputDir=.code-pushup/{projectName}"
-        ],
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        "command": "autorun",
+        "config": "{projectRoot}/code-pushup.config.ts",
+        "persist": {
+          "outputDir": ".code-pushup/{projectName}"
         }
       }
     },
     "code-pushup-coverage": {
+      "executor": "@code-pushup/nx-plugin:cli",
       "dependsOn": ["*-test"],
       "cache": true,
       "inputs": ["default", "code-pushup-inputs"],
       "outputs": [
         "{workspaceRoot}/.code-pushup/{projectName}/coverage/runner-output.json"
       ],
-      "executor": "nx:run-commands",
       "options": {
-        "command": "node packages/cli/src/index.ts collect",
-        "args": [
-          "--config={projectRoot}/code-pushup.config.ts",
-          "--cache.write",
-          "--onlyPlugins=coverage",
-          "--persist.skipReports=true",
-          "--persist.outputDir=.code-pushup/{projectName}"
-        ],
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        "command": "collect",
+        "config": "{projectRoot}/code-pushup.config.ts",
+        "onlyPlugins": ["coverage"],
+        "persist": {
+          "outputDir": ".code-pushup/{projectName}"
         }
       }
     },
     "code-pushup-eslint": {
+      "executor": "@code-pushup/nx-plugin:cli",
       "dependsOn": ["lint"],
       "cache": true,
       "inputs": ["default", "code-pushup-inputs"],
       "outputs": [
         "{workspaceRoot}/.code-pushup/{projectName}/eslint/runner-output.json"
       ],
-      "executor": "nx:run-commands",
       "options": {
-        "command": "node packages/cli/src/index.ts collect",
-        "args": [
-          "--config={projectRoot}/code-pushup.config.ts",
-          "--cache.write",
-          "--onlyPlugins=eslint",
-          "--persist.skipReports",
-          "--persist.outputDir=.code-pushup/{projectName}"
-        ],
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        "command": "collect",
+        "config": "{projectRoot}/code-pushup.config.ts",
+        "onlyPlugins": ["eslint"],
+        "persist": {
+          "outputDir": ".code-pushup/{projectName}"
         }
       }
     },
     "code-pushup-js-packages": {
+      "executor": "@code-pushup/nx-plugin:cli",
       "cache": false,
       "inputs": [
         {
@@ -194,43 +200,33 @@
       "outputs": [
         "{workspaceRoot}/.code-pushup/{projectName}/js-packages/runner-output.json"
       ],
-      "executor": "nx:run-commands",
       "options": {
-        "command": "node packages/cli/src/index.ts collect",
-        "args": [
-          "--config={projectRoot}/code-pushup.config.ts",
-          "--onlyPlugins=js-packages",
-          "--persist.outputDir=.code-pushup/{projectName}"
-        ],
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        "command": "collect",
+        "config": "{projectRoot}/code-pushup.config.ts",
+        "onlyPlugins": ["js-packages"],
+        "persist": {
+          "outputDir": ".code-pushup/{projectName}"
         }
       }
     },
     "code-pushup-lighthouse": {
+      "executor": "@code-pushup/nx-plugin:cli",
       "cache": true,
       "inputs": ["production", "^production", "code-pushup-inputs"],
       "outputs": [
         "{workspaceRoot}/.code-pushup/{projectName}/lighthouse/runner-output.json"
       ],
-      "executor": "nx:run-commands",
       "options": {
-        "command": "node packages/cli/src/index.ts collect",
-        "args": [
-          "--config={projectRoot}/code-pushup.config.ts",
-          "--cache.write",
-          "--onlyPlugins=lighthouse",
-          "--persist.skipReports",
-          "--persist.outputDir=.code-pushup/{projectName}"
-        ],
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        "command": "collect",
+        "config": "{projectRoot}/code-pushup.config.ts",
+        "onlyPlugins": ["lighthouse"],
+        "persist": {
+          "outputDir": ".code-pushup/{projectName}"
         }
       }
     },
     "code-pushup-jsdocs": {
+      "executor": "@code-pushup/nx-plugin:cli",
       "cache": true,
       "inputs": [
         "default",
@@ -240,23 +236,17 @@
       "outputs": [
         "{workspaceRoot}/.code-pushup/{projectName}/jsdocs/runner-output.json"
       ],
-      "executor": "nx:run-commands",
       "options": {
-        "command": "node packages/cli/src/index.ts collect",
-        "args": [
-          "--config={projectRoot}/code-pushup.config.ts",
-          "--cache.write",
-          "--onlyPlugins=jsdocs",
-          "--persist.skipReports",
-          "--persist.outputDir=.code-pushup/{projectName}"
-        ],
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        "command": "collect",
+        "config": "{projectRoot}/code-pushup.config.ts",
+        "onlyPlugins": ["jsdocs"],
+        "persist": {
+          "outputDir": ".code-pushup/{projectName}"
         }
       }
     },
     "code-pushup-typescript": {
+      "executor": "@code-pushup/nx-plugin:cli",
       "cache": true,
       "inputs": [
         "default",
@@ -266,40 +256,28 @@
       "outputs": [
         "{workspaceRoot}/.code-pushup/{projectName}/typescript/runner-output.json"
       ],
-      "executor": "nx:run-commands",
       "options": {
-        "command": "node packages/cli/src/index.ts collect",
-        "args": [
-          "--config={projectRoot}/code-pushup.config.ts",
-          "--cache.write",
-          "--onlyPlugins=typescript",
-          "--persist.skipReports",
-          "--persist.outputDir=.code-pushup/{projectName}"
-        ],
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        "command": "collect",
+        "config": "{projectRoot}/code-pushup.config.ts",
+        "onlyPlugins": ["typescript"],
+        "persist": {
+          "outputDir": ".code-pushup/{projectName}"
         }
       }
     },
     "code-pushup-axe": {
+      "executor": "@code-pushup/nx-plugin:cli",
       "cache": true,
       "inputs": ["default", "code-pushup-inputs"],
       "outputs": [
         "{workspaceRoot}/.code-pushup/{projectName}/axe/runner-output.json"
       ],
-      "executor": "nx:run-commands",
       "options": {
-        "command": "node packages/cli/src/index.ts collect",
-        "args": [
-          "--config={projectRoot}/code-pushup.config.ts",
-          "--cache.write",
-          "--onlyPlugins=axe",
-          "--persist.outputDir=.code-pushup/{projectName}"
-        ],
-        "env": {
-          "NODE_OPTIONS": "--import tsx",
-          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        "command": "collect",
+        "config": "{projectRoot}/code-pushup.config.ts",
+        "onlyPlugins": ["axe"],
+        "persist": {
+          "outputDir": ".code-pushup/{projectName}"
         }
       }
     },
@@ -309,6 +287,13 @@
       "options": {
         "packageRoot": "{projectRoot}/dist",
         "registry": "https://registry.npmjs.org/"
+      }
+    },
+    "validate-cp-targets": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "node tools/scripts/validate-cp-targets.mjs"
       }
     }
   },
@@ -344,7 +329,75 @@
     "releaseTagPattern": "v{version}"
   },
   "plugins": [
-    "@code-pushup/nx-plugin",
+    {
+      "plugin": "@code-pushup/nx-plugin",
+      "options": {
+        "targetName": "code-pushup"
+      },
+      "exclude": ["tools/**", "testing/**", "examples/**"]
+    },
+    {
+      "plugin": "@code-pushup/nx-plugin",
+      "options": {
+        "targetName": "code-pushup-coverage"
+      },
+      "exclude": ["tools/**", "testing/**", "examples/**"]
+    },
+    {
+      "plugin": "@code-pushup/nx-plugin",
+      "options": {
+        "targetName": "code-pushup-eslint"
+      },
+      "exclude": ["testing/**", "examples/**"]
+    },
+    {
+      "plugin": "@code-pushup/nx-plugin",
+      "options": {
+        "targetName": "code-pushup-typescript"
+      },
+      "exclude": [
+        "packages/models/**",
+        "packages/plugin-lighthouse",
+        "packages/plugin-js-packages",
+        "tools/**",
+        "testing/**",
+        "examples/**"
+      ]
+    },
+    {
+      "plugin": "@code-pushup/nx-plugin",
+      "options": {
+        "targetName": "code-pushup-jsdocs"
+      },
+      "exclude": [
+        "packages/models",
+        "packages/plugin-lighthouse",
+        "tools/**",
+        "testing/**",
+        "examples/**"
+      ]
+    },
+    {
+      "plugin": "@code-pushup/nx-plugin",
+      "options": {
+        "targetName": "code-pushup-js-packages"
+      },
+      "exclude": ["packages/**", "tools/**", "testing/**", "examples/**"]
+    },
+    {
+      "plugin": "@code-pushup/nx-plugin",
+      "options": {
+        "targetName": "code-pushup-lighthouse"
+      },
+      "exclude": ["packages/**", "tools/**", "testing/**", "examples/**"]
+    },
+    {
+      "plugin": "@code-pushup/nx-plugin",
+      "options": {
+        "targetName": "code-pushup-axe"
+      },
+      "exclude": ["packages/**", "tools/**", "testing/**", "examples/**"]
+    },
     {
       "plugin": "@push-based/nx-verdaccio",
       "options": {
