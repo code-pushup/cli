@@ -9,6 +9,7 @@
       "!{projectRoot}/CHANGELOG.md",
       "!{projectRoot}/perf/**/*",
       "!{projectRoot}/tools/**/*",
+      "!{projectRoot}/zod2md.config.ts",
       "!{projectRoot}/eslint.config.?(c)js",
       "!{workspaceRoot}/**/.code-pushup/**/*",
       "!{projectRoot}/code-pushup.config.?(m)[jt]s",
