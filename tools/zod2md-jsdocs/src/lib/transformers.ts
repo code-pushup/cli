@@ -57,4 +57,5 @@ export function annotateTypeDefinitions(
       tsLib.visitNode(sourceFile, visitor, tsLib.isSourceFile);
   };
 }
-export default annotateTypeDefinitions;
+
+export { annotateTypeDefinitions as default };
