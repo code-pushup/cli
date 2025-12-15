@@ -15,7 +15,7 @@ Why should you use this plugin?
 // nx.json
 {
   //...
-  "plugins": ["./tools/zod2md-jsdocs-nx-plugin/src/lib/plugin.js"],
+  "plugins": ["./tools/zod2md-jsdocs-nx-plugin/src/lib/plugin.ts"],
 }
 ```
 
