@@ -8,19 +8,19 @@ import {
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess } from '@code-pushup/utils';
-import type { ESLintTarget } from './config.js';
-import { eslintConfigFromNxProject } from './nx/find-project-without-deps.js';
+import type { ESLintTarget } from '../config.js';
 import {
   eslintConfigFromAllNxProjects,
+  eslintConfigFromNxProject,
   eslintConfigFromNxProjectAndDeps,
-} from './nx/index.js';
+} from './nx.js';
 
 type Project = 'cli' | 'core' | 'nx-plugin' | 'utils';
 
 // skipping tests on Windows due to a problem with createProjectGraphAsync that hangs forever, issue seems to be connected to nested git or some other Nx graph related problem https://github.com/nrwl/nx/issues/27494#issuecomment-2633836688
 describe.skipIf(process.platform === 'win32')('Nx helpers', () => {
   const thisDir = fileURLToPath(path.dirname(import.meta.url));
-  const fixturesDir = path.join(thisDir, '..', '..', 'mocks', 'fixtures');
+  const fixturesDir = path.join(thisDir, '..', '..', '..', 'mocks', 'fixtures');
   const tmpDir = path.join(process.cwd(), 'tmp', 'int', 'plugin-eslint');
   let cwdSpy: MockInstance<[], string>;
 
