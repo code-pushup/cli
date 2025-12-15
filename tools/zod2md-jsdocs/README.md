@@ -17,7 +17,7 @@ Add the plugin to your `nx.json`:
 
 ```jsonc
 {
-  "plugins": ["./tools/zod2md-jsdocs/src/lib/plugin.js"],
+  "plugins": ["./tools/zod2md-jsdocs/src/nx-plugin.ts"],
 }
 ```
 
