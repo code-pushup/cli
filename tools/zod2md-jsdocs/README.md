@@ -37,7 +37,7 @@ Create a `zod2md.config.ts` in your project, and you'll automatically get a `gen
       {
         "transform": "./tools/zod2md-jsdocs/dist/src",
         "afterDeclarations": true,
-        "baseUrl": "https://example.com/docs/api-reference.md"
+        "baseUrl": "https://github.com/code-pushup/cli/blob/main/packages/<PROJECT-NAME>/docs/models-reference.md"
       }
     ]
   }
