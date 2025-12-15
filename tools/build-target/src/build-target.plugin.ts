@@ -15,7 +15,7 @@ export function createBuildTargetConfig(): TargetConfiguration {
       outputPath: '{projectRoot}/dist',
       main: '{projectRoot}/src/index.ts',
       tsConfig: `{projectRoot}/${TSCONFIG_LIB_FILE}`,
-      assets: ['{projectRoot}/*.md'],
+      assets: ['{projectRoot}/*.md', '{projectRoot}/bin/*'],
     },
   };
 }

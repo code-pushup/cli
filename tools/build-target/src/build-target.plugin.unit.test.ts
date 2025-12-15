@@ -13,7 +13,7 @@ describe('createBuildTargetConfig', () => {
         outputPath: '{projectRoot}/dist',
         main: '{projectRoot}/src/index.ts',
         tsConfig: `{projectRoot}/tsconfig.lib.json`,
-        assets: ['{projectRoot}/*.md'],
+        assets: ['{projectRoot}/*.md', '{projectRoot}/bin/*'],
       },
     });
   });
