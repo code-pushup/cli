@@ -5,7 +5,7 @@ import {
   logger,
   truncateIssueMessage,
 } from '@code-pushup/utils';
-import { ruleIdToSlug } from '../meta/index.js';
+import { ruleIdToSlug } from '../meta/list.js';
 import type { LinterOutput } from './types.js';
 
 type LintIssue = Linter.LintMessage & {

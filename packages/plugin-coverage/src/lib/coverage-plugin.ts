@@ -1,6 +1,4 @@
 import { createRequire } from 'node:module';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import {
   type Audit,
   type Group,
@@ -13,7 +11,7 @@ import {
   type CoverageType,
   coveragePluginConfigSchema,
 } from './config.js';
-import { createRunnerConfig } from './runner/index.js';
+import { createRunnerFunction } from './runner/runner.js';
 import { coverageDescription, coverageTypeWeightMapper } from './utils.js';
 
 /**
@@ -60,12 +58,6 @@ export async function coveragePlugin(
     })),
   };
 
-  const runnerScriptPath = path.join(
-    fileURLToPath(path.dirname(import.meta.url)),
-    '..',
-    'bin.js',
-  );
-
   const packageJson = createRequire(import.meta.url)(
     '../../package.json',
   ) as typeof import('../../package.json');
@@ -82,7 +74,7 @@ export async function coveragePlugin(
     version: packageJson.version,
     audits,
     groups: [group],
-    runner: await createRunnerConfig(runnerScriptPath, coverageConfig),
+    runner: createRunnerFunction(coverageConfig),
     ...(scoreTargets && { scoreTargets }),
   };
 }

@@ -8,8 +8,8 @@ import {
 } from '@code-pushup/models';
 import { logger } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
-import { createRunnerFunction } from './index.js';
 import * as lintModule from './lint.js';
+import { createRunnerFunction } from './runner.js';
 import type { LinterOutput } from './types.js';
 import * as utilsFileModule from './utils.js';
 

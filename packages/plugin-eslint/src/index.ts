@@ -10,4 +10,4 @@ export {
   eslintConfigFromNxProject,
   eslintConfigFromNxProjectAndDeps,
   eslintConfigFromNxProjects,
-} from './lib/nx/index.js';
+} from './lib/nx/nx.js';
