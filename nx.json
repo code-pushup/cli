@@ -344,7 +344,7 @@
     "releaseTagPattern": "v{version}"
   },
   "plugins": [
-    "./tools/zod2md-jsdocs/src/nx-plugin.cjs",
+    "./tools/zod2md-jsdocs/src/nx-plugin.ts",
     {
       "plugin": "@push-based/nx-verdaccio",
       "options": {
