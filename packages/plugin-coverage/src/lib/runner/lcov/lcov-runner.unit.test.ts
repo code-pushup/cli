@@ -145,7 +145,7 @@ end_of_record
     ]);
 
     expect(logger.warn).toHaveBeenCalledWith(
-      `Empty lcov report file detected at ${path.join(
+      `Empty LCOV report file detected at ${path.join(
         'coverage',
         'lcov.info',
       )}.`,

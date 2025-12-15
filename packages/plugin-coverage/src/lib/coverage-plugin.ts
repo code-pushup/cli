@@ -5,14 +5,14 @@ import {
   type PluginConfig,
   validate,
 } from '@code-pushup/models';
-import { capitalize, logger, pluralizeToken } from '@code-pushup/utils';
+import { logger, pluralizeToken } from '@code-pushup/utils';
 import {
   type CoveragePluginConfig,
   type CoverageType,
   coveragePluginConfigSchema,
 } from './config.js';
 import { COVERAGE_PLUGIN_SLUG, COVERAGE_PLUGIN_TITLE } from './constants.js';
-import { formatMetaLog } from './format.js';
+import { formatMetaLog, typeToAuditSlug, typeToAuditTitle } from './format.js';
 import { createRunnerFunction } from './runner/runner.js';
 import { coverageDescription, coverageTypeWeightMapper } from './utils.js';
 
@@ -41,8 +41,8 @@ export async function coveragePlugin(
 
   const audits = coverageConfig.coverageTypes.map(
     (type): Audit => ({
-      slug: `${type}-coverage`,
-      title: `${capitalize(type)} coverage`,
+      slug: typeToAuditSlug(type),
+      title: typeToAuditTitle(type),
       description: coverageDescription[type],
     }),
   );

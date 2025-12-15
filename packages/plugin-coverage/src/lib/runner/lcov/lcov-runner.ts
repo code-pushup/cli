@@ -1,17 +1,22 @@
 import path from 'node:path';
 import type { LCOVRecord } from 'parse-lcov';
-import type { AuditOutputs } from '@code-pushup/models';
+import type { AuditOutputs, TableColumnObject } from '@code-pushup/models';
 import {
   type FileCoverage,
+  capitalize,
   exists,
+  formatAsciiTable,
   getGitRoot,
   logger,
   objectFromEntries,
   objectToEntries,
+  pluralize,
+  pluralizeToken,
   readTextFile,
   toUnixNewlines,
 } from '@code-pushup/utils';
 import type { CoverageResult, CoverageType } from '../../config.js';
+import { ALL_COVERAGE_TYPES } from '../../constants.js';
 import { mergeLcovResults } from './merge-lcov.js';
 import { parseLcov } from './parse-lcov.js';
 import {
@@ -37,6 +42,7 @@ export async function lcovResultsToAuditOutputs(
 
   // Merge multiple coverage reports for the same file
   const mergedResults = mergeLcovResults(lcovResults);
+  logMergedRecords({ before: lcovResults.length, after: mergedResults.length });
 
   // Calculate code coverage from all coverage results
   const totalCoverageStats = groupLcovRecordsByCoverageType(
@@ -65,37 +71,45 @@ export async function lcovResultsToAuditOutputs(
 export async function parseLcovFiles(
   results: CoverageResult[],
 ): Promise<LCOVRecord[]> {
-  const parsedResults = (
-    await Promise.all(
-      results.map(async result => {
-        const resultsPath =
-          typeof result === 'string' ? result : result.resultsPath;
-        const lcovFileContent = await readTextFile(resultsPath);
-        if (lcovFileContent.trim() === '') {
-          logger.warn(`Empty lcov report file detected at ${resultsPath}.`);
-        }
-        const parsedRecords = parseLcov(toUnixNewlines(lcovFileContent));
-        return parsedRecords.map(
-          (record): LCOVRecord => ({
-            title: record.title,
-            file:
-              typeof result === 'string' || result.pathToProject == null
-                ? record.file
-                : path.join(result.pathToProject, record.file),
-            functions: patchInvalidStats(record, 'functions'),
-            branches: patchInvalidStats(record, 'branches'),
-            lines: patchInvalidStats(record, 'lines'),
-          }),
-        );
-      }),
-    )
-  ).flat();
+  const recordsPerReport = Object.fromEntries(
+    await Promise.all(results.map(parseLcovFile)),
+  );
 
-  if (parsedResults.length === 0) {
+  logLcovRecords(recordsPerReport);
+
+  const allRecords = Object.values(recordsPerReport).flat();
+  if (allRecords.length === 0) {
     throw new Error('All provided coverage results are empty.');
   }
 
-  return parsedResults;
+  return allRecords;
+}
+
+async function parseLcovFile(
+  result: CoverageResult,
+): Promise<[string, LCOVRecord[]]> {
+  const resultsPath = typeof result === 'string' ? result : result.resultsPath;
+  const lcovFileContent = await readTextFile(resultsPath);
+  if (lcovFileContent.trim() === '') {
+    logger.warn(`Empty LCOV report file detected at ${resultsPath}.`);
+  }
+  const parsedRecords = parseLcov(toUnixNewlines(lcovFileContent));
+  logger.debug(`Parsed LCOV report file at ${resultsPath}`);
+  return [
+    resultsPath,
+    parsedRecords.map(
+      (record): LCOVRecord => ({
+        title: record.title,
+        file:
+          typeof result === 'string' || result.pathToProject == null
+            ? record.file
+            : path.join(result.pathToProject, record.file),
+        functions: patchInvalidStats(record, 'functions'),
+        branches: patchInvalidStats(record, 'branches'),
+        lines: patchInvalidStats(record, 'lines'),
+      }),
+    ),
+  ];
 }
 
 /**
@@ -124,7 +138,7 @@ function patchInvalidStats<T extends 'branches' | 'functions' | 'lines'>(
  */
 function groupLcovRecordsByCoverageType<T extends CoverageType>(
   records: LCOVRecord[],
-  coverageTypes: T[],
+  coverageTypes: readonly T[],
 ): Partial<Record<T, FileCoverage[]>> {
   return records.reduce<Partial<Record<T, FileCoverage[]>>>(
     (acc, record) =>
@@ -144,7 +158,7 @@ function groupLcovRecordsByCoverageType<T extends CoverageType>(
  */
 function getCoverageStatsFromLcovRecord<T extends CoverageType>(
   record: LCOVRecord,
-  coverageTypes: T[],
+  coverageTypes: readonly T[],
 ): Record<T, FileCoverage> {
   return objectFromEntries(
     coverageTypes.map(coverageType => [
@@ -152,4 +166,81 @@ function getCoverageStatsFromLcovRecord<T extends CoverageType>(
       recordToStatFunctionMapper[coverageType](record),
     ]),
   );
+}
+
+function logLcovRecords(recordsPerReport: Record<string, LCOVRecord[]>): void {
+  const reportsCount = Object.keys(recordsPerReport).length;
+  const sourceFilesCount = new Set(
+    Object.values(recordsPerReport)
+      .flat()
+      .map(record => record.file),
+  ).size;
+  logger.info(
+    `Parsed ${pluralizeToken('LCOV report', reportsCount)}, coverage collected from ${pluralizeToken('source file', sourceFilesCount)}`,
+  );
+
+  if (!logger.isVerbose()) {
+    return;
+  }
+
+  logger.newline();
+  logger.debug(
+    formatAsciiTable({
+      columns: [
+        { key: 'reportPath', label: 'LCOV report', align: 'left' },
+        { key: 'filesCount', label: 'Files', align: 'right' },
+        ...ALL_COVERAGE_TYPES.map(
+          (type): TableColumnObject => ({
+            key: type,
+            label: capitalize(pluralize(type)),
+            align: 'right',
+          }),
+        ),
+      ],
+      // TODO: truncate report paths (replace shared segments with ellipsis)
+      rows: Object.entries(recordsPerReport).map(([reportPath, records]) => {
+        const groups = groupLcovRecordsByCoverageType(
+          records,
+          ALL_COVERAGE_TYPES,
+        );
+        const stats: Record<CoverageType, string> = objectFromEntries(
+          objectToEntries(groups).map(([type, files = []]) => [
+            type,
+            formatCoverageSum(files),
+          ]),
+        );
+        return { reportPath, filesCount: records.length, ...stats };
+      }),
+    }),
+  );
+  logger.newline();
+}
+
+function formatCoverageSum(files: FileCoverage[]): string {
+  const { covered, total } = files.reduce<
+    Pick<FileCoverage, 'covered' | 'total'>
+  >(
+    (acc, file) => ({
+      covered: acc.covered + file.covered,
+      total: acc.total + file.total,
+    }),
+    { covered: 0, total: 0 },
+  );
+
+  const percentage = (covered / total) * 100;
+  return `${percentage.toFixed(1)}%`;
+}
+
+function logMergedRecords(counts: { before: number; after: number }): void {
+  if (counts.before === counts.after) {
+    logger.debug(
+      counts.after === 1
+        ? 'There is only 1 LCOV record' // should be rare
+        : `All of ${pluralizeToken('LCOV record', counts.after)} have unique source files`,
+    );
+  } else {
+    logger.info(
+      `Merged ${counts.before} into ${pluralizeToken('unique LCOV record', counts.after)} per source file`,
+    );
+  }
 }
