@@ -6,6 +6,16 @@
   "targets": {
     "lint": {},
     "build": {},
-    "unit-test": {}
+    "unit-test": {},
+    "ts-patch": {
+      "command": "ts-patch install",
+      "cache": true,
+      "inputs": [
+        "sharedGlobals",
+        {
+          "runtime": "ts-patch check"
+        }
+      ]
+    }
   }
 }

@@ -1,18 +1,7 @@
 const path = require('node:path');
 
 const ZOD2MD_CONFIG_FILE = 'zod2md.config.ts';
-const TS_PATCH_TARGET_NAME = 'ts-patch';
 const GENERATE_DOCS_TARGET_NAME = 'generate-docs';
-
-/**
- * Creates the ts-patch target configuration
- * @returns {object} ts-patch target configuration
- */
-const createTsPatchTargetConfig = {
-  command: 'ts-patch install',
-  cache: true,
-  inputs: ['sharedGlobals', { runtime: 'ts-patch check' }],
-};
 
 /**
  * Creates the docs generation target configuration
@@ -56,9 +45,6 @@ const createNodesV2 = [
           projects: {
             [normalizedProjectRoot]: {
               targets: {
-                ...(jsDocsTypesAugmentation
-                  ? { [TS_PATCH_TARGET_NAME]: createTsPatchTargetConfig }
-                  : {}),
                 [docsTargetName]: createDocsTargetConfig({
                   config,
                   output,
