@@ -1,6 +1,6 @@
 import { pluginConfigSchema } from '@code-pushup/models';
 import { eslintPlugin } from './eslint-plugin.js';
-import * as metaModule from './meta/index.js';
+import * as metaModule from './meta/list.js';
 
 describe('eslintPlugin', () => {
   const listAuditsAndGroupsSpy = vi.spyOn(metaModule, 'listAuditsAndGroups');
