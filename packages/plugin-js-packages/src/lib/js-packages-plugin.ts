@@ -9,7 +9,7 @@ import {
 } from './config.js';
 import { dependencyDocs, dependencyGroupWeights } from './constants.js';
 import { packageManagers } from './package-managers/package-managers.js';
-import { createRunnerFunction } from './runner/index.js';
+import { createRunnerFunction } from './runner/runner.js';
 import { normalizeConfig } from './utils.js';
 
 /**
