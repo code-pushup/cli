@@ -1,8 +1,9 @@
+import { PLUGIN_NAME } from './plugin/constants.js';
 import { createNodes, createNodesV2 } from './plugin/index.js';
 
 // default export for nx.json#plugins
 const plugin = {
-  name: '@code-pushup/nx-plugin',
+  name: PLUGIN_NAME,
   createNodesV2,
   // Keep for backwards compatibility with Nx < 21
   createNodes,
