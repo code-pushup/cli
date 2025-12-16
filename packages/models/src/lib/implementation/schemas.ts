@@ -71,10 +71,10 @@ export const urlSchema = z.string().url().meta({ title: 'URL' });
 export const docsUrlSchema = z
   .union([
     z.literal(''),
-    // eslint-disable-next-line unicorn/prefer-top-level-await
     z
       .string()
       .url()
+      // eslint-disable-next-line unicorn/prefer-top-level-await
       .catch(error => {
         // if only URL validation fails, supress error since this metadata is optional anyway
         if (
