@@ -7,8 +7,8 @@ import {
   eslintPluginOptionsSchema,
 } from './config.js';
 import { ESLINT_PLUGIN_SLUG, ESLINT_PLUGIN_TITLE } from './constants.js';
-import { listAuditsAndGroups } from './meta/index.js';
-import { createRunnerFunction } from './runner/index.js';
+import { listAuditsAndGroups } from './meta/list.js';
+import { createRunnerFunction } from './runner/runner.js';
 
 /**
  * Instantiates Code PushUp ESLint plugin for use in core config.

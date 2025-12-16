@@ -65,6 +65,7 @@ export async function generateWorkspaceAndProject(
 export function registerPluginInWorkspace(
   tree: Tree,
   configuration: PluginConfiguration,
+  pluginConfig?: Record<string, unknown>,
 ) {
   const normalizedPluginConfiguration =
     typeof configuration === 'string'
@@ -72,9 +73,21 @@ export function registerPluginInWorkspace(
           plugin: configuration,
         }
       : configuration;
+
+  const pluginName =
+    typeof configuration === 'string' ? configuration : configuration.plugin;
+
   updateJson(tree, 'nx.json', (json: NxJsonConfiguration) => ({
     ...json,
     plugins: [...(json.plugins ?? []), normalizedPluginConfiguration],
+    ...(pluginConfig
+      ? {
+          pluginsConfig: {
+            ...json.pluginsConfig,
+            [pluginName]: pluginConfig,
+          },
+        }
+      : {}),
   }));
 }
 

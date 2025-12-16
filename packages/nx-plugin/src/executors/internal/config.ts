@@ -50,15 +50,11 @@ export function uploadConfig(
 
   const { projectPrefix, server, apiKey, organization, project, timeout } =
     options;
-  const applyPrefix = workspaceRoot === '.';
-  const prefix = projectPrefix ? `${projectPrefix}-` : '';
+  const applyPrefix = workspaceRoot !== '.';
+  const prefix = projectPrefix && applyPrefix ? `${projectPrefix}-` : '';
 
   const derivedProject =
-    projectName && !project
-      ? applyPrefix
-        ? `${prefix}${projectName}`
-        : projectName
-      : project;
+    projectName && !project ? `${prefix}${projectName}` : project;
 
   return {
     ...parseEnv(process.env),
