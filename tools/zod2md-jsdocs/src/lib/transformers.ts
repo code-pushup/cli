@@ -1,5 +1,7 @@
 import type { PluginConfig, TransformerExtras } from 'ts-patch';
 import type * as ts from 'typescript';
+
+/* eslint-disable-next-line no-duplicate-imports */
 import tsInstance from 'typescript';
 
 /**

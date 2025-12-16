@@ -4,10 +4,10 @@ import * as path from 'node:path';
 const ZOD2MD_CONFIG_FILE = 'zod2md.config.ts';
 const GENERATE_DOCS_TARGET_NAME = 'generate-docs';
 
-interface DocsTargetConfigParams {
+type DocsTargetConfigParams = {
   config: string;
   output: string;
-}
+};
 
 function createDocsTargetConfig({
   config,
@@ -30,8 +30,8 @@ function createDocsTargetConfig({
 
 const createNodesV2: CreateNodesV2 = [
   `**/${ZOD2MD_CONFIG_FILE}`,
-  async configFilePaths => {
-    return Promise.all(
+  async configFilePaths =>
+    Promise.all(
       configFilePaths.map(async configFilePath => {
         const projectRoot = path.dirname(configFilePath);
         const normalizedProjectRoot = projectRoot === '.' ? '' : projectRoot;
@@ -54,8 +54,7 @@ const createNodesV2: CreateNodesV2 = [
           },
         ] as const;
       }),
-    );
-  },
+    ),
 ];
 
 const nxPlugin: NxPlugin = {
@@ -63,4 +62,4 @@ const nxPlugin: NxPlugin = {
   createNodesV2,
 };
 
-module.exports = nxPlugin;
+export default nxPlugin;

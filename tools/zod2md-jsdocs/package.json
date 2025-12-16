@@ -6,7 +6,8 @@
   "main": "./src/index.js",
   "dependencies": {
     "typescript": "^5.5.4",
-    "ts-patch": "^3.3.0"
+    "ts-patch": "^3.3.0",
+    "@nx/devkit": "21.6.9"
   },
   "files": [
     "src"

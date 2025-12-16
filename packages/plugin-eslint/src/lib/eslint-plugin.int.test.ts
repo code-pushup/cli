@@ -130,7 +130,12 @@ describe('eslintPlugin', () => {
           groups: [{ slug: 'type-safety', title: 'Type safety', rules: [] }],
         },
       ),
-    ).rejects.toThrow('Invalid input');
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`
+      [SchemaValidationError: Invalid [1mESLintPluginOptions[22m
+      ✖ Custom group rules must contain at least 1 element
+        → at groups[0].rules
+      ]
+    `);
     await expect(
       eslintPlugin(
         {
@@ -141,7 +146,12 @@ describe('eslintPlugin', () => {
           groups: [{ slug: 'type-safety', title: 'Type safety', rules: {} }],
         },
       ),
-    ).rejects.toThrow('Invalid input');
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`
+      [SchemaValidationError: Invalid [1mESLintPluginOptions[22m
+      ✖ Custom group rules must contain at least 1 element
+        → at groups[0].rules
+      ]
+    `);
   });
 
   it('should throw when invalid parameters provided', async () => {
