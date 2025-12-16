@@ -63,6 +63,7 @@ describe('pluralize', () => {
     ['error', 'errors'],
     ['category', 'categories'],
     ['status', 'statuses'],
+    ['branch', 'branches'],
   ])('should pluralize "%s" as "%s"', (singular, plural) => {
     expect(pluralize(singular)).toBe(plural);
   });
