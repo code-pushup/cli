@@ -333,6 +333,39 @@ describe('uploadConfig', () => {
         },
         { workspaceRoot: 'workspaceRoot', projectName: 'my-app' },
       ),
-    ).toEqual(expect.objectContaining({ project: 'my-app2' }));
+    ).toStrictEqual(expect.objectContaining({ project: 'my-app2' }));
+  });
+
+  it('should apply projectPrefix when workspaceRoot is not "."', () => {
+    expect(
+      uploadConfig(
+        {
+          ...baseUploadConfig,
+          projectPrefix: 'cli',
+        },
+        { workspaceRoot: 'workspace-root', projectName: 'models' },
+      ),
+    ).toStrictEqual(expect.objectContaining({ project: 'cli-models' }));
+  });
+
+  it('should NOT apply projectPrefix when workspaceRoot is "."', () => {
+    expect(
+      uploadConfig(
+        {
+          ...baseUploadConfig,
+          projectPrefix: 'cli',
+        },
+        { workspaceRoot: '.', projectName: 'models' },
+      ),
+    ).toStrictEqual(expect.objectContaining({ project: 'models' }));
+  });
+
+  it('should NOT apply projectPrefix when projectPrefix is not provided', () => {
+    expect(
+      uploadConfig(baseUploadConfig, {
+        workspaceRoot: 'workspace-root',
+        projectName: 'models',
+      }),
+    ).toStrictEqual(expect.objectContaining({ project: 'models' }));
   });
 });

@@ -7,6 +7,7 @@ import type {
   CreateNodesV2,
 } from '@nx/devkit';
 import { PROJECT_JSON_FILE_NAME } from '../internal/constants.js';
+import { PLUGIN_NAME } from './constants.js';
 import { createTargets } from './target/targets.js';
 import type { CreateNodesOptions } from './types.js';
 import {
@@ -15,6 +16,9 @@ import {
 } from './utils.js';
 
 // name has to be "createNodes" to get picked up by Nx <v20
+/**
+ *  @deprecated
+ */
 export const createNodes: CreateNodes = [
   `**/${PROJECT_JSON_FILE_NAME}`,
   async (
@@ -23,10 +27,14 @@ export const createNodes: CreateNodes = [
     context: CreateNodesContext,
   ): Promise<CreateNodesResult> => {
     const parsedCreateNodesOptions = createNodesOptions as CreateNodesOptions;
+    const pluginsConfig =
+      context.nxJsonConfiguration.pluginsConfig?.[PLUGIN_NAME] ?? {};
+    const mergedOptions = { ...pluginsConfig, ...parsedCreateNodesOptions };
+
     const normalizedContext = await normalizedCreateNodesContext(
       context,
       projectConfigurationFile,
-      parsedCreateNodesOptions,
+      mergedOptions,
     );
 
     return {
@@ -47,13 +55,16 @@ export const createNodesV2: CreateNodesV2<CreateNodesOptions> = [
     context: CreateNodesContextV2,
   ): Promise<CreateNodesResultV2> => {
     const parsedCreateNodesOptions = createNodesOptions as CreateNodesOptions;
+    const { pluginsConfig = {} } = context.nxJsonConfiguration;
+    const pluginsConfigObj = pluginsConfig[PLUGIN_NAME] ?? {};
+    const mergedOptions = { ...pluginsConfigObj, ...parsedCreateNodesOptions };
 
     return await Promise.all(
       projectConfigurationFiles.map(async projectConfigurationFile => {
         const normalizedContext = await normalizedCreateNodesV2Context(
           context,
           projectConfigurationFile,
-          parsedCreateNodesOptions,
+          mergedOptions,
         );
 
         const result: CreateNodesResult = {
