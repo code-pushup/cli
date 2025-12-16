@@ -43,6 +43,7 @@ export {
   readJsonFile,
   readTextFile,
   removeDirectoryIfExists,
+  truncatePaths,
   type CrawlFileSystemOptions,
 } from './lib/file-system.js';
 export { filterItemRefsBy } from './lib/filter.js';
