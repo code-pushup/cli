@@ -14,6 +14,7 @@ import {
   pluralizeToken,
   readTextFile,
   toUnixNewlines,
+  truncatePaths,
 } from '@code-pushup/utils';
 import type { CoverageResult, CoverageType } from '../../config.js';
 import { ALL_COVERAGE_TYPES } from '../../constants.js';
@@ -169,7 +170,8 @@ function getCoverageStatsFromLcovRecord<T extends CoverageType>(
 }
 
 function logLcovRecords(recordsPerReport: Record<string, LCOVRecord[]>): void {
-  const reportsCount = Object.keys(recordsPerReport).length;
+  const reportPaths = Object.keys(recordsPerReport);
+  const reportsCount = reportPaths.length;
   const sourceFilesCount = new Set(
     Object.values(recordsPerReport)
       .flat()
@@ -183,11 +185,13 @@ function logLcovRecords(recordsPerReport: Record<string, LCOVRecord[]>): void {
     return;
   }
 
+  const truncatedPaths = truncatePaths(reportPaths);
+
   logger.newline();
   logger.debug(
     formatAsciiTable({
       columns: [
-        { key: 'reportPath', label: 'LCOV report', align: 'left' },
+        { key: 'report', label: 'LCOV report', align: 'left' },
         { key: 'filesCount', label: 'Files', align: 'right' },
         ...ALL_COVERAGE_TYPES.map(
           (type): TableColumnObject => ({
@@ -197,20 +201,22 @@ function logLcovRecords(recordsPerReport: Record<string, LCOVRecord[]>): void {
           }),
         ),
       ],
-      // TODO: truncate report paths (replace shared segments with ellipsis)
-      rows: Object.entries(recordsPerReport).map(([reportPath, records]) => {
-        const groups = groupLcovRecordsByCoverageType(
-          records,
-          ALL_COVERAGE_TYPES,
-        );
-        const stats: Record<CoverageType, string> = objectFromEntries(
-          objectToEntries(groups).map(([type, files = []]) => [
-            type,
-            formatCoverageSum(files),
-          ]),
-        );
-        return { reportPath, filesCount: records.length, ...stats };
-      }),
+      rows: Object.entries(recordsPerReport).map(
+        ([reportPath, records], idx) => {
+          const groups = groupLcovRecordsByCoverageType(
+            records,
+            ALL_COVERAGE_TYPES,
+          );
+          const stats: Record<CoverageType, string> = objectFromEntries(
+            objectToEntries(groups).map(([type, files = []]) => [
+              type,
+              formatCoverageSum(files),
+            ]),
+          );
+          const report = truncatedPaths[idx] ?? reportPath;
+          return { report, filesCount: records.length, ...stats };
+        },
+      ),
     }),
   );
   logger.newline();
@@ -226,6 +232,10 @@ function formatCoverageSum(files: FileCoverage[]): string {
     }),
     { covered: 0, total: 0 },
   );
+
+  if (total === 0) {
+    return 'n/a';
+  }
 
   const percentage = (covered / total) * 100;
   return `${percentage.toFixed(1)}%`;
