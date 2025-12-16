@@ -68,25 +68,27 @@ export const descriptionSchema = z
 export const urlSchema = z.string().url().meta({ title: 'URL' });
 
 /**  Schema for a docsUrl */
-export const docsUrlSchema = urlSchema
+export const docsUrlSchema = z
+  .union([
+    z.literal(''),
+    // eslint-disable-next-line unicorn/prefer-top-level-await
+    z
+      .string()
+      .url()
+      .catch(error => {
+        // if only URL validation fails, supress error since this metadata is optional anyway
+        if (
+          error.issues.length === 1 &&
+          error.issues[0]?.code === 'invalid_format' &&
+          (error.issues[0] as ZodIssue & { format?: string }).format === 'url'
+        ) {
+          console.warn(`Ignoring invalid docsUrl: ${error.value}`);
+          return '';
+        }
+        throw new ZodError(error.error.issues);
+      }),
+  ])
   .optional()
-  .or(z.literal('')) // allow empty string (no URL validation)
-  // eslint-disable-next-line unicorn/prefer-top-level-await, unicorn/catch-error-name
-  .catch(ctx => {
-    // if only URL validation fails, supress error since this metadata is optional anyway
-    if (
-      ctx.issues.length === 1 &&
-      (ctx.issues[0]?.errors as ZodIssue[][])
-        .flat()
-        .some(
-          error => error.code === 'invalid_format' && error.format === 'url',
-        )
-    ) {
-      console.warn(`Ignoring invalid docsUrl: ${ctx.value}`);
-      return '';
-    }
-    throw new ZodError(ctx.error.issues);
-  })
   .meta({ title: 'DocsUrl', description: 'Documentation site' });
 
 /** Schema for a title of a plugin, category and audit */
