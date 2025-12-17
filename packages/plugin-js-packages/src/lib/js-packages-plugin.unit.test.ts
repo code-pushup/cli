@@ -23,7 +23,7 @@ describe('jsPackagesPlugin', () => {
     await expect(jsPackagesPlugin()).resolves.toStrictEqual(
       expect.objectContaining({
         slug: 'js-packages',
-        title: 'JS Packages',
+        title: 'JS packages',
         audits: expect.arrayContaining([
           expect.objectContaining({ slug: 'npm-audit-prod' }),
           expect.objectContaining({ slug: 'npm-audit-dev' }),
@@ -49,7 +49,7 @@ describe('jsPackagesPlugin', () => {
     ).resolves.toStrictEqual(
       expect.objectContaining({
         slug: 'js-packages',
-        title: 'JS Packages',
+        title: 'JS packages',
         audits: expect.any(Array),
         groups: expect.any(Array),
         runner: expect.any(Function),

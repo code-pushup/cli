@@ -23,7 +23,7 @@ describe('normalizeConfig', () => {
   });
 
   it('should throw if no package manager is detected', async () => {
-    await expect(normalizeConfig()).rejects.toThrow(
+    await expect(normalizeConfig(undefined)).rejects.toThrow(
       'Could not detect package manager. Please provide it in the js-packages plugin config.',
     );
   });
@@ -36,7 +36,7 @@ describe('normalizeConfig', () => {
         packageManager: expect.objectContaining({
           slug: 'npm',
           command: 'npm',
-          name: 'NPM',
+          name: 'npm',
         }),
       }),
     );
@@ -64,7 +64,7 @@ describe('normalizeConfig', () => {
         packageManager: expect.objectContaining({
           slug: 'yarn-modern',
           command: 'yarn',
-          name: 'yarn-modern',
+          name: 'Yarn v2+',
         }),
       }),
     );

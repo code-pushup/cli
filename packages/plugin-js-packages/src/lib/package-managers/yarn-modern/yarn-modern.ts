@@ -13,7 +13,7 @@ const yarnModernEnvironmentOptions: Record<DependencyGroup, string> = {
 
 export const yarnModernPackageManager: PackageManager = {
   slug: 'yarn-modern',
-  name: 'yarn-modern',
+  name: 'Yarn v2+',
   command: 'yarn',
   icon: 'yarn',
   docs: {
