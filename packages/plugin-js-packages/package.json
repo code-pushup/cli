@@ -39,6 +39,7 @@
   "dependencies": {
     "@code-pushup/models": "0.97.0",
     "@code-pushup/utils": "0.97.0",
+    "ansis": "^3.3.2",
     "build-md": "^0.4.1",
     "semver": "^7.6.0",
     "zod": "^4.0.5"
