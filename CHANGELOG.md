@@ -1,3 +1,13 @@
+## 0.98.0 (2025-12-17)
+
+### 🚀 Features
+
+- **plugin-js-packages:** log initializer and runner steps ([1b8bbd2e](https://github.com/code-pushup/cli/commit/1b8bbd2e))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.97.0 (2025-12-17)
 
 ### 🚀 Features
