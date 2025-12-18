@@ -13,7 +13,7 @@ const npmDependencyOptions: Record<DependencyGroup, string[]> = {
 
 export const npmPackageManager: PackageManager = {
   slug: 'npm',
-  name: 'NPM',
+  name: 'npm',
   command: 'npm',
   icon: 'npm',
   docs: {

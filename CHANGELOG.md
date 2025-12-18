@@ -1,3 +1,39 @@
+## 0.99.0 (2025-12-18)
+
+### 🚀 Features
+
+- **plugin-typescript:** log initializer and runner steps ([53384e0a](https://github.com/code-pushup/cli/commit/53384e0a))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.98.0 (2025-12-17)
+
+### 🚀 Features
+
+- **plugin-js-packages:** log initializer and runner steps ([1b8bbd2e](https://github.com/code-pushup/cli/commit/1b8bbd2e))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.97.0 (2025-12-17)
+
+### 🚀 Features
+
+- **plugin-coverage:** log initializer and nx helper steps ([2eb0cc82](https://github.com/code-pushup/cli/commit/2eb0cc82))
+- **plugin-coverage:** log runner steps and statistics ([639a4471](https://github.com/code-pushup/cli/commit/639a4471))
+- **utils:** truncate paths with shared prefix and/or suffix ([5f10cf9c](https://github.com/code-pushup/cli/commit/5f10cf9c))
+
+### 🩹 Fixes
+
+- **utils:** handle suffixes like -ch and -sh in pluralize helper ([f680f5e1](https://github.com/code-pushup/cli/commit/f680f5e1))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.96.1 (2025-12-11)
 
 ### 🩹 Fixes
