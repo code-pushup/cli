@@ -4,7 +4,11 @@ import {
   type SourceFile,
 } from 'typescript';
 import { beforeEach, describe, expect } from 'vitest';
-import { auditOutputsSchema } from '@code-pushup/models';
+import {
+  DEFAULT_PERSIST_CONFIG,
+  type RunnerArgs,
+  auditOutputsSchema,
+} from '@code-pushup/models';
 import { createRunnerFunction } from './runner.js';
 import * as runnerModule from './ts-runner.js';
 import * as utilsModule from './utils.js';
@@ -19,6 +23,8 @@ describe('createRunnerFunction', () => {
     utilsModule,
     'getIssueFromDiagnostic',
   );
+
+  const runnerArgs: RunnerArgs = { persist: DEFAULT_PERSIST_CONFIG };
 
   const semanticTsCode = 2322;
   const mockSemanticDiagnostic = {
@@ -47,51 +53,51 @@ describe('createRunnerFunction', () => {
     getTypeScriptDiagnosticsSpy.mockReset();
   });
 
-  it('should return empty array if no diagnostics are found', async () => {
-    getTypeScriptDiagnosticsSpy.mockResolvedValue([]);
+  it('should return empty array if no diagnostics are found', () => {
+    getTypeScriptDiagnosticsSpy.mockReturnValue([]);
     const runner = createRunnerFunction({
       tsconfig: 'tsconfig.json',
       expectedAudits: [],
     });
-    await expect(runner(() => void 0)).resolves.toStrictEqual([]);
+    expect(runner(runnerArgs)).toStrictEqual([]);
   });
 
-  it('should return empty array if no supported diagnostics are found', async () => {
-    getTypeScriptDiagnosticsSpy.mockResolvedValue([mockSemanticDiagnostic]);
+  it('should return empty array if no supported diagnostics are found', () => {
+    getTypeScriptDiagnosticsSpy.mockReturnValue([mockSemanticDiagnostic]);
     const runner = createRunnerFunction({
       tsconfig: 'tsconfig.json',
       expectedAudits: [],
     });
-    await expect(runner(() => void 0)).resolves.toStrictEqual([]);
+    expect(runner(runnerArgs)).toStrictEqual([]);
   });
 
-  it('should pass the diagnostic code to tsCodeToSlug', async () => {
-    getTypeScriptDiagnosticsSpy.mockResolvedValue([mockSemanticDiagnostic]);
+  it('should pass the diagnostic code to tsCodeToSlug', () => {
+    getTypeScriptDiagnosticsSpy.mockReturnValue([mockSemanticDiagnostic]);
     const runner = createRunnerFunction({
       tsconfig: 'tsconfig.json',
       expectedAudits: [],
     });
-    await expect(runner(() => void 0)).resolves.toStrictEqual([]);
+    expect(runner(runnerArgs)).toStrictEqual([]);
     expect(tSCodeToAuditSlugSpy).toHaveBeenCalledTimes(1);
     expect(tSCodeToAuditSlugSpy).toHaveBeenCalledWith(semanticTsCode);
   });
 
-  it('should pass the diagnostic to getIssueFromDiagnostic', async () => {
-    getTypeScriptDiagnosticsSpy.mockResolvedValue([mockSemanticDiagnostic]);
+  it('should pass the diagnostic to getIssueFromDiagnostic', () => {
+    getTypeScriptDiagnosticsSpy.mockReturnValue([mockSemanticDiagnostic]);
     const runner = createRunnerFunction({
       tsconfig: 'tsconfig.json',
       expectedAudits: [],
     });
-    await expect(runner(() => void 0)).resolves.toStrictEqual([]);
+    expect(runner(runnerArgs)).toStrictEqual([]);
     expect(getIssueFromDiagnosticSpy).toHaveBeenCalledTimes(1);
     expect(getIssueFromDiagnosticSpy).toHaveBeenCalledWith(
       mockSemanticDiagnostic,
     );
   });
 
-  it('should return multiple issues per audit', async () => {
+  it('should return multiple issues per audit', () => {
     const code = 2222;
-    getTypeScriptDiagnosticsSpy.mockResolvedValue([
+    getTypeScriptDiagnosticsSpy.mockReturnValue([
       mockSemanticDiagnostic,
       {
         ...mockSemanticDiagnostic,
@@ -104,7 +110,7 @@ describe('createRunnerFunction', () => {
       expectedAudits: [{ slug: 'semantic-errors' }],
     });
 
-    const auditOutputs = await runner(() => void 0);
+    const auditOutputs = runner(runnerArgs);
     expect(auditOutputs).toStrictEqual([
       {
         slug: 'semantic-errors',
@@ -126,8 +132,8 @@ describe('createRunnerFunction', () => {
     expect(() => auditOutputsSchema.parse(auditOutputs)).not.toThrow();
   });
 
-  it('should return multiple audits', async () => {
-    getTypeScriptDiagnosticsSpy.mockResolvedValue([
+  it('should return multiple audits', () => {
+    getTypeScriptDiagnosticsSpy.mockReturnValue([
       mockSyntacticDiagnostic,
       mockSemanticDiagnostic,
     ]);
@@ -136,7 +142,7 @@ describe('createRunnerFunction', () => {
       expectedAudits: [{ slug: 'semantic-errors' }, { slug: 'syntax-errors' }],
     });
 
-    const auditOutputs = await runner(() => void 0);
+    const auditOutputs = runner(runnerArgs);
     expect(auditOutputs).toStrictEqual([
       expect.objectContaining({
         slug: 'semantic-errors',
@@ -159,8 +165,8 @@ describe('createRunnerFunction', () => {
     ]);
   });
 
-  it('should return valid AuditOutput shape', async () => {
-    getTypeScriptDiagnosticsSpy.mockResolvedValue([
+  it('should return valid AuditOutput shape', () => {
+    getTypeScriptDiagnosticsSpy.mockReturnValue([
       mockSyntacticDiagnostic,
       {
         ...mockSyntacticDiagnostic,
@@ -178,7 +184,7 @@ describe('createRunnerFunction', () => {
       tsconfig: 'tsconfig.json',
       expectedAudits: [{ slug: 'semantic-errors' }, { slug: 'syntax-errors' }],
     });
-    const auditOutputs = await runner(() => void 0);
+    const auditOutputs = runner(runnerArgs);
     expect(() => auditOutputsSchema.parse(auditOutputs)).not.toThrow();
   });
 });
