@@ -1,3 +1,13 @@
+## 0.99.0 (2025-12-18)
+
+### 🚀 Features
+
+- **plugin-typescript:** log initializer and runner steps ([53384e0a](https://github.com/code-pushup/cli/commit/53384e0a))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.98.0 (2025-12-17)
 
 ### 🚀 Features
