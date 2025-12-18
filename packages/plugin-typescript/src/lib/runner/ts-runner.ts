@@ -3,23 +3,30 @@ import {
   createProgram,
   getPreEmitDiagnostics,
 } from 'typescript';
-import { stringifyError } from '@code-pushup/utils';
+import { logger, pluralizeToken, stringifyError } from '@code-pushup/utils';
 import { loadTargetConfig } from './utils.js';
 
 export type DiagnosticsOptions = {
   tsconfig: string;
 };
 
-export async function getTypeScriptDiagnostics({
+export function getTypeScriptDiagnostics({
   tsconfig,
-}: DiagnosticsOptions): Promise<readonly Diagnostic[]> {
+}: DiagnosticsOptions): readonly Diagnostic[] {
   const { fileNames, options } = loadTargetConfig(tsconfig);
+  logger.info(
+    `Parsed TypeScript config file ${tsconfig}, program includes ${pluralizeToken('file', fileNames.length)}`,
+  );
   try {
     const program = createProgram(fileNames, options);
-    return getPreEmitDiagnostics(program);
+    const diagnostics = getPreEmitDiagnostics(program);
+    logger.info(
+      `TypeScript compiler found ${pluralizeToken('diagnostic', diagnostics.length)}`,
+    );
+    return diagnostics;
   } catch (error) {
     throw new Error(
-      `Can't create TS program in getDiagnostics. \n ${stringifyError(error)}`,
+      `Can't create TS program and get diagnostics.\n${stringifyError(error)}`,
     );
   }
 }

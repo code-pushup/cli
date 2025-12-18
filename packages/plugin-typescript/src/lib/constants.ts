@@ -4,6 +4,8 @@ import { TS_CODE_RANGE_NAMES } from './runner/ts-error-codes.js';
 import type { AuditSlug } from './types.js';
 
 export const TYPESCRIPT_PLUGIN_SLUG = 'typescript';
+export const TYPESCRIPT_PLUGIN_TITLE = 'TypeScript';
+
 export const DEFAULT_TS_CONFIG = 'tsconfig.json';
 
 const AUDIT_DESCRIPTIONS: Record<AuditSlug, string> = {

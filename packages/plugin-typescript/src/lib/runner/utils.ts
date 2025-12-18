@@ -14,7 +14,7 @@ import type { CodeRangeName } from './types.js';
 
 /**
  * Transform the TypeScript error code to the audit slug.
- * @param code - The TypeScript error code.
+ * @param code The TypeScript error code.
  * @returns The audit slug.
  * @throws Error if the code is not supported.
  */
@@ -31,7 +31,7 @@ export function tsCodeToAuditSlug(code: number): CodeRangeName {
  * - ts.DiagnosticCategory.Error (2)
  * - ts.DiagnosticCategory.Suggestion (3)
  * - ts.DiagnosticCategory.Message (4)
- * @param category - The TypeScript diagnostic category.
+ * @param category The TypeScript diagnostic category.
  * @returns The severity of the issue.
  */
 export function getSeverity(category: DiagnosticCategory): Issue['severity'] {
@@ -47,7 +47,7 @@ export function getSeverity(category: DiagnosticCategory): Issue['severity'] {
 
 /**
  * Format issue message from the TypeScript diagnostic.
- * @param diag - The TypeScript diagnostic.
+ * @param diag The TypeScript diagnostic.
  * @returns The issue message.
  */
 export function getMessage(diag: Diagnostic): string {
@@ -60,7 +60,7 @@ export function getMessage(diag: Diagnostic): string {
 
 /**
  * Get the issue from the TypeScript diagnostic.
- * @param diag - The TypeScript diagnostic.
+ * @param diag The TypeScript diagnostic.
  * @returns The issue.
  * @throws Error if the diagnostic is global (e.g., invalid compiler option).
  */
@@ -84,13 +84,7 @@ export function getIssueFromDiagnostic(diag: Diagnostic) {
     ...issue,
     source: {
       file: path.relative(process.cwd(), diag.file.fileName),
-      ...(startLine
-        ? {
-            position: {
-              startLine,
-            },
-          }
-        : {}),
+      ...(startLine ? { position: { startLine } } : {}),
     },
   } satisfies Issue;
 }
