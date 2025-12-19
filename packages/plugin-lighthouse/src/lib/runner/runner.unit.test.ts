@@ -1,4 +1,3 @@
-import ansis from 'ansis';
 import type { Config } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
@@ -52,6 +51,7 @@ vi.mock('lighthouse/cli/run.js', async () => {
                   score: 0.9,
                 } satisfies Result,
               },
+              categories: {},
             },
           },
   );
@@ -177,7 +177,7 @@ describe('createRunnerFunction', () => {
   it('should continue with other URLs when one fails in multiple URL scenario', async () => {
     const runner = createRunnerFunction([
       'https://localhost:8080',
-      'fail',
+      'http://fail.com',
       'https://localhost:8082',
     ]);
 
@@ -199,7 +199,7 @@ describe('createRunnerFunction', () => {
     );
 
     expect(logger.warn).toHaveBeenCalledWith(
-      `Lighthouse did not produce a result for URL: ${ansis.blueBright('fail')}`,
+      'Lighthouse run failed for http://fail.com - Lighthouse did not produce a result',
     );
   });
 

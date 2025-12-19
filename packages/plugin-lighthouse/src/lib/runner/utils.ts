@@ -22,7 +22,7 @@ import type { LighthouseOptions } from '../types.js';
 import { logUnsupportedDetails, toAuditDetails } from './details/details.js';
 import type { LighthouseCliFlags } from './types.js';
 
-export function normalizeAuditOutputs(
+export function filterAuditOutputs(
   auditOutputs: AuditOutputs,
   flags: LighthouseOptions = { skipAudits: [] },
 ): AuditOutputs {
@@ -33,7 +33,7 @@ export function normalizeAuditOutputs(
 export class LighthouseAuditParsingError extends Error {
   constructor(slug: string, error: unknown) {
     super(
-      `\nAudit ${ansis.bold(slug)} failed parsing details: \n${stringifyError(error)}`,
+      `Failed to parse ${ansis.bold(slug)} audit's details - ${stringifyError(error)}`,
     );
   }
 }
@@ -99,6 +99,7 @@ export type LighthouseLogLevel =
   | 'silent'
   | 'warn'
   | undefined;
+
 export function determineAndSetLogLevel({
   verbose,
   quiet,
@@ -127,31 +128,52 @@ export type ConfigOptions = Partial<
 export async function getConfig(
   options: ConfigOptions = {},
 ): Promise<Config | undefined> {
-  const { configPath: filepath, preset } = options;
+  const { configPath, preset } = options;
 
-  if (filepath != null) {
-    if (filepath.endsWith('.json')) {
-      // Resolve the config file path relative to where cli was called.
-      return readJsonFile<Config>(filepath);
-    } else if (/\.(ts|js|mjs)$/.test(filepath)) {
-      return importModule<Config>({ filepath, format: 'esm' });
+  if (configPath != null) {
+    // Resolve the config file path relative to where cli was called.
+    return logger.task(
+      `Loading lighthouse config from ${configPath}`,
+      async () => {
+        const message = `Loaded lighthouse config from ${configPath}`;
+        if (configPath.endsWith('.json')) {
+          return { message, result: await readJsonFile<Config>(configPath) };
+        }
+        if (/\.(ts|js|mjs)$/.test(configPath)) {
+          return {
+            message,
+            result: await importModule<Config>({
+              filepath: configPath,
+              format: 'esm',
+            }),
+          };
+        }
+        throw new Error(
+          `Unknown Lighthouse config file extension in ${configPath}`,
+        );
+      },
+    );
+  }
+
+  if (preset != null) {
+    const supportedPresets: Record<
+      NonNullable<LighthouseCliFlags['preset']>,
+      Config
+    > = {
+      desktop: desktopConfig,
+      perf: perfConfig,
+      experimental: experimentalConfig,
+    };
+    // in reality, the preset could be a string not included in the type definition
+    const config: Config | undefined = supportedPresets[preset];
+    if (config) {
+      logger.info(`Loaded config from ${ansis.bold(preset)} preset`);
+      return config;
     } else {
-      logger.warn(`Format of file ${filepath} not supported`);
-    }
-  } else if (preset != null) {
-    switch (preset) {
-      case 'desktop':
-        return desktopConfig;
-      case 'perf':
-        return perfConfig as Config;
-      case 'experimental':
-        return experimentalConfig as Config;
-      default:
-        // as preset is a string literal the default case here is normally caught by TS and not possible to happen. Now in reality it can happen and preset could be a string not included in the literal.
-        // Therefore, we have to use `as string`. Otherwise, it will consider preset as type never
-        logger.warn(`Preset "${preset as string}" is not supported`);
+      logger.warn(`Preset "${preset}" is not supported`);
     }
   }
+
   return undefined;
 }
 
@@ -190,10 +212,12 @@ export function withLocalTmpDir<T>(fn: () => Promise<T>): () => Promise<T> {
 
   return async () => {
     const originalTmpDir = process.env['TEMP'];
+    const localPath = path.join(pluginWorkDir(LIGHTHOUSE_PLUGIN_SLUG), 'tmp');
+
     // eslint-disable-next-line functional/immutable-data
-    process.env['TEMP'] = path.join(
-      pluginWorkDir(LIGHTHOUSE_PLUGIN_SLUG),
-      'tmp',
+    process.env['TEMP'] = localPath;
+    logger.debug(
+      `Temporarily overwriting TEMP environment variable with ${localPath} to prevent permissions error on cleanup`,
     );
 
     try {
@@ -201,6 +225,9 @@ export function withLocalTmpDir<T>(fn: () => Promise<T>): () => Promise<T> {
     } finally {
       // eslint-disable-next-line functional/immutable-data
       process.env['TEMP'] = originalTmpDir;
+      logger.debug(
+        `Restored TEMP environment variable to original value ${originalTmpDir}`,
+      );
     }
   };
 }
