@@ -25,9 +25,10 @@ export function lighthouseAuditRef(auditSlug: string, weight = 1): CategoryRef {
   };
 }
 
-export class AuditsNotImplementedError extends Error {
-  constructor(auditSlugs: string[]) {
-    super(`audits: "${auditSlugs.join(', ')}" not implemented`);
+export class NotImplementedError extends Error {
+  constructor(plural: string, slugs: string[]) {
+    const formattedSlugs = slugs.map(slug => `"${slug}"`).join(', ');
+    super(`${plural} not implemented: ${formattedSlugs}`);
   }
 }
 
@@ -36,15 +37,9 @@ export function validateAudits(audits: Audit[], onlyAudits: string[]): boolean {
     slug => !audits.some(audit => audit.slug === slug),
   );
   if (missingAudtis.length > 0) {
-    throw new AuditsNotImplementedError(missingAudtis);
+    throw new NotImplementedError('Audits', missingAudtis);
   }
   return true;
-}
-
-export class CategoriesNotImplementedError extends Error {
-  constructor(categorySlugs: string[]) {
-    super(`categories: "${categorySlugs.join(', ')}" not implemented`);
-  }
 }
 
 export function validateOnlyCategories(
@@ -55,7 +50,7 @@ export function validateOnlyCategories(
     groups.every(group => group.slug !== slug),
   );
   if (missingCategories.length > 0) {
-    throw new CategoriesNotImplementedError(missingCategories);
+    throw new NotImplementedError('Categories', missingCategories);
   }
   return true;
 }
