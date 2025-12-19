@@ -567,7 +567,7 @@ exports[`PLUGIN collect report with jsdocs-plugin NPM package > should run JSDoc
       ],
       "icon": "folder-docs",
       "slug": "jsdocs",
-      "title": "JSDoc coverage",
+      "title": "JSDocs coverage",
     },
   ],
 }

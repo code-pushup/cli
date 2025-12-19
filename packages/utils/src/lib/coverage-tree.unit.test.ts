@@ -1,6 +1,10 @@
 import path from 'node:path';
 import type { CoverageTree } from '@code-pushup/models';
-import { type FileCoverage, filesCoverageToTree } from './coverage-tree.js';
+import {
+  type FileCoverage,
+  aggregateCoverageStats,
+  filesCoverageToTree,
+} from './coverage-tree.js';
 
 describe('filesCoverageToTree', () => {
   it('should convert list of files to folder structure', () => {
@@ -221,5 +225,19 @@ describe('filesCoverageToTree', () => {
         }),
       }),
     );
+  });
+});
+
+describe('aggregateCoverageStats', () => {
+  it('should sum covered and total counts from all files', () => {
+    expect(
+      aggregateCoverageStats([
+        { covered: 1, total: 5 },
+        { covered: 0, total: 3 },
+        { covered: 4, total: 4 },
+        { covered: 0, total: 0 },
+        { covered: 5, total: 8 },
+      ]),
+    ).toEqual({ covered: 10, total: 20 });
   });
 });

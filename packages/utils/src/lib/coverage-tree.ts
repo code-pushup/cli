@@ -168,3 +168,13 @@ function sortCoverageTree(root: CoverageTreeNode): CoverageTreeNode {
       ),
   };
 }
+
+export function aggregateCoverageStats(files: CoverageStats[]): CoverageStats {
+  return files.reduce<CoverageStats>(
+    (acc, file) => ({
+      covered: acc.covered + file.covered,
+      total: acc.total + file.total,
+    }),
+    { covered: 0, total: 0 },
+  );
+}
