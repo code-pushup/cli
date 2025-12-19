@@ -25,7 +25,7 @@ export function lighthouseAuditRef(auditSlug: string, weight = 1): CategoryRef {
   };
 }
 
-export class NotImplementedError extends Error {
+class NotImplementedError extends Error {
   constructor(plural: string, slugs: string[]) {
     const formattedSlugs = slugs.map(slug => `"${slug}"`).join(', ');
     super(`${plural} not implemented: ${formattedSlugs}`);
