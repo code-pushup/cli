@@ -182,3 +182,17 @@ export function pluginMetaLogFormatter(
       (line, idx) => `${idx === 0 ? prefix : padding} ${line}`,
     );
 }
+
+export function formatCoveragePercentage(stats: {
+  covered: number;
+  total: number;
+}): string {
+  const { covered, total } = stats;
+
+  if (total === 0) {
+    return '-';
+  }
+
+  const percentage = (covered / total) * 100;
+  return `${percentage.toFixed(1)}%`;
+}
