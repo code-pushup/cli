@@ -25,11 +25,7 @@
       ]
     },
     "lint": {},
-    "unit-test": {},
-    "code-pushup": {},
-    "code-pushup-eslint": {},
-    "code-pushup-coverage": {},
-    "code-pushup-jsdocs": {}
+    "unit-test": {}
   },
   "tags": ["scope:shared", "type:util", "publishable"]
 }
