@@ -1,3 +1,21 @@
+## 0.100.0 (2025-12-20)
+
+### 🚀 Features
+
+- **plugin-axe:** log initializer steps ([f226f67e](https://github.com/code-pushup/cli/commit/f226f67e))
+- **plugin-axe:** log runner steps, incl. stats and incomplete results ([0cd87769](https://github.com/code-pushup/cli/commit/0cd87769))
+- **plugin-jsdocs:** log initializer and runner steps ([18db8310](https://github.com/code-pushup/cli/commit/18db8310))
+- **plugin-lighthouse:** log initializer steps (audit/group counts, expanded, skipped) ([b868bc09](https://github.com/code-pushup/cli/commit/b868bc09))
+- **plugin-lighthouse:** log runner steps (incl. categories per url, config loading) ([e23c97e7](https://github.com/code-pushup/cli/commit/e23c97e7))
+
+### 🩹 Fixes
+
+- **utils:** break urls in ascii table differently to regular words ([964441c8](https://github.com/code-pushup/cli/commit/964441c8))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.99.0 (2025-12-18)
 
 ### 🚀 Features
