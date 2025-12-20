@@ -1,18 +1,34 @@
-import type { CreateNodesContext } from '@nx/devkit';
+import type { CreateNodesContextV2 } from '@nx/devkit';
 import { vol } from 'memfs';
-import { describe, expect } from 'vitest';
-import { invokeCreateNodesOnVirtualFiles } from '@code-pushup/test-nx-utils';
+import { afterEach, beforeEach, describe, expect } from 'vitest';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { PACKAGE_NAME, PROJECT_JSON_FILE_NAME } from '../internal/constants.js';
 import { CP_TARGET_NAME } from './constants.js';
-import { createNodes } from './plugin.js';
+import { createNodesV2 } from './plugin.js';
 
 describe('@code-pushup/nx-plugin/plugin', () => {
-  let context: CreateNodesContext;
+  let context: CreateNodesContextV2;
+  const createNodesFunction = createNodesV2[1];
+  const projectJsonPath = (projectRoot: string) =>
+    `${MEMFS_VOLUME}/${projectRoot}/${PROJECT_JSON_FILE_NAME}`;
+  const setupProject = (projectRoot: string, withConfig = true) => {
+    vol.fromJSON(
+      {
+        [`${projectRoot}/${PROJECT_JSON_FILE_NAME}`]: JSON.stringify({
+          name: '@org/empty-root',
+        }),
+        ...(withConfig
+          ? { [`${projectRoot}/code-pushup.config.ts`]: '{}' }
+          : {}),
+      },
+      MEMFS_VOLUME,
+    );
+  };
 
   beforeEach(() => {
     context = {
       nxJsonConfiguration: {},
-      workspaceRoot: '',
+      workspaceRoot: MEMFS_VOLUME,
       configFiles: [],
     };
   });
@@ -23,25 +39,23 @@ describe('@code-pushup/nx-plugin/plugin', () => {
 
   it('should normalize context and use it to create the configuration target on ROOT project', async () => {
     const projectRoot = '.';
-    const matchingFilesData = {
-      [`${projectRoot}/${PROJECT_JSON_FILE_NAME}`]: `${JSON.stringify({
-        name: '@org/empty-root',
-      })}`,
-    };
+    setupProject(projectRoot, false);
 
-    await expect(
-      invokeCreateNodesOnVirtualFiles(
-        createNodes,
-        context,
-        {},
-        { matchingFilesData },
-      ),
-    ).resolves.toStrictEqual({
-      [projectRoot]: {
-        targets: {
-          [`${CP_TARGET_NAME}--configuration`]: {
-            command: `nx g ${PACKAGE_NAME}:configuration --project="@org/empty-root"`,
-          },
+    const result = await createNodesFunction(
+      [projectJsonPath(projectRoot)],
+      {},
+      context,
+    );
+
+    expect(result).toHaveLength(1);
+    const [file, nodesResult] = result[0];
+    expect(file).toBe(projectJsonPath(projectRoot));
+    // The projectRoot in the result will be the absolute path from path.dirname()
+    const actualProjectRoot = Object.keys(nodesResult.projects)[0];
+    expect(nodesResult.projects[actualProjectRoot]).toStrictEqual({
+      targets: {
+        [`${CP_TARGET_NAME}--configuration`]: {
+          command: `nx g ${PACKAGE_NAME}:configuration --project="@org/empty-root"`,
         },
       },
     });
@@ -49,25 +63,22 @@ describe('@code-pushup/nx-plugin/plugin', () => {
 
   it('should normalize context and use it to create the configuration target on PACKAGE project', async () => {
     const projectRoot = 'apps/my-app';
-    const matchingFilesData = {
-      [`${projectRoot}/${PROJECT_JSON_FILE_NAME}`]: `${JSON.stringify({
-        name: '@org/empty-root',
-      })}`,
-    };
+    setupProject(projectRoot, false);
 
-    await expect(
-      invokeCreateNodesOnVirtualFiles(
-        createNodes,
-        context,
-        {},
-        { matchingFilesData },
-      ),
-    ).resolves.toStrictEqual({
-      [projectRoot]: {
-        targets: {
-          [`${CP_TARGET_NAME}--configuration`]: {
-            command: `nx g ${PACKAGE_NAME}:configuration --project="@org/empty-root"`,
-          },
+    const result = await createNodesFunction(
+      [projectJsonPath(projectRoot)],
+      {},
+      context,
+    );
+
+    expect(result).toHaveLength(1);
+    const [file, nodesResult] = result[0];
+    expect(file).toBe(projectJsonPath(projectRoot));
+    const actualProjectRoot = Object.keys(nodesResult.projects)[0] ?? '';
+    expect(nodesResult.projects).toHaveProperty(actualProjectRoot, {
+      targets: {
+        [`${CP_TARGET_NAME}--configuration`]: {
+          command: `nx g ${PACKAGE_NAME}:configuration --project="@org/empty-root"`,
         },
       },
     });
@@ -75,30 +86,26 @@ describe('@code-pushup/nx-plugin/plugin', () => {
 
   it('should create the executor target on ROOT project if configured', async () => {
     const projectRoot = '.';
-    const matchingFilesData = {
-      [`${projectRoot}/${PROJECT_JSON_FILE_NAME}`]: `${JSON.stringify({
-        name: '@org/empty-root',
-      })}`,
-      [`${projectRoot}/code-pushup.config.ts`]: '{}',
-    };
+    setupProject(projectRoot);
 
-    await expect(
-      invokeCreateNodesOnVirtualFiles(
-        createNodes,
-        context,
-        {
-          projectPrefix: 'cli',
-        },
-        { matchingFilesData },
-      ),
-    ).resolves.toStrictEqual({
-      [projectRoot]: {
-        targets: {
-          [CP_TARGET_NAME]: {
-            executor: `${PACKAGE_NAME}:cli`,
-            options: {
-              projectPrefix: 'cli',
-            },
+    const result = await createNodesFunction(
+      [projectJsonPath(projectRoot)],
+      {
+        projectPrefix: 'cli',
+      },
+      context,
+    );
+
+    expect(result).toHaveLength(1);
+    const [file, nodesResult] = result[0];
+    expect(file).toBe(projectJsonPath(projectRoot));
+    const actualProjectRoot = Object.keys(nodesResult.projects)[0];
+    expect(nodesResult.projects[actualProjectRoot]).toStrictEqual({
+      targets: {
+        [CP_TARGET_NAME]: {
+          executor: `${PACKAGE_NAME}:cli`,
+          options: {
+            projectPrefix: 'cli',
           },
         },
       },
@@ -107,30 +114,26 @@ describe('@code-pushup/nx-plugin/plugin', () => {
 
   it('should create the executor target on PACKAGE project if configured', async () => {
     const projectRoot = 'apps/my-app';
-    const matchingFilesData = {
-      [`${projectRoot}/${PROJECT_JSON_FILE_NAME}`]: `${JSON.stringify({
-        name: '@org/empty-root',
-      })}`,
-      [`${projectRoot}/code-pushup.config.ts`]: '{}',
-    };
+    setupProject(projectRoot);
 
-    await expect(
-      invokeCreateNodesOnVirtualFiles(
-        createNodes,
-        context,
-        {
-          projectPrefix: 'cli',
-        },
-        { matchingFilesData },
-      ),
-    ).resolves.toStrictEqual({
-      [projectRoot]: {
-        targets: {
-          [CP_TARGET_NAME]: {
-            executor: `${PACKAGE_NAME}:cli`,
-            options: {
-              projectPrefix: 'cli',
-            },
+    const result = await createNodesFunction(
+      [projectJsonPath(projectRoot)],
+      {
+        projectPrefix: 'cli',
+      },
+      context,
+    );
+
+    expect(result).toHaveLength(1);
+    const [file, nodesResult] = result[0];
+    expect(file).toBe(projectJsonPath(projectRoot));
+    const actualProjectRoot = Object.keys(nodesResult.projects)[0];
+    expect(nodesResult.projects[actualProjectRoot]).toStrictEqual({
+      targets: {
+        [CP_TARGET_NAME]: {
+          executor: `${PACKAGE_NAME}:cli`,
+          options: {
+            projectPrefix: 'cli',
           },
         },
       },

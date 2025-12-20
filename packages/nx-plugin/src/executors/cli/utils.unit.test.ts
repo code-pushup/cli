@@ -1,11 +1,25 @@
-import { type MockInstance, describe, expect, it, vi } from 'vitest';
-import { osAgnosticPath } from '@code-pushup/test-utils';
+import { readFile } from 'node:fs/promises';
+import {
+  type MockInstance,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
+import { MEMFS_VOLUME, osAgnosticPath } from '@code-pushup/test-utils';
+import { normalizedCreateNodesV2Context } from '../../plugin/utils.js';
 import type { Command } from '../internal/types.js';
 import {
   parseCliExecutorOnlyOptions,
   parseCliExecutorOptions,
   parsePrintConfigExecutorOptions,
 } from './utils.js';
+
+vi.mock('node:fs/promises', () => ({
+  readFile: vi.fn(),
+}));
 
 describe('parsePrintConfigExecutorOptions', () => {
   it('should provide NO default output path', () => {
@@ -202,4 +216,226 @@ describe('parseCliExecutorOptions', () => {
       );
     },
   );
+});
+
+describe('normalizedCreateNodesV2Context', () => {
+  const CP_TARGET_NAME = 'code-pushup';
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should normalize context with default target name', async () => {
+    const projectJsonPath = `${MEMFS_VOLUME}/libs/my-lib/project.json`;
+    const projectJsonContent = JSON.stringify({
+      name: 'my-lib',
+      root: 'libs/my-lib',
+      targets: {},
+    });
+
+    // Mock readFile
+    vi.mocked(readFile).mockResolvedValue(Buffer.from(projectJsonContent));
+
+    const context = {
+      nxJsonConfiguration: {},
+      configFiles: [],
+      workspaceRoot: MEMFS_VOLUME,
+    };
+
+    const result = await normalizedCreateNodesV2Context(
+      context,
+      projectJsonPath,
+    );
+
+    expect(result).toEqual({
+      ...context,
+      projectJson: {
+        name: 'my-lib',
+        root: 'libs/my-lib',
+        targets: {},
+      },
+      projectRoot: expect.any(String),
+      createOptions: {
+        targetName: CP_TARGET_NAME,
+      },
+    });
+    expect(osAgnosticPath(result.projectRoot)).toBe(
+      osAgnosticPath(`${MEMFS_VOLUME}/libs/my-lib`),
+    );
+
+    expect(readFile).toHaveBeenCalledWith(projectJsonPath);
+  });
+
+  it('should normalize context with custom target name', async () => {
+    const projectJsonPath = `${MEMFS_VOLUME}/libs/my-lib/project.json`;
+    const projectJsonContent = JSON.stringify({
+      name: 'my-lib',
+      root: 'libs/my-lib',
+      targets: {},
+    });
+
+    const customTargetName = 'custom-target';
+
+    // Mock readFile
+    vi.mocked(readFile).mockResolvedValue(Buffer.from(projectJsonContent));
+
+    const context = {
+      nxJsonConfiguration: {},
+      configFiles: [],
+      workspaceRoot: MEMFS_VOLUME,
+    };
+
+    const result = await normalizedCreateNodesV2Context(
+      context,
+      projectJsonPath,
+      {
+        targetName: customTargetName,
+      },
+    );
+
+    expect(result).toEqual({
+      ...context,
+      projectJson: {
+        name: 'my-lib',
+        root: 'libs/my-lib',
+        targets: {},
+      },
+      projectRoot: expect.any(String),
+      createOptions: {
+        targetName: customTargetName,
+      },
+    });
+    expect(osAgnosticPath(result.projectRoot)).toBe(
+      osAgnosticPath(`${MEMFS_VOLUME}/libs/my-lib`),
+    );
+  });
+
+  it('should extract project root from project.json path', async () => {
+    const projectJsonPath = `${MEMFS_VOLUME}/packages/utils/project.json`;
+    const projectJsonContent = JSON.stringify({
+      name: 'utils',
+      root: 'packages/utils',
+      targets: {},
+    });
+
+    // Mock readFile
+    vi.mocked(readFile).mockResolvedValue(Buffer.from(projectJsonContent));
+
+    const context = {
+      nxJsonConfiguration: {},
+      configFiles: [],
+      workspaceRoot: MEMFS_VOLUME,
+    };
+
+    const result = await normalizedCreateNodesV2Context(
+      context,
+      projectJsonPath,
+    );
+
+    expect(osAgnosticPath(result.projectRoot)).toBe(
+      osAgnosticPath(`${MEMFS_VOLUME}/packages/utils`),
+    );
+  });
+
+  it('should preserve all context properties', async () => {
+    const projectJsonPath = `${MEMFS_VOLUME}/libs/my-lib/project.json`;
+    const projectJsonContent = JSON.stringify({
+      name: 'my-lib',
+      root: 'libs/my-lib',
+      targets: {},
+    });
+
+    // Mock readFile
+    vi.mocked(readFile).mockResolvedValue(Buffer.from(projectJsonContent));
+
+    const context = {
+      nxJsonConfiguration: { namedInputs: { default: ['{projectRoot}/**/*'] } },
+      workspaceRoot: MEMFS_VOLUME,
+    };
+
+    const result = await normalizedCreateNodesV2Context(
+      context,
+      projectJsonPath,
+    );
+
+    expect(result.nxJsonConfiguration).toEqual(context.nxJsonConfiguration);
+    expect(result.workspaceRoot).toBe(context.workspaceRoot);
+    expect(result.projectJson).toBeDefined();
+    expect(result.projectRoot).toBeDefined();
+    expect(result.createOptions).toBeDefined();
+  });
+
+  it('should preserve createOptions properties', async () => {
+    const projectJsonPath = `${MEMFS_VOLUME}/libs/my-lib/project.json`;
+    const projectJsonContent = JSON.stringify({
+      name: 'my-lib',
+      root: 'libs/my-lib',
+      targets: {},
+    });
+
+    // Mock readFile
+    vi.mocked(readFile).mockResolvedValue(Buffer.from(projectJsonContent));
+
+    const context = {
+      nxJsonConfiguration: {},
+      configFiles: [],
+      workspaceRoot: MEMFS_VOLUME,
+    };
+
+    const createOptions = {
+      targetName: 'custom-target',
+      projectPrefix: 'cli',
+      bin: 'packages/cli/dist',
+    };
+
+    const result = await normalizedCreateNodesV2Context(
+      context,
+      projectJsonPath,
+      createOptions,
+    );
+
+    expect(result.createOptions).toEqual({
+      ...createOptions,
+      targetName: 'custom-target',
+    });
+  });
+
+  it('should throw error when project.json file cannot be read', async () => {
+    const projectJsonPath = `${MEMFS_VOLUME}/libs/my-lib/project.json`;
+
+    // Mock readFile to throw error
+    vi.mocked(readFile).mockRejectedValue(new Error('File not found'));
+
+    const context = {
+      nxJsonConfiguration: {},
+      configFiles: [],
+      workspaceRoot: MEMFS_VOLUME,
+    };
+
+    await expect(
+      normalizedCreateNodesV2Context(context, projectJsonPath),
+    ).rejects.toThrow(`Error parsing project.json file ${projectJsonPath}.`);
+  });
+
+  it('should throw error when project.json contains invalid JSON', async () => {
+    const projectJsonPath = `${MEMFS_VOLUME}/libs/my-lib/project.json`;
+    const invalidJson = '{ invalid json }';
+
+    // Mock readFile
+    vi.mocked(readFile).mockResolvedValue(Buffer.from(invalidJson));
+
+    const context = {
+      nxJsonConfiguration: {},
+      configFiles: [],
+      workspaceRoot: MEMFS_VOLUME,
+    };
+
+    await expect(
+      normalizedCreateNodesV2Context(context, projectJsonPath),
+    ).rejects.toThrow(`Error parsing project.json file ${projectJsonPath}.`);
+  });
 });
