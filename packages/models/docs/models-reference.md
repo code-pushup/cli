@@ -29,9 +29,9 @@ _Object containing the following properties:_
 | :----------------------- | :----------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`slug`** (\*)          | Unique ID (human-readable, URL-safe) | [Slug](#slug)                                                                                                                                                                                                                                                                                         |
 | **`title`** (\*)         | Descriptive name                     | `string` (_max length: 256_)                                                                                                                                                                                                                                                                          |
-| `docsUrl`                | Documentation site                   | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                                               |
+| `docsUrl`                | Documentation site                   | `''` _or_ `string` (_url_)                                                                                                                                                                                                                                                                            |
 | **`scores`** (\*)        | Score comparison                     | _Object with properties:_<ul><li>**`before`** (\*): [Score](#score) - Value between 0 and 1 (source commit)</li><li>**`after`** (\*): [Score](#score) - Value between 0 and 1 (target commit)</li><li>**`diff`** (\*): `number` (_≥-1, ≤1_) - Score change (`scores.after - scores.before`)</li></ul> |
-| **`plugin`** (\*)        | Plugin which defines it              | _Object with properties:_<ul><li>**`slug`** (\*): [Slug](#slug) - Unique plugin slug within core config</li><li>**`title`** (\*): `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `string` (_url_) (_optional_) _or_ `''` - Plugin documentation site</li></ul>                    |
+| **`plugin`** (\*)        | Plugin which defines it              | _Object with properties:_<ul><li>**`slug`** (\*): [Slug](#slug) - Unique plugin slug within core config</li><li>**`title`** (\*): `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `''` _or_ `string` (_url_) - Plugin documentation site</li></ul>                                 |
 | **`values`** (\*)        | Audit `value` comparison             | _Object with properties:_<ul><li>**`before`** (\*): `number` (_≥0_) - Raw numeric value (source commit)</li><li>**`after`** (\*): `number` (_≥0_) - Raw numeric value (target commit)</li><li>**`diff`** (\*): `number` - Value change (`values.after - values.before`)</li></ul>                     |
 | **`displayValues`** (\*) | Audit `displayValue` comparison      | _Object with properties:_<ul><li>`before`: `string` - Formatted value (e.g. '0.9 s', '2.1 MB') (source commit)</li><li>`after`: `string` - Formatted value (e.g. '0.9 s', '2.1 MB') (target commit)</li></ul>                                                                                         |
 
@@ -64,18 +64,18 @@ _Array of [AuditOutput](#auditoutput) items._
 
 _Object containing the following properties:_
 
-| Property         | Description                              | Type                                    |
-| :--------------- | :--------------------------------------- | :-------------------------------------- |
-| **`slug`** (\*)  | Reference to audit                       | [Slug](#slug)                           |
-| **`title`** (\*) | Descriptive name                         | `string` (_max length: 256_)            |
-| `description`    | Description (markdown)                   | `string` (_max length: 65536_)          |
-| `docsUrl`        | Link to documentation (rationale)        | `string` (_url_) (_optional_) _or_ `''` |
-| `isSkipped`      | Indicates whether the audit is skipped   | `boolean`                               |
-| `displayValue`   | Formatted value (e.g. '0.9 s', '2.1 MB') | `string`                                |
-| **`value`** (\*) | Raw numeric value                        | `number` (_≥0_)                         |
-| **`score`** (\*) | Value between 0 and 1                    | [Score](#score)                         |
-| `scoreTarget`    | Pass/fail score threshold (0-1)          | `number` (_≥0, ≤1_)                     |
-| `details`        | Detailed information                     | [AuditDetails](#auditdetails)           |
+| Property         | Description                              | Type                           |
+| :--------------- | :--------------------------------------- | :----------------------------- |
+| **`slug`** (\*)  | Reference to audit                       | [Slug](#slug)                  |
+| **`title`** (\*) | Descriptive name                         | `string` (_max length: 256_)   |
+| `description`    | Description (markdown)                   | `string` (_max length: 65536_) |
+| `docsUrl`        | Link to documentation (rationale)        | `''` _or_ `string` (_url_)     |
+| `isSkipped`      | Indicates whether the audit is skipped   | `boolean`                      |
+| `displayValue`   | Formatted value (e.g. '0.9 s', '2.1 MB') | `string`                       |
+| **`value`** (\*) | Raw numeric value                        | `number` (_≥0_)                |
+| **`score`** (\*) | Value between 0 and 1                    | [Score](#score)                |
+| `scoreTarget`    | Pass/fail score threshold (0-1)          | `number` (_≥0, ≤1_)            |
+| `details`        | Detailed information                     | [AuditDetails](#auditdetails)  |
 
 _(\*) Required._
 
@@ -83,15 +83,15 @@ _(\*) Required._
 
 _Object containing the following properties:_
 
-| Property          | Description                              | Type                                                                                                                                                                                                                                                                               |
-| :---------------- | :--------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`slug`** (\*)   | Unique ID (human-readable, URL-safe)     | [Slug](#slug)                                                                                                                                                                                                                                                                      |
-| **`title`** (\*)  | Descriptive name                         | `string` (_max length: 256_)                                                                                                                                                                                                                                                       |
-| `docsUrl`         | Documentation site                       | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                            |
-| **`plugin`** (\*) | Plugin which defines it                  | _Object with properties:_<ul><li>**`slug`** (\*): [Slug](#slug) - Unique plugin slug within core config</li><li>**`title`** (\*): `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `string` (_url_) (_optional_) _or_ `''` - Plugin documentation site</li></ul> |
-| **`score`** (\*)  | Value between 0 and 1                    | [Score](#score)                                                                                                                                                                                                                                                                    |
-| **`value`** (\*)  | Raw numeric value                        | `number` (_≥0_)                                                                                                                                                                                                                                                                    |
-| `displayValue`    | Formatted value (e.g. '0.9 s', '2.1 MB') | `string`                                                                                                                                                                                                                                                                           |
+| Property          | Description                              | Type                                                                                                                                                                                                                                                                  |
+| :---------------- | :--------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`slug`** (\*)   | Unique ID (human-readable, URL-safe)     | [Slug](#slug)                                                                                                                                                                                                                                                         |
+| **`title`** (\*)  | Descriptive name                         | `string` (_max length: 256_)                                                                                                                                                                                                                                          |
+| `docsUrl`         | Documentation site                       | `''` _or_ `string` (_url_)                                                                                                                                                                                                                                            |
+| **`plugin`** (\*) | Plugin which defines it                  | _Object with properties:_<ul><li>**`slug`** (\*): [Slug](#slug) - Unique plugin slug within core config</li><li>**`title`** (\*): `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `''` _or_ `string` (_url_) - Plugin documentation site</li></ul> |
+| **`score`** (\*)  | Value between 0 and 1                    | [Score](#score)                                                                                                                                                                                                                                                       |
+| **`value`** (\*)  | Raw numeric value                        | `number` (_≥0_)                                                                                                                                                                                                                                                       |
+| `displayValue`    | Formatted value (e.g. '0.9 s', '2.1 MB') | `string`                                                                                                                                                                                                                                                              |
 
 _(\*) Required._
 
@@ -99,13 +99,13 @@ _(\*) Required._
 
 _Object containing the following properties:_
 
-| Property         | Description                            | Type                                    |
-| :--------------- | :------------------------------------- | :-------------------------------------- |
-| **`slug`** (\*)  | ID (unique within plugin)              | [Slug](#slug)                           |
-| **`title`** (\*) | Descriptive name                       | `string` (_max length: 256_)            |
-| `description`    | Description (markdown)                 | `string` (_max length: 65536_)          |
-| `docsUrl`        | Link to documentation (rationale)      | `string` (_url_) (_optional_) _or_ `''` |
-| `isSkipped`      | Indicates whether the audit is skipped | `boolean`                               |
+| Property         | Description                            | Type                           |
+| :--------------- | :------------------------------------- | :----------------------------- |
+| **`slug`** (\*)  | ID (unique within plugin)              | [Slug](#slug)                  |
+| **`title`** (\*) | Descriptive name                       | `string` (_max length: 256_)   |
+| `description`    | Description (markdown)                 | `string` (_max length: 65536_) |
+| `docsUrl`        | Link to documentation (rationale)      | `''` _or_ `string` (_url_)     |
+| `isSkipped`      | Indicates whether the audit is skipped | `boolean`                      |
 
 _(\*) Required._
 
@@ -175,7 +175,7 @@ _Object containing the following properties:_
 | **`refs`** (\*)  |                                              | _Array of at least 1 [CategoryRef](#categoryref) items_ |
 | **`title`** (\*) | Category Title                               | `string` (_max length: 256_)                            |
 | `description`    | Category description                         | `string` (_max length: 65536_)                          |
-| `docsUrl`        | Category docs URL                            | `string` (_url_) (_optional_) _or_ `''`                 |
+| `docsUrl`        | Category docs URL                            | `''` _or_ `string` (_url_)                              |
 | `isSkipped`      |                                              | `boolean`                                               |
 | `scoreTarget`    | Pass/fail score threshold (0-1)              | `number` (_≥0, ≤1_)                                     |
 
@@ -189,7 +189,7 @@ _Object containing the following properties:_
 | :---------------- | :----------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`slug`** (\*)   | Unique ID (human-readable, URL-safe) | [Slug](#slug)                                                                                                                                                                                                                                                                                         |
 | **`title`** (\*)  | Descriptive name                     | `string` (_max length: 256_)                                                                                                                                                                                                                                                                          |
-| `docsUrl`         | Documentation site                   | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                                               |
+| `docsUrl`         | Documentation site                   | `''` _or_ `string` (_url_)                                                                                                                                                                                                                                                                            |
 | **`scores`** (\*) | Score comparison                     | _Object with properties:_<ul><li>**`before`** (\*): [Score](#score) - Value between 0 and 1 (source commit)</li><li>**`after`** (\*): [Score](#score) - Value between 0 and 1 (target commit)</li><li>**`diff`** (\*): `number` (_≥-1, ≤1_) - Score change (`scores.after - scores.before`)</li></ul> |
 
 _(\*) Required._
@@ -211,12 +211,12 @@ _(\*) Required._
 
 _Object containing the following properties:_
 
-| Property         | Description                          | Type                                    |
-| :--------------- | :----------------------------------- | :-------------------------------------- |
-| **`slug`** (\*)  | Unique ID (human-readable, URL-safe) | [Slug](#slug)                           |
-| **`title`** (\*) | Descriptive name                     | `string` (_max length: 256_)            |
-| `docsUrl`        | Documentation site                   | `string` (_url_) (_optional_) _or_ `''` |
-| **`score`** (\*) | Value between 0 and 1                | [Score](#score)                         |
+| Property         | Description                          | Type                         |
+| :--------------- | :----------------------------------- | :--------------------------- |
+| **`slug`** (\*)  | Unique ID (human-readable, URL-safe) | [Slug](#slug)                |
+| **`title`** (\*) | Descriptive name                     | `string` (_max length: 256_) |
+| `docsUrl`        | Documentation site                   | `''` _or_ `string` (_url_)   |
+| **`score`** (\*) | Value between 0 and 1                | [Score](#score)              |
 
 _(\*) Required._
 
@@ -320,9 +320,9 @@ _Object containing the following properties:_
 | :---------------- | :----------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`slug`** (\*)   | Unique ID (human-readable, URL-safe) | [Slug](#slug)                                                                                                                                                                                                                                                                                         |
 | **`title`** (\*)  | Descriptive name                     | `string` (_max length: 256_)                                                                                                                                                                                                                                                                          |
-| `docsUrl`         | Documentation site                   | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                                               |
+| `docsUrl`         | Documentation site                   | `''` _or_ `string` (_url_)                                                                                                                                                                                                                                                                            |
 | **`scores`** (\*) | Score comparison                     | _Object with properties:_<ul><li>**`before`** (\*): [Score](#score) - Value between 0 and 1 (source commit)</li><li>**`after`** (\*): [Score](#score) - Value between 0 and 1 (target commit)</li><li>**`diff`** (\*): `number` (_≥-1, ≤1_) - Score change (`scores.after - scores.before`)</li></ul> |
-| **`plugin`** (\*) | Plugin which defines it              | _Object with properties:_<ul><li>**`slug`** (\*): [Slug](#slug) - Unique plugin slug within core config</li><li>**`title`** (\*): `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `string` (_url_) (_optional_) _or_ `''` - Plugin documentation site</li></ul>                    |
+| **`plugin`** (\*) | Plugin which defines it              | _Object with properties:_<ul><li>**`slug`** (\*): [Slug](#slug) - Unique plugin slug within core config</li><li>**`title`** (\*): `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `''` _or_ `string` (_url_) - Plugin documentation site</li></ul>                                 |
 
 _(\*) Required._
 
@@ -343,13 +343,13 @@ _(\*) Required._
 
 _Object containing the following properties:_
 
-| Property          | Description                          | Type                                                                                                                                                                                                                                                                               |
-| :---------------- | :----------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`slug`** (\*)   | Unique ID (human-readable, URL-safe) | [Slug](#slug)                                                                                                                                                                                                                                                                      |
-| **`title`** (\*)  | Descriptive name                     | `string` (_max length: 256_)                                                                                                                                                                                                                                                       |
-| `docsUrl`         | Documentation site                   | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                            |
-| **`plugin`** (\*) | Plugin which defines it              | _Object with properties:_<ul><li>**`slug`** (\*): [Slug](#slug) - Unique plugin slug within core config</li><li>**`title`** (\*): `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `string` (_url_) (_optional_) _or_ `''` - Plugin documentation site</li></ul> |
-| **`score`** (\*)  | Value between 0 and 1                | [Score](#score)                                                                                                                                                                                                                                                                    |
+| Property          | Description                          | Type                                                                                                                                                                                                                                                                  |
+| :---------------- | :----------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`slug`** (\*)   | Unique ID (human-readable, URL-safe) | [Slug](#slug)                                                                                                                                                                                                                                                         |
+| **`title`** (\*)  | Descriptive name                     | `string` (_max length: 256_)                                                                                                                                                                                                                                          |
+| `docsUrl`         | Documentation site                   | `''` _or_ `string` (_url_)                                                                                                                                                                                                                                            |
+| **`plugin`** (\*) | Plugin which defines it              | _Object with properties:_<ul><li>**`slug`** (\*): [Slug](#slug) - Unique plugin slug within core config</li><li>**`title`** (\*): `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `''` _or_ `string` (_url_) - Plugin documentation site</li></ul> |
+| **`score`** (\*)  | Value between 0 and 1                | [Score](#score)                                                                                                                                                                                                                                                       |
 
 _(\*) Required._
 
@@ -363,7 +363,7 @@ _Object containing the following properties:_
 | **`refs`** (\*)  |                                              | _Array of at least 1 [GroupRef](#groupref) items_ |
 | **`title`** (\*) | Descriptive name for the group               | `string` (_max length: 256_)                      |
 | `description`    | Description of the group (markdown)          | `string` (_max length: 65536_)                    |
-| `docsUrl`        | Group documentation site                     | `string` (_url_) (_optional_) _or_ `''`           |
+| `docsUrl`        | Group documentation site                     | `''` _or_ `string` (_url_)                        |
 | `isSkipped`      | Indicates whether the group is skipped       | `boolean`                                         |
 
 _(\*) Required._
@@ -1296,7 +1296,7 @@ _Object containing the following properties:_
 | `version`         | NPM version of the package                                                                                       | `string`                                                             |
 | **`title`** (\*)  | Descriptive name                                                                                                 | `string` (_max length: 256_)                                         |
 | `description`     | Description (markdown)                                                                                           | `string` (_max length: 65536_)                                       |
-| `docsUrl`         | Plugin documentation site                                                                                        | `string` (_url_) (_optional_) _or_ `''`                              |
+| `docsUrl`         | Plugin documentation site                                                                                        | `''` _or_ `string` (_url_)                                           |
 | `isSkipped`       |                                                                                                                  | `boolean`                                                            |
 | **`slug`** (\*)   | Unique plugin slug within core config                                                                            | [Slug](#slug)                                                        |
 | **`icon`** (\*)   | Icon from VSCode Material Icons extension                                                                        | [MaterialIcon](#materialicon)                                        |
@@ -1322,16 +1322,16 @@ _Object record with dynamic keys:_
 
 _Object containing the following properties:_
 
-| Property         | Description                               | Type                                    |
-| :--------------- | :---------------------------------------- | :-------------------------------------- |
-| `packageName`    | NPM package name                          | `string`                                |
-| `version`        | NPM version of the package                | `string`                                |
-| **`title`** (\*) | Descriptive name                          | `string` (_max length: 256_)            |
-| `description`    | Description (markdown)                    | `string` (_max length: 65536_)          |
-| `docsUrl`        | Plugin documentation site                 | `string` (_url_) (_optional_) _or_ `''` |
-| `isSkipped`      |                                           | `boolean`                               |
-| **`slug`** (\*)  | Unique plugin slug within core config     | [Slug](#slug)                           |
-| **`icon`** (\*)  | Icon from VSCode Material Icons extension | [MaterialIcon](#materialicon)           |
+| Property         | Description                               | Type                           |
+| :--------------- | :---------------------------------------- | :----------------------------- |
+| `packageName`    | NPM package name                          | `string`                       |
+| `version`        | NPM version of the package                | `string`                       |
+| **`title`** (\*) | Descriptive name                          | `string` (_max length: 256_)   |
+| `description`    | Description (markdown)                    | `string` (_max length: 65536_) |
+| `docsUrl`        | Plugin documentation site                 | `''` _or_ `string` (_url_)     |
+| `isSkipped`      |                                           | `boolean`                      |
+| **`slug`** (\*)  | Unique plugin slug within core config     | [Slug](#slug)                  |
+| **`icon`** (\*)  | Icon from VSCode Material Icons extension | [MaterialIcon](#materialicon)  |
 
 _(\*) Required._
 
@@ -1345,7 +1345,7 @@ _Object containing the following properties:_
 | `version`           | NPM version of the package                | `string`                                                |
 | **`title`** (\*)    | Descriptive name                          | `string` (_max length: 256_)                            |
 | `description`       | Description (markdown)                    | `string` (_max length: 65536_)                          |
-| `docsUrl`           | Plugin documentation site                 | `string` (_url_) (_optional_) _or_ `''`                 |
+| `docsUrl`           | Plugin documentation site                 | `''` _or_ `string` (_url_)                              |
 | `isSkipped`         |                                           | `boolean`                                               |
 | **`slug`** (\*)     | Unique plugin slug within core config     | [Slug](#slug)                                           |
 | **`icon`** (\*)     | Icon from VSCode Material Icons extension | [MaterialIcon](#materialicon)                           |
