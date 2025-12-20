@@ -20,8 +20,8 @@ import type { LighthouseCliFlags } from './types.js';
 import {
   determineAndSetLogLevel,
   enrichFlags,
+  filterAuditOutputs,
   getConfig,
-  normalizeAuditOutputs,
   toAuditOutputs,
   withLocalTmpDir,
 } from './utils.js';
@@ -51,10 +51,10 @@ vi.mock('bundle-require', async () => {
   };
 });
 
-describe('normalizeAuditOutputs', () => {
+describe('filterAuditOutputs', () => {
   it('should filter audits listed under skipAudits', () => {
     expect(
-      normalizeAuditOutputs(
+      filterAuditOutputs(
         [
           { slug: 'largest-contentful-paint' } as AuditOutput,
           { slug: 'cumulative-layout-shifts' } as AuditOutput,
@@ -66,7 +66,7 @@ describe('normalizeAuditOutputs', () => {
 
   it('should NOT filter audits if no skipAudits are listed', () => {
     expect(
-      normalizeAuditOutputs([
+      filterAuditOutputs([
         { slug: 'largest-contentful-paint' } as AuditOutput,
         { slug: 'cumulative-layout-shifts' } as AuditOutput,
       ]),
@@ -308,7 +308,7 @@ describe('toAuditOutputs', () => {
         { verbose: true },
       ),
     ).toThrow(
-      `Audit ${ansis.bold('cumulative-layout-shift')} failed parsing details:`,
+      `Failed to parse ${ansis.bold('cumulative-layout-shift')} audit's details`,
     );
   });
 });
@@ -378,12 +378,9 @@ describe('getConfig', () => {
     );
   });
 
-  it('should return undefined and log if configPath has wrong extension', async () => {
-    await expect(
-      getConfig({ configPath: path.join('wrong.not') }),
-    ).resolves.toBeUndefined();
-    expect(logger.warn).toHaveBeenCalledWith(
-      'Format of file wrong.not not supported',
+  it('should throw if configPath has wrong extension', async () => {
+    await expect(getConfig({ configPath: 'wrong.not' })).rejects.toThrow(
+      'Unknown Lighthouse config file extension in wrong.not',
     );
   });
 });

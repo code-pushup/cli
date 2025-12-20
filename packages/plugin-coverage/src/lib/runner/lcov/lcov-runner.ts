@@ -3,9 +3,11 @@ import type { LCOVRecord } from 'parse-lcov';
 import type { AuditOutputs, TableColumnObject } from '@code-pushup/models';
 import {
   type FileCoverage,
+  aggregateCoverageStats,
   capitalize,
   exists,
   formatAsciiTable,
+  formatCoveragePercentage,
   getGitRoot,
   logger,
   objectFromEntries,
@@ -210,7 +212,7 @@ function logLcovRecords(recordsPerReport: Record<string, LCOVRecord[]>): void {
           const stats: Record<CoverageType, string> = objectFromEntries(
             objectToEntries(groups).map(([type, files = []]) => [
               type,
-              formatCoverageSum(files),
+              formatCoveragePercentage(aggregateCoverageStats(files)),
             ]),
           );
           const report = truncatedPaths[idx] ?? reportPath;
@@ -220,25 +222,6 @@ function logLcovRecords(recordsPerReport: Record<string, LCOVRecord[]>): void {
     }),
   );
   logger.newline();
-}
-
-function formatCoverageSum(files: FileCoverage[]): string {
-  const { covered, total } = files.reduce<
-    Pick<FileCoverage, 'covered' | 'total'>
-  >(
-    (acc, file) => ({
-      covered: acc.covered + file.covered,
-      total: acc.total + file.total,
-    }),
-    { covered: 0, total: 0 },
-  );
-
-  if (total === 0) {
-    return 'n/a';
-  }
-
-  const percentage = (covered / total) * 100;
-  return `${percentage.toFixed(1)}%`;
 }
 
 function logMergedRecords(counts: { before: number; after: number }): void {

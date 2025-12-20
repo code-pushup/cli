@@ -1,19 +1,21 @@
 import { describe, expect, it, vi } from 'vitest';
 import { pluginConfigSchema } from '@code-pushup/models';
-import { PLUGIN_SLUG, groups } from './constants.js';
 import {
+  GROUPS,
   PLUGIN_DESCRIPTION,
   PLUGIN_DOCS_URL,
+  PLUGIN_SLUG,
   PLUGIN_TITLE,
-  jsDocsPlugin,
-} from './jsdocs-plugin.js';
+} from './constants.js';
+import { jsDocsPlugin } from './jsdocs-plugin.js';
 import { createRunnerFunction } from './runner/runner.js';
 import {
   filterAuditsByPluginConfig,
   filterGroupsByOnlyAudits,
 } from './utils.js';
 
-vi.mock('./utils.js', () => ({
+vi.mock('./utils.js', async () => ({
+  ...(await vi.importActual('./utils.js')),
   filterAuditsByPluginConfig: vi.fn().mockReturnValue([
     {
       slug: 'mock-audit',
@@ -69,7 +71,7 @@ describe('jsDocsPlugin', () => {
     const config = { patterns: ['src/**/*.ts'] };
     jsDocsPlugin(config);
 
-    expect(filterGroupsByOnlyAudits).toHaveBeenCalledWith(groups, config);
+    expect(filterGroupsByOnlyAudits).toHaveBeenCalledWith(GROUPS, config);
   });
 
   it('should filter audits', async () => {

@@ -2,6 +2,10 @@ import type { Audit, Group } from '@code-pushup/models';
 import type { AuditSlug } from './models.js';
 
 export const PLUGIN_SLUG = 'jsdocs';
+export const PLUGIN_TITLE = 'JSDocs coverage';
+export const PLUGIN_DESCRIPTION = 'Official Code PushUp JSDoc coverage plugin.';
+export const PLUGIN_DOCS_URL =
+  'https://www.npmjs.com/package/@code-pushup/jsdocs-plugin/';
 
 export const AUDITS_MAP: Record<AuditSlug, Audit> = {
   'classes-coverage': {
@@ -46,7 +50,7 @@ export const AUDITS_MAP: Record<AuditSlug, Audit> = {
   },
 } as const;
 
-export const groups: Group[] = [
+export const GROUPS: Group[] = [
   {
     slug: 'documentation-coverage',
     title: 'Documentation coverage',

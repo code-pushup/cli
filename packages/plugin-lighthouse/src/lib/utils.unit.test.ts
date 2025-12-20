@@ -7,8 +7,6 @@ import {
   pluginConfigSchema,
 } from '@code-pushup/models';
 import {
-  AuditsNotImplementedError,
-  CategoriesNotImplementedError,
   lighthouseAuditRef,
   lighthouseGroupRef,
   markSkippedAuditsAndGroups,
@@ -70,7 +68,7 @@ describe('validateAudits', () => {
         ],
         ['missing-audit'],
       ),
-    ).toThrow(new AuditsNotImplementedError(['missing-audit']));
+    ).toThrow('Audits not implemented: "missing-audit"');
   });
 });
 
@@ -107,7 +105,7 @@ describe('validateOnlyCategories', () => {
         ],
         'missing-category',
       ),
-    ).toThrow(new CategoriesNotImplementedError(['missing-category']));
+    ).toThrow('Categories not implemented: "missing-category"');
   });
 });
 
@@ -209,7 +207,7 @@ describe('markSkippedAuditsAndGroups to be used in plugin config', () => {
         ] as Group[],
         { skipAudits: ['missing-audit'] },
       ),
-    ).toThrow(new AuditsNotImplementedError(['missing-audit']));
+    ).toThrow('Audits not implemented: "missing-audit"');
   });
 
   it('should mark audits as not skipped when onlyAudits is set', () => {
@@ -258,7 +256,7 @@ describe('markSkippedAuditsAndGroups to be used in plugin config', () => {
         ] as Group[],
         { onlyAudits: ['missing-audit'] },
       ),
-    ).toThrow(new AuditsNotImplementedError(['missing-audit']));
+    ).toThrow('Audits not implemented: "missing-audit"');
   });
 
   it('should mark skipped audits and groups when onlyGroups is set', () => {
@@ -396,10 +394,10 @@ describe('markSkippedAuditsAndGroups to be used in plugin config', () => {
           onlyAudits: ['missing-audit'],
         },
       ),
-    ).toThrow(new AuditsNotImplementedError(['missing-audit']));
+    ).toThrow('Audits not implemented: "missing-audit"');
   });
 
-  it('should throw if onlyGroups is set with a group slug that is not implemented', () => {
+  it('should throw if onlyCategories is set with a group slug that is not implemented', () => {
     expect(() =>
       markSkippedAuditsAndGroups(
         [{ slug: 'speed-index' }] as Audit[],
@@ -413,6 +411,6 @@ describe('markSkippedAuditsAndGroups to be used in plugin config', () => {
           onlyCategories: ['missing-group'],
         },
       ),
-    ).toThrow(new CategoriesNotImplementedError(['missing-group']));
+    ).toThrow('Categories not implemented: "missing-group"');
   });
 });
