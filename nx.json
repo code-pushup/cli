@@ -85,7 +85,7 @@
       "outputs": [
         "{workspaceRoot}/coverage/{projectName}/unit-tests/lcov.info"
       ],
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "options": {
         "configFile": "{projectRoot}/vitest.unit.config.ts",
         "coverage": {
@@ -97,7 +97,7 @@
       "cache": true,
       "inputs": ["default", "^production", "test-vitest-inputs"],
       "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "options": {
         "configFile": "{projectRoot}/vitest.int.config.ts",
         "coverage": {
@@ -112,14 +112,6 @@
     },
     "nxv-pkg-install": {
       "parallelism": false
-    },
-    "@nx/vite:test": {
-      "cache": true,
-      "inputs": ["default", "test-vitest-inputs"],
-      "options": {
-        "passWithNoTests": true,
-        "watch": false
-      }
     },
     "code-pushup": {
       "cache": false,
