@@ -90,7 +90,9 @@
         "configFile": "{projectRoot}/vitest.unit.config.ts",
         "coverage": {
           "enabled": true
-        }
+        },
+        "passWithNoTests": true,
+        "watch": false
       }
     },
     "int-test": {
@@ -102,13 +104,19 @@
         "configFile": "{projectRoot}/vitest.int.config.ts",
         "coverage": {
           "enabled": true
-        }
+        },
+        "passWithNoTests": true,
+        "watch": false
       }
     },
     "e2e": {
       "cache": true,
       "inputs": ["default", "test-vitest-inputs"],
-      "dependsOn": ["^build"]
+      "executor": "@nx/vitest:test",
+      "options": {
+        "passWithNoTests": true,
+        "watch": false
+      }
     },
     "nxv-pkg-install": {
       "parallelism": false
