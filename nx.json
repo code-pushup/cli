@@ -119,9 +119,6 @@
         "watch": false
       }
     },
-    "nxv-pkg-install": {
-      "parallelism": false
-    },
     "code-pushup": {
       "cache": false,
       "executor": "nx:run-commands",
