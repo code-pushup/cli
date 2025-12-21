@@ -111,9 +111,10 @@
     },
     "e2e": {
       "cache": true,
-      "inputs": ["default", "test-vitest-inputs"],
+      "inputs": ["default", "^production", "test-vitest-inputs"],
       "executor": "@nx/vitest:test",
       "options": {
+        "configFile": "{projectRoot}/vitest.e2e.config.ts",
         "passWithNoTests": true,
         "watch": false
       }
