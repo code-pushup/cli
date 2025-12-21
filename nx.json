@@ -122,14 +122,6 @@
     "nxv-pkg-install": {
       "parallelism": false
     },
-    "@nx/vite:test": {
-      "cache": true,
-      "inputs": ["default", "test-vitest-inputs"],
-      "options": {
-        "passWithNoTests": true,
-        "watch": false
-      }
-    },
     "code-pushup": {
       "cache": false,
       "executor": "nx:run-commands",
