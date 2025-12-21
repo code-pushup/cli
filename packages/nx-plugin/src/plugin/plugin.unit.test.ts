@@ -1,4 +1,4 @@
-import type { CreateNodesContextV2 } from '@nx/devkit';
+import type { CreateNodesContextV2, CreateNodesResultV2 } from '@nx/devkit';
 import { vol } from 'memfs';
 import { afterEach, beforeEach, describe, expect } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
@@ -48,11 +48,12 @@ describe('@code-pushup/nx-plugin/plugin', () => {
     );
 
     expect(result).toHaveLength(1);
-    const [file, nodesResult] = result[0];
+    const [file, nodesResult] = result[0] as CreateNodesResultV2[number];
     expect(file).toBe(projectJsonPath(projectRoot));
-    // The projectRoot in the result will be the absolute path from path.dirname()
-    const actualProjectRoot = Object.keys(nodesResult.projects)[0];
-    expect(nodesResult.projects[actualProjectRoot]).toStrictEqual({
+    const actualProjectRoot = Object.keys(
+      nodesResult.projects ?? {},
+    )[0] as string;
+    expect(nodesResult.projects).toHaveProperty(actualProjectRoot, {
       targets: {
         [`${CP_TARGET_NAME}--configuration`]: {
           command: `nx g ${PACKAGE_NAME}:configuration --project="@org/empty-root"`,
@@ -72,9 +73,11 @@ describe('@code-pushup/nx-plugin/plugin', () => {
     );
 
     expect(result).toHaveLength(1);
-    const [file, nodesResult] = result[0];
+    const [file, nodesResult] = result[0] as CreateNodesResultV2[number];
     expect(file).toBe(projectJsonPath(projectRoot));
-    const actualProjectRoot = Object.keys(nodesResult.projects)[0] ?? '';
+    const actualProjectRoot = Object.keys(
+      nodesResult.projects ?? {},
+    )[0] as string;
     expect(nodesResult.projects).toHaveProperty(actualProjectRoot, {
       targets: {
         [`${CP_TARGET_NAME}--configuration`]: {
@@ -97,10 +100,12 @@ describe('@code-pushup/nx-plugin/plugin', () => {
     );
 
     expect(result).toHaveLength(1);
-    const [file, nodesResult] = result[0];
+    const [file, nodesResult] = result[0] as CreateNodesResultV2[number];
     expect(file).toBe(projectJsonPath(projectRoot));
-    const actualProjectRoot = Object.keys(nodesResult.projects)[0];
-    expect(nodesResult.projects[actualProjectRoot]).toStrictEqual({
+    const actualProjectRoot = Object.keys(
+      nodesResult.projects ?? {},
+    )[0] as string;
+    expect(nodesResult.projects).toHaveProperty(actualProjectRoot, {
       targets: {
         [CP_TARGET_NAME]: {
           executor: `${PACKAGE_NAME}:cli`,
@@ -125,10 +130,12 @@ describe('@code-pushup/nx-plugin/plugin', () => {
     );
 
     expect(result).toHaveLength(1);
-    const [file, nodesResult] = result[0];
+    const [file, nodesResult] = result[0] as CreateNodesResultV2[number];
     expect(file).toBe(projectJsonPath(projectRoot));
-    const actualProjectRoot = Object.keys(nodesResult.projects)[0];
-    expect(nodesResult.projects[actualProjectRoot]).toStrictEqual({
+    const actualProjectRoot = Object.keys(
+      nodesResult.projects ?? {},
+    )[0] as string;
+    expect(nodesResult.projects).toHaveProperty(actualProjectRoot, {
       targets: {
         [CP_TARGET_NAME]: {
           executor: `${PACKAGE_NAME}:cli`,
