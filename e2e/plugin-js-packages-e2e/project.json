@@ -6,7 +6,12 @@
   "implicitDependencies": ["cli", "plugin-js-packages"],
   "targets": {
     "lint": {},
-    "e2e": {}
+    "e2e": {
+      "executor": "@nx/vitest:test",
+      "options": {
+        "configFile": "{projectRoot}/vitest.e2e.config.ts"
+      }
+    }
   },
   "tags": ["scope:plugin", "type:e2e"]
 }
