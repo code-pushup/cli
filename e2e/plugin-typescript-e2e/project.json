@@ -6,7 +6,7 @@
   "targets": {
     "lint": {},
     "e2e": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "options": {
         "configFile": "e2e/plugin-typescript-e2e/vitest.e2e.config.ts"
       }

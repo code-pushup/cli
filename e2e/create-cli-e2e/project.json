@@ -6,7 +6,7 @@
   "targets": {
     "lint": {},
     "e2e": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "options": {
         "keepServerRunning": true,
         "configFile": "{projectRoot}/vitest.e2e.config.ts"
