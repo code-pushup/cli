@@ -233,20 +233,18 @@ describe('normalizedCreateNodesV2Context', () => {
       config: { name: 'my-lib', root: projectRoot, targets: {} },
     });
 
-    const result = await normalizedCreateNodesV2Context(
-      createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
-      projectJsonPath(projectRoot),
-    );
-
-    expect(result).toStrictEqual(
+    await expect(
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
+        projectJsonPath(projectRoot),
+      ),
+    ).resolves.toStrictEqual(
       expect.objectContaining({
+        projectRoot: expect.pathToMatch(`${MEMFS_VOLUME}/${projectRoot}`),
         workspaceRoot: MEMFS_VOLUME,
         projectJson: { name: 'my-lib', root: projectRoot, targets: {} },
         createOptions: { targetName: CP_TARGET_NAME },
       }),
-    );
-    expect(osAgnosticPath(result.projectRoot)).toBe(
-      osAgnosticPath(`${MEMFS_VOLUME}/${projectRoot}`),
     );
   });
 
@@ -258,20 +256,18 @@ describe('normalizedCreateNodesV2Context', () => {
       config: { name: 'my-lib', root: projectRoot, targets: {} },
     });
 
-    const result = await normalizedCreateNodesV2Context(
-      createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
-      projectJsonPath(projectRoot),
-      { targetName: customTargetName },
-    );
-
-    expect(result).toStrictEqual(
+    await expect(
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
+        projectJsonPath(projectRoot),
+        { targetName: customTargetName },
+      ),
+    ).resolves.toStrictEqual(
       expect.objectContaining({
+        projectRoot: expect.pathToMatch(`${MEMFS_VOLUME}/${projectRoot}`),
         projectJson: { name: 'my-lib', root: projectRoot, targets: {} },
         createOptions: { targetName: customTargetName },
       }),
-    );
-    expect(osAgnosticPath(result.projectRoot)).toBe(
-      osAgnosticPath(`${MEMFS_VOLUME}/${projectRoot}`),
     );
   });
 
@@ -282,62 +278,70 @@ describe('normalizedCreateNodesV2Context', () => {
       config: { name: 'utils', root: projectRoot, targets: {} },
     });
 
-    const result = await normalizedCreateNodesV2Context(
-      createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
-      projectJsonPath(projectRoot),
-    );
-
-    expect(osAgnosticPath(result.projectRoot)).toBe(
-      osAgnosticPath(`${MEMFS_VOLUME}/${projectRoot}`),
+    await expect(
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
+        projectJsonPath(projectRoot),
+      ),
+    ).resolves.toStrictEqual(
+      expect.objectContaining({
+        projectRoot: expect.pathToMatch(`${MEMFS_VOLUME}/${projectRoot}`),
+      }),
     );
   });
 
   it('should preserve all context properties', async () => {
     const projectRoot = 'libs/my-lib';
+    const nxJsonConfiguration = {
+      namedInputs: { default: ['{projectRoot}/**/*'] },
+    };
     setupProjectJson({
       projectRoot,
       config: { name: 'my-lib', root: projectRoot, targets: {} },
     });
 
-    const nxJsonConfiguration = {
-      namedInputs: { default: ['{projectRoot}/**/*'] },
-    };
-
-    const result = await normalizedCreateNodesV2Context(
-      createNodesV2Context({
+    await expect(
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({
+          workspaceRoot: MEMFS_VOLUME,
+          nxJsonConfiguration,
+        }),
+        projectJsonPath(projectRoot),
+      ),
+    ).resolves.toStrictEqual(
+      expect.objectContaining({
+        projectRoot: expect.pathToMatch(`${MEMFS_VOLUME}/${projectRoot}`),
         workspaceRoot: MEMFS_VOLUME,
         nxJsonConfiguration,
+        projectJson: { name: 'my-lib', root: projectRoot, targets: {} },
+        createOptions: { targetName: CP_TARGET_NAME },
       }),
-      projectJsonPath(projectRoot),
     );
-
-    expect(result.nxJsonConfiguration).toStrictEqual(nxJsonConfiguration);
-    expect(result.workspaceRoot).toBe(MEMFS_VOLUME);
-    expect(result.projectJson).toBeDefined();
-    expect(result.projectRoot).toBeDefined();
-    expect(result.createOptions).toBeDefined();
   });
 
   it('should preserve createOptions properties', async () => {
     const projectRoot = 'libs/my-lib';
-    setupProjectJson({
-      projectRoot,
-      config: { name: 'my-lib', root: projectRoot, targets: {} },
-    });
-
     const createOptions = {
       targetName: 'custom-target',
       projectPrefix: 'cli',
       bin: 'packages/cli/dist',
     };
+    setupProjectJson({
+      projectRoot,
+      config: { name: 'my-lib', root: projectRoot, targets: {} },
+    });
 
-    const result = await normalizedCreateNodesV2Context(
-      createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
-      projectJsonPath(projectRoot),
-      createOptions,
+    await expect(
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
+        projectJsonPath(projectRoot),
+        createOptions,
+      ),
+    ).resolves.toStrictEqual(
+      expect.objectContaining({
+        createOptions,
+      }),
     );
-
-    expect(result.createOptions).toStrictEqual(createOptions);
   });
 
   it('should throw error when project.json file cannot be read', async () => {
