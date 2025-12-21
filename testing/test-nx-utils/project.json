@@ -4,7 +4,6 @@
   "sourceRoot": "testing/test-nx-utils/src",
   "projectType": "library",
   "targets": {
-    "build": {},
     "lint": {},
     "unit-test": {}
   },
