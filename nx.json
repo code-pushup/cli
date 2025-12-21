@@ -111,10 +111,21 @@
     },
     "e2e": {
       "cache": true,
-      "inputs": ["default", "^production", "test-vitest-inputs"],
+      "inputs": ["default", "test-vitest-inputs"],
       "executor": "@nx/vitest:test",
       "options": {
         "configFile": "{projectRoot}/vitest.e2e.config.ts",
+        "passWithNoTests": true,
+        "watch": false
+      }
+    },
+    "nxv-pkg-install": {
+      "parallelism": false
+    },
+    "@nx/vite:test": {
+      "cache": true,
+      "inputs": ["default", "test-vitest-inputs"],
+      "options": {
         "passWithNoTests": true,
         "watch": false
       }
