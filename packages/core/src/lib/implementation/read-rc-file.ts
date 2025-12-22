@@ -1,43 +1,51 @@
+import ansis from 'ansis';
 import path from 'node:path';
 import {
   CONFIG_FILE_NAME,
   type CoreConfig,
   SUPPORTED_CONFIG_FILE_FORMATS,
   coreConfigSchema,
+  validate,
 } from '@code-pushup/models';
-import { fileExists, importModule, parseSchema } from '@code-pushup/utils';
-
-export class ConfigPathError extends Error {
-  constructor(configPath: string) {
-    super(`Provided path '${configPath}' is not valid.`);
-  }
-}
+import { fileExists, importModule, logger } from '@code-pushup/utils';
 
 export async function readRcByPath(
-  filepath: string,
+  filePath: string,
   tsconfig?: string,
 ): Promise<CoreConfig> {
-  if (filepath.length === 0) {
-    throw new Error('The path to the configuration file is empty.');
-  }
+  const formattedTarget = [
+    `${ansis.bold(path.relative(process.cwd(), filePath))}`,
+    tsconfig &&
+      `(paths from ${ansis.bold(path.relative(process.cwd(), tsconfig))})`,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
-  if (!(await fileExists(filepath))) {
-    throw new ConfigPathError(filepath);
-  }
+  const value = await logger.task(
+    `Importing config from ${formattedTarget}`,
+    async () => {
+      const result = await importModule({
+        filepath: filePath,
+        tsconfig,
+        format: 'esm',
+      });
+      return { result, message: `Imported config from ${formattedTarget}` };
+    },
+  );
 
-  const cfg: CoreConfig = await importModule({
-    filepath,
-    tsconfig,
-    format: 'esm',
-  });
-
-  return parseSchema(coreConfigSchema, cfg, {
-    schemaType: 'core config',
-    sourcePath: filepath,
-  });
+  const config = validate(coreConfigSchema, value, { filePath });
+  logger.info('Configuration is valid ✓');
+  return config;
 }
 
 export async function autoloadRc(tsconfig?: string): Promise<CoreConfig> {
+  const configFilePatterns = [
+    CONFIG_FILE_NAME,
+    `{${SUPPORTED_CONFIG_FILE_FORMATS.join(',')}}`,
+  ].join('.');
+
+  logger.debug(`Looking for default config file ${configFilePatterns}`);
+
   // eslint-disable-next-line functional/no-let
   let ext = '';
   // eslint-disable-next-line functional/no-loop-statements
@@ -46,6 +54,7 @@ export async function autoloadRc(tsconfig?: string): Promise<CoreConfig> {
     const exists = await fileExists(filePath);
 
     if (exists) {
+      logger.debug(`Found default config file ${ansis.bold(filePath)}`);
       ext = extension;
       break;
     }
@@ -53,9 +62,7 @@ export async function autoloadRc(tsconfig?: string): Promise<CoreConfig> {
 
   if (!ext) {
     throw new Error(
-      `No file ${CONFIG_FILE_NAME}.(${SUPPORTED_CONFIG_FILE_FORMATS.join(
-        '|',
-      )}) present in ${process.cwd()}`,
+      `No ${configFilePatterns} file present in ${process.cwd()}`,
     );
   }
 

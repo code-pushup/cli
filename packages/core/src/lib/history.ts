@@ -4,9 +4,13 @@ import type {
   PersistConfig,
   UploadConfig,
 } from '@code-pushup/models';
-import { getCurrentBranchOrTag, safeCheckout, ui } from '@code-pushup/utils';
+import {
+  type WithRequired,
+  getCurrentBranchOrTag,
+  logger,
+  safeCheckout,
+} from '@code-pushup/utils';
 import { collectAndPersistReports } from './collect-and-persist.js';
-import type { GlobalOptions } from './types.js';
 import { upload } from './upload.js';
 
 export type HistoryOnlyOptions = {
@@ -18,8 +22,7 @@ export type HistoryOptions = Pick<CoreConfig, 'plugins' | 'categories'> & {
   persist: Required<PersistConfig>;
   cache: CacheConfigObject;
   upload?: Required<UploadConfig>;
-} & HistoryOnlyOptions &
-  Partial<GlobalOptions>;
+} & HistoryOnlyOptions;
 
 export async function history(
   config: HistoryOptions,
@@ -32,7 +35,7 @@ export async function history(
   const reports: string[] = [];
   // eslint-disable-next-line functional/no-loop-statements
   for (const commit of commits) {
-    ui().logger.info(`Collect ${commit}`);
+    logger.info(`Collecting for commit ${commit}`);
     await safeCheckout(commit, forceCleanStatus);
 
     const currentConfig: HistoryOptions = {
@@ -51,14 +54,12 @@ export async function history(
     await collectAndPersistReports(currentConfig);
 
     if (skipUploads) {
-      ui().logger.info('Upload is skipped because skipUploads is set to true.');
+      logger.info('Upload is skipped because skipUploads is set to true.');
     } else {
-      if (currentConfig.upload) {
+      if (hasUpload(currentConfig)) {
         await upload(currentConfig);
       } else {
-        ui().logger.info(
-          'Upload is skipped because upload config is undefined.',
-        );
+        logger.info('Upload is skipped because upload config is undefined.');
       }
     }
 
@@ -69,4 +70,10 @@ export async function history(
   await safeCheckout(initialBranch, forceCleanStatus);
 
   return reports;
+}
+
+function hasUpload(
+  config: HistoryOptions,
+): config is WithRequired<HistoryOptions, 'upload'> {
+  return config.upload != null;
 }

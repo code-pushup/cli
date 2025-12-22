@@ -1,15 +1,38 @@
+/* eslint-disable max-lines, no-console, @typescript-eslint/class-methods-use-this */
 import ansis, { type AnsiColors } from 'ansis';
 import os from 'node:os';
 import ora, { type Ora } from 'ora';
+import { formatCommandStatus } from './command.js';
 import { dateToUnixTimestamp } from './dates.js';
 import { isEnvVarEnabled } from './env.js';
+import { stringifyError } from './errors.js';
 import { formatDuration, indentLines, transformLines } from './formatting.js';
 import { settlePromise } from './promises.js';
 
 type GroupColor = Extract<AnsiColors, 'cyan' | 'magenta'>;
-type CiPlatform = 'GitHub Actions' | 'GitLab CI/CD';
+type CiPlatform = 'GitHub' | 'GitLab';
 
-const GROUP_COLOR_ENV_VAR_NAME = 'CP_LOGGER_GROUP_COLOR';
+/** Additional options for log methods */
+export type LogOptions = {
+  /** Do not append line-feed to message (`process.stdout.write` instead of `console.log`) */
+  noLineBreak?: boolean;
+  /** Do not indent lines even if logged while a spinner is active */
+  noIndent?: boolean;
+};
+
+/** Additional options for {@link Logger.debug} method */
+export type DebugLogOptions = LogOptions & {
+  /** Print debug message even if verbose flag is not set */
+  force?: boolean;
+};
+
+const HEX_RADIX = 16;
+
+const SIGINT_CODE = 2;
+// https://www.gnu.org/software/bash/manual/html_node/Exit-Status.html#:~:text=When%20a%20command%20terminates%20on%20a%20fatal%20signal%20whose%20number%20is%20N%2C%20Bash%20uses%20the%20value%20128%2BN%20as%20the%20exit%20status.
+const SIGNALS_CODE_OFFSET_UNIX = 128;
+const SIGINT_EXIT_CODE_UNIX = SIGNALS_CODE_OFFSET_UNIX + SIGINT_CODE;
+const SIGINT_EXIT_CODE_WINDOWS = SIGINT_CODE;
 
 /**
  * Rich logging implementation for Code PushUp CLI, plugins, etc.
@@ -19,17 +42,12 @@ const GROUP_COLOR_ENV_VAR_NAME = 'CP_LOGGER_GROUP_COLOR';
 export class Logger {
   #isVerbose = isEnvVarEnabled('CP_VERBOSE');
   #isCI = isEnvVarEnabled('CI');
-  #ciPlatform: CiPlatform | undefined =
-    process.env['GITHUB_ACTIONS'] === 'true'
-      ? 'GitHub Actions'
-      : process.env['GITLAB_CI'] === 'true'
-        ? 'GitLab CI/CD'
-        : undefined;
-  #groupColor: GroupColor | undefined =
-    process.env[GROUP_COLOR_ENV_VAR_NAME] === 'cyan' ||
-    process.env[GROUP_COLOR_ENV_VAR_NAME] === 'magenta'
-      ? process.env[GROUP_COLOR_ENV_VAR_NAME]
+  #ciPlatform: CiPlatform | undefined = isEnvVarEnabled('GITHUB_ACTIONS')
+    ? 'GitHub'
+    : isEnvVarEnabled('GITLAB_CI')
+      ? 'GitLab'
       : undefined;
+  #groupColor: GroupColor | undefined;
 
   #groupsCount = 0;
   #activeSpinner: Ora | undefined;
@@ -50,7 +68,7 @@ export class Logger {
           text,
           symbol: this.#colorize(this.#groupSymbols.end, this.#groupColor),
         });
-        this.#setGroupColor(undefined);
+        this.#groupColor = undefined;
       } else {
         this.#activeSpinner.fail(text);
       }
@@ -58,7 +76,12 @@ export class Logger {
     }
     this.newline();
     this.error(ansis.bold('Cancelled by SIGINT'));
-    process.exit(os.platform() === 'win32' ? 2 : 130);
+    // eslint-disable-next-line n/no-process-exit, unicorn/no-process-exit
+    process.exit(
+      os.platform() === 'win32'
+        ? SIGINT_EXIT_CODE_WINDOWS
+        : SIGINT_EXIT_CODE_UNIX,
+    );
   };
 
   /**
@@ -70,9 +93,10 @@ export class Logger {
    * logger.error('Config file is invalid');
    *
    * @param message Error text
+   * @param options Additional options
    */
-  error(message: string): void {
-    this.#log(message, 'red');
+  error(message: string, options?: LogOptions): void {
+    this.#log(message, 'red', options);
   }
 
   /**
@@ -84,9 +108,10 @@ export class Logger {
    * logger.warn('Skipping invalid audits');
    *
    * @param message Warning text
+   * @param options Additional options
    */
-  warn(message: string): void {
-    this.#log(message, 'yellow');
+  warn(message: string, options?: LogOptions): void {
+    this.#log(message, 'yellow', options);
   }
 
   /**
@@ -98,9 +123,10 @@ export class Logger {
    * logger.info('Code PushUp CLI v0.80.2');
    *
    * @param message Info text
+   * @param options Additional options
    */
-  info(message: string): void {
-    this.#log(message);
+  info(message: string, options?: LogOptions): void {
+    this.#log(message, undefined, options);
   }
 
   /**
@@ -112,10 +138,11 @@ export class Logger {
    * logger.debug('Running ESLint version 9.16.0');
    *
    * @param message Debug text
+   * @param options Additional options
    */
-  debug(message: string): void {
-    if (this.#isVerbose) {
-      this.#log(message, 'gray');
+  debug(message: string, options?: DebugLogOptions): void {
+    if (this.#isVerbose || options?.force) {
+      this.#log(message, 'gray', options);
     }
   }
 
@@ -185,18 +212,24 @@ export class Logger {
    * @param title Display text used as pending message.
    * @param worker Asynchronous implementation. Returned promise determines spinner status and final message. Support for inner logs has some limitations (described above).
    */
-  task(title: string, worker: () => Promise<string>): Promise<void> {
-    return this.#spinner(worker, {
+  async task<T = undefined>(
+    title: string,
+    worker: () => Promise<string | { message: string; result: T }>,
+  ): Promise<T> {
+    const result = await this.#spinner(worker, {
       pending: title,
-      success: value => value,
-      failure: error => `${title} → ${ansis.red(`${error}`)}`,
+      success: value => (typeof value === 'string' ? value : value.message),
+      failure: error => `${title} → ${ansis.red(String(error))}`,
     });
+    return typeof result === 'object' ? result.result : (undefined as T);
   }
 
   /**
    * Similar to {@link task}, but spinner texts are formatted as shell commands.
    *
    * A `$`-prefix is added. Its color indicates the status (blue=pending, green=success, red=failure).
+   *
+   * If the command's working directory isn't `process.cwd()`, a relative path is prefixed to the output.
    *
    * @example
    * await logger.command('npx eslint . --format=json', async () => {
@@ -205,12 +238,20 @@ export class Logger {
    *
    * @param bin Command string with arguments.
    * @param worker Asynchronous execution of the command (not implemented by the logger).
+   * @param options Custom CWD path where the command is executed (default is `process.cwd()`).
+   * @template T Type of resolved worker value.
    */
-  command(bin: string, worker: () => Promise<void>): Promise<void> {
+  command<T>(
+    bin: string,
+    worker: () => Promise<T>,
+    options?: {
+      cwd?: string;
+    },
+  ): Promise<T> {
     return this.#spinner(worker, {
-      pending: `${ansis.blue('$')} ${bin}`,
-      success: () => `${ansis.green('$')} ${bin}`,
-      failure: () => `${ansis.red('$')} ${bin}`,
+      pending: formatCommandStatus(bin, options, 'pending'),
+      success: () => formatCommandStatus(bin, options, 'success'),
+      failure: () => formatCommandStatus(bin, options, 'failure'),
     });
   }
 
@@ -224,19 +265,26 @@ export class Logger {
    * Nested groups are not supported.
    *
    * @example
-   * await logger.group('Running plugin "ESLint"', async () => {
+   * const eslintResult = await logger.group('Running plugin "ESLint"', async () => {
    *   logger.debug('ESLint version is 9.16.0');
-   *   await logger.command('npx eslint . --format=json', () => {
+   *   const result = await logger.command('npx eslint . --format=json', () => {
    *     // ...
    *   })
    *   logger.info('Found 42 lint errors.');
-   *   return 'Completed "ESLint" plugin execution';
+   *   return {
+   *     message: 'Completed "ESLint" plugin execution',
+   *     result,
+   *   };
    * });
    *
    * @param title Display title for the group.
    * @param worker Asynchronous implementation. Returned promise determines group status and ending message. Inner logs are attached to the group.
    */
-  async group(title: string, worker: () => Promise<string>): Promise<void> {
+  // eslint-disable-next-line max-lines-per-function
+  async group<T = undefined>(
+    title: string,
+    worker: () => Promise<string | { message: string; result: T }>,
+  ): Promise<T> {
     if (this.#groupColor) {
       throw new Error(
         'Internal Logger error - nested groups are not supported',
@@ -252,7 +300,7 @@ export class Logger {
       this.newline();
     }
 
-    this.#setGroupColor(this.#groupsCount % 2 === 0 ? 'cyan' : 'magenta');
+    this.#groupColor = this.#groupsCount % 2 === 0 ? 'cyan' : 'magenta';
     this.#groupsCount++;
 
     const groupMarkers = this.#createGroupMarkers();
@@ -264,10 +312,12 @@ export class Logger {
     const end = performance.now();
 
     if (result.status === 'fulfilled') {
+      const message =
+        typeof result.value === 'string' ? result.value : result.value.message;
       console.log(
         [
           this.#colorize(this.#groupSymbols.end, this.#groupColor),
-          this.#colorize(result.value, 'green'),
+          this.#colorize(message, 'green'),
           this.#formatDurationSuffix({ start, end }),
         ].join(' '),
       );
@@ -275,7 +325,10 @@ export class Logger {
       console.log(
         [
           this.#colorize(this.#groupSymbols.end, this.#groupColor),
-          this.#colorize(`${result.reason}`, 'red'),
+          this.#colorize(
+            `${stringifyError(result.reason, { oneline: true })}`,
+            'red',
+          ),
         ].join(' '),
       );
     }
@@ -284,30 +337,43 @@ export class Logger {
     if (endMarker) {
       console.log(endMarker);
     }
-    this.#setGroupColor(undefined);
+    this.#groupColor = undefined;
     this.newline();
 
     if (result.status === 'rejected') {
       throw result.reason;
     }
+
+    if (typeof result.value === 'object') {
+      return result.value.result;
+    }
+    return undefined as T;
   }
 
   #createGroupMarkers(): {
     start: (title: string) => string;
     end: () => string;
   } {
-    switch (this.#ciPlatform) {
-      case 'GitHub Actions':
+    // Nx typically renders native log groups for each target in GitHub
+    // + GitHub doesn't support nested log groups: https://github.com/actions/toolkit/issues/1001
+    // => skip native GitHub log groups if run within Nx target
+    const platform =
+      this.#ciPlatform === 'GitHub' && process.env['NX_TASK_TARGET_TARGET'] // https://nx.dev/docs/reference/environment-variables
+        ? undefined
+        : this.#ciPlatform;
+
+    switch (platform) {
+      case 'GitHub':
         // https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-commands#grouping-log-lines
         return {
           start: title =>
             `::group::${this.#formatGroupTitle(title, { prefix: false })}`,
           end: () => '::endgroup::',
         };
-      case 'GitLab CI/CD':
+      case 'GitLab':
         // https://docs.gitlab.com/ci/jobs/job_logs/#custom-collapsible-sections
-        const ansiEscCode = '\x1b[0K'; // '\e' ESC character only works for `echo -e`, Node console must use '\x1b'
-        const id = Math.random().toString(16).slice(2);
+        const ansiEscCode = '\u001B[0K'; // '\e' ESC character only works for `echo -e`, Node console must use '\u001B'
+        const id = Math.random().toString(HEX_RADIX).slice(2);
         const sectionId = `code_pushup_logs_group_${id}`;
         return {
           start: title => {
@@ -337,15 +403,7 @@ export class Logger {
     return ansis.bold(this.#colorize(text, this.#groupColor));
   }
 
-  #setGroupColor(groupColor: GroupColor | undefined) {
-    this.#groupColor = groupColor;
-    if (groupColor) {
-      process.env[GROUP_COLOR_ENV_VAR_NAME] = groupColor;
-    } else {
-      delete process.env[GROUP_COLOR_ENV_VAR_NAME];
-    }
-  }
-
+  // eslint-disable-next-line max-lines-per-function
   async #spinner<T>(
     worker: () => Promise<T>,
     messages: {
@@ -353,7 +411,7 @@ export class Logger {
       success: (value: T) => string;
       failure: (error: unknown) => string;
     },
-  ): Promise<void> {
+  ): Promise<T> {
     if (this.#activeSpinner) {
       throw new Error(
         'Internal Logger error - concurrent spinners are not supported',
@@ -368,6 +426,7 @@ export class Logger {
         text: messages.pending,
         spinner: 'line',
         color: this.#groupColor,
+        stream: process.stdout,
       });
       if (this.#isCI) {
         console.log(this.#format(messages.pending, undefined));
@@ -375,7 +434,10 @@ export class Logger {
         this.#activeSpinner.start();
       }
     } else {
-      this.#activeSpinner = ora(messages.pending);
+      this.#activeSpinner = ora({
+        text: messages.pending,
+        stream: process.stdout,
+      });
       this.#activeSpinner.start();
     }
 
@@ -391,7 +453,7 @@ export class Logger {
             messages.success(result.value),
             this.#formatDurationSuffix({ start, end }),
           ].join(' ')
-        : messages.failure(result.reason);
+        : messages.failure(stringifyError(result.reason, { oneline: true }));
 
     if (this.#activeSpinner) {
       if (this.#groupColor) {
@@ -419,19 +481,28 @@ export class Logger {
     if (result.status === 'rejected') {
       throw result.reason;
     }
+
+    return result.value;
   }
 
-  #log(message: string, color?: AnsiColors): void {
+  #log(message: string, color?: AnsiColors, options?: LogOptions): void {
+    const print: (text: string) => void = options?.noLineBreak
+      ? text => process.stdout.write(text)
+      : console.log;
+
     if (this.#activeSpinner) {
       if (this.#activeSpinner.isSpinning) {
         this.#activeSpinnerLogs.push(this.#format(message, color));
       } else {
-        console.log(this.#format(indentLines(message, 2), color));
+        const indented =
+          options?.noIndent || !message ? message : indentLines(message, 2);
+        print(this.#format(indented, color));
       }
     } else {
-      console.log(this.#format(message, color));
+      print(this.#format(message, color));
     }
-    this.#endsWithBlankLine = !message || message.endsWith('\n');
+    this.#endsWithBlankLine =
+      (!message || message.endsWith('\n')) && !options?.noIndent;
   }
 
   #format(message: string, color: AnsiColors | undefined): string {

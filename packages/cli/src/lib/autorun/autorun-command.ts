@@ -1,4 +1,3 @@
-import { bold, gray } from 'ansis';
 import type { ArgumentsCamelCase, CommandModule } from 'yargs';
 import {
   type CollectOptions,
@@ -6,13 +5,11 @@ import {
   collectAndPersistReports,
   upload,
 } from '@code-pushup/core';
-import { ui } from '@code-pushup/utils';
-import { CLI_NAME } from '../constants.js';
+import { logger } from '@code-pushup/utils';
 import {
-  collectSuccessfulLog,
-  renderConfigureCategoriesHint,
-  renderIntegratePortalHint,
-  uploadSuccessfulLog,
+  printCliCommand,
+  renderCategoriesHint,
+  renderPortalHint,
 } from '../implementation/logging.js';
 
 type AutorunOptions = CollectOptions & UploadOptions;
@@ -23,8 +20,8 @@ export function yargsAutorunCommandObject() {
     command,
     describe: 'Shortcut for running collect followed by upload',
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
-      ui().logger.log(bold(CLI_NAME));
-      ui().logger.info(gray(`Run ${command}...`));
+      printCliCommand(command);
+
       const options = args as unknown as AutorunOptions;
 
       // we need to ensure `json` is part of the formats as we want to upload
@@ -39,20 +36,18 @@ export function yargsAutorunCommandObject() {
       };
 
       await collectAndPersistReports(optionsWithFormat);
-      collectSuccessfulLog();
 
-      if (!options.categories || options.categories.length === 0) {
-        renderConfigureCategoriesHint();
+      if (!options.categories?.length) {
+        renderCategoriesHint();
+        logger.newline();
       }
 
       if (options.upload) {
-        const report = await upload(options);
-        if (report?.url) {
-          uploadSuccessfulLog(report.url);
-        }
+        await upload(options);
       } else {
-        ui().logger.warning('Upload skipped because configuration is not set.');
-        renderIntegratePortalHint();
+        logger.warn('Upload skipped because Portal is not configured.');
+        logger.newline();
+        renderPortalHint();
       }
     },
   } satisfies CommandModule;

@@ -1,5 +1,3 @@
-import type { ProcessObserver } from '@code-pushup/utils';
-
 export const MONOREPO_TOOLS = ['nx', 'turbo', 'yarn', 'pnpm', 'npm'] as const;
 export type MonorepoTool = (typeof MONOREPO_TOOLS)[number];
 
@@ -17,7 +15,6 @@ export type MonorepoHandlerOptions = {
   task: string;
   cwd: string;
   parallel: boolean | number;
-  observer?: ProcessObserver;
   nxProjectsFilter: string | string[];
 };
 

@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import type { CompareOptions } from '@code-pushup/core';
 import type { CoreConfig, Format } from '@code-pushup/models';
-import { isCI } from '@code-pushup/utils';
 import { yargsHistoryOptionsDefinition } from './history/history.options.js';
-import type { CompareOptions } from './implementation/compare.model.js';
 import { yargsCompareOptionsDefinition } from './implementation/compare.options.js';
 import type {
   PersistConfigCliOptions,
@@ -10,37 +9,29 @@ import type {
 } from './implementation/core-config.model.js';
 import type { FilterOptions } from './implementation/filter.model.js';
 import { yargsFilterOptionsDefinition } from './implementation/filter.options.js';
-import type { GeneralCliOptions } from './implementation/global.model.js';
+import type { GlobalOptions } from './implementation/global.model.js';
 import type { MergeDiffsOptions } from './implementation/merge-diffs.model.js';
 import { yargsMergeDiffsOptionsDefinition } from './implementation/merge-diffs.options.js';
 import { options } from './options.js';
 import { yargsCli } from './yargs-cli.js';
 
 describe('yargsCli', () => {
-  it('should provide correct default values for global options', async () => {
-    const parsedArgv = await yargsCli<GeneralCliOptions>([], {
-      options,
-    }).parseAsync();
-    expect(parsedArgv.verbose).toBe(false);
-    expect(parsedArgv.progress).toBe(!isCI());
-  });
-
   it('should parse an empty array as a default onlyPlugins option', async () => {
-    const parsedArgv = await yargsCli<GeneralCliOptions & FilterOptions>([], {
+    const parsedArgv = await yargsCli<GlobalOptions & FilterOptions>([], {
       options: { ...options, ...yargsFilterOptionsDefinition() },
     }).parseAsync();
     expect(parsedArgv.onlyPlugins).toEqual([]);
   });
 
   it('should parse an empty array as a default skipPlugins option', async () => {
-    const parsedArgv = await yargsCli<GeneralCliOptions & FilterOptions>([], {
+    const parsedArgv = await yargsCli<GlobalOptions & FilterOptions>([], {
       options: { ...options, ...yargsFilterOptionsDefinition() },
     }).parseAsync();
     expect(parsedArgv.skipPlugins).toEqual([]);
   });
 
   it('should parse the overrides of skipPlugins and onlyPlugins even with different formats', async () => {
-    const parsedArgv = await yargsCli<GeneralCliOptions & FilterOptions>(
+    const parsedArgv = await yargsCli<GlobalOptions & FilterOptions>(
       [
         '--onlyPlugins=lighthouse',
         '--onlyPlugins=eslint',
@@ -57,14 +48,14 @@ describe('yargsCli', () => {
   });
 
   it('should parse a single boolean negated argument', async () => {
-    const parsedArgv = await yargsCli<GeneralCliOptions>(['--no-progress'], {
+    const parsedArgv = await yargsCli<GlobalOptions>(['--no-verbose'], {
       options,
     }).parseAsync();
-    expect(parsedArgv.progress).toBe(false);
+    expect(parsedArgv.verbose).toBe(false);
   });
 
   it('should parse a single config argument as a string', async () => {
-    const parsedArgv = await yargsCli<GeneralCliOptions>(
+    const parsedArgv = await yargsCli<GlobalOptions>(
       ['--config=./config.a.ts'],
       { options },
     ).parseAsync();
@@ -89,25 +80,41 @@ describe('yargsCli', () => {
   });
 
   it('should parse global options correctly', async () => {
-    const parsedArgv = await yargsCli<GeneralCliOptions>(
-      ['--verbose', '--no-progress'],
+    const parsedArgv = await yargsCli<GlobalOptions>(
+      ['--verbose', '--tsconfig', 'tsconfig.json'],
       { options },
     ).parseAsync();
     expect(parsedArgv.verbose).toBe(true);
-    expect(parsedArgv.progress).toBe(false);
+    expect(parsedArgv.tsconfig).toBe('tsconfig.json');
   });
 
   it('should use the last occurrence of an argument if config is passed multiple times', async () => {
-    const parsedArgv = await yargsCli<GeneralCliOptions>(
+    const parsedArgv = await yargsCli<GlobalOptions>(
       ['--config=./config.a.ts', '--config=./config.b.ts'],
       { options },
     ).parseAsync();
     expect(parsedArgv.config).toBe('./config.b.ts');
   });
 
+  it('should use the last occurrence of an argument if persist.outputDir is passed multiple times', async () => {
+    const parsedArgv = await yargsCli<Pick<CoreConfig, 'persist'>>(
+      ['--persist.outputDir=output-a', '--persist.outputDir=output-b'],
+      { options },
+    ).parseAsync();
+    expect(parsedArgv.persist!.outputDir).toBe('output-b');
+  });
+
+  it('should ignore unknown options', async () => {
+    const parsedArgv = await yargsCli<GlobalOptions>(
+      ['--no-progress', '--verbose'],
+      { options },
+    ).parseAsync();
+    expect(parsedArgv.verbose).toBe(true);
+  });
+
   it('should handle global options and middleware argument overrides correctly', async () => {
     const parsedArgv = await yargsCli<
-      GeneralCliOptions &
+      GlobalOptions &
         PersistConfigCliOptions &
         UploadConfigCliOptions &
         FilterOptions
@@ -130,7 +137,8 @@ describe('yargsCli', () => {
     expect(parsedArgv).toEqual(
       expect.objectContaining({
         // default values
-        verbose: false,
+        onlyCategories: [],
+        skipCategories: [],
         // overridden arguments
         persist: expect.objectContaining({
           outputDir: 'code-pushdown/output/dir',
@@ -150,7 +158,7 @@ describe('yargsCli', () => {
   });
 
   it('should parse compare options', async () => {
-    const parsedArgv = await yargsCli<GeneralCliOptions & CompareOptions>(
+    const parsedArgv = await yargsCli<GlobalOptions & CompareOptions>(
       ['--before=source-report.json', '--after', 'target-report.json'],
       {
         options: { ...options, ...yargsCompareOptionsDefinition() },
@@ -161,7 +169,7 @@ describe('yargsCli', () => {
   });
 
   it('should parse merge-diffs options', async () => {
-    const parsedArgv = await yargsCli<GeneralCliOptions & MergeDiffsOptions>(
+    const parsedArgv = await yargsCli<GlobalOptions & MergeDiffsOptions>(
       [
         '--files',
         '.code-pushup/frontend/report-diff.json',
@@ -177,7 +185,7 @@ describe('yargsCli', () => {
 
   it('should error if required merge-diffs option is missing', () => {
     expect(() =>
-      yargsCli<GeneralCliOptions & CompareOptions>([], {
+      yargsCli<GlobalOptions & CompareOptions>([], {
         options: { ...options, ...yargsMergeDiffsOptionsDefinition() },
         noExitProcess: true,
       }).parse(),

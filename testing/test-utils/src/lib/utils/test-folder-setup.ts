@@ -1,6 +1,6 @@
-import { logger } from '@nx/devkit';
-import { bold } from 'ansis';
-import { mkdir, rm, stat } from 'node:fs/promises';
+import ansis from 'ansis';
+import { mkdir, readdir, rename, rm, stat } from 'node:fs/promises';
+import path from 'node:path';
 
 export async function cleanTestFolder(dirName: string) {
   await teardownTestFolder(dirName);
@@ -11,8 +11,8 @@ export async function teardownTestFolder(dirName: string) {
   try {
     const stats = await stat(dirName);
     if (!stats.isDirectory()) {
-      logger.warn(
-        `⚠️ You are trying to delete a file instead of a directory - ${bold(
+      console.warn(
+        `⚠️ You are trying to delete a file instead of a directory - ${ansis.bold(
           dirName,
         )}.`,
       );
@@ -30,10 +30,43 @@ export async function teardownTestFolder(dirName: string) {
       retryDelay: 100,
     });
   } catch {
-    logger.warn(
-      `⚠️ Failed to delete test artefact ${bold(
+    console.warn(
+      `⚠️ Failed to delete test artefact ${ansis.bold(
         dirName,
       )} so the folder is still in the file system!\nIt may require a deletion before running e2e tests again.`,
     );
   }
+}
+
+/**
+ * File names that need to be restored by removing the "_" prefix.
+ * These files are prefixed with "_" in mock fixtures to avoid Nx detection.
+ */
+export const NX_IGNORED_FILES_TO_RESTORE: string[] = [
+  '_package.json',
+  '_nx.json',
+  '_project.json',
+];
+
+/**
+ * Recursively renames specific files by removing the "_" prefix.
+ * This is needed because mock fixtures have "_" prefix to avoid Nx detection,
+ * but tests need the original filenames.
+ *
+ * @param dir - Directory to process recursively
+ */
+export async function restoreNxIgnoredFiles(dir: string): Promise<void> {
+  const entries = await readdir(dir, { withFileTypes: true });
+  await entries.reduce(async (previousPromise, entry) => {
+    await previousPromise;
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      await restoreNxIgnoredFiles(fullPath);
+    } else if (
+      entry.isFile() &&
+      NX_IGNORED_FILES_TO_RESTORE.includes(entry.name)
+    ) {
+      await rename(fullPath, path.join(dir, entry.name.slice(1)));
+    }
+  }, Promise.resolve());
 }

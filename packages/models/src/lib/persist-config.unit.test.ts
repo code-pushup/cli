@@ -23,13 +23,13 @@ describe('persistConfigSchema', () => {
   it('should throw for an empty file name', () => {
     expect(() =>
       persistConfigSchema.parse({ filename: ' ' } as PersistConfig),
-    ).toThrow('file name is invalid');
+    ).toThrow('Invalid string: must match pattern');
   });
 
   it('should throw for an empty output directory', () => {
     expect(() =>
       persistConfigSchema.parse({ outputDir: ' ' } as PersistConfig),
-    ).toThrow('path is invalid');
+    ).toThrow('Too small: expected string to have >=1 characters');
   });
 
   it('should throw for an invalid format', () => {

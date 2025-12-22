@@ -10,7 +10,12 @@ import {
   type SourceFileIssue,
   runInCI,
 } from '@code-pushup/ci';
-import { CODE_PUSHUP_UNICODE_LOGO } from '@code-pushup/utils';
+import { DEFAULT_PERSIST_CONFIG } from '@code-pushup/models';
+import {
+  CODE_PUSHUP_UNICODE_LOGO,
+  logger,
+  stringifyError,
+} from '@code-pushup/utils';
 
 type GitHubRefs = {
   head: GitBranch;
@@ -82,7 +87,7 @@ function createAnnotationsFromIssues(issues: SourceFileIssue[]): void {
 }
 
 function createGitHubApiClient(): ProviderAPIClient {
-  const token = process.env.GH_TOKEN;
+  const token = process.env['GH_TOKEN'];
 
   if (!token) {
     throw new Error('No GitHub token found');
@@ -124,15 +129,51 @@ function createGitHubApiClient(): ProviderAPIClient {
   };
 }
 
+function setupOptions(): Options {
+  const isMonorepo = process.env['MODE'] === 'monorepo';
+
+  if (isMonorepo) {
+    return {
+      jobId: 'monorepo-mode',
+      monorepo: 'nx',
+      nxProjectsFilter: '--with-target=code-pushup --exclude=workspace',
+      configPatterns: {
+        persist: {
+          ...DEFAULT_PERSIST_CONFIG,
+          outputDir: '.code-pushup/{projectName}',
+        },
+        ...(process.env['CP_API_KEY'] && {
+          upload: {
+            server: 'https://api.staging.code-pushup.dev/graphql',
+            apiKey: process.env['CP_API_KEY'],
+            organization: 'code-pushup',
+            project: 'cli-{projectName}',
+          },
+        }),
+      },
+    };
+  }
+
+  // tsx importer need to resolve plugin runner scripts
+  // eslint-disable-next-line functional/immutable-data
+  process.env['NODE_OPTIONS'] = '--import=tsx';
+
+  return {
+    jobId: 'standalone-mode',
+    // run without Nx to demonstrate native GitHub Actions log groups
+    bin: 'node packages/cli/src/index.ts',
+  };
+}
+
 async function run(): Promise<void> {
   try {
-    const options: Options = {
-      bin: 'npx nx code-pushup --nx-bail  --',
-    };
+    if (core.isDebug()) {
+      logger.setVerbose(true);
+    }
 
     const gitRefs = parseGitRefs();
-
     const apiClient = createGitHubApiClient();
+    const options = setupOptions();
 
     const result = await runInCI(gitRefs, apiClient, options);
 
@@ -150,7 +191,7 @@ async function run(): Promise<void> {
 
     core.info(`${LOG_PREFIX} Finished running successfully`);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
+    const message = stringifyError(error);
     core.error(`${LOG_PREFIX} Failed: ${message}`);
     core.setFailed(message);
   }

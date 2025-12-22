@@ -1,10 +1,9 @@
-import { type MockInstance, expect, vi } from 'vitest';
+import { type MockInstance, describe, expect, it, vi } from 'vitest';
 import { osAgnosticPath } from '@code-pushup/test-utils';
 import type { Command } from '../internal/types.js';
 import {
-  mergeExecutorOptions,
-  parseAutorunExecutorOnlyOptions,
-  parseAutorunExecutorOptions,
+  parseCliExecutorOnlyOptions,
+  parseCliExecutorOptions,
   parsePrintConfigExecutorOptions,
 } from './utils.js';
 
@@ -24,45 +23,57 @@ describe('parsePrintConfigExecutorOptions', () => {
   });
 });
 
-describe('parseAutorunExecutorOnlyOptions', () => {
+describe('parseCliExecutorOnlyOptions', () => {
   it('should provide NO default projectPrefix', () => {
-    expect(parseAutorunExecutorOnlyOptions({})).toStrictEqual(
+    expect(parseCliExecutorOnlyOptions({})).toStrictEqual(
       expect.not.objectContaining({ projectPrefix: expect.anything() }),
     );
   });
 
   it('should process given projectPrefix', () => {
-    expect(
-      parseAutorunExecutorOnlyOptions({ projectPrefix: 'cli' }),
-    ).toStrictEqual(expect.objectContaining({ projectPrefix: 'cli' }));
+    expect(parseCliExecutorOnlyOptions({ projectPrefix: 'cli' })).toStrictEqual(
+      expect.objectContaining({ projectPrefix: 'cli' }),
+    );
   });
 
   it('should provide NO default dryRun', () => {
-    expect(parseAutorunExecutorOnlyOptions({})).toStrictEqual(
+    expect(parseCliExecutorOnlyOptions({})).toStrictEqual(
       expect.not.objectContaining({ dryRun: expect.anything() }),
     );
   });
 
   it('should process given dryRun', () => {
-    expect(parseAutorunExecutorOnlyOptions({ dryRun: false })).toStrictEqual(
+    expect(parseCliExecutorOnlyOptions({ dryRun: false })).toStrictEqual(
       expect.objectContaining({ dryRun: false }),
     );
   });
 
   it('should provide default onlyPlugins', () => {
-    expect(parseAutorunExecutorOnlyOptions({})).toStrictEqual(
+    expect(parseCliExecutorOnlyOptions({})).toStrictEqual(
       expect.not.objectContaining({ onlyPlugins: ['json'] }),
     );
   });
 
   it('should process given onlyPlugins', () => {
     expect(
-      parseAutorunExecutorOnlyOptions({ onlyPlugins: ['md', 'json'] }),
+      parseCliExecutorOnlyOptions({ onlyPlugins: ['md', 'json'] }),
     ).toStrictEqual(expect.objectContaining({ onlyPlugins: ['md', 'json'] }));
+  });
+
+  it('should log env variables options if given', async () => {
+    expect(
+      parseCliExecutorOnlyOptions({ env: { TEST_ENV_VAR: '42' } }),
+    ).toStrictEqual(expect.objectContaining({ env: { TEST_ENV_VAR: '42' } }));
+  });
+
+  it('should process given bin', () => {
+    expect(parseCliExecutorOnlyOptions({ bin: 'index.js' })).toStrictEqual(
+      expect.objectContaining({ bin: 'index.js' }),
+    );
   });
 });
 
-describe('parseAutorunExecutorOptions', () => {
+describe('parseCliExecutorOptions', () => {
   let processEnvSpy: MockInstance<[], NodeJS.ProcessEnv>;
 
   beforeAll(() => {
@@ -75,7 +86,7 @@ describe('parseAutorunExecutorOptions', () => {
 
   it('should leverage other config helper to assemble the executor config', () => {
     const projectName = 'my-app';
-    const executorOptions = parseAutorunExecutorOptions(
+    const executorOptions = parseCliExecutorOptions(
       {
         persist: {
           filename: 'from-options',
@@ -85,7 +96,7 @@ describe('parseAutorunExecutorOptions', () => {
         projectName,
         workspaceRoot: 'workspaceRoot',
         projectConfig: {
-          name: 'my-app',
+          name: projectName,
           root: 'root',
         },
       },
@@ -95,7 +106,6 @@ describe('parseAutorunExecutorOptions', () => {
     );
     expect(executorOptions).toEqual(
       expect.objectContaining({
-        progress: false,
         verbose: false,
       }),
     );
@@ -113,11 +123,33 @@ describe('parseAutorunExecutorOptions', () => {
     );
   });
 
+  it('should include the env options', () => {
+    const projectName = 'my-app';
+    const env = {
+      NODE_OPTIONS: '--import tsx',
+      TSX_TSCONFIG_PATH: 'tsconfig.base.json',
+    };
+
+    const executorOptions = parseCliExecutorOptions(
+      { env },
+      {
+        projectName,
+        workspaceRoot: 'workspaceRoot',
+        projectConfig: {
+          name: projectName,
+          root: 'root',
+        },
+      },
+    );
+
+    expect(executorOptions.env).toStrictEqual(env);
+  });
+
   it.each<Command | undefined>(['upload', 'autorun', undefined])(
     'should include upload config for command %s if API key is provided',
     command => {
       const projectName = 'my-app';
-      const executorOptions = parseAutorunExecutorOptions(
+      const executorOptions = parseCliExecutorOptions(
         {
           command,
           upload: {
@@ -146,7 +178,7 @@ describe('parseAutorunExecutorOptions', () => {
     'should not include upload config for command %s',
     command => {
       const projectName = 'my-app';
-      const executorOptions = parseAutorunExecutorOptions(
+      const executorOptions = parseCliExecutorOptions(
         {
           command,
           upload: {
@@ -170,27 +202,4 @@ describe('parseAutorunExecutorOptions', () => {
       );
     },
   );
-});
-
-describe('mergeExecutorOptions', () => {
-  it('should deeply merge target and CLI options', () => {
-    const targetOptions = {
-      persist: {
-        outputDir: '.reports',
-        filename: 'report',
-      },
-    };
-    const cliOptions = {
-      persist: {
-        filename: 'report-file',
-      },
-    };
-    const expected = {
-      persist: {
-        outputDir: '.reports',
-        filename: 'report-file',
-      },
-    };
-    expect(mergeExecutorOptions(targetOptions, cliOptions)).toEqual(expected);
-  });
 });

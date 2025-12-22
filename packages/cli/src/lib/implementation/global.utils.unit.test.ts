@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import { filterKebabCaseKeys, logErrorBeforeThrow } from './global.utils.js';
 import { OptionValidationError } from './validate-filter-options.utils.js';
 
@@ -64,7 +64,7 @@ describe('logErrorBeforeThrow', () => {
     } catch {
       /* suppress */
     }
-    expect(ui()).toHaveLogged('error', 'Option validation failed');
+    expect(logger.error).toHaveBeenCalledWith('Option validation failed');
   });
 
   it('should rethrow errors other than OptionValidationError', async () => {

@@ -2,14 +2,18 @@ import ansis from 'ansis';
 import { describe, expect, it } from 'vitest';
 import {
   formatBytes,
+  formatCoveragePercentage,
   formatDate,
   formatDuration,
   indentLines,
+  pluginMetaLogFormatter,
   pluralize,
   pluralizeToken,
   roundDecimals,
+  serializeCommandWithArgs,
   slugify,
   transformLines,
+  truncateMultilineText,
   truncateText,
 } from './formatting.js';
 
@@ -23,7 +27,7 @@ describe('roundDecimals', () => {
   });
 
   it('should return number to prevent unnecessary trailing 0s in decimals', () => {
-    const result = roundDecimals(42.500001, 3);
+    const result = roundDecimals(42.500_001, 3);
     expect(result).toBeTypeOf('number');
     expect(result.toString()).toBe('42.5');
     expect(result.toString()).not.toBe('42.50');
@@ -60,6 +64,7 @@ describe('pluralize', () => {
     ['error', 'errors'],
     ['category', 'categories'],
     ['status', 'statuses'],
+    ['branch', 'branches'],
   ])('should pluralize "%s" as "%s"', (singular, plural) => {
     expect(pluralize(singular)).toBe(plural);
   });
@@ -112,7 +117,7 @@ describe('formatDuration', () => {
     [891, '891 ms'],
     [499.85, '500 ms'],
     [1200, '1.2 s'],
-    [56789, '56.79 s'],
+    [56_789, '56.79 s'],
     [60_000, '60 s'],
   ])('should format duration of %s milliseconds as %s', (ms, displayValue) => {
     expect(formatDuration(ms)).toBe(displayValue);
@@ -135,7 +140,7 @@ describe('formatDate', () => {
 describe('truncateText', () => {
   it('should replace overflowing text with ellipsis at the end', () => {
     expect(truncateText('All work and no play makes Jack a dull boy', 32)).toBe(
-      'All work and no play makes Ja...',
+      'All work and no play makes Jack…',
     );
   });
 
@@ -161,28 +166,47 @@ describe('truncateText', () => {
         maxChars: 10,
         position: 'start',
       }),
-    ).toBe('...dy day.');
+    ).toBe('…oudy day.');
   });
 
   it('should produce truncated text with ellipsis at the middle', () => {
     expect(
       truncateText('Horrendous amounts of lint issues are present Tony!', {
-        maxChars: 10,
+        maxChars: 8,
         position: 'middle',
       }),
-    ).toBe('Hor...ny!');
+    ).toBe('Hor…ny!');
   });
 
   it('should produce truncated text with ellipsis at the end', () => {
     expect(truncateText("I'm Johnny!", { maxChars: 10, position: 'end' })).toBe(
-      "I'm Joh...",
+      "I'm Johnn…",
     );
   });
 
   it('should produce truncated text with custom ellipsis', () => {
-    expect(truncateText("I'm Johnny!", { maxChars: 10, ellipsis: '*' })).toBe(
-      "I'm Johnn*",
+    expect(truncateText("I'm Johnny!", { maxChars: 10, ellipsis: '...' })).toBe(
+      "I'm Joh...",
     );
+  });
+});
+
+describe('transformMultilineText', () => {
+  it('should replace additional lines with an ellipsis', () => {
+    const error = `SchemaValidationError: Invalid CoreConfig in code-pushup.config.ts file
+✖ Invalid input: expected array, received undefined
+  → at plugins`;
+    expect(truncateMultilineText(error)).toBe(
+      'SchemaValidationError: Invalid CoreConfig in code-pushup.config.ts file […]',
+    );
+  });
+
+  it('should leave one-liner texts unchanged', () => {
+    expect(truncateMultilineText('Hello, world!')).toBe('Hello, world!');
+  });
+
+  it('should omit ellipsis if additional lines have no non-whitespace characters', () => {
+    expect(truncateMultilineText('- item 1\n  \n\n')).toBe('- item 1');
   });
 });
 
@@ -192,7 +216,10 @@ describe('transformLines', () => {
     expect(
       transformLines(
         `export function greet(name = 'World') {\n  console.log('Hello, ' + name + '!');\n}\n`,
-        line => `${ansis.gray(`${++count} | `)}${line}`,
+        line => {
+          const prefix = `${++count} | `;
+          return `${ansis.gray(prefix)}${line}`;
+        },
       ),
     ).toBe(
       `
@@ -228,5 +255,69 @@ describe('indentLines', () => {
   All files pass linting.
   `.slice(1), // ignore first line break
     );
+  });
+});
+
+describe('serializeCommandWithArgs', () => {
+  it('should serialize command and args into an equivalent shell string', () => {
+    expect(
+      serializeCommandWithArgs({
+        command: 'npx',
+        args: ['eslint', '.', '--format=json'],
+      }),
+    ).toBe('npx eslint . --format=json');
+  });
+
+  it('should omit args if missing', () => {
+    expect(serializeCommandWithArgs({ command: 'ls' })).toBe('ls');
+  });
+});
+
+describe('pluginMetaLogFormatter', () => {
+  it('should prefix plugin title', () => {
+    expect(pluginMetaLogFormatter('ESLint')('Found 42 rules in total')).toBe(
+      `${ansis.blue('[ESLint]')} Found 42 rules in total`,
+    );
+  });
+
+  it('should align multiline message with prefix', () => {
+    expect(
+      ansis.strip(
+        pluginMetaLogFormatter('Coverage')(
+          'Created 3 groups:\n- Line coverage\n- Branch coverage\n- Function coverage',
+        ),
+      ),
+    ).toBe(
+      `
+[Coverage] Created 3 groups:
+           - Line coverage
+           - Branch coverage
+           - Function coverage
+`.trim(),
+    );
+  });
+});
+
+describe('formatCoveragePercentage', () => {
+  it('should render percentage', () => {
+    expect(formatCoveragePercentage({ covered: 125, total: 1000 })).toBe(
+      '12.5%',
+    );
+  });
+
+  it('should render max 1 decimal', () => {
+    expect(formatCoveragePercentage({ covered: 1, total: 3 })).toBe('33.3%');
+  });
+
+  it('should render at least 1 decimal', () => {
+    expect(formatCoveragePercentage({ covered: 0, total: 10 })).toBe('0.0%');
+  });
+
+  it('should round decimal up if appropriate', () => {
+    expect(formatCoveragePercentage({ covered: 2, total: 3 })).toBe('66.7%');
+  });
+
+  it('should not render invalid percentage', () => {
+    expect(formatCoveragePercentage({ covered: 0, total: 0 })).toBe('-');
   });
 });

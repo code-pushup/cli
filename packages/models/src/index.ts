@@ -66,11 +66,17 @@ export {
   filePathSchema,
   globPathSchema,
   materialIconSchema,
+  positiveIntSchema,
   scoreSchema,
   slugSchema,
   type MaterialIcon,
 } from './lib/implementation/schemas.js';
 export { exists } from './lib/implementation/utils.js';
+export {
+  SchemaValidationError,
+  validate,
+  validateAsync,
+} from './lib/implementation/validate.js';
 export {
   issueSchema,
   issueSeveritySchema,
@@ -88,10 +94,12 @@ export {
   pluginContextSchema,
   pluginMetaSchema,
   pluginScoreTargetsSchema,
+  pluginUrlsSchema,
   type PluginConfig,
   type PluginContext,
   type PluginMeta,
   type PluginScoreTargets,
+  type PluginUrls,
 } from './lib/plugin-config.js';
 export {
   auditReportSchema,

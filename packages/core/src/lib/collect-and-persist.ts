@@ -1,22 +1,16 @@
-import {
-  type CacheConfigObject,
-  type CoreConfig,
-  type PersistConfig,
-  pluginReportSchema,
+import type {
+  CacheConfigObject,
+  CoreConfig,
+  PersistConfig,
 } from '@code-pushup/models';
 import {
-  isVerbose,
   logStdoutSummary,
+  logger,
   scoreReport,
   sortReport,
-  ui,
 } from '@code-pushup/utils';
 import { collect } from './implementation/collect.js';
-import {
-  logPersistedResults,
-  persistReport,
-} from './implementation/persist.js';
-import type { GlobalOptions } from './types.js';
+import { logPersistedReport, persistReport } from './implementation/persist.js';
 
 export type CollectAndPersistReportsOptions = Pick<
   CoreConfig,
@@ -25,38 +19,32 @@ export type CollectAndPersistReportsOptions = Pick<
   persist: Required<Omit<PersistConfig, 'skipReports'>> &
     Pick<PersistConfig, 'skipReports'>;
   cache: CacheConfigObject;
-} & Partial<GlobalOptions>;
+};
 
 export async function collectAndPersistReports(
   options: CollectAndPersistReportsOptions,
 ): Promise<void> {
-  const logger = ui().logger;
   const reportResult = await collect(options);
   const sortedScoredReport = sortReport(scoreReport(reportResult));
 
   const { persist } = options;
   const { skipReports = false, ...persistOptions } = persist ?? {};
 
-  if (skipReports === true) {
-    logger.info('Skipping saving reports as `persist.skipReports` is true');
+  if (skipReports) {
+    logger.info('Skipped saving report as persist.skipReports flag is set');
   } else {
-    const persistResults = await persistReport(
+    const reportFiles = await persistReport(
       reportResult,
       sortedScoredReport,
       persistOptions,
     );
-
-    if (isVerbose()) {
-      logPersistedResults(persistResults);
-    }
+    logPersistedReport(reportFiles);
   }
 
   // terminal output
+  logger.newline();
+  logger.newline();
   logStdoutSummary(sortedScoredReport);
-
-  // validate report and throw if invalid
-  reportResult.plugins.forEach(plugin => {
-    // Running checks after persisting helps while debugging as you can check the invalid output after the error is thrown
-    pluginReportSchema.parse(plugin);
-  });
+  logger.newline();
+  logger.newline();
 }

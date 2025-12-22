@@ -8,12 +8,14 @@ import {
   DEFAULT_PERSIST_OUTPUT_DIR,
   type Format,
   uploadConfigSchema,
+  validate,
 } from '@code-pushup/models';
+import { logger, pluralizeToken } from '@code-pushup/utils';
 import type { CoreConfigCliOptions } from './core-config.model.js';
 import type { FilterOptions } from './filter.model.js';
-import type { GeneralCliOptions } from './global.model.js';
+import type { GlobalOptions } from './global.model.js';
 
-export type CoreConfigMiddlewareOptions = GeneralCliOptions &
+export type CoreConfigMiddlewareOptions = GlobalOptions &
   CoreConfigCliOptions &
   FilterOptions;
 
@@ -37,7 +39,7 @@ function buildPersistConfig(
 
 export async function coreConfigMiddleware<
   T extends CoreConfigMiddlewareOptions,
->(processArgs: T): Promise<GeneralCliOptions & CoreConfig & FilterOptions> {
+>(processArgs: T): Promise<GlobalOptions & CoreConfig & FilterOptions> {
   const {
     config,
     tsconfig,
@@ -46,43 +48,45 @@ export async function coreConfigMiddleware<
     cache: cliCache,
     ...remainingCliOptions
   } = processArgs;
-  // Search for possible configuration file extensions if path is not given
-  const importedRc = config
-    ? await readRcByPath(config, tsconfig)
-    : await autoloadRc(tsconfig);
-  const {
-    persist: rcPersist,
-    upload: rcUpload,
-    ...remainingRcConfig
-  } = importedRc;
-  const upload =
-    rcUpload == null && cliUpload == null
-      ? undefined
-      : uploadConfigSchema.parse({
-          ...rcUpload,
-          ...cliUpload,
-        });
 
-  return {
-    ...(config != null && { config }),
-    cache: normalizeCache(cliCache),
-    persist: buildPersistConfig(cliPersist, rcPersist),
-    ...(upload != null && { upload }),
-    ...remainingRcConfig,
-    ...remainingCliOptions,
-  };
+  return logger.group('Loading configuration', async () => {
+    // Search for possible configuration file extensions if path is not given
+    const importedRc = config
+      ? await readRcByPath(config, tsconfig)
+      : await autoloadRc(tsconfig);
+    const {
+      persist: rcPersist,
+      upload: rcUpload,
+      ...remainingRcConfig
+    } = importedRc;
+    const upload =
+      rcUpload == null && cliUpload == null
+        ? undefined
+        : validate(uploadConfigSchema, { ...rcUpload, ...cliUpload });
+
+    const result: GlobalOptions & CoreConfig & FilterOptions = {
+      ...(config != null && { config }),
+      cache: normalizeCache(cliCache),
+      persist: buildPersistConfig(cliPersist, rcPersist),
+      ...(upload != null && { upload }),
+      ...remainingRcConfig,
+      ...remainingCliOptions,
+    };
+
+    return {
+      message: `Parsed config: ${summarizeConfig(result)}`,
+      result,
+    };
+  });
 }
 
-export const normalizeBooleanWithNegation = <T extends string>(
-  propertyName: T,
-  cliOptions?: Record<T, unknown>,
-  rcOptions?: Record<T, unknown>,
-): boolean =>
-  propertyName in (cliOptions ?? {})
-    ? (cliOptions?.[propertyName] as boolean)
-    : `no-${propertyName}` in (cliOptions ?? {})
-      ? false
-      : ((rcOptions?.[propertyName] as boolean) ?? true);
+function summarizeConfig(config: CoreConfig): string {
+  return [
+    pluralizeToken('plugin', config.plugins.length),
+    pluralizeToken('category', config.categories?.length ?? 0),
+    `upload ${config.upload ? 'enabled' : 'disabled'}`,
+  ].join(', ');
+}
 
 export const normalizeCache = (cache?: CacheConfig): CacheConfigObject => {
   if (cache == null) {

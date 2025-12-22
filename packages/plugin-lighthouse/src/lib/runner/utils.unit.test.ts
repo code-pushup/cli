@@ -1,4 +1,4 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import debug from 'debug';
 import log from 'lighthouse-logger';
 import type Details from 'lighthouse/types/lhr/audit-details';
@@ -13,15 +13,15 @@ import {
   auditOutputsSchema,
 } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { ui } from '@code-pushup/utils';
+import { logger } from '@code-pushup/utils';
 import { DEFAULT_CLI_FLAGS } from './constants.js';
 import { unsupportedDetailTypes } from './details/details.js';
 import type { LighthouseCliFlags } from './types.js';
 import {
   determineAndSetLogLevel,
   enrichFlags,
+  filterAuditOutputs,
   getConfig,
-  normalizeAuditOutputs,
   toAuditOutputs,
   withLocalTmpDir,
 } from './utils.js';
@@ -51,10 +51,10 @@ vi.mock('bundle-require', async () => {
   };
 });
 
-describe('normalizeAuditOutputs', () => {
+describe('filterAuditOutputs', () => {
   it('should filter audits listed under skipAudits', () => {
     expect(
-      normalizeAuditOutputs(
+      filterAuditOutputs(
         [
           { slug: 'largest-contentful-paint' } as AuditOutput,
           { slug: 'cumulative-layout-shifts' } as AuditOutput,
@@ -66,7 +66,7 @@ describe('normalizeAuditOutputs', () => {
 
   it('should NOT filter audits if no skipAudits are listed', () => {
     expect(
-      normalizeAuditOutputs([
+      filterAuditOutputs([
         { slug: 'largest-contentful-paint' } as AuditOutput,
         { slug: 'cumulative-layout-shifts' } as AuditOutput,
       ]),
@@ -247,7 +247,7 @@ describe('toAuditOutputs', () => {
           }) as Result,
       ),
     );
-    expect(ui()).not.toHaveLogs();
+    expect(logger.warn).not.toHaveBeenCalled();
   });
 
   it('should inform that for all unsupported details if verbose IS given', () => {
@@ -265,7 +265,7 @@ describe('toAuditOutputs', () => {
       ),
       { verbose: true },
     );
-    expect(ui()).toHaveLoggedTimes(1);
+    expect(logger.warn).toHaveBeenCalledTimes(1);
   });
 
   it('should not parse empty audit details', () => {
@@ -308,7 +308,7 @@ describe('toAuditOutputs', () => {
         { verbose: true },
       ),
     ).toThrow(
-      `Audit ${bold('cumulative-layout-shift')} failed parsing details:`,
+      `Failed to parse ${ansis.bold('cumulative-layout-shift')} audit's details`,
     );
   });
 });
@@ -348,7 +348,7 @@ describe('getConfig', () => {
     await expect(
       getConfig({ preset: 'wrong' as 'desktop' }),
     ).resolves.toBeUndefined();
-    expect(ui()).toHaveLogged('info', 'Preset "wrong" is not supported');
+    expect(logger.warn).toHaveBeenCalledWith('Preset "wrong" is not supported');
   });
 
   it('should load config from json file if configPath is specified', async () => {
@@ -368,6 +368,7 @@ describe('getConfig', () => {
   });
 
   it('should load config from lh-config.js file if configPath is specified', async () => {
+    vol.fromJSON({ 'lh-config.js': '// mocked above' }, MEMFS_VOLUME);
     await expect(getConfig({ configPath: 'lh-config.js' })).resolves.toEqual(
       expect.objectContaining({
         upload: expect.objectContaining({
@@ -377,11 +378,10 @@ describe('getConfig', () => {
     );
   });
 
-  it('should return undefined and log if configPath has wrong extension', async () => {
-    await expect(
-      getConfig({ configPath: path.join('wrong.not') }),
-    ).resolves.toBeUndefined();
-    expect(ui()).toHaveLogged('info', 'Format of file wrong.not not supported');
+  it('should throw if configPath has wrong extension', async () => {
+    await expect(getConfig({ configPath: 'wrong.not' })).rejects.toThrow(
+      'Unknown Lighthouse config file extension in wrong.not',
+    );
   });
 });
 

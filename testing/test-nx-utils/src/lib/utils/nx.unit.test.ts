@@ -1,12 +1,12 @@
-import * as process from 'node:process';
 import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
 import { describe, expect } from 'vitest';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { executorContext, registerPluginInWorkspace } from './nx.js';
 
 describe('executorContext', () => {
   it('should create context for given project name', () => {
     expect(executorContext('my-lib')).toStrictEqual({
-      cwd: process.cwd(),
+      cwd: MEMFS_VOLUME,
       isVerbose: false,
       projectName: 'my-lib',
       projectsConfigurations: {
@@ -88,6 +88,40 @@ describe('registerPluginInWorkspace', () => {
             options: { key: 'value' },
           },
         ],
+      }),
+    );
+  });
+
+  it('should register pluginsConfig when provided', () => {
+    const tree = createTreeWithEmptyWorkspace({ layout: 'apps-libs' });
+
+    registerPluginInWorkspace(
+      tree,
+      {
+        plugin: '@code-pushup/nx-plugin',
+        options: { targetName: 'code-pushup' },
+      },
+      {
+        projectPrefix: 'cli',
+        bin: 'packages/cli/src/index.ts',
+      },
+    );
+
+    const nxJson = JSON.parse(tree.read('nx.json')?.toString() ?? '{}');
+    expect(nxJson).toStrictEqual(
+      expect.objectContaining({
+        plugins: [
+          {
+            plugin: '@code-pushup/nx-plugin',
+            options: { targetName: 'code-pushup' },
+          },
+        ],
+        pluginsConfig: {
+          '@code-pushup/nx-plugin': {
+            projectPrefix: 'cli',
+            bin: 'packages/cli/src/index.ts',
+          },
+        },
       }),
     );
   });

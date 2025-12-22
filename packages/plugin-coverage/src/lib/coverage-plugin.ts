@@ -1,14 +1,19 @@
 import { createRequire } from 'node:module';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import type { Audit, Group, PluginConfig } from '@code-pushup/models';
-import { capitalize } from '@code-pushup/utils';
+import {
+  type Audit,
+  type Group,
+  type PluginConfig,
+  validate,
+} from '@code-pushup/models';
+import { logger, pluralizeToken } from '@code-pushup/utils';
 import {
   type CoveragePluginConfig,
   type CoverageType,
   coveragePluginConfigSchema,
 } from './config.js';
-import { createRunnerConfig } from './runner/index.js';
+import { COVERAGE_PLUGIN_SLUG, COVERAGE_PLUGIN_TITLE } from './constants.js';
+import { formatMetaLog, typeToAuditSlug, typeToAuditTitle } from './format.js';
+import { createRunnerFunction } from './runner/runner.js';
 import { coverageDescription, coverageTypeWeightMapper } from './utils.js';
 
 /**
@@ -32,12 +37,12 @@ import { coverageDescription, coverageTypeWeightMapper } from './utils.js';
 export async function coveragePlugin(
   config: CoveragePluginConfig,
 ): Promise<PluginConfig> {
-  const coverageConfig = coveragePluginConfigSchema.parse(config);
+  const coverageConfig = validate(coveragePluginConfigSchema, config);
 
   const audits = coverageConfig.coverageTypes.map(
     (type): Audit => ({
-      slug: `${type}-coverage`,
-      title: `${capitalize(type)} coverage`,
+      slug: typeToAuditSlug(type),
+      title: typeToAuditTitle(type),
       description: coverageDescription[type],
     }),
   );
@@ -55,10 +60,10 @@ export async function coveragePlugin(
     })),
   };
 
-  const runnerScriptPath = path.join(
-    fileURLToPath(path.dirname(import.meta.url)),
-    '..',
-    'bin.js',
+  logger.info(
+    formatMetaLog(
+      `Created ${pluralizeToken('audit', audits.length)} (${coverageConfig.coverageTypes.join('/')} coverage) and 1 group`,
+    ),
   );
 
   const packageJson = createRequire(import.meta.url)(
@@ -68,8 +73,8 @@ export async function coveragePlugin(
   const scoreTargets = coverageConfig.scoreTargets;
 
   return {
-    slug: 'coverage',
-    title: 'Code coverage',
+    slug: COVERAGE_PLUGIN_SLUG,
+    title: COVERAGE_PLUGIN_TITLE,
     icon: 'folder-coverage-open',
     description: 'Official Code PushUp code coverage plugin.',
     docsUrl: 'https://www.npmjs.com/package/@code-pushup/coverage-plugin/',
@@ -77,7 +82,7 @@ export async function coveragePlugin(
     version: packageJson.version,
     audits,
     groups: [group],
-    runner: await createRunnerConfig(runnerScriptPath, coverageConfig),
+    runner: createRunnerFunction(coverageConfig),
     ...(scoreTargets && { scoreTargets }),
   };
 }

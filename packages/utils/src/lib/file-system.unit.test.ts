@@ -1,21 +1,19 @@
 import { vol } from 'memfs';
 import { stat } from 'node:fs/promises';
 import path from 'node:path';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
-  type FileResult,
   crawlFileSystem,
   createReportPath,
   ensureDirectoryExists,
   filePathToCliArg,
   findLineNumberInText,
   findNearestFile,
-  logMultipleFileResults,
   projectToFilename,
   splitFilePath,
+  truncatePaths,
 } from './file-system.js';
-import * as logResults from './log-results.js';
 
 describe('ensureDirectoryExists', () => {
   it('should create a nested folder', async () => {
@@ -50,32 +48,6 @@ describe('createReportPath', () => {
         suffix: 'diff',
       }),
     ).toMatchPath('.code-pushup/report-diff.md');
-  });
-});
-
-describe('logMultipleFileResults', () => {
-  it('should call logMultipleResults with the correct arguments', () => {
-    const logMultipleResultsSpy = vi.spyOn(
-      logResults,
-      'logMultipleResults' as never,
-    );
-    const persistResult = [
-      {
-        status: 'fulfilled',
-        value: ['out.json', 10_000],
-      } as PromiseFulfilledResult<FileResult>,
-    ];
-    const messagePrefix = 'Generated reports';
-
-    logMultipleFileResults(persistResult, messagePrefix);
-
-    expect(logMultipleResultsSpy).toHaveBeenCalled();
-    expect(logMultipleResultsSpy).toHaveBeenCalledWith(
-      persistResult,
-      messagePrefix,
-      expect.any(Function),
-      expect.any(Function),
-    );
   });
 });
 
@@ -295,5 +267,62 @@ describe('splitFilePath', () => {
       folders: ['src', 'app'],
       file: 'app.component.ts',
     });
+  });
+});
+
+describe('truncatePaths', () => {
+  it('should replace shared path prefix with ellipsis', () => {
+    expect(
+      truncatePaths([
+        path.join('dist', 'packages', 'cli'),
+        path.join('dist', 'packages', 'core'),
+        path.join('dist', 'packages', 'utils'),
+      ]),
+    ).toEqual([
+      path.join('…', 'cli'),
+      path.join('…', 'core'),
+      path.join('…', 'utils'),
+    ]);
+  });
+
+  it('should replace shared path suffix with ellipsis', () => {
+    expect(
+      truncatePaths([
+        path.join('e2e', 'cli-e2e', 'coverage', 'lcov.info'),
+        path.join('packages', 'cli', 'coverage', 'lcov.info'),
+        path.join('packages', 'core', 'coverage', 'lcov.info'),
+      ]),
+    ).toEqual([
+      path.join('e2e', 'cli-e2e', '…'),
+      path.join('packages', 'cli', '…'),
+      path.join('packages', 'core', '…'),
+    ]);
+  });
+
+  it('should replace shared path prefix and suffix at once', () => {
+    expect(
+      truncatePaths([
+        path.join('coverage', 'packages', 'cli', 'int-tests', 'lcov.info'),
+        path.join('coverage', 'packages', 'cli', 'unit-tests', 'lcov.info'),
+        path.join('coverage', 'packages', 'core', 'int-tests', 'lcov.info'),
+        path.join('coverage', 'packages', 'core', 'unit-tests', 'lcov.info'),
+        path.join('coverage', 'packages', 'utils', 'unit-tests', 'lcov.info'),
+      ]),
+    ).toEqual([
+      path.join('…', 'cli', 'int-tests', '…'),
+      path.join('…', 'cli', 'unit-tests', '…'),
+      path.join('…', 'core', 'int-tests', '…'),
+      path.join('…', 'core', 'unit-tests', '…'),
+      path.join('…', 'utils', 'unit-tests', '…'),
+    ]);
+  });
+
+  it('should leave unique paths unchanged', () => {
+    const paths = [
+      path.join('e2e', 'cli-e2e'),
+      path.join('packages', 'cli'),
+      path.join('packages', 'core'),
+    ];
+    expect(truncatePaths(paths)).toEqual(paths);
   });
 });

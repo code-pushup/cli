@@ -1,4 +1,3 @@
-import { bold, gray } from 'ansis';
 import type { CommandModule } from 'yargs';
 import { type HistoryOptions, history } from '@code-pushup/core';
 import {
@@ -6,19 +5,18 @@ import {
   getCurrentBranchOrTag,
   getHashes,
   getSemverTags,
+  logger,
   safeCheckout,
-  ui,
 } from '@code-pushup/utils';
-import { CLI_NAME } from '../constants.js';
 import { yargsFilterOptionsDefinition } from '../implementation/filter.options.js';
+import { printCliCommand } from '../implementation/logging.js';
 import type { HistoryCliOptions } from './history.model.js';
 import { yargsHistoryOptionsDefinition } from './history.options.js';
 import { normalizeHashOptions } from './utils.js';
 
 const command = 'history';
 async function handler(args: unknown) {
-  ui().logger.info(bold(CLI_NAME));
-  ui().logger.info(gray(`Run ${command}`));
+  printCliCommand(command);
 
   const currentBranch = await getCurrentBranchOrTag();
   const { targetBranch: rawTargetBranch, ...opt } = args as HistoryCliOptions &
@@ -50,7 +48,7 @@ async function handler(args: unknown) {
       results.map(({ hash }) => hash),
     );
 
-    ui().logger.log(`Reports: ${reports.length}`);
+    logger.info(`Reports: ${reports.length}`);
   } finally {
     // go back to initial branch
     await safeCheckout(currentBranch);

@@ -19,14 +19,13 @@ export const nxHandler: MonorepoToolHandler = {
           command: 'npx',
           args: ['nx', 'report'],
           cwd: options.cwd,
-          observer: options.observer,
           ignoreExitCode: true,
         })
       ).code === 0
     );
   },
 
-  async listProjects({ cwd, task, nxProjectsFilter, observer }) {
+  async listProjects({ cwd, task, nxProjectsFilter }) {
     const { stdout } = await executeProcess({
       command: 'npx',
       args: [
@@ -37,7 +36,6 @@ export const nxHandler: MonorepoToolHandler = {
         '--json',
       ],
       cwd,
-      observer,
     });
     const projects = parseProjects(stdout);
     return projects.toSorted().map(project => ({

@@ -28,6 +28,7 @@ export default tseslint.config(
             String.raw`^.*/eslint(\.base)?\.config\.[cm]?js$`,
             String.raw`^.*/code-pushup\.(config|preset)(\.m?[jt]s)?$`,
             '^[./]+/tools/.*$',
+            String.raw`^[./]+/(testing/)?test-setup-config/src/index\.js$`,
           ],
           depConstraints: [
             {
@@ -115,6 +116,7 @@ export default tseslint.config(
     files: ['**/*.ts', '**/*.js'],
     rules: {
       'n/file-extension-in-import': ['error', 'always'],
+      'unicorn/number-literal-case': 'off',
     },
   },
   {
@@ -127,7 +129,7 @@ export default tseslint.config(
   {
     // tests need only be compatible with local Node version
     // publishable packages should pick up version range from "engines" in their package.json
-    files: ['e2e/**/*.ts', 'testing/**/*.ts'],
+    files: ['e2e/**/*.ts', 'testing/**/*.ts', '**/*.test.ts'],
     settings: {
       node: {
         version: fs.readFileSync('.node-version', 'utf8'),
@@ -143,5 +145,22 @@ export default tseslint.config(
       '**/dist',
       '**/*.md',
     ],
+  },
+  {
+    files: ['packages/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@nx/devkit',
+              importNames: ['logger'],
+              message: 'Please use logger from @code-pushup/utils instead.',
+            },
+          ],
+        },
+      ],
+    },
   },
 );

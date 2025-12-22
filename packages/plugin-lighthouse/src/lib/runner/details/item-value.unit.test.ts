@@ -1,7 +1,7 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import type Details from 'lighthouse/types/lhr/audit-details';
-import { beforeAll, describe, expect, it } from 'vitest';
-import { ui } from '@code-pushup/utils';
+import { describe, expect, it } from 'vitest';
+import { logger } from '@code-pushup/utils';
 import {
   type SimpleItemValue,
   formatTableItemPropertyValue,
@@ -49,10 +49,6 @@ describe('parseSimpleItemValue', () => {
 });
 
 describe('parseTableItemPropertyValue', () => {
-  beforeAll(() => {
-    ui().switchMode('raw');
-  });
-
   it('should parse undefined', () => {
     expect(parseTableItemPropertyValue(undefined)).toBe('');
   });
@@ -146,17 +142,15 @@ describe('parseTableItemPropertyValue', () => {
       }),
     ).toBe('');
 
-    expect(ui()).toHaveLogged(
-      'info',
-      `Value type ${bold('subitems')} is not implemented`,
+    expect(logger.debug).toHaveBeenCalledWith(
+      `Value type ${ansis.bold('subitems')} is not implemented`,
     );
   });
 
   it('should parse value item debugdata to empty string and log implemented', () => {
     expect(parseTableItemPropertyValue({ type: 'debugdata' })).toBe('');
-    expect(ui()).toHaveLogged(
-      'info',
-      `Value type ${bold('debugdata')} is not implemented`,
+    expect(logger.debug).toHaveBeenCalledWith(
+      `Value type ${ansis.bold('debugdata')} is not implemented`,
     );
   });
 
@@ -185,10 +179,6 @@ describe('formatTableItemPropertyValue', () => {
 
     return result;
   };
-
-  beforeAll(() => {
-    ui().switchMode('raw');
-  });
 
   it('should format undefined to empty string', () => {
     expect(formatTableItemPropertyValue(undefined)).toBe('');
@@ -300,7 +290,7 @@ describe('formatTableItemPropertyValue', () => {
     ) as string;
 
     expect(formattedStr.length).toBeLessThanOrEqual(200);
-    expect(formattedStr.slice(-3)).toBe('...');
+    expect(formattedStr.slice(-1)).toBe('…');
   });
 
   it('should format value based on itemValueFormat "numeric" as int', () => {
@@ -352,7 +342,7 @@ describe('formatTableItemPropertyValue', () => {
     ) as string;
 
     expect(formattedStr.length).toBeLessThanOrEqual(500);
-    expect(formattedStr.slice(-3)).toBe('...');
+    expect(formattedStr.slice(-1)).toBe('…');
   });
 
   it('should format value based on itemValueFormat "multi"', () => {
@@ -363,9 +353,8 @@ describe('formatTableItemPropertyValue', () => {
       ),
     ).toBe('');
 
-    expect(ui()).toHaveLogged(
-      'info',
-      `Format type ${bold('multi')} is not implemented`,
+    expect(logger.debug).toHaveBeenCalledWith(
+      `Format type ${ansis.bold('multi')} is not implemented`,
     );
   });
 
@@ -376,9 +365,8 @@ describe('formatTableItemPropertyValue', () => {
         'thumbnail',
       ),
     ).toBe('');
-    expect(ui()).toHaveLogged(
-      'info',
-      `Format type ${bold('thumbnail')} is not implemented`,
+    expect(logger.debug).toHaveBeenCalledWith(
+      `Format type ${ansis.bold('thumbnail')} is not implemented`,
     );
   });
 

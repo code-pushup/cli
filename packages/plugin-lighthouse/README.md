@@ -51,66 +51,6 @@ For more infos visit the [official docs](https://developer.chrome.com/docs/light
 
 4. Run the CLI with `npx code-pushup collect` and view or upload the report (refer to [CLI docs](../cli/README.md)).
 
-### Optionally set up categories
-
-Reference audits (or groups) which you wish to include in custom categories (use `npx code-pushup print-config --onlyPlugins=lighthouse` to list audits and groups).
-
-Assign weights based on what influence each Lighthouse audit has on the overall category score (assign weight 0 to only include as extra info, without influencing category score).
-The plugin exports the helper `lighthouseAuditRef` and `lighthouseGroupRef` to reference Lighthouse category references for audits and groups.
-
-#### Reference audits directly with `lighthouseGroupRef`
-
-```ts
-import { lighthouseGroupRef } from './utils';
-
-export default {
-  // ...
-  categories: [
-    {
-      slug: 'performance',
-      title: 'Performance',
-      refs: [lighthouseGroupRef('performance')],
-    },
-    {
-      slug: 'a11y',
-      title: 'Accessibility',
-      refs: [lighthouseGroupRef('accessibility')],
-    },
-    {
-      slug: 'best-practices',
-      title: 'Best Practices',
-      refs: [lighthouseGroupRef('best-practices')],
-    },
-    {
-      slug: 'seo',
-      title: 'SEO',
-      refs: [lighthouseGroupRef('seo')],
-    },
-  ],
-};
-```
-
-#### Reference groups with `lighthouseAuditRef`
-
-The Lighthouse categories are reflected as groups.
-Referencing individual audits offers more granularity. However, keep maintenance costs of a higher number of audits in mind as well.
-
-```ts
-import { lighthouseAuditRef } from './utils';
-
-export default {
-  // ...
-  categories: [
-    {
-      slug: 'core-web-vitals',
-      title: 'Core Web Vitals',
-      scoreTarget: 0.9,
-      refs: [lighthouseAuditRef('largest-contentful-paint', 3), lighthouseAuditRef('first-input-delay', 2), lighthouseAuditRef('cumulative-layout-shift', 2), lighthouseAuditRef('first-contentful-paint', 1)],
-    },
-  ],
-};
-```
-
 ## Multiple URLs
 
 The Lighthouse plugin supports running audits against multiple URLs in a single invocation. To do this, provide an array of URLs as the first argument to the plugin:
@@ -147,63 +87,6 @@ export default {
   ];
 };
 ```
-
-### Categories with multiple URLs
-
-When running Lighthouse against multiple URLs, use the `mergeLighthouseCategories` utility to ensure categories are correctly expanded and results are aggregated per URL.
-
-#### Basic usage
-
-```ts
-import lighthousePlugin, { mergeLighthouseCategories } from '@code-pushup/lighthouse-plugin';
-
-const lhPlugin = await lighthousePlugin(urls);
-
-export default {
-  plugins: [
-    // ...
-    lhPlugin,
-  ],
-  categories: [
-    // ...
-    ...mergeLighthouseCategories(lhPlugin),
-  ],
-};
-```
-
-#### Custom categories
-
-If you provide custom categories, you can reference both groups and audits as usual. The merging utility will expand each referenced group or audit for every URL, assigning the correct per-URL weight.
-
-```ts
-import lighthousePlugin, { lighthouseAuditRef, lighthouseGroupRef, mergeLighthouseCategories } from '@code-pushup/lighthouse-plugin';
-
-const lhPlugin = await lighthousePlugin(urls);
-
-export default {
-  // ...
-  plugins: [
-    // ...
-    lhPlugin,
-  ],
-  categories: [
-    // ...
-    ...mergeLighthouseCategories(lhPlugin, [
-      {
-        slug: 'performance',
-        title: 'Performance',
-        refs: [lighthouseGroupRef('performance'), lighthouseAuditRef('first-contentful-paint', 2)],
-      },
-    ]),
-  ],
-};
-```
-
-### Behavior Summary
-
-- **No categories**: The plugin auto-generates categories from the plugin's default Lighthouse groups.
-- **Custom categories**: The plugin expands all referenced audits and groups for each URL, applying appropriate weights.
-- **Empty array** (`categories: []`): No categories are created or expanded, which is useful when you only want audit data.
 
 ## Flags
 
@@ -323,5 +206,79 @@ For a complete guide on Lighthouse configuration read the [official documentatio
 >  }
 > })
 > ```
+
+## Category integration
+
+The plugin provides helpers to integrate Lighthouse results into your categories.
+
+### Auto-generate categories
+
+Use `lighthouseCategories` to automatically create categories from all plugin groups:
+
+```ts
+import lighthousePlugin, { lighthouseCategories } from '@code-pushup/lighthouse-plugin';
+
+const lighthouse = await lighthousePlugin('https://example.com');
+
+export default {
+  plugins: [lighthouse],
+  categories: lighthouseCategories(lighthouse),
+};
+```
+
+The helper creates categories for all four Lighthouse groups: `performance`, `accessibility`, `best-practices`, and `seo`. For multi-URL setups, refs are automatically expanded for each URL with appropriate weights.
+
+### Custom categories
+
+For fine-grained control, provide your own categories. You can reference groups (Lighthouse's native categories) or individual audits:
+
+```ts
+import lighthousePlugin, { lighthouseAuditRef, lighthouseCategories, lighthouseGroupRef } from '@code-pushup/lighthouse-plugin';
+
+const lighthouse = await lighthousePlugin(['https://example.com', 'https://example.com/about']);
+
+export default {
+  plugins: [lighthouse],
+  categories: lighthouseCategories(lighthouse, [
+    {
+      slug: 'performance',
+      title: 'Performance',
+      refs: [lighthouseGroupRef('performance')],
+    },
+    {
+      slug: 'core-web-vitals',
+      title: 'Core Web Vitals',
+      refs: [lighthouseAuditRef('largest-contentful-paint', 3), lighthouseAuditRef('cumulative-layout-shift', 2), lighthouseAuditRef('first-contentful-paint', 1)],
+    },
+  ]),
+};
+```
+
+> [!NOTE]
+> Referencing individual audits offers more granularity but increases maintenance costs. Use `npx code-pushup print-config --onlyPlugins=lighthouse` to list all available audits and groups.
+
+> [!TIP]
+> Weights determine each ref's influence on the category score. Use weight `0` to include a ref as info only, without affecting the score.
+
+> [!TIP]
+> You can use `lighthouseGroupRef` and `lighthouseAuditRef` directly in your categories without the helper. However, wrapping them in `lighthouseCategories` future-proofs your config for multi-URL setups.
+
+### Helper functions
+
+| Function               | Description                                  |
+| ---------------------- | -------------------------------------------- |
+| `lighthouseCategories` | Auto-generates or expands categories         |
+| `lighthouseGroupRef`   | Creates a category ref to a Lighthouse group |
+| `lighthouseAuditRef`   | Creates a category ref to a Lighthouse audit |
+
+### Type safety
+
+The `LighthouseGroupSlug` type is exported for discovering valid group slugs:
+
+```ts
+import type { LighthouseGroupSlug } from '@code-pushup/lighthouse-plugin';
+
+const group: LighthouseGroupSlug = 'performance';
+```
 
 If you want to contribute, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md).

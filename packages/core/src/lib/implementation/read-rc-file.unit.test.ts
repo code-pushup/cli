@@ -76,7 +76,7 @@ describe('autoloadRc', () => {
 
   it('should throw if no configuration file is present', async () => {
     await expect(autoloadRc()).rejects.toThrow(
-      'No file code-pushup.config.(ts|mjs|js) present in',
+      `No code-pushup.config.{ts,mjs,js} file present in ${MEMFS_VOLUME}`,
     );
   });
 });

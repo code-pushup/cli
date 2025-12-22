@@ -1,6 +1,8 @@
 import type { Audit, Group } from '@code-pushup/models';
+import { logger, pluralizeToken } from '@code-pushup/utils';
 import type { JsDocsPluginTransformedConfig } from './config.js';
-import { AUDITS_MAP } from './constants.js';
+import { AUDITS_MAP, GROUPS } from './constants.js';
+import { formatMetaLog } from './format.js';
 
 /**
  * Get audits based on the configuration.
@@ -49,4 +51,31 @@ export function filterGroupsByOnlyAudits(
       ),
     }))
     .filter(group => group.refs.length > 0);
+}
+
+export function logAuditsAndGroups(audits: Audit[], groups: Group[]) {
+  logger.info(
+    formatMetaLog(
+      `Created ${pluralizeToken('audit', audits.length)} and ${pluralizeToken('group', groups.length)}`,
+    ),
+  );
+  const skippedAudits = Object.keys(AUDITS_MAP).filter(
+    slug => !audits.some(audit => audit.slug === slug),
+  );
+  const skippedGroups = GROUPS.filter(
+    group => !groups.some(({ slug }) => slug === group.slug),
+  );
+  if (skippedAudits.length > 0) {
+    logger.info(
+      formatMetaLog(
+        [
+          `Skipped ${pluralizeToken('audit', skippedAudits.length)}`,
+          skippedGroups.length > 0 &&
+            pluralizeToken('group', skippedGroups.length),
+        ]
+          .filter(Boolean)
+          .join(' and '),
+      ),
+    );
+  }
 }

@@ -2,7 +2,8 @@ import type { Config } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
 import { expect, vi } from 'vitest';
-import { ui } from '@code-pushup/utils';
+import { DEFAULT_PERSIST_CONFIG } from '@code-pushup/models';
+import { logger } from '@code-pushup/utils';
 import { DEFAULT_CLI_FLAGS } from './constants.js';
 import { createRunnerFunction } from './runner.js';
 import type { LighthouseCliFlags } from './types.js';
@@ -50,6 +51,7 @@ vi.mock('lighthouse/cli/run.js', async () => {
                   score: 0.9,
                 } satisfies Result,
               },
+              categories: {},
             },
           },
   );
@@ -62,9 +64,11 @@ vi.mock('lighthouse/cli/run.js', async () => {
 });
 
 describe('createRunnerFunction', () => {
+  const args = { persist: DEFAULT_PERSIST_CONFIG };
+
   it('should call runLighthouse with defaults when executed with only url given', async () => {
     const runner = createRunnerFunction(['https://localhost:8080']);
-    await expect(runner(undefined)).resolves.toEqual(
+    await expect(runner(args)).resolves.toEqual(
       expect.arrayContaining([
         {
           slug: 'cumulative-layout-shift',
@@ -83,7 +87,7 @@ describe('createRunnerFunction', () => {
   });
 
   it('should call enrichFlags with correct parameters for single URL', async () => {
-    await createRunnerFunction(['https://localhost:8080'])(undefined);
+    await createRunnerFunction(['https://localhost:8080'])(args);
 
     expect(enrichFlags).toHaveBeenCalledWith(DEFAULT_CLI_FLAGS);
   });
@@ -92,7 +96,7 @@ describe('createRunnerFunction', () => {
     await createRunnerFunction([
       'https://localhost:8080',
       'https://localhost:8081',
-    ])(undefined);
+    ])(args);
 
     expect(enrichFlags).toHaveBeenCalledWith(DEFAULT_CLI_FLAGS, 1);
     expect(enrichFlags).toHaveBeenCalledWith(DEFAULT_CLI_FLAGS, 2);
@@ -101,7 +105,7 @@ describe('createRunnerFunction', () => {
   it('should call getConfig with given configPath', async () => {
     await createRunnerFunction(['https://localhost:8080'], {
       configPath: 'lh-config.js',
-    } as LighthouseCliFlags)(undefined);
+    } as LighthouseCliFlags)(args);
     expect(getConfig).toHaveBeenCalledWith(
       expect.objectContaining({ configPath: 'lh-config.js' }),
     );
@@ -109,7 +113,7 @@ describe('createRunnerFunction', () => {
 
   it('should throw if lighthouse returns an empty result', async () => {
     const runner = createRunnerFunction(['fail']);
-    await expect(runner(undefined)).rejects.toThrow(
+    await expect(runner(args)).rejects.toThrow(
       'Lighthouse did not produce a result.',
     );
   });
@@ -119,7 +123,7 @@ describe('createRunnerFunction', () => {
       'https://localhost:8080',
       'https://localhost:8081',
     ]);
-    await expect(runner(undefined)).resolves.toEqual(
+    await expect(runner(args)).resolves.toEqual(
       expect.arrayContaining([
         {
           slug: 'cumulative-layout-shift-1',
@@ -158,7 +162,7 @@ describe('createRunnerFunction', () => {
 
   it('should handle single URL without adding index to audit slugs', async () => {
     const runner = createRunnerFunction(['https://localhost:8080']);
-    await expect(runner(undefined)).resolves.toEqual(
+    await expect(runner(args)).resolves.toEqual(
       expect.arrayContaining([
         {
           slug: 'cumulative-layout-shift',
@@ -173,11 +177,11 @@ describe('createRunnerFunction', () => {
   it('should continue with other URLs when one fails in multiple URL scenario', async () => {
     const runner = createRunnerFunction([
       'https://localhost:8080',
-      'fail',
+      'http://fail.com',
       'https://localhost:8082',
     ]);
 
-    await expect(runner(undefined)).resolves.toEqual(
+    await expect(runner(args)).resolves.toEqual(
       expect.arrayContaining([
         {
           slug: 'cumulative-layout-shift-1',
@@ -194,15 +198,14 @@ describe('createRunnerFunction', () => {
       ]),
     );
 
-    expect(ui()).toHaveLogged(
-      'warn',
-      `Lighthouse did not produce a result for URL: fail`,
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Lighthouse run failed for http://fail.com - Lighthouse did not produce a result',
     );
   });
 
   it('should throw error if all URLs fail in multiple URL scenario', async () => {
     const runner = createRunnerFunction(['fail1', 'fail2', 'fail3']);
-    await expect(runner(undefined)).rejects.toThrow(
+    await expect(runner(args)).rejects.toThrow(
       'Lighthouse failed to produce results for all URLs.',
     );
   });
@@ -213,7 +216,7 @@ describe('createRunnerFunction', () => {
       'https://localhost:8081',
     ]);
 
-    await runner(undefined);
+    await runner(args);
 
     expect(runLighthouse).toHaveBeenCalledWith(
       'https://localhost:8080',

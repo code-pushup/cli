@@ -1,0 +1,14 @@
+{
+  "name": "@code-pushup/zod2md-jsdocs",
+  "version": "0.0.0",
+  "description": "TypeScript transformers enhancing models with JSDoc and schema metadata",
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "dependencies": {
+    "typescript": "^5.5.4",
+    "ts-patch": "^3.3.0"
+  },
+  "files": [
+    "src"
+  ]
+}

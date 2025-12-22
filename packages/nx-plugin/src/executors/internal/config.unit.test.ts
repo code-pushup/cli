@@ -34,36 +34,6 @@ describe('globalConfig', () => {
     ).toEqual(expect.objectContaining({ verbose: true }));
   });
 
-  it('should provide default global progress options', () => {
-    expect(
-      globalConfig(
-        {},
-        {
-          workspaceRoot: '/test/root/workspace-root',
-          projectConfig: {
-            name: 'my-app',
-            root: 'packages/project-root',
-          },
-        },
-      ),
-    ).toEqual(expect.objectContaining({ progress: false }));
-  });
-
-  it('should parse global progress options', () => {
-    expect(
-      globalConfig(
-        { progress: true },
-        {
-          workspaceRoot: '/test/root/workspace-root',
-          projectConfig: {
-            name: 'my-app',
-            root: 'packages/project-root',
-          },
-        },
-      ),
-    ).toEqual(expect.objectContaining({ progress: true }));
-  });
-
   it('should provide default global config options', () => {
     const { config } = globalConfig(
       {},
@@ -95,6 +65,20 @@ describe('globalConfig', () => {
         },
       ),
     ).toEqual(expect.objectContaining({ config: 'my.config.ts' }));
+  });
+
+  it('should include the command options', () => {
+    const { command } = globalConfig(
+      { command: 'collect' },
+      {
+        workspaceRoot: '/test/root/workspace-root',
+        projectConfig: {
+          name: 'my-app',
+          root: 'packages/project-root',
+        },
+      },
+    );
+    expect(command).toBe('collect');
   });
 
   it('should work with empty projectConfig', () => {
@@ -276,20 +260,13 @@ describe('uploadConfig', () => {
   });
 
   it('should parse upload project options', () => {
-    const projectName = 'utils';
     expect(
       uploadConfig(
         {
           ...baseUploadConfig,
           project: 'cli-utils',
         },
-        {
-          workspaceRoot: 'workspace-root',
-          projectConfig: {
-            name: projectName,
-            root: 'root',
-          },
-        },
+        { workspaceRoot: 'workspace-root', projectName: 'utils' },
       ),
     ).toEqual(expect.objectContaining({ project: 'cli-utils' }));
   });
@@ -301,13 +278,7 @@ describe('uploadConfig', () => {
           ...baseUploadConfig,
           server: 'https://new1-portal.code.pushup.dev',
         },
-        {
-          workspaceRoot: 'workspace-root',
-          projectConfig: {
-            name: 'utils',
-            root: 'root',
-          },
-        },
+        { workspaceRoot: 'workspace-root', projectName: 'utils' },
       ),
     ).toEqual(
       expect.objectContaining({
@@ -323,13 +294,7 @@ describe('uploadConfig', () => {
           ...baseUploadConfig,
           organization: 'code-pushup-v2',
         },
-        {
-          workspaceRoot: 'workspace-root',
-          projectConfig: {
-            name: 'utils',
-            root: 'root',
-          },
-        },
+        { workspaceRoot: 'workspace-root', projectName: 'utils' },
       ),
     ).toEqual(expect.objectContaining({ organization: 'code-pushup-v2' }));
   });
@@ -341,13 +306,7 @@ describe('uploadConfig', () => {
           ...baseUploadConfig,
           apiKey: '123456789',
         },
-        {
-          workspaceRoot: 'workspace-root',
-          projectConfig: {
-            name: 'utils',
-            root: 'root',
-          },
-        },
+        { workspaceRoot: 'workspace-root', projectName: 'utils' },
       ),
     ).toEqual(expect.objectContaining({ apiKey: '123456789' }));
   });
@@ -357,13 +316,7 @@ describe('uploadConfig', () => {
     expect(
       uploadConfig(
         {},
-        {
-          workspaceRoot: 'workspaceRoot',
-          projectConfig: {
-            name: 'my-app',
-            root: 'root',
-          },
-        },
+        { workspaceRoot: 'workspaceRoot', projectName: 'my-app' },
       ),
     ).toEqual(
       expect.objectContaining({
@@ -378,14 +331,41 @@ describe('uploadConfig', () => {
         {
           project: 'my-app2',
         },
-        {
-          workspaceRoot: 'workspaceRoot',
-          projectConfig: {
-            name: 'my-app',
-            root: 'root',
-          },
-        },
+        { workspaceRoot: 'workspaceRoot', projectName: 'my-app' },
       ),
-    ).toEqual(expect.objectContaining({ project: 'my-app2' }));
+    ).toStrictEqual(expect.objectContaining({ project: 'my-app2' }));
+  });
+
+  it('should apply projectPrefix when workspaceRoot is not "."', () => {
+    expect(
+      uploadConfig(
+        {
+          ...baseUploadConfig,
+          projectPrefix: 'cli',
+        },
+        { workspaceRoot: 'workspace-root', projectName: 'models' },
+      ),
+    ).toStrictEqual(expect.objectContaining({ project: 'cli-models' }));
+  });
+
+  it('should NOT apply projectPrefix when workspaceRoot is "."', () => {
+    expect(
+      uploadConfig(
+        {
+          ...baseUploadConfig,
+          projectPrefix: 'cli',
+        },
+        { workspaceRoot: '.', projectName: 'models' },
+      ),
+    ).toStrictEqual(expect.objectContaining({ project: 'models' }));
+  });
+
+  it('should NOT apply projectPrefix when projectPrefix is not provided', () => {
+    expect(
+      uploadConfig(baseUploadConfig, {
+        workspaceRoot: 'workspace-root',
+        projectName: 'models',
+      }),
+    ).toStrictEqual(expect.objectContaining({ project: 'models' }));
   });
 });

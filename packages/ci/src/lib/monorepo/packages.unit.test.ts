@@ -309,10 +309,7 @@ describe('readRootPackageJson', () => {
 describe('hasScript', () => {
   it('should return true if script in package.json "scripts"', () => {
     expect(
-      hasScript(
-        { scripts: { 'code-pushup': 'code-pushup --no-progress' } },
-        'code-pushup',
-      ),
+      hasScript({ scripts: { 'code-pushup': 'code-pushup' } }, 'code-pushup'),
     ).toBeTrue();
   });
 

@@ -11,11 +11,13 @@ describe('pnpmToOutdatedResult', () => {
           cypress: {
             current: '8.5.0',
             latest: '13.6.0',
+            wanted: '8.5.0',
             dependencyType: 'devDependencies',
           },
           '@cypress/request': {
             current: '2.88.10',
             latest: '3.0.0',
+            wanted: '2.88.10',
             dependencyType: 'devDependencies',
           },
         } satisfies PnpmOutdatedResultJson),
@@ -49,11 +51,13 @@ describe('pnpmToOutdatedResult', () => {
         "cypress": {
           "current": "8.5.0",
           "latest": "13.6.0",
+          "wanted": "8.5.0",
           "dependencyType": "devDependencies"
         },
         "@cypress/request": {
           "current": "2.88.10",
           "latest": "3.0.0",
+          "wanted": "2.88.10",
           "dependencyType": "devDependencies"
         }
       }
@@ -71,6 +75,37 @@ describe('pnpmToOutdatedResult', () => {
         current: '2.88.10',
         latest: '3.0.0',
         type: 'devDependencies',
+      },
+    ]);
+  });
+
+  it('should handle dependencies with missing current version by falling back to wanted', () => {
+    const output = JSON.stringify({
+      '@angular/animations': {
+        latest: '21.0.1',
+        wanted: '20.3.12',
+        dependencyType: 'dependencies',
+      },
+      rxjs: {
+        current: '7.8.0',
+        latest: '7.8.1',
+        wanted: '7.8.0',
+        dependencyType: 'dependencies',
+      },
+    });
+
+    expect(pnpmToOutdatedResult(output)).toEqual([
+      {
+        name: '@angular/animations',
+        current: '20.3.12',
+        latest: '21.0.1',
+        type: 'dependencies',
+      },
+      {
+        name: 'rxjs',
+        current: '7.8.0',
+        latest: '7.8.1',
+        type: 'dependencies',
       },
     ]);
   });

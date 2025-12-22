@@ -2,9 +2,8 @@ import type { PluginConfig } from '@code-pushup/models';
 import {
   capitalize,
   filterItemRefsBy,
-  isVerbose,
+  logger,
   pluralize,
-  ui,
 } from '@code-pushup/utils';
 import type { FilterOptionType, Filterables } from './filter.model.js';
 
@@ -49,16 +48,16 @@ export function validateFilterOption(
     ) {
       throw new OptionValidationError(message);
     }
-    ui().logger.warning(message);
+    logger.warn(message);
   }
-  if (skippedValidItems.length > 0 && isVerbose()) {
+  if (skippedValidItems.length > 0 && logger.isVerbose()) {
     const item = getItemType(option, skippedValidItems.length);
     const prefix = skippedValidItems.length === 1 ? `a skipped` : `skipped`;
-    ui().logger.warning(
+    logger.warn(
       `The --${option} argument references ${prefix} ${item}: ${skippedValidItems.join(', ')}.`,
     );
   }
-  if (isPluginOption(option) && categories.length > 0 && isVerbose()) {
+  if (isPluginOption(option) && categories.length > 0 && logger.isVerbose()) {
     const removedCategories = filterItemRefsBy(categories, ({ plugin }) =>
       isOnlyOption(option)
         ? !itemsToFilterSet.has(plugin)
@@ -66,7 +65,7 @@ export function validateFilterOption(
     ).map(({ slug }) => slug);
 
     if (removedCategories.length > 0) {
-      ui().logger.info(
+      logger.info(
         `The --${option} argument removed the following categories: ${removedCategories.join(
           ', ',
         )}.`,
@@ -82,9 +81,9 @@ export function validateSkippedCategories(
   const skippedCategories = originalCategories.filter(
     original => !filteredCategories.some(({ slug }) => slug === original.slug),
   );
-  if (skippedCategories.length > 0 && isVerbose()) {
+  if (skippedCategories.length > 0 && logger.isVerbose()) {
     skippedCategories.forEach(category => {
-      ui().logger.info(
+      logger.info(
         `Category ${category.slug} was removed because all its refs were skipped. Affected refs: ${category.refs
           .map(ref => `${ref.slug} (${ref.type})`)
           .join(', ')}`,

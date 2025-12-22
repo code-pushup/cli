@@ -30,11 +30,11 @@ import {
 } from './cli/index.js';
 import { listChangedFiles, normalizeGitRef } from './git.js';
 import { type SourceFileIssue, filterRelevantIssues } from './issues.js';
+import { logDebug, logInfo, logWarning } from './log.js';
 import type {
   ConfigPatterns,
   GitBranch,
   GitRefs,
-  Logger,
   Options,
   ProjectRunResult,
   ProviderAPIClient,
@@ -90,11 +90,6 @@ export async function createRunEnv(
   options: Options | undefined,
   git: SimpleGit,
 ): Promise<RunEnv> {
-  const inferredVerbose: boolean =
-    options?.debug === true || options?.silent === false;
-  // eslint-disable-next-line functional/immutable-data
-  process.env['CP_VERBOSE'] = `${inferredVerbose}`;
-
   const [head, base] = await Promise.all([
     normalizeGitRef(refs.head, git),
     refs.base && normalizeGitRef(refs.base, git),
@@ -112,17 +107,14 @@ export async function createRunEnv(
 }
 
 function sanitizeOptions(options: Options): Options {
-  const logger = options.logger ?? DEFAULT_SETTINGS.logger;
-
   return removeUndefinedAndEmptyProps({
     ...options,
-    searchCommits: sanitizeSearchCommits(options.searchCommits, logger),
+    searchCommits: sanitizeSearchCommits(options.searchCommits),
   });
 }
 
 function sanitizeSearchCommits(
   searchCommits: Options['searchCommits'],
-  logger: Logger,
 ): Options['searchCommits'] {
   if (
     typeof searchCommits === 'number' &&
@@ -130,7 +122,7 @@ function sanitizeSearchCommits(
       searchCommits < MIN_SEARCH_COMMITS ||
       searchCommits > MAX_SEARCH_COMMITS)
   ) {
-    logger.warn(
+    logWarning(
       `The searchCommits option must be a boolean or an integer in range ${MIN_SEARCH_COMMITS} to ${MAX_SEARCH_COMMITS}, ignoring invalid value ${searchCommits}.`,
     );
     return undefined;
@@ -147,18 +139,17 @@ export async function runOnProject(
     refs: { head, base },
     settings,
   } = env;
-  const logger = settings.logger;
 
   const ctx = createCommandContext(settings, project);
 
   if (project) {
-    logger.info(`Running Code PushUp on monorepo project ${project.name}`);
+    logInfo(`Running Code PushUp on monorepo project ${project.name}`);
   }
 
   const config = settings.configPatterns
     ? configFromPatterns(settings.configPatterns, project)
     : await printPersistConfig(ctx);
-  logger.debug(
+  logDebug(
     settings.configPatterns
       ? `Parsed persist and upload configs from configPatterns option - ${JSON.stringify(config)}`
       : `Loaded persist and upload configs from print-config command - ${JSON.stringify(config)}`,
@@ -171,7 +162,7 @@ export async function runOnProject(
     files: persistedFilesFromConfig(config, ctx),
     settings,
   });
-  logger.debug(`Collected current report at ${currReport.files.json}`);
+  logDebug(`Collected current report at ${currReport.files.json}`);
 
   const noDiffOutput = {
     name: projectToName(project),
@@ -182,7 +173,7 @@ export async function runOnProject(
     return noDiffOutput;
   }
 
-  logger.info(
+  logInfo(
     `PR/MR detected, preparing to compare base branch ${base.ref} to head ${head.ref}`,
   );
 
@@ -201,12 +192,11 @@ export async function compareReports(
 ): Promise<ProjectRunResult> {
   const { ctx, env, config } = args;
   const { settings } = env;
-  const { logger } = settings;
 
   await prepareReportFilesToCompare(args);
   await runCompare(ctx, { hasFormats: hasDefaultPersistFormats(config) });
 
-  logger.info('Compared reports and generated diff files');
+  logInfo('Compared reports and generated diff files');
 
   const newIssues = settings.detectNewIssues
     ? await findNewIssues(args)
@@ -218,13 +208,12 @@ export async function compareReports(
 export async function prepareReportFilesToCompare(
   args: CompareReportsArgs,
 ): Promise<Diff<string>> {
-  const { config, project, env, ctx } = args;
+  const { config, project, ctx } = args;
   const {
     outputDir = DEFAULT_PERSIST_OUTPUT_DIR,
     filename = DEFAULT_PERSIST_FILENAME,
   } = config.persist ?? {};
   const label = project?.name;
-  const { logger } = env.settings;
 
   const originalReports = await Promise.all(
     [args.currReport, args.prevReport].map(({ files }) =>
@@ -252,7 +241,7 @@ export async function prepareReportFilesToCompare(
     ),
   );
 
-  logger.debug(
+  logDebug(
     [
       'Prepared',
       project && `"${project.name}" project's`,
@@ -320,7 +309,7 @@ export async function collectPreviousReport(
 ): Promise<ReportData<'previous'> | null> {
   const { ctx, env, base, project } = args;
   const { settings } = env;
-  const { logger, configPatterns } = settings;
+  const { configPatterns } = settings;
 
   const cachedBaseReport = await loadCachedBaseReport(args);
   if (cachedBaseReport) {
@@ -342,7 +331,7 @@ export async function collectPreviousReport(
       files: persistedFilesFromConfig(config, ctx),
       settings,
     });
-    logger.debug(`Collected previous report at ${report.files.json}`);
+    logDebug(`Collected previous report at ${report.files.json}`);
     return report;
   });
 }
@@ -374,10 +363,9 @@ async function loadCachedBaseReportFromArtifacts(
   args: BaseReportArgs,
 ): Promise<string | null> {
   const {
-    env: { api, settings },
+    env: { api },
     project,
   } = args;
-  const { logger } = settings;
 
   if (api.downloadReportArtifact == null) {
     return null;
@@ -386,15 +374,15 @@ async function loadCachedBaseReportFromArtifacts(
   const reportPath = await api
     .downloadReportArtifact(project?.name)
     .catch((error: unknown) => {
-      logger.warn(
+      logWarning(
         `Error when downloading previous report artifact, skipping - ${stringifyError(error)}`,
       );
       return null;
     });
 
-  logger.info(`Previous report artifact ${reportPath ? 'found' : 'not found'}`);
+  logInfo(`Previous report artifact ${reportPath ? 'found' : 'not found'}`);
   if (reportPath) {
-    logger.debug(`Previous report artifact downloaded to ${reportPath}`);
+    logDebug(`Previous report artifact downloaded to ${reportPath}`);
   }
 
   return reportPath;
@@ -408,7 +396,6 @@ async function loadCachedBaseReportFromPortal(
     env: { settings },
     base,
   } = args;
-  const { logger } = settings;
 
   if (!config.upload) {
     return null;
@@ -429,17 +416,17 @@ async function loadCachedBaseReportFromPortal(
       }),
     },
   }).catch((error: unknown) => {
-    logger.warn(
+    logWarning(
       `Error when downloading previous report from portal, skipping - ${stringifyError(error)}`,
     );
     return null;
   });
 
-  logger.info(
+  logInfo(
     `Previous report ${reportPath ? 'found' : 'not found'} in Code PushUp portal`,
   );
   if (reportPath) {
-    logger.debug(`Previous report downloaded from portal to ${reportPath}`);
+    logDebug(`Previous report downloaded from portal to ${reportPath}`);
   }
 
   return reportPath;
@@ -450,19 +437,16 @@ export async function runInBaseBranch<T>(
   env: RunEnv,
   fn: () => Promise<T>,
 ): Promise<T> {
-  const {
-    git,
-    settings: { logger },
-  } = env;
+  const { git } = env;
 
   await git.fetch('origin', base.ref, ['--depth=1']);
   await git.checkout(['-f', base.sha]);
-  logger.info(`Switched to base branch ${base.ref}`);
+  logInfo(`Switched to base branch ${base.ref}`);
 
   const result = await fn();
 
   await git.checkout(['-f', '-']);
-  logger.info('Switched back to PR/MR branch');
+  logInfo('Switched back to PR/MR branch');
 
   return result;
 }
@@ -470,26 +454,20 @@ export async function runInBaseBranch<T>(
 export async function checkPrintConfig(
   args: BaseReportArgs,
 ): Promise<EnhancedPersistConfig | null> {
-  const {
-    project,
-    ctx,
-    base,
-    env: { settings },
-  } = args;
-  const { logger } = settings;
+  const { project, ctx, base } = args;
 
   const operation = project
     ? `Executing print-config for project ${project.name}`
     : 'Executing print-config';
   try {
     const config = await printPersistConfig(ctx);
-    logger.debug(
+    logDebug(
       `${operation} verified code-pushup installed in base branch ${base.ref}`,
     );
     return config;
   } catch (error) {
-    logger.debug(`Error from print-config - ${stringifyError(error)}`);
-    logger.info(
+    logDebug(`Error from print-config - ${stringifyError(error)}`);
+    logInfo(
       `${operation} failed, assuming code-pushup not installed in base branch ${base.ref} and skipping comparison`,
     );
     return null;
@@ -549,10 +527,7 @@ export async function findNewIssues(
     prevReport,
     config,
     ctx,
-    env: {
-      git,
-      settings: { logger },
-    },
+    env: { git },
   } = args;
 
   const diffFiles = persistedFilesFromConfig(config, {
@@ -573,7 +548,7 @@ export async function findNewIssues(
     reportsDiff: JSON.parse(reportsDiff) as ReportsDiff,
     changedFiles,
   });
-  logger.debug(
+  logDebug(
     `Found ${issues.length} relevant issues for ${
       Object.keys(changedFiles).length
     } changed files`,

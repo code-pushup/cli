@@ -1,4 +1,4 @@
-import { bold } from 'ansis';
+import ansis from 'ansis';
 import {
   type AuditOutput,
   type AuditReport,
@@ -10,11 +10,8 @@ import {
   type RunnerArgs,
 } from '@code-pushup/models';
 import {
-  type ProgressBar,
-  getProgressBar,
-  groupByStatus,
-  logMultipleResults,
-  pluralizeToken,
+  asyncSequential,
+  logger,
   scoreAuditsWithTarget,
 } from '@code-pushup/utils';
 import {
@@ -34,16 +31,16 @@ import {
  *
  * @example
  * // plugin execution
- * const pluginCfg = pluginConfigSchema.parse({...});
+ * const pluginCfg = validate(pluginConfigSchema, {...});
  * const output = await executePlugin(pluginCfg);
  *
- *  @example
- *  // error handling
- *  try {
- *  await executePlugin(pluginCfg);
- *  } catch (e) {
- *  console.error(e.message);
- *  }
+ * @example
+ * // error handling
+ * try {
+ *   await executePlugin(pluginCfg);
+ * } catch (error) {
+ *   console.error(error);
+ * }
  */
 export async function executePlugin(
   pluginConfig: PluginConfig,
@@ -107,94 +104,31 @@ export async function executePlugin(
   };
 }
 
-const wrapProgress = async (
-  cfg: {
-    plugin: PluginConfig;
-    persist: PersistConfig;
-    cache: CacheConfigObject;
-  },
-  steps: number,
-  progressBar: ProgressBar | null,
-) => {
-  const { plugin: pluginCfg, ...rest } = cfg;
-  progressBar?.updateTitle(`Executing ${bold(pluginCfg.title)}`);
-  try {
-    const pluginReport = await executePlugin(pluginCfg, rest);
-    progressBar?.incrementInSteps(steps);
-    return pluginReport;
-  } catch (error) {
-    progressBar?.incrementInSteps(steps);
-    throw new Error(
-      error instanceof Error
-        ? `- Plugin ${bold(pluginCfg.title)} (${bold(
-            pluginCfg.slug,
-          )}) produced the following error:\n  - ${error.message}`
-        : String(error),
-    );
-  }
-};
-
 /**
  * Execute multiple plugins and aggregates their output.
- * @public
- * @param cfg
- * @param {Object} [options] execution options
- * @param {boolean} options.progress show progress bar
- * @returns {Promise<PluginReport[]>} plugin report
+ *
+ * @param config
+ * @returns plugin reports
  *
  * @example
- * // plugin execution
- * const plugins = [pluginConfigSchema.parse({...})];
- *
- * @example
- * // error handling
  * try {
- * await executePlugins(plugins);
- * } catch (e) {
- * console.error(e.message); // Plugin output is invalid
+ *   await executePlugins(config);
+ * } catch (error) {
+ *   console.error(error); // Plugin output is invalid
  * }
- *
  */
-export async function executePlugins(
-  cfg: {
-    plugins: PluginConfig[];
-    persist: PersistConfig;
-    cache: CacheConfigObject;
-  },
-  options?: { progress?: boolean },
-): Promise<PluginReport[]> {
-  const { plugins, ...cacheCfg } = cfg;
-  const { progress = false } = options ?? {};
-
-  const progressBar = progress ? getProgressBar('Run plugins') : null;
-
-  const pluginsResult = plugins.map(pluginCfg =>
-    wrapProgress(
-      { plugin: pluginCfg, ...cacheCfg },
-      plugins.length,
-      progressBar,
-    ),
-  );
-
-  const errorsTransform = ({ reason }: PromiseRejectedResult) => String(reason);
-  const results = await Promise.allSettled(pluginsResult);
-
-  progressBar?.endProgress('Done running plugins');
-
-  logMultipleResults(results, 'Plugins', undefined, errorsTransform);
-
-  const { fulfilled, rejected } = groupByStatus(results);
-  if (rejected.length > 0) {
-    const errorMessages = rejected
-      .map(({ reason }) => String(reason))
-      .join('\n');
-    throw new Error(
-      `Executing ${pluralizeToken(
-        'plugin',
-        rejected.length,
-      )} failed.\n\n${errorMessages}\n\n`,
-    );
-  }
-
-  return fulfilled.map(result => result.value);
+export function executePlugins(config: {
+  plugins: PluginConfig[];
+  persist: PersistConfig;
+  cache: CacheConfigObject;
+}): Promise<PluginReport[]> {
+  return asyncSequential(config.plugins, async (pluginConfig, index) => {
+    const suffix = ansis.gray(`[${index + 1}/${config.plugins.length}]`);
+    const title = `Running plugin "${pluginConfig.title}" ${suffix}`;
+    const message = `Completed "${pluginConfig.title}" plugin execution`;
+    return logger.group(title, async () => {
+      const result = await executePlugin(pluginConfig, config);
+      return { message, result };
+    });
+  });
 }

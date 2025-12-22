@@ -1,13 +1,17 @@
 import { createRequire } from 'node:module';
-import type { PluginConfig } from '@code-pushup/models';
-import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
+import type { PluginConfig, PluginUrls } from '@code-pushup/models';
+import { normalizeUrlInput } from '@code-pushup/utils';
+import {
+  LIGHTHOUSE_PLUGIN_SLUG,
+  LIGHTHOUSE_PLUGIN_TITLE,
+} from './constants.js';
 import { normalizeFlags } from './normalize-flags.js';
-import { normalizeUrlInput, processAuditsAndGroups } from './processing.js';
+import { processAuditsAndGroups } from './processing.js';
 import { createRunnerFunction } from './runner/runner.js';
-import type { LighthouseOptions, LighthouseUrls } from './types.js';
+import type { LighthouseOptions } from './types.js';
 
 export function lighthousePlugin(
-  urls: LighthouseUrls,
+  urls: PluginUrls,
   flags?: LighthouseOptions,
 ): PluginConfig {
   const {
@@ -32,10 +36,10 @@ export function lighthousePlugin(
 
   return {
     slug: LIGHTHOUSE_PLUGIN_SLUG,
+    title: LIGHTHOUSE_PLUGIN_TITLE,
+    icon: 'lighthouse',
     packageName: packageJson.name,
     version: packageJson.version,
-    title: 'Lighthouse',
-    icon: 'lighthouse',
     audits,
     groups,
     runner: createRunnerFunction(normalizedUrls, {

@@ -8,7 +8,12 @@ export {
   toTitleCase,
   uppercase,
 } from './lib/case-conversions.js';
-export { filesCoverageToTree, type FileCoverage } from './lib/coverage-tree.js';
+export { formatCommandStatus } from './lib/command.js';
+export {
+  filesCoverageToTree,
+  type FileCoverage,
+  aggregateCoverageStats,
+} from './lib/coverage-tree.js';
 export { createRunnerFiles } from './lib/create-runner-files.js';
 export { dateToUnixTimestamp } from './lib/dates.js';
 export { comparePairs, matchArrayItemsByKey, type Diff } from './lib/diff.js';
@@ -16,7 +21,6 @@ export {
   coerceBooleanValue,
   isCI,
   isEnvVarEnabled,
-  isVerbose,
   runnerArgsFromEnv,
   runnerArgsToEnv,
 } from './lib/env.js';
@@ -38,30 +42,33 @@ export {
   findLineNumberInText,
   findNearestFile,
   importModule,
-  logMultipleFileResults,
   pluginWorkDir,
   projectToFilename,
   readJsonFile,
   readTextFile,
   removeDirectoryIfExists,
+  truncatePaths,
   type CrawlFileSystemOptions,
-  type FileResult,
-  type MultipleFileResults,
 } from './lib/file-system.js';
 export { filterItemRefsBy } from './lib/filter.js';
 export {
   formatBytes,
+  formatCoveragePercentage,
   formatDuration,
   indentLines,
+  pluginMetaLogFormatter,
   pluralize,
   pluralizeToken,
   roundDecimals,
+  serializeCommandWithArgs,
   slugify,
   transformLines,
   truncateDescription,
   truncateIssueMessage,
+  truncateMultilineText,
   truncateText,
   truncateTitle,
+  UNICODE_ELLIPSIS,
 } from './lib/formatting.js';
 export {
   getCurrentBranchOrTag,
@@ -82,13 +89,27 @@ export {
   hasNoNullableProps,
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
+  isRecord,
 } from './lib/guards.js';
 export { interpolate } from './lib/interpolate.js';
-export { logMultipleResults } from './lib/log-results.js';
 export { Logger, logger } from './lib/logger.js';
-export { link, ui, type CliUi, type Column } from './lib/logging.js';
 export { mergeConfigs } from './lib/merge-configs.js';
-export { getProgressBar, type ProgressBar } from './lib/progress.js';
+export {
+  addIndex,
+  ContextValidationError,
+  createCategoryRefs,
+  expandAuditsForUrls,
+  expandCategoryRefs,
+  expandGroupsForUrls,
+  removeIndex,
+  shouldExpandForUrls,
+  validateUrlContext,
+} from './lib/plugin-url-aggregation.js';
+export {
+  getUrlIdentifier,
+  normalizeUrlInput,
+  type PluginUrlContext,
+} from './lib/plugin-url-config.js';
 export {
   asyncSequential,
   groupByStatus,
@@ -100,12 +121,12 @@ export {
   CODE_PUSHUP_UNICODE_LOGO,
   FOOTER_PREFIX,
   README_LINK,
-  TERMINAL_WIDTH,
 } from './lib/reports/constants.js';
 export {
   listAuditsFromAllPlugins,
   listGroupsFromAllPlugins,
 } from './lib/reports/flatten-plugins.js';
+export { formatIssueSeverities, wrapTags } from './lib/reports/formatting.js';
 export { generateMdReport } from './lib/reports/generate-md-report.js';
 export {
   generateMdReportsDiff,
@@ -126,6 +147,10 @@ export {
   formatReportScore,
 } from './lib/reports/utils.js';
 export { isSemver, normalizeSemver, sortSemvers } from './lib/semver.js';
+export { formatAsciiLink } from './lib/text-formats/ascii/link.js';
+export { formatAsciiSticker } from './lib/text-formats/ascii/sticker.js';
+export { formatAsciiTable } from './lib/text-formats/ascii/table.js';
+export { formatAsciiTree } from './lib/text-formats/ascii/tree.js';
 export * from './lib/text-formats/index.js';
 export {
   countOccurrences,
@@ -155,4 +180,3 @@ export type {
   Prettify,
   WithRequired,
 } from './lib/types.js';
-export { parseSchema, SchemaValidationError } from './lib/zod-validation.js';

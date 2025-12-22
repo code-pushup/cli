@@ -1,0 +1,15 @@
+name: Git Checks
+
+on: pull_request
+
+jobs:
+  block-fixup:
+    name: Block fixup commits
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      - name: Block fixup commit merge
+        uses: 13rac1/block-fixup-merge-action@v2.0.0

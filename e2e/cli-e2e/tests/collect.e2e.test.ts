@@ -5,6 +5,7 @@ import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
+  restoreNxIgnoredFiles,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import {
@@ -36,6 +37,7 @@ describe('CLI collect', () => {
 
   beforeAll(async () => {
     await cp(fixtureDummyDir, dummyDir, { recursive: true });
+    await restoreNxIgnoredFiles(dummyDir);
   });
 
   afterAll(async () => {
@@ -49,12 +51,7 @@ describe('CLI collect', () => {
   it('should create report.md', async () => {
     const { code } = await executeProcess({
       command: 'npx',
-      args: [
-        '@code-pushup/cli',
-        '--no-progress',
-        'collect',
-        '--persist.format=md',
-      ],
+      args: ['@code-pushup/cli', 'collect', '--persist.format=md'],
       cwd: dummyDir,
     });
 
@@ -62,7 +59,7 @@ describe('CLI collect', () => {
 
     const md = await readTextFile(path.join(dummyOutputDir, 'report.md'));
 
-    expect(md).toContain('# Code PushUp Report');
+    expect(md).toContain('# Code PushUp report');
     expect(md).toContain(dummyPluginTitle);
     expect(md).toContain(dummyAuditTitle);
   });
@@ -70,7 +67,7 @@ describe('CLI collect', () => {
   it('should write runner outputs if --cache is given', async () => {
     const { code } = await executeProcess({
       command: 'npx',
-      args: ['@code-pushup/cli', '--no-progress', 'collect', '--cache'],
+      args: ['@code-pushup/cli', 'collect', '--cache'],
       cwd: dummyDir,
     });
 
@@ -92,12 +89,7 @@ describe('CLI collect', () => {
   it('should not create reports if --persist.skipReports is given', async () => {
     const { code } = await executeProcess({
       command: 'npx',
-      args: [
-        '@code-pushup/cli',
-        '--no-progress',
-        'collect',
-        '--persist.skipReports',
-      ],
+      args: ['@code-pushup/cli', 'collect', '--persist.skipReports'],
       cwd: dummyDir,
     });
 
@@ -114,13 +106,13 @@ describe('CLI collect', () => {
   it('should print report summary to stdout', async () => {
     const { code, stdout } = await executeProcess({
       command: 'npx',
-      args: ['@code-pushup/cli', '--no-progress', 'collect'],
+      args: ['@code-pushup/cli', 'collect'],
       cwd: dummyDir,
     });
 
     expect(code).toBe(0);
 
-    expect(stdout).toContain('Code PushUp Report');
+    expect(stdout).toContain('Code PushUp report');
     expect(stdout).not.toContain('Generated reports');
     expect(stdout).toContain(dummyPluginTitle);
     expect(stdout).toContain(dummyAuditTitle);

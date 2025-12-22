@@ -1,42 +1,11 @@
 {
-  "name": "cli-workspace",
+  "name": "workspace",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
-    "code-pushup-js-packages": {},
-    "code-pushup-lighthouse": {},
-    "code-pushup-coverage": {
-      "dependsOn": [
-        {
-          "target": "unit-test",
-          "projects": "*"
-        },
-        {
-          "target": "int-test",
-          "projects": "*"
-        }
-      ]
-    },
-    "code-pushup-eslint": {
-      "dependsOn": [
-        {
-          "target": "lint",
-          "projects": "*"
-        }
-      ]
-    },
-    "code-pushup-jsdocs": {},
-    "code-pushup-typescript": {},
     "code-pushup": {
-      "dependsOn": ["code-pushup-*"],
-      "executor": "nx:run-commands",
+      "dependsOn": [],
       "options": {
-        "args": [
-          "--no-progress",
-          "--verbose",
-          "--cache.read",
-          "--persist.outputDir={projectRoot}/.code-pushup",
-          "--upload.project={projectName}"
-        ]
+        "args": []
       }
     }
   }

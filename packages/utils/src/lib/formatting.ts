@@ -1,8 +1,12 @@
+import ansis from 'ansis';
+import stringWidth from 'string-width';
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_ISSUE_MESSAGE_LENGTH,
   MAX_TITLE_LENGTH,
 } from '@code-pushup/models';
+
+export const UNICODE_ELLIPSIS = '…';
 
 export function roundDecimals(value: number, maxDecimals: number) {
   const multiplier = Math.pow(10, maxDecimals);
@@ -22,10 +26,14 @@ export function pluralize(text: string, amount?: number): string {
     return text;
   }
 
+  // best approximation of English pluralization "rules"
+  // https://www.grammarly.com/blog/grammar/spelling-plurals-with-s-es/
+
   if (text.endsWith('y')) {
     return `${text.slice(0, -1)}ies`;
   }
-  if (text.endsWith('s')) {
+  const suffixes = ['s', 'sh', 'ch', 'x', 'z'];
+  if (suffixes.some(suffix => text.endsWith(suffix))) {
     return `${text}es`;
   }
   return `${text}s`;
@@ -87,7 +95,7 @@ export function truncateText(
   const {
     maxChars,
     position = 'end',
-    ellipsis = '...',
+    ellipsis = UNICODE_ELLIPSIS,
   } = typeof options === 'number' ? { maxChars: options } : options;
   if (text.length <= maxChars) {
     return text;
@@ -121,13 +129,70 @@ export function truncateIssueMessage(text: string): string {
   return truncateText(text, MAX_ISSUE_MESSAGE_LENGTH);
 }
 
+export function truncateMultilineText(
+  text: string,
+  options?: { ellipsis?: string },
+): string {
+  const { ellipsis = `[${UNICODE_ELLIPSIS}]` } = options ?? {};
+
+  const crlfIndex = text.indexOf('\r\n');
+  const lfIndex = text.indexOf('\n');
+  const index = crlfIndex === -1 ? lfIndex : crlfIndex;
+
+  if (index < 0) {
+    return text;
+  }
+
+  const firstLine = text.slice(0, index);
+  if (text.slice(index).trim().length === 0) {
+    return firstLine;
+  }
+  return `${firstLine} ${ellipsis}`;
+}
+
 export function transformLines(
   text: string,
-  fn: (line: string) => string,
+  fn: (line: string, index: number) => string,
 ): string {
   return text.split(/\r?\n/).map(fn).join('\n');
 }
 
 export function indentLines(text: string, identation: number): string {
   return transformLines(text, line => `${' '.repeat(identation)}${line}`);
+}
+
+export function serializeCommandWithArgs({
+  command,
+  args,
+}: {
+  command: string;
+  args?: string[];
+}): string {
+  return [command, ...(args ?? [])].join(' ');
+}
+
+export function pluginMetaLogFormatter(
+  title: string,
+): (message: string) => string {
+  const prefix = ansis.blue(`[${title}]`);
+  const padding = ' '.repeat(stringWidth(prefix));
+  return message =>
+    transformLines(
+      message,
+      (line, idx) => `${idx === 0 ? prefix : padding} ${line}`,
+    );
+}
+
+export function formatCoveragePercentage(stats: {
+  covered: number;
+  total: number;
+}): string {
+  const { covered, total } = stats;
+
+  if (total === 0) {
+    return '-';
+  }
+
+  const percentage = (covered / total) * 100;
+  return `${percentage.toFixed(1)}%`;
 }

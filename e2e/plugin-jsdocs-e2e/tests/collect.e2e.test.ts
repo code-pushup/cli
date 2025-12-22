@@ -9,6 +9,7 @@ import {
   TEST_OUTPUT_DIR,
   initGitRepo,
   omitVariableReportData,
+  restoreNxIgnoredFiles,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
@@ -36,6 +37,8 @@ describe('PLUGIN collect report with jsdocs-plugin NPM package', () => {
   beforeAll(async () => {
     await cp(fixturesAngularDir, angularDir, { recursive: true });
     await cp(fixturesReactDir, reactDir, { recursive: true });
+    await restoreNxIgnoredFiles(angularDir);
+    await restoreNxIgnoredFiles(reactDir);
     await initGitRepo(simpleGit, { baseDir: angularDir });
     await initGitRepo(simpleGit, { baseDir: reactDir });
   });
@@ -53,7 +56,7 @@ describe('PLUGIN collect report with jsdocs-plugin NPM package', () => {
   it('should run JSDoc plugin for Angular example dir and create report.json', async () => {
     const { code } = await executeProcess({
       command: 'npx',
-      args: ['@code-pushup/cli', 'collect', '--no-progress'],
+      args: ['@code-pushup/cli', 'collect'],
       cwd: angularDir,
     });
 

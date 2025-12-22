@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { getGitRoot, ui } from '@code-pushup/utils';
+import { getGitRoot, logger } from '@code-pushup/utils';
 import type { CoverageResult, CoverageType } from '../../config.js';
 import { lcovResultsToAuditOutputs, parseLcovFiles } from './lcov-runner.js';
 
@@ -144,9 +144,8 @@ end_of_record
       path.join('coverage', 'lcov.info'),
     ]);
 
-    expect(ui()).toHaveLogged(
-      'warn',
-      `Coverage plugin: Empty lcov report file detected at ${path.join(
+    expect(logger.warn).toHaveBeenCalledWith(
+      `Empty LCOV report file detected at ${path.join(
         'coverage',
         'lcov.info',
       )}.`,

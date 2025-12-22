@@ -64,7 +64,6 @@ describe('collect', () => {
       ...MINIMAL_CONFIG_MOCK,
       persist: { outputDir },
       cache: { read: false, write: false },
-      progress: false,
     });
 
     expect(report.plugins[0]).toStrictEqual({
@@ -85,7 +84,6 @@ describe('collect', () => {
       ...MINIMAL_CONFIG_MOCK,
       persist: { outputDir },
       cache: { read: false, write: true },
-      progress: false,
     });
 
     expect(report.plugins[0]).toStrictEqual({
@@ -108,7 +106,6 @@ describe('collect', () => {
       ...MINIMAL_CONFIG_MOCK,
       persist: { outputDir },
       cache: { read: true, write: false },
-      progress: false,
     });
 
     expect(report.plugins[0]?.audits[0]).toStrictEqual(
@@ -131,7 +128,6 @@ describe('collect', () => {
       ...MINIMAL_CONFIG_MOCK,
       persist: { outputDir },
       cache: { read: true, write: true },
-      progress: false,
     });
 
     expect(report.plugins[0]).toStrictEqual({

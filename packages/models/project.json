@@ -21,12 +21,15 @@
       "dependsOn": [
         "^build",
         "generate-docs",
-        { "projects": "models-transformers", "target": "build" }
+        { "projects": "zod2md-jsdocs", "target": "build" }
       ]
     },
     "lint": {},
-    "lint-report": {},
-    "unit-test": {}
+    "unit-test": {},
+    "code-pushup": {},
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {},
+    "code-pushup-jsdocs": {}
   },
   "tags": ["scope:shared", "type:util", "publishable"]
 }

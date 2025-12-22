@@ -1,15 +1,14 @@
 import { createRequire } from 'node:module';
-import type { PluginConfig } from '@code-pushup/models';
-import { parseSchema } from '@code-pushup/utils';
+import { type PluginConfig, validate } from '@code-pushup/models';
 import {
   type ESLintPluginConfig,
   type ESLintPluginOptions,
   eslintPluginConfigSchema,
   eslintPluginOptionsSchema,
 } from './config.js';
-import { ESLINT_PLUGIN_SLUG } from './constants.js';
-import { listAuditsAndGroups } from './meta/index.js';
-import { createRunnerFunction } from './runner/index.js';
+import { ESLINT_PLUGIN_SLUG, ESLINT_PLUGIN_TITLE } from './constants.js';
+import { listAuditsAndGroups } from './meta/list.js';
+import { createRunnerFunction } from './runner/runner.js';
 
 /**
  * Instantiates Code PushUp ESLint plugin for use in core config.
@@ -36,19 +35,13 @@ export async function eslintPlugin(
   config: ESLintPluginConfig,
   options?: ESLintPluginOptions,
 ): Promise<PluginConfig> {
-  const targets = parseSchema(eslintPluginConfigSchema, config, {
-    schemaType: 'ESLint plugin config',
-  });
+  const targets = validate(eslintPluginConfigSchema, config);
 
   const {
     groups: customGroups,
     artifacts,
     scoreTargets,
-  } = options
-    ? parseSchema(eslintPluginOptionsSchema, options, {
-        schemaType: 'ESLint plugin options',
-      })
-    : {};
+  } = options ? validate(eslintPluginOptionsSchema, options) : {};
 
   const { audits, groups } = await listAuditsAndGroups(targets, customGroups);
 
@@ -58,7 +51,7 @@ export async function eslintPlugin(
 
   return {
     slug: ESLINT_PLUGIN_SLUG,
-    title: 'ESLint',
+    title: ESLINT_PLUGIN_TITLE,
     icon: 'eslint',
     description: 'Official Code PushUp ESLint plugin',
     docsUrl: 'https://www.npmjs.com/package/@code-pushup/eslint-plugin',
@@ -68,7 +61,7 @@ export async function eslintPlugin(
     audits,
     groups,
 
-    runner: await createRunnerFunction({
+    runner: createRunnerFunction({
       audits,
       targets,
       ...(artifacts ? { artifacts } : {}),

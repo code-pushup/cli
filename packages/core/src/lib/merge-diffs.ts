@@ -6,9 +6,9 @@ import {
   generateMdReportsDiffForMonorepo,
   isPromiseFulfilledResult,
   isPromiseRejectedResult,
+  logger,
   readJsonFile,
   stringifyError,
-  ui,
 } from '@code-pushup/utils';
 
 export async function mergeDiffs(
@@ -32,9 +32,7 @@ export async function mergeDiffs(
     }),
   );
   results.filter(isPromiseRejectedResult).forEach(({ reason }) => {
-    ui().logger.warning(
-      `Skipped invalid report diff - ${stringifyError(reason)}`,
-    );
+    logger.warn(`Skipped invalid report diff - ${stringifyError(reason)}`);
   });
   const diffs = results
     .filter(isPromiseFulfilledResult)

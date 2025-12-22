@@ -17,3 +17,7 @@ export function hasNoNullableProps<T extends object>(
 ): obj is ExcludeNullableProps<T> {
   return Object.values(obj).every(value => value != null);
 }
+
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value != null;
+}

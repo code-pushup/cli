@@ -40,12 +40,12 @@ describe('CLI print-config', () => {
   it.each(extensions)(
     'should load .%s config file with correct arguments',
     async ext => {
-      const { code, stdout } = await executeProcess({
+      const { code } = await executeProcess({
         command: 'npx',
         args: [
           '@code-pushup/cli',
           'print-config',
-          '--no-progress',
+          '--output=config.json',
           `--config=${configFilePath(ext)}`,
           '--tsconfig=tsconfig.base.json',
           '--persist.outputDir=output-dir',
@@ -57,7 +57,11 @@ describe('CLI print-config', () => {
 
       expect(code).toBe(0);
 
-      expect(JSON.parse(stdout)).toEqual(
+      const output = await readFile(
+        path.join(testFileDummySetup, 'config.json'),
+        'utf8',
+      );
+      expect(JSON.parse(output)).toEqual(
         expect.objectContaining({
           config: expect.stringContaining(`code-pushup.config.${ext}`),
           tsconfig: 'tsconfig.base.json',
@@ -72,30 +76,4 @@ describe('CLI print-config', () => {
       );
     },
   );
-
-  it('should print config to output file', async () => {
-    const { code, stdout } = await executeProcess({
-      command: 'npx',
-      args: ['@code-pushup/cli', 'print-config', '--output=config.json'],
-      cwd: testFileDummySetup,
-    });
-
-    expect(code).toBe(0);
-
-    const output = await readFile(
-      path.join(testFileDummySetup, 'config.json'),
-      'utf8',
-    );
-    expect(JSON.parse(output)).toEqual(
-      expect.objectContaining({
-        plugins: [
-          expect.objectContaining({
-            slug: 'dummy-plugin',
-            title: 'Dummy Plugin',
-          }),
-        ],
-      }),
-    );
-    expect(stdout).not.toContain('dummy-plugin');
-  });
 });

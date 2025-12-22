@@ -1,3 +1,4 @@
+import { validate } from '@code-pushup/models';
 import {
   type JSPackagesPluginConfig,
   jsPackagesPluginConfigSchema,
@@ -5,8 +6,11 @@ import {
 import { derivePackageManager } from './package-managers/derive-package-manager.js';
 import { packageManagers } from './package-managers/package-managers.js';
 
-export async function normalizeConfig(config?: JSPackagesPluginConfig) {
-  const jsPackagesPluginConfig = jsPackagesPluginConfigSchema.parse(
+export async function normalizeConfig(
+  config: JSPackagesPluginConfig | undefined,
+) {
+  const jsPackagesPluginConfig = validate(
+    jsPackagesPluginConfigSchema,
     config ?? {},
   );
 

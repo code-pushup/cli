@@ -1,6 +1,10 @@
+import path from 'node:path';
 import {
+  logger,
   objectFromEntries,
+  objectToEntries,
   objectToKeys,
+  pluralizeToken,
   readJsonFile,
 } from '@code-pushup/utils';
 import type { AuditResult, Vulnerability } from './audit/types.js';
@@ -54,19 +58,38 @@ export function filterAuditResult(
 export async function getTotalDependencies(
   packageJsonPath: string,
 ): Promise<DependencyTotals> {
-  const parsedDeps = await readJsonFile<PackageJson>(packageJsonPath);
+  const formattedPath = path.relative(process.cwd(), packageJsonPath);
 
-  const mergedDeps = objectFromEntries(
-    dependencyGroupLong.map(group => {
-      const deps = parsedDeps[group];
-      return [group, deps == null ? [] : objectToKeys(deps)];
-    }),
-  );
+  return logger.task(
+    `Counting direct dependencies in ${formattedPath}`,
+    async () => {
+      const parsedDeps = await readJsonFile<PackageJson>(packageJsonPath);
 
-  return objectFromEntries(
-    objectToKeys(mergedDeps).map(deps => [
-      deps,
-      new Set(mergedDeps[deps]).size,
-    ]),
+      const mergedDeps = objectFromEntries(
+        dependencyGroupLong.map(group => {
+          const deps = parsedDeps[group];
+          return [group, deps == null ? [] : objectToKeys(deps)];
+        }),
+      );
+
+      const depTotals = objectFromEntries(
+        objectToKeys(mergedDeps).map(deps => [
+          deps,
+          new Set(mergedDeps[deps]).size,
+        ]),
+      );
+
+      const depTotal = Object.values(depTotals).reduce(
+        (acc, count) => acc + count,
+        0,
+      );
+      const groupsSummary = objectToEntries(depTotals)
+        .filter(([, count]) => count > 0)
+        .map(([group, count]) => `${count} ${group}`)
+        .join(', ');
+      const message = `Found ${pluralizeToken('direct dependency', depTotal)} in ${formattedPath} (${groupsSummary})`;
+
+      return { message, result: depTotals };
+    },
   );
 }

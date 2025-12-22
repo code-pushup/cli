@@ -4,7 +4,12 @@ import type {
   Issue,
   RunnerFunction,
 } from '@code-pushup/models';
-import { pluralizeToken } from '@code-pushup/utils';
+import {
+  formatAsciiTable,
+  logger,
+  pluralizeToken,
+  toSentenceCase,
+} from '@code-pushup/utils';
 import type { AuditSlug } from '../types.js';
 import {
   type DiagnosticsOptions,
@@ -19,8 +24,10 @@ export type RunnerOptions = DiagnosticsOptions & {
 
 export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
   const { tsconfig, expectedAudits } = options;
-  return async (): Promise<AuditOutputs> => {
-    const diagnostics = await getTypeScriptDiagnostics({ tsconfig });
+
+  return (): AuditOutputs => {
+    const diagnostics = getTypeScriptDiagnostics({ tsconfig });
+
     const result = diagnostics.reduce<
       Partial<Record<CodeRangeName, Pick<AuditOutput, 'slug' | 'details'>>>
     >((acc, diag) => {
@@ -36,6 +43,19 @@ export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
         },
       };
     }, {});
+
+    logger.debug(
+      formatAsciiTable(
+        {
+          columns: ['left', 'right'],
+          rows: Object.values(result).map(audit => [
+            `• ${toSentenceCase(audit.slug)}`,
+            audit.details?.issues?.length ?? 0,
+          ]),
+        },
+        { borderless: true },
+      ),
+    );
 
     return expectedAudits.map(({ slug }): AuditOutput => {
       const { details } = result[slug] ?? {};

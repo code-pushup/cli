@@ -20,7 +20,6 @@ const configDirPath = path.join(
 
 describe('coreConfigMiddleware', () => {
   const CLI_DEFAULTS = {
-    progress: true,
     plugins: [],
     onlyPlugins: [],
     skipPlugins: [],
@@ -41,7 +40,7 @@ describe('coreConfigMiddleware', () => {
   it('should throw with invalid config path', async () => {
     await expect(
       coreConfigMiddleware({ config: 'wrong/path/to/config', ...CLI_DEFAULTS }),
-    ).rejects.toThrow(/Provided path .* is not valid./);
+    ).rejects.toThrow(/File '.*' does not exist/);
   });
 
   it('should load config which relies on provided --tsconfig', async () => {

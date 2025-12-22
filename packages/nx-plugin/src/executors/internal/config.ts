@@ -14,11 +14,10 @@ export function globalConfig(
 ): GlobalExecutorOptions {
   const { projectConfig } = context;
   const { root: projectRoot = '' } = projectConfig ?? {};
-  // For better debugging use `--verbose --no-progress` as default
-  const { verbose, progress, config } = options;
+  const { verbose, config, command } = options;
   return {
+    command,
     verbose: !!verbose,
-    progress: !!progress,
     config: config ?? path.join(projectRoot, 'code-pushup.config.ts'),
   };
 }
@@ -51,15 +50,11 @@ export function uploadConfig(
 
   const { projectPrefix, server, apiKey, organization, project, timeout } =
     options;
-  const applyPrefix = workspaceRoot === '.';
-  const prefix = projectPrefix ? `${projectPrefix}-` : '';
+  const applyPrefix = workspaceRoot !== '.';
+  const prefix = projectPrefix && applyPrefix ? `${projectPrefix}-` : '';
 
   const derivedProject =
-    projectName && !project
-      ? applyPrefix
-        ? `${prefix}${projectName}`
-        : projectName
-      : project;
+    projectName && !project ? `${prefix}${projectName}` : project;
 
   return {
     ...parseEnv(process.env),

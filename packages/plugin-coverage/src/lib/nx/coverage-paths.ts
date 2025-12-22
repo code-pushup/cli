@@ -6,10 +6,16 @@ import type {
 } from '@nx/devkit';
 import type { JestExecutorOptions } from '@nx/jest/src/executors/jest/schema';
 import type { VitestExecutorOptions } from '@nx/vite/executors';
-import { bold } from 'ansis';
 import path from 'node:path';
-import { importModule, stringifyError, ui } from '@code-pushup/utils';
+import {
+  importModule,
+  logger,
+  pluralize,
+  pluralizeToken,
+  stringifyError,
+} from '@code-pushup/utils';
 import type { CoverageResult } from '../config.js';
+import { formatMetaLog } from '../format.js';
 
 /**
  * Resolves the cached project graph for the current Nx workspace.
@@ -22,9 +28,8 @@ async function resolveCachedProjectGraph() {
   try {
     return readCachedProjectGraph();
   } catch (error) {
-    ui().logger.info(
-      `Could not read cached project graph, falling back to async creation.
-      ${stringifyError(error)}`,
+    logger.warn(
+      `Could not read cached project graph, falling back to async creation - ${stringifyError(error)}`,
     );
     return await createProjectGraphAsync({ exitOnError: false });
   }
@@ -36,39 +41,53 @@ async function resolveCachedProjectGraph() {
  */
 export async function getNxCoveragePaths(
   targets: string[] = ['test'],
-  verbose?: boolean,
 ): Promise<CoverageResult[]> {
-  if (verbose) {
-    ui().logger.info(
-      bold('💡 Gathering coverage from the following nx projects:'),
-    );
-  }
-
   const { nodes } = await resolveCachedProjectGraph();
 
-  const coverageResults = await Promise.all(
-    targets.map(async target => {
-      const relevantNodes = Object.values(nodes).filter(graph =>
-        hasNxTarget(graph, target),
-      );
+  const coverageResultsPerTarget = Object.fromEntries(
+    await Promise.all(
+      targets.map(async (target): Promise<[string, CoverageResult[]]> => {
+        const relevantNodes = Object.values(nodes).filter(graph =>
+          hasNxTarget(graph, target),
+        );
 
-      return await Promise.all(
-        relevantNodes.map<Promise<CoverageResult>>(async ({ name, data }) => {
-          const coveragePaths = await getCoveragePathsForTarget(data, target);
-          if (verbose) {
-            ui().logger.info(`- ${name}: ${target}`);
-          }
-          return coveragePaths;
-        }),
-      );
-    }),
+        return [
+          target,
+          await Promise.all(
+            relevantNodes.map(({ data }) =>
+              getCoveragePathsForTarget(data, target),
+            ),
+          ),
+        ];
+      }),
+    ),
   );
 
-  if (verbose) {
-    ui().logger.info('\n');
-  }
+  const coverageResults = Object.values(coverageResultsPerTarget).flat();
 
-  return coverageResults.flat();
+  logger.info(
+    formatMetaLog(
+      `Inferred ${pluralizeToken('coverage report', coverageResults.length)} from Nx projects with ${pluralize('target', targets.length)} ${
+        targets.length === 1
+          ? targets[0]
+          : Object.entries(coverageResultsPerTarget)
+              .map(([target, results]) => `${target} (${results.length})`)
+              .join(' and ')
+      }`,
+    ),
+  );
+  logger.debug(
+    formatMetaLog(
+      coverageResults
+        .map(
+          result =>
+            `• ${typeof result === 'string' ? result : result.resultsPath}`,
+        )
+        .join('\n'),
+    ),
+  );
+
+  return coverageResults;
 }
 
 function hasNxTarget(

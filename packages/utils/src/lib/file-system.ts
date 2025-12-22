@@ -1,11 +1,9 @@
-import { bold, gray } from 'ansis';
 import { type Options, bundleRequire } from 'bundle-require';
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
 import type { Format, PersistConfig } from '@code-pushup/models';
-import { formatBytes } from './formatting.js';
-import { logMultipleResults } from './log-results.js';
-import { ui } from './logging.js';
+import { logger } from './logger.js';
+import { settlePromise } from './promises.js';
 
 export async function readTextFile(filePath: string): Promise<string> {
   const buffer = await readFile(filePath);
@@ -40,8 +38,9 @@ export async function ensureDirectoryExists(baseDir: string) {
     await mkdir(baseDir, { recursive: true });
     return;
   } catch (error) {
-    ui().logger.info((error as { code: string; message: string }).message);
-    if ((error as { code: string }).code !== 'EEXIST') {
+    const fsError = error as NodeJS.ErrnoException;
+    logger.warn(fsError.message);
+    if (fsError.code !== 'EEXIST') {
       throw error;
     }
   }
@@ -53,30 +52,15 @@ export async function removeDirectoryIfExists(dir: string) {
   }
 }
 
-export type FileResult = readonly [string] | readonly [string, number];
-export type MultipleFileResults = PromiseSettledResult<FileResult>[];
-
-export function logMultipleFileResults(
-  fileResults: MultipleFileResults,
-  messagePrefix: string,
-): void {
-  const succeededTransform = (result: PromiseFulfilledResult<FileResult>) => {
-    const [fileName, size] = result.value;
-    const formattedSize = size ? ` (${gray(formatBytes(size))})` : '';
-    return `- ${bold(fileName)}${formattedSize}`;
-  };
-  const failedTransform = (result: PromiseRejectedResult) =>
-    `- ${bold(result.reason as string)}`;
-
-  logMultipleResults<FileResult>(
-    fileResults,
-    messagePrefix,
-    succeededTransform,
-    failedTransform,
-  );
-}
-
 export async function importModule<T = unknown>(options: Options): Promise<T> {
+  const resolvedStats = await settlePromise(stat(options.filepath));
+  if (resolvedStats.status === 'rejected') {
+    throw new Error(`File '${options.filepath}' does not exist`);
+  }
+  if (!resolvedStats.value.isFile()) {
+    throw new Error(`Expected '${options.filepath}' to be a file`);
+  }
+
   const { mod } = await bundleRequire<object>(options);
 
   if (typeof mod === 'object' && 'default' in mod) {
@@ -195,4 +179,47 @@ export function splitFilePath(filePath: string): SplitFilePath {
     folders.unshift(path.basename(dirPath));
   }
   return { folders, file };
+}
+
+export function truncatePaths(paths: string[]): string[] {
+  const segmentedPaths = paths
+    .map(splitFilePath)
+    .map(({ folders, file }): string[] => [...folders, file]);
+
+  const first = segmentedPaths[0];
+  const others = segmentedPaths.slice(1);
+  if (!first) {
+    return paths;
+  }
+
+  /* eslint-disable functional/no-let,functional/no-loop-statements,unicorn/no-for-loop */
+  let offsetLeft = 0;
+  let offsetRight = 0;
+  for (let left = 0; left < first.length; left++) {
+    if (others.every(segments => segments[left] === first[left])) {
+      offsetLeft++;
+    } else {
+      break;
+    }
+  }
+  for (let right = 1; right <= first.length; right++) {
+    if (others.every(segments => segments.at(-right) === first.at(-right))) {
+      offsetRight++;
+    } else {
+      break;
+    }
+  }
+  /* eslint-enable functional/no-let,functional/no-loop-statements,unicorn/no-for-loop */
+
+  return segmentedPaths.map(segments => {
+    const uniqueSegments = segments.slice(
+      offsetLeft,
+      offsetRight > 0 ? -offsetRight : undefined,
+    );
+    return path.join(
+      offsetLeft > 0 ? '…' : '',
+      ...uniqueSegments,
+      offsetRight > 0 ? '…' : '',
+    );
+  });
 }

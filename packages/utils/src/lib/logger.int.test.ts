@@ -1,56 +1,30 @@
 import ansis from 'ansis';
 import cliSpinners from 'cli-spinners';
 import os from 'node:os';
+import path from 'node:path';
 import process from 'node:process';
 import type { MockInstance } from 'vitest';
 import { Logger } from './logger.js';
 
-// customize ora options for test environment
-vi.mock('ora', async (): Promise<typeof import('ora')> => {
-  const exports = await vi.importActual<typeof import('ora')>('ora');
-  return {
-    ...exports,
-    default: options => {
-      const spinner = exports.default({
-        // skip cli-cursor package
-        hideCursor: false,
-        // skip is-interactive package
-        isEnabled: process.env['CI'] !== 'true',
-        // skip is-unicode-supported package
-        spinner: cliSpinners.dots,
-        // preserve other options
-        ...(typeof options === 'string' ? { text: options } : options),
-      });
-      // skip log-symbols package
-      vi.spyOn(spinner, 'succeed').mockImplementation(text =>
-        spinner.stopAndPersist({ text, symbol: ansis.green('✔') }),
-      );
-      vi.spyOn(spinner, 'fail').mockImplementation(text =>
-        spinner.stopAndPersist({ text, symbol: ansis.red('✖') }),
-      );
-      return spinner;
-    },
-  };
-});
-
 describe('Logger', () => {
-  let output = '';
+  let stdout: string;
   let consoleLogSpy: MockInstance<unknown[], void>;
-  let processStderrSpy: MockInstance<[], typeof process.stderr>;
+  let processStdoutSpy: MockInstance<[], typeof process.stdout>;
   let performanceNowSpy: MockInstance<[], number>;
   let mathRandomSpy: MockInstance<[], number>;
 
   beforeAll(() => {
+    stdout = '';
     vi.useFakeTimers();
 
     consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(message => {
-      output += `${message}\n`;
+      stdout += `${message}\n`;
     });
 
-    // ora spinner uses process.stderr stream
-    const mockProcessStderr: Partial<typeof process.stderr> = {
+    // ora spinner uses process.stdout stream
+    const mockProcessStdout: Partial<typeof process.stdout> = {
       write: message => {
-        output += message;
+        stdout += message;
         return true;
       },
       get isTTY() {
@@ -59,30 +33,31 @@ describe('Logger', () => {
       cursorTo: () => true,
       moveCursor: () => true,
       clearLine: () => {
-        const idx = output.lastIndexOf('\n');
-        output = idx >= 0 ? output.substring(0, idx + 1) : '';
+        const idx = stdout.lastIndexOf('\n');
+        stdout = idx === -1 ? '' : stdout.slice(0, Math.max(0, idx + 1));
         return true;
       },
     };
-    processStderrSpy = vi
-      .spyOn(process, 'stderr', 'get')
-      .mockReturnValue(mockProcessStderr as typeof process.stderr);
+    processStdoutSpy = vi
+      .spyOn(process, 'stdout', 'get')
+      .mockReturnValue(mockProcessStdout as typeof process.stdout);
   });
 
   beforeEach(() => {
-    output = '';
+    stdout = '';
     performanceNowSpy = vi.spyOn(performance, 'now');
     mathRandomSpy = vi.spyOn(Math, 'random');
 
     vi.stubEnv('CI', 'false');
     vi.stubEnv('GITHUB_ACTIONS', 'false');
     vi.stubEnv('GITLAB_CI', 'false');
+    vi.stubEnv('NX_TASK_TARGET_TARGET', '');
   });
 
   afterAll(() => {
     vi.useRealTimers();
     consoleLogSpy.mockReset();
-    processStderrSpy.mockReset();
+    processStdoutSpy.mockReset();
     performanceNowSpy.mockReset();
     mathRandomSpy.mockReset();
   });
@@ -97,7 +72,7 @@ describe('Logger', () => {
       logger.warn('Config file in CommonJS format');
       logger.error('Failed to load config');
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 Code PushUp CLI
 ${ansis.gray('v1.2.3')}
@@ -112,7 +87,32 @@ ${ansis.red('Failed to load config')}
 
       new Logger().debug('Found config file code-pushup.config.js');
 
-      expect(output).toBe('');
+      expect(stdout).toBe('');
+    });
+
+    it('should print debug logs if not verbose but force flag is used', () => {
+      vi.stubEnv('CP_VERBOSE', 'false');
+
+      new Logger().debug('Found config file code-pushup.config.js', {
+        force: true,
+      });
+
+      expect(stdout).toBe(
+        `${ansis.gray('Found config file code-pushup.config.js')}\n`,
+      );
+    });
+
+    it('should skip line-break if requested', () => {
+      const logger = new Logger();
+
+      logger.info('Code PushUp CLI', { noLineBreak: true });
+      logger.debug(' - v1.2.3', { noLineBreak: true, force: true });
+      logger.warn(' (Config file in CommonJS format)', { noLineBreak: true });
+      logger.error(' => Failed to load config', { noLineBreak: true });
+
+      expect(stdout).toBe(
+        `Code PushUp CLI${ansis.gray(' - v1.2.3')}${ansis.yellow(' (Config file in CommonJS format)')}${ansis.red(' => Failed to load config')}`,
+      );
     });
 
     it('should set verbose flag and environment variable', () => {
@@ -121,9 +121,9 @@ ${ansis.red('Failed to load config')}
 
       logger.setVerbose(true);
 
-      expect(logger.isVerbose()).toBe(true);
+      expect(logger.isVerbose()).toBeTrue();
       expect(process.env['CP_VERBOSE']).toBe('true');
-      expect(new Logger().isVerbose()).toBe(true);
+      expect(new Logger().isVerbose()).toBeTrue();
     });
   });
 
@@ -138,7 +138,7 @@ ${ansis.red('Failed to load config')}
         return 'ESLint reported 4 errors and 11 warnings';
       });
 
-      expect(ansis.strip(output)).toBe(`
+      expect(ansis.strip(stdout)).toBe(`
 ❯ Running plugin "ESLint"
 │ $ npx eslint . --format=json
 │ Skipping unknown rule "deprecation/deprecation"
@@ -162,11 +162,11 @@ ${ansis.red('Failed to load config')}
       ).rejects.toThrow(
         "ENOENT: no such file or directory, open '.code-pushup/eslint/results.json'",
       );
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('│')} $ npx eslint . --format=json --output-file=.code-pushup/eslint/results.json
-${ansis.cyan('└')} ${ansis.red("Error: ENOENT: no such file or directory, open '.code-pushup/eslint/results.json'")}
+${ansis.cyan('└')} ${ansis.red("ENOENT: no such file or directory, open '.code-pushup/eslint/results.json'")}
 
 `,
       );
@@ -198,7 +198,7 @@ ${ansis.cyan('└')} ${ansis.red("Error: ENOENT: no such file or directory, open
         return `Total line coverage is ${ansis.bold('82%')}`;
       });
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('│')} ${ansis.blue('$')} npx eslint . --format=json
@@ -216,20 +216,17 @@ ${ansis.cyan('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%')}`
       );
     });
 
-    it('should use log group prefix in child loggers', async () => {
-      performanceNowSpy.mockReturnValueOnce(0).mockReturnValueOnce(1234); // group duration: 1.23 s
+    it('should return result from worker', async () => {
+      const result = { stats: { errors: 0, warnings: 0 }, problems: [] };
 
-      await new Logger().group('Running plugin "ESLint"', async () => {
-        new Logger().info(`${ansis.blue('$')} npx eslint . --format=json`);
-        return 'ESLint reported 4 errors and 11 warnings';
-      });
+      await expect(
+        new Logger().group('Running plugin "ESLint"', async () => ({
+          message: 'Completed "ESLint" plugin execution',
+          result,
+        })),
+      ).resolves.toBe(result);
 
-      expect(output).toBe(`
-${ansis.bold.cyan('❯ Running plugin "ESLint"')}
-${ansis.cyan('│')} ${ansis.blue('$')} npx eslint . --format=json
-${ansis.cyan('└')} ${ansis.green('ESLint reported 4 errors and 11 warnings')} ${ansis.gray('(1.23 s)')}
-
-`);
+      expect(stdout).toContain('Completed "ESLint" plugin execution');
     });
 
     it('should use workflow commands to group logs in GitHub Actions environment', async () => {
@@ -244,7 +241,7 @@ ${ansis.cyan('└')} ${ansis.green('ESLint reported 4 errors and 11 warnings')} 
         return 'ESLint reported 4 errors and 11 warnings';
       });
 
-      expect(ansis.strip(output)).toBe(`
+      expect(ansis.strip(stdout)).toBe(`
 ::group::Running plugin "ESLint"
 │ $ npx eslint . --format=json
 │ Skipping unknown rule "deprecation/deprecation"
@@ -254,10 +251,32 @@ ${ansis.cyan('└')} ${ansis.green('ESLint reported 4 errors and 11 warnings')} 
 `);
     });
 
+    it('should NOT use native GitHub Actions log groups if run within Nx target', async () => {
+      vi.stubEnv('CI', 'true');
+      vi.stubEnv('GITHUB_ACTIONS', 'true');
+      vi.stubEnv('NX_TASK_TARGET_TARGET', 'code-pushup');
+      performanceNowSpy.mockReturnValueOnce(0).mockReturnValueOnce(1234); // group duration: 1.23 s
+      const logger = new Logger();
+
+      await logger.group('Running plugin "ESLint"', async () => {
+        logger.info('$ npx eslint . --format=json');
+        logger.warn('Skipping unknown rule "deprecation/deprecation"');
+        return 'ESLint reported 4 errors and 11 warnings';
+      });
+
+      expect(ansis.strip(stdout)).toBe(`
+❯ Running plugin "ESLint"
+│ $ npx eslint . --format=json
+│ Skipping unknown rule "deprecation/deprecation"
+└ ESLint reported 4 errors and 11 warnings (1.23 s)
+
+`);
+    });
+
     it('should use collapsible sections in GitLab CI/CD environment, initial collapse depends on verbosity', async () => {
       vi.stubEnv('CI', 'true');
       vi.stubEnv('GITLAB_CI', 'true');
-      vi.setSystemTime(new Date(123456789000)); // current Unix timestamp: 123456789 seconds since epoch
+      vi.setSystemTime(new Date(123_456_789_000)); // current Unix timestamp: 123456789 seconds since epoch
       performanceNowSpy
         .mockReturnValueOnce(0)
         .mockReturnValueOnce(123) // 1st group duration: 123 ms
@@ -281,17 +300,17 @@ ${ansis.cyan('└')} ${ansis.green('ESLint reported 4 errors and 11 warnings')} 
       });
 
       // debugging tip: temporarily remove '\r' character from original implementation
-      expect(output).toBe(`
-\x1b[0Ksection_start:123456789:code_pushup_logs_group_1a[collapsed=true]\r\x1b[0K${ansis.bold.cyan('❯ Running plugin "ESLint"')}
+      expect(stdout).toBe(`
+\u001B[0Ksection_start:123456789:code_pushup_logs_group_1a[collapsed=true]\r\u001B[0K${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('│')} ${ansis.blue('$')} npx eslint . --format=json
 ${ansis.cyan('│')} ${ansis.yellow('Skipping unknown rule "deprecation/deprecation"')}
 ${ansis.cyan('└')} ${ansis.green('ESLint reported 4 errors and 11 warnings')} ${ansis.gray('(123 ms)')}
-\x1b[0Ksection_end:123456789:code_pushup_logs_group_1a\r\x1b[0K
+\u001B[0Ksection_end:123456789:code_pushup_logs_group_1a\r\u001B[0K
 
-\x1b[0Ksection_start:123456789:code_pushup_logs_group_1b\r\x1b[0K${ansis.bold.magenta('❯ Running plugin "Code coverage"')}
+\u001B[0Ksection_start:123456789:code_pushup_logs_group_1b\r\u001B[0K${ansis.bold.magenta('❯ Running plugin "Code coverage"')}
 ${ansis.magenta('│')} ${ansis.blue('$')} npx vitest --coverage.enabled
 ${ansis.magenta('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%')}`)} ${ansis.gray('(45 ms)')}
-\x1b[0Ksection_end:123456789:code_pushup_logs_group_1b\r\x1b[0K
+\u001B[0Ksection_end:123456789:code_pushup_logs_group_1b\r\u001B[0K
 
 `);
     });
@@ -308,17 +327,17 @@ ${ansis.magenta('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%'
         async () => 'Uploaded report to portal',
       );
 
-      expect(output).toBe(`${ansis.cyan('⠋')} Uploading report to portal`);
+      expect(stdout).toBe(`${ansis.cyan('⠋')} Uploading report to portal`);
 
       vi.advanceTimersByTime(cliSpinners.dots.interval);
-      expect(output).toBe(`${ansis.cyan('⠙')} Uploading report to portal`);
+      expect(stdout).toBe(`${ansis.cyan('⠙')} Uploading report to portal`);
 
       vi.advanceTimersByTime(cliSpinners.dots.interval);
-      expect(output).toBe(`${ansis.cyan('⠹')} Uploading report to portal`);
+      expect(stdout).toBe(`${ansis.cyan('⠹')} Uploading report to portal`);
 
       await expect(task).resolves.toBeUndefined();
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `${ansis.green('✔')} Uploaded report to portal ${ansis.gray('(42 ms)')}\n`,
       );
     });
@@ -328,12 +347,12 @@ ${ansis.magenta('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%'
         throw new Error('GraphQL error: Invalid API key');
       });
 
-      expect(output).toBe(`${ansis.cyan('⠋')} Uploading report to portal`);
+      expect(stdout).toBe(`${ansis.cyan('⠋')} Uploading report to portal`);
 
       await expect(task).rejects.toThrow('GraphQL error: Invalid API key');
 
-      expect(output).toBe(
-        `${ansis.red('✖')} Uploading report to portal → ${ansis.red('Error: GraphQL error: Invalid API key')}\n`,
+      expect(stdout).toBe(
+        `${ansis.red('✖')} Uploading report to portal → ${ansis.red('GraphQL error: Invalid API key')}\n`,
       );
     });
 
@@ -345,14 +364,73 @@ ${ansis.magenta('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%'
         async () => 'Uploaded report to portal',
       );
 
-      expect(output).toBe('- Uploading report to portal\n');
+      expect(stdout).toBe('- Uploading report to portal\n');
 
       await task;
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 - Uploading report to portal
 ${ansis.green('✔')} Uploaded report to portal ${ansis.gray('(42 ms)')}
+`.trimStart(),
+      );
+    });
+
+    it('should resolve value from worker', async () => {
+      const config = { plugins: ['eslint'] };
+
+      await expect(
+        new Logger().task('Loading configuration', async () => ({
+          message: 'Loaded configuration',
+          result: config,
+        })),
+      ).resolves.toBe(config);
+
+      expect(stdout).toBe(
+        `
+${ansis.green('✔')} Loaded configuration ${ansis.gray('(42 ms)')}
+`.trimStart(),
+      );
+    });
+
+    it('should allow spinners to be run in sequence', async () => {
+      performanceNowSpy
+        .mockReset()
+        .mockReturnValueOnce(0)
+        .mockReturnValueOnce(30_000) // 1st task duration: 30 s
+        .mockReturnValueOnce(0)
+        .mockReturnValueOnce(1000); // 2nd task duration: 1 s
+
+      const task1 = new Logger().task(
+        'Collecting report',
+        async () => 'Collected report',
+      );
+
+      expect(stdout).toBe(`${ansis.cyan('⠋')} Collecting report`);
+
+      await expect(task1).resolves.toBeUndefined();
+
+      expect(stdout).toBe(
+        `${ansis.green('✔')} Collected report ${ansis.gray('(30 s)')}\n`,
+      );
+
+      const task2 = new Logger().task(
+        'Uploading report to portal',
+        async () => 'Uploaded report to portal',
+      );
+
+      expect(stdout).toBe(
+        `
+${ansis.green('✔')} Collected report ${ansis.gray('(30 s)')}
+${ansis.cyan('⠋')} Uploading report to portal`.trimStart(),
+      );
+
+      await expect(task2).resolves.toBeUndefined();
+
+      expect(stdout).toBe(
+        `
+${ansis.green('✔')} Collected report ${ansis.gray('(30 s)')}
+${ansis.green('✔')} Uploaded report to portal ${ansis.gray('(1 s)')}
 `.trimStart(),
       );
     });
@@ -366,11 +444,11 @@ ${ansis.green('✔')} Uploaded report to portal ${ansis.gray('(42 ms)')}
         async () => 'Uploaded report to portal',
       );
 
-      expect(output).toBe(`${ansis.cyan('⠋')} Uploading report to portal`);
+      expect(stdout).toBe(`${ansis.cyan('⠋')} Uploading report to portal`);
 
       process.emit('SIGINT');
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.red('✖')} Uploading report to portal ${ansis.red.bold('[SIGINT]')}
 
@@ -394,12 +472,12 @@ ${ansis.red.bold('Cancelled by SIGINT')}
         return 'Uploaded report to portal';
       });
 
-      expect(output).toBe(`${ansis.cyan('⠋')} Uploading report to portal`);
+      expect(stdout).toBe(`${ansis.cyan('⠋')} Uploading report to portal`);
 
       await vi.advanceTimersByTimeAsync(42);
       await expect(task).resolves.toBeUndefined();
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.green('✔')} Uploaded report to portal ${ansis.gray('(42 ms)')}
   ${ansis.gray('Sent request to Portal API')}
@@ -421,14 +499,14 @@ ${ansis.green('✔')} Uploaded report to portal ${ansis.gray('(42 ms)')}
         throw new Error('GraphQL error: Invalid API key');
       });
 
-      expect(output).toBe(`${ansis.cyan('⠋')} Uploading report to portal`);
+      expect(stdout).toBe(`${ansis.cyan('⠋')} Uploading report to portal`);
 
       vi.advanceTimersByTime(42);
       await expect(task).rejects.toThrow('GraphQL error: Invalid API key');
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
-${ansis.red('✖')} Uploading report to portal → ${ansis.red('Error: GraphQL error: Invalid API key')}
+${ansis.red('✖')} Uploading report to portal → ${ansis.red('GraphQL error: Invalid API key')}
   ${ansis.gray('Sent request to Portal API')}
   ${ansis.gray('Received response from Portal API')}
 `.trimStart(),
@@ -449,7 +527,7 @@ ${ansis.red('✖')} Uploading report to portal → ${ansis.red('Error: GraphQL e
         return 'Uploaded report to portal';
       });
 
-      expect(ansis.strip(output)).toBe(
+      expect(ansis.strip(stdout)).toBe(
         `
 - Uploading report to portal
   Sent request to Portal API
@@ -458,7 +536,7 @@ ${ansis.red('✖')} Uploading report to portal → ${ansis.red('Error: GraphQL e
 
       await vi.advanceTimersByTimeAsync(42);
 
-      expect(ansis.strip(output)).toBe(
+      expect(ansis.strip(stdout)).toBe(
         `
 - Uploading report to portal
   Sent request to Portal API
@@ -471,16 +549,16 @@ ${ansis.red('✖')} Uploading report to portal → ${ansis.red('Error: GraphQL e
     it('should use colored dollar prefix for commands (success)', async () => {
       const command = new Logger().command(
         'npx eslint . --format=json',
-        async () => {},
+        async () => ({ code: 0 }),
       );
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `${ansis.cyan('⠋')} ${ansis.blue('$')} npx eslint . --format=json`,
       );
 
-      await expect(command).resolves.toBeUndefined();
+      await expect(command).resolves.toEqual({ code: 0 });
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `${ansis.green('✔')} ${ansis.green('$')} npx eslint . --format=json ${ansis.gray('(42 ms)')}\n`,
       );
     });
@@ -493,14 +571,84 @@ ${ansis.red('✖')} Uploading report to portal → ${ansis.red('Error: GraphQL e
         },
       );
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `${ansis.cyan('⠋')} ${ansis.blue('$')} npx eslint . --format=json`,
       );
 
       await expect(command).rejects.toThrow('Process failed with exit code 1');
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `${ansis.red('✖')} ${ansis.red('$')} npx eslint . --format=json\n`,
+      );
+    });
+
+    it("should print command's working directory if it differs from `process.cwd()`", async () => {
+      const command = new Logger().command(
+        'npx eslint . --format=json',
+        async () => {},
+        { cwd: 'src' },
+      );
+
+      expect(stdout).toBe(
+        `${ansis.cyan('⠋')} ${ansis.blue('src')} ${ansis.blue('$')} npx eslint . --format=json`,
+      );
+
+      await expect(command).resolves.toBeUndefined();
+
+      expect(stdout).toBe(
+        `${ansis.green('✔')} ${ansis.blue('src')} ${ansis.green('$')} npx eslint . --format=json ${ansis.gray('(42 ms)')}\n`,
+      );
+    });
+
+    it('should print relative working directory if absoluted path provided', async () => {
+      const command = new Logger().command(
+        'npx eslint . --format=json',
+        async () => {},
+        { cwd: path.join(process.cwd(), 'src') },
+      );
+
+      expect(stdout).toBe(
+        `${ansis.cyan('⠋')} ${ansis.blue('src')} ${ansis.blue('$')} npx eslint . --format=json`,
+      );
+
+      await expect(command).resolves.toBeUndefined();
+
+      expect(stdout).toBe(
+        `${ansis.green('✔')} ${ansis.blue('src')} ${ansis.green('$')} npx eslint . --format=json ${ansis.gray('(42 ms)')}\n`,
+      );
+    });
+
+    it('should skip indentation for inner logs in CI if requested', async () => {
+      vi.stubEnv('CI', 'true');
+      const logger = new Logger();
+
+      await logger.command('npx code-pushup', async () => {
+        logger.newline();
+        logger.info(
+          '::group::npx nx lint\nAll files pass linting.\n::endgroup\n',
+          { noIndent: true },
+        );
+        logger.info(
+          'Collected report:\n- .code-pushup/report.json\n- .code-pushup/report.md',
+          { noIndent: true },
+        );
+        logger.newline();
+      });
+
+      expect(ansis.strip(stdout)).toBe(
+        `
+- $ npx code-pushup
+
+::group::npx nx lint
+All files pass linting.
+::endgroup
+
+Collected report:
+- .code-pushup/report.json
+- .code-pushup/report.md
+
+✔ $ npx code-pushup (42 ms)
+`.trimStart(),
       );
     });
   });
@@ -523,28 +671,28 @@ ${ansis.red('✖')} Uploading report to portal → ${ansis.red('Error: GraphQL e
         return 'ESLint reported 4 errors and 11 warnings';
       });
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('-')} ${ansis.blue('$')} npx eslint . --format=json`,
       );
 
       vi.advanceTimersByTime(cliSpinners.line.interval);
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('\\')} ${ansis.blue('$')} npx eslint . --format=json`,
       );
 
       vi.advanceTimersByTime(cliSpinners.line.interval);
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('|')} ${ansis.blue('$')} npx eslint . --format=json`,
       );
 
       vi.advanceTimersByTime(cliSpinners.line.interval);
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('/')} ${ansis.blue('$')} npx eslint . --format=json`,
@@ -552,7 +700,7 @@ ${ansis.cyan('/')} ${ansis.blue('$')} npx eslint . --format=json`,
 
       await expect(group).resolves.toBeUndefined();
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('│')} ${ansis.green('$')} npx eslint . --format=json ${ansis.gray('(42 ms)')}
@@ -571,7 +719,7 @@ ${ansis.cyan('└')} ${ansis.green('ESLint reported 4 errors and 11 warnings')} 
         return 'ESLint reported 4 errors and 11 warnings';
       });
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('-')} ${ansis.blue('$')} npx eslint . --format=json`,
@@ -598,7 +746,7 @@ ${ansis.cyan('-')} ${ansis.blue('$')} npx eslint . --format=json`,
         return 'Calculated Lighthouse scores for 4 categories';
       });
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('│')} ${ansis.green('$')} npx eslint . --format=json ${ansis.gray('(42 ms)')}
@@ -609,7 +757,7 @@ ${ansis.magenta('-')} Executing ${ansis.bold('runLighthouse')} function`,
       );
 
       vi.advanceTimersByTime(cliSpinners.line.interval);
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('│')} ${ansis.green('$')} npx eslint . --format=json ${ansis.gray('(42 ms)')}
@@ -620,7 +768,7 @@ ${ansis.magenta('\\')} Executing ${ansis.bold('runLighthouse')} function`,
       );
 
       await group2;
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('│')} ${ansis.green('$')} npx eslint . --format=json ${ansis.gray('(42 ms)')}
@@ -643,7 +791,7 @@ ${ansis.magenta('└')} ${ansis.green('Calculated Lighthouse scores for 4 catego
         return 'ESLint reported 4 errors and 11 warnings';
       });
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('│')} ${ansis.blue('$')} npx eslint . --format=json
@@ -652,7 +800,7 @@ ${ansis.cyan('│')} ${ansis.blue('$')} npx eslint . --format=json
 
       await group;
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('│')} ${ansis.blue('$')} npx eslint . --format=json
@@ -676,7 +824,7 @@ ${ansis.cyan('└')} ${ansis.green('ESLint reported 4 errors and 11 warnings')} 
         return 'ESLint reported 4 errors and 11 warnings';
       });
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('-')} ${ansis.blue('$')} npx eslint . --format=json`,
@@ -685,11 +833,11 @@ ${ansis.cyan('-')} ${ansis.blue('$')} npx eslint . --format=json`,
       vi.advanceTimersToNextTimer();
       await expect(group).rejects.toThrow('Process failed with exit code 1');
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('│')} ${ansis.red('$')} npx eslint . --format=json
-${ansis.cyan('└')} ${ansis.red('Error: Process failed with exit code 1')}
+${ansis.cyan('└')} ${ansis.red('Process failed with exit code 1')}
 
 `,
       );
@@ -705,7 +853,7 @@ ${ansis.cyan('└')} ${ansis.red('Error: Process failed with exit code 1')}
         return 'ESLint reported 4 errors and 11 warnings';
       });
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('-')} ${ansis.blue('$')} npx eslint . --format=json`,
@@ -713,7 +861,7 @@ ${ansis.cyan('-')} ${ansis.blue('$')} npx eslint . --format=json`,
 
       process.emit('SIGINT');
 
-      expect(output).toBe(
+      expect(stdout).toBe(
         `
 ${ansis.bold.cyan('❯ Running plugin "ESLint"')}
 ${ansis.cyan('└')} ${ansis.blue('$')} npx eslint . --format=json ${ansis.red.bold('[SIGINT]')}
@@ -736,7 +884,7 @@ ${ansis.red.bold('Cancelled by SIGINT')}
         return 'ESLint reported 0 problems';
       });
 
-      expect(ansis.strip(output)).toBe(
+      expect(ansis.strip(stdout)).toBe(
         `
 ❯ Running plugin "ESLint"
 - $ npx eslint . --format=json`,
@@ -744,7 +892,7 @@ ${ansis.red.bold('Cancelled by SIGINT')}
 
       await expect(group).resolves.toBeUndefined();
 
-      expect(ansis.strip(output)).toBe(
+      expect(ansis.strip(stdout)).toBe(
         `
 ❯ Running plugin "ESLint"
 │ $ npx eslint . --format=json (42 ms)
@@ -774,7 +922,7 @@ ${ansis.red.bold('Cancelled by SIGINT')}
 
       await expect(group).rejects.toThrow('Process failed with exit code 2');
 
-      expect(ansis.strip(output)).toBe(
+      expect(ansis.strip(stdout)).toBe(
         `
 ❯ Running plugin "ESLint"
 │ $ npx eslint . --format=json
@@ -786,7 +934,7 @@ ${ansis.red.bold('Cancelled by SIGINT')}
 │   ESLint couldn't find a configuration file.
 │   
 │ $ npx eslint . --format=json
-└ Error: Process failed with exit code 2
+└ Process failed with exit code 2
 
 `,
       );
@@ -800,20 +948,6 @@ ${ansis.red.bold('Cancelled by SIGINT')}
       await expect(
         logger.group('Outer group', async () => {
           await logger.group('Inner group', async () => 'Inner group complete');
-          return 'Outer group complete';
-        }),
-      ).rejects.toThrow(
-        'Internal Logger error - nested groups are not supported',
-      );
-    });
-
-    it('should throw if nesting groups across logger instances', async () => {
-      await expect(
-        new Logger().group('Outer group', async () => {
-          await new Logger().group(
-            'Inner group',
-            async () => 'Inner group complete',
-          );
           return 'Outer group complete';
         }),
       ).rejects.toThrow(
@@ -846,5 +980,18 @@ ${ansis.red.bold('Cancelled by SIGINT')}
         'Internal Logger error - concurrent spinners are not supported',
       );
     });
+  });
+
+  it('should throw if spinners are nested', async () => {
+    const logger = new Logger();
+
+    await expect(
+      logger.task('Task 1', async () => {
+        await logger.task('Task 2', async () => 'DONE');
+        return 'DONE';
+      }),
+    ).rejects.toThrow(
+      'Internal Logger error - concurrent spinners are not supported',
+    );
   });
 });

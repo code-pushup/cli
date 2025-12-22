@@ -1,7 +1,17 @@
 import type { CompilerOptions } from 'typescript';
-import type { Audit, CategoryConfig, CategoryRef } from '@code-pushup/models';
-import { kebabCaseToCamelCase, ui } from '@code-pushup/utils';
+import type {
+  Audit,
+  CategoryConfig,
+  CategoryRef,
+  Group,
+} from '@code-pushup/models';
+import {
+  kebabCaseToCamelCase,
+  logger,
+  pluralizeToken,
+} from '@code-pushup/utils';
 import { AUDITS, GROUPS, TYPESCRIPT_PLUGIN_SLUG } from './constants.js';
+import { formatMetaLog } from './format.js';
 import type {
   TypescriptPluginConfig,
   TypescriptPluginOptions,
@@ -141,11 +151,29 @@ export function getCategories() {
   return Object.values(CATEGORY_MAP);
 }
 
-export function logSkippedAudits(audits: Audit[]) {
+export function logAuditsAndGroups(audits: Audit[], groups: Group[]) {
+  logger.info(
+    formatMetaLog(
+      `Created ${pluralizeToken('audit', audits.length)} and ${pluralizeToken('group', groups.length)}`,
+    ),
+  );
   const skippedAudits = AUDITS.filter(
-    audit => !audits.some(filtered => filtered.slug === audit.slug),
-  ).map(audit => kebabCaseToCamelCase(audit.slug));
+    audit => !audits.some(({ slug }) => slug === audit.slug),
+  );
+  const skippedGroups = GROUPS.filter(
+    group => !groups.some(({ slug }) => slug === group.slug),
+  );
   if (skippedAudits.length > 0) {
-    ui().logger.info(`Skipped audits: [${skippedAudits.join(', ')}]`);
+    logger.info(
+      formatMetaLog(
+        [
+          `Skipped ${pluralizeToken('audit', skippedAudits.length)}`,
+          skippedGroups.length > 0 &&
+            pluralizeToken('group', skippedGroups.length),
+        ]
+          .filter(Boolean)
+          .join(' and '),
+      ),
+    );
   }
 }

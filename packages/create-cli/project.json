@@ -6,18 +6,13 @@
   "targets": {
     "build": {},
     "lint": {},
-    "lint-report": {},
+
     "unit-test": {},
-    "exec-node": {
-      "dependsOn": ["build"],
-      "command": "node ./dist/packages/create-cli/src/index.js",
-      "options": {}
-    },
-    "exec-npm": {
-      "dependsOn": ["^build"],
-      "command": "npm exec ./dist/packages/create-cli",
-      "options": {}
-    }
+    "code-pushup": {},
+    "code-pushup-eslint": {},
+    "code-pushup-coverage": {},
+    "code-pushup-typescript": {},
+    "code-pushup-jsdocs": {}
   },
   "tags": ["scope:tooling", "type:app", "publishable"]
 }

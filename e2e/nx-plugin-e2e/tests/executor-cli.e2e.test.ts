@@ -1,7 +1,7 @@
 import { type Tree, updateProjectConfiguration } from '@nx/devkit';
 import path from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
-import { afterAll, afterEach, beforeEach, expect, vi } from 'vitest';
+import { afterAll, afterEach, beforeEach, expect } from 'vitest';
 import {
   type AutorunCommandExecutorOptions,
   generateCodePushupConfig,
@@ -17,7 +17,7 @@ import {
   removeColorCodes,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
-import { executeProcess, readJsonFile } from '@code-pushup/utils';
+import { executeProcess, logger, readJsonFile } from '@code-pushup/utils';
 import { INLINE_PLUGIN } from '../mocks/inline-plugin.js';
 
 async function addTargetToWorkspace(
@@ -62,15 +62,16 @@ describe('executor command', () => {
     Object.entries(process.env).filter(([k]) => k.startsWith('CP_')),
   );
 
-  /* eslint-disable functional/immutable-data, @typescript-eslint/no-dynamic-delete */
   beforeAll(() => {
     Object.entries(process.env)
       .filter(([k]) => k.startsWith('CP_'))
-      .forEach(([k]) => delete process.env[k]);
+      .forEach(([k]) => {
+        // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
+        delete process.env[k];
+      });
   });
 
   beforeEach(async () => {
-    vi.unstubAllEnvs();
     tree = await generateWorkspaceAndProject(project);
   });
 
@@ -79,9 +80,11 @@ describe('executor command', () => {
   });
 
   afterAll(() => {
-    Object.entries(processEnvCP).forEach(([k, v]) => (process.env[k] = v));
+    Object.entries(processEnvCP).forEach(([k, v]) => {
+      // eslint-disable-next-line functional/immutable-data
+      process.env[k] = v;
+    });
   });
-  /* eslint-enable functional/immutable-data, @typescript-eslint/no-dynamic-delete */
 
   it('should execute no specific command by default', async () => {
     const cwd = path.join(testFileDir, 'execute-default-command');
@@ -95,25 +98,6 @@ describe('executor command', () => {
     expect(code).toBe(0);
     const cleanStdout = removeColorCodes(stdout);
     expect(cleanStdout).toContain('nx run my-lib:code-pushup');
-  });
-
-  it('should execute print-config executor', async () => {
-    const cwd = path.join(testFileDir, 'execute-print-config-command');
-    await addTargetToWorkspace(tree, { cwd, project });
-
-    const { stdout, code } = await executeProcess({
-      command: 'npx',
-      args: ['nx', 'run', `${project}:code-pushup`, 'print-config'],
-      cwd,
-    });
-
-    expect(code).toBe(0);
-    const cleanStdout = removeColorCodes(stdout);
-    expect(cleanStdout).toContain('nx run my-lib:code-pushup print-config');
-
-    await expect(() =>
-      readJsonFile(path.join(cwd, '.code-pushup', project, 'report.json')),
-    ).rejects.toThrow('');
   });
 
   it('should execute print-config executor with output', async () => {
@@ -141,32 +125,6 @@ describe('executor command', () => {
     ).resolves.not.toThrow();
   });
 
-  it('should execute print-config executor with api key', async () => {
-    const cwd = path.join(testFileDir, 'execute-print-config-command');
-    await addTargetToWorkspace(tree, { cwd, project });
-
-    const { stdout, code } = await executeProcess({
-      command: 'npx',
-      args: [
-        'nx',
-        'run',
-        `${project}:code-pushup`,
-        'print-config',
-        '--upload.apiKey=a123a',
-      ],
-      cwd,
-    });
-
-    expect(code).toBe(0);
-    const cleanStdout = removeColorCodes(stdout);
-    expect(cleanStdout).toContain('nx run my-lib:code-pushup print-config');
-    expect(cleanStdout).toContain('a123a');
-
-    await expect(() =>
-      readJsonFile(path.join(cwd, '.code-pushup', project, 'report.json')),
-    ).rejects.toThrow('');
-  });
-
   it('should execute collect executor and merge target and command-line options', async () => {
     const cwd = path.join(testFileDir, 'execute-collect-with-merged-options');
     await addTargetToWorkspace(
@@ -179,6 +137,7 @@ describe('executor command', () => {
         },
       },
     );
+    logger.setVerbose(true);
 
     const { stdout, code } = await executeProcess({
       command: 'npx',
@@ -188,6 +147,7 @@ describe('executor command', () => {
         `${project}:code-pushup`,
         'collect',
         '--persist.filename=terminal-report',
+        '--verbose',
       ],
       cwd,
     });
@@ -200,7 +160,9 @@ describe('executor command', () => {
     expect(cleanStdout).toContain('Code PushUp CLI');
 
     await expect(
-      readJsonFile(path.join(cwd, '.reports', 'terminal-report.json')),
+      readJsonFile(
+        path.join(cwd, '.code-pushup', project, 'terminal-report.json'),
+      ),
     ).resolves.not.toThrow();
   });
 

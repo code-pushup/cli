@@ -1,16 +1,29 @@
-import type { Config, RunnerResult } from 'lighthouse';
+import ansis from 'ansis';
+import type { Config, Result, RunnerResult } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
 import path from 'node:path';
-import type { AuditOutputs, RunnerFunction } from '@code-pushup/models';
-import { ensureDirectoryExists, ui } from '@code-pushup/utils';
-import { orderSlug, shouldExpandForUrls } from '../processing.js';
+import type {
+  AuditOutputs,
+  RunnerFunction,
+  TableColumnObject,
+} from '@code-pushup/models';
+import {
+  addIndex,
+  asyncSequential,
+  ensureDirectoryExists,
+  formatAsciiTable,
+  formatReportScore,
+  logger,
+  shouldExpandForUrls,
+  stringifyError,
+} from '@code-pushup/utils';
 import type { LighthouseOptions } from '../types.js';
 import { DEFAULT_CLI_FLAGS } from './constants.js';
 import type { LighthouseCliFlags } from './types.js';
 import {
   enrichFlags,
+  filterAuditOutputs,
   getConfig,
-  normalizeAuditOutputs,
   toAuditOutputs,
   withLocalTmpDir,
 } from './utils.js';
@@ -22,62 +35,118 @@ export function createRunnerFunction(
   return withLocalTmpDir(async (): Promise<AuditOutputs> => {
     const config = await getConfig(flags);
     const normalizationFlags = enrichFlags(flags);
-    const isSingleUrl = !shouldExpandForUrls(urls.length);
+    const urlsCount = urls.length;
+    const isSingleUrl = !shouldExpandForUrls(urlsCount);
 
-    const allResults = await urls.reduce(async (prev, url, index) => {
-      const acc = await prev;
-      try {
-        const enrichedFlags = isSingleUrl
-          ? normalizationFlags
-          : enrichFlags(flags, index + 1);
+    const allResults = await asyncSequential(urls, (url, urlIndex) => {
+      const enrichedFlags = isSingleUrl
+        ? normalizationFlags
+        : enrichFlags(flags, urlIndex + 1);
+      const step = { urlIndex, urlsCount };
+      return runLighthouseForUrl(url, enrichedFlags, config, step);
+    });
 
-        const auditOutputs = await runLighthouseForUrl(
-          url,
-          enrichedFlags,
-          config,
-        );
-
-        const processedOutputs = isSingleUrl
-          ? auditOutputs
-          : auditOutputs.map(audit => ({
-              ...audit,
-              slug: orderSlug(audit.slug, index),
-            }));
-
-        return [...acc, ...processedOutputs];
-      } catch (error) {
-        ui().logger.warning((error as Error).message);
-        return acc;
-      }
-    }, Promise.resolve<AuditOutputs>([]));
-
-    if (allResults.length === 0) {
+    const collectedResults = allResults.filter(res => res != null);
+    if (collectedResults.length === 0) {
       throw new Error(
         isSingleUrl
           ? 'Lighthouse did not produce a result.'
           : 'Lighthouse failed to produce results for all URLs.',
       );
     }
-    return normalizeAuditOutputs(allResults, normalizationFlags);
+
+    logResultsForAllUrls(collectedResults);
+
+    const auditOutputs: AuditOutputs = collectedResults.flatMap(
+      res => res.auditOutputs,
+    );
+    return filterAuditOutputs(auditOutputs, normalizationFlags);
   });
 }
+
+type ResultForUrl = {
+  url: string;
+  lhr: Result;
+  auditOutputs: AuditOutputs;
+};
 
 async function runLighthouseForUrl(
   url: string,
   flags: LighthouseOptions,
   config: Config | undefined,
-): Promise<AuditOutputs> {
-  if (flags.outputPath) {
-    await ensureDirectoryExists(path.dirname(flags.outputPath));
+  step: { urlIndex: number; urlsCount: number },
+): Promise<ResultForUrl | null> {
+  const { urlIndex, urlsCount } = step;
+
+  const prefix = ansis.gray(`[${step.urlIndex + 1}/${step.urlsCount}]`);
+
+  try {
+    if (flags.outputPath) {
+      await ensureDirectoryExists(path.dirname(flags.outputPath));
+    }
+
+    const lhr: Result = await logger.task(
+      `${prefix} Running lighthouse on ${url}`,
+      async () => {
+        const runnerResult: RunnerResult | undefined = await runLighthouse(
+          url,
+          flags,
+          config,
+        );
+
+        if (runnerResult == null) {
+          throw new Error('Lighthouse did not produce a result');
+        }
+
+        return {
+          message: `${prefix} Completed lighthouse run on ${url}`,
+          result: runnerResult.lhr,
+        };
+      },
+    );
+
+    const auditOutputs = toAuditOutputs(Object.values(lhr.audits), flags);
+    if (shouldExpandForUrls(urlsCount)) {
+      return {
+        url,
+        lhr,
+        auditOutputs: auditOutputs.map(audit => ({
+          ...audit,
+          slug: addIndex(audit.slug, urlIndex),
+        })),
+      };
+    }
+    return { url, lhr, auditOutputs };
+  } catch (error) {
+    logger.warn(`Lighthouse run failed for ${url} - ${stringifyError(error)}`);
+    return null;
   }
+}
 
-  const runnerResult: unknown = await runLighthouse(url, flags, config);
+function logResultsForAllUrls(results: ResultForUrl[]): void {
+  const categoryNames = Object.fromEntries(
+    results
+      .flatMap(res => Object.values(res.lhr.categories))
+      .map(category => [category.id, category.title]),
+  );
 
-  if (runnerResult == null) {
-    throw new Error(`Lighthouse did not produce a result for URL: ${url}`);
-  }
-
-  const { lhr } = runnerResult as RunnerResult;
-
-  return toAuditOutputs(Object.values(lhr.audits), flags);
+  logger.info(
+    formatAsciiTable({
+      columns: [
+        { key: 'url', label: 'URL', align: 'left' },
+        ...Object.entries(categoryNames).map(
+          ([key, label]): TableColumnObject => ({ key, label, align: 'right' }),
+        ),
+      ],
+      rows: results.map(({ url, lhr }) => ({
+        url,
+        ...Object.fromEntries(
+          Object.values(lhr.categories).map(category => [
+            category.id,
+            category.score == null ? '-' : formatReportScore(category.score),
+          ]),
+        ),
+      })),
+    }),
+  );
 }

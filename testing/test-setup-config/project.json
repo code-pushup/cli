@@ -1,0 +1,12 @@
+{
+  "name": "test-setup-config",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "testing/test-setup-config/src",
+  "projectType": "library",
+  "targets": {
+    "build": {},
+    "lint": {},
+    "unit-test": {}
+  },
+  "tags": ["scope:shared", "type:testing"]
+}
