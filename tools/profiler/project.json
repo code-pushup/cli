@@ -1,0 +1,45 @@
+{
+  "name": "profiler",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/profiler/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "tools/profiler/dist",
+        "main": "tools/profiler/src/index.ts",
+        "tsConfig": "tools/profiler/tsconfig.lib.json"
+      }
+    },
+    "test-api": {
+      "dependsOn": ["build"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsx {projectRoot}/mocks/test-perf_hooks-patch.ts"
+      },
+      "configurations": {
+        "patched": {
+          "env": {
+            "NODE_OPTIONS": "--import ./tools/profiler/dist/src/lib/extensibility-api.perf_hooks.patch.js"
+          }
+        }
+      }
+    },
+    "test-profiler": {
+      "dependsOn": ["build"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsx {projectRoot}/mocks/test-profiler.ts"
+      },
+      "configurations": {
+        "patched": {
+          "env": {
+            "NODE_OPTIONS": "--import ./tools/profiler/dist/src/lib/extensibility-api.perf_hooks.patch.js"
+          }
+        }
+      }
+    }
+  }
+}

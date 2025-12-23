@@ -1,0 +1,11 @@
+{
+  "name": "@code-pushup/profiler",
+  "version": "0.0.0",
+  "description": "Node profiler in creating custom tracks for Chrome DevTools",
+  "type": "module",
+  "main": "./src/index.js",
+  "dependencies": {},
+  "files": [
+    "src/**/*"
+  ]
+}
