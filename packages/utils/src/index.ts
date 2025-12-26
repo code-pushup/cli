@@ -93,6 +93,7 @@ export {
 } from './lib/guards.js';
 export { interpolate } from './lib/interpolate.js';
 export { Logger, logger } from './lib/logger.js';
+export { Profiler, profiler } from './lib/profiler.js';
 export { mergeConfigs } from './lib/merge-configs.js';
 export {
   addIndex,

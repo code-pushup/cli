@@ -1,6 +1,8 @@
 import { createRequire } from 'node:module';
 import type { PluginConfig, PluginUrls } from '@code-pushup/models';
-import { normalizeUrlInput } from '@code-pushup/utils';
+import { GROUP_CODEPUSHUP } from '@code-pushup/profiler';
+import { createPluginSpan } from '@code-pushup/profiler';
+import { normalizeUrlInput, profiler } from '@code-pushup/utils';
 import {
   LIGHTHOUSE_PLUGIN_SLUG,
   LIGHTHOUSE_PLUGIN_TITLE,
@@ -14,6 +16,14 @@ export function lighthousePlugin(
   urls: PluginUrls,
   flags?: LighthouseOptions,
 ): PluginConfig {
+  const startPluginConfig = profiler.mark(
+    `start-${LIGHTHOUSE_PLUGIN_SLUG}-plugin-config`,
+    createPluginSpan(LIGHTHOUSE_PLUGIN_SLUG)({
+      group: GROUP_CODEPUSHUP,
+      tooltipText: `Loading ${LIGHTHOUSE_PLUGIN_TITLE} plugin configuration`,
+    }),
+  );
+
   const {
     skipAudits,
     onlyAudits,
@@ -34,7 +44,7 @@ export function lighthousePlugin(
     '../../package.json',
   ) as typeof import('../../package.json');
 
-  return {
+  const result: PluginConfig = {
     slug: LIGHTHOUSE_PLUGIN_SLUG,
     title: LIGHTHOUSE_PLUGIN_TITLE,
     icon: 'lighthouse',
@@ -51,4 +61,10 @@ export function lighthousePlugin(
     context,
     ...(scoreTargets && { scoreTargets }),
   };
+
+  profiler.measure(
+    `run-${LIGHTHOUSE_PLUGIN_SLUG}-plugin-config`,
+    startPluginConfig as PerformanceMeasure,
+  );
+  return result;
 }

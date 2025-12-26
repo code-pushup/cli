@@ -1,6 +1,8 @@
 import { createRequire } from 'node:module';
 import { type PluginConfig, validate } from '@code-pushup/models';
-import { stringifyError } from '@code-pushup/utils';
+import { GROUP_CODEPUSHUP } from '@code-pushup/profiler';
+import { createPluginSpan } from '@code-pushup/profiler';
+import { profiler, stringifyError } from '@code-pushup/utils';
 import {
   DEFAULT_TS_CONFIG,
   TYPESCRIPT_PLUGIN_SLUG,
@@ -21,6 +23,14 @@ const packageJson = createRequire(import.meta.url)(
 export function typescriptPlugin(
   options?: TypescriptPluginOptions,
 ): PluginConfig {
+  const startPluginConfig = profiler.mark(
+    `start-${TYPESCRIPT_PLUGIN_SLUG}-plugin-config`,
+    createPluginSpan(TYPESCRIPT_PLUGIN_SLUG)({
+      group: GROUP_CODEPUSHUP,
+      tooltipText: `Loading ${TYPESCRIPT_PLUGIN_TITLE} plugin configuration`,
+    }),
+  );
+
   const {
     tsconfig = DEFAULT_TS_CONFIG,
     onlyAudits,
@@ -32,7 +42,7 @@ export function typescriptPlugin(
 
   logAuditsAndGroups(audits, groups);
 
-  return {
+  const result: PluginConfig = {
     slug: TYPESCRIPT_PLUGIN_SLUG,
     title: TYPESCRIPT_PLUGIN_TITLE,
     icon: 'typescript',
@@ -48,6 +58,12 @@ export function typescriptPlugin(
     }),
     ...(scoreTargets && { scoreTargets }),
   };
+
+  profiler.measure(
+    `run-${TYPESCRIPT_PLUGIN_SLUG}-plugin-config`,
+    startPluginConfig as PerformanceMeasure,
+  );
+  return result;
 }
 
 function parseOptions(

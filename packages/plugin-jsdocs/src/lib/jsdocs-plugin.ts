@@ -1,4 +1,5 @@
 import { type PluginConfig, validate } from '@code-pushup/models';
+import { profiler } from '@code-pushup/utils';
 import { type JsDocsPluginConfig, jsDocsPluginConfigSchema } from './config.js';
 import {
   GROUPS,
@@ -31,6 +32,8 @@ import {
  * @returns Plugin configuration.
  */
 export function jsDocsPlugin(config: JsDocsPluginConfig): PluginConfig {
+  const startPluginConfig = profiler.mark(`start-${PLUGIN_SLUG}-plugin-config`);
+
   const jsDocsConfig = validate(jsDocsPluginConfigSchema, config);
   const scoreTargets = jsDocsConfig.scoreTargets;
 
@@ -39,7 +42,7 @@ export function jsDocsPlugin(config: JsDocsPluginConfig): PluginConfig {
 
   logAuditsAndGroups(audits, groups);
 
-  return {
+  const result: PluginConfig = {
     slug: PLUGIN_SLUG,
     title: PLUGIN_TITLE,
     icon: 'folder-docs',
@@ -50,4 +53,10 @@ export function jsDocsPlugin(config: JsDocsPluginConfig): PluginConfig {
     runner: createRunnerFunction(jsDocsConfig),
     ...(scoreTargets && { scoreTargets }),
   };
+
+  profiler.measure(
+    `run-${PLUGIN_SLUG}-plugin-config`,
+    startPluginConfig as PerformanceMeasure,
+  );
+  return result;
 }

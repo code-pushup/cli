@@ -5,7 +5,9 @@ import {
   type PluginConfig,
   validate,
 } from '@code-pushup/models';
-import { logger, pluralizeToken } from '@code-pushup/utils';
+import { GROUP_CODEPUSHUP } from '@code-pushup/profiler';
+import { createPluginSpan } from '@code-pushup/profiler';
+import { logger, pluralizeToken, profiler } from '@code-pushup/utils';
 import {
   type CoveragePluginConfig,
   type CoverageType,
@@ -37,6 +39,13 @@ import { coverageDescription, coverageTypeWeightMapper } from './utils.js';
 export async function coveragePlugin(
   config: CoveragePluginConfig,
 ): Promise<PluginConfig> {
+  const startPluginConfig = profiler.mark(
+    `start-${COVERAGE_PLUGIN_SLUG}-plugin-config`,
+    createPluginSpan(COVERAGE_PLUGIN_SLUG)({
+      group: GROUP_CODEPUSHUP,
+      tooltipText: `Loading ${COVERAGE_PLUGIN_TITLE} plugin configuration`,
+    }),
+  );
   const coverageConfig = validate(coveragePluginConfigSchema, config);
 
   const audits = coverageConfig.coverageTypes.map(
@@ -72,7 +81,7 @@ export async function coveragePlugin(
 
   const scoreTargets = coverageConfig.scoreTargets;
 
-  return {
+  const r = {
     slug: COVERAGE_PLUGIN_SLUG,
     title: COVERAGE_PLUGIN_TITLE,
     icon: 'folder-coverage-open',
@@ -85,4 +94,9 @@ export async function coveragePlugin(
     runner: createRunnerFunction(coverageConfig),
     ...(scoreTargets && { scoreTargets }),
   };
+  profiler.measure(
+    `run-${COVERAGE_PLUGIN_SLUG}-plugin-config`,
+    startPluginConfig as PerformanceMeasure,
+  );
+  return r as any;
 }

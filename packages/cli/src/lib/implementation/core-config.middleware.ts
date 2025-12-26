@@ -10,7 +10,7 @@ import {
   uploadConfigSchema,
   validate,
 } from '@code-pushup/models';
-import { logger, pluralizeToken } from '@code-pushup/utils';
+import { logger, pluralizeToken, profiler } from '@code-pushup/utils';
 import type { CoreConfigCliOptions } from './core-config.model.js';
 import type { FilterOptions } from './filter.model.js';
 import type { GlobalOptions } from './global.model.js';
@@ -40,6 +40,8 @@ function buildPersistConfig(
 export async function coreConfigMiddleware<
   T extends CoreConfigMiddlewareOptions,
 >(processArgs: T): Promise<GlobalOptions & CoreConfig & FilterOptions> {
+  const startMark = profiler.mark('loadCliConfig:start');
+
   const {
     config,
     tsconfig,
@@ -49,7 +51,7 @@ export async function coreConfigMiddleware<
     ...remainingCliOptions
   } = processArgs;
 
-  return logger.group('Loading configuration', async () => {
+  const result = await logger.group('Loading configuration', async () => {
     // Search for possible configuration file extensions if path is not given
     const importedRc = config
       ? await readRcByPath(config, tsconfig)
@@ -64,7 +66,7 @@ export async function coreConfigMiddleware<
         ? undefined
         : validate(uploadConfigSchema, { ...rcUpload, ...cliUpload });
 
-    const result: GlobalOptions & CoreConfig & FilterOptions = {
+    const configResult: GlobalOptions & CoreConfig & FilterOptions = {
       ...(config != null && { config }),
       cache: normalizeCache(cliCache),
       persist: buildPersistConfig(cliPersist, rcPersist),
@@ -74,10 +76,13 @@ export async function coreConfigMiddleware<
     };
 
     return {
-      message: `Parsed config: ${summarizeConfig(result)}`,
-      result,
+      message: `Parsed config: ${summarizeConfig(configResult)}`,
+      result: configResult,
     };
   });
+
+  profiler.measure('loadCliConfig', startMark as PerformanceMeasure);
+  return result;
 }
 
 function summarizeConfig(config: CoreConfig): string {

@@ -16,6 +16,7 @@ import {
   ensureDirectoryExists,
   generateMdReportsDiff,
   logger,
+  profiler,
   readJsonFile,
   scoreReport,
 } from '@code-pushup/utils';
@@ -42,48 +43,52 @@ export async function compareReportFiles(
 ): Promise<string[]> {
   const { outputDir, filename, format } = config.persist;
 
-  const defaultInputPath = (suffix: keyof Diff<string>) =>
-    createReportPath({ outputDir, filename, format: 'json', suffix });
+  return profiler.span('compareReportFiles', async () => {
+    const defaultInputPath = (suffix: keyof Diff<string>) =>
+      createReportPath({ outputDir, filename, format: 'json', suffix });
 
-  const [reportBefore, reportAfter] = await Promise.all([
-    readJsonFile(options?.before ?? defaultInputPath('before')),
-    readJsonFile(options?.after ?? defaultInputPath('after')),
-  ]);
-  const reports: Diff<Report> = {
-    before: validate(reportSchema, reportBefore),
-    after: validate(reportSchema, reportAfter),
-  };
+    const [reportBefore, reportAfter] = await Promise.all([
+      readJsonFile(options?.before ?? defaultInputPath('before')),
+      readJsonFile(options?.after ?? defaultInputPath('after')),
+    ]);
+    const reports: Diff<Report> = {
+      before: validate(reportSchema, reportBefore),
+      after: validate(reportSchema, reportAfter),
+    };
 
-  const diff = compareReports(reports);
+    const diff = compareReports(reports);
 
-  const label = options?.label ?? getLabelFromReports(reports);
-  const portalUrl =
-    config.upload &&
-    diff.commits &&
-    (await fetchPortalComparisonLink(config.upload, diff.commits));
+    const label = options?.label ?? getLabelFromReports(reports);
+    const portalUrl =
+      config.upload &&
+      diff.commits &&
+      (await fetchPortalComparisonLink(config.upload, diff.commits));
 
-  const diffWithLinks: ReportsDiff =
-    label || portalUrl
-      ? { ...diff, ...(label && { label }), ...(portalUrl && { portalUrl }) }
-      : diff;
+    const diffWithLinks: ReportsDiff =
+      label || portalUrl
+        ? { ...diff, ...(label && { label }), ...(portalUrl && { portalUrl }) }
+        : diff;
 
-  return Promise.all(
-    format.map(async fmt => {
-      const outputPath = createReportPath({
-        outputDir,
-        filename,
-        format: fmt,
-        suffix: 'diff',
-      });
-      const content = reportsDiffToFileContent(diffWithLinks, fmt);
-      await ensureDirectoryExists(outputDir);
-      await writeFile(outputPath, content);
-      return outputPath;
-    }),
-  );
+    return Promise.all(
+      format.map(async fmt => {
+        const outputPath = createReportPath({
+          outputDir,
+          filename,
+          format: fmt,
+          suffix: 'diff',
+        });
+        const content = reportsDiffToFileContent(diffWithLinks, fmt);
+        await ensureDirectoryExists(outputDir);
+        await writeFile(outputPath, content);
+        return outputPath;
+      }),
+    );
+  });
 }
 
 export function compareReports(reports: Diff<Report>): ReportsDiff {
+  const startMark = profiler.mark('compareReports:start');
+
   const start = performance.now();
   const date = new Date().toISOString();
 
@@ -107,7 +112,7 @@ export function compareReports(reports: Diff<Report>): ReportsDiff {
     '../../package.json',
   ) as typeof import('../../package.json');
 
-  return {
+  const result: ReportsDiff = {
     commits,
     categories,
     groups,
@@ -117,6 +122,9 @@ export function compareReports(reports: Diff<Report>): ReportsDiff {
     date,
     duration,
   };
+
+  profiler.measure('compareReports', startMark as PerformanceMeasure);
+  return result;
 }
 
 function reportsDiffToFileContent(

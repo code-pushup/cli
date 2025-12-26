@@ -1,7 +1,9 @@
 import ansis from 'ansis';
 import { createRequire } from 'node:module';
 import type { Audit, Group, PluginConfig } from '@code-pushup/models';
-import { logger, pluralizeToken } from '@code-pushup/utils';
+import { GROUP_CODEPUSHUP } from '@code-pushup/profiler';
+import { createPluginSpan } from '@code-pushup/profiler';
+import { logger, pluralizeToken, profiler } from '@code-pushup/utils';
 import {
   type DependencyGroup,
   type JSPackagesPluginConfig,
@@ -40,6 +42,14 @@ import { normalizeConfig } from './utils.js';
 export async function jsPackagesPlugin(
   config?: JSPackagesPluginConfig,
 ): Promise<PluginConfig> {
+  const startPluginConfig = profiler.mark(
+    `start-${JS_PACKAGES_PLUGIN_SLUG}-plugin-config`,
+    createPluginSpan(JS_PACKAGES_PLUGIN_SLUG)({
+      group: GROUP_CODEPUSHUP,
+      tooltipText: `Loading ${JS_PACKAGES_PLUGIN_TITLE} plugin configuration`,
+    }),
+  );
+
   const {
     packageManager,
     checks,
@@ -61,7 +71,7 @@ export async function jsPackagesPlugin(
     ),
   );
 
-  return {
+  const result: PluginConfig = {
     slug: JS_PACKAGES_PLUGIN_SLUG,
     title: JS_PACKAGES_PLUGIN_TITLE,
     icon: packageManager.icon,
@@ -80,6 +90,12 @@ export async function jsPackagesPlugin(
     }),
     ...(scoreTargets && { scoreTargets }),
   };
+
+  profiler.measure(
+    `run-${JS_PACKAGES_PLUGIN_SLUG}-plugin-config`,
+    startPluginConfig as PerformanceMeasure,
+  );
+  return result;
 }
 
 function createGroups(

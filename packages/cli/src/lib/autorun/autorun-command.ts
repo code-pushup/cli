@@ -5,7 +5,7 @@ import {
   collectAndPersistReports,
   upload,
 } from '@code-pushup/core';
-import { logger } from '@code-pushup/utils';
+import { logger, profiler } from '@code-pushup/utils';
 import {
   printCliCommand,
   renderCategoriesHint,
@@ -20,35 +20,37 @@ export function yargsAutorunCommandObject() {
     command,
     describe: 'Shortcut for running collect followed by upload',
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
-      printCliCommand(command);
+      return profiler.span('autorun', async () => {
+        printCliCommand(command);
 
-      const options = args as unknown as AutorunOptions;
+        const options = args as unknown as AutorunOptions;
 
-      // we need to ensure `json` is part of the formats as we want to upload
-      const optionsWithFormat: AutorunOptions = {
-        ...options,
-        persist: {
-          ...options.persist,
-          format: [
-            ...new Set([...options.persist.format, 'json']),
-          ] as AutorunOptions['persist']['format'],
-        },
-      };
+        // we need to ensure `json` is part of the formats as we want to upload
+        const optionsWithFormat: AutorunOptions = {
+          ...options,
+          persist: {
+            ...options.persist,
+            format: [
+              ...new Set([...options.persist.format, 'json']),
+            ] as AutorunOptions['persist']['format'],
+          },
+        };
 
-      await collectAndPersistReports(optionsWithFormat);
+        await collectAndPersistReports(optionsWithFormat);
 
-      if (!options.categories?.length) {
-        renderCategoriesHint();
-        logger.newline();
-      }
+        if (!options.categories?.length) {
+          renderCategoriesHint();
+          logger.newline();
+        }
 
-      if (options.upload) {
-        await upload(options);
-      } else {
-        logger.warn('Upload skipped because Portal is not configured.');
-        logger.newline();
-        renderPortalHint();
-      }
+        if (options.upload) {
+          await upload(options);
+        } else {
+          logger.warn('Upload skipped because Portal is not configured.');
+          logger.newline();
+          renderPortalHint();
+        }
+      });
     },
   } satisfies CommandModule;
 }

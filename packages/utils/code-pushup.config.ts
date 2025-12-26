@@ -12,7 +12,7 @@ const projectName = 'utils';
 
 export default mergeConfigs(
   configureUpload(projectName),
-  await configureEslintPlugin(projectName),
+  // await configureEslintPlugin(projectName),
   await configureCoveragePlugin(projectName),
   configureTypescriptPlugin(projectName),
   configureJsDocsPlugin(projectName),

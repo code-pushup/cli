@@ -1,5 +1,8 @@
 import { createRequire } from 'node:module';
 import { type PluginConfig, validate } from '@code-pushup/models';
+import { GROUP_CODEPUSHUP } from '@code-pushup/profiler';
+import { createPluginSpan } from '@code-pushup/profiler';
+import { profiler } from '@code-pushup/utils';
 import {
   type ESLintPluginConfig,
   type ESLintPluginOptions,
@@ -35,6 +38,13 @@ export async function eslintPlugin(
   config: ESLintPluginConfig,
   options?: ESLintPluginOptions,
 ): Promise<PluginConfig> {
+  const startPluginConfig = profiler.mark(
+    `start-${ESLINT_PLUGIN_SLUG}-plugin-config`,
+    createPluginSpan(ESLINT_PLUGIN_SLUG)({
+      group: GROUP_CODEPUSHUP,
+      tooltipText: `Loading ${ESLINT_PLUGIN_TITLE} plugin configuration`,
+    }),
+  );
   const targets = validate(eslintPluginConfigSchema, config);
 
   const {
@@ -49,7 +59,7 @@ export async function eslintPlugin(
     '../../package.json',
   ) as typeof import('../../package.json');
 
-  return {
+  const r = {
     slug: ESLINT_PLUGIN_SLUG,
     title: ESLINT_PLUGIN_TITLE,
     icon: 'eslint',
@@ -68,4 +78,9 @@ export async function eslintPlugin(
     }),
     ...(scoreTargets && { scoreTargets }),
   };
+  profiler.measure(
+    `run-${ESLINT_PLUGIN_SLUG}-plugin-config`,
+    startPluginConfig as PerformanceMeasure,
+  );
+  return r as any;
 }

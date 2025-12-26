@@ -97,7 +97,7 @@
       "cache": true,
       "inputs": ["default", "^production", "test-vitest-inputs"],
       "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "options": {
         "configFile": "{projectRoot}/vitest.int.config.ts",
         "coverage": {
@@ -133,6 +133,7 @@
           "--persist.outputDir=.code-pushup/{projectName}"
         ],
         "env": {
+          "CP_PROFILING": "true",
           "NODE_OPTIONS": "--import tsx",
           "TSX_TSCONFIG_PATH": "tsconfig.base.json"
         }
@@ -156,6 +157,7 @@
           "--persist.outputDir=.code-pushup/{projectName}"
         ],
         "env": {
+          "CP_PROFILING": "true",
           "NODE_OPTIONS": "--import tsx",
           "TSX_TSCONFIG_PATH": "tsconfig.base.json"
         }

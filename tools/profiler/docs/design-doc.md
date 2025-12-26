@@ -2,6 +2,8 @@
 
 The goal is to enable Browser functionality in the NodeJS environment, specifically the Extensibility API used for Performance profiling.
 
+_Example - NodeJS code:_
+
 ```ts
 // Mark used to represent the start of the image processing task
 // The start time is defaulted to now
@@ -31,6 +33,10 @@ performance.measure('Image Processing Complete', {
 });
 ```
 
+_Example - ChromeDevTools Performance panel:_
+
+![example-custom-track.png](imgs/example-custom-track.png)
+
 ## Problem
 
 ATM NodeJS `--cpu-pro` or similar flags do not support the Extensibility API used by Chrome DevTools for Performance profiling.
@@ -38,56 +44,38 @@ Nevertheless, calling the API with additional details does not cause any issues 
 
 ## Solution
 
-### Trace persistence
+The solution requires multiple building blocks elaborated below:
 
-### PerformanceEntry to Trace Event helper
+- Utils
+  - Persist trace data
+  - PerformanceEntry to Trace Event
+  - PerformanceEntry Details helper
+- Profiler
+  - API
+  - Usage
+
+### Utils
+
+#### Persist trace data
+
+Trace persistence is implemented in 2 steps:
+
+- at runtime add trace events to an in-memory structure
+- at the end of the profiling session, serialize the trace events to a file or the terminal.
+
+#### PerformanceEntry to Trace Event helper
 
 A helper function can be created to convert `PerformanceEntry` objects into Trace Events that can be consumed by Chrome DevTools.
 
-### Track Entry helper
+```ts
+const markA: PerformanceMeasureOptions = performance.mark('a-start');
+const measureA = performance.measure('Run A', markA);
+const traceEvents = [convertPerformanceMarkEntryToTraceEvent(markA), convertPerformanceMarkEntryToTraceEvent(measureA)];
+```
+
+#### PerformanceEntry Details helper
 
 ```ts
-export type DevtoolsSpanConfig<T extends string = string, G extends string = string> = {
-  track: T;
-  group?: G;
-  color?: DevToolsColor;
-};
-
-export type DevtoolsSpansRegistry = Record<string, DevtoolsSpanConfig>;
-
-export function createDevtoolsSpans<const R extends DevtoolsSpansRegistry>(registry: R) {
-  type SpanKey = Extract<keyof R, string>;
-
-  type SpanFn<K extends SpanKey> = (opts?: {
-    properties?: [string, string][];
-    tooltipText?: string;
-
-    // optional overrides (rare)
-    track?: R[K]['track'];
-    group?: R[K]['group'];
-    color?: DevToolsColor;
-  }) => DevtoolsTrackEntryDetail<R[K]['track'], Extract<R[K]['group'], string>>;
-
-  const spans = {} as { [K in SpanKey]: SpanFn<K> };
-
-  for (const key of Object.keys(registry) as SpanKey[]) {
-    const def = registry[key];
-
-    spans[key] = (opts => ({
-      devtools: {
-        dataType: 'track-entry',
-        track: (opts?.track ?? def.track) as R[typeof key]['track'],
-        trackGroup: (opts?.group ?? def.group) as any,
-        color: opts?.color ?? def.color,
-        properties: opts?.properties,
-        tooltipText: opts?.tooltipText,
-      },
-    })) as SpanFn<typeof key>;
-  }
-
-  return spans;
-}
-
 const Devtools = createDevtoolsSpans({
   analysis: { track: 'Analysis', group: 'Tools', color: 'primary' },
   io: { track: 'I/O', group: 'Tools', color: 'secondary' },
@@ -107,10 +95,82 @@ performance.measure('Read config', a);
 performance.measure('Analyze input', {
   start: a.start,
   detail: Devtools.analysis({
+    ...a.details.devtools,
     tooltipText: 'Heavy analysis',
   }),
 });
 ```
+
+### Profiler
+
+The profiler handles the integration with NodeJS processes, as well as the trace data creation and persistence.
+
+#### API
+
+- `#writeLine` - writes a single line to the output stream
+- `#installExitHandlers` - sets up handlers to flush data on process exit
+- handles normal exit, uncaught exceptions, and termination signals
+- `enableProfiling` - sets up the profiler to capture trace events
+- `spans` - Helper to create span details for PerformanceEntry objects
+- configured with predefined tracks, groups, and colors
+- `mark` - Equivalent to `performance.mark`, but also captures trace events
+- `measure` - Equivalent to `performance.measure`, but also captures trace events
+- `flush` - Writes the captured trace events to a file or terminal
+- `close` - Cleans up resources used by the profiler
+
+#### Usage
+
+```ts
+const profiler = new Profiler({
+  outputPath: 'trace-output.json',
+  spans: {
+    analysis: { track: 'Analysis', group: 'Tools', color: 'primary' },
+    io: { track: 'I/O', group: 'Tools', color: 'secondary' },
+  },
+});
+
+const taskLoadConfig = profiler.mark('start-loadConfig', {
+  detail: profiler.spans.io({
+    properties: [['Config File', 'code-pushup.config.json']],
+  }),
+});
+profiler.measure('run-loadConfig', taskLoadConfig);
+```
+
+```shell
+# Profile Code PushUp CLI
+CP_PROFILING=true npm @code-pushup/cli
+# Or Profile with Code PushUp NxPlugin
+nx run @code-pushup/nx-plugin:cli --profiling --profiling-output=trace.json
+
+# Both write the trace to the file system
+```
+
+### Track Design
+
+Lanes represent different components of the system being profiled.
+
+```txt
+CodePushUp CLI - Custom
+ ├─ CLI                  ████████████████████████
+ │  ├─ load config       █
+ │  └─ save report                        ███████
+ │
+ ├─ Plugin:eslint         █████████
+ │  ├─ run eslint         █████
+ │  └─ parse output            ████
+ │
+ └─ Plugin:bundle-budget           ███████
+    ├─ run stats                   █████
+    └─ parse output                     ██
+```
+
+| Track Group | Track Name            | Color              | Description                 |
+| ----------- | --------------------- | ------------------ | --------------------------- |
+| CodePushup  | CLI                   | 🟦 tertiary-dark   | Main CLI process and tasks  |
+| CodePushup  | CLI                   | 🟦 tertiary-light  | Detailed CLI operations     |
+| Plugins     | Plugin:<name>         | 🟪 secondary-dark  | Individual plugin execution |
+| Plugins     | Plugin:<name>:details | 🟪 secondary-light | Plugin details and steps    |
 
 ## References
 

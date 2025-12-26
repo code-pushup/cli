@@ -4,7 +4,9 @@ import {
   type PluginUrls,
   validate,
 } from '@code-pushup/models';
-import { normalizeUrlInput } from '@code-pushup/utils';
+import { GROUP_CODEPUSHUP } from '@code-pushup/profiler';
+import { createPluginSpan } from '@code-pushup/profiler';
+import { normalizeUrlInput, profiler } from '@code-pushup/utils';
 import { type AxePluginOptions, axePluginOptionsSchema } from './config.js';
 import { AXE_PLUGIN_SLUG, AXE_PLUGIN_TITLE } from './constants.js';
 import { processAuditsAndGroups } from './meta/processing.js';
@@ -22,6 +24,14 @@ export function axePlugin(
   urls: PluginUrls,
   options: AxePluginOptions = {},
 ): PluginConfig {
+  const startPluginConfig = profiler.mark(
+    `start-${AXE_PLUGIN_SLUG}-plugin-config`,
+    createPluginSpan(AXE_PLUGIN_SLUG)({
+      group: GROUP_CODEPUSHUP,
+      tooltipText: `Loading ${AXE_PLUGIN_TITLE} plugin configuration`,
+    }),
+  );
+
   const { preset, scoreTargets, timeout } = validate(
     axePluginOptionsSchema,
     options,
@@ -38,7 +48,7 @@ export function axePlugin(
     '../../package.json',
   ) as typeof import('../../package.json');
 
-  return {
+  const result: PluginConfig = {
     slug: AXE_PLUGIN_SLUG,
     title: AXE_PLUGIN_TITLE,
     icon: 'folder-syntax',
@@ -53,4 +63,10 @@ export function axePlugin(
     context,
     ...(scoreTargets && { scoreTargets }),
   };
+
+  profiler.measure(
+    `run-${AXE_PLUGIN_SLUG}-plugin-config`,
+    startPluginConfig as PerformanceMeasure,
+  );
+  return result;
 }

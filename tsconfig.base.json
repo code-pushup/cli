@@ -24,6 +24,7 @@
       "@code-pushup/ci": ["packages/ci/src/index.ts"],
       "@code-pushup/cli": ["packages/cli/src/index.ts"],
       "@code-pushup/core": ["packages/core/src/index.ts"],
+      "@code-pushup/profiler": ["tools/profiler/src/index.ts"],
       "@code-pushup/coverage-plugin": ["packages/plugin-coverage/src/index.ts"],
       "@code-pushup/eslint-formatter-multi": [
         "tools/eslint-formatter-multi/src/index.ts"
