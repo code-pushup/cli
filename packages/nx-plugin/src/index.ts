@@ -1,12 +1,10 @@
 import { PLUGIN_NAME } from './plugin/constants.js';
-import { createNodes, createNodesV2 } from './plugin/index.js';
+import { createNodesV2 } from './plugin/index.js';
 
 // default export for nx.json#plugins
 const plugin = {
   name: PLUGIN_NAME,
   createNodesV2,
-  // Keep for backwards compatibility with Nx < 21
-  createNodes,
 };
 
 export default plugin;
@@ -18,4 +16,4 @@ export type { ConfigurationGeneratorOptions } from './generators/configuration/s
 export { initGenerator, initSchematic } from './generators/init/generator.js';
 export { type InitGeneratorSchema } from './generators/init/schema.js';
 export * from './internal/versions.js';
-export { createNodes, createNodesV2 } from './plugin/index.js';
+export { createNodesV2 } from './plugin/index.js';

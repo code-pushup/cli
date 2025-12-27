@@ -5,13 +5,7 @@
   "projectType": "application",
   "targets": {
     "lint": {},
-    "e2e": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "keepServerRunning": true,
-        "configFile": "{projectRoot}/vitest.e2e.config.ts"
-      }
-    }
+    "e2e": {}
   },
   "implicitDependencies": ["create-cli"],
   "tags": ["scope:tooling", "type:e2e"]

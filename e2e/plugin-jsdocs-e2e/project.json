@@ -7,11 +7,6 @@
   "implicitDependencies": ["cli", "plugin-jsdocs"],
   "targets": {
     "lint": {},
-    "e2e": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "e2e/plugin-jsdocs-e2e/vitest.e2e.config.ts"
-      }
-    }
+    "e2e": {}
   }
 }

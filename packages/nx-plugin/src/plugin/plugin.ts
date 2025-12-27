@@ -1,6 +1,4 @@
 import type {
-  CreateNodes,
-  CreateNodesContext,
   CreateNodesContextV2,
   CreateNodesResult,
   CreateNodesResultV2,
@@ -10,42 +8,7 @@ import { PROJECT_JSON_FILE_NAME } from '../internal/constants.js';
 import { PLUGIN_NAME } from './constants.js';
 import { createTargets } from './target/targets.js';
 import type { CreateNodesOptions } from './types.js';
-import {
-  normalizedCreateNodesContext,
-  normalizedCreateNodesV2Context,
-} from './utils.js';
-
-// name has to be "createNodes" to get picked up by Nx <v20
-/**
- *  @deprecated
- */
-export const createNodes: CreateNodes = [
-  `**/${PROJECT_JSON_FILE_NAME}`,
-  async (
-    projectConfigurationFile: string,
-    createNodesOptions: unknown,
-    context: CreateNodesContext,
-  ): Promise<CreateNodesResult> => {
-    const parsedCreateNodesOptions = createNodesOptions as CreateNodesOptions;
-    const pluginsConfig =
-      context.nxJsonConfiguration.pluginsConfig?.[PLUGIN_NAME] ?? {};
-    const mergedOptions = { ...pluginsConfig, ...parsedCreateNodesOptions };
-
-    const normalizedContext = await normalizedCreateNodesContext(
-      context,
-      projectConfigurationFile,
-      mergedOptions,
-    );
-
-    return {
-      projects: {
-        [normalizedContext.projectRoot]: {
-          targets: await createTargets(normalizedContext),
-        },
-      },
-    };
-  },
-];
+import { normalizedCreateNodesV2Context } from './utils.js';
 
 export const createNodesV2: CreateNodesV2<CreateNodesOptions> = [
   `**/${PROJECT_JSON_FILE_NAME}`,

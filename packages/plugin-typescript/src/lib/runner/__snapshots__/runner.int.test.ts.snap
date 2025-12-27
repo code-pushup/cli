@@ -26,26 +26,6 @@ exports[`createRunnerFunction > should create valid audit outputs when called 1`
     "details": {
       "issues": [
         {
-          "message": "TS2694: Namespace '"./node_modules/minimatch/dist/commonjs/index"' has no exported member 'IOptions'.",
-          "severity": "error",
-          "source": {
-            "file": "node_modules/@types/glob/index.d.ts",
-            "position": {
-              "startLine": 29,
-            },
-          },
-        },
-        {
-          "message": "TS2724: '"./node_modules/minimatch/dist/commonjs/index"' has no exported member named 'IMinimatch'. Did you mean 'Minimatch'?",
-          "severity": "error",
-          "source": {
-            "file": "node_modules/@types/glob/index.d.ts",
-            "position": {
-              "startLine": 74,
-            },
-          },
-        },
-        {
           "message": "TS2307: Cannot find module './non-existent' or its corresponding type declarations.",
           "severity": "error",
           "source": {
@@ -98,10 +78,10 @@ exports[`createRunnerFunction > should create valid audit outputs when called 1`
         },
       ],
     },
-    "displayValue": "7 errors",
+    "displayValue": "5 errors",
     "score": 0,
     "slug": "semantic-errors",
-    "value": 7,
+    "value": 5,
   },
   {
     "details": {

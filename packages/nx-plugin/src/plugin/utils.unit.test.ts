@@ -1,22 +1,33 @@
 import { vol } from 'memfs';
-import { describe, expect } from 'vitest';
-import { createNodesContext } from '@code-pushup/test-nx-utils';
+import { describe, expect, it } from 'vitest';
+import { createNodesV2Context } from '@code-pushup/test-nx-utils';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { normalizedCreateNodesContext } from './utils.js';
+import { normalizedCreateNodesV2Context } from './utils.js';
 
-describe('normalizedCreateNodesContext', () => {
-  it('should provide workspaceRoot', async () => {
+describe('normalizedCreateNodesV2Context', () => {
+  const projectJsonPath = (projectRoot = '') =>
+    `${MEMFS_VOLUME}/${projectRoot}${projectRoot ? '/' : ''}project.json`;
+
+  const setupProjectJson = (options?: {
+    config?: Record<string, unknown>;
+    root?: string;
+  }) => {
+    const { config = { name: 'my-project' }, root = '' } = options ?? {};
     vol.fromJSON(
       {
-        'project.json': JSON.stringify({ name: 'my-project' }),
+        [`${root}${root ? '/' : ''}project.json`]: JSON.stringify(config),
       },
       MEMFS_VOLUME,
     );
+  };
+
+  it('should provide workspaceRoot', async () => {
+    setupProjectJson();
 
     await expect(
-      normalizedCreateNodesContext(
-        createNodesContext({ workspaceRoot: MEMFS_VOLUME }),
-        'project.json',
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
+        projectJsonPath(),
       ),
     ).resolves.toStrictEqual(
       expect.objectContaining({
@@ -26,47 +37,35 @@ describe('normalizedCreateNodesContext', () => {
   });
 
   it('should provide projectRoot', async () => {
-    vol.fromJSON(
-      {
-        'packages/utils/project.json': JSON.stringify({
-          name: 'my-project',
-        }),
-      },
-      MEMFS_VOLUME,
-    );
+    const root = 'packages/utils';
+    setupProjectJson({ root });
 
     await expect(
-      normalizedCreateNodesContext(
-        createNodesContext(),
-        'packages/utils/project.json',
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
+        projectJsonPath(root),
       ),
     ).resolves.toStrictEqual(
       expect.objectContaining({
-        projectRoot: 'packages/utils',
+        projectRoot: `${MEMFS_VOLUME}/${root}`,
       }),
     );
   });
 
   it('should provide nxJsonConfiguration', async () => {
-    vol.fromJSON(
-      {
-        'project.json': JSON.stringify({
-          name: 'my-project',
-        }),
-      },
-      MEMFS_VOLUME,
-    );
+    setupProjectJson();
 
     await expect(
-      normalizedCreateNodesContext(
-        createNodesContext({
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({
+          workspaceRoot: MEMFS_VOLUME,
           nxJsonConfiguration: {
             workspaceLayout: {
               libsDir: 'libs',
             },
           },
         }),
-        'project.json',
+        projectJsonPath(),
       ),
     ).resolves.toStrictEqual(
       expect.objectContaining({
@@ -80,17 +79,13 @@ describe('normalizedCreateNodesContext', () => {
   });
 
   it('should provide projectJson', async () => {
-    vol.fromJSON(
-      {
-        'project.json': JSON.stringify({
-          name: 'my-project',
-        }),
-      },
-      MEMFS_VOLUME,
-    );
+    setupProjectJson({ config: { name: 'my-project' } });
 
     await expect(
-      normalizedCreateNodesContext(createNodesContext(), 'project.json'),
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
+        projectJsonPath(),
+      ),
     ).resolves.toStrictEqual(
       expect.objectContaining({
         projectJson: {
@@ -109,22 +104,21 @@ describe('normalizedCreateNodesContext', () => {
     );
 
     await expect(
-      normalizedCreateNodesContext(createNodesContext(), 'project.json'),
-    ).rejects.toThrow('Error parsing project.json file project.json.');
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
+        projectJsonPath(),
+      ),
+    ).rejects.toThrow(`Error parsing project.json file ${projectJsonPath()}.`);
   });
 
   it('should provide default targetName in createOptions', async () => {
-    vol.fromJSON(
-      {
-        'project.json': JSON.stringify({
-          name: 'my-project',
-        }),
-      },
-      MEMFS_VOLUME,
-    );
+    setupProjectJson();
 
     await expect(
-      normalizedCreateNodesContext(createNodesContext(), 'project.json'),
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
+        projectJsonPath(),
+      ),
     ).resolves.toStrictEqual(
       expect.objectContaining({
         createOptions: {
@@ -135,19 +129,16 @@ describe('normalizedCreateNodesContext', () => {
   });
 
   it('should provide createOptions', async () => {
-    vol.fromJSON(
-      {
-        'project.json': JSON.stringify({
-          name: 'my-project',
-        }),
-      },
-      MEMFS_VOLUME,
-    );
+    setupProjectJson();
 
     await expect(
-      normalizedCreateNodesContext(createNodesContext(), 'project.json', {
-        projectPrefix: 'cli',
-      }),
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
+        projectJsonPath(),
+        {
+          projectPrefix: 'cli',
+        },
+      ),
     ).resolves.toStrictEqual(
       expect.objectContaining({
         createOptions: {

@@ -8,6 +8,6 @@ describe('getTypeScriptDiagnostics', () => {
         tsconfig:
           'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.json',
       }),
-    ).toHaveLength(8);
+    ).toHaveLength(5);
   });
 });
