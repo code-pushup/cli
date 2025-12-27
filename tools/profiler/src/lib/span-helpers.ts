@@ -7,7 +7,6 @@ export type DevtoolsSpanConfig<
   track: T | ((...args: any[]) => T);
   group?: G;
   color?: DevToolsColor;
-  /** Glob pattern(s) to match file paths. If provided, this config applies to spans from matching paths. */
   pathPattern?: string | string[];
 };
 
@@ -98,4 +97,54 @@ export function createDevtoolsSpans<
 
     return acc;
   }, {} as any);
+}
+
+/**
+ * Creates a span helper function for a plugin with default color 'secondary-dark'.
+ * @param pluginSlug - The plugin identifier (e.g., 'eslint', 'webpack')
+ * @returns A function that creates a DevTools track entry detail for the plugin
+ */
+export function createPluginSpan(
+  pluginSlug: string,
+): (opts?: {
+  group?: string;
+  properties?: [string, string][];
+  tooltipText?: string;
+  color?: DevToolsColor;
+}) => DevtoolsTrackEntryDetail {
+  return opts => ({
+    devtools: {
+      dataType: 'track-entry',
+      track: `Plugin:${pluginSlug}`,
+      trackGroup: opts?.group,
+      color: opts?.color ?? 'secondary-dark',
+      properties: opts?.properties,
+      tooltipText: opts?.tooltipText,
+    },
+  });
+}
+
+/**
+ * Creates a span helper function for plugin details with default color 'secondary-light'.
+ * @param pluginSlug - The plugin identifier (e.g., 'eslint', 'webpack')
+ * @returns A function that creates a DevTools track entry detail for plugin details
+ */
+export function createPluginDetailsSpan(
+  pluginSlug: string,
+): (opts?: {
+  group?: string;
+  properties?: [string, string][];
+  tooltipText?: string;
+  color?: DevToolsColor;
+}) => DevtoolsTrackEntryDetail {
+  return opts => ({
+    devtools: {
+      dataType: 'track-entry',
+      track: `Plugin:${pluginSlug}:details`,
+      trackGroup: opts?.group,
+      color: opts?.color ?? 'secondary-light',
+      properties: opts?.properties,
+      tooltipText: opts?.tooltipText,
+    },
+  });
 }

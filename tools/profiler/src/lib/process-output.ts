@@ -2,6 +2,23 @@ import { closeSync, fsyncSync, mkdirSync, openSync, writeSync } from 'node:fs';
 import path from 'node:path';
 
 /**
+ *
+ */
+export class ProcessOutputError extends Error {
+  constructor(
+    message: string,
+    public override readonly cause?: Error,
+  ) {
+    super(message);
+    this.name = 'ProcessOutputError';
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, ProcessOutputError);
+    }
+  }
+}
+
+/**
  * ProcessOutput interface for buffered file output.
  */
 export interface ProcessOutput {
@@ -63,6 +80,10 @@ export function createProcessOutput(opts: {
         try {
           writeSync(fd, line, undefined, 'utf8');
         } catch (error) {
+          // Silently ignore EBADF errors - file descriptor was closed
+          if ((error as any)?.code === 'EBADF') {
+            return;
+          }
           throw new ProcessOutputError(
             `Failed to write to file descriptor for "${opts.filePath}"`,
             error as Error,
@@ -82,6 +103,10 @@ export function createProcessOutput(opts: {
           writeSync(fd, data, undefined, 'utf8');
           fsyncSync(fd);
         } catch (error) {
+          // Silently ignore EBADF errors - file descriptor was closed
+          if ((error as any)?.code === 'EBADF') {
+            return;
+          }
           throw new ProcessOutputError(
             `Failed to flush buffer to file descriptor for "${opts.filePath}"`,
             error as Error,
@@ -111,16 +136,42 @@ export function createProcessOutput(opts: {
   };
 }
 
-export class ProcessOutputError extends Error {
-  constructor(
-    message: string,
-    public override readonly cause?: Error,
-  ) {
-    super(message);
-    this.name = 'ProcessOutputError';
-
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, ProcessOutputError);
-    }
+export class ExitHandlerError extends Error {
+  constructor(type: string) {
+    super(`${type}`);
+    this.name = 'ExitHandlerError';
   }
+}
+
+export function installExitHandlers({
+  envVar = 'EXIT_HANDLERS',
+  safeClose,
+}: {
+  envVar?: string;
+  safeClose: (error?: unknown) => void;
+}): void {
+  if (process.env[envVar] != null) {
+    return;
+  }
+  process.env[envVar] = 'true';
+
+  process.on('beforeExit', () => safeClose());
+  process.on('exit', () => safeClose());
+  process.on('SIGINT', () => {
+    safeClose();
+    process.exit(130);
+  });
+  process.on('SIGTERM', () => {
+    safeClose();
+    process.exit(143);
+  });
+
+  process.on('uncaughtException', err => {
+    safeClose(new ExitHandlerError('uncaughtException'));
+    throw err;
+  });
+
+  process.on('unhandledRejection', reason => {
+    safeClose(new ExitHandlerError('unhandledRejection'));
+  });
 }

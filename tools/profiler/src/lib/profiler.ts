@@ -1,4 +1,3 @@
-/* eslint-disable no-console, @typescript-eslint/class-methods-use-this */
 import path from 'node:path';
 import { PerformanceObserver, performance } from 'node:perf_hooks';
 import process from 'node:process';
@@ -6,19 +5,20 @@ import { threadId } from 'node:worker_threads';
 import { type MeasureOptions } from 'perf_hooks';
 import {
   DevToolsOutputFormat,
-  type ExtendedPerformanceMeasure,
   type OutputFormat,
   type ProfilingEvent,
-  getAutoDetectedDetail,
 } from './output-format';
-import { type ProcessOutput, createProcessOutput } from './process-output';
+import {
+  type ProcessOutput,
+  createProcessOutput,
+  installExitHandlers,
+} from './process-output';
 import {
   type DevtoolsSpanConfig,
   type DevtoolsSpanHelpers,
   type DevtoolsSpansRegistry,
   createDevtoolsSpans,
 } from './span-helpers';
-import { installExitHandlers } from './utils';
 
 const nextId = createIncrementingId();
 const id = nextId();
@@ -49,6 +49,13 @@ const PROFILER_EXIT_HANDLER_INSTALLED = Symbol.for(
   'codepushup.profiler.exit-handler',
 );
 
+function getAutoDetectedDetail(
+  _spansRegistry: DevtoolsSpansRegistry<any>,
+): undefined {
+  // No-op: auto-detection is not implemented
+  return undefined;
+}
+
 /**
  * Even if the module is loaded twice (different identities, bundling), you still get exactly one instance per process.
  * @param opts
@@ -70,6 +77,7 @@ export class Profiler<K extends string = never> {
   #outputFileFinal: string;
   #outputFormat: OutputFormat;
   #closed = false;
+  #performanceObserver: PerformanceObserver | undefined;
 
   readonly #spans: DevtoolsSpanHelpers<DevtoolsSpansRegistry<K | 'main'>>;
   readonly #spansRegistry: DevtoolsSpansRegistry<K | 'main'>;
@@ -151,19 +159,17 @@ export class Profiler<K extends string = never> {
   }
 
   #writeLineImmediate(entries: string[]): void {
-    if (this.#output != null) {
-      const writeLineImmediate = this.#output.writeLineImmediate;
-      const e = entries instanceof Array ? entries : [entries];
-      const encodeOpts = {
-        pid: process.pid,
-        tid: threadId,
-      };
-      e.forEach(entry =>
-        this.#outputFormat
-          .encode(entry, encodeOpts)
-          .forEach(writeLineImmediate),
-      );
-    }
+    if (this.#closed || this.#output == null) return;
+
+    const writeLineImmediate = this.#output.writeLineImmediate;
+    const e = Array.isArray(entries) ? entries : [entries];
+    const encodeOpts = {
+      pid: process.pid,
+      tid: threadId,
+    };
+    e.forEach(entry =>
+      this.#outputFormat.encode(entry, encodeOpts).forEach(writeLineImmediate),
+    );
   }
 
   #writeFatalError(
@@ -194,19 +200,16 @@ export class Profiler<K extends string = never> {
   }
 
   #writeEntry(entries: ProfilingEvent | ProfilingEvent[]): void {
-    if (this.#output != null) {
-      const writeLineImmediate = this.#output.writeLineImmediate;
-      const e = entries instanceof Array ? entries : [entries];
-      const encodeOpts = {
-        pid: process.pid,
-        tid: threadId,
-      };
-      e.forEach(entry =>
-        this.#outputFormat
-          .encode(entry, encodeOpts)
-          .forEach(writeLineImmediate),
-      );
-    }
+    if (this.#closed || this.#output == null) return;
+    const writeLineImmediate = this.#output.writeLineImmediate;
+    const e = entries instanceof Array ? entries : [entries];
+    const encodeOpts = {
+      pid: process.pid,
+      tid: threadId,
+    };
+    e.forEach(entry =>
+      this.#outputFormat.encode(entry, encodeOpts).forEach(writeLineImmediate),
+    );
   }
 
   #installPerformanceObserver(options: { buffer?: boolean }): void {
@@ -223,6 +226,8 @@ export class Profiler<K extends string = never> {
       entryTypes: ['mark', 'measure'],
       buffered: options.buffer ?? false,
     });
+
+    this.#performanceObserver = observer;
   }
 
   enableProfiling(isEnabled: boolean): void {
@@ -231,12 +236,20 @@ export class Profiler<K extends string = never> {
   }
 
   mark(name: string, detail?: unknown) {
+    if (!this.#enabled || this.#closed) {
+      return undefined;
+    }
+
     const options: PerformanceMarkOptions | undefined =
       detail === undefined ? undefined : { detail };
     return performance.mark(name, options);
   }
 
   measure(name: string, options: string | MeasureOptions) {
+    if (!this.#enabled || this.#closed) {
+      return undefined;
+    }
+
     return performance.measure(name, options as MeasureOptions);
   }
 
@@ -248,6 +261,16 @@ export class Profiler<K extends string = never> {
   close(): void {
     if (!this.#enabled || this.#closed) return;
     this.#closed = true;
+
+    // Disconnect PerformanceObserver to prevent callbacks after close
+    if (this.#performanceObserver) {
+      try {
+        this.#performanceObserver.disconnect();
+      } catch {
+        // ignore
+      }
+      this.#performanceObserver = undefined;
+    }
 
     if (!this.#output) return;
 
@@ -267,23 +290,24 @@ export class Profiler<K extends string = never> {
     }
 
     try {
-      this.#outputFormat.finalize?.();
+      const result = this.#outputFormat.finalize?.();
+      if (result instanceof Promise) {
+        result.catch(() => {
+          // ignore async errors
+        });
+      }
     } catch {
-      // ignore
+      // ignore sync errors
     }
 
     this.#output = undefined;
   }
 
-  async span<T>(
+  async spanAsync<T>(
     name: string,
     fn: () => Promise<T>,
     options?: PerformanceMarkOptions,
   ): Promise<T> {
-    if (!this.#enabled || this.#closed) {
-      return fn();
-    }
-
     const start = `${name}:start`;
     const end = `${name}:end`;
 
@@ -303,11 +327,7 @@ export class Profiler<K extends string = never> {
     }
   }
 
-  wrap<T>(name: string, fn: () => T, options?: PerformanceMarkOptions): T {
-    if (!this.#enabled || this.#closed) {
-      return fn();
-    }
-
+  span<T>(name: string, fn: () => T, options?: PerformanceMarkOptions): T {
     const start = `${name}:start`;
     const end = `${name}:end`;
 
@@ -327,8 +347,6 @@ export class Profiler<K extends string = never> {
   }
 
   instant(name: string, options?: PerformanceMarkOptions): void {
-    if (!this.#enabled || this.#closed) return;
-
     // Auto-detect context if detail is not provided in options
     const finalOptions: PerformanceMarkOptions | undefined =
       options?.detail === undefined
@@ -346,7 +364,6 @@ export class Profiler<K extends string = never> {
     installExitHandlers({
       envVar,
       safeClose: error => {
-        // Log fatal errors if this is an ExitHandlerError
         if (error && (error as any).name === 'ExitHandlerError') {
           const kind = (error as any).message as
             | 'uncaughtException'

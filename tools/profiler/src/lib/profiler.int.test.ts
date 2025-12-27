@@ -185,17 +185,17 @@ describe('Profiler', () => {
     it('should execute spans and create performance entries', async () => {
       const profiler = new Profiler();
 
-      const result = await profiler.span('test-span', async () => {
+      const result = await profiler.spanAsync('test-span', async () => {
         return 'span-result';
       });
 
       expect(result).toBe('span-result');
     });
 
-    it('should execute wrap and create performance entries', () => {
+    it('should execute span and create performance entries', () => {
       const profiler = new Profiler();
 
-      const result = profiler.wrap('test-wrap', () => {
+      const result = profiler.span('test-wrap', () => {
         return 'wrap-result';
       });
 
@@ -214,11 +214,11 @@ describe('Profiler', () => {
     it('should execute functions normally when disabled', async () => {
       const profiler = new Profiler({ enabled: false });
 
-      const spanResult = await profiler.span(
+      const spanResult = await profiler.spanAsync(
         'test-span',
         async () => 'span-result',
       );
-      const wrapResult = profiler.wrap('test-wrap', () => 'wrap-result');
+      const wrapResult = profiler.span('test-wrap', () => 'wrap-result');
 
       expect(spanResult).toBe('span-result');
       expect(wrapResult).toBe('wrap-result');
@@ -228,17 +228,17 @@ describe('Profiler', () => {
       const profiler = new Profiler();
 
       await expect(
-        profiler.span('test-span', async () => {
+        profiler.spanAsync('test-span', async () => {
           throw new Error('span error');
         }),
       ).rejects.toThrow('span error');
     });
 
-    it('should handle wrap errors properly', () => {
+    it('should handle span errors properly', () => {
       const profiler = new Profiler();
 
       expect(() => {
-        profiler.wrap('test-wrap', () => {
+        profiler.span('test-wrap', () => {
           throw new Error('wrap error');
         });
       }).toThrow('wrap error');
@@ -263,16 +263,16 @@ describe('Profiler', () => {
         } as const,
       });
 
-      expect(profiler.spans.customTrack).toBeDefined();
-      expect(typeof profiler.spans.customTrack).toBe('function');
+      expect(profiler.spanAsyncs.customTrack).toBeDefined();
+      expect(typeof profiler.spanAsyncs.customTrack).toBe('function');
     });
 
     it('should include default main span', () => {
       const tempDir = 'test-profiles';
       const profiler = new Profiler({ outDir: tempDir });
 
-      expect(profiler.spans.main).toBeDefined();
-      expect(typeof profiler.spans.main).toBe('function');
+      expect(profiler.spanAsyncs.main).toBeDefined();
+      expect(typeof profiler.spanAsyncs.main).toBe('function');
     });
 
     it('should auto-detect context when enabled', () => {

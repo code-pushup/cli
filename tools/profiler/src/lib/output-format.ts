@@ -1,7 +1,6 @@
-import { createReadStream, createWriteStream } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
 import { performance } from 'node:perf_hooks';
-import { Transform } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
 import { threadId } from 'node:worker_threads';
 import type { DevtoolsSpansRegistry } from '@code-pushup/profiler';
 import {
@@ -151,31 +150,33 @@ export class DevToolsOutputFormat implements OutputFormat<ProfilingEvent> {
 
   async finalize(): Promise<void> {
     try {
-      const transformStream = new Transform({
-        objectMode: false,
-        transform(chunk, encoding, callback) {
-          const data = chunk.toString();
-          // Split into lines and process each line
-          const lines = data.split('\n').filter((line: string) => line.trim());
-          if (lines.length > 0) {
-            // Add comma after each line except the last one in the chunk
-            const processedLines = lines.map((line: string, index: number) =>
-              index < lines.length - 1 ? `${line},\n` : `${line}\n`,
-            );
-            this.push(processedLines.join(''));
-          }
-          callback();
-        },
-        flush(callback) {
-          // Close the JSON array and object
-          this.push('\n    ]\n}');
-          callback();
-        },
-      });
+      // Ensure directory exists
+      const dir = path.dirname(this.filePath);
+      if (!existsSync(dir)) {
+        mkdirSync(dir, { recursive: true });
+      }
 
-      // Write the JSON opening structure
-      const writeStream = createWriteStream(this.filePath);
-      writeStream.write(`{
+      // Read existing JSONL content if file exists
+      let jsonlContent = '';
+      if (existsSync(this.filePath)) {
+        jsonlContent = readFileSync(this.filePath, 'utf8');
+      }
+
+      // Transform JSONL to JSON array format
+      const lines = jsonlContent
+        .split('\n')
+        .filter((line: string) => line.trim());
+      const traceEventsContent =
+        lines.length > 0
+          ? lines
+              .map((line: string, index: number) =>
+                index < lines.length - 1 ? `      ${line},` : `      ${line}`,
+              )
+              .join('\n')
+          : '';
+
+      // Write complete JSON structure
+      const jsonOutput = `{
     "metadata": {
       "dataOrigin": "TraceEvents",
       "hardwareConcurrency": 1,
@@ -183,13 +184,11 @@ export class DevToolsOutputFormat implements OutputFormat<ProfilingEvent> {
       "startTime": "mocked-timestamp"
     },
     "traceEvents": [
-`);
+${traceEventsContent}
+    ]
+}`;
 
-      await pipeline(
-        createReadStream(this.filePath, { encoding: 'utf8' }),
-        transformStream,
-        writeStream,
-      );
+      writeFileSync(this.filePath, jsonOutput, 'utf8');
     } catch (error) {
       throw new Error(`Failed to wrap trace JSON file: ${this.filePath}`);
     }

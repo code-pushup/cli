@@ -1,13 +1,6 @@
-import {
-  createReadStream,
-  createWriteStream,
-  mkdirSync,
-  readFileSync,
-  writeFileSync,
-} from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { pipeline } from 'node:stream/promises';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   DevToolsOutputFormat,
@@ -702,38 +695,18 @@ describe('DevToolsOutputFormat', () => {
       expect(result.match(/"event": "test\d"/g)).toHaveLength(3);
     });
 
-    it('should throw error when pipeline fails', async () => {
-      const filePath = path.join(tempDir, 'pipeline-error.jsonl');
-      mkdirSync(tempDir, { recursive: true });
-      writeFileSync(filePath, '{"event": "test"}\n');
-
-      // Import the module to spy on
-      const streamPromises = await import('node:stream/promises');
-      // Mock pipeline to reject
-      const pipelineSpy = vi
-        .spyOn(streamPromises, 'pipeline')
-        .mockRejectedValue(new Error('Pipeline error'));
-
-      const testFormat = new DevToolsOutputFormat(filePath);
-      await expect(testFormat.finalize()).rejects.toThrow(
-        `Failed to wrap trace JSON file: ${filePath}`,
-      );
-
-      pipelineSpy.mockRestore();
-    });
-
-    it('should throw error when createReadStream fails', async () => {
+    it('should throw error when readFileSync fails', async () => {
       const filePath = path.join(tempDir, 'read-error.jsonl');
       mkdirSync(tempDir, { recursive: true });
       writeFileSync(filePath, '{"event": "test"}\n');
 
       // Import the module to spy on
       const fs = await import('node:fs');
-      // Mock createReadStream to throw an error
-      const createReadStreamSpy = vi
-        .spyOn(fs, 'createReadStream')
+      // Mock readFileSync to throw an error
+      const readFileSyncSpy = vi
+        .spyOn(fs, 'readFileSync')
         .mockImplementation(() => {
-          throw new Error('Read stream error');
+          throw new Error('Read file error');
         });
 
       const testFormat = new DevToolsOutputFormat(filePath);
@@ -741,21 +714,21 @@ describe('DevToolsOutputFormat', () => {
         `Failed to wrap trace JSON file: ${filePath}`,
       );
 
-      createReadStreamSpy.mockRestore();
+      readFileSyncSpy.mockRestore();
     });
 
-    it('should throw error when createWriteStream fails', async () => {
+    it('should throw error when writeFileSync fails', async () => {
       const filePath = path.join(tempDir, 'write-error.jsonl');
       mkdirSync(tempDir, { recursive: true });
       writeFileSync(filePath, '{"event": "test"}\n');
 
       // Import the module to spy on
       const fs = await import('node:fs');
-      // Mock createWriteStream to throw an error
-      const createWriteStreamSpy = vi
-        .spyOn(fs, 'createWriteStream')
+      // Mock writeFileSync to throw an error
+      const writeFileSyncSpy = vi
+        .spyOn(fs, 'writeFileSync')
         .mockImplementation(() => {
-          throw new Error('Write stream error');
+          throw new Error('Write file error');
         });
 
       const testFormat = new DevToolsOutputFormat(filePath);
@@ -763,7 +736,7 @@ describe('DevToolsOutputFormat', () => {
         `Failed to wrap trace JSON file: ${filePath}`,
       );
 
-      createWriteStreamSpy.mockRestore();
+      writeFileSyncSpy.mockRestore();
     });
   });
 

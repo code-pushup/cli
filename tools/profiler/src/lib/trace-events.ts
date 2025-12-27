@@ -19,9 +19,10 @@ export type TraceEvent = {
  */
 export function measureToTraceEvents(
   entry: PerformanceMeasure,
-  ctx: { pid: number; tid: number; nextId2: () => { local: string } },
+  options: { pid: number; tid: number; nextId2: () => { local: string } },
 ): TraceEvent[] {
-  const id2 = ctx.nextId2(); // call once per measure
+  const { pid, tid, nextId2 } = options;
+  const id2 = nextId2(); // call once per measure
 
   const startUs = Math.round(entry.startTime * 1000);
   const endUs = Math.round((entry.startTime + entry.duration) * 1000);
@@ -30,8 +31,8 @@ export function measureToTraceEvents(
     cat: 'blink.user_timing',
     name: entry.name,
     ph: 'b',
-    pid: ctx.pid,
-    tid: ctx.tid,
+    pid,
+    tid,
     ts: startUs,
     id2,
     args:
@@ -44,8 +45,8 @@ export function measureToTraceEvents(
     cat: 'blink.user_timing',
     name: entry.name,
     ph: 'e',
-    pid: ctx.pid,
-    tid: ctx.tid,
+    pid,
+    tid,
     ts: endUs,
     id2,
     args: {},
@@ -61,16 +62,17 @@ export function measureToTraceEvents(
  */
 export function markToTraceEvent(
   entry: PerformanceMark,
-  ctx: { pid: number; tid: number; nextId2: () => { local: string } },
+  options: { pid: number; tid: number; nextId2: () => { local: string } },
 ): TraceEvent {
+  const { pid, tid, nextId2 } = options;
   return {
     cat: 'blink.user_timing',
     name: entry.name,
     ph: 'b',
-    pid: ctx.pid,
-    tid: ctx.tid,
+    pid,
+    tid,
     ts: Math.round(entry.startTime * 1000),
-    id2: ctx.nextId2(),
+    id2: nextId2(),
     args:
       entry.detail === undefined
         ? {}

@@ -150,4 +150,20 @@ describe('createDevtoolsSpans', () => {
       },
     });
   });
+
+  it('should throw error when registry definition is missing', () => {
+    const registry = {
+      valid: { track: 'Valid', group: 'Test' },
+    } as const;
+
+    // Manually add a null entry to test error handling
+    const registryWithNull = {
+      ...registry,
+      invalid: null,
+    } as any;
+
+    expect(() => {
+      createDevtoolsSpans(registryWithNull);
+    }).toThrow('Missing registry definition for key: invalid');
+  });
 });
