@@ -29,7 +29,6 @@ describe('@code-pushup/nx-plugin/plugin', () => {
     context = {
       nxJsonConfiguration: {},
       workspaceRoot: MEMFS_VOLUME,
-      configFiles: [],
     };
   });
 

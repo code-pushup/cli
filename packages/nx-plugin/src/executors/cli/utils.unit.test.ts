@@ -1,5 +1,13 @@
 import { vol } from 'memfs';
-import { type MockInstance, describe, expect, it, vi } from 'vitest';
+import {
+  type MockInstance,
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 import { createNodesV2Context } from '@code-pushup/test-nx-utils';
 import { MEMFS_VOLUME, osAgnosticPath } from '@code-pushup/test-utils';
 import { normalizedCreateNodesV2Context } from '../../plugin/utils.js';
