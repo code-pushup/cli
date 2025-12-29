@@ -17,6 +17,12 @@ describe('axePluginOptionsSchema', () => {
     },
   );
 
+  it('should accept setupScript as a file path', () => {
+    expect(() =>
+      axePluginOptionsSchema.parse({ setupScript: 'src/axe-setup.js' }),
+    ).not.toThrow();
+  });
+
   it('should accept scoreTargets as a number between 0 and 1', () => {
     expect(() =>
       axePluginOptionsSchema.parse({ scoreTargets: 0.99 }),
