@@ -87,6 +87,7 @@ export async function executePluginRunner(
         ? await executeRunnerConfig(runner, args)
         : await executeRunnerFunction(runner, args);
     },
+    { detail: profiler.spans.cli() },
   );
 
   const duration = calcDuration(start);

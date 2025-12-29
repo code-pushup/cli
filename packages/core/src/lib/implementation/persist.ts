@@ -25,45 +25,49 @@ export async function persistReport(
 ): Promise<FileSize[]> {
   const { outputDir, filename, format } = options;
 
-  return profiler.span('persistReport', async () => {
-    // format report
-    const results = format.map(
-      (reportType): { format: Format; content: string } => {
-        switch (reportType) {
-          case 'json':
-            return {
-              format: 'json',
-              content: JSON.stringify(report, null, 2),
-            };
-          case 'md':
-            return {
-              format: 'md',
-              content: generateMdReport(sortedScoredReport, { outputDir }),
-            };
+  return profiler.spanAsync(
+    'persistReport',
+    async () => {
+      // format report
+      const results = format.map(
+        (reportType): { format: Format; content: string } => {
+          switch (reportType) {
+            case 'json':
+              return {
+                format: 'json',
+                content: JSON.stringify(report, null, 2),
+              };
+            case 'md':
+              return {
+                format: 'md',
+                content: generateMdReport(sortedScoredReport, { outputDir }),
+              };
+          }
+        },
+      );
+
+      if (!(await directoryExists(outputDir))) {
+        try {
+          await mkdir(outputDir, { recursive: true });
+        } catch (error) {
+          throw new Error(
+            `Failed to create output directory in ${ansis.bold(outputDir)} - ${stringifyError(error)}`,
+          );
         }
-      },
-    );
-
-    if (!(await directoryExists(outputDir))) {
-      try {
-        await mkdir(outputDir, { recursive: true });
-      } catch (error) {
-        throw new Error(
-          `Failed to create output directory in ${ansis.bold(outputDir)} - ${stringifyError(error)}`,
-        );
       }
-    }
 
-    // write relevant format outputs to file system
-    return Promise.all(
-      results.map(result =>
-        persistResult(
-          createReportPath({ outputDir, filename, format: result.format }),
-          result.content,
+      // write relevant format outputs to file system
+      return Promise.all(
+        results.map(result =>
+          persistResult(
+            createReportPath({ outputDir, filename, format: result.format }),
+            result.content,
+          ),
         ),
-      ),
-    );
-  });
+      );
+    },
+    { detail: profiler.spans.cli() },
+  );
 }
 
 function persistResult(reportPath: string, content: string): Promise<FileSize> {

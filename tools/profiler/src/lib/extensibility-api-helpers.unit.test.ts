@@ -7,7 +7,7 @@ import {
   createDevtoolsSpans,
   createPluginDetailsSpan,
   createPluginSpan,
-} from './span-helpers.js';
+} from './extensibility-api-helpers.js';
 
 describe('createPluginSpan', () => {
   it('should create plugin span helper with correct defaults', () => {

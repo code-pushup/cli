@@ -42,60 +42,54 @@ import { normalizeConfig } from './utils.js';
 export async function jsPackagesPlugin(
   config?: JSPackagesPluginConfig,
 ): Promise<PluginConfig> {
-  const startPluginConfig = profiler.mark(
-    `start-${JS_PACKAGES_PLUGIN_SLUG}-plugin-config`,
-    createPluginSpan(JS_PACKAGES_PLUGIN_SLUG)({
-      group: GROUP_CODEPUSHUP,
-      tooltipText: `Loading ${JS_PACKAGES_PLUGIN_TITLE} plugin configuration`,
-    }),
-  );
-
-  const {
-    packageManager,
-    checks,
-    depGroups,
-    scoreTargets,
-    ...jsPackagesPluginConfigRest
-  } = await normalizeConfig(config);
-
-  const packageJson = createRequire(import.meta.url)(
-    '../../package.json',
-  ) as typeof import('../../package.json');
-
-  const audits = createAudits(packageManager.slug, checks, depGroups);
-  const groups = createGroups(packageManager.slug, checks, depGroups);
-
-  logger.info(
-    formatMetaLog(
-      `Created ${pluralizeToken('audit', audits.length)} and ${pluralizeToken('group', groups.length)} for ${ansis.bold(packageManager.name)} package manager`,
-    ),
-  );
-
-  const result: PluginConfig = {
-    slug: JS_PACKAGES_PLUGIN_SLUG,
-    title: JS_PACKAGES_PLUGIN_TITLE,
-    icon: packageManager.icon,
-    description:
-      'This plugin runs audit to uncover vulnerabilities and lists outdated dependencies. It supports npm, yarn classic, yarn modern, and pnpm package managers.',
-    docsUrl: packageManager.docs.homepage,
-    packageName: packageJson.name,
-    version: packageJson.version,
-    audits,
-    groups,
-    runner: createRunnerFunction({
-      ...jsPackagesPluginConfigRest,
-      checks,
-      packageManager: packageManager.slug,
-      dependencyGroups: depGroups,
-    }),
-    ...(scoreTargets && { scoreTargets }),
-  };
-
-  profiler.measure(
+  return profiler.spanAsync(
     `run-${JS_PACKAGES_PLUGIN_SLUG}-plugin-config`,
-    startPluginConfig as PerformanceMeasure,
+    async () => {
+      const {
+        packageManager,
+        checks,
+        depGroups,
+        scoreTargets,
+        ...jsPackagesPluginConfigRest
+      } = await normalizeConfig(config);
+
+      const packageJson = createRequire(import.meta.url)(
+        '../../package.json',
+      ) as typeof import('../../package.json');
+
+      const audits = createAudits(packageManager.slug, checks, depGroups);
+      const groups = createGroups(packageManager.slug, checks, depGroups);
+
+      logger.info(
+        formatMetaLog(
+          `Created ${pluralizeToken('audit', audits.length)} and ${pluralizeToken('group', groups.length)} for ${ansis.bold(packageManager.name)} package manager`,
+        ),
+      );
+
+      const result: PluginConfig = {
+        slug: JS_PACKAGES_PLUGIN_SLUG,
+        title: JS_PACKAGES_PLUGIN_TITLE,
+        icon: packageManager.icon,
+        description:
+          'This plugin runs audit to uncover vulnerabilities and lists outdated dependencies. It supports npm, yarn classic, yarn modern, and pnpm package managers.',
+        docsUrl: packageManager.docs.homepage,
+        packageName: packageJson.name,
+        version: packageJson.version,
+        audits,
+        groups,
+        runner: createRunnerFunction({
+          ...jsPackagesPluginConfigRest,
+          checks,
+          packageManager: packageManager.slug,
+          dependencyGroups: depGroups,
+        }),
+        ...(scoreTargets && { scoreTargets }),
+      };
+
+      return result;
+    },
+    { detail: profiler.spans.plugins(JS_PACKAGES_PLUGIN_SLUG)() },
   );
-  return result;
 }
 
 function createGroups(

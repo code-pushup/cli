@@ -40,49 +40,52 @@ function buildPersistConfig(
 export async function coreConfigMiddleware<
   T extends CoreConfigMiddlewareOptions,
 >(processArgs: T): Promise<GlobalOptions & CoreConfig & FilterOptions> {
-  const startMark = profiler.mark('loadCliConfig:start');
+  return profiler.spanAsync(
+    'loadCliConfig',
+    async () => {
+      const {
+        config,
+        tsconfig,
+        persist: cliPersist,
+        upload: cliUpload,
+        cache: cliCache,
+        ...remainingCliOptions
+      } = processArgs;
 
-  const {
-    config,
-    tsconfig,
-    persist: cliPersist,
-    upload: cliUpload,
-    cache: cliCache,
-    ...remainingCliOptions
-  } = processArgs;
+      const result = await logger.group('Loading configuration', async () => {
+        // Search for possible configuration file extensions if path is not given
+        const importedRc = config
+          ? await readRcByPath(config, tsconfig)
+          : await autoloadRc(tsconfig);
+        const {
+          persist: rcPersist,
+          upload: rcUpload,
+          ...remainingRcConfig
+        } = importedRc;
+        const upload =
+          rcUpload == null && cliUpload == null
+            ? undefined
+            : validate(uploadConfigSchema, { ...rcUpload, ...cliUpload });
 
-  const result = await logger.group('Loading configuration', async () => {
-    // Search for possible configuration file extensions if path is not given
-    const importedRc = config
-      ? await readRcByPath(config, tsconfig)
-      : await autoloadRc(tsconfig);
-    const {
-      persist: rcPersist,
-      upload: rcUpload,
-      ...remainingRcConfig
-    } = importedRc;
-    const upload =
-      rcUpload == null && cliUpload == null
-        ? undefined
-        : validate(uploadConfigSchema, { ...rcUpload, ...cliUpload });
+        const configResult: GlobalOptions & CoreConfig & FilterOptions = {
+          ...(config != null && { config }),
+          cache: normalizeCache(cliCache),
+          persist: buildPersistConfig(cliPersist, rcPersist),
+          ...(upload != null && { upload }),
+          ...remainingRcConfig,
+          ...remainingCliOptions,
+        };
 
-    const configResult: GlobalOptions & CoreConfig & FilterOptions = {
-      ...(config != null && { config }),
-      cache: normalizeCache(cliCache),
-      persist: buildPersistConfig(cliPersist, rcPersist),
-      ...(upload != null && { upload }),
-      ...remainingRcConfig,
-      ...remainingCliOptions,
-    };
+        return {
+          message: `Parsed config: ${summarizeConfig(configResult)}`,
+          result: configResult,
+        };
+      });
 
-    return {
-      message: `Parsed config: ${summarizeConfig(configResult)}`,
-      result: configResult,
-    };
-  });
-
-  profiler.measure('loadCliConfig', startMark as PerformanceMeasure);
-  return result;
+      return result;
+    },
+    { detail: profiler.spans.cli() },
+  );
 }
 
 function summarizeConfig(config: CoreConfig): string {

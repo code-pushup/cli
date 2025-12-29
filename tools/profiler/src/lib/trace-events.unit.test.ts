@@ -1,12 +1,24 @@
-import { describe, expect, it } from 'vitest';
+import { performance } from 'node:perf_hooks';
+import { describe, expect, it, vi } from 'vitest';
 import {
   getFrameName,
   getFrameTreeNodeId,
   getRunTaskTraceEvent,
   getStartTracing,
-  markToTraceEvent,
-  measureToTraceEvents,
 } from './trace-events.js';
+import { markToTraceEvent, measureToTraceEvents } from './trace-file-output.js';
+
+// Mock performance.timeOrigin for consistent timestamps in tests
+vi.mock('node:perf_hooks', async () => {
+  const actual = await vi.importActual('node:perf_hooks');
+  return {
+    ...actual,
+    performance: {
+      ...actual.performance,
+      timeOrigin: 1766930000000, // Set to match timeOriginBase for effectiveTimeOrigin = 0
+    },
+  };
+});
 
 describe('getFrameTreeNodeId', () => {
   it.each([
@@ -134,7 +146,7 @@ describe('measureToTraceEvents', () => {
     const ctx = {
       pid: 3,
       tid: 4,
-      nextId2: () => ({ local: '0x2' }),
+      nextId2: () => ({ local: '0x1' }),
     };
 
     const events = measureToTraceEvents(measure, ctx);
@@ -147,7 +159,7 @@ describe('measureToTraceEvents', () => {
       pid: 3,
       tid: 4,
       ts: 200000,
-      id2: { local: '0x2' },
+      id2: { local: '0x1' },
       args: { detail: JSON.stringify({ custom: 'data', value: 42 }) },
     });
 
@@ -158,7 +170,7 @@ describe('measureToTraceEvents', () => {
       pid: 3,
       tid: 4,
       ts: 275000,
-      id2: { local: '0x2' },
+      id2: { local: '0x1' },
       args: {},
     });
   });
@@ -184,12 +196,13 @@ describe('markToTraceEvent', () => {
     expect(event).toEqual({
       cat: 'blink.user_timing',
       name: 'test-mark',
-      ph: 'b',
+      ph: 'I',
+      s: 't',
       pid: 1,
       tid: 2,
       ts: 300000,
-      id2: { local: '42' },
-      args: {},
+      tts: 300000,
+      args: { data: { startTime: 300 } },
     });
   });
 
@@ -205,7 +218,7 @@ describe('markToTraceEvent', () => {
     const ctx = {
       pid: 5,
       tid: 6,
-      nextId2: () => ({ local: '0x3' }),
+      nextId2: () => ({ local: '0x1' }),
     };
 
     const event = markToTraceEvent(mark, ctx);
@@ -213,13 +226,17 @@ describe('markToTraceEvent', () => {
     expect(event).toEqual({
       cat: 'blink.user_timing',
       name: 'test-mark-detail',
-      ph: 'b',
+      ph: 'I',
+      s: 't',
       pid: 5,
       tid: 6,
       ts: 400000,
-      id2: { local: '0x3' },
+      tts: 400000,
       args: {
-        detail: JSON.stringify({ metadata: 'info', timestamp: 123456789 }),
+        data: {
+          detail: JSON.stringify({ metadata: 'info', timestamp: 123456789 }),
+          startTime: 400,
+        },
       },
     });
   });

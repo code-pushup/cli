@@ -23,47 +23,42 @@ const packageJson = createRequire(import.meta.url)(
 export function typescriptPlugin(
   options?: TypescriptPluginOptions,
 ): PluginConfig {
-  const startPluginConfig = profiler.mark(
-    `start-${TYPESCRIPT_PLUGIN_SLUG}-plugin-config`,
-    createPluginSpan(TYPESCRIPT_PLUGIN_SLUG)({
-      group: GROUP_CODEPUSHUP,
-      tooltipText: `Loading ${TYPESCRIPT_PLUGIN_TITLE} plugin configuration`,
-    }),
-  );
-
-  const {
-    tsconfig = DEFAULT_TS_CONFIG,
-    onlyAudits,
-    scoreTargets,
-  } = parseOptions(options ?? {});
-
-  const audits = getAudits({ onlyAudits });
-  const groups = getGroups({ onlyAudits });
-
-  logAuditsAndGroups(audits, groups);
-
-  const result: PluginConfig = {
-    slug: TYPESCRIPT_PLUGIN_SLUG,
-    title: TYPESCRIPT_PLUGIN_TITLE,
-    icon: 'typescript',
-    description: 'Official Code PushUp TypeScript plugin.',
-    docsUrl: 'https://www.npmjs.com/package/@code-pushup/typescript-plugin/',
-    packageName: packageJson.name,
-    version: packageJson.version,
-    audits,
-    groups,
-    runner: createRunnerFunction({
-      tsconfig,
-      expectedAudits: audits,
-    }),
-    ...(scoreTargets && { scoreTargets }),
-  };
-
-  profiler.measure(
+  return profiler.span(
     `run-${TYPESCRIPT_PLUGIN_SLUG}-plugin-config`,
-    startPluginConfig as PerformanceMeasure,
+    () => {
+      const {
+        tsconfig = DEFAULT_TS_CONFIG,
+        onlyAudits,
+        scoreTargets,
+      } = parseOptions(options ?? {});
+
+      const audits = getAudits({ onlyAudits });
+      const groups = getGroups({ onlyAudits });
+
+      logAuditsAndGroups(audits, groups);
+
+      const result: PluginConfig = {
+        slug: TYPESCRIPT_PLUGIN_SLUG,
+        title: TYPESCRIPT_PLUGIN_TITLE,
+        icon: 'typescript',
+        description: 'Official Code PushUp TypeScript plugin.',
+        docsUrl:
+          'https://www.npmjs.com/package/@code-pushup/typescript-plugin/',
+        packageName: packageJson.name,
+        version: packageJson.version,
+        audits,
+        groups,
+        runner: createRunnerFunction({
+          tsconfig,
+          expectedAudits: audits,
+        }),
+        ...(scoreTargets && { scoreTargets }),
+      };
+
+      return result;
+    },
+    { detail: profiler.spans.plugins(TYPESCRIPT_PLUGIN_SLUG)() },
   );
-  return result;
 }
 
 function parseOptions(

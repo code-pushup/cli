@@ -24,49 +24,43 @@ export function axePlugin(
   urls: PluginUrls,
   options: AxePluginOptions = {},
 ): PluginConfig {
-  const startPluginConfig = profiler.mark(
-    `start-${AXE_PLUGIN_SLUG}-plugin-config`,
-    createPluginSpan(AXE_PLUGIN_SLUG)({
-      group: GROUP_CODEPUSHUP,
-      tooltipText: `Loading ${AXE_PLUGIN_TITLE} plugin configuration`,
-    }),
-  );
-
-  const { preset, scoreTargets, timeout } = validate(
-    axePluginOptionsSchema,
-    options,
-  );
-
-  const { urls: normalizedUrls, context } = normalizeUrlInput(urls);
-
-  const { audits, groups, ruleIds } = processAuditsAndGroups(
-    normalizedUrls,
-    preset,
-  );
-
-  const packageJson = createRequire(import.meta.url)(
-    '../../package.json',
-  ) as typeof import('../../package.json');
-
-  const result: PluginConfig = {
-    slug: AXE_PLUGIN_SLUG,
-    title: AXE_PLUGIN_TITLE,
-    icon: 'folder-syntax',
-    description:
-      'Official Code PushUp Axe plugin for automated accessibility testing',
-    docsUrl: 'https://www.npmjs.com/package/@code-pushup/axe-plugin',
-    packageName: packageJson.name,
-    version: packageJson.version,
-    audits,
-    groups,
-    runner: createRunnerFunction(normalizedUrls, ruleIds, timeout),
-    context,
-    ...(scoreTargets && { scoreTargets }),
-  };
-
-  profiler.measure(
+  return profiler.span(
     `run-${AXE_PLUGIN_SLUG}-plugin-config`,
-    startPluginConfig as PerformanceMeasure,
+    () => {
+      const { preset, scoreTargets, timeout } = validate(
+        axePluginOptionsSchema,
+        options,
+      );
+
+      const { urls: normalizedUrls, context } = normalizeUrlInput(urls);
+
+      const { audits, groups, ruleIds } = processAuditsAndGroups(
+        normalizedUrls,
+        preset,
+      );
+
+      const packageJson = createRequire(import.meta.url)(
+        '../../package.json',
+      ) as typeof import('../../package.json');
+
+      const result: PluginConfig = {
+        slug: AXE_PLUGIN_SLUG,
+        title: AXE_PLUGIN_TITLE,
+        icon: 'folder-syntax',
+        description:
+          'Official Code PushUp Axe plugin for automated accessibility testing',
+        docsUrl: 'https://www.npmjs.com/package/@code-pushup/axe-plugin',
+        packageName: packageJson.name,
+        version: packageJson.version,
+        audits,
+        groups,
+        runner: createRunnerFunction(normalizedUrls, ruleIds, timeout),
+        context,
+        ...(scoreTargets && { scoreTargets }),
+      };
+
+      return result;
+    },
+    { detail: profiler.spans.plugins(AXE_PLUGIN_SLUG)() },
   );
-  return result;
 }

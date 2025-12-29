@@ -51,10 +51,7 @@ export type DevtoolsSpanHelpers<R extends Record<string, DevtoolsSpanConfig>> =
           track?: R[K]['track'];
           group?: R[K]['group'];
           color?: DevToolsColor;
-        }) => DevtoolsTrackEntryDetail<
-          R[K]['track'],
-          Extract<R[K]['group'], string>
-        >;
+        }) => DevtoolsTrackEntryDetail<string, Extract<R[K]['group'], string>>;
   };
 
 export function createDevtoolsSpans<
@@ -70,11 +67,17 @@ export function createDevtoolsSpans<
 
     if (typeof def.track === 'function') {
       // Dynamic track based on arguments
-      acc[key] = ((...args) =>
-        opts => ({
+      acc[key] = ((...args: any[]) =>
+        (opts?: {
+          properties?: [string, string][];
+          tooltipText?: string;
+          group?: R[K]['group'];
+          color?: DevToolsColor;
+        }) => ({
           devtools: {
             dataType: 'track-entry',
-            track: def.track(...args),
+            track:
+              typeof def.track === 'function' ? def.track(...args) : def.track,
             trackGroup: (opts?.group ?? def.group) as any,
             color: opts?.color ?? def.color,
             properties: opts?.properties,
@@ -83,7 +86,13 @@ export function createDevtoolsSpans<
         })) as any;
     } else {
       // Static track
-      acc[key] = (opts => ({
+      acc[key] = ((opts?: {
+        properties?: [string, string][];
+        tooltipText?: string;
+        track?: R[K]['track'];
+        group?: R[K]['group'];
+        color?: DevToolsColor;
+      }) => ({
         devtools: {
           dataType: 'track-entry',
           track: (opts?.track ?? def.track) as R[typeof key]['track'],

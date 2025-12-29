@@ -43,88 +43,99 @@ export async function compareReportFiles(
 ): Promise<string[]> {
   const { outputDir, filename, format } = config.persist;
 
-  return profiler.span('compareReportFiles', async () => {
-    const defaultInputPath = (suffix: keyof Diff<string>) =>
-      createReportPath({ outputDir, filename, format: 'json', suffix });
+  return profiler.spanAsync(
+    'compareReportFiles',
+    async () => {
+      const defaultInputPath = (suffix: keyof Diff<string>) =>
+        createReportPath({ outputDir, filename, format: 'json', suffix });
 
-    const [reportBefore, reportAfter] = await Promise.all([
-      readJsonFile(options?.before ?? defaultInputPath('before')),
-      readJsonFile(options?.after ?? defaultInputPath('after')),
-    ]);
-    const reports: Diff<Report> = {
-      before: validate(reportSchema, reportBefore),
-      after: validate(reportSchema, reportAfter),
-    };
+      const [reportBefore, reportAfter] = await Promise.all([
+        readJsonFile(options?.before ?? defaultInputPath('before')),
+        readJsonFile(options?.after ?? defaultInputPath('after')),
+      ]);
+      const reports: Diff<Report> = {
+        before: validate(reportSchema, reportBefore),
+        after: validate(reportSchema, reportAfter),
+      };
 
-    const diff = compareReports(reports);
+      const diff = compareReports(reports);
 
-    const label = options?.label ?? getLabelFromReports(reports);
-    const portalUrl =
-      config.upload &&
-      diff.commits &&
-      (await fetchPortalComparisonLink(config.upload, diff.commits));
+      const label = options?.label ?? getLabelFromReports(reports);
+      const portalUrl =
+        config.upload &&
+        diff.commits &&
+        (await fetchPortalComparisonLink(config.upload, diff.commits));
 
-    const diffWithLinks: ReportsDiff =
-      label || portalUrl
-        ? { ...diff, ...(label && { label }), ...(portalUrl && { portalUrl }) }
-        : diff;
+      const diffWithLinks: ReportsDiff =
+        label || portalUrl
+          ? {
+              ...diff,
+              ...(label && { label }),
+              ...(portalUrl && { portalUrl }),
+            }
+          : diff;
 
-    return Promise.all(
-      format.map(async fmt => {
-        const outputPath = createReportPath({
-          outputDir,
-          filename,
-          format: fmt,
-          suffix: 'diff',
-        });
-        const content = reportsDiffToFileContent(diffWithLinks, fmt);
-        await ensureDirectoryExists(outputDir);
-        await writeFile(outputPath, content);
-        return outputPath;
-      }),
-    );
-  });
+      return Promise.all(
+        format.map(async fmt => {
+          const outputPath = createReportPath({
+            outputDir,
+            filename,
+            format: fmt,
+            suffix: 'diff',
+          });
+          const content = reportsDiffToFileContent(diffWithLinks, fmt);
+          await ensureDirectoryExists(outputDir);
+          await writeFile(outputPath, content);
+          return outputPath;
+        }),
+      );
+    },
+    { detail: profiler.spans.cli() },
+  );
 }
 
 export function compareReports(reports: Diff<Report>): ReportsDiff {
-  const startMark = profiler.mark('compareReports:start');
+  return profiler.span(
+    'compareReports',
+    () => {
+      const start = performance.now();
+      const date = new Date().toISOString();
 
-  const start = performance.now();
-  const date = new Date().toISOString();
+      const commits: ReportsDiff['commits'] =
+        reports.before.commit != null && reports.after.commit != null
+          ? { before: reports.before.commit, after: reports.after.commit }
+          : null;
 
-  const commits: ReportsDiff['commits'] =
-    reports.before.commit != null && reports.after.commit != null
-      ? { before: reports.before.commit, after: reports.after.commit }
-      : null;
+      const scoredReports: ReportsToCompare = {
+        before: scoreReport(reports.before),
+        after: scoreReport(reports.after),
+      };
 
-  const scoredReports: ReportsToCompare = {
-    before: scoreReport(reports.before),
-    after: scoreReport(reports.after),
-  };
+      const categories = compareCategories(scoredReports);
+      const groups = compareGroups(scoredReports);
+      const audits = compareAudits(scoredReports);
 
-  const categories = compareCategories(scoredReports);
-  const groups = compareGroups(scoredReports);
-  const audits = compareAudits(scoredReports);
+      const duration = calcDuration(start);
 
-  const duration = calcDuration(start);
+      const packageJson = createRequire(import.meta.url)(
+        '../../package.json',
+      ) as typeof import('../../package.json');
 
-  const packageJson = createRequire(import.meta.url)(
-    '../../package.json',
-  ) as typeof import('../../package.json');
+      const result: ReportsDiff = {
+        commits,
+        categories,
+        groups,
+        audits,
+        packageName: packageJson.name,
+        version: packageJson.version,
+        date,
+        duration,
+      };
 
-  const result: ReportsDiff = {
-    commits,
-    categories,
-    groups,
-    audits,
-    packageName: packageJson.name,
-    version: packageJson.version,
-    date,
-    duration,
-  };
-
-  profiler.measure('compareReports', startMark as PerformanceMeasure);
-  return result;
+      return result;
+    },
+    { detail: profiler.spans.cli() },
+  );
 }
 
 function reportsDiffToFileContent(

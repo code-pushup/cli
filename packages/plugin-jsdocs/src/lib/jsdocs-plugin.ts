@@ -32,31 +32,31 @@ import {
  * @returns Plugin configuration.
  */
 export function jsDocsPlugin(config: JsDocsPluginConfig): PluginConfig {
-  const startPluginConfig = profiler.mark(`start-${PLUGIN_SLUG}-plugin-config`);
-
-  const jsDocsConfig = validate(jsDocsPluginConfigSchema, config);
-  const scoreTargets = jsDocsConfig.scoreTargets;
-
-  const groups = filterGroupsByOnlyAudits(GROUPS, jsDocsConfig);
-  const audits = filterAuditsByPluginConfig(jsDocsConfig);
-
-  logAuditsAndGroups(audits, groups);
-
-  const result: PluginConfig = {
-    slug: PLUGIN_SLUG,
-    title: PLUGIN_TITLE,
-    icon: 'folder-docs',
-    description: PLUGIN_DESCRIPTION,
-    docsUrl: PLUGIN_DOCS_URL,
-    groups,
-    audits,
-    runner: createRunnerFunction(jsDocsConfig),
-    ...(scoreTargets && { scoreTargets }),
-  };
-
-  profiler.measure(
+  return profiler.span(
     `run-${PLUGIN_SLUG}-plugin-config`,
-    startPluginConfig as PerformanceMeasure,
+    () => {
+      const jsDocsConfig = validate(jsDocsPluginConfigSchema, config);
+      const scoreTargets = jsDocsConfig.scoreTargets;
+
+      const groups = filterGroupsByOnlyAudits(GROUPS, jsDocsConfig);
+      const audits = filterAuditsByPluginConfig(jsDocsConfig);
+
+      logAuditsAndGroups(audits, groups);
+
+      const result: PluginConfig = {
+        slug: PLUGIN_SLUG,
+        title: PLUGIN_TITLE,
+        icon: 'folder-docs',
+        description: PLUGIN_DESCRIPTION,
+        docsUrl: PLUGIN_DOCS_URL,
+        groups,
+        audits,
+        runner: createRunnerFunction(jsDocsConfig),
+        ...(scoreTargets && { scoreTargets }),
+      };
+
+      return result;
+    },
+    { detail: profiler.spans.plugins(PLUGIN_SLUG)() },
   );
-  return result;
 }

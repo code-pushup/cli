@@ -2,13 +2,9 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
-import type { DevtoolsSpansRegistry } from '@code-pushup/profiler';
-import {
-  getRunTaskTraceEvent,
-  getStartTracing,
-  markToTraceEvent,
-  measureToTraceEvents,
-} from './trace-events';
+import { getJsonlPath } from './file-output';
+import { getRunTaskTraceEvent, getStartTracing } from './trace-events';
+import { markToTraceEvent, measureToTraceEvents } from './trace-file-output';
 
 export type DevToolsColor =
   | 'primary'
@@ -72,7 +68,7 @@ export interface OutputFormat<I = unknown> {
 
   epilogue(opt?: Record<string, unknown>): string[];
 
-  finalize?(): void | Promise<void>;
+  finalize?(): void;
 }
 
 export type ProfilingEvent =
@@ -85,18 +81,29 @@ export class DevToolsOutputFormat implements OutputFormat<ProfilingEvent> {
   readonly id = 'devtools';
   readonly fileExt = 'jsonl';
   readonly filePath: string;
+  readonly includeStackTraces: boolean;
 
   #nextId2 = (() => {
-    let id = 0;
-    return () => ({ local: `0x${(++id).toString(16).toUpperCase()}` });
+    let counter = 1;
+    return () => ({ local: `0x${counter++}` });
   })();
 
-  constructor(filePath: string) {
+  constructor(filePath: string, options?: { includeStackTraces?: boolean }) {
     this.filePath = filePath;
+    this.includeStackTraces = options?.includeStackTraces ?? true;
   }
 
-  preamble(opt?: { pid: number; tid: number; url: string }): string[] {
-    const traceStartTs = Math.round(performance.now() * 1000);
+  preamble(opt?: {
+    pid: number;
+    tid: number;
+    url: string;
+    traceStartTs?: number;
+  }): string[] {
+    const traceStartTs =
+      opt?.traceStartTs ??
+      Math.round(
+        (performance.timeOrigin - 1766930000000 + performance.now()) * 1000,
+      );
     const pid = opt?.pid ?? process.pid;
     const tid = opt?.tid ?? threadId;
     const url = opt?.url ?? this.filePath;
@@ -116,16 +123,25 @@ export class DevToolsOutputFormat implements OutputFormat<ProfilingEvent> {
     ];
   }
 
-  encode(event: ProfilingEvent, opt?: { pid: number; tid: number }): string[] {
+  encode(
+    event: ProfilingEvent,
+    opt?: { pid: number; tid: number; includeStackTraces?: boolean },
+  ): string[] {
     const ctx = {
       pid: opt?.pid ?? process.pid,
       tid: opt?.tid ?? threadId,
       nextId2: this.#nextId2,
     };
 
+    const includeStack = opt?.includeStackTraces ?? this.includeStackTraces;
+
     switch (event.entryType) {
       case 'mark':
-        return [JSON.stringify(markToTraceEvent(event, ctx))];
+        return [
+          JSON.stringify(
+            markToTraceEvent(event, { ...ctx, includeStack: includeStack }),
+          ),
+        ];
       case 'measure':
         return measureToTraceEvents(event, ctx).map(event =>
           JSON.stringify(event),
@@ -141,14 +157,16 @@ export class DevToolsOutputFormat implements OutputFormat<ProfilingEvent> {
     return [
       JSON.stringify(
         getRunTaskTraceEvent(pid, tid, {
-          ts: Math.round(performance.now() * 1000),
+          ts: Math.round(
+            (performance.timeOrigin - 1766930000000 + performance.now()) * 1000,
+          ),
           dur: 10,
         }),
       ),
     ];
   }
 
-  async finalize(): Promise<void> {
+  finalize(): void {
     try {
       // Ensure directory exists
       const dir = path.dirname(this.filePath);
@@ -156,10 +174,17 @@ export class DevToolsOutputFormat implements OutputFormat<ProfilingEvent> {
         mkdirSync(dir, { recursive: true });
       }
 
-      // Read existing JSONL content if file exists
+      // Read existing JSONL content from the .jsonl file
+      const jsonlFilePath = getJsonlPath(this.filePath);
       let jsonlContent = '';
-      if (existsSync(this.filePath)) {
-        jsonlContent = readFileSync(this.filePath, 'utf8');
+      if (existsSync(jsonlFilePath)) {
+        jsonlContent = readFileSync(jsonlFilePath, 'utf8');
+      }
+
+      // Append epilogue events to the JSONL content
+      const epilogueEvents = this.epilogue();
+      if (epilogueEvents.length > 0) {
+        jsonlContent += '\n' + epilogueEvents.join('\n');
       }
 
       // Transform JSONL to JSON array format
@@ -190,7 +215,7 @@ ${traceEventsContent}
 
       writeFileSync(this.filePath, jsonOutput, 'utf8');
     } catch (error) {
-      throw new Error(`Failed to wrap trace JSON file: ${this.filePath}`);
+      throw new Error(`Failed to wrap trace JSON file: ${error}`);
     }
   }
 }

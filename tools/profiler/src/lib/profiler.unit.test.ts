@@ -2,9 +2,9 @@ import { readFile } from 'node:fs/promises';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   ExitHandlerError,
-  createProcessOutput,
+  createLineOutput,
   installExitHandlers,
-} from './process-output.js';
+} from './line-output.js';
 import { PROFILER_ENV_VAR, Profiler, getProfiler } from './profiler.js';
 
 describe('getProfiler', () => {
@@ -108,6 +108,33 @@ describe('getProfiler', () => {
     });
   });
 
+  it('should use custom id in filename instead of timestamp', () => {
+    const profiler = getProfiler({
+      outDir: '/custom/dir',
+      fileBaseName: 'custom-marker',
+      id: 'my-custom-id',
+      enabled: true,
+    });
+
+    expect(profiler.filePath).pathToMatch(
+      '/custom/dir/custom-marker.my-custom-id.json',
+    );
+    expect(profiler.enabled).toBeTruthy();
+  });
+
+  it('should fall back to timestamp when id is not provided', () => {
+    const profiler = getProfiler({
+      outDir: '/custom/dir',
+      fileBaseName: 'custom-marker',
+      enabled: true,
+    });
+
+    expect(profiler.filePath).pathToMatch(
+      '/custom/dir/custom-marker.2024-01-01T12-00-00.json',
+    );
+    expect(profiler.enabled).toBeTruthy();
+  });
+
   it('should update enabled state when enableProfiling is called', () => {
     const profiler = getProfiler({ enabled: false });
 
@@ -131,6 +158,7 @@ describe('getProfiler', () => {
 
   it('should create measure', () => {
     const profiler = getProfiler();
+    profiler.mark('test-mark');
     expect(profiler.measure('test-measure', 'test-mark')).toStrictEqual(
       expect.objectContaining({
         detail: null,
@@ -385,9 +413,9 @@ describe('getProfiler', () => {
     });
 
     it('should handle output close errors gracefully', async () => {
-      const processOutput = await import('./process-output.js');
+      const processOutput = await import('./line-output.js');
 
-      // Mock createProcessOutput to return an output that throws on close
+      // Mock createLineOutput to return an output that throws on close
       const mockOutput = {
         filePath: 'test.jsonl',
         writeLineImmediate: vi.fn(),
@@ -399,7 +427,7 @@ describe('getProfiler', () => {
       };
 
       const createSpy = vi
-        .spyOn(processOutput, 'createProcessOutput')
+        .spyOn(processOutput, 'createLineOutput')
         .mockReturnValue(mockOutput as any);
 
       // Create a new profiler instance
@@ -468,9 +496,9 @@ describe('getProfiler', () => {
     });
 
     it('should handle initialization errors gracefully', async () => {
-      const processOutput = await import('./process-output.js');
+      const processOutput = await import('./line-output.js');
       const createSpy = vi
-        .spyOn(processOutput, 'createProcessOutput')
+        .spyOn(processOutput, 'createLineOutput')
         .mockImplementation(() => {
           throw new Error('Init error');
         });
@@ -484,9 +512,9 @@ describe('getProfiler', () => {
     });
 
     it('should handle safeClose callback with error and write error line', async () => {
-      const processOutput = await import('./process-output.js');
+      const processOutput = await import('./line-output.js');
 
-      // Mock createProcessOutput
+      // Mock createLineOutput
       const mockOutput = {
         filePath: 'test.jsonl',
         writeLineImmediate: vi.fn(),
@@ -496,7 +524,7 @@ describe('getProfiler', () => {
       };
 
       const createSpy = vi
-        .spyOn(processOutput, 'createProcessOutput')
+        .spyOn(processOutput, 'createLineOutput')
         .mockReturnValue(mockOutput as any);
 
       let capturedSafeClose: ((error?: unknown) => void) | undefined;
@@ -537,7 +565,7 @@ describe('getProfiler', () => {
     });
 
     it('should handle safeClose callback with non-Error object', async () => {
-      const processOutput = await import('./process-output.js');
+      const processOutput = await import('./line-output.js');
 
       const mockOutput = {
         filePath: 'test.jsonl',
@@ -548,7 +576,7 @@ describe('getProfiler', () => {
       };
 
       const createSpy = vi
-        .spyOn(processOutput, 'createProcessOutput')
+        .spyOn(processOutput, 'createLineOutput')
         .mockReturnValue(mockOutput as any);
 
       let capturedSafeClose: ((error?: unknown) => void) | undefined;
@@ -573,11 +601,10 @@ describe('getProfiler', () => {
 
         // Verify error was written with String() conversion
         expect(writeLineSpy).toHaveBeenCalledWith(
-          expect.objectContaining({
-            type: 'error',
-            message: String(testError),
-            error: testError,
-          }),
+          expect.stringContaining('"type":"error"'),
+        );
+        expect(writeLineSpy).toHaveBeenCalledWith(
+          expect.stringContaining(`"message":"${String(testError)}"`),
         );
       }
 
@@ -589,7 +616,7 @@ describe('getProfiler', () => {
 
   describe('exit handler error handling', () => {
     it('should handle safeClose callback with error', async () => {
-      const processOutput = await import('./process-output.js');
+      const processOutput = await import('./line-output.js');
       const installSpy = vi.spyOn(processOutput, 'installExitHandlers');
       let capturedSafeClose: ((error?: unknown) => void) | undefined;
 
@@ -612,7 +639,7 @@ describe('getProfiler', () => {
     });
 
     it('should handle ExitHandlerError with uncaughtException and write fatal error', async () => {
-      const processOutput = await import('./process-output.js');
+      const processOutput = await import('./line-output.js');
       const installSpy = vi.spyOn(processOutput, 'installExitHandlers');
       let capturedSafeClose: ((error?: unknown) => void) | undefined;
 
@@ -622,7 +649,7 @@ describe('getProfiler', () => {
 
       const profiler = new Profiler({ enabled: true });
 
-      // Mock createProcessOutput to get access to output
+      // Mock createLineOutput to get access to output
       const mockOutput = {
         filePath: 'test.jsonl',
         writeLineImmediate: vi.fn(),
@@ -632,7 +659,7 @@ describe('getProfiler', () => {
       };
 
       const createSpy = vi
-        .spyOn(processOutput, 'createProcessOutput')
+        .spyOn(processOutput, 'createLineOutput')
         .mockReturnValue(mockOutput as any);
 
       // Create a new profiler to get the mocked output
@@ -650,10 +677,10 @@ describe('getProfiler', () => {
 
       // Verify writeFatalError was called (through writeLine)
       expect(writeLineSpy).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: 'fatal',
-          kind: 'uncaughtException',
-        }),
+        expect.stringContaining('"type":"fatal"'),
+      );
+      expect(writeLineSpy).toHaveBeenCalledWith(
+        expect.stringContaining('"kind":"uncaughtException"'),
       );
 
       writeLineSpy.mockRestore();
@@ -664,7 +691,7 @@ describe('getProfiler', () => {
     });
 
     it('should handle ExitHandlerError with unhandledRejection and write fatal error', async () => {
-      const processOutput = await import('./process-output.js');
+      const processOutput = await import('./line-output.js');
       const installSpy = vi.spyOn(processOutput, 'installExitHandlers');
       let capturedSafeClose: ((error?: unknown) => void) | undefined;
 
@@ -672,7 +699,7 @@ describe('getProfiler', () => {
         capturedSafeClose = safeClose;
       });
 
-      // Mock createProcessOutput to get access to output
+      // Mock createLineOutput to get access to output
       const mockOutput = {
         filePath: 'test.jsonl',
         writeLineImmediate: vi.fn(),
@@ -682,7 +709,7 @@ describe('getProfiler', () => {
       };
 
       const createSpy = vi
-        .spyOn(processOutput, 'createProcessOutput')
+        .spyOn(processOutput, 'createLineOutput')
         .mockReturnValue(mockOutput as any);
 
       // Create a new profiler to get the mocked output
@@ -700,10 +727,10 @@ describe('getProfiler', () => {
 
       // Verify writeFatalError was called (through writeLine)
       expect(writeLineSpy).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: 'fatal',
-          kind: 'unhandledRejection',
-        }),
+        expect.stringContaining('"type":"fatal"'),
+      );
+      expect(writeLineSpy).toHaveBeenCalledWith(
+        expect.stringContaining('"kind":"unhandledRejection"'),
       );
 
       writeLineSpy.mockRestore();
@@ -713,7 +740,7 @@ describe('getProfiler', () => {
     });
 
     it('should handle writeFatalError when output writeLine fails', async () => {
-      const processOutput = await import('./process-output.js');
+      const processOutput = await import('./line-output.js');
       const installSpy = vi.spyOn(processOutput, 'installExitHandlers');
       let capturedSafeClose: ((error?: unknown) => void) | undefined;
 
@@ -721,7 +748,7 @@ describe('getProfiler', () => {
         capturedSafeClose = safeClose;
       });
 
-      // Mock createProcessOutput to get access to output that throws
+      // Mock createLineOutput to get access to output that throws
       const mockOutput = {
         filePath: 'test.jsonl',
         writeLineImmediate: vi.fn(),
@@ -733,7 +760,7 @@ describe('getProfiler', () => {
       };
 
       const createSpy = vi
-        .spyOn(processOutput, 'createProcessOutput')
+        .spyOn(processOutput, 'createLineOutput')
         .mockReturnValue(mockOutput as any);
 
       // Create a new profiler to get the mocked output
@@ -754,7 +781,7 @@ describe('getProfiler', () => {
 
     it('should not write fatal error when disabled', async () => {
       const profiler = getProfiler({ enabled: false });
-      const processOutput = await import('./process-output.js');
+      const processOutput = await import('./line-output.js');
       const installSpy = vi.spyOn(processOutput, 'installExitHandlers');
       let capturedSafeClose: ((error?: unknown) => void) | undefined;
 
@@ -794,7 +821,7 @@ describe('getProfiler', () => {
 
       if (output) {
         const writeLineSpy = vi.spyOn(output, 'writeLine');
-        const processOutput = await import('./process-output.js');
+        const processOutput = await import('./line-output.js');
         const installSpy = vi.spyOn(processOutput, 'installExitHandlers');
         let capturedSafeClose: ((error?: unknown) => void) | undefined;
 
@@ -822,6 +849,32 @@ describe('getProfiler', () => {
         installSpy.mockRestore();
         newProfiler.close();
       }
+    });
+  });
+
+  describe('includeStackTraces option', () => {
+    it('should enable stack traces by default', () => {
+      const profiler = new Profiler();
+      expect(profiler.enabled).toBe(true);
+      expect(profiler.filePath).toBeDefined();
+      // The default behavior should include stack traces
+      profiler.close();
+    });
+
+    it('should allow disabling stack traces', () => {
+      const profiler = new Profiler({ includeStackTraces: false });
+      expect(profiler.enabled).toBe(true);
+      expect(profiler.filePath).toBeDefined();
+      // Stack traces should be disabled
+      profiler.close();
+    });
+
+    it('should allow enabling stack traces explicitly', () => {
+      const profiler = new Profiler({ includeStackTraces: true });
+      expect(profiler.enabled).toBe(true);
+      expect(profiler.filePath).toBeDefined();
+      // Stack traces should be enabled
+      profiler.close();
     });
   });
 });

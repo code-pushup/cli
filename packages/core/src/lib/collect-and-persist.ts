@@ -25,32 +25,38 @@ export type CollectAndPersistReportsOptions = Pick<
 export async function collectAndPersistReports(
   options: CollectAndPersistReportsOptions,
 ): Promise<void> {
-  return profiler.span('collectAndPersistReports', async () => {
-    const reportResult = await collect(options);
-    const sortedScoredReport = sortReport(scoreReport(reportResult));
+  return profiler.spanAsync(
+    'collectAndPersistReports',
+    async () => {
+      const reportResult = await collect(options);
+      const sortedScoredReport = sortReport(scoreReport(reportResult));
 
-    const { persist } = options;
-    const { skipReports = false, ...persistOptions } = persist ?? {};
+      const { persist } = options;
+      const { skipReports = false, ...persistOptions } = persist ?? {};
 
-    if (skipReports) {
-      logger.info('Skipped saving report as persist.skipReports flag is set');
-    } else {
-      const reportFiles = await persistReport(
-        reportResult,
-        sortedScoredReport,
-        persistOptions,
-      );
+      if (skipReports) {
+        logger.info('Skipped saving report as persist.skipReports flag is set');
+      } else {
+        const reportFiles = await persistReport(
+          reportResult,
+          sortedScoredReport,
+          persistOptions,
+        );
 
-      await profiler.span('persistLogit', () =>
-        logPersistedReport(reportFiles),
-      );
-    }
+        await profiler.span(
+          'persistLogit',
+          () => logPersistedReport(reportFiles),
+          { detail: profiler.spans.cli() },
+        );
+      }
 
-    // terminal output
-    logger.newline();
-    logger.newline();
-    logStdoutSummary(sortedScoredReport);
-    logger.newline();
-    logger.newline();
-  });
+      // terminal output
+      logger.newline();
+      logger.newline();
+      logStdoutSummary(sortedScoredReport);
+      logger.newline();
+      logger.newline();
+    },
+    { detail: profiler.spans.cli() },
+  );
 }

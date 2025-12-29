@@ -54,22 +54,26 @@ export async function removeDirectoryIfExists(dir: string) {
 }
 
 export async function importModule<T = unknown>(options: Options): Promise<T> {
-  return profiler.span('importModule', async () => {
-    const resolvedStats = await settlePromise(stat(options.filepath));
-    if (resolvedStats.status === 'rejected') {
-      throw new Error(`File '${options.filepath}' does not exist`);
-    }
-    if (!resolvedStats.value.isFile()) {
-      throw new Error(`Expected '${options.filepath}' to be a file`);
-    }
+  return profiler.span(
+    'importModule',
+    async () => {
+      const resolvedStats = await settlePromise(stat(options.filepath));
+      if (resolvedStats.status === 'rejected') {
+        throw new Error(`File '${options.filepath}' does not exist`);
+      }
+      if (!resolvedStats.value.isFile()) {
+        throw new Error(`Expected '${options.filepath}' to be a file`);
+      }
 
-    const { mod } = await bundleRequire<object>(options);
+      const { mod } = await bundleRequire<object>(options);
 
-    if (typeof mod === 'object' && 'default' in mod) {
-      return mod.default as T;
-    }
-    return mod as T;
-  });
+      if (typeof mod === 'object' && 'default' in mod) {
+        return mod.default as T;
+      }
+      return mod as T;
+    },
+    { detail: profiler.spans.cli() },
+  );
 }
 
 export function createReportPath({
@@ -99,30 +103,38 @@ export type CrawlFileSystemOptions<T> = {
 export async function crawlFileSystem<T = string>(
   options: CrawlFileSystemOptions<T>,
 ): Promise<T[]> {
-  return profiler.span('crawlFileSystem', async () => {
-    const {
-      directory,
-      pattern,
-      fileTransform = (filePath: string) => filePath as T,
-    } = options;
+  return profiler.span(
+    'crawlFileSystem',
+    async () => {
+      const {
+        directory,
+        pattern,
+        fileTransform = (filePath: string) => filePath as T,
+      } = options;
 
-    const files = await readdir(directory);
-    const promises = files.map(async (file): Promise<T | T[]> => {
-      const filePath = path.join(directory, file);
-      const stats = await stat(filePath);
+      const files = await readdir(directory);
+      const promises = files.map(async (file): Promise<T | T[]> => {
+        const filePath = path.join(directory, file);
+        const stats = await stat(filePath);
 
-      if (stats.isDirectory()) {
-        return crawlFileSystem({ directory: filePath, pattern, fileTransform });
-      }
-      if (stats.isFile() && (!pattern || new RegExp(pattern).test(file))) {
-        return fileTransform(filePath);
-      }
-      return [];
-    });
+        if (stats.isDirectory()) {
+          return crawlFileSystem({
+            directory: filePath,
+            pattern,
+            fileTransform,
+          });
+        }
+        if (stats.isFile() && (!pattern || new RegExp(pattern).test(file))) {
+          return fileTransform(filePath);
+        }
+        return [];
+      });
 
-    const resultsNestedArray = await Promise.all(promises);
-    return resultsNestedArray.flat() as T[];
-  });
+      const resultsNestedArray = await Promise.all(promises);
+      return resultsNestedArray.flat() as T[];
+    },
+    { detail: profiler.spans.cli() },
+  );
 }
 
 export async function findNearestFile(

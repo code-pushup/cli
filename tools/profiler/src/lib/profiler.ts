@@ -1,34 +1,117 @@
 import path from 'node:path';
-import { PerformanceObserver, performance } from 'node:perf_hooks';
+import {
+  type PerformanceMark,
+  type PerformanceMeasure,
+  performance,
+} from 'node:perf_hooks';
 import process from 'node:process';
 import { threadId } from 'node:worker_threads';
-import { type MeasureOptions } from 'perf_hooks';
-import {
-  DevToolsOutputFormat,
-  type OutputFormat,
-  type ProfilingEvent,
-} from './output-format';
-import {
-  type ProcessOutput,
-  createProcessOutput,
-  installExitHandlers,
-} from './process-output';
+import { type MarkOptions, type MeasureOptions } from 'perf_hooks';
 import {
   type DevtoolsSpanConfig,
   type DevtoolsSpanHelpers,
   type DevtoolsSpansRegistry,
   createDevtoolsSpans,
-} from './span-helpers';
+} from './extensibility-api-helpers';
+import {
+  type ExtendedPerformanceMark,
+  type ExtendedPerformanceMeasure,
+  type ProfilingEvent,
+} from './output-format';
+import {
+  type PerformanceObserverHandle,
+  createPerformanceObserver,
+} from './performance-observer';
+import { type TraceFile, createTraceFile } from './trace-file-output';
 
 const nextId = createIncrementingId();
 const id = nextId();
+
+// Fatal error types for structured error handling
+interface FatalError {
+  type: 'fatal';
+  pid: number;
+  tid: number;
+  tsMs: number;
+  kind: 'uncaughtException' | 'unhandledRejection';
+  error:
+    | {
+        name?: string;
+        message?: string;
+        stack?: string;
+      }
+    | unknown;
+}
+
+// Profiler-specific error types
+class ProfilerError extends Error {
+  constructor(
+    message: string,
+    public readonly operation: string,
+    public override readonly cause?: unknown,
+  ) {
+    super(message);
+    this.name = 'ProfilerError';
+  }
+}
+
+class ProfilerResourceError extends ProfilerError {
+  constructor(operation: string, cause?: unknown) {
+    super(`Resource operation failed: ${operation}`, operation, cause);
+    this.name = 'ProfilerResourceError';
+  }
+}
+
+export class ExitHandlerError extends Error {
+  constructor(type: string) {
+    super(`${type}`);
+    this.name = 'ExitHandlerError';
+  }
+}
+
+export function installExitHandlers({
+  envVar = 'EXIT_HANDLERS',
+  safeClose,
+}: {
+  envVar?: string;
+  safeClose: (error?: unknown) => void;
+}): void {
+  if (process.env[envVar] != null) {
+    return;
+  }
+  process.env[envVar] = 'true';
+
+  process.on('beforeExit', () => safeClose());
+  process.on('exit', () => safeClose());
+  process.on('SIGINT', () => {
+    safeClose();
+    process.exit(130);
+  });
+  process.on('SIGTERM', () => {
+    safeClose();
+    process.exit(143);
+  });
+
+  process.on('uncaughtException', err => {
+    safeClose(new ExitHandlerError('uncaughtException'));
+    throw err;
+  });
+
+  process.on('unhandledRejection', reason => {
+    safeClose(new ExitHandlerError('unhandledRejection'));
+  });
+}
 
 export type ProfilerOptions<K extends string = never> = {
   enabled?: boolean;
   outDir?: string;
   fileBaseName?: string;
+  /** custom id to use in filename instead of timestamp */
+  id?: string;
   /** write metadata line once at start */
   metadata?: Record<string, unknown>;
+  /** include stack traces in trace events (default: true) */
+  includeStackTraces?: boolean;
 
   /** user spans (main is injected automatically) */
   spans?: Partial<DevtoolsSpansRegistry<K>>;
@@ -72,28 +155,29 @@ export class Profiler<K extends string = never> {
   #envEnabled: string = PROFILER_ENV_VAR;
   #enabled: boolean = Boolean(process.env[this.#envEnabled]);
 
-  #output: ProcessOutput | undefined;
-  #outPath: string;
+  #traceFile: TraceFile | undefined;
   #outputFileFinal: string;
-  #outputFormat: OutputFormat;
   #closed = false;
-  #performanceObserver: PerformanceObserver | undefined;
+  #performanceObserver: PerformanceObserverHandle | undefined;
+  #creationTs: number;
 
   readonly #spans: DevtoolsSpanHelpers<DevtoolsSpansRegistry<K | 'main'>>;
   readonly #spansRegistry: DevtoolsSpansRegistry<K | 'main'>;
 
   constructor(options: ProfilerOptions<K> = {}) {
-    this.enableProfiling(
-      options.enabled ?? process.env[PROFILER_ENV_VAR] !== 'false',
-    );
+    this.#creationTs = Math.round(performance.now() * 1000);
+
+    const enabled =
+      options.enabled ?? process.env[PROFILER_ENV_VAR] !== 'false';
+    this.enableProfiling(enabled);
 
     const outDir = options.outDir ?? path.join(process.cwd(), PROFILER_OUT_DIR);
     const base = options.fileBaseName ?? 'timing.profile';
     const now = new Date();
     const timestamp = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
-    const fileName = `${base}.${timestamp}`;
+    const idOrTimestamp = options.id ?? timestamp;
+    const fileName = `${base}.${idOrTimestamp}`;
 
-    this.#outPath = path.resolve(outDir, `${fileName}.jsonl`);
     this.#outputFileFinal = path.resolve(outDir, `${fileName}.json`);
 
     const registry = {
@@ -103,44 +187,46 @@ export class Profiler<K extends string = never> {
 
     this.#spansRegistry = registry;
     this.#spans = createDevtoolsSpans(registry);
-    this.#outputFormat = new DevToolsOutputFormat(this.#outputFileFinal);
 
     if (!this.#enabled) return;
 
     try {
-      this.#output = createProcessOutput({ filePath: this.#outPath });
+      this.#traceFile = createTraceFile({
+        filename: fileName,
+        directory: outDir,
+        flushEveryN: 200,
+        includeStackTraces: options.includeStackTraces ?? true,
+      });
 
-      const preambleOpts = {
-        pid: process.pid,
-        tid: threadId,
-        url: this.#outputFileFinal,
-      };
-
-      this.#writeLineImmediate(this.#outputFormat.preamble(preambleOpts));
-      const preambleEvents = this.#outputFormat.preamble(preambleOpts);
-      for (const event of preambleEvents) {
-        this.#output.writeLineImmediate(event);
-      }
-
-      this.#installPerformanceObserver({ buffer: true });
+      this.#performanceObserver = createPerformanceObserver({
+        writeEvent: event => this.#traceFile!.write(event),
+        captureBuffered: true,
+      });
 
       this.#installExitHandlers({
         envVar: 'CP_PROFILING_EXIT_HANDLERS',
         safeClose: err => {
           if (err) {
-            this.#output?.writeLine({
-              type: 'error',
-              pid: process.pid,
-              tid: threadId,
-              tsMs: performance.now(),
-              message: err instanceof Error ? err.message : String(err),
-              error: err,
-            });
+            try {
+              this.#traceFile?.write({
+                type: 'error',
+                pid: process.pid,
+                tid: threadId,
+                tsMs: performance.now(),
+                message: err instanceof Error ? err.message : String(err),
+                error: err,
+              });
+            } catch (writeError) {
+              // Log the write error but don't throw - we don't want to crash on error logging
+              this.#handleError('write error during safeClose', writeError);
+            }
           }
+
           this.close();
         },
       });
-    } catch {
+    } catch (error) {
+      console.error('Failed to initialize profiler:', error);
       this.#enabled = false;
       return;
     }
@@ -158,28 +244,14 @@ export class Profiler<K extends string = never> {
     return this.#outputFileFinal;
   }
 
-  #writeLineImmediate(entries: string[]): void {
-    if (this.#closed || this.#output == null) return;
-
-    const writeLineImmediate = this.#output.writeLineImmediate;
-    const e = Array.isArray(entries) ? entries : [entries];
-    const encodeOpts = {
-      pid: process.pid,
-      tid: threadId,
-    };
-    e.forEach(entry =>
-      this.#outputFormat.encode(entry, encodeOpts).forEach(writeLineImmediate),
-    );
-  }
-
   #writeFatalError(
     kind: 'uncaughtException' | 'unhandledRejection',
     error: unknown,
   ): void {
-    if (!this.#enabled || this.#closed || !this.#output) return;
+    if (!this.#enabled || this.#closed || !this.#traceFile) return;
 
     try {
-      this.#output.writeLine({
+      const fatalError: FatalError = {
         type: 'fatal',
         pid: process.pid,
         tid: threadId,
@@ -187,47 +259,31 @@ export class Profiler<K extends string = never> {
         kind,
         error:
           kind === 'uncaughtException'
-            ? {
-                name: (error as any)?.name,
-                message: (error as any)?.message,
-                stack: (error as any)?.stack,
-              }
+            ? this.#extractErrorDetails(error)
             : error,
-      });
-    } catch {
-      // ignore
+      };
+
+      this.#traceFile.write(fatalError);
+    } catch (writeError) {
+      // Log the write error but don't throw - we don't want to crash on error logging
+      console.warn('Failed to write fatal error to trace file:', writeError);
     }
   }
 
-  #writeEntry(entries: ProfilingEvent | ProfilingEvent[]): void {
-    if (this.#closed || this.#output == null) return;
-    const writeLineImmediate = this.#output.writeLineImmediate;
-    const e = entries instanceof Array ? entries : [entries];
-    const encodeOpts = {
-      pid: process.pid,
-      tid: threadId,
+  #extractErrorDetails(error: unknown): FatalError['error'] {
+    if (error instanceof Error) {
+      return {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+      };
+    }
+
+    // Fallback for non-Error objects
+    return {
+      name: 'UnknownError',
+      message: String(error),
     };
-    e.forEach(entry =>
-      this.#outputFormat.encode(entry, encodeOpts).forEach(writeLineImmediate),
-    );
-  }
-
-  #installPerformanceObserver(options: { buffer?: boolean }): void {
-    const observer = new PerformanceObserver(list => {
-      const entries = list.getEntries();
-      if (this.#enabled && !this.#closed && this.#output) {
-        for (const entry of entries) {
-          this.#writeEntry(entry as any);
-        }
-      }
-    });
-
-    observer.observe({
-      entryTypes: ['mark', 'measure'],
-      buffered: options.buffer ?? false,
-    });
-
-    this.#performanceObserver = observer;
   }
 
   enableProfiling(isEnabled: boolean): void {
@@ -235,72 +291,80 @@ export class Profiler<K extends string = never> {
     this.#enabled = isEnabled;
   }
 
-  mark(name: string, detail?: unknown) {
-    if (!this.#enabled || this.#closed) {
-      return undefined;
-    }
-
-    const options: PerformanceMarkOptions | undefined =
-      detail === undefined ? undefined : { detail };
+  mark(name: string, options?: MarkOptions): PerformanceMark {
     return performance.mark(name, options);
   }
 
-  measure(name: string, options: string | MeasureOptions) {
-    if (!this.#enabled || this.#closed) {
-      return undefined;
+  measure(
+    name: string,
+    startMark?: string,
+    endMark?: string,
+  ): PerformanceMeasure | undefined;
+  measure(
+    name: string,
+    options: MeasureOptions,
+  ): PerformanceMeasure | undefined;
+  measure(
+    name: string,
+    optionsOrStartMark?: string | MeasureOptions,
+    endMark?: string,
+  ): PerformanceMeasure {
+    // Handle overload: (name, startMark?, endMark?)
+    if (
+      typeof optionsOrStartMark === 'string' ||
+      optionsOrStartMark === undefined
+    ) {
+      return performance.measure(name, optionsOrStartMark, endMark);
     }
 
-    return performance.measure(name, options as MeasureOptions);
+    // Handle overload: (name, options)
+    return performance.measure(name, optionsOrStartMark);
   }
 
   flush(): void {
-    if (!this.#enabled || this.#closed || !this.#output) return;
-    this.#output.flush();
+    if (!this.#enabled || this.#closed || !this.#traceFile) return;
+
+    // Flush performance observer (handles all pending entries)
+    this.#performanceObserver?.flush();
+
+    // Flush the trace file
+    this.#traceFile?.flush();
   }
 
   close(): void {
     if (!this.#enabled || this.#closed) return;
     this.#closed = true;
 
+    if (!this.#traceFile) return;
+
+    try {
+      // Flush any pending writes before disconnecting observer
+      this.flush();
+    } catch (error) {
+      this.#handleError('flush during close', error);
+    }
+
     // Disconnect PerformanceObserver to prevent callbacks after close
     if (this.#performanceObserver) {
       try {
         this.#performanceObserver.disconnect();
-      } catch {
-        // ignore
+        this.#performanceObserver = undefined;
+      } catch (error) {
+        this.#handleError('performance observer disconnect', error);
       }
-      this.#performanceObserver = undefined;
     }
 
-    if (!this.#output) return;
-
-    try {
-      this.flush();
-      this.#writeLineImmediate(this.#outputFormat.preamble());
-      this.#output.flush();
-    } catch {
-      // ignore
-    }
-
-    // Close output and finalize format
-    try {
-      this.#output.close();
-    } catch {
-      // ignore
-    }
-
-    try {
-      const result = this.#outputFormat.finalize?.();
-      if (result instanceof Promise) {
-        result.catch(() => {
-          // ignore async errors
-        });
+    // Close trace file (includes recovery/finalization)
+    if (this.#traceFile) {
+      try {
+        this.#traceFile.close();
+        this.#traceFile = undefined;
+      } catch (error) {
+        this.#handleError('trace file close', error);
       }
-    } catch {
-      // ignore sync errors
     }
 
-    this.#output = undefined;
+    this.#traceFile = undefined;
   }
 
   async spanAsync<T>(
@@ -308,28 +372,84 @@ export class Profiler<K extends string = never> {
     fn: () => Promise<T>,
     options?: PerformanceMarkOptions,
   ): Promise<T> {
-    const start = `${name}:start`;
-    const end = `${name}:end`;
+    const startTime = performance.now();
 
     // Auto-detect context if detail is not provided in options
     const finalOptions: PerformanceMarkOptions | undefined =
       options?.detail === undefined
         ? { ...options, detail: getAutoDetectedDetail(this.#spansRegistry) }
         : options;
-
-    this.mark(start, finalOptions);
 
     try {
       return await fn();
     } finally {
-      this.mark(end);
-      this.measure(name, { start, end, detail: finalOptions?.detail });
+      const endTime = performance.now();
+      const duration = endTime - startTime;
+
+      // Create trace events directly to avoid duplication with the PerformanceObserver
+      if (this.#enabled && !this.#closed && this.#traceFile) {
+        const timeOriginBase = 1766930000000; // Base to align with Chrome trace format
+        const effectiveTimeOrigin = performance.timeOrigin - timeOriginBase;
+        const startUs = Math.round((effectiveTimeOrigin + startTime) * 1000);
+        const endUs = Math.round((effectiveTimeOrigin + endTime) * 1000);
+
+        const id2 = { local: `0x${Math.random().toString(16).slice(2, 8)}` };
+
+        // Extract link properties from options and put them at top level
+        const options = finalOptions as any; // Cast to any to access link properties
+        const { id, parentId, flowIn, flowOut, detail, ...otherOptions } =
+          options || {};
+
+        const mergedDetail = detail ? JSON.stringify(detail) : undefined;
+
+        const beginEvent: any = {
+          cat: 'blink.user_timing',
+          name,
+          ph: 'b',
+          pid: process.pid,
+          tid: threadId,
+          ts: startUs,
+          id2,
+          args: mergedDetail ? { detail: mergedDetail } : {},
+        };
+
+        const endEvent: any = {
+          cat: 'blink.user_timing',
+          name,
+          ph: 'e',
+          pid: process.pid,
+          tid: threadId,
+          ts: endUs,
+          id2,
+          args: {},
+        };
+
+        // Add link properties at top level if they exist
+        if (id !== undefined) {
+          beginEvent.id = id;
+          endEvent.id = id;
+        }
+        if (parentId !== undefined) {
+          beginEvent.parentId = parentId;
+          endEvent.parentId = parentId;
+        }
+        if (flowIn !== undefined) {
+          beginEvent.flowIn = flowIn;
+          endEvent.flowIn = flowIn;
+        }
+        if (flowOut !== undefined) {
+          beginEvent.flowOut = flowOut;
+          endEvent.flowOut = flowOut;
+        }
+
+        this.#traceFile.write(beginEvent);
+        this.#traceFile.write(endEvent);
+      }
     }
   }
 
   span<T>(name: string, fn: () => T, options?: PerformanceMarkOptions): T {
-    const start = `${name}:start`;
-    const end = `${name}:end`;
+    const startTime = performance.now();
 
     // Auto-detect context if detail is not provided in options
     const finalOptions: PerformanceMarkOptions | undefined =
@@ -337,12 +457,32 @@ export class Profiler<K extends string = never> {
         ? { ...options, detail: getAutoDetectedDetail(this.#spansRegistry) }
         : options;
 
-    this.mark(start, finalOptions);
     try {
       return fn();
     } finally {
-      this.mark(end);
-      this.measure(name, { start, end, detail: finalOptions?.detail });
+      const endTime = performance.now();
+      const duration = endTime - startTime;
+
+      // Create measure directly instead of using performance.measure
+      const measure: PerformanceMeasure = {
+        name,
+        entryType: 'measure',
+        startTime,
+        duration,
+        detail: finalOptions?.detail,
+        toJSON: () => ({
+          name,
+          entryType: 'measure',
+          startTime,
+          duration,
+          detail: finalOptions?.detail,
+        }),
+      };
+
+      // Write directly to trace file
+      if (this.#traceFile) {
+        this.#traceFile.write(measure as ProfilingEvent);
+      }
     }
   }
 
@@ -354,6 +494,11 @@ export class Profiler<K extends string = never> {
         : options;
 
     this.mark(name, finalOptions);
+
+    // Automatically flush after instant mark to ensure data is captured
+    if (this.#enabled && !this.#closed) {
+      this.flush();
+    }
   }
 
   #installExitHandlers(options: {
@@ -370,10 +515,21 @@ export class Profiler<K extends string = never> {
             | 'unhandledRejection';
           this.#writeFatalError(kind, error);
         }
-        this.close();
+        // Flush for exit handlers
+        this.flush();
         safeClose(error);
       },
     });
+  }
+
+  // Private utility methods
+  #handleError(operation: string, error: unknown): void {
+    const profilerError = new ProfilerError(
+      `Profiler operation '${operation}' failed`,
+      operation,
+      error,
+    );
+    console.warn(profilerError.message, { cause: error });
   }
 }
 

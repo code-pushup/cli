@@ -123,15 +123,19 @@ export function executePlugins(config: {
   persist: PersistConfig;
   cache: CacheConfigObject;
 }): Promise<PluginReport[]> {
-  return profiler.span('executePlugins', async () => {
-    return asyncSequential(config.plugins, async (pluginConfig, index) => {
-      const suffix = ansis.gray(`[${index + 1}/${config.plugins.length}]`);
-      const title = `Running plugin "${pluginConfig.title}" ${suffix}`;
-      const message = `Completed "${pluginConfig.title}" plugin execution`;
-      return logger.group(title, async () => {
-        const result = await executePlugin(pluginConfig, config);
-        return { message, result };
+  return profiler.spanAsync(
+    'executePlugins',
+    async () => {
+      return asyncSequential(config.plugins, async (pluginConfig, index) => {
+        const suffix = ansis.gray(`[${index + 1}/${config.plugins.length}]`);
+        const title = `Running plugin "${pluginConfig.title}" ${suffix}`;
+        const message = `Completed "${pluginConfig.title}" plugin execution`;
+        return logger.group(title, async () => {
+          const result = await executePlugin(pluginConfig, config);
+          return { message, result };
+        });
       });
-    });
-  });
+    },
+    { detail: profiler.spans.cli() },
+  );
 }

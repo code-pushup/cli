@@ -38,49 +38,47 @@ export async function eslintPlugin(
   config: ESLintPluginConfig,
   options?: ESLintPluginOptions,
 ): Promise<PluginConfig> {
-  const startPluginConfig = profiler.mark(
-    `start-${ESLINT_PLUGIN_SLUG}-plugin-config`,
-    createPluginSpan(ESLINT_PLUGIN_SLUG)({
-      group: GROUP_CODEPUSHUP,
-      tooltipText: `Loading ${ESLINT_PLUGIN_TITLE} plugin configuration`,
-    }),
-  );
-  const targets = validate(eslintPluginConfigSchema, config);
-
-  const {
-    groups: customGroups,
-    artifacts,
-    scoreTargets,
-  } = options ? validate(eslintPluginOptionsSchema, options) : {};
-
-  const { audits, groups } = await listAuditsAndGroups(targets, customGroups);
-
-  const packageJson = createRequire(import.meta.url)(
-    '../../package.json',
-  ) as typeof import('../../package.json');
-
-  const r = {
-    slug: ESLINT_PLUGIN_SLUG,
-    title: ESLINT_PLUGIN_TITLE,
-    icon: 'eslint',
-    description: 'Official Code PushUp ESLint plugin',
-    docsUrl: 'https://www.npmjs.com/package/@code-pushup/eslint-plugin',
-    packageName: packageJson.name,
-    version: packageJson.version,
-
-    audits,
-    groups,
-
-    runner: createRunnerFunction({
-      audits,
-      targets,
-      ...(artifacts ? { artifacts } : {}),
-    }),
-    ...(scoreTargets && { scoreTargets }),
-  };
-  profiler.measure(
+  return profiler.spanAsync(
     `run-${ESLINT_PLUGIN_SLUG}-plugin-config`,
-    startPluginConfig as PerformanceMeasure,
+    async () => {
+      const targets = validate(eslintPluginConfigSchema, config);
+
+      const {
+        groups: customGroups,
+        artifacts,
+        scoreTargets,
+      } = options ? validate(eslintPluginOptionsSchema, options) : {};
+
+      const { audits, groups } = await listAuditsAndGroups(
+        targets,
+        customGroups,
+      );
+
+      const packageJson = createRequire(import.meta.url)(
+        '../../package.json',
+      ) as typeof import('../../package.json');
+
+      const r = {
+        slug: ESLINT_PLUGIN_SLUG,
+        title: ESLINT_PLUGIN_TITLE,
+        icon: 'eslint',
+        description: 'Official Code PushUp ESLint plugin',
+        docsUrl: 'https://www.npmjs.com/package/@code-pushup/eslint-plugin',
+        packageName: packageJson.name,
+        version: packageJson.version,
+
+        audits,
+        groups,
+
+        runner: createRunnerFunction({
+          audits,
+          targets,
+          ...(artifacts ? { artifacts } : {}),
+        }),
+        ...(scoreTargets && { scoreTargets }),
+      };
+      return r as any;
+    },
+    { detail: profiler.spans.plugins(ESLINT_PLUGIN_SLUG)() },
   );
-  return r as any;
 }

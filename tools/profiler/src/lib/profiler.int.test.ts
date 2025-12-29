@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import process from 'node:process';
+import { vi } from 'vitest';
 import { Profiler, getProfiler } from './profiler.js';
 
 describe('Profiler', () => {
