@@ -1,5 +1,5 @@
 import { PerformanceObserver, performance } from 'node:perf_hooks';
-import { type ProfilingEvent } from './output-format';
+import { type ProfilingEvent } from './trace-file-output';
 
 export interface PerformanceObserverOptions {
   /** Callback to write performance events */

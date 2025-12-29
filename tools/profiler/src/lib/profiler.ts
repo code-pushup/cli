@@ -12,16 +12,16 @@ import {
   type DevtoolsSpanHelpers,
   type DevtoolsSpansRegistry,
   createDevtoolsSpans,
-} from './extensibility-api-helpers';
-import {
-  type ExtendedPerformanceMark,
-  type ExtendedPerformanceMeasure,
-  type ProfilingEvent,
-} from './output-format';
+} from './extensibility-helper';
 import {
   type PerformanceObserverHandle,
   createPerformanceObserver,
 } from './performance-observer';
+import {
+  type ExtendedPerformanceMark,
+  type ExtendedPerformanceMeasure,
+  type ProfilingEvent,
+} from './trace-file-output';
 import { type TraceFile, createTraceFile } from './trace-file-output';
 
 const nextId = createIncrementingId();

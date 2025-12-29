@@ -6,15 +6,260 @@ import {
   writeFileSync,
 } from 'node:fs';
 import path from 'node:path';
+import { performance } from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
-import { type FileOutput } from './file-output';
 import { LineOutputError, createLineOutput } from './line-output';
-import { DevToolsOutputFormat, type ProfilingEvent } from './output-format';
 import {
-  type TraceEvent,
+  getRunTaskTraceEvent,
+  getStartTracing,
   getTimingEventInstant,
   getTimingEventSpan,
-} from './trace-events';
+} from './trace-events-helper';
+import type { TraceEvent } from './trace-events.types';
+
+/**
+ * Get the intermediate file path for a given final file path.
+ * Used for output formats where data is written to an intermediate file
+ * and then converted to the final format.
+ */
+export function getIntermediatePath(
+  finalPath: string,
+  options?: {
+    intermediateExtension?: string;
+    finalExtension?: string;
+  },
+): string {
+  const intermediateExtension = options?.intermediateExtension || '.jsonl';
+  const finalExtension = options?.finalExtension || '.json';
+  return finalPath.replace(
+    new RegExp(`${finalExtension}$`),
+    intermediateExtension,
+  );
+}
+
+/**
+ * @deprecated Use getIntermediatePath instead
+ */
+export function getJsonlPath(jsonPath: string): string {
+  return getIntermediatePath(jsonPath, {
+    intermediateExtension: '.jsonl',
+    finalExtension: '.json',
+  });
+}
+
+export type DevToolsColor =
+  | 'primary'
+  | 'primary-light'
+  | 'primary-dark'
+  | 'secondary'
+  | 'secondary-light'
+  | 'secondary-dark'
+  | 'tertiary'
+  | 'tertiary-light'
+  | 'tertiary-dark'
+  | 'error';
+
+export interface ExtensionTrackEntryPayload {
+  dataType?: 'track-entry'; // Defaults to "track-entry"
+  color?: DevToolsColor; // Defaults to "primary"
+  track: string; // Required: Name of the custom track
+  trackGroup?: string; // Optional: Group for organizing tracks
+  properties?: [string, string][]; // Key-value pairs for detailed view
+  tooltipText?: string; // Short description for tooltip
+}
+
+export interface ExtensionMarkerPayload {
+  dataType: 'marker'; // Required: Identifies as a marker
+  color?: DevToolsColor; // Defaults to "primary"
+  properties?: [string, string][]; // Key-value pairs for detailed view
+  tooltipText?: string; // Short description for tooltip
+}
+
+export interface Details<
+  T = ExtensionTrackEntryPayload | ExtensionMarkerPayload,
+> {
+  devtools: T;
+}
+
+export type ExtendedPerformanceMark = PerformanceMark & {
+  detail?: Details<ExtensionMarkerPayload>;
+};
+
+export type ExtendedPerformanceMeasure = PerformanceMeasure & {
+  detail?: Details<PerformanceMeasure>;
+};
+
+/**
+ * OutputFormat defines how to encode profiling events into output format.
+ * Responsibilities:
+ * - Define output schema and semantics
+ * - Own all format-specific concepts (pid, tid, timestamps, url)
+ * - Support multiple formats/versions
+ */
+export interface OutputFormat<I = unknown> {
+  readonly id: string;
+  readonly filePath: string;
+
+  /**
+   * Return preamble events written at the start of tracing.
+   */
+  preamble(opt?: Record<string, unknown>): string[];
+
+  encode(event: I, opt?: Record<string, unknown>): string[];
+
+  epilogue(opt?: Record<string, unknown>): string[];
+
+  finalize?(): void;
+}
+
+export type ProfilingEvent =
+  | ExtendedPerformanceMark
+  | ExtendedPerformanceMeasure;
+/**
+ * Chrome DevTools output format implementation.
+ */
+export class DevToolsOutputFormat implements OutputFormat<ProfilingEvent> {
+  readonly id = 'devtools';
+  readonly fileExt = 'jsonl';
+  readonly filePath: string;
+  readonly includeStackTraces: boolean;
+
+  #nextId2 = (() => {
+    let counter = 1;
+    return () => ({ local: `0x${counter++}` });
+  })();
+
+  constructor(filePath: string, options?: { includeStackTraces?: boolean }) {
+    this.filePath = filePath;
+    this.includeStackTraces = options?.includeStackTraces ?? true;
+  }
+
+  preamble(opt?: {
+    pid: number;
+    tid: number;
+    url: string;
+    traceStartTs?: number;
+  }): string[] {
+    const traceStartTs =
+      opt?.traceStartTs ??
+      Math.round(
+        (performance.timeOrigin - 1766930000000 + performance.now()) * 1000,
+      );
+    const pid = opt?.pid ?? process.pid;
+    const tid = opt?.tid ?? threadId;
+    const url = opt?.url ?? this.filePath;
+    return [
+      JSON.stringify(
+        getStartTracing(pid, tid, {
+          traceStartTs,
+          url,
+        }),
+      ),
+      JSON.stringify(
+        getRunTaskTraceEvent(pid, tid, {
+          ts: traceStartTs,
+          dur: 10,
+        }),
+      ),
+    ];
+  }
+
+  encode(
+    event: ProfilingEvent,
+    opt?: { pid: number; tid: number; includeStackTraces?: boolean },
+  ): string[] {
+    const ctx = {
+      pid: opt?.pid ?? process.pid,
+      tid: opt?.tid ?? threadId,
+      nextId2: this.#nextId2,
+    };
+
+    const includeStack = opt?.includeStackTraces ?? this.includeStackTraces;
+
+    switch (event.entryType) {
+      case 'mark':
+        return [
+          JSON.stringify(
+            markToTraceEvent(event, { ...ctx, includeStack: includeStack }),
+          ),
+        ];
+      case 'measure':
+        return measureToTraceEvents(event, ctx).map(event =>
+          JSON.stringify(event),
+        );
+      default:
+        return [];
+    }
+  }
+
+  epilogue(opt?: { pid: number; tid: number }): string[] {
+    const pid = opt?.pid ?? process.pid;
+    const tid = opt?.tid ?? threadId;
+    return [
+      JSON.stringify(
+        getRunTaskTraceEvent(pid, tid, {
+          ts: Math.round(
+            (performance.timeOrigin - 1766930000000 + performance.now()) * 1000,
+          ),
+          dur: 10,
+        }),
+      ),
+    ];
+  }
+
+  finalize(): void {
+    try {
+      // Ensure directory exists
+      const dir = path.dirname(this.filePath);
+      if (!existsSync(dir)) {
+        mkdirSync(dir, { recursive: true });
+      }
+
+      // Read existing JSONL content from the .jsonl file
+      const jsonlFilePath = getJsonlPath(this.filePath);
+      let jsonlContent = '';
+      if (existsSync(jsonlFilePath)) {
+        jsonlContent = readFileSync(jsonlFilePath, 'utf8');
+      }
+
+      // Append epilogue events to the JSONL content
+      const epilogueEvents = this.epilogue();
+      if (epilogueEvents.length > 0) {
+        jsonlContent += '\n' + epilogueEvents.join('\n');
+      }
+
+      // Transform JSONL to JSON array format
+      const lines = jsonlContent
+        .split('\n')
+        .filter((line: string) => line.trim());
+      const traceEventsContent =
+        lines.length > 0
+          ? lines
+              .map((line: string, index: number) =>
+                index < lines.length - 1 ? `      ${line},` : `      ${line}`,
+              )
+              .join('\n')
+          : '';
+
+      // Write complete JSON structure
+      const jsonOutput = `{
+    "metadata": {
+      "dataOrigin": "TraceEvents",
+      "hardwareConcurrency": 1,
+      "source": "DevTools",
+      "startTime": "mocked-timestamp"
+    },
+    "traceEvents": [
+${traceEventsContent}
+    ]
+}`;
+
+      writeFileSync(this.filePath, jsonOutput, 'utf8');
+    } catch (error) {
+      throw new Error(`Failed to wrap trace JSON file: ${error}`);
+    }
+  }
+}
 
 /**
  * Helper for MEASURE entries
@@ -68,7 +313,7 @@ ${traceEventsContent}
 }
 /**
  * Trace file interface for Chrome DevTools trace event files.
- * Extends generic FileOutput with trace-specific features like recovery.
+ * Provides file output functionality with trace-specific features like recovery.
  */
 type TraceFileEvent =
   | ProfilingEvent
@@ -89,8 +334,14 @@ type TraceFileEvent =
       error: unknown;
     };
 
-export interface TraceFile extends FileOutput<TraceFileEvent> {
+export interface TraceFile {
+  readonly filePath: string;
   readonly jsonlPath: string;
+
+  write(obj: TraceFileEvent): void;
+  writeImmediate(obj: TraceFileEvent): void;
+  flush(): void;
+  close(): void;
 
   /**
    * Recover from incomplete or corrupted trace files.
@@ -115,15 +366,19 @@ export function createTraceFile(opts: {
   fileOutputExtension?: string;
   flushEveryN?: number;
   includeStackTraces?: boolean;
-  parse?: (line: string) => unknown;
 }): TraceFile {
   const directory = opts.directory || '';
   const lineOutputExtension = opts.lineOutputExtension || '.jsonl';
   const fileOutputExtension = opts.fileOutputExtension || '.json';
-  const parser = opts.parse || ((line: string) => JSON.parse(line));
 
   const filePath = path.join(directory, opts.filename + fileOutputExtension);
   const jsonlPath = path.join(directory, opts.filename + lineOutputExtension);
+
+  // Ensure directory exists for JSONL file
+  const dir = path.dirname(jsonlPath);
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true });
+  }
 
   const outputFormat = new DevToolsOutputFormat(filePath, {
     includeStackTraces: opts.includeStackTraces,
@@ -139,17 +394,11 @@ export function createTraceFile(opts: {
     }
   };
 
-  // Ensure directory exists for JSONL file
-  const dir = path.dirname(jsonlPath);
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
-  }
-
   // Create line output with trace-specific parsing and encoding
   const lineOutput = createLineOutput<TraceFileEvent | string, unknown>({
     filePath: jsonlPath,
     flushEveryN: opts.flushEveryN,
-    parse: (line: string) => JSON.parse(line), // Parse JSON lines
+    parse: (line: string) => JSON.parse(line), // Parse JSON lines for recovery
     encode: (obj: TraceFileEvent | string) => {
       if (typeof obj === 'string') return obj;
 
@@ -170,36 +419,26 @@ export function createTraceFile(opts: {
     },
   });
 
-  // Wrap line output in a simple file output interface
-  const fileOutput = {
-    filePath: jsonlPath,
-    write: (obj: TraceFileEvent | string) => lineOutput.writeLine(obj),
-    writeImmediate: (obj: TraceFileEvent | string) =>
-      lineOutput.writeLineImmediate(obj),
-    flush: () => lineOutput.flush(),
-    close: () => lineOutput.close(),
-  };
-
   return {
-    ...fileOutput,
+    filePath: jsonlPath,
     jsonlPath,
 
     write(obj: TraceFileEvent): void {
       if (closed) return;
-      fileOutput.write(obj);
+      lineOutput.writeLine(obj);
     },
 
     writeImmediate(obj: TraceFileEvent): void {
       if (closed) return;
       ensurePreambleWritten();
-      fileOutput.writeImmediate(obj);
+      lineOutput.writeImmediate(obj);
     },
 
     close(): void {
       if (closed) return;
       closed = true;
 
-      fileOutput.close();
+      lineOutput.close();
 
       // Convert JSONL to final format (includes epilogue)
       try {

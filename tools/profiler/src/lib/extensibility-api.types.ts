@@ -1,9 +1,3 @@
-/* eslint-disable no-console, @typescript-eslint/class-methods-use-this */
-import fs from 'node:fs';
-import path from 'node:path';
-import { performance } from 'node:perf_hooks';
-import { threadId } from 'node:worker_threads';
-
 export type DevToolsColor =
   | 'primary'
   | 'primary-light'

@@ -5,7 +5,7 @@ import {
   getFrameTreeNodeId,
   getRunTaskTraceEvent,
   getStartTracing,
-} from './trace-events.js';
+} from './trace-events-helper.js';
 import { markToTraceEvent, measureToTraceEvents } from './trace-file-output.js';
 
 // Mock performance.timeOrigin for consistent timestamps in tests
@@ -52,6 +52,7 @@ describe('getStartTracing', () => {
       pid: 1,
       tid: 2,
       ts: 123456,
+      tts: 123456,
       s: 't',
       args: {
         data: {
