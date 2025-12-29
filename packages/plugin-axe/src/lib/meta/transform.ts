@@ -8,11 +8,13 @@ import {
   getWcagPresetTags,
 } from '../groups.js';
 
+/** Loads Axe rules filtered by the specified preset. */
 export function loadAxeRules(preset: AxePreset): axe.RuleMetadata[] {
   const tags = getPresetTags(preset);
   return tags.length === 0 ? axe.getRules() : axe.getRules(tags);
 }
 
+/** Transforms Axe rule metadata into Code PushUp audit definitions. */
 export function transformRulesToAudits(rules: axe.RuleMetadata[]): Audit[] {
   return rules.map(rule => ({
     slug: rule.ruleId,
@@ -22,6 +24,7 @@ export function transformRulesToAudits(rules: axe.RuleMetadata[]): Audit[] {
   }));
 }
 
+/** Transforms Axe rules into Code PushUp groups based on accessibility categories. */
 export function transformRulesToGroups(rules: axe.RuleMetadata[]): Group[] {
   const groups = createCategoryGroups(rules);
   return groups.filter(({ refs }) => refs.length > 0);

@@ -5,7 +5,10 @@ import type {
   CoreConfig,
   PluginUrls,
 } from './packages/models/src/index.js';
-import axePlugin, { axeCategories } from './packages/plugin-axe/src/index.js';
+import axePlugin, {
+  type AxePluginOptions,
+  axeCategories,
+} from './packages/plugin-axe/src/index.js';
 import coveragePlugin, {
   type CoveragePluginConfig,
   getNxCoveragePaths,
@@ -226,8 +229,11 @@ export async function configureLighthousePlugin(
   };
 }
 
-export function configureAxePlugin(urls: PluginUrls): CoreConfig {
-  const axe = axePlugin(urls);
+export function configureAxePlugin(
+  urls: PluginUrls,
+  options?: AxePluginOptions,
+): CoreConfig {
+  const axe = axePlugin(urls, options);
   return {
     plugins: [axe],
     categories: axeCategories(axe),

@@ -16,6 +16,7 @@ import {
   transformRulesToGroups,
 } from './transform.js';
 
+/** Loads and processes Axe rules into audits and groups, expanding for multiple URLs if needed. */
 export function processAuditsAndGroups(
   urls: string[],
   preset: AxePreset,
