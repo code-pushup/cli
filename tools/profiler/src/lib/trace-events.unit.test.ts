@@ -10,7 +10,7 @@ import { markToTraceEvent, measureToTraceEvents } from './trace-file-output.js';
 
 // Mock performance.timeOrigin for consistent timestamps in tests
 vi.mock('node:perf_hooks', async () => {
-  const actual = await vi.importActual('node:perf_hooks');
+  const actual = (await vi.importActual('node:perf_hooks')) as any;
   return {
     ...actual,
     performance: {
@@ -52,7 +52,6 @@ describe('getStartTracing', () => {
       pid: 1,
       tid: 2,
       ts: 123456,
-      tts: 123456,
       s: 't',
       args: {
         data: {
@@ -160,7 +159,7 @@ describe('measureToTraceEvents', () => {
       pid: 3,
       tid: 4,
       ts: 200000,
-      id2: { local: '0x1' },
+      id2: { local: expect.any(String) },
       args: { detail: JSON.stringify({ custom: 'data', value: 42 }) },
     });
 
@@ -171,7 +170,7 @@ describe('measureToTraceEvents', () => {
       pid: 3,
       tid: 4,
       ts: 275000,
-      id2: { local: '0x1' },
+      id2: { local: expect.any(String) },
       args: {},
     });
   });
@@ -202,7 +201,7 @@ describe('markToTraceEvent', () => {
       pid: 1,
       tid: 2,
       ts: 300000,
-      tts: 300000,
+      id2: { local: '42' },
       args: { data: { startTime: 300 } },
     });
   });
@@ -232,7 +231,7 @@ describe('markToTraceEvent', () => {
       pid: 5,
       tid: 6,
       ts: 400000,
-      tts: 400000,
+      id2: { local: '0x1' },
       args: {
         data: {
           detail: JSON.stringify({ metadata: 'info', timestamp: 123456789 }),

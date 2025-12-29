@@ -15,29 +15,35 @@ const jsonFromJsonl = async (
 };
 
 describe('LineOutput Integration Tests', () => {
-  const testDir = path.join('tmp', 'unit-test', 'profiler');
+  const getTestDir = (testName: string) => {
+    const sanitizedName = testName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    return path.join('tmp', 'int', 'profiler', sanitizedName);
+  };
+
+  let currentTestDir: string;
 
   beforeEach(async () => {
-    // Clean up test directory before each test
-    try {
-      await fs.rm(testDir, { recursive: true, force: true });
-    } catch {
-      // Directory might not exist, ignore
-    }
-    await fs.mkdir(testDir, { recursive: true });
+    // Create test-specific directory
+    currentTestDir = getTestDir(
+      expect.getState().currentTestName || 'unknown-test',
+    );
+    await fs.mkdir(currentTestDir, { recursive: true });
   });
 
   afterEach(async () => {
     // Clean up test directory after each test
     try {
-      await fs.rm(testDir, { recursive: true, force: true });
+      await fs.rm(currentTestDir, { recursive: true, force: true });
     } catch {
       // Ignore cleanup errors
     }
   });
 
   it('should write plain text lines without JSON encoding', async () => {
-    const filePath = path.join(testDir, `logs.txt`);
+    const filePath = path.join(currentTestDir, `logs.txt`);
     const output = createLineOutput({
       filePath,
     });
@@ -55,7 +61,7 @@ describe('LineOutput Integration Tests', () => {
   });
 
   it('should write jsonl lines with custom structured encoding', async () => {
-    const filePath = path.join(testDir, `logs.jsonl`);
+    const filePath = path.join(currentTestDir, `logs.jsonl`);
     const output = createLineOutput({
       filePath,
       encode: (obj: { timestamp: string; level: string; message: string }) =>
@@ -96,7 +102,7 @@ describe('LineOutput Integration Tests', () => {
   });
 
   it('should recover from corrupted lines in existing jsonl file', async () => {
-    const filePath = path.join(testDir, 'recovery-test.jsonl');
+    const filePath = path.join(currentTestDir, 'recovery-test.jsonl');
 
     // Stage a file with valid JSON lines and one corrupted line at the end
     const validLines = [

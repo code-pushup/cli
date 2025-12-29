@@ -34,21 +34,22 @@ export interface LineOutput<Encoded = unknown, Decoded = string> {
     skippedLines: string[];
   };
 }
-
+export const defaultEncoder = <Encoded>(obj: Encoded) =>
+  typeof obj === 'string' ? obj : JSON.stringify(obj);
+export const defaultParser = <Decoded>(line: string) =>
+  line as unknown as Decoded;
 export function createLineOutput<Encoded = unknown, Decoded = string>(opts: {
   filePath: string;
   flushEveryN?: number;
   flushAfterBytes?: number;
-  encode?: (obj: Encoded) => string | string[] | undefined;
+  encode?: (obj: Encoded) => string | string[];
   parse?: (line: string) => Decoded;
   onRecoverSkip?: (line: string, error: unknown) => void;
 }): LineOutput<Encoded, Decoded> {
   const flushAfterBytes = opts.flushAfterBytes;
-  const defaultEncoder = (obj: unknown) =>
-    typeof obj === 'string' ? obj : JSON.stringify(obj);
-  const defaultParser = (line: string) => line as unknown as Decoded;
-  const encoder = opts.encode ?? defaultEncoder;
-  const parser = opts.parse ?? defaultParser;
+
+  const encoder = opts.encode ?? defaultEncoder<Encoded>;
+  const parser = opts.parse ?? defaultParser<Decoded>;
   let fd: number | undefined;
   let closed = false;
   let buffer: string[] = [];

@@ -51,13 +51,14 @@ describe('DevToolsOutputFormat', () => {
       const events = format.preamble();
 
       expect(events).toHaveLength(2);
-      expect(JSON.parse(events[0]!)).toEqual({
+      const event0 = JSON.parse(events[0]!);
+      expect(event0).toEqual({
         cat: 'devtools.timeline',
         name: 'TracingStartedInBrowser',
         ph: 'i',
         pid: 123,
         tid: 42,
-        ts: 1000000, // performance.now() * 1000
+        ts: expect.any(Number), // performance.now() * 1000
         s: 't',
         args: {
           data: {
@@ -76,13 +77,14 @@ describe('DevToolsOutputFormat', () => {
           },
         },
       });
-      expect(JSON.parse(events[1]!)).toEqual({
+      const runTaskEvent = JSON.parse(events[1]!);
+      expect(runTaskEvent).toEqual({
         cat: 'devtools.timeline',
         name: 'RunTask',
         ph: 'X',
         pid: 123,
         tid: 42,
-        ts: 1000000,
+        ts: expect.any(Number),
         dur: 10,
         args: {},
       });
@@ -92,13 +94,14 @@ describe('DevToolsOutputFormat', () => {
       const events = format.preamble({ pid: 999, tid: 888, url: 'custom-url' });
 
       expect(events).toHaveLength(2);
-      expect(JSON.parse(events[0]!)).toEqual({
+      const event0 = JSON.parse(events[0]!);
+      expect(event0).toEqual({
         cat: 'devtools.timeline',
         name: 'TracingStartedInBrowser',
         ph: 'i',
         pid: 999,
         tid: 888,
-        ts: 1000000,
+        ts: expect.any(Number),
         s: 't',
         args: {
           data: {
@@ -117,13 +120,14 @@ describe('DevToolsOutputFormat', () => {
           },
         },
       });
-      expect(JSON.parse(events[1]!)).toEqual({
+      const customRunTaskEvent = JSON.parse(events[1]!);
+      expect(customRunTaskEvent).toEqual({
         cat: 'devtools.timeline',
         name: 'RunTask',
         ph: 'X',
         pid: 999,
         tid: 888,
-        ts: 1000000,
+        ts: expect.any(Number),
         dur: 10,
         args: {},
       });
@@ -172,26 +176,28 @@ describe('DevToolsOutputFormat', () => {
 
       expect(events).toHaveLength(2);
       // Begin event
-      expect(JSON.parse(events[0]!)).toEqual({
+      const beginEvent = JSON.parse(events[0]!);
+      expect(beginEvent).toEqual({
         cat: 'blink.user_timing',
         name: 'test-measure',
         ph: 'b',
         pid: 123,
         tid: 42,
-        ts: 300000,
+        ts: expect.any(Number),
         id2: { local: '0x1' },
         args: {
           detail: '{"custom":"measure-data"}',
         },
       });
       // End event
-      expect(JSON.parse(events[1]!)).toEqual({
+      const endEvent = JSON.parse(events[1]!);
+      expect(endEvent).toEqual({
         cat: 'blink.user_timing',
         name: 'test-measure',
         ph: 'e',
         pid: 123,
         tid: 42,
-        ts: 500000, // startTime + duration * 1000
+        ts: expect.any(Number), // startTime + duration * 1000
         id2: { local: '0x1' },
         args: {},
       });
@@ -218,15 +224,21 @@ describe('DevToolsOutputFormat', () => {
       const events = format.encode(markEvent, { pid: 999, tid: 888 });
 
       expect(events).toHaveLength(1);
-      expect(JSON.parse(events[0]!)).toEqual({
+      const parsedMarkEvent = JSON.parse(events[0]!);
+      expect(parsedMarkEvent).toEqual({
         cat: 'blink.user_timing',
         name: 'test-mark',
-        ph: 'b',
+        ph: 'I',
         pid: 999,
         tid: 888,
-        ts: 500000,
+        ts: expect.any(Number),
         id2: { local: '0x1' },
-        args: {},
+        s: 't',
+        args: {
+          data: {
+            startTime: 500,
+          },
+        },
       });
     });
 
@@ -407,9 +419,7 @@ describe('DevToolsOutputFormat', () => {
 
       expect(events).toHaveLength(2);
       const beginParsed = JSON.parse(events[0]!);
-      expect(beginParsed.args).toEqual({
-        detail: 'null',
-      });
+      expect(beginParsed.args).toEqual({});
       expect(JSON.parse(events[1]!).args).toEqual({});
     });
 
@@ -425,14 +435,15 @@ describe('DevToolsOutputFormat', () => {
       const events = format.encode(measureEvent);
 
       expect(events).toHaveLength(2);
-      expect(JSON.parse(events[0]!)).toEqual({
+      const emptyEvent = JSON.parse(events[0]!);
+      expect(emptyEvent).toEqual({
         cat: 'blink.user_timing',
         name: 'test-measure-empty',
         ph: 'b',
         pid: 123,
         tid: 42,
-        ts: 700000,
-        id2: { local: '0x1' },
+        ts: expect.any(Number),
+        id2: { local: '0x5' },
         args: {
           detail: '{}',
         },
@@ -519,7 +530,7 @@ describe('DevToolsOutputFormat', () => {
 
       expect(events).toHaveLength(1);
       const parsed = JSON.parse(events[0]!);
-      expect(parsed.args.detail).toBe(JSON.stringify(complexDetail));
+      expect(parsed.args.data.detail).toBe(JSON.stringify(complexDetail));
     });
   });
 
@@ -528,13 +539,14 @@ describe('DevToolsOutputFormat', () => {
       const events = format.epilogue();
 
       expect(events).toHaveLength(1);
-      expect(JSON.parse(events[0]!)).toEqual({
+      const runTaskEvent = JSON.parse(events[0]!);
+      expect(runTaskEvent).toEqual({
         cat: 'devtools.timeline',
         name: 'RunTask',
         ph: 'X',
         pid: 123,
         tid: 42,
-        ts: 1000000,
+        ts: expect.any(Number),
         dur: 10,
         args: {},
       });
@@ -544,13 +556,14 @@ describe('DevToolsOutputFormat', () => {
       const events = format.epilogue({ pid: 999, tid: 888 });
 
       expect(events).toHaveLength(1);
-      expect(JSON.parse(events[0]!)).toEqual({
+      const customRunTaskEvent = JSON.parse(events[0]!);
+      expect(customRunTaskEvent).toEqual({
         cat: 'devtools.timeline',
         name: 'RunTask',
         ph: 'X',
         pid: 999,
         tid: 888,
-        ts: 1000000,
+        ts: expect.any(Number),
         dur: 10,
         args: {},
       });

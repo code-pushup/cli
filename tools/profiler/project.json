@@ -41,7 +41,31 @@
         }
       }
     },
-    "int-test": {},
-    "unit-test": {}
+    "int-test": {
+      "cache": true,
+      "inputs": ["default", "^production", "test-vitest-inputs"],
+      "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
+      "executor": "@nx/vitest:test",
+      "options": {
+        "configFile": "{projectRoot}/vitest.int.config.ts",
+        "coverage": {
+          "enabled": true
+        }
+      }
+    },
+    "unit-test": {
+      "cache": true,
+      "inputs": ["default", "^production", "test-vitest-inputs"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectName}/unit-tests/lcov.info"
+      ],
+      "executor": "@nx/vitest:test",
+      "options": {
+        "configFile": "{projectRoot}/vitest.unit.config.ts",
+        "coverage": {
+          "enabled": true
+        }
+      }
+    }
   }
 }

@@ -8,6 +8,8 @@ import {
   type LineOutput,
   LineOutputError,
   createLineOutput,
+  defaultEncoder,
+  defaultParser,
 } from './line-output.js';
 
 describe('createLineOutput', () => {
@@ -26,13 +28,14 @@ describe('createLineOutput', () => {
   });
 
   it('should initialize the file on creation', async () => {
-    outInst = createLineOutput({ filePath: 'test.txt' });
+    outInst = createLineOutput({ filePath: 'logs.txt' });
+
     await expect(
-      readTextFile(path.join(MEMFS_VOLUME, 'test.txt')),
+      readTextFile(path.join(MEMFS_VOLUME, 'logs.txt')),
     ).resolves.toBe('');
   });
 
-  it('should encode and write line immediately without buffering when using writeLineImmediate', async () => {
+  it('should encode with default encoder and write line immediately without buffering when using writeLineImmediate', async () => {
     outInst = createLineOutput({ filePath: 'test.txt' });
     outInst.writeLineImmediate('[LOG] Parse JSON -> { test: 42 }');
     await expect(
@@ -40,20 +43,15 @@ describe('createLineOutput', () => {
     ).resolves.toBe('[LOG] Parse JSON -> { test: 42 }\n');
   });
 
-  it('should write JSON Object lines immediately without buffering when using writeLineImmediate', async () => {
-    outInst = createLineOutput({ filePath: 'test.jsonl' });
+  it('should encode with custom encoder and write line immediately without buffering when using writeLineImmediate', async () => {
+    outInst = createLineOutput({
+      filePath: 'test.txt',
+      encode: (obj: unknown) => `[LOG] Parse JSON -> ${JSON.stringify(obj)}`,
+    });
     outInst.writeLineImmediate({ test: 42 });
     await expect(
-      readTextFile(path.join(MEMFS_VOLUME, 'test.jsonl')),
-    ).resolves.toBe('{"test":42}\n');
-  });
-
-  it('should write JSON Array lines immediately without buffering when using writeLineImmediate', async () => {
-    outInst = createLineOutput({ filePath: 'test.jsonl' });
-    outInst.writeLineImmediate({ test: 42 });
-    await expect(
-      readTextFile(path.join(MEMFS_VOLUME, 'test.jsonl')),
-    ).resolves.toBe('{"test":42}\n');
+      readTextFile(path.join(MEMFS_VOLUME, 'test.txt')),
+    ).resolves.toBe('[LOG] Parse JSON -> {"test":42}\n');
   });
 
   it('should buffer lines without writing to file until flush is called', async () => {
@@ -65,7 +63,6 @@ describe('createLineOutput', () => {
 
     outInst.flush();
 
-    // expect outInst.writeLineImmediate is called
     await expect(
       readTextFile(path.join(MEMFS_VOLUME, 'test.txt')),
     ).resolves.toBe('{"test":42}\n');
@@ -192,6 +189,30 @@ describe('createLineOutput', () => {
       readTextFile(path.join(MEMFS_VOLUME, 'test.txt')),
     ).resolves.toBe('test');
   });
+
+  it('should recover existing file with incomplete line at end', async () => {
+    vol.fromJSON(
+      {
+        'test.jsonl': `{"complete": 42}\n{"incomplete": `,
+      },
+      MEMFS_VOLUME,
+    );
+
+    // First check the file exists with incomplete content
+    await expect(
+      readTextFile(path.join(MEMFS_VOLUME, 'test.jsonl')),
+    ).resolves.toBe('{"complete": 42}\n{"incomplete": ');
+
+    outInst = createLineOutput({
+      filePath: 'test.jsonl',
+      parse: (line: string) => JSON.parse(line),
+    });
+
+    // After recovery, the incomplete line should be removed
+    await expect(
+      readTextFile(path.join(MEMFS_VOLUME, 'test.jsonl')),
+    ).resolves.toBe('{"complete": 42}\n');
+  });
 });
 
 describe('LineOutputError', () => {
@@ -210,5 +231,60 @@ describe('LineOutputError', () => {
     expect(error.message).toBe('Test message');
     expect(error.cause).toBeUndefined();
     expect(error.name).toBe('LineOutputError');
+  });
+});
+
+describe('defaultEncoder', () => {
+  it('should return string as-is when input is a string', () => {
+    const input = 'test string';
+    const result = defaultEncoder(input);
+    expect(result).toBe('test string');
+  });
+
+  it('should JSON stringify when input is an object', () => {
+    const input = { test: 42, message: 'hello' };
+    const result = defaultEncoder(input);
+    expect(result).toBe('{"test":42,"message":"hello"}');
+  });
+
+  it('should JSON stringify when input is a number', () => {
+    const input = 42;
+    const result = defaultEncoder(input);
+    expect(result).toBe('42');
+  });
+
+  it('should JSON stringify when input is an array', () => {
+    const input = [1, 2, 3];
+    const result = defaultEncoder(input);
+    expect(result).toBe('[1,2,3]');
+  });
+
+  it('should JSON stringify when input is null', () => {
+    const input = null;
+    const result = defaultEncoder(input);
+    expect(result).toBe('null');
+  });
+
+  it('should JSON stringify when input is undefined', () => {
+    const input = undefined;
+    const result = defaultEncoder(input);
+    expect(result).toBeUndefined();
+  });
+});
+
+describe('defaultParser', () => {
+  it('should return the line string cast as unknown then as Decoded type', () => {
+    const input = '{"test":42}';
+    const result = defaultParser(input);
+    expect(result).toBe('{"test":42}');
+  });
+
+  it('should work with different string inputs', () => {
+    const inputs = ['simple string', '123', 'true', '', 'hello world'];
+
+    inputs.forEach(input => {
+      const result = defaultParser(input);
+      expect(result).toBe(input);
+    });
   });
 });

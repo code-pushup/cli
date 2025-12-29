@@ -20,6 +20,11 @@ import {
 } from './performance-observer';
 import { timingEventToTraceEvent } from './trace-events-helper';
 import { type TraceFile, createTraceFile } from './trace-file-output';
+import {
+  ExitHandlerError,
+  getFilenameParts,
+  installExitHandlersOnce,
+} from './utils';
 
 type MarkOpts = MarkOptions & { detail?: unknown };
 
@@ -50,42 +55,6 @@ const SIGNALS = [
   ['SIGQUIT', 131],
 ] as const;
 
-export function installExitHandlersOnce(opts: {
-  onClose: () => void;
-  onFatal?: (kind: FatalKind, error: unknown) => void;
-}): void {
-  const g = globalThis as any;
-  if (g[EXIT_HANDLERS_INSTALLED]) return;
-  g[EXIT_HANDLERS_INSTALLED] = true;
-
-  const safe = (fn?: () => void) => {
-    try {
-      fn?.();
-    } catch {}
-  };
-  const close = () => safe(opts.onClose);
-
-  (['beforeExit', 'exit'] as const).forEach(ev => process.on(ev, close));
-
-  SIGNALS.forEach(([sig, code]) =>
-    process.on(sig, () => {
-      close();
-      process.exit(code);
-    }),
-  );
-
-  process.on('uncaughtException', err => {
-    safe(() => opts.onFatal?.('uncaughtException', err));
-    close();
-    throw err;
-  });
-
-  process.on('unhandledRejection', reason => {
-    safe(() => opts.onFatal?.('unhandledRejection', reason));
-    close();
-  });
-}
-
 export type ProfilerOptions<K extends string = never> = {
   enabled?: boolean;
   outDir?: string;
@@ -110,18 +79,6 @@ const PROFILER_KEY = Symbol.for('codepushup.profiler');
 
 function getAutoDetectedDetail(_: DevtoolsSpansRegistry<any>): undefined {
   return undefined;
-}
-
-export function getFilenameParts<K extends string = never>(
-  options: ProfilerOptions<K> = {},
-): { filename: string; directory: string } {
-  const directory =
-    options.outDir ?? path.join(process.cwd(), PROFILER_OUT_DIR);
-  const base = options.fileBaseName ?? PROFILER_FILE_BASE_NAME;
-  const stamp =
-    options.id ?? new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  const filename = `${base}.${stamp}`;
-  return { filename, directory };
 }
 
 export function getProfiler<K extends string = never>(
@@ -208,7 +165,8 @@ export class Profiler<K extends string = never> {
     this.#enabled = isEnabled;
   }
 
-  mark(name: string, options?: MarkOpts): PerformanceMark {
+  mark(name: string, options?: MarkOpts): PerformanceMark | undefined {
+    if (!this.#enabled) return undefined;
     return performance.mark(name, options);
   }
 
@@ -225,7 +183,8 @@ export class Profiler<K extends string = never> {
     name: string,
     a?: string | MeasureOptions,
     b?: string,
-  ): PerformanceMeasure {
+  ): PerformanceMeasure | undefined {
+    if (!this.#enabled) return undefined;
     return typeof a === 'string' || a === undefined
       ? performance.measure(name, a, b)
       : performance.measure(name, a);

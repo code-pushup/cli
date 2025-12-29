@@ -23,6 +23,7 @@ const UNIT_TEST_SETUP_FILES = [
   '../../testing/test-setup/src/lib/reset.mocks.ts',
   '../../testing/test-setup/src/lib/fs.mock.ts',
   '../../testing/test-setup/src/lib/logger.mock.ts',
+  '../../testing/test-setup/src/lib/profiler.mock.ts',
   '../../testing/test-setup/src/lib/git.mock.ts',
   '../../testing/test-setup/src/lib/portal-client.mock.ts',
   ...CUSTOM_MATCHERS,
@@ -38,6 +39,7 @@ const UNIT_TEST_SETUP_FILES = [
 const INT_TEST_SETUP_FILES = [
   '../../testing/test-setup/src/lib/reset.mocks.ts',
   '../../testing/test-setup/src/lib/logger.mock.ts',
+  '../../testing/test-setup/src/lib/profiler.mock.ts',
   '../../testing/test-setup/src/lib/chrome-path.mock.ts',
   ...CUSTOM_MATCHERS,
 ] as const;

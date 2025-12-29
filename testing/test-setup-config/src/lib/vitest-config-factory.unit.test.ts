@@ -65,6 +65,9 @@ describe('createVitestConfig', () => {
         '../../testing/test-setup/src/lib/logger.mock.ts',
       );
       expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/profiler.mock.ts',
+      );
+      expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/extend/markdown-table.matcher.ts',
       );
       expect(setupFiles).toContain(
@@ -122,6 +125,9 @@ describe('createVitestConfig', () => {
       const setupFiles = config.test!.setupFiles;
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/logger.mock.ts',
+      );
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/profiler.mock.ts',
       );
       expect(setupFiles).not.toContain(
         '../../testing/test-setup/src/lib/fs.mock.ts',
