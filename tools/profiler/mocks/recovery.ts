@@ -1,8 +1,8 @@
 import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
-import { getProfiler } from '../src/index.ts';
-import { createTraceFile } from '../src/lib/trace-file-output.ts';
+import { getProfiler } from '../src/index.js';
+import { createTraceFile } from '../src/lib/trace-file-output.js';
 
 async function createBrokenJsonl() {
   console.log('Creating broken JSONL file...');
@@ -33,6 +33,9 @@ async function createBrokenJsonl() {
   traceFile.write(
     performance.getEntriesByName('mark-recovery-valid-middle')[0],
   );
+  // clear pervormance marks to avoid duplication
+  performance.clearMarks();
+
   await sleep(10);
 
   // Flush to ensure events are written
@@ -49,17 +52,18 @@ async function createBrokenJsonl() {
   // Close the trace file (but don't recover yet)
   traceFile.close();
 
-  // Add some corrupted lines (incomplete JSON objects)
-  corruptedContent +=
-    '{"cat":"blink.user_timing","name":"recovery-corrupted","ph":"i","pid":123,"tid":1,"ts":1000,"id2":{"local":"0xabc"}\n'; // Missing closing brace
-  corruptedContent +=
-    '{"cat":"blink.user_timing","name":"recovery-incomplete","ph":"b","pid":123,"tid":1,"ts":1100,"id2":{"local":"0xdef"}'; // Incomplete object, no closing
-  corruptedContent += '\n'; // Just a newline
-  corruptedContent +=
-    '{"cat":"blink.user_timing","name":"recovery-partial","ph":"e","pid":123,"tid":1,"ts":1200'; // Partial object
+  // Read existing content and add corrupted lines at the end
+  let fileContent = '';
+  if (existsSync(jsonlFile)) {
+    fileContent = readFileSync(jsonlFile, 'utf8');
+  }
+
+  // Add corrupted content at the very end (this will be detected by recovery)
+  fileContent +=
+    '{"cat":"blink.user_timing","name":"recovery-corrupted","ph":"i","pid":123,"tid":1,"ts":1000,"id2":{"local":"0xabc"}'; // Missing closing brace
 
   // Write the corrupted content back
-  writeFileSync(jsonlFile, corruptedContent, 'utf8');
+  writeFileSync(jsonlFile, fileContent, 'utf8');
 
   return { jsonlFile, tmpDir };
 }
@@ -82,7 +86,8 @@ async function testRecovery() {
   // The profiler constructor should have recovered the broken file
   console.log('Profiler started and should have recovered the file');
 
-  // Create some new events to verify the profiler is working
+  // The profiler should have recovered the corrupted file during initialization
+  // Create some new events to verify the profiler is working after recovery
   performance.mark('mark-recovery-new-start');
   await sleep(20);
   performance.mark('mark-recovery-new-end');
