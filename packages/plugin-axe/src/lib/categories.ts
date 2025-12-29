@@ -58,6 +58,7 @@ function expandCategories(
   );
 }
 
+/** Creates an aggregated accessibility category from Axe groups. */
 export function createAggregatedCategory(
   groups: Group[],
   context: PluginUrlContext,
@@ -72,6 +73,7 @@ export function createAggregatedCategory(
   };
 }
 
+/** Expands category refs for multiple URLs. */
 export function expandAggregatedCategory(
   category: CategoryConfig,
   context: PluginUrlContext,
@@ -84,6 +86,7 @@ export function expandAggregatedCategory(
   };
 }
 
+/** Extracts unique group slugs from Axe groups. */
 export function extractGroupSlugs(groups: Group[]): AxeCategoryGroupSlug[] {
   const slugs = groups.map(({ slug }) => removeIndex(slug));
   return [...new Set(slugs)].filter(isAxeGroupSlug);

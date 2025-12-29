@@ -34,11 +34,16 @@ export type AxeUrlResult = {
   auditOutputs: AuditOutputs;
 };
 
+/**
+ * Manages Playwright browser lifecycle and runs Axe accessibility audits.
+ * Handles browser installation, authentication state, and URL analysis.
+ */
 export class AxeRunner {
   private browser: Browser | undefined;
   private browserInstalled = false;
   private storageState: BrowserContextOptions['storageState'];
 
+  /** Analyzes a URL for accessibility issues using Axe. */
   async analyzeUrl(args: AxeUrlArgs): Promise<AxeUrlResult> {
     const browser = await this.launchBrowser();
     const { url, urlIndex, urlsCount } = args;
@@ -67,6 +72,7 @@ export class AxeRunner {
     });
   }
 
+  /** Runs setup script and captures authentication state for reuse. */
   async captureAuthState(
     setupFn: SetupFunction,
     timeout: number,
@@ -87,6 +93,7 @@ export class AxeRunner {
     }
   }
 
+  /** Closes the browser and clears authentication state. */
   async close(): Promise<void> {
     this.storageState = undefined;
     this.browserInstalled = false;
@@ -127,6 +134,7 @@ export class AxeRunner {
     this.browserInstalled = true;
   }
 
+  /** Lazily launches or returns existing Chromium browser instance. */
   private async launchBrowser(): Promise<Browser> {
     if (this.browser) {
       return this.browser;

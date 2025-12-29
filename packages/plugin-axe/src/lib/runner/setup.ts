@@ -26,6 +26,7 @@ const setupScriptModuleSchema = z
       'ES module with a default export containing the authentication setup function',
   });
 
+/** Loads and validates a setup script module from the given path. */
 export async function loadSetupScript(
   setupScript: string,
 ): Promise<SetupFunction> {
@@ -47,6 +48,7 @@ export async function loadSetupScript(
   return validModule.default;
 }
 
+/** Executes the setup function with the provided Playwright page. */
 export async function runSetup(
   setupFn: SetupFunction,
   page: Page,

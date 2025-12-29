@@ -11,6 +11,7 @@ import {
 import { AxeRunner, type AxeUrlArgs, type AxeUrlResult } from './run-axe.js';
 import { loadSetupScript } from './setup.js';
 
+/** Creates a runner function that executes Axe accessibility audits for given URLs. */
 export function createRunnerFunction(
   urls: string[],
   ruleIds: string[],
