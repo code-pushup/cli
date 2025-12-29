@@ -4,7 +4,15 @@ import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import type { MockInstance } from 'vitest';
+import {
+  type MockInstance,
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 import type { Audit } from '@code-pushup/models';
 import {
   restoreNxIgnoredFiles,
@@ -130,7 +138,7 @@ describe('eslintPlugin', () => {
           groups: [{ slug: 'type-safety', title: 'Type safety', rules: [] }],
         },
       ),
-    ).rejects.toThrow('Invalid input');
+    ).rejects.toThrow(`Invalid ${ansis.bold('ESLintPluginOptions')}`);
     await expect(
       eslintPlugin(
         {
@@ -141,7 +149,7 @@ describe('eslintPlugin', () => {
           groups: [{ slug: 'type-safety', title: 'Type safety', rules: {} }],
         },
       ),
-    ).rejects.toThrow('Invalid input');
+    ).rejects.toThrow(`Invalid ${ansis.bold('ESLintPluginOptions')}`);
   });
 
   it('should throw when invalid parameters provided', async () => {
