@@ -3,12 +3,13 @@ import type {
   CompleteEvent,
   InstantEvent,
   SpanEvent,
-  TraceEvent,
 } from './trace-events.types';
-import {
-  type ExtendedPerformanceMark,
-  type ExtendedPerformanceMeasure,
-} from './trace-file-output';
+import { markToTraceEvent, measureToTraceEvents } from './trace-file-output';
+
+const nextId2 = (() => {
+  let counter = 1;
+  return () => ({ local: `0x${counter++}` });
+})();
 
 export function getTimingEventInstant(options: {
   entry?: PerformanceMark;
@@ -19,10 +20,9 @@ export function getTimingEventInstant(options: {
   pid: number;
   tid: number;
   nextId2?: () => { local: string }; // Optional since not used for instant events
-  includeStack?: boolean;
 }): InstantEvent {
   // {"args":{"data":{"callTime":37300251007,"detail":"{\"name\":\"invoke-has-pre-registration-flag\",\"componentName\":\"messaging\",\"spanId\":3168785428,\"traceId\":613107129,\"error\":false}","navigationId":"234F7482B1E9D4B1EEA32305D6FBF815","sampleTraceId":8589113407370704,"startTime":229}},"cat":"blink.user_timing","name":"start-invoke-has-pre-registration-flag","ph":"I","pid":31825,"s":"t","tid":1197643,"ts":37300250992,"tts":179196},
-  const { pid, tid, nextId2, entry, name, ts, detail, includeStack } = options;
+  const { pid, tid, nextId2, entry, name, ts, detail } = options;
 
   // Determine timestamp: use provided ts, or calculate from entry if available
   // Use absolute timestamps for cross-process alignment (Strategy B)
@@ -49,20 +49,14 @@ export function getTimingEventInstant(options: {
     pid,
     tid,
     ts: timestamp,
-    tts: timestamp, // Thread timestamp (same as main timestamp for instant events)
     args: {
       data: {
         ...(mergedDetail && { detail: JSON.stringify(mergedDetail) }),
         startTime: entry?.startTime || 0,
       },
     },
-    // Note: id2 is not used for instant events in Chrome DevTools format
+    ...(nextId2 && { id2: nextId2() }),
   };
-
-  // Add stack trace if requested
-  if (includeStack) {
-    traceEvent.stack = captureStackTrace().join('\n');
-  }
 
   return traceEvent;
 }
@@ -73,9 +67,8 @@ export function getTimingEventSpan(options: {
   detail?: any;
   pid: number;
   tid: number;
-  nextId2: () => { local: string };
 }): [SpanEvent, SpanEvent] {
-  const { pid, tid, nextId2, entry, name: explicitName, detail } = options;
+  const { pid, tid, entry, name: explicitName, detail } = options;
 
   const eventName = explicitName ?? entry.name;
   const timeOriginBase = 1766930000000; // Base to align with Chrome trace format
@@ -143,7 +136,6 @@ export function getStartTracing(
     tid,
     ts: traceStartTs,
     s: 't',
-    tts: traceStartTs, // Thread timestamp for instant event
     args: {
       data: {
         frameTreeNodeId,
@@ -185,28 +177,19 @@ export function getRunTaskTraceEvent(
 }
 
 /**
- * Captures the current call stack and returns it as an array of strings.
- * The stack is ordered with the rootmost frame (e.g., global scope) at index 0
- * and the leafmost frame (where the event occurred) as the last item.
- * @returns Array of stack frame strings, or empty array if stack capture fails
+ * Convert a ProfilingEvent (mark or measure) to TraceEvent(s)
  */
-export function captureStackTrace(): string[] {
-  try {
-    // Create an Error object to capture the stack trace
-    const rawStack = new Error().stack || '';
-
-    // Split by newlines and clean up the stack
-    const stackLines = rawStack
-      .split('\n')
-      .slice(1) // Remove the "Error" header line
-      .map(line => line.trim())
-      .filter(line => line.length > 0); // Remove empty lines
-
-    // Reverse the stack so root is at index 0 and leaf is at the end
-    // This matches the Trace Event Format specification
-    return stackLines.reverse();
-  } catch (error) {
-    // If stack capture fails, return empty array
-    return [];
+export function timingEventToTraceEvent(
+  event: import('./trace-file-output').ProfilingEvent,
+  pid: number,
+  tid: number,
+): import('./trace-events.types').TraceEvent[] {
+  switch (event.entryType) {
+    case 'mark':
+      return [markToTraceEvent(event, { pid, tid })];
+    case 'measure':
+      return measureToTraceEvents(event, { pid, tid });
+    default:
+      return [];
   }
 }

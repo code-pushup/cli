@@ -1,10 +1,4 @@
-import {
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  statSync,
-  writeFileSync,
-} from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
@@ -108,8 +102,6 @@ export interface OutputFormat<I = unknown> {
   encode(event: I, opt?: Record<string, unknown>): string[];
 
   epilogue(opt?: Record<string, unknown>): string[];
-
-  finalize?(): void;
 }
 
 export type ProfilingEvent =
@@ -122,16 +114,14 @@ export class DevToolsOutputFormat implements OutputFormat<ProfilingEvent> {
   readonly id = 'devtools';
   readonly fileExt = 'jsonl';
   readonly filePath: string;
-  readonly includeStackTraces: boolean;
 
   #nextId2 = (() => {
     let counter = 1;
     return () => ({ local: `0x${counter++}` });
   })();
 
-  constructor(filePath: string, options?: { includeStackTraces?: boolean }) {
+  constructor(filePath: string) {
     this.filePath = filePath;
-    this.includeStackTraces = options?.includeStackTraces ?? true;
   }
 
   preamble(opt?: {
@@ -164,25 +154,16 @@ export class DevToolsOutputFormat implements OutputFormat<ProfilingEvent> {
     ];
   }
 
-  encode(
-    event: ProfilingEvent,
-    opt?: { pid: number; tid: number; includeStackTraces?: boolean },
-  ): string[] {
+  encode(event: ProfilingEvent, opt?: { pid: number; tid: number }): string[] {
     const ctx = {
       pid: opt?.pid ?? process.pid,
       tid: opt?.tid ?? threadId,
       nextId2: this.#nextId2,
     };
 
-    const includeStack = opt?.includeStackTraces ?? this.includeStackTraces;
-
     switch (event.entryType) {
       case 'mark':
-        return [
-          JSON.stringify(
-            markToTraceEvent(event, { ...ctx, includeStack: includeStack }),
-          ),
-        ];
+        return [JSON.stringify(markToTraceEvent(event, ctx))];
       case 'measure':
         return measureToTraceEvents(event, ctx).map(event =>
           JSON.stringify(event),
@@ -206,60 +187,12 @@ export class DevToolsOutputFormat implements OutputFormat<ProfilingEvent> {
       ),
     ];
   }
-
-  finalize(): void {
-    try {
-      // Ensure directory exists
-      const dir = path.dirname(this.filePath);
-      if (!existsSync(dir)) {
-        mkdirSync(dir, { recursive: true });
-      }
-
-      // Read existing JSONL content from the .jsonl file
-      const jsonlFilePath = getJsonlPath(this.filePath);
-      let jsonlContent = '';
-      if (existsSync(jsonlFilePath)) {
-        jsonlContent = readFileSync(jsonlFilePath, 'utf8');
-      }
-
-      // Append epilogue events to the JSONL content
-      const epilogueEvents = this.epilogue();
-      if (epilogueEvents.length > 0) {
-        jsonlContent += '\n' + epilogueEvents.join('\n');
-      }
-
-      // Transform JSONL to JSON array format
-      const lines = jsonlContent
-        .split('\n')
-        .filter((line: string) => line.trim());
-      const traceEventsContent =
-        lines.length > 0
-          ? lines
-              .map((line: string, index: number) =>
-                index < lines.length - 1 ? `      ${line},` : `      ${line}`,
-              )
-              .join('\n')
-          : '';
-
-      // Write complete JSON structure
-      const jsonOutput = `{
-    "metadata": {
-      "dataOrigin": "TraceEvents",
-      "hardwareConcurrency": 1,
-      "source": "DevTools",
-      "startTime": "mocked-timestamp"
-    },
-    "traceEvents": [
-${traceEventsContent}
-    ]
-}`;
-
-      writeFileSync(this.filePath, jsonOutput, 'utf8');
-    } catch (error) {
-      throw new Error(`Failed to wrap trace JSON file: ${error}`);
-    }
-  }
 }
+
+const nextId2 = (() => {
+  let counter = 1;
+  return () => ({ local: `0x${counter++}` });
+})();
 
 /**
  * Helper for MEASURE entries
@@ -269,7 +202,7 @@ ${traceEventsContent}
  */
 export function measureToTraceEvents(
   entry: PerformanceMeasure,
-  options: { pid: number; tid: number; nextId2: () => { local: string } },
+  options: { pid: number; tid: number },
 ): TraceEvent[] {
   return getTimingEventSpan({ entry, ...options });
 }
@@ -284,13 +217,12 @@ export function markToTraceEvent(
   options: {
     pid: number;
     tid: number;
-    nextId2?: () => { local: string };
-    includeStack?: boolean;
   },
 ): TraceEvent {
   return getTimingEventInstant({
     entry,
     name: entry.name,
+    nextId2,
     ...options,
   });
 }
@@ -316,7 +248,7 @@ ${traceEventsContent}
  * Provides file output functionality with trace-specific features like recovery.
  */
 type TraceFileEvent =
-  | ProfilingEvent
+  | TraceEvent
   | {
       type: 'fatal';
       pid: number;
@@ -348,11 +280,6 @@ export interface TraceFile {
    * Attempts to complete partial writes and convert to final format.
    */
   recover(): void;
-
-  /**
-   * Check if the file appears to be complete and valid.
-   */
-  isComplete(): boolean;
 }
 
 /**
@@ -365,7 +292,6 @@ export function createTraceFile(opts: {
   lineOutputExtension?: string;
   fileOutputExtension?: string;
   flushEveryN?: number;
-  includeStackTraces?: boolean;
 }): TraceFile {
   const directory = opts.directory || '';
   const lineOutputExtension = opts.lineOutputExtension || '.jsonl';
@@ -380,9 +306,7 @@ export function createTraceFile(opts: {
     mkdirSync(dir, { recursive: true });
   }
 
-  const outputFormat = new DevToolsOutputFormat(filePath, {
-    includeStackTraces: opts.includeStackTraces,
-  });
+  const outputFormat = new DevToolsOutputFormat(filePath);
 
   let preambleWritten = false;
   let closed = false;
@@ -401,21 +325,7 @@ export function createTraceFile(opts: {
     parse: (line: string) => JSON.parse(line), // Parse JSON lines for recovery
     encode: (obj: TraceFileEvent | string) => {
       if (typeof obj === 'string') return obj;
-
-      // Check if this is a profiling event (mark or measure)
-      if (
-        'entryType' in obj &&
-        (obj.entryType === 'mark' || obj.entryType === 'measure')
-      ) {
-        return outputFormat.encode(obj as ProfilingEvent, {
-          pid: process.pid,
-          tid: threadId,
-          includeStackTraces: opts.includeStackTraces,
-        });
-      }
-
-      // For fatal/error events, encode as JSON directly
-      return JSON.stringify(obj);
+      return [JSON.stringify(obj)];
     },
   });
 
@@ -431,7 +341,12 @@ export function createTraceFile(opts: {
     writeImmediate(obj: TraceFileEvent): void {
       if (closed) return;
       ensurePreambleWritten();
-      lineOutput.writeImmediate(obj);
+      lineOutput.writeLineImmediate(obj);
+    },
+
+    flush(): void {
+      if (closed) return;
+      lineOutput.flush();
     },
 
     close(): void {
@@ -483,24 +398,26 @@ export function createTraceFile(opts: {
           return;
         }
 
-        const earliestTs = 0;
-        const latestTs = 0;
-
-        // Determine prolog timestamp
-        let prologTs = Math.max(0, earliestTs - 20);
-
-        // If jsonl file exists and was created after first entry, use first entry time
-        if (existsSync(jsonlPath)) {
-          try {
-            const jsonlStats = statSync(jsonlPath);
-            const jsonlCreationTime = jsonlStats.birthtime.getTime() * 1000; // Convert to microseconds
-            if (jsonlCreationTime > earliestTs) {
-              prologTs = earliestTs;
+        // Parse events to find earliest and latest timestamps
+        const events = validJsonl
+          .trim()
+          .split('\n')
+          .map(line => {
+            try {
+              return JSON.parse(line);
+            } catch {
+              return null;
             }
-          } catch {
-            // If we can't get file stats, fall back to default logic
-          }
-        }
+          })
+          .filter(event => event && typeof event.ts === 'number');
+
+        const earliestTs =
+          events.length > 0 ? Math.min(...events.map(e => e.ts)) : 0;
+        const latestTs =
+          events.length > 0 ? Math.max(...events.map(e => e.ts)) : 0;
+
+        // Determine prolog timestamp (20ms before first blink event)
+        const prologTs = Math.max(0, earliestTs - 20);
 
         const prologEvents = outputFormat.preamble({
           pid: process.pid,
@@ -580,29 +497,6 @@ export function createTraceFile(opts: {
           `Failed to recover trace file "${filePath}"`,
           error as Error,
         );
-      }
-    },
-
-    isComplete(): boolean {
-      if (!existsSync(filePath)) return false;
-
-      try {
-        const content = readFileSync(filePath, 'utf8');
-        const parsed = JSON.parse(content);
-
-        // Check basic structure
-        if (!parsed.metadata || !Array.isArray(parsed.traceEvents)) {
-          return false;
-        }
-
-        // Check for epilogue events (RunTask events)
-        const hasEpilogue = parsed.traceEvents.some(
-          (event: any) => event.name === 'RunTask',
-        );
-
-        return hasEpilogue;
-      } catch {
-        return false;
       }
     },
   };

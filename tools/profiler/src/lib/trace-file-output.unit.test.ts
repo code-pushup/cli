@@ -143,18 +143,20 @@ describe('DevToolsOutputFormat', () => {
       const events = format.encode(markEvent);
 
       expect(events).toHaveLength(1);
-      expect(JSON.parse(events[0]!)).toEqual({
-        cat: 'blink.user_timing',
-        name: 'test-mark',
-        ph: 'b',
-        pid: 123,
-        tid: 42,
-        ts: 500000, // startTime * 1000
-        id2: { local: '0x1' },
-        args: {
+      const parsed = JSON.parse(events[0]!);
+      expect(parsed.cat).toBe('blink.user_timing');
+      expect(parsed.name).toBe('test-mark');
+      expect(parsed.ph).toBe('I');
+      expect(parsed.s).toBe('t');
+      expect(parsed.pid).toBe(123);
+      expect(parsed.tid).toBe(42);
+      expect(parsed.args).toEqual({
+        data: {
           detail: '{"custom":"data"}',
+          startTime: 500,
         },
       });
+      expect(typeof parsed.ts).toBe('number');
     });
 
     it('should encode measure events', () => {
@@ -240,16 +242,19 @@ describe('DevToolsOutputFormat', () => {
       const events = format.encode(markEvent);
 
       expect(events).toHaveLength(1);
-      expect(JSON.parse(events[0]!)).toEqual({
-        cat: 'blink.user_timing',
-        name: 'test-mark-undefined',
-        ph: 'b',
-        pid: 123,
-        tid: 42,
-        ts: 600000,
-        id2: { local: '0x1' },
-        args: {},
+      const parsed = JSON.parse(events[0]!);
+      expect(parsed.cat).toBe('blink.user_timing');
+      expect(parsed.name).toBe('test-mark-undefined');
+      expect(parsed.ph).toBe('I');
+      expect(parsed.s).toBe('t');
+      expect(parsed.pid).toBe(123);
+      expect(parsed.tid).toBe(42);
+      expect(parsed.args).toEqual({
+        data: {
+          startTime: 600,
+        },
       });
+      expect(typeof parsed.ts).toBe('number');
     });
 
     it('should encode mark events without detail property', () => {
@@ -263,16 +268,19 @@ describe('DevToolsOutputFormat', () => {
       const events = format.encode(markEvent);
 
       expect(events).toHaveLength(1);
-      expect(JSON.parse(events[0]!)).toEqual({
-        cat: 'blink.user_timing',
-        name: 'test-mark-no-detail',
-        ph: 'b',
-        pid: 123,
-        tid: 42,
-        ts: 700000,
-        id2: { local: '0x1' },
-        args: {},
+      const parsed = JSON.parse(events[0]!);
+      expect(parsed.cat).toBe('blink.user_timing');
+      expect(parsed.name).toBe('test-mark-no-detail');
+      expect(parsed.ph).toBe('I');
+      expect(parsed.s).toBe('t');
+      expect(parsed.pid).toBe(123);
+      expect(parsed.tid).toBe(42);
+      expect(parsed.args).toEqual({
+        data: {
+          startTime: 700,
+        },
       });
+      expect(typeof parsed.ts).toBe('number');
     });
 
     it('should encode mark events with null detail', () => {
@@ -289,7 +297,9 @@ describe('DevToolsOutputFormat', () => {
       expect(events).toHaveLength(1);
       const parsed = JSON.parse(events[0]!);
       expect(parsed.args).toEqual({
-        detail: 'null',
+        data: {
+          startTime: 800,
+        },
       });
     });
 
@@ -305,18 +315,20 @@ describe('DevToolsOutputFormat', () => {
       const events = format.encode(markEvent);
 
       expect(events).toHaveLength(1);
-      expect(JSON.parse(events[0]!)).toEqual({
-        cat: 'blink.user_timing',
-        name: 'test-mark-empty',
-        ph: 'b',
-        pid: 123,
-        tid: 42,
-        ts: 900000,
-        id2: { local: '0x1' },
-        args: {
+      const parsed = JSON.parse(events[0]!);
+      expect(parsed.cat).toBe('blink.user_timing');
+      expect(parsed.name).toBe('test-mark-empty');
+      expect(parsed.ph).toBe('I');
+      expect(parsed.s).toBe('t');
+      expect(parsed.pid).toBe(123);
+      expect(parsed.tid).toBe(42);
+      expect(parsed.args).toEqual({
+        data: {
           detail: '{}',
+          startTime: 900,
         },
       });
+      expect(typeof parsed.ts).toBe('number');
     });
 
     it('should encode mark events with ExtensionMarkerPayload', () => {
@@ -343,10 +355,12 @@ describe('DevToolsOutputFormat', () => {
       const parsed = JSON.parse(events[0]!);
       expect(parsed.cat).toBe('blink.user_timing');
       expect(parsed.name).toBe('test-mark-extension');
-      expect(parsed.ph).toBe('b');
-      expect(parsed.args.detail).toBe(
+      expect(parsed.ph).toBe('I');
+      expect(parsed.s).toBe('t');
+      expect(parsed.args.data.detail).toBe(
         JSON.stringify({ devtools: markerPayload }),
       );
+      expect(parsed.args.data.startTime).toBe(1000);
     });
 
     it('should encode measure events with undefined detail', () => {
@@ -543,203 +557,6 @@ describe('DevToolsOutputFormat', () => {
     });
   });
 
-  describe('finalize', () => {
-    let tempDir: string;
-
-    beforeEach(() => {
-      tempDir = tmpdir();
-    });
-
-    it('should wrap JSONL content into JSON format', async () => {
-      const filePath = path.join(tempDir, 'trace.jsonl');
-      const jsonlContent = '{"event": "test1"}\n{"event": "test2"}\n';
-
-      // Ensure directory exists
-      mkdirSync(tempDir, { recursive: true });
-      // Create initial JSONL file
-      writeFileSync(filePath, jsonlContent);
-
-      const testFormat = new DevToolsOutputFormat(filePath);
-      await testFormat.finalize();
-
-      const result = readFileSync(filePath, 'utf8');
-      // Verify it contains the metadata structure
-      expect(result).toContain('"metadata"');
-      expect(result).toContain('"traceEvents"');
-      expect(result).toContain('"dataOrigin": "TraceEvents"');
-    });
-
-    it('should handle empty file gracefully', async () => {
-      const filePath = path.join(tempDir, 'empty.jsonl');
-
-      // Ensure directory exists
-      mkdirSync(tempDir, { recursive: true });
-      // Create empty file
-      writeFileSync(filePath, '');
-
-      const testFormat = new DevToolsOutputFormat(filePath);
-      await expect(testFormat.finalize()).resolves.not.toThrow();
-
-      const result = readFileSync(filePath, 'utf8');
-      expect(result).toContain('"traceEvents": [');
-    });
-
-    it('should handle non-existent files by creating them with proper structure', async () => {
-      // Test with non-existent file - finalize should create it with proper JSON structure
-      const filePath = path.join(tempDir, 'non-existent-file.jsonl');
-      const testFormat = new DevToolsOutputFormat(filePath);
-
-      await expect(testFormat.finalize()).resolves.not.toThrow();
-
-      const result = readFileSync(filePath, 'utf8');
-      expect(result).toContain('"metadata"');
-      expect(result).toContain('"traceEvents"');
-      expect(result).toContain('\n    ]\n}');
-      // For empty file, traceEvents should be empty array
-      expect(result).toMatch(/"traceEvents": \[\s*\]/);
-    });
-
-    it('should handle files with invalid content gracefully', async () => {
-      // Test with file containing invalid content that might cause transform errors
-      const filePath = path.join(tempDir, 'invalid-content.jsonl');
-
-      // Ensure directory exists
-      mkdirSync(tempDir, { recursive: true });
-      // Create file with content that might cause issues
-      writeFileSync(filePath, 'invalid json content\n');
-
-      const testFormat = new DevToolsOutputFormat(filePath);
-      await expect(testFormat.finalize()).resolves.not.toThrow();
-
-      const result = readFileSync(filePath, 'utf8');
-      expect(result).toContain('"traceEvents"');
-    });
-
-    it('should handle transform stream with empty chunks', async () => {
-      const filePath = path.join(tempDir, 'empty-chunks.jsonl');
-      // Ensure directory exists
-      mkdirSync(tempDir, { recursive: true });
-      // Create file with content that will result in empty chunks after filtering
-      writeFileSync(filePath, '\n\n\n');
-
-      const testFormat = new DevToolsOutputFormat(filePath);
-      await testFormat.finalize();
-
-      const result = readFileSync(filePath, 'utf8');
-      expect(result).toContain('"traceEvents": [');
-    });
-
-    it('should handle transform stream with multiple chunks', async () => {
-      const filePath = path.join(tempDir, 'multi-chunk.jsonl');
-      const jsonlContent =
-        '{"event": "chunk1"}\n{"event": "chunk2"}\n{"event": "chunk3"}\n';
-
-      // Ensure directory exists
-      mkdirSync(tempDir, { recursive: true });
-      writeFileSync(filePath, jsonlContent);
-
-      const testFormat = new DevToolsOutputFormat(filePath);
-      await testFormat.finalize();
-
-      const result = readFileSync(filePath, 'utf8');
-      // Verify the JSON structure is created
-      expect(result).toContain('"traceEvents"');
-      expect(result).toContain('"metadata"');
-    });
-
-    it('should handle transform stream with single line content', async () => {
-      const filePath = path.join(tempDir, 'single-line.jsonl');
-      const jsonlContent = '{"event": "single"}\n';
-
-      mkdirSync(tempDir, { recursive: true });
-      writeFileSync(filePath, jsonlContent);
-
-      const testFormat = new DevToolsOutputFormat(filePath);
-      await testFormat.finalize();
-
-      const result = readFileSync(filePath, 'utf8');
-      expect(result).toContain('"traceEvents"');
-      expect(result).toContain('{"event": "single"}');
-    });
-
-    it('should handle transform stream with content ending without newline', async () => {
-      const filePath = path.join(tempDir, 'no-trailing-newline.jsonl');
-      const jsonlContent = '{"event": "test1"}\n{"event": "test2"}';
-
-      mkdirSync(tempDir, { recursive: true });
-      writeFileSync(filePath, jsonlContent);
-
-      const testFormat = new DevToolsOutputFormat(filePath);
-      await testFormat.finalize();
-
-      const result = readFileSync(filePath, 'utf8');
-      expect(result).toContain('"traceEvents"');
-      expect(result).toContain('{"event": "test1"}');
-      expect(result).toContain('{"event": "test2"}');
-    });
-
-    it('should handle transform stream with mixed empty and non-empty lines', async () => {
-      const filePath = path.join(tempDir, 'mixed-lines.jsonl');
-      const jsonlContent =
-        '{"event": "test1"}\n\n{"event": "test2"}\n\n\n{"event": "test3"}\n';
-
-      mkdirSync(tempDir, { recursive: true });
-      writeFileSync(filePath, jsonlContent);
-
-      const testFormat = new DevToolsOutputFormat(filePath);
-      await testFormat.finalize();
-
-      const result = readFileSync(filePath, 'utf8');
-      expect(result).toContain('"traceEvents"');
-      // Empty lines should be filtered out
-      expect(result.match(/"event": "test\d"/g)).toHaveLength(3);
-    });
-
-    it('should throw error when readFileSync fails', async () => {
-      const filePath = path.join(tempDir, 'read-error.jsonl');
-      mkdirSync(tempDir, { recursive: true });
-      writeFileSync(filePath, '{"event": "test"}\n');
-
-      // Import the module to spy on
-      const fs = await import('node:fs');
-      // Mock readFileSync to throw an error
-      const readFileSyncSpy = vi
-        .spyOn(fs, 'readFileSync')
-        .mockImplementation(() => {
-          throw new Error('Read file error');
-        });
-
-      const testFormat = new DevToolsOutputFormat(filePath);
-      await expect(testFormat.finalize()).rejects.toThrow(
-        `Failed to wrap trace JSON file: ${filePath}`,
-      );
-
-      readFileSyncSpy.mockRestore();
-    });
-
-    it('should throw error when writeFileSync fails', async () => {
-      const filePath = path.join(tempDir, 'write-error.jsonl');
-      mkdirSync(tempDir, { recursive: true });
-      writeFileSync(filePath, '{"event": "test"}\n');
-
-      // Import the module to spy on
-      const fs = await import('node:fs');
-      // Mock writeFileSync to throw an error
-      const writeFileSyncSpy = vi
-        .spyOn(fs, 'writeFileSync')
-        .mockImplementation(() => {
-          throw new Error('Write file error');
-        });
-
-      const testFormat = new DevToolsOutputFormat(filePath);
-      await expect(testFormat.finalize()).rejects.toThrow(
-        `Failed to wrap trace JSON file: ${filePath}`,
-      );
-
-      writeFileSyncSpy.mockRestore();
-    });
-  });
-
   describe('interface compliance', () => {
     it('should implement OutputFormat interface', () => {
       const outputFormat: OutputFormat = new DevToolsOutputFormat(
@@ -755,7 +572,6 @@ describe('DevToolsOutputFormat', () => {
         ),
       ).toBe(true);
       expect(Array.isArray(outputFormat.epilogue())).toBe(true);
-      expect(typeof outputFormat.finalize).toBe('function');
     });
 
     it('should have fileExt property', () => {

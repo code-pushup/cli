@@ -10,14 +10,12 @@ export type TraceEvent = {
   dur?: number;
   id2?: { local: string };
   args?: Record<string, unknown>;
-  stack?: string;
 };
 
 // Specific event types for better type safety
 export interface InstantEvent extends TraceEvent {
   ph: 'I' | 'i'; // Instant events
   s: 't'; // Timeline scope
-  tts: number; // Thread timestamp required for instant events
   dur?: never; // No duration for instant events
 }
 
