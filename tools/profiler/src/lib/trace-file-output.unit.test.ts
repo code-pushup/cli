@@ -8,7 +8,7 @@ import {
   type ExtensionTrackEntryPayload,
   type OutputFormat,
   type ProfilingEvent,
-} from './output-format.js';
+} from './trace-file-output.js';
 
 // Mock process.pid and threadId
 vi.mock('node:worker_threads', () => ({

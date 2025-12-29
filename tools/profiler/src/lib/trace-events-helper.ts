@@ -1,23 +1,14 @@
 import { performance } from 'node:perf_hooks';
+import type {
+  CompleteEvent,
+  InstantEvent,
+  SpanEvent,
+  TraceEvent,
+} from './trace-events.types';
 import {
   type ExtendedPerformanceMark,
   type ExtendedPerformanceMeasure,
-} from './output-format';
-
-export type TraceEvent = {
-  cat: string;
-  name: string;
-  s?: string;
-  ph: string;
-  pid: number;
-  tid: number;
-  ts: number;
-  tts?: number;
-  dur?: number;
-  id2?: { local: string };
-  args?: Record<string, unknown>;
-  stack?: string;
-};
+} from './trace-file-output';
 
 export function getTimingEventInstant(options: {
   entry?: PerformanceMark;
@@ -29,7 +20,7 @@ export function getTimingEventInstant(options: {
   tid: number;
   nextId2?: () => { local: string }; // Optional since not used for instant events
   includeStack?: boolean;
-}): TraceEvent {
+}): InstantEvent {
   // {"args":{"data":{"callTime":37300251007,"detail":"{\"name\":\"invoke-has-pre-registration-flag\",\"componentName\":\"messaging\",\"spanId\":3168785428,\"traceId\":613107129,\"error\":false}","navigationId":"234F7482B1E9D4B1EEA32305D6FBF815","sampleTraceId":8589113407370704,"startTime":229}},"cat":"blink.user_timing","name":"start-invoke-has-pre-registration-flag","ph":"I","pid":31825,"s":"t","tid":1197643,"ts":37300250992,"tts":179196},
   const { pid, tid, nextId2, entry, name, ts, detail, includeStack } = options;
 
@@ -50,7 +41,7 @@ export function getTimingEventInstant(options: {
       ? Object.assign({}, entry?.detail, detail)
       : undefined;
 
-  const traceEvent: TraceEvent = {
+  const traceEvent: InstantEvent = {
     cat: 'blink.user_timing',
     name: name,
     ph: 'I', // Uppercase I for instant events in Chrome DevTools format
@@ -83,7 +74,7 @@ export function getTimingEventSpan(options: {
   pid: number;
   tid: number;
   nextId2: () => { local: string };
-}): TraceEvent[] {
+}): [SpanEvent, SpanEvent] {
   const { pid, tid, nextId2, entry, name: explicitName, detail } = options;
 
   const eventName = explicitName ?? entry.name;
@@ -101,7 +92,7 @@ export function getTimingEventSpan(options: {
 
   const id2 = nextId2();
 
-  const begin: TraceEvent = {
+  const begin: SpanEvent = {
     cat: 'blink.user_timing',
     name: eventName,
     ph: 'b',
@@ -112,7 +103,7 @@ export function getTimingEventSpan(options: {
     args: mergedDetail ? { detail: JSON.stringify(mergedDetail) } : {},
   };
 
-  const end: TraceEvent = {
+  const end: SpanEvent = {
     cat: 'blink.user_timing',
     name: eventName,
     ph: 'e',
@@ -141,7 +132,7 @@ export function getStartTracing(
     traceStartTs: number;
     url: string;
   },
-): TraceEvent {
+): InstantEvent {
   const { traceStartTs, url } = opt;
   const frameTreeNodeId = getFrameTreeNodeId(pid, tid);
   return {
@@ -152,6 +143,7 @@ export function getStartTracing(
     tid,
     ts: traceStartTs,
     s: 't',
+    tts: traceStartTs, // Thread timestamp for instant event
     args: {
       data: {
         frameTreeNodeId,
@@ -168,7 +160,7 @@ export function getStartTracing(
         persistentIds: true,
       },
     },
-  };
+  } as InstantEvent;
 }
 
 export function getRunTaskTraceEvent(
@@ -178,7 +170,7 @@ export function getRunTaskTraceEvent(
     ts: number;
     dur: number;
   },
-): TraceEvent {
+): CompleteEvent {
   const { ts, dur } = opt;
   return {
     args: {},
@@ -189,7 +181,7 @@ export function getRunTaskTraceEvent(
     pid,
     tid,
     ts,
-  };
+  } as CompleteEvent;
 }
 
 /**
