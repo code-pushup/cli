@@ -28,7 +28,7 @@ export function createRunnerFunction(
           gitRoot,
         );
       },
-      { detail: profiler.spans.plugins(PLUGIN_SLUG)() },
+      { detail: profiler.spans.plugin(PLUGIN_SLUG)() },
     );
   };
 }

@@ -79,6 +79,6 @@ export async function eslintPlugin(
       };
       return r as any;
     },
-    { detail: profiler.spans.plugins(ESLINT_PLUGIN_SLUG)() },
+    { detail: profiler.spans.plugin(ESLINT_PLUGIN_SLUG)() },
   );
 }

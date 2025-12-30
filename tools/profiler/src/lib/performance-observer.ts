@@ -19,15 +19,28 @@ export function createPerformanceObserver(
 
   const handleEntries = (entries: readonly PerformanceEntry[]) => {
     for (const e of entries) {
-      // we only observe mark/measure anyway, but keep the guard
       if (e.entryType !== 'mark' && e.entryType !== 'measure') continue;
-
+      console.log('writing event', e.name, e.entryType);
       writeEvent(e as ProfilingEvent);
 
-      // Clear *only* the processed measure by name (avoid global clears)
-      if (e.entryType === 'measure') performance.clearMeasures(e.name);
+      // Clear the processed entries
+      // if (e.entryType === 'mark') performance.clearMarks(e.name);
+      //  if (e.entryType === 'measure') performance.clearMeasures(e.name);
     }
   };
+
+  const flush = () => {
+    const entries = [
+      ...performance.getEntriesByType('mark'),
+      ...performance.getEntriesByType('measure'),
+    ];
+    handleEntries(entries);
+  };
+
+  // initially flush all buffered entries
+  if (captureBuffered) {
+    flush();
+  }
 
   let observer: PerformanceObserver | undefined = new PerformanceObserver(
     list => handleEntries(list.getEntries()),
@@ -39,14 +52,7 @@ export function createPerformanceObserver(
   });
 
   return {
-    flush: () => {
-      if (!observer) return;
-      // defensive: drain anything still sitting in the timeline
-      handleEntries([
-        ...performance.getEntriesByType('mark'),
-        ...performance.getEntriesByType('measure'),
-      ]);
-    },
+    flush,
     disconnect: () => {
       observer?.disconnect();
       observer = undefined;

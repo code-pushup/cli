@@ -53,7 +53,7 @@ export function yargsAutorunCommandObject() {
             renderPortalHint();
           }
         },
-        { detail: profiler.spans.cli() },
+        { detail: profiler.tracks.cli() },
       );
     },
   } satisfies CommandModule;

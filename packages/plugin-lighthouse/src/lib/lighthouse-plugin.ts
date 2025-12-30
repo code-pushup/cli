@@ -59,6 +59,6 @@ export function lighthousePlugin(
 
       return result;
     },
-    { detail: profiler.spans.plugins(LIGHTHOUSE_PLUGIN_SLUG)() },
+    { detail: profiler.spans.plugin(LIGHTHOUSE_PLUGIN_SLUG)() },
   );
 }

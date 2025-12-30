@@ -59,6 +59,6 @@ export async function collect(options: CollectOptions): Promise<Report> {
         plugins: pluginOutputs,
       };
     },
-    { detail: profiler.spans.cli() },
+    { detail: profiler.tracks.cli() },
   );
 }

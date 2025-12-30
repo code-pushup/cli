@@ -92,6 +92,6 @@ export async function coveragePlugin(
       };
       return r as any;
     },
-    { detail: profiler.spans.plugins(COVERAGE_PLUGIN_SLUG)() },
+    { detail: profiler.spans.plugin(COVERAGE_PLUGIN_SLUG)() },
   );
 }

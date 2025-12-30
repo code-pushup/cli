@@ -18,27 +18,19 @@ import {
   type PerformanceObserverHandle,
   createPerformanceObserver,
 } from './performance-observer';
-import { timingEventToTraceEvent } from './trace-events-helper';
-import { type TraceFile, createTraceFile } from './trace-file-output';
+import { timingEventToTraceEvent as userTimingEventToTraceEvent } from './trace-events-helper';
+import type { InstantEvent } from './trace-events.types';
 import {
-  ExitHandlerError,
-  getFilenameParts,
-  installExitHandlersOnce,
-} from './utils';
+  type TraceFile,
+  createTraceFile,
+  errorToTraceEvent,
+  markToTraceEvent,
+} from './trace-file-output';
+import { getFilenameParts, installExitHandlersOnce } from './utils';
 
 type MarkOpts = MarkOptions & { detail?: unknown };
 
 type FatalKind = 'uncaughtException' | 'unhandledRejection';
-
-interface FatalError {
-  type: 'fatal';
-  pid: number;
-  tid: number;
-  tsMs: number;
-  kind: FatalKind;
-  error: unknown;
-  details?: { name?: string; message?: string };
-}
 
 const errorDetails = (e: unknown) =>
   e instanceof Error
@@ -97,6 +89,9 @@ export class Profiler<K extends string = never> {
   #outputFileFinal: string;
   #closed = false;
 
+  #measureDetails = new Map<string, any>();
+  #markDetails = new Map<string, any>();
+
   readonly #spansRegistry: DevtoolsSpansRegistry<K | 'main'>;
   readonly #spans: DevtoolsSpanHelpers<DevtoolsSpansRegistry<K | 'main'>>;
 
@@ -130,18 +125,26 @@ export class Profiler<K extends string = never> {
       this.#performanceObserver = createPerformanceObserver({
         captureBuffered: true,
         writeEvent: event => {
-          for (const te of timingEventToTraceEvent(
+          for (const te of userTimingEventToTraceEvent(
             event,
             process.pid,
             threadId,
+            this.#measureDetails,
+            this.#markDetails,
           )) {
             this.#traceFile!.write(te);
           }
         },
       });
+      // initially flush any buffered entries
+      // this.#performanceObserver?.flush()
 
       installExitHandlersOnce({
-        onFatal: (kind, err) => this.#writeFatalError(kind, err),
+        onFatal: (kind, err) => {
+          this.#writeFatalError(err);
+          this.close(); // Ensures the trace file is written before re-throwing
+          throw err; // Re-throw after cleanup
+        },
         onClose: () => this.close(),
       });
     } catch (e) {
@@ -154,9 +157,11 @@ export class Profiler<K extends string = never> {
   get spans() {
     return this.#spans;
   }
+
   get enabled() {
     return this.#enabled;
   }
+
   get filePath() {
     return this.#outputFileFinal;
   }
@@ -174,24 +179,19 @@ export class Profiler<K extends string = never> {
     name: string,
     startMark?: string,
     endMark?: string,
-  ): PerformanceMeasure | undefined;
-  measure(
-    name: string,
-    options: MeasureOptions,
-  ): PerformanceMeasure | undefined;
+  ): PerformanceMeasure;
+  measure(name: string, options: MeasureOptions): PerformanceMeasure;
   measure(
     name: string,
     a?: string | MeasureOptions,
     b?: string,
-  ): PerformanceMeasure | undefined {
-    if (!this.#enabled) return undefined;
+  ): PerformanceMeasure {
     return typeof a === 'string' || a === undefined
-      ? performance.measure(name, a, b)
+      ? performance.measure(name, { start: a, end: b })
       : performance.measure(name, a);
   }
 
   flush(): void {
-    this.#performanceObserver?.flush();
     this.#traceFile?.flush();
   }
 
@@ -227,14 +227,18 @@ export class Profiler<K extends string = never> {
 
     const start = `${name}:start`;
     const end = `${name}:end`;
+
+    // Store measure detail for later retrieval during event processing
+    if (options?.detail) {
+      this.#measureDetails.set(name, options.detail);
+    }
+
     this.#markWithDetail(start, options);
     try {
       return run();
     } finally {
       this.mark(end);
       this.measure(name, start, end);
-      performance.clearMarks(start);
-      performance.clearMarks(end);
     }
   }
 
@@ -242,17 +246,192 @@ export class Profiler<K extends string = never> {
     name: string,
     fn: () => Promise<T>,
     options?: MarkOpts,
+  ): Promise<T>;
+  spanAsync<T>(
+    name: string,
+    fn: () => Promise<T>,
+    options: {
+      onSuccess?: (result: T) => MarkOpts;
+      onError?: (error: unknown) => MarkOpts;
+    },
+  ): Promise<T>;
+  async spanAsync<T>(
+    name: string,
+    fn: () => Promise<T>,
+    options?:
+      | MarkOpts
+      | {
+          onSuccess?: (result: T) => MarkOpts;
+          onError?: (error: unknown) => MarkOpts;
+        },
   ): Promise<T> {
-    return this.#withSpan(name, options, fn);
+    if (!this.#enabled) return fn();
+
+    if (
+      options &&
+      typeof options === 'object' &&
+      ('onSuccess' in options || 'onError' in options)
+    ) {
+      const callbackOpts = options as {
+        onSuccess?: (result: T) => MarkOpts;
+        onError?: (error: unknown) => MarkOpts;
+      };
+
+      const start = `${name}:start`;
+      const end = `${name}:end`;
+
+      this.#markWithDetail(start, undefined);
+      try {
+        const result = await fn();
+        const spanOpts = callbackOpts.onSuccess?.(result);
+        if (spanOpts?.detail) {
+          this.#measureDetails.set(name, spanOpts.detail);
+        }
+        return result;
+      } catch (error) {
+        const spanOpts = callbackOpts.onError?.(error);
+        if (spanOpts?.detail) {
+          this.#measureDetails.set(name, spanOpts.detail);
+        }
+        // Add error marker detail to the end mark for proper error visualization
+        const endMarkName = `${name}:end`;
+        this.#markDetails.set(endMarkName, {
+          devtools: {
+            dataType: 'marker',
+            color: 'error',
+            properties: [
+              ['Error Type', errorDetails(error).name],
+              ['Error Message', errorDetails(error).message],
+            ],
+            tooltipText: `${errorDetails(error).name}: ${errorDetails(error).message}`,
+          },
+        });
+        throw error;
+      } finally {
+        this.mark(end);
+        this.measure(name, start, end);
+      }
+    } else {
+      const start = `${name}:start`;
+      const end = `${name}:end`;
+
+      // Store measure detail for later retrieval during event processing
+      if ((options as MarkOpts)?.detail) {
+        this.#measureDetails.set(name, (options as MarkOpts).detail);
+      }
+
+      this.#markWithDetail(start, options as MarkOpts);
+      try {
+        return await fn();
+      } finally {
+        this.mark(end);
+        this.measure(name, start, end);
+      }
+    }
   }
 
-  span<T>(name: string, fn: () => T, options?: MarkOpts): T {
-    return this.#withSpan(name, options, fn);
+  span<T>(name: string, fn: () => T, options?: MarkOpts): T;
+  span<T>(
+    name: string,
+    fn: () => T,
+    options: {
+      onSuccess?: (result: T) => MarkOpts;
+      onError?: (error: unknown) => MarkOpts;
+    },
+  ): T;
+  span<T>(
+    name: string,
+    fn: () => T,
+    options?:
+      | MarkOpts
+      | {
+          onSuccess?: (result: T) => MarkOpts;
+          onError?: (error: unknown) => MarkOpts;
+        },
+  ): T {
+    if (
+      options &&
+      typeof options === 'object' &&
+      ('onSuccess' in options || 'onError' in options)
+    ) {
+      const callbackOpts = options as {
+        onSuccess?: (result: T) => MarkOpts;
+        onError?: (error: unknown) => MarkOpts;
+      };
+      return this.#withSpan(name, undefined, () => {
+        try {
+          const result = fn();
+          const spanOpts = callbackOpts.onSuccess?.(result);
+          if (spanOpts?.detail) {
+            this.#measureDetails.set(name, spanOpts.detail);
+          }
+          return result;
+        } catch (error) {
+          const spanOpts = callbackOpts.onError?.(error);
+          if (spanOpts?.detail) {
+            this.#measureDetails.set(name, spanOpts.detail);
+          }
+          // Add error marker detail to the end mark for proper error visualization
+          const endMarkName = `${name}:end`;
+          this.#markDetails.set(endMarkName, {
+            devtools: {
+              dataType: 'marker',
+              color: 'error',
+              properties: [
+                ['Error Type', errorDetails(error).name],
+                ['Error Message', errorDetails(error).message],
+              ],
+              tooltipText: `${errorDetails(error).name}: ${errorDetails(error).message}`,
+            },
+          });
+          throw error;
+        }
+      });
+    } else {
+      return this.#withSpan(name, options as MarkOpts, fn);
+    }
   }
 
-  instant(name: string, options?: MarkOpts): void {
-    if (!this.#enabled) return;
-    this.#markWithDetail(name, options);
+  instant(name: string, options?: MarkOpts): void;
+  instant<T>(
+    name: string,
+    fn: () => T,
+    options: {
+      onSuccess?: (result: T) => MarkOpts;
+      onError?: (error: unknown) => MarkOpts;
+    },
+  ): T;
+  instant<T>(
+    name: string,
+    fnOrOptions?: (() => T) | MarkOpts,
+    callbackOpts?: {
+      onSuccess?: (result: T) => MarkOpts;
+      onError?: (error: unknown) => MarkOpts;
+    },
+  ): T | void {
+    if (typeof fnOrOptions === 'function' && callbackOpts) {
+      // Work function with callback options
+      const fn = fnOrOptions;
+      try {
+        const result = fn();
+        const markOpts = callbackOpts.onSuccess?.(result);
+        if (this.#enabled) {
+          this.#markWithDetail(name, markOpts);
+        }
+        return result;
+      } catch (error) {
+        const markOpts = callbackOpts.onError?.(error);
+        if (this.#enabled) {
+          this.#markWithDetail(name, markOpts);
+        }
+        throw error;
+      }
+    } else {
+      // Normal instant case
+      const opts = fnOrOptions as MarkOpts | undefined;
+      if (!this.#enabled) return;
+      this.#markWithDetail(name, opts);
+    }
   }
 
   #markWithDetail(name: string, options?: MarkOpts): void {
@@ -264,22 +443,13 @@ export class Profiler<K extends string = never> {
     );
   }
 
-  #writeFatalError(kind: FatalKind, error: unknown): void {
+  #writeFatalError(error: unknown): void {
     if (this.#closed || !this.#traceFile) return;
 
-    try {
-      const fatal: FatalError = {
-        type: 'fatal',
-        pid: process.pid,
-        tid: threadId,
-        tsMs: performance.now(),
-        kind,
-        error,
-        details: errorDetails(error),
-      };
-      this.#traceFile.write(fatal);
-    } catch (e) {
-      console.warn('Failed to write fatal error to trace file:', e);
-    }
+    const fatal: InstantEvent = errorToTraceEvent(error, {
+      pid: process.pid,
+      tid: threadId,
+    });
+    this.#traceFile.write(fatal);
   }
 }

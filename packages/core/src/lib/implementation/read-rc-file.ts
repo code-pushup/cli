@@ -49,7 +49,7 @@ export async function readRcByPath(
 
       return config;
     },
-    { detail: profiler.spans.cli() },
+    { detail: profiler.tracks.cli() },
   );
 }
 
@@ -125,6 +125,6 @@ export async function autoloadRc(tsconfig?: string): Promise<CoreConfig> {
 
       return config;
     },
-    { detail: profiler.spans.cli() },
+    { detail: profiler.tracks.cli() },
   );
 }

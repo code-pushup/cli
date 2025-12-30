@@ -57,6 +57,6 @@ export function jsDocsPlugin(config: JsDocsPluginConfig): PluginConfig {
 
       return result;
     },
-    { detail: profiler.spans.plugins(PLUGIN_SLUG)() },
+    { detail: profiler.tracks.plugin(PLUGIN_SLUG)() },
   );
 }

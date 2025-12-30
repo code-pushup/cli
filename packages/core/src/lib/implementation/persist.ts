@@ -66,7 +66,7 @@ export async function persistReport(
         ),
       );
     },
-    { detail: profiler.spans.cli() },
+    { detail: profiler.tracks.cli() },
   );
 }
 

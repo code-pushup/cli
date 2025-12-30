@@ -71,7 +71,7 @@ export function createRunnerFunction(options: {
             },
         );
       },
-      { detail: profiler.spans.plugins(ESLINT_PLUGIN_SLUG)() },
+      { detail: profiler.spans.plugin(ESLINT_PLUGIN_SLUG)() },
     );
   };
 }

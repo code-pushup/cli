@@ -84,7 +84,7 @@ export async function coreConfigMiddleware<
 
       return result;
     },
-    { detail: profiler.spans.cli() },
+    { detail: profiler.tracks.cli() },
   );
 }
 

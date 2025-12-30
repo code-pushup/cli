@@ -52,6 +52,6 @@ export async function upload(options: UploadOptions) {
         return `Uploaded report to Portal`;
       });
     },
-    { detail: profiler.spans.cli() },
+    { detail: profiler.tracks.cli() },
   );
 }

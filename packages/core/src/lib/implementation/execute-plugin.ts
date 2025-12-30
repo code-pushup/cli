@@ -136,6 +136,6 @@ export function executePlugins(config: {
         });
       });
     },
-    { detail: profiler.spans.cli() },
+    { detail: profiler.tracks.cli() },
   );
 }

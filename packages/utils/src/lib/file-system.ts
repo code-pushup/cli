@@ -72,7 +72,7 @@ export async function importModule<T = unknown>(options: Options): Promise<T> {
       }
       return mod as T;
     },
-    { detail: profiler.spans.cli() },
+    { detail: profiler.tracks.cli() },
   );
 }
 
@@ -133,7 +133,7 @@ export async function crawlFileSystem<T = string>(
       const resultsNestedArray = await Promise.all(promises);
       return resultsNestedArray.flat() as T[];
     },
-    { detail: profiler.spans.cli() },
+    { detail: profiler.tracks.cli() },
   );
 }
 

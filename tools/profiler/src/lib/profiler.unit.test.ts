@@ -81,10 +81,10 @@ describe('getProfiler', () => {
       '/custom/dir/custom-marker.2024-01-01T12-00-00.json',
     );
     expect(profiler.enabled).toBeTruthy();
-    expect(typeof profiler.spans.custom).toBe('function');
-    expect(typeof profiler.spans.main).toBe('function');
+    expect(typeof profiler.tracks.custom).toBe('function');
+    expect(typeof profiler.tracks.main).toBe('function');
 
-    expect(profiler.spans.custom()).toEqual({
+    expect(profiler.tracks.custom()).toEqual({
       devtools: {
         dataType: 'track-entry',
         track: 'Custom',
@@ -93,7 +93,7 @@ describe('getProfiler', () => {
       },
     });
 
-    expect(profiler.spans.main()).toEqual({
+    expect(profiler.tracks.main()).toEqual({
       devtools: {
         dataType: 'track-entry',
         track: 'CLI',
@@ -364,6 +364,90 @@ describe('getProfiler', () => {
       profiler.instant('test-instant');
 
       expect(profiler.mark).toBeDefined();
+    });
+  });
+
+  describe('prefixMarks option', () => {
+    it('should NOT prefix marks when prefixMarks is not set', () => {
+      const profiler = getProfiler();
+      const mark = profiler.mark('test-mark');
+
+      expect(mark?.name).toBe('test-mark');
+    });
+
+    it('should prefix marks with custom prefix when prefixMarks is set', () => {
+      const profiler = getProfiler({ prefixMarks: 'cp:' });
+      const mark = profiler.mark('test-mark');
+
+      expect(mark?.name).toBe('cp:test-mark');
+    });
+
+    it('should prefix measures with custom prefix when prefixMarks is set', () => {
+      const profiler = getProfiler({ prefixMarks: 'custom:' });
+      profiler.mark('start-mark');
+      const measure = profiler.measure('test-measure', 'custom:start-mark');
+
+      expect(measure?.name).toBe('custom:test-measure');
+    });
+
+    it('should prefix marks and measures created by span methods', () => {
+      const mockMark = vi.fn(name => ({
+        name,
+        entryType: 'mark' as const,
+        startTime: 100,
+        duration: 0,
+      }));
+      const mockMeasure = vi.fn(name => ({
+        name,
+        entryType: 'measure' as const,
+        startTime: 100,
+        duration: 50,
+      }));
+      const mockClearMarks = vi.fn();
+
+      // Mock performance methods
+      vi.spyOn(performance, 'mark').mockImplementation(mockMark);
+      vi.spyOn(performance, 'measure').mockImplementation(mockMeasure);
+      vi.spyOn(performance, 'clearMarks').mockImplementation(mockClearMarks);
+
+      const profiler = getProfiler({ prefixMarks: 'prefix:' });
+
+      profiler.span('test-span', () => {
+        // This should create marks: prefix:test-span:start and prefix:test-span:end
+        // And measure: prefix:test-span
+      });
+
+      // Verify that performance.mark was called with prefixed names
+      expect(mockMark).toHaveBeenCalledWith(
+        'prefix:test-span:start',
+        undefined,
+      );
+      expect(mockMark).toHaveBeenCalledWith('prefix:test-span:end', undefined);
+
+      // Verify that performance.measure was called with prefixed name
+      expect(mockMeasure).toHaveBeenCalledWith(
+        'prefix:test-span',
+        'prefix:test-span:start',
+        'prefix:test-span:end',
+      );
+
+      // Verify that clearMarks was called with prefixed names
+      expect(mockClearMarks).toHaveBeenCalledWith('prefix:test-span:start');
+      expect(mockClearMarks).toHaveBeenCalledWith('prefix:test-span:end');
+    });
+
+    it('should prefix instant marks with custom prefix when prefixMarks is set', () => {
+      const mockMark = vi.fn();
+      vi.spyOn(performance, 'mark').mockImplementation(mockMark);
+
+      const profiler = getProfiler({ prefixMarks: 'my-prefix:' });
+
+      profiler.instant('test-instant');
+
+      expect(mockMark).toHaveBeenCalledWith(
+        'my-prefix:test-instant',
+        undefined,
+      );
     });
   });
 });

@@ -46,7 +46,7 @@ export async function collectAndPersistReports(
         await profiler.span(
           'persistLogit',
           () => logPersistedReport(reportFiles),
-          { detail: profiler.spans.cli() },
+          { detail: profiler.tracks.cli() },
         );
       }
 
@@ -57,6 +57,6 @@ export async function collectAndPersistReports(
       logger.newline();
       logger.newline();
     },
-    { detail: profiler.spans.cli() },
+    { detail: profiler.tracks.cli() },
   );
 }

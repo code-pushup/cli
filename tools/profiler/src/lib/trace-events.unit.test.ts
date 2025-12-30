@@ -16,6 +16,7 @@ vi.mock('node:perf_hooks', async () => {
     performance: {
       ...actual.performance,
       timeOrigin: 1766930000000, // Set to match timeOriginBase for effectiveTimeOrigin = 0
+      getEntriesByName: vi.fn(() => []),
     },
   };
 });
@@ -201,6 +202,7 @@ describe('markToTraceEvent', () => {
       pid: 1,
       tid: 2,
       ts: 300000,
+      id: '1-test-mark',
       id2: { local: '42' },
       args: { data: { startTime: 300 } },
     });
@@ -231,6 +233,7 @@ describe('markToTraceEvent', () => {
       pid: 5,
       tid: 6,
       ts: 400000,
+      id: '2-test-mark-detail',
       id2: { local: '0x1' },
       args: {
         data: {

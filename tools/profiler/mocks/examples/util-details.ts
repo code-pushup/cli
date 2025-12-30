@@ -73,10 +73,7 @@ async function runTest() {
     },
   });
 
-  console.log('=== DEVTOOLS DETAILS EXAMPLES ===\n');
-
   // Example 1: Basic Links (id/parentId) - API → Database Chain
-  console.log('1. Basic Links (id/parentId) - API → Database Chain');
   console.log(
     '   Shows hierarchical relationships - links auto-highlight on hover',
   );
@@ -142,7 +139,6 @@ async function runTest() {
   console.log(
     '2. Flow Arrows (flowIn/flowOut) - WebSocket Broadcast → Clients',
   );
-  console.log('   Shows directional data flow with arrows between events');
 
   await profiler.spanAsync(
     'websocket-broadcast',
@@ -203,8 +199,6 @@ async function runTest() {
   );
 
   // Example 3: Sticky Tracks - Critical Infrastructure
-  console.log('3. Sticky Tracks - Critical Infrastructure');
-  console.log('   Critical operations remain visible when scrolling timeline');
 
   await profiler.spanAsync(
     'realtime-metrics-update',
@@ -234,8 +228,6 @@ async function runTest() {
   );
 
   // Example 4: Error Recovery with Links - Error → Recovery Chain
-  console.log('4. Error Recovery with Links - Error → Recovery Chain');
-  console.log('   Shows error propagation and recovery sequences');
 
   await profiler
     .spanAsync(
@@ -294,7 +286,6 @@ async function runTest() {
   );
 
   // Example 5: Complex Properties Showcase
-  console.log('5. Complex Properties Showcase');
   console.log(
     '   Demonstrates rich metadata and comprehensive operation details',
   );
@@ -341,7 +332,6 @@ async function runTest() {
   );
 
   // Example 6: Transaction Chain with Flow Array
-  console.log('6. Transaction Chain with Flow Array');
   console.log(
     '   Shows complex multi-step operations with multiple flow connections',
   );
@@ -386,8 +376,6 @@ async function runTest() {
   );
 
   // Example 7: Color Showcase - All Available DevTools Colors
-  console.log('7. Color Showcase - All Available DevTools Colors');
-  console.log('   Demonstrates the complete color palette for DevTools tracks');
 
   const colors: Array<{
     name: string;
@@ -498,7 +486,6 @@ async function runTest() {
     );
   }
 
-  console.log('\n=== DEVTOOLS DETAILS EXAMPLES COMPLETE ===');
   console.log(
     'Generated comprehensive examples showcasing key DevTools features:',
   );
@@ -508,7 +495,6 @@ async function runTest() {
   console.log(
     '  2. Flow Arrows (flowIn/flowOut) - Directional data flow visualization',
   );
-  console.log('  3. Sticky Tracks - Critical infrastructure always visible');
   console.log(
     '  4. Error Recovery Links - Error propagation and recovery chains',
   );
@@ -521,15 +507,9 @@ async function runTest() {
   console.log(
     '  7. Color Showcase - Complete DevTools color palette demonstration',
   );
-  console.log('');
-  console.log('Available DevTools Colors:');
-  console.log('  • Primary (Blue): primary, primary-light, primary-dark');
   console.log(
     '  • Secondary (Green): secondary, secondary-light, secondary-dark',
   );
-  console.log('  • Tertiary (Red): tertiary, tertiary-light, tertiary-dark');
-  console.log('  • Status (Red): error');
-  console.log('');
   console.log(
     'Open the trace files in Chrome DevTools Performance tab to visualize',
   );
@@ -541,4 +521,4 @@ async function runTest() {
   );
 }
 
-runTest().catch(console.error);
+runTest();

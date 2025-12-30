@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
+import { createDevtoolsErrorDetail } from './extensibility-helper';
 import { LineOutputError, createLineOutput } from './line-output';
 import {
   getRunTaskTraceEvent,
@@ -9,7 +10,8 @@ import {
   getTimingEventInstant,
   getTimingEventSpan,
 } from './trace-events-helper';
-import type { TraceEvent } from './trace-events.types';
+import type { InstantEvent, SpanEvent, TraceEvent } from './trace-events.types';
+import type { UserTimingDetail } from './user-timing-details.type';
 
 /**
  * Get the intermediate file path for a given final file path.
@@ -41,46 +43,12 @@ export function getJsonlPath(jsonPath: string): string {
   });
 }
 
-export type DevToolsColor =
-  | 'primary'
-  | 'primary-light'
-  | 'primary-dark'
-  | 'secondary'
-  | 'secondary-light'
-  | 'secondary-dark'
-  | 'tertiary'
-  | 'tertiary-light'
-  | 'tertiary-dark'
-  | 'error';
-
-export interface ExtensionTrackEntryPayload {
-  dataType?: 'track-entry'; // Defaults to "track-entry"
-  color?: DevToolsColor; // Defaults to "primary"
-  track: string; // Required: Name of the custom track
-  trackGroup?: string; // Optional: Group for organizing tracks
-  properties?: [string, string][]; // Key-value pairs for detailed view
-  tooltipText?: string; // Short description for tooltip
-}
-
-export interface ExtensionMarkerPayload {
-  dataType: 'marker'; // Required: Identifies as a marker
-  color?: DevToolsColor; // Defaults to "primary"
-  properties?: [string, string][]; // Key-value pairs for detailed view
-  tooltipText?: string; // Short description for tooltip
-}
-
-export interface Details<
-  T = ExtensionTrackEntryPayload | ExtensionMarkerPayload,
-> {
-  devtools: T;
-}
-
 export type ExtendedPerformanceMark = PerformanceMark & {
-  detail?: Details<ExtensionMarkerPayload>;
+  detail?: UserTimingDetail;
 };
 
 export type ExtendedPerformanceMeasure = PerformanceMeasure & {
-  detail?: Details<PerformanceMeasure>;
+  detail?: UserTimingDetail;
 };
 
 /**
@@ -120,8 +88,15 @@ export class DevToolsOutputFormat implements OutputFormat<ProfilingEvent> {
     return () => ({ local: `0x${counter++}` });
   })();
 
-  constructor(filePath: string) {
+  #traceStartTs?: number;
+
+  constructor(filePath: string, traceStartTs?: number) {
     this.filePath = filePath;
+    this.#traceStartTs = traceStartTs;
+  }
+
+  get traceStartTs(): number | undefined {
+    return this.#traceStartTs;
   }
 
   preamble(opt?: {
@@ -132,6 +107,7 @@ export class DevToolsOutputFormat implements OutputFormat<ProfilingEvent> {
   }): string[] {
     const traceStartTs =
       opt?.traceStartTs ??
+      this.#traceStartTs ??
       Math.round(
         (performance.timeOrigin - 1766930000000 + performance.now()) * 1000,
       );
@@ -189,6 +165,11 @@ export class DevToolsOutputFormat implements OutputFormat<ProfilingEvent> {
   }
 }
 
+const nextId = (() => {
+  let counter = 1;
+  return () => counter++;
+})();
+
 const nextId2 = (() => {
   let counter = 1;
   return () => ({ local: `0x${counter++}` });
@@ -203,8 +184,53 @@ const nextId2 = (() => {
 export function measureToTraceEvents(
   entry: PerformanceMeasure,
   options: { pid: number; tid: number },
-): TraceEvent[] {
-  return getTimingEventSpan({ entry, ...options });
+  measureDetails?: Map<string, any>,
+): SpanEvent[] {
+  const detail = measureDetails?.get(entry.name);
+  // Clean up the detail after using it
+  if (detail && measureDetails) {
+    measureDetails.delete(entry.name);
+  }
+  return getTimingEventSpan({ entry, detail, ...options });
+}
+
+/**
+ * Helper for Error Mark entries
+ * - emits an instant event (ph: i)
+ * - timestamps stay in ms
+ */
+export function errorToTraceEvent(
+  error: unknown,
+  options: {
+    pid: number;
+    tid: number;
+  },
+): InstantEvent {
+  const { pid, tid } = options;
+
+  const errorName = error instanceof Error ? error.name : 'UnknownError';
+
+  return {
+    cat: 'blink.user_timing',
+    name: `fatal-${errorName}`,
+    ph: 'I', // Uppercase I for instant events in Chrome DevTools format
+    s: 't', // Timeline scope
+    pid,
+    tid,
+    ts: Math.round(
+      (performance.timeOrigin - 1766930000000 + performance.now()) * 1000,
+    ),
+    id: `${nextId()}-fatal-${errorName}`,
+    id2: nextId2(),
+    args: {
+      data: {
+        detail: JSON.stringify(
+          createDevtoolsErrorDetail(error as Error).detail,
+        ),
+        startTime: performance.now(),
+      },
+    },
+  };
 }
 
 /**
@@ -218,10 +244,13 @@ export function markToTraceEvent(
     pid: number;
     tid: number;
   },
-): TraceEvent {
+  markDetails?: Map<string, any>,
+): InstantEvent {
+  const detail = markDetails?.get(entry.name);
   return getTimingEventInstant({
     entry,
     name: entry.name,
+    detail,
     nextId2,
     ...options,
   });
@@ -243,6 +272,7 @@ ${traceEventsContent}
   ]
 }`;
 }
+
 /**
  * Trace file interface for Chrome DevTools trace event files.
  * Provides file output functionality with trace-specific features like recovery.
@@ -292,6 +322,7 @@ export function createTraceFile(opts: {
   lineOutputExtension?: string;
   fileOutputExtension?: string;
   flushEveryN?: number;
+  traceStartTs?: number;
 }): TraceFile {
   const directory = opts.directory || '';
   const lineOutputExtension = opts.lineOutputExtension || '.jsonl';
@@ -306,7 +337,7 @@ export function createTraceFile(opts: {
     mkdirSync(dir, { recursive: true });
   }
 
-  const outputFormat = new DevToolsOutputFormat(filePath);
+  const outputFormat = new DevToolsOutputFormat(filePath, opts.traceStartTs);
 
   let preambleWritten = false;
   let closed = false;
@@ -322,12 +353,27 @@ export function createTraceFile(opts: {
   const lineOutput = createLineOutput<TraceFileEvent | string, unknown>({
     filePath: jsonlPath,
     flushEveryN: opts.flushEveryN,
+    restoreFromExisting: false,
     parse: (line: string) => JSON.parse(line), // Parse JSON lines for recovery
     encode: (obj: TraceFileEvent | string) => {
-      if (typeof obj === 'string') return obj;
+      if (typeof obj === 'string') return [obj];
       return [JSON.stringify(obj)];
     },
   });
+
+  // Clear existing data immediately if restoreFromExisting is false
+  if (!existsSync(jsonlPath)) {
+    // File doesn't exist, nothing to clear
+  } else {
+    try {
+      writeFileSync(jsonlPath, '', 'utf8');
+    } catch (error) {
+      throw new LineOutputError(
+        `Failed to clear existing file "${jsonlPath}"`,
+        error as Error,
+      );
+    }
+  }
 
   return {
     filePath: jsonlPath,
@@ -365,25 +411,19 @@ export function createTraceFile(opts: {
 
     recover(): void {
       try {
-        // Ensure directory exists for final file
         const dir = path.dirname(filePath);
         if (!existsSync(dir)) {
           mkdirSync(dir, { recursive: true });
         }
 
-        // Check if JSONL file exists and has content
         if (!existsSync(jsonlPath)) {
-          // No content to recover, write empty trace
           const emptyOutput = createTraceJsonOutput('');
           writeFileSync(filePath, emptyOutput, 'utf8');
           return;
         }
 
-        // Parse JSONL and extract valid content with first/last events
-        const { skippedLines } = lineOutput.recover();
         const validJsonl = readFileSync(jsonlPath, 'utf8');
 
-        // Handle empty case (though this shouldn't happen due to trim check above)
         if (!validJsonl.trim()) {
           const emptyOutput = `{
   "metadata": {
@@ -398,7 +438,6 @@ export function createTraceFile(opts: {
           return;
         }
 
-        // Parse events to find earliest and latest timestamps
         const events = validJsonl
           .trim()
           .split('\n')
@@ -416,8 +455,8 @@ export function createTraceFile(opts: {
         const latestTs =
           events.length > 0 ? Math.max(...events.map(e => e.ts)) : 0;
 
-        // Determine prolog timestamp (20ms before first blink event)
-        const prologTs = Math.max(0, earliestTs - 20);
+        const storedTraceStartTs = (outputFormat as any).traceStartTs;
+        const prologTs = storedTraceStartTs ?? Math.max(0, earliestTs - 20);
 
         const prologEvents = outputFormat.preamble({
           pid: process.pid,
@@ -426,13 +465,11 @@ export function createTraceFile(opts: {
           traceStartTs: prologTs,
         });
 
-        // Add epilog events (after latest performance event)
         const epilogEvents = outputFormat.epilogue({
           pid: process.pid,
           tid: threadId,
         });
 
-        // Adjust epilog timestamps to be after the latest event
         const adjustedEpilogEvents = epilogEvents.map(eventStr => {
           try {
             const event = JSON.parse(eventStr);
@@ -445,16 +482,13 @@ export function createTraceFile(opts: {
           }
         });
 
-        // Build trace events content
         let traceEventsContent = '';
 
-        // Add prolog events
         if (prologEvents.length > 0) {
           traceEventsContent +=
             prologEvents.map(event => `      ${event}`).join(',\n') + ',\n';
         }
 
-        // Add valid JSONL
         if (validJsonl) {
           const trimmedJsonl = validJsonl.trim();
           if (trimmedJsonl) {
@@ -468,7 +502,6 @@ export function createTraceFile(opts: {
           }
         }
 
-        // Add epilog events
         if (adjustedEpilogEvents.length > 0) {
           for (let i = 0; i < adjustedEpilogEvents.length; i++) {
             traceEventsContent += `      ${adjustedEpilogEvents[i]}`;
@@ -478,12 +511,10 @@ export function createTraceFile(opts: {
           }
         }
 
-        // Write complete JSON structure
         const jsonOutput = createTraceJsonOutput(traceEventsContent);
 
         writeFileSync(filePath, jsonOutput, 'utf8');
 
-        // Validate that the final JSON file is parseable
         try {
           JSON.parse(jsonOutput);
         } catch (parseError) {

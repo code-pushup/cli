@@ -61,6 +61,6 @@ export function axePlugin(
 
       return result;
     },
-    { detail: profiler.spans.plugins(AXE_PLUGIN_SLUG)() },
+    { detail: profiler.spans.plugin(AXE_PLUGIN_SLUG)() },
   );
 }

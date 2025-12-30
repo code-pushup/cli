@@ -88,7 +88,7 @@ export async function jsPackagesPlugin(
 
       return result;
     },
-    { detail: profiler.spans.plugins(JS_PACKAGES_PLUGIN_SLUG)() },
+    { detail: profiler.spans.plugin(JS_PACKAGES_PLUGIN_SLUG)() },
   );
 }
 

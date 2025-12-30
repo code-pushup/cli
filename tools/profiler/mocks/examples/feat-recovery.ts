@@ -5,8 +5,6 @@ import { getProfiler } from '../src/index.js';
 import { createTraceFile } from '../src/lib/trace-file-output.js';
 
 async function createBrokenJsonl() {
-  console.log('Creating broken JSONL file...');
-
   // Create tmp/profiles directory if it doesn't exist
   const tmpDir = path.join('tmp', 'profiles');
   const jsonlFile = path.join(tmpDir, 'recovery-test.test-run.jsonl');
@@ -69,12 +67,8 @@ async function createBrokenJsonl() {
 }
 
 async function testRecovery() {
-  console.log('Testing recovery process...');
-
   // Create a broken JSONL file first
   const { jsonlFile, tmpDir } = await createBrokenJsonl();
-
-  console.log('\nStarting profiler to recover the broken file...');
 
   // Start a profiler with the same file path - it should recover the broken JSONL
   const profiler = getProfiler({
@@ -84,7 +78,6 @@ async function testRecovery() {
   });
 
   // The profiler constructor should have recovered the broken file
-  console.log('Profiler started and should have recovered the file');
 
   // The profiler should have recovered the corrupted file during initialization
   // Create some new events to verify the profiler is working after recovery
@@ -103,34 +96,25 @@ async function testRecovery() {
   // Close the profiler (this will trigger final recovery)
   profiler.close();
 
-  console.log('Profiler closed');
-
   // Verify the final JSON file exists and is complete
   const jsonFile = path.join('tmp', 'profiles', 'recovery-test.test-run.json');
   if (existsSync(jsonFile)) {
     const content = readFileSync(jsonFile, 'utf8');
-    console.log(`\nFinal JSON file created at: ${jsonFile}`);
-    console.log('File size:', content.length, 'characters');
 
     try {
       const parsed = JSON.parse(content);
-      console.log('JSON is valid');
-      console.log('Number of trace events:', parsed.traceEvents?.length || 0);
 
       // Show some events
       if (parsed.traceEvents && parsed.traceEvents.length > 0) {
-        console.log('\nFirst few events:');
         for (let i = 0; i < Math.min(3, parsed.traceEvents.length); i++) {
           const event = parsed.traceEvents[i];
-          console.log(`- ${event.name} (${event.ph}) at ts:${event.ts}`);
         }
       }
     } catch (error) {
-      console.error('JSON parsing failed:', error);
+      // JSON parsing failed
     }
   } else {
-    console.error('Final JSON file was not created');
   }
 }
 
-testRecovery().catch(console.error);
+testRecovery();

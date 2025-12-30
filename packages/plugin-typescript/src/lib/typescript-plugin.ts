@@ -57,7 +57,7 @@ export function typescriptPlugin(
 
       return result;
     },
-    { detail: profiler.spans.plugins(TYPESCRIPT_PLUGIN_SLUG)() },
+    { detail: profiler.spans.plugin(TYPESCRIPT_PLUGIN_SLUG)() },
   );
 }
 

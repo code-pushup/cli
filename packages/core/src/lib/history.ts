@@ -77,7 +77,7 @@ export async function history(
             // eslint-disable-next-line functional/immutable-data
             reports.push(currentConfig.persist.filename);
           },
-          { detail: profiler.spans.cli() },
+          { detail: profiler.tracks.cli() },
         );
       }
 
@@ -85,7 +85,7 @@ export async function history(
 
       return reports;
     },
-    { detail: profiler.spans.cli() },
+    { detail: profiler.tracks.cli() },
   );
 }
 

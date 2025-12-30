@@ -90,7 +90,7 @@ export async function compareReportFiles(
         }),
       );
     },
-    { detail: profiler.spans.cli() },
+    { detail: profiler.tracks.cli() },
   );
 }
 
@@ -134,7 +134,7 @@ export function compareReports(reports: Diff<Report>): ReportsDiff {
 
       return result;
     },
-    { detail: profiler.spans.cli() },
+    { detail: profiler.tracks.cli() },
   );
 }
 
