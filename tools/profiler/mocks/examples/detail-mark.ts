@@ -7,6 +7,13 @@ import {
 } from '../../src/lib/user-timing-details-utils';
 
 async function run() {
+  // Create profiler first so it can intercept marks
+  const profiler = getProfiler({
+    enabled: true,
+    fileBaseName: 'detail-mark',
+    captureBuffered: true,
+  });
+
   performance.mark(getMeasureMarkNames('details-mark').startName, {
     detail: {
       str: 'This is a string value',
@@ -38,11 +45,6 @@ async function run() {
       },
     });
   })();
-  getProfiler({
-    enabled: true,
-    fileBaseName: 'detail-mark',
-    captureBuffered: true,
-  });
 }
 
 run();

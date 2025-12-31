@@ -1,0 +1,167 @@
+{
+  "traceEvents": [
+    {
+      "cat": "disabled-by-default-devtools.timeline",
+      "name": "TracingStartedInBrowser",
+      "ph": "i",
+      "pid": 1,
+      "tid": 1,
+      "ts": 1,
+      "s": "t",
+      "args": {
+        "data": {
+          "frames": [
+            {
+              "processId": 1,
+              "url": "file://has-to-be-a-valid-URL-pattern"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "args": {
+        "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"color\":\"secondary\",\"trackGroup\":\"Custom track timings\",\"track\":\"Custom timing A\",\"properties\":[[\"Description\",\"step-A1\"],[\"Duration (ms)\",\"10.00\"]],\"tooltipText\":\"step-A1 took 10.00ms\"}}"
+      },
+      "cat": "blink.user_timing",
+      "id2": { "local": "0xA1" },
+      "name": "step-A1",
+      "ph": "b",
+      "pid": 1,
+      "tid": 1,
+      "ts": 65
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "id2": { "local": "0xA1" },
+      "name": "step-A1",
+      "ph": "e",
+      "pid": 1,
+      "tid": 1,
+      "ts": 75
+    },
+    {
+      "args": {
+        "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"color\":\"secondary\",\"trackGroup\":\"Custom track timings\",\"track\":\"Custom timing B\",\"properties\":[[\"Description\",\"step-B1\"],[\"Duration (ms)\",\"12.00\"]],\"tooltipText\":\"step-B1 took 12.00ms\"}}"
+      },
+      "cat": "blink.user_timing",
+      "id2": { "local": "0xB1" },
+      "name": "step-B1",
+      "ph": "b",
+      "pid": 1,
+      "tid": 1,
+      "ts": 70
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "id2": { "local": "0xB1" },
+      "name": "step-B1",
+      "ph": "e",
+      "pid": 1,
+      "tid": 1,
+      "ts": 82
+    },
+    {
+      "args": {
+        "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"color\":\"secondary\",\"trackGroup\":\"Custom track timings\",\"track\":\"Custom timing C\",\"properties\":[[\"Description\",\"step-C1\"],[\"Duration (ms)\",\"15.00\"]],\"tooltipText\":\"step-C1 took 15.00ms\"}}"
+      },
+      "cat": "blink.user_timing",
+      "id2": { "local": "0xC1" },
+      "name": "step-C1",
+      "ph": "b",
+      "pid": 1,
+      "tid": 1,
+      "ts": 80
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "id2": { "local": "0xC1" },
+      "name": "step-C1",
+      "ph": "e",
+      "pid": 1,
+      "tid": 1,
+      "ts": 95
+    },
+    {
+      "args": {
+        "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"color\":\"secondary\",\"trackGroup\":\"Custom track timings\",\"track\":\"Custom timing A\",\"properties\":[[\"Description\",\"step-1\"],[\"Duration (ms)\",\"50.00\"]],\"tooltipText\":\"step-1 took 50.00ms\"}}"
+      },
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x2" },
+      "name": "step-1",
+      "ph": "b",
+      "pid": 1,
+      "tid": 1,
+      "ts": 10
+    },
+    {
+      "args": {
+        "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"color\":\"secondary\",\"trackGroup\":\"Custom track timings\",\"track\":\"Custom timing B\",\"properties\":[[\"Description\",\"step-2\"],[\"Duration (ms)\",\"30.00\"]],\"tooltipText\":\"step-2 took 30.00ms\"}}"
+      },
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x2" },
+      "name": "step-2",
+      "ph": "b",
+      "pid": 1,
+      "tid": 1,
+      "ts": 20
+    },
+    {
+      "args": {
+        "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"color\":\"secondary\",\"trackGroup\":\"Custom track timings\",\"track\":\"Custom timing C\",\"properties\":[[\"Description\",\"step-3\"],[\"Duration (ms)\",\"10.00\"]],\"tooltipText\":\"step-3 took 10.00ms\"}}"
+      },
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x2" },
+      "name": "step-3",
+      "ph": "b",
+      "pid": 1,
+      "tid": 1,
+      "ts": 30
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x2" },
+      "name": "step-3",
+      "ph": "e",
+      "pid": 1,
+      "tid": 1,
+      "ts": 40
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x2" },
+      "name": "step-2",
+      "ph": "e",
+      "pid": 1,
+      "tid": 1,
+      "ts": 50
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x2" },
+      "name": "step-1",
+      "ph": "e",
+      "pid": 1,
+      "tid": 1,
+      "ts": 60
+    },
+    {
+      "args": {
+        "description": "Artificial RunTask event to mark end of the trace"
+      },
+      "cat": "devtools.timeline",
+      "dur": 10,
+      "name": "RunTask",
+      "ph": "X",
+      "pid": 1,
+      "tid": 2,
+      "ts": 100
+    }
+  ]
+}

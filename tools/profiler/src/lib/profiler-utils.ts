@@ -1,13 +1,10 @@
 import type { PerformanceMark, PerformanceMeasure } from 'node:perf_hooks';
-import { timerify } from '../../mocks/examples/utils-profiling';
 import {
-  createErrorMarkFromError,
   createTrackEntry,
   createTrackEntryFromError,
   errorToDevToolsProperties,
 } from './user-timing-details-utils.js';
 import type {
-  DevToolsMark,
   DevToolsTrackEntry,
   UserTimingDetail,
 } from './user-timing-details.type';
@@ -90,7 +87,8 @@ export function timerifySync<T>(
   }
 }
 
-export const MAIN_TRACK_NAME = 'Programm';
+export const MAIN_TRACK_NAME = 'Program';
+
 export function mainTrack(): { track: string } {
   return {
     track: MAIN_TRACK_NAME,

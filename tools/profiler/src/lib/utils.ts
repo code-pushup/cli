@@ -37,7 +37,7 @@ export function getFilenameParts(options: ProfilerOptions): FilenameParts {
 }
 
 export function installExitHandlersOnce(options: {
-  onFatal: (kind: FatalKind, err: unknown) => void;
+  onFatal: (err: unknown, kind?: FatalKind) => void;
   onClose: () => void;
 }): void {
   const g = globalThis as any;
@@ -47,11 +47,11 @@ export function installExitHandlersOnce(options: {
 
   // Handle uncaught exceptions and unhandled rejections
   process.on('uncaughtException', err => {
-    options.onFatal('uncaughtException', err);
+    options.onFatal(err, 'uncaughtException');
   });
 
   process.on('unhandledRejection', reason => {
-    options.onFatal('unhandledRejection', reason);
+    options.onFatal(reason, 'unhandledRejection');
   });
 
   // Handle graceful shutdown signals

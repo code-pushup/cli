@@ -17,19 +17,42 @@ import {
   measureSync,
 } from './profiler-utils.js';
 import type { ProfilerMethods } from './profiler-utils.js';
-import { type TraceFile, createTraceFile } from './trace-file-output';
 import {
-  errorToInstantEvent,
-  relativeToAbsuloteTime,
-  timingEventToTraceEvent as userTimingEventToTraceEvent,
+  type FileOutput,
+  createTraceFile,
+  markToTraceEvent,
+} from './trace-file-output';
+import {
+  getInstantEvent,
+  measureToSpanEvents,
+  relativeToAbsoluteTime,
 } from './trace-file-utils';
+import type { InstantEvent, SpanEvent, TraceEvent } from './trace-file.type';
 import {
   type DevtoolsSpanConfig,
   type DevtoolsSpanHelpers,
   type DevtoolsSpansRegistry,
   createDevtoolsSpans,
+  createErrorLabel,
 } from './user-timing-details-utils.js';
 import { getFilenameParts, installExitHandlersOnce } from './utils';
+
+/**
+ * Convert a ProfilingEvent (mark or measure) to TraceEvent(s)
+ */
+export function timingEventToTraceEvent(
+  event: import('./trace-file-output').ProfilingEvent,
+  opt: Pick<TraceEvent, 'pid' | 'tid'>,
+): (InstantEvent | SpanEvent)[] {
+  switch (event.entryType) {
+    case 'mark':
+      return [markToTraceEvent(event, opt)];
+    case 'measure':
+      return measureToSpanEvents(event, opt);
+    default:
+      return [];
+  }
+}
 
 export type ProfilerOptions<K extends string = never> = {
   enabled?: boolean;
@@ -63,7 +86,7 @@ export function getProfiler<K extends string = string>(
 export class Profiler<K extends string = never> implements ProfilerMethods {
   #enabled = process.env[PROFILER_ENV_VAR] !== 'false';
 
-  #traceFile?: TraceFile;
+  #traceFile?: FileOutput<TraceEvent>;
   #performanceObserver?: PerformanceObserverHandle;
   #outputFileFinal: string;
   #closed = false;
@@ -107,10 +130,9 @@ export class Profiler<K extends string = never> implements ProfilerMethods {
       this.#performanceObserver = createPerformanceObserver({
         captureBuffered,
         processEvent: event => {
-          for (const te of userTimingEventToTraceEvent(event, {
+          for (const te of timingEventToTraceEvent(event, {
             pid: process.pid,
             tid: threadId,
-            ts: relativeToAbsuloteTime(undefined, event.startTime),
           })) {
             this.#traceFile!.write(te);
           }
@@ -121,12 +143,20 @@ export class Profiler<K extends string = never> implements ProfilerMethods {
       this.#performanceObserver?.flush();
 
       installExitHandlersOnce({
-        onFatal: (kind, error) => {
+        onFatal: (error, kind) => {
           if (this.#traceFile) {
+            const errorName =
+              error instanceof Error ? error.name : (kind ?? 'UnknownError');
+
             this.#traceFile.write(
-              errorToInstantEvent(error, {
+              getInstantEvent({
                 pid: process.pid,
                 tid: threadId,
+                name: `FATAL: ${errorName}`,
+                ts: relativeToAbsoluteTime(),
+                argsDataDetail: {
+                  devtools: createErrorLabel(error),
+                },
               }),
             );
           }

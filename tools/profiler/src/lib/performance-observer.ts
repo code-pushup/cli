@@ -15,7 +15,7 @@ export interface PerformanceObserverHandle {
 export function createPerformanceObserver(
   options: PerformanceObserverOptions,
 ): PerformanceObserverHandle {
-  const { processEvent: writeEvent, captureBuffered = true } = options;
+  const { processEvent, captureBuffered = true } = options;
 
   const handleEntries = (
     entries: readonly PerformanceEntry[],
@@ -24,7 +24,8 @@ export function createPerformanceObserver(
     for (const e of entries) {
       if (e.entryType !== 'mark' && e.entryType !== 'measure') continue;
       console.log('writing event', e.name, e.entryType, e.toJSON());
-      writeEvent(e as ProfilingEvent);
+
+      processEvent(e as ProfilingEvent);
 
       if (clear) {
         if (e.entryType === 'mark') performance.clearMarks(e.name);

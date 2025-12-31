@@ -1,0 +1,211 @@
+{
+  "traceEvents": [
+    {
+      "cat": "disabled-by-default-devtools.timeline",
+      "name": "TracingStartedInBrowser",
+      "ph": "i",
+      "pid": 1,
+      "tid": 1,
+      "ts": 1,
+      "s": "t",
+      "args": {
+        "data": {
+          "frames": [
+            {
+              "processId": 1,
+              "url": "file://has-to-be-a-valid-URL-pattern"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "args": {
+        "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"color\":\"primary-dark\",\"trackGroup\":\"Custom track timings\",\"track\":\"Custom timing events\",\"properties\":[[\"Description\",\"step-4\"],[\"Duration (ms)\",\"10.00\"]],\"tooltipText\":\"step-4 took 10.00ms\"}}"
+      },
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x3" },
+      "name": "step-4",
+      "ph": "b",
+      "pid": 1,
+      "tid": 1,
+      "ts": 65
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x3" },
+      "name": "step-4",
+      "ph": "e",
+      "pid": 1,
+      "tid": 1,
+      "ts": 75
+    },
+    {
+      "args": {
+        "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"color\":\"secondary-dark\",\"trackGroup\":\"Custom track timings\",\"track\":\"Custom timing events\",\"properties\":[[\"Description\",\"step-5\"],[\"Duration (ms)\",\"15.00\"]],\"tooltipText\":\"step-5 took 15.00ms\"}}"
+      },
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x4" },
+      "name": "step-5",
+      "ph": "b",
+      "pid": 1,
+      "tid": 1,
+      "ts": 80
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x4" },
+      "name": "step-5",
+      "ph": "e",
+      "pid": 1,
+      "tid": 1,
+      "ts": 95
+    },
+    {
+      "args": {
+        "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"color\":\"tertiary\",\"trackGroup\":\"Custom track timings\",\"track\":\"Custom timing events\",\"properties\":[[\"Description\",\"step-6\"],[\"Duration (ms)\",\"20.00\"]],\"tooltipText\":\"step-6 took 20.00ms\"}}"
+      },
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x5" },
+      "name": "step-6",
+      "ph": "b",
+      "pid": 1,
+      "tid": 1,
+      "ts": 100
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x5" },
+      "name": "step-6",
+      "ph": "e",
+      "pid": 1,
+      "tid": 1,
+      "ts": 120
+    },
+    {
+      "args": {
+        "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"color\":\"tertiary-light\",\"trackGroup\":\"Custom track timings\",\"track\":\"Custom timing events\",\"properties\":[[\"Description\",\"step-7\"],[\"Duration (ms)\",\"10.00\"]],\"tooltipText\":\"step-7 took 10.00ms\"}}"
+      },
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x6" },
+      "name": "step-7",
+      "ph": "b",
+      "pid": 1,
+      "tid": 1,
+      "ts": 125
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x6" },
+      "name": "step-7",
+      "ph": "e",
+      "pid": 1,
+      "tid": 1,
+      "ts": 135
+    },
+    {
+      "args": {
+        "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"color\":\"error\",\"trackGroup\":\"Custom track timings\",\"track\":\"Custom timing events\",\"properties\":[[\"Description\",\"step-8\"],[\"Duration (ms)\",\"20.00\"]],\"tooltipText\":\"step-8 took 20.00ms\"}}"
+      },
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x7" },
+      "name": "step-8",
+      "ph": "b",
+      "pid": 1,
+      "tid": 1,
+      "ts": 140
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x7" },
+      "name": "step-8",
+      "ph": "e",
+      "pid": 1,
+      "tid": 1,
+      "ts": 160
+    },
+    {
+      "args": {
+        "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"color\":\"primary\",\"trackGroup\":\"Custom track timings\",\"track\":\"Custom timing events\",\"properties\":[[\"Description\",\"step-1\"],[\"Duration (ms)\",\"50.00\"]],\"tooltipText\":\"step-1 took 50.00ms\"}}"
+      },
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x2" },
+      "name": "step-1",
+      "ph": "b",
+      "pid": 1,
+      "tid": 1,
+      "ts": 10
+    },
+    {
+      "args": {
+        "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"color\":\"secondary\",\"trackGroup\":\"Custom track timings\",\"track\":\"Custom timing events\",\"properties\":[[\"Description\",\"step-2\"],[\"Duration (ms)\",\"30.00\"]],\"tooltipText\":\"step-2 took 30.00ms\"}}"
+      },
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x2" },
+      "name": "step-2",
+      "ph": "b",
+      "pid": 1,
+      "tid": 1,
+      "ts": 20
+    },
+    {
+      "args": {
+        "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"color\":\"secondary-light\",\"trackGroup\":\"Custom track timings\",\"track\":\"Custom timing events\",\"properties\":[[\"Description\",\"step-3\"],[\"Duration (ms)\",\"10.00\"]],\"tooltipText\":\"step-3 took 10.00ms\"}}"
+      },
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x2" },
+      "name": "step-3",
+      "ph": "b",
+      "pid": 1,
+      "tid": 1,
+      "ts": 30
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x2" },
+      "name": "step-3",
+      "ph": "e",
+      "pid": 1,
+      "tid": 1,
+      "ts": 40
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x2" },
+      "name": "step-2",
+      "ph": "e",
+      "pid": 1,
+      "tid": 1,
+      "ts": 50
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "id2": { "local": "0x2" },
+      "name": "step-1",
+      "ph": "e",
+      "pid": 1,
+      "tid": 1,
+      "ts": 60
+    },
+    {
+      "args": {
+        "description": "Artificial RunTask event to mark end of the trace"
+      },
+      "cat": "devtools.timeline",
+      "dur": 10,
+      "name": "RunTask",
+      "ph": "X",
+      "pid": 1,
+      "tid": 2,
+      "ts": 165
+    }
+  ]
+}

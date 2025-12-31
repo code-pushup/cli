@@ -1,47 +1,15 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { performance } from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
 import { LineOutputError, createLineFileOutput } from './line-file-output.js';
 import {
+  entryToTraceTimestamp,
   getCompleteEvent,
+  getInstantEvent,
   getStartTracing,
-  getTimingEventInstant,
-  getTimingEventSpan,
-  relativeToAbsuloteTime,
 } from './trace-file-utils';
-import type { InstantEvent, SpanEvent, TraceEvent } from './trace-file.type';
+import type { InstantEvent, TraceEvent } from './trace-file.type';
 import type { UserTimingDetail } from './user-timing-details.type';
-
-/**
- * Get the intermediate file path for a given final file path.
- * Used for output formats where data is written to an intermediate file
- * and then converted to the final format.
- */
-export function getIntermediatePath(
-  finalPath: string,
-  options?: {
-    intermediateExtension?: string;
-    finalExtension?: string;
-  },
-): string {
-  const intermediateExtension = options?.intermediateExtension || '.jsonl';
-  const finalExtension = options?.finalExtension || '.json';
-  return finalPath.replace(
-    new RegExp(`${finalExtension}$`),
-    intermediateExtension,
-  );
-}
-
-/**
- * @deprecated Use getIntermediatePath instead
- */
-export function getJsonlPath(jsonPath: string): string {
-  return getIntermediatePath(jsonPath, {
-    intermediateExtension: '.jsonl',
-    finalExtension: '.json',
-  });
-}
 
 export type ExtendedPerformanceMark = PerformanceMark & {
   detail?: UserTimingDetail;
@@ -62,12 +30,7 @@ export interface OutputFormat<I = unknown> {
   readonly id: string;
   readonly filePath: string;
 
-  /**
-   * Return preamble events written at the start of tracing.
-   */
   preamble(opt?: Record<string, unknown>): string[];
-
-  encode(event: I, opt?: Record<string, unknown>): string[];
 
   epilogue(opt?: Record<string, unknown>): string[];
 }
@@ -81,13 +44,9 @@ export type ProfilingEvent =
  */
 export class DevToolsOutputFormat implements OutputFormat<ProfilingEvent> {
   readonly id = 'devtools';
-  readonly fileExt = 'jsonl';
   readonly filePath: string;
-
-  #nextId2 = (() => {
-    let counter = 1;
-    return () => ({ local: `0x${counter++}` });
-  })();
+  readonly #pid = process.pid;
+  readonly #tid = threadId;
 
   #traceStartTs?: number;
 
@@ -100,61 +59,35 @@ export class DevToolsOutputFormat implements OutputFormat<ProfilingEvent> {
     return this.#traceStartTs;
   }
 
-  preamble(opt?: {
-    pid: number;
-    tid: number;
-    url: string;
-    traceStartTs?: number;
-  }): string[] {
-    const traceStartTs =
-      opt?.traceStartTs ?? relativeToAbsuloteTime(this.#traceStartTs);
-    const pid = opt?.pid ?? process.pid;
-    const tid = opt?.tid ?? threadId;
-    const url = opt?.url ?? this.filePath;
+  preamble(opt: { url: string; ts: number }): string[] {
+    const { url = opt?.url ?? this.filePath, ts } = opt;
     return [
       JSON.stringify(
         getStartTracing({
-          pid,
-          tid,
-          traceStartTs,
+          pid: this.#pid,
+          tid: this.#tid,
+          ts,
           url,
         }),
       ),
       JSON.stringify(
-        getCompleteEvent(pid, tid, {
-          ts: traceStartTs,
+        getCompleteEvent({
+          ts,
           dur: 10,
+          pid: this.#pid,
+          tid: this.#tid,
         }),
       ),
     ];
   }
 
-  encode(event: ProfilingEvent, opt?: { pid: number; tid: number }): string[] {
-    const ctx = {
-      pid: opt?.pid ?? process.pid,
-      tid: opt?.tid ?? threadId,
-      nextId2: this.#nextId2,
-    };
-
-    switch (event.entryType) {
-      case 'mark':
-        return [JSON.stringify(markToTraceEvent(event, ctx))];
-      case 'measure':
-        return measureToTraceEvents(event, ctx).map(event =>
-          JSON.stringify(event),
-        );
-      default:
-        return [];
-    }
-  }
-
-  epilogue(opt?: { pid: number; tid: number }): string[] {
-    const pid = opt?.pid ?? process.pid;
-    const tid = opt?.tid ?? threadId;
+  epilogue(opt: { ts: number }): string[] {
     return [
       JSON.stringify(
-        getCompleteEvent(pid, tid, {
-          ts: relativeToAbsuloteTime(),
+        getCompleteEvent({
+          pid: this.#pid,
+          tid: this.#tid,
+          ...opt,
           dur: 10,
         }),
       ),
@@ -173,34 +106,19 @@ const nextId2 = (() => {
 })();
 
 /**
- * Helper for MEASURE entries
- * - emits async begin/end (b/e)
- * - uses a simple incrementing id
- * - timestamps stay in ms
- */
-export function measureToTraceEvents(
-  entry: PerformanceMeasure,
-  options: Pick<SpanEvent, 'pid' | 'tid' | 'ts'>,
-): SpanEvent[] {
-  const { ts, ...opts } = options;
-  const absTs = relativeToAbsuloteTime(ts);
-  return getTimingEventSpan(entry, { ...opts, ts: absTs });
-}
-
-/**
  * Helper for MARK entries
  * - emits an instant event (ph: i)
  * - timestamps stay in ms
  */
 export function markToTraceEvent(
   entry: PerformanceMark,
-  options: Pick<InstantEvent, 'pid' | 'tid' | 'ts'>,
+  options: Pick<InstantEvent, 'pid' | 'tid'>,
 ): InstantEvent {
-  return getTimingEventInstant({
-    entry,
-    name: entry.name,
-    nextId2,
+  return getInstantEvent({
     ...options,
+    name: entry.name,
+    ts: entryToTraceTimestamp(entry),
+    argsDataDetail: entry.detail,
   });
 }
 
@@ -221,43 +139,20 @@ ${traceEventsContent}
 }`;
 }
 
-/**
- * Trace file interface for Chrome DevTools trace event files.
- * Provides file output functionality with trace-specific features like recovery.
- */
-type TraceFileEvent =
-  | TraceEvent
-  | {
-      type: 'fatal';
-      pid: number;
-      tid: number;
-      tsMs: number;
-      kind: string;
-      error: unknown;
-    }
-  | {
-      type: 'error';
-      pid: number;
-      tid: number;
-      tsMs: number;
-      message: string;
-      error: unknown;
-    };
-
-export interface TraceFile {
+export interface FileOutput<T> {
   readonly filePath: string;
   readonly jsonlPath: string;
 
-  write(obj: TraceFileEvent): void;
+  write(obj: T): void;
 
-  writeImmediate(obj: TraceFileEvent): void;
+  writeImmediate(obj: T): void;
 
   flush(): void;
 
   close(): void;
 
   /**
-   * Recover from incomplete or corrupted trace files.
+   * Recover from potentially incomplete or corrupted trace files.
    * Attempts to complete partial writes and convert to final format.
    */
   recover(): void;
@@ -272,7 +167,7 @@ export function createTraceFile(opts: {
   directory?: string;
   flushEveryN?: number;
   recoverExisting?: boolean;
-}): TraceFile {
+}): FileOutput<TraceEvent> {
   const {
     filename,
     directory = '.',
@@ -301,28 +196,28 @@ export function createTraceFile(opts: {
     }
   };
 
-  const lineOutput = createLineFileOutput<TraceFileEvent | string, unknown>({
+  const lineOutput = createLineFileOutput<TraceEvent | string, unknown>({
     filePath: jsonlPath,
     flushEveryN,
     recoverExisting,
-    // Parse JSON lines for recovery
     parse: (line: string) => JSON.parse(line),
-    encode: (obj: TraceFileEvent | string) => {
+    encode: (obj: TraceEvent | string) => {
       if (typeof obj === 'string') return [obj];
       return [JSON.stringify(obj)];
     },
   });
+  const traceStartTs = performance.now();
 
   return {
     filePath: jsonlPath,
     jsonlPath,
 
-    write(obj: TraceFileEvent): void {
+    write(obj: TraceEvent): void {
       if (closed) return;
       lineOutput.writeLine(obj);
     },
 
-    writeImmediate(obj: TraceFileEvent): void {
+    writeImmediate(obj: TraceEvent): void {
       if (closed) return;
       ensurePreambleWritten();
       lineOutput.writeLineImmediate(obj);
@@ -398,15 +293,13 @@ export function createTraceFile(opts: {
           (events.length > 0 ? Math.max(0, earliestTs - 20) : undefined);
 
         const prologEvents = outputFormat.preamble({
-          pid: process.pid,
-          tid: threadId,
+          ts: Math.min(earliestTs, traceStartTs),
           url: filePath,
           ...(prologTs !== undefined && { traceStartTs: prologTs }),
         });
 
         const epilogEvents = outputFormat.epilogue({
-          pid: process.pid,
-          tid: threadId,
+          ts: latestTs,
         });
 
         const adjustedEpilogEvents = epilogEvents.map(eventStr => {
