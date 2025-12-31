@@ -1,7 +1,6 @@
 import path from 'node:path';
 import {
   type MarkOptions,
-  type MeasureOptions,
   type PerformanceMark,
   type PerformanceMeasure,
   performance,
@@ -9,56 +8,40 @@ import {
 import process from 'node:process';
 import { threadId } from 'node:worker_threads';
 import {
+  type PerformanceObserverHandle,
+  createPerformanceObserver,
+} from './performance-observer';
+import {
+  type DevToolsOptionCb,
+  measureAsync,
+  measureSync,
+} from './profiler-utils.js';
+import type { ProfilerMethods } from './profiler-utils.js';
+import { type TraceFile, createTraceFile } from './trace-file-output';
+import {
+  errorToInstantEvent,
+  relativeToAbsuloteTime,
+  timingEventToTraceEvent as userTimingEventToTraceEvent,
+} from './trace-file-utils';
+import {
   type DevtoolsSpanConfig,
   type DevtoolsSpanHelpers,
   type DevtoolsSpansRegistry,
   createDevtoolsSpans,
-} from './extensibility-helper';
-import {
-  type PerformanceObserverHandle,
-  createPerformanceObserver,
-} from './performance-observer';
-import { timingEventToTraceEvent as userTimingEventToTraceEvent } from './trace-events-helper';
-import type { InstantEvent } from './trace-events.types';
-import {
-  type TraceFile,
-  createTraceFile,
-  errorToTraceEvent,
-  markToTraceEvent,
-} from './trace-file-output';
+} from './user-timing-details-utils.js';
 import { getFilenameParts, installExitHandlersOnce } from './utils';
-
-type MarkOpts = MarkOptions & { detail?: unknown };
-
-type FatalKind = 'uncaughtException' | 'unhandledRejection';
-
-const errorDetails = (e: unknown) =>
-  e instanceof Error
-    ? { name: e.name, message: e.message }
-    : { name: 'UnknownError', message: String(e) };
-
-const EXIT_HANDLERS_INSTALLED = Symbol.for(
-  'codepushup.exit-handlers-installed',
-);
-
-const SIGNALS = [
-  ['SIGINT', 130],
-  ['SIGTERM', 143],
-  ['SIGQUIT', 131],
-] as const;
 
 export type ProfilerOptions<K extends string = never> = {
   enabled?: boolean;
+  captureBuffered?: boolean;
+  recoverExisting?: boolean;
   outDir?: string;
   fileBaseName?: string;
-  id?: string;
   metadata?: Record<string, unknown>;
   spans?: Partial<DevtoolsSpansRegistry<K>>;
 };
 
 export const PROFILER_ENV_VAR = 'CP_PROFILING';
-export const PROFILER_OUT_DIR = path.join('tmp', 'profiles');
-export const PROFILER_FILE_BASE_NAME = 'timing.profile';
 export const GROUP_CODEPUSHUP = 'CodePushUp';
 
 const DEFAULT_MAIN_SPAN = {
@@ -69,11 +52,7 @@ const DEFAULT_MAIN_SPAN = {
 
 const PROFILER_KEY = Symbol.for('codepushup.profiler');
 
-function getAutoDetectedDetail(_: DevtoolsSpansRegistry<any>): undefined {
-  return undefined;
-}
-
-export function getProfiler<K extends string = never>(
+export function getProfiler<K extends string = string>(
   opts?: ProfilerOptions<K>,
 ) {
   const g = globalThis as any;
@@ -81,7 +60,7 @@ export function getProfiler<K extends string = never>(
   return g[PROFILER_KEY] as Profiler<any> as Profiler<K>;
 }
 
-export class Profiler<K extends string = never> {
+export class Profiler<K extends string = never> implements ProfilerMethods {
   #enabled = process.env[PROFILER_ENV_VAR] !== 'false';
 
   #traceFile?: TraceFile;
@@ -89,18 +68,21 @@ export class Profiler<K extends string = never> {
   #outputFileFinal: string;
   #closed = false;
 
-  #measureDetails = new Map<string, any>();
-  #markDetails = new Map<string, any>();
-
   readonly #spansRegistry: DevtoolsSpansRegistry<K | 'main'>;
   readonly #spans: DevtoolsSpanHelpers<DevtoolsSpansRegistry<K | 'main'>>;
 
   constructor(options: ProfilerOptions<K> = {}) {
-    const enabled =
-      options.enabled ?? process.env[PROFILER_ENV_VAR] !== 'false';
+    const {
+      enabled = process.env[PROFILER_ENV_VAR] === 'true',
+      captureBuffered,
+      metadata,
+      spans,
+      recoverExisting,
+      ...pathOptions
+    } = options;
     this.enableProfiling(enabled);
 
-    const parts = getFilenameParts(options);
+    const parts = getFilenameParts(pathOptions);
     this.#outputFileFinal = path.resolve(
       parts.directory,
       `${parts.filename}.json`,
@@ -123,27 +105,33 @@ export class Profiler<K extends string = never> {
       });
 
       this.#performanceObserver = createPerformanceObserver({
-        captureBuffered: true,
-        writeEvent: event => {
-          for (const te of userTimingEventToTraceEvent(
-            event,
-            process.pid,
-            threadId,
-            this.#measureDetails,
-            this.#markDetails,
-          )) {
+        captureBuffered,
+        processEvent: event => {
+          for (const te of userTimingEventToTraceEvent(event, {
+            pid: process.pid,
+            tid: threadId,
+            ts: relativeToAbsuloteTime(undefined, event.startTime),
+          })) {
             this.#traceFile!.write(te);
           }
         },
       });
+
       // initially flush any buffered entries
-      // this.#performanceObserver?.flush()
+      this.#performanceObserver?.flush();
 
       installExitHandlersOnce({
-        onFatal: (kind, err) => {
-          this.#writeFatalError(err);
-          this.close(); // Ensures the trace file is written before re-throwing
-          throw err; // Re-throw after cleanup
+        onFatal: (kind, error) => {
+          if (this.#traceFile) {
+            this.#traceFile.write(
+              errorToInstantEvent(error, {
+                pid: process.pid,
+                tid: threadId,
+              }),
+            );
+          }
+          this.close();
+          throw error;
         },
         onClose: () => this.close(),
       });
@@ -170,25 +158,58 @@ export class Profiler<K extends string = never> {
     this.#enabled = isEnabled;
   }
 
-  mark(name: string, options?: MarkOpts): PerformanceMark | undefined {
-    if (!this.#enabled) return undefined;
-    return performance.mark(name, options);
+  mark(
+    markName: string,
+    markOptions?: PerformanceMarkOptions,
+  ): PerformanceMark {
+    // TODO: Add automatic detection of detail from spans registry
+    return performance.mark(markName, markOptions);
   }
 
+  measure(measureName: string): PerformanceMeasure;
+  measure(measureName: string, startMark: string): PerformanceMeasure;
   measure(
-    name: string,
-    startMark?: string,
-    endMark?: string,
+    measureName: string,
+    startMark: string,
+    endMark: string,
   ): PerformanceMeasure;
-  measure(name: string, options: MeasureOptions): PerformanceMeasure;
   measure(
-    name: string,
-    a?: string | MeasureOptions,
-    b?: string,
+    measureName: string,
+    options: PerformanceMeasureOptions,
+  ): PerformanceMeasure;
+  measure(
+    measureName: string,
+    startOrOptions?: string | PerformanceMeasureOptions,
+    endMark?: string,
   ): PerformanceMeasure {
-    return typeof a === 'string' || a === undefined
-      ? performance.measure(name, { start: a, end: b })
-      : performance.measure(name, a);
+    // TODO: Add automatic detection of detail from spans registry
+    return typeof startOrOptions === 'string' || startOrOptions === undefined
+      ? performance.measure(measureName, {
+          start: startOrOptions,
+          end: endMark,
+        })
+      : performance.measure(measureName, startOrOptions);
+  }
+
+  spanAsync<T = unknown>(
+    spanName: string,
+    fn: () => Promise<T>,
+    options?: DevToolsOptionCb<T>,
+  ): Promise<T> {
+    return measureAsync(this, spanName, fn, options);
+  }
+
+  span<T = unknown>(
+    spanName: string,
+    fn: () => T,
+    options?: DevToolsOptionCb<T>,
+  ): T {
+    return measureSync(this, spanName, fn, options);
+  }
+
+  instant(name: string, options?: MarkOptions): PerformanceMark {
+    // TODO: Add automatic detection of detail from spans registry
+    return this.mark(name, options);
   }
 
   flush(): void {
@@ -220,236 +241,5 @@ export class Profiler<K extends string = never> {
       console.warn('[profiler] trace close failed', e);
     }
     this.#traceFile = undefined;
-  }
-
-  #withSpan<T>(name: string, options: MarkOpts | undefined, run: () => T): T {
-    if (!this.#enabled) return run();
-
-    const start = `${name}:start`;
-    const end = `${name}:end`;
-
-    // Store measure detail for later retrieval during event processing
-    if (options?.detail) {
-      this.#measureDetails.set(name, options.detail);
-    }
-
-    this.#markWithDetail(start, options);
-    try {
-      return run();
-    } finally {
-      this.mark(end);
-      this.measure(name, start, end);
-    }
-  }
-
-  async spanAsync<T>(
-    name: string,
-    fn: () => Promise<T>,
-    options?: MarkOpts,
-  ): Promise<T>;
-  spanAsync<T>(
-    name: string,
-    fn: () => Promise<T>,
-    options: {
-      onSuccess?: (result: T) => MarkOpts;
-      onError?: (error: unknown) => MarkOpts;
-    },
-  ): Promise<T>;
-  async spanAsync<T>(
-    name: string,
-    fn: () => Promise<T>,
-    options?:
-      | MarkOpts
-      | {
-          onSuccess?: (result: T) => MarkOpts;
-          onError?: (error: unknown) => MarkOpts;
-        },
-  ): Promise<T> {
-    if (!this.#enabled) return fn();
-
-    if (
-      options &&
-      typeof options === 'object' &&
-      ('onSuccess' in options || 'onError' in options)
-    ) {
-      const callbackOpts = options as {
-        onSuccess?: (result: T) => MarkOpts;
-        onError?: (error: unknown) => MarkOpts;
-      };
-
-      const start = `${name}:start`;
-      const end = `${name}:end`;
-
-      this.#markWithDetail(start, undefined);
-      try {
-        const result = await fn();
-        const spanOpts = callbackOpts.onSuccess?.(result);
-        if (spanOpts?.detail) {
-          this.#measureDetails.set(name, spanOpts.detail);
-        }
-        return result;
-      } catch (error) {
-        const spanOpts = callbackOpts.onError?.(error);
-        if (spanOpts?.detail) {
-          this.#measureDetails.set(name, spanOpts.detail);
-        }
-        // Add error marker detail to the end mark for proper error visualization
-        const endMarkName = `${name}:end`;
-        this.#markDetails.set(endMarkName, {
-          devtools: {
-            dataType: 'marker',
-            color: 'error',
-            properties: [
-              ['Error Type', errorDetails(error).name],
-              ['Error Message', errorDetails(error).message],
-            ],
-            tooltipText: `${errorDetails(error).name}: ${errorDetails(error).message}`,
-          },
-        });
-        throw error;
-      } finally {
-        this.mark(end);
-        this.measure(name, start, end);
-      }
-    } else {
-      const start = `${name}:start`;
-      const end = `${name}:end`;
-
-      // Store measure detail for later retrieval during event processing
-      if ((options as MarkOpts)?.detail) {
-        this.#measureDetails.set(name, (options as MarkOpts).detail);
-      }
-
-      this.#markWithDetail(start, options as MarkOpts);
-      try {
-        return await fn();
-      } finally {
-        this.mark(end);
-        this.measure(name, start, end);
-      }
-    }
-  }
-
-  span<T>(name: string, fn: () => T, options?: MarkOpts): T;
-  span<T>(
-    name: string,
-    fn: () => T,
-    options: {
-      onSuccess?: (result: T) => MarkOpts;
-      onError?: (error: unknown) => MarkOpts;
-    },
-  ): T;
-  span<T>(
-    name: string,
-    fn: () => T,
-    options?:
-      | MarkOpts
-      | {
-          onSuccess?: (result: T) => MarkOpts;
-          onError?: (error: unknown) => MarkOpts;
-        },
-  ): T {
-    if (
-      options &&
-      typeof options === 'object' &&
-      ('onSuccess' in options || 'onError' in options)
-    ) {
-      const callbackOpts = options as {
-        onSuccess?: (result: T) => MarkOpts;
-        onError?: (error: unknown) => MarkOpts;
-      };
-      return this.#withSpan(name, undefined, () => {
-        try {
-          const result = fn();
-          const spanOpts = callbackOpts.onSuccess?.(result);
-          if (spanOpts?.detail) {
-            this.#measureDetails.set(name, spanOpts.detail);
-          }
-          return result;
-        } catch (error) {
-          const spanOpts = callbackOpts.onError?.(error);
-          if (spanOpts?.detail) {
-            this.#measureDetails.set(name, spanOpts.detail);
-          }
-          // Add error marker detail to the end mark for proper error visualization
-          const endMarkName = `${name}:end`;
-          this.#markDetails.set(endMarkName, {
-            devtools: {
-              dataType: 'marker',
-              color: 'error',
-              properties: [
-                ['Error Type', errorDetails(error).name],
-                ['Error Message', errorDetails(error).message],
-              ],
-              tooltipText: `${errorDetails(error).name}: ${errorDetails(error).message}`,
-            },
-          });
-          throw error;
-        }
-      });
-    } else {
-      return this.#withSpan(name, options as MarkOpts, fn);
-    }
-  }
-
-  instant(name: string, options?: MarkOpts): void;
-  instant<T>(
-    name: string,
-    fn: () => T,
-    options: {
-      onSuccess?: (result: T) => MarkOpts;
-      onError?: (error: unknown) => MarkOpts;
-    },
-  ): T;
-  instant<T>(
-    name: string,
-    fnOrOptions?: (() => T) | MarkOpts,
-    callbackOpts?: {
-      onSuccess?: (result: T) => MarkOpts;
-      onError?: (error: unknown) => MarkOpts;
-    },
-  ): T | void {
-    if (typeof fnOrOptions === 'function' && callbackOpts) {
-      // Work function with callback options
-      const fn = fnOrOptions;
-      try {
-        const result = fn();
-        const markOpts = callbackOpts.onSuccess?.(result);
-        if (this.#enabled) {
-          this.#markWithDetail(name, markOpts);
-        }
-        return result;
-      } catch (error) {
-        const markOpts = callbackOpts.onError?.(error);
-        if (this.#enabled) {
-          this.#markWithDetail(name, markOpts);
-        }
-        throw error;
-      }
-    } else {
-      // Normal instant case
-      const opts = fnOrOptions as MarkOpts | undefined;
-      if (!this.#enabled) return;
-      this.#markWithDetail(name, opts);
-    }
-  }
-
-  #markWithDetail(name: string, options?: MarkOpts): void {
-    const detail =
-      options?.detail ?? getAutoDetectedDetail(this.#spansRegistry);
-    this.mark(
-      name,
-      detail === undefined ? options : { ...(options ?? {}), detail },
-    );
-  }
-
-  #writeFatalError(error: unknown): void {
-    if (this.#closed || !this.#traceFile) return;
-
-    const fatal: InstantEvent = errorToTraceEvent(error, {
-      pid: process.pid,
-      tid: threadId,
-    });
-    this.#traceFile.write(fatal);
   }
 }

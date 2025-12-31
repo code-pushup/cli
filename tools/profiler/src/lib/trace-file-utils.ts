@@ -1,10 +1,14 @@
 import { performance } from 'node:perf_hooks';
+import { markToTraceEvent, measureToTraceEvents } from './trace-file-output';
 import type {
+  BeginEvent,
   CompleteEvent,
+  EndEvent,
   InstantEvent,
   SpanEvent,
-} from './trace-events.types';
-import { markToTraceEvent, measureToTraceEvents } from './trace-file-output';
+  TraceEvent,
+} from './trace-file.type';
+import { createErrorLabelFromError } from './user-timing-details-utils';
 
 /**
  * Converts a performance timestamp to Chrome trace format timestamp in microseconds.
@@ -20,7 +24,7 @@ import { markToTraceEvent, measureToTraceEvents } from './trace-file-output';
  * @param relativeTime - Relative time in milliseconds (defaults to performance.now())
  * @returns Timestamp in microseconds, aligned with Chrome trace format
  */
-function toChromeTraceTimestamp(
+export function relativeToAbsuloteTime(
   ts?: number,
   relativeTime = performance.now(),
 ): number {
@@ -42,26 +46,21 @@ export function getTimingEventInstant(options: {
   entry?: PerformanceMark;
   name: string;
   ts?: number;
-  timeOrigin?: number;
-  detail?: any;
   pid: number;
   tid: number;
   nextId2?: () => { local: string }; // Optional since not used for instant events
 }): InstantEvent {
   // {"args":{"data":{"callTime":37300251007,"detail":"{\"name\":\"invoke-has-pre-registration-flag\",\"componentName\":\"messaging\",\"spanId\":3168785428,\"traceId\":613107129,\"error\":false}","navigationId":"234F7482B1E9D4B1EEA32305D6FBF815","sampleTraceId":8589113407370704,"startTime":229}},"cat":"blink.user_timing","name":"start-invoke-has-pre-registration-flag","ph":"I","pid":31825,"s":"t","tid":1197643,"ts":37300250992,"tts":179196},
-  const { pid, tid, nextId2, entry, name, ts, detail } = options;
+  const { pid, tid, nextId2, entry, name, ts } = options;
 
   // Determine timestamp: use provided ts, or calculate from entry if available
   // Use absolute timestamps for cross-process alignment (Strategy B)
   const timestamp = entry
-    ? toChromeTraceTimestamp(ts, entry.startTime)
-    : toChromeTraceTimestamp(ts);
+    ? relativeToAbsuloteTime(ts, entry.startTime)
+    : relativeToAbsuloteTime(ts);
 
-  // Merge details: entry detail + provided detail
-  const mergedDetail =
-    entry?.detail || detail
-      ? Object.assign({}, entry?.detail, detail)
-      : undefined;
+  // @TODO remove after tests
+  const offset = entry ? entry.detail?.offest : 0;
 
   const traceEvent: InstantEvent = {
     cat: 'blink.user_timing',
@@ -70,11 +69,10 @@ export function getTimingEventInstant(options: {
     s: 't', // Timeline scope
     pid,
     tid,
-    ts: timestamp,
+    ts: timestamp + offset,
     args: {
       data: {
-        ...(mergedDetail && { detail: JSON.stringify(mergedDetail) }),
-        startTime: entry?.startTime || 0,
+        ...(entry?.detail && { detail: JSON.stringify(entry?.detail) }),
       },
     },
   };
@@ -82,24 +80,95 @@ export function getTimingEventInstant(options: {
   return traceEvent;
 }
 
-export function getTimingEventSpan(options: {
-  entry: PerformanceMeasure;
-  name?: string;
-  detail?: any;
-  pid: number;
-  tid: number;
-}): [SpanEvent, SpanEvent] {
-  const { pid, tid, entry, name: explicitName, detail } = options;
+/**
+ * Helper for Error Mark entries
+ * - emits an instant event (ph: i)
+ * - timestamps stay in ms
+ */
+export function errorToInstantEvent(
+  error: unknown,
+  options: {
+    pid: number;
+    tid: number;
+  },
+): InstantEvent {
+  const { pid, tid } = options;
+
+  const errorName = error instanceof Error ? error.name : 'UnknownError';
+
+  return {
+    cat: 'blink.user_timing',
+    name: `err-${errorName}`,
+    ph: 'I',
+    s: 't',
+    pid,
+    tid,
+    ts: relativeToAbsuloteTime(),
+    args: {
+      data: {
+        detail: JSON.stringify({
+          devtools: createErrorLabelFromError(error),
+        }),
+      },
+    },
+  };
+}
+
+export function getSpanEvent(
+  ph: 'b',
+  opt: Pick<SpanEvent, 'name' | 'pid' | 'tid' | 'ts' | 'id2'> & {
+    argsDetail?: Record<string, unknown>;
+  },
+): BeginEvent;
+export function getSpanEvent(
+  ph: 'e',
+  opt: Pick<SpanEvent, 'name' | 'pid' | 'tid' | 'ts' | 'id2'> & {
+    argsDetail: Record<string, unknown>;
+  },
+): EndEvent;
+export function getSpanEvent(
+  ph: 'b' | 'e',
+  opt: Pick<SpanEvent, 'name' | 'pid' | 'tid' | 'ts' | 'id2'> & {
+    argsDetail: Record<string, unknown>;
+  },
+): BeginEvent | EndEvent {
+  const { pid, tid, name, ts, id2, argsDetail, ...options } = opt;
+  return {
+    cat: 'blink.user_timing',
+    name,
+    ph,
+    pid,
+    tid,
+    ts,
+    id2,
+    args: argsDetail ? { detail: JSON.stringify(argsDetail) } : {},
+    ...options,
+  };
+}
+
+const z = getSpanEvent('b', {
+  ts: 0,
+  pid: 0,
+  tid: 0,
+  name: '',
+  id2: { local: '0x0' },
+});
+
+export function getTimingEventSpan(
+  entry: PerformanceMeasure,
+  options: Pick<SpanEvent, 'pid' | 'tid' | 'ts' | 'name'>,
+): [BeginEvent, EndEvent] {
+  const { pid, tid, name: explicitName } = options;
 
   const eventName = explicitName ?? entry.name;
-  const startUs = toChromeTraceTimestamp(undefined, entry.startTime);
-  const endUs = toChromeTraceTimestamp(
+  const startUs = relativeToAbsuloteTime(undefined, entry.startTime);
+  const endUs = relativeToAbsuloteTime(
     undefined,
     entry.startTime + entry.duration,
   );
 
   // For measures, try to get detail from the corresponding start mark
-  let measureDetail = entry?.detail || detail;
+  let measureDetail = entry?.detail;
   if (!measureDetail && eventName) {
     const startMarkName = `${eventName}:start`;
     const startMark = performance.getEntriesByName(
@@ -111,33 +180,29 @@ export function getTimingEventSpan(options: {
     }
   }
 
-  const mergedDetail = measureDetail
+  const argsDetail = measureDetail
     ? Object.assign({}, measureDetail)
     : undefined;
 
   const id2 = nextId2();
 
-  const begin: SpanEvent = {
-    cat: 'blink.user_timing',
+  const begin: BeginEvent = getSpanEvent('b', {
     name: eventName,
-    ph: 'b',
     pid,
     tid,
     ts: startUs,
     id2,
-    args: mergedDetail ? { detail: JSON.stringify(mergedDetail) } : {},
-  };
+    argsDetail,
+  });
 
-  const end: SpanEvent = {
-    cat: 'blink.user_timing',
+  const end: EndEvent = getSpanEvent('e', {
     name: eventName,
-    ph: 'e',
     pid,
     tid,
     ts: endUs,
     id2,
-    args: {},
-  };
+    argsDetail,
+  });
 
   return [begin, end];
 }
@@ -150,20 +215,18 @@ export function getFrameName(pid: number, tid: number): string {
   return `FRAME0P${pid}T${tid}`;
 }
 
-export function getStartTracing(
-  pid: number,
-  tid: number,
-  opt: {
-    traceStartTs: number;
-    url: string;
-  },
-): InstantEvent {
-  const { traceStartTs, url } = opt;
+export function getStartTracing(opt: {
+  pid: number;
+  tid: number;
+  traceStartTs: number;
+  url: string;
+}): TraceEvent {
+  const { traceStartTs, url, pid, tid } = opt;
   const frameTreeNodeId = getFrameTreeNodeId(pid, tid);
   return {
     cat: 'devtools.timeline',
     name: 'TracingStartedInBrowser',
-    ph: 'i',
+    ph: 'I',
     pid,
     tid,
     ts: traceStartTs,
@@ -184,10 +247,10 @@ export function getStartTracing(
         persistentIds: true,
       },
     },
-  } as InstantEvent;
+  };
 }
 
-export function getRunTaskTraceEvent(
+export function getCompleteEvent(
   pid: number,
   tid: number,
   opt: {
@@ -208,83 +271,19 @@ export function getRunTaskTraceEvent(
   } as CompleteEvent;
 }
 
-// Flow event generators for causality tracking
-export function getTimingEventFlowStart(options: {
-  name: string;
-  id: string;
-  pid: number;
-  tid: number;
-  ts?: number;
-  bp?: 'e' | 's';
-  detail?: any;
-}): import('./trace-events.types').FlowStartEvent {
-  const { name, id, pid, tid, ts, bp, detail } = options;
-
-  const timestamp = toChromeTraceTimestamp(ts);
-
-  const event: import('./trace-events.types').FlowStartEvent = {
-    cat: 'blink.user_timing',
-    name,
-    ph: 's',
-    id,
-    pid,
-    tid,
-    ts: timestamp,
-    args: detail ? { detail: JSON.stringify(detail) } : {},
-  };
-
-  if (bp) {
-    event.bp = bp;
-  }
-
-  return event;
-}
-export function getTimingEventFlowEnd(options: {
-  name: string;
-  id: string;
-  pid: number;
-  tid: number;
-  ts?: number;
-  bp?: 'e' | 's';
-  detail?: any;
-}): import('./trace-events.types').FlowEndEvent {
-  const { name, id, pid, tid, ts, bp, detail } = options;
-
-  const timestamp = toChromeTraceTimestamp(ts);
-
-  const event: import('./trace-events.types').FlowEndEvent = {
-    cat: 'blink.user_timing',
-    name,
-    ph: 'f',
-    id,
-    pid,
-    tid,
-    ts: timestamp,
-    args: detail ? { detail: JSON.stringify(detail) } : {},
-  };
-
-  if (bp) {
-    event.bp = bp;
-  }
-
-  return event;
-}
-
 /**
  * Convert a ProfilingEvent (mark or measure) to TraceEvent(s)
  */
 export function timingEventToTraceEvent(
   event: import('./trace-file-output').ProfilingEvent,
-  pid: number,
-  tid: number,
-  measureDetails?: Map<string, any>,
-  markDetails?: Map<string, any>,
+  opt: Pick<TraceEvent, 'pid' | 'tid' | 'ts'>,
 ): (InstantEvent | SpanEvent)[] {
+  const { pid, tid, ts } = opt;
   switch (event.entryType) {
     case 'mark':
-      return [markToTraceEvent(event, { pid, tid }, markDetails)];
+      return [markToTraceEvent(event, { pid, tid, ts })];
     case 'measure':
-      return measureToTraceEvents(event, { pid, tid }, measureDetails);
+      return measureToTraceEvents(event, { pid, tid, ts });
     default:
       return [];
   }

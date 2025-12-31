@@ -15,6 +15,7 @@ export type TraceEvent = {
 
 // Specific event types for better type safety
 export interface InstantEvent extends TraceEvent {
+  cat: 'blink.user_timing';
   ph: 'I' | 'i'; // Instant events
   s: 't'; // Timeline scope
   dur?: never; // No duration for instant events

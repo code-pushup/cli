@@ -1,6 +1,6 @@
 import process from 'node:process';
 import { setTimeout as sleep } from 'timers/promises';
-import { getProfiler } from '../src/index.js';
+import { getProfiler } from '../../src/index.js';
 
 async function runTest() {
   const profiler = getProfiler({

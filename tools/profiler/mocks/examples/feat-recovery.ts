@@ -1,8 +1,8 @@
 import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
-import { getProfiler } from '../src/index.js';
-import { createTraceFile } from '../src/lib/trace-file-output.js';
+import { getProfiler } from '../../src/index.js';
+import { createTraceFile } from '../../src/lib/trace-file-output.js';
 
 async function createBrokenJsonl() {
   // Create tmp/profiles directory if it doesn't exist

@@ -2,12 +2,12 @@ import { PerformanceObserver, performance } from 'node:perf_hooks';
 import { type ProfilingEvent } from './trace-file-output';
 
 export interface PerformanceObserverOptions {
-  writeEvent: (event: ProfilingEvent) => void;
+  processEvent: (event: ProfilingEvent) => void;
   captureBuffered?: boolean;
 }
 
 export interface PerformanceObserverHandle {
-  flush: () => void;
+  flush: (clear?: boolean) => void;
   disconnect: () => void;
   isConnected: () => boolean;
 }
@@ -15,31 +15,35 @@ export interface PerformanceObserverHandle {
 export function createPerformanceObserver(
   options: PerformanceObserverOptions,
 ): PerformanceObserverHandle {
-  const { writeEvent, captureBuffered = true } = options;
+  const { processEvent: writeEvent, captureBuffered = true } = options;
 
-  const handleEntries = (entries: readonly PerformanceEntry[]) => {
+  const handleEntries = (
+    entries: readonly PerformanceEntry[],
+    clear = false,
+  ) => {
     for (const e of entries) {
       if (e.entryType !== 'mark' && e.entryType !== 'measure') continue;
-      console.log('writing event', e.name, e.entryType);
+      console.log('writing event', e.name, e.entryType, e.toJSON());
       writeEvent(e as ProfilingEvent);
 
-      // Clear the processed entries
-      // if (e.entryType === 'mark') performance.clearMarks(e.name);
-      //  if (e.entryType === 'measure') performance.clearMeasures(e.name);
+      if (clear) {
+        if (e.entryType === 'mark') performance.clearMarks(e.name);
+        if (e.entryType === 'measure') performance.clearMeasures(e.name);
+      }
     }
   };
 
-  const flush = () => {
+  const flush = (clear?: boolean) => {
     const entries = [
       ...performance.getEntriesByType('mark'),
       ...performance.getEntriesByType('measure'),
     ];
-    handleEntries(entries);
+    handleEntries(entries, clear);
   };
 
-  // initially flush all buffered entries
+  // initially flush all buffered entries and clear them
   if (captureBuffered) {
-    flush();
+    flush(true);
   }
 
   let observer: PerformanceObserver | undefined = new PerformanceObserver(

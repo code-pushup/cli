@@ -11,25 +11,37 @@ export type DevToolsColorToken =
   | 'error'
   | 'warning';
 
+export type DevToolsDataType = 'mark' | 'track-entry';
+
 export type DevToolsProperties = Array<[key: string, value: string]>;
 
 export interface DevToolsBase {
+  dataType?: DevToolsDataType;
   color?: DevToolsColorToken;
   tooltipText?: string;
   properties?: DevToolsProperties;
 }
 
-export interface DevToolsTrackEntry extends DevToolsBase {
-  // DevTools treats missing dataType as track-entry as long as track is set
-  dataType?: 'track-entry';
+export interface DevToolsTrackBase extends DevToolsBase {
   // Required: Name of the custom track
   track: string;
   // Optional: Group for organizing tracks
   trackGroup?: string;
 }
 
-export interface DevToolsMarker extends DevToolsBase {
-  dataType: 'marker';
+export interface DevToolsLabel extends Omit<DevToolsBase, 'dataType'> {
+  dataType: 'mark';
+}
+export interface DevToolsMark extends Omit<DevToolsTrackBase, 'dataType'> {
+  dataType: 'track-entry';
+  track: string;
+}
+
+export interface DevToolsMarkError extends Omit<DevToolsTrackBase, 'dataType'> {
+  dataType: 'track-entry';
+  track: string;
+  // colors mark in red
+  color: 'error';
 }
 
 /**
@@ -38,17 +50,23 @@ export interface DevToolsMarker extends DevToolsBase {
  * It also draws a vertical line across all tracks.
  * Both the label and the vertical line are colored red
  */
-export interface DevToolsErrorLabel extends DevToolsMarker {
+export interface DevToolsLabelError
+  extends Omit<DevToolsBase, 'track' | 'color'> {
   // To render a mark as label, the track must be missing
   track: never;
   // colors label and vertical line in red
   color: 'error';
 }
 
+export interface DevToolsTrackEntry extends DevToolsTrackBase {
+  // DevTools treats missing dataType as track-entry as long as track is set
+  dataType?: 'track-entry';
+}
+
 export type DevToolsPayload =
   | DevToolsTrackEntry
-  | DevToolsMarker
-  | DevToolsErrorLabel;
+  | DevToolsMark
+  | DevToolsLabelError;
 
 // This is the bit you stick into mark/measure detail on the custom tracks and labels:
 export interface UserTimingDetail {

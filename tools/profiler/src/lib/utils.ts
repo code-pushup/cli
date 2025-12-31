@@ -19,11 +19,13 @@ export interface FilenameParts {
   filename: string;
 }
 
+export const PROFILER_OUT_DIR = path.join('tmp', 'profiles');
+export const PROFILER_FILE_BASE_NAME = 'timing.profile';
+
 export function getFilenameParts(options: ProfilerOptions): FilenameParts {
-  const directory = options.outDir ?? path.join('tmp', 'profiles');
-  const baseName = options.fileBaseName ?? 'timing.profile';
-  const id =
-    options.id ?? new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+  const directory = options.outDir ?? PROFILER_OUT_DIR;
+  const baseName = options.fileBaseName ?? PROFILER_FILE_BASE_NAME;
+  const id = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
 
   // Combine base name with ID if provided
   const filename = id ? `${baseName}.${id}` : baseName;
