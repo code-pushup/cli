@@ -1,5 +1,9 @@
 # @code-pushup/nx-plugin
 
+[![npm](https://img.shields.io/npm/v/%40code-pushup%2Fnx-plugin.svg)](https://www.npmjs.com/package/@code-pushup/nx-plugin)
+[![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Fnx-plugin)](https://npmtrends.com/@code-pushup/nx-plugin)
+[![dependencies](https://img.shields.io/librariesio/release/npm/%40code-pushup/nx-plugin)](https://www.npmjs.com/package/@code-pushup/nx-plugin?activeTab=dependencies)
+
 ### Plugin
 
 Register this plugin in your `nx.json` to leverage a set of generators and executors to integrate Code PushUp into a Nx workspace.

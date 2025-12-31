@@ -15,7 +15,7 @@ It supports the following package managers:
   - In order to check outdated dependencies for Yarn v2+, you need to install [`yarn-plugin-outdated`](https://github.com/mskelton/yarn-plugin-outdated).
 - [PNPM](https://pnpm.io/pnpm-cli)
 
-> ![NOTE]
+> [!NOTE]
 > As of now, Yarn v2 does not support security audit of optional dependencies. Only production and dev dependencies audits will be included in the report.
 
 ## Getting started
