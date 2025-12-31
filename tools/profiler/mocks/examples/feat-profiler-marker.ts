@@ -65,7 +65,7 @@ async function run() {
 
   // === start mark ===
   const profiler = getProfiler({
-    fileBaseName: 'utils-profiling',
+    fileBaseName: 'feat-profiler-marker',
     enabled: true,
     captureBuffered: true,
   });
@@ -151,6 +151,8 @@ async function run() {
       optionCallbacks,
     );
   } catch (err) {}
+
+  profiler.close();
 }
 
 await run();

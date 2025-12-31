@@ -17,7 +17,7 @@ export function createErrorLabel(
   },
 ): DevToolsLabelError {
   return {
-    dataType: 'mark',
+    dataType: 'marker',
     color: 'error',
     track: undefined as never,
     properties: mergePropertiesWithOverwrite(
@@ -41,7 +41,7 @@ export function createLabel(
   options?: Omit<DevToolsLabel, 'dataType'>,
 ): DevToolsLabel {
   return {
-    dataType: 'mark',
+    dataType: 'marker',
     ...options,
   };
 }
@@ -50,7 +50,7 @@ export function createLabelError(
   options?: Omit<DevToolsLabel, 'dataType' | 'color'>,
 ): DevToolsLabel {
   return {
-    dataType: 'mark',
+    dataType: 'marker',
     color: 'error',
     ...options,
   };
@@ -60,7 +60,7 @@ export function createLabelWarning(
   options?: Omit<DevToolsLabel, 'dataType' | 'color'>,
 ): DevToolsLabel {
   return {
-    dataType: 'mark',
+    dataType: 'marker',
     color: 'warning',
     ...options,
   };

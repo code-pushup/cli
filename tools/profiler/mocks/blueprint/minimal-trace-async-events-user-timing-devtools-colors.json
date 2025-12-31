@@ -5,7 +5,7 @@
       "name": "TracingStartedInBrowser",
       "ph": "I",
       "pid": 1,
-      "tid": 1,
+      "tid": 0,
       "ts": 1,
       "s": "t",
       "args": {
@@ -21,7 +21,21 @@
     },
     {
       "args": {
-        "detail": "{\"devtools\":{\"dataType\":\"marker\",\"track\":\"CustomT\",\"trackGroup\":\"CustomG\"}}"
+        "description": "Artificial RunTask event to mark end of the trace"
+      },
+      "cat": "devtools.timeline",
+      "dur": 10,
+      "name": "RunTask",
+      "ph": "X",
+      "pid": 1,
+      "tid": 0,
+      "ts": 1
+    },
+    {
+      "args": {
+        "data": {
+          "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"track\":\"CustomT\",\"trackGroup\":\"CustomG\"}}"
+        }
       },
       "cat": "blink.user_timing",
       "name": "measure-1:start",
@@ -61,7 +75,9 @@
     },
     {
       "args": {
-        "detail": "{\"devtools\":{\"dataType\":\"marker\",\"track\":\"CustomT\",\"trackGroup\":\"CustomG\"}}"
+        "data": {
+          "detail": "{\"devtools\":{\"dataType\":\"marker\",\"track\":\"CustomT\",\"trackGroup\":\"CustomG\"}}"
+        }
       },
       "cat": "blink.user_timing",
       "name": "measure-1:end",
@@ -81,7 +97,7 @@
       "name": "RunTask",
       "ph": "X",
       "pid": 1,
-      "tid": 1,
+      "tid": 0,
       "ts": 165
     }
   ]

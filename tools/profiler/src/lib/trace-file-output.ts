@@ -7,8 +7,10 @@ import {
   getCompleteEvent,
   getInstantEvent,
   getStartTracing,
+  performanceTimestampToTraceTimestamp,
 } from './trace-file-utils';
 import type { InstantEvent, TraceEvent } from './trace-file.type';
+import { createLabel } from './user-timing-details-utils';
 import type { UserTimingDetail } from './user-timing-details.type';
 
 export type ExtendedPerformanceMark = PerformanceMark & {
@@ -187,6 +189,7 @@ function fromJsonLines(lines: string[]): {
   if (parsedLines.length === 0) {
     throw new Error('No valid trace events found in JSONL content');
   }
+  parsedLines.sort((a, b) => a.ts - b.ts);
 
   return {
     events: parsedLines,
@@ -259,6 +262,11 @@ export function createTraceFile(opts: {
   });
   const creation = performance.now();
 
+  // Create empty file immediately so tests can check for its existence
+  if (!existsSync(jsonlPath)) {
+    writeFileSync(jsonlPath, '', 'utf8');
+  }
+
   const initEmptyFile = () => {
     const dir = path.dirname(filePath);
     if (!existsSync(dir)) {
@@ -313,15 +321,21 @@ export function createTraceFile(opts: {
         const lines = rawJsonl.trim().split('\n');
         const { events, first, last } = fromJsonLines(lines);
 
+        // To have nice readability of events close to the start and end, we attach a margin to the measures
+        const tsMargin = 1000;
         const jsonOutput = createTraceFileContent(
           [
             ...outputFormat.preamble({
-              ts: Math.max(creation, first.ts),
+              ts:
+                Math.max(
+                  performanceTimestampToTraceTimestamp(creation),
+                  first.ts,
+                ) - tsMargin,
               url: filePath,
             }),
             ...events.map(s => JSON.stringify(s)),
             ...outputFormat.epilogue({
-              ts: last.ts + 10,
+              ts: last.ts + tsMargin,
             }),
           ].join(',\n'),
         );

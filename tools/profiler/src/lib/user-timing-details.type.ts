@@ -11,7 +11,7 @@ export type DevToolsColorToken =
   | 'error'
   | 'warning';
 
-export type DevToolsDataType = 'mark' | 'track-entry';
+export type DevToolsDataType = 'marker' | 'track-entry';
 
 export type DevToolsProperties = Array<[key: string, value: string]>;
 
@@ -30,7 +30,7 @@ export interface DevToolsTrackBase extends DevToolsBase {
 }
 
 export interface DevToolsLabel extends Omit<DevToolsBase, 'dataType'> {
-  dataType: 'mark';
+  dataType: 'marker';
 }
 export interface DevToolsMark extends Omit<DevToolsTrackBase, 'dataType'> {
   dataType: 'track-entry';
@@ -51,7 +51,7 @@ export interface DevToolsMarkError extends Omit<DevToolsTrackBase, 'dataType'> {
  * Both the label and the vertical line are colored red
  */
 export interface DevToolsLabelError
-  extends Omit<DevToolsBase, 'track' | 'color'> {
+  extends Omit<DevToolsLabel & DevToolsBase, 'track' | 'color'> {
   // To render a mark as label, the track must be missing
   track: never;
   // colors label and vertical line in red

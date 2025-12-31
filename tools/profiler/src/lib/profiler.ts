@@ -22,7 +22,11 @@ import {
   createTraceFile,
   markToTraceEvent,
 } from './trace-file-output';
-import { getInstantEvent, measureToSpanEvents } from './trace-file-utils';
+import {
+  getInstantEvent,
+  measureToSpanEvents,
+  performanceTimestampToTraceTimestamp,
+} from './trace-file-utils';
 import type { InstantEvent, SpanEvent, TraceEvent } from './trace-file.type';
 import {
   type DevtoolsSpanConfig,
@@ -30,6 +34,7 @@ import {
   type DevtoolsSpansRegistry,
   createDevtoolsSpans,
   createErrorLabel,
+  createLabel,
 } from './user-timing-details-utils.js';
 import { getFilenameParts, installExitHandlersOnce } from './utils';
 
@@ -92,7 +97,7 @@ export class Profiler<K extends string = never> implements ProfilerMethods {
 
   constructor(options: ProfilerOptions<K> = {}) {
     const {
-      enabled = process.env[PROFILER_ENV_VAR] === 'true',
+      enabled = process.env[PROFILER_ENV_VAR] !== 'false',
       captureBuffered,
       metadata,
       spans,
@@ -123,6 +128,19 @@ export class Profiler<K extends string = never> implements ProfilerMethods {
         flushEveryN: 200,
       });
 
+      const initProfilerFile = getInstantEvent({
+        name: 'PROFILER:CREATE-FILE',
+        ts: performanceTimestampToTraceTimestamp(this.#traceFile.creation),
+        pid: process.pid,
+        tid: threadId,
+        argsDataDetail: {
+          devtools: createLabel({
+            tooltipText: `Profiler initialized - empty ${this.#traceFile.filePath}`,
+          }),
+        },
+      });
+      this.#traceFile.write(initProfilerFile);
+
       this.#performanceObserver = createPerformanceObserver({
         captureBuffered,
         processEvent: event => {
@@ -149,7 +167,9 @@ export class Profiler<K extends string = never> implements ProfilerMethods {
                 pid: process.pid,
                 tid: threadId,
                 name: `FATAL: ${errorName}`,
-                ts: this.#traceFile.creation,
+                ts: performanceTimestampToTraceTimestamp(
+                  this.#traceFile.creation,
+                ),
                 argsDataDetail: {
                   devtools: createErrorLabel(error),
                 },
@@ -252,8 +272,6 @@ export class Profiler<K extends string = never> implements ProfilerMethods {
       console.warn('[profiler] flush failed', e);
     }
 
-    this.#closed = true;
-
     try {
       this.#performanceObserver?.disconnect();
     } catch (e) {
@@ -261,11 +279,25 @@ export class Profiler<K extends string = never> implements ProfilerMethods {
     }
     this.#performanceObserver = undefined;
 
+    const closeProfiler = getInstantEvent({
+      name: 'PROFILER:CLOSE',
+      ts: performanceTimestampToTraceTimestamp(performance.now()),
+      pid: process.pid,
+      tid: threadId,
+      argsDataDetail: {
+        devtools: createLabel({
+          tooltipText: `Profiler closed`,
+        }),
+      },
+    });
+    this.#traceFile?.write(closeProfiler);
+
     try {
       this.#traceFile?.close();
     } catch (e) {
       console.warn('[profiler] trace close failed', e);
     }
+    this.#closed = true;
     this.#traceFile = undefined;
   }
 }

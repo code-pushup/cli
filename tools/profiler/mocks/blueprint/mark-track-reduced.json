@@ -66,14 +66,10 @@
       "pid": 49512,
       "tid": 0,
       "ts": 272245587193,
-      "args": {
-        "id2": {
-          "local": "0x2"
-        },
-        "data": {
-          "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"track\":\"CLI\",\"trackGroup\":\"CodePushUp\",\"color\":\"tertiary-dark\",\"properties\":[[\"Data Source\",\"PostgreSQL\"],[\"Table\",\"sales_transactions\"],[\"Time Range\",\"2024-01-01 to 2024-01-31\"],[\"Records Processed\",\"1,247,891\"],[\"Memory Usage\",\"89 MB\"],[\"CPU Cores Used\",\"4\"],[\"Parallel Workers\",\"8\"],[\"Aggregation Type\",\"Daily revenue by region\"],[\"Cache Hit Rate\",\"94%\"]],\"tooltipText\":\"Monthly sales data analysis - processed 1.2M records efficiently\"}}"
-        }
-      }
+      "id2": {
+        "local": "0x2"
+      },
+      "args": {}
     },
     {
       "cat": "blink.user_timing",
@@ -82,14 +78,10 @@
       "pid": 49512,
       "tid": 0,
       "ts": 272245595997,
-      "args": {
-        "id2": {
-          "local": "0x2"
-        },
-        "data": {
-          "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"track\":\"CLI\",\"trackGroup\":\"CodePushUp\",\"color\":\"tertiary-dark\",\"properties\":[[\"Data Source\",\"PostgreSQL\"],[\"Table\",\"sales_transactions\"],[\"Time Range\",\"2024-01-01 to 2024-01-31\"],[\"Records Processed\",\"1,247,891\"],[\"Memory Usage\",\"89 MB\"],[\"CPU Cores Used\",\"4\"],[\"Parallel Workers\",\"8\"],[\"Aggregation Type\",\"Daily revenue by region\"],[\"Cache Hit Rate\",\"94%\"]],\"tooltipText\":\"Monthly sales data analysis - processed 1.2M records efficiently\"}}"
-        }
-      }
+      "id2": {
+        "local": "0x2"
+      },
+      "args": {}
     },
     {
       "args": {},

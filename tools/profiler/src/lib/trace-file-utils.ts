@@ -7,7 +7,12 @@ import type {
   SpanEvent,
   TraceEvent,
 } from './trace-file.type';
-import type { DevToolsPayload } from './user-timing-details.type';
+import type {
+  DevToolsLabel,
+  DevToolsLabelError,
+  DevToolsMark,
+  DevToolsPayload,
+} from './user-timing-details.type';
 
 /**
  * Converts a performance entry's timestamp to Chrome trace format timestamp in microseconds.
@@ -26,6 +31,20 @@ export function entryToTraceTimestamp(
   const timeOriginBase = 1766930000000; // Base to align with Chrome trace format
   const effectiveTimeOrigin = performance.timeOrigin - timeOriginBase;
   return Math.round((effectiveTimeOrigin + relativeTime) * 1000);
+}
+
+/**
+ * Converts a performance.now() timestamp to Chrome trace format timestamp in microseconds.
+ *
+ * @param performanceNow - Timestamp from performance.now() in milliseconds
+ * @returns Timestamp in microseconds, aligned with Chrome trace format
+ */
+export function performanceTimestampToTraceTimestamp(
+  performanceNow: number,
+): number {
+  const timeOriginBase = 1766930000000; // Base to align with Chrome trace format
+  const effectiveTimeOrigin = performance.timeOrigin - timeOriginBase;
+  return Math.round((effectiveTimeOrigin + performanceNow) * 1000);
 }
 
 const nextId2 = (() => {
@@ -48,18 +67,29 @@ export function markToEventInstant(
   });
 }
 
-export type DetailShortcut = {
-  argsDataDetail?: {
+export type MeasureDetailShortcut = {
+  // needed for ph I timing marks only (assuming a bug in ChromeDevtools :) )
+  argsDetail?: {
     devtools: DevToolsPayload;
   };
 };
+export type MarkerDetailShortcut = {
+  // needed for ph b/e timing entries only (assuming a bug in ChromeDevtools :) )
+  argsDataDetail?: {
+    devtools: DevToolsMark | DevToolsLabel;
+  };
+};
+export type DevtoolsDetailShortcuts = MeasureDetailShortcut &
+  MarkerDetailShortcut;
 
-export function getEventArgsPayload(argsDataDetail?: Record<string, unknown>) {
-  return argsDataDetail
-    ? {
-        detail: JSON.stringify(argsDataDetail),
-      }
-    : {};
+export function getEventArgsPayload(args: DevtoolsDetailShortcuts) {
+  const { argsDataDetail, argsDetail } = args;
+  return {
+    ...(argsDetail ? { detail: JSON.stringify(argsDetail) } : {}),
+    data: {
+      ...(argsDataDetail ? { detail: JSON.stringify(argsDataDetail) } : {}),
+    },
+  };
 }
 
 export function getInstantEvent(
@@ -68,7 +98,7 @@ export function getInstantEvent(
     ts: number;
     pid: number;
     tid: number;
-  } & DetailShortcut,
+  } & MarkerDetailShortcut,
 ): InstantEvent {
   const { argsDataDetail, name, pid, tid, ts } = options;
   return {
@@ -79,7 +109,7 @@ export function getInstantEvent(
     pid,
     tid,
     ts,
-    args: getEventArgsPayload(argsDataDetail),
+    args: getEventArgsPayload({ argsDataDetail }),
   };
 }
 
@@ -95,7 +125,7 @@ export function errorToInstantEvent(
     pid: number;
     tid: number;
     ts: number;
-  } & DetailShortcut,
+  } & MeasureDetailShortcut,
 ): InstantEvent {
   const errorName = error instanceof Error ? error.name : 'UnknownError';
 
@@ -107,9 +137,10 @@ export function errorToInstantEvent(
 
 export function getSpanEvent(
   ph: 'b' | 'e',
-  opt: Pick<SpanEvent, 'name' | 'pid' | 'tid' | 'ts' | 'id2'> & DetailShortcut,
+  opt: Pick<SpanEvent, 'name' | 'pid' | 'tid' | 'ts' | 'id2'> &
+    MeasureDetailShortcut,
 ): BeginEvent | EndEvent {
-  const { argsDataDetail, name, pid, tid, ts, id2 } = opt;
+  const { argsDetail, name, pid, tid, ts, id2 } = opt;
 
   return {
     cat: 'blink.user_timing',
@@ -120,7 +151,7 @@ export function getSpanEvent(
     tid,
     ts,
     id2,
-    args: getEventArgsPayload(argsDataDetail),
+    args: getEventArgsPayload({ argsDetail }),
   };
 }
 
@@ -128,8 +159,15 @@ export function measureToSpanEvents(
   entry: PerformanceMeasure,
   options: Pick<SpanEvent, 'pid' | 'tid'>,
 ): [BeginEvent, EndEvent] {
-  const startUs = entryToTraceTimestamp(entry);
-  const endUs = entryToTraceTimestamp(entry, true);
+  // make the measure slightly smaller so the markers align perfectly.
+  // Otherwise, the marker is visible at the start of the measure below the frame
+  //
+  //        No padding     Padding
+  // spans: ========      |======|
+  // marks: |      |
+  const tsMarkerPadding = 1;
+  const startUs = entryToTraceTimestamp(entry) + tsMarkerPadding;
+  const endUs = entryToTraceTimestamp(entry, true) - tsMarkerPadding;
 
   const name = entry.name;
   const id2 = nextId2();
@@ -139,7 +177,7 @@ export function measureToSpanEvents(
     name,
     id2,
     ts: startUs,
-    argsDataDetail: entry?.detail,
+    argsDetail: entry?.detail,
   }) as BeginEvent;
 
   const end = getSpanEvent('e', {
@@ -147,7 +185,7 @@ export function measureToSpanEvents(
     name,
     id2,
     ts: endUs,
-    argsDataDetail: entry?.detail,
+    argsDetail: entry?.detail,
   }) as EndEvent;
 
   return [begin, end];
