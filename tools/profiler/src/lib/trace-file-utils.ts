@@ -15,6 +15,31 @@ import type {
 } from './user-timing-details.type';
 
 /**
+ * Converts performance time (milliseconds since timeOrigin) to Chrome trace format timestamp in microseconds.
+ *
+ * @param performanceTimeMs - Time in milliseconds since performance.timeOrigin
+ * @returns Timestamp in microseconds, aligned with Chrome trace format
+ */
+export function performanceTimeToTraceTime(performanceTimeMs: number): number {
+  const timeOriginBase = 1766930000000; // Base to align with Chrome trace format
+  const effectiveTimeOrigin = performance.timeOrigin - timeOriginBase;
+  return Math.round((effectiveTimeOrigin + performanceTimeMs) * 1000);
+}
+
+/**
+ * Converts a Chrome trace format timestamp back to a Date object.
+ *
+ * @param traceTimeUs - Timestamp in microseconds from Chrome trace format
+ * @returns Date object representing the timestamp
+ */
+export function traceTimeToDate(traceTimeUs: number): Date {
+  const timeOriginBase = 1766930000000; // Base to align with Chrome trace format
+  const effectiveTimeOrigin = performance.timeOrigin - timeOriginBase;
+  const performanceTimeMs = traceTimeUs / 1000 - effectiveTimeOrigin;
+  return new Date(performance.timeOrigin + performanceTimeMs);
+}
+
+/**
  * Converts a performance entry's timestamp to Chrome trace format timestamp in microseconds.
  *
  * @param entry - Performance entry (mark, measure) containing startTime and potential duration
@@ -25,12 +50,10 @@ export function entryToTraceTimestamp(
   entry: PerformanceEntry,
   asEndTime: boolean = false,
 ): number {
-  const duration =
-    entry.entryType === 'measure' && asEndTime ? entry.duration : 0;
-  const relativeTime = entry.startTime + duration;
-  const timeOriginBase = 1766930000000; // Base to align with Chrome trace format
-  const effectiveTimeOrigin = performance.timeOrigin - timeOriginBase;
-  return Math.round((effectiveTimeOrigin + relativeTime) * 1000);
+  const performanceTime =
+    entry.startTime +
+    (entry.entryType === 'measure' && asEndTime ? entry.duration : 0);
+  return performanceTimeToTraceTime(performanceTime);
 }
 
 /**
@@ -39,13 +62,15 @@ export function entryToTraceTimestamp(
  * @param performanceNow - Timestamp from performance.now() in milliseconds
  * @returns Timestamp in microseconds, aligned with Chrome trace format
  */
-export function performanceTimestampToTraceTimestamp(
-  performanceNow: number,
-): number {
-  const timeOriginBase = 1766930000000; // Base to align with Chrome trace format
-  const effectiveTimeOrigin = performance.timeOrigin - timeOriginBase;
-  return Math.round((effectiveTimeOrigin + performanceNow) * 1000);
-}
+export const performanceTimestampToTraceTimestamp = performanceTimeToTraceTime;
+
+/**
+ * Converts a Chrome trace format timestamp back to a Date object.
+ *
+ * @param traceTimestamp - Timestamp in microseconds from Chrome trace format
+ * @returns Date object representing the timestamp
+ */
+export const traceTimestampToDate = traceTimeToDate;
 
 const nextId2 = (() => {
   let counter = 1;

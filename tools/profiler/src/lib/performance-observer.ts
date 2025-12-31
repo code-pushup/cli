@@ -42,11 +42,6 @@ export function createPerformanceObserver(
     handleEntries(entries, clear);
   };
 
-  // initially flush all buffered entries and clear them
-  if (captureBuffered) {
-    flush(true);
-  }
-
   let observer: PerformanceObserver | undefined = new PerformanceObserver(
     list => handleEntries(list.getEntries()),
   );

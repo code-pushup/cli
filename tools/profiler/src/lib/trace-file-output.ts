@@ -7,7 +7,7 @@ import {
   getCompleteEvent,
   getInstantEvent,
   getStartTracing,
-  performanceTimestampToTraceTimestamp,
+  traceTimestampToDate,
 } from './trace-file-utils';
 import type { InstantEvent, TraceEvent } from './trace-file.type';
 import { createLabel } from './user-timing-details-utils';
@@ -323,14 +323,13 @@ export function createTraceFile(opts: {
 
         // To have nice readability of events close to the start and end, we attach a margin to the measures
         const tsMargin = 1000;
+        const startTs = first.ts - tsMargin;
+        const startDate = traceTimestampToDate(first.ts);
+
         const jsonOutput = createTraceFileContent(
           [
             ...outputFormat.preamble({
-              ts:
-                Math.max(
-                  performanceTimestampToTraceTimestamp(creation),
-                  first.ts,
-                ) - tsMargin,
+              ts: startTs,
               url: filePath,
             }),
             ...events.map(s => JSON.stringify(s)),
@@ -338,6 +337,7 @@ export function createTraceFile(opts: {
               ts: last.ts + tsMargin,
             }),
           ].join(',\n'),
+          startDate,
         );
 
         writeFileSync(filePath, jsonOutput, 'utf8');
