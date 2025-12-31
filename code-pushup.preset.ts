@@ -45,10 +45,7 @@ export async function configureEslintPlugin(
     plugins: [
       projectName
         ? await eslintPlugin(
-            {
-              eslintrc: `packages/${projectName}/eslint.config.js`,
-              patterns: ['.'],
-            },
+            { eslintrc: `packages/${projectName}/eslint.config.js` },
             {
               artifacts: {
                 // We leverage Nx dependsOn to only run all lint targets before we run code-pushup
