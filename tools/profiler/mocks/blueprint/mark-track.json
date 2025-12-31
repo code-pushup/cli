@@ -1,0 +1,122 @@
+{
+  "metadata": {
+    "dataOrigin": "TraceEvents",
+    "hardwareConcurrency": 1,
+    "source": "DevTools",
+    "startTime": "recovered-2025-12-31T17:25:42.448Z"
+  },
+  "traceEvents": [
+    {
+      "cat": "devtools.timeline",
+      "name": "TracingStartedInBrowser",
+      "ph": "i",
+      "pid": 45163,
+      "tid": 0,
+      "ts": 271942326832,
+      "s": "t",
+      "args": {
+        "data": {
+          "frameTreeNodeId": 4516300,
+          "frames": [
+            {
+              "frame": "FRAME0P45163T0",
+              "isInPrimaryMainFrame": true,
+              "isOutermostMainFrame": true,
+              "name": "",
+              "processId": 45163,
+              "url": "/Users/michael_hladky/WebstormProjects/cli/tools/profiler/mocks/tmp/profiles/span-test.2025-12-31T17-25-42.json"
+            }
+          ],
+          "persistentIds": true
+        }
+      }
+    },
+    {
+      "args": {},
+      "cat": "devtools.timeline",
+      "dur": 10,
+      "name": "RunTask",
+      "ph": "X",
+      "pid": 45163,
+      "tid": 0,
+      "ts": 271942326832
+    },
+    {
+      "cat": "blink.user_timing",
+      "name": "process-user-avatar:start",
+      "ph": "I",
+      "s": "t",
+      "pid": 45163,
+      "tid": 0,
+      "ts": 271942326852,
+      "args": {
+        "data": {
+          "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"track\":\"CLI\",\"trackGroup\":\"CodePushUp\",\"color\":\"tertiary-dark\",\"properties\":[[\"Operation\",\"Image Processing\"],[\"Input Format\",\"JPEG\"],[\"Output Format\",\"WebP\"],[\"Original Size\",\"2.1 MB\"],[\"Processed Size\",\"245 KB\"],[\"Compression Ratio\",\"85%\"],[\"Quality Setting\",\"80%\"],[\"Resize Algorithm\",\"Lanczos\"],[\"Processing Pipeline\",\"Resize → Compress → Optimize\"]],\"tooltipText\":\"User avatar image processing - significant size reduction achieved\"}}",
+          "startTime": 102.814625
+        }
+      },
+      "id2": { "local": "0x1" }
+    },
+    {
+      "cat": "blink.user_timing",
+      "name": "process-user-avatar",
+      "ph": "b",
+      "pid": 45163,
+      "tid": 0,
+      "ts": 271942326852,
+      "id2": { "local": "0x1" },
+      "args": {}
+    },
+    {
+      "cat": "blink.user_timing",
+      "name": "process-user-avatar",
+      "ph": "e",
+      "pid": 45163,
+      "tid": 0,
+      "ts": 271942337315,
+      "id2": { "local": "0x1" },
+      "args": {}
+    },
+    {
+      "cat": "blink.user_timing",
+      "name": "process-user-avatar:end",
+      "ph": "I",
+      "s": "t",
+      "pid": 45163,
+      "tid": 0,
+      "ts": 271942337315,
+      "args": { "data": { "startTime": 113.27775 } },
+      "id2": { "local": "0x2" }
+    },
+    {
+      "cat": "blink.user_timing",
+      "name": "analyze-sales-data",
+      "ph": "b",
+      "pid": 45163,
+      "tid": 0,
+      "ts": 271942438092,
+      "id2": { "local": "0x2" },
+      "args": {}
+    },
+    {
+      "cat": "blink.user_timing",
+      "name": "analyze-sales-data",
+      "ph": "e",
+      "pid": 45163,
+      "tid": 0,
+      "ts": 271942447951,
+      "id2": { "local": "0x2" },
+      "args": {}
+    },
+    {
+      "args": {},
+      "cat": "devtools.timeline",
+      "dur": 10,
+      "name": "RunTask",
+      "ph": "X",
+      "pid": 45163,
+      "tid": 0,
+      "ts": 271942448931
+    }
+  ]
+}
