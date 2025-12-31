@@ -22,11 +22,7 @@ import {
   createTraceFile,
   markToTraceEvent,
 } from './trace-file-output';
-import {
-  getInstantEvent,
-  measureToSpanEvents,
-  relativeToAbsoluteTime,
-} from './trace-file-utils';
+import { getInstantEvent, measureToSpanEvents } from './trace-file-utils';
 import type { InstantEvent, SpanEvent, TraceEvent } from './trace-file.type';
 import {
   type DevtoolsSpanConfig,
@@ -153,7 +149,7 @@ export class Profiler<K extends string = never> implements ProfilerMethods {
                 pid: process.pid,
                 tid: threadId,
                 name: `FATAL: ${errorName}`,
-                ts: relativeToAbsoluteTime(),
+                ts: this.#traceFile.creation,
                 argsDataDetail: {
                   devtools: createErrorLabel(error),
                 },

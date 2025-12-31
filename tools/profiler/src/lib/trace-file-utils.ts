@@ -29,33 +29,6 @@ export function entryToTraceTimestamp(
   return Math.round((effectiveTimeOrigin + relativeTime) * 1000);
 }
 
-/**
- * Converts a performance timestamp to Chrome trace format timestamp in microseconds.
- *
- * The formula works as follows:
- * 1. `performance.timeOrigin` is the time when the performance timeline started (in milliseconds since Unix epoch)
- * 2. Subtract a base offset (1766930000000) to align with Chrome's trace format expectations
- * 3. Add the relative timestamp (e.g., `performance.now()` or `entry.startTime`) to get absolute time
- * 4. Multiply by 1000 to convert from milliseconds to microseconds (Chrome trace format uses microseconds)
- * 5. Round to nearest integer for precision
- *
- * @param ts - Optional pre-calculated timestamp in microseconds (if provided, skips calculation)
- * @param relativeTime - Relative time in milliseconds (defaults to performance.now())
- * @returns Timestamp in microseconds, aligned with Chrome trace format
- */
-export function relativeToAbsoluteTime(
-  ts?: number,
-  relativeTime = performance.now(),
-): number {
-  if (ts != null) {
-    return ts;
-  }
-
-  const timeOriginBase = 1766930000000; // Base to align with Chrome trace format
-  const effectiveTimeOrigin = performance.timeOrigin - timeOriginBase;
-  return Math.round((effectiveTimeOrigin + relativeTime) * 1000);
-}
-
 const nextId2 = (() => {
   let counter = 1;
   return () => ({ local: `0x${counter++}` });
@@ -129,7 +102,6 @@ export function errorToInstantEvent(
   return getInstantEvent({
     ...options,
     name: `err-${errorName}`,
-    ts: relativeToAbsoluteTime(),
   });
 }
 

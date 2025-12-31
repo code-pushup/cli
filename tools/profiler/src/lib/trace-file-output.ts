@@ -140,6 +140,7 @@ ${traceEventsContent}
 }
 
 export interface FileOutput<T> {
+  readonly creation: number;
   readonly filePath: string;
   readonly jsonlPath: string;
 
@@ -206,11 +207,12 @@ export function createTraceFile(opts: {
       return [JSON.stringify(obj)];
     },
   });
-  const traceStartTs = performance.now();
+  const creation = performance.now();
 
   return {
     filePath: jsonlPath,
     jsonlPath,
+    creation,
 
     write(obj: TraceEvent): void {
       if (closed) return;
@@ -257,15 +259,7 @@ export function createTraceFile(opts: {
         const validJsonl = readFileSync(jsonlPath, 'utf8');
 
         if (!validJsonl.trim()) {
-          const emptyOutput = `{
-  "metadata": {
-    "dataOrigin": "TraceEvents",
-    "hardwareConcurrency": 1,
-    "source": "DevTools",
-    "startTime": "recovered-${new Date().toISOString()}"
-  },
-  "traceEvents": []
-}`;
+          const emptyOutput = createTraceJsonOutput('');
           writeFileSync(filePath, emptyOutput, 'utf8');
           return;
         }
@@ -287,13 +281,10 @@ export function createTraceFile(opts: {
         const latestTs =
           events.length > 0 ? Math.max(...events.map(e => e.ts)) : 0;
 
-        const storedTraceStartTs = (outputFormat as any).traceStartTs;
-        const prologTs =
-          storedTraceStartTs ??
-          (events.length > 0 ? Math.max(0, earliestTs - 20) : undefined);
+        const prologTs = events.length > 0 ? Math.max(0, earliestTs - 20) : 0;
 
         const prologEvents = outputFormat.preamble({
-          ts: Math.min(earliestTs, traceStartTs),
+          ts: Math.min(earliestTs, creation),
           url: filePath,
           ...(prologTs !== undefined && { traceStartTs: prologTs }),
         });
