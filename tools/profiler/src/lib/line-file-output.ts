@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 /**
@@ -53,7 +53,7 @@ export function createLineFileOutput<T, P = unknown>(
   // Ensure directory exists
   const dir = path.dirname(filePath);
   if (!existsSync(dir)) {
-    throw new LineOutputError(`Directory does not exist: ${dir}`);
+    mkdirSync(dir, { recursive: true });
   }
 
   let buffer: string[] = [];
@@ -91,7 +91,6 @@ export function createLineFileOutput<T, P = unknown>(
 
   const writeLines = (lines: string[], immediate = false) => {
     if (closed) return;
-
     try {
       if (immediate || buffer.length + lines.length >= flushEveryN) {
         // Include buffered lines plus new lines

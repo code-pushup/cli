@@ -1,7 +1,9 @@
 import type { PerformanceMark, PerformanceMeasure } from 'node:perf_hooks';
 import {
+  createErrorMarkFromError,
   createTrackEntry,
   createTrackEntryFromError,
+  createTrackMark,
   errorToDevToolsProperties,
 } from './user-timing-details-utils.js';
 import type {
@@ -79,7 +81,7 @@ export function timerifySync<T>(
       start: startName,
       end: endName,
       detail: {
-        ...errorToDevToolsProperties(err),
+        ...Object.fromEntries(errorToDevToolsProperties(err)),
         ...error?.(err),
       },
     });
@@ -117,10 +119,18 @@ export function measureSync<T>(
       devtools,
     },
   };
-  profiler.mark(startName, detailBase);
+  profiler.mark(startName, {
+    detail: {
+      devtools: createTrackMark(devtools),
+    },
+  });
   try {
     const result = fn();
-    profiler.mark(endName, detailBase);
+    profiler.mark(endName, {
+      detail: {
+        devtools: createTrackMark(devtools),
+      },
+    });
     profiler.measure(measureName, {
       start: startName,
       end: endName,
@@ -133,7 +143,11 @@ export function measureSync<T>(
     });
     return result;
   } catch (err) {
-    profiler.mark(endName, detailBase);
+    profiler.mark(endName, {
+      detail: {
+        devtools: createErrorMarkFromError(err, devtools),
+      },
+    });
     profiler.measure(measureName, {
       start: startName,
       end: endName,

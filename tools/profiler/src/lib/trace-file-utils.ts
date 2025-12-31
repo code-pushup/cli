@@ -1,5 +1,4 @@
 import { performance } from 'node:perf_hooks';
-import { markToTraceEvent } from './trace-file-output';
 import type {
   BeginEvent,
   CompleteEvent,
@@ -58,9 +57,7 @@ export type DetailShortcut = {
 export function getEventArgsPayload(argsDataDetail?: Record<string, unknown>) {
   return argsDataDetail
     ? {
-        data: {
-          detail: JSON.stringify(argsDataDetail),
-        },
+        detail: JSON.stringify(argsDataDetail),
       }
     : {};
 }
@@ -73,12 +70,15 @@ export function getInstantEvent(
     tid: number;
   } & DetailShortcut,
 ): InstantEvent {
-  const { argsDataDetail, ...opt } = options;
+  const { argsDataDetail, name, pid, tid, ts } = options;
   return {
-    ...opt,
     cat: 'blink.user_timing',
     s: 't', // Timeline scope,
     ph: 'I', // Uppercase I for instant events in Chrome DevTools format
+    name,
+    pid,
+    tid,
+    ts,
     args: getEventArgsPayload(argsDataDetail),
   };
 }
@@ -109,13 +109,17 @@ export function getSpanEvent(
   ph: 'b' | 'e',
   opt: Pick<SpanEvent, 'name' | 'pid' | 'tid' | 'ts' | 'id2'> & DetailShortcut,
 ): BeginEvent | EndEvent {
-  const { argsDataDetail, ...options } = opt;
+  const { argsDataDetail, name, pid, tid, ts, id2 } = opt;
 
   return {
     cat: 'blink.user_timing',
     s: 't',
     ph,
-    ...options,
+    name,
+    pid,
+    tid,
+    ts,
+    id2,
     args: getEventArgsPayload(argsDataDetail),
   };
 }
@@ -135,6 +139,7 @@ export function measureToSpanEvents(
     name,
     id2,
     ts: startUs,
+    argsDataDetail: entry?.detail,
   }) as BeginEvent;
 
   const end = getSpanEvent('e', {
@@ -166,12 +171,12 @@ export function getStartTracing(opt: {
   const frameTreeNodeId = getFrameTreeNodeId(pid, tid);
   return {
     cat: 'devtools.timeline',
-    name: 'TracingStartedInBrowser',
+    s: 't',
     ph: 'I',
+    name: 'TracingStartedInBrowser',
     pid,
     tid,
     ts,
-    s: 't',
     args: {
       data: {
         frameTreeNodeId,
@@ -197,11 +202,15 @@ export function getCompleteEvent(opt: {
   ts: number;
   dur: number;
 }): CompleteEvent {
+  const { ts, pid, tid, dur } = opt;
   return {
-    ...opt,
-    args: {},
     cat: 'devtools.timeline',
-    name: 'RunTask',
     ph: 'X',
+    name: 'RunTask',
+    pid,
+    tid,
+    ts,
+    dur,
+    args: {},
   };
 }

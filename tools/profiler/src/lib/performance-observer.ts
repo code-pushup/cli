@@ -23,7 +23,7 @@ export function createPerformanceObserver(
   ) => {
     for (const e of entries) {
       if (e.entryType !== 'mark' && e.entryType !== 'measure') continue;
-      console.log('writing event', e.name, e.entryType, e.toJSON());
+      console.log('observed event', e.name, e.entryType, e.toJSON());
 
       processEvent(e as ProfilingEvent);
 

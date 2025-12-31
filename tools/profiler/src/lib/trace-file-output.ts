@@ -122,21 +122,77 @@ export function markToTraceEvent(
   });
 }
 
+export function getTraceMetadata(startDate?: Date) {
+  return {
+    source: 'DevTools',
+    startTime: startDate?.toISOString() ?? new Date().toISOString(),
+    hardwareConcurrency: 1,
+    dataOrigin: 'TraceEvents',
+  };
+}
+
 /**
  * Generate the complete JSON structure for a Chrome DevTools trace file.
  */
-function createTraceJsonOutput(traceEventsContent: string): string {
+function createTraceFileContent(
+  traceEventsContent: string,
+  startDate?: Date,
+): string {
   return `{
-  "metadata": {
-    "dataOrigin": "TraceEvents",
-    "hardwareConcurrency": 1,
-    "source": "DevTools",
-    "startTime": "recovered-${new Date().toISOString()}"
-  },
+  "metadata": ${JSON.stringify(getTraceMetadata(startDate))},
   "traceEvents": [
 ${traceEventsContent}
   ]
 }`;
+}
+
+/**
+ * Parse JSONL lines into TraceEvent objects.
+ * Handles both TraceEvent objects and PerformanceEntry objects that need conversion.
+ */
+function fromJsonLines(lines: string[]): {
+  events: TraceEvent[];
+  first: TraceEvent;
+  last: TraceEvent;
+} {
+  const parsedLines: TraceEvent[] = [];
+
+  for (const line of lines) {
+    if (!line.trim()) continue;
+
+    try {
+      const parsed = JSON.parse(line);
+
+      // Check if it's already a TraceEvent
+      if (parsed && typeof parsed.ts === 'number') {
+        parsedLines.push(parsed as TraceEvent);
+        continue;
+      }
+
+      // Check if it's a PerformanceEntry that needs conversion
+      if (parsed && parsed.entryType && typeof parsed.startTime === 'number') {
+        // Convert PerformanceEntry to TraceEvent format
+        const traceEvent = markToTraceEvent(parsed as ExtendedPerformanceMark, {
+          pid: process.pid,
+          tid: threadId,
+        });
+        parsedLines.push(traceEvent);
+        continue;
+      }
+    } catch {
+      // Skip invalid JSON lines
+    }
+  }
+
+  if (parsedLines.length === 0) {
+    throw new Error('No valid trace events found in JSONL content');
+  }
+
+  return {
+    events: parsedLines,
+    first: parsedLines[0]!,
+    last: parsedLines[parsedLines.length - 1]!,
+  };
 }
 
 export interface FileOutput<T> {
@@ -179,12 +235,6 @@ export function createTraceFile(opts: {
   const filePath = path.join(directory, `${filename}.json`);
   const jsonlPath = path.join(directory, `${filename}.jsonl`);
 
-  // Ensure directory exists for JSONL file
-  const dir = path.dirname(jsonlPath);
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
-  }
-
   const outputFormat = new DevToolsOutputFormat(filePath);
 
   let preambleWritten = false;
@@ -208,6 +258,15 @@ export function createTraceFile(opts: {
     },
   });
   const creation = performance.now();
+
+  const initEmptyFile = () => {
+    const dir = path.dirname(filePath);
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true });
+    }
+    const emptyOutput = createTraceFileContent('');
+    writeFileSync(filePath, emptyOutput, 'utf8');
+  };
 
   return {
     filePath: jsonlPath,
@@ -245,107 +304,29 @@ export function createTraceFile(opts: {
 
     recover(): void {
       try {
-        const dir = path.dirname(filePath);
-        if (!existsSync(dir)) {
-          mkdirSync(dir, { recursive: true });
-        }
-
         if (!existsSync(jsonlPath)) {
-          const emptyOutput = createTraceJsonOutput('');
-          writeFileSync(filePath, emptyOutput, 'utf8');
+          initEmptyFile();
           return;
         }
 
-        const validJsonl = readFileSync(jsonlPath, 'utf8');
+        const rawJsonl = readFileSync(jsonlPath, 'utf8');
+        const lines = rawJsonl.trim().split('\n');
+        const { events, first, last } = fromJsonLines(lines);
 
-        if (!validJsonl.trim()) {
-          const emptyOutput = createTraceJsonOutput('');
-          writeFileSync(filePath, emptyOutput, 'utf8');
-          return;
-        }
-
-        const events = validJsonl
-          .trim()
-          .split('\n')
-          .map(line => {
-            try {
-              return JSON.parse(line);
-            } catch {
-              return null;
-            }
-          })
-          .filter(event => event && typeof event.ts === 'number');
-
-        const earliestTs =
-          events.length > 0 ? Math.min(...events.map(e => e.ts)) : 0;
-        const latestTs =
-          events.length > 0 ? Math.max(...events.map(e => e.ts)) : 0;
-
-        const prologTs = events.length > 0 ? Math.max(0, earliestTs - 20) : 0;
-
-        const prologEvents = outputFormat.preamble({
-          ts: Math.min(earliestTs, creation),
-          url: filePath,
-          ...(prologTs !== undefined && { traceStartTs: prologTs }),
-        });
-
-        const epilogEvents = outputFormat.epilogue({
-          ts: latestTs,
-        });
-
-        const adjustedEpilogEvents = epilogEvents.map(eventStr => {
-          try {
-            const event = JSON.parse(eventStr);
-            if (event.ts && event.ts < latestTs) {
-              event.ts = latestTs + 10; // Place 10 units after the last perf event
-            }
-            return JSON.stringify(event);
-          } catch {
-            return eventStr;
-          }
-        });
-
-        let traceEventsContent = '';
-
-        if (prologEvents.length > 0) {
-          traceEventsContent +=
-            prologEvents.map(event => `      ${event}`).join(',\n') + ',\n';
-        }
-
-        if (validJsonl) {
-          const trimmedJsonl = validJsonl.trim();
-          if (trimmedJsonl) {
-            traceEventsContent +=
-              '      ' + trimmedJsonl.replace(/\n/g, ',\n      ');
-            if (adjustedEpilogEvents.length > 0) {
-              traceEventsContent += ',\n';
-            } else {
-              traceEventsContent += '\n';
-            }
-          }
-        }
-
-        if (adjustedEpilogEvents.length > 0) {
-          for (let i = 0; i < adjustedEpilogEvents.length; i++) {
-            traceEventsContent += `      ${adjustedEpilogEvents[i]}`;
-            if (i < adjustedEpilogEvents.length - 1) {
-              traceEventsContent += ',\n';
-            }
-          }
-        }
-
-        const jsonOutput = createTraceJsonOutput(traceEventsContent);
+        const jsonOutput = createTraceFileContent(
+          [
+            ...outputFormat.preamble({
+              ts: Math.max(creation, first.ts),
+              url: filePath,
+            }),
+            ...events.map(s => JSON.stringify(s)),
+            ...outputFormat.epilogue({
+              ts: last.ts + 10,
+            }),
+          ].join(',\n'),
+        );
 
         writeFileSync(filePath, jsonOutput, 'utf8');
-
-        try {
-          JSON.parse(jsonOutput);
-        } catch (parseError) {
-          throw new LineOutputError(
-            `Recovery produced invalid JSON in file "${filePath}"`,
-            parseError as Error,
-          );
-        }
       } catch (error) {
         throw new LineOutputError(
           `Failed to recover trace file "${filePath}"`,

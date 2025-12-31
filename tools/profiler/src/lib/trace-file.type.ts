@@ -1,3 +1,8 @@
+export type TraceEventArgsPayload = {
+  detail?: string; // JSON stringified detail object
+  [key: string]: unknown;
+};
+
 export type TraceEvent = {
   cat: string;
   name: string;
@@ -10,7 +15,7 @@ export type TraceEvent = {
   dur?: number;
   id?: string;
   id2?: { local: string };
-  args?: Record<string, unknown>;
+  args?: TraceEventArgsPayload;
 };
 
 // Specific event types for better type safety
@@ -19,12 +24,7 @@ export interface InstantEvent extends TraceEvent {
   ph: 'I' | 'i'; // Instant events
   s: 't'; // Timeline scope
   dur?: never; // No duration for instant events
-  args?: {
-    data?: {
-      detail?: string; // JSON stringified detail object
-      [key: string]: unknown;
-    };
-  };
+  args?: TraceEventArgsPayload;
 }
 
 export interface CompleteEvent extends TraceEvent {
@@ -60,7 +60,7 @@ export interface FlowStartEvent extends TraceEvent {
   tid: number;
   ts: number;
   bp?: 'e' | 's'; // binding point for attaching to other events
-  args?: Record<string, unknown>;
+  args?: TraceEventArgsPayload;
 }
 
 export interface FlowStepEvent extends TraceEvent {
@@ -71,7 +71,7 @@ export interface FlowStepEvent extends TraceEvent {
   pid: number;
   tid: number;
   ts: number;
-  args?: Record<string, unknown>;
+  args?: TraceEventArgsPayload;
 }
 
 export interface FlowEndEvent extends TraceEvent {
@@ -83,7 +83,7 @@ export interface FlowEndEvent extends TraceEvent {
   tid: number;
   ts: number;
   bp?: 'e' | 's'; // binding point for attaching to other events
-  args?: Record<string, unknown>;
+  args?: TraceEventArgsPayload;
 }
 
 // Union type for flow events
