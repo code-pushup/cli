@@ -33,6 +33,7 @@ async function runTest() {
   const profiler = getProfiler({
     enabled: true,
     fileBaseName: 'buffered-performance-test',
+    captureBuffered: true,
   });
 
   await sleep(100);

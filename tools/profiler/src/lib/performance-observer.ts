@@ -15,7 +15,7 @@ export interface PerformanceObserverHandle {
 export function createPerformanceObserver(
   options: PerformanceObserverOptions,
 ): PerformanceObserverHandle {
-  const { processEvent, captureBuffered = true } = options;
+  const { processEvent, captureBuffered } = options;
 
   const handleEntries = (
     entries: readonly PerformanceEntry[],

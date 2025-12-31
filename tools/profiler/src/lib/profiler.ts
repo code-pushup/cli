@@ -166,10 +166,8 @@ export class Profiler<K extends string = never> implements ProfilerMethods {
               getInstantEvent({
                 pid: process.pid,
                 tid: threadId,
-                name: `FATAL: ${errorName}`,
-                ts: performanceTimestampToTraceTimestamp(
-                  this.#traceFile.creation,
-                ),
+                name: `PROCESS:FATAL-ERROR: ${errorName}`,
+                ts: performanceTimestampToTraceTimestamp(performance.now()),
                 argsDataDetail: {
                   devtools: createErrorLabel(error),
                 },
