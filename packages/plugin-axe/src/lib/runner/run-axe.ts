@@ -12,7 +12,7 @@ import {
   logger,
   pluralizeToken,
 } from '@code-pushup/utils';
-import { toAuditOutputs } from './transform.js';
+import { createUrlSuffix, toAuditOutputs } from './transform.js';
 
 /* eslint-disable functional/no-let */
 let browser: Browser | undefined;
@@ -54,7 +54,10 @@ export async function runAxeForUrl(args: AxeUrlArgs): Promise<AxeUrlResult> {
       const page = await context.newPage();
       try {
         const axeResults = await runAxeForPage(page, args);
-        const auditOutputs = toAuditOutputs(axeResults, url);
+        const auditOutputs = toAuditOutputs(
+          axeResults,
+          createUrlSuffix(url, urlsCount),
+        );
         return {
           message: `${prefix} Analyzed URL ${url}`,
           result: { url, axeResults, auditOutputs },

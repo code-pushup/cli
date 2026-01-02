@@ -18,16 +18,24 @@ import {
  */
 export function toAuditOutputs(
   { passes, violations, incomplete, inapplicable }: axe.AxeResults,
-  url: string,
+  urlSuffix: string,
 ): AuditOutputs {
-  const auditMap = new Map<string, AuditOutput>([
-    ...inapplicable.map(res => [res.id, toAuditOutput(res, url, 1)] as const),
-    ...passes.map(res => [res.id, toAuditOutput(res, url, 1)] as const),
-    ...incomplete.map(res => [res.id, toAuditOutput(res, url, 0)] as const),
-    ...violations.map(res => [res.id, toAuditOutput(res, url, 0)] as const),
-  ]);
+  const toEntries = (results: axe.Result[], score: number) =>
+    results.map(res => [res.id, toAuditOutput(res, urlSuffix, score)] as const);
 
-  return [...auditMap.values()];
+  return [
+    ...new Map<string, AuditOutput>([
+      ...toEntries(inapplicable, 1),
+      ...toEntries(passes, 1),
+      ...toEntries(incomplete, 0),
+      ...toEntries(violations, 0),
+    ]).values(),
+  ];
+}
+
+/** Creates a URL suffix for issue messages, only included when analyzing multiple URLs. */
+export function createUrlSuffix(url: string, urlsCount: number): string {
+  return urlsCount > 1 ? ` ([${getUrlIdentifier(url)}](${url}))` : '';
 }
 
 /**
@@ -36,7 +44,7 @@ export function toAuditOutputs(
  */
 function toAuditOutput(
   result: axe.Result,
-  url: string,
+  urlSuffix: string,
   score: number,
 ): AuditOutput {
   const base = {
@@ -46,7 +54,7 @@ function toAuditOutput(
   };
 
   if (score === 0 && result.nodes.length > 0) {
-    const issues = result.nodes.map(node => toIssue(node, result, url));
+    const issues = result.nodes.map(node => toIssue(node, result, urlSuffix));
 
     return {
       ...base,
@@ -68,15 +76,19 @@ function formatSelector(selector: axe.CrossTreeSelector): string {
   return selector.join(' >> ');
 }
 
-function toIssue(node: axe.NodeResult, result: axe.Result, url: string): Issue {
+function toIssue(
+  node: axe.NodeResult,
+  result: axe.Result,
+  urlSuffix: string,
+): Issue {
   const selector = formatSelector(node.target?.[0] || node.html);
   const rawMessage = node.failureSummary || result.help;
   const cleanedMessage = rawMessage.replace(/\s+/g, ' ').trim();
 
-  const message = `[\`${selector}\`] ${cleanedMessage} ([${getUrlIdentifier(url)}](${url}))`;
-
   return {
-    message: truncateIssueMessage(message),
+    message: truncateIssueMessage(
+      `[\`${selector}\`] ${cleanedMessage}${urlSuffix}`,
+    ),
     severity: impactToSeverity(node.impact),
   };
 }

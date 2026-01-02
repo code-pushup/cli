@@ -11,16 +11,6 @@ import {
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
-function sanitizeReportPaths(report: Report): Report {
-  // Convert to JSON, replace paths, and parse back
-  const reportJson = JSON.stringify(report);
-  const sanitized = reportJson.replace(
-    /\/(?:[^/\s"]+\/)+index\.html/g,
-    '/<TEST_DIR>/index.html',
-  );
-  return JSON.parse(sanitized);
-}
-
 describe('PLUGIN collect report with axe-plugin NPM package', () => {
   const testFileDir = path.join(
     E2E_ENVIRONMENTS_DIR,
@@ -53,8 +43,6 @@ describe('PLUGIN collect report with axe-plugin NPM package', () => {
     );
 
     expect(() => reportSchema.parse(report)).not.toThrow();
-    expect(
-      omitVariableReportData(sanitizeReportPaths(report)),
-    ).toMatchSnapshot();
+    expect(omitVariableReportData(report)).toMatchSnapshot();
   });
 });
