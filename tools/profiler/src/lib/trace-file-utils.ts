@@ -1,30 +1,34 @@
 import { performance } from 'node:perf_hooks';
-import type {
-  BeginEvent,
-  CompleteEvent,
-  EndEvent,
-  InstantEvent,
-  SpanEvent,
-  TraceEvent,
+import { type PerformanceMark, type PerformanceMeasure } from 'node:perf_hooks';
+import { threadId } from 'node:worker_threads';
+import { clock } from './clock.js';
+import { defaultTrack } from './performance-utils';
+import type { ProfilerMethods } from './profiler';
+import {
+  type BaseTraceEventOptions,
+  type BeginEvent,
+  type CompleteEvent,
+  type EndEvent,
+  type InstantEvent,
+  type TraceEvent,
 } from './trace-file.type';
-import type {
-  DevToolsLabel,
-  DevToolsLabelError,
-  DevToolsMark,
-  DevToolsPayload,
+import {
+  errorToEntryMeta,
+  errorToTrackEntryPayload,
+  markerPayload,
+  trackEntryPayload,
+} from './user-timing-details-utils';
+import {
+  type DevToolsColor,
+  type DevToolsPayload,
+  type EntryMeta,
+  type MarkerPayload,
+  type TrackEntryPayload,
+  type UserTimingDetail,
 } from './user-timing-details.type';
 
-/**
- * Converts performance time (milliseconds since timeOrigin) to Chrome trace format timestamp in microseconds.
- *
- * @param performanceTimeMs - Time in milliseconds since performance.timeOrigin
- * @returns Timestamp in microseconds, aligned with Chrome trace format
- */
-export function performanceTimeToTraceTime(performanceTimeMs: number): number {
-  const timeOriginBase = 1766930000000; // Base to align with Chrome trace format
-  const effectiveTimeOrigin = performance.timeOrigin - timeOriginBase;
-  return Math.round((effectiveTimeOrigin + performanceTimeMs) * 1000);
-}
+// Create a default clock instance for trace timestamp conversions
+const defaultClock = clock();
 
 /**
  * Converts a Chrome trace format timestamp back to a Date object.
@@ -33,10 +37,9 @@ export function performanceTimeToTraceTime(performanceTimeMs: number): number {
  * @returns Date object representing the timestamp
  */
 export function traceTimeToDate(traceTimeUs: number): Date {
-  const timeOriginBase = 1766930000000; // Base to align with Chrome trace format
-  const effectiveTimeOrigin = performance.timeOrigin - timeOriginBase;
-  const performanceTimeMs = traceTimeUs / 1000 - effectiveTimeOrigin;
-  return new Date(performance.timeOrigin + performanceTimeMs);
+  // Convert trace microseconds back to epoch microseconds, then to Date
+  const epochUs = defaultClock.traceZeroEpochUs + traceTimeUs;
+  return new Date(epochUs / 1000);
 }
 
 /**
@@ -53,16 +56,8 @@ export function entryToTraceTimestamp(
   const performanceTime =
     entry.startTime +
     (entry.entryType === 'measure' && asEndTime ? entry.duration : 0);
-  return performanceTimeToTraceTime(performanceTime);
+  return defaultClock.fromPerfMs(performanceTime);
 }
-
-/**
- * Converts a performance.now() timestamp to Chrome trace format timestamp in microseconds.
- *
- * @param performanceNow - Timestamp from performance.now() in milliseconds
- * @returns Timestamp in microseconds, aligned with Chrome trace format
- */
-export const performanceTimestampToTraceTimestamp = performanceTimeToTraceTime;
 
 /**
  * Converts a Chrome trace format timestamp back to a Date object.
@@ -72,10 +67,44 @@ export const performanceTimestampToTraceTimestamp = performanceTimeToTraceTime;
  */
 export const traceTimestampToDate = traceTimeToDate;
 
-const nextId2 = (() => {
+export const nextId2 = (() => {
   let counter = 1;
   return () => ({ local: `0x${counter++}` });
 })();
+
+/**
+ * Helper to get common trace event defaults
+ */
+function getTraceEventDefaults(opt: BaseTraceEventOptions) {
+  return {
+    pid: opt.pid ?? process.pid,
+    tid: opt.tid ?? threadId,
+    ts: opt.ts ?? defaultClock.fromPerfMs(performance.now()),
+  };
+}
+
+/**
+ * Specific options for span events
+ */
+interface SpanEventOptions extends BaseTraceEventOptions {
+  name: string;
+  id2: { local: string };
+  args?: SpanEventArgs;
+}
+
+/**
+ * Specific options for complete events
+ */
+interface CompleteEventOptions extends BaseTraceEventOptions {
+  dur: number;
+}
+
+/**
+ * Specific options for start tracing events
+ */
+interface StartTracingOptions extends BaseTraceEventOptions {
+  url: string;
+}
 
 export function markToEventInstant(
   entry: PerformanceMark,
@@ -87,45 +116,42 @@ export function markToEventInstant(
 ): InstantEvent {
   return getInstantEvent({
     ...options,
-    ts: entryToTraceTimestamp(entry),
-    argsDataDetail: entry.detail,
+    ts: defaultClock.fromEntryStartTimeMs(entry.startTime),
+    args: {
+      data: {
+        detail: {
+          devtools: (entry.detail as UserTimingDetail)?.devtools,
+        },
+      },
+    },
   });
 }
 
-export type MeasureDetailShortcut = {
-  // needed for ph I timing marks only (assuming a bug in ChromeDevtools :) )
-  argsDetail?: {
-    devtools: DevToolsPayload;
+export type InstantEventArgs = {
+  data?: {
+    detail?: UserTimingDetail;
   };
 };
-export type MarkerDetailShortcut = {
-  // needed for ph b/e timing entries only (assuming a bug in ChromeDevtools :) )
-  argsDataDetail?: {
-    devtools: DevToolsMark | DevToolsLabel;
-  };
-};
-export type DevtoolsDetailShortcuts = MeasureDetailShortcut &
-  MarkerDetailShortcut;
 
-export function getEventArgsPayload(args: DevtoolsDetailShortcuts) {
-  const { argsDataDetail, argsDetail } = args;
+export function decodeInstantArgs(args?: InstantEventArgs) {
+  const detail = args?.data?.detail as DevToolsPayload | undefined;
   return {
-    ...(argsDetail ? { detail: JSON.stringify(argsDetail) } : {}),
     data: {
-      ...(argsDataDetail ? { detail: JSON.stringify(argsDataDetail) } : {}),
+      detail: detail ? JSON.stringify(detail) : undefined,
     },
   };
 }
 
-export function getInstantEvent(
-  options: {
-    name: string;
-    ts: number;
-    pid: number;
-    tid: number;
-  } & MarkerDetailShortcut,
-): InstantEvent {
-  const { argsDataDetail, name, pid, tid, ts } = options;
+export function getInstantEvent(options: {
+  name: string;
+  ts?: number;
+  pid?: number;
+  tid?: number;
+  args?: InstantEventArgs;
+}): InstantEvent {
+  const { pid, tid, ts } = getTraceEventDefaults(options);
+  const { args, name } = options;
+
   return {
     cat: 'blink.user_timing',
     s: 't', // Timeline scope,
@@ -134,7 +160,7 @@ export function getInstantEvent(
     pid,
     tid,
     ts,
-    args: getEventArgsPayload({ argsDataDetail }),
+    args: decodeInstantArgs(args),
   };
 }
 
@@ -147,42 +173,101 @@ export function errorToInstantEvent(
   error: unknown,
   options: {
     name: string;
-    pid: number;
-    tid: number;
-    ts: number;
-  } & MeasureDetailShortcut,
+    pid?: number;
+    tid?: number;
+    ts?: number;
+  },
 ): InstantEvent {
   const errorName = error instanceof Error ? error.name : 'UnknownError';
+  const { pid, tid, ts } = getTraceEventDefaults(options);
+  const { name } = options;
 
   return getInstantEvent({
     ...options,
+    pid,
+    tid,
+    ts,
     name: `err-${errorName}`,
   });
 }
 
+export type SpanEventArgs = {
+  detail?: UserTimingDetail;
+};
+
+export function getSpanEventArgsPayload(args?: SpanEventArgs) {
+  return {
+    ...(args?.detail ? { detail: JSON.stringify(args.detail) } : {}),
+  };
+}
+
+export function getSpanEvent(ph: 'b', opt: SpanEventOptions): BeginEvent;
+export function getSpanEvent(ph: 'e', opt: SpanEventOptions): EndEvent;
 export function getSpanEvent(
   ph: 'b' | 'e',
-  opt: Pick<SpanEvent, 'name' | 'pid' | 'tid' | 'ts' | 'id2'> &
-    MeasureDetailShortcut,
+  opt: SpanEventOptions,
 ): BeginEvent | EndEvent {
-  const { argsDetail, name, pid, tid, ts, id2 } = opt;
+  const { name, id2, args } = opt;
 
-  return {
+  const baseEvent = {
     cat: 'blink.user_timing',
     s: 't',
     ph,
     name,
-    pid,
-    tid,
-    ts,
+    ...getTraceEventDefaults(opt),
     id2,
-    args: getEventArgsPayload({ argsDetail }),
+    args: getSpanEventArgsPayload(args),
   };
+
+  return baseEvent as BeginEvent | EndEvent;
+}
+
+// Convert performance measure to span events
+export function getSpan(options: {
+  tsB: number;
+  tsE: number;
+  name: string;
+  id2?: { local: string };
+  pid?: number;
+  tid?: number;
+  args?: SpanEventArgs;
+}): [BeginEvent, EndEvent] {
+  // make the measure slightly smaller so the markers align perfectly.
+  // Otherwise, the marker is visible at the start of the measure below the frame
+  //
+  //        No padding     Padding
+  // spans: ========      |======|
+  // marks: |      |
+  const tsMarkerPadding = 1;
+
+  const { tsB, tsE, name, id2: id2Param, args } = options;
+  const id2 = id2Param ?? nextId2();
+
+  const begin = getSpanEvent('b', {
+    ...options,
+    name,
+    id2,
+    ts: tsB + tsMarkerPadding,
+    args,
+  }) as BeginEvent;
+
+  const end = getSpanEvent('e', {
+    ...options,
+    name,
+    id2,
+    ts: tsE - tsMarkerPadding,
+    args,
+  }) as EndEvent;
+
+  return [begin, end];
 }
 
 export function measureToSpanEvents(
   entry: PerformanceMeasure,
-  options: Pick<SpanEvent, 'pid' | 'tid'>,
+  options: {
+    pid?: number;
+    tid?: number;
+  } = {},
 ): [BeginEvent, EndEvent] {
   // make the measure slightly smaller so the markers align perfectly.
   // Otherwise, the marker is visible at the start of the measure below the frame
@@ -202,7 +287,13 @@ export function measureToSpanEvents(
     name,
     id2,
     ts: startUs,
-    argsDetail: entry?.detail,
+    args: {
+      ...(entry?.detail
+        ? {
+            detail: { devtools: (entry?.detail as UserTimingDetail)?.devtools },
+          }
+        : {}),
+    },
   }) as BeginEvent;
 
   const end = getSpanEvent('e', {
@@ -210,7 +301,13 @@ export function measureToSpanEvents(
     name,
     id2,
     ts: endUs,
-    argsDetail: entry?.detail,
+    args: {
+      ...(entry?.detail
+        ? {
+            detail: { devtools: (entry?.detail as UserTimingDetail)?.devtools },
+          }
+        : {}),
+    },
   }) as EndEvent;
 
   return [begin, end];
@@ -224,13 +321,9 @@ export function getFrameName(pid: number, tid: number): string {
   return `FRAME0P${pid}T${tid}`;
 }
 
-export function getStartTracing(opt: {
-  pid: number;
-  tid: number;
-  ts: number;
-  url: string;
-}): TraceEvent {
-  const { ts, pid, url, tid } = opt;
+export function getStartTracing(opt: StartTracingOptions): TraceEvent {
+  const { pid, tid, ts } = getTraceEventDefaults(opt);
+  const { url } = opt;
   const frameTreeNodeId = getFrameTreeNodeId(pid, tid);
   return {
     cat: 'devtools.timeline',
@@ -259,21 +352,48 @@ export function getStartTracing(opt: {
   };
 }
 
-export function getCompleteEvent(opt: {
-  pid: number;
-  tid: number;
-  ts: number;
-  dur: number;
-}): CompleteEvent {
-  const { ts, pid, tid, dur } = opt;
+export function getCompleteEvent(opt: CompleteEventOptions): CompleteEvent {
+  const { dur, ...rest } = opt;
   return {
     cat: 'devtools.timeline',
     ph: 'X',
     name: 'RunTask',
-    pid,
-    tid,
-    ts,
+    ...getTraceEventDefaults(rest),
     dur,
     args: {},
   };
+}
+
+const instantEventTrackEntry = (opt: {
+  name: string;
+  ts?: number;
+  devtools: TrackEntryPayload;
+}) => {
+  const { devtools, ...traceProps } = opt;
+  return getInstantEvent({
+    ...traceProps,
+    args: {
+      data: {
+        detail: { devtools: trackEntryPayload(devtools) },
+      },
+    },
+  });
+};
+
+function errorToInstantEventTrackEntry(
+  error: unknown,
+  options?: { name: string; errorColor?: DevToolsColor } & Omit<
+    TrackEntryPayload,
+    'dataType'
+  >,
+): InstantEvent {
+  const { name, errorColor = 'error', ...meta } = options ?? {};
+  return instantEventTrackEntry({
+    name: name ?? (error instanceof Error ? error.name : 'UnknownError'),
+    devtools: trackEntryPayload({
+      track: 'Program',
+      color: errorColor,
+      ...errorToEntryMeta(error, meta),
+    }),
+  });
 }

@@ -1,6 +1,6 @@
 import path from 'node:path';
 import process from 'node:process';
-import type { ProfilerOptions } from './profiler.js';
+import { type ProfilerOptions } from './profiler.js';
 
 const EXIT_HANDLERS_INSTALLED = Symbol.for(
   'codepushup.exit-handlers-installed',
@@ -24,11 +24,19 @@ export const PROFILER_FILE_BASE_NAME = 'timing.profile';
 
 export function getFilenameParts(options: ProfilerOptions): FilenameParts {
   const directory = options.outDir ?? PROFILER_OUT_DIR;
+
+  // If fileName is provided, use it directly without timestamp
+  if (options.fileName) {
+    return {
+      directory,
+      filename: options.fileName,
+    };
+  }
+
+  // Otherwise use fileBaseName with timestamp
   const baseName = options.fileBaseName ?? PROFILER_FILE_BASE_NAME;
   const id = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-
-  // Combine base name with ID if provided
-  const filename = id ? `${baseName}.${id}` : baseName;
+  const filename = `${baseName}.${id}`;
 
   return {
     directory,

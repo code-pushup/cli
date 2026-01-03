@@ -1,4 +1,11 @@
-export type DevToolsColorToken =
+import {
+  type MarkOptions,
+  type MeasureOptions,
+  type PerformanceMark,
+  type PerformanceMeasure,
+} from 'node:perf_hooks';
+
+export type DevToolsColor =
   | 'primary'
   | 'primary-light'
   | 'primary-dark'
@@ -11,67 +18,81 @@ export type DevToolsColorToken =
   | 'error'
   | 'warning';
 
+performance.mark('');
+
 export type DevToolsDataType = 'marker' | 'track-entry';
 
-export type DevToolsProperties = Array<[key: string, value: string]>;
+export type DevToolsProperties = Array<
+  [key: string, value: string | number | boolean | object | undefined]
+>;
 
-export interface DevToolsBase {
-  dataType?: DevToolsDataType;
-  color?: DevToolsColorToken;
-  tooltipText?: string;
-  properties?: DevToolsProperties;
+export interface EntryMeta {
+  tooltipText?: string; // Short description for tooltip on hover
+  properties?: DevToolsProperties; // Key-value pairs for detailed view on click
+}
+export interface TrackStyle {
+  color?: DevToolsColor; // rendered color of background and border, defaults to "primary"
+}
+export interface TrackMeta {
+  track: string; // Required: Name of the custom track
+  trackGroup?: string; // Optional: Group for organizing tracks
 }
 
-export interface DevToolsTrackBase extends DevToolsBase {
-  // Required: Name of the custom track
-  track: string;
-  // Optional: Group for organizing tracks
-  trackGroup?: string;
+export type ExtensionTrackBase = EntryMeta & TrackStyle;
+
+export interface TrackEntryPayload extends ExtensionTrackBase, TrackMeta {
+  dataType?: 'track-entry'; // Defaults to "track-entry"
 }
 
-export interface DevToolsLabel extends Omit<DevToolsBase, 'dataType'> {
-  dataType: 'marker';
-}
-export interface DevToolsMark extends Omit<DevToolsTrackBase, 'dataType'> {
-  dataType: 'track-entry';
-  track: string;
+export interface MarkerPayload extends ExtensionTrackBase {
+  dataType: 'marker'; // Required: Identifies as a marker
 }
 
-export interface DevToolsMarkError extends Omit<DevToolsTrackBase, 'dataType'> {
-  dataType: 'track-entry';
-  track: string;
-  // colors mark in red
+// Generic type helper that fixes color to 'error' for any type with a color property
+export type WithErrorColor<T extends { color?: DevToolsColor }> = Omit<
+  T,
+  'color'
+> & {
   color: 'error';
-}
-
-/**
- * Special marker to visualize a mark as error lable in DevTools UI
- * This is visualized at the top of the Timing track (withing the heading space)
- * It also draws a vertical line across all tracks.
- * Both the label and the vertical line are colored red
- */
-export interface DevToolsLabelError
-  extends Omit<DevToolsLabel & DevToolsBase, 'track' | 'color'> {
-  // To render a mark as label, the track must be missing
-  track: never;
-  // colors label and vertical line in red
-  color: 'error';
-}
-
-export interface DevToolsTrackEntry extends DevToolsTrackBase {
-  // DevTools treats missing dataType as track-entry as long as track is set
-  dataType?: 'track-entry';
-}
-
-export type DevToolsPayload =
-  | DevToolsTrackEntry
-  | DevToolsMark
-  | DevToolsLabelError;
-
-// This is the bit you stick into mark/measure detail on the custom tracks and labels:
-export interface UserTimingDetail {
-  devtools?: DevToolsPayload;
-  // ...custom extra detail fields
-  // @TODO document text styling in DevTools details view
+};
+export type WithDevToolsPayload<T extends TrackEntryPayload | MarkerPayload> = {
+  devtools?: T;
+};
+export type DevToolsPayload = TrackEntryPayload | MarkerPayload;
+export type UserTimingDetailMeasurePayload =
+  WithDevToolsPayload<TrackEntryPayload> & {
+    [k: string]: unknown;
+  };
+export type UserTimingDetailMarkPayload = WithDevToolsPayload<
+  TrackEntryPayload | MarkerPayload
+> & {
   [k: string]: unknown;
+};
+export type UserTimingDetail =
+  | UserTimingDetailMeasurePayload
+  | UserTimingDetailMarkPayload;
+
+// DevTools-enhanced performance API types
+export interface MarkOptionsWithDevtools extends Omit<MarkOptions, 'detail'> {
+  detail?: WithDevToolsPayload<TrackEntryPayload | MarkerPayload>;
+}
+
+export interface MeasureOptionsWithDevtools
+  extends Omit<MeasureOptions, 'detail'> {
+  detail?: WithDevToolsPayload<TrackEntryPayload>;
+}
+
+// Mimics performance.mark/measure API with devtools extensions
+export interface NativePerformanceAPI {
+  mark(name: string, options?: MarkOptionsWithDevtools): PerformanceMark;
+
+  measure(
+    name: string,
+    options: MeasureOptionsWithDevtools,
+  ): PerformanceMeasure;
+  measure(
+    name: string,
+    startMark?: string,
+    endMark?: string,
+  ): PerformanceMeasure;
 }

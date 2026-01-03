@@ -9,24 +9,10 @@ async function runTest() {
   });
 
   // Video processing span
-  await profiler.spanAsync(
-    'video-transcoding-job',
-    async () => {
-      // simulate some async work
-      await sleep(100);
-    },
-    {
-      detail: {
-        devtools: {
-          dataType: 'track-entry',
-          track: 'Media Processing',
-          trackGroup: 'Content Pipeline',
-          color: 'secondary-dark',
-          tooltipText: 'Hallo',
-        },
-      },
-    },
-  );
+  await profiler.spanAsync('video-transcoding-job', async () => {
+    // simulate some async work
+    await sleep(100);
+  });
 }
 
 await runTest();

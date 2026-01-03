@@ -12,7 +12,8 @@ beforeAll(async () => {
     profilerSpies.push(
       vi.spyOn(profiler, 'span'),
       vi.spyOn(profiler, 'spanAsync'),
-      vi.spyOn(profiler, 'instant'),
+      vi.spyOn(profiler, 'instantMarker'),
+      vi.spyOn(profiler, 'instantTrackEntry'),
       vi.spyOn(profiler, 'mark'),
       vi.spyOn(profiler, 'measure'),
       vi.spyOn(profiler, 'flush'),
@@ -27,7 +28,8 @@ beforeAll(async () => {
       vi
         .spyOn(profiler, 'spanAsync')
         .mockImplementation(async (name, fn, options) => await fn()),
-      vi.spyOn(profiler, 'instant').mockImplementation(() => {}),
+      vi.spyOn(profiler, 'instantMarker').mockImplementation(() => {}),
+      vi.spyOn(profiler, 'instantTrackEntry').mockImplementation(() => {}),
       vi.spyOn(profiler, 'mark').mockImplementation(() => ({}) as any),
       vi.spyOn(profiler, 'measure').mockImplementation(() => undefined),
       vi.spyOn(profiler, 'flush').mockImplementation(() => {}),

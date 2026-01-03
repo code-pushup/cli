@@ -18,6 +18,7 @@
     "baseUrl": ".",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "verbatimModuleSyntax": true,
     "paths": {
       "@code-pushup/axe-plugin": ["packages/plugin-axe/src/index.ts"],

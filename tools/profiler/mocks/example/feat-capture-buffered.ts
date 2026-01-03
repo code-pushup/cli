@@ -1,21 +1,27 @@
+// 1. Generate output:
+// npx tsx ./example/feat-capture-buffered.ts
+// 2. Evaluate output:
+
+/*
+node -e "
+const { validateTraceStructure } = require('../test-utils.js');
+validateTraceStructure('buffered-performance-test', [
+  {\"cat\":\"blink.user_timing\", \"ph\":\"I\",\"name\":\"buffered-mark-start\"},
+  {\"cat\":\"blink.user_timing\", \"ph\":\"I\",\"name\":\"buffered-mark-end\"},
+  {\"cat\":\"blink.user_timing\", \"ph\":\"b\",\"name\":\"buffered-measure-1\"},
+  {\"cat\":\"blink.user_timing\", \"ph\":\"I\",\"name\":\"span-async-measure:start\"},
+  {\"cat\":\"blink.user_timing\", \"ph\":\"I\",\"name\":\"span-async-measure:end\"}
+]);
+"
+*/
 import { setTimeout as sleep } from 'timers/promises';
 import { getProfiler } from '../../src/index.js';
-import { timerifySync } from '../../src/lib/profiler-utils';
-import type { UserTimingDetail } from '../../src/lib/user-timing-details.type';
 
-function doWork(): number {
-  for (let i = 0; i < 1e6; i++) {
-    Math.sqrt(i);
-  }
-  return 1e6;
-}
 async function runTest() {
-  // Create marks for measurement
   performance.mark('buffered-mark-start');
   await sleep(100);
   performance.mark('buffered-mark-end');
   await sleep(100);
-  // Test measure with string overloads
   const measure1 = performance.measure(
     'buffered-measure-1',
     'buffered-mark-start',
@@ -27,7 +33,6 @@ async function runTest() {
     'buffered-mark-start',
   );
   await sleep(100);
-  // File upload measurement
   const measure3 = performance.measure(
     'buffered-measure-file-upload-complete',
     {
@@ -36,23 +41,6 @@ async function runTest() {
     },
   );
   await sleep(100);
-  const detailCallbacks = {
-    success: (result: number): Partial<UserTimingDetail> => ({
-      iterations: String(result),
-    }),
-    error: (err: unknown) => ({
-      stack: (err as Error)?.stack?.toString() ?? 'No stack trace available',
-    }),
-  };
-
-  timerifySync(
-    performance,
-    'performance-timerifySync-success',
-    doWork,
-    detailCallbacks,
-  );
-
-  // ====== PROFILER START ======
 
   const profiler = getProfiler({
     enabled: true,

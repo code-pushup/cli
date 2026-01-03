@@ -1,8 +1,10 @@
 import { getProfiler } from '@code-pushup/profiler';
+import { logger } from './logger.js';
 
 export { Profiler } from '@code-pushup/profiler';
 export const profiler = getProfiler({
   enabled: process.env['CP_PROFILING'] !== 'false',
+  logger,
   prefixMarks: 'cp:',
   spans: {
     // CLI group - matches all CLI-related files

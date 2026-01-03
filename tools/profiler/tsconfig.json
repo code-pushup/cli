@@ -11,7 +11,7 @@
     "types": ["vitest"]
   },
   "files": [],
-  "include": ["src/lib/extensibility-api.perf_hooks.patch.d.ts"],
+  "include": ["src/lib/perf_hooks.extensibility-api.types.d.ts"],
   "references": [
     {
       "path": "./tsconfig.lib.json"

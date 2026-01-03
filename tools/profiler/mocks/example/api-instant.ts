@@ -8,11 +8,11 @@ async function runTest() {
   });
 
   // Basic instant mark
-  profiler.instant('instant');
+  profiler.instantTrackEntry('instant');
   await sleep(10);
 
   // Instant mark with details
-  profiler.instant('instant-details', {
+  profiler.instantTrackEntry('instant-details', {
     detail: {
       str: 'This is a detail property',
       num: 42,
@@ -26,7 +26,7 @@ async function runTest() {
   await sleep(10);
 
   // Instant mark with devtools error styling
-  profiler.instant('instant-details-error', {
+  profiler.instantTrackEntry('instant-details-error', {
     detail: {
       devtools: {
         dataType: 'track-entry',
@@ -44,7 +44,7 @@ async function runTest() {
   await sleep(10);
 
   // Instant mark with devtools track entry
-  profiler.instant('instant-details-devtools', {
+  profiler.instantTrackEntry('instant-details-devtools', {
     detail: {
       devtools: {
         dataType: 'track-entry',
@@ -65,7 +65,7 @@ async function runTest() {
   await sleep(10);
 
   // Instant mark with devtools error track entry
-  profiler.instant('instant-details-devtools-error', {
+  profiler.instantTrackEntry('instant-details-devtools-error', {
     detail: {
       devtools: {
         dataType: 'track-entry',

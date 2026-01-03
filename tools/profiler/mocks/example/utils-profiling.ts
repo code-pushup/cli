@@ -1,13 +1,13 @@
 import { setTimeout as sleep } from 'timers/promises';
+import { getProfiler } from '@code-pushup/profiler';
 import {
   type DevToolsOptionCb,
-  measureAsync,
-  measureSync,
-  timerifySync,
-} from 'tools/profiler/src/lib/profiler-utils';
-import { getProfiler } from '@code-pushup/profiler';
+  span,
+  spanAsync,
+} from '../../src/lib/performance-utils';
+import { markerPayload } from '../../src/lib/user-timing-details-utils';
 import type {
-  DevToolsTrackEntry,
+  TrackEntryPayload,
   UserTimingDetail,
 } from '../../src/lib/user-timing-details.type';
 
@@ -36,34 +36,16 @@ async function doWorkAsyncThrow(): Promise<number> {
 
 async function run() {
   // ======= TIMERIFY =======
+  await sleep(20);
 
-  const detailCallbacks = {
-    success: (result: number): Partial<UserTimingDetail> => ({
-      iterations: String(result),
-    }),
-    error: (err: unknown) => ({
-      stack: (err as Error)?.stack?.toString() ?? 'No stack trace available',
-    }),
-  };
-
-  timerifySync(
-    performance,
-    'performance-timerifySync-success',
-    doWork,
-    detailCallbacks,
-  );
-  try {
-    timerifySync(
-      performance,
-      'performance-timerifySync-error',
-      doWorkThrow,
-      detailCallbacks,
-    );
-  } catch {
-    /* swallow to keep the program running */
-  }
+  performance.mark('matk:start', {
+    detail: {
+      devtools: markerPayload(),
+    },
+  });
 
   // === start mark ===
+
   const profiler = getProfiler({
     fileBaseName: 'utils-profiling',
     enabled: true,
@@ -73,27 +55,24 @@ async function run() {
   // ======= MEASURE =======
 
   const optionCallbacks: DevToolsOptionCb<ReturnType<typeof doWork>> = {
-    base: () => ({
-      track: 'Work',
-    }),
-    success: (result: number): Partial<DevToolsTrackEntry> => ({
+    success: (result: number) => ({
       properties: [['Iterations', String(result)]],
       tooltipText: `Completed ${result} iterations successfully`,
     }),
-    error: (err: unknown): Partial<DevToolsTrackEntry> => ({
+    error: (err: unknown) => ({
       properties: [['Stack', String((err as Error).stack)]],
       tooltipText: `Work failed caused by: ${(err as Error).name}`,
     }),
   };
 
-  measureSync(
+  span(
     performance,
     'performance-measureSync1-success',
     doWork,
     optionCallbacks,
   );
   try {
-    measureSync(
+    span(
       performance,
       'performance-measureSync1-error',
       doWorkThrow,
@@ -103,31 +82,21 @@ async function run() {
     /* swallow to keep the program running */
   }
 
-  measureSync(
-    profiler,
-    'profiler-measureSync1-success',
-    doWork,
-    optionCallbacks,
-  );
+  span(profiler, 'profiler-measureSync1-success', doWork, optionCallbacks);
   try {
-    measureSync(
-      profiler,
-      'profiler-measureSync1-error',
-      doWorkThrow,
-      optionCallbacks,
-    );
+    span(profiler, 'profiler-measureSync1-error', doWorkThrow, optionCallbacks);
   } catch {
     /* swallow to keep the program running */
   }
 
-  await measureAsync(
+  await spanAsync(
     performance,
     'performance-measureAsync1-success',
     doWorkAsync,
     optionCallbacks,
   );
   try {
-    await measureAsync(
+    await spanAsync(
       performance,
       'performance-measureAsync1-error',
       doWorkAsyncThrow,
@@ -137,14 +106,14 @@ async function run() {
     /* swallow to keep the program running */
   }
 
-  await measureAsync(
+  await spanAsync(
     profiler,
     'profiler-measureAsync2-success',
     doWorkAsync,
     optionCallbacks,
   );
   try {
-    await measureAsync(
+    await spanAsync(
       profiler,
       'profiler-measureAsync2-error',
       doWorkAsyncThrow,

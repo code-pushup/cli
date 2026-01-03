@@ -1,6 +1,6 @@
 import { setTimeout as sleep } from 'timers/promises';
 import { getProfiler } from '@code-pushup/profiler';
-import { createTrackEntry } from '../../src/lib/user-timing-details-utils';
+import { trackEntryPayload } from '../../src/lib/user-timing-details-utils';
 import type { MarkOpts } from '../../src/lib/user-timing-to-trace-event-utils';
 
 async function run() {
@@ -16,7 +16,7 @@ async function run() {
     },
     {
       detail: {
-        devtools: createTrackEntry({
+        devtools: trackEntryPayload({
           track: 'Main Track',
           tooltipText: 'This is a secondary mark',
         }),
@@ -33,7 +33,7 @@ async function run() {
     },
     {
       detail: {
-        devtools: createTrackEntry({
+        devtools: trackEntryPayload({
           track: 'Worker Track',
           trackGroup: 'Secondary Program',
           color: 'secondary',

@@ -1,9 +1,9 @@
 import { setTimeout as sleep } from 'timers/promises';
 import { getProfiler } from '@code-pushup/profiler';
-import { getMeasureMarkNames } from '../../src/lib/profiler-utils';
+import { getMeasureMarkNames } from '../../src/lib/performance-utils';
 import {
   createTrackMark,
-  propertiesFrom,
+  objToPropertiesPayload,
 } from '../../src/lib/user-timing-details-utils';
 
 async function run() {

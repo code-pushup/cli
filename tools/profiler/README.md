@@ -33,126 +33,144 @@ export type ProfilerOptions<K extends string = never> = {
 };
 ```
 
-## API
+## Type Safety
 
-### Profiler
-
-// ASCII chart of profiler architecture (perf observer, file output format,... maybe some more)
-// Profiler -> TraceFile -> TraceEvent
-// |
-// v
-// PerformanceObserver -> TraceEvent
-// |
-// v
-// LineOutput -> TraceEvent
+For enhanced autocomplete and type safety when using native `performance.mark()` and `performance.measure()` with DevTools options, import the type declarations:
 
 ```typescript
-const profiler = getProfiler({ enabled: true });
+import '@code-pushup/profiler/perf_hooks';
 
-// Synchronous span
-profiler.span('load-config', () => loadConfig());
-
-// Asynchronous span
-await profiler.spanAsync('process-data', async () => {
-  return await processLargeDataset();
-});
-
-// Instant event (marker)
-profiler.instant('app-ready');
-
-// Custom performance marks and measures
-profiler.mark('custom-start');
-profiler.measure('custom-duration', 'custom-start');
-
-await profiler.flush();
-await profiler.close();
-```
-
-```typescript
-const profiler = getProfiler({ enabled: true });
-
-profiler.span('load-config', () => loadConfig());
-profiler.span('process-data', () => processData(), {
-  detail: profiler.spans.database(),
-});
-
-await profiler.spanAsync('fetch-users', async () => {
-  return await api.getUsers();
-});
-
-profiler.instant('app-ready');
-
-profiler.mark('custom-start');
-profiler.measure('custom-duration', 'custom-start');
-await profiler.flush();
-await profiler.close();
-
-profiler.enabled;
-profiler.filePath;
-profiler.spans;
-```
-
-### Span Helpers
-
-```typescript
-const profiler = getProfiler({
-  spans: {
-    database: { track: 'Database', group: 'IO', color: 'secondary-dark' },
-    network: { track: 'Network', color: 'primary' },
-    plugin: { track: name => `Plugin:${name}`, color: 'tertiary' },
+// Now performance.mark and performance.measure have DevTools-aware overloads
+performance.mark('my-event', {
+  detail: {
+    devtools: {
+      dataType: 'marker',
+      color: 'primary',
+      tooltipText: 'Custom event with DevTools metadata',
+    },
   },
 });
 
-profiler.span('query-users', () => db.query('SELECT * FROM users'), {
-  detail: profiler.spans.database(),
-});
-
-profiler.span('eslint-check', () => runEslint(), {
-  detail: profiler.spans.plugin('eslint'),
+performance.measure('operation-duration', {
+  start: 'start-mark',
+  end: 'end-mark',
+  detail: {
+    devtools: {
+      dataType: 'track-entry',
+      track: 'my-track',
+      color: 'secondary',
+    },
+  },
 });
 ```
 
-### Trace Events
+## User Timing
 
-```jsonl
-{"cat":"blink.user_timing","name":"load-config","ph":"X","pid":123,"tid":456,"ts":1000,"dur":500}
-{"cat":"blink.user_timing","name":"process-data","ph":"b","pid":123,"tid":456,"ts":1500}
-{"cat":"blink.user_timing","name":"process-data","ph":"e","pid":123,"tid":456,"ts":2000}
-{"cat":"blink.user_timing","name":"app-ready","ph":"i","pid":123,"tid":456,"ts":2500}
-{"cat":"blink.user_timing","name":"database-query","ph":"X","pid":123,"tid":456,"ts":3000,"dur":200,"args":{"detail":"{\"devtools\":{\"dataType\":\"track-entry\",\"track\":\"Database\",\"trackGroup\":\"IO\",\"color\":\"secondary-dark\"}}"}}
-```
+User Timing API is supported in both Browser and Node.js environments.
+It allows you to create custom timing marks and measures that can be visualized in profiling tools.
 
-### Trace File
+The Public API includes:
+
+- `profiler.mark(name: string)`: Create a timing mark.
+- `profiler.measure(name: string, startMark?: string, endMark?: string)`: Create a timing measure.
+- `console.time(name: string): Start a timer`: Create a timing mark.
+- `console.timeEnd(name: string)`: End a timer and create a timing measure.
+
+This is reflected in the Timing Track in ChromeDevtools.
+
+![user-timing-overview.png](docs/imgs/user-timing-overview.png)
+
+### Extensibility API
+
+The Chrome DevTools trace format supports custom event types and metadata enabling us to extend profiling capabilities with tracks, colors, label's and more.
+We can leverage the capabilities by adding `PerformanceEntry` details under the `devtools` property.
+
+Official documentation: https://developer.chrome.com/docs/devtools/performance/extension?hl=de
+See [user-timing-details.type.ts](src/lib/user-timing-details.type.ts) and [perf_hooks.d.ts](src/perf_hooks.d.ts) for global type extensions.
+
+![example-custom-track.png](docs/imgs/example-custom-track.png)
+
+#### Marker
+
+Labels are special marker that sti at the top of the trace view and create a vertical line across all tracks for easy identification.
 
 ```typescript
-const profiler = getProfiler({
-  outDir: 'tmp/profiles',
-  fileBaseName: 'timing',
+import { DevToolsLabel } from './user-timing-details.type';
+
+profiler.mark('app-run:start', {
+  devtools: {
+    dataType: 'marker',
+  } satisfies DevToolsLabel,
 });
-
-profiler.filePath;
 ```
 
-```jsonl
-{"cat":"devtools.timeline","name":"TracingStartedInBrowser","ph":"i","s":"t","pid":123,"tid":456,"ts":0,"args":{"data":{"frameTreeNodeId":"1230456","frames":[{"frame":"FRAME0P123T456","isInPrimaryMainFrame":true,"isOutermostMainFrame":true,"name":"","processId":123,"url":""}]}}}
-{"cat":"blink.user_timing","name":"load-config","ph":"b","pid":123,"tid":456,"ts":1000000,"id2":{"local":"0x1"}}
-{"cat":"blink.user_timing","name":"load-config","ph":"e","pid":123,"tid":456,"ts":1500000,"id2":{"local":"0x1"}}
-{"cat":"blink.user_timing","name":"app-ready","ph":"i","pid":123,"tid":456,"ts":1600000,"id2":{"local":"0x2"}}
-```
+### Track Entries aka Spans and Instant
 
-### Output Format
+### Track Entries Instant
+
+Markers are instantaneous events that denote specific points in time during the execution of a program.
 
 ```typescript
-import { DevToolsOutputFormat } from '@code-pushup/profiler';
+profiler.mark('cli:start', {
+  devtools: {
+    dataType: 'track-entry',
+    track: 'cli',
+  } satisfies DevtoolsMarkerDetails,
+});
+```
 
-const format = new DevToolsOutputFormat('trace.jsonl');
+### Track Entries Spans
 
-format.preamble({ pid: 123, tid: 456, url: 'app.js' });
+Spans represent a duration of time during which a specific operation or task is performed.
 
-const mark = performance.mark('test');
-const events = format.encode(mark);
+```typescript
+profiler.measure('app-run', {
+  start: 'app-run:start',
+  end: 'app-run:end',
+  detail: {
+    devtools: {
+      dataType: 'track-entry',
+      track: 'cli',
+    } satisfies DevtoolsSpanDetails,
+  },
+});
+```
 
-format.epilogue();
+### Tracks and TrackGroups
 
-format.id;
+Tracks are horizontal lanes in the timeline that group related events together.
+We can think of groups being processes and tracks being threads within those processes.
+
+They are controlled over the `track` and `trackGroup` property in the `devtools` details.
+
+```typescript
+import { DevToolsTrackEntry } from './user-timing-details.type';
+
+profiler.measure('app-run', {
+  start: 'app-run:start',
+  end: 'app-run:end',
+  detail: {
+    devtools: {
+      track: 'cli',
+      trackGroup: 'code-pushup',
+    } satisfies DevToolsTrackEntry,
+  },
+});
+```
+
+By default, any entry with devtools.dataType `marker` or `track-entry` and `track` set, will show up in a track with the label "Custom Track - _Custom_".
+
+### Styling and Metadata
+
+```typescript
+import { DevToolsLabel } from './user-timing-details.type';
+
+profiler.mark('app-run:start', {
+  devtools: {
+    color: 'secondary', // 'primary' is default
+    tooltiptext: 'Application run started', // shown on hover
+    // visible in details pane on click
+    properties: [['key', 'value']],
+  } satisfies DevToolsLabel,
+});
 ```

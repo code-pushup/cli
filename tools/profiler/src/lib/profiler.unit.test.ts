@@ -325,7 +325,7 @@ describe('getProfiler', () => {
     it('should create instant mark when enabled', () => {
       const profiler = getProfiler();
 
-      profiler.instant('test-instant');
+      profiler.instantTrackEntry('test-instant');
 
       expect(profiler.mark).toBeDefined();
     });
@@ -333,7 +333,7 @@ describe('getProfiler', () => {
     it('should not create instant mark when disabled', () => {
       const profiler = getProfiler({ enabled: false });
 
-      profiler.instant('test-instant');
+      profiler.instantTrackEntry('test-instant');
 
       // Should not throw
       expect(true).toBe(true);
@@ -343,7 +343,7 @@ describe('getProfiler', () => {
       const profiler = getProfiler();
       profiler.close();
 
-      profiler.instant('test-instant');
+      profiler.instantTrackEntry('test-instant');
 
       // Should not throw
       expect(true).toBe(true);
@@ -353,7 +353,7 @@ describe('getProfiler', () => {
       const profiler = getProfiler();
       const detail = { custom: 'data' };
 
-      profiler.instant('test-instant', { detail });
+      profiler.instantTrackEntry('test-instant', { detail });
 
       expect(profiler.mark).toBeDefined();
     });
@@ -361,7 +361,7 @@ describe('getProfiler', () => {
     it('should handle instant without detail option (auto-detect)', () => {
       const profiler = getProfiler();
 
-      profiler.instant('test-instant');
+      profiler.instantTrackEntry('test-instant');
 
       expect(profiler.mark).toBeDefined();
     });
@@ -442,7 +442,7 @@ describe('getProfiler', () => {
 
       const profiler = getProfiler({ prefixMarks: 'my-prefix:' });
 
-      profiler.instant('test-instant');
+      profiler.instantTrackEntry('test-instant');
 
       expect(mockMark).toHaveBeenCalledWith(
         'my-prefix:test-instant',

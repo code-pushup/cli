@@ -1,4 +1,4 @@
-import type { MarkOptions } from 'node:perf_hooks';
+import { type MarkOptions } from 'node:perf_hooks';
 
 export type MarkOpts = MarkOptions & { detail?: unknown };
 
@@ -12,7 +12,7 @@ export type SpanCallbackOptions<T, K extends string = never> = {
       options?: {
         properties?: Array<[string, string]>;
         tooltipText?: string;
-        color?: import('./user-timing-details.type').DevToolsColorToken;
+        color?: import('./user-timing-details.type').DevToolsColor;
       },
     ) => MarkOpts;
     createErrorDetail: (
@@ -22,7 +22,7 @@ export type SpanCallbackOptions<T, K extends string = never> = {
     createStartDetail: (options?: {
       properties?: Array<[string, string]>;
       tooltipText?: string;
-      color?: import('./user-timing-details.type').DevToolsColorToken;
+      color?: import('./user-timing-details.type').DevToolsColor;
     }) => MarkOpts;
   };
 };

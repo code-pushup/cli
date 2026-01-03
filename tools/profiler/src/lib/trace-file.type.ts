@@ -3,19 +3,27 @@ export type TraceEventArgsPayload = {
   [key: string]: unknown;
 };
 
-export type TraceEvent = {
+/**
+ * Base options shared by all trace event creation functions
+ */
+export interface BaseTraceEventOptions {
+  pid?: number;
+  tid?: number;
+  ts?: number;
+}
+
+export type TraceEvent = BaseTraceEventOptions & {
   cat: string;
   name: string;
   s?: string;
   ph: string;
-  pid: number;
-  tid: number;
-  ts: number;
+  ts: number; // Required timestamp
   tts?: number;
   dur?: number;
   id?: string;
   id2?: { local: string };
   args?: TraceEventArgsPayload;
+  [key: string]: unknown; // Index signature for compatibility with Record<string, unknown>
 };
 
 // Specific event types for better type safety

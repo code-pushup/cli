@@ -1,11 +1,11 @@
 import { setTimeout as sleep } from 'timers/promises';
 import { getProfiler } from '@code-pushup/profiler';
-import { getMeasureMarkNames } from '../../src/lib/profiler-utils';
+import { getMeasureMarkNames } from '../../src/lib/performance-utils';
 import {
   createLabel,
   createLabelError,
-  createLabelWarning,
-  propertiesFrom,
+  extensionMarkerWarningPayload,
+  objToPropertiesPayload,
 } from '../../src/lib/user-timing-details-utils';
 
 async function run() {
@@ -23,7 +23,7 @@ async function run() {
       devtools: createLabel({
         color: 'secondary',
         tooltipText: 'This is a primary label',
-        properties: propertiesFrom({
+        properties: objToPropertiesPayload({
           'Property Info': 'This is a primary label',
         }),
       }),
@@ -40,7 +40,7 @@ async function run() {
   await sleep(10);
   performance.mark(getMeasureMarkNames('warn-mark-label').startName, {
     detail: {
-      devtools: createLabelWarning({
+      devtools: extensionMarkerWarningPayload({
         tooltipText: 'This is a warning label',
       }),
     },
