@@ -16,8 +16,8 @@ const disableProfiler =
   args.includes('--disable-profiler') || args.includes('-np');
 
 // Environment variable override
-const envEnabled = process.env.PROFILER_ENABLED === 'true';
-const envDisabled = process.env.PROFILER_ENABLED === 'false';
+const envEnabled = process.env['PROFILER_ENABLED'] === 'true';
+const envDisabled = process.env['PROFILER_ENABLED'] === 'false';
 
 // Determine if profiler should be enabled
 const profilerEnabled =

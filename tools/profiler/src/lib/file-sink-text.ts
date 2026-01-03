@@ -7,18 +7,17 @@ import { type RecoverResult, type Sink } from './output.types';
 
 export interface FileSinkOptions<I = any> {
   filePath: string;
-  encode?: (input: I) => FileOutput;
-  decode?: (input: FileOutput) => I;
+  encode?: (input: I) => FileSinkText;
+  decode?: (input: FileSinkText) => I;
   recover?: () => RecoverResult<I>;
   finalize?: () => void;
 }
 
 export type FileInput = Buffer | string;
 export type FileOutput = string;
+export type FileSinkText = string;
 
-export class FileSink<I = FileInput>
-  implements Sink<I, FileOutput>, Recoverable
-{
+export class FileSink<I = FileInput> implements Sink<I, FileSink>, Recoverable {
   #fd: number | null = null;
   private options: FileSinkOptions<I>;
 
@@ -33,9 +32,7 @@ export class FileSink<I = FileInput>
         throw new Error('decode function must be provided');
       },
       recover: () =>
-        stringRecover(filePath, value =>
-          this.options.decode!(value as FileOutput),
-        ),
+        stringRecover(filePath, value => this.options.decode!(value)),
       finalize: () => this.close(),
       ...options,
     };
@@ -65,11 +62,11 @@ export class FileSink<I = FileInput>
     fs.writeSync(this.#fd, encoded as any);
   }
 
-  encode(input: I): FileOutput {
+  encode(input: I): FileSink {
     return this.options.encode!(input);
   }
 
-  decode(input: FileOutput): I {
+  decode(input: FileSink): I {
     return this.options.decode!(input);
   }
 

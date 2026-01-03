@@ -5,18 +5,20 @@ import {
   type PerformanceMeasure,
 } from 'node:perf_hooks';
 
-export type DevToolsColor =
+export type DevToolsFeedbackColor = 'error' | 'warning';
+
+export type DevToolsActionColor =
   | 'primary'
-  | 'primary-light'
   | 'primary-dark'
+  | 'primary-light'
   | 'secondary'
-  | 'secondary-light'
   | 'secondary-dark'
+  | 'secondary-light'
   | 'tertiary'
-  | 'tertiary-light'
   | 'tertiary-dark'
-  | 'error'
-  | 'warning';
+  | 'tertiary-light';
+
+export type DevToolsColor = DevToolsFeedbackColor | DevToolsActionColor;
 
 performance.mark('');
 
@@ -30,9 +32,15 @@ export interface EntryMeta {
   tooltipText?: string; // Short description for tooltip on hover
   properties?: DevToolsProperties; // Key-value pairs for detailed view on click
 }
+
 export interface TrackStyle {
   color?: DevToolsColor; // rendered color of background and border, defaults to "primary"
 }
+
+export interface TrackStyle {
+  color?: DevToolsColor; // rendered color of background and border, defaults to "primary"
+}
+
 export interface TrackMeta {
   track: string; // Required: Name of the custom track
   trackGroup?: string; // Optional: Group for organizing tracks
@@ -90,6 +98,7 @@ export interface NativePerformanceAPI {
     name: string,
     options: MeasureOptionsWithDevtools,
   ): PerformanceMeasure;
+
   measure(
     name: string,
     startMark?: string,

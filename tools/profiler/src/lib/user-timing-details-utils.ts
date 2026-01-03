@@ -102,25 +102,16 @@ export function errorToEntryMeta(
   };
 }
 
-export function errorToTrackEntryPayload<
-  T extends string,
-  C extends DevToolsColor = 'error',
->(
+export function errorToTrackEntryPayload<T extends string>(
   error: unknown,
   detail: Omit<TrackEntryPayload, 'color' | 'dataType'> & {
     track: T;
-    color?: C;
   },
 ) {
-  const {
-    properties,
-    tooltipText,
-    color = 'error',
-    ...trackPayload
-  } = detail ?? {};
+  const { properties, tooltipText, ...trackPayload } = detail ?? {};
   return {
     dataType: 'track-entry',
-    color: color,
+    color: 'error' as const,
     ...trackPayload,
     ...errorToEntryMeta(error, {
       properties,

@@ -45,7 +45,6 @@ function runTest() {
                 () => work(true),
                 {
                   track: 'Plugins Coverage',
-                  color: 'error',
                   error: err => ({
                     tooltipText:
                       'An error occurred during coverage plugin execution',

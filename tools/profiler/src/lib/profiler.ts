@@ -14,9 +14,9 @@ import {
 import {
   type DevToolsOptionCb,
   type MeasureControl,
-  PerformanceAPIExtension,
+  type PerformanceAPIExtension,
   type TrackControl,
-  TrackControlOptions,
+  type TrackControlOptions,
   getMeasureControl,
   getTrackControl,
   span,
@@ -45,14 +45,11 @@ import {
   trackEntryPayload,
 } from './user-timing-details-utils.js';
 import {
-  EntryMeta,
   type MarkOptionsWithDevtools,
   type MarkerPayload,
   type MeasureOptionsWithDevtools,
   type NativePerformanceAPI,
   type TrackEntryPayload,
-  type TrackMeta,
-  type TrackStyle,
   type UserTimingDetail,
 } from './user-timing-details.type.js';
 import { getFilenameParts, installExitHandlersOnce } from './utils';
@@ -127,6 +124,7 @@ export interface ProfilerInterface
   extends ProfilerControl,
     PerformanceAPIExtension,
     NativePerformanceAPI {}
+
 export type ProfilerControlOptions = {
   enabled?: boolean;
   captureBuffered?: boolean;
@@ -145,6 +143,7 @@ export class Profiler implements ProfilerInterface {
   #closed = false;
 
   measureConfig: TrackControl & MeasureControl;
+
   constructor(options: ProfilerOptions = {}) {
     const {
       enabled = process.env[PROFILER_ENV_VAR] !== 'false',

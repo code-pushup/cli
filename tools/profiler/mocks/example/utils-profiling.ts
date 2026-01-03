@@ -65,19 +65,9 @@ async function run() {
     }),
   };
 
-  span(
-    performance,
-    'performance-measureSync1-success',
-    doWork,
-    optionCallbacks,
-  );
+  span('performance-measureSync1-success', doWork, optionCallbacks);
   try {
-    span(
-      performance,
-      'performance-measureSync1-error',
-      doWorkThrow,
-      optionCallbacks,
-    );
+    span('performance-measureSync1-error', doWorkThrow, optionCallbacks);
   } catch {
     /* swallow to keep the program running */
   }

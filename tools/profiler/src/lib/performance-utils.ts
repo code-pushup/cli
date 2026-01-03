@@ -5,9 +5,9 @@ import {
   trackEntryPayload,
 } from './user-timing-details-utils.js';
 import {
-  EntryMeta,
+  type DevToolsActionColor,
+  type EntryMeta,
   type MarkerPayload,
-  type NativePerformanceAPI,
   type TrackEntryPayload,
   type TrackMeta,
   type TrackStyle,
@@ -36,6 +36,7 @@ export function getMeasureMarkNames(baseName: string, prefix?: string) {
     measureName: `${prfx}${baseName}`,
   };
 }
+
 export interface MeasureControl {
   defaultPrefix?: string;
   getNames: (
@@ -64,6 +65,7 @@ export type TrackControlOptions = {
   defaultTrack?: Partial<TrackMeta> & TrackStyle;
   errorHandler?: (error: unknown) => EntryMeta;
 };
+
 export function getTrackControl(options?: TrackControlOptions): TrackControl {
   const { defaultTrack, errorHandler } = options ?? {};
   return {
@@ -75,13 +77,11 @@ export function getTrackControl(options?: TrackControlOptions): TrackControl {
   };
 }
 
-export type DevToolsOptionCb<T> = Partial<TrackMeta> &
+export type DevToolsOptionCb<T> = TrackMeta &
   TrackStyle & {
     success?: (result: T) => EntryMeta;
     error?: (err: unknown) => EntryMeta;
   };
-
-export type UtilsControl = TrackControl & MeasureControl & NativePerformanceAPI;
 
 export interface PerformanceAPIExtension {
   instantMarker(name: string, options: MarkerPayload): void;
@@ -103,21 +103,20 @@ export function span<T>(
   options: DevToolsOptionCb<T>,
 ): T {
   const { startName, measureName, endName } = getMeasureMarkNames(name);
-  const { error, success, ...spanDetail } = options ?? {};
-  performance.mark(startName, asOptions(trackEntryPayload(spanDetail)));
+  const { error, success, ...spanDetails } = options ?? {};
+  performance.mark(startName, asOptions(trackEntryPayload(spanDetails)));
   try {
     const result = fn();
-    performance.mark(endName, asOptions(trackEntryPayload(spanDetail)));
     performance.measure(measureName, {
       start: startName,
       end: endName,
-      ...asOptions(trackEntryPayload(spanDetail)),
+      ...asOptions(trackEntryPayload(spanDetails)),
     });
     return result;
   } catch (err) {
     const errorOptions = asOptions(
       errorToTrackEntryPayload(err, {
-        ...spanDetail,
+        ...spanDetails,
         ...error?.(err),
       }),
     );
@@ -130,23 +129,24 @@ export function span<T>(
     throw err;
   }
 }
+
 export async function spanAsync<T>(
   name: string,
   fn: () => Promise<T>,
   options: DevToolsOptionCb<T>,
 ): Promise<T> {
   const { startName, measureName, endName } = getMeasureMarkNames(name);
-  const { error, success, ...trackDetail } = options ?? {};
-  performance.mark(startName, asOptions(trackEntryPayload(trackDetail)));
+  const { error, success, ...spanDetail } = options ?? {};
+  performance.mark(startName, asOptions(trackEntryPayload(spanDetail)));
   try {
     const result = await fn();
-    performance.mark(endName, asOptions(trackEntryPayload(trackDetail)));
+    performance.mark(endName, asOptions(trackEntryPayload(spanDetail)));
     performance.measure(measureName, {
       start: startName,
       end: endName,
       ...asOptions(
         trackEntryPayload({
-          ...trackDetail,
+          ...spanDetail,
           ...success?.(result),
         }),
       ),
@@ -155,7 +155,7 @@ export async function spanAsync<T>(
   } catch (err) {
     const errorOptions = asOptions(
       errorToTrackEntryPayload(err, {
-        ...trackDetail,
+        ...spanDetail,
         ...error?.(err),
       }),
     );
