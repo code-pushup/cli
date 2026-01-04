@@ -5,44 +5,17 @@ import {
   span,
   spanAsync,
 } from '../../src/lib/performance-utils';
-import { markerPayload } from '../../src/lib/user-timing-details-utils';
-import type {
-  TrackEntryPayload,
-  UserTimingDetail,
-} from '../../src/lib/user-timing-details.type';
-
-function doWork(): number {
-  for (let i = 0; i < 1e6; i++) {
-    Math.sqrt(i);
-  }
-  return 1e6;
-}
-
-function doWorkThrow(): number {
-  const res = doWork();
-  throw new Error(`Iteration ${res} failed sync.`);
-}
-
-async function doWorkAsync(): Promise<number> {
-  const res = doWork();
-  await sleep(5);
-  return res;
-}
-
-async function doWorkAsyncThrow(): Promise<number> {
-  const res = await doWorkAsync();
-  throw new Error(`Iteration ${res} failed ssync.`);
-}
+import {
+  asOptions,
+  markerPayload,
+} from '../../src/lib/user-timing-details-utils';
+import { asyncWork, work } from '../test-utils';
 
 async function run() {
   // ======= TIMERIFY =======
   await sleep(20);
 
-  performance.mark('matk:start', {
-    detail: {
-      devtools: markerPayload(),
-    },
-  });
+  performance.mark('matk:start', asOptions(markerPayload()));
 
   // === start mark ===
 
@@ -54,7 +27,8 @@ async function run() {
 
   // ======= MEASURE =======
 
-  const optionCallbacks: DevToolsOptionCb<ReturnType<typeof doWork>> = {
+  const optionCallbacks: DevToolsOptionCb<ReturnType<typeof work>> = {
+    track: 'performance-utils',
     success: (result: number) => ({
       properties: [['Iterations', String(result)]],
       tooltipText: `Completed ${result} iterations successfully`,
@@ -65,31 +39,18 @@ async function run() {
     }),
   };
 
-  span('performance-measureSync1-success', doWork, optionCallbacks);
+  span('performance-measureSync1-success', work, optionCallbacks);
   try {
-    span('performance-measureSync1-error', doWorkThrow, optionCallbacks);
+    span('performance-measureSync1-error', () => work(true), optionCallbacks);
   } catch {
     /* swallow to keep the program running */
   }
 
-  span(profiler, 'profiler-measureSync1-success', doWork, optionCallbacks);
+  profiler.span('profiler-measureSync1-success', work, optionCallbacks);
   try {
-    span(profiler, 'profiler-measureSync1-error', doWorkThrow, optionCallbacks);
-  } catch {
-    /* swallow to keep the program running */
-  }
-
-  await spanAsync(
-    performance,
-    'performance-measureAsync1-success',
-    doWorkAsync,
-    optionCallbacks,
-  );
-  try {
-    await spanAsync(
-      performance,
-      'performance-measureAsync1-error',
-      doWorkAsyncThrow,
+    profiler.span(
+      'profiler-measureSync1-error',
+      () => work(true),
       optionCallbacks,
     );
   } catch {
@@ -97,16 +58,29 @@ async function run() {
   }
 
   await spanAsync(
-    profiler,
-    'profiler-measureAsync2-success',
-    doWorkAsync,
+    'performance-measureAsync1-success',
+    asyncWork,
     optionCallbacks,
   );
   try {
     await spanAsync(
-      profiler,
+      'performance-measureAsync1-error',
+      () => asyncWork(true),
+      optionCallbacks,
+    );
+  } catch {
+    /* swallow to keep the program running */
+  }
+
+  await profiler.spanAsync(
+    'profiler-measureAsync2-success',
+    asyncWork,
+    optionCallbacks,
+  );
+  try {
+    await profiler.spanAsync(
       'profiler-measureAsync2-error',
-      doWorkAsyncThrow,
+      () => asyncWork(true),
       optionCallbacks,
     );
   } catch (err) {}
