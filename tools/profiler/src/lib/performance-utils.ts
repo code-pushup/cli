@@ -1,4 +1,5 @@
 import { performance } from 'node:perf_hooks';
+import { getProfiler } from './profiler.js';
 import {
   asOptions,
   errorToTrackEntryPayload,
@@ -12,6 +13,9 @@ import {
   type TrackMeta,
   type TrackStyle,
 } from './user-timing-details.type';
+
+// Re-export for use in other modules
+export type { TrackMeta, TrackStyle };
 
 export const MARK_SUFFIX = {
   START: ':start',
@@ -56,51 +60,81 @@ export function getMeasureControl(defaultPrefix?: string): MeasureControl {
   };
 }
 
-export interface TrackControl {
-  defaultTrack: TrackMeta & TrackStyle;
+export interface TrackControl<
+  Tracks extends Record<string, TrackStyle & TrackMeta> = Record<
+    string,
+    TrackStyle & TrackMeta
+  >,
+> {
+  tracks: Tracks & { defaultTrack: TrackStyle & TrackMeta };
   errorHandler?: (error: unknown) => EntryMeta;
 }
 
-export type TrackControlOptions = {
+export type TrackControlOptions<
+  Tracks extends Record<string, TrackStyle & TrackMeta> = Record<
+    string,
+    TrackStyle & TrackMeta
+  >,
+> = {
   defaultTrack?: Partial<TrackMeta> & TrackStyle;
+  tracks?: Tracks;
   errorHandler?: (error: unknown) => EntryMeta;
 };
 
-export function getTrackControl(options?: TrackControlOptions): TrackControl {
-  const { defaultTrack, errorHandler } = options ?? {};
+export function getTrackControl<
+  Tracks extends Record<string, TrackStyle & TrackMeta> = Record<
+    string,
+    TrackStyle & TrackMeta
+  >,
+>(options: TrackControlOptions<Tracks> = {}): TrackControl<Tracks> {
+  const { defaultTrack, tracks = {} as Tracks, errorHandler } = options;
   return {
-    defaultTrack: {
-      track: 'Main',
-      ...defaultTrack,
+    tracks: {
+      defaultTrack: {
+        track: 'Main',
+        ...defaultTrack,
+      },
+      ...tracks,
     },
     errorHandler,
   };
 }
 
-export type DevToolsOptionCb<T> = TrackMeta &
+export type DevToolsOptionCb<Track extends string = string, R = unknown> = Omit<
+  TrackMeta,
+  'track'
+> &
   TrackStyle & {
-    success?: (result: T) => EntryMeta;
+    track: Track | string; // Can be track key or track value
+    success?: (result: R) => EntryMeta;
     error?: (err: unknown) => EntryMeta;
   };
 
-export interface PerformanceAPIExtension {
-  instantMarker(name: string, options: MarkerPayload): void;
+export interface PerformanceAPIExtension<Track extends string> {
+  instantMarker(name: string, options: MarkerPayload & { track: Track }): void;
 
-  instantTrackEntry(name: string, options?: TrackEntryPayload): void;
+  instantTrackEntry(
+    name: string,
+    options?: TrackEntryPayload & { track: Track },
+  ): void;
 
-  span<T>(name: string, fn: () => T, options?: DevToolsOptionCb<T>): T;
+  span<T>(
+    name: string,
+    fn: () => T,
+    options?: DevToolsOptionCb<Track, T> | Track | (TrackStyle & TrackMeta),
+  ): T;
 
   spanAsync<T>(
     name: string,
     fn: () => Promise<T>,
-    options?: DevToolsOptionCb<T>,
+    options?: DevToolsOptionCb<Track, T> | Track | (TrackStyle & TrackMeta),
   ): Promise<T>;
 }
 
 export function span<T>(
   name: string,
   fn: () => T,
-  options: DevToolsOptionCb<T>,
+  options: DevToolsOptionCb<string, T>,
 ): T {
   const { startName, measureName, endName } = getMeasureMarkNames(name);
   const { error, success, ...spanDetails } = options ?? {};
@@ -110,7 +144,11 @@ export function span<T>(
     performance.measure(measureName, {
       start: startName,
       end: endName,
-      ...asOptions(trackEntryPayload(spanDetails)),
+      ...asOptions(
+        trackEntryPayload({
+          ...spanDetails,
+        }),
+      ),
     });
     return result;
   } catch (err) {
@@ -133,7 +171,7 @@ export function span<T>(
 export async function spanAsync<T>(
   name: string,
   fn: () => Promise<T>,
-  options: DevToolsOptionCb<T>,
+  options: DevToolsOptionCb<string, T>,
 ): Promise<T> {
   const { startName, measureName, endName } = getMeasureMarkNames(name);
   const { error, success, ...spanDetail } = options ?? {};

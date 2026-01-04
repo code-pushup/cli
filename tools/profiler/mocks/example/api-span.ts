@@ -1,23 +1,35 @@
 import { getProfiler } from '../../src/index.js';
 import { sequentialWork, work } from '../test-utils.js';
 
+const trackGroup = '<✓> Code PushUp';
 const profiler = getProfiler({
   enabled: true,
   fileBaseName: `api-span-${Date.now()}`,
-  devtools: {
+  tracks: {
     defaultTrack: {
       track: 'CLI',
-      trackGroup: '<✓> Code PushUp',
+      trackGroup,
       color: 'primary-dark',
     },
-    errorHandler: error => ({
-      properties: [
-        ['Stack Track', (error as Error)?.stack || 'Unknown'],
-        ['Cause', (error as Error)?.cause || 'Unknown'],
-      ],
-    }),
+    pluginEslint: {
+      track: 'Plugins Eslint',
+      trackGroup,
+      color: 'secondary',
+    },
+    pluginCoverage: {
+      track: 'Plugins Coverage',
+      trackGroup,
+      color: 'secondary-dark',
+    },
   },
+  errorHandler: error => ({
+    properties: [
+      ['Stack Track', (error as Error)?.stack || 'Unknown'],
+      ['Cause', (error as Error)?.cause || 'Unknown'],
+    ],
+  }),
 });
+
 profiler.span('cli:init', () =>
   profiler.span(
     'core:load-rc-config',
@@ -39,32 +51,27 @@ profiler.span('cli:init', () =>
 );
 
 profiler.span('cli:collect-command', () =>
-  profiler.span(
-    'core:execute-plugins',
-    () =>
-      sequentialWork([
-        () =>
-          profiler.span(
-            'plugin-eslint:execute-runner',
-            () =>
-              profiler.span('plugin-eslint:run-eslint', work, {
-                track: 'Plugins Eslint',
-                color: 'secondary',
-              }),
-            {
-              track: 'Plugins Eslint',
-              color: 'secondary-dark',
-            },
-          ),
-        () =>
-          profiler.span('plugin-coverage:execute-runner', work, {
-            track: 'Plugins Coverage',
+  profiler.span('core:execute-plugins', () =>
+    sequentialWork([
+      () =>
+        profiler.span(
+          'plugin-eslint:execute-runner',
+          () =>
+            profiler.span('plugin-eslint:run-eslint', work, {
+              ...profiler.measureConfig.tracks.pluginEslint,
+              color: 'secondary',
+            }),
+          {
+            ...profiler.measureConfig.tracks.pluginEslint,
             color: 'secondary-dark',
-          }),
-      ]),
-    {
-      color: 'primary',
-    },
+          },
+        ),
+      () =>
+        profiler.span('plugin-coverage:execute-runner', work, {
+          ...profiler.measureConfig.tracks.pluginCoverage,
+          color: 'secondary-dark',
+        }),
+    ]),
   ),
 );
 
@@ -79,11 +86,11 @@ profiler.span('cli:collect-command-error', () => {
               'plugin-eslint:execute-runner-error',
               () =>
                 profiler.span('plugin-eslint:run-eslint-error', work, {
-                  track: 'Plugins Eslint',
+                  ...profiler.measureConfig.tracks.pluginEslint,
                   color: 'secondary',
                 }),
               {
-                track: 'Plugins Eslint',
+                ...profiler.measureConfig.tracks.pluginEslint,
                 color: 'secondary-dark',
               },
             ),
@@ -92,7 +99,8 @@ profiler.span('cli:collect-command-error', () => {
               'plugin-coverage:execute-runner-error',
               () => work(true),
               {
-                track: 'Plugins Coverage',
+                ...profiler.measureConfig.tracks.pluginCoverage,
+                color: 'tertiary',
               },
             ),
         ]),

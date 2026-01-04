@@ -5,19 +5,19 @@ async function runTest() {
   const profiler = getProfiler({
     enabled: true,
     fileBaseName: `api-spanAsync-${Date.now()}`,
-    devtools: {
+    tracks: {
       defaultTrack: {
         track: 'CLI',
         trackGroup: '<✓> Code PushUp',
         color: 'primary-dark',
       },
-      errorHandler: error => ({
-        properties: [
-          ['Stack Track', (error as Error)?.stack || 'Unknown'],
-          ['Cause', (error as Error)?.cause || 'Unknown'],
-        ],
-      }),
     },
+    errorHandler: error => ({
+      properties: [
+        ['Stack Track', (error as Error)?.stack || 'Unknown'],
+        ['Cause', (error as Error)?.cause || 'Unknown'],
+      ],
+    }),
   });
   profiler.spanAsync('cli:init', () =>
     profiler.spanAsync(
@@ -49,17 +49,17 @@ async function runTest() {
               'plugin-eslint:execute-runner',
               () =>
                 profiler.spanAsync('plugin-eslint:run-eslint', asyncWork, {
-                  track: 'Plugins Eslint',
+                  ...profiler.measureConfig.tracks.pluginEslint,
                   color: 'secondary',
                 }),
               {
-                track: 'Plugins Eslint',
+                ...profiler.measureConfig.tracks.pluginEslint,
                 color: 'secondary-dark',
               },
             ),
           () =>
             profiler.spanAsync('plugin-coverage:execute-runner', asyncWork, {
-              track: 'Plugins Coverage',
+              ...profiler.measureConfig.tracks.pluginCoverage,
               color: 'secondary-dark',
             }),
         ]),
@@ -83,12 +83,12 @@ async function runTest() {
                     'plugin-eslint:run-eslint-error',
                     asyncWork,
                     {
-                      track: 'Plugins Eslint',
+                      ...profiler.measureConfig.tracks.pluginEslint,
                       color: 'secondary',
                     },
                   ),
                 {
-                  track: 'Plugins Eslint',
+                  ...profiler.measureConfig.tracks.pluginEslint,
                   color: 'secondary-dark',
                 },
               ),
@@ -97,7 +97,7 @@ async function runTest() {
                 'plugin-coverage:execute-runner-error',
                 () => asyncWork(true),
                 {
-                  track: 'Plugins Coverage',
+                  ...profiler.measureConfig.tracks.pluginCoverage,
                   color: 'secondary-dark',
                   error: err => ({
                     tooltipText:

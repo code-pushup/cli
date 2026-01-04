@@ -12,11 +12,12 @@ import {
   createPerformanceObserver,
 } from './performance-observer';
 import {
-  type DevToolsOptionCb,
   type MeasureControl,
   type PerformanceAPIExtension,
   type TrackControl,
   type TrackControlOptions,
+  type TrackMeta,
+  type TrackStyle,
   getMeasureControl,
   getTrackControl,
   span,
@@ -45,6 +46,7 @@ import {
   trackEntryPayload,
 } from './user-timing-details-utils.js';
 import {
+  type EntryMeta,
   type MarkOptionsWithDevtools,
   type MarkerPayload,
   type MeasureOptionsWithDevtools,
@@ -112,7 +114,10 @@ const instantEvenMarker = (opt: {
   });
 };
 
-export function getProfiler(opts?: ProfilerOptions) {
+export function getProfiler<
+  Tracks extends Record<string, TrackStyle & TrackMeta>,
+>(opts: ProfilerOptions<Tracks>): Profiler<Tracks>;
+export function getProfiler(opts?: ProfilerOptions): Profiler {
   const g = globalThis as any;
   if (!g[PROFILER_KEY] || !g[PROFILER_KEY].isEnabled()) {
     g[PROFILER_KEY] = new Profiler(opts);
@@ -122,7 +127,7 @@ export function getProfiler(opts?: ProfilerOptions) {
 
 export interface ProfilerInterface
   extends ProfilerControl,
-    PerformanceAPIExtension,
+    PerformanceAPIExtension<string>,
     NativePerformanceAPI {}
 
 export type ProfilerControlOptions = {
@@ -131,20 +136,42 @@ export type ProfilerControlOptions = {
   recoverJsonl?: boolean;
 };
 
-export type ProfilerOptions = ProfilerControlOptions &
-  ProfilerFileOptions & {
-    devtools?: TrackControlOptions;
-  } & ProfilerEntryOptions;
+export type ProfilerOptions<
+  Tracks extends Record<string, TrackStyle & TrackMeta> = Record<
+    string,
+    TrackStyle & TrackMeta
+  >,
+> = ProfilerControlOptions &
+  ProfilerFileOptions &
+  TrackControlOptions<Tracks> &
+  ProfilerEntryOptions;
 
-export class Profiler implements ProfilerInterface {
+export type SpanOptions<Track extends string = string, R = unknown> = Omit<
+  TrackMeta,
+  'track'
+> &
+  TrackStyle & {
+    track?: Track | string; // Can be track key or track value
+    config?: string;
+    success?: (result: R) => EntryMeta;
+    error?: (err: unknown) => EntryMeta;
+  };
+
+export class Profiler<
+  Tracks extends Record<string, TrackStyle & TrackMeta> = Record<
+    string,
+    TrackStyle & TrackMeta
+  >,
+> implements ProfilerInterface
+{
   #enabled = process.env[PROFILER_ENV_VAR] !== 'false';
   #traceFile?: TraceFileSink;
   #performanceObserver?: PerformanceObserverHandle<SpanEvent | InstantEvent>;
   #closed = false;
 
-  measureConfig: TrackControl & MeasureControl;
+  measureConfig: TrackControl<Tracks> & MeasureControl;
 
-  constructor(options: ProfilerOptions = {}) {
+  constructor(options: ProfilerOptions<Tracks> = {}) {
     const {
       enabled = process.env[PROFILER_ENV_VAR] !== 'false',
       captureBuffered,
@@ -154,8 +181,10 @@ export class Profiler implements ProfilerInterface {
       namePrefix,
       ...pathOptions
     } = options;
+    const trackControl = getTrackControl(devtools);
+
     this.measureConfig = {
-      ...getTrackControl(devtools),
+      ...trackControl,
       ...getMeasureControl(namePrefix),
     };
 
@@ -244,25 +273,19 @@ export class Profiler implements ProfilerInterface {
     name: string,
     options?: Omit<TrackEntryPayload, 'dataType'>,
   ): void {
-    const payload = {
-      track: this.measureConfig.defaultTrack.track,
+    const devtools = {
+      ...this.measureConfig.tracks.defaultTrack,
       ...options,
     };
-    performance.mark(name, asOptions(trackEntryPayload(payload)));
+    performance.mark(name, asOptions(trackEntryPayload(devtools)));
   }
 
   mark(name: string, options?: MarkOptionsWithDevtools): PerformanceMark {
-    const trackAndColor = {
+    const devtools = {
+      ...this.measureConfig.tracks.defaultTrack,
       ...options,
-      detail: {
-        ...options?.detail,
-        devtools: {
-          ...this.measureConfig.defaultTrack,
-          ...options?.detail?.devtools,
-        },
-      },
     };
-    return performance.mark(name, trackAndColor);
+    return performance.mark(name, asOptions(trackEntryPayload(devtools)));
   }
 
   measure(
@@ -287,7 +310,7 @@ export class Profiler implements ProfilerInterface {
         detail: {
           ...startMarkOrOptions.detail,
           devtools: {
-            ...this.measureConfig.defaultTrack,
+            ...this.measureConfig.tracks.defaultTrack,
             ...startMarkOrOptions.detail?.devtools,
           },
         },
@@ -298,76 +321,71 @@ export class Profiler implements ProfilerInterface {
     }
   }
 
-  span<T>(name: string, fn: () => T, options?: DevToolsOptionCb<T>): T {
-    const { error, success, ...opt } = options ?? {};
+  span<Result>(
+    name: string,
+    fn: () => Result,
+    optionsOrConfig?:
+      | SpanOptions<Extract<keyof Tracks, string>, Result>
+      | Extract<keyof Tracks, string>,
+  ): Result {
+    let spanOptions =
+      typeof optionsOrConfig === 'string'
+        ? (this.measureConfig.tracks[optionsOrConfig] as SpanOptions<
+            Extract<keyof Tracks, string>,
+            Result
+          >)
+        : (optionsOrConfig ??
+          ({} as SpanOptions<Extract<keyof Tracks, string>, Result>));
+
+    const { error, success, ...opt } = spanOptions;
     const globalErrorHandler = this.measureConfig.errorHandler;
-    const spanOptions = {
-      ...this.measureConfig.defaultTrack,
+    return span(name, fn, {
+      ...this.measureConfig.tracks.defaultTrack,
       ...opt,
       error: globalErrorHandler
-        ? (err: unknown) => {
-            try {
-              const globalMeta = globalErrorHandler(err);
-              const localMeta = error?.(err);
-              return {
-                color: 'error', // Ensure error spans use error color
-                ...(globalMeta || {}),
-                ...(localMeta || {}),
-              };
-            } catch (handlerError) {
-              // If global handler fails, still try local handler
-              console.warn(
-                '[profiler] global error handler failed:',
-                handlerError,
-              );
-              return {
-                color: 'error', // Ensure error spans use error color
-                ...(error?.(err) || {}),
-              };
-            }
-          }
+        ? (err: unknown) => ({
+            color: 'error',
+            ...globalErrorHandler(err),
+            ...error?.(err),
+          })
         : error,
       success,
-    };
-    return span(name, fn, spanOptions);
+    });
   }
 
-  spanAsync<T>(
+  spanAsync<Result>(
     name: string,
-    fn: () => Promise<T>,
-    options?: DevToolsOptionCb<T>,
-  ): Promise<T> {
-    const { error, success, ...opt } = options ?? {};
+    fn: () => Promise<Result>,
+    optionsOrConfig?: SpanOptions<Extract<keyof Tracks, string>, Result>,
+  ): Promise<Result> {
+    let spanOptions =
+      typeof optionsOrConfig === 'string'
+        ? (this.measureConfig.tracks[optionsOrConfig] as SpanOptions<
+            Extract<keyof Tracks, string>,
+            Result
+          >)
+        : (optionsOrConfig ??
+          ({} as SpanOptions<Extract<keyof Tracks, string>, Result>));
+
+    const { error, success, ...opt } = spanOptions;
     const globalErrorHandler = this.measureConfig.errorHandler;
-    const spanOptions = {
-      ...this.measureConfig.defaultTrack,
+
+    const finalOptions = {
+      ...this.measureConfig.tracks.defaultTrack,
       ...opt,
       error: globalErrorHandler
         ? (err: unknown) => {
-            try {
-              const globalMeta = globalErrorHandler(err);
-              const localMeta = error?.(err);
-              return {
-                color: 'error', // Ensure error spans use error color
-                ...(globalMeta || {}),
-                ...(localMeta || {}),
-              };
-            } catch (handlerError) {
-              // If global handler fails, still try local handler
-              console.warn(
-                '[profiler] global error handler failed:',
-                handlerError,
-              );
-              return {
-                color: 'error', // Ensure error spans use error color
-                ...(error?.(err) || {}),
-              };
-            }
+            const globalMeta = globalErrorHandler(err);
+            const localMeta = error?.(err);
+            return {
+              ...globalMeta,
+              ...localMeta,
+            };
           }
         : error,
       success,
     };
-    return spanAsync(name, fn, spanOptions);
+    return spanAsync(name, fn, finalOptions);
   }
 
   close(): void {
