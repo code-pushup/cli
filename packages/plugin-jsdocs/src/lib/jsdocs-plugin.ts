@@ -1,4 +1,5 @@
 import { type PluginConfig, validate } from '@code-pushup/models';
+import { profiler } from '@code-pushup/utils';
 import { type JsDocsPluginConfig, jsDocsPluginConfigSchema } from './config.js';
 import {
   GROUPS,
@@ -39,15 +40,30 @@ export function jsDocsPlugin(config: JsDocsPluginConfig): PluginConfig {
 
   logAuditsAndGroups(audits, groups);
 
-  return {
-    slug: PLUGIN_SLUG,
-    title: PLUGIN_TITLE,
-    icon: 'folder-docs',
-    description: PLUGIN_DESCRIPTION,
-    docsUrl: PLUGIN_DOCS_URL,
-    groups,
-    audits,
-    runner: createRunnerFunction(jsDocsConfig),
-    ...(scoreTargets && { scoreTargets }),
-  };
+  return profiler.measure(
+    'plugin-jsdocs:setup-config',
+    () => {
+      return {
+        slug: PLUGIN_SLUG,
+        title: PLUGIN_TITLE,
+        icon: 'folder-docs',
+        description: PLUGIN_DESCRIPTION,
+        docsUrl: PLUGIN_DOCS_URL,
+        groups,
+        audits,
+        runner: createRunnerFunction(jsDocsConfig),
+        ...(scoreTargets && { scoreTargets }),
+      };
+    },
+    {
+      ...profiler.measureConfig.tracks.pluginJsDocs,
+      success: (config: PluginConfig) => ({
+        properties: [
+          ['Audits', String(config.audits.length)],
+          ['Groups', String(config.groups.length)],
+        ],
+        tooltipText: `Configured JSDocs plugin with ${config.audits.length} audits and ${config.groups.length} groups`,
+      }),
+    },
+  );
 }

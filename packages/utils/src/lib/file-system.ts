@@ -54,7 +54,7 @@ export async function removeDirectoryIfExists(dir: string) {
 }
 
 export async function importModule<T = unknown>(options: Options): Promise<T> {
-  return profiler.measure(
+  return profiler.measureAsync(
     'utils:importModule',
     async () => {
       const resolvedStats = await settlePromise(stat(options.filepath));
@@ -72,7 +72,16 @@ export async function importModule<T = unknown>(options: Options): Promise<T> {
       }
       return mod as T;
     },
-    { color: 'primary-light' },
+    {
+      color: 'primary-light',
+      success: (module: T) => ({
+        properties: [
+          ['File Path', options.filepath],
+          ['Format', options.format || 'esm'],
+        ],
+        tooltipText: `Successfully imported module from ${options.filepath}`,
+      }),
+    },
   );
 }
 

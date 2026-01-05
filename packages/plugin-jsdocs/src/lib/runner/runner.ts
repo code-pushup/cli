@@ -4,6 +4,7 @@ import {
   filesCoverageToTree,
   getGitRoot,
   objectToEntries,
+  profiler,
   toNumberPrecision,
 } from '@code-pushup/utils';
 import type { JsDocsPluginTransformedConfig } from '../config.js';
@@ -14,15 +15,33 @@ import { coverageTypeToAuditSlug } from './utils.js';
 export function createRunnerFunction(
   config: JsDocsPluginTransformedConfig,
 ): RunnerFunction {
-  return async (): Promise<AuditOutputs> => {
-    const coverageResult = processJsDocs(config);
-    const gitRoot = await getGitRoot();
-    return trasformCoverageReportToAuditOutputs(
-      coverageResult,
-      config,
-      gitRoot,
+  return (): Promise<AuditOutputs> =>
+    profiler.measureAsync(
+      'plugin-jsdocs:runner',
+      async (): Promise<AuditOutputs> => {
+        const coverageResult = processJsDocs(config);
+        const gitRoot = await getGitRoot();
+        return trasformCoverageReportToAuditOutputs(
+          coverageResult,
+          config,
+          gitRoot,
+        );
+      },
+      {
+        ...profiler.measureConfig.tracks.pluginJsDocs,
+        success: (result: AuditOutputs) => ({
+          properties: [
+            ['Audits', String(result.length)],
+            [
+              'Total Undocumented',
+              String(result.reduce((sum, audit) => sum + audit.value, 0)),
+            ],
+            ['Coverage Types', String(Object.keys(result).length)],
+          ],
+          tooltipText: `JSDocs coverage analysis completed with ${result.length} audits`,
+        }),
+      },
     );
-  };
 }
 
 /**

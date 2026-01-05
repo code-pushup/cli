@@ -1,7 +1,7 @@
 import ansis from 'ansis';
 import { createRequire } from 'node:module';
 import type { Audit, Group, PluginConfig } from '@code-pushup/models';
-import { logger, pluralizeToken } from '@code-pushup/utils';
+import { logger, pluralizeToken, profiler } from '@code-pushup/utils';
 import {
   type DependencyGroup,
   type JSPackagesPluginConfig,
@@ -61,25 +61,41 @@ export async function jsPackagesPlugin(
     ),
   );
 
-  return {
-    slug: JS_PACKAGES_PLUGIN_SLUG,
-    title: JS_PACKAGES_PLUGIN_TITLE,
-    icon: packageManager.icon,
-    description:
-      'This plugin runs audit to uncover vulnerabilities and lists outdated dependencies. It supports npm, yarn classic, yarn modern, and pnpm package managers.',
-    docsUrl: packageManager.docs.homepage,
-    packageName: packageJson.name,
-    version: packageJson.version,
-    audits,
-    groups,
-    runner: createRunnerFunction({
-      ...jsPackagesPluginConfigRest,
-      checks,
-      packageManager: packageManager.slug,
-      dependencyGroups: depGroups,
-    }),
-    ...(scoreTargets && { scoreTargets }),
-  };
+  return profiler.measureAsync(
+    'plugin-js-packages:setup-config',
+    async () => {
+      return {
+        slug: JS_PACKAGES_PLUGIN_SLUG,
+        title: JS_PACKAGES_PLUGIN_TITLE,
+        icon: packageManager.icon,
+        description:
+          'This plugin runs audit to uncover vulnerabilities and lists outdated dependencies. It supports npm, yarn classic, yarn modern, and pnpm package managers.',
+        docsUrl: packageManager.docs.homepage,
+        packageName: packageJson.name,
+        version: packageJson.version,
+        audits,
+        groups,
+        runner: createRunnerFunction({
+          ...jsPackagesPluginConfigRest,
+          checks,
+          packageManager: packageManager.slug,
+          dependencyGroups: depGroups,
+        }),
+        ...(scoreTargets && { scoreTargets }),
+      };
+    },
+    {
+      ...profiler.measureConfig.tracks.pluginJsPackages,
+      success: (config: PluginConfig) => ({
+        properties: [
+          ['Audits', String(config.audits.length)],
+          ['Groups', String(config.groups.length)],
+          ['Package Manager', packageManager.name],
+        ],
+        tooltipText: `Configured JS packages plugin with ${config.audits.length} audits and ${config.groups.length} groups`,
+      }),
+    },
+  );
 }
 
 function createGroups(

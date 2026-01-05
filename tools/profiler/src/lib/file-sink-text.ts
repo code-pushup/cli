@@ -1,8 +1,8 @@
 import * as fs from 'node:fs';
 import { existsSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
-import { type RecoverOptions, type Recoverable } from './sink.types';
-import { type RecoverResult, type Sink } from './sink.types';
+import { type RecoverOptions, type Recoverable } from './sink-source.types.js';
+import { type RecoverResult, type Sink } from './sink-source.types.js';
 
 export const stringDecode = <O extends FileOutput, I>(output: O): I => {
   const str = Buffer.isBuffer(output)
@@ -54,12 +54,9 @@ export const stringRecover = function <I, O extends FileOutput = FileOutput>(
   return { records, errors, partialTail };
 };
 
-export interface FileSinkOptions<
-  I = FileInput,
-  O extends FileOutput = FileOutput,
-> {
+export interface FileSinkOptions {
   filePath: string;
-  recover?: () => RecoverResult<I>;
+  recover?: () => RecoverResult;
   finalize?: () => void;
 }
 
@@ -70,9 +67,9 @@ export class FileSink<I = FileInput, O extends FileOutput = FileOutput>
   implements Sink<I, O>, Recoverable
 {
   #fd: number | null = null;
-  options: FileSinkOptions<I, O>;
+  options: FileSinkOptions;
 
-  constructor(options: FileSinkOptions<I, O>) {
+  constructor(options: FileSinkOptions) {
     this.options = options;
   }
 

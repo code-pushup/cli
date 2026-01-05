@@ -3,6 +3,7 @@ import {
   type CollectAndPersistReportsOptions,
   collectAndPersistReports,
 } from '@code-pushup/core';
+import { profiler } from '@code-pushup/utils';
 import {
   printCliCommand,
   renderCategoriesHint,
@@ -16,25 +17,35 @@ export function yargsCollectCommandObject(): CommandModule {
     command,
     describe: 'Run plugins and collect results',
     handler: async <T>(args: ArgumentsCamelCase<T>) => {
-      printCliCommand(command);
+      return profiler.measureAsync(
+        'cli:command-collect',
+        async () => {
+          printCliCommand(command);
 
-      const options = args as unknown as CollectAndPersistReportsOptions;
+          const options = args as unknown as CollectAndPersistReportsOptions;
 
-      await collectAndPersistReports(options);
+          await collectAndPersistReports(options);
 
-      if (!options.categories?.length) {
-        renderCategoriesHint();
-      }
+          if (!options.categories?.length) {
+            renderCategoriesHint();
+          }
 
-      const { upload } = args as unknown as Record<
-        'upload',
-        object | undefined
-      >;
-      if (upload) {
-        renderUploadHint();
-      } else {
-        renderPortalHint();
-      }
+          const { upload } = args as unknown as Record<
+            'upload',
+            object | undefined
+          >;
+          if (upload) {
+            renderUploadHint();
+          } else {
+            renderPortalHint();
+          }
+        },
+        {
+          success: () => ({
+            tooltipText: 'Collect command completed successfully',
+          }),
+        },
+      );
     },
   } satisfies CommandModule;
 }

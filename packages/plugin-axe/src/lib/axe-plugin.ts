@@ -4,7 +4,7 @@ import {
   type PluginUrls,
   validate,
 } from '@code-pushup/models';
-import { normalizeUrlInput } from '@code-pushup/utils';
+import { normalizeUrlInput, profiler } from '@code-pushup/utils';
 import { type AxePluginOptions, axePluginOptionsSchema } from './config.js';
 import { AXE_PLUGIN_SLUG, AXE_PLUGIN_TITLE } from './constants.js';
 import { processAuditsAndGroups } from './meta/processing.js';
@@ -34,23 +34,39 @@ export function axePlugin(
     preset,
   );
 
-  const packageJson = createRequire(import.meta.url)(
-    '../../package.json',
-  ) as typeof import('../../package.json');
+  return profiler.measure(
+    'plugin-axe:setup-config',
+    () => {
+      const packageJson = createRequire(import.meta.url)(
+        '../../package.json',
+      ) as typeof import('../../package.json');
 
-  return {
-    slug: AXE_PLUGIN_SLUG,
-    title: AXE_PLUGIN_TITLE,
-    icon: 'folder-syntax',
-    description:
-      'Official Code PushUp Axe plugin for automated accessibility testing',
-    docsUrl: 'https://www.npmjs.com/package/@code-pushup/axe-plugin',
-    packageName: packageJson.name,
-    version: packageJson.version,
-    audits,
-    groups,
-    runner: createRunnerFunction(normalizedUrls, ruleIds, timeout),
-    context,
-    ...(scoreTargets && { scoreTargets }),
-  };
+      return {
+        slug: AXE_PLUGIN_SLUG,
+        title: AXE_PLUGIN_TITLE,
+        icon: 'folder-syntax',
+        description:
+          'Official Code PushUp Axe plugin for automated accessibility testing',
+        docsUrl: 'https://www.npmjs.com/package/@code-pushup/axe-plugin',
+        packageName: packageJson.name,
+        version: packageJson.version,
+        audits,
+        groups,
+        runner: createRunnerFunction(normalizedUrls, ruleIds, timeout),
+        context,
+        ...(scoreTargets && { scoreTargets }),
+      };
+    },
+    {
+      ...profiler.measureConfig.tracks.pluginAxe,
+      success: (config: PluginConfig) => ({
+        properties: [
+          ['URLs', String(normalizedUrls.length)],
+          ['Audits', String(config.audits.length)],
+          ['Groups', String(config.groups.length)],
+        ],
+        tooltipText: `Configured Axe plugin with ${config.audits.length} audits for ${normalizedUrls.length} URLs`,
+      }),
+    },
+  );
 }

@@ -2,7 +2,7 @@ import ansis from 'ansis';
 import type { CommandModule } from 'yargs';
 import { type CompareOptions, compareReportFiles } from '@code-pushup/core';
 import type { PersistConfig, UploadConfig } from '@code-pushup/models';
-import { logger } from '@code-pushup/utils';
+import { logger, profiler } from '@code-pushup/utils';
 import { yargsCompareOptionsDefinition } from '../implementation/compare.options.js';
 import { printCliCommand } from '../implementation/logging.js';
 
@@ -13,24 +13,38 @@ export function yargsCompareCommandObject() {
     describe: 'Compare 2 report files and create a diff file',
     builder: yargsCompareOptionsDefinition(),
     handler: async (args: unknown) => {
-      printCliCommand(command);
+      return profiler.measureAsync(
+        'cli:command-compare',
+        async () => {
+          printCliCommand(command);
 
-      const options = args as CompareOptions & {
-        persist: Required<PersistConfig>;
-        upload?: UploadConfig;
-      };
+          const options = args as CompareOptions & {
+            persist: Required<PersistConfig>;
+            upload?: UploadConfig;
+          };
 
-      const { before, after, label, persist, upload } = options;
+          const { before, after, label, persist, upload } = options;
 
-      const outputPaths = await compareReportFiles(
-        { persist, upload },
-        { before, after, label },
-      );
+          const outputPaths = await compareReportFiles(
+            { persist, upload },
+            { before, after, label },
+          );
 
-      logger.info(
-        `Reports diff written to ${outputPaths
-          .map(path => ansis.bold(path))
-          .join(' and ')}`,
+          logger.info(
+            `Reports diff written to ${outputPaths
+              .map(path => ansis.bold(path))
+              .join(' and ')}`,
+          );
+        },
+        {
+          success: (outputPaths: string[]) => ({
+            properties: [
+              ['Output Files', String(outputPaths.length)],
+              ['Output Paths', outputPaths.join(', ')],
+            ],
+            tooltipText: `Compare command completed, generated ${outputPaths.length} output file(s)`,
+          }),
+        },
       );
     },
   } satisfies CommandModule;

@@ -1,4 +1,9 @@
-import { logger, pluralizeToken, stringifyError } from '@code-pushup/utils';
+import {
+  logger,
+  pluralizeToken,
+  profiler,
+  stringifyError,
+} from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
 import { formatMetaLog } from '../meta/format.js';
 import { filterProjectGraph } from './filter-project-graph.js';
@@ -51,26 +56,43 @@ async function resolveCachedProjectGraph() {
 export async function eslintConfigFromAllNxProjects(
   options: { exclude?: string[] } = {},
 ): Promise<ESLintTarget[]> {
-  const projectGraph = await resolveCachedProjectGraph();
-  const filteredProjectGraph = filterProjectGraph(
-    projectGraph,
-    options.exclude,
-  );
-  const targets = await nxProjectsToConfig(filteredProjectGraph);
+  return profiler.measureAsync(
+    'plugin-eslint:find-all-nx-projects',
+    async () => {
+      const projectGraph = await resolveCachedProjectGraph();
+      const filteredProjectGraph = filterProjectGraph(
+        projectGraph,
+        options.exclude,
+      );
+      const targets = await nxProjectsToConfig(filteredProjectGraph);
 
-  logger.info(
-    formatMetaLog(
-      [
-        `Inferred ${pluralizeToken('lint target', targets.length)} for all Nx projects`,
-        options.exclude?.length &&
-          `(excluding ${pluralizeToken('project', options.exclude.length)})`,
-      ]
-        .filter(Boolean)
-        .join(' '),
-    ),
-  );
+      logger.info(
+        formatMetaLog(
+          [
+            `Inferred ${pluralizeToken('lint target', targets.length)} for all Nx projects`,
+            options.exclude?.length &&
+              `(excluding ${pluralizeToken('project', options.exclude.length)})`,
+          ]
+            .filter(Boolean)
+            .join(' '),
+        ),
+      );
 
-  return targets;
+      return targets;
+    },
+    {
+      color: 'secondary-light',
+      success: (targets: ESLintTarget[]) => ({
+        properties: [
+          ['Targets Found', String(targets.length)],
+          ...(options.exclude?.length
+            ? [['Excluded Projects', String(options.exclude.length)]]
+            : []),
+        ],
+        tooltipText: `Found ${targets.length} ESLint targets from Nx projects`,
+      }),
+    },
+  );
 }
 
 /**

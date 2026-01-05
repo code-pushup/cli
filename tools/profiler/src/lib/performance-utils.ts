@@ -1,16 +1,6 @@
-import { performance } from 'node:perf_hooks';
-import { getProfiler } from './profiler.js';
+import { errorToEntryMeta } from './user-timing-details-utils.js';
 import {
-  asOptions,
-  errorToEntryMeta,
-  errorToTrackEntryPayload,
-  trackEntryPayload,
-} from './user-timing-details-utils.js';
-import {
-  type DevToolsActionColor,
   type EntryMeta,
-  type MarkerPayload,
-  type TrackEntryPayload,
   type TrackMeta,
   type TrackStyle,
 } from './user-timing-details.type';
@@ -47,7 +37,6 @@ export function getMeasureMarkNames(baseName: string, prefix?: string) {
 }
 
 export interface MeasureControl {
-  defaultPrefix?: string;
   getNames: (baseName: string) => {
     startName: string;
     endName: string;
@@ -57,8 +46,7 @@ export interface MeasureControl {
 
 export function getMeasureControl(defaultPrefix?: string): MeasureControl {
   return {
-    defaultPrefix,
-    getNames: getMeasureMarkNames,
+    getNames: name => getMeasureMarkNames(name, defaultPrefix),
   };
 }
 

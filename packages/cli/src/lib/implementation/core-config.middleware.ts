@@ -10,7 +10,7 @@ import {
   uploadConfigSchema,
   validate,
 } from '@code-pushup/models';
-import { logger, pluralizeToken } from '@code-pushup/utils';
+import { logger, pluralizeToken, profiler } from '@code-pushup/utils';
 import type { CoreConfigCliOptions } from './core-config.model.js';
 import type { FilterOptions } from './filter.model.js';
 import type { GlobalOptions } from './global.model.js';

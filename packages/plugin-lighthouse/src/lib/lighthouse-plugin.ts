@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module';
 import type { PluginConfig, PluginUrls } from '@code-pushup/models';
-import { normalizeUrlInput } from '@code-pushup/utils';
+import { normalizeUrlInput, profiler } from '@code-pushup/utils';
 import {
   LIGHTHOUSE_PLUGIN_SLUG,
   LIGHTHOUSE_PLUGIN_TITLE,
@@ -30,25 +30,41 @@ export function lighthousePlugin(
     onlyCategories,
   });
 
-  const packageJson = createRequire(import.meta.url)(
-    '../../package.json',
-  ) as typeof import('../../package.json');
+  return profiler.measure(
+    'plugin-lighthouse:setup-config',
+    () => {
+      const packageJson = createRequire(import.meta.url)(
+        '../../package.json',
+      ) as typeof import('../../package.json');
 
-  return {
-    slug: LIGHTHOUSE_PLUGIN_SLUG,
-    title: LIGHTHOUSE_PLUGIN_TITLE,
-    icon: 'lighthouse',
-    packageName: packageJson.name,
-    version: packageJson.version,
-    audits,
-    groups,
-    runner: createRunnerFunction(normalizedUrls, {
-      skipAudits,
-      onlyAudits,
-      onlyCategories,
-      ...unparsedFlags,
-    }),
-    context,
-    ...(scoreTargets && { scoreTargets }),
-  };
+      return {
+        slug: LIGHTHOUSE_PLUGIN_SLUG,
+        title: LIGHTHOUSE_PLUGIN_TITLE,
+        icon: 'lighthouse',
+        packageName: packageJson.name,
+        version: packageJson.version,
+        audits,
+        groups,
+        runner: createRunnerFunction(normalizedUrls, {
+          skipAudits,
+          onlyAudits,
+          onlyCategories,
+          ...unparsedFlags,
+        }),
+        context,
+        ...(scoreTargets && { scoreTargets }),
+      };
+    },
+    {
+      ...profiler.measureConfig.tracks.pluginLighthouse,
+      success: (config: PluginConfig) => ({
+        properties: [
+          ['URLs', String(normalizedUrls.length)],
+          ['Audits', String(config.audits.length)],
+          ['Groups', String(config.groups.length)],
+        ],
+        tooltipText: `Configured Lighthouse plugin with ${config.audits.length} audits for ${normalizedUrls.length} URLs`,
+      }),
+    },
+  );
 }

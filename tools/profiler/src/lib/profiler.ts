@@ -309,9 +309,8 @@ export class Profiler<
     name: string,
     options?: Omit<MarkerPayload, 'dataType'>,
   ): PerformanceMark {
-    const { startName } = this.measureConfig.getNames(name);
     return performance.mark(
-      startName,
+      name,
       asOptions(
         markerPayload({
           ...options,
@@ -420,6 +419,10 @@ export class Profiler<
             error?: (err: unknown) => EntryMeta;
           }),
   ): T {
+    if (!this.#enabled) {
+      return fn();
+    }
+
     const metaPayload = this.prepMeta(options);
     const { startName, endName } = this.measureConfig.getNames(name);
 
@@ -469,16 +472,21 @@ export class Profiler<
             error?: (err: unknown) => EntryMeta;
           }),
   ): Promise<T> {
+    if (!this.#enabled) {
+      return fn();
+    }
+
     const metaPayload = this.prepMeta(options);
     const { startName, measureName, endName } = getMeasureMarkNames(name);
 
     performance.mark(startName, asOptions(trackEntryPayload(metaPayload)));
     try {
-      const result = await fn();
+      const result = await Promise.resolve().then(fn);
       const successCallback = this.prepSuccessCallback(options);
       performance.mark(endName, asOptions(trackEntryPayload(metaPayload)));
       performance.measure(measureName, {
         start: startName,
+        end: endName,
         ...asOptions(
           trackEntryPayload({
             ...metaPayload,

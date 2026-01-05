@@ -12,6 +12,7 @@ import {
 import {
   asyncSequential,
   logger,
+  profiler,
   scoreAuditsWithTarget,
 } from '@code-pushup/utils';
 import {
@@ -127,7 +128,22 @@ export function executePlugins(config: {
     const title = `Running plugin "${pluginConfig.title}" ${suffix}`;
     const message = `Completed "${pluginConfig.title}" plugin execution`;
     return logger.group(title, async () => {
-      const result = await executePlugin(pluginConfig, config);
+      const result = await profiler.measureAsync(
+        'core:execute-plugin',
+        () => executePlugin(pluginConfig, config),
+        {
+          color: 'primary',
+          success: (result: Awaited<ReturnType<typeof executePlugin>>) => ({
+            properties: [
+              ['Plugin', result.title || pluginConfig.title],
+              ['Audits', String(result.audits.length)],
+              ['Groups', String(result.groups?.length || 0)],
+              ['Duration', `${result.duration}ms`],
+            ],
+            tooltipText: `Executed plugin "${result.title || pluginConfig.title}" with ${result.audits.length} audits in ${result.duration}ms`,
+          }),
+        },
+      );
       return { message, result };
     });
   });

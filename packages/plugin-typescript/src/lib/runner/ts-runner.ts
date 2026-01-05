@@ -3,7 +3,12 @@ import {
   createProgram,
   getPreEmitDiagnostics,
 } from 'typescript';
-import { logger, pluralizeToken, stringifyError } from '@code-pushup/utils';
+import {
+  logger,
+  pluralizeToken,
+  profiler,
+  stringifyError,
+} from '@code-pushup/utils';
 import { loadTargetConfig } from './utils.js';
 
 export type DiagnosticsOptions = {
@@ -18,8 +23,24 @@ export function getTypeScriptDiagnostics({
     `Parsed TypeScript config file ${tsconfig}, program includes ${pluralizeToken('file', fileNames.length)}`,
   );
   try {
-    const program = createProgram(fileNames, options);
-    const diagnostics = getPreEmitDiagnostics(program);
+    const diagnostics = profiler.measure(
+      'plugin-typescript:typescript-program-exec',
+      () => {
+        const program = createProgram(fileNames, options);
+        return getPreEmitDiagnostics(program);
+      },
+      {
+        ...profiler.measureConfig.tracks.pluginTypescript,
+        color: 'tertiary-dark',
+        success: (tsDiagnostics: readonly Diagnostic[]) => ({
+          properties: [
+            ['Files', String(fileNames.length)],
+            ['Diagnostics', String(tsDiagnostics.length)],
+          ],
+          tooltipText: `TypeScript program executed on ${fileNames.length} files, found ${tsDiagnostics.length} diagnostics`,
+        }),
+      },
+    );
     logger.info(
       `TypeScript compiler found ${pluralizeToken('diagnostic', diagnostics.length)}`,
     );

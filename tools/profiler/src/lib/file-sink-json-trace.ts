@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { JsonlFileSink, recoverJsonlFile } from './file-sink-json.js';
-import type { RecoverResult } from './sink.types.js';
+import type { RecoverResult } from './sink-source.types.js';
 import {
   getCompleteEvent,
   getStartTracing,

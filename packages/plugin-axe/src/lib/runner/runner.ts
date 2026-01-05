@@ -20,37 +20,55 @@ export function createRunnerFunction(
   ruleIds: string[],
   timeout: number,
 ): RunnerFunction {
-  return async (): Promise<AuditOutputs> => {
-    const urlsCount = urls.length;
+  return (): Promise<AuditOutputs> =>
+    profiler.measureAsync(
+      'plugin-axe:runner',
+      async (): Promise<AuditOutputs> => {
+        const urlsCount = urls.length;
 
-    logger.info(
-      `Running Axe accessibility checks for ${pluralizeToken('URL', urlsCount)} ...`,
-    );
-
-    try {
-      const results = await asyncSequential(
-        urls,
-        async (url, urlIndex): Promise<AxeUrlResult | null> =>
-          runForUrl({ urlsCount, ruleIds, timeout, url, urlIndex }),
-      );
-
-      const collectedResults = results.filter(res => res != null);
-      const auditOutputs = collectedResults.flatMap(res => res.auditOutputs);
-      if (collectedResults.length === 0) {
-        throw new Error(
-          shouldExpandForUrls(urlsCount)
-            ? 'Axe failed to produce results for all URLs.'
-            : 'Axe did not produce any results.',
+        logger.info(
+          `Running Axe accessibility checks for ${pluralizeToken('URL', urlsCount)} ...`,
         );
-      }
 
-      logResultsForAllUrls(collectedResults);
+        try {
+          const results = await asyncSequential(
+            urls,
+            async (url, urlIndex): Promise<AxeUrlResult | null> =>
+              runForUrl({ urlsCount, ruleIds, timeout, url, urlIndex }),
+          );
 
-      return auditOutputs;
-    } finally {
-      await closeBrowser();
-    }
-  };
+          const collectedResults = results.filter(res => res != null);
+          const auditOutputs = collectedResults.flatMap(
+            res => res.auditOutputs,
+          );
+          if (collectedResults.length === 0) {
+            throw new Error(
+              shouldExpandForUrls(urlsCount)
+                ? 'Axe failed to produce results for all URLs.'
+                : 'Axe did not produce any results.',
+            );
+          }
+
+          logResultsForAllUrls(collectedResults);
+
+          return auditOutputs;
+        } finally {
+          await closeBrowser();
+        }
+      },
+      {
+        ...profiler.measureConfig.tracks.pluginAxe,
+        success: (result: AuditOutputs) => ({
+          properties: [
+            ['URLs', String(urls.length)],
+            ['Rule IDs', String(ruleIds.length)],
+            ['Audits', String(result.length)],
+            ['Timeout', `${timeout}ms`],
+          ],
+          tooltipText: `Axe accessibility checks completed for ${urls.length} URLs with ${result.length} audits`,
+        }),
+      },
+    );
 }
 
 async function runForUrl(args: AxeUrlArgs): Promise<AxeUrlResult | null> {

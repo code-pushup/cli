@@ -34,30 +34,53 @@ import { getTotalDependencies } from './utils.js';
 export function createRunnerFunction(
   config: FinalJSPackagesPluginConfig,
 ): RunnerFunction {
-  return async () => {
-    const {
-      packageManager,
-      checks,
-      auditLevelMapping,
-      packageJsonPath,
-      dependencyGroups: depGroups,
-    } = config;
-
-    const auditResults = checks.includes('audit')
-      ? await processAudit(
+  return (): Promise<AuditOutputs> =>
+    profiler.measureAsync(
+      'plugin-js-packages:runner',
+      async (): Promise<AuditOutputs> => {
+        const {
           packageManager,
-          depGroups,
+          checks,
           auditLevelMapping,
           packageJsonPath,
-        )
-      : [];
+          dependencyGroups: depGroups,
+        } = config;
 
-    const outdatedResults = checks.includes('outdated')
-      ? await processOutdated(packageManager, depGroups, packageJsonPath)
-      : [];
+        const auditResults = checks.includes('audit')
+          ? await processAudit(
+              packageManager,
+              depGroups,
+              auditLevelMapping,
+              packageJsonPath,
+            )
+          : [];
 
-    return [...auditResults, ...outdatedResults];
-  };
+        const outdatedResults = checks.includes('outdated')
+          ? await processOutdated(packageManager, depGroups, packageJsonPath)
+          : [];
+
+        return [...auditResults, ...outdatedResults];
+      },
+      {
+        ...profiler.measureConfig.tracks.pluginJsPackages,
+        success: (result: AuditOutputs) => ({
+          properties: [
+            ['Package Manager', packageManager],
+            ['Checks', String(checks.length)],
+            [
+              'Audit Results',
+              String(result.filter(r => r.slug.includes('audit')).length),
+            ],
+            [
+              'Outdated Results',
+              String(result.filter(r => r.slug.includes('outdated')).length),
+            ],
+            ['Total Audits', String(result.length)],
+          ],
+          tooltipText: `JS packages analysis completed with ${result.length} audits`,
+        }),
+      },
+    );
 }
 
 async function processOutdated(

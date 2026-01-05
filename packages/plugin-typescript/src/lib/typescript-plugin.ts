@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module';
 import { type PluginConfig, validate } from '@code-pushup/models';
-import { stringifyError } from '@code-pushup/utils';
+import { profiler, stringifyError } from '@code-pushup/utils';
 import {
   DEFAULT_TS_CONFIG,
   TYPESCRIPT_PLUGIN_SLUG,
@@ -32,22 +32,38 @@ export function typescriptPlugin(
 
   logAuditsAndGroups(audits, groups);
 
-  return {
-    slug: TYPESCRIPT_PLUGIN_SLUG,
-    title: TYPESCRIPT_PLUGIN_TITLE,
-    icon: 'typescript',
-    description: 'Official Code PushUp TypeScript plugin.',
-    docsUrl: 'https://www.npmjs.com/package/@code-pushup/typescript-plugin/',
-    packageName: packageJson.name,
-    version: packageJson.version,
-    audits,
-    groups,
-    runner: createRunnerFunction({
-      tsconfig,
-      expectedAudits: audits,
-    }),
-    ...(scoreTargets && { scoreTargets }),
-  };
+  return profiler.measure(
+    'plugin-typescript:setup-config',
+    () => {
+      return {
+        slug: TYPESCRIPT_PLUGIN_SLUG,
+        title: TYPESCRIPT_PLUGIN_TITLE,
+        icon: 'typescript',
+        description: 'Official Code PushUp TypeScript plugin.',
+        docsUrl:
+          'https://www.npmjs.com/package/@code-pushup/typescript-plugin/',
+        packageName: packageJson.name,
+        version: packageJson.version,
+        audits,
+        groups,
+        runner: createRunnerFunction({
+          tsconfig,
+          expectedAudits: audits,
+        }),
+        ...(scoreTargets && { scoreTargets }),
+      };
+    },
+    {
+      ...profiler.measureConfig.tracks.pluginTypescript,
+      success: (config: PluginConfig) => ({
+        properties: [
+          ['Audits', String(config.audits.length)],
+          ['Groups', String(config.groups.length)],
+        ],
+        tooltipText: `Configured TypeScript plugin with ${config.audits.length} audits and ${config.groups.length} groups`,
+      }),
+    },
+  );
 }
 
 function parseOptions(

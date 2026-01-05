@@ -8,7 +8,10 @@ import {
   stringEncode,
   stringRecover,
 } from './file-sink-text';
-import { type RecoverOptions, type RecoverResult } from './sink.types';
+import {
+  type RecoverOptions,
+  type RecoverResult,
+} from './sink-source.types.js';
 
 export const jsonlEncode = <
   T extends Record<string, unknown> = Record<string, unknown>,

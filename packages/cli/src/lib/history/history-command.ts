@@ -6,6 +6,7 @@ import {
   getHashes,
   getSemverTags,
   logger,
+  profiler,
   safeCheckout,
 } from '@code-pushup/utils';
 import { yargsFilterOptionsDefinition } from '../implementation/filter.options.js';
@@ -70,6 +71,18 @@ export function yargsHistoryCommandObject() {
       );
       return yargs;
     },
-    handler,
+    handler: async (args: unknown) => {
+      return profiler.measureAsync(
+        'cli:command-history',
+        async () => {
+          return handler(args);
+        },
+        {
+          success: () => ({
+            tooltipText: 'History command completed successfully',
+          }),
+        },
+      );
+    },
   } satisfies CommandModule;
 }

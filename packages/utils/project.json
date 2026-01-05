@@ -21,6 +21,22 @@
     "unit-test": {},
     "int-test": {},
     "code-pushup": {},
+    "code-pushup-perf": {
+      "cache": false,
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node packages/cli/src/index.ts",
+        "args": [
+          "--config={projectRoot}/code-pushup.config.ts",
+          "--persist.outputDir=.code-pushup/{projectName}"
+        ],
+        "env": {
+          "CP_PROFILING": "true",
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
+        }
+      }
+    },
     "code-pushup-eslint": {},
     "code-pushup-coverage": {},
     "code-pushup-typescript": {},

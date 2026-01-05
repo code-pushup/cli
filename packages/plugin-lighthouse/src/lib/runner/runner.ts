@@ -32,36 +32,51 @@ export function createRunnerFunction(
   urls: string[],
   flags: LighthouseCliFlags = DEFAULT_CLI_FLAGS,
 ): RunnerFunction {
-  return withLocalTmpDir(async (): Promise<AuditOutputs> => {
-    const config = await getConfig(flags);
-    const normalizationFlags = enrichFlags(flags);
-    const urlsCount = urls.length;
-    const isSingleUrl = !shouldExpandForUrls(urlsCount);
+  return (): Promise<AuditOutputs> =>
+    profiler.measureAsync(
+      'plugin-lighthouse:runner',
+      withLocalTmpDir(async (): Promise<AuditOutputs> => {
+        const config = await getConfig(flags);
+        const normalizationFlags = enrichFlags(flags);
+        const urlsCount = urls.length;
+        const isSingleUrl = !shouldExpandForUrls(urlsCount);
 
-    const allResults = await asyncSequential(urls, (url, urlIndex) => {
-      const enrichedFlags = isSingleUrl
-        ? normalizationFlags
-        : enrichFlags(flags, urlIndex + 1);
-      const step = { urlIndex, urlsCount };
-      return runLighthouseForUrl(url, enrichedFlags, config, step);
-    });
+        const allResults = await asyncSequential(urls, (url, urlIndex) => {
+          const enrichedFlags = isSingleUrl
+            ? normalizationFlags
+            : enrichFlags(flags, urlIndex + 1);
+          const step = { urlIndex, urlsCount };
+          return runLighthouseForUrl(url, enrichedFlags, config, step);
+        });
 
-    const collectedResults = allResults.filter(res => res != null);
-    if (collectedResults.length === 0) {
-      throw new Error(
-        isSingleUrl
-          ? 'Lighthouse did not produce a result.'
-          : 'Lighthouse failed to produce results for all URLs.',
-      );
-    }
+        const collectedResults = allResults.filter(res => res != null);
+        if (collectedResults.length === 0) {
+          throw new Error(
+            isSingleUrl
+              ? 'Lighthouse did not produce a result.'
+              : 'Lighthouse failed to produce results for all URLs.',
+          );
+        }
 
-    logResultsForAllUrls(collectedResults);
+        logResultsForAllUrls(collectedResults);
 
-    const auditOutputs: AuditOutputs = collectedResults.flatMap(
-      res => res.auditOutputs,
+        const auditOutputs: AuditOutputs = collectedResults.flatMap(
+          res => res.auditOutputs,
+        );
+        return filterAuditOutputs(auditOutputs, normalizationFlags);
+      }),
+      {
+        ...profiler.measureConfig.tracks.pluginLighthouse,
+        success: (result: AuditOutputs) => ({
+          properties: [
+            ['URLs', String(urls.length)],
+            ['Audits', String(result.length)],
+            ['Successful Runs', String(result.length > 0 ? urls.length : 0)],
+          ],
+          tooltipText: `Lighthouse analysis completed for ${urls.length} URLs with ${result.length} audits`,
+        }),
+      },
     );
-    return filterAuditOutputs(auditOutputs, normalizationFlags);
-  });
 }
 
 type ResultForUrl = {
