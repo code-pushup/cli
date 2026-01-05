@@ -13,7 +13,6 @@ import {
 } from './performance-observer';
 import {
   type MeasureControl,
-  type PerformanceAPIExtension,
   type TrackControl,
   type TrackControlOptions,
   type TrackMeta,
@@ -74,6 +73,40 @@ function performanceMeasureToSpanEvents(
       },
     },
   });
+}
+
+export interface PerformanceAPIExtension<Track extends string> {
+  marker(name: string, options: MarkerPayload & { track: Track }): void;
+
+  mark(name: string, options?: TrackEntryPayload & { track: Track }): void;
+
+  measure<T>(
+    name: string,
+    fn: () => T,
+    options?:
+      | (Omit<TrackMeta, 'track'> &
+          TrackStyle & {
+            track?: Track | string;
+            success?: (result: T) => Partial<TrackEntryPayload>;
+            error?: (err: unknown) => EntryMeta;
+          })
+      | Track
+      | (TrackStyle & TrackMeta),
+  ): T;
+
+  measureAsync<T>(
+    name: string,
+    fn: () => Promise<T>,
+    options?:
+      | (Omit<TrackMeta, 'track'> &
+          TrackStyle & {
+            track?: Track | string;
+            success?: (result: T) => Partial<TrackEntryPayload>;
+            error?: (err: unknown) => EntryMeta;
+          })
+      | Track
+      | (TrackStyle & TrackMeta),
+  ): Promise<T>;
 }
 
 // Convert performance mark to instant event
@@ -300,12 +333,16 @@ export class Profiler<
   private prepSuccessCallback<T>(
     options?:
       | string
-      | {
-          success?: (result: T) => Partial<TrackEntryPayload>;
-        },
+      | (TrackStyle & Partial<TrackMeta>)
+      | (Omit<TrackMeta, 'track'> &
+          TrackStyle & {
+            track?: string;
+            success?: (result: T) => Partial<TrackEntryPayload>;
+            error?: (err: unknown) => EntryMeta;
+          }),
   ): (result: T) => Partial<TrackEntryPayload> {
-    return options && typeof options === 'object'
-      ? (options?.success ?? ((result: T) => ({})))
+    return options && typeof options === 'object' && 'success' in options
+      ? (options.success ?? ((result: T) => ({})))
       : (result: T) => ({});
   }
 
@@ -433,14 +470,13 @@ export class Profiler<
           }),
   ): Promise<T> {
     const metaPayload = this.prepMeta(options);
-    const successCallback = this.prepSuccessCallback(options);
-    const errorCallback = this.prepErrorCallback(options);
-
     const { startName, measureName, endName } = getMeasureMarkNames(name);
 
     performance.mark(startName, asOptions(trackEntryPayload(metaPayload)));
     try {
       const result = await fn();
+      const successCallback = this.prepSuccessCallback(options);
+      performance.mark(endName, asOptions(trackEntryPayload(metaPayload)));
       performance.measure(measureName, {
         start: startName,
         ...asOptions(
@@ -456,6 +492,7 @@ export class Profiler<
         endName,
         asOptions(errorToTrackEntryPayload(err, metaPayload)),
       );
+      const errorCallback = this.prepErrorCallback(options);
       performance.measure(measureName, {
         start: startName,
         end: endName,

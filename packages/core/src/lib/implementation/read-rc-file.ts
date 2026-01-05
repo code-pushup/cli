@@ -7,124 +7,67 @@ import {
   coreConfigSchema,
   validate,
 } from '@code-pushup/models';
-import { fileExists, importModule, logger, profiler } from '@code-pushup/utils';
+import { fileExists, importModule, logger } from '@code-pushup/utils';
 
 export async function readRcByPath(
   filePath: string,
   tsconfig?: string,
 ): Promise<CoreConfig> {
-  return profiler.spanAsync(
-    'loadConfigFile',
+  const formattedTarget = [
+    `${ansis.bold(path.relative(process.cwd(), filePath))}`,
+    tsconfig &&
+      `(paths from ${ansis.bold(path.relative(process.cwd(), tsconfig))})`,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const value = await logger.task(
+    `Importing config from ${formattedTarget}`,
     async () => {
-      const relativePath = path.relative(process.cwd(), filePath);
-      const fileExtension = path.extname(filePath) || 'none';
-
-      const formattedTarget = [
-        `${ansis.bold(path.relative(process.cwd(), filePath))}`,
-        tsconfig &&
-          `(paths from ${ansis.bold(path.relative(process.cwd(), tsconfig))})`,
-      ]
-        .filter(Boolean)
-        .join(' ');
-
-      const value = await logger.task(
-        `Importing config from ${formattedTarget}`,
-        async () => {
-          const result = await importModule({
-            filepath: filePath,
-            tsconfig,
-            format: 'esm',
-          });
-          return { result, message: `Imported config from ${formattedTarget}` };
-        },
-      );
-
-      const config = validate(coreConfigSchema, value, { filePath });
-      logger.info('Configuration is valid ✓');
-
-      const configJson = JSON.stringify(config);
-      const configSize = configJson.length;
-      const configPreview =
-        configSize > 500 ? `${configJson.slice(0, 500)}...` : configJson;
-
-      return config;
+      const result = await importModule({
+        filepath: filePath,
+        tsconfig,
+        format: 'esm',
+      });
+      return { result, message: `Imported config from ${formattedTarget}` };
     },
-    { detail: profiler.tracks.cli() },
   );
+
+  const config = validate(coreConfigSchema, value, { filePath });
+  logger.info('Configuration is valid ✓');
+  return config;
 }
 
 export async function autoloadRc(tsconfig?: string): Promise<CoreConfig> {
-  return profiler.spanAsync(
-    'loadConfigFile',
-    async () => {
-      const configFilePatterns = [
-        CONFIG_FILE_NAME,
-        `{${SUPPORTED_CONFIG_FILE_FORMATS.join(',')}}`,
-      ].join('.');
+  const configFilePatterns = [
+    CONFIG_FILE_NAME,
+    `{${SUPPORTED_CONFIG_FILE_FORMATS.join(',')}}`,
+  ].join('.');
 
-      logger.debug(`Looking for default config file ${configFilePatterns}`);
+  logger.debug(`Looking for default config file ${configFilePatterns}`);
 
-      // eslint-disable-next-line functional/no-let
-      let ext = '';
-      const checkedExtensions: string[] = [];
+  // eslint-disable-next-line functional/no-let
+  let ext = '';
+  // eslint-disable-next-line functional/no-loop-statements
+  for (const extension of SUPPORTED_CONFIG_FILE_FORMATS) {
+    const filePath = `${CONFIG_FILE_NAME}.${extension}`;
+    const exists = await fileExists(filePath);
 
-      // eslint-disable-next-line functional/no-loop-statements
-      for (const extension of SUPPORTED_CONFIG_FILE_FORMATS) {
-        const filePath = `${CONFIG_FILE_NAME}.${extension}`;
-        const exists = await fileExists(filePath);
-        checkedExtensions.push(extension);
+    if (exists) {
+      logger.debug(`Found default config file ${ansis.bold(filePath)}`);
+      ext = extension;
+      break;
+    }
+  }
 
-        if (exists) {
-          logger.debug(`Found default config file ${ansis.bold(filePath)}`);
-          ext = extension;
-          break;
-        }
-      }
+  if (!ext) {
+    throw new Error(
+      `No ${configFilePatterns} file present in ${process.cwd()}`,
+    );
+  }
 
-      if (!ext) {
-        throw new Error(
-          `No ${configFilePatterns} file present in ${process.cwd()}`,
-        );
-      }
-
-      const discoveredFilePath = path.join(
-        process.cwd(),
-        `${CONFIG_FILE_NAME}.${ext}`,
-      );
-      const relativePath = path.relative(process.cwd(), discoveredFilePath);
-
-      const formattedTarget = [
-        `${ansis.bold(relativePath)}`,
-        tsconfig &&
-          `(paths from ${ansis.bold(path.relative(process.cwd(), tsconfig))})`,
-      ]
-        .filter(Boolean)
-        .join(' ');
-
-      const value = await logger.task(
-        `Importing config from ${formattedTarget}`,
-        async () => {
-          const result = await importModule({
-            filepath: discoveredFilePath,
-            tsconfig,
-            format: 'esm',
-          });
-          return { result, message: `Imported config from ${formattedTarget}` };
-        },
-      );
-
-      const config = validate(coreConfigSchema, value, {
-        filePath: discoveredFilePath,
-      });
-      logger.info('Configuration is valid ✓');
-
-      const configJson = JSON.stringify(config);
-      const configSize = configJson.length;
-      const configPreview =
-        configSize > 500 ? `${configJson.slice(0, 500)}...` : configJson;
-
-      return config;
-    },
-    { detail: profiler.tracks.cli() },
+  return readRcByPath(
+    path.join(process.cwd(), `${CONFIG_FILE_NAME}.${ext}`),
+    tsconfig,
   );
 }

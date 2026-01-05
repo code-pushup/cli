@@ -1,9 +1,7 @@
 import ansis from 'ansis';
 import { createRequire } from 'node:module';
 import type { Audit, Group, PluginConfig } from '@code-pushup/models';
-import { GROUP_CODEPUSHUP } from '@code-pushup/profiler';
-import { createPluginSpan } from '@code-pushup/profiler';
-import { logger, pluralizeToken, profiler } from '@code-pushup/utils';
+import { logger, pluralizeToken } from '@code-pushup/utils';
 import {
   type DependencyGroup,
   type JSPackagesPluginConfig,
@@ -42,54 +40,46 @@ import { normalizeConfig } from './utils.js';
 export async function jsPackagesPlugin(
   config?: JSPackagesPluginConfig,
 ): Promise<PluginConfig> {
-  return profiler.spanAsync(
-    `run-${JS_PACKAGES_PLUGIN_SLUG}-plugin-config`,
-    async () => {
-      const {
-        packageManager,
-        checks,
-        depGroups,
-        scoreTargets,
-        ...jsPackagesPluginConfigRest
-      } = await normalizeConfig(config);
+  const {
+    packageManager,
+    checks,
+    depGroups,
+    scoreTargets,
+    ...jsPackagesPluginConfigRest
+  } = await normalizeConfig(config);
 
-      const packageJson = createRequire(import.meta.url)(
-        '../../package.json',
-      ) as typeof import('../../package.json');
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
 
-      const audits = createAudits(packageManager.slug, checks, depGroups);
-      const groups = createGroups(packageManager.slug, checks, depGroups);
+  const audits = createAudits(packageManager.slug, checks, depGroups);
+  const groups = createGroups(packageManager.slug, checks, depGroups);
 
-      logger.info(
-        formatMetaLog(
-          `Created ${pluralizeToken('audit', audits.length)} and ${pluralizeToken('group', groups.length)} for ${ansis.bold(packageManager.name)} package manager`,
-        ),
-      );
-
-      const result: PluginConfig = {
-        slug: JS_PACKAGES_PLUGIN_SLUG,
-        title: JS_PACKAGES_PLUGIN_TITLE,
-        icon: packageManager.icon,
-        description:
-          'This plugin runs audit to uncover vulnerabilities and lists outdated dependencies. It supports npm, yarn classic, yarn modern, and pnpm package managers.',
-        docsUrl: packageManager.docs.homepage,
-        packageName: packageJson.name,
-        version: packageJson.version,
-        audits,
-        groups,
-        runner: createRunnerFunction({
-          ...jsPackagesPluginConfigRest,
-          checks,
-          packageManager: packageManager.slug,
-          dependencyGroups: depGroups,
-        }),
-        ...(scoreTargets && { scoreTargets }),
-      };
-
-      return result;
-    },
-    { detail: profiler.spans.plugin(JS_PACKAGES_PLUGIN_SLUG)() },
+  logger.info(
+    formatMetaLog(
+      `Created ${pluralizeToken('audit', audits.length)} and ${pluralizeToken('group', groups.length)} for ${ansis.bold(packageManager.name)} package manager`,
+    ),
   );
+
+  return {
+    slug: JS_PACKAGES_PLUGIN_SLUG,
+    title: JS_PACKAGES_PLUGIN_TITLE,
+    icon: packageManager.icon,
+    description:
+      'This plugin runs audit to uncover vulnerabilities and lists outdated dependencies. It supports npm, yarn classic, yarn modern, and pnpm package managers.',
+    docsUrl: packageManager.docs.homepage,
+    packageName: packageJson.name,
+    version: packageJson.version,
+    audits,
+    groups,
+    runner: createRunnerFunction({
+      ...jsPackagesPluginConfigRest,
+      checks,
+      packageManager: packageManager.slug,
+      dependencyGroups: depGroups,
+    }),
+    ...(scoreTargets && { scoreTargets }),
+  };
 }
 
 function createGroups(

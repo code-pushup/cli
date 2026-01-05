@@ -5,9 +5,7 @@ import {
   type PluginConfig,
   validate,
 } from '@code-pushup/models';
-import { GROUP_CODEPUSHUP } from '@code-pushup/profiler';
-import { createPluginSpan } from '@code-pushup/profiler';
-import { logger, pluralizeToken, profiler } from '@code-pushup/utils';
+import { logger, pluralizeToken } from '@code-pushup/utils';
 import {
   type CoveragePluginConfig,
   type CoverageType,
@@ -39,59 +37,52 @@ import { coverageDescription, coverageTypeWeightMapper } from './utils.js';
 export async function coveragePlugin(
   config: CoveragePluginConfig,
 ): Promise<PluginConfig> {
-  return profiler.spanAsync(
-    `run-${COVERAGE_PLUGIN_SLUG}-plugin-config`,
-    async () => {
-      const coverageConfig = validate(coveragePluginConfigSchema, config);
+  const coverageConfig = validate(coveragePluginConfigSchema, config);
 
-      const audits = coverageConfig.coverageTypes.map(
-        (type): Audit => ({
-          slug: typeToAuditSlug(type),
-          title: typeToAuditTitle(type),
-          description: coverageDescription[type],
-        }),
-      );
-
-      const group: Group = {
-        slug: 'coverage',
-        title: 'Code coverage metrics',
-        description: 'Group containing all defined coverage types as audits.',
-        refs: audits.map(audit => ({
-          ...audit,
-          weight:
-            coverageTypeWeightMapper[
-              audit.slug.slice(0, audit.slug.indexOf('-')) as CoverageType
-            ],
-        })),
-      };
-
-      logger.info(
-        formatMetaLog(
-          `Created ${pluralizeToken('audit', audits.length)} (${coverageConfig.coverageTypes.join('/')} coverage) and 1 group`,
-        ),
-      );
-
-      const packageJson = createRequire(import.meta.url)(
-        '../../package.json',
-      ) as typeof import('../../package.json');
-
-      const scoreTargets = coverageConfig.scoreTargets;
-
-      const r = {
-        slug: COVERAGE_PLUGIN_SLUG,
-        title: COVERAGE_PLUGIN_TITLE,
-        icon: 'folder-coverage-open',
-        description: 'Official Code PushUp code coverage plugin.',
-        docsUrl: 'https://www.npmjs.com/package/@code-pushup/coverage-plugin/',
-        packageName: packageJson.name,
-        version: packageJson.version,
-        audits,
-        groups: [group],
-        runner: createRunnerFunction(coverageConfig),
-        ...(scoreTargets && { scoreTargets }),
-      };
-      return r as any;
-    },
-    { detail: profiler.spans.plugin(COVERAGE_PLUGIN_SLUG)() },
+  const audits = coverageConfig.coverageTypes.map(
+    (type): Audit => ({
+      slug: typeToAuditSlug(type),
+      title: typeToAuditTitle(type),
+      description: coverageDescription[type],
+    }),
   );
+
+  const group: Group = {
+    slug: 'coverage',
+    title: 'Code coverage metrics',
+    description: 'Group containing all defined coverage types as audits.',
+    refs: audits.map(audit => ({
+      ...audit,
+      weight:
+        coverageTypeWeightMapper[
+          audit.slug.slice(0, audit.slug.indexOf('-')) as CoverageType
+        ],
+    })),
+  };
+
+  logger.info(
+    formatMetaLog(
+      `Created ${pluralizeToken('audit', audits.length)} (${coverageConfig.coverageTypes.join('/')} coverage) and 1 group`,
+    ),
+  );
+
+  const packageJson = createRequire(import.meta.url)(
+    '../../package.json',
+  ) as typeof import('../../package.json');
+
+  const scoreTargets = coverageConfig.scoreTargets;
+
+  return {
+    slug: COVERAGE_PLUGIN_SLUG,
+    title: COVERAGE_PLUGIN_TITLE,
+    icon: 'folder-coverage-open',
+    description: 'Official Code PushUp code coverage plugin.',
+    docsUrl: 'https://www.npmjs.com/package/@code-pushup/coverage-plugin/',
+    packageName: packageJson.name,
+    version: packageJson.version,
+    audits,
+    groups: [group],
+    runner: createRunnerFunction(coverageConfig),
+    ...(scoreTargets && { scoreTargets }),
+  };
 }

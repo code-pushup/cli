@@ -4,7 +4,8 @@ import {
   performance,
 } from 'node:perf_hooks';
 import { FileSink } from './file-sink-text.js';
-import { Buffered, type Encoder, type Sink } from './sink.types';
+import type { Buffered } from './sink.types';
+import { type Encoder, type Sink } from './sink.types';
 
 export interface PerformanceObserverOptions<T> {
   sink: FileSink<T>;

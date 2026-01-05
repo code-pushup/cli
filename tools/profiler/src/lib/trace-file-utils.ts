@@ -3,7 +3,7 @@ import { type PerformanceMark, type PerformanceMeasure } from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
 import { clock } from './clock.js';
 import { defaultTrack } from './performance-utils';
-import type { ProfilerMethods } from './profiler';
+import type { ProfilerInterface } from './profiler';
 import {
   type BaseTraceEventOptions,
   type BeginEvent,

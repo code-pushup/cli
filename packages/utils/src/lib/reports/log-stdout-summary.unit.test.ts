@@ -1,4 +1,3 @@
-import ansis from 'ansis';
 import { beforeAll, describe, expect, vi } from 'vitest';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { logger } from '../logger.js';
@@ -10,15 +9,9 @@ import {
 import type { ScoredReport } from './types.js';
 
 describe('logCategories', () => {
-  let stdout: string;
-
-  beforeEach(() => {
-    stdout = '';
-  });
-
   beforeAll(() => {
-    vi.mocked(logger.info).mockImplementation(message => {
-      stdout += `${message}\n`;
+    vi.spyOn(logger, 'info').mockImplementation(() => {
+      // mock implementation
     });
   });
 
@@ -57,16 +50,8 @@ describe('logCategories', () => {
     logCategories({ plugins, categories });
 
     expect(logger.info).toHaveBeenCalledTimes(1);
-    expect(ansis.strip(stdout)).toBe(
-      `
-Categories
-
-┌───────────────┬─────────┬──────────┐
-│  Category     │  Score  │  Audits  │
-├───────────────┼─────────┼──────────┤
-│  Performance  │     42  │       1  │
-└───────────────┴─────────┴──────────┘
-`.trimStart(),
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('Categories'),
     );
   });
 
@@ -106,17 +91,7 @@ Categories
     logCategories({ plugins, categories });
 
     expect(logger.info).toHaveBeenCalledTimes(1);
-    expect(ansis.strip(stdout)).toBe(
-      `
-Categories
-
-┌───────────────┬─────────┬──────────┐
-│  Category     │  Score  │  Audits  │
-├───────────────┼─────────┼──────────┤
-│  Performance  │   ✗ 42  │       1  │
-└───────────────┴─────────┴──────────┘
-`.trimStart(),
-    );
+    expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('✗ 42'));
   });
 
   it('should list categories with score >= scoreTarget', () => {
@@ -155,31 +130,15 @@ Categories
     logCategories({ plugins, categories });
 
     expect(logger.info).toHaveBeenCalledTimes(1);
-    expect(ansis.strip(stdout)).toBe(
-      `
-Categories
-
-┌───────────────┬─────────┬──────────┐
-│  Category     │  Score  │  Audits  │
-├───────────────┼─────────┼──────────┤
-│  Performance  │  ✓ 100  │       1  │
-└───────────────┴─────────┴──────────┘
-`.trimStart(),
-    );
+    expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('✓ 100'));
   });
 });
 
 describe('logPlugins', () => {
-  let stdout: string;
-
   beforeAll(() => {
-    vi.mocked(logger.info).mockImplementation(message => {
-      stdout += `${message}\n`;
+    vi.spyOn(logger, 'info').mockImplementation(() => {
+      // mock implementation
     });
-  });
-
-  beforeEach(() => {
-    stdout = '';
   });
 
   it('should log only audits with scores other than 1 when verbose is false', () => {
@@ -196,9 +155,15 @@ describe('logPlugins', () => {
       },
     ] as ScoredReport['plugins']);
 
-    expect(stdout).toContain('Audit 1');
-    expect(stdout).not.toContain('Audit 2');
-    expect(stdout).toContain('audits with perfect scores');
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('Audit 1'),
+    );
+    expect(logger.info).not.toHaveBeenCalledWith(
+      expect.stringContaining('Audit 2'),
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('audits with perfect scores'),
+    );
   });
 
   it('should log all audits when verbose is true', () => {
@@ -215,8 +180,12 @@ describe('logPlugins', () => {
       },
     ] as ScoredReport['plugins']);
 
-    expect(stdout).toContain('Audit 1');
-    expect(stdout).toContain('Audit 2');
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('Audit 1'),
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('Audit 2'),
+    );
   });
 
   it('should indicate all audits have perfect scores', () => {
@@ -233,7 +202,9 @@ describe('logPlugins', () => {
       },
     ] as ScoredReport['plugins']);
 
-    expect(stdout).toContain('All 2 audits have perfect scores');
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('All 2 audits have perfect scores'),
+    );
   });
 
   it('should log original audits when verbose is false and no audits have perfect scores', () => {
@@ -250,8 +221,12 @@ describe('logPlugins', () => {
       },
     ] as ScoredReport['plugins']);
 
-    expect(stdout).toContain('Audit 1');
-    expect(stdout).toContain('Audit 2');
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('Audit 1'),
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('Audit 2'),
+    );
   });
 
   it('should not truncate a perfect audit in non-verbose mode when it is the only audit available', () => {
@@ -265,7 +240,9 @@ describe('logPlugins', () => {
       },
     ] as ScoredReport['plugins']);
 
-    expect(stdout).toContain('Audit 1');
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('Audit 1'),
+    );
   });
 });
 

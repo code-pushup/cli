@@ -54,8 +54,8 @@ export async function removeDirectoryIfExists(dir: string) {
 }
 
 export async function importModule<T = unknown>(options: Options): Promise<T> {
-  return profiler.span(
-    'importModule',
+  return profiler.measure(
+    'utils:importModule',
     async () => {
       const resolvedStats = await settlePromise(stat(options.filepath));
       if (resolvedStats.status === 'rejected') {
@@ -72,7 +72,7 @@ export async function importModule<T = unknown>(options: Options): Promise<T> {
       }
       return mod as T;
     },
-    { detail: profiler.tracks.cli() },
+    { color: 'primary-light' },
   );
 }
 
@@ -103,38 +103,28 @@ export type CrawlFileSystemOptions<T> = {
 export async function crawlFileSystem<T = string>(
   options: CrawlFileSystemOptions<T>,
 ): Promise<T[]> {
-  return profiler.span(
-    'crawlFileSystem',
-    async () => {
-      const {
-        directory,
-        pattern,
-        fileTransform = (filePath: string) => filePath as T,
-      } = options;
+  const {
+    directory,
+    pattern,
+    fileTransform = (filePath: string) => filePath as T,
+  } = options;
 
-      const files = await readdir(directory);
-      const promises = files.map(async (file): Promise<T | T[]> => {
-        const filePath = path.join(directory, file);
-        const stats = await stat(filePath);
+  const files = await readdir(directory);
+  const promises = files.map(async (file): Promise<T | T[]> => {
+    const filePath = path.join(directory, file);
+    const stats = await stat(filePath);
 
-        if (stats.isDirectory()) {
-          return crawlFileSystem({
-            directory: filePath,
-            pattern,
-            fileTransform,
-          });
-        }
-        if (stats.isFile() && (!pattern || new RegExp(pattern).test(file))) {
-          return fileTransform(filePath);
-        }
-        return [];
-      });
+    if (stats.isDirectory()) {
+      return crawlFileSystem({ directory: filePath, pattern, fileTransform });
+    }
+    if (stats.isFile() && (!pattern || new RegExp(pattern).test(file))) {
+      return fileTransform(filePath);
+    }
+    return [];
+  });
 
-      const resultsNestedArray = await Promise.all(promises);
-      return resultsNestedArray.flat() as T[];
-    },
-    { detail: profiler.tracks.cli() },
-  );
+  const resultsNestedArray = await Promise.all(promises);
+  return resultsNestedArray.flat() as T[];
 }
 
 export async function findNearestFile(

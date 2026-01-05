@@ -164,11 +164,15 @@ describe('measure method', () => {
 
   it('should handle custom success callback', () => {
     const profiler = new Profiler();
-    const successCallback = vi.fn((result: string) => ({
-      tooltipText: `Success: ${result}`,
-      properties: [['Success', String(result)]],
-      track: 'Custom Success Track', // Can now include track data
-    }));
+    const successCallback = vi.fn(
+      (result: string): Partial<TrackEntryPayload> => ({
+        tooltipText: `Success: ${result}`,
+        properties: [['Success', String(result)]] as Array<
+          [string, string | number | boolean | object | undefined]
+        >,
+        track: 'Custom Success Track', // Can now include track data
+      }),
+    );
 
     profiler.measure('test-measure', () => 'result', {
       success: successCallback,

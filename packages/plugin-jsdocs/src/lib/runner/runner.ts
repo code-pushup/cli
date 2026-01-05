@@ -1,5 +1,4 @@
 import type { AuditOutputs, RunnerFunction } from '@code-pushup/models';
-import { profiler } from '@code-pushup/utils';
 import {
   type FileCoverage,
   filesCoverageToTree,
@@ -8,7 +7,6 @@ import {
   toNumberPrecision,
 } from '@code-pushup/utils';
 import type { JsDocsPluginTransformedConfig } from '../config.js';
-import { PLUGIN_SLUG } from '../constants.js';
 import { processJsDocs } from './doc-processor.js';
 import type { CoverageType } from './models.js';
 import { coverageTypeToAuditSlug } from './utils.js';
@@ -17,18 +15,12 @@ export function createRunnerFunction(
   config: JsDocsPluginTransformedConfig,
 ): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
-    return profiler.spanAsync(
-      `run-${PLUGIN_SLUG}-plugin-runner`,
-      async () => {
-        const coverageResult = processJsDocs(config);
-        const gitRoot = await getGitRoot();
-        return trasformCoverageReportToAuditOutputs(
-          coverageResult,
-          config,
-          gitRoot,
-        );
-      },
-      { detail: profiler.spans.plugin(PLUGIN_SLUG)() },
+    const coverageResult = processJsDocs(config);
+    const gitRoot = await getGitRoot();
+    return trasformCoverageReportToAuditOutputs(
+      coverageResult,
+      config,
+      gitRoot,
     );
   };
 }

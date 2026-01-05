@@ -18,6 +18,10 @@ import {
 // Re-export for use in other modules
 export type { TrackMeta, TrackStyle };
 
+export const defaultTrack = {
+  track: 'Main',
+} as const;
+
 export const MARK_SUFFIX = {
   START: ':start',
   END: ':end',
@@ -96,38 +100,4 @@ export function getTrackControl<
     },
     errorHandler: errorHandler ?? errorToEntryMeta,
   };
-}
-
-export interface PerformanceAPIExtension<Track extends string> {
-  marker(name: string, options: MarkerPayload & { track: Track }): void;
-
-  mark(name: string, options?: TrackEntryPayload & { track: Track }): void;
-
-  measure<T>(
-    name: string,
-    fn: () => T,
-    options?:
-      | (Omit<TrackMeta, 'track'> &
-          TrackStyle & {
-            track?: Track | string;
-            success?: (result: T) => Partial<TrackEntryPayload>;
-            error?: (err: unknown) => EntryMeta;
-          })
-      | Track
-      | (TrackStyle & TrackMeta),
-  ): T;
-
-  measureAsync<T>(
-    name: string,
-    fn: () => Promise<T>,
-    options?:
-      | (Omit<TrackMeta, 'track'> &
-          TrackStyle & {
-            track?: Track | string;
-            success?: (result: T) => Partial<TrackEntryPayload>;
-            error?: (err: unknown) => EntryMeta;
-          })
-      | Track
-      | (TrackStyle & TrackMeta),
-  ): Promise<T>;
 }

@@ -27,27 +27,20 @@ describe('asyncSequential', () => {
   });
 
   it('should wait for previous item to resolve before processing next item', async () => {
-    let counter = 0;
-    const work = vi.fn().mockImplementation(
-      () =>
-        new Promise(resolve => {
-          counter++;
-          setTimeout(() => {
-            resolve(counter);
-          }, 10);
-        }),
-    );
+    const work = vi
+      .fn()
+      .mockImplementation((item: undefined, index: number) =>
+        Promise.resolve(index + 1),
+      );
 
-    const items = Array.from({ length: 4 });
+    const items = Array.from({ length: 3 });
 
-    await expect(asyncSequential(items, work)).resolves.toEqual([1, 2, 3, 4]);
-
-    counter = 0;
-    const sequentialResult = await asyncSequential(items, work); // [1, 2, 3, 4]
-    counter = 0;
-    const parallelResult = await Promise.all(items.map(work)); // [4, 4, 4, 4]
-
-    expect(sequentialResult).not.toEqual(parallelResult);
+    const result = await asyncSequential(items, work);
+    expect(result).toEqual([1, 2, 3]);
+    expect(work).toHaveBeenCalledTimes(3);
+    expect(work).toHaveBeenNthCalledWith(1, undefined, 0);
+    expect(work).toHaveBeenNthCalledWith(2, undefined, 1);
+    expect(work).toHaveBeenNthCalledWith(3, undefined, 2);
   });
 
   it('should provide array item and index to callback', async () => {

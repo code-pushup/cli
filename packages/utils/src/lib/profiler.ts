@@ -1,30 +1,24 @@
 import { getProfiler } from '@code-pushup/profiler';
-import { logger } from './logger.js';
 
 export { Profiler } from '@code-pushup/profiler';
 export const profiler = getProfiler({
-  enabled: process.env['CP_PROFILING'] !== 'false',
-  logger,
-  prefixMarks: 'cp:',
-  spans: {
-    // CLI group - matches all CLI-related files
-    cli: {
-      pathPattern: [
-        '**/packages/cli/**/*.ts',
-        '**/packages/core/**/*.ts',
-        '**/packages/utils/**/*.ts',
-      ],
-      group: 'CLI',
+  fileName: `code-pushup-cli`,
+  tracks: {
+    defaultTrack: {
       track: 'CLI',
+      trackGroup: '<✓> Code PushUp',
       color: 'primary-dark',
     },
-    // Plugins group - matches all plugin files
-    // Plugin name is auto-extracted from path (e.g., plugin-eslint -> Plugin:eslint)
-    plugin: (slug: string) => ({
-      pathPattern: ['**/packages/plugin-*/**/*.ts', '**/code-pushup.preset.ts'],
-      group: 'Plugins',
-      track: `Plugin:${slug}`,
+    pluginEslint: {
+      track: 'Plugins Eslint',
       color: 'secondary-dark',
-    }),
-  } as const,
+    },
+    pluginCoverage: {
+      track: 'Plugins Coverage',
+      color: 'secondary-dark',
+    },
+  },
+  errorHandler: error => ({
+    properties: [['Stack Track', (error as Error)?.stack || 'Unknown']],
+  }),
 });

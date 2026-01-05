@@ -1,8 +1,6 @@
 import { createRequire } from 'node:module';
 import { type PluginConfig, validate } from '@code-pushup/models';
-import { GROUP_CODEPUSHUP } from '@code-pushup/profiler';
-import { createPluginSpan } from '@code-pushup/profiler';
-import { profiler, stringifyError } from '@code-pushup/utils';
+import { stringifyError } from '@code-pushup/utils';
 import {
   DEFAULT_TS_CONFIG,
   TYPESCRIPT_PLUGIN_SLUG,
@@ -23,42 +21,33 @@ const packageJson = createRequire(import.meta.url)(
 export function typescriptPlugin(
   options?: TypescriptPluginOptions,
 ): PluginConfig {
-  return profiler.span(
-    `run-${TYPESCRIPT_PLUGIN_SLUG}-plugin-config`,
-    () => {
-      const {
-        tsconfig = DEFAULT_TS_CONFIG,
-        onlyAudits,
-        scoreTargets,
-      } = parseOptions(options ?? {});
+  const {
+    tsconfig = DEFAULT_TS_CONFIG,
+    onlyAudits,
+    scoreTargets,
+  } = parseOptions(options ?? {});
 
-      const audits = getAudits({ onlyAudits });
-      const groups = getGroups({ onlyAudits });
+  const audits = getAudits({ onlyAudits });
+  const groups = getGroups({ onlyAudits });
 
-      logAuditsAndGroups(audits, groups);
+  logAuditsAndGroups(audits, groups);
 
-      const result: PluginConfig = {
-        slug: TYPESCRIPT_PLUGIN_SLUG,
-        title: TYPESCRIPT_PLUGIN_TITLE,
-        icon: 'typescript',
-        description: 'Official Code PushUp TypeScript plugin.',
-        docsUrl:
-          'https://www.npmjs.com/package/@code-pushup/typescript-plugin/',
-        packageName: packageJson.name,
-        version: packageJson.version,
-        audits,
-        groups,
-        runner: createRunnerFunction({
-          tsconfig,
-          expectedAudits: audits,
-        }),
-        ...(scoreTargets && { scoreTargets }),
-      };
-
-      return result;
-    },
-    { detail: profiler.spans.plugin(TYPESCRIPT_PLUGIN_SLUG)() },
-  );
+  return {
+    slug: TYPESCRIPT_PLUGIN_SLUG,
+    title: TYPESCRIPT_PLUGIN_TITLE,
+    icon: 'typescript',
+    description: 'Official Code PushUp TypeScript plugin.',
+    docsUrl: 'https://www.npmjs.com/package/@code-pushup/typescript-plugin/',
+    packageName: packageJson.name,
+    version: packageJson.version,
+    audits,
+    groups,
+    runner: createRunnerFunction({
+      tsconfig,
+      expectedAudits: audits,
+    }),
+    ...(scoreTargets && { scoreTargets }),
+  };
 }
 
 function parseOptions(

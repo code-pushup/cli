@@ -40,10 +40,11 @@ export function markerPayload(
 export function trackEntryPayload(
   options: Omit<TrackEntryPayload, 'dataType'>,
 ): TrackEntryPayload {
+  const { track = 'Main', ...rest } = options;
   return {
     dataType: 'track-entry',
-    track: 'Main',
-    ...options,
+    track,
+    ...rest,
   };
 }
 

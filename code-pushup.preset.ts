@@ -1,6 +1,5 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 import { createProjectGraphAsync } from '@nx/devkit';
-import { GROUP_CODEPUSHUP, createPluginSpan } from '@code-pushup/profiler';
 import type {
   CategoryConfig,
   CoreConfig,
@@ -24,7 +23,6 @@ import {
 import typescriptPlugin, {
   getCategories,
 } from './packages/plugin-typescript/src/index.js';
-import { profiler } from './packages/utils/src/lib/profiler.js';
 
 export function configureUpload(projectName: string = 'workspace'): CoreConfig {
   return {
@@ -43,108 +41,88 @@ export function configureUpload(projectName: string = 'workspace'): CoreConfig {
 export async function configureEslintPlugin(
   projectName?: string,
 ): Promise<CoreConfig> {
-  return profiler.span(
-    'configureEslintPlugin',
-    async () => ({
-      plugins: [
-        projectName
-          ? await eslintPlugin(
-              {
-                eslintrc: `packages/${projectName}/eslint.config.js`,
-                patterns: ['.'],
+  return {
+    plugins: [
+      projectName
+        ? await eslintPlugin(
+            {
+              eslintrc: `packages/${projectName}/eslint.config.js`,
+              patterns: ['.'],
+            },
+            {
+              artifacts: {
+                // We leverage Nx dependsOn to only run all lint targets before we run code-pushup
+                // generateArtifactsCommand: 'npx nx run-many -t lint',
+                artifactsPaths: [
+                  `packages/${projectName}/.eslint/eslint-report.json`,
+                ],
               },
-              {
-                artifacts: {
-                  // We leverage Nx dependsOn to only run all lint targets before we run code-pushup
-                  // generateArtifactsCommand: 'npx nx run-many -t lint',
-                  artifactsPaths: [
-                    `packages/${projectName}/.eslint/eslint-report.json`,
-                  ],
-                },
-              },
-            )
-          : await eslintPlugin(await eslintConfigFromAllNxProjects()),
-      ],
-      categories: [
-        {
-          slug: 'bug-prevention',
-          title: 'Bug prevention',
-          description: 'Lint rules that find **potential bugs** in your code.',
-          refs: [
-            { type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 },
-          ],
-        },
-        {
-          slug: 'code-style',
-          title: 'Code style',
-          description:
-            'Lint rules that promote **good practices** and consistency in your code.',
-          refs: [
-            { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
-          ],
-        },
-      ],
-    }),
-    {
-      detail: createPluginSpan('eslint')({
-        group: GROUP_CODEPUSHUP,
-        tooltipText: 'Configuring ESLint plugin preset',
-      }),
-    },
-  );
+            },
+          )
+        : await eslintPlugin(await eslintConfigFromAllNxProjects()),
+    ],
+    categories: [
+      {
+        slug: 'bug-prevention',
+        title: 'Bug prevention',
+        description: 'Lint rules that find **potential bugs** in your code.',
+        refs: [
+          { type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 },
+        ],
+      },
+      {
+        slug: 'code-style',
+        title: 'Code style',
+        description:
+          'Lint rules that promote **good practices** and consistency in your code.',
+        refs: [
+          { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
+        ],
+      },
+    ],
+  };
 }
 
 export async function configureCoveragePlugin(
   projectName?: string,
 ): Promise<CoreConfig> {
-  return profiler.span('configureCoveragePlugin', async () => {
-    const targets = ['unit-test', 'int-test'];
-    const config: CoveragePluginConfig = projectName
-      ? // We do not need to run a coverageToolCommand. This is handled over the Nx task graph.
-        {
-          reports: Object.keys(
-            (
-              await profiler.span('createProjectGraph', () =>
-                createProjectGraphAsync(),
-              )
-            ).nodes[projectName]?.data.targets ?? {},
-          )
-            .filter(target => targets.includes(target))
-            .map(target => ({
-              pathToProject: `packages/${projectName}`,
-              resultsPath: `coverage/${projectName}/${target}s/lcov.info`,
-            })),
-        }
-      : {
-          reports: await getNxCoveragePaths(targets),
-          coverageToolCommand: {
-            command: `npx nx run-many -t ${targets.join(',')}`,
-          },
-        };
-    return {
-      plugins: [await coveragePlugin(config)],
-      categories: [
-        {
-          slug: 'code-coverage',
-          title: 'Code coverage',
-          description:
-            'Measures how much of your code is **covered by tests**.',
-          refs: [
-            {
-              type: 'group',
-              plugin: 'coverage',
-              slug: 'coverage',
-              weight: 1,
-            },
-          ],
+  const targets = ['unit-test', 'int-test'];
+  const config: CoveragePluginConfig = projectName
+    ? // We do not need to run a coverageToolCommand. This is handled over the Nx task graph.
+      {
+        reports: Object.keys(
+          (await createProjectGraphAsync()).nodes[projectName]?.data.targets ??
+            {},
+        )
+          .filter(target => targets.includes(target))
+          .map(target => ({
+            pathToProject: `packages/${projectName}`,
+            resultsPath: `coverage/${projectName}/${target}s/lcov.info`,
+          })),
+      }
+    : {
+        reports: await getNxCoveragePaths(targets),
+        coverageToolCommand: {
+          command: `npx nx run-many -t ${targets.join(',')}`,
         },
-      ],
-    };
-  });
+      };
+  return {
+    plugins: [await coveragePlugin(config)],
+    categories: [
+      {
+        slug: 'code-coverage',
+        title: 'Code coverage',
+        description: 'Measures how much of your code is **covered by tests**.',
+        refs: [
+          { type: 'group', plugin: 'coverage', slug: 'coverage', weight: 1 },
+        ],
+      },
+    ],
+  };
 }
 
 export async function configureJsPackagesPlugin(): Promise<CoreConfig> {
-  return profiler.span('configureJsPackagesPlugin', async () => ({
+  return {
     plugins: [await jsPackagesPlugin()],
     categories: [
       {
@@ -174,7 +152,7 @@ export async function configureJsPackagesPlugin(): Promise<CoreConfig> {
         ],
       },
     ],
-  }));
+  };
 }
 
 export function configureTypescriptPlugin(projectName?: string): CoreConfig {
@@ -219,35 +197,33 @@ export function configureJsDocsPlugin(projectName?: string): CoreConfig {
 export async function configureLighthousePlugin(
   urls: PluginUrls,
 ): Promise<CoreConfig> {
-  return profiler.span('configureLighthousePlugin', async () => {
-    const lhPlugin = await lighthousePlugin(urls);
-    const lhCategories: CategoryConfig[] = [
-      {
-        slug: 'performance',
-        title: 'Performance',
-        refs: [lighthouseGroupRef('performance')],
-      },
-      {
-        slug: 'a11y',
-        title: 'Accessibility',
-        refs: [lighthouseGroupRef('accessibility')],
-      },
-      {
-        slug: 'best-practices',
-        title: 'Best Practices',
-        refs: [lighthouseGroupRef('best-practices')],
-      },
-      {
-        slug: 'seo',
-        title: 'SEO',
-        refs: [lighthouseGroupRef('seo')],
-      },
-    ];
-    return {
-      plugins: [lhPlugin],
-      categories: lighthouseCategories(lhPlugin, lhCategories),
-    };
-  });
+  const lhPlugin = await lighthousePlugin(urls);
+  const lhCategories: CategoryConfig[] = [
+    {
+      slug: 'performance',
+      title: 'Performance',
+      refs: [lighthouseGroupRef('performance')],
+    },
+    {
+      slug: 'a11y',
+      title: 'Accessibility',
+      refs: [lighthouseGroupRef('accessibility')],
+    },
+    {
+      slug: 'best-practices',
+      title: 'Best Practices',
+      refs: [lighthouseGroupRef('best-practices')],
+    },
+    {
+      slug: 'seo',
+      title: 'SEO',
+      refs: [lighthouseGroupRef('seo')],
+    },
+  ];
+  return {
+    plugins: [lhPlugin],
+    categories: lighthouseCategories(lhPlugin, lhCategories),
+  };
 }
 
 export function configureAxePlugin(urls: PluginUrls): CoreConfig {

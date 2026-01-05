@@ -1,5 +1,4 @@
 import type { MiddlewareFunction } from 'yargs';
-import { profiler } from '@code-pushup/utils';
 import { coreConfigMiddleware } from './implementation/core-config.middleware.js';
 import { filterMiddleware } from './implementation/filter.middleware.js';
 import { logIntroMiddleware } from './implementation/log-intro.middleware.js';

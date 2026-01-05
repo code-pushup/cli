@@ -8,7 +8,6 @@ import {
   type WithRequired,
   getCurrentBranchOrTag,
   logger,
-  profiler,
   safeCheckout,
 } from '@code-pushup/utils';
 import { collectAndPersistReports } from './collect-and-persist.js';
@@ -29,64 +28,48 @@ export async function history(
   config: HistoryOptions,
   commits: string[],
 ): Promise<string[]> {
-  return profiler.spanAsync(
-    'history',
-    async () => {
-      const initialBranch: string = await getCurrentBranchOrTag();
+  const initialBranch: string = await getCurrentBranchOrTag();
 
-      const { skipUploads = false, forceCleanStatus, persist } = config;
+  const { skipUploads = false, forceCleanStatus, persist } = config;
 
-      const reports: string[] = [];
-      // eslint-disable-next-line functional/no-loop-statements
-      for (const commit of commits) {
-        await profiler.spanAsync(
-          `history:commit:${commit}`,
-          async () => {
-            logger.info(`Collecting for commit ${commit}`);
-            await safeCheckout(commit, forceCleanStatus);
+  const reports: string[] = [];
+  // eslint-disable-next-line functional/no-loop-statements
+  for (const commit of commits) {
+    logger.info(`Collecting for commit ${commit}`);
+    await safeCheckout(commit, forceCleanStatus);
 
-            const currentConfig: HistoryOptions = {
-              ...config,
-              persist: {
-                ...persist,
-                format: ['json'],
-                filename: `${commit}-report`,
-              },
-              cache: {
-                read: false,
-                write: false,
-              },
-            };
+    const currentConfig: HistoryOptions = {
+      ...config,
+      persist: {
+        ...persist,
+        format: ['json'],
+        filename: `${commit}-report`,
+      },
+      cache: {
+        read: false,
+        write: false,
+      },
+    };
 
-            await collectAndPersistReports(currentConfig);
+    await collectAndPersistReports(currentConfig);
 
-            if (skipUploads) {
-              logger.info(
-                'Upload is skipped because skipUploads is set to true.',
-              );
-            } else {
-              if (hasUpload(currentConfig)) {
-                await upload(currentConfig);
-              } else {
-                logger.info(
-                  'Upload is skipped because upload config is undefined.',
-                );
-              }
-            }
-
-            // eslint-disable-next-line functional/immutable-data
-            reports.push(currentConfig.persist.filename);
-          },
-          { detail: profiler.tracks.cli() },
-        );
+    if (skipUploads) {
+      logger.info('Upload is skipped because skipUploads is set to true.');
+    } else {
+      if (hasUpload(currentConfig)) {
+        await upload(currentConfig);
+      } else {
+        logger.info('Upload is skipped because upload config is undefined.');
       }
+    }
 
-      await safeCheckout(initialBranch, forceCleanStatus);
+    // eslint-disable-next-line functional/immutable-data
+    reports.push(currentConfig.persist.filename);
+  }
 
-      return reports;
-    },
-    { detail: profiler.tracks.cli() },
-  );
+  await safeCheckout(initialBranch, forceCleanStatus);
+
+  return reports;
 }
 
 function hasUpload(

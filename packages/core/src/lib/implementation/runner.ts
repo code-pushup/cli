@@ -16,7 +16,6 @@ import {
   executeProcess,
   fileExists,
   logger,
-  profiler,
   readJsonFile,
   removeDirectoryIfExists,
   runnerArgsToEnv,
@@ -72,7 +71,7 @@ export class AuditOutputsMissingAuditError extends Error {
 }
 
 export async function executePluginRunner(
-  pluginConfig: Pick<PluginConfig, 'audits' | 'runner' | 'slug'>,
+  pluginConfig: Pick<PluginConfig, 'audits' | 'runner'>,
   args: RunnerArgs,
 ): Promise<RunnerResult> {
   const { audits: pluginConfigAudits, runner } = pluginConfig;
@@ -80,15 +79,10 @@ export async function executePluginRunner(
   const date = new Date().toISOString();
   const start = performance.now();
 
-  const unvalidatedAuditOutputs = await profiler.span(
-    'executeRunner',
-    async () => {
-      return typeof runner === 'object'
-        ? await executeRunnerConfig(runner, args)
-        : await executeRunnerFunction(runner, args);
-    },
-    { detail: profiler.tracks.cli() },
-  );
+  const unvalidatedAuditOutputs =
+    typeof runner === 'object'
+      ? await executeRunnerConfig(runner, args)
+      : await executeRunnerFunction(runner, args);
 
   const duration = calcDuration(start);
 
