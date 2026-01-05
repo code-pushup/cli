@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, vi } from 'vitest';
-import { removeColorCodes, reportMock } from '@code-pushup/test-utils';
+import { reportMock } from '@code-pushup/test-fixtures';
+import { removeColorCodes } from '@code-pushup/test-utils';
 import { logger } from '../logger.js';
 import { logStdoutSummary } from './log-stdout-summary.js';
 import { scoreReport } from './scoring.js';

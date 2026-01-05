@@ -21,7 +21,7 @@ import { createRunnerFunction } from './runner/runner.js';
  *   plugins: [
  *     // ... other plugins ...
  *     await eslintPlugin({
- *       eslintrc: '.eslintrc.json',
+ *       eslintrc: 'eslint.config.js',
  *       patterns: ['src', 'test/*.spec.js']
  *     })
  *   ]
@@ -32,7 +32,7 @@ import { createRunnerFunction } from './runner/runner.js';
  * @returns Plugin configuration as a promise.
  */
 export async function eslintPlugin(
-  config: ESLintPluginConfig,
+  config?: ESLintPluginConfig,
   options?: ESLintPluginOptions,
 ): Promise<PluginConfig> {
   const targets = validate(eslintPluginConfigSchema, config);
