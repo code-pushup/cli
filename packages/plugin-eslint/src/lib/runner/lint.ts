@@ -4,6 +4,7 @@ import {
   distinct,
   executeProcess,
   filePathToCliArg,
+  profiler,
   toArray,
 } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
@@ -14,7 +15,21 @@ export async function lint({
   eslintrc,
   patterns,
 }: ESLintTarget): Promise<LinterOutput> {
-  const results = await executeLint({ eslintrc, patterns });
+  const results = await profiler.measureAsync(
+    'plugin-eslint:eslint-cli-execution',
+    () => executeLint({ eslintrc, patterns }),
+    {
+      ...profiler.measureConfig.tracks.utils,
+      color: 'primary-light',
+      success: (results: Awaited<ReturnType<typeof executeLint>>) => ({
+        properties: [
+          ['Files', String(results.length)],
+          ['Patterns', String(toArray(patterns).length)],
+        ],
+        tooltipText: `Executed ESLint CLI on ${results.length} files using ${toArray(patterns).length} patterns`,
+      }),
+    },
+  );
   const eslint = await setupESLint(eslintrc);
   const ruleOptionsPerFile = await loadRuleOptionsPerFile(eslint, results);
   return { results, ruleOptionsPerFile };

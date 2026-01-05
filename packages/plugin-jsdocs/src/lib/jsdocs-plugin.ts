@@ -32,17 +32,17 @@ import {
  * @returns Plugin configuration.
  */
 export function jsDocsPlugin(config: JsDocsPluginConfig): PluginConfig {
-  const jsDocsConfig = validate(jsDocsPluginConfigSchema, config);
-  const scoreTargets = jsDocsConfig.scoreTargets;
-
-  const groups = filterGroupsByOnlyAudits(GROUPS, jsDocsConfig);
-  const audits = filterAuditsByPluginConfig(jsDocsConfig);
-
-  logAuditsAndGroups(audits, groups);
-
   return profiler.measure(
     'plugin-jsdocs:setup-config',
     () => {
+      const jsDocsConfig = validate(jsDocsPluginConfigSchema, config);
+      const scoreTargets = jsDocsConfig.scoreTargets;
+
+      const groups = filterGroupsByOnlyAudits(GROUPS, jsDocsConfig);
+      const audits = filterAuditsByPluginConfig(jsDocsConfig);
+
+      logAuditsAndGroups(audits, groups);
+
       return {
         slug: PLUGIN_SLUG,
         title: PLUGIN_TITLE,
@@ -59,10 +59,11 @@ export function jsDocsPlugin(config: JsDocsPluginConfig): PluginConfig {
       ...profiler.measureConfig.tracks.pluginJsDocs,
       success: (config: PluginConfig) => ({
         properties: [
+          ['Patterns', String(config.length)],
           ['Audits', String(config.audits.length)],
           ['Groups', String(config.groups.length)],
         ],
-        tooltipText: `Configured JSDocs plugin with ${config.audits.length} audits and ${config.groups.length} groups`,
+        tooltipText: `Configured JSDocs plugin with ${config.audits.length} audits and ${config.groups.length} groups for ${config.length} patterns`,
       }),
     },
   );

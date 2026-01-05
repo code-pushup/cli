@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { type ClockInit, clock, defaultClock } from './clock.js';
 
-describe('clock function', () => {
+describe('clock', () => {
   it('should create clock with defaults', () => {
     const c = clock();
     expect(typeof c.traceZeroEpochUs).toBe('number');
@@ -27,27 +27,21 @@ describe('clock function', () => {
     const c = clock({ preferPerformanceClock: false });
     expect(c.timeOriginMs).toBeDefined();
   });
-});
 
-describe('clock fromEpochUs method', () => {
   it('should convert epoch microseconds to trace microseconds', () => {
     const c = clock({ traceZeroEpochUs: 1000000 });
     expect(c.fromEpochUs(1000000)).toBe(0);
     expect(c.fromEpochUs(1001000)).toBe(1000);
     expect(c.fromEpochUs(999000)).toBe(-1000);
   });
-});
 
-describe('clock fromEpochMs method', () => {
   it('should convert epoch milliseconds to trace microseconds', () => {
     const c = clock({ traceZeroEpochUs: 1000000 });
     expect(c.fromEpochMs(1000)).toBe(0);
     expect(c.fromEpochMs(1001)).toBe(1000);
     expect(c.fromEpochMs(999)).toBe(-1000);
   });
-});
 
-describe('clock fromPerfMs method', () => {
   it('should convert performance milliseconds to trace microseconds', () => {
     const c = clock({ traceZeroEpochUs: 1000000 });
 
@@ -58,26 +52,20 @@ describe('clock fromPerfMs method', () => {
       expect(typeof c.fromPerfMs(0)).toBe('number');
     }
   });
-});
 
-describe('clock fromEntryStartTimeMs method', () => {
   it('should convert entry start time to trace microseconds', () => {
     const c = clock();
     expect(typeof c.fromEntryStartTimeMs(0)).toBe('number');
     expect(typeof c.fromEntryStartTimeMs(1000)).toBe('number');
   });
-});
 
-describe('clock fromDateNowMs method', () => {
   it('should convert Date.now() milliseconds to trace microseconds', () => {
     const c = clock();
     expect(typeof c.fromDateNowMs(1000000)).toBe('number');
     expect(typeof c.fromDateNowMs(2000000)).toBe('number');
   });
-});
 
-describe('defaultClock export', () => {
-  it('should be a valid clock object', () => {
+  it('should have valid defaultClock export', () => {
     expect(typeof defaultClock.traceZeroEpochUs).toBe('number');
     expect(typeof defaultClock.pid).toBe('number');
     expect(typeof defaultClock.tid).toBe('number');
@@ -86,14 +74,12 @@ describe('defaultClock export', () => {
     expect(typeof defaultClock.fromPerfMs).toBe('function');
   });
 
-  it('should have reasonable trace zero epoch', () => {
+  it('should have reasonable trace zero epoch for defaultClock', () => {
     const now = Date.now() * 1000;
     expect(defaultClock.traceZeroEpochUs).toBeGreaterThan(now - 1000000);
     expect(defaultClock.traceZeroEpochUs).toBeLessThan(now + 1000000);
   });
-});
 
-describe('clock time conversion accuracy', () => {
   it('should maintain conversion consistency', () => {
     const c = clock({ traceZeroEpochUs: 1000000 });
 

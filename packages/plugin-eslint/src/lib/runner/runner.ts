@@ -39,12 +39,57 @@ export function createRunnerFunction(options: {
 
         const linterOutputs = artifacts
           ? await loadArtifacts(artifacts)
-          : await asyncSequential(targets, lint);
+          : await profiler.measureAsync(
+              'plugin-eslint:sequential-linting',
+              () => asyncSequential(targets, lint),
+              {
+                ...profiler.measureConfig.tracks.utils,
+                color: 'primary-light',
+                success: (
+                  outputs: Awaited<ReturnType<typeof asyncSequential>>,
+                ) => ({
+                  properties: [
+                    ['Targets', String(targets.length)],
+                    ['Outputs', String(outputs.length)],
+                  ],
+                  tooltipText: `Executed sequential linting on ${targets.length} targets, produced ${outputs.length} outputs`,
+                }),
+              },
+            );
 
         const lintResults = mergeLinterOutputs(linterOutputs);
-        const failedAudits = lintResultsToAudits(lintResults);
+        const failedAudits = profiler.measure(
+          'plugin-eslint:results-transformation',
+          () => lintResultsToAudits(lintResults),
+          {
+            ...profiler.measureConfig.tracks.pluginEslint,
+            color: 'secondary-light',
+            success: (audits: ReturnType<typeof lintResultsToAudits>) => ({
+              properties: [
+                ['Results', String(lintResults.results.length)],
+                ['Failed Audits', String(audits.length)],
+              ],
+              tooltipText: `Transformed ${lintResults.results.length} lint results into ${audits.length} failed audits`,
+            }),
+          },
+        );
 
-        const stats = aggregateLintResultsStats(lintResults.results);
+        const stats = profiler.measure(
+          'plugin-eslint:stats-aggregation',
+          () => aggregateLintResultsStats(lintResults.results),
+          {
+            ...profiler.measureConfig.tracks.pluginEslint,
+            color: 'secondary-light',
+            success: (stats: ReturnType<typeof aggregateLintResultsStats>) => ({
+              properties: [
+                ['Files', String(stats.filesCount)],
+                ['Problems', String(stats.problemsCount)],
+                ['Failed Rules', String(stats.failedRulesCount)],
+              ],
+              tooltipText: `Aggregated stats from ${stats.filesCount} files with ${stats.problemsCount} problems across ${stats.failedRulesCount} rules`,
+            }),
+          },
+        );
         logger.info(
           stats.problemsCount === 0
             ? 'ESLint did not find any problems'

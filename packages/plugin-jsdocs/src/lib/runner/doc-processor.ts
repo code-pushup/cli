@@ -10,6 +10,7 @@ import {
   type FileCoverage,
   objectFromEntries,
   objectToEntries,
+  profiler,
 } from '@code-pushup/utils';
 import type { JsDocsPluginTransformedConfig } from '../config.js';
 import type { CoverageType } from './models.js';
@@ -62,9 +63,25 @@ export function getVariablesInformation(
 export function processJsDocs(
   config: JsDocsPluginTransformedConfig,
 ): Record<CoverageType, FileCoverage[]> {
-  const project = new Project();
-  project.addSourceFilesAtPaths(config.patterns);
-  const sourceFiles = project.getSourceFiles();
+  const sourceFiles = profiler.measure(
+    'plugin-jsdocs:typescript-program-exec',
+    () => {
+      const project = new Project();
+      project.addSourceFilesAtPaths(config.patterns);
+      return project.getSourceFiles();
+    },
+    {
+      ...profiler.measureConfig.tracks.pluginJsDocs,
+      color: 'tertiary-dark',
+      success: (sourceFiles: SourceFile[]) => ({
+        properties: [
+          ['Files', String(sourceFiles.length)],
+          ['Patterns', String(config.patterns.length)],
+        ],
+        tooltipText: `TypeScript program executed on ${sourceFiles.length} files for JSDocs analysis`,
+      }),
+    },
+  );
 
   logSourceFiles(sourceFiles, config);
 

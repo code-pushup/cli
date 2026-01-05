@@ -21,20 +21,20 @@ const packageJson = createRequire(import.meta.url)(
 export function typescriptPlugin(
   options?: TypescriptPluginOptions,
 ): PluginConfig {
-  const {
-    tsconfig = DEFAULT_TS_CONFIG,
-    onlyAudits,
-    scoreTargets,
-  } = parseOptions(options ?? {});
-
-  const audits = getAudits({ onlyAudits });
-  const groups = getGroups({ onlyAudits });
-
-  logAuditsAndGroups(audits, groups);
-
   return profiler.measure(
     'plugin-typescript:setup-config',
     () => {
+      const {
+        tsconfig = DEFAULT_TS_CONFIG,
+        onlyAudits,
+        scoreTargets,
+      } = parseOptions(options ?? {});
+
+      const audits = getAudits({ onlyAudits });
+      const groups = getGroups({ onlyAudits });
+
+      logAuditsAndGroups(audits, groups);
+
       return {
         slug: TYPESCRIPT_PLUGIN_SLUG,
         title: TYPESCRIPT_PLUGIN_TITLE,

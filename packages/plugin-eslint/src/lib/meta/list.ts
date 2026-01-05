@@ -1,5 +1,10 @@
 import type { Audit, Group } from '@code-pushup/models';
-import { formatAsciiTable, logger, pluralizeToken } from '@code-pushup/utils';
+import {
+  formatAsciiTable,
+  logger,
+  pluralizeToken,
+  profiler,
+} from '@code-pushup/utils';
 import type { CustomGroup, ESLintTarget } from '../config.js';
 import { formatMetaLog } from './format.js';
 import {
@@ -18,7 +23,21 @@ export async function listAuditsAndGroups(
   targets: ESLintTarget[],
   customGroups?: CustomGroup[] | undefined,
 ): Promise<{ audits: Audit[]; groups: Group[] }> {
-  const rules = await listRules(targets);
+  const rules = await profiler.measureAsync(
+    'plugin-eslint:eslint-rules-gathering',
+    () => listRules(targets),
+    {
+      ...profiler.measureConfig.tracks.pluginEslint,
+      color: 'tertiary-dark',
+      success: (rules: Awaited<ReturnType<typeof listRules>>) => ({
+        properties: [
+          ['Targets', String(targets.length)],
+          ['Rules', String(rules.length)],
+        ],
+        tooltipText: `Gathered ${rules.length} ESLint rules from ${targets.length} targets using ESLint native APIs`,
+      }),
+    },
+  );
   const audits = rules.map(ruleToAudit);
 
   logger.info(
