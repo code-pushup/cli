@@ -140,7 +140,8 @@ jsDocsPlugin({
 }),
 ```
 
-> ⚠️ **Warning:** You cannot use both `onlyAudits` and `skipAudits` in the same configuration. Choose the one that better suits your needs.
+> [!WARNING]
+> You cannot use both `onlyAudits` and `skipAudits` in the same configuration. Choose the one that better suits your needs.
 
 ### Audits and group
 

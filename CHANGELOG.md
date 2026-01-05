@@ -1,3 +1,13 @@
+## 0.100.1 (2025-12-29)
+
+### 🩹 Fixes
+
+- update to nx v22 ([#1196](https://github.com/code-pushup/cli/pull/1196))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.100.0 (2025-12-20)
 
 ### 🚀 Features

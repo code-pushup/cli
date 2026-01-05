@@ -5,12 +5,7 @@
   "projectType": "application",
   "targets": {
     "lint": {},
-    "e2e": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "configFile": "e2e/plugin-typescript-e2e/vitest.e2e.config.ts"
-      }
-    }
+    "e2e": {}
   },
   "implicitDependencies": ["cli", "plugin-typescript"],
   "tags": ["scope:plugin", "type:e2e"]
