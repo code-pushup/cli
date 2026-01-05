@@ -23,7 +23,7 @@ export interface ProfilerControl {
 }
 export type ProfilerEntryOptions = {
   namePrefix?: string;
-  devtools?: {
+  tracks?: {
     defaultTrack?: Partial<TrackMeta> & TrackStyle;
     errorHandler?: (error: unknown) => EntryMeta;
   };

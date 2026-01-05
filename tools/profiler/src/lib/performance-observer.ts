@@ -3,7 +3,7 @@ import {
   PerformanceObserver,
   performance,
 } from 'node:perf_hooks';
-import { FileSink } from './output';
+import { FileSink } from './file-sink-text.js';
 import { Buffered, type Encoder, type Sink } from './sink.types';
 
 export interface PerformanceObserverOptions<T> {

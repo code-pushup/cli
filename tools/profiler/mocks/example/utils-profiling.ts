@@ -1,10 +1,6 @@
 import { setTimeout as sleep } from 'timers/promises';
 import { getProfiler } from '@code-pushup/profiler';
-import {
-  type DevToolsOptionCb,
-  span,
-  spanAsync,
-} from '../../src/lib/performance-utils';
+import { span, spanAsync } from '../../src/lib/performance-utils';
 import {
   asOptions,
   markerPayload,
@@ -27,7 +23,17 @@ async function run() {
 
   // ======= MEASURE =======
 
-  const optionCallbacks: DevToolsOptionCb<ReturnType<typeof work>> = {
+  const optionCallbacks: {
+    track?: string;
+    success?: (result: ReturnType<typeof work>) => {
+      properties?: [string, string][];
+      tooltipText?: string;
+    };
+    error?: (err: unknown) => {
+      properties?: [string, string][];
+      tooltipText?: string;
+    };
+  } = {
     track: 'performance-utils',
     success: (result: number) => ({
       properties: [['Iterations', String(result)]],

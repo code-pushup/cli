@@ -98,16 +98,6 @@ export function getTrackControl<
   };
 }
 
-export type DevToolsOptionCb<Track extends string = string, R = unknown> = Omit<
-  TrackMeta,
-  'track'
-> &
-  TrackStyle & {
-    track: Track | string; // Can be track key or track value
-    success?: (result: R) => EntryMeta;
-    error?: (err: unknown) => EntryMeta;
-  };
-
 export interface PerformanceAPIExtension<Track extends string> {
   marker(name: string, options: MarkerPayload & { track: Track }): void;
 
@@ -116,88 +106,28 @@ export interface PerformanceAPIExtension<Track extends string> {
   measure<T>(
     name: string,
     fn: () => T,
-    options?: DevToolsOptionCb<Track, T> | Track | (TrackStyle & TrackMeta),
+    options?:
+      | (Omit<TrackMeta, 'track'> &
+          TrackStyle & {
+            track?: Track | string;
+            success?: (result: T) => Partial<TrackEntryPayload>;
+            error?: (err: unknown) => EntryMeta;
+          })
+      | Track
+      | (TrackStyle & TrackMeta),
   ): T;
 
   measureAsync<T>(
     name: string,
     fn: () => Promise<T>,
-    options?: DevToolsOptionCb<Track, T> | Track | (TrackStyle & TrackMeta),
+    options?:
+      | (Omit<TrackMeta, 'track'> &
+          TrackStyle & {
+            track?: Track | string;
+            success?: (result: T) => Partial<TrackEntryPayload>;
+            error?: (err: unknown) => EntryMeta;
+          })
+      | Track
+      | (TrackStyle & TrackMeta),
   ): Promise<T>;
-}
-
-export function span<T>(
-  name: string,
-  fn: () => T,
-  options: DevToolsOptionCb<string, T>,
-): T {
-  const { startName, measureName, endName } = getMeasureMarkNames(name);
-  const { error, success, ...spanDetails } = options ?? {};
-  performance.mark(name, asOptions(trackEntryPayload(spanDetails)));
-  try {
-    const result = fn();
-    performance.measure(measureName, {
-      start: startName,
-      end: endName,
-      ...asOptions(
-        trackEntryPayload({
-          ...spanDetails,
-        }),
-      ),
-    });
-    return result;
-  } catch (err) {
-    const errorOptions = asOptions(
-      errorToTrackEntryPayload(err, {
-        ...spanDetails,
-        ...error?.(err),
-      }),
-    );
-    performance.mark(endName, errorOptions);
-    performance.measure(measureName, {
-      start: startName,
-      end: endName,
-      ...errorOptions,
-    });
-    throw err;
-  }
-}
-
-export async function spanAsync<T>(
-  name: string,
-  fn: () => Promise<T>,
-  options: DevToolsOptionCb<string, T>,
-): Promise<T> {
-  const { startName, measureName, endName } = getMeasureMarkNames(name);
-  const { error, success, ...spanDetail } = options ?? {};
-  performance.mark(startName, asOptions(trackEntryPayload(spanDetail)));
-  try {
-    const result = await fn();
-    performance.mark(endName, asOptions(trackEntryPayload(spanDetail)));
-    performance.measure(measureName, {
-      start: startName,
-      end: endName,
-      ...asOptions(
-        trackEntryPayload({
-          ...spanDetail,
-          ...success?.(result),
-        }),
-      ),
-    });
-    return result;
-  } catch (err) {
-    const errorOptions = asOptions(
-      errorToTrackEntryPayload(err, {
-        ...spanDetail,
-        ...error?.(err),
-      }),
-    );
-    performance.mark(endName, errorOptions);
-    performance.measure(measureName, {
-      start: startName,
-      end: endName,
-      ...errorOptions,
-    });
-    throw err;
-  }
 }

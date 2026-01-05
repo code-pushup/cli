@@ -42,6 +42,7 @@ export function trackEntryPayload(
 ): TrackEntryPayload {
   return {
     dataType: 'track-entry',
+    track: 'Main',
     ...options,
   };
 }

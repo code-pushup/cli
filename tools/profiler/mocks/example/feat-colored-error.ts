@@ -5,7 +5,7 @@ function runTest() {
   const profiler = getProfiler({
     enabled: true,
     fileBaseName: 'feat-colored-error.ts',
-    devtools: {
+    tracks: {
       defaultTrack: {
         track: 'CLI',
         trackGroup: '<✓> Code PushUp',

@@ -197,9 +197,7 @@ export type SpanEventArgs = {
 
 export function getSpanEventArgsPayload(args?: SpanEventArgs) {
   return {
-    data: {
-      ...(args?.detail ? { detail: JSON.stringify(args.detail) } : {}),
-    },
+    ...(args?.detail ? { detail: JSON.stringify(args.detail) } : {}),
   };
 }
 
