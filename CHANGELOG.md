@@ -1,3 +1,13 @@
+## 0.101.0 (2026-01-05)
+
+### 🚀 Features
+
+- **plugin-eslint:** make patterns input optional with default ([7ce6e9b7](https://github.com/code-pushup/cli/commit/7ce6e9b7))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.100.1 (2025-12-29)
 
 ### 🩹 Fixes
