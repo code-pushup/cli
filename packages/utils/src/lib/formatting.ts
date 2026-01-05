@@ -26,10 +26,14 @@ export function pluralize(text: string, amount?: number): string {
     return text;
   }
 
+  // best approximation of English pluralization "rules"
+  // https://www.grammarly.com/blog/grammar/spelling-plurals-with-s-es/
+
   if (text.endsWith('y')) {
     return `${text.slice(0, -1)}ies`;
   }
-  if (text.endsWith('s')) {
+  const suffixes = ['s', 'sh', 'ch', 'x', 'z'];
+  if (suffixes.some(suffix => text.endsWith(suffix))) {
     return `${text}es`;
   }
   return `${text}s`;
@@ -177,4 +181,18 @@ export function pluginMetaLogFormatter(
       message,
       (line, idx) => `${idx === 0 ? prefix : padding} ${line}`,
     );
+}
+
+export function formatCoveragePercentage(stats: {
+  covered: number;
+  total: number;
+}): string {
+  const { covered, total } = stats;
+
+  if (total === 0) {
+    return '-';
+  }
+
+  const percentage = (covered / total) * 100;
+  return `${percentage.toFixed(1)}%`;
 }

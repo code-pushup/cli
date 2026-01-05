@@ -5,7 +5,7 @@ import type {
   CoreConfig,
   PluginUrls,
 } from './packages/models/src/index.js';
-import axePlugin from './packages/plugin-axe/src/index.js';
+import axePlugin, { axeCategories } from './packages/plugin-axe/src/index.js';
 import coveragePlugin, {
   type CoveragePluginConfig,
   getNxCoveragePaths,
@@ -16,13 +16,9 @@ import eslintPlugin, {
 import jsPackagesPlugin from './packages/plugin-js-packages/src/index.js';
 import jsDocsPlugin from './packages/plugin-jsdocs/src/index.js';
 import {
-  PLUGIN_SLUG,
-  groups,
-} from './packages/plugin-jsdocs/src/lib/constants.js';
-import {
+  lighthouseCategories,
   lighthouseGroupRef,
   lighthousePlugin,
-  mergeLighthouseCategories,
 } from './packages/plugin-lighthouse/src/index.js';
 import typescriptPlugin, {
   getCategories,
@@ -185,12 +181,14 @@ export function configureJsDocsPlugin(projectName?: string): CoreConfig {
         slug: 'docs',
         title: 'Documentation',
         description: 'Measures how much of your code is **documented**.',
-        refs: groups.map(group => ({
-          weight: 1,
-          type: 'group',
-          plugin: PLUGIN_SLUG,
-          slug: group.slug,
-        })),
+        refs: [
+          {
+            type: 'group',
+            plugin: 'jsdocs',
+            slug: 'documentation-coverage',
+            weight: 1,
+          },
+        ],
       },
     ],
   };
@@ -224,12 +222,14 @@ export async function configureLighthousePlugin(
   ];
   return {
     plugins: [lhPlugin],
-    categories: mergeLighthouseCategories(lhPlugin, lhCategories),
+    categories: lighthouseCategories(lhPlugin, lhCategories),
   };
 }
 
-export function axeCoreConfig(urls: PluginUrls): CoreConfig {
+export function configureAxePlugin(urls: PluginUrls): CoreConfig {
+  const axe = axePlugin(urls);
   return {
-    plugins: [axePlugin(urls)],
+    plugins: [axe],
+    categories: axeCategories(axe),
   };
 }

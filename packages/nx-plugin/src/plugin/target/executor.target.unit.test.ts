@@ -27,4 +27,23 @@ describe('createExecutorTarget', () => {
       },
     });
   });
+
+  it('should use env if provided', () => {
+    expect(
+      createExecutorTarget({
+        env: {
+          NODE_OPTIONS: '--import tsx',
+          TSX_TSCONFIG_PATH: 'tsconfig.base.json',
+        },
+      }),
+    ).toStrictEqual({
+      executor: '@code-pushup/nx-plugin:cli',
+      options: {
+        env: {
+          NODE_OPTIONS: '--import tsx',
+          TSX_TSCONFIG_PATH: 'tsconfig.base.json',
+        },
+      },
+    });
+  });
 });

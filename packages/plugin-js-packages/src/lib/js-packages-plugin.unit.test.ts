@@ -3,18 +3,10 @@ import { describe, expect, it } from 'vitest';
 import {
   type Group,
   type PluginConfig,
-  type RunnerConfig,
   pluginConfigSchema,
 } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { jsPackagesPlugin } from './js-packages-plugin.js';
-
-vi.mock('./runner/index.ts', () => ({
-  createRunnerConfig: vi.fn().mockReturnValue({
-    command: 'node',
-    outputFile: 'runner-output.json',
-  } satisfies RunnerConfig),
-}));
 
 describe('jsPackagesPlugin', () => {
   it('should initialise the plugin without a given config for NPM', async () => {
@@ -31,7 +23,7 @@ describe('jsPackagesPlugin', () => {
     await expect(jsPackagesPlugin()).resolves.toStrictEqual(
       expect.objectContaining({
         slug: 'js-packages',
-        title: 'JS Packages',
+        title: 'JS packages',
         audits: expect.arrayContaining([
           expect.objectContaining({ slug: 'npm-audit-prod' }),
           expect.objectContaining({ slug: 'npm-audit-dev' }),
@@ -57,10 +49,10 @@ describe('jsPackagesPlugin', () => {
     ).resolves.toStrictEqual(
       expect.objectContaining({
         slug: 'js-packages',
-        title: 'JS Packages',
+        title: 'JS packages',
         audits: expect.any(Array),
         groups: expect.any(Array),
-        runner: expect.any(Object),
+        runner: expect.any(Function),
       }),
     );
   });

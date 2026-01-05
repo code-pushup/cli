@@ -16,6 +16,8 @@ import type { CoverageType } from './models.js';
 import {
   createInitialCoverageTypesRecord,
   getCoverageTypeFromKind,
+  logReport,
+  logSourceFiles,
   singularCoverageType,
 } from './utils.js';
 
@@ -29,7 +31,7 @@ type Node = {
 
 /**
  * Gets the variables information from the variable statements
- * @param variableStatements - The variable statements to process
+ * @param variableStatements The variable statements to process
  * @returns The variables information with the right methods to get the information
  */
 export function getVariablesInformation(
@@ -54,7 +56,7 @@ export function getVariablesInformation(
 
 /**
  * Processes documentation coverage for TypeScript files in the specified path
- * @param config - The configuration object containing patterns to include for documentation analysis
+ * @param config The configuration object containing patterns to include for documentation analysis
  * @returns Object containing coverage statistics and undocumented items
  */
 export function processJsDocs(
@@ -62,7 +64,15 @@ export function processJsDocs(
 ): Record<CoverageType, FileCoverage[]> {
   const project = new Project();
   project.addSourceFilesAtPaths(config.patterns);
-  return getDocumentationReport(project.getSourceFiles());
+  const sourceFiles = project.getSourceFiles();
+
+  logSourceFiles(sourceFiles, config);
+
+  const report = getDocumentationReport(sourceFiles);
+
+  logReport(report);
+
+  return report;
 }
 
 export function getAllNodesFromASourceFile(sourceFile: SourceFile) {
@@ -80,7 +90,7 @@ export function getAllNodesFromASourceFile(sourceFile: SourceFile) {
 
 /**
  * Gets the documentation coverage report from the source files
- * @param sourceFiles - The source files to process
+ * @param sourceFiles The source files to process
  * @returns The documentation coverage report
  */
 export function getDocumentationReport(
@@ -101,8 +111,8 @@ export function getDocumentationReport(
 
 /**
  * Gets the coverage from all nodes of a file
- * @param nodes - The nodes to process
- * @param filePath - The file path where the nodes are located
+ * @param nodes The nodes to process
+ * @param filePath The file path where the nodes are located
  * @returns The coverage report for the nodes
  */
 function getCoverageFromAllNodesOfFile(nodes: Node[], filePath: string) {
@@ -145,7 +155,7 @@ function getCoverageFromAllNodesOfFile(nodes: Node[], filePath: string) {
 
 /**
  * Gets the nodes from a class
- * @param classNodes - The class nodes to process
+ * @param classNodes The class nodes to process
  * @returns The nodes from the class
  */
 export function getClassNodes(classNodes: ClassDeclaration[]) {

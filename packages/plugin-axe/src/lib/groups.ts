@@ -70,6 +70,10 @@ export const CATEGORY_GROUPS: Record<AxeCategoryGroupSlug, string> = {
   'time-and-media': 'Media',
 };
 
+export function isAxeGroupSlug(slug: unknown): slug is AxeCategoryGroupSlug {
+  return axeCategoryGroupSlugSchema.safeParse(slug).success;
+}
+
 /* Combined exports */
 export const axeGroupSlugSchema = axeCategoryGroupSlugSchema;
 export type AxeGroupSlug = AxeCategoryGroupSlug;

@@ -146,4 +146,21 @@ export default tseslint.config(
       '**/*.md',
     ],
   },
+  {
+    files: ['packages/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@nx/devkit',
+              importNames: ['logger'],
+              message: 'Please use logger from @code-pushup/utils instead.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 );

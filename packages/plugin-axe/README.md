@@ -159,6 +159,66 @@ The plugin organizes audits into category groups based on axe-core's accessibili
 
 Use `npx code-pushup print-config --onlyPlugins=axe` to list all audits and groups for your configuration.
 
+## Category integration
+
+The plugin provides helpers to integrate Axe results into your categories.
+
+### Auto-generate accessibility category
+
+Use `axeCategories` to automatically create an accessibility category from all plugin groups:
+
+```ts
+import axePlugin, { axeCategories } from '@code-pushup/axe-plugin';
+
+const axe = axePlugin('https://example.com');
+
+export default {
+  plugins: [axe],
+  categories: axeCategories(axe),
+};
+```
+
+This configuration works with both single-URL and multi-URL configurations. For multi-URL setups, refs are automatically expanded for each URL with appropriate weights.
+
+### Custom categories
+
+For fine-grained control, provide your own categories with specific groups:
+
+```ts
+import axePlugin, { axeCategories, axeGroupRef } from '@code-pushup/axe-plugin';
+
+const axe = axePlugin(['https://example.com', 'https://example.com/about']);
+
+export default {
+  plugins: [axe],
+  categories: axeCategories(axe, [
+    {
+      slug: 'axe-a11y',
+      title: 'Axe Accessibility',
+      refs: [axeGroupRef('aria', 2), axeGroupRef('color'), axeGroupRef('keyboard')],
+    },
+  ]),
+};
+```
+
+### Helper functions
+
+| Function        | Description                            |
+| --------------- | -------------------------------------- |
+| `axeCategories` | Auto-generates or expands categories   |
+| `axeGroupRef`   | Creates a category ref to an Axe group |
+| `axeAuditRef`   | Creates a category ref to an Axe audit |
+
+### Type safety
+
+The `AxeGroupSlug` type is exported for discovering valid group slugs:
+
+```ts
+import type { AxeGroupSlug } from '@code-pushup/axe-plugin';
+
+const group: AxeGroupSlug = 'aria';
+```
+
 ## Resources
 
 - **[Axe-core rules](https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md)** - Complete list of accessibility rules

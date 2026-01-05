@@ -18,9 +18,9 @@ Commands:
 
 
 Global Options:
-      --verbose         When true creates more verbose output. This is helpful w
-                        hen debugging. You may also set CP_VERBOSE env variable
-                        instead.       [boolean] [default: false]
+      --verbose         Toggles whether to print debug logs. The default value i
+                        s derived from the CP_VERBOSE environment variable (fals
+                        e if not set).                  [boolean]
       --config          Path to config file. By default it loads code-pushup.con
                         fig.(ts|mjs|js).                 [string]
       --tsconfig        Path to a TypeScript config, to be used when loading con

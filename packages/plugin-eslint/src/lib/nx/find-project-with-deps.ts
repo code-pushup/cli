@@ -1,5 +1,4 @@
-import { logger } from '@nx/devkit';
-import { pluralizeToken } from '@code-pushup/utils';
+import { logger, pluralizeToken } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
 import { formatMetaLog } from '../meta/format.js';
 import { nxProjectsToConfig } from './projects-to-config.js';

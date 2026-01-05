@@ -1,54 +1,12 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expect } from 'vitest';
-import type { AuditOutputs, RunnerConfig } from '@code-pushup/models';
-import { createRunnerFiles, readJsonFile } from '@code-pushup/utils';
-import type { FinalCoveragePluginConfig } from '../config.js';
-import { createRunnerConfig, executeRunner } from './index.js';
+import { type AuditOutputs, DEFAULT_PERSIST_CONFIG } from '@code-pushup/models';
+import { createRunnerFunction } from './runner.js';
 
-describe('createRunnerConfig', () => {
-  it('should create a valid runner config', async () => {
-    const runnerConfig = await createRunnerConfig('executeRunner.ts', {
-      reports: ['coverage/lcov.info'],
-      coverageTypes: ['branch'],
-      scoreTargets: 0.85,
-      continueOnCommandFail: true,
-    });
-    expect(runnerConfig).toStrictEqual<RunnerConfig>({
-      command: 'node',
-      args: [
-        '"executeRunner.ts"',
-        expect.stringContaining('plugin-config.json'),
-        expect.stringContaining('runner-output.json'),
-      ],
-      outputFile: expect.stringContaining('runner-output.json'),
-      configFile: expect.stringContaining('plugin-config.json'),
-    });
-  });
-
-  it('should provide plugin config to runner in JSON file', async () => {
-    const pluginConfig: FinalCoveragePluginConfig = {
-      coverageTypes: ['line'],
-      reports: ['coverage/lcov.info'],
-      coverageToolCommand: { command: 'npm', args: ['run', 'test'] },
-      scoreTargets: 0.85,
-      continueOnCommandFail: true,
-    };
-
-    const { configFile } = await createRunnerConfig(
-      'executeRunner.ts',
-      pluginConfig,
-    );
-
-    expect(configFile).toMatch(/.*plugin-config\.json$/);
-    const config = await readJsonFile<FinalCoveragePluginConfig>(configFile!);
-    expect(config).toStrictEqual(pluginConfig);
-  });
-});
-
-describe('executeRunner', () => {
+describe('createRunnerFunction', () => {
   it('should successfully execute runner', async () => {
-    const config: FinalCoveragePluginConfig = {
+    const runner = createRunnerFunction({
       reports: [
         path.join(
           fileURLToPath(path.dirname(import.meta.url)),
@@ -61,18 +19,11 @@ describe('executeRunner', () => {
       ],
       coverageTypes: ['line'],
       continueOnCommandFail: true,
-    };
+    });
 
-    const runnerFiles = await createRunnerFiles(
-      'coverage',
-      JSON.stringify(config),
-    );
-    await executeRunner(runnerFiles);
-
-    const results = await readJsonFile<AuditOutputs>(
-      runnerFiles.runnerOutputPath,
-    );
-    expect(results).toStrictEqual<AuditOutputs>([
+    await expect(
+      runner({ persist: DEFAULT_PERSIST_CONFIG }),
+    ).resolves.toStrictEqual([
       {
         slug: 'line-coverage',
         score: 0.7,
@@ -112,6 +63,6 @@ describe('executeRunner', () => {
           ],
         },
       },
-    ]);
+    ] satisfies AuditOutputs);
   });
 });

@@ -1,14 +1,7 @@
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { type RunnerConfig, pluginConfigSchema } from '@code-pushup/models';
+import { pluginConfigSchema } from '@code-pushup/models';
 import { coveragePlugin } from './coverage-plugin.js';
-
-vi.mock('./runner/index.ts', () => ({
-  createRunnerConfig: vi.fn().mockReturnValue({
-    command: 'node',
-    outputFile: 'runner-output.json',
-  } satisfies RunnerConfig),
-}));
 
 describe('coveragePlugin', () => {
   const LCOV_PATH = path.join(
@@ -30,7 +23,7 @@ describe('coveragePlugin', () => {
         title: 'Code coverage',
         audits: expect.any(Array),
         groups: expect.any(Array),
-        runner: expect.any(Object),
+        runner: expect.any(Function),
       }),
     );
   });

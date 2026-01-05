@@ -2,6 +2,7 @@ import ansis from 'ansis';
 import { describe, expect, it } from 'vitest';
 import {
   formatBytes,
+  formatCoveragePercentage,
   formatDate,
   formatDuration,
   indentLines,
@@ -63,6 +64,7 @@ describe('pluralize', () => {
     ['error', 'errors'],
     ['category', 'categories'],
     ['status', 'statuses'],
+    ['branch', 'branches'],
   ])('should pluralize "%s" as "%s"', (singular, plural) => {
     expect(pluralize(singular)).toBe(plural);
   });
@@ -293,5 +295,29 @@ describe('pluginMetaLogFormatter', () => {
            - Function coverage
 `.trim(),
     );
+  });
+});
+
+describe('formatCoveragePercentage', () => {
+  it('should render percentage', () => {
+    expect(formatCoveragePercentage({ covered: 125, total: 1000 })).toBe(
+      '12.5%',
+    );
+  });
+
+  it('should render max 1 decimal', () => {
+    expect(formatCoveragePercentage({ covered: 1, total: 3 })).toBe('33.3%');
+  });
+
+  it('should render at least 1 decimal', () => {
+    expect(formatCoveragePercentage({ covered: 0, total: 10 })).toBe('0.0%');
+  });
+
+  it('should round decimal up if appropriate', () => {
+    expect(formatCoveragePercentage({ covered: 2, total: 3 })).toBe('66.7%');
+  });
+
+  it('should not render invalid percentage', () => {
+    expect(formatCoveragePercentage({ covered: 0, total: 0 })).toBe('-');
   });
 });

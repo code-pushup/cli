@@ -67,6 +67,20 @@ describe('globalConfig', () => {
     ).toEqual(expect.objectContaining({ config: 'my.config.ts' }));
   });
 
+  it('should include the command options', () => {
+    const { command } = globalConfig(
+      { command: 'collect' },
+      {
+        workspaceRoot: '/test/root/workspace-root',
+        projectConfig: {
+          name: 'my-app',
+          root: 'packages/project-root',
+        },
+      },
+    );
+    expect(command).toBe('collect');
+  });
+
   it('should work with empty projectConfig', () => {
     expect(
       globalConfig(
@@ -319,6 +333,39 @@ describe('uploadConfig', () => {
         },
         { workspaceRoot: 'workspaceRoot', projectName: 'my-app' },
       ),
-    ).toEqual(expect.objectContaining({ project: 'my-app2' }));
+    ).toStrictEqual(expect.objectContaining({ project: 'my-app2' }));
+  });
+
+  it('should apply projectPrefix when workspaceRoot is not "."', () => {
+    expect(
+      uploadConfig(
+        {
+          ...baseUploadConfig,
+          projectPrefix: 'cli',
+        },
+        { workspaceRoot: 'workspace-root', projectName: 'models' },
+      ),
+    ).toStrictEqual(expect.objectContaining({ project: 'cli-models' }));
+  });
+
+  it('should NOT apply projectPrefix when workspaceRoot is "."', () => {
+    expect(
+      uploadConfig(
+        {
+          ...baseUploadConfig,
+          projectPrefix: 'cli',
+        },
+        { workspaceRoot: '.', projectName: 'models' },
+      ),
+    ).toStrictEqual(expect.objectContaining({ project: 'models' }));
+  });
+
+  it('should NOT apply projectPrefix when projectPrefix is not provided', () => {
+    expect(
+      uploadConfig(baseUploadConfig, {
+        workspaceRoot: 'workspace-root',
+        projectName: 'models',
+      }),
+    ).toStrictEqual(expect.objectContaining({ project: 'models' }));
   });
 });

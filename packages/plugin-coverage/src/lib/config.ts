@@ -1,8 +1,9 @@
 import { z } from 'zod';
 import { pluginScoreTargetsSchema } from '@code-pushup/models';
+import { ALL_COVERAGE_TYPES } from './constants.js';
 
 export const coverageTypeSchema = z
-  .enum(['function', 'branch', 'line'])
+  .enum(ALL_COVERAGE_TYPES)
   .meta({ title: 'CoverageType' });
 export type CoverageType = z.infer<typeof coverageTypeSchema>;
 
@@ -48,7 +49,7 @@ export const coveragePluginConfigSchema = z
     coverageTypes: z
       .array(coverageTypeSchema)
       .min(1)
-      .default(['function', 'branch', 'line'])
+      .default([...ALL_COVERAGE_TYPES])
       .meta({
         description:
           'Coverage types measured. Defaults to all available types.',

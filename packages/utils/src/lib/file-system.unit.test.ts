@@ -12,6 +12,7 @@ import {
   findNearestFile,
   projectToFilename,
   splitFilePath,
+  truncatePaths,
 } from './file-system.js';
 
 describe('ensureDirectoryExists', () => {
@@ -266,5 +267,62 @@ describe('splitFilePath', () => {
       folders: ['src', 'app'],
       file: 'app.component.ts',
     });
+  });
+});
+
+describe('truncatePaths', () => {
+  it('should replace shared path prefix with ellipsis', () => {
+    expect(
+      truncatePaths([
+        path.join('dist', 'packages', 'cli'),
+        path.join('dist', 'packages', 'core'),
+        path.join('dist', 'packages', 'utils'),
+      ]),
+    ).toEqual([
+      path.join('…', 'cli'),
+      path.join('…', 'core'),
+      path.join('…', 'utils'),
+    ]);
+  });
+
+  it('should replace shared path suffix with ellipsis', () => {
+    expect(
+      truncatePaths([
+        path.join('e2e', 'cli-e2e', 'coverage', 'lcov.info'),
+        path.join('packages', 'cli', 'coverage', 'lcov.info'),
+        path.join('packages', 'core', 'coverage', 'lcov.info'),
+      ]),
+    ).toEqual([
+      path.join('e2e', 'cli-e2e', '…'),
+      path.join('packages', 'cli', '…'),
+      path.join('packages', 'core', '…'),
+    ]);
+  });
+
+  it('should replace shared path prefix and suffix at once', () => {
+    expect(
+      truncatePaths([
+        path.join('coverage', 'packages', 'cli', 'int-tests', 'lcov.info'),
+        path.join('coverage', 'packages', 'cli', 'unit-tests', 'lcov.info'),
+        path.join('coverage', 'packages', 'core', 'int-tests', 'lcov.info'),
+        path.join('coverage', 'packages', 'core', 'unit-tests', 'lcov.info'),
+        path.join('coverage', 'packages', 'utils', 'unit-tests', 'lcov.info'),
+      ]),
+    ).toEqual([
+      path.join('…', 'cli', 'int-tests', '…'),
+      path.join('…', 'cli', 'unit-tests', '…'),
+      path.join('…', 'core', 'int-tests', '…'),
+      path.join('…', 'core', 'unit-tests', '…'),
+      path.join('…', 'utils', 'unit-tests', '…'),
+    ]);
+  });
+
+  it('should leave unique paths unchanged', () => {
+    const paths = [
+      path.join('e2e', 'cli-e2e'),
+      path.join('packages', 'cli'),
+      path.join('packages', 'core'),
+    ];
+    expect(truncatePaths(paths)).toEqual(paths);
   });
 });
