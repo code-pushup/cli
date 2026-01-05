@@ -1,185 +1,120 @@
-import { setTimeout as sleep } from 'timers/promises';
-import {
-  asOptions,
-  markerErrorPayload,
-  objToPropertiesPayload,
-  trackEntryErrorPayload,
-  trackEntryPayload,
-} from 'tools/profiler/src/lib/user-timing-details-utils.js';
 import { getProfiler } from '../../src/index.js';
+import { sequentialWork, work } from '../test-utils.js';
 
-async function runTest() {
-  const profiler = getProfiler({
-    enabled: true,
-    fileBaseName: 'api-measure',
-  });
-
-  profiler.mark('measure-mark-start-to-now:start');
-  await sleep(10);
-  profiler.measure(
-    'measure-mark-start-to-now',
-    'measure-mark-start-to-now:start',
-  );
-
-  await sleep(10);
-
-  profiler.mark('measure-overload-name-startMark-endMark:start');
-  await sleep(10);
-  profiler.mark('measure-overload-name-startMark-endMark:end');
-
-  profiler.measure(
-    'measure-overload-name-startMark-endMark',
-    'measure-overload-name-startMark-endMark:start',
-    'measure-overload-name-startMark-endMark:end',
-  );
-
-  await sleep(10);
-
-  profiler.mark('measure-overload-options-start-end:start');
-  await sleep(10);
-  profiler.mark('measure-overload-options-start-end:end');
-  profiler.measure('measure-overload-options-start-end', {
-    start: 'measure-overload-options-start-end:start',
-    end: 'measure-overload-options-start-end:end',
-  });
-
-  await sleep(10);
-
-  profiler.measure('measure-overload-options-duration', {
-    start: 'measure-overload-options-start-end:start',
-    duration: 50,
-  });
-
-  await sleep(10);
-
-  profiler.mark('measure-details-raw:start');
-  await sleep(10);
-  profiler.mark('measure-details-raw:end');
-
-  profiler.measure('measure-details-raw', {
-    start: 'measure-details-raw:start',
-    end: 'measure-details-raw:end',
-    detail: {
-      str: 'This is a detail property',
-      num: 42,
-      obj: {
-        num: 42,
-      },
-      array: [42, 42, 42],
+const trackGroup = '<✓> Code PushUp';
+const profiler = getProfiler({
+  enabled: true,
+  fileBaseName: `api-span-${Date.now()}`,
+  tracks: {
+    defaultTrack: {
+      track: 'CLI',
+      trackGroup,
+      color: 'primary-dark',
     },
-  });
+    pluginEslint: {
+      track: 'Plugins Eslint',
+      trackGroup,
+      color: 'secondary',
+    },
+    pluginCoverage: {
+      track: 'Plugins Coverage',
+      trackGroup,
+      color: 'secondary-dark',
+    },
+  },
+  errorHandler: error => ({
+    properties: [
+      ['Stack Track', (error as Error)?.stack || 'Unknown'],
+      ['Cause', (error as Error)?.cause || 'Unknown'],
+    ],
+  }),
+});
 
-  await sleep(10);
-  const trackMetaPayload = {
-    track: 'Program',
-    trackGroup: 'Main Process',
-  };
+profiler.measure('cli:init', () =>
+  profiler.measure(
+    'core:load-rc-config',
+    () =>
+      sequentialWork([
+        () =>
+          profiler.measure('utils:import-module', work, {
+            color: 'primary-light',
+          }),
+        () =>
+          profiler.measure('models:core-config-parse', work, {
+            color: 'primary-light',
+          }),
+      ]),
+    {
+      color: 'primary',
+    },
+  ),
+);
 
-  profiler.mark('measure-details:start');
-  await sleep(10);
-  profiler.mark('measure-details:end');
-
-  profiler.measure('measure-details', {
-    start: 'measure-details:start',
-    end: 'measure-details:end',
-    ...asOptions(
-      trackEntryPayload({
-        ...trackMetaPayload,
-        properties: objToPropertiesPayload({
-          str: 'This is a detail property',
-          num: 42,
-          object: { str: '42', num: 42 },
-          array: [42, 42, 42],
+profiler.measure('cli:collect-command', () =>
+  profiler.measure('core:execute-plugins', () =>
+    sequentialWork([
+      () =>
+        profiler.measure(
+          'plugin-eslint:execute-runner',
+          () =>
+            profiler.measure('plugin-eslint:run-eslint', work, {
+              ...profiler.measureConfig.tracks.pluginEslint,
+              color: 'secondary',
+            }),
+          {
+            ...profiler.measureConfig.tracks.pluginEslint,
+            color: 'secondary-dark',
+          },
+        ),
+      () =>
+        profiler.measure('plugin-coverage:execute-runner', work, {
+          ...profiler.measureConfig.tracks.pluginCoverage,
+          color: 'secondary-dark',
         }),
-      }),
-    ),
-  });
+    ]),
+  ),
+);
 
-  await sleep(10);
-
-  profiler.mark('measure-details-error:start');
-  await sleep(10);
-  profiler.mark(
-    'measure-details-error:end',
-    asOptions(
-      markerErrorPayload({
-        properties: objToPropertiesPayload({
-          ['Error Type']: 'ValidationError',
-          ['Error Message']: 'Invalid input data provided',
-        }),
-        tooltipText: 'ValidationError: Invalid input data provided',
-      }),
-    ),
-  );
-
-  profiler.measure('measure-details-error', {
-    start: 'measure-details-error:start',
-    end: 'measure-details-error:end',
-    ...asOptions(
-      trackEntryErrorPayload({
-        ...trackMetaPayload,
-        properties: objToPropertiesPayload({
-          ['Error Type']: 'ValidationError',
-          ['Error Message']: 'Invalid input data provided',
-        }),
-        tooltipText: 'ValidationError: Invalid input data provided',
-      }),
-    ),
-  });
-
-  profiler.mark(
-    'measure-details-devtools:start',
-    asOptions(trackEntryPayload(trackMetaPayload)),
-  );
-  await sleep(10);
-  profiler.mark(
-    'measure-details-devtools:end',
-    asOptions(trackEntryPayload(trackMetaPayload)),
-  );
-
-  profiler.measure('measure-details-devtools', {
-    start: 'measure-details-devtools:start',
-    end: 'measure-details-devtools:end',
-    ...asOptions(
-      trackEntryPayload({
-        ...trackMetaPayload,
+profiler.measure('cli:collect-command-error', () => {
+  try {
+    profiler.measure(
+      'core:execute-plugins-error',
+      () =>
+        sequentialWork([
+          () =>
+            profiler.measure(
+              'plugin-eslint:execute-runner-error',
+              () =>
+                profiler.measure('plugin-eslint:run-eslint-error', work, {
+                  ...profiler.measureConfig.tracks.pluginEslint,
+                  color: 'secondary',
+                }),
+              {
+                ...profiler.measureConfig.tracks.pluginEslint,
+                color: 'secondary-dark',
+              },
+            ),
+          () =>
+            profiler.measure(
+              'plugin-coverage:execute-runner-error',
+              () => work(true),
+              {
+                ...profiler.measureConfig.tracks.pluginCoverage,
+                color: 'tertiary',
+              },
+            ),
+        ]),
+      {
         color: 'primary',
-      }),
-    ),
-  });
-
-  await sleep(10);
-
-  profiler.mark('measure-details-devtools-error:start');
-  await sleep(10);
-  profiler.mark(
-    'measure-details-devtools-error:end',
-    asOptions(
-      markerErrorPayload({
-        ...trackMetaPayload,
-        properties: objToPropertiesPayload({
-          ['Error Type']: 'ValidationError',
-          ['Error Message']: 'Invalid input data provided',
+        error: err => ({
+          tooltipText: 'An error occurred during coverage plugin execution',
+          properties: [['Stack Track', `${(err as Error).stack}`]],
         }),
-        tooltipText: 'ValidationError: Invalid input data provided',
-      }),
-    ),
-  );
-
-  profiler.measure('measure-details-devtools-error', {
-    start: 'measure-details-devtools-error:start',
-    end: 'measure-details-devtools-error:end',
-    ...asOptions(
-      trackEntryErrorPayload({
-        ...trackMetaPayload,
-        properties: objToPropertiesPayload({
-          ['Error Type']: 'ValidationError',
-          ['Error Message']: 'Invalid input data provided',
-        }),
-        tooltipText: 'ValidationError: Invalid input data provided',
-      }),
-    ),
-  });
-}
-
-runTest();
+      },
+    );
+    return 0;
+  } catch (e) {
+    console.log('Error caught silently');
+    return 0;
+  }
+});

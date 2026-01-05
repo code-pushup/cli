@@ -208,7 +208,7 @@ describe('getProfiler', () => {
       const profiler = getProfiler();
       let executed = false;
 
-      const result = await profiler.spanAsync('test-span', async () => {
+      const result = await profiler.measureAsync('test-span', async () => {
         executed = true;
         return 'result';
       });
@@ -221,7 +221,7 @@ describe('getProfiler', () => {
       const profiler = getProfiler({ enabled: false });
       let executed = false;
 
-      const result = await profiler.spanAsync('test-span', async () => {
+      const result = await profiler.measureAsync('test-span', async () => {
         executed = true;
         return 'result';
       });
@@ -235,7 +235,7 @@ describe('getProfiler', () => {
       profiler.close();
       let executed = false;
 
-      const result = await profiler.spanAsync('test-span', async () => {
+      const result = await profiler.measureAsync('test-span', async () => {
         executed = true;
         return 'result';
       });
@@ -248,7 +248,9 @@ describe('getProfiler', () => {
       const profiler = getProfiler();
       const detail = { custom: 'data' };
 
-      await profiler.spanAsync('test-span', async () => 'result', { detail });
+      await profiler.measureAsync('test-span', async () => 'result', {
+        detail,
+      });
 
       expect(profiler.mark).toBeDefined();
     });
@@ -256,7 +258,7 @@ describe('getProfiler', () => {
     it('should handle span without detail option (auto-detect)', async () => {
       const profiler = getProfiler();
 
-      await profiler.spanAsync('test-span', async () => 'result');
+      await profiler.measureAsync('test-span', async () => 'result');
 
       expect(profiler.mark).toBeDefined();
     });
@@ -267,7 +269,7 @@ describe('getProfiler', () => {
       const profiler = getProfiler();
       let executed = false;
 
-      const result = profiler.span('test-wrap', () => {
+      const result = profiler.measure('test-wrap', () => {
         executed = true;
         return 'result';
       });
@@ -280,7 +282,7 @@ describe('getProfiler', () => {
       const profiler = getProfiler({ enabled: false });
       let executed = false;
 
-      const result = profiler.span('test-wrap', () => {
+      const result = profiler.measure('test-wrap', () => {
         executed = true;
         return 'result';
       });
@@ -294,7 +296,7 @@ describe('getProfiler', () => {
       profiler.close();
       let executed = false;
 
-      const result = profiler.span('test-wrap', () => {
+      const result = profiler.measure('test-wrap', () => {
         executed = true;
         return 'result';
       });
@@ -307,7 +309,7 @@ describe('getProfiler', () => {
       const profiler = getProfiler();
       const detail = { custom: 'data' };
 
-      const result = profiler.span('test-wrap', () => 'result', { detail });
+      const result = profiler.measure('test-wrap', () => 'result', { detail });
 
       expect(result).toBe('result');
     });
@@ -315,7 +317,7 @@ describe('getProfiler', () => {
     it('should handle span without detail option (auto-detect)', () => {
       const profiler = getProfiler();
 
-      const result = profiler.span('test-wrap', () => 'result');
+      const result = profiler.measure('test-wrap', () => 'result');
 
       expect(result).toBe('result');
     });
@@ -325,7 +327,7 @@ describe('getProfiler', () => {
     it('should create instant mark when enabled', () => {
       const profiler = getProfiler();
 
-      profiler.instantTrackEntry('test-instant');
+      profiler.mark('test-instant');
 
       expect(profiler.mark).toBeDefined();
     });
@@ -333,7 +335,7 @@ describe('getProfiler', () => {
     it('should not create instant mark when disabled', () => {
       const profiler = getProfiler({ enabled: false });
 
-      profiler.instantTrackEntry('test-instant');
+      profiler.mark('test-instant');
 
       // Should not throw
       expect(true).toBe(true);
@@ -343,7 +345,7 @@ describe('getProfiler', () => {
       const profiler = getProfiler();
       profiler.close();
 
-      profiler.instantTrackEntry('test-instant');
+      profiler.mark('test-instant');
 
       // Should not throw
       expect(true).toBe(true);
@@ -353,7 +355,7 @@ describe('getProfiler', () => {
       const profiler = getProfiler();
       const detail = { custom: 'data' };
 
-      profiler.instantTrackEntry('test-instant', { detail });
+      profiler.mark('test-instant', { detail });
 
       expect(profiler.mark).toBeDefined();
     });
@@ -361,7 +363,7 @@ describe('getProfiler', () => {
     it('should handle instant without detail option (auto-detect)', () => {
       const profiler = getProfiler();
 
-      profiler.instantTrackEntry('test-instant');
+      profiler.mark('test-instant');
 
       expect(profiler.mark).toBeDefined();
     });
@@ -412,7 +414,7 @@ describe('getProfiler', () => {
 
       const profiler = getProfiler({ prefixMarks: 'prefix:' });
 
-      profiler.span('test-span', () => {
+      profiler.measure('test-span', () => {
         // This should create marks: prefix:test-span:start and prefix:test-span:end
         // And measure: prefix:test-span
       });
@@ -442,7 +444,7 @@ describe('getProfiler', () => {
 
       const profiler = getProfiler({ prefixMarks: 'my-prefix:' });
 
-      profiler.instantTrackEntry('test-instant');
+      profiler.mark('test-instant');
 
       expect(mockMark).toHaveBeenCalledWith(
         'my-prefix:test-instant',

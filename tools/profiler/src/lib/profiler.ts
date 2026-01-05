@@ -6,12 +6,13 @@ import {
 } from 'node:perf_hooks';
 import process from 'node:process';
 import { defaultClock } from './clock';
-import { TraceFileSink } from './output-trace-json.js';
+import { TraceFileSink } from './file-sink-json-trace.js';
 import {
   type PerformanceObserverHandle,
   createPerformanceObserver,
 } from './performance-observer';
 import {
+  type DevToolsOptionCb,
   type MeasureControl,
   type PerformanceAPIExtension,
   type TrackControl,
@@ -19,9 +20,8 @@ import {
   type TrackMeta,
   type TrackStyle,
   getMeasureControl,
+  getMeasureMarkNames,
   getTrackControl,
-  span,
-  spanAsync,
 } from './performance-utils.js';
 import type {
   ProfilerControl,
@@ -42,6 +42,7 @@ import {
 import {
   asOptions,
   errorToMarkerPayload,
+  errorToTrackEntryPayload,
   markerPayload,
   trackEntryPayload,
 } from './user-timing-details-utils.js';
@@ -127,13 +128,12 @@ export function getProfiler(opts?: ProfilerOptions): Profiler {
 
 export interface ProfilerInterface
   extends ProfilerControl,
-    PerformanceAPIExtension<string>,
-    NativePerformanceAPI {}
+    PerformanceAPIExtension<string> {}
 
 export type ProfilerControlOptions = {
   enabled?: boolean;
-  captureBuffered?: boolean;
   recoverJsonl?: boolean;
+  captureBuffered?: boolean;
 };
 
 export type ProfilerOptions<
@@ -181,7 +181,7 @@ export class Profiler<
       namePrefix,
       ...pathOptions
     } = options;
-    const trackControl = getTrackControl(devtools);
+    const trackControl = getTrackControl<Tracks>(devtools);
 
     this.measureConfig = {
       ...trackControl,
@@ -193,10 +193,9 @@ export class Profiler<
     try {
       this.#traceFile = new TraceFileSink({
         ...getFilenameParts(pathOptions),
-        recoverJsonl,
         metadata,
       });
-      this.#traceFile.open();
+      this.#traceFile.open(!!recoverJsonl);
 
       this.#performanceObserver = createPerformanceObserver<
         SpanEvent | InstantEvent
@@ -217,7 +216,6 @@ export class Profiler<
         sink: this.#traceFile,
       });
 
-      // Start observing performance entries
       this.#performanceObserver.connect();
 
       this.#performanceObserver?.flush();
@@ -265,127 +263,153 @@ export class Profiler<
     this.#performanceObserver?.flush();
   }
 
-  instantMarker(name: string, options: Omit<MarkerPayload, 'dataType'>): void {
-    performance.mark(name, asOptions(markerPayload(options)));
+  marker(
+    name: string,
+    options?: Omit<MarkerPayload, 'dataType'>,
+  ): PerformanceMark {
+    const { startName } = this.measureConfig.getNames(name);
+    return performance.mark(
+      startName,
+      asOptions(
+        markerPayload({
+          ...options,
+          ...this.measureConfig.tracks.defaultTrack,
+        }),
+      ),
+    );
   }
 
-  instantTrackEntry(
+  mark(
     name: string,
-    options?: Omit<TrackEntryPayload, 'dataType'>,
-  ): void {
-    const devtools = {
-      ...this.measureConfig.tracks.defaultTrack,
-      ...options,
+    options?: Omit<TrackEntryPayload, 'track'> & { track?: string },
+  ): PerformanceMark {
+    const { startName } = this.measureConfig.getNames(name);
+    return performance.mark(
+      startName,
+      asOptions(
+        trackEntryPayload({
+          ...this.measureConfig.tracks.defaultTrack,
+          ...options,
+        }),
+      ),
+    );
+  }
+
+  private prepareDevToolsOptions<T>(
+    options:
+      | string
+      | (TrackStyle & Partial<TrackMeta>)
+      | DevToolsOptionCb<string, T>
+      | undefined,
+  ): {
+    error?: (err: unknown) => EntryMeta;
+    success?: (result: T) => EntryMeta;
+  } & DevToolsOptionCb<string, T> {
+    const profilerDefaultTrack = this.measureConfig.tracks.defaultTrack;
+    let {
+      error: errorHandler,
+      success,
+      ...devtoolsPayload
+    }: DevToolsOptionCb<string, T> = {
+      ...profilerDefaultTrack,
+      ...(typeof options === 'string'
+        ? this.measureConfig.tracks[options]
+        : options),
     };
-    performance.mark(name, asOptions(trackEntryPayload(devtools)));
+
+    return { error: errorHandler, success, ...devtoolsPayload };
   }
 
-  mark(name: string, options?: MarkOptionsWithDevtools): PerformanceMark {
-    const devtools = {
-      ...this.measureConfig.tracks.defaultTrack,
-      ...options,
-    };
-    return performance.mark(name, asOptions(trackEntryPayload(devtools)));
-  }
+  measure<T>(
+    name: string,
+    fn: () => T,
+    options?:
+      | string
+      | (TrackStyle & Partial<TrackMeta>)
+      | DevToolsOptionCb<string, T>,
+  ): T {
+    const profilerErrorHandler = this.measureConfig.errorHandler;
+    const { error, success, devtoolsPayload } =
+      this.prepareDevToolsOptions(options);
 
-  measure(
-    name: string,
-    options: MeasureOptionsWithDevtools,
-  ): PerformanceMeasure;
-  measure(
-    name: string,
-    startMark?: string,
-    endMark?: string,
-  ): PerformanceMeasure;
-  measure(
-    name: string,
-    startMarkOrOptions?: string | MeasureOptionsWithDevtools,
-    endMark?: string,
-  ): PerformanceMeasure {
-    if (typeof startMarkOrOptions === 'string') {
-      return performance.measure(name, startMarkOrOptions, endMark);
-    } else if (startMarkOrOptions) {
-      const trackAndColor = {
-        ...startMarkOrOptions,
-        detail: {
-          ...startMarkOrOptions.detail,
-          devtools: {
-            ...this.measureConfig.tracks.defaultTrack,
-            ...startMarkOrOptions.detail?.devtools,
-          },
-        },
-      };
-      return performance.measure(name, trackAndColor);
-    } else {
-      return performance.measure(name);
+    const { startName, measureName, endName } = getMeasureMarkNames(name);
+
+    performance.mark(startName, asOptions(trackEntryPayload(devtoolsPayload)));
+    try {
+      const result = fn();
+      performance.measure(measureName, {
+        start: startName,
+        ...asOptions(
+          trackEntryPayload({
+            ...devtoolsPayload,
+            ...success?.(result),
+          }),
+        ),
+      });
+      return result;
+    } catch (err) {
+      const errorHandler = error
+        ? (err: unknown): EntryMeta => {
+            return { ...profilerErrorHandler(err), ...error(err) };
+          }
+        : profilerErrorHandler;
+      performance.mark(
+        endName,
+        asOptions(errorToTrackEntryPayload(err, devtoolsPayload)),
+      );
+      performance.measure(measureName, {
+        start: startName,
+        end: endName,
+        ...errorHandler(err),
+      });
+      throw err;
     }
   }
 
-  span<Result>(
+  async measureAsync<T>(
     name: string,
-    fn: () => Result,
-    optionsOrConfig?:
-      | SpanOptions<Extract<keyof Tracks, string>, Result>
-      | Extract<keyof Tracks, string>,
-  ): Result {
-    let spanOptions =
-      typeof optionsOrConfig === 'string'
-        ? (this.measureConfig.tracks[optionsOrConfig] as SpanOptions<
-            Extract<keyof Tracks, string>,
-            Result
-          >)
-        : (optionsOrConfig ??
-          ({} as SpanOptions<Extract<keyof Tracks, string>, Result>));
+    fn: () => Promise<T>,
+    options?:
+      | string
+      | (TrackStyle & Partial<TrackMeta>)
+      | DevToolsOptionCb<string, T>,
+  ): Promise<T> {
+    const profilerErrorHandler = this.measureConfig.errorHandler;
+    const { error, success, ...devtoolsPayload } =
+      this.prepareDevToolsOptions(options);
 
-    const { error, success, ...opt } = spanOptions;
-    const globalErrorHandler = this.measureConfig.errorHandler;
-    return span(name, fn, {
-      ...this.measureConfig.tracks.defaultTrack,
-      ...opt,
-      error: globalErrorHandler
-        ? (err: unknown) => ({
-            color: 'error',
-            ...globalErrorHandler(err),
-            ...error?.(err),
-          })
-        : error,
-      success,
-    });
-  }
+    const { startName, measureName, endName } = getMeasureMarkNames(name);
 
-  spanAsync<Result>(
-    name: string,
-    fn: () => Promise<Result>,
-    optionsOrConfig?: SpanOptions<Extract<keyof Tracks, string>, Result>,
-  ): Promise<Result> {
-    let spanOptions =
-      typeof optionsOrConfig === 'string'
-        ? (this.measureConfig.tracks[optionsOrConfig] as SpanOptions<
-            Extract<keyof Tracks, string>,
-            Result
-          >)
-        : (optionsOrConfig ??
-          ({} as SpanOptions<Extract<keyof Tracks, string>, Result>));
-
-    const { error, success, ...opt } = spanOptions;
-    const globalErrorHandler = this.measureConfig.errorHandler;
-
-    const finalOptions = {
-      ...this.measureConfig.tracks.defaultTrack,
-      ...opt,
-      error: globalErrorHandler
-        ? (err: unknown) => {
-            const globalMeta = globalErrorHandler(err);
-            const localMeta = error?.(err);
-            return {
-              ...globalMeta,
-              ...localMeta,
-            };
+    performance.mark(startName, asOptions(trackEntryPayload(devtoolsPayload)));
+    try {
+      const result = await fn();
+      performance.measure(measureName, {
+        start: startName,
+        ...asOptions(
+          trackEntryPayload({
+            ...devtoolsPayload,
+            ...success?.(result),
+          }),
+        ),
+      });
+      return result;
+    } catch (err) {
+      const errorHandler = error
+        ? (err: unknown): EntryMeta => {
+            return { ...profilerErrorHandler(err), ...error(err) };
           }
-        : error,
-      success,
-    };
-    return spanAsync(name, fn, finalOptions);
+        : profilerErrorHandler;
+      performance.mark(
+        endName,
+        asOptions(errorToTrackEntryPayload(err, devtoolsPayload)),
+      );
+      performance.measure(measureName, {
+        start: startName,
+        end: endName,
+        ...errorHandler(err),
+      });
+      throw err;
+    }
   }
 
   close(): void {

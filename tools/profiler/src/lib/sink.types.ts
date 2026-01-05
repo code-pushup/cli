@@ -3,7 +3,7 @@ export interface Encoder<I, O> {
 }
 
 export interface Decoder<O, I> {
-  decode(input: O): I;
+  decode(output: O): I;
 }
 
 export interface Sink<I, O> extends Encoder<I, O> {
@@ -35,15 +35,6 @@ export interface RecoverResult<T = any> {
 
 export interface RecoverOptions<T = any> {
   keepInvalid?: boolean;
-}
-
-export interface OutputOptions<I, O> {
-  filePath: string;
-  flushEveryN?: number;
-  encode?: (input: I) => O;
-  decode?: (input: O) => I;
-  recover?: () => RecoverResult<I>;
-  finalize?: () => void;
 }
 
 export interface Output<I, O> extends BufferedSink<I, O> {}

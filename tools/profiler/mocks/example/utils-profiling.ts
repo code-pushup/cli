@@ -46,9 +46,9 @@ async function run() {
     /* swallow to keep the program running */
   }
 
-  profiler.span('profiler-measureSync1-success', work, optionCallbacks);
+  profiler.measure('profiler-measureSync1-success', work, optionCallbacks);
   try {
-    profiler.span(
+    profiler.measure(
       'profiler-measureSync1-error',
       () => work(true),
       optionCallbacks,
@@ -72,13 +72,13 @@ async function run() {
     /* swallow to keep the program running */
   }
 
-  await profiler.spanAsync(
+  await profiler.measureAsync(
     'profiler-measureAsync2-success',
     asyncWork,
     optionCallbacks,
   );
   try {
-    await profiler.spanAsync(
+    await profiler.measureAsync(
       'profiler-measureAsync2-error',
       () => asyncWork(true),
       optionCallbacks,

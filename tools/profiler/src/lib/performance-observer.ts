@@ -4,7 +4,7 @@ import {
   performance,
 } from 'node:perf_hooks';
 import { FileSink } from './output';
-import { Buffered, type Encoder, type Sink } from './output.types';
+import { Buffered, type Encoder, type Sink } from './sink.types';
 
 export interface PerformanceObserverOptions<T> {
   sink: FileSink<T>;

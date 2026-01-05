@@ -37,47 +37,32 @@ async function runTest() {
   await sleep(10);
 
   profiler.mark('mark-details-raw', {
-    detail: {
-      devtools: {
-        dataType: 'marker',
-        properties: [
-          ['str', 'This is a detail property'],
-          ['num', 42],
-          ['object', { str: '42', num: 42 }],
-          ['array', [42, 42, 42]],
-        ],
-        tooltipText: 'This is a tooltip text for the mark',
-      },
-    },
+    properties: [
+      ['str', 'This is a detail property'],
+      ['num', 42],
+      ['object', { str: '42', num: 42 }],
+      ['array', [42, 42, 42]],
+    ],
+    tooltipText: 'This is a tooltip text for the mark',
   });
   await sleep(10);
 
-  profiler.mark(
-    'mark-details',
-    asOptions(
-      markerPayload({
-        color: 'tertiary',
-        properties: objToPropertiesPayload({
-          str: 'This is a detail property',
-          num: 42,
-          object: { str: '42', num: 42 },
-          array: [42, 42, 42],
-        }),
-      }),
-    ),
-  );
+  profiler.mark('mark-details', {
+    color: 'tertiary',
+    properties: objToPropertiesPayload({
+      str: 'This is a detail property',
+      num: 42,
+      object: { str: '42', num: 42 },
+      array: [42, 42, 42],
+    }),
+  });
   await sleep(10);
 
-  profiler.mark(
-    'mark-details-error',
-    asOptions(
-      markerErrorPayload({
-        properties: objToPropertiesPayload({
-          ['Error Type']: 'ValidationError',
-        }),
-      }),
-    ),
-  );
+  profiler.mark('mark-details-error', {
+    properties: objToPropertiesPayload({
+      ['Error Type']: 'ValidationError',
+    }),
+  });
 
   await sleep(10);
 
@@ -85,37 +70,27 @@ async function runTest() {
     track: 'Program',
     trackGroup: 'Main Process',
   };
-  profiler.mark(
-    'mark-details-devtools',
-    asOptions(
-      trackEntryPayload({
-        ...trackMetaPayload,
-        properties: objToPropertiesPayload({
-          ['str']: 'This is a detail.devtools property',
-          ['num']: 42,
-          ['object']: { str: '42', num: 42 },
-          ['array']: [42, 42, 42],
-        }),
-        tooltipText: 'This is a tooltip text for the mark',
-      }),
-    ),
-  );
+  profiler.mark('mark-details-devtools', {
+    ...trackMetaPayload,
+    properties: objToPropertiesPayload({
+      ['str']: 'This is a detail.devtools property',
+      ['num']: 42,
+      ['object']: { str: '42', num: 42 },
+      ['array']: [42, 42, 42],
+    }),
+    tooltipText: 'This is a tooltip text for the mark',
+  });
 
   await sleep(10);
 
-  profiler.mark(
-    'mark-details-devtools-error',
-    asOptions(
-      trackEntryErrorPayload({
-        ...trackMetaPayload,
-        properties: objToPropertiesPayload({
-          ['Error Type']: 'ValidationError',
-          ['Error Message']: 'Invalid input data provided',
-        }),
-        tooltipText: 'ValidationError: Invalid input data provided',
-      }),
-    ),
-  );
+  profiler.mark('mark-details-devtools-error', {
+    ...trackMetaPayload,
+    properties: objToPropertiesPayload({
+      ['Error Type']: 'ValidationError',
+      ['Error Message']: 'Invalid input data provided',
+    }),
+    tooltipText: 'ValidationError: Invalid input data provided',
+  });
 }
 
 runTest();

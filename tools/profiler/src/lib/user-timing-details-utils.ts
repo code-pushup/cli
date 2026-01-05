@@ -86,12 +86,12 @@ export function errorToDevToolsProperties(e: unknown): DevToolsProperties {
 
 export function errorToEntryMeta(
   e: unknown,
-  options: {
+  options?: {
     tooltipText?: string;
     properties?: DevToolsProperties;
   },
 ): EntryMeta {
-  const { properties, tooltipText } = options;
+  const { properties, tooltipText } = options ?? {};
   const props = mergePropertiesWithOverwrite(
     errorToDevToolsProperties(e),
     properties,

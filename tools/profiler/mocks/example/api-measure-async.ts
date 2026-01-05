@@ -11,6 +11,14 @@ async function runTest() {
         trackGroup: '<✓> Code PushUp',
         color: 'primary-dark',
       },
+      pluginEslint: {
+        track: 'Plugins Eslint',
+        color: 'secondary-dark',
+      },
+      pluginCoverage: {
+        track: 'Plugins Coverage',
+        color: 'secondary-dark',
+      },
     },
     errorHandler: error => ({
       properties: [
@@ -19,17 +27,17 @@ async function runTest() {
       ],
     }),
   });
-  profiler.spanAsync('cli:init', () =>
-    profiler.spanAsync(
+  profiler.measureAsync('cli:init', () =>
+    profiler.measureAsync(
       'core:load-rc-config',
       () =>
         sequentialAsyncWork([
           () =>
-            profiler.spanAsync('utils:import-module', asyncWork, {
+            profiler.measureAsync('utils:import-module', asyncWork, {
               color: 'primary-light',
             }),
           () =>
-            profiler.spanAsync('models:core-config-parse', asyncWork, {
+            profiler.measureAsync('models:core-config-parse', asyncWork, {
               color: 'primary-light',
             }),
         ]),
@@ -39,28 +47,28 @@ async function runTest() {
     ),
   );
 
-  await profiler.spanAsync('cli:collect-command', () =>
-    profiler.spanAsync(
+  await profiler.measureAsync('cli:collect-command', () =>
+    profiler.measureAsync(
       'core:execute-plugins',
       () =>
         sequentialAsyncWork([
           () =>
-            profiler.spanAsync(
+            profiler.measureAsync(
               'plugin-eslint:execute-runner',
               () =>
-                profiler.spanAsync('plugin-eslint:run-eslint', asyncWork, {
+                profiler.measureAsync('plugin-eslint:run-eslint', asyncWork, {
                   ...profiler.measureConfig.tracks.pluginEslint,
                   color: 'secondary',
                 }),
               {
                 ...profiler.measureConfig.tracks.pluginEslint,
-                color: 'secondary-dark',
+                color: 'secondary-light',
               },
             ),
           () =>
-            profiler.spanAsync('plugin-coverage:execute-runner', asyncWork, {
+            profiler.measureAsync('plugin-coverage:execute-runner', asyncWork, {
               ...profiler.measureConfig.tracks.pluginCoverage,
-              color: 'secondary-dark',
+              color: 'secondary-light',
             }),
         ]),
       {
@@ -69,17 +77,17 @@ async function runTest() {
     ),
   );
 
-  await profiler.spanAsync('cli:collect-command-error', async () => {
+  await profiler.measureAsync('cli:collect-command-error', async () => {
     try {
-      await profiler.spanAsync(
+      await profiler.measureAsync(
         'core:execute-plugins-error',
         () =>
           sequentialAsyncWork([
             () =>
-              profiler.spanAsync(
+              profiler.measureAsync(
                 'plugin-eslint:execute-runner-error',
                 () =>
-                  profiler.spanAsync(
+                  profiler.measureAsync(
                     'plugin-eslint:run-eslint-error',
                     asyncWork,
                     {
@@ -89,16 +97,16 @@ async function runTest() {
                   ),
                 {
                   ...profiler.measureConfig.tracks.pluginEslint,
-                  color: 'secondary-dark',
+                  color: 'secondary-light',
                 },
               ),
             () =>
-              profiler.spanAsync(
+              profiler.measureAsync(
                 'plugin-coverage:execute-runner-error',
                 () => asyncWork(true),
                 {
                   ...profiler.measureConfig.tracks.pluginCoverage,
-                  color: 'secondary-dark',
+                  color: 'secondary-light',
                   error: err => ({
                     tooltipText:
                       'An error occurred during coverage plugin execution',
@@ -117,6 +125,4 @@ async function runTest() {
     }
   });
 }
-await runTest().then(() => {
-  // throw new Error('Process error simulation')
-});
+await runTest();

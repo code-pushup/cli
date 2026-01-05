@@ -1,22 +1,15 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import {
-  createJsonlFileOutput,
-  jsonlDecode,
-  jsonlEncode,
-  recoverJsonlFileSync,
-} from './output-jsonl.js';
-import { FileSink } from './output.js';
+import { performance } from 'node:perf_hooks';
+import { JsonlFileSink, recoverJsonlFile } from './file-sink-json.js';
+import type { RecoverResult } from './sink.types.js';
 import {
   getCompleteEvent,
   getStartTracing,
   traceTimestampToDate,
-} from './trace-file-utils';
-import { InstantEvent, SpanEvent } from './trace-file.type';
+} from './trace-file-utils.js';
+import type { InstantEvent, SpanEvent } from './trace-file.type.js';
 
-/**
- * Generate Chrome DevTools trace metadata
- */
 function getTraceMetadata(
   startDate?: Date,
   metadata?: Record<string, unknown>,
@@ -30,9 +23,6 @@ function getTraceMetadata(
   };
 }
 
-/**
- * Generate the complete JSON structure for a Chrome DevTools trace file.
- */
 function createTraceFileContent(
   traceEventsContent: string,
   startDate?: Date,
@@ -46,36 +36,27 @@ ${traceEventsContent}
 }`;
 }
 
-/**
- * Recover trace events from a JSONL file
- */
-function recoverTraceEvents(jsonlPath: string): (SpanEvent | InstantEvent)[] {
-  return recoverJsonlFileSync<SpanEvent | InstantEvent>(jsonlPath).records;
-}
-
 function finalizeTraceFile(
   events: (SpanEvent | InstantEvent)[],
   outputPath: string,
   metadata?: Record<string, unknown>,
 ): void {
   const { writeFileSync } = fs;
-  const pid = process.pid;
-  const tid = (globalThis as any).threadId || 0;
 
-  // Find first and last events by timestamp
   const sortedEvents = events.sort((a, b) => a.ts - b.ts);
   const first = sortedEvents[0];
   const last = sortedEvents[sortedEvents.length - 1];
 
-  if (!first || !last) {
-    throw new Error('No events to finalize');
-  }
+  // Use performance.now() as fallback when no events exist
+  const fallbackTs = performance.now();
+  const firstTs = first?.ts ?? fallbackTs;
+  const lastTs = last?.ts ?? fallbackTs;
 
   // Add margins for readability
   const tsMargin = 1000;
-  const startTs = first.ts - tsMargin;
-  const endTs = last.ts + tsMargin;
-  const startDate = traceTimestampToDate(first.ts);
+  const startTs = firstTs - tsMargin;
+  const endTs = lastTs + tsMargin;
+  const startDate = traceTimestampToDate(firstTs);
 
   const traceEventsJson = [
     // Preamble
@@ -109,51 +90,35 @@ function finalizeTraceFile(
   writeFileSync(outputPath, jsonOutput, 'utf8');
 }
 
-/**
- * Create a complete Chrome DevTools trace file from JSONL data
- */
-export class TraceFileSink
-  extends FileSink<SpanEvent | InstantEvent>
-  implements TraceFileOutput
-{
+export interface TraceFileSinkOptions {
+  filename: string;
+  directory?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export class TraceFileSink extends JsonlFileSink<SpanEvent | InstantEvent> {
   readonly #filePath: string;
   readonly #getFilePathForExt: (ext: 'json' | 'jsonl') => string;
-  readonly #finalizeFn: () => void;
+  readonly #metadata: Record<string, unknown> | undefined;
 
-  constructor(opts: {
-    filename: string;
-    directory?: string;
-    recoverJsonl?: boolean;
-    metadata?: Record<string, unknown>;
-  }) {
-    const { filename, directory = '.', recoverJsonl, metadata } = opts;
+  constructor(opts: TraceFileSinkOptions) {
+    const { filename, directory = '.', metadata } = opts;
 
     const traceJsonlPath = path.join(directory, `${filename}.jsonl`);
 
     super({
       filePath: traceJsonlPath,
-      encode: jsonlEncode<SpanEvent | InstantEvent>,
-      decode: jsonlDecode<SpanEvent | InstantEvent>,
-      recover: () =>
-        recoverJsonl
-          ? recoverJsonlFileSync<SpanEvent | InstantEvent>(traceJsonlPath)
-          : { records: [], errors: [], partialTail: null },
+      recover: () => recoverJsonlFile<SpanEvent | InstantEvent>(traceJsonlPath),
     });
 
+    this.#metadata = metadata;
     this.#filePath = path.join(directory, `${filename}.json`);
     this.#getFilePathForExt = (ext: 'json' | 'jsonl') =>
       path.join(directory, `${filename}.${ext}`);
-    this.#finalizeFn = () =>
-      finalizeTraceFile(
-        recoverTraceEvents(traceJsonlPath),
-        this.#filePath,
-        metadata,
-      );
   }
 
-  // TraceFileOutput interface methods - override FileSink.finalize
-  finalize(): void {
-    this.#finalizeFn();
+  override finalize(): void {
+    finalizeTraceFile(this.recover().records, this.#filePath, this.#metadata);
   }
 
   getFilePathForExt(ext: 'json' | 'jsonl'): string {

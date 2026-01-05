@@ -20,17 +20,17 @@ function runTest() {
     },
   });
 
-  profiler.span('cli:collect-command', () => {
+  profiler.measure('cli:collect-command', () => {
     try {
-      profiler.span(
+      profiler.measure(
         'core:execute-plugins',
         () =>
           sequentialWork([
             () =>
-              profiler.span(
+              profiler.measure(
                 'plugin-eslint:execute-runner',
                 () =>
-                  profiler.span('plugin-eslint:run-eslint', work, {
+                  profiler.measure('plugin-eslint:run-eslint', work, {
                     track: 'Plugins Eslint',
                     color: 'secondary',
                   }),
@@ -40,7 +40,7 @@ function runTest() {
                 },
               ),
             () =>
-              profiler.span(
+              profiler.measure(
                 'plugin-coverage:execute-runner',
                 () => work(true),
                 {
@@ -59,7 +59,7 @@ function runTest() {
       );
       return 0;
     } catch (e) {
-      profiler.instantMarker('Error swallowed', {
+      profiler.marker('Error swallowed', {
         color: 'warning',
       });
       return 0;

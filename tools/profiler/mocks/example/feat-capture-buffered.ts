@@ -50,7 +50,7 @@ async function runTest() {
 
   await sleep(100);
 
-  await profiler.spanAsync('span-async-measure', async () => {
+  await profiler.measureAsync('span-async-measure', async () => {
     await sleep(100);
   });
 }

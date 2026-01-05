@@ -2,6 +2,7 @@ import { performance } from 'node:perf_hooks';
 import { getProfiler } from './profiler.js';
 import {
   asOptions,
+  errorToEntryMeta,
   errorToTrackEntryPayload,
   trackEntryPayload,
 } from './user-timing-details-utils.js';
@@ -43,10 +44,7 @@ export function getMeasureMarkNames(baseName: string, prefix?: string) {
 
 export interface MeasureControl {
   defaultPrefix?: string;
-  getNames: (
-    baseName: string,
-    prefix?: string,
-  ) => {
+  getNames: (baseName: string) => {
     startName: string;
     endName: string;
     measureName: string;
@@ -67,7 +65,7 @@ export interface TrackControl<
   >,
 > {
   tracks: Tracks & { defaultTrack: TrackStyle & TrackMeta };
-  errorHandler?: (error: unknown) => EntryMeta;
+  errorHandler: (error: unknown) => EntryMeta;
 }
 
 export type TrackControlOptions<
@@ -96,7 +94,7 @@ export function getTrackControl<
       },
       ...tracks,
     },
-    errorHandler,
+    errorHandler: errorHandler ?? errorToEntryMeta,
   };
 }
 
@@ -111,20 +109,17 @@ export type DevToolsOptionCb<Track extends string = string, R = unknown> = Omit<
   };
 
 export interface PerformanceAPIExtension<Track extends string> {
-  instantMarker(name: string, options: MarkerPayload & { track: Track }): void;
+  marker(name: string, options: MarkerPayload & { track: Track }): void;
 
-  instantTrackEntry(
-    name: string,
-    options?: TrackEntryPayload & { track: Track },
-  ): void;
+  mark(name: string, options?: TrackEntryPayload & { track: Track }): void;
 
-  span<T>(
+  measure<T>(
     name: string,
     fn: () => T,
     options?: DevToolsOptionCb<Track, T> | Track | (TrackStyle & TrackMeta),
   ): T;
 
-  spanAsync<T>(
+  measureAsync<T>(
     name: string,
     fn: () => Promise<T>,
     options?: DevToolsOptionCb<Track, T> | Track | (TrackStyle & TrackMeta),
@@ -138,7 +133,7 @@ export function span<T>(
 ): T {
   const { startName, measureName, endName } = getMeasureMarkNames(name);
   const { error, success, ...spanDetails } = options ?? {};
-  performance.mark(startName, asOptions(trackEntryPayload(spanDetails)));
+  performance.mark(name, asOptions(trackEntryPayload(spanDetails)));
   try {
     const result = fn();
     performance.measure(measureName, {

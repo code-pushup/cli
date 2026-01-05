@@ -4,17 +4,15 @@ import { getProfiler } from '../../src/index.js';
 async function runTest() {
   const profiler = getProfiler({
     enabled: true,
-    fileBaseName: 'api-instant',
+    fileBaseName: 'api-marker',
   });
 
-  // Basic instant mark
-  profiler.instantTrackEntry('instant');
+  // Basic instant.mark
+  profiler.marker('instant');
   await sleep(10);
 
-  // Instant mark with devtools error track entry
-  profiler.instantTrackEntry('instant-details-devtools-error', {
-    track: 'Program',
-    trackGroup: 'Main Process',
+  // Instant.marker with devtools error track entry
+  profiler.marker('instant-details-devtools-error', {
     color: 'error',
     properties: [
       ['Error Type', 'ValidationError'],
