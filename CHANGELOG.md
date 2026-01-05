@@ -1,3 +1,67 @@
+## 0.100.1 (2025-12-29)
+
+### 🩹 Fixes
+
+- update to nx v22 ([#1196](https://github.com/code-pushup/cli/pull/1196))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
+## 0.100.0 (2025-12-20)
+
+### 🚀 Features
+
+- **plugin-axe:** log initializer steps ([f226f67e](https://github.com/code-pushup/cli/commit/f226f67e))
+- **plugin-axe:** log runner steps, incl. stats and incomplete results ([0cd87769](https://github.com/code-pushup/cli/commit/0cd87769))
+- **plugin-jsdocs:** log initializer and runner steps ([18db8310](https://github.com/code-pushup/cli/commit/18db8310))
+- **plugin-lighthouse:** log initializer steps (audit/group counts, expanded, skipped) ([b868bc09](https://github.com/code-pushup/cli/commit/b868bc09))
+- **plugin-lighthouse:** log runner steps (incl. categories per url, config loading) ([e23c97e7](https://github.com/code-pushup/cli/commit/e23c97e7))
+
+### 🩹 Fixes
+
+- **utils:** break urls in ascii table differently to regular words ([964441c8](https://github.com/code-pushup/cli/commit/964441c8))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.99.0 (2025-12-18)
+
+### 🚀 Features
+
+- **plugin-typescript:** log initializer and runner steps ([53384e0a](https://github.com/code-pushup/cli/commit/53384e0a))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.98.0 (2025-12-17)
+
+### 🚀 Features
+
+- **plugin-js-packages:** log initializer and runner steps ([1b8bbd2e](https://github.com/code-pushup/cli/commit/1b8bbd2e))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
+## 0.97.0 (2025-12-17)
+
+### 🚀 Features
+
+- **plugin-coverage:** log initializer and nx helper steps ([2eb0cc82](https://github.com/code-pushup/cli/commit/2eb0cc82))
+- **plugin-coverage:** log runner steps and statistics ([639a4471](https://github.com/code-pushup/cli/commit/639a4471))
+- **utils:** truncate paths with shared prefix and/or suffix ([5f10cf9c](https://github.com/code-pushup/cli/commit/5f10cf9c))
+
+### 🩹 Fixes
+
+- **utils:** handle suffixes like -ch and -sh in pluralize helper ([f680f5e1](https://github.com/code-pushup/cli/commit/f680f5e1))
+
+### ❤️ Thank You
+
+- Matěj Chalk
+
 ## 0.96.1 (2025-12-11)
 
 ### 🩹 Fixes

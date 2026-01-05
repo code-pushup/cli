@@ -1,4 +1,17 @@
-import { SyntaxKind } from 'ts-morph';
+import { type SourceFile, SyntaxKind } from 'ts-morph';
+import {
+  type FileCoverage,
+  aggregateCoverageStats,
+  capitalize,
+  formatAsciiTable,
+  formatCoveragePercentage,
+  logger,
+  objectToEntries,
+  pluralize,
+  pluralizeToken,
+  toArray,
+} from '@code-pushup/utils';
+import type { JsDocsPluginTransformedConfig } from '../config.js';
 import { SYNTAX_COVERAGE_MAP } from './constants.js';
 import type { CoverageType } from './models.js';
 
@@ -69,4 +82,45 @@ export function singularCoverageType(type: CoverageType): string {
     case 'variables':
       return 'variable';
   }
+}
+
+export function logSourceFiles(
+  sourceFiles: SourceFile[],
+  config: JsDocsPluginTransformedConfig,
+): void {
+  const patterns = toArray(config.patterns);
+  logger.info(
+    `Found ${pluralizeToken('source file', sourceFiles.length)} matching ${pluralize('pattern', patterns.length)} ${patterns.join(' ')}`,
+  );
+}
+
+export function logReport(report: Record<CoverageType, FileCoverage[]>): void {
+  const typesCount = Object.keys(report).length;
+  logger.info(
+    `Collected documentation coverage for ${pluralizeToken('type', typesCount)} of ${pluralize('entity', typesCount)}`,
+  );
+  if (!logger.isVerbose()) {
+    return;
+  }
+
+  logger.debug(
+    formatAsciiTable({
+      columns: [
+        { key: 'type', label: 'Entity', align: 'left' },
+        { key: 'covered', label: 'Hits', align: 'right' },
+        { key: 'total', label: 'Found', align: 'right' },
+        { key: 'coverage', label: 'Coverage', align: 'right' },
+      ],
+      rows: objectToEntries(report)
+        .map(([type, files]) => {
+          const stats = aggregateCoverageStats(files);
+          return {
+            ...stats,
+            type: capitalize(type),
+            coverage: formatCoveragePercentage(stats),
+          };
+        })
+        .toSorted((a, b) => b.total - a.total),
+    }),
+  );
 }

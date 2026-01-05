@@ -16,10 +16,6 @@ import eslintPlugin, {
 import jsPackagesPlugin from './packages/plugin-js-packages/src/index.js';
 import jsDocsPlugin from './packages/plugin-jsdocs/src/index.js';
 import {
-  PLUGIN_SLUG,
-  groups,
-} from './packages/plugin-jsdocs/src/lib/constants.js';
-import {
   lighthouseCategories,
   lighthouseGroupRef,
   lighthousePlugin,
@@ -185,12 +181,14 @@ export function configureJsDocsPlugin(projectName?: string): CoreConfig {
         slug: 'docs',
         title: 'Documentation',
         description: 'Measures how much of your code is **documented**.',
-        refs: groups.map(group => ({
-          weight: 1,
-          type: 'group',
-          plugin: PLUGIN_SLUG,
-          slug: group.slug,
-        })),
+        refs: [
+          {
+            type: 'group',
+            plugin: 'jsdocs',
+            slug: 'documentation-coverage',
+            weight: 1,
+          },
+        ],
       },
     ],
   };

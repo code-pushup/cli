@@ -1022,7 +1022,7 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
       "icon": "folder-syntax",
       "packageName": "@code-pushup/axe-plugin",
       "slug": "axe",
-      "title": "Axe Accessibility",
+      "title": "Axe",
     },
   ],
 }

@@ -53,6 +53,8 @@ const BORDERS = {
   },
 };
 
+const WORD_REGEX = /^[a-zA-Z]+(-[a-zA-Z])?$/;
+
 export function formatAsciiTable(
   table: Table,
   options?: AsciiTableOptions,
@@ -164,10 +166,13 @@ function wrapText(text: string, width: number | undefined): string {
   const words = extractWords(text);
   const longWords = words.filter(word => word.length > width);
   const replacements = longWords.map(original => {
-    const parts = original.includes('-')
-      ? original.split('-')
-      : partitionString(original, width - 1);
-    const replacement = parts.join('-\n');
+    const isWord = WORD_REGEX.test(original);
+    const parts = isWord
+      ? original.includes('-')
+        ? original.split('-')
+        : partitionString(original, width - 1)
+      : partitionString(original, width);
+    const replacement = parts.join(isWord ? '-\n' : '\n');
     return { original, replacement };
   });
   const textWithSplitLongWords = replacements.reduce(

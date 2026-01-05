@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { type Audit, categoryRefSchema } from '@code-pushup/models';
 import { logger } from '@code-pushup/utils';
-import { AUDITS } from './constants.js';
+import { AUDITS, GROUPS } from './constants.js';
 import {
   filterAuditsByCompilerOptions,
   filterAuditsBySlug,
   getCategoryRefsFromGroups,
-  logSkippedAudits,
+  logAuditsAndGroups,
 } from './utils.js';
 
 describe('filterAuditsBySlug', () => {
@@ -114,26 +114,28 @@ describe('getCategoryRefsFromGroups', () => {
   });
 });
 
-describe('logSkippedAudits', () => {
-  it('should not print anything when all audits are included', () => {
-    logSkippedAudits(AUDITS);
+describe('logAuditsAndGroups', () => {
+  it('should log only once if nothing was skipped', () => {
+    logAuditsAndGroups(AUDITS, GROUPS);
 
-    expect(logger.info).not.toHaveBeenCalled();
-  });
-
-  it('should warn about skipped audits', () => {
-    logSkippedAudits(AUDITS.slice(0, -1));
-
+    expect(logger.info).toHaveBeenCalledTimes(1);
     expect(logger.info).toHaveBeenCalledWith(
-      expect.stringContaining(`Skipped audits: [`),
+      expect.stringMatching(/Created \d+ audits and \d+ groups$/),
     );
   });
 
-  it('should camel case the slugs in the audit message', () => {
-    logSkippedAudits(AUDITS.slice(0, -1));
+  it('should log skipped audits and groups', () => {
+    const groups = GROUPS.slice(0, 1);
+    const audits = AUDITS.filter(audit =>
+      groups[0]!.refs.some(ref => ref.slug === audit.slug),
+    );
 
-    expect(logger.info).toHaveBeenCalledWith(
-      expect.stringContaining(`unknownCodes`),
+    logAuditsAndGroups(audits, groups);
+
+    expect(logger.info).toHaveBeenCalledTimes(2);
+    expect(logger.info).toHaveBeenNthCalledWith(
+      2,
+      expect.stringMatching(/Skipped \d+ audits and \d+ groups$/),
     );
   });
 });
