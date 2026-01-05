@@ -14,12 +14,16 @@ const eslintrcSchema = z
   .string()
   .meta({ description: 'Path to ESLint config file' });
 
-const eslintTargetObjectSchema = z.object({
-  eslintrc: eslintrcSchema.optional(),
-  patterns: patternsSchema,
-});
+const eslintTargetObjectSchema = z
+  .object({
+    eslintrc: eslintrcSchema.optional(),
+    patterns: patternsSchema.optional().default('.'),
+  })
+  .meta({ title: 'ESLintTargetObject' });
+
 type ESLintTargetObject = z.infer<typeof eslintTargetObjectSchema>;
 
+/** Transforms string/array patterns into normalized object format. */
 export const eslintTargetSchema = z
   .union([patternsSchema, eslintTargetObjectSchema])
   .transform(
@@ -32,10 +36,17 @@ export const eslintTargetSchema = z
 
 export type ESLintTarget = z.infer<typeof eslintTargetSchema>;
 
+/** First parameter of {@link eslintPlugin}. Defaults to current directory. */
 export const eslintPluginConfigSchema = z
   .union([eslintTargetSchema, z.array(eslintTargetSchema).min(1)])
+  .optional()
+  .default({ patterns: '.' })
   .transform(toArray)
-  .meta({ title: 'ESLintPluginConfig' });
+  .meta({
+    title: 'ESLintPluginConfig',
+    description:
+      'Optional configuration, defaults to linting current directory',
+  });
 
 export type ESLintPluginConfig = z.input<typeof eslintPluginConfigSchema>;
 
