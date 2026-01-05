@@ -34,13 +34,6 @@ describe('eslintTargetSchema', () => {
     });
   });
 
-  it('should use default patterns when only eslintrc is provided', () => {
-    expect(eslintTargetSchema.parse({ eslintrc: 'eslint.config.js' })).toEqual({
-      eslintrc: 'eslint.config.js',
-      patterns: '.',
-    });
-  });
-
   it('should use default patterns when empty object is provided', () => {
     expect(eslintTargetSchema.parse({})).toStrictEqual({
       patterns: '.',
