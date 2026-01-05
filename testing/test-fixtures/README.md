@@ -11,4 +11,4 @@ Please prefer using static mocks over dynamic ones for better readability. Dynam
 
 ## Fixtures
 
-Example configuration files that are to be used in integration or E2E tests live in [`configs`](./src//lib/fixtures/configs/).
+Example configuration files that are to be used in integration or E2E tests live in [`configs`](./src/lib/fixtures/configs/).
