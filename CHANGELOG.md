@@ -1,3 +1,13 @@
+## 0.101.1 (2026-01-06)
+
+### 🩹 Fixes
+
+- **plugin-typescript:** exclude test files from standalone analysis ([bf008fd4](https://github.com/code-pushup/cli/commit/bf008fd4))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
 ## 0.101.0 (2026-01-05)
 
 ### 🚀 Features
