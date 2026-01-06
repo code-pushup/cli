@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { defaultClock, epochClock } from './clock-epoch';
+import { defaultClock, epochClock } from './clock-epoch.js';
 
 describe('epochClock', () => {
   afterEach(() => {
@@ -37,10 +37,9 @@ describe('epochClock', () => {
   });
 
   it('should return undefined if performance.timeOrigin is NOT present', () => {
-    Object.defineProperty(performance, 'timeOrigin', {
-      value: undefined,
-      writable: true,
-      configurable: true,
+    vi.stubGlobal('performance', {
+      ...performance,
+      timeOrigin: undefined,
     });
     const c = epochClock();
     expect(c.hasTimeOrigin()).toBe(false);

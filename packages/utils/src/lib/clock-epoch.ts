@@ -8,7 +8,9 @@ export type EpochMilliseconds = number;
 const hasPerf = (): boolean =>
   typeof performance !== 'undefined' && typeof performance.now === 'function';
 const hasTimeOrigin = (): boolean =>
-  hasPerf() && typeof (performance as any).timeOrigin === 'number';
+  hasPerf() &&
+  typeof (performance as { timeOrigin: number | undefined }).timeOrigin ===
+    'number';
 
 const msToUs = (ms: number): Microseconds => Math.round(ms * 1000);
 const usToUs = (us: number): Microseconds => Math.round(us);
@@ -19,10 +21,10 @@ const usToUs = (us: number): Microseconds => Math.round(us);
  * Provides process and thread IDs.
  * @param init
  */
-export interface EpochClockOptions {
+export type EpochClockOptions = {
   pid?: number;
   tid?: number;
-}
+};
 /**
  * Creates epoch-based clock utility.
  * Epoch time has been the time since January 1, 1970 (UNIX epoch).
@@ -34,20 +36,19 @@ export function epochClock(init: EpochClockOptions = {}) {
   const tid = init.tid ?? threadId;
 
   const timeOriginMs = hasTimeOrigin()
-    ? ((performance as any).timeOrigin as number)
+    ? (performance as { timeOrigin: number | undefined }).timeOrigin
     : undefined;
 
   const epochNowUs = (): Microseconds => {
     if (hasTimeOrigin()) {
-      return msToUs((performance as any).timeOrigin + performance.now());
+      return msToUs(performance.timeOrigin + performance.now());
     }
     return msToUs(Date.now());
   };
 
-  const fromEpochUs = (epochUs: Microseconds): Microseconds => usToUs(epochUs);
+  const fromEpochUs = usToUs;
 
-  const fromEpochMs = (epochMs: EpochMilliseconds): Microseconds =>
-    msToUs(epochMs);
+  const fromEpochMs = msToUs;
 
   const fromPerfMs = (perfMs: Milliseconds): Microseconds => {
     if (timeOriginMs === undefined) {
@@ -56,10 +57,8 @@ export function epochClock(init: EpochClockOptions = {}) {
     return msToUs(timeOriginMs + perfMs);
   };
 
-  const fromEntryStartTimeMs = (startTimeMs: Milliseconds): Microseconds =>
-    fromPerfMs(startTimeMs);
-  const fromDateNowMs = (dateNowMs: EpochMilliseconds): Microseconds =>
-    fromEpochMs(dateNowMs);
+  const fromEntryStartTimeMs = fromPerfMs;
+  const fromDateNowMs = fromEpochMs;
 
   return {
     timeOriginMs,
