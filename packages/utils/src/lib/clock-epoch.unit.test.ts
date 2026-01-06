@@ -10,7 +10,7 @@ describe('epochClock', () => {
     const c = epochClock();
     expect(c.timeOriginMs).toBe(500_000);
     expect(c.tid).toBe(1);
-    expect(c.pid).toBe(10001);
+    expect(c.pid).toBe(10_001);
     expect(typeof c.fromEpochMs).toBe('function');
     expect(typeof c.fromEpochUs).toBe('function');
     expect(typeof c.fromPerfMs).toBe('function');
@@ -30,7 +30,7 @@ describe('epochClock', () => {
   it('should use tid options', () => {
     expect(epochClock({ tid: 888 })).toStrictEqual(
       expect.objectContaining({
-        pid: 10001,
+        pid: 10_001,
         tid: 888,
       }),
     );
@@ -96,7 +96,7 @@ describe('epochClock', () => {
 
   it.each([
     [0, 500_000_000],
-    [1_000, 501_000_000],
+    [1000, 501_000_000],
   ])(
     'should convert performance milliseconds to microseconds',
     (perfMs, expected) => {
@@ -108,8 +108,8 @@ describe('epochClock', () => {
     const c = epochClock();
     expect([
       c.fromEntryStartTimeMs(0),
-      c.fromEntryStartTimeMs(1_000),
-    ]).toStrictEqual([c.fromPerfMs(0), c.fromPerfMs(1_000)]);
+      c.fromEntryStartTimeMs(1000),
+    ]).toStrictEqual([c.fromPerfMs(0), c.fromPerfMs(1000)]);
   });
 
   it('should convert Date.now() milliseconds to microseconds', () => {
