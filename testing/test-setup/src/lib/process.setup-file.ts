@@ -1,8 +1,13 @@
 import process from 'node:process';
-import { beforeEach, vi } from 'vitest';
+import { afterEach, beforeEach, vi } from 'vitest';
 
 export const MOCK_PID = 10_001;
 
+let processMock = vi.spyOn(process, 'pid', 'get');
 beforeEach(() => {
-  vi.spyOn(process, 'pid', 'get').mockReturnValue(MOCK_PID);
+  processMock.mockReturnValue(MOCK_PID);
+});
+
+afterEach(() => {
+  processMock.mockRestore();
 });
