@@ -24,7 +24,7 @@
   },
   "type": "module",
   "engines": {
-    "node": ">=17.0.0"
+    "node": ">=18.2.0"
   },
   "dependencies": {
     "@code-pushup/models": "0.101.1",
