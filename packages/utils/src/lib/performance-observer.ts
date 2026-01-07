@@ -8,9 +8,8 @@ import type { Buffered, Encoder, Sink } from './sink-source.types.js';
 export interface PerformanceObserverOptions<T> {
   sink: Sink<T, unknown>;
   encode: (entry: PerformanceEntry) => T[];
-  onEntry?: (entry: T) => void;
   captureBuffered?: boolean;
-  flushEveryN?: number;
+  flushThreshold?: number;
 }
 
 export class PerformanceObserverHandle<T>
@@ -18,9 +17,8 @@ export class PerformanceObserverHandle<T>
 {
   #encode: (entry: PerformanceEntry) => T[];
   #captureBuffered: boolean;
-  #flushEveryN: number;
+  #observedEntryCount: number;
   #flushThreshold: number;
-  #onEntry?: (entry: T) => void;
   #processedEntries = new Set<string>();
   #sink: Sink<T, unknown>;
   #observer: PerformanceObserver | undefined;
@@ -30,9 +28,8 @@ export class PerformanceObserverHandle<T>
     this.#encode = options.encode;
     this.#sink = options.sink;
     this.#captureBuffered = options.captureBuffered ?? false;
-    this.#flushThreshold = options.flushEveryN ?? 20;
-    this.#flushEveryN = 0;
-    this.#onEntry = options.onEntry;
+    this.#flushThreshold = options.flushThreshold ?? 20;
+    this.#observedEntryCount = 0;
   }
 
   encode(entry: PerformanceEntry): T[] {
@@ -42,10 +39,10 @@ export class PerformanceObserverHandle<T>
   connect(): void {
     if (this.#observer || this.#closed) return;
     this.#observer = new PerformanceObserver(() => {
-      this.#flushEveryN++;
-      if (this.#flushEveryN >= this.#flushThreshold) {
+      this.#observedEntryCount++;
+      if (this.#observedEntryCount >= this.#flushThreshold) {
         this.flush();
-        this.#flushEveryN = 0;
+        this.#observedEntryCount = 0;
       }
     });
 
@@ -72,7 +69,6 @@ export class PerformanceObserverHandle<T>
       const encoded = this.encode(e);
       for (const item of encoded) {
         this.#sink.write(item);
-        this.#onEntry?.(item);
       }
 
       if (clear) {

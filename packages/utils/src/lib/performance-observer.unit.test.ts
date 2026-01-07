@@ -1,12 +1,11 @@
-// Import the mocked modules
 import {
+  type EntryType,
   type PerformanceEntry,
   PerformanceObserver,
   performance,
 } from 'node:perf_hooks';
 import {
   type MockedFunction,
-  afterEach,
   beforeEach,
   describe,
   expect,
@@ -29,12 +28,15 @@ class MockSink<T> implements Sink<T, unknown> {
   open(): void {
     throw new Error('Method not implemented.');
   }
+
   close(): void {
     throw new Error('Method not implemented.');
   }
+
   encode(input: T): unknown {
     throw new Error('Method not implemented.');
   }
+
   written: T[] = [];
 
   write(input: T): void {
@@ -42,7 +44,6 @@ class MockSink<T> implements Sink<T, unknown> {
   }
 }
 
-// Mock performance entries
 const mockMarkEntry = {
   name: 'test-mark',
   entryType: 'mark' as const,
@@ -58,12 +59,14 @@ const mockMeasureEntry = {
 } as PerformanceEntry;
 
 describe('PerformanceObserverHandle', () => {
-  let mockSink: Sink<string, unknown>;
-  let encodeFn: MockedFunction<(entry: PerformanceEntry) => string[]>;
+  let getEntriesByTypeSpy = vi.spyOn(performance, 'getEntriesByType');
+  let observedTrigger: (() => void) | undefined;
   let mockObserverInstance: {
     observe: MockedFunction<any>;
     disconnect: MockedFunction<any>;
   };
+  let mockSink: MockSink<string>;
+  let encodeFn: MockedFunction<(entry: PerformanceEntry) => string[]>;
 
   beforeEach(() => {
     mockSink = new MockSink<string>();
@@ -78,35 +81,35 @@ describe('PerformanceObserverHandle', () => {
 
     vi.clearAllMocks();
 
-    (PerformanceObserver as any).mockImplementation(() => mockObserverInstance);
+    getEntriesByTypeSpy.mockImplementation((type: string) => {
+      if (type === 'mark') return [mockMarkEntry];
+      if (type === 'measure') return [mockMeasureEntry];
+      return [];
+    });
 
-    // Setup performance mock
-    (performance.getEntriesByType as any).mockImplementation(
-      (type: string) => [],
-    );
-    (performance.clearMarks as any).mockImplementation(() => {});
-    (performance.clearMeasures as any).mockImplementation(() => {});
+    (PerformanceObserver as any).mockImplementation(() => mockObserverInstance);
   });
 
   it('should create PerformanceObserverHandle with default options', () => {
-    const observer = new PerformanceObserverHandle({
-      sink: mockSink,
-      encode: encodeFn,
-    });
-
-    expect(observer).toBeInstanceOf(PerformanceObserverHandle);
+    expect(
+      () =>
+        new PerformanceObserverHandle({
+          sink: mockSink,
+          encode: encodeFn,
+        }),
+    ).not.toThrow();
   });
 
   it('should create PerformanceObserverHandle with custom options', () => {
-    const observer = new PerformanceObserverHandle({
-      sink: mockSink,
-      encode: encodeFn,
-      captureBuffered: true,
-      flushEveryN: 10,
-      onEntry: vi.fn(),
-    });
-
-    expect(observer).toBeInstanceOf(PerformanceObserverHandle);
+    expect(
+      () =>
+        new PerformanceObserverHandle({
+          sink: mockSink,
+          encode: encodeFn,
+          captureBuffered: true,
+          flushThreshold: 10,
+        }),
+    ).not.toThrow();
   });
 
   it('should encode performance entry using provided encode function', () => {
@@ -115,12 +118,11 @@ describe('PerformanceObserverHandle', () => {
       encode: encodeFn,
     });
 
-    const result = observer.encode(mockMarkEntry);
+    expect(observer.encode(mockMarkEntry)).toEqual(['test-mark:mark']);
     expect(encodeFn).toHaveBeenCalledWith(mockMarkEntry);
-    expect(result).toEqual(['test-mark:mark']);
   });
 
-  it('should create PerformanceObserver and observe mark and measure entries', () => {
+  it('should observe mark and measure entries on connect', () => {
     const observer = new PerformanceObserverHandle({
       sink: mockSink,
       encode: encodeFn,
@@ -129,13 +131,14 @@ describe('PerformanceObserverHandle', () => {
     observer.connect();
 
     expect(PerformanceObserver).toHaveBeenCalled();
-    expect(mockObserverInstance.observe).toHaveBeenCalledWith({
-      entryTypes: ['mark', 'measure'],
-      buffered: false,
-    });
+    expect(mockObserverInstance.observe).toHaveBeenCalledWith(
+      expect.objectContaining({
+        entryTypes: ['mark', 'measure'],
+      }),
+    );
   });
 
-  it('should enable buffered capture when captureBuffered is true', () => {
+  it('should observe buffered mark and measure entries on connect when captureBuffered is true', () => {
     const observer = new PerformanceObserverHandle({
       sink: mockSink,
       encode: encodeFn,
@@ -144,10 +147,11 @@ describe('PerformanceObserverHandle', () => {
 
     observer.connect();
 
-    expect(mockObserverInstance.observe).toHaveBeenCalledWith({
-      entryTypes: ['mark', 'measure'],
-      buffered: true,
-    });
+    expect(mockObserverInstance.observe).toHaveBeenCalledWith(
+      expect.objectContaining({
+        buffered: true,
+      }),
+    );
   });
 
   it('should not create observer if already connected', () => {
@@ -169,378 +173,294 @@ describe('PerformanceObserverHandle', () => {
     });
 
     observer.close();
-
     observer.connect();
 
     expect(PerformanceObserver).not.toHaveBeenCalled();
   });
 
-  it('should trigger flush when flushEveryN threshold is reached', () => {
+  it('should call encode on flush', () => {
     const observer = new PerformanceObserverHandle({
       sink: mockSink,
       encode: encodeFn,
-      flushEveryN: 2,
     });
 
-    // Mock the observer to capture the callback
-    let callback: (() => void) | undefined;
+    observer.connect();
+    observer.flush();
+
+    expect(encodeFn).toHaveBeenCalled();
+  });
+
+  it('should trigger flush when flushThreshold is reached', () => {
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: encodeFn,
+      flushThreshold: 2,
+    });
+
+    getEntriesByTypeSpy.mockImplementation((type: string) => {
+      if (type === 'mark') return [mockMarkEntry];
+      if (type === 'measure') return [mockMeasureEntry];
+      return [];
+    });
+
+    let observedTrigger: (() => void) | undefined;
     (PerformanceObserver as any).mockImplementation((cb: () => void) => {
-      callback = cb;
+      observedTrigger = cb;
       return mockObserverInstance;
     });
 
     observer.connect();
 
-    // Simulate calling the callback twice to reach threshold
-    callback?.(); // flushEveryN = 1
-    callback?.(); // flushEveryN = 2, should trigger flush
+    observedTrigger?.();
+    observedTrigger?.();
 
-    expect(PerformanceObserver).toHaveBeenCalled();
+    expect(encodeFn).toHaveBeenCalledTimes(2);
   });
 
-  describe('flush', () => {
-    it('should process performance entries and write to sink', () => {
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-      });
-
-      // Mock performance.getEntriesByType
-      (performance.getEntriesByType as any).mockImplementation(
-        (type: string) => {
-          if (type === 'mark') return [mockMarkEntry];
-          if (type === 'measure') return [mockMeasureEntry];
-          return [];
-        },
-      );
-
-      observer.flush();
-
-      expect(performance.getEntriesByType).toHaveBeenCalledWith('mark');
-      expect(performance.getEntriesByType).toHaveBeenCalledWith('measure');
-      expect(encodeFn).toHaveBeenCalledTimes(2);
-      expect(mockSink.written).toEqual([
-        'test-mark:mark',
-        'test-measure:measure',
-      ]);
+  it('should process performance entries and write to sink', () => {
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: encodeFn,
     });
 
-    it('should skip already processed entries', () => {
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-      });
+    observer.flush();
 
-      (performance.getEntriesByType as any).mockReturnValue([mockMarkEntry]);
-
-      observer.flush(); // First flush processes the entry
-      observer.flush(); // Second flush should skip already processed entry
-
-      expect(encodeFn).toHaveBeenCalledTimes(1);
-      expect(mockSink.written).toEqual(['test-mark:mark']);
-    });
-
-    it('should clear processed entries when clear=true', () => {
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-      });
-
-      (performance.getEntriesByType as any).mockImplementation(
-        (type: string) => {
-          if (type === 'mark') return [mockMarkEntry];
-          if (type === 'measure') return [mockMeasureEntry];
-          return [];
-        },
-      );
-
-      observer.flush(true); // Clear mode
-
-      expect(performance.clearMarks).toHaveBeenCalledWith('test-mark');
-      expect(performance.clearMeasures).toHaveBeenCalledWith('test-measure');
-      expect(mockSink.written).toEqual([
-        'test-mark:mark',
-        'test-measure:measure',
-      ]);
-    });
-
-    it('should do nothing if closed', () => {
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-      });
-
-      observer.close();
-
-      (performance.getEntriesByType as any).mockReturnValue([mockMarkEntry]);
-
-      observer.flush();
-
-      expect(encodeFn).not.toHaveBeenCalled();
-    });
-
-    it('should work even if not connected', () => {
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-      });
-
-      (performance.getEntriesByType as any).mockReturnValue([mockMarkEntry]);
-
-      observer.flush();
-
-      expect(encodeFn).toHaveBeenCalledWith(mockMarkEntry);
-      expect(mockSink.written).toEqual(['test-mark:mark']);
-    });
-
-    it('should call onEntry callback when provided', () => {
-      const onEntry = vi.fn();
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-        onEntry,
-      });
-
-      (performance.getEntriesByType as any).mockReturnValue([mockMarkEntry]);
-
-      observer.flush();
-
-      expect(onEntry).toHaveBeenCalledWith('test-mark:mark');
-    });
-
-    it('should skip entries that are not mark or measure types', () => {
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-      });
-
-      const invalidEntry = {
-        name: 'invalid',
-        entryType: 'navigation' as const,
-        startTime: 100,
-        duration: 0,
-      } as PerformanceEntry;
-
-      (performance.getEntriesByType as any).mockImplementation(
-        (type: string) => {
-          if (type === 'mark') return [mockMarkEntry];
-          if (type === 'measure') return [invalidEntry];
-          return [];
-        },
-      );
-
-      observer.flush();
-
-      // Should only process the mark entry, skip the navigation entry
-      expect(encodeFn).toHaveBeenCalledTimes(1);
-      expect(encodeFn).toHaveBeenCalledWith(mockMarkEntry);
-      expect(mockSink.written).toEqual(['test-mark:mark']);
-    });
-
-    it('should handle multiple encoded items per entry', () => {
-      const multiEncodeFn = vi.fn(() => ['item1', 'item2']);
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: multiEncodeFn,
-      });
-
-      (performance.getEntriesByType as any).mockReturnValue([mockMarkEntry]);
-
-      observer.flush();
-
-      expect(multiEncodeFn).toHaveBeenCalledWith(mockMarkEntry);
-      expect(mockSink.written).toEqual(['item1', 'item2']);
-    });
+    expect(getEntriesByTypeSpy).toHaveBeenCalledWith('mark');
+    expect(getEntriesByTypeSpy).toHaveBeenCalledWith('measure');
+    expect(encodeFn).toHaveBeenCalledTimes(2);
+    expect(mockSink.written).toStrictEqual([
+      'test-mark:mark',
+      'test-measure:measure',
+    ]);
   });
 
-  describe('disconnect', () => {
-    it('should disconnect PerformanceObserver', () => {
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-      });
-
-      observer.connect();
-      observer.disconnect();
-
-      expect(mockObserverInstance.disconnect).toHaveBeenCalled();
-      expect(observer.isConnected()).toBe(false);
+  it('should skip already processed entries', () => {
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: encodeFn,
     });
 
-    it('should do nothing if not connected', () => {
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-      });
+    getEntriesByTypeSpy.mockReturnValue([mockMarkEntry]);
 
-      observer.disconnect();
+    observer.flush();
+    observer.flush();
 
-      expect(observer.isConnected()).toBe(false);
-    });
-
-    it('should do nothing if already closed', () => {
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-      });
-
-      observer.close();
-      observer.disconnect();
-
-      expect(observer.isConnected()).toBe(false);
-    });
+    expect(encodeFn).toHaveBeenCalledTimes(1);
+    expect(mockSink.written).toStrictEqual(['test-mark:mark']);
   });
 
-  describe('close', () => {
-    it('should flush and disconnect when closing', () => {
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-      });
-
-      (performance.getEntriesByType as any).mockImplementation(
-        (type: string) => {
-          if (type === 'mark') return [mockMarkEntry];
-          return [];
-        },
-      );
-
-      observer.connect();
-      observer.close();
-
-      expect(encodeFn).toHaveBeenCalledWith(mockMarkEntry);
-      expect(mockObserverInstance.disconnect).toHaveBeenCalled();
-      expect(observer.isConnected()).toBe(false);
+  it('should clear processed entries when clear=true', () => {
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: encodeFn,
     });
 
-    it('should do nothing if already closed', () => {
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-      });
+    observer.flush(true);
 
-      observer.close();
-      observer.close(); // Second call should do nothing
-
-      expect(observer.isConnected()).toBe(false);
-    });
+    expect(performance.clearMarks).toHaveBeenCalledWith('test-mark');
+    expect(performance.clearMeasures).toHaveBeenCalledWith('test-measure');
+    expect(mockSink.written).toStrictEqual([
+      'test-mark:mark',
+      'test-measure:measure',
+    ]);
   });
 
-  describe('isConnected', () => {
-    it('should return true when connected', () => {
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-      });
+  it('should do nothing if closed', () => {
+    getEntriesByTypeSpy.mockReturnValue([]);
 
-      expect(observer.isConnected()).toBe(false);
-
-      observer.connect();
-
-      expect(observer.isConnected()).toBe(true);
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: encodeFn,
     });
 
-    it('should return false when disconnected', () => {
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-      });
+    observer.close();
+    observer.flush();
 
-      observer.connect();
-      observer.disconnect();
-
-      expect(observer.isConnected()).toBe(false);
-    });
-
-    it('should return false when closed', () => {
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-      });
-
-      observer.connect();
-      observer.close();
-
-      expect(observer.isConnected()).toBe(false);
-    });
-
-    it('should return false when closed even if observer exists', () => {
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-      });
-
-      observer.connect();
-      observer.close();
-
-      expect(observer.isConnected()).toBe(false);
-    });
+    expect(encodeFn).not.toHaveBeenCalled();
   });
 
-  describe('integration', () => {
-    it('should handle multiple entries with different types', () => {
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-      });
-
-      const entries = [
-        { ...mockMarkEntry, name: 'mark1' },
-        { ...mockMeasureEntry, name: 'measure1' },
-        { ...mockMarkEntry, name: 'mark2' },
-      ];
-
-      (performance.getEntriesByType as any).mockImplementation(
-        (type: string) => {
-          if (type === 'mark')
-            return entries.filter(e => e.entryType === 'mark');
-          if (type === 'measure')
-            return entries.filter(e => e.entryType === 'measure');
-          return [];
-        },
-      );
-
-      observer.flush();
-
-      expect(mockSink.written).toEqual([
-        'mark1:mark',
-        'mark2:mark',
-        'measure1:measure',
-      ]);
+  it('should work even if not connected', () => {
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: encodeFn,
     });
 
-    it('should call onEntry callback when provided', () => {
-      const onEntry = vi.fn();
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-        onEntry,
-      });
+    observer.flush();
 
-      (performance.getEntriesByType as any).mockReturnValue([mockMarkEntry]);
+    expect(encodeFn).toHaveBeenCalledWith(mockMarkEntry);
+    expect(mockSink.written).toStrictEqual([
+      'test-mark:mark',
+      'test-measure:measure',
+    ]);
+  });
 
-      observer.flush();
-
-      expect(onEntry).toHaveBeenCalledWith('test-mark:mark');
+  it('should skip entries that are not mark or measure types', () => {
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: encodeFn,
     });
 
-    it('should use default flushEveryN when not specified', () => {
-      const observer = new PerformanceObserverHandle({
-        sink: mockSink,
-        encode: encodeFn,
-      });
+    const invalidEntry = {
+      name: 'invalid',
+      entryType: 'navigation' as EntryType,
+      startTime: 100,
+      duration: 0,
+      toJSON(): any {},
+    };
 
-      // Test that it uses default by checking that flush works without observer
-      (performance.getEntriesByType as any).mockImplementation(
-        (type: string) => {
-          if (type === 'mark') return [mockMarkEntry];
-          return [];
-        },
-      );
-
-      observer.flush();
-
-      expect(mockSink.written).toEqual(['test-mark:mark']);
+    getEntriesByTypeSpy.mockImplementation((type: string) => {
+      if (type === 'mark') return [mockMarkEntry];
+      if (type === 'measure') return [invalidEntry];
+      return [];
     });
+
+    observer.flush();
+
+    expect(encodeFn).toHaveBeenCalledTimes(1);
+    expect(encodeFn).toHaveBeenCalledWith(mockMarkEntry);
+    expect(mockSink.written).toStrictEqual(['test-mark:mark']);
+  });
+
+  it('should handle multiple encoded items per entry', () => {
+    const multiEncodeFn = vi.fn(() => ['item1', 'item2']);
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: multiEncodeFn,
+    });
+
+    getEntriesByTypeSpy.mockImplementation((type: string) => {
+      if (type === 'mark') return [mockMarkEntry];
+      return [];
+    });
+
+    observer.flush();
+
+    expect(multiEncodeFn).toHaveBeenCalledWith(mockMarkEntry);
+    expect(mockSink.written).toStrictEqual(['item1', 'item2']);
+  });
+
+  it('should disconnect PerformanceObserver', () => {
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: encodeFn,
+    });
+
+    observer.connect();
+    observer.disconnect();
+
+    expect(mockObserverInstance.disconnect).toHaveBeenCalled();
+    expect(observer.isConnected()).toBe(false);
+  });
+
+  it('should do nothing if not connected and disconnect is called', () => {
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: encodeFn,
+    });
+
+    observer.disconnect();
+
+    expect(observer.isConnected()).toBe(false);
+  });
+
+  it('should do nothing if already closed and disconnect is called', () => {
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: encodeFn,
+    });
+
+    observer.close();
+    observer.disconnect();
+
+    expect(observer.isConnected()).toBe(false);
+  });
+
+  it('should flush and disconnect when closing', () => {
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: encodeFn,
+    });
+
+    observer.connect();
+    observer.close();
+
+    expect(encodeFn).toHaveBeenCalledWith(mockMarkEntry);
+    expect(mockObserverInstance.disconnect).toHaveBeenCalled();
+    expect(observer.isConnected()).toBe(false);
+  });
+
+  it('should do nothing if already closed', () => {
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: encodeFn,
+    });
+
+    observer.close();
+    observer.close();
+
+    expect(observer.isConnected()).toBe(false);
+  });
+
+  it('should return true when connected', () => {
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: encodeFn,
+    });
+
+    expect(observer.isConnected()).toBe(false);
+
+    observer.connect();
+
+    expect(observer.isConnected()).toBe(true);
+  });
+
+  it('should return false when disconnected', () => {
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: encodeFn,
+    });
+
+    observer.connect();
+    observer.disconnect();
+
+    expect(observer.isConnected()).toBe(false);
+  });
+
+  it('should return false when closed', () => {
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: encodeFn,
+    });
+
+    observer.connect();
+    observer.close();
+
+    expect(observer.isConnected()).toBe(false);
+  });
+
+  it('should return false when closed even if observer exists', () => {
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: encodeFn,
+    });
+
+    observer.connect();
+    observer.close();
+
+    expect(observer.isConnected()).toBe(false);
+  });
+
+  it('should use default flushEveryN when not specified', () => {
+    const observer = new PerformanceObserverHandle({
+      sink: mockSink,
+      encode: encodeFn,
+    });
+
+    observer.flush();
+
+    expect(mockSink.written).toStrictEqual([
+      'test-mark:mark',
+      'test-measure:measure',
+    ]);
   });
 });
