@@ -9,7 +9,7 @@ describe('epochClock', () => {
   it('should create epoch clock with defaults', () => {
     const c = epochClock();
     expect(c.timeOriginMs).toBe(500_000);
-    expect(c.tid).toBeGreaterThan(0);
+    expect(c.tid).toBe(2);
     expect(c.pid).toBe(10_001);
     expect(typeof c.fromEpochMs).toBe('function');
     expect(typeof c.fromEpochUs).toBe('function');
