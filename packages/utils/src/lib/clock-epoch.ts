@@ -5,13 +5,6 @@ export type Microseconds = number;
 export type Milliseconds = number;
 export type EpochMilliseconds = number;
 
-const hasPerf = (): boolean =>
-  typeof performance !== 'undefined' && typeof performance.now === 'function';
-const hasTimeOrigin = (): boolean =>
-  hasPerf() &&
-  typeof (performance as { timeOrigin: number | undefined }).timeOrigin ===
-    'number';
-
 const msToUs = (ms: number): Microseconds => Math.round(ms * 1000);
 const usToUs = (us: number): Microseconds => Math.round(us);
 
@@ -26,11 +19,6 @@ export type EpochClockOptions = {
   tid?: number;
 };
 
-type MaybePerformance = typeof performance & {
-  timeOrigin?: number;
-  now?: number;
-};
-
 /**
  * Creates epoch-based clock utility.
  * Epoch time has been the time since January 1, 1970 (UNIX epoch).
@@ -41,27 +29,17 @@ export function epochClock(init: EpochClockOptions = {}) {
   const pid = init.pid ?? process.pid;
   const tid = init.tid ?? threadId;
 
-  const timeOriginMs = hasTimeOrigin()
-    ? (performance as MaybePerformance).timeOrigin
-    : Date.now();
+  const timeOriginMs = performance.timeOrigin;
 
-  const epochNowUs = (): Microseconds => {
-    if (hasTimeOrigin()) {
-      return msToUs(timeOriginMs + performance.now());
-    }
-    return msToUs(Date.now());
-  };
+  const epochNowUs = (): Microseconds =>
+    msToUs(timeOriginMs + performance.now());
 
   const fromEpochUs = usToUs;
 
   const fromEpochMs = msToUs;
 
-  const fromPerfMs = (perfMs: Milliseconds): Microseconds => {
-    if (hasTimeOrigin()) {
-      return msToUs(timeOriginMs + perfMs);
-    }
-    return epochNowUs() - msToUs(performance.now() - perfMs);
-  };
+  const fromPerfMs = (perfMs: Milliseconds): Microseconds =>
+    msToUs(timeOriginMs + perfMs);
 
   const fromEntryStartTimeMs = fromPerfMs;
   const fromDateNowMs = fromEpochMs;
@@ -71,7 +49,6 @@ export function epochClock(init: EpochClockOptions = {}) {
     pid,
     tid,
 
-    hasTimeOrigin,
     epochNowUs,
     msToUs,
     usToUs,

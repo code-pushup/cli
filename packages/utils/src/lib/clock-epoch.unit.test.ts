@@ -36,44 +36,10 @@ describe('epochClock', () => {
     );
   });
 
-  it('should return undefined if performance.timeOrigin is NOT present', () => {
-    vi.stubGlobal('performance', {
-      ...performance,
-      timeOrigin: undefined,
-    });
-    const c = epochClock();
-    expect(c.hasTimeOrigin()).toBe(false);
-  });
-
-  it('should return timeorigin if performance.timeOrigin is present', () => {
-    const c = epochClock();
-    expect(c.hasTimeOrigin()).toBe(true);
-  });
-
   it('should support performance clock by default for epochNowUs', () => {
     const c = epochClock();
     expect(c.timeOriginMs).toBe(500_000);
     expect(c.epochNowUs()).toBe(1_000_000_000); // timeOrigin + (Date.now() - timeOrigin) = Date.now()
-  });
-
-  it('should fallback to Date clock by if performance clock is not given in epochNowUs', () => {
-    vi.stubGlobal('performance', {
-      ...performance,
-      timeOrigin: undefined,
-    });
-    const c = epochClock();
-    expect(c.timeOriginMs).toBe(1_000_000);
-    expect(c.epochNowUs()).toBe(1_000_000_000); // Date.now() * 1000 when performance unavailable
-  });
-
-  it('should fallback to Date clock by if performance clock is NOT given', () => {
-    vi.stubGlobal('performance', {
-      ...performance,
-      timeOrigin: undefined,
-    });
-    const c = epochClock();
-    expect(c.timeOriginMs).toBe(1_000_000);
-    expect(c.fromPerfMs(100)).toBe(500_100_000); // epochNowUs() - msToUs(performance.now() - perfMs)
   });
 
   it.each([
