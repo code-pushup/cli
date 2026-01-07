@@ -11,11 +11,11 @@ import {
 import {
   COMMIT_ALT_MOCK,
   COMMIT_MOCK,
-  MEMFS_VOLUME,
   MINIMAL_REPORT_MOCK,
   REPORT_MOCK,
   reportMock,
-} from '@code-pushup/test-utils';
+} from '@code-pushup/test-fixtures';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { type Diff, fileExists, readJsonFile } from '@code-pushup/utils';
 import { compareReportFiles, compareReports } from './compare.js';
 

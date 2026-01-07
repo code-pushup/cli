@@ -1,7 +1,7 @@
 import type { AxeResults, NodeResult, Result } from 'axe-core';
 import { describe, expect, it } from 'vitest';
 import type { AuditOutput } from '@code-pushup/models';
-import { toAuditOutputs } from './transform.js';
+import { createUrlSuffix, toAuditOutputs } from './transform.js';
 
 function createMockNode(overrides: Partial<NodeResult> = {}): NodeResult {
   return {
@@ -33,8 +33,6 @@ function createMockAxeResults(overrides: Partial<AxeResults> = {}): AxeResults {
 }
 
 describe('toAuditOutputs', () => {
-  const testUrl = 'https://example.com';
-
   it('should transform passes with score 1 and no issues', () => {
     const results = createMockAxeResults({
       passes: [
@@ -46,7 +44,7 @@ describe('toAuditOutputs', () => {
       ],
     });
 
-    expect(toAuditOutputs(results, testUrl)).toEqual<AuditOutput[]>([
+    expect(toAuditOutputs(results, '')).toEqual<AuditOutput[]>([
       {
         slug: 'color-contrast',
         score: 1,
@@ -81,7 +79,7 @@ describe('toAuditOutputs', () => {
       ],
     });
 
-    expect(toAuditOutputs(results, testUrl)).toEqual<AuditOutput[]>([
+    expect(toAuditOutputs(results, '')).toEqual<AuditOutput[]>([
       {
         slug: 'image-alt',
         score: 0,
@@ -91,17 +89,16 @@ describe('toAuditOutputs', () => {
           issues: [
             {
               message:
-                '[`img`] Fix this: Element does not have an alt attribute ([example.com](https://example.com))',
+                '[`img`] Fix this: Element does not have an alt attribute',
               severity: 'error',
             },
             {
               message:
-                '[`.header > img:nth-child(2)`] Fix this: Element does not have an alt attribute ([example.com](https://example.com))',
+                '[`.header > img:nth-child(2)`] Fix this: Element does not have an alt attribute',
               severity: 'error',
             },
             {
-              message:
-                '[`#main img`] Mock help for image-alt ([example.com](https://example.com))',
+              message: '[`#main img`] Mock help for image-alt',
               severity: 'error',
             },
           ],
@@ -130,7 +127,7 @@ describe('toAuditOutputs', () => {
       ],
     });
 
-    expect(toAuditOutputs(results, testUrl)).toEqual<AuditOutput[]>([
+    expect(toAuditOutputs(results, '')).toEqual<AuditOutput[]>([
       {
         slug: 'color-contrast',
         score: 0,
@@ -140,12 +137,11 @@ describe('toAuditOutputs', () => {
           issues: [
             {
               message:
-                '[`button`] Fix this: Element has insufficient color contrast ([example.com](https://example.com))',
+                '[`button`] Fix this: Element has insufficient color contrast',
               severity: 'warning',
             },
             {
-              message:
-                '[`a`] Review: Unable to determine contrast ratio ([example.com](https://example.com))',
+              message: '[`a`] Review: Unable to determine contrast ratio',
               severity: 'warning',
             },
           ],
@@ -159,7 +155,7 @@ describe('toAuditOutputs', () => {
       inapplicable: [createMockResult('audio-caption', [])],
     });
 
-    expect(toAuditOutputs(results, testUrl)).toEqual<AuditOutput[]>([
+    expect(toAuditOutputs(results, '')).toEqual<AuditOutput[]>([
       {
         slug: 'audio-caption',
         score: 1,
@@ -192,7 +188,7 @@ describe('toAuditOutputs', () => {
       ],
     });
 
-    const outputs = toAuditOutputs(results, testUrl);
+    const outputs = toAuditOutputs(results, '');
 
     expect(outputs).toBeArrayOfSize(1);
     expect(outputs[0]).toMatchObject({
@@ -204,7 +200,7 @@ describe('toAuditOutputs', () => {
   });
 
   it('should handle empty results', () => {
-    expect(toAuditOutputs(createMockAxeResults(), testUrl)).toBeEmpty();
+    expect(toAuditOutputs(createMockAxeResults(), '')).toBeEmpty();
   });
 
   it('should format severity counts when multiple impacts exist', () => {
@@ -219,7 +215,7 @@ describe('toAuditOutputs', () => {
       ],
     });
 
-    const outputs = toAuditOutputs(results, testUrl);
+    const outputs = toAuditOutputs(results, '');
 
     expect(outputs[0]).toMatchObject({
       slug: 'color-contrast',
@@ -243,7 +239,7 @@ describe('toAuditOutputs', () => {
       ],
     });
 
-    expect(toAuditOutputs(results, testUrl)).toEqual<AuditOutput[]>([
+    expect(toAuditOutputs(results, '')).toEqual<AuditOutput[]>([
       {
         slug: 'color-contrast',
         score: 0,
@@ -253,7 +249,7 @@ describe('toAuditOutputs', () => {
           issues: [
             {
               message:
-                '[`#app >> my-component >> button`] Fix this: Element has insufficient color contrast ([example.com](https://example.com))',
+                '[`#app >> my-component >> button`] Fix this: Element has insufficient color contrast',
               severity: 'error',
             },
           ],
@@ -277,7 +273,7 @@ describe('toAuditOutputs', () => {
       ],
     });
 
-    expect(toAuditOutputs(results, testUrl)).toEqual<AuditOutput[]>([
+    expect(toAuditOutputs(results, '')).toEqual<AuditOutput[]>([
       {
         slug: 'aria-roles',
         score: 0,
@@ -287,12 +283,24 @@ describe('toAuditOutputs', () => {
           issues: [
             {
               message:
-                '[`<div role="invalid-role">Content</div>`] Fix this: Ensure all values assigned to role="" correspond to valid ARIA roles ([example.com](https://example.com))',
+                '[`<div role="invalid-role">Content</div>`] Fix this: Ensure all values assigned to role="" correspond to valid ARIA roles',
               severity: 'error',
             },
           ],
         },
       },
     ]);
+  });
+});
+
+describe('createUrlSuffix', () => {
+  it('should return empty string for single URL', () => {
+    expect(createUrlSuffix('https://example.com', 1)).toBe('');
+  });
+
+  it('should return formatted suffix for multiple URLs', () => {
+    expect(createUrlSuffix('https://example.com', 2)).toBe(
+      ' ([example.com](https://example.com))',
+    );
   });
 });

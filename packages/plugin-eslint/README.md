@@ -43,7 +43,7 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
 
 4. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.js`).
 
-   Pass in the path to your ESLint config file, along with glob patterns for which files you wish to target (relative to `process.cwd()`).
+   The simplest configuration uses default settings and lints the current directory:
 
    ```js
    import eslintPlugin from '@code-pushup/eslint-plugin';
@@ -52,7 +52,21 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
      // ...
      plugins: [
        // ...
-       await eslintPlugin({ eslintrc: '.eslintrc.js', patterns: ['src/**/*.js'] }),
+       await eslintPlugin(),
+     ],
+   };
+   ```
+
+   You can optionally specify a custom ESLint config file and/or glob patterns for target files (relative to `process.cwd()`):
+
+   ```js
+   import eslintPlugin from '@code-pushup/eslint-plugin';
+
+   export default {
+     // ...
+     plugins: [
+       // ...
+       await eslintPlugin({ eslintrc: './eslint.config.js', patterns: ['src/**/*.js'] }),
      ],
    };
    ```
@@ -105,7 +119,7 @@ export default {
   plugins: [
     // ...
     await eslintPlugin(
-      { eslintrc: '.eslintrc.js', patterns: ['src/**/*.js'] },
+      { eslintrc: 'eslint.config.js', patterns: ['src/**/*.js'] },
       {
         groups: [
           {
@@ -239,19 +253,13 @@ The artifacts feature supports loading ESLint JSON reports that follow the stand
 
 ### Basic artifact configuration
 
-Specify the path(s) to your ESLint JSON report files:
+Specify the path(s) to your ESLint JSON report files in the artifacts option. If you don't need custom lint patterns, pass an empty object as the first parameter:
 
 ```js
 import eslintPlugin from '@code-pushup/eslint-plugin';
 
 export default {
-  plugins: [
-    await eslintPlugin({
-      artifacts: {
-        artifactsPaths: './eslint-report.json',
-      },
-    }),
-  ],
+  plugins: [await eslintPlugin({}, { artifacts: { artifactsPaths: './eslint-report.json' } })],
 };
 ```
 
@@ -262,11 +270,14 @@ Use glob patterns to aggregate results from multiple files:
 ```js
 export default {
   plugins: [
-    await eslintPlugin({
-      artifacts: {
-        artifactsPaths: ['packages/**/eslint-report.json', 'apps/**/.eslint/*.json'],
+    await eslintPlugin(
+      {},
+      {
+        artifacts: {
+          artifactsPaths: ['packages/**/eslint-report.json', 'apps/**/.eslint/*.json'],
+        },
       },
-    }),
+    ),
   ],
 };
 ```
@@ -278,12 +289,15 @@ If you need to generate the artifacts before loading them, use the `generateArti
 ```js
 export default {
   plugins: [
-    await eslintPlugin({
-      artifacts: {
-        generateArtifactsCommand: 'npm run lint:report',
-        artifactsPaths: './eslint-report.json',
+    await eslintPlugin(
+      {},
+      {
+        artifacts: {
+          generateArtifactsCommand: 'npm run lint:report',
+          artifactsPaths: './eslint-report.json',
+        },
       },
-    }),
+    ),
   ],
 };
 ```
@@ -293,15 +307,18 @@ You can also specify the command with arguments:
 ```js
 export default {
   plugins: [
-    await eslintPlugin({
-      artifacts: {
-        generateArtifactsCommand: {
-          command: 'eslint',
-          args: ['src/**/*.{js,ts}', '--format=json', '--output-file=eslint-report.json'],
+    await eslintPlugin(
+      {},
+      {
+        artifacts: {
+          generateArtifactsCommand: {
+            command: 'eslint',
+            args: ['src/**/*.{js,ts}', '--format=json', '--output-file=eslint-report.json'],
+          },
+          artifactsPaths: './eslint-report.json',
         },
-        artifactsPaths: './eslint-report.json',
       },
-    }),
+    ),
   ],
 };
 ```

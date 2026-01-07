@@ -1,5 +1,5 @@
 import { describe } from 'vitest';
-import { reportMock } from '@code-pushup/test-utils';
+import { reportMock } from '@code-pushup/test-fixtures';
 import { generateMdReport } from './generate-md-report.js';
 import { scoreReport } from './scoring.js';
 import { sortReport } from './sorting.js';

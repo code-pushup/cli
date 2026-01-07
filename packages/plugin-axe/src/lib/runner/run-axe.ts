@@ -18,7 +18,7 @@ import {
   pluralizeToken,
 } from '@code-pushup/utils';
 import { type SetupFunction, runSetup } from './setup.js';
-import { toAuditOutputs } from './transform.js';
+import { createUrlSuffix, toAuditOutputs } from './transform.js';
 
 export type AxeUrlArgs = {
   url: string;
@@ -58,7 +58,10 @@ export class AxeRunner {
         const page = await context.newPage();
         try {
           const axeResults = await analyzePage(page, args);
-          const auditOutputs = toAuditOutputs(axeResults, url);
+          const auditOutputs = toAuditOutputs(
+            axeResults,
+            createUrlSuffix(url, urlsCount),
+          );
           return {
             message: `${prefix} Analyzed URL ${url}`,
             result: { url, axeResults, auditOutputs },
