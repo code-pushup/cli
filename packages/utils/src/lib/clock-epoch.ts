@@ -25,6 +25,12 @@ export type EpochClockOptions = {
   pid?: number;
   tid?: number;
 };
+
+type MaybePerformance = typeof performance & {
+  timeOrigin?: number;
+  now?: number;
+};
+
 /**
  * Creates epoch-based clock utility.
  * Epoch time has been the time since January 1, 1970 (UNIX epoch).
@@ -36,12 +42,12 @@ export function epochClock(init: EpochClockOptions = {}) {
   const tid = init.tid ?? threadId;
 
   const timeOriginMs = hasTimeOrigin()
-    ? (performance as { timeOrigin: number | undefined }).timeOrigin
-    : undefined;
+    ? (performance as MaybePerformance).timeOrigin
+    : Date.now();
 
   const epochNowUs = (): Microseconds => {
     if (hasTimeOrigin()) {
-      return msToUs(performance.timeOrigin + performance.now());
+      return msToUs(timeOriginMs + performance.now());
     }
     return msToUs(Date.now());
   };
@@ -51,10 +57,10 @@ export function epochClock(init: EpochClockOptions = {}) {
   const fromEpochMs = msToUs;
 
   const fromPerfMs = (perfMs: Milliseconds): Microseconds => {
-    if (timeOriginMs === undefined) {
-      return epochNowUs() - msToUs(performance.now() - perfMs);
+    if (hasTimeOrigin()) {
+      return msToUs(timeOriginMs + perfMs);
     }
-    return msToUs(timeOriginMs + perfMs);
+    return epochNowUs() - msToUs(performance.now() - perfMs);
   };
 
   const fromEntryStartTimeMs = fromPerfMs;

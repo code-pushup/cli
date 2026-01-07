@@ -62,7 +62,7 @@ describe('epochClock', () => {
       timeOrigin: undefined,
     });
     const c = epochClock();
-    expect(c.timeOriginMs).toBeUndefined();
+    expect(c.timeOriginMs).toBe(1_000_000);
     expect(c.epochNowUs()).toBe(1_000_000_000); // Date.now() * 1000 when performance unavailable
   });
 
@@ -72,7 +72,7 @@ describe('epochClock', () => {
       timeOrigin: undefined,
     });
     const c = epochClock();
-    expect(c.timeOriginMs).toBeUndefined();
+    expect(c.timeOriginMs).toBe(1_000_000);
     expect(c.fromPerfMs(100)).toBe(500_100_000); // epochNowUs() - msToUs(performance.now() - perfMs)
   });
 
