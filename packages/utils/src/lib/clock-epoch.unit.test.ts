@@ -1,11 +1,7 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { defaultClock, epochClock } from './clock-epoch.js';
 
 describe('epochClock', () => {
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
-
   it('should create epoch clock with defaults', () => {
     const c = epochClock();
     expect(c.timeOriginMs).toBe(500_000);
