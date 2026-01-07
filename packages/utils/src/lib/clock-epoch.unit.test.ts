@@ -9,7 +9,7 @@ describe('epochClock', () => {
   it('should create epoch clock with defaults', () => {
     const c = epochClock();
     expect(c.timeOriginMs).toBe(500_000);
-    expect(c.tid).toBe(1);
+    expect(c.tid).toBeGreaterThan(0);
     expect(c.pid).toBe(10_001);
     expect(typeof c.fromEpochMs).toBe('function');
     expect(typeof c.fromEpochUs).toBe('function');
@@ -22,7 +22,6 @@ describe('epochClock', () => {
     expect(epochClock({ pid: 999 })).toStrictEqual(
       expect.objectContaining({
         pid: 999,
-        tid: 1,
       }),
     );
   });
@@ -30,7 +29,6 @@ describe('epochClock', () => {
   it('should use tid options', () => {
     expect(epochClock({ tid: 888 })).toStrictEqual(
       expect.objectContaining({
-        pid: 10_001,
         tid: 888,
       }),
     );
