@@ -26,15 +26,15 @@ vi.mock('node:perf_hooks', () => ({
 
 class MockSink<T> implements Sink<T, unknown> {
   open(): void {
-    throw new Error('Method not implemented.');
+    throw new Error(`Method not implemented in ${this.constructor.name}.`);
   }
 
   close(): void {
-    throw new Error('Method not implemented.');
+    throw new Error(`Method not implemented in ${this.constructor.name}.`);
   }
 
-  encode(input: T): unknown {
-    throw new Error('Method not implemented.');
+  encode(_input: T): unknown {
+    throw new Error(`Method not implemented in ${this.constructor.name}.`);
   }
 
   written: T[] = [];
@@ -59,8 +59,7 @@ const mockMeasureEntry = {
 } as PerformanceEntry;
 
 describe('PerformanceObserverHandle', () => {
-  let getEntriesByTypeSpy = vi.spyOn(performance, 'getEntriesByType');
-  let observedTrigger: (() => void) | undefined;
+  const getEntriesByTypeSpy = vi.spyOn(performance, 'getEntriesByType');
   let mockObserverInstance: {
     observe: MockedFunction<any>;
     disconnect: MockedFunction<any>;

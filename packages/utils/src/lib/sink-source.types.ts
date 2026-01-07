@@ -1,41 +1,41 @@
-export interface Encoder<I, O> {
-  encode(input: I): O;
-}
+export type Encoder<I, O> = {
+  encode: (input: I) => O;
+};
 
-export interface Decoder<O, I> {
-  decode(output: O): I;
-}
+export type Decoder<O, I> = {
+  decode: (output: O) => I;
+};
 
-export interface Sink<I, O> extends Encoder<I, O> {
-  open(): void;
-  write(input: I): void;
-  close(): void;
-}
+export type Sink<I, O> = {
+  open: () => void;
+  write: (input: I) => void;
+  close: () => void;
+} & Encoder<I, O>;
 
-export interface Buffered {
-  flush(): void;
-}
-export interface BufferedSink<I, O> extends Sink<I, O>, Buffered {}
+export type Buffered = {
+  flush: () => void;
+};
+export type BufferedSink<I, O> = {} & Sink<I, O> & Buffered;
 
-export interface Source<I, O = any> {
-  read?(): O;
-  decode?(input: I): O;
-}
+export type Source<I, O = unknown> = {
+  read?: () => O;
+  decode?: (input: I) => O;
+};
 
-export interface Recoverable {
-  recover(): RecoverResult;
-  repack(): void;
-  finalize(): void;
-}
+export type Recoverable = {
+  recover: () => RecoverResult;
+  repack: () => void;
+  finalize: () => void;
+};
 
-export interface RecoverResult<T = any> {
+export type RecoverResult<T = unknown> = {
   records: T[];
-  errors: Array<{ lineNo: number; line: string; error: Error }>;
+  errors: { lineNo: number; line: string; error: Error }[];
   partialTail: string | null;
-}
+};
 
-export interface RecoverOptions<T = any> {
+export type RecoverOptions = {
   keepInvalid?: boolean;
-}
+};
 
-export interface Output<I, O> extends BufferedSink<I, O> {}
+export type Output<I, O> = {} & BufferedSink<I, O>;
