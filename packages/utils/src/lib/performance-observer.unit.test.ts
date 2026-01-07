@@ -233,21 +233,6 @@ describe('PerformanceObserverHandle', () => {
     ]);
   });
 
-  it('should skip already processed entries', () => {
-    const observer = new PerformanceObserverHandle({
-      sink: mockSink,
-      encode: encodeFn,
-    });
-
-    getEntriesByTypeSpy.mockReturnValue([mockMarkEntry]);
-
-    observer.flush();
-    observer.flush();
-
-    expect(encodeFn).toHaveBeenCalledTimes(1);
-    expect(mockSink.written).toStrictEqual(['test-mark:mark']);
-  });
-
   it('should clear processed entries when clear=true', () => {
     const observer = new PerformanceObserverHandle({
       sink: mockSink,

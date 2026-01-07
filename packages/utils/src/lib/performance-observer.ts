@@ -21,7 +21,6 @@ export class PerformanceObserverHandle<T>
   #captureBuffered: boolean;
   #observedEntryCount: number;
   #flushThreshold: number;
-  #processedEntries = new Set<string>();
   #sink: Sink<T, unknown>;
   #observer: PerformanceObserver | undefined;
   #closed = false;
@@ -68,7 +67,6 @@ export class PerformanceObserverHandle<T>
     // Process all entries
     entries
       .filter(e => e.entryType === 'mark' || e.entryType === 'measure')
-      .filter(e => clear || !this.#processedEntries.has(e.name))
       .forEach(e => {
         const encoded = this.encode(e);
         encoded.forEach(item => {
@@ -76,15 +74,12 @@ export class PerformanceObserverHandle<T>
         });
 
         if (clear) {
-          this.#processedEntries.delete(e.name);
           if (e.entryType === 'mark') {
             performance.clearMarks(e.name);
           }
           if (e.entryType === 'measure') {
             performance.clearMeasures(e.name);
           }
-        } else {
-          this.#processedEntries.add(e.name);
         }
       });
   }
