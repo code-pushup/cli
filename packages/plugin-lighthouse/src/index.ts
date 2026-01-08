@@ -6,7 +6,12 @@ export {
   LIGHTHOUSE_PLUGIN_SLUG,
   LIGHTHOUSE_OUTPUT_PATH,
 } from './lib/constants.js';
-export { lighthouseAuditRef, lighthouseGroupRef } from './lib/utils.js';
+export {
+  lighthouseAuditRef,
+  lighthouseAuditRefs,
+  lighthouseGroupRef,
+  lighthouseGroupRefs,
+} from './lib/utils.js';
 export type { LighthouseGroupSlug, LighthouseOptions } from './lib/types.js';
 export { lighthousePlugin } from './lib/lighthouse-plugin.js';
 export default lighthousePlugin;
