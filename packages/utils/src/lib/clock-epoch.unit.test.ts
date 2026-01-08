@@ -7,11 +7,11 @@ describe('epochClock', () => {
     expect(c.timeOriginMs).toBe(500_000);
     expect(c.tid).toBe(2);
     expect(c.pid).toBe(10_001);
-    expect(typeof c.fromEpochMs).toBe('function');
-    expect(typeof c.fromEpochUs).toBe('function');
-    expect(typeof c.fromPerfMs).toBe('function');
-    expect(typeof c.fromEntryStartTimeMs).toBe('function');
-    expect(typeof c.fromDateNowMs).toBe('function');
+    expect(c.fromEpochMs).toBeFunction();
+    expect(c.fromEpochUs).toBeFunction();
+    expect(c.fromPerfMs).toBeFunction();
+    expect(c.fromEntryStartTimeMs).toBeFunction();
+    expect(c.fromDateNowMs).toBeFunction();
   });
 
   it('should use pid options', () => {
