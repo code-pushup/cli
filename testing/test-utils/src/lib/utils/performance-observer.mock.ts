@@ -5,6 +5,7 @@ type EntryLike = Pick<
 
 export class MockPerformanceObserver {
   static instances: MockPerformanceObserver[] = [];
+  static globalEntries: PerformanceEntry[] = [];
 
   static lastInstance(): MockPerformanceObserver | undefined {
     return this.instances.at(-1);
@@ -12,7 +13,6 @@ export class MockPerformanceObserver {
 
   buffered = false;
   private observing = false;
-  bufferedEntries: PerformanceEntry[] = [];
 
   constructor(cb: PerformanceObserverCallback) {
     MockPerformanceObserver.instances.push(this);
@@ -25,7 +25,6 @@ export class MockPerformanceObserver {
 
   disconnect() {
     this.observing = false;
-    this.bufferedEntries = [];
     const index = MockPerformanceObserver.instances.indexOf(this);
     if (index > -1) {
       MockPerformanceObserver.instances.splice(index, 1);
@@ -37,7 +36,7 @@ export class MockPerformanceObserver {
     if (!this.observing) return;
 
     const perfEntries = entries as unknown as PerformanceEntry[];
-    this.bufferedEntries.push(...perfEntries);
+    MockPerformanceObserver.globalEntries.push(...perfEntries);
 
     // For unit tests, don't call the callback automatically to avoid complex interactions
     // Just buffer the entries so takeRecords() can return them
