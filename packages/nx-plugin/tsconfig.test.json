@@ -7,7 +7,7 @@
   "include": [
     "vitest.unit.config.ts",
     "vitest.int.config.ts",
-    "mock/**/*.ts",
+    "mocks/**/*.ts",
     "src/**/*.test.ts",
     "src/**/*.test.tsx",
     "src/**/*.test.js",
