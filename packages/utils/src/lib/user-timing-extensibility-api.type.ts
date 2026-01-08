@@ -80,18 +80,3 @@ export type MarkOptionsWithDevtools = {
 export type MeasureOptionsWithDevtools = {
   detail?: WithDevToolsPayload<TrackEntryPayload>;
 } & Omit<MeasureOptions, 'detail'>;
-
-// Mimics performance.mark/measure API with devtools extensions
-export type NativePerformanceAPI = {
-  mark: (name: string, options?: MarkOptionsWithDevtools) => PerformanceMark;
-
-  measure: ((
-    name: string,
-    options: MeasureOptionsWithDevtools,
-  ) => PerformanceMeasure) &
-    ((
-      name: string,
-      startMark?: string,
-      endMark?: string,
-    ) => PerformanceMeasure);
-};
