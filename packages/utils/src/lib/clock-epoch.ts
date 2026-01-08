@@ -3,7 +3,6 @@ import { threadId } from 'node:worker_threads';
 
 export type Microseconds = number;
 export type Milliseconds = number;
-export type EpochMilliseconds = number;
 
 const msToUs = (ms: number): Microseconds => Math.round(ms * 1000);
 const usToUs = (us: number): Microseconds => Math.round(us);
