@@ -9,6 +9,7 @@ import type {
 } from './user-timing-extensibility-api.type.js';
 
 const dataTypeTrackEntry = 'track-entry';
+const dataTypeMarker = 'marker';
 
 export function objToPropertiesPayload(
   object: Record<string, string | number | boolean | object | undefined>,
@@ -34,7 +35,7 @@ export function markerPayload(
   options?: Omit<MarkerPayload, 'dataType'>,
 ): MarkerPayload {
   return {
-    dataType: 'marker',
+    dataType: dataTypeMarker,
     ...options,
   };
 }
@@ -54,7 +55,7 @@ export function markerErrorPayload<T extends DevToolsColor>(
   options?: Omit<MarkerPayload, 'dataType' | 'color'>,
 ): MarkerPayload {
   return {
-    dataType: 'marker',
+    dataType: dataTypeMarker,
     color: 'error' as T,
     ...options,
   } satisfies MarkerPayload;
@@ -129,7 +130,7 @@ export function errorToMarkerPayload<T extends DevToolsColor>(
 ): MarkerPayload {
   const { properties, tooltipText } = detail ?? {};
   return {
-    dataType: 'marker',
+    dataType: dataTypeMarker,
     color: 'error' as T,
     ...errorToEntryMeta(error, {
       properties,
