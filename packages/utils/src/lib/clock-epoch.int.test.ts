@@ -90,10 +90,10 @@ describe('defaultClock', () => {
       }),
     );
 
-    expect(typeof c.fromEpochMs).toBe('function');
-    expect(typeof c.fromEpochUs).toBe('function');
-    expect(typeof c.fromPerfMs).toBe('function');
-    expect(typeof c.fromEntryStartTimeMs).toBe('function');
-    expect(typeof c.fromDateNowMs).toBe('function');
+    expect(c.fromEpochMs).toBeFunction();
+    expect(c.fromEpochUs).toBeFunction();
+    expect(c.fromPerfMs).toBeFunction();
+    expect(c.fromEntryStartTimeMs).toBeFunction();
+    expect(c.fromDateNowMs).toBeFunction();
   });
 });
