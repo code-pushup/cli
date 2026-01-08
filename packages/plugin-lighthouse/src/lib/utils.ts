@@ -1,9 +1,23 @@
-import type { Audit, CategoryRef, Group } from '@code-pushup/models';
-import { toArray } from '@code-pushup/utils';
+import {
+  type Audit,
+  type CategoryRef,
+  type Group,
+  type PluginConfig,
+  validate,
+} from '@code-pushup/models';
+import {
+  expandCategoryRefs,
+  extractGroupSlugs,
+  pluginUrlContextSchema,
+  toArray,
+} from '@code-pushup/utils';
 import { LIGHTHOUSE_GROUP_SLUGS, LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
 import type { LighthouseCliFlags } from './runner/types.js';
 import type { LighthouseGroupSlug } from './types.js';
 
+/**
+ * @deprecated Use `lighthouseGroupRefs` instead for multi-URL support.
+ */
 export function lighthouseGroupRef(
   groupSlug: LighthouseGroupSlug,
   weight = 1,
@@ -16,6 +30,9 @@ export function lighthouseGroupRef(
   };
 }
 
+/**
+ * @deprecated Use `lighthouseAuditRefs` instead for multi-URL support.
+ */
 export function lighthouseAuditRef(auditSlug: string, weight = 1): CategoryRef {
   return {
     plugin: LIGHTHOUSE_PLUGIN_SLUG,
@@ -23,6 +40,81 @@ export function lighthouseAuditRef(auditSlug: string, weight = 1): CategoryRef {
     type: 'audit',
     weight,
   };
+}
+
+/**
+ * Creates category refs for Lighthouse groups with multi-URL support.
+ *
+ * @param plugin - Lighthouse plugin instance
+ * @param groupSlug - Optional group slug; if omitted, includes all groups
+ * @param groupWeight - Optional weight for the ref(s)
+ * @returns Array of category refs, expanded for each URL in multi-URL configs
+ */
+export function lighthouseGroupRefs(
+  plugin: Pick<PluginConfig, 'groups' | 'context'>,
+  groupSlug?: LighthouseGroupSlug,
+  groupWeight?: number,
+): CategoryRef[] {
+  const context = validate(pluginUrlContextSchema, plugin.context);
+  if (groupSlug) {
+    return expandCategoryRefs(
+      {
+        plugin: LIGHTHOUSE_PLUGIN_SLUG,
+        slug: groupSlug,
+        type: 'group',
+        weight: groupWeight,
+      },
+      context,
+    );
+  }
+  return lighthouseGroupSlugs(plugin).flatMap(slug =>
+    expandCategoryRefs(
+      { plugin: LIGHTHOUSE_PLUGIN_SLUG, slug, type: 'group' },
+      context,
+    ),
+  );
+}
+
+/**
+ * Creates category refs for Lighthouse audits with multi-URL support.
+ *
+ * @param plugin - Lighthouse plugin instance
+ * @param auditSlug - Optional audit slug; if omitted, includes all audits
+ * @param auditWeight - Optional weight for the ref(s)
+ * @returns Array of category refs, expanded for each URL in multi-URL configs
+ */
+export function lighthouseAuditRefs(
+  plugin: Pick<PluginConfig, 'audits' | 'context'>,
+  auditSlug?: string,
+  auditWeight?: number,
+): CategoryRef[] {
+  const context = validate(pluginUrlContextSchema, plugin.context);
+  if (auditSlug) {
+    return expandCategoryRefs(
+      {
+        plugin: LIGHTHOUSE_PLUGIN_SLUG,
+        slug: auditSlug,
+        type: 'audit',
+        weight: auditWeight,
+      },
+      context,
+    );
+  }
+  return plugin.audits.flatMap(({ slug }) =>
+    expandCategoryRefs(
+      { plugin: LIGHTHOUSE_PLUGIN_SLUG, slug, type: 'audit' },
+      context,
+    ),
+  );
+}
+
+export function lighthouseGroupSlugs(
+  plugin: Pick<PluginConfig, 'groups'>,
+): LighthouseGroupSlug[] {
+  if (!plugin.groups) {
+    return [];
+  }
+  return extractGroupSlugs(plugin.groups).filter(isLighthouseGroupSlug);
 }
 
 class NotImplementedError extends Error {
