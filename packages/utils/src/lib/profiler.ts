@@ -41,9 +41,9 @@ export const profiler = getProfiler({
       color: 'primary-dark',
     },
     externalTrack: {
-      track: undefined,
-      trackGroup: undefined,
-      color: undefined,
+      track: 'NX',
+      trackGroup: `External`,
+      color: 'tertiary-light',
     },
     pluginEslint: {
       track: 'Plugins Eslint',
