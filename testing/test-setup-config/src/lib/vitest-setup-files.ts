@@ -24,6 +24,7 @@ const UNIT_TEST_SETUP_FILES = [
   '../../testing/test-setup/src/lib/fs.mock.ts',
   '../../testing/test-setup/src/lib/logger.mock.ts',
   '../../testing/test-setup/src/lib/git.mock.ts',
+  '../../testing/test-setup/src/lib/performance.setup-file.ts',
   '../../testing/test-setup/src/lib/portal-client.mock.ts',
   ...CUSTOM_MATCHERS,
 ] as const;

@@ -1,90 +1,80 @@
 import {
+  type EntryType,
   type PerformanceEntry,
   PerformanceObserver,
+  type PerformanceObserverEntryList,
   performance,
 } from 'node:perf_hooks';
-import type { Buffered, Encoder, Sink } from './sink-source.types.js';
+import type { Buffered, Encoder, Observer, Sink } from './sink-source.types.js';
 
 export const DEFAULT_FLUSH_THRESHOLD = 20;
 
 export type PerformanceObserverOptions<T> = {
   sink: Sink<T, unknown>;
   encode: (entry: PerformanceEntry) => T[];
-  captureBuffered?: boolean;
+  buffered?: boolean;
   flushThreshold?: number;
 };
 
-export class PerformanceObserverHandle<T>
-  implements Buffered, Encoder<PerformanceEntry, T[]>
+export class PerformanceObserverSink<T>
+  implements Observer, Buffered, Encoder<PerformanceEntry, T[]>
 {
   #encode: (entry: PerformanceEntry) => T[];
-  #captureBuffered: boolean;
-  #observedEntryCount: number;
+  #buffered: boolean;
   #flushThreshold: number;
   #sink: Sink<T, unknown>;
   #observer: PerformanceObserver | undefined;
-  #closed = false;
+  #observedTypes: EntryType[] = ['mark', 'measure'];
+  #getEntries = (list: PerformanceObserverEntryList) =>
+    this.#observedTypes.flatMap(t => list.getEntriesByType(t));
+  #observedCount: number = 0;
 
   constructor(options: PerformanceObserverOptions<T>) {
     this.#encode = options.encode;
     this.#sink = options.sink;
-    this.#captureBuffered = options.captureBuffered ?? false;
+    this.#buffered = options.buffered ?? false;
     this.#flushThreshold = options.flushThreshold ?? DEFAULT_FLUSH_THRESHOLD;
-    this.#observedEntryCount = 0;
   }
 
   encode(entry: PerformanceEntry): T[] {
     return this.#encode(entry);
   }
 
-  connect(): void {
-    if (this.#observer || this.#closed) {
+  subscribe(): void {
+    if (this.#observer) {
       return;
     }
-    this.#observer = new PerformanceObserver(() => {
-      this.#observedEntryCount++;
-      if (this.#observedEntryCount >= this.#flushThreshold) {
+
+    this.#observer = new PerformanceObserver(list => {
+      const entries = this.#getEntries(list);
+      this.#observedCount += entries.length;
+      if (this.#observedCount >= this.#flushThreshold) {
         this.flush();
-        this.#observedEntryCount = 0;
       }
     });
 
     this.#observer.observe({
-      entryTypes: ['mark', 'measure'],
-      buffered: this.#captureBuffered,
+      entryTypes: this.#observedTypes,
+      buffered: this.#buffered,
     });
   }
 
-  flush(clear = false): void {
-    if (this.#closed || !this.#sink) {
+  flush(): void {
+    if (!this.#observer) {
       return;
     }
-    const entries = [
-      ...performance.getEntriesByType('mark'),
-      ...performance.getEntriesByType('measure'),
-    ];
 
-    // Process all entries
-    entries
-      .filter(e => e.entryType === 'mark' || e.entryType === 'measure')
-      .forEach(e => {
-        const encoded = this.encode(e);
-        encoded.forEach(item => {
-          this.#sink.write(item);
-        });
-
-        if (clear) {
-          if (e.entryType === 'mark') {
-            performance.clearMarks(e.name);
-          }
-          if (e.entryType === 'measure') {
-            performance.clearMeasures(e.name);
-          }
-        }
+    const entries = this.#getEntries(performance);
+    entries.forEach(entry => {
+      const encoded = this.encode(entry);
+      encoded.forEach(item => {
+        this.#sink.write(item);
       });
+    });
+    this.#observedCount = 0;
   }
 
-  disconnect(): void {
+  unsubscribe(): void {
     if (!this.#observer) {
       return;
     }
@@ -92,16 +82,7 @@ export class PerformanceObserverHandle<T>
     this.#observer = undefined;
   }
 
-  close(): void {
-    if (this.#closed) {
-      return;
-    }
-    this.flush();
-    this.#closed = true;
-    this.disconnect();
-  }
-
-  isConnected(): boolean {
-    return this.#observer !== undefined && !this.#closed;
+  isSubscribed(): boolean {
+    return this.#observer !== undefined;
   }
 }
