@@ -27,8 +27,7 @@ describe('epochClock', () => {
     expect(nowUs).toBe(Math.round(nowUs));
     const expectedUs = Date.now() * 1000;
 
-    expect(nowUs).toBeGreaterThan(expectedUs - 1000);
-    expect(nowUs).toBeLessThan(expectedUs + 1000);
+    expect(nowUs).toBeWithin(expectedUs - 1000, expectedUs + 1000);
   });
 
   it('should convert epoch milliseconds to microseconds correctly', () => {
