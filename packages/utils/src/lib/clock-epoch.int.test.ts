@@ -35,8 +35,8 @@ describe('epochClock', () => {
     const epochMs = Date.now();
 
     const result = c.fromEpochMs(epochMs);
+    expect(result).toBeInteger();
     expect(result).toBe(Math.round(epochMs * 1000));
-    expect(result).toBe(Math.round(result));
   });
 
   it('should convert epoch microseconds to microseconds correctly', () => {
@@ -56,7 +56,7 @@ describe('epochClock', () => {
 
     const result = c.fromPerfMs(perfMs);
     expect(result).toBe(expectedUs);
-    expect(result).toBe(Math.round(result));
+    expect(result).toBeInteger();
   });
 
   it('should convert entry start time milliseconds to epoch microseconds correctly', () => {
