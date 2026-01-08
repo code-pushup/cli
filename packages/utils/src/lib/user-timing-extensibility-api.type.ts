@@ -1,9 +1,4 @@
-import type {
-  MarkOptions,
-  MeasureOptions,
-  PerformanceMark,
-  PerformanceMeasure,
-} from 'node:perf_hooks';
+import type { MarkOptions, MeasureOptions } from 'node:perf_hooks';
 
 export type DevToolsFeedbackColor = 'error' | 'warning';
 
