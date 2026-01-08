@@ -14,6 +14,7 @@ import {
 } from './performance-observer.js';
 import type { Sink } from './sink-source.types';
 
+// @TODO remove duplicate when file-sink is implemented
 class MockSink implements Sink<string, string> {
   private writtenItems: string[] = [];
   private closed = false;
@@ -40,10 +41,6 @@ class MockSink implements Sink<string, string> {
 
   getWrittenItems(): string[] {
     return [...this.writtenItems];
-  }
-
-  clearWrittenItems(): void {
-    this.writtenItems = [];
   }
 }
 
