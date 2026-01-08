@@ -4,6 +4,7 @@ import {
   formatAsciiTable,
   logger,
   pluralizeToken,
+  profiler,
 } from '@code-pushup/utils';
 import type { FinalCoveragePluginConfig } from '../config.js';
 import { slugToTitle } from '../format.js';
@@ -55,13 +56,8 @@ export function createRunnerFunction(
       {
         ...profiler.measureConfig.tracks.pluginCoverage,
         success: (result: AuditOutputs) => ({
-          properties: [
-            ['Reports', String(reports.length)],
-            ['Audits', String(result.length)],
-            ['Coverage Types', String(coverageTypes.length)],
-            ['Command Executed', coverageToolCommand ? 'true' : 'false'],
-          ],
-          tooltipText: `Processed ${reports.length} coverage reports into ${result.length} audits`,
+          properties: [['Audits', String(result.length)]],
+          tooltipText: `Generated ${result.length} coverage audits`,
         }),
       },
     );

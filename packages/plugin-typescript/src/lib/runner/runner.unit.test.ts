@@ -53,49 +53,49 @@ describe('createRunnerFunction', () => {
     getTypeScriptDiagnosticsSpy.mockReset();
   });
 
-  it('should return empty array if no diagnostics are found', () => {
+  it('should return empty array if no diagnostics are found', async () => {
     getTypeScriptDiagnosticsSpy.mockReturnValue([]);
     const runner = createRunnerFunction({
       tsconfig: 'tsconfig.json',
       expectedAudits: [],
     });
-    expect(runner(runnerArgs)).toStrictEqual([]);
+    await expect(runner(runnerArgs)).resolves.toStrictEqual([]);
   });
 
-  it('should return empty array if no supported diagnostics are found', () => {
+  it('should return empty array if no supported diagnostics are found', async () => {
     getTypeScriptDiagnosticsSpy.mockReturnValue([mockSemanticDiagnostic]);
     const runner = createRunnerFunction({
       tsconfig: 'tsconfig.json',
       expectedAudits: [],
     });
-    expect(runner(runnerArgs)).toStrictEqual([]);
+    await expect(runner(runnerArgs)).resolves.toStrictEqual([]);
   });
 
-  it('should pass the diagnostic code to tsCodeToSlug', () => {
+  it('should pass the diagnostic code to tsCodeToSlug', async () => {
     getTypeScriptDiagnosticsSpy.mockReturnValue([mockSemanticDiagnostic]);
     const runner = createRunnerFunction({
       tsconfig: 'tsconfig.json',
       expectedAudits: [],
     });
-    expect(runner(runnerArgs)).toStrictEqual([]);
+    await expect(runner(runnerArgs)).resolves.toStrictEqual([]);
     expect(tSCodeToAuditSlugSpy).toHaveBeenCalledTimes(1);
     expect(tSCodeToAuditSlugSpy).toHaveBeenCalledWith(semanticTsCode);
   });
 
-  it('should pass the diagnostic to getIssueFromDiagnostic', () => {
+  it('should pass the diagnostic to getIssueFromDiagnostic', async () => {
     getTypeScriptDiagnosticsSpy.mockReturnValue([mockSemanticDiagnostic]);
     const runner = createRunnerFunction({
       tsconfig: 'tsconfig.json',
       expectedAudits: [],
     });
-    expect(runner(runnerArgs)).toStrictEqual([]);
+    await expect(runner(runnerArgs)).resolves.toStrictEqual([]);
     expect(getIssueFromDiagnosticSpy).toHaveBeenCalledTimes(1);
     expect(getIssueFromDiagnosticSpy).toHaveBeenCalledWith(
       mockSemanticDiagnostic,
     );
   });
 
-  it('should return multiple issues per audit', () => {
+  it('should return multiple issues per audit', async () => {
     const code = 2222;
     getTypeScriptDiagnosticsSpy.mockReturnValue([
       mockSemanticDiagnostic,
@@ -110,7 +110,7 @@ describe('createRunnerFunction', () => {
       expectedAudits: [{ slug: 'semantic-errors' }],
     });
 
-    const auditOutputs = runner(runnerArgs);
+    const auditOutputs = await runner(runnerArgs);
     expect(auditOutputs).toStrictEqual([
       {
         slug: 'semantic-errors',
@@ -132,7 +132,7 @@ describe('createRunnerFunction', () => {
     expect(() => auditOutputsSchema.parse(auditOutputs)).not.toThrow();
   });
 
-  it('should return multiple audits', () => {
+  it('should return multiple audits', async () => {
     getTypeScriptDiagnosticsSpy.mockReturnValue([
       mockSyntacticDiagnostic,
       mockSemanticDiagnostic,
@@ -142,7 +142,7 @@ describe('createRunnerFunction', () => {
       expectedAudits: [{ slug: 'semantic-errors' }, { slug: 'syntax-errors' }],
     });
 
-    const auditOutputs = runner(runnerArgs);
+    const auditOutputs = await runner(runnerArgs);
     expect(auditOutputs).toStrictEqual([
       expect.objectContaining({
         slug: 'semantic-errors',
@@ -165,7 +165,7 @@ describe('createRunnerFunction', () => {
     ]);
   });
 
-  it('should return valid AuditOutput shape', () => {
+  it('should return valid AuditOutput shape', async () => {
     getTypeScriptDiagnosticsSpy.mockReturnValue([
       mockSyntacticDiagnostic,
       {
@@ -184,7 +184,7 @@ describe('createRunnerFunction', () => {
       tsconfig: 'tsconfig.json',
       expectedAudits: [{ slug: 'semantic-errors' }, { slug: 'syntax-errors' }],
     });
-    const auditOutputs = runner(runnerArgs);
+    const auditOutputs = await runner(runnerArgs);
     expect(() => auditOutputsSchema.parse(auditOutputs)).not.toThrow();
   });
 });

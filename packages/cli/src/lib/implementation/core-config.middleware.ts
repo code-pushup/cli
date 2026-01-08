@@ -40,43 +40,45 @@ function buildPersistConfig(
 export async function coreConfigMiddleware<
   T extends CoreConfigMiddlewareOptions,
 >(processArgs: T): Promise<GlobalOptions & CoreConfig & FilterOptions> {
-  const {
-    config,
-    tsconfig,
-    persist: cliPersist,
-    upload: cliUpload,
-    cache: cliCache,
-    ...remainingCliOptions
-  } = processArgs;
-
-  return logger.group('Loading configuration', async () => {
-    // Search for possible configuration file extensions if path is not given
-    const importedRc = config
-      ? await readRcByPath(config, tsconfig)
-      : await autoloadRc(tsconfig);
+  return profiler.measureAsync('cli:core-config-middleware', async () => {
     const {
-      persist: rcPersist,
-      upload: rcUpload,
-      ...remainingRcConfig
-    } = importedRc;
-    const upload =
-      rcUpload == null && cliUpload == null
-        ? undefined
-        : validate(uploadConfigSchema, { ...rcUpload, ...cliUpload });
+      config,
+      tsconfig,
+      persist: cliPersist,
+      upload: cliUpload,
+      cache: cliCache,
+      ...remainingCliOptions
+    } = processArgs;
 
-    const result: GlobalOptions & CoreConfig & FilterOptions = {
-      ...(config != null && { config }),
-      cache: normalizeCache(cliCache),
-      persist: buildPersistConfig(cliPersist, rcPersist),
-      ...(upload != null && { upload }),
-      ...remainingRcConfig,
-      ...remainingCliOptions,
-    };
+    return logger.group('Loading configuration', async () => {
+      // Search for possible configuration file extensions if path is not given
+      const importedRc = config
+        ? await readRcByPath(config, tsconfig)
+        : await autoloadRc(tsconfig);
+      const {
+        persist: rcPersist,
+        upload: rcUpload,
+        ...remainingRcConfig
+      } = importedRc;
+      const upload =
+        rcUpload == null && cliUpload == null
+          ? undefined
+          : validate(uploadConfigSchema, { ...rcUpload, ...cliUpload });
 
-    return {
-      message: `Parsed config: ${summarizeConfig(result)}`,
-      result,
-    };
+      const result: GlobalOptions & CoreConfig & FilterOptions = {
+        ...(config != null && { config }),
+        cache: normalizeCache(cliCache),
+        persist: buildPersistConfig(cliPersist, rcPersist),
+        ...(upload != null && { upload }),
+        ...remainingRcConfig,
+        ...remainingCliOptions,
+      };
+
+      return {
+        message: `Parsed config: ${summarizeConfig(result)}`,
+        result,
+      };
+    });
   });
 }
 

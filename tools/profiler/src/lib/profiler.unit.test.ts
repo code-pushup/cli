@@ -6,7 +6,10 @@ import {
   getProfiler,
   getProfiler as profilerSingleton,
 } from './profiler.js';
-import type { EntryMeta } from './user-timing-details.type.js';
+import type {
+  EntryMeta,
+  TrackEntryPayload,
+} from './user-timing-details.type.js';
 
 describe('measure method', () => {
   beforeEach(() => {
@@ -69,6 +72,26 @@ describe('measure method', () => {
       color: 'secondary-dark',
       group: 'Plugins',
     });
+  });
+
+  it('should accept colors configuration', () => {
+    const profiler = new Profiler({
+      colors: {
+        externalTooling: 'tertiary-dark',
+        internalTooling: 'secondary',
+      },
+    });
+
+    expect(profiler.colors).toEqual({
+      externalTooling: 'tertiary-dark',
+      internalTooling: 'secondary',
+    });
+  });
+
+  it('should default colors to empty object', () => {
+    const profiler = new Profiler();
+
+    expect(profiler.colors).toEqual({});
   });
 
   it('should add default payload on mark', () => {

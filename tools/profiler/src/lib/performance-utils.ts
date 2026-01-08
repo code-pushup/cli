@@ -56,7 +56,10 @@ export interface TrackControl<
     TrackStyle & TrackMeta
   >,
 > {
-  tracks: Tracks & { defaultTrack: TrackStyle & TrackMeta };
+  tracks: Tracks & {
+    defaultTrack: TrackStyle & TrackMeta;
+    externalTrack: TrackStyle & TrackMeta;
+  };
   errorHandler: (error: unknown) => EntryMeta;
 }
 
@@ -67,6 +70,7 @@ export type TrackControlOptions<
   >,
 > = {
   defaultTrack?: Partial<TrackMeta> & TrackStyle;
+  externalTrack?: Partial<TrackMeta> & TrackStyle;
   tracks?: Tracks;
   errorHandler?: (error: unknown) => EntryMeta;
 };
@@ -77,12 +81,21 @@ export function getTrackControl<
     TrackStyle & TrackMeta
   >,
 >(options: TrackControlOptions<Tracks> = {}): TrackControl<Tracks> {
-  const { defaultTrack, tracks = {} as Tracks, errorHandler } = options;
+  const {
+    defaultTrack,
+    externalTrack,
+    tracks = {} as Tracks,
+    errorHandler,
+  } = options;
   return {
     tracks: {
       defaultTrack: {
         track: 'Main',
         ...defaultTrack,
+      },
+      externalTrack: {
+        track: 'External',
+        ...externalTrack,
       },
       ...tracks,
     },

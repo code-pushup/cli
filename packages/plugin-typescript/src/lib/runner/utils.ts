@@ -8,7 +8,7 @@ import {
   sys,
 } from 'typescript';
 import type { Issue } from '@code-pushup/models';
-import { truncateIssueMessage } from '@code-pushup/utils';
+import { profiler, truncateIssueMessage } from '@code-pushup/utils';
 import { TS_CODE_RANGE_NAMES } from './ts-error-codes.js';
 import type { CodeRangeName } from './types.js';
 
@@ -90,28 +90,47 @@ export function getIssueFromDiagnostic(diag: Diagnostic) {
 }
 
 export function loadTargetConfig(tsConfigPath: string) {
-  const resolvedConfigPath = path.resolve(tsConfigPath);
-  const { config, error } = readConfigFile(resolvedConfigPath, sys.readFile);
+  return profiler.measure(
+    'plugin-typescript:config-loading',
+    () => {
+      const resolvedConfigPath = path.resolve(tsConfigPath);
+      const { config, error } = readConfigFile(
+        resolvedConfigPath,
+        sys.readFile,
+      );
 
-  if (error) {
-    throw new Error(
-      `Error reading TypeScript config file at ${tsConfigPath}:\n${error.messageText}`,
-    );
-  }
+      if (error) {
+        throw new Error(
+          `Error reading TypeScript config file at ${tsConfigPath}:\n${error.messageText}`,
+        );
+      }
 
-  const parsedConfig = parseJsonConfigFileContent(
-    config,
-    sys,
-    path.dirname(resolvedConfigPath),
-    {},
-    resolvedConfigPath,
+      const parsedConfig = parseJsonConfigFileContent(
+        config,
+        sys,
+        path.dirname(resolvedConfigPath),
+        {},
+        resolvedConfigPath,
+      );
+
+      if (parsedConfig.fileNames.length === 0) {
+        throw new Error(
+          'No files matched by the TypeScript configuration. Check your "include", "exclude" or "files" settings.',
+        );
+      }
+
+      return parsedConfig;
+    },
+    {
+      ...profiler.measureConfig.tracks.pluginTypescript,
+      color: 'tertiary',
+      success: parsedConfig => ({
+        properties: [
+          ['Config Path', tsConfigPath],
+          ['Files Matched', String(parsedConfig.fileNames.length)],
+        ],
+        tooltipText: `TypeScript config loaded from ${tsConfigPath} with ${parsedConfig.fileNames.length} files`,
+      }),
+    },
   );
-
-  if (parsedConfig.fileNames.length === 0) {
-    throw new Error(
-      'No files matched by the TypeScript configuration. Check your "include", "exclude" or "files" settings.',
-    );
-  }
-
-  return parsedConfig;
 }

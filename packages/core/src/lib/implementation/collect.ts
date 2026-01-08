@@ -37,7 +37,7 @@ export async function collect(options: CollectOptions): Promise<Report> {
     'core:get-latest-commit',
     () => getLatestCommit(),
     {
-      color: 'primary',
+      color: 'primary-light',
       success: (result: typeof commit) => ({
         properties: [
           ['Commit Found', result ? 'true' : 'false'],
@@ -67,7 +67,7 @@ export async function collect(options: CollectOptions): Promise<Report> {
     'core:execute-plugins',
     () => executePlugins({ plugins, persist, cache }),
     {
-      color: 'primary',
+      color: 'primary-light',
       success: (pluginOutputs: Awaited<ReturnType<typeof executePlugins>>) => ({
         properties: [['Plugins Executed', String(pluginOutputs.length)]],
         tooltipText: `Executed ${pluginOutputs.length} plugin(s) successfully`,

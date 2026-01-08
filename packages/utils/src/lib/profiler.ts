@@ -28,6 +28,9 @@ export const profiler = getProfiler({
   namePrefix: 'cp',
   enabled: true,
   captureBuffered: true,
+  colors: {
+    externalTooling: 'tertiary-dark',
+  },
   tracks: {
     defaultTrack: {
       track: 'Core',
@@ -36,6 +39,11 @@ export const profiler = getProfiler({
         args: process.argv.slice(3),
       })}`,
       color: 'primary-dark',
+    },
+    externalTrack: {
+      track: undefined,
+      trackGroup: undefined,
+      color: undefined,
     },
     pluginEslint: {
       track: 'Plugins Eslint',

@@ -4,7 +4,8 @@ import { sequentialWork, work } from '../test-utils.js';
 const trackGroup = '<✓> Code PushUp';
 const profiler = getProfiler({
   enabled: true,
-  fileBaseName: `api-span-${Date.now()}`,
+  namePrefix: 'cp',
+  fileBaseName: `api-measure-${Date.now()}`,
   tracks: {
     defaultTrack: {
       track: 'CLI',

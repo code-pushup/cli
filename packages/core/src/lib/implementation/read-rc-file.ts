@@ -37,7 +37,7 @@ export async function readRcByPath(
               });
             },
             {
-              color: 'primary',
+              color: 'primary-light',
               success: (result: Awaited<ReturnType<typeof importModule>>) => ({
                 properties: [
                   ['File Path', filePath],
@@ -73,6 +73,7 @@ export async function readRcByPath(
       return config;
     },
     {
+      color: 'primary',
       success: (config: CoreConfig) => ({
         properties: [
           ['Config File', path.relative(process.cwd(), filePath)],
@@ -130,6 +131,7 @@ export async function autoloadRc(tsconfig?: string): Promise<CoreConfig> {
           return '';
         },
         {
+          color: 'primary-light',
           success: (ext: string) => ({
             properties: [
               ['Config File Found', ext ? 'true' : 'false'],
@@ -154,7 +156,7 @@ export async function autoloadRc(tsconfig?: string): Promise<CoreConfig> {
       );
     },
     {
-      color: 'primary',
+      color: 'primary-light',
       success: (config: CoreConfig) => ({
         properties: [
           ['Auto-loaded', 'true'],

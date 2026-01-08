@@ -7,8 +7,7 @@ import { createRunnerFunction } from './runner.js';
 describe('createRunnerFunction', () => {
   it('should create valid audit outputs when called', async () => {
     const runnerFunction = createRunnerFunction({
-      tsconfig:
-        'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.all-audits.json',
+      tsconfig: 'mocks/fixtures/basic-setup/tsconfig.all-audits.json',
       expectedAudits: getAudits(),
     });
 

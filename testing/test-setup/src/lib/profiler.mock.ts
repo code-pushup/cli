@@ -6,8 +6,8 @@ vi.mock('@code-pushup/utils', async () => {
   return {
     ...actual,
     profiler: {
-      measure: vi.fn(async (name: string, fn: Function, options?: any) => {
-        return await fn();
+      measure: vi.fn((name: string, fn: Function, options?: any) => {
+        return fn();
       }),
       measureAsync: vi.fn(async (name: string, fn: Function, options?: any) => {
         return await fn();
@@ -19,6 +19,23 @@ vi.mock('@code-pushup/utils', async () => {
       getFilePathForExt: vi.fn(() => ''),
       flush: vi.fn(),
       close: vi.fn(),
+      measureConfig: {
+        tracks: {
+          pluginTypescript: {
+            track: 'Plugins TypeScript',
+            color: 'secondary-dark',
+          },
+          defaultTrack: {
+            track: 'Default',
+            color: 'primary',
+          },
+        },
+        errorHandler: vi.fn(),
+        getNames: vi.fn((name: string) => ({
+          startName: `${name}-start`,
+          endName: `${name}-end`,
+        })),
+      },
     },
   };
 });

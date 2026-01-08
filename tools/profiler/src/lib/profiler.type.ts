@@ -1,4 +1,5 @@
 import {
+  type ColorScheme,
   type EntryMeta,
   type TrackMeta,
   type TrackStyle,
@@ -27,4 +28,5 @@ export type ProfilerEntryOptions = {
     defaultTrack?: Partial<TrackMeta> & TrackStyle;
     errorHandler?: (error: unknown) => EntryMeta;
   };
+  colors?: ColorScheme;
 };

@@ -64,6 +64,17 @@ performance.measure('operation-duration', {
 });
 ```
 
+## Features
+
+![example-custom-track-all-open.png](docs/imgs/example-custom-track-all-open.png)
+![example-custom-track-click-entry.png](docs/imgs/example-custom-track-click-entry.png)
+![example-custom-track-closed.png](docs/imgs/example-custom-track-closed.png)
+![example-custom-track-external-group.png](docs/imgs/example-custom-track-external-group.png)
+![example-custom-track-group-open.png](docs/imgs/example-custom-track-group-open.png)
+![example-custom-track-hover-entry.png](docs/imgs/example-custom-track-hover-entry.png)
+![example-custom-track-track-open.png](docs/imgs/example-custom-track-track-open.png)
+![example-custom-track-unknown-timing-entry.png](docs/imgs/example-custom-track-unknown-timing-entry.png)
+
 ## User Timing
 
 User Timing API is supported in both Browser and Node.js environments.

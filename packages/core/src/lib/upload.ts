@@ -23,10 +23,10 @@ export async function upload(options: UploadOptions) {
     async () => {
       return logger.task('Uploading report to Portal', async () => {
         const portalClient = await profiler.measureAsync(
-          'core:upload:load-portal-client',
+          'core:load-portal-client',
           () => loadPortalClient(),
           {
-            color: 'primary',
+            color: 'primary-light',
             success: () => ({
               tooltipText: 'Portal client loaded successfully',
             }),
@@ -36,14 +36,14 @@ export async function upload(options: UploadOptions) {
         const { apiKey, server, organization, project, timeout } =
           options.upload;
         const report: Report = await profiler.measureAsync(
-          'core:upload:load-report',
+          'core:load-report',
           () =>
             loadReport({
               ...options.persist,
               format: 'json',
             }),
           {
-            color: 'primary',
+            color: 'primary-light',
             success: (report: Report) => ({
               properties: [
                 ['Commit', report.commit?.hash.substring(0, 8) || 'unknown'],
@@ -66,7 +66,7 @@ export async function upload(options: UploadOptions) {
         };
 
         const { url } = await profiler.measureAsync(
-          'core:upload:to-portal',
+          'core:upload-report-to-portal',
           () =>
             uploadReportToPortal({
               apiKey,
@@ -75,7 +75,7 @@ export async function upload(options: UploadOptions) {
               timeout,
             }),
           {
-            color: 'primary',
+            color: 'primary-light',
             success: ({ url }: { url: string }) => ({
               properties: [
                 ['Portal URL', url],

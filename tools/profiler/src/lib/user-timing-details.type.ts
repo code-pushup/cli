@@ -20,6 +20,8 @@ export type DevToolsActionColor =
 
 export type DevToolsColor = DevToolsFeedbackColor | DevToolsActionColor;
 
+export type ColorScheme = Record<string, DevToolsColor>;
+
 performance.mark('');
 
 export type DevToolsDataType = 'marker' | 'track-entry';

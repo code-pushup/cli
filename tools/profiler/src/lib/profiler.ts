@@ -45,6 +45,7 @@ import {
   trackEntryPayload,
 } from './user-timing-details-utils.js';
 import {
+  type ColorScheme,
   type EntryMeta,
   type MarkOptionsWithDevtools,
   type MarkerPayload,
@@ -60,8 +61,14 @@ function performanceMeasureToSpanEvents(
   options: {
     pid?: number;
     tid?: number;
+    extraDevtools?: UserTimingDetail['devtools'];
   } = {},
 ): [BeginEvent, EndEvent] {
+  const existingDevtools = (entry.detail as UserTimingDetail)?.devtools;
+  const devtools = options.extraDevtools
+    ? { ...existingDevtools, ...options.extraDevtools }
+    : existingDevtools;
+
   return getSpan({
     ...options,
     tsB: entryToTraceTimestamp(entry),
@@ -69,7 +76,7 @@ function performanceMeasureToSpanEvents(
     name: entry.name,
     args: {
       detail: {
-        devtools: (entry.detail as UserTimingDetail)?.devtools,
+        devtools,
       },
     },
   });
@@ -112,14 +119,20 @@ export interface PerformanceAPIExtension<Track extends string> {
 // Convert performance mark to instant event
 function performanceMarkToInstantEvent(
   entryMark: PerformanceMark,
+  extraDevtools?: UserTimingDetail['devtools'],
 ): InstantEvent {
+  const existingDevtools = (entryMark.detail as UserTimingDetail)?.devtools;
+  const devtools = extraDevtools
+    ? { ...existingDevtools, ...extraDevtools }
+    : existingDevtools;
+
   return getInstantEvent({
     name: entryMark.name,
     ts: defaultClock.fromEntryStartTimeMs(entryMark.startTime),
     args: {
       data: {
         detail: {
-          devtools: (entryMark.detail as UserTimingDetail)?.devtools,
+          devtools,
         },
       },
     },
@@ -207,6 +220,7 @@ export class Profiler<
   #closed = false;
 
   measureConfig: TrackControl<Tracks> & MeasureControl;
+  colors: ColorScheme;
 
   constructor(options: ProfilerOptions<Tracks> = {}) {
     const {
@@ -216,6 +230,7 @@ export class Profiler<
       metadata,
       tracks: devtools,
       namePrefix,
+      colors = {},
       ...pathOptions
     } = options;
     const trackControl = getTrackControl<Tracks>({ tracks: devtools });
@@ -224,6 +239,8 @@ export class Profiler<
       ...trackControl,
       ...getMeasureControl(namePrefix),
     };
+
+    this.colors = colors;
 
     this.#enabled = enabled;
     if (!this.#enabled) return;
@@ -239,12 +256,25 @@ export class Profiler<
       >({
         captureBuffered,
         encode: (entry: PerformanceEntry): (SpanEvent | InstantEvent)[] => {
+          const externalOptions = !entry.name.startsWith(`${namePrefix}:`)
+            ? {
+                devtools: {
+                  ...trackControl.tracks.externalTrack,
+                },
+              }
+            : {};
           switch (entry.entryType) {
             case 'mark':
-              return [performanceMarkToInstantEvent(entry as PerformanceMark)];
+              return [
+                performanceMarkToInstantEvent(
+                  entry as PerformanceMark,
+                  externalOptions.devtools,
+                ),
+              ];
             case 'measure':
               return performanceMeasureToSpanEvents(
                 entry as PerformanceMeasure,
+                { extraDevtools: externalOptions.devtools },
               );
             default:
               return [];
@@ -310,7 +340,7 @@ export class Profiler<
     options?: Omit<MarkerPayload, 'dataType'>,
   ): PerformanceMark {
     return performance.mark(
-      name,
+      this.measureConfig.getNames(name).measureName,
       asOptions(
         markerPayload({
           ...options,
@@ -424,7 +454,8 @@ export class Profiler<
     }
 
     const metaPayload = this.prepMeta(options);
-    const { startName, endName } = this.measureConfig.getNames(name);
+    const { startName, endName, measureName } =
+      this.measureConfig.getNames(name);
 
     performance.mark(startName, asOptions(trackEntryPayload(metaPayload)));
 
@@ -433,7 +464,7 @@ export class Profiler<
       performance.mark(endName, asOptions(trackEntryPayload(metaPayload)));
       const successCallback = this.prepSuccessCallback(options);
 
-      performance.measure(name, {
+      performance.measure(measureName, {
         start: startName,
         end: endName,
         ...asOptions(
@@ -448,7 +479,7 @@ export class Profiler<
       );
       const errorCallback = this.prepErrorCallback(options);
 
-      performance.measure(name, {
+      performance.measure(measureName, {
         start: startName,
         end: endName,
         ...asOptions(
@@ -477,7 +508,8 @@ export class Profiler<
     }
 
     const metaPayload = this.prepMeta(options);
-    const { startName, measureName, endName } = getMeasureMarkNames(name);
+    const { startName, measureName, endName } =
+      this.measureConfig.getNames(name);
 
     performance.mark(startName, asOptions(trackEntryPayload(metaPayload)));
     try {

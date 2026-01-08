@@ -129,10 +129,10 @@ export function executePlugins(config: {
     const message = `Completed "${pluginConfig.title}" plugin execution`;
     return logger.group(title, async () => {
       const result = await profiler.measureAsync(
-        'core:execute-plugin',
+        `core:execute-plugin-${pluginConfig.slug}`,
         () => executePlugin(pluginConfig, config),
         {
-          color: 'primary',
+          color: 'primary-light',
           success: (result: Awaited<ReturnType<typeof executePlugin>>) => ({
             properties: [
               ['Plugin', result.title || pluginConfig.title],

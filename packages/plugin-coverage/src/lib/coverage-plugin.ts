@@ -70,34 +70,19 @@ export async function coveragePlugin(
     '../../package.json',
   ) as typeof import('../../package.json');
 
-  return profiler.measure(
-    'plugin-coverage:setup-config',
-    () => {
-      const scoreTargets = coverageConfig.scoreTargets;
+  const scoreTargets = coverageConfig.scoreTargets;
 
-      return {
-        slug: COVERAGE_PLUGIN_SLUG,
-        title: COVERAGE_PLUGIN_TITLE,
-        icon: 'folder-coverage-open',
-        description: 'Official Code PushUp code coverage plugin.',
-        docsUrl: 'https://www.npmjs.com/package/@code-pushup/coverage-plugin/',
-        packageName: packageJson.name,
-        version: packageJson.version,
-        audits,
-        groups: [group],
-        runner: createRunnerFunction(coverageConfig),
-        ...(scoreTargets && { scoreTargets }),
-      };
-    },
-    {
-      ...profiler.measureConfig.tracks.pluginCoverage,
-      success: (config: PluginConfig) => ({
-        properties: [
-          ['Audits', String(config.audits.length)],
-          ['Groups', String(config.groups.length)],
-        ],
-        tooltipText: `Configured coverage plugin with ${config.audits.length} audits and ${config.groups.length} groups`,
-      }),
-    },
-  );
+  return {
+    slug: COVERAGE_PLUGIN_SLUG,
+    title: COVERAGE_PLUGIN_TITLE,
+    icon: 'folder-coverage-open',
+    description: 'Official Code PushUp code coverage plugin.',
+    docsUrl: 'https://www.npmjs.com/package/@code-pushup/coverage-plugin/',
+    packageName: packageJson.name,
+    version: packageJson.version,
+    audits,
+    groups: [group],
+    runner: createRunnerFunction(coverageConfig),
+    ...(scoreTargets && { scoreTargets }),
+  };
 }
