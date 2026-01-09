@@ -25,4 +25,14 @@ describe('eslintPlugin', () => {
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig.scoreTargets).toStrictEqual(scoreTargets);
   });
+
+  it('should use default patterns when called without config', async () => {
+    const pluginConfig = await eslintPlugin();
+
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+    expect(listAuditsAndGroupsSpy).toHaveBeenCalledWith(
+      [{ patterns: '.' }],
+      undefined,
+    );
+  });
 });

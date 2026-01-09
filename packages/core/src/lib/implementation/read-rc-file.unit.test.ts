@@ -7,7 +7,7 @@ import { autoloadRc } from './read-rc-file.js';
 // mock bundleRequire inside importEsmModule used for fetching config
 vi.mock('bundle-require', async () => {
   const { CORE_CONFIG_MOCK }: Record<string, CoreConfig> =
-    await vi.importActual('@code-pushup/test-utils');
+    await vi.importActual('@code-pushup/test-fixtures');
 
   return {
     bundleRequire: vi

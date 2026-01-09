@@ -108,41 +108,42 @@
       "outputs": [
         "{workspaceRoot}/coverage/{projectName}/unit-tests/lcov.info"
       ],
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "options": {
         "configFile": "{projectRoot}/vitest.unit.config.ts",
         "coverage": {
           "enabled": true
-        }
+        },
+        "passWithNoTests": true,
+        "watch": false
       }
     },
     "int-test": {
       "cache": true,
       "inputs": ["default", "^production", "test-vitest-inputs"],
       "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "options": {
         "configFile": "{projectRoot}/vitest.int.config.ts",
         "coverage": {
           "enabled": true
-        }
+        },
+        "passWithNoTests": true,
+        "watch": false
       }
     },
     "e2e": {
       "cache": true,
       "inputs": ["default", "test-vitest-inputs"],
-      "dependsOn": ["^build"]
-    },
-    "nxv-pkg-install": {
-      "parallelism": false
-    },
-    "@nx/vite:test": {
-      "cache": true,
-      "inputs": ["default", "test-vitest-inputs"],
+      "executor": "@nx/vitest:test",
       "options": {
+        "configFile": "{projectRoot}/vitest.e2e.config.ts",
         "passWithNoTests": true,
         "watch": false
       }
+    },
+    "nxv-pkg-install": {
+      "parallelism": false
     },
     "code-pushup": {
       "cache": false,
