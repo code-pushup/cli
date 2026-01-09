@@ -151,5 +151,5 @@ export function asOptions<T extends MarkerPayload | TrackEntryPayload>(
 ): {
   detail?: WithDevToolsPayload<T>;
 } {
-  return devtools != null ? { detail: { devtools } } : { detail: {} };
+  return devtools == null ? { detail: {} } : { detail: { devtools } };
 }
