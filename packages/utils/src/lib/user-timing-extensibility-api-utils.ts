@@ -1,4 +1,4 @@
-import { objectFromEntries } from '@code-pushup/utils';
+import { objectFromEntries } from './transform.js';
 import type {
   DevToolsColor,
   DevToolsProperties,
@@ -155,8 +155,3 @@ export function asOptions<T extends MarkerPayload | TrackEntryPayload>(
 } {
   return devtools ? { detail: { devtools } } : { detail: {} };
 }
-
-const o = asOptions({
-  dataType: 'marker',
-  color: 'error',
-});
