@@ -142,15 +142,15 @@ export function errorToMarkerPayload(
  * }));
  */
 export function asOptions<T extends MarkerPayload>(
-  devtools: T,
+  devtools?: T | null,
 ): MarkOptionsWithDevtools<T>;
 export function asOptions<T extends TrackEntryPayload>(
-  devtools: T,
+  devtools?: T | null,
 ): MeasureOptionsWithDevtools<T>;
 export function asOptions<T extends MarkerPayload | TrackEntryPayload>(
-  devtools?: T,
+  devtools?: T | null,
 ): {
   detail?: WithDevToolsPayload<T>;
 } {
-  return devtools ? { detail: { devtools } } : { detail: {} };
+  return devtools != null ? { detail: { devtools } } : { detail: {} };
 }

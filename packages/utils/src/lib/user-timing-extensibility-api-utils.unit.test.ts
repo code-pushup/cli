@@ -320,10 +320,10 @@ describe('asOptions', () => {
   });
 
   it('should return empty detail for null input', () => {
-    expect(asOptions(null as any)).toStrictEqual({ detail: {} });
+    expect(asOptions(null)).toStrictEqual({ detail: {} });
   });
 
   it('should return empty detail for undefined input', () => {
-    expect(asOptions(undefined as any)).toStrictEqual({ detail: {} });
+    expect(asOptions(undefined)).toStrictEqual({ detail: {} });
   });
 });
