@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import {
+  filePathSchema,
   pluginScoreTargetsSchema,
   positiveIntSchema,
 } from '@code-pushup/models';
@@ -21,6 +22,7 @@ export const axePluginOptionsSchema = z
       description:
         'Accessibility ruleset preset (default: wcag21aa for WCAG 2.1 Level AA compliance)',
     }),
+    setupScript: filePathSchema.optional(),
     scoreTargets: pluginScoreTargetsSchema.optional(),
     timeout: positiveIntSchema.default(DEFAULT_TIMEOUT_MS).meta({
       description:
