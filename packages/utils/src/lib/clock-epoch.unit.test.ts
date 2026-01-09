@@ -33,7 +33,7 @@ describe('epochClock', () => {
   it('should support performance clock by default for epochNowUs', () => {
     const c = epochClock();
     expect(c.timeOriginMs).toBe(500_000);
-    expect(c.epochNowUs()).toBe(1_000_000_000); // timeOrigin + (Date.now() - timeOrigin) = Date.now()
+    expect(c.epochNowUs()).toBe(500_000_000); // timeOrigin + performance.now() = timeOrigin + 0
   });
 
   it.each([

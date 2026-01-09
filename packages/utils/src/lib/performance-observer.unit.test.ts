@@ -1,4 +1,4 @@
-import type { PerformanceEntry } from 'node:perf_hooks';
+import { type PerformanceEntry, performance } from 'node:perf_hooks';
 import {
   type MockedFunction,
   beforeEach,
@@ -13,7 +13,6 @@ import {
   type PerformanceObserverOptions,
   PerformanceObserverSink,
 } from './performance-observer.js';
-import type { Sink } from './sink-source.types';
 
 describe('PerformanceObserverSink', () => {
   let encode: MockedFunction<(entry: PerformanceEntry) => string[]>;
@@ -29,15 +28,20 @@ describe('PerformanceObserverSink', () => {
     options = {
       sink,
       encode,
+      // we test buffered behavior separately
       flushThreshold: 1,
     };
+
+    performance.clearMarks();
+    performance.clearMeasures();
   });
 
-  it('creates instance with default options', () => {
+  it('creates instance with required options without starting to observe', () => {
     expect(() => new PerformanceObserverSink(options)).not.toThrow();
+    expect(MockPerformanceObserver.instances).toHaveLength(0);
   });
 
-  it('creates instance with custom options', () => {
+  it('creates instance with all options without starting to observe', () => {
     expect(
       () =>
         new PerformanceObserverSink({
@@ -46,91 +50,173 @@ describe('PerformanceObserverSink', () => {
           flushThreshold: 10,
         }),
     ).not.toThrow();
-  });
-
-  it('should be isomorph and create a single observer on subscribe', () => {
-    const observer = new PerformanceObserverSink(options);
-
-    expect(observer.isSubscribed()).toBe(false);
     expect(MockPerformanceObserver.instances).toHaveLength(0);
-    observer.subscribe();
-    expect(observer.isSubscribed()).toBe(true);
-    expect(MockPerformanceObserver.instances).toHaveLength(1);
-    observer.subscribe();
-    expect(observer.isSubscribed()).toBe(true);
-    expect(MockPerformanceObserver.instances).toHaveLength(1);
   });
 
-  it('skips non-mark and non-measure entry types', () => {
+  it('subscribe is isomorphic and calls observe on internal PerformanceObserver', () => {
     const observer = new PerformanceObserverSink(options);
 
+    observer.subscribe();
+    observer.subscribe();
+    expect(MockPerformanceObserver.instances).toHaveLength(1);
+    expect(
+      MockPerformanceObserver.lastInstance()?.observe,
+    ).toHaveBeenCalledTimes(1);
+  });
+
+  it('internal PerformanceObserver should observe mark and measure', () => {
+    const observer = new PerformanceObserverSink(options);
+    observer.subscribe();
+    expect(
+      MockPerformanceObserver.lastInstance()?.observe,
+    ).toHaveBeenCalledWith(
+      expect.objectContaining({
+        entryTypes: ['mark', 'measure'],
+      }),
+    );
+  });
+
+  it('internal PerformanceObserver should observe unbuffered by default', () => {
+    const observer = new PerformanceObserverSink(options);
+
+    observer.subscribe();
+    expect(
+      MockPerformanceObserver.lastInstance()?.observe,
+    ).toHaveBeenCalledWith(
+      expect.objectContaining({
+        buffered: false,
+      }),
+    );
+  });
+
+  it('internal PerformanceObserver should observe buffered if buffered option is provided', () => {
+    const observer = new PerformanceObserverSink({
+      ...options,
+      buffered: true,
+    });
+
+    observer.subscribe();
+    expect(
+      MockPerformanceObserver.lastInstance()?.observe,
+    ).toHaveBeenCalledWith(
+      expect.objectContaining({
+        buffered: true,
+      }),
+    );
+  });
+
+  it('internal PerformanceObserver should process observed entries', () => {
+    const observer = new PerformanceObserverSink({
+      ...options,
+      flushThreshold: 20, // Disable automatic flushing for this test
+    });
+    observer.subscribe();
+
+    performance.mark('test-mark');
+    performance.measure('test-measure');
+    observer.flush();
+    expect(encode).toHaveBeenCalledTimes(2);
+    expect(encode).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        name: 'test-mark',
+        entryType: 'mark',
+      }),
+    );
+    expect(encode).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        name: 'test-measure',
+        entryType: 'measure',
+      }),
+    );
+  });
+
+  it('when observing skips non-mark and non-measure entry types', () => {
+    const observer = new PerformanceObserverSink(options);
     observer.subscribe();
 
     MockPerformanceObserver.lastInstance()?.emitNavigation('test-navigation');
-
     expect(encode).not.toHaveBeenCalled();
   });
 
-  it('flushes existing performance entries', () => {
+  it('isSubscribed returns false when not observing', () => {
     const observer = new PerformanceObserverSink(options);
 
-    observer.subscribe(); // Create the PerformanceObserver first
+    expect(observer.isSubscribed()).toBe(false);
+  });
 
-    MockPerformanceObserver.lastInstance()?.emitMark('test-mark');
+  it('isSubscribed returns true when observing', () => {
+    const observer = new PerformanceObserverSink(options);
+
+    observer.subscribe();
+    expect(observer.isSubscribed()).toBe(true);
+  });
+
+  it('isSubscribed reflects observe disconnect', () => {
+    const observer = new PerformanceObserverSink(options);
+
+    observer.subscribe();
+    expect(observer.isSubscribed()).toBe(true);
+    observer.unsubscribe();
+    expect(observer.isSubscribed()).toBe(false);
+  });
+
+  it('flush flushes observed entries when subscribed', () => {
+    const observer = new PerformanceObserverSink(options);
+    observer.subscribe();
+
+    performance.mark('test-mark1');
+    performance.mark('test-mark2');
+    expect(sink.getWrittenItems()).toStrictEqual([]);
+
+    observer.flush();
+    expect(sink.getWrittenItems()).toStrictEqual([
+      'test-mark1:mark',
+      'test-mark2:mark',
+    ]);
+  });
+
+  it('flush calls encode for each entry', () => {
+    const observer = new PerformanceObserverSink(options);
+    observer.subscribe();
+
+    performance.mark('test-mark1');
+    performance.mark('test-mark2');
 
     observer.flush();
 
     expect(encode).toHaveBeenCalledWith({
-      name: 'test-mark',
+      name: 'test-mark1',
       entryType: 'mark',
       startTime: 0,
       duration: 0,
     });
-    expect(sink.getWrittenItems()).toStrictEqual(['test-mark:mark']);
+    expect(encode).toHaveBeenCalledWith({
+      name: 'test-mark2',
+      entryType: 'mark',
+      startTime: 0,
+      duration: 0,
+    });
   });
 
-  it('handles flush gracefully when not connected', () => {
+  it('flush does not flush observed entries when not subscribed', () => {
     const observer = new PerformanceObserverSink(options);
 
+    performance.mark('test-mark');
     observer.flush();
-
     expect(encode).not.toHaveBeenCalled();
     expect(sink.getWrittenItems()).toStrictEqual([]);
   });
 
-  it('disconnects PerformanceObserver', () => {
-    const observer = new PerformanceObserverSink(options);
+  it('unsubscribe is isomorphic and calls observe on internal PerformanceObserver', () => {
+    const observerSink = new PerformanceObserverSink(options);
 
-    observer.subscribe();
-    observer.unsubscribe();
-
-    expect(observer.isSubscribed()).toBe(false);
-  });
-
-  it('handles disconnect gracefully when not connected', () => {
-    const observer = new PerformanceObserverSink(options);
-
-    observer.unsubscribe();
-
-    expect(observer.isSubscribed()).toBe(false);
-  });
-
-  it('reports connected state correctly', () => {
-    const observer = new PerformanceObserverSink(options);
-
-    expect(observer.isSubscribed()).toBe(false);
-
-    observer.subscribe();
-
-    expect(observer.isSubscribed()).toBe(true);
-  });
-
-  it('reports disconnected state correctly', () => {
-    const observer = new PerformanceObserverSink(options);
-
-    observer.subscribe();
-    observer.unsubscribe();
-
-    expect(observer.isSubscribed()).toBe(false);
+    observerSink.subscribe();
+    const perfObserver = MockPerformanceObserver.lastInstance();
+    observerSink.unsubscribe();
+    observerSink.unsubscribe();
+    expect(perfObserver?.disconnect).toHaveBeenCalledTimes(1);
+    expect(MockPerformanceObserver.instances).toHaveLength(0);
   });
 });

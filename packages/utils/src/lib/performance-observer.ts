@@ -49,7 +49,7 @@ export class PerformanceObserverSink<T>
       const entries = this.#getEntries(list);
       this.#observedCount += entries.length;
       if (this.#observedCount >= this.#flushThreshold) {
-        this.flush();
+        this.flush(entries);
       }
     });
 
@@ -59,18 +59,22 @@ export class PerformanceObserverSink<T>
     });
   }
 
-  flush(): void {
+  flush(entriesToProcess?: PerformanceEntry[]): void {
     if (!this.#observer) {
       return;
     }
 
-    const entries = this.#getEntries(performance);
+    const entries = entriesToProcess || this.#getEntries(performance);
     entries.forEach(entry => {
       const encoded = this.encode(entry);
       encoded.forEach(item => {
         this.#sink.write(item);
       });
     });
+
+    // In real PerformanceObserver, entries remain in the global buffer
+    // They are only cleared when explicitly requested via performance.clearMarks/clearMeasures
+
     this.#observedCount = 0;
   }
 
