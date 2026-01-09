@@ -8,41 +8,12 @@ import {
   vi,
 } from 'vitest';
 import { MockPerformanceObserver } from '@code-pushup/test-utils';
+import { MockSink } from '../../mocks/sink.mock';
 import {
   type PerformanceObserverOptions,
   PerformanceObserverSink,
 } from './performance-observer.js';
 import type { Sink } from './sink-source.types';
-
-// @TODO remove duplicate when file-sink is implemented
-class MockSink implements Sink<string, string> {
-  private writtenItems: string[] = [];
-  private closed = false;
-
-  open(): void {
-    this.closed = false;
-  }
-
-  write(input: string): void {
-    this.writtenItems.push(input);
-  }
-
-  close(): void {
-    this.closed = true;
-  }
-
-  isClosed(): boolean {
-    return this.closed;
-  }
-
-  encode(input: string): string {
-    return `${input}-${this.constructor.name}-encoded`;
-  }
-
-  getWrittenItems(): string[] {
-    return [...this.writtenItems];
-  }
-}
 
 describe('PerformanceObserverSink', () => {
   let encode: MockedFunction<(entry: PerformanceEntry) => string[]>;
