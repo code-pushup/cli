@@ -8,3 +8,4 @@ export * from './lib/utils/file-system.js';
 export * from './lib/utils/create-npm-workshpace.js';
 export * from './lib/utils/project-graph.js';
 export * from './lib/utils/test-folder-setup.js';
+export * from './lib/utils/setup-test-environment.js';

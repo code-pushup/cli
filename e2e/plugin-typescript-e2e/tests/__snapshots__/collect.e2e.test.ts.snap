@@ -40,7 +40,7 @@ exports[`PLUGIN collect report with typescript-plugin NPM package > should run p
                 "message": "TS1136: Property assignment expected.",
                 "severity": "error",
                 "source": {
-                  "file": "tmp/e2e/plugin-typescript-e2e/src/1-syntax-errors.ts",
+                  "file": "tmp/e2e/plugin-typescript-e2e/__test__/default-setup/src/1-syntax-errors.ts",
                   "position": {
                     "startLine": 1,
                   },
@@ -62,7 +62,7 @@ exports[`PLUGIN collect report with typescript-plugin NPM package > should run p
                 "message": "TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.",
                 "severity": "error",
                 "source": {
-                  "file": "tmp/e2e/plugin-typescript-e2e/src/2-semantic-errors.ts",
+                  "file": "tmp/e2e/plugin-typescript-e2e/__test__/default-setup/src/2-semantic-errors.ts",
                   "position": {
                     "startLine": 3,
                   },
@@ -72,7 +72,7 @@ exports[`PLUGIN collect report with typescript-plugin NPM package > should run p
                 "message": "TS2322: Type 'null' is not assignable to type 'string'.",
                 "severity": "error",
                 "source": {
-                  "file": "tmp/e2e/plugin-typescript-e2e/src/2-semantic-errors.ts",
+                  "file": "tmp/e2e/plugin-typescript-e2e/__test__/default-setup/src/2-semantic-errors.ts",
                   "position": {
                     "startLine": 7,
                   },
@@ -94,7 +94,7 @@ exports[`PLUGIN collect report with typescript-plugin NPM package > should run p
                 "message": "TS4112: This member cannot have an 'override' modifier because its containing class 'Standalone' does not extend another class.",
                 "severity": "error",
                 "source": {
-                  "file": "tmp/e2e/plugin-typescript-e2e/src/4-languale-service.ts",
+                  "file": "tmp/e2e/plugin-typescript-e2e/__test__/default-setup/src/4-languale-service.ts",
                   "position": {
                     "startLine": 2,
                   },
@@ -124,7 +124,7 @@ exports[`PLUGIN collect report with typescript-plugin NPM package > should run p
                 "message": "TS6059: File './exclude/utils.ts' is not under 'rootDir' './src'. 'rootDir' is expected to contain all source files.",
                 "severity": "error",
                 "source": {
-                  "file": "tmp/e2e/plugin-typescript-e2e/src/6-configuration-errors.ts",
+                  "file": "tmp/e2e/plugin-typescript-e2e/__test__/default-setup/src/6-configuration-errors.ts",
                   "position": {
                     "startLine": 1,
                   },

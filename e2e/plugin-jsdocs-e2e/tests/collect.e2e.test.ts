@@ -1,56 +1,45 @@
-import { cp } from 'node:fs/promises';
 import path from 'node:path';
-import { simpleGit } from 'simple-git';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
 import { omitVariableReportData } from '@code-pushup/test-fixtures';
-import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
-  E2E_ENVIRONMENTS_DIR,
-  TEST_OUTPUT_DIR,
-  initGitRepo,
-  restoreNxIgnoredFiles,
-  teardownTestFolder,
+  type TestEnvironmentWithGit,
+  setupTestEnvironment,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
 describe('PLUGIN collect report with jsdocs-plugin NPM package', () => {
-  const fixturesDir = path.join(
-    'e2e',
-    'plugin-jsdocs-e2e',
-    'mocks',
-    'fixtures',
-  );
-  const fixturesAngularDir = path.join(fixturesDir, 'angular');
-  const fixturesReactDir = path.join(fixturesDir, 'react');
-
-  const envRoot = path.join(
-    E2E_ENVIRONMENTS_DIR,
-    nxTargetProject(),
-    TEST_OUTPUT_DIR,
-  );
-  const angularDir = path.join(envRoot, 'angular');
-  const reactDir = path.join(envRoot, 'react');
-  const angularOutputDir = path.join(angularDir, '.code-pushup');
-  const reactOutputDir = path.join(reactDir, '.code-pushup');
+  let angularTestEnv: TestEnvironmentWithGit;
+  let reactTestEnv: TestEnvironmentWithGit;
+  let angularDir: string;
+  let angularOutputDir: string;
 
   beforeAll(async () => {
-    await cp(fixturesAngularDir, angularDir, { recursive: true });
-    await cp(fixturesReactDir, reactDir, { recursive: true });
-    await restoreNxIgnoredFiles(angularDir);
-    await restoreNxIgnoredFiles(reactDir);
-    await initGitRepo(simpleGit, { baseDir: angularDir });
-    await initGitRepo(simpleGit, { baseDir: reactDir });
+    angularTestEnv = await setupTestEnvironment(
+      ['..', 'mocks', 'fixtures', 'angular'],
+      {
+        callerUrl: import.meta.url,
+        git: true,
+      },
+    );
+    reactTestEnv = await setupTestEnvironment(
+      ['..', 'mocks', 'fixtures', 'react'],
+      {
+        callerUrl: import.meta.url,
+        git: true,
+      },
+    );
+    angularDir = angularTestEnv.baseDir;
+    angularOutputDir = path.join(angularDir, '.code-pushup');
   });
 
   afterAll(async () => {
-    await teardownTestFolder(angularDir);
-    await teardownTestFolder(reactDir);
+    await angularTestEnv.cleanup();
+    await reactTestEnv.cleanup();
   });
 
   afterEach(async () => {
-    await teardownTestFolder(angularOutputDir);
-    await teardownTestFolder(reactOutputDir);
+    // Output directories are cleaned up by the test environment cleanup
   });
 
   it('should run JSDoc plugin for Angular example dir and create report.json', async () => {

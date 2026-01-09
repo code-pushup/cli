@@ -1,11 +1,8 @@
-import { cp } from 'node:fs/promises';
 import path from 'node:path';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
-  E2E_ENVIRONMENTS_DIR,
-  TEST_OUTPUT_DIR,
-  restoreNxIgnoredFiles,
+  type TestEnvironment,
+  setupTestEnvironment,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import {
@@ -19,29 +16,24 @@ import { dummyPluginSlug } from '../mocks/fixtures/dummy-setup/dummy.plugin';
 describe('CLI collect', () => {
   const dummyPluginTitle = 'Dummy Plugin';
   const dummyAuditTitle = 'Dummy Audit';
-  const fixtureDummyDir = path.join(
-    'e2e',
-    nxTargetProject(),
-    'mocks',
-    'fixtures',
-    'dummy-setup',
-  );
-  const testFileDir = path.join(
-    E2E_ENVIRONMENTS_DIR,
-    nxTargetProject(),
-    TEST_OUTPUT_DIR,
-    'collect',
-  );
-  const dummyDir = path.join(testFileDir, 'dummy-setup');
-  const dummyOutputDir = path.join(dummyDir, '.code-pushup');
+
+  let testEnv: TestEnvironment;
+  let dummyDir: string;
+  let dummyOutputDir: string;
 
   beforeAll(async () => {
-    await cp(fixtureDummyDir, dummyDir, { recursive: true });
-    await restoreNxIgnoredFiles(dummyDir);
+    testEnv = await setupTestEnvironment(
+      ['..', 'mocks', 'fixtures', 'dummy-setup'],
+      {
+        callerUrl: import.meta.url,
+      },
+    );
+    dummyDir = testEnv.baseDir;
+    dummyOutputDir = path.join(dummyDir, '.code-pushup');
   });
 
   afterAll(async () => {
-    await teardownTestFolder(dummyDir);
+    await testEnv.cleanup();
   });
 
   afterEach(async () => {
