@@ -1,8 +1,6 @@
-import type { PerformanceEntry } from 'node:perf_hooks';
+import type { EntryType, PerformanceEntry } from 'node:perf_hooks';
 import { vi } from 'vitest';
 import { MockPerformanceObserver } from './performance-observer.mock';
-
-type EntryType = 'mark' | 'measure';
 
 let nowMs = 0;
 let entries: PerformanceEntry[] = [];
