@@ -1,6 +1,6 @@
 import type { PerformanceEntry } from 'node:perf_hooks';
 import { vi } from 'vitest';
-import { MockPerformanceObserver } from '@code-pushup/test-utils';
+import { MockPerformanceObserver } from './performance-observer.mock';
 
 type EntryType = 'mark' | 'measure';
 

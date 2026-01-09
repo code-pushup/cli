@@ -1,5 +1,6 @@
 export * from './lib/constants.js';
 export * from './lib/utils/performance-observer.mock.js';
+export * from './lib/utils/perf-hooks.mock.js';
 export * from './lib/utils/execute-process-helper.mock.js';
 export * from './lib/utils/os-agnostic-paths.js';
 export * from './lib/utils/env.js';

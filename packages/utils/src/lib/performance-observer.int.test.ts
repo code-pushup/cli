@@ -7,7 +7,6 @@ import {
   it,
   vi,
 } from 'vitest';
-import { MockPerformanceObserver } from '@code-pushup/test-utils';
 import { MockSink } from '../../mocks/sink.mock';
 import {
   type PerformanceObserverOptions,

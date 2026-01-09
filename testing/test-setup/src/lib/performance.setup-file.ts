@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, vi } from 'vitest';
-import { MockPerformanceObserver } from '@code-pushup/test-utils';
-import { createPerformanceMock } from '../../../test-utils/src/lib/utils/perf-hooks.mock';
+import {
+  MockPerformanceObserver,
+  createPerformanceMock,
+} from '@code-pushup/test-utils';
 
 const MOCK_TIME_ORIGIN = 500_000;
 
@@ -10,8 +12,8 @@ vi.mock('node:perf_hooks', () => ({
 }));
 
 beforeEach(() => {
-  MockPerformanceObserver.globalEntries = [];
-  MockPerformanceObserver.instances = [];
+  MockPerformanceObserver.reset();
+  vi.stubGlobal('performance', createPerformanceMock(MOCK_TIME_ORIGIN));
 });
 
 afterEach(() => {

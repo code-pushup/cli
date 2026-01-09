@@ -13,6 +13,11 @@ export class MockPerformanceObserver {
     return this.instances.at(-1);
   }
 
+  static reset() {
+    this.globalEntries = [];
+    this.instances = [];
+  }
+
   buffered = false;
   private observing = false;
   callback: PerformanceObserverCallback;
