@@ -7,7 +7,7 @@ import {
   jsonlDecode,
   jsonlEncode,
   recoverJsonlFile,
-} from './file-sink-json.js';
+} from './file-sink-jsonl.js';
 
 describe('jsonlEncode', () => {
   it('should encode object to JSON string', () => {
@@ -207,10 +207,36 @@ describe('JsonlFileSink', () => {
       `${records.map(record => JSON.stringify(record)).join('\n')}\n`,
     );
 
+    sink.repack();
+    expect(fs.readFileSync(filePath, 'utf8')).toBe(
+      `${JSON.stringify(records[0])}\n${JSON.stringify(records[1])}\n`,
+    );
+  });
+
+  it('repack() should accept output path', () => {
+    const filePath = '/tmp/jsonl-repack-test.jsonl';
+    const sink = new JsonlFileSink<JsonObj>({ filePath });
+    const records = [
+      { key: 'value', number: 42 },
+      { key: 'value', number: 42 },
+    ];
+
+    fs.writeFileSync(
+      filePath,
+      `${records.map(record => JSON.stringify(record)).join('\n')}\n`,
+    );
+
     const outputPath = '/tmp/jsonl-repack-output.jsonl';
     sink.repack(outputPath);
     expect(fs.readFileSync(outputPath, 'utf8')).toBe(
       `${JSON.stringify(records[0])}\n${JSON.stringify(records[1])}\n`,
     );
+  });
+
+  it('should do nothing on finalize()', () => {
+    const sink = new JsonlFileSink<JsonObj>({
+      filePath: '/tmp/jsonl-finalize-test.jsonl',
+    });
+    expect(() => sink.finalize()).not.toThrow();
   });
 });

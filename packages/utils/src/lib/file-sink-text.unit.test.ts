@@ -252,6 +252,21 @@ describe('FileSink', () => {
 
   it('repack() should recover records and write them to output path', () => {
     const mockRecover = vi.fn();
+    const filePath = '/tmp/test-file.txt';
+    const sink = new FileSink({
+      filePath,
+      recover: mockRecover,
+    });
+    const records = ['record1', 'record2'];
+    mockRecover.mockReturnValue({ records, errors: [], partialTail: null });
+
+    sink.repack();
+    expect(mockRecover).toHaveBeenCalled();
+    expect(fs.readFileSync(filePath, 'utf8')).toBe('record1\n\nrecord2\n');
+  });
+
+  it('repack() should accept output path', () => {
+    const mockRecover = vi.fn();
     const sink = new FileSink({
       filePath: '/tmp/test-file.txt',
       recover: mockRecover,

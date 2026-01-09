@@ -3,7 +3,7 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { teardownTestFolder } from '@code-pushup/test-utils';
-import { JsonlFileSink, recoverJsonlFile } from './file-sink-json.js';
+import { JsonlFileSink, recoverJsonlFile } from './file-sink-jsonl.js';
 
 describe('JsonlFileSink integration', () => {
   const baseDir = path.join(os.tmpdir(), 'file-sink-json-int-tests');
