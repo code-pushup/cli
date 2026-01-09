@@ -17,10 +17,9 @@ export function mergePropertiesWithOverwrite(
   baseProperties: DevToolsProperties | undefined,
   overrideProperties?: DevToolsProperties | undefined,
 ) {
-  return Object.entries({
-    ...objectFromEntries(baseProperties ?? []),
-    ...objectFromEntries(overrideProperties ?? []),
-  }) satisfies DevToolsProperties;
+  return [
+    ...new Map([...(baseProperties ?? []), ...(overrideProperties ?? [])]),
+  ] satisfies DevToolsProperties;
 }
 
 export function markerPayload(options?: Omit<MarkerPayload, 'dataType'>) {
