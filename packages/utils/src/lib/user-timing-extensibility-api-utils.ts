@@ -1,4 +1,3 @@
-import { objectFromEntries } from './transform.js';
 import type {
   DevToolsColor,
   DevToolsProperties,
