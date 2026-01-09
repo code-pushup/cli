@@ -1,3 +1,4 @@
+import { objectFromEntries } from '@code-pushup/utils';
 import type {
   DevToolsColor,
   DevToolsProperties,
@@ -6,54 +7,43 @@ import type {
   MarkerPayload,
   MeasureOptionsWithDevtools,
   TrackEntryPayload,
+  WithDevToolsPayload,
 } from './user-timing-extensibility-api.type.js';
 
 const dataTypeTrackEntry = 'track-entry';
 const dataTypeMarker = 'marker';
 
-export function objToPropertiesPayload(
-  object: Record<string, string | number | boolean | object | undefined>,
-): DevToolsProperties {
-  return Object.entries(object);
-}
-
 export function mergePropertiesWithOverwrite(
   baseProperties: DevToolsProperties | undefined,
   overrideProperties?: DevToolsProperties | undefined,
-): DevToolsProperties {
-  return objToPropertiesPayload({
-    ...Object.fromEntries(
-      (baseProperties ?? []).map(([key, value]) => [key, String(value)]),
-    ),
-    ...Object.fromEntries(
-      (overrideProperties ?? []).map(([key, value]) => [key, String(value)]),
-    ),
-  });
+) {
+  return Object.entries({
+    ...objectFromEntries(baseProperties ?? []),
+    ...objectFromEntries(overrideProperties ?? []),
+  }) satisfies DevToolsProperties;
 }
 
-export function markerPayload(
-  options?: Omit<MarkerPayload, 'dataType'>,
-): MarkerPayload {
+export function markerPayload(options?: Omit<MarkerPayload, 'dataType'>) {
   return {
     dataType: dataTypeMarker,
     ...options,
-  };
+  } satisfies MarkerPayload;
 }
 
 export function trackEntryPayload(
   options: Omit<TrackEntryPayload, 'dataType'>,
-): TrackEntryPayload {
+) {
   const { track, ...rest } = options;
   return {
     dataType: dataTypeTrackEntry,
     track,
     ...rest,
-  };
+  } satisfies TrackEntryPayload;
 }
 
 export function markerErrorPayload<T extends DevToolsColor>(
   options?: Omit<MarkerPayload, 'dataType' | 'color'>,
-): MarkerPayload {
+) {
   return {
     dataType: dataTypeMarker,
     color: 'error' as T,
@@ -69,8 +59,8 @@ export function trackEntryErrorPayload<
     track: T;
     color?: C;
   },
-): TrackEntryPayload {
-  const { track, color = 'error', ...restOptions } = options;
+) {
+  const { track, color = 'error' as const, ...restOptions } = options;
   return {
     dataType: dataTypeTrackEntry,
     color,
@@ -79,13 +69,13 @@ export function trackEntryErrorPayload<
   } satisfies TrackEntryPayload;
 }
 
-export function errorToDevToolsProperties(e: unknown): DevToolsProperties {
+export function errorToDevToolsProperties(e: unknown) {
   const name = e instanceof Error ? e.name : 'UnknownError';
   const message = e instanceof Error ? e.message : String(e);
   return [
-    ['Error Type', name],
-    ['Error Message', message],
-  ];
+    ['Error Type' as const, name],
+    ['Error Message' as const, message],
+  ] satisfies DevToolsProperties;
 }
 
 export function errorToEntryMeta(
@@ -94,7 +84,7 @@ export function errorToEntryMeta(
     tooltipText?: string;
     properties?: DevToolsProperties;
   },
-): EntryMeta {
+) {
   const { properties, tooltipText } = options ?? {};
   const props = mergePropertiesWithOverwrite(
     errorToDevToolsProperties(e),
@@ -103,7 +93,7 @@ export function errorToEntryMeta(
   return {
     properties: props,
     ...(tooltipText ? { tooltipText } : {}),
-  };
+  } satisfies EntryMeta;
 }
 
 export function errorToTrackEntryPayload<T extends string>(
@@ -124,14 +114,14 @@ export function errorToTrackEntryPayload<T extends string>(
   } satisfies TrackEntryPayload;
 }
 
-export function errorToMarkerPayload<T extends DevToolsColor>(
+export function errorToMarkerPayload(
   error: unknown,
   detail?: Omit<MarkerPayload, 'color' | 'dataType'>,
-): MarkerPayload {
+) {
   const { properties, tooltipText } = detail ?? {};
   return {
     dataType: dataTypeMarker,
-    color: 'error' as T,
+    color: 'error' as const,
     ...errorToEntryMeta(error, {
       properties,
       tooltipText,
@@ -140,27 +130,33 @@ export function errorToMarkerPayload<T extends DevToolsColor>(
 }
 
 /**
+ * asOptions wraps a DevTools payload into the `detail` property of User Timing entry options.
  *
  * @example
  * profiler.mark('mark', asOptions({
+ *   dataType: 'marker',
+ *   color: 'error',
+ *   tooltipText: 'This is a marker',
  *   properties: [
- *     ['str', 'This is a detail property'],
- *     ['num', 42],
- *     ['object', { str: '42', num: 42 }],
- *     ['array', [42, 42, 42]],
+ *     ['str', 'This is a detail property']
  *   ],
  * }));
  */
-export function asOptions(
-  devtools: MarkerPayload,
-): Pick<MarkOptionsWithDevtools, 'detail'>;
-export function asOptions(
-  devtools: TrackEntryPayload,
-): Pick<MeasureOptionsWithDevtools, 'detail'>;
-export function asOptions(
-  devtools: MarkerPayload | TrackEntryPayload,
-):
-  | Pick<MarkOptionsWithDevtools, 'detail'>
-  | Pick<MeasureOptionsWithDevtools, 'detail'> {
+export function asOptions<T extends MarkerPayload>(
+  devtools: T,
+): MarkOptionsWithDevtools<T>;
+export function asOptions<T extends TrackEntryPayload>(
+  devtools: T,
+): MeasureOptionsWithDevtools<T>;
+export function asOptions<T extends MarkerPayload | TrackEntryPayload>(
+  devtools?: T,
+): {
+  detail?: WithDevToolsPayload<T>;
+} {
   return devtools ? { detail: { devtools } } : { detail: {} };
 }
+
+const o = asOptions({
+  dataType: 'marker',
+  color: 'error',
+});

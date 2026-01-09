@@ -1,7 +1,28 @@
 import type { MarkOptions, MeasureOptions } from 'node:perf_hooks';
 
+/**
+ * Color options for feedback states in DevTools.
+ * Used for error and warning states on marker and track entries.
+ * @example
+ * - 'error' - red
+ * - 'warning' - yellow
+ */
 export type DevToolsFeedbackColor = 'error' | 'warning';
 
+/**
+ * Color options for action states in DevTools.
+ * Used for valid states on marker and track entries.
+ * @example
+ * - 'primary' - blue (default)
+ * - 'primary-dark' - dark blue
+ * - 'primary-light' - light blue
+ * - 'secondary' - purple
+ * - 'secondary-dark' - dark purple
+ * - 'secondary-light' - light purple
+ * - 'tertiary' - green
+ * - 'tertiary-dark' - dark green
+ * - 'tertiary-light' - light green
+ */
 export type DevToolsActionColor =
   | 'primary'
   | 'primary-dark'
@@ -13,65 +34,121 @@ export type DevToolsActionColor =
   | 'tertiary-dark'
   | 'tertiary-light';
 
+/**
+ * Union type of all available DevTools color options.
+ */
 export type DevToolsColor = DevToolsFeedbackColor | DevToolsActionColor;
 
-export type DevToolsDataType = 'marker' | 'track-entry';
-
+/**
+ * Array of key-value pairs for detailed DevTools properties.
+ */
 export type DevToolsProperties = [
   key: string,
   value: string | number | boolean | object | undefined,
 ][];
 
+/**
+ * EntryMeta is used to store metadata about a track entry.
+ * @property {string} [tooltipText] - Short description for tooltip on hover
+ * @property {DevToolsProperties} [properties] - Key-value pairs for detailed view on click.
+ * It provides better styling of values including features like automatic links rendering.
+ */
 export type EntryMeta = {
-  tooltipText?: string; // Short description for tooltip on hover
-  properties?: DevToolsProperties; // Key-value pairs for detailed view on click
+  tooltipText?: string;
+  properties?: DevToolsProperties;
 };
 
+/**
+ * Styling options for track entries in DevTools.
+ * @property {DevToolsColor} [color] - rendered color of background and border, defaults to "primary"
+ */
 export type TrackStyle = {
-  color?: DevToolsColor; // rendered color of background and border, defaults to "primary"
+  color?: DevToolsColor;
 };
 
+/**
+ * Metadata for organizing track entries in DevTools.
+ * @property {string} track - Name of the custom track
+ * @property {string} [trackGroup] - Group for organizing tracks
+ */
 export type TrackMeta = {
-  track: string; // Name of the custom track
-  trackGroup?: string; // Group for organizing tracks
+  track: string;
+  trackGroup?: string;
 };
 
-export type ExtensionTrackBase = EntryMeta & TrackStyle;
+/**
+ * Base type combining entry metadata and styling for DevTools tracks.
+ */
+export type TrackBase = EntryMeta & TrackStyle;
 
+/**
+ * Payload for track entries in DevTools Performance panel.
+ * @property {'track-entry'} [dataType] - Defaults to "track-entry"
+ *
+ * This type is visible in a custom track with name defined in `track` property.
+ */
 export type TrackEntryPayload = {
-  dataType?: 'track-entry'; // Defaults to "track-entry"
-} & ExtensionTrackBase &
+  dataType?: 'track-entry';
+} & TrackBase &
   TrackMeta;
 
+/**
+ * Payload for marker entries in DevTools Performance panel.
+ * @property {'marker'} dataType - Identifies as a marker
+ * This type is visible as a marker on top of all tracks and in addition creates a vertical line spanning all lanes in the performance palen.
+ */
 export type MarkerPayload = {
-  dataType: 'marker'; // Identifies as a marker
-} & ExtensionTrackBase;
+  dataType: 'marker';
+} & TrackBase;
 
+/**
+ * Utility type that forces a color property to be 'error'.
+ */
 export type WithErrorColor<T extends { color?: DevToolsColor }> = Omit<
   T,
   'color'
 > & {
   color: 'error';
 };
+/**
+ * Utility type that adds an optional devtools payload property.
+ */
 export type WithDevToolsPayload<T extends TrackEntryPayload | MarkerPayload> = {
   devtools?: T;
 };
-export type DevToolsPayload = TrackEntryPayload | MarkerPayload;
-export type UserTimingDetailMeasurePayload =
-  WithDevToolsPayload<TrackEntryPayload> & {
-    [k: string]: unknown;
-  };
 
-export type UserTimingDetailMarkPayload = WithDevToolsPayload<
-  TrackEntryPayload | MarkerPayload
-> & {
-  [k: string]: unknown;
-};
-
-export type MarkOptionsWithDevtools = {
-  detail?: WithDevToolsPayload<TrackEntryPayload | MarkerPayload>;
+/**
+ * Extended MarkOptions that supports DevTools payload in detail.
+ * @example
+ * const options: MarkOptionsWithDevtools = {
+ *    detail: {
+ *      devtools: {
+ *        dataType: 'marker',
+ *        color: 'error',
+ *      },
+ *   },
+ * }
+ * profiler.mark('start-program', options);
+ */
+export type MarkOptionsWithDevtools<
+  T extends TrackEntryPayload | MarkerPayload,
+> = {
+  detail?: WithDevToolsPayload<T>;
 } & Omit<MarkOptions, 'detail'>;
 
-export type MeasureOptionsWithDevtools = {
-  detail?: WithDevToolsPayload<TrackEntryPayload>;
+/**
+ * Extended MeasureOptions that supports DevTools payload in detail.
+ * @example
+ * const options: MeasureOptionsWithDevtools = {
+ *   detail: {
+ *     devtools: {
+ *       dataType: 'track-entry',
+ *       color: 'primary',
+ *       }
+ *     }
+ *   }
+ *   profiler.measure('load-program', 'start-program', 'end-program', options);
+ */
+export type MeasureOptionsWithDevtools<T extends TrackEntryPayload> = {
+  detail?: WithDevToolsPayload<T>;
 } & Omit<MeasureOptions, 'detail'>;

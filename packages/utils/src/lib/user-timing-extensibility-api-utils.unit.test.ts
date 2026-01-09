@@ -8,35 +8,9 @@ import {
   markerErrorPayload,
   markerPayload,
   mergePropertiesWithOverwrite,
-  objToPropertiesPayload,
   trackEntryErrorPayload,
   trackEntryPayload,
 } from './user-timing-extensibility-api-utils.js';
-
-describe('objToPropertiesPayload', () => {
-  it('should convert object to properties array', () => {
-    expect(
-      objToPropertiesPayload({ key: 'value', number: 42, bool: true }),
-    ).toStrictEqual([
-      ['key', 'value'],
-      ['number', 42],
-      ['bool', true],
-    ]);
-  });
-
-  it('should keep undefined values', () => {
-    expect(
-      objToPropertiesPayload({ key: 'value', undef: undefined }),
-    ).toStrictEqual([
-      ['key', 'value'],
-      ['undef', undefined],
-    ]);
-  });
-
-  it('should handle empty object', () => {
-    expect(objToPropertiesPayload({})).toStrictEqual([]);
-  });
-});
 
 describe('mergePropertiesWithOverwrite', () => {
   it('should merge properties with overwrite', () => {
