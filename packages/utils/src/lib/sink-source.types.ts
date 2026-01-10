@@ -29,9 +29,9 @@ export type Observer = {
   isSubscribed: () => boolean;
 };
 
-export type Recoverable = {
-  recover: () => RecoverResult;
-  repack: () => void;
+export type Recoverable<T> = {
+  recover: () => RecoverResult<T>;
+  repack: (outputPath?: string) => void;
   finalize: () => void;
 };
 
