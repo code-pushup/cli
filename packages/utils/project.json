@@ -20,11 +20,6 @@
     },
     "unit-test": {},
     "int-test": {},
-    "code-pushup": {},
-    "code-pushup-eslint": {},
-    "code-pushup-coverage": {},
-    "code-pushup-typescript": {},
-    "code-pushup-jsdocs": {},
     "demo-logger": {
       "executor": "nx:run-commands",
       "options": {
