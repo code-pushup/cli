@@ -9,18 +9,27 @@ import {
   type RunResult,
   runInCI,
 } from '@code-pushup/ci';
-import { TEST_SNAPSHOTS_DIR } from '@code-pushup/test-utils';
+import {
+  TEST_SNAPSHOTS_DIR,
+  type TestEnvironmentWithGit,
+  setupTestEnvironment,
+} from '@code-pushup/test-utils';
 import { readJsonFile } from '@code-pushup/utils';
 import { MOCK_API, MOCK_COMMENT } from '../mocks/api.js';
-import { type TestRepo, setupTestRepo } from '../mocks/setup.js';
 
 describe('CI - monorepo mode (Nx)', () => {
-  let repo: TestRepo;
+  let repo: TestEnvironmentWithGit;
   let git: SimpleGit;
   let options: Options;
 
   beforeEach(async () => {
-    repo = await setupTestRepo('nx-monorepo');
+    repo = await setupTestEnvironment(
+      ['..', 'mocks', 'fixtures', 'nx-monorepo'],
+      {
+        callerUrl: import.meta.url,
+        git: true,
+      },
+    );
     git = repo.git;
     options = {
       monorepo: true,

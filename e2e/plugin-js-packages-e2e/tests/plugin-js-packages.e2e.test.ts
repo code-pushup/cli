@@ -1,4 +1,3 @@
-import { cp } from 'node:fs/promises';
 import path from 'node:path';
 import { afterAll, beforeAll, expect, it } from 'vitest';
 import {
@@ -6,38 +5,28 @@ import {
   type Report,
   reportSchema,
 } from '@code-pushup/models';
-import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
-  E2E_ENVIRONMENTS_DIR,
-  TEST_OUTPUT_DIR,
-  restoreNxIgnoredFiles,
-  teardownTestFolder,
+  type TestEnvironment,
+  setupTestEnvironment,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
 describe('plugin-js-packages', () => {
-  const fixturesDir = path.join(
-    'e2e',
-    'plugin-js-packages-e2e',
-    'mocks',
-    'fixtures',
-  );
-  const fixturesNPMDir = path.join(fixturesDir, 'npm-repo');
-
-  const envRoot = path.join(
-    E2E_ENVIRONMENTS_DIR,
-    nxTargetProject(),
-    TEST_OUTPUT_DIR,
-  );
-  const npmRepoDir = path.join(envRoot, 'npm-repo');
+  let testEnv: TestEnvironment;
+  let npmRepoDir: string;
 
   beforeAll(async () => {
-    await cp(fixturesNPMDir, npmRepoDir, { recursive: true });
-    await restoreNxIgnoredFiles(npmRepoDir);
+    testEnv = await setupTestEnvironment(
+      ['..', 'mocks', 'fixtures', 'npm-repo'],
+      {
+        callerUrl: import.meta.url,
+      },
+    );
+    npmRepoDir = testEnv.baseDir;
   });
 
   afterAll(async () => {
-    await teardownTestFolder(npmRepoDir);
+    await testEnv.cleanup();
   });
 
   it('should run JS packages plugin for NPM and create report.json', async () => {
@@ -47,13 +36,9 @@ describe('plugin-js-packages', () => {
         '@code-pushup/cli',
         'collect',
         '--verbose',
-        `--config=${path.join(
-          TEST_OUTPUT_DIR,
-          'npm-repo',
-          'code-pushup.config.ts',
-        )}`,
+        `--config=code-pushup.config.ts`,
       ],
-      cwd: path.join(E2E_ENVIRONMENTS_DIR, nxTargetProject()),
+      cwd: npmRepoDir,
     });
 
     expect(code).toBe(0);
