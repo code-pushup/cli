@@ -16,7 +16,7 @@ export type Sink<I, O> = {
 export type Buffered = {
   flush: () => void;
 };
-export type BufferedSink<I, O> = {} & Sink<I, O> & Buffered;
+export type BufferedSink<I, O> = Sink<I, O> & Buffered;
 
 export type Source<I, O = unknown> = {
   read?: () => O;

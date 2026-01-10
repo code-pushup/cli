@@ -1,3 +1,13 @@
+## 0.102.0 (2026-01-10)
+
+### 🚀 Features
+
+- **utils:** add performance observer ([#1206](https://github.com/code-pushup/cli/pull/1206))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.101.1 (2026-01-06)
 
 ### 🩹 Fixes
