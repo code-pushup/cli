@@ -1,4 +1,8 @@
-import { getUrlIdentifier, normalizeUrlInput } from './plugin-url-config.js';
+import {
+  getUrlIdentifier,
+  normalizeUrlInput,
+  pluginUrlContextSchema,
+} from './plugin-url-config.js';
 
 describe('getUrlIdentifier', () => {
   it.each([
@@ -28,12 +32,9 @@ describe('getUrlIdentifier', () => {
 describe('normalizeUrlInput', () => {
   describe('string input', () => {
     it('should normalize single URL string', () => {
-      expect(normalizeUrlInput('https://example.com')).toEqual({
+      expect(normalizeUrlInput('https://example.com')).toStrictEqual({
         urls: ['https://example.com'],
-        context: {
-          urlCount: 1,
-          weights: { 1: 1 },
-        },
+        context: { urlCount: 1, weights: { 1: 1 } },
       });
     });
   });
@@ -42,32 +43,23 @@ describe('normalizeUrlInput', () => {
     it('should normalize array of URLs', () => {
       expect(
         normalizeUrlInput(['https://example.com', 'https://example.com/about']),
-      ).toEqual({
+      ).toStrictEqual({
         urls: ['https://example.com', 'https://example.com/about'],
-        context: {
-          urlCount: 2,
-          weights: { 1: 1, 2: 1 },
-        },
+        context: { urlCount: 2, weights: { 1: 1, 2: 1 } },
       });
     });
 
     it('should handle empty array', () => {
-      expect(normalizeUrlInput([])).toEqual({
+      expect(normalizeUrlInput([])).toStrictEqual({
         urls: [],
-        context: {
-          urlCount: 0,
-          weights: {},
-        },
+        context: { urlCount: 0, weights: {} },
       });
     });
 
     it('should handle single URL in array', () => {
-      expect(normalizeUrlInput(['https://example.com'])).toEqual({
+      expect(normalizeUrlInput(['https://example.com'])).toStrictEqual({
         urls: ['https://example.com'],
-        context: {
-          urlCount: 1,
-          weights: { 1: 1 },
-        },
+        context: { urlCount: 1, weights: { 1: 1 } },
       });
     });
   });
@@ -80,26 +72,20 @@ describe('normalizeUrlInput', () => {
           'https://example.com/about': 3,
           'https://example.com/contact': 1,
         }),
-      ).toEqual({
+      ).toStrictEqual({
         urls: [
           'https://example.com',
           'https://example.com/about',
           'https://example.com/contact',
         ],
-        context: {
-          urlCount: 3,
-          weights: { 1: 2, 2: 3, 3: 1 },
-        },
+        context: { urlCount: 3, weights: { 1: 2, 2: 3, 3: 1 } },
       });
     });
 
     it('should handle single weighted URL', () => {
-      expect(normalizeUrlInput({ 'https://example.com': 5 })).toEqual({
+      expect(normalizeUrlInput({ 'https://example.com': 5 })).toStrictEqual({
         urls: ['https://example.com'],
-        context: {
-          urlCount: 1,
-          weights: { 1: 5 },
-        },
+        context: { urlCount: 1, weights: { 1: 5 } },
       });
     });
 
@@ -109,47 +95,61 @@ describe('normalizeUrlInput', () => {
           'https://example.com': 2,
           'https://example.com/about': 0,
         }),
-      ).toEqual({
+      ).toStrictEqual({
         urls: ['https://example.com', 'https://example.com/about'],
-        context: {
-          urlCount: 2,
-          weights: { 1: 2, 2: 0 },
-        },
+        context: { urlCount: 2, weights: { 1: 2, 2: 0 } },
       });
     });
 
     it('should handle empty object', () => {
-      expect(normalizeUrlInput({})).toEqual({
+      expect(normalizeUrlInput({})).toStrictEqual({
         urls: [],
-        context: {
-          urlCount: 0,
-          weights: {},
-        },
+        context: { urlCount: 0, weights: {} },
       });
     });
   });
 
   describe('edge cases', () => {
     it('should handle URLs with special characters', () => {
-      const result = normalizeUrlInput({
-        'https://example.com/path?query=test&foo=bar': 2,
-        'https://example.com/path#section': 1,
+      expect(
+        normalizeUrlInput({
+          'https://example.com/path?query=test&foo=bar': 2,
+          'https://example.com/path#section': 1,
+        }),
+      ).toStrictEqual({
+        urls: [
+          'https://example.com/path?query=test&foo=bar',
+          'https://example.com/path#section',
+        ],
+        context: { urlCount: 2, weights: { 1: 2, 2: 1 } },
       });
-
-      expect(result.urls).toEqual([
-        'https://example.com/path?query=test&foo=bar',
-        'https://example.com/path#section',
-      ]);
-      expect(result.context.weights).toEqual({ 1: 2, 2: 1 });
     });
 
     it('should handle numeric weights including decimals', () => {
-      const result = normalizeUrlInput({
-        'https://example.com': 1.5,
-        'https://example.com/about': 2.7,
-      });
-
-      expect(result.context.weights).toEqual({ 1: 1.5, 2: 2.7 });
+      expect(
+        normalizeUrlInput({
+          'https://example.com': 1.5,
+          'https://example.com/about': 2.7,
+        }).context.weights,
+      ).toStrictEqual({ 1: 1.5, 2: 2.7 });
     });
+  });
+});
+
+describe('pluginUrlContextSchema', () => {
+  it.each([
+    [undefined, /expected object/i],
+    [{ weights: {} }, /expected number/i],
+    [{ urlCount: -1, weights: {} }, /too small/i],
+    [{ urlCount: 2 }, /expected record/i],
+    [{ urlCount: 2, weights: { 1: 1 } }, /weights count must match/i],
+  ])('should throw error for invalid context: %j', (pattern, expectedError) => {
+    expect(() => pluginUrlContextSchema.parse(pattern)).toThrow(expectedError);
+  });
+
+  it('should accept valid context', () => {
+    expect(() =>
+      pluginUrlContextSchema.parse({ urlCount: 2, weights: { 1: 1, 2: 1 } }),
+    ).not.toThrow();
   });
 });

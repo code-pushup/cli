@@ -96,18 +96,16 @@ export { Logger, logger } from './lib/logger.js';
 export { mergeConfigs } from './lib/merge-configs.js';
 export {
   addIndex,
-  ContextValidationError,
-  createCategoryRefs,
   expandAuditsForUrls,
   expandCategoryRefs,
   expandGroupsForUrls,
-  removeIndex,
+  extractGroupSlugs,
   shouldExpandForUrls,
-  validateUrlContext,
 } from './lib/plugin-url-aggregation.js';
 export {
   getUrlIdentifier,
   normalizeUrlInput,
+  pluginUrlContextSchema,
   type PluginUrlContext,
 } from './lib/plugin-url-config.js';
 export {

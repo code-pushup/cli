@@ -25,15 +25,15 @@ _All properties are optional._
 
 _Object containing the following properties:_
 
-| Property                 | Description                          | Type                                                                                                                                                                                                                                                                                                  |
-| :----------------------- | :----------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`slug`** (\*)          | Unique ID (human-readable, URL-safe) | [Slug](#slug)                                                                                                                                                                                                                                                                                         |
-| **`title`** (\*)         | Descriptive name                     | `string` (_max length: 256_)                                                                                                                                                                                                                                                                          |
-| `docsUrl`                | Documentation site                   | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                                               |
-| **`scores`** (\*)        | Score comparison                     | _Object with properties:_<ul><li>**`before`** (\*): [Score](#score) - Value between 0 and 1 (source commit)</li><li>**`after`** (\*): [Score](#score) - Value between 0 and 1 (target commit)</li><li>**`diff`** (\*): `number` (_≥-1, ≤1_) - Score change (`scores.after - scores.before`)</li></ul> |
-| **`plugin`** (\*)        | Plugin which defines it              | _Object with properties:_<ul><li>**`slug`** (\*): [Slug](#slug) - Unique plugin slug within core config</li><li>**`title`** (\*): `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `string` (_url_) (_optional_) _or_ `''` - Plugin documentation site</li></ul>                    |
-| **`values`** (\*)        | Audit `value` comparison             | _Object with properties:_<ul><li>**`before`** (\*): `number` (_≥0_) - Raw numeric value (source commit)</li><li>**`after`** (\*): `number` (_≥0_) - Raw numeric value (target commit)</li><li>**`diff`** (\*): `number` - Value change (`values.after - values.before`)</li></ul>                     |
-| **`displayValues`** (\*) | Audit `displayValue` comparison      | _Object with properties:_<ul><li>`before`: `string` - Formatted value (e.g. '0.9 s', '2.1 MB') (source commit)</li><li>`after`: `string` - Formatted value (e.g. '0.9 s', '2.1 MB') (target commit)</li></ul>                                                                                         |
+| Property                 | Description                          | Type                                                                                                                                                                                                                                                                                                                              |
+| :----------------------- | :----------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`slug`** (\*)          | Unique ID (human-readable, URL-safe) | [Slug](#slug)                                                                                                                                                                                                                                                                                                                     |
+| **`title`** (\*)         | Descriptive name                     | `string` (_max length: 256_)                                                                                                                                                                                                                                                                                                      |
+| `docsUrl`                | Documentation site                   | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                                                                           |
+| **`scores`** (\*)        | Score comparison                     | _Object with properties:_<ul><li>**`before`** (\*): [Score](#score) - Value between 0 and 1 (source commit)</li><li>**`after`** (\*): [Score](#score) - Value between 0 and 1 (target commit)</li><li>**`diff`** (\*): `number` (_≥-1, ≤1_) - Score change (`scores.after - scores.before`)</li></ul>                             |
+| **`plugin`** (\*)        | Plugin which defines it              | _Object with properties:_<ul><li>**`slug`** (\*): [Slug](#slug) - Unique plugin slug within core config</li><li>**`title`** (\*): `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `string` (_url_) (_optional_) _or_ `''` - Plugin documentation site</li></ul>                                                |
+| **`values`** (\*)        | Audit `value` comparison             | _Object with properties:_<ul><li>**`before`** (\*): [NonnegativeNumber](#nonnegativenumber) - Raw numeric value (source commit)</li><li>**`after`** (\*): [NonnegativeNumber](#nonnegativenumber) - Raw numeric value (target commit)</li><li>**`diff`** (\*): `number` - Value change (`values.after - values.before`)</li></ul> |
+| **`displayValues`** (\*) | Audit `displayValue` comparison      | _Object with properties:_<ul><li>`before`: `string` - Formatted value (e.g. '0.9 s', '2.1 MB') (source commit)</li><li>`after`: `string` - Formatted value (e.g. '0.9 s', '2.1 MB') (target commit)</li></ul>                                                                                                                     |
 
 _(\*) Required._
 
@@ -43,14 +43,14 @@ Audit information
 
 _Object containing the following properties:_
 
-| Property         | Description                              | Type                          |
-| :--------------- | :--------------------------------------- | :---------------------------- |
-| **`slug`** (\*)  | Reference to audit                       | [Slug](#slug)                 |
-| `displayValue`   | Formatted value (e.g. '0.9 s', '2.1 MB') | `string`                      |
-| **`value`** (\*) | Raw numeric value                        | `number` (_≥0_)               |
-| **`score`** (\*) | Value between 0 and 1                    | [Score](#score)               |
-| `scoreTarget`    | Pass/fail score threshold (0-1)          | `number` (_≥0, ≤1_)           |
-| `details`        | Detailed information                     | [AuditDetails](#auditdetails) |
+| Property         | Description                              | Type                                    |
+| :--------------- | :--------------------------------------- | :-------------------------------------- |
+| **`slug`** (\*)  | Reference to audit                       | [Slug](#slug)                           |
+| `displayValue`   | Formatted value (e.g. '0.9 s', '2.1 MB') | `string`                                |
+| **`value`** (\*) | Raw numeric value                        | [NonnegativeNumber](#nonnegativenumber) |
+| **`score`** (\*) | Value between 0 and 1                    | [Score](#score)                         |
+| `scoreTarget`    | Pass/fail score threshold (0-1)          | `number` (_≥0, ≤1_)                     |
+| `details`        | Detailed information                     | [AuditDetails](#auditdetails)           |
 
 _(\*) Required._
 
@@ -72,7 +72,7 @@ _Object containing the following properties:_
 | `docsUrl`        | Link to documentation (rationale)        | `string` (_url_) (_optional_) _or_ `''` |
 | `isSkipped`      | Indicates whether the audit is skipped   | `boolean`                               |
 | `displayValue`   | Formatted value (e.g. '0.9 s', '2.1 MB') | `string`                                |
-| **`value`** (\*) | Raw numeric value                        | `number` (_≥0_)                         |
+| **`value`** (\*) | Raw numeric value                        | [NonnegativeNumber](#nonnegativenumber) |
 | **`score`** (\*) | Value between 0 and 1                    | [Score](#score)                         |
 | `scoreTarget`    | Pass/fail score threshold (0-1)          | `number` (_≥0, ≤1_)                     |
 | `details`        | Detailed information                     | [AuditDetails](#auditdetails)           |
@@ -90,7 +90,7 @@ _Object containing the following properties:_
 | `docsUrl`         | Documentation site                       | `string` (_url_) (_optional_) _or_ `''`                                                                                                                                                                                                                                            |
 | **`plugin`** (\*) | Plugin which defines it                  | _Object with properties:_<ul><li>**`slug`** (\*): [Slug](#slug) - Unique plugin slug within core config</li><li>**`title`** (\*): `string` (_max length: 256_) - Descriptive name</li><li>`docsUrl`: `string` (_url_) (_optional_) _or_ `''` - Plugin documentation site</li></ul> |
 | **`score`** (\*)  | Value between 0 and 1                    | [Score](#score)                                                                                                                                                                                                                                                                    |
-| **`value`** (\*)  | Raw numeric value                        | `number` (_≥0_)                                                                                                                                                                                                                                                                    |
+| **`value`** (\*)  | Raw numeric value                        | [NonnegativeNumber](#nonnegativenumber)                                                                                                                                                                                                                                            |
 | `displayValue`    | Formatted value (e.g. '0.9 s', '2.1 MB') | `string`                                                                                                                                                                                                                                                                           |
 
 _(\*) Required._
@@ -198,12 +198,12 @@ _(\*) Required._
 
 _Object containing the following properties:_
 
-| Property          | Description                                                        | Type                 |
-| :---------------- | :----------------------------------------------------------------- | :------------------- |
-| **`slug`** (\*)   | Slug of an audit or group (depending on `type`)                    | [Slug](#slug)        |
-| **`weight`** (\*) | Weight used to calculate score                                     | `number` (_≥0_)      |
-| **`type`** (\*)   | Discriminant for reference kind, affects where `slug` is looked up | `'audit' \| 'group'` |
-| **`plugin`** (\*) | Plugin slug (plugin should contain referenced audit or group)      | [Slug](#slug)        |
+| Property          | Description                                                        | Type                                    |
+| :---------------- | :----------------------------------------------------------------- | :-------------------------------------- |
+| **`slug`** (\*)   | Slug of an audit or group (depending on `type`)                    | [Slug](#slug)                           |
+| **`weight`** (\*) | Weight used to calculate score                                     | [NonnegativeNumber](#nonnegativenumber) |
+| **`type`** (\*)   | Discriminant for reference kind, affects where `slug` is looked up | `'audit' \| 'group'`                    |
+| **`plugin`** (\*) | Plugin slug (plugin should contain referenced audit or group)      | [Slug](#slug)                           |
 
 _(\*) Required._
 
@@ -332,10 +332,10 @@ Weighted reference to a group
 
 _Object containing the following properties:_
 
-| Property          | Description                                                     | Type            |
-| :---------------- | :-------------------------------------------------------------- | :-------------- |
-| **`slug`** (\*)   | Reference slug to a group within this plugin (e.g. 'max-lines') | [Slug](#slug)   |
-| **`weight`** (\*) | Weight used to calculate score                                  | `number` (_≥0_) |
+| Property          | Description                                                     | Type                                    |
+| :---------------- | :-------------------------------------------------------------- | :-------------------------------------- |
+| **`slug`** (\*)   | Reference slug to a group within this plugin (e.g. 'max-lines') | [Slug](#slug)                           |
+| **`weight`** (\*) | Weight used to calculate score                                  | [NonnegativeNumber](#nonnegativenumber) |
 
 _(\*) Required._
 
@@ -1262,6 +1262,10 @@ _Enum, one of the following possible values:_
 
 </details>
 
+## NonnegativeNumber
+
+_Number which is greater than or equal to 0._
+
 ## PersistConfig
 
 _Object containing the following properties:_
@@ -1374,7 +1378,7 @@ _Union of the following possible types:_
 
 - `string` (_url_)
 - `Array<string (_url_)>`
-- _Object with dynamic keys of type_ `string` (_url_) _and values of type_ `number` (_≥0_)
+- _Object with dynamic keys of type_ `string` (_url_) _and values of type_ [NonnegativeNumber](#nonnegativenumber)
 
 ## PositiveInt
 
@@ -1574,3 +1578,9 @@ _Object containing the following properties:_
 | `timeout`               | Request timeout in minutes (default is 5)                            | `number` (_>0, int_) |
 
 _(\*) Required._
+
+## Weight
+
+Coefficient for the given score (use weight 0 if only for display)
+
+_Number which is greater than or equal to 0._
