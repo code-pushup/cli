@@ -229,6 +229,7 @@ export function setupTracks<
         dataType: dataTypeTrackEntry,
       }),
     }),
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     {} as Record<keyof T, ActionTrack>,
   ) as Record<keyof T, ActionTrack>;
 }
