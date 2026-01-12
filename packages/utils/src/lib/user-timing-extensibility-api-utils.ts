@@ -1,4 +1,5 @@
 import { performance } from 'node:perf_hooks';
+import { objectToEntries } from './transform.js';
 import type {
   DevToolsColor,
   DevToolsProperties,
@@ -185,21 +186,18 @@ export type MergeResult<
 export function mergeDevtoolsPayload<
   const P extends readonly Partial<TrackEntryPayload | MarkerPayload>[],
 >(...parts: P): MergeResult<P> {
-  return parts.reduce(
-    (acc, cur) => ({
-      ...acc,
-      ...cur,
-      ...(cur.properties || acc.properties
-        ? {
-            properties: mergePropertiesWithOverwrite(
-              acc.properties ?? [],
-              cur.properties ?? [],
-            ),
-          }
-        : {}),
-    }),
-    {} as Partial<TrackEntryPayload>,
-  ) as MergeResult<P>;
+  return parts.reduce((acc, cur) => ({
+    ...acc,
+    ...cur,
+    ...(cur.properties || acc.properties
+      ? {
+          properties: mergePropertiesWithOverwrite(
+            acc.properties ?? [],
+            cur.properties ?? [],
+          ),
+        }
+      : {}),
+  })) as MergeResult<P>;
 }
 
 export function mergeDevtoolsPayloadAction<
@@ -220,14 +218,11 @@ export type ActionTrack = TrackEntryPayload & ActionColorPayload;
 export function setupTracks<
   const T extends Record<string, Partial<ActionTrack>>,
   const D extends ActionTrack,
->(defaults: D, tracks: T): Record<keyof T, ActionTrack> {
-  return Object.entries(tracks).reduce(
-    (result, [key, track]) => ({
-      ...result,
-      [key]: mergeDevtoolsPayload(defaults, track) as ActionTrack,
-    }),
-    {} as Record<keyof T, ActionTrack>,
-  );
+>(defaults: D, tracks: T) {
+  return objectToEntries(tracks).reduce((result, [key, track]) => ({
+    ...result,
+    [key]: mergeDevtoolsPayload(defaults, track),
+  })) as Record<keyof T, ActionTrack>;
 }
 
 /**
