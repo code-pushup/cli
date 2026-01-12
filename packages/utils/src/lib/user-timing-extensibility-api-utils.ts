@@ -186,18 +186,21 @@ export type MergeResult<
 export function mergeDevtoolsPayload<
   const P extends readonly Partial<TrackEntryPayload | MarkerPayload>[],
 >(...parts: P): MergeResult<P> {
-  return parts.reduce((acc, cur) => ({
-    ...acc,
-    ...cur,
-    ...(cur.properties || acc.properties
-      ? {
-          properties: mergePropertiesWithOverwrite(
-            acc.properties ?? [],
-            cur.properties ?? [],
-          ),
-        }
-      : {}),
-  })) as MergeResult<P>;
+  return parts.reduce(
+    (acc, cur) => ({
+      ...acc,
+      ...cur,
+      ...(cur.properties || acc.properties
+        ? {
+            properties: mergePropertiesWithOverwrite(
+              acc.properties ?? [],
+              cur.properties ?? [],
+            ),
+          }
+        : {}),
+    }),
+    {},
+  ) as MergeResult<P>;
 }
 
 export function mergeDevtoolsPayloadAction<
@@ -219,10 +222,15 @@ export function setupTracks<
   const T extends Record<string, Partial<ActionTrack>>,
   const D extends ActionTrack,
 >(defaults: D, tracks: T) {
-  return objectToEntries(tracks).reduce((result, [key, track]) => ({
-    ...result,
-    [key]: mergeDevtoolsPayload(defaults, track),
-  })) as Record<keyof T, ActionTrack>;
+  return objectToEntries(tracks).reduce(
+    (result, [key, track]) => ({
+      ...result,
+      [key]: mergeDevtoolsPayload(defaults, track, {
+        dataType: dataTypeTrackEntry,
+      }),
+    }),
+    {} as Record<keyof T, ActionTrack>,
+  ) as Record<keyof T, ActionTrack>;
 }
 
 /**

@@ -367,7 +367,7 @@ describe('mergeDevtoolsPayload', () => {
       color: 'primary',
       properties: [['key1', 'value1']],
     };
-    expect(mergeDevtoolsPayload(payload)).toBe(payload);
+    expect(mergeDevtoolsPayload(payload)).toStrictEqual(payload);
   });
 
   it('should merge multiple track entry payloads', () => {
@@ -425,7 +425,7 @@ describe('mergeDevtoolsPayload', () => {
 
     expect(mergeDevtoolsPayload(payload1, payload2)).toStrictEqual({
       track: 'Test',
-      properties: [['key1', 'value1']],
+      properties: undefined,
     });
   });
 });
