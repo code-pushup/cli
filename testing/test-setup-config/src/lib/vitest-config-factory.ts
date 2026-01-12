@@ -31,7 +31,28 @@ function buildCoverageConfig(
     return undefined;
   }
 
-  const exclude = ['mocks/**', '**/types.ts', 'perf/**'];
+  const exclude = [
+    'mocks/**',
+    'perf/**',
+    // Vitest configuration files
+    '**/vitest.*.config.ts',
+    '**/vitest.config.ts',
+    // code-pushup config
+    '**/code-pushup.config.ts',
+    // other config files
+    '**/*.config.ts',
+    // Barrel files (index files that only re-export)
+    '**/index.ts',
+    '**/index.js',
+    '**/index.mjs',
+    // Model files
+    '**/models.ts',
+    '**/*.model.ts',
+    '**/types.ts',
+    '**/*.types.ts',
+    // typings
+    '**/*.d.ts',
+  ];
   const reportsDirectory = `../../coverage/${projectKey}/${kind}-tests`;
 
   return {
