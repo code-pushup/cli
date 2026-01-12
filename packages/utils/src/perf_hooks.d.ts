@@ -1,17 +1,5 @@
-// perf_hooks.d.ts - Custom type definitions for performance.mark() and performance.measure()
 import type {
-  MarkOptions,
-  MeasureOptions,
-  Performance,
-  PerformanceMark,
-  PerformanceMarkOptions,
-  PerformanceMeasure,
-  PerformanceMeasureOptions,
-} from 'node:perf_hooks';
-import type {
-  MarkOptionsWithDevtools,
   MarkerPayload,
-  MeasureOptionsWithDevtools,
   TrackEntryPayload,
   WithDevToolsPayload,
 } from './lib/user-timing-extensibility-api.type';
