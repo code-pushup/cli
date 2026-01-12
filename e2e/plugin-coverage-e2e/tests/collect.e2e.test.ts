@@ -1,56 +1,58 @@
-import { cp } from 'node:fs/promises';
 import path from 'node:path';
-import { simpleGit } from 'simple-git';
 import { afterAll, afterEach, beforeAll } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
 import { omitVariableReportData } from '@code-pushup/test-fixtures';
-import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
-  E2E_ENVIRONMENTS_DIR,
-  TEST_OUTPUT_DIR,
-  initGitRepo,
-  restoreNxIgnoredFiles,
+  type TestEnvironmentWithGit,
+  setupTestEnvironment,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
 describe('PLUGIN collect report with coverage-plugin NPM package', () => {
-  const envRoot = path.join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
-  const testFileDir = path.join(envRoot, TEST_OUTPUT_DIR, 'collect');
-
-  const basicDir = path.join(testFileDir, 'basic-setup');
-  const existingDir = path.join(testFileDir, 'existing-report');
-
-  const fixtureDir = path.join('e2e', nxTargetProject(), 'mocks', 'fixtures');
+  let basicEnv: TestEnvironmentWithGit;
+  let existingEnv: TestEnvironmentWithGit;
 
   beforeAll(async () => {
-    await cp(fixtureDir, testFileDir, { recursive: true });
-    await restoreNxIgnoredFiles(testFileDir);
-    await initGitRepo(simpleGit, { baseDir: basicDir });
-    await initGitRepo(simpleGit, { baseDir: existingDir });
+    basicEnv = await setupTestEnvironment(
+      ['..', 'mocks', 'fixtures', 'basic-setup'],
+      {
+        callerUrl: import.meta.url,
+        git: true,
+        testId: 'plugin-coverage-basic',
+      },
+    );
+    existingEnv = await setupTestEnvironment(
+      ['..', 'mocks', 'fixtures', 'existing-report'],
+      {
+        callerUrl: import.meta.url,
+        git: true,
+        testId: 'plugin-coverage-existing',
+      },
+    );
   });
 
   afterAll(async () => {
-    await teardownTestFolder(basicDir);
-    await teardownTestFolder(existingDir);
+    await basicEnv.cleanup();
+    await existingEnv.cleanup();
   });
 
   afterEach(async () => {
-    await teardownTestFolder(path.join(basicDir, '.code-pushup'));
-    await teardownTestFolder(path.join(existingDir, '.code-pushup'));
+    await teardownTestFolder(path.join(basicEnv.baseDir, '.code-pushup'));
+    await teardownTestFolder(path.join(existingEnv.baseDir, '.code-pushup'));
   });
 
   it('should run Code coverage plugin which runs tests and creates report.json', async () => {
     const { code } = await executeProcess({
       command: 'npx',
       args: ['code-pushup', 'collect'],
-      cwd: basicDir,
+      cwd: basicEnv.baseDir,
     });
 
     expect(code).toBe(0);
 
     const report = await readJsonFile<Report>(
-      path.join(basicDir, '.code-pushup', 'report.json'),
+      path.join(basicEnv.baseDir, '.code-pushup', 'report.json'),
     );
 
     expect(() => reportSchema.parse(report)).not.toThrow();
@@ -61,13 +63,13 @@ describe('PLUGIN collect report with coverage-plugin NPM package', () => {
     const { code } = await executeProcess({
       command: 'npx',
       args: ['@code-pushup/cli', 'collect'],
-      cwd: existingDir,
+      cwd: existingEnv.baseDir,
     });
 
     expect(code).toBe(0);
 
     const report = await readJsonFile<Report>(
-      path.join(existingDir, '.code-pushup', 'report.json'),
+      path.join(existingEnv.baseDir, '.code-pushup', 'report.json'),
     );
 
     expect(() => reportSchema.parse(report)).not.toThrow();

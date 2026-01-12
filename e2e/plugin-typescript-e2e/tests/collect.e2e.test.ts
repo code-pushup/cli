@@ -1,4 +1,3 @@
-import { cp } from 'node:fs/promises';
 import path from 'node:path';
 import { afterAll, beforeAll, expect } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
@@ -6,13 +5,11 @@ import {
   omitVariableReportData,
   osAgnosticAuditOutputs,
 } from '@code-pushup/test-fixtures';
-import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
-  E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
+  type TestEnvironment,
   osAgnosticPath,
-  restoreNxIgnoredFiles,
-  teardownTestFolder,
+  setupTestEnvironment,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
@@ -40,24 +37,23 @@ function sanitizeReportPaths(report: Report): Report {
 }
 
 describe('PLUGIN collect report with typescript-plugin NPM package', () => {
-  const envRoot = path.join(E2E_ENVIRONMENTS_DIR, nxTargetProject());
-  const distRoot = path.join(envRoot, TEST_OUTPUT_DIR);
-
-  const fixturesDir = path.join(
-    'e2e',
-    nxTargetProject(),
-    'mocks',
-    'fixtures',
-    'default-setup',
-  );
+  let testEnv: TestEnvironment;
+  let envRoot: string;
+  let distRoot: string;
 
   beforeAll(async () => {
-    await cp(fixturesDir, envRoot, { recursive: true });
-    await restoreNxIgnoredFiles(envRoot);
+    testEnv = await setupTestEnvironment(
+      ['..', 'mocks', 'fixtures', 'default-setup'],
+      {
+        callerUrl: import.meta.url,
+      },
+    );
+    envRoot = testEnv.baseDir;
+    distRoot = path.join(envRoot, TEST_OUTPUT_DIR);
   });
 
   afterAll(async () => {
-    await teardownTestFolder(distRoot);
+    await testEnv.cleanup();
   });
 
   it('should run plugin over CLI and creates report.json', async () => {

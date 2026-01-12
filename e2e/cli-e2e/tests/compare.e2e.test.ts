@@ -1,41 +1,30 @@
-import { cp } from 'node:fs/promises';
 import path from 'node:path';
 import { beforeAll } from 'vitest';
 import type { ReportsDiff } from '@code-pushup/models';
-import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
-  E2E_ENVIRONMENTS_DIR,
-  TEST_OUTPUT_DIR,
-  restoreNxIgnoredFiles,
-  teardownTestFolder,
+  type TestEnvironment,
+  setupTestEnvironment,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 
 describe('CLI compare', () => {
-  const fixtureDummyDir = path.join(
-    'e2e',
-    nxTargetProject(),
-    'mocks',
-    'fixtures',
-    'existing-reports',
-  );
-
-  const testFileDir = path.join(
-    E2E_ENVIRONMENTS_DIR,
-    nxTargetProject(),
-    TEST_OUTPUT_DIR,
-    'compare',
-  );
-  const existingDir = path.join(testFileDir, 'existing-reports');
-  const existingOutputDir = path.join(existingDir, '.code-pushup');
+  let testEnv: TestEnvironment;
+  let existingDir: string;
+  let existingOutputDir: string;
 
   beforeAll(async () => {
-    await cp(fixtureDummyDir, existingDir, { recursive: true });
-    await restoreNxIgnoredFiles(existingDir);
+    testEnv = await setupTestEnvironment(
+      ['..', 'mocks', 'fixtures', 'existing-reports'],
+      {
+        callerUrl: import.meta.url,
+      },
+    );
+    existingDir = testEnv.baseDir;
+    existingOutputDir = path.join(existingDir, '.code-pushup');
   });
 
   afterAll(async () => {
-    await teardownTestFolder(existingDir);
+    await testEnv.cleanup();
   });
 
   it('should compare report.json files and create report-diff.json and report-diff.md', async () => {

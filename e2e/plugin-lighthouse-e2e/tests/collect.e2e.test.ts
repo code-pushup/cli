@@ -1,35 +1,26 @@
-import { cp } from 'node:fs/promises';
 import path from 'node:path';
 import { afterAll, beforeAll, expect } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
 import { omitVariableReportData } from '@code-pushup/test-fixtures';
-import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
-  E2E_ENVIRONMENTS_DIR,
-  TEST_OUTPUT_DIR,
-  restoreNxIgnoredFiles,
-  teardownTestFolder,
+  type TestEnvironment,
+  setupTestEnvironment,
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
 describe('PLUGIN collect report with lighthouse-plugin NPM package', () => {
-  const testFileDir = path.join(
-    E2E_ENVIRONMENTS_DIR,
-    nxTargetProject(),
-    TEST_OUTPUT_DIR,
-    'collect',
-  );
-  const defaultSetupDir = path.join(testFileDir, 'default-setup');
-
-  const fixturesDir = path.join('e2e', nxTargetProject(), 'mocks/fixtures');
+  let testEnv: TestEnvironment;
+  let defaultSetupDir: string;
 
   beforeAll(async () => {
-    await cp(fixturesDir, testFileDir, { recursive: true });
-    await restoreNxIgnoredFiles(testFileDir);
+    testEnv = await setupTestEnvironment(['..', 'mocks', 'fixtures'], {
+      callerUrl: import.meta.url,
+    });
+    defaultSetupDir = path.join(testEnv.baseDir, 'default-setup');
   });
 
   afterAll(async () => {
-    await teardownTestFolder(testFileDir);
+    await testEnv.cleanup();
   });
 
   it('should run plugin over CLI and creates report.json', async () => {
