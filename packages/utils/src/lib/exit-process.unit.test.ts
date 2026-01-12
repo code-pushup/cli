@@ -1,3 +1,4 @@
+import os from 'node:os';
 import process from 'node:process';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SIGNAL_EXIT_CODES, installExitHandlers } from './exit-process.js';
@@ -215,28 +216,22 @@ describe('exit-process tests', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('should have correct SIGINT exit code based on platform', () => {
-    const os = require('node:os');
-    const isWindows = os.platform() === 'win32';
-    const SIGINT_CODE = 2;
-    const UNIX_SIGNAL_EXIT_CODE_OFFSET = 128;
+  it('should have correct SIGINT exit code on Windows', () => {
+    const osSpy = vi.spyOn(os, 'platform').mockReturnValue('win32');
+    const exitCodes = SIGNAL_EXIT_CODES();
+    expect(exitCodes.SIGINT).toBe(2);
+    osSpy.mockRestore();
+  });
 
-    const expectedSigintCode = isWindows
-      ? SIGINT_CODE
-      : UNIX_SIGNAL_EXIT_CODE_OFFSET + SIGINT_CODE;
-
-    if (isWindows) {
-      expect(expectedSigintCode).toBe(2);
-    } else {
-      expect(expectedSigintCode).toBe(130);
-      expect(SIGNAL_EXIT_CODES().SIGINT).toBe(130);
-    }
+  it('should have correct SIGINT exit code on Unix-like systems', () => {
+    const osSpy = vi.spyOn(os, 'platform').mockReturnValue('linux');
+    const exitCodes = SIGNAL_EXIT_CODES();
+    expect(exitCodes.SIGINT).toBe(130);
+    osSpy.mockRestore();
   });
 
   it('should calculate Windows exit codes correctly when platform is mocked to Windows', () => {
-    const osSpy = vi
-      .spyOn(require('node:os'), 'platform')
-      .mockReturnValue('win32');
+    const osSpy = vi.spyOn(os, 'platform').mockReturnValue('win32');
 
     const exitCodes = SIGNAL_EXIT_CODES();
 
