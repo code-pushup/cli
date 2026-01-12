@@ -24,24 +24,11 @@ declare module 'node:perf_hooks' {
   }
 
   const performance: {
-    mark(
-      name: string,
-      options?: {
-        detail?: DetailPayloadWithDevtools;
-      },
-    ): PerformanceMark;
+    mark(name: string, options?: PerformanceMarkOptions): PerformanceMark;
 
     measure(
       name: string,
-      startOrOptions?:
-        | string
-        | number
-        | {
-            detail?: DetailPayloadWithDevtools;
-            start?: string | number;
-            end?: string | number;
-            duration?: number;
-          },
+      startOrOptions?: string | number | PerformanceMeasureOptions,
       end?: string | number,
     ): PerformanceMeasure;
   };

@@ -1,7 +1,7 @@
 import { type PerformanceMarkOptions, performance } from 'node:perf_hooks';
 import { describe, expectTypeOf, it } from 'vitest';
 
-describe('perf_hooks.type', () => {
+describe('perf-hooks definitions', () => {
   it('PerformanceMarkOptions should be type safe', () => {
     expectTypeOf<{
       startTime: number;
@@ -12,7 +12,6 @@ describe('perf_hooks.type', () => {
         };
       };
     }>().toMatchTypeOf<PerformanceMarkOptions>();
-
     expectTypeOf<{
       startTime: number;
       detail: {
