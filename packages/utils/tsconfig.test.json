@@ -13,7 +13,6 @@
     "src/**/*.test.js",
     "src/**/*.test.jsx",
     "src/**/*.d.ts",
-    "../../testing/test-setup/src/vitest.d.ts",
-    "src/perf_hooks.type.ts"
+    "../../testing/test-setup/src/vitest.d.ts"
   ]
 }
