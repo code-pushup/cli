@@ -1,6 +1,6 @@
 import process from 'node:process';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { installExitHandlers } from './exit-process.js';
+import { SIGNAL_EXIT_CODES, installExitHandlers } from './exit-process.js';
 
 describe('installExitHandlers', () => {
   const onError = vi.fn();
@@ -72,7 +72,7 @@ describe('installExitHandlers', () => {
     (process as any).emit('SIGINT');
 
     expect(onClose).toHaveBeenCalledTimes(1);
-    expect(onClose).toHaveBeenCalledWith(130, {
+    expect(onClose).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGINT, {
       kind: 'signal',
       signal: 'SIGINT',
     });
@@ -85,7 +85,7 @@ describe('installExitHandlers', () => {
     (process as any).emit('SIGTERM');
 
     expect(onClose).toHaveBeenCalledTimes(1);
-    expect(onClose).toHaveBeenCalledWith(143, {
+    expect(onClose).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGTERM, {
       kind: 'signal',
       signal: 'SIGTERM',
     });
@@ -98,7 +98,7 @@ describe('installExitHandlers', () => {
     (process as any).emit('SIGQUIT');
 
     expect(onClose).toHaveBeenCalledTimes(1);
-    expect(onClose).toHaveBeenCalledWith(131, {
+    expect(onClose).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGQUIT, {
       kind: 'signal',
       signal: 'SIGQUIT',
     });
