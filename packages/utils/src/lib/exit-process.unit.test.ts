@@ -246,4 +246,22 @@ describe('exit-process tests', () => {
 
     osSpy.mockRestore();
   });
+
+  it('should call onClose only once even when close is called multiple times', () => {
+    expect(() =>
+      installExitHandlers({ onClose, signalExit: true }),
+    ).not.toThrow();
+
+    (process as any).emit('SIGINT');
+    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(onClose).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGINT, {
+      kind: 'signal',
+      signal: 'SIGINT',
+    });
+    onClose.mockClear();
+    (process as any).emit('SIGTERM');
+    expect(onClose).not.toHaveBeenCalled();
+    (process as any).emit('exit', 0);
+    expect(onClose).not.toHaveBeenCalled();
+  });
 });
