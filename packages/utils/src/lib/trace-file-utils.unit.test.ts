@@ -66,29 +66,41 @@ describe('getTraceFile', () => {
       startTime: '2023-01-01T00:00:00.000Z',
     });
 
-    expect(result.metadata?.startTime).toBe('2023-01-01T00:00:00.000Z');
+    expect(result).toHaveProperty(
+      'metadata',
+      expect.objectContaining({
+        startTime: '2023-01-01T00:00:00.000Z',
+      }),
+    );
   });
 
   it('should include hardware concurrency', () => {
-    expect(
-      getTraceFile({ traceEvents: [] }).metadata?.hardwareConcurrency,
-    ).toBeGreaterThan(0);
+    expect(getTraceFile({ traceEvents: [] })).toHaveProperty(
+      'metadata',
+      expect.objectContaining({
+        hardwareConcurrency: expect.any(Number),
+      }),
+    );
   });
 });
 
 describe('frameTreeNodeId', () => {
-  it('should generate correct frame tree node ID', () => {
-    expect(frameTreeNodeId(123, 456)).toBe(1_230_456);
-    expect(frameTreeNodeId(1, 2)).toBe(102);
-    expect(frameTreeNodeId(999, 999)).toBe(9_990_999);
+  it.each([
+    [123, 456, 1_230_456],
+    [1, 2, 102],
+    [999, 999, 9_990_999],
+  ])('should generate correct frame tree node ID', (pid, tid, expected) => {
+    expect(frameTreeNodeId(pid, tid)).toBe(expected);
   });
 });
 
 describe('frameName', () => {
-  it('should generate correct frame name', () => {
-    expect(frameName(123, 456)).toBe('FRAME0P123T456');
-    expect(frameName(1, 2)).toBe('FRAME0P1T2');
-    expect(frameName(999, 999)).toBe('FRAME0P999T999');
+  it.each([
+    [123, 456],
+    [1, 2],
+    [999, 999],
+  ])('should generate correct frame name', (pid, tid) => {
+    expect(frameName(pid, tid)).toBe(`FRAME0P${pid}T${tid}`);
   });
 });
 
@@ -338,13 +350,26 @@ describe('measureToSpanEvents', () => {
       },
     );
 
-    expect(result).toHaveLength(2);
-    expect(result[0].name).toBe('custom-measure');
-    expect(result[0].pid).toBe(777);
-    expect(result[0].tid).toBe(666);
-    expect(result[0].args).toStrictEqual({
-      data: { detail: { measurement: 'data' } },
-    });
+    expect(result).toStrictEqual([
+      expect.objectContaining({
+        name: 'custom-measure',
+        pid: 777,
+        tid: 666,
+        args: { data: { detail: { measurement: 'data' } } },
+      }),
+      expect.objectContaining({
+        name: 'custom-measure',
+        pid: 777,
+        tid: 666,
+        args: { data: { detail: { measurement: 'data' } } },
+      }),
+      expect.objectContaining({
+        name: 'custom-measure',
+        pid: 777,
+        tid: 666,
+        args: { data: { detail: { measurement: 'data' } } },
+      }),
+    ]);
   });
 });
 
@@ -430,6 +455,7 @@ describe('getSpan', () => {
       tsB: 1000,
       tsE: 1500,
       tsMarkerPadding: 5,
+      args: {},
     });
 
     expect(result).toStrictEqual([

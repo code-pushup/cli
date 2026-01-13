@@ -48,7 +48,7 @@ export const getInstantEvent = (opt: {
   ts?: number;
   pid?: number;
   tid?: number;
-  args: InstantEventArgs;
+  args?: InstantEventArgs;
 }): InstantEvent => ({
   cat: 'blink.user_timing',
   ph: 'i',
@@ -113,7 +113,7 @@ type SpanOpt = {
   ts?: number;
   pid?: number;
   tid?: number;
-  args: SpanEventArgs;
+  args?: SpanEventArgs;
 };
 
 export function getSpanEvent(ph: 'b', opt: SpanOpt): BeginEvent;
@@ -138,7 +138,7 @@ export const getSpan = (opt: {
   id2?: { local: string };
   pid?: number;
   tid?: number;
-  args: SpanEventArgs;
+  args?: SpanEventArgs;
   tsMarkerPadding?: number;
 }): [BeginEvent, EndEvent] => {
   // tsMarkerPadding is here to make the measure slightly smaller so the markers align perfectly.
@@ -154,15 +154,11 @@ export const getSpan = (opt: {
       ...opt,
       id2,
       ts: opt.tsB + pad,
-      name: opt.name,
-      args: opt.args,
     }),
     getSpanEvent('e', {
       ...opt,
       id2,
       ts: opt.tsE - pad,
-      name: opt.name,
-      args: opt.args,
     }),
   ];
 };
@@ -175,7 +171,7 @@ export const markToInstantEvent = (
     ...opt,
     name: opt?.name ?? entry.name,
     ts: defaultClock.fromEntryStartTimeMs(entry.startTime),
-    args: entry.detail ? { detail: entry.detail } : {},
+    args: entry.detail ? { detail: entry.detail } : undefined,
   });
 
 export const measureToSpanEvents = (
@@ -187,7 +183,7 @@ export const measureToSpanEvents = (
     name: opt?.name ?? entry.name,
     tsB: entryToTraceTimestamp(entry),
     tsE: entryToTraceTimestamp(entry, true),
-    args: entry.detail ? { data: { detail: entry.detail } } : {},
+    args: entry.detail ? { data: { detail: entry.detail } } : undefined,
   });
 
 export const getTraceFile = (opt: {
