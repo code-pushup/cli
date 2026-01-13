@@ -105,13 +105,24 @@ describe('installExitHandlers', () => {
     expect(onError).not.toHaveBeenCalled();
   });
 
-  it('should call onExit for normal exit', () => {
+  it('should call onExit for successful process termination with exit code 0', () => {
     expect(() => installExitHandlers({ onExit })).not.toThrow();
 
-    (process as any).emit('exit');
+    (process as any).emit('exit', 0);
 
     expect(onExit).toHaveBeenCalledTimes(1);
-    expect(onExit).toHaveBeenCalledWith(undefined, { kind: 'exit' });
+    expect(onExit).toHaveBeenCalledWith(0, { kind: 'exit' });
+    expect(onError).not.toHaveBeenCalled();
+    expect(processExitSpy).not.toHaveBeenCalled();
+  });
+
+  it('should call onExit for failed process termination with exit code 1', () => {
+    expect(() => installExitHandlers({ onExit })).not.toThrow();
+
+    (process as any).emit('exit', 1);
+
+    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledWith(1, { kind: 'exit' });
     expect(onError).not.toHaveBeenCalled();
     expect(processExitSpy).not.toHaveBeenCalled();
   });
