@@ -2,7 +2,6 @@ import {
   type EntryType,
   type PerformanceEntry,
   PerformanceObserver,
-  type PerformanceObserverEntryList,
   performance,
 } from 'node:perf_hooks';
 import type { Buffered, Encoder, Observer, Sink } from './sink-source.types.js';
