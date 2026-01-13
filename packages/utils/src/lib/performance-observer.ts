@@ -24,9 +24,9 @@ export class PerformanceObserverSink<T>
   #sink: Sink<T, unknown>;
   #observer: PerformanceObserver | undefined;
   readonly #observedTypes: EntryType[] = ['mark', 'measure'];
-  #getEntries = (list: {
+  #getEntries = (listOrGlobal: {
     getEntriesByType: (t: EntryType) => PerformanceEntry[];
-  }) => this.#observedTypes.flatMap(t => list.getEntriesByType(t));
+  }) => this.#observedTypes.flatMap(t => listOrGlobal.getEntriesByType(t));
   #observedCount: number = 0;
 
   constructor(options: PerformanceObserverOptions<T>) {
@@ -71,9 +71,6 @@ export class PerformanceObserverSink<T>
         this.#sink.write(item);
       });
     });
-
-    // In real PerformanceObserver, entries remain in the global buffer
-    // They are only cleared when explicitly requested via performance.clearMarks/clearMeasures
 
     this.#observedCount = 0;
   }
