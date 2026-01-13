@@ -34,7 +34,7 @@ describe('epochClock', () => {
   it('should support performance clock by default for epochNowUs', () => {
     const c = epochClock();
     expect(c.timeOriginMs).toBe(500_000);
-    expect(c.epochNowUs()).toBe(500_000_000); // timeOrigin + performance.now() = timeOrigin + 0
+    expect(c.epochNowUs()).toBe(500_000_000);
   });
 
   it.each([
@@ -86,7 +86,7 @@ describe('epochClock', () => {
     );
     expect(defaultClock.fromEntry(markEntry, true)).toBe(
       defaultClock.fromPerfMs(1000),
-    ); // useEndTime doesn't matter for marks
+    );
   });
 
   it('should convert performance measure to microseconds', () => {
@@ -99,13 +99,13 @@ describe('epochClock', () => {
 
     expect(defaultClock.fromEntry(measureEntry)).toBe(
       defaultClock.fromPerfMs(1000),
-    ); // useEndTime = false (default)
+    );
     expect(defaultClock.fromEntry(measureEntry, false)).toBe(
       defaultClock.fromPerfMs(1000),
-    ); // explicit false
+    );
     expect(defaultClock.fromEntry(measureEntry, true)).toBe(
       defaultClock.fromPerfMs(1500),
-    ); // useEndTime = true, adds duration
+    );
   });
 
   it('should convert Date.now() milliseconds to microseconds', () => {

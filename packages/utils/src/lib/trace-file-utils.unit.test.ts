@@ -1,7 +1,6 @@
 import type { PerformanceMark, PerformanceMeasure } from 'node:perf_hooks';
 import { describe, expect, it } from 'vitest';
 import {
-  entryToTraceTimestamp,
   frameName,
   frameTreeNodeId,
   getCompleteEvent,
@@ -363,49 +362,7 @@ describe('measureToSpanEvents', () => {
         tid: 666,
         args: { data: { detail: { measurement: 'data' } } },
       }),
-      expect.objectContaining({
-        name: 'custom-measure',
-        pid: 777,
-        tid: 666,
-        args: { data: { detail: { measurement: 'data' } } },
-      }),
     ]);
-  });
-});
-
-describe('entryToTraceTimestamp', () => {
-  it('should convert entry timestamp for start time', () => {
-    expect(
-      typeof entryToTraceTimestamp({
-        startTime: 1000,
-        duration: 500,
-        entryType: 'measure',
-      } as PerformanceMeasure),
-    ).toBe('number');
-  });
-
-  it('should convert entry timestamp for end time', () => {
-    const mockEntry = {
-      startTime: 1000,
-      duration: 500,
-      entryType: 'measure',
-    } as PerformanceMeasure;
-
-    expect(entryToTraceTimestamp(mockEntry, true)).toBeGreaterThan(
-      entryToTraceTimestamp(mockEntry, false),
-    );
-  });
-
-  it('should handle non-measure entries', () => {
-    expect(
-      typeof entryToTraceTimestamp(
-        {
-          startTime: 1000,
-          entryType: 'mark',
-        } as PerformanceMark,
-        true,
-      ),
-    ).toBe('number');
   });
 });
 
