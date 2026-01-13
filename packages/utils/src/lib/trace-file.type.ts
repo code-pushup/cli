@@ -4,14 +4,18 @@ import type { UserTimingDetail } from './user-timing-extensibility-api.type';
  * Arguments for instant trace events.
  * @property {UserTimingDetail} [detail] - Optional user timing detail with DevTools payload
  */
-export type InstantEventArgs = { detail?: UserTimingDetail };
+export type InstantEventArgs = {
+  detail?: UserTimingDetail & Record<string, unknown>;
+};
 
 /**
  * Arguments for span trace events (begin/end events).
  * @property {object} [data] - Optional data object
  * @property {UserTimingDetail} [data.detail] - Optional user timing detail with DevTools payload
  */
-export type SpanEventArgs = { data?: { detail?: UserTimingDetail } };
+export type SpanEventArgs = {
+  data?: { detail?: UserTimingDetail & Record<string, unknown> };
+};
 
 /**
  * Arguments for complete trace events.
@@ -29,14 +33,14 @@ export type CompleteEventArgs = { detail?: Record<string, unknown> };
 export type StartTracingEventArgs = {
   data: {
     frameTreeNodeId: number;
-    frames: Array<{
+    frames: {
       frame: string;
       isInPrimaryMainFrame: boolean;
       isOutermostMainFrame: boolean;
       name: string;
       processId: number;
       url: string;
-    }>;
+    }[];
     persistentIds: boolean;
   };
 };
@@ -69,6 +73,16 @@ export type BaseTraceEvent = {
 };
 
 /**
+ * Start tracing event for Chrome DevTools tracing.
+ */
+export type StartTracingEvent = BaseTraceEvent & {
+  cat: 'devtools.timeline';
+  ph: 'i';
+  name: 'TracingStartedInBrowser';
+  args: StartTracingEventArgs;
+};
+
+/**
  * Complete trace event with duration.
  * Represents a complete operation with start time and duration.
  * @property {'X'} ph - Phase indicator for complete events
@@ -81,14 +95,12 @@ export type CompleteEvent = BaseTraceEvent & { ph: 'X'; dur: number };
  * Used for user timing marks and other instantaneous events.
  * @property {'blink.user_timing'} cat - Fixed category for user timing events
  * @property {'i'} ph - Phase indicator for instant events
- * @property {'t'} s - Scope indicator (thread)
  * @property {never} [dur] - Duration is not applicable for instant events
  * @property {InstantEventArgs} [args] - Optional event arguments
  */
 export type InstantEvent = Omit<BaseTraceEvent, 'cat' | 'args'> & {
   cat: 'blink.user_timing';
   ph: 'i';
-  s: 't';
   dur?: never;
   args: InstantEventArgs;
 };
@@ -106,9 +118,13 @@ type SpanCore = Omit<BaseTraceEvent, 'args'> & {
 /**
  * Begin event for a span (paired with an end event).
  * @property {'b'} ph - Phase indicator for begin events
+ * @property {'t'} s - Scope indicator (thread)
  * @property {never} [dur] - Duration is not applicable for begin events
  */
-export type BeginEvent = SpanCore & { ph: 'b'; dur?: never };
+export type BeginEvent = SpanCore & {
+  ph: 'b';
+  dur?: never;
+};
 
 /**
  * End event for a span (paired with a begin event).
@@ -125,17 +141,6 @@ export type SpanEvent = BeginEvent | EndEvent;
 /**
  * Union type of all trace event types.
  */
-/**
- * Start tracing event for Chrome DevTools tracing.
- */
-export type StartTracingEvent = BaseTraceEvent & {
-  cat: 'devtools.timeline';
-  ph: 'i';
-  s: 't';
-  name: 'TracingStartedInBrowser';
-  args: StartTracingEventArgs;
-};
-
 export type TraceEvent =
   | InstantEvent
   | CompleteEvent

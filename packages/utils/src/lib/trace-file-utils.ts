@@ -1,11 +1,12 @@
 import os from 'node:os';
 import {
+  type PerformanceEntry,
   type PerformanceMark,
   type PerformanceMeasure,
   performance,
 } from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
-import { defaultClock } from './clock-epoch';
+import { defaultClock } from './clock-epoch.js';
 import type {
   BeginEvent,
   CompleteEvent,
@@ -17,7 +18,6 @@ import type {
   StartTracingEvent,
   TraceEvent,
   TraceEventContainer,
-  TraceFile,
 } from './trace-file.type.js';
 
 export const entryToTraceTimestamp = (
@@ -29,10 +29,9 @@ export const entryToTraceTimestamp = (
       (entry.entryType === 'measure' && asEnd ? entry.duration : 0),
   );
 
-export const nextId2 = (() => {
-  let i = 1;
-  return () => ({ local: `0x${i++}` });
-})();
+// eslint-disable-next-line functional/no-let
+let id2Count = 0;
+export const nextId2 = () => ({ local: `0x${++id2Count}` });
 
 const defaults = (opt?: { pid?: number; tid?: number; ts?: number }) => ({
   pid: opt?.pid ?? process.pid,
@@ -53,7 +52,6 @@ export const getInstantEvent = (opt: {
 }): InstantEvent => ({
   cat: 'blink.user_timing',
   ph: 'i',
-  s: 't',
   name: opt.name,
   ...defaults(opt),
   args: opt.args ?? {},
@@ -71,7 +69,6 @@ export const getStartTracing = (opt: {
   return {
     cat: 'devtools.timeline',
     ph: 'i',
-    s: 't',
     name: 'TracingStartedInBrowser',
     pid,
     tid,
@@ -125,14 +122,13 @@ export function getSpanEvent(ph: 'b' | 'e', opt: SpanOpt): SpanEvent {
   return {
     cat: 'blink.user_timing',
     ph,
-    s: 't',
     name: opt.name,
     id2: opt.id2,
     ...defaults(opt),
     args: opt.args?.data?.detail
       ? { data: { detail: opt.args.data.detail } }
       : {},
-  } as SpanEvent;
+  };
 }
 
 export const getSpan = (opt: {

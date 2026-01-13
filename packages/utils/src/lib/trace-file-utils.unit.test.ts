@@ -36,7 +36,7 @@ describe('getTraceFile', () => {
         traceEvents: [
           getInstantEvent({
             name: 'test-event',
-            ts: 1234567890,
+            ts: 1_234_567_890,
             pid: 123,
             tid: 456,
           }),
@@ -46,7 +46,7 @@ describe('getTraceFile', () => {
       traceEvents: [
         expect.objectContaining({
           name: 'test-event',
-          ts: 1234567890,
+          ts: 1_234_567_890,
           pid: 123,
           tid: 456,
         }),
@@ -78,9 +78,9 @@ describe('getTraceFile', () => {
 
 describe('frameTreeNodeId', () => {
   it('should generate correct frame tree node ID', () => {
-    expect(frameTreeNodeId(123, 456)).toBe(1230456);
+    expect(frameTreeNodeId(123, 456)).toBe(1_230_456);
     expect(frameTreeNodeId(1, 2)).toBe(102);
-    expect(frameTreeNodeId(999, 999)).toBe(9990999);
+    expect(frameTreeNodeId(999, 999)).toBe(9_990_999);
   });
 });
 
@@ -97,7 +97,6 @@ describe('getStartTracing', () => {
     expect(getStartTracing({ url: 'https://example.com' })).toStrictEqual({
       cat: 'devtools.timeline',
       ph: 'i',
-      s: 't',
       name: 'TracingStartedInBrowser',
       pid: expect.any(Number),
       tid: expect.any(Number),
@@ -131,14 +130,13 @@ describe('getStartTracing', () => {
     ).toStrictEqual({
       cat: 'devtools.timeline',
       ph: 'i',
-      s: 't',
       name: 'TracingStartedInBrowser',
       pid: 777,
       tid: 888,
       ts: expect.any(Number),
       args: {
         data: {
-          frameTreeNodeId: 7770888,
+          frameTreeNodeId: 7_770_888,
           frames: [
             {
               frame: 'FRAME0P777T888',
@@ -182,7 +180,7 @@ describe('getCompleteEvent', () => {
         dur: 500,
         pid: 111,
         tid: 222,
-        ts: 1234567890,
+        ts: 1_234_567_890,
       }),
     ).toStrictEqual({
       cat: 'devtools.timeline',
@@ -191,7 +189,7 @@ describe('getCompleteEvent', () => {
       dur: 500,
       pid: 111,
       tid: 222,
-      ts: 1234567890,
+      ts: 1_234_567_890,
       args: {},
     });
   });
@@ -208,7 +206,6 @@ describe('markToInstantEvent', () => {
     ).toStrictEqual({
       cat: 'blink.user_timing',
       ph: 'i',
-      s: 't',
       name: 'test-mark',
       pid: expect.any(Number),
       tid: expect.any(Number),
@@ -227,7 +224,6 @@ describe('markToInstantEvent', () => {
     ).toStrictEqual({
       cat: 'blink.user_timing',
       ph: 'i',
-      s: 't',
       name: 'test-mark',
       pid: expect.any(Number),
       tid: expect.any(Number),
@@ -253,7 +249,6 @@ describe('markToInstantEvent', () => {
     ).toStrictEqual({
       cat: 'blink.user_timing',
       ph: 'i',
-      s: 't',
       name: 'custom-name',
       pid: 999,
       tid: 888,
@@ -276,7 +271,6 @@ describe('measureToSpanEvents', () => {
       {
         cat: 'blink.user_timing',
         ph: 'b',
-        s: 't',
         name: 'test-measure',
         pid: expect.any(Number),
         tid: expect.any(Number),
@@ -287,7 +281,6 @@ describe('measureToSpanEvents', () => {
       {
         cat: 'blink.user_timing',
         ph: 'e',
-        s: 't',
         name: 'test-measure',
         pid: expect.any(Number),
         tid: expect.any(Number),
@@ -310,7 +303,6 @@ describe('measureToSpanEvents', () => {
       {
         cat: 'blink.user_timing',
         ph: 'b',
-        s: 't',
         name: 'test-measure',
         pid: expect.any(Number),
         tid: expect.any(Number),
@@ -321,7 +313,6 @@ describe('measureToSpanEvents', () => {
       {
         cat: 'blink.user_timing',
         ph: 'e',
-        s: 't',
         name: 'test-measure',
         pid: expect.any(Number),
         tid: expect.any(Number),
@@ -404,7 +395,6 @@ describe('getSpanEvent', () => {
     ).toStrictEqual({
       cat: 'blink.user_timing',
       ph: 'b',
-      s: 't',
       name: 'test-span',
       pid: expect.any(Number),
       tid: expect.any(Number),
@@ -423,7 +413,6 @@ describe('getSpanEvent', () => {
     ).toStrictEqual({
       cat: 'blink.user_timing',
       ph: 'e',
-      s: 't',
       name: 'test-span',
       pid: expect.any(Number),
       tid: expect.any(Number),
@@ -447,7 +436,6 @@ describe('getSpan', () => {
       {
         cat: 'blink.user_timing',
         ph: 'b',
-        s: 't',
         name: 'test-span',
         pid: expect.any(Number),
         tid: expect.any(Number),
@@ -458,7 +446,6 @@ describe('getSpan', () => {
       {
         cat: 'blink.user_timing',
         ph: 'e',
-        s: 't',
         name: 'test-span',
         pid: expect.any(Number),
         tid: expect.any(Number),
@@ -493,7 +480,6 @@ describe('getSpan', () => {
       {
         cat: 'blink.user_timing',
         ph: 'b',
-        s: 't',
         name: 'test-span',
         pid: expect.any(Number),
         tid: expect.any(Number),
@@ -504,7 +490,6 @@ describe('getSpan', () => {
       {
         cat: 'blink.user_timing',
         ph: 'e',
-        s: 't',
         name: 'test-span',
         pid: expect.any(Number),
         tid: expect.any(Number),
