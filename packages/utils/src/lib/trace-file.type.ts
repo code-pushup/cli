@@ -5,8 +5,8 @@ import type { UserTimingDetail } from './user-timing-extensibility-api.type';
  * @property {UserTimingDetail} [detail] - Optional user timing detail with DevTools payload
  */
 export type InstantEventArgs = {
-  detail?: UserTimingDetail & Record<string, unknown>;
-};
+  detail?: UserTimingDetail;
+} & { [key: string]: unknown };
 
 /**
  * Arguments for span trace events (begin/end events).
@@ -14,8 +14,8 @@ export type InstantEventArgs = {
  * @property {UserTimingDetail} [data.detail] - Optional user timing detail with DevTools payload
  */
 export type SpanEventArgs = {
-  data?: { detail?: UserTimingDetail & Record<string, unknown> };
-};
+  data?: { detail?: UserTimingDetail };
+} & { [key: string]: unknown };
 
 /**
  * Arguments for complete trace events.
