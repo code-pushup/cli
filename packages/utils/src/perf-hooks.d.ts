@@ -40,6 +40,10 @@ declare module 'node:perf_hooks' {
     duration?: number;
   }
 
+  export interface PerformanceObserverEntryList {
+    getEntriesByType: (type: EntryType) => PerformanceEntry[];
+  }
+
   const performance: {
     mark: (name: string, options?: PerformanceMarkOptions) => PerformanceMark;
 
@@ -48,5 +52,7 @@ declare module 'node:perf_hooks' {
       startOrOptions?: string | number | PerformanceMeasureOptions,
       end?: string | number,
     ) => PerformanceMeasure;
+
+    getEntriesByType: (type: EntryType) => PerformanceEntry[];
   };
 }

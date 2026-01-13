@@ -24,9 +24,10 @@ export class PerformanceObserverSink<T>
   #flushThreshold: number;
   #sink: Sink<T, unknown>;
   #observer: PerformanceObserver | undefined;
-  #observedTypes: EntryType[] = ['mark', 'measure'];
-  #getEntries = (list: PerformanceObserverEntryList) =>
-    this.#observedTypes.flatMap(t => list.getEntriesByType(t));
+  readonly #observedTypes: EntryType[] = ['mark', 'measure'];
+  #getEntries = (list: {
+    getEntriesByType: (t: EntryType) => PerformanceEntry[];
+  }) => this.#observedTypes.flatMap(t => list.getEntriesByType(t));
   #observedCount: number = 0;
 
   constructor(options: PerformanceObserverOptions<T>) {
