@@ -1,5 +1,4 @@
 import {
-  type EntryType,
   type PerformanceEntry,
   PerformanceObserver,
   type PerformanceObserverEntryList,
@@ -7,6 +6,8 @@ import {
 } from 'node:perf_hooks';
 import type { Buffered, Encoder, Observer, Sink } from './sink-source.types.js';
 
+const OBSERVED_TYPES = ['mark', 'measure'] as const;
+type ObservedEntryType = 'mark' | 'measure';
 export const DEFAULT_FLUSH_THRESHOLD = 20;
 
 export type PerformanceObserverOptions<T> = {
@@ -24,16 +25,21 @@ export class PerformanceObserverSink<T>
   #flushThreshold: number;
   #sink: Sink<T, unknown>;
   #observer: PerformanceObserver | undefined;
-  #observedTypes: EntryType[] = ['mark', 'measure'];
-  #getEntries = (list: PerformanceObserverEntryList) =>
-    this.#observedTypes.flatMap(t => list.getEntriesByType(t));
-  #observedCount: number = 0;
+
+  #pendingCount = 0;
+
+  // "cursor" per type: how many we already wrote from the global buffer
+  #written: Map<ObservedEntryType, number>;
 
   constructor(options: PerformanceObserverOptions<T>) {
-    this.#encode = options.encode;
-    this.#sink = options.sink;
-    this.#buffered = options.buffered ?? false;
-    this.#flushThreshold = options.flushThreshold ?? DEFAULT_FLUSH_THRESHOLD;
+    const { encode, sink, buffered, flushThreshold } = options;
+    this.#encode = encode;
+    this.#written = new Map<ObservedEntryType, number>(
+      OBSERVED_TYPES.map(t => [t, 0]),
+    );
+    this.#sink = sink;
+    this.#buffered = buffered ?? false;
+    this.#flushThreshold = flushThreshold ?? DEFAULT_FLUSH_THRESHOLD;
   }
 
   encode(entry: PerformanceEntry): T[] {
@@ -45,37 +51,51 @@ export class PerformanceObserverSink<T>
       return;
     }
 
-    this.#observer = new PerformanceObserver(list => {
-      const entries = this.#getEntries(list);
-      this.#observedCount += entries.length;
-      if (this.#observedCount >= this.#flushThreshold) {
-        this.flush(entries);
-      }
-    });
+    // The only used to trigger the flush it is not processing the entries just counting them
+    this.#observer = new PerformanceObserver(
+      (list: PerformanceObserverEntryList) => {
+        const batchCount = OBSERVED_TYPES.reduce(
+          (n, t) => n + list.getEntriesByType(t).length,
+          0,
+        );
+
+        this.#pendingCount += batchCount;
+        if (this.#pendingCount >= this.#flushThreshold) {
+          this.flush();
+        }
+      },
+    );
 
     this.#observer.observe({
-      entryTypes: this.#observedTypes,
+      entryTypes: OBSERVED_TYPES,
       buffered: this.#buffered,
     });
   }
 
-  flush(entriesToProcess?: PerformanceEntry[]): void {
+  flush(): void {
     if (!this.#observer) {
       return;
     }
 
-    const entries = entriesToProcess || this.#getEntries(performance);
-    entries.forEach(entry => {
-      const encoded = this.encode(entry);
-      encoded.forEach(item => {
-        this.#sink.write(item);
-      });
+    OBSERVED_TYPES.forEach(t => {
+      const written = this.#written.get(t) ?? 0;
+      const fresh = performance.getEntriesByType(t).slice(written);
+
+      try {
+        fresh
+          .flatMap(entry => this.encode(entry))
+          .forEach(item => this.#sink.write(item));
+
+        this.#written.set(t, written + fresh.length);
+      } catch (error) {
+        throw new Error(
+          'PerformanceObserverSink failed to write items to sink.',
+          { cause: error },
+        );
+      }
     });
 
-    // In real PerformanceObserver, entries remain in the global buffer
-    // They are only cleared when explicitly requested via performance.clearMarks/clearMeasures
-
-    this.#observedCount = 0;
+    this.#pendingCount = 0;
   }
 
   unsubscribe(): void {

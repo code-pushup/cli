@@ -41,6 +41,40 @@ describe('PerformanceObserverSink', () => {
     expect(MockPerformanceObserver.instances).toHaveLength(0);
   });
 
+  it('creates instance with default flushThreshold when not provided', () => {
+    expect(
+      () =>
+        new PerformanceObserverSink({
+          sink,
+          encode,
+        }),
+    ).not.toThrow();
+    expect(MockPerformanceObserver.instances).toHaveLength(0);
+    // Instance creation covers the default flushThreshold assignment
+  });
+
+  it('automatically flushes when pendingCount reaches flushThreshold', () => {
+    const observer = new PerformanceObserverSink({
+      sink,
+      encode,
+      flushThreshold: 2, // Set threshold to 2
+    });
+    observer.subscribe();
+
+    const mockObserver = MockPerformanceObserver.lastInstance();
+
+    // Emit 1 entry - should not trigger flush yet (pendingCount = 1 < 2)
+    mockObserver?.emitMark('first-mark');
+    expect(sink.getWrittenItems()).toStrictEqual([]);
+
+    // Emit 1 more entry - should trigger flush (pendingCount = 2 >= 2)
+    mockObserver?.emitMark('second-mark');
+    expect(sink.getWrittenItems()).toStrictEqual([
+      'first-mark:mark',
+      'second-mark:mark',
+    ]);
+  });
+
   it('creates instance with all options without starting to observe', () => {
     expect(
       () =>
@@ -218,5 +252,57 @@ describe('PerformanceObserverSink', () => {
     observerSink.unsubscribe();
     expect(perfObserver?.disconnect).toHaveBeenCalledTimes(1);
     expect(MockPerformanceObserver.instances).toHaveLength(0);
+  });
+
+  it('flush wraps sink write errors with descriptive error message', () => {
+    const failingSink = {
+      write: vi.fn(() => {
+        throw new Error('Sink write failed');
+      }),
+    };
+
+    const observer = new PerformanceObserverSink({
+      sink: failingSink as any,
+      encode,
+      flushThreshold: 1,
+    });
+
+    observer.subscribe();
+
+    performance.mark('test-mark');
+
+    expect(() => observer.flush()).toThrow(
+      expect.objectContaining({
+        message: 'PerformanceObserverSink failed to write items to sink.',
+        cause: expect.objectContaining({
+          message: 'Sink write failed',
+        }),
+      }),
+    );
+  });
+
+  it('flush wraps encode errors with descriptive error message', () => {
+    const failingEncode = vi.fn(() => {
+      throw new Error('Encode failed');
+    });
+
+    const observer = new PerformanceObserverSink({
+      sink,
+      encode: failingEncode,
+      flushThreshold: 1,
+    });
+
+    observer.subscribe();
+
+    performance.mark('test-mark');
+
+    expect(() => observer.flush()).toThrow(
+      expect.objectContaining({
+        message: 'PerformanceObserverSink failed to write items to sink.',
+        cause: expect.objectContaining({
+          message: 'Encode failed',
+        }),
+      }),
+    );
   });
 });
