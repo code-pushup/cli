@@ -1,5 +1,5 @@
 import os from 'node:os';
-import { type PerformanceMark, type PerformanceMeasure } from 'node:perf_hooks';
+import type { PerformanceMark, PerformanceMeasure } from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
 import { defaultClock } from './clock-epoch.js';
 import type {

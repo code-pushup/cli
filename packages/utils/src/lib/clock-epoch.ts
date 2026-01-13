@@ -1,3 +1,4 @@
+import type { PerformanceEntry } from 'node:perf_hooks';
 import process from 'node:process';
 import { threadId } from 'node:worker_threads';
 
@@ -41,12 +42,11 @@ export function epochClock(init: EpochClockOptions = {}) {
     msToUs(timeOriginMs + perfMs);
 
   const fromEntryStartTimeMs = fromPerfMs;
-  const fromEntry = (entry: PerformanceEntry, useEndTime = false) => {
-    return defaultClock.fromPerfMs(
+  const fromEntry = (entry: PerformanceEntry, useEndTime = false) =>
+    defaultClock.fromPerfMs(
       entry.startTime +
         (entry.entryType === 'measure' && useEndTime ? entry.duration : 0),
     );
-  };
   const fromDateNowMs = fromEpochMs;
 
   return {
