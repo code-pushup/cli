@@ -1,10 +1,5 @@
 import os from 'node:os';
-import {
-  type PerformanceEntry,
-  type PerformanceMark,
-  type PerformanceMeasure,
-  performance,
-} from 'node:perf_hooks';
+import { type PerformanceMark, type PerformanceMeasure } from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
 import { defaultClock } from './clock-epoch.js';
 import type {
@@ -19,15 +14,6 @@ import type {
   TraceEvent,
   TraceEventContainer,
 } from './trace-file.type.js';
-
-export const entryToTraceTimestamp = (
-  entry: PerformanceEntry,
-  asEnd = false,
-): number =>
-  defaultClock.fromPerfMs(
-    entry.startTime +
-      (entry.entryType === 'measure' && asEnd ? entry.duration : 0),
-  );
 
 // eslint-disable-next-line functional/no-let
 let id2Count = 0;
@@ -147,6 +133,7 @@ export const getSpan = (opt: {
   // spans: ========   |======|
   // marks: |      |
   const pad = opt.tsMarkerPadding ?? 1;
+  // b|e need to share the same id2
   const id2 = opt.id2 ?? nextId2();
 
   return [
@@ -170,7 +157,7 @@ export const markToInstantEvent = (
   getInstantEvent({
     ...opt,
     name: opt?.name ?? entry.name,
-    ts: defaultClock.fromEntryStartTimeMs(entry.startTime),
+    ts: defaultClock.fromEntry(entry),
     args: entry.detail ? { detail: entry.detail } : undefined,
   });
 
@@ -181,8 +168,8 @@ export const measureToSpanEvents = (
   getSpan({
     ...opt,
     name: opt?.name ?? entry.name,
-    tsB: entryToTraceTimestamp(entry),
-    tsE: entryToTraceTimestamp(entry, true),
+    tsB: defaultClock.fromEntry(entry),
+    tsE: defaultClock.fromEntry(entry, true),
     args: entry.detail ? { data: { detail: entry.detail } } : undefined,
   });
 
