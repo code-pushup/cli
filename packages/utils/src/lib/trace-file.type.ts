@@ -60,7 +60,7 @@ export type TraceArgs =
  * @property {string} name - Event name
  * @property {number} pid - Process ID
  * @property {number} tid - Thread ID
- * @property {number} ts - Timestamp in microseconds
+ * @property {number} ts - Timestamp in epoch microseconds
  * @property {TraceArgs} [args] - Optional event arguments
  */
 export type BaseTraceEvent = {

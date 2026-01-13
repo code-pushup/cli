@@ -36,7 +36,7 @@ export const nextId2 = () => ({ local: `0x${++id2Count}` });
 const defaults = (opt?: { pid?: number; tid?: number; ts?: number }) => ({
   pid: opt?.pid ?? process.pid,
   tid: opt?.tid ?? threadId,
-  ts: opt?.ts ?? defaultClock.fromPerfMs(performance.now()),
+  ts: opt?.ts ?? defaultClock.epochNowUs(),
 });
 
 export const frameTreeNodeId = (pid: number, tid: number) =>
