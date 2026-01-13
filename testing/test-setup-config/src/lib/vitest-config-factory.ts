@@ -32,14 +32,17 @@ function buildCoverageConfig(
   }
 
   const exclude = [
-    'mocks/**',
+    'tests/**',
     'perf/**',
-    // Vitest configuration files
+    // Mocks and fixtures
+    'mocks/**',
+    '**/fixtures/**',
+    '**/*.mock.ts',
+    '**/*.fixture.ts',
+    // Config files
     '**/vitest.*.config.ts',
     '**/vitest.config.ts',
-    // code-pushup config
     '**/code-pushup.config.ts',
-    // other config files
     '**/*.config.ts',
     // Barrel files (index files that only re-export)
     '**/index.ts',
@@ -49,7 +52,9 @@ function buildCoverageConfig(
     '**/models.ts',
     '**/*.model.ts',
     '**/types.ts',
-    '**/*.types.ts',
+    '**/*.type.ts',
+    // Constants
+    '**/constants.ts',
     // typings
     '**/*.d.ts',
   ];

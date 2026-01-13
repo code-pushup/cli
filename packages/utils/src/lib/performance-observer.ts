@@ -5,7 +5,7 @@ import {
   type PerformanceObserverEntryList,
   performance,
 } from 'node:perf_hooks';
-import type { Buffered, Encoder, Observer, Sink } from './sink-source.types.js';
+import type { Buffered, Encoder, Observer, Sink } from './sink-source.type';
 
 export const DEFAULT_FLUSH_THRESHOLD = 20;
 

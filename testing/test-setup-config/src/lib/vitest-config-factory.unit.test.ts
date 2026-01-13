@@ -39,8 +39,12 @@ describe('createVitestConfig', () => {
             reporter: ['text', 'lcov'],
             reportsDirectory: '../../coverage/test-package/unit-tests',
             exclude: [
-              'mocks/**',
+              'tests/**',
               'perf/**',
+              'mocks/**',
+              '**/fixtures/**',
+              '**/*.mock.ts',
+              '**/*.fixture.ts',
               '**/vitest.*.config.ts',
               '**/vitest.config.ts',
               '**/code-pushup.config.ts',
@@ -51,7 +55,8 @@ describe('createVitestConfig', () => {
               '**/models.ts',
               '**/*.model.ts',
               '**/types.ts',
-              '**/*.types.ts',
+              '**/*.type.ts',
+              '**/constants.ts',
               '**/*.d.ts',
             ],
           }),
@@ -285,8 +290,12 @@ describe('createVitestConfig', () => {
       const config = createVitestConfig('test-package', 'unit');
 
       expect(config.test!.coverage!.exclude).toEqual([
-        'mocks/**',
+        'tests/**',
         'perf/**',
+        'mocks/**',
+        '**/fixtures/**',
+        '**/*.mock.ts',
+        '**/*.fixture.ts',
         '**/vitest.*.config.ts',
         '**/vitest.config.ts',
         '**/code-pushup.config.ts',
@@ -297,7 +306,8 @@ describe('createVitestConfig', () => {
         '**/models.ts',
         '**/*.model.ts',
         '**/types.ts',
-        '**/*.types.ts',
+        '**/*.type.ts',
+        '**/constants.ts',
         '**/*.d.ts',
       ]);
     });
