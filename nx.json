@@ -16,7 +16,6 @@
       "!{projectRoot}/code-pushup.config.bundled_*.mjs",
       "!{projectRoot}/@(test|mocks)/**/*",
       "!{projectRoot}/**/?(*.)test.[jt]s?(x)?(.snap)",
-      "!{projectRoot}/**/?(*.)mocks.[jt]s?(x)",
       "!{projectRoot}/**/?(*.)mock.[jt]s?(x)",
       "!{projectRoot}/vitest.@(unit|int|e2e).config.[jt]s",
       "!{projectRoot}/dist/**/*",

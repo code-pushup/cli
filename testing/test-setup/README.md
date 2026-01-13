@@ -20,4 +20,4 @@ In this library you can find all files that can be used in `setupFiles` property
 Additionally, you may find helper functions for:
 
 - setting up and tearing down a [testing folder](./src/lib/test-folder.setup.ts)
-- [resetting](./src/lib/reset.mocks.ts) mocks
+- [resetting](./src/lib/reset.mock.ts) mocks
