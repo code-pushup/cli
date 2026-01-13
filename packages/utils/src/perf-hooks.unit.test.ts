@@ -1,75 +1,90 @@
 import { type PerformanceMarkOptions, performance } from 'node:perf_hooks';
-import { describe, expectTypeOf, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 describe('perf-hooks definitions', () => {
   it('PerformanceMarkOptions should be type safe', () => {
-    expectTypeOf<{
-      startTime: number;
-      detail: {
-        devtools: {
-          dataType: 'marker';
-          color: 'error';
+    expect(() =>
+      expectTypeOf<{
+        startTime: number;
+        detail: {
+          devtools: {
+            dataType: 'marker';
+            color: 'error';
+          };
         };
-      };
-    }>().toMatchTypeOf<PerformanceMarkOptions>();
-    expectTypeOf<{
-      startTime: number;
-      detail: {
-        devtools: {
-          dataType: 'markerr';
+      }>().toMatchTypeOf<PerformanceMarkOptions>(),
+    ).not.toThrow();
+
+    expect(() =>
+      expectTypeOf<{
+        startTime: number;
+        detail: {
+          devtools: {
+            dataType: 'markerr';
+          };
         };
-      };
-    }>().not.toMatchTypeOf<PerformanceMarkOptions>();
+      }>().not.toMatchTypeOf<PerformanceMarkOptions>(),
+    ).not.toThrow();
   });
 
   it('perf_hooks.mark should be type safe', () => {
-    performance.mark('name', {
-      detail: {
-        devtools: {
-          dataType: 'marker',
-          color: 'error',
+    expect(() =>
+      performance.mark('name', {
+        detail: {
+          devtools: {
+            dataType: 'marker',
+            color: 'error',
+          },
         },
-      },
-    });
+      }),
+    ).not.toThrow();
 
-    performance.mark('name', {
-      detail: {
-        devtools: {
-          /* @ts-expect-error - dataType should be marker | track */
-          dataType: 'markerrr',
-          color: 'error',
+    expect(() =>
+      performance.mark('name', {
+        detail: {
+          devtools: {
+            // @ts-expect-error - dataType should be marker | track
+            dataType: 'markerrr',
+            color: 'error',
+          },
         },
-      },
-    });
+      }),
+    ).not.toThrow();
   });
 
   it('PerformanceMeasureOptions should be type safe', () => {
-    expectTypeOf<{
-      start: string;
-      end: string;
-      detail: {
-        devtools: {
-          dataType: 'track-entry';
-          track: 'test-track';
-          color: 'primary';
+    expect(() =>
+      expectTypeOf<{
+        start: string;
+        end: string;
+        detail: {
+          devtools: {
+            dataType: 'track-entry';
+            track: 'test-track';
+            color: 'primary';
+          };
         };
-      };
-    }>().toMatchTypeOf<PerformanceMeasureOptions>();
+      }>().toMatchTypeOf<PerformanceMeasureOptions>(),
+    ).not.toThrow();
   });
 
   it('perf_hooks.measure should be type safe', () => {
-    performance.measure('measure-name', 'start-mark', 'end-mark');
+    expect(() =>
+      performance.measure('measure-name', 'start-mark', 'end-mark'),
+    ).not.toThrow();
 
-    performance.measure('measure-name', {
-      start: 'start-mark',
-      end: 'end-mark',
-      detail: {
-        /* @ts-expect-error - track is required */
-        devtools: {
-          dataType: 'track-entry',
-          color: 'primary',
+    expect(() =>
+      performance.measure('measure-name', {
+        start: 'start-mark',
+        end: 'end-mark',
+        detail: {
+          // @ts-expect-error - track is required
+          devtools: {
+            dataType: 'track-entry',
+            color: 'primary',
+          },
         },
-      },
-    });
+      }),
+    ).not.toThrow();
   });
 });

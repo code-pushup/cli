@@ -11,6 +11,23 @@ type DetailPayloadWithDevtools = WithDevToolsPayload<
 >;
 
 declare module 'node:perf_hooks' {
+  interface PerformanceEntry {
+    readonly detail?: DetailPayloadWithDevtools;
+  }
+
+  interface MarkEntry extends PerformanceMark {
+    readonly entryType: 'mark';
+    readonly detail?: DetailPayloadWithDevtools;
+  }
+
+  interface MeasureEntry extends PerformanceMeasure {
+    readonly entryType: 'measure';
+    readonly detail?: DetailPayloadWithDevtools;
+  }
+
+  interface PerformanceMark extends PerformanceEntry {}
+  interface PerformanceMeasure extends PerformanceEntry {}
+
   export interface PerformanceMarkOptions {
     detail?: DetailPayloadWithDevtools;
     startTime?: DOMHighResTimeStamp;
@@ -24,12 +41,12 @@ declare module 'node:perf_hooks' {
   }
 
   const performance: {
-    mark(name: string, options?: PerformanceMarkOptions): PerformanceMark;
+    mark: (name: string, options?: PerformanceMarkOptions) => PerformanceMark;
 
-    measure(
+    measure: (
       name: string,
       startOrOptions?: string | number | PerformanceMeasureOptions,
       end?: string | number,
-    ): PerformanceMeasure;
+    ) => PerformanceMeasure;
   };
 }
