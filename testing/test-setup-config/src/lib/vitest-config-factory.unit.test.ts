@@ -32,7 +32,7 @@ describe('createVitestConfig', () => {
           ],
           globalSetup: ['../../global-setup.ts'],
           setupFiles: expect.arrayContaining([
-            '../../testing/test-setup/src/lib/reset.mocks.ts',
+            '../../testing/test-setup/src/lib/reset.mock.ts',
             '../../testing/test-setup/src/lib/fs.mock.ts',
           ]),
           coverage: expect.objectContaining({
@@ -50,7 +50,7 @@ describe('createVitestConfig', () => {
 
       const setupFiles = config.test!.setupFiles;
       expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/reset.mocks.ts',
+        '../../testing/test-setup/src/lib/reset.mock.ts',
       );
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/fs.mock.ts',
@@ -166,7 +166,7 @@ describe('createVitestConfig', () => {
       const setupFiles = config.test!.setupFiles;
       // Should only include reset mocks
       expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/reset.mocks.ts',
+        '../../testing/test-setup/src/lib/reset.mock.ts',
       );
       // Should NOT include fs, git, etc.
       expect(setupFiles).not.toContain(
