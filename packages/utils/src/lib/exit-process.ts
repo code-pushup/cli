@@ -31,10 +31,10 @@ export type CloseReason =
   | { kind: 'exit' };
 
 export type ExitHandlerOptions = {
-  onClose?: (code: number, reason: CloseReason) => void;
+  onExit?: (code: number, reason: CloseReason) => void;
   onError?: (err: unknown, kind: FatalKind) => void;
-  fatalExit?: boolean;
-  signalExit?: boolean;
+  exitOnFatal?: boolean;
+  exitOnSignal?: boolean;
   fatalExitCode?: number;
 };
 
@@ -42,10 +42,10 @@ export function installExitHandlers(options: ExitHandlerOptions = {}): void {
   // eslint-disable-next-line functional/no-let
   let closedReason: CloseReason | undefined;
   const {
-    onClose,
+    onExit,
     onError,
-    fatalExit,
-    signalExit,
+    exitOnFatal,
+    exitOnSignal,
     fatalExitCode = DEFAULT_FATAL_EXIT_CODE,
   } = options;
 
@@ -54,12 +54,12 @@ export function installExitHandlers(options: ExitHandlerOptions = {}): void {
       return;
     }
     closedReason = reason;
-    onClose?.(code, reason);
+    onExit?.(code, reason);
   };
 
   process.on('uncaughtException', err => {
     onError?.(err, 'uncaughtException');
-    if (fatalExit) {
+    if (exitOnFatal) {
       close(fatalExitCode, {
         kind: 'fatal',
         fatal: 'uncaughtException',
@@ -69,7 +69,7 @@ export function installExitHandlers(options: ExitHandlerOptions = {}): void {
 
   process.on('unhandledRejection', reason => {
     onError?.(reason, 'unhandledRejection');
-    if (fatalExit) {
+    if (exitOnFatal) {
       close(fatalExitCode, {
         kind: 'fatal',
         fatal: 'unhandledRejection',
@@ -80,7 +80,7 @@ export function installExitHandlers(options: ExitHandlerOptions = {}): void {
   (['SIGINT', 'SIGTERM', 'SIGQUIT'] as const).forEach(signal => {
     process.on(signal, () => {
       close(SIGNAL_EXIT_CODES()[signal], { kind: 'signal', signal });
-      if (signalExit) {
+      if (exitOnSignal) {
         // eslint-disable-next-line n/no-process-exit
         process.exit(SIGNAL_EXIT_CODES()[signal]);
       }

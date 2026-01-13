@@ -5,7 +5,7 @@ import { SIGNAL_EXIT_CODES, installExitHandlers } from './exit-process.js';
 
 describe('exit-process tests', () => {
   const onError = vi.fn();
-  const onClose = vi.fn();
+  const onExit = vi.fn();
   const processOnSpy = vi.spyOn(process, 'on');
   const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(vi.fn());
 
@@ -27,7 +27,7 @@ describe('exit-process tests', () => {
   });
 
   it('should install event listeners for all expected events', () => {
-    expect(() => installExitHandlers({ onError, onClose })).not.toThrow();
+    expect(() => installExitHandlers({ onError, onExit })).not.toThrow();
 
     expect(processOnSpy).toHaveBeenCalledWith(
       'uncaughtException',
@@ -52,7 +52,7 @@ describe('exit-process tests', () => {
 
     expect(onError).toHaveBeenCalledWith(testError, 'uncaughtException');
     expect(onError).toHaveBeenCalledTimes(1);
-    expect(onClose).not.toHaveBeenCalled();
+    expect(onExit).not.toHaveBeenCalled();
   });
 
   it('should call onError with reason and kind for unhandledRejection', () => {
@@ -64,18 +64,18 @@ describe('exit-process tests', () => {
 
     expect(onError).toHaveBeenCalledWith(testReason, 'unhandledRejection');
     expect(onError).toHaveBeenCalledTimes(1);
-    expect(onClose).not.toHaveBeenCalled();
+    expect(onExit).not.toHaveBeenCalled();
   });
 
-  it('should call onClose with correct code and reason for SIGINT', () => {
+  it('should call onExit with correct code and reason for SIGINT', () => {
     expect(() =>
-      installExitHandlers({ onClose, signalExit: true }),
+      installExitHandlers({ onExit, exitOnSignal: true }),
     ).not.toThrow();
 
     (process as any).emit('SIGINT');
 
-    expect(onClose).toHaveBeenCalledTimes(1);
-    expect(onClose).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGINT, {
+    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGINT, {
       kind: 'signal',
       signal: 'SIGINT',
     });
@@ -83,15 +83,15 @@ describe('exit-process tests', () => {
     expect(processExitSpy).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGINT);
   });
 
-  it('should call onClose with correct code and reason for SIGTERM', () => {
+  it('should call onExit with correct code and reason for SIGTERM', () => {
     expect(() =>
-      installExitHandlers({ onClose, signalExit: true }),
+      installExitHandlers({ onExit, exitOnSignal: true }),
     ).not.toThrow();
 
     (process as any).emit('SIGTERM');
 
-    expect(onClose).toHaveBeenCalledTimes(1);
-    expect(onClose).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGTERM, {
+    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGTERM, {
       kind: 'signal',
       signal: 'SIGTERM',
     });
@@ -99,15 +99,15 @@ describe('exit-process tests', () => {
     expect(processExitSpy).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGTERM);
   });
 
-  it('should call onClose with correct code and reason for SIGQUIT', () => {
+  it('should call onExit with correct code and reason for SIGQUIT', () => {
     expect(() =>
-      installExitHandlers({ onClose, signalExit: true }),
+      installExitHandlers({ onExit, exitOnSignal: true }),
     ).not.toThrow();
 
     (process as any).emit('SIGQUIT');
 
-    expect(onClose).toHaveBeenCalledTimes(1);
-    expect(onClose).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGQUIT, {
+    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGQUIT, {
       kind: 'signal',
       signal: 'SIGQUIT',
     });
@@ -115,15 +115,15 @@ describe('exit-process tests', () => {
     expect(processExitSpy).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGQUIT);
   });
 
-  it('should not exit process when signalExit is false', () => {
+  it('should not exit process when exitOnSignal is false', () => {
     expect(() =>
-      installExitHandlers({ onClose, signalExit: false }),
+      installExitHandlers({ onExit, exitOnSignal: false }),
     ).not.toThrow();
 
     (process as any).emit('SIGINT');
 
-    expect(onClose).toHaveBeenCalledTimes(1);
-    expect(onClose).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGINT, {
+    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGINT, {
       kind: 'signal',
       signal: 'SIGINT',
     });
@@ -131,13 +131,13 @@ describe('exit-process tests', () => {
     expect(processExitSpy).not.toHaveBeenCalled();
   });
 
-  it('should not exit process when signalExit is not set', () => {
-    expect(() => installExitHandlers({ onClose })).not.toThrow();
+  it('should not exit process when exitOnSignal is not set', () => {
+    expect(() => installExitHandlers({ onExit })).not.toThrow();
 
     (process as any).emit('SIGTERM');
 
-    expect(onClose).toHaveBeenCalledTimes(1);
-    expect(onClose).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGTERM, {
+    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGTERM, {
       kind: 'signal',
       signal: 'SIGTERM',
     });
@@ -145,21 +145,21 @@ describe('exit-process tests', () => {
     expect(processExitSpy).not.toHaveBeenCalled();
   });
 
-  it('should call onClose with exit code and reason for normal exit', () => {
-    expect(() => installExitHandlers({ onClose })).not.toThrow();
+  it('should call onExit with exit code and reason for normal exit', () => {
+    expect(() => installExitHandlers({ onExit })).not.toThrow();
 
     const exitCode = 42;
     (process as any).emit('exit', exitCode);
 
-    expect(onClose).toHaveBeenCalledTimes(1);
-    expect(onClose).toHaveBeenCalledWith(exitCode, { kind: 'exit' });
+    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledWith(exitCode, { kind: 'exit' });
     expect(onError).not.toHaveBeenCalled();
     expect(processExitSpy).not.toHaveBeenCalled();
   });
 
-  it('should call onClose with fatal reason when fatalExit is true', () => {
+  it('should call onExit with fatal reason when exitOnFatal is true', () => {
     expect(() =>
-      installExitHandlers({ onError, onClose, fatalExit: true }),
+      installExitHandlers({ onError, onExit, exitOnFatal: true }),
     ).not.toThrow();
 
     const testError = new Error('Test uncaught exception');
@@ -168,19 +168,19 @@ describe('exit-process tests', () => {
 
     expect(onError).toHaveBeenCalledWith(testError, 'uncaughtException');
     expect(onError).toHaveBeenCalledTimes(1);
-    expect(onClose).toHaveBeenCalledWith(1, {
+    expect(onExit).toHaveBeenCalledWith(1, {
       kind: 'fatal',
       fatal: 'uncaughtException',
     });
-    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledTimes(1);
   });
 
-  it('should use custom fatalExitCode when fatalExit is true', () => {
+  it('should use custom fatalExitCode when exitOnFatal is true', () => {
     expect(() =>
       installExitHandlers({
         onError,
-        onClose,
-        fatalExit: true,
+        onExit,
+        exitOnFatal: true,
         fatalExitCode: 42,
       }),
     ).not.toThrow();
@@ -191,16 +191,16 @@ describe('exit-process tests', () => {
 
     expect(onError).toHaveBeenCalledWith(testError, 'uncaughtException');
     expect(onError).toHaveBeenCalledTimes(1);
-    expect(onClose).toHaveBeenCalledWith(42, {
+    expect(onExit).toHaveBeenCalledWith(42, {
       kind: 'fatal',
       fatal: 'uncaughtException',
     });
-    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledTimes(1);
   });
 
-  it('should call onClose with fatal reason for unhandledRejection when fatalExit is true', () => {
+  it('should call onExit with fatal reason for unhandledRejection when exitOnFatal is true', () => {
     expect(() =>
-      installExitHandlers({ onError, onClose, fatalExit: true }),
+      installExitHandlers({ onError, onExit, exitOnFatal: true }),
     ).not.toThrow();
 
     const testReason = 'Test unhandled rejection';
@@ -209,11 +209,11 @@ describe('exit-process tests', () => {
 
     expect(onError).toHaveBeenCalledWith(testReason, 'unhandledRejection');
     expect(onError).toHaveBeenCalledTimes(1);
-    expect(onClose).toHaveBeenCalledWith(1, {
+    expect(onExit).toHaveBeenCalledWith(1, {
       kind: 'fatal',
       fatal: 'unhandledRejection',
     });
-    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledTimes(1);
   });
 
   it('should have correct SIGINT exit code on Windows', () => {
@@ -242,21 +242,21 @@ describe('exit-process tests', () => {
     osSpy.mockRestore();
   });
 
-  it('should call onClose only once even when close is called multiple times', () => {
+  it('should call onExit only once even when close is called multiple times', () => {
     expect(() =>
-      installExitHandlers({ onClose, signalExit: true }),
+      installExitHandlers({ onExit, exitOnSignal: true }),
     ).not.toThrow();
 
     (process as any).emit('SIGINT');
-    expect(onClose).toHaveBeenCalledTimes(1);
-    expect(onClose).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGINT, {
+    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGINT, {
       kind: 'signal',
       signal: 'SIGINT',
     });
-    onClose.mockClear();
+    onExit.mockClear();
     (process as any).emit('SIGTERM');
-    expect(onClose).not.toHaveBeenCalled();
+    expect(onExit).not.toHaveBeenCalled();
     (process as any).emit('exit', 0);
-    expect(onClose).not.toHaveBeenCalled();
+    expect(onExit).not.toHaveBeenCalled();
   });
 });
