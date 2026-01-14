@@ -1,3 +1,13 @@
+## 0.104.0 (2026-01-14)
+
+### 🚀 Features
+
+- **utils:** measure utils ([#1211](https://github.com/code-pushup/cli/pull/1211))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.103.0 (2026-01-14)
 
 ### 🚀 Features
