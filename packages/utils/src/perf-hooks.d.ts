@@ -1,14 +1,6 @@
-import type {
-  MarkerPayload,
-  TrackEntryPayload,
-  WithDevToolsPayload,
-} from './lib/user-timing-extensibility-api.type';
+import type { DetailPayloadWithDevtools } from './lib/user-timing-extensibility-api.type';
 
 export {};
-
-type DetailPayloadWithDevtools = WithDevToolsPayload<
-  TrackEntryPayload | MarkerPayload
->;
 
 declare module 'node:perf_hooks' {
   interface PerformanceEntry {

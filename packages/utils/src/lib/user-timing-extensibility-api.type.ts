@@ -118,6 +118,12 @@ export type WithDevToolsPayload<T extends TrackEntryPayload | MarkerPayload> = {
 };
 
 /**
+ * Combined detail payload type for performance entries with DevTools support.
+ */
+export type DetailPayloadWithDevtools = WithDevToolsPayload<
+  TrackEntryPayload | MarkerPayload
+>;
+/**
  * Extended MarkOptions that supports DevTools payload in detail.
  * @example
  * const options: MarkOptionsWithDevtools = {
