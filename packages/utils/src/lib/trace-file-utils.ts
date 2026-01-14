@@ -16,6 +16,7 @@ import type {
 } from './trace-file.type.js';
 
 /** Global counter for generating unique local IDs */
+// eslint-disable-next-line functional/no-let
 let id2Count = 0;
 
 /**
