@@ -51,7 +51,7 @@ export class PerformanceObserverSink<T>
       return;
     }
 
-    // The only used to trigger the flush it is not processing the entries just counting them
+    // Only used to trigger the flush - it's not processing the entries, just counting them
     this.#observer = new PerformanceObserver(
       (list: PerformanceObserverEntryList) => {
         const batchCount = OBSERVED_TYPES.reduce(
