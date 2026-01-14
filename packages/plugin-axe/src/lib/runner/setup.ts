@@ -34,16 +34,20 @@ export async function loadSetupScript(
     ? setupScript
     : path.join(process.cwd(), setupScript);
 
-  logger.debug(`Resolved setup script path: ${absolutePath}`);
-
   if (!(await fileExists(absolutePath))) {
     throw new Error(`Setup script not found: ${absolutePath}`);
   }
 
-  const module: unknown = await import(absolutePath);
-  const validModule = await validateAsync(setupScriptModuleSchema, module, {
-    filePath: absolutePath,
-  });
+  const validModule = await logger.task(
+    `Loading setup script from ${absolutePath}`,
+    async () => {
+      const module: unknown = await import(absolutePath);
+      const validated = await validateAsync(setupScriptModuleSchema, module, {
+        filePath: absolutePath,
+      });
+      return { message: 'Setup script loaded successfully', result: validated };
+    },
+  );
 
   return validModule.default;
 }
