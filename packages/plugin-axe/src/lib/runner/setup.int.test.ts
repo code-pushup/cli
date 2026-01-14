@@ -19,7 +19,7 @@ describe('loadSetupScript integration', () => {
       path.join(fixturesDir, 'valid-setup.ts'),
     );
 
-    expect(typeof setupFn).toBe('function');
+    expect(setupFn).toBeFunction();
   });
 
   it('should execute loaded setup script with runSetup', async () => {
