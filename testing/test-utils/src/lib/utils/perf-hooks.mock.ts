@@ -33,27 +33,36 @@ export const createPerformanceMock = (timeOrigin = 500_000) => ({
 
   now: vi.fn(() => nowMs),
 
-  mark: vi.fn((name: string) => {
+  mark: vi.fn((name: string, options?: { detail?: unknown }) => {
     entries.push({
       name,
       entryType: 'mark',
       startTime: nowMs,
       duration: 0,
+      detail: options?.detail,
     } as PerformanceEntry);
     MockPerformanceObserver.globalEntries = entries;
   }),
 
-  measure: vi.fn((name: string, startMark?: string, endMark?: string) => {
-    const entry = {
-      name,
-      entryType: 'measure',
-      startTime: nowMs,
-      duration: nowMs,
-    } as PerformanceEntry;
-    entries.push(entry);
-    MockPerformanceObserver.globalEntries = entries;
-    triggerObservers([entry]);
-  }),
+  measure: vi.fn(
+    (
+      name: string,
+      startMark?: string,
+      endMark?: string,
+      options?: { detail?: unknown },
+    ) => {
+      const entry = {
+        name,
+        entryType: 'measure',
+        startTime: nowMs,
+        duration: nowMs,
+        detail: options?.detail,
+      } as PerformanceEntry;
+      entries.push(entry);
+      MockPerformanceObserver.globalEntries = entries;
+      triggerObservers([entry]);
+    },
+  ),
 
   getEntries: vi.fn(() => entries.slice()),
 

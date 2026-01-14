@@ -1,7 +1,7 @@
-import os from 'node:os';
 import type { PerformanceMark, PerformanceMeasure } from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
 import { defaultClock } from './clock-epoch.js';
+import { jsonlDecode, jsonlEncode } from './file-sink-jsonl.js';
 import type {
   BeginEvent,
   CompleteEvent,
@@ -13,7 +13,9 @@ import type {
   SpanEventArgs,
   TraceEvent,
   TraceEventContainer,
+  TraceEventRaw,
 } from './trace-file.type.js';
+import type { UserTimingDetail } from './user-timing-extensibility-api.type.js';
 
 /** Global counter for generating unique span IDs within a trace */
 // eslint-disable-next-line functional/no-let
@@ -228,7 +230,7 @@ export const markToInstantEvent = (
     ...opt,
     name: opt?.name ?? entry.name,
     ts: defaultClock.fromEntry(entry),
-    args: entry.detail ? { detail: entry.detail } : undefined,
+    args: entry.detail ? { data: { detail: entry.detail } } : undefined,
   });
 
 /**
@@ -249,6 +251,19 @@ export const measureToSpanEvents = (
     args: entry.detail ? { data: { detail: entry.detail } } : undefined,
   });
 
+export function getTraceMetadata(
+  startDate?: Date,
+  metadata?: Record<string, unknown>,
+) {
+  return {
+    source: 'DevTools',
+    startTime: startDate?.toISOString() ?? new Date().toISOString(),
+    hardwareConcurrency: 1,
+    dataOrigin: 'TraceEvents',
+    ...metadata,
+  };
+}
+
 /**
  * Creates a complete trace file container with metadata.
  * @param opt - Trace file configuration
@@ -263,6 +278,65 @@ export const getTraceFile = (opt: {
   metadata: {
     source: 'Node.js UserTiming',
     startTime: opt.startTime ?? new Date().toISOString(),
-    hardwareConcurrency: os.cpus().length,
+    hardwareConcurrency: 1,
   },
 });
+
+function processDetail<T extends { detail?: unknown }>(
+  target: T,
+  processor: (detail: string | object) => string | object,
+): T {
+  if (
+    target.detail != null &&
+    (typeof target.detail === 'string' || typeof target.detail === 'object')
+  ) {
+    return { ...target, detail: processor(target.detail) };
+  }
+  return target;
+}
+
+export function decodeDetail(target: { detail: string }): UserTimingDetail {
+  return processDetail(target, detail =>
+    typeof detail === 'string' ? jsonlDecode<UserTimingDetail>(detail) : detail,
+  ) as UserTimingDetail;
+}
+
+export function encodeDetail(target: UserTimingDetail): UserTimingDetail {
+  return processDetail(target, detail =>
+    typeof detail === 'object'
+      ? jsonlEncode(detail as UserTimingDetail)
+      : detail,
+  );
+}
+
+export function decodeTraceEvent({ args, ...rest }: TraceEventRaw): TraceEvent {
+  if (!args) return rest as TraceEvent;
+
+  const processedArgs = decodeDetail(args as { detail: string });
+  if ('data' in args && args.data && typeof args.data === 'object') {
+    return {
+      ...rest,
+      args: {
+        ...processedArgs,
+        data: decodeDetail(args.data as { detail: string }),
+      },
+    } as TraceEvent;
+  }
+  return { ...rest, args: processedArgs } as TraceEvent;
+}
+
+export function encodeTraceEvent({ args, ...rest }: TraceEvent): TraceEventRaw {
+  if (!args) return rest as TraceEventRaw;
+
+  const processedArgs = encodeDetail(args);
+  if ('data' in args && args.data && typeof args.data === 'object') {
+    return {
+      ...rest,
+      args: {
+        ...processedArgs,
+        data: encodeDetail(args.data as UserTimingDetail),
+      },
+    } as TraceEventRaw;
+  }
+  return { ...rest, args: processedArgs } as TraceEventRaw;
+}

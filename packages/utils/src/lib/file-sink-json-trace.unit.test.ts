@@ -2,13 +2,12 @@ import { vol } from 'memfs';
 import * as fs from 'node:fs';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { FileSinkJsonTrace, finalizeTraceFile } from './file-sink-json-trace';
 import {
-  TraceFileSink,
   decodeTraceEvent,
   encodeTraceEvent,
-  finalizeTraceFile,
   getTraceMetadata,
-} from './file-sink-json-trace.js';
+} from './trace-file-utils.js';
 import type {
   InstantEvent,
   TraceEvent,
@@ -134,9 +133,7 @@ describe('finalizeTraceFile', () => {
 
     finalizeTraceFile(events as any, outputPath);
 
-    expect(fs.existsSync(outputPath)).toBe(true);
-    const content = JSON.parse(fs.readFileSync(outputPath, 'utf8'));
-    expect(content.traceEvents).toHaveLength(3); // preamble (start + complete) + end complete
+    expect(fs.existsSync(outputPath)).toBe(false); // No file created for empty events
   });
 
   it('should sort events by timestamp', () => {
@@ -154,6 +151,46 @@ describe('finalizeTraceFile', () => {
       .map((e: any) => e.name);
     expect(eventNames).toStrictEqual(['event1', 'event2']);
   });
+
+  it('should use configurable margins', () => {
+    const events: TraceEvent[] = [{ name: 'event1', ts: 1000, ph: 'I' }];
+    const outputPath = '/tmp/custom-margin-trace.json';
+
+    finalizeTraceFile(
+      events as any,
+      outputPath,
+      {},
+      { marginMs: 500, marginDurMs: 10 },
+    );
+
+    const content = JSON.parse(fs.readFileSync(outputPath, 'utf8'));
+    expect(content.traceEvents).toHaveLength(4); // start tracing + start margin + event + end margin
+
+    // Check start margin timestamp and duration
+    const startMargin = content.traceEvents.find(
+      (e: any) => e.name === '[trace padding start]',
+    );
+    expect(startMargin.ts).toBe(500); // 1000 - 500
+    expect(startMargin.dur).toBe(10);
+
+    // Check end margin timestamp and duration
+    const endMargin = content.traceEvents.find(
+      (e: any) => e.name === '[trace padding end]',
+    );
+    expect(endMargin.ts).toBe(1500); // 1000 + 500
+    expect(endMargin.dur).toBe(10);
+  });
+
+  it('should use deterministic startTime', () => {
+    const events: TraceEvent[] = [{ name: 'event1', ts: 1000, ph: 'I' }];
+    const outputPath = '/tmp/deterministic-trace.json';
+    const fixedTime = '2023-01-15T10:30:00.000Z';
+
+    finalizeTraceFile(events as any, outputPath, {}, { startTime: fixedTime });
+
+    const content = JSON.parse(fs.readFileSync(outputPath, 'utf8'));
+    expect(content.metadata.startTime).toBe(fixedTime);
+  });
 });
 
 describe('TraceFileSink', () => {
@@ -167,13 +204,13 @@ describe('TraceFileSink', () => {
   });
 
   it('should create trace file sink with default options', () => {
-    const sink = new TraceFileSink({ filename: 'test' });
+    const sink = new FileSinkJsonTrace({ filename: 'test' });
     expect(sink.getFilePathForExt('json')).toBe('test.json');
     expect(sink.getFilePathForExt('jsonl')).toBe('test.jsonl');
   });
 
   it('should create trace file sink with custom directory', () => {
-    const sink = new TraceFileSink({
+    const sink = new FileSinkJsonTrace({
       filename: 'test',
       directory: '/tmp/custom',
     });
@@ -182,12 +219,10 @@ describe('TraceFileSink', () => {
   });
 
   it('should handle file operations with trace events', () => {
-    const sink = new TraceFileSink({
+    const sink = new FileSinkJsonTrace({
       filename: 'trace-test',
       directory: '/tmp',
     });
-    sink.open();
-
     const event1: InstantEvent = { name: 'mark1', ts: 100, ph: 'I' };
     const event2: InstantEvent = { name: 'mark2', ts: 200, ph: 'I' };
     sink.write(event1);
@@ -202,11 +237,10 @@ describe('TraceFileSink', () => {
   });
 
   it('should create trace file on finalize', () => {
-    const sink = new TraceFileSink({
+    const sink = new FileSinkJsonTrace({
       filename: 'finalize-test',
       directory: '/tmp',
     });
-    sink.open();
 
     const event: InstantEvent = { name: 'test-event', ts: 150, ph: 'I' };
     sink.write(event);
@@ -224,12 +258,11 @@ describe('TraceFileSink', () => {
 
   it('should handle metadata in finalize', () => {
     const metadata = { customField: 'value', version: '1.0' };
-    const sink = new TraceFileSink({
+    const sink = new FileSinkJsonTrace({
       filename: 'metadata-test',
       directory: '/tmp',
       metadata,
     });
-    sink.open();
     sink.write({ name: 'event', ts: 100, ph: 'I' });
     sink.finalize();
 
@@ -240,17 +273,43 @@ describe('TraceFileSink', () => {
     expect(content.metadata.version).toBe('1.0');
   });
 
+  it('should use configurable options in TraceFileSink', () => {
+    const sink = new FileSinkJsonTrace({
+      filename: 'options-test',
+      directory: '/tmp',
+      marginMs: 200,
+      marginDurMs: 5,
+      startTime: '2023-12-25T12:00:00.000Z',
+    });
+    sink.write({ name: 'event', ts: 1000, ph: 'I' });
+    sink.finalize();
+
+    const content = JSON.parse(
+      fs.readFileSync('/tmp/options-test.json', 'utf8'),
+    );
+    expect(content.metadata.startTime).toBe('2023-12-25T12:00:00.000Z');
+
+    const startMargin = content.traceEvents.find(
+      (e: any) => e.name === '[trace padding start]',
+    );
+    expect(startMargin.ts).toBe(800); // 1000 - 200
+    expect(startMargin.dur).toBe(5);
+
+    const endMargin = content.traceEvents.find(
+      (e: any) => e.name === '[trace padding end]',
+    );
+    expect(endMargin.ts).toBe(1200); // 1000 + 200
+    expect(endMargin.dur).toBe(5);
+  });
+
   it('should do nothing on finalize when no events written', () => {
-    const sink = new TraceFileSink({
+    const sink = new FileSinkJsonTrace({
       filename: 'empty-test',
       directory: '/tmp',
     });
-    sink.open();
     sink.finalize();
 
-    expect(fs.existsSync('/tmp/empty-test.json')).toBe(true);
-    const content = JSON.parse(fs.readFileSync('/tmp/empty-test.json', 'utf8'));
-    expect(content.traceEvents).toHaveLength(3); // preamble (start + complete) + end complete
+    expect(fs.existsSync('/tmp/empty-test.json')).toBe(false); // No file created for empty events
   });
 });
 

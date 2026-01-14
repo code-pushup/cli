@@ -3,7 +3,7 @@ import * as fs from 'node:fs';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
-  JsonlFileSink,
+  JsonlFile,
   jsonlDecode,
   jsonlEncode,
   recoverJsonlFile,
@@ -150,7 +150,7 @@ describe('recoverJsonlFile', () => {
   });
 });
 
-describe('JsonlFileSink', () => {
+describe('JsonlFile', () => {
   beforeEach(() => {
     vol.fromJSON(
       {
@@ -163,7 +163,7 @@ describe('JsonlFileSink', () => {
   type JsonObj = { key: string; number: number };
 
   it('should encode objects as JSON', () => {
-    const sink = new JsonlFileSink<JsonObj>({
+    const sink = new JsonlFile<JsonObj>({
       filePath: '/tmp/jsonl-test.jsonl',
     });
     const obj = { key: 'value', number: 42 };
@@ -171,7 +171,7 @@ describe('JsonlFileSink', () => {
   });
 
   it('should decode JSON strings to objects', () => {
-    const sink = new JsonlFileSink<JsonObj>({
+    const sink = new JsonlFile<JsonObj>({
       filePath: '/tmp/jsonl-test.jsonl',
     });
     const obj = { key: 'value', number: 42 };
@@ -181,8 +181,7 @@ describe('JsonlFileSink', () => {
 
   it('should handle file operations with JSONL format', () => {
     const filePath = '/tmp/jsonl-file-ops-test.jsonl';
-    const sink = new JsonlFileSink<JsonObj>({ filePath });
-    sink.open();
+    const sink = new JsonlFile<JsonObj>({ filePath });
 
     const obj1 = { key: 'value', number: 42 };
     const obj2 = { key: 'value', number: 42 };
@@ -196,7 +195,7 @@ describe('JsonlFileSink', () => {
 
   it('repack() should recover records and write them to output path', () => {
     const filePath = '/tmp/jsonl-repack-test.jsonl';
-    const sink = new JsonlFileSink<JsonObj>({ filePath });
+    const sink = new JsonlFile<JsonObj>({ filePath });
     const records = [
       { key: 'value', number: 42 },
       { key: 'value', number: 42 },
@@ -215,7 +214,7 @@ describe('JsonlFileSink', () => {
 
   it('repack() should accept output path', () => {
     const filePath = '/tmp/jsonl-repack-test.jsonl';
-    const sink = new JsonlFileSink<JsonObj>({ filePath });
+    const sink = new JsonlFile<JsonObj>({ filePath });
     const records = [
       { key: 'value', number: 42 },
       { key: 'value', number: 42 },
@@ -234,7 +233,7 @@ describe('JsonlFileSink', () => {
   });
 
   it('should do nothing on finalize()', () => {
-    const sink = new JsonlFileSink<JsonObj>({
+    const sink = new JsonlFile<JsonObj>({
       filePath: '/tmp/jsonl-finalize-test.jsonl',
     });
     expect(() => sink.finalize()).not.toThrow();

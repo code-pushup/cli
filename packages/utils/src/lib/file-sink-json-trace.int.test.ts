@@ -3,8 +3,8 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { teardownTestFolder } from '@code-pushup/test-utils';
-import { TraceFileSink } from './file-sink-json-trace.js';
-import type { TraceEvent } from './trace-file.type';
+import { FileSinkJsonTrace } from './file-sink-json-trace';
+import type { CompleteEvent, TraceEvent } from './trace-file.type';
 
 describe('TraceFileSink integration', () => {
   const baseDir = path.join(os.tmpdir(), 'file-sink-json-trace-int-tests');
@@ -52,7 +52,7 @@ describe('TraceFileSink integration', () => {
     ];
 
     it('should write and read trace events', async () => {
-      const sink = new TraceFileSink({
+      const sink = new FileSinkJsonTrace({
         filename: 'test-data',
         directory: baseDir,
       });
@@ -83,7 +83,7 @@ describe('TraceFileSink integration', () => {
     });
 
     it('should recover events from JSONL file', async () => {
-      const sink = new TraceFileSink({
+      const sink = new FileSinkJsonTrace({
         filename: 'test-data',
         directory: baseDir,
       });
@@ -98,7 +98,7 @@ describe('TraceFileSink integration', () => {
     });
 
     it('should handle empty trace files', async () => {
-      const sink = new TraceFileSink({
+      const sink = new FileSinkJsonTrace({
         filename: 'empty-test',
         directory: baseDir,
       });
@@ -123,7 +123,7 @@ describe('TraceFileSink integration', () => {
         customData: { key: 'value' },
       };
 
-      const sink = new TraceFileSink({
+      const sink = new FileSinkJsonTrace({
         filename: 'metadata-test',
         directory: baseDir,
         metadata,
@@ -151,7 +151,7 @@ describe('TraceFileSink integration', () => {
           cat: 'test',
         };
 
-        const sink = new TraceFileSink({
+        const sink = new FileSinkJsonTrace({
           filename: 'single-event-test',
           directory: baseDir,
         });
@@ -169,7 +169,7 @@ describe('TraceFileSink integration', () => {
       });
 
       it('should handle events with complex args', async () => {
-        const complexEvent: TraceEvent = {
+        const complexEvent: CompleteEvent = {
           name: 'complexEvent',
           ts: 456,
           ph: 'X',
@@ -180,7 +180,7 @@ describe('TraceFileSink integration', () => {
           },
         };
 
-        const sink = new TraceFileSink({
+        const sink = new FileSinkJsonTrace({
           filename: 'complex-args-test',
           directory: baseDir,
         });
@@ -196,15 +196,15 @@ describe('TraceFileSink integration', () => {
           (e: any) => e.name === 'complexEvent',
         );
         expect(eventInTrace).toBeDefined();
-        expect(eventInTrace.args.detail).toStrictEqual(
-          '{"nested":{"data":[1,2,3]}}',
-        );
+        expect(eventInTrace.args.detail).toStrictEqual({
+          nested: { data: [1, 2, 3] },
+        });
         expect(eventInTrace.args.data.url).toBe('https://example.com');
       });
 
       it('should handle non-existent directories gracefully', async () => {
         const nonExistentDir = path.join(baseDir, 'non-existent');
-        const sink = new TraceFileSink({
+        const sink = new FileSinkJsonTrace({
           filename: 'non-existent-dir-test',
           directory: nonExistentDir,
         });

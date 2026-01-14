@@ -3,9 +3,9 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { teardownTestFolder } from '@code-pushup/test-utils';
-import { JsonlFileSink, recoverJsonlFile } from './file-sink-jsonl.js';
+import { JsonlFile, recoverJsonlFile } from './file-sink-jsonl.js';
 
-describe('JsonlFileSink integration', () => {
+describe('JsonlFile integration', () => {
   const baseDir = path.join(os.tmpdir(), 'file-sink-json-int-tests');
   const testFile = path.join(baseDir, 'test-data.jsonl');
 
@@ -33,7 +33,7 @@ describe('JsonlFileSink integration', () => {
     ];
 
     it('should write and read JSONL files', async () => {
-      const sink = new JsonlFileSink({ filePath: testFile });
+      const sink = new JsonlFile({ filePath: testFile });
 
       // Open and write data
       sink.open();
@@ -91,7 +91,7 @@ describe('JsonlFileSink integration', () => {
     });
 
     it('should recover data using JsonlFileSink.recover()', async () => {
-      const sink = new JsonlFileSink({ filePath: testFile });
+      const sink = new JsonlFile({ filePath: testFile });
       sink.open();
       testData.forEach(item => sink.write(item));
       sink.close();

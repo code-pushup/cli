@@ -262,7 +262,7 @@ describe('FileSink', () => {
 
     sink.repack();
     expect(mockRecover).toHaveBeenCalled();
-    expect(fs.readFileSync(filePath, 'utf8')).toBe('record1\n\nrecord2\n');
+    expect(fs.readFileSync(filePath, 'utf8')).toBe('record1\nrecord2\n');
   });
 
   it('repack() should accept output path', () => {
@@ -276,7 +276,7 @@ describe('FileSink', () => {
     const outputPath = '/tmp/repack-output.txt';
     sink.repack(outputPath);
     expect(mockRecover).toHaveBeenCalled();
-    expect(fs.readFileSync(outputPath, 'utf8')).toBe('record1\n\nrecord2\n');
+    expect(fs.readFileSync(outputPath, 'utf8')).toBe('record1\nrecord2\n');
   });
 
   it('finalize() should call the finalize function from options', () => {
