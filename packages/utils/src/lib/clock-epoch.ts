@@ -42,8 +42,15 @@ export function epochClock(init: EpochClockOptions = {}) {
     msToUs(timeOriginMs + perfMs);
 
   const fromEntryStartTimeMs = fromPerfMs;
-  const fromEntry = (entry: PerformanceEntry, useEndTime = false) =>
-    defaultClock.fromPerfMs(
+  const fromEntry = (
+    entry: {
+      startTime: Milliseconds;
+      entryType: string;
+      duration: Milliseconds;
+    },
+    useEndTime = false,
+  ) =>
+    fromPerfMs(
       entry.startTime +
         (entry.entryType === 'measure' && useEndTime ? entry.duration : 0),
     );

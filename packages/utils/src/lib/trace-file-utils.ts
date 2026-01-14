@@ -8,20 +8,20 @@ import type {
   EndEvent,
   InstantEvent,
   InstantEventArgs,
+  InstantEventTracingStartedInBrowser,
   SpanEvent,
   SpanEventArgs,
-  StartTracingEvent,
   TraceEvent,
   TraceEventContainer,
 } from './trace-file.type.js';
 
-/** Global counter for generating unique local IDs */
+/** Global counter for generating unique span IDs within a trace */
 // eslint-disable-next-line functional/no-let
 let id2Count = 0;
 
 /**
- * Generates a unique local ID for span events, to link start and end with a id.
- * @returns Object with local ID string
+ * Generates a unique ID for linking begin and end span events in Chrome traces.
+ * @returns Object with local ID string for the id2 field
  */
 export const nextId2 = () => ({ local: `0x${++id2Count}` });
 
@@ -74,16 +74,16 @@ export const getInstantEvent = (opt: {
 
 /**
  * Creates a start tracing event with frame information.
- * This event is needed to make events in general show up and also colores the track better.
+ * This event is needed at the beginning of the traceEvents array to make tell the UI profiling has started, and it should visualize the data.
  * @param opt - Tracing configuration options
  * @returns StartTracingEvent object
  */
-export const getStartTracing = (opt: {
+export const getInstantEventTracingStartedInBrowser = (opt: {
   url: string;
   ts?: number;
   pid?: number;
   tid?: number;
-}): StartTracingEvent => {
+}): InstantEventTracingStartedInBrowser => {
   const { pid, tid, ts } = defaults(opt);
   const id = frameTreeNodeId(pid, tid);
 

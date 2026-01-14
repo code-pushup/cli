@@ -1,3 +1,4 @@
+import { getInstantEventTracingStartedInBrowser } from './trace-file-utils';
 import type { UserTimingDetail } from './user-timing-extensibility-api.type';
 
 /**
@@ -30,7 +31,7 @@ export type CompleteEventArgs = { detail?: Record<string, unknown> };
  * @property {Array} data.frames - Array of frame information
  * @property {boolean} data.persistentIds - Whether IDs are persistent
  */
-export type StartTracingEventArgs = {
+export type InstantEventTracingStartedInBrowserArgs = {
   data: {
     frameTreeNodeId: number;
     frames: {
@@ -52,7 +53,7 @@ export type TraceArgs =
   | InstantEventArgs
   | SpanEventArgs
   | CompleteEventArgs
-  | StartTracingEventArgs;
+  | InstantEventTracingStartedInBrowserArgs;
 
 /**
  * Base properties shared by all trace events.
@@ -75,11 +76,11 @@ export type BaseTraceEvent = {
 /**
  * Start tracing event for Chrome DevTools tracing.
  */
-export type StartTracingEvent = BaseTraceEvent & {
+export type InstantEventTracingStartedInBrowser = BaseTraceEvent & {
   cat: 'devtools.timeline';
   ph: 'i';
   name: 'TracingStartedInBrowser';
-  args: StartTracingEventArgs;
+  args: InstantEventTracingStartedInBrowserArgs;
 };
 
 /**
@@ -118,7 +119,7 @@ type SpanCore = Omit<BaseTraceEvent, 'args'> & {
 /**
  * Begin event for a span (paired with an end event).
  * @property {'b'} ph - Phase indicator for begin events
- * @property {'t'} s - Scope indicator (thread)
+ * @property {'t'} s - Scope indicator ('t' is thread)
  * @property {never} [dur] - Duration is not applicable for begin events
  */
 export type BeginEvent = SpanCore & {
@@ -145,7 +146,7 @@ export type TraceEvent =
   | InstantEvent
   | CompleteEvent
   | SpanEvent
-  | StartTracingEvent;
+  | InstantEventTracingStartedInBrowser;
 
 /**
  * Raw arguments format for trace events before processing.

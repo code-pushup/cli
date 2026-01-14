@@ -5,9 +5,9 @@ import {
   frameTreeNodeId,
   getCompleteEvent,
   getInstantEvent,
+  getInstantEventTracingStartedInBrowser,
   getSpan,
   getSpanEvent,
-  getStartTracing,
   getTraceFile,
   markToInstantEvent,
   measureToSpanEvents,
@@ -103,9 +103,11 @@ describe('frameName', () => {
   });
 });
 
-describe('getStartTracing', () => {
+describe('getInstantEventTracingStartedInBrowser', () => {
   it('should create start tracing event with required url', () => {
-    expect(getStartTracing({ url: 'https://example.com' })).toStrictEqual({
+    expect(
+      getInstantEventTracingStartedInBrowser({ url: 'https://example.com' }),
+    ).toStrictEqual({
       cat: 'devtools.timeline',
       ph: 'i',
       name: 'TracingStartedInBrowser',
@@ -133,7 +135,7 @@ describe('getStartTracing', () => {
 
   it('should use custom pid and tid', () => {
     expect(
-      getStartTracing({
+      getInstantEventTracingStartedInBrowser({
         url: 'https://test.com',
         pid: 777,
         tid: 888,
