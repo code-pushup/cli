@@ -40,14 +40,12 @@ export function mergePropertiesWithOverwrite(
  * @param options - Marker options excluding dataType
  * @returns Complete marker payload
  * @example
- * ```ts
  * const payload = markerPayload({
  *   color: 'primary',
  *   tooltipText: 'User action completed',
  *   properties: [['action', 'save'], ['duration', 150]]
  * });
  * // { dataType: 'marker', color: 'primary', tooltipText: 'User action completed', ... }
- * ```
  */
 export function markerPayload(options?: Omit<MarkerPayload, 'dataType'>) {
   return {
@@ -61,7 +59,6 @@ export function markerPayload(options?: Omit<MarkerPayload, 'dataType'>) {
  * @param options - Track entry options excluding dataType
  * @returns Complete track entry payload
  * @example
- * ```ts
  * const payload = trackEntryPayload({
  *   track: 'user-interactions',
  *   trackGroup: 'frontend',
@@ -70,7 +67,6 @@ export function markerPayload(options?: Omit<MarkerPayload, 'dataType'>) {
  *   properties: [['element', 'save-button'], ['response-time', 200]]
  * });
  * // { dataType: 'track-entry', track: 'user-interactions', ... }
- * ```
  */
 export function trackEntryPayload(
   options: Omit<TrackEntryPayload, 'dataType'>,
@@ -205,7 +201,6 @@ export function errorToMarkerPayload(
  * @param devtools - DevTools payload or null
  * @returns Performance API options with DevTools detail
  * @example
- * ```ts
  * const marker = markerPayload({ color: 'primary', tooltipText: 'Start' });
  * performance.mark('start', asOptions(marker));
  *
@@ -215,7 +210,6 @@ export function errorToMarkerPayload(
  *   end: 'end',
  *   ...asOptions(trackEntry)
  * });
- * ```
  */
 export function asOptions<T extends MarkerPayload>(
   devtools?: T | null,
@@ -307,13 +301,11 @@ type MergeResult<P extends readonly unknown[]> = P extends readonly [
  * @param parts - Array of payloads where first is complete and rest are partial
  * @returns Merged payload with combined properties
  * @example
- * ```ts
  * const payload = mergeDevtoolsPayload(
  *   trackEntryPayload({ track: 'user-interactions', color: 'secondary' }),
  *   { color: 'primary', tooltipText: 'User action completed' },
  * );
  * // { track: 'user-interactions', color: 'primary', tooltipText: 'User action completed' }
- * ```
  */
 export function mergeDevtoolsPayload<
   const P extends readonly [
@@ -420,7 +412,6 @@ export type MeasureCtxOptions = ActionTrackEntryPayload & {
  * @param cfg - Configuration defining default track properties, optional prefix, and global error handling
  * @returns Function that creates measurement controllers for specific events
  * @example
- * ```ts
  * // Basic usage with defaults
  * const measure = measureCtx({
  *   track: 'api-calls',
@@ -432,9 +423,7 @@ export type MeasureCtxOptions = ActionTrackEntryPayload & {
  * start(); // Creates "fetch-user:start" mark
  * // ... async operation ...
  * success({ userCount: 42 }); // Creates "fetch-user:end" mark and "fetch-user" measure
- * ```
  * @example
- * ```ts
  * // Advanced usage with callbacks and error handling
  * const measure = measureCtx({
  *   track: 'user-actions',
@@ -461,9 +450,7 @@ export type MeasureCtxOptions = ActionTrackEntryPayload & {
  * } catch (err) {
  *   error(err); // Applies both global and specific error metadata
  * }
- * ```
  * @example
- * ```ts
  * // onetime config of defaults
  * const apiMeasure = measureCtx({
  *   prefix: 'http:',
@@ -480,8 +467,6 @@ export type MeasureCtxOptions = ActionTrackEntryPayload & {
  * } catch(err) {
  *   error(err)
  * }
- *
- * ```
  * @returns Object with measurement control methods:
  * - `start()`: Marks the beginning of the measurement
  * - `success(result?)`: Completes successful measurement with optional result metadata

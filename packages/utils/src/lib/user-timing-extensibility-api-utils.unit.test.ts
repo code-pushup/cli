@@ -20,6 +20,7 @@ import {
   trackEntryPayload,
 } from './user-timing-extensibility-api-utils.js';
 import type {
+  ActionTrackEntryPayload,
   EntryMeta,
   TrackEntryPayload,
   TrackMeta,
@@ -362,10 +363,6 @@ describe('getNames', () => {
 });
 
 describe('mergeDevtoolsPayload', () => {
-  it('should return empty object when no payloads provided', () => {
-    expect(mergeDevtoolsPayload()).toStrictEqual({});
-  });
-
   it('should return the same payload when single payload provided', () => {
     const payload: TrackEntryPayload = {
       dataType: 'track-entry',
@@ -403,7 +400,8 @@ describe('mergeDevtoolsPayload', () => {
   });
 
   it('should merge multiple property payloads with overwrite behavior', () => {
-    const payload1: EntryMeta = {
+    const payload1: ActionTrackEntryPayload = {
+      track: 'Test Track',
       properties: [['key1', 'value1']],
     };
     const payload2: EntryMeta = {
@@ -414,6 +412,7 @@ describe('mergeDevtoolsPayload', () => {
     };
 
     expect(mergeDevtoolsPayload(payload1, payload2)).toStrictEqual({
+      track: 'Test Track',
       properties: [
         ['key1', 'overwrite'],
         ['key2', 'value2'],
@@ -438,7 +437,7 @@ describe('mergeDevtoolsPayload', () => {
 
 describe('setupTracks', () => {
   it('should create track definitions with defaults as base', () => {
-    const defaults: TrackEntryPayload = {
+    const defaults: ActionTrackEntryPayload = {
       track: 'Main Track',
       color: 'primary',
       trackGroup: 'My Group',
