@@ -1,7 +1,12 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { performance } from 'node:perf_hooks';
-import { JsonlFileSink, recoverJsonlFile } from './file-sink-jsonl.js';
+import {
+  JsonlFileSink,
+  jsonlDecode,
+  jsonlEncode,
+  recoverJsonlFile,
+} from './file-sink-jsonl.js';
 import { getCompleteEvent, getStartTracing } from './trace-file-utils.js';
 import type {
   InstantEvent,
@@ -11,46 +16,60 @@ import type {
   UserTimingDetail,
 } from './trace-file.type.js';
 
-const tryJson = <T>(v: unknown): T | unknown => {
-  if (typeof v !== 'string') return v;
-  try {
-    return JSON.parse(v) as T;
-  } catch {
-    return v;
+export function decodeDetail(target: UserTimingDetail): UserTimingDetail {
+  if (typeof target.detail === 'string') {
+    return { ...target, detail: jsonlDecode<UserTimingDetail>(target.detail) };
   }
-};
+  return target;
+}
 
-const toJson = (v: unknown): unknown => {
-  if (v === undefined) return undefined;
-  try {
-    return JSON.stringify(v);
-  } catch {
-    return v;
+export function encodeDetail(target: UserTimingDetail): UserTimingDetail {
+  if (target.detail && typeof target.detail === 'object') {
+    return {
+      ...target,
+      detail: jsonlEncode(target.detail as UserTimingDetail),
+    };
   }
-};
+  return target;
+}
 
 export function decodeTraceEvent({ args, ...rest }: TraceEventRaw): TraceEvent {
   if (!args) return rest as TraceEvent;
 
-  const out: any = { ...args };
-  if ('detail' in out) out.detail = tryJson<UserTimingDetail>(out.detail);
-  if (out.data?.detail)
-    out.data.detail = tryJson<UserTimingDetail>(out.data.detail);
+  const out: UserTimingDetail = { ...args };
+  const processedOut = decodeDetail(out);
 
-  return { ...rest, args: out } as TraceEvent;
+  return {
+    ...rest,
+    args:
+      out.data && typeof out.data === 'object'
+        ? {
+            ...processedOut,
+            data: decodeDetail(out.data as UserTimingDetail),
+          }
+        : processedOut,
+  };
 }
 
 export function encodeTraceEvent({ args, ...rest }: TraceEvent): TraceEventRaw {
   if (!args) return rest as TraceEventRaw;
 
-  const out: any = { ...args };
-  if ('detail' in out) out.detail = toJson(out.detail);
-  if (out.data?.detail) out.data.detail = toJson(out.data.detail);
+  const out: UserTimingDetail = { ...args };
+  const processedOut = encodeDetail(out);
 
-  return { ...rest, args: out } as TraceEventRaw;
+  return {
+    ...rest,
+    args:
+      out.data && typeof out.data === 'object'
+        ? {
+            ...processedOut,
+            data: encodeDetail(out.data as UserTimingDetail),
+          }
+        : processedOut,
+  };
 }
 
-function getTraceMetadata(
+export function getTraceMetadata(
   startDate?: Date,
   metadata?: Record<string, unknown>,
 ) {
@@ -76,30 +95,30 @@ ${traceEventsContent}
 }`;
 }
 
-function finalizeTraceFile(
+export function finalizeTraceFile(
   events: (SpanEvent | InstantEvent)[],
   outputPath: string,
   metadata?: Record<string, unknown>,
 ): void {
   const { writeFileSync } = fs;
 
+  if (events.length === 0) {
+    return;
+  }
+
   const sortedEvents = events.sort((a, b) => a.ts - b.ts);
   const first = sortedEvents[0];
   const last = sortedEvents[sortedEvents.length - 1];
 
-  // Use performance.now() as fallback when no events exist
   const fallbackTs = performance.now();
   const firstTs = first?.ts ?? fallbackTs;
   const lastTs = last?.ts ?? fallbackTs;
 
-  // Add margins for readability
   const tsMargin = 1000;
   const startTs = firstTs - tsMargin;
   const endTs = lastTs + tsMargin;
-  const startDate = new Date().toISOString();
 
   const traceEventsJson = [
-    // Preamble
     encodeTraceEvent(
       getStartTracing({
         ts: startTs,
@@ -112,7 +131,6 @@ function finalizeTraceFile(
         dur: 20,
       }),
     ),
-    // Events
     ...events.map(encodeTraceEvent),
     encodeTraceEvent(
       getCompleteEvent({
@@ -120,7 +138,9 @@ function finalizeTraceFile(
         dur: 20,
       }),
     ),
-  ].join(',\n');
+  ]
+    .map(event => JSON.stringify(event))
+    .join(',\n');
 
   const jsonOutput = createTraceFileContent(
     traceEventsJson,
@@ -130,11 +150,11 @@ function finalizeTraceFile(
   writeFileSync(outputPath, jsonOutput, 'utf8');
 }
 
-export interface TraceFileSinkOptions {
+export type TraceFileSinkOptions = {
   filename: string;
   directory?: string;
   metadata?: Record<string, unknown>;
-}
+};
 
 export class TraceFileSink extends JsonlFileSink<SpanEvent | InstantEvent> {
   readonly #filePath: string;
