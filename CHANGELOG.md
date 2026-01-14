@@ -1,3 +1,13 @@
+## 0.105.0 (2026-01-14)
+
+### 🚀 Features
+
+- add trace event utils ([#1215](https://github.com/code-pushup/cli/pull/1215))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.104.0 (2026-01-14)
 
 ### 🚀 Features
