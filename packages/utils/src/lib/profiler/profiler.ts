@@ -35,8 +35,12 @@ type ProfilerMeasureOptions<T extends Record<string, ActionTrackEntryPayload>> =
  *
  * @template T - Record type defining available track names and their configurations
  */
-export type ProfilerOptions<T extends Record<string, ActionTrackEntryPayload>> =
-  ProfilerMeasureOptions<T>;
+export type ProfilerOptions<
+  T extends Record<string, ActionTrackEntryPayload> = Record<
+    string,
+    ActionTrackEntryPayload
+  >,
+> = ProfilerMeasureOptions<T>;
 
 /**
  * Performance profiler that creates structured timing measurements with DevTools visualization.
@@ -127,7 +131,7 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
    *   ]
    * });
    */
-  marker(name: string, opt?: EntryMeta & { color: DevToolsColor }) {
+  marker(name: string, opt?: EntryMeta & { color?: DevToolsColor }) {
     if (!this.#enabled) {
       return;
     }

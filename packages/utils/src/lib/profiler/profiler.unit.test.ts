@@ -1,30 +1,30 @@
 import { performance } from 'node:perf_hooks';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
-import { Profiler } from './profiler.js';
+import { Profiler, type ProfilerOptions } from './profiler.js';
 
 describe('Profiler', () => {
+  const getProfiler = (overrides?: Partial<ProfilerOptions>) =>
+    new Profiler({
+      prefix: 'cp',
+      track: 'test-track',
+      ...overrides,
+    });
+
   let profiler: Profiler<Record<string, ActionTrackEntryPayload>>;
 
   beforeEach(() => {
     performance.clearMarks();
     performance.clearMeasures();
+    // eslint-disable-next-line functional/immutable-data
     delete process.env.CP_PROFILING;
 
-    profiler = new Profiler({
-      prefix: 'cp',
-      track: 'test-track',
-      tracks: {},
-    });
+    profiler = getProfiler();
   });
 
   it('constructor should initialize with default enabled state from env', () => {
     vi.stubEnv('CP_PROFILING', 'true');
-    const profilerWithEnv = new Profiler({
-      prefix: 'cp',
-      track: 'test-track',
-      tracks: {},
-    });
+    const profilerWithEnv = getProfiler();
 
     expect(profilerWithEnv.isEnabled()).toBe(true);
   });
@@ -34,7 +34,6 @@ describe('Profiler', () => {
     const profilerWithOverride = new Profiler({
       prefix: 'cp',
       track: 'test-track',
-      tracks: {},
       enabled: true,
     });
 
@@ -42,12 +41,7 @@ describe('Profiler', () => {
   });
 
   it('constructor should use defaults for measure', () => {
-    const customProfiler = new Profiler({
-      prefix: 'custom',
-      track: 'custom-track',
-      trackGroup: 'custom-group',
-      color: 'secondary',
-    });
+    const customProfiler = getProfiler({ color: 'secondary' });
 
     customProfiler.setEnabled(true);
 
@@ -61,23 +55,21 @@ describe('Profiler', () => {
     expect(marks).toStrictEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          name: 'custom:test-operation:start',
+          name: 'cp:test-operation:start',
           detail: {
             devtools: expect.objectContaining({
               dataType: 'track-entry',
-              track: 'custom-track',
-              trackGroup: 'custom-group',
+              track: 'test-track',
               color: 'secondary',
             }),
           },
         }),
         expect.objectContaining({
-          name: 'custom:test-operation:end',
+          name: 'cp:test-operation:end',
           detail: {
             devtools: expect.objectContaining({
               dataType: 'track-entry',
-              track: 'custom-track',
-              trackGroup: 'custom-group',
+              track: 'test-track',
               color: 'secondary',
             }),
           },
@@ -86,12 +78,11 @@ describe('Profiler', () => {
     );
     expect(measures).toStrictEqual([
       expect.objectContaining({
-        name: 'custom:test-operation',
+        name: 'cp:test-operation',
         detail: {
           devtools: expect.objectContaining({
             dataType: 'track-entry',
-            track: 'custom-track',
-            trackGroup: 'custom-group',
+            track: 'test-track',
             color: 'secondary',
           }),
         },
@@ -186,12 +177,7 @@ describe('Profiler', () => {
   it('marker should execute without error when enabled with default color', () => {
     performance.clearMarks();
 
-    const profilerWithColor = new Profiler({
-      prefix: 'cp',
-      track: 'test-track',
-      color: 'primary',
-      tracks: {},
-    });
+    const profilerWithColor = getProfiler({ color: 'primary' });
     profilerWithColor.setEnabled(true);
 
     expect(() => {
@@ -216,11 +202,7 @@ describe('Profiler', () => {
   });
 
   it('marker should execute without error when enabled with no default color', () => {
-    const profilerNoColor = new Profiler({
-      prefix: 'cp',
-      track: 'test-track',
-      tracks: {},
-    });
+    const profilerNoColor = getProfiler();
     profilerNoColor.setEnabled(true);
 
     expect(() => {
