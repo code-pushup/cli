@@ -470,13 +470,13 @@ export type MeasureCtxOptions = ActionTrackEntryPayload & {
  *   track: 'api',
  * });
  *
- * cosnt {start, success, error} = apiMeasure('login');
+ * const { start, success, error } = apiMeasure('login');
  *
  * start();
  * try {
- *  cosnt result = myWork();
- *  success(result);
- *  return result;
+ *   const result = myWork();
+ *   success(result);
+ *   return result;
  * } catch(err) {
  *   error(err)
  * }
