@@ -1,6 +1,7 @@
 import process from 'node:process';
 import { isEnvVarEnabled } from '../env.js';
 import {
+  type MeasureCtxOptions,
   type MeasureOptions,
   asOptions,
   markerPayload,
@@ -8,16 +9,11 @@ import {
   setupTracks,
 } from '../user-timing-extensibility-api-utils.js';
 import type {
-  ActionColorPayload,
   ActionTrackEntryPayload,
   DevToolsColor,
   EntryMeta,
-  TrackMeta,
 } from '../user-timing-extensibility-api.type.js';
 import { PROFILER_ENABLED } from './constants.js';
-
-/** Default track configuration combining metadata and color options. */
-type DefaultTrackOptions = TrackMeta & ActionColorPayload;
 
 /**
  * Configuration options for creating a Profiler instance.
@@ -25,13 +21,11 @@ type DefaultTrackOptions = TrackMeta & ActionColorPayload;
  * @template T - Record type defining available track names and their configurations
  */
 type ProfilerMeasureOptions<T extends Record<string, ActionTrackEntryPayload>> =
-  DefaultTrackOptions & {
+  MeasureCtxOptions & {
     /** Custom track configurations that will be merged with default settings */
-    tracks: Record<keyof T, Partial<ActionTrackEntryPayload>>;
+    tracks?: Record<keyof T, Partial<ActionTrackEntryPayload>>;
     /** Whether profiling should be enabled (defaults to CP_PROFILING env var) */
     enabled?: boolean;
-    /** Prefix for all performance measurement names to avoid conflicts */
-    prefix: string;
   };
 
 /**
@@ -51,38 +45,11 @@ export type ProfilerOptions<T extends Record<string, ActionTrackEntryPayload>> =
  * integration for Chrome DevTools Performance panel. It supports both synchronous and
  * asynchronous operations with customizable track visualization.
  *
- * @example
- * ```typescript
- * const profiler = new Profiler({
- *   prefix: 'api',
- *   track: 'backend-calls',
- *   trackGroup: 'api',
- *   color: 'secondary',
- *   tracks: {
- *     database: { track: 'database', color: 'tertiary' },
- *     external: { track: 'external-apis', color: 'primary' }
- *   }
- * });
- *
- * // Measure synchronous operation
- * const result = profiler.measure('fetch-user', () => api.getUser(id));
- *
- * // Measure async operation
- * const asyncResult = await profiler.measureAsync('save-data',
- *   () => api.saveData(data)
- * );
- *
- * // Add marker
- * profiler.marker('cache-invalidated', {
- *   color: 'warning',
- *   tooltipText: 'Cache cleared due to stale data'
- * });
- * ```
  */
 export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
   #enabled: boolean;
   private readonly defaults: ActionTrackEntryPayload;
-  readonly tracks: Record<keyof T, ActionTrackEntryPayload>;
+  readonly tracks: Record<keyof T, ActionTrackEntryPayload> | undefined;
   private readonly ctxOf: ReturnType<typeof measureCtx>;
 
   /**
@@ -96,20 +63,6 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
    * @param options.color - Default color for track entries
    * @param options.enabled - Whether profiling is enabled (defaults to CP_PROFILING env var)
    *
-   * @example
-   * ```typescript
-   * const profiler = new Profiler({
-   *   prefix: 'api',
-   *   track: 'backend-calls',
-   *   trackGroup: 'api',
-   *   color: 'secondary',
-   *   enabled: true,
-   *   tracks: {
-   *     database: { track: 'database', color: 'tertiary' },
-   *     cache: { track: 'cache', color: 'primary' }
-   *   }
-   * });
-   * ```
    */
   constructor(options: ProfilerOptions<T>) {
     const { tracks, prefix, enabled, ...defaults } = options;
@@ -117,7 +70,9 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
 
     this.#enabled = enabled ?? isEnvVarEnabled(PROFILER_ENABLED);
     this.defaults = { ...defaults, dataType };
-    this.tracks = setupTracks({ ...defaults, dataType }, tracks);
+    this.tracks = tracks
+      ? setupTracks({ ...defaults, dataType }, tracks)
+      : undefined;
     this.ctxOf = measureCtx({
       ...defaults,
       dataType,
@@ -157,13 +112,12 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
    * returns immediately without creating any performance entries.
    *
    * @param name - Unique name for the marker
-   * @param opt - Optional metadata and styling for the marker
+   * @param opt - Metadata and styling for the marker
    * @param opt.color - Color of the marker line (defaults to profiler default)
    * @param opt.tooltipText - Text shown on hover
    * @param opt.properties - Key-value pairs for detailed view
    *
    * @example
-   * ```typescript
    * profiler.marker('user-action-start', {
    *   color: 'primary',
    *   tooltipText: 'User clicked save button',
@@ -172,7 +126,6 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
    *     ['elementId', 'save-btn']
    *   ]
    * });
-   * ```
    */
   marker(name: string, opt?: EntryMeta & { color: DevToolsColor }) {
     if (!this.#enabled) {
@@ -201,26 +154,19 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
    * @template R - The return type of the work function
    * @param event - Name for this measurement event
    * @param work - Function to execute and measure
-   * @param options - Optional measurement configuration overrides
+   * @param options - Measurement configuration overrides
    * @returns The result of the work function
    *
-   * @example
-   * ```typescript
-   * const user = profiler.measure('fetch-user', () => {
-   *   return api.getUser(userId);
-   * }, {
-   *   success: (result) => ({
-   *     properties: [['userId', result.id], ['loadTime', Date.now()]]
-   *   })
-   * });
-   * ```
    */
-  measure<R>(event: string, work: () => R, options?: MeasureOptions): R {
+  measure<R>(event: string, work: () => R, options?: MeasureOptions<R>): R {
     if (!this.#enabled) {
       return work();
     }
 
-    const { start, success, error } = this.ctxOf(event, options);
+    const { start, success, error } = this.ctxOf(
+      event,
+      options as MeasureOptions,
+    );
     start();
     try {
       const r = work();
@@ -242,34 +188,23 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
    * @template R - The resolved type of the work promise
    * @param event - Name for this measurement event
    * @param work - Function returning a promise to execute and measure
-   * @param options - Optional measurement configuration overrides
+   * @param options - Measurement configuration overrides
    * @returns Promise that resolves to the result of the work function
    *
-   * @example
-   * ```typescript
-   * const data = await profiler.measureAsync('save-form', async () => {
-   *   const result = await api.saveForm(formData);
-   *   return result;
-   * }, {
-   *   success: (result) => ({
-   *     properties: [['recordsSaved', result.count]]
-   *   }),
-   *   error: (err) => ({
-   *     properties: [['errorType', err.name]]
-   *   })
-   * });
-   * ```
    */
   async measureAsync<R>(
     event: string,
     work: () => Promise<R>,
-    options?: MeasureOptions,
+    options?: MeasureOptions<R>,
   ): Promise<R> {
     if (!this.#enabled) {
       return await work();
     }
 
-    const { start, success, error } = this.ctxOf(event, options);
+    const { start, success, error } = this.ctxOf(
+      event,
+      options as MeasureOptions,
+    );
     start();
     try {
       const r = work();
