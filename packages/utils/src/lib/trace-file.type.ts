@@ -1,5 +1,4 @@
-import { getInstantEventTracingStartedInBrowser } from './trace-file-utils';
-import type { UserTimingDetail } from './user-timing-extensibility-api.type';
+import type { UserTimingDetail } from './user-timing-extensibility-api.type.js';
 
 /**
  * Arguments for instant trace events.

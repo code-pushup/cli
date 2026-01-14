@@ -1,4 +1,3 @@
-import type { PerformanceEntry } from 'node:perf_hooks';
 import process from 'node:process';
 import { threadId } from 'node:worker_threads';
 
