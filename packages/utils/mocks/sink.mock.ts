@@ -1,4 +1,4 @@
-import type { Sink } from '../src/lib/sink-source.types';
+import type { Sink } from '../src/lib/sink-source.type';
 
 export class MockSink implements Sink<string, string> {
   private writtenItems: string[] = [];

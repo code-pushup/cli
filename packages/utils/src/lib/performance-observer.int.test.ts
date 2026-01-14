@@ -179,4 +179,49 @@ describe('PerformanceObserverSink', () => {
 
     expect(sink.getWrittenItems()).toHaveLength(2);
   });
+
+  it('cursor logic prevents duplicate processing of performance entries', () => {
+    const observer = new PerformanceObserverSink(options);
+    observer.subscribe();
+
+    performance.mark('first-mark');
+    performance.mark('second-mark');
+    expect(encode).not.toHaveBeenCalled();
+    observer.flush();
+    expect(sink.getWrittenItems()).toStrictEqual([
+      'first-mark:mark',
+      'second-mark:mark',
+    ]);
+
+    expect(encode).toHaveBeenCalledTimes(2);
+    expect(encode).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ name: 'first-mark' }),
+    );
+    expect(encode).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ name: 'second-mark' }),
+    );
+
+    performance.mark('third-mark');
+    performance.measure('first-measure');
+
+    observer.flush();
+    expect(sink.getWrittenItems()).toStrictEqual([
+      'first-mark:mark',
+      'second-mark:mark',
+      'third-mark:mark',
+      'first-measure:measure',
+    ]);
+
+    expect(encode).toHaveBeenCalledTimes(4);
+    expect(encode).toHaveBeenNthCalledWith(
+      3,
+      expect.objectContaining({ name: 'third-mark' }),
+    );
+    expect(encode).toHaveBeenNthCalledWith(
+      4,
+      expect.objectContaining({ name: 'first-measure' }),
+    );
+  });
 });
