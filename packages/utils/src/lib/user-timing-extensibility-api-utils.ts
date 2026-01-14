@@ -356,12 +356,7 @@ export function setupTracks<
  * @returns The mark options without dataType, tooltipText and properties.
  */
 function toMarkMeasureOpts<T extends TrackEntryPayload>(devtools: T) {
-  const {
-    dataType: _,
-    tooltipText: __,
-    properties: ___,
-    ...markDevtools
-  } = devtools;
+  const { tooltipText: _, properties: __, ...markDevtools } = devtools;
   return { detail: { devtools: markDevtools } };
 }
 

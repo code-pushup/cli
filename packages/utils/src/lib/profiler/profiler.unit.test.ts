@@ -9,11 +9,11 @@ describe('Profiler', () => {
   beforeEach(() => {
     performance.clearMarks();
     performance.clearMeasures();
+    delete process.env.CP_PROFILING;
 
     profiler = new Profiler({
       prefix: 'cp',
       track: 'test-track',
-      color: 'primary',
       tracks: {},
     });
   });
@@ -183,11 +183,78 @@ describe('Profiler', () => {
     expect(marks).toHaveLength(0);
   });
 
+  it('marker should execute without error when enabled with default color', () => {
+    performance.clearMarks();
+
+    const profilerWithColor = new Profiler({
+      prefix: 'cp',
+      track: 'test-track',
+      color: 'primary',
+      tracks: {},
+    });
+    profilerWithColor.setEnabled(true);
+
+    expect(() => {
+      profilerWithColor.marker('test-marker-default-color', {
+        tooltipText: 'Test marker with default color',
+      });
+    }).not.toThrow();
+
+    const marks = performance.getEntriesByType('mark');
+    expect(marks).toStrictEqual([
+      expect.objectContaining({
+        name: 'test-marker-default-color',
+        detail: {
+          devtools: expect.objectContaining({
+            dataType: 'marker',
+            color: 'primary', // Should use default color
+            tooltipText: 'Test marker with default color',
+          }),
+        },
+      }),
+    ]);
+  });
+
+  it('marker should execute without error when enabled with no default color', () => {
+    const profilerNoColor = new Profiler({
+      prefix: 'cp',
+      track: 'test-track',
+      tracks: {},
+    });
+    profilerNoColor.setEnabled(true);
+
+    expect(() => {
+      profilerNoColor.marker('test-marker-no-color', {
+        color: 'secondary',
+        tooltipText: 'Test marker without default color',
+        properties: [['key', 'value']],
+      });
+    }).not.toThrow();
+
+    const marks = performance.getEntriesByType('mark');
+    expect(marks).toStrictEqual([
+      expect.objectContaining({
+        name: 'test-marker-no-color',
+        detail: {
+          devtools: expect.objectContaining({
+            dataType: 'marker',
+            color: 'secondary',
+            tooltipText: 'Test marker without default color',
+            properties: [['key', 'value']],
+          }),
+        },
+      }),
+    ]);
+  });
+
   it('measure should execute work and return result when enabled', () => {
+    performance.clearMarks();
+    performance.clearMeasures();
+
     profiler.setEnabled(true);
 
     const workFn = vi.fn(() => 'result');
-    const result = profiler.measure('test-event', workFn);
+    const result = profiler.measure('test-event', workFn, { color: 'primary' });
 
     expect(result).toBe('result');
     expect(workFn).toHaveBeenCalled();
@@ -203,7 +270,6 @@ describe('Profiler', () => {
             devtools: expect.objectContaining({
               dataType: 'track-entry',
               track: 'test-track',
-              color: 'primary',
             }),
           },
         }),
@@ -213,7 +279,6 @@ describe('Profiler', () => {
             devtools: expect.objectContaining({
               dataType: 'track-entry',
               track: 'test-track',
-              color: 'primary',
             }),
           },
         }),
@@ -226,7 +291,6 @@ describe('Profiler', () => {
           devtools: expect.objectContaining({
             dataType: 'track-entry',
             track: 'test-track',
-            color: 'primary',
           }),
         },
       }),
@@ -280,7 +344,9 @@ describe('Profiler', () => {
       return 'async-result';
     });
 
-    const result = await profiler.measureAsync('test-async-event', workFn);
+    const result = await profiler.measureAsync('test-async-event', workFn, {
+      color: 'primary',
+    });
 
     expect(result).toBe('async-result');
     expect(workFn).toHaveBeenCalled();
