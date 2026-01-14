@@ -185,7 +185,9 @@ export class FileSink<T = string> {
    * Open file for writing (creates directory if needed).
    */
   open(withRepack?: boolean): void {
-    if (this.isOpen) return;
+    if (this.isOpen) {
+      return;
+    }
 
     const dir = path.dirname(this.file.getPath());
     fs.mkdirSync(dir, { recursive: true });
@@ -202,7 +204,9 @@ export class FileSink<T = string> {
    * Write input to file (append-only).
    */
   write(input: T): void {
-    if (!this.isOpen) return;
+    if (!this.isOpen) {
+      return;
+    }
 
     try {
       const encoded = this.encode(input);

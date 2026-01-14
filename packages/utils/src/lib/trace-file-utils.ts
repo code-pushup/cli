@@ -310,7 +310,9 @@ export function encodeDetail(target: UserTimingDetail): UserTimingDetail {
 }
 
 export function decodeTraceEvent({ args, ...rest }: TraceEventRaw): TraceEvent {
-  if (!args) return rest as TraceEvent;
+  if (!args) {
+    return rest as TraceEvent;
+  }
 
   const processedArgs = decodeDetail(args as { detail: string });
   if ('data' in args && args.data && typeof args.data === 'object') {
@@ -326,7 +328,9 @@ export function decodeTraceEvent({ args, ...rest }: TraceEventRaw): TraceEvent {
 }
 
 export function encodeTraceEvent({ args, ...rest }: TraceEvent): TraceEventRaw {
-  if (!args) return rest as TraceEventRaw;
+  if (!args) {
+    return rest as TraceEventRaw;
+  }
 
   const processedArgs = encodeDetail(args);
   if ('data' in args && args.data && typeof args.data === 'object') {

@@ -37,7 +37,7 @@ export function finalizeTraceFile(
   events.sort((a, b) => a.ts - b.ts);
   const fallbackTs = performance.now();
   const firstTs = events.length > 0 ? events[0].ts : fallbackTs;
-  const lastTs = events.length > 0 ? events[events.length - 1].ts : fallbackTs;
+  const lastTs = events.length > 0 ? events.at(-1).ts : fallbackTs;
 
   const marginMs = options?.marginMs ?? TRACE_MARGIN_MS;
   const marginDurMs = options?.marginDurMs ?? TRACE_MARGIN_DURATION_MS;
@@ -182,7 +182,9 @@ export class FileSinkJsonTrace {
   }
 
   finalize(): void {
-    if (this.#finalized) return;
+    if (this.#finalized) {
+      return;
+    }
     this.#finalized = true;
     this.sink.finalize();
   }

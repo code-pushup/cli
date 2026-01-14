@@ -2,7 +2,10 @@ import { vol } from 'memfs';
 import * as fs from 'node:fs';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { FileSinkJsonTrace, finalizeTraceFile } from './file-sink-json-trace';
+import {
+  FileSinkJsonTrace,
+  finalizeTraceFile,
+} from './file-sink-json-trace.js';
 import {
   decodeTraceEvent,
   encodeTraceEvent,

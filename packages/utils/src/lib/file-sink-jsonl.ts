@@ -100,7 +100,7 @@ export class JsonlFile<
    * Encode record to JSONL format.
    */
   encode(record: T): string {
-    return jsonlEncode(record) + '\n';
+    return `${jsonlEncode(record)}\n`;
   }
 
   /**
@@ -121,7 +121,7 @@ export class JsonlFile<
    * Write record in JSONL format (append-only).
    */
   write(record: T): void {
-    this.file.append(jsonlEncode(record) + '\n');
+    this.file.append(`${jsonlEncode(record)}\n`);
   }
 
   /**
@@ -167,7 +167,7 @@ export class JsonlFile<
     const { records } = this.recover();
     fs.writeFileSync(
       outputPath ?? this.getPath(),
-      records.map(jsonlEncode).join('\n') + '\n',
+      `${records.map(jsonlEncode).join('\n')}\n`,
     );
   }
 }

@@ -3,7 +3,7 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { teardownTestFolder } from '@code-pushup/test-utils';
-import { FileSinkJsonTrace } from './file-sink-json-trace';
+import { FileSinkJsonTrace } from './file-sink-json-trace.js';
 import type { CompleteEvent, TraceEvent } from './trace-file.type';
 
 describe('TraceFileSink integration', () => {
