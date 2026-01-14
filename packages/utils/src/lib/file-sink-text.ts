@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 import { existsSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
+import { PROFILER_FILE_BASE_NAME, PROFILER_OUT_DIR } from './profiler';
 import type {
   RecoverOptions,
   RecoverResult,
@@ -59,6 +60,42 @@ export const stringRecover = function <I, O extends FileOutput = FileOutput>(
 
   return { records, errors, partialTail };
 };
+
+export type FileNameOptions = {
+  fileBaseName: string;
+  outDir: string;
+  fileName?: string;
+};
+
+export function getFilenameParts(options: FileNameOptions): {
+  outDir: string;
+  fileName: string;
+} {
+  const { fileName, fileBaseName, outDir } = options;
+
+  if (fileName) {
+    return {
+      outDir,
+      fileName,
+    };
+  }
+
+  const baseName = fileBaseName;
+  const DATE_LENGTH = 10;
+  const TIME_SEGMENTS = 3;
+  const COLON_LENGTH = 1;
+  const TOTAL_TIME_LENGTH =
+    TIME_SEGMENTS * 2 + (TIME_SEGMENTS - 1) * COLON_LENGTH; // HH:MM:SS = 8 chars
+  const id = new Date()
+    .toISOString()
+    .slice(0, DATE_LENGTH + TOTAL_TIME_LENGTH)
+    .replace(/:/g, '-');
+
+  return {
+    outDir,
+    fileName: `${baseName}.${id}`,
+  };
+}
 
 export type FileSinkOptions = {
   filePath: string;
