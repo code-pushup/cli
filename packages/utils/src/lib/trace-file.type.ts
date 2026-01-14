@@ -118,7 +118,6 @@ type SpanCore = Omit<BaseTraceEvent, 'args'> & {
 /**
  * Begin event for a span (paired with an end event).
  * @property {'b'} ph - Phase indicator for begin events
- * @property {'t'} s - Scope indicator ('t' is thread)
  * @property {never} [dur] - Duration is not applicable for begin events
  */
 export type BeginEvent = SpanCore & {
