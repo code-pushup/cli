@@ -59,7 +59,7 @@ export type EntryMeta = {
 };
 
 /**
- * Styling options for track entries in DevTools.
+ * Styling options for track entries and marker in DevTools.
  * @property {DevToolsColor} [color] - rendered color of background and border, defaults to "primary"
  */
 export type TrackStyle = {
@@ -69,7 +69,7 @@ export type TrackStyle = {
 /**
  * Metadata for organizing track entries in DevTools.
  * @property {string} track - Name of the custom track
- * @property {string} [trackGroup] - Group for organizing tracks
+ * @property {string} [trackGroup] - Group for organizing tracks.
  */
 export type TrackMeta = {
   track: string;
@@ -110,6 +110,24 @@ export type WithErrorColor<T extends { color?: DevToolsColor }> = Omit<
 > & {
   color: 'error';
 };
+
+/**
+ * Action color payload.
+ * @param color - The color of the action
+ * @returns The action color payload
+ */
+export type ActionColorPayload = {
+  color?: DevToolsActionColor;
+};
+
+/**
+ * Action track payload.
+ * @param TrackEntryPayload - The track entry payload
+ * @param ActionColorPayload - The action color payload
+ * @returns The action track payload
+ */
+export type ActionTrackEntryPayload = TrackEntryPayload & ActionColorPayload;
+
 /**
  * Utility type that adds an optional devtools payload property.
  */

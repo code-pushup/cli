@@ -56,6 +56,12 @@ describe('mergePropertiesWithOverwrite', () => {
       ['key', 'value'],
     ]);
   });
+
+  it('should handle undefined base properties with override properties', () => {
+    expect(mergePropertiesWithOverwrite([], [['key', 'value']])).toStrictEqual([
+      ['key', 'value'],
+    ]);
+  });
 });
 
 describe('markerPayload', () => {
@@ -448,13 +454,11 @@ describe('setupTracks', () => {
         track: 'Main Track',
         color: 'primary',
         trackGroup: 'My Group',
-        dataType: 'track-entry',
       },
       secondary: {
         track: 'Secondary Track',
         color: 'primary',
         trackGroup: 'My Group',
-        dataType: 'track-entry',
       },
     });
   });
@@ -534,7 +538,6 @@ describe('measureCtx', () => {
     expect(performance.mark).toHaveBeenCalledWith('utils:start', {
       detail: {
         devtools: {
-          dataType: 'track-entry',
           track: 'Global Track',
           color: 'primary', // local override wins
         },
@@ -546,7 +549,6 @@ describe('measureCtx', () => {
     expect(performance.mark).toHaveBeenLastCalledWith('utils:end', {
       detail: {
         devtools: {
-          dataType: 'track-entry',
           track: 'Global Track',
           color: 'primary',
         },
@@ -557,7 +559,6 @@ describe('measureCtx', () => {
       end: 'utils:end',
       detail: {
         devtools: {
-          dataType: 'track-entry',
           track: 'Global Track',
           color: 'primary',
           properties: [
@@ -589,7 +590,6 @@ describe('measureCtx', () => {
     expect(performance.mark).toHaveBeenCalledWith('load-cfg:start', {
       detail: {
         devtools: {
-          dataType: 'track-entry',
           track: 'Global Track',
           trackGroup: 'Global Track Group',
           color: 'primary-dark',
@@ -611,7 +611,6 @@ describe('measureCtx', () => {
     expect(performance.mark).toHaveBeenCalledWith('load-cfg:start', {
       detail: {
         devtools: {
-          dataType: 'track-entry',
           track: 'Global Track',
           color: 'primary',
           // Marks do not have EntryMeta as hover/click is rare
@@ -631,7 +630,6 @@ describe('measureCtx', () => {
     expect(performance.mark).toHaveBeenCalledWith('load-cfg:end', {
       detail: {
         devtools: {
-          dataType: 'track-entry',
           track: 'Global Track',
           trackGroup: 'Global Track Group',
           color: 'primary-dark',
@@ -644,7 +642,6 @@ describe('measureCtx', () => {
       end: 'load-cfg:end',
       detail: {
         devtools: {
-          dataType: 'track-entry',
           track: 'Global Track',
           trackGroup: 'Global Track Group',
           color: 'primary-dark',
@@ -670,7 +667,6 @@ describe('measureCtx', () => {
     expect(performance.mark).toHaveBeenCalledWith('test:end', {
       detail: {
         devtools: {
-          dataType: 'track-entry',
           track: 'Global Track',
           color: 'primary',
           // Marks do not have EntryMeta as hover/click is rare
@@ -682,7 +678,6 @@ describe('measureCtx', () => {
       end: 'test:end',
       detail: {
         devtools: {
-          dataType: 'track-entry',
           track: 'Global Track',
           color: 'primary',
           properties: [
@@ -707,7 +702,6 @@ describe('measureCtx', () => {
     expect(performance.mark).toHaveBeenCalledWith('load-cfg:end', {
       detail: {
         devtools: {
-          dataType: 'track-entry',
           track: 'Global Track',
           trackGroup: 'Global Track Group',
           color: 'error',
@@ -720,14 +714,13 @@ describe('measureCtx', () => {
       end: 'load-cfg:end',
       detail: {
         devtools: {
-          dataType: 'track-entry',
           track: 'Global Track',
           trackGroup: 'Global Track Group',
           color: 'error',
           properties: [
+            ['Global:Config', `Process ID ${process.pid}`],
             ['Error Type', 'Error'],
             ['Error Message', 'test error'],
-            ['Global:Config', `Process ID ${process.pid}`],
           ],
         },
       },
@@ -753,7 +746,6 @@ describe('measureCtx', () => {
     expect(performance.mark).toHaveBeenCalledWith('test:end', {
       detail: {
         devtools: {
-          dataType: 'track-entry',
           track: 'Global Track',
           color: 'error',
           // Marks do not have EntryMeta as hover/click is rare
@@ -765,18 +757,17 @@ describe('measureCtx', () => {
       end: 'test:end',
       detail: {
         devtools: {
-          dataType: 'track-entry',
           track: 'Global Track',
           color: 'error',
           properties: [
+            ['Global:Config', `Process ID ${process.pid}`],
+            ['Runtime:Config', `Thread ID ${threadId}`],
             ['Error Type', 'Error'],
             ['Error Message', 'test error'],
             [
               'Runtime:Error',
               `Stack Trace: ${String((error as Error)?.stack)}`,
             ],
-            ['Global:Config', `Process ID ${process.pid}`],
-            ['Runtime:Config', `Thread ID ${threadId}`],
           ],
         },
       },
@@ -793,7 +784,6 @@ describe('measureCtx', () => {
     expect(performance.mark).toHaveBeenCalledWith('test:end', {
       detail: {
         devtools: {
-          dataType: 'track-entry',
           track: 'Global Track',
           color: 'error',
         },
@@ -804,13 +794,48 @@ describe('measureCtx', () => {
       end: 'test:end',
       detail: {
         devtools: {
-          dataType: 'track-entry',
+          track: 'Global Track',
+          color: 'error',
+          properties: [
+            ['Global:Config', `Process ID ${process.pid}`],
+            ['Error Type', 'Error'],
+            ['Error Message', 'test error'],
+          ],
+        },
+      },
+    });
+  });
+
+  it('creates error mark and measure with global error handler', () => {
+    const error = new Error('test error');
+    const { error: errorFn } = measureCtx({
+      track: 'Global Track',
+      error: (errorVal: unknown) => ({
+        properties: [
+          ['Global:Error', `Custom Global Error: ${String(errorVal)}`],
+        ],
+      }),
+    })('test');
+    errorFn(error);
+    expect(performance.mark).toHaveBeenCalledWith('test:end', {
+      detail: {
+        devtools: {
+          track: 'Global Track',
+          color: 'error',
+        },
+      },
+    });
+    expect(performance.measure).toHaveBeenCalledWith('test', {
+      start: 'test:start',
+      end: 'test:end',
+      detail: {
+        devtools: {
           track: 'Global Track',
           color: 'error',
           properties: [
             ['Error Type', 'Error'],
             ['Error Message', 'test error'],
-            ['Global:Config', `Process ID ${process.pid}`],
+            ['Global:Error', 'Custom Global Error: Error: test error'],
           ],
         },
       },

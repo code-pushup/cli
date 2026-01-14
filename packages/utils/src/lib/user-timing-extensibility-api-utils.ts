@@ -1,6 +1,7 @@
 import { performance } from 'node:perf_hooks';
-import { objectToEntries } from './transform.js';
+import { objectFromEntries, objectToEntries } from './transform.js';
 import type {
+  ActionTrackEntryPayload,
   DevToolsColor,
   DevToolsProperties,
   EntryMeta,
@@ -14,6 +15,12 @@ import type {
 const dataTypeTrackEntry = 'track-entry';
 const dataTypeMarker = 'marker';
 
+/**
+ * Merges DevTools properties with override priority.
+ * @param baseProperties - Base properties array
+ * @param overrideProperties - Override properties array
+ * @returns Merged properties array
+ */
 export function mergePropertiesWithOverwrite<
   const T extends DevToolsProperties,
   const U extends DevToolsProperties,
@@ -22,14 +29,26 @@ export function mergePropertiesWithOverwrite<
   const T extends DevToolsProperties,
 >(baseProperties: T): T;
 export function mergePropertiesWithOverwrite(
-  baseProperties?: DevToolsProperties,
+  baseProperties: DevToolsProperties,
   overrideProperties?: DevToolsProperties,
 ): DevToolsProperties {
-  return [
-    ...new Map([...(baseProperties ?? []), ...(overrideProperties ?? [])]),
-  ];
+  return [...new Map([...baseProperties, ...(overrideProperties ?? [])])];
 }
 
+/**
+ * Creates a marker payload with default data type.
+ * @param options - Marker options excluding dataType
+ * @returns Complete marker payload
+ * @example
+ * ```ts
+ * const payload = markerPayload({
+ *   color: 'primary',
+ *   tooltipText: 'User action completed',
+ *   properties: [['action', 'save'], ['duration', 150]]
+ * });
+ * // { dataType: 'marker', color: 'primary', tooltipText: 'User action completed', ... }
+ * ```
+ */
 export function markerPayload(options?: Omit<MarkerPayload, 'dataType'>) {
   return {
     dataType: dataTypeMarker,
@@ -37,6 +56,22 @@ export function markerPayload(options?: Omit<MarkerPayload, 'dataType'>) {
   } satisfies MarkerPayload;
 }
 
+/**
+ * Creates a track entry payload with default data type.
+ * @param options - Track entry options excluding dataType
+ * @returns Complete track entry payload
+ * @example
+ * ```ts
+ * const payload = trackEntryPayload({
+ *   track: 'user-interactions',
+ *   trackGroup: 'frontend',
+ *   color: 'secondary',
+ *   tooltipText: 'Button click processed',
+ *   properties: [['element', 'save-button'], ['response-time', 200]]
+ * });
+ * // { dataType: 'track-entry', track: 'user-interactions', ... }
+ * ```
+ */
 export function trackEntryPayload(
   options: Omit<TrackEntryPayload, 'dataType'>,
 ) {
@@ -48,6 +83,11 @@ export function trackEntryPayload(
   } satisfies TrackEntryPayload;
 }
 
+/**
+ * Creates an error marker payload with red color.
+ * @param options - Marker options excluding dataType and color
+ * @returns Error marker payload
+ */
 export function markerErrorPayload<T extends DevToolsColor>(
   options?: Omit<MarkerPayload, 'dataType' | 'color'>,
 ) {
@@ -58,6 +98,11 @@ export function markerErrorPayload<T extends DevToolsColor>(
   } satisfies MarkerPayload;
 }
 
+/**
+ * Creates an error track entry payload with red color.
+ * @param options - Track entry options excluding color and dataType
+ * @returns Error track entry payload
+ */
 export function trackEntryErrorPayload<T extends string>(
   options: Omit<TrackEntryPayload, 'color' | 'dataType'> & {
     track: T;
@@ -72,6 +117,11 @@ export function trackEntryErrorPayload<T extends string>(
   } satisfies TrackEntryPayload;
 }
 
+/**
+ * Converts an error to DevTools properties array.
+ * @param e - Error object or value
+ * @returns Array of error properties for DevTools
+ */
 export function errorToDevToolsProperties(e: unknown) {
   const name = e instanceof Error ? e.name : 'UnknownError';
   const message = e instanceof Error ? e.message : String(e);
@@ -81,6 +131,12 @@ export function errorToDevToolsProperties(e: unknown) {
   ] satisfies DevToolsProperties;
 }
 
+/**
+ * Converts an error to entry metadata for DevTools.
+ * @param e - Error object or value
+ * @param options - Additional metadata options
+ * @returns Entry metadata with error properties
+ */
 export function errorToEntryMeta(
   e: unknown,
   options?: {
@@ -99,6 +155,12 @@ export function errorToEntryMeta(
   } satisfies EntryMeta;
 }
 
+/**
+ * Converts an error to a track entry payload with error styling.
+ * @param error - Error object or value
+ * @param detail - Track entry details excluding color and dataType
+ * @returns Error track entry payload
+ */
 export function errorToTrackEntryPayload<T extends string>(
   error: unknown,
   detail: Omit<TrackEntryPayload, 'color' | 'dataType'> & {
@@ -117,6 +179,12 @@ export function errorToTrackEntryPayload<T extends string>(
   } satisfies TrackEntryPayload;
 }
 
+/**
+ * Converts an error to a marker payload with error styling.
+ * @param error - Error object or value
+ * @param detail - Marker details excluding color and dataType
+ * @returns Error marker payload
+ */
 export function errorToMarkerPayload(
   error: unknown,
   detail?: Omit<MarkerPayload, 'color' | 'dataType'>,
@@ -132,6 +200,23 @@ export function errorToMarkerPayload(
   } satisfies MarkerPayload;
 }
 
+/**
+ * Converts DevTools payload to performance API options format.
+ * @param devtools - DevTools payload or null
+ * @returns Performance API options with DevTools detail
+ * @example
+ * ```ts
+ * const marker = markerPayload({ color: 'primary', tooltipText: 'Start' });
+ * performance.mark('start', asOptions(marker));
+ *
+ * const trackEntry = trackEntryPayload({ track: 'operations', color: 'tertiary' });
+ * performance.measure('operation', {
+ *   start: 'start',
+ *   end: 'end',
+ *   ...asOptions(trackEntry)
+ * });
+ * ```
+ */
 export function asOptions<T extends MarkerPayload>(
   devtools?: T | null,
 ): MarkOptionsWithDevtools<T>;
@@ -150,12 +235,23 @@ export function asOptions<T extends MarkerPayload | TrackEntryPayload>(
   return { detail: { devtools } };
 }
 
+/**
+ * Generates start, end, and measure names for performance tracking.
+ * @param base - Base name for the measurement
+ * @returns Object with startName, endName, and measureName
+ */
 export type Names<N extends string> = {
   startName: `${N}:start`;
   endName: `${N}:end`;
   measureName: N;
 };
 
+/**
+ * Generates start, end, and measure names for performance tracking.
+ * @param base - Base name for the measurement
+ * @param prefix - Optional prefix for names
+ * @returns Object with startName, endName, and measureName
+ */
 export function getNames<T extends string>(base: T): Names<T>;
 export function getNames<T extends string, P extends string>(
   base: T,
@@ -170,22 +266,61 @@ export function getNames(base: string, prefix?: string) {
   } as const;
 }
 
-type Simplify<T> = { [K in keyof T]: T[K] } & object;
+/**
+ * Removes undefined from a type, effectively filtering out undefined values.
+ */
+type Defined<T> = T extends undefined ? never : T;
 
-type MergeObjects<T extends readonly object[]> = T extends readonly [
-  infer F extends object,
-  ...infer R extends readonly object[],
+/**
+ * Merges two objects with the specified overwrite semantics:
+ * - If B[K] is undefined → keep A[K]
+ * - If B[K] is defined → overwrite with Defined<B[K]>
+ * - Keys only in A → keep A[K]
+ * - Keys only in B → take Defined<B[K]>
+ */
+type MergeDefined<A, B> = {
+  [K in keyof A | keyof B]: K extends keyof B
+    ? Defined<B[K]> extends never
+      ? K extends keyof A
+        ? A[K]
+        : never
+      : Defined<B[K]>
+    : K extends keyof A
+      ? A[K]
+      : never;
+};
+
+/**
+ * Recursively merges an array of objects using MergeDefined semantics.
+ * The first element is the base type, subsequent elements only overwrite with defined values.
+ */
+type MergeResult<P extends readonly unknown[]> = P extends readonly [
+  infer A,
+  ...infer R,
 ]
-  ? Simplify<Omit<F, keyof MergeObjects<R>> & MergeObjects<R>>
+  ? MergeDefined<A & {}, MergeResult<R>>
   : object;
 
-export type MergeResult<
-  P extends readonly Partial<TrackEntryPayload | MarkerPayload>[],
-> = MergeObjects<P> & { properties?: DevToolsProperties };
-
+/**
+ * Merges multiple DevTools payloads into a single payload.
+ * The first payload establishes the base type, subsequent payloads only overwrite with defined values.
+ * @param parts - Array of payloads where first is complete and rest are partial
+ * @returns Merged payload with combined properties
+ * @example
+ * ```ts
+ * const payload = mergeDevtoolsPayload(
+ *   trackEntryPayload({ track: 'user-interactions', color: 'secondary' }),
+ *   { color: 'primary', tooltipText: 'User action completed' },
+ * );
+ * // { track: 'user-interactions', color: 'primary', tooltipText: 'User action completed' }
+ * ```
+ */
 export function mergeDevtoolsPayload<
-  const P extends readonly Partial<TrackEntryPayload | MarkerPayload>[],
->(...parts: P): MergeResult<P> {
+  const P extends readonly [
+    TrackEntryPayload | MarkerPayload,
+    ...Partial<TrackEntryPayload | MarkerPayload>[],
+  ],
+>(...parts: P): MergeResult<P> & { properties?: DevToolsProperties } {
   return parts.reduce(
     (acc, cur) => ({
       ...acc,
@@ -199,70 +334,166 @@ export function mergeDevtoolsPayload<
           }
         : {}),
     }),
-    {},
-  ) as MergeResult<P>;
-}
-
-export function mergeDevtoolsPayloadAction<
-  const P extends readonly [ActionTrack, ...Partial<ActionTrack>[]],
->(...parts: P): MergeObjects<P> & { properties?: DevToolsProperties } {
-  return mergeDevtoolsPayload(
-    ...(parts as unknown as readonly Partial<
-      TrackEntryPayload | MarkerPayload
-    >[]),
-  ) as MergeObjects<P> & { properties?: DevToolsProperties };
-}
-
-export type ActionColorPayload = {
-  color?: DevToolsColor;
-};
-export type ActionTrack = TrackEntryPayload & ActionColorPayload;
-
-export function setupTracks<
-  const T extends Record<string, Partial<ActionTrack>>,
-  const D extends ActionTrack,
->(defaults: D, tracks: T) {
-  return objectToEntries(tracks).reduce(
-    (result, [key, track]) => ({
-      ...result,
-      [key]: mergeDevtoolsPayload(defaults, track, {
-        dataType: dataTypeTrackEntry,
-      }),
-    }),
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    {} as Record<keyof T, ActionTrack>,
-  ) as Record<keyof T, ActionTrack>;
+    {} as MergeResult<P> & { properties?: DevToolsProperties },
+  );
+}
+
+/**
+ * Sets up tracks with default values merged into each track.
+ * This helps to avoid repetition when defining multiple tracks with common properties.
+ * @param defaults - Default action track configuration
+ * @param tracks - Track configurations to merge with defaults
+ * @returns Record with merged track configurations
+ */
+export function setupTracks<
+  const T extends Record<string, Partial<ActionTrackEntryPayload>>,
+  const D extends ActionTrackEntryPayload,
+>(defaults: D, tracks: T) {
+  return objectFromEntries(
+    objectToEntries(tracks).map(([key, track]) => [
+      key,
+      mergeDevtoolsPayload(defaults, track),
+    ]),
+  );
 }
 
 /**
  * This is a helper function used to ensure that the marks used to create a measure do not contain UI interaction properties.
  * @param devtools - The devtools payload to convert to mark options.
- * @returns The mark options without tooltipText and properties.
+ * @returns The mark options without dataType, tooltipText and properties.
  */
-function toMarkMeasureOpts(devtools: TrackEntryPayload) {
-  const { tooltipText: _, properties: __, ...markDevtools } = devtools;
+function toMarkMeasureOpts<T extends TrackEntryPayload>(devtools: T) {
+  const {
+    dataType: _,
+    tooltipText: __,
+    properties: ___,
+    ...markDevtools
+  } = devtools;
   return { detail: { devtools: markDevtools } };
 }
 
-export type MeasureOptions = Partial<ActionTrack> & {
-  success?: (result: unknown) => EntryMeta;
-  error?: (error: unknown) => EntryMeta;
+/**
+ * Options for customizing measurement behavior and callbacks.
+ * Extends partial ActionTrackEntryPayload to allow overriding default track properties.
+ */
+export type MeasureOptions = Partial<ActionTrackEntryPayload> & {
+  /**
+   * Callback invoked when measurement completes successfully.
+   * @param result - The successful result value
+   * @returns Additional DevTools properties to merge for success state
+   */
+  success?: (result: unknown) => Partial<ActionTrackEntryPayload>;
+  /**
+   * Callback invoked when measurement fails with an error.
+   * @param error - The error that occurred
+   * @returns Additional DevTools properties to merge for error state
+   */
+  error?: (error: unknown) => Partial<ActionTrackEntryPayload>;
 };
 
-export type MeasureCtxOptions = ActionTrack & {
+/**
+ * Configuration for creating a measurement context.
+ * Defines default behavior and appearance for all measurements in this context.
+ */
+export type MeasureCtxOptions = ActionTrackEntryPayload & {
+  /**
+   * Optional prefix for all measurement names to avoid conflicts.
+   * @example "api:" results in names like "api:request:start"
+   */
   prefix?: string;
 } & {
+  /**
+   * Global error handler for all measurements in this context.
+   * Applied to all error states in addition to per-measurement error callbacks.
+   * @param error - The error that occurred
+   * @returns Additional DevTools metadata for error display
+   */
   error?: (error: unknown) => EntryMeta;
 };
+/**
+ * Creates a measurement context for tracking performance events with consistent DevTools visualization.
+ *
+ * This function returns a higher-order function that generates measurement controllers for individual events.
+ * Each measurement creates start/end marks and a final measure in Chrome DevTools Performance panel.
+ *
+ * @param cfg - Configuration defining default track properties, optional prefix, and global error handling
+ * @returns Function that creates measurement controllers for specific events
+ * @example
+ * ```ts
+ * // Basic usage with defaults
+ * const measure = measureCtx({
+ *   track: 'api-calls',
+ *   color: 'secondary',
+ *   trackGroup: 'backend'
+ * });
+ *
+ * const { start, success, error } = measure('fetch-user');
+ * start(); // Creates "fetch-user:start" mark
+ * // ... async operation ...
+ * success({ userCount: 42 }); // Creates "fetch-user:end" mark and "fetch-user" measure
+ * ```
+ * @example
+ * ```ts
+ * // Advanced usage with callbacks and error handling
+ * const measure = measureCtx({
+ *   track: 'user-actions',
+ *   color: 'primary',
+ *   error: (err) => ({
+ *     properties: [['error-type', err.name], ['error-message', err.message]]
+ *   })
+ * });
+ *
+ * const { start, success, error } = measure('save-form', {
+ *   success: (result) => ({
+ *     properties: [['items-saved', result.count]],
+ *     tooltipText: `Saved ${result.count} items successfully`
+ *   }),
+ *   error: (err) => ({
+ *     properties: [['validation-errors', err.errors?.length ?? 0]]
+ *   })
+ * });
+ *
+ * start();
+ * try {
+ *   const result = await saveFormData(formData);
+ *   success(result);
+ * } catch (err) {
+ *   error(err); // Applies both global and specific error metadata
+ * }
+ * ```
+ * @example
+ * ```ts
+ * // onetime config of defaults
+ * const apiMeasure = measureCtx({
+ *   prefix: 'http:',
+ *   track: 'api',
+ * });
+ *
+ * cosnt {start, success, error} = apiMeasure('login');
+ *
+ * start();
+ * try {
+ *  cosnt result = myWork();
+ *  success(result);
+ *  return result;
+ * } catch(err) {
+ *   error(err)
+ * }
+ *
+ * ```
+ * @returns Object with measurement control methods:
+ * - `start()`: Marks the beginning of the measurement
+ * - `success(result?)`: Completes successful measurement with optional result metadata
+ * - `error(error)`: Completes failed measurement with error metadata
+ */
+
 export function measureCtx(cfg: MeasureCtxOptions) {
   const { prefix, error: globalErr, ...defaults } = cfg;
 
   return (event: string, opt?: MeasureOptions) => {
     const { success, error, ...measurePayload } = opt ?? {};
-    const merged = mergeDevtoolsPayloadAction(defaults, measurePayload, {
-      dataType: dataTypeTrackEntry,
-    }) as TrackEntryPayload;
-
+    const merged = mergeDevtoolsPayload(defaults, measurePayload);
     const {
       startName: s,
       endName: e,
@@ -284,10 +515,10 @@ export function measureCtx(cfg: MeasureCtxOptions) {
 
       error: (err: unknown) => {
         const errorPayload = mergeDevtoolsPayload(
+          { ...merged, color: 'error' },
           errorToEntryMeta(err),
           globalErr?.(err) ?? {},
           error?.(err) ?? {},
-          { ...merged, color: 'error' },
         );
         performance.mark(e, toMarkMeasureOpts(errorPayload));
         performance.measure(m, {
