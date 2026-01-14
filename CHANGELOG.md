@@ -1,3 +1,13 @@
+## 0.103.0 (2026-01-14)
+
+### 🚀 Features
+
+- add process exit handler ([#1212](https://github.com/code-pushup/cli/pull/1212))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.102.0 (2026-01-10)
 
 ### 🚀 Features
