@@ -1,3 +1,33 @@
+## 0.106.0 (2026-01-15)
+
+### 🚀 Features
+
+- multi-URL aware helpers for cross-plugin composition ([6bfad3ce](https://github.com/code-pushup/cli/commit/6bfad3ce))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
+## 0.105.0 (2026-01-14)
+
+### 🚀 Features
+
+- add trace event utils ([#1215](https://github.com/code-pushup/cli/pull/1215))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
+## 0.104.0 (2026-01-14)
+
+### 🚀 Features
+
+- **utils:** measure utils ([#1211](https://github.com/code-pushup/cli/pull/1211))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.103.0 (2026-01-14)
 
 ### 🚀 Features

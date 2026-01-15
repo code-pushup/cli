@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { axePresetSchema } from './config.js';
 
-/* WCAG presets for rule loading */
+/** WCAG presets for rule loading */
 const axeWcagTags = [
   'wcag2a',
   'wcag21a',
@@ -31,7 +31,7 @@ export function getWcagPresetTags(preset: AxeWcagPreset): AxeWcagTag[] {
   return WCAG_PRESET_TAGS[preset];
 }
 
-/* Category groups for all presets */
+/** Category groups for all presets */
 const axeCategoryGroupSlugs = [
   'aria',
   'color',
@@ -74,6 +74,6 @@ export function isAxeGroupSlug(slug: unknown): slug is AxeCategoryGroupSlug {
   return axeCategoryGroupSlugSchema.safeParse(slug).success;
 }
 
-/* Combined exports */
+// Combined exports
 export const axeGroupSlugSchema = axeCategoryGroupSlugSchema;
 export type AxeGroupSlug = AxeCategoryGroupSlug;
