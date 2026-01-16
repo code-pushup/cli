@@ -3,7 +3,7 @@ import { createProjectGraphAsync } from '@nx/devkit';
 import type { CoreConfig, PluginUrls } from './packages/models/src/index.js';
 import axePlugin, {
   type AxePluginOptions,
-  axeCategories,
+  axeGroupRefs,
 } from './packages/plugin-axe/src/index.js';
 import coveragePlugin, {
   type CoveragePluginConfig,
