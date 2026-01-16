@@ -137,7 +137,7 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
    *   ]
    * });
    */
-  marker(name: string, opt?: EntryMeta & { color?: DevToolsColor }) {
+  marker(name: string, opt?: EntryMeta & { color?: DevToolsColor }): void {
     if (!this.#enabled) {
       return;
     }
