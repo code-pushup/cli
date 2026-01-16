@@ -304,7 +304,9 @@ export class NodejsProfiler<
   }
 
   #setObserving(observing: boolean): void {
-    if (this.#observing === observing) return;
+    if (this.#observing === observing) {
+      return;
+    }
     this.#observing = observing;
 
     if (observing) {
