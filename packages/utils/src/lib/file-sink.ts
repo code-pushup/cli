@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+import * as fs from 'node:fs';
 import path from 'node:path';
 import type { Decoder, Encoder, RecoverResult } from './sink-source.type';
 
