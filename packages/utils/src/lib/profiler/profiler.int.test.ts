@@ -11,12 +11,13 @@ describe('Profiler Integration', () => {
     performance.clearMeasures();
 
     profiler = new Profiler({
-      prefix: 'test',
-      track: 'integration-tests',
-      color: 'primary',
+      prefix: 'cp',
+      track: 'CLI',
+      trackGroup: 'Code Pushup',
+      color: 'primary-dark',
       tracks: {
-        async: { track: 'async-ops', color: 'secondary' },
-        sync: { track: 'sync-ops', color: 'tertiary' },
+        utils: { track: 'Utils', color: 'primary' },
+        core: { track: 'Core', color: 'primary-light' },
       },
       enabled: true,
     });
@@ -37,16 +38,29 @@ describe('Profiler Integration', () => {
 
     expect(marks).toStrictEqual(
       expect.arrayContaining([
-        expect.objectContaining({ name: 'test:sync-test:start' }),
-        expect.objectContaining({ name: 'test:sync-test:end' }),
+        expect.objectContaining({
+          name: 'cp:sync-test:start',
+          detail: expect.objectContaining({
+            devtools: expect.objectContaining({ dataType: 'track-entry' }),
+          }),
+        }),
+        expect.objectContaining({
+          name: 'cp:sync-test:end',
+          detail: expect.objectContaining({
+            devtools: expect.objectContaining({ dataType: 'track-entry' }),
+          }),
+        }),
       ]),
     );
 
     expect(measures).toStrictEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          name: 'test:sync-test',
+          name: 'cp:sync-test',
           duration: expect.any(Number),
+          detail: expect.objectContaining({
+            devtools: expect.objectContaining({ dataType: 'track-entry' }),
+          }),
         }),
       ]),
     );
@@ -65,16 +79,29 @@ describe('Profiler Integration', () => {
 
     expect(marks).toStrictEqual(
       expect.arrayContaining([
-        expect.objectContaining({ name: 'test:async-test:start' }),
-        expect.objectContaining({ name: 'test:async-test:end' }),
+        expect.objectContaining({
+          name: 'cp:async-test:start',
+          detail: expect.objectContaining({
+            devtools: expect.objectContaining({ dataType: 'track-entry' }),
+          }),
+        }),
+        expect.objectContaining({
+          name: 'cp:async-test:end',
+          detail: expect.objectContaining({
+            devtools: expect.objectContaining({ dataType: 'track-entry' }),
+          }),
+        }),
       ]),
     );
 
     expect(measures).toStrictEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          name: 'test:async-test',
+          name: 'cp:async-test',
           duration: expect.any(Number),
+          detail: expect.objectContaining({
+            devtools: expect.objectContaining({ dataType: 'track-entry' }),
+          }),
         }),
       ]),
     );
@@ -95,16 +122,16 @@ describe('Profiler Integration', () => {
     const markNames = marks.map(m => m.name);
     expect(markNames).toStrictEqual(
       expect.arrayContaining([
-        'test:outer:start',
-        'test:outer:end',
-        'test:inner:start',
-        'test:inner:end',
+        'cp:outer:start',
+        'cp:outer:end',
+        'cp:inner:start',
+        'cp:inner:end',
       ]),
     );
 
     const measureNames = measures.map(m => m.name);
     expect(measureNames).toStrictEqual(
-      expect.arrayContaining(['test:outer', 'test:inner']),
+      expect.arrayContaining(['cp:outer', 'cp:inner']),
     );
   });
 
@@ -151,11 +178,13 @@ describe('Profiler Integration', () => {
     expect(measures).toStrictEqual(
       expect.arrayContaining([
         expect.objectContaining({
+          name: 'cp:track-test',
           detail: {
             devtools: expect.objectContaining({
               dataType: 'track-entry',
-              track: 'integration-tests',
-              color: 'primary',
+              track: 'CLI',
+              trackGroup: 'Code Pushup',
+              color: 'primary-dark',
               properties: [['result', 'result']],
               tooltipText: 'Track test completed',
             }),
@@ -179,11 +208,13 @@ describe('Profiler Integration', () => {
     expect(measures).toStrictEqual(
       expect.arrayContaining([
         expect.objectContaining({
+          name: 'cp:sync-op',
           detail: {
             devtools: expect.objectContaining({
               dataType: 'track-entry',
-              track: 'integration-tests',
-              color: 'primary',
+              track: 'CLI',
+              trackGroup: 'Code Pushup',
+              color: 'primary-dark',
               properties: [
                 ['operation', 'sync'],
                 ['result', 'sync-result'],
@@ -249,24 +280,18 @@ describe('Profiler Integration', () => {
   });
 
   it('should not create performance entries when disabled', async () => {
-    const disabledProfiler = new Profiler({
-      prefix: 'disabled',
-      track: 'disabled-tests',
-      color: 'primary',
-      tracks: {},
-      enabled: false,
-    });
+    profiler.setEnabled(false);
 
-    const syncResult = disabledProfiler.measure('disabled-sync', () => 'sync');
+    const syncResult = profiler.measure('disabled-sync', () => 'sync');
     expect(syncResult).toBe('sync');
 
-    const asyncResult = disabledProfiler.measureAsync(
+    const asyncResult = profiler.measureAsync(
       'disabled-async',
       async () => 'async',
     );
     await expect(asyncResult).resolves.toBe('async');
 
-    disabledProfiler.marker('disabled-marker');
+    profiler.marker('disabled-marker');
 
     expect(performance.getEntriesByType('mark')).toHaveLength(0);
     expect(performance.getEntriesByType('measure')).toHaveLength(0);
