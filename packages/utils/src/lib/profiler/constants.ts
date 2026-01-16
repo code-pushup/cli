@@ -1,0 +1,1 @@
+export const PROFILER_ENABLED_ENV_VAR = 'CP_PROFILING';

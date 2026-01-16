@@ -1,12 +1,5 @@
 import { MATERIAL_ICONS } from 'vscode-material-icons';
-import {
-  ZodError,
-  type ZodIssue,
-  type ZodObject,
-  type ZodOptional,
-  type ZodString,
-  z,
-} from 'zod';
+import { type ZodObject, type ZodOptional, type ZodString, z } from 'zod';
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_SLUG_LENGTH,
@@ -65,28 +58,24 @@ export const descriptionSchema = z
   .optional();
 
 /* Schema for a URL */
-export const urlSchema = z.string().url().meta({ title: 'URL' });
+export const urlSchema = z.url().meta({ title: 'URL' });
 
 /**  Schema for a docsUrl */
-export const docsUrlSchema = urlSchema
+export const docsUrlSchema = z
+  .union([
+    z.literal(''), // allow empty string (no URL validation)
+    // eslint-disable-next-line unicorn/prefer-top-level-await, unicorn/catch-error-name
+    urlSchema.optional().catch(ctx => {
+      const issue = ctx.issues[0];
+      if (issue?.code === 'invalid_format' && issue?.format === 'url') {
+        console.warn(`Ignoring invalid docsUrl: ${ctx.value}`);
+        return '';
+      }
+      // re-parse to throw formatted error for non-URL issues
+      return urlSchema.parse(ctx.value);
+    }),
+  ])
   .optional()
-  .or(z.literal('')) // allow empty string (no URL validation)
-  // eslint-disable-next-line unicorn/prefer-top-level-await, unicorn/catch-error-name
-  .catch(ctx => {
-    // if only URL validation fails, supress error since this metadata is optional anyway
-    if (
-      ctx.issues.length === 1 &&
-      (ctx.issues[0]?.errors as ZodIssue[][])
-        .flat()
-        .some(
-          error => error.code === 'invalid_format' && error.format === 'url',
-        )
-    ) {
-      console.warn(`Ignoring invalid docsUrl: ${ctx.value}`);
-      return '';
-    }
-    throw new ZodError(ctx.error.issues);
-  })
   .meta({ title: 'DocsUrl', description: 'Documentation site' });
 
 /** Schema for a title of a plugin, category and audit */
