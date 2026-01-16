@@ -170,3 +170,12 @@ export type MarkOptionsWithDevtools<
 export type MeasureOptionsWithDevtools<T extends TrackEntryPayload> = {
   detail?: WithDevToolsPayload<T>;
 } & Omit<MeasureOptions, 'detail'>;
+
+/**
+ * Detail object containing DevTools payload for user timing events.
+ * Extends WithDevToolsPayload to include track entry or marker payload.
+ * This can be used in trace event arguments to provide additional context in DevTools.
+ */
+export type UserTimingDetail = WithDevToolsPayload<
+  TrackEntryPayload | MarkerPayload
+>;

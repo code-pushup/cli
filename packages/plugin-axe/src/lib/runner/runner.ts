@@ -8,19 +8,18 @@ import {
   shouldExpandForUrls,
   stringifyError,
 } from '@code-pushup/utils';
-import {
-  type AxeUrlArgs,
-  type AxeUrlResult,
-  closeBrowser,
-  runAxeForUrl,
-} from './run-axe.js';
+import { AxeRunner, type AxeUrlArgs, type AxeUrlResult } from './run-axe.js';
+import { loadSetupScript } from './setup.js';
 
+/** Creates a runner function that executes Axe accessibility audits for given URLs. */
 export function createRunnerFunction(
   urls: string[],
   ruleIds: string[],
   timeout: number,
+  setupScript?: string,
 ): RunnerFunction {
   return async (): Promise<AuditOutputs> => {
+    const runner = new AxeRunner();
     const urlsCount = urls.length;
 
     logger.info(
@@ -28,10 +27,15 @@ export function createRunnerFunction(
     );
 
     try {
+      if (setupScript) {
+        const setupFn = await loadSetupScript(setupScript);
+        await runner.captureAuthState(setupFn, timeout);
+      }
+
       const results = await asyncSequential(
         urls,
         async (url, urlIndex): Promise<AxeUrlResult | null> =>
-          runForUrl({ urlsCount, ruleIds, timeout, url, urlIndex }),
+          runForUrl(runner, { urlsCount, ruleIds, timeout, url, urlIndex }),
       );
 
       const collectedResults = results.filter(res => res != null);
@@ -48,15 +52,18 @@ export function createRunnerFunction(
 
       return auditOutputs;
     } finally {
-      await closeBrowser();
+      await runner.close();
     }
   };
 }
 
-async function runForUrl(args: AxeUrlArgs): Promise<AxeUrlResult | null> {
+async function runForUrl(
+  runner: AxeRunner,
+  args: AxeUrlArgs,
+): Promise<AxeUrlResult | null> {
   const { url, urlsCount, urlIndex } = args;
   try {
-    const result = await runAxeForUrl(args);
+    const result = await runner.analyzeUrl(args);
 
     if (shouldExpandForUrls(urlsCount)) {
       return {

@@ -1,9 +1,21 @@
-import type { PluginUrls } from '@code-pushup/models';
+import { z } from 'zod';
+import {
+  type PluginUrls,
+  nonnegativeNumberSchema,
+  weightSchema,
+} from '@code-pushup/models';
 
-export type PluginUrlContext = {
-  urlCount: number;
-  weights: Record<string, number>;
-};
+export const pluginUrlContextSchema = z
+  .object({
+    urlCount: nonnegativeNumberSchema,
+    weights: z.record(z.string(), weightSchema),
+  })
+  .refine(({ urlCount, weights }) => Object.keys(weights).length === urlCount, {
+    message: 'weights count must match urlCount',
+  })
+  .meta({ title: 'PluginUrlContext' });
+
+export type PluginUrlContext = z.infer<typeof pluginUrlContextSchema>;
 
 export const SINGLE_URL_THRESHOLD = 1;
 

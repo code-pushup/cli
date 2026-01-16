@@ -10,6 +10,7 @@ describe('epochClock', () => {
     expect(c.fromEpochMs).toBeFunction();
     expect(c.fromEpochUs).toBeFunction();
     expect(c.fromPerfMs).toBeFunction();
+    expect(c.fromEntry).toBeFunction();
     expect(c.fromEntryStartTimeMs).toBeFunction();
     expect(c.fromDateNowMs).toBeFunction();
   });
@@ -33,7 +34,7 @@ describe('epochClock', () => {
   it('should support performance clock by default for epochNowUs', () => {
     const c = epochClock();
     expect(c.timeOriginMs).toBe(500_000);
-    expect(c.epochNowUs()).toBe(500_000_000); // timeOrigin + performance.now() = timeOrigin + 0
+    expect(c.epochNowUs()).toBe(500_000_000);
   });
 
   it.each([
@@ -70,6 +71,41 @@ describe('epochClock', () => {
       c.fromEntryStartTimeMs(0),
       c.fromEntryStartTimeMs(1000),
     ]).toStrictEqual([c.fromPerfMs(0), c.fromPerfMs(1000)]);
+  });
+
+  it('should convert performance mark to microseconds', () => {
+    const markEntry = {
+      name: 'test-mark',
+      entryType: 'mark',
+      startTime: 1000,
+      duration: 0,
+    } as PerformanceMark;
+
+    expect(defaultClock.fromEntry(markEntry)).toBe(
+      defaultClock.fromPerfMs(1000),
+    );
+    expect(defaultClock.fromEntry(markEntry, true)).toBe(
+      defaultClock.fromPerfMs(1000),
+    );
+  });
+
+  it('should convert performance measure to microseconds', () => {
+    const measureEntry = {
+      name: 'test-measure',
+      entryType: 'measure',
+      startTime: 1000,
+      duration: 500,
+    } as PerformanceMeasure;
+
+    expect(defaultClock.fromEntry(measureEntry)).toBe(
+      defaultClock.fromPerfMs(1000),
+    );
+    expect(defaultClock.fromEntry(measureEntry, false)).toBe(
+      defaultClock.fromPerfMs(1000),
+    );
+    expect(defaultClock.fromEntry(measureEntry, true)).toBe(
+      defaultClock.fromPerfMs(1500),
+    );
   });
 
   it('should convert Date.now() milliseconds to microseconds', () => {
