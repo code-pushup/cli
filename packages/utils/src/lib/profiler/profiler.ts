@@ -14,7 +14,7 @@ import type {
   DevToolsColor,
   EntryMeta,
 } from '../user-timing-extensibility-api.type.js';
-import { PROFILER_ENABLED } from './constants.js';
+import { PROFILER_ENABLED_ENV_VAR } from './constants.js';
 
 /**
  * Configuration options for creating a Profiler instance.
@@ -48,9 +48,8 @@ export type MarkerOptions = EntryMeta & { color?: DevToolsColor };
  * @property color - Default color for track entries
  * @property tracks - Custom track configurations merged with defaults
  */
-export type ProfilerOptions<
-  T extends ActionTrackConfigs = Record<string, ActionTrackEntryPayload>,
-> = ProfilerMeasureOptions<T>;
+export type ProfilerOptions<T extends ActionTrackConfigs = ActionTrackConfigs> =
+  ProfilerMeasureOptions<T>;
 
 /**
  * Performance profiler that creates structured timing measurements with Chrome DevTools Extensibility API payloads.
@@ -81,12 +80,12 @@ export class Profiler<T extends ActionTrackConfigs> {
     const { tracks, prefix, enabled, ...defaults } = options;
     const dataType = 'track-entry';
 
-    this.#enabled = enabled ?? isEnvVarEnabled(PROFILER_ENABLED);
-    this.defaults = { ...defaults, dataType };
+    this.#enabled = enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
+    this.#defaults = { ...defaults, dataType };
     this.tracks = tracks
       ? setupTracks({ ...defaults, dataType }, tracks)
       : undefined;
-    this.ctxOf = measureCtx({
+    this.#ctxOf = measureCtx({
       ...defaults,
       dataType,
       prefix,
@@ -102,7 +101,7 @@ export class Profiler<T extends ActionTrackConfigs> {
    * @param enabled - Whether profiling should be enabled
    */
   setEnabled(enabled: boolean): void {
-    process.env[PROFILER_ENABLED] = `${enabled}`;
+    process.env[PROFILER_ENABLED_ENV_VAR] = `${enabled}`;
     this.#enabled = enabled;
   }
 
@@ -150,7 +149,7 @@ export class Profiler<T extends ActionTrackConfigs> {
       asOptions(
         markerPayload({
           // marker only takes default color, no TrackMeta
-          ...(this.defaults.color ? { color: this.defaults.color } : {}),
+          ...(this.#defaults.color ? { color: this.#defaults.color } : {}),
           ...opt,
         }),
       ),
@@ -178,7 +177,7 @@ export class Profiler<T extends ActionTrackConfigs> {
       return work();
     }
 
-    const { start, success, error } = this.ctxOf(event, options);
+    const { start, success, error } = this.#ctxOf(event, options);
     start();
     try {
       const r = work();
@@ -215,7 +214,7 @@ export class Profiler<T extends ActionTrackConfigs> {
       return await work();
     }
 
-    const { start, success, error } = this.ctxOf(event, options);
+    const { start, success, error } = this.#ctxOf(event, options);
     start();
     try {
       const r = await work();
