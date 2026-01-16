@@ -66,9 +66,11 @@ export {
   filePathSchema,
   globPathSchema,
   materialIconSchema,
+  nonnegativeNumberSchema,
   positiveIntSchema,
   scoreSchema,
   slugSchema,
+  weightSchema,
   type MaterialIcon,
 } from './lib/implementation/schemas.js';
 export { exists } from './lib/implementation/utils.js';

@@ -1,29 +1,32 @@
-import type { CategoryConfig, Group, PluginConfig } from '@code-pushup/models';
+import {
+  type CategoryConfig,
+  type PluginConfig,
+  validate,
+} from '@code-pushup/models';
 import {
   type PluginUrlContext,
-  createCategoryRefs,
   expandCategoryRefs,
-  removeIndex,
+  pluginUrlContextSchema,
   shouldExpandForUrls,
-  validateUrlContext,
 } from '@code-pushup/utils';
 import { AXE_PLUGIN_SLUG } from './constants.js';
-import { type AxeCategoryGroupSlug, isAxeGroupSlug } from './groups.js';
+import { axeGroupRefs } from './utils.js';
 
 /**
- * Creates categories for the Axe plugin.
- *
- * @public
- * @param plugin - {@link PluginConfig} object with groups and context
- * @param categories - {@link CategoryConfig} optional user-defined categories
- * @returns {CategoryConfig[]} - expanded and aggregated categories
+ * @deprecated Use `axeGroupRefs` to build categories manually instead.
  *
  * @example
- * const axe = await axePlugin(urls);
- * const axeCoreConfig = {
- *   plugins: [axe],
- *   categories: axeCategories(axe),
- * };
+ * // Instead of:
+ * const categories = axeCategories(axePlugin);
+ *
+ * // Use:
+ * const categories = [
+ *   {
+ *     slug: 'a11y',
+ *     title: 'Accessibility',
+ *     refs: axeGroupRefs(axePlugin),
+ *   },
+ * ];
  */
 export function axeCategories(
   plugin: Pick<PluginConfig, 'groups' | 'context'>,
@@ -32,24 +35,29 @@ export function axeCategories(
   if (!plugin.groups || plugin.groups.length === 0) {
     return categories ?? [];
   }
-  validateUrlContext(plugin.context);
   if (!categories) {
-    return createCategories(plugin.groups, plugin.context);
+    return createCategories(plugin);
   }
-  return expandCategories(categories, plugin.context);
+  return expandCategories(plugin, categories);
 }
 
 function createCategories(
-  groups: Group[],
-  context: PluginUrlContext,
+  plugin: Pick<PluginConfig, 'groups' | 'context'>,
 ): CategoryConfig[] {
-  return [createAggregatedCategory(groups, context)];
+  return [
+    {
+      slug: 'axe-a11y',
+      title: 'Axe Accessibility',
+      refs: axeGroupRefs(plugin),
+    },
+  ];
 }
 
 function expandCategories(
+  plugin: Pick<PluginConfig, 'context'>,
   categories: CategoryConfig[],
-  context: PluginUrlContext,
 ): CategoryConfig[] {
+  const context = validate(pluginUrlContextSchema, plugin.context);
   if (!shouldExpandForUrls(context.urlCount)) {
     return categories;
   }
@@ -58,22 +66,6 @@ function expandCategories(
   );
 }
 
-/** Creates an aggregated accessibility category from Axe groups. */
-export function createAggregatedCategory(
-  groups: Group[],
-  context: PluginUrlContext,
-): CategoryConfig {
-  const refs = extractGroupSlugs(groups).flatMap(slug =>
-    createCategoryRefs(slug, AXE_PLUGIN_SLUG, context),
-  );
-  return {
-    slug: 'axe-a11y',
-    title: 'Axe Accessibility',
-    refs,
-  };
-}
-
-/** Expands category refs for multiple URLs. */
 export function expandAggregatedCategory(
   category: CategoryConfig,
   context: PluginUrlContext,
@@ -84,10 +76,4 @@ export function expandAggregatedCategory(
       ref.plugin === AXE_PLUGIN_SLUG ? expandCategoryRefs(ref, context) : [ref],
     ),
   };
-}
-
-/** Extracts unique group slugs from Axe groups. */
-export function extractGroupSlugs(groups: Group[]): AxeCategoryGroupSlug[] {
-  const slugs = groups.map(({ slug }) => removeIndex(slug));
-  return [...new Set(slugs)].filter(isAxeGroupSlug);
 }

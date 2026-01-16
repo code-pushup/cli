@@ -1,10 +1,6 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 import { createProjectGraphAsync } from '@nx/devkit';
-import type {
-  CategoryConfig,
-  CoreConfig,
-  PluginUrls,
-} from './packages/models/src/index.js';
+import type { CoreConfig, PluginUrls } from './packages/models/src/index.js';
 import axePlugin, {
   type AxePluginOptions,
   axeCategories,
@@ -19,8 +15,7 @@ import eslintPlugin, {
 import jsPackagesPlugin from './packages/plugin-js-packages/src/index.js';
 import jsDocsPlugin from './packages/plugin-jsdocs/src/index.js';
 import {
-  lighthouseCategories,
-  lighthouseGroupRef,
+  lighthouseGroupRefs,
   lighthousePlugin,
 } from './packages/plugin-lighthouse/src/index.js';
 import typescriptPlugin, {
@@ -198,31 +193,30 @@ export async function configureLighthousePlugin(
   urls: PluginUrls,
 ): Promise<CoreConfig> {
   const lhPlugin = await lighthousePlugin(urls);
-  const lhCategories: CategoryConfig[] = [
-    {
-      slug: 'performance',
-      title: 'Performance',
-      refs: [lighthouseGroupRef('performance')],
-    },
-    {
-      slug: 'a11y',
-      title: 'Accessibility',
-      refs: [lighthouseGroupRef('accessibility')],
-    },
-    {
-      slug: 'best-practices',
-      title: 'Best Practices',
-      refs: [lighthouseGroupRef('best-practices')],
-    },
-    {
-      slug: 'seo',
-      title: 'SEO',
-      refs: [lighthouseGroupRef('seo')],
-    },
-  ];
   return {
     plugins: [lhPlugin],
-    categories: lighthouseCategories(lhPlugin, lhCategories),
+    categories: [
+      {
+        slug: 'performance',
+        title: 'Performance',
+        refs: lighthouseGroupRefs(lhPlugin, 'performance'),
+      },
+      {
+        slug: 'a11y',
+        title: 'Accessibility',
+        refs: lighthouseGroupRefs(lhPlugin, 'accessibility'),
+      },
+      {
+        slug: 'best-practices',
+        title: 'Best Practices',
+        refs: lighthouseGroupRefs(lhPlugin, 'best-practices'),
+      },
+      {
+        slug: 'seo',
+        title: 'SEO',
+        refs: lighthouseGroupRefs(lhPlugin, 'seo'),
+      },
+    ],
   };
 }
 
@@ -233,6 +227,12 @@ export function configureAxePlugin(
   const axe = axePlugin(urls, options);
   return {
     plugins: [axe],
-    categories: axeCategories(axe),
+    categories: [
+      {
+        slug: 'axe-a11y',
+        title: 'Axe Accessibility',
+        refs: axeGroupRefs(axe),
+      },
+    ],
   };
 }

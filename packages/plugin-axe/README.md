@@ -214,51 +214,105 @@ Use `npx code-pushup print-config --onlyPlugins=axe` to list all audits and grou
 
 The plugin provides helpers to integrate Axe results into your categories.
 
-### Auto-generate accessibility category
+### Building categories with ref helpers
 
-Use `axeCategories` to automatically create an accessibility category from all plugin groups:
+Use `axeGroupRefs` and `axeAuditRefs` to build categories. These helpers automatically handle multi-URL expansion:
 
 ```ts
-import axePlugin, { axeCategories } from '@code-pushup/axe-plugin';
+import axePlugin, { axeGroupRefs } from '@code-pushup/axe-plugin';
 
 const axe = axePlugin('https://example.com');
 
 export default {
   plugins: [axe],
-  categories: axeCategories(axe),
+  categories: [
+    {
+      slug: 'a11y',
+      title: 'Accessibility',
+      refs: axeGroupRefs(axe),
+    },
+  ],
 };
 ```
 
-This configuration works with both single-URL and multi-URL configurations. For multi-URL setups, refs are automatically expanded for each URL with appropriate weights.
-
-### Custom categories
-
-For fine-grained control, provide your own categories with specific groups:
+For multi-URL setups, refs are automatically expanded for each URL with appropriate weights:
 
 ```ts
-import axePlugin, { axeCategories, axeGroupRef } from '@code-pushup/axe-plugin';
+import axePlugin, { axeGroupRefs } from '@code-pushup/axe-plugin';
 
-const axe = axePlugin(['https://example.com', 'https://example.com/about']);
+const axe = axePlugin({
+  'https://example.com': 2,
+  'https://example.com/about': 1,
+});
 
 export default {
   plugins: [axe],
-  categories: axeCategories(axe, [
+  categories: [
     {
-      slug: 'axe-a11y',
-      title: 'Axe Accessibility',
-      refs: [axeGroupRef('aria', 2), axeGroupRef('color'), axeGroupRef('keyboard')],
+      slug: 'a11y',
+      title: 'Accessibility',
+      refs: axeGroupRefs(axe),
     },
-  ]),
+  ],
 };
 ```
 
+### Custom categories with specific groups
+
+For fine-grained control, specify which groups to include:
+
+```ts
+import axePlugin, { axeGroupRefs } from '@code-pushup/axe-plugin';
+
+const axe = axePlugin('https://example.com');
+
+export default {
+  plugins: [axe],
+  categories: [
+    {
+      slug: 'a11y',
+      title: 'Accessibility',
+      refs: [...axeGroupRefs(axe, 'aria', 2), ...axeGroupRefs(axe, 'color'), ...axeGroupRefs(axe, 'keyboard')],
+    },
+  ],
+};
+```
+
+### Combining with Lighthouse
+
+For comprehensive accessibility testing, combine Axe with Lighthouse's accessibility group in a single category:
+
+```ts
+import axePlugin, { axeGroupRefs } from '@code-pushup/axe-plugin';
+import lighthousePlugin, { lighthouseGroupRefs } from '@code-pushup/lighthouse-plugin';
+
+const urls = ['https://example.com', 'https://example.com/about'];
+const axe = axePlugin(urls);
+const lighthouse = await lighthousePlugin(urls);
+
+export default {
+  plugins: [axe, lighthouse],
+  categories: [
+    {
+      slug: 'a11y',
+      title: 'Accessibility',
+      refs: [...lighthouseGroupRefs(lighthouse, 'accessibility'), ...axeGroupRefs(axe)],
+    },
+  ],
+};
+```
+
+This gives you both Lighthouse's performance-focused accessibility audits and Axe's comprehensive WCAG coverage in one category score.
+
 ### Helper functions
 
-| Function        | Description                            |
-| --------------- | -------------------------------------- |
-| `axeCategories` | Auto-generates or expands categories   |
-| `axeGroupRef`   | Creates a category ref to an Axe group |
-| `axeAuditRef`   | Creates a category ref to an Axe audit |
+| Function       | Description                                              |
+| -------------- | -------------------------------------------------------- |
+| `axeGroupRefs` | Creates category refs to Axe group(s), handles multi-URL |
+| `axeAuditRefs` | Creates category refs to Axe audit(s), handles multi-URL |
+
+> [!TIP]
+> Weights determine each ref's influence on the category score. Use weight `0` to include a ref as info only, without affecting the score.
 
 ### Type safety
 
@@ -269,6 +323,16 @@ import type { AxeGroupSlug } from '@code-pushup/axe-plugin';
 
 const group: AxeGroupSlug = 'aria';
 ```
+
+### Deprecated helpers
+
+The following helpers are deprecated and will be removed in a future version:
+
+| Function        | Replacement                                       |
+| --------------- | ------------------------------------------------- |
+| `axeCategories` | Build categories manually with `axeGroupRefs`     |
+| `axeGroupRef`   | Use `axeGroupRefs` (plural) for multi-URL support |
+| `axeAuditRef`   | Use `axeAuditRefs` (plural) for multi-URL support |
 
 ## Resources
 
