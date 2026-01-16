@@ -19,23 +19,6 @@ Why should you use this plugin?
 }
 ```
 
-or with options:
-
-```jsonc
-// nx.json
-{
-  //...
-  "plugins": [
-    {
-      "plugin": "./tools/zod2md-jsdocs-nx-plugin/src/lib/plugin.js",
-      "options": {
-        "targetName": "zod-docs",
-      },
-    },
-  ],
-}
-```
-
 Now every project with a `zod2md.config.ts` file will have a `generate-docs` target automatically created.
 
 - `nx run <project-name>:generate-docs`
@@ -77,31 +60,6 @@ Default values:
 
 - `config`: `{projectRoot}/zod2md.config.ts`
 - `output`: `{projectRoot}/docs/{projectName}-reference.md`
-
-## Options
-
-| Name                        | type                               | description                                                         |
-| --------------------------- | ---------------------------------- | ------------------------------------------------------------------- |
-| **docsTargetName**          | `string` (DEFAULT 'generate-docs') | The name of the docs generation target.                             |
-| **jsDocsTypesAugmentation** | `boolean` (DEFAULT `true`)         | Whether to enable TypeScript transformer integration with ts-patch. |
-
-All options are optional and provided in the `nx.json` file.
-
-```jsonc
-// nx.json
-{
-  //...
-  "plugins": [
-    {
-      "plugin": "./tools/zod2md-jsdocs-nx-plugin/src/lib/plugin.js",
-      "options": {
-        "docsTargetName": "docs",
-        "jsDocsTypesAugmentation": true,
-      },
-    },
-  ],
-}
-```
 
 ## Configuration
 
