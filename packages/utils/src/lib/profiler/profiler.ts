@@ -1,6 +1,7 @@
 import process from 'node:process';
 import { isEnvVarEnabled } from '../env.js';
 import {
+  type ActionTrackConfigs,
   type MeasureCtxOptions,
   type MeasureOptions,
   asOptions,
@@ -20,7 +21,7 @@ import { PROFILER_ENABLED } from './constants.js';
  *
  * @template T - Record type defining available track names and their configurations
  */
-type ProfilerMeasureOptions<T extends Record<string, ActionTrackEntryPayload>> =
+type ProfilerMeasureOptions<T extends ActionTrackConfigs> =
   MeasureCtxOptions & {
     /** Custom track configurations that will be merged with default settings */
     tracks?: Record<keyof T, Partial<ActionTrackEntryPayload>>;
@@ -48,10 +49,7 @@ export type MarkerOptions = EntryMeta & { color?: DevToolsColor };
  * @property tracks - Custom track configurations merged with defaults
  */
 export type ProfilerOptions<
-  T extends Record<string, ActionTrackEntryPayload> = Record<
-    string,
-    ActionTrackEntryPayload
-  >,
+  T extends ActionTrackConfigs = Record<string, ActionTrackEntryPayload>,
 > = ProfilerMeasureOptions<T>;
 
 /**
@@ -61,7 +59,7 @@ export type ProfilerOptions<
  * It supports both synchronous and asynchronous operations with all having smart defaults for custom track data.
  *
  */
-export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
+export class Profiler<T extends ActionTrackConfigs> {
   #enabled: boolean;
   readonly #defaults: ActionTrackEntryPayload;
   readonly tracks: Record<keyof T, ActionTrackEntryPayload> | undefined;
