@@ -37,7 +37,7 @@
   "dependencies": {
     "@code-pushup/models": "0.106.0",
     "@code-pushup/utils": "0.106.0",
-    "zod": "^4.0.5",
+    "zod": "^4.2.1",
     "ts-morph": "^24.0.0"
   },
   "files": [
