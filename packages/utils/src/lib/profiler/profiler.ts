@@ -34,6 +34,13 @@ type ProfilerMeasureOptions<T extends Record<string, ActionTrackEntryPayload>> =
  * This is an alias for ProfilerMeasureOptions for backward compatibility.
  *
  * @template T - Record type defining available track names and their configurations
+ *
+ * @property enabled - Whether profiling is enabled (defaults to CP_PROFILING env var)
+ * @property prefix - Prefix for all measurement names
+ * @property track - Default track name for measurements
+ * @property trackGroup - Default track group for organization
+ * @property color - Default color for track entries
+ * @property tracks - Custom track configurations merged with defaults
  */
 export type ProfilerOptions<
   T extends Record<string, ActionTrackEntryPayload> = Record<
@@ -43,11 +50,10 @@ export type ProfilerOptions<
 > = ProfilerMeasureOptions<T>;
 
 /**
- * Performance profiler that creates structured timing measurements with DevTools visualization.
+ * Performance profiler that creates structured timing measurements with Chrome DevTools Extensibility API payloads.
  *
- * This class provides high-level APIs for performance monitoring with automatic DevTools
- * integration for Chrome DevTools Performance panel. It supports both synchronous and
- * asynchronous operations with customizable track visualization.
+ * This class provides high-level APIs for performance monitoring focused on Chrome DevTools Extensibility API data.
+ * It supports both synchronous and asynchronous operations with all having smart defaults for custom track data.
  *
  */
 export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
@@ -109,7 +115,7 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
   }
 
   /**
-   * Creates a performance marker in the DevTools Performance panel.
+   * Creates a performance mark including payload for a Chrome DevTools 'marker' item.
    *
    * Markers appear as vertical lines spanning all tracks and can include custom metadata
    * for debugging and performance analysis. When profiling is disabled, this method
@@ -119,7 +125,7 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
    * @param opt - Metadata and styling for the marker
    * @param opt.color - Color of the marker line (defaults to profiler default)
    * @param opt.tooltipText - Text shown on hover
-   * @param opt.properties - Key-value pairs for detailed view
+   * @param opt.properties - Key-value pairs for detailed view show on click
    *
    * @example
    * profiler.marker('user-action-start', {
@@ -140,7 +146,7 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
       name,
       asOptions(
         markerPayload({
-          // marker only supports color no TrackMeta
+          // marker only takes default color, no TrackMeta
           ...(this.defaults.color ? { color: this.defaults.color } : {}),
           ...opt,
         }),
@@ -151,8 +157,8 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
   /**
    * Measures the execution time of a synchronous operation.
    *
-   * Creates start/end marks and a final measure entry in the performance timeline.
-   * The operation appears in the configured track with proper DevTools visualization.
+   * Creates performance start/end marks and a final measure.
+   * All entries have Chrome DevTools Extensibility API payload and are visualized under custom tracks.
    * When profiling is disabled, executes the work function directly without overhead.
    *
    * @template R - The return type of the work function
@@ -185,8 +191,8 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
   /**
    * Measures the execution time of an asynchronous operation.
    *
-   * Creates start/end marks and a final measure entry in the performance timeline.
-   * The operation appears in the configured track with proper DevTools visualization.
+   * Creates performance start/end marks and a final measure.
+   * All entries have Chrome DevTools Extensibility API payload and are visualized under custom tracks.
    * When profiling is disabled, executes and awaits the work function directly without overhead.
    *
    * @template R - The resolved type of the work promise
