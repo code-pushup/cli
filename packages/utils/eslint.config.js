@@ -16,7 +16,6 @@ export default tseslint.config(
     files: ['packages/utils/src/lib/**/file-sink*.ts'],
     rules: {
       'n/no-sync': 'off',
-      eqeqeq: 'off',
     },
   },
   {

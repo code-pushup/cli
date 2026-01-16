@@ -101,7 +101,7 @@ export class AppendFileSink {
 
     const { records, partialTail } = this.recover();
 
-    if (partialTail === null && outputPath === this.filePath) {
+    if (partialTail == null && outputPath === this.filePath) {
       return;
     }
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
