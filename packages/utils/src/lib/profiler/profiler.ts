@@ -221,9 +221,9 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
     );
     start();
     try {
-      const r = work();
+      const r = await work();
       success(r);
-      return await r;
+      return r;
     } catch (error_) {
       error(error_);
       throw error_;
