@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import type {
   RecoverResult,
   Recoverable,
@@ -8,45 +9,47 @@ export class MockSink implements Sink<string, string> {
   private writtenItems: string[] = [];
   private closed = false;
 
-  open(): void {
+  open = vi.fn((): void => {
     this.closed = false;
-  }
+  });
 
-  write(input: string): void {
+  write = vi.fn((input: string): void => {
     this.writtenItems.push(input);
-  }
+  });
 
-  close(): void {
+  close = vi.fn((): void => {
     this.closed = true;
-  }
+  });
 
-  isClosed(): boolean {
+  isClosed = vi.fn((): boolean => {
     return this.closed;
-  }
+  });
 
-  encode(input: string): string {
+  encode = vi.fn((input: string): string => {
     return `${input}-${this.constructor.name}-encoded`;
-  }
+  });
 
-  getWrittenItems(): string[] {
+  getWrittenItems = vi.fn((): string[] => {
     return [...this.writtenItems];
-  }
+  });
 }
 
-export class MockRecoverableSink<T> extends MockSink implements Recoverable<T> {
-  recover(): RecoverResult<T> {
-    return {
-      records: this.getWrittenItems() as T[],
-      errors: [],
-      partialTail: null,
-    };
-  }
+export class MockTraceEventFileSink extends MockSink implements Recoverable {
+  recover = vi.fn(
+    (): {
+      records: unknown[];
+      errors: { lineNo: number; line: string; error: Error }[];
+      partialTail: string | null;
+    } => {
+      return {
+        records: this.getWrittenItems(),
+        errors: [],
+        partialTail: null,
+      };
+    },
+  );
 
-  repack(): void {
-    this.getWrittenItems().forEach(item => this.write(item));
-  }
+  repack = vi.fn((): void => {});
 
-  finalize(): void {
-    this.close();
-  }
+  finalize = vi.fn((): void => {});
 }
