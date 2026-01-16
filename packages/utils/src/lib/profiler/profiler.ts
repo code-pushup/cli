@@ -29,6 +29,11 @@ type ProfilerMeasureOptions<T extends Record<string, ActionTrackEntryPayload>> =
   };
 
 /**
+ * Options for creating a performance marker.
+ */
+export type MarkerOptions = EntryMeta & { color?: DevToolsColor };
+
+/**
  * Options for configuring a Profiler instance.
  *
  * This is an alias for ProfilerMeasureOptions for backward compatibility.
@@ -137,7 +142,7 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
    *   ]
    * });
    */
-  marker(name: string, opt?: EntryMeta & { color?: DevToolsColor }): void {
+  marker(name: string, opt?: MarkerOptions): void {
     if (!this.#enabled) {
       return;
     }
