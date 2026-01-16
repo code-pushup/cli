@@ -157,6 +157,8 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
   /**
    * Measures the execution time of a synchronous operation.
    *
+   * For asynchronous operations, use the {@link measureAsync} method.
+   *
    * Creates performance start/end marks and a final measure.
    * All entries have Chrome DevTools Extensibility API payload and are visualized under custom tracks.
    * When profiling is disabled, executes the work function directly without overhead.
