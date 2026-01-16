@@ -1,5 +1,6 @@
-import process from 'node:process';
 import { isEnvVarEnabled } from '../env.js';
+import { PerformanceObserverSink } from '../performance-observer.js';
+import type { Recoverable, Sink } from '../sink-source.type.js';
 import {
   type ActionTrackConfigs,
   type MeasureCtxOptions,
@@ -95,20 +96,22 @@ export class Profiler<T extends ActionTrackConfigs> {
   /**
    * Sets enabled state for this profiler.
    *
-   * Also sets the `CP_PROFILING` environment variable.
-   * This means any future {@link Profiler} instantiations (including child processes) will use the same enabled state.
+   * Note: This only affects the current profiler instance and does not modify environment variables.
+   * Environment variables are read-only configuration that should be set before application startup.
    *
    * @param enabled - Whether profiling should be enabled
    */
   setEnabled(enabled: boolean): void {
-    process.env[PROFILER_ENABLED_ENV_VAR] = `${enabled}`;
+    if (this.#enabled === enabled) {
+      return;
+    }
     this.#enabled = enabled;
   }
 
   /**
    * Is profiling enabled?
    *
-   * Profiling is enabled by {@link setEnabled} call or `CP_PROFILING` environment variable.
+   * Profiling is enabled by {@link setEnabled} call or by the `CP_PROFILING` environment variable at instantiation.
    *
    * @returns Whether profiling is currently enabled
    */
@@ -224,5 +227,110 @@ export class Profiler<T extends ActionTrackConfigs> {
       error(error_);
       throw error_;
     }
+  }
+}
+
+/**
+ * Options for configuring a NodejsProfiler instance.
+ *
+ * Extends ProfilerOptions with a required sink parameter.
+ *
+ * @template Tracks - Record type defining available track names and their configurations
+ */
+export type NodejsProfilerOptions<
+  DomainEvents,
+  Tracks extends Record<string, ActionTrackEntryPayload>,
+> = ProfilerOptions<Tracks> & {
+  /** Sink for buffering and flushing performance data */
+  sink: Sink<DomainEvents, unknown> & Recoverable<unknown>;
+  /** Encoder that converts PerformanceEntry to domain events */
+  // eslint-disable-next-line n/no-unsupported-features/node-builtins
+  encode: (entry: PerformanceEntry) => DomainEvents[];
+};
+
+/**
+ * Performance profiler with automatic process exit handling for buffered performance data.
+ *
+ * This class extends the base {@link Profiler} with automatic flushing of performance data
+ * when the process exits. It accepts a {@link PerformanceObserverSink} that buffers performance
+ * entries and ensures they are written out during process termination, even for unexpected exits.
+ *
+ * The sink defines the output format for performance data, enabling flexible serialization
+ * to various formats such as DevTools TraceEvent JSON, OpenTelemetry protocol buffers,
+ * or custom domain-specific formats.
+ *
+ * The profiler automatically subscribes to the performance observer when enabled and installs
+ * exit handlers that flush buffered data on process termination (signals, fatal errors, or normal exit).
+ *
+ */
+export class NodejsProfiler<
+  DomainEvents,
+  Tracks extends Record<string, ActionTrackEntryPayload> = Record<
+    string,
+    ActionTrackEntryPayload
+  >,
+> extends Profiler<Tracks> {
+  #sink: Sink<DomainEvents, unknown> & Recoverable<unknown>;
+  #performanceObserverSink: PerformanceObserverSink<DomainEvents>;
+
+  /**
+   * Creates a new NodejsProfiler instance with automatic exit handling.
+   *
+   * @param options - Configuration options including the sink
+   * @param options.sink - Sink for buffering and flushing performance data
+   * @param options.tracks - Custom track configurations merged with defaults
+   * @param options.prefix - Prefix for all measurement names
+   * @param options.track - Default track name for measurements
+   * @param options.trackGroup - Default track group for organization
+   * @param options.color - Default color for track entries
+   * @param options.enabled - Whether profiling is enabled (defaults to CP_PROFILING env var)
+   *
+   */
+  constructor(options: NodejsProfilerOptions<DomainEvents, Tracks>) {
+    const { sink, encode, ...profilerOptions } = options;
+
+    super(profilerOptions);
+
+    this.#sink = sink;
+
+    this.#performanceObserverSink = new PerformanceObserverSink<DomainEvents>({
+      sink,
+      encode,
+    });
+
+    this.#setObserving(this.isEnabled());
+  }
+
+  #setObserving(observing: boolean): void {
+    if (observing) {
+      this.#sink.open();
+      this.#performanceObserverSink.subscribe();
+    } else {
+      this.#performanceObserverSink.unsubscribe();
+      this.#performanceObserverSink.flush();
+      this.#sink.close();
+    }
+  }
+
+  /**
+   * Sets enabled state for this profiler and manages sink/observer lifecycle.
+   *
+   * Design: Environment = default, Runtime = override
+   * - Environment variables define defaults (read once at construction)
+   * - This method provides runtime control without mutating globals
+   * - Child processes are unaffected by runtime enablement changes
+   *
+   * Invariant: enabled ↔ sink + observer state
+   * - enabled === true  → sink open + observer subscribed
+   * - enabled === false → sink closed + observer unsubscribed
+   *
+   * @param enabled - Whether profiling should be enabled
+   */
+  setEnabled(enabled: boolean): void {
+    if (this.isEnabled() === enabled) {
+      return;
+    }
+    super.setEnabled(enabled);
+    this.#setObserving(enabled);
   }
 }

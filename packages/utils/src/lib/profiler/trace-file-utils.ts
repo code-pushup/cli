@@ -1,7 +1,8 @@
 import type { PerformanceMark, PerformanceMeasure } from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
-import { defaultClock } from './clock-epoch.js';
-import { jsonlDecode, jsonlEncode } from './file-sink-jsonl.js';
+import { defaultClock } from '../clock-epoch.js';
+import { JsonCodec } from '../file-sink.js';
+import type { UserTimingDetail } from '../user-timing-extensibility-api.type.js';
 import type {
   BeginEvent,
   CompleteEvent,
@@ -14,8 +15,8 @@ import type {
   TraceEvent,
   TraceEventContainer,
   TraceEventRaw,
+  UserTimingTraceEvent,
 } from './trace-file.type.js';
-import type { UserTimingDetail } from './user-timing-extensibility-api.type.js';
 
 /** Global counter for generating unique span IDs within a trace */
 // eslint-disable-next-line functional/no-let
@@ -230,7 +231,7 @@ export const markToInstantEvent = (
     ...opt,
     name: opt?.name ?? entry.name,
     ts: defaultClock.fromEntry(entry),
-    args: entry.detail ? { data: { detail: entry.detail } } : undefined,
+    args: entry.detail ? { detail: entry.detail } : undefined,
   });
 
 /**
@@ -297,16 +298,18 @@ function processDetail<T extends { detail?: unknown }>(
 
 export function decodeDetail(target: { detail: string }): UserTimingDetail {
   return processDetail(target, detail =>
-    typeof detail === 'string' ? jsonlDecode<UserTimingDetail>(detail) : detail,
+    typeof detail === 'string' ? JsonCodec.decode(detail) : detail,
   ) as UserTimingDetail;
 }
 
 export function encodeDetail(target: UserTimingDetail): UserTimingDetail {
-  return processDetail(target, detail =>
-    typeof detail === 'object'
-      ? jsonlEncode(detail as UserTimingDetail)
-      : detail,
-  );
+  return processDetail(
+    target as UserTimingDetail & { detail?: unknown },
+    (detail: string | object) =>
+      typeof detail === 'object'
+        ? JsonCodec.encode(detail as UserTimingDetail)
+        : detail,
+  ) as UserTimingDetail;
 }
 
 export function decodeTraceEvent({ args, ...rest }: TraceEventRaw): TraceEvent {
@@ -316,31 +319,38 @@ export function decodeTraceEvent({ args, ...rest }: TraceEventRaw): TraceEvent {
 
   const processedArgs = decodeDetail(args as { detail: string });
   if ('data' in args && args.data && typeof args.data === 'object') {
-    return {
+    const result: TraceEvent = {
       ...rest,
       args: {
         ...processedArgs,
         data: decodeDetail(args.data as { detail: string }),
       },
-    } as TraceEvent;
+    };
+    return result;
   }
-  return { ...rest, args: processedArgs } as TraceEvent;
+  const result: TraceEvent = { ...rest, args: processedArgs };
+  return result;
 }
 
-export function encodeTraceEvent({ args, ...rest }: TraceEvent): TraceEventRaw {
+export function encodeTraceEvent({
+  args,
+  ...rest
+}: UserTimingTraceEvent): TraceEventRaw {
   if (!args) {
     return rest as TraceEventRaw;
   }
 
-  const processedArgs = encodeDetail(args);
+  const processedArgs = encodeDetail(args as UserTimingDetail);
   if ('data' in args && args.data && typeof args.data === 'object') {
-    return {
+    const result: TraceEventRaw = {
       ...rest,
       args: {
         ...processedArgs,
         data: encodeDetail(args.data as UserTimingDetail),
       },
-    } as TraceEventRaw;
+    };
+    return result;
   }
-  return { ...rest, args: processedArgs } as TraceEventRaw;
+  const result: TraceEventRaw = { ...rest, args: processedArgs };
+  return result;
 }

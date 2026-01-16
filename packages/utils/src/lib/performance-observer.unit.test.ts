@@ -8,7 +8,7 @@ import {
   vi,
 } from 'vitest';
 import { MockPerformanceObserver } from '@code-pushup/test-utils';
-import { MockSink } from '../../mocks/sink.mock';
+import { MockFileSink } from '../../mocks/sink.mock';
 import {
   type PerformanceObserverOptions,
   PerformanceObserverSink,
@@ -16,12 +16,12 @@ import {
 
 describe('PerformanceObserverSink', () => {
   let encode: MockedFunction<(entry: PerformanceEntry) => string[]>;
-  let sink: MockSink;
+  let sink: MockFileSink;
   let options: PerformanceObserverOptions<string>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    sink = new MockSink();
+    sink = new MockFileSink();
     encode = vi.fn((entry: PerformanceEntry) => [
       `${entry.name}:${entry.entryType}`,
     ]);

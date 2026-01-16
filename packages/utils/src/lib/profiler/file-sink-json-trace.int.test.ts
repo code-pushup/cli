@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import * as os from 'node:os';
-import * as path from 'node:path';
+import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { teardownTestFolder } from '@code-pushup/test-utils';
 import { FileSinkJsonTrace } from './file-sink-json-trace.js';
@@ -142,6 +142,7 @@ describe('TraceFileSink integration', () => {
       expect(traceData.metadata.source).toBe('DevTools');
     });
 
+    // eslint-disable-next-line vitest/max-nested-describe
     describe('edge cases', () => {
       it('should handle single event traces', async () => {
         const singleEvent: TraceEvent = {

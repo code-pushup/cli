@@ -1,6 +1,8 @@
 import type { Sink } from '../src/lib/sink-source.type';
 
-export class MockSink implements Sink<string, string> {
+export class MockFileSink implements Sink<string, string> {
+  setPath: (filePath: string) => void;
+  getPath: () => string;
   private writtenItems: string[] = [];
   private closed = false;
 
@@ -26,5 +28,9 @@ export class MockSink implements Sink<string, string> {
 
   getWrittenItems(): string[] {
     return [...this.writtenItems];
+  }
+
+  clearWrittenItems(): void {
+    this.writtenItems = [];
   }
 }

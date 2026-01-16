@@ -4,7 +4,12 @@ import {
   type PerformanceObserverEntryList,
   performance,
 } from 'node:perf_hooks';
-import type { Buffered, Encoder, Observer, Sink } from './sink-source.type';
+import type {
+  Buffered,
+  EncoderInterface,
+  Observer,
+  Sink,
+} from './sink-source.type';
 
 const OBSERVED_TYPES = ['mark', 'measure'] as const;
 type ObservedEntryType = 'mark' | 'measure';
@@ -18,7 +23,7 @@ export type PerformanceObserverOptions<T> = {
 };
 
 export class PerformanceObserverSink<T>
-  implements Observer, Buffered, Encoder<PerformanceEntry, T[]>
+  implements Observer, Buffered, EncoderInterface<PerformanceEntry, T[]>
 {
   #encode: (entry: PerformanceEntry) => T[];
   #buffered: boolean;
