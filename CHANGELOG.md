@@ -1,3 +1,13 @@
+## 0.108.0 (2026-01-16)
+
+### 🚀 Features
+
+- add profiler class and measure API ([#1216](https://github.com/code-pushup/cli/pull/1216))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.107.0 (2026-01-16)
 
 ### 🚀 Features
