@@ -7,7 +7,7 @@ import type {
 
 export class MockSink implements Sink<string, string> {
   private writtenItems: string[] = [];
-  private closed = false;
+  private closed = true;
 
   open = vi.fn((): void => {
     this.closed = false;
@@ -45,7 +45,7 @@ export class MockTraceEventFileSink extends MockSink implements Recoverable {
         records: this.getWrittenItems(),
         errors: [],
         partialTail: null,
-      };
+      } satisfies RecoverResult<string>;
     },
   );
 

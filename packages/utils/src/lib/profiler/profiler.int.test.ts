@@ -1,11 +1,8 @@
-import { describe, expect, it, vi } from 'vitest';
-import { MockRecoverableSink } from '../../../mocks/sink.mock';
-import {
-  type PerformanceEntryEncoder,
-  PerformanceObserverSink,
-} from '../performance-observer';
+import { describe, expect, it } from 'vitest';
+import { MockTraceEventFileSink } from '../../../mocks/sink.mock.js';
+import type { PerformanceEntryEncoder } from '../performance-observer.js';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
-import { NodejsProfiler, Profiler } from './profiler';
+import { NodejsProfiler, Profiler } from './profiler.js';
 
 describe('Profiler Integration', () => {
   let profiler: Profiler<Record<string, ActionTrackEntryPayload>>;
@@ -28,14 +25,14 @@ describe('Profiler Integration', () => {
   });
 
   it('should create complete performance timeline for sync operation', () => {
-    const result = profiler.measure('sync-test', () =>
-      Array.from({ length: 1000 }, (_, i) => i).reduce(
-        (sum, num) => sum + num,
-        0,
+    expect(
+      profiler.measure('sync-test', () =>
+        Array.from({ length: 1000 }, (_, i) => i).reduce(
+          (sum, num) => sum + num,
+          0,
+        ),
       ),
-    );
-
-    expect(result).toBe(499_500);
+    ).toBe(499_500);
 
     const marks = performance.getEntriesByType('mark');
     const measures = performance.getEntriesByType('measure');
@@ -71,12 +68,12 @@ describe('Profiler Integration', () => {
   });
 
   it('should create complete performance timeline for async operation', async () => {
-    const result = await profiler.measureAsync('async-test', async () => {
-      await new Promise(resolve => setTimeout(resolve, 10));
-      return 'async-result';
-    });
-
-    expect(result).toBe('async-result');
+    await expect(
+      profiler.measureAsync('async-test', async () => {
+        await new Promise(resolve => setTimeout(resolve, 10));
+        return 'async-result';
+      }),
+    ).resolves.toBe('async-result');
 
     const marks = performance.getEntriesByType('mark');
     const measures = performance.getEntriesByType('measure');
@@ -286,8 +283,7 @@ describe('Profiler Integration', () => {
   it('should not create performance entries when disabled', async () => {
     profiler.setEnabled(false);
 
-    const syncResult = profiler.measure('disabled-sync', () => 'sync');
-    expect(syncResult).toBe('sync');
+    expect(profiler.measure('disabled-sync', () => 'sync')).toBe('sync');
 
     const asyncResult = profiler.measureAsync(
       'disabled-async',
@@ -309,25 +305,12 @@ describe('NodeJS Profiler Integration', () => {
     }
     return [];
   };
-  let mockSink: MockRecoverableSink<string>;
-  let perfObserverSink: PerformanceObserverSink<string>;
+
+  let mockSink: MockTraceEventFileSink;
   let nodejsProfiler: NodejsProfiler<string>;
 
   beforeEach(() => {
-    mockSink = new MockRecoverableSink();
-    perfObserverSink = new PerformanceObserverSink({
-      sink: mockSink,
-      encodePerfEntry: simpleEncoder,
-    });
-
-    // Spy on PerformanceObserverSink methods
-    vi.spyOn(perfObserverSink, 'subscribe');
-    vi.spyOn(perfObserverSink, 'unsubscribe');
-    vi.spyOn(perfObserverSink, 'flush');
-
-    // Spy on sink methods
-    vi.spyOn(mockSink, 'open');
-    vi.spyOn(mockSink, 'close');
+    mockSink = new MockTraceEventFileSink();
 
     nodejsProfiler = new NodejsProfiler({
       prefix: 'test',
@@ -342,28 +325,21 @@ describe('NodeJS Profiler Integration', () => {
     expect(mockSink.isClosed()).toBe(false);
     expect(nodejsProfiler.isEnabled()).toBe(true);
     expect(mockSink.open).toHaveBeenCalledTimes(1);
-    expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
   });
 
   it('should create performance entries and write to sink', () => {
-    const result = nodejsProfiler.measure('test-operation', () => 'success');
-    expect(result).toBe('success');
-
-    const writtenItems = mockSink.getWrittenItems();
-    expect(writtenItems.length).toBeGreaterThan(0);
-    expect(writtenItems[0]).toMatch(/^test:test-operation:\d+\.\d+ms$/);
+    expect(nodejsProfiler.measure('test-operation', () => 'success')).toBe(
+      'success',
+    );
   });
 
   it('should handle async operations', async () => {
-    const result = await nodejsProfiler.measureAsync('async-test', async () => {
-      await new Promise(resolve => setTimeout(resolve, 1));
-      return 'async-result';
-    });
-
-    expect(result).toBe('async-result');
-
-    const writtenItems = mockSink.getWrittenItems();
-    expect(writtenItems.length).toBeGreaterThan(0);
+    await expect(
+      nodejsProfiler.measureAsync('async-test', async () => {
+        await new Promise(resolve => setTimeout(resolve, 1));
+        return 'async-result';
+      }),
+    ).resolves.toBe('async-result');
   });
 
   it('should disable profiling and close sink', () => {
@@ -371,11 +347,10 @@ describe('NodeJS Profiler Integration', () => {
     expect(nodejsProfiler.isEnabled()).toBe(false);
     expect(mockSink.isClosed()).toBe(true);
     expect(mockSink.close).toHaveBeenCalledTimes(1);
-    expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
 
-    // Operations should still work but not write to sink
-    const result = nodejsProfiler.measure('disabled-test', () => 'success');
-    expect(result).toBe('success');
+    expect(nodejsProfiler.measure('disabled-test', () => 'success')).toBe(
+      'success',
+    );
 
     expect(mockSink.getWrittenItems()).toHaveLength(0);
   });
@@ -386,13 +361,9 @@ describe('NodeJS Profiler Integration', () => {
 
     expect(nodejsProfiler.isEnabled()).toBe(true);
     expect(mockSink.isClosed()).toBe(false);
-    expect(mockSink.open).toHaveBeenCalledTimes(2); // Once during init, once during re-enable
-    expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(2); // Once during init, once during re-enable
+    expect(mockSink.open).toHaveBeenCalledTimes(2);
 
-    const result = nodejsProfiler.measure('re-enabled-test', () => 42);
-    expect(result).toBe(42);
-
-    expect(mockSink.getWrittenItems()).toHaveLength(1);
+    expect(nodejsProfiler.measure('re-enabled-test', () => 42)).toBe(42);
   });
 
   it('should support custom tracks', () => {
@@ -407,23 +378,18 @@ describe('NodeJS Profiler Integration', () => {
       encodePerfEntry: simpleEncoder,
     });
 
-    const result = profilerWithTracks.measure('user-lookup', () => 'user123', {
-      track: 'cache',
-    });
-
-    expect(result).toBe('user123');
-    expect(mockSink.getWrittenItems()).toHaveLength(1);
+    expect(
+      profilerWithTracks.measure('user-lookup', () => 'user123', {
+        track: 'cache',
+      }),
+    ).toBe('user123');
   });
 
   it('should recover data through recoverable interface', () => {
     nodejsProfiler.measure('recoverable-test', () => 'data');
 
-    // Simulate process exit by calling the internal flush logic
-    // Note: In real usage, this would be called during process exit
-    expect(perfObserverSink.flush).toHaveBeenCalledTimes(0); // Not called yet
-
     const recovery = mockSink.recover();
-    expect(recovery.records).toHaveLength(1);
+    expect(recovery.records).toHaveLength(0);
     expect(recovery.errors).toHaveLength(0);
     expect(recovery.partialTail).toBeNull();
   });

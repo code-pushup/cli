@@ -1,11 +1,8 @@
 import { performance } from 'node:perf_hooks';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { MockSink } from '../../../mocks/sink.mock';
-import {
-  type PerformanceEntryEncoder,
-  PerformanceObserverSink,
-} from '../performance-observer';
-import type { Recoverable, Sink } from '../sink-source.type.js';
+import { MockTraceEventFileSink } from '../../../mocks/sink.mock.js';
+import type { PerformanceEntryEncoder } from '../performance-observer.js';
+import * as PerfObserverModule from '../performance-observer.js';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
 import {
   NodejsProfiler,
@@ -19,6 +16,7 @@ describe('Profiler', () => {
     new Profiler({
       prefix: 'cp',
       track: 'test-track',
+      enabled: false,
       ...overrides,
     });
 
@@ -35,7 +33,10 @@ describe('Profiler', () => {
 
   it('constructor should initialize with default enabled state from env', () => {
     vi.stubEnv('CP_PROFILING', 'true');
-    const profilerWithEnv = getProfiler();
+    const profilerWithEnv = new Profiler({
+      prefix: 'cp',
+      track: 'test-track',
+    });
 
     expect(profilerWithEnv.isEnabled()).toBe(true);
   });
@@ -204,7 +205,7 @@ describe('Profiler', () => {
         detail: {
           devtools: expect.objectContaining({
             dataType: 'marker',
-            color: 'primary', // Should use default color
+            color: 'primary',
             tooltipText: 'Test marker with default color',
           }),
         },
@@ -436,30 +437,6 @@ describe('Profiler', () => {
   });
 });
 
-// Mock sink that extends MockSink with Recoverable interface
-class MockRecoverableSink extends MockSink implements Recoverable {
-  recover(): {
-    records: unknown[];
-    errors: { lineNo: number; line: string; error: Error }[];
-    partialTail: string | null;
-  } {
-    return {
-      records: this.getWrittenItems(),
-      errors: [],
-      partialTail: null,
-    };
-  }
-
-  repack(): void {
-    // Mock implementation - no-op
-  }
-
-  finalize(): void {
-    // Mock implementation - no-op
-  }
-}
-
-// Simple string encoder for testing
 const simpleEncoder: PerformanceEntryEncoder<string> = entry => {
   if (entry.entryType === 'measure') {
     return [`${entry.name}:${entry.duration.toFixed(2)}ms`];
@@ -470,18 +447,22 @@ const simpleEncoder: PerformanceEntryEncoder<string> = entry => {
 describe('NodejsProfiler', () => {
   const getNodejsProfiler = (
     overrides?: Partial<
-      NodejsProfilerOptions<Record<string, ActionTrackEntryPayload>, string>
+      NodejsProfilerOptions<string, Record<string, ActionTrackEntryPayload>>
     >,
   ) => {
-    const sink = new MockRecoverableSink();
-    const perfObserverSink = new PerformanceObserverSink({
-      sink,
-      encodePerfEntry: simpleEncoder,
-    });
+    const sink = new MockTraceEventFileSink();
 
-    // Spy on methods
-    vi.spyOn(perfObserverSink, 'subscribe');
-    vi.spyOn(perfObserverSink, 'unsubscribe');
+    const mockPerfObserverSink = {
+      subscribe: vi.fn(),
+      unsubscribe: vi.fn(),
+      isSubscribed: vi.fn().mockReturnValue(false),
+      encode: vi.fn(),
+      flush: vi.fn(),
+    };
+    vi.spyOn(PerfObserverModule, 'PerformanceObserverSink').mockReturnValue(
+      mockPerfObserverSink as any,
+    );
+
     vi.spyOn(sink, 'open');
     vi.spyOn(sink, 'close');
 
@@ -493,7 +474,7 @@ describe('NodejsProfiler', () => {
       ...overrides,
     });
 
-    return { sink, perfObserverSink, profiler };
+    return { sink, perfObserverSink: mockPerfObserverSink, profiler };
   };
 
   it('should export NodejsProfiler class', () => {
@@ -515,82 +496,73 @@ describe('NodejsProfiler', () => {
     );
   });
 
-  describe('constructor and initialization', () => {
-    it('should initialize with sink opened when enabled is true', () => {
-      const { sink, perfObserverSink } = getNodejsProfiler({ enabled: true });
-      expect(sink.isClosed()).toBe(false);
-      expect(sink.open).toHaveBeenCalledTimes(1);
-      expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
-    });
-
-    it('should initialize with sink closed when enabled is false', () => {
-      const { sink, perfObserverSink } = getNodejsProfiler({ enabled: false });
-      expect(sink.isClosed()).toBe(true);
-      expect(sink.open).not.toHaveBeenCalled();
-      expect(perfObserverSink.subscribe).not.toHaveBeenCalled();
-    });
+  it('should initialize with sink opened when enabled is true', () => {
+    const { sink, perfObserverSink } = getNodejsProfiler({ enabled: true });
+    expect(sink.isClosed()).toBe(false);
+    expect(sink.open).toHaveBeenCalledTimes(1);
+    expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
   });
 
-  describe('setEnabled', () => {
-    it('should open sink and subscribe observer when enabling', () => {
-      const { sink, perfObserverSink, profiler } = getNodejsProfiler({
-        enabled: false,
-      });
-
-      profiler.setEnabled(true);
-
-      expect(profiler.isEnabled()).toBe(true);
-      expect(sink.isClosed()).toBe(false);
-      expect(sink.open).toHaveBeenCalledTimes(1);
-      expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
-    });
-
-    it('should close sink and unsubscribe observer when disabling', () => {
-      const { sink, perfObserverSink, profiler } = getNodejsProfiler({
-        enabled: true,
-      });
-
-      profiler.setEnabled(false);
-
-      expect(profiler.isEnabled()).toBe(false);
-      expect(sink.isClosed()).toBe(true);
-      expect(sink.close).toHaveBeenCalledTimes(1);
-      expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
-    });
-
-    it('should be idempotent - no-op when setting same state', () => {
-      const { sink, perfObserverSink, profiler } = getNodejsProfiler({
-        enabled: true,
-      });
-
-      // Should still have the same call counts as initialization
-      expect(sink.open).toHaveBeenCalledTimes(1);
-      expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
-
-      profiler.setEnabled(true); // Set same state - should not change counts
-
-      expect(sink.open).toHaveBeenCalledTimes(1);
-      expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
-    });
+  it('should initialize with sink closed when enabled is false', () => {
+    const { sink, perfObserverSink } = getNodejsProfiler({ enabled: false });
+    expect(sink.isClosed()).toBe(true);
+    expect(sink.open).not.toHaveBeenCalled();
+    expect(perfObserverSink.subscribe).not.toHaveBeenCalled();
   });
 
-  describe('measurement operations', () => {
-    it('should perform measurements when enabled', () => {
-      const { sink, profiler } = getNodejsProfiler({ enabled: true });
-
-      const result = profiler.measure('test-op', () => 'success');
-      expect(result).toBe('success');
-
-      expect(sink.getWrittenItems()).toHaveLength(1);
+  it('should open sink and subscribe observer when enabling', () => {
+    const { sink, perfObserverSink, profiler } = getNodejsProfiler({
+      enabled: false,
     });
 
-    it('should skip sink operations when disabled', () => {
-      const { sink, profiler } = getNodejsProfiler({ enabled: false });
+    profiler.setEnabled(true);
 
-      const result = profiler.measure('disabled-op', () => 'success');
-      expect(result).toBe('success');
+    expect(profiler.isEnabled()).toBe(true);
+    expect(sink.isClosed()).toBe(false);
+    expect(sink.open).toHaveBeenCalledTimes(1);
+    expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
+  });
 
-      expect(sink.getWrittenItems()).toHaveLength(0);
+  it('should close sink and unsubscribe observer when disabling', () => {
+    const { sink, perfObserverSink, profiler } = getNodejsProfiler({
+      enabled: true,
     });
+
+    profiler.setEnabled(false);
+
+    expect(profiler.isEnabled()).toBe(false);
+    expect(sink.isClosed()).toBe(true);
+    expect(sink.close).toHaveBeenCalledTimes(1);
+    expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
+  });
+
+  it('should be idempotent - no-op when setting same state', () => {
+    const { sink, perfObserverSink, profiler } = getNodejsProfiler({
+      enabled: true,
+    });
+
+    expect(sink.open).toHaveBeenCalledTimes(1);
+    expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
+
+    profiler.setEnabled(true);
+
+    expect(sink.open).toHaveBeenCalledTimes(1);
+    expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
+  });
+
+  it('should perform measurements when enabled', () => {
+    const { profiler } = getNodejsProfiler({ enabled: true });
+
+    const result = profiler.measure('test-op', () => 'success');
+    expect(result).toBe('success');
+  });
+
+  it('should skip sink operations when disabled', () => {
+    const { sink, profiler } = getNodejsProfiler({ enabled: false });
+
+    const result = profiler.measure('disabled-op', () => 'success');
+    expect(result).toBe('success');
+
+    expect(sink.getWrittenItems()).toHaveLength(0);
   });
 });

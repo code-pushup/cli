@@ -23,13 +23,14 @@ describe('PerformanceObserverSink', () => {
 
   beforeEach(() => {
     sink = new MockSink();
+    sink.open();
     encode = vi.fn((entry: PerformanceEntry) => [
       `${entry.name}:${entry.entryType}`,
     ]);
 
     options = {
       sink,
-      encode,
+      encodePerfEntry: encode,
     };
 
     performance.clearMarks();
@@ -169,7 +170,7 @@ describe('PerformanceObserverSink', () => {
     ]);
     const observer = new PerformanceObserverSink({
       ...options,
-      encode: multiEncodeFn,
+      encodePerfEntry: multiEncodeFn,
     });
 
     observer.subscribe();
@@ -222,6 +223,18 @@ describe('PerformanceObserverSink', () => {
     expect(encode).toHaveBeenNthCalledWith(
       4,
       expect.objectContaining({ name: 'first-measure' }),
+    );
+  });
+
+  it('throws error when subscribing with sink that is not open', () => {
+    const closedSink = new MockSink();
+    const observer = new PerformanceObserverSink({
+      sink: closedSink,
+      encodePerfEntry: encode,
+    });
+
+    expect(() => observer.subscribe()).toThrow(
+      'Sink MockSink must be opened before subscribing PerformanceObserver',
     );
   });
 });

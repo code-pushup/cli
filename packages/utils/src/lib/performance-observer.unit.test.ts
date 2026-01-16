@@ -15,20 +15,20 @@ import {
 } from './performance-observer.js';
 
 describe('PerformanceObserverSink', () => {
-  let encode: MockedFunction<(entry: PerformanceEntry) => string[]>;
+  let encodePerfEntry: MockedFunction<(entry: PerformanceEntry) => string[]>;
   let sink: MockSink;
   let options: PerformanceObserverOptions<string>;
 
   beforeEach(() => {
     vi.clearAllMocks();
     sink = new MockSink();
-    encode = vi.fn((entry: PerformanceEntry) => [
+    sink.open();
+    encodePerfEntry = vi.fn((entry: PerformanceEntry) => [
       `${entry.name}:${entry.entryType}`,
     ]);
     options = {
       sink,
-      encode,
-      // we test buffered behavior separately
+      encodePerfEntry,
       flushThreshold: 1,
     };
 
@@ -46,17 +46,16 @@ describe('PerformanceObserverSink', () => {
       () =>
         new PerformanceObserverSink({
           sink,
-          encode,
+          encodePerfEntry,
         }),
     ).not.toThrow();
     expect(MockPerformanceObserver.instances).toHaveLength(0);
-    // Instance creation covers the default flushThreshold assignment
   });
 
   it('automatically flushes when pendingCount reaches flushThreshold', () => {
     const observer = new PerformanceObserverSink({
       sink,
-      encode,
+      encodePerfEntry,
       flushThreshold: 2, // Set threshold to 2
     });
     observer.subscribe();
@@ -149,15 +148,15 @@ describe('PerformanceObserverSink', () => {
     performance.mark('test-mark');
     performance.measure('test-measure');
     observer.flush();
-    expect(encode).toHaveBeenCalledTimes(2);
-    expect(encode).toHaveBeenNthCalledWith(
+    expect(encodePerfEntry).toHaveBeenCalledTimes(2);
+    expect(encodePerfEntry).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
         name: 'test-mark',
         entryType: 'mark',
       }),
     );
-    expect(encode).toHaveBeenNthCalledWith(
+    expect(encodePerfEntry).toHaveBeenNthCalledWith(
       2,
       expect.objectContaining({
         name: 'test-measure',
@@ -171,7 +170,7 @@ describe('PerformanceObserverSink', () => {
     observer.subscribe();
 
     MockPerformanceObserver.lastInstance()?.emitNavigation('test-navigation');
-    expect(encode).not.toHaveBeenCalled();
+    expect(encodePerfEntry).not.toHaveBeenCalled();
   });
 
   it('isSubscribed returns false when not observing', () => {
@@ -211,7 +210,7 @@ describe('PerformanceObserverSink', () => {
     ]);
   });
 
-  it('flush calls encode for each entry', () => {
+  it('flush calls encodePerfEntry for each entry', () => {
     const observer = new PerformanceObserverSink(options);
     observer.subscribe();
 
@@ -220,13 +219,13 @@ describe('PerformanceObserverSink', () => {
 
     observer.flush();
 
-    expect(encode).toHaveBeenCalledWith({
+    expect(encodePerfEntry).toHaveBeenCalledWith({
       name: 'test-mark1',
       entryType: 'mark',
       startTime: 0,
       duration: 0,
     });
-    expect(encode).toHaveBeenCalledWith({
+    expect(encodePerfEntry).toHaveBeenCalledWith({
       name: 'test-mark2',
       entryType: 'mark',
       startTime: 0,
@@ -239,7 +238,7 @@ describe('PerformanceObserverSink', () => {
 
     performance.mark('test-mark');
     observer.flush();
-    expect(encode).not.toHaveBeenCalled();
+    expect(encodePerfEntry).not.toHaveBeenCalled();
     expect(sink.getWrittenItems()).toStrictEqual([]);
   });
 
@@ -259,11 +258,12 @@ describe('PerformanceObserverSink', () => {
       write: vi.fn(() => {
         throw new Error('Sink write failed');
       }),
+      isClosed: vi.fn(() => false),
     };
 
     const observer = new PerformanceObserverSink({
       sink: failingSink as any,
-      encode,
+      encodePerfEntry,
       flushThreshold: 1,
     });
 
@@ -281,14 +281,14 @@ describe('PerformanceObserverSink', () => {
     );
   });
 
-  it('flush wraps encode errors with descriptive error message', () => {
+  it('flush wraps encodePerfEntry errors with descriptive error message', () => {
     const failingEncode = vi.fn(() => {
       throw new Error('Encode failed');
     });
 
     const observer = new PerformanceObserverSink({
       sink,
-      encode: failingEncode,
+      encodePerfEntry: failingEncode,
       flushThreshold: 1,
     });
 
@@ -303,6 +303,18 @@ describe('PerformanceObserverSink', () => {
           message: 'Encode failed',
         }),
       }),
+    );
+  });
+
+  it('throws error when subscribing with sink that is not open', () => {
+    const closedSink = new MockSink(); // Note: not calling open()
+    const observer = new PerformanceObserverSink({
+      sink: closedSink,
+      encodePerfEntry,
+    });
+
+    expect(() => observer.subscribe()).toThrow(
+      'Sink MockSink must be opened before subscribing PerformanceObserver',
     );
   });
 });

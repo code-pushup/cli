@@ -62,7 +62,7 @@ export class PerformanceObserverSink<T>
     }
     if (this.#sink.isClosed()) {
       throw new Error(
-        'Sink must be opened before subscribing PerformanceObserver',
+        `Sink ${this.#sink.constructor.name} must be opened before subscribing PerformanceObserver`,
       );
     }
 
@@ -93,7 +93,7 @@ export class PerformanceObserverSink<T>
     }
     if (this.#sink.isClosed()) {
       throw new Error(
-        'Sink must be opened before subscribing PerformanceObserver',
+        `Sink ${this.#sink.constructor.name} must be opened before subscribing PerformanceObserver`,
       );
     }
 

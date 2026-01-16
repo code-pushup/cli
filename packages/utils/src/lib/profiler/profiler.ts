@@ -271,9 +271,9 @@ export class NodejsProfiler<
     ActionTrackEntryPayload
   >,
 > extends Profiler<Tracks> {
-  #enabled: boolean;
   #sink: Sink<DomainEvents, unknown> & Recoverable;
   #performanceObserverSink: PerformanceObserverSink<DomainEvents>;
+  #observing = false;
 
   /**
    * Creates a new NodejsProfiler instance with automatic exit handling.
@@ -293,7 +293,6 @@ export class NodejsProfiler<
 
     super(profilerOptions);
 
-    this.#enabled = super.isEnabled(); // Initialize with parent's enabled state
     this.#sink = sink;
 
     this.#performanceObserverSink = new PerformanceObserverSink({
@@ -303,19 +302,17 @@ export class NodejsProfiler<
 
     this.#setObserving(this.isEnabled());
   }
-  /**
-   * Is profiling enabled?
-   *
-   * Returns the runtime-only enabled state, separate from environment variables.
-   *
-   * @returns Whether profiling is currently enabled
-   */
+
   #setObserving(observing: boolean): void {
+    if (this.#observing === observing) return;
+    this.#observing = observing;
+
     if (observing) {
       this.#sink.open();
       this.#performanceObserverSink.subscribe();
     } else {
       this.#performanceObserverSink.unsubscribe();
+      this.#performanceObserverSink.flush();
       this.#sink.close();
     }
   }
@@ -338,7 +335,7 @@ export class NodejsProfiler<
     if (this.isEnabled() === enabled) {
       return;
     }
-    this.#enabled = enabled;
+    super.setEnabled(enabled);
     this.#setObserving(enabled);
   }
 }
