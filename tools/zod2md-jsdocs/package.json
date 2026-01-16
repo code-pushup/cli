@@ -5,8 +5,8 @@
   "type": "commonjs",
   "main": "./src/index.js",
   "dependencies": {
-    "typescript": "^5.5.4",
     "ts-patch": "^3.3.0",
+    "typescript": "5.7.3",
     "@nx/devkit": "22.3.3"
   },
   "files": [
