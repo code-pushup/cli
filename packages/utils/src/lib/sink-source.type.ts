@@ -7,6 +7,7 @@ export type EncoderInterface<I, O> = {
   encode: (input: I) => O;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type Sink<I = string | Buffer, O = unknown> = {
   setPath: (filePath: string) => void;
   getPath: () => string;

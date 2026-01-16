@@ -1,4 +1,4 @@
-import * as fs from 'node:fs';
+import fs from 'node:fs';
 import path from 'node:path';
 import type { Decoder, Encoder } from './sink-source.type';
 
@@ -67,7 +67,11 @@ export class AppendFileSink {
       .map(line => (line.endsWith('\r') ? line.slice(0, -1) : line));
   }
 
-  recover() {
+  recover(): {
+    records: string[];
+    errors: { lineNo: number; line: string; error: Error }[];
+    partialTail: string | null;
+  } {
     if (!fs.existsSync(this.filePath)) {
       return { records: [], errors: [], partialTail: null };
     }
@@ -131,7 +135,11 @@ export class JsonlFile<T> {
     yield* [...this.sink.readAll()].map(line => this.decode(line));
   }
 
-  recover() {
+  recover(): {
+    records: T[];
+    errors: { lineNo: number; line: string; error: Error }[];
+    partialTail: string | null;
+  } {
     const r = this.sink.recover();
     return {
       records: r.records.map(l => this.decode(l)),

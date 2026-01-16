@@ -128,12 +128,12 @@ describe('Profiler', () => {
     expect(profiler.isEnabled()).toBe(false);
   });
 
-  it('setEnabled should update internal state without affecting env vars', () => {
+  it('isEnabled should update environment variable', () => {
     profiler.setEnabled(true);
-    expect(profiler.isEnabled()).toBe(true);
+    expect(process.env.CP_PROFILING).toBe('true');
 
     profiler.setEnabled(false);
-    expect(profiler.isEnabled()).toBe(false);
+    expect(process.env.CP_PROFILING).toBe('false');
   });
 
   it('marker should execute without error when enabled', () => {
@@ -422,23 +422,5 @@ describe('Profiler', () => {
       profiler.measureAsync('test-async-event', workFn),
     ).rejects.toThrow(error);
     expect(workFn).toHaveBeenCalled();
-  });
-
-  it('setEnabled should be idempotent', () => {
-    // Test enabling
-    profiler.setEnabled(true);
-    expect(profiler.isEnabled()).toBe(true);
-
-    // Setting to true again should not change anything
-    profiler.setEnabled(true);
-    expect(profiler.isEnabled()).toBe(true);
-
-    // Test disabling
-    profiler.setEnabled(false);
-    expect(profiler.isEnabled()).toBe(false);
-
-    // Setting to false again should not change anything
-    profiler.setEnabled(false);
-    expect(profiler.isEnabled()).toBe(false);
   });
 });

@@ -28,7 +28,7 @@ export type FinalizeTraceFileOptions = {
   marginDurMs?: number;
 };
 
-// eslint-disable-next-line max-lines-per-function
+// eslint-disable-next-line max-lines-per-function, complexity
 export function finalizeTraceFile(
   events: (SpanEvent | InstantEvent)[],
   outputPath: string,
