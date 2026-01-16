@@ -330,7 +330,10 @@ export function mergeDevtoolsPayload<
     {} as MergeResult<P> & { properties?: DevToolsProperties },
   );
 }
-
+export type ActionTrackConfigs<T extends string = string> = Record<
+  T,
+  ActionTrackEntryPayload
+>;
 /**
  * Sets up tracks with default values merged into each track.
  * This helps to avoid repetition when defining multiple tracks with common properties.
@@ -347,7 +350,7 @@ export function setupTracks<
       key,
       mergeDevtoolsPayload(defaults, track),
     ]),
-  );
+  ) satisfies ActionTrackConfigs;
 }
 
 /**
@@ -468,10 +471,10 @@ export type MeasureCtxOptions = ActionTrackEntryPayload & {
  * - `error(error)`: Completes failed measurement with error metadata
  */
 
-export function measureCtx<T = unknown>(cfg: MeasureCtxOptions) {
+export function measureCtx(cfg: MeasureCtxOptions) {
   const { prefix, error: globalErr, ...defaults } = cfg;
 
-  return (event: string, opt?: MeasureOptions) => {
+  return <T = unknown>(event: string, opt?: MeasureOptions<T>) => {
     const { success, error, ...measurePayload } = opt ?? {};
     const merged = mergeDevtoolsPayload(defaults, measurePayload);
     const {

@@ -175,10 +175,7 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
       return work();
     }
 
-    const { start, success, error } = this.ctxOf(
-      event,
-      options as MeasureOptions,
-    );
+    const { start, success, error } = this.ctxOf(event, options);
     start();
     try {
       const r = work();
@@ -215,10 +212,7 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
       return await work();
     }
 
-    const { start, success, error } = this.ctxOf(
-      event,
-      options as MeasureOptions,
-    );
+    const { start, success, error } = this.ctxOf(event, options);
     start();
     try {
       const r = await work();
