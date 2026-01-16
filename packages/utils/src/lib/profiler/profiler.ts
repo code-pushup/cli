@@ -58,9 +58,9 @@ export type ProfilerOptions<
  */
 export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
   #enabled: boolean;
-  private readonly defaults: ActionTrackEntryPayload;
+  readonly #defaults: ActionTrackEntryPayload;
   readonly tracks: Record<keyof T, ActionTrackEntryPayload> | undefined;
-  private readonly ctxOf: ReturnType<typeof measureCtx>;
+  readonly #ctxOf: ReturnType<typeof measureCtx>;
 
   /**
    * Creates a new Profiler instance with the specified configuration.
