@@ -39,7 +39,7 @@ export const createPerformanceMock = (timeOrigin = 500_000) => ({
       entryType: 'mark',
       startTime: nowMs,
       duration: 0,
-      detail: options?.detail,
+      ...(options?.detail ? { detail: options.detail } : {}),
     } as PerformanceEntry);
     MockPerformanceObserver.globalEntries = entries;
   }),
@@ -47,16 +47,14 @@ export const createPerformanceMock = (timeOrigin = 500_000) => ({
   measure: vi.fn(
     (
       name: string,
-      startMark?: string,
-      endMark?: string,
-      options?: { detail?: unknown },
+      options?: { start?: string; end?: string; detail?: unknown },
     ) => {
       const entry = {
         name,
         entryType: 'measure',
         startTime: nowMs,
         duration: nowMs,
-        detail: options?.detail,
+        ...(options?.detail ? { detail: options.detail } : {}),
       } as PerformanceEntry;
       entries.push(entry);
       MockPerformanceObserver.globalEntries = entries;

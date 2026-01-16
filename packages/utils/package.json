@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/utils",
-  "version": "0.105.0",
+  "version": "0.108.0",
   "description": "Low-level utilities (helper functions, etc.) used by Code PushUp CLI",
   "license": "MIT",
   "homepage": "https://github.com/code-pushup/cli/tree/main/packages/utils#readme",
@@ -27,7 +27,7 @@
     "node": ">=18.2.0"
   },
   "dependencies": {
-    "@code-pushup/models": "0.105.0",
+    "@code-pushup/models": "0.108.0",
     "ansis": "^3.3.0",
     "build-md": "^0.4.2",
     "bundle-require": "^5.1.0",
@@ -37,7 +37,7 @@
     "simple-git": "^3.20.0",
     "string-width": "^8.1.0",
     "wrap-ansi": "^9.0.2",
-    "zod": "^4.0.5"
+    "zod": "^4.2.1"
   },
   "files": [
     "src",
