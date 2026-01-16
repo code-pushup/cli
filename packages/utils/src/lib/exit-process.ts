@@ -44,8 +44,8 @@ export function installExitHandlers(options: ExitHandlerOptions = {}): void {
   const {
     onExit,
     onError,
-    exitOnFatal,
-    exitOnSignal,
+    exitOnFatal = false,
+    exitOnSignal = false,
     fatalExitCode = DEFAULT_FATAL_EXIT_CODE,
   } = options;
 

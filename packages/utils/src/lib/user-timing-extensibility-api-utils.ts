@@ -369,19 +369,19 @@ function toMarkMeasureOpts<T extends TrackEntryPayload>(devtools: T) {
  * Options for customizing measurement behavior and callbacks.
  * Extends partial ActionTrackEntryPayload to allow overriding default track properties.
  */
-export type MeasureOptions = Partial<ActionTrackEntryPayload> & {
+export type MeasureOptions<T> = Partial<ActionTrackEntryPayload> & {
   /**
    * Callback invoked when measurement completes successfully.
    * @param result - The successful result value
    * @returns Additional DevTools properties to merge for success state
    */
-  success?: (result: unknown) => Partial<ActionTrackEntryPayload>;
+  success?: (result: T) => EntryMeta;
   /**
    * Callback invoked when measurement fails with an error.
    * @param error - The error that occurred
    * @returns Additional DevTools properties to merge for error state
    */
-  error?: (error: unknown) => Partial<ActionTrackEntryPayload>;
+  error?: (error: unknown) => EntryMeta;
 };
 
 /**
@@ -473,7 +473,7 @@ export type MeasureCtxOptions = ActionTrackEntryPayload & {
  * - `error(error)`: Completes failed measurement with error metadata
  */
 
-export function measureCtx(cfg: MeasureCtxOptions) {
+export function measureCtx<T = unknown>(cfg: MeasureCtxOptions) {
   const { prefix, error: globalErr, ...defaults } = cfg;
 
   return (event: string, opt?: MeasureOptions) => {
@@ -488,7 +488,7 @@ export function measureCtx(cfg: MeasureCtxOptions) {
     return {
       start: () => performance.mark(s, toMarkMeasureOpts(merged)),
 
-      success: (r: unknown) => {
+      success: (r: T) => {
         const successPayload = mergeDevtoolsPayload(merged, success?.(r) ?? {});
         performance.mark(e, toMarkMeasureOpts(successPayload));
         performance.measure(m, {

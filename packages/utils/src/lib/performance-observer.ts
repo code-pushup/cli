@@ -6,21 +6,31 @@ import {
 } from 'node:perf_hooks';
 import type { Buffered, Encoder, Observer, Sink } from './sink-source.type';
 
+/**
+ * Encoder that converts PerformanceEntry to domain events.
+ *
+ * Pure function that transforms performance entries into one or more domain events.
+ * Should be stateless, synchronous, and have no side effects.
+ */
+export type PerformanceEntryEncoder<F> = (
+  entry: PerformanceEntry,
+) => readonly F[];
+
 const OBSERVED_TYPES = ['mark', 'measure'] as const;
 type ObservedEntryType = 'mark' | 'measure';
 export const DEFAULT_FLUSH_THRESHOLD = 20;
 
 export type PerformanceObserverOptions<T> = {
   sink: Sink<T, unknown>;
-  encode: (entry: PerformanceEntry) => T[];
+  encodePerfEntry: PerformanceEntryEncoder<T>;
   buffered?: boolean;
   flushThreshold?: number;
 };
 
 export class PerformanceObserverSink<T>
-  implements Observer, Buffered, Encoder<PerformanceEntry, T[]>
+  implements Observer, Buffered, Encoder<PerformanceEntry, readonly T[]>
 {
-  #encode: (entry: PerformanceEntry) => T[];
+  #encodePerfEntry: PerformanceEntryEncoder<T>;
   #buffered: boolean;
   #flushThreshold: number;
   #sink: Sink<T, unknown>;
@@ -32,8 +42,8 @@ export class PerformanceObserverSink<T>
   #written: Map<ObservedEntryType, number>;
 
   constructor(options: PerformanceObserverOptions<T>) {
-    const { encode, sink, buffered, flushThreshold } = options;
-    this.#encode = encode;
+    const { encodePerfEntry, sink, buffered, flushThreshold } = options;
+    this.#encodePerfEntry = encodePerfEntry;
     this.#written = new Map<ObservedEntryType, number>(
       OBSERVED_TYPES.map(t => [t, 0]),
     );
@@ -42,13 +52,18 @@ export class PerformanceObserverSink<T>
     this.#flushThreshold = flushThreshold ?? DEFAULT_FLUSH_THRESHOLD;
   }
 
-  encode(entry: PerformanceEntry): T[] {
-    return this.#encode(entry);
+  encode(entry: PerformanceEntry): readonly T[] {
+    return this.#encodePerfEntry(entry);
   }
 
   subscribe(): void {
     if (this.#observer) {
       return;
+    }
+    if (this.#sink.isClosed()) {
+      throw new Error(
+        'Sink must be opened before subscribing PerformanceObserver',
+      );
     }
 
     // Only used to trigger the flush - it's not processing the entries, just counting them
@@ -75,6 +90,11 @@ export class PerformanceObserverSink<T>
   flush(): void {
     if (!this.#observer) {
       return;
+    }
+    if (this.#sink.isClosed()) {
+      throw new Error(
+        'Sink must be opened before subscribing PerformanceObserver',
+      );
     }
 
     OBSERVED_TYPES.forEach(t => {

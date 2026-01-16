@@ -1,0 +1,1 @@
+export const PROFILER_ENABLED = 'CP_PROFILING';

@@ -1,4 +1,8 @@
-import type { Sink } from '../src/lib/sink-source.type';
+import type {
+  RecoverResult,
+  Recoverable,
+  Sink,
+} from '../src/lib/sink-source.type';
 
 export class MockSink implements Sink<string, string> {
   private writtenItems: string[] = [];
@@ -26,5 +30,23 @@ export class MockSink implements Sink<string, string> {
 
   getWrittenItems(): string[] {
     return [...this.writtenItems];
+  }
+}
+
+export class MockRecoverableSink<T> extends MockSink implements Recoverable<T> {
+  recover(): RecoverResult<T> {
+    return {
+      records: this.getWrittenItems() as T[],
+      errors: [],
+      partialTail: null,
+    };
+  }
+
+  repack(): void {
+    this.getWrittenItems().forEach(item => this.write(item));
+  }
+
+  finalize(): void {
+    this.close();
   }
 }
