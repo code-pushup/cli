@@ -319,17 +319,15 @@ export function decodeTraceEvent({ args, ...rest }: TraceEventRaw): TraceEvent {
 
   const processedArgs = decodeDetail(args as { detail: string });
   if ('data' in args && args.data && typeof args.data === 'object') {
-    const result: TraceEvent = {
+    return {
       ...rest,
       args: {
         ...processedArgs,
         data: decodeDetail(args.data as { detail: string }),
       },
-    };
-    return result;
+    } as TraceEvent;
   }
-  const result: TraceEvent = { ...rest, args: processedArgs };
-  return result;
+  return { ...rest, args: processedArgs } as TraceEvent;
 }
 
 export function encodeTraceEvent({
