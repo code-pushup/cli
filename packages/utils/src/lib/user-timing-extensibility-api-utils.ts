@@ -330,7 +330,10 @@ export function mergeDevtoolsPayload<
     {} as MergeResult<P> & { properties?: DevToolsProperties },
   );
 }
-
+export type ActionTrackConfigs<T extends string = string> = Record<
+  T,
+  ActionTrackEntryPayload
+>;
 /**
  * Sets up tracks with default values merged into each track.
  * This helps to avoid repetition when defining multiple tracks with common properties.
@@ -347,7 +350,7 @@ export function setupTracks<
       key,
       mergeDevtoolsPayload(defaults, track),
     ]),
-  );
+  ) satisfies ActionTrackConfigs;
 }
 
 /**
@@ -356,12 +359,7 @@ export function setupTracks<
  * @returns The mark options without dataType, tooltipText and properties.
  */
 function toMarkMeasureOpts<T extends TrackEntryPayload>(devtools: T) {
-  const {
-    dataType: _,
-    tooltipText: __,
-    properties: ___,
-    ...markDevtools
-  } = devtools;
+  const { tooltipText: _, properties: __, ...markDevtools } = devtools;
   return { detail: { devtools: markDevtools } };
 }
 
@@ -369,7 +367,7 @@ function toMarkMeasureOpts<T extends TrackEntryPayload>(devtools: T) {
  * Options for customizing measurement behavior and callbacks.
  * Extends partial ActionTrackEntryPayload to allow overriding default track properties.
  */
-export type MeasureOptions<T> = Partial<ActionTrackEntryPayload> & {
+export type MeasureOptions<T = unknown> = Partial<ActionTrackEntryPayload> & {
   /**
    * Callback invoked when measurement completes successfully.
    * @param result - The successful result value
@@ -473,10 +471,10 @@ export type MeasureCtxOptions = ActionTrackEntryPayload & {
  * - `error(error)`: Completes failed measurement with error metadata
  */
 
-export function measureCtx<T = unknown>(cfg: MeasureCtxOptions) {
+export function measureCtx(cfg: MeasureCtxOptions) {
   const { prefix, error: globalErr, ...defaults } = cfg;
 
-  return (event: string, opt?: MeasureOptions) => {
+  return <T = unknown>(event: string, opt?: MeasureOptions<T>) => {
     const { success, error, ...measurePayload } = opt ?? {};
     const merged = mergeDevtoolsPayload(defaults, measurePayload);
     const {

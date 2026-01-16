@@ -1,3 +1,13 @@
+## 0.107.0 (2026-01-16)
+
+### 🚀 Features
+
+- **plugin-axe:** add authentication support via setup script ([#1198](https://github.com/code-pushup/cli/pull/1198))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.106.0 (2026-01-15)
 
 ### 🚀 Features

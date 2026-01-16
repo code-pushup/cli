@@ -22,7 +22,7 @@ export function axePlugin(
   urls: PluginUrls,
   options: AxePluginOptions = {},
 ): PluginConfig {
-  const { preset, scoreTargets, timeout } = validate(
+  const { preset, scoreTargets, timeout, setupScript } = validate(
     axePluginOptionsSchema,
     options,
   );
@@ -49,7 +49,7 @@ export function axePlugin(
     version: packageJson.version,
     audits,
     groups,
-    runner: createRunnerFunction(normalizedUrls, ruleIds, timeout),
+    runner: createRunnerFunction(normalizedUrls, ruleIds, timeout, setupScript),
     context,
     ...(scoreTargets && { scoreTargets }),
   };

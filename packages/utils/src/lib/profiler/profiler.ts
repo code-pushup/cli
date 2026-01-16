@@ -1,11 +1,12 @@
+import process from 'node:process';
 import { isEnvVarEnabled } from '../env.js';
-import { installExitHandlers } from '../exit-process.js';
 import {
   type PerformanceEntryEncoder,
   PerformanceObserverSink,
 } from '../performance-observer.js';
 import type { Recoverable, Sink } from '../sink-source.type.js';
 import {
+  type ActionTrackConfigs,
   type MeasureCtxOptions,
   type MeasureOptions,
   asOptions,
@@ -18,20 +19,25 @@ import type {
   DevToolsColor,
   EntryMeta,
 } from '../user-timing-extensibility-api.type.js';
-import { PROFILER_ENABLED } from './constants.js';
+import { PROFILER_ENABLED_ENV_VAR } from './constants.js';
 
 /**
  * Configuration options for creating a Profiler instance.
  *
  * @template T - Record type defining available track names and their configurations
  */
-type ProfilerMeasureOptions<T extends Record<string, ActionTrackEntryPayload>> =
+type ProfilerMeasureOptions<T extends ActionTrackConfigs> =
   MeasureCtxOptions & {
     /** Custom track configurations that will be merged with default settings */
     tracks?: Record<keyof T, Partial<ActionTrackEntryPayload>>;
     /** Whether profiling should be enabled (defaults to CP_PROFILING env var) */
     enabled?: boolean;
   };
+
+/**
+ * Options for creating a performance marker.
+ */
+export type MarkerOptions = EntryMeta & { color?: DevToolsColor };
 
 /**
  * Options for configuring a Profiler instance.
@@ -47,12 +53,8 @@ type ProfilerMeasureOptions<T extends Record<string, ActionTrackEntryPayload>> =
  * @property color - Default color for track entries
  * @property tracks - Custom track configurations merged with defaults
  */
-export type ProfilerOptions<
-  T extends Record<string, ActionTrackEntryPayload> = Record<
-    string,
-    ActionTrackEntryPayload
-  >,
-> = ProfilerMeasureOptions<T>;
+export type ProfilerOptions<T extends ActionTrackConfigs = ActionTrackConfigs> =
+  ProfilerMeasureOptions<T>;
 
 /**
  * Performance profiler that creates structured timing measurements with Chrome DevTools Extensibility API payloads.
@@ -61,11 +63,11 @@ export type ProfilerOptions<
  * It supports both synchronous and asynchronous operations with all having smart defaults for custom track data.
  *
  */
-export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
+export class Profiler<T extends ActionTrackConfigs> {
   #enabled: boolean;
-  private readonly defaults: ActionTrackEntryPayload;
+  readonly #defaults: ActionTrackEntryPayload;
   readonly tracks: Record<keyof T, ActionTrackEntryPayload> | undefined;
-  private readonly ctxOf: ReturnType<typeof measureCtx>;
+  readonly #ctxOf: ReturnType<typeof measureCtx>;
 
   /**
    * Creates a new Profiler instance with the specified configuration.
@@ -83,12 +85,12 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
     const { tracks, prefix, enabled, ...defaults } = options;
     const dataType = 'track-entry';
 
-    this.#enabled = enabled ?? isEnvVarEnabled(PROFILER_ENABLED);
-    this.defaults = { ...defaults, dataType };
+    this.#enabled = enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
+    this.#defaults = { ...defaults, dataType };
     this.tracks = tracks
       ? setupTracks({ ...defaults, dataType }, tracks)
       : undefined;
-    this.ctxOf = measureCtx({
+    this.#ctxOf = measureCtx({
       ...defaults,
       dataType,
       prefix,
@@ -98,21 +100,20 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
   /**
    * Sets enabled state for this profiler.
    *
-   * Design: Environment = default, Runtime = override
-   * - Environment variables define defaults (read once at construction)
-   * - This method provides runtime control without mutating globals
-   * - Child processes are unaffected by runtime enablement changes
+   * Also sets the `CP_PROFILING` environment variable.
+   * This means any future {@link Profiler} instantiations (including child processes) will use the same enabled state.
    *
    * @param enabled - Whether profiling should be enabled
    */
   setEnabled(enabled: boolean): void {
+    process.env[PROFILER_ENABLED_ENV_VAR] = `${enabled}`;
     this.#enabled = enabled;
   }
 
   /**
    * Is profiling enabled?
    *
-   * Returns the runtime-only enabled state, separate from environment variables.
+   * Profiling is enabled by {@link setEnabled} call or `CP_PROFILING` environment variable.
    *
    * @returns Whether profiling is currently enabled
    */
@@ -143,7 +144,7 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
    *   ]
    * });
    */
-  marker(name: string, opt?: EntryMeta & { color?: DevToolsColor }) {
+  marker(name: string, opt?: MarkerOptions): void {
     if (!this.#enabled) {
       return;
     }
@@ -153,7 +154,7 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
       asOptions(
         markerPayload({
           // marker only takes default color, no TrackMeta
-          ...(this.defaults.color ? { color: this.defaults.color } : {}),
+          ...(this.#defaults.color ? { color: this.#defaults.color } : {}),
           ...opt,
         }),
       ),
@@ -162,6 +163,8 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
 
   /**
    * Measures the execution time of a synchronous operation.
+   *
+   * For asynchronous operations, use the {@link measureAsync} method.
    *
    * Creates performance start/end marks and a final measure.
    * All entries have Chrome DevTools Extensibility API payload and are visualized under custom tracks.
@@ -174,12 +177,12 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
    * @returns The result of the work function
    *
    */
-  measure<R>(event: string, work: () => R, options?: MeasureOptions): R {
+  measure<R>(event: string, work: () => R, options?: MeasureOptions<R>): R {
     if (!this.#enabled) {
       return work();
     }
 
-    const { start, success, error } = this.ctxOf(event, options);
+    const { start, success, error } = this.#ctxOf(event, options);
     start();
     try {
       const r = work();
@@ -193,6 +196,8 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
 
   /**
    * Measures the execution time of an asynchronous operation.
+   *
+   * For synchronous operations, use the {@link measure} method.
    *
    * Creates performance start/end marks and a final measure.
    * All entries have Chrome DevTools Extensibility API payload and are visualized under custom tracks.
@@ -208,18 +213,18 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
   async measureAsync<R>(
     event: string,
     work: () => Promise<R>,
-    options?: MeasureOptions,
+    options?: MeasureOptions<R>,
   ): Promise<R> {
     if (!this.#enabled) {
       return await work();
     }
 
-    const { start, success, error } = this.ctxOf(event, options);
+    const { start, success, error } = this.#ctxOf(event, options);
     start();
     try {
-      const r = work();
+      const r = await work();
       success(r);
-      return await r;
+      return r;
     } catch (error_) {
       error(error_);
       throw error_;
@@ -235,8 +240,8 @@ export class Profiler<T extends Record<string, ActionTrackEntryPayload>> {
  * @template Tracks - Record type defining available track names and their configurations
  */
 export type NodejsProfilerOptions<
-  Tracks extends Record<string, ActionTrackEntryPayload>,
   DomainEvents,
+  Tracks extends Record<string, ActionTrackEntryPayload>,
 > = ProfilerOptions<Tracks> & {
   /** Sink for buffering and flushing performance data */
   sink: Sink<DomainEvents, unknown> & Recoverable;
@@ -250,6 +255,10 @@ export type NodejsProfilerOptions<
  * This class extends the base {@link Profiler} with automatic flushing of performance data
  * when the process exits. It accepts a {@link PerformanceObserverSink} that buffers performance
  * entries and ensures they are written out during process termination, even for unexpected exits.
+ *
+ * The sink defines the output format for performance data, enabling flexible serialization
+ * to various formats such as DevTools TraceEvent JSON, OpenTelemetry protocol buffers,
+ * or custom domain-specific formats.
  *
  * The profiler automatically subscribes to the performance observer when enabled and installs
  * exit handlers that flush buffered data on process termination (signals, fatal errors, or normal exit).
@@ -279,7 +288,7 @@ export class NodejsProfiler<
    * @param options.enabled - Whether profiling is enabled (defaults to CP_PROFILING env var)
    *
    */
-  constructor(options: NodejsProfilerOptions<Tracks, DomainEvents>) {
+  constructor(options: NodejsProfilerOptions<DomainEvents, Tracks>) {
     const { sink, encodePerfEntry, ...profilerOptions } = options;
 
     super(profilerOptions);
@@ -293,8 +302,6 @@ export class NodejsProfiler<
     });
 
     this.#setObserving(this.isEnabled());
-
-    this.#installExitHandlers();
   }
   /**
    * Is profiling enabled?
@@ -333,32 +340,5 @@ export class NodejsProfiler<
     }
     this.#enabled = enabled;
     this.#setObserving(enabled);
-  }
-
-  /**
-   * Installs process exit handlers to flush buffered performance data and close the sink.
-   *
-   * Sets up handlers for signals (SIGINT, SIGTERM, SIGQUIT), fatal errors
-   * (uncaughtException, unhandledRejection), and normal process exit.
-   * All handlers flush the performance observer sink and close the sink to ensure
-   * data is written out and resources are properly cleaned up.
-   */
-  #installExitHandlers(): void {
-    installExitHandlers({
-      onExit: () => {
-        if (!this.isEnabled()) {
-          return;
-        }
-        try {
-          this.#performanceObserverSink.flush();
-          this.#sink.finalize();
-        } catch (error) {
-          console.error(
-            'Failed to flush performance data and create trace file on exit:',
-            error,
-          );
-        }
-      },
-    });
   }
 }
