@@ -71,12 +71,14 @@ export function generateTraceContent(
  */
 export const traceEventWalFormat = <
   T extends UserTimingTraceEvent = UserTimingTraceEvent,
->(_opt?: {
+>(opt?: {
   dir?: string;
+  groupId?: string;
 }) => {
   const baseName = 'trace';
   const walExtension = '.jsonl';
   const finalExtension = '.json';
+  const groupId = opt?.groupId || 'default';
   return {
     baseName,
     walExtension,
@@ -85,8 +87,8 @@ export const traceEventWalFormat = <
       encode: event => JSON.stringify(encodeTraceEvent(event)),
       decode: (json: string) => decodeTraceEvent(JSON.parse(json)) as T,
     },
-    shardPath: (id: string) => `${baseName}.${id}${walExtension}`,
-    finalPath: () => `${baseName}${finalExtension}`,
+    shardPath: (id: string) => `${baseName}.${groupId}.${id}${walExtension}`,
+    finalPath: () => `${baseName}.${groupId}${finalExtension}`,
     finalizer: (records, metadata) => generateTraceContent(records, metadata),
   } satisfies WalFormat<T>;
 };

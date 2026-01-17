@@ -1,5 +1,7 @@
 import * as fs from 'node:fs';
 import path from 'node:path';
+import process from 'node:process';
+import { PROFILER_ORIGIN_PID_ENV_VAR } from './constants';
 
 /**
  * Codec for encoding/decoding values to/from strings for WAL storage.
@@ -153,13 +155,15 @@ export class WriteAheadLogFile<T> {
   /**
    * Append a record to the WAL.
    * @param v - Record to append
-   * @throws Error if WAL is not opened
+   * @throws Error if WAL cannot be opened
    */
   append = (v: T) => {
     if (!this.#fd) {
-      throw new Error('WAL not opened');
+      this.open();
     }
-    fs.writeSync(this.#fd, `${this.#encode(v)}\n`);
+    if (this.#fd) {
+      fs.writeSync(this.#fd, `${this.#encode(v)}\n`);
+    }
   };
 
   /** Close the WAL file */
@@ -279,6 +283,29 @@ export function parseWalFormat<T extends object | string = object>(
 }
 
 /**
+ * Determines if this process is the leader WAL process using the origin PID heuristic.
+ *
+ * The leader is the process that first enabled profiling (the one that set CP_PROFILER_ORIGIN_PID).
+ * All descendant processes inherit the environment but have different PIDs.
+ *
+ * @returns true if this is the leader WAL process, false otherwise
+ */
+export function isLeaderWal(envVarName: string): boolean {
+  return process.env[envVarName] === String(process.pid);
+}
+
+/**
+ * Initialize the origin PID environment variable if not already set.
+ * This must be done as early as possible before any user code runs.
+ * Set's PROFILER_ORIGIN_PID_ENV_VAR to the current process PID if not already defined.
+ */
+export function setLeaderWal(PROFILER_ORIGIN_PID_ENV_VAR: string): void {
+  if (!process.env[PROFILER_ORIGIN_PID_ENV_VAR]) {
+    process.env[PROFILER_ORIGIN_PID_ENV_VAR] = String(process.pid);
+  }
+}
+
+/**
  * Sharded Write-Ahead Log manager for coordinating multiple WAL shards.
  * Handles distributed logging across multiple processes/files with atomic finalization.
  */
@@ -304,16 +331,21 @@ export class ShardedWal<T extends object | string = object> {
 
   /** Get all shard file paths matching this WAL's base name */
   private shardFiles() {
-    return fs.existsSync(this.#dir)
-      ? fs
-          .readdirSync(this.#dir)
-          .filter(
-            f =>
-              f.startsWith(`${this.#format.baseName}.`) &&
-              f.endsWith(this.#format.walExtension),
-          )
-          .map(f => path.join(this.#dir, f))
-      : [];
+    if (!fs.existsSync(this.#dir)) {
+      return [];
+    }
+
+    const files: string[] = [];
+    const entries = fs.readdirSync(this.#dir);
+
+    for (const entry of entries) {
+      // Look for files matching the pattern: anything ending with .jsonl
+      if (entry.endsWith(this.#format.walExtension)) {
+        files.push(path.join(this.#dir, entry));
+      }
+    }
+
+    return files;
   }
 
   /**
@@ -351,6 +383,32 @@ export class ShardedWal<T extends object | string = object> {
   }
 
   cleanup() {
-    this.shardFiles().forEach(f => fs.unlinkSync(f));
+    this.shardFiles().forEach(f => {
+      // Remove the shard file
+      fs.unlinkSync(f);
+      // Remove the parent directory (shard group directory)
+      const shardDir = path.dirname(f);
+      try {
+        fs.rmdirSync(shardDir);
+      } catch (error) {
+        // Directory might not be empty or already removed, ignore
+      }
+    });
   }
+}
+
+/**
+ * Generates a shard ID.
+ * This is idempotent since PID and TID are fixed for the process/thread.
+ */
+export function getShardId(pid: number, tid: number = 0): string {
+  return `${pid}-${tid}`;
+}
+
+/**
+ * Generates a sharded group ID based on performance.timeOrigin.
+ * This is idempotent per process since timeOrigin is fixed within a process and its worker.
+ */
+export function getShardedGroupId(): string {
+  return Math.floor(performance.timeOrigin).toString();
 }

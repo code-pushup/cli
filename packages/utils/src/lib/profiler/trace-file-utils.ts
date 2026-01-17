@@ -263,7 +263,9 @@ export const measureToSpanEvents = (
  * @param entry - Performance entry
  * @returns UserTimingTraceEvent[]
  */
-export function entryToTraceEvents(entry: PerformanceEntry) {
+export function entryToTraceEvents(
+  entry: PerformanceEntry,
+): UserTimingTraceEvent[] {
   if (entry.entryType === 'mark') {
     return [markToInstantEvent(entry as PerformanceMark)];
   }

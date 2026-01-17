@@ -1,3 +1,5 @@
+import path from 'node:path';
+import { performance } from 'node:perf_hooks';
 import type { PerformanceEntry } from 'node:perf_hooks';
 import process from 'node:process';
 import { threadId } from 'node:worker_threads';
@@ -26,7 +28,14 @@ import {
 import { entryToTraceEvents } from './trace-file-utils.js';
 import type { UserTimingTraceEvent } from './trace-file.type.js';
 import { traceEventWalFormat } from './wal-json-trace.js';
-import { ShardedWal, WriteAheadLogFile } from './wal.js';
+import {
+  ShardedWal,
+  WriteAheadLogFile,
+  getShardId,
+  getShardedGroupId,
+  isLeaderWal,
+  setLeaderWal,
+} from './wal.js';
 import type { WalFormat } from './wal.js';
 
 /**
@@ -80,11 +89,6 @@ export class Profiler<T extends ActionTrackConfigs> {
    *
    */
   constructor(options: ProfilerOptions<T>) {
-    // Initialize origin PID early - must happen before user code runs
-    if (!process.env[PROFILER_ORIGIN_PID_ENV_VAR]) {
-      process.env[PROFILER_ORIGIN_PID_ENV_VAR] = String(process.pid);
-    }
-
     const { tracks, prefix, enabled, ...defaults } = options;
     const dataType = 'track-entry';
 
@@ -111,6 +115,13 @@ export class Profiler<T extends ActionTrackConfigs> {
   setEnabled(enabled: boolean): void {
     process.env[PROFILER_ENABLED_ENV_VAR] = `${enabled}`;
     this.#enabled = enabled;
+  }
+
+  /**
+   * Close the profiler. Subclasses should override this to perform cleanup.
+   */
+  close(): void {
+    // Base implementation does nothing
   }
 
   /**
@@ -235,67 +246,96 @@ export class Profiler<T extends ActionTrackConfigs> {
   }
 }
 
-/**
- * Determines if this process is the leader WAL process using the origin PID heuristic.
- *
- * The leader is the process that first enabled profiling (the one that set CP_PROFILER_ORIGIN_PID).
- * All descendant processes inherit the environment but have different PIDs.
- *
- * @returns true if this is the leader WAL process, false otherwise
- */
-export function isLeaderWal(): boolean {
-  return process.env[PROFILER_ORIGIN_PID_ENV_VAR] === String(process.pid);
-}
-
 export class NodeProfiler<
   TracksConfig extends ActionTrackConfigs = ActionTrackConfigs,
-  CodecOutput extends string | object = UserTimingTraceEvent,
+  CodecOutput extends UserTimingTraceEvent = UserTimingTraceEvent,
 > extends Profiler<TracksConfig> {
   #shard: WriteAheadLogFile<CodecOutput>;
   #perfObserver: PerformanceObserverSink<CodecOutput>;
   #shardWal: ShardedWal<CodecOutput>;
   readonly #format: WalFormat<CodecOutput>;
+  readonly #debug: boolean;
+  #closed: boolean = false;
+
   constructor(
     options: ProfilerOptions<TracksConfig> & {
       directory?: string;
       performanceEntryEncode: (entry: PerformanceEntry) => CodecOutput[];
-      format: WalFormat<CodecOutput>;
+      debug?: boolean;
     },
   ) {
+    // Initialize origin PID early - must happen before user code runs
+    setLeaderWal(PROFILER_ORIGIN_PID_ENV_VAR);
+
     const {
       directory = PROFILER_DIRECTORY,
       performanceEntryEncode,
-      format,
+      debug = false,
+      ...profilerOptions
     } = options;
-    super(options);
-    const shardId = `${process.pid}-${threadId}`;
+    super(profilerOptions);
+    const walGroupId = getShardedGroupId();
+    const shardId = getShardId(process.pid, threadId);
 
-    this.#format = format;
-    this.#shardWal = new ShardedWal(directory, format);
+    this.#format = traceEventWalFormat({ groupId: walGroupId });
+    this.#debug = debug;
+    this.#shardWal = new ShardedWal(
+      path.join(directory, walGroupId),
+      this.#format,
+    );
     this.#shard = this.#shardWal.shard(shardId);
 
     this.#perfObserver = new PerformanceObserverSink({
       sink: this.#shard,
       encode: performanceEntryEncode,
       buffered: true,
-      flushThreshold: 100,
+      flushThreshold: 1, // Lower threshold for immediate flushing
     });
+
+    this.#perfObserver.subscribe();
 
     installExitHandlers({
       onExit: () => {
-        this.#perfObserver.flush();
-        this.#perfObserver.unsubscribe();
-        this.#shard.close();
-        if (isLeaderWal()) {
-          this.#shardWal.finalize();
-          this.#shardWal.cleanup();
-        }
+        this.close();
       },
     });
   }
 
   getFinalPath() {
     return this.#format.finalPath();
+  }
+
+  /**
+   * Close the profiler and finalize files if this is the leader process.
+   * This method can be called manually to ensure proper cleanup.
+   */
+  close(): void {
+    if (this.#closed) {
+      return;
+    }
+
+    this.#closed = true;
+
+    try {
+      if (!this.#perfObserver || !this.#shard || !this.#shardWal) {
+        console.warn('Warning: Profiler not fully initialized during close');
+        return;
+      }
+
+      this.#perfObserver.flush();
+      this.#perfObserver.unsubscribe();
+
+      this.#shard.close();
+
+      if (isLeaderWal(PROFILER_ORIGIN_PID_ENV_VAR)) {
+        this.#shardWal.finalize();
+        if (!this.#debug) {
+          this.#shardWal.cleanup();
+        }
+      }
+    } catch (error) {
+      console.warn('Warning: Error during profiler close:', error);
+    }
   }
 }
 
@@ -304,5 +344,5 @@ export const profiler = new NodeProfiler({
   track: 'CLI',
   trackGroup: 'Code Pushup',
   performanceEntryEncode: entryToTraceEvents,
-  format: traceEventWalFormat(),
+  debug: process.env.CP_PROFILER_DEBUG === 'true',
 });
