@@ -4,7 +4,7 @@ import {
   type PerformanceObserverEntryList,
   performance,
 } from 'node:perf_hooks';
-import type { WriteAheadLogFile } from './profiler/wal.js';
+import type { WriteAheadLogFile } from './wal.js';
 
 const OBSERVED_TYPES = ['mark', 'measure'] as const;
 type ObservedEntryType = 'mark' | 'measure';

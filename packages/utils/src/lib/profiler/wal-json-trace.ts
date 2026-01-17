@@ -1,4 +1,5 @@
 import { performance } from 'node:perf_hooks';
+import type { WalFormat } from '../wal.js';
 import {
   decodeTraceEvent,
   encodeTraceEvent,
@@ -7,7 +8,6 @@ import {
   getTraceFile,
 } from './trace-file-utils.js';
 import type { TraceEvent, UserTimingTraceEvent } from './trace-file.type.js';
-import type { WalFormat } from './wal.js';
 
 /** Name for the trace start margin event */
 const TRACE_START_MARGIN_NAME = '[trace padding start]';
@@ -84,11 +84,15 @@ export const traceEventWalFormat = <
     walExtension,
     finalExtension,
     codec: {
-      encode: event => JSON.stringify(encodeTraceEvent(event)),
+      encode: (event: UserTimingTraceEvent) =>
+        JSON.stringify(encodeTraceEvent(event)),
       decode: (json: string) => decodeTraceEvent(JSON.parse(json)) as T,
     },
     shardPath: (id: string) => `${baseName}.${groupId}.${id}${walExtension}`,
     finalPath: () => `${baseName}.${groupId}${finalExtension}`,
-    finalizer: (records, metadata) => generateTraceContent(records, metadata),
+    finalizer: (
+      records: UserTimingTraceEvent[],
+      metadata?: Record<string, unknown>,
+    ) => generateTraceContent(records, metadata),
   } satisfies WalFormat<T>;
 };
