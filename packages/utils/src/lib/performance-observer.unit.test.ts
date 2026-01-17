@@ -13,7 +13,7 @@ import {
   type PerformanceObserverOptions,
   PerformanceObserverSink,
 } from './performance-observer.js';
-import type { Codec } from './types.js';
+import type { Codec } from './wal.js';
 
 describe('PerformanceObserverSink', () => {
   let encode: MockedFunction<(entry: PerformanceEntry) => string[]>;

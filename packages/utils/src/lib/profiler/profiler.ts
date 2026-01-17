@@ -1,11 +1,5 @@
-import path from 'node:path';
-import { performance } from 'node:perf_hooks';
-import type { PerformanceEntry } from 'node:perf_hooks';
 import process from 'node:process';
-import { threadId } from 'node:worker_threads';
 import { isEnvVarEnabled } from '../env.js';
-import { installExitHandlers } from '../exit-process.js';
-import { PerformanceObserverSink } from '../performance-observer.js';
 import {
   type ActionTrackConfigs,
   type MeasureCtxOptions,
@@ -20,23 +14,25 @@ import type {
   DevToolsColor,
   EntryMeta,
 } from '../user-timing-extensibility-api.type.js';
-import {
-  PROFILER_DIRECTORY,
-  PROFILER_ENABLED_ENV_VAR,
-  PROFILER_ORIGIN_PID_ENV_VAR,
-} from './constants.js';
-import { entryToTraceEvents } from './trace-file-utils.js';
-import type { UserTimingTraceEvent } from './trace-file.type.js';
-import { traceEventWalFormat } from './wal-json-trace.js';
-import {
-  ShardedWal,
-  WriteAheadLogFile,
-  getShardId,
-  getShardedGroupId,
-  isLeaderWal,
-  setLeaderWal,
-} from './wal.js';
-import type { WalFormat } from './wal.js';
+import { PROFILER_ENABLED_ENV_VAR } from './constants.js';
+
+/**
+ * Configuration options for creating a Profiler instance.
+ *
+ * @template T - Record type defining available track names and their configurations
+ */
+type ProfilerMeasureOptions<T extends ActionTrackConfigs> =
+  MeasureCtxOptions & {
+    /** Custom track configurations that will be merged with default settings */
+    tracks?: Record<keyof T, Partial<ActionTrackEntryPayload>>;
+    /** Whether profiling should be enabled (defaults to CP_PROFILING env var) */
+    enabled?: boolean;
+  };
+
+/**
+ * Options for creating a performance marker.
+ */
+export type MarkerOptions = EntryMeta & { color?: DevToolsColor };
 
 /**
  * Options for configuring a Profiler instance.
@@ -53,15 +49,7 @@ import type { WalFormat } from './wal.js';
  * @property tracks - Custom track configurations merged with defaults
  */
 export type ProfilerOptions<T extends ActionTrackConfigs = ActionTrackConfigs> =
-  MeasureCtxOptions & {
-    tracks?: Record<keyof T, Partial<ActionTrackEntryPayload>>;
-    enabled?: boolean;
-  };
-
-/**
- * Options for creating a performance marker.
- */
-export type MarkerOptions = EntryMeta & { color?: DevToolsColor };
+  ProfilerMeasureOptions<T>;
 
 /**
  * Performance profiler that creates structured timing measurements with Chrome DevTools Extensibility API payloads.
@@ -115,13 +103,6 @@ export class Profiler<T extends ActionTrackConfigs> {
   setEnabled(enabled: boolean): void {
     process.env[PROFILER_ENABLED_ENV_VAR] = `${enabled}`;
     this.#enabled = enabled;
-  }
-
-  /**
-   * Close the profiler. Subclasses should override this to perform cleanup.
-   */
-  close(): void {
-    // Base implementation does nothing
   }
 
   /**
@@ -245,104 +226,3 @@ export class Profiler<T extends ActionTrackConfigs> {
     }
   }
 }
-
-export class NodeProfiler<
-  TracksConfig extends ActionTrackConfigs = ActionTrackConfigs,
-  CodecOutput extends UserTimingTraceEvent = UserTimingTraceEvent,
-> extends Profiler<TracksConfig> {
-  #shard: WriteAheadLogFile<CodecOutput>;
-  #perfObserver: PerformanceObserverSink<CodecOutput>;
-  #shardWal: ShardedWal<CodecOutput>;
-  readonly #format: WalFormat<CodecOutput>;
-  readonly #debug: boolean;
-  #closed: boolean = false;
-
-  constructor(
-    options: ProfilerOptions<TracksConfig> & {
-      directory?: string;
-      performanceEntryEncode: (entry: PerformanceEntry) => CodecOutput[];
-      debug?: boolean;
-    },
-  ) {
-    // Initialize origin PID early - must happen before user code runs
-    setLeaderWal(PROFILER_ORIGIN_PID_ENV_VAR);
-
-    const {
-      directory = PROFILER_DIRECTORY,
-      performanceEntryEncode,
-      debug = false,
-      ...profilerOptions
-    } = options;
-    super(profilerOptions);
-    const walGroupId = getShardedGroupId();
-    const shardId = getShardId(process.pid, threadId);
-
-    this.#format = traceEventWalFormat({ groupId: walGroupId });
-    this.#debug = debug;
-    this.#shardWal = new ShardedWal(
-      path.join(directory, walGroupId),
-      this.#format,
-    );
-    this.#shard = this.#shardWal.shard(shardId);
-
-    this.#perfObserver = new PerformanceObserverSink({
-      sink: this.#shard,
-      encode: performanceEntryEncode,
-      buffered: true,
-      flushThreshold: 1, // Lower threshold for immediate flushing
-    });
-
-    this.#perfObserver.subscribe();
-
-    installExitHandlers({
-      onExit: () => {
-        this.close();
-      },
-    });
-  }
-
-  getFinalPath() {
-    return this.#format.finalPath();
-  }
-
-  /**
-   * Close the profiler and finalize files if this is the leader process.
-   * This method can be called manually to ensure proper cleanup.
-   */
-  close(): void {
-    if (this.#closed) {
-      return;
-    }
-
-    this.#closed = true;
-
-    try {
-      if (!this.#perfObserver || !this.#shard || !this.#shardWal) {
-        console.warn('Warning: Profiler not fully initialized during close');
-        return;
-      }
-
-      this.#perfObserver.flush();
-      this.#perfObserver.unsubscribe();
-
-      this.#shard.close();
-
-      if (isLeaderWal(PROFILER_ORIGIN_PID_ENV_VAR)) {
-        this.#shardWal.finalize();
-        if (!this.#debug) {
-          this.#shardWal.cleanup();
-        }
-      }
-    } catch (error) {
-      console.warn('Warning: Error during profiler close:', error);
-    }
-  }
-}
-
-export const profiler = new NodeProfiler({
-  prefix: 'cp',
-  track: 'CLI',
-  trackGroup: 'Code Pushup',
-  performanceEntryEncode: entryToTraceEvents,
-  debug: process.env.CP_PROFILER_DEBUG === 'true',
-});

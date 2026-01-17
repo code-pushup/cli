@@ -1,7 +1,6 @@
 import * as fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
-import { PROFILER_ORIGIN_PID_ENV_VAR } from './constants';
 
 /**
  * Codec for encoding/decoding values to/from strings for WAL storage.

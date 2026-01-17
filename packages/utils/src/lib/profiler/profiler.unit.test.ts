@@ -1,8 +1,7 @@
 import { performance } from 'node:perf_hooks';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
-import { Profiler, type ProfilerOptions, profiler } from './profiler.js';
-import { isLeaderWal } from './wal.js';
+import { Profiler, type ProfilerOptions } from './profiler.js';
 
 describe('Profiler', () => {
   const getProfiler = (overrides?: Partial<ProfilerOptions>) =>
@@ -12,7 +11,7 @@ describe('Profiler', () => {
       ...overrides,
     });
 
-  let profilerInstance: Profiler<Record<string, ActionTrackEntryPayload>>;
+  let profiler: Profiler<Record<string, ActionTrackEntryPayload>>;
 
   beforeEach(() => {
     performance.clearMarks();
@@ -20,7 +19,7 @@ describe('Profiler', () => {
     // eslint-disable-next-line functional/immutable-data
     delete process.env.CP_PROFILING;
 
-    profilerInstance = getProfiler();
+    profiler = getProfiler();
   });
 
   it('constructor should initialize with default enabled state from env', () => {
@@ -120,28 +119,28 @@ describe('Profiler', () => {
   });
 
   it('isEnabled should set and get enabled state', () => {
-    expect(profilerInstance.isEnabled()).toBe(false);
+    expect(profiler.isEnabled()).toBe(false);
 
-    profilerInstance.setEnabled(true);
-    expect(profilerInstance.isEnabled()).toBe(true);
+    profiler.setEnabled(true);
+    expect(profiler.isEnabled()).toBe(true);
 
-    profilerInstance.setEnabled(false);
-    expect(profilerInstance.isEnabled()).toBe(false);
+    profiler.setEnabled(false);
+    expect(profiler.isEnabled()).toBe(false);
   });
 
   it('isEnabled should update environment variable', () => {
-    profilerInstance.setEnabled(true);
+    profiler.setEnabled(true);
     expect(process.env.CP_PROFILING).toBe('true');
 
-    profilerInstance.setEnabled(false);
+    profiler.setEnabled(false);
     expect(process.env.CP_PROFILING).toBe('false');
   });
 
   it('marker should execute without error when enabled', () => {
-    profilerInstance.setEnabled(true);
+    profiler.setEnabled(true);
 
     expect(() => {
-      profilerInstance.marker('test-marker', {
+      profiler.marker('test-marker', {
         color: 'primary',
         tooltipText: 'Test marker',
         properties: [['key', 'value']],
@@ -165,10 +164,10 @@ describe('Profiler', () => {
   });
 
   it('marker should execute without error when disabled', () => {
-    profilerInstance.setEnabled(false);
+    profiler.setEnabled(false);
 
     expect(() => {
-      profilerInstance.marker('test-marker');
+      profiler.marker('test-marker');
     }).not.toThrow();
 
     const marks = performance.getEntriesByType('mark');
@@ -234,12 +233,10 @@ describe('Profiler', () => {
     performance.clearMarks();
     performance.clearMeasures();
 
-    profilerInstance.setEnabled(true);
+    profiler.setEnabled(true);
 
     const workFn = vi.fn(() => 'result');
-    const result = profilerInstance.measure('test-event', workFn, {
-      color: 'primary',
-    });
+    const result = profiler.measure('test-event', workFn, { color: 'primary' });
 
     expect(result).toBe('result');
     expect(workFn).toHaveBeenCalled();
@@ -283,9 +280,9 @@ describe('Profiler', () => {
   });
 
   it('measure should execute work directly when disabled', () => {
-    profilerInstance.setEnabled(false);
+    profiler.setEnabled(false);
     const workFn = vi.fn(() => 'result');
-    const result = profilerInstance.measure('test-event', workFn);
+    const result = profiler.measure('test-event', workFn);
 
     expect(result).toBe('result');
     expect(workFn).toHaveBeenCalled();
@@ -298,44 +295,40 @@ describe('Profiler', () => {
   });
 
   it('measure should propagate errors when enabled', () => {
-    profilerInstance.setEnabled(true);
+    profiler.setEnabled(true);
 
     const error = new Error('Test error');
     const workFn = vi.fn(() => {
       throw error;
     });
 
-    expect(() => profilerInstance.measure('test-event', workFn)).toThrow(error);
+    expect(() => profiler.measure('test-event', workFn)).toThrow(error);
     expect(workFn).toHaveBeenCalled();
   });
 
   it('measure should propagate errors when disabled', () => {
-    profilerInstance.setEnabled(false);
+    profiler.setEnabled(false);
 
     const error = new Error('Test error');
     const workFn = vi.fn(() => {
       throw error;
     });
 
-    expect(() => profilerInstance.measure('test-event', workFn)).toThrow(error);
+    expect(() => profiler.measure('test-event', workFn)).toThrow(error);
     expect(workFn).toHaveBeenCalled();
   });
 
   it('measureAsync should handle async operations correctly when enabled', async () => {
-    profilerInstance.setEnabled(true);
+    profiler.setEnabled(true);
 
     const workFn = vi.fn(async () => {
       await Promise.resolve();
       return 'async-result';
     });
 
-    const result = await profilerInstance.measureAsync(
-      'test-async-event',
-      workFn,
-      {
-        color: 'primary',
-      },
-    );
+    const result = await profiler.measureAsync('test-async-event', workFn, {
+      color: 'primary',
+    });
 
     expect(result).toBe('async-result');
     expect(workFn).toHaveBeenCalled();
@@ -382,17 +375,14 @@ describe('Profiler', () => {
   });
 
   it('measureAsync should execute async work directly when disabled', async () => {
-    profilerInstance.setEnabled(false);
+    profiler.setEnabled(false);
 
     const workFn = vi.fn(async () => {
       await Promise.resolve();
       return 'async-result';
     });
 
-    const result = await profilerInstance.measureAsync(
-      'test-async-event',
-      workFn,
-    );
+    const result = await profiler.measureAsync('test-async-event', workFn);
 
     expect(result).toBe('async-result');
     expect(workFn).toHaveBeenCalled();
@@ -405,7 +395,7 @@ describe('Profiler', () => {
   });
 
   it('measureAsync should propagate async errors when enabled', async () => {
-    profilerInstance.setEnabled(true);
+    profiler.setEnabled(true);
 
     const error = new Error('Async test error');
     const workFn = vi.fn(async () => {
@@ -414,13 +404,13 @@ describe('Profiler', () => {
     });
 
     await expect(
-      profilerInstance.measureAsync('test-async-event', workFn),
+      profiler.measureAsync('test-async-event', workFn),
     ).rejects.toThrow(error);
     expect(workFn).toHaveBeenCalled();
   });
 
   it('measureAsync should propagate async errors when disabled', async () => {
-    profilerInstance.setEnabled(false);
+    profiler.setEnabled(false);
 
     const error = new Error('Async test error');
     const workFn = vi.fn(async () => {
@@ -429,96 +419,8 @@ describe('Profiler', () => {
     });
 
     await expect(
-      profilerInstance.measureAsync('test-async-event', workFn),
+      profiler.measureAsync('test-async-event', workFn),
     ).rejects.toThrow(error);
     expect(workFn).toHaveBeenCalled();
-  });
-});
-
-describe('NodeProfiler', () => {
-  it('should export profiler instance with NodeProfiler methods', () => {
-    expect(profiler).toBeDefined();
-    expect(profiler).toBeInstanceOf(Profiler);
-    expect(typeof profiler.getFinalPath).toBe('function');
-    expect(profiler.getFinalPath()).toBe('trace.json');
-  });
-});
-
-describe('Profiler constructor - origin PID initialization', () => {
-  const originalEnv = { ...process.env };
-  const mockPid = 12345;
-
-  beforeEach(() => {
-    // Reset environment variables before each test
-    vi.unstubAllEnvs();
-    // eslint-disable-next-line functional/immutable-data
-    process.env = { ...originalEnv };
-    // Mock process.pid for consistent testing
-    vi.spyOn(process, 'pid', 'get').mockReturnValue(mockPid);
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it('should set CP_PROFILER_ORIGIN_PID if not already set', () => {
-    // eslint-disable-next-line functional/immutable-data
-    delete process.env.CP_PROFILER_ORIGIN_PID;
-
-    new Profiler({ prefix: 'test', track: 'test-track' });
-
-    expect(process.env.CP_PROFILER_ORIGIN_PID).toBe(String(mockPid));
-  });
-
-  it('should not override existing CP_PROFILER_ORIGIN_PID', () => {
-    const existingPid = '99999';
-    vi.stubEnv('CP_PROFILER_ORIGIN_PID', existingPid);
-
-    new Profiler({ prefix: 'test', track: 'test-track' });
-
-    expect(process.env.CP_PROFILER_ORIGIN_PID).toBe(existingPid);
-  });
-});
-
-describe('isLeaderWal', () => {
-  const originalEnv = { ...process.env };
-  const mockPid = 12345;
-
-  beforeEach(() => {
-    // Reset environment variables before each test
-    vi.unstubAllEnvs();
-    // eslint-disable-next-line functional/immutable-data
-    process.env = { ...originalEnv };
-    // Mock process.pid for consistent testing
-    vi.spyOn(process, 'pid', 'get').mockReturnValue(mockPid);
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it('should return true when CP_PROFILER_ORIGIN_PID matches current process PID', () => {
-    vi.stubEnv('CP_PROFILER_ORIGIN_PID', String(mockPid));
-
-    expect(isLeaderWal('CP_PROFILER_ORIGIN_PID')).toBe(true);
-  });
-
-  it('should return false when CP_PROFILER_ORIGIN_PID does not match current process PID', () => {
-    vi.stubEnv('CP_PROFILER_ORIGIN_PID', '99999'); // Different PID
-
-    expect(isLeaderWal('CP_PROFILER_ORIGIN_PID')).toBe(false);
-  });
-
-  it('should return false when CP_PROFILER_ORIGIN_PID is not set', () => {
-    // eslint-disable-next-line functional/immutable-data
-    delete process.env.CP_PROFILER_ORIGIN_PID;
-
-    expect(isLeaderWal('CP_PROFILER_ORIGIN_PID')).toBe(false);
-  });
-
-  it('should handle string PID values correctly', () => {
-    vi.stubEnv('CP_PROFILER_ORIGIN_PID', String(mockPid));
-
-    expect(isLeaderWal('CP_PROFILER_ORIGIN_PID')).toBe(true);
   });
 });
