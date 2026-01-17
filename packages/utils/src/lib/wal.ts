@@ -159,11 +159,9 @@ export class WriteAheadLogFile<T> {
    */
   append = (v: T) => {
     if (!this.#fd) {
-      this.open();
+      throw new Error('WAL not opened');
     }
-    if (this.#fd) {
-      fs.writeSync(this.#fd, `${this.#encode(v)}\n`);
-    }
+    fs.writeSync(this.#fd, `${this.#encode(v)}\n`);
   };
 
   /** Close the WAL file */
@@ -202,12 +200,16 @@ export class WriteAheadLogFile<T> {
     if (r.errors.length > 0) {
       // Log repack failure - could add proper logging here
     }
-    const validRecords = filterValidRecords(r.records);
-    fs.mkdirSync(path.dirname(out), { recursive: true });
-    fs.writeFileSync(
-      out,
-      `${validRecords.map(v => this.#encode(v)).join('\n')}\n`,
+
+    // Check if any records are invalid entries (from tolerant codec)
+    const hasInvalidEntries = r.records.some(
+      rec => typeof rec === 'object' && rec !== null && '__invalid' in rec,
     );
+    const recordsToWrite = hasInvalidEntries
+      ? r.records
+      : filterValidRecords(r.records);
+    fs.mkdirSync(path.dirname(out), { recursive: true });
+    fs.writeFileSync(out, `${recordsToWrite.map(this.#encode).join('\n')}\n`);
   }
 }
 
@@ -364,16 +366,19 @@ export class ShardedWal<T extends object | string = object> {
       })),
     );
 
-    if (errors.length > 0) {
-      // Log finalize failure - could add proper logging here
-    }
+    // Check if any records are invalid entries (from tolerant codec)
+    const hasInvalidEntries = records.some(
+      r => typeof r === 'object' && r !== null && '__invalid' in r,
+    );
 
-    const validRecords = filterValidRecords(records);
+    const recordsToFinalize = hasInvalidEntries
+      ? records
+      : filterValidRecords(records);
     const out = path.join(this.#dir, this.#format.finalPath());
     fs.mkdirSync(path.dirname(out), {
       recursive: true,
     });
-    fs.writeFileSync(out, this.#format.finalizer(validRecords, opt));
+    fs.writeFileSync(out, this.#format.finalizer(recordsToFinalize, opt));
   }
 
   cleanup() {

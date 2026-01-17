@@ -300,7 +300,10 @@ export const getTraceFile = (opt: {
 }): TraceEventContainer => ({
   traceEvents: opt.traceEvents,
   displayTimeUnit: 'ms',
-  metadata: getTraceMetadata(new Date(), opt.metadata),
+  metadata: getTraceMetadata(
+    opt.startTime ? new Date(opt.startTime) : new Date(),
+    opt.metadata,
+  ),
 });
 
 function processDetail<T extends { detail?: unknown }>(

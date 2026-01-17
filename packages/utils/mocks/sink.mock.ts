@@ -1,5 +1,5 @@
-import { WriteAheadLogFile } from '../src/lib/profiler/wal.js';
-import type { Codec } from '../src/lib/types.js';
+import { WriteAheadLogFile } from '../src/lib/wal.js';
+import type { Codec } from '../src/lib/wal.js';
 
 export class MockFileSink implements WriteAheadLogFile<string> {
   private writtenItems: string[] = [];

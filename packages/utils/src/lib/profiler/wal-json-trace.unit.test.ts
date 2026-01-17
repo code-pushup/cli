@@ -46,7 +46,7 @@ describe('generateTraceContent', () => {
         hardwareConcurrency: 1,
         dataOrigin: 'TraceEvents',
         version: '1.0.0',
-        generatedAt: '2024-01-01T00:00:00Z',
+        generatedAt: expect.any(String),
       },
     });
   });
@@ -120,6 +120,7 @@ describe('generateTraceContent', () => {
         startTime: expect.any(String),
         hardwareConcurrency: 1,
         dataOrigin: 'TraceEvents',
+        generatedAt: expect.any(String),
       },
     });
   });

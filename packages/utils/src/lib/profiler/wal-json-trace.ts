@@ -25,12 +25,11 @@ export function generateTraceContent(
   const traceContainer = getTraceFile({
     traceEvents: events,
     startTime: new Date().toISOString(),
-    metadata,
+    metadata: {
+      ...metadata,
+      generatedAt: new Date().toISOString(),
+    },
   });
-
-  if (events.length === 0) {
-    return JSON.stringify(traceContainer);
-  }
 
   const marginMs = TRACE_MARGIN_MS;
   const marginDurMs = TRACE_MARGIN_DURATION_MS;
@@ -46,7 +45,7 @@ export function generateTraceContent(
   const traceEvents: TraceEvent[] = [
     getInstantEventTracingStartedInBrowser({
       ts: startTs,
-      url: 'generated-trace',
+      url: events.length === 0 ? 'empty-trace' : 'generated-trace',
     }),
     getCompleteEvent({
       name: TRACE_START_MARGIN_NAME,
@@ -77,7 +76,7 @@ export const traceEventWalFormat = <
   const baseName = 'trace';
   const walExtension = '.jsonl';
   const finalExtension = '.json';
-  const groupId = opt?.groupId || 'default';
+  const groupId = opt?.groupId;
   return {
     baseName,
     walExtension,
@@ -87,8 +86,14 @@ export const traceEventWalFormat = <
         JSON.stringify(encodeTraceEvent(event)),
       decode: (json: string) => decodeTraceEvent(JSON.parse(json)) as T,
     },
-    shardPath: (id: string) => `${baseName}.${groupId}.${id}${walExtension}`,
-    finalPath: () => `${baseName}.${groupId}${finalExtension}`,
+    shardPath: (id: string) =>
+      groupId
+        ? `${baseName}.${groupId}.${id}${walExtension}`
+        : `${baseName}.${id}${walExtension}`,
+    finalPath: () =>
+      groupId
+        ? `${baseName}.${groupId}${finalExtension}`
+        : `${baseName}${finalExtension}`,
     // eslint-disable-next-line functional/prefer-tacit
     finalizer: (
       records: UserTimingTraceEvent[],

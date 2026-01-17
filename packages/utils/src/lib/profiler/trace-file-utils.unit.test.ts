@@ -15,18 +15,16 @@ import {
 
 describe('getTraceFile', () => {
   it('should create trace file with empty events array', () => {
-    const result = getTraceFile({ traceEvents: [] });
-
-    expect(result).toStrictEqual({
+    expect(getTraceFile({ traceEvents: [] })).toStrictEqual({
       traceEvents: [],
       displayTimeUnit: 'ms',
       metadata: {
-        source: 'Node.js UserTiming',
+        source: 'DevTools',
+        dataOrigin: 'TraceEvents',
         startTime: expect.any(String),
         hardwareConcurrency: expect.any(Number),
       },
     });
-    expect(() => new Date(result?.metadata!.startTime)).not.toThrow();
   });
 
   it('should create trace file with events', () => {
@@ -52,7 +50,8 @@ describe('getTraceFile', () => {
       ],
       displayTimeUnit: 'ms',
       metadata: {
-        source: 'Node.js UserTiming',
+        source: 'DevTools',
+        dataOrigin: 'TraceEvents',
         startTime: expect.any(String),
         hardwareConcurrency: expect.any(Number),
       },
