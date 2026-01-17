@@ -225,7 +225,10 @@ export type WalFormat<T> = {
   /** Function to generate final merged file path */
   finalPath: () => string;
   /** Finalizer for converting records to a string */
-  finalizer: (records: T[], opt?: Record<string, unknown>) => string;
+  finalizer: (
+    records: (T | InvalidEntry<string>)[],
+    opt?: Record<string, unknown>,
+  ) => string;
 };
 
 export const stringCodec = <
@@ -250,7 +253,7 @@ export const stringCodec = <
  *  - codec defaults to stringCodec<T>()
  *  - shardPath defaults to (id: string) => `${baseName}.${id}${walExtension}`
  *  - finalPath defaults to () => `${baseName}${finalExtension}`
- *  - finalizer defaults to (encodedRecords: T[]) => `${encodedRecords.join('\n')}\n`
+ *  - finalizer defaults to (encodedRecords: (T | InvalidEntry<string>)[]) => `${encodedRecords.join('\n')}\n`
  * @param format - Partial WalFormat configuration
  * @returns Parsed WalFormat with defaults filled in
  */
@@ -264,7 +267,8 @@ export function parseWalFormat<T extends object | string = object>(
     codec = stringCodec<T>(),
     shardPath = (id: string) => `${baseName}.${id}.${walExtension}`,
     finalPath = () => `${baseName}.${finalExtension}`,
-    finalizer = (encodedRecords: T[]) => `${encodedRecords.join('\n')}\n`,
+    finalizer = (encodedRecords: (T | InvalidEntry<string>)[]) =>
+      `${encodedRecords.join('\n')}\n`,
   } = format;
 
   return {

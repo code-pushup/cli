@@ -1,5 +1,5 @@
 import { performance } from 'node:perf_hooks';
-import type { WalFormat } from '../wal.js';
+import type { InvalidEntry, WalFormat } from '../wal.js';
 import {
   decodeTraceEvent,
   encodeTraceEvent,
@@ -108,8 +108,14 @@ export const traceEventWalFormat = <
         : `${baseName}${finalExtension}`,
     // eslint-disable-next-line functional/prefer-tacit
     finalizer: (
-      records: UserTimingTraceEvent[],
+      records: (UserTimingTraceEvent | InvalidEntry<string>)[],
       metadata?: Record<string, unknown>,
-    ) => generateTraceContent(records, metadata),
+    ) => {
+      const validRecords = records.filter(
+        (r): r is UserTimingTraceEvent =>
+          !(typeof r === 'object' && r != null && '__invalid' in r),
+      );
+      return generateTraceContent(validRecords, metadata);
+    },
   } satisfies WalFormat<T>;
 };
