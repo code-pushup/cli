@@ -22,7 +22,6 @@ export function generateTraceContent(
   events: UserTimingTraceEvent[],
   metadata?: Record<string, unknown>,
 ): string {
-  const startTime = new Date().toISOString();
   const traceContainer = getTraceFile({
     traceEvents: events,
     startTime: new Date().toISOString(),
@@ -90,6 +89,7 @@ export const traceEventWalFormat = <
     },
     shardPath: (id: string) => `${baseName}.${groupId}.${id}${walExtension}`,
     finalPath: () => `${baseName}.${groupId}${finalExtension}`,
+    // eslint-disable-next-line functional/prefer-tacit
     finalizer: (
       records: UserTimingTraceEvent[],
       metadata?: Record<string, unknown>,

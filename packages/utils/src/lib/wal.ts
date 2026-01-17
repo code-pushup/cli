@@ -32,18 +32,19 @@ export const createTolerantCodec = <I, O = string>(
   codecOrEncode: ((v: I) => O) | { encode: (v: I) => O; decode: (d: O) => I },
   decode?: (d: O) => I,
 ): Codec<I | InvalidEntry<O>, O> => {
-  let encodeFn: (v: I) => O;
-  let decodeFn: (d: O) => I;
-
-  if (typeof codecOrEncode === 'function') {
-    // Called with separate encode/decode functions
-    encodeFn = codecOrEncode;
-    decodeFn = decode!;
-  } else {
-    // Called with codec object
-    encodeFn = codecOrEncode.encode;
-    decodeFn = codecOrEncode.decode;
+  if (typeof codecOrEncode === 'function' && !decode) {
+    throw new Error(
+      'decode function must be provided when codecOrEncode is a function',
+    );
   }
+
+  const encodeFn =
+    typeof codecOrEncode === 'function' ? codecOrEncode : codecOrEncode.encode;
+
+  const decodeFn =
+    typeof codecOrEncode === 'function'
+      ? (decode as (d: O) => I)
+      : codecOrEncode.decode;
 
   return {
     encode: v =>
@@ -65,7 +66,7 @@ export function filterValidRecords<T>(
 ): T[] {
   return records
     .filter(
-      (r): r is T => !(typeof r === 'object' && r !== null && '__invalid' in r),
+      (r): r is T => !(typeof r === 'object' && r != null && '__invalid' in r),
     )
     .map(r => r as T);
 }
@@ -199,7 +200,7 @@ export class WriteAheadLogFile<T> {
     this.close();
     const r = this.recover();
     if (r.errors.length > 0) {
-      console.log(`Repack failed`);
+      // Log repack failure - could add proper logging here
     }
     const validRecords = filterValidRecords(r.records);
     fs.mkdirSync(path.dirname(out), { recursive: true });
@@ -300,6 +301,7 @@ export function isLeaderWal(envVarName: string): boolean {
  */
 export function setLeaderWal(PROFILER_ORIGIN_PID_ENV_VAR: string): void {
   if (!process.env[PROFILER_ORIGIN_PID_ENV_VAR]) {
+    // eslint-disable-next-line functional/immutable-data
     process.env[PROFILER_ORIGIN_PID_ENV_VAR] = String(process.pid);
   }
 }
@@ -334,17 +336,10 @@ export class ShardedWal<T extends object | string = object> {
       return [];
     }
 
-    const files: string[] = [];
-    const entries = fs.readdirSync(this.#dir);
-
-    for (const entry of entries) {
-      // Look for files matching the pattern: anything ending with .jsonl
-      if (entry.endsWith(this.#format.walExtension)) {
-        files.push(path.join(this.#dir, entry));
-      }
-    }
-
-    return files;
+    return fs
+      .readdirSync(this.#dir)
+      .filter(entry => entry.endsWith(this.#format.walExtension))
+      .map(entry => path.join(this.#dir, entry));
   }
 
   /**
@@ -370,7 +365,7 @@ export class ShardedWal<T extends object | string = object> {
     );
 
     if (errors.length > 0) {
-      console.log(`Finalize failed: ${errors.length} decode errors`);
+      // Log finalize failure - could add proper logging here
     }
 
     const validRecords = filterValidRecords(records);
@@ -389,7 +384,7 @@ export class ShardedWal<T extends object | string = object> {
       const shardDir = path.dirname(f);
       try {
         fs.rmdirSync(shardDir);
-      } catch (error) {
+      } catch {
         // Directory might not be empty or already removed, ignore
       }
     });
