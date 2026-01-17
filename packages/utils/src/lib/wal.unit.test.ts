@@ -51,7 +51,7 @@ describe('createTolerantCodec', () => {
       },
     });
     expect(c.decode(c.encode(42))).toBe(42);
-    // Invalid decode should return InvalidEntry, and encoding that should return the raw value
+
     const invalid = c.decode('x');
     expect(invalid).toStrictEqual({ __invalid: true, raw: 'x' });
     expect(c.encode(invalid)).toBe('x');
@@ -188,11 +188,9 @@ describe('WriteAheadLogFile', () => {
     const w = wal('/test/a.log');
     expect(w.isClosed()).toBe(true);
 
-    // First open should open the file
     w.open();
     expect(w.isClosed()).toBe(false);
 
-    // Subsequent opens should be no-ops
     w.open();
     expect(w.isClosed()).toBe(false);
     w.open();
@@ -221,7 +219,6 @@ describe('WriteAheadLogFile', () => {
   });
 
   it('returns empty result when file does not exist', () => {
-    // File '/test/nonexistent.log' does not exist
     const w = wal('/test/nonexistent.log');
     const result = w.recover();
 
@@ -236,7 +233,7 @@ describe('WriteAheadLogFile', () => {
     vol.mkdirSync('/test', { recursive: true });
     write('/test/a.log', 'line1\nline2\n');
     const w = wal('/test/a.log');
-    // Profiler WAL can recover without opening - it reads the file directly
+
     const result = w.recover();
     expect(result.records).toEqual(['line1', 'line2']);
     expect(result.errors).toEqual([]);
@@ -292,7 +289,6 @@ describe('WriteAheadLogFile', () => {
       },
     });
 
-    // With tolerant codec, repack should succeed and preserve all entries (valid and invalid)
     wal('/test/a.log', tolerantCodec).repack();
     expect(read('/test/a.log')).toBe('ok\nbad\n');
   });
@@ -309,7 +305,6 @@ describe('WriteAheadLogFile', () => {
     const content = 'good\nbad\ngood\n';
     const result = recoverFromContent(content, failingCodec.decode);
 
-    // Should have decode errors
     expect(result.errors).toHaveLength(1);
     expect(result.errors[0].error.message).toBe('Bad record during recovery');
     expect(result.records).toEqual(['good', 'good']);
@@ -390,17 +385,14 @@ describe('stringCodec', () => {
   });
 
   it('should maintain type safety with generics', () => {
-    // Test with string type
     const stringCodecInstance = stringCodec<string>();
     const str: string = stringCodecInstance.decode('test');
     expect(typeof str).toBe('string');
 
-    // Test with object type
     const objectCodecInstance = stringCodec<{ id: number; name: string }>();
     const obj = objectCodecInstance.decode('{"id":1,"name":"test"}');
     expect(obj).toEqual({ id: 1, name: 'test' });
 
-    // Test with union type
     const unionCodecInstance = stringCodec<string | number[]>();
     expect(unionCodecInstance.decode('string')).toBe('string');
     expect(unionCodecInstance.decode('[1,2,3]')).toEqual([1, 2, 3]);
@@ -474,7 +466,6 @@ describe('getShardedGroupId', () => {
   const originalTimeOrigin = performance.timeOrigin;
 
   afterEach(() => {
-    // Restore original timeOrigin
     Object.defineProperty(performance, 'timeOrigin', {
       value: originalTimeOrigin,
       writable: true,
@@ -549,6 +540,6 @@ describe('getShardedGroupId', () => {
 
     const result = getShardedGroupId();
 
-    expect(result).toBe('-124'); // Math.floor(-123.456) = -124
+    expect(result).toBe('-124');
   });
 });

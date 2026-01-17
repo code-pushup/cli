@@ -29,7 +29,7 @@ describe('PerformanceObserverSink', () => {
     options = {
       sink,
       encode,
-      // we test buffered behavior separately
+
       flushThreshold: 1,
     };
 
@@ -51,24 +51,21 @@ describe('PerformanceObserverSink', () => {
         }),
     ).not.toThrow();
     expect(MockPerformanceObserver.instances).toHaveLength(0);
-    // Instance creation covers the default flushThreshold assignment
   });
 
   it('automatically flushes when pendingCount reaches flushThreshold', () => {
     const observer = new PerformanceObserverSink({
       sink,
       encode,
-      flushThreshold: 2, // Set threshold to 2
+      flushThreshold: 2,
     });
     observer.subscribe();
 
     const mockObserver = MockPerformanceObserver.lastInstance();
 
-    // Emit 1 entry - should not trigger flush yet (pendingCount = 1 < 2)
     mockObserver?.emitMark('first-mark');
     expect(sink.getWrittenItems()).toStrictEqual([]);
 
-    // Emit 1 more entry - should trigger flush (pendingCount = 2 >= 2)
     mockObserver?.emitMark('second-mark');
     expect(sink.getWrittenItems()).toStrictEqual([
       'first-mark:mark',
@@ -143,7 +140,7 @@ describe('PerformanceObserverSink', () => {
   it('internal PerformanceObserver should process observed entries', () => {
     const observer = new PerformanceObserverSink({
       ...options,
-      flushThreshold: 20, // Disable automatic flushing for this test
+      flushThreshold: 20,
     });
     observer.subscribe();
 
@@ -318,7 +315,6 @@ describe('PerformanceObserverSink', () => {
   });
 
   it('accepts custom sinks with append method', () => {
-    // Create a simple in-memory sink that just collects items
     const collectedItems: string[] = [];
     const customSink = {
       append: (item: string) => collectedItems.push(item),

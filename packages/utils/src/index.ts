@@ -114,7 +114,6 @@ export {
   settlePromise,
 } from './lib/promises.js';
 export { generateRandomId } from './lib/random.js';
-// export { profiler } from './lib/profiler/profiler.js'; // Disabled - requires WAL functionality
 export {
   CODE_PUSHUP_DOMAIN,
   CODE_PUSHUP_UNICODE_LOGO,
