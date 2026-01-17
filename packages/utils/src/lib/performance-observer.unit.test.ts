@@ -268,7 +268,6 @@ describe('PerformanceObserverSink', () => {
       codec: failingCodec,
     });
 
-    // Mock the append method to throw
     vi.spyOn(failingSink, 'append').mockImplementation(() => {
       throw new Error('Sink write failed');
     });
@@ -316,5 +315,27 @@ describe('PerformanceObserverSink', () => {
         }),
       }),
     );
+  });
+
+  it('accepts custom sinks with append method', () => {
+    // Create a simple in-memory sink that just collects items
+    const collectedItems: string[] = [];
+    const customSink = {
+      append: (item: string) => collectedItems.push(item),
+    };
+
+    const observer = new PerformanceObserverSink({
+      sink: customSink,
+      encode: (entry: PerformanceEntry) => [`${entry.name}:${entry.duration}`],
+    });
+
+    observer.subscribe();
+
+    const mockObserver = MockPerformanceObserver.lastInstance();
+    mockObserver?.emitMark('test-mark');
+
+    observer.flush();
+
+    expect(collectedItems).toContain('test-mark:0');
   });
 });

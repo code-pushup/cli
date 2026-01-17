@@ -4,14 +4,14 @@ import {
   type PerformanceObserverEntryList,
   performance,
 } from 'node:perf_hooks';
-import type { WriteAheadLogFile } from './wal.js';
+import type { AppendableSink } from './wal.js';
 
 const OBSERVED_TYPES = ['mark', 'measure'] as const;
 type ObservedEntryType = 'mark' | 'measure';
 export const DEFAULT_FLUSH_THRESHOLD = 20;
 
 export type PerformanceObserverOptions<T> = {
-  sink: WriteAheadLogFile<T>;
+  sink: AppendableSink<T>;
   encode: (entry: PerformanceEntry) => T[];
   buffered?: boolean;
   flushThreshold?: number;
@@ -21,7 +21,7 @@ export class PerformanceObserverSink<T> {
   #encode: (entry: PerformanceEntry) => T[];
   #buffered: boolean;
   #flushThreshold: number;
-  #sink: WriteAheadLogFile<T>;
+  #sink: AppendableSink<T>;
   #observer: PerformanceObserver | undefined;
 
   #pendingCount = 0;

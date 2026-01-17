@@ -16,6 +16,14 @@ export type Codec<I, O = string> = {
 export type InvalidEntry<O = string> = { __invalid: true; raw: O };
 
 /**
+ * Interface for sinks that can append items.
+ * Allows for different types of appendable storage (WAL, in-memory, etc.)
+ */
+export interface AppendableSink<T> {
+  append: (item: T) => void;
+}
+
+/**
  * Result of recovering records from a WAL file.
  * Contains successfully recovered records and any errors encountered during parsing.
  */
@@ -28,32 +36,20 @@ export type RecoverResult<T> = {
   partialTail: string | null;
 };
 
-export const createTolerantCodec = <I, O = string>(
-  codecOrEncode: ((v: I) => O) | { encode: (v: I) => O; decode: (d: O) => I },
-  decode?: (d: O) => I,
-): Codec<I | InvalidEntry<O>, O> => {
-  if (typeof codecOrEncode === 'function' && !decode) {
-    throw new Error(
-      'decode function must be provided when codecOrEncode is a function',
-    );
-  }
-
-  const encodeFn =
-    typeof codecOrEncode === 'function' ? codecOrEncode : codecOrEncode.encode;
-
-  const decodeFn =
-    typeof codecOrEncode === 'function'
-      ? (decode as (d: O) => I)
-      : codecOrEncode.decode;
+export const createTolerantCodec = <I, O = string>(codec: {
+  encode: (v: I) => O;
+  decode: (d: O) => I;
+}): Codec<I | InvalidEntry<O>, O> => {
+  const { encode, decode } = codec;
 
   return {
     encode: v =>
       v && typeof v === 'object' && '__invalid' in v
         ? (v as InvalidEntry<O>).raw
-        : encodeFn(v as I),
+        : encode(v as I),
     decode: d => {
       try {
-        return decodeFn(d);
+        return decode(d);
       } catch {
         return { __invalid: true, raw: d };
       }
@@ -118,7 +114,7 @@ export function recoverFromContent<T>(
  * Write-Ahead Log implementation for crash-safe append-only logging.
  * Provides atomic operations for writing, recovering, and repacking log entries.
  */
-export class WriteAheadLogFile<T> {
+export class WriteAheadLogFile<T> implements AppendableSink<T> {
   #fd: number | null = null;
   readonly #file: string;
   readonly #decode: Codec<T | InvalidEntry<string>>['decode'];
@@ -133,11 +129,6 @@ export class WriteAheadLogFile<T> {
     const c = createTolerantCodec(options.codec);
     this.#decode = c.decode;
     this.#encode = c.encode;
-  }
-
-  /** Get the file path for this WAL */
-  get path() {
-    return this.#file;
   }
 
   /** Get the file path for this WAL */
@@ -198,13 +189,16 @@ export class WriteAheadLogFile<T> {
     this.close();
     const r = this.recover();
     if (r.errors.length > 0) {
-      // Log repack failure - could add proper logging here
+      console.log('WAL repack encountered decode errors');
     }
 
     // Check if any records are invalid entries (from tolerant codec)
     const hasInvalidEntries = r.records.some(
       rec => typeof rec === 'object' && rec != null && '__invalid' in rec,
     );
+    if (hasInvalidEntries) {
+      console.log('Found invalid entries during WAL repack');
+    }
     const recordsToWrite = hasInvalidEntries
       ? r.records
       : filterValidRecords(r.records);
