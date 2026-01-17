@@ -203,7 +203,7 @@ export class WriteAheadLogFile<T> {
 
     // Check if any records are invalid entries (from tolerant codec)
     const hasInvalidEntries = r.records.some(
-      rec => typeof rec === 'object' && rec !== null && '__invalid' in rec,
+      rec => typeof rec === 'object' && rec != null && '__invalid' in rec,
     );
     const recordsToWrite = hasInvalidEntries
       ? r.records
@@ -359,16 +359,10 @@ export class ShardedWal<T extends object | string = object> {
     }));
 
     const records = fileRecoveries.flatMap(({ recovery }) => recovery.records);
-    const errors = fileRecoveries.flatMap(({ file, recovery }) =>
-      recovery.errors.map(e => ({
-        ...e,
-        line: `${path.basename(file)}:${e.line}`,
-      })),
-    );
 
     // Check if any records are invalid entries (from tolerant codec)
     const hasInvalidEntries = records.some(
-      r => typeof r === 'object' && r !== null && '__invalid' in r,
+      r => typeof r === 'object' && r != null && '__invalid' in r,
     );
 
     const recordsToFinalize = hasInvalidEntries

@@ -18,6 +18,13 @@ const TRACE_MARGIN_MS = 1000;
 /** Duration in milliseconds for margin events */
 const TRACE_MARGIN_DURATION_MS = 20;
 
+/**
+ * Generates a complete Chrome DevTools trace file content as JSON string.
+ * Adds margin events around the trace events and includes metadata.
+ * @param events - Array of user timing trace events to include
+ * @param metadata - Optional custom metadata to include in the trace file
+ * @returns JSON string representation of the complete trace file
+ */
 export function generateTraceContent(
   events: UserTimingTraceEvent[],
   metadata?: Record<string, unknown>,
@@ -64,8 +71,13 @@ export function generateTraceContent(
 }
 
 /**
- * WAL format for Chrome DevTools trace files.
- * Automatically finalizes shards into complete trace files with proper metadata.
+ * Creates a WAL (Write-Ahead Logging) format configuration for Chrome DevTools trace files.
+ * Automatically finalizes shards into complete trace files with proper metadata and margin events.
+ * @template T - Type of trace events, defaults to UserTimingTraceEvent
+ * @param opt - Optional configuration for the WAL format
+ * @param opt.dir - Optional directory for WAL files (not used in returned object)
+ * @param opt.groupId - Optional group identifier for organizing trace files
+ * @returns WalFormat configuration object with codec, paths, and finalizer
  */
 export const traceEventWalFormat = <
   T extends UserTimingTraceEvent = UserTimingTraceEvent,

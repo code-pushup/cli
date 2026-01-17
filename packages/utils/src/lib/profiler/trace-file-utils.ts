@@ -34,8 +34,11 @@ export const nextId2 = () => ({ local: `0x${++id2Count}` });
 
 /**
  * Provides default values for trace event properties.
- * @param opt - Optional overrides for pid, tid, and timestamp
- * @returns Object with pid, tid, and timestamp
+ * @param opt - Optional overrides for process ID, thread ID, and timestamp
+ * @param opt.pid - Process ID override, defaults to current process PID
+ * @param opt.tid - Thread ID override, defaults to current thread ID
+ * @param opt.ts - Timestamp override in microseconds, defaults to current epoch time
+ * @returns Object containing pid, tid, and ts with defaults applied
  */
 const defaults = (opt?: { pid?: number; tid?: number; ts?: number }) => ({
   pid: opt?.pid ?? process.pid,
@@ -275,6 +278,12 @@ export function entryToTraceEvents(
   return [];
 }
 
+/**
+ * Creates trace metadata object with standard DevTools fields and custom metadata.
+ * @param startDate - Optional start date for the trace, defaults to current date
+ * @param metadata - Optional additional metadata to merge into the trace metadata
+ * @returns TraceMetadata object with source, startTime, and merged custom metadata
+ */
 export function getTraceMetadata(
   startDate?: Date,
   metadata?: Record<string, unknown>,
@@ -306,6 +315,13 @@ export const getTraceFile = (opt: {
   ),
 });
 
+/**
+ * Processes the detail property of an object using a custom processor function.
+ * @template T - Object type that may contain a detail property
+ * @param target - Object containing the detail property to process
+ * @param processor - Function to transform the detail value
+ * @returns New object with processed detail property, or original object if no detail
+ */
 function processDetail<T extends { detail?: unknown }>(
   target: T,
   processor: (detail: string | object) => string | object,
@@ -319,6 +335,11 @@ function processDetail<T extends { detail?: unknown }>(
   return target;
 }
 
+/**
+ * Decodes a JSON string detail property back to its original object form.
+ * @param target - Object containing a detail property as a JSON string
+ * @returns UserTimingDetail with the detail property parsed from JSON
+ */
 export function decodeDetail(target: { detail: string }): UserTimingDetail {
   return processDetail(target, detail =>
     typeof detail === 'string'
@@ -327,6 +348,11 @@ export function decodeDetail(target: { detail: string }): UserTimingDetail {
   ) as UserTimingDetail;
 }
 
+/**
+ * Encodes object detail properties to JSON strings for storage/transmission.
+ * @param target - UserTimingDetail object with detail property to encode
+ * @returns UserTimingDetail with object details converted to JSON strings
+ */
 export function encodeDetail(target: UserTimingDetail): UserTimingDetail {
   return processDetail(
     target as UserTimingDetail & { detail?: unknown },
@@ -337,6 +363,12 @@ export function encodeDetail(target: UserTimingDetail): UserTimingDetail {
   ) as UserTimingDetail;
 }
 
+/**
+ * Decodes a raw trace event with JSON string details back to typed UserTimingTraceEvent.
+ * Parses detail properties from JSON strings to objects.
+ * @param event - Raw trace event with string-encoded details
+ * @returns UserTimingTraceEvent with parsed detail objects
+ */
 export function decodeTraceEvent({
   args,
   ...rest
@@ -360,6 +392,12 @@ export function decodeTraceEvent({
   return { ...rest, args: processedArgs } as UserTimingTraceEvent;
 }
 
+/**
+ * Encodes a UserTimingTraceEvent to raw format with JSON string details.
+ * Converts object details to JSON strings for storage/transmission.
+ * @param event - UserTimingTraceEvent with object details
+ * @returns TraceEventRaw with string-encoded details
+ */
 export function encodeTraceEvent({
   args,
   ...rest
