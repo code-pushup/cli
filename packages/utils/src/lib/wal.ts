@@ -70,7 +70,7 @@ export function filterValidRecords<T>(
 /**
  * Pure helper function to recover records from WAL file content.
  * @param content - Raw file content as string
- * @param codec - Codec for decoding records
+ * @param decode - function fo decoding records
  * @returns Recovery result with records, errors, and partial tail
  */
 export function recoverFromContent<T>(
@@ -213,7 +213,7 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
  * Format descriptor that binds codec and file extension together.
  * Prevents misconfiguration by keeping related concerns in one object.
  */
-export type WalFormat<T> = {
+export type WalFormat<T extends object | string> = {
   /** Base name for the WAL (e.g., "trace") */
   baseName: string;
   /** Shard file extension (e.g., ".jsonl") */
@@ -267,8 +267,8 @@ export function parseWalFormat<T extends object | string = object>(
     walExtension = '.log',
     finalExtension = walExtension,
     codec = stringCodec<T>(),
-    shardPath = (id: string) => `${baseName}.${id}.${walExtension}`,
-    finalPath = () => `${baseName}.${finalExtension}`,
+    shardPath = (id: string) => `${baseName}.${id}${walExtension}`,
+    finalPath = () => `${baseName}${finalExtension}`,
     finalizer = (encodedRecords: (T | InvalidEntry<string>)[]) =>
       `${encodedRecords.join('\n')}\n`,
   } = format;

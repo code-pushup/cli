@@ -1,18 +1,22 @@
 import { vol } from 'memfs';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
   type Codec,
+  ShardedWal,
   WriteAheadLogFile,
   createTolerantCodec,
   filterValidRecords,
   getShardId,
   getShardedGroupId,
+  isLeaderWal,
+  parseWalFormat,
   recoverFromContent,
+  setLeaderWal,
   stringCodec,
 } from './wal.js';
 
-const read = (p: string) => vol.readFileSync(p, 'utf8');
+const read = (p: string) => vol.readFileSync(p, 'utf8') as string;
 const write = (p: string, c: string) => vol.writeFileSync(p, c);
 
 const wal = <T extends object | string>(
@@ -305,6 +309,83 @@ describe('WriteAheadLogFile', () => {
     );
     expect(result.records).toEqual(['good', 'good']);
   });
+
+  it('repacks with invalid entries and logs warning', () => {
+    const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+    vol.mkdirSync('/test', { recursive: true });
+    write('/test/a.log', 'ok\nbad\n');
+
+    const tolerantCodec = createTolerantCodec({
+      encode: (s: string) => s,
+      decode: (s: string) => {
+        if (s === 'bad') throw new Error('Bad record');
+        return s;
+      },
+    });
+
+    wal('/test/a.log', tolerantCodec).repack();
+
+    expect(consoleLogSpy).toHaveBeenCalledWith(
+      'Found invalid entries during WAL repack',
+    );
+    expect(read('/test/a.log')).toBe('ok\nbad\n');
+
+    consoleLogSpy.mockRestore();
+  });
+
+  it('recoverFromContent handles decode errors and returns them', () => {
+    const failingCodec: Codec<string> = {
+      encode: (s: string) => s,
+      decode: (s: string) => {
+        if (s === 'bad') throw new Error('Bad record during recovery');
+        return s;
+      },
+    };
+
+    const content = 'good\nbad\ngood\n';
+    const result = recoverFromContent(content, failingCodec.decode);
+
+    expect(result.records).toEqual(['good', 'good']);
+    expect(result.errors).toHaveLength(1);
+    expect(result).toHaveProperty(
+      'errors',
+      expect.arrayContaining([
+        {
+          lineNo: 2,
+          line: 'bad',
+          error: expect.any(Error),
+        },
+      ]),
+    );
+  });
+
+  it('repack logs decode errors when recover returns errors', () => {
+    const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+    vol.mkdirSync('/test', { recursive: true });
+    write('/test/a.log', 'content\n');
+
+    const walInstance = wal('/test/a.log');
+
+    // Mock the recover method to return errors
+    const recoverSpy = vi.spyOn(walInstance, 'recover').mockReturnValue({
+      records: ['content'],
+      errors: [
+        { lineNo: 1, line: 'content', error: new Error('Mock decode error') },
+      ],
+      partialTail: null,
+    });
+
+    walInstance.repack();
+
+    expect(consoleLogSpy).toHaveBeenCalledWith(
+      'WAL repack encountered decode errors',
+    );
+
+    recoverSpy.mockRestore();
+    consoleLogSpy.mockRestore();
+  });
 });
 
 describe('stringCodec', () => {
@@ -489,5 +570,348 @@ describe('getShardedGroupId', () => {
 
     expect(result1).toBe(result2);
     expect(result1).toBe('500000');
+  });
+});
+
+describe('parseWalFormat', () => {
+  it('should apply all defaults when given empty config', () => {
+    const result = parseWalFormat({});
+
+    expect(result.baseName).toMatch(/^\d+$/);
+    expect(result.walExtension).toBe('.log');
+    expect(result.finalExtension).toBe('.log');
+    expect(result.codec).toBeDefined();
+    expect(typeof result.shardPath).toBe('function');
+    expect(typeof result.finalPath).toBe('function');
+    expect(typeof result.finalizer).toBe('function');
+  });
+
+  it('should use provided baseName and default others', () => {
+    const result = parseWalFormat({ baseName: 'test' });
+
+    expect(result.baseName).toBe('test');
+    expect(result.walExtension).toBe('.log');
+    expect(result.finalExtension).toBe('.log');
+    expect(result.shardPath('123')).toBe('test.123.log');
+    expect(result.finalPath()).toBe('test.log');
+  });
+
+  it('should use provided walExtension and default finalExtension to match', () => {
+    const result = parseWalFormat({ walExtension: '.wal' });
+
+    expect(result.walExtension).toBe('.wal');
+    expect(result.finalExtension).toBe('.wal');
+    expect(result.shardPath('123')).toMatch(/\.123\.wal$/);
+    expect(result.finalPath()).toMatch(/\.wal$/);
+  });
+
+  it('should use provided finalExtension independently', () => {
+    const result = parseWalFormat({
+      walExtension: '.wal',
+      finalExtension: '.json',
+    });
+
+    expect(result.walExtension).toBe('.wal');
+    expect(result.finalExtension).toBe('.json');
+    expect(result.shardPath('123')).toMatch(/\.123\.wal$/);
+    expect(result.finalPath()).toMatch(/\.json$/);
+  });
+
+  it('should use provided codec', () => {
+    const customCodec = stringCodec<string>();
+    const result = parseWalFormat({ codec: customCodec });
+
+    expect(result.codec).toBe(customCodec);
+  });
+
+  it('should use custom shardPath function', () => {
+    const customShardPath = (id: string) => `shard-${id}.log`;
+    const result = parseWalFormat({ shardPath: customShardPath });
+
+    expect(result.shardPath('test')).toBe('shard-test.log');
+  });
+
+  it('should use custom finalPath function', () => {
+    const customFinalPath = () => 'final-output.log';
+    const result = parseWalFormat({ finalPath: customFinalPath });
+
+    expect(result.finalPath()).toBe('final-output.log');
+  });
+
+  it('should use custom finalizer function', () => {
+    const customFinalizer = (records: any[]) => `custom: ${records.length}`;
+    const result = parseWalFormat({ finalizer: customFinalizer });
+
+    expect(result.finalizer(['a', 'b'])).toBe('custom: 2');
+  });
+
+  it('should work with all custom parameters', () => {
+    const config = {
+      baseName: 'my-wal',
+      walExtension: '.wal',
+      finalExtension: '.json',
+      codec: stringCodec<string>(),
+      shardPath: (id: string) => `shards/${id}.wal`,
+      finalPath: () => 'output/final.json',
+      finalizer: (records: any[]) => JSON.stringify(records),
+    };
+
+    const result = parseWalFormat(config);
+
+    expect(result.baseName).toBe('my-wal');
+    expect(result.walExtension).toBe('.wal');
+    expect(result.finalExtension).toBe('.json');
+    expect(result.codec).toBe(config.codec);
+    expect(result.shardPath('123')).toBe('shards/123.wal');
+    expect(result.finalPath()).toBe('output/final.json');
+    expect(result.finalizer(['test'])).toBe('["test"]');
+  });
+
+  it('should use default finalizer when none provided', () => {
+    const result = parseWalFormat({ baseName: 'test' });
+    expect(result.finalizer(['line1', 'line2'])).toBe('line1\nline2\n');
+    expect(result.finalizer([])).toBe('\n');
+  });
+});
+
+describe('isLeaderWal', () => {
+  const originalEnv = { ...process.env };
+
+  afterEach(() => {
+    process.env = { ...originalEnv }; // eslint-disable-line functional/immutable-data
+  });
+
+  it('should return true when env var matches current pid', () => {
+    const envVarName = 'TEST_LEADER_PID';
+    process.env[envVarName] = '10001'; // eslint-disable-line functional/immutable-data
+
+    const result = isLeaderWal(envVarName);
+    expect(result).toBe(true);
+  });
+
+  it('should return false when env var does not match current pid', () => {
+    const envVarName = 'TEST_LEADER_PID';
+    process.env[envVarName] = '67890'; // eslint-disable-line functional/immutable-data
+
+    const result = isLeaderWal(envVarName);
+    expect(result).toBe(false);
+  });
+
+  it('should return false when env var is not set', () => {
+    const envVarName = 'NON_EXISTENT_VAR';
+    delete process.env[envVarName]; // eslint-disable-line @typescript-eslint/no-dynamic-delete,functional/immutable-data
+
+    const result = isLeaderWal(envVarName);
+    expect(result).toBe(false);
+  });
+
+  it('should return false when env var is empty string', () => {
+    const envVarName = 'TEST_LEADER_PID';
+    process.env[envVarName] = ''; // eslint-disable-line functional/immutable-data
+
+    const result = isLeaderWal(envVarName);
+    expect(result).toBe(false);
+  });
+});
+
+describe('setLeaderWal', () => {
+  const originalEnv = { ...process.env };
+
+  afterEach(() => {
+    process.env = { ...originalEnv }; // eslint-disable-line functional/immutable-data
+  });
+
+  it('should set env var when not already set', () => {
+    const envVarName = 'TEST_ORIGIN_PID';
+    delete process.env[envVarName]; // eslint-disable-line @typescript-eslint/no-dynamic-delete,functional/immutable-data
+    expect(process.env[envVarName]).toBeUndefined();
+
+    setLeaderWal(envVarName);
+
+    expect(process.env[envVarName]).toBe('10001'); // process.pid is mocked to 10001
+  });
+
+  it('should not overwrite existing env var', () => {
+    const envVarName = 'TEST_ORIGIN_PID';
+    const existingValue = '99999';
+
+    process.env[envVarName] = existingValue; // eslint-disable-line functional/immutable-data
+    setLeaderWal(envVarName);
+
+    expect(process.env[envVarName]).toBe(existingValue);
+  });
+
+  it('should set env var to current pid as string', () => {
+    const envVarName = 'TEST_ORIGIN_PID';
+    delete process.env[envVarName]; // eslint-disable-line @typescript-eslint/no-dynamic-delete,functional/immutable-data
+    setLeaderWal(envVarName);
+
+    expect(process.env[envVarName]).toBe('10001');
+  });
+});
+
+describe('ShardedWal', () => {
+  beforeEach(() => {
+    vol.reset();
+    vol.fromJSON({}, MEMFS_VOLUME);
+  });
+
+  it('should create instance with directory and format', () => {
+    const sw = new ShardedWal('/test/shards', {});
+
+    expect(sw).toBeInstanceOf(ShardedWal);
+  });
+
+  it('should create shard with correct file path', () => {
+    const sw = new ShardedWal('/test/shards', {
+      baseName: 'test-wal',
+      walExtension: '.log',
+    });
+
+    const shard = sw.shard('123-456');
+    expect(shard).toBeInstanceOf(WriteAheadLogFile);
+    expect(shard.getPath()).toBe('/test/shards/test-wal.123-456.log');
+  });
+
+  it('should list no shard files when directory does not exist', () => {
+    const sw = new ShardedWal('/nonexistent', {});
+    // Access private method for testing
+    const files = (sw as any).shardFiles();
+    expect(files).toEqual([]);
+  });
+
+  it('should list no shard files when directory is empty', () => {
+    vol.mkdirSync('/empty', { recursive: true });
+    const sw = new ShardedWal('/empty', {});
+    const files = (sw as any).shardFiles();
+    expect(files).toEqual([]);
+  });
+
+  it('should list shard files matching extension', () => {
+    vol.mkdirSync('/shards', { recursive: true });
+    write('/shards/wal.1.log', 'content1');
+    write('/shards/wal.2.log', 'content2');
+    write('/shards/other.txt', 'not a shard');
+
+    const sw = new ShardedWal('/shards', { walExtension: '.log' });
+    const files = (sw as any).shardFiles();
+
+    expect(files).toHaveLength(2);
+    expect(files).toContain('/shards/wal.1.log');
+    expect(files).toContain('/shards/wal.2.log');
+  });
+
+  it('should finalize empty shards to empty result', () => {
+    vol.mkdirSync('/shards', { recursive: true });
+    const sw = new ShardedWal('/shards', {
+      baseName: 'test',
+      finalPath: () => 'final.json',
+      finalizer: records => `${JSON.stringify(records)}\n`,
+    });
+
+    sw.finalize();
+
+    expect(read('/shards/final.json')).toBe('[]\n');
+  });
+
+  it('should finalize multiple shards into single file', () => {
+    vol.mkdirSync('/shards', { recursive: true });
+    write('/shards/test.1.log', 'record1\n');
+    write('/shards/test.2.log', 'record2\n');
+
+    const sw = new ShardedWal('/shards', {
+      baseName: 'test',
+      walExtension: '.log',
+      finalPath: () => 'merged.json',
+      finalizer: records => `${JSON.stringify(records)}\n`,
+    });
+
+    sw.finalize();
+
+    const result = JSON.parse(read('/shards/merged.json').trim());
+    expect(result).toEqual(['record1', 'record2']);
+  });
+
+  it('should handle invalid entries during finalize', () => {
+    vol.mkdirSync('/shards', { recursive: true });
+    write('/shards/test.1.log', 'valid\n');
+    write('/shards/test.2.log', 'invalid\n');
+
+    const tolerantCodec = createTolerantCodec({
+      encode: (s: string) => s,
+      decode: (s: string) => {
+        if (s === 'invalid') throw new Error('Bad record');
+        return s;
+      },
+    });
+
+    const sw = new ShardedWal('/shards', {
+      baseName: 'test',
+      walExtension: '.log',
+      codec: tolerantCodec,
+      finalPath: () => 'final.json',
+      finalizer: records => `${JSON.stringify(records)}\n`,
+    });
+
+    sw.finalize();
+
+    const result = JSON.parse(read('/shards/final.json').trim());
+    expect(result).toHaveLength(2);
+    expect(result[0]).toBe('valid');
+    expect(result[1]).toEqual({ __invalid: true, raw: 'invalid' });
+  });
+
+  it('should cleanup shard files', () => {
+    vol.mkdirSync('/shards', { recursive: true });
+    write('/shards/test.1.log', 'content1');
+    write('/shards/test.2.log', 'content2');
+
+    const sw = new ShardedWal('/shards', {
+      baseName: 'test',
+      walExtension: '.log',
+    });
+
+    expect(vol.existsSync('/shards/test.1.log')).toBe(true);
+    expect(vol.existsSync('/shards/test.2.log')).toBe(true);
+
+    sw.cleanup();
+
+    expect(vol.existsSync('/shards/test.1.log')).toBe(false);
+    expect(vol.existsSync('/shards/test.2.log')).toBe(false);
+  });
+
+  it('should handle cleanup when some shard files do not exist', () => {
+    vol.mkdirSync('/shards', { recursive: true });
+    write('/shards/test.1.log', 'content1');
+
+    const sw = new ShardedWal('/shards', {
+      baseName: 'test',
+      walExtension: '.log',
+    });
+
+    // Manually delete one file to simulate race condition
+    vol.unlinkSync('/shards/test.1.log');
+
+    // Should not throw
+    expect(() => sw.cleanup()).not.toThrow();
+  });
+
+  it('should use custom options in finalizer', () => {
+    vol.mkdirSync('/shards', { recursive: true });
+    write('/shards/test.1.log', 'record1\n');
+
+    const sw = new ShardedWal('/shards', {
+      baseName: 'test',
+      walExtension: '.log',
+      finalPath: () => 'final.json',
+      finalizer: (records, opt) =>
+        `${JSON.stringify({ records, meta: opt })}\n`,
+    });
+
+    sw.finalize({ version: '1.0', compressed: true });
+
+    const result = JSON.parse(read('/shards/final.json'));
+    expect(result.records).toEqual(['record1']);
+    expect(result.meta).toEqual({ version: '1.0', compressed: true });
   });
 });
