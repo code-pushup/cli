@@ -106,7 +106,6 @@ export const traceEventWalFormat = <
       groupId
         ? `${baseName}.${groupId}${finalExtension}`
         : `${baseName}${finalExtension}`,
-    // eslint-disable-next-line functional/prefer-tacit
     finalizer: (
       records: (UserTimingTraceEvent | InvalidEntry<string>)[],
       metadata?: Record<string, unknown>,

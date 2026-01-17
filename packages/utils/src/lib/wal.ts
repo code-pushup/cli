@@ -19,9 +19,9 @@ export type InvalidEntry<O = string> = { __invalid: true; raw: O };
  * Interface for sinks that can append items.
  * Allows for different types of appendable storage (WAL, in-memory, etc.)
  */
-export interface AppendableSink<T> {
+export type AppendableSink<T> = {
   append: (item: T) => void;
-}
+};
 
 /**
  * Result of recovering records from a WAL file.
@@ -189,6 +189,7 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
     this.close();
     const r = this.recover();
     if (r.errors.length > 0) {
+      // eslint-disable-next-line no-console
       console.log('WAL repack encountered decode errors');
     }
 
@@ -197,6 +198,7 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
       rec => typeof rec === 'object' && rec != null && '__invalid' in rec,
     );
     if (hasInvalidEntries) {
+      // eslint-disable-next-line no-console
       console.log('Found invalid entries during WAL repack');
     }
     const recordsToWrite = hasInvalidEntries

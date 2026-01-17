@@ -317,6 +317,7 @@ describe('PerformanceObserverSink', () => {
   it('accepts custom sinks with append method', () => {
     const collectedItems: string[] = [];
     const customSink = {
+      // eslint-disable-next-line functional/immutable-data
       append: (item: string) => collectedItems.push(item),
     };
 
