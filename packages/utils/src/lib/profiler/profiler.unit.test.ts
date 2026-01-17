@@ -1,12 +1,8 @@
 import { performance } from 'node:perf_hooks';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
-import {
-  Profiler,
-  type ProfilerOptions,
-  isLeaderWal,
-  profiler,
-} from './profiler.js';
+import { Profiler, type ProfilerOptions, profiler } from './profiler.js';
+import { isLeaderWal } from './wal.js';
 
 describe('Profiler', () => {
   const getProfiler = (overrides?: Partial<ProfilerOptions>) =>
@@ -504,25 +500,25 @@ describe('isLeaderWal', () => {
   it('should return true when CP_PROFILER_ORIGIN_PID matches current process PID', () => {
     vi.stubEnv('CP_PROFILER_ORIGIN_PID', String(mockPid));
 
-    expect(isLeaderWal()).toBe(true);
+    expect(isLeaderWal('CP_PROFILER_ORIGIN_PID')).toBe(true);
   });
 
   it('should return false when CP_PROFILER_ORIGIN_PID does not match current process PID', () => {
     vi.stubEnv('CP_PROFILER_ORIGIN_PID', '99999'); // Different PID
 
-    expect(isLeaderWal()).toBe(false);
+    expect(isLeaderWal('CP_PROFILER_ORIGIN_PID')).toBe(false);
   });
 
   it('should return false when CP_PROFILER_ORIGIN_PID is not set', () => {
     // eslint-disable-next-line functional/immutable-data
     delete process.env.CP_PROFILER_ORIGIN_PID;
 
-    expect(isLeaderWal()).toBe(false);
+    expect(isLeaderWal('CP_PROFILER_ORIGIN_PID')).toBe(false);
   });
 
   it('should handle string PID values correctly', () => {
     vi.stubEnv('CP_PROFILER_ORIGIN_PID', String(mockPid));
 
-    expect(isLeaderWal()).toBe(true);
+    expect(isLeaderWal('CP_PROFILER_ORIGIN_PID')).toBe(true);
   });
 });
