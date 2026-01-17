@@ -118,7 +118,7 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
   #fd: number | null = null;
   readonly #file: string;
   readonly #decode: Codec<T | InvalidEntry<string>>['decode'];
-  readonly #encode: Codec<T | InvalidEntry<string>>['encode'];
+  readonly #encode: Codec<T>['encode'];
 
   /**
    * Create a new WAL file instance.
@@ -202,7 +202,7 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
       console.log('Found invalid entries during WAL repack');
     }
     const recordsToWrite = hasInvalidEntries
-      ? r.records
+      ? (r.records as T[])
       : filterValidRecords(r.records);
     fs.mkdirSync(path.dirname(out), { recursive: true });
     fs.writeFileSync(out, `${recordsToWrite.map(this.#encode).join('\n')}\n`);

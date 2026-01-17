@@ -160,6 +160,18 @@ describe('WriteAheadLogFile', () => {
     vol.fromJSON({}, MEMFS_VOLUME);
   });
 
+  it('should act as WLA for any kind of data', () => {
+    const w = wal('/test/a.log', stringCodec<object>());
+    w.open();
+    w.append({ id: 1, name: 'test' });
+    w.close();
+    expect(w.recover()).toStrictEqual({ id: 1, name: 'test' });
+    expect(() =>
+      w.append('{ id: 1, name:...' as unknown as object),
+    ).not.toThrow();
+    w.expect(w.recover()).toStrictEqual({ id: 1, name: 'test' });
+  });
+
   it('should create instance with file path and codecs without opening', () => {
     const w = wal('/test/a.log');
     expect(w).toBeInstanceOf(WriteAheadLogFile);
@@ -797,8 +809,12 @@ describe('ShardedWal', () => {
     const files = (sw as any).shardFiles();
 
     expect(files).toHaveLength(2);
-    expect(files).toContain('/shards/wal.1.log');
-    expect(files).toContain('/shards/wal.2.log');
+    expect(files).toEqual(
+      expect.arrayContaining([
+        expect.pathToMatch('/shards/wal.1.log'),
+        expect.pathToMatch('/shards/wal.2.log'),
+      ]),
+    );
   });
 
   it('should finalize empty shards to empty result', () => {
