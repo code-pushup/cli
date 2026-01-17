@@ -251,5 +251,5 @@ const saved = profiler.measure('save-user', () => saveToDb(user), {
 
 ## Resources
 
-- **[Chrome DevTools Extensibility API](?)** - Official documentation for performance profiling
+- **[Chrome DevTools Extensibility API](https://developer.chrome.com/docs/devtools/performance/extension)** - Official documentation for performance profiling
 - **[User Timing API](https://developer.mozilla.org/en-US/docs/Web/API/User_Timing_API)** - Web Performance API reference

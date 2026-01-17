@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { MockTraceEventFileSink } from '../../../mocks/sink.mock.js';
 import type { PerformanceEntryEncoder } from '../performance-observer.js';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
