@@ -1,5 +1,9 @@
+import type { PerformanceEntry } from 'node:perf_hooks';
 import process from 'node:process';
+import { threadId } from 'node:worker_threads';
 import { isEnvVarEnabled } from '../env.js';
+import { installExitHandlers } from '../exit-process.js';
+import { PerformanceObserverSink } from '../performance-observer.js';
 import {
   type ActionTrackConfigs,
   type MeasureCtxOptions,
@@ -14,25 +18,16 @@ import type {
   DevToolsColor,
   EntryMeta,
 } from '../user-timing-extensibility-api.type.js';
-import { PROFILER_ENABLED_ENV_VAR } from './constants.js';
-
-/**
- * Configuration options for creating a Profiler instance.
- *
- * @template T - Record type defining available track names and their configurations
- */
-type ProfilerMeasureOptions<T extends ActionTrackConfigs> =
-  MeasureCtxOptions & {
-    /** Custom track configurations that will be merged with default settings */
-    tracks?: Record<keyof T, Partial<ActionTrackEntryPayload>>;
-    /** Whether profiling should be enabled (defaults to CP_PROFILING env var) */
-    enabled?: boolean;
-  };
-
-/**
- * Options for creating a performance marker.
- */
-export type MarkerOptions = EntryMeta & { color?: DevToolsColor };
+import {
+  PROFILER_DIRECTORY,
+  PROFILER_ENABLED_ENV_VAR,
+  PROFILER_ORIGIN_PID_ENV_VAR,
+} from './constants.js';
+import { entryToTraceEvents } from './trace-file-utils.js';
+import type { UserTimingTraceEvent } from './trace-file.type.js';
+import { traceEventWalFormat } from './wal-json-trace.js';
+import { ShardedWal, WriteAheadLogFile } from './wal.js';
+import type { WalFormat } from './wal.js';
 
 /**
  * Options for configuring a Profiler instance.
@@ -49,7 +44,15 @@ export type MarkerOptions = EntryMeta & { color?: DevToolsColor };
  * @property tracks - Custom track configurations merged with defaults
  */
 export type ProfilerOptions<T extends ActionTrackConfigs = ActionTrackConfigs> =
-  ProfilerMeasureOptions<T>;
+  MeasureCtxOptions & {
+    tracks?: Record<keyof T, Partial<ActionTrackEntryPayload>>;
+    enabled?: boolean;
+  };
+
+/**
+ * Options for creating a performance marker.
+ */
+export type MarkerOptions = EntryMeta & { color?: DevToolsColor };
 
 /**
  * Performance profiler that creates structured timing measurements with Chrome DevTools Extensibility API payloads.
@@ -77,6 +80,11 @@ export class Profiler<T extends ActionTrackConfigs> {
    *
    */
   constructor(options: ProfilerOptions<T>) {
+    // Initialize origin PID early - must happen before user code runs
+    if (!process.env[PROFILER_ORIGIN_PID_ENV_VAR]) {
+      process.env[PROFILER_ORIGIN_PID_ENV_VAR] = String(process.pid);
+    }
+
     const { tracks, prefix, enabled, ...defaults } = options;
     const dataType = 'track-entry';
 
@@ -226,3 +234,75 @@ export class Profiler<T extends ActionTrackConfigs> {
     }
   }
 }
+
+/**
+ * Determines if this process is the leader WAL process using the origin PID heuristic.
+ *
+ * The leader is the process that first enabled profiling (the one that set CP_PROFILER_ORIGIN_PID).
+ * All descendant processes inherit the environment but have different PIDs.
+ *
+ * @returns true if this is the leader WAL process, false otherwise
+ */
+export function isLeaderWal(): boolean {
+  return process.env[PROFILER_ORIGIN_PID_ENV_VAR] === String(process.pid);
+}
+
+export class NodeProfiler<
+  TracksConfig extends ActionTrackConfigs = ActionTrackConfigs,
+  CodecOutput extends string | object = UserTimingTraceEvent,
+> extends Profiler<TracksConfig> {
+  #shard: WriteAheadLogFile<CodecOutput>;
+  #perfObserver: PerformanceObserverSink<CodecOutput>;
+  #shardWal: ShardedWal<CodecOutput>;
+  readonly #format: WalFormat<CodecOutput>;
+  constructor(
+    options: ProfilerOptions<TracksConfig> & {
+      directory?: string;
+      performanceEntryEncode: (entry: PerformanceEntry) => CodecOutput[];
+      format: WalFormat<CodecOutput>;
+    },
+  ) {
+    const {
+      directory = PROFILER_DIRECTORY,
+      performanceEntryEncode,
+      format,
+    } = options;
+    super(options);
+    const shardId = `${process.pid}-${threadId}`;
+
+    this.#format = format;
+    this.#shardWal = new ShardedWal(directory, format);
+    this.#shard = this.#shardWal.shard(shardId);
+
+    this.#perfObserver = new PerformanceObserverSink({
+      sink: this.#shard,
+      encode: performanceEntryEncode,
+      buffered: true,
+      flushThreshold: 100,
+    });
+
+    installExitHandlers({
+      onExit: () => {
+        this.#perfObserver.flush();
+        this.#perfObserver.unsubscribe();
+        this.#shard.close();
+        if (isLeaderWal()) {
+          this.#shardWal.finalize();
+          this.#shardWal.cleanup();
+        }
+      },
+    });
+  }
+
+  getFinalPath() {
+    return this.#format.finalPath();
+  }
+}
+
+export const profiler = new NodeProfiler({
+  prefix: 'cp',
+  track: 'CLI',
+  trackGroup: 'Code Pushup',
+  performanceEntryEncode: entryToTraceEvents,
+  format: traceEventWalFormat(),
+});

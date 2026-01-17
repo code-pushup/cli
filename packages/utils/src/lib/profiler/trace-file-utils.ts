@@ -1,7 +1,10 @@
-import type { PerformanceMark, PerformanceMeasure } from 'node:perf_hooks';
+import type {
+  PerformanceEntry,
+  PerformanceMark,
+  PerformanceMeasure,
+} from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
 import { defaultClock } from '../clock-epoch.js';
-import { JsonCodec } from '../file-sink.js';
 import type { UserTimingDetail } from '../user-timing-extensibility-api.type.js';
 import type {
   BeginEvent,
@@ -15,6 +18,7 @@ import type {
   TraceEvent,
   TraceEventContainer,
   TraceEventRaw,
+  TraceMetadata,
   UserTimingTraceEvent,
 } from './trace-file.type.js';
 
@@ -252,6 +256,23 @@ export const measureToSpanEvents = (
     args: entry.detail ? { data: { detail: entry.detail } } : undefined,
   });
 
+/**
+ * Converts a PerformanceEntry to an array of UserTimingTraceEvents.
+ * A mark is converted to an instant event, and a measure is converted to a pair of span events.
+ * Other entry types are ignored.
+ * @param entry - Performance entry
+ * @returns UserTimingTraceEvent[]
+ */
+export function entryToTraceEvents(entry: PerformanceEntry) {
+  if (entry.entryType === 'mark') {
+    return [markToInstantEvent(entry as PerformanceMark)];
+  }
+  if (entry.entryType === 'measure') {
+    return measureToSpanEvents(entry as PerformanceMeasure);
+  }
+  return [];
+}
+
 export function getTraceMetadata(
   startDate?: Date,
   metadata?: Record<string, unknown>,
@@ -273,14 +294,11 @@ export function getTraceMetadata(
 export const getTraceFile = (opt: {
   traceEvents: TraceEvent[];
   startTime?: string;
+  metadata?: Partial<TraceMetadata>;
 }): TraceEventContainer => ({
   traceEvents: opt.traceEvents,
   displayTimeUnit: 'ms',
-  metadata: {
-    source: 'Node.js UserTiming',
-    startTime: opt.startTime ?? new Date().toISOString(),
-    hardwareConcurrency: 1,
-  },
+  metadata: getTraceMetadata(new Date(), opt.metadata),
 });
 
 function processDetail<T extends { detail?: unknown }>(
@@ -298,7 +316,9 @@ function processDetail<T extends { detail?: unknown }>(
 
 export function decodeDetail(target: { detail: string }): UserTimingDetail {
   return processDetail(target, detail =>
-    typeof detail === 'string' ? JsonCodec.decode(detail) : detail,
+    typeof detail === 'string'
+      ? (JSON.parse(detail) as string | object)
+      : detail,
   ) as UserTimingDetail;
 }
 
@@ -307,14 +327,17 @@ export function encodeDetail(target: UserTimingDetail): UserTimingDetail {
     target as UserTimingDetail & { detail?: unknown },
     (detail: string | object) =>
       typeof detail === 'object'
-        ? JsonCodec.encode(detail as UserTimingDetail)
+        ? JSON.stringify(detail as UserTimingDetail)
         : detail,
   ) as UserTimingDetail;
 }
 
-export function decodeTraceEvent({ args, ...rest }: TraceEventRaw): TraceEvent {
+export function decodeTraceEvent({
+  args,
+  ...rest
+}: TraceEventRaw): UserTimingTraceEvent {
   if (!args) {
-    return rest as TraceEvent;
+    return rest as UserTimingTraceEvent;
   }
 
   const processedArgs = decodeDetail(args as { detail: string });
@@ -326,10 +349,10 @@ export function decodeTraceEvent({ args, ...rest }: TraceEventRaw): TraceEvent {
         ...processedArgs,
         data: decodeDetail(args.data as { detail: string }),
       },
-    } as TraceEvent;
+    } as UserTimingTraceEvent;
   }
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  return { ...rest, args: processedArgs } as TraceEvent;
+  return { ...rest, args: processedArgs } as UserTimingTraceEvent;
 }
 
 export function encodeTraceEvent({

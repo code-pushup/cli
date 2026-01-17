@@ -4,31 +4,24 @@ import {
   type PerformanceObserverEntryList,
   performance,
 } from 'node:perf_hooks';
-import type {
-  Buffered,
-  EncoderInterface,
-  Observer,
-  Sink,
-} from './sink-source.type';
+import type { WriteAheadLogFile } from './profiler/wal.js';
 
 const OBSERVED_TYPES = ['mark', 'measure'] as const;
 type ObservedEntryType = 'mark' | 'measure';
 export const DEFAULT_FLUSH_THRESHOLD = 20;
 
 export type PerformanceObserverOptions<T> = {
-  sink: Sink<T, unknown>;
+  sink: WriteAheadLogFile<T>;
   encode: (entry: PerformanceEntry) => T[];
   buffered?: boolean;
   flushThreshold?: number;
 };
 
-export class PerformanceObserverSink<T>
-  implements Observer, Buffered, EncoderInterface<PerformanceEntry, T[]>
-{
+export class PerformanceObserverSink<T> {
   #encode: (entry: PerformanceEntry) => T[];
   #buffered: boolean;
   #flushThreshold: number;
-  #sink: Sink<T, unknown>;
+  #sink: WriteAheadLogFile<T>;
   #observer: PerformanceObserver | undefined;
 
   #pendingCount = 0;
@@ -89,7 +82,7 @@ export class PerformanceObserverSink<T>
       try {
         fresh
           .flatMap(entry => this.encode(entry))
-          .forEach(item => this.#sink.write(item));
+          .forEach(item => this.#sink.append(item));
 
         this.#written.set(t, written + fresh.length);
       } catch (error) {

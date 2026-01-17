@@ -13,7 +13,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['packages/utils/src/lib/**/file-sink*.ts'],
+    files: ['packages/utils/src/lib/**/wal*.ts'],
     rules: {
       'n/no-sync': 'off',
     },

@@ -13,6 +13,7 @@ import {
   type PerformanceObserverOptions,
   PerformanceObserverSink,
 } from './performance-observer.js';
+import type { Codec } from './types.js';
 
 describe('PerformanceObserverSink', () => {
   let encode: MockedFunction<(entry: PerformanceEntry) => string[]>;
@@ -255,11 +256,22 @@ describe('PerformanceObserverSink', () => {
   });
 
   it('flush wraps sink write errors with descriptive error message', () => {
-    const failingSink = {
-      write: vi.fn(() => {
+    const failingCodec: Codec<string> = {
+      encode: () => {
         throw new Error('Sink write failed');
-      }),
+      },
+      decode: (data: string) => data,
     };
+
+    const failingSink = new MockFileSink({
+      file: '/test/path',
+      codec: failingCodec,
+    });
+
+    // Mock the append method to throw
+    vi.spyOn(failingSink, 'append').mockImplementation(() => {
+      throw new Error('Sink write failed');
+    });
 
     const observer = new PerformanceObserverSink({
       sink: failingSink as any,
