@@ -527,6 +527,7 @@ describe('PerformanceObserverSink', () => {
     flushSpy.mockRestore();
     observer.unsubscribe();
   });
+
   it('getStats returns correct written count when queue overflows', () => {
     const observer = new PerformanceObserverSink({
       sink,

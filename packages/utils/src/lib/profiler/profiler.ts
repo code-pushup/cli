@@ -1,7 +1,6 @@
 import process from 'node:process';
 import { isEnvVarEnabled } from '../env.js';
 import {
-  type PerformanceEntryEncoder,
   type PerformanceObserverOptions,
   PerformanceObserverSink,
 } from '../performance-observer.js';
