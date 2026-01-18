@@ -59,4 +59,3 @@ export function annotateTypeDefinitions(
       tsLib.visitNode(sourceFile, visitor, tsLib.isSourceFile);
   };
 }
-
