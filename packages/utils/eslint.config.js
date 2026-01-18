@@ -13,6 +13,12 @@ export default tseslint.config(
     },
   },
   {
+    files: ['packages/utils/src/lib/**/wal*.ts'],
+    rules: {
+      'n/no-sync': 'off',
+    },
+  },
+  {
     files: ['**/*.json'],
     rules: {
       '@nx/dependency-checks': [

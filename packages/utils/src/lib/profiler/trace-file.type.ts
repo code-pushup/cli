@@ -1,4 +1,4 @@
-import type { UserTimingDetail } from './user-timing-extensibility-api.type.js';
+import type { UserTimingDetail } from '../user-timing-extensibility-api.type.js';
 
 /**
  * Arguments for instant trace events.
@@ -140,10 +140,14 @@ export type SpanEvent = BeginEvent | EndEvent;
 /**
  * Union type of all trace event types.
  */
+export type UserTimingTraceEvent = InstantEvent | SpanEvent;
+
+/**
+ * All trace events including system events added during finalization.
+ */
 export type TraceEvent =
-  | InstantEvent
+  | UserTimingTraceEvent
   | CompleteEvent
-  | SpanEvent
   | InstantEventTracingStartedInBrowser;
 
 /**
