@@ -250,7 +250,7 @@ describe('WriteAheadLogFile', () => {
     const w = wal('/test/a.log');
 
     const result = w.recover();
-    expect(result.records).toEqual(['line1', 'line2']);
+    expect(result.records).toStrictEqual(['line1', 'line2']);
     expect(result.errors).toEqual([]);
   });
 
@@ -385,7 +385,6 @@ describe('WriteAheadLogFile', () => {
 
     const walInstance = wal('/test/a.log');
 
-    // Mock the recover method to return errors
     const recoverSpy = vi.spyOn(walInstance, 'recover').mockReturnValue({
       records: ['content'],
       errors: [
@@ -685,85 +684,62 @@ describe('parseWalFormat', () => {
   });
 
   it('should use default finalizer when none provided', () => {
-    const result = parseWalFormat({ baseName: 'test' });
+    const result = parseWalFormat<string>({ baseName: 'test' });
     expect(result.finalizer(['line1', 'line2'])).toBe('line1\nline2\n');
     expect(result.finalizer([])).toBe('\n');
   });
 });
 
 describe('isLeaderWal', () => {
-  const originalEnv = { ...process.env };
-
-  afterEach(() => {
-    process.env = { ...originalEnv }; // eslint-disable-line functional/immutable-data
-  });
-
   it('should return true when env var matches current pid', () => {
-    const envVarName = 'TEST_LEADER_PID';
-    process.env[envVarName] = '10001'; // eslint-disable-line functional/immutable-data
+    vi.stubEnv('TEST_LEADER_PID', '10001');
 
-    const result = isLeaderWal(envVarName);
+    const result = isLeaderWal('TEST_LEADER_PID');
     expect(result).toBe(true);
   });
 
   it('should return false when env var does not match current pid', () => {
-    const envVarName = 'TEST_LEADER_PID';
-    process.env[envVarName] = '67890'; // eslint-disable-line functional/immutable-data
+    vi.stubEnv('TEST_LEADER_PID', '67890');
 
-    const result = isLeaderWal(envVarName);
+    const result = isLeaderWal('TEST_LEADER_PID');
     expect(result).toBe(false);
   });
 
   it('should return false when env var is not set', () => {
-    const envVarName = 'NON_EXISTENT_VAR';
-    delete process.env[envVarName]; // eslint-disable-line @typescript-eslint/no-dynamic-delete,functional/immutable-data
+    vi.stubEnv('NON_EXISTENT_VAR', undefined as any);
 
-    const result = isLeaderWal(envVarName);
+    const result = isLeaderWal('NON_EXISTENT_VAR');
     expect(result).toBe(false);
   });
 
   it('should return false when env var is empty string', () => {
-    const envVarName = 'TEST_LEADER_PID';
-    process.env[envVarName] = ''; // eslint-disable-line functional/immutable-data
+    vi.stubEnv('TEST_LEADER_PID', '');
 
-    const result = isLeaderWal(envVarName);
+    const result = isLeaderWal('TEST_LEADER_PID');
     expect(result).toBe(false);
   });
 });
 
 describe('setLeaderWal', () => {
-  const originalEnv = { ...process.env };
-
-  afterEach(() => {
-    process.env = { ...originalEnv }; // eslint-disable-line functional/immutable-data
-  });
-
   it('should set env var when not already set', () => {
-    const envVarName = 'TEST_ORIGIN_PID';
-    delete process.env[envVarName]; // eslint-disable-line @typescript-eslint/no-dynamic-delete,functional/immutable-data
-    expect(process.env[envVarName]).toBeUndefined();
+    expect(process.env['TEST_ORIGIN_PID']).toBeUndefined();
 
-    setLeaderWal(envVarName);
+    setLeaderWal('TEST_ORIGIN_PID');
 
-    expect(process.env[envVarName]).toBe('10001'); // process.pid is mocked to 10001
+    expect(process.env['TEST_ORIGIN_PID']).toBe('10001');
   });
 
   it('should not overwrite existing env var', () => {
-    const envVarName = 'TEST_ORIGIN_PID';
-    const existingValue = '99999';
+    vi.stubEnv('TEST_ORIGIN_PID', '99999');
+    setLeaderWal('TEST_ORIGIN_PID');
 
-    process.env[envVarName] = existingValue; // eslint-disable-line functional/immutable-data
-    setLeaderWal(envVarName);
-
-    expect(process.env[envVarName]).toBe(existingValue);
+    expect(process.env['TEST_ORIGIN_PID']).toBe('99999');
   });
 
   it('should set env var to current pid as string', () => {
-    const envVarName = 'TEST_ORIGIN_PID';
-    delete process.env[envVarName]; // eslint-disable-line @typescript-eslint/no-dynamic-delete,functional/immutable-data
-    setLeaderWal(envVarName);
+    setLeaderWal('TEST_ORIGIN_PID');
 
-    expect(process.env[envVarName]).toBe('10001');
+    expect(process.env['TEST_ORIGIN_PID']).toBe('10001');
   });
 });
 
@@ -787,12 +763,11 @@ describe('ShardedWal', () => {
 
     const shard = sw.shard('123-456');
     expect(shard).toBeInstanceOf(WriteAheadLogFile);
-    expect(shard.getPath()).toBe('/test/shards/test-wal.123-456.log');
+    expect(shard.getPath()).toMatchPath('/test/shards/test-wal.123-456.log');
   });
 
   it('should list no shard files when directory does not exist', () => {
     const sw = new ShardedWal('/nonexistent', {});
-    // Access private method for testing
     const files = (sw as any).shardFiles();
     expect(files).toEqual([]);
   });
@@ -805,10 +780,11 @@ describe('ShardedWal', () => {
   });
 
   it('should list shard files matching extension', () => {
-    vol.mkdirSync('/shards', { recursive: true });
-    write('/shards/wal.1.log', 'content1');
-    write('/shards/wal.2.log', 'content2');
-    write('/shards/other.txt', 'not a shard');
+    vol.fromJSON({
+      '/shards/wal.1.log': 'content1',
+      '/shards/wal.2.log': 'content2',
+      '/shards/other.txt': 'not a shard',
+    });
 
     const sw = new ShardedWal('/shards', { walExtension: '.log' });
     const files = (sw as any).shardFiles();
@@ -836,9 +812,10 @@ describe('ShardedWal', () => {
   });
 
   it('should finalize multiple shards into single file', () => {
-    vol.mkdirSync('/shards', { recursive: true });
-    write('/shards/test.1.log', 'record1\n');
-    write('/shards/test.2.log', 'record2\n');
+    vol.fromJSON({
+      '/shards/test.1.log': 'record1\n',
+      '/shards/test.2.log': 'record2\n',
+    });
 
     const sw = new ShardedWal('/shards', {
       baseName: 'test',
@@ -854,10 +831,10 @@ describe('ShardedWal', () => {
   });
 
   it('should handle invalid entries during finalize', () => {
-    vol.mkdirSync('/shards', { recursive: true });
-    write('/shards/test.1.log', 'valid\n');
-    write('/shards/test.2.log', 'invalid\n');
-
+    vol.fromJSON({
+      '/shards/test.1.log': 'valid\n',
+      '/shards/test.2.log': 'invalid\n',
+    });
     const tolerantCodec = createTolerantCodec({
       encode: (s: string) => s,
       decode: (s: string) => {
@@ -883,10 +860,10 @@ describe('ShardedWal', () => {
   });
 
   it('should cleanup shard files', () => {
-    vol.mkdirSync('/shards', { recursive: true });
-    write('/shards/test.1.log', 'content1');
-    write('/shards/test.2.log', 'content2');
-
+    vol.fromJSON({
+      '/shards/test.1.log': 'content1',
+      '/shards/test.2.log': 'content2',
+    });
     const sw = new ShardedWal('/shards', {
       baseName: 'test',
       walExtension: '.log',
@@ -902,24 +879,19 @@ describe('ShardedWal', () => {
   });
 
   it('should handle cleanup when some shard files do not exist', () => {
-    vol.mkdirSync('/shards', { recursive: true });
-    write('/shards/test.1.log', 'content1');
+    vol.fromJSON({ '/shards/test.1.log': 'content1' });
 
     const sw = new ShardedWal('/shards', {
       baseName: 'test',
       walExtension: '.log',
     });
 
-    // Manually delete one file to simulate race condition
     vol.unlinkSync('/shards/test.1.log');
-
-    // Should not throw
     expect(() => sw.cleanup()).not.toThrow();
   });
 
   it('should use custom options in finalizer', () => {
-    vol.mkdirSync('/shards', { recursive: true });
-    write('/shards/test.1.log', 'record1\n');
+    vol.fromJSON({ '/shards/test.1.log': 'record1\n' });
 
     const sw = new ShardedWal('/shards', {
       baseName: 'test',
