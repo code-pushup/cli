@@ -1,7 +1,26 @@
 import { performance } from 'node:perf_hooks';
+import { threadId } from 'node:worker_threads';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { ActionTrackConfigs } from '../user-timing-extensibility-api-utils';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
-import { Profiler, type ProfilerOptions } from './profiler.js';
+import { PROFILER_INSTANCE_GLOBAL } from './constants.js';
+import {
+  Profiler,
+  type ProfilerOptions,
+  getProfiler,
+  getProfilerId,
+} from './profiler.js';
+
+describe('getProfilerId', () => {
+  it('should generate a unique id per process', () => {
+    expect(getProfilerId()).toBe(
+      `${Math.round(performance.timeOrigin)}.${process.pid}.${threadId}.1`,
+    );
+    expect(getProfilerId()).toBe(
+      `${Math.round(performance.timeOrigin)}.${process.pid}.${threadId}.2`,
+    );
+  });
+});
 
 describe('Profiler', () => {
   const getProfiler = (overrides?: Partial<ProfilerOptions>) =>
@@ -422,5 +441,43 @@ describe('Profiler', () => {
       profiler.measureAsync('test-async-event', workFn),
     ).rejects.toThrow(error);
     expect(workFn).toHaveBeenCalled();
+  });
+});
+
+describe('getProfiler', () => {
+  beforeEach(() => {
+    // Clear the global profiler instance between tests
+    const g = globalThis as typeof globalThis & {
+      [PROFILER_INSTANCE_GLOBAL]?: Profiler<ActionTrackConfigs>;
+    };
+    delete g[PROFILER_INSTANCE_GLOBAL];
+  });
+
+  it('should create and return a singleton profiler instance', () => {
+    const profiler1 = getProfiler({ track: 'test' });
+    const profiler2 = getProfiler({ track: 'different' });
+
+    expect(profiler1).toBeInstanceOf(Profiler);
+    expect(profiler2).toBe(profiler1); // Should return the same instance
+  });
+
+  it('should configure profiler with initial options', () => {
+    const profiler = getProfiler({ track: 'singleton-test' });
+
+    // The profiler should be configured with the options
+    expect(profiler).toBeInstanceOf(Profiler);
+    // Since it's a singleton, subsequent calls return the same instance
+    const profiler2 = getProfiler({ track: 'different' });
+    expect(profiler2).toBe(profiler);
+  });
+
+  it('should return existing instance on subsequent calls', () => {
+    const profiler1 = getProfiler({ track: 'first' });
+    const profiler2 = getProfiler({ track: 'second' });
+    const profiler3 = getProfiler({ track: 'third' });
+
+    expect(profiler1).toBe(profiler2);
+    expect(profiler2).toBe(profiler3);
+    expect(profiler1).toBe(profiler3);
   });
 });

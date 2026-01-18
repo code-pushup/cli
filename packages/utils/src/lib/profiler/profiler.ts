@@ -1,4 +1,5 @@
 import process from 'node:process';
+import { threadId } from 'node:worker_threads';
 import { isEnvVarEnabled } from '../env.js';
 import {
   type ActionTrackConfigs,
@@ -14,7 +15,18 @@ import type {
   DevToolsColor,
   EntryMeta,
 } from '../user-timing-extensibility-api.type.js';
-import { PROFILER_ENABLED_ENV_VAR } from './constants.js';
+import {
+  PROFILER_ENABLED_ENV_VAR,
+  PROFILER_INSTANCE_GLOBAL,
+} from './constants.js';
+
+/**
+ * Generates a unique profiler ID based on performance time origin, process ID, thread ID, and instance count.
+ */
+export function getProfilerId() {
+  // eslint-disable-next-line functional/immutable-data
+  return `${Math.round(performance.timeOrigin)}.${process.pid}.${threadId}.${++Profiler.instanceCount}`;
+}
 
 /**
  * Configuration options for creating a Profiler instance.
@@ -59,6 +71,8 @@ export type ProfilerOptions<T extends ActionTrackConfigs = ActionTrackConfigs> =
  *
  */
 export class Profiler<T extends ActionTrackConfigs> {
+  static instanceCount = 0;
+  readonly id = getProfilerId();
   #enabled: boolean;
   readonly #defaults: ActionTrackEntryPayload;
   readonly tracks: Record<keyof T, ActionTrackEntryPayload> | undefined;
@@ -225,4 +239,25 @@ export class Profiler<T extends ActionTrackConfigs> {
       throw error_;
     }
   }
+}
+
+/**
+ * Gets a singleton Profiler instance with the specified options.
+ * If an instance already exists, it is returned configured with the initial options.
+ * Otherwise, a new instance is created with the current options.
+ * @param options
+ */
+export function getProfiler(
+  options: ProfilerOptions,
+): Profiler<ActionTrackConfigs> {
+  const g = globalThis as typeof globalThis & {
+    [PROFILER_INSTANCE_GLOBAL]?: Profiler<ActionTrackConfigs>;
+  };
+  if (!g[PROFILER_INSTANCE_GLOBAL]) {
+    // eslint-disable-next-line functional/immutable-data
+    g[PROFILER_INSTANCE_GLOBAL] = new Profiler<ActionTrackConfigs>({
+      ...options,
+    });
+  }
+  return g[PROFILER_INSTANCE_GLOBAL];
 }

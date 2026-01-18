@@ -1,7 +1,8 @@
 import { performance } from 'node:perf_hooks';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
-import { Profiler } from './profiler.js';
+import { PROFILER_INSTANCE_GLOBAL } from './constants.js';
+import { Profiler, getProfiler } from './profiler.js';
 
 describe('Profiler Integration', () => {
   let profiler: Profiler<Record<string, ActionTrackEntryPayload>>;
@@ -10,6 +11,8 @@ describe('Profiler Integration', () => {
     performance.clearMarks();
     performance.clearMeasures();
 
+    // eslint-disable-next-line functional/immutable-data
+    Profiler.instanceCount = 0;
     profiler = new Profiler({
       prefix: 'cp',
       track: 'CLI',
@@ -21,6 +24,12 @@ describe('Profiler Integration', () => {
       },
       enabled: true,
     });
+  });
+
+  it('should create id unique', () => {
+    const profilerA = new Profiler({ track: 'A' });
+    const profilerB = new Profiler({ track: 'B' });
+    expect(profilerA.id).not.toBe(profilerB.id);
   });
 
   it('should create complete performance timeline for sync operation', () => {
@@ -295,5 +304,27 @@ describe('Profiler Integration', () => {
 
     expect(performance.getEntriesByType('mark')).toHaveLength(0);
     expect(performance.getEntriesByType('measure')).toHaveLength(0);
+  });
+});
+
+describe('getProfiler', () => {
+  beforeEach(() => {
+    // eslint-disable-next-line functional/immutable-data
+    Profiler.instanceCount = 0;
+  });
+
+  it('should return singleton stored under globalThis', () => {
+    const g = globalThis as typeof globalThis & {
+      [PROFILER_INSTANCE_GLOBAL]: Profiler<any>;
+    };
+    expect(Profiler.instanceCount).toBe(0);
+    expect(g[PROFILER_INSTANCE_GLOBAL]).toBeUndefined();
+    expect(
+      getProfiler({
+        track: 'Test Track',
+      }),
+    ).toBe(getProfiler({} as any));
+    expect(g[PROFILER_INSTANCE_GLOBAL]).toBe(getProfiler({} as any));
+    expect(Profiler.instanceCount).toBe(1);
   });
 });
