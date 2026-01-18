@@ -74,21 +74,14 @@ export function generateTraceContent(
  * Creates a WAL (Write-Ahead Logging) format configuration for Chrome DevTools trace files.
  * Automatically finalizes shards into complete trace files with proper metadata and margin events.
  * @template T - Type of trace events, defaults to UserTimingTraceEvent
- * @param opt - Optional configuration for the WAL format
- * @param opt.dir - Optional directory for WAL files (not used in returned object)
- * @param opt.groupId - Optional group identifier for organizing trace files
- * @returns WalFormat configuration object with codec, paths, and finalizer
+ * @returns WalFormat configuration object with baseName, codec, extensions, and finalizer
  */
 export const traceEventWalFormat = <
   T extends UserTimingTraceEvent = UserTimingTraceEvent,
->(opt?: {
-  dir?: string;
-  groupId?: string;
-}) => {
+>() => {
   const baseName = 'trace';
   const walExtension = '.jsonl';
   const finalExtension = '.json';
-  const groupId = opt?.groupId;
   return {
     baseName,
     walExtension,
