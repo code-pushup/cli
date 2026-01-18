@@ -1,6 +1,5 @@
 # User Timing Profiler
 
-
 ⏱️ **High-performance profiling utility for structured timing measurements with Chrome DevTools Extensibility API payloads.** 📊
 
 ---
@@ -93,6 +92,14 @@ CP_PROFILING=false npm run build
 ## API Methods
 
 The profiler provides several methods for different types of performance measurements:
+
+| Method                                                                                            | Description                                                                                             |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `measure<R>(event: string, work: () => R, options?: MeasureOptions<R>): R`                        | Measures synchronous operation execution time with DevTools payloads. Noop when profiling is disabled.  |
+| `measureAsync<R>(event: string, work: () => Promise<R>, options?: MeasureOptions<R>): Promise<R>` | Measures asynchronous operation execution time with DevTools payloads. Noop when profiling is disabled. |
+| `marker(name: string, opt?: MarkerOptions): void`                                                 | Creates performance markers as vertical lines in DevTools timeline. Noop when profiling is disabled.    |
+| `setEnabled(enabled: boolean): void`                                                              | Controls profiling at runtime.                                                                          |
+| `isEnabled(): boolean`                                                                            | Returns whether profiling is currently enabled.                                                         |
 
 ### Synchronous measurements
 
@@ -229,20 +236,121 @@ interface AppTracks {
 }
 
 const profiler = new Profiler<AppTracks>({
+  track: 'API',
+  trackGroup: 'Server',
+  color: 'primary-dark',
   tracks: {
-    api: { track: 'api', trackGroup: 'network', color: 'primary' },
-    db: { track: 'database', trackGroup: 'data', color: 'warning' },
-    cache: { track: 'cache', trackGroup: 'data', color: 'success' },
+    api: { color: 'primary' },
+    db: { track: 'database', color: 'warning' },
+    cache: { track: 'cache', color: 'success' },
   },
 });
 
 // Use predefined tracks
-const users = await profiler.measureAsync('fetch-users', fetchUsers, {
-  track: 'api',
-});
+const users = await profiler.measureAsync('fetch-users', fetchUsers, profiler.tracks.api);
 
 const saved = profiler.measure('save-user', () => saveToDb(user), {
-  track: 'db',
+  ...profiler.tracks.db,
+  color: 'primary',
+});
+```
+
+## NodeJSProfiler
+
+This profiler extends all options and API from Profiler with automatic process exit handling for buffered performance data.
+
+The NodeJSProfiler automatically subscribes to performance observation and installs exit handlers that flush buffered data on process termination (signals, fatal errors, or normal exit).
+
+## Configuration
+
+```ts
+new NodejsProfiler<DomainEvents, Tracks>(options: NodejsProfilerOptions<DomainEvents, Tracks>)
+```
+
+**Parameters:**
+
+- `options` - Configuration options for the profiler instance
+
+**Options:**
+
+| Property                 | Type                                    | Default    | Description                                                                     |
+| ------------------------ | --------------------------------------- | ---------- | ------------------------------------------------------------------------------- |
+| `encodePerfEntry`        | `PerformanceEntryEncoder<DomainEvents>` | _required_ | Function that encodes raw PerformanceEntry objects into domain-specific types   |
+| `captureBufferedEntries` | `boolean`                               | `true`     | Whether to capture performance entries that occurred before observation started |
+| `flushThreshold`         | `number`                                | `20`       | Threshold for triggering queue flushes based on queue length                    |
+| `maxQueueSize`           | `number`                                | `10_000`   | Maximum number of items allowed in the queue before new entries are dropped     |
+
+## API Methods
+
+The NodeJSProfiler inherits all API methods from the base Profiler class and adds additional methods for queue management and WAL lifecycle control.
+
+| Method                               | Description                                                                     |
+| ------------------------------------ | ------------------------------------------------------------------------------- |
+| `getStats()`                         | Returns comprehensive queue statistics for monitoring and debugging.            |
+| `flush()`                            | Forces immediate writing of all queued performance entries to the WAL.          |
+| `setEnabled(enabled: boolean): void` | Controls profiling at runtime with automatic WAL/observer lifecycle management. |
+
+### Runtime control with Write Ahead Log lifecycle management
+
+```ts
+profiler.setEnabled(enabled: boolean): void
+```
+
+Controls profiling at runtime and manages the WAL/observer lifecycle. Unlike the base Profiler class, this method ensures that when profiling is enabled, the WAL is opened and the performance observer is subscribed. When disabled, the WAL is closed and the observer is unsubscribed.
+
+```ts
+// Temporarily disable profiling to reduce overhead during heavy operations
+profiler.setEnabled(false);
+await performHeavyOperation();
+profiler.setEnabled(true); // WAL reopens and observer resubscribes
+```
+
+### Queue statistics
+
+```ts
+profiler.getStats(): {
+  enabled: boolean;
+  observing: boolean;
+  walOpen: boolean;
+  isSubscribed: boolean;
+  queued: number;
+  dropped: number;
+  written: number;
+  maxQueueSize: number;
+  flushThreshold: number;
+  addedSinceLastFlush: number;
+  buffered: boolean;
+}
+```
+
+Returns comprehensive queue statistics for monitoring and debugging. Provides insight into the current state of the performance entry queue, useful for monitoring memory usage and processing throughput.
+
+```ts
+const stats = profiler.getStats();
+console.log(`Enabled: ${stats.enabled}, WAL Open: ${stats.walOpen}, Observing: ${stats.observing}, Subscribed: ${stats.isSubscribed}, Queued: ${stats.queued}`);
+if (stats.enabled && stats.walOpen && stats.observing && stats.isSubscribed && stats.queued > stats.flushThreshold) {
+  console.log('Queue nearing capacity, consider manual flush');
+}
+```
+
+### Manual flushing
+
+```ts
+profiler.flush(): void
+```
+
+Forces immediate writing of all queued performance entries to the write ahead log, ensuring no performance data is lost. This method is useful for manual control over when buffered data is written, complementing the automatic flushing that occurs during process exit or when thresholds are reached.
+
+```ts
+// Flush periodically in long-running applications to prevent memory buildup
+setInterval(() => {
+  profiler.flush();
+}, 60000); // Flush every minute
+
+// Ensure all measurements are saved before critical operations
+await profiler.measureAsync('database-migration', async () => {
+  await runMigration();
+  profiler.flush(); // Ensure migration timing is recorded immediately
 });
 ```
 
