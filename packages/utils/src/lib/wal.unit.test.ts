@@ -740,7 +740,7 @@ describe('ShardedWal', () => {
 
     const shard = sw.shard('20231114-221320-000.1.2.3');
     expect(shard).toBeInstanceOf(WriteAheadLogFile);
-    expect(shard.getPath()).toBe(
+    expect(shard.getPath()).toMatchPath(
       '/test/shards/20231114-221320-000/trace.20231114-221320-000.1.2.3.log',
     );
   });
