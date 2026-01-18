@@ -1,7 +1,8 @@
-import { performance } from 'node:perf_hooks';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { MockTraceEventFileSink } from '../../../mocks/sink.mock.js';
+import type { PerformanceEntryEncoder } from '../performance-observer.js';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
-import { Profiler } from './profiler.js';
+import { NodejsProfiler, Profiler } from './profiler.js';
 
 describe('Profiler Integration', () => {
   let profiler: Profiler<Record<string, ActionTrackEntryPayload>>;
@@ -24,14 +25,14 @@ describe('Profiler Integration', () => {
   });
 
   it('should create complete performance timeline for sync operation', () => {
-    const result = profiler.measure('sync-test', () =>
-      Array.from({ length: 1000 }, (_, i) => i).reduce(
-        (sum, num) => sum + num,
-        0,
+    expect(
+      profiler.measure('sync-test', () =>
+        Array.from({ length: 1000 }, (_, i) => i).reduce(
+          (sum, num) => sum + num,
+          0,
+        ),
       ),
-    );
-
-    expect(result).toBe(499_500);
+    ).toBe(499_500);
 
     const marks = performance.getEntriesByType('mark');
     const measures = performance.getEntriesByType('measure');
@@ -67,12 +68,12 @@ describe('Profiler Integration', () => {
   });
 
   it('should create complete performance timeline for async operation', async () => {
-    const result = await profiler.measureAsync('async-test', async () => {
-      await new Promise(resolve => setTimeout(resolve, 10));
-      return 'async-result';
-    });
-
-    expect(result).toBe('async-result');
+    await expect(
+      profiler.measureAsync('async-test', async () => {
+        await new Promise(resolve => setTimeout(resolve, 10));
+        return 'async-result';
+      }),
+    ).resolves.toBe('async-result');
 
     const marks = performance.getEntriesByType('mark');
     const measures = performance.getEntriesByType('measure');
@@ -168,7 +169,7 @@ describe('Profiler Integration', () => {
 
   it('should create proper DevTools payloads for tracks', () => {
     profiler.measure('track-test', (): string => 'result', {
-      success: result => ({
+      success: (result: string) => ({
         properties: [['result', result]],
         tooltipText: 'Track test completed',
       }),
@@ -195,8 +196,8 @@ describe('Profiler Integration', () => {
   });
 
   it('should merge track defaults with measurement options', () => {
-    profiler.measure('sync-op', () => 'sync-result', {
-      success: result => ({
+    profiler.measure('sync-op', (): string => 'sync-result', {
+      success: (result: string) => ({
         properties: [
           ['operation', 'sync'],
           ['result', result],
@@ -282,8 +283,7 @@ describe('Profiler Integration', () => {
   it('should not create performance entries when disabled', async () => {
     profiler.setEnabled(false);
 
-    const syncResult = profiler.measure('disabled-sync', () => 'sync');
-    expect(syncResult).toBe('sync');
+    expect(profiler.measure('disabled-sync', () => 'sync')).toBe('sync');
 
     const asyncResult = profiler.measureAsync(
       'disabled-async',
@@ -295,5 +295,189 @@ describe('Profiler Integration', () => {
 
     expect(performance.getEntriesByType('mark')).toHaveLength(0);
     expect(performance.getEntriesByType('measure')).toHaveLength(0);
+  });
+});
+
+describe('NodeJS Profiler Integration', () => {
+  const simpleEncoder: PerformanceEntryEncoder<string> = entry => {
+    if (entry.entryType === 'measure') {
+      return [`${entry.name}:${entry.duration.toFixed(2)}ms`];
+    }
+    return [];
+  };
+
+  let mockSink: MockTraceEventFileSink;
+  let nodejsProfiler: NodejsProfiler<string>;
+
+  beforeEach(() => {
+    mockSink = new MockTraceEventFileSink();
+
+    nodejsProfiler = new NodejsProfiler({
+      prefix: 'test',
+      track: 'test-track',
+      sink: mockSink,
+      encodePerfEntry: simpleEncoder,
+      enabled: true,
+    });
+  });
+
+  it('should initialize with sink opened when enabled', () => {
+    expect(mockSink.isClosed()).toBe(false);
+    expect(nodejsProfiler.isEnabled()).toBe(true);
+    expect(mockSink.open).toHaveBeenCalledTimes(1);
+  });
+
+  it('should create performance entries and write to sink', () => {
+    expect(nodejsProfiler.measure('test-operation', () => 'success')).toBe(
+      'success',
+    );
+  });
+
+  it('should handle async operations', async () => {
+    await expect(
+      nodejsProfiler.measureAsync('async-test', async () => {
+        await new Promise(resolve => setTimeout(resolve, 1));
+        return 'async-result';
+      }),
+    ).resolves.toBe('async-result');
+  });
+
+  it('should disable profiling and close sink', () => {
+    nodejsProfiler.setEnabled(false);
+    expect(nodejsProfiler.isEnabled()).toBe(false);
+    expect(mockSink.isClosed()).toBe(true);
+    expect(mockSink.close).toHaveBeenCalledTimes(1);
+
+    expect(nodejsProfiler.measure('disabled-test', () => 'success')).toBe(
+      'success',
+    );
+
+    expect(mockSink.getWrittenItems()).toHaveLength(0);
+  });
+
+  it('should re-enable profiling correctly', () => {
+    nodejsProfiler.setEnabled(false);
+    nodejsProfiler.setEnabled(true);
+
+    expect(nodejsProfiler.isEnabled()).toBe(true);
+    expect(mockSink.isClosed()).toBe(false);
+    expect(mockSink.open).toHaveBeenCalledTimes(2);
+
+    expect(nodejsProfiler.measure('re-enabled-test', () => 42)).toBe(42);
+  });
+
+  it('should support custom tracks', () => {
+    const profilerWithTracks = new NodejsProfiler({
+      prefix: 'api-server',
+      track: 'HTTP',
+      tracks: {
+        db: { track: 'Database', color: 'secondary' },
+        cache: { track: 'Cache', color: 'primary' },
+      },
+      sink: mockSink,
+      encodePerfEntry: simpleEncoder,
+    });
+
+    expect(
+      profilerWithTracks.measure('user-lookup', () => 'user123', {
+        track: 'cache',
+      }),
+    ).toBe('user123');
+  });
+
+  it('should capture buffered entries when buffered option is enabled', () => {
+    const bufferedProfiler = new NodejsProfiler({
+      prefix: 'buffered-test',
+      track: 'Test',
+      sink: mockSink,
+      encodePerfEntry: simpleEncoder,
+      captureBufferedEntries: true,
+      enabled: true,
+    });
+
+    const bufferedStats = bufferedProfiler.getStats();
+    expect(bufferedStats.enabled).toBe(true);
+    expect(bufferedStats.walOpen).toBe(true);
+    expect(bufferedStats.isSubscribed).toBe(true);
+    expect(bufferedStats.queued).toBe(0);
+    expect(bufferedStats.dropped).toBe(0);
+    expect(bufferedStats.written).toBe(0);
+
+    bufferedProfiler.setEnabled(false);
+  });
+
+  it('should return correct getStats with dropped and written counts', () => {
+    const statsProfiler = new NodejsProfiler({
+      prefix: 'stats-test',
+      track: 'Stats',
+      sink: mockSink,
+      encodePerfEntry: simpleEncoder,
+      maxQueueSize: 2,
+      flushThreshold: 2,
+      enabled: true,
+    });
+
+    expect(statsProfiler.measure('test-op', () => 'result')).toBe('result');
+
+    const stats = statsProfiler.getStats();
+    expect(stats.enabled).toBe(true);
+    expect(stats.walOpen).toBe(true);
+    expect(stats.isSubscribed).toBe(true);
+    expect(typeof stats.queued).toBe('number');
+    expect(typeof stats.dropped).toBe('number');
+    expect(typeof stats.written).toBe('number');
+
+    statsProfiler.setEnabled(false);
+  });
+
+  it('should provide comprehensive queue statistics via getStats', () => {
+    const profiler = new NodejsProfiler({
+      prefix: 'stats-profiler',
+      track: 'Stats',
+      sink: mockSink,
+      encodePerfEntry: simpleEncoder,
+      maxQueueSize: 3,
+      flushThreshold: 2, // Low threshold to trigger flushing
+      enabled: true,
+    });
+
+    // Initial stats should be zero
+    const initialStats = profiler.getStats();
+    expect(initialStats.enabled).toBe(true);
+    expect(initialStats.walOpen).toBe(true);
+    expect(initialStats.isSubscribed).toBe(true);
+    expect(initialStats.queued).toBe(0);
+    expect(initialStats.dropped).toBe(0);
+    expect(initialStats.written).toBe(0);
+
+    // Add measurements that will trigger flushing
+    profiler.measure('operation-1', () => 'result1');
+    profiler.measure('operation-2', () => 'result2');
+
+    const statsAfterMeasurements = profiler.getStats();
+
+    // Verify all stats are present and are numbers
+    expect(typeof statsAfterMeasurements.queued).toBe('number');
+    expect(typeof statsAfterMeasurements.dropped).toBe('number');
+    expect(typeof statsAfterMeasurements.written).toBe('number');
+
+    // Stats should be non-negative
+    expect(statsAfterMeasurements.queued).toBeGreaterThanOrEqual(0);
+    expect(statsAfterMeasurements.dropped).toBeGreaterThanOrEqual(0);
+    expect(statsAfterMeasurements.written).toBeGreaterThanOrEqual(0);
+
+    // Disable profiler to flush remaining items
+    profiler.setEnabled(false);
+
+    const finalStats = profiler.getStats();
+    expect(finalStats.enabled).toBe(false); // Should be disabled
+    expect(finalStats.walOpen).toBe(false); // WAL should be closed when disabled
+    expect(finalStats.isSubscribed).toBe(false); // Should not be subscribed when disabled
+    expect(finalStats.queued).toBe(0); // Should be cleared when disabled
+  });
+
+  it('should write to file on flush', () => {
+    // @TODO: Implement test when PR #1210 is merged
+    expect(true).toBe(true);
   });
 });

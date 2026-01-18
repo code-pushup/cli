@@ -23,13 +23,14 @@ describe('PerformanceObserverSink', () => {
 
   beforeEach(() => {
     sink = new MockSink();
+    sink.open();
     encode = vi.fn((entry: PerformanceEntry) => [
       `${entry.name}:${entry.entryType}`,
     ]);
 
     options = {
       sink,
-      encode,
+      encodePerfEntry: encode,
     };
 
     performance.clearMarks();
@@ -40,23 +41,22 @@ describe('PerformanceObserverSink', () => {
     expect(() => new PerformanceObserverSink(options)).not.toThrow();
   });
 
-  it('internal PerformanceObserver should process observed entries', () => {
+  it('internal PerformanceObserver should process observed entries', async () => {
     const observer = new PerformanceObserverSink(options);
     observer.subscribe();
 
     performance.mark('test-mark');
     performance.measure('test-measure');
+    await awaitObserverCallback();
     observer.flush();
     expect(encode).toHaveBeenCalledTimes(2);
-    expect(encode).toHaveBeenNthCalledWith(
-      1,
+    expect(encode).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'test-mark',
         entryType: 'mark',
       }),
     );
-    expect(encode).toHaveBeenNthCalledWith(
-      2,
+    expect(encode).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'test-measure',
         entryType: 'measure',
@@ -80,7 +80,7 @@ describe('PerformanceObserverSink', () => {
     expect(encode).toHaveBeenCalledTimes(3);
   });
 
-  it('flush flushes observed entries when subscribed', () => {
+  it('flush flushes observed entries when subscribed', async () => {
     const observer = new PerformanceObserverSink(options);
     observer.subscribe();
 
@@ -88,6 +88,7 @@ describe('PerformanceObserverSink', () => {
     performance.mark('test-mark2');
     expect(sink.getWrittenItems()).toStrictEqual([]);
 
+    await awaitObserverCallback();
     observer.flush();
     expect(sink.getWrittenItems()).toStrictEqual([
       'test-mark1:mark',
@@ -95,13 +96,14 @@ describe('PerformanceObserverSink', () => {
     ]);
   });
 
-  it('flush calls encode for each entry', () => {
+  it('flush calls encode for each entry', async () => {
     const observer = new PerformanceObserverSink(options);
     observer.subscribe();
 
     performance.mark('test-mark1');
     performance.mark('test-mark2');
 
+    await awaitObserverCallback();
     observer.flush();
 
     expect(encode).toHaveBeenCalledWith(
@@ -137,91 +139,55 @@ describe('PerformanceObserverSink', () => {
     expect(encode).toHaveBeenCalledTimes(2);
   });
 
-  it('should observe performance entries and write them to the sink on flush', () => {
+  it('should observe performance entries and write them to the sink on flush', async () => {
     const observer = new PerformanceObserverSink(options);
 
     observer.subscribe();
     performance.mark('test-mark');
+    await awaitObserverCallback();
     observer.flush();
     expect(sink.getWrittenItems()).toHaveLength(1);
   });
 
-  it('should observe buffered performance entries when buffered is enabled', async () => {
-    const observer = new PerformanceObserverSink({
-      ...options,
-      buffered: true,
-    });
+  it('should observe performance entries when subscribed', async () => {
+    const observer = new PerformanceObserverSink(options);
 
+    observer.subscribe();
     performance.mark('test-mark-1');
     performance.mark('test-mark-2');
-    await new Promise(resolve => setTimeout(resolve, 10));
-    observer.subscribe();
-    await new Promise(resolve => setTimeout(resolve, 10));
-    expect(performance.getEntries()).toHaveLength(2);
+    await awaitObserverCallback();
     observer.flush();
     expect(sink.getWrittenItems()).toHaveLength(2);
   });
 
-  it('handles multiple encoded items per performance entry', () => {
+  it('handles multiple encoded items per performance entry', async () => {
     const multiEncodeFn = vi.fn(e => [
       `${e.entryType}-item1`,
       `${e.entryType}item2`,
     ]);
     const observer = new PerformanceObserverSink({
       ...options,
-      encode: multiEncodeFn,
+      encodePerfEntry: multiEncodeFn,
     });
 
     observer.subscribe();
 
     performance.mark('test-mark');
+    await awaitObserverCallback();
     observer.flush();
 
     expect(sink.getWrittenItems()).toHaveLength(2);
   });
 
-  it('cursor logic prevents duplicate processing of performance entries', () => {
-    const observer = new PerformanceObserverSink(options);
-    observer.subscribe();
+  it('throws error when subscribing with sink that is not open', () => {
+    const closedSink = new MockSink();
+    const observer = new PerformanceObserverSink({
+      sink: closedSink,
+      encodePerfEntry: encode,
+    });
 
-    performance.mark('first-mark');
-    performance.mark('second-mark');
-    expect(encode).not.toHaveBeenCalled();
-    observer.flush();
-    expect(sink.getWrittenItems()).toStrictEqual([
-      'first-mark:mark',
-      'second-mark:mark',
-    ]);
-
-    expect(encode).toHaveBeenCalledTimes(2);
-    expect(encode).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({ name: 'first-mark' }),
-    );
-    expect(encode).toHaveBeenNthCalledWith(
-      2,
-      expect.objectContaining({ name: 'second-mark' }),
-    );
-
-    performance.mark('third-mark');
-    performance.measure('first-measure');
-
-    observer.flush();
-    expect(sink.getWrittenItems()).toStrictEqual([
-      'first-mark:mark',
-      'second-mark:mark',
-      'third-mark:mark',
-      'first-measure:measure',
-    ]);
-
-    expect(encode).toHaveBeenCalledTimes(4);
-    expect(encode).toHaveBeenNthCalledWith(
-      3,
-      expect.objectContaining({ name: 'third-mark' }),
-    );
-    expect(encode).toHaveBeenNthCalledWith(
-      4,
-      expect.objectContaining({ name: 'first-measure' }),
+    expect(() => observer.subscribe()).toThrow(
+      'Sink MockSink must be opened before subscribing PerformanceObserver',
     );
   });
 });

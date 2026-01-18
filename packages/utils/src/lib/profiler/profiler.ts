@@ -1,6 +1,11 @@
 import process from 'node:process';
 import { isEnvVarEnabled } from '../env.js';
 import {
+  type PerformanceObserverOptions,
+  PerformanceObserverSink,
+} from '../performance-observer.js';
+import type { Recoverable, Sink } from '../sink-source.type.js';
+import {
   type ActionTrackConfigs,
   type MeasureCtxOptions,
   type MeasureOptions,
@@ -224,5 +229,154 @@ export class Profiler<T extends ActionTrackConfigs> {
       error(error_);
       throw error_;
     }
+  }
+}
+
+/**
+ * Options for configuring a NodejsProfiler instance.
+ *
+ * Extends ProfilerOptions with a required sink parameter.
+ *
+ * @template Tracks - Record type defining available track names and their configurations
+ */
+export type NodejsProfilerOptions<
+  DomainEvents,
+  Tracks extends Record<string, ActionTrackEntryPayload>,
+> = ProfilerOptions<Tracks> &
+  Omit<PerformanceObserverOptions<DomainEvents>, 'sink'> & {
+    /** Sink for buffering and flushing performance data
+     * @NOTE this is dummy code and will be replaced by PR #1210
+     **/
+    sink: Sink<DomainEvents, unknown> & Recoverable;
+  };
+
+/**
+ * Performance profiler with automatic process exit handling for buffered performance data.
+ *
+ * This class extends the base {@link Profiler} with automatic flushing of performance data
+ * when the process exits. It accepts a {@link PerformanceObserverSink} that buffers performance
+ * entries and ensures they are written out during process termination, even for unexpected exits.
+ *
+ * The sink defines the output format for performance data, enabling flexible serialization
+ * to various formats such as DevTools TraceEvent JSON, OpenTelemetry protocol buffers,
+ * or custom domain-specific formats.
+ *
+ * The profiler automatically subscribes to the performance observer when enabled and installs
+ * exit handlers that flush buffered data on process termination (signals, fatal errors, or normal exit).
+ *
+ */
+export class NodejsProfiler<
+  DomainEvents,
+  Tracks extends Record<string, ActionTrackEntryPayload> = Record<
+    string,
+    ActionTrackEntryPayload
+  >,
+> extends Profiler<Tracks> {
+  #sink: Sink<DomainEvents, unknown> & Recoverable;
+  #performanceObserverSink: PerformanceObserverSink<DomainEvents>;
+  #observing = false;
+
+  /**
+   * Creates a new NodejsProfiler instance with automatic exit handling.
+   *
+   * @param options - Configuration options including the sink
+   * @param options.sink - Sink for buffering and flushing performance data
+   * @param options.tracks - Custom track configurations merged with defaults
+   * @param options.prefix - Prefix for all measurement names
+   * @param options.track - Default track name for measurements
+   * @param options.trackGroup - Default track group for organization
+   * @param options.color - Default color for track entries
+   * @param options.enabled - Whether profiling is enabled (defaults to CP_PROFILING env var)
+   *
+   */
+  constructor(options: NodejsProfilerOptions<DomainEvents, Tracks>) {
+    const {
+      sink,
+      encodePerfEntry,
+      captureBufferedEntries,
+      flushThreshold,
+      maxQueueSize,
+      ...profilerOptions
+    } = options;
+
+    super(profilerOptions);
+
+    this.#sink = sink;
+
+    this.#performanceObserverSink = new PerformanceObserverSink({
+      sink,
+      encodePerfEntry,
+      captureBufferedEntries,
+      flushThreshold,
+      maxQueueSize,
+    });
+
+    this.#setObserving(this.isEnabled());
+  }
+
+  #setObserving(observing: boolean): void {
+    if (this.#observing === observing) {
+      return;
+    }
+    this.#observing = observing;
+
+    if (observing) {
+      this.#sink.open();
+      this.#performanceObserverSink.subscribe();
+    } else {
+      this.#performanceObserverSink.unsubscribe();
+      this.#performanceObserverSink.flush();
+      this.#sink.close();
+    }
+  }
+
+  /**
+   * Returns current queue statistics and profiling state for monitoring and debugging.
+   *
+   * Provides insight into the current state of the performance entry queue, observer status, and WAL state,
+   * useful for monitoring memory usage, processing throughput, and profiling lifecycle.
+   *
+   * @returns Object containing profiling state and queue statistics
+   */
+  getStats() {
+    return {
+      enabled: this.isEnabled(),
+      walOpen: !this.#sink.isClosed(),
+      ...this.#performanceObserverSink.getStats(),
+    };
+  }
+
+  /**
+   * Sets enabled state for this profiler and manages sink/observer lifecycle.
+   *
+   * Design: Environment = default, Runtime = override
+   * - Environment variables define defaults (read once at construction)
+   * - This method provides runtime control without mutating globals
+   * - Child processes are unaffected by runtime enablement changes
+   *
+   * Invariant: enabled ↔ sink + observer state
+   * - enabled === true  → sink open + observer subscribed
+   * - enabled === false → sink closed + observer unsubscribed
+   *
+   * @param enabled - Whether profiling should be enabled
+   */
+  setEnabled(enabled: boolean): void {
+    if (this.isEnabled() === enabled) {
+      return;
+    }
+    super.setEnabled(enabled);
+    this.#setObserving(enabled);
+  }
+
+  /**
+   * Flushes any buffered performance data to the sink.
+   *
+   * Forces immediate writing of all queued performance entries to the configured sink,
+   * ensuring no performance data is lost. This method is useful for manual control
+   * over when buffered data is written, complementing the automatic flushing that
+   * occurs during process exit or when thresholds are reached.
+   */
+  flush(): void {
+    this.#performanceObserverSink.flush();
   }
 }
