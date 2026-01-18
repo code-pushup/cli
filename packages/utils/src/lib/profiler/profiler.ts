@@ -2,6 +2,7 @@ import process from 'node:process';
 import { isEnvVarEnabled } from '../env.js';
 import {
   type PerformanceEntryEncoder,
+  type PerformanceObserverOptions,
   PerformanceObserverSink,
 } from '../performance-observer.js';
 import type { Recoverable, Sink } from '../sink-source.type.js';
@@ -242,12 +243,13 @@ export class Profiler<T extends ActionTrackConfigs> {
 export type NodejsProfilerOptions<
   DomainEvents,
   Tracks extends Record<string, ActionTrackEntryPayload>,
-> = ProfilerOptions<Tracks> & {
-  /** Sink for buffering and flushing performance data */
-  sink: Sink<DomainEvents, unknown> & Recoverable;
-  /** Encoder that converts PerformanceEntry to domain events */
-  encodePerfEntry: PerformanceEntryEncoder<DomainEvents>;
-};
+> = ProfilerOptions<Tracks> &
+  Omit<PerformanceObserverOptions<DomainEvents>, 'sink'> & {
+    /** Sink for buffering and flushing performance data
+     * @NOTE this is dummy code and will be replaced by PR #1210
+     **/
+    sink: Sink<DomainEvents, unknown> & Recoverable;
+  };
 
 /**
  * Performance profiler with automatic process exit handling for buffered performance data.
@@ -289,7 +291,14 @@ export class NodejsProfiler<
    *
    */
   constructor(options: NodejsProfilerOptions<DomainEvents, Tracks>) {
-    const { sink, encodePerfEntry, ...profilerOptions } = options;
+    const {
+      sink,
+      encodePerfEntry,
+      captureBufferedEntries,
+      flushThreshold,
+      maxQueueSize,
+      ...profilerOptions
+    } = options;
 
     super(profilerOptions);
 
@@ -298,6 +307,9 @@ export class NodejsProfiler<
     this.#performanceObserverSink = new PerformanceObserverSink({
       sink,
       encodePerfEntry,
+      captureBufferedEntries,
+      flushThreshold,
+      maxQueueSize,
     });
 
     this.#setObserving(this.isEnabled());
@@ -320,6 +332,22 @@ export class NodejsProfiler<
   }
 
   /**
+   * Returns current queue statistics and profiling state for monitoring and debugging.
+   *
+   * Provides insight into the current state of the performance entry queue, observer status, and WAL state,
+   * useful for monitoring memory usage, processing throughput, and profiling lifecycle.
+   *
+   * @returns Object containing profiling state and queue statistics
+   */
+  getStats() {
+    return {
+      enabled: this.isEnabled(),
+      walOpen: !this.#sink.isClosed(),
+      ...this.#performanceObserverSink.getStats(),
+    };
+  }
+
+  /**
    * Sets enabled state for this profiler and manages sink/observer lifecycle.
    *
    * Design: Environment = default, Runtime = override
@@ -339,5 +367,17 @@ export class NodejsProfiler<
     }
     super.setEnabled(enabled);
     this.#setObserving(enabled);
+  }
+
+  /**
+   * Flushes any buffered performance data to the sink.
+   *
+   * Forces immediate writing of all queued performance entries to the configured sink,
+   * ensuring no performance data is lost. This method is useful for manual control
+   * over when buffered data is written, complementing the automatic flushing that
+   * occurs during process exit or when thresholds are reached.
+   */
+  flush(): void {
+    this.#performanceObserverSink.flush();
   }
 }

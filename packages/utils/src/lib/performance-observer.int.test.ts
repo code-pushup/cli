@@ -150,7 +150,7 @@ describe('PerformanceObserverSink', () => {
   it('should observe buffered performance entries when buffered is enabled', async () => {
     const observer = new PerformanceObserverSink({
       ...options,
-      buffered: true,
+      captureBufferedEntries: true,
     });
 
     performance.mark('test-mark-1');

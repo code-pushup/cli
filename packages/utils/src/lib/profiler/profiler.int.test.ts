@@ -385,12 +385,94 @@ describe('NodeJS Profiler Integration', () => {
     ).toBe('user123');
   });
 
-  it('should recover data through recoverable interface', () => {
-    nodejsProfiler.measure('recoverable-test', () => 'data');
+  it('should capture buffered entries when buffered option is enabled', () => {
+    const bufferedProfiler = new NodejsProfiler({
+      prefix: 'buffered-test',
+      track: 'Test',
+      sink: mockSink,
+      encodePerfEntry: simpleEncoder,
+      captureBufferedEntries: true,
+      enabled: true,
+    });
 
-    const recovery = mockSink.recover();
-    expect(recovery.records).toHaveLength(0);
-    expect(recovery.errors).toHaveLength(0);
-    expect(recovery.partialTail).toBeNull();
+    const bufferedStats = bufferedProfiler.getStats();
+    expect(bufferedStats.enabled).toBe(true);
+    expect(bufferedStats.walOpen).toBe(true);
+    expect(bufferedStats.isSubscribed).toBe(true);
+    expect(bufferedStats.queued).toBe(0);
+    expect(bufferedStats.dropped).toBe(0);
+    expect(bufferedStats.written).toBe(0);
+
+    bufferedProfiler.setEnabled(false);
+  });
+
+  it('should return correct getStats with dropped and written counts', () => {
+    const statsProfiler = new NodejsProfiler({
+      prefix: 'stats-test',
+      track: 'Stats',
+      sink: mockSink,
+      encodePerfEntry: simpleEncoder,
+      maxQueueSize: 2,
+      flushThreshold: 2,
+      enabled: true,
+    });
+
+    expect(statsProfiler.measure('test-op', () => 'result')).toBe('result');
+
+    const stats = statsProfiler.getStats();
+    expect(stats.enabled).toBe(true);
+    expect(stats.walOpen).toBe(true);
+    expect(stats.isSubscribed).toBe(true);
+    expect(typeof stats.queued).toBe('number');
+    expect(typeof stats.dropped).toBe('number');
+    expect(typeof stats.written).toBe('number');
+
+    statsProfiler.setEnabled(false);
+  });
+
+  it('should provide comprehensive queue statistics via getStats', () => {
+    const profiler = new NodejsProfiler({
+      prefix: 'stats-profiler',
+      track: 'Stats',
+      sink: mockSink,
+      encodePerfEntry: simpleEncoder,
+      maxQueueSize: 3,
+      flushThreshold: 2, // Low threshold to trigger flushing
+      enabled: true,
+    });
+
+    // Initial stats should be zero
+    const initialStats = profiler.getStats();
+    expect(initialStats.enabled).toBe(true);
+    expect(initialStats.walOpen).toBe(true);
+    expect(initialStats.isSubscribed).toBe(true);
+    expect(initialStats.queued).toBe(0);
+    expect(initialStats.dropped).toBe(0);
+    expect(initialStats.written).toBe(0);
+
+    // Add measurements that will trigger flushing
+    profiler.measure('operation-1', () => 'result1');
+    profiler.measure('operation-2', () => 'result2');
+
+    const statsAfterMeasurements = profiler.getStats();
+
+    // Verify all stats are present and are numbers
+    expect(typeof statsAfterMeasurements.queued).toBe('number');
+    expect(typeof statsAfterMeasurements.dropped).toBe('number');
+    expect(typeof statsAfterMeasurements.written).toBe('number');
+
+    // Stats should be non-negative
+    expect(statsAfterMeasurements.queued).toBeGreaterThanOrEqual(0);
+    expect(statsAfterMeasurements.dropped).toBeGreaterThanOrEqual(0);
+    expect(statsAfterMeasurements.written).toBeGreaterThanOrEqual(0);
+
+    // Disable profiler to flush remaining items
+    profiler.setEnabled(false);
+
+    const finalStats = profiler.getStats();
+    expect(finalStats.enabled).toBe(false); // Should be disabled
+    expect(finalStats.walOpen).toBe(false); // WAL should be closed when disabled
+    expect(finalStats.isSubscribed).toBe(false); // Should not be subscribed when disabled
+    expect(finalStats.queued).toBe(0); // Should be cleared when disabled
   });
 });

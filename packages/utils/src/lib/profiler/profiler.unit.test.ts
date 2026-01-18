@@ -458,6 +458,16 @@ describe('NodejsProfiler', () => {
       isSubscribed: vi.fn().mockReturnValue(false),
       encode: vi.fn(),
       flush: vi.fn(),
+      getStats: vi.fn().mockReturnValue({
+        isSubscribed: false,
+        queued: 0,
+        dropped: 0,
+        written: 0,
+        maxQueueSize: 10000,
+        flushThreshold: 20,
+        addedSinceLastFlush: 0,
+        buffered: true,
+      }),
     };
     vi.spyOn(PerfObserverModule, 'PerformanceObserverSink').mockReturnValue(
       mockPerfObserverSink as any,
@@ -564,5 +574,30 @@ describe('NodejsProfiler', () => {
     expect(result).toBe('success');
 
     expect(sink.getWrittenItems()).toHaveLength(0);
+  });
+
+  it('should flush buffered performance data to sink', () => {
+    const { perfObserverSink, profiler } = getNodejsProfiler();
+
+    profiler.flush();
+
+    expect(perfObserverSink.flush).toHaveBeenCalledTimes(1);
+  });
+
+  it('getStats should return current stats', () => {
+    const { profiler } = getNodejsProfiler({ enabled: false });
+
+    expect(profiler.getStats()).toStrictEqual({
+      enabled: false,
+      walOpen: false,
+      isSubscribed: false,
+      queued: 0,
+      dropped: 0,
+      written: 0,
+      maxQueueSize: 10000,
+      flushThreshold: 20,
+      addedSinceLastFlush: 0,
+      buffered: true,
+    });
   });
 });
