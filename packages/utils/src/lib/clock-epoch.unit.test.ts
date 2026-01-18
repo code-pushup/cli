@@ -4,7 +4,7 @@ import { defaultClock, epochClock } from './clock-epoch.js';
 describe('epochClock', () => {
   it('should create epoch clock with defaults', () => {
     const c = epochClock();
-    expect(c.timeOriginMs).toBe(500_000);
+    expect(c.timeOriginMs).toBe(1_700_000_000_000);
     expect(c.tid).toBe(2);
     expect(c.pid).toBe(10_001);
     expect(c.fromEpochMs).toBeFunction();
@@ -33,8 +33,8 @@ describe('epochClock', () => {
 
   it('should support performance clock by default for epochNowUs', () => {
     const c = epochClock();
-    expect(c.timeOriginMs).toBe(500_000);
-    expect(c.epochNowUs()).toBe(500_000_000);
+    expect(c.timeOriginMs).toBe(1_700_000_000_000);
+    expect(c.epochNowUs()).toBe(1_700_000_000_000_000);
   });
 
   it.each([
@@ -56,8 +56,8 @@ describe('epochClock', () => {
   });
 
   it.each([
-    [0, 500_000_000],
-    [1000, 501_000_000],
+    [0, 1_700_000_000_000_000],
+    [1000, 1_700_000_001_000_000],
   ])(
     'should convert performance milliseconds to microseconds',
     (perfMs, expected) => {

@@ -1,6 +1,8 @@
+/* eslint-disable max-lines */
 import * as fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { threadId } from 'node:worker_threads';
 
 /**
  * Codec for encoding/decoding values to/from strings for WAL storage.
@@ -222,10 +224,6 @@ export type WalFormat<T extends object | string> = {
   finalExtension: string;
   /** Codec for encoding/decoding records */
   codec: Codec<T, string>;
-  /** Function to generate shard file paths */
-  shardPath: (id: string) => string;
-  /** Function to generate final merged file path */
-  finalPath: () => string;
   /** Finalizer for converting records to a string */
   finalizer: (
     records: (T | InvalidEntry<string>)[],
@@ -253,8 +251,6 @@ export const stringCodec = <
  *  - walExtension defaults to '.log'
  *  - finalExtension defaults to '.log'
  *  - codec defaults to stringCodec<T>()
- *  - shardPath defaults to (id: string) => `${baseName}.${id}${walExtension}`
- *  - finalPath defaults to () => `${baseName}${finalExtension}`
  *  - finalizer defaults to (encodedRecords: (T | InvalidEntry<string>)[]) => `${encodedRecords.join('\n')}\n`
  * @param format - Partial WalFormat configuration
  * @returns Parsed WalFormat with defaults filled in
@@ -263,12 +259,10 @@ export function parseWalFormat<T extends object | string = object>(
   format: Partial<WalFormat<T>>,
 ): WalFormat<T> {
   const {
-    baseName = Date.now().toString(),
+    baseName = 'trace',
     walExtension = '.log',
     finalExtension = walExtension,
     codec = stringCodec<T>(),
-    shardPath = (id: string) => `${baseName}.${id}${walExtension}`,
-    finalPath = () => `${baseName}${finalExtension}`,
     finalizer = (encodedRecords: (T | InvalidEntry<string>)[]) =>
       `${encodedRecords.join('\n')}\n`,
   } = format;
@@ -278,8 +272,6 @@ export function parseWalFormat<T extends object | string = object>(
     walExtension,
     finalExtension,
     codec,
-    shardPath,
-    finalPath,
     finalizer,
   } satisfies WalFormat<T>;
 }
@@ -292,20 +284,111 @@ export function parseWalFormat<T extends object | string = object>(
  *
  * @returns true if this is the leader WAL process, false otherwise
  */
-export function isLeaderWal(envVarName: string): boolean {
-  return process.env[envVarName] === String(process.pid);
+export function isLeaderWal(envVarName: string, profilerID: string): boolean {
+  return process.env[envVarName] === profilerID;
 }
 
 /**
  * Initialize the origin PID environment variable if not already set.
  * This must be done as early as possible before any user code runs.
- * Set's PROFILER_ORIGIN_PID_ENV_VAR to the current process PID if not already defined.
+ * Set's envVarName to the current process PID if not already defined.
  */
-export function setLeaderWal(PROFILER_ORIGIN_PID_ENV_VAR: string): void {
-  if (!process.env[PROFILER_ORIGIN_PID_ENV_VAR]) {
+export function setLeaderWal(envVarName: string, profilerID: string): void {
+  if (!process.env[envVarName]) {
     // eslint-disable-next-line functional/immutable-data
-    process.env[PROFILER_ORIGIN_PID_ENV_VAR] = String(process.pid);
+    process.env[envVarName] = profilerID;
   }
+}
+
+// eslint-disable-next-line functional/no-let
+let shardCount = 0;
+/**
+ * Generates a human-readable shard ID.
+ * This ID is unique per process/thread/shard combination and used in the file name.
+ * Format: readable-timestamp.pid.threadId.shardCount
+ * Example: "20240101-120000-000.12345.1.1"
+ * Becomes file: trace.20240101-120000-000.12345.1.1.log
+ */
+export function getShardId(): string {
+  const timestamp = Math.round(performance.timeOrigin + performance.now());
+  const readableTimestamp = soratebleReadableDateString(`${timestamp}`);
+  return `${readableTimestamp}.${process.pid}.${threadId}.${++shardCount}`;
+}
+
+/**
+ * Generates a human-readable sharded group ID.
+ * This ID is a globally unique, sortable, human-readable date string per run.
+ * Used directly as the folder name to group shards.
+ * Format: yyyymmdd-hhmmss-ms
+ * Example: "20240101-120000-000"
+ */
+export function getShardedGroupId(): string {
+  return soratebleReadableDateString(
+    `${Math.round(performance.timeOrigin + performance.now())}`,
+  );
+}
+
+/**
+ * Regex patterns for validating WAL ID formats
+ */
+export const WAL_ID_PATTERNS = {
+  /** Readable date format: yyyymmdd-hhmmss-ms */
+  READABLE_DATE: /^\d{8}-\d{6}-\d{3}$/,
+  /** Group ID format: yyyymmdd-hhmmss-ms */
+  GROUP_ID: /^\d{8}-\d{6}-\d{3}$/,
+  /** Shard ID format: readable-date.pid.threadId.count */
+  SHARD_ID: /^\d{8}-\d{6}-\d{3}(?:\.\d+){3}$/,
+} as const;
+
+export function soratebleReadableDateString(timestampMs: string): string {
+  const timestamp = Number.parseInt(timestampMs, 10);
+  const date = new Date(timestamp);
+  const MILLISECONDS_PER_SECOND = 1000;
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  const hh = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  const ss = String(date.getSeconds()).padStart(2, '0');
+  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+  const ms = String(timestamp % MILLISECONDS_PER_SECOND).padStart(3, '0');
+
+  return `${yyyy}${mm}${dd}-${hh}${min}${ss}-${ms}`;
+}
+/**
+ * Generates a path to a shard file using human-readable IDs.
+ * Both groupId and shardId are already in readable date format.
+ *
+ * Example with groupId "20240101-120000-000" and shardId "20240101-120000-000.12345.1.1":
+ * Full path: /base/20240101-120000-000/trace.20240101-120000-000.12345.1.1.log
+ *
+ * @param dir - The directory to store the shard file
+ * @param format - The WalFormat to use for the shard file
+ * @param groupId - The human-readable group ID (yyyymmdd-hhmmss-ms format)
+ * @param shardId - The human-readable shard ID (readable-timestamp.pid.threadId.count format)
+ * @returns The path to the shard file
+ */
+export function getShardedPath<T extends object | string = object>(opt: {
+  dir?: string;
+  format: WalFormat<T>;
+  groupId: string;
+  shardId: string;
+}): string {
+  const { dir = '', format, groupId, shardId } = opt;
+  const { baseName, walExtension } = format;
+
+  return path.join(dir, groupId, `${baseName}.${shardId}${walExtension}`);
+}
+
+export function getShardedFinalPath<T extends object | string = object>(opt: {
+  dir?: string;
+  format: WalFormat<T>;
+  groupId: string;
+}): string {
+  const { dir = '', format, groupId } = opt;
+  const { baseName, finalExtension } = format;
+
+  return path.join(dir, groupId, `${baseName}.${groupId}${finalExtension}`);
 }
 
 /**
@@ -314,20 +397,34 @@ export function setLeaderWal(PROFILER_ORIGIN_PID_ENV_VAR: string): void {
  */
 
 export class ShardedWal<T extends object | string = object> {
+  readonly groupId = getShardedGroupId();
   readonly #format: WalFormat<T>;
-  readonly #dir: string;
+  readonly #dir: string = process.cwd();
 
   /**
    * Create a sharded WAL manager.
    */
-  constructor(dir: string, format: Partial<WalFormat<T>>) {
-    this.#dir = dir;
+  constructor(opt: {
+    dir?: string;
+    format: Partial<WalFormat<T>>;
+    groupId?: string;
+  }) {
+    const { dir, format, groupId } = opt;
+    this.groupId = groupId ?? getShardedGroupId();
+    if (dir) {
+      this.#dir = dir;
+    }
     this.#format = parseWalFormat<T>(format);
   }
 
-  shard(id: string) {
+  shard(shardId: string = getShardId()) {
     return new WriteAheadLogFile({
-      file: path.join(this.#dir, this.#format.shardPath(id)),
+      file: getShardedPath({
+        dir: this.#dir,
+        format: this.#format,
+        groupId: this.groupId,
+        shardId,
+      }),
       codec: this.#format.codec,
     });
   }
@@ -338,10 +435,18 @@ export class ShardedWal<T extends object | string = object> {
       return [];
     }
 
+    const groupIdDir = path.dirname(
+      getShardedFinalPath({
+        dir: this.#dir,
+        format: this.#format,
+        groupId: this.groupId,
+      }),
+    );
     return fs
-      .readdirSync(this.#dir)
+      .readdirSync(groupIdDir)
       .filter(entry => entry.endsWith(this.#format.walExtension))
-      .map(entry => path.join(this.#dir, entry));
+      .filter(entry => entry.startsWith(`${this.#format.baseName}`))
+      .map(entry => path.join(groupIdDir, entry));
   }
 
   /**
@@ -368,7 +473,11 @@ export class ShardedWal<T extends object | string = object> {
     const recordsToFinalize = hasInvalidEntries
       ? records
       : filterValidRecords(records);
-    const out = path.join(this.#dir, this.#format.finalPath());
+    const out = getShardedFinalPath({
+      dir: this.#dir,
+      format: this.#format,
+      groupId: this.groupId,
+    });
     fs.mkdirSync(path.dirname(out), {
       recursive: true,
     });
@@ -388,20 +497,4 @@ export class ShardedWal<T extends object | string = object> {
       }
     });
   }
-}
-
-/**
- * Generates a shard ID.
- * This is idempotent since PID and TID are fixed for the process/thread.
- */
-export function getShardId(pid: number, tid: number = 0): string {
-  return `${pid}-${tid}`;
-}
-
-/**
- * Generates a sharded group ID based on performance.timeOrigin.
- * This is idempotent per process since timeOrigin is fixed within a process and its worker.
- */
-export function getShardedGroupId(): string {
-  return Math.floor(performance.timeOrigin).toString();
 }

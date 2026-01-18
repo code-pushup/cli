@@ -4,6 +4,7 @@ import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
   type Codec,
   ShardedWal,
+  WAL_ID_PATTERNS,
   WriteAheadLogFile,
   createTolerantCodec,
   filterValidRecords,
@@ -17,6 +18,7 @@ import {
 } from './wal.js';
 
 const read = (p: string) => vol.readFileSync(p, 'utf8') as string;
+
 const write = (p: string, c: string) => vol.writeFileSync(p, c);
 
 const wal = <T extends object | string>(
@@ -502,82 +504,60 @@ describe('stringCodec', () => {
 });
 
 describe('getShardId', () => {
-  it('should generate shard ID with PID and default TID', () => {
-    const pid = 12_345;
-    const result = getShardId(pid);
+  it('should generate shard ID with readable timestamp', () => {
+    const result = getShardId();
 
-    expect(result).toBe('12345-0');
+    expect(result).toMatch(WAL_ID_PATTERNS.SHARD_ID);
+    expect(result).toStartWith('20231114-221320-000.');
   });
 
-  it('should generate shard ID with PID and custom TID', () => {
-    const pid = 12_345;
-    const tid = 678;
-    const result = getShardId(pid, tid);
+  it('should generate different shard IDs for different calls', () => {
+    const result1 = getShardId();
+    const result2 = getShardId();
 
-    expect(result).toBe('12345-678');
+    expect(result1).not.toBe(result2);
+    expect(result1).toStartWith('20231114-221320-000.');
+    expect(result2).toStartWith('20231114-221320-000.');
   });
 
-  it('should handle zero PID', () => {
-    const result = getShardId(0, 5);
-
-    expect(result).toBe('0-5');
+  it('should handle zero values', () => {
+    const result = getShardId();
+    expect(result).toStartWith('20231114-221320-000.');
   });
 
-  it('should handle zero TID', () => {
-    const result = getShardId(123, 0);
+  it('should handle negative timestamps', () => {
+    const result = getShardId();
 
-    expect(result).toBe('123-0');
+    expect(result).toStartWith('20231114-221320-000.');
   });
 
-  it('should handle large numbers', () => {
-    const pid = 999_999;
-    const tid = 123_456;
-    const result = getShardId(pid, tid);
+  it('should handle large timestamps', () => {
+    const result = getShardId();
 
-    expect(result).toBe('999999-123456');
+    expect(result).toStartWith('20231114-221320-000.');
   });
 
-  it('should handle negative numbers', () => {
-    const result = getShardId(-1, -2);
+  it('should generate incrementing counter', () => {
+    const result1 = getShardId();
+    const result2 = getShardId();
 
-    expect(result).toBe('-1--2');
-  });
+    const parts1 = result1.split('.');
+    const parts2 = result2.split('.');
+    const counter1 = parts1.at(-1) as string;
+    const counter2 = parts2.at(-1) as string;
 
-  it('should be idempotent for same inputs', () => {
-    const pid = 42;
-    const tid = 7;
-
-    const result1 = getShardId(pid, tid);
-    const result2 = getShardId(pid, tid);
-
-    expect(result1).toBe(result2);
-    expect(result1).toBe('42-7');
+    expect(Number.parseInt(counter1, 10)).toBe(
+      Number.parseInt(counter2, 10) - 1,
+    );
   });
 });
 
 describe('getShardedGroupId', () => {
-  it('should generate group ID from floored timeOrigin', () => {
-    const result = getShardedGroupId();
-
-    expect(result).toBe('500000');
-  });
-
   it('should work with mocked timeOrigin', () => {
     const result = getShardedGroupId();
 
-    expect(result).toBe('500000');
-  });
-
-  it('should handle decimal timeOrigin', () => {
-    const result = getShardedGroupId();
-
-    expect(result).toBe('500000');
-  });
-
-  it('should handle timeOrigin values', () => {
-    const result = getShardedGroupId();
-
-    expect(result).toBe('500000');
+    expect(result).toBe('20231114-221320-000');
+    expect(result).toMatch(WAL_ID_PATTERNS.GROUP_ID);
   });
 
   it('should be idempotent within same process', () => {
@@ -585,7 +565,6 @@ describe('getShardedGroupId', () => {
     const result2 = getShardedGroupId();
 
     expect(result1).toBe(result2);
-    expect(result1).toBe('500000');
   });
 });
 
@@ -593,12 +572,10 @@ describe('parseWalFormat', () => {
   it('should apply all defaults when given empty config', () => {
     const result = parseWalFormat({});
 
-    expect(result.baseName).toMatch(/^\d+$/);
+    expect(result.baseName).toBe('trace');
     expect(result.walExtension).toBe('.log');
     expect(result.finalExtension).toBe('.log');
     expect(result.codec).toBeDefined();
-    expect(typeof result.shardPath).toBe('function');
-    expect(typeof result.finalPath).toBe('function');
     expect(typeof result.finalizer).toBe('function');
   });
 
@@ -608,8 +585,6 @@ describe('parseWalFormat', () => {
     expect(result.baseName).toBe('test');
     expect(result.walExtension).toBe('.log');
     expect(result.finalExtension).toBe('.log');
-    expect(result.shardPath('123')).toBe('test.123.log');
-    expect(result.finalPath()).toBe('test.log');
   });
 
   it('should use provided walExtension and default finalExtension to match', () => {
@@ -617,8 +592,6 @@ describe('parseWalFormat', () => {
 
     expect(result.walExtension).toBe('.wal');
     expect(result.finalExtension).toBe('.wal');
-    expect(result.shardPath('123')).toMatch(/\.123\.wal$/);
-    expect(result.finalPath()).toMatch(/\.wal$/);
   });
 
   it('should use provided finalExtension independently', () => {
@@ -629,8 +602,6 @@ describe('parseWalFormat', () => {
 
     expect(result.walExtension).toBe('.wal');
     expect(result.finalExtension).toBe('.json');
-    expect(result.shardPath('123')).toMatch(/\.123\.wal$/);
-    expect(result.finalPath()).toMatch(/\.json$/);
   });
 
   it('should use provided codec', () => {
@@ -638,20 +609,6 @@ describe('parseWalFormat', () => {
     const result = parseWalFormat({ codec: customCodec });
 
     expect(result.codec).toBe(customCodec);
-  });
-
-  it('should use custom shardPath function', () => {
-    const customShardPath = (id: string) => `shard-${id}.log`;
-    const result = parseWalFormat({ shardPath: customShardPath });
-
-    expect(result.shardPath('test')).toBe('shard-test.log');
-  });
-
-  it('should use custom finalPath function', () => {
-    const customFinalPath = () => 'final-output.log';
-    const result = parseWalFormat({ finalPath: customFinalPath });
-
-    expect(result.finalPath()).toBe('final-output.log');
   });
 
   it('should use custom finalizer function', () => {
@@ -667,8 +624,6 @@ describe('parseWalFormat', () => {
       walExtension: '.wal',
       finalExtension: '.json',
       codec: stringCodec<string>(),
-      shardPath: (id: string) => `shards/${id}.wal`,
-      finalPath: () => 'output/final.json',
       finalizer: (records: any[]) => JSON.stringify(records),
     };
 
@@ -678,8 +633,6 @@ describe('parseWalFormat', () => {
     expect(result.walExtension).toBe('.wal');
     expect(result.finalExtension).toBe('.json');
     expect(result.codec).toBe(config.codec);
-    expect(result.shardPath('123')).toBe('shards/123.wal');
-    expect(result.finalPath()).toBe('output/final.json');
     expect(result.finalizer(['test'])).toBe('["test"]');
   });
 
@@ -692,54 +645,70 @@ describe('parseWalFormat', () => {
 
 describe('isLeaderWal', () => {
   it('should return true when env var matches current pid', () => {
-    vi.stubEnv('TEST_LEADER_PID', '10001');
+    const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
+    vi.stubEnv('TEST_LEADER_PID', profilerId);
 
-    const result = isLeaderWal('TEST_LEADER_PID');
+    const result = isLeaderWal('TEST_LEADER_PID', profilerId);
     expect(result).toBe(true);
   });
 
-  it('should return false when env var does not match current pid', () => {
-    vi.stubEnv('TEST_LEADER_PID', '67890');
+  it('should return false when env var does not match current profilerId', () => {
+    const wrongProfilerId = `${Math.round(performance.timeOrigin)}${process.pid}.2.0`;
+    vi.stubEnv('TEST_LEADER_PID', wrongProfilerId);
 
-    const result = isLeaderWal('TEST_LEADER_PID');
+    const currentProfilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
+    const result = isLeaderWal('TEST_LEADER_PID', currentProfilerId);
     expect(result).toBe(false);
   });
 
   it('should return false when env var is not set', () => {
     vi.stubEnv('NON_EXISTENT_VAR', undefined as any);
 
-    const result = isLeaderWal('NON_EXISTENT_VAR');
+    const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
+    const result = isLeaderWal('NON_EXISTENT_VAR', profilerId);
     expect(result).toBe(false);
   });
 
   it('should return false when env var is empty string', () => {
     vi.stubEnv('TEST_LEADER_PID', '');
 
-    const result = isLeaderWal('TEST_LEADER_PID');
+    const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
+    const result = isLeaderWal('TEST_LEADER_PID', profilerId);
     expect(result).toBe(false);
   });
 });
 
 describe('setLeaderWal', () => {
+  beforeEach(() => {
+    // Clean up any existing TEST_ORIGIN_PID
+    // eslint-disable-next-line functional/immutable-data
+    delete process.env['TEST_ORIGIN_PID'];
+  });
+
   it('should set env var when not already set', () => {
     expect(process.env['TEST_ORIGIN_PID']).toBeUndefined();
 
-    setLeaderWal('TEST_ORIGIN_PID');
+    const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
+    setLeaderWal('TEST_ORIGIN_PID', profilerId);
 
-    expect(process.env['TEST_ORIGIN_PID']).toBe('10001');
+    expect(process.env['TEST_ORIGIN_PID']).toBe(profilerId);
   });
 
   it('should not overwrite existing env var', () => {
-    vi.stubEnv('TEST_ORIGIN_PID', '99999');
-    setLeaderWal('TEST_ORIGIN_PID');
+    const existingProfilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
+    const newProfilerId = `${Math.round(performance.timeOrigin)}${process.pid}.2.0`;
 
-    expect(process.env['TEST_ORIGIN_PID']).toBe('99999');
+    vi.stubEnv('TEST_ORIGIN_PID', existingProfilerId);
+    setLeaderWal('TEST_ORIGIN_PID', newProfilerId);
+
+    expect(process.env['TEST_ORIGIN_PID']).toBe(existingProfilerId);
   });
 
-  it('should set env var to current pid as string', () => {
-    setLeaderWal('TEST_ORIGIN_PID');
+  it('should set env var to profiler id', () => {
+    const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
+    setLeaderWal('TEST_ORIGIN_PID', profilerId);
 
-    expect(process.env['TEST_ORIGIN_PID']).toBe('10001');
+    expect(process.env['TEST_ORIGIN_PID']).toBe(profilerId);
   });
 });
 
@@ -750,90 +719,155 @@ describe('ShardedWal', () => {
   });
 
   it('should create instance with directory and format', () => {
-    const sw = new ShardedWal('/test/shards', {});
+    const sw = new ShardedWal({
+      dir: '/test/shards',
+      format: {
+        baseName: 'test-wal',
+      },
+    });
 
     expect(sw).toBeInstanceOf(ShardedWal);
   });
 
   it('should create shard with correct file path', () => {
-    const sw = new ShardedWal('/test/shards', {
-      baseName: 'test-wal',
-      walExtension: '.log',
+    const sw = new ShardedWal({
+      dir: '/test/shards',
+      format: {
+        baseName: 'trace',
+        walExtension: '.log',
+      },
     });
 
-    const shard = sw.shard('123-456');
+    const shard = sw.shard('20231114-221320-000.1.2.3');
     expect(shard).toBeInstanceOf(WriteAheadLogFile);
-    expect(shard.getPath()).toMatchPath('/test/shards/test-wal.123-456.log');
+    expect(shard.getPath()).toBe(
+      '/test/shards/20231114-221320-000/trace.20231114-221320-000.1.2.3.log',
+    );
+  });
+
+  it('should create shard with default shardId when no argument provided', () => {
+    const sw = new ShardedWal({
+      dir: '/test/shards',
+      format: {
+        baseName: 'trace',
+        walExtension: '.log',
+      },
+    });
+
+    const shard = sw.shard();
+    expect(shard.getPath()).toStartWithPath(
+      '/test/shards/20231114-221320-000/trace.20231114-221320-000.10001',
+    );
+    expect(shard.getPath()).toEndWithPath('.log');
   });
 
   it('should list no shard files when directory does not exist', () => {
-    const sw = new ShardedWal('/nonexistent', {});
+    const sw = new ShardedWal({
+      dir: '/nonexistent',
+      format: {
+        baseName: 'test-wal',
+      },
+    });
     const files = (sw as any).shardFiles();
     expect(files).toEqual([]);
   });
 
   it('should list no shard files when directory is empty', () => {
-    vol.mkdirSync('/empty', { recursive: true });
-    const sw = new ShardedWal('/empty', {});
+    const sw = new ShardedWal({
+      dir: '/empty',
+      format: {
+        baseName: 'test-wal',
+      },
+    });
+    // Create the group directory (matches actual getShardedGroupId() output)
+    vol.mkdirSync('/empty/20231114-221320-000', { recursive: true });
     const files = (sw as any).shardFiles();
     expect(files).toEqual([]);
   });
 
   it('should list shard files matching extension', () => {
+    // Note: Real shard IDs look like "1704067200000.12345.1.1" (timestamp.pid.threadId.count)
+    // These test IDs use simplified format "001.1", "002.2" for predictability
     vol.fromJSON({
-      '/shards/wal.1.log': 'content1',
-      '/shards/wal.2.log': 'content2',
+      '/shards/20231114-221320-000/trace.19700101-000820-001.1.log': 'content1',
+      '/shards/20231114-221320-000/trace.19700101-000820-002.2.log': 'content2',
       '/shards/other.txt': 'not a shard',
     });
 
-    const sw = new ShardedWal('/shards', { walExtension: '.log' });
+    const sw = new ShardedWal({
+      dir: '/shards',
+      format: {
+        baseName: 'trace',
+        walExtension: '.log',
+      },
+    });
     const files = (sw as any).shardFiles();
 
     expect(files).toHaveLength(2);
     expect(files).toEqual(
       expect.arrayContaining([
-        expect.pathToMatch('/shards/wal.1.log'),
-        expect.pathToMatch('/shards/wal.2.log'),
+        expect.pathToMatch(
+          '/shards/20231114-221320-000/trace.19700101-000820-001.1.log',
+        ),
+        expect.pathToMatch(
+          '/shards/20231114-221320-000/trace.19700101-000820-002.2.log',
+        ),
       ]),
     );
   });
 
   it('should finalize empty shards to empty result', () => {
-    vol.mkdirSync('/shards', { recursive: true });
-    const sw = new ShardedWal('/shards', {
-      baseName: 'test',
-      finalPath: () => 'final.json',
-      finalizer: records => `${JSON.stringify(records)}\n`,
+    const sw = new ShardedWal({
+      dir: '/shards',
+      format: {
+        baseName: 'final',
+        finalExtension: '.json',
+        finalizer: records => `${JSON.stringify(records)}\n`,
+      },
     });
 
+    // Create the group directory
+    vol.mkdirSync('/shards/20231114-221320-000', { recursive: true });
     sw.finalize();
 
-    expect(read('/shards/final.json')).toBe('[]\n');
+    expect(
+      read('/shards/20231114-221320-000/final.20231114-221320-000.json'),
+    ).toBe('[]\n');
   });
 
   it('should finalize multiple shards into single file', () => {
     vol.fromJSON({
-      '/shards/test.1.log': 'record1\n',
-      '/shards/test.2.log': 'record2\n',
+      '/shards/20231114-221320-000/merged.20240101-120000-001.1.log':
+        'record1\n',
+      '/shards/20231114-221320-000/merged.20240101-120000-002.2.log':
+        'record2\n',
     });
 
-    const sw = new ShardedWal('/shards', {
-      baseName: 'test',
-      walExtension: '.log',
-      finalPath: () => 'merged.json',
-      finalizer: records => `${JSON.stringify(records)}\n`,
+    const sw = new ShardedWal({
+      dir: '/shards',
+      format: {
+        baseName: 'merged',
+        walExtension: '.log',
+        finalExtension: '.json',
+        finalizer: records => `${JSON.stringify(records)}\n`,
+      },
     });
 
     sw.finalize();
 
-    const result = JSON.parse(read('/shards/merged.json').trim());
+    const result = JSON.parse(
+      read(
+        '/shards/20231114-221320-000/merged.20231114-221320-000.json',
+      ).trim(),
+    );
     expect(result).toEqual(['record1', 'record2']);
   });
 
   it('should handle invalid entries during finalize', () => {
     vol.fromJSON({
-      '/shards/test.1.log': 'valid\n',
-      '/shards/test.2.log': 'invalid\n',
+      '/shards/20231114-221320-000/final.20240101-120000-001.1.log': 'valid\n',
+      '/shards/20231114-221320-000/final.20240101-120000-002.2.log':
+        'invalid\n',
     });
     const tolerantCodec = createTolerantCodec({
       encode: (s: string) => s,
@@ -843,17 +877,22 @@ describe('ShardedWal', () => {
       },
     });
 
-    const sw = new ShardedWal('/shards', {
-      baseName: 'test',
-      walExtension: '.log',
-      codec: tolerantCodec,
-      finalPath: () => 'final.json',
-      finalizer: records => `${JSON.stringify(records)}\n`,
+    const sw = new ShardedWal({
+      dir: '/shards',
+      format: {
+        baseName: 'final',
+        walExtension: '.log',
+        finalExtension: '.json',
+        codec: tolerantCodec,
+        finalizer: records => `${JSON.stringify(records)}\n`,
+      },
     });
 
     sw.finalize();
 
-    const result = JSON.parse(read('/shards/final.json').trim());
+    const result = JSON.parse(
+      read('/shards/20231114-221320-000/final.20231114-221320-000.json').trim(),
+    );
     expect(result).toHaveLength(2);
     expect(result[0]).toBe('valid');
     expect(result[1]).toEqual({ __invalid: true, raw: 'invalid' });
@@ -861,49 +900,73 @@ describe('ShardedWal', () => {
 
   it('should cleanup shard files', () => {
     vol.fromJSON({
-      '/shards/test.1.log': 'content1',
-      '/shards/test.2.log': 'content2',
+      '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.1.log':
+        'content1',
+      '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.2.log':
+        'content2',
     });
-    const sw = new ShardedWal('/shards', {
-      baseName: 'test',
-      walExtension: '.log',
+    const sw = new ShardedWal({
+      dir: '/shards',
+      format: {
+        baseName: 'test',
+        walExtension: '.log',
+      },
     });
 
-    expect(vol.existsSync('/shards/test.1.log')).toBe(true);
-    expect(vol.existsSync('/shards/test.2.log')).toBe(true);
+    expect(vol.toJSON()).toStrictEqual({
+      '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.1.log':
+        'content1',
+      '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.2.log':
+        'content2',
+    });
 
     sw.cleanup();
 
-    expect(vol.existsSync('/shards/test.1.log')).toBe(false);
-    expect(vol.existsSync('/shards/test.2.log')).toBe(false);
+    expect(vol.toJSON()).toStrictEqual({});
   });
 
   it('should handle cleanup when some shard files do not exist', () => {
-    vol.fromJSON({ '/shards/test.1.log': 'content1' });
-
-    const sw = new ShardedWal('/shards', {
-      baseName: 'test',
-      walExtension: '.log',
+    vol.fromJSON({
+      '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.1.log':
+        'content1',
     });
 
-    vol.unlinkSync('/shards/test.1.log');
+    const sw = new ShardedWal({
+      dir: '/shards',
+      format: {
+        baseName: 'test',
+        walExtension: '.log',
+      },
+    });
+
+    vol.unlinkSync(
+      '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.1.log',
+    );
     expect(() => sw.cleanup()).not.toThrow();
   });
 
   it('should use custom options in finalizer', () => {
-    vol.fromJSON({ '/shards/test.1.log': 'record1\n' });
+    vol.fromJSON({
+      '/shards/20231114-221320-000/final.20231114-221320-000.10001.2.1.log':
+        'record1\n',
+    });
 
-    const sw = new ShardedWal('/shards', {
-      baseName: 'test',
-      walExtension: '.log',
-      finalPath: () => 'final.json',
-      finalizer: (records, opt) =>
-        `${JSON.stringify({ records, meta: opt })}\n`,
+    const sw = new ShardedWal({
+      dir: '/shards',
+      format: {
+        baseName: 'final',
+        walExtension: '.log',
+        finalExtension: '.json',
+        finalizer: (records, opt) =>
+          `${JSON.stringify({ records, meta: opt })}\n`,
+      },
     });
 
     sw.finalize({ version: '1.0', compressed: true });
 
-    const result = JSON.parse(read('/shards/final.json'));
+    const result = JSON.parse(
+      read('/shards/20231114-221320-000/final.20231114-221320-000.json'),
+    );
     expect(result.records).toEqual(['record1']);
     expect(result.meta).toEqual({ version: '1.0', compressed: true });
   });
