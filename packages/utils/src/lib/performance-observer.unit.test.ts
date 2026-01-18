@@ -622,47 +622,6 @@ describe('PerformanceObserverSink', () => {
     observer.unsubscribe();
   });
 
-  it('observer callback clears queue when sink closes during observation', () => {
-    const observer = new PerformanceObserverSink({
-      sink,
-      encodePerfEntry,
-      flushThreshold: 10, // High threshold to prevent automatic flushing
-    });
-
-    observer.subscribe();
-
-    const mockObserver = MockPerformanceObserver.lastInstance();
-    mockObserver?.emit([
-      {
-        name: 'test-entry-1',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-    ]);
-
-    // Verify entry is queued
-    expect(observer.getStats().queued).toBe(1);
-
-    // Close the sink while observer is still active
-    sink.close();
-
-    // Emit another entry - the callback should detect closed sink and clear queue
-    mockObserver?.emit([
-      {
-        name: 'test-entry-2',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-    ]);
-
-    // Queue should be cleared due to closed sink in callback
-    expect(observer.getStats().queued).toBe(0);
-
-    observer.unsubscribe();
-  });
-
   it('clears queue without writing when sink is closed during flush', () => {
     const observer = new PerformanceObserverSink({
       sink,

@@ -223,11 +223,6 @@ export class PerformanceObserverSink<T> implements Observer, Buffered {
     }
 
     this.#observer = new PerformanceObserver(list => {
-      if (this.#sink.isClosed()) {
-        this.#queue.length = 0;
-        return;
-      }
-
       list.getEntries().forEach(entry => {
         if (OBSERVED_TYPE_SET.has(entry.entryType as ObservedEntryType)) {
           const items = this.encode(entry);
