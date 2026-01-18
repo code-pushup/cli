@@ -223,8 +223,6 @@ describe('traceEventWalFormat', () => {
       baseName: 'trace',
       walExtension: '.jsonl',
       finalExtension: '.json',
-      shardPath: expect.any(Function),
-      finalPath: expect.any(Function),
       codec: {
         encode: expect.any(Function),
         decode: expect.any(Function),
@@ -247,36 +245,6 @@ describe('traceEventWalFormat', () => {
     expect(format.baseName).toBe('trace');
     expect(format.walExtension).toBe('.jsonl');
     expect(format.finalExtension).toBe('.json');
-  });
-
-  it('should generate correct shard paths', () => {
-    const format = traceEventWalFormat();
-
-    expect(format.shardPath('shard-1')).toBe('trace.shard-1.jsonl');
-    expect(format.shardPath('process-123-thread-456')).toBe(
-      'trace.process-123-thread-456.jsonl',
-    );
-  });
-
-  it('should generate correct shard paths with groupId', () => {
-    const format = traceEventWalFormat({ groupId: 'session-123' });
-
-    expect(format.shardPath('shard-1')).toBe('trace.session-123.shard-1.jsonl');
-    expect(format.shardPath('process-123-thread-456')).toBe(
-      'trace.session-123.process-123-thread-456.jsonl',
-    );
-  });
-
-  it('should generate correct final path', () => {
-    const format = traceEventWalFormat();
-
-    expect(format.finalPath()).toBe('trace.json');
-  });
-
-  it('should generate correct final path with groupId', () => {
-    const format = traceEventWalFormat({ groupId: 'session-123' });
-
-    expect(format.finalPath()).toBe('trace.session-123.json');
   });
 
   it('should encode and decode trace events correctly', () => {

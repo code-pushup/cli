@@ -496,5 +496,12 @@ export class ShardedWal<T extends object | string = object> {
         // Directory might not be empty or already removed, ignore
       }
     });
+
+    // Also try to remove the root directory if it becomes empty
+    try {
+      fs.rmdirSync(this.#dir);
+    } catch {
+      // Directory might not be empty or already removed, ignore
+    }
   }
 }

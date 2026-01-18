@@ -98,14 +98,6 @@ export const traceEventWalFormat = <
         JSON.stringify(encodeTraceEvent(event)),
       decode: (json: string) => decodeTraceEvent(JSON.parse(json)) as T,
     },
-    shardPath: (id: string) =>
-      groupId
-        ? `${baseName}.${groupId}.${id}${walExtension}`
-        : `${baseName}.${id}${walExtension}`,
-    finalPath: () =>
-      groupId
-        ? `${baseName}.${groupId}${finalExtension}`
-        : `${baseName}${finalExtension}`,
     finalizer: (
       records: (UserTimingTraceEvent | InvalidEntry<string>)[],
       metadata?: Record<string, unknown>,
