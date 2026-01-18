@@ -1,10 +1,13 @@
 import process from 'node:process';
 import { isEnvVarEnabled } from '../env.js';
+import { installExitHandlers } from '../exit-process';
+import type { TraceEvent } from '../trace-file.type';
 import {
   type ActionTrackConfigs,
   type MeasureCtxOptions,
   type MeasureOptions,
   asOptions,
+  errorToMarkerPayload,
   markerPayload,
   measureCtx,
   setupTracks,
@@ -13,6 +16,7 @@ import type {
   ActionTrackEntryPayload,
   DevToolsColor,
   EntryMeta,
+  UserTimingDetail,
 } from '../user-timing-extensibility-api.type.js';
 import { PROFILER_ENABLED_ENV_VAR } from './constants.js';
 
@@ -224,5 +228,103 @@ export class Profiler<T extends ActionTrackConfigs> {
       error(error_);
       throw error_;
     }
+  }
+}
+
+// @TODO implement ShardedWAL
+type WalSink = {
+  append(event: TraceEvent): void;
+  open(): void;
+  close(): void;
+};
+
+export type NodeJsProfilerOptions<T extends ActionTrackConfigs> =
+  ProfilerOptions<T> & {
+    // @TODO implement WALFormat
+    format: {
+      encode(v: string | object): string;
+    };
+  };
+
+export class NodeJsProfiler<T extends ActionTrackConfigs> extends Profiler<T> {
+  protected sink: WalSink | null = null;
+
+  constructor(options: NodeJsProfilerOptions<T>) {
+    super(options);
+    // Temporary dummy sink; replaced by real WAL implementation
+    this.sink = {
+      append: event => {
+        options.format.encode(event);
+      },
+      open: () => void 0,
+      close: () => void 0,
+    };
+    this.installExitHandlers();
+  }
+
+  /**
+   * Installs process exit and error handlers to ensure proper cleanup of profiling resources.
+   *
+   * When an error occurs or the process exits, this automatically creates a fatal error marker
+   * and shuts down the profiler gracefully, ensuring all buffered data is flushed.
+   *
+   * @protected
+   */
+  protected installExitHandlers(): void {
+    installExitHandlers({
+      onError: (err, kind) => {
+        if (!this.isEnabled()) {
+          return;
+        }
+        this.marker('Fatal Error', {
+          ...errorToMarkerPayload(err),
+          tooltipText: `${kind} caused fatal error`,
+        });
+        this.shutdown();
+      },
+      onExit: () => {
+        if (!this.isEnabled()) {
+          return;
+        }
+        this.shutdown();
+      },
+    });
+  }
+
+  override setEnabled(enabled: boolean): void {
+    super.setEnabled(enabled);
+    enabled ? this.sink?.open() : this.sink?.close();
+  }
+
+  /**
+   * Closes the profiler and releases all associated resources.
+   * Profiling is finished forever for this instance.
+   *
+   * This method should be called when profiling is complete to ensure all buffered
+   * data is flushed and the WAL sink is properly closed.
+   */
+  close(): void {
+    this.shutdown();
+  }
+
+  /**
+   * Forces all buffered Performance Entries to be written to the WAL sink.
+   */
+  flush(): void {
+    // @TODO implement WAL flush, currently all entries are buffered in memory
+  }
+
+  /**
+   * Performs internal cleanup of profiling resources.
+   *
+   * Flushes any remaining buffered data and closes the WAL sink.
+   * This method is called automatically on process exit or error.
+   *
+   * @protected
+   */
+  protected shutdown(): void {
+    if (!this.isEnabled()) return;
+    this.flush();
+    this.setEnabled(false);
   }
 }

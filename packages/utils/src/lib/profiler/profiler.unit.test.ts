@@ -1,7 +1,11 @@
 import { performance } from 'node:perf_hooks';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { installExitHandlers } from '../exit-process.js';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
-import { Profiler, type ProfilerOptions } from './profiler.js';
+import { NodeJsProfiler, Profiler, type ProfilerOptions } from './profiler.js';
+
+// Spy on installExitHandlers to capture handlers
+vi.mock('../exit-process.js');
 
 describe('Profiler', () => {
   const getProfiler = (overrides?: Partial<ProfilerOptions>) =>
@@ -422,5 +426,178 @@ describe('Profiler', () => {
       profiler.measureAsync('test-async-event', workFn),
     ).rejects.toThrow(error);
     expect(workFn).toHaveBeenCalled();
+  });
+});
+describe('NodeJsProfiler', () => {
+  const mockInstallExitHandlers = vi.mocked(installExitHandlers);
+
+  let capturedOnError:
+    | ((
+        error: unknown,
+        kind: 'uncaughtException' | 'unhandledRejection',
+      ) => void)
+    | undefined;
+  let capturedOnExit:
+    | ((code: number, reason: import('../exit-process.js').CloseReason) => void)
+    | undefined;
+  const createProfiler = (overrides?: Partial<ProfilerOptions>) =>
+    new NodeJsProfiler({
+      prefix: 'cp',
+      track: 'test-track',
+      format: {
+        encode: v => JSON.stringify(v),
+      },
+      ...overrides,
+    });
+
+  let profiler: NodeJsProfiler<Record<string, ActionTrackEntryPayload>>;
+
+  beforeEach(() => {
+    capturedOnError = undefined;
+    capturedOnExit = undefined;
+
+    mockInstallExitHandlers.mockImplementation(options => {
+      capturedOnError = options?.onError;
+      capturedOnExit = options?.onExit;
+    });
+
+    performance.clearMarks();
+    performance.clearMeasures();
+    // eslint-disable-next-line functional/immutable-data
+    delete process.env.CP_PROFILING;
+  });
+
+  it('installs exit handlers on construction', () => {
+    expect(() => createProfiler()).not.toThrow();
+
+    expect(mockInstallExitHandlers).toHaveBeenCalledWith({
+      onError: expect.any(Function),
+      onExit: expect.any(Function),
+    });
+  });
+
+  it('setEnabled toggles profiler state', () => {
+    profiler = createProfiler({ enabled: true });
+    expect(profiler.isEnabled()).toBe(true);
+
+    profiler.setEnabled(false);
+    expect(profiler.isEnabled()).toBe(false);
+
+    profiler.setEnabled(true);
+    expect(profiler.isEnabled()).toBe(true);
+  });
+
+  it('marks fatal errors and shuts down profiler on uncaughtException', () => {
+    profiler = createProfiler({ enabled: true });
+
+    const testError = new Error('Test fatal error');
+    capturedOnError?.call(profiler, testError, 'uncaughtException');
+
+    expect(performance.getEntriesByType('mark')).toStrictEqual([
+      {
+        name: 'Fatal Error',
+        detail: {
+          devtools: {
+            color: 'error',
+            dataType: 'marker',
+            properties: [
+              ['Error Type', 'Error'],
+              ['Error Message', 'Test fatal error'],
+            ],
+            tooltipText: 'uncaughtException caused fatal error',
+          },
+        },
+        duration: 0,
+        entryType: 'mark',
+        startTime: 0,
+      },
+    ]);
+  });
+
+  it('marks fatal errors and shuts down profiler on unhandledRejection', () => {
+    profiler = createProfiler({ enabled: true });
+    expect(profiler.isEnabled()).toBe(true);
+
+    capturedOnError?.call(
+      profiler,
+      new Error('Test fatal error'),
+      'unhandledRejection',
+    );
+
+    expect(performance.getEntriesByType('mark')).toStrictEqual([
+      {
+        name: 'Fatal Error',
+        detail: {
+          devtools: {
+            color: 'error',
+            dataType: 'marker',
+            properties: [
+              ['Error Type', 'Error'],
+              ['Error Message', 'Test fatal error'],
+            ],
+            tooltipText: 'unhandledRejection caused fatal error',
+          },
+        },
+        duration: 0,
+        entryType: 'mark',
+        startTime: 0,
+      },
+    ]);
+  });
+  it('shutdown method shuts down profiler', () => {
+    profiler = createProfiler({ enabled: true });
+    const setEnabledSpy = vi.spyOn(profiler, 'setEnabled');
+    const sinkCloseSpy = vi.spyOn((profiler as any).sink, 'close');
+    expect(profiler.isEnabled()).toBe(true);
+
+    (profiler as any).shutdown();
+
+    expect(setEnabledSpy).toHaveBeenCalledTimes(1);
+    expect(setEnabledSpy).toHaveBeenCalledWith(false);
+    expect(sinkCloseSpy).toHaveBeenCalledTimes(1);
+    expect(profiler.isEnabled()).toBe(false);
+  });
+  it('exit handler shuts down profiler', () => {
+    profiler = createProfiler({ enabled: true });
+    const shutdownSpy = vi.spyOn(profiler, 'shutdown' as any);
+    expect(profiler.isEnabled()).toBe(true);
+
+    capturedOnExit?.(0, { kind: 'exit' });
+
+    expect(profiler.isEnabled()).toBe(false);
+    expect(shutdownSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('close method shuts down profiler', () => {
+    profiler = createProfiler({ enabled: true });
+    const shutdownSpy = vi.spyOn(profiler, 'shutdown' as any);
+    expect(profiler.isEnabled()).toBe(true);
+
+    profiler.close();
+
+    expect(shutdownSpy).toHaveBeenCalledTimes(1);
+    expect(profiler.isEnabled()).toBe(false);
+  });
+
+  it('error handler does nothing when profiler is disabled', () => {
+    profiler = createProfiler({ enabled: false }); // Start disabled
+    expect(profiler.isEnabled()).toBe(false);
+
+    const testError = new Error('Test error');
+    capturedOnError?.call(profiler, testError, 'uncaughtException');
+
+    // Should not create any marks when disabled
+    expect(performance.getEntriesByType('mark')).toHaveLength(0);
+  });
+
+  it('exit handler does nothing when profiler is disabled', () => {
+    profiler = createProfiler({ enabled: false }); // Start disabled
+    expect(profiler.isEnabled()).toBe(false);
+
+    // Should not call shutdown when disabled
+    const shutdownSpy = vi.spyOn(profiler, 'shutdown' as any);
+    capturedOnExit?.(0, { kind: 'exit' });
+
+    expect(shutdownSpy).not.toHaveBeenCalled();
   });
 });
