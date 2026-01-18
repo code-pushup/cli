@@ -60,4 +60,3 @@ export function annotateTypeDefinitions(
   };
 }
 
-export { annotateTypeDefinitions as default };
