@@ -1,4 +1,4 @@
-# @code-pushup/utils - Profiler
+# User Timing Profiler
 
 [![npm](https://img.shields.io/npm/v/%40code-pushup%2Futils.svg)](https://www.npmjs.com/package/@code-pushup/utils)
 [![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Futils)](https://npmtrends.com/@code-pushup/utils)
