@@ -475,4 +475,9 @@ describe('NodeJS Profiler Integration', () => {
     expect(finalStats.isSubscribed).toBe(false); // Should not be subscribed when disabled
     expect(finalStats.queued).toBe(0); // Should be cleared when disabled
   });
+
+  it('should write to file on flush', () => {
+    // @TODO: Implement test when PR #1210 is merged
+    expect(true).toBe(true);
+  });
 });
