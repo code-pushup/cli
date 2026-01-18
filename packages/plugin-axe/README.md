@@ -68,9 +68,10 @@ axePlugin(urls: PluginUrls, options?: AxePluginOptions)
 | Property       | Type        | Default      | Description                               |
 | -------------- | ----------- | ------------ | ----------------------------------------- |
 | `preset`       | `AxePreset` | `'wcag21aa'` | Accessibility ruleset preset              |
+| `setupScript`  | `string`    | `undefined`  | Path to authentication setup script       |
 | `scoreTargets` | `object`    | `undefined`  | Pass/fail thresholds for audits or groups |
 
-See [Presets](#presets) for the list of available presets and [Preset details](#preset-details) for what each preset includes.
+See [Presets](#presets) and [Authentication](#authentication) sections below.
 
 ## Multiple URLs
 
@@ -91,6 +92,56 @@ axePlugin({
 ```
 
 URLs with higher weights contribute more to overall scores. For example, a URL with weight 3 has three times the influence of a URL with weight 1.
+
+## Authentication
+
+To test login-protected pages, provide a `setupScript` that authenticates before analysis:
+
+```ts
+axePlugin('https://example.com/dashboard', {
+  setupScript: './axe-setup.ts',
+});
+```
+
+The setup script must export a default async function that receives a Playwright `Page` instance:
+
+```ts
+// axe-setup.ts
+import type { Page } from 'playwright-core';
+
+export default async function (page: Page): Promise<void> {
+  await page.goto('https://example.com/login');
+  await page.fill('#username', process.env.USERNAME);
+  await page.fill('#password', process.env.PASSWORD);
+  await page.click('button[type="submit"]');
+  await page.waitForURL('**/dashboard');
+}
+```
+
+The script runs once before analyzing URLs. Authentication state (cookies, localStorage) is automatically shared across all URL analyses.
+
+<details>
+<summary>Alternative: Cookie-based authentication</summary>
+
+If you have a session token, you can inject it directly via cookies:
+
+```ts
+// axe-setup.ts
+import type { Page } from 'playwright-core';
+
+export default async function (page: Page): Promise<void> {
+  await page.context().addCookies([
+    {
+      name: 'session_token',
+      value: process.env.SESSION_TOKEN,
+      domain: 'example.com',
+      path: '/',
+    },
+  ]);
+}
+```
+
+</details>
 
 ## Presets
 

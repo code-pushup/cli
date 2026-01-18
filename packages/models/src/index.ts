@@ -166,3 +166,4 @@ export {
   type Tree,
 } from './lib/tree.js';
 export { uploadConfigSchema, type UploadConfig } from './lib/upload-config.js';
+export { convertAsyncZodFunctionToSchema } from './lib/implementation/function.js';
