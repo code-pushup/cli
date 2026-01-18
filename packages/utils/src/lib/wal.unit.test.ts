@@ -165,11 +165,16 @@ describe('WriteAheadLogFile', () => {
     w.open();
     w.append({ id: 1, name: 'test' });
     w.close();
-    expect(w.recover()).toStrictEqual({ id: 1, name: 'test' });
+    expect(w.recover().records).toStrictEqual([{ id: 1, name: 'test' }]);
+    w.open();
     expect(() =>
       w.append('{ id: 1, name:...' as unknown as object),
     ).not.toThrow();
-    w.expect(w.recover()).toStrictEqual({ id: 1, name: 'test' });
+    w.close();
+    expect(w.recover().records).toStrictEqual([
+      { id: 1, name: 'test' },
+      '{ id: 1, name:...',
+    ]);
   });
 
   it('should create instance with file path and codecs without opening', () => {
