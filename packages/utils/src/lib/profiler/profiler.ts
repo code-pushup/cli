@@ -1,4 +1,3 @@
-import process from 'node:process';
 import { isEnvVarEnabled } from '../env.js';
 import {
   type PerformanceObserverOptions,
@@ -85,7 +84,7 @@ export class Profiler<T extends ActionTrackConfigs> {
     const { tracks, prefix, enabled, ...defaults } = options;
     const dataType = 'track-entry';
 
-    this.#enabled = enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
+    this.setEnabled(enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR));
     this.#defaults = { ...defaults, dataType };
     this.tracks = tracks
       ? setupTracks({ ...defaults, dataType }, tracks)
@@ -100,13 +99,11 @@ export class Profiler<T extends ActionTrackConfigs> {
   /**
    * Sets enabled state for this profiler.
    *
-   * Also sets the `CP_PROFILING` environment variable.
    * This means any future {@link Profiler} instantiations (including child processes) will use the same enabled state.
    *
    * @param enabled - Whether profiling should be enabled
    */
   setEnabled(enabled: boolean): void {
-    process.env[PROFILER_ENABLED_ENV_VAR] = `${enabled}`;
     this.#enabled = enabled;
   }
 
@@ -145,7 +142,7 @@ export class Profiler<T extends ActionTrackConfigs> {
    * });
    */
   marker(name: string, opt?: MarkerOptions): void {
-    if (!this.#enabled) {
+    if (!this.isEnabled()) {
       return;
     }
 
@@ -178,7 +175,7 @@ export class Profiler<T extends ActionTrackConfigs> {
    *
    */
   measure<R>(event: string, work: () => R, options?: MeasureOptions<R>): R {
-    if (!this.#enabled) {
+    if (!this.isEnabled()) {
       return work();
     }
 
@@ -215,7 +212,7 @@ export class Profiler<T extends ActionTrackConfigs> {
     work: () => Promise<R>,
     options?: MeasureOptions<R>,
   ): Promise<R> {
-    if (!this.#enabled) {
+    if (!this.isEnabled()) {
       return await work();
     }
 
@@ -274,20 +271,11 @@ export class NodejsProfiler<
 > extends Profiler<Tracks> {
   #sink: Sink<DomainEvents, unknown> & Recoverable;
   #performanceObserverSink: PerformanceObserverSink<DomainEvents>;
-  #observing = false;
+  #state: 'idle' | 'running' | 'closed' = 'idle';
 
   /**
-   * Creates a new NodejsProfiler instance with automatic exit handling.
-   *
-   * @param options - Configuration options including the sink
-   * @param options.sink - Sink for buffering and flushing performance data
-   * @param options.tracks - Custom track configurations merged with defaults
-   * @param options.prefix - Prefix for all measurement names
-   * @param options.track - Default track name for measurements
-   * @param options.trackGroup - Default track group for organization
-   * @param options.color - Default color for track entries
-   * @param options.enabled - Whether profiling is enabled (defaults to CP_PROFILING env var)
-   *
+   * Creates a NodejsProfiler instance.
+   * @param options - Configuration with required sink
    */
   constructor(options: NodejsProfilerOptions<DomainEvents, Tracks>) {
     const {
@@ -311,72 +299,95 @@ export class NodejsProfiler<
       maxQueueSize,
     });
 
-    this.#setObserving(this.isEnabled());
+    if (super.isEnabled()) {
+      this.#transition('running');
+    }
   }
 
-  #setObserving(observing: boolean): void {
-    if (this.#observing === observing) {
+  #transition(next: 'idle' | 'running' | 'closed'): void {
+    if (this.#state === next) {
       return;
     }
-    this.#observing = observing;
-
-    if (observing) {
-      this.#sink.open();
-      this.#performanceObserverSink.subscribe();
-    } else {
-      this.#performanceObserverSink.unsubscribe();
-      this.#performanceObserverSink.flush();
-      this.#sink.close();
+    if (this.#state === 'closed') {
+      throw new Error('Profiler already closed');
     }
+
+    switch (`${this.#state}->${next}`) {
+      case 'idle->running':
+        super.setEnabled(true);
+        this.#sink.open();
+        this.#performanceObserverSink.subscribe();
+        break;
+
+      case 'running->idle':
+        super.setEnabled(false);
+        this.#performanceObserverSink.unsubscribe();
+        this.#sink.close();
+        break;
+
+      case 'idle->closed':
+        // No resources to clean up when idle
+        break;
+
+      case 'running->closed':
+        super.setEnabled(false);
+        this.#performanceObserverSink.unsubscribe();
+        this.#sink.close();
+        break;
+
+      default:
+        throw new Error(`Invalid transition: ${this.#state} -> ${next}`);
+    }
+
+    this.#state = next;
+  }
+
+  /** Starts profiling (idle → running). */
+  start(): void {
+    this.#transition('running');
+  }
+
+  /** Stops profiling (running → idle). */
+  stop(): void {
+    this.#transition('idle');
   }
 
   /**
-   * Returns current queue statistics and profiling state for monitoring and debugging.
-   *
-   * Provides insight into the current state of the performance entry queue, observer status, and WAL state,
-   * useful for monitoring memory usage, processing throughput, and profiling lifecycle.
-   *
-   * @returns Object containing profiling state and queue statistics
+   * Closes profiler and releases resources. Idempotent, safe for exit handlers.
+   * **Exit Handler Usage**: Call only this method from process exit handlers.
    */
+  close(): void {
+    this.#transition('closed');
+  }
+
+  /** @returns Current profiler state */
+  get state(): 'idle' | 'running' | 'closed' {
+    return this.#state;
+  }
+
+  /** @returns Whether profiler is in 'running' state */
+  protected isRunning(): boolean {
+    return this.#state === 'running';
+  }
+
+  protected activeat(): boolean {
+    return this.#state === 'running';
+  }
+
+  /** @returns Queue statistics and profiling state for monitoring */
   getStats() {
     return {
-      enabled: this.isEnabled(),
-      walOpen: !this.#sink.isClosed(),
       ...this.#performanceObserverSink.getStats(),
+      state: this.#state,
+      walOpen: !this.#sink.isClosed(),
     };
   }
 
-  /**
-   * Sets enabled state for this profiler and manages sink/observer lifecycle.
-   *
-   * Design: Environment = default, Runtime = override
-   * - Environment variables define defaults (read once at construction)
-   * - This method provides runtime control without mutating globals
-   * - Child processes are unaffected by runtime enablement changes
-   *
-   * Invariant: enabled ↔ sink + observer state
-   * - enabled === true  → sink open + observer subscribed
-   * - enabled === false → sink closed + observer unsubscribed
-   *
-   * @param enabled - Whether profiling should be enabled
-   */
-  setEnabled(enabled: boolean): void {
-    if (this.isEnabled() === enabled) {
-      return;
-    }
-    super.setEnabled(enabled);
-    this.#setObserving(enabled);
-  }
-
-  /**
-   * Flushes any buffered performance data to the sink.
-   *
-   * Forces immediate writing of all queued performance entries to the configured sink,
-   * ensuring no performance data is lost. This method is useful for manual control
-   * over when buffered data is written, complementing the automatic flushing that
-   * occurs during process exit or when thresholds are reached.
-   */
+  /** Flushes buffered performance data to sink. */
   flush(): void {
+    if (this.#state === 'closed') {
+      return; // No-op if closed
+    }
     this.#performanceObserverSink.flush();
   }
 }

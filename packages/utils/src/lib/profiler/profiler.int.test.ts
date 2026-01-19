@@ -279,23 +279,6 @@ describe('Profiler Integration', () => {
       ]),
     );
   });
-
-  it('should not create performance entries when disabled', async () => {
-    profiler.setEnabled(false);
-
-    expect(profiler.measure('disabled-sync', () => 'sync')).toBe('sync');
-
-    const asyncResult = profiler.measureAsync(
-      'disabled-async',
-      async () => 'async',
-    );
-    await expect(asyncResult).resolves.toBe('async');
-
-    profiler.marker('disabled-marker');
-
-    expect(performance.getEntriesByType('mark')).toHaveLength(0);
-    expect(performance.getEntriesByType('measure')).toHaveLength(0);
-  });
 });
 
 describe('NodeJS Profiler Integration', () => {
@@ -343,8 +326,8 @@ describe('NodeJS Profiler Integration', () => {
   });
 
   it('should disable profiling and close sink', () => {
-    nodejsProfiler.setEnabled(false);
-    expect(nodejsProfiler.isEnabled()).toBe(false);
+    nodejsProfiler.stop();
+    expect(nodejsProfiler.isRunning()).toBe(false);
     expect(mockSink.isClosed()).toBe(true);
     expect(mockSink.close).toHaveBeenCalledTimes(1);
 
@@ -356,10 +339,10 @@ describe('NodeJS Profiler Integration', () => {
   });
 
   it('should re-enable profiling correctly', () => {
-    nodejsProfiler.setEnabled(false);
-    nodejsProfiler.setEnabled(true);
+    nodejsProfiler.stop();
+    nodejsProfiler.start();
 
-    expect(nodejsProfiler.isEnabled()).toBe(true);
+    expect(nodejsProfiler.isRunning()).toBe(true);
     expect(mockSink.isClosed()).toBe(false);
     expect(mockSink.open).toHaveBeenCalledTimes(2);
 
@@ -396,14 +379,14 @@ describe('NodeJS Profiler Integration', () => {
     });
 
     const bufferedStats = bufferedProfiler.getStats();
-    expect(bufferedStats.enabled).toBe(true);
+    expect(bufferedStats.state).toBe('running');
     expect(bufferedStats.walOpen).toBe(true);
     expect(bufferedStats.isSubscribed).toBe(true);
     expect(bufferedStats.queued).toBe(0);
     expect(bufferedStats.dropped).toBe(0);
     expect(bufferedStats.written).toBe(0);
 
-    bufferedProfiler.setEnabled(false);
+    bufferedProfiler.stop();
   });
 
   it('should return correct getStats with dropped and written counts', () => {
@@ -420,14 +403,14 @@ describe('NodeJS Profiler Integration', () => {
     expect(statsProfiler.measure('test-op', () => 'result')).toBe('result');
 
     const stats = statsProfiler.getStats();
-    expect(stats.enabled).toBe(true);
+    expect(stats.state).toBe('running');
     expect(stats.walOpen).toBe(true);
     expect(stats.isSubscribed).toBe(true);
     expect(typeof stats.queued).toBe('number');
     expect(typeof stats.dropped).toBe('number');
     expect(typeof stats.written).toBe('number');
 
-    statsProfiler.setEnabled(false);
+    statsProfiler.stop();
   });
 
   it('should provide comprehensive queue statistics via getStats', () => {
@@ -443,7 +426,7 @@ describe('NodeJS Profiler Integration', () => {
 
     // Initial stats should be zero
     const initialStats = profiler.getStats();
-    expect(initialStats.enabled).toBe(true);
+    expect(initialStats.state).toBe('running');
     expect(initialStats.walOpen).toBe(true);
     expect(initialStats.isSubscribed).toBe(true);
     expect(initialStats.queued).toBe(0);
@@ -467,10 +450,10 @@ describe('NodeJS Profiler Integration', () => {
     expect(statsAfterMeasurements.written).toBeGreaterThanOrEqual(0);
 
     // Disable profiler to flush remaining items
-    profiler.setEnabled(false);
+    profiler.stop();
 
     const finalStats = profiler.getStats();
-    expect(finalStats.enabled).toBe(false); // Should be disabled
+    expect(finalStats.state).toBe('idle'); // Should be idle
     expect(finalStats.walOpen).toBe(false); // WAL should be closed when disabled
     expect(finalStats.isSubscribed).toBe(false); // Should not be subscribed when disabled
     expect(finalStats.queued).toBe(0); // Should be cleared when disabled

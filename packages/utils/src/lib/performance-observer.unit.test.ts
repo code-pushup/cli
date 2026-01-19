@@ -429,18 +429,6 @@ describe('PerformanceObserverSink', () => {
     );
   });
 
-  it('throws error when subscribing with sink that is not open', () => {
-    const closedSink = new MockSink();
-    const observer = new PerformanceObserverSink({
-      sink: closedSink,
-      encodePerfEntry,
-    });
-
-    expect(() => observer.subscribe()).toThrow(
-      'Sink MockSink must be opened before subscribing PerformanceObserver',
-    );
-  });
-
   it('getStats returns dropped and queued item information', () => {
     const observer = new PerformanceObserverSink({
       sink,
@@ -619,51 +607,6 @@ describe('PerformanceObserverSink', () => {
     ]);
 
     expect(observer.getStats()).toHaveProperty('addedSinceLastFlush', 2);
-
-    observer.unsubscribe();
-  });
-
-  it('clears queue without writing when sink is closed during flush', () => {
-    const observer = new PerformanceObserverSink({
-      sink,
-      encodePerfEntry,
-      flushThreshold: 10, // High threshold to prevent automatic flushing
-    });
-
-    observer.subscribe();
-
-    const mockObserver = MockPerformanceObserver.lastInstance();
-    mockObserver?.emit([
-      {
-        name: 'test-entry-1',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-      {
-        name: 'test-entry-2',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-    ]);
-
-    // Verify entries are queued
-    expect(observer.getStats().queued).toBe(2);
-    expect(observer.getStats().written).toBe(0);
-
-    // Close the sink
-    sink.close();
-
-    // Flush should clear queue without writing
-    observer.flush();
-
-    // Verify queue is cleared but written count unchanged
-    expect(observer.getStats().queued).toBe(0);
-    expect(observer.getStats().written).toBe(0);
-
-    // Verify sink received no additional writes
-    expect(sink.getWrittenItems()).toHaveLength(0);
 
     observer.unsubscribe();
   });

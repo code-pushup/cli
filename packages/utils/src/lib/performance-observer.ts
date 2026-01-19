@@ -216,11 +216,6 @@ export class PerformanceObserverSink<T> implements Observer, Buffered {
     if (this.#observer) {
       return;
     }
-    if (this.#sink.isClosed()) {
-      throw new Error(
-        `Sink ${this.#sink.constructor.name} must be opened before subscribing PerformanceObserver`,
-      );
-    }
 
     this.#observer = new PerformanceObserver(list => {
       list.getEntries().forEach(entry => {
@@ -272,11 +267,6 @@ export class PerformanceObserverSink<T> implements Observer, Buffered {
     if (this.#queue.length === 0) {
       return;
     }
-    if (this.#sink.isClosed()) {
-      // clear queue and drop items when sink closes unexpectedly
-      this.#queue.length = 0;
-      return;
-    }
 
     try {
       this.#queue.forEach(item => {
@@ -284,6 +274,7 @@ export class PerformanceObserverSink<T> implements Observer, Buffered {
         this.#written++;
       });
     } catch (error) {
+      this.#dropped += this.#queue.length;
       throw new Error(
         'PerformanceObserverSink failed to write items to sink.',
         { cause: error },
