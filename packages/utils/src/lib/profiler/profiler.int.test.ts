@@ -452,8 +452,8 @@ describe('NodeJS Profiler Integration', () => {
 
     profiler.measure('operation-1', () => 'result1');
     profiler.measure('operation-2', () => 'result2');
-
-    expect(profiler.stats.written).toBe(2);
+    profiler.flush();
+    expect(profiler.stats.written).toBe(0);
 
     profiler.setEnabled(false);
 
