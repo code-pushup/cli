@@ -1,8 +1,8 @@
 import process from 'node:process';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { SIGNAL_EXIT_CODES, installExitHandlers } from './exit-process.js';
+import { SIGNAL_EXIT_CODES, subscribeProcessExit } from './exit-process.js';
 
-describe('installExitHandlers', () => {
+describe('subscribeProcessExit', () => {
   const onError = vi.fn();
   const onExit = vi.fn();
   const processOnSpy = vi.spyOn(process, 'on');
@@ -26,7 +26,7 @@ describe('installExitHandlers', () => {
   });
 
   it('should install event listeners for all expected events', () => {
-    expect(() => installExitHandlers({ onError, onExit })).not.toThrow();
+    expect(() => subscribeProcessExit({ onError, onExit })).not.toThrow();
 
     expect(processOnSpy).toHaveBeenCalledWith(
       'uncaughtException',
@@ -43,7 +43,7 @@ describe('installExitHandlers', () => {
   });
 
   it('should call onError with error and kind for uncaughtException', () => {
-    expect(() => installExitHandlers({ onError })).not.toThrow();
+    expect(() => subscribeProcessExit({ onError })).not.toThrow();
 
     const testError = new Error('Test uncaught exception');
 
@@ -55,7 +55,7 @@ describe('installExitHandlers', () => {
   });
 
   it('should call onError with reason and kind for unhandledRejection', () => {
-    expect(() => installExitHandlers({ onError })).not.toThrow();
+    expect(() => subscribeProcessExit({ onError })).not.toThrow();
 
     const testReason = 'Test unhandled rejection';
 
@@ -67,7 +67,7 @@ describe('installExitHandlers', () => {
   });
 
   it('should call onExit and exit with code 0 for SIGINT', () => {
-    expect(() => installExitHandlers({ onExit })).not.toThrow();
+    expect(() => subscribeProcessExit({ onExit })).not.toThrow();
 
     (process as any).emit('SIGINT');
 
@@ -80,7 +80,7 @@ describe('installExitHandlers', () => {
   });
 
   it('should call onExit and exit with code 0 for SIGTERM', () => {
-    expect(() => installExitHandlers({ onExit })).not.toThrow();
+    expect(() => subscribeProcessExit({ onExit })).not.toThrow();
 
     (process as any).emit('SIGTERM');
 
@@ -93,7 +93,7 @@ describe('installExitHandlers', () => {
   });
 
   it('should call onExit and exit with code 0 for SIGQUIT', () => {
-    expect(() => installExitHandlers({ onExit })).not.toThrow();
+    expect(() => subscribeProcessExit({ onExit })).not.toThrow();
 
     (process as any).emit('SIGQUIT');
 
@@ -106,7 +106,7 @@ describe('installExitHandlers', () => {
   });
 
   it('should call onExit for successful process termination with exit code 0', () => {
-    expect(() => installExitHandlers({ onExit })).not.toThrow();
+    expect(() => subscribeProcessExit({ onExit })).not.toThrow();
 
     (process as any).emit('exit', 0);
 
@@ -117,7 +117,7 @@ describe('installExitHandlers', () => {
   });
 
   it('should call onExit for failed process termination with exit code 1', () => {
-    expect(() => installExitHandlers({ onExit })).not.toThrow();
+    expect(() => subscribeProcessExit({ onExit })).not.toThrow();
 
     (process as any).emit('exit', 1);
 

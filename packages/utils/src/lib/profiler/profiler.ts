@@ -1,6 +1,6 @@
 import process from 'node:process';
 import { isEnvVarEnabled } from '../env.js';
-import { subscribeProcessExit } from '../exit-process';
+import { subscribeProcessExit } from '../exit-process.js';
 import type { TraceEvent } from '../trace-file.type';
 import {
   type ActionTrackConfigs,
@@ -232,17 +232,17 @@ export class Profiler<T extends ActionTrackConfigs> {
 
 // @TODO implement ShardedWAL
 type WalSink = {
-  append(event: TraceEvent): void;
-  open(): void;
-  close(): void;
-  isClosed(): boolean;
+  append: (event: TraceEvent) => void;
+  open: () => void;
+  close: () => void;
+  isClosed: () => boolean;
 };
 
 export type NodeJsProfilerOptions<T extends ActionTrackConfigs> =
   ProfilerOptions<T> & {
     // @TODO implement WALFormat
     format: {
-      encode(v: string | object): string;
+      encode: (v: string | object) => string;
     };
   };
 
@@ -275,7 +275,7 @@ export class NodeJsProfiler<T extends ActionTrackConfigs> extends Profiler<T> {
   protected subscribeProcessExit(): () => void {
     return subscribeProcessExit({
       onError: (err, kind) => {
-        if (!this.isRunning()) {
+        if (!super.isEnabled()) {
           return;
         }
         this.marker('Fatal Error', {
@@ -285,26 +285,17 @@ export class NodeJsProfiler<T extends ActionTrackConfigs> extends Profiler<T> {
         this.close();
       },
       onExit: (code, reason) => {
-        if (!this.isRunning()) {
+        if (!super.isEnabled()) {
           return;
         }
         this.marker('Process Exit', {
-          ...(code !== 0 ? { color: 'warning' } : {}),
+          ...(code === 0 ? {} : { color: 'warning' }),
           properties: [['reason', JSON.stringify(reason)]],
           tooltipText: `Process exited with code ${code}`,
         });
         this.close();
       },
     });
-  }
-
-  isRunning(): boolean {
-    return this.isEnabled() && !this.sink?.isClosed();
-  }
-
-  override setEnabled(enabled: boolean): void {
-    super.setEnabled(enabled);
-    enabled ? this.sink?.open() : this.sink?.close();
   }
 
   /**
@@ -315,16 +306,10 @@ export class NodeJsProfiler<T extends ActionTrackConfigs> extends Profiler<T> {
    * data is flushed and the WAL sink is properly closed.
    */
   close(): void {
-    if (!this.isEnabled()) return;
-    this.flush();
+    if (!this.isEnabled()) {
+      return;
+    }
     this.setEnabled(false);
     this.#exitHandlerSubscribscription?.();
-  }
-
-  /**
-   * Forces all buffered Performance Entries to be written to the WAL sink.
-   */
-  flush(): void {
-    // @TODO implement WAL flush, currently all entries are buffered in memory
   }
 }

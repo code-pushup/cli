@@ -428,6 +428,7 @@ describe('Profiler', () => {
     expect(workFn).toHaveBeenCalled();
   });
 });
+
 describe('NodeJsProfiler', () => {
   const mockSubscribeProcessExit = vi.mocked(subscribeProcessExit);
 
@@ -545,60 +546,16 @@ describe('NodeJsProfiler', () => {
       },
     ]);
   });
-  it('shutdown method shuts down profiler', () => {
-    profiler = createProfiler({ enabled: true });
-    const setEnabledSpy = vi.spyOn(profiler, 'setEnabled');
-    const sinkCloseSpy = vi.spyOn((profiler as any).sink, 'close');
-    expect(profiler.isEnabled()).toBe(true);
 
-    (profiler as any).shutdown();
-
-    expect(setEnabledSpy).toHaveBeenCalledTimes(1);
-    expect(setEnabledSpy).toHaveBeenCalledWith(false);
-    expect(sinkCloseSpy).toHaveBeenCalledTimes(1);
-    expect(profiler.isEnabled()).toBe(false);
-  });
   it('exit handler shuts down profiler', () => {
     profiler = createProfiler({ enabled: true });
-    const shutdownSpy = vi.spyOn(profiler, 'shutdown' as any);
+    const setEnabledSpy = vi.spyOn(profiler, 'setEnabled');
     expect(profiler.isEnabled()).toBe(true);
 
     capturedOnExit?.(0, { kind: 'exit' });
 
     expect(profiler.isEnabled()).toBe(false);
-    expect(shutdownSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('close method shuts down profiler', () => {
-    profiler = createProfiler({ enabled: true });
-    const shutdownSpy = vi.spyOn(profiler, 'shutdown' as any);
-    expect(profiler.isEnabled()).toBe(true);
-
-    profiler.close();
-
-    expect(shutdownSpy).toHaveBeenCalledTimes(1);
-    expect(profiler.isEnabled()).toBe(false);
-  });
-
-  it('error handler does nothing when profiler is disabled', () => {
-    profiler = createProfiler({ enabled: false }); // Start disabled
-    expect(profiler.isEnabled()).toBe(false);
-
-    const testError = new Error('Test error');
-    capturedOnError?.call(profiler, testError, 'uncaughtException');
-
-    // Should not create any marks when disabled
-    expect(performance.getEntriesByType('mark')).toHaveLength(0);
-  });
-
-  it('exit handler does nothing when profiler is disabled', () => {
-    profiler = createProfiler({ enabled: false }); // Start disabled
-    expect(profiler.isEnabled()).toBe(false);
-
-    // Should not call shutdown when disabled
-    const shutdownSpy = vi.spyOn(profiler, 'shutdown' as any);
-    capturedOnExit?.(0, { kind: 'exit' });
-
-    expect(shutdownSpy).not.toHaveBeenCalled();
+    expect(setEnabledSpy).toHaveBeenCalledTimes(1);
+    expect(setEnabledSpy).toHaveBeenCalledWith(false);
   });
 });

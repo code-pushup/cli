@@ -94,7 +94,7 @@ export function subscribeProcessExit(
       const handler = () => {
         close(SIGNAL_EXIT_CODES()[signal], { kind: 'signal', signal });
         if (exitOnSignal) {
-          // eslint-disable-next-line n/no-process-exit
+          // eslint-disable-next-line unicorn/no-process-exit
           process.exit(SIGNAL_EXIT_CODES()[signal]);
         }
       };
