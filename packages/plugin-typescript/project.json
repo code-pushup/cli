@@ -4,6 +4,7 @@
   "sourceRoot": "packages/plugin-typescript/src",
   "projectType": "library",
   "targets": {
+    "build": {},
     "lint": {},
     "unit-test": {},
     "int-test": {},

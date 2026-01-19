@@ -4,6 +4,7 @@
   "sourceRoot": "examples/plugins/src",
   "projectType": "library",
   "targets": {
+    "build": {},
     "lint": {},
     "unit-test": {},
     "int-test": {},

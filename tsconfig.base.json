@@ -48,8 +48,7 @@
       "@code-pushup/typescript-plugin": [
         "packages/plugin-typescript/src/index.ts"
       ],
-      "@code-pushup/utils": ["packages/utils/src/index.ts"],
-      "@code-pushup/tmp": ["packages/utils/tmp/src/index.ts"]
+      "@code-pushup/utils": ["packages/utils/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -4,6 +4,11 @@
   "sourceRoot": "packages/cli/src",
   "projectType": "library",
   "targets": {
+    "build": {
+      "options": {
+        "assets": ["{projectRoot}/*.md", "{projectRoot}/bin/*"]
+      }
+    },
     "lint": {},
     "unit-test": {},
     "int-test": {},

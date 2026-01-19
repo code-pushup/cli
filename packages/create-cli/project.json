@@ -4,7 +4,9 @@
   "sourceRoot": "packages/create-cli/src",
   "projectType": "library",
   "targets": {
+    "build": {},
     "lint": {},
+
     "unit-test": {},
     "code-pushup": {},
     "code-pushup-eslint": {},

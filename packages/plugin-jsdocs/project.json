@@ -5,6 +5,7 @@
   "projectType": "library",
   "tags": ["scope:plugin", "type:feature", "publishable"],
   "targets": {
+    "build": {},
     "lint": {},
     "unit-test": {},
     "int-test": {},
