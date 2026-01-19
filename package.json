@@ -59,7 +59,7 @@
     "@commitlint/types": "^19.5.0",
     "@nodelib/fs.walk": "^2.0.0",
     "@nx/eslint-plugin": "22.3.3",
-    "@nx/js": "22.3.3",
+    "@nx/js": "^22.3.3",
     "@nx/plugin": "22.3.3",
     "@nx/react": "22.3.3",
     "@nx/vite": "22.3.3",

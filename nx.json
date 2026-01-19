@@ -2,7 +2,11 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
-    "os": [{ "runtime": "node -e \"console.log(require('os').platform())\"" }],
+    "os": [
+      {
+        "runtime": "node -e \"console.log(require('os').platform())\""
+      }
+    ],
     "production": [
       "default",
       "!{projectRoot}/README.md",
@@ -25,23 +29,42 @@
     ],
     "test-vitest-inputs": [
       "os",
-      { "env": "NX_VERBOSE_LOGGING" },
-      { "externalDependencies": ["vitest"] }
+      {
+        "env": "NX_VERBOSE_LOGGING"
+      },
+      {
+        "externalDependencies": ["vitest"]
+      }
     ],
     "lint-eslint-inputs": [
       "{workspaceRoot}/eslint.config.js",
-      { "externalDependencies": ["eslint"] }
+      {
+        "externalDependencies": ["eslint"]
+      }
     ],
     "typecheck-typescript-inputs": [
       "{workspaceRoot}/tsconfig.base.json",
-      { "externalDependencies": ["typescript"] }
+      {
+        "externalDependencies": ["typescript"]
+      }
     ],
     "code-pushup-inputs": [
       "{workspaceRoot}/code-pushup.preset.ts",
-      { "env": "NODE_OPTIONS" },
-      { "env": "TSX_TSCONFIG_PATH" }
+      {
+        "env": "NODE_OPTIONS"
+      },
+      {
+        "env": "TSX_TSCONFIG_PATH"
+      }
     ],
-    "sharedGlobals": [{ "runtime": "node -v" }, { "runtime": "npm -v" }]
+    "sharedGlobals": [
+      {
+        "runtime": "node -v"
+      },
+      {
+        "runtime": "npm -v"
+      }
+    ]
   },
   "targetDefaults": {
     "lint": {
@@ -358,6 +381,20 @@
         },
         "packages": {
           "filterByTags": ["publishable"]
+        }
+      }
+    },
+    {
+      "plugin": "@nx/js/typescript",
+      "options": {
+        "typecheck": {
+          "targetName": "typecheck"
+        },
+        "build": {
+          "targetName": "tsc:build",
+          "configName": "tsconfig.lib.json",
+          "buildDepsName": "tsc:build-deps",
+          "watchDepsName": "tsc:watch-deps"
         }
       }
     }
