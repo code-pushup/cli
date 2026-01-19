@@ -1,10 +1,10 @@
 import { performance } from 'node:perf_hooks';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { installExitHandlers } from '../exit-process.js';
+import { subscribeProcessExit } from '../exit-process.js';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
 import { NodeJsProfiler, Profiler, type ProfilerOptions } from './profiler.js';
 
-// Spy on installExitHandlers to capture handlers
+// Spy on subscribeProcessExit to capture handlers
 vi.mock('../exit-process.js');
 
 describe('Profiler', () => {
@@ -429,7 +429,7 @@ describe('Profiler', () => {
   });
 });
 describe('NodeJsProfiler', () => {
-  const mockInstallExitHandlers = vi.mocked(installExitHandlers);
+  const mockSubscribeProcessExit = vi.mocked(subscribeProcessExit);
 
   let capturedOnError:
     | ((
@@ -456,9 +456,10 @@ describe('NodeJsProfiler', () => {
     capturedOnError = undefined;
     capturedOnExit = undefined;
 
-    mockInstallExitHandlers.mockImplementation(options => {
+    mockSubscribeProcessExit.mockImplementation(options => {
       capturedOnError = options?.onError;
       capturedOnExit = options?.onExit;
+      return vi.fn();
     });
 
     performance.clearMarks();
@@ -470,7 +471,7 @@ describe('NodeJsProfiler', () => {
   it('installs exit handlers on construction', () => {
     expect(() => createProfiler()).not.toThrow();
 
-    expect(mockInstallExitHandlers).toHaveBeenCalledWith({
+    expect(mockSubscribeProcessExit).toHaveBeenCalledWith({
       onError: expect.any(Function),
       onExit: expect.any(Function),
     });

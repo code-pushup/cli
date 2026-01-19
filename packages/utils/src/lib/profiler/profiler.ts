@@ -1,6 +1,6 @@
 import process from 'node:process';
 import { isEnvVarEnabled } from '../env.js';
-import { installExitHandlers } from '../exit-process';
+import { subscribeProcessExit } from '../exit-process';
 import type { TraceEvent } from '../trace-file.type';
 import {
   type ActionTrackConfigs,
@@ -16,7 +16,6 @@ import type {
   ActionTrackEntryPayload,
   DevToolsColor,
   EntryMeta,
-  UserTimingDetail,
 } from '../user-timing-extensibility-api.type.js';
 import { PROFILER_ENABLED_ENV_VAR } from './constants.js';
 
@@ -236,6 +235,7 @@ type WalSink = {
   append(event: TraceEvent): void;
   open(): void;
   close(): void;
+  isClosed(): boolean;
 };
 
 export type NodeJsProfilerOptions<T extends ActionTrackConfigs> =
@@ -247,6 +247,7 @@ export type NodeJsProfilerOptions<T extends ActionTrackConfigs> =
   };
 
 export class NodeJsProfiler<T extends ActionTrackConfigs> extends Profiler<T> {
+  #exitHandlerSubscribscription: null | (() => void) = null;
   protected sink: WalSink | null = null;
 
   constructor(options: NodeJsProfilerOptions<T>) {
@@ -258,8 +259,9 @@ export class NodeJsProfiler<T extends ActionTrackConfigs> extends Profiler<T> {
       },
       open: () => void 0,
       close: () => void 0,
+      isClosed: () => false,
     };
-    this.installExitHandlers();
+    this.#exitHandlerSubscribscription = this.subscribeProcessExit();
   }
 
   /**
@@ -270,25 +272,34 @@ export class NodeJsProfiler<T extends ActionTrackConfigs> extends Profiler<T> {
    *
    * @protected
    */
-  protected installExitHandlers(): void {
-    installExitHandlers({
+  protected subscribeProcessExit(): () => void {
+    return subscribeProcessExit({
       onError: (err, kind) => {
-        if (!this.isEnabled()) {
+        if (!this.isRunning()) {
           return;
         }
         this.marker('Fatal Error', {
           ...errorToMarkerPayload(err),
           tooltipText: `${kind} caused fatal error`,
         });
-        this.shutdown();
+        this.close();
       },
-      onExit: () => {
-        if (!this.isEnabled()) {
+      onExit: (code, reason) => {
+        if (!this.isRunning()) {
           return;
         }
-        this.shutdown();
+        this.marker('Process Exit', {
+          ...(code !== 0 ? { color: 'warning' } : {}),
+          properties: [['reason', JSON.stringify(reason)]],
+          tooltipText: `Process exited with code ${code}`,
+        });
+        this.close();
       },
     });
+  }
+
+  isRunning(): boolean {
+    return this.isEnabled() && !this.sink?.isClosed();
   }
 
   override setEnabled(enabled: boolean): void {
@@ -304,7 +315,10 @@ export class NodeJsProfiler<T extends ActionTrackConfigs> extends Profiler<T> {
    * data is flushed and the WAL sink is properly closed.
    */
   close(): void {
-    this.shutdown();
+    if (!this.isEnabled()) return;
+    this.flush();
+    this.setEnabled(false);
+    this.#exitHandlerSubscribscription?.();
   }
 
   /**
@@ -312,19 +326,5 @@ export class NodeJsProfiler<T extends ActionTrackConfigs> extends Profiler<T> {
    */
   flush(): void {
     // @TODO implement WAL flush, currently all entries are buffered in memory
-  }
-
-  /**
-   * Performs internal cleanup of profiling resources.
-   *
-   * Flushes any remaining buffered data and closes the WAL sink.
-   * This method is called automatically on process exit or error.
-   *
-   * @protected
-   */
-  protected shutdown(): void {
-    if (!this.isEnabled()) return;
-    this.flush();
-    this.setEnabled(false);
   }
 }
