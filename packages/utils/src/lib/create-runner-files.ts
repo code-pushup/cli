@@ -13,8 +13,10 @@ export async function createRunnerFiles(
   pluginSlug: string,
   configJSON: string,
 ): Promise<RunnerFilesPaths> {
-  const timestamp = Date.now().toString();
-  const runnerWorkDir = path.join(pluginWorkDir(pluginSlug), timestamp);
+  // Use timestamp + process ID + random suffix to ensure uniqueness
+  // This prevents race conditions when running the same plugin for multiple projects in parallel
+  const uniqueId = `${Date.now()}-${process.pid}-${Math.random().toString(36).slice(2, 8)}`;
+  const runnerWorkDir = path.join(pluginWorkDir(pluginSlug), uniqueId);
   const runnerConfigPath = path.join(runnerWorkDir, 'plugin-config.json');
   const runnerOutputPath = path.join(runnerWorkDir, 'runner-output.json');
 
