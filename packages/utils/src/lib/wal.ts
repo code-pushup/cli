@@ -291,7 +291,7 @@ export function isLeaderWal(envVarName: string, profilerID: string): boolean {
 /**
  * Initialize the origin PID environment variable if not already set.
  * This must be done as early as possible before any user code runs.
- * Set's envVarName to the current process PID if not already defined.
+ * Sets envVarName to the current process ID if not already defined.
  */
 export function setLeaderWal(envVarName: string, profilerID: string): void {
   if (!process.env[envVarName]) {
