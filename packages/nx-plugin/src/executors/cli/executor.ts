@@ -24,6 +24,7 @@ export default async function runCliExecutor(
     dryRun,
     env: executorEnv,
     bin,
+    projectPrefix, // Do not forward to CLI, it is handled plugin logic only
     ...restArgs
   } = parseCliExecutorOptions(terminalAndExecutorOptions, normalizedContext);
   // this sets `CP_VERBOSE=true` on process.env
@@ -48,7 +49,7 @@ export default async function runCliExecutor(
     logger.warn(`DryRun execution of: ${commandString}`);
   } else {
     try {
-      logger.debug(`Run CLI with env vars: ${loggedEnvVars}`);
+      logger.debug(`Run CLI with env vars: ${JSON.stringify(loggedEnvVars)}`);
       await executeProcess({
         command,
         args,

@@ -1,5 +1,16 @@
-import { type MockInstance, describe, expect, it, vi } from 'vitest';
-import { osAgnosticPath } from '@code-pushup/test-utils';
+import { vol } from 'memfs';
+import {
+  type MockInstance,
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
+import { createNodesV2Context } from '@code-pushup/test-nx-utils';
+import { MEMFS_VOLUME, osAgnosticPath } from '@code-pushup/test-utils';
+import { normalizedCreateNodesV2Context } from '../../plugin/utils.js';
 import type { Command } from '../internal/types.js';
 import {
   parseCliExecutorOnlyOptions,
@@ -202,4 +213,175 @@ describe('parseCliExecutorOptions', () => {
       );
     },
   );
+});
+
+describe('normalizedCreateNodesV2Context', () => {
+  const CP_TARGET_NAME = 'code-pushup';
+
+  const projectJsonPath = (projectRoot: string) =>
+    `${MEMFS_VOLUME}/${projectRoot}/project.json`;
+
+  const setupProjectJson = (options: {
+    projectRoot: string;
+    config: Record<string, unknown>;
+  }) => {
+    const { projectRoot, config } = options;
+    vol.fromJSON(
+      {
+        [`${projectRoot}/project.json`]: JSON.stringify(config),
+      },
+      MEMFS_VOLUME,
+    );
+  };
+
+  it('should normalize context with default target name', async () => {
+    const projectRoot = 'libs/my-lib';
+    setupProjectJson({
+      projectRoot,
+      config: { name: 'my-lib', root: projectRoot, targets: {} },
+    });
+
+    await expect(
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
+        projectJsonPath(projectRoot),
+      ),
+    ).resolves.toStrictEqual(
+      expect.objectContaining({
+        projectRoot: expect.pathToMatch(`${MEMFS_VOLUME}/${projectRoot}`),
+        workspaceRoot: MEMFS_VOLUME,
+        projectJson: { name: 'my-lib', root: projectRoot, targets: {} },
+        createOptions: { targetName: CP_TARGET_NAME },
+      }),
+    );
+  });
+
+  it('should normalize context with custom target name', async () => {
+    const projectRoot = 'libs/my-lib';
+    const customTargetName = 'custom-target';
+    setupProjectJson({
+      projectRoot,
+      config: { name: 'my-lib', root: projectRoot, targets: {} },
+    });
+
+    await expect(
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
+        projectJsonPath(projectRoot),
+        { targetName: customTargetName },
+      ),
+    ).resolves.toStrictEqual(
+      expect.objectContaining({
+        projectRoot: expect.pathToMatch(`${MEMFS_VOLUME}/${projectRoot}`),
+        projectJson: { name: 'my-lib', root: projectRoot, targets: {} },
+        createOptions: { targetName: customTargetName },
+      }),
+    );
+  });
+
+  it('should extract project root from project.json path', async () => {
+    const projectRoot = 'packages/utils';
+    setupProjectJson({
+      projectRoot,
+      config: { name: 'utils', root: projectRoot, targets: {} },
+    });
+
+    await expect(
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
+        projectJsonPath(projectRoot),
+      ),
+    ).resolves.toStrictEqual(
+      expect.objectContaining({
+        projectRoot: expect.pathToMatch(`${MEMFS_VOLUME}/${projectRoot}`),
+      }),
+    );
+  });
+
+  it('should preserve all context properties', async () => {
+    const projectRoot = 'libs/my-lib';
+    const nxJsonConfiguration = {
+      namedInputs: { default: ['{projectRoot}/**/*'] },
+    };
+    setupProjectJson({
+      projectRoot,
+      config: { name: 'my-lib', root: projectRoot, targets: {} },
+    });
+
+    await expect(
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({
+          workspaceRoot: MEMFS_VOLUME,
+          nxJsonConfiguration,
+        }),
+        projectJsonPath(projectRoot),
+      ),
+    ).resolves.toStrictEqual(
+      expect.objectContaining({
+        projectRoot: expect.pathToMatch(`${MEMFS_VOLUME}/${projectRoot}`),
+        workspaceRoot: MEMFS_VOLUME,
+        nxJsonConfiguration,
+        projectJson: { name: 'my-lib', root: projectRoot, targets: {} },
+        createOptions: { targetName: CP_TARGET_NAME },
+      }),
+    );
+  });
+
+  it('should preserve createOptions properties', async () => {
+    const projectRoot = 'libs/my-lib';
+    const createOptions = {
+      targetName: 'custom-target',
+      projectPrefix: 'cli',
+      bin: 'packages/cli/dist',
+    };
+    setupProjectJson({
+      projectRoot,
+      config: { name: 'my-lib', root: projectRoot, targets: {} },
+    });
+
+    await expect(
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
+        projectJsonPath(projectRoot),
+        createOptions,
+      ),
+    ).resolves.toStrictEqual(
+      expect.objectContaining({
+        createOptions,
+      }),
+    );
+  });
+
+  it('should throw error when project.json file cannot be read', async () => {
+    const projectRoot = 'libs/my-lib';
+    vol.fromJSON({}, MEMFS_VOLUME);
+
+    await expect(
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
+        projectJsonPath(projectRoot),
+      ),
+    ).rejects.toThrow(
+      `Error parsing project.json file ${projectJsonPath(projectRoot)}.`,
+    );
+  });
+
+  it('should throw error when project.json contains invalid JSON', async () => {
+    const projectRoot = 'libs/my-lib';
+    vol.fromJSON(
+      {
+        [`${projectRoot}/project.json`]: '{ invalid json }',
+      },
+      MEMFS_VOLUME,
+    );
+
+    await expect(
+      normalizedCreateNodesV2Context(
+        createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
+        projectJsonPath(projectRoot),
+      ),
+    ).rejects.toThrow(
+      `Error parsing project.json file ${projectJsonPath(projectRoot)}.`,
+    );
+  });
 });

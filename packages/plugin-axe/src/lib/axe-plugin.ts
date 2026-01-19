@@ -6,8 +6,8 @@ import {
 } from '@code-pushup/models';
 import { normalizeUrlInput } from '@code-pushup/utils';
 import { type AxePluginOptions, axePluginOptionsSchema } from './config.js';
-import { AXE_PLUGIN_SLUG } from './constants.js';
-import { processAuditsAndGroups } from './processing.js';
+import { AXE_PLUGIN_SLUG, AXE_PLUGIN_TITLE } from './constants.js';
+import { processAuditsAndGroups } from './meta/processing.js';
 import { createRunnerFunction } from './runner/runner.js';
 
 /**
@@ -22,7 +22,7 @@ export function axePlugin(
   urls: PluginUrls,
   options: AxePluginOptions = {},
 ): PluginConfig {
-  const { preset, scoreTargets, timeout } = validate(
+  const { preset, scoreTargets, timeout, setupScript } = validate(
     axePluginOptionsSchema,
     options,
   );
@@ -40,16 +40,16 @@ export function axePlugin(
 
   return {
     slug: AXE_PLUGIN_SLUG,
-    packageName: packageJson.name,
-    version: packageJson.version,
-    title: 'Axe Accessibility',
+    title: AXE_PLUGIN_TITLE,
     icon: 'folder-syntax',
     description:
       'Official Code PushUp Axe plugin for automated accessibility testing',
     docsUrl: 'https://www.npmjs.com/package/@code-pushup/axe-plugin',
+    packageName: packageJson.name,
+    version: packageJson.version,
     audits,
     groups,
-    runner: createRunnerFunction(normalizedUrls, ruleIds, timeout),
+    runner: createRunnerFunction(normalizedUrls, ruleIds, timeout, setupScript),
     context,
     ...(scoreTargets && { scoreTargets }),
   };

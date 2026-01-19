@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/coverage-plugin",
-  "version": "0.96.1",
+  "version": "0.108.0",
   "description": "Code PushUp plugin for tracking code coverage ☂",
   "license": "MIT",
   "homepage": "https://github.com/code-pushup/cli/tree/main/packages/plugin-coverage#readme",
@@ -34,10 +34,10 @@
   },
   "type": "module",
   "dependencies": {
-    "@code-pushup/models": "0.96.1",
-    "@code-pushup/utils": "0.96.1",
+    "@code-pushup/models": "0.108.0",
+    "@code-pushup/utils": "0.108.0",
     "parse-lcov": "^1.0.4",
-    "zod": "^4.0.5"
+    "zod": "^4.2.1"
   },
   "peerDependencies": {
     "@nx/devkit": ">=17.0.0",

@@ -4,7 +4,15 @@ import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import type { MockInstance } from 'vitest';
+import {
+  type MockInstance,
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 import type { Audit } from '@code-pushup/models';
 import {
   restoreNxIgnoredFiles,
@@ -130,7 +138,7 @@ describe('eslintPlugin', () => {
           groups: [{ slug: 'type-safety', title: 'Type safety', rules: [] }],
         },
       ),
-    ).rejects.toThrow('Invalid input');
+    ).rejects.toThrow(`Invalid ${ansis.bold('ESLintPluginOptions')}`);
     await expect(
       eslintPlugin(
         {
@@ -141,14 +149,25 @@ describe('eslintPlugin', () => {
           groups: [{ slug: 'type-safety', title: 'Type safety', rules: {} }],
         },
       ),
-    ).rejects.toThrow('Invalid input');
+    ).rejects.toThrow(`Invalid ${ansis.bold('ESLintPluginOptions')}`);
   });
 
-  it('should throw when invalid parameters provided', async () => {
-    await expect(
-      // @ts-expect-error simulating invalid non-TS config
-      eslintPlugin({ eslintrc: '.eslintrc.json' }),
-    ).rejects.toThrow(`Invalid ${ansis.bold('ESLintPluginConfig')}`);
+  it('should initialize ESLint plugin without config using default patterns', async () => {
+    cwdSpy.mockReturnValue(path.join(tmpDir, 'todos-app'));
+
+    const plugin = await eslintPlugin();
+
+    expect(plugin.slug).toBe('eslint');
+    expect(plugin.audits.length).toBeGreaterThan(0);
+  });
+
+  it('should initialize ESLint plugin with only eslintrc using default patterns', async () => {
+    cwdSpy.mockReturnValue(path.join(tmpDir, 'todos-app'));
+
+    const plugin = await eslintPlugin({ eslintrc: 'eslint.config.js' });
+
+    expect(plugin.slug).toBe('eslint');
+    expect(plugin.audits.length).toBeGreaterThan(0);
   });
 
   it("should throw if eslintrc file doesn't exist", async () => {

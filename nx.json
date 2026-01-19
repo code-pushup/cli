@@ -53,7 +53,7 @@
       "options": {
         "command": "eslint",
         "args": [
-          "'{projectRoot}/**/*.ts'",
+          "'{projectRoot}/**/*.{ts,cjs,mjs,js}'",
           "{projectRoot}/package.json",
           "--config={projectRoot}/eslint.config.js",
           "--max-warnings=0",
@@ -66,47 +66,61 @@
         }
       }
     },
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
+      "cache": true,
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "{projectRoot}/dist",
+        "main": "{projectRoot}/src/index.ts",
+        "tsConfig": "{projectRoot}/tsconfig.lib.json",
+        "assets": ["{projectRoot}/*.md"]
+      }
+    },
     "unit-test": {
       "cache": true,
       "inputs": ["default", "^production", "test-vitest-inputs"],
       "outputs": [
         "{workspaceRoot}/coverage/{projectName}/unit-tests/lcov.info"
       ],
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "options": {
         "configFile": "{projectRoot}/vitest.unit.config.ts",
         "coverage": {
           "enabled": true
-        }
+        },
+        "passWithNoTests": true,
+        "watch": false
       }
     },
     "int-test": {
       "cache": true,
       "inputs": ["default", "^production", "test-vitest-inputs"],
       "outputs": ["{workspaceRoot}/coverage/{projectName}/int-tests/lcov.info"],
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "options": {
         "configFile": "{projectRoot}/vitest.int.config.ts",
         "coverage": {
           "enabled": true
-        }
+        },
+        "passWithNoTests": true,
+        "watch": false
       }
     },
     "e2e": {
       "cache": true,
       "inputs": ["default", "test-vitest-inputs"],
-      "dependsOn": ["^build"]
-    },
-    "nxv-pkg-install": {
-      "parallelism": false
-    },
-    "@nx/vite:test": {
-      "cache": true,
-      "inputs": ["default", "test-vitest-inputs"],
+      "executor": "@nx/vitest:test",
       "options": {
+        "configFile": "{projectRoot}/vitest.e2e.config.ts",
         "passWithNoTests": true,
         "watch": false
       }
+    },
+    "nxv-pkg-install": {
+      "parallelism": false
     },
     "code-pushup": {
       "cache": false,
@@ -331,7 +345,7 @@
     "releaseTagPattern": "v{version}"
   },
   "plugins": [
-    "./tools/build-target/src/build-target.plugin.ts",
+    "./tools/zod2md-jsdocs/src/nx-plugin.ts",
     {
       "plugin": "@push-based/nx-verdaccio",
       "options": {

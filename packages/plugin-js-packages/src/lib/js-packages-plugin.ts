@@ -1,5 +1,7 @@
+import ansis from 'ansis';
 import { createRequire } from 'node:module';
 import type { Audit, Group, PluginConfig } from '@code-pushup/models';
+import { logger, pluralizeToken } from '@code-pushup/utils';
 import {
   type DependencyGroup,
   type JSPackagesPluginConfig,
@@ -7,9 +9,15 @@ import {
   type PackageManagerId,
   dependencyGroups,
 } from './config.js';
-import { dependencyDocs, dependencyGroupWeights } from './constants.js';
+import {
+  JS_PACKAGES_PLUGIN_SLUG,
+  JS_PACKAGES_PLUGIN_TITLE,
+  dependencyDocs,
+  dependencyGroupWeights,
+} from './constants.js';
+import { formatMetaLog } from './format.js';
 import { packageManagers } from './package-managers/package-managers.js';
-import { createRunnerFunction } from './runner/index.js';
+import { createRunnerFunction } from './runner/runner.js';
 import { normalizeConfig } from './utils.js';
 
 /**
@@ -44,17 +52,26 @@ export async function jsPackagesPlugin(
     '../../package.json',
   ) as typeof import('../../package.json');
 
+  const audits = createAudits(packageManager.slug, checks, depGroups);
+  const groups = createGroups(packageManager.slug, checks, depGroups);
+
+  logger.info(
+    formatMetaLog(
+      `Created ${pluralizeToken('audit', audits.length)} and ${pluralizeToken('group', groups.length)} for ${ansis.bold(packageManager.name)} package manager`,
+    ),
+  );
+
   return {
-    slug: 'js-packages',
-    title: 'JS Packages',
+    slug: JS_PACKAGES_PLUGIN_SLUG,
+    title: JS_PACKAGES_PLUGIN_TITLE,
     icon: packageManager.icon,
     description:
       'This plugin runs audit to uncover vulnerabilities and lists outdated dependencies. It supports npm, yarn classic, yarn modern, and pnpm package managers.',
     docsUrl: packageManager.docs.homepage,
     packageName: packageJson.name,
     version: packageJson.version,
-    audits: createAudits(packageManager.slug, checks, depGroups),
-    groups: createGroups(packageManager.slug, checks, depGroups),
+    audits,
+    groups,
     runner: createRunnerFunction({
       ...jsPackagesPluginConfigRest,
       checks,

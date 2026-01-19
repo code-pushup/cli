@@ -1,6 +1,6 @@
 import { pluginConfigSchema } from '@code-pushup/models';
 import { eslintPlugin } from './eslint-plugin.js';
-import * as metaModule from './meta/index.js';
+import * as metaModule from './meta/list.js';
 
 describe('eslintPlugin', () => {
   const listAuditsAndGroupsSpy = vi.spyOn(metaModule, 'listAuditsAndGroups');
@@ -24,5 +24,15 @@ describe('eslintPlugin', () => {
 
     expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
     expect(pluginConfig.scoreTargets).toStrictEqual(scoreTargets);
+  });
+
+  it('should use default patterns when called without config', async () => {
+    const pluginConfig = await eslintPlugin();
+
+    expect(() => pluginConfigSchema.parse(pluginConfig)).not.toThrow();
+    expect(listAuditsAndGroupsSpy).toHaveBeenCalledWith(
+      [{ patterns: '.' }],
+      undefined,
+    );
   });
 });

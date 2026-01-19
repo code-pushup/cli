@@ -6,11 +6,12 @@ import {
   categoryRefSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
+import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
 import {
-  AuditsNotImplementedError,
-  CategoriesNotImplementedError,
   lighthouseAuditRef,
+  lighthouseAuditRefs,
   lighthouseGroupRef,
+  lighthouseGroupRefs,
   markSkippedAuditsAndGroups,
   validateAudits,
   validateOnlyCategories,
@@ -46,6 +47,112 @@ describe('lighthouseGroupRef', () => {
   });
 });
 
+describe('lighthouseGroupRefs', () => {
+  it('should return refs for all groups when no slug provided', () => {
+    expect(
+      lighthouseGroupRefs({
+        groups: [
+          { slug: 'performance-1', title: 'Performance (url1)', refs: [] },
+          { slug: 'performance-2', title: 'Performance (url2)', refs: [] },
+        ],
+        context: { urlCount: 2, weights: { 1: 2, 2: 3 } },
+      }),
+    ).toStrictEqual([
+      {
+        plugin: LIGHTHOUSE_PLUGIN_SLUG,
+        slug: 'performance-1',
+        type: 'group',
+        weight: 2,
+      },
+      {
+        plugin: LIGHTHOUSE_PLUGIN_SLUG,
+        slug: 'performance-2',
+        type: 'group',
+        weight: 3,
+      },
+    ]);
+  });
+
+  it('should return refs for specific group when slug provided', () => {
+    expect(
+      lighthouseGroupRefs(
+        {
+          groups: [
+            { slug: 'performance-1', title: 'Performance (url1)', refs: [] },
+            { slug: 'performance-2', title: 'Performance (url2)', refs: [] },
+          ],
+          context: { urlCount: 2, weights: { 1: 1, 2: 1 } },
+        },
+        'performance',
+        3,
+      ),
+    ).toStrictEqual([
+      {
+        plugin: LIGHTHOUSE_PLUGIN_SLUG,
+        slug: 'performance-1',
+        type: 'group',
+        weight: 2,
+      },
+      {
+        plugin: LIGHTHOUSE_PLUGIN_SLUG,
+        slug: 'performance-2',
+        type: 'group',
+        weight: 2,
+      },
+    ]);
+  });
+
+  it('should return empty array when plugin has no groups', () => {
+    expect(
+      lighthouseGroupRefs({
+        groups: undefined,
+        context: { urlCount: 1, weights: { 1: 1 } },
+      }),
+    ).toBeEmpty();
+  });
+});
+
+describe('lighthouseAuditRefs', () => {
+  it('should return refs for specific audit with multi-URL expansion', () => {
+    expect(
+      lighthouseAuditRefs(
+        { audits: [], context: { urlCount: 2, weights: { 1: 1, 2: 2 } } },
+        'first-contentful-paint',
+        3,
+      ),
+    ).toStrictEqual([
+      {
+        plugin: LIGHTHOUSE_PLUGIN_SLUG,
+        slug: 'first-contentful-paint-1',
+        type: 'audit',
+        weight: 2,
+      },
+      {
+        plugin: LIGHTHOUSE_PLUGIN_SLUG,
+        slug: 'first-contentful-paint-2',
+        type: 'audit',
+        weight: 2.5,
+      },
+    ]);
+  });
+
+  it('should return refs for all audits when no slug provided', () => {
+    expect(
+      lighthouseAuditRefs({
+        audits: [{ slug: 'first-contentful-paint', title: '' }],
+        context: { urlCount: 1, weights: { 1: 1 } },
+      }),
+    ).toStrictEqual([
+      {
+        plugin: LIGHTHOUSE_PLUGIN_SLUG,
+        slug: 'first-contentful-paint',
+        type: 'audit',
+        weight: 1,
+      },
+    ]);
+  });
+});
+
 describe('validateAudits', () => {
   it('should not throw for audit slugs existing in given audits', () => {
     expect(
@@ -70,7 +177,7 @@ describe('validateAudits', () => {
         ],
         ['missing-audit'],
       ),
-    ).toThrow(new AuditsNotImplementedError(['missing-audit']));
+    ).toThrow('Audits not implemented: "missing-audit"');
   });
 });
 
@@ -107,7 +214,7 @@ describe('validateOnlyCategories', () => {
         ],
         'missing-category',
       ),
-    ).toThrow(new CategoriesNotImplementedError(['missing-category']));
+    ).toThrow('Categories not implemented: "missing-category"');
   });
 });
 
@@ -209,7 +316,7 @@ describe('markSkippedAuditsAndGroups to be used in plugin config', () => {
         ] as Group[],
         { skipAudits: ['missing-audit'] },
       ),
-    ).toThrow(new AuditsNotImplementedError(['missing-audit']));
+    ).toThrow('Audits not implemented: "missing-audit"');
   });
 
   it('should mark audits as not skipped when onlyAudits is set', () => {
@@ -258,7 +365,7 @@ describe('markSkippedAuditsAndGroups to be used in plugin config', () => {
         ] as Group[],
         { onlyAudits: ['missing-audit'] },
       ),
-    ).toThrow(new AuditsNotImplementedError(['missing-audit']));
+    ).toThrow('Audits not implemented: "missing-audit"');
   });
 
   it('should mark skipped audits and groups when onlyGroups is set', () => {
@@ -396,10 +503,10 @@ describe('markSkippedAuditsAndGroups to be used in plugin config', () => {
           onlyAudits: ['missing-audit'],
         },
       ),
-    ).toThrow(new AuditsNotImplementedError(['missing-audit']));
+    ).toThrow('Audits not implemented: "missing-audit"');
   });
 
-  it('should throw if onlyGroups is set with a group slug that is not implemented', () => {
+  it('should throw if onlyCategories is set with a group slug that is not implemented', () => {
     expect(() =>
       markSkippedAuditsAndGroups(
         [{ slug: 'speed-index' }] as Audit[],
@@ -413,6 +520,6 @@ describe('markSkippedAuditsAndGroups to be used in plugin config', () => {
           onlyCategories: ['missing-group'],
         },
       ),
-    ).toThrow(new CategoriesNotImplementedError(['missing-group']));
+    ).toThrow('Categories not implemented: "missing-group"');
   });
 });

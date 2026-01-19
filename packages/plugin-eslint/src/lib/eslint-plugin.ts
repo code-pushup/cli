@@ -7,8 +7,8 @@ import {
   eslintPluginOptionsSchema,
 } from './config.js';
 import { ESLINT_PLUGIN_SLUG, ESLINT_PLUGIN_TITLE } from './constants.js';
-import { listAuditsAndGroups } from './meta/index.js';
-import { createRunnerFunction } from './runner/index.js';
+import { listAuditsAndGroups } from './meta/list.js';
+import { createRunnerFunction } from './runner/runner.js';
 
 /**
  * Instantiates Code PushUp ESLint plugin for use in core config.
@@ -21,7 +21,7 @@ import { createRunnerFunction } from './runner/index.js';
  *   plugins: [
  *     // ... other plugins ...
  *     await eslintPlugin({
- *       eslintrc: '.eslintrc.json',
+ *       eslintrc: 'eslint.config.js',
  *       patterns: ['src', 'test/*.spec.js']
  *     })
  *   ]
@@ -32,7 +32,7 @@ import { createRunnerFunction } from './runner/index.js';
  * @returns Plugin configuration as a promise.
  */
 export async function eslintPlugin(
-  config: ESLintPluginConfig,
+  config?: ESLintPluginConfig,
   options?: ESLintPluginOptions,
 ): Promise<PluginConfig> {
   const targets = validate(eslintPluginConfigSchema, config);

@@ -11,14 +11,14 @@ import {
   DEFAULT_PERSIST_CONFIG,
   type Issue,
 } from '@code-pushup/models';
+import { osAgnosticAuditOutputs } from '@code-pushup/test-fixtures';
 import {
-  osAgnosticAuditOutputs,
   restoreNxIgnoredFiles,
   teardownTestFolder,
 } from '@code-pushup/test-utils';
-import type { ESLintTarget } from './config.js';
-import { listAuditsAndGroups } from './meta/index.js';
-import { createRunnerFunction } from './runner/index.js';
+import type { ESLintTarget } from '../config.js';
+import { listAuditsAndGroups } from '../meta/list.js';
+import { createRunnerFunction } from './runner.js';
 
 describe('executeRunner', () => {
   let cwdSpy: MockInstance<[], string>;
@@ -34,7 +34,7 @@ describe('executeRunner', () => {
   };
 
   const thisDir = fileURLToPath(path.dirname(import.meta.url));
-  const fixturesDir = path.join(thisDir, '..', '..', 'mocks', 'fixtures');
+  const fixturesDir = path.join(thisDir, '..', '..', '..', 'mocks', 'fixtures');
   const tmpDir = path.join(process.cwd(), 'tmp', 'int', 'plugin-eslint');
   const appDir = path.join(tmpDir, 'todos-app');
 

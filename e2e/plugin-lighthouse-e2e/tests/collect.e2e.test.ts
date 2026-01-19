@@ -2,11 +2,11 @@ import { cp } from 'node:fs/promises';
 import path from 'node:path';
 import { afterAll, beforeAll, expect } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
+import { omitVariableReportData } from '@code-pushup/test-fixtures';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
   E2E_ENVIRONMENTS_DIR,
   TEST_OUTPUT_DIR,
-  omitVariableReportData,
   restoreNxIgnoredFiles,
   teardownTestFolder,
 } from '@code-pushup/test-utils';

@@ -66,9 +66,11 @@ export {
   filePathSchema,
   globPathSchema,
   materialIconSchema,
+  nonnegativeNumberSchema,
   positiveIntSchema,
   scoreSchema,
   slugSchema,
+  weightSchema,
   type MaterialIcon,
 } from './lib/implementation/schemas.js';
 export { exists } from './lib/implementation/utils.js';
@@ -164,3 +166,4 @@ export {
   type Tree,
 } from './lib/tree.js';
 export { uploadConfigSchema, type UploadConfig } from './lib/upload-config.js';
+export { convertAsyncZodFunctionToSchema } from './lib/implementation/function.js';

@@ -4,13 +4,18 @@
   "sourceRoot": "tools/zod2md-jsdocs/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "dependsOn": ["^build", "pre-build"]
-    },
-    "pre-build": {
+    "lint": {},
+    "build": {},
+    "unit-test": {},
+    "ts-patch": {
       "command": "ts-patch install",
       "cache": true,
-      "inputs": ["sharedGlobals", { "runtime": "ts-patch check" }]
+      "inputs": [
+        "sharedGlobals",
+        {
+          "runtime": "ts-patch check"
+        }
+      ]
     }
   }
 }

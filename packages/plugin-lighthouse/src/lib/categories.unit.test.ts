@@ -3,7 +3,6 @@ import type { CategoryConfig } from '@code-pushup/models';
 import {
   createAggregatedCategory,
   expandAggregatedCategory,
-  extractGroupSlugs,
   lighthouseCategories,
 } from './categories.js';
 import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
@@ -178,13 +177,13 @@ describe('lighthouseCategories', () => {
             type: 'group',
             plugin: LIGHTHOUSE_PLUGIN_SLUG,
             slug: 'performance-1',
-            weight: 1,
+            weight: 1.5,
           },
           {
             type: 'group',
             plugin: LIGHTHOUSE_PLUGIN_SLUG,
             slug: 'performance-2',
-            weight: 1,
+            weight: 1.5,
           },
         ],
       });
@@ -247,13 +246,13 @@ describe('lighthouseCategories', () => {
           type: 'audit',
           plugin: LIGHTHOUSE_PLUGIN_SLUG,
           slug: 'first-contentful-paint-1',
-          weight: 1,
+          weight: 1.5,
         },
         {
           type: 'audit',
           plugin: LIGHTHOUSE_PLUGIN_SLUG,
           slug: 'first-contentful-paint-2',
-          weight: 1,
+          weight: 1.5,
         },
       ]);
     });
@@ -491,48 +490,6 @@ describe('lighthouseCategories', () => {
   });
 });
 
-describe('extractGroupSlugs', () => {
-  it('should extract unique base slugs from ordered groups', () => {
-    const groups = [
-      { slug: 'performance-1', title: 'Performance 1', refs: [] },
-      { slug: 'performance-2', title: 'Performance 2', refs: [] },
-      { slug: 'accessibility-1', title: 'Accessibility 1', refs: [] },
-      { slug: 'accessibility-2', title: 'Accessibility 2', refs: [] },
-    ];
-    expect(extractGroupSlugs(groups)).toEqual(['performance', 'accessibility']);
-  });
-
-  it('should handle non-ordered groups', () => {
-    const groups = [
-      { slug: 'performance', title: 'Performance', refs: [] },
-      { slug: 'accessibility', title: 'Accessibility', refs: [] },
-    ];
-    expect(extractGroupSlugs(groups)).toEqual(['performance', 'accessibility']);
-  });
-
-  it('should handle mixed ordered and non-ordered groups', () => {
-    const groups = [
-      { slug: 'performance', title: 'Performance', refs: [] },
-      { slug: 'accessibility-1', title: 'Accessibility 1', refs: [] },
-      { slug: 'accessibility-2', title: 'Accessibility 2', refs: [] },
-    ];
-    expect(extractGroupSlugs(groups)).toEqual(['performance', 'accessibility']);
-  });
-
-  it('should return unique slugs only', () => {
-    const groups = [
-      { slug: 'performance-1', title: 'Performance 1', refs: [] },
-      { slug: 'performance-2', title: 'Performance 2', refs: [] },
-      { slug: 'performance-3', title: 'Performance 3', refs: [] },
-    ];
-    expect(extractGroupSlugs(groups)).toEqual(['performance']);
-  });
-
-  it('should handle empty groups array', () => {
-    expect(extractGroupSlugs([])).toEqual([]);
-  });
-});
-
 describe('createAggregatedCategory', () => {
   it("should create category with Lighthouse groups' refs", () => {
     expect(
@@ -667,7 +624,7 @@ describe('expandAggregatedCategory', () => {
         type: 'group',
         plugin: LIGHTHOUSE_PLUGIN_SLUG,
         slug: 'performance-1',
-        weight: 3,
+        weight: 2,
       },
       {
         type: 'group',
@@ -685,7 +642,7 @@ describe('expandAggregatedCategory', () => {
         type: 'audit',
         plugin: LIGHTHOUSE_PLUGIN_SLUG,
         slug: 'first-contentful-paint-2',
-        weight: 1,
+        weight: 2,
       },
     ]);
   });
@@ -744,7 +701,7 @@ describe('expandAggregatedCategory', () => {
     ).toEqual(category);
   });
 
-  it('should prioritize URL weights over user-defined category weights', () => {
+  it('should average user-defined and URL weights', () => {
     expect(
       expandAggregatedCategory(
         {
@@ -766,18 +723,18 @@ describe('expandAggregatedCategory', () => {
         type: 'group',
         plugin: LIGHTHOUSE_PLUGIN_SLUG,
         slug: 'performance-1',
-        weight: 3,
+        weight: 2.5,
       },
       {
         type: 'group',
         plugin: LIGHTHOUSE_PLUGIN_SLUG,
         slug: 'performance-2',
-        weight: 5,
+        weight: 3.5,
       },
     ]);
   });
 
-  it('should fall back to user-defined weight when URL weight is missing', () => {
+  it('should average weights for each URL independently', () => {
     expect(
       expandAggregatedCategory(
         {
@@ -792,25 +749,25 @@ describe('expandAggregatedCategory', () => {
             },
           ],
         },
-        { urlCount: 2, weights: { 1: 3 } },
+        { urlCount: 2, weights: { 1: 3, 2: 5 } },
       ).refs,
     ).toEqual([
       {
         type: 'group',
         plugin: LIGHTHOUSE_PLUGIN_SLUG,
         slug: 'performance-1',
-        weight: 3,
+        weight: 5,
       },
       {
         type: 'group',
         plugin: LIGHTHOUSE_PLUGIN_SLUG,
         slug: 'performance-2',
-        weight: 7,
+        weight: 6,
       },
     ]);
   });
 
-  it('should not add suffixes for single URL but preserve weights', () => {
+  it('should not add suffixes for single URL but average weights', () => {
     expect(
       expandAggregatedCategory(
         {
@@ -832,7 +789,7 @@ describe('expandAggregatedCategory', () => {
         type: 'group',
         plugin: LIGHTHOUSE_PLUGIN_SLUG,
         slug: 'performance',
-        weight: 5,
+        weight: 3,
       },
     ]);
   });

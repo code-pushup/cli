@@ -6,6 +6,8 @@ import { DEFAULT_PERSIST_OUTPUT_DIR } from '@code-pushup/models';
 export const DEFAULT_CHROME_FLAGS = [...DEFAULT_FLAGS, '--headless'];
 
 export const LIGHTHOUSE_PLUGIN_SLUG = 'lighthouse';
+export const LIGHTHOUSE_PLUGIN_TITLE = 'Lighthouse';
+
 export const LIGHTHOUSE_OUTPUT_PATH = path.join(
   DEFAULT_PERSIST_OUTPUT_DIR,
   LIGHTHOUSE_PLUGIN_SLUG,
