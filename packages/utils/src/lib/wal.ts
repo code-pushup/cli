@@ -362,10 +362,10 @@ export function soratebleReadableDateString(timestampMs: string): string {
  * Example with groupId "20240101-120000-000" and shardId "20240101-120000-000.12345.1.1":
  * Full path: /base/20240101-120000-000/trace.20240101-120000-000.12345.1.1.log
  *
- * @param dir - The directory to store the shard file
- * @param format - The WalFormat to use for the shard file
- * @param groupId - The human-readable group ID (yyyymmdd-hhmmss-ms format)
- * @param shardId - The human-readable shard ID (readable-timestamp.pid.threadId.count format)
+ * @param opt.dir - The directory to store the shard file
+ * @param opt.format - The WalFormat to use for the shard file
+ * @param opt.groupId - The human-readable group ID (yyyymmdd-hhmmss-ms format)
+ * @param opt.shardId - The human-readable shard ID (readable-timestamp.pid.threadId.count format)
  * @returns The path to the shard file
  */
 export function getShardedPath<T extends object | string = object>(opt: {
