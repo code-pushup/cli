@@ -163,4 +163,18 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    // in bin files, imports with side effects are allowed
+    files: ['**/bin/**/*.ts', '**/bin/**/*.js'],
+    rules: {
+      'import/no-unassigned-import': 'off',
+    },
+  },
+  {
+    // in *nx-plugin.ts files path imports cant be default export style (@TODO understand relation to swc)
+    files: ['**/*nx-plugin.ts'],
+    rules: {
+      'unicorn/import-style': 'off',
+    },
+  },
 );
