@@ -72,7 +72,7 @@ export function filterValidRecords<T>(
 /**
  * Pure helper function to recover records from WAL file content.
  * @param content - Raw file content as string
- * @param decode - function fo decoding records
+ * @param decode - function for decoding records
  * @returns Recovery result with records, errors, and partial tail
  */
 export function recoverFromContent<T>(
