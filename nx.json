@@ -2,7 +2,11 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
-    "os": [{ "runtime": "node -e \"console.log(require('os').platform())\"" }],
+    "os": [
+      {
+        "runtime": "node -e \"console.log(require('os').platform())\""
+      }
+    ],
     "production": [
       "default",
       "!{projectRoot}/README.md",
@@ -25,23 +29,42 @@
     ],
     "test-vitest-inputs": [
       "os",
-      { "env": "NX_VERBOSE_LOGGING" },
-      { "externalDependencies": ["vitest"] }
+      {
+        "env": "NX_VERBOSE_LOGGING"
+      },
+      {
+        "externalDependencies": ["vitest"]
+      }
     ],
     "lint-eslint-inputs": [
       "{workspaceRoot}/eslint.config.js",
-      { "externalDependencies": ["eslint"] }
+      {
+        "externalDependencies": ["eslint"]
+      }
     ],
     "typecheck-typescript-inputs": [
       "{workspaceRoot}/tsconfig.base.json",
-      { "externalDependencies": ["typescript"] }
+      {
+        "externalDependencies": ["typescript"]
+      }
     ],
     "code-pushup-inputs": [
       "{workspaceRoot}/code-pushup.preset.ts",
-      { "env": "NODE_OPTIONS" },
-      { "env": "TSX_TSCONFIG_PATH" }
+      {
+        "env": "NODE_OPTIONS"
+      },
+      {
+        "env": "TSX_TSCONFIG_PATH"
+      }
     ],
-    "sharedGlobals": [{ "runtime": "node -v" }, { "runtime": "npm -v" }]
+    "sharedGlobals": [
+      {
+        "runtime": "node -v"
+      },
+      {
+        "runtime": "npm -v"
+      }
+    ]
   },
   "targetDefaults": {
     "lint": {
@@ -67,15 +90,7 @@
       }
     },
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"],
-      "cache": true,
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "{projectRoot}/dist",
-        "main": "{projectRoot}/src/index.ts",
-        "tsConfig": "{projectRoot}/tsconfig.lib.json",
         "assets": ["{projectRoot}/*.md"]
       }
     },
@@ -311,6 +326,11 @@
         "packageRoot": "{projectRoot}/dist",
         "registry": "https://registry.npmjs.org/"
       }
+    },
+    "@nx/js:tsc": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   },
   "workspaceLayout": {
@@ -358,6 +378,35 @@
         },
         "packages": {
           "filterByTags": ["publishable"]
+        }
+      }
+    },
+    {
+      "plugin": "@nx/js/typescript",
+      "options": {
+        "typecheck": false,
+        "build": {
+          "targetName": "build",
+          "configName": "tsconfig.lib.json",
+          "buildDepsName": "tsc:build-deps",
+          "watchDepsName": "tsc:watch-deps",
+          "options": {
+            "assets": ["{projectRoot}/*.md"]
+          }
+        }
+      },
+      "exclude": ["packages/utils/tmp/*"]
+    },
+    {
+      "plugin": "@nx/js/typescript",
+      "include": ["packages/utils/tmp/*"],
+      "options": {
+        "typecheck": {
+          "targetName": "typecheck"
+        },
+        "build": {
+          "targetName": "build",
+          "configName": "tsconfig.lib.json"
         }
       }
     }
