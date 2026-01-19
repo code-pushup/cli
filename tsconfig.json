@@ -1,0 +1,109 @@
+{
+  "extends": "./tsconfig.base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./packages/models"
+    },
+    {
+      "path": "./packages/utils"
+    },
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/cli"
+    },
+    {
+      "path": "./packages/ci"
+    },
+    {
+      "path": "./packages/create-cli"
+    },
+    {
+      "path": "./packages/nx-plugin"
+    },
+    {
+      "path": "./packages/plugin-axe"
+    },
+    {
+      "path": "./packages/plugin-coverage"
+    },
+    {
+      "path": "./packages/plugin-eslint"
+    },
+    {
+      "path": "./packages/plugin-js-packages"
+    },
+    {
+      "path": "./packages/plugin-jsdocs"
+    },
+    {
+      "path": "./packages/plugin-lighthouse"
+    },
+    {
+      "path": "./packages/plugin-typescript"
+    },
+    {
+      "path": "./testing/test-utils"
+    },
+    {
+      "path": "./testing/test-setup"
+    },
+    {
+      "path": "./testing/test-setup-config"
+    },
+    {
+      "path": "./testing/test-fixtures"
+    },
+    {
+      "path": "./testing/test-nx-utils"
+    },
+    {
+      "path": "./tools/eslint-formatter-multi"
+    },
+    {
+      "path": "./tools/zod2md-jsdocs"
+    },
+    {
+      "path": "./e2e/plugin-js-packages-e2e"
+    },
+    {
+      "path": "./e2e/plugin-lighthouse-e2e"
+    },
+    {
+      "path": "./e2e/plugin-typescript-e2e"
+    },
+    {
+      "path": "./e2e/plugin-coverage-e2e"
+    },
+    {
+      "path": "./e2e/plugin-eslint-e2e"
+    },
+    {
+      "path": "./e2e/plugin-jsdocs-e2e"
+    },
+    {
+      "path": "./e2e/create-cli-e2e"
+    },
+    {
+      "path": "./e2e/plugin-axe-e2e"
+    },
+    {
+      "path": "./e2e/nx-plugin-e2e"
+    },
+    {
+      "path": "./examples/plugins"
+    },
+    {
+      "path": "./e2e/cli-e2e"
+    },
+    {
+      "path": "./e2e/ci-e2e"
+    },
+    {
+      "path": "./.github/actions/code-pushup"
+    }
+  ]
+}

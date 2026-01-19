@@ -2,7 +2,15 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "module": "CommonJS",
-    "verbatimModuleSyntax": false
+    "verbatimModuleSyntax": false,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "types": ["vitest"]
   },
   "files": [],
   "include": [],

@@ -8,10 +8,28 @@ import {
   updateJson,
 } from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
-import type { LibraryGeneratorSchema } from '@nx/js/src/generators/library/schema';
 import path from 'node:path';
-import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
 import { executeProcess } from '@code-pushup/utils';
+
+// Import the testing utility with a type assertion to work around module resolution issues
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+const { createTreeWithEmptyWorkspace } =
+  require('nx/src/generators/testing-utils/create-tree-with-empty-workspace') as {
+    createTreeWithEmptyWorkspace: (opts?: { layout?: 'apps-libs' }) => Tree;
+  };
+
+// Define minimal interface for library generator options used in this module
+interface LibraryGeneratorOptions {
+  name: string;
+  directory?: string;
+  tags?: string;
+  linter?: string;
+  unitTestRunner?: string;
+  testEnvironment?: string;
+  buildable?: boolean;
+  publishable?: boolean;
+  [key: string]: unknown;
+}
 
 export function executorContext<
   T extends { projectName: string; cwd?: string },
@@ -40,7 +58,7 @@ export function executorContext<
 export async function generateWorkspaceAndProject(
   options:
     | string
-    | (Omit<Partial<LibraryGeneratorSchema>, 'name'> & {
+    | (Omit<Partial<LibraryGeneratorOptions>, 'name'> & {
         name: string;
       }),
 ) {

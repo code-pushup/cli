@@ -1,9 +1,27 @@
+import type { EntryType, PerformanceEntry } from 'node:perf_hooks';
 import { vi } from 'vitest';
 
 type EntryLike = Pick<
   PerformanceEntry,
   'name' | 'entryType' | 'startTime' | 'duration'
 >;
+
+interface PerformanceObserverInit {
+  entryTypes?: EntryType[];
+  type?: EntryType;
+  buffered?: boolean;
+}
+
+interface PerformanceObserverEntryList {
+  getEntries(): PerformanceEntry[];
+  getEntriesByType(type: string): PerformanceEntry[];
+  getEntriesByName(name: string): PerformanceEntry[];
+}
+
+type PerformanceObserverCallback = (
+  list: PerformanceObserverEntryList,
+  observer: MockPerformanceObserver,
+) => void;
 
 export class MockPerformanceObserver {
   static instances: MockPerformanceObserver[] = [];
@@ -64,10 +82,10 @@ export class MockPerformanceObserver {
     this.callback(mockEntryList, this);
   }
 
-  takeRecords(): PerformanceEntryList {
+  takeRecords(): PerformanceObserverEntryList {
     const entries = MockPerformanceObserver.globalEntries;
     MockPerformanceObserver.globalEntries = [];
-    return entries as unknown as PerformanceEntryList;
+    return entries as unknown as PerformanceObserverEntryList;
   }
 
   emitMark(name: string) {
@@ -91,7 +109,7 @@ export class MockPerformanceObserver {
     this.emit([
       {
         name,
-        entryType: 'navigation',
+        entryType: 'navigation' as any,
         startTime,
         duration,
       },

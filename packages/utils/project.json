@@ -4,7 +4,6 @@
   "sourceRoot": "packages/utils/src",
   "projectType": "library",
   "targets": {
-    "build": {},
     "lint": {},
     "perf": {
       "command": "npx tsx --tsconfig=../tsconfig.perf.json",

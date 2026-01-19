@@ -3,12 +3,25 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "declaration": true,
-    "types": ["node"]
+    "types": ["node"],
+    "module": "nodenext",
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "package.json"],
   "exclude": [
     "vitest.unit.config.ts",
     "vitest.int.config.ts",
     "src/**/*.test.ts"
+  ],
+  "references": [
+    {
+      "path": "../../testing/test-setup-config/tsconfig.lib.json"
+    },
+    {
+      "path": "../models/tsconfig.lib.json"
+    },
+    {
+      "path": "../utils/tsconfig.lib.json"
+    }
   ]
 }

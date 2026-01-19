@@ -14,6 +14,24 @@
   "include": [],
   "references": [
     {
+      "path": "../../testing/test-setup-config"
+    },
+    {
+      "path": "../../testing/test-utils"
+    },
+    {
+      "path": "../../testing/test-nx-utils"
+    },
+    {
+      "path": "../../packages/utils"
+    },
+    {
+      "path": "../../packages/models"
+    },
+    {
+      "path": "../../packages/ci"
+    },
+    {
       "path": "./tsconfig.test.json"
     }
   ]

@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc",
+    "outDir": "../../dist/out-tsc/create-cli",
     "declaration": true,
     "types": ["node"]
   },
@@ -11,5 +11,19 @@
     "vitest.int.config.ts",
     "src/**/*.test.ts",
     "test/**/*.ts"
+  ],
+  "references": [
+    {
+      "path": "../../testing/test-setup-config/tsconfig.lib.json"
+    },
+    {
+      "path": "../../testing/test-utils/tsconfig.lib.json"
+    },
+    {
+      "path": "../nx-plugin/tsconfig.lib.json"
+    },
+    {
+      "path": "../utils/tsconfig.lib.json"
+    }
   ]
 }

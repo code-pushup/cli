@@ -7,5 +7,10 @@
     "types": ["node"],
     "esModuleInterop": true
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "references": [
+    {
+      "path": "../../testing/test-setup-config/tsconfig.lib.json"
+    }
+  ]
 }

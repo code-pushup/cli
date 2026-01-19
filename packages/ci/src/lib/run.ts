@@ -1,4 +1,5 @@
-import { type SimpleGit, simpleGit } from 'simple-git';
+import type { SimpleGit } from 'simple-git';
+import { simpleGit } from 'simple-git';
 import type {
   GitRefs,
   Options,

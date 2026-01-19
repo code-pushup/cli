@@ -4,7 +4,6 @@ import type {
   ProjectGraphProjectNode,
   Tree,
 } from '@nx/devkit';
-import type { JestExecutorOptions } from '@nx/jest/src/executors/jest/schema';
 import type { VitestExecutorOptions } from '@nx/vite/executors';
 import path from 'node:path';
 import {
@@ -17,14 +16,20 @@ import {
 import type { CoverageResult } from '../config.js';
 import { formatMetaLog } from '../format.js';
 
+// Define JestExecutorOptions locally since the internal Nx path changed in v22
+export type JestExecutorOptions = {
+  jestConfig: string;
+  coverageDirectory?: string;
+  coverageReporters?: string[];
+};
+
 /**
  * Resolves the cached project graph for the current Nx workspace.
  * First tries to read cache and if not possible, go for the async creation.
  */
 async function resolveCachedProjectGraph() {
-  const { readCachedProjectGraph, createProjectGraphAsync } = await import(
-    '@nx/devkit'
-  );
+  const { readCachedProjectGraph, createProjectGraphAsync } =
+    await import('@nx/devkit');
   try {
     return readCachedProjectGraph();
   } catch (error) {

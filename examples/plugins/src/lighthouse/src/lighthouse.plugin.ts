@@ -1,4 +1,4 @@
-import type Result from 'lighthouse/types/lhr/lhr';
+import type { Result } from 'lighthouse';
 import path from 'node:path';
 import type {
   AuditOutput,
@@ -109,32 +109,31 @@ export function runnerConfig(options: LighthouseCliOptions): RunnerConfig {
 }
 
 function lhrToAuditOutputs(lhr: Result): AuditOutputs {
-  return Object.values(lhr.audits).map(
-    ({
+  return Object.values(lhr.audits).map((audit: Result['audits'][string]) => {
+    const {
       id: slug,
       score,
       numericValue: value = 0, // not every audit has a numericValue
       displayValue,
       details,
-    }) => {
-      const auditOutput: AuditOutput = {
-        slug,
-        score: score ?? 0, // score can be null
-        value: Number.parseInt(value.toString(), 10),
-        displayValue,
+    } = audit;
+    const auditOutput: AuditOutput = {
+      slug,
+      score: score ?? 0, // score can be null
+      value: Number.parseInt(value.toString(), 10),
+      displayValue,
+    };
+
+    const issues = lhrDetailsToIssueDetails(details);
+    if (issues) {
+      return {
+        ...auditOutput,
+        details: {
+          issues,
+        },
       };
+    }
 
-      const issues = lhrDetailsToIssueDetails(details);
-      if (issues) {
-        return {
-          ...auditOutput,
-          details: {
-            issues,
-          },
-        };
-      }
-
-      return auditOutput;
-    },
-  );
+    return auditOutput;
+  });
 }

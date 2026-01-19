@@ -30,13 +30,16 @@ import { lowercase } from '@code-pushup/utils';
 export function transformGQLReport(report: ReportFragment): Report {
   return {
     commit: transformGQLCommit(report.commit),
-    plugins: report.plugins.map(plugin =>
+    plugins: report.plugins.map((plugin: PluginFragment) =>
       transformGQLPlugin(
         plugin,
-        report.issues?.edges.map(({ node }) => node) ?? [],
+        report.issues?.edges.map(({ node }: { node: IssueFragment }) => node) ??
+          [],
       ),
     ),
-    categories: report.categories.map(transformGQLCategory),
+    categories: report.categories.map((category: CategoryFragment) =>
+      transformGQLCategory(category),
+    ),
     // TODO: make report metadata required in Portal API?
     packageName: report.packageName ?? 'unknown',
     version: report.packageVersion ?? 'unknown',
@@ -64,8 +67,14 @@ function transformGQLCategory(category: CategoryFragment): CategoryConfig {
     ...(category.description && { description: category.description }),
     ...(category.scoreTarget != null && { scoreTarget: category.scoreTarget }),
     refs: category.refs.map(
-      ({ target, weight }): CategoryRef => ({
-        type: lowercase(target.__typename),
+      ({
+        target,
+        weight,
+      }: {
+        target: { __typename: string; plugin: { slug: string }; slug: string };
+        weight: number;
+      }): CategoryRef => ({
+        type: lowercase(target.__typename as 'Audit' | 'Group'),
         plugin: target.plugin.slug,
         slug: target.slug,
         weight,
@@ -84,7 +93,7 @@ function transformGQLPlugin(
     icon: plugin.icon,
     ...(plugin.description && { description: plugin.description }),
     ...(plugin.docsUrl && { docsUrl: plugin.docsUrl }),
-    audits: plugin.audits.edges.map(({ node }) =>
+    audits: plugin.audits.edges.map(({ node }: { node: AuditFragment }) =>
       transformGQLAudit(
         node,
         issues.filter(
@@ -108,10 +117,12 @@ function transformGQLGroup(group: GroupFragment): Group {
     slug: group.slug,
     title: group.title,
     ...(group.description && { description: group.description }),
-    refs: group.refs.map(({ target, weight }) => ({
-      slug: target.slug,
-      weight,
-    })),
+    refs: group.refs.map(
+      ({ target, weight }: { target: { slug: string }; weight: number }) => ({
+        slug: target.slug,
+        weight,
+      }),
+    ),
   };
 }
 
@@ -146,7 +157,7 @@ function transformGQLAudit(
 function transformGQLIssue(issue: IssueFragment): Issue {
   return {
     message: issue.message,
-    severity: lowercase(issue.severity),
+    severity: lowercase(issue.severity as 'ERROR' | 'WARNING' | 'INFO'),
     ...(issue.source?.__typename === 'SourceCodeLocation' && {
       source: {
         file: issue.source.filePath,
@@ -173,19 +184,31 @@ function transformGQLTable(table: TableFragment): Table {
   if (!table.header) {
     return {
       ...(table.title && { title: table.title }),
-      rows: table.body.map(cells => cells.map(cell => cell.content)),
+      rows: table.body.map((cells: { content: string }[]) =>
+        cells.map((cell: { content: string }) => cell.content),
+      ),
     };
   }
 
   return {
     ...(table.title && { title: table.title }),
-    columns: table.header.map(({ content, alignment }, idx) => ({
-      key: idx.toString(),
-      label: content,
-      align: lowercase(alignment),
-    })),
-    rows: table.body.map(cells =>
-      Object.fromEntries(cells.map((cell, idx) => [idx, cell.content])),
+    columns: table.header.map(
+      (
+        { content, alignment }: { content: string; alignment: string },
+        idx: number,
+      ) => ({
+        key: idx.toString(),
+        label: content,
+        align: lowercase(alignment as 'LEFT' | 'CENTER' | 'RIGHT'),
+      }),
+    ),
+    rows: table.body.map((cells: { content: string }[]) =>
+      Object.fromEntries(
+        cells.map((cell: { content: string }, idx: number) => [
+          idx,
+          cell.content,
+        ]),
+      ),
     ),
   };
 }
@@ -204,6 +227,10 @@ function transformGQLTree(tree: TreeFragment): Tree {
         ...(tree.title && { title: tree.title }),
         root: transformGQLCoverageTreeNode(tree.root),
       };
+    default:
+      throw new Error(
+        `Unknown tree type: ${(tree as TreeFragment).__typename}`,
+      );
   }
 }
 
@@ -219,7 +246,9 @@ function transformGQLBasicTreeNode(
     name: node.name,
     ...(node.customValues && {
       values: Object.fromEntries(
-        node.customValues.map(({ key, value }) => [key, value]),
+        node.customValues.map(
+          ({ key, value }: { key: string; value: string }) => [key, value],
+        ),
       ),
     }),
     ...(node.children && {
@@ -236,14 +265,23 @@ function transformGQLCoverageTreeNode(
     values: {
       coverage: node.values.coverage,
       ...(node.values.missing && {
-        missing: node.values.missing.map(missing => ({
-          ...(missing.kind && { kind: missing.kind }),
-          ...(missing.name && { name: missing.name }),
-          startLine: missing.startLine,
-          ...(missing.startColumn && { startColumn: missing.startColumn }),
-          ...(missing.endLine && { endLine: missing.endLine }),
-          ...(missing.endColumn && { endColumn: missing.endColumn }),
-        })),
+        missing: node.values.missing.map(
+          (missing: {
+            kind?: string;
+            name?: string;
+            startLine: number;
+            startColumn?: number;
+            endLine?: number;
+            endColumn?: number;
+          }) => ({
+            ...(missing.kind && { kind: missing.kind }),
+            ...(missing.name && { name: missing.name }),
+            startLine: missing.startLine,
+            ...(missing.startColumn && { startColumn: missing.startColumn }),
+            ...(missing.endLine && { endLine: missing.endLine }),
+            ...(missing.endColumn && { endColumn: missing.endColumn }),
+          }),
+        ),
       }),
     },
     ...(node.children && {

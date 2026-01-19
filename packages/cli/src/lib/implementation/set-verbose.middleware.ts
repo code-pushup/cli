@@ -1,7 +1,7 @@
 import type { CoreConfig } from '@code-pushup/models';
 import { coerceBooleanValue, logger } from '@code-pushup/utils';
 import type { FilterOptions } from './filter.model.js';
-import type { GlobalOptions } from './global.model';
+import type { GlobalOptions } from './global.model.js';
 
 /**
  *

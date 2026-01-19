@@ -1,4 +1,4 @@
-import ansis, { type Ansis } from 'ansis';
+import { type Ansis, Ansis as AnsisClass } from 'ansis';
 import { type InlineText, md } from 'build-md';
 import type {
   AuditDiff,
@@ -276,7 +276,7 @@ function compareSourceFilePosition(
 // @TODO rethink implementation
 export function applyScoreColor(
   { score, text }: { score: number; text?: string },
-  style: Ansis = ansis,
+  style: Ansis = new AnsisClass(),
 ) {
   const formattedScore = text ?? formatReportScore(score);
 

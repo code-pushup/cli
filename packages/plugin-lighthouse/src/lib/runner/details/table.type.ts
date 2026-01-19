@@ -1,3 +1,4 @@
+// @ts-ignore - lighthouse types not properly exported in v12
 import type Details from 'lighthouse/types/lhr/audit-details';
 import {
   type Table,
@@ -21,7 +22,7 @@ export function parseTableToAuditDetailsTable(
   try {
     return validate(tableSchema(), {
       columns: parseTableColumns(headings),
-      rows: items.map(row => parseTableRow(row, headings)),
+      rows: items.map((row: any) => parseTableRow(row, headings)),
     });
   } catch (error) {
     throw new LighthouseAuditDetailsParsingError(
@@ -56,7 +57,7 @@ export function parseTableRow(
       .filter(([key]) => keys.has(key))
       .map(([key, value]) => {
         const valueType = valueTypesByKey.get(key);
-        return parseTableEntry([key, value], valueType);
+        return parseTableEntry([key as string, value as any], valueType);
       }),
   ) as TableRowObject;
 }

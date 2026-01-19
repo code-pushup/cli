@@ -1,3 +1,4 @@
+import type { SimpleGit } from 'simple-git';
 import { DiffNameStatus, GitError, simpleGit } from 'simple-git';
 import type { GitBranch } from './models.js';
 
@@ -15,7 +16,7 @@ type LineChange = {
 
 export async function normalizeGitRef(
   ref: string | GitBranch,
-  git = simpleGit(),
+  git: SimpleGit = simpleGit(),
 ): Promise<GitBranch> {
   if (typeof ref === 'object') {
     return ref;
@@ -23,7 +24,7 @@ export async function normalizeGitRef(
   try {
     const sha = await git.revparse(ref);
     return { ref, sha };
-  } catch (error) {
+  } catch (error: unknown) {
     if (
       error instanceof GitError &&
       error.message.includes(`fatal: ambiguous argument '${ref}'`)
@@ -41,7 +42,7 @@ export async function listChangedFiles(
     base: string;
     head: string;
   },
-  git = simpleGit(),
+  git: SimpleGit = simpleGit(),
 ): Promise<ChangedFiles> {
   const statuses: DiffNameStatus[] = [
     DiffNameStatus.ADDED,
@@ -59,29 +60,37 @@ export async function listChangedFiles(
 
   const entries = await Promise.all(
     files
-      .filter(({ binary }) => !binary)
-      .map(({ file }) => {
+      .filter(({ binary }: { binary: boolean }) => !binary)
+      .map(({ file }: { file: string }) => {
         const rename = parseFileRename(file);
         if (rename) {
           return { file: rename.curr, originalFile: rename.prev };
         }
         return { file };
       })
-      .map(async ({ file, originalFile }) => {
-        const diff = await git.diff([
-          '--unified=0',
-          refs.base,
-          refs.head,
-          '--',
+      .map(
+        async ({
           file,
-          ...(originalFile ? [originalFile] : []),
-        ]);
-        const lineChanges = parseDiff(diff);
-        return [
-          file,
-          { ...(originalFile && { originalFile }), lineChanges },
-        ] as const;
-      }),
+          originalFile,
+        }: {
+          file: string;
+          originalFile?: string;
+        }) => {
+          const diff = await git.diff([
+            '--unified=0',
+            refs.base,
+            refs.head,
+            '--',
+            file,
+            ...(originalFile ? [originalFile] : []),
+          ]);
+          const lineChanges = parseDiff(diff);
+          return [
+            file,
+            { ...(originalFile && { originalFile }), lineChanges },
+          ] as const;
+        },
+      ),
   );
 
   return Object.fromEntries(entries);

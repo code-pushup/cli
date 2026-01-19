@@ -25,6 +25,8 @@
     "access": "public"
   },
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "dependencies": {
     "@code-pushup/models": "0.108.0",
     "@code-pushup/portal-client": "^0.16.0",
@@ -36,7 +38,7 @@
     "zod": "^4.2.1"
   },
   "files": [
-    "src",
+    "dist",
     "!**/*.tsbuildinfo"
   ]
 }

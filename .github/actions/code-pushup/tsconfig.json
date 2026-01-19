@@ -1,4 +1,15 @@
 {
   "extends": "../../../tsconfig.base.json",
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "references": [
+    {
+      "path": "../../../packages/utils"
+    },
+    {
+      "path": "../../../packages/models"
+    },
+    {
+      "path": "../../../packages/ci"
+    }
+  ]
 }

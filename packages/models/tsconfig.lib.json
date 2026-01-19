@@ -1,12 +1,16 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc",
-    "declaration": true,
+    "baseUrl": ".",
+    "rootDir": "src",
+    "outDir": "dist",
+    "tsBuildInfoFile": "dist/tsconfig.lib.tsbuildinfo",
+    "emitDeclarationOnly": false,
+    "forceConsistentCasingInFileNames": true,
     "types": ["node"],
     "plugins": [
       {
-        "transform": "./tools/zod2md-jsdocs/dist",
+        "transform": "../../tools/zod2md-jsdocs/dist",
         "afterDeclarations": true,
         "baseUrl": "https://github.com/code-pushup/cli/blob/main/packages/models/docs/models-reference.md"
       }
@@ -14,13 +18,23 @@
   },
   "include": ["src/**/*.ts"],
   "exclude": [
-    "vitest.unit.config.ts",
-    "vitest.int.config.ts",
-    "code-pushup.config.ts",
-    "zod2md.config.ts",
+    "vite.config.ts",
+    "vite.config.mts",
+    "vitest.config.ts",
+    "vitest.config.mts",
     "src/**/*.test.ts",
-    "src/**/*.mock.ts",
-    "mocks/**/*.ts",
-    "tools/**/*.ts"
+    "src/**/*.spec.ts",
+    "src/**/*.test.tsx",
+    "src/**/*.spec.tsx",
+    "src/**/*.test.js",
+    "src/**/*.spec.js",
+    "src/**/*.test.jsx",
+    "src/**/*.spec.jsx",
+    "**/*.tsbuildinfo"
+  ],
+  "references": [
+    {
+      "path": "../../testing/test-setup-config/tsconfig.lib.json"
+    }
   ]
 }

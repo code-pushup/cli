@@ -12,5 +12,19 @@
     "src/**/*.test.ts",
     "src/**/*.mock.ts",
     "mocks/**/*.ts"
+  ],
+  "references": [
+    {
+      "path": "../../testing/test-setup-config/tsconfig.lib.json"
+    },
+    {
+      "path": "../../packages/utils/tsconfig.lib.json"
+    },
+    {
+      "path": "../../packages/models/tsconfig.lib.json"
+    },
+    {
+      "path": "../../packages/core/tsconfig.lib.json"
+    }
   ]
 }

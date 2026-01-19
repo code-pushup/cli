@@ -89,19 +89,6 @@
         }
       }
     },
-    "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"],
-      "cache": true,
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "{projectRoot}/dist",
-        "main": "{projectRoot}/src/index.ts",
-        "tsConfig": "{projectRoot}/tsconfig.lib.json",
-        "assets": ["{projectRoot}/*.md"]
-      }
-    },
     "unit-test": {
       "cache": true,
       "inputs": ["default", "^production", "test-vitest-inputs"],
@@ -387,11 +374,9 @@
     {
       "plugin": "@nx/js/typescript",
       "options": {
-        "typecheck": {
-          "targetName": "typecheck"
-        },
+        "typecheck": false,
         "build": {
-          "targetName": "tsc:build",
+          "targetName": "build",
           "configName": "tsconfig.lib.json",
           "buildDepsName": "tsc:build-deps",
           "watchDepsName": "tsc:watch-deps"

@@ -510,7 +510,7 @@ export class Logger {
     if (!color) {
       return text;
     }
-    return ansis[color](text);
+    return (ansis as Record<AnsiColors, (text: string) => string>)[color](text);
   }
 
   #formatDurationSuffix({

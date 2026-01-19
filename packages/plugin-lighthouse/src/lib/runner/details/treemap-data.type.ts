@@ -1,4 +1,5 @@
 import type { Treemap } from 'lighthouse';
+// @ts-ignore - lighthouse types not properly exported in v12
 import type Details from 'lighthouse/types/lhr/audit-details';
 import type { BasicTree, BasicTreeNode } from '@code-pushup/models';
 import { formatBytes } from '@code-pushup/utils';
@@ -6,7 +7,7 @@ import { formatBytes } from '@code-pushup/utils';
 export function parseTreemapDataToBasicTrees(
   details: Details.TreemapData,
 ): BasicTree[] {
-  return details.nodes.map(node => ({
+  return details.nodes.map((node: Details.TreemapData['nodes'][number]) => ({
     type: 'basic',
     root: treemapNodeToBasicTreeNode(node),
   }));
