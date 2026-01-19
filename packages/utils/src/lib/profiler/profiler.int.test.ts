@@ -438,11 +438,10 @@ describe('NodeJS Profiler Integration', () => {
       sink: mockSink,
       encodePerfEntry: simpleEncoder,
       maxQueueSize: 3,
-      flushThreshold: 2, // Low threshold to trigger flushing
+      flushThreshold: 2,
       enabled: true,
     });
 
-    // Initial stats should be zero
     const initialStats = profiler.stats;
     expect(initialStats.state).toBe('running');
     expect(initialStats.walOpen).toBe(true);
@@ -451,34 +450,21 @@ describe('NodeJS Profiler Integration', () => {
     expect(initialStats.dropped).toBe(0);
     expect(initialStats.written).toBe(0);
 
-    // Add measurements that will trigger flushing
     profiler.measure('operation-1', () => 'result1');
     profiler.measure('operation-2', () => 'result2');
 
-    const statsAfterMeasurements = profiler.stats;
+    expect(profiler.stats.written).toBe(2);
 
-    // Verify all stats are present and are numbers
-    expect(typeof statsAfterMeasurements.queued).toBe('number');
-    expect(typeof statsAfterMeasurements.dropped).toBe('number');
-    expect(typeof statsAfterMeasurements.written).toBe('number');
-
-    // Stats should be non-negative
-    expect(statsAfterMeasurements.queued).toBeGreaterThanOrEqual(0);
-    expect(statsAfterMeasurements.dropped).toBeGreaterThanOrEqual(0);
-    expect(statsAfterMeasurements.written).toBeGreaterThanOrEqual(0);
-
-    // Disable profiler to flush remaining items
     profiler.setEnabled(false);
 
     const finalStats = profiler.stats;
-    expect(finalStats.state).toBe('idle'); // Should be idle
-    expect(finalStats.walOpen).toBe(false); // WAL should be closed when disabled
-    expect(finalStats.isSubscribed).toBe(false); // Should not be subscribed when disabled
-    expect(finalStats.queued).toBe(0); // Should be cleared when disabled
+    expect(finalStats.state).toBe('idle');
+    expect(finalStats.walOpen).toBe(false);
+    expect(finalStats.isSubscribed).toBe(false);
+    expect(finalStats.queued).toBe(0);
   });
 
   it('should write to file on flush', () => {
-    // @TODO: Implement test when PR #1210 is merged
     expect(true).toBe(true);
   });
 });
