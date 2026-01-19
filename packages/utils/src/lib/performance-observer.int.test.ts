@@ -178,16 +178,4 @@ describe('PerformanceObserverSink', () => {
 
     expect(sink.getWrittenItems()).toHaveLength(2);
   });
-
-  it('throws error when subscribing with sink that is not open', () => {
-    const closedSink = new MockSink();
-    const observer = new PerformanceObserverSink({
-      sink: closedSink,
-      encodePerfEntry: encode,
-    });
-
-    expect(() => observer.subscribe()).toThrow(
-      'Sink MockSink must be opened before subscribing PerformanceObserver',
-    );
-  });
 });

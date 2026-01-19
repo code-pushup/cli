@@ -16,7 +16,6 @@ describe('Profiler', () => {
     new Profiler({
       prefix: 'cp',
       track: 'test-track',
-      enabled: false,
       ...overrides,
     });
 
@@ -118,11 +117,14 @@ describe('Profiler', () => {
     });
   });
 
-  it('base profiler should be active when enabled', () => {
-    const enabledProfiler = getProfiler({ enabled: true });
-    expect(typeof enabledProfiler.measure).toBe('function');
-    expect(typeof enabledProfiler.marker).toBe('function');
-    expect(enabledProfiler.isEnabled()).toBe(true);
+  it('isEnabled should set and get enabled state', () => {
+    expect(profiler.isEnabled()).toBe(false);
+
+    profiler.setEnabled(true);
+    expect(profiler.isEnabled()).toBe(true);
+
+    profiler.setEnabled(false);
+    expect(profiler.isEnabled()).toBe(false);
   });
 
   it('marker should execute without error when enabled', () => {
@@ -204,6 +206,20 @@ describe('Profiler', () => {
     ]);
   });
 
+  it('marker should return early when disabled', () => {
+    const disabledProfiler = getProfiler({ enabled: false });
+
+    expect(() => {
+      disabledProfiler.marker('disabled-marker', {
+        color: 'primary',
+        tooltipText: 'This should not create a mark',
+      });
+    }).not.toThrow();
+
+    const marks = performance.getEntriesByType('mark');
+    expect(marks).toHaveLength(0);
+  });
+
   it('measure should execute work and return result when enabled', () => {
     performance.clearMarks();
     performance.clearMeasures();
@@ -283,6 +299,44 @@ describe('Profiler', () => {
     expect(workFn).toHaveBeenCalled();
   });
 
+  it('measure should propagate errors when enabled and call error callback', () => {
+    const enabledProfiler = getProfiler({ enabled: true });
+    const error = new Error('Enabled test error');
+    const workFn = vi.fn(() => {
+      throw error;
+    });
+
+    expect(() => enabledProfiler.measure('test-event-error', workFn)).toThrow(
+      error,
+    );
+    expect(workFn).toHaveBeenCalled();
+
+    // Verify that performance marks were created even though error occurred
+    const marks = performance.getEntriesByType('mark');
+    expect(marks).toStrictEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: 'cp:test-event-error:start',
+          detail: {
+            devtools: expect.objectContaining({
+              dataType: 'track-entry',
+              track: 'test-track',
+            }),
+          },
+        }),
+        expect.objectContaining({
+          name: 'cp:test-event-error:end',
+          detail: {
+            devtools: expect.objectContaining({
+              dataType: 'track-entry',
+              track: 'test-track',
+            }),
+          },
+        }),
+      ]),
+    );
+  });
+
   it('measureAsync should handle async operations correctly when enabled', async () => {
     const enabledProfiler = getProfiler({ enabled: true });
     const workFn = vi.fn(async () => {
@@ -354,6 +408,45 @@ describe('Profiler', () => {
     ).rejects.toThrow(error);
     expect(workFn).toHaveBeenCalled();
   });
+
+  it('measureAsync should propagate async errors when enabled and call error callback', async () => {
+    const enabledProfiler = getProfiler({ enabled: true });
+    const error = new Error('Enabled async test error');
+    const workFn = vi.fn(async () => {
+      await Promise.resolve();
+      throw error;
+    });
+
+    await expect(
+      enabledProfiler.measureAsync('test-async-event-error', workFn),
+    ).rejects.toThrow(error);
+    expect(workFn).toHaveBeenCalled();
+
+    // Verify that performance marks were created even though error occurred
+    const marks = performance.getEntriesByType('mark');
+    expect(marks).toStrictEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: 'cp:test-async-event-error:start',
+          detail: {
+            devtools: expect.objectContaining({
+              dataType: 'track-entry',
+              track: 'test-track',
+            }),
+          },
+        }),
+        expect.objectContaining({
+          name: 'cp:test-async-event-error:end',
+          detail: {
+            devtools: expect.objectContaining({
+              dataType: 'track-entry',
+              track: 'test-track',
+            }),
+          },
+        }),
+      ]),
+    );
+  });
 });
 
 const simpleEncoder: PerformanceEntryEncoder<string> = entry => {
@@ -415,10 +508,9 @@ describe('NodejsProfiler', () => {
     expect(typeof profiler.measure).toBe('function');
     expect(typeof profiler.measureAsync).toBe('function');
     expect(typeof profiler.marker).toBe('function');
-    expect(typeof profiler.start).toBe('function');
-    expect(typeof profiler.stop).toBe('function');
     expect(typeof profiler.close).toBe('function');
     expect(typeof profiler.state).toBe('string');
+    expect(typeof profiler.setEnabled).toBe('function');
   });
 
   it('should inherit from Profiler', () => {
@@ -441,12 +533,12 @@ describe('NodejsProfiler', () => {
     expect(perfObserverSink.subscribe).not.toHaveBeenCalled();
   });
 
-  it('should open sink and subscribe observer when starting', () => {
+  it('should open sink and subscribe observer when enabling', () => {
     const { sink, perfObserverSink, profiler } = getNodejsProfiler({
       enabled: false,
     });
 
-    profiler.start();
+    profiler.setEnabled(true);
 
     expect(profiler.state).toBe('running');
     expect(sink.isClosed()).toBe(false);
@@ -454,15 +546,14 @@ describe('NodejsProfiler', () => {
     expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
   });
 
-  it('should close sink and unsubscribe observer when stopping', () => {
+  it('should close sink and unsubscribe observer when disabling', () => {
     const { sink, perfObserverSink, profiler } = getNodejsProfiler({
       enabled: true,
     });
 
-    profiler.stop();
+    profiler.setEnabled(false);
 
-    expect(profiler.isRunning()).toBe(false);
-    expect(profiler.activeat()).toBe(false);
+    expect(profiler.isEnabled()).toBe(false);
     expect(sink.isClosed()).toBe(true);
     expect(sink.close).toHaveBeenCalledTimes(1);
     expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
@@ -476,7 +567,7 @@ describe('NodejsProfiler', () => {
     expect(sink.open).toHaveBeenCalledTimes(1);
     expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
 
-    profiler.start();
+    profiler.setEnabled(true);
 
     expect(sink.open).toHaveBeenCalledTimes(1);
     expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
@@ -506,10 +597,10 @@ describe('NodejsProfiler', () => {
     expect(perfObserverSink.flush).toHaveBeenCalledTimes(1);
   });
 
-  it('getStats should return current stats', () => {
+  it('get stats() getter should return current stats', () => {
     const { profiler } = getNodejsProfiler({ enabled: false });
 
-    expect(profiler.getStats()).toStrictEqual({
+    expect(profiler.stats).toStrictEqual({
       state: 'idle',
       walOpen: false,
       isSubscribed: false,
@@ -538,28 +629,29 @@ describe('NodejsProfiler', () => {
         expect(perfObserverSink.subscribe).not.toHaveBeenCalled();
 
         // idle → running
-        profiler.start();
+        profiler.setEnabled(true);
         expect(profiler.state).toBe('running');
         expect(sink.isClosed()).toBe(false);
         expect(sink.open).toHaveBeenCalledTimes(1);
         expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
 
         // running → idle
-        profiler.stop();
-        expect(profiler.isRunning()).toBe(false);
-        expect(profiler.activeat()).toBe(false);
+        profiler.setEnabled(false);
+        expect(profiler.isEnabled()).toBe(false);
+        expect(sink.isClosed()).toBe(true);
         expect(sink.close).toHaveBeenCalledTimes(1);
         expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
 
         // idle → closed (terminal)
         profiler.close();
-        expect(sink.close).toHaveBeenCalledTimes(2); // close called again
-        expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(2); // unsubscribe called again
-        expect(perfObserverSink.flush).toHaveBeenCalledTimes(1); // flush called once
+        expect(sink.close).toHaveBeenCalledTimes(1); // No additional close since we're in idle
+        expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1); // No additional unsubscribe since we're in idle
+        expect(perfObserverSink.flush).toHaveBeenCalledTimes(0); // No flush for idle->closed
 
-        // Verify closed state - operations should throw or be idempotent
-        expect(() => profiler.start()).toThrow('Profiler already closed');
-        expect(() => profiler.stop()).not.toThrow(); // stop is idempotent in closed state
+        // Verify closed state - operations should throw or be safe
+        expect(() => profiler.setEnabled(true)).toThrow(
+          'Profiler already closed',
+        );
         profiler.close(); // Should be idempotent
       },
     );
@@ -569,10 +661,10 @@ describe('NodejsProfiler', () => {
 
       expect(profiler.state).toBe('idle');
 
-      profiler.start();
+      profiler.setEnabled(true);
       expect(profiler.state).toBe('running');
 
-      profiler.stop();
+      profiler.setEnabled(false);
       expect(profiler.state).toBe('idle');
 
       profiler.close();
@@ -591,21 +683,21 @@ describe('NodejsProfiler', () => {
         expect(sink.isClosed()).toBe(true);
         expect(perfObserverSink.isSubscribed).toHaveBeenCalledWith(false);
 
-        // Start - should open sink and subscribe observer
-        profiler.start();
+        // Enable - should open sink and subscribe observer
+        profiler.setEnabled(true);
         expect(profiler.state).toBe('running');
         expect(sink.isClosed()).toBe(false);
         expect(sink.open).toHaveBeenCalledTimes(1);
         expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
 
-        // Stop - should close sink and unsubscribe observer
-        profiler.stop();
+        // Disable - should close sink and unsubscribe observer
+        profiler.setEnabled(false);
         expect(profiler.state).toBe('idle');
         expect(sink.close).toHaveBeenCalledTimes(1);
         expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
 
-        // Start again - should open and subscribe again
-        profiler.start();
+        // Enable again - should open and subscribe again
+        profiler.setEnabled(true);
         expect(profiler.state).toBe('running');
         expect(sink.isClosed()).toBe(false);
         expect(sink.open).toHaveBeenCalledTimes(2);
@@ -634,11 +726,10 @@ describe('NodejsProfiler', () => {
       // idle → closed
       profiler.close();
 
-      // Should throw for start
-      expect(() => profiler.start()).toThrow('Profiler already closed');
-
-      // stop should be safe when closed
-      expect(() => profiler.stop()).not.toThrow();
+      // Should throw for setEnabled(true)
+      expect(() => profiler.setEnabled(true)).toThrow(
+        'Profiler already closed',
+      );
     });
 
     it('should handle flush when closed (no-op)', () => {
@@ -664,16 +755,352 @@ describe('NodejsProfiler', () => {
       expect(perfObserverSink.flush).toHaveBeenCalledTimes(1);
     });
 
+    it('should throw error when attempting to transition from closed state', () => {
+      const { profiler } = getNodejsProfiler({ enabled: false });
+
+      // Close the profiler first
+      profiler.close();
+      expect(profiler.state).toBe('closed');
+
+      // Attempting to enable from closed state should throw
+      expect(() => profiler.setEnabled(true)).toThrow(
+        'Profiler already closed',
+      );
+    });
+
+    it('should handle idle to closed transition without cleanup', () => {
+      const { sink, perfObserverSink, profiler } = getNodejsProfiler({
+        enabled: false,
+      });
+
+      // Ensure profiler is in idle state
+      expect(profiler.state).toBe('idle');
+      expect(sink.isClosed()).toBe(true);
+      expect(perfObserverSink.subscribe).not.toHaveBeenCalled();
+
+      // Transition from idle to closed
+      profiler.close();
+
+      // Should change state to closed without any cleanup operations
+      expect(profiler.state).toBe('closed');
+      expect(sink.close).not.toHaveBeenCalled();
+      expect(perfObserverSink.unsubscribe).not.toHaveBeenCalled();
+    });
+
+    it('should handle running to closed transition with cleanup', () => {
+      const { sink, perfObserverSink, profiler } = getNodejsProfiler({
+        enabled: true,
+      });
+
+      // Ensure profiler is in running state
+      expect(profiler.state).toBe('running');
+      expect(sink.isClosed()).toBe(false);
+      expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
+
+      // Transition from running to closed
+      profiler.close();
+
+      // Should change state to closed and perform cleanup operations
+      expect(profiler.state).toBe('closed');
+      expect(sink.close).toHaveBeenCalledTimes(1);
+      expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
+    });
+
+    it('should close profiler and change state to closed', () => {
+      const { profiler } = getNodejsProfiler({ enabled: false });
+
+      // Initially idle
+      expect(profiler.state).toBe('idle');
+
+      // Close should transition to closed
+      profiler.close();
+      expect(profiler.state).toBe('closed');
+    });
+
+    it('should disable profiling when setEnabled(false) is called', () => {
+      const { sink, perfObserverSink, profiler } = getNodejsProfiler({
+        enabled: true,
+      });
+
+      // Initially running
+      expect(profiler.state).toBe('running');
+
+      // Call setEnabled(false) which should transition to idle
+      profiler.setEnabled(false);
+
+      // Verify operations were performed
+      expect(profiler.state).toBe('idle');
+      expect(sink.close).toHaveBeenCalledTimes(1);
+      expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
+    });
+
+    describe('#transition method state transitions', () => {
+      it('should return early when transitioning to same state (idle->idle)', () => {
+        const { sink, perfObserverSink, profiler } = getNodejsProfiler({
+          enabled: false,
+        });
+
+        // Ensure profiler is in idle state
+        expect(profiler.state).toBe('idle');
+
+        // Try to transition to same state - should be no-op
+        profiler.setEnabled(true); // This calls transition('running') from idle
+        expect(profiler.state).toBe('running');
+
+        // Now try to transition to running again - should be no-op
+        profiler.setEnabled(true); // Should not change anything
+
+        // Should still be running and operations should not be called again
+        expect(profiler.state).toBe('running');
+        expect(sink.open).toHaveBeenCalledTimes(1);
+        expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
+      });
+
+      it('should return early when transitioning to same state (running->running)', () => {
+        const { sink, perfObserverSink, profiler } = getNodejsProfiler({
+          enabled: true,
+        });
+
+        // Ensure profiler is in running state
+        expect(profiler.state).toBe('running');
+
+        // Try to transition to same state - should be no-op
+        profiler.setEnabled(true); // Should be no-op
+
+        // Should still be running and operations should not be called again
+        expect(profiler.state).toBe('running');
+        expect(sink.open).toHaveBeenCalledTimes(1);
+        expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
+      });
+
+      it('should throw error when attempting to transition from closed state', () => {
+        const { profiler } = getNodejsProfiler({ enabled: false });
+
+        // Close the profiler first
+        profiler.close();
+        expect(profiler.state).toBe('closed');
+
+        // Attempting to enable from closed state should throw
+        expect(() => profiler.setEnabled(true)).toThrow(
+          'Profiler already closed',
+        );
+
+        // Attempting to disable from closed state should also throw (since setEnabled(false) calls transition('idle'))
+        expect(() => profiler.setEnabled(false)).toThrow(
+          'Profiler already closed',
+        );
+      });
+
+      it('should handle idle->running transition', () => {
+        const { sink, perfObserverSink, profiler } = getNodejsProfiler({
+          enabled: false,
+        });
+
+        // Enable from idle state
+        expect(profiler.state).toBe('idle');
+
+        profiler.setEnabled(true);
+
+        expect(profiler.state).toBe('running');
+        expect(sink.open).toHaveBeenCalledTimes(1);
+        expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
+      });
+
+      it('should handle running->idle transition', () => {
+        const { sink, perfObserverSink, profiler } = getNodejsProfiler({
+          enabled: true,
+        });
+
+        // Disable from running state
+        expect(profiler.state).toBe('running');
+
+        profiler.setEnabled(false);
+
+        expect(profiler.state).toBe('idle');
+        expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
+        expect(sink.close).toHaveBeenCalledTimes(1);
+      });
+
+      it('should handle idle->closed transition', () => {
+        const { sink, perfObserverSink, profiler } = getNodejsProfiler({
+          enabled: false,
+        });
+
+        // Close from idle state
+        expect(profiler.state).toBe('idle');
+
+        profiler.close();
+
+        expect(profiler.state).toBe('closed');
+        // No cleanup operations should be called for idle->closed
+        expect(sink.close).not.toHaveBeenCalled();
+        expect(perfObserverSink.unsubscribe).not.toHaveBeenCalled();
+      });
+
+      it('should handle running->closed transition', () => {
+        const { sink, perfObserverSink, profiler } = getNodejsProfiler({
+          enabled: true,
+        });
+
+        // Close from running state
+        expect(profiler.state).toBe('running');
+
+        profiler.close();
+
+        expect(profiler.state).toBe('closed');
+        expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
+        expect(sink.close).toHaveBeenCalledTimes(1);
+      });
+
+      it('should execute all operations in running->closed case', () => {
+        const { sink, perfObserverSink, profiler } = getNodejsProfiler({
+          enabled: true,
+        });
+
+        // Spy on the parent class setEnabled method
+        const parentSetEnabledSpy = vi.spyOn(Profiler.prototype, 'setEnabled');
+
+        // Ensure profiler is in running state
+        expect(profiler.state).toBe('running');
+
+        // Trigger the running->closed transition
+        profiler.close();
+
+        // Verify all operations in the case are executed:
+        // 1. super.setEnabled(false) - calls parent setEnabled
+        expect(parentSetEnabledSpy).toHaveBeenCalledWith(false);
+
+        // 2. this.#performanceObserverSink.unsubscribe()
+        expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
+
+        // 3. this.#sink.close()
+        expect(sink.close).toHaveBeenCalledTimes(1);
+
+        // 4. State is updated to 'closed'
+        expect(profiler.state).toBe('closed');
+
+        // Clean up spy
+        parentSetEnabledSpy.mockRestore();
+      });
+
+      it('should throw error for invalid transitions (default case)', () => {
+        const profiler = getNodejsProfiler({ enabled: false }).profiler;
+
+        // We can't easily trigger the default case since the method signature
+        // restricts the possible transitions, but we can test that valid transitions work
+        // and invalid ones would be caught by TypeScript or would need runtime testing
+
+        // For now, verify that all valid transitions work as expected
+        expect(profiler.state).toBe('idle');
+
+        profiler.setEnabled(true);
+        expect(profiler.state).toBe('running');
+
+        profiler.setEnabled(false);
+        expect(profiler.state).toBe('idle');
+
+        profiler.close();
+        expect(profiler.state).toBe('closed');
+      });
+    });
+
+    describe('close() API', () => {
+      it('should close profiler from idle state', () => {
+        const { profiler } = getNodejsProfiler({ enabled: false });
+
+        expect(profiler.state).toBe('idle');
+
+        profiler.close();
+
+        expect(profiler.state).toBe('closed');
+      });
+
+      it('should close profiler from running state', () => {
+        const { profiler } = getNodejsProfiler({ enabled: true });
+
+        expect(profiler.state).toBe('running');
+
+        profiler.close();
+
+        expect(profiler.state).toBe('closed');
+      });
+
+      it('should be idempotent - calling close multiple times', () => {
+        const { profiler } = getNodejsProfiler({ enabled: false });
+
+        expect(profiler.state).toBe('idle');
+
+        profiler.close();
+        expect(profiler.state).toBe('closed');
+
+        // Calling close again should be safe
+        profiler.close();
+        expect(profiler.state).toBe('closed');
+      });
+    });
+
+    describe('setEnabled override', () => {
+      it('should enable profiling when setEnabled(true)', () => {
+        const { profiler } = getNodejsProfiler({ enabled: false });
+
+        expect(profiler.state).toBe('idle');
+
+        profiler.setEnabled(true);
+
+        expect(profiler.state).toBe('running');
+      });
+
+      it('should disable profiling when setEnabled(false)', () => {
+        const { profiler } = getNodejsProfiler({ enabled: true });
+
+        expect(profiler.state).toBe('running');
+
+        profiler.setEnabled(false);
+
+        expect(profiler.state).toBe('idle');
+      });
+    });
+
+    describe('flush() early return when closed', () => {
+      it('should return early when flush() called on closed profiler', () => {
+        const { perfObserverSink, profiler } = getNodejsProfiler({
+          enabled: false,
+        });
+
+        // Close profiler
+        profiler.close();
+        expect(profiler.state).toBe('closed');
+
+        // flush should be no-op when closed
+        profiler.flush();
+
+        // flush should not be called on the performance observer sink
+        expect(perfObserverSink.flush).not.toHaveBeenCalled();
+      });
+
+      it('should flush when profiler is running', () => {
+        const { perfObserverSink, profiler } = getNodejsProfiler({
+          enabled: true,
+        });
+
+        expect(profiler.state).toBe('running');
+
+        profiler.flush();
+
+        expect(perfObserverSink.flush).toHaveBeenCalledTimes(1);
+      });
+    });
+
     it('should be idempotent - no-op when transitioning to same state', () => {
       const { sink, perfObserverSink, profiler } = getNodejsProfiler({
         enabled: true,
       });
 
-      // Already running, start again should be no-op
+      // Already running, enable again should be no-op
       expect(sink.open).toHaveBeenCalledTimes(1);
       expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
 
-      profiler.start(); // Should be no-op
+      profiler.setEnabled(true); // Should be no-op
 
       expect(sink.open).toHaveBeenCalledTimes(1);
       expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);

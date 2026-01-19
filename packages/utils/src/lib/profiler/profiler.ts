@@ -63,7 +63,7 @@ export type ProfilerOptions<T extends ActionTrackConfigs = ActionTrackConfigs> =
  *
  */
 export class Profiler<T extends ActionTrackConfigs> {
-  #enabled: boolean;
+  #enabled: boolean = false;
   readonly #defaults: ActionTrackEntryPayload;
   readonly tracks: Record<keyof T, ActionTrackEntryPayload> | undefined;
   readonly #ctxOf: ReturnType<typeof measureCtx>;
@@ -77,14 +77,14 @@ export class Profiler<T extends ActionTrackConfigs> {
    * @param options.track - Default track name for measurements
    * @param options.trackGroup - Default track group for organization
    * @param options.color - Default color for track entries
-   * @param options.enabled - Whether profiling is enabled (defaults to CP_PROFILING env var)
+   * @param options.enabled - Whether profiling is enabled (defaults to false)
    *
    */
   constructor(options: ProfilerOptions<T>) {
-    const { tracks, prefix, enabled, ...defaults } = options;
+    const { tracks, prefix, enabled = false, ...defaults } = options;
     const dataType = 'track-entry';
 
-    this.setEnabled(enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR));
+    this.#enabled = enabled;
     this.#defaults = { ...defaults, dataType };
     this.tracks = tracks
       ? setupTracks({ ...defaults, dataType }, tracks)
@@ -284,10 +284,11 @@ export class NodejsProfiler<
       captureBufferedEntries,
       flushThreshold,
       maxQueueSize,
+      enabled,
       ...profilerOptions
     } = options;
-
-    super(profilerOptions);
+    const initialEnabled = enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
+    super({ ...profilerOptions, enabled: initialEnabled });
 
     this.#sink = sink;
 
@@ -299,7 +300,7 @@ export class NodejsProfiler<
       maxQueueSize,
     });
 
-    if (super.isEnabled()) {
+    if (initialEnabled) {
       this.#transition('running');
     }
   }
@@ -320,19 +321,14 @@ export class NodejsProfiler<
         break;
 
       case 'running->idle':
+      case 'running->closed':
         super.setEnabled(false);
         this.#performanceObserverSink.unsubscribe();
         this.#sink.close();
         break;
 
       case 'idle->closed':
-        // No resources to clean up when idle
-        break;
-
-      case 'running->closed':
-        super.setEnabled(false);
-        this.#performanceObserverSink.unsubscribe();
-        this.#sink.close();
+        // No-op, was not open
         break;
 
       default:
@@ -340,16 +336,6 @@ export class NodejsProfiler<
     }
 
     this.#state = next;
-  }
-
-  /** Starts profiling (idle → running). */
-  start(): void {
-    this.#transition('running');
-  }
-
-  /** Stops profiling (running → idle). */
-  stop(): void {
-    this.#transition('idle');
   }
 
   /**
@@ -366,16 +352,21 @@ export class NodejsProfiler<
   }
 
   /** @returns Whether profiler is in 'running' state */
-  protected isRunning(): boolean {
+  override isEnabled(): boolean {
     return this.#state === 'running';
   }
 
-  protected activeat(): boolean {
-    return this.#state === 'running';
+  /** Enables profiling (start/stop)*/
+  override setEnabled(enabled: boolean): void {
+    if (enabled) {
+      this.#transition('running');
+    } else {
+      this.#transition('idle');
+    }
   }
 
   /** @returns Queue statistics and profiling state for monitoring */
-  getStats() {
+  get stats() {
     return {
       ...this.#performanceObserverSink.getStats(),
       state: this.#state,
