@@ -20,12 +20,12 @@ const CUSTOM_MATCHERS = [
  * which is why they use `../../` to navigate to the workspace root first.
  */
 const UNIT_TEST_SETUP_FILES = [
-  '../../testing/test-setup/src/lib/reset.mock.ts',
-  '../../testing/test-setup/src/lib/fs.mock.ts',
-  '../../testing/test-setup/src/lib/logger.mock.ts',
-  '../../testing/test-setup/src/lib/git.mock.ts',
+  '../../testing/test-setup/src/lib/reset.setup-file.ts',
+  '../../testing/test-setup/src/lib/fs.setup-file.ts',
+  '../../testing/test-setup/src/lib/logger.setup-file.ts',
+  '../../testing/test-setup/src/lib/git.setup-file.ts',
   '../../testing/test-setup/src/lib/performance.setup-file.ts',
-  '../../testing/test-setup/src/lib/portal-client.mock.ts',
+  '../../testing/test-setup/src/lib/portal-client.setup-file.ts',
   '../../testing/test-setup/src/lib/process.setup-file.ts',
   ...CUSTOM_MATCHERS,
 ] as const;
@@ -38,9 +38,9 @@ const UNIT_TEST_SETUP_FILES = [
 
  */
 const INT_TEST_SETUP_FILES = [
-  '../../testing/test-setup/src/lib/reset.mock.ts',
-  '../../testing/test-setup/src/lib/logger.mock.ts',
-  '../../testing/test-setup/src/lib/chrome-path.mock.ts',
+  '../../testing/test-setup/src/lib/reset.setup-file.ts',
+  '../../testing/test-setup/src/lib/logger.setup-file.ts',
+  '../../testing/test-setup/src/lib/chrome-path.setup-file.ts',
   ...CUSTOM_MATCHERS,
 ] as const;
 
@@ -51,7 +51,7 @@ const INT_TEST_SETUP_FILES = [
  * which is why they use `../../` to navigate to the workspace root first.
  */
 const E2E_TEST_SETUP_FILES = [
-  '../../testing/test-setup/src/lib/reset.mock.ts',
+  '../../testing/test-setup/src/lib/reset.setup-file.ts',
   ...CUSTOM_MATCHERS,
 ] as const;
 
