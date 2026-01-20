@@ -1,5 +1,4 @@
 import type { AxeResults, NodeResult, Result } from 'axe-core';
-import { describe, expect, it } from 'vitest';
 import type { AuditOutput } from '@code-pushup/models';
 import { createUrlSuffix, toAuditOutputs } from './transform.js';
 

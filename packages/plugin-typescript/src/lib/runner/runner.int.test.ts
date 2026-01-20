@@ -1,4 +1,3 @@
-import { describe, expect } from 'vitest';
 import { type AuditOutputs, DEFAULT_PERSIST_CONFIG } from '@code-pushup/models';
 import { osAgnosticAuditOutputs } from '@code-pushup/test-fixtures';
 import { getAudits } from '../utils.js';

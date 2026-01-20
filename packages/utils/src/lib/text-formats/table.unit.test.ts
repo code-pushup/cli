@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import type { Table, TableRowObject } from '@code-pushup/models';
 import {
   columnsToStringArray,

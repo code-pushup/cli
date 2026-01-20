@@ -1,5 +1,4 @@
 import type { ESLint } from 'eslint';
-import { describe, expect, it, vi } from 'vitest';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import {
   formatContent,

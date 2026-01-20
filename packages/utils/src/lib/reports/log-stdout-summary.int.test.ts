@@ -1,4 +1,3 @@
-import { beforeAll, describe, expect, vi } from 'vitest';
 import { reportMock } from '@code-pushup/test-fixtures';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { logger } from '../logger.js';

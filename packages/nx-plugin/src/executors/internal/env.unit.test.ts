@@ -1,4 +1,3 @@
-import { describe, expect } from 'vitest';
 import { parseEnv } from './env.js';
 
 describe('parseEnv', () => {

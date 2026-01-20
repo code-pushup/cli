@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import type { AuditResult } from '../../runner/audit/types.js';
 import { yarnBerryToAuditResult } from './audit-result.js';
 import type {

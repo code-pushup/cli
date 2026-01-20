@@ -1,5 +1,4 @@
 import ansis from 'ansis';
-import { describe, expect } from 'vitest';
 import {
   descriptionStyle,
   formatNestedValues,

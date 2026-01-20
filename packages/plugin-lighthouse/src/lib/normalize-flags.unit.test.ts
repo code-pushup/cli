@@ -1,6 +1,5 @@
 import ansis from 'ansis';
 import path from 'node:path';
-import { describe, expect, it } from 'vitest';
 import { logger } from '@code-pushup/utils';
 import { DEFAULT_CHROME_FLAGS, LIGHTHOUSE_OUTPUT_PATH } from './constants.js';
 import { logUnsupportedFlagsInUse, normalizeFlags } from './normalize-flags.js';
@@ -10,7 +9,7 @@ import type { LighthouseOptions } from './types.js';
 describe('logUnsupportedFlagsInUse', () => {
   it('should log unsupported entries', () => {
     logUnsupportedFlagsInUse({ 'list-all-audits': true } as LighthouseOptions);
-    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledOnce();
     expect(logger.warn).toHaveBeenCalledWith(
       `Used unsupported flags: ${ansis.bold('list-all-audits')}`,
     );
@@ -29,7 +28,7 @@ describe('logUnsupportedFlagsInUse', () => {
       // unsupported
       ...unsupportedFlags,
     } as unknown as LighthouseOptions);
-    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledOnce();
     expect(logger.warn).toHaveBeenCalledWith(
       `Used unsupported flags: ${ansis.bold(
         'list-all-audits, list-locales, list-trace-categories',
@@ -113,7 +112,7 @@ describe('normalizeFlags', () => {
         ...supportedFlags,
       } as unknown as LighthouseOptions),
     ).toEqual(expect.not.objectContaining({ 'list-all-audits': true }));
-    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledOnce();
   });
 
   it('should remove any flag with an empty array as a value', () => {

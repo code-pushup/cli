@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import {
   filenameRegex,
   hasDuplicateStrings,
@@ -61,7 +60,7 @@ describe('filenameRegex', () => {
 
 describe('hasDuplicateStrings', () => {
   it('should return false for a list of unique strings', () => {
-    expect(hasDuplicateStrings(['a', 'b'])).toBe(false);
+    expect(hasDuplicateStrings(['a', 'b'])).toBeFalse();
   });
 
   it('should return a list of duplicates for a list with duplicates', () => {
@@ -73,21 +72,21 @@ describe('hasDuplicateStrings', () => {
   });
 
   it('should return false for a list with 1 item', () => {
-    expect(hasDuplicateStrings(['a'])).toBe(false);
+    expect(hasDuplicateStrings(['a'])).toBeFalse();
   });
 });
 
 describe('hasMissingStrings', () => {
   it('should return false for two identical arrays', () => {
-    expect(hasMissingStrings(['a', 'b'], ['a', 'b'])).toBe(false);
+    expect(hasMissingStrings(['a', 'b'], ['a', 'b'])).toBeFalse();
   });
 
   it('should return false for an array subset', () => {
-    expect(hasMissingStrings(['b'], ['a', 'b'])).toBe(false);
+    expect(hasMissingStrings(['b'], ['a', 'b'])).toBeFalse();
   });
 
   it('should return false for two empty arrays', () => {
-    expect(hasMissingStrings([], [])).toBe(false);
+    expect(hasMissingStrings([], [])).toBeFalse();
   });
 
   it('should return a list of strings from source that are missing in target', () => {

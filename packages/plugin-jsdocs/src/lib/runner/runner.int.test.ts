@@ -1,6 +1,5 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, it } from 'vitest';
 import type { AuditOutput, CoverageTree } from '@code-pushup/models';
 import { AUDITS_MAP } from '../constants.js';
 import { createRunnerFunction } from './runner.js';

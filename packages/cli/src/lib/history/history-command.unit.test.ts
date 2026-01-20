@@ -1,4 +1,3 @@
-import { describe, expect, vi } from 'vitest';
 import { type HistoryOptions, history } from '@code-pushup/core';
 import { safeCheckout } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants.js';
@@ -73,6 +72,6 @@ describe('history-command', () => {
       expect.any(Array),
     );
 
-    expect(safeCheckout).toHaveBeenCalledTimes(1);
+    expect(safeCheckout).toHaveBeenCalledOnce();
   });
 });

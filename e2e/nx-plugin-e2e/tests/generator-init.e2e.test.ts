@@ -1,7 +1,6 @@
 import type { Tree } from '@nx/devkit';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { afterEach, expect } from 'vitest';
 import {
   generateWorkspaceAndProject,
   materializeTree,

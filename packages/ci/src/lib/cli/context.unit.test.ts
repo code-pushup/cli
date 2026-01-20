@@ -1,4 +1,3 @@
-import { expect } from 'vitest';
 import { DEFAULT_SETTINGS } from '../settings.js';
 import { type CommandContext, createCommandContext } from './context.js';
 

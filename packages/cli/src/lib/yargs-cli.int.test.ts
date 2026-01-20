@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import type { CompareOptions } from '@code-pushup/core';
 import type { CoreConfig, Format } from '@code-pushup/models';
 import { yargsHistoryOptionsDefinition } from './history/history.options.js';
@@ -51,7 +50,7 @@ describe('yargsCli', () => {
     const parsedArgv = await yargsCli<GlobalOptions>(['--no-verbose'], {
       options,
     }).parseAsync();
-    expect(parsedArgv.verbose).toBe(false);
+    expect(parsedArgv.verbose).toBeFalse();
   });
 
   it('should parse a single config argument as a string', async () => {
@@ -84,7 +83,7 @@ describe('yargsCli', () => {
       ['--verbose', '--tsconfig', 'tsconfig.json'],
       { options },
     ).parseAsync();
-    expect(parsedArgv.verbose).toBe(true);
+    expect(parsedArgv.verbose).toBeTrue();
     expect(parsedArgv.tsconfig).toBe('tsconfig.json');
   });
 
@@ -109,7 +108,7 @@ describe('yargsCli', () => {
       ['--no-progress', '--verbose'],
       { options },
     ).parseAsync();
-    expect(parsedArgv.verbose).toBe(true);
+    expect(parsedArgv.verbose).toBeTrue();
   });
 
   it('should handle global options and middleware argument overrides correctly', async () => {

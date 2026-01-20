@@ -1,6 +1,5 @@
 import { vol } from 'memfs';
 import { rm } from 'node:fs/promises';
-import { afterEach, beforeEach, expect } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { DEFAULT_TARGET_NAME, PACKAGE_NAME } from '../../internal/constants.js';
 import { CP_TARGET_NAME } from '../constants.js';
