@@ -15,7 +15,7 @@ To test lighthouse properly we work with a predefined testing setup.
 
 On some OS there could be a problem finding the path to Chrome.
 
-We try to detect it automatically in the [`chrome-path.mock.ts` script](../../testing/test-setup/src/lib/chrome-path.mock.ts).
+We try to detect it automatically in the [`chrome-path.setup-file.ts` script](../../testing/test-setup/src/lib/chrome-path.setup-file.ts).
 There we use `getChromePath` and have `chromium` installed as NPM package, so detecting the path should not cause any problem.
 
 However, if no chrome path is detected automatically the error looks like this:
@@ -46,7 +46,7 @@ In the CI you can set a static path if needed over the env variable like this:
 # ...
 ```
 
-We consider this path in our `beforeAll` hook in a [`chrome-path.mock.ts` script](../../testing/test-setup/src/lib/chrome-path.mock.ts).
+We consider this path in our `beforeAll` hook in a [`chrome-path.setup-file.ts` script](../../testing/test-setup/src/lib/chrome-path.setup-file.ts).
 
 ### Testing chrome flags
 
