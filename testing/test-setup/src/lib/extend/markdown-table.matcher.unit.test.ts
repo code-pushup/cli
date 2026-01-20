@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 describe('markdown-table-matcher', () => {
   it('should match header and data rows in a markdown table', () => {
     const markdown = `

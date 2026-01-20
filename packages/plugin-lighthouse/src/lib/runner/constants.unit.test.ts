@@ -1,4 +1,3 @@
-import { expect } from 'vitest';
 import { auditSchema, groupSchema } from '@code-pushup/models';
 import {
   LIGHTHOUSE_GROUPS,
@@ -23,7 +22,7 @@ describe('constants', () => {
     invalidSlug => {
       expect(
         LIGHTHOUSE_NAVIGATION_AUDITS.every(({ slug }) => slug !== invalidSlug),
-      ).toBe(true);
+      ).toBeTrue();
     },
   );
 

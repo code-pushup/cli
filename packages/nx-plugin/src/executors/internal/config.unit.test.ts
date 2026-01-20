@@ -1,4 +1,4 @@
-import { type MockInstance, describe, expect } from 'vitest';
+import type { MockInstance } from 'vitest';
 import { osAgnosticPath } from '@code-pushup/test-utils';
 import { ENV } from '../../../mock/fixtures/env.js';
 import { globalConfig, persistConfig, uploadConfig } from './config.js';

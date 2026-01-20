@@ -1,5 +1,4 @@
 import ansis from 'ansis';
-import { describe, expect, it } from 'vitest';
 import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
 import { axeCategories } from './categories.js';
 import { AXE_PLUGIN_SLUG } from './constants.js';

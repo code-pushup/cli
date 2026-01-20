@@ -1,5 +1,4 @@
 import { performance } from 'node:perf_hooks';
-import { beforeEach, describe, expect, it } from 'vitest';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
 import { Profiler } from './profiler.js';
 

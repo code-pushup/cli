@@ -1,4 +1,3 @@
-import { describe } from 'vitest';
 import { asyncSequential, groupByStatus, settlePromise } from './promises.js';
 
 describe('groupByStatus', () => {

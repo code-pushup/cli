@@ -1,5 +1,4 @@
 import { type InlineText, md } from 'build-md';
-import { describe, expect, it } from 'vitest';
 import {
   binaryIconSuffix,
   categoriesDetailsSection,

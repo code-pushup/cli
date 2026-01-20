@@ -1,13 +1,3 @@
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as executeProcessModule from '../../internal/execute-process.js';
@@ -51,7 +41,7 @@ describe('runCliExecutor', () => {
 
   it('should call executeProcess with return result', async () => {
     const output = await runCliExecutor({}, executorContext('utils'));
-    expect(output.success).toBe(true);
+    expect(output.success).toBeTrue();
     expect(output.command).toMatch('npx @code-pushup/cli');
     expect(executeProcessSpy).toHaveBeenCalledWith({
       command: 'npx',
@@ -68,7 +58,7 @@ describe('runCliExecutor', () => {
         cwd: 'cwd-form-context',
       },
     );
-    expect(output.success).toBe(true);
+    expect(output.success).toBeTrue();
     expect(output.command).toMatch('npx @code-pushup/cli');
     expect(output.command).toContain('cwd-form-context');
     expect(executeProcessSpy).toHaveBeenCalledWith({
@@ -83,7 +73,7 @@ describe('runCliExecutor', () => {
       { output: 'code-pushup.config.json', persist: { filename: 'REPORT' } },
       executorContext('testing-utils'),
     );
-    expect(output.success).toBe(true);
+    expect(output.success).toBeTrue();
     expect(output.command).toContain('--output="code-pushup.config.json"');
     expect(output.command).toContain('--persist.filename="REPORT"');
   });
@@ -124,7 +114,7 @@ describe('runCliExecutor', () => {
       { ...executorContext('github-action'), cwd: '<CWD>' },
     );
 
-    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledOnce();
     expect(executeProcessSpy).toHaveBeenCalledWith({
       command: 'npx',
       args: expect.arrayContaining(['@code-pushup/cli']),
@@ -153,7 +143,7 @@ describe('runCliExecutor', () => {
     expect(executeProcessSpy).toHaveBeenCalledTimes(0);
 
     expect(output.command).not.toContain('--verbose');
-    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledOnce();
     expect(logger.warn).toHaveBeenCalledWith(
       expect.stringContaining('CP_VERBOSE="true"'),
     );
@@ -163,7 +153,7 @@ describe('runCliExecutor', () => {
     await runCliExecutor({ dryRun: true }, executorContext('utils'));
 
     expect(logger.command).toHaveBeenCalledTimes(0);
-    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledOnce();
     expect(logger.warn).toHaveBeenCalledWith(
       expect.stringContaining('DryRun execution of'),
     );

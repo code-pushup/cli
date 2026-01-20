@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { toUnixPath } from '../transform.js';
 import {
   formatFileLink,

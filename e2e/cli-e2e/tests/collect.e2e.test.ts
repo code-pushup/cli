@@ -1,6 +1,5 @@
 import { cp } from 'node:fs/promises';
 import path from 'node:path';
-import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
   E2E_ENVIRONMENTS_DIR,

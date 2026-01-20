@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { type Issue, issueSchema } from './issue.js';
 
 describe('issueSchema', () => {

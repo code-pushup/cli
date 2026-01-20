@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { AXE_PLUGIN_SLUG } from './constants.js';
 import {
   axeAuditRef,

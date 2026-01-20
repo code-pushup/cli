@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { expandOptionsForUrls, processAuditsAndGroups } from './processing.js';
 
 describe('expandOptionsForUrls', () => {
@@ -78,8 +77,8 @@ describe('processAuditsAndGroups', () => {
 
     expect(result.audits).toBeDefined();
     expect(result.groups).toBeDefined();
-    expect(result.audits.some(({ slug }) => slug.includes('-1'))).toBe(false);
-    expect(result.groups.some(({ slug }) => slug.includes('-1'))).toBe(false);
+    expect(result.audits.some(({ slug }) => slug.includes('-1'))).toBeFalse();
+    expect(result.groups.some(({ slug }) => slug.includes('-1'))).toBeFalse();
   });
 
   it('should expand audits and groups for multiple URLs', () => {
@@ -89,8 +88,8 @@ describe('processAuditsAndGroups', () => {
     expect(result.audits).toBeDefined();
     expect(result.groups).toBeDefined();
 
-    expect(result.audits.every(({ slug }) => /-[12]$/.test(slug))).toBe(true);
-    expect(result.groups.every(({ slug }) => /-[12]$/.test(slug))).toBe(true);
+    expect(result.audits.every(({ slug }) => /-[12]$/.test(slug))).toBeTrue();
+    expect(result.groups.every(({ slug }) => /-[12]$/.test(slug))).toBeTrue();
   });
 
   it('should apply filter options for multiple URLs', () => {
@@ -109,8 +108,8 @@ describe('processAuditsAndGroups', () => {
       'performance-1',
       'performance-2',
     ]);
-    expect(performanceGroups.every(({ isSkipped }) => !isSkipped)).toBe(true);
-    expect(nonPerformanceGroups.every(({ isSkipped }) => isSkipped)).toBe(true);
+    expect(performanceGroups.every(({ isSkipped }) => !isSkipped)).toBeTrue();
+    expect(nonPerformanceGroups.every(({ isSkipped }) => isSkipped)).toBeTrue();
   });
 
   it('should handle empty options', () => {

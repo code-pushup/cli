@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { get42, isEven, untested } from './index.mjs';
 
 describe('get42', () => {

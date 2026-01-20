@@ -1,12 +1,5 @@
 import { type PerformanceEntry, performance } from 'node:perf_hooks';
-import {
-  type MockedFunction,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
+import type { MockedFunction } from 'vitest';
 import { MockSink } from '../../mocks/sink.mock';
 import {
   type PerformanceObserverOptions,

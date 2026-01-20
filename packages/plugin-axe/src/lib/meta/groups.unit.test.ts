@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import type { Group } from '@code-pushup/models';
 import { loadAxeRules, transformRulesToGroups } from './transform.js';
 

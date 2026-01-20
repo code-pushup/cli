@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import type { AuditReport, Issue, Table } from '@code-pushup/models';
 import { tableSection } from './formatting.js';
 import {

@@ -1,7 +1,6 @@
 import { mkdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
-import { afterAll, beforeAll, describe, expect } from 'vitest';
 import { commitFile, initGitRepo } from '@code-pushup/test-utils';
 import {
   getCurrentBranchOrTag,
