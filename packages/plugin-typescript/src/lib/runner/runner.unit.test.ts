@@ -56,7 +56,7 @@ describe('createRunnerFunction', () => {
   it('should return empty array if no diagnostics are found', () => {
     getTypeScriptDiagnosticsSpy.mockReturnValue([]);
     const runner = createRunnerFunction({
-      tsconfig: 'tsconfig.json',
+      tsconfig: ['tsconfig.json'],
       expectedAudits: [],
     });
     expect(runner(runnerArgs)).toStrictEqual([]);
@@ -65,7 +65,7 @@ describe('createRunnerFunction', () => {
   it('should return empty array if no supported diagnostics are found', () => {
     getTypeScriptDiagnosticsSpy.mockReturnValue([mockSemanticDiagnostic]);
     const runner = createRunnerFunction({
-      tsconfig: 'tsconfig.json',
+      tsconfig: ['tsconfig.json'],
       expectedAudits: [],
     });
     expect(runner(runnerArgs)).toStrictEqual([]);
@@ -74,7 +74,7 @@ describe('createRunnerFunction', () => {
   it('should pass the diagnostic code to tsCodeToSlug', () => {
     getTypeScriptDiagnosticsSpy.mockReturnValue([mockSemanticDiagnostic]);
     const runner = createRunnerFunction({
-      tsconfig: 'tsconfig.json',
+      tsconfig: ['tsconfig.json'],
       expectedAudits: [],
     });
     expect(runner(runnerArgs)).toStrictEqual([]);
@@ -85,7 +85,7 @@ describe('createRunnerFunction', () => {
   it('should pass the diagnostic to getIssueFromDiagnostic', () => {
     getTypeScriptDiagnosticsSpy.mockReturnValue([mockSemanticDiagnostic]);
     const runner = createRunnerFunction({
-      tsconfig: 'tsconfig.json',
+      tsconfig: ['tsconfig.json'],
       expectedAudits: [],
     });
     expect(runner(runnerArgs)).toStrictEqual([]);
@@ -106,7 +106,7 @@ describe('createRunnerFunction', () => {
       },
     ]);
     const runner = createRunnerFunction({
-      tsconfig: 'tsconfig.json',
+      tsconfig: ['tsconfig.json'],
       expectedAudits: [{ slug: 'semantic-errors' }],
     });
 
@@ -138,7 +138,7 @@ describe('createRunnerFunction', () => {
       mockSemanticDiagnostic,
     ]);
     const runner = createRunnerFunction({
-      tsconfig: 'tsconfig.json',
+      tsconfig: ['tsconfig.json'],
       expectedAudits: [{ slug: 'semantic-errors' }, { slug: 'syntax-errors' }],
     });
 
@@ -181,10 +181,54 @@ describe('createRunnerFunction', () => {
       },
     ]);
     const runner = createRunnerFunction({
-      tsconfig: 'tsconfig.json',
+      tsconfig: ['tsconfig.json'],
       expectedAudits: [{ slug: 'semantic-errors' }, { slug: 'syntax-errors' }],
     });
     const auditOutputs = runner(runnerArgs);
     expect(() => auditOutputsSchema.parse(auditOutputs)).not.toThrow();
+  });
+
+  it('should aggregate diagnostics from multiple tsconfigs', () => {
+    getTypeScriptDiagnosticsSpy
+      .mockReturnValueOnce([mockSemanticDiagnostic])
+      .mockReturnValueOnce([mockSyntacticDiagnostic]);
+
+    const runner = createRunnerFunction({
+      tsconfig: ['tsconfig.lib.json', 'tsconfig.spec.json'],
+      expectedAudits: [{ slug: 'semantic-errors' }, { slug: 'syntax-errors' }],
+    });
+
+    const auditOutputs = runner(runnerArgs);
+
+    expect(getTypeScriptDiagnosticsSpy).toHaveBeenCalledTimes(2);
+    expect(getTypeScriptDiagnosticsSpy).toHaveBeenNthCalledWith(1, {
+      tsconfig: 'tsconfig.lib.json',
+    });
+    expect(getTypeScriptDiagnosticsSpy).toHaveBeenNthCalledWith(2, {
+      tsconfig: 'tsconfig.spec.json',
+    });
+
+    expect(auditOutputs).toStrictEqual([
+      expect.objectContaining({
+        slug: 'semantic-errors',
+        value: 1,
+        details: {
+          issues: [
+            expect.objectContaining({
+              message: `TS2322: Type 'string' is not assignable to type 'number'.`,
+            }),
+          ],
+        },
+      }),
+      expect.objectContaining({
+        slug: 'syntax-errors',
+        value: 1,
+        details: {
+          issues: [
+            expect.objectContaining({ message: "TS1005: ';' expected." }),
+          ],
+        },
+      }),
+    ]);
   });
 });

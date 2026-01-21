@@ -11,14 +11,12 @@ import {
   toSentenceCase,
 } from '@code-pushup/utils';
 import type { AuditSlug } from '../types.js';
-import {
-  type DiagnosticsOptions,
-  getTypeScriptDiagnostics,
-} from './ts-runner.js';
+import { getTypeScriptDiagnostics } from './ts-runner.js';
 import type { CodeRangeName } from './types.js';
 import { getIssueFromDiagnostic, tsCodeToAuditSlug } from './utils.js';
 
-export type RunnerOptions = DiagnosticsOptions & {
+export type RunnerOptions = {
+  tsconfig: string[];
   expectedAudits: { slug: AuditSlug }[];
 };
 
@@ -26,7 +24,9 @@ export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
   const { tsconfig, expectedAudits } = options;
 
   return (): AuditOutputs => {
-    const diagnostics = getTypeScriptDiagnostics({ tsconfig });
+    const diagnostics = tsconfig.flatMap(config => [
+      ...getTypeScriptDiagnostics({ tsconfig: config }),
+    ]);
 
     const result = diagnostics.reduce<
       Partial<Record<CodeRangeName, Pick<AuditOutput, 'slug' | 'details'>>>
