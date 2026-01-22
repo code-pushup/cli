@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { importModule } from './file-system.js';
+import { importModule } from './import-module.js';
 
 describe('importModule', () => {
   const mockDir = path.join(

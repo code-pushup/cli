@@ -42,7 +42,6 @@ export {
   filePathToCliArg,
   findLineNumberInText,
   findNearestFile,
-  importModule,
   pluginWorkDir,
   projectToFilename,
   readJsonFile,
@@ -179,3 +178,4 @@ export type {
   Prettify,
   WithRequired,
 } from './lib/types.js';
+export * from './lib/import-module.js';
