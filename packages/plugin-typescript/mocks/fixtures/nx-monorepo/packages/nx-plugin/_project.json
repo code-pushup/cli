@@ -1,0 +1,5 @@
+{
+  "name": "nx-plugin",
+  "sourceRoot": "packages/nx-plugin/src",
+  "projectType": "library"
+}

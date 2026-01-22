@@ -231,4 +231,47 @@ describe('createRunnerFunction', () => {
       }),
     ]);
   });
+
+  it('should skip failed tsconfigs and warn when multiple configs provided', () => {
+    getTypeScriptDiagnosticsSpy
+      .mockReturnValueOnce([mockSemanticDiagnostic])
+      .mockImplementationOnce(() => {
+        throw new Error('File not found');
+      });
+    const runner = createRunnerFunction({
+      tsconfig: ['tsconfig.lib.json', 'tsconfig.broken.json'],
+      expectedAudits: [{ slug: 'semantic-errors' }],
+    });
+    const auditOutputs = runner(runnerArgs);
+    expect(auditOutputs).toStrictEqual([
+      expect.objectContaining({
+        slug: 'semantic-errors',
+        value: 1,
+      }),
+    ]);
+  });
+
+  it('should throw if single tsconfig fails', () => {
+    getTypeScriptDiagnosticsSpy.mockImplementation(() => {
+      throw new Error('File not found');
+    });
+    const runner = createRunnerFunction({
+      tsconfig: ['tsconfig.json'],
+      expectedAudits: [],
+    });
+    expect(() => runner(runnerArgs)).toThrow('File not found');
+  });
+
+  it('should throw if all tsconfigs fail', () => {
+    getTypeScriptDiagnosticsSpy.mockImplementation(() => {
+      throw new Error('Error');
+    });
+    const runner = createRunnerFunction({
+      tsconfig: ['tsconfig.a.json', 'tsconfig.b.json'],
+      expectedAudits: [],
+    });
+    expect(() => runner(runnerArgs)).toThrow(
+      'All 2 TypeScript configurations failed to load',
+    );
+  });
 });

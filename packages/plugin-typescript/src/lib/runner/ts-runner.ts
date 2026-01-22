@@ -14,13 +14,13 @@ export function getTypeScriptDiagnostics({
   tsconfig,
 }: DiagnosticsOptions): readonly Diagnostic[] {
   const { fileNames, options } = loadTargetConfig(tsconfig);
-  logger.info(
+  logger.debug(
     `Parsed TypeScript config file ${tsconfig}, program includes ${pluralizeToken('file', fileNames.length)}`,
   );
   try {
     const program = createProgram(fileNames, options);
     const diagnostics = getPreEmitDiagnostics(program);
-    logger.info(
+    logger.debug(
       `TypeScript compiler found ${pluralizeToken('diagnostic', diagnostics.length)}`,
     );
     return diagnostics;
