@@ -1,7 +1,7 @@
 import * as tsModule from 'typescript';
 import { describe, expect, vi } from 'vitest';
 import { osAgnosticPath } from '@code-pushup/test-utils';
-import { loadTargetConfig } from './utils.js';
+import { loadTargetConfig } from './load-ts-config.js';
 
 describe('loadTargetConfig', () => {
   const readConfigFileSpy = vi.spyOn(tsModule, 'readConfigFile');
