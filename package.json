@@ -64,7 +64,7 @@
     "@nx/react": "22.3.3",
     "@nx/vite": "22.3.3",
     "@nx/workspace": "22.3.3",
-    "@push-based/jiti-tsc": "^0.0.2",
+    "@push-based/jiti-tsc": "^0.1.1",
     "@push-based/nx-verdaccio": "0.0.7",
     "@swc-node/register": "1.9.2",
     "@swc/cli": "0.6.0",

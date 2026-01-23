@@ -1,7 +1,11 @@
 import tseslint from 'typescript-eslint';
 import baseConfig from '../../eslint.config.js';
 
-export default tseslint.config(...baseConfig, {
+const resolvedBaseConfig = await (typeof baseConfig === 'function'
+  ? baseConfig()
+  : baseConfig);
+
+export default tseslint.config(...resolvedBaseConfig, {
   files: ['**/*.ts'],
   languageOptions: {
     parserOptions: {
