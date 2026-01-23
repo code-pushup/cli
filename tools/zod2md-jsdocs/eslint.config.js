@@ -1,12 +1,8 @@
 const baseConfig = require('../../eslint.config.js').default;
 
 module.exports = (async () => {
-  const resolvedBaseConfig = await (typeof baseConfig === 'function'
-    ? baseConfig()
-    : baseConfig);
-
   return [
-    ...resolvedBaseConfig,
+    ...(await (typeof baseConfig === 'function' ? baseConfig() : baseConfig)),
     {
       files: ['**/*.json'],
       rules: {

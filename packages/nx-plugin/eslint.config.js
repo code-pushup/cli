@@ -2,12 +2,8 @@ const tseslint = require('typescript-eslint');
 const baseConfig = require('../../eslint.config.js').default;
 
 module.exports = (async () => {
-  const resolvedBaseConfig = await (typeof baseConfig === 'function'
-    ? baseConfig()
-    : baseConfig);
-
   return tseslint.config(
-    ...resolvedBaseConfig,
+    ...(await (typeof baseConfig === 'function' ? baseConfig() : baseConfig)),
     {
       files: ['**/*.ts'],
       languageOptions: {
