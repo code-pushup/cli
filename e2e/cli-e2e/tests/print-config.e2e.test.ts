@@ -47,7 +47,7 @@ describe('CLI print-config', () => {
           'print-config',
           '--output=config.json',
           `--config=${configFilePath(ext)}`,
-          '--tsconfig=tsconfig.base.json',
+          `--tsconfig=${path.join(process.cwd(), 'tsconfig.base.json')}`,
           '--persist.outputDir=output-dir',
           '--persist.format=md',
           `--persist.filename=${ext}-report`,
