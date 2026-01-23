@@ -127,14 +127,15 @@
       "executor": "nx:run-commands",
       "dependsOn": ["code-pushup-*"],
       "options": {
-        "command": "npx jiti-tsc packages/cli/src/index.ts",
+        "command": "node packages/cli/src/index.ts",
         "args": [
           "--config={projectRoot}/code-pushup.config.ts",
           "--cache.read",
           "--persist.outputDir=.code-pushup/{projectName}"
         ],
         "env": {
-          "JITI_TS_CONFIG_PATH": "tsconfig.base.json"
+          "NODE_OPTIONS": "--import tsx",
+          "TSX_TSCONFIG_PATH": "tsconfig.base.json"
         }
       }
     },
