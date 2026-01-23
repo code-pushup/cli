@@ -15,7 +15,7 @@ const config: CoreConfig = [
   await configureCoveragePlugin(projectName),
   // FIXME: Can't create TS program in getDiagnostics. Cannot find module './packages/models/transformers/dist'
   // configureTypescriptPlugin(projectName),
-  configureJsDocsPlugin(projectName),
+  await configureJsDocsPlugin(projectName),
 ].reduce(
   (acc, { plugins, categories }) => ({
     ...acc,
