@@ -64,7 +64,7 @@ describe('CLI print-config', () => {
       expect(JSON.parse(output)).toEqual(
         expect.objectContaining({
           config: expect.stringContaining(`code-pushup.config.${ext}`),
-          tsconfig: 'tsconfig.base.json',
+          tsconfig: path.join(process.cwd(), 'tsconfig.base.json'),
           plugins: [
             expect.objectContaining({
               slug: 'dummy-plugin',
