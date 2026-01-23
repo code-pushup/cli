@@ -1,4 +1,4 @@
-import axe from 'axe-core';
+import type { RuleMetadata } from 'axe-core';
 import type { Audit, Group } from '@code-pushup/models';
 import { objectToEntries, wrapTags } from '@code-pushup/utils';
 import type { AxePreset } from '../config.js';
@@ -7,15 +7,22 @@ import {
   CATEGORY_GROUPS,
   getWcagPresetTags,
 } from '../groups.js';
+import { importAxeCore } from '../safe-axe-import.js';
+
+let axeModule: any | null = null;
 
 /** Loads Axe rules filtered by the specified preset. */
-export function loadAxeRules(preset: AxePreset): axe.RuleMetadata[] {
+export async function loadAxeRules(preset: AxePreset): Promise<RuleMetadata[]> {
+  if (!axeModule) {
+    axeModule = await importAxeCore();
+  }
+
   const tags = getPresetTags(preset);
-  return tags.length === 0 ? axe.getRules() : axe.getRules(tags);
+  return tags.length === 0 ? axeModule.getRules() : axeModule.getRules(tags);
 }
 
 /** Transforms Axe rule metadata into Code PushUp audit definitions. */
-export function transformRulesToAudits(rules: axe.RuleMetadata[]): Audit[] {
+export function transformRulesToAudits(rules: RuleMetadata[]): Audit[] {
   return rules.map(rule => ({
     slug: rule.ruleId,
     title: wrapTags(rule.help),
@@ -25,7 +32,7 @@ export function transformRulesToAudits(rules: axe.RuleMetadata[]): Audit[] {
 }
 
 /** Transforms Axe rules into Code PushUp groups based on accessibility categories. */
-export function transformRulesToGroups(rules: axe.RuleMetadata[]): Group[] {
+export function transformRulesToGroups(rules: RuleMetadata[]): Group[] {
   const groups = createCategoryGroups(rules);
   return groups.filter(({ refs }) => refs.length > 0);
 }
@@ -52,7 +59,7 @@ function getPresetTags(preset: AxePreset): string[] {
 function createGroup(
   slug: AxeGroupSlug,
   title: string,
-  rules: axe.RuleMetadata[],
+  rules: RuleMetadata[],
 ): Group {
   return {
     slug,
@@ -61,7 +68,7 @@ function createGroup(
   };
 }
 
-function createCategoryGroups(rules: axe.RuleMetadata[]): Group[] {
+function createCategoryGroups(rules: RuleMetadata[]): Group[] {
   return objectToEntries(CATEGORY_GROUPS).map(([slug, title]) => {
     const tag = `cat.${slug}`;
     const categoryRules = rules.filter(({ tags }) => tags.includes(tag));

@@ -45,6 +45,7 @@
     "@code-pushup/models": "0.108.1",
     "@code-pushup/utils": "0.108.1",
     "axe-core": "^4.11.0",
+    "jsdom": "^25.0.0",
     "playwright-core": "^1.56.1",
     "zod": "^4.2.1"
   },

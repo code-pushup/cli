@@ -10,3 +10,6 @@ export {
   axeGroupRefs,
 } from './lib/utils.js';
 export { axeCategories } from './lib/categories.js';
+
+// Utility for working with DOM-dependent libraries
+export { withDom } from './lib/safe-axe-import.js';
