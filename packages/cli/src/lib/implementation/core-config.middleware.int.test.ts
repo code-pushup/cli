@@ -3,21 +3,6 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect } from 'vitest';
 import { coreConfigMiddleware } from './core-config.middleware.js';
 
-const configDirPath = path.join(
-  fileURLToPath(path.dirname(import.meta.url)),
-  '..',
-  '..',
-  '..',
-  '..',
-  '..',
-  'testing',
-  'test-fixtures',
-  'src',
-  'lib',
-  'fixtures',
-  'configs',
-);
-
 const localMocks = path.join(
   fileURLToPath(path.dirname(import.meta.url)),
   '..',
