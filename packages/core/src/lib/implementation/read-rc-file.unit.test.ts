@@ -4,32 +4,39 @@ import { CONFIG_FILE_NAME, type CoreConfig } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { autoloadRc } from './read-rc-file.js';
 
-// mock bundleRequire inside importEsmModule used for fetching config
-vi.mock('bundle-require', async () => {
+// mock jiti used for fetching config
+vi.mock('jiti', async () => {
   const { CORE_CONFIG_MOCK }: Record<string, CoreConfig> =
     await vi.importActual('@code-pushup/test-fixtures');
 
+  const actualJiti = await vi.importActual('jiti');
+
   return {
-    bundleRequire: vi
-      .fn()
-      .mockImplementation((options: { filepath: string }) => {
-        const extension = options.filepath.split('.').at(-1);
-        return {
-          mod: {
-            default: {
+    ...actualJiti,
+    createJiti: vi.fn().mockImplementation(() => ({
+      import: vi
+        .fn()
+        .mockImplementation(
+          (filepath: string, options: { default?: boolean }) => {
+            const extension = filepath.split('.').at(-1);
+            const config = {
               ...CORE_CONFIG_MOCK,
               upload: {
                 ...CORE_CONFIG_MOCK?.upload,
                 project: extension, // returns loaded file extension to check format precedence
               },
-            },
+            };
+
+            // When default: true is passed, return the config directly
+            // Otherwise return { default: config }
+            return options?.default ? config : { default: config };
           },
-        };
-      }),
+        ),
+    })),
   };
 });
 
-// Note: memfs files are only listed to satisfy a system check, value is used from bundle-require mock
+// Note: memfs files are only listed to satisfy a system check, value is used from jiti mock
 describe('autoloadRc', () => {
   it('prioritise a .ts configuration file', async () => {
     vol.fromJSON(
