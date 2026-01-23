@@ -18,6 +18,12 @@ export async function importModule<T = unknown>(
 ): Promise<T> {
   const { filepath, tsconfig, ...jitiOptions } = options;
 
+  if (!filepath) {
+    throw new Error(
+      `Importing module failed. File '${filepath}' does not exist`,
+    );
+  }
+
   const absoluteFilePath = path.resolve(process.cwd(), filepath);
   const resolvedStats = await settlePromise(stat(absoluteFilePath));
   if (resolvedStats.status === 'rejected') {
