@@ -18,19 +18,21 @@ export async function importModule<T = unknown>(
 ): Promise<T> {
   const { filepath, tsconfig, ...jitiOptions } = options;
 
-  const resolvedStats = await settlePromise(stat(filepath));
+  const absoluteFilePath = path.resolve(process.cwd(), filepath);
+  const resolvedStats = await settlePromise(stat(absoluteFilePath));
   if (resolvedStats.status === 'rejected') {
-    throw new Error(`File '${filepath}' does not exist`);
+    throw new Error(`File '${absoluteFilePath}' does not exist`);
   }
   if (!resolvedStats.value.isFile()) {
     throw new Error(`Expected '${filepath}' to be a file`);
   }
 
-  const jitiInstance = await createTsJiti(process.cwd(), {
+  const jitiInstance = await createTsJiti(import.meta.url, {
     ...jitiOptions,
     tsconfigPath: tsconfig,
   });
-  return (await jitiInstance.import(filepath, { default: true })) as T;
+
+  return (await jitiInstance.import(absoluteFilePath, { default: true })) as T;
 }
 
 /**
@@ -127,29 +129,31 @@ export function parseTsConfigToJitiConfig(
 /**
  * Create a jiti instance with options derived from tsconfig.
  * Used instead of direct jiti.createJiti to allow tsconfig integration.
- * @param filepath
+ * @param id
  * @param options
  * @param jiti
  */
 export async function createTsJiti(
-  filepath: string,
-  options: JitiOptions & { tsconfigPath?: string },
+  id: string,
+  options: JitiOptions & { tsconfigPath?: string } = {},
   createJiti: (typeof import('jiti'))['createJiti'] = createJitiSource,
 ) {
   const { tsconfigPath, ...jitiOptions } = options;
-  const fallbackTsconfigPath = path.resolve('./tsconfig.json');
+
+  const fallbackTsconfigPath = path.resolve(process.cwd(), 'tsconfig.json');
 
   const validPath: null | string =
     tsconfigPath == null
       ? (await fileExists(fallbackTsconfigPath))
         ? fallbackTsconfigPath
         : null
-      : tsconfigPath;
+      : path.resolve(process.cwd(), tsconfigPath);
 
   const tsDerivedJitiOptions: MappableJitiOptions = validPath
     ? await jitiOptionsFromTsConfig(validPath)
     : {};
-  return createJiti(filepath, { ...jitiOptions, ...tsDerivedJitiOptions });
+
+  return createJiti(id, { ...jitiOptions, ...tsDerivedJitiOptions });
 }
 
 /**

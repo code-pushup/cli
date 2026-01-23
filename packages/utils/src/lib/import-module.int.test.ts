@@ -67,7 +67,9 @@ describe('importModule', () => {
   it('should throw if the file does not exist', async () => {
     await expect(
       importModule({ filepath: 'path/to/non-existent-export.mjs' }),
-    ).rejects.toThrow("File 'path/to/non-existent-export.mjs' does not exist");
+    ).rejects.toThrow(
+      `File '${path.resolve('path/to/non-existent-export.mjs')}' does not exist`,
+    );
   });
 
   it('should throw if path is a directory', async () => {
