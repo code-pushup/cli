@@ -14,7 +14,7 @@ describe('loadTargetConfig', () => {
     expect(
       loadTargetConfig(
         osAgnosticPath(
-          'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.init.json',
+          'packages/utils/mocks/fixtures/basic-setup/tsconfig.init.json',
         ),
       ),
     ).toStrictEqual(
@@ -42,7 +42,7 @@ describe('loadTargetConfig', () => {
   it('should return the parsed content of a tsconfig file that extends another config', () => {
     expect(
       loadTargetConfig(
-        'packages/plugin-typescript/mocks/fixtures/basic-setup/tsconfig.extends-extending.json',
+        'packages/utils/mocks/fixtures/basic-setup/tsconfig.extends-extending.json',
       ),
     ).toStrictEqual(
       expect.objectContaining({
