@@ -77,10 +77,12 @@ export const mapTsJsxToJitiJsx = (tsJsxMode: number): boolean =>
  * | sourceMaps        | boolean                 | sourceMap             | boolean                  | Enable sourcemap generation. |
  * | jsx               | boolean                 | jsx                   | JsxEmit (0-5)           | TS JsxEmit enum (0-5) => boolean JSX processing. |
  */
-export type MappableJitiOptions = Partial<
-  Pick<JitiOptions, 'alias' | 'interopDefault' | 'sourceMaps' | 'jsx'>
->;
-
+export type MappableJitiOptions = Partial<{
+  alias: Record<string, string>;
+  interopDefault: boolean;
+  sourceMaps: boolean;
+  jsx: boolean;
+}>;
 /**
  * Parse TypeScript compiler options to mappable jiti options
  * @param compilerOptions TypeScript compiler options
@@ -154,6 +156,5 @@ export async function jitiOptionsFromTsConfig(
   tsconfigPath: string,
 ): Promise<MappableJitiOptions> {
   const { options } = loadTargetConfig(tsconfigPath);
-  return options;
   return parseTsConfigToJitiConfig(options, path.dirname(tsconfigPath));
 }
