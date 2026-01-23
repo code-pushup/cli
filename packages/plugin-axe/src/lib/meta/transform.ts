@@ -7,6 +7,7 @@ import {
   CATEGORY_GROUPS,
   getWcagPresetTags,
 } from '../groups.js';
+import '../polyfills.dom.js';
 
 /** Loads Axe rules filtered by the specified preset. */
 export function loadAxeRules(preset: AxePreset): axe.RuleMetadata[] {
