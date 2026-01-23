@@ -1,6 +1,7 @@
 // Polyfills for axe-core DOM access in Node.js environment
 // This must be imported before any axe-core imports
 
+/* eslint-disable functional/immutable-data, @typescript-eslint/no-explicit-any, unicorn/prefer-global-this, n/no-unsupported-features/node-builtins, unicorn/no-typeof-undefined, @typescript-eslint/no-empty-function */
 if (typeof global.window === 'undefined') {
   const mockElement = {
     style: {},
@@ -25,15 +26,15 @@ if (typeof global.window === 'undefined') {
 
   // Mock document
   const mockDocument = {
-    createElement: tagName => ({
+    createElement: (tagName: string) => ({
       ...mockElement,
       tagName: tagName.toUpperCase(),
     }),
-    createElementNS: (ns, tagName) => ({
+    createElementNS: (_ns: string, tagName: string) => ({
       ...mockElement,
       tagName: tagName.toUpperCase(),
     }),
-    createTextNode: text => ({ ...mockElement, textContent: text }),
+    createTextNode: (text: string) => ({ ...mockElement, textContent: text }),
     body: { ...mockElement, tagName: 'BODY' },
     documentElement: { ...mockElement, tagName: 'HTML' },
     head: { ...mockElement, tagName: 'HEAD' },
@@ -52,30 +53,30 @@ if (typeof global.window === 'undefined') {
   };
 
   // Set up global objects
-  global.window = global;
-  global.document = mockDocument;
+  (global as any).window = global;
+  (global as any).document = mockDocument;
 
   // Only set navigator if it doesn't exist or isn't read-only
   try {
     if (typeof global.navigator === 'undefined') {
-      global.navigator = {
+      (global as any).navigator = {
         userAgent: 'Node.js',
         platform: 'Node.js',
         appVersion: 'Node.js',
       };
     }
-  } catch (e) {
+  } catch {
     // navigator is read-only, skip setting it
   }
 
   // Also set on globalThis for consistency
-  globalThis.window = global.window;
-  globalThis.document = global.document;
+  (globalThis as any).window = (global as any).window;
+  (globalThis as any).document = (global as any).document;
   try {
     if (typeof globalThis.navigator === 'undefined') {
-      globalThis.navigator = global.navigator;
+      (globalThis as any).navigator = (global as any).navigator;
     }
-  } catch (e) {
+  } catch {
     // navigator is read-only, skip setting it
   }
 }

@@ -1,6 +1,7 @@
 const tseslint = require('typescript-eslint');
 const baseConfig = require('../../eslint.config.js').default;
 
+// eslint-disable-next-line unicorn/prefer-top-level-await, arrow-body-style
 module.exports = (async () => {
   return tseslint.config(
     ...(await (typeof baseConfig === 'function' ? baseConfig() : baseConfig)),
