@@ -1,4 +1,4 @@
-import { type JitiOptions, createJiti as createJitiSource } from 'jiti';
+import { createJiti as createJitiSource } from 'jiti';
 import { stat } from 'node:fs/promises';
 import path from 'node:path';
 import type { CompilerOptions } from 'typescript';
@@ -6,8 +6,15 @@ import { fileExists } from './file-system.js';
 import { loadTargetConfig } from './load-ts-config.js';
 import { settlePromise } from './promises.js';
 
+// For unknown reason, we can't import `JitiOptions` directly in this repository
+type JitiOptions = Exclude<Parameters<typeof createJitiSource>[1], undefined>;
+
+export type ImportModuleOptions = JitiOptions & {
+  filepath: string;
+  tsconfig?: string;
+};
 export async function importModule<T = unknown>(
-  options: JitiOptions & { filepath: string; tsconfig?: string },
+  options: ImportModuleOptions,
 ): Promise<T> {
   const { filepath, tsconfig, ...jitiOptions } = options;
 
@@ -77,12 +84,9 @@ export const mapTsJsxToJitiJsx = (tsJsxMode: number): boolean =>
  * | sourceMaps        | boolean                 | sourceMap             | boolean                  | Enable sourcemap generation. |
  * | jsx               | boolean                 | jsx                   | JsxEmit (0-5)           | TS JsxEmit enum (0-5) => boolean JSX processing. |
  */
-export type MappableJitiOptions = Partial<{
-  alias: Record<string, string>;
-  interopDefault: boolean;
-  sourceMaps: boolean;
-  jsx: boolean;
-}>;
+export type MappableJitiOptions = Partial<
+  Pick<JitiOptions, 'alias' | 'interopDefault' | 'sourceMaps' | 'jsx'>
+>;
 /**
  * Parse TypeScript compiler options to mappable jiti options
  * @param compilerOptions TypeScript compiler options
