@@ -2,8 +2,8 @@ import { type JitiOptions, createJiti as createJitiSource } from 'jiti';
 import { stat } from 'node:fs/promises';
 import path from 'node:path';
 import type { CompilerOptions } from 'typescript';
-import { fileExists } from './file-system';
-import { loadTargetConfig } from './load-ts-config';
+import { fileExists } from './file-system.js';
+import { loadTargetConfig } from './load-ts-config.js';
 import { settlePromise } from './promises.js';
 
 export async function importModule<T = unknown>(
@@ -132,11 +132,17 @@ export async function createTsJiti(
 ) {
   const { tsconfigPath, ...jitiOptions } = options;
   const fallbackTsconfigPath = path.resolve('./tsconfig.json');
-  const tsDerivedJitiOptions: MappableJitiOptions = tsconfigPath
-    ? await jitiOptionsFromTsConfig(tsconfigPath)
-    : (await fileExists(fallbackTsconfigPath))
-      ? await jitiOptionsFromTsConfig(tsconfigPath)
-      : {};
+
+  const validPath: null | string =
+    tsconfigPath == null
+      ? (await fileExists(fallbackTsconfigPath))
+        ? fallbackTsconfigPath
+        : null
+      : tsconfigPath;
+
+  const tsDerivedJitiOptions: MappableJitiOptions = validPath
+    ? await jitiOptionsFromTsConfig(validPath)
+    : {};
   return createJiti(filepath, { ...jitiOptions, ...tsDerivedJitiOptions });
 }
 
@@ -147,26 +153,7 @@ export async function createTsJiti(
 export async function jitiOptionsFromTsConfig(
   tsconfigPath: string,
 ): Promise<MappableJitiOptions> {
-  const compilerOptions = await deriveTsConfig(tsconfigPath);
-  const tsconfigDir = path.dirname(tsconfigPath);
-  return parseTsConfigToJitiConfig(compilerOptions, tsconfigDir);
-}
-
-/**
- * Read tsconfig file by path and return the parsed options as JSON object
- * @param tsconfigPath
- */
-export async function deriveTsConfig(
-  tsconfigPath: string,
-): Promise<CompilerOptions> {
-  // check if tsconfig file exists
-  const exists = await fileExists(tsconfigPath);
-  if (!exists) {
-    throw new Error(
-      `Tsconfig file not found at path: ${tsconfigPath.replace(/\\/g, '/')}`,
-    );
-  }
-
   const { options } = loadTargetConfig(tsconfigPath);
   return options;
+  return parseTsConfigToJitiConfig(options, path.dirname(tsconfigPath));
 }

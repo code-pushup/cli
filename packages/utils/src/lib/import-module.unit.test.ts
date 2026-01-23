@@ -1,7 +1,6 @@
 import type { CompilerOptions } from 'typescript';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
-  deriveTsConfig,
   mapTsPathsToJitiAlias,
   parseTsConfigToJitiConfig,
 } from './import-module.js';
@@ -106,13 +105,5 @@ describe('parseTsConfigToJitiConfig', () => {
       sourceMaps: true,
       jsx: true,
     });
-  });
-});
-
-describe('deriveTsConfig', () => {
-  it('throws error when tsconfig file does not exist', async () => {
-    await expect(deriveTsConfig('missing.json')).rejects.toThrow(
-      'Tsconfig file not found at path: missing.json',
-    );
   });
 });

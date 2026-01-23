@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
-import { deriveTsConfig, importModule } from './import-module.js';
+import { importModule } from './import-module.js';
 
 describe('importModule', () => {
   const mockDir = path.join(
@@ -80,37 +80,5 @@ describe('importModule', () => {
     await expect(
       importModule({ filepath: path.join(mockDir, 'invalid-js-file.json') }),
     ).resolves.toStrictEqual({ key: 'value' });
-  });
-});
-
-describe('deriveTsConfig', () => {
-  const mockDir = path.join(
-    process.cwd(),
-    'packages',
-    'utils',
-    'mocks',
-    'fixtures',
-  );
-
-  it('should load a valid tsconfig.json file', async () => {
-    const configPath = path.join(mockDir, 'tsconfig-setup', 'tsconfig.json');
-
-    await expect(deriveTsConfig(configPath)).resolves.toStrictEqual({
-      configFilePath: expect.any(String),
-      paths: {
-        '@utils/*': ['./utils.ts'],
-      },
-      pathsBasePath: expect.any(String),
-    });
-  });
-
-  it('should throw if the path is empty', async () => {
-    await expect(deriveTsConfig('')).rejects.toThrow(/Tsconfig file not found/);
-  });
-
-  it('should throw if the file does not exist', async () => {
-    await expect(
-      deriveTsConfig(path.join('non-existent', 'tsconfig.json')),
-    ).rejects.toThrow(/Tsconfig file not found/);
   });
 });
