@@ -18,17 +18,17 @@ export async function importModule<T = unknown>(
 ): Promise<T> {
   const { filepath, tsconfig, ...jitiOptions } = options;
 
-  const resolvedStats = await settlePromise(stat(options.filepath));
+  const resolvedStats = await settlePromise(stat(filepath));
   if (resolvedStats.status === 'rejected') {
-    throw new Error(`File '${options.filepath}' does not exist`);
+    throw new Error(`File '${filepath}' does not exist`);
   }
   if (!resolvedStats.value.isFile()) {
-    throw new Error(`Expected '${options.filepath}' to be a file`);
+    throw new Error(`Expected '${filepath}' to be a file`);
   }
 
-  const jitiInstance = await createTsJiti(options.filepath, {
+  const jitiInstance = await createTsJiti(process.cwd(), {
     ...jitiOptions,
-    tsconfigPath: options.tsconfig,
+    tsconfigPath: tsconfig,
   });
   return (await jitiInstance.import(filepath, { default: true })) as T;
 }
