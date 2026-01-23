@@ -1,6 +1,6 @@
 import path from 'node:path';
-import { describe, expect, it } from 'vitest';
-import { importModule } from './file-system.js';
+import { describe, expect, it, vi } from 'vitest';
+import { importModule } from './import-module.js';
 
 describe('importModule', () => {
   const mockDir = path.join(
@@ -45,10 +45,31 @@ describe('importModule', () => {
     ).resolves.toBe('valid-ts-default-export');
   });
 
+  it('imports module with default tsconfig when tsconfig undefined', async () => {
+    vi.clearAllMocks();
+    await expect(
+      importModule({
+        filepath: path.join(mockDir, 'valid-ts-default-export.ts'),
+      }),
+    ).resolves.toBe('valid-ts-default-export');
+  });
+
+  it('imports module with custom tsconfig', async () => {
+    vi.clearAllMocks();
+    await expect(
+      importModule({
+        filepath: path.join(mockDir, 'tsconfig-setup', 'import-alias.ts'),
+        tsconfig: path.join(mockDir, 'tsconfig-setup', 'tsconfig.json'),
+      }),
+    ).resolves.toBe('valid-ts-default-export-utils-export');
+  });
+
   it('should throw if the file does not exist', async () => {
     await expect(
       importModule({ filepath: 'path/to/non-existent-export.mjs' }),
-    ).rejects.toThrow("File 'path/to/non-existent-export.mjs' does not exist");
+    ).rejects.toThrow(
+      `File '${path.resolve('path/to/non-existent-export.mjs')}' does not exist`,
+    );
   });
 
   it('should throw if path is a directory', async () => {
@@ -57,11 +78,9 @@ describe('importModule', () => {
     );
   });
 
-  it('should throw if file is not valid JS', async () => {
+  it('should load valid JSON', async () => {
     await expect(
       importModule({ filepath: path.join(mockDir, 'invalid-js-file.json') }),
-    ).rejects.toThrow(
-      `${path.join(mockDir, 'invalid-js-file.json')} is not a valid JS file`,
-    );
+    ).resolves.toStrictEqual({ key: 'value' });
   });
 });

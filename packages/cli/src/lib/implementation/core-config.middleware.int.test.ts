@@ -3,17 +3,12 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect } from 'vitest';
 import { coreConfigMiddleware } from './core-config.middleware.js';
 
-const configDirPath = path.join(
+const localMocks = path.join(
   fileURLToPath(path.dirname(import.meta.url)),
   '..',
   '..',
   '..',
-  '..',
-  '..',
-  'testing',
-  'test-fixtures',
-  'src',
-  'lib',
+  'mocks',
   'fixtures',
   'configs',
 );
@@ -29,7 +24,7 @@ describe('coreConfigMiddleware', () => {
     'should load a valid .%s config',
     async extension => {
       const config = await coreConfigMiddleware({
-        config: path.join(configDirPath, `code-pushup.config.${extension}`),
+        config: path.join(localMocks, `code-pushup.config.${extension}`),
         ...CLI_DEFAULTS,
       });
       expect(config.config).toContain(`code-pushup.config.${extension}`);
@@ -46,11 +41,8 @@ describe('coreConfigMiddleware', () => {
   it('should load config which relies on provided --tsconfig', async () => {
     await expect(
       coreConfigMiddleware({
-        config: path.join(
-          configDirPath,
-          'code-pushup.needs-tsconfig.config.ts',
-        ),
-        tsconfig: path.join(configDirPath, 'tsconfig.json'),
+        config: path.join(localMocks, 'code-pushup.needs-tsconfig.config.ts'),
+        tsconfig: path.join(localMocks, 'tsconfig.alias.json'),
         ...CLI_DEFAULTS,
       }),
     ).resolves.toBeTruthy();
@@ -60,11 +52,13 @@ describe('coreConfigMiddleware', () => {
     await expect(
       coreConfigMiddleware({
         config: path.join(
-          configDirPath,
-          'code-pushup.needs-tsconfig.config.ts',
+          localMocks,
+          'code-pushup.needs-tsconfig-fail.config.ts',
         ),
         ...CLI_DEFAULTS,
       }),
-    ).rejects.toThrow("Cannot find package '@example/custom-plugin'");
+    ).rejects.toThrow(
+      "Cannot find module '@definitely-non-existent-package/custom-plugin'",
+    );
   });
 });

@@ -3,8 +3,12 @@ import {
   createProgram,
   getPreEmitDiagnostics,
 } from 'typescript';
-import { logger, pluralizeToken, stringifyError } from '@code-pushup/utils';
-import { loadTargetConfig } from './utils.js';
+import {
+  loadTargetConfig,
+  logger,
+  pluralizeToken,
+  stringifyError,
+} from '@code-pushup/utils';
 
 export type DiagnosticsOptions = {
   tsconfig: string;

@@ -26,25 +26,23 @@ import {
   withLocalTmpDir,
 } from './utils.js';
 
-// mock bundleRequire inside importEsmModule used for fetching config
-vi.mock('bundle-require', async () => {
+vi.mock('@code-pushup/utils', async () => {
   const { CORE_CONFIG_MOCK }: Record<string, CoreConfig> =
     await vi.importActual('@code-pushup/test-utils');
 
+  const actualUtils = await vi.importActual('@code-pushup/utils');
+
   return {
-    bundleRequire: vi
+    ...actualUtils,
+    importModule: vi
       .fn()
       .mockImplementation((options: { filepath: string }) => {
         const project = options.filepath.split('.').at(-2);
         return {
-          mod: {
-            default: {
-              ...CORE_CONFIG_MOCK,
-              upload: {
-                ...CORE_CONFIG_MOCK?.upload,
-                project, // returns loaded file extension to check in test
-              },
-            },
+          ...CORE_CONFIG_MOCK,
+          upload: {
+            ...CORE_CONFIG_MOCK?.upload,
+            project, // returns loaded file extension to check in test
           },
         };
       }),

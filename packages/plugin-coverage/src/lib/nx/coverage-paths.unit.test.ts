@@ -13,74 +13,77 @@ import {
   getCoveragePathsForTarget,
 } from './coverage-paths.js';
 
-vi.mock('bundle-require', () => ({
-  bundleRequire: vi.fn().mockImplementation((options: { filepath: string }) => {
-    const VITEST_VALID: VitestCoverageConfig = {
-      test: {
-        coverage: {
-          reporter: ['lcov'],
-          reportsDirectory: path.join('coverage', 'cli'),
-        },
-      },
-    };
+vi.mock('@code-pushup/utils', async () => {
+  const actualUtils = await vi.importActual('@code-pushup/utils');
 
-    const VITEST_NO_DIR: VitestCoverageConfig = {
-      test: { coverage: { reporter: ['lcov'] } },
-    };
+  return {
+    ...actualUtils,
+    importModule: vi
+      .fn()
+      .mockImplementation((options: { filepath: string }) => {
+        const VITEST_VALID: VitestCoverageConfig = {
+          test: {
+            coverage: {
+              reporter: ['lcov'],
+              reportsDirectory: path.join('coverage', 'cli'),
+            },
+          },
+        };
 
-    const VITEST_NO_LCOV: VitestCoverageConfig = {
-      test: {
-        coverage: {
-          reporter: ['json'],
-          reportsDirectory: 'coverage',
-        },
-      },
-    };
+        const VITEST_NO_DIR: VitestCoverageConfig = {
+          test: { coverage: { reporter: ['lcov'] } },
+        };
 
-    const JEST_VALID: JestCoverageConfig = {
-      coverageReporters: ['lcov'],
-      coverageDirectory: path.join('coverage', 'core'),
-    };
+        const VITEST_NO_LCOV: VitestCoverageConfig = {
+          test: {
+            coverage: {
+              reporter: ['json'],
+              reportsDirectory: 'coverage',
+            },
+          },
+        };
 
-    const JEST_NO_DIR: JestCoverageConfig = {
-      coverageReporters: ['lcov'],
-    };
+        const JEST_VALID: JestCoverageConfig = {
+          coverageReporters: ['lcov'],
+          coverageDirectory: path.join('coverage', 'core'),
+        };
 
-    const JEST_NO_LCOV: JestCoverageConfig = {
-      coverageReporters: ['json'],
-      coverageDirectory: 'coverage',
-    };
+        const JEST_NO_DIR: JestCoverageConfig = {
+          coverageReporters: ['lcov'],
+        };
 
-    const JEST_PRESET: JestCoverageConfig & { preset?: string } = {
-      preset: '../../jest.preset.ts',
-      coverageDirectory: 'coverage',
-    };
+        const JEST_NO_LCOV: JestCoverageConfig = {
+          coverageReporters: ['json'],
+          coverageDirectory: 'coverage',
+        };
 
-    const wrapReturnValue = (
-      value: VitestCoverageConfig | JestCoverageConfig,
-    ) => ({ mod: { default: value } });
+        const JEST_PRESET: JestCoverageConfig & { preset?: string } = {
+          preset: '../../jest.preset.ts',
+          coverageDirectory: 'coverage',
+        };
 
-    const config = options.filepath.split('.')[0];
-    switch (config) {
-      case 'vitest-valid':
-        return wrapReturnValue(VITEST_VALID);
-      case 'vitest-no-lcov':
-        return wrapReturnValue(VITEST_NO_LCOV);
-      case 'vitest-no-dir':
-        return wrapReturnValue(VITEST_NO_DIR);
-      case 'jest-valid':
-        return wrapReturnValue(JEST_VALID);
-      case 'jest-no-lcov':
-        return wrapReturnValue(JEST_NO_LCOV);
-      case 'jest-no-dir':
-        return wrapReturnValue(JEST_NO_DIR);
-      case 'jest-preset':
-        return wrapReturnValue(JEST_PRESET);
-      default:
-        return wrapReturnValue({});
-    }
-  }),
-}));
+        const config = options.filepath.split('.')[0];
+        switch (config) {
+          case 'vitest-valid':
+            return VITEST_VALID;
+          case 'vitest-no-lcov':
+            return VITEST_NO_LCOV;
+          case 'vitest-no-dir':
+            return VITEST_NO_DIR;
+          case 'jest-valid':
+            return JEST_VALID;
+          case 'jest-no-lcov':
+            return JEST_NO_LCOV;
+          case 'jest-no-dir':
+            return JEST_NO_DIR;
+          case 'jest-preset':
+            return JEST_PRESET;
+          default:
+            return {};
+        }
+      }),
+  };
+});
 
 describe('getCoveragePathForTarget', () => {
   beforeEach(() => {

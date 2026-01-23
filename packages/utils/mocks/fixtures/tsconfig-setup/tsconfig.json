@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@utils/*": ["./utils.ts"]
+    }
+  },
+  "include": ["*.ts"]
+}

@@ -3,24 +3,27 @@ import type { Group } from '@code-pushup/models';
 import { loadAxeRules, transformRulesToGroups } from './transform.js';
 
 describe('transformRulesToGroups', () => {
-  it('should create category groups for "wcag21aa" preset', () => {
-    const groups = transformRulesToGroups(loadAxeRules('wcag21aa'));
+  it('should create category groups for "wcag21aa" preset', async () => {
+    const rules = await loadAxeRules('wcag21aa');
+    const groups = transformRulesToGroups(rules);
 
     expect(groups.length).toBeGreaterThan(5);
     expect(groups).toPartiallyContain({ slug: 'aria', title: 'ARIA' });
     expect(groups).toPartiallyContain({ slug: 'forms', title: 'Forms' });
   });
 
-  it('should create category groups for "wcag22aa" preset', () => {
-    const groups = transformRulesToGroups(loadAxeRules('wcag22aa'));
+  it('should create category groups for "wcag22aa" preset', async () => {
+    const rules = await loadAxeRules('wcag22aa');
+    const groups = transformRulesToGroups(rules);
 
     expect(groups.length).toBeGreaterThan(5);
     expect(groups).toPartiallyContain({ slug: 'aria', title: 'ARIA' });
     expect(groups).toPartiallyContain({ slug: 'forms', title: 'Forms' });
   });
 
-  it('should create category groups for "best-practice" preset', () => {
-    const groups = transformRulesToGroups(loadAxeRules('best-practice'));
+  it('should create category groups for "best-practice" preset', async () => {
+    const rules = await loadAxeRules('best-practice');
+    const groups = transformRulesToGroups(rules);
 
     expect(groups.length).toBeGreaterThan(5);
     expect(groups).toPartiallyContain({ slug: 'aria', title: 'ARIA' });
@@ -30,8 +33,9 @@ describe('transformRulesToGroups', () => {
     });
   });
 
-  it('should create category groups for "all" preset', () => {
-    const groups = transformRulesToGroups(loadAxeRules('all'));
+  it('should create category groups for "all" preset', async () => {
+    const rules = await loadAxeRules('all');
+    const groups = transformRulesToGroups(rules);
 
     expect(groups.length).toBeGreaterThan(10);
     expect(groups).toPartiallyContain({ slug: 'aria', title: 'ARIA' });
@@ -41,8 +45,9 @@ describe('transformRulesToGroups', () => {
     });
   });
 
-  it('should format category titles using display names', () => {
-    const groups = transformRulesToGroups(loadAxeRules('all'));
+  it('should format category titles using display names', async () => {
+    const rules = await loadAxeRules('all');
+    const groups = transformRulesToGroups(rules);
 
     expect(groups).toPartiallyContain({ slug: 'aria', title: 'ARIA' });
     expect(groups).toPartiallyContain({
@@ -55,22 +60,25 @@ describe('transformRulesToGroups', () => {
     });
   });
 
-  it('should not include "cat." prefix in group slugs', () => {
-    const groups = transformRulesToGroups(loadAxeRules('all'));
+  it('should not include "cat." prefix in group slugs', async () => {
+    const rules = await loadAxeRules('all');
+    const groups = transformRulesToGroups(rules);
 
     expect(groups).toSatisfyAll<Group>(({ slug }) => !slug.startsWith('cat.'));
   });
 
-  it('should assign equal weight to all audit references within groups', () => {
-    const groups = transformRulesToGroups(loadAxeRules('wcag21aa'));
+  it('should assign equal weight to all audit references within groups', async () => {
+    const rules = await loadAxeRules('wcag21aa');
+    const groups = transformRulesToGroups(rules);
 
     expect(groups).toSatisfyAll<Group>(({ refs }) =>
       refs.every(({ weight }) => weight === 1),
     );
   });
 
-  it('should filter out empty groups', () => {
-    const groups = transformRulesToGroups(loadAxeRules('all'));
+  it('should filter out empty groups', async () => {
+    const rules = await loadAxeRules('all');
+    const groups = transformRulesToGroups(rules);
 
     expect(groups).toSatisfyAll<Group>(({ refs }) => refs.length > 0);
   });
