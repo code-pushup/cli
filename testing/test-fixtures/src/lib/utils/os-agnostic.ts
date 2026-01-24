@@ -1,5 +1,14 @@
-import type { AuditOutput, AuditReport } from '@code-pushup/models';
+import type {
+  AuditOutput,
+  AuditReport,
+  IssueSource,
+  SourceFileLocation,
+} from '@code-pushup/models';
 import { osAgnosticPath } from '@code-pushup/test-utils';
+
+function isFileSource(source: IssueSource): source is SourceFileLocation {
+  return 'file' in source;
+}
 
 export function osAgnosticAudit<T extends AuditOutput | AuditReport>(
   audit: T,
@@ -12,18 +21,19 @@ export function osAgnosticAudit<T extends AuditOutput | AuditReport>(
   return {
     ...audit,
     details: {
-      issues: issues.map(issue =>
-        issue.source == null
-          ? issue
-          : {
-              ...issue,
-              source: {
-                ...issue.source,
-                file: osAgnosticPath(issue.source.file),
-              },
-              message: transformMessage(issue.message),
-            },
-      ),
+      issues: issues.map(issue => {
+        if (issue.source == null || !isFileSource(issue.source)) {
+          return issue;
+        }
+        return {
+          ...issue,
+          source: {
+            ...issue.source,
+            file: osAgnosticPath(issue.source.file),
+          },
+          message: transformMessage(issue.message),
+        };
+      }),
     },
   };
 }
