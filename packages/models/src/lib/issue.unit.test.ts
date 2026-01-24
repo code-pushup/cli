@@ -24,6 +24,32 @@ describe('issueSchema', () => {
     ).not.toThrow();
   });
 
+  it('should accept a valid issue with source URL information', () => {
+    expect(() =>
+      issueSchema.parse({
+        message: 'Image is missing alt attribute',
+        severity: 'error',
+        source: {
+          url: 'https://example.com/page',
+          snippet: '<img src="logo.png">',
+          selector: 'img.logo',
+        },
+      }),
+    ).not.toThrow();
+  });
+
+  it('should accept issue with URL source without optional fields', () => {
+    expect(() =>
+      issueSchema.parse({
+        message: 'Accessibility issue found',
+        severity: 'warning',
+        source: {
+          url: 'https://example.com',
+        },
+      }),
+    ).not.toThrow();
+  });
+
   it('should throw for a missing message', () => {
     expect(() =>
       issueSchema.parse({
