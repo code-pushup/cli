@@ -9,11 +9,12 @@ import type {
   AuditReport,
   Issue,
   IssueSeverity,
+  IssueSource,
   SourceFileLocation,
   Table,
   Tree,
 } from '@code-pushup/models';
-import { pluralizeToken } from '../formatting.js';
+import { UNICODE_ELLIPSIS, pluralizeToken } from '../formatting.js';
 import { formatAsciiTree } from '../text-formats/ascii/tree.js';
 import {
   columnsToStringArray,
@@ -27,6 +28,7 @@ import {
   getGitHubBaseUrl,
   getGitLabBaseUrl,
 } from './environment-type.js';
+import { isUrlSource } from './type-guards.js';
 import type { MdReportOptions } from './types.js';
 import { compareIssueSeverity } from './utils.js';
 
@@ -111,6 +113,19 @@ export function linkToLocalSourceForIde(
   }
 
   return md.link(formatFileLink(file, position, outputDir), md.code(file));
+}
+
+/**
+ * Link to source (handles both file and URL sources)
+ */
+export function linkToSource(
+  source: IssueSource,
+  options?: Pick<MdReportOptions, 'outputDir'>,
+): InlineText {
+  if (isUrlSource(source)) {
+    return md.link(source.url, source.url);
+  }
+  return linkToLocalSourceForIde(source, options);
 }
 
 export function formatSourceLine(
@@ -211,4 +226,9 @@ export function wrapTags(text: string | undefined): string {
     return '';
   }
   return text.replace(/<[a-z][a-z\d]*[^>]*>/gi, '`$&`');
+}
+
+export function formatSelectorLocation(selector: string): string {
+  const lastSegment = selector.split(/\s*>>?\s*/).at(-1) ?? selector;
+  return selector === lastSegment ? selector : UNICODE_ELLIPSIS + lastSegment;
 }

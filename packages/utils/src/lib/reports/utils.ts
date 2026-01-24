@@ -7,8 +7,11 @@ import type {
   IssueSeverity as CliIssueSeverity,
   Group,
   Issue,
+  IssueSource,
+  SourceFileLocation,
 } from '@code-pushup/models';
 import { SCORE_COLOR_RANGE } from './constants.js';
+import { isFileSource } from './type-guards.js';
 import type {
   ScoreFilter,
   ScoredReport,
@@ -241,6 +244,10 @@ export function getPluginNameFromSlug(
   );
 }
 
+function getSourceIdentifier(source: IssueSource): string {
+  return isFileSource(source) ? source.file : source.url;
+}
+
 export function compareIssues(a: Issue, b: Issue): number {
   if (a.severity !== b.severity) {
     return -compareIssueSeverity(a.severity, b.severity);
@@ -251,15 +258,22 @@ export function compareIssues(a: Issue, b: Issue): number {
   if (a.source && !b.source) {
     return 1;
   }
-  if (a.source?.file !== b.source?.file) {
-    return a.source?.file.localeCompare(b.source?.file || '') ?? 0;
+  if (a.source && b.source) {
+    const aId = getSourceIdentifier(a.source);
+    const bId = getSourceIdentifier(b.source);
+    if (aId !== bId) {
+      return aId.localeCompare(bId);
+    }
+    if (isFileSource(a.source) && isFileSource(b.source)) {
+      return compareSourceFilePosition(a.source.position, b.source.position);
+    }
   }
-  return compareSourceFilePosition(a.source?.position, b.source?.position);
+  return 0;
 }
 
 function compareSourceFilePosition(
-  a: NonNullable<Issue['source']>['position'],
-  b: NonNullable<Issue['source']>['position'],
+  a: SourceFileLocation['position'],
+  b: SourceFileLocation['position'],
 ): number {
   if (!a && b) {
     return -1;
