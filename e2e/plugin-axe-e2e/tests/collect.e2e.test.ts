@@ -11,6 +11,15 @@ import {
 } from '@code-pushup/test-utils';
 import { executeProcess, readJsonFile } from '@code-pushup/utils';
 
+function sanitizeReportPaths(report: Report): Report {
+  const reportJson = JSON.stringify(report);
+  const sanitized = reportJson.replace(
+    /\/(?:[^/\s"]+\/)+index\.html/g,
+    '/<TEST_DIR>/index.html',
+  );
+  return JSON.parse(sanitized);
+}
+
 describe('PLUGIN collect report with axe-plugin NPM package', () => {
   const fixturesDir = path.join(
     'e2e',
@@ -49,6 +58,8 @@ describe('PLUGIN collect report with axe-plugin NPM package', () => {
     );
 
     expect(() => reportSchema.parse(report)).not.toThrow();
-    expect(omitVariableReportData(report)).toMatchSnapshot();
+    expect(
+      omitVariableReportData(sanitizeReportPaths(report)),
+    ).toMatchSnapshot();
   });
 });
