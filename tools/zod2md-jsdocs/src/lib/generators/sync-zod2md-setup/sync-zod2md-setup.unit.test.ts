@@ -83,7 +83,6 @@ describe('sync-zod2md-setup generator', () => {
   it('should fail if missing tsconfig file', async () => {
     tree.delete(`${projectRoot}/tsconfig.json`);
     tree.delete(`${projectRoot}/tsconfig.lib.json`);
-    // @TODO this also contains the target issues.. this means the beforeEach setup of targets if not working
     await expect(syncZod2mdSetupGenerator(tree)).resolves.toStrictEqual({
       outOfSyncMessage: expect.stringContaining(
         `Missing tsconfig in:
