@@ -4,8 +4,6 @@ import * as ts from 'typescript';
 import type { Config } from 'zod2md';
 import { formatArrayToLinesOfJsString } from './utils.js';
 
-export const DEFAULT_IMPORTS = ["import type { Config } from 'zod2md';"];
-
 export type GenerateZod2MdConfigOptions = Config;
 
 export function getFirstExistingConfig(tree: Tree, projectRoot: string) {
@@ -36,7 +34,6 @@ export function generateZod2MdConfig(
     } = options ?? {};
 
     generateFiles(tree, path.join(__dirname, 'files'), root, {
-      fileImports: formatArrayToLinesOfJsString(DEFAULT_IMPORTS),
       entry,
       format,
       title,

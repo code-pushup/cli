@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import stripAnsi from 'strip-ansi';
 import { afterEach, describe, expect, it } from 'vitest';
 import { formatArrayToLinesOfJsString } from './utils.js';
-import { DEFAULT_IMPORTS, generateZod2MdConfig } from './zod2md-config.js';
+import { generateZod2MdConfig } from './zod2md-config.js';
 
 describe('generateZod2MdConfig options', () => {
   let tree: devKit.Tree;
@@ -36,7 +36,6 @@ describe('generateZod2MdConfig options', () => {
       expect.any(String),
       expect.any(String),
       expect.objectContaining({
-        fileImports: formatArrayToLinesOfJsString(DEFAULT_IMPORTS),
         entry: 'test-app/src/main.ts',
         format: 'esm',
         title: 'App Types',
@@ -98,7 +97,6 @@ describe('generateZod2MdConfig options', () => {
       expect.any(String),
       expect.any(String),
       {
-        fileImports: formatArrayToLinesOfJsString(DEFAULT_IMPORTS),
         entry: 'test-app/src/index.ts',
         format: 'esm',
         title: 'test-app reference',

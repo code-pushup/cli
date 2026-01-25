@@ -9,6 +9,7 @@
   },
   "include": ["src/**/*.ts"],
   "exclude": [
+    "**/__snapshots__/**",
     "vite.config.ts",
     "vite.config.mts",
     "vitest.config.ts",
