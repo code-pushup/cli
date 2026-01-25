@@ -31,6 +31,5 @@ Show what will be generated without writing to disk:
 | ----------------- | --------------------------- | ------------------------------------------------------ |
 | **--project**     | `string` (REQUIRED)         | The name of the project.                               |
 | **--targetName**  | `string` (DEFAULT 'zod2md') | The id used to identify a target in your project.json. |
-| **--bin**         | `string`                    | Path to Code PushUp CLI                                |
 | **--skipProject** | `boolean` (DEFAULT false)   | Skip adding the target to `project.json`.              |
 | **--skipConfig**  | `boolean` (DEFAULT false)   | Skip adding the `zod2md.config.ts` to project root.    |
