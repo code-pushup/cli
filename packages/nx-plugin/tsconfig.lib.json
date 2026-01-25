@@ -1,52 +1,9 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "composite": true,
-    "declarationMap": true,
-    "emitDeclarationOnly": true,
-    "importHelpers": true,
-    "isolatedModules": true,
-    "lib": ["es2023"],
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "noEmitOnError": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitOverride": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "target": "es2022",
-    "allowSyntheticDefaultImports": true,
-    "verbatimModuleSyntax": false,
     "outDir": "../../dist/out-tsc",
     "declaration": true,
-    "types": ["node"],
-    "paths": {
-      "@code-pushup/axe-plugin": ["../plugin-axe/src/index.ts"],
-      "@code-pushup/ci": ["../ci/src/index.ts"],
-      "@code-pushup/cli": ["../cli/src/index.ts"],
-      "@code-pushup/core": ["../core/src/index.ts"],
-      "@code-pushup/coverage-plugin": ["../plugin-coverage/src/index.ts"],
-      "@code-pushup/eslint-plugin": ["../plugin-eslint/src/index.ts"],
-      "@code-pushup/js-packages-plugin": ["../plugin-js-packages/src/index.ts"],
-      "@code-pushup/jsdocs-plugin": ["../plugin-jsdocs/src/index.ts"],
-      "@code-pushup/lighthouse-plugin": ["../plugin-lighthouse/src/index.ts"],
-      "@code-pushup/models": ["../models/src/index.ts"],
-      "@code-pushup/nx-plugin": ["./src/index.ts"],
-      "@code-pushup/test-fixtures": [
-        "../../testing/test-fixtures/src/index.ts"
-      ],
-      "@code-pushup/test-nx-utils": [
-        "../../testing/test-nx-utils/src/index.ts"
-      ],
-      "@code-pushup/test-setup": ["../../testing/test-setup/src/index.ts"],
-      "@code-pushup/test-setup-config": [
-        "../../testing/test-setup-config/src/index.ts"
-      ],
-      "@code-pushup/test-utils": ["../../testing/test-utils/src/index.ts"],
-      "@code-pushup/typescript-plugin": ["../plugin-typescript/src/index.ts"],
-      "@code-pushup/utils": ["../utils/src/index.ts"]
-    }
+    "types": ["node"]
   },
   "include": ["src/**/*.ts"],
   "exclude": [
@@ -56,22 +13,5 @@
     "src/**/*.test.ts",
     "src/**/*.mock.ts",
     "test/**/*.ts"
-  ],
-  "references": [
-    {
-      "path": "../../testing/test-setup-config/tsconfig.lib.json"
-    },
-    {
-      "path": "../../testing/test-utils/tsconfig.lib.json"
-    },
-    {
-      "path": "../../testing/test-nx-utils/tsconfig.lib.json"
-    },
-    {
-      "path": "../models/tsconfig.lib.json"
-    },
-    {
-      "path": "../utils/tsconfig.lib.json"
-    }
   ]
 }

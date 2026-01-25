@@ -1,8 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
+    "outDir": "../../dist/out-tsc",
     "declaration": true,
     "types": ["node"]
   },
@@ -13,19 +12,5 @@
     "src/**/*.test.ts",
     "src/**/*.mock.ts",
     "mocks/**/*.ts"
-  ],
-  "references": [
-    {
-      "path": "../../testing/test-setup-config/tsconfig.lib.json"
-    },
-    {
-      "path": "../../testing/test-utils/tsconfig.lib.json"
-    },
-    {
-      "path": "../models/tsconfig.lib.json"
-    },
-    {
-      "path": "../utils/tsconfig.lib.json"
-    }
   ]
 }

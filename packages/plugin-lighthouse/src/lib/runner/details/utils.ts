@@ -1,5 +1,4 @@
 import ansis from 'ansis';
-// @ts-ignore - lighthouse types not properly exported in v12
 import type Details from 'lighthouse/types/lhr/audit-details';
 import { stringifyError } from '@code-pushup/utils';
 

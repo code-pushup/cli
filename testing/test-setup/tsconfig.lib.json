@@ -11,16 +11,5 @@
     "src/vitest.d.ts",
     "src/**/*.unit.test.ts",
     "src/**/*.int.test.ts"
-  ],
-  "references": [
-    {
-      "path": "../test-setup-config/tsconfig.lib.json"
-    },
-    {
-      "path": "../../packages/utils/tsconfig.lib.json"
-    },
-    {
-      "path": "../test-utils/tsconfig.lib.json"
-    }
   ]
 }

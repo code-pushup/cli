@@ -1,4 +1,3 @@
-// @ts-ignore - lighthouse types not properly exported
 import type Details from 'lighthouse/types/lhr/audit-details';
 import type {
   AuditDetails,

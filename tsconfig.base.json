@@ -1,57 +1,54 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "composite": true,
-    "declarationMap": true,
-    "emitDeclarationOnly": true,
-    "importHelpers": true,
-    "isolatedModules": true,
-    "lib": ["es2023"],
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "noEmitOnError": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitOverride": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "skipLibCheck": true,
+    "rootDir": ".",
+    "sourceMap": true,
     "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": false,
     "target": "es2022",
-    "customConditions": ["@code-pushup/source"],
+    "module": "esnext",
+    "lib": ["es2023", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "verbatimModuleSyntax": true,
     "paths": {
-      "@code-pushup/axe-plugin": ["./packages/plugin-axe/src/index.ts"],
-      "@code-pushup/ci": ["./packages/ci/src/index.ts"],
-      "@code-pushup/cli": ["./packages/cli/src/index.ts"],
-      "@code-pushup/core": ["./packages/core/src/index.ts"],
-      "@code-pushup/coverage-plugin": [
-        "./packages/plugin-coverage/src/index.ts"
-      ],
+      "@code-pushup/axe-plugin": ["packages/plugin-axe/src/index.ts"],
+      "@code-pushup/ci": ["packages/ci/src/index.ts"],
+      "@code-pushup/cli": ["packages/cli/src/index.ts"],
+      "@code-pushup/core": ["packages/core/src/index.ts"],
+      "@code-pushup/coverage-plugin": ["packages/plugin-coverage/src/index.ts"],
       "@code-pushup/eslint-formatter-multi": [
-        "./tools/eslint-formatter-multi/src/index.ts"
+        "tools/eslint-formatter-multi/src/index.ts"
       ],
-      "@code-pushup/eslint-plugin": ["./packages/plugin-eslint/src/index.ts"],
+      "@code-pushup/eslint-plugin": ["packages/plugin-eslint/src/index.ts"],
       "@code-pushup/js-packages-plugin": [
-        "./packages/plugin-js-packages/src/index.ts"
+        "packages/plugin-js-packages/src/index.ts"
       ],
-      "@code-pushup/jsdocs-plugin": ["./packages/plugin-jsdocs/src/index.ts"],
+      "@code-pushup/jsdocs-plugin": ["packages/plugin-jsdocs/src/index.ts"],
       "@code-pushup/lighthouse-plugin": [
-        "./packages/plugin-lighthouse/src/index.ts"
+        "packages/plugin-lighthouse/src/index.ts"
       ],
-      "@code-pushup/models": ["./packages/models/src/index.ts"],
-      "@code-pushup/nx-plugin": ["./packages/nx-plugin/src/index.ts"],
-      "@code-pushup/test-fixtures": ["./testing/test-fixtures/src/index.ts"],
-      "@code-pushup/test-nx-utils": ["./testing/test-nx-utils/src/index.ts"],
-      "@code-pushup/test-setup": ["./testing/test-setup/src/index.ts"],
+      "@code-pushup/models": ["packages/models/src/index.ts"],
+      "@code-pushup/nx-plugin": ["packages/nx-plugin/src/index.ts"],
+      "@code-pushup/test-fixtures": ["testing/test-fixtures/src/index.ts"],
+      "@code-pushup/test-nx-utils": ["testing/test-nx-utils/src/index.ts"],
+      "@code-pushup/test-setup": ["testing/test-setup/src/index.ts"],
       "@code-pushup/test-setup-config": [
-        "./testing/test-setup-config/src/index.ts"
+        "testing/test-setup-config/src/index.ts"
       ],
-      "@code-pushup/test-utils": ["./testing/test-utils/src/index.ts"],
+      "@code-pushup/test-utils": ["testing/test-utils/src/index.ts"],
       "@code-pushup/typescript-plugin": [
-        "./packages/plugin-typescript/src/index.ts"
+        "packages/plugin-typescript/src/index.ts"
       ],
-      "@code-pushup/utils": ["./packages/utils/src/index.ts"]
+      "@code-pushup/utils": ["packages/utils/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -14,27 +14,6 @@
   "include": [],
   "references": [
     {
-      "path": "../../testing/test-setup-config"
-    },
-    {
-      "path": "../../packages/utils"
-    },
-    {
-      "path": "../../testing/test-utils"
-    },
-    {
-      "path": "../../testing/test-nx-utils"
-    },
-    {
-      "path": "../../testing/test-fixtures"
-    },
-    {
-      "path": "../../packages/models"
-    },
-    {
-      "path": "../../packages/plugin-lighthouse"
-    },
-    {
       "path": "./tsconfig.test.json"
     }
   ]

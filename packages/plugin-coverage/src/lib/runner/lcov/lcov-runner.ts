@@ -101,7 +101,7 @@ async function parseLcovFile(
   return [
     resultsPath,
     parsedRecords.map(
-      (record: any): LCOVRecord => ({
+      (record): LCOVRecord => ({
         title: record.title,
         file:
           typeof result === 'string' || result.pathToProject == null

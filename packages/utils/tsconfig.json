@@ -1,9 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "./src",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "module": "es2022",
     "types": ["vitest"]
   },
   "files": [],

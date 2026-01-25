@@ -5,29 +5,12 @@
     "declaration": true,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "package.json"],
+  "include": ["src/**/*.ts"],
   "exclude": [
     "vitest.unit.config.ts",
     "vitest.int.config.ts",
     "src/**/*.test.ts",
     "src/**/*.mock.ts",
     "mocks/**/*.ts"
-  ],
-  "references": [
-    {
-      "path": "../../testing/test-setup-config/tsconfig.lib.json"
-    },
-    {
-      "path": "../../testing/test-utils/tsconfig.lib.json"
-    },
-    {
-      "path": "../../testing/test-fixtures/tsconfig.lib.json"
-    },
-    {
-      "path": "../models/tsconfig.lib.json"
-    },
-    {
-      "path": "../utils/tsconfig.lib.json"
-    }
   ]
 }

@@ -1,14 +1,8 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
 import { describe, expect, it } from 'vitest';
 import { materializeTree } from './tree.js';
-
-// Import the testing utility with a type assertion to work around module resolution issues
-// eslint-disable-next-line @typescript-eslint/no-restricted-imports
-const { createTreeWithEmptyWorkspace } =
-  require('nx/src/generators/testing-utils/create-tree-with-empty-workspace') as {
-    createTreeWithEmptyWorkspace: (opts?: { layout?: 'apps-libs' }) => any;
-  };
 
 describe('materializeTree', () => {
   const baseDir = path.join('tmp', 'materialize-tree');

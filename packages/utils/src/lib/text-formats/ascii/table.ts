@@ -160,7 +160,7 @@ function wrapText(text: string, width: number | undefined): string {
   if (!width || getTextWidth(text) <= width) {
     return text;
   }
-  if (text !== (ansis as { strip: (text: string) => string }).strip(text)) {
+  if (text !== ansis.strip(text)) {
     return wrapAnsi(text, width, { hard: true });
   }
   const words = extractWords(text);
@@ -187,10 +187,10 @@ function getTextWidth(text: string): number {
 }
 
 function extractWords(text: string): string[] {
-  return (ansis as { strip: (text: string) => string })
+  return ansis
     .strip(text)
     .split(' ')
-    .map((word: string) => word.trim());
+    .map(word => word.trim());
 }
 
 function partitionString(text: string, maxChars: number): string[] {

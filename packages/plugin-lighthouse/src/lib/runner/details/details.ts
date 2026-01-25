@@ -1,8 +1,6 @@
 import ansis from 'ansis';
 import type { FormattedIcu } from 'lighthouse';
-// @ts-ignore - lighthouse types not properly exported in v12
 import type Details from 'lighthouse/types/lhr/audit-details';
-// @ts-ignore - lighthouse types not properly exported in v12
 import type { Result } from 'lighthouse/types/lhr/audit-result';
 import type { AuditDetails } from '@code-pushup/models';
 import { logger } from '@code-pushup/utils';

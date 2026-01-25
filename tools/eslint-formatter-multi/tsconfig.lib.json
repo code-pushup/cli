@@ -19,13 +19,5 @@
     "src/**/*.spec.js",
     "src/**/*.test.jsx",
     "src/**/*.spec.jsx"
-  ],
-  "references": [
-    {
-      "path": "../../testing/test-setup-config/tsconfig.lib.json"
-    },
-    {
-      "path": "../../testing/test-utils/tsconfig.lib.json"
-    }
   ]
 }

@@ -1,6 +1,5 @@
 import ansis from 'ansis';
 import type { IcuMessage } from 'lighthouse';
-// @ts-ignore - lighthouse types not properly exported in v12
 import type Details from 'lighthouse/types/lhr/audit-details';
 import {
   formatBytes,

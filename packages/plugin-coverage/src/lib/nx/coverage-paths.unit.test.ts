@@ -1,10 +1,10 @@
+import type { JestExecutorOptions } from '@nx/jest/src/executors/jest/schema';
 import type { VitestExecutorOptions } from '@nx/vite/executors';
 import { vol } from 'memfs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import type { CoverageResult } from '../config.js';
-import type { JestExecutorOptions } from './coverage-paths.js';
 import {
   type JestCoverageConfig,
   type VitestCoverageConfig,

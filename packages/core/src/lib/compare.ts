@@ -140,7 +140,7 @@ async function fetchPortalComparisonLink(
   if (!portalClient) {
     return;
   }
-  const { getPortalComparisonLink } = portalClient;
+  const { PortalOperationError, getPortalComparisonLink } = portalClient;
   try {
     return await getPortalComparisonLink({
       server,
@@ -153,10 +153,11 @@ async function fetchPortalComparisonLink(
       },
     });
   } catch (error) {
-    logger.warn(
-      `Failed to fetch portal comparison link - ${(error as Error).message || 'Unknown error'}`,
-    );
-    return undefined;
+    if (error instanceof PortalOperationError) {
+      logger.warn(`Failed to fetch portal comparison link - ${error.message}`);
+      return undefined;
+    }
+    throw error;
   }
 }
 

@@ -1,4 +1,3 @@
-// @ts-ignore - lighthouse types not properly exported in v12
 import type Details from 'lighthouse/types/lhr/audit-details';
 import {
   type Table,
@@ -23,9 +22,7 @@ export function parseOpportunityToAuditDetailsTable(
     return validate(tableSchema(), {
       title: 'Opportunity',
       columns: parseTableColumns(headings),
-      rows: items.map((row: any) =>
-        parseOpportunityItemToTableRow(row, headings),
-      ),
+      rows: items.map(row => parseOpportunityItemToTableRow(row, headings)),
     });
   } catch (error) {
     throw new LighthouseAuditDetailsParsingError(
@@ -76,6 +73,6 @@ export function parseOpportunityEntry(
     case 'wastedMs':
       return [key, formatDuration(Number(value))];
     default:
-      return parseTableEntry([key as string, value], valueType);
+      return parseTableEntry([key, value], valueType);
   }
 }

@@ -3,20 +3,8 @@
   "compilerOptions": {
     "outDir": "../dist/out-tsc",
     "declaration": true,
-    "types": ["node"],
-    "skipLibCheck": true
+    "types": ["node"]
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["vitest.unit.config.ts", "src/**/*.unit.test.ts"],
-  "references": [
-    {
-      "path": "../test-setup-config/tsconfig.lib.json"
-    },
-    {
-      "path": "../test-utils/tsconfig.lib.json"
-    },
-    {
-      "path": "../../packages/utils/tsconfig.lib.json"
-    }
-  ]
+  "exclude": ["vitest.unit.config.ts", "src/**/*.unit.test.ts"]
 }

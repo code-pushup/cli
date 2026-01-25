@@ -1,5 +1,5 @@
 import type { CategoryRef, CoreConfig } from '@code-pushup/models';
-import type { Filterables } from './filter.model.js';
+import type { Filterables } from './filter.model';
 
 export function applyFilters<T>(
   items: T[],

@@ -4,9 +4,7 @@ import log from 'lighthouse-logger';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
 import experimentalConfig from 'lighthouse/core/config/experimental-config.js';
 import perfConfig from 'lighthouse/core/config/perf-config.js';
-// @ts-ignore - lighthouse types not properly exported in v12
 import type Details from 'lighthouse/types/lhr/audit-details';
-// @ts-ignore - lighthouse types not properly exported in v12
 import type { Result } from 'lighthouse/types/lhr/audit-result';
 import os from 'node:os';
 import path from 'node:path';
