@@ -5,11 +5,13 @@
   "type": "commonjs",
   "main": "./src/index.js",
   "dependencies": {
+    "@nx/devkit": "22.3.3",
     "ts-patch": "^3.3.0",
     "typescript": "5.7.3",
-    "@nx/devkit": "22.3.3"
+    "zod2md": "^0.2.4"
   },
   "files": [
     "src"
-  ]
+  ],
+  "generators": "./generators.json"
 }

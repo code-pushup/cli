@@ -3,14 +3,10 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/models/src",
   "projectType": "library",
+  "implicitDependencies": ["zod2md-jsdocs"],
   "targets": {
     "build": {
-      "dependsOn": [
-        "^build",
-        "generate-docs",
-        { "projects": "zod2md-jsdocs", "target": "build" },
-        { "projects": "zod2md-jsdocs", "target": "ts-patch" }
-      ]
+      "dependsOn": ["^build", "generate-docs"]
     },
     "lint": {},
     "unit-test": {},

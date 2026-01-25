@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "SyncZod2mdSetup",
+  "title": "",
+  "type": "object",
+  "properties": {}
+}
