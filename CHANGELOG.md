@@ -1,3 +1,13 @@
+## 0.108.1 (2026-01-20)
+
+### 🩹 Fixes
+
+- **utils:** unique names for parallel plugin execution ([#1222](https://github.com/code-pushup/cli/pull/1222))
+
+### ❤️ Thank You
+
+- Nicolas Beaussart @beaussan
+
 ## 0.108.0 (2026-01-16)
 
 ### 🚀 Features
