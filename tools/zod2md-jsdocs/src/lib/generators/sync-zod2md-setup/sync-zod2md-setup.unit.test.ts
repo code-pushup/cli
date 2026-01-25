@@ -1,13 +1,12 @@
 import * as devkit from '@nx/devkit';
 import { updateJson } from '@nx/devkit';
-import * as path from 'node:path';
 import type { NxProjectPackageJsonConfiguration } from 'nx/src/utils/package-json';
 import { expect } from 'vitest';
 import { generateWorkspaceAndProject } from '@code-pushup/test-nx-utils';
 import {
   GENERATE_DOCS_TARGET_NAME,
   PATCH_TS_TARGET_NAME,
-} from '../../plugin/constants';
+} from '../../plugin/constants.js';
 import { addZod2MdTransformToTsConfig } from '../configuration/tsconfig.js';
 import { generateZod2MdConfig } from '../configuration/zod2md-config.js';
 import { syncZod2mdSetupGenerator } from './sync-zod2md-setup.js';
@@ -25,8 +24,8 @@ describe('sync-zod2md-setup generator', () => {
   const projectConfig: NxProjectPackageJsonConfiguration = {
     root: projectRoot,
     targets: {
-      ['build']: {
-        dependsOn: ['build', GENERATE_DOCS_TARGET_NAME, PATCH_TS_TARGET_NAME],
+      build: {
+        dependsOn: ['^build', GENERATE_DOCS_TARGET_NAME, PATCH_TS_TARGET_NAME],
       },
       [GENERATE_DOCS_TARGET_NAME]: {
         executor: 'zod2md-jsdocs:zod2md',
@@ -36,7 +35,6 @@ describe('sync-zod2md-setup generator', () => {
         outputs: ['{projectRoot}/docs'],
       },
     },
-    files: [],
     tags: [],
   };
 
@@ -100,8 +98,12 @@ describe('sync-zod2md-setup generator', () => {
       ...config,
       name: projectName,
       targets: {
-        ['build']: {
-          dependsOn: ['build', GENERATE_DOCS_TARGET_NAME, PATCH_TS_TARGET_NAME],
+        build: {
+          dependsOn: [
+            '^build',
+            GENERATE_DOCS_TARGET_NAME,
+            PATCH_TS_TARGET_NAME,
+          ],
         },
       },
     }));
@@ -120,8 +122,8 @@ describe('sync-zod2md-setup generator', () => {
       name: projectName,
       targets: {
         ...projectConfig.targets,
-        ['build']: {
-          dependsOn: ['build'],
+        build: {
+          dependsOn: ['^build'],
         },
       },
     }));

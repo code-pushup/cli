@@ -2,7 +2,6 @@ import { type Tree, generateFiles, logger } from '@nx/devkit';
 import * as path from 'node:path';
 import * as ts from 'typescript';
 import type { Config } from 'zod2md';
-import { formatArrayToLinesOfJsString } from './utils.js';
 
 export type GenerateZod2MdConfigOptions = Config;
 

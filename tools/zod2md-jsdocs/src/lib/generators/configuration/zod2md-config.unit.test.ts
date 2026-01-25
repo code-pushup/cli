@@ -3,7 +3,6 @@ import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import * as path from 'node:path';
 import stripAnsi from 'strip-ansi';
 import { afterEach, describe, expect, it } from 'vitest';
-import { formatArrayToLinesOfJsString } from './utils.js';
 import { generateZod2MdConfig } from './zod2md-config.js';
 
 describe('generateZod2MdConfig options', () => {
