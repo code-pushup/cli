@@ -1,4 +1,5 @@
 import { performance } from 'node:perf_hooks';
+import { threadId } from 'node:worker_threads';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MockTraceEventFileSink } from '../../../mocks/sink.mock.js';
 import type { PerformanceEntryEncoder } from '../performance-observer.js';
@@ -9,8 +10,19 @@ import {
   type NodejsProfilerOptions,
   Profiler,
   type ProfilerOptions,
+  getProfilerId,
 } from './profiler.js';
 
+describe('getProfilerId', () => {
+  it('should generate a unique id per process', () => {
+    expect(getProfilerId()).toBe(
+      `${Math.round(performance.timeOrigin)}.${process.pid}.${threadId}.1`,
+    );
+    expect(getProfilerId()).toBe(
+      `${Math.round(performance.timeOrigin)}.${process.pid}.${threadId}.2`,
+    );
+  });
+});
 describe('Profiler', () => {
   const getProfiler = (overrides?: Partial<ProfilerOptions>) =>
     new Profiler({

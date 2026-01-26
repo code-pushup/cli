@@ -6,6 +6,7 @@ import {
 import { isEnvVarEnabled } from './env.js';
 import { PROFILER_DEBUG_ENV_VAR } from './profiler/constants.js';
 import type { Buffered, Observer, Sink } from './sink-source.type';
+import type { AppendableSink } from './wal.js';
 
 /**
  * Encoder that converts PerformanceEntry to domain events.
@@ -163,7 +164,7 @@ export type PerformanceObserverOptions<T> = {
  * @implements {Observer} - Lifecycle management interface
  * @implements {Buffered} - Queue statistics interface
  */
-export class PerformanceObserverSink<T> implements Observer, Buffered {
+export class PerformanceObserverSink<T> {
   /** Encoder function for transforming PerformanceEntry objects into domain types */
   #encodePerfEntry: PerformanceEntryEncoder<T>;
 
@@ -352,7 +353,7 @@ export class PerformanceObserverSink<T> implements Observer, Buffered {
 
     this.#queue.forEach(item => {
       try {
-        this.#sink.write(item);
+        this.#sink.append(item);
         this.#written++;
       } catch {
         failedItems.push(item);

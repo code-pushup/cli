@@ -1,6 +1,6 @@
 import { type PerformanceEntry, performance } from 'node:perf_hooks';
 import type { MockedFunction } from 'vitest';
-import { MockSink } from '../../mocks/sink.mock';
+import { MockFileSink } from '../../mocks/sink.mock';
 import {
   type PerformanceObserverOptions,
   PerformanceObserverSink,
@@ -8,14 +8,14 @@ import {
 
 describe('PerformanceObserverSink', () => {
   let encode: MockedFunction<(entry: PerformanceEntry) => string[]>;
-  let sink: MockSink;
+  let sink: MockFileSink;
   let options: PerformanceObserverOptions<string>;
 
   const awaitObserverCallback = () =>
     new Promise(resolve => setTimeout(resolve, 10));
 
   beforeEach(() => {
-    sink = new MockSink();
+    sink = new MockFileSink();
     sink.open();
     encode = vi.fn((entry: PerformanceEntry) => [
       `${entry.name}:${entry.entryType}`,

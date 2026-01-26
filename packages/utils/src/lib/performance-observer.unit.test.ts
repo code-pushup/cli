@@ -1,7 +1,7 @@
 import { type PerformanceEntry, performance } from 'node:perf_hooks';
 import type { MockedFunction } from 'vitest';
 import { MockPerformanceObserver } from '@code-pushup/test-utils';
-import { MockSink } from '../../mocks/sink.mock';
+import { MockFileSink } from '../../mocks/sink.mock';
 import {
   DEFAULT_FLUSH_THRESHOLD,
   DEFAULT_MAX_QUEUE_SIZE,
@@ -9,6 +9,7 @@ import {
   PerformanceObserverSink,
   validateFlushThreshold,
 } from './performance-observer.js';
+import type { Codec } from './wal.js';
 
 describe('validateFlushThreshold', () => {
   it.each([
@@ -55,12 +56,12 @@ describe('validateFlushThreshold', () => {
 
 describe('PerformanceObserverSink', () => {
   let encodePerfEntry: MockedFunction<(entry: PerformanceEntry) => string[]>;
-  let sink: MockSink;
+  let sink: MockFileSink;
   let options: PerformanceObserverOptions<string>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    sink = new MockSink();
+    sink = new MockFileSink();
     sink.open();
     encodePerfEntry = vi.fn((entry: PerformanceEntry) => [
       `${entry.name}:${entry.entryType}`,
@@ -661,6 +662,28 @@ describe('PerformanceObserverSink', () => {
         written: 3,
       }),
     );
+  });
+
+  it('accepts custom sinks with append method', () => {
+    const collectedItems: string[] = [];
+    const customSink = {
+      // eslint-disable-next-line functional/immutable-data
+      append: (item: string) => collectedItems.push(item),
+    };
+
+    const observer = new PerformanceObserverSink({
+      sink: customSink,
+      encode: (entry: PerformanceEntry) => [`${entry.name}:${entry.duration}`],
+    });
+
+    observer.subscribe();
+
+    const mockObserver = MockPerformanceObserver.lastInstance();
+    mockObserver?.emitMark('test-mark');
+
+    observer.flush();
+
+    expect(collectedItems).toContain('test-mark:0');
   });
 
   it('tracks addedSinceLastFlush counter correctly', () => {
