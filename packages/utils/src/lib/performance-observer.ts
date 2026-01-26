@@ -288,7 +288,7 @@ export class PerformanceObserverSink<T> implements Observer, Buffered {
             items.forEach(item => {
               // ❌ MAX QUEUE OVERFLOW
               if (this.#queue.length >= this.#maxQueueSize) {
-                this.#dropped++; // Item are lost forever
+                this.#dropped++; // Items are lost forever
                 return;
               }
 
