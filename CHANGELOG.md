@@ -1,3 +1,15 @@
+## 0.109.0 (2026-01-26)
+
+### 🚀 Features
+
+- **models:** add URL source type for issues ([ef5a5be1](https://github.com/code-pushup/cli/commit/ef5a5be1))
+- **plugin-axe:** add source field to issues ([fe6f94ea](https://github.com/code-pushup/cli/commit/fe6f94ea))
+- **utils:** add type guards and URL source formatting ([cde6309e](https://github.com/code-pushup/cli/commit/cde6309e))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
 ## 0.108.2 (2026-01-26)
 
 ### 🩹 Fixes
