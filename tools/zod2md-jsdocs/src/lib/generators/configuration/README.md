@@ -1,16 +1,16 @@
 # Configuration Generator
 
-#### @zod2md/nx-plugin:configuration
+#### @tooling/zod2md-jsdocs:configuration
 
 ## Usage
 
-`nx generate @zod2md/nx-plugin:configuration`
+`nx generate @tooling/zod2md-jsdocs:configuration`
 
 By default, the Nx plugin will search for existing configuration files. If they are not present it creates a `zod2md.config.ts` and adds a target to your `project.json` file.
 
 You can specify the project explicitly as follows:
 
-`nx g @zod2md/nx-plugin:configuration <project-name>`
+`nx g @tooling/zod2md-jsdocs:configuration <project-name>`
 
 ```text
 Root/

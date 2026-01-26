@@ -1,6 +1,6 @@
 # Zod2Md Nx Plugin
 
-**Package:** `@zod2md/nx-plugin`  
+**Package:** `@tooling/zod2md-jsdocs`  
 **Plugin name:** `zod2md-jsdocs-nx-plugin`
 
 This Nx plugin automatically wires **Zod → Markdown documentation generation**

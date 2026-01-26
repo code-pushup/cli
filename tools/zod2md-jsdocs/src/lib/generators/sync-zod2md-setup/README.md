@@ -1,6 +1,6 @@
 # Sync Zod2Md Setup Generator (Nx sync generator)
 
-**Package:** `@zod2md/nx-plugin`  
+**Package:** `@tooling/zod2md-jsdocs`  
 **Generator:** `sync-zod2md-setup`
 
 ---
@@ -8,7 +8,7 @@
 ## Usage
 
 ```bash
-nx generate @zod2md/nx-plugin:sync-zod2md-setup
+nx generate @tooling/zod2md-jsdocs:sync-zod2md-setup
 ```
 
 The sync generator automatically targets **all projects that already contain a**
@@ -70,22 +70,30 @@ Root/
 You can still scope execution to a single project:
 
 ```bash
-nx g @zod2md/nx-plugin:sync-zod2md-setup project-name
+nx g @tooling/zod2md-jsdocs:sync-zod2md-setup project-name
 ```
 
 ---
 
-## Registering / previewing the generator
+## Previewing the generator
 
 To preview what the generator would change without applying modifications:
 
 ```bash
-nx g @zod2md/nx-plugin:sync-zod2md-setup --dry-run
+nx g @tooling/zod2md-jsdocs:sync-zod2md-setup --dry-run
 ```
 
 This is especially useful when integrating the sync generator into CI or workspace maintenance workflows.
 
 ---
+
+## Registering / Testing the generator
+
+To register the generator in your workspace:
+
+```bash
+nx g @tooling/zod2md-jsdocs:sync-zod2md-setup --register
+```
 
 ## Notes
 
