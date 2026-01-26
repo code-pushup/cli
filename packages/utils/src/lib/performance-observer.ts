@@ -208,8 +208,7 @@ export class PerformanceObserverSink<T> implements Observer, Buffered {
    * Creates a Node.js PerformanceObserver that monitors 'mark' and 'measure' entries.
    * The observer uses a bounded queue with proactive flushing to manage memory usage.
    * When buffered mode is enabled, any existing buffered entries are immediately flushed.
-   *
-   * @throws {Error} If the sink is closed before subscription
+   * If the sink is closed, items stay in the queue until reopened.
    *
    */
   subscribe(): void {
@@ -260,10 +259,7 @@ export class PerformanceObserverSink<T> implements Observer, Buffered {
    * Writes all currently queued encoded performance entries to the configured sink.
    * If the sink is closed during flush, the queue is cleared without writing.
    * The queue is always cleared after flush attempt, regardless of success or failure.
-   *
-   * Note: flush() on a closed sink is a no-op.
-   *
-   * @throws {Error} If sink write operations fail (with original error as cause)
+   * If the sink is closed flush is a no-op and the items stay in the queue until reopened.
    */
   flush(): void {
     if (this.#queue.length === 0) {
