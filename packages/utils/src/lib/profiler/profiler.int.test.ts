@@ -463,8 +463,4 @@ describe('NodeJS Profiler Integration', () => {
     expect(finalStats.isSubscribed).toBe(false);
     expect(finalStats.queued).toBe(0);
   });
-
-  it('should write to file on flush', () => {
-    expect(true).toBe(true);
-  });
 });
