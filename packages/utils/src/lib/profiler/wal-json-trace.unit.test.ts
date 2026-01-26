@@ -230,16 +230,8 @@ describe('traceEventWalFormat', () => {
     });
   });
 
-  it('should create WAL format with custom directory', () => {
-    const format = traceEventWalFormat({ dir: '/custom/path' });
-
-    expect(format.baseName).toBe('trace');
-    expect(format.walExtension).toBe('.jsonl');
-    expect(format.finalExtension).toBe('.json');
-  });
-
-  it('should create WAL format with groupId', () => {
-    const format = traceEventWalFormat({ groupId: 'session-123' });
+  it('should create WAL format with consistent structure', () => {
+    const format = traceEventWalFormat();
 
     expect(format.baseName).toBe('trace');
     expect(format.walExtension).toBe('.jsonl');
