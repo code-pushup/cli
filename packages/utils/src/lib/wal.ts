@@ -158,7 +158,7 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
     if (this.#fd) {
       return;
     }
-    fs.mkdirSync(path.dirname(this.#file), { recursive: true });
+    ensureDirectoryExistsSync(path.dirname(this.#file));
     this.#fd = fs.openSync(this.#file, 'a');
   };
 
@@ -229,7 +229,7 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
     const recordsToWrite = hasInvalidEntries
       ? (r.records as T[])
       : filterValidRecords(r.records);
-    fs.mkdirSync(path.dirname(out), { recursive: true });
+    ensureDirectoryExistsSync(path.dirname(out));
     fs.writeFileSync(out, `${recordsToWrite.map(this.#encode).join('\n')}\n`);
   }
 
@@ -411,6 +411,16 @@ export function sortableReadableDateString(timestampMs: string): string {
 }
 
 /**
+ * Ensures a directory exists, creating it recursively if necessary using sync methods.
+ * @param dirPath - The directory path to ensure exists
+ */
+function ensureDirectoryExistsSync(dirPath: string): void {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
+}
+
+/**
  * Generates a path to a shard file using human-readable IDs.
  * Both groupId and shardId are already in readable date format.
  *
@@ -497,6 +507,9 @@ export class ShardedWal<T extends object | string = object> {
         groupId: this.groupId,
       }),
     );
+    // create dir if not existing
+    ensureDirectoryExistsSync(groupIdDir);
+
     return fs
       .readdirSync(groupIdDir)
       .filter(entry => entry.endsWith(this.#format.walExtension))
@@ -533,9 +546,7 @@ export class ShardedWal<T extends object | string = object> {
       format: this.#format,
       groupId: this.groupId,
     });
-    fs.mkdirSync(path.dirname(out), {
-      recursive: true,
-    });
+    ensureDirectoryExistsSync(path.dirname(out));
     fs.writeFileSync(out, this.#format.finalizer(recordsToFinalize, opt));
   }
 
