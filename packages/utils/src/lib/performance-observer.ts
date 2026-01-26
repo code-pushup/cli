@@ -334,9 +334,8 @@ export class PerformanceObserverSink<T> implements Observer, Buffered {
    * Flushes all queued performance entries to the sink.
    *
    * Writes all currently queued encoded performance entries to the configured sink.
-   * If the sink is closed during flush, the queue is cleared without writing.
+   * If the sink is closed, flush is a no-op and items stay in the queue until reopened.
    * The queue is always cleared after flush attempt, regardless of success or failure.
-   * If the sink is closed flush is a no-op and the items stay in the queue until reopened.
    */
   flush(): void {
     if (this.#queue.length === 0) {
