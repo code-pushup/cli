@@ -1,5 +1,4 @@
 import { vol } from 'memfs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
 import {
@@ -171,7 +170,7 @@ describe('derivePackageManager', () => {
     expect(fileExistsSpy).toHaveBeenCalledWith(
       expect.stringContaining('yarn.lock'),
     );
-    expect(deriveYarnVersionSpy).toHaveBeenCalledTimes(1);
+    expect(deriveYarnVersionSpy).toHaveBeenCalledOnce();
     expect(deriveYarnVersionSpy).toHaveBeenCalledWith();
   });
 

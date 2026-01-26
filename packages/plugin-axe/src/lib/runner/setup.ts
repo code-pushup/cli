@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import type { Page } from 'playwright-core';
 import { z } from 'zod/v4';
 import {
@@ -41,7 +42,8 @@ export async function loadSetupScript(
   const validModule = await logger.task(
     `Loading setup script from ${absolutePath}`,
     async () => {
-      const module: unknown = await import(absolutePath);
+      const url = pathToFileURL(absolutePath).toString();
+      const module: unknown = await import(url);
       const validated = await validateAsync(setupScriptModuleSchema, module, {
         filePath: absolutePath,
       });

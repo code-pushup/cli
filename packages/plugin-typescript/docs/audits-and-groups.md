@@ -33,11 +33,11 @@ Errors that occur during type checking and type inference.
 
 #### Issues
 
-|  Severity  | Message                                                                              | Source file                                                               | Line(s) |
-| :--------: | :----------------------------------------------------------------------------------- | :------------------------------------------------------------------------ | :-----: |
-| 🚨 _error_ | TS2307: Cannot find module './non-existent' or its corresponding type declarations.  | [`path/to/module-resolution.ts`](../path/to/module-resolution.ts)         |    2    |
-| 🚨 _error_ | TS2349: This expression is not callable.<br /> Type 'Number' has no call signatures. | [`path/to/strict-function-types.ts`](../path/to/strict-function-types.ts) |    3    |
-| 🚨 _error_ | TS2304: Cannot find name 'NonExistentType'.                                          | [`path/to/cannot-find-module.ts`](../path/to/cannot-find-module.ts)       |    1    |
+|  Severity  | Message                                                                              | Source                                                                    | Location |
+| :--------: | :----------------------------------------------------------------------------------- | :------------------------------------------------------------------------ | :------: |
+| 🚨 _error_ | TS2307: Cannot find module './non-existent' or its corresponding type declarations.  | [`path/to/module-resolution.ts`](../path/to/module-resolution.ts)         |    2     |
+| 🚨 _error_ | TS2349: This expression is not callable.<br /> Type 'Number' has no call signatures. | [`path/to/strict-function-types.ts`](../path/to/strict-function-types.ts) |    3     |
+| 🚨 _error_ | TS2304: Cannot find name 'NonExistentType'.                                          | [`path/to/cannot-find-module.ts`](../path/to/cannot-find-module.ts)       |    1     |
 
 ---
 
@@ -54,9 +54,9 @@ Errors that occur during parsing and lexing of TypeScript source code.
 
 #### Issues
 
-|  Severity  | Message                               | Source file                                             | Line(s) |
-| :--------: | :------------------------------------ | :------------------------------------------------------ | :-----: |
-| 🚨 _error_ | TS1136: Property assignment expected. | [`path/to/syntax-error.ts`](../path/to/syntax-error.ts) |    1    |
+|  Severity  | Message                               | Source                                                  | Location |
+| :--------: | :------------------------------------ | :------------------------------------------------------ | :------: |
+| 🚨 _error_ | TS1136: Property assignment expected. | [`path/to/syntax-error.ts`](../path/to/syntax-error.ts) |    1     |
 
 ---
 
@@ -73,9 +73,9 @@ Errors that occur when parsing TypeScript configuration files.
 
 #### Issues
 
-|  Severity  | Message                                    | Source file                                         | Line(s) |
-| :--------: | :----------------------------------------- | :-------------------------------------------------- | :-----: |
-| 🚨 _error_ | TS5023: Unknown compiler option 'invalid'. | [`path/to/tsconfig.json`](../path/to/tsconfig.json) |    1    |
+|  Severity  | Message                                    | Source                                              | Location |
+| :--------: | :----------------------------------------- | :-------------------------------------------------- | :------: |
+| 🚨 _error_ | TS5023: Unknown compiler option 'invalid'. | [`path/to/tsconfig.json`](../path/to/tsconfig.json) |    1     |
 
 ---
 
@@ -92,9 +92,9 @@ Errors that occur during TypeScript language service operations.
 
 #### Issues
 
-|  Severity  | Message                                                                                                                         | Source file                                                         | Line(s) |
-| :--------: | :------------------------------------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------ | :-----: |
-| 🚨 _error_ | TS4112: This member cannot have an 'override' modifier because its containing class 'Standalone' does not extend another class. | [`path/to/incorrect-modifier.ts`](../path/to/incorrect-modifier.ts) |    2    |
+|  Severity  | Message                                                                                                                         | Source                                                              | Location |
+| :--------: | :------------------------------------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------ | :------: |
+| 🚨 _error_ | TS4112: This member cannot have an 'override' modifier because its containing class 'Standalone' does not extend another class. | [`path/to/incorrect-modifier.ts`](../path/to/incorrect-modifier.ts) |    2     |
 
 ---
 
@@ -111,9 +111,9 @@ Errors that occur during TypeScript internal operations.
 
 #### Issues
 
-|  Severity  | Message                          | Source file                                                 | Line(s) |
-| :--------: | :------------------------------- | :---------------------------------------------------------- | :-----: |
-| 🚨 _error_ | TS9001: Internal compiler error. | [`path/to/internal-error.ts`](../path/to/internal-error.ts) |    4    |
+|  Severity  | Message                          | Source                                                      | Location |
+| :--------: | :------------------------------- | :---------------------------------------------------------- | :------: |
+| 🚨 _error_ | TS9001: Internal compiler error. | [`path/to/internal-error.ts`](../path/to/internal-error.ts) |    4     |
 
 ---
 
@@ -130,9 +130,9 @@ Errors related to no implicit any compiler option.
 
 #### Issues
 
-|  Severity  | Message                                             | Source file                                             | Line(s) |
-| :--------: | :-------------------------------------------------- | :------------------------------------------------------ | :-----: |
-| 🚨 _error_ | TS7006: Parameter 'x' implicitly has an 'any' type. | [`path/to/implicit-any.ts`](../path/to/implicit-any.ts) |    5    |
+|  Severity  | Message                                             | Source                                                  | Location |
+| :--------: | :-------------------------------------------------- | :------------------------------------------------------ | :------: |
+| 🚨 _error_ | TS7006: Parameter 'x' implicitly has an 'any' type. | [`path/to/implicit-any.ts`](../path/to/implicit-any.ts) |    5     |
 
 ---
 
@@ -149,9 +149,9 @@ Errors that do not match any known TypeScript error code.
 
 #### Issues
 
-|  Severity  | Message                                 | Source file                                               | Line(s) |
-| :--------: | :-------------------------------------- | :-------------------------------------------------------- | :-----: |
-| 🚨 _error_ | TS9999: Unknown error code encountered. | [`path/to/unknown-error.ts`](../path/to/unknown-error.ts) |    6    |
+|  Severity  | Message                                 | Source                                                    | Location |
+| :--------: | :-------------------------------------- | :-------------------------------------------------------- | :------: |
+| 🚨 _error_ | TS9999: Unknown error code encountered. | [`path/to/unknown-error.ts`](../path/to/unknown-error.ts) |    6     |
 
 ---
 

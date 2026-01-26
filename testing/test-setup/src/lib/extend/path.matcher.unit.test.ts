@@ -1,4 +1,3 @@
-import { describe, expect, it, vi } from 'vitest';
 import * as testUtils from '@code-pushup/test-utils';
 
 describe('path-matcher', () => {

@@ -1,6 +1,6 @@
 import ansis from 'ansis';
 import { vol } from 'memfs';
-import { type MockInstance, describe, expect, it, vi } from 'vitest';
+import type { MockInstance } from 'vitest';
 import {
   type AuditOutputs,
   DEFAULT_PERSIST_CONFIG,

@@ -1,12 +1,5 @@
 import { type PerformanceEntry, performance } from 'node:perf_hooks';
-import {
-  type MockedFunction,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
+import type { MockedFunction } from 'vitest';
 import { MockPerformanceObserver } from '@code-pushup/test-utils';
 import { MockFileSink } from '../../mocks/sink.mock';
 import {
@@ -93,7 +86,7 @@ describe('PerformanceObserverSink', () => {
     expect(MockPerformanceObserver.instances).toHaveLength(1);
     expect(
       MockPerformanceObserver.lastInstance()?.observe,
-    ).toHaveBeenCalledTimes(1);
+    ).toHaveBeenCalledOnce();
   });
 
   it('internal PerformanceObserver should observe mark and measure', () => {
@@ -175,23 +168,23 @@ describe('PerformanceObserverSink', () => {
   it('isSubscribed returns false when not observing', () => {
     const observer = new PerformanceObserverSink(options);
 
-    expect(observer.isSubscribed()).toBe(false);
+    expect(observer.isSubscribed()).toBeFalse();
   });
 
   it('isSubscribed returns true when observing', () => {
     const observer = new PerformanceObserverSink(options);
 
     observer.subscribe();
-    expect(observer.isSubscribed()).toBe(true);
+    expect(observer.isSubscribed()).toBeTrue();
   });
 
   it('isSubscribed reflects observe disconnect', () => {
     const observer = new PerformanceObserverSink(options);
 
     observer.subscribe();
-    expect(observer.isSubscribed()).toBe(true);
+    expect(observer.isSubscribed()).toBeTrue();
     observer.unsubscribe();
-    expect(observer.isSubscribed()).toBe(false);
+    expect(observer.isSubscribed()).toBeFalse();
   });
 
   it('flush flushes observed entries when subscribed', () => {
@@ -248,7 +241,7 @@ describe('PerformanceObserverSink', () => {
     const perfObserver = MockPerformanceObserver.lastInstance();
     observerSink.unsubscribe();
     observerSink.unsubscribe();
-    expect(perfObserver?.disconnect).toHaveBeenCalledTimes(1);
+    expect(perfObserver?.disconnect).toHaveBeenCalledOnce();
     expect(MockPerformanceObserver.instances).toHaveLength(0);
   });
 

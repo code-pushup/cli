@@ -1,6 +1,5 @@
 import type { CreateNodesContextV2, CreateNodesResultV2 } from '@nx/devkit';
 import { vol } from 'memfs';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { PACKAGE_NAME, PROJECT_JSON_FILE_NAME } from '../internal/constants.js';
 import { CP_TARGET_NAME } from './constants.js';

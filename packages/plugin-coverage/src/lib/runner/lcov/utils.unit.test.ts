@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { calculateCoverage, mergeConsecutiveNumbers } from './utils.js';
 
 describe('calculateCoverage', () => {

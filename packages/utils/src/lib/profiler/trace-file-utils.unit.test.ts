@@ -1,5 +1,4 @@
 import type { PerformanceMark, PerformanceMeasure } from 'node:perf_hooks';
-import { describe, expect, it } from 'vitest';
 import {
   decodeDetail,
   decodeTraceEvent,

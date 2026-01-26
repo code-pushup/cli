@@ -559,8 +559,8 @@ The `report.md` file should contain a similar content like the following:
     <tr>
       <th>Severity</th>
       <th>Message</th>
-      <th>Source file</th>
-      <th>Line(s)</th>
+      <th>Source</th>
+      <th>Location</th>
     </tr>
     <tr>
       <td>🚨 <i>error</i></td>

@@ -1,6 +1,5 @@
 import { performance } from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   type MeasureCtxOptions,
   type MeasureOptions,

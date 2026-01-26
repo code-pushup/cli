@@ -1,4 +1,3 @@
-import { describe, expect } from 'vitest';
 import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
 import { logger } from '@code-pushup/utils';
 import type { FilterOptionType, Filterables } from './filter.model.js';
@@ -131,7 +130,7 @@ describe('validateFilterOption', () => {
       { itemsToFilter: ['p1'], skippedItems: [] },
     );
     expect(logger.warn).not.toHaveBeenCalled();
-    expect(logger.info).toHaveBeenCalledTimes(1);
+    expect(logger.info).toHaveBeenCalledOnce();
     expect(logger.info).toHaveBeenCalledWith(
       'The --onlyPlugins argument removed the following categories: c1, c3.',
     );
@@ -499,7 +498,7 @@ describe('pluginHasZeroWeightRefs', () => {
           },
         ],
       } as PluginConfig),
-    ).toBe(true);
+    ).toBeTrue();
   });
 
   it('should return false if any ref has non-zero weight', () => {
@@ -522,12 +521,12 @@ describe('pluginHasZeroWeightRefs', () => {
           },
         ],
       } as PluginConfig),
-    ).toBe(false);
+    ).toBeFalse();
   });
 
   it('should return false if there are no groups', () => {
-    expect(pluginHasZeroWeightRefs({ groups: undefined } as PluginConfig)).toBe(
-      false,
-    );
+    expect(
+      pluginHasZeroWeightRefs({ groups: undefined } as PluginConfig),
+    ).toBeFalse();
   });
 });

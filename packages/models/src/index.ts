@@ -4,7 +4,11 @@ export {
 } from './lib/implementation/schemas.js';
 export {
   sourceFileLocationSchema,
+  sourceUrlLocationSchema,
+  issueSourceSchema,
+  type IssueSource,
   type SourceFileLocation,
+  type SourceUrlLocation,
 } from './lib/source.js';
 
 export {
@@ -80,10 +84,14 @@ export {
   validateAsync,
 } from './lib/implementation/validate.js';
 export {
+  fileIssueSchema,
   issueSchema,
   issueSeveritySchema,
+  urlIssueSchema,
+  type FileIssue,
   type Issue,
   type IssueSeverity,
+  type UrlIssue,
 } from './lib/issue.js';
 export {
   formatSchema,

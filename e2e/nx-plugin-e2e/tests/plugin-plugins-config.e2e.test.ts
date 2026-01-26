@@ -1,7 +1,6 @@
 import type { Tree } from '@nx/devkit';
 import path from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
-import { afterEach, expect } from 'vitest';
 import { generateCodePushupConfig } from '@code-pushup/nx-plugin';
 import {
   generateWorkspaceAndProject,

@@ -1,7 +1,6 @@
 import ansis from 'ansis';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { describe, expect, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { logger } from '@code-pushup/utils';
 import { DEFAULT_CLI_CONFIGURATION } from '../../../mocks/constants.js';
