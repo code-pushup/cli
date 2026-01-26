@@ -1,3 +1,14 @@
+## 0.108.2 (2026-01-26)
+
+### 🩹 Fixes
+
+- add missing vitest.d.ts to test tsconfigs ([c9c47f36](https://github.com/code-pushup/cli/commit/c9c47f36))
+- **zod2md-jsdocs:** exclude tests from build ([69707ff8](https://github.com/code-pushup/cli/commit/69707ff8))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
 ## 0.108.1 (2026-01-20)
 
 ### 🩹 Fixes
