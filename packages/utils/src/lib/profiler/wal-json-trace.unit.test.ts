@@ -288,7 +288,7 @@ describe('traceEventWalFormat', () => {
     const parsed = JSON.parse(result);
     expect(parsed).toHaveProperty('traceEvents');
     expect(parsed).toHaveProperty('metadata');
-    expect(Array.isArray(parsed.traceEvents)).toBe(true);
+    expect(parsed.traceEvents).toBeArray();
   });
 
   it('should include generatedAt in finalizer metadata', () => {

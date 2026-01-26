@@ -1,7 +1,6 @@
-import { WriteAheadLogFile } from '../src/lib/wal.js';
-import type { Codec } from '../src/lib/wal.js';
+import type { AppendableSink, Codec } from '../src/lib/wal.js';
 
-export class MockFileSink implements WriteAheadLogFile<string> {
+export class MockFileSink implements AppendableSink<string> {
   private writtenItems: string[] = [];
   private closed = false;
 

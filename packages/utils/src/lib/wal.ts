@@ -185,7 +185,6 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
    * Repack the WAL by recovering all valid records and rewriting cleanly.
    * Removes corrupted entries and ensures clean formatting.
    * @param out - Output path (defaults to current file)
-   * @throws Error if recovery encounters decode errors
    */
   repack(out = this.#file) {
     this.close();
@@ -311,7 +310,7 @@ let shardCount = 0;
  */
 export function getShardId(): string {
   const timestamp = Math.round(performance.timeOrigin + performance.now());
-  const readableTimestamp = soratebleReadableDateString(`${timestamp}`);
+  const readableTimestamp = sortableReadableDateString(`${timestamp}`);
   return `${readableTimestamp}.${process.pid}.${threadId}.${++shardCount}`;
 }
 
@@ -323,7 +322,7 @@ export function getShardId(): string {
  * Example: "20240101-120000-000"
  */
 export function getShardedGroupId(): string {
-  return soratebleReadableDateString(
+  return sortableReadableDateString(
     `${Math.round(performance.timeOrigin + performance.now())}`,
   );
 }
@@ -340,7 +339,7 @@ export const WAL_ID_PATTERNS = {
   SHARD_ID: /^\d{8}-\d{6}-\d{3}(?:\.\d+){3}$/,
 } as const;
 
-export function soratebleReadableDateString(timestampMs: string): string {
+export function sortableReadableDateString(timestampMs: string): string {
   const timestamp = Number.parseInt(timestampMs, 10);
   const date = new Date(timestamp);
   const MILLISECONDS_PER_SECOND = 1000;
