@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import type { UserTimingTraceEvent } from './trace-file.type.js';
 import { generateTraceContent, traceEventWalFormat } from './wal-json-trace.js';
 

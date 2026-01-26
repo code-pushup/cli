@@ -1,6 +1,5 @@
 import { performance } from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
 import { Profiler, type ProfilerOptions, getProfilerId } from './profiler.js';
 
