@@ -723,7 +723,7 @@ describe('PerformanceObserverSink', () => {
     it('returns false when debug env var is not set', () => {
       const observer = new PerformanceObserverSink(options);
 
-      expect(observer.debug).toBe(false);
+      expect(observer.debug).toBeFalse();
     });
 
     it('returns true when debug env var is set to "true"', () => {
@@ -732,7 +732,7 @@ describe('PerformanceObserverSink', () => {
 
       const observer = new PerformanceObserverSink(options);
 
-      expect(observer.debug).toBe(true);
+      expect(observer.debug).toBeTrue();
     });
 
     it('returns false when debug env var is set to a value other than "true"', () => {
@@ -741,7 +741,7 @@ describe('PerformanceObserverSink', () => {
 
       const observer = new PerformanceObserverSink(options);
 
-      expect(observer.debug).toBe(false);
+      expect(observer.debug).toBeFalse();
     });
 
     it('returns false when debug env var is set to empty string', () => {
@@ -750,7 +750,7 @@ describe('PerformanceObserverSink', () => {
 
       const observer = new PerformanceObserverSink(options);
 
-      expect(observer.debug).toBe(false);
+      expect(observer.debug).toBeFalse();
     });
 
     it('respects custom debugEnvVar option', () => {
@@ -762,7 +762,7 @@ describe('PerformanceObserverSink', () => {
         debugEnvVar: 'CUSTOM_DEBUG_VAR',
       });
 
-      expect(observer.debug).toBe(true);
+      expect(observer.debug).toBeTrue();
 
       // eslint-disable-next-line functional/immutable-data
       delete process.env.CUSTOM_DEBUG_VAR;
@@ -774,7 +774,7 @@ describe('PerformanceObserverSink', () => {
         debugEnvVar: 'CUSTOM_DEBUG_VAR',
       });
 
-      expect(observer.debug).toBe(false);
+      expect(observer.debug).toBeFalse();
     });
   });
 });
