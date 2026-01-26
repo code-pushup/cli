@@ -44,14 +44,14 @@ describe('generateZod2MdConfig options', () => {
 
   it('should call generateFilesSpy', () => {
     generateZod2MdConfig(tree, testProjectName);
-    expect(generateFilesSpy).toHaveBeenCalledTimes(1);
+    expect(generateFilesSpy).toHaveBeenCalledOnce();
   });
 
   it('should skip creation if config already exists', () => {
     tree.write(path.join(testProjectName, 'zod2md.config.js'), '');
     generateZod2MdConfig(tree, testProjectName);
     expect(generateFilesSpy).toHaveBeenCalledTimes(0);
-    expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
+    expect(loggerWarnSpy).toHaveBeenCalledOnce();
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       stripAnsi(
         'No config file created as zod2md.config.js file already exists.',

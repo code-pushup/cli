@@ -76,7 +76,7 @@ describe('sync-zod2md-setup generator', () => {
     await expect(syncZod2mdSetupGenerator(tree)).resolves.toStrictEqual({
       outOfSyncMessage: undefined,
     });
-    expect(tree.exists(zod2mdConfigPath)).toBe(false);
+    expect(tree.exists(zod2mdConfigPath)).toBeFalse();
   });
 
   it('should fail if missing tsconfig file', async () => {
@@ -88,7 +88,7 @@ describe('sync-zod2md-setup generator', () => {
   - ${projectRoot}`,
       ),
     });
-    expect(tree.exists(`${projectRoot}/zod2md.config.ts`)).toBe(true);
+    expect(tree.exists(`${projectRoot}/zod2md.config.ts`)).toBeTrue();
   });
 
   it('should fail if missing "zod2md" target in project config', async () => {
@@ -111,7 +111,7 @@ describe('sync-zod2md-setup generator', () => {
   - ${projectRoot}`,
       ),
     });
-    expect(tree.exists(`${projectRoot}/zod2md.config.ts`)).toBe(true);
+    expect(tree.exists(`${projectRoot}/zod2md.config.ts`)).toBeTrue();
   });
 
   it('should fail if missing "dependsOn" targets in build target', async () => {
@@ -131,7 +131,7 @@ describe('sync-zod2md-setup generator', () => {
   - libs/test: generate-docs, ts-patch`,
       ),
     });
-    expect(tree.exists(`${projectRoot}/zod2md.config.ts`)).toBe(true);
+    expect(tree.exists(`${projectRoot}/zod2md.config.ts`)).toBeTrue();
   });
 
   it('should pass if zod2md setup is correct', async () => {
