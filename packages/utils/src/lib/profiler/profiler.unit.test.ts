@@ -1,6 +1,18 @@
 import { performance } from 'node:perf_hooks';
+import { threadId } from 'node:worker_threads';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
-import { Profiler, type ProfilerOptions } from './profiler.js';
+import { Profiler, type ProfilerOptions, getProfilerId } from './profiler.js';
+
+describe('getProfilerId', () => {
+  it('should generate a unique id per process', () => {
+    expect(getProfilerId()).toBe(
+      `${Math.round(performance.timeOrigin)}.${process.pid}.${threadId}.1`,
+    );
+    expect(getProfilerId()).toBe(
+      `${Math.round(performance.timeOrigin)}.${process.pid}.${threadId}.2`,
+    );
+  });
+});
 
 describe('Profiler', () => {
   const getProfiler = (overrides?: Partial<ProfilerOptions>) =>
