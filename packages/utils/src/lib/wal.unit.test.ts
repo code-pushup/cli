@@ -662,6 +662,19 @@ describe('parseWalFormat', () => {
     const output = result.finalizer(records);
     expect(output).toBe('valid\ninvalid-raw\nalso-valid\n');
   });
+
+  it('should encode objects correctly when using default type parameter', () => {
+    // Test parseWalFormat({}) with default type parameter (object)
+    const result = parseWalFormat({});
+    const records = [
+      { id: 1, name: 'test1' },
+      { id: 2, name: 'test2' },
+    ];
+    const output = result.finalizer(records);
+    // Should be JSON strings, not [object Object]
+    expect(output).toBe('{"id":1,"name":"test1"}\n{"id":2,"name":"test2"}\n');
+    expect(output).not.toContain('[object Object]');
+  });
 });
 
 describe('isLeaderWal', () => {

@@ -290,7 +290,9 @@ export const stringCodec = <
  *  - walExtension defaults to '.log'
  *  - finalExtension defaults to '.log'
  *  - codec defaults to stringCodec<T>()
- *  - finalizer defaults to (encodedRecords: (T | InvalidEntry<string>)[]) => `${encodedRecords.join('\n')}\n`
+ *  - finalizer defaults to encoding each record using codec.encode() and joining with newlines.
+ *    For object types, this properly JSON-stringifies them (not [object Object]).
+ *    InvalidEntry records use their raw string value directly.
  * @param format - Partial WalFormat configuration
  * @returns Parsed WalFormat with defaults filled in
  */
@@ -306,8 +308,11 @@ export function parseWalFormat<T extends object | string = object>(
 
   const finalizer =
     format.finalizer ??
-    ((encodedRecords: (T | InvalidEntry<string>)[]) => {
-      const encoded = encodedRecords.map(record =>
+    ((records: (T | InvalidEntry<string>)[]) => {
+      // Encode each record using the codec before joining.
+      // For object types, codec.encode() will JSON-stringify them properly.
+      // InvalidEntry records use their raw string value directly.
+      const encoded = records.map(record =>
         typeof record === 'object' && record != null && '__invalid' in record
           ? (record as InvalidEntry<string>).raw
           : codec.encode(record as T),
