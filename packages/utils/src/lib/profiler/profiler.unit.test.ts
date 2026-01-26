@@ -127,6 +127,19 @@ describe('Profiler', () => {
     expect(profiler.isEnabled()).toBe(false);
   });
 
+  it('setEnabled should set environment variable and future instances should use it', () => {
+    vi.stubEnv('CP_PROFILING', 'false');
+    const profiler1 = getProfiler();
+
+    profiler1.setEnabled(true);
+
+    expect(profiler1.isEnabled()).toBeTrue();
+    expect(process.env['CP_PROFILING']).toBe('true');
+    expect(
+      new Profiler({ prefix: 'cp', track: 'test-track' }).isEnabled(),
+    ).toBeTrue();
+  });
+
   it('marker should execute without error when enabled', () => {
     const enabledProfiler = getProfiler({ enabled: true });
     expect(() => {

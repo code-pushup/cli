@@ -83,14 +83,14 @@ export class Profiler<T extends ActionTrackConfigs> {
    * @param options.track - Default track name for measurements
    * @param options.trackGroup - Default track group for organization
    * @param options.color - Default color for track entries
-   * @param options.enabled - Whether profiling is enabled (defaults to false)
+   * @param options.enabled - Whether profiling is enabled (defaults to CP_PROFILING env var)
    *
    */
   constructor(options: ProfilerOptions<T>) {
-    const { tracks, prefix, enabled = false, ...defaults } = options;
+    const { tracks, prefix, enabled, ...defaults } = options;
     const dataType = 'track-entry';
 
-    this.#enabled = enabled;
+    this.#enabled = enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
     this.#defaults = { ...defaults, dataType };
     this.tracks = tracks
       ? setupTracks({ ...defaults, dataType }, tracks)
@@ -105,11 +105,13 @@ export class Profiler<T extends ActionTrackConfigs> {
   /**
    * Sets enabled state for this profiler.
    *
+   * Also sets the `CP_PROFILING` environment variable.
    * This means any future {@link Profiler} instantiations (including child processes) will use the same enabled state.
    *
    * @param enabled - Whether profiling should be enabled
    */
   setEnabled(enabled: boolean): void {
+    process.env[PROFILER_ENABLED_ENV_VAR] = `${enabled}`;
     this.#enabled = enabled;
   }
 
