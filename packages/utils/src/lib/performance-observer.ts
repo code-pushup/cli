@@ -105,8 +105,10 @@ export type PerformanceObserverOptions<T> = {
   captureBufferedEntries?: boolean;
 
   /**
-   * Threshold for triggering queue flushes based on queue length.
-   * Flushes occur when queue length reaches (maxQueueSize - flushThreshold).
+   * Threshold for triggering queue flushes.
+   * Flushes occur in two scenarios:
+   * 1. When queue length reaches (maxQueueSize - flushThreshold)
+   * 2. When the number of items added since last flush reaches flushThreshold
    * Larger values provide more buffer space before hitting capacity limits.
    *
    * @default DEFAULT_FLUSH_THRESHOLD (20)
