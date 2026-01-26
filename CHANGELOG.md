@@ -1,3 +1,13 @@
+## 0.110.0 (2026-01-26)
+
+### 🚀 Features
+
+- **utils:** add WriteAheadLog classes ([#1210](https://github.com/code-pushup/cli/pull/1210))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.109.0 (2026-01-26)
 
 ### 🚀 Features
