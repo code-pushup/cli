@@ -1,32 +1,15 @@
-import { createProjectGraphAsync, joinPathFragments } from '@nx/devkit';
-import { tsconfigLibBase } from '@code-pushup/workspace-baseline';
+import { createTsconfigBase } from '../src/lib/baseline.tsconfig';
+import { arr, obj } from '../src/lib/json-updater.js';
 
-export const syncTsconfigBaselineAcrossProjects = async tree => {
-  const graph = await createProjectGraphAsync();
-
-  const diagnostics = Object.values(graph.nodes).flatMap(project => {
-    const root = project.data.root;
-
-    const scopedTree = {
-      ...tree,
-      exists: (p: string) => tree.exists(joinPathFragments(root, p)),
-      read: (p: string) => tree.read(joinPathFragments(root, p)),
-      write: (p: string, c: string) =>
-        tree.write(joinPathFragments(root, p), c),
-    };
-
-    return tsconfigLibBase.sync(scopedTree as any).map(d => ({
-      ...d,
-      path: `${project.name}:${d.path}`,
-    }));
-  });
-
-  return diagnostics.length
-    ? {
-        outOfSyncMessage: diagnosticsToMessage(
-          diagnostics,
-          'tsconfig.lib.json',
-        ),
-      }
-    : {};
-};
+export const tsconfigLibBase = createTsconfigBase(
+  ['tsconfig.lib.json', 'tsconfig.json'],
+  {
+    extends: './tsconfig.base.json',
+    compilerOptions: obj.add({
+      strict: true,
+      noEmit: true,
+    }),
+    include: arr.add(['src/**/*.ts', 'tests/**/*.ts']),
+    exclude: arr.add(['node_modules', 'dist']),
+  },
+);

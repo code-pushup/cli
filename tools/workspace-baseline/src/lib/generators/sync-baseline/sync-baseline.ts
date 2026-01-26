@@ -1,25 +1,34 @@
-import {
-  Tree,
-  addProjectConfiguration,
-  formatFiles,
-  generateFiles,
-} from '@nx/devkit';
-import * as path from 'path';
-import { SyncBaselineGeneratorSchema } from './schema';
+import { type Tree } from '@nx/devkit';
+import { createProjectGraphAsync, joinPathFragments } from '@nx/devkit';
+import { tsconfigLibBase } from '../baseline/tsconfig-lib.baseline';
+import { diagnosticsToMessage } from './diagnostics-to-message';
 
-export async function syncBaselineGenerator(
-  tree: Tree,
-  options: SyncBaselineGeneratorSchema,
-) {
-  const projectRoot = `libs/${options.name}`;
-  addProjectConfiguration(tree, options.name, {
-    root: projectRoot,
-    projectType: 'library',
-    sourceRoot: `${projectRoot}/src`,
-    targets: {},
+export const syncBaseline = async (tree: Tree) => {
+  const graph = await createProjectGraphAsync();
+
+  const diagnostics = Object.values(graph.nodes).flatMap(project => {
+    const root = project.data.root;
+
+    const scopedTree = {
+      ...tree,
+      exists: (p: string) => tree.exists(joinPathFragments(root, p)),
+      read: (p: string) => tree.read(joinPathFragments(root, p)),
+      write: (p: string, c: string) =>
+        tree.write(joinPathFragments(root, p), c),
+    };
+
+    return tsconfigLibBase.sync(scopedTree as any).map(d => ({
+      ...d,
+      path: `${project.name}:${d.path}`,
+    }));
   });
-  generateFiles(tree, path.join(__dirname, 'files'), projectRoot, options);
-  await formatFiles(tree);
-}
 
-export default syncBaselineGenerator;
+  return diagnostics.length
+    ? {
+        outOfSyncMessage: diagnosticsToMessage(
+          diagnostics,
+          'tsconfig.lib.json',
+        ),
+      }
+    : {};
+};
