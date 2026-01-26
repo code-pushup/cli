@@ -1,6 +1,5 @@
 import { vol } from 'memfs';
 import path from 'node:path';
-import { describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import type { AuditResult, Vulnerability } from './audit/types.js';
 import type { DependencyTotals, PackageJson } from './outdated/types.js';

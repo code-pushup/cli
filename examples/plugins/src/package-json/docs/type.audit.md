@@ -28,8 +28,8 @@ A `Issue` with severity `info` is present and names to the given file.
     <tr>
       <th>Severity</th>
       <th>Message</th>
-      <th>Source file</th>
-      <th>Line(s)</th>
+      <th>Source</th>
+      <th>Location</th>
     </tr>
     <tr>
       <td>ℹ️ <i>info</i></td>
@@ -48,8 +48,8 @@ A `Issue` with severity `info` is present and names to the given file.
     <tr>
       <th>Severity</th>
       <th>Message</th>
-      <th>Source file</th>
-      <th>Line(s)</th>
+      <th>Source</th>
+      <th>Location</th>
     </tr>
     <tr>
       <td>ℹ️ <i>info</i></td>
@@ -69,8 +69,8 @@ The `type` of the given file, the target `type` as well as the given `type` are 
     <tr>
       <th>Severity</th>
       <th>Message</th>
-      <th>Source file</th>
-      <th>Line(s)</th>
+      <th>Source</th>
+      <th>Location</th>
     </tr>
     <tr>
        <td>🚨 <i>error</i></td>

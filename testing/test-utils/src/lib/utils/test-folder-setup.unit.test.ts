@@ -1,6 +1,5 @@
 import ansis from 'ansis';
 import { vol } from 'memfs';
-import { describe, expect, it, vi } from 'vitest';
 import { MEMFS_VOLUME } from '../constants.js';
 import {
   cleanTestFolder,

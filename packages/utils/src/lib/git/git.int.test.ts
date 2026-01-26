@@ -1,7 +1,6 @@
 import { mkdir, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
-import { afterAll, beforeAll, beforeEach, describe, expect } from 'vitest';
 import { initGitRepo, teardownTestFolder } from '@code-pushup/test-utils';
 import { toUnixPath } from '../transform.js';
 import {

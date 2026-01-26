@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { type CoreConfig, coreConfigSchema } from './core-config.js';
 
 describe('coreConfigSchema', () => {

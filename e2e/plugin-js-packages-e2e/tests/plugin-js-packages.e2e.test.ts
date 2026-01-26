@@ -1,6 +1,5 @@
 import { cp } from 'node:fs/promises';
 import path from 'node:path';
-import { afterAll, beforeAll, expect, it } from 'vitest';
 import {
   type AuditReport,
   type Report,

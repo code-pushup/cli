@@ -4,7 +4,6 @@ import type {
   LCOVRecord,
   LinesDetails,
 } from 'parse-lcov';
-import { describe, expect, it } from 'vitest';
 import {
   mergeDuplicateLcovRecords,
   mergeLcovBranchesDetails,

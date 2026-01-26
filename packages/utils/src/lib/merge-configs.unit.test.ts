@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import type { CoreConfig, PluginConfig } from '@code-pushup/models';
 import { mergeConfigs } from './merge-configs.js';
 

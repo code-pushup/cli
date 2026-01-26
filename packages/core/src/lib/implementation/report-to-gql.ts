@@ -33,6 +33,7 @@ import type {
   TableAlignment,
   Tree,
 } from '@code-pushup/models';
+import { isFileIssue } from '@code-pushup/utils';
 
 export function reportToGQL(
   report: Report,
@@ -106,7 +107,7 @@ export function issueToGQL(issue: Issue): PortalIssue {
   return {
     message: issue.message,
     severity: issueSeverityToGQL(issue.severity),
-    ...(issue.source?.file && {
+    ...(isFileIssue(issue) && {
       sourceType: safeEnum<PortalIssueSourceType>('SourceCode'),
       sourceFilePath: issue.source.file,
       sourceStartLine: issue.source.position?.startLine,

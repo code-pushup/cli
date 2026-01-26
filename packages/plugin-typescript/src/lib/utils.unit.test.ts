@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { type Audit, categoryRefSchema } from '@code-pushup/models';
 import { logger } from '@code-pushup/utils';
 import { AUDITS, GROUPS } from './constants.js';
@@ -13,21 +12,21 @@ describe('filterAuditsBySlug', () => {
   const mockAudit = { slug: 'strict-function-types' } as Audit;
 
   it('should return true if slugs are undefined', () => {
-    expect(filterAuditsBySlug(undefined)(mockAudit)).toBe(true);
+    expect(filterAuditsBySlug(undefined)(mockAudit)).toBeTrue();
   });
 
   it('should return true if slugs are empty', () => {
-    expect(filterAuditsBySlug([])(mockAudit)).toBe(true);
+    expect(filterAuditsBySlug([])(mockAudit)).toBeTrue();
   });
 
   it('should return true if slugs are including the current audit slug', () => {
-    expect(filterAuditsBySlug(['strict-function-types'])(mockAudit)).toBe(true);
+    expect(filterAuditsBySlug(['strict-function-types'])(mockAudit)).toBeTrue();
   });
 
   it('should return false if slugs are not including the current audit slug', () => {
-    expect(filterAuditsBySlug(['verbatim-module-syntax'])(mockAudit)).toBe(
-      false,
-    );
+    expect(
+      filterAuditsBySlug(['verbatim-module-syntax'])(mockAudit),
+    ).toBeFalse();
   });
 });
 
@@ -40,7 +39,7 @@ describe('filterAuditsByCompilerOptions', () => {
         },
         ['strict-function-types'],
       )({ slug: 'strict-function-types' }),
-    ).toBe(false);
+    ).toBeFalse();
   });
 
   it('should return false if the audit is undefined in compiler options', () => {
@@ -51,7 +50,7 @@ describe('filterAuditsByCompilerOptions', () => {
         },
         ['strict-function-types'],
       )({ slug: 'strict-function-types' }),
-    ).toBe(false);
+    ).toBeFalse();
   });
 
   it('should return false if the audit is enabled in compiler options but not in onlyAudits', () => {
@@ -63,7 +62,7 @@ describe('filterAuditsByCompilerOptions', () => {
         },
         onlyAudits,
       )({ slug: 'strict-function-types' }),
-    ).toBe(false);
+    ).toBeFalse();
   });
 
   it('should return true if the audit is enabled in compiler options and onlyAudits is empty', () => {
@@ -74,7 +73,7 @@ describe('filterAuditsByCompilerOptions', () => {
         },
         [],
       )({ slug: 'strict-function-types' }),
-    ).toBe(true);
+    ).toBeTrue();
   });
 
   it('should return true if the audit is enabled in compiler options and in onlyAudits', () => {
@@ -85,7 +84,7 @@ describe('filterAuditsByCompilerOptions', () => {
         },
         ['strict-function-types'],
       )({ slug: 'strict-function-types' }),
-    ).toBe(true);
+    ).toBeTrue();
   });
 });
 
@@ -118,7 +117,7 @@ describe('logAuditsAndGroups', () => {
   it('should log only once if nothing was skipped', () => {
     logAuditsAndGroups(AUDITS, GROUPS);
 
-    expect(logger.info).toHaveBeenCalledTimes(1);
+    expect(logger.info).toHaveBeenCalledOnce();
     expect(logger.info).toHaveBeenCalledWith(
       expect.stringMatching(/Created \d+ audits and \d+ groups$/),
     );

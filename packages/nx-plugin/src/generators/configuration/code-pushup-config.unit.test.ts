@@ -1,7 +1,6 @@
 import * as devKit from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import * as path from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import {
   DEFAULT_IMPORTS,
@@ -70,14 +69,14 @@ describe('generateCodePushupConfig options', () => {
 
   it('should call generateFilesSpy', () => {
     generateCodePushupConfig(tree, testProjectName);
-    expect(generateFilesSpy).toHaveBeenCalledTimes(1);
+    expect(generateFilesSpy).toHaveBeenCalledOnce();
   });
 
   it('should skip creation if config already exists', () => {
     tree.write(path.join(testProjectName, 'code-pushup.config.js'), '');
     generateCodePushupConfig(tree, testProjectName);
     expect(generateFilesSpy).toHaveBeenCalledTimes(0);
-    expect(loggerWarnSpy).toHaveBeenCalledTimes(1);
+    expect(loggerWarnSpy).toHaveBeenCalledOnce();
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       removeColorCodes(
         'NOTE: No config file created as code-pushup.config.js file already exists.',

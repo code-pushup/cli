@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { type UploadConfig, uploadConfigSchema } from './upload-config.js';
 
 describe('uploadConfigSchema', () => {

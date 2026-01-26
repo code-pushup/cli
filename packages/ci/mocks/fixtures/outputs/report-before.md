@@ -9,9 +9,9 @@
 
 #### Issues
 
-|   Severity   | Message                               | Source file               | Line(s) |
-| :----------: | :------------------------------------ | :------------------------ | :-----: |
-| ⚠️ _warning_ | Use .ts file extension instead of .js | [`index.js`](../index.js) |         |
+|   Severity   | Message                               | Source                    | Location |
+| :----------: | :------------------------------------ | :------------------------ | :------: |
+| ⚠️ _warning_ | Use .ts file extension instead of .js | [`index.js`](../index.js) |          |
 
 </details>
 

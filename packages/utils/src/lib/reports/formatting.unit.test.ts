@@ -1,10 +1,10 @@
-import { describe, expect, it } from 'vitest';
 import { toUnixPath } from '../transform.js';
 import {
   formatFileLink,
   formatGitHubLink,
   formatGitLabLink,
   formatIssueSeverities,
+  formatSelectorLocation,
   formatSeverityCounts,
   formatSourceLine,
   linkToLocalSourceForIde,
@@ -427,5 +427,19 @@ describe('wrapTags', () => {
     [undefined, ''],
   ])('should transform %j to %j', (input, expected) => {
     expect(wrapTags(input)).toBe(expected);
+  });
+});
+
+describe('formatSelectorLocation', () => {
+  it.each([
+    ['img.logo', 'img.logo'],
+    ['main > article > img.logo', '…img.logo'],
+    ['main >> iframe >> img', '…img'],
+    [
+      'tr:nth-child(1) > td[align="center"] > a > img[width="24"]',
+      '…img[width="24"]',
+    ],
+  ])('should format %j selector as %j', (input, expected) => {
+    expect(formatSelectorLocation(input)).toBe(expected);
   });
 });

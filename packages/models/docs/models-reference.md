@@ -291,6 +291,20 @@ _Object containing the following properties:_
 
 _(\*) Required._
 
+## FileIssue
+
+Issue with a file source location
+
+_Object containing the following properties:_
+
+| Property            | Description               | Type                                      |
+| :------------------ | :------------------------ | :---------------------------------------- |
+| **`message`** (\*)  | Descriptive error message | `string` (_max length: 1024_)             |
+| **`severity`** (\*) | Severity level            | [IssueSeverity](#issueseverity)           |
+| **`source`** (\*)   | Source file location      | [SourceFileLocation](#sourcefilelocation) |
+
+_(\*) Required._
+
 ## FileName
 
 _String which matches the regular expression `/^(?!.*[ \\/:*?"<>|]).+$/` and has a minimum length of 1._
@@ -374,11 +388,11 @@ Issue information
 
 _Object containing the following properties:_
 
-| Property            | Description               | Type                                      |
-| :------------------ | :------------------------ | :---------------------------------------- |
-| **`message`** (\*)  | Descriptive error message | `string` (_max length: 1024_)             |
-| **`severity`** (\*) | Severity level            | [IssueSeverity](#issueseverity)           |
-| `source`            | Source file location      | [SourceFileLocation](#sourcefilelocation) |
+| Property            | Description                                    | Type                            |
+| :------------------ | :--------------------------------------------- | :------------------------------ |
+| **`message`** (\*)  | Descriptive error message                      | `string` (_max length: 1024_)   |
+| **`severity`** (\*) | Severity level                                 | [IssueSeverity](#issueseverity) |
+| `source`            | Source location of an issue (file path or URL) | [IssueSource](#issuesource)     |
 
 _(\*) Required._
 
@@ -391,6 +405,15 @@ _Enum, one of the following possible values:_
 - `'info'`
 - `'warning'`
 - `'error'`
+
+## IssueSource
+
+Source location of an issue (file path or URL)
+
+_Union of the following possible types:_
+
+- [SourceFileLocation](#sourcefilelocation)
+- [SourceUrlLocation](#sourceurllocation)
 
 ## MaterialIcon
 
@@ -1500,6 +1523,20 @@ _Object containing the following properties:_
 
 _(\*) Required._
 
+## SourceUrlLocation
+
+Location of a DOM element in a web page
+
+_Object containing the following properties:_
+
+| Property       | Description                                   | Type             |
+| :------------- | :-------------------------------------------- | :--------------- |
+| **`url`** (\*) | URL of the web page where the issue was found | `string` (_url_) |
+| `snippet`      | HTML snippet of the element                   | `string`         |
+| `selector`     | CSS selector to locate the element            | `string`         |
+
+_(\*) Required._
+
 ## TableAlignment
 
 Cell alignment
@@ -1576,6 +1613,20 @@ _Object containing the following properties:_
 | **`organization`** (\*) | Organization slug from Code PushUp portal                            | [Slug](#slug)        |
 | **`project`** (\*)      | Project slug from Code PushUp portal                                 | [Slug](#slug)        |
 | `timeout`               | Request timeout in minutes (default is 5)                            | `number` (_>0, int_) |
+
+_(\*) Required._
+
+## UrlIssue
+
+Issue with a URL source location
+
+_Object containing the following properties:_
+
+| Property            | Description                             | Type                                    |
+| :------------------ | :-------------------------------------- | :-------------------------------------- |
+| **`message`** (\*)  | Descriptive error message               | `string` (_max length: 1024_)           |
+| **`severity`** (\*) | Severity level                          | [IssueSeverity](#issueseverity)         |
+| **`source`** (\*)   | Location of a DOM element in a web page | [SourceUrlLocation](#sourceurllocation) |
 
 _(\*) Required._
 

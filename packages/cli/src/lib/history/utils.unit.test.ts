@@ -1,4 +1,3 @@
-import { describe, expect, vi } from 'vitest';
 import type { HistoryOptions } from '@code-pushup/core';
 import type { HistoryCliOptions } from './history.model.js';
 import { normalizeHashOptions } from './utils.js';
