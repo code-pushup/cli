@@ -1,0 +1,41 @@
+{
+  "name": "workspace-baseline",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/workspace-baseline/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/tools/workspace-baseline",
+        "main": "tools/workspace-baseline/src/index.ts",
+        "tsConfig": "tools/workspace-baseline/tsconfig.lib.json",
+        "assets": [
+          "tools/workspace-baseline/*.md",
+          {
+            "input": "./tools/workspace-baseline/src",
+            "glob": "**/!(*.ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./tools/workspace-baseline/src",
+            "glob": "**/*.d.ts",
+            "output": "./src"
+          },
+          {
+            "input": "./tools/workspace-baseline",
+            "glob": "generators.json",
+            "output": "."
+          },
+          {
+            "input": "./tools/workspace-baseline",
+            "glob": "executors.json",
+            "output": "."
+          }
+        ]
+      }
+    }
+  }
+}

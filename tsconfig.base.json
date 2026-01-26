@@ -48,7 +48,10 @@
       "@code-pushup/typescript-plugin": [
         "packages/plugin-typescript/src/index.ts"
       ],
-      "@code-pushup/utils": ["packages/utils/src/index.ts"]
+      "@code-pushup/utils": ["packages/utils/src/index.ts"],
+      "@code-pushup/workspace-baseline": [
+        "tools/workspace-baseline/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

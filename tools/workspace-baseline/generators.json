@@ -1,0 +1,9 @@
+{
+  "generators": {
+    "sync-baseline": {
+      "factory": "./src/lib/generators/sync-baseline/sync-baseline",
+      "schema": "./src/lib/generators/sync-baseline/schema.json",
+      "description": "sync-baseline generator"
+    }
+  }
+}
