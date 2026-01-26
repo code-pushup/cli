@@ -12,20 +12,16 @@ export async function configurationGenerator(
   options: ConfigurationGeneratorOptions,
 ) {
   const projectConfiguration = readProjectConfiguration(tree, options.project);
-
   const { skipConfig, skipFormat } = options;
-
   if (skipConfig === true) {
     logger.info('Skip config file creation');
   } else {
     generateZod2MdConfig(tree, projectConfiguration.root);
   }
-
   if (skipFormat === true) {
     logger.info('Skip formatting files');
   } else {
     await formatFiles(tree);
   }
 }
-
 export default configurationGenerator;

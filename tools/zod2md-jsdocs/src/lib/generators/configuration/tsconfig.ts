@@ -33,7 +33,6 @@ export function getFirstExistingTsConfig(
       )
     : undefined;
 }
-
 export type PluginDefinition = {
   transform: string;
   afterDeclarations: boolean;
@@ -44,7 +43,6 @@ export type TsConfig = {
     plugins: PluginDefinition[];
   };
 };
-
 export function addZod2MdTransformToTsConfig(
   tree: Tree,
   root: string,
@@ -61,15 +59,12 @@ export function addZod2MdTransformToTsConfig(
   if (!firstExistingTsc) {
     throw new Error(`No config tsconfig.json file exists.`);
   }
-
   const tscJson = JSON.parse(tree.read(firstExistingTsc)?.toString() ?? `{}`);
   const compilerOptions = tscJson.compilerOptions ?? {};
   const plugins = (compilerOptions.plugins ?? []) as PluginDefinition[];
-
   const hasTransformPlugin = plugins.some(
     plugin => plugin.transform === './tools/zod2md-jsdocs/dist',
   );
-
   if (!hasTransformPlugin) {
     tree.write(
       firstExistingTsc,

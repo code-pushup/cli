@@ -6,7 +6,7 @@
   "implicitDependencies": ["zod2md-jsdocs"],
   "targets": {
     "build": {
-      "dependsOn": ["^build", "generate-docs"]
+      "dependsOn": ["^build", "generate-docs", "ts-patch"]
     },
     "lint": {},
     "unit-test": {},

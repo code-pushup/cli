@@ -1,14 +1,7 @@
 import type { PluginConfig, TransformerExtras } from 'ts-patch';
 import type * as ts from 'typescript';
-
-/* eslint-disable-next-line no-duplicate-imports */
 import tsInstance from 'typescript';
 
-/**
- * Generates a JSDoc comment for a given type name and base URL.
- * @param typeName
- * @param baseUrl
- */
 export function generateJSDocComment(
   typeName: string,
   baseUrl: string,
@@ -23,14 +16,12 @@ export function generateJSDocComment(
  * @see {@link ${markdownLink}}
  `;
 }
-
 export function annotateTypeDefinitions(
   _program: ts.Program,
   pluginConfig: PluginConfig,
   extras?: TransformerExtras,
 ): ts.TransformerFactory<ts.SourceFile> {
   const baseUrl = pluginConfig.baseUrl as string | undefined;
-
   if (!baseUrl) {
     throw new Error(
       'zod2md-jsdocs: "baseUrl" option is required. ' +

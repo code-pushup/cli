@@ -4,14 +4,12 @@ import * as ts from 'typescript';
 import type { Config } from 'zod2md';
 
 export type GenerateZod2MdConfigOptions = Config;
-
 export function getFirstExistingConfig(tree: Tree, projectRoot: string) {
   const supportedFormats = ['ts', 'mjs', 'js'];
   return supportedFormats.find(ext =>
     tree.exists(path.join(projectRoot, `zod2md.config.${ext}`)),
   );
 }
-
 export function generateZod2MdConfig(
   tree: Tree,
   root: string,
@@ -31,7 +29,6 @@ export function generateZod2MdConfig(
       tsconfig = path.join(root, 'tsconfig.lib.json'),
       transformName,
     } = options ?? {};
-
     generateFiles(tree, path.join(__dirname, 'files'), root, {
       entry,
       format,
@@ -42,7 +39,6 @@ export function generateZod2MdConfig(
     });
   }
 }
-
 export function readDefaultExportObject<
   T extends Record<string, unknown> = Record<string, unknown>,
 >(tree: Tree, filePath: string): T | null {
@@ -50,30 +46,23 @@ export function readDefaultExportObject<
   if (!content) {
     return null;
   }
-
   const source = ts.createSourceFile(
     filePath,
     content,
     ts.ScriptTarget.Latest,
     true,
   );
-
-  // eslint-disable-next-line functional/no-let
   let result: Record<string, unknown> | null = null;
-
   source.forEachChild(node => {
     if (!ts.isExportAssignment(node)) {
       return;
     }
-
     const expr = ts.isSatisfiesExpression?.(node.expression)
       ? node.expression.expression
       : node.expression;
-
     if (!ts.isObjectLiteralExpression(expr)) {
       return;
     }
-
     result = expr.properties.reduce<Record<string, string>>((acc, prop) => {
       if (
         ts.isPropertyAssignment(prop) &&
@@ -85,10 +74,8 @@ export function readDefaultExportObject<
           [prop.name.text]: prop.initializer.text,
         };
       }
-
       return acc;
     }, {});
   });
-
   return result as T | null;
 }
