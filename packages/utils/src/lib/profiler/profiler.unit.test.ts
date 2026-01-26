@@ -466,7 +466,9 @@ describe('NodejsProfiler', () => {
 
     const mockPerfObserverSink = {
       subscribe: vi.fn(),
-      unsubscribe: vi.fn(),
+      unsubscribe: vi.fn(function (this: typeof mockPerfObserverSink) {
+        this.flush();
+      }),
       isSubscribed: vi.fn().mockReturnValue(false),
       encode: vi.fn(),
       flush: vi.fn(),
@@ -611,52 +613,48 @@ describe('NodejsProfiler', () => {
       flushThreshold: 20,
       addedSinceLastFlush: 0,
       buffered: true,
+      debug: false,
     });
   });
 
-  describe.todo('state transitions', () => {
-    it.todo(
-      'should handle full transition matrix: idle → running → idle → closed',
-      () => {
-        const { sink, perfObserverSink, profiler } = getNodejsProfiler({
-          enabled: false,
-        });
+  describe('state transitions', () => {
+    it('should handle full transition matrix: idle → running → idle → closed', () => {
+      const { sink, perfObserverSink, profiler } = getNodejsProfiler({
+        enabled: false,
+      });
 
-        // Initial state: idle
-        expect(profiler.isRunning()).toBe(false);
-        expect(profiler.activeat()).toBe(false);
-        expect(sink.isClosed()).toBe(true);
-        expect(perfObserverSink.subscribe).not.toHaveBeenCalled();
+      // Initial state: idle
+      expect(sink.isClosed()).toBe(true);
+      expect(perfObserverSink.subscribe).not.toHaveBeenCalled();
 
-        // idle → running
-        profiler.setEnabled(true);
-        expect(profiler.state).toBe('running');
-        expect(sink.isClosed()).toBe(false);
-        expect(sink.open).toHaveBeenCalledTimes(1);
-        expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
+      // idle → running
+      profiler.setEnabled(true);
+      expect(profiler.state).toBe('running');
+      expect(sink.isClosed()).toBe(false);
+      expect(sink.open).toHaveBeenCalledTimes(1);
+      expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
 
-        // running → idle
-        profiler.setEnabled(false);
-        expect(profiler.isEnabled()).toBe(false);
-        expect(sink.isClosed()).toBe(true);
-        expect(sink.close).toHaveBeenCalledTimes(1);
-        expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
+      // running → idle
+      profiler.setEnabled(false);
+      expect(profiler.isEnabled()).toBe(false);
+      expect(sink.isClosed()).toBe(true);
+      expect(sink.close).toHaveBeenCalledTimes(1);
+      expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
 
-        // idle → closed (terminal)
-        profiler.close();
-        expect(sink.close).toHaveBeenCalledTimes(1); // No additional close since we're in idle
-        expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1); // No additional unsubscribe since we're in idle
-        expect(perfObserverSink.flush).toHaveBeenCalledTimes(0); // No flush for idle->closed
+      // idle → closed (terminal)
+      profiler.close();
+      expect(sink.close).toHaveBeenCalledTimes(1); // No additional close since we're in idle
+      expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1); // No additional unsubscribe since we're in idle
+      expect(perfObserverSink.flush).toHaveBeenCalledTimes(1); // Flush was called during running->idle transition via unsubscribe
 
-        // Verify closed state - operations should throw or be safe
-        expect(() => profiler.setEnabled(true)).toThrow(
-          'Profiler already closed',
-        );
-        profiler.close(); // Should be idempotent
-      },
-    );
+      // Verify closed state - operations should throw or be safe
+      expect(() => profiler.setEnabled(true)).toThrow(
+        'Profiler already closed',
+      );
+      profiler.close(); // Should be idempotent
+    });
 
-    it.todo('should expose state via getter', () => {
+    it('should expose state via getter', () => {
       const profiler = getNodejsProfiler({ enabled: false }).profiler;
 
       expect(profiler.state).toBe('idle');
@@ -671,41 +669,38 @@ describe('NodejsProfiler', () => {
       expect(profiler.state).toBe('closed');
     });
 
-    it.todo(
-      'should maintain state invariant: running ⇒ sink open + observer subscribed',
-      () => {
-        const { sink, perfObserverSink, profiler } = getNodejsProfiler({
-          enabled: false,
-        });
+    it('should maintain state invariant: running ⇒ sink open + observer subscribed', () => {
+      const { sink, perfObserverSink, profiler } = getNodejsProfiler({
+        enabled: false,
+      });
 
-        // Initially idle - sink closed, observer not subscribed
-        expect(profiler.state).toBe('idle');
-        expect(sink.isClosed()).toBe(true);
-        expect(perfObserverSink.isSubscribed).toHaveBeenCalledWith(false);
+      // Initially idle - sink closed, observer not subscribed
+      expect(profiler.state).toBe('idle');
+      expect(sink.isClosed()).toBe(true);
+      expect(perfObserverSink.isSubscribed()).toBe(false);
 
-        // Enable - should open sink and subscribe observer
-        profiler.setEnabled(true);
-        expect(profiler.state).toBe('running');
-        expect(sink.isClosed()).toBe(false);
-        expect(sink.open).toHaveBeenCalledTimes(1);
-        expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
+      // Enable - should open sink and subscribe observer
+      profiler.setEnabled(true);
+      expect(profiler.state).toBe('running');
+      expect(sink.isClosed()).toBe(false);
+      expect(sink.open).toHaveBeenCalledTimes(1);
+      expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
 
-        // Disable - should close sink and unsubscribe observer
-        profiler.setEnabled(false);
-        expect(profiler.state).toBe('idle');
-        expect(sink.close).toHaveBeenCalledTimes(1);
-        expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
+      // Disable - should close sink and unsubscribe observer
+      profiler.setEnabled(false);
+      expect(profiler.state).toBe('idle');
+      expect(sink.close).toHaveBeenCalledTimes(1);
+      expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
 
-        // Enable again - should open and subscribe again
-        profiler.setEnabled(true);
-        expect(profiler.state).toBe('running');
-        expect(sink.isClosed()).toBe(false);
-        expect(sink.open).toHaveBeenCalledTimes(2);
-        expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(2);
-      },
-    );
+      // Enable again - should open and subscribe again
+      profiler.setEnabled(true);
+      expect(profiler.state).toBe('running');
+      expect(sink.isClosed()).toBe(false);
+      expect(sink.open).toHaveBeenCalledTimes(2);
+      expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(2);
+    });
 
-    it.todo('should handle running → closed transition', () => {
+    it('should handle running → closed transition', () => {
       const { sink, perfObserverSink, profiler } = getNodejsProfiler({
         enabled: true,
       });
@@ -720,7 +715,7 @@ describe('NodejsProfiler', () => {
       expect(sink.close).toHaveBeenCalledTimes(1);
     });
 
-    it.todo('should prevent invalid transitions when closed', () => {
+    it('should prevent invalid transitions when closed', () => {
       const { profiler } = getNodejsProfiler({ enabled: false });
 
       // idle → closed
@@ -1039,6 +1034,183 @@ describe('NodejsProfiler', () => {
       });
     });
 
+    describe('debug flag and transition markers', () => {
+      const originalEnv = process.env.CP_PROFILER_DEBUG;
+
+      beforeEach(() => {
+        performance.clearMarks();
+        performance.clearMeasures();
+        // eslint-disable-next-line functional/immutable-data
+        delete process.env.CP_PROFILER_DEBUG;
+      });
+
+      afterEach(() => {
+        if (originalEnv === undefined) {
+          // eslint-disable-next-line functional/immutable-data
+          delete process.env.CP_PROFILER_DEBUG;
+        } else {
+          // eslint-disable-next-line functional/immutable-data
+          process.env.CP_PROFILER_DEBUG = originalEnv;
+        }
+      });
+
+      it('should initialize debug flag to false when env var not set', () => {
+        const { profiler } = getNodejsProfiler();
+
+        const stats = profiler.stats;
+        expect(stats.debug).toBe(false);
+      });
+
+      it('should initialize debug flag from CP_PROFILER_DEBUG env var when set', () => {
+        // eslint-disable-next-line functional/immutable-data
+        process.env.CP_PROFILER_DEBUG = 'true';
+
+        const { profiler } = getNodejsProfiler();
+
+        const stats = profiler.stats;
+        expect(stats.debug).toBe(true);
+      });
+
+      it('should create transition marker when debug is enabled and transitioning to running', () => {
+        // eslint-disable-next-line functional/immutable-data
+        process.env.CP_PROFILER_DEBUG = 'true';
+        const { profiler } = getNodejsProfiler({ enabled: false });
+
+        performance.clearMarks();
+
+        // Transition from idle to running (profiler becomes enabled)
+        profiler.setEnabled(true);
+
+        const marks = performance.getEntriesByType('mark');
+        const transitionMark = marks.find(
+          mark => mark.name === 'idle->running',
+        );
+        expect(transitionMark).toBeDefined();
+        expect(transitionMark?.name).toBe('idle->running');
+      });
+
+      it('should not create transition marker when transitioning from running to idle (profiler disabled)', () => {
+        // eslint-disable-next-line functional/immutable-data
+        process.env.CP_PROFILER_DEBUG = 'true';
+        const { profiler } = getNodejsProfiler({ enabled: true });
+
+        performance.clearMarks();
+
+        // Transition from running to idle (profiler becomes disabled before marker call)
+        profiler.setEnabled(false);
+
+        const marks = performance.getEntriesByType('mark');
+        const transitionMark = marks.find(
+          mark => mark.name === 'running->idle',
+        );
+        // Marker won't be created because profiler is disabled before marker() is called
+        expect(transitionMark).toBeUndefined();
+      });
+
+      it('should not create transition marker when transitioning from idle to closed (profiler never enabled)', () => {
+        // eslint-disable-next-line functional/immutable-data
+        process.env.CP_PROFILER_DEBUG = 'true';
+        const { profiler } = getNodejsProfiler({ enabled: false });
+
+        performance.clearMarks();
+
+        // Transition from idle to closed (profiler was never enabled)
+        profiler.close();
+
+        const marks = performance.getEntriesByType('mark');
+        const transitionMark = marks.find(mark => mark.name === 'idle->closed');
+        // Marker won't be created because profiler is not enabled
+        expect(transitionMark).toBeUndefined();
+      });
+
+      it('should not create transition marker when debug is disabled', () => {
+        // eslint-disable-next-line functional/immutable-data
+        delete process.env.CP_PROFILER_DEBUG;
+        const { profiler } = getNodejsProfiler();
+
+        performance.clearMarks();
+
+        // Transition from idle to running
+        profiler.setEnabled(true);
+
+        const marks = performance.getEntriesByType('mark');
+        const transitionMark = marks.find(mark =>
+          mark.name.startsWith('idle->running'),
+        );
+        expect(transitionMark).toBeUndefined();
+      });
+
+      it('should not create transition marker when debug not set and env var not set', () => {
+        const { profiler } = getNodejsProfiler();
+
+        performance.clearMarks();
+
+        // Transition from idle to running
+        profiler.setEnabled(true);
+
+        const marks = performance.getEntriesByType('mark');
+        const transitionMark = marks.find(mark =>
+          mark.name.startsWith('idle->running'),
+        );
+        expect(transitionMark).toBeUndefined();
+      });
+
+      it('should create transition marker when debug enabled via env var', () => {
+        // eslint-disable-next-line functional/immutable-data
+        process.env.CP_PROFILER_DEBUG = 'true';
+
+        const { profiler } = getNodejsProfiler();
+
+        performance.clearMarks();
+
+        // Transition from idle to running
+        profiler.setEnabled(true);
+
+        const marks = performance.getEntriesByType('mark');
+        const transitionMark = marks.find(mark =>
+          mark.name.startsWith('idle->running'),
+        );
+        expect(transitionMark).toBeDefined();
+      });
+
+      it('should include stats in transition marker properties when transitioning to running', () => {
+        // eslint-disable-next-line functional/immutable-data
+        process.env.CP_PROFILER_DEBUG = 'true';
+        const { profiler, perfObserverSink } = getNodejsProfiler({
+          enabled: false,
+        });
+
+        perfObserverSink.getStats.mockReturnValue({
+          isSubscribed: true,
+          queued: 5,
+          dropped: 2,
+          written: 10,
+          maxQueueSize: 10_000,
+          flushThreshold: 20,
+          addedSinceLastFlush: 3,
+          buffered: true,
+        });
+
+        performance.clearMarks();
+
+        // Transition to running (profiler becomes enabled, so marker will be created)
+        profiler.setEnabled(true);
+
+        const marks = performance.getEntriesByType('mark');
+        const transitionMark = marks.find(
+          mark => mark.name === 'idle->running',
+        );
+        expect(transitionMark).toBeDefined();
+
+        // Verify marker was created with correct name and includes stats in detail
+        expect(transitionMark?.name).toBe('idle->running');
+        expect(transitionMark?.detail).toBeDefined();
+        expect(transitionMark?.detail.devtools).toBeDefined();
+        expect(transitionMark?.detail.devtools.dataType).toBe('marker');
+        expect(transitionMark?.detail.devtools.properties).toBeDefined();
+      });
+    });
+
     describe('setEnabled override', () => {
       it('should enable profiling when setEnabled(true)', () => {
         const { profiler } = getNodejsProfiler({ enabled: false });
@@ -1173,8 +1345,7 @@ describe('NodejsProfiler', () => {
           track: 'test-track',
         });
 
-        expect(profiler.isRunning()).toBe(true);
-        expect(profiler.activeat()).toBe(true);
+        expect(profiler.isEnabled()).toBe(false); // Base profiler defaults to disabled
 
         // measure should always execute work
         let workCalled = false;

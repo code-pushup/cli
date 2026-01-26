@@ -1,9 +1,11 @@
+import { performance } from 'node:perf_hooks';
 import { isEnvVarEnabled } from '../env.js';
 import {
   type PerformanceObserverOptions,
   PerformanceObserverSink,
 } from '../performance-observer.js';
 import type { Recoverable, Sink } from '../sink-source.type.js';
+import { objectToEntries } from '../transform.js';
 import {
   type ActionTrackConfigs,
   type MeasureCtxOptions,
@@ -17,8 +19,12 @@ import type {
   ActionTrackEntryPayload,
   DevToolsColor,
   EntryMeta,
+  MarkerPayload,
 } from '../user-timing-extensibility-api.type.js';
-import { PROFILER_ENABLED_ENV_VAR } from './constants.js';
+import {
+  PROFILER_DEBUG_ENV_VAR,
+  PROFILER_ENABLED_ENV_VAR,
+} from './constants.js';
 
 /**
  * Configuration options for creating a Profiler instance.
@@ -245,6 +251,14 @@ export type NodejsProfilerOptions<
      * @NOTE this is dummy code and will be replaced by PR #1210
      **/
     sink: Sink<DomainEvents, unknown> & Recoverable;
+
+    /**
+     * Name of the environment variable to check for debug mode.
+     * When the env var is set to 'true', profiler state transitions create performance marks for debugging.
+     *
+     * @default 'CP_PROFILER_DEBUG'
+     */
+    debugEnvVar?: string;
   };
 
 /**
@@ -272,6 +286,7 @@ export class NodejsProfiler<
   #sink: Sink<DomainEvents, unknown> & Recoverable;
   #performanceObserverSink: PerformanceObserverSink<DomainEvents>;
   #state: 'idle' | 'running' | 'closed' = 'idle';
+  #debug: boolean;
 
   /**
    * Creates a NodejsProfiler instance.
@@ -285,12 +300,14 @@ export class NodejsProfiler<
       flushThreshold,
       maxQueueSize,
       enabled,
+      debugEnvVar = PROFILER_DEBUG_ENV_VAR,
       ...profilerOptions
     } = options;
     const initialEnabled = enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
     super({ ...profilerOptions, enabled: initialEnabled });
 
     this.#sink = sink;
+    this.#debug = isEnvVarEnabled(debugEnvVar);
 
     this.#performanceObserverSink = new PerformanceObserverSink({
       sink,
@@ -298,11 +315,39 @@ export class NodejsProfiler<
       captureBufferedEntries,
       flushThreshold,
       maxQueueSize,
+      debugEnvVar,
     });
 
     if (initialEnabled) {
       this.#transition('running');
     }
+  }
+
+  /**
+   * Returns whether debug mode is enabled for profiler state transitions.
+   *
+   * Debug mode is determined by the environment variable specified by `debugEnvVar`
+   * (defaults to 'CP_PROFILER_DEBUG'). When enabled, profiler state transitions create
+   * performance marks for debugging.
+   *
+   * @returns true if debug mode is enabled, false otherwise
+   */
+  get debug(): boolean {
+    return this.#debug;
+  }
+
+  /**
+   * Creates a performance marker for a profiler state transition.
+   * @param transition - The state transition that occurred
+   */
+  #transitionMarker(transition: string): void {
+    const transitionMarkerPayload: MarkerPayload = {
+      dataType: 'marker',
+      color: 'primary',
+      tooltipText: `Profiler state transition: ${transition}`,
+      properties: [['Transition', transition], ...objectToEntries(this.stats)],
+    };
+    this.marker(transition, transitionMarkerPayload);
   }
 
   #transition(next: 'idle' | 'running' | 'closed'): void {
@@ -313,7 +358,9 @@ export class NodejsProfiler<
       throw new Error('Profiler already closed');
     }
 
-    switch (`${this.#state}->${next}`) {
+    const transition = `${this.#state}->${next}`;
+
+    switch (transition) {
       case 'idle->running':
         super.setEnabled(true);
         this.#sink.open();
@@ -336,6 +383,10 @@ export class NodejsProfiler<
     }
 
     this.#state = next;
+
+    if (this.#debug) {
+      this.#transitionMarker(transition);
+    }
   }
 
   /**
@@ -369,6 +420,7 @@ export class NodejsProfiler<
   get stats() {
     return {
       ...this.#performanceObserverSink.getStats(),
+      debug: this.#debug,
       state: this.#state,
       walOpen: !this.#sink.isClosed(),
     };

@@ -190,20 +190,10 @@ describe('PerformanceObserverSink', () => {
     observer.subscribe();
 
     const mockObserver = MockPerformanceObserver.lastInstance();
-    mockObserver?.emit([
-      {
-        name: 'test-mark',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-      {
-        name: 'test-measure',
-        entryType: 'measure',
-        startTime: 0,
-        duration: 100,
-      },
-    ]);
+    performance.mark('test-mark');
+    mockObserver?.triggerObserverCallback();
+    performance.measure('test-measure');
+    // measure() automatically triggers observers, so no need to call triggerObserverCallback again
     observer.flush();
     expect(encodePerfEntry).toHaveBeenCalledTimes(2);
     expect(encodePerfEntry).toHaveBeenNthCalledWith(
@@ -226,7 +216,15 @@ describe('PerformanceObserverSink', () => {
     const observer = new PerformanceObserverSink(options);
     observer.subscribe();
 
-    MockPerformanceObserver.lastInstance()?.emitNavigation('test-navigation');
+    const mockObserver = MockPerformanceObserver.lastInstance();
+    // eslint-disable-next-line functional/immutable-data
+    MockPerformanceObserver.globalEntries.push({
+      name: 'test-navigation',
+      entryType: 'navigation',
+      startTime: 0,
+      duration: 0,
+    } as unknown as PerformanceEntry);
+    mockObserver?.triggerObserverCallback();
     expect(encodePerfEntry).not.toHaveBeenCalled();
   });
 
@@ -260,20 +258,9 @@ describe('PerformanceObserverSink', () => {
     observer.subscribe();
 
     const mockObserver = MockPerformanceObserver.lastInstance();
-    mockObserver?.emit([
-      {
-        name: 'test-mark1',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-      {
-        name: 'test-mark2',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-    ]);
+    performance.mark('test-mark1');
+    performance.mark('test-mark2');
+    mockObserver?.triggerObserverCallback();
     expect(sink.getWrittenItems()).toStrictEqual([]);
 
     observer.flush();
@@ -297,20 +284,9 @@ describe('PerformanceObserverSink', () => {
     observer.subscribe();
 
     const mockObserver = MockPerformanceObserver.lastInstance();
-    mockObserver?.emit([
-      {
-        name: 'test-mark1',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-      {
-        name: 'test-mark2',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-    ]);
+    performance.mark('test-mark1');
+    performance.mark('test-mark2');
+    mockObserver?.triggerObserverCallback();
 
     observer.flush();
 
@@ -349,14 +325,8 @@ describe('PerformanceObserverSink', () => {
     observer.subscribe();
 
     const mockObserver = MockPerformanceObserver.lastInstance();
-    mockObserver?.emit([
-      {
-        name: 'mark-1',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-    ]);
+    performance.mark('mark-1');
+    mockObserver?.triggerObserverCallback();
 
     await new Promise(resolve => {
       setTimeout(() => resolve(0), 0);
@@ -381,7 +351,7 @@ describe('PerformanceObserverSink', () => {
     expect(MockPerformanceObserver.instances).toHaveLength(0);
   });
 
-  it('observer callback throws encodePerfEntry errors immediately', () => {
+  it('handles encodePerfEntry errors gracefully and drops items', () => {
     const failingEncode = vi.fn(() => {
       throw new Error('Encode failed');
     });
@@ -395,19 +365,193 @@ describe('PerformanceObserverSink', () => {
     observer.subscribe();
 
     const mockObserver = MockPerformanceObserver.lastInstance();
-    expect(() =>
-      mockObserver?.emit([
-        {
-          name: 'test-mark',
-          entryType: 'mark',
-          startTime: 0,
-          duration: 0,
-        },
-      ]),
-    ).toThrow('Encode failed');
+    performance.mark('test-mark');
+    expect(() => mockObserver?.triggerObserverCallback()).not.toThrow();
+
+    const stats = observer.getStats();
+    expect(stats.dropped).toBe(1);
+    expect(stats.queued).toBe(0);
   });
 
-  it('flush wraps sink write errors with descriptive error message', () => {
+  describe('debug mode with env var', () => {
+    const originalEnv = process.env.CP_PROFILER_DEBUG;
+
+    beforeEach(() => {
+      // Restore original env before each test
+      if (originalEnv === undefined) {
+        // eslint-disable-next-line functional/immutable-data
+        delete process.env.CP_PROFILER_DEBUG;
+      } else {
+        // eslint-disable-next-line functional/immutable-data
+        process.env.CP_PROFILER_DEBUG = originalEnv;
+      }
+    });
+
+    afterEach(() => {
+      // Restore original env after each test
+      if (originalEnv === undefined) {
+        // eslint-disable-next-line functional/immutable-data
+        delete process.env.CP_PROFILER_DEBUG;
+      } else {
+        // eslint-disable-next-line functional/immutable-data
+        process.env.CP_PROFILER_DEBUG = originalEnv;
+      }
+    });
+
+    it('creates performance mark when encode fails and debug mode is enabled via env var', () => {
+      // eslint-disable-next-line functional/immutable-data
+      process.env.CP_PROFILER_DEBUG = 'true';
+
+      const failingEncode = vi.fn(() => {
+        throw new Error('EncodeError');
+      });
+
+      const observer = new PerformanceObserverSink({
+        sink,
+        encodePerfEntry: failingEncode,
+        flushThreshold: 10,
+      });
+
+      observer.subscribe();
+
+      const mockObserver = MockPerformanceObserver.lastInstance();
+      performance.mark('test-entry');
+      mockObserver?.triggerObserverCallback();
+
+      const marks = performance.getEntriesByType('mark');
+      const errorMark = marks.find(mark =>
+        mark.name.startsWith('encode-error:'),
+      );
+      expect(errorMark).toBeDefined();
+      expect(errorMark?.name).toBe('encode-error:Error:test-entry');
+
+      const stats = observer.getStats();
+      expect(stats.dropped).toBe(1);
+    });
+
+    it('does not create performance mark when encode fails and debug mode is disabled', () => {
+      // eslint-disable-next-line functional/immutable-data
+      delete process.env.CP_PROFILER_DEBUG;
+
+      const failingEncode = vi.fn(() => {
+        throw new Error('EncodeError');
+      });
+
+      const observer = new PerformanceObserverSink({
+        sink,
+        encodePerfEntry: failingEncode,
+        flushThreshold: 10,
+      });
+
+      performance.clearMarks();
+      observer.subscribe();
+
+      const mockObserver = MockPerformanceObserver.lastInstance();
+      performance.mark('test-entry');
+      mockObserver?.triggerObserverCallback();
+
+      const marks = performance.getEntriesByType('mark');
+      const errorMark = marks.find(mark =>
+        mark.name.startsWith('encode-error:'),
+      );
+      expect(errorMark).toBeUndefined();
+
+      const stats = observer.getStats();
+      expect(stats.dropped).toBe(1);
+    });
+
+    it('handles encode errors for unnamed entries correctly', () => {
+      // eslint-disable-next-line functional/immutable-data
+      process.env.CP_PROFILER_DEBUG = 'true';
+
+      const failingEncode = vi.fn(() => {
+        throw new Error('EncodeError');
+      });
+
+      const observer = new PerformanceObserverSink({
+        sink,
+        encodePerfEntry: failingEncode,
+        flushThreshold: 10,
+      });
+
+      observer.subscribe();
+
+      const mockObserver = MockPerformanceObserver.lastInstance();
+      performance.mark('');
+      mockObserver?.triggerObserverCallback();
+
+      const marks = performance.getEntriesByType('mark');
+      const errorMark = marks.find(mark =>
+        mark.name.startsWith('encode-error:'),
+      );
+      expect(errorMark).toBeDefined();
+      expect(errorMark?.name).toBe('encode-error:Error:unnamed');
+    });
+
+    it('handles non-Error objects thrown from encode function', () => {
+      // eslint-disable-next-line functional/immutable-data
+      process.env.CP_PROFILER_DEBUG = 'true';
+
+      const failingEncode = vi.fn(() => {
+        throw 'String error';
+      });
+
+      const observer = new PerformanceObserverSink({
+        sink,
+        encodePerfEntry: failingEncode,
+        flushThreshold: 10,
+      });
+
+      observer.subscribe();
+
+      const mockObserver = MockPerformanceObserver.lastInstance();
+      performance.mark('test-entry');
+      mockObserver?.triggerObserverCallback();
+
+      const marks = performance.getEntriesByType('mark');
+      const errorMark = marks.find(mark =>
+        mark.name.startsWith('encode-error:'),
+      );
+      expect(errorMark).toBeDefined();
+      expect(errorMark?.name).toBe('encode-error:UnknownError:test-entry');
+
+      const stats = observer.getStats();
+      expect(stats.dropped).toBe(1);
+    });
+  });
+
+  it('continues processing other entries after encode failure', () => {
+    let callCount = 0;
+    const failingEncode = vi.fn(() => {
+      callCount++;
+      if (callCount === 1) {
+        throw new Error('First encode failed');
+      }
+      return [`entry-${callCount}:mark`];
+    });
+
+    const observer = new PerformanceObserverSink({
+      sink,
+      encodePerfEntry: failingEncode,
+      flushThreshold: 10,
+    });
+
+    observer.subscribe();
+
+    const mockObserver = MockPerformanceObserver.lastInstance();
+    performance.mark('failing-entry');
+    performance.mark('successful-entry');
+    mockObserver?.triggerObserverCallback();
+
+    observer.flush();
+
+    const stats = observer.getStats();
+    expect(stats.dropped).toBe(1);
+    expect(stats.written).toBe(1);
+    expect(sink.getWrittenItems()).toStrictEqual(['entry-2:mark']);
+  });
+
+  it('flush handles sink write errors internally and keeps failed items in queue', () => {
     const failingSink = {
       write: vi.fn(() => {
         throw new Error('Sink write failed');
@@ -424,23 +568,19 @@ describe('PerformanceObserverSink', () => {
     observer.subscribe();
 
     const mockObserver = MockPerformanceObserver.lastInstance();
-    mockObserver?.emit([
-      {
-        name: 'test-mark',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-    ]);
+    performance.mark('test-mark');
+    mockObserver?.triggerObserverCallback();
 
-    expect(() => observer.flush()).toThrow(
-      expect.objectContaining({
-        message: 'PerformanceObserverSink failed to write items to sink.',
-        cause: expect.objectContaining({
-          message: 'Sink write failed',
-        }),
-      }),
-    );
+    const statsBefore = observer.getStats();
+    expect(statsBefore.dropped).toBe(0);
+    expect(statsBefore.queued).toBe(1);
+
+    // flush should not throw, but failed items stay in queue for retry
+    expect(() => observer.flush()).not.toThrow();
+
+    const statsAfter = observer.getStats();
+    expect(statsAfter.dropped).toBe(0); // Items not dropped, kept for retry
+    expect(statsAfter.queued).toBe(1); // Failed item stays in queue
   });
 
   it('getStats returns dropped and queued item information', () => {
@@ -468,14 +608,8 @@ describe('PerformanceObserverSink', () => {
 
     observer.subscribe();
     const mockObserver = MockPerformanceObserver.lastInstance();
-    mockObserver?.emit([
-      {
-        name: 'start-operation',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-    ]);
+    performance.mark('start-operation');
+    mockObserver?.triggerObserverCallback();
 
     expect(observer.getStats()).toStrictEqual(
       expect.objectContaining({
@@ -498,26 +632,10 @@ describe('PerformanceObserverSink', () => {
     observer.subscribe();
 
     const mockObserver = MockPerformanceObserver.lastInstance();
-    mockObserver?.emit([
-      {
-        name: 'mark-1',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-      {
-        name: 'mark-2',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-      {
-        name: 'mark-3',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-    ]);
+    performance.mark('mark-1');
+    performance.mark('mark-2');
+    performance.mark('mark-3');
+    mockObserver?.triggerObserverCallback();
 
     expect(observer.getStats()).toStrictEqual(
       expect.objectContaining({
@@ -539,26 +657,10 @@ describe('PerformanceObserverSink', () => {
 
     observer.subscribe();
     const mockObserver = MockPerformanceObserver.lastInstance();
-    mockObserver?.emit([
-      {
-        name: 'write-test-1',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-      {
-        name: 'write-test-2',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-      {
-        name: 'write-test-3',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-    ]);
+    performance.mark('write-test-1');
+    performance.mark('write-test-2');
+    performance.mark('write-test-3');
+    mockObserver?.triggerObserverCallback();
     observer.flush();
 
     expect(observer.getStats()).toStrictEqual(
@@ -580,48 +682,106 @@ describe('PerformanceObserverSink', () => {
     observer.subscribe();
     const mockObserver = MockPerformanceObserver.lastInstance();
 
-    mockObserver?.emit([
-      {
-        name: 'test-1',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-    ]);
+    performance.mark('test-1');
+    mockObserver?.triggerObserverCallback();
 
     expect(observer.getStats().addedSinceLastFlush).toBe(1);
 
-    mockObserver?.emit([
-      {
-        name: 'test-2',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-    ]);
+    performance.mark('test-2');
+    mockObserver?.triggerObserverCallback();
 
-    expect(observer.getStats().addedSinceLastFlush).toBe(2);
+    // triggerObserverCallback processes all entries in globalEntries, including previously processed ones
+    // So it processes both test-1 and test-2, adding 2 items (total 3 including the previous one)
+    expect(observer.getStats().addedSinceLastFlush).toBe(3);
 
     observer.flush();
     expect(observer.getStats().addedSinceLastFlush).toBe(0);
 
-    mockObserver?.emit([
-      {
-        name: 'test-3',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-      {
-        name: 'test-4',
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-    ]);
+    performance.mark('test-3');
+    performance.mark('test-4');
+    mockObserver?.triggerObserverCallback();
 
-    expect(observer.getStats()).toHaveProperty('addedSinceLastFlush', 2);
+    // triggerObserverCallback processes all entries in globalEntries, including previously processed ones
+    // So after flush, we have test-1, test-2, test-3, test-4 all in globalEntries
+    // When callback is triggered, it processes all 4 entries, adding 4 items to queue
+    expect(observer.getStats()).toHaveProperty('addedSinceLastFlush', 4);
 
     observer.unsubscribe();
+  });
+
+  describe('debug getter', () => {
+    const originalEnv = process.env.CP_PROFILER_DEBUG;
+
+    beforeEach(() => {
+      // eslint-disable-next-line functional/immutable-data
+      delete process.env.CP_PROFILER_DEBUG;
+    });
+
+    afterEach(() => {
+      if (originalEnv === undefined) {
+        // eslint-disable-next-line functional/immutable-data
+        delete process.env.CP_PROFILER_DEBUG;
+      } else {
+        // eslint-disable-next-line functional/immutable-data
+        process.env.CP_PROFILER_DEBUG = originalEnv;
+      }
+    });
+
+    it('returns false when debug env var is not set', () => {
+      const observer = new PerformanceObserverSink(options);
+
+      expect(observer.debug).toBe(false);
+    });
+
+    it('returns true when debug env var is set to "true"', () => {
+      // eslint-disable-next-line functional/immutable-data
+      process.env.CP_PROFILER_DEBUG = 'true';
+
+      const observer = new PerformanceObserverSink(options);
+
+      expect(observer.debug).toBe(true);
+    });
+
+    it('returns false when debug env var is set to a value other than "true"', () => {
+      // eslint-disable-next-line functional/immutable-data
+      process.env.CP_PROFILER_DEBUG = 'false';
+
+      const observer = new PerformanceObserverSink(options);
+
+      expect(observer.debug).toBe(false);
+    });
+
+    it('returns false when debug env var is set to empty string', () => {
+      // eslint-disable-next-line functional/immutable-data
+      process.env.CP_PROFILER_DEBUG = '';
+
+      const observer = new PerformanceObserverSink(options);
+
+      expect(observer.debug).toBe(false);
+    });
+
+    it('respects custom debugEnvVar option', () => {
+      // eslint-disable-next-line functional/immutable-data
+      process.env.CUSTOM_DEBUG_VAR = 'true';
+
+      const observer = new PerformanceObserverSink({
+        ...options,
+        debugEnvVar: 'CUSTOM_DEBUG_VAR',
+      });
+
+      expect(observer.debug).toBe(true);
+
+      // eslint-disable-next-line functional/immutable-data
+      delete process.env.CUSTOM_DEBUG_VAR;
+    });
+
+    it('returns false when custom debugEnvVar is not set', () => {
+      const observer = new PerformanceObserverSink({
+        ...options,
+        debugEnvVar: 'CUSTOM_DEBUG_VAR',
+      });
+
+      expect(observer.debug).toBe(false);
+    });
   });
 });

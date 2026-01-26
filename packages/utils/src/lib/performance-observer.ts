@@ -1,4 +1,10 @@
-import { type PerformanceEntry, PerformanceObserver } from 'node:perf_hooks';
+import {
+  type PerformanceEntry,
+  PerformanceObserver,
+  performance,
+} from 'node:perf_hooks';
+import { isEnvVarEnabled } from './env.js';
+import { PROFILER_DEBUG_ENV_VAR } from './profiler/constants.js';
 import type { Buffered, Observer, Sink } from './sink-source.type';
 
 /**
@@ -20,6 +26,18 @@ export type PerformanceEntryEncoder<F> = (
 const OBSERVED_TYPES = ['mark', 'measure'] as const;
 type ObservedEntryType = 'mark' | 'measure';
 const OBSERVED_TYPE_SET = new Set<ObservedEntryType>(OBSERVED_TYPES);
+
+/**
+ * Converts an error to a performance mark name for debugging.
+ * @param error - The error that occurred
+ * @param entry - The performance entry that failed to encode
+ * @returns A mark name string
+ */
+function errorToPerfMark(error: unknown, entry: PerformanceEntry): string {
+  const errorName = error instanceof Error ? error.name : 'UnknownError';
+  const entryName = entry.name || 'unnamed';
+  return `encode-error:${errorName}:${entryName}`;
+}
 
 /**
  * Default threshold for triggering queue flushes based on queue length.
@@ -102,6 +120,14 @@ export type PerformanceObserverOptions<T> = {
    * @default DEFAULT_MAX_QUEUE_SIZE (10000)
    */
   maxQueueSize?: number;
+
+  /**
+   * Name of the environment variable to check for debug mode.
+   * When the env var is set to 'true', encode failures create performance marks for debugging.
+   *
+   * @default 'CP_PROFILER_DEBUG'
+   */
+  debugEnvVar?: string;
 };
 
 /**
@@ -110,6 +136,26 @@ export type PerformanceObserverOptions<T> = {
  * This class provides a buffered, memory-safe bridge between Node.js PerformanceObserver
  * and application-specific data sinks. It handles performance entry encoding, queue management,
  * and graceful degradation under high load conditions.
+ *
+ * Performance entries flow through the following lifecycle:
+ *
+ * - Queued in Memory 💾
+ *   - Items stored in queue (`#queue`) until flushed
+ *   - Queue limited by `maxQueueSize` to prevent unbounded growth
+ *   - Items remain in queue if sink is closed during flush
+ *
+ * - Successfully Written 📤
+ *   - Items written to sink and counted in `getStats().written`
+ *   - Queue cleared after successful batch writes
+ *
+ * - Item Disposition Scenarios 💥
+ *   - **Encode Failure**: ❌ Items lost when `encode()` throws. Creates perf mark if debug env var (specified by `debugEnvVar`) is set to 'true'.
+ *   - **Sink Write Failure**: 💾 Items stay in queue when sink write fails during flush
+ *   - **Sink Closed**: 💾 Items stay in queue when sink is closed during flush
+ *   - **Proactive Flush Throws**: 💾 Items stay in queue when `flush()` throws during threshold check
+ *   - **Final Flush Throws**: 💾 Items stay in queue when `flush()` throws at end of callback
+ *   - **Buffered Flush Throws**: 💾 Items stay in queue when buffered entries flush fails
+ *   - **Queue Overflow**: ❌ Items dropped when queue reaches `maxQueueSize`
  *
  * @template T - The type of encoded performance data written to the sink
  * @implements {Observer} - Lifecycle management interface
@@ -146,6 +192,9 @@ export class PerformanceObserverSink<T> implements Observer, Buffered {
   /** Number of items added to queue since last successful flush */
   #addedSinceLastFlush = 0;
 
+  /** Whether debug mode is enabled for encode failures */
+  #debug: boolean;
+
   /**
    * Creates a new PerformanceObserverSink with the specified configuration.
    *
@@ -159,6 +208,7 @@ export class PerformanceObserverSink<T> implements Observer, Buffered {
       captureBufferedEntries,
       flushThreshold = DEFAULT_FLUSH_THRESHOLD,
       maxQueueSize = DEFAULT_MAX_QUEUE_SIZE,
+      debugEnvVar = PROFILER_DEBUG_ENV_VAR,
     } = options;
     this.#encodePerfEntry = encodePerfEntry;
     this.#sink = sink;
@@ -166,6 +216,20 @@ export class PerformanceObserverSink<T> implements Observer, Buffered {
     this.#maxQueueSize = maxQueueSize;
     validateFlushThreshold(flushThreshold, this.#maxQueueSize);
     this.#flushThreshold = flushThreshold;
+    this.#debug = isEnvVarEnabled(debugEnvVar);
+  }
+
+  /**
+   * Returns whether debug mode is enabled for encode failures.
+   *
+   * Debug mode is determined by the environment variable specified by `debugEnvVar`
+   * (defaults to 'CP_PROFILER_DEBUG'). When enabled, encode failures create
+   * performance marks for debugging.
+   *
+   * @returns true if debug mode is enabled, false otherwise
+   */
+  get debug(): boolean {
+    return this.#debug;
   }
 
   /**
@@ -219,22 +283,35 @@ export class PerformanceObserverSink<T> implements Observer, Buffered {
     this.#observer = new PerformanceObserver(list => {
       list.getEntries().forEach(entry => {
         if (OBSERVED_TYPE_SET.has(entry.entryType as ObservedEntryType)) {
-          const items = this.encode(entry);
-          items.forEach(item => {
-            if (this.#queue.length >= this.#maxQueueSize) {
-              this.#dropped++;
-              return;
-            }
+          try {
+            const items = this.encode(entry);
+            items.forEach(item => {
+              // ❌ MAX QUEUE OVERFLOW
+              if (this.#queue.length >= this.#maxQueueSize) {
+                this.#dropped++; // Item are lost forever
+                return;
+              }
 
-            if (
-              this.#queue.length >=
-              this.#maxQueueSize - this.#flushThreshold
-            ) {
-              this.flush();
+              if (
+                this.#queue.length >=
+                this.#maxQueueSize - this.#flushThreshold
+              ) {
+                this.flush();
+              }
+              this.#queue.push(item);
+              this.#addedSinceLastFlush++;
+            });
+          } catch (error) {
+            // ❌ Encode failure: item lost forever as user has to fix encode function.
+            this.#dropped++;
+            if (this.#debug) {
+              try {
+                performance.mark(errorToPerfMark(error, entry));
+              } catch {
+                // Ignore mark failures to prevent double errors
+              }
             }
-            this.#queue.push(item);
-            this.#addedSinceLastFlush++;
-          });
+          }
         }
       });
 
@@ -269,23 +346,22 @@ export class PerformanceObserverSink<T> implements Observer, Buffered {
       return;
     }
 
-    let batchWritten = 0;
-    try {
-      this.#queue.forEach(item => {
+    // Process each item in queue
+    const failedItems: T[] = [];
+
+    this.#queue.forEach(item => {
+      try {
         this.#sink.write(item);
-        batchWritten++;
         this.#written++;
-      });
-    } catch (error) {
-      this.#dropped += this.#queue.length - batchWritten;
-      throw new Error(
-        'PerformanceObserverSink failed to write items to sink.',
-        { cause: error },
-      );
-    } finally {
-      this.#queue.length = 0;
-      this.#addedSinceLastFlush = 0;
-    }
+      } catch {
+        failedItems.push(item);
+      }
+    });
+
+    // Clear queue but keep failed items for retry
+    this.#queue.length = 0;
+    this.#queue.push(...failedItems);
+    this.#addedSinceLastFlush = failedItems.length;
   }
 
   /**
