@@ -1055,6 +1055,8 @@ describe('NodejsProfiler', () => {
         performance.clearMeasures();
         // eslint-disable-next-line functional/immutable-data
         delete process.env.CP_PROFILER_DEBUG;
+        // eslint-disable-next-line functional/immutable-data
+        delete process.env.CP_PROFILING;
       });
 
       afterEach(() => {
@@ -1171,6 +1173,8 @@ describe('NodejsProfiler', () => {
       it('should create transition marker when debug enabled via env var', () => {
         // eslint-disable-next-line functional/immutable-data
         process.env.CP_PROFILER_DEBUG = 'true';
+        // eslint-disable-next-line functional/immutable-data
+        delete process.env.CP_PROFILING;
 
         const { profiler } = getNodejsProfiler();
 
@@ -1353,6 +1357,8 @@ describe('NodejsProfiler', () => {
 
     describe('base Profiler behavior', () => {
       it('should always be active in base profiler', () => {
+        // eslint-disable-next-line functional/immutable-data
+        delete process.env.CP_PROFILING;
         const profiler = new Profiler({
           prefix: 'cp',
           track: 'test-track',
