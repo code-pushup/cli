@@ -1,4 +1,4 @@
-import { performance } from 'node:perf_hooks';
+import { defaultClock } from '../clock-epoch.js';
 import type { InvalidEntry, WalFormat } from '../wal.js';
 import {
   decodeTraceEvent,
@@ -13,10 +13,10 @@ import type { TraceEvent, UserTimingTraceEvent } from './trace-file.type.js';
 const TRACE_START_MARGIN_NAME = '[trace padding start]';
 /** Name for the trace end margin event */
 const TRACE_END_MARGIN_NAME = '[trace padding end]';
-/** Milliseconds of padding to add before/after trace events */
-const TRACE_MARGIN_MS = 1000;
-/** Duration in milliseconds for margin events */
-const TRACE_MARGIN_DURATION_MS = 20;
+/** Microseconds of padding to add before/after trace events (1000ms = 1,000,000μs) */
+const TRACE_MARGIN_US = 1_000_000;
+/** Duration in microseconds for margin events (20ms = 20,000μs) */
+const TRACE_MARGIN_DURATION_US = 20_000;
 
 /**
  * Generates a complete Chrome DevTools trace file content as JSON string.
@@ -38,16 +38,16 @@ export function generateTraceContent(
     },
   });
 
-  const marginMs = TRACE_MARGIN_MS;
-  const marginDurMs = TRACE_MARGIN_DURATION_MS;
+  const marginUs = TRACE_MARGIN_US;
+  const marginDurUs = TRACE_MARGIN_DURATION_US;
 
   const sortedEvents = [...events].sort((a, b) => a.ts - b.ts);
-  const fallbackTs = performance.now();
+  const fallbackTs = defaultClock.epochNowUs();
   const firstTs: number = sortedEvents.at(0)?.ts ?? fallbackTs;
   const lastTs: number = sortedEvents.at(-1)?.ts ?? fallbackTs;
 
-  const startTs = firstTs - marginMs;
-  const endTs = lastTs + marginMs;
+  const startTs = firstTs - marginUs;
+  const endTs = lastTs + marginUs;
 
   const traceEvents: TraceEvent[] = [
     getInstantEventTracingStartedInBrowser({
@@ -57,13 +57,13 @@ export function generateTraceContent(
     getCompleteEvent({
       name: TRACE_START_MARGIN_NAME,
       ts: startTs,
-      dur: marginDurMs,
+      dur: marginDurUs,
     }),
     ...sortedEvents,
     getCompleteEvent({
       name: TRACE_END_MARGIN_NAME,
       ts: endTs,
-      dur: marginDurMs,
+      dur: marginDurUs,
     }),
   ];
 

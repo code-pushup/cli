@@ -572,7 +572,7 @@ describe('parseWalFormat', () => {
   it('should apply all defaults when given empty config', () => {
     const result = parseWalFormat({});
 
-    expect(result.baseName).toBe('trace');
+    expect(result.baseName).toBe('wal');
     expect(result.walExtension).toBe('.log');
     expect(result.finalExtension).toBe('.log');
     expect(result.codec).toBeDefined();
@@ -640,6 +640,27 @@ describe('parseWalFormat', () => {
     const result = parseWalFormat<string>({ baseName: 'test' });
     expect(result.finalizer(['line1', 'line2'])).toBe('line1\nline2\n');
     expect(result.finalizer([])).toBe('\n');
+  });
+
+  it('should encode objects to JSON strings in default finalizer', () => {
+    const result = parseWalFormat<object>({ baseName: 'test' });
+    const records = [
+      { id: 1, name: 'test' },
+      { id: 2, name: 'test2' },
+    ];
+    const output = result.finalizer(records);
+    expect(output).toBe('{"id":1,"name":"test"}\n{"id":2,"name":"test2"}\n');
+  });
+
+  it('should handle InvalidEntry in default finalizer', () => {
+    const result = parseWalFormat<string>({ baseName: 'test' });
+    const records: (string | InvalidEntry<string>)[] = [
+      'valid',
+      { __invalid: true, raw: 'invalid-raw' },
+      'also-valid',
+    ];
+    const output = result.finalizer(records);
+    expect(output).toBe('valid\ninvalid-raw\nalso-valid\n');
   });
 });
 

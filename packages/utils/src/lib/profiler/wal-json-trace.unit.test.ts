@@ -28,13 +28,13 @@ describe('generateTraceContent', () => {
         expect.objectContaining({
           name: '[trace padding start]',
           ph: 'X',
-          dur: 20,
+          dur: 20_000,
           cat: 'devtools.timeline',
         }),
         expect.objectContaining({
           name: '[trace padding end]',
           ph: 'X',
-          dur: 20,
+          dur: 20_000,
           cat: 'devtools.timeline',
         }),
       ],
@@ -102,14 +102,14 @@ describe('generateTraceContent', () => {
         expect.objectContaining({
           name: '[trace padding start]',
           ph: 'X',
-          dur: 20,
+          dur: 20_000,
           cat: 'devtools.timeline',
         }),
         ...events,
         expect.objectContaining({
           name: '[trace padding end]',
           ph: 'X',
-          dur: 20,
+          dur: 20_000,
           cat: 'devtools.timeline',
         }),
       ],
@@ -191,24 +191,24 @@ describe('generateTraceContent', () => {
       }),
     );
 
-    // Second should be start margin at ts - 1000
+    // Second should be start margin at ts - 1,000,000μs (1000ms)
     expect(traceEvents[1]).toStrictEqual(
       expect.objectContaining({
         name: '[trace padding start]',
         ph: 'X',
-        dur: 20,
+        dur: 20_000,
       }),
     );
 
     // Third should be the actual event
     expect(traceEvents[2]).toStrictEqual(events[0]);
 
-    // Fourth should be end margin at lastTs + 1000
+    // Fourth should be end margin at lastTs + 1,000,000μs (1000ms)
     expect(traceEvents[3]).toStrictEqual(
       expect.objectContaining({
         name: '[trace padding end]',
         ph: 'X',
-        dur: 20,
+        dur: 20_000,
       }),
     );
   });

@@ -38,6 +38,22 @@ export type RecoverResult<T> = {
   partialTail: string | null;
 };
 
+/**
+ * Statistics about the WAL file state and last recovery operation.
+ */
+export type WalStats<T> = {
+  /** File path for this WAL */
+  filePath: string;
+  /** Whether the WAL file is currently closed */
+  isClosed: boolean;
+  /** Whether the WAL file exists on disk */
+  fileExists: boolean;
+  /** File size in bytes (0 if file doesn't exist) */
+  fileSize: number;
+  /** Last recovery state from the most recent {@link recover} or {@link repack} operation */
+  lastRecovery: RecoverResult<T | InvalidEntry<string>> | null;
+};
+
 export const createTolerantCodec = <I, O = string>(codec: {
   encode: (v: I) => O;
   decode: (d: O) => I;
@@ -121,6 +137,7 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
   readonly #file: string;
   readonly #decode: Codec<T | InvalidEntry<string>>['decode'];
   readonly #encode: Codec<T>['encode'];
+  #lastRecoveryState: RecoverResult<T | InvalidEntry<string>> | null = null;
 
   /**
    * Create a new WAL file instance.
@@ -170,20 +187,27 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
   /**
    * Recover all records from the WAL file.
    * Handles partial writes and decode errors gracefully.
+   * Updates the recovery state (accessible via {@link getStats}).
    * @returns Recovery result with records, errors, and partial tail
    */
   recover(): RecoverResult<T | InvalidEntry<string>> {
     if (!fs.existsSync(this.#file)) {
-      return { records: [], errors: [], partialTail: null };
+      this.#lastRecoveryState = { records: [], errors: [], partialTail: null };
+      return this.#lastRecoveryState;
     }
-
     const txt = fs.readFileSync(this.#file, 'utf8');
-    return recoverFromContent<T | InvalidEntry<string>>(txt, this.#decode);
+    this.#lastRecoveryState = recoverFromContent<T | InvalidEntry<string>>(
+      txt,
+      this.#decode,
+    );
+
+    return this.#lastRecoveryState;
   }
 
   /**
    * Repack the WAL by recovering all valid records and rewriting cleanly.
    * Removes corrupted entries and ensures clean formatting.
+   * Updates the recovery state (accessible via {@link getStats}).
    * @param out - Output path (defaults to current file)
    */
   repack(out = this.#file) {
@@ -207,6 +231,22 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
       : filterValidRecords(r.records);
     fs.mkdirSync(path.dirname(out), { recursive: true });
     fs.writeFileSync(out, `${recordsToWrite.map(this.#encode).join('\n')}\n`);
+  }
+
+  /**
+   * Get comprehensive statistics about the WAL file state.
+   * Includes file information, open/close status, and last recovery state.
+   * @returns Statistics object with file info and last recovery state
+   */
+  getStats(): WalStats<T> {
+    const fileExists = fs.existsSync(this.#file);
+    return {
+      filePath: this.#file,
+      isClosed: this.#fd == null,
+      fileExists,
+      fileSize: fileExists ? fs.statSync(this.#file).size : 0,
+      lastRecovery: this.#lastRecoveryState,
+    };
   }
 }
 
@@ -246,7 +286,7 @@ export const stringCodec = <
 /**
  * Parses a partial WalFormat configuration and returns a complete WalFormat object.
  * All fallback values are targeting string types.
- *  - baseName defaults to Date.now().toString()
+ *  - baseName defaults to 'wal'
  *  - walExtension defaults to '.log'
  *  - finalExtension defaults to '.log'
  *  - codec defaults to stringCodec<T>()
@@ -258,13 +298,22 @@ export function parseWalFormat<T extends object | string = object>(
   format: Partial<WalFormat<T>>,
 ): WalFormat<T> {
   const {
-    baseName = 'trace',
+    baseName = 'wal',
     walExtension = '.log',
     finalExtension = walExtension,
     codec = stringCodec<T>(),
-    finalizer = (encodedRecords: (T | InvalidEntry<string>)[]) =>
-      `${encodedRecords.join('\n')}\n`,
   } = format;
+
+  const finalizer =
+    format.finalizer ??
+    ((encodedRecords: (T | InvalidEntry<string>)[]) => {
+      const encoded = encodedRecords.map(record =>
+        typeof record === 'object' && record != null && '__invalid' in record
+          ? (record as InvalidEntry<string>).raw
+          : codec.encode(record as T),
+      );
+      return `${encoded.join('\n')}\n`;
+    });
 
   return {
     baseName,
@@ -301,6 +350,7 @@ export function setLeaderWal(envVarName: string, profilerID: string): void {
 
 // eslint-disable-next-line functional/no-let
 let shardCount = 0;
+
 /**
  * Generates a human-readable shard ID.
  * This ID is unique per process/thread/shard combination and used in the file name.
@@ -354,6 +404,7 @@ export function sortableReadableDateString(timestampMs: string): string {
 
   return `${yyyy}${mm}${dd}-${hh}${min}${ss}-${ms}`;
 }
+
 /**
  * Generates a path to a shard file using human-readable IDs.
  * Both groupId and shardId are already in readable date format.
