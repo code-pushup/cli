@@ -6,7 +6,6 @@ import {
 } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import * as path from 'node:path';
-import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_ZOD2MD_CONFIG_FILE_NAME } from './constants.js';
 import { configurationGenerator } from './generator.js';
 

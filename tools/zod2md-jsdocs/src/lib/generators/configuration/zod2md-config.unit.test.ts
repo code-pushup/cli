@@ -2,7 +2,6 @@ import * as devKit from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import * as path from 'node:path';
 import stripAnsi from 'strip-ansi';
-import { afterEach, describe, expect, it } from 'vitest';
 import { generateZod2MdConfig } from './zod2md-config.js';
 
 describe('generateZod2MdConfig options', () => {
@@ -35,10 +34,10 @@ describe('generateZod2MdConfig options', () => {
       expect.any(String),
       expect.any(String),
       expect.objectContaining({
-        entry: 'test-app/src/main.ts',
+        entry: expect.pathToMatch('test-app/src/main.ts'),
         format: 'esm',
         title: 'App Types',
-        output: 'test-app/docs/main.md',
+        output: expect.pathToMatch('test-app/docs/main.md'),
       }),
     );
   });
@@ -95,14 +94,14 @@ describe('generateZod2MdConfig options', () => {
       expect.anything(),
       expect.any(String),
       expect.any(String),
-      {
-        entry: 'test-app/src/index.ts',
+      expect.objectContaining({
+        entry: expect.pathToMatch('test-app/src/index.ts'),
         format: 'esm',
         title: 'test-app reference',
-        output: 'test-app/docs/test-app-reference.md',
+        output: expect.pathToMatch('test-app/docs/test-app-reference.md'),
         transformName: undefined,
-        tsconfig: 'test-app/tsconfig.lib.json',
-      },
+        tsconfig: expect.pathToMatch('test-app/tsconfig.lib.json'),
+      }),
     );
   });
 });

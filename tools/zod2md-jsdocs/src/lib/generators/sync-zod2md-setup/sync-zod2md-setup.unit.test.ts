@@ -1,7 +1,6 @@
 import * as devkit from '@nx/devkit';
 import { updateJson } from '@nx/devkit';
 import type { NxProjectPackageJsonConfiguration } from 'nx/src/utils/package-json';
-import { expect } from 'vitest';
 import { generateWorkspaceAndProject } from '@code-pushup/test-nx-utils';
 import {
   GENERATE_DOCS_TARGET_NAME,

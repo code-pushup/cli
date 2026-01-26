@@ -95,11 +95,28 @@ export async function nxShowProjectJson<T extends ProjectConfiguration>(
   cwd: string,
   project: string,
 ) {
-  const { stderr, stdout } = await executeProcess({
-    command: 'npx',
-    args: ['nx', 'show', `project --json  ${project}`],
-    cwd,
-  });
+  try {
+    const { stderr, stdout } = await executeProcess({
+      command: 'npx',
+      args: ['nx', 'show', 'project', '--json', project],
+      cwd,
+    });
 
-  return { stderr, projectJson: JSON.parse(stdout) as T };
+    return {
+      code: 0,
+      stderr,
+      projectJson: JSON.parse(stdout) as T,
+    };
+  } catch (error: unknown) {
+    const execError = error as {
+      code?: number;
+      stderr?: string;
+      stdout?: string;
+    };
+    return {
+      code: execError.code ?? 1,
+      stderr: execError.stderr ?? String(error),
+      projectJson: JSON.parse(execError.stdout ?? '{}') as T,
+    };
+  }
 }
