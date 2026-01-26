@@ -339,19 +339,33 @@ describe('PerformanceObserverSink', () => {
     expect(sink.getWrittenItems()).toStrictEqual([]);
   });
 
-  it('flush is safe when sink is closed', () => {
+  it('flush is safe when sink is closed', async () => {
     const observer = new PerformanceObserverSink({
       sink,
       encodePerfEntry,
       flushThreshold: 10,
     });
-
+    sink.open();
     observer.subscribe();
-    performance.mark('test-mark');
+
+    const mockObserver = MockPerformanceObserver.lastInstance();
+    mockObserver?.emit([
+      {
+        name: 'mark-1',
+        entryType: 'mark',
+        startTime: 0,
+        duration: 0,
+      },
+    ]);
+
+    await new Promise(resolve => {
+      setTimeout(() => resolve(0), 0);
+    });
     sink.close();
 
     expect(() => observer.flush()).not.toThrow();
     expect(() => observer.flush()).not.toThrow();
+    expect(observer.getStats()).toHaveProperty('queued', 1);
 
     observer.unsubscribe();
   });

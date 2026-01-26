@@ -261,20 +261,27 @@ export class PerformanceObserverSink<T> implements Observer, Buffered {
    * If the sink is closed during flush, the queue is cleared without writing.
    * The queue is always cleared after flush attempt, regardless of success or failure.
    *
+   * Note: flush() on a closed sink is a no-op.
+   *
    * @throws {Error} If sink write operations fail (with original error as cause)
    */
   flush(): void {
     if (this.#queue.length === 0) {
       return;
     }
+    if (this.#sink.isClosed()) {
+      return;
+    }
 
+    let batchWritten = 0;
     try {
       this.#queue.forEach(item => {
         this.#sink.write(item);
+        batchWritten++;
         this.#written++;
       });
     } catch (error) {
-      this.#dropped += this.#queue.length;
+      this.#dropped += this.#queue.length - batchWritten;
       throw new Error(
         'PerformanceObserverSink failed to write items to sink.',
         { cause: error },
@@ -298,7 +305,6 @@ export class PerformanceObserverSink<T> implements Observer, Buffered {
       return;
     }
     this.flush();
-    this.#queue.length = 0;
     this.#addedSinceLastFlush = 0;
     this.#observer.disconnect();
     this.#observer = undefined;
