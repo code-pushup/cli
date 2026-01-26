@@ -1,5 +1,4 @@
 import * as tsModule from 'typescript';
-import { describe, expect, vi } from 'vitest';
 import { osAgnosticPath } from '@code-pushup/test-utils';
 import { loadTargetConfig } from './utils.js';
 
@@ -31,12 +30,12 @@ describe('loadTargetConfig', () => {
         },
       }),
     );
-    expect(readConfigFileSpy).toHaveBeenCalledTimes(1);
+    expect(readConfigFileSpy).toHaveBeenCalledOnce();
     expect(readConfigFileSpy).toHaveBeenCalledWith(
       expect.stringContaining('tsconfig.init.json'),
       expect.any(Function),
     );
-    expect(parseJsonConfigFileContentSpy).toHaveBeenCalledTimes(1);
+    expect(parseJsonConfigFileContentSpy).toHaveBeenCalledOnce();
   });
 
   it('should return the parsed content of a tsconfig file that extends another config', () => {
@@ -63,7 +62,7 @@ describe('loadTargetConfig', () => {
       }),
     );
 
-    expect(readConfigFileSpy).toHaveBeenCalledTimes(1);
-    expect(parseJsonConfigFileContentSpy).toHaveBeenCalledTimes(1);
+    expect(readConfigFileSpy).toHaveBeenCalledOnce();
+    expect(parseJsonConfigFileContentSpy).toHaveBeenCalledOnce();
   });
 });

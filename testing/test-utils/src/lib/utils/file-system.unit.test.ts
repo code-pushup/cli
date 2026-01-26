@@ -1,15 +1,7 @@
 import { vol } from 'memfs';
 import { stat } from 'node:fs/promises';
 import path from 'node:path';
-import {
-  type MockInstance,
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
+import type { MockInstance } from 'vitest';
 import { MEMFS_VOLUME } from '../constants.js';
 import { ensureDirectoryExists } from './file-system.js';
 

@@ -1,4 +1,3 @@
-import { describe, expect, it, vi } from 'vitest';
 import { logger } from '@code-pushup/utils';
 import { filterKebabCaseKeys, logErrorBeforeThrow } from './global.utils.js';
 import { OptionValidationError } from './validate-filter-options.utils.js';

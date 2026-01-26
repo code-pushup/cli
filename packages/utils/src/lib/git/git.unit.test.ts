@@ -1,5 +1,4 @@
 import type { SimpleGit, StatusResult } from 'simple-git';
-import { describe, expect } from 'vitest';
 import {
   GitStatusError,
   formatGitPath,

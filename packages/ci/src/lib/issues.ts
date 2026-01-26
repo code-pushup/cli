@@ -2,11 +2,12 @@ import type {
   Audit,
   AuditReport,
   CategoryRef,
-  Issue,
+  FileIssue,
   PluginMeta,
   Report,
   ReportsDiff,
 } from '@code-pushup/models';
+import { isFileIssue } from '@code-pushup/utils';
 import {
   type ChangedFiles,
   adjustFileName,
@@ -14,7 +15,7 @@ import {
   isFileChanged,
 } from './git.js';
 
-export type SourceFileIssue = Required<Issue> & IssueContext;
+export type SourceFileIssue = FileIssue & IssueContext;
 
 type IssueContext = {
   audit: Pick<Audit, 'slug' | 'title'>;
@@ -71,7 +72,7 @@ function getAuditIssues(
 ): SourceFileIssue[] {
   return (
     audit.details?.issues
-      ?.filter((issue): issue is Required<Issue> => issue.source?.file != null)
+      ?.filter(isFileIssue)
       .map(issue => ({ ...issue, audit, plugin })) ?? []
   );
 }

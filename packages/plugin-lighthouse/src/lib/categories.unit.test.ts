@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import type { CategoryConfig } from '@code-pushup/models';
 import {
   createAggregatedCategory,

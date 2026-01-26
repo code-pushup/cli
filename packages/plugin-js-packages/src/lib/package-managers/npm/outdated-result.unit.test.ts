@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import type { OutdatedResult } from '../../runner/outdated/types.js';
 import { npmToOutdatedResult } from './outdated-result.js';
 

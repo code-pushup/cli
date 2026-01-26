@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import type { AuditOutput, Issue } from '@code-pushup/models';
 import { defaultAuditLevelMapping } from '../../constants.js';
 import {

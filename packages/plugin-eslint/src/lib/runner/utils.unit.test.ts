@@ -1,6 +1,5 @@
 import type { ESLint } from 'eslint';
 import * as globModule from 'glob';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as utilsModule from '@code-pushup/utils';
 import type { LinterOutput } from './types.js';
 import { loadArtifacts } from './utils.js';
@@ -79,7 +78,7 @@ describe('loadArtifacts', () => {
       loadArtifacts({ artifactsPaths: artifactsPaths.at(0)! }),
     ).resolves.toStrictEqual([expectedLinterOutput1]);
     expect(executeProcessSpy).not.toHaveBeenCalled();
-    expect(readJsonFileSpy).toHaveBeenCalledTimes(1);
+    expect(readJsonFileSpy).toHaveBeenCalledOnce();
     expect(readJsonFileSpy).toHaveBeenNthCalledWith(1, artifactsPaths.at(0));
   });
 
@@ -94,7 +93,7 @@ describe('loadArtifacts', () => {
       expectedLinterOutput2,
     ]);
 
-    expect(globSpy).toHaveBeenCalledTimes(1);
+    expect(globSpy).toHaveBeenCalledOnce();
     expect(globSpy).toHaveBeenCalledWith(artifactsPaths);
     expect(readJsonFileSpy).toHaveBeenCalledTimes(2);
     expect(readJsonFileSpy).toHaveBeenNthCalledWith(1, artifactsPaths.at(0));
@@ -119,7 +118,7 @@ describe('loadArtifacts', () => {
       command: generateArtifactsCommand,
       ignoreExitCode: true,
     });
-    expect(globSpy).toHaveBeenCalledTimes(1);
+    expect(globSpy).toHaveBeenCalledOnce();
     expect(globSpy).toHaveBeenCalledWith(artifactsPaths);
   });
 
@@ -142,7 +141,7 @@ describe('loadArtifacts', () => {
       ...generateArtifactsCommand,
       ignoreExitCode: true,
     });
-    expect(globSpy).toHaveBeenCalledTimes(1);
+    expect(globSpy).toHaveBeenCalledOnce();
     expect(globSpy).toHaveBeenCalledWith(artifactsPaths);
   });
 });

@@ -53,7 +53,7 @@
       "options": {
         "command": "eslint",
         "args": [
-          "'{projectRoot}/**/*.ts'",
+          "'{projectRoot}/**/*.{ts,cjs,mjs,js}'",
           "{projectRoot}/package.json",
           "--config={projectRoot}/eslint.config.js",
           "--max-warnings=0",
@@ -345,6 +345,7 @@
     "releaseTagPattern": "v{version}"
   },
   "plugins": [
+    "./tools/zod2md-jsdocs/src/nx-plugin.ts",
     {
       "plugin": "@push-based/nx-verdaccio",
       "options": {

@@ -1,5 +1,4 @@
 import axe from 'axe-core';
-import { describe, expect, it } from 'vitest';
 import { axeCategoryGroupSlugSchema, axeWcagTagSchema } from './groups.js';
 
 describe('axeCategoryGroupSlugSchema', () => {

@@ -1,6 +1,5 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { expect } from 'vitest';
 import { type AuditOutputs, DEFAULT_PERSIST_CONFIG } from '@code-pushup/models';
 import { createRunnerFunction } from './runner.js';
 

@@ -1,4 +1,3 @@
-import { expect } from 'vitest';
 import { PACKAGE_NAME } from '../../internal/constants.js';
 import { createConfigurationTarget } from './configuration-target.js';
 

@@ -24,8 +24,8 @@ A `Issue` with severity `info` is present and names to the given file.
     <tr>
       <th>Severity</th>
       <th>Message</th>
-      <th>Source file</th>
-      <th>Line(s)</th>
+      <th>Source</th>
+      <th>Location</th>
     </tr>
     <tr>
       <td>ℹ️ <i>info</i></td>
@@ -45,8 +45,8 @@ The file sizes of the given file, the budget as well as the size difference is m
     <tr>
       <th>Severity</th>
       <th>Message</th>
-      <th>Source file</th>
-      <th>Line(s)</th>
+      <th>Source</th>
+      <th>Location</th>
     </tr>
     <tr>
        <td>🚨 <i>error</i></td>

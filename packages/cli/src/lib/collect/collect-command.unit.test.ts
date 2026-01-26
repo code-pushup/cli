@@ -1,4 +1,3 @@
-import { describe, expect, it, vi } from 'vitest';
 import { collectAndPersistReports, readRcByPath } from '@code-pushup/core';
 import {
   DEFAULT_PERSIST_FILENAME,

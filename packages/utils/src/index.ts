@@ -125,6 +125,11 @@ export {
   listGroupsFromAllPlugins,
 } from './lib/reports/flatten-plugins.js';
 export { formatIssueSeverities, wrapTags } from './lib/reports/formatting.js';
+export {
+  isFileIssue,
+  isFileSource,
+  isUrlSource,
+} from './lib/reports/type-guards.js';
 export { generateMdReport } from './lib/reports/generate-md-report.js';
 export {
   generateMdReportsDiff,
