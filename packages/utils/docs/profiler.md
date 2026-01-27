@@ -277,6 +277,12 @@ const saved = profiler.measure('save-user', () => saveToDb(user), {
 This profiler extends all options and API from Profiler with automatic process exit handling for buffered performance data.
 The NodeJSProfiler automatically subscribes to performance observation and installs exit handlers that flush buffered data on process termination (signals, fatal errors, or normal exit).
 
+### Exit Handlers
+
+The profiler automatically subscribes to process events (`exit`, `SIGINT`, `SIGTERM`, `SIGQUIT`, `uncaughtException`, `unhandledRejection`) during construction. When any of these occur, the handlers call `close()` to ensure buffered data is flushed.
+
+The `close()` method is idempotent and safe to call from exit handlers. It unsubscribes from exit handlers, closes the WAL sink, and unsubscribes from the performance observer, ensuring all buffered performance data is written before process termination.
+
 ## Configuration
 
 ```ts

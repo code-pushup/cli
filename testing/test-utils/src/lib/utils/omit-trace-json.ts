@@ -10,21 +10,33 @@
  *   then mapping to incremental values starting from mocked epoch clock base,
  *   while preserving the original order of events in the output.
  *
- * @param jsonlContent - JSONL string content (one JSON object per line)
+ * @param jsonlContent - JSONL string content (one JSON object per line) or parsed JSON object/array
  * @param baseTimestampUs - Base timestamp in microseconds to start incrementing from (default: 1_700_000_005_000_000)
  * @returns Normalized JSONL string with deterministic pid, tid, and ts values
  */
 export function omitTraceJson(
-  jsonlContent: string,
+  jsonlContent: string | object,
   baseTimestampUs = 1_700_000_005_000_000,
 ): string {
-  if (!jsonlContent.trim()) {
+  if (typeof jsonlContent !== 'string') {
+    const eventsArray = Array.isArray(jsonlContent)
+      ? jsonlContent
+      : [jsonlContent];
+    if (eventsArray.length === 0) {
+      return '';
+    }
+    const events = eventsArray as TraceEvent[];
+    return normalizeAndFormatEvents(events, baseTimestampUs);
+  }
+
+  // Handle string input (JSONL format)
+  const trimmedContent = jsonlContent.trim();
+  if (!trimmedContent) {
     return jsonlContent;
   }
 
   // Parse all events from JSONL
-  const events = jsonlContent
-    .trim()
+  const events = trimmedContent
     .split('\n')
     .filter(Boolean)
     .map(line => JSON.parse(line) as TraceEvent);
@@ -33,32 +45,71 @@ export function omitTraceJson(
     return jsonlContent;
   }
 
-  // Collect unique pid and tid values
-  const uniquePids = new Set<number>();
-  const uniqueTids = new Set<number>();
-  const timestamps: number[] = [];
-  const uniqueLocalIds = new Set<string>();
+  return normalizeAndFormatEvents(events, baseTimestampUs);
+}
 
-  for (const event of events) {
-    if (typeof event.pid === 'number') {
-      uniquePids.add(event.pid);
-    }
-    if (typeof event.tid === 'number') {
-      uniqueTids.add(event.tid);
-    }
-    if (typeof event.ts === 'number') {
-      timestamps.push(event.ts);
-    }
-    // Collect id2.local values
-    if (
-      event.id2 &&
-      typeof event.id2 === 'object' &&
-      'local' in event.id2 &&
-      typeof event.id2.local === 'string'
-    ) {
-      uniqueLocalIds.add(event.id2.local);
-    }
+/**
+ * Normalizes trace events and formats them as JSONL.
+ */
+function normalizeAndFormatEvents(
+  events: TraceEvent[],
+  baseTimestampUs: number,
+): string {
+  if (events.length === 0) {
+    return '';
   }
+
+  // Collect unique pid and tid values
+  type Accumulator = {
+    uniquePids: Set<number>;
+    uniqueTids: Set<number>;
+    timestamps: number[];
+    uniqueLocalIds: Set<string>;
+  };
+
+  const { uniquePids, uniqueTids, timestamps, uniqueLocalIds } =
+    events.reduce<Accumulator>(
+      (acc, event) => {
+        const newUniquePids = new Set(acc.uniquePids);
+        const newUniqueTids = new Set(acc.uniqueTids);
+        const newUniqueLocalIds = new Set(acc.uniqueLocalIds);
+
+        if (typeof event.pid === 'number') {
+          newUniquePids.add(event.pid);
+        }
+        if (typeof event.tid === 'number') {
+          newUniqueTids.add(event.tid);
+        }
+
+        const newTimestamps =
+          typeof event.ts === 'number'
+            ? [...acc.timestamps, event.ts]
+            : acc.timestamps;
+
+        // Collect id2.local values
+        if (
+          event.id2 &&
+          typeof event.id2 === 'object' &&
+          'local' in event.id2 &&
+          typeof event.id2.local === 'string'
+        ) {
+          newUniqueLocalIds.add(event.id2.local);
+        }
+
+        return {
+          uniquePids: newUniquePids,
+          uniqueTids: newUniqueTids,
+          timestamps: newTimestamps,
+          uniqueLocalIds: newUniqueLocalIds,
+        };
+      },
+      {
+        uniquePids: new Set<number>(),
+        uniqueTids: new Set<number>(),
+        timestamps: [] as number[],
+        uniqueLocalIds: new Set<string>(),
+      },
+    );
 
   // Create mappings: original value -> normalized incremental value
   const pidMap = new Map<number, number>();
@@ -66,13 +117,13 @@ export function omitTraceJson(
   const localIdMap = new Map<string, string>();
 
   // Sort unique values to ensure consistent mapping order
-  const sortedPids = Array.from(uniquePids).sort((a, b) => a - b);
-  const sortedTids = Array.from(uniqueTids).sort((a, b) => a - b);
-  const sortedLocalIds = Array.from(uniqueLocalIds).sort();
+  const sortedPids = [...uniquePids].sort((a, b) => a - b);
+  const sortedTids = [...uniqueTids].sort((a, b) => a - b);
+  const sortedLocalIds = [...uniqueLocalIds].sort();
 
   // Map pids starting from 10001
   sortedPids.forEach((pid, index) => {
-    pidMap.set(pid, 10001 + index);
+    pidMap.set(pid, 10_001 + index);
   });
 
   // Map tids starting from 1
@@ -87,50 +138,58 @@ export function omitTraceJson(
 
   // Sort timestamps to determine incremental order
   const sortedTimestamps = [...timestamps].sort((a, b) => a - b);
-  const tsMap = new Map<number, number>();
 
   // Map timestamps incrementally starting from baseTimestampUs
-  sortedTimestamps.forEach((ts, index) => {
-    if (!tsMap.has(ts)) {
-      tsMap.set(ts, baseTimestampUs + index);
+  const tsMap = sortedTimestamps.reduce((map, ts, index) => {
+    if (!map.has(ts)) {
+      return new Map(map).set(ts, baseTimestampUs + index);
     }
-  });
+    return map;
+  }, new Map<number, number>());
 
   // Normalize events while preserving original order
   const normalizedEvents = events.map(event => {
-    const normalized: TraceEvent = { ...event };
+    const pidUpdate =
+      typeof event.pid === 'number' && pidMap.has(event.pid)
+        ? { pid: pidMap.get(event.pid)! }
+        : {};
 
-    if (typeof normalized.pid === 'number' && pidMap.has(normalized.pid)) {
-      normalized.pid = pidMap.get(normalized.pid)!;
-    }
+    const tidUpdate =
+      typeof event.tid === 'number' && tidMap.has(event.tid)
+        ? { tid: tidMap.get(event.tid)! }
+        : {};
 
-    if (typeof normalized.tid === 'number' && tidMap.has(normalized.tid)) {
-      normalized.tid = tidMap.get(normalized.tid)!;
-    }
-
-    if (typeof normalized.ts === 'number' && tsMap.has(normalized.ts)) {
-      normalized.ts = tsMap.get(normalized.ts)!;
-    }
+    const tsUpdate =
+      typeof event.ts === 'number' && tsMap.has(event.ts)
+        ? { ts: tsMap.get(event.ts)! }
+        : {};
 
     // Normalize id2.local if present
-    if (
-      normalized.id2 &&
-      typeof normalized.id2 === 'object' &&
-      'local' in normalized.id2 &&
-      typeof normalized.id2.local === 'string' &&
-      localIdMap.has(normalized.id2.local)
-    ) {
-      normalized.id2 = {
-        ...normalized.id2,
-        local: localIdMap.get(normalized.id2.local)!,
-      };
-    }
+    const id2Update =
+      event.id2 &&
+      typeof event.id2 === 'object' &&
+      'local' in event.id2 &&
+      typeof event.id2.local === 'string' &&
+      localIdMap.has(event.id2.local)
+        ? {
+            id2: {
+              ...event.id2,
+              local: localIdMap.get(event.id2.local)!,
+            },
+          }
+        : {};
 
-    return normalized;
+    return {
+      ...event,
+      ...pidUpdate,
+      ...tidUpdate,
+      ...tsUpdate,
+      ...id2Update,
+    };
   });
 
   // Convert back to JSONL format
-  return normalizedEvents.map(event => JSON.stringify(event)).join('\n') + '\n';
+  return `${normalizedEvents.map(event => JSON.stringify(event)).join('\n')}\n`;
 }
 
 /**

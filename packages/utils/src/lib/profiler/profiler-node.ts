@@ -88,6 +88,7 @@ export class NodejsProfiler<
    * A WriteAheadLogFile sink is automatically created for buffering performance data.
    * @param options - Configuration options
    */
+  // eslint-disable-next-line max-lines-per-function
   constructor(options: NodejsProfilerOptions<DomainEvents, Tracks>) {
     const {
       encodePerfEntry,

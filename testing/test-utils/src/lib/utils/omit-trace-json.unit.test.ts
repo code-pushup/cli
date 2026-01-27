@@ -21,7 +21,7 @@ describe('omitTraceJson', () => {
   it('should normalize pid field starting from 10001', () => {
     const result = omitTraceJson('{"pid":12345}\n');
     const parsed = JSON.parse(result.trim());
-    expect(parsed.pid).toBe(10001);
+    expect(parsed.pid).toBe(10_001);
   });
 
   it('should normalize tid field starting from 1', () => {
@@ -76,9 +76,9 @@ describe('omitTraceJson', () => {
     expect(events[0].name).toBe('third');
     expect(events[1].name).toBe('first');
     expect(events[2].name).toBe('second');
-    expect(events[0].pid).toBe(10003);
-    expect(events[1].pid).toBe(10001);
-    expect(events[2].pid).toBe(10002);
+    expect(events[0].pid).toBe(10_003);
+    expect(events[1].pid).toBe(10_001);
+    expect(events[2].pid).toBe(10_002);
   });
 
   it('should preserve event order when TIDs are out of order', () => {
@@ -106,9 +106,9 @@ describe('omitTraceJson', () => {
       .split('\n')
       .map(line => JSON.parse(line));
     expect(events.map(e => e.name)).toEqual(['e', 'a', 'c']);
-    expect(events[0].pid).toBe(10003);
-    expect(events[1].pid).toBe(10001);
-    expect(events[2].pid).toBe(10002);
+    expect(events[0].pid).toBe(10_003);
+    expect(events[1].pid).toBe(10_001);
+    expect(events[2].pid).toBe(10_002);
   });
 
   it('should not normalize non-number pid values', () => {
@@ -188,9 +188,9 @@ describe('omitTraceJson', () => {
       .trim()
       .split('\n')
       .map(line => JSON.parse(line));
-    expect(events[0].pid).toBe(10001);
-    expect(events[1].pid).toBe(10002);
-    expect(events[2].pid).toBe(10001);
+    expect(events[0].pid).toBe(10_001);
+    expect(events[1].pid).toBe(10_002);
+    expect(events[2].pid).toBe(10_001);
   });
 
   it('should handle duplicate timestamps correctly', () => {
