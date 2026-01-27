@@ -1,8 +1,10 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { SHARDED_WAL_COORDINATOR_ID_ENV_VAR } from './profiler/constants';
 import {
   type Codec,
+  type InvalidEntry,
   ShardedWal,
   WAL_ID_PATTERNS,
   WriteAheadLogFile,
@@ -10,7 +12,7 @@ import {
   filterValidRecords,
   getShardId,
   getShardedGroupId,
-  isLeaderWal,
+  isCoordinarotProcess,
   parseWalFormat,
   recoverFromContent,
   setLeaderWal,
@@ -682,7 +684,7 @@ describe('isLeaderWal', () => {
     const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
     vi.stubEnv('TEST_LEADER_PID', profilerId);
 
-    const result = isLeaderWal('TEST_LEADER_PID', profilerId);
+    const result = isCoordinarotProcess('TEST_LEADER_PID', profilerId);
     expect(result).toBe(true);
   });
 
@@ -691,7 +693,7 @@ describe('isLeaderWal', () => {
     vi.stubEnv('TEST_LEADER_PID', wrongProfilerId);
 
     const currentProfilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    const result = isLeaderWal('TEST_LEADER_PID', currentProfilerId);
+    const result = isCoordinarotProcess('TEST_LEADER_PID', currentProfilerId);
     expect(result).toBe(false);
   });
 
@@ -699,7 +701,7 @@ describe('isLeaderWal', () => {
     vi.stubEnv('NON_EXISTENT_VAR', undefined as any);
 
     const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    const result = isLeaderWal('NON_EXISTENT_VAR', profilerId);
+    const result = isCoordinarotProcess('NON_EXISTENT_VAR', profilerId);
     expect(result).toBe(false);
   });
 
@@ -707,7 +709,7 @@ describe('isLeaderWal', () => {
     vi.stubEnv('TEST_LEADER_PID', '');
 
     const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    const result = isLeaderWal('TEST_LEADER_PID', profilerId);
+    const result = isCoordinarotProcess('TEST_LEADER_PID', profilerId);
     expect(result).toBe(false);
   });
 });
@@ -758,6 +760,7 @@ describe('ShardedWal', () => {
       format: {
         baseName: 'test-wal',
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     expect(sw).toBeInstanceOf(ShardedWal);
@@ -770,6 +773,7 @@ describe('ShardedWal', () => {
         baseName: 'trace',
         walExtension: '.log',
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     const shard = sw.shard('20231114-221320-000.1.2.3');
@@ -786,6 +790,7 @@ describe('ShardedWal', () => {
         baseName: 'trace',
         walExtension: '.log',
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     const shard = sw.shard();
@@ -801,6 +806,7 @@ describe('ShardedWal', () => {
       format: {
         baseName: 'test-wal',
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
     const files = (sw as any).shardFiles();
     expect(files).toEqual([]);
@@ -812,6 +818,7 @@ describe('ShardedWal', () => {
       format: {
         baseName: 'test-wal',
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
     // Create the group directory (matches actual getShardedGroupId() output)
     vol.mkdirSync('/empty/20231114-221320-000', { recursive: true });
@@ -834,6 +841,7 @@ describe('ShardedWal', () => {
         baseName: 'trace',
         walExtension: '.log',
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
     const files = (sw as any).shardFiles();
 
@@ -858,6 +866,7 @@ describe('ShardedWal', () => {
         finalExtension: '.json',
         finalizer: records => `${JSON.stringify(records)}\n`,
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     // Create the group directory
@@ -885,6 +894,7 @@ describe('ShardedWal', () => {
         finalExtension: '.json',
         finalizer: records => `${JSON.stringify(records)}\n`,
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     sw.finalize();
@@ -920,6 +930,7 @@ describe('ShardedWal', () => {
         codec: tolerantCodec,
         finalizer: records => `${JSON.stringify(records)}\n`,
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     sw.finalize();
@@ -945,6 +956,7 @@ describe('ShardedWal', () => {
         baseName: 'test',
         walExtension: '.log',
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     expect(vol.toJSON()).toStrictEqual({
@@ -971,6 +983,7 @@ describe('ShardedWal', () => {
         baseName: 'test',
         walExtension: '.log',
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     vol.unlinkSync(
@@ -994,6 +1007,7 @@ describe('ShardedWal', () => {
         finalizer: (records, opt) =>
           `${JSON.stringify({ records, meta: opt })}\n`,
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     sw.finalize({ version: '1.0', compressed: true });
