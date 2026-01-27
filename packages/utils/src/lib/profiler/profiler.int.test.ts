@@ -1,6 +1,12 @@
+import { existsSync, readdirSync } from 'node:fs';
+import path from 'node:path';
+import { readTextFile } from '../file-system.js';
 import type { PerformanceEntryEncoder } from '../performance-observer.js';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
 import { NodeJsProfiler, Profiler } from './profiler.js';
+import { entryToTraceEvents } from './trace-file-utils.js';
+import type { UserTimingTraceEvent } from './trace-file.type.js';
+import { traceEventWalFormat } from './wal-json-trace.js';
 
 describe('Profiler Integration', () => {
   let profiler: Profiler<Record<string, ActionTrackEntryPayload>>;
@@ -510,11 +516,57 @@ describe('NodeJS Profiler Integration', () => {
   });
 
   it('should handle async operations', async () => {
+    // Create a profiler with trace event format for this test
+    const traceProfiler = new NodeJsProfiler<UserTimingTraceEvent>({
+      prefix: 'test',
+      track: 'test-track',
+      format: traceEventWalFormat(),
+      encodePerfEntry: entryToTraceEvents,
+      enabled: true,
+    });
+
     await expect(
-      nodejsProfiler.measureAsync('async-test', async () => {
+      traceProfiler.measureAsync('async-test', async () => {
         await new Promise(resolve => setTimeout(resolve, 1));
         return 'async-result';
       }),
     ).resolves.toBe('async-result');
+
+    // Flush buffered data to ensure shard files are written
+    traceProfiler.flush();
+
+    // Read shard files before finalization
+    const outDir = 'tmp/profiles';
+    const groupId = traceProfiler.shardedWal.groupId;
+    const groupDir = path.join(outDir, groupId);
+
+    // Check if directory exists and read shard files
+    if (!existsSync(groupDir)) {
+      throw new Error(`Expected directory ${groupDir} to exist`);
+    }
+
+    const shardFiles = readdirSync(groupDir).filter(file =>
+      file.endsWith('.jsonl'),
+    );
+
+    // Read and snapshot JSONL shard files
+    const shardContents = await Promise.all(
+      shardFiles.map(file => readTextFile(path.join(groupDir, file))),
+    );
+    const shardContentJoined = shardContents.join('\n');
+    await expect(shardContentJoined).toMatchFileSnapshot(
+      '__snapshots__/profiler.int.test.async-operations.jsonl',
+    );
+
+    // Disable profiler to trigger finalization
+    traceProfiler.setEnabled(false);
+
+    // Read and snapshot final JSON file
+    const finalFileName = traceProfiler.shardedWal.getFinalFileName();
+    const finalFilePath = path.join(groupDir, finalFileName);
+    const finalContent = await readTextFile(finalFilePath);
+    await expect(finalContent).toMatchFileSnapshot(
+      '__snapshots__/profiler.int.test.async-operations-final.json',
+    );
   });
 });
