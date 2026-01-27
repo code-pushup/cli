@@ -37,7 +37,9 @@ describe.skipIf(process.platform === 'win32')('Nx helpers', () => {
   });
 
   describe('tsconfigFromAllNxProjects', () => {
-    it('should find tsconfig.lib.json from all Nx projects', async () => {
+    it('should find tsconfig files, filtering out empty configs and tsconfig.base.json', async () => {
+      // cli project has tsconfig.json (empty arrays, filtered), tsconfig.base.json (excluded), tsconfig.lib.json (included)
+      // other projects only have tsconfig.lib.json
       await expect(tsconfigFromAllNxProjects()).resolves.toEqual([
         'packages/cli/tsconfig.lib.json',
         'packages/core/tsconfig.lib.json',

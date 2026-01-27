@@ -1,18 +1,39 @@
 import type { ProjectConfiguration } from '@nx/devkit';
 import { readdir } from 'node:fs/promises';
 import path from 'node:path';
+import { readConfigFile, sys } from 'typescript';
 import { logger, pluralizeToken, stringifyError } from '@code-pushup/utils';
 import { formatMetaLog } from '../format.js';
 
 /**
- * TypeScript config patterns to look for in each project.
+ * Matches tsconfig.json and tsconfig.*.json, excludes tsconfig.base.json.
  */
-const TSCONFIG_PATTERNS = new Set([
-  'tsconfig.lib.json',
-  'tsconfig.spec.json',
-  'tsconfig.test.json',
-  'tsconfig.app.json',
-]);
+function isTsconfigFile(filename: string): boolean {
+  if (filename === 'tsconfig.base.json') {
+    return false;
+  }
+  return (
+    filename === 'tsconfig.json' ||
+    (filename.startsWith('tsconfig.') && filename.endsWith('.json'))
+  );
+}
+
+/**
+ * Returns false for empty configs (files and include both empty arrays).
+ */
+function hasFilesToCompile(tsconfigPath: string): boolean {
+  const { config } = readConfigFile(tsconfigPath, sys.readFile);
+
+  if (!config) {
+    return true;
+  }
+
+  const { files, include } = config;
+  const filesEmpty = Array.isArray(files) && files.length === 0;
+  const includeEmpty = Array.isArray(include) && include.length === 0;
+
+  return !(filesEmpty && includeEmpty);
+}
 
 /**
  * Resolves the cached project graph for the current Nx workspace.
@@ -40,13 +61,15 @@ function isProjectIncluded(
 }
 
 /**
- * Finds tsconfig files matching known patterns in a project directory.
+ * Finds non-empty tsconfig files in a project directory.
  */
 async function findTsconfigsInProject(projectRoot: string): Promise<string[]> {
   const absoluteRoot = path.resolve(process.cwd(), projectRoot);
   const files = await readdir(absoluteRoot);
+
   return files
-    .filter(file => TSCONFIG_PATTERNS.has(file))
+    .filter(isTsconfigFile)
+    .filter(file => hasFilesToCompile(path.join(absoluteRoot, file)))
     .map(file => path.join(projectRoot, file));
 }
 

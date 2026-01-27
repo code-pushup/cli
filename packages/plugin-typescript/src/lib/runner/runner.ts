@@ -32,13 +32,17 @@ function collectDiagnostics(tsconfigs: string[]): CollectResult {
   return tsconfigs.reduce<CollectResult>(
     (acc, config) => {
       try {
-        const diagnostics = [
-          ...getTypeScriptDiagnostics({ tsconfig: config }),
-        ].map(diag => ({
-          code: diag.code,
-          issue: getIssueFromDiagnostic(diag),
-        }));
-        return { ...acc, diagnostics: [...acc.diagnostics, ...diagnostics] };
+        const diagnostics = getTypeScriptDiagnostics({ tsconfig: config }).map(
+          diag => ({
+            code: diag.code,
+            issue: getIssueFromDiagnostic(diag),
+          }),
+        );
+
+        return {
+          ...acc,
+          diagnostics: [...acc.diagnostics, ...diagnostics],
+        };
       } catch (error) {
         if (tsconfigs.length === 1) {
           throw error;
@@ -95,7 +99,7 @@ export function createRunnerFunction(options: RunnerOptions): RunnerFunction {
     logger.info(
       diagnostics.length === 0
         ? 'No TypeScript errors found'
-        : `TypeScript compiler found ${pluralizeToken('diagnostic', diagnostics.length)}`,
+        : `TypeScript compiler found ${pluralizeToken('error', diagnostics.length)} in total`,
     );
 
     const result = groupDiagnosticsByAudit(diagnostics);

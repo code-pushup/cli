@@ -14,15 +14,20 @@ export function getTypeScriptDiagnostics({
   tsconfig,
 }: DiagnosticsOptions): readonly Diagnostic[] {
   const { fileNames, options } = loadTargetConfig(tsconfig);
-  logger.debug(
-    `Parsed TypeScript config file ${tsconfig}, program includes ${pluralizeToken('file', fileNames.length)}`,
-  );
   try {
     const program = createProgram(fileNames, options);
     const diagnostics = getPreEmitDiagnostics(program);
-    logger.debug(
-      `TypeScript compiler found ${pluralizeToken('diagnostic', diagnostics.length)}`,
-    );
+
+    if (diagnostics.length > 0) {
+      logger.info(
+        `  ${tsconfig} - ${pluralizeToken('error', diagnostics.length)}`,
+      );
+    } else {
+      logger.debug(
+        `  ${tsconfig}: ${pluralizeToken('file', fileNames.length)}, 0 errors`,
+      );
+    }
+
     return diagnostics;
   } catch (error) {
     throw new Error(
