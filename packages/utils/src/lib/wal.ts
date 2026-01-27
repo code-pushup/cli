@@ -617,18 +617,4 @@ export class ShardedWal<T extends object | string = object> {
       // Directory might not be empty or already removed, ignore
     }
   }
-
-  finalizeIfCoordinator(): void {
-    if (this.#finalized) {
-      return;
-    }
-    this.#finalized = true;
-
-    if (!this.isCoordinator()) {
-      return;
-    }
-
-    this.finalize();
-    this.cleanup();
-  }
 }
