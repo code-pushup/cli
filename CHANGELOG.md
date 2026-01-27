@@ -1,3 +1,13 @@
+## 0.111.0 (2026-01-27)
+
+### 🚀 Features
+
+- **utils:** add NodeJS profiler ([#1219](https://github.com/code-pushup/cli/pull/1219))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.110.0 (2026-01-26)
 
 ### 🚀 Features
