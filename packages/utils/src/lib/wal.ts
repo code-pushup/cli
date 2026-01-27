@@ -424,6 +424,7 @@ export function sortableReadableDateString(timestampMs: string): string {
 }
 
 /**
+ * NOTE: this helper is only used in this file. The rest of the repo avoids sync methods so it is not reusable.
  * Ensures a directory exists, creating it recursively if necessary using sync methods.
  * @param dirPath - The directory path to ensure exists
  */
@@ -431,42 +432,6 @@ function ensureDirectoryExistsSync(dirPath: string): void {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
   }
-}
-
-/**
- * Generates a path to a shard file using human-readable IDs.
- * Both groupId and shardId are already in readable date format.
- *
- * Example with groupId "20240101-120000-000" and shardId "20240101-120000-000.12345.1.1":
- * Full path: /base/20240101-120000-000/trace.20240101-120000-000.12345.1.1.log
- *
- * @param opt.dir - The directory to store the shard file
- * @param opt.format - The WalFormat to use for the shard file
- * @param opt.groupId - The human-readable group ID (yyyymmdd-hhmmss-ms format)
- * @param opt.shardId - The human-readable shard ID (readable-timestamp.pid.threadId.count format)
- * @returns The path to the shard file
- */
-export function getShardedPath<T extends object | string = object>(opt: {
-  dir?: string;
-  format: WalFormat<T>;
-  groupId: string;
-  shardId: string;
-}): string {
-  const { dir = '', format, groupId, shardId } = opt;
-  const { baseName, walExtension } = format;
-
-  return path.join(dir, groupId, `${baseName}.${shardId}${walExtension}`);
-}
-
-export function getShardedFinalPath<T extends object | string = object>(opt: {
-  dir?: string;
-  format: WalFormat<T>;
-  groupId: string;
-}): string {
-  const { dir = '', format, groupId } = opt;
-  const { baseName, finalExtension } = format;
-
-  return path.join(dir, groupId, `${baseName}.${groupId}${finalExtension}`);
 }
 
 /**
@@ -495,14 +460,42 @@ export class ShardedWal<T extends object | string = object> {
     this.#format = parseWalFormat<T>(format);
   }
 
+  /**
+   * Generates a filename for a shard file using a shard ID.
+   * Both groupId and shardId are already in readable date format.
+   *
+   * Example with baseName "trace" and shardId "20240101-120000-000.12345.1.1":
+   * Filename: trace.20240101-120000-000.12345.1.1.log
+   *
+   * @param shardId - The human-readable shard ID (readable-timestamp.pid.threadId.count format)
+   * @returns The filename for the shard file
+   */
+  getShardedFileName(shardId: string) {
+    const { baseName, walExtension } = this.#format;
+    return `${baseName}.${shardId}${walExtension}`;
+  }
+
+  /**
+   * Generates a filename for the final merged output file.
+   * Uses the groupId as the identifier in the filename.
+   *
+   * Example with baseName "trace" and groupId "20240101-120000-000":
+   * Filename: trace.20240101-120000-000.json
+   *
+   * @returns The filename for the final merged output file
+   */
+  getFinalFileName() {
+    const { baseName, finalExtension } = this.#format;
+    return `${baseName}.${this.groupId}${finalExtension}`;
+  }
+
   shard(shardId: string = getShardId()) {
     return new WriteAheadLogFile({
-      file: getShardedPath({
-        dir: this.#dir,
-        format: this.#format,
-        groupId: this.groupId,
-        shardId,
-      }),
+      file: path.join(
+        this.#dir,
+        this.groupId,
+        this.getShardedFileName(shardId),
+      ),
       codec: this.#format.codec,
     });
   }
@@ -513,13 +506,7 @@ export class ShardedWal<T extends object | string = object> {
       return [];
     }
 
-    const groupIdDir = path.dirname(
-      getShardedFinalPath({
-        dir: this.#dir,
-        format: this.#format,
-        groupId: this.groupId,
-      }),
-    );
+    const groupIdDir = path.join(this.#dir, this.groupId);
     // create dir if not existing
     ensureDirectoryExistsSync(groupIdDir);
 
@@ -554,11 +541,7 @@ export class ShardedWal<T extends object | string = object> {
     const recordsToFinalize = hasInvalidEntries
       ? records
       : filterValidRecords(records);
-    const out = getShardedFinalPath({
-      dir: this.#dir,
-      format: this.#format,
-      groupId: this.groupId,
-    });
+    const out = path.join(this.#dir, this.groupId, this.getFinalFileName());
     ensureDirectoryExistsSync(path.dirname(out));
     fs.writeFileSync(out, this.#format.finalizer(recordsToFinalize, opt));
   }

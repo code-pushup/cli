@@ -8,8 +8,9 @@ import type {
   ActionTrackEntryPayload,
   UserTimingDetail,
 } from '../user-timing-extensibility-api.type.js';
+import * as WalModule from '../wal.js';
 import {
-  NodejsProfiler,
+  NodeJsProfiler,
   type NodejsProfilerOptions,
   Profiler,
   type ProfilerOptions,
@@ -492,6 +493,16 @@ describe('NodejsProfiler', () => {
     >,
   ) => {
     const sink = new MockTraceEventFileSink();
+    const mockShardedWal = {
+      shard: vi.fn().mockReturnValue(sink),
+      groupId: 'test-group-id',
+      finalize: vi.fn(),
+      cleanup: vi.fn(),
+    };
+
+    // Mock ShardedWal class
+    const MockShardedWal = vi.fn().mockImplementation(() => mockShardedWal);
+    vi.spyOn(WalModule, 'ShardedWal').mockImplementation(MockShardedWal as any);
 
     const mockPerfObserverSink = {
       subscribe: vi.fn(),
@@ -519,15 +530,30 @@ describe('NodejsProfiler', () => {
     vi.spyOn(sink, 'open');
     vi.spyOn(sink, 'close');
 
-    const profiler = new NodejsProfiler({
+    const profiler = new NodeJsProfiler({
       prefix: 'test',
       track: 'test-track',
-      sink,
+      format: {
+        baseName: 'test',
+        walExtension: '.log',
+        finalExtension: '.log',
+        codec: {
+          encode: (v: string) => v,
+          decode: (v: string) => v,
+        },
+        finalizer: (records: (string | { __invalid: true; raw: string })[]) =>
+          records.filter((r): r is string => typeof r === 'string').join('\n'),
+      },
       encodePerfEntry: simpleEncoder,
       ...overrides,
     });
 
-    return { sink, perfObserverSink: mockPerfObserverSink, profiler };
+    return {
+      sink,
+      shardedWal: mockShardedWal,
+      perfObserverSink: mockPerfObserverSink,
+      profiler,
+    };
   };
 
   const originalEnv = process.env.CP_PROFILER_DEBUG;
@@ -552,7 +578,7 @@ describe('NodejsProfiler', () => {
   });
 
   it('should export NodejsProfiler class', () => {
-    expect(typeof NodejsProfiler).toBe('function');
+    expect(typeof NodeJsProfiler).toBe('function');
   });
 
   it('should have required static structure', () => {
@@ -566,9 +592,50 @@ describe('NodejsProfiler', () => {
   });
 
   it('should inherit from Profiler', () => {
-    expect(Object.getPrototypeOf(NodejsProfiler.prototype)).toBe(
+    expect(Object.getPrototypeOf(NodeJsProfiler.prototype)).toBe(
       Profiler.prototype,
     );
+  });
+
+  it('should expose shardedWal getter', () => {
+    const { profiler, shardedWal } = getNodejsProfiler();
+    expect(profiler.shardedWal).toBe(shardedWal);
+  });
+
+  it('isDebugMode should return and set debug mode state', () => {
+    const { profiler } = getNodejsProfiler();
+    const initialDebug = profiler.isDebugMode();
+
+    profiler.setDebugMode(true);
+    expect(profiler.isDebugMode()).toBe(true);
+    expect(profiler.debug).toBe(true);
+
+    profiler.setDebugMode(false);
+    expect(profiler.isDebugMode()).toBe(false);
+    expect(profiler.debug).toBe(false);
+
+    // Restore initial state
+    profiler.setDebugMode(initialDebug);
+  });
+
+  it('setDebugMode should set environment variable and future instances should use it', () => {
+    vi.stubEnv('CP_PROFILER_DEBUG', 'false');
+    const profiler1 = getNodejsProfiler().profiler;
+
+    expect(profiler1.isDebugMode()).toBe(false);
+
+    profiler1.setDebugMode(true);
+    expect(profiler1.isDebugMode()).toBe(true);
+    expect(process.env.CP_PROFILER_DEBUG).toBe('true');
+
+    // New instance should pick up the env var
+    const profiler2 = getNodejsProfiler().profiler;
+    expect(profiler2.isDebugMode()).toBe(true);
+
+    profiler1.setDebugMode(false);
+    expect(process.env.CP_PROFILER_DEBUG).toBe('false');
+
+    vi.unstubAllEnvs();
   });
 
   it('should initialize with sink opened when enabled is true', () => {

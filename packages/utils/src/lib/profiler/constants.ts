@@ -19,3 +19,21 @@ export const PROFILER_ENABLED_ENV_VAR = 'CP_PROFILING';
  * ```
  */
 export const PROFILER_DEBUG_ENV_VAR = 'CP_PROFILER_DEBUG';
+
+/**
+ * Default output directory for persisted profiler data.
+ * Matches the default persist output directory from models.
+ */
+export const PERSIST_OUT_DIR = '.code-pushup';
+
+/**
+ * Default filename (without extension) for persisted profiler data.
+ * Matches the default persist filename from models.
+ */
+export const PERSIST_OUT_FILENAME = 'report';
+
+/**
+ * Default base name for WAL files.
+ * Used as the base name for sharded WAL files (e.g., "trace").
+ */
+export const PERSIST_OUT_BASENAME = 'trace';

@@ -1,7 +1,6 @@
-import { MockTraceEventFileSink } from '../../../mocks/sink.mock.js';
 import type { PerformanceEntryEncoder } from '../performance-observer.js';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
-import { NodejsProfiler, Profiler } from './profiler.js';
+import { NodeJsProfiler, Profiler } from './profiler.js';
 
 describe('Profiler Integration', () => {
   let profiler: Profiler<Record<string, ActionTrackEntryPayload>>;
@@ -306,25 +305,31 @@ describe('NodeJS Profiler Integration', () => {
     return [];
   };
 
-  let mockSink: MockTraceEventFileSink;
-  let nodejsProfiler: NodejsProfiler<string>;
+  let nodejsProfiler: NodeJsProfiler<string>;
 
   beforeEach(() => {
-    mockSink = new MockTraceEventFileSink();
-
-    nodejsProfiler = new NodejsProfiler({
+    nodejsProfiler = new NodeJsProfiler({
       prefix: 'test',
       track: 'test-track',
-      sink: mockSink,
+      format: {
+        baseName: 'test',
+        walExtension: '.log',
+        finalExtension: '.log',
+        codec: {
+          encode: (v: string) => v,
+          decode: (v: string) => v,
+        },
+        finalizer: (records: (string | { __invalid: true; raw: string })[]) =>
+          records.filter((r): r is string => typeof r === 'string').join('\n'),
+      },
       encodePerfEntry: simpleEncoder,
       enabled: true,
     });
   });
 
   it('should initialize with sink opened when enabled', () => {
-    expect(mockSink.isClosed()).toBeFalse();
     expect(nodejsProfiler.isEnabled()).toBeTrue();
-    expect(mockSink.open).toHaveBeenCalledOnce();
+    expect(nodejsProfiler.stats.walOpen).toBeTrue();
   });
 
   it('should create performance entries and write to sink', () => {
@@ -340,19 +345,21 @@ describe('NodeJS Profiler Integration', () => {
         return 'async-result';
       }),
     ).resolves.toBe('async-result');
+
+    const stats = nodejsProfiler.stats;
+    await expect(JSON.stringify(stats, null, 2)).toMatchFileSnapshot(
+      '__snapshots__/profiler.int.test.async-operations.json',
+    );
   });
 
   it('should disable profiling and close sink', () => {
     nodejsProfiler.setEnabled(false);
     expect(nodejsProfiler.isEnabled()).toBeFalse();
-    expect(mockSink.isClosed()).toBeTrue();
-    expect(mockSink.close).toHaveBeenCalledOnce();
+    expect(nodejsProfiler.stats.walOpen).toBeFalse();
 
     expect(nodejsProfiler.measure('disabled-test', () => 'success')).toBe(
       'success',
     );
-
-    expect(mockSink.getWrittenItems()).toHaveLength(0);
   });
 
   it('should re-enable profiling correctly', () => {
@@ -360,21 +367,30 @@ describe('NodeJS Profiler Integration', () => {
     nodejsProfiler.setEnabled(true);
 
     expect(nodejsProfiler.isEnabled()).toBeTrue();
-    expect(mockSink.isClosed()).toBeFalse();
-    expect(mockSink.open).toHaveBeenCalledTimes(2);
+    expect(nodejsProfiler.stats.walOpen).toBeTrue();
 
     expect(nodejsProfiler.measure('re-enabled-test', () => 42)).toBe(42);
   });
 
   it('should support custom tracks', () => {
-    const profilerWithTracks = new NodejsProfiler({
+    const profilerWithTracks = new NodeJsProfiler({
       prefix: 'api-server',
       track: 'HTTP',
       tracks: {
         db: { track: 'Database', color: 'secondary' },
         cache: { track: 'Cache', color: 'primary' },
       },
-      sink: mockSink,
+      format: {
+        baseName: 'test',
+        walExtension: '.log',
+        finalExtension: '.log',
+        codec: {
+          encode: (v: string) => v,
+          decode: (v: string) => v,
+        },
+        finalizer: (records: (string | { __invalid: true; raw: string })[]) =>
+          records.filter((r): r is string => typeof r === 'string').join('\n'),
+      },
       encodePerfEntry: simpleEncoder,
     });
 
@@ -386,10 +402,20 @@ describe('NodeJS Profiler Integration', () => {
   });
 
   it('should capture buffered entries when buffered option is enabled', () => {
-    const bufferedProfiler = new NodejsProfiler({
+    const bufferedProfiler = new NodeJsProfiler({
       prefix: 'buffered-test',
       track: 'Test',
-      sink: mockSink,
+      format: {
+        baseName: 'test',
+        walExtension: '.log',
+        finalExtension: '.log',
+        codec: {
+          encode: (v: string) => v,
+          decode: (v: string) => v,
+        },
+        finalizer: (records: (string | { __invalid: true; raw: string })[]) =>
+          records.filter((r): r is string => typeof r === 'string').join('\n'),
+      },
       encodePerfEntry: simpleEncoder,
       captureBufferedEntries: true,
       enabled: true,
@@ -407,10 +433,20 @@ describe('NodeJS Profiler Integration', () => {
   });
 
   it('should return correct getStats with dropped and written counts', () => {
-    const statsProfiler = new NodejsProfiler({
+    const statsProfiler = new NodeJsProfiler({
       prefix: 'stats-test',
       track: 'Stats',
-      sink: mockSink,
+      format: {
+        baseName: 'test',
+        walExtension: '.log',
+        finalExtension: '.log',
+        codec: {
+          encode: (v: string) => v,
+          decode: (v: string) => v,
+        },
+        finalizer: (records: (string | { __invalid: true; raw: string })[]) =>
+          records.filter((r): r is string => typeof r === 'string').join('\n'),
+      },
       encodePerfEntry: simpleEncoder,
       maxQueueSize: 2,
       flushThreshold: 2,
@@ -431,10 +467,20 @@ describe('NodeJS Profiler Integration', () => {
   });
 
   it('should provide comprehensive queue statistics via getStats', () => {
-    const profiler = new NodejsProfiler({
+    const profiler = new NodeJsProfiler({
       prefix: 'stats-profiler',
       track: 'Stats',
-      sink: mockSink,
+      format: {
+        baseName: 'test',
+        walExtension: '.log',
+        finalExtension: '.log',
+        codec: {
+          encode: (v: string) => v,
+          decode: (v: string) => v,
+        },
+        finalizer: (records: (string | { __invalid: true; raw: string })[]) =>
+          records.filter((r): r is string => typeof r === 'string').join('\n'),
+      },
       encodePerfEntry: simpleEncoder,
       maxQueueSize: 3,
       flushThreshold: 2,
@@ -461,5 +507,14 @@ describe('NodeJS Profiler Integration', () => {
     expect(finalStats.walOpen).toBeFalse();
     expect(finalStats.isSubscribed).toBeFalse();
     expect(finalStats.queued).toBe(0);
+  });
+
+  it('should handle async operations', async () => {
+    await expect(
+      nodejsProfiler.measureAsync('async-test', async () => {
+        await new Promise(resolve => setTimeout(resolve, 1));
+        return 'async-result';
+      }),
+    ).resolves.toBe('async-result');
   });
 });

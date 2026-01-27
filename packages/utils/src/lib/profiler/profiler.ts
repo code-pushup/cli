@@ -22,8 +22,10 @@ import type {
   EntryMeta,
   MarkerPayload,
 } from '../user-timing-extensibility-api.type.js';
-import type { AppendableSink } from '../wal.js';
+import type { AppendableSink, WalFormat } from '../wal.js';
+import { ShardedWal } from '../wal.js';
 import {
+  PERSIST_OUT_DIR,
   PROFILER_DEBUG_ENV_VAR,
   PROFILER_ENABLED_ENV_VAR,
 } from './constants.js';
@@ -47,6 +49,13 @@ type ProfilerMeasureOptions<T extends ActionTrackConfigs> =
     tracks?: Record<keyof T, Partial<ActionTrackEntryPayload>>;
     /** Whether profiling should be enabled (defaults to CP_PROFILING env var) */
     enabled?: boolean;
+    /**
+     * Name of the environment variable to check for debug mode.
+     * When the env var is set to 'true', profiler state transitions create performance marks for debugging.
+     *
+     * @default 'CP_PROFILER_DEBUG'
+     */
+    debugEnvVar?: string;
   };
 
 /**
@@ -67,6 +76,7 @@ export type MarkerOptions = EntryMeta & { color?: DevToolsColor };
  * @property trackGroup - Default track group for organization
  * @property color - Default color for track entries
  * @property tracks - Custom track configurations merged with defaults
+ * @property debugEnvVar - Name of the environment variable to check for debug mode (defaults to CP_PROFILER_DEBUG)
  */
 export type ProfilerOptions<T extends ActionTrackConfigs = ActionTrackConfigs> =
   ProfilerMeasureOptions<T>;
@@ -85,6 +95,28 @@ export class Profiler<T extends ActionTrackConfigs> {
   readonly #defaults: ActionTrackEntryPayload;
   readonly tracks: Record<keyof T, ActionTrackEntryPayload> | undefined;
   readonly #ctxOf: ReturnType<typeof measureCtx>;
+  /**
+   * Whether debug mode is enabled for profiler state transitions.
+   * When enabled, profiler state transitions create performance marks for debugging.
+   */
+  #debug: boolean = false;
+  readonly #debugEnvVar: string;
+
+  /**
+   * Protected method to set debug mode state.
+   * Allows subclasses to update debug state.
+   */
+  protected setDebugState(debugMode: boolean): void {
+    this.#debug = debugMode;
+  }
+
+  /**
+   * Protected getter for debug environment variable name.
+   * Allows subclasses to access the debugEnvVar value.
+   */
+  protected get debugEnvVar(): string {
+    return this.#debugEnvVar;
+  }
 
   /**
    * Creates a new Profiler instance with the specified configuration.
@@ -96,10 +128,17 @@ export class Profiler<T extends ActionTrackConfigs> {
    * @param options.trackGroup - Default track group for organization
    * @param options.color - Default color for track entries
    * @param options.enabled - Whether profiling is enabled (defaults to CP_PROFILING env var)
+   * @param options.debugEnvVar - Name of the environment variable to check for debug mode (defaults to CP_PROFILER_DEBUG)
    *
    */
   constructor(options: ProfilerOptions<T>) {
-    const { tracks, prefix, enabled, ...defaults } = options;
+    const {
+      tracks,
+      prefix,
+      enabled,
+      debugEnvVar = PROFILER_DEBUG_ENV_VAR,
+      ...defaults
+    } = options;
     const dataType = 'track-entry';
 
     this.#enabled = enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
@@ -112,6 +151,8 @@ export class Profiler<T extends ActionTrackConfigs> {
       dataType,
       prefix,
     });
+    this.#debugEnvVar = debugEnvVar;
+    this.#debug = isEnvVarEnabled(this.#debugEnvVar);
   }
 
   /**
@@ -136,6 +177,44 @@ export class Profiler<T extends ActionTrackConfigs> {
    */
   isEnabled(): boolean {
     return this.#enabled;
+  }
+
+  /**
+   * Returns whether debug mode is enabled for profiler state transitions.
+   *
+   * Debug mode is determined by the environment variable specified by `debugEnvVar`
+   * (defaults to 'CP_PROFILER_DEBUG'). When enabled, profiler state transitions create
+   * performance marks for debugging.
+   *
+   * @returns true if debug mode is enabled, false otherwise
+   */
+  get debug(): boolean {
+    return this.#debug;
+  }
+
+  /**
+   * Sets debug mode state for this profiler.
+   *
+   * Also sets the environment variable specified by `debugEnvVar` (defaults to 'CP_PROFILER_DEBUG').
+   * This means any future {@link Profiler} instantiations (including child processes) will use the same debug state.
+   *
+   * @param debugMode - Whether debug mode should be enabled
+   */
+  setDebugMode(debugMode: boolean): void {
+    process.env[this.#debugEnvVar] = `${debugMode}`;
+    this.#debug = debugMode;
+  }
+
+  /**
+   * Is debug mode enabled?
+   *
+   * Debug mode is enabled by {@link setDebugMode} call or the environment variable specified by `debugEnvVar`
+   * (defaults to 'CP_PROFILER_DEBUG').
+   *
+   * @returns Whether debug mode is currently enabled
+   */
+  isDebugMode(): boolean {
+    return this.#debug;
   }
 
   /**
@@ -249,40 +328,84 @@ export class Profiler<T extends ActionTrackConfigs> {
   }
 }
 
+export type PersistOptions<DomainEvents extends string | object> = {
+  /**
+   * WAL format configuration for sharded write-ahead logging.
+   * Defines codec, extensions, and finalizer for the WAL files.
+   */
+  format: Partial<WalFormat<DomainEvents>>;
+
+  /**
+   * Output directory for WAL shards and final files.
+   * @default 'tmp/profiles'
+   */
+  outDir?: string;
+
+  /**
+   * Override the base name for WAL files (overrides format.baseName).
+   * If provided, this value will be merged into the format configuration.
+   */
+  outBaseName?: string;
+
+  /**
+   * Optional name for your measurement that is reflected in path name. If not provided, a new group ID will be generated.
+   */
+  measureName?: string;
+};
+
 /**
  * Options for configuring a NodejsProfiler instance.
  *
- * Extends ProfilerOptions with a required sink parameter.
+ * Extends ProfilerOptions with a required format parameter for sharded WAL.
  *
+ * @template DomainEvents - The type of domain events encoded from performance entries
  * @template Tracks - Record type defining available track names and their configurations
  */
 export type NodejsProfilerOptions<
-  DomainEvents,
+  DomainEvents extends string | object,
   Tracks extends Record<string, ActionTrackEntryPayload>,
 > = ProfilerOptions<Tracks> &
-  Omit<PerformanceObserverOptions<DomainEvents>, 'sink'> & {
-    /**
-     * Sink for buffering and flushing performance data
-     */
-    sink: AppendableSink<DomainEvents>;
+  PersistOptions<DomainEvents> &
+  Omit<PerformanceObserverOptions<DomainEvents>, 'sink'>;
 
-    /**
-     * Name of the environment variable to check for debug mode.
-     * When the env var is set to 'true', profiler state transitions create performance marks for debugging.
-     *
-     * @default 'CP_PROFILER_DEBUG'
-     */
-    debugEnvVar?: string;
-  };
+/**
+ * Sets up a ShardedWal instance with the provided configuration.
+ * Merges outBaseName into format if provided and handles groupId generation.
+ *
+ * @param format - WAL format configuration
+ * @param outDir - Output directory for WAL shards
+ * @param outBaseName - Optional base name override for WAL files
+ * @param measureName - Optional measurement name for groupId generation
+ * @returns Configured ShardedWal instance
+ */
+function setupWal<DomainEvents extends string | object>(
+  format: Partial<WalFormat<DomainEvents>>,
+  outDir: string,
+  outBaseName?: string,
+  measureName?: string,
+): ShardedWal<DomainEvents> {
+  // Merge outBaseName into format if provided
+  const walFormat = outBaseName ? { ...format, baseName: outBaseName } : format;
+
+  return new ShardedWal<DomainEvents>({
+    dir: outDir,
+    format: walFormat,
+    ...(measureName ? { groupId: `${measureName}-${outBaseName}` } : {}),
+  });
+}
+
+type NodeJsProfilerState = 'idle' | 'running' | 'closed';
 
 /**
  * Performance profiler with automatic process exit handling for buffered performance data.
  *
  * This class extends the base {@link Profiler} with automatic flushing of performance data
- * when the process exits. It accepts a {@link PerformanceObserverSink} that buffers performance
- * entries and ensures they are written out during process termination, even for unexpected exits.
+ * when the process exits. It uses a {@link ShardedWal} internally to coordinate multiple
+ * WAL shards across processes/files, and accepts a {@link PerformanceObserverSink} that
+ * buffers performance entries and ensures they are written out during process termination,
+ * even for unexpected exits.
  *
- * The sink defines the output format for performance data, enabling flexible serialization
+ * The format defines the output format for performance data, enabling flexible serialization
  * to various formats such as DevTools TraceEvent JSON, OpenTelemetry protocol buffers,
  * or custom domain-specific formats.
  *
@@ -290,47 +413,60 @@ export type NodejsProfilerOptions<
  * exit handlers that flush buffered data on process termination (signals, fatal errors, or normal exit).
  *
  */
-export class NodejsProfiler<
-  DomainEvents,
+export class NodeJsProfiler<
+  DomainEvents extends string | object,
   Tracks extends Record<string, ActionTrackEntryPayload> = Record<
     string,
     ActionTrackEntryPayload
   >,
 > extends Profiler<Tracks> {
   #sink: AppendableSink<DomainEvents>;
+  #shardedWal: ShardedWal<DomainEvents>;
   #performanceObserverSink: PerformanceObserverSink<DomainEvents>;
-  #state: 'idle' | 'running' | 'closed' = 'idle';
-  #debug: boolean;
+  #state: NodeJsProfilerState = 'idle';
 
   /**
    * Creates a NodejsProfiler instance.
-   * @param options - Configuration with required sink
+   * @param options - Configuration with required format for sharded WAL
    */
   constructor(options: NodejsProfilerOptions<DomainEvents, Tracks>) {
     const {
-      sink,
+      format,
+      outDir = 'tmp/profiles',
+      outBaseName,
+      measureName,
+      ...allButWalOptions
+    } = options;
+
+    const {
       encodePerfEntry,
       captureBufferedEntries,
       flushThreshold,
       maxQueueSize,
-      enabled,
-      debugEnvVar = PROFILER_DEBUG_ENV_VAR,
-      ...profilerOptions
-    } = options;
+      ...allButPerfObsOptions
+    } = allButWalOptions;
+
+    const { enabled, ...profilerOptions } = allButPerfObsOptions;
+
     const initialEnabled = enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
     super({ ...profilerOptions, enabled: initialEnabled });
+    this.#shardedWal = setupWal(format, outDir, outBaseName, measureName);
 
-    this.#sink = sink;
-    this.#debug = isEnvVarEnabled(debugEnvVar);
+    // Create a shard sink for this profiler instance
+    this.#sink = this.#shardedWal.shard();
 
-    this.#performanceObserverSink = new PerformanceObserverSink({
-      sink,
+    // Configure PerformanceObserver with extracted options
+    const performanceObserverOptions = {
+      sink: this.#sink,
       encodePerfEntry,
       captureBufferedEntries,
       flushThreshold,
       maxQueueSize,
-      debugEnvVar,
-    });
+      debugEnvVar: this.debugEnvVar,
+    };
+    this.#performanceObserverSink = new PerformanceObserverSink(
+      performanceObserverOptions,
+    );
 
     if (initialEnabled) {
       this.#transition('running');
@@ -338,16 +474,13 @@ export class NodejsProfiler<
   }
 
   /**
-   * Returns whether debug mode is enabled for profiler state transitions.
+   * Returns the ShardedWal instance used by this profiler.
+   * Useful for accessing WAL management methods like finalize() and cleanup().
    *
-   * Debug mode is determined by the environment variable specified by `debugEnvVar`
-   * (defaults to 'CP_PROFILER_DEBUG'). When enabled, profiler state transitions create
-   * performance marks for debugging.
-   *
-   * @returns true if debug mode is enabled, false otherwise
+   * @returns The ShardedWal instance
    */
-  get debug(): boolean {
-    return this.#debug;
+  get shardedWal(): ShardedWal<DomainEvents> {
+    return this.#shardedWal;
   }
 
   /**
@@ -386,6 +519,7 @@ export class NodejsProfiler<
         super.setEnabled(false);
         this.#performanceObserverSink.unsubscribe();
         this.#sink.close?.();
+        this.#shardedWal.finalize();
         break;
 
       case 'idle->closed':
@@ -398,7 +532,7 @@ export class NodejsProfiler<
 
     this.#state = next;
 
-    if (this.#debug) {
+    if (this.debug) {
       this.#transitionMarker(transition);
     }
   }
@@ -434,7 +568,7 @@ export class NodejsProfiler<
   get stats() {
     return {
       ...this.#performanceObserverSink.getStats(),
-      debug: this.#debug,
+      debug: this.debug,
       state: this.#state,
       walOpen: !this.#sink.isClosed(),
     };
