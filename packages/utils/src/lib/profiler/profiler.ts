@@ -421,7 +421,7 @@ export class NodejsProfiler<
     return this.#state === 'running';
   }
 
-  /** Enables profiling (start/stop)*/
+  /** Enables profiling (start/stop) */
   override setEnabled(enabled: boolean): void {
     if (enabled) {
       this.#transition('running');
