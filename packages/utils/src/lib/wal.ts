@@ -362,7 +362,10 @@ export function isCoordinatorProcess(
  * This must be done as early as possible before any user code runs.
  * Sets envVarName to the current process ID if not already defined.
  */
-export function setLeaderWal(envVarName: string, profilerID: string): void {
+export function setCoordinatorProcess(
+  envVarName: string,
+  profilerID: string,
+): void {
   if (!process.env[envVarName]) {
     // eslint-disable-next-line functional/immutable-data
     process.env[envVarName] = profilerID;

@@ -15,7 +15,7 @@ import {
   isCoordinatorProcess,
   parseWalFormat,
   recoverFromContent,
-  setLeaderWal,
+  setCoordinatorProcess,
   stringCodec,
 } from './wal.js';
 
@@ -714,7 +714,7 @@ describe('isCoordinatorProcess', () => {
   });
 });
 
-describe('setLeaderWal', () => {
+describe('setCoordinatorProcess', () => {
   beforeEach(() => {
     // Clean up any existing TEST_ORIGIN_PID
     // eslint-disable-next-line functional/immutable-data
@@ -725,7 +725,7 @@ describe('setLeaderWal', () => {
     expect(process.env['TEST_ORIGIN_PID']).toBeUndefined();
 
     const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    setLeaderWal('TEST_ORIGIN_PID', profilerId);
+    setCoordinatorProcess('TEST_ORIGIN_PID', profilerId);
 
     expect(process.env['TEST_ORIGIN_PID']).toBe(profilerId);
   });
@@ -735,14 +735,14 @@ describe('setLeaderWal', () => {
     const newProfilerId = `${Math.round(performance.timeOrigin)}${process.pid}.2.0`;
 
     vi.stubEnv('TEST_ORIGIN_PID', existingProfilerId);
-    setLeaderWal('TEST_ORIGIN_PID', newProfilerId);
+    setCoordinatorProcess('TEST_ORIGIN_PID', newProfilerId);
 
     expect(process.env['TEST_ORIGIN_PID']).toBe(existingProfilerId);
   });
 
   it('should set env var to profiler id', () => {
     const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    setLeaderWal('TEST_ORIGIN_PID', profilerId);
+    setCoordinatorProcess('TEST_ORIGIN_PID', profilerId);
 
     expect(process.env['TEST_ORIGIN_PID']).toBe(profilerId);
   });
