@@ -2,7 +2,6 @@ import process from 'node:process';
 import { threadId } from 'node:worker_threads';
 import { isEnvVarEnabled } from '../env.js';
 import { subscribeProcessExit } from '../exit-process.js';
-import type { TraceEvent } from '../trace-file.type';
 import {
   type ActionTrackConfigs,
   type MeasureCtxOptions,
@@ -19,6 +18,7 @@ import type {
   EntryMeta,
 } from '../user-timing-extensibility-api.type.js';
 import { PROFILER_ENABLED_ENV_VAR } from './constants.js';
+import { type TraceEvent } from './trace-file.type.js';
 
 /**
  * Generates a unique profiler ID based on performance time origin, process ID, thread ID, and instance count.
@@ -258,7 +258,7 @@ export type NodeJsProfilerOptions<T extends ActionTrackConfigs> =
   };
 
 export class NodeJsProfiler<T extends ActionTrackConfigs> extends Profiler<T> {
-  #exitHandlerSubscribscription: null | (() => void) = null;
+  #exitHandlerSubscription: null | (() => void) = null;
   protected sink: WalSink | null = null;
 
   constructor(options: NodeJsProfilerOptions<T>) {
@@ -272,7 +272,7 @@ export class NodeJsProfiler<T extends ActionTrackConfigs> extends Profiler<T> {
       close: () => void 0,
       isClosed: () => false,
     };
-    this.#exitHandlerSubscribscription = this.subscribeProcessExit();
+    this.#exitHandlerSubscription = this.subscribeProcessExit();
   }
 
   /**
@@ -321,6 +321,8 @@ export class NodeJsProfiler<T extends ActionTrackConfigs> extends Profiler<T> {
       return;
     }
     this.setEnabled(false);
-    this.#exitHandlerSubscribscription?.();
+    this.#exitHandlerSubscription?.();
+    this.#exitHandlerSubscription = null;
+    this.sink?.close();
   }
 }
