@@ -184,38 +184,38 @@ describe('WriteAheadLogFile', () => {
     const w = wal('/test/a.log');
     expect(w).toBeInstanceOf(WriteAheadLogFile);
     expect(w.getPath()).toBe('/test/a.log');
-    expect(w.isClosed()).toBe(true);
+    expect(w.isClosed()).toBeTrue();
   });
 
   it('throws error when appending without opening', () => {
     const w = wal('/test/a.log');
-    expect(w.isClosed()).toBe(true);
+    expect(w.isClosed()).toBeTrue();
     expect(() => w.append('a')).toThrow('WAL not opened');
   });
 
   it('opens and closes correctly', () => {
     const w = wal('/test/a.log');
-    expect(w.isClosed()).toBe(true);
+    expect(w.isClosed()).toBeTrue();
     w.open();
-    expect(w.isClosed()).toBe(false);
+    expect(w.isClosed()).toBeFalse();
     w.close();
-    expect(w.isClosed()).toBe(true);
+    expect(w.isClosed()).toBeTrue();
   });
 
   it('multiple open calls are idempotent', () => {
     const w = wal('/test/a.log');
-    expect(w.isClosed()).toBe(true);
+    expect(w.isClosed()).toBeTrue();
 
     w.open();
-    expect(w.isClosed()).toBe(false);
+    expect(w.isClosed()).toBeFalse();
 
     w.open();
-    expect(w.isClosed()).toBe(false);
+    expect(w.isClosed()).toBeFalse();
     w.open();
-    expect(w.isClosed()).toBe(false);
+    expect(w.isClosed()).toBeFalse();
 
     w.close();
-    expect(w.isClosed()).toBe(true);
+    expect(w.isClosed()).toBeTrue();
   });
 
   it('append lines if opened', () => {
@@ -497,8 +497,8 @@ describe('stringCodec', () => {
   it('should handle special JSON values', () => {
     const codec = stringCodec<any>();
     expect(codec.decode('null')).toBeNull();
-    expect(codec.decode('true')).toBe(true);
-    expect(codec.decode('false')).toBe(false);
+    expect(codec.decode('true')).toBeTrue();
+    expect(codec.decode('false')).toBeFalse();
     expect(codec.decode('"quoted string"')).toBe('quoted string');
     expect(codec.decode('42')).toBe(42);
   });
@@ -684,7 +684,7 @@ describe('isCoordinatorProcess', () => {
     vi.stubEnv('TEST_LEADER_PID', profilerId);
 
     const result = isCoordinatorProcess('TEST_LEADER_PID', profilerId);
-    expect(result).toBe(true);
+    expect(result).toBeTrue();
   });
 
   it('should return false when env var does not match current profilerId', () => {
@@ -693,7 +693,7 @@ describe('isCoordinatorProcess', () => {
 
     const currentProfilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
     const result = isCoordinatorProcess('TEST_LEADER_PID', currentProfilerId);
-    expect(result).toBe(false);
+    expect(result).toBeFalse();
   });
 
   it('should return false when env var is not set', () => {
@@ -701,7 +701,7 @@ describe('isCoordinatorProcess', () => {
 
     const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
     const result = isCoordinatorProcess('NON_EXISTENT_VAR', profilerId);
-    expect(result).toBe(false);
+    expect(result).toBeFalse();
   });
 
   it('should return false when env var is empty string', () => {
@@ -709,7 +709,7 @@ describe('isCoordinatorProcess', () => {
 
     const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
     const result = isCoordinatorProcess('TEST_LEADER_PID', profilerId);
-    expect(result).toBe(false);
+    expect(result).toBeFalse();
   });
 });
 
