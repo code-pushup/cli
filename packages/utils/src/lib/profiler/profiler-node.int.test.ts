@@ -75,11 +75,11 @@ describe('NodeJS Profiler Integration', () => {
     ).resolves.toBe('async-result');
   });
 
-  it('should disable profiling and close sink', () => {
+  it('should disable profiling and keep sink open', () => {
     nodejsProfiler.setEnabled(false);
     expect(nodejsProfiler.isEnabled()).toBeFalse();
-    expect(mockSink.isClosed()).toBeTrue();
-    expect(mockSink.close).toHaveBeenCalledOnce();
+    expect(mockSink.isClosed()).toBeFalse();
+    expect(mockSink.close).not.toHaveBeenCalled();
 
     expect(nodejsProfiler.measure('disabled-test', () => 'success')).toBe(
       'success',
@@ -132,7 +132,7 @@ describe('NodeJS Profiler Integration', () => {
 
     const bufferedStats = bufferedProfiler.stats;
     expect(bufferedStats.state).toBe('running');
-    expect(bufferedStats.walOpen).toBeTrue();
+    expect(bufferedStats.sinkOpen).toBeTrue();
     expect(bufferedStats.isSubscribed).toBeTrue();
     expect(bufferedStats.queued).toBe(0);
     expect(bufferedStats.dropped).toBe(0);
@@ -156,7 +156,7 @@ describe('NodeJS Profiler Integration', () => {
 
     const stats = statsProfiler.stats;
     expect(stats.state).toBe('running');
-    expect(stats.walOpen).toBeTrue();
+    expect(stats.sinkOpen).toBeTrue();
     expect(stats.isSubscribed).toBeTrue();
     expect(typeof stats.queued).toBe('number');
     expect(typeof stats.dropped).toBe('number');
@@ -178,7 +178,7 @@ describe('NodeJS Profiler Integration', () => {
 
     const initialStats = profiler.stats;
     expect(initialStats.state).toBe('running');
-    expect(initialStats.walOpen).toBeTrue();
+    expect(initialStats.sinkOpen).toBeTrue();
     expect(initialStats.isSubscribed).toBeTrue();
     expect(initialStats.queued).toBe(0);
     expect(initialStats.dropped).toBe(0);
@@ -193,7 +193,7 @@ describe('NodeJS Profiler Integration', () => {
 
     const finalStats = profiler.stats;
     expect(finalStats.state).toBe('idle');
-    expect(finalStats.walOpen).toBeFalse();
+    expect(finalStats.sinkOpen).toBeTrue();
     expect(finalStats.isSubscribed).toBeFalse();
     expect(finalStats.queued).toBe(0);
 
