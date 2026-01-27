@@ -3,7 +3,6 @@ import * as fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { threadId } from 'node:worker_threads';
-import { SHARDED_WAL_COORDINATOR_ID_ENV_VAR } from './profiler/constants.js';
 
 /**
  * Codec for encoding/decoding values to/from strings for WAL storage.
@@ -620,10 +619,14 @@ export class ShardedWal<T extends object | string = object> {
   }
 
   finalizeIfCoordinator(): void {
-    if (this.#finalized) return;
+    if (this.#finalized) {
+      return;
+    }
     this.#finalized = true;
 
-    if (!this.isCoordinator()) return;
+    if (!this.isCoordinator()) {
+      return;
+    }
 
     this.finalize();
     this.cleanup();

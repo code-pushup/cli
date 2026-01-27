@@ -5,7 +5,7 @@ import {
   PerformanceObserverSink,
 } from '../performance-observer.js';
 import { objectToEntries } from '../transform.js';
-import { errorToMarkerPayload } from '../user-timing-extensibility-api-utils';
+import { errorToMarkerPayload } from '../user-timing-extensibility-api-utils.js';
 import type {
   ActionTrackEntryPayload,
   MarkerPayload,
@@ -15,7 +15,7 @@ import {
   PROFILER_DEBUG_ENV_VAR,
   PROFILER_ENABLED_ENV_VAR,
 } from './constants.js';
-import { Profiler, type ProfilerOptions } from './profiler';
+import { Profiler, type ProfilerOptions } from './profiler.js';
 
 /**
  * Options for configuring a NodejsProfiler instance.
@@ -111,7 +111,7 @@ export class NodejsProfiler<
       ) => {
         this.#handleFatalError(error, kind);
       },
-      onExit: (code: number) => {
+      onExit: (_code: number) => {
         this.close();
       },
     });
@@ -155,7 +155,7 @@ export class NodejsProfiler<
    */
   #handleFatalError(
     error: unknown,
-    kind: 'uncaughtException' | 'unhandledRejection',
+    _kind: 'uncaughtException' | 'unhandledRejection',
   ): void {
     this.marker('Fatal Error', errorToMarkerPayload(error));
     this.close(); // Ensures buffers flush and sink finalizes
@@ -223,7 +223,9 @@ export class NodejsProfiler<
    * **Exit Handler Usage**: Call only this method from process exit handlers.
    */
   close(): void {
-    if (this.#state === 'closed') return;
+    if (this.#state === 'closed') {
+      return;
+    }
     this.#unsubscribeExitHandlers?.();
     this.#transition('closed');
   }

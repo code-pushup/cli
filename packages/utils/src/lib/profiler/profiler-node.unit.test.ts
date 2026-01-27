@@ -8,8 +8,8 @@ import type {
   ActionTrackEntryPayload,
   UserTimingDetail,
 } from '../user-timing-extensibility-api.type.js';
-import { Profiler } from './profiler';
-import { NodejsProfiler, type NodejsProfilerOptions } from './profiler-node';
+import { NodejsProfiler, type NodejsProfilerOptions } from './profiler-node.js';
+import { Profiler } from './profiler.js';
 
 vi.mock('../exit-process.js');
 

@@ -48,6 +48,7 @@ export type ExitHandlerOptions = {
  * @param options.fatalExitCode - The exit code to use for fatal errors
  * @returns A function to unsubscribe from the exit handlers
  */
+// eslint-disable-next-line max-lines-per-function
 export function subscribeProcessExit(
   options: ExitHandlerOptions = {},
 ): () => void {
@@ -94,7 +95,7 @@ export function subscribeProcessExit(
       const handler = () => {
         close(SIGNAL_EXIT_CODES()[signal], { kind: 'signal', signal });
         if (exitOnSignal) {
-          // eslint-disable-next-line unicorn/no-process-exit
+          // eslint-disable-next-line unicorn/no-process-exit,n/no-process-exit
           process.exit(SIGNAL_EXIT_CODES()[signal]);
         }
       };
