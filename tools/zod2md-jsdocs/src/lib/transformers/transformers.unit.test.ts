@@ -17,17 +17,14 @@ describe('generateJSDocComment', () => {
        "
     `);
   });
-
   it('should use type name in description', () => {
     const result = generateJSDocComment('SchemaName123', 'https://example.com');
     expect(result).toContain('Type Definition: `SchemaName123`');
   });
-
   it('should convert type name to lowercase in the link anchor', () => {
     const result = generateJSDocComment('SchemaName123', 'https://example.com');
     expect(result).toContain('#schemaname123');
   });
-
   it('should baseUrl in the link', () => {
     const result = generateJSDocComment('Schema', 'https://example.com');
     expect(result).toContain('https://example.com#');

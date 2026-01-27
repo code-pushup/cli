@@ -4,9 +4,53 @@
   "sourceRoot": "tools/zod2md-jsdocs/src",
   "projectType": "library",
   "targets": {
-    "lint": {},
-    "build": {},
+    "build": {
+      "options": {
+        "assets": [
+          "{projectRoot}/*.md",
+          {
+            "input": "./tools/zod2md-jsdocs/src",
+            "glob": "**/!(*.ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./tools/zod2md-jsdocs/src",
+            "glob": "**/*.d.ts",
+            "output": "./src"
+          },
+          {
+            "input": "./tools/zod2md-jsdocs",
+            "glob": "generators.json",
+            "output": "."
+          },
+          {
+            "input": "./tools/zod2md-jsdocs",
+            "glob": "executors.json",
+            "output": "."
+          }
+        ]
+      }
+    },
+    "lint": {
+      "options": {
+        "lintFilePatterns": [
+          "tools/zod2md-jsdocs/**/*.ts",
+          "tools/zod2md-jsdocs/package.json",
+          "tools/zod2md-jsdocs/generators.json"
+        ]
+      }
+    },
+    "lint-report": {
+      "options": {
+        "lintFilePatterns": [
+          "tools/zod2md-jsdocs/**/*.ts",
+          "tools/zod2md-jsdocs/package.json",
+          "tools/zod2md-jsdocs/generators.json"
+        ]
+      }
+    },
     "unit-test": {},
+    "int-test": {},
     "ts-patch": {
       "command": "ts-patch install",
       "cache": true,
@@ -17,5 +61,6 @@
         }
       ]
     }
-  }
+  },
+  "tags": ["scope:tooling", "type:feature", "publishable"]
 }

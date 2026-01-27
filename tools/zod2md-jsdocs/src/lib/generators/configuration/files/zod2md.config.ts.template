@@ -1,0 +1,11 @@
+import type { Config } from 'zod2md';
+
+// see: https://github.com/matejchalk/zod2md?tab=readme-ov-file#configuration-file-reference
+export default {
+    <% if (entry) { %>entry: "<%- entry %>",<% } %>
+    <% if (format) { %>format: "<%- format %>",<% } %>
+    <% if (title) { %>title: "<%- title %>",<% } %>
+    <% if (output) { %>output: "<%- output %>",<% } %>
+    <% if (tsconfig) { %>tsconfig: "<%- tsconfig %>",<% } %>
+    <% if (transformName) { %>transformName: "<%- transformName %>",<% } %>
+} satisfies Config;
