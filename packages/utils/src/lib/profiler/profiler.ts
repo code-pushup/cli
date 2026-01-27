@@ -263,7 +263,7 @@ export type NodejsProfilerOptions<
   Omit<PerformanceObserverOptions<DomainEvents>, 'sink'> & {
     /**
      * Sink for buffering and flushing performance data
-     **/
+     */
     sink: AppendableSink<DomainEvents>;
 
     /**
