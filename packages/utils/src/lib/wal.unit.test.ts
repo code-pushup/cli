@@ -12,7 +12,7 @@ import {
   filterValidRecords,
   getShardId,
   getShardedGroupId,
-  isCoordinarotProcess,
+  isCoordinatorProcess,
   parseWalFormat,
   recoverFromContent,
   setLeaderWal,
@@ -684,7 +684,7 @@ describe('isLeaderWal', () => {
     const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
     vi.stubEnv('TEST_LEADER_PID', profilerId);
 
-    const result = isCoordinarotProcess('TEST_LEADER_PID', profilerId);
+    const result = isCoordinatorProcess('TEST_LEADER_PID', profilerId);
     expect(result).toBe(true);
   });
 
@@ -693,7 +693,7 @@ describe('isLeaderWal', () => {
     vi.stubEnv('TEST_LEADER_PID', wrongProfilerId);
 
     const currentProfilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    const result = isCoordinarotProcess('TEST_LEADER_PID', currentProfilerId);
+    const result = isCoordinatorProcess('TEST_LEADER_PID', currentProfilerId);
     expect(result).toBe(false);
   });
 
@@ -701,7 +701,7 @@ describe('isLeaderWal', () => {
     vi.stubEnv('NON_EXISTENT_VAR', undefined as any);
 
     const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    const result = isCoordinarotProcess('NON_EXISTENT_VAR', profilerId);
+    const result = isCoordinatorProcess('NON_EXISTENT_VAR', profilerId);
     expect(result).toBe(false);
   });
 
@@ -709,7 +709,7 @@ describe('isLeaderWal', () => {
     vi.stubEnv('TEST_LEADER_PID', '');
 
     const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    const result = isCoordinarotProcess('TEST_LEADER_PID', profilerId);
+    const result = isCoordinatorProcess('TEST_LEADER_PID', profilerId);
     expect(result).toBe(false);
   });
 });

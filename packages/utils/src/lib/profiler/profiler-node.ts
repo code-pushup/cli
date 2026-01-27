@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { isEnvVarEnabled } from '../env.js';
 import { subscribeProcessExit } from '../exit-process.js';
 import {
@@ -10,7 +11,7 @@ import type {
   ActionTrackEntryPayload,
   MarkerPayload,
 } from '../user-timing-extensibility-api.type.js';
-import type { AppendableSink } from '../wal.js';
+import { type AppendableSink, WriteAheadLogFile, stringCodec } from '../wal.js';
 import {
   PROFILER_DEBUG_ENV_VAR,
   PROFILER_ENABLED_ENV_VAR,
@@ -30,10 +31,12 @@ export type NodejsProfilerOptions<
 > = ProfilerOptions<Tracks> &
   Omit<PerformanceObserverOptions<DomainEvents>, 'sink'> & {
     /**
-     * Sink for buffering and flushing performance data
+     * File path for the WriteAheadLogFile sink.
+     * If not provided, defaults to `trace.json` in the current working directory.
+     *
+     * @default path.join(process.cwd(), 'trace.json')
      */
-    sink: AppendableSink<DomainEvents>;
-
+    filename?: string;
     /**
      * Name of the environment variable to check for debug mode.
      * When the env var is set to 'true', profiler state transitions create performance marks for debugging.
@@ -47,12 +50,11 @@ export type NodejsProfilerOptions<
  * Performance profiler with automatic process exit handling for buffered performance data.
  *
  * This class extends the base {@link Profiler} with automatic flushing of performance data
- * when the process exits. It accepts a {@link PerformanceObserverSink} that buffers performance
- * entries and ensures they are written out during process termination, even for unexpected exits.
+ * when the process exits. It automatically creates a {@link WriteAheadLogFile} sink that buffers
+ * performance entries and ensures they are written out during process termination, even for unexpected exits.
  *
- * The sink defines the output format for performance data, enabling flexible serialization
- * to various formats such as DevTools TraceEvent JSON, OpenTelemetry protocol buffers,
- * or custom domain-specific formats.
+ * The sink uses a default codec for serializing performance data to JSON format,
+ * enabling compatibility with Chrome DevTools trace file format.
  *
  * The profiler automatically subscribes to the performance observer when enabled and installs
  * exit handlers that flush buffered data on process termination (signals, fatal errors, or normal exit).
@@ -76,27 +78,31 @@ export class NodejsProfiler<
 
   /**
    * Creates a NodejsProfiler instance.
-   * @param options - Configuration with required sink
+   * A WriteAheadLogFile sink is automatically created for buffering performance data.
+   * @param options - Configuration options
    */
   constructor(options: NodejsProfilerOptions<DomainEvents, Tracks>) {
     const {
-      sink,
       encodePerfEntry,
       captureBufferedEntries,
       flushThreshold,
       maxQueueSize,
       enabled,
+      filename,
       debugEnvVar = PROFILER_DEBUG_ENV_VAR,
       ...profilerOptions
     } = options;
     const initialEnabled = enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
     super({ ...profilerOptions, enabled: initialEnabled });
 
-    this.#sink = sink;
+    this.#sink = new WriteAheadLogFile({
+      file: filename ?? path.join(process.cwd(), 'trace.json'),
+      codec: stringCodec<DomainEvents>(),
+    });
     this.#debug = isEnvVarEnabled(debugEnvVar);
 
     this.#performanceObserverSink = new PerformanceObserverSink({
-      sink,
+      sink: this.#sink,
       encodePerfEntry,
       captureBufferedEntries,
       flushThreshold,
@@ -155,9 +161,14 @@ export class NodejsProfiler<
    */
   #handleFatalError(
     error: unknown,
-    _kind: 'uncaughtException' | 'unhandledRejection',
+    kind: 'uncaughtException' | 'unhandledRejection',
   ): void {
-    this.marker('Fatal Error', errorToMarkerPayload(error));
+    this.marker(
+      'Fatal Error',
+      errorToMarkerPayload(error, {
+        tooltipText: `${kind} caused fatal error`,
+      }),
+    );
     this.close(); // Ensures buffers flush and sink finalizes
   }
 
@@ -166,7 +177,7 @@ export class NodejsProfiler<
    *
    * State transitions enforce lifecycle invariants:
    * - `idle -> running`: Enables profiling, opens sink, and subscribes to performance observer
-   * - `running -> idle`: Disables profiling and unsubscribes (sink remains open for potential re-enable)
+   * - `running -> idle`: Disables profiling, unsubscribes, and closes sink (sink will be reopened on re-enable)
    * - `running -> closed`: Disables profiling, unsubscribes, and closes sink (irreversible)
    * - `idle -> closed`: Closes sink if it was opened (irreversible)
    *
@@ -191,11 +202,6 @@ export class NodejsProfiler<
         break;
 
       case 'running->idle':
-        super.setEnabled(false);
-        this.#performanceObserverSink.unsubscribe();
-        // DO NOT close sink - it must remain open for potential re-enable
-        break;
-
       case 'running->closed':
         super.setEnabled(false);
         this.#performanceObserverSink.unsubscribe();
@@ -255,7 +261,7 @@ export class NodejsProfiler<
       ...this.#performanceObserverSink.getStats(),
       debug: this.#debug,
       state: this.#state,
-      sinkOpen: !this.#sink.isClosed(),
+      walOpen: !this.#sink.isClosed(),
     };
   }
 

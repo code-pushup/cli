@@ -350,7 +350,7 @@ export function parseWalFormat<T extends object | string = object>(
  *
  * @returns true if this is the leader WAL process, false otherwise
  */
-export function isCoordinarotProcess(
+export function isCoordinatorProcess(
   envVarName: string,
   profilerID: string,
 ): boolean {
@@ -514,7 +514,7 @@ export class ShardedWal<T extends object | string = object> {
       this.#dir = dir;
     }
     this.#format = parseWalFormat<T>(format);
-    this.#isCoordinator = isCoordinarotProcess(coordinatorIdEnvVar, this.#id);
+    this.#isCoordinator = isCoordinatorProcess(coordinatorIdEnvVar, this.#id);
   }
 
   /**
