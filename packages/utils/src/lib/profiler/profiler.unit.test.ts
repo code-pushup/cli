@@ -574,4 +574,18 @@ describe('NodeJsProfiler', () => {
     expect(setEnabledSpy).toHaveBeenCalledTimes(1);
     expect(setEnabledSpy).toHaveBeenCalledWith(false);
   });
+
+  it('close() unsubscribes from exit handlers even when disabled', () => {
+    const unsubscribeFn = vi.fn();
+    mockSubscribeProcessExit.mockReturnValue(unsubscribeFn);
+
+    profiler = createProfiler({ enabled: false });
+    expect(profiler.isEnabled()).toBe(false);
+    expect(mockSubscribeProcessExit).toHaveBeenCalled();
+
+    profiler.close();
+
+    expect(unsubscribeFn).toHaveBeenCalledTimes(1);
+    expect(profiler.isEnabled()).toBe(false);
+  });
 });

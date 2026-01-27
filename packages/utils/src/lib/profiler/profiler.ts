@@ -17,8 +17,8 @@ import type {
   DevToolsColor,
   EntryMeta,
 } from '../user-timing-extensibility-api.type.js';
+import { ShardedWal, type WalFormat, WriteAheadLogFile } from '../wal';
 import { PROFILER_ENABLED_ENV_VAR } from './constants.js';
-import { type TraceEvent } from './trace-file.type.js';
 
 /**
  * Generates a unique profiler ID based on performance time origin, process ID, thread ID, and instance count.
@@ -241,37 +241,28 @@ export class Profiler<T extends ActionTrackConfigs> {
   }
 }
 
-// @TODO implement ShardedWAL
-type WalSink = {
-  append: (event: TraceEvent) => void;
-  open: () => void;
-  close: () => void;
-  isClosed: () => boolean;
+export type ProfilerPersistOptions<DomainObject extends string | object> = {
+  format: WalFormat<DomainObject>;
 };
+export type NodeJsProfilerOptions<
+  T extends ActionTrackConfigs,
+  DomainObject extends string | object,
+> = ProfilerOptions<T> & ProfilerPersistOptions<DomainObject>;
 
-export type NodeJsProfilerOptions<T extends ActionTrackConfigs> =
-  ProfilerOptions<T> & {
-    // @TODO implement WALFormat
-    format: {
-      encode: (v: string | object) => string;
-    };
-  };
-
-export class NodeJsProfiler<T extends ActionTrackConfigs> extends Profiler<T> {
+export class NodeJsProfiler<
+  T extends ActionTrackConfigs,
+  DomainObject extends string | object,
+> extends Profiler<T> {
   #exitHandlerSubscription: null | (() => void) = null;
-  protected sink: WalSink | null = null;
+  #shardedWal: ShardedWal<DomainObject>;
+  #sink: WriteAheadLogFile<DomainObject> | null = null;
 
-  constructor(options: NodeJsProfilerOptions<T>) {
-    super(options);
-    // Temporary dummy sink; replaced by real WAL implementation
-    this.sink = {
-      append: event => {
-        options.format.encode(event);
-      },
-      open: () => void 0,
-      close: () => void 0,
-      isClosed: () => false,
-    };
+  constructor(options: NodeJsProfilerOptions<T, DomainObject>) {
+    const { format, ...profilerOptons } = options;
+    super(profilerOptons);
+
+    this.#shardedWal = new ShardedWal({ format });
+    this.#sink = this.#shardedWal.shard();
     this.#exitHandlerSubscription = this.subscribeProcessExit();
   }
 
@@ -317,12 +308,11 @@ export class NodeJsProfiler<T extends ActionTrackConfigs> extends Profiler<T> {
    * data is flushed and the WAL sink is properly closed.
    */
   close(): void {
-    if (!this.isEnabled()) {
-      return;
-    }
-    this.setEnabled(false);
     this.#exitHandlerSubscription?.();
     this.#exitHandlerSubscription = null;
-    this.sink?.close();
+    this.setEnabled(false);
+    this.#sink?.close();
+    this.#sink = null;
+    this.#shardedWal.finalizeIfCoordinator();
   }
 }
