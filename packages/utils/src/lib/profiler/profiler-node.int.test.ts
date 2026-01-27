@@ -254,7 +254,7 @@ describe('NodeJS Profiler Integration', () => {
       });
 
       const filePath = profiler.filePath;
-      expect(filePath).toContain('tmp/profiles');
+      expect(filePath).toContainPath('tmp/profiles');
       expect(filePath).toMatch(/\.jsonl$/);
 
       const pathParts = filePath.split(path.sep);
