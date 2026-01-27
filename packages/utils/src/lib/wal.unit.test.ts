@@ -1,8 +1,9 @@
 import { vol } from 'memfs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { SHARDED_WAL_COORDINATOR_ID_ENV_VAR } from './profiler/constants.js';
 import {
   type Codec,
+  type InvalidEntry,
   ShardedWal,
   WAL_ID_PATTERNS,
   WriteAheadLogFile,
@@ -10,10 +11,10 @@ import {
   filterValidRecords,
   getShardId,
   getShardedGroupId,
-  isLeaderWal,
+  isCoordinatorProcess,
   parseWalFormat,
   recoverFromContent,
-  setLeaderWal,
+  setCoordinatorProcess,
   stringCodec,
 } from './wal.js';
 
@@ -183,38 +184,38 @@ describe('WriteAheadLogFile', () => {
     const w = wal('/test/a.log');
     expect(w).toBeInstanceOf(WriteAheadLogFile);
     expect(w.getPath()).toBe('/test/a.log');
-    expect(w.isClosed()).toBe(true);
+    expect(w.isClosed()).toBeTrue();
   });
 
   it('throws error when appending without opening', () => {
     const w = wal('/test/a.log');
-    expect(w.isClosed()).toBe(true);
+    expect(w.isClosed()).toBeTrue();
     expect(() => w.append('a')).toThrow('WAL not opened');
   });
 
   it('opens and closes correctly', () => {
     const w = wal('/test/a.log');
-    expect(w.isClosed()).toBe(true);
+    expect(w.isClosed()).toBeTrue();
     w.open();
-    expect(w.isClosed()).toBe(false);
+    expect(w.isClosed()).toBeFalse();
     w.close();
-    expect(w.isClosed()).toBe(true);
+    expect(w.isClosed()).toBeTrue();
   });
 
   it('multiple open calls are idempotent', () => {
     const w = wal('/test/a.log');
-    expect(w.isClosed()).toBe(true);
+    expect(w.isClosed()).toBeTrue();
 
     w.open();
-    expect(w.isClosed()).toBe(false);
+    expect(w.isClosed()).toBeFalse();
 
     w.open();
-    expect(w.isClosed()).toBe(false);
+    expect(w.isClosed()).toBeFalse();
     w.open();
-    expect(w.isClosed()).toBe(false);
+    expect(w.isClosed()).toBeFalse();
 
     w.close();
-    expect(w.isClosed()).toBe(true);
+    expect(w.isClosed()).toBeTrue();
   });
 
   it('append lines if opened', () => {
@@ -496,8 +497,8 @@ describe('stringCodec', () => {
   it('should handle special JSON values', () => {
     const codec = stringCodec<any>();
     expect(codec.decode('null')).toBeNull();
-    expect(codec.decode('true')).toBe(true);
-    expect(codec.decode('false')).toBe(false);
+    expect(codec.decode('true')).toBeTrue();
+    expect(codec.decode('false')).toBeFalse();
     expect(codec.decode('"quoted string"')).toBe('quoted string');
     expect(codec.decode('42')).toBe(42);
   });
@@ -677,13 +678,13 @@ describe('parseWalFormat', () => {
   });
 });
 
-describe('isLeaderWal', () => {
+describe('isCoordinatorProcess', () => {
   it('should return true when env var matches current pid', () => {
     const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
     vi.stubEnv('TEST_LEADER_PID', profilerId);
 
-    const result = isLeaderWal('TEST_LEADER_PID', profilerId);
-    expect(result).toBe(true);
+    const result = isCoordinatorProcess('TEST_LEADER_PID', profilerId);
+    expect(result).toBeTrue();
   });
 
   it('should return false when env var does not match current profilerId', () => {
@@ -691,28 +692,28 @@ describe('isLeaderWal', () => {
     vi.stubEnv('TEST_LEADER_PID', wrongProfilerId);
 
     const currentProfilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    const result = isLeaderWal('TEST_LEADER_PID', currentProfilerId);
-    expect(result).toBe(false);
+    const result = isCoordinatorProcess('TEST_LEADER_PID', currentProfilerId);
+    expect(result).toBeFalse();
   });
 
   it('should return false when env var is not set', () => {
     vi.stubEnv('NON_EXISTENT_VAR', undefined as any);
 
     const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    const result = isLeaderWal('NON_EXISTENT_VAR', profilerId);
-    expect(result).toBe(false);
+    const result = isCoordinatorProcess('NON_EXISTENT_VAR', profilerId);
+    expect(result).toBeFalse();
   });
 
   it('should return false when env var is empty string', () => {
     vi.stubEnv('TEST_LEADER_PID', '');
 
     const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    const result = isLeaderWal('TEST_LEADER_PID', profilerId);
-    expect(result).toBe(false);
+    const result = isCoordinatorProcess('TEST_LEADER_PID', profilerId);
+    expect(result).toBeFalse();
   });
 });
 
-describe('setLeaderWal', () => {
+describe('setCoordinatorProcess', () => {
   beforeEach(() => {
     // Clean up any existing TEST_ORIGIN_PID
     // eslint-disable-next-line functional/immutable-data
@@ -723,7 +724,7 @@ describe('setLeaderWal', () => {
     expect(process.env['TEST_ORIGIN_PID']).toBeUndefined();
 
     const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    setLeaderWal('TEST_ORIGIN_PID', profilerId);
+    setCoordinatorProcess('TEST_ORIGIN_PID', profilerId);
 
     expect(process.env['TEST_ORIGIN_PID']).toBe(profilerId);
   });
@@ -733,14 +734,14 @@ describe('setLeaderWal', () => {
     const newProfilerId = `${Math.round(performance.timeOrigin)}${process.pid}.2.0`;
 
     vi.stubEnv('TEST_ORIGIN_PID', existingProfilerId);
-    setLeaderWal('TEST_ORIGIN_PID', newProfilerId);
+    setCoordinatorProcess('TEST_ORIGIN_PID', newProfilerId);
 
     expect(process.env['TEST_ORIGIN_PID']).toBe(existingProfilerId);
   });
 
   it('should set env var to profiler id', () => {
     const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    setLeaderWal('TEST_ORIGIN_PID', profilerId);
+    setCoordinatorProcess('TEST_ORIGIN_PID', profilerId);
 
     expect(process.env['TEST_ORIGIN_PID']).toBe(profilerId);
   });
@@ -758,6 +759,7 @@ describe('ShardedWal', () => {
       format: {
         baseName: 'test-wal',
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     expect(sw).toBeInstanceOf(ShardedWal);
@@ -770,6 +772,7 @@ describe('ShardedWal', () => {
         baseName: 'trace',
         walExtension: '.log',
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     const shard = sw.shard('20231114-221320-000.1.2.3');
@@ -786,6 +789,7 @@ describe('ShardedWal', () => {
         baseName: 'trace',
         walExtension: '.log',
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     const shard = sw.shard();
@@ -801,6 +805,7 @@ describe('ShardedWal', () => {
       format: {
         baseName: 'test-wal',
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
     const files = (sw as any).shardFiles();
     expect(files).toEqual([]);
@@ -812,6 +817,7 @@ describe('ShardedWal', () => {
       format: {
         baseName: 'test-wal',
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
     // Create the group directory (matches actual getShardedGroupId() output)
     vol.mkdirSync('/empty/20231114-221320-000', { recursive: true });
@@ -834,6 +840,7 @@ describe('ShardedWal', () => {
         baseName: 'trace',
         walExtension: '.log',
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
     const files = (sw as any).shardFiles();
 
@@ -858,6 +865,7 @@ describe('ShardedWal', () => {
         finalExtension: '.json',
         finalizer: records => `${JSON.stringify(records)}\n`,
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     // Create the group directory
@@ -885,6 +893,7 @@ describe('ShardedWal', () => {
         finalExtension: '.json',
         finalizer: records => `${JSON.stringify(records)}\n`,
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     sw.finalize();
@@ -920,6 +929,7 @@ describe('ShardedWal', () => {
         codec: tolerantCodec,
         finalizer: records => `${JSON.stringify(records)}\n`,
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     sw.finalize();
@@ -945,6 +955,7 @@ describe('ShardedWal', () => {
         baseName: 'test',
         walExtension: '.log',
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     expect(vol.toJSON()).toStrictEqual({
@@ -971,6 +982,7 @@ describe('ShardedWal', () => {
         baseName: 'test',
         walExtension: '.log',
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     vol.unlinkSync(
@@ -994,6 +1006,7 @@ describe('ShardedWal', () => {
         finalizer: (records, opt) =>
           `${JSON.stringify({ records, meta: opt })}\n`,
       },
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
 
     sw.finalize({ version: '1.0', compressed: true });
