@@ -78,7 +78,6 @@ export class NodejsProfiler<
 > extends Profiler<Tracks> {
   #sink: AppendableSink<DomainEvents>;
   #performanceObserverSink: PerformanceObserverSink<DomainEvents>;
-  //
   #state: 'idle' | 'running' | 'closed' = 'idle';
   #debug: boolean;
   #unsubscribeExitHandlers: (() => void) | undefined;
