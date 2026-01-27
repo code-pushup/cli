@@ -1,10 +1,6 @@
-import type {
-  RecoverResult,
-  Recoverable,
-  Sink,
-} from '../src/lib/sink-source.type';
+import type { AppendableSink, RecoverResult } from '../src/lib/wal';
 
-export class MockSink implements Sink<string, string> {
+export class MockAppendableSink implements AppendableSink<string> {
   private writtenItems: string[] = [];
   private closed = true;
 
@@ -12,7 +8,7 @@ export class MockSink implements Sink<string, string> {
     this.closed = false;
   });
 
-  write = vi.fn((input: string): void => {
+  append = vi.fn((input: string): void => {
     this.writtenItems.push(input);
   });
 
@@ -24,6 +20,16 @@ export class MockSink implements Sink<string, string> {
     return this.closed;
   });
 
+  recover = vi.fn((): RecoverResult<string> => {
+    return {
+      records: [...this.writtenItems],
+      errors: [],
+      partialTail: null,
+    };
+  });
+
+  repack = vi.fn((): void => {});
+
   encode = vi.fn((input: string): string => {
     return `${input}-${this.constructor.name}-encoded`;
   });
@@ -33,20 +39,14 @@ export class MockSink implements Sink<string, string> {
   });
 }
 
-export class MockTraceEventFileSink extends MockSink implements Recoverable {
-  recover = vi.fn(
-    (): {
-      records: unknown[];
-      errors: { lineNo: number; line: string; error: Error }[];
-      partialTail: string | null;
-    } => {
-      return {
-        records: this.getWrittenItems(),
-        errors: [],
-        partialTail: null,
-      } satisfies RecoverResult<string>;
-    },
-  );
+export class MockTraceEventFileSink extends MockAppendableSink {
+  override recover = vi.fn((): RecoverResult<string> => {
+    return {
+      records: this.getWrittenItems(),
+      errors: [],
+      partialTail: null,
+    };
+  });
 
   repack = vi.fn((): void => {});
 

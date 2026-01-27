@@ -5,7 +5,6 @@ import {
 } from 'node:perf_hooks';
 import { isEnvVarEnabled } from './env.js';
 import { PROFILER_DEBUG_ENV_VAR } from './profiler/constants.js';
-import type { Buffered, Observer, Sink } from './sink-source.type';
 import type { AppendableSink } from './wal.js';
 
 /**
@@ -85,9 +84,9 @@ export function validateFlushThreshold(
 export type PerformanceObserverOptions<T> = {
   /**
    * The sink where encoded performance entries will be written.
-   * Must implement the Sink interface for handling the encoded data.
+   * Must implement the AppendableSink interface for handling the encoded data.
    */
-  sink: Sink<T, unknown>;
+  sink: AppendableSink<T>;
 
   /**
    * Function that encodes raw PerformanceEntry objects into domain-specific types.
@@ -178,7 +177,7 @@ export class PerformanceObserverSink<T> {
   #maxQueueSize: number;
 
   /** The target sink where encoded performance data is written */
-  #sink: Sink<T, unknown>;
+  #sink: AppendableSink<T>;
 
   /** Node.js PerformanceObserver instance, undefined when not subscribed */
   #observer: PerformanceObserver | undefined;

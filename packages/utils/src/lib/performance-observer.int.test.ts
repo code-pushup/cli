@@ -1,6 +1,6 @@
 import { type PerformanceEntry, performance } from 'node:perf_hooks';
 import type { MockedFunction } from 'vitest';
-import { MockFileSink } from '../../mocks/sink.mock';
+import { MockAppendableSink } from '../../mocks/sink.mock.js';
 import {
   type PerformanceObserverOptions,
   PerformanceObserverSink,
@@ -8,14 +8,14 @@ import {
 
 describe('PerformanceObserverSink', () => {
   let encode: MockedFunction<(entry: PerformanceEntry) => string[]>;
-  let sink: MockFileSink;
+  let sink: MockAppendableSink;
   let options: PerformanceObserverOptions<string>;
 
   const awaitObserverCallback = () =>
     new Promise(resolve => setTimeout(resolve, 10));
 
   beforeEach(() => {
-    sink = new MockFileSink();
+    sink = new MockAppendableSink();
     sink.open();
     encode = vi.fn((entry: PerformanceEntry) => [
       `${entry.name}:${entry.entryType}`,
@@ -139,9 +139,9 @@ describe('PerformanceObserverSink', () => {
   });
 
   it('keeps items in queue when sink write fails', async () => {
-    const failingSink = new MockSink();
+    const failingSink = new MockAppendableSink();
     failingSink.open();
-    failingSink.write.mockImplementation(() => {
+    failingSink.append.mockImplementation(() => {
       throw new Error('Sink write failed');
     });
 
@@ -163,7 +163,7 @@ describe('PerformanceObserverSink', () => {
   });
 
   it('keeps items in queue when sink is closed during flush', async () => {
-    const closedSink = new MockSink();
+    const closedSink = new MockAppendableSink();
     closedSink.open();
     closedSink.close();
 

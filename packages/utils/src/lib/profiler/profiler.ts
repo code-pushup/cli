@@ -6,7 +6,6 @@ import {
   type PerformanceObserverOptions,
   PerformanceObserverSink,
 } from '../performance-observer.js';
-import type { Recoverable, Sink } from '../sink-source.type.js';
 import { objectToEntries } from '../transform.js';
 import {
   type ActionTrackConfigs,
@@ -23,6 +22,7 @@ import type {
   EntryMeta,
   MarkerPayload,
 } from '../user-timing-extensibility-api.type.js';
+import type { AppendableSink } from '../wal.js';
 import {
   PROFILER_DEBUG_ENV_VAR,
   PROFILER_ENABLED_ENV_VAR,
@@ -264,7 +264,7 @@ export type NodejsProfilerOptions<
     /** Sink for buffering and flushing performance data
      * @NOTE this is dummy code and will be replaced by PR #1210
      **/
-    sink: Sink<DomainEvents, unknown> & Recoverable;
+    sink: AppendableSink<DomainEvents>;
 
     /**
      * Name of the environment variable to check for debug mode.
@@ -297,7 +297,7 @@ export class NodejsProfiler<
     ActionTrackEntryPayload
   >,
 > extends Profiler<Tracks> {
-  #sink: Sink<DomainEvents, unknown> & Recoverable;
+  #sink: AppendableSink<DomainEvents>;
   #performanceObserverSink: PerformanceObserverSink<DomainEvents>;
   #state: 'idle' | 'running' | 'closed' = 'idle';
   #debug: boolean;
@@ -377,7 +377,7 @@ export class NodejsProfiler<
     switch (transition) {
       case 'idle->running':
         super.setEnabled(true);
-        this.#sink.open();
+        this.#sink.open?.();
         this.#performanceObserverSink.subscribe();
         break;
 
@@ -385,7 +385,7 @@ export class NodejsProfiler<
       case 'running->closed':
         super.setEnabled(false);
         this.#performanceObserverSink.unsubscribe();
-        this.#sink.close();
+        this.#sink.close?.();
         break;
 
       case 'idle->closed':

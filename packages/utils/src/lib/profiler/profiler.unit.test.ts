@@ -4,7 +4,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MockTraceEventFileSink } from '../../../mocks/sink.mock.js';
 import type { PerformanceEntryEncoder } from '../performance-observer.js';
 import * as PerfObserverModule from '../performance-observer.js';
-import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
+import type {
+  ActionTrackEntryPayload,
+  UserTimingDetail,
+} from '../user-timing-extensibility-api.type.js';
 import {
   NodejsProfiler,
   type NodejsProfilerOptions,
@@ -23,6 +26,7 @@ describe('getProfilerId', () => {
     );
   });
 });
+
 describe('Profiler', () => {
   const getProfiler = (overrides?: Partial<ProfilerOptions>) =>
     new Profiler({
@@ -491,8 +495,8 @@ describe('NodejsProfiler', () => {
 
     const mockPerfObserverSink = {
       subscribe: vi.fn(),
-      unsubscribe: vi.fn(function (this: typeof mockPerfObserverSink) {
-        this.flush();
+      unsubscribe: vi.fn(() => {
+        mockPerfObserverSink.flush();
       }),
       isSubscribed: vi.fn().mockReturnValue(false),
       encode: vi.fn(),
@@ -1212,9 +1216,10 @@ describe('NodejsProfiler', () => {
     // Verify marker was created with correct name and includes stats in detail
     expect(transitionMark?.name).toBe('idle->running');
     expect(transitionMark?.detail).toBeDefined();
-    expect(transitionMark?.detail.devtools).toBeDefined();
-    expect(transitionMark?.detail.devtools.dataType).toBe('marker');
-    expect(transitionMark?.detail.devtools.properties).toBeDefined();
+    const detail = transitionMark?.detail as UserTimingDetail;
+    expect(detail.devtools).toBeDefined();
+    expect(detail.devtools?.dataType).toBe('marker');
+    expect(detail.devtools?.properties).toBeDefined();
   });
 
   it('setEnabled override: should enable profiling when setEnabled(true)', () => {
