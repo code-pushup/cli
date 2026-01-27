@@ -679,7 +679,7 @@ describe('parseWalFormat', () => {
   });
 });
 
-describe('isLeaderWal', () => {
+describe('isCoordinatorProcess', () => {
   it('should return true when env var matches current pid', () => {
     const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
     vi.stubEnv('TEST_LEADER_PID', profilerId);

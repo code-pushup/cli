@@ -268,7 +268,7 @@ const saved = profiler.measure('save-user', () => saveToDb(user), {
 
 ### Features
 
-- **Crash-save Write Ahead Log**: Ensures profiling data is saved even if the application crashes.
+- **Crash-safe Write Ahead Log**: Ensures profiling data is saved even if the application crashes.
 - **Recoverable Profiles**: Ability to resume profiling sessions after interruptions or crash.
 - **Automatic Trace Generation**: Generates trace files compatible with Chrome DevTools for in-depth performance analysis.
 - **Multiprocess Support**: Designed to handle profiling over sharded WAL.

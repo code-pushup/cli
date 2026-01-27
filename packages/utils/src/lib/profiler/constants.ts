@@ -19,8 +19,9 @@ export const PROFILER_DEBUG_ENV_VAR = 'CP_PROFILER_DEBUG';
 /**
  * Environment variable name for setting the Sharded WAL Coordinator ID.
  * This ID is used to identify the coordinator instance in a sharded Write-Ahead Logging setup.
- *  @example
- *  CP_SHARDED_WAL_COORDINATOR_ID=coordinator-1 npm run dev
+ * 
+ * @example
+ * CP_SHARDED_WAL_COORDINATOR_ID=coordinator-1 npm run dev
  */
 export const SHARDED_WAL_COORDINATOR_ID_ENV_VAR =
   'CP_SHARDED_WAL_COORDINATOR_ID';
