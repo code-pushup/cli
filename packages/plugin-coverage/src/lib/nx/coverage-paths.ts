@@ -12,28 +12,10 @@ import {
   logger,
   pluralize,
   pluralizeToken,
-  stringifyError,
+  resolveCachedProjectGraph,
 } from '@code-pushup/utils';
 import type { CoverageResult } from '../config.js';
 import { formatMetaLog } from '../format.js';
-
-/**
- * Resolves the cached project graph for the current Nx workspace.
- * First tries to read cache and if not possible, go for the async creation.
- */
-async function resolveCachedProjectGraph() {
-  const { readCachedProjectGraph, createProjectGraphAsync } = await import(
-    '@nx/devkit'
-  );
-  try {
-    return readCachedProjectGraph();
-  } catch (error) {
-    logger.warn(
-      `Could not read cached project graph, falling back to async creation - ${stringifyError(error)}`,
-    );
-    return await createProjectGraphAsync({ exitOnError: false });
-  }
-}
 
 /**
  * @param targets nx targets to be used for measuring coverage, test by default

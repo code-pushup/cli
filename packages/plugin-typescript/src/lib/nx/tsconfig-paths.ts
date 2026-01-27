@@ -2,7 +2,11 @@ import type { ProjectConfiguration } from '@nx/devkit';
 import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { readConfigFile, sys } from 'typescript';
-import { logger, pluralizeToken, stringifyError } from '@code-pushup/utils';
+import {
+  logger,
+  pluralizeToken,
+  resolveCachedProjectGraph,
+} from '@code-pushup/utils';
 import { formatMetaLog } from '../format.js';
 
 /**
@@ -33,24 +37,6 @@ function hasFilesToCompile(tsconfigPath: string): boolean {
   const includeEmpty = Array.isArray(include) && include.length === 0;
 
   return !(filesEmpty && includeEmpty);
-}
-
-/**
- * Resolves the cached project graph for the current Nx workspace.
- * Tries to read from cache first, falls back to async creation.
- */
-async function resolveCachedProjectGraph() {
-  const { readCachedProjectGraph, createProjectGraphAsync } = await import(
-    '@nx/devkit'
-  );
-  try {
-    return readCachedProjectGraph();
-  } catch (error) {
-    logger.warn(
-      `Could not read cached project graph, falling back to async creation.\n${stringifyError(error)}`,
-    );
-    return await createProjectGraphAsync({ exitOnError: false });
-  }
 }
 
 function isProjectIncluded(

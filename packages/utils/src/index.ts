@@ -94,6 +94,7 @@ export {
 export { interpolate } from './lib/interpolate.js';
 export { Logger, logger } from './lib/logger.js';
 export { mergeConfigs } from './lib/merge-configs.js';
+export { createProjectGraph, resolveCachedProjectGraph } from './lib/nx.js';
 export {
   addIndex,
   expandAuditsForUrls,
