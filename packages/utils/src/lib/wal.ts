@@ -22,8 +22,21 @@ export type InvalidEntry<O = string> = { __invalid: true; raw: O };
  * Interface for sinks that can append items.
  * Allows for different types of appendable storage (WAL, in-memory, etc.)
  */
-export type AppendableSink<T> = {
+export type AppendableSink<T> = Recoverable & {
   append: (item: T) => void;
+  isClosed: () => boolean;
+  open?: () => void;
+  close?: () => void;
+};
+
+/**
+ * Interface for sinks that support recovery operations.
+ * Represents the recoverable subset of AppendableSink functionality.
+ */
+export type Recoverable = {
+  recover: () => RecoverResult<unknown>;
+  repack: (out?: string) => void;
+  finalize?: (opt?: Record<string, unknown>) => void;
 };
 
 /**
@@ -493,12 +506,7 @@ export class ShardedWal<T extends object | string = object> {
     groupId?: string;
     coordinatorIdEnvVar?: string;
   }) {
-    const {
-      dir,
-      format,
-      groupId,
-      coordinatorIdEnvVar = SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-    } = opt;
+    const { dir, format, groupId, coordinatorIdEnvVar } = opt;
     this.groupId = groupId ?? getShardedGroupId();
     if (dir) {
       this.#dir = dir;

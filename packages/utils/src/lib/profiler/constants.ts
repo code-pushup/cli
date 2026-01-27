@@ -1,8 +1,26 @@
+/**
+ * Environment variable name for enabling/disabling profiling globally.
+ * When set to 'true', profiling is enabled. When set to 'false' or unset, profiling is disabled.
+ *
+ * @example
+ * CP_PROFILING=true npm run dev
+ */
 export const PROFILER_ENABLED_ENV_VAR = 'CP_PROFILING';
-export const PROFILER_COORDINATOR_FLAG_ENV_VAR = 'CP_PROFILER_COORDINATOR';
-export const PROFILER_ORIGIN_PID_ENV_VAR = 'CP_PROFILER_ORIGIN_PID';
-export const PROFILER_DIRECTORY_ENV_VAR = 'CP_PROFILER_DIR';
-export const PROFILER_BASE_NAME = 'trace';
-export const PROFILER_DIRECTORY = './tmp/profiles';
+
+/**
+ * Environment variable name for enabling debug mode for profiler state transitions.
+ * When set to 'true', profiler state transitions create performance marks for debugging.
+ *
+ * @example
+ * CP_PROFILER_DEBUG=true npm run dev
+ */
+export const PROFILER_DEBUG_ENV_VAR = 'CP_PROFILER_DEBUG';
+
+/**
+ * Environment variable name for setting the Sharded WAL Coordinator ID.
+ * This ID is used to identify the coordinator instance in a sharded Write-Ahead Logging setup.
+ *  @example
+ *  CP_SHARDED_WAL_COORDINATOR_ID=coordinator-1 npm run dev
+ */
 export const SHARDED_WAL_COORDINATOR_ID_ENV_VAR =
   'CP_SHARDED_WAL_COORDINATOR_ID';

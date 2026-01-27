@@ -1,61 +1,54 @@
-import type { AppendableSink, Codec } from '../src/lib/wal.js';
+import type { AppendableSink, RecoverResult } from '../src/lib/wal';
 
-export class MockFileSink implements AppendableSink<string> {
+export class MockAppendableSink implements AppendableSink<string> {
   private writtenItems: string[] = [];
-  private closed = false;
+  private closed = true;
 
-  constructor(options?: { file?: string; codec?: Codec<string> }) {
-    const file = options?.file || '/tmp/mock-sink.log';
-    const codec = options?.codec || {
-      encode: (input: string) => input,
-      decode: (data: string) => data,
-    };
-  }
+  open = vi.fn((): void => {
+    this.closed = false;
+  });
 
-  #fd: number | null = null;
+  append = vi.fn((input: string): void => {
+    this.writtenItems.push(input);
+  });
 
-  get path(): string {
-    return '/tmp/mock-sink.log';
-  }
-
-  getPath(): string {
-    return this.path;
-  }
-
-  open(): void {
-    this.#fd = 1; // Mock file descriptor
-  }
-
-  append(v: string): void {
-    this.writtenItems.push(v);
-  }
-
-  close(): void {
-    this.#fd = null;
+  close = vi.fn((): void => {
     this.closed = true;
-  }
+  });
 
-  isClosed(): boolean {
-    return this.#fd === null;
-  }
+  isClosed = vi.fn((): boolean => {
+    return this.closed;
+  });
 
-  recover(): any {
+  recover = vi.fn((): RecoverResult<string> => {
     return {
-      records: this.writtenItems,
+      records: [...this.writtenItems],
       errors: [],
       partialTail: null,
     };
-  }
+  });
 
-  repack(): void {
-    // Mock implementation - do nothing
-  }
+  repack = vi.fn((): void => {});
 
-  getWrittenItems(): string[] {
+  encode = vi.fn((input: string): string => {
+    return `${input}-${this.constructor.name}-encoded`;
+  });
+
+  getWrittenItems = vi.fn((): string[] => {
     return [...this.writtenItems];
-  }
+  });
+}
 
-  clearWrittenItems(): void {
-    this.writtenItems = [];
-  }
+export class MockTraceEventFileSink extends MockAppendableSink {
+  override recover = vi.fn((): RecoverResult<string> => {
+    return {
+      records: this.getWrittenItems(),
+      errors: [],
+      partialTail: null,
+    };
+  });
+
+  repack = vi.fn((): void => {});
+
+  finalize = vi.fn((): void => {});
 }
