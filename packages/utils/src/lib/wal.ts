@@ -492,7 +492,6 @@ export class ShardedWal<T extends object | string = object> {
   readonly #format: WalFormat<T>;
   readonly #dir: string = process.cwd();
   readonly #isCoordinator: boolean;
-  #finalized = false;
 
   /**
    * Create a sharded WAL manager.
