@@ -2,10 +2,26 @@ import { performance } from 'node:perf_hooks';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { subscribeProcessExit } from '../exit-process.js';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
-import { NodeJsProfiler, Profiler, type ProfilerOptions } from './profiler.js';
+import {
+  NodeJsProfiler,
+  Profiler,
+  type ProfilerOptions,
+  getProfilerId,
+} from './profiler.js';
 
 // Spy on subscribeProcessExit to capture handlers
 vi.mock('../exit-process.js');
+
+describe('getProfilerId', () => {
+  it('should generate a unique id per process', () => {
+    expect(getProfilerId()).toBe(
+      `${Math.round(performance.timeOrigin)}.${process.pid}.${threadId}.1`,
+    );
+    expect(getProfilerId()).toBe(
+      `${Math.round(performance.timeOrigin)}.${process.pid}.${threadId}.2`,
+    );
+  });
+});
 
 describe('Profiler', () => {
   const getProfiler = (overrides?: Partial<ProfilerOptions>) =>
@@ -30,7 +46,7 @@ describe('Profiler', () => {
     vi.stubEnv('CP_PROFILING', 'true');
     const profilerWithEnv = getProfiler();
 
-    expect(profilerWithEnv.isEnabled()).toBe(true);
+    expect(profilerWithEnv.isEnabled()).toBeTrue();
   });
 
   it('constructor should override enabled state from options', () => {
@@ -41,7 +57,7 @@ describe('Profiler', () => {
       enabled: true,
     });
 
-    expect(profilerWithOverride.isEnabled()).toBe(true);
+    expect(profilerWithOverride.isEnabled()).toBeTrue();
   });
 
   it('constructor should use defaults for measure', () => {
@@ -123,13 +139,13 @@ describe('Profiler', () => {
   });
 
   it('isEnabled should set and get enabled state', () => {
-    expect(profiler.isEnabled()).toBe(false);
+    expect(profiler.isEnabled()).toBeFalse();
 
     profiler.setEnabled(true);
-    expect(profiler.isEnabled()).toBe(true);
+    expect(profiler.isEnabled()).toBeTrue();
 
     profiler.setEnabled(false);
-    expect(profiler.isEnabled()).toBe(false);
+    expect(profiler.isEnabled()).toBeFalse();
   });
 
   it('isEnabled should update environment variable', () => {

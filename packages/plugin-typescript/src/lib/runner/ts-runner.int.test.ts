@@ -1,4 +1,3 @@
-import { describe, expect } from 'vitest';
 import { getTypeScriptDiagnostics } from './ts-runner.js';
 
 describe('getTypeScriptDiagnostics', () => {

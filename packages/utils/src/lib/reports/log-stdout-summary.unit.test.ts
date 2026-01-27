@@ -1,5 +1,4 @@
 import ansis from 'ansis';
-import { beforeAll, describe, expect, vi } from 'vitest';
 import { removeColorCodes } from '@code-pushup/test-utils';
 import { logger } from '../logger.js';
 import {
@@ -56,7 +55,7 @@ describe('logCategories', () => {
 
     logCategories({ plugins, categories });
 
-    expect(logger.info).toHaveBeenCalledTimes(1);
+    expect(logger.info).toHaveBeenCalledOnce();
     expect(ansis.strip(stdout)).toBe(
       `
 Categories
@@ -105,7 +104,7 @@ Categories
 
     logCategories({ plugins, categories });
 
-    expect(logger.info).toHaveBeenCalledTimes(1);
+    expect(logger.info).toHaveBeenCalledOnce();
     expect(ansis.strip(stdout)).toBe(
       `
 Categories
@@ -154,7 +153,7 @@ Categories
 
     logCategories({ plugins, categories });
 
-    expect(logger.info).toHaveBeenCalledTimes(1);
+    expect(logger.info).toHaveBeenCalledOnce();
     expect(ansis.strip(stdout)).toBe(
       `
 Categories

@@ -1,18 +1,19 @@
 import type { AuditOutputs, Issue } from '@code-pushup/models';
-import { formatGitPath, getGitRoot } from '@code-pushup/utils';
+import { formatGitPath, getGitRoot, isFileIssue } from '@code-pushup/utils';
 
 export function normalizeIssue(issue: Issue, gitRoot: string): Issue {
+  // Early exit to avoid cloning; only file sources need path normalization
+  if (!isFileIssue(issue)) {
+    return issue;
+  }
   const { source, ...issueWithoutSource } = issue;
-  // early exit to avoid issue object cloning.
-  return source == null
-    ? issue
-    : {
-        ...issueWithoutSource,
-        source: {
-          ...source,
-          file: formatGitPath(source.file, gitRoot),
-        },
-      };
+  return {
+    ...issueWithoutSource,
+    source: {
+      ...source,
+      file: formatGitPath(source.file, gitRoot),
+    },
+  };
 }
 
 export async function normalizeAuditOutputs(

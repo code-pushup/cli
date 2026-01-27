@@ -1,4 +1,8 @@
-const transformers = require('./lib/transformers.js');
+import { annotateTypeDefinitions } from './lib/transformers.js';
 
-module.exports = transformers;
-module.exports.default = transformers;
+export {
+  annotateTypeDefinitions,
+  generateJSDocComment,
+} from './lib/transformers.js';
+
+export default annotateTypeDefinitions;

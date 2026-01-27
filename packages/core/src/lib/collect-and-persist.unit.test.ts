@@ -1,4 +1,4 @@
-import { type MockInstance, describe } from 'vitest';
+import type { MockInstance } from 'vitest';
 import {
   MINIMAL_CONFIG_MOCK,
   MINIMAL_REPORT_MOCK,

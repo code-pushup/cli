@@ -1,7 +1,6 @@
 import { vol } from 'memfs';
 import { stat } from 'node:fs/promises';
 import path from 'node:path';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
   crawlFileSystem,

@@ -50,7 +50,7 @@ describe('subscribeProcessExit', () => {
     (process as any).emit('uncaughtException', testError);
 
     expect(onError).toHaveBeenCalledWith(testError, 'uncaughtException');
-    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledOnce();
     expect(onExit).not.toHaveBeenCalled();
   });
 
@@ -62,7 +62,7 @@ describe('subscribeProcessExit', () => {
     (process as any).emit('unhandledRejection', testReason);
 
     expect(onError).toHaveBeenCalledWith(testReason, 'unhandledRejection');
-    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledOnce();
     expect(onExit).not.toHaveBeenCalled();
   });
 
@@ -71,7 +71,7 @@ describe('subscribeProcessExit', () => {
 
     (process as any).emit('SIGINT');
 
-    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledOnce();
     expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGINT, {
       kind: 'signal',
       signal: 'SIGINT',
@@ -84,7 +84,7 @@ describe('subscribeProcessExit', () => {
 
     (process as any).emit('SIGTERM');
 
-    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledOnce();
     expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGTERM, {
       kind: 'signal',
       signal: 'SIGTERM',
@@ -97,7 +97,7 @@ describe('subscribeProcessExit', () => {
 
     (process as any).emit('SIGQUIT');
 
-    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledOnce();
     expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGQUIT, {
       kind: 'signal',
       signal: 'SIGQUIT',
@@ -110,7 +110,7 @@ describe('subscribeProcessExit', () => {
 
     (process as any).emit('exit', 0);
 
-    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledOnce();
     expect(onExit).toHaveBeenCalledWith(0, { kind: 'exit' });
     expect(onError).not.toHaveBeenCalled();
     expect(processExitSpy).not.toHaveBeenCalled();
@@ -121,7 +121,7 @@ describe('subscribeProcessExit', () => {
 
     (process as any).emit('exit', 1);
 
-    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledOnce();
     expect(onExit).toHaveBeenCalledWith(1, { kind: 'exit' });
     expect(onError).not.toHaveBeenCalled();
     expect(processExitSpy).not.toHaveBeenCalled();

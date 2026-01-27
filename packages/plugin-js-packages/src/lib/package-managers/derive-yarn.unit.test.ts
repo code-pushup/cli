@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as utils from '@code-pushup/utils';
 import type { ProcessResult } from '@code-pushup/utils';
 import { deriveYarnVersion } from './derive-yarn.js';
@@ -18,7 +17,7 @@ describe('deriveYarnVersion', () => {
     executeProcessSpy.mockResolvedValue({ stdout: '1.22.2' } as ProcessResult);
 
     await expect(deriveYarnVersion()).resolves.toBe('yarn-classic');
-    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledOnce();
     expect(executeProcessSpy).toHaveBeenCalledWith({
       command: 'yarn',
       args: ['-v'],
@@ -29,7 +28,7 @@ describe('deriveYarnVersion', () => {
     executeProcessSpy.mockResolvedValue({ stdout: '2.22.2' } as ProcessResult);
 
     await expect(deriveYarnVersion()).resolves.toBe('yarn-modern');
-    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledOnce();
     expect(executeProcessSpy).toHaveBeenCalledWith({
       command: 'yarn',
       args: ['-v'],
@@ -41,8 +40,8 @@ describe('deriveYarnVersion', () => {
       stdout: 'not-installed',
     } as ProcessResult);
 
-    await expect(deriveYarnVersion()).resolves.toBe(false);
-    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    await expect(deriveYarnVersion()).resolves.toBeFalse();
+    expect(executeProcessSpy).toHaveBeenCalledOnce();
     expect(executeProcessSpy).toHaveBeenCalledWith({
       command: 'yarn',
       args: ['-v'],

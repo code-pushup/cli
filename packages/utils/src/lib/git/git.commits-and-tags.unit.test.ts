@@ -1,4 +1,3 @@
-import { describe, expect, vi } from 'vitest';
 import { filterLogs, getSemverTags } from './git.commits-and-tags.js';
 
 vi.mock('simple-git', async () => {

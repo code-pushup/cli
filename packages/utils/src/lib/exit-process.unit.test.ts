@@ -51,7 +51,7 @@ describe('subscribeProcessExit', () => {
     (process as any).emit('uncaughtException', testError);
 
     expect(onError).toHaveBeenCalledWith(testError, 'uncaughtException');
-    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledOnce();
     expect(onExit).not.toHaveBeenCalled();
   });
 
@@ -63,7 +63,7 @@ describe('subscribeProcessExit', () => {
     (process as any).emit('unhandledRejection', testReason);
 
     expect(onError).toHaveBeenCalledWith(testReason, 'unhandledRejection');
-    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledOnce();
     expect(onExit).not.toHaveBeenCalled();
   });
 
@@ -74,7 +74,7 @@ describe('subscribeProcessExit', () => {
 
     (process as any).emit('SIGINT');
 
-    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledOnce();
     expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGINT, {
       kind: 'signal',
       signal: 'SIGINT',
@@ -90,7 +90,7 @@ describe('subscribeProcessExit', () => {
 
     (process as any).emit('SIGTERM');
 
-    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledOnce();
     expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGTERM, {
       kind: 'signal',
       signal: 'SIGTERM',
@@ -106,7 +106,7 @@ describe('subscribeProcessExit', () => {
 
     (process as any).emit('SIGQUIT');
 
-    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledOnce();
     expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGQUIT, {
       kind: 'signal',
       signal: 'SIGQUIT',
@@ -122,7 +122,7 @@ describe('subscribeProcessExit', () => {
 
     (process as any).emit('SIGINT');
 
-    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledOnce();
     expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGINT, {
       kind: 'signal',
       signal: 'SIGINT',
@@ -136,7 +136,7 @@ describe('subscribeProcessExit', () => {
 
     (process as any).emit('SIGTERM');
 
-    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledOnce();
     expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGTERM, {
       kind: 'signal',
       signal: 'SIGTERM',
@@ -151,7 +151,7 @@ describe('subscribeProcessExit', () => {
     const exitCode = 42;
     (process as any).emit('exit', exitCode);
 
-    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledOnce();
     expect(onExit).toHaveBeenCalledWith(exitCode, { kind: 'exit' });
     expect(onError).not.toHaveBeenCalled();
     expect(processExitSpy).not.toHaveBeenCalled();
@@ -167,12 +167,12 @@ describe('subscribeProcessExit', () => {
     (process as any).emit('uncaughtException', testError);
 
     expect(onError).toHaveBeenCalledWith(testError, 'uncaughtException');
-    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledOnce();
     expect(onExit).toHaveBeenCalledWith(1, {
       kind: 'fatal',
       fatal: 'uncaughtException',
     });
-    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledOnce();
   });
 
   it('should use custom fatalExitCode when exitOnFatal is true', () => {
@@ -190,12 +190,12 @@ describe('subscribeProcessExit', () => {
     (process as any).emit('uncaughtException', testError);
 
     expect(onError).toHaveBeenCalledWith(testError, 'uncaughtException');
-    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledOnce();
     expect(onExit).toHaveBeenCalledWith(42, {
       kind: 'fatal',
       fatal: 'uncaughtException',
     });
-    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledOnce();
   });
 
   it('should call onExit with fatal reason for unhandledRejection when exitOnFatal is true', () => {
@@ -208,12 +208,12 @@ describe('subscribeProcessExit', () => {
     (process as any).emit('unhandledRejection', testReason);
 
     expect(onError).toHaveBeenCalledWith(testReason, 'unhandledRejection');
-    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledOnce();
     expect(onExit).toHaveBeenCalledWith(1, {
       kind: 'fatal',
       fatal: 'unhandledRejection',
     });
-    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledOnce();
   });
 
   it('should have correct SIGINT exit code on Windows', () => {
@@ -248,7 +248,7 @@ describe('subscribeProcessExit', () => {
     ).not.toThrow();
 
     (process as any).emit('SIGINT');
-    expect(onExit).toHaveBeenCalledTimes(1);
+    expect(onExit).toHaveBeenCalledOnce();
     expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGINT, {
       kind: 'signal',
       signal: 'SIGINT',

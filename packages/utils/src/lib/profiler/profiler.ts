@@ -1,4 +1,5 @@
 import process from 'node:process';
+import { threadId } from 'node:worker_threads';
 import { isEnvVarEnabled } from '../env.js';
 import { subscribeProcessExit } from '../exit-process.js';
 import type { TraceEvent } from '../trace-file.type';
@@ -18,6 +19,14 @@ import type {
   EntryMeta,
 } from '../user-timing-extensibility-api.type.js';
 import { PROFILER_ENABLED_ENV_VAR } from './constants.js';
+
+/**
+ * Generates a unique profiler ID based on performance time origin, process ID, thread ID, and instance count.
+ */
+export function getProfilerId() {
+  // eslint-disable-next-line functional/immutable-data
+  return `${Math.round(performance.timeOrigin)}.${process.pid}.${threadId}.${++Profiler.instanceCount}`;
+}
 
 /**
  * Configuration options for creating a Profiler instance.
@@ -62,6 +71,8 @@ export type ProfilerOptions<T extends ActionTrackConfigs = ActionTrackConfigs> =
  *
  */
 export class Profiler<T extends ActionTrackConfigs> {
+  static instanceCount = 0;
+  readonly id = getProfilerId();
   #enabled: boolean;
   readonly #defaults: ActionTrackEntryPayload;
   readonly tracks: Record<keyof T, ActionTrackEntryPayload> | undefined;

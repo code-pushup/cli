@@ -1,6 +1,5 @@
 import ansis from 'ansis';
 import type Details from 'lighthouse/types/lhr/audit-details';
-import { describe, expect, it } from 'vitest';
 import { logger } from '@code-pushup/utils';
 import {
   type SimpleItemValue,
@@ -32,7 +31,7 @@ describe('parseSimpleItemValue', () => {
   });
 
   it('should parse primitive ItemValue type boolean', () => {
-    expect(parseSimpleItemValue(false)).toBe(false);
+    expect(parseSimpleItemValue(false)).toBeFalse();
   });
 
   it('should parse ObjectItemValue ItemValue type boolean', () => {
@@ -66,7 +65,7 @@ describe('parseTableItemPropertyValue', () => {
   });
 
   it('should parse primitive boolean value', () => {
-    expect(parseTableItemPropertyValue(false)).toBe(false);
+    expect(parseTableItemPropertyValue(false)).toBeFalse();
   });
 
   it('should parse value item code', () => {
@@ -197,7 +196,7 @@ describe('formatTableItemPropertyValue', () => {
   });
 
   it('should format primitive boolean value', () => {
-    expect(formatTableItemPropertyValue(false)).toBe(false);
+    expect(formatTableItemPropertyValue(false)).toBeFalse();
   });
 
   it('should forward non primitive value directly if no format is provided', () => {

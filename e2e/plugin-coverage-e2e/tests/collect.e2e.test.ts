@@ -1,7 +1,6 @@
 import { cp } from 'node:fs/promises';
 import path from 'node:path';
 import { simpleGit } from 'simple-git';
-import { afterAll, afterEach, beforeAll } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
 import { omitVariableReportData } from '@code-pushup/test-fixtures';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';

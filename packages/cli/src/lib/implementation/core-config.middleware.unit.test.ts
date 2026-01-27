@@ -1,4 +1,3 @@
-import { describe, expect, vi } from 'vitest';
 import { autoloadRc, readRcByPath } from '@code-pushup/core';
 import {
   coreConfigMiddleware,

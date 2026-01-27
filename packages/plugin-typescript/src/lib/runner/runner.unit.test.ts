@@ -3,7 +3,6 @@ import {
   DiagnosticCategory,
   type SourceFile,
 } from 'typescript';
-import { beforeEach, describe, expect } from 'vitest';
 import {
   DEFAULT_PERSIST_CONFIG,
   type RunnerArgs,
@@ -78,7 +77,7 @@ describe('createRunnerFunction', () => {
       expectedAudits: [],
     });
     expect(runner(runnerArgs)).toStrictEqual([]);
-    expect(tSCodeToAuditSlugSpy).toHaveBeenCalledTimes(1);
+    expect(tSCodeToAuditSlugSpy).toHaveBeenCalledOnce();
     expect(tSCodeToAuditSlugSpy).toHaveBeenCalledWith(semanticTsCode);
   });
 
@@ -89,7 +88,7 @@ describe('createRunnerFunction', () => {
       expectedAudits: [],
     });
     expect(runner(runnerArgs)).toStrictEqual([]);
-    expect(getIssueFromDiagnosticSpy).toHaveBeenCalledTimes(1);
+    expect(getIssueFromDiagnosticSpy).toHaveBeenCalledOnce();
     expect(getIssueFromDiagnosticSpy).toHaveBeenCalledWith(
       mockSemanticDiagnostic,
     );

@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import type { AuditReport, Issue, Table } from '@code-pushup/models';
 import { tableSection } from './formatting.js';
 import {
@@ -225,6 +224,48 @@ describe('auditDetailsIssues', () => {
         } as Issue,
       ])?.toString(),
     ).toContainMarkdownTableRow(['⚠️ _warning_', '', '`index.js`', '4-7']);
+  });
+
+  it('should include URL source with selector as location', () => {
+    expect(
+      auditDetailsIssues([
+        {
+          message: 'Element does not have an alt attribute',
+          severity: 'error',
+          source: {
+            url: 'https://example.com/page',
+            selector: 'img.logo',
+            snippet: '<img class="logo" src="logo.png">',
+          },
+        },
+      ])!.toString(),
+    ).toContainMarkdownTableRow([
+      '🚨 _error_',
+      'Element does not have an alt attribute',
+      '[https://example.com/page](https://example.com/page)',
+      '`img.logo`',
+    ]);
+  });
+
+  it('should show only target element for multi-segment selectors', () => {
+    expect(
+      auditDetailsIssues([
+        {
+          message: 'Element has insufficient color contrast',
+          severity: 'warning',
+          source: {
+            url: 'https://example.com/page',
+            selector:
+              'main > article > section > div.container > ul > li:nth-child(2) > a > span',
+          },
+        },
+      ])!.toString(),
+    ).toContainMarkdownTableRow([
+      '⚠️ _warning_',
+      'Element has insufficient color contrast',
+      '[https://example.com/page](https://example.com/page)',
+      '`…span`',
+    ]);
   });
 });
 
@@ -492,8 +533,8 @@ describe('auditsSection', () => {
     expect(md).toContainMarkdownTableRow([
       'Severity',
       'Message',
-      'Source file',
-      'Line(s)',
+      'Source',
+      'Location',
     ]);
     expect(md).toContainMarkdownTableRow(['value']);
   });
