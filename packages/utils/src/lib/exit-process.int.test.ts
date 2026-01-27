@@ -1,5 +1,4 @@
 import process from 'node:process';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SIGNAL_EXIT_CODES, subscribeProcessExit } from './exit-process.js';
 
 describe('subscribeProcessExit', () => {
