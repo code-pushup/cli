@@ -9,17 +9,14 @@ import {
 } from '@code-pushup/utils';
 import { formatMetaLog } from '../format.js';
 
+const TSCONFIG_PATTERN = /^tsconfig(\..+)?\.json$/;
+const EXCLUDED_TSCONFIGS = new Set(['tsconfig.base.json', 'tsconfig.json']);
+
 /**
- * Matches tsconfig.json and tsconfig.*.json, excludes tsconfig.base.json.
+ * Matches tsconfig.*.json files, excludes tsconfig.json and tsconfig.base.json.
  */
 function isTsconfigFile(filename: string): boolean {
-  if (filename === 'tsconfig.base.json') {
-    return false;
-  }
-  return (
-    filename === 'tsconfig.json' ||
-    (filename.startsWith('tsconfig.') && filename.endsWith('.json'))
-  );
+  return TSCONFIG_PATTERN.test(filename) && !EXCLUDED_TSCONFIGS.has(filename);
 }
 
 /**
