@@ -51,4 +51,8 @@ export class MockTraceEventFileSink extends MockAppendableSink {
   repack = vi.fn((): void => {});
 
   finalize = vi.fn((): void => {});
+
+  getPath = vi.fn((): string => {
+    return '/test/tmp/profiles/default/trace.default.jsonl';
+  });
 }

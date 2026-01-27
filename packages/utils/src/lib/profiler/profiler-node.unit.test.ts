@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MockTraceEventFileSink } from '../../../mocks/sink.mock';
@@ -28,8 +29,12 @@ describe('NodejsProfiler', () => {
     >,
   ) => {
     const sink = new MockTraceEventFileSink();
+    const mockFilePath =
+      overrides?.filename ??
+      '/test/tmp/profiles/20240101-120000-000/trace.20240101-120000-000.12345.1.1.jsonl';
     vi.spyOn(sink, 'open');
     vi.spyOn(sink, 'close');
+    vi.spyOn(sink, 'getPath').mockReturnValue(mockFilePath);
 
     // Mock WriteAheadLogFile constructor to return our mock sink
     vi.spyOn(WalModule, 'WriteAheadLogFile').mockImplementation(
@@ -317,6 +322,29 @@ describe('NodejsProfiler', () => {
   });
 
   describe('profiling operations', () => {
+    it('should expose filePath getter', () => {
+      const { profiler } = getNodejsProfiler({ enabled: true });
+      expect(profiler.filePath).toMatchPath(
+        '/test/tmp/profiles/20240101-120000-000/trace.20240101-120000-000.12345.1.1.jsonl',
+      );
+    });
+
+    it('should use provided filename when specified', () => {
+      const customPath = path.join(process.cwd(), 'custom-trace.json');
+      const { profiler } = getNodejsProfiler({
+        filename: customPath,
+      });
+      expect(profiler.filePath).toBe(customPath);
+    });
+
+    it('should use sharded path when filename is not provided', () => {
+      const { profiler } = getNodejsProfiler();
+      const filePath = profiler.filePath;
+      expect(filePath).toMatchPath(
+        '/test/tmp/profiles/20240101-120000-000/trace.20240101-120000-000.12345.1.1.jsonl',
+      );
+    });
+
     it('should perform measurements when enabled', () => {
       const { profiler } = getNodejsProfiler({ enabled: true });
 
@@ -550,6 +578,158 @@ describe('NodejsProfiler', () => {
       expect(detail.devtools).toBeDefined();
       expect(detail.devtools?.dataType).toBe('marker');
       expect(detail.devtools?.properties).toBeDefined();
+    });
+
+    // eslint-disable-next-line vitest/max-nested-describe
+    describe('setDebugMode', () => {
+      it('should enable debug mode when called with true', () => {
+        const { profiler } = getNodejsProfiler();
+        expect(profiler.debug).toBe(false);
+
+        profiler.setDebugMode(true);
+
+        expect(profiler.debug).toBe(true);
+        expect(profiler.stats.debug).toBe(true);
+      });
+
+      it('should disable debug mode when called with false', () => {
+        // eslint-disable-next-line functional/immutable-data
+        process.env.CP_PROFILER_DEBUG = 'true';
+        const { profiler } = getNodejsProfiler();
+        expect(profiler.debug).toBe(true);
+
+        profiler.setDebugMode(false);
+
+        expect(profiler.debug).toBe(false);
+        expect(profiler.stats.debug).toBe(false);
+      });
+
+      it('should create transition markers after enabling debug mode', () => {
+        const { profiler } = getNodejsProfiler({ enabled: false });
+        expect(profiler.debug).toBe(false);
+
+        performance.clearMarks();
+        profiler.setEnabled(true);
+        expect(
+          performance
+            .getEntriesByType('mark')
+            .some(m => m.name.startsWith('idle->running')),
+        ).toBe(false);
+
+        profiler.setEnabled(false);
+        profiler.setDebugMode(true);
+        performance.clearMarks();
+
+        profiler.setEnabled(true);
+
+        const marks = performance.getEntriesByType('mark');
+        const transitionMark = marks.find(
+          mark => mark.name === 'idle->running',
+        );
+        expect(transitionMark).toBeDefined();
+        expect(transitionMark?.name).toBe('idle->running');
+      });
+
+      it('should stop creating transition markers after disabling debug mode', () => {
+        // eslint-disable-next-line functional/immutable-data
+        process.env.CP_PROFILER_DEBUG = 'true';
+        const { profiler } = getNodejsProfiler({ enabled: false });
+        expect(profiler.debug).toBe(true);
+
+        profiler.setDebugMode(false);
+        performance.clearMarks();
+
+        profiler.setEnabled(true);
+
+        expect(
+          performance
+            .getEntriesByType('mark')
+            .some(m => m.name.startsWith('idle->running')),
+        ).toBe(false);
+      });
+
+      it('should be idempotent when called multiple times with true', () => {
+        const { profiler } = getNodejsProfiler();
+        expect(profiler.debug).toBe(false);
+
+        profiler.setDebugMode(true);
+        profiler.setDebugMode(true);
+        profiler.setDebugMode(true);
+
+        expect(profiler.debug).toBe(true);
+        expect(profiler.stats.debug).toBe(true);
+      });
+
+      it('should be idempotent when called multiple times with false', () => {
+        // eslint-disable-next-line functional/immutable-data
+        process.env.CP_PROFILER_DEBUG = 'true';
+        const { profiler } = getNodejsProfiler();
+        expect(profiler.debug).toBe(true);
+
+        profiler.setDebugMode(false);
+        profiler.setDebugMode(false);
+        profiler.setDebugMode(false);
+
+        expect(profiler.debug).toBe(false);
+        expect(profiler.stats.debug).toBe(false);
+      });
+
+      it('should work when profiler is in idle state', () => {
+        const { profiler } = getNodejsProfiler({ enabled: false });
+        expect(profiler.state).toBe('idle');
+        expect(profiler.debug).toBe(false);
+
+        profiler.setDebugMode(true);
+        expect(profiler.debug).toBe(true);
+        expect(profiler.stats.debug).toBe(true);
+      });
+
+      it('should work when profiler is in running state', () => {
+        const { profiler } = getNodejsProfiler({ enabled: true });
+        expect(profiler.state).toBe('running');
+        expect(profiler.debug).toBe(false);
+
+        profiler.setDebugMode(true);
+        expect(profiler.debug).toBe(true);
+        expect(profiler.stats.debug).toBe(true);
+
+        performance.clearMarks();
+        profiler.setEnabled(false);
+        profiler.setEnabled(true);
+
+        const marks = performance.getEntriesByType('mark');
+        const transitionMark = marks.find(
+          mark => mark.name === 'idle->running',
+        );
+        expect(transitionMark).toBeDefined();
+      });
+
+      it('should work when profiler is in closed state', () => {
+        const { profiler } = getNodejsProfiler({ enabled: false });
+        profiler.close();
+        expect(profiler.state).toBe('closed');
+        expect(profiler.debug).toBe(false);
+
+        profiler.setDebugMode(true);
+        expect(profiler.debug).toBe(true);
+        expect(profiler.stats.debug).toBe(true);
+      });
+
+      it('should toggle debug mode multiple times', () => {
+        const { profiler } = getNodejsProfiler({ enabled: false });
+
+        profiler.setDebugMode(true);
+        expect(profiler.debug).toBe(true);
+
+        profiler.setDebugMode(false);
+        expect(profiler.debug).toBe(false);
+
+        profiler.setDebugMode(true);
+        expect(profiler.debug).toBe(true);
+
+        profiler.setDebugMode(false);
+        expect(profiler.debug).toBe(false);
+      });
     });
   });
 

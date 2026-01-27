@@ -11,12 +11,19 @@ import type {
   ActionTrackEntryPayload,
   MarkerPayload,
 } from '../user-timing-extensibility-api.type.js';
-import { type AppendableSink, WriteAheadLogFile, stringCodec } from '../wal.js';
+import {
+  type AppendableSink,
+  WriteAheadLogFile,
+  getShardId,
+  getShardedGroupId,
+  getShardedPath,
+} from '../wal.js';
 import {
   PROFILER_DEBUG_ENV_VAR,
   PROFILER_ENABLED_ENV_VAR,
 } from './constants.js';
 import { Profiler, type ProfilerOptions } from './profiler.js';
+import { traceEventWalFormat } from './wal-json-trace.js';
 
 /**
  * Options for configuring a NodejsProfiler instance.
@@ -95,10 +102,21 @@ export class NodejsProfiler<
     const initialEnabled = enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
     super({ ...profilerOptions, enabled: initialEnabled });
 
+    const walFormat = traceEventWalFormat();
     this.#sink = new WriteAheadLogFile({
-      file: filename ?? path.join(process.cwd(), 'trace.json'),
-      codec: stringCodec<DomainEvents>(),
-    });
+      file:
+        filename ??
+        path.join(
+          process.cwd(),
+          getShardedPath({
+            dir: 'tmp/profiles',
+            groupId: getShardedGroupId(),
+            shardId: getShardId(),
+            format: walFormat,
+          }),
+        ),
+      codec: walFormat.codec,
+    }) as AppendableSink<DomainEvents>;
     this.#debug = isEnvVarEnabled(debugEnvVar);
 
     this.#performanceObserverSink = new PerformanceObserverSink({
@@ -130,14 +148,28 @@ export class NodejsProfiler<
   /**
    * Returns whether debug mode is enabled for profiler state transitions.
    *
-   * Debug mode is determined by the environment variable specified by `debugEnvVar`
-   * (defaults to 'CP_PROFILER_DEBUG'). When enabled, profiler state transitions create
+   * Debug mode is initially determined by the environment variable specified by `debugEnvVar`
+   * (defaults to 'CP_PROFILER_DEBUG') during construction, but can be changed at runtime
+   * using {@link setDebugMode}. When enabled, profiler state transitions create
    * performance marks for debugging.
    *
    * @returns true if debug mode is enabled, false otherwise
    */
   get debug(): boolean {
     return this.#debug;
+  }
+
+  /**
+   * Sets debug mode for profiler state transitions.
+   *
+   * When debug mode is enabled, profiler state transitions create performance marks
+   * for debugging. This allows runtime control of debug mode without needing to
+   * restart the application or change environment variables.
+   *
+   * @param enabled - Whether to enable debug mode
+   */
+  setDebugMode(enabled: boolean): void {
+    this.#debug = enabled;
   }
 
   /**
@@ -271,5 +303,10 @@ export class NodejsProfiler<
       return; // No-op if closed
     }
     this.#performanceObserverSink.flush();
+  }
+
+  /** @returns The file path of the WriteAheadLogFile sink */
+  get filePath(): string {
+    return (this.#sink as WriteAheadLogFile<DomainEvents>).getPath();
   }
 }
