@@ -261,8 +261,8 @@ export type NodejsProfilerOptions<
   Tracks extends Record<string, ActionTrackEntryPayload>,
 > = ProfilerOptions<Tracks> &
   Omit<PerformanceObserverOptions<DomainEvents>, 'sink'> & {
-    /** Sink for buffering and flushing performance data
-     * @NOTE this is dummy code and will be replaced by PR #1210
+    /**
+     * Sink for buffering and flushing performance data
      **/
     sink: AppendableSink<DomainEvents>;
 
