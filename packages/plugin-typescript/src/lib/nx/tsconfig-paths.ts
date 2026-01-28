@@ -10,30 +10,22 @@ import {
 import { formatMetaLog } from '../format.js';
 
 const TSCONFIG_PATTERN = /^tsconfig(\..+)?\.json$/;
-const EXCLUDED_TSCONFIGS = new Set(['tsconfig.base.json', 'tsconfig.json']);
 
 /**
- * Matches tsconfig.*.json files, excludes tsconfig.json and tsconfig.base.json.
- */
-function isTsconfigFile(filename: string): boolean {
-  return TSCONFIG_PATTERN.test(filename) && !EXCLUDED_TSCONFIGS.has(filename);
-}
-
-/**
- * Returns false for empty configs (files and include both empty arrays).
+ * Returns true only if config explicitly defines files or include with values.
  */
 function hasFilesToCompile(tsconfigPath: string): boolean {
   const { config } = readConfigFile(tsconfigPath, sys.readFile);
 
   if (!config) {
-    return true;
+    return false;
   }
 
   const { files, include } = config;
-  const filesEmpty = Array.isArray(files) && files.length === 0;
-  const includeEmpty = Array.isArray(include) && include.length === 0;
+  const hasFiles = Array.isArray(files) && files.length > 0;
+  const hasInclude = Array.isArray(include) && include.length > 0;
 
-  return !(filesEmpty && includeEmpty);
+  return hasFiles || hasInclude;
 }
 
 function isProjectIncluded(
@@ -51,7 +43,7 @@ async function findTsconfigsInProject(projectRoot: string): Promise<string[]> {
   const files = await readdir(absoluteRoot);
 
   return files
-    .filter(isTsconfigFile)
+    .filter(file => TSCONFIG_PATTERN.test(file))
     .filter(file => hasFilesToCompile(path.join(absoluteRoot, file)))
     .map(file => path.join(projectRoot, file));
 }
