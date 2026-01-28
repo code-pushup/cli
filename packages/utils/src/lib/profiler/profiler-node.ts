@@ -230,6 +230,7 @@ export class NodejsProfiler<
 
       case 'running->idle':
       case 'running->closed':
+        super.setEnabled(false);
         this.#performanceObserverSink.unsubscribe();
         this.#shard.close();
         this.#sharder.finalizeIfCoordinator();

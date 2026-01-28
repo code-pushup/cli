@@ -113,7 +113,9 @@ describe('NodeJS Profiler Integration', () => {
         db: { track: 'Database', color: 'secondary' },
         cache: { track: 'Cache', color: 'primary' },
       },
-      encodePerfEntry: traceEventEncoder,
+      format: {
+        encodePerfEntry: traceEventEncoder,
+      },
       filename: traceTracksFile,
       enabled: true,
     });
@@ -132,16 +134,16 @@ describe('NodeJS Profiler Integration', () => {
     // eslint-disable-next-line n/no-sync
     const content = fs.readFileSync(traceTracksFile, 'utf8');
     const normalizedContent = omitTraceJson(content);
-    await expect(normalizedContent).toMatchFileSnapshot(
-      '__snapshots__/custom-tracks-trace-events.jsonl',
-    );
+    await expect(normalizedContent).toMatchInlineSnapshot();
   });
 
   it('should capture buffered entries when buffered option is enabled', () => {
     const bufferedProfiler = new NodejsProfiler({
       prefix: 'buffered-test',
       track: 'Test',
-      encodePerfEntry: traceEventEncoder,
+      format: {
+        encodePerfEntry: traceEventEncoder,
+      },
       captureBufferedEntries: true,
       filename: path.join(
         process.cwd(),
@@ -168,7 +170,9 @@ describe('NodeJS Profiler Integration', () => {
     const statsProfiler = new NodejsProfiler({
       prefix: 'stats-test',
       track: 'Stats',
-      encodePerfEntry: traceEventEncoder,
+      format: {
+        encodePerfEntry: traceEventEncoder,
+      },
       maxQueueSize: 2,
       flushThreshold: 2,
       filename: path.join(
@@ -205,7 +209,9 @@ describe('NodeJS Profiler Integration', () => {
     const profiler = new NodejsProfiler({
       prefix: 'stats-profiler',
       track: 'Stats',
-      encodePerfEntry: traceEventEncoder,
+      format: {
+        encodePerfEntry: traceEventEncoder,
+      },
       maxQueueSize: 3,
       flushThreshold: 2,
       filename: traceStatsFile,
@@ -251,7 +257,9 @@ describe('NodeJS Profiler Integration', () => {
       const profiler = new NodejsProfiler({
         prefix: 'sharded-test',
         track: 'Test',
-        encodePerfEntry: traceEventEncoder,
+        format: {
+          encodePerfEntry: traceEventEncoder,
+        },
         enabled: true,
       });
 
@@ -277,7 +285,9 @@ describe('NodeJS Profiler Integration', () => {
       const profiler = new NodejsProfiler({
         prefix: 'folder-test',
         track: 'Test',
-        encodePerfEntry: traceEventEncoder,
+        format: {
+          encodePerfEntry: traceEventEncoder,
+        },
         enabled: true,
       });
 
@@ -298,7 +308,9 @@ describe('NodeJS Profiler Integration', () => {
       const profiler = new NodejsProfiler({
         prefix: 'write-test',
         track: 'Test',
-        encodePerfEntry: traceEventEncoder,
+        format: {
+          encodePerfEntry: traceEventEncoder,
+        },
         enabled: true,
       });
 

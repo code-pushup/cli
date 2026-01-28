@@ -1,6 +1,7 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { getUniqueInstanceId } from './process-id.js';
 import { SHARDED_WAL_COORDINATOR_ID_ENV_VAR } from './profiler/constants.js';
 import { ShardedWal } from './wal-sharded.js';
 import { WriteAheadLogFile, createTolerantCodec } from './wal.js';
@@ -348,15 +349,27 @@ describe('ShardedWal', () => {
           'content1',
       });
 
+      // Generate the instance ID that will be used by the constructor
+      // The constructor increments ShardedWal.instanceCount, so we need to
+      // generate the ID using the value that will be used (current + 1)
+      // without actually modifying ShardedWal.instanceCount
+      const nextCount = ShardedWal.instanceCount + 1;
+      const instanceId = getUniqueInstanceId({
+        next() {
+          return nextCount;
+        },
+      });
+
+      // Set coordinator BEFORE creating instance
+      ShardedWal.setCoordinatorProcess(
+        SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+        instanceId,
+      );
+
       const sw = getShardedWal({
         dir: '/shards',
         format: { baseName: 'test', walExtension: '.log' },
       });
-
-      ShardedWal.setCoordinatorProcess(
-        SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-        'test-coordinator-id',
-      );
 
       sw.cleanupIfCoordinator();
 
@@ -388,6 +401,23 @@ describe('ShardedWal', () => {
           'content1',
       });
 
+      // Generate the instance ID that will be used by the constructor
+      // The constructor increments ShardedWal.instanceCount, so we need to
+      // generate the ID using the value that will be used (current + 1)
+      // without actually modifying ShardedWal.instanceCount
+      const nextCount = ShardedWal.instanceCount + 1;
+      const instanceId = getUniqueInstanceId({
+        next() {
+          return nextCount;
+        },
+      });
+
+      // Set coordinator BEFORE creating instance
+      ShardedWal.setCoordinatorProcess(
+        SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+        instanceId,
+      );
+
       const sw = getShardedWal({
         dir: '/shards',
         format: {
@@ -397,11 +427,6 @@ describe('ShardedWal', () => {
           finalizer: records => `${JSON.stringify(records)}\n`,
         },
       });
-
-      ShardedWal.setCoordinatorProcess(
-        SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-        'test-coordinator-id',
-      );
 
       sw.cleanupIfCoordinator();
       expect(sw.getState()).toBe('cleaned');

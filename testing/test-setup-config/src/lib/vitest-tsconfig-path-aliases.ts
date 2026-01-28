@@ -1,13 +1,36 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import { loadConfig } from 'tsconfig-paths';
 import type { Alias, AliasOptions } from 'vite';
 
 /**
+ * Finds the workspace root by searching upward for tsconfig.base.json or nx.json.
+ */
+function findWorkspaceRoot(startDir: string): string {
+  let currentDir = path.resolve(startDir);
+  const root = path.parse(currentDir).root;
+
+  while (currentDir !== root) {
+    const tsconfigPath = path.join(currentDir, 'tsconfig.base.json');
+    const nxJsonPath = path.join(currentDir, 'nx.json');
+    if (fs.existsSync(tsconfigPath) || fs.existsSync(nxJsonPath)) {
+      return currentDir;
+    }
+    currentDir = path.dirname(currentDir);
+  }
+
+  throw new Error(
+    `Could not find workspace root (tsconfig.base.json or nx.json) starting from ${startDir}`,
+  );
+}
+
+/**
  * Loads TypeScript path aliases from tsconfig.base.json for use in Vitest.
- * Uses process.cwd() as the workspace root to load the tsconfig.
+ * Searches upward from process.cwd() to find the workspace root.
  */
 export function tsconfigPathAliases(): AliasOptions {
-  const tsconfigPath = path.resolve(process.cwd(), 'tsconfig.base.json');
+  const workspaceRoot = findWorkspaceRoot(process.cwd());
+  const tsconfigPath = path.join(workspaceRoot, 'tsconfig.base.json');
   const result = loadConfig(tsconfigPath);
 
   if (result.resultType === 'failed') {
@@ -22,8 +45,8 @@ export function tsconfigPathAliases(): AliasOptions {
     .map(
       ([importPath, relativePath]): Alias => ({
         find: importPath,
-        // Make paths relative to workspace root (../../ from config file)
-        replacement: path.resolve(process.cwd(), relativePath),
+        // Make paths relative to workspace root
+        replacement: path.resolve(workspaceRoot, relativePath),
       }),
     );
 }

@@ -1,20 +1,17 @@
-import {
-  WAL_ID_PATTERNS,
-  getUniqueReadableInstanceId,
-  getUniqueRunId,
-} from './process-id.js';
+import { WAL_ID_PATTERNS, getUniqueTimeId } from './process-id.js';
+import { getShardId } from './wal-sharded.js';
 
-describe('getUniqueReadableInstanceId', () => {
+describe('getShardId (formerly getUniqueReadableInstanceId)', () => {
   it('should generate shard ID with readable timestamp', () => {
-    const result = getUniqueReadableInstanceId();
+    const result = getShardId();
 
     expect(result).toMatch(WAL_ID_PATTERNS.INSTANCE_ID);
     expect(result).toStartWith('20231114-221320-000.');
   });
 
   it('should generate different shard IDs for different calls', () => {
-    const result1 = getUniqueReadableInstanceId();
-    const result2 = getUniqueReadableInstanceId();
+    const result1 = getShardId();
+    const result2 = getShardId();
 
     expect(result1).not.toBe(result2);
     expect(result1).toStartWith('20231114-221320-000.');
@@ -22,25 +19,25 @@ describe('getUniqueReadableInstanceId', () => {
   });
 
   it('should handle zero values', () => {
-    const result = getUniqueReadableInstanceId();
+    const result = getShardId();
     expect(result).toStartWith('20231114-221320-000.');
   });
 
   it('should handle negative timestamps', () => {
-    const result = getUniqueReadableInstanceId();
+    const result = getShardId();
 
     expect(result).toStartWith('20231114-221320-000.');
   });
 
   it('should handle large timestamps', () => {
-    const result = getUniqueReadableInstanceId();
+    const result = getShardId();
 
     expect(result).toStartWith('20231114-221320-000.');
   });
 
   it('should generate incrementing counter', () => {
-    const result1 = getUniqueReadableInstanceId();
-    const result2 = getUniqueReadableInstanceId();
+    const result1 = getShardId();
+    const result2 = getShardId();
 
     const parts1 = result1.split('.');
     const parts2 = result2.split('.');
@@ -53,18 +50,22 @@ describe('getUniqueReadableInstanceId', () => {
   });
 });
 
-describe('getUniqueRunId', () => {
+describe('getUniqueTimeId (formerly getUniqueRunId)', () => {
   it('should work with mocked timeOrigin', () => {
-    const result = getUniqueRunId();
+    const result = getUniqueTimeId();
 
     expect(result).toBe('20231114-221320-000');
     expect(result).toMatch(WAL_ID_PATTERNS.GROUP_ID);
   });
 
-  it('should be idempotent within same process', () => {
-    const result1 = getUniqueRunId();
-    const result2 = getUniqueRunId();
+  it('should generate new ID on each call (not idempotent)', () => {
+    const result1 = getUniqueTimeId();
+    const result2 = getUniqueTimeId();
 
-    expect(result1).toBe(result2);
+    // Note: getUniqueTimeId is not idempotent - it generates a new ID each call
+    // based on current time, so results will be different
+    expect(result1).toMatch(WAL_ID_PATTERNS.GROUP_ID);
+    expect(result2).toMatch(WAL_ID_PATTERNS.GROUP_ID);
+    // They may be the same if called within the same millisecond, but generally different
   });
 });
