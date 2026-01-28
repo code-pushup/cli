@@ -84,19 +84,47 @@ Each set is also available as group in the plugin. See more under [Audits and Gr
 
 The plugin accepts the following parameters:
 
-| Option     | Type     | Default         | Description                                                                                                                                 |
-| ---------- | -------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| tsconfig   | string   | `tsconfig.json` | A string that defines the path to your `tsconfig.json` file                                                                                 |
-| onlyAudits | string[] | undefined       | An array of audit slugs to specify which documentation types you want to measure. Only the specified audits will be included in the results |
+| Option     | Type               | Default         | Description                                                                                                                                 |
+| ---------- | ------------------ | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| tsconfig   | string \| string[] | `tsconfig.json` | Path(s) to your `tsconfig.json` file(s)                                                                                                     |
+| onlyAudits | string[]           | undefined       | An array of audit slugs to specify which documentation types you want to measure. Only the specified audits will be included in the results |
 
 #### `tsconfig`
 
-Optional parameter. The `tsconfig` option accepts a string that defines the path to your config file and defaults to `tsconfig.json`.
+Optional parameter. The `tsconfig` option accepts a path or an array of paths to your config files. Defaults to `tsconfig.json`.
 
 ```js
 typescriptPlugin({
   tsconfig: './tsconfig.json',
 });
+```
+
+You can also provide multiple tsconfigs to combine results from different configurations (e.g., separate configs for source and test files):
+
+```js
+typescriptPlugin({
+  tsconfig: ['./tsconfig.lib.json', './tsconfig.spec.json'],
+});
+```
+
+If you're using an Nx monorepo, a helper function is provided to auto-discover tsconfigs from all projects:
+
+```js
+import typescriptPlugin, { tsconfigFromAllNxProjects } from '@code-pushup/typescript-plugin';
+
+export default {
+  plugins: [
+    await typescriptPlugin({
+      tsconfig: await tsconfigFromAllNxProjects(),
+    }),
+  ],
+};
+```
+
+You can exclude specific projects by name:
+
+```js
+await tsconfigFromAllNxProjects({ exclude: ['my-app-e2e'] });
 ```
 
 #### `onlyAudits`

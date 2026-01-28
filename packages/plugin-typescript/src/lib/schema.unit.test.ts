@@ -18,6 +18,25 @@ describe('typescriptPluginConfigSchema', () => {
     ).not.toThrow();
   });
 
+  it('transforms a single tsconfig string to an array', () => {
+    expect(
+      typescriptPluginConfigSchema.parse({ tsconfig }).tsconfig,
+    ).toStrictEqual([tsconfig]);
+  });
+
+  it('accepts an array of tsconfig paths', () => {
+    const tsconfigs = ['tsconfig.lib.json', 'tsconfig.spec.json'];
+    expect(
+      typescriptPluginConfigSchema.parse({ tsconfig: tsconfigs }).tsconfig,
+    ).toStrictEqual(tsconfigs);
+  });
+
+  it('throws for empty tsconfig array', () => {
+    expect(() => typescriptPluginConfigSchema.parse({ tsconfig: [] })).toThrow(
+      'too_small',
+    );
+  });
+
   it('accepts a configuration with tsconfig and empty onlyAudits', () => {
     expect(() =>
       typescriptPluginConfigSchema.parse({

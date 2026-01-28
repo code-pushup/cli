@@ -1,0 +1,5 @@
+{
+  "name": "cli",
+  "sourceRoot": "packages/cli/src",
+  "projectType": "library"
+}

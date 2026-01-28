@@ -1,26 +1,8 @@
-import { logger, pluralizeToken, stringifyError } from '@code-pushup/utils';
+import { loadNxProjectGraph, logger, pluralizeToken } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
 import { formatMetaLog } from '../meta/format.js';
 import { filterProjectGraph } from './filter-project-graph.js';
 import { nxProjectsToConfig } from './projects-to-config.js';
-
-/**
- * Resolves the cached project graph for the current Nx workspace.
- * First tries to read cache and if not possible, go for the async creation.
- */
-async function resolveCachedProjectGraph() {
-  const { readCachedProjectGraph, createProjectGraphAsync } = await import(
-    '@nx/devkit'
-  );
-  try {
-    return readCachedProjectGraph();
-  } catch (error) {
-    logger.warn(
-      `Could not read cached project graph, falling back to async creation.\n${stringifyError(error)}`,
-    );
-    return await createProjectGraphAsync({ exitOnError: false });
-  }
-}
 
 /**
  * Finds all Nx projects in workspace and converts their lint configurations to Code PushUp ESLint plugin parameters.
@@ -51,7 +33,7 @@ async function resolveCachedProjectGraph() {
 export async function eslintConfigFromAllNxProjects(
   options: { exclude?: string[] } = {},
 ): Promise<ESLintTarget[]> {
-  const projectGraph = await resolveCachedProjectGraph();
+  const projectGraph = await loadNxProjectGraph();
   const filteredProjectGraph = filterProjectGraph(
     projectGraph,
     options.exclude,
