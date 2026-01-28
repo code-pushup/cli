@@ -350,7 +350,10 @@ export function parseWalFormat<T extends object | string = object>(
  *
  * @returns true if this is the leader WAL process, false otherwise
  */
-export function isLeaderWal(envVarName: string, profilerID: string): boolean {
+export function isCoordinatorProcess(
+  envVarName: string,
+  profilerID: string,
+): boolean {
   return process.env[envVarName] === profilerID;
 }
 
@@ -359,7 +362,10 @@ export function isLeaderWal(envVarName: string, profilerID: string): boolean {
  * This must be done as early as possible before any user code runs.
  * Sets envVarName to the current process ID if not already defined.
  */
-export function setLeaderWal(envVarName: string, profilerID: string): void {
+export function setCoordinatorProcess(
+  envVarName: string,
+  profilerID: string,
+): void {
   if (!process.env[envVarName]) {
     // eslint-disable-next-line functional/immutable-data
     process.env[envVarName] = profilerID;
@@ -368,6 +374,14 @@ export function setLeaderWal(envVarName: string, profilerID: string): void {
 
 // eslint-disable-next-line functional/no-let
 let shardCount = 0;
+
+/**
+ * Generates a unique sharded WAL ID based on performance time origin, process ID, thread ID, and instance count.
+ */
+function getShardedWalId() {
+  // eslint-disable-next-line functional/immutable-data
+  return `${Math.round(performance.timeOrigin)}.${process.pid}.${threadId}.${++ShardedWal.instanceCount}`;
+}
 
 /**
  * Generates a human-readable shard ID.
@@ -440,24 +454,46 @@ function ensureDirectoryExistsSync(dirPath: string): void {
  */
 
 export class ShardedWal<T extends object | string = object> {
+  static instanceCount = 0;
+  readonly #id: string = getShardedWalId();
   readonly groupId = getShardedGroupId();
   readonly #format: WalFormat<T>;
   readonly #dir: string = process.cwd();
+  readonly #isCoordinator: boolean;
 
   /**
    * Create a sharded WAL manager.
+   *
+   * @param opt.dir - Base directory to store shard files (defaults to process.cwd())
+   * @param opt.format - WAL format configuration
+   * @param opt.groupId - Group ID for sharding (defaults to generated group ID)
+   * @param opt.coordinatorIdEnvVar - Environment variable name for storing coordinator ID (defaults to CP_SHARDED_WAL_COORDINATOR_ID)
    */
   constructor(opt: {
     dir?: string;
     format: Partial<WalFormat<T>>;
     groupId?: string;
+    coordinatorIdEnvVar: string;
   }) {
-    const { dir, format, groupId } = opt;
+    const { dir, format, groupId, coordinatorIdEnvVar } = opt;
     this.groupId = groupId ?? getShardedGroupId();
     if (dir) {
       this.#dir = dir;
     }
     this.#format = parseWalFormat<T>(format);
+    this.#isCoordinator = isCoordinatorProcess(coordinatorIdEnvVar, this.#id);
+  }
+
+  /**
+   * Is this instance the coordinator?
+   *
+   * Coordinator status is determined from the coordinatorIdEnvVar environment variable.
+   * The coordinator handles finalization and cleanup of shard files.
+   *
+   * @returns true if this instance is the coordinator, false otherwise
+   */
+  isCoordinator(): boolean {
+    return this.#isCoordinator;
   }
 
   /**

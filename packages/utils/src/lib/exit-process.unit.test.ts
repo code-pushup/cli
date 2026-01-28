@@ -1,8 +1,8 @@
 import os from 'node:os';
 import process from 'node:process';
-import { SIGNAL_EXIT_CODES, installExitHandlers } from './exit-process.js';
+import { SIGNAL_EXIT_CODES, subscribeProcessExit } from './exit-process.js';
 
-describe('exit-process tests', () => {
+describe('subscribeProcessExit', () => {
   const onError = vi.fn();
   const onExit = vi.fn();
   const processOnSpy = vi.spyOn(process, 'on');
@@ -26,7 +26,7 @@ describe('exit-process tests', () => {
   });
 
   it('should install event listeners for all expected events', () => {
-    expect(() => installExitHandlers({ onError, onExit })).not.toThrow();
+    expect(() => subscribeProcessExit({ onError, onExit })).not.toThrow();
 
     expect(processOnSpy).toHaveBeenCalledWith(
       'uncaughtException',
@@ -43,7 +43,7 @@ describe('exit-process tests', () => {
   });
 
   it('should call onError with error and kind for uncaughtException', () => {
-    expect(() => installExitHandlers({ onError })).not.toThrow();
+    expect(() => subscribeProcessExit({ onError })).not.toThrow();
 
     const testError = new Error('Test uncaught exception');
 
@@ -55,7 +55,7 @@ describe('exit-process tests', () => {
   });
 
   it('should call onError with reason and kind for unhandledRejection', () => {
-    expect(() => installExitHandlers({ onError })).not.toThrow();
+    expect(() => subscribeProcessExit({ onError })).not.toThrow();
 
     const testReason = 'Test unhandled rejection';
 
@@ -68,7 +68,7 @@ describe('exit-process tests', () => {
 
   it('should call onExit with correct code and reason for SIGINT', () => {
     expect(() =>
-      installExitHandlers({ onExit, exitOnSignal: true }),
+      subscribeProcessExit({ onExit, exitOnSignal: true }),
     ).not.toThrow();
 
     (process as any).emit('SIGINT');
@@ -84,7 +84,7 @@ describe('exit-process tests', () => {
 
   it('should call onExit with correct code and reason for SIGTERM', () => {
     expect(() =>
-      installExitHandlers({ onExit, exitOnSignal: true }),
+      subscribeProcessExit({ onExit, exitOnSignal: true }),
     ).not.toThrow();
 
     (process as any).emit('SIGTERM');
@@ -100,7 +100,7 @@ describe('exit-process tests', () => {
 
   it('should call onExit with correct code and reason for SIGQUIT', () => {
     expect(() =>
-      installExitHandlers({ onExit, exitOnSignal: true }),
+      subscribeProcessExit({ onExit, exitOnSignal: true }),
     ).not.toThrow();
 
     (process as any).emit('SIGQUIT');
@@ -116,7 +116,7 @@ describe('exit-process tests', () => {
 
   it('should not exit process when exitOnSignal is false', () => {
     expect(() =>
-      installExitHandlers({ onExit, exitOnSignal: false }),
+      subscribeProcessExit({ onExit, exitOnSignal: false }),
     ).not.toThrow();
 
     (process as any).emit('SIGINT');
@@ -131,7 +131,7 @@ describe('exit-process tests', () => {
   });
 
   it('should not exit process when exitOnSignal is not set', () => {
-    expect(() => installExitHandlers({ onExit })).not.toThrow();
+    expect(() => subscribeProcessExit({ onExit })).not.toThrow();
 
     (process as any).emit('SIGTERM');
 
@@ -145,7 +145,7 @@ describe('exit-process tests', () => {
   });
 
   it('should call onExit with exit code and reason for normal exit', () => {
-    expect(() => installExitHandlers({ onExit })).not.toThrow();
+    expect(() => subscribeProcessExit({ onExit })).not.toThrow();
 
     const exitCode = 42;
     (process as any).emit('exit', exitCode);
@@ -158,7 +158,7 @@ describe('exit-process tests', () => {
 
   it('should call onExit with fatal reason when exitOnFatal is true', () => {
     expect(() =>
-      installExitHandlers({ onError, onExit, exitOnFatal: true }),
+      subscribeProcessExit({ onError, onExit, exitOnFatal: true }),
     ).not.toThrow();
 
     const testError = new Error('Test uncaught exception');
@@ -176,7 +176,7 @@ describe('exit-process tests', () => {
 
   it('should use custom fatalExitCode when exitOnFatal is true', () => {
     expect(() =>
-      installExitHandlers({
+      subscribeProcessExit({
         onError,
         onExit,
         exitOnFatal: true,
@@ -199,7 +199,7 @@ describe('exit-process tests', () => {
 
   it('should call onExit with fatal reason for unhandledRejection when exitOnFatal is true', () => {
     expect(() =>
-      installExitHandlers({ onError, onExit, exitOnFatal: true }),
+      subscribeProcessExit({ onError, onExit, exitOnFatal: true }),
     ).not.toThrow();
 
     const testReason = 'Test unhandled rejection';
@@ -243,7 +243,7 @@ describe('exit-process tests', () => {
 
   it('should call onExit only once even when close is called multiple times', () => {
     expect(() =>
-      installExitHandlers({ onExit, exitOnSignal: true }),
+      subscribeProcessExit({ onExit, exitOnSignal: true }),
     ).not.toThrow();
 
     (process as any).emit('SIGINT');

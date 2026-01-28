@@ -6,6 +6,15 @@
 
 The `Profiler` class provides a clean, type-safe API for performance monitoring that integrates seamlessly with Chrome DevTools. It supports both synchronous and asynchronous operations with smart defaults for custom track visualization, enabling developers to track performance bottlenecks and optimize application speed.
 
+### Features
+
+- **Type-Safe API**: Fully typed UserTiming API for [Chrome DevTools Extensibility API](https://developer.chrome.com/docs/devtools/performance/extension)
+- **Measure API**: Easy-to-use methods for measuring synchronous and asynchronous code execution times.
+- **Custom Track Configuration**: Fully typed reusable configurations for custom track visualization.
+- **Process buffered entries**: Captures and processes buffered profiling entries.
+- **3rd Party Profiling**: Automatically processes third-party performance entries.
+- **Clean measure names**: Automatically adds prefixes to measure names, as well as start/end postfix to marks, for better organization.
+
 ## Getting started
 
 1. If you haven't already, install [@code-pushup/utils](../../README.md).
@@ -257,9 +266,23 @@ const saved = profiler.measure('save-user', () => saveToDb(user), {
 
 ## NodeJSProfiler
 
+### Features
+
+- **Crash-safe Write Ahead Log**: Ensures profiling data is saved even if the application crashes.
+- **Recoverable Profiles**: Ability to resume profiling sessions after interruptions or crash.
+- **Automatic Trace Generation**: Generates trace files compatible with Chrome DevTools for in-depth performance analysis.
+- **Multiprocess Support**: Designed to handle profiling over sharded WAL.
+- **Controllable over env vars**: Easily enable or disable profiling through environment variables.
+
 This profiler extends all options and API from Profiler with automatic process exit handling for buffered performance data.
 
-The NodeJSProfiler automatically subscribes to performance observation and installs exit handlers that flush buffered data on process termination (signals, fatal errors, or normal exit). It uses a `ShardedWal` internally to coordinate multiple WAL shards across processes/files.
+The NodeJSProfiler automatically subscribes to performance observation and installs exit handlers that flush buffered data on process termination (signals, fatal errors, or normal exit).
+
+### Exit Handlers
+
+The profiler automatically subscribes to process events (`exit`, `SIGINT`, `SIGTERM`, `SIGQUIT`, `uncaughtException`, `unhandledRejection`) during construction. When any of these occur, the handlers call `close()` to ensure buffered data is flushed.
+
+The `close()` method is idempotent and safe to call from exit handlers. It unsubscribes from exit handlers, closes the WAL sink, and unsubscribes from the performance observer, ensuring all buffered performance data is written before process termination.
 
 ## Configuration
 

@@ -1,3 +1,13 @@
+## 0.111.1 (2026-01-27)
+
+### 🩹 Fixes
+
+- add exit handler to profiler ([#1221](https://github.com/code-pushup/cli/pull/1221))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.111.0 (2026-01-27)
 
 ### 🚀 Features
