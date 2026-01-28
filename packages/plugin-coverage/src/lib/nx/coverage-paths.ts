@@ -9,10 +9,10 @@ import type { VitestExecutorOptions } from '@nx/vite/executors';
 import path from 'node:path';
 import {
   importModule,
+  loadNxProjectGraph,
   logger,
   pluralize,
   pluralizeToken,
-  resolveCachedProjectGraph,
 } from '@code-pushup/utils';
 import type { CoverageResult } from '../config.js';
 import { formatMetaLog } from '../format.js';
@@ -24,7 +24,7 @@ import { formatMetaLog } from '../format.js';
 export async function getNxCoveragePaths(
   targets: string[] = ['test'],
 ): Promise<CoverageResult[]> {
-  const { nodes } = await resolveCachedProjectGraph();
+  const { nodes } = await loadNxProjectGraph();
 
   const coverageResultsPerTarget = Object.fromEntries(
     await Promise.all(

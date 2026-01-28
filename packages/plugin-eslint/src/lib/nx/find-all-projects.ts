@@ -1,8 +1,4 @@
-import {
-  logger,
-  pluralizeToken,
-  resolveCachedProjectGraph,
-} from '@code-pushup/utils';
+import { loadNxProjectGraph, logger, pluralizeToken } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
 import { formatMetaLog } from '../meta/format.js';
 import { filterProjectGraph } from './filter-project-graph.js';
@@ -37,7 +33,7 @@ import { nxProjectsToConfig } from './projects-to-config.js';
 export async function eslintConfigFromAllNxProjects(
   options: { exclude?: string[] } = {},
 ): Promise<ESLintTarget[]> {
-  const projectGraph = await resolveCachedProjectGraph();
+  const projectGraph = await loadNxProjectGraph();
   const filteredProjectGraph = filterProjectGraph(
     projectGraph,
     options.exclude,

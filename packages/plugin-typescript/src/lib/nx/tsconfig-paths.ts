@@ -2,11 +2,7 @@ import type { ProjectConfiguration } from '@nx/devkit';
 import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { readConfigFile, sys } from 'typescript';
-import {
-  logger,
-  pluralizeToken,
-  resolveCachedProjectGraph,
-} from '@code-pushup/utils';
+import { loadNxProjectGraph, logger, pluralizeToken } from '@code-pushup/utils';
 import { formatMetaLog } from '../format.js';
 
 const TSCONFIG_PATTERN = /^tsconfig(\..+)?\.json$/;
@@ -58,7 +54,7 @@ async function findTsconfigsInProject(projectRoot: string): Promise<string[]> {
 export async function tsconfigFromAllNxProjects(
   options: { exclude?: string[] } = {},
 ): Promise<string[]> {
-  const projectGraph = await resolveCachedProjectGraph();
+  const projectGraph = await loadNxProjectGraph();
 
   const { readProjectsConfigurationFromProjectGraph } = await import(
     '@nx/devkit'
