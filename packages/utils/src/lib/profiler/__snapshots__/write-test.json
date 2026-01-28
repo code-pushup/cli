@@ -1,26 +1,25 @@
 [
   {
-    "args": {},
     "displayTimeUnit": "ms",
     "metadata": {
       "dataOrigin": "TraceEvents",
-      "generatedAt": "2026-01-28T14:29:28.023Z",
+      "generatedAt": "2026-01-28T14:29:27.995Z",
       "hardwareConcurrency": 1,
       "source": "DevTools",
-      "startTime": "2026-01-28T14:29:28.023Z",
+      "startTime": "2026-01-28T14:29:27.995Z",
     },
     "traceEvents": [
       {
         "args": {
           "data": {
-            "frameTreeNodeId": 5059301,
+            "frameTreeNodeId": 1000101,
             "frames": [
               {
-                "frame": "FRAME0P50593T1",
+                "frame": "FRAME0P10001T1",
                 "isInPrimaryMainFrame": true,
                 "isOutermostMainFrame": true,
                 "name": "",
-                "processId": 50593,
+                "processId": 10001,
                 "url": "generated-trace",
               },
             ],
@@ -30,9 +29,9 @@
         "cat": "devtools.timeline",
         "name": "TracingStartedInBrowser",
         "ph": "i",
-        "pid": 50593,
+        "pid": 10001,
         "tid": 1,
-        "ts": 1769610567011998,
+        "ts": 1700000005000000,
       },
       {
         "args": {},
@@ -40,9 +39,9 @@
         "dur": 20000,
         "name": "[trace padding start]",
         "ph": "X",
-        "pid": 50593,
+        "pid": 10001,
         "tid": 1,
-        "ts": 1769610567011998,
+        "ts": 1700000005000000,
       },
       {
         "args": {
@@ -56,9 +55,9 @@
         "cat": "blink.user_timing",
         "name": "test-operation:start",
         "ph": "i",
-        "pid": 50593,
+        "pid": 10001,
         "tid": 1,
-        "ts": 1769610568011998,
+        "ts": 1700000005000002,
       },
       {
         "args": {
@@ -73,13 +72,13 @@
         },
         "cat": "blink.user_timing",
         "id2": {
-          "local": "0x22",
+          "local": "0x1",
         },
         "name": "test-operation",
         "ph": "b",
-        "pid": 50593,
+        "pid": 10001,
         "tid": 1,
-        "ts": 1769610568011999,
+        "ts": 1700000005000003,
       },
       {
         "args": {
@@ -94,13 +93,13 @@
         },
         "cat": "blink.user_timing",
         "id2": {
-          "local": "0x22",
+          "local": "0x1",
         },
         "name": "test-operation",
         "ph": "e",
-        "pid": 50593,
+        "pid": 10001,
         "tid": 1,
-        "ts": 1769610568012014,
+        "ts": 1700000005000004,
       },
       {
         "args": {
@@ -114,9 +113,9 @@
         "cat": "blink.user_timing",
         "name": "test-operation:end",
         "ph": "i",
-        "pid": 50593,
+        "pid": 10001,
         "tid": 1,
-        "ts": 1769610568012015,
+        "ts": 1700000005000005,
       },
       {
         "args": {},
@@ -124,9 +123,9 @@
         "dur": 20000,
         "name": "[trace padding end]",
         "ph": "X",
-        "pid": 50593,
+        "pid": 10001,
         "tid": 1,
-        "ts": 1769610569012015,
+        "ts": 1700000005000006,
       },
     ],
   },
