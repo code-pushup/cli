@@ -1,0 +1,133 @@
+[
+  {
+    "args": {},
+    "displayTimeUnit": "ms",
+    "metadata": {
+      "dataOrigin": "TraceEvents",
+      "generatedAt": "2026-01-28T14:29:28.023Z",
+      "hardwareConcurrency": 1,
+      "source": "DevTools",
+      "startTime": "2026-01-28T14:29:28.023Z",
+    },
+    "traceEvents": [
+      {
+        "args": {
+          "data": {
+            "frameTreeNodeId": 5059301,
+            "frames": [
+              {
+                "frame": "FRAME0P50593T1",
+                "isInPrimaryMainFrame": true,
+                "isOutermostMainFrame": true,
+                "name": "",
+                "processId": 50593,
+                "url": "generated-trace",
+              },
+            ],
+            "persistentIds": true,
+          },
+        },
+        "cat": "devtools.timeline",
+        "name": "TracingStartedInBrowser",
+        "ph": "i",
+        "pid": 50593,
+        "tid": 1,
+        "ts": 1769610567011998,
+      },
+      {
+        "args": {},
+        "cat": "devtools.timeline",
+        "dur": 20000,
+        "name": "[trace padding start]",
+        "ph": "X",
+        "pid": 50593,
+        "tid": 1,
+        "ts": 1769610567011998,
+      },
+      {
+        "args": {
+          "detail": {
+            "devtools": {
+              "dataType": "track-entry",
+              "track": "int-test-track",
+            },
+          },
+        },
+        "cat": "blink.user_timing",
+        "name": "test-operation:start",
+        "ph": "i",
+        "pid": 50593,
+        "tid": 1,
+        "ts": 1769610568011998,
+      },
+      {
+        "args": {
+          "data": {
+            "detail": {
+              "devtools": {
+                "dataType": "track-entry",
+                "track": "int-test-track",
+              },
+            },
+          },
+        },
+        "cat": "blink.user_timing",
+        "id2": {
+          "local": "0x22",
+        },
+        "name": "test-operation",
+        "ph": "b",
+        "pid": 50593,
+        "tid": 1,
+        "ts": 1769610568011999,
+      },
+      {
+        "args": {
+          "data": {
+            "detail": {
+              "devtools": {
+                "dataType": "track-entry",
+                "track": "int-test-track",
+              },
+            },
+          },
+        },
+        "cat": "blink.user_timing",
+        "id2": {
+          "local": "0x22",
+        },
+        "name": "test-operation",
+        "ph": "e",
+        "pid": 50593,
+        "tid": 1,
+        "ts": 1769610568012014,
+      },
+      {
+        "args": {
+          "detail": {
+            "devtools": {
+              "dataType": "track-entry",
+              "track": "int-test-track",
+            },
+          },
+        },
+        "cat": "blink.user_timing",
+        "name": "test-operation:end",
+        "ph": "i",
+        "pid": 50593,
+        "tid": 1,
+        "ts": 1769610568012015,
+      },
+      {
+        "args": {},
+        "cat": "devtools.timeline",
+        "dur": 20000,
+        "name": "[trace padding end]",
+        "ph": "X",
+        "pid": 50593,
+        "tid": 1,
+        "ts": 1769610569012015,
+      },
+    ],
+  },
+]
