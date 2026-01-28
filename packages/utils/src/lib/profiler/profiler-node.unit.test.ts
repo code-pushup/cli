@@ -15,9 +15,9 @@ import { Profiler } from './profiler.js';
 
 vi.mock('../exit-process.js');
 
-const simpleEncoder: PerformanceEntryEncoder<string> = entry => {
+const simpleEncoder: PerformanceEntryEncoder<{ message: string }> = entry => {
   if (entry.entryType === 'measure') {
-    return [`${entry.name}:${entry.duration.toFixed(2)}ms`];
+    return [{ message: `${entry.name}:${entry.duration.toFixed(2)}ms` }];
   }
   return [];
 };
@@ -25,7 +25,10 @@ const simpleEncoder: PerformanceEntryEncoder<string> = entry => {
 describe('NodejsProfiler', () => {
   const getNodejsProfiler = (
     overrides?: Partial<
-      NodejsProfilerOptions<string, Record<string, ActionTrackEntryPayload>>
+      NodejsProfilerOptions<
+        { message: string },
+        Record<string, ActionTrackEntryPayload>
+      >
     >,
   ) => {
     const sink = new MockTraceEventFileSink();
@@ -67,20 +70,26 @@ describe('NodejsProfiler', () => {
     const profiler = new NodejsProfiler({
       prefix: 'test',
       track: 'test-track',
-      encodePerfEntry: simpleEncoder,
+      format: {
+        encodePerfEntry: simpleEncoder,
+        baseName: 'trace',
+        walExtension: '.jsonl',
+        finalExtension: '.json',
+        ...overrides?.format,
+      },
       ...overrides,
     });
 
     return { sink, perfObserverSink: mockPerfObserverSink, profiler };
   };
 
-  const originalEnv = process.env.CP_PROFILER_DEBUG;
+  const originalEnv = process.env.DEBUG;
 
   beforeEach(() => {
     performance.clearMarks();
     performance.clearMeasures();
     // eslint-disable-next-line functional/immutable-data
-    delete process.env.CP_PROFILER_DEBUG;
+    delete process.env.DEBUG;
     // eslint-disable-next-line functional/immutable-data
     delete process.env.CP_PROFILING;
   });
@@ -88,10 +97,10 @@ describe('NodejsProfiler', () => {
   afterEach(() => {
     if (originalEnv === undefined) {
       // eslint-disable-next-line functional/immutable-data
-      delete process.env.CP_PROFILER_DEBUG;
+      delete process.env.DEBUG;
     } else {
       // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = originalEnv;
+      process.env.DEBUG = originalEnv;
     }
   });
 
@@ -137,7 +146,10 @@ describe('NodejsProfiler', () => {
         name: 'idle → running',
         initial: false,
         action: (
-          p: NodejsProfiler<string, Record<string, ActionTrackEntryPayload>>,
+          p: NodejsProfiler<
+            { message: string },
+            Record<string, ActionTrackEntryPayload>
+          >,
         ) => p.setEnabled(true),
         expected: {
           state: 'running',
@@ -151,7 +163,10 @@ describe('NodejsProfiler', () => {
         name: 'running → idle',
         initial: true,
         action: (
-          p: NodejsProfiler<string, Record<string, ActionTrackEntryPayload>>,
+          p: NodejsProfiler<
+            { message: string },
+            Record<string, ActionTrackEntryPayload>
+          >,
         ) => p.setEnabled(false),
         expected: {
           state: 'idle',
@@ -165,7 +180,10 @@ describe('NodejsProfiler', () => {
         name: 'idle → closed',
         initial: false,
         action: (
-          p: NodejsProfiler<string, Record<string, ActionTrackEntryPayload>>,
+          p: NodejsProfiler<
+            { message: string },
+            Record<string, ActionTrackEntryPayload>
+          >,
         ) => p.close(),
         expected: {
           state: 'closed',
@@ -179,7 +197,10 @@ describe('NodejsProfiler', () => {
         name: 'running → closed',
         initial: true,
         action: (
-          p: NodejsProfiler<string, Record<string, ActionTrackEntryPayload>>,
+          p: NodejsProfiler<
+            { message: string },
+            Record<string, ActionTrackEntryPayload>
+          >,
         ) => p.close(),
         expected: {
           state: 'closed',
@@ -483,9 +504,9 @@ describe('NodejsProfiler', () => {
       expect(stats.debug).toBe(false);
     });
 
-    it('should initialize debug flag from CP_PROFILER_DEBUG env var when set', () => {
+    it('should initialize debug flag from DEBUG env var when set', () => {
       // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
+      process.env.DEBUG = 'true';
 
       const { profiler } = getNodejsProfiler();
 
@@ -498,14 +519,14 @@ describe('NodejsProfiler', () => {
       expect(profiler.debug).toBe(false);
 
       // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
+      process.env.DEBUG = 'true';
       const { profiler: debugProfiler } = getNodejsProfiler();
       expect(debugProfiler.debug).toBe(true);
     });
 
     it('should create transition marker when debug is enabled and transitioning to running', () => {
       // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
+      process.env.DEBUG = 'true';
       const { profiler } = getNodejsProfiler({ enabled: false });
 
       performance.clearMarks();
@@ -520,7 +541,7 @@ describe('NodejsProfiler', () => {
 
     it('should not create transition marker when transitioning from running to idle (profiler disabled)', () => {
       // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
+      process.env.DEBUG = 'true';
       const { profiler } = getNodejsProfiler({ enabled: true });
 
       performance.clearMarks();
@@ -548,7 +569,7 @@ describe('NodejsProfiler', () => {
 
     it('should include stats in transition marker properties when transitioning to running', () => {
       // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
+      process.env.DEBUG = 'true';
       const { profiler, perfObserverSink } = getNodejsProfiler({
         enabled: false,
       });
@@ -594,7 +615,7 @@ describe('NodejsProfiler', () => {
 
       it('should disable debug mode when called with false', () => {
         // eslint-disable-next-line functional/immutable-data
-        process.env.CP_PROFILER_DEBUG = 'true';
+        process.env.DEBUG = 'true';
         const { profiler } = getNodejsProfiler();
         expect(profiler.debug).toBe(true);
 
@@ -632,7 +653,7 @@ describe('NodejsProfiler', () => {
 
       it('should stop creating transition markers after disabling debug mode', () => {
         // eslint-disable-next-line functional/immutable-data
-        process.env.CP_PROFILER_DEBUG = 'true';
+        process.env.DEBUG = 'true';
         const { profiler } = getNodejsProfiler({ enabled: false });
         expect(profiler.debug).toBe(true);
 
@@ -662,7 +683,7 @@ describe('NodejsProfiler', () => {
 
       it('should be idempotent when called multiple times with false', () => {
         // eslint-disable-next-line functional/immutable-data
-        process.env.CP_PROFILER_DEBUG = 'true';
+        process.env.DEBUG = 'true';
         const { profiler } = getNodejsProfiler();
         expect(profiler.debug).toBe(true);
 
@@ -750,7 +771,10 @@ describe('NodejsProfiler', () => {
       | undefined;
     const createProfiler = (
       overrides?: Partial<
-        NodejsProfilerOptions<string, Record<string, ActionTrackEntryPayload>>
+        NodejsProfilerOptions<
+          { message: string },
+          Record<string, ActionTrackEntryPayload>
+        >
       >,
     ) => {
       const sink = new MockTraceEventFileSink();
@@ -762,13 +786,19 @@ describe('NodejsProfiler', () => {
       return new NodejsProfiler({
         prefix: 'cp',
         track: 'test-track',
-        encodePerfEntry: simpleEncoder,
+        format: {
+          encodePerfEntry: simpleEncoder,
+          baseName: 'trace',
+          walExtension: '.jsonl',
+          finalExtension: '.json',
+          ...overrides?.format,
+        },
         ...overrides,
       });
     };
 
     let profiler: NodejsProfiler<
-      string,
+      { message: string },
       Record<string, ActionTrackEntryPayload>
     >;
 

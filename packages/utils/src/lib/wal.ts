@@ -1,8 +1,5 @@
-/* eslint-disable max-lines */
 import * as fs from 'node:fs';
 import path from 'node:path';
-import process from 'node:process';
-import { threadId } from 'node:worker_threads';
 
 /**
  * Codec for encoding/decoding values to/from strings for WAL storage.
@@ -156,9 +153,10 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
    * Create a new WAL file instance.
    * @param options - Configuration options
    */
-  constructor(options: { file: string; codec: Codec<T> }) {
-    this.#file = options.file;
-    const c = createTolerantCodec(options.codec);
+  constructor(options: { id?: string; file: string; codec: Codec<T> }) {
+    const { file, codec } = options;
+    this.#file = file;
+    const c = createTolerantCodec(codec);
     this.#decode = c.decode;
     this.#encode = c.encode;
   }
@@ -267,7 +265,7 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
  * Format descriptor that binds codec and file extension together.
  * Prevents misconfiguration by keeping related concerns in one object.
  */
-export type WalFormat<T extends object | string> = {
+export type WalFormat<T extends object> = {
   /** Base name for the WAL (e.g., "trace") */
   baseName: string;
   /** Shard file extension (e.g., ".jsonl") */
@@ -283,10 +281,8 @@ export type WalFormat<T extends object | string> = {
   ) => string;
 };
 
-export const stringCodec = <
-  T extends string | object = string,
->(): Codec<T> => ({
-  encode: v => (typeof v === 'string' ? v : JSON.stringify(v)),
+export const stringCodec = <T extends object = object>(): Codec<T> => ({
+  encode: v => JSON.stringify(v),
   decode: v => {
     try {
       return JSON.parse(v) as T;
@@ -309,7 +305,7 @@ export const stringCodec = <
  * @param format - Partial WalFormat configuration
  * @returns Parsed WalFormat with defaults filled in
  */
-export function parseWalFormat<T extends object | string = object>(
+export function parseWalFormat<T extends object = object>(
   format: Partial<WalFormat<T>>,
 ): WalFormat<T> {
   const {
@@ -343,101 +339,6 @@ export function parseWalFormat<T extends object | string = object>(
 }
 
 /**
- * Determines if this process is the leader WAL process using the origin PID heuristic.
- *
- * The leader is the process that first enabled profiling (the one that set CP_PROFILER_ORIGIN_PID).
- * All descendant processes inherit the environment but have different PIDs.
- *
- * @returns true if this is the leader WAL process, false otherwise
- */
-export function isCoordinatorProcess(
-  envVarName: string,
-  profilerID: string,
-): boolean {
-  return process.env[envVarName] === profilerID;
-}
-
-/**
- * Initialize the origin PID environment variable if not already set.
- * This must be done as early as possible before any user code runs.
- * Sets envVarName to the current process ID if not already defined.
- */
-export function setCoordinatorProcess(
-  envVarName: string,
-  profilerID: string,
-): void {
-  if (!process.env[envVarName]) {
-    // eslint-disable-next-line functional/immutable-data
-    process.env[envVarName] = profilerID;
-  }
-}
-
-// eslint-disable-next-line functional/no-let
-let shardCount = 0;
-
-/**
- * Generates a unique sharded WAL ID based on performance time origin, process ID, thread ID, and instance count.
- */
-function getShardedWalId() {
-  // eslint-disable-next-line functional/immutable-data
-  return `${Math.round(performance.timeOrigin)}.${process.pid}.${threadId}.${++ShardedWal.instanceCount}`;
-}
-
-/**
- * Generates a human-readable shard ID.
- * This ID is unique per process/thread/shard combination and used in the file name.
- * Format: readable-timestamp.pid.threadId.shardCount
- * Example: "20240101-120000-000.12345.1.1"
- * Becomes file: trace.20240101-120000-000.12345.1.1.log
- */
-export function getShardId(): string {
-  const timestamp = Math.round(performance.timeOrigin + performance.now());
-  const readableTimestamp = sortableReadableDateString(`${timestamp}`);
-  return `${readableTimestamp}.${process.pid}.${threadId}.${++shardCount}`;
-}
-
-/**
- * Generates a human-readable sharded group ID.
- * This ID is a globally unique, sortable, human-readable date string per run.
- * Used directly as the folder name to group shards.
- * Format: yyyymmdd-hhmmss-ms
- * Example: "20240101-120000-000"
- */
-export function getShardedGroupId(): string {
-  return sortableReadableDateString(
-    `${Math.round(performance.timeOrigin + performance.now())}`,
-  );
-}
-
-/**
- * Regex patterns for validating WAL ID formats
- */
-export const WAL_ID_PATTERNS = {
-  /** Readable date format: yyyymmdd-hhmmss-ms */
-  READABLE_DATE: /^\d{8}-\d{6}-\d{3}$/,
-  /** Group ID format: yyyymmdd-hhmmss-ms */
-  GROUP_ID: /^\d{8}-\d{6}-\d{3}$/,
-  /** Shard ID format: readable-date.pid.threadId.count */
-  SHARD_ID: /^\d{8}-\d{6}-\d{3}(?:\.\d+){3}$/,
-} as const;
-
-export function sortableReadableDateString(timestampMs: string): string {
-  const timestamp = Number.parseInt(timestampMs, 10);
-  const date = new Date(timestamp);
-  const MILLISECONDS_PER_SECOND = 1000;
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const dd = String(date.getDate()).padStart(2, '0');
-  const hh = String(date.getHours()).padStart(2, '0');
-  const min = String(date.getMinutes()).padStart(2, '0');
-  const ss = String(date.getSeconds()).padStart(2, '0');
-  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-  const ms = String(timestamp % MILLISECONDS_PER_SECOND).padStart(3, '0');
-
-  return `${yyyy}${mm}${dd}-${hh}${min}${ss}-${ms}`;
-}
-
-/**
  * NOTE: this helper is only used in this file. The rest of the repo avoids sync methods so it is not reusable.
  * Ensures a directory exists, creating it recursively if necessary using sync methods.
  * @param dirPath - The directory path to ensure exists
@@ -445,161 +346,5 @@ export function sortableReadableDateString(timestampMs: string): string {
 function ensureDirectoryExistsSync(dirPath: string): void {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
-  }
-}
-
-/**
- * Sharded Write-Ahead Log manager for coordinating multiple WAL shards.
- * Handles distributed logging across multiple processes/files with atomic finalization.
- */
-
-export class ShardedWal<T extends object | string = object> {
-  static instanceCount = 0;
-  readonly #id: string = getShardedWalId();
-  readonly groupId = getShardedGroupId();
-  readonly #format: WalFormat<T>;
-  readonly #dir: string = process.cwd();
-  readonly #isCoordinator: boolean;
-
-  /**
-   * Create a sharded WAL manager.
-   *
-   * @param opt.dir - Base directory to store shard files (defaults to process.cwd())
-   * @param opt.format - WAL format configuration
-   * @param opt.groupId - Group ID for sharding (defaults to generated group ID)
-   * @param opt.coordinatorIdEnvVar - Environment variable name for storing coordinator ID (defaults to CP_SHARDED_WAL_COORDINATOR_ID)
-   */
-  constructor(opt: {
-    dir?: string;
-    format: Partial<WalFormat<T>>;
-    groupId?: string;
-    coordinatorIdEnvVar: string;
-  }) {
-    const { dir, format, groupId, coordinatorIdEnvVar } = opt;
-    this.groupId = groupId ?? getShardedGroupId();
-    if (dir) {
-      this.#dir = dir;
-    }
-    this.#format = parseWalFormat<T>(format);
-    this.#isCoordinator = isCoordinatorProcess(coordinatorIdEnvVar, this.#id);
-  }
-
-  /**
-   * Is this instance the coordinator?
-   *
-   * Coordinator status is determined from the coordinatorIdEnvVar environment variable.
-   * The coordinator handles finalization and cleanup of shard files.
-   *
-   * @returns true if this instance is the coordinator, false otherwise
-   */
-  isCoordinator(): boolean {
-    return this.#isCoordinator;
-  }
-
-  /**
-   * Generates a filename for a shard file using a shard ID.
-   * Both groupId and shardId are already in readable date format.
-   *
-   * Example with baseName "trace" and shardId "20240101-120000-000.12345.1.1":
-   * Filename: trace.20240101-120000-000.12345.1.1.log
-   *
-   * @param shardId - The human-readable shard ID (readable-timestamp.pid.threadId.count format)
-   * @returns The filename for the shard file
-   */
-  getShardedFileName(shardId: string) {
-    const { baseName, walExtension } = this.#format;
-    return `${baseName}.${shardId}${walExtension}`;
-  }
-
-  /**
-   * Generates a filename for the final merged output file.
-   * Uses the groupId as the identifier in the filename.
-   *
-   * Example with baseName "trace" and groupId "20240101-120000-000":
-   * Filename: trace.20240101-120000-000.json
-   *
-   * @returns The filename for the final merged output file
-   */
-  getFinalFileName() {
-    const { baseName, finalExtension } = this.#format;
-    return `${baseName}.${this.groupId}${finalExtension}`;
-  }
-
-  shard(shardId: string = getShardId()) {
-    return new WriteAheadLogFile({
-      file: path.join(
-        this.#dir,
-        this.groupId,
-        this.getShardedFileName(shardId),
-      ),
-      codec: this.#format.codec,
-    });
-  }
-
-  /** Get all shard file paths matching this WAL's base name */
-  private shardFiles() {
-    if (!fs.existsSync(this.#dir)) {
-      return [];
-    }
-
-    const groupIdDir = path.join(this.#dir, this.groupId);
-    // create dir if not existing
-    ensureDirectoryExistsSync(groupIdDir);
-
-    return fs
-      .readdirSync(groupIdDir)
-      .filter(entry => entry.endsWith(this.#format.walExtension))
-      .filter(entry => entry.startsWith(`${this.#format.baseName}`))
-      .map(entry => path.join(groupIdDir, entry));
-  }
-
-  /**
-   * Finalize all shards by merging them into a single output file.
-   * Recovers all records from all shards, validates no errors, and writes merged result.
-   * @throws Error if any shard contains decode errors
-   */
-  finalize(opt?: Record<string, unknown>) {
-    const fileRecoveries = this.shardFiles().map(f => ({
-      file: f,
-      recovery: new WriteAheadLogFile({
-        file: f,
-        codec: this.#format.codec,
-      }).recover(),
-    }));
-
-    const records = fileRecoveries.flatMap(({ recovery }) => recovery.records);
-
-    // Check if any records are invalid entries (from tolerant codec)
-    const hasInvalidEntries = records.some(
-      r => typeof r === 'object' && r != null && '__invalid' in r,
-    );
-
-    const recordsToFinalize = hasInvalidEntries
-      ? records
-      : filterValidRecords(records);
-    const out = path.join(this.#dir, this.groupId, this.getFinalFileName());
-    ensureDirectoryExistsSync(path.dirname(out));
-    fs.writeFileSync(out, this.#format.finalizer(recordsToFinalize, opt));
-  }
-
-  cleanup() {
-    this.shardFiles().forEach(f => {
-      // Remove the shard file
-      fs.unlinkSync(f);
-      // Remove the parent directory (shard group directory)
-      const shardDir = path.dirname(f);
-      try {
-        fs.rmdirSync(shardDir);
-      } catch {
-        // Directory might not be empty or already removed, ignore
-      }
-    });
-
-    // Also try to remove the root directory if it becomes empty
-    try {
-      fs.rmdirSync(this.#dir);
-    } catch {
-      // Directory might not be empty or already removed, ignore
-    }
   }
 }

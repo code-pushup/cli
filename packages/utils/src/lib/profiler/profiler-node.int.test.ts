@@ -5,7 +5,7 @@ import {
   omitTraceJson,
 } from '@code-pushup/test-utils';
 import type { PerformanceEntryEncoder } from '../performance-observer.js';
-import { WAL_ID_PATTERNS } from '../wal.js';
+import { WAL_ID_PATTERNS } from '../process-id.js';
 import { NodejsProfiler } from './profiler-node.js';
 import { entryToTraceEvents } from './trace-file-utils.js';
 import type { UserTimingTraceEvent } from './trace-file.type.js';
@@ -20,7 +20,7 @@ describe('NodeJS Profiler Integration', () => {
     performance.clearMarks();
     performance.clearMeasures();
     vi.stubEnv('CP_PROFILING', undefined!);
-    vi.stubEnv('CP_PROFILER_DEBUG', undefined!);
+    vi.stubEnv('DEBUG', undefined!);
 
     // Clean up trace files from previous test runs
     const traceFilesDir = path.join(process.cwd(), 'tmp', 'int', 'utils');
@@ -40,7 +40,9 @@ describe('NodeJS Profiler Integration', () => {
     nodejsProfiler = new NodejsProfiler({
       prefix: 'test',
       track: 'test-track',
-      encodePerfEntry: traceEventEncoder,
+      format: {
+        encodePerfEntry: traceEventEncoder,
+      },
       filename: path.join(process.cwd(), 'tmp', 'int', 'utils', 'trace.json'),
       enabled: true,
     });
@@ -51,7 +53,7 @@ describe('NodeJS Profiler Integration', () => {
       nodejsProfiler.close();
     }
     vi.stubEnv('CP_PROFILING', undefined!);
-    vi.stubEnv('CP_PROFILER_DEBUG', undefined!);
+    vi.stubEnv('DEBUG', undefined!);
   });
 
   it('should initialize with sink opened when enabled', () => {

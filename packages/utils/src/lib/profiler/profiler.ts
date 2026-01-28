@@ -16,7 +16,10 @@ import type {
   DevToolsColor,
   EntryMeta,
 } from '../user-timing-extensibility-api.type.js';
-import { PROFILER_ENABLED_ENV_VAR } from './constants.js';
+import {
+  PROFILER_DEBUG_ENV_VAR,
+  PROFILER_ENABLED_ENV_VAR,
+} from './constants.js';
 
 /**
  * Generates a unique profiler ID based on performance time origin, process ID, thread ID, and instance count.
@@ -35,15 +38,6 @@ type ProfilerMeasureOptions<T extends ActionTrackConfigs> =
   MeasureCtxOptions & {
     /** Custom track configurations that will be merged with default settings */
     tracks?: Record<keyof T, Partial<ActionTrackEntryPayload>>;
-    /** Whether profiling should be enabled (defaults to CP_PROFILING env var) */
-    enabled?: boolean;
-    /**
-     * Name of the environment variable to check for debug mode.
-     * When the env var is set to 'true', profiler state transitions create performance marks for debugging.
-     *
-     * @default 'CP_PROFILER_DEBUG'
-     */
-    debugEnvVar?: string;
   };
 
 /**
@@ -51,6 +45,16 @@ type ProfilerMeasureOptions<T extends ActionTrackConfigs> =
  */
 export type MarkerOptions = EntryMeta & { color?: DevToolsColor };
 
+export type ProfilerStateOptions = {
+  /** Whether profiling should be enabled (defaults to CP_PROFILING env var) */
+  enabled?: boolean;
+  /**
+   * When set to true, profiler creates debug logs in traces.
+   *
+   * @default false
+   */
+  debug?: boolean;
+};
 /**
  * Options for configuring a Profiler instance.
  *
@@ -64,10 +68,9 @@ export type MarkerOptions = EntryMeta & { color?: DevToolsColor };
  * @property trackGroup - Default track group for organization
  * @property color - Default color for track entries
  * @property tracks - Custom track configurations merged with defaults
- * @property debugEnvVar - Name of the environment variable to check for debug mode (defaults to CP_PROFILER_DEBUG)
  */
 export type ProfilerOptions<T extends ActionTrackConfigs = ActionTrackConfigs> =
-  ProfilerMeasureOptions<T>;
+  ProfilerStateOptions & ProfilerMeasureOptions<T>;
 
 /**
  * Performance profiler that creates structured timing measurements with Chrome DevTools Extensibility API payloads.
@@ -79,16 +82,15 @@ export type ProfilerOptions<T extends ActionTrackConfigs = ActionTrackConfigs> =
 export class Profiler<T extends ActionTrackConfigs> {
   static instanceCount = 0;
   readonly id = getProfilerId();
-  #enabled: boolean = false;
-  readonly #defaults: ActionTrackEntryPayload;
-  readonly tracks: Record<keyof T, ActionTrackEntryPayload> | undefined;
-  readonly #ctxOf: ReturnType<typeof measureCtx>;
   /**
    * Whether debug mode is enabled for profiler state transitions.
    * When enabled, profiler state transitions create performance marks for debugging.
    */
   #debug: boolean = false;
-  readonly #debugEnvVar: string;
+  #enabled: boolean = false;
+  readonly #defaults: ActionTrackEntryPayload;
+  readonly tracks: Record<keyof T, ActionTrackEntryPayload> | undefined;
+  readonly #ctxOf: ReturnType<typeof measureCtx>;
 
   /**
    * Protected method to set debug mode state.
@@ -96,14 +98,6 @@ export class Profiler<T extends ActionTrackConfigs> {
    */
   protected setDebugState(debugMode: boolean): void {
     this.#debug = debugMode;
-  }
-
-  /**
-   * Protected getter for debug environment variable name.
-   * Allows subclasses to access the debugEnvVar value.
-   */
-  protected get debugEnvVar(): string {
-    return this.#debugEnvVar;
   }
 
   /**
@@ -116,20 +110,14 @@ export class Profiler<T extends ActionTrackConfigs> {
    * @param options.trackGroup - Default track group for organization
    * @param options.color - Default color for track entries
    * @param options.enabled - Whether profiling is enabled (defaults to CP_PROFILING env var)
-   * @param options.debugEnvVar - Name of the environment variable to check for debug mode (defaults to CP_PROFILER_DEBUG)
    *
    */
   constructor(options: ProfilerOptions<T>) {
-    const {
-      tracks,
-      prefix,
-      enabled,
-      debugEnvVar = PROFILER_DEBUG_ENV_VAR,
-      ...defaults
-    } = options;
+    const { tracks, prefix, enabled, debug, ...defaults } = options;
     const dataType = 'track-entry';
 
     this.#enabled = enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
+    this.#debug = debug ?? isEnvVarEnabled(PROFILER_DEBUG_ENV_VAR);
     this.#defaults = { ...defaults, dataType };
     this.tracks = tracks
       ? setupTracks({ ...defaults, dataType }, tracks)
@@ -139,8 +127,6 @@ export class Profiler<T extends ActionTrackConfigs> {
       dataType,
       prefix,
     });
-    this.#debugEnvVar = debugEnvVar;
-    this.#debug = isEnvVarEnabled(this.#debugEnvVar);
   }
 
   /**
@@ -170,21 +156,19 @@ export class Profiler<T extends ActionTrackConfigs> {
   /**
    * Sets debug mode state for this profiler.
    *
-   * Also sets the environment variable specified by `debugEnvVar` (defaults to 'CP_PROFILER_DEBUG').
    * This means any future {@link Profiler} instantiations (including child processes) will use the same debug state.
    *
    * @param debugMode - Whether debug mode should be enabled
    */
   setDebugMode(debugMode: boolean): void {
-    process.env[this.#debugEnvVar] = `${debugMode}`;
+    process.env[PROFILER_DEBUG_ENV_VAR] = `${debugMode}`;
     this.#debug = debugMode;
   }
 
   /**
    * Is debug mode enabled?
    *
-   * Debug mode is enabled by {@link setDebugMode} call or the environment variable specified by `debugEnvVar`
-   * (defaults to 'CP_PROFILER_DEBUG').
+   * (defaults to 'DEBUG').
    *
    * @returns Whether debug mode is currently enabled
    */
