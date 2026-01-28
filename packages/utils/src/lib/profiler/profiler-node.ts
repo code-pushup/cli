@@ -290,11 +290,15 @@ export class NodejsProfiler<
 
   /** @returns Queue statistics and profiling state for monitoring */
   get stats() {
+    const { state: sharderState, ...sharderStats } = this.#sharder.getStats();
     return {
-      ...this.#performanceObserverSink.getStats(),
-      state: this.#state,
-      walOpen: !this.#shard.isClosed(),
+      profilerState: this.#state,
       debug: this.isDebugMode(),
+      sharderState,
+      ...sharderStats,
+      shardOpen: !this.#shard.isClosed(),
+      shardPath: this.#shard.getPath(),
+      ...this.#performanceObserverSink.getStats(),
     };
   }
 

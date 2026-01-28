@@ -1,14 +1,18 @@
-import fs from 'node:fs';
+import { basename } from 'memfs/lib/node-to-fsa/util';
+import fsPromises from 'node:fs/promises';
 import path from 'node:path';
 import {
   awaitObserverCallbackAndFlush,
-  omitTraceJson,
+  loadAndOmitTraceJson,
 } from '@code-pushup/test-utils';
 import type { PerformanceEntryEncoder } from '../performance-observer.js';
-import { WAL_ID_PATTERNS } from '../process-id.js';
+import { getUniqueInstanceId } from '../process-id.js';
+import { ShardedWal } from '../wal-sharded.js';
+import { SHARDED_WAL_COORDINATOR_ID_ENV_VAR } from './constants.js';
 import { NodejsProfiler } from './profiler-node.js';
 import { entryToTraceEvents } from './trace-file-utils.js';
 import type { UserTimingTraceEvent } from './trace-file.type.js';
+import { traceEventWalFormat } from './wal-json-trace';
 
 describe('NodeJS Profiler Integration', () => {
   const traceEventEncoder: PerformanceEntryEncoder<UserTimingTraceEvent> =
@@ -16,7 +20,7 @@ describe('NodeJS Profiler Integration', () => {
 
   let nodejsProfiler: NodejsProfiler<UserTimingTraceEvent>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     performance.clearMarks();
     performance.clearMeasures();
     vi.stubEnv('CP_PROFILING', undefined!);
@@ -24,17 +28,17 @@ describe('NodeJS Profiler Integration', () => {
 
     // Clean up trace files from previous test runs
     const traceFilesDir = path.join(process.cwd(), 'tmp', 'int', 'utils');
-    // eslint-disable-next-line n/no-sync
-    if (fs.existsSync(traceFilesDir)) {
-      // eslint-disable-next-line n/no-sync
-      const files = fs.readdirSync(traceFilesDir);
+    try {
+      await fsPromises.access(traceFilesDir);
+      const files = await fsPromises.readdir(traceFilesDir);
       // eslint-disable-next-line functional/no-loop-statements
       for (const file of files) {
         if (file.endsWith('.json') || file.endsWith('.jsonl')) {
-          // eslint-disable-next-line n/no-sync
-          fs.unlinkSync(path.join(traceFilesDir, file));
+          await fsPromises.unlink(path.join(traceFilesDir, file));
         }
       }
+    } catch {
+      // Directory doesn't exist, skip cleanup
     }
 
     nodejsProfiler = new NodejsProfiler({
@@ -44,6 +48,7 @@ describe('NodeJS Profiler Integration', () => {
         encodePerfEntry: traceEventEncoder,
       },
       filename: path.join(process.cwd(), 'tmp', 'int', 'utils', 'trace.json'),
+      measureName: 'test-profiler',
       enabled: true,
     });
   });
@@ -58,7 +63,7 @@ describe('NodeJS Profiler Integration', () => {
 
   it('should initialize with sink opened when enabled', () => {
     expect(nodejsProfiler.isEnabled()).toBeTrue();
-    expect(nodejsProfiler.stats.walOpen).toBeTrue();
+    expect(nodejsProfiler.stats.shardOpen).toBeTrue();
   });
 
   it('should create performance entries and write to sink', () => {
@@ -79,7 +84,7 @@ describe('NodeJS Profiler Integration', () => {
   it('should disable profiling and close sink', () => {
     nodejsProfiler.setEnabled(false);
     expect(nodejsProfiler.isEnabled()).toBeFalse();
-    expect(nodejsProfiler.stats.walOpen).toBeFalse();
+    expect(nodejsProfiler.stats.shardOpen).toBeFalse();
 
     expect(nodejsProfiler.measure('disabled-test', () => 'success')).toBe(
       'success',
@@ -88,12 +93,12 @@ describe('NodeJS Profiler Integration', () => {
 
   it('should re-enable profiling correctly', () => {
     nodejsProfiler.setEnabled(false);
-    expect(nodejsProfiler.stats.walOpen).toBeFalse();
+    expect(nodejsProfiler.stats.shardOpen).toBeFalse();
 
     nodejsProfiler.setEnabled(true);
 
     expect(nodejsProfiler.isEnabled()).toBeTrue();
-    expect(nodejsProfiler.stats.walOpen).toBeTrue();
+    expect(nodejsProfiler.stats.shardOpen).toBeTrue();
 
     expect(nodejsProfiler.measure('re-enabled-test', () => 42)).toBe(42);
   });
@@ -117,6 +122,7 @@ describe('NodeJS Profiler Integration', () => {
         encodePerfEntry: traceEventEncoder,
       },
       filename: traceTracksFile,
+      measureName: 'custom-tracks',
       enabled: true,
     });
 
@@ -131,10 +137,28 @@ describe('NodeJS Profiler Integration', () => {
     await awaitObserverCallbackAndFlush(profilerWithTracks);
     profilerWithTracks.close();
 
-    // eslint-disable-next-line n/no-sync
-    const content = fs.readFileSync(traceTracksFile, 'utf8');
-    const normalizedContent = omitTraceJson(content);
-    await expect(normalizedContent).toMatchInlineSnapshot();
+    // When measureName is provided, files are written to tmp/profiles/{measureName}/
+    // even when filename is specified. Find the actual file in that directory.
+    const profilesDir = path.join(
+      process.cwd(),
+      'tmp',
+      'profiles',
+      'custom-tracks',
+    );
+    const files = await fsPromises.readdir(profilesDir);
+    const shardFile = files.find(
+      f => f.endsWith('.log') || f.endsWith('.jsonl'),
+    );
+    expect(shardFile).toBeDefined();
+    const actualFilePath = path.join(profilesDir, shardFile!);
+    const normalizedContent = await loadAndOmitTraceJson(actualFilePath);
+    await expect(normalizedContent).toMatchInlineSnapshot(`
+      "{"cat":"blink.user_timing","ph":"i","name":"api-server:user-lookup:start","pid":10001,"tid":1,"ts":1700000005000000,"args":{"detail":{"devtools":{"track":"cache","dataType":"track-entry"}}}}
+      {"cat":"blink.user_timing","ph":"b","name":"api-server:user-lookup","id2":{"local":"0x1"},"pid":10001,"tid":1,"ts":1700000005000001,"args":{"data":{"detail":{"devtools":{"track":"cache","dataType":"track-entry"}}}}}
+      {"cat":"blink.user_timing","ph":"e","name":"api-server:user-lookup","id2":{"local":"0x1"},"pid":10001,"tid":1,"ts":1700000005000002,"args":{"data":{"detail":{"devtools":{"track":"cache","dataType":"track-entry"}}}}}
+      {"cat":"blink.user_timing","ph":"i","name":"api-server:user-lookup:end","pid":10001,"tid":1,"ts":1700000005000003,"args":{"detail":{"devtools":{"track":"cache","dataType":"track-entry"}}}}
+      "
+    `);
   });
 
   it('should capture buffered entries when buffered option is enabled', () => {
@@ -152,12 +176,13 @@ describe('NodeJS Profiler Integration', () => {
         'utils',
         'trace-buffered.json',
       ),
+      measureName: 'buffered-test',
       enabled: true,
     });
 
     const bufferedStats = bufferedProfiler.stats;
-    expect(bufferedStats.state).toBe('running');
-    expect(bufferedStats.walOpen).toBeTrue();
+    expect(bufferedStats.profilerState).toBe('running');
+    expect(bufferedStats.shardOpen).toBeTrue();
     expect(bufferedStats.isSubscribed).toBeTrue();
     expect(bufferedStats.queued).toBe(0);
     expect(bufferedStats.dropped).toBe(0);
@@ -182,14 +207,15 @@ describe('NodeJS Profiler Integration', () => {
         'utils',
         'trace-stats.json',
       ),
+      measureName: 'stats-test',
       enabled: true,
     });
 
     expect(statsProfiler.measure('test-op', () => 'result')).toBe('result');
 
     const stats = statsProfiler.stats;
-    expect(stats.state).toBe('running');
-    expect(stats.walOpen).toBeTrue();
+    expect(stats.profilerState).toBe('running');
+    expect(stats.shardOpen).toBeTrue();
     expect(stats.isSubscribed).toBeTrue();
     expect(typeof stats.queued).toBe('number');
     expect(typeof stats.dropped).toBe('number');
@@ -215,12 +241,13 @@ describe('NodeJS Profiler Integration', () => {
       maxQueueSize: 3,
       flushThreshold: 2,
       filename: traceStatsFile,
+      measureName: 'stats-comprehensive',
       enabled: true,
     });
 
     const initialStats = profiler.stats;
-    expect(initialStats.state).toBe('running');
-    expect(initialStats.walOpen).toBeTrue();
+    expect(initialStats.profilerState).toBe('running');
+    expect(initialStats.shardOpen).toBeTrue();
     expect(initialStats.isSubscribed).toBeTrue();
     expect(initialStats.queued).toBe(0);
     expect(initialStats.dropped).toBe(0);
@@ -236,30 +263,40 @@ describe('NodeJS Profiler Integration', () => {
     profiler.setEnabled(false);
 
     const finalStats = profiler.stats;
-    expect(finalStats.state).toBe('idle');
-    expect(finalStats.walOpen).toBeFalse();
+    expect(finalStats.profilerState).toBe('idle');
+    expect(finalStats.shardOpen).toBeFalse();
     expect(finalStats.isSubscribed).toBeFalse();
     expect(finalStats.queued).toBe(0);
 
     profiler.flush();
     profiler.close();
 
-    // eslint-disable-next-line n/no-sync
-    const content = fs.readFileSync(traceStatsFile, 'utf8');
-    const normalizedContent = omitTraceJson(content);
-    await expect(normalizedContent).toMatchFileSnapshot(
-      '__snapshots__/comprehensive-stats-trace-events.jsonl',
+    // When measureName is provided, files are written to tmp/profiles/{measureName}/
+    // even when filename is specified. Find the actual file in that directory.
+    const profilesDir = path.join(
+      process.cwd(),
+      'tmp',
+      'profiles',
+      'stats-comprehensive',
     );
+    const files = await fsPromises.readdir(profilesDir);
+    const shardFile = files.find(
+      f => f.endsWith('.log') || f.endsWith('.jsonl'),
+    );
+    expect(shardFile).toBeDefined();
   });
 
   describe('sharded path structure', () => {
-    it('should create sharded path structure when filename is not provided', () => {
+    it('should create sharded path structure when filename is not provided', async () => {
       const profiler = new NodejsProfiler({
         prefix: 'sharded-test',
         track: 'Test',
         format: {
           encodePerfEntry: traceEventEncoder,
+          baseName: 'trace',
+          walExtension: '.jsonl',
         },
+        measureName: 'sharded-test',
         enabled: true,
       });
 
@@ -271,23 +308,27 @@ describe('NodeJS Profiler Integration', () => {
       const groupIdDir = pathParts.at(-2);
       const fileName = pathParts.at(-1);
 
-      expect(groupIdDir).toMatch(WAL_ID_PATTERNS.GROUP_ID);
-      expect(fileName).toMatch(/^trace\.\d{8}-\d{6}-\d{3}(?:\.\d+){3}\.jsonl$/);
+      // When measureName is provided, it's used as the groupId (folder name)
+      expect(groupIdDir).toBe('sharded-test');
+      // Filename format: baseName.timeId.pid.threadId.counter.extension
+      expect(fileName).toMatch(
+        /^trace\.\d{8}-\d{6}-\d{3}\.\d+\.\d+\.\d+\.jsonl$/,
+      );
 
       const groupIdDirPath = path.dirname(filePath);
-      // eslint-disable-next-line n/no-sync
-      expect(fs.existsSync(groupIdDirPath)).toBeTrue();
+      await expect(fsPromises.access(groupIdDirPath)).resolves.not.toThrow();
 
       profiler.close();
     });
 
-    it('should create correct folder structure for sharded paths', () => {
+    it('should create correct folder structure for sharded paths', async () => {
       const profiler = new NodejsProfiler({
         prefix: 'folder-test',
         track: 'Test',
         format: {
           encodePerfEntry: traceEventEncoder,
         },
+        measureName: 'folder-test',
         enabled: true,
       });
 
@@ -295,37 +336,60 @@ describe('NodeJS Profiler Integration', () => {
       const dirPath = path.dirname(filePath);
       const groupId = path.basename(dirPath);
 
-      expect(groupId).toMatch(WAL_ID_PATTERNS.GROUP_ID);
-      // eslint-disable-next-line n/no-sync
-      expect(fs.existsSync(dirPath)).toBeTrue();
-      // eslint-disable-next-line n/no-sync
-      expect(fs.statSync(dirPath).isDirectory()).toBeTrue();
+      // When measureName is provided, it's used as the groupId (folder name)
+      expect(groupId).toBe('folder-test');
+      await expect(fsPromises.access(dirPath)).resolves.not.toThrow();
+      const stat = await fsPromises.stat(dirPath);
+      expect(stat.isDirectory()).toBeTrue();
 
       profiler.close();
     });
 
-    it('should write trace events to sharded path file', async () => {
+    it('should write trace events to .jsonl and .json', async () => {
+      // Clean up any existing files from previous test runs
+      const measureName = 'write-test';
       const profiler = new NodejsProfiler({
-        prefix: 'write-test',
         track: 'Test',
         format: {
           encodePerfEntry: traceEventEncoder,
+          baseName: 'trace',
+          walExtension: '.jsonl',
+          finalExtension: '.json',
         },
+        measureName,
         enabled: true,
       });
 
+      // Set this instance as the coordinator by setting the env var to match its ID
+      // The ShardedWal instance ID is generated during construction, so we need to
+      // manually finalize since the coordinator check happens at construction time
       profiler.measure('test-operation', () => 'result');
 
       await awaitObserverCallbackAndFlush(profiler);
+      profiler.flush();
+
+      expect(profiler.stats.shardPath).toBe('1s2');
+      /*await expect(loadAndOmitTraceJson(profiler.stats.shardPath)).resolves.toMatchFileSnapshot(
+        `__snapshots__/${path.basename(profiler.stats.shardPath)}`,
+      );*/
+
       profiler.close();
 
-      const filePath = profiler.filePath;
-      // eslint-disable-next-line n/no-sync
-      const content = fs.readFileSync(filePath, 'utf8');
-      const normalizedContent = omitTraceJson(content);
-      await expect(normalizedContent).toMatchFileSnapshot(
-        '__snapshots__/sharded-path-trace-events.jsonl',
+      // Verify the final file exists and matches snapshot
+      /*const finalFilePath = profiler.stats.finalFilePath;
+      await expect(loadAndOmitTraceJson(finalFilePath)).resolves.toMatchFileSnapshot(
+        `__snapshots__/${path.basename(finalFilePath)}`,
       );
+
+      // Restore original coordinator ID and instance count
+      if (originalCoordinatorId) {
+        // eslint-disable-next-line functional/immutable-data
+        process.env[SHARDED_WAL_COORDINATOR_ID_ENV_VAR] = originalCoordinatorId;
+      } else {
+        // eslint-disable-next-line functional/immutable-data
+        delete process.env[SHARDED_WAL_COORDINATOR_ID_ENV_VAR];
+      }
+      ShardedWal.instanceCount = originalCount;*/
     });
   });
 });

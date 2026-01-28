@@ -213,9 +213,13 @@ export class ShardedWal<T extends object = object> {
    *
    * @returns The filename for the final merged output file
    */
-  getFinalFileName() {
+  getFinalFilePath() {
+    const groupIdDir = path.join(this.#dir, this.groupId);
     const { baseName, finalExtension } = this.#format;
-    return `${baseName}.${this.groupId}${finalExtension}`;
+    return path.join(
+      groupIdDir,
+      `${baseName}.${this.groupId}${finalExtension}`,
+    );
   }
 
   shard(shardId: string = getShardId()) {
@@ -284,8 +288,10 @@ export class ShardedWal<T extends object = object> {
     const groupIdDir = path.join(this.#dir, this.groupId);
     ensureDirectoryExistsSync(groupIdDir);
 
-    const out = path.join(groupIdDir, this.getFinalFileName());
-    fs.writeFileSync(out, this.#format.finalizer(recordsToFinalize, opt));
+    fs.writeFileSync(
+      this.getFinalFilePath(),
+      this.#format.finalizer(recordsToFinalize, opt),
+    );
 
     this.#state = 'finalized';
   }
@@ -316,6 +322,19 @@ export class ShardedWal<T extends object = object> {
     ensureDirectoryRemoveSync(this.#dir);
 
     this.#state = 'cleaned';
+  }
+
+  getStats() {
+    return {
+      state: this.#state,
+      groupId: this.groupId,
+      shardCount: this.shardFiles().length,
+      isFinalized: this.isFinalized(),
+      isCleaned: this.isCleaned(),
+      finalFilePath: this.getFinalFilePath(),
+      shardFileCount: this.shardFiles().length,
+      shardFiles: this.shardFiles(),
+    };
   }
 
   finalizeIfCoordinator(opt?: Record<string, unknown>) {

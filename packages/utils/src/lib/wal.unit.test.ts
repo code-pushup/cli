@@ -265,7 +265,8 @@ describe('WriteAheadLogFile', () => {
       expect(consoleLogSpy).toHaveBeenCalledWith(
         'Found invalid entries during WAL repack',
       );
-      expect(read('/test/a.log')).toBe('ok\nbad\n');
+      // Repack filters out invalid entries, so only valid records remain
+      expect(read('/test/a.log')).toBe('ok\n');
       consoleLogSpy.mockRestore();
     });
 

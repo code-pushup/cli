@@ -26,7 +26,7 @@ describe('WriteAheadLogFile Integration', () => {
 
   it('should perform complete write/recover cycle', () => {
     const filePath = path.join(testDir, 'test.log');
-    walFile = new WriteAheadLogFile({ file: filePath });
+    walFile = new WriteAheadLogFile({ file: filePath, codec: stringCodec() });
 
     walFile.open();
     walFile.append('record1');
@@ -41,7 +41,7 @@ describe('WriteAheadLogFile Integration', () => {
 
   it('should handle multiple append operations with recovery', () => {
     const filePath = path.join(testDir, 'multi.log');
-    walFile = new WriteAheadLogFile({ file: filePath });
+    walFile = new WriteAheadLogFile({ file: filePath, codec: stringCodec() });
 
     walFile.open();
     for (let i = 1; i <= 10; i++) {
@@ -57,7 +57,7 @@ describe('WriteAheadLogFile Integration', () => {
 
   it('should recover from file with partial write', () => {
     const filePath = path.join(testDir, 'partial.log');
-    walFile = new WriteAheadLogFile({ file: filePath });
+    walFile = new WriteAheadLogFile({ file: filePath, codec: stringCodec() });
 
     walFile.open();
     walFile.append('complete1');
@@ -123,7 +123,7 @@ describe('WriteAheadLogFile Integration', () => {
 
   it('should maintain file state across operations', () => {
     const filePath = path.join(testDir, 'state.log');
-    walFile = new WriteAheadLogFile({ file: filePath });
+    walFile = new WriteAheadLogFile({ file: filePath, codec: stringCodec() });
 
     expect(walFile.isClosed()).toBeTrue();
     expect(walFile.getStats().fileExists).toBeFalse();
@@ -133,6 +133,9 @@ describe('WriteAheadLogFile Integration', () => {
 
     walFile.append('test');
     walFile.close();
+
+    // Recover to populate lastRecovery state
+    walFile.recover();
 
     const stats = walFile.getStats();
     expect(stats.fileExists).toBeTrue();

@@ -237,9 +237,8 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
       // eslint-disable-next-line no-console
       console.log('Found invalid entries during WAL repack');
     }
-    const recordsToWrite = hasInvalidEntries
-      ? (r.records as T[])
-      : filterValidRecords(r.records);
+    // Always filter out invalid entries when repacking
+    const recordsToWrite = filterValidRecords(r.records);
     ensureDirectoryExistsSync(path.dirname(out));
     fs.writeFileSync(out, `${recordsToWrite.map(this.#encode).join('\n')}\n`);
   }
@@ -287,7 +286,7 @@ export const stringCodec = <T extends object = object>(): Codec<T> => ({
     try {
       return JSON.parse(v) as T;
     } catch {
-      return v as T;
+      return v as unknown as T;
     }
   },
 });

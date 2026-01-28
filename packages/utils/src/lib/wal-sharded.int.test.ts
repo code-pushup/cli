@@ -41,6 +41,7 @@ describe('ShardedWal Integration', () => {
         finalizer: records => `${JSON.stringify(records)}\n`,
       },
       coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+      groupId: 'create-finalize',
     });
 
     const shard1 = shardedWal.shard('test-shard-1');
@@ -78,6 +79,7 @@ describe('ShardedWal Integration', () => {
         finalizer: records => `${JSON.stringify(records)}\n`,
       },
       coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+      groupId: 'merge-shards',
     });
 
     // Create multiple shards
@@ -121,6 +123,7 @@ describe('ShardedWal Integration', () => {
         finalizer: records => `${JSON.stringify(records)}\n`,
       },
       coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+      groupId: 'invalid-entries',
     });
 
     const shard = shardedWal.shard('test-shard');
@@ -155,6 +158,7 @@ describe('ShardedWal Integration', () => {
         finalizer: records => `${JSON.stringify(records)}\n`,
       },
       coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+      groupId: 'cleanup-test',
     });
 
     const shard1 = shardedWal.shard('shard-1');
@@ -199,6 +203,7 @@ describe('ShardedWal Integration', () => {
           `${JSON.stringify({ records, metadata: opt })}\n`,
       },
       coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+      groupId: 'custom-finalizer',
     });
 
     const shard = shardedWal.shard('custom-shard');
@@ -232,6 +237,7 @@ describe('ShardedWal Integration', () => {
         finalizer: records => `${JSON.stringify(records)}\n`,
       },
       coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+      groupId: 'empty-shards',
     });
 
     // Create group directory but no shards

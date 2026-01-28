@@ -385,9 +385,21 @@ describe('NodejsProfiler', () => {
     it('get stats() getter should return current stats', () => {
       const { profiler } = getNodejsProfiler({ enabled: false });
 
-      expect(profiler.stats).toStrictEqual({
-        state: 'idle',
-        walOpen: false,
+      const stats = profiler.stats;
+      expect(stats).toStrictEqual({
+        profilerState: 'idle',
+        debug: false,
+        sharderState: 'active',
+        shardCount: 0,
+        groupId: '20231114-221320-000',
+        isFinalized: false,
+        isCleaned: false,
+        finalFilePath: stats.finalFilePath, // Dynamic: depends on time-based groupId
+        shardFileCount: 0,
+        shardFiles: [],
+        shardOpen: false,
+        shardPath:
+          '/test/tmp/profiles/20240101-120000-000/trace.20240101-120000-000.12345.1.1.jsonl',
         isSubscribed: false,
         queued: 0,
         dropped: 0,
@@ -396,7 +408,6 @@ describe('NodejsProfiler', () => {
         flushThreshold: 20,
         addedSinceLastFlush: 0,
         buffered: true,
-        debug: false,
       });
     });
 

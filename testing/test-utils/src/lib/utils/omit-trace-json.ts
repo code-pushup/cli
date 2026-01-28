@@ -1,3 +1,5 @@
+import * as fs from 'node:fs/promises';
+
 /**
  * Normalizes trace JSONL files for deterministic snapshot testing.
  *
@@ -14,37 +16,20 @@
  * @param baseTimestampUs - Base timestamp in microseconds to start incrementing from (default: 1_700_000_005_000_000)
  * @returns Normalized JSONL string with deterministic pid, tid, and ts values
  */
-export function omitTraceJson(
-  jsonlContent: string | object,
+export async function loadAndOmitTraceJson(
+  filePath: string,
   baseTimestampUs = 1_700_000_005_000_000,
-): string {
-  if (typeof jsonlContent !== 'string') {
-    const eventsArray = Array.isArray(jsonlContent)
-      ? jsonlContent
-      : [jsonlContent];
-    if (eventsArray.length === 0) {
-      return '';
-    }
-    const events = eventsArray as TraceEvent[];
-    return normalizeAndFormatEvents(events, baseTimestampUs);
-  }
-
-  // Handle string input (JSONL format)
-  const trimmedContent = jsonlContent.trim();
-  if (!trimmedContent) {
-    return jsonlContent;
-  }
-
+) {
+  const stringContent = (await fs.readFile(filePath)).toString();
   // Parse all events from JSONL
-  const events = trimmedContent
+  const events = stringContent
     .split('\n')
     .filter(Boolean)
-    .map(line => JSON.parse(line) as TraceEvent);
+    .map((line: string) => JSON.parse(line) as TraceEvent);
 
   if (events.length === 0) {
-    return jsonlContent;
+    return stringContent;
   }
-
   return normalizeAndFormatEvents(events, baseTimestampUs);
 }
 
