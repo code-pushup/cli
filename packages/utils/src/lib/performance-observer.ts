@@ -122,14 +122,6 @@ export type PerformanceObserverOptions<T> = {
    * @default DEFAULT_MAX_QUEUE_SIZE (10000)
    */
   maxQueueSize?: number;
-
-  /**
-   * Name of the environment variable to check for debug mode.
-   * When the env var is set to 'true', encode failures create performance marks for debugging.
-   *
-   * @default 'CP_PROFILER_DEBUG'
-   */
-  debugEnvVar?: string;
 };
 
 /**
@@ -151,7 +143,7 @@ export type PerformanceObserverOptions<T> = {
  *   - Queue cleared after successful batch writes
  *
  * - Item Disposition Scenarios 💥
- *   - **Encode Failure**: ❌ Items lost when `encode()` throws. Creates perf mark if debug env var (specified by `debugEnvVar`) is set to 'true'.
+ *   - **Encode Failure**: ❌ Items lost when `encode()` throws. Creates perf mark if 'DEBUG' env var is set to 'true'.
  *   - **Sink Write Failure**: 💾 Items stay in queue when sink write fails during flush
  *   - **Sink Closed**: 💾 Items stay in queue when sink is closed during flush
  *   - **Proactive Flush Throws**: 💾 Items stay in queue when `flush()` throws during threshold check
@@ -210,7 +202,6 @@ export class PerformanceObserverSink<T> {
       captureBufferedEntries,
       flushThreshold = DEFAULT_FLUSH_THRESHOLD,
       maxQueueSize = DEFAULT_MAX_QUEUE_SIZE,
-      debugEnvVar = PROFILER_DEBUG_ENV_VAR,
     } = options;
     this.#encodePerfEntry = encodePerfEntry;
     this.#sink = sink;
@@ -218,14 +209,13 @@ export class PerformanceObserverSink<T> {
     this.#maxQueueSize = maxQueueSize;
     validateFlushThreshold(flushThreshold, this.#maxQueueSize);
     this.#flushThreshold = flushThreshold;
-    this.#debug = isEnvVarEnabled(debugEnvVar);
+    this.#debug = isEnvVarEnabled(PROFILER_DEBUG_ENV_VAR);
   }
 
   /**
    * Returns whether debug mode is enabled for encode failures.
    *
-   * Debug mode is determined by the environment variable specified by `debugEnvVar`
-   * (defaults to 'CP_PROFILER_DEBUG'). When enabled, encode failures create
+   * Debug mode is determined by the environment variable 'DEBUG'
    * performance marks for debugging.
    *
    * @returns true if debug mode is enabled, false otherwise

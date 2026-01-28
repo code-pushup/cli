@@ -275,6 +275,7 @@ const saved = profiler.measure('save-user', () => saveToDb(user), {
 - **Controllable over env vars**: Easily enable or disable profiling through environment variables.
 
 This profiler extends all options and API from Profiler with automatic process exit handling for buffered performance data.
+
 The NodeJSProfiler automatically subscribes to performance observation and installs exit handlers that flush buffered data on process termination (signals, fatal errors, or normal exit).
 
 ### Exit Handlers
@@ -282,6 +283,24 @@ The NodeJSProfiler automatically subscribes to performance observation and insta
 The profiler automatically subscribes to process events (`exit`, `SIGINT`, `SIGTERM`, `SIGQUIT`, `uncaughtException`, `unhandledRejection`) during construction. When any of these occur, the handlers call `close()` to ensure buffered data is flushed.
 
 The `close()` method is idempotent and safe to call from exit handlers. It unsubscribes from exit handlers, closes the WAL sink, and unsubscribes from the performance observer, ensuring all buffered performance data is written before process termination.
+
+### Profiler Lifecycle States
+
+The NodeJSProfiler follows a state machine with three distinct states:
+
+**State Machine Flow**
+
+```
+active → finalized → cleaned
+  ↓         ↓
+  └─────────┘ (no transitions back)
+```
+
+- **active**: Profiler is running and collecting performance measurements
+- **finalized**: Profiler has been closed and all buffered data has been flushed to disk
+- **cleaned**: Profiler resources have been fully released
+
+Once a state transition occurs (e.g., `active` → `finalized`), there are no transitions back to previous states. This ensures data integrity and prevents resource leaks.
 
 ## Configuration
 
@@ -295,12 +314,16 @@ new NodejsProfiler<DomainEvents, Tracks>(options: NodejsProfilerOptions<DomainEv
 
 **Options:**
 
-| Property                 | Type                                    | Default    | Description                                                                     |
-| ------------------------ | --------------------------------------- | ---------- | ------------------------------------------------------------------------------- |
-| `encodePerfEntry`        | `PerformanceEntryEncoder<DomainEvents>` | _required_ | Function that encodes raw PerformanceEntry objects into domain-specific types   |
-| `captureBufferedEntries` | `boolean`                               | `true`     | Whether to capture performance entries that occurred before observation started |
-| `flushThreshold`         | `number`                                | `20`       | Threshold for triggering queue flushes based on queue length                    |
-| `maxQueueSize`           | `number`                                | `10_000`   | Maximum number of items allowed in the queue before new entries are dropped     |
+| Property                 | Type                                    | Default          | Description                                                                           |
+| ------------------------ | --------------------------------------- | ---------------- | ------------------------------------------------------------------------------------- |
+| `format`                 | `ProfilerFormat<DomainEvents>`          | _required_       | WAL format configuration for sharded write-ahead logging, including `encodePerfEntry` |
+| `measureName`            | `string`                                | _auto-generated_ | Optional folder name for sharding. If not provided, a new group ID will be generated  |
+| `outDir`                 | `string`                                | `'tmp/profiles'` | Output directory for WAL shards and final files                                       |
+| `outBaseName`            | `string`                                | _optional_       | Override the base name for WAL files (overrides format.baseName)                      |
+| `format.encodePerfEntry` | `PerformanceEntryEncoder<DomainEvents>` | _required_       | Function that encodes raw PerformanceEntry objects into domain-specific types         |
+| `captureBufferedEntries` | `boolean`                               | `true`           | Whether to capture performance entries that occurred before observation started       |
+| `flushThreshold`         | `number`                                | `20`             | Threshold for triggering queue flushes based on queue length                          |
+| `maxQueueSize`           | `number`                                | `10_000`         | Maximum number of items allowed in the queue before new entries are dropped           |
 
 ## API Methods
 

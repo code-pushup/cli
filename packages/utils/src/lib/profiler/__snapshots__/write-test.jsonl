@@ -1,0 +1,76 @@
+[
+  {
+    "args": {
+      "detail": {
+        "devtools": {
+          "dataType": "track-entry",
+          "track": "int-test-track",
+        },
+      },
+    },
+    "cat": "blink.user_timing",
+    "name": "test-operation:start",
+    "ph": "i",
+    "pid": 10001,
+    "tid": 1,
+    "ts": 1700000005000000,
+  },
+  {
+    "args": {
+      "data": {
+        "detail": {
+          "devtools": {
+            "dataType": "track-entry",
+            "track": "int-test-track",
+          },
+        },
+      },
+    },
+    "cat": "blink.user_timing",
+    "id2": {
+      "local": "0x1",
+    },
+    "name": "test-operation",
+    "ph": "b",
+    "pid": 10001,
+    "tid": 1,
+    "ts": 1700000005000001,
+  },
+  {
+    "args": {
+      "data": {
+        "detail": {
+          "devtools": {
+            "dataType": "track-entry",
+            "track": "int-test-track",
+          },
+        },
+      },
+    },
+    "cat": "blink.user_timing",
+    "id2": {
+      "local": "0x1",
+    },
+    "name": "test-operation",
+    "ph": "e",
+    "pid": 10001,
+    "tid": 1,
+    "ts": 1700000005000002,
+  },
+  {
+    "args": {
+      "detail": {
+        "devtools": {
+          "dataType": "track-entry",
+          "track": "int-test-track",
+        },
+      },
+    },
+    "cat": "blink.user_timing",
+    "name": "test-operation:end",
+    "ph": "i",
+    "pid": 10001,
+    "tid": 1,
+    "ts": 1700000005000003,
+  },
+]

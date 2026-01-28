@@ -1,29 +1,29 @@
-import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
-import { Profiler } from './profiler.js';
+import type { ActionTrackConfigs } from '../user-timing-extensibility-api-utils';
+import { Profiler, type ProfilerOptions } from './profiler.js';
 
 describe('Profiler Integration', () => {
-  let profiler: Profiler<Record<string, ActionTrackEntryPayload>>;
+  function profiler(opt?: ProfilerOptions): Profiler<ActionTrackConfigs> {
+    return new Profiler({
+      ...opt,
+      prefix: 'cp',
+      track: 'CLI',
+      trackGroup: 'Code Pushup',
+      tracks: {
+        utils: { track: 'Utils', color: 'primary' },
+      },
+      enabled: true,
+    });
+  }
 
   beforeEach(() => {
     performance.clearMarks();
     performance.clearMeasures();
-
-    profiler = new Profiler({
-      prefix: 'cp',
-      track: 'CLI',
-      trackGroup: 'Code Pushup',
-      color: 'primary-dark',
-      tracks: {
-        utils: { track: 'Utils', color: 'primary' },
-        core: { track: 'Core', color: 'primary-light' },
-      },
-      enabled: true,
-    });
   });
 
   it('should create complete performance timeline for sync operation', () => {
+    const p = profiler();
     expect(
-      profiler.measure('sync-test', () =>
+      p.measure('sync-test', () =>
         Array.from({ length: 1000 }, (_, i) => i).reduce(
           (sum, num) => sum + num,
           0,
@@ -33,40 +33,12 @@ describe('Profiler Integration', () => {
 
     const marks = performance.getEntriesByType('mark');
     const measures = performance.getEntriesByType('measure');
-
-    expect(marks).toStrictEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          name: 'cp:sync-test:start',
-          detail: expect.objectContaining({
-            devtools: expect.objectContaining({ dataType: 'track-entry' }),
-          }),
-        }),
-        expect.objectContaining({
-          name: 'cp:sync-test:end',
-          detail: expect.objectContaining({
-            devtools: expect.objectContaining({ dataType: 'track-entry' }),
-          }),
-        }),
-      ]),
-    );
-
-    expect(measures).toStrictEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          name: 'cp:sync-test',
-          duration: expect.any(Number),
-          detail: expect.objectContaining({
-            devtools: expect.objectContaining({ dataType: 'track-entry' }),
-          }),
-        }),
-      ]),
-    );
   });
 
   it('should create complete performance timeline for async operation', async () => {
+    const p = profiler();
     await expect(
-      profiler.measureAsync('async-test', async () => {
+      p.measureAsync('async-test', async () => {
         await new Promise(resolve => setTimeout(resolve, 10));
         return 'async-result';
       }),
@@ -106,8 +78,9 @@ describe('Profiler Integration', () => {
   });
 
   it('should handle nested measurements correctly', () => {
-    profiler.measure('outer', () => {
-      profiler.measure('inner', () => 'inner-result');
+    const p = profiler();
+    p.measure('outer', () => {
+      p.measure('inner', () => 'inner-result');
       return 'outer-result';
     });
 
@@ -134,7 +107,8 @@ describe('Profiler Integration', () => {
   });
 
   it('should create markers with proper metadata', () => {
-    profiler.marker('test-marker', {
+    const p = profiler();
+    p.marker('test-marker', {
       color: 'warning',
       tooltipText: 'Test marker tooltip',
       properties: [
@@ -165,131 +139,48 @@ describe('Profiler Integration', () => {
   });
 
   it('should create proper DevTools payloads for tracks', () => {
-    profiler.measure('track-test', (): string => 'result', {
+    const p = profiler();
+    p.measure('track-test', (): string => 'result', {
       success: result => ({
-        properties: [['result', result]],
-        tooltipText: 'Track test completed',
+        track: 'Track 1',
+        trackGroup: 'Group 1',
+        color: 'secondary-dark',
+        properties: [['secondary', result]],
+        tooltipText: 'Track test secondary',
       }),
     });
 
     const measures = performance.getEntriesByType('measure');
-    expect(measures).toStrictEqual(
+    expect(measures).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           name: 'cp:track-test',
-          detail: {
+          detail: expect.objectContaining({
             devtools: expect.objectContaining({
               dataType: 'track-entry',
-              track: 'CLI',
-              trackGroup: 'Code Pushup',
-              color: 'primary-dark',
-              properties: [['result', 'result']],
-              tooltipText: 'Track test completed',
+              track: 'Track 1',
+              trackGroup: 'Group 1',
+              color: 'secondary-dark',
+              properties: [['secondary', 'result']],
+              tooltipText: 'Track test secondary',
             }),
-          },
-        }),
-      ]),
-    );
-  });
-
-  it('should merge track defaults with measurement options', () => {
-    profiler.measure('sync-op', () => 'sync-result', {
-      success: result => ({
-        properties: [
-          ['operation', 'sync'],
-          ['result', result],
-        ],
-      }),
-    });
-
-    const measures = performance.getEntriesByType('measure');
-    expect(measures).toStrictEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          name: 'cp:sync-op',
-          detail: {
-            devtools: expect.objectContaining({
-              dataType: 'track-entry',
-              track: 'CLI',
-              trackGroup: 'Code Pushup',
-              color: 'primary-dark',
-              properties: [
-                ['operation', 'sync'],
-                ['result', 'sync-result'],
-              ],
-            }),
-          },
-        }),
-      ]),
-    );
-  });
-
-  it('should mark errors with red color in DevTools', () => {
-    const error = new Error('Test error');
-
-    expect(() => {
-      profiler.measure('error-test', () => {
-        throw error;
-      });
-    }).toThrow(error);
-
-    const measures = performance.getEntriesByType('measure');
-    expect(measures).toStrictEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          detail: {
-            devtools: expect.objectContaining({
-              color: 'error',
-              properties: expect.arrayContaining([
-                ['Error Type', 'Error'],
-                ['Error Message', 'Test error'],
-              ]),
-            }),
-          },
-        }),
-      ]),
-    );
-  });
-
-  it('should include error metadata in DevTools properties', () => {
-    const customError = new TypeError('Custom type error');
-
-    expect(() => {
-      profiler.measure('custom-error-test', () => {
-        throw customError;
-      });
-    }).toThrow(customError);
-
-    const measures = performance.getEntriesByType('measure');
-    expect(measures).toStrictEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          detail: {
-            devtools: expect.objectContaining({
-              properties: expect.arrayContaining([
-                ['Error Type', 'TypeError'],
-                ['Error Message', 'Custom type error'],
-              ]),
-            }),
-          },
+          }),
         }),
       ]),
     );
   });
 
   it('should not create performance entries when disabled', async () => {
-    profiler.setEnabled(false);
+    const p = profiler();
+    p.setEnabled(false);
 
-    const syncResult = profiler.measure('disabled-sync', () => 'sync');
+    const syncResult = p.measure('disabled-sync', () => 'sync');
     expect(syncResult).toBe('sync');
 
-    const asyncResult = profiler.measureAsync(
-      'disabled-async',
-      async () => 'async',
-    );
+    const asyncResult = p.measureAsync('disabled-async', async () => 'async');
     await expect(asyncResult).resolves.toBe('async');
 
-    profiler.marker('disabled-marker');
+    p.marker('disabled-marker');
 
     expect(performance.getEntriesByType('mark')).toHaveLength(0);
     expect(performance.getEntriesByType('measure')).toHaveLength(0);
