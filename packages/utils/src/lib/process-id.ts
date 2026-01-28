@@ -16,7 +16,7 @@ export interface Counter {
 /**
  * Base regex pattern for time ID format: yyyymmdd-hhmmss-ms
  */
-const TIME_ID_BASE = /\d{8}-\d{6}-\d{3}/;
+export const TIME_ID_BASE = /\d{8}-\d{6}-\d{3}/;
 
 /**
  * Regex patterns for validating ID formats used in Write-Ahead Logging (WAL) system.

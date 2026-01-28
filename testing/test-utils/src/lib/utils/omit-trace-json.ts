@@ -1,6 +1,29 @@
 import * as fs from 'node:fs/promises';
 
 /**
+ * Trace event structure with pid, tid, ts, and id2.local fields.
+ */
+type TraceEventRaw = {
+  args: {
+    data?: { detail?: string };
+    detail?: string;
+    [key: string]: unknown;
+  };
+};
+type TraceEvent = {
+  pid: number | string;
+  tid: number | string;
+  ts: number;
+  id2?: { local: string };
+  args: {
+    data?: { detail?: object };
+    detail?: object;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+};
+
+/**
  * Normalizes trace JSONL files for deterministic snapshot testing.
  *
  * Replaces variable values (pid, tid, ts) with deterministic incremental values
@@ -12,9 +35,9 @@ import * as fs from 'node:fs/promises';
  *   then mapping to incremental values starting from mocked epoch clock base,
  *   while preserving the original order of events in the output.
  *
- * @param jsonlContent - JSONL string content (one JSON object per line) or parsed JSON object/array
+ * @param filePath - Path to JSONL file to load and normalize
  * @param baseTimestampUs - Base timestamp in microseconds to start incrementing from (default: 1_700_000_005_000_000)
- * @returns Normalized JSONL string with deterministic pid, tid, and ts values
+ * @returns Normalized array of trace event objects with deterministic pid, tid, and ts values
  */
 export async function loadAndOmitTraceJson(
   filePath: string,
@@ -25,23 +48,65 @@ export async function loadAndOmitTraceJson(
   const events = stringContent
     .split('\n')
     .filter(Boolean)
-    .map((line: string) => JSON.parse(line) as TraceEvent);
+    .map((line: string) => JSON.parse(line))
+    .map((row: TraceEventRaw) => {
+      const args = row.args || {};
+      const processedArgs: {
+        data?: { detail?: object; [key: string]: unknown };
+        detail?: object;
+        [key: string]: unknown;
+      } = {};
 
-  if (events.length === 0) {
-    return stringContent;
-  }
+      // Copy all properties except detail and data
+      Object.keys(args).forEach(key => {
+        if (key !== 'detail' && key !== 'data') {
+          processedArgs[key] = args[key];
+        }
+      });
+
+      // Parse detail if it exists
+      if (args.detail != null && typeof args.detail === 'string') {
+        processedArgs.detail = JSON.parse(args.detail);
+      }
+
+      // Parse data.detail if data exists and has detail
+      if (args.data != null && typeof args.data === 'object') {
+        const processedData: { detail?: object; [key: string]: unknown } = {};
+        const dataObj = args.data as Record<string, unknown>;
+
+        // Copy all properties from data except detail
+        Object.keys(dataObj).forEach(key => {
+          if (key !== 'detail') {
+            processedData[key] = dataObj[key];
+          }
+        });
+
+        // Parse detail if it exists
+        if (args.data.detail != null && typeof args.data.detail === 'string') {
+          processedData.detail = JSON.parse(args.data.detail);
+        }
+
+        processedArgs.data = processedData;
+      }
+
+      return {
+        ...row,
+        args: processedArgs,
+      } as TraceEvent;
+    });
+
   return normalizeAndFormatEvents(events, baseTimestampUs);
 }
 
 /**
- * Normalizes trace events and formats them as JSONL.
+ * Normalizes trace events and returns parsed objects.
  */
 function normalizeAndFormatEvents(
   events: TraceEvent[],
   baseTimestampUs: number,
-): string {
+): TraceEvent[] {
   if (events.length === 0) {
-    return '';
+    return [];
   }
 
   // Collect unique pid and tid values
@@ -173,20 +238,5 @@ function normalizeAndFormatEvents(
     };
   });
 
-  // Convert back to JSONL format
-  return `${normalizedEvents.map(event => JSON.stringify(event)).join('\n')}\n`;
+  return normalizedEvents;
 }
-
-/**
- * Trace event structure with pid, tid, ts, and id2.local fields.
- */
-type TraceEvent = {
-  pid?: number;
-  tid?: number;
-  ts?: number;
-  id2?: {
-    local?: string;
-    [key: string]: unknown;
-  };
-  [key: string]: unknown;
-};

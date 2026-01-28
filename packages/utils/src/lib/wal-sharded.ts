@@ -80,7 +80,7 @@ export class ShardedWal<T extends object = object> {
   readonly groupId = getUniqueTimeId();
   readonly #format: WalFormat<T>;
   readonly #dir: string = process.cwd();
-  readonly #isCoordinator: boolean;
+  readonly #coordinatorIdEnvVar: string;
   #state: 'active' | 'finalized' | 'cleaned' = 'active';
 
   /**
@@ -132,10 +132,16 @@ export class ShardedWal<T extends object = object> {
       this.#dir = dir;
     }
     this.#format = parseWalFormat<T>(format);
-    this.#isCoordinator = ShardedWal.isCoordinatorProcess(
-      coordinatorIdEnvVar,
-      this.#id,
-    );
+    this.#coordinatorIdEnvVar = coordinatorIdEnvVar;
+  }
+
+  /**
+   * Gets the unique instance ID for this ShardedWal.
+   *
+   * @returns The unique instance ID
+   */
+  get id(): string {
+    return this.#id;
   }
 
   /**
@@ -143,11 +149,23 @@ export class ShardedWal<T extends object = object> {
    *
    * Coordinator status is determined from the coordinatorIdEnvVar environment variable.
    * The coordinator handles finalization and cleanup of shard files.
+   * Checks dynamically to allow coordinator to be set after construction.
    *
    * @returns true if this instance is the coordinator, false otherwise
    */
   isCoordinator(): boolean {
-    return this.#isCoordinator;
+    return ShardedWal.isCoordinatorProcess(this.#coordinatorIdEnvVar, this.#id);
+  }
+
+  /**
+   * Ensures this instance is set as the coordinator if no coordinator is currently set.
+   * This method is idempotent - if a coordinator is already set (even if it's not this instance),
+   * it will not change the coordinator.
+   *
+   * This should be called after construction to ensure the first instance becomes the coordinator.
+   */
+  ensureCoordinator(): void {
+    ShardedWal.setCoordinatorProcess(this.#coordinatorIdEnvVar, this.#id);
   }
 
   /**
@@ -302,7 +320,7 @@ export class ShardedWal<T extends object = object> {
    * Idempotent: returns early if already cleaned.
    */
   cleanup() {
-    if (!this.#isCoordinator) {
+    if (!this.isCoordinator()) {
       throw new Error('cleanup() can only be called by coordinator');
     }
 
@@ -329,6 +347,7 @@ export class ShardedWal<T extends object = object> {
       state: this.#state,
       groupId: this.groupId,
       shardCount: this.shardFiles().length,
+      isCoordinator: this.isCoordinator(),
       isFinalized: this.isFinalized(),
       isCleaned: this.isCleaned(),
       finalFilePath: this.getFinalFilePath(),

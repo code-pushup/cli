@@ -5,6 +5,7 @@ import {
   type PerformanceObserverOptions,
   PerformanceObserverSink,
 } from '../performance-observer.js';
+import { getUniqueInstanceId } from '../process-id.js';
 import { objectToEntries } from '../transform.js';
 import { errorToMarkerPayload } from '../user-timing-extensibility-api-utils.js';
 import type {
@@ -101,7 +102,6 @@ export class NodejsProfiler<
   #performanceObserverSink: PerformanceObserverSink<DomainEvents>;
   #state: 'idle' | 'running' | 'closed' = 'idle';
   #unsubscribeExitHandlers: (() => void) | undefined;
-  #filename?: string;
   #outDir?: string;
 
   /**
@@ -121,7 +121,6 @@ export class NodejsProfiler<
     // Pick ProfilerPersistOptions
     const {
       format: profilerFormat,
-      filename,
       baseName,
       measureName,
       outDir,
@@ -133,7 +132,6 @@ export class NodejsProfiler<
     super(profilerOptions);
 
     const { encodePerfEntry, ...format } = profilerFormat;
-    this.#filename = filename;
     this.#outDir = outDir ?? 'tmp/profiles';
 
     // Merge baseName if provided
@@ -145,6 +143,7 @@ export class NodejsProfiler<
       coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: options.measureName,
     });
+    this.#sharder.ensureCoordinator();
     this.#shard = this.#sharder.shard();
     this.#performanceObserverSink = new PerformanceObserverSink({
       sink: this.#shard,
@@ -205,8 +204,8 @@ export class NodejsProfiler<
    * State transitions enforce lifecycle invariants:
    * - `idle -> running`: Enables profiling, opens sink, and subscribes to performance observer
    * - `running -> idle`: Disables profiling, unsubscribes, and closes sink (sink will be reopened on re-enable)
-   * - `running -> closed`: Disables profiling, unsubscribes, and closes sink (irreversible)
-   * - `idle -> closed`: Closes sink if it was opened (irreversible)
+   * - `running -> closed`: Disables profiling, unsubscribes, closes sink, and finalizes shards (irreversible)
+   * - `idle -> closed`: Closes sink if it was opened and finalizes shards (irreversible)
    *
    * @param next - The target state to transition to
    * @throws {Error} If attempting to transition from 'closed' state or invalid transition
@@ -223,12 +222,22 @@ export class NodejsProfiler<
 
     switch (transition) {
       case 'idle->running':
+        // Set this profiler as coordinator if no coordinator is set yet
+        ShardedWal.setCoordinatorProcess(
+          SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+          this.#sharder.id,
+        );
         super.setEnabled(true);
         this.#shard.open();
         this.#performanceObserverSink.subscribe();
         break;
 
       case 'running->idle':
+        super.setEnabled(false);
+        this.#performanceObserverSink.unsubscribe();
+        this.#shard.close();
+        break;
+
       case 'running->closed':
         super.setEnabled(false);
         this.#performanceObserverSink.unsubscribe();
@@ -238,7 +247,10 @@ export class NodejsProfiler<
 
       case 'idle->closed':
         // Shard may have been opened before, close it
+        super.setEnabled(false);
+        this.#performanceObserverSink.unsubscribe();
         this.#shard.close();
+        this.#sharder.finalizeIfCoordinator();
         break;
 
       default:
@@ -308,13 +320,5 @@ export class NodejsProfiler<
       return; // No-op if closed
     }
     this.#performanceObserverSink.flush();
-  }
-
-  /** @returns The file path of the WriteAheadLogFile sink */
-  get filePath(): string {
-    if (this.#filename) {
-      return this.#filename;
-    }
-    return this.#shard.getPath();
   }
 }
