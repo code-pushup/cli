@@ -20,6 +20,7 @@ import {
 } from './packages/plugin-lighthouse/src/index.js';
 import typescriptPlugin, {
   getCategories,
+  tsconfigFromAllNxProjects,
 } from './packages/plugin-typescript/src/index.js';
 
 export function configureUpload(projectName: string = 'workspace'): CoreConfig {
@@ -150,10 +151,17 @@ export async function configureJsPackagesPlugin(): Promise<CoreConfig> {
   };
 }
 
-export function configureTypescriptPlugin(projectName?: string): CoreConfig {
+export async function configureTypescriptPlugin(
+  projectName?: string,
+): Promise<CoreConfig> {
   const tsconfig = projectName
     ? `packages/${projectName}/tsconfig.lib.json`
-    : 'tsconfig.code-pushup.json';
+    : await tsconfigFromAllNxProjects({
+        exclude: [
+          'test-fixtures', // Intentionally incomplete tsconfigs
+          'models', // Uses ts-patch transformer plugin
+        ],
+      });
   return {
     plugins: [typescriptPlugin({ tsconfig })],
     categories: getCategories(),

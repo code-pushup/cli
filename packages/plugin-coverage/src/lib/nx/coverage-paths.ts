@@ -9,31 +9,13 @@ import type { VitestExecutorOptions } from '@nx/vite/executors';
 import path from 'node:path';
 import {
   importModule,
+  loadNxProjectGraph,
   logger,
   pluralize,
   pluralizeToken,
-  stringifyError,
 } from '@code-pushup/utils';
 import type { CoverageResult } from '../config.js';
 import { formatMetaLog } from '../format.js';
-
-/**
- * Resolves the cached project graph for the current Nx workspace.
- * First tries to read cache and if not possible, go for the async creation.
- */
-async function resolveCachedProjectGraph() {
-  const { readCachedProjectGraph, createProjectGraphAsync } = await import(
-    '@nx/devkit'
-  );
-  try {
-    return readCachedProjectGraph();
-  } catch (error) {
-    logger.warn(
-      `Could not read cached project graph, falling back to async creation - ${stringifyError(error)}`,
-    );
-    return await createProjectGraphAsync({ exitOnError: false });
-  }
-}
 
 /**
  * @param targets nx targets to be used for measuring coverage, test by default
@@ -42,7 +24,7 @@ async function resolveCachedProjectGraph() {
 export async function getNxCoveragePaths(
   targets: string[] = ['test'],
 ): Promise<CoverageResult[]> {
-  const { nodes } = await resolveCachedProjectGraph();
+  const { nodes } = await loadNxProjectGraph();
 
   const coverageResultsPerTarget = Object.fromEntries(
     await Promise.all(
