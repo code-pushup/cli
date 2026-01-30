@@ -1,0 +1,200 @@
+{
+  "displayTimeUnit": "ms",
+  "metadata": {
+    "dataOrigin": "TraceEvents",
+    "generatedAt": "2026-01-28T14:29:27.995Z",
+    "hardwareConcurrency": 1,
+    "source": "DevTools",
+    "startTime": "2026-01-28T14:29:27.995Z",
+  },
+  "traceEvents": [
+    {
+      "args": {
+        "data": {
+          "frameTreeNodeId": 1000101,
+          "frames": [
+            {
+              "frame": "FRAME0P10001T1",
+              "isInPrimaryMainFrame": true,
+              "isOutermostMainFrame": true,
+              "name": "",
+              "processId": 10001,
+              "url": "generated-trace",
+            },
+          ],
+          "persistentIds": true,
+        },
+      },
+      "cat": "devtools.timeline",
+      "name": "TracingStartedInBrowser",
+      "ph": "i",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000000,
+    },
+    {
+      "args": {},
+      "cat": "devtools.timeline",
+      "dur": 20000,
+      "name": "[trace padding start]",
+      "ph": "X",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000000,
+    },
+    {
+      "args": {
+        "detail": {
+          "devtools": {
+            "dataType": "marker",
+            "tooltipText": "set enable to true",
+          },
+        },
+      },
+      "cat": "blink.user_timing",
+      "name": "profiler-enable",
+      "ph": "i",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000002,
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "name": "sync-measure:start",
+      "ph": "i",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000003,
+    },
+    {
+      "args": {
+        "data": {
+          "detail": {
+            "devtools": {
+              "dataType": "track-entry",
+              "tooltipText": "sync measurement returned :"sync success"",
+              "track": "Buffered Track",
+              "trackGroup": "Buffered Track",
+            },
+          },
+        },
+      },
+      "cat": "blink.user_timing",
+      "id2": {
+        "local": "0x1",
+      },
+      "name": "sync-measure",
+      "ph": "b",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000004,
+    },
+    {
+      "args": {
+        "data": {
+          "detail": {
+            "devtools": {
+              "dataType": "track-entry",
+              "tooltipText": "sync measurement returned :"sync success"",
+              "track": "Buffered Track",
+              "trackGroup": "Buffered Track",
+            },
+          },
+        },
+      },
+      "cat": "blink.user_timing",
+      "id2": {
+        "local": "0x1",
+      },
+      "name": "sync-measure",
+      "ph": "e",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000005,
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "name": "sync-measure:end",
+      "ph": "i",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000006,
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "name": "async-measure:start",
+      "ph": "i",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000007,
+    },
+    {
+      "args": {
+        "data": {
+          "detail": {
+            "devtools": {
+              "dataType": "track-entry",
+              "tooltipText": "sync measurement returned :"async success"",
+              "track": "Buffered Track",
+              "trackGroup": "Buffered Track",
+            },
+          },
+        },
+      },
+      "cat": "blink.user_timing",
+      "id2": {
+        "local": "0x2",
+      },
+      "name": "async-measure",
+      "ph": "b",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000008,
+    },
+    {
+      "args": {
+        "data": {
+          "detail": {
+            "devtools": {
+              "dataType": "track-entry",
+              "tooltipText": "sync measurement returned :"async success"",
+              "track": "Buffered Track",
+              "trackGroup": "Buffered Track",
+            },
+          },
+        },
+      },
+      "cat": "blink.user_timing",
+      "id2": {
+        "local": "0x2",
+      },
+      "name": "async-measure",
+      "ph": "e",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000009,
+    },
+    {
+      "args": {},
+      "cat": "blink.user_timing",
+      "name": "async-measure:end",
+      "ph": "i",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000010,
+    },
+    {
+      "args": {},
+      "cat": "devtools.timeline",
+      "dur": 20000,
+      "name": "[trace padding end]",
+      "ph": "X",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000011,
+    },
+  ],
+}

@@ -7,7 +7,11 @@ import {
   getInstantEventTracingStartedInBrowser,
   getTraceFile,
 } from './trace-file-utils.js';
-import type { TraceEvent, UserTimingTraceEvent } from './trace-file.type.js';
+import type {
+  TraceEvent,
+  TraceEventRaw,
+  UserTimingTraceEvent,
+} from './trace-file.type.js';
 
 /** Name for the trace start margin event */
 const TRACE_START_MARGIN_NAME = '[trace padding start]';
@@ -59,7 +63,7 @@ export function generateTraceContent(
       ts: startTs,
       dur: marginDurUs,
     }),
-    ...sortedEvents,
+    ...sortedEvents.map(event => encodeTraceEvent(event) as TraceEvent),
     getCompleteEvent({
       name: TRACE_END_MARGIN_NAME,
       ts: endTs,

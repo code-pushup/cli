@@ -1,0 +1,182 @@
+[
+  {
+    "args": {
+      "detail": {
+        "devtools": {
+          "dataType": "marker",
+          "tooltipText": "set enable to true",
+        },
+      },
+    },
+    "cat": "blink.user_timing",
+    "name": "profiler-enable",
+    "ph": "i",
+    "pid": 10001,
+    "tid": 1,
+    "ts": 1700000005000000,
+  },
+  {
+    "args": {
+      "detail": {
+        "devtools": {
+          "dataType": "track-entry",
+          "track": "int-test-track",
+        },
+      },
+    },
+    "cat": "blink.user_timing",
+    "name": "write-j-jl:sync-measure:start",
+    "ph": "i",
+    "pid": 10001,
+    "tid": 1,
+    "ts": 1700000005000001,
+  },
+  {
+    "args": {
+      "data": {
+        "detail": {
+          "devtools": {
+            "dataType": "track-entry",
+            "track": "int-test-track",
+          },
+        },
+      },
+    },
+    "cat": "blink.user_timing",
+    "id2": {
+      "local": "0x1",
+    },
+    "name": "write-j-jl:sync-measure",
+    "ph": "b",
+    "pid": 10001,
+    "tid": 1,
+    "ts": 1700000005000002,
+  },
+  {
+    "args": {
+      "data": {
+        "detail": {
+          "devtools": {
+            "dataType": "track-entry",
+            "track": "int-test-track",
+          },
+        },
+      },
+    },
+    "cat": "blink.user_timing",
+    "id2": {
+      "local": "0x1",
+    },
+    "name": "write-j-jl:sync-measure",
+    "ph": "e",
+    "pid": 10001,
+    "tid": 1,
+    "ts": 1700000005000003,
+  },
+  {
+    "args": {
+      "detail": {
+        "devtools": {
+          "dataType": "track-entry",
+          "track": "int-test-track",
+        },
+      },
+    },
+    "cat": "blink.user_timing",
+    "name": "write-j-jl:sync-measure:end",
+    "ph": "i",
+    "pid": 10001,
+    "tid": 1,
+    "ts": 1700000005000004,
+  },
+  {
+    "args": {
+      "detail": {
+        "devtools": {
+          "dataType": "track-entry",
+          "track": "int-test-track",
+        },
+      },
+    },
+    "cat": "blink.user_timing",
+    "name": "write-j-jl:async-measure:start",
+    "ph": "i",
+    "pid": 10001,
+    "tid": 1,
+    "ts": 1700000005000005,
+  },
+  {
+    "args": {
+      "data": {
+        "detail": {
+          "devtools": {
+            "dataType": "track-entry",
+            "track": "int-test-track",
+          },
+        },
+      },
+    },
+    "cat": "blink.user_timing",
+    "id2": {
+      "local": "0x2",
+    },
+    "name": "write-j-jl:async-measure",
+    "ph": "b",
+    "pid": 10001,
+    "tid": 1,
+    "ts": 1700000005000006,
+  },
+  {
+    "args": {
+      "data": {
+        "detail": {
+          "devtools": {
+            "dataType": "track-entry",
+            "track": "int-test-track",
+          },
+        },
+      },
+    },
+    "cat": "blink.user_timing",
+    "id2": {
+      "local": "0x2",
+    },
+    "name": "write-j-jl:async-measure",
+    "ph": "e",
+    "pid": 10001,
+    "tid": 1,
+    "ts": 1700000005000007,
+  },
+  {
+    "args": {
+      "detail": {
+        "devtools": {
+          "dataType": "track-entry",
+          "track": "int-test-track",
+        },
+      },
+    },
+    "cat": "blink.user_timing",
+    "name": "write-j-jl:async-measure:end",
+    "ph": "i",
+    "pid": 10001,
+    "tid": 1,
+    "ts": 1700000005000008,
+  },
+  {
+    "args": {
+      "detail": {
+        "devtools": {
+          "dataType": "marker",
+          "tooltipText": "set enable to false",
+        },
+      },
+    },
+    "cat": "blink.user_timing",
+    "name": "profiler-enable",
+    "ph": "i",
+    "pid": 10001,
+    "tid": 1,
+    "ts": 1700000005000009,
+  },
+]

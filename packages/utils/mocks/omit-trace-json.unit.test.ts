@@ -1,4 +1,4 @@
-import { omitTraceJson } from './omit-trace-json.js';
+import { loadAndOmitTraceJson } from './omit-trace-json.js';
 
 describe('omitTraceJson', () => {
   it('should return empty string unchanged', () => {

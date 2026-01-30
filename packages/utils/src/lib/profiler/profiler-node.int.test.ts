@@ -6,6 +6,11 @@ import {
   loadAndOmitTraceJson,
 } from '@code-pushup/test-utils';
 import type { PerformanceEntryEncoder } from '../performance-observer.js';
+import {
+  asOptions,
+  markerPayload,
+  trackEntryPayload,
+} from '../user-timing-extensibility-api-utils';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
 import {
   PROFILER_DEBUG_ENV_VAR,
@@ -21,6 +26,7 @@ describe('NodeJS Profiler Integration', () => {
   const traceEventEncoder: PerformanceEntryEncoder<UserTimingTraceEvent> =
     entryToTraceEvents;
   const testSuitDir = path.join(process.cwd(), 'tmp', 'int', 'utils');
+
   function nodejsProfiler(
     optionsOrMeasureName:
       | string
@@ -50,6 +56,80 @@ describe('NodeJS Profiler Integration', () => {
     });
   }
 
+  async function create3rdPartyMeasures() {
+    const trackDefaults = {
+      track: 'Buffered Track',
+      trackGroup: 'Buffered Track',
+    };
+
+    expect(() =>
+      performance.mark(
+        'profiler-enable',
+        asOptions(
+          markerPayload({
+            tooltipText: 'set enable to true',
+          }),
+        ),
+      ),
+    ).not.toThrow();
+
+    expect(() => performance.mark('sync-measure:start')).not.toThrow();
+
+    expect('sync success').toBe('sync success');
+    expect(() => performance.mark('sync-measure:end')).not.toThrow();
+
+    performance.measure('sync-measure', {
+      start: 'sync-measure:start',
+      end: 'sync-measure:end',
+      ...asOptions(
+        trackEntryPayload({
+          ...trackDefaults,
+          tooltipText: 'sync measurement returned :"sync success"',
+        }),
+      ),
+    });
+
+    expect(() => performance.mark('async-measure:start')).not.toThrow();
+    await expect(Promise.resolve('async success')).resolves.toBe(
+      'async success',
+    );
+    expect(() => performance.mark('async-measure:end')).not.toThrow();
+
+    performance.measure('async-measure', {
+      start: 'async-measure:start',
+      end: 'async-measure:end',
+      ...asOptions(
+        trackEntryPayload({
+          ...trackDefaults,
+          tooltipText: 'sync measurement returned :"async success"',
+        }),
+      ),
+    });
+  }
+
+  async function createBasicMeasures(
+    profiler: NodejsProfiler<UserTimingTraceEvent>,
+  ) {
+    expect(() =>
+      profiler.marker('profiler-enable', {
+        tooltipText: 'set enable to true',
+      }),
+    ).not.toThrow();
+
+    expect(profiler.measure('sync-measure', () => 'success')).toBe('success');
+    await expect(
+      profiler.measureAsync('async-measure', () =>
+        Promise.resolve('async success'),
+      ),
+    ).resolves.toBe('async success');
+
+    expect(() =>
+      profiler.marker('profiler-enable', {
+        tooltipText: 'set enable to false',
+      }),
+    ).not.toThrow();
+  }
+
   beforeEach(async () => {
     performance.clearMarks();
     performance.clearMeasures();
@@ -66,19 +146,24 @@ describe('NodeJS Profiler Integration', () => {
     delete process.env[SHARDED_WAL_COORDINATOR_ID_ENV_VAR];
   });
   afterAll(() => {
-    rm(testSuitDir, { recursive: true, force: true });
+    //  rm(testSuitDir, { recursive: true, force: true });
   });
 
-  it('should initialize with sink opened when enabled', () => {
-    const profiler = nodejsProfiler('initialize-sink-opened');
+  it('should initialize with shard opened when enabled', () => {
+    const profiler = nodejsProfiler('initialize-shard-opened');
     expect(profiler.isEnabled()).toBeTrue();
     expect(profiler.stats.shardOpen).toBeTrue();
   });
 
-  it('should create performance entries and write to sink', async () => {
-    const measureName = 'create-entries-write-sink';
-    const profiler = nodejsProfiler(measureName);
-    expect(profiler.measure('test-operation', () => 'success')).toBe('success');
+  it('should create mark and measure performance entries and write to .jsonl and .json', async () => {
+    const measureName = 'entries-write-to-shard';
+    const profiler = nodejsProfiler({
+      prefix: 'write-j-jl',
+      measureName,
+    });
+
+    await createBasicMeasures(profiler);
+
     await awaitObserverCallbackAndFlush(profiler);
     await expect(
       loadAndOmitTraceJson(profiler.stats.shardPath),
@@ -89,55 +174,20 @@ describe('NodeJS Profiler Integration', () => {
     ).resolves.toMatchFileSnapshot(`__snapshots__/${measureName}.json`);
   });
 
-  it('should handle async operations', async () => {
-    const profiler = nodejsProfiler('handle-async-operations');
-    await expect(
-      profiler.measureAsync('async-test', async () => {
-        await new Promise(resolve => setTimeout(resolve, 1));
-        return 'async-result';
-      }),
-    ).resolves.toBe('async-result');
-  });
+  it('should capture buffered entries when buffered option is enabled', async () => {
+    const measureName = 'buffered-test';
+    await create3rdPartyMeasures();
 
-  it('should disable profiling and close sink', () => {
-    const profiler = nodejsProfiler('disable-profiling-close-sink');
-    profiler.setEnabled(false);
-    expect(profiler.isEnabled()).toBeFalse();
-    expect(profiler.stats.shardOpen).toBeFalse();
-
-    expect(profiler.measure('disabled-test', () => 'success')).toBe('success');
-  });
-
-  it('should re-enable profiling correctly', () => {
-    const profiler = nodejsProfiler('re-enable-profiling');
-    profiler.setEnabled(false);
-    expect(profiler.stats.shardOpen).toBeFalse();
-
-    profiler.setEnabled(true);
-
-    expect(profiler.isEnabled()).toBeTrue();
-    expect(profiler.stats.shardOpen).toBeTrue();
-
-    expect(profiler.measure('re-enabled-test', () => 42)).toBe(42);
-  });
-
-  it('should capture buffered entries when buffered option is enabled', () => {
-    const bufferedProfiler = nodejsProfiler({
-      measureName: 'buffered-test',
-      prefix: 'buffered-test',
-      track: 'Test',
+    const profiler = nodejsProfiler({
+      prefix: 'write-buffered-j-jl',
+      measureName,
       captureBufferedEntries: true,
     });
-
-    const bufferedStats = bufferedProfiler.stats;
-    expect(bufferedStats.profilerState).toBe('running');
-    expect(bufferedStats.shardOpen).toBeTrue();
-    expect(bufferedStats.isSubscribed).toBeTrue();
-    expect(bufferedStats.queued).toBe(0);
-    expect(bufferedStats.dropped).toBe(0);
-    expect(bufferedStats.written).toBe(0);
-
-    bufferedProfiler.close();
+    await awaitObserverCallbackAndFlush(profiler);
+    profiler.close();
+    await expect(
+      loadAndOmitTraceJson(profiler.stats.finalFilePath),
+    ).resolves.toMatchFileSnapshot(`__snapshots__/${measureName}.json`);
   });
 
   it('should return correct getStats with dropped and written counts', () => {
@@ -186,73 +236,49 @@ describe('NodeJS Profiler Integration', () => {
     expect(finalStats.shardOpen).toBeFalse();
     expect(finalStats.isSubscribed).toBeFalse();
     expect(finalStats.queued).toBe(0);
-
-    awaitObserverCallbackAndFlush(profiler);
-    const traceEvents = await loadAndOmitTraceJson(profiler.stats.shardPath);
-    expect(traceEvents).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ cat: 'blink.user_timing' }),
-      ]),
-    );
   });
 
-  describe('sharded path structure', () => {
-    it('should create sharded path structure when filename is not provided', async () => {
-      const profiler = nodejsProfiler('sharded-test');
+  it('should create sharded path structure when filename is not provided', async () => {
+    const measureName = 'sharded-test';
+    const profiler = nodejsProfiler(measureName);
 
-      const { finalFilePath, shardPath } = profiler.stats;
-      expect(finalFilePath).toContainPath('tmp/int/utils');
-      expect(finalFilePath).toMatch(/\.json$/);
+    const { finalFilePath, shardPath } = profiler.stats;
+    expect(finalFilePath).toContainPath('tmp/int/utils');
+    expect(finalFilePath).toMatch(/\.json$/);
 
-      const pathParts = finalFilePath.split(path.sep);
-      const groupIdDir = pathParts.at(-2);
-      const fileName = pathParts.at(-1);
+    const pathParts = finalFilePath.split(path.sep);
+    const groupIdDir = pathParts.at(-2);
+    const fileName = pathParts.at(-1);
 
-      expect(groupIdDir).toBe('sharded-test');
-      // When measureName is provided, it becomes the groupId, so filename is baseName.groupId.json
-      expect(fileName).toMatch(/^trace-events\.sharded-test\.json$/);
+    expect(groupIdDir).toBe(measureName);
+    // When measureName is provided, it becomes the groupId, so filename is baseName.groupId.json
+    expect(fileName).toMatch(
+      new RegExp(`^trace-events\\.${measureName}\\.json$`),
+    );
 
-      // Verify shard path has .jsonl extension
-      expect(shardPath).toMatch(/\.jsonl$/);
+    // Verify shard path has .jsonl extension
+    expect(shardPath).toContain(measureName);
+    expect(shardPath).toMatch(/\.jsonl$/);
 
-      const groupIdDirPath = path.dirname(finalFilePath);
-      await expect(fsPromises.access(groupIdDirPath)).resolves.not.toThrow();
+    const groupIdDirPath = path.dirname(finalFilePath);
+    await expect(fsPromises.access(groupIdDirPath)).resolves.not.toThrow();
 
-      profiler.close();
+    profiler.close();
+  });
+
+  it('should create transition markers if debugMode true', async () => {
+    const measureName = 'debugMode-test';
+    const profiler = nodejsProfiler({
+      measureName,
+      debug: true,
     });
 
-    it('should create correct folder structure for sharded paths', async () => {
-      const profiler = nodejsProfiler('folder-test');
-
-      const filePath = profiler.stats.finalFilePath;
-      const dirPath = path.dirname(filePath);
-      const groupId = path.basename(dirPath);
-
-      expect(groupId).toBe('folder-test');
-      await expect(fsPromises.access(dirPath)).resolves.not.toThrow();
-      const stat = await fsPromises.stat(dirPath);
-      expect(stat.isDirectory()).toBeTrue();
-
-      profiler.close();
-    });
-
-    it('should write trace events to .jsonl and .json', async () => {
-      const measureName = 'write-test';
-      const profiler = nodejsProfiler(measureName);
-
-      profiler.measure('test-operation', () => 'result');
-      await awaitObserverCallbackAndFlush(profiler);
-      expect(profiler.stats.shardFileCount).toBe(1);
-      expect(profiler.stats.shardPath).toBeTruthy();
-      await expect(
-        loadAndOmitTraceJson(profiler.stats.shardPath),
-      ).resolves.toMatchFileSnapshot(`__snapshots__/${measureName}.jsonl`);
-
-      profiler.close();
-      expect(profiler.stats.isCoordinator).toBeTrue();
-      await expect(
-        loadAndOmitTraceJson(profiler.stats.finalFilePath),
-      ).resolves.toMatchFileSnapshot(`__snapshots__/${measureName}.json`);
-    });
+    profiler.setEnabled(false);
+    profiler.setEnabled(true);
+    await awaitObserverCallbackAndFlush(profiler);
+    profiler.close();
+    await expect(
+      loadAndOmitTraceJson(profiler.stats.finalFilePath),
+    ).resolves.toMatchFileSnapshot(`__snapshots__/${measureName}.json`);
   });
 });

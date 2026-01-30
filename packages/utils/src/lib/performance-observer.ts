@@ -317,8 +317,59 @@ export class PerformanceObserverSink<T> {
       buffered: this.#buffered,
     });
 
+    // When buffered mode is enabled, Node.js PerformanceObserver invokes
+    // the callback synchronously with all buffered entries before observe() returns.
+    // However, entries created before any observer existed may not be buffered by Node.js.
+    // We manually retrieve entries from the performance buffer using getEntriesByType()
+    // to capture entries that were created before the observer was created.
     if (this.#buffered) {
-      this.flush();
+      // Get all mark and measure entries from the performance buffer
+      const existingMarks = performance.getEntriesByType('mark');
+      const existingMeasures = performance.getEntriesByType('measure');
+      const allEntries = [...existingMarks, ...existingMeasures];
+
+      // Process entries that weren't already delivered by the callback
+      // We track which entries were processed by checking if they're in the queue
+      const initialQueueLength = this.#queue.length;
+      allEntries.forEach(entry => {
+        if (OBSERVED_TYPE_SET.has(entry.entryType as ObservedEntryType)) {
+          try {
+            const items = this.encode(entry);
+            items.forEach(item => {
+              if (this.#queue.length >= this.#maxQueueSize) {
+                this.#dropped++;
+                return;
+              }
+              if (
+                this.#queue.length >=
+                this.#maxQueueSize - this.#flushThreshold
+              ) {
+                this.flush();
+              }
+              this.#queue.push(item);
+              this.#addedSinceLastFlush++;
+            });
+          } catch (error) {
+            this.#dropped++;
+            if (this.#debug) {
+              try {
+                performance.mark(errorToPerfMark(error, entry));
+              } catch {
+                // Ignore mark failures
+              }
+            }
+          }
+        }
+      });
+
+      if (this.#addedSinceLastFlush >= this.#flushThreshold) {
+        this.flush();
+      }
+
+      // Flush any remaining queued entries
+      if (this.#queue.length > 0) {
+        this.flush();
+      }
     }
   }
 
