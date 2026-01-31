@@ -1,3 +1,4 @@
+/** THIS IS A COPY OF THE UTILS PACKAGE AND TESTED THERE **/
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 

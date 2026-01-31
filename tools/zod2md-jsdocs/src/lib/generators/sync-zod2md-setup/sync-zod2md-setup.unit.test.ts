@@ -35,6 +35,7 @@ describe('sync-zod2md-setup generator', () => {
     },
     tags: [],
   };
+
   beforeEach(async () => {
     tree = await generateWorkspaceAndProject({
       name: 'test',
@@ -67,6 +68,7 @@ describe('sync-zod2md-setup generator', () => {
       },
     }));
   });
+
   it('should pass if missing zod2md.config', async () => {
     tree.delete(zod2mdConfigPath);
     await expect(syncZod2mdSetupGenerator(tree)).resolves.toStrictEqual({
@@ -74,6 +76,7 @@ describe('sync-zod2md-setup generator', () => {
     });
     expect(tree.exists(zod2mdConfigPath)).toBeFalse();
   });
+
   it('should fail if missing tsconfig file', async () => {
     tree.delete(`${projectRoot}/tsconfig.json`);
     tree.delete(`${projectRoot}/tsconfig.lib.json`);
@@ -83,6 +86,7 @@ describe('sync-zod2md-setup generator', () => {
     });
     expect(tree.exists(`${projectRoot}/zod2md.config.ts`)).toBeTrue();
   });
+
   it('should fail if missing "zod2md" target in project config', async () => {
     updateJson(tree, `${projectRoot}/project.json`, config => ({
       ...config,
@@ -125,6 +129,7 @@ describe('sync-zod2md-setup generator', () => {
     });
     expect(tree.exists(`${projectRoot}/zod2md.config.ts`)).toBeTrue();
   });
+
   it('should fail if missing "dependsOn" targets in build target', async () => {
     updateJson(tree, `${projectRoot}/project.json`, config => ({
       ...config,
@@ -161,6 +166,7 @@ describe('sync-zod2md-setup generator', () => {
     });
     expect(tree.exists(`${projectRoot}/zod2md.config.ts`)).toBeTrue();
   });
+
   it('should fail if missing Zod2Md TypeScript plugin configuration', async () => {
     updateJson(tree, `${projectRoot}/tsconfig.lib.json`, config => ({
       ...config,
@@ -176,11 +182,13 @@ describe('sync-zod2md-setup generator', () => {
     });
     expect(tree.exists(`${projectRoot}/zod2md.config.ts`)).toBeTrue();
   });
+
   it('should pass if zod2md setup is correct', async () => {
     await expect(syncZod2mdSetupGenerator(tree)).resolves.toStrictEqual({
       outOfSyncMessage: undefined,
     });
   });
+
   it('should not duplicate dependencies when they exist as objects', async () => {
     const objectFormDependsOn = [
       '^build',

@@ -13,15 +13,18 @@ describe('configurationGenerator', () => {
   let tree: Tree;
   const testProjectName = 'test-app';
   const loggerInfoSpy = vi.spyOn(logger, 'info');
+
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
     addProjectConfiguration(tree, 'test-app', {
       root: 'test-app',
     });
   });
+
   afterEach(() => {
     tree.delete(testProjectName);
   });
+
   it('should skip config creation if skipConfig is used', async () => {
     await configurationGenerator(tree, {
       project: testProjectName,
@@ -38,6 +41,7 @@ describe('configurationGenerator', () => {
     ).toBeNull();
     expect(loggerInfoSpy).toHaveBeenCalledWith('Skip config file creation');
   });
+
   it('should skip formatting', async () => {
     await configurationGenerator(tree, {
       project: testProjectName,

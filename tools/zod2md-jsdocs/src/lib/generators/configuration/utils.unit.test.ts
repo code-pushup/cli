@@ -12,13 +12,16 @@ describe('formatArrayToJSArray', () => {
         plugin2()]"
       `);
   });
+
   it('should return empty array as JS for empty items', () => {
     expect(formatArrayToJSArray([])).toMatchInlineSnapshot('"[]"');
   });
+
   it('should return undefined for undefined values', () => {
     expect(formatArrayToJSArray(undefined)).toBeUndefined();
   });
 });
+
 describe('formatArrayToLinesOfJsString', () => {
   it('should return lines as JS', () => {
     expect(formatArrayToLinesOfJsString([`import plugin from "../nx-plugin";`]))
@@ -26,6 +29,7 @@ describe('formatArrayToLinesOfJsString', () => {
         "import plugin from "../nx-plugin";"
       `);
   });
+
   it('should return lines as JS with normalized quotes', () => {
     expect(
       formatArrayToLinesOfJsString([
@@ -33,21 +37,25 @@ describe('formatArrayToLinesOfJsString', () => {
         `import plugin from "../mx-plugin";`,
       ]),
     ).toMatchInlineSnapshot(`
-        "import { CoreConfig } from "@zod2md/models";
-        import plugin from "../mx-plugin";"
-      `);
+      "import { CoreConfig } from "@zod2md/models";
+      import plugin from "../mx-plugin";"
+    `);
   });
+
   it('should return undefined for empty items', () => {
     expect(formatArrayToLinesOfJsString([])).toBeUndefined();
   });
+
   it('should return undefined for nullish values', () => {
     expect(formatArrayToLinesOfJsString()).toBeUndefined();
   });
 });
+
 describe('normalizeItemOrArray', () => {
   it('should turn string into string array', () => {
     expect(normalizeItemOrArray('myPlugin()')).toStrictEqual(['myPlugin()']);
   });
+
   it('should keep string array', () => {
     expect(normalizeItemOrArray('myPlugin()')).toStrictEqual(['myPlugin()']);
   });

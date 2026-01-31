@@ -1,6 +1,5 @@
 import type { PluginConfig, TransformerExtras } from 'ts-patch';
-import type * as ts from 'typescript';
-import tsInstance from 'typescript';
+import * as ts from 'typescript';
 
 export function generateJSDocComment(
   typeName: string,
@@ -28,7 +27,7 @@ export function annotateTypeDefinitions(
         'Please configure it in your tsconfig.json plugins section.',
     );
   }
-  const tsLib = extras?.ts ?? tsInstance;
+  const tsLib = extras?.ts ?? ts;
   return (context: ts.TransformationContext) => {
     const visitor = (node: ts.Node): ts.Node => {
       if (

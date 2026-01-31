@@ -52,30 +52,38 @@ export function readDefaultExportObject<
     ts.ScriptTarget.Latest,
     true,
   );
-  let result: Record<string, unknown> | null = null;
-  source.forEachChild(node => {
+  const matchingNode = source.getChildren().find(node => {
     if (!ts.isExportAssignment(node)) {
-      return;
+      return false;
     }
     const expr = ts.isSatisfiesExpression?.(node.expression)
       ? node.expression.expression
       : node.expression;
-    if (!ts.isObjectLiteralExpression(expr)) {
-      return;
-    }
-    result = expr.properties.reduce<Record<string, string>>((acc, prop) => {
-      if (
-        ts.isPropertyAssignment(prop) &&
-        ts.isIdentifier(prop.name) &&
-        ts.isStringLiteral(prop.initializer)
-      ) {
-        return {
-          ...acc,
-          [prop.name.text]: prop.initializer.text,
-        };
-      }
-      return acc;
-    }, {});
+    return ts.isObjectLiteralExpression(expr);
   });
+  const result =
+    matchingNode && ts.isExportAssignment(matchingNode)
+      ? (() => {
+          const expr = ts.isSatisfiesExpression?.(matchingNode.expression)
+            ? matchingNode.expression.expression
+            : matchingNode.expression;
+          if (!ts.isObjectLiteralExpression(expr)) {
+            return null;
+          }
+          return expr.properties.reduce<Record<string, string>>((acc, prop) => {
+            if (
+              ts.isPropertyAssignment(prop) &&
+              ts.isIdentifier(prop.name) &&
+              ts.isStringLiteral(prop.initializer)
+            ) {
+              return {
+                ...acc,
+                [prop.name.text]: prop.initializer.text,
+              };
+            }
+            return acc;
+          }, {});
+        })()
+      : null;
   return result as T | null;
 }

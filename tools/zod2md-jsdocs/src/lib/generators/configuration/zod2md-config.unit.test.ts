@@ -9,15 +9,18 @@ describe('generateZod2MdConfig options', () => {
   const testProjectName = 'test-app';
   const generateFilesSpy = vi.spyOn(devKit, 'generateFiles');
   const loggerWarnSpy = vi.spyOn(devKit.logger, 'warn');
+
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
     devKit.addProjectConfiguration(tree, testProjectName, {
       root: 'test-app',
     });
   });
+
   afterEach(() => {
     generateFilesSpy.mockReset();
   });
+
   it('should create zod2md.config.ts with options', () => {
     generateZod2MdConfig(tree, testProjectName, {
       entry: 'test-app/src/main.ts',
@@ -37,10 +40,12 @@ describe('generateZod2MdConfig options', () => {
       }),
     );
   });
+
   it('should call generateFilesSpy', () => {
     generateZod2MdConfig(tree, testProjectName);
     expect(generateFilesSpy).toHaveBeenCalledOnce();
   });
+
   it('should skip creation if config already exists', () => {
     tree.write(path.join(testProjectName, 'zod2md.config.js'), '');
     generateZod2MdConfig(tree, testProjectName);
@@ -52,6 +57,7 @@ describe('generateZod2MdConfig options', () => {
       ),
     );
   });
+
   it('should use correct templates', () => {
     generateZod2MdConfig(tree, testProjectName);
     expect(generateFilesSpy).toHaveBeenCalledWith(
@@ -70,6 +76,7 @@ describe('generateZod2MdConfig options', () => {
       expect.any(Object),
     );
   });
+
   it('should use correct testProjectName', () => {
     generateZod2MdConfig(tree, testProjectName);
     expect(generateFilesSpy).toHaveBeenCalledWith(
@@ -79,6 +86,7 @@ describe('generateZod2MdConfig options', () => {
       expect.any(Object),
     );
   });
+
   it('should use default options', () => {
     generateZod2MdConfig(tree, testProjectName);
     expect(generateFilesSpy).toHaveBeenCalledWith(

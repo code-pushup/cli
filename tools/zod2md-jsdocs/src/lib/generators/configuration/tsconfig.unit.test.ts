@@ -12,6 +12,7 @@ describe('addZod2MdTransformToTsConfig', () => {
     testProjectName,
     DEFAULT_ZOD2MD_CONFIG_FILE_NAME,
   );
+
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
     tree.write(
@@ -39,6 +40,7 @@ describe('addZod2MdTransformToTsConfig', () => {
       `,
     );
   });
+
   it('should fail on missing tsconfig.json', () => {
     tree.delete(tsconfigLibPath);
     expect(() =>
@@ -48,6 +50,7 @@ describe('addZod2MdTransformToTsConfig', () => {
       }),
     ).toThrow('No config tsconfig.json file exists.');
   });
+
   it('should update tsconfig.lib.json with transform', () => {
     tree.write(
       tsconfigLibPath,
@@ -73,6 +76,7 @@ describe('addZod2MdTransformToTsConfig', () => {
       }),
     );
   });
+
   it('should skip creation if config already configured', () => {
     expect(() =>
       addZod2MdTransformToTsConfig(tree, testProjectName, {

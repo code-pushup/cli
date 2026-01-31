@@ -213,15 +213,19 @@ function formatIssues(issues: readonly SyncIssue[]): string | undefined {
   if (issues.length === 0) {
     return undefined;
   }
-  const grouped = issues.reduce<
-    Record<SyncIssue['type'], readonly SyncIssue[]>
-  >(
-    (acc, issue) => ({
-      ...acc,
-      [issue.type]: [...(acc[issue.type] ?? []), issue],
-    }),
-    {} as Record<SyncIssue['type'], readonly SyncIssue[]>,
-  );
+  const grouped: Record<SyncIssue['type'], readonly SyncIssue[]> =
+    issues.reduce<Record<SyncIssue['type'], readonly SyncIssue[]>>(
+      (acc, issue) => ({
+        ...acc,
+        [issue.type]: [...(acc[issue.type] ?? []), issue],
+      }),
+      {
+        [missingTsconfig]: [],
+        [missingTarget]: [],
+        [missingBuildDeps]: [],
+        [missingTsPlugin]: [],
+      },
+    );
   return [
     grouped[missingTsconfig]?.length
       ? `Missing tsconfig in:\n${grouped[missingTsconfig]
