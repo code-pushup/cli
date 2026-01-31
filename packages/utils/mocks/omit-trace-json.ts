@@ -31,21 +31,6 @@ const parseJsonl = (input: string): TraceEvent[] =>
     .map(line => JSON.parse(line) as TraceEvent);
 
 /**
- * Normalizes encoded events and preserves encoded format.
- * Similar to normalizeEncoded but works directly on encoded events from JSONL.
- */
-const normalizeEncodedJsonl = (
-  events: TraceEvent[],
-  options?: { baseTimestampUs: number },
-): TraceEvent[] => {
-  // Decode temporarily to normalize (normalizeAndFormatEvents needs decoded format)
-  const decodedEvents = events.map(decodeEvent);
-  const normalizedDecoded = normalizeAndFormatEvents(decodedEvents, options);
-  // Re-encode to preserve serialized format
-  return normalizedDecoded.map(encodeEvent);
-};
-
-/**
  * Loads and normalizes trace events from a JSONL file.
  * Parses the file, decodes all events, normalizes them for deterministic testing,
  * and returns the normalized decoded events.

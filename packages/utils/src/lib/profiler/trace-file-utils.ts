@@ -130,7 +130,7 @@ export const getInstantEventTracingStartedInBrowser = (
           },
         ],
         persistentIds: true,
-      } as Record<string, unknown>,
+      } satisfies Record<string, unknown>,
     },
   };
 };

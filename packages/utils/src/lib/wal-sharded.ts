@@ -5,7 +5,6 @@ import { threadId } from 'node:worker_threads';
 import {
   type Counter,
   getUniqueInstanceId,
-  getUniqueProcessThreadId,
   getUniqueTimeId,
 } from './process-id.js';
 import {
@@ -131,6 +130,7 @@ export class ShardedWal<T extends object = object> {
       opt;
 
     // Determine groupId: use provided, then env var, or generate
+    // eslint-disable-next-line functional/no-let
     let resolvedGroupId: string;
     if (groupId) {
       // User explicitly provided groupId - use it

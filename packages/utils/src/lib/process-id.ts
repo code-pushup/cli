@@ -105,6 +105,7 @@ export function getUniqueInstanceIdAndUpdate(
   getCount: () => number,
   setCount: (value: number) => void,
 ): string {
+  // eslint-disable-next-line functional/no-let
   let value = getCount();
   const counter: Counter = {
     next() {

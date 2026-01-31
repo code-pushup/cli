@@ -26,6 +26,7 @@ describe('ShardedWal', () => {
     vol.reset();
     vol.fromJSON({}, MEMFS_VOLUME);
     // Clear coordinator env var for fresh state
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
   });
 
@@ -226,6 +227,7 @@ describe('ShardedWal', () => {
       });
 
       // Ensure no coordinator is set
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
 
       const sw = getShardedWal({
@@ -246,6 +248,7 @@ describe('ShardedWal', () => {
       });
 
       // Ensure no coordinator is set
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
 
       const sw = getShardedWal({
@@ -439,6 +442,7 @@ describe('ShardedWal', () => {
       });
 
       // Not coordinator - cleanupIfCoordinator should be no-op
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
       sw.cleanupIfCoordinator();
       expect(vol.toJSON()).not.toStrictEqual({});

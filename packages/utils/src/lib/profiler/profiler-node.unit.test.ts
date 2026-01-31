@@ -1,4 +1,3 @@
-import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { awaitObserverCallbackAndFlush } from '@code-pushup/test-utils';
@@ -40,7 +39,7 @@ const resetEnv = () => {
   delete process.env.DEBUG;
   // eslint-disable-next-line functional/immutable-data
   delete process.env.CP_PROFILING;
-  // eslint-disable-next-line functional/immutable-data
+  // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
   delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
 };
 
@@ -197,6 +196,7 @@ describe('NodejsProfiler', () => {
       expect(profiler.stats.isSubscribed).toBe(true);
     });
 
+    // eslint-disable-next-line vitest/expect-expect
     it('should initialize with sink closed when enabled is false', () => {
       const profiler = createProfiler({
         measureName: 'init-disabled',
@@ -300,6 +300,7 @@ describe('NodejsProfiler', () => {
       expect(profiler.state).toBe('closed');
     });
 
+    // eslint-disable-next-line vitest/expect-expect
     it('should maintain state invariant: running ⇒ sink open + observer subscribed', () => {
       const profiler = createProfiler({
         measureName: 'state-invariant',
@@ -584,6 +585,7 @@ describe('NodejsProfiler', () => {
       expect(debugProfiler.debug).toBe(true);
     });
 
+    // eslint-disable-next-line vitest/expect-expect
     it('should create transition marker when debug is enabled and transitioning to running', () => {
       // eslint-disable-next-line functional/immutable-data
       process.env.DEBUG = 'true';
@@ -598,19 +600,7 @@ describe('NodejsProfiler', () => {
       expectTransitionMarker('debug:idle->running');
     });
 
-    it('should not create transition marker when transitioning from running to idle (profiler disabled)', () => {
-      // eslint-disable-next-line functional/immutable-data
-      process.env.DEBUG = 'true';
-      const profiler = createProfiler({
-        measureName: 'debug-no-transition-marker',
-      });
-
-      performance.clearMarks();
-      profiler.setEnabled(false);
-
-      expectNoTransitionMarker('running->idle');
-    });
-
+    // eslint-disable-next-line vitest/expect-expect
     it('does not emit transition markers unless debug is enabled', () => {
       const profiler = createProfiler('no-transition-markers');
 

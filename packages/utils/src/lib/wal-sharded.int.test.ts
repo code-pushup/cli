@@ -3,7 +3,7 @@ import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { PROFILER_SHARDER_ID_ENV_VAR } from './profiler/constants.js';
 import { ShardedWal } from './wal-sharded.js';
-import { createTolerantCodec, stringCodec } from './wal.js';
+import { createTolerantCodec } from './wal.js';
 
 describe('ShardedWal Integration', () => {
   const testDir = path.join(

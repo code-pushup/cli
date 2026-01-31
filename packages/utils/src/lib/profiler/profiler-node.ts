@@ -7,9 +7,7 @@ import {
 import { objectToEntries } from '../transform.js';
 import { errorToMarkerPayload } from '../user-timing-extensibility-api-utils.js';
 import type {
-  ActionColorPayload,
   ActionTrackEntryPayload,
-  DevToolsActionColor,
   MarkerPayload,
 } from '../user-timing-extensibility-api.type.js';
 import { ShardedWal } from '../wal-sharded.js';

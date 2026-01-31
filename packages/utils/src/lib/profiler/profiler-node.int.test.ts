@@ -185,7 +185,7 @@ describe('NodeJS Profiler Integration', () => {
     performance.clearMeasures();
     vi.stubEnv(PROFILER_ENABLED_ENV_VAR, undefined!);
     vi.stubEnv(PROFILER_DEBUG_ENV_VAR, undefined!);
-    // eslint-disable-next-line functional/immutable-data
+    // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
     delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
   });
 
@@ -199,7 +199,7 @@ describe('NodeJS Profiler Integration', () => {
 
     vi.stubEnv(PROFILER_ENABLED_ENV_VAR, undefined!);
     vi.stubEnv(PROFILER_DEBUG_ENV_VAR, undefined!);
-    // eslint-disable-next-line functional/immutable-data
+    // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
     delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
   });
 
