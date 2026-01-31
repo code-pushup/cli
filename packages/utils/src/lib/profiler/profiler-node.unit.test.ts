@@ -1,6 +1,9 @@
 import { performance } from 'node:perf_hooks';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { awaitObserverCallbackAndFlush } from '@code-pushup/test-utils';
+import {
+  awaitObserverCallbackAndFlush,
+  osAgnosticPath,
+} from '@code-pushup/test-utils';
 import {
   loadAndOmitTraceJson,
   loadAndOmitTraceJsonl,
@@ -360,7 +363,7 @@ describe('NodejsProfiler', () => {
         measureName: 'filepath-getter',
       });
       // When measureName is provided, it's used as the groupId directory
-      expect(profiler.stats.shardPath).toContain(
+      expect(profiler.stats.shardPath).toContainPath(
         'tmp/profiles/filepath-getter',
       );
       expect(profiler.stats.shardPath).toMatch(/\.jsonl$/);
@@ -372,7 +375,7 @@ describe('NodejsProfiler', () => {
       });
       const shardPath = profiler.stats.shardPath;
       // shardPath uses the shard ID format: baseName.shardId.jsonl
-      expect(shardPath).toContain('tmp/profiles/custom-filename');
+      expect(shardPath).toContainPath('tmp/profiles/custom-filename');
       expect(shardPath).toMatch(/trace\.\d{8}-\d{6}-\d{3}(?:\.\d+){3}\.jsonl$/);
       // finalFilePath uses measureName as the identifier
       expect(profiler.stats.finalFilePath).toBe(
@@ -384,7 +387,7 @@ describe('NodejsProfiler', () => {
       const profiler = createProfiler('sharded-path');
       const filePath = profiler.stats.shardPath;
       // When measureName is provided, it's used as the groupId directory
-      expect(filePath).toContain('tmp/profiles/sharded-path');
+      expect(filePath).toContainPath('tmp/profiles/sharded-path');
       expect(filePath).toMatch(/\.jsonl$/);
     });
 
@@ -423,7 +426,8 @@ describe('NodejsProfiler', () => {
         /^\^|\$$/g,
         '',
       );
-      expect(stats.shardPath).toMatch(
+      // Normalize path before regex matching to handle OS-specific separators
+      expect(osAgnosticPath(stats.shardPath)).toMatch(
         new RegExp(
           `^tmp/profiles/stats-getter/trace\\.${instanceIdPattern}\\.jsonl$`,
         ),
