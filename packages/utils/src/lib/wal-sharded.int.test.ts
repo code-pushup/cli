@@ -42,25 +42,27 @@ describe('ShardedWal Integration', () => {
       },
       coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: 'create-finalize',
+      filename: 'test-shard-1',
     });
 
-    const shard1 = shardedWal.shard('test-shard-1');
+    const shard1 = shardedWal.shard();
     shard1.open();
     shard1.append('record1');
     shard1.append('record2');
     shard1.close();
 
-    const shard2 = shardedWal.shard('test-shard-2');
+    const shard2 = shardedWal.shard();
     shard2.open();
     shard2.append('record3');
     shard2.close();
 
     shardedWal.finalize();
 
+    // With filename provided, final file uses the first filename (test-shard-1)
     const finalFile = path.join(
       testDir,
       shardedWal.groupId,
-      `trace.${shardedWal.groupId}.json`,
+      `trace.test-shard-1.json`,
     );
     expect(fs.existsSync(finalFile)).toBeTrue();
 
@@ -80,11 +82,12 @@ describe('ShardedWal Integration', () => {
       },
       coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: 'merge-shards',
+      filename: 'shard-1',
     });
 
     // Create multiple shards
     for (let i = 1; i <= 5; i++) {
-      const shard = shardedWal.shard(`shard-${i}`);
+      const shard = shardedWal.shard();
       shard.open();
       shard.append(`record-from-shard-${i}`);
       shard.close();
@@ -92,10 +95,11 @@ describe('ShardedWal Integration', () => {
 
     shardedWal.finalize();
 
+    // With filename provided, final file uses the first filename (shard-1)
     const finalFile = path.join(
       testDir,
       shardedWal.groupId,
-      `merged.${shardedWal.groupId}.json`,
+      `merged.shard-1.json`,
     );
     const content = fs.readFileSync(finalFile, 'utf8');
     const records = JSON.parse(content.trim());
@@ -124,9 +128,10 @@ describe('ShardedWal Integration', () => {
       },
       coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: 'invalid-entries',
+      filename: 'test-shard',
     });
 
-    const shard = shardedWal.shard('test-shard');
+    const shard = shardedWal.shard();
     shard.open();
     shard.append('valid1');
     shard.append('invalid');
@@ -135,10 +140,11 @@ describe('ShardedWal Integration', () => {
 
     shardedWal.finalize();
 
+    // With filename provided, final file uses the filename (test-shard)
     const finalFile = path.join(
       testDir,
       shardedWal.groupId,
-      `test.${shardedWal.groupId}.json`,
+      `test.test-shard.json`,
     );
     const content = fs.readFileSync(finalFile, 'utf8');
     const records = JSON.parse(content.trim());
@@ -159,14 +165,15 @@ describe('ShardedWal Integration', () => {
       },
       coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: 'cleanup-test',
+      filename: 'shard-1',
     });
 
-    const shard1 = shardedWal.shard('shard-1');
+    const shard1 = shardedWal.shard();
     shard1.open();
     shard1.append('record1');
     shard1.close();
 
-    const shard2 = shardedWal.shard('shard-2');
+    const shard2 = shardedWal.shard();
     shard2.open();
     shard2.append('record2');
     shard2.close();
@@ -174,10 +181,11 @@ describe('ShardedWal Integration', () => {
     shardedWal.finalize();
 
     // Verify final file exists
+    // With filename provided, final file uses the first filename (shard-1)
     const finalFile = path.join(
       testDir,
       shardedWal.groupId,
-      `cleanup-test.${shardedWal.groupId}.json`,
+      `cleanup-test.shard-1.json`,
     );
     expect(fs.existsSync(finalFile)).toBeTrue();
 
@@ -188,8 +196,8 @@ describe('ShardedWal Integration', () => {
     const groupDir = path.join(testDir, shardedWal.groupId);
     const files = fs.readdirSync(groupDir);
     expect(files).not.toContain(expect.stringMatching(/cleanup-test.*\.log$/));
-    // Final file should still exist
-    expect(files).toContain(`cleanup-test.${shardedWal.groupId}.json`);
+    // Final file should still exist (uses first filename: shard-1)
+    expect(files).toContain(`cleanup-test.shard-1.json`);
   });
 
   it('should use custom options in finalizer', () => {
@@ -204,19 +212,21 @@ describe('ShardedWal Integration', () => {
       },
       coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: 'custom-finalizer',
+      filename: 'custom-shard',
     });
 
-    const shard = shardedWal.shard('custom-shard');
+    const shard = shardedWal.shard();
     shard.open();
     shard.append('record1');
     shard.close();
 
     shardedWal.finalize({ version: '2.0', timestamp: Date.now() });
 
+    // With filename provided, final file uses the filename (custom-shard)
     const finalFile = path.join(
       testDir,
       shardedWal.groupId,
-      `custom.${shardedWal.groupId}.json`,
+      `custom.custom-shard.json`,
     );
     const content = fs.readFileSync(finalFile, 'utf8');
     const result = JSON.parse(content.trim());

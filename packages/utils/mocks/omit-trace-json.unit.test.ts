@@ -1,235 +1,422 @@
-import { loadAndOmitTraceJson } from './omit-trace-json.js';
+import { vol } from 'memfs';
+import { expect } from 'vitest';
+import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import type { TraceEvent } from '../src/lib/profiler/trace-file.type';
+import {
+  loadAndOmitTraceJson,
+  loadAndOmitTraceJsonl,
+  normalizeAndFormatEvents,
+} from './omit-trace-json.js';
 
-describe('omitTraceJson', () => {
+describe('normalizeAndFormatEvents', () => {
   it('should return empty string unchanged', () => {
-    expect(omitTraceJson('')).toBe('');
+    expect(normalizeAndFormatEvents('')).toBe('');
   });
 
   it('should return whitespace-only string unchanged', () => {
-    expect(omitTraceJson('   \n\t  ')).toBe('   \n\t  ');
+    expect(normalizeAndFormatEvents('   \n\t  ')).toBe('   \n\t  ');
   });
 
   it('should return empty JSONL unchanged', () => {
-    expect(omitTraceJson('\n\n')).toBe('\n\n');
+    expect(normalizeAndFormatEvents('\n\n')).toBe('\n\n');
   });
 
-  it('should return minimal event unchanged', () => {
-    const input = '{"name":"test"}\n';
-    expect(omitTraceJson(input)).toBe(input);
-  });
-
-  it('should normalize pid field starting from 10001', () => {
-    const result = omitTraceJson('{"pid":12345}\n');
-    const parsed = JSON.parse(result.trim());
-    expect(parsed.pid).toBe(10_001);
-  });
-
-  it('should normalize tid field starting from 1', () => {
-    const result = omitTraceJson('{"tid":999}\n');
-    const parsed = JSON.parse(result.trim());
-    expect(parsed.tid).toBe(1);
-  });
-
-  it('should normalize ts field with default baseTimestampUs', () => {
-    const result = omitTraceJson('{"ts":1234567890}\n');
-    const parsed = JSON.parse(result.trim());
-    expect(parsed.ts).toBe(1_700_000_005_000_000);
+  it('should normalize single event with all fields', () => {
+    expect(
+      normalizeAndFormatEvents(
+        '{"pid":12345,"tid":999,"ts":1234567890,"id2":{"local":"0xabc123"},"name":"test"}\n',
+      ),
+    ).toBe(
+      '{"pid":10001,"tid":1,"ts":1700000005000000,"id2":{"local":"0x1"},"name":"test"}\n',
+    );
   });
 
   it('should normalize ts field with custom baseTimestampUs', () => {
     const customBase = 2_000_000_000_000_000;
-    const result = omitTraceJson('{"ts":1234567890}\n', customBase);
-    const parsed = JSON.parse(result.trim());
-    expect(parsed.ts).toBe(customBase);
-  });
-
-  it('should normalize id2.local field starting from 0x1', () => {
-    const result = omitTraceJson('{"id2":{"local":"0xabc123"}}\n');
-    const parsed = JSON.parse(result.trim());
-    expect(parsed.id2.local).toBe('0x1');
+    expect(
+      normalizeAndFormatEvents('{"ts":1234567890}\n', {
+        baseTimestampUs: customBase,
+      }),
+    ).toBe('{"ts":2000000000000000}\n');
   });
 
   it('should preserve event order when timestamps are out of order', () => {
     const input =
       '{"ts":300,"name":"third"}\n{"ts":100,"name":"first"}\n{"ts":200,"name":"second"}\n';
-    const result = omitTraceJson(input);
-    const events = result
-      .trim()
-      .split('\n')
-      .map(line => JSON.parse(line));
-    expect(events[0].name).toBe('third');
-    expect(events[1].name).toBe('first');
-    expect(events[2].name).toBe('second');
-    expect(events[0].ts).toBe(1_700_000_005_000_002);
-    expect(events[1].ts).toBe(1_700_000_005_000_000);
-    expect(events[2].ts).toBe(1_700_000_005_000_001);
+    expect(normalizeAndFormatEvents(input)).toBe(
+      '{"ts":1700000005000002,"name":"third"}\n{"ts":1700000005000000,"name":"first"}\n{"ts":1700000005000001,"name":"second"}\n',
+    );
   });
 
   it('should preserve event order when PIDs are out of order', () => {
     const input =
       '{"pid":300,"name":"third"}\n{"pid":100,"name":"first"}\n{"pid":200,"name":"second"}\n';
-    const result = omitTraceJson(input);
-    const events = result
-      .trim()
-      .split('\n')
-      .map(line => JSON.parse(line));
-    expect(events[0].name).toBe('third');
-    expect(events[1].name).toBe('first');
-    expect(events[2].name).toBe('second');
-    expect(events[0].pid).toBe(10_003);
-    expect(events[1].pid).toBe(10_001);
-    expect(events[2].pid).toBe(10_002);
+    expect(normalizeAndFormatEvents(input)).toBe(
+      '{"pid":10003,"name":"third"}\n{"pid":10001,"name":"first"}\n{"pid":10002,"name":"second"}\n',
+    );
   });
 
-  it('should preserve event order when TIDs are out of order', () => {
-    const input =
-      '{"tid":30,"name":"third"}\n{"tid":10,"name":"first"}\n{"tid":20,"name":"second"}\n';
-    const result = omitTraceJson(input);
-    const events = result
-      .trim()
-      .split('\n')
-      .map(line => JSON.parse(line));
-    expect(events[0].name).toBe('third');
-    expect(events[1].name).toBe('first');
-    expect(events[2].name).toBe('second');
-    expect(events[0].tid).toBe(3);
-    expect(events[1].tid).toBe(1);
-    expect(events[2].tid).toBe(2);
+  it('should handle decoding of instantEvents with args.data.detail', () => {
+    const rawInstantEvent: TraceEvent = {
+      cat: 'blink.user_timing',
+      ph: 'i',
+      name: 'plugin-eslint:run-eslint:start',
+      pid: 8057,
+      tid: 0,
+      ts: 1769814970883535,
+      args: {
+        data: {
+          detail:
+            '{"devtools":{"dataType":"track-entry","track":"External","trackGroup":"<✓> Code PushUp","color":"secondary"}}',
+        },
+      },
+    };
+
+    expect(normalizeAndFormatEvents([rawInstantEvent])).toStrictEqual([
+      {
+        cat: 'blink.user_timing',
+        ph: 'i',
+        name: 'plugin-eslint:run-eslint:start',
+        pid: 10_001,
+        tid: 1,
+        ts: 1_700_000_005_000_000,
+        args: {
+          data: {
+            detail: {
+              devtools: {
+                dataType: 'track-entry',
+                track: 'External',
+                trackGroup: '<✓> Code PushUp',
+                color: 'secondary',
+              },
+            },
+          },
+        },
+      },
+    ]);
   });
 
-  it('should preserve event order with mixed out-of-order fields', () => {
-    const input =
-      '{"pid":500,"tid":5,"ts":5000,"name":"e"}\n{"pid":100,"tid":1,"ts":1000,"name":"a"}\n{"pid":300,"tid":3,"ts":3000,"name":"c"}\n';
-    const result = omitTraceJson(input);
-    const events = result
-      .trim()
-      .split('\n')
-      .map(line => JSON.parse(line));
-    expect(events.map(e => e.name)).toEqual(['e', 'a', 'c']);
-    expect(events[0].pid).toBe(10_003);
-    expect(events[1].pid).toBe(10_001);
-    expect(events[2].pid).toBe(10_002);
+  it('should handle decoding of spanEvents with args.detail', () => {
+    const rawSpanEvent = {
+      cat: 'blink.user_timing',
+      s: 't',
+      ph: 'b' as const,
+      name: 'plugin-eslint:run-eslint',
+      pid: 8057,
+      tid: 0,
+      ts: 1769814970883536,
+      id2: { local: '0x3' },
+      args: {
+        detail:
+          '{"devtools":{"dataType":"track-entry","track":"External","trackGroup":"<✓> Code PushUp","color":"secondary"}}',
+      },
+    } as TraceEvent;
+
+    expect(normalizeAndFormatEvents([rawSpanEvent])).toStrictEqual([
+      {
+        cat: 'blink.user_timing',
+        s: 't',
+        ph: 'b',
+        name: 'plugin-eslint:run-eslint',
+        pid: 10_001,
+        tid: 1,
+        ts: 1_700_000_005_000_000,
+        id2: { local: '0x1' },
+        args: {
+          detail: {
+            devtools: {
+              dataType: 'track-entry',
+              track: 'External',
+              trackGroup: '<✓> Code PushUp',
+              color: 'secondary',
+            },
+          },
+        },
+      },
+    ]);
   });
 
-  it('should not normalize non-number pid values', () => {
-    const input = '{"pid":"string"}\n{"pid":null}\n';
-    const result = omitTraceJson(input);
-    const events = result
-      .trim()
-      .split('\n')
-      .map(line => JSON.parse(line));
-    expect(events[0].pid).toBe('string');
-    expect(events[1].pid).toBeNull();
+  it('should handle events with frame normalization', () => {
+    const rawEvent = {
+      cat: 'devtools.timeline',
+      s: 't',
+      ph: 'i' as const,
+      name: 'TracingStartedInBrowser',
+      pid: 8057,
+      tid: 0,
+      ts: 1769814970882268,
+      args: {
+        data: {
+          frameTreeNodeId: 805700,
+          frames: [
+            {
+              frame: 'FRAME0P8057T0',
+              isInPrimaryMainFrame: true,
+              processId: 8057,
+              url: 'trace.json',
+            },
+          ],
+        },
+      },
+    } as TraceEvent;
+
+    expect(normalizeAndFormatEvents([rawEvent])).toStrictEqual([
+      {
+        cat: 'devtools.timeline',
+        s: 't',
+        ph: 'i',
+        name: 'TracingStartedInBrowser',
+        pid: 10_001,
+        tid: 1,
+        ts: 1_700_000_005_000_000,
+        args: {
+          data: {
+            frameTreeNodeId: 1_000_101, // 10001 + '0' + 1
+            frames: [
+              {
+                frame: 'FRAME0P10001T1',
+                isInPrimaryMainFrame: true,
+                processId: 10_001,
+                url: 'trace.json',
+              },
+            ],
+          },
+        },
+      },
+    ]);
   });
 
-  it('should not normalize non-number tid values', () => {
-    const input = '{"tid":"string"}\n{"tid":null}\n';
-    const result = omitTraceJson(input);
-    const events = result
-      .trim()
-      .split('\n')
-      .map(line => JSON.parse(line));
-    expect(events[0].tid).toBe('string');
-    expect(events[1].tid).toBeNull();
+  it('should handle multiple events with different pid/tid/ts/id2', () => {
+    const events = [
+      {
+        cat: 'test',
+        ph: 'i' as const,
+        pid: 100,
+        tid: 5,
+        ts: 100,
+        name: 'first',
+      },
+      {
+        cat: 'test',
+        ph: 'b' as const,
+        pid: 200,
+        tid: 3,
+        ts: 300,
+        name: 'second',
+        id2: { local: '0xabc' },
+      },
+      {
+        cat: 'test',
+        ph: 'b' as const,
+        pid: 150,
+        tid: 7,
+        ts: 200,
+        name: 'third',
+        id2: { local: '0xdef' },
+      },
+    ] as TraceEvent[];
+
+    expect(normalizeAndFormatEvents(events)).toStrictEqual([
+      {
+        cat: 'test',
+        ph: 'i',
+        pid: 10_001,
+        tid: 2,
+        ts: 1_700_000_005_000_000,
+        name: 'first',
+      }, // pid 100->10001, tid 5->2 (sorted: 3->1, 5->2, 7->3)
+      {
+        cat: 'test',
+        ph: 'b',
+        pid: 10_003,
+        tid: 1,
+        ts: 1_700_000_005_000_002,
+        name: 'second',
+        id2: { local: '0x1' },
+      }, // pid 200->10003, tid 3->1
+      {
+        cat: 'test',
+        ph: 'b',
+        pid: 10_002,
+        tid: 3,
+        ts: 1_700_000_005_000_001,
+        name: 'third',
+        id2: { local: '0x2' },
+      }, // pid 150->10002, tid 7->3
+    ]);
   });
 
-  it('should not normalize non-number ts values', () => {
-    const input = '{"ts":"string"}\n{"ts":null}\n';
-    const result = omitTraceJson(input);
-    const events = result
-      .trim()
-      .split('\n')
-      .map(line => JSON.parse(line));
-    expect(events[0].ts).toBe('string');
-    expect(events[1].ts).toBeNull();
+  it('should handle empty array', () => {
+    expect(normalizeAndFormatEvents([])).toStrictEqual([]);
   });
 
-  it('should not normalize id2.local when id2 is missing', () => {
-    const input = '{"name":"test"}\n';
-    const result = omitTraceJson(input);
-    const parsed = JSON.parse(result.trim());
-    expect(parsed.id2).toBeUndefined();
+  it('should handle events with both args.detail and args.data.detail', () => {
+    const rawEvent: TraceEvent = {
+      cat: 'blink.user_timing',
+      ph: 'i',
+      name: 'test',
+      pid: 8057,
+      tid: 0,
+      ts: 1769814970883535,
+      args: {
+        detail: '{"type":"mark"}',
+        data: { detail: '{"type":"span"}' },
+      },
+    };
+
+    expect(normalizeAndFormatEvents([rawEvent])).toStrictEqual([
+      {
+        cat: 'blink.user_timing',
+        ph: 'i',
+        name: 'test',
+        pid: 10_001,
+        tid: 1,
+        ts: 1_700_000_005_000_000,
+        args: {
+          detail: { type: 'mark' },
+          data: { detail: { type: 'span' } },
+        },
+      },
+    ]);
+  });
+});
+
+describe('loadAndOmitTraceJsonl', () => {
+  it('should load and normalize JSONL file', async () => {
+    vol.fromJSON(
+      {
+        'trace.jsonl':
+          '{"pid":12345,"tid":999,"ts":1234567890,"name":"test"}\n{"pid":54321,"tid":888,"ts":9876543210,"name":"test2"}\n',
+      },
+      MEMFS_VOLUME,
+    );
+
+    await expect(loadAndOmitTraceJsonl('trace.jsonl')).resolves.toStrictEqual([
+      { pid: 10_001, tid: 2, ts: 1_700_000_005_000_000, name: 'test' }, // tid 999 maps to 2 (sorted: 888->1, 999->2)
+      { pid: 10_002, tid: 1, ts: 1_700_000_005_000_001, name: 'test2' }, // tid 888 maps to 1
+    ]);
   });
 
-  it('should not normalize id2.local when id2 is not an object', () => {
-    const input = '{"id2":"string"}\n{"id2":null}\n';
-    const result = omitTraceJson(input);
-    const events = result
-      .trim()
-      .split('\n')
-      .map(line => JSON.parse(line));
-    expect(events[0].id2).toBe('string');
-    expect(events[1].id2).toBeNull();
+  it('should decode args.detail and args.data.detail from JSONL', async () => {
+    vol.fromJSON(
+      {
+        'trace.jsonl':
+          '{"pid":8057,"tid":0,"ts":1769814970883535,"args":{"data":{"detail":"{\\"devtools\\":{\\"dataType\\":\\"track-entry\\"}}"}}}\n{"pid":8057,"tid":0,"ts":1769814970883536,"args":{"detail":"{\\"devtools\\":{\\"dataType\\":\\"track-entry\\"}}"}}\n',
+      },
+      MEMFS_VOLUME,
+    );
+
+    await expect(loadAndOmitTraceJsonl('trace.jsonl')).resolves.toStrictEqual([
+      {
+        pid: 10_001,
+        tid: 1,
+        ts: 1_700_000_005_000_000,
+        args: { data: { detail: { devtools: { dataType: 'track-entry' } } } },
+      },
+      {
+        pid: 10_001,
+        tid: 1,
+        ts: 1_700_000_005_000_001,
+        args: { detail: { devtools: { dataType: 'track-entry' } } },
+      },
+    ]);
   });
 
-  it('should not normalize id2.local when local is missing', () => {
-    const input = '{"id2":{"other":"value"}}\n';
-    const result = omitTraceJson(input);
-    const parsed = JSON.parse(result.trim());
-    expect(parsed.id2.local).toBeUndefined();
-    expect(parsed.id2.other).toBe('value');
+  it('should use custom baseTimestampUs', async () => {
+    vol.fromJSON(
+      {
+        'trace.jsonl': '{"ts":1234567890}\n',
+      },
+      MEMFS_VOLUME,
+    );
+
+    await expect(
+      loadAndOmitTraceJsonl('trace.jsonl', {
+        baseTimestampUs: 2_000_000_000_000_000,
+      }),
+    ).resolves.toStrictEqual([{ ts: 2_000_000_000_000_000 }]);
+  });
+});
+
+describe('loadAndOmitTraceJson', () => {
+  it('should load and normalize single trace container', async () => {
+    vol.fromJSON(
+      {
+        'trace.json': JSON.stringify({
+          traceEvents: [
+            { pid: 8057, tid: 0, ts: 1769814970882268, name: 'test' },
+          ],
+        }),
+      },
+      MEMFS_VOLUME,
+    );
+
+    await expect(loadAndOmitTraceJson('trace.json')).resolves.toStrictEqual({
+      traceEvents: [
+        { pid: 10_001, tid: 1, ts: 1_700_000_005_000_000, name: 'test' },
+      ],
+    });
   });
 
-  it('should not normalize id2.local when local is not a string', () => {
-    const input = '{"id2":{"local":123}}\n{"id2":{"local":null}}\n';
-    const result = omitTraceJson(input);
-    const events = result
-      .trim()
-      .split('\n')
-      .map(line => JSON.parse(line));
-    expect(events[0].id2.local).toBe(123);
-    expect(events[1].id2.local).toBeNull();
+  it('should normalize metadata timestamps', async () => {
+    vol.fromJSON(
+      {
+        'trace.json': JSON.stringify({
+          metadata: {
+            generatedAt: '2025-01-01T00:00:00.000Z',
+            startTime: '2025-01-01T00:00:00.000Z',
+            other: 'value',
+          },
+          traceEvents: [],
+        }),
+      },
+      MEMFS_VOLUME,
+    );
+
+    const result = await loadAndOmitTraceJson('trace.json');
+    expect(result).toStrictEqual({
+      traceEvents: [],
+      metadata: {
+        generatedAt: '2026-01-28T14:29:27.995Z',
+        startTime: '2026-01-28T14:29:27.995Z',
+        other: 'value',
+      },
+    });
   });
 
-  it('should map duplicate values to same normalized value', () => {
-    const input = '{"pid":100}\n{"pid":200}\n{"pid":100}\n';
-    const result = omitTraceJson(input);
-    const events = result
-      .trim()
-      .split('\n')
-      .map(line => JSON.parse(line));
-    expect(events[0].pid).toBe(10_001);
-    expect(events[1].pid).toBe(10_002);
-    expect(events[2].pid).toBe(10_001);
+  it('should handle array of trace containers', async () => {
+    vol.fromJSON(
+      {
+        'trace.json': JSON.stringify([
+          { traceEvents: [{ pid: 100, name: 'first' }] },
+          { traceEvents: [{ pid: 200, name: 'second' }] },
+        ]),
+      },
+      MEMFS_VOLUME,
+    );
+
+    await expect(loadAndOmitTraceJson('trace.json')).resolves.toStrictEqual([
+      { traceEvents: [{ pid: 10_001, name: 'first' }] },
+      { traceEvents: [{ pid: 10_001, name: 'second' }] },
+    ]);
   });
 
-  it('should handle duplicate timestamps correctly', () => {
-    const input = '{"ts":1000}\n{"ts":2000}\n{"ts":1000}\n';
-    const result = omitTraceJson(input);
-    const events = result
-      .trim()
-      .split('\n')
-      .map(line => JSON.parse(line));
-    expect(events[0].ts).toBe(1_700_000_005_000_000);
-    expect(events[1].ts).toBe(1_700_000_005_000_002);
-    expect(events[2].ts).toBe(1_700_000_005_000_000);
-  });
+  it('should use custom baseTimestampUs', async () => {
+    vol.fromJSON(
+      {
+        'trace.json': JSON.stringify({
+          traceEvents: [{ ts: 1234567890 }],
+        }),
+      },
+      MEMFS_VOLUME,
+    );
 
-  it('should preserve other id2 properties when normalizing local', () => {
-    const input =
-      '{"id2":{"local":"0xabc","other":"value","nested":{"key":123}}}\n';
-    const result = omitTraceJson(input);
-    const parsed = JSON.parse(result.trim());
-    expect(parsed.id2.local).toBe('0x1');
-    expect(parsed.id2.other).toBe('value');
-    expect(parsed.id2.nested).toEqual({ key: 123 });
-  });
-
-  it('should map multiple id2.local values to incremental hex', () => {
-    const input =
-      '{"id2":{"local":"0xabc"}}\n{"id2":{"local":"0xdef"}}\n{"id2":{"local":"0x123"}}\n';
-    const result = omitTraceJson(input);
-    const events = result
-      .trim()
-      .split('\n')
-      .map(line => JSON.parse(line));
-    const locals = events.map(e => e.id2.local).sort();
-    expect(locals).toEqual(['0x1', '0x2', '0x3']);
-  });
-
-  it('should output valid JSONL with trailing newline', () => {
-    const result = omitTraceJson('{"pid":123}\n');
-    expect(result).toMatch(/\n$/);
-    expect(() => JSON.parse(result.trim())).not.toThrow();
+    await expect(
+      loadAndOmitTraceJson('trace.json', {
+        baseTimestampUs: 2_000_000_000_000_000,
+      }),
+    ).resolves.toStrictEqual({
+      traceEvents: [{ ts: 2_000_000_000_000_000 }],
+    });
   });
 });

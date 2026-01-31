@@ -82,6 +82,7 @@ export class ShardedWal<T extends object = object> {
   readonly #dir: string = process.cwd();
   readonly #coordinatorIdEnvVar: string;
   #state: 'active' | 'finalized' | 'cleaned' = 'active';
+  #filename?: string;
 
   /**
    * Initialize the origin PID environment variable if not already set.
@@ -119,20 +120,52 @@ export class ShardedWal<T extends object = object> {
    * @param opt.format - WAL format configuration
    * @param opt.groupId - Group ID for sharding (defaults to generated group ID)
    * @param opt.coordinatorIdEnvVar - Environment variable name for storing coordinator ID (defaults to CP_SHARDED_WAL_COORDINATOR_ID)
+   * @param opt.measureNameEnvVar - Environment variable name for coordinating groupId across processes (optional)
+   * @param opt.filename - Filename to use for final output file (optional)
    */
   constructor(opt: {
     dir?: string;
     format: Partial<WalFormat<T>>;
     groupId?: string;
     coordinatorIdEnvVar: string;
+    measureNameEnvVar?: string;
+    filename?: string;
   }) {
-    const { dir, format, groupId, coordinatorIdEnvVar } = opt;
-    this.groupId = groupId ?? getUniqueTimeId();
+    const {
+      dir,
+      format,
+      groupId,
+      coordinatorIdEnvVar,
+      measureNameEnvVar,
+      filename,
+    } = opt;
+
+    // Determine groupId: use provided, then env var, or generate
+    let resolvedGroupId: string;
+    if (groupId) {
+      // User explicitly provided groupId - use it
+      resolvedGroupId = groupId;
+    } else if (measureNameEnvVar && process.env[measureNameEnvVar]) {
+      // Env var is set (by coordinator or previous process) - use it
+      resolvedGroupId = process.env[measureNameEnvVar];
+    } else if (measureNameEnvVar) {
+      // Env var not set - we're likely the first/coordinator, generate and set it
+      resolvedGroupId = getUniqueTimeId();
+      // eslint-disable-next-line functional/immutable-data
+      process.env[measureNameEnvVar] = resolvedGroupId;
+    } else {
+      // No measureNameEnvVar provided - generate unique one (backward compatible)
+      resolvedGroupId = getUniqueTimeId();
+    }
+
+    this.groupId = resolvedGroupId;
+
     if (dir) {
       this.#dir = dir;
     }
     this.#format = parseWalFormat<T>(format);
     this.#coordinatorIdEnvVar = coordinatorIdEnvVar;
+    this.#filename = filename;
   }
 
   /**
@@ -224,29 +257,40 @@ export class ShardedWal<T extends object = object> {
 
   /**
    * Generates a filename for the final merged output file.
-   * Uses the groupId as the identifier in the filename.
+   * Uses the stored filename if available, otherwise falls back to groupId.
    *
    * Example with baseName "trace" and groupId "20240101-120000-000":
    * Filename: trace.20240101-120000-000.json
+   *
+   * Example with baseName "trace" and filename "custom-trace.json":
+   * Filename: trace.custom-trace.json
    *
    * @returns The filename for the final merged output file
    */
   getFinalFilePath() {
     const groupIdDir = path.join(this.#dir, this.groupId);
     const { baseName, finalExtension } = this.#format;
-    return path.join(
-      groupIdDir,
-      `${baseName}.${this.groupId}${finalExtension}`,
-    );
+
+    // Use stored filename if available, otherwise use groupId
+    let identifier: string;
+    if (this.#filename) {
+      // Extract basename if it's a full path, and remove extension
+      const basename = path.basename(this.#filename);
+      identifier = basename.replace(/\.[^.]*$/, ''); // Remove extension
+    } else {
+      identifier = this.groupId;
+    }
+
+    return path.join(groupIdDir, `${baseName}.${identifier}${finalExtension}`);
   }
 
-  shard(shardId: string = getShardId()) {
+  shard() {
     this.assertActive();
     return new WriteAheadLogFile({
       file: path.join(
         this.#dir,
         this.groupId,
-        this.getShardedFileName(shardId),
+        this.getShardedFileName(getShardId()),
       ),
       codec: this.#format.codec,
     });

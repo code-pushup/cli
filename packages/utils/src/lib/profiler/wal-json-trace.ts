@@ -1,17 +1,14 @@
 import { defaultClock } from '../clock-epoch.js';
 import type { InvalidEntry, WalFormat } from '../wal.js';
 import {
-  decodeTraceEvent,
-  encodeTraceEvent,
-  getCompleteEvent,
+  complete,
+  createTraceFile,
+  deserializeTraceEvent,
+  encodeEvent,
   getInstantEventTracingStartedInBrowser,
-  getTraceFile,
+  serializeTraceEvent,
 } from './trace-file-utils.js';
-import type {
-  TraceEvent,
-  TraceEventRaw,
-  UserTimingTraceEvent,
-} from './trace-file.type.js';
+import type { TraceEvent } from './trace-file.type.js';
 
 /** Name for the trace start margin event */
 const TRACE_START_MARGIN_NAME = '[trace padding start]';
@@ -22,18 +19,11 @@ const TRACE_MARGIN_US = 1_000_000;
 /** Duration in microseconds for margin events (20ms = 20,000μs) */
 const TRACE_MARGIN_DURATION_US = 20_000;
 
-/**
- * Generates a complete Chrome DevTools trace file content as JSON string.
- * Adds margin events around the trace events and includes metadata.
- * @param events - Array of user timing trace events to include
- * @param metadata - Optional custom metadata to include in the trace file
- * @returns JSON string representation of the complete trace file
- */
 export function generateTraceContent(
-  events: UserTimingTraceEvent[],
+  events: TraceEvent[],
   metadata?: Record<string, unknown>,
 ): string {
-  const traceContainer = getTraceFile({
+  const traceContainer = createTraceFile({
     traceEvents: events,
     startTime: new Date().toISOString(),
     metadata: {
@@ -42,37 +32,40 @@ export function generateTraceContent(
     },
   });
 
-  const marginUs = TRACE_MARGIN_US;
-  const marginDurUs = TRACE_MARGIN_DURATION_US;
-
-  const sortedEvents = [...events].sort((a, b) => a.ts - b.ts);
   const fallbackTs = defaultClock.epochNowUs();
-  const firstTs: number = sortedEvents.at(0)?.ts ?? fallbackTs;
-  const lastTs: number = sortedEvents.at(-1)?.ts ?? fallbackTs;
+  const sortedEvents = events.length
+    ? [...events].sort((a, b) => a.ts - b.ts)
+    : [];
 
-  const startTs = firstTs - marginUs;
-  const endTs = lastTs + marginUs;
+  const firstTs = sortedEvents[0]?.ts ?? fallbackTs;
+  const lastTs = sortedEvents.at(-1)?.ts ?? fallbackTs;
 
-  const traceEvents: TraceEvent[] = [
-    getInstantEventTracingStartedInBrowser({
-      ts: startTs,
-      url: events.length === 0 ? 'empty-trace' : 'generated-trace',
-    }),
-    getCompleteEvent({
-      name: TRACE_START_MARGIN_NAME,
-      ts: startTs,
-      dur: marginDurUs,
-    }),
-    ...sortedEvents.map(event => encodeTraceEvent(event) as TraceEvent),
-    getCompleteEvent({
-      name: TRACE_END_MARGIN_NAME,
-      ts: endTs,
-      dur: marginDurUs,
-    }),
-  ];
-
-  return JSON.stringify({ ...traceContainer, traceEvents });
+  return JSON.stringify({
+    ...traceContainer,
+    traceEvents: [
+      getInstantEventTracingStartedInBrowser({
+        ts: firstTs - TRACE_MARGIN_US,
+        url: events.length ? 'generated-trace' : 'empty-trace',
+      }),
+      complete(TRACE_START_MARGIN_NAME, TRACE_MARGIN_DURATION_US, {
+        ts: firstTs - TRACE_MARGIN_US,
+      }),
+      ...sortedEvents.map(encodeEvent),
+      complete(TRACE_END_MARGIN_NAME, TRACE_MARGIN_DURATION_US, {
+        ts: lastTs + TRACE_MARGIN_US,
+      }),
+    ],
+  });
 }
+
+/**
+ * Codec for encoding and decoding trace events.
+ * Encodes nested objects in args.detail and args.data.detail to JSON strings for storage.
+ */
+export const traceEventCodec = {
+  encode: serializeTraceEvent,
+  decode: deserializeTraceEvent,
+};
 
 /**
  * Creates a WAL (Write-Ahead Logging) format configuration for Chrome DevTools trace files.
@@ -80,28 +73,18 @@ export function generateTraceContent(
  * @returns WalFormat configuration object with baseName, codec, extensions, and finalizer
  */
 export function traceEventWalFormat() {
-  const baseName = 'trace';
-  const walExtension = '.jsonl';
-  const finalExtension = '.json';
   return {
-    baseName,
-    walExtension,
-    finalExtension,
-    codec: {
-      encode: (event: UserTimingTraceEvent) =>
-        JSON.stringify(encodeTraceEvent(event)),
-      decode: (json: string) =>
-        decodeTraceEvent(JSON.parse(json)) as UserTimingTraceEvent,
-    },
+    baseName: 'trace',
+    walExtension: '.jsonl',
+    finalExtension: '.json',
+    codec: traceEventCodec,
     finalizer: (
-      records: (UserTimingTraceEvent | InvalidEntry<string>)[],
+      records: (TraceEvent | InvalidEntry<string>)[],
       metadata?: Record<string, unknown>,
-    ) => {
-      const validRecords = records.filter(
-        (r): r is UserTimingTraceEvent =>
-          !(typeof r === 'object' && r != null && '__invalid' in r),
-      );
-      return generateTraceContent(validRecords, metadata);
-    },
-  } satisfies WalFormat<UserTimingTraceEvent>;
+    ) =>
+      generateTraceContent(
+        records.filter((r): r is TraceEvent => !('__invalid' in (r as object))),
+        metadata,
+      ),
+  } satisfies WalFormat<TraceEvent>;
 }

@@ -1,11 +1,9 @@
-import path from 'node:path';
 import { isEnvVarEnabled } from '../env.js';
 import { type FatalKind, subscribeProcessExit } from '../exit-process.js';
 import {
   type PerformanceObserverOptions,
   PerformanceObserverSink,
 } from '../performance-observer.js';
-import { getUniqueInstanceId } from '../process-id.js';
 import { objectToEntries } from '../transform.js';
 import { errorToMarkerPayload } from '../user-timing-extensibility-api-utils.js';
 import type {
@@ -16,10 +14,12 @@ import { ShardedWal } from '../wal-sharded.js';
 import { type WalFormat, WriteAheadLogFile } from '../wal.js';
 import {
   PROFILER_ENABLED_ENV_VAR,
+  PROFILER_MEASURE_NAME_ENV_VAR,
+  PROFILER_OUT_DIR_ENV_VAR,
+  PROFILER_PERSIST_OUT_DIR,
   SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
 } from './constants.js';
 import { Profiler, type ProfilerOptions } from './profiler.js';
-import { traceEventWalFormat } from './wal-json-trace.js';
 
 export type ProfilerBufferOptions<DomainEvents extends object> = Omit<
   PerformanceObserverOptions<DomainEvents>,
@@ -102,7 +102,6 @@ export class NodejsProfiler<
   #performanceObserverSink: PerformanceObserverSink<DomainEvents>;
   #state: 'idle' | 'running' | 'closed' = 'idle';
   #unsubscribeExitHandlers: (() => void) | undefined;
-  #outDir?: string;
 
   /**
    * Creates a NodejsProfiler instance.
@@ -121,29 +120,28 @@ export class NodejsProfiler<
     // Pick ProfilerPersistOptions
     const {
       format: profilerFormat,
-      baseName,
       measureName,
-      outDir,
+      outDir = PROFILER_PERSIST_OUT_DIR,
       enabled,
       debug,
+      filename,
       ...profilerOptions
     } = allButBufferOptions;
 
     super(profilerOptions);
 
     const { encodePerfEntry, ...format } = profilerFormat;
-    this.#outDir = outDir ?? 'tmp/profiles';
-
-    // Merge baseName if provided
-    const finalFormat = baseName ? { ...format, baseName } : format;
 
     this.#sharder = new ShardedWal<DomainEvents>({
-      dir: this.#outDir,
-      format: finalFormat,
+      dir: process.env[PROFILER_OUT_DIR_ENV_VAR] ?? outDir,
+      format,
       coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-      groupId: options.measureName,
+      measureNameEnvVar: PROFILER_MEASURE_NAME_ENV_VAR,
+      groupId: measureName,
+      filename,
     });
     this.#sharder.ensureCoordinator();
+
     this.#shard = this.#sharder.shard();
     this.#performanceObserverSink = new PerformanceObserverSink({
       sink: this.#shard,
@@ -222,11 +220,6 @@ export class NodejsProfiler<
 
     switch (transition) {
       case 'idle->running':
-        // Set this profiler as coordinator if no coordinator is set yet
-        ShardedWal.setCoordinatorProcess(
-          SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-          this.#sharder.id,
-        );
         super.setEnabled(true);
         this.#shard.open();
         this.#performanceObserverSink.subscribe();
@@ -239,18 +232,12 @@ export class NodejsProfiler<
         break;
 
       case 'running->closed':
-        super.setEnabled(false);
-        this.#performanceObserverSink.unsubscribe();
-        this.#shard.close();
-        this.#sharder.finalizeIfCoordinator();
-        break;
-
       case 'idle->closed':
-        // Shard may have been opened before, close it
         super.setEnabled(false);
         this.#performanceObserverSink.unsubscribe();
         this.#shard.close();
         this.#sharder.finalizeIfCoordinator();
+        this.#unsubscribeExitHandlers?.();
         break;
 
       default:
@@ -273,7 +260,6 @@ export class NodejsProfiler<
       return;
     }
     this.#transition('closed');
-    this.#unsubscribeExitHandlers?.();
   }
 
   /** @returns Whether profiler is in 'running' state */
@@ -302,12 +288,18 @@ export class NodejsProfiler<
 
   /** @returns Queue statistics and profiling state for monitoring */
   get stats() {
-    const { state: sharderState, ...sharderStats } = this.#sharder.getStats();
+    const {
+      state: sharderState,
+      isCoordinator,
+      ...sharderStats
+    } = this.#sharder.getStats();
+
     return {
       profilerState: this.#state,
       debug: this.isDebugMode(),
       sharderState,
       ...sharderStats,
+      isCoordinator,
       shardOpen: !this.#shard.isClosed(),
       shardPath: this.#shard.getPath(),
       ...this.#performanceObserverSink.getStats(),

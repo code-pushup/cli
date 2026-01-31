@@ -13,6 +13,7 @@ const getShardedWal = (overrides?: {
   format?: Partial<
     Parameters<typeof ShardedWal.prototype.constructor>[0]['format']
   >;
+  filename?: string;
 }) =>
   new ShardedWal({
     dir: '/test/shards',
@@ -40,11 +41,19 @@ describe('ShardedWal', () => {
     it('should create shard with correct file path', () => {
       const sw = getShardedWal({
         format: { baseName: 'trace', walExtension: '.log' },
+        filename: '20231114-221320-000.1.2.3',
       });
-      const shard = sw.shard('20231114-221320-000.1.2.3');
+      const shard = sw.shard();
       expect(shard).toBeInstanceOf(WriteAheadLogFile);
-      expect(shard.getPath()).toMatchPath(
-        '/test/shards/20231114-221320-000/trace.20231114-221320-000.1.2.3.log',
+      // Shard files use getShardId() format (timestamp.pid.threadId.counter)
+      // Filename is stored but not used in shard path
+      expect(shard.getPath()).toStartWithPath(
+        '/test/shards/20231114-221320-000/trace.20231114-221320-000.',
+      );
+      expect(shard.getPath()).toEndWithPath('.log');
+      // Verify it matches the getShardId() pattern: timestamp.pid.threadId.counter.log
+      expect(shard.getPath()).toMatch(
+        /^\/test\/shards\/20231114-221320-000\/trace\.20231114-221320-000\.\d+\.\d+\.\d+\.log$/,
       );
     });
 

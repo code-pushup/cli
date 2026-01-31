@@ -30,8 +30,22 @@ export const SHARDED_WAL_COORDINATOR_ID_ENV_VAR =
  * Default output directory for persisted profiler data.
  * Matches the default persist output directory from models.
  */
-export const PROFILER_PERSIST_OUT_DIR = '.code-pushup';
+export const PROFILER_PERSIST_OUT_DIR = 'tmp/profiles';
 
+/**
+ * Environment variable name for setting the output directory for profiler data.
+ * When set, profiler data is written to the specified directory.
+ *
+ * @example
+ * CP_PROFILER_OUT_DIR=/path/to/output npm run dev
+ */
+export const PROFILER_OUT_DIR_ENV_VAR = 'CP_PROFILER_OUT_DIR';
+
+/**
+ * Environment variable name for setting the measure name for profiler data.
+ * When set, the measure name is used to identify the profiler data.
+ */
+export const PROFILER_MEASURE_NAME_ENV_VAR = 'CP_PROFILER_MEASURE_NAME';
 /**
  * Default filename (without extension) for persisted profiler data.
  * Matches the default persist filename from models.

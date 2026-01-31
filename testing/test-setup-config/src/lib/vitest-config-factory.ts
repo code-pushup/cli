@@ -13,6 +13,7 @@ function getIncludePatterns(kind: TestKind): string[] {
   switch (kind) {
     case 'unit':
       return [
+        'mocks/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
         'src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
         'src/**/*.type.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
       ];

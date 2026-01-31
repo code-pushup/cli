@@ -1,111 +1,153 @@
 import * as fs from 'node:fs/promises';
+import { expect } from 'vitest';
+import {
+  createTraceFile,
+  decodeEvent,
+  encodeEvent,
+  frameName,
+  frameTreeNodeId,
+} from '../src/lib/profiler/trace-file-utils.js';
 import type {
-  SpanEvent,
-  TraceEventRaw,
+  TraceEvent,
+  TraceEventContainer,
+  TraceMetadata,
 } from '../src/lib/profiler/trace-file.type';
 
 /**
- * Trace container structure for complete JSON trace files.
+ * Parses JSONL string and decodes all events.
  */
-type TraceContainer = {
-  metadata?: {
-    generatedAt?: string;
-    startTime?: string;
-    [key: string]: unknown;
-  };
-  traceEvents?: TraceEventRaw[];
-  [key: string]: unknown;
+const parseAndDecodeJsonl = (input: string): TraceEvent[] =>
+  input
+    .split('\n')
+    .filter(Boolean)
+    .map(line => decodeEvent(JSON.parse(line)));
+
+/**
+ * Parses JSONL string without decoding (preserves encoded format).
+ */
+const parseJsonl = (input: string): TraceEvent[] =>
+  input
+    .split('\n')
+    .filter(Boolean)
+    .map(line => JSON.parse(line) as TraceEvent);
+
+/**
+ * Normalizes encoded events and preserves encoded format.
+ * Similar to normalizeEncoded but works directly on encoded events from JSONL.
+ */
+const normalizeEncodedJsonl = (
+  events: TraceEvent[],
+  options?: { baseTimestampUs: number },
+): TraceEvent[] => {
+  // Decode temporarily to normalize (normalizeAndFormatEvents needs decoded format)
+  const decodedEvents = events.map(decodeEvent);
+  const normalizedDecoded = normalizeAndFormatEvents(decodedEvents, options);
+  // Re-encode to preserve serialized format
+  return normalizedDecoded.map(encodeEvent);
 };
 
 export async function loadAndOmitTraceJsonl(
   filePath: `${string}.jsonl`,
-  baseTimestampUs = 1_700_000_005_000_000,
-) {
+  options?: {
+    baseTimestampUs: number;
+  },
+): Promise<TraceEvent[]> {
+  const baseTimestampUs = options?.baseTimestampUs ?? 1_700_000_005_000_000;
   const stringContent = (await fs.readFile(filePath)).toString().trim();
 
-  // Parse as JSONL (line-by-line)
-  const events = stringContent
-    .split('\n')
-    .filter(Boolean)
-    .map((line: string) => JSON.parse(line))
-    .map((row: TraceEventRaw) => {
-      const args = row.args || {};
-      const processedArgs: {
-        data?: { detail?: object; [key: string]: unknown };
-        detail?: object;
-        [key: string]: unknown;
-      } = {};
+  // Parse and decode events
+  const events = parseAndDecodeJsonl(stringContent);
+  // Normalize decoded events
+  const normalizedEvents = normalizeAndFormatEvents(events, {
+    baseTimestampUs,
+  });
+  return normalizedEvents;
+}
 
-      // Copy all properties except detail and data
-      Object.keys(args).forEach(key => {
-        if (key !== 'detail' && key !== 'data') {
-          processedArgs[key] = args[key];
-        }
-      });
-
-      // Parse detail if it exists
-      if (args.detail != null && typeof args.detail === 'string') {
-        processedArgs.detail = JSON.parse(args.detail);
-      }
-
-      // Parse data.detail if data exists and has detail
-      if (args.data != null && typeof args.data === 'object') {
-        const processedData: { detail?: object; [key: string]: unknown } = {};
-        const dataObj = args.data as Record<string, unknown>;
-
-        // Copy all properties from data except detail
-        Object.keys(dataObj).forEach(key => {
-          if (key !== 'detail') {
-            processedData[key] = dataObj[key];
-          }
-        });
-
-        // Parse detail if it exists
-        if (args.data.detail != null && typeof args.data.detail === 'string') {
-          processedData.detail = JSON.parse(args.data.detail);
-        }
-
-        processedArgs.data = processedData;
-      }
-
-      return {
-        ...row,
-        args: processedArgs,
-      } as TraceEventRaw;
-    });
-
-  return normalizeAndFormatEvents(events, { baseTimestampUs });
+/**
+ * Validates that a value can be serialized to and parsed from valid JSON.
+ * Throws an error if the value cannot be round-tripped through JSON.
+ */
+function validateJsonSerializable(value: unknown): void {
+  try {
+    const serialized = JSON.stringify(value);
+    JSON.parse(serialized);
+  } catch (error) {
+    throw new Error(
+      `Value is not valid JSON serializable: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
 }
 
 export async function loadAndOmitTraceJson(
-  filePath: `${string}.json`,
-  baseTimestampUs = 1_700_000_005_000_000,
-) {
+  filePath: string,
+  options?: {
+    baseTimestampUs: number;
+  },
+): Promise<TraceEventContainer> {
+  const baseTimestampUs = options?.baseTimestampUs ?? 1_700_000_005_000_000;
   const stringContent = (await fs.readFile(filePath)).toString().trim();
 
   const parsed = JSON.parse(stringContent);
 
-  if (parsed.metadata) {
-    parsed.metadata = {
-      ...parsed.metadata,
+  // Normalize metadata timestamps if present
+  function normalizeMetadata(
+    metadata?: TraceMetadata | Record<string, unknown>,
+  ): TraceMetadata | undefined {
+    if (!metadata) {
+      return undefined;
+    }
+    return {
+      ...metadata,
       generatedAt: '2026-01-28T14:29:27.995Z',
       startTime: '2026-01-28T14:29:27.995Z',
-    };
+    } as TraceMetadata;
   }
 
+  /**
+   * Normalizes decoded events and returns decoded format (for testing).
+   */
+  const normalizeDecoded = (
+    events: TraceEvent[],
+    options?: { baseTimestampUs: number },
+  ): TraceEvent[] => normalizeAndFormatEvents(events, options);
+
   // Check if it's a trace container structure (array of containers or single container)
-  if (Array.isArray(parsed)) {
-    // Array of trace containers
-    return parsed.map(container =>
-      normalizeAndFormatEvents(container, baseTimestampUs),
-    );
-  } else if (
+  if (
     typeof parsed === 'object' &&
     ('traceEvents' in parsed || 'metadata' in parsed)
   ) {
     // Single trace container
-    return normalizeAndFormatEvents(parsed, baseTimestampUs);
+    const container = parsed as {
+      traceEvents?: TraceEvent[];
+      metadata?: TraceMetadata;
+      displayTimeUnit?: 'ms' | 'ns';
+    };
+    // Normalize events and return decoded format
+    const decodedEvents = (container.traceEvents ?? []).map(decodeEvent);
+    const normalizedEvents = normalizeDecoded(decodedEvents, {
+      baseTimestampUs,
+    });
+    const result: TraceEventContainer = {
+      traceEvents: normalizedEvents,
+    };
+    if (container.displayTimeUnit) {
+      result.displayTimeUnit = container.displayTimeUnit;
+    }
+    if (container.metadata) {
+      result.metadata = normalizeMetadata(container.metadata);
+    }
+    // Validate that the result can be serialized to valid JSON
+    validateJsonSerializable(result);
+    return result;
   }
+
+  // Fallback: if structure is unexpected, wrap events in container
+  const fallbackResult = {
+    traceEvents: [],
+  };
+  validateJsonSerializable(fallbackResult);
+  return fallbackResult;
 }
 
 /**
@@ -122,252 +164,236 @@ export async function loadAndOmitTraceJson(
  * - Normalizes metadata timestamps (generatedAt, startTime) to fixed values
  * - Normalizes nested process IDs in args.data (frameTreeNodeId, frames[].processId, frames[].frame)
  *
- * @param traceEvents - The events to nurmalize
- * @param options
- * @returns Normalized trace container object (for single JSON file), array of trace containers (for array JSON), or array of trace events (for JSONL)
- */ export function normalizeAndFormatEvents<
-  I extends object,
-  O extends object,
->(
-  traceEvents: TraceEventRaw[],
-  options: {
+ * @param traceEvents - Array of trace events to normalize, or JSONL string
+ * @param options - Optional configuration with baseTimestampUs
+ * @returns Array of normalized events, or JSONL string if input was string
+ */
+export function normalizeAndFormatEvents(
+  traceEvents: TraceEvent[],
+  options?: { baseTimestampUs: number },
+): TraceEvent[];
+export function normalizeAndFormatEvents(
+  traceEvents: string,
+  options?: { baseTimestampUs: number },
+): string;
+export function normalizeAndFormatEvents(
+  traceEvents: TraceEvent[] | string,
+  options?: { baseTimestampUs: number },
+): TraceEvent[] | string {
+  if (typeof traceEvents === 'string') {
+    if (!traceEvents.trim()) {
+      return traceEvents;
+    }
+    const events = parseJsonl(traceEvents);
+    const decodedEvents = events.map(decodeEvent);
+    const normalized = normalizeAndFormatEventsArray(decodedEvents, options);
+    const encoded = normalized.map(encodeEvent);
+    const result = encoded.map(event => JSON.stringify(event)).join('\n');
+    const hasTrailingNewline = traceEvents.endsWith('\n');
+    return hasTrailingNewline ? result + '\n' : result;
+  }
+  return normalizeAndFormatEventsArray(traceEvents, options);
+}
+
+/**
+ * Maps a value if it exists in the map, otherwise returns empty object.
+ */
+const mapIf = <T, R>(
+  value: T | undefined,
+  map: Map<T, R>,
+  key: string,
+): Record<string, R> =>
+  value != null && map.has(value) ? { [key]: map.get(value)! } : {};
+
+/**
+ * Normalizes frame objects with process ID and frame name.
+ */
+const normalizeFrames = (
+  frames: unknown[],
+  pid: number,
+  tid: number,
+): unknown[] =>
+  frames.map(frame =>
+    frame && typeof frame === 'object'
+      ? {
+          ...(frame as Record<string, unknown>),
+          processId: pid,
+          frame: frameName(pid, tid),
+        }
+      : frame,
+  );
+
+/**
+ * Internal function that normalizes an array of trace events.
+ */
+function normalizeAndFormatEventsArray(
+  traceEvents: TraceEvent[],
+  options?: {
     baseTimestampUs: number;
   },
-): TraceEventRaw[] {
+): TraceEvent[] {
   if (traceEvents.length === 0) {
     return [];
   }
-  const { baseTimestampUs } = options;
+  const { baseTimestampUs = 1_700_000_005_000_000 } = options ?? {};
 
-  // Collect unique pid and tid values
-  type Accumulator = {
-    uniquePids: Set<number>;
-    uniqueTids: Set<number>;
-    timestamps: number[];
-    uniqueLocalIds: Set<string>;
-  };
-
-  const { uniquePids, uniqueTids, timestamps, uniqueLocalIds } =
-    traceEvents.reduce<Accumulator>(
-      (acc, event) => {
-        const newUniquePids = new Set(acc.uniquePids);
-        const newUniqueTids = new Set(acc.uniqueTids);
-        const newUniqueLocalIds = new Set(acc.uniqueLocalIds);
-
-        if (event.tid != null) {
-          newUniquePids.add(event.pid);
-        }
-        if (event.tid != null) {
-          newUniqueTids.add(event.tid);
-        }
-
-        const newTimestamps = [...acc.timestamps, event.ts];
-
-        // Collect id2.local values
-        if (
-          'id2' in event &&
-          (event as SpanEvent).id2 &&
-          typeof (event as SpanEvent).id2 === 'object' &&
-          'local' in (event as SpanEvent).id2 &&
-          typeof (event as SpanEvent).id2.local === 'string'
-        ) {
-          newUniqueLocalIds.add((event as SpanEvent).id2.local);
-        }
-
-        return {
-          uniquePids: newUniquePids,
-          uniqueTids: newUniqueTids,
-          timestamps: newTimestamps,
-          uniqueLocalIds: newUniqueLocalIds,
-        };
-      },
-      {
-        uniquePids: new Set<number>(),
-        uniqueTids: new Set<number>(),
-        timestamps: [] as number[],
-        uniqueLocalIds: new Set<string>(),
-      },
-    );
-
-  // Create mappings: original value -> normalized incremental value
-  const pidMap = new Map<number, number>();
-  const tidMap = new Map<number, number>();
-  const localIdMap = new Map<string, string>();
-
-  // Sort unique values to ensure consistent mapping order
-  const sortedPids = [...uniquePids].sort((a, b) => a - b);
-  const sortedTids = [...uniqueTids].sort((a, b) => a - b);
-  const sortedLocalIds = [...uniqueLocalIds].sort();
-
-  // Map pids starting from 10001
-  sortedPids.forEach((pid, index) => {
-    pidMap.set(pid, 10_001 + index);
-  });
-
-  // Map tids starting from 1
-  sortedTids.forEach((tid, index) => {
-    tidMap.set(tid, 1 + index);
-  });
-
-  // Map local IDs starting from "0x1"
-  sortedLocalIds.forEach((localId, index) => {
-    localIdMap.set(localId, `0x${(index + 1).toString(16)}`);
-  });
-
-  // Sort timestamps to determine incremental order
-  const sortedTimestamps = [...timestamps].sort((a, b) => a - b);
-
-  // Map timestamps incrementally starting from baseTimestampUs
-  const tsMap = sortedTimestamps.reduce((map, ts, index) => {
-    if (!map.has(ts)) {
-      return new Map(map).set(ts, baseTimestampUs + index);
+  // Decode events first if they have string-encoded details
+  const decodedEvents = traceEvents.map(event => {
+    // Check if details are strings and decode them
+    if (event.args?.detail && typeof event.args.detail === 'string') {
+      return decodeEvent(event);
     }
-    return map;
-  }, new Map<number, number>());
+    if (
+      event.args?.data?.detail &&
+      typeof event.args.data.detail === 'string'
+    ) {
+      return decodeEvent(event);
+    }
+    return event;
+  });
+
+  const uniquePids = new Set<number>();
+  const uniqueTids = new Set<number>();
+  const uniqueLocalIds = new Set<string>();
+  const timestamps: number[] = [];
+
+  for (const event of decodedEvents) {
+    if (event.pid != null) uniquePids.add(event.pid);
+    if (event.tid != null) uniqueTids.add(event.tid);
+    timestamps.push(event.ts);
+    if (event.id2?.local && typeof event.id2.local === 'string') {
+      uniqueLocalIds.add(event.id2.local);
+    }
+  }
+
+  const pidMap = new Map(
+    [...uniquePids].sort((a, b) => a - b).map((pid, i) => [pid, 10_001 + i]),
+  );
+  const tidMap = new Map(
+    [...uniqueTids].sort((a, b) => a - b).map((tid, i) => [tid, 1 + i]),
+  );
+  const localIdMap = new Map(
+    [...uniqueLocalIds]
+      .sort()
+      .map((localId, i) => [localId, `0x${(i + 1).toString(16)}`]),
+  );
+  const tsMap = new Map(
+    [...new Set(timestamps)]
+      .sort((a, b) => a - b)
+      .map((ts, i) => [ts, baseTimestampUs + i]),
+  );
 
   // Normalize events while preserving original order
-  return traceEvents.map(event => {
-    const normalizedPid =
-      typeof event.pid === 'number' && pidMap.has(event.pid)
-        ? pidMap.get(event.pid)!
-        : event.pid;
+  return decodedEvents.map(event => {
+    const pid = pidMap.get(event.pid) ?? event.pid;
+    const tid = tidMap.get(event.tid) ?? event.tid;
 
-    const normalizedTid =
-      typeof event.tid === 'number' && tidMap.has(event.tid)
-        ? tidMap.get(event.tid)!
-        : event.tid;
-
-    const pidUpdate =
-      typeof event.pid === 'number' && pidMap.has(event.pid)
-        ? { pid: normalizedPid }
-        : {};
-
-    const tidUpdate =
-      typeof event.tid === 'number' && tidMap.has(event.tid)
-        ? { tid: normalizedTid }
-        : {};
-
-    const tsUpdate =
-      typeof event.ts === 'number' && tsMap.has(event.ts)
-        ? { ts: tsMap.get(event.ts)! }
-        : {};
-
-    // Normalize id2.local if present
-    const id2Update =
-      'id2' in event &&
-      (event as SpanEvent).id2 &&
-      typeof (event as SpanEvent).id2 === 'object' &&
-      'local' in (event as SpanEvent).id2 &&
-      typeof (event as SpanEvent).id2.local === 'string' &&
-      localIdMap.has((event as SpanEvent).id2.local)
-        ? {
-            id2: {
-              ...(event as SpanEvent).id2,
-              local: localIdMap.get((event as SpanEvent).id2.local)!,
-            },
-          }
-        : {};
-
-    // Parse detail strings to objects and normalize nested args.data fields
-    let argsUpdate = {};
-    if (event.args && typeof event.args === 'object') {
-      const processedArgs: {
-        data?: { detail?: object; [key: string]: unknown };
-        detail?: object;
-        [key: string]: unknown;
-      } = { ...event.args };
-
-      // Parse detail if it exists and is a string
-      if (
-        'detail' in event.args &&
-        event.args.detail != null &&
-        typeof event.args.detail === 'string'
-      ) {
-        try {
-          processedArgs.detail = JSON.parse(event.args.detail);
-        } catch {
-          // If parsing fails, keep as string
-        }
-      }
-
-      // Parse data.detail if data exists and has detail
-      if (
-        'data' in event.args &&
-        event.args.data &&
-        typeof event.args.data === 'object'
-      ) {
-        const data = event.args.data as Record<string, unknown>;
-        const normalizedData: Record<string, unknown> = { ...data };
-
-        // Parse detail if it exists and is a string
-        if (
-          'detail' in data &&
-          data['detail'] != null &&
-          typeof data['detail'] === 'string'
-        ) {
-          try {
-            normalizedData['detail'] = JSON.parse(data['detail'] as string);
-          } catch {
-            // If parsing fails, keep as string
-          }
-        }
-
-        // Normalize frameTreeNodeId if present
-        if (
-          'frameTreeNodeId' in data &&
-          typeof normalizedPid === 'number' &&
-          typeof normalizedTid === 'number'
-        ) {
-          normalizedData['frameTreeNodeId'] = Number.parseInt(
-            `${normalizedPid}0${normalizedTid}`,
-            10,
-          );
-        }
-
-        // Normalize frames array if present
-        if ('frames' in data && Array.isArray(data['frames'])) {
-          normalizedData['frames'] = data['frames'].map((frame: unknown) => {
-            if (
-              frame &&
-              typeof frame === 'object' &&
-              typeof normalizedPid === 'number' &&
-              typeof normalizedTid === 'number'
-            ) {
-              const frameObj = frame as Record<string, unknown>;
-              const normalizedFrame: Record<string, unknown> = { ...frameObj };
-
-              // Normalize processId
-              if ('processId' in frameObj) {
-                normalizedFrame['processId'] = normalizedPid;
-              }
-
-              // Normalize frame name (format: FRAME0P{pid}T{tid})
-              if ('frame' in frameObj) {
-                normalizedFrame['frame'] =
-                  `FRAME0P${normalizedPid}T${normalizedTid}`;
-              }
-
-              return normalizedFrame;
-            }
-            return frame;
-          });
-        }
-
-        processedArgs.data = normalizedData;
-      }
-
-      argsUpdate = {
-        args: processedArgs,
-      };
-    }
-
-    return {
+    const normalized: TraceEvent = {
       ...event,
-      ...pidUpdate,
-      ...tidUpdate,
-      ...tsUpdate,
-      ...id2Update,
-      ...argsUpdate,
+      ...mapIf(event.pid, pidMap, 'pid'),
+      ...mapIf(event.tid, tidMap, 'tid'),
+      ...mapIf(event.ts, tsMap, 'ts'),
+      ...(event.id2?.local && localIdMap.has(event.id2.local)
+        ? { id2: { ...event.id2, local: localIdMap.get(event.id2.local)! } }
+        : {}),
     };
+
+    // Handle args normalization
+    if (event.args?.data && typeof event.args.data === 'object') {
+      normalized.args = {
+        ...event.args,
+        data: {
+          ...event.args.data,
+          ...(typeof pid === 'number' &&
+            typeof tid === 'number' &&
+            'frameTreeNodeId' in event.args.data && {
+              frameTreeNodeId: frameTreeNodeId(pid, tid),
+            }),
+          ...(Array.isArray(
+            (event.args.data as Record<string, unknown>).frames,
+          ) && {
+            frames: normalizeFrames(
+              (event.args.data as Record<string, unknown>).frames as unknown[],
+              pid,
+              tid,
+            ),
+          }),
+        },
+      };
+    } else if (event.args) {
+      // Preserve args if it exists and has other properties
+      normalized.args = event.args;
+    }
+    // If args is undefined or doesn't exist, don't include it
+
+    return normalized;
   });
+}
+
+/**
+ * Loads a normalized trace from a JSON file.
+ * @param filePath - The path to the JSON trace file.
+ * @returns The normalized trace.
+ */
+export async function loadNormalizedTraceJson(
+  filePath: `${string}.json`,
+): Promise<TraceEventContainer> {
+  const baseTimestampUs = 1_700_000_005_000_000;
+  const stringContent = (await fs.readFile(filePath)).toString().trim();
+  const parsed = JSON.parse(stringContent);
+
+  function normalizeMetadata(
+    metadata?: TraceMetadata | Record<string, unknown>,
+  ): TraceMetadata | undefined {
+    if (!metadata) {
+      return undefined;
+    }
+    return {
+      ...metadata,
+      generatedAt: '2026-01-28T14:29:27.995Z',
+      startTime: '2026-01-28T14:29:27.995Z',
+    } as TraceMetadata;
+  }
+
+  const container = parsed as {
+    traceEvents?: TraceEvent[];
+    metadata?: TraceMetadata;
+    displayTimeUnit?: 'ms' | 'ns';
+  };
+  const decodedEvents = (container.traceEvents ?? []).map(decodeEvent);
+  const normalizedEvents = normalizeAndFormatEvents(decodedEvents, {
+    baseTimestampUs,
+  });
+  return createTraceFile({
+    traceEvents: normalizedEvents,
+    startTime: container.metadata?.startTime,
+    metadata: normalizeMetadata(container.metadata),
+  });
+}
+
+/**
+ * Loads a normalized trace from a JSONL file.
+ * @param filePath - The path to the JSONL trace file.
+ * @returns The normalized trace.
+ */
+export async function loadNormalizedTraceJsonl(
+  filePath: `${string}.jsonl`,
+): Promise<TraceEventContainer> {
+  const baseTimestampUs = 1_700_000_005_000_000;
+  const stringContent = (await fs.readFile(filePath)).toString().trim();
+  const events = parseAndDecodeJsonl(stringContent);
+  const normalizedEvents = normalizeAndFormatEvents(events, {
+    baseTimestampUs,
+  });
+  return createTraceFile({
+    traceEvents: normalizedEvents,
+  });
+}
+
+export function expectTraceDecodable(container: TraceEventContainer): void {
+  for (const event of container.traceEvents) {
+    if (event.cat === 'blink.user_timing') {
+      expect(() => decodeEvent(event)).not.toThrow();
+    }
+  }
 }
