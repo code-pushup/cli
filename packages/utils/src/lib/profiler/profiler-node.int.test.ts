@@ -398,7 +398,7 @@ describe('NodeJS Profiler Integration', () => {
       ...cleanEnv
     } = process.env;
 
-    const { stdout } = await executeProcess({
+    const { stdout, stderr } = await executeProcess({
       command: 'npx',
       args: [
         'tsx',
@@ -416,7 +416,21 @@ describe('NodeJS Profiler Integration', () => {
       },
     });
 
-    const coordinatorStats = JSON.parse(stdout.trim());
+    if (!stdout.trim()) {
+      throw new Error(
+        `Worker process produced no stdout output.${stderr ? ` stderr: ${stderr}` : ''}`,
+      );
+    }
+
+    let coordinatorStats;
+    try {
+      coordinatorStats = JSON.parse(stdout.trim());
+    } catch (error) {
+      throw new Error(
+        `Failed to parse worker output as JSON. stdout: "${stdout}", stderr: "${stderr}"`,
+        { cause: error },
+      );
+    }
 
     expect(coordinatorStats).toStrictEqual(
       expect.objectContaining({
