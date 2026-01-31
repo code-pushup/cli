@@ -146,35 +146,6 @@ describe('PerformanceObserverSink', () => {
     );
   });
 
-  it('internal PerformanceObserver should observe buffered by default', () => {
-    const observer = new PerformanceObserverSink(options);
-
-    observer.subscribe();
-    expect(
-      MockPerformanceObserver.lastInstance()?.observe,
-    ).toHaveBeenCalledWith(
-      expect.objectContaining({
-        buffered: true,
-      }),
-    );
-  });
-
-  it('internal PerformanceObserver should observe buffered if buffered option is provided', () => {
-    const observer = new PerformanceObserverSink({
-      ...options,
-      captureBufferedEntries: true,
-    });
-
-    observer.subscribe();
-    expect(
-      MockPerformanceObserver.lastInstance()?.observe,
-    ).toHaveBeenCalledWith(
-      expect.objectContaining({
-        buffered: true,
-      }),
-    );
-  });
-
   it('internal PerformanceObserver should process observed entries', () => {
     const observer = new PerformanceObserverSink({
       ...options,

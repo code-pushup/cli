@@ -49,6 +49,7 @@ describe('Profiler', () => {
 
   it('constructor should use defaults for measure', () => {
     const customProfiler = getProfiler({ color: 'secondary' });
+    customProfiler.setEnabled(true);
 
     const result = customProfiler.measure('test-operation', () => 'success');
 
@@ -148,6 +149,7 @@ describe('Profiler', () => {
 
   it('marker should execute without error when enabled', () => {
     const enabledProfiler = getProfiler();
+    enabledProfiler.setEnabled(true);
     expect(() => {
       enabledProfiler.marker('test-marker', {
         color: 'primary',
@@ -176,6 +178,7 @@ describe('Profiler', () => {
     performance.clearMarks();
 
     const profilerWithColor = getProfiler({ color: 'primary' });
+    profilerWithColor.setEnabled(true);
 
     expect(() => {
       profilerWithColor.marker('test-marker-default-color', {
@@ -200,6 +203,7 @@ describe('Profiler', () => {
 
   it('marker should execute without error when enabled with no default color', () => {
     const profilerNoColor = getProfiler();
+    profilerNoColor.setEnabled(true);
 
     expect(() => {
       profilerNoColor.marker('test-marker-no-color', {
@@ -244,6 +248,7 @@ describe('Profiler', () => {
     performance.clearMeasures();
 
     const enabledProfiler = getProfiler();
+    enabledProfiler.setEnabled(true);
     const workFn = vi.fn(() => 'result');
     const result = enabledProfiler.measure('test-event', workFn, {
       color: 'primary',
@@ -320,6 +325,7 @@ describe('Profiler', () => {
 
   it('measure should propagate errors when enabled and call error callback', () => {
     const enabledProfiler = getProfiler();
+    enabledProfiler.setEnabled(true);
     const error = new Error('Enabled test error');
     const workFn = vi.fn(() => {
       throw error;
@@ -358,6 +364,7 @@ describe('Profiler', () => {
 
   it('measureAsync should handle async operations correctly when enabled', async () => {
     const enabledProfiler = getProfiler();
+    enabledProfiler.setEnabled(true);
     const workFn = vi.fn(async () => {
       await Promise.resolve();
       return 'async-result';
@@ -430,6 +437,7 @@ describe('Profiler', () => {
 
   it('measureAsync should propagate async errors when enabled and call error callback', async () => {
     const enabledProfiler = getProfiler();
+    enabledProfiler.setEnabled(true);
     const error = new Error('Enabled async test error');
     const workFn = vi.fn(async () => {
       await Promise.resolve();

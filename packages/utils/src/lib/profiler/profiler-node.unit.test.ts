@@ -107,6 +107,7 @@ const createSimpleProfiler = (
     prefix: 'cp',
     track: 'test-track',
     measureName: overrides?.measureName ?? 'simple',
+    enabled: overrides?.enabled ?? true,
     format: {
       encodePerfEntry: simpleEncoder,
       baseName: 'trace',
@@ -416,9 +417,14 @@ describe('NodejsProfiler', () => {
 
       const stats = profiler.stats;
       // shardPath uses dynamic shard ID format, so we check it matches the pattern
+      // Remove ^ and $ anchors from INSTANCE_ID pattern since we're embedding it
+      const instanceIdPattern = ID_PATTERNS.INSTANCE_ID.source.replace(
+        /^\^|\$$/g,
+        '',
+      );
       expect(stats.shardPath).toMatch(
         new RegExp(
-          `^tmp/profiles/stats-getter/trace\\.${ID_PATTERNS.INSTANCE_ID.source}\\.jsonl$`,
+          `^tmp/profiles/stats-getter/trace\\.${instanceIdPattern}\\.jsonl$`,
         ),
       );
       expect(stats).toStrictEqual({
@@ -589,7 +595,7 @@ describe('NodejsProfiler', () => {
       performance.clearMarks();
       profiler.setEnabled(true);
 
-      expectTransitionMarker('idle->running');
+      expectTransitionMarker('debug:idle->running');
     });
 
     it('should not create transition marker when transitioning from running to idle (profiler disabled)', () => {
@@ -626,10 +632,12 @@ describe('NodejsProfiler', () => {
       profiler.setEnabled(true);
 
       const marks = performance.getEntriesByType('mark');
-      const transitionMark = marks.find(mark => mark.name === 'idle->running');
+      const transitionMark = marks.find(
+        mark => mark.name === 'debug:idle->running',
+      );
       expect(transitionMark).toBeDefined();
 
-      expect(transitionMark?.name).toBe('idle->running');
+      expect(transitionMark?.name).toBe('debug:idle->running');
       expect(transitionMark?.detail).toBeDefined();
       const detail = transitionMark?.detail as UserTimingDetail;
       expect(detail.devtools).toBeDefined();
