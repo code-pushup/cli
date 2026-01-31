@@ -368,11 +368,9 @@ describe('NodejsProfiler', () => {
       expect(profiler.stats.shardPath).toMatch(/\.jsonl$/);
     });
 
-    it('should use provided filename when specified', () => {
-      const customPath = path.join(process.cwd(), 'custom-trace.json');
+    it('should use measureName for final file path', () => {
       const profiler = createProfiler({
         measureName: 'custom-filename',
-        filename: customPath,
       });
       const shardPath = profiler.stats.shardPath;
       // shardPath uses the shard ID format: baseName.shardId.jsonl
@@ -380,9 +378,9 @@ describe('NodejsProfiler', () => {
       expect(shardPath).toMatch(
         /trace\.\d{8}-\d{6}-\d{3}\.\d+\.\d+\.\d+\.jsonl$/,
       );
-      // finalFilePath uses the custom filename
+      // finalFilePath uses measureName as the identifier
       expect(profiler.stats.finalFilePath).toBe(
-        `${PROFILER_PERSIST_OUT_DIR}/custom-filename/trace.custom-trace.json`,
+        `${PROFILER_PERSIST_OUT_DIR}/custom-filename/trace.custom-filename.json`,
       );
     });
 
@@ -420,7 +418,6 @@ describe('NodejsProfiler', () => {
     it('get stats() getter should return current stats', () => {
       const profiler = createProfiler({
         measureName: 'stats-getter',
-        filename: 'stats-getter-trace',
         enabled: false,
       });
 
@@ -438,7 +435,7 @@ describe('NodejsProfiler', () => {
         isCoordinator: true, // When no coordinator env var is set, this profiler becomes coordinator
         isFinalized: false,
         isCleaned: false,
-        finalFilePath: `${PROFILER_PERSIST_OUT_DIR}/stats-getter/trace.stats-getter-trace.json`,
+        finalFilePath: `${PROFILER_PERSIST_OUT_DIR}/stats-getter/trace.stats-getter.json`,
         shardFileCount: 0,
         shardFiles: [],
         shardOpen: false,

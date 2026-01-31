@@ -316,11 +316,6 @@ export class PerformanceObserverSink<T> {
       this.processPerformanceEntries(list.getEntries());
     });
 
-    this.#observer.observe({
-      entryTypes: OBSERVED_TYPES,
-      buffered: this.#buffered,
-    });
-
     // When buffered mode is enabled, Node.js PerformanceObserver invokes
     // the callback synchronously with all buffered entries before observe() returns.
     // However, entries created before any observer existed may not be buffered by Node.js.
@@ -332,6 +327,12 @@ export class PerformanceObserverSink<T> {
       const allEntries = [...existingMarks, ...existingMeasures];
       this.processPerformanceEntries(allEntries);
     }
+
+    this.#observer.observe({
+      entryTypes: OBSERVED_TYPES,
+      // @NOTE: This is for unknown reasons not working, and we manually do it above
+      // buffered: this.#buffered,
+    });
   }
 
   /**

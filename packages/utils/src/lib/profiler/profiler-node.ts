@@ -40,11 +40,6 @@ export type PersistOptions<DomainEvents extends object> = {
   outDir?: string;
 
   /**
-   * File path for the WriteAheadLogFile sink.
-   * If not provided, defaults to `trace.json` in the current working directory.
-   */
-  filename?: string;
-  /**
    * Override the base name for WAL files (overrides format.baseName).
    * If provided, this value will be merged into the format configuration.
    */
@@ -127,7 +122,6 @@ export class NodejsProfiler<
       outDir = PROFILER_PERSIST_OUT_DIR,
       enabled,
       debug,
-      filename,
       ...profilerOptions
     } = allButBufferOptions;
 
@@ -141,7 +135,6 @@ export class NodejsProfiler<
       coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       measureNameEnvVar: PROFILER_MEASURE_NAME_ENV_VAR,
       groupId: measureName,
-      filename,
     });
     this.#sharder.ensureCoordinator();
 

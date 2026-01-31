@@ -82,7 +82,6 @@ export class ShardedWal<T extends object = object> {
   readonly #dir: string = process.cwd();
   readonly #coordinatorIdEnvVar: string;
   #state: 'active' | 'finalized' | 'cleaned' = 'active';
-  #filename?: string;
 
   /**
    * Initialize the origin PID environment variable if not already set.
@@ -121,7 +120,6 @@ export class ShardedWal<T extends object = object> {
    * @param opt.groupId - Group ID for sharding (defaults to generated group ID)
    * @param opt.coordinatorIdEnvVar - Environment variable name for storing coordinator ID (defaults to CP_SHARDED_WAL_COORDINATOR_ID)
    * @param opt.measureNameEnvVar - Environment variable name for coordinating groupId across processes (optional)
-   * @param opt.filename - Filename to use for final output file (optional)
    */
   constructor(opt: {
     dir?: string;
@@ -129,16 +127,9 @@ export class ShardedWal<T extends object = object> {
     groupId?: string;
     coordinatorIdEnvVar: string;
     measureNameEnvVar?: string;
-    filename?: string;
   }) {
-    const {
-      dir,
-      format,
-      groupId,
-      coordinatorIdEnvVar,
-      measureNameEnvVar,
-      filename,
-    } = opt;
+    const { dir, format, groupId, coordinatorIdEnvVar, measureNameEnvVar } =
+      opt;
 
     // Determine groupId: use provided, then env var, or generate
     let resolvedGroupId: string;
@@ -165,7 +156,6 @@ export class ShardedWal<T extends object = object> {
     }
     this.#format = parseWalFormat<T>(format);
     this.#coordinatorIdEnvVar = coordinatorIdEnvVar;
-    this.#filename = filename;
   }
 
   /**
@@ -257,13 +247,13 @@ export class ShardedWal<T extends object = object> {
 
   /**
    * Generates a filename for the final merged output file.
-   * Uses the stored filename if available, otherwise falls back to groupId.
+   * Uses the groupId as the identifier in the final filename.
    *
    * Example with baseName "trace" and groupId "20240101-120000-000":
    * Filename: trace.20240101-120000-000.json
    *
-   * Example with baseName "trace" and filename "custom-trace.json":
-   * Filename: trace.custom-trace.json
+   * Example with baseName "trace" and groupId "measureName":
+   * Filename: trace.measureName.json
    *
    * @returns The filename for the final merged output file
    */
@@ -271,17 +261,10 @@ export class ShardedWal<T extends object = object> {
     const groupIdDir = path.join(this.#dir, this.groupId);
     const { baseName, finalExtension } = this.#format;
 
-    // Use stored filename if available, otherwise use groupId
-    let identifier: string;
-    if (this.#filename) {
-      // Extract basename if it's a full path, and remove extension
-      const basename = path.basename(this.#filename);
-      identifier = basename.replace(/\.[^.]*$/, ''); // Remove extension
-    } else {
-      identifier = this.groupId;
-    }
-
-    return path.join(groupIdDir, `${baseName}.${identifier}${finalExtension}`);
+    return path.join(
+      groupIdDir,
+      `${baseName}.${this.groupId}${finalExtension}`,
+    );
   }
 
   shard() {
