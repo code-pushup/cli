@@ -26,6 +26,6 @@ const { window: jsdomWindow } = new JSDOM(html);
 
 // Set globals for axe-core compatibility
 // eslint-disable-next-line  functional/immutable-data
-globalThis.window = jsdomWindow;
+globalThis.window = jsdomWindow as unknown as Window & typeof globalThis;
 // eslint-disable-next-line  functional/immutable-data
 globalThis.document = jsdomWindow.document;
