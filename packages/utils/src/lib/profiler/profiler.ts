@@ -13,6 +13,7 @@ import {
 } from '../user-timing-extensibility-api-utils.js';
 import type {
   ActionTrackEntryPayload,
+  DevToolsActionColor,
   DevToolsColor,
   EntryMeta,
 } from '../user-timing-extensibility-api.type.js';

@@ -1,5 +1,6 @@
 import { defaultClock } from '../clock-epoch.js';
 import type { InvalidEntry, WalFormat } from '../wal.js';
+import { PROFILER_OUT_BASENAME } from './constants';
 import {
   complete,
   createTraceFile,
@@ -37,7 +38,7 @@ export function generateTraceContent(
     ? [...events].sort((a, b) => a.ts - b.ts)
     : [];
 
-  const firstTs = sortedEvents[0]?.ts ?? fallbackTs;
+  const firstTs = sortedEvents.at(0)?.ts ?? fallbackTs;
   const lastTs = sortedEvents.at(-1)?.ts ?? fallbackTs;
 
   return JSON.stringify({
@@ -74,7 +75,7 @@ export const traceEventCodec = {
  */
 export function traceEventWalFormat() {
   return {
-    baseName: 'trace',
+    baseName: PROFILER_OUT_BASENAME,
     walExtension: '.jsonl',
     finalExtension: '.json',
     codec: traceEventCodec,

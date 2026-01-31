@@ -46,11 +46,6 @@ export const PROFILER_OUT_DIR_ENV_VAR = 'CP_PROFILER_OUT_DIR';
  * When set, the measure name is used to identify the profiler data.
  */
 export const PROFILER_MEASURE_NAME_ENV_VAR = 'CP_PROFILER_MEASURE_NAME';
-/**
- * Default filename (without extension) for persisted profiler data.
- * Matches the default persist filename from models.
- */
-export const PROFILER_OUT_FILENAME = 'report';
 
 /**
  * Default base name for WAL files.

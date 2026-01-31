@@ -7,12 +7,15 @@ import {
 import { objectToEntries } from '../transform.js';
 import { errorToMarkerPayload } from '../user-timing-extensibility-api-utils.js';
 import type {
+  ActionColorPayload,
   ActionTrackEntryPayload,
+  DevToolsActionColor,
   MarkerPayload,
 } from '../user-timing-extensibility-api.type.js';
 import { ShardedWal } from '../wal-sharded.js';
 import { type WalFormat, WriteAheadLogFile } from '../wal.js';
 import {
+  PROFILER_DEBUG_MEASURE_PREFIX,
   PROFILER_ENABLED_ENV_VAR,
   PROFILER_MEASURE_NAME_ENV_VAR,
   PROFILER_OUT_DIR_ENV_VAR,
@@ -179,7 +182,10 @@ export class NodejsProfiler<
       tooltipText: `Profiler state transition: ${transition}`,
       properties: [['Transition', transition], ...objectToEntries(this.stats)],
     };
-    this.marker(transition, transitionMarkerPayload);
+    this.marker(
+      `${PROFILER_DEBUG_MEASURE_PREFIX}:${transition}`,
+      transitionMarkerPayload,
+    );
   }
 
   /**
