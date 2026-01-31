@@ -444,7 +444,7 @@ describe('NodeJS Profiler Integration', () => {
 
     // Verify all processes share the same groupId
     const groupId = coordinatorStats.groupId;
-    expect(coordinatorStats.finalFilePath).toContain(groupId);
+    expect(coordinatorStats.finalFilePath).toContainPath(groupId);
 
     const snapshotData = await loadNormalizedTraceJson(
       coordinatorStats.finalFilePath as `${string}.json`,
