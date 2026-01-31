@@ -37,6 +37,7 @@ try {
         new Promise((resolve, reject) => {
           const child = spawn('npx', ['tsx', workerScriptPath], {
             stdio: 'pipe',
+            env: process.env,
           });
 
           child.on('close', code => {
