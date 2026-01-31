@@ -378,7 +378,7 @@ describe('NodejsProfiler', () => {
       expect(shardPath).toContainPath('tmp/profiles/custom-filename');
       expect(shardPath).toMatch(/trace\.\d{8}-\d{6}-\d{3}(?:\.\d+){3}\.jsonl$/);
       // finalFilePath uses measureName as the identifier
-      expect(profiler.stats.finalFilePath).toBe(
+      expect(profiler.stats.finalFilePath).toMatchPath(
         `${PROFILER_PERSIST_OUT_DIR}/custom-filename/trace.custom-filename.json`,
       );
     });
@@ -441,7 +441,9 @@ describe('NodejsProfiler', () => {
         isCoordinator: true, // When no coordinator env var is set, this profiler becomes coordinator
         isFinalized: false,
         isCleaned: false,
-        finalFilePath: `${PROFILER_PERSIST_OUT_DIR}/stats-getter/trace.stats-getter.json`,
+        finalFilePath: expect.pathToMatch(
+          `${PROFILER_PERSIST_OUT_DIR}/stats-getter/trace.stats-getter.json`,
+        ),
         shardFileCount: 0,
         shardFiles: [],
         shardOpen: false,

@@ -44,6 +44,7 @@ describe('WriteAheadLogFile Integration', () => {
     walFile = new WriteAheadLogFile({ file: filePath, codec: stringCodec() });
 
     walFile.open();
+    // eslint-disable-next-line functional/no-loop-statements
     for (let i = 1; i <= 10; i++) {
       walFile.append(`record${i}`);
     }

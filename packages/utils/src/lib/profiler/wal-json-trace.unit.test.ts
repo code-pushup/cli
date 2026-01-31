@@ -207,6 +207,7 @@ describe('traceEventCodec', () => {
 
     it('should handle multiple round-trips correctly', () => {
       let current = instantEvent;
+      // eslint-disable-next-line functional/no-loop-statements
       for (let i = 0; i < 3; i++) {
         const encoded = traceEventCodec.encode(current);
         const decoded = traceEventCodec.decode(encoded);

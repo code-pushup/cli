@@ -125,9 +125,11 @@ export async function loadAndOmitTraceJson(
       traceEvents: normalizedEvents,
     };
     if (container.displayTimeUnit) {
+      // eslint-disable-next-line functional/immutable-data
       result.displayTimeUnit = container.displayTimeUnit;
     }
     if (container.metadata) {
+      // eslint-disable-next-line functional/immutable-data
       result.metadata = normalizeMetadata(container.metadata);
     }
     // Validate that the result can be serialized to valid JSON
@@ -251,9 +253,11 @@ function normalizeAndFormatEventsArray(
   const uniqueLocalIds = new Set<string>();
   const timestamps: number[] = [];
 
+  // eslint-disable-next-line functional/no-loop-statements
   for (const event of decodedEvents) {
     if (event.pid != null) uniquePids.add(event.pid);
     if (event.tid != null) uniqueTids.add(event.tid);
+    // eslint-disable-next-line functional/immutable-data
     timestamps.push(event.ts);
     if (event.id2?.local && typeof event.id2.local === 'string') {
       uniqueLocalIds.add(event.id2.local);
@@ -294,6 +298,7 @@ function normalizeAndFormatEventsArray(
 
     // Handle args normalization
     if (event.args?.data && typeof event.args.data === 'object') {
+      // eslint-disable-next-line functional/immutable-data
       normalized.args = {
         ...event.args,
         data: {
@@ -316,6 +321,7 @@ function normalizeAndFormatEventsArray(
       };
     } else if (event.args) {
       // Preserve args if it exists and has other properties
+      // eslint-disable-next-line functional/immutable-data
       normalized.args = event.args;
     }
     // If args is undefined or doesn't exist, don't include it
@@ -405,6 +411,7 @@ export async function loadNormalizedTraceJsonl(
  * @param container - Trace event container to validate
  */
 export function expectTraceDecodable(container: TraceEventContainer): void {
+  // eslint-disable-next-line functional/no-loop-statements
   for (const event of container.traceEvents) {
     if (event.cat === 'blink.user_timing') {
       expect(() => decodeEvent(event)).not.toThrow();

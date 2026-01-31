@@ -67,6 +67,7 @@ describe('NodeJS Profiler Integration', () => {
       debug: options.debug ?? false,
       measureName: options.measureName,
     });
+    // eslint-disable-next-line functional/immutable-data
     activeProfilers.push(profiler);
     return profiler;
   }
@@ -190,11 +191,13 @@ describe('NodeJS Profiler Integration', () => {
   });
 
   afterEach(() => {
+    // eslint-disable-next-line functional/no-loop-statements
     for (const profiler of activeProfilers) {
       if (profiler.stats.profilerState !== 'closed') {
         profiler.close();
       }
     }
+    // eslint-disable-next-line functional/immutable-data
     activeProfilers.length = 0;
 
     vi.stubEnv(PROFILER_ENABLED_ENV_VAR, undefined!);
@@ -420,8 +423,9 @@ describe('NodeJS Profiler Integration', () => {
     const processDuration = performance.now() - processStartTime;
 
     if (!stdout.trim()) {
+      const stderrMessage = stderr ? ` stderr: ${stderr}` : '';
       throw new Error(
-        `Worker process produced no stdout output.${stderr ? ` stderr: ${stderr}` : ''}`,
+        `Worker process produced no stdout output.${stderrMessage}`,
       );
     }
 
@@ -465,6 +469,7 @@ describe('NodeJS Profiler Integration', () => {
     const totalDuration = performance.now() - startTime;
 
     // Log timing information for debugging
+    // eslint-disable-next-line no-console
     console.log(
       `[Timing] Process execution: ${processDuration.toFixed(2)}ms, Validation: ${validationDuration.toFixed(2)}ms, Total: ${totalDuration.toFixed(2)}ms`,
     );

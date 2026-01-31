@@ -5,12 +5,10 @@ import {
   performDummyWork,
 } from './utils.js';
 
-(async () => {
-  await createBufferedEvents();
+await createBufferedEvents();
 
-  const profiler = new NodejsProfiler(getProfilerConfig());
+const profiler = new NodejsProfiler(getProfilerConfig());
 
-  await performDummyWork(profiler);
+await performDummyWork(profiler);
 
-  profiler.close();
-})();
+profiler.close();

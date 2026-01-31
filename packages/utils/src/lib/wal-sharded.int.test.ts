@@ -82,6 +82,7 @@ describe('ShardedWal Integration', () => {
       groupId: 'merge-shards',
     });
 
+    // eslint-disable-next-line functional/no-loop-statements
     for (let i = 1; i <= 5; i++) {
       const shard = shardedWal.shard();
       shard.open();

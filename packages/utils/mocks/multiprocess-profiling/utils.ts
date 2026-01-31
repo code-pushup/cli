@@ -1,5 +1,7 @@
-import { NodejsProfiler } from '../../src/lib/profiler/profiler-node.js';
-import type { NodejsProfilerOptions } from '../../src/lib/profiler/profiler-node.js';
+import {
+  NodejsProfiler,
+  type NodejsProfilerOptions,
+} from '../../src/lib/profiler/profiler-node.js';
 import { entryToTraceEvents } from '../../src/lib/profiler/trace-file-utils.js';
 import type { TraceEvent } from '../../src/lib/profiler/trace-file.type.js';
 import { traceEventWalFormat } from '../../src/lib/profiler/wal-json-trace.js';
@@ -70,6 +72,7 @@ export async function performDummyWork(
   // Random number of intervals (1-3) - reduced from 2-5
   const numIntervals = Math.floor(Math.random() * 3) + 1;
 
+  // eslint-disable-next-line functional/no-loop-statements
   for (let interval = 0; interval < numIntervals; interval++) {
     // Random interval delay (25-100ms)
     const intervalDelay = Math.floor(Math.random() * 75) + 25;
@@ -78,6 +81,7 @@ export async function performDummyWork(
     // Random number of work packages per interval (1-3)
     const numWorkPackages = Math.floor(Math.random() * 3) + 1;
 
+    // eslint-disable-next-line functional/no-loop-statements
     for (let pkg = 0; pkg < numWorkPackages; pkg++) {
       // Random work size (100-2,500,000 elements)
       const workSize = Math.floor(Math.random() * 2_500_000);
