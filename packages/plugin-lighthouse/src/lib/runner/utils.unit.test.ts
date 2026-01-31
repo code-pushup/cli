@@ -25,27 +25,25 @@ import {
   withLocalTmpDir,
 } from './utils.js';
 
-// mock bundleRequire inside importEsmModule used for fetching config
-vi.mock('bundle-require', async () => {
+// mock importModule from @code-pushup/utils to bypass jiti which doesn't work with memfs
+vi.mock('@code-pushup/utils', async () => {
+  const utils: object = await vi.importActual('@code-pushup/utils');
   const { CORE_CONFIG_MOCK }: Record<string, CoreConfig> =
     await vi.importActual('@code-pushup/test-utils');
 
   return {
-    bundleRequire: vi
+    ...utils,
+    importModule: vi
       .fn()
       .mockImplementation((options: { filepath: string }) => {
         const project = options.filepath.split('.').at(-2);
-        return {
-          mod: {
-            default: {
-              ...CORE_CONFIG_MOCK,
-              upload: {
-                ...CORE_CONFIG_MOCK?.upload,
-                project, // returns loaded file extension to check in test
-              },
-            },
+        return Promise.resolve({
+          ...CORE_CONFIG_MOCK,
+          upload: {
+            ...CORE_CONFIG_MOCK?.upload,
+            project, // returns loaded file extension to check in test
           },
-        };
+        });
       }),
   };
 });

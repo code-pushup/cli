@@ -13,80 +13,86 @@ import {
   getCoveragePathsForTarget,
 } from './coverage-paths.js';
 
-vi.mock('bundle-require', () => ({
-  bundleRequire: vi.fn().mockImplementation((options: { filepath: string }) => {
-    const VITEST_VALID: VitestCoverageConfig = {
-      test: {
-        coverage: {
-          reporter: ['lcov'],
-          reportsDirectory: path.join('coverage', 'cli'),
-        },
+// mock importModule from @code-pushup/utils to bypass jiti which doesn't work with memfs
+vi.mock('@code-pushup/utils', async () => {
+  const utils: object = await vi.importActual('@code-pushup/utils');
+
+  const VITEST_VALID: VitestCoverageConfig = {
+    test: {
+      coverage: {
+        reporter: ['lcov'],
+        reportsDirectory: path.join('coverage', 'cli'),
       },
-    };
+    },
+  };
 
-    const VITEST_NO_DIR: VitestCoverageConfig = {
-      test: { coverage: { reporter: ['lcov'] } },
-    };
+  const VITEST_NO_DIR: VitestCoverageConfig = {
+    test: { coverage: { reporter: ['lcov'] } },
+  };
 
-    const VITEST_NO_LCOV: VitestCoverageConfig = {
-      test: {
-        coverage: {
-          reporter: ['json'],
-          reportsDirectory: 'coverage',
-        },
+  const VITEST_NO_LCOV: VitestCoverageConfig = {
+    test: {
+      coverage: {
+        reporter: ['json'],
+        reportsDirectory: 'coverage',
       },
-    };
+    },
+  };
 
-    const JEST_VALID: JestCoverageConfig = {
-      coverageReporters: ['lcov'],
-      coverageDirectory: path.join('coverage', 'core'),
-    };
+  const JEST_VALID: JestCoverageConfig = {
+    coverageReporters: ['lcov'],
+    coverageDirectory: path.join('coverage', 'core'),
+  };
 
-    const JEST_NO_DIR: JestCoverageConfig = {
-      coverageReporters: ['lcov'],
-    };
+  const JEST_NO_DIR: JestCoverageConfig = {
+    coverageReporters: ['lcov'],
+  };
 
-    const JEST_NO_LCOV: JestCoverageConfig = {
-      coverageReporters: ['json'],
-      coverageDirectory: 'coverage',
-    };
+  const JEST_NO_LCOV: JestCoverageConfig = {
+    coverageReporters: ['json'],
+    coverageDirectory: 'coverage',
+  };
 
-    const JEST_PRESET: JestCoverageConfig & { preset?: string } = {
-      preset: '../../jest.preset.ts',
-      coverageDirectory: 'coverage',
-    };
+  const JEST_PRESET: JestCoverageConfig & { preset?: string } = {
+    preset: '../../jest.preset.ts',
+    coverageDirectory: 'coverage',
+  };
 
-    const wrapReturnValue = (
-      value: VitestCoverageConfig | JestCoverageConfig,
-    ) => ({ mod: { default: value } });
-
-    const config = options.filepath.split('.')[0];
-    switch (config) {
-      case 'vitest-valid':
-        return wrapReturnValue(VITEST_VALID);
-      case 'vitest-no-lcov':
-        return wrapReturnValue(VITEST_NO_LCOV);
-      case 'vitest-no-dir':
-        return wrapReturnValue(VITEST_NO_DIR);
-      case 'jest-valid':
-        return wrapReturnValue(JEST_VALID);
-      case 'jest-no-lcov':
-        return wrapReturnValue(JEST_NO_LCOV);
-      case 'jest-no-dir':
-        return wrapReturnValue(JEST_NO_DIR);
-      case 'jest-preset':
-        return wrapReturnValue(JEST_PRESET);
-      default:
-        return wrapReturnValue({});
-    }
-  }),
-}));
+  return {
+    ...utils,
+    importModule: vi
+      .fn()
+      .mockImplementation((options: { filepath: string }) => {
+        // Extract config name from filename (handles both absolute and relative paths)
+        const filename = path.basename(options.filepath);
+        const config = filename.split('.')[0];
+        switch (config) {
+          case 'vitest-valid':
+            return Promise.resolve(VITEST_VALID);
+          case 'vitest-no-lcov':
+            return Promise.resolve(VITEST_NO_LCOV);
+          case 'vitest-no-dir':
+            return Promise.resolve(VITEST_NO_DIR);
+          case 'jest-valid':
+            return Promise.resolve(JEST_VALID);
+          case 'jest-no-lcov':
+            return Promise.resolve(JEST_NO_LCOV);
+          case 'jest-no-dir':
+            return Promise.resolve(JEST_NO_DIR);
+          case 'jest-preset':
+            return Promise.resolve(JEST_PRESET);
+          default:
+            return Promise.resolve({});
+        }
+      }),
+  };
+});
 
 describe('getCoveragePathForTarget', () => {
   beforeEach(() => {
     vol.fromJSON(
       {
-        // values come from bundle-require mock above
+        // values come from importModule mock above
         'vitest-valid.config.ts': '',
         'jest-valid.config.ts': '',
       },
@@ -162,7 +168,7 @@ describe('getCoveragePathForVitest', () => {
   beforeEach(() => {
     vol.fromJSON(
       {
-        // values come from bundle-require mock above
+        // values come from importModule mock above
         'vitest-valid.config.unit.ts': '',
         'vitest-no-dir.config.integration.ts': '',
         'vitest-no-lcov.config.integration.ts': '',
@@ -260,7 +266,7 @@ describe('getCoveragePathForJest', () => {
   beforeEach(() => {
     vol.fromJSON(
       {
-        // values come from bundle-require mock above
+        // values come from importModule mock above
         'jest-preset.config.ts': '',
         'jest-valid.config.unit.ts': '',
         'jest-valid.config.integration.ts': '',
