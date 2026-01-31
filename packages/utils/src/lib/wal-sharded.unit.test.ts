@@ -318,14 +318,8 @@ describe('ShardedWal', () => {
         format: { baseName: 'test', walExtension: '.log' },
       });
 
-      // Note: This test verifies state transition logic.
-      // Actual cleanup requires coordinator status which is hard to set up in unit tests.
-      // The state transition is tested via cleanupIfCoordinator() behavior.
-      // If instance is coordinator, cleanupIfCoordinator() will clean and set state to 'cleaned'.
-      // If not coordinator, state remains 'active'.
       sw.cleanupIfCoordinator();
 
-      // State depends on coordinator status - we test the logic, not the coordinator setup
       const state = sw.getState();
       expect(['active', 'cleaned']).toContain(state);
     });

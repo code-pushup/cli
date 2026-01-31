@@ -493,19 +493,11 @@ describe('traceEventWalFormat', () => {
       },
     };
 
-    // Start with encoded string
     const initialEncoded = format.codec.encode(originalEvent);
-
-    // First decode
     const firstDecoded = format.codec.decode(initialEncoded);
-
-    // Encode again
     const secondEncoded = format.codec.encode(firstDecoded);
-
-    // Decode again
     const secondDecoded = format.codec.decode(secondEncoded);
 
-    // Verify the final decoded event matches the first decoded event
     expect(secondDecoded).toStrictEqual(firstDecoded);
     expect(secondDecoded).toStrictEqual(originalEvent);
   });

@@ -58,7 +58,6 @@ describe('ShardedWal Integration', () => {
 
     shardedWal.finalize();
 
-    // With filename provided, final file uses the first filename (test-shard-1)
     const finalFile = path.join(
       testDir,
       shardedWal.groupId,
@@ -85,7 +84,6 @@ describe('ShardedWal Integration', () => {
       filename: 'shard-1',
     });
 
-    // Create multiple shards
     for (let i = 1; i <= 5; i++) {
       const shard = shardedWal.shard();
       shard.open();
@@ -95,7 +93,6 @@ describe('ShardedWal Integration', () => {
 
     shardedWal.finalize();
 
-    // With filename provided, final file uses the first filename (shard-1)
     const finalFile = path.join(
       testDir,
       shardedWal.groupId,
@@ -140,7 +137,6 @@ describe('ShardedWal Integration', () => {
 
     shardedWal.finalize();
 
-    // With filename provided, final file uses the filename (test-shard)
     const finalFile = path.join(
       testDir,
       shardedWal.groupId,
@@ -180,8 +176,6 @@ describe('ShardedWal Integration', () => {
 
     shardedWal.finalize();
 
-    // Verify final file exists
-    // With filename provided, final file uses the first filename (shard-1)
     const finalFile = path.join(
       testDir,
       shardedWal.groupId,
@@ -189,14 +183,11 @@ describe('ShardedWal Integration', () => {
     );
     expect(fs.existsSync(finalFile)).toBeTrue();
 
-    // Cleanup should remove shard files (only if coordinator)
     shardedWal.cleanupIfCoordinator();
 
-    // Verify shard files are removed
     const groupDir = path.join(testDir, shardedWal.groupId);
     const files = fs.readdirSync(groupDir);
     expect(files).not.toContain(expect.stringMatching(/cleanup-test.*\.log$/));
-    // Final file should still exist (uses first filename: shard-1)
     expect(files).toContain(`cleanup-test.shard-1.json`);
   });
 
@@ -222,7 +213,6 @@ describe('ShardedWal Integration', () => {
 
     shardedWal.finalize({ version: '2.0', timestamp: Date.now() });
 
-    // With filename provided, final file uses the filename (custom-shard)
     const finalFile = path.join(
       testDir,
       shardedWal.groupId,
@@ -250,7 +240,6 @@ describe('ShardedWal Integration', () => {
       groupId: 'empty-shards',
     });
 
-    // Create group directory but no shards
     const groupDir = path.join(testDir, shardedWal.groupId);
     fs.mkdirSync(groupDir, { recursive: true });
 
