@@ -44,7 +44,7 @@ export function getProfilerConfig(
 export async function createBufferedEvents(): Promise<void> {
   const bM1 = `buffered-mark-${process.pid}`;
   performance.mark(bM1, asOptions(markerPayload({ color: 'tertiary' })));
-  const intervalDelay = Math.floor(Math.random() * 150) + 50;
+  const intervalDelay = Math.floor(Math.random() * 50) + 25;
   await new Promise(resolve => setTimeout(resolve, intervalDelay));
   performance.measure(`buffered-${process.pid}`, {
     start: bM1,
@@ -67,20 +67,20 @@ export async function performDummyWork(
     tooltipText: `Process ${process.pid} started`,
   });
 
-  // Random number of intervals (2-5)
-  const numIntervals = Math.floor(Math.random() * 4) + 2;
+  // Random number of intervals (1-3) - reduced from 2-5
+  const numIntervals = Math.floor(Math.random() * 3) + 1;
 
   for (let interval = 0; interval < numIntervals; interval++) {
-    // Random interval delay (50-200ms)
-    const intervalDelay = Math.floor(Math.random() * 150) + 50;
+    // Random interval delay (25-100ms)
+    const intervalDelay = Math.floor(Math.random() * 75) + 25;
     await new Promise(resolve => setTimeout(resolve, intervalDelay));
 
-    // Random number of work packages per interval (1-5)
-    const numWorkPackages = Math.floor(Math.random() * 5) + 1;
+    // Random number of work packages per interval (1-3)
+    const numWorkPackages = Math.floor(Math.random() * 3) + 1;
 
     for (let pkg = 0; pkg < numWorkPackages; pkg++) {
-      // Random work size (100-5000 elements)
-      const workSize = Math.floor(Math.random() * 5_000_000);
+      // Random work size (100-2,500,000 elements)
+      const workSize = Math.floor(Math.random() * 2_500_000);
 
       profiler.measure(
         `process-${process.pid}:interval-${interval}:work-${pkg}`,

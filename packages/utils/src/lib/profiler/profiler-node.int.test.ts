@@ -391,6 +391,7 @@ describe('NodeJS Profiler Integration', () => {
 
   it('should handle sharding across multiple processes', async () => {
     const numProcesses = 3;
+    const startTime = performance.now();
 
     const {
       [PROFILER_SHARDER_ID_ENV_VAR]: _coordinatorId,
@@ -398,6 +399,7 @@ describe('NodeJS Profiler Integration', () => {
       ...cleanEnv
     } = process.env;
 
+    const processStartTime = performance.now();
     const { stdout, stderr } = await executeProcess({
       command: 'npx',
       args: [
@@ -415,6 +417,7 @@ describe('NodeJS Profiler Integration', () => {
         [PROFILER_OUT_DIR_ENV_VAR]: testSuitDir,
       },
     });
+    const processDuration = performance.now() - processStartTime;
 
     if (!stdout.trim()) {
       throw new Error(
@@ -432,6 +435,7 @@ describe('NodeJS Profiler Integration', () => {
       );
     }
 
+    const validationStartTime = performance.now();
     expect(coordinatorStats).toStrictEqual(
       expect.objectContaining({
         isCoordinator: true,
@@ -459,5 +463,12 @@ describe('NodeJS Profiler Integration', () => {
     });
 
     expect(processIds.size).toStrictEqual(numProcesses);
+    const validationDuration = performance.now() - validationStartTime;
+    const totalDuration = performance.now() - startTime;
+
+    // Log timing information for debugging
+    console.log(
+      `[Timing] Process execution: ${processDuration.toFixed(2)}ms, Validation: ${validationDuration.toFixed(2)}ms, Total: ${totalDuration.toFixed(2)}ms`,
+    );
   }, 10_000); // Timeout: 10 seconds for multi-process coordination
 });
