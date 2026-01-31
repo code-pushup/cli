@@ -37,7 +37,7 @@ describe('typescriptPlugin', () => {
       }),
     )
       .toThrow(`Error parsing TypeScript Plugin options: SchemaValidationError: Invalid ${ansis.bold('TypescriptPluginConfig')}
-✖ Invalid input: expected string, received number
+✖ Invalid input
   → at tsconfig
 `);
   });

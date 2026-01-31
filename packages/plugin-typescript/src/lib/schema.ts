@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { pluginScoreTargetsSchema } from '@code-pushup/models';
+import { toArray } from '@code-pushup/utils';
 import { AUDITS, DEFAULT_TS_CONFIG } from './constants.js';
 import type { AuditSlug } from './types.js';
 
@@ -10,8 +11,9 @@ const auditSlugs = AUDITS.map(({ slug }) => slug) as [
 export const typescriptPluginConfigSchema = z
   .object({
     tsconfig: z
-      .string()
+      .union([z.string(), z.array(z.string()).min(1)])
       .default(DEFAULT_TS_CONFIG)
+      .transform(toArray)
       .meta({
         description: `Path to a tsconfig file (default is ${DEFAULT_TS_CONFIG})`,
       }),

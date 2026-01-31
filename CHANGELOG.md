@@ -1,3 +1,13 @@
+## 0.112.0 (2026-01-29)
+
+### 🚀 Features
+
+- **plugin-typescript:** support multiple tsconfigs ([#1229](https://github.com/code-pushup/cli/pull/1229))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.111.1 (2026-01-27)
 
 ### 🩹 Fixes
