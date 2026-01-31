@@ -20,7 +20,7 @@ export default mergeConfigs(
   await configureEslintPlugin(),
   await configureCoveragePlugin(),
   await configureJsPackagesPlugin(),
-  configureTypescriptPlugin(),
+  await configureTypescriptPlugin(),
   configureJsDocsPlugin(),
   await configureLighthousePlugin(TARGET_URL),
   configureAxePlugin(TARGET_URL),

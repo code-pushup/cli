@@ -1,4 +1,3 @@
-import { performance } from 'node:perf_hooks';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
 import { Profiler } from './profiler.js';
 
@@ -23,14 +22,14 @@ describe('Profiler Integration', () => {
   });
 
   it('should create complete performance timeline for sync operation', () => {
-    const result = profiler.measure('sync-test', () =>
-      Array.from({ length: 1000 }, (_, i) => i).reduce(
-        (sum, num) => sum + num,
-        0,
+    expect(
+      profiler.measure('sync-test', () =>
+        Array.from({ length: 1000 }, (_, i) => i).reduce(
+          (sum, num) => sum + num,
+          0,
+        ),
       ),
-    );
-
-    expect(result).toBe(499_500);
+    ).toBe(499_500);
 
     const marks = performance.getEntriesByType('mark');
     const measures = performance.getEntriesByType('measure');
@@ -66,12 +65,12 @@ describe('Profiler Integration', () => {
   });
 
   it('should create complete performance timeline for async operation', async () => {
-    const result = await profiler.measureAsync('async-test', async () => {
-      await new Promise(resolve => setTimeout(resolve, 10));
-      return 'async-result';
-    });
-
-    expect(result).toBe('async-result');
+    await expect(
+      profiler.measureAsync('async-test', async () => {
+        await new Promise(resolve => setTimeout(resolve, 10));
+        return 'async-result';
+      }),
+    ).resolves.toBe('async-result');
 
     const marks = performance.getEntriesByType('mark');
     const measures = performance.getEntriesByType('measure');

@@ -1,3 +1,43 @@
+## 0.112.0 (2026-01-29)
+
+### 🚀 Features
+
+- **plugin-typescript:** support multiple tsconfigs ([#1229](https://github.com/code-pushup/cli/pull/1229))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
+## 0.111.1 (2026-01-27)
+
+### 🩹 Fixes
+
+- add exit handler to profiler ([#1221](https://github.com/code-pushup/cli/pull/1221))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
+## 0.111.0 (2026-01-27)
+
+### 🚀 Features
+
+- **utils:** add NodeJS profiler ([#1219](https://github.com/code-pushup/cli/pull/1219))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
+## 0.110.0 (2026-01-26)
+
+### 🚀 Features
+
+- **utils:** add WriteAheadLog classes ([#1210](https://github.com/code-pushup/cli/pull/1210))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.109.0 (2026-01-26)
 
 ### 🚀 Features

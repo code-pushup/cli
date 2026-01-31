@@ -1,7 +1,11 @@
-import os from 'node:os';
-import type { PerformanceMark, PerformanceMeasure } from 'node:perf_hooks';
+import type {
+  PerformanceEntry,
+  PerformanceMark,
+  PerformanceMeasure,
+} from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
-import { defaultClock } from './clock-epoch.js';
+import { defaultClock } from '../clock-epoch.js';
+import type { UserTimingDetail } from '../user-timing-extensibility-api.type.js';
 import type {
   BeginEvent,
   CompleteEvent,
@@ -13,6 +17,9 @@ import type {
   SpanEventArgs,
   TraceEvent,
   TraceEventContainer,
+  TraceEventRaw,
+  TraceMetadata,
+  UserTimingTraceEvent,
 } from './trace-file.type.js';
 
 /** Global counter for generating unique span IDs within a trace */
@@ -27,8 +34,11 @@ export const nextId2 = () => ({ local: `0x${++id2Count}` });
 
 /**
  * Provides default values for trace event properties.
- * @param opt - Optional overrides for pid, tid, and timestamp
- * @returns Object with pid, tid, and timestamp
+ * @param opt - Optional overrides for process ID, thread ID, and timestamp
+ * @param opt.pid - Process ID override, defaults to current process PID
+ * @param opt.tid - Thread ID override, defaults to current thread ID
+ * @param opt.ts - Timestamp override in microseconds, defaults to current epoch time
+ * @returns Object containing pid, tid, and ts with defaults applied
  */
 const defaults = (opt?: { pid?: number; tid?: number; ts?: number }) => ({
   pid: opt?.pid ?? process.pid,
@@ -250,6 +260,44 @@ export const measureToSpanEvents = (
   });
 
 /**
+ * Converts a PerformanceEntry to an array of UserTimingTraceEvents.
+ * A mark is converted to an instant event, and a measure is converted to a pair of span events.
+ * Other entry types are ignored.
+ * @param entry - Performance entry
+ * @returns UserTimingTraceEvent[]
+ */
+export function entryToTraceEvents(
+  entry: PerformanceEntry,
+): UserTimingTraceEvent[] {
+  if (entry.entryType === 'mark') {
+    return [markToInstantEvent(entry as PerformanceMark)];
+  }
+  if (entry.entryType === 'measure') {
+    return measureToSpanEvents(entry as PerformanceMeasure);
+  }
+  return [];
+}
+
+/**
+ * Creates trace metadata object with standard DevTools fields and custom metadata.
+ * @param startDate - Optional start date for the trace, defaults to current date
+ * @param metadata - Optional additional metadata to merge into the trace metadata
+ * @returns TraceMetadata object with source, startTime, and merged custom metadata
+ */
+export function getTraceMetadata(
+  startDate?: Date,
+  metadata?: Record<string, unknown>,
+) {
+  return {
+    source: 'DevTools',
+    startTime: startDate?.toISOString() ?? new Date().toISOString(),
+    hardwareConcurrency: 1,
+    dataOrigin: 'TraceEvents',
+    ...metadata,
+  };
+}
+
+/**
  * Creates a complete trace file container with metadata.
  * @param opt - Trace file configuration
  * @returns TraceEventContainer with events and metadata
@@ -257,12 +305,118 @@ export const measureToSpanEvents = (
 export const getTraceFile = (opt: {
   traceEvents: TraceEvent[];
   startTime?: string;
+  metadata?: Partial<TraceMetadata>;
 }): TraceEventContainer => ({
   traceEvents: opt.traceEvents,
   displayTimeUnit: 'ms',
-  metadata: {
-    source: 'Node.js UserTiming',
-    startTime: opt.startTime ?? new Date().toISOString(),
-    hardwareConcurrency: os.cpus().length,
-  },
+  metadata: getTraceMetadata(
+    opt.startTime ? new Date(opt.startTime) : new Date(),
+    opt.metadata,
+  ),
 });
+
+/**
+ * Processes the detail property of an object using a custom processor function.
+ * @template T - Object type that may contain a detail property
+ * @param target - Object containing the detail property to process
+ * @param processor - Function to transform the detail value
+ * @returns New object with processed detail property, or original object if no detail
+ */
+function processDetail<T extends { detail?: unknown }>(
+  target: T,
+  processor: (detail: string | object) => string | object,
+): T {
+  if (
+    target.detail != null &&
+    (typeof target.detail === 'string' || typeof target.detail === 'object')
+  ) {
+    return { ...target, detail: processor(target.detail) };
+  }
+  return target;
+}
+
+/**
+ * Decodes a JSON string detail property back to its original object form.
+ * @param target - Object containing a detail property as a JSON string
+ * @returns UserTimingDetail with the detail property parsed from JSON
+ */
+export function decodeDetail(target: { detail: string }): UserTimingDetail {
+  return processDetail(target, detail =>
+    typeof detail === 'string'
+      ? (JSON.parse(detail) as string | object)
+      : detail,
+  ) as UserTimingDetail;
+}
+
+/**
+ * Encodes object detail properties to JSON strings for storage/transmission.
+ * @param target - UserTimingDetail object with detail property to encode
+ * @returns UserTimingDetail with object details converted to JSON strings
+ */
+export function encodeDetail(target: UserTimingDetail): UserTimingDetail {
+  return processDetail(
+    target as UserTimingDetail & { detail?: unknown },
+    (detail: string | object) =>
+      typeof detail === 'object'
+        ? JSON.stringify(detail as UserTimingDetail)
+        : detail,
+  ) as UserTimingDetail;
+}
+
+/**
+ * Decodes a raw trace event with JSON string details back to typed UserTimingTraceEvent.
+ * Parses detail properties from JSON strings to objects.
+ * @param event - Raw trace event with string-encoded details
+ * @returns UserTimingTraceEvent with parsed detail objects
+ */
+export function decodeTraceEvent({
+  args,
+  ...rest
+}: TraceEventRaw): UserTimingTraceEvent {
+  if (!args) {
+    return rest as UserTimingTraceEvent;
+  }
+
+  const processedArgs = decodeDetail(args as { detail: string });
+  if ('data' in args && args.data && typeof args.data === 'object') {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    return {
+      ...rest,
+      args: {
+        ...processedArgs,
+        data: decodeDetail(args.data as { detail: string }),
+      },
+    } as UserTimingTraceEvent;
+  }
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  return { ...rest, args: processedArgs } as UserTimingTraceEvent;
+}
+
+/**
+ * Encodes a UserTimingTraceEvent to raw format with JSON string details.
+ * Converts object details to JSON strings for storage/transmission.
+ * @param event - UserTimingTraceEvent with object details
+ * @returns TraceEventRaw with string-encoded details
+ */
+export function encodeTraceEvent({
+  args,
+  ...rest
+}: UserTimingTraceEvent): TraceEventRaw {
+  if (!args) {
+    return rest as TraceEventRaw;
+  }
+
+  const processedArgs = encodeDetail(args as UserTimingDetail);
+  if ('data' in args && args.data && typeof args.data === 'object') {
+    const result: TraceEventRaw = {
+      ...rest,
+      args: {
+        ...processedArgs,
+        data: encodeDetail(args.data as UserTimingDetail),
+      },
+    };
+    return result;
+  }
+  const result: TraceEventRaw = { ...rest, args: processedArgs };
+  return result;
+}

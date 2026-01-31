@@ -38,14 +38,27 @@ export type ExitHandlerOptions = {
   fatalExitCode?: number;
 };
 
-export function installExitHandlers(options: ExitHandlerOptions = {}): void {
+/**
+ *
+ * @param options - Options for the exit handler
+ * @param options.onExit - Callback to be called when the process exits
+ * @param options.onError - Callback to be called when an error occurs
+ * @param options.exitOnFatal - Whether to exit the process on fatal errors
+ * @param options.exitOnSignal - Whether to exit the process on signals
+ * @param options.fatalExitCode - The exit code to use for fatal errors
+ * @returns A function to unsubscribe from the exit handlers
+ */
+// eslint-disable-next-line max-lines-per-function
+export function subscribeProcessExit(
+  options: ExitHandlerOptions = {},
+): () => void {
   // eslint-disable-next-line functional/no-let
   let closedReason: CloseReason | undefined;
   const {
     onExit,
     onError,
-    exitOnFatal,
-    exitOnSignal,
+    exitOnFatal = false,
+    exitOnSignal = false,
     fatalExitCode = DEFAULT_FATAL_EXIT_CODE,
   } = options;
 
@@ -57,7 +70,7 @@ export function installExitHandlers(options: ExitHandlerOptions = {}): void {
     onExit?.(code, reason);
   };
 
-  process.on('uncaughtException', err => {
+  const uncaughtExceptionHandler = (err: unknown) => {
     onError?.(err, 'uncaughtException');
     if (exitOnFatal) {
       close(fatalExitCode, {
@@ -65,9 +78,9 @@ export function installExitHandlers(options: ExitHandlerOptions = {}): void {
         fatal: 'uncaughtException',
       });
     }
-  });
+  };
 
-  process.on('unhandledRejection', reason => {
+  const unhandledRejectionHandler = (reason: unknown) => {
     onError?.(reason, 'unhandledRejection');
     if (exitOnFatal) {
       close(fatalExitCode, {
@@ -75,22 +88,39 @@ export function installExitHandlers(options: ExitHandlerOptions = {}): void {
         fatal: 'unhandledRejection',
       });
     }
-  });
+  };
 
-  (['SIGINT', 'SIGTERM', 'SIGQUIT'] as const).forEach(signal => {
-    process.on(signal, () => {
-      close(SIGNAL_EXIT_CODES()[signal], { kind: 'signal', signal });
-      if (exitOnSignal) {
-        // eslint-disable-next-line n/no-process-exit
-        process.exit(SIGNAL_EXIT_CODES()[signal]);
-      }
-    });
-  });
+  const signalHandlers = (['SIGINT', 'SIGTERM', 'SIGQUIT'] as const).map(
+    signal => {
+      const handler = () => {
+        close(SIGNAL_EXIT_CODES()[signal], { kind: 'signal', signal });
+        if (exitOnSignal) {
+          // eslint-disable-next-line unicorn/no-process-exit,n/no-process-exit
+          process.exit(SIGNAL_EXIT_CODES()[signal]);
+        }
+      };
+      process.on(signal, handler);
+      return { signal, handler };
+    },
+  );
 
-  process.on('exit', code => {
+  const exitHandler = (code: number) => {
     if (closedReason) {
       return;
     }
     close(code, { kind: 'exit' });
-  });
+  };
+
+  process.on('uncaughtException', uncaughtExceptionHandler);
+  process.on('unhandledRejection', unhandledRejectionHandler);
+  process.on('exit', exitHandler);
+
+  return () => {
+    process.removeListener('uncaughtException', uncaughtExceptionHandler);
+    process.removeListener('unhandledRejection', unhandledRejectionHandler);
+    process.removeListener('exit', exitHandler);
+    signalHandlers.forEach(({ signal, handler }) => {
+      process.removeListener(signal, handler);
+    });
+  };
 }
