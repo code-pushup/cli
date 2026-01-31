@@ -396,11 +396,8 @@ describe('NodeJS Profiler Integration', () => {
     const numProcesses = 3;
     const startTime = performance.now();
 
-    const {
-      [PROFILER_SHARDER_ID_ENV_VAR]: _coordinatorId,
-      [PROFILER_MEASURE_NAME_ENV_VAR]: _measureName,
-      ...cleanEnv
-    } = process.env;
+    const { [PROFILER_MEASURE_NAME_ENV_VAR]: _measureName, ...cleanEnv } =
+      process.env;
 
     const processStartTime = performance.now();
     const { stdout, stderr } = await executeProcess({
