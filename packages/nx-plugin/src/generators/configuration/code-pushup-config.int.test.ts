@@ -2,7 +2,6 @@ import * as devKit from '@nx/devkit';
 import { formatFiles } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import * as path from 'node:path';
-import { describe, expect, it } from 'vitest';
 import { generateCodePushupConfig } from './code-pushup-config.js';
 
 describe('generateCodePushupConfig options', () => {

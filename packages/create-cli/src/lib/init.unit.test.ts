@@ -1,5 +1,4 @@
 import { vol } from 'memfs';
-import { afterEach, beforeEach, describe, expect } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import type { ProcessResult } from '@code-pushup/utils';
 import * as utils from '@code-pushup/utils';
@@ -54,7 +53,7 @@ describe('initCodePushup', () => {
 
     await initCodePushup();
 
-    expect(spySetupNxContext).toHaveBeenCalledTimes(1);
+    expect(spySetupNxContext).toHaveBeenCalledOnce();
 
     expect(spyExecuteProcess).toHaveBeenNthCalledWith(1, {
       command: 'npx',
@@ -74,7 +73,7 @@ describe('initCodePushup', () => {
     expect(spyParseNxProcessOutput).toHaveBeenNthCalledWith(1, 'stdout-mock');
     expect(spyParseNxProcessOutput).toHaveBeenCalledTimes(2);
     expect(spyExecuteProcess).toHaveBeenCalledTimes(2);
-    expect(spyTeardownNxContext).toHaveBeenCalledTimes(1);
+    expect(spyTeardownNxContext).toHaveBeenCalledOnce();
     expect(spyTeardownNxContext).toHaveBeenNthCalledWith(1, {
       projectName: projectJson.name,
       nxJsonTeardown: false,
@@ -93,8 +92,8 @@ describe('initCodePushup', () => {
 
     await initCodePushup();
 
-    expect(spySetupNxContext).toHaveBeenCalledTimes(1);
-    expect(spyTeardownNxContext).toHaveBeenCalledTimes(1);
+    expect(spySetupNxContext).toHaveBeenCalledOnce();
+    expect(spyTeardownNxContext).toHaveBeenCalledOnce();
     expect(spyTeardownNxContext).toHaveBeenNthCalledWith(1, {
       projectName: projectJson.name,
       nxJsonTeardown: true,
@@ -117,8 +116,8 @@ describe('initCodePushup', () => {
 
     await initCodePushup();
 
-    expect(spySetupNxContext).toHaveBeenCalledTimes(1);
-    expect(spyTeardownNxContext).toHaveBeenCalledTimes(1);
+    expect(spySetupNxContext).toHaveBeenCalledOnce();
+    expect(spyTeardownNxContext).toHaveBeenCalledOnce();
     expect(spyTeardownNxContext).toHaveBeenNthCalledWith(1, {
       projectName: 'source-root',
       nxJsonTeardown: false,

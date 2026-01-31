@@ -1,30 +1,58 @@
-import type { Sink } from '../src/lib/sink-source.type';
+import type { AppendableSink, RecoverResult } from '../src/lib/wal';
 
-export class MockSink implements Sink<string, string> {
+export class MockAppendableSink implements AppendableSink<string> {
   private writtenItems: string[] = [];
-  private closed = false;
+  private closed = true;
 
-  open(): void {
+  open = vi.fn((): void => {
     this.closed = false;
-  }
+  });
 
-  write(input: string): void {
+  append = vi.fn((input: string): void => {
     this.writtenItems.push(input);
-  }
+  });
 
-  close(): void {
+  close = vi.fn((): void => {
     this.closed = true;
-  }
+  });
 
-  isClosed(): boolean {
+  isClosed = vi.fn((): boolean => {
     return this.closed;
-  }
+  });
 
-  encode(input: string): string {
+  recover = vi.fn((): RecoverResult<string> => {
+    return {
+      records: [...this.writtenItems],
+      errors: [],
+      partialTail: null,
+    };
+  });
+
+  repack = vi.fn((): void => {});
+
+  encode = vi.fn((input: string): string => {
     return `${input}-${this.constructor.name}-encoded`;
-  }
+  });
 
-  getWrittenItems(): string[] {
+  getWrittenItems = vi.fn((): string[] => {
     return [...this.writtenItems];
-  }
+  });
+}
+
+export class MockTraceEventFileSink extends MockAppendableSink {
+  override recover = vi.fn((): RecoverResult<string> => {
+    return {
+      records: this.getWrittenItems(),
+      errors: [],
+      partialTail: null,
+    };
+  });
+
+  repack = vi.fn((): void => {});
+
+  finalize = vi.fn((): void => {});
+
+  getPath = vi.fn((): string => {
+    return '/test/tmp/profiles/default/trace.default.jsonl';
+  });
 }

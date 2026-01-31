@@ -17,15 +17,15 @@ import {
 } from './transform.js';
 
 /** Loads and processes Axe rules into audits and groups, expanding for multiple URLs if needed. */
-export async function processAuditsAndGroups(
+export function processAuditsAndGroups(
   urls: string[],
   preset: AxePreset,
-): Promise<{
+): {
   audits: Audit[];
   groups: Group[];
   ruleIds: string[];
-}> {
-  const rules = await loadAxeRules(preset);
+} {
+  const rules = loadAxeRules(preset);
   const ruleIds = rules.map(({ ruleId }) => ruleId);
   const audits = transformRulesToAudits(rules);
   const groups = transformRulesToGroups(rules);

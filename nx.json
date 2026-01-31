@@ -38,6 +38,7 @@
     ],
     "code-pushup-inputs": [
       "{workspaceRoot}/code-pushup.preset.ts",
+      { "env": "NODE_OPTIONS" },
       { "env": "TSX_TSCONFIG_PATH" }
     ],
     "sharedGlobals": [{ "runtime": "node -v" }, { "runtime": "npm -v" }]

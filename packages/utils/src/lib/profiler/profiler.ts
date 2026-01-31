@@ -1,4 +1,6 @@
+import { performance } from 'node:perf_hooks';
 import process from 'node:process';
+import { threadId } from 'node:worker_threads';
 import { isEnvVarEnabled } from '../env.js';
 import {
   type ActionTrackConfigs,
@@ -15,6 +17,14 @@ import type {
   EntryMeta,
 } from '../user-timing-extensibility-api.type.js';
 import { PROFILER_ENABLED_ENV_VAR } from './constants.js';
+
+/**
+ * Generates a unique profiler ID based on performance time origin, process ID, thread ID, and instance count.
+ */
+export function getProfilerId() {
+  // eslint-disable-next-line functional/immutable-data
+  return `${Math.round(performance.timeOrigin)}.${process.pid}.${threadId}.${++Profiler.instanceCount}`;
+}
 
 /**
  * Configuration options for creating a Profiler instance.
@@ -59,7 +69,9 @@ export type ProfilerOptions<T extends ActionTrackConfigs = ActionTrackConfigs> =
  *
  */
 export class Profiler<T extends ActionTrackConfigs> {
-  #enabled: boolean;
+  static instanceCount = 0;
+  readonly id = getProfilerId();
+  #enabled: boolean = false;
   readonly #defaults: ActionTrackEntryPayload;
   readonly tracks: Record<keyof T, ActionTrackEntryPayload> | undefined;
   readonly #ctxOf: ReturnType<typeof measureCtx>;
@@ -140,7 +152,7 @@ export class Profiler<T extends ActionTrackConfigs> {
    * });
    */
   marker(name: string, opt?: MarkerOptions): void {
-    if (!this.#enabled) {
+    if (!this.isEnabled()) {
       return;
     }
 
@@ -173,7 +185,7 @@ export class Profiler<T extends ActionTrackConfigs> {
    *
    */
   measure<R>(event: string, work: () => R, options?: MeasureOptions<R>): R {
-    if (!this.#enabled) {
+    if (!this.isEnabled()) {
       return work();
     }
 
@@ -210,7 +222,7 @@ export class Profiler<T extends ActionTrackConfigs> {
     work: () => Promise<R>,
     options?: MeasureOptions<R>,
   ): Promise<R> {
-    if (!this.#enabled) {
+    if (!this.isEnabled()) {
       return await work();
     }
 

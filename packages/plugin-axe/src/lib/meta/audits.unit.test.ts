@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import type { AxePreset } from '../config.js';
 import { loadAxeRules, transformRulesToAudits } from './transform.js';
 
@@ -10,15 +9,16 @@ describe('transformRulesToAudits', () => {
     ['all', 100, 110],
   ])(
     'should transform %j preset rules into audits within expected range',
-    async (preset, min, max) => {
-      const rules = await loadAxeRules(preset);
-      expect(transformRulesToAudits(rules)).toBeInRange(min, max);
+    (preset, min, max) => {
+      expect(transformRulesToAudits(loadAxeRules(preset))).toBeInRange(
+        min,
+        max,
+      );
     },
   );
 
-  it('should include required metadata fields for all transformed audits', async () => {
-    const rules = await loadAxeRules('wcag21aa');
-    const audit = transformRulesToAudits(rules)[0]!;
+  it('should include required metadata fields for all transformed audits', () => {
+    const audit = transformRulesToAudits(loadAxeRules('wcag21aa'))[0]!;
 
     expect(audit).toMatchObject({
       slug: expect.any(String),

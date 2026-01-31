@@ -1,33 +1,34 @@
 import { vol } from 'memfs';
-import { describe, expect, vi } from 'vitest';
 import { CONFIG_FILE_NAME, type CoreConfig } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { autoloadRc } from './read-rc-file.js';
 
-vi.mock('@code-pushup/utils', async () => {
+// mock bundleRequire inside importEsmModule used for fetching config
+vi.mock('bundle-require', async () => {
   const { CORE_CONFIG_MOCK }: Record<string, CoreConfig> =
     await vi.importActual('@code-pushup/test-fixtures');
 
-  const actualUtils = await vi.importActual('@code-pushup/utils');
-
   return {
-    ...actualUtils,
-    importModule: vi
+    bundleRequire: vi
       .fn()
       .mockImplementation((options: { filepath: string }) => {
         const extension = options.filepath.split('.').at(-1);
         return {
-          ...CORE_CONFIG_MOCK,
-          upload: {
-            ...CORE_CONFIG_MOCK?.upload,
-            project: extension, // returns loaded file extension to check format precedence
+          mod: {
+            default: {
+              ...CORE_CONFIG_MOCK,
+              upload: {
+                ...CORE_CONFIG_MOCK?.upload,
+                project: extension, // returns loaded file extension to check format precedence
+              },
+            },
           },
         };
       }),
   };
 });
 
-// Note: memfs files are only listed to satisfy a system check, value is used from importModule mock
+// Note: memfs files are only listed to satisfy a system check, value is used from bundle-require mock
 describe('autoloadRc', () => {
   it('prioritise a .ts configuration file', async () => {
     vol.fromJSON(

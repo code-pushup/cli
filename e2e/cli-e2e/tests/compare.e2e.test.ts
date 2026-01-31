@@ -1,6 +1,5 @@
 import { cp } from 'node:fs/promises';
 import path from 'node:path';
-import { beforeAll } from 'vitest';
 import type { ReportsDiff } from '@code-pushup/models';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {

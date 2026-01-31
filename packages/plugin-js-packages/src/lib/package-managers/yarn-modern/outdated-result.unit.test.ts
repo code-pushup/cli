@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { yarnBerryToOutdatedResult } from './outdated-result.js';
 import type { YarnBerryOutdatedResultJson } from './types.js';
 

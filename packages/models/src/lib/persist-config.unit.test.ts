@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { type PersistConfig, persistConfigSchema } from './persist-config.js';
 
 describe('persistConfigSchema', () => {

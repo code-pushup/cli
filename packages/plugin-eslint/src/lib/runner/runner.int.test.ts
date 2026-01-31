@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import { type MockInstance, describe, expect, it } from 'vitest';
+import type { MockInstance } from 'vitest';
 import {
   type Audit,
   type AuditOutput,

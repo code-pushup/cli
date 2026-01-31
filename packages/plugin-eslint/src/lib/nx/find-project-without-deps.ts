@@ -1,4 +1,4 @@
-import { logger } from '@code-pushup/utils';
+import { loadNxProjectGraph, logger } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
 import { formatMetaLog } from '../meta/format.js';
 import { nxProjectsToConfig } from './projects-to-config.js';
@@ -31,8 +31,7 @@ import { nxProjectsToConfig } from './projects-to-config.js';
 export async function eslintConfigFromNxProject(
   projectName: string,
 ): Promise<ESLintTarget> {
-  const { createProjectGraphAsync } = await import('@nx/devkit');
-  const projectGraph = await createProjectGraphAsync({ exitOnError: false });
+  const projectGraph = await loadNxProjectGraph();
 
   const [project] = await nxProjectsToConfig(
     projectGraph,

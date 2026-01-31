@@ -1,5 +1,4 @@
 import { vol } from 'memfs';
-import { describe, expect, it } from 'vitest';
 import {
   type Group,
   type PluginConfig,

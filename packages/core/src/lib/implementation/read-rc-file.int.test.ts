@@ -1,6 +1,5 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { describe, expect } from 'vitest';
 import { readRcByPath } from './read-rc-file.js';
 
 describe('readRcByPath', () => {
@@ -55,9 +54,7 @@ describe('readRcByPath', () => {
   });
 
   it('should throw if the path is empty', async () => {
-    await expect(readRcByPath('')).rejects.toThrow(
-      "Importing module failed. File '' does not exist",
-    );
+    await expect(readRcByPath('')).rejects.toThrow("File '' does not exist");
   });
 
   it('should throw if the file does not exist', async () => {

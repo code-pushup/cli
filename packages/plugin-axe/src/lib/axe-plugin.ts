@@ -18,10 +18,10 @@ import { createRunnerFunction } from './runner/runner.js';
  * @param options - {@link AxePluginOptions} Plugin options
  * @returns Plugin configuration
  */
-export async function axePlugin(
+export function axePlugin(
   urls: PluginUrls,
   options: AxePluginOptions = {},
-): Promise<PluginConfig> {
+): PluginConfig {
   const { preset, scoreTargets, timeout, setupScript } = validate(
     axePluginOptionsSchema,
     options,
@@ -29,7 +29,7 @@ export async function axePlugin(
 
   const { urls: normalizedUrls, context } = normalizeUrlInput(urls);
 
-  const { audits, groups, ruleIds } = await processAuditsAndGroups(
+  const { audits, groups, ruleIds } = processAuditsAndGroups(
     normalizedUrls,
     preset,
   );

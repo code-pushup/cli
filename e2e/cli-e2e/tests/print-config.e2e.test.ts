@@ -1,6 +1,5 @@
 import { cp, readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { beforeAll, expect } from 'vitest';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
   E2E_ENVIRONMENTS_DIR,
@@ -47,7 +46,7 @@ describe('CLI print-config', () => {
           'print-config',
           '--output=config.json',
           `--config=${configFilePath(ext)}`,
-          `--tsconfig=${path.join(process.cwd(), 'tsconfig.base.json')}`,
+          '--tsconfig=tsconfig.base.json',
           '--persist.outputDir=output-dir',
           '--persist.format=md',
           `--persist.filename=${ext}-report`,
@@ -64,7 +63,7 @@ describe('CLI print-config', () => {
       expect(JSON.parse(output)).toEqual(
         expect.objectContaining({
           config: expect.stringContaining(`code-pushup.config.${ext}`),
-          tsconfig: path.join(process.cwd(), 'tsconfig.base.json'),
+          tsconfig: 'tsconfig.base.json',
           plugins: [
             expect.objectContaining({
               slug: 'dummy-plugin',

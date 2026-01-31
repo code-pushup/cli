@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as configFactory from './vitest-config-factory.js';
 import {
   createE2ETestConfig,

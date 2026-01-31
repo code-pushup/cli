@@ -1,6 +1,5 @@
 import path from 'node:path';
 import type { LCOVRecord } from 'parse-lcov';
-import { describe, it } from 'vitest';
 import type { AuditOutput } from '@code-pushup/models';
 import type { FileCoverage } from '@code-pushup/utils';
 import { INVALID_FUNCTION_NAME } from '../constants.js';

@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { createExecutorTarget } from './executor-target.js';
 
 describe('createExecutorTarget', () => {

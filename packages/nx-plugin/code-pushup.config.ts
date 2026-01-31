@@ -14,6 +14,6 @@ export default mergeConfigs(
   configureUpload(projectName),
   await configureEslintPlugin(projectName),
   await configureCoveragePlugin(projectName),
-  configureTypescriptPlugin(projectName),
+  await configureTypescriptPlugin(projectName),
   configureJsDocsPlugin(projectName),
 );

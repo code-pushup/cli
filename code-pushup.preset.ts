@@ -1,6 +1,27 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 import { createProjectGraphAsync } from '@nx/devkit';
 import type { CoreConfig, PluginUrls } from './packages/models/src/index.js';
+import axePlugin, {
+  type AxePluginOptions,
+  axeGroupRefs,
+} from './packages/plugin-axe/src/index.js';
+import coveragePlugin, {
+  type CoveragePluginConfig,
+  getNxCoveragePaths,
+} from './packages/plugin-coverage/src/index.js';
+import eslintPlugin, {
+  eslintConfigFromAllNxProjects,
+} from './packages/plugin-eslint/src/index.js';
+import jsPackagesPlugin from './packages/plugin-js-packages/src/index.js';
+import jsDocsPlugin from './packages/plugin-jsdocs/src/index.js';
+import {
+  lighthouseGroupRefs,
+  lighthousePlugin,
+} from './packages/plugin-lighthouse/src/index.js';
+import typescriptPlugin, {
+  getCategories,
+  tsconfigFromAllNxProjects,
+} from './packages/plugin-typescript/src/index.js';
 
 export function configureUpload(projectName: string = 'workspace'): CoreConfig {
   return {
@@ -19,10 +40,6 @@ export function configureUpload(projectName: string = 'workspace'): CoreConfig {
 export async function configureEslintPlugin(
   projectName?: string,
 ): Promise<CoreConfig> {
-  const { default: eslintPlugin, eslintConfigFromAllNxProjects } = await import(
-    './packages/plugin-eslint/src/index.js'
-  );
-
   return {
     plugins: [
       projectName
@@ -65,12 +82,8 @@ export async function configureEslintPlugin(
 export async function configureCoveragePlugin(
   projectName?: string,
 ): Promise<CoreConfig> {
-  const { default: coveragePlugin, getNxCoveragePaths } = await import(
-    './packages/plugin-coverage/src/index.js'
-  );
-
   const targets = ['unit-test', 'int-test'];
-  const config = projectName
+  const config: CoveragePluginConfig = projectName
     ? // We do not need to run a coverageToolCommand. This is handled over the Nx task graph.
       {
         reports: Object.keys(
@@ -105,10 +118,6 @@ export async function configureCoveragePlugin(
 }
 
 export async function configureJsPackagesPlugin(): Promise<CoreConfig> {
-  const { default: jsPackagesPlugin } = await import(
-    './packages/plugin-js-packages/src/index.js'
-  );
-
   return {
     plugins: [await jsPackagesPlugin()],
     categories: [
@@ -145,26 +154,21 @@ export async function configureJsPackagesPlugin(): Promise<CoreConfig> {
 export async function configureTypescriptPlugin(
   projectName?: string,
 ): Promise<CoreConfig> {
-  const { default: typescriptPlugin, getCategories } = await import(
-    './packages/plugin-typescript/src/index.js'
-  );
-
   const tsconfig = projectName
     ? `packages/${projectName}/tsconfig.lib.json`
-    : 'tsconfig.code-pushup.json';
+    : await tsconfigFromAllNxProjects({
+        exclude: [
+          'test-fixtures', // Intentionally incomplete tsconfigs
+          'models', // Uses ts-patch transformer plugin
+        ],
+      });
   return {
     plugins: [typescriptPlugin({ tsconfig })],
     categories: getCategories(),
   };
 }
 
-export async function configureJsDocsPlugin(
-  projectName?: string,
-): Promise<CoreConfig> {
-  const { default: jsDocsPlugin } = await import(
-    './packages/plugin-jsdocs/src/index.js'
-  );
-
+export function configureJsDocsPlugin(projectName?: string): CoreConfig {
   const patterns: string[] = [
     `packages/${projectName ?? '*'}/src/**/*.ts`,
     `!**/node_modules`,
@@ -196,10 +200,6 @@ export async function configureJsDocsPlugin(
 export async function configureLighthousePlugin(
   urls: PluginUrls,
 ): Promise<CoreConfig> {
-  const { lighthousePlugin, lighthouseGroupRefs } = await import(
-    './packages/plugin-lighthouse/src/index.js'
-  );
-
   const lhPlugin = await lighthousePlugin(urls);
   return {
     plugins: [lhPlugin],
@@ -228,14 +228,10 @@ export async function configureLighthousePlugin(
   };
 }
 
-export async function configureAxePlugin(
+export function configureAxePlugin(
   urls: PluginUrls,
   options?: AxePluginOptions,
-): Promise<CoreConfig> {
-  const { default: axePlugin, axeGroupRefs } = await import(
-    './packages/plugin-axe/src/index.js'
-  );
-
+): CoreConfig {
   const axe = axePlugin(urls, options);
   return {
     plugins: [axe],

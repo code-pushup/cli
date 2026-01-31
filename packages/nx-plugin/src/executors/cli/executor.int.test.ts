@@ -1,4 +1,3 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { executorContext } from '@code-pushup/test-nx-utils';
 import * as executeProcessModule from '../../internal/execute-process.js';
 import runCliExecutor from './executor.js';
@@ -29,9 +28,9 @@ describe('runCliExecutor', () => {
       { verbose: true },
       executorContext('utils'),
     );
-    expect(output.success).toBe(true);
+    expect(output.success).toBeTrue();
 
-    expect(parseCliExecutorOptionsSpy).toHaveBeenCalledTimes(1);
+    expect(parseCliExecutorOptionsSpy).toHaveBeenCalledOnce();
 
     //is context normalized
     expect(parseCliExecutorOptionsSpy).toHaveBeenCalledWith(
@@ -40,7 +39,7 @@ describe('runCliExecutor', () => {
         projectConfig: expect.objectContaining({ name: 'utils' }),
       }),
     );
-    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(executeProcessSpy).toHaveBeenCalledOnce();
     expect(executeProcessSpy).toHaveBeenCalledWith({
       command: 'npx',
       args: expect.arrayContaining(['@code-pushup/cli']),
@@ -56,8 +55,8 @@ describe('runCliExecutor', () => {
       },
       executorContext('utils'),
     );
-    expect(output.success).toBe(true);
-    expect(executeProcessSpy).toHaveBeenCalledTimes(1);
+    expect(output.success).toBeTrue();
+    expect(executeProcessSpy).toHaveBeenCalledOnce();
     expect(executeProcessSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         env: expect.objectContaining({

@@ -1,7 +1,9 @@
+import { type Options, bundleRequire } from 'bundle-require';
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
 import type { Format, PersistConfig } from '@code-pushup/models';
 import { logger } from './logger.js';
+import { settlePromise } from './promises.js';
 
 export async function readTextFile(filePath: string): Promise<string> {
   const buffer = await readFile(filePath);
@@ -48,6 +50,23 @@ export async function removeDirectoryIfExists(dir: string) {
   if (await directoryExists(dir)) {
     await rm(dir, { recursive: true, force: true });
   }
+}
+
+export async function importModule<T = unknown>(options: Options): Promise<T> {
+  const resolvedStats = await settlePromise(stat(options.filepath));
+  if (resolvedStats.status === 'rejected') {
+    throw new Error(`File '${options.filepath}' does not exist`);
+  }
+  if (!resolvedStats.value.isFile()) {
+    throw new Error(`Expected '${options.filepath}' to be a file`);
+  }
+
+  const { mod } = await bundleRequire<object>(options);
+
+  if (typeof mod === 'object' && 'default' in mod) {
+    return mod.default as T;
+  }
+  return mod as T;
 }
 
 export function createReportPath({

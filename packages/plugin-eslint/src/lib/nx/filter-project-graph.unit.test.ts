@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { toProjectGraph } from '@code-pushup/test-utils';
 import { filterProjectGraph } from './filter-project-graph.js';
 

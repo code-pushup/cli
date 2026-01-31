@@ -2,16 +2,6 @@
   "name": "workspace",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "targets": {
-    "jiti-test": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "node -e \"console.log('Testing jiti path aliases:'); console.log('NODE_OPTIONS:', process.env.NODE_OPTIONS); console.log('JITI_TSCONFIG_PATH:', process.env.JITI_TSCONFIG_PATH); console.log('Testing import of @push-based/jiti-tsc...'); try { require('@push-based/jiti-tsc'); console.log('✓ jiti-tsc imported successfully'); } catch (e) { console.log('✗ Failed to import jiti-tsc:', e.message); }\"",
-        "env": {
-          "NODE_OPTIONS": "--import @push-based/jiti-tsc",
-          "JITI_TSCONFIG_PATH": "tsconfig.base.json"
-        }
-      }
-    },
     "code-pushup": {
       "dependsOn": [],
       "options": {

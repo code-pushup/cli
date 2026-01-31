@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "paths": {
-      "@definitely-non-existent-package/custom-plugin": ["./custom-plugin.ts"]
+      "@example/custom-plugin": ["./custom-plugin.ts"]
     }
   }
 }

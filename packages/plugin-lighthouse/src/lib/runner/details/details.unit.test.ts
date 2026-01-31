@@ -2,7 +2,6 @@ import ansis from 'ansis';
 import type { FormattedIcu } from 'lighthouse';
 import type Details from 'lighthouse/types/lhr/audit-details';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
-import { describe, expect, it } from 'vitest';
 import type { AuditDetails } from '@code-pushup/models';
 import { logger } from '@code-pushup/utils';
 import { logUnsupportedDetails, toAuditDetails } from './details.js';
@@ -10,7 +9,7 @@ import { logUnsupportedDetails, toAuditDetails } from './details.js';
 describe('logUnsupportedDetails', () => {
   it('should log unsupported entries', () => {
     logUnsupportedDetails([{ details: { type: 'screenshot' } }] as Result[]);
-    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledOnce();
     expect(logger.warn).toHaveBeenCalledWith(
       `Skipped parsing of unsupported audit details: ${ansis.bold('screenshot')}.`,
     );
@@ -26,7 +25,7 @@ describe('logUnsupportedDetails', () => {
       { details: { type: 'treemap-data' } },
       { details: { type: 'criticalrequestchain' } },
     ] as Result[]);
-    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledOnce();
     expect(logger.warn).toHaveBeenCalledWith(
       `Skipped parsing of unsupported audit details: ${ansis.bold(
         'filmstrip, screenshot, debugdata',

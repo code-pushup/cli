@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.extends-base.json",
-  "compilerOptions": {
-    "verbatimModuleSyntax": true,
-    "module": "CommonJS"
-  },
-  "exclude": ["src/*-errors/**/*.ts"]
-}

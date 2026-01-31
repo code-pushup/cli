@@ -1,5 +1,5 @@
 import type { Ansis } from 'ansis';
-import { type Mock, describe, expect, it } from 'vitest';
+import type { Mock } from 'vitest';
 import type { AuditReport, Issue, IssueSeverity } from '@code-pushup/models';
 import { SCORE_COLOR_RANGE } from './constants.js';
 import type {
@@ -34,13 +34,13 @@ import {
 
 describe('scoreFilter', () => {
   it('should not filter by score if no options are passed', () => {
-    expect(scoreFilter()({ score: 0 })).toBe(true);
+    expect(scoreFilter()({ score: 0 })).toBeTrue();
   });
 
   it('should filter by score if options are passed', () => {
     expect(
       scoreFilter({ isScoreListed: score => score === 0.5 })({ score: 0 }),
-    ).toBe(false);
+    ).toBeFalse();
   });
 });
 

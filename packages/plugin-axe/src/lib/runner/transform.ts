@@ -4,10 +4,10 @@ import type {
   AuditOutputs,
   Issue,
   IssueSeverity,
+  SourceUrlLocation,
 } from '@code-pushup/models';
 import {
   formatIssueSeverities,
-  getUrlIdentifier,
   pluralizeToken,
   truncateIssueMessage,
 } from '@code-pushup/utils';
@@ -18,10 +18,10 @@ import {
  */
 export function toAuditOutputs(
   { passes, violations, incomplete, inapplicable }: axe.AxeResults,
-  urlSuffix: string,
+  url: string,
 ): AuditOutputs {
   const toEntries = (results: axe.Result[], score: number) =>
-    results.map(res => [res.id, toAuditOutput(res, urlSuffix, score)] as const);
+    results.map(res => [res.id, toAuditOutput(res, url, score)] as const);
 
   return [
     ...new Map<string, AuditOutput>([
@@ -33,18 +33,13 @@ export function toAuditOutputs(
   ];
 }
 
-/** Creates a URL suffix for issue messages, only included when analyzing multiple URLs. */
-export function createUrlSuffix(url: string, urlsCount: number): string {
-  return urlsCount > 1 ? ` ([${getUrlIdentifier(url)}](${url}))` : '';
-}
-
 /**
  * For failing audits (score 0), includes detailed issues with locations and severities.
  * For passing audits (score 1), only includes element count.
  */
 function toAuditOutput(
   result: axe.Result,
-  urlSuffix: string,
+  url: string,
   score: number,
 ): AuditOutput {
   const base = {
@@ -54,7 +49,7 @@ function toAuditOutput(
   };
 
   if (score === 0 && result.nodes.length > 0) {
-    const issues = result.nodes.map(node => toIssue(node, result, urlSuffix));
+    const issues = result.nodes.map(node => toIssue(node, result, url));
 
     return {
       ...base,
@@ -76,20 +71,26 @@ function formatSelector(selector: axe.CrossTreeSelector): string {
   return selector.join(' >> ');
 }
 
-function toIssue(
-  node: axe.NodeResult,
-  result: axe.Result,
-  urlSuffix: string,
-): Issue {
-  const selector = formatSelector(node.target?.[0] || node.html);
+function toIssue(node: axe.NodeResult, result: axe.Result, url: string): Issue {
+  const selector = node.target?.[0]
+    ? formatSelector(node.target[0])
+    : undefined;
   const rawMessage = node.failureSummary || result.help;
-  const cleanedMessage = rawMessage.replace(/\s+/g, ' ').trim();
+  const cleanMessage = rawMessage.replace(/\s+/g, ' ').trim();
+
+  // TODO: Remove selector prefix from message once Portal supports URL sources
+  const message = selector ? `[\`${selector}\`] ${cleanMessage}` : cleanMessage;
+
+  const source: SourceUrlLocation = {
+    url,
+    ...(node.html && { snippet: node.html }),
+    ...(selector && { selector }),
+  };
 
   return {
-    message: truncateIssueMessage(
-      `[\`${selector}\`] ${cleanedMessage}${urlSuffix}`,
-    ),
+    message: truncateIssueMessage(message),
     severity: impactToSeverity(node.impact),
+    source,
   };
 }
 
