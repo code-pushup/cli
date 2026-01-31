@@ -22,6 +22,7 @@ const CUSTOM_MATCHERS = [
 const UNIT_TEST_SETUP_FILES = [
   '../../testing/test-setup/src/lib/reset.mocks.ts',
   '../../testing/test-setup/src/lib/fs.mock.ts',
+  '../../testing/test-setup/src/lib/jiti.setup.ts',
   '../../testing/test-setup/src/lib/logger.mock.ts',
   '../../testing/test-setup/src/lib/git.mock.ts',
   '../../testing/test-setup/src/lib/performance.setup-file.ts',

@@ -33,6 +33,7 @@ describe('createVitestConfig', () => {
           setupFiles: expect.arrayContaining([
             '../../testing/test-setup/src/lib/reset.mocks.ts',
             '../../testing/test-setup/src/lib/fs.mock.ts',
+            '../../testing/test-setup/src/lib/jiti.setup.ts',
           ]),
           coverage: expect.objectContaining({
             reporter: ['text', 'lcov'],
@@ -73,6 +74,9 @@ describe('createVitestConfig', () => {
       );
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/fs.mock.ts',
+      );
+      expect(setupFiles).toContain(
+        '../../testing/test-setup/src/lib/jiti.setup.ts',
       );
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/git.mock.ts',
