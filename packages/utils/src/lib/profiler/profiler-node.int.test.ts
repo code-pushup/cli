@@ -21,7 +21,7 @@ import {
   PROFILER_ENABLED_ENV_VAR,
   PROFILER_MEASURE_NAME_ENV_VAR,
   PROFILER_OUT_DIR_ENV_VAR,
-  SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+  PROFILER_SHARDER_ID_ENV_VAR,
 } from './constants.js';
 import { NodejsProfiler, type NodejsProfilerOptions } from './profiler-node.js';
 import { entryToTraceEvents } from './trace-file-utils.js';
@@ -187,7 +187,7 @@ describe('NodeJS Profiler Integration', () => {
     vi.stubEnv(PROFILER_ENABLED_ENV_VAR, undefined!);
     vi.stubEnv(PROFILER_DEBUG_ENV_VAR, undefined!);
     // eslint-disable-next-line functional/immutable-data
-    delete process.env[SHARDED_WAL_COORDINATOR_ID_ENV_VAR];
+    delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
   });
 
   afterEach(() => {
@@ -201,7 +201,7 @@ describe('NodeJS Profiler Integration', () => {
     vi.stubEnv(PROFILER_ENABLED_ENV_VAR, undefined!);
     vi.stubEnv(PROFILER_DEBUG_ENV_VAR, undefined!);
     // eslint-disable-next-line functional/immutable-data
-    delete process.env[SHARDED_WAL_COORDINATOR_ID_ENV_VAR];
+    delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
   });
 
   afterAll(async () => {
@@ -396,7 +396,7 @@ describe('NodeJS Profiler Integration', () => {
     const numProcesses = 3;
 
     const {
-      [SHARDED_WAL_COORDINATOR_ID_ENV_VAR]: _coordinatorId,
+      [PROFILER_SHARDER_ID_ENV_VAR]: _coordinatorId,
       [PROFILER_MEASURE_NAME_ENV_VAR]: _measureName,
       ...cleanEnv
     } = process.env;

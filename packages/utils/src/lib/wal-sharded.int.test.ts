@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { SHARDED_WAL_COORDINATOR_ID_ENV_VAR } from './profiler/constants.js';
+import { PROFILER_SHARDER_ID_ENV_VAR } from './profiler/constants.js';
 import { ShardedWal } from './wal-sharded.js';
 import { createTolerantCodec, stringCodec } from './wal.js';
 
@@ -40,7 +40,7 @@ describe('ShardedWal Integration', () => {
         finalExtension: '.json',
         finalizer: records => `${JSON.stringify(records)}\n`,
       },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       groupId: 'create-finalize',
       filename: 'test-shard-1',
     });
@@ -80,7 +80,7 @@ describe('ShardedWal Integration', () => {
         finalExtension: '.json',
         finalizer: records => `${JSON.stringify(records)}\n`,
       },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       groupId: 'merge-shards',
       filename: 'shard-1',
     });
@@ -126,7 +126,7 @@ describe('ShardedWal Integration', () => {
         codec: tolerantCodec,
         finalizer: records => `${JSON.stringify(records)}\n`,
       },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       groupId: 'invalid-entries',
       filename: 'test-shard',
     });
@@ -163,7 +163,7 @@ describe('ShardedWal Integration', () => {
         finalExtension: '.json',
         finalizer: records => `${JSON.stringify(records)}\n`,
       },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       groupId: 'cleanup-test',
       filename: 'shard-1',
     });
@@ -210,7 +210,7 @@ describe('ShardedWal Integration', () => {
         finalizer: (records, opt) =>
           `${JSON.stringify({ records, metadata: opt })}\n`,
       },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       groupId: 'custom-finalizer',
       filename: 'custom-shard',
     });
@@ -246,7 +246,7 @@ describe('ShardedWal Integration', () => {
         finalExtension: '.json',
         finalizer: records => `${JSON.stringify(records)}\n`,
       },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       groupId: 'empty-shards',
     });
 

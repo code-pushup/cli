@@ -20,7 +20,7 @@ import {
   PROFILER_MEASURE_NAME_ENV_VAR,
   PROFILER_OUT_DIR_ENV_VAR,
   PROFILER_PERSIST_OUT_DIR,
-  SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+  PROFILER_SHARDER_ID_ENV_VAR,
 } from './constants.js';
 import { Profiler, type ProfilerOptions } from './profiler.js';
 
@@ -132,7 +132,7 @@ export class NodejsProfiler<
     this.#sharder = new ShardedWal<DomainEvents>({
       dir: process.env[PROFILER_OUT_DIR_ENV_VAR] ?? outDir,
       format,
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       measureNameEnvVar: PROFILER_MEASURE_NAME_ENV_VAR,
       groupId: measureName,
     });

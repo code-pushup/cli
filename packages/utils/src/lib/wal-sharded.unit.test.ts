@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { getUniqueInstanceId } from './process-id.js';
-import { SHARDED_WAL_COORDINATOR_ID_ENV_VAR } from './profiler/constants.js';
+import { PROFILER_SHARDER_ID_ENV_VAR } from './profiler/constants.js';
 import { ShardedWal } from './wal-sharded.js';
 import { WriteAheadLogFile, createTolerantCodec } from './wal.js';
 
@@ -17,7 +17,7 @@ const getShardedWal = (overrides?: {
   new ShardedWal({
     dir: '/test/shards',
     format: { baseName: 'test-wal' },
-    coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+    coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
     ...overrides,
   });
 
@@ -26,7 +26,7 @@ describe('ShardedWal', () => {
     vol.reset();
     vol.fromJSON({}, MEMFS_VOLUME);
     // Clear coordinator env var for fresh state
-    delete process.env[SHARDED_WAL_COORDINATOR_ID_ENV_VAR];
+    delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
   });
 
   describe('initialization', () => {
@@ -226,7 +226,7 @@ describe('ShardedWal', () => {
       });
 
       // Ensure no coordinator is set
-      delete process.env[SHARDED_WAL_COORDINATOR_ID_ENV_VAR];
+      delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
 
       const sw = getShardedWal({
         dir: '/shards',
@@ -246,7 +246,7 @@ describe('ShardedWal', () => {
       });
 
       // Ensure no coordinator is set
-      delete process.env[SHARDED_WAL_COORDINATOR_ID_ENV_VAR];
+      delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
 
       const sw = getShardedWal({
         dir: '/shards',
@@ -364,10 +364,7 @@ describe('ShardedWal', () => {
       });
 
       // Set coordinator BEFORE creating instance
-      ShardedWal.setCoordinatorProcess(
-        SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-        instanceId,
-      );
+      ShardedWal.setCoordinatorProcess(PROFILER_SHARDER_ID_ENV_VAR, instanceId);
 
       const sw = getShardedWal({
         dir: '/shards',
@@ -416,10 +413,7 @@ describe('ShardedWal', () => {
       });
 
       // Set coordinator BEFORE creating instance
-      ShardedWal.setCoordinatorProcess(
-        SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-        instanceId,
-      );
+      ShardedWal.setCoordinatorProcess(PROFILER_SHARDER_ID_ENV_VAR, instanceId);
 
       const sw = getShardedWal({
         dir: '/shards',
@@ -451,7 +445,7 @@ describe('ShardedWal', () => {
       });
 
       // Not coordinator - cleanupIfCoordinator should be no-op
-      delete process.env[SHARDED_WAL_COORDINATOR_ID_ENV_VAR];
+      delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
       sw.cleanupIfCoordinator();
       expect(vol.toJSON()).not.toStrictEqual({});
       expect(sw.getState()).toBe('active');

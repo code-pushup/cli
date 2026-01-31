@@ -16,7 +16,7 @@ import type {
 import * as WalModule from '../wal.js';
 import {
   PROFILER_PERSIST_OUT_DIR,
-  SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+  PROFILER_SHARDER_ID_ENV_VAR,
 } from './constants';
 import { NodejsProfiler, type NodejsProfilerOptions } from './profiler-node.js';
 import { Profiler, getProfilerId } from './profiler.js';
@@ -43,7 +43,7 @@ const resetEnv = () => {
   // eslint-disable-next-line functional/immutable-data
   delete process.env.CP_PROFILING;
   // eslint-disable-next-line functional/immutable-data
-  delete process.env[SHARDED_WAL_COORDINATOR_ID_ENV_VAR];
+  delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
 };
 
 const expectRunning = (p: NodejsProfiler<any>) => {
@@ -229,7 +229,7 @@ describe('NodejsProfiler', () => {
     });
 
     it('should NOT initialize as coordinator if env vars is defined', async () => {
-      vi.stubEnv(SHARDED_WAL_COORDINATOR_ID_ENV_VAR, getProfilerId());
+      vi.stubEnv(PROFILER_SHARDER_ID_ENV_VAR, getProfilerId());
       const profiler = createProfiler('is-coordinator');
       expect(profiler.stats.isCoordinator).toBe(false);
       profiler.marker('special-marker');
