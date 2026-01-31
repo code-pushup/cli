@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { MEMFS_VOLUME, osAgnosticPath } from '@code-pushup/test-utils';
 import { getUniqueInstanceId } from './process-id.js';
 import { PROFILER_SHARDER_ID_ENV_VAR } from './profiler/constants.js';
 import { ShardedWal } from './wal-sharded.js';
@@ -46,7 +46,8 @@ describe('ShardedWal', () => {
       expect(shard).toBeInstanceOf(WriteAheadLogFile);
       // Shard files use getShardId() format (timestamp.pid.threadId.counter)
       // The groupId is auto-generated and used in the shard path
-      expect(shard.getPath()).toMatch(
+      // Normalize path before regex matching to handle OS-specific separators
+      expect(osAgnosticPath(shard.getPath())).toMatch(
         /^\/test\/shards\/\d{8}-\d{6}-\d{3}\/trace\.\d{8}-\d{6}-\d{3}(?:\.\d+){3}\.log$/,
       );
       expect(shard.getPath()).toEndWithPath('.log');

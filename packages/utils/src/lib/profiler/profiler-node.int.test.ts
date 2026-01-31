@@ -436,13 +436,11 @@ describe('NodeJS Profiler Integration', () => {
     }
 
     const validationStartTime = performance.now();
-    expect(coordinatorStats).toStrictEqual(
-      expect.objectContaining({
-        isCoordinator: true,
-        shardFileCount: numProcesses + 1, // numProcesses child processes + 1 coordinator shard
-        groupId: expect.stringMatching(/^\d{8}-\d{6}-\d{3}$/), // Auto-generated groupId format
-      }),
-    );
+    expect(coordinatorStats).toMatchObject({
+      isCoordinator: true,
+      shardFileCount: numProcesses + 1, // numProcesses child processes + 1 coordinator shard
+      groupId: expect.stringMatching(/^\d{8}-\d{6}-\d{3}$/), // Auto-generated groupId format
+    });
 
     // Verify all processes share the same groupId
     const groupId = coordinatorStats.groupId;
