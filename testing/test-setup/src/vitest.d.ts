@@ -3,16 +3,13 @@ import type { CustomMarkdownTableMatchers } from './lib/extend/markdown-table.ma
 import type {
   CustomAsymmetricPathMatchers,
   CustomPathMatchers,
-  FsStructure,
 } from './lib/extend/path.matcher.js';
 
 declare module 'vitest' {
   interface Assertion
     extends CustomPathMatchers,
       CustomMarkdownTableMatchers,
-      JestExtendedMatchers {
-    fsMatchesStructure: (structure: FsStructure) => Promise<void>;
-  }
+      JestExtendedMatchers {}
 
   interface AsymmetricMatchersContaining
     extends CustomAsymmetricPathMatchers,
@@ -20,7 +17,3 @@ declare module 'vitest' {
 
   interface ExpectStatic extends JestExtendedMatchers {}
 }
-
-// Export types for use in tests
-export type { FsStructure } from './lib/extend/path.matcher.js';
-export { fsMatcherKey } from './lib/extend/path.matcher.js';

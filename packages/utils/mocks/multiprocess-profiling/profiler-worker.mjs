@@ -2,13 +2,12 @@ import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { NodejsProfiler } from '../../src/lib/profiler/profiler-node.js';
-import { entryToTraceEvents } from '../../src/lib/profiler/trace-file-utils.js';
-import { traceEventWalFormat } from '../../src/lib/profiler/wal-json-trace.js';
+import { createBufferedEvents, getProfilerConfig } from './utils.js';
 
-const [numProcesses, measureName] = process.argv.slice(2);
+const [numProcesses] = process.argv.slice(2);
 
 if (!numProcesses) {
-  console.error('Usage: node profiler-worker.mjs <numProcesses> [measureName]');
+  console.error('Usage: node profiler-worker.mjs <numProcesses>');
   process.exit(1);
 }
 
@@ -23,17 +22,11 @@ const workerScriptPath = path.join(
   './profiler-worker-child.mjs',
 );
 
-const profiler = new NodejsProfiler({
-  format: {
-    ...traceEventWalFormat(),
-    encodePerfEntry: entryToTraceEvents,
-  },
-  track: `Track: ${process.pid}`,
-  trackGroup: 'Multiprocess',
-  ...(measureName && { measureName }),
-});
+await createBufferedEvents();
 
-(async () => {
+const profiler = new NodejsProfiler(getProfilerConfig());
+
+await profiler.measureAsync('profiler-worker', async () => {
   const processes = Array.from({ length: numProcs }, (_, i) => {
     return new Promise((resolve, reject) => {
       const child = spawn('npx', ['tsx', workerScriptPath], {
@@ -51,9 +44,8 @@ const profiler = new NodejsProfiler({
       child.on('error', reject);
     });
   });
-
   await Promise.all(processes);
+});
 
-  profiler.close();
-  console.log(JSON.stringify(profiler.stats, null, 2));
-})();
+profiler.close();
+console.log(JSON.stringify(profiler.stats, null, 2));

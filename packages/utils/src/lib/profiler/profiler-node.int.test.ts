@@ -407,7 +407,7 @@ describe('NodeJS Profiler Integration', () => {
         'tsx',
         '--tsconfig',
         'tsconfig.base.json',
-        'packages/utils/mocks/multiprocess-profiling/profiler-worker.mjs',
+        path.relative(process.cwd(), workerScriptPath),
         String(numProcesses),
       ],
       cwd: process.cwd(),

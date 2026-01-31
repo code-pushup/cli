@@ -189,6 +189,46 @@ export class PerformanceObserverSink<T> {
   /** Whether debug mode is enabled for encode failures */
   #debug: boolean;
 
+  private processPerformanceEntries(entries: PerformanceEntry[]) {
+    entries.forEach(entry => {
+      if (OBSERVED_TYPE_SET.has(entry.entryType as ObservedEntryType)) {
+        try {
+          const items = this.encode(entry);
+          items.forEach(item => {
+            // ❌ MAX QUEUE OVERFLOW
+            if (this.#queue.length >= this.#maxQueueSize) {
+              this.#dropped++; // Items are lost forever
+              return;
+            }
+
+            if (
+              this.#queue.length >=
+              this.#maxQueueSize - this.#flushThreshold
+            ) {
+              this.flush();
+            }
+            this.#queue.push(item);
+            this.#addedSinceLastFlush++;
+          });
+        } catch (error) {
+          // ❌ Encode failure: item lost forever as user has to fix encode function.
+          this.#dropped++;
+          if (this.#debug) {
+            try {
+              performance.mark(errorToPerfMark(error, entry));
+            } catch {
+              // Ignore mark failures to prevent double errors
+            }
+          }
+        }
+      }
+    });
+
+    if (this.#addedSinceLastFlush >= this.#flushThreshold) {
+      this.flush();
+    }
+  }
+
   /**
    * Creates a new PerformanceObserverSink with the specified configuration.
    *
@@ -273,43 +313,7 @@ export class PerformanceObserverSink<T> {
     }
 
     this.#observer = new PerformanceObserver(list => {
-      list.getEntries().forEach(entry => {
-        if (OBSERVED_TYPE_SET.has(entry.entryType as ObservedEntryType)) {
-          try {
-            const items = this.encode(entry);
-            items.forEach(item => {
-              // ❌ MAX QUEUE OVERFLOW
-              if (this.#queue.length >= this.#maxQueueSize) {
-                this.#dropped++; // Items are lost forever
-                return;
-              }
-
-              if (
-                this.#queue.length >=
-                this.#maxQueueSize - this.#flushThreshold
-              ) {
-                this.flush();
-              }
-              this.#queue.push(item);
-              this.#addedSinceLastFlush++;
-            });
-          } catch (error) {
-            // ❌ Encode failure: item lost forever as user has to fix encode function.
-            this.#dropped++;
-            if (this.#debug) {
-              try {
-                performance.mark(errorToPerfMark(error, entry));
-              } catch {
-                // Ignore mark failures to prevent double errors
-              }
-            }
-          }
-        }
-      });
-
-      if (this.#addedSinceLastFlush >= this.#flushThreshold) {
-        this.flush();
-      }
+      this.processPerformanceEntries(list.getEntries());
     });
 
     this.#observer.observe({
@@ -323,53 +327,10 @@ export class PerformanceObserverSink<T> {
     // We manually retrieve entries from the performance buffer using getEntriesByType()
     // to capture entries that were created before the observer was created.
     if (this.#buffered) {
-      // Get all mark and measure entries from the performance buffer
       const existingMarks = performance.getEntriesByType('mark');
       const existingMeasures = performance.getEntriesByType('measure');
       const allEntries = [...existingMarks, ...existingMeasures];
-
-      // Process entries that weren't already delivered by the callback
-      // We track which entries were processed by checking if they're in the queue
-      const initialQueueLength = this.#queue.length;
-      allEntries.forEach(entry => {
-        if (OBSERVED_TYPE_SET.has(entry.entryType as ObservedEntryType)) {
-          try {
-            const items = this.encode(entry);
-            items.forEach(item => {
-              if (this.#queue.length >= this.#maxQueueSize) {
-                this.#dropped++;
-                return;
-              }
-              if (
-                this.#queue.length >=
-                this.#maxQueueSize - this.#flushThreshold
-              ) {
-                this.flush();
-              }
-              this.#queue.push(item);
-              this.#addedSinceLastFlush++;
-            });
-          } catch (error) {
-            this.#dropped++;
-            if (this.#debug) {
-              try {
-                performance.mark(errorToPerfMark(error, entry));
-              } catch {
-                // Ignore mark failures
-              }
-            }
-          }
-        }
-      });
-
-      if (this.#addedSinceLastFlush >= this.#flushThreshold) {
-        this.flush();
-      }
-
-      // Flush any remaining queued entries
-      if (this.#queue.length > 0) {
-        this.flush();
-      }
+      this.processPerformanceEntries(allEntries);
     }
   }
 

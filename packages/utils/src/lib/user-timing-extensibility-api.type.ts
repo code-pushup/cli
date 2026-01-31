@@ -122,12 +122,11 @@ export type ActionColorPayload = {
 
 /**
  * Action track payload.
+ * @param TrackEntryPayload - The track entry payload
+ * @param ActionColorPayload - The action color payload
  * @returns The action track payload
  */
-export type ActionTrackEntryPayload = Omit<
-  TrackEntryPayload & ActionColorPayload,
-  'dataType'
->;
+export type ActionTrackEntryPayload = TrackEntryPayload & ActionColorPayload;
 
 /**
  * Utility type that adds an optional devtools payload property.

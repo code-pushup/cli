@@ -18,7 +18,10 @@ function getIncludePatterns(kind: TestKind): string[] {
         'src/**/*.type.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
       ];
     case 'int':
-      return ['src/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'];
+      return [
+        'mocks/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+        'src/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+      ];
     case 'e2e':
       return ['tests/**/*.e2e.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'];
   }

@@ -8,13 +8,5 @@
     "^@code-pushup/(.*)$",
     "^[./]"
   ],
-  "importOrderSortSpecifiers": true,
-  "overrides": [
-    {
-      "files": "*.json",
-      "options": {
-        "trailingComma": "none"
-      }
-    }
-  ]
+  "importOrderSortSpecifiers": true
 }

@@ -275,7 +275,6 @@ const saved = profiler.measure('save-user', () => saveToDb(user), {
 - **Controllable over env vars**: Easily enable or disable profiling through environment variables.
 
 This profiler extends all options and API from Profiler with automatic process exit handling for buffered performance data.
-
 The NodeJSProfiler automatically subscribes to performance observation and installs exit handlers that flush buffered data on process termination (signals, fatal errors, or normal exit).
 
 ### Exit Handlers
@@ -291,16 +290,23 @@ The NodeJSProfiler follows a state machine with three distinct states:
 **State Machine Flow**
 
 ```
-active → finalized → cleaned
-  ↓         ↓
-  └─────────┘ (no transitions back)
+idle ⇄ running
+  ↓       ↓
+  └──→ closed
 ```
 
-- **active**: Profiler is running and collecting performance measurements
-- **finalized**: Profiler has been closed and all buffered data has been flushed to disk
-- **cleaned**: Profiler resources have been fully released
+- **idle**: Profiler is initialized but not actively collecting measurements. WAL sink is closed and performance observer is unsubscribed.
+- **running**: Profiler is actively collecting performance measurements. WAL sink is open and performance observer is subscribed.
+- **closed**: Profiler has been closed and all buffered data has been flushed to disk. Resources have been fully released. This state is irreversible.
 
-Once a state transition occurs (e.g., `active` → `finalized`), there are no transitions back to previous states. This ensures data integrity and prevents resource leaks.
+**State Transitions:**
+
+- `idle` → `running`: Occurs when `setEnabled(true)` is called. Enables profiling, opens WAL sink, and subscribes to performance observer.
+- `running` → `idle`: Occurs when `setEnabled(false)` is called. Disables profiling, unsubscribes from performance observer, and closes WAL sink (sink will be reopened on re-enable).
+- `running` → `closed`: Occurs when `close()` is called. Disables profiling, unsubscribes, closes sink, finalizes shards, and unsubscribes exit handlers (irreversible).
+- `idle` → `closed`: Occurs when `close()` is called. Closes sink if it was opened, finalizes shards, and unsubscribes exit handlers (irreversible).
+
+Once a state transition to `closed` occurs, there are no transitions back to previous states. This ensures data integrity and prevents resource leaks.
 
 ## Configuration
 
@@ -325,15 +331,76 @@ new NodejsProfiler<DomainEvents, Tracks>(options: NodejsProfilerOptions<DomainEv
 | `flushThreshold`         | `number`                                | `20`             | Threshold for triggering queue flushes based on queue length                          |
 | `maxQueueSize`           | `number`                                | `10_000`         | Maximum number of items allowed in the queue before new entries are dropped           |
 
+### Environment Variables
+
+The NodeJSProfiler can be configured using environment variables, which override the corresponding options when not explicitly provided:
+
+| Environment Variable       | Type     | Default          | Description                                                                                                                        |
+| -------------------------- | -------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `CP_PROFILING`             | `string` | _unset_          | Enables or disables profiling globally. Set to `'true'` to enable, `'false'` or unset to disable.                                  |
+| `DEBUG`                    | `string` | _unset_          | Enables debug mode for profiler state transitions. When set to `'true'`, state transitions create performance marks for debugging. |
+| `CP_PROFILER_OUT_DIR`      | `string` | `'tmp/profiles'` | Output directory for WAL shards and final files. Overrides the `outDir` option.                                                    |
+| `CP_PROFILER_MEASURE_NAME` | `string` | _auto-generated_ | Measure name used for sharding. Overrides the `measureName` option. If not provided, a new group ID will be generated.             |
+
+```bash
+# Enable profiling with custom output directory
+CP_PROFILING=true CP_PROFILER_OUT_DIR=/path/to/profiles npm run dev
+
+# Enable profiling with debug mode and custom measure name
+CP_PROFILING=true DEBUG=true CP_PROFILER_MEASURE_NAME=my-measure npm run dev
+```
+
 ## API Methods
 
 The NodeJSProfiler inherits all API methods from the base Profiler class and adds additional methods for queue management and WAL lifecycle control.
 
-| Method                               | Description                                                                     |
-| ------------------------------------ | ------------------------------------------------------------------------------- |
-| `getStats()`                         | Returns comprehensive queue statistics for monitoring and debugging.            |
-| `flush()`                            | Forces immediate writing of all queued performance entries to the WAL.          |
-| `setEnabled(enabled: boolean): void` | Controls profiling at runtime with automatic WAL/observer lifecycle management. |
+| Method                               | Description                                                                              |
+| ------------------------------------ | ---------------------------------------------------------------------------------------- | --------- | ----------- |
+| `stats`                              | Returns comprehensive queue statistics and profiling state for monitoring and debugging. |
+| `state`                              | Returns current profiler state (`'idle'                                                  | 'running' | 'closed'`). |
+| `close()`                            | Closes profiler and releases resources. Idempotent, safe for exit handlers.              |
+| `flush()`                            | Forces immediate writing of all queued performance entries to the WAL.                   |
+| `setEnabled(enabled: boolean): void` | Controls profiling at runtime with automatic WAL/observer lifecycle management.          |
+
+### Profiler state
+
+```ts
+profiler.state: 'idle' | 'running' | 'closed'
+```
+
+Returns the current profiler state. Use this to check the profiler's lifecycle state without accessing the full stats object.
+
+```ts
+// Check current state
+if (profiler.state === 'running') {
+  console.log('Profiler is actively collecting measurements');
+} else if (profiler.state === 'idle') {
+  console.log('Profiler is initialized but not collecting');
+} else {
+  console.log('Profiler has been closed');
+}
+```
+
+### Closing the profiler
+
+```ts
+profiler.close(): void
+```
+
+Closes profiler and releases resources. This method is idempotent and safe to call from exit handlers. When called, it transitions the profiler to the `closed` state, which is irreversible. All buffered data is flushed, shards are finalized, and exit handlers are unsubscribed.
+
+```ts
+// Close profiler when done
+profiler.close();
+
+// Safe to call multiple times (idempotent)
+profiler.close(); // No-op if already closed
+
+// Check if closed
+if (profiler.state === 'closed') {
+  console.log('Profiler resources have been released');
+}
+```
 
 ### Runtime control with Write Ahead Log lifecycle management
 
@@ -350,13 +417,23 @@ await performHeavyOperation();
 profiler.setEnabled(true); // WAL reopens and observer resubscribes
 ```
 
-### Queue statistics
+### Profiler statistics
 
 ```ts
-profiler.getStats(): {
-  enabled: boolean;
-  observing: boolean;
-  walOpen: boolean;
+profiler.stats: {
+  profilerState: 'idle' | 'running' | 'closed';
+  debug: boolean;
+  sharderState: 'active' | 'finalized' | 'cleaned';
+  shardCount: number;
+  groupId: string;
+  isCoordinator: boolean;
+  isFinalized: boolean;
+  isCleaned: boolean;
+  finalFilePath: string;
+  shardFileCount: number;
+  shardFiles: string[];
+  shardOpen: boolean;
+  shardPath: string;
   isSubscribed: boolean;
   queued: number;
   dropped: number;
@@ -365,16 +442,6 @@ profiler.getStats(): {
   flushThreshold: number;
   addedSinceLastFlush: number;
   buffered: boolean;
-}
-```
-
-Returns comprehensive queue statistics for monitoring and debugging. Provides insight into the current state of the performance entry queue, useful for monitoring memory usage and processing throughput.
-
-```ts
-const stats = profiler.getStats();
-console.log(`Enabled: ${stats.enabled}, WAL Open: ${stats.walOpen}, Observing: ${stats.observing}, Subscribed: ${stats.isSubscribed}, Queued: ${stats.queued}`);
-if (stats.enabled && stats.walOpen && stats.observing && stats.isSubscribed && stats.queued > stats.flushThreshold) {
-  console.log('Queue nearing capacity, consider manual flush');
 }
 ```
 

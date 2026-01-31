@@ -1,11 +1,11 @@
-import { WAL_ID_PATTERNS, getUniqueTimeId } from './process-id.js';
+import { ID_PATTERNS, getUniqueTimeId } from './process-id.js';
 import { getShardId } from './wal-sharded.js';
 
 describe('getShardId (formerly getUniqueReadableInstanceId)', () => {
   it('should generate shard ID with readable timestamp', () => {
     const result = getShardId();
 
-    expect(result).toMatch(WAL_ID_PATTERNS.INSTANCE_ID);
+    expect(result).toMatch(ID_PATTERNS.INSTANCE_ID);
     expect(result).toStartWith('20231114-221320-000.');
   });
 
@@ -55,7 +55,7 @@ describe('getUniqueTimeId (formerly getUniqueRunId)', () => {
     const result = getUniqueTimeId();
 
     expect(result).toBe('20231114-221320-000');
-    expect(result).toMatch(WAL_ID_PATTERNS.GROUP_ID);
+    expect(result).toMatch(ID_PATTERNS.GROUP_ID);
   });
 
   it('should generate new ID on each call (not idempotent)', () => {
@@ -64,8 +64,8 @@ describe('getUniqueTimeId (formerly getUniqueRunId)', () => {
 
     // Note: getUniqueTimeId is not idempotent - it generates a new ID each call
     // based on current time, so results will be different
-    expect(result1).toMatch(WAL_ID_PATTERNS.GROUP_ID);
-    expect(result2).toMatch(WAL_ID_PATTERNS.GROUP_ID);
+    expect(result1).toMatch(ID_PATTERNS.GROUP_ID);
+    expect(result2).toMatch(ID_PATTERNS.GROUP_ID);
     // They may be the same if called within the same millisecond, but generally different
   });
 });

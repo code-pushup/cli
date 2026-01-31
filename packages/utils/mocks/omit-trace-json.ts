@@ -45,6 +45,15 @@ const normalizeEncodedJsonl = (
   return normalizedDecoded.map(encodeEvent);
 };
 
+/**
+ * Loads and normalizes trace events from a JSONL file.
+ * Parses the file, decodes all events, normalizes them for deterministic testing,
+ * and returns the normalized decoded events.
+ *
+ * @param filePath - Path to the JSONL trace file
+ * @param options - Optional configuration with baseTimestampUs for timestamp normalization
+ * @returns Promise resolving to an array of normalized trace events
+ */
 export async function loadAndOmitTraceJsonl(
   filePath: `${string}.jsonl`,
   options?: {
@@ -78,6 +87,15 @@ function validateJsonSerializable(value: unknown): void {
   }
 }
 
+/**
+ * Loads and normalizes trace events from a JSON file.
+ * Parses the file, decodes events, normalizes them for deterministic testing,
+ * normalizes metadata timestamps, and validates JSON serializability.
+ *
+ * @param filePath - Path to the JSON trace file
+ * @param options - Optional configuration with baseTimestampUs for timestamp normalization
+ * @returns Promise resolving to a normalized trace event container
+ */
 export async function loadAndOmitTraceJson(
   filePath: string,
   options?: {
@@ -144,7 +162,7 @@ export async function loadAndOmitTraceJson(
 /**
  * Normalizes trace events for deterministic snapshot testing.
  *
- * Replaces variable values (pid, tid, ts) with deterministic incremental values
+ * Replaces variable values (pid, tid, ts, id2.local) with deterministic incremental values
  * while preserving the original order of events.
  *
  * - Assigns incremental IDs to pid fields starting from 10001, 10002, etc.
@@ -152,8 +170,9 @@ export async function loadAndOmitTraceJson(
  * - Normalizes timestamps by sorting them first to determine incremental order,
  *   then mapping to incremental values starting from mocked epoch clock base,
  *   while preserving the original order of events in the output.
- * - Normalizes metadata timestamps (generatedAt, startTime) to fixed values
+ * - Normalizes id2.local values to incremental hex values (0x1, 0x2, etc.)
  * - Normalizes nested process IDs in args.data (frameTreeNodeId, frames[].processId, frames[].frame)
+ * - Automatically decodes events if they contain string-encoded details
  *
  * @param traceEvents - Array of trace events to normalize, or JSONL string
  * @param options - Optional configuration with baseTimestampUs
@@ -322,9 +341,13 @@ function normalizeAndFormatEventsArray(
 }
 
 /**
- * Loads a normalized trace from a JSON file.
- * @param filePath - The path to the JSON trace file.
- * @returns The normalized trace.
+ * Loads and normalizes trace events from a JSON file.
+ * Parses the file, decodes events, normalizes them for deterministic testing,
+ * normalizes metadata (removes generatedAt, sets startTime to fixed value),
+ * creates a trace file container, and removes displayTimeUnit.
+ *
+ * @param filePath - Path to the JSON trace file (must end with .json)
+ * @returns Promise resolving to a normalized trace event container
  */
 export async function loadNormalizedTraceJson(
   filePath: `${string}.json`,
@@ -370,9 +393,12 @@ export async function loadNormalizedTraceJson(
 }
 
 /**
- * Loads a normalized trace from a JSONL file.
- * @param filePath - The path to the JSONL trace file.
- * @returns The normalized trace.
+ * Loads and normalizes trace events from a JSONL file.
+ * Parses the file, decodes all events, normalizes them for deterministic testing,
+ * and creates a trace file container.
+ *
+ * @param filePath - Path to the JSONL trace file (must end with .jsonl)
+ * @returns Promise resolving to a normalized trace event container
  */
 export async function loadNormalizedTraceJsonl(
   filePath: `${string}.jsonl`,
@@ -388,6 +414,12 @@ export async function loadNormalizedTraceJsonl(
   });
 }
 
+/**
+ * Validates that all blink.user_timing events in the container can be decoded.
+ * Throws an assertion error if any event fails to decode.
+ *
+ * @param container - Trace event container to validate
+ */
 export function expectTraceDecodable(container: TraceEventContainer): void {
   for (const event of container.traceEvents) {
     if (event.cat === 'blink.user_timing') {
