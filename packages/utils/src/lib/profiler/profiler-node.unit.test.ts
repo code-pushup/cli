@@ -9,6 +9,7 @@ import {
 import { MockTraceEventFileSink } from '../../../mocks/sink.mock';
 import { subscribeProcessExit } from '../exit-process.js';
 import type { PerformanceEntryEncoder } from '../performance-observer.js';
+import { ID_PATTERNS } from '../process-id.js';
 import type {
   ActionTrackEntryPayload,
   UserTimingDetail,
@@ -32,10 +33,6 @@ const simpleEncoder: PerformanceEntryEncoder<{ message: string }> = entry => {
   }
   return [];
 };
-
-// ─────────────────────────────────────────────────────────────
-// Helper functions
-// ─────────────────────────────────────────────────────────────
 
 const resetEnv = () => {
   // eslint-disable-next-line functional/immutable-data
@@ -192,7 +189,6 @@ describe('NodejsProfiler', () => {
     it('should initialize with sink opened when enabled is true', () => {
       const profiler = createProfiler({
         measureName: 'init-enabled',
-        enabled: true,
       });
       expect(profiler.state).toBe('running');
       expect(profiler.stats.shardOpen).toBe(true);
@@ -322,7 +318,6 @@ describe('NodejsProfiler', () => {
     it('is idempotent for repeated operations', () => {
       const profiler = createProfiler({
         measureName: 'idempotent-operations',
-        enabled: true,
       });
 
       profiler.setEnabled(true);
@@ -359,7 +354,6 @@ describe('NodejsProfiler', () => {
     it('should expose shardPath in stats', () => {
       const profiler = createProfiler({
         measureName: 'filepath-getter',
-        enabled: true,
       });
       // When measureName is provided, it's used as the groupId directory
       expect(profiler.stats.shardPath).toContain(
@@ -395,7 +389,6 @@ describe('NodejsProfiler', () => {
     it('should perform measurements when enabled', () => {
       const profiler = createProfiler({
         measureName: 'measurements-enabled',
-        enabled: true,
       });
 
       const result = profiler.measure('test-op', () => 'success');
@@ -424,7 +417,9 @@ describe('NodejsProfiler', () => {
       const stats = profiler.stats;
       // shardPath uses dynamic shard ID format, so we check it matches the pattern
       expect(stats.shardPath).toMatch(
-        /^tmp\/profiles\/stats-getter\/trace\.\d{8}-\d{6}-\d{3}\.\d+\.\d+\.\d+\.jsonl$/,
+        new RegExp(
+          `^tmp/profiles/stats-getter/trace\\.${ID_PATTERNS.INSTANCE_ID.source}\\.jsonl$`,
+        ),
       );
       expect(stats).toStrictEqual({
         profilerState: 'idle',
@@ -454,7 +449,6 @@ describe('NodejsProfiler', () => {
     it('flush() should flush when profiler is running', () => {
       const profiler = createProfiler({
         measureName: 'flush-running',
-        enabled: true,
       });
       expect(() => profiler.flush()).not.toThrow();
     });
@@ -462,7 +456,6 @@ describe('NodejsProfiler', () => {
     it('should propagate errors from measure work function', () => {
       const profiler = createProfiler({
         measureName: 'measure-error',
-        enabled: true,
       });
 
       const error = new Error('Test error');
@@ -476,7 +469,6 @@ describe('NodejsProfiler', () => {
     it('should propagate errors from measureAsync work function', async () => {
       const profiler = createProfiler({
         measureName: 'measure-async-error',
-        enabled: true,
       });
 
       const error = new Error('Async test error');
@@ -605,7 +597,6 @@ describe('NodejsProfiler', () => {
       process.env.DEBUG = 'true';
       const profiler = createProfiler({
         measureName: 'debug-no-transition-marker',
-        enabled: true,
       });
 
       performance.clearMarks();
@@ -683,7 +674,6 @@ describe('NodejsProfiler', () => {
     it('setEnabled toggles profiler state', () => {
       const profiler = createSimpleProfiler({
         measureName: 'exit-set-enabled',
-        enabled: true,
       });
       expect(profiler.isEnabled()).toBe(true);
 
@@ -699,7 +689,6 @@ describe('NodejsProfiler', () => {
       expect(() =>
         createSimpleProfiler({
           measureName: 'exit-uncaught-exception',
-          enabled: true,
         }),
       ).not.toThrow();
 
@@ -731,7 +720,6 @@ describe('NodejsProfiler', () => {
       const handlers = captureExitHandlers();
       const profiler = createSimpleProfiler({
         measureName: 'exit-unhandled-rejection',
-        enabled: true,
       });
       expect(profiler.isEnabled()).toBe(true);
 
@@ -762,7 +750,6 @@ describe('NodejsProfiler', () => {
       const handlers = captureExitHandlers();
       const profiler = createSimpleProfiler({
         measureName: 'exit-handler-shutdown',
-        enabled: true,
       });
       const closeSpy = vi.spyOn(profiler, 'close');
       expect(profiler.isEnabled()).toBe(true);

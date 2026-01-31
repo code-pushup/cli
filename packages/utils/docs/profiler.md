@@ -47,7 +47,6 @@ The `Profiler` class provides a clean, type-safe API for performance monitoring 
        utils: { track: 'Utils', color: 'primary' },
        core: { track: 'Core', color: 'primary-light' },
      },
-     enabled: true,
    });
    ```
 
@@ -207,7 +206,6 @@ const profiler = new Profiler({
     utils: { track: 'Utils', color: 'primary' },
     core: { track: 'Core', color: 'primary-light' },
   },
-  enabled: true,
 });
 
 // Simple measurement

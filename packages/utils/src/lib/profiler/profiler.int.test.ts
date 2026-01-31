@@ -11,7 +11,6 @@ describe('Profiler Integration', () => {
       tracks: {
         utils: { track: 'Utils', color: 'primary' },
       },
-      enabled: true,
     });
   }
 
