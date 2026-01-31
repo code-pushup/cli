@@ -16,14 +16,15 @@ import type {
 } from '../user-timing-extensibility-api.type.js';
 import * as WalModule from '../wal.js';
 import {
+  PROFILER_OUT_BASENAME,
   PROFILER_PERSIST_OUT_DIR,
   PROFILER_SHARDER_ID_ENV_VAR,
-} from './constants';
+} from './constants.js';
 import { NodejsProfiler, type NodejsProfilerOptions } from './profiler-node.js';
 import { Profiler, getProfilerId } from './profiler.js';
 import { entryToTraceEvents } from './trace-file-utils.js';
 import type { TraceEvent } from './trace-file.type.js';
-import { traceEventWalFormat } from './wal-json-trace';
+import { traceEventWalFormat } from './wal-json-trace.js';
 
 vi.mock('../exit-process.js');
 
@@ -82,8 +83,8 @@ const createProfiler = (
     format: {
       ...traceEventWalFormat(),
       encodePerfEntry: entryToTraceEvents,
+      baseName: opts.format?.baseName ?? PROFILER_OUT_BASENAME,
     },
-    baseName: opts.baseName ?? 'trace-events',
     enabled: opts.enabled ?? true,
     measureName: opts.measureName,
   });
@@ -110,7 +111,7 @@ const createSimpleProfiler = (
     enabled: overrides?.enabled ?? true,
     format: {
       encodePerfEntry: simpleEncoder,
-      baseName: 'trace',
+      baseName: overrides?.format?.baseName ?? PROFILER_OUT_BASENAME,
       walExtension: '.jsonl',
       finalExtension: '.json',
       ...overrides?.format,
@@ -208,6 +209,7 @@ describe('NodejsProfiler', () => {
       const profiler = createProfiler('is-coordinator');
       expect(profiler.stats.isCoordinator).toBe(true);
     });
+
     it('should finalize shard folder as coordinator', async () => {
       const profiler = createProfiler('is-coordinator');
       expect(profiler.stats.isCoordinator).toBe(true);
@@ -239,7 +241,7 @@ describe('NodejsProfiler', () => {
       ).resolves.not.toThrow();
       await expect(
         loadAndOmitTraceJson(profiler.stats.finalFilePath),
-      ).rejects.toThrowError('no such file or directory');
+      ).rejects.toThrow('no such file or directory');
     });
   });
 
@@ -370,9 +372,7 @@ describe('NodejsProfiler', () => {
       const shardPath = profiler.stats.shardPath;
       // shardPath uses the shard ID format: baseName.shardId.jsonl
       expect(shardPath).toContain('tmp/profiles/custom-filename');
-      expect(shardPath).toMatch(
-        /trace\.\d{8}-\d{6}-\d{3}\.\d+\.\d+\.\d+\.jsonl$/,
-      );
+      expect(shardPath).toMatch(/trace\.\d{8}-\d{6}-\d{3}(?:\.\d+){3}\.jsonl$/);
       // finalFilePath uses measureName as the identifier
       expect(profiler.stats.finalFilePath).toBe(
         `${PROFILER_PERSIST_OUT_DIR}/custom-filename/trace.custom-filename.json`,

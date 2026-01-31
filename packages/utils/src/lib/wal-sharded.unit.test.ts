@@ -46,7 +46,7 @@ describe('ShardedWal', () => {
       // Shard files use getShardId() format (timestamp.pid.threadId.counter)
       // The groupId is auto-generated and used in the shard path
       expect(shard.getPath()).toMatch(
-        /^\/test\/shards\/\d{8}-\d{6}-\d{3}\/trace\.\d{8}-\d{6}-\d{3}\.\d+\.\d+\.\d+\.log$/,
+        /^\/test\/shards\/\d{8}-\d{6}-\d{3}\/trace\.\d{8}-\d{6}-\d{3}(?:\.\d+){3}\.log$/,
       );
       expect(shard.getPath()).toEndWithPath('.log');
     });

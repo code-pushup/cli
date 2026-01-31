@@ -1,4 +1,5 @@
-import type { ActionTrackConfigs } from '../user-timing-extensibility-api-utils';
+import type { ActionTrackConfigs } from '../user-timing-extensibility-api-utils.js';
+import { PROFILER_ENABLED_ENV_VAR } from './constants.js';
 import { Profiler, type ProfilerOptions } from './profiler.js';
 
 describe('Profiler Integration', () => {
@@ -8,6 +9,7 @@ describe('Profiler Integration', () => {
       prefix: 'cp',
       track: 'CLI',
       trackGroup: 'Code Pushup',
+      enabled: true,
       tracks: {
         utils: { track: 'Utils', color: 'primary' },
       },
@@ -17,6 +19,9 @@ describe('Profiler Integration', () => {
   beforeEach(() => {
     performance.clearMarks();
     performance.clearMeasures();
+    // Don't stub env var to undefined - let profiler respect enabled: true option
+    // The profiler constructor uses: enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR)
+    // So if enabled is explicitly true, it will use that value
   });
 
   it('should create complete performance timeline for sync operation', () => {

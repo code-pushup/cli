@@ -7,7 +7,7 @@ import {
   asOptions,
   markerPayload,
   trackEntryPayload,
-} from '../../src/lib/user-timing-extensibility-api-utils';
+} from '../../src/lib/user-timing-extensibility-api-utils.js';
 import type {
   ActionTrackEntryPayload,
   TrackMeta,
@@ -80,7 +80,7 @@ export async function performDummyWork(
 
     for (let pkg = 0; pkg < numWorkPackages; pkg++) {
       // Random work size (100-5000 elements)
-      const workSize = Math.floor(Math.random() * 5000000);
+      const workSize = Math.floor(Math.random() * 5_000_000);
 
       profiler.measure(
         `process-${process.pid}:interval-${interval}:work-${pkg}`,

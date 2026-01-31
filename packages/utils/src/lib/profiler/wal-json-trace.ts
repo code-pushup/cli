@@ -1,6 +1,6 @@
 import { defaultClock } from '../clock-epoch.js';
 import type { InvalidEntry, WalFormat } from '../wal.js';
-import { PROFILER_OUT_BASENAME } from './constants';
+import { PROFILER_OUT_BASENAME } from './constants.js';
 import {
   complete,
   createTraceFile,
@@ -34,9 +34,8 @@ export function generateTraceContent(
   });
 
   const fallbackTs = defaultClock.epochNowUs();
-  const sortedEvents = events.length
-    ? [...events].sort((a, b) => a.ts - b.ts)
-    : [];
+  const sortedEvents =
+    events.length > 0 ? [...events].sort((a, b) => a.ts - b.ts) : [];
 
   const firstTs = sortedEvents.at(0)?.ts ?? fallbackTs;
   const lastTs = sortedEvents.at(-1)?.ts ?? fallbackTs;
@@ -46,7 +45,7 @@ export function generateTraceContent(
     traceEvents: [
       getInstantEventTracingStartedInBrowser({
         ts: firstTs - TRACE_MARGIN_US,
-        url: events.length ? 'generated-trace' : 'empty-trace',
+        url: events.length > 0 ? 'generated-trace' : 'empty-trace',
       }),
       complete(TRACE_START_MARGIN_NAME, TRACE_MARGIN_DURATION_US, {
         ts: firstTs - TRACE_MARGIN_US,

@@ -63,7 +63,7 @@ describe('normalizeAndFormatEvents', () => {
       name: 'plugin-eslint:run-eslint:start',
       pid: 8057,
       tid: 0,
-      ts: 1769814970883535,
+      ts: 1_769_814_970_883_535,
       args: {
         data: {
           detail:
@@ -104,7 +104,7 @@ describe('normalizeAndFormatEvents', () => {
       name: 'plugin-eslint:run-eslint',
       pid: 8057,
       tid: 0,
-      ts: 1769814970883536,
+      ts: 1_769_814_970_883_536,
       id2: { local: '0x3' },
       args: {
         detail:
@@ -144,10 +144,10 @@ describe('normalizeAndFormatEvents', () => {
       name: 'TracingStartedInBrowser',
       pid: 8057,
       tid: 0,
-      ts: 1769814970882268,
+      ts: 1_769_814_970_882_268,
       args: {
         data: {
-          frameTreeNodeId: 805700,
+          frameTreeNodeId: 805_700,
           frames: [
             {
               frame: 'FRAME0P8057T0',
@@ -257,7 +257,7 @@ describe('normalizeAndFormatEvents', () => {
       name: 'test',
       pid: 8057,
       tid: 0,
-      ts: 1769814970883535,
+      ts: 1_769_814_970_883_535,
       args: {
         detail: '{"type":"mark"}',
         data: { detail: '{"type":"span"}' },
@@ -344,7 +344,7 @@ describe('loadAndOmitTraceJson', () => {
       {
         'trace.json': JSON.stringify({
           traceEvents: [
-            { pid: 8057, tid: 0, ts: 1769814970882268, name: 'test' },
+            { pid: 8057, tid: 0, ts: 1_769_814_970_882_268, name: 'test' },
           ],
         }),
       },
@@ -388,7 +388,7 @@ describe('loadAndOmitTraceJson', () => {
     vol.fromJSON(
       {
         'trace.json': JSON.stringify({
-          traceEvents: [{ ts: 1234567890 }],
+          traceEvents: [{ ts: 1_234_567_890 }],
         }),
       },
       MEMFS_VOLUME,

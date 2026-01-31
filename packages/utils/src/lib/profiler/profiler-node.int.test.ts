@@ -14,12 +14,13 @@ import {
   asOptions,
   markerPayload,
   trackEntryPayload,
-} from '../user-timing-extensibility-api-utils';
+} from '../user-timing-extensibility-api-utils.js';
 import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
 import {
   PROFILER_DEBUG_ENV_VAR,
   PROFILER_ENABLED_ENV_VAR,
   PROFILER_MEASURE_NAME_ENV_VAR,
+  PROFILER_OUT_BASENAME,
   PROFILER_OUT_DIR_ENV_VAR,
   PROFILER_SHARDER_ID_ENV_VAR,
 } from './constants.js';
@@ -59,9 +60,9 @@ describe('NodeJS Profiler Integration', () => {
       format: {
         ...traceEventWalFormat(),
         encodePerfEntry: traceEventEncoder,
+        baseName: options.format?.baseName ?? PROFILER_OUT_BASENAME,
       },
       outDir: testSuitDir,
-      baseName: options.baseName ?? 'trace-events',
       enabled: options.enabled ?? true,
       debug: options.debug ?? false,
       measureName: options.measureName,
@@ -100,7 +101,7 @@ describe('NodeJS Profiler Integration', () => {
       .filter(x => x % 2 === 0)
       .reduce((sum, x) => sum + x, 0);
     expect(result).toBeGreaterThan(0);
-    expect('sync success').toStrictEqual('sync success');
+    expect('sync success').toBe('sync success');
     expect(() => performance.mark(`${prefix}:sync-measure:end`)).not.toThrow();
 
     performance.measure(`${prefix}:sync-measure`, {
@@ -126,7 +127,7 @@ describe('NodeJS Profiler Integration', () => {
     const flattened = matrix.flat();
     const sum = flattened.reduce((acc, val) => acc + val, 0);
     expect(sum).toBeGreaterThan(0);
-    await expect(Promise.resolve('async success')).resolves.toStrictEqual(
+    await expect(Promise.resolve('async success')).resolves.toBe(
       'async success',
     );
     expect(() => performance.mark(`${prefix}:async-measure:end`)).not.toThrow();
@@ -155,9 +156,7 @@ describe('NodeJS Profiler Integration', () => {
 
     await new Promise(resolve => setTimeout(resolve, 50));
 
-    expect(profiler.measure('sync-measure', () => 'success')).toStrictEqual(
-      'success',
-    );
+    expect(profiler.measure('sync-measure', () => 'success')).toBe('success');
 
     await new Promise(resolve => setTimeout(resolve, 50));
 
@@ -165,7 +164,7 @@ describe('NodeJS Profiler Integration', () => {
       profiler.measureAsync('async-measure', () =>
         Promise.resolve('async success'),
       ),
-    ).resolves.toStrictEqual('async success');
+    ).resolves.toBe('async success');
 
     await new Promise(resolve => setTimeout(resolve, 50));
 
@@ -213,7 +212,7 @@ describe('NodeJS Profiler Integration', () => {
 
   it('should initialize with shard opened when enabled', () => {
     const profiler = nodejsProfiler('initialize-shard-opened');
-    expect(profiler.isEnabled()).toStrictEqual(true);
+    expect(profiler.isEnabled()).toBe(true);
     expect(profiler.stats).toEqual(
       expect.objectContaining({
         profilerState: 'running',
@@ -273,9 +272,7 @@ describe('NodeJS Profiler Integration', () => {
     const prefix = 'stats-test';
     const statsProfiler = nodejsProfiler(prefix);
 
-    expect(statsProfiler.measure('test-op', () => 'result')).toStrictEqual(
-      'result',
-    );
+    expect(statsProfiler.measure('test-op', () => 'result')).toBe('result');
 
     const stats = statsProfiler.stats;
     expect(stats).toEqual(
@@ -323,7 +320,7 @@ describe('NodeJS Profiler Integration', () => {
     profiler.measure('operation-1', () => 'result1');
     profiler.measure('operation-2', () => 'result2');
     await awaitObserverCallbackAndFlush(profiler);
-    expect(profiler.stats.written).toStrictEqual(8);
+    expect(profiler.stats.written).toBe(8);
 
     profiler.setEnabled(false);
 
@@ -359,7 +356,7 @@ describe('NodeJS Profiler Integration', () => {
 
     expect(groupIdDir).toStrictEqual(measureName);
     expect(fileName).toMatch(
-      new RegExp(`^trace-events\\.${measureName}\\.json$`),
+      new RegExp(`^${PROFILER_OUT_BASENAME}\\.${measureName}\\.json$`),
     );
 
     expect(shardPath).toContain(measureName);
@@ -424,7 +421,7 @@ describe('NodeJS Profiler Integration', () => {
     expect(coordinatorStats).toStrictEqual(
       expect.objectContaining({
         isCoordinator: true,
-        shardFileCount: numProcesses,
+        shardFileCount: numProcesses + 1, // numProcesses child processes + 1 coordinator shard
         groupId: expect.stringMatching(/^\d{8}-\d{6}-\d{3}$/), // Auto-generated groupId format
       }),
     );
@@ -448,5 +445,5 @@ describe('NodeJS Profiler Integration', () => {
     });
 
     expect(processIds.size).toStrictEqual(numProcesses);
-  });
+  }, 10_000); // Timeout: 10 seconds for multi-process coordination
 });

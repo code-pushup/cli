@@ -66,10 +66,9 @@ export async function loadAndOmitTraceJsonl(
   // Parse and decode events
   const events = parseAndDecodeJsonl(stringContent);
   // Normalize decoded events
-  const normalizedEvents = normalizeAndFormatEvents(events, {
+  return normalizeAndFormatEvents(events, {
     baseTimestampUs,
   });
-  return normalizedEvents;
 }
 
 /**
@@ -200,7 +199,7 @@ export function normalizeAndFormatEvents(
     const encoded = normalized.map(encodeEvent);
     const result = encoded.map(event => JSON.stringify(event)).join('\n');
     const hasTrailingNewline = traceEvents.endsWith('\n');
-    return hasTrailingNewline ? result + '\n' : result;
+    return hasTrailingNewline ? `${result}\n` : result;
   }
   return normalizeAndFormatEventsArray(traceEvents, options);
 }

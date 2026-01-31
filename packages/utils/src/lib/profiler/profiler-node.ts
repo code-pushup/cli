@@ -40,12 +40,6 @@ export type PersistOptions<DomainEvents extends object> = {
   outDir?: string;
 
   /**
-   * Override the base name for WAL files (overrides format.baseName).
-   * If provided, this value will be merged into the format configuration.
-   */
-  baseName?: string;
-
-  /**
    * Optional name for your measurement that is reflected in path name. If not provided, a new group ID will be generated.
    */
   measureName?: string;
@@ -106,7 +100,7 @@ export class NodejsProfiler<
    * A WriteAheadLogFile sink is automatically created for buffering performance data.
    * @param options - Configuration options
    */
-  // eslint-disable-next-line max-lines-per-function
+
   constructor(options: NodejsProfilerOptions<DomainEvents, Tracks>) {
     // Pick ProfilerBufferOptions
     const {

@@ -93,7 +93,6 @@ export class ShardedWal<T extends object = object> {
    */
   static setCoordinatorProcess(envVarName: string, profilerID: string): void {
     if (!process.env[envVarName]) {
-      // eslint-disable-next-line functional/immutable-data
       process.env[envVarName] = profilerID;
     }
   }
@@ -142,7 +141,7 @@ export class ShardedWal<T extends object = object> {
     } else if (measureNameEnvVar) {
       // Env var not set - we're likely the first/coordinator, generate and set it
       resolvedGroupId = getUniqueTimeId();
-      // eslint-disable-next-line functional/immutable-data
+
       process.env[measureNameEnvVar] = resolvedGroupId;
     } else {
       // No measureNameEnvVar provided - generate unique one (backward compatible)

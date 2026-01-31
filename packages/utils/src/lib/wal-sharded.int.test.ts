@@ -42,7 +42,6 @@ describe('ShardedWal Integration', () => {
       },
       coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       groupId: 'create-finalize',
-      filename: 'test-shard-1',
     });
 
     const shard1 = shardedWal.shard();
@@ -61,7 +60,7 @@ describe('ShardedWal Integration', () => {
     const finalFile = path.join(
       testDir,
       shardedWal.groupId,
-      `trace.test-shard-1.json`,
+      `trace.create-finalize.json`,
     );
     expect(fs.existsSync(finalFile)).toBeTrue();
 
@@ -81,7 +80,6 @@ describe('ShardedWal Integration', () => {
       },
       coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       groupId: 'merge-shards',
-      filename: 'shard-1',
     });
 
     for (let i = 1; i <= 5; i++) {
@@ -96,7 +94,7 @@ describe('ShardedWal Integration', () => {
     const finalFile = path.join(
       testDir,
       shardedWal.groupId,
-      `merged.shard-1.json`,
+      `merged.merge-shards.json`,
     );
     const content = fs.readFileSync(finalFile, 'utf8');
     const records = JSON.parse(content.trim());
@@ -125,7 +123,6 @@ describe('ShardedWal Integration', () => {
       },
       coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       groupId: 'invalid-entries',
-      filename: 'test-shard',
     });
 
     const shard = shardedWal.shard();
@@ -140,7 +137,7 @@ describe('ShardedWal Integration', () => {
     const finalFile = path.join(
       testDir,
       shardedWal.groupId,
-      `test.test-shard.json`,
+      `test.invalid-entries.json`,
     );
     const content = fs.readFileSync(finalFile, 'utf8');
     const records = JSON.parse(content.trim());
@@ -161,7 +158,6 @@ describe('ShardedWal Integration', () => {
       },
       coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       groupId: 'cleanup-test',
-      filename: 'shard-1',
     });
 
     const shard1 = shardedWal.shard();
@@ -179,7 +175,7 @@ describe('ShardedWal Integration', () => {
     const finalFile = path.join(
       testDir,
       shardedWal.groupId,
-      `cleanup-test.shard-1.json`,
+      `cleanup-test.cleanup-test.json`,
     );
     expect(fs.existsSync(finalFile)).toBeTrue();
 
@@ -188,7 +184,7 @@ describe('ShardedWal Integration', () => {
     const groupDir = path.join(testDir, shardedWal.groupId);
     const files = fs.readdirSync(groupDir);
     expect(files).not.toContain(expect.stringMatching(/cleanup-test.*\.log$/));
-    expect(files).toContain(`cleanup-test.shard-1.json`);
+    expect(files).toContain(`cleanup-test.cleanup-test.json`);
   });
 
   it('should use custom options in finalizer', () => {
@@ -203,7 +199,6 @@ describe('ShardedWal Integration', () => {
       },
       coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       groupId: 'custom-finalizer',
-      filename: 'custom-shard',
     });
 
     const shard = shardedWal.shard();
@@ -216,7 +211,7 @@ describe('ShardedWal Integration', () => {
     const finalFile = path.join(
       testDir,
       shardedWal.groupId,
-      `custom.custom-shard.json`,
+      `custom.custom-finalizer.json`,
     );
     const content = fs.readFileSync(finalFile, 'utf8');
     const result = JSON.parse(content.trim());

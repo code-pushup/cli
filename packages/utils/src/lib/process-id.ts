@@ -5,13 +5,13 @@ import { threadId } from 'node:worker_threads';
  * Counter interface for generating sequential instance IDs.
  * Encapsulates increment logic within the counter-implementation.
  */
-export interface Counter {
+export type Counter = {
   /**
    * Returns the next counter-value and increments the internal state.
    * @returns The next counter-value
    */
-  next(): number;
-}
+  next: () => number;
+};
 
 /**
  * Base regex pattern for time ID format: yyyymmdd-hhmmss-ms
