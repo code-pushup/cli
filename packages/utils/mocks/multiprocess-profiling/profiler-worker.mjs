@@ -37,6 +37,7 @@ try {
         new Promise((resolve, reject) => {
           const child = spawn('npx', ['tsx', workerScriptPath], {
             stdio: 'pipe',
+            // NOTE: this is needed for windows as inheritance is not working there
             env: process.env,
           });
 
