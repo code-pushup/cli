@@ -48,7 +48,7 @@ describe('ShardedWal', () => {
       // The groupId is auto-generated and used in the shard path
       // Normalize path before regex matching to handle OS-specific separators
       expect(osAgnosticPath(shard.getPath())).toMatch(
-        /^\/test\/shards\/\d{8}-\d{6}-\d{3}\/trace\.\d{8}-\d{6}-\d{3}(?:\.\d+){3}\.log$/,
+        /^<CWD>\/shards\/\d{8}-\d{6}-\d{3}\/trace\.\d{8}-\d{6}-\d{3}(?:\.\d+){3}\.log$/,
       );
       expect(shard.getPath()).toEndWithPath('.log');
     });
@@ -59,7 +59,7 @@ describe('ShardedWal', () => {
       });
       const shard = sw.shard();
       expect(shard.getPath()).toStartWithPath(
-        '/test/shards/20231114-221320-000/trace.20231114-221320-000.10001',
+        '<CWD>/shards/20231114-221320-000/trace.20231114-221320-000.10001',
       );
       expect(shard.getPath()).toEndWithPath('.log');
     });
