@@ -1,1 +1,167 @@
-{"traceEvents":[{"cat":"devtools.timeline","ph":"i","name":"TracingStartedInBrowser","pid":10001,"tid":1,"ts":1700000005000000,"args":{"data":{"frameTreeNodeId":1000101,"frames":[{"frame":"FRAME0P10001T1","isInPrimaryMainFrame":true,"isOutermostMainFrame":true,"name":"","processId":10001,"url":"generated-trace"}],"persistentIds":true}}},{"cat":"devtools.timeline","pid":10001,"tid":1,"ts":1700000005000000,"ph":"X","name":"[trace padding start]","dur":20000,"args":{}},{"cat":"blink.user_timing","pid":10001,"tid":1,"ts":1700000005000001,"name":"write-buffered-j-jl:profiler-enable","ph":"i","args":{"detail":"{\"devtools\":{\"dataType\":\"marker\",\"tooltipText\":\"set enable to true\"}}"}},{"cat":"blink.user_timing","pid":10001,"tid":1,"ts":1700000005000002,"name":"write-buffered-j-jl:sync-measure:start","ph":"i","args":{}},{"cat":"blink.user_timing","pid":10001,"tid":1,"ts":1700000005000003,"name":"write-buffered-j-jl:sync-measure","ph":"b","id2":{"local":"0x1"},"args":{"data":{"detail":"{\"devtools\":{\"dataType\":\"track-entry\",\"track\":\"Buffered Track\",\"trackGroup\":\"Buffered Track\",\"tooltipText\":\"sync measurement returned :\\\"sync success\\\"\"}}"}}},{"cat":"blink.user_timing","pid":10001,"tid":1,"ts":1700000005000004,"name":"write-buffered-j-jl:sync-measure","ph":"e","id2":{"local":"0x1"},"args":{"data":{"detail":"{\"devtools\":{\"dataType\":\"track-entry\",\"track\":\"Buffered Track\",\"trackGroup\":\"Buffered Track\",\"tooltipText\":\"sync measurement returned :\\\"sync success\\\"\"}}"}}},{"cat":"blink.user_timing","pid":10001,"tid":1,"ts":1700000005000005,"name":"write-buffered-j-jl:sync-measure:end","ph":"i","args":{}},{"cat":"blink.user_timing","pid":10001,"tid":1,"ts":1700000005000006,"name":"write-buffered-j-jl:async-measure:start","ph":"i","args":{}},{"cat":"blink.user_timing","pid":10001,"tid":1,"ts":1700000005000007,"name":"write-buffered-j-jl:async-measure","ph":"b","id2":{"local":"0x2"},"args":{"data":{"detail":"{\"devtools\":{\"dataType\":\"track-entry\",\"track\":\"Buffered Track\",\"trackGroup\":\"Buffered Track\",\"tooltipText\":\"sync measurement returned :\\\"async success\\\"\"}}"}}},{"cat":"blink.user_timing","pid":10001,"tid":1,"ts":1700000005000008,"name":"write-buffered-j-jl:async-measure","ph":"e","id2":{"local":"0x2"},"args":{"data":{"detail":"{\"devtools\":{\"dataType\":\"track-entry\",\"track\":\"Buffered Track\",\"trackGroup\":\"Buffered Track\",\"tooltipText\":\"sync measurement returned :\\\"async success\\\"\"}}"}}},{"cat":"blink.user_timing","pid":10001,"tid":1,"ts":1700000005000009,"name":"write-buffered-j-jl:async-measure:end","ph":"i","args":{}},{"cat":"devtools.timeline","pid":10001,"tid":1,"ts":1700000005000010,"ph":"X","name":"[trace padding end]","dur":20000,"args":{}}],"displayTimeUnit":"ms","metadata":{"source":"DevTools","startTime":"2026-01-28T14:29:27.995Z","hardwareConcurrency":1,"dataOrigin":"TraceEvents","generatedAt":"2026-01-28T14:29:27.995Z"}}
+{
+  "traceEvents": [
+    {
+      "cat": "devtools.timeline",
+      "ph": "i",
+      "name": "TracingStartedInBrowser",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000000,
+      "args": {
+        "data": {
+          "frameTreeNodeId": 1000101,
+          "frames": [
+            {
+              "frame": "FRAME0P10001T1",
+              "isInPrimaryMainFrame": true,
+              "isOutermostMainFrame": true,
+              "name": "",
+              "processId": 10001,
+              "url": "generated-trace"
+            }
+          ],
+          "persistentIds": true
+        }
+      }
+    },
+    {
+      "cat": "devtools.timeline",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000000,
+      "ph": "X",
+      "name": "[trace padding start]",
+      "dur": 20000,
+      "args": {}
+    },
+    {
+      "cat": "blink.user_timing",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000001,
+      "name": "write-buffered-j-jl:profiler-enable",
+      "ph": "i",
+      "args": {
+        "detail": "{\"devtools\":{\"dataType\":\"marker\",\"tooltipText\":\"set enable to true\"}}"
+      }
+    },
+    {
+      "cat": "blink.user_timing",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000002,
+      "name": "write-buffered-j-jl:sync-measure:start",
+      "ph": "i",
+      "args": {}
+    },
+    {
+      "cat": "blink.user_timing",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000003,
+      "name": "write-buffered-j-jl:sync-measure",
+      "ph": "b",
+      "id2": {
+        "local": "0x1"
+      },
+      "args": {
+        "data": {
+          "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"track\":\"Buffered Track\",\"trackGroup\":\"Buffered Track\",\"tooltipText\":\"sync measurement returned :\\\"sync success\\\"\"}}"
+        }
+      }
+    },
+    {
+      "cat": "blink.user_timing",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000004,
+      "name": "write-buffered-j-jl:sync-measure",
+      "ph": "e",
+      "id2": {
+        "local": "0x1"
+      },
+      "args": {
+        "data": {
+          "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"track\":\"Buffered Track\",\"trackGroup\":\"Buffered Track\",\"tooltipText\":\"sync measurement returned :\\\"sync success\\\"\"}}"
+        }
+      }
+    },
+    {
+      "cat": "blink.user_timing",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000005,
+      "name": "write-buffered-j-jl:sync-measure:end",
+      "ph": "i",
+      "args": {}
+    },
+    {
+      "cat": "blink.user_timing",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000006,
+      "name": "write-buffered-j-jl:async-measure:start",
+      "ph": "i",
+      "args": {}
+    },
+    {
+      "cat": "blink.user_timing",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000007,
+      "name": "write-buffered-j-jl:async-measure",
+      "ph": "b",
+      "id2": {
+        "local": "0x2"
+      },
+      "args": {
+        "data": {
+          "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"track\":\"Buffered Track\",\"trackGroup\":\"Buffered Track\",\"tooltipText\":\"sync measurement returned :\\\"async success\\\"\"}}"
+        }
+      }
+    },
+    {
+      "cat": "blink.user_timing",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000008,
+      "name": "write-buffered-j-jl:async-measure",
+      "ph": "e",
+      "id2": {
+        "local": "0x2"
+      },
+      "args": {
+        "data": {
+          "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"track\":\"Buffered Track\",\"trackGroup\":\"Buffered Track\",\"tooltipText\":\"sync measurement returned :\\\"async success\\\"\"}}"
+        }
+      }
+    },
+    {
+      "cat": "blink.user_timing",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000009,
+      "name": "write-buffered-j-jl:async-measure:end",
+      "ph": "i",
+      "args": {}
+    },
+    {
+      "cat": "devtools.timeline",
+      "pid": 10001,
+      "tid": 1,
+      "ts": 1700000005000010,
+      "ph": "X",
+      "name": "[trace padding end]",
+      "dur": 20000,
+      "args": {}
+    }
+  ],
+  "displayTimeUnit": "ms",
+  "metadata": {
+    "source": "DevTools",
+    "startTime": "2026-01-28T14:29:27.995Z",
+    "hardwareConcurrency": 1,
+    "dataOrigin": "TraceEvents",
+    "generatedAt": "2026-01-28T14:29:27.995Z"
+  }
+}

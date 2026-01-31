@@ -5,10 +5,10 @@ import { NodejsProfiler } from '../../src/lib/profiler/profiler-node.js';
 import { entryToTraceEvents } from '../../src/lib/profiler/trace-file-utils.js';
 import { traceEventWalFormat } from '../../src/lib/profiler/wal-json-trace.js';
 
-const [numProcesses] = process.argv.slice(2);
+const [numProcesses, measureName] = process.argv.slice(2);
 
 if (!numProcesses) {
-  console.error('Usage: node profiler-worker.mjs <numProcesses>');
+  console.error('Usage: node profiler-worker.mjs <numProcesses> [measureName]');
   process.exit(1);
 }
 
@@ -28,6 +28,9 @@ const profiler = new NodejsProfiler({
     ...traceEventWalFormat(),
     encodePerfEntry: entryToTraceEvents,
   },
+  track: `Track: ${process.pid}`,
+  trackGroup: 'Multiprocess',
+  ...(measureName && { measureName }),
 });
 
 (async () => {

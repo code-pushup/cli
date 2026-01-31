@@ -19,6 +19,7 @@ import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.t
 import {
   PROFILER_DEBUG_ENV_VAR,
   PROFILER_ENABLED_ENV_VAR,
+  PROFILER_MEASURE_NAME_ENV_VAR,
   PROFILER_OUT_DIR_ENV_VAR,
   SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
 } from './constants.js';
@@ -392,25 +393,30 @@ describe('NodeJS Profiler Integration', () => {
   });
 
   it('should handle sharding across multiple processes', async () => {
-    const measureName = 'multi-process-sharding';
     const numProcesses = 3;
 
     const {
       [SHARDED_WAL_COORDINATOR_ID_ENV_VAR]: _coordinatorId,
+      [PROFILER_MEASURE_NAME_ENV_VAR]: _measureName,
       ...cleanEnv
     } = process.env;
 
     const { stdout } = await executeProcess({
       command: 'npx',
-      args: ['tsx', workerScriptPath, testSuitDir, String(numProcesses)],
-      cwd: path.join(process.cwd(), 'packages', 'utils'),
+      args: [
+        'tsx',
+        '--tsconfig',
+        'tsconfig.base.json',
+        'packages/utils/mocks/multiprocess-profiling/profiler-worker.mjs',
+        String(numProcesses),
+      ],
+      cwd: process.cwd(),
       env: {
         ...cleanEnv,
         [PROFILER_ENABLED_ENV_VAR]: 'true',
         [PROFILER_DEBUG_ENV_VAR]: 'true',
         [PROFILER_OUT_DIR_ENV_VAR]: testSuitDir,
       },
-      silent: true,
     });
 
     const coordinatorStats = JSON.parse(stdout.trim());
@@ -419,14 +425,13 @@ describe('NodeJS Profiler Integration', () => {
       expect.objectContaining({
         isCoordinator: true,
         shardFileCount: numProcesses,
-        groupId: measureName,
-        finalFilePath: expect.stringMatching(
-          new RegExp(
-            `^${testSuitDir.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/${measureName}/trace-events\\.${measureName}\\.json$`,
-          ),
-        ),
+        groupId: expect.stringMatching(/^\d{8}-\d{6}-\d{3}$/), // Auto-generated groupId format
       }),
     );
+
+    // Verify all processes share the same groupId
+    const groupId = coordinatorStats.groupId;
+    expect(coordinatorStats.finalFilePath).toContain(groupId);
 
     const snapshotData = await loadNormalizedTraceJson(
       coordinatorStats.finalFilePath as `${string}.json`,

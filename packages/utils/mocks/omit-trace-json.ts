@@ -280,7 +280,7 @@ function normalizeAndFormatEventsArray(
   const tsMap = new Map(
     [...new Set(timestamps)]
       .sort((a, b) => a - b)
-      .map((ts, i) => [ts, baseTimestampUs + i]),
+      .map((ts, i) => [ts, baseTimestampUs + i * 100]),
   );
 
   // Normalize events while preserving original order
