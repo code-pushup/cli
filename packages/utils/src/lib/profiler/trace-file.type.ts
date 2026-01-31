@@ -18,7 +18,7 @@ export type TraceEvent = {
   id2?: { local: string };
   args?: {
     detail?: unknown;
-    data?: { detail?: unknown };
+    data?: { detail?: unknown; [key: string]: unknown };
     devtools?: DevToolsPayload;
     [key: string]: unknown;
   };
