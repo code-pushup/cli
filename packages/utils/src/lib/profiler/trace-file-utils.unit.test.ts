@@ -196,7 +196,7 @@ describe('markToInstantEvent', () => {
       pid: expect.any(Number),
       tid: expect.any(Number),
       ts: expect.any(Number),
-      args: { detail: { customData: 'test' } },
+      args: { data: { detail: { customData: 'test' } } },
     });
   });
 
@@ -239,7 +239,7 @@ describe('markToInstantEvent', () => {
       pid: 999,
       tid: 888,
       ts: expect.any(Number),
-      args: { detail: { customData: 'test' } },
+      args: { data: { detail: { customData: 'test' } } },
     });
   });
 });
@@ -262,7 +262,7 @@ describe('measureToSpanEvents', () => {
         tid: expect.any(Number),
         ts: expect.any(Number),
         id2: { local: expect.stringMatching(/^0x\d+$/) },
-        args: { data: { detail: { measurement: 'data' } } },
+        args: { detail: { measurement: 'data' } },
       },
       {
         cat: 'blink.user_timing',
@@ -272,7 +272,7 @@ describe('measureToSpanEvents', () => {
         tid: expect.any(Number),
         ts: expect.any(Number),
         id2: { local: expect.stringMatching(/^0x\d+$/) },
-        args: { data: { detail: { measurement: 'data' } } },
+        args: { detail: { measurement: 'data' } },
       },
     ]);
   });
@@ -329,13 +329,13 @@ describe('measureToSpanEvents', () => {
         name: 'custom-measure',
         pid: 777,
         tid: 666,
-        args: { data: { detail: { measurement: 'data' } } },
+        args: { detail: { measurement: 'data' } },
       }),
       expect.objectContaining({
         name: 'custom-measure',
         pid: 777,
         tid: 666,
-        args: { data: { detail: { measurement: 'data' } } },
+        args: { detail: { measurement: 'data' } },
       }),
     ]);
   });
@@ -453,7 +453,7 @@ describe('entryToTraceEvents', () => {
       pid: expect.any(Number),
       tid: expect.any(Number),
       ts: expect.any(Number),
-      args: { detail: { customData: 'test' } },
+      args: { data: { detail: { customData: 'test' } } },
     });
   });
 
@@ -478,7 +478,7 @@ describe('entryToTraceEvents', () => {
       tid: expect.any(Number),
       ts: expect.any(Number),
       id2: { local: expect.stringMatching(/^0x\d+$/) },
-      args: { data: { detail: { measurement: 'data' } } },
+      args: { detail: { measurement: 'data' } },
     });
     expect(result[1]).toStrictEqual({
       cat: 'blink.user_timing',
@@ -488,7 +488,7 @@ describe('entryToTraceEvents', () => {
       tid: expect.any(Number),
       ts: expect.any(Number),
       id2: { local: expect.stringMatching(/^0x\d+$/) },
-      args: { data: { detail: { measurement: 'data' } } },
+      args: { detail: { measurement: 'data' } },
     });
   });
 

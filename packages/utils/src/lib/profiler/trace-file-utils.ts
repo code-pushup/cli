@@ -170,7 +170,7 @@ export const markToInstantEvent = (
     opt?.name ?? entry.name,
     defaultClock.fromEntry(entry),
     entry.detail
-      ? { args: { detail: entry.detail }, ...opt }
+      ? { args: { data: { detail: entry.detail } }, ...opt }
       : { args: {}, ...opt },
   );
 
@@ -190,7 +190,7 @@ export const measureToSpanEvents = (
     defaultClock.fromEntry(entry, true),
     {
       ...opt,
-      args: entry.detail ? { data: { detail: entry.detail } } : {},
+      args: entry.detail ? { detail: entry.detail } : {},
     },
   );
 

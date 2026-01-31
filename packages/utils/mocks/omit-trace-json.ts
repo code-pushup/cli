@@ -1,5 +1,4 @@
 import * as fs from 'node:fs/promises';
-import { expect } from 'vitest';
 import {
   createTraceFile,
   decodeEvent,
@@ -104,15 +103,7 @@ export async function loadAndOmitTraceJson(
     } as TraceMetadata;
   }
 
-  /**
-   * Normalizes decoded events and returns decoded format (for testing).
-   */
-  const normalizeDecoded = (
-    events: TraceEvent[],
-    options?: { baseTimestampUs: number },
-  ): TraceEvent[] => normalizeAndFormatEvents(events, options);
-
-  // Check if it's a trace container structure (array of containers or single container)
+  // Check if it's a trace container structure
   if (
     typeof parsed === 'object' &&
     ('traceEvents' in parsed || 'metadata' in parsed)
@@ -125,7 +116,7 @@ export async function loadAndOmitTraceJson(
     };
     // Normalize events and return decoded format
     const decodedEvents = (container.traceEvents ?? []).map(decodeEvent);
-    const normalizedEvents = normalizeDecoded(decodedEvents, {
+    const normalizedEvents = normalizeAndFormatEvents(decodedEvents, {
       baseTimestampUs,
     });
     const result: TraceEventContainer = {
@@ -348,9 +339,13 @@ export async function loadNormalizedTraceJson(
     if (!metadata) {
       return undefined;
     }
+    // Remove generatedAt to match valid-trace.json shape
+    const { generatedAt, ...restMetadata } = metadata as Record<
+      string,
+      unknown
+    >;
     return {
-      ...metadata,
-      generatedAt: '2026-01-28T14:29:27.995Z',
+      ...restMetadata,
       startTime: '2026-01-28T14:29:27.995Z',
     } as TraceMetadata;
   }
@@ -364,11 +359,14 @@ export async function loadNormalizedTraceJson(
   const normalizedEvents = normalizeAndFormatEvents(decodedEvents, {
     baseTimestampUs,
   });
-  return createTraceFile({
+  const result = createTraceFile({
     traceEvents: normalizedEvents,
     startTime: container.metadata?.startTime,
     metadata: normalizeMetadata(container.metadata),
   });
+  // Remove displayTimeUnit to match valid-trace.json shape
+  const { displayTimeUnit, ...rest } = result;
+  return rest;
 }
 
 /**

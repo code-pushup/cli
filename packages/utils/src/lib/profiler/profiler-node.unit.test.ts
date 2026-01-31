@@ -378,11 +378,11 @@ describe('NodejsProfiler', () => {
       // shardPath uses the shard ID format: baseName.shardId.jsonl
       expect(shardPath).toContain('tmp/profiles/custom-filename');
       expect(shardPath).toMatch(
-        /trace-events\.\d{8}-\d{6}-\d{3}\.\d+\.\d+\.\d+\.jsonl$/,
+        /trace\.\d{8}-\d{6}-\d{3}\.\d+\.\d+\.\d+\.jsonl$/,
       );
       // finalFilePath uses the custom filename
       expect(profiler.stats.finalFilePath).toBe(
-        `${PROFILER_PERSIST_OUT_DIR}/custom-filename/trace-events.custom-trace.json`,
+        `${PROFILER_PERSIST_OUT_DIR}/custom-filename/trace.custom-trace.json`,
       );
     });
 
@@ -427,7 +427,7 @@ describe('NodejsProfiler', () => {
       const stats = profiler.stats;
       // shardPath uses dynamic shard ID format, so we check it matches the pattern
       expect(stats.shardPath).toMatch(
-        /^tmp\/profiles\/stats-getter\/trace-events\.\d{8}-\d{6}-\d{3}\.\d+\.\d+\.\d+\.jsonl$/,
+        /^tmp\/profiles\/stats-getter\/trace\.\d{8}-\d{6}-\d{3}\.\d+\.\d+\.\d+\.jsonl$/,
       );
       expect(stats).toStrictEqual({
         profilerState: 'idle',
@@ -438,7 +438,7 @@ describe('NodejsProfiler', () => {
         isCoordinator: true, // When no coordinator env var is set, this profiler becomes coordinator
         isFinalized: false,
         isCleaned: false,
-        finalFilePath: `${PROFILER_PERSIST_OUT_DIR}/stats-getter/trace-events.stats-getter-trace.json`,
+        finalFilePath: `${PROFILER_PERSIST_OUT_DIR}/stats-getter/trace.stats-getter-trace.json`,
         shardFileCount: 0,
         shardFiles: [],
         shardOpen: false,

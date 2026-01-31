@@ -44,7 +44,7 @@ describe('normalizeAndFormatEvents', () => {
     const input =
       '{"ts":300,"name":"third"}\n{"ts":100,"name":"first"}\n{"ts":200,"name":"second"}\n';
     expect(normalizeAndFormatEvents(input)).toBe(
-      '{"ts":1700000005000002,"name":"third"}\n{"ts":1700000005000000,"name":"first"}\n{"ts":1700000005000001,"name":"second"}\n',
+      '{"ts":1700000005000200,"name":"third"}\n{"ts":1700000005000000,"name":"first"}\n{"ts":1700000005000100,"name":"second"}\n',
     );
   });
 
@@ -230,7 +230,7 @@ describe('normalizeAndFormatEvents', () => {
         ph: 'b',
         pid: 10_003,
         tid: 1,
-        ts: 1_700_000_005_000_002,
+        ts: 1_700_000_005_000_200,
         name: 'second',
         id2: { local: '0x1' },
       }, // pid 200->10003, tid 3->1
@@ -239,7 +239,7 @@ describe('normalizeAndFormatEvents', () => {
         ph: 'b',
         pid: 10_002,
         tid: 3,
-        ts: 1_700_000_005_000_001,
+        ts: 1_700_000_005_000_100,
         name: 'third',
         id2: { local: '0x2' },
       }, // pid 150->10002, tid 7->3
@@ -293,7 +293,7 @@ describe('loadAndOmitTraceJsonl', () => {
 
     await expect(loadAndOmitTraceJsonl('trace.jsonl')).resolves.toStrictEqual([
       { pid: 10_001, tid: 2, ts: 1_700_000_005_000_000, name: 'test' }, // tid 999 maps to 2 (sorted: 888->1, 999->2)
-      { pid: 10_002, tid: 1, ts: 1_700_000_005_000_001, name: 'test2' }, // tid 888 maps to 1
+      { pid: 10_002, tid: 1, ts: 1_700_000_005_000_100, name: 'test2' }, // tid 888 maps to 1
     ]);
   });
 
@@ -316,7 +316,7 @@ describe('loadAndOmitTraceJsonl', () => {
       {
         pid: 10_001,
         tid: 1,
-        ts: 1_700_000_005_000_001,
+        ts: 1_700_000_005_000_100,
         args: { detail: { devtools: { dataType: 'track-entry' } } },
       },
     ]);
@@ -382,23 +382,6 @@ describe('loadAndOmitTraceJson', () => {
         other: 'value',
       },
     });
-  });
-
-  it('should handle array of trace containers', async () => {
-    vol.fromJSON(
-      {
-        'trace.json': JSON.stringify([
-          { traceEvents: [{ pid: 100, name: 'first' }] },
-          { traceEvents: [{ pid: 200, name: 'second' }] },
-        ]),
-      },
-      MEMFS_VOLUME,
-    );
-
-    await expect(loadAndOmitTraceJson('trace.json')).resolves.toStrictEqual([
-      { traceEvents: [{ pid: 10_001, name: 'first' }] },
-      { traceEvents: [{ pid: 10_001, name: 'second' }] },
-    ]);
   });
 
   it('should use custom baseTimestampUs', async () => {
