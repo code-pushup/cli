@@ -260,8 +260,9 @@ export class PerformanceObserverSink<T> {
   /**
    * Returns whether debug mode is enabled for encode failures.
    *
-   * Debug mode is determined by the environment variable 'DEBUG'
-   * performance marks for debugging.
+   * Debug mode is configured via the `debug` option passed to the
+   * PerformanceObserverSink constructor. When enabled, encode failures
+   * are recorded as performance marks for debugging.
    *
    * @returns true if debug mode is enabled, false otherwise
    */
