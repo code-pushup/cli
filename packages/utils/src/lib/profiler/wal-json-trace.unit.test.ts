@@ -10,7 +10,7 @@ describe('traceEventCodec', () => {
   // This is the format we process and hold in memory
   const instantEvent: TraceEvent = {
     name: 'cp:test-event',
-    ph: 'i',
+    ph: 'I',
     ts: 123_456_789,
     pid: 123,
     tid: 456,
@@ -73,7 +73,7 @@ describe('traceEventCodec', () => {
   // This is the format stored in WAL files (.jsonl)
   const instantEventJsonString = JSON.stringify({
     name: 'cp:test-event',
-    ph: 'i',
+    ph: 'I',
     ts: 123_456_789,
     pid: 123,
     tid: 456,
@@ -271,7 +271,7 @@ describe('generateTraceContent', () => {
     const events: TraceEvent[] = [
       {
         name: 'cp:test-operation:start',
-        ph: 'i',
+        ph: 'I',
         ts: 1000,
         pid: 123,
         tid: 456,
@@ -284,7 +284,7 @@ describe('generateTraceContent', () => {
       },
       {
         name: 'cp:test-operation:end',
-        ph: 'i',
+        ph: 'I',
         ts: 2000,
         pid: 123,
         tid: 456,
@@ -345,7 +345,7 @@ describe('generateTraceContent', () => {
     const events: TraceEvent[] = [
       {
         name: 'cp:second-operation',
-        ph: 'i',
+        ph: 'I',
         ts: 2000,
         pid: 123,
         tid: 456,
@@ -354,7 +354,7 @@ describe('generateTraceContent', () => {
       },
       {
         name: 'cp:first-operation',
-        ph: 'i',
+        ph: 'I',
         ts: 1000,
         pid: 123,
         tid: 456,
@@ -378,7 +378,7 @@ describe('generateTraceContent', () => {
     const events: TraceEvent[] = [
       {
         name: 'cp:single-event',
-        ph: 'i',
+        ph: 'I',
         ts: 5000,
         pid: 123,
         tid: 456,
@@ -459,7 +459,7 @@ describe('traceEventWalFormat', () => {
     const format = traceEventWalFormat();
     const testEvent: TraceEvent = {
       name: 'cp:test-event',
-      ph: 'i',
+      ph: 'I',
       ts: 123_456_789,
       pid: 123,
       tid: 456,
@@ -481,7 +481,7 @@ describe('traceEventWalFormat', () => {
     const format = traceEventWalFormat();
     const originalEvent: TraceEvent = {
       name: 'cp:round-trip-test',
-      ph: 'i',
+      ph: 'I',
       ts: 987_654_321,
       pid: 789,
       tid: 101,
@@ -508,7 +508,7 @@ describe('traceEventWalFormat', () => {
     const records: TraceEvent[] = [
       {
         name: 'cp:operation:start',
-        ph: 'i',
+        ph: 'I',
         ts: 1000,
         pid: 123,
         tid: 456,

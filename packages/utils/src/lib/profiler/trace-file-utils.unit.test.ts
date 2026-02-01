@@ -191,7 +191,7 @@ describe('markToInstantEvent', () => {
       } as PerformanceMark),
     ).toStrictEqual({
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-mark',
       pid: expect.any(Number),
       tid: expect.any(Number),
@@ -209,7 +209,7 @@ describe('markToInstantEvent', () => {
       } as PerformanceMark),
     ).toStrictEqual({
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-mark',
       pid: expect.any(Number),
       tid: expect.any(Number),
@@ -234,7 +234,7 @@ describe('markToInstantEvent', () => {
       ),
     ).toStrictEqual({
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'custom-name',
       pid: 999,
       tid: 888,
@@ -448,7 +448,7 @@ describe('entryToTraceEvents', () => {
     expect(result).toHaveLength(1);
     expect(result[0]).toStrictEqual({
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-mark',
       pid: expect.any(Number),
       tid: expect.any(Number),

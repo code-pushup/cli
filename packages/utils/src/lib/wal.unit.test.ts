@@ -131,7 +131,7 @@ describe('recoverFromContent', () => {
     );
     expect(result.records).toEqual(['good']);
     expect(result.errors).toHaveLength(1);
-    expect(result.errors[0].lineNo).toBe(2);
+    expect(result.errors.at(0)?.lineNo).toBe(2);
     expect(result.partialTail).toBe('partial');
   });
 });
@@ -303,8 +303,6 @@ describe('WriteAheadLogFile', () => {
       const stats = w.getStats();
       expect(stats.filePath).toBe('/test/a.log');
       expect(stats.isClosed).toBeTrue();
-      expect(stats.fileExists).toBeFalse();
-      expect(stats.fileSize).toBe(0);
       expect(stats.lastRecovery).toBeNull();
     });
   });
@@ -312,17 +310,17 @@ describe('WriteAheadLogFile', () => {
 
 describe('stringCodec', () => {
   it('encodes strings and objects as JSON', () => {
-    const codec = stringCodec<string>();
+    const codec = stringCodec();
     expect(codec.encode('hello')).toBe('"hello"');
     expect(codec.encode('')).toBe('""');
 
-    const objCodec = stringCodec<object>();
+    const objCodec = stringCodec();
     const obj = { name: 'test', value: 42 };
     expect(objCodec.encode(obj)).toBe('{"name":"test","value":42}');
   });
 
   it('decodes valid JSON strings', () => {
-    const codec = stringCodec<object>();
+    const codec = stringCodec();
     expect(codec.decode('{"name":"test","value":42}')).toEqual({
       name: 'test',
       value: 42,
@@ -331,13 +329,13 @@ describe('stringCodec', () => {
   });
 
   it('returns strings as-is when JSON parsing fails', () => {
-    const codec = stringCodec<string>();
+    const codec = stringCodec();
     expect(codec.decode('not json')).toBe('not json');
     expect(codec.decode('{invalid')).toBe('{invalid');
   });
 
   it('handles special JSON values', () => {
-    const codec = stringCodec<any>();
+    const codec = stringCodec();
     expect(codec.decode('null')).toBeNull();
     expect(codec.decode('true')).toBeTrue();
     expect(codec.decode('false')).toBeFalse();
@@ -345,13 +343,13 @@ describe('stringCodec', () => {
   });
 
   it('round-trips values correctly', () => {
-    const stringCodecInstance = stringCodec<string>();
+    const stringCodecInstance = stringCodec();
     const original = 'hello world';
     expect(
       stringCodecInstance.decode(stringCodecInstance.encode(original)),
     ).toBe(original);
 
-    const objectCodecInstance = stringCodec<object>();
+    const objectCodecInstance = stringCodec();
     const obj = { name: 'test', nested: { value: 123 } };
     expect(objectCodecInstance.decode(objectCodecInstance.encode(obj))).toEqual(
       obj,
@@ -370,7 +368,7 @@ describe('parseWalFormat', () => {
   });
 
   it('uses provided parameters and defaults others', () => {
-    const customCodec = stringCodec<string>();
+    const customCodec = stringCodec();
     const result = parseWalFormat({
       baseName: 'test',
       walExtension: '.wal',
@@ -396,13 +394,13 @@ describe('parseWalFormat', () => {
   });
 
   it('uses default finalizer when none provided', () => {
-    const result = parseWalFormat<string>({ baseName: 'test' });
+    const result = parseWalFormat({ baseName: 'test' });
     expect(result.finalizer(['line1', 'line2'])).toBe('"line1"\n"line2"\n');
     expect(result.finalizer([])).toBe('\n');
   });
 
   it('encodes objects to JSON strings in default finalizer', () => {
-    const result = parseWalFormat<object>({ baseName: 'test' });
+    const result = parseWalFormat({ baseName: 'test' });
     const records = [
       { id: 1, name: 'test' },
       { id: 2, name: 'test2' },
@@ -413,7 +411,7 @@ describe('parseWalFormat', () => {
   });
 
   it('handles InvalidEntry in default finalizer', () => {
-    const result = parseWalFormat<string>({ baseName: 'test' });
+    const result = parseWalFormat({ baseName: 'test' });
     const records: (string | InvalidEntry<string>)[] = [
       'valid',
       { __invalid: true, raw: 'invalid-raw' },

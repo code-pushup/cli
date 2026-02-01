@@ -14,6 +14,8 @@ export type Codec<I, O = string> = {
 
 export type InvalidEntry<O = string> = { __invalid: true; raw: O };
 
+export type WalRecord = object | string;
+
 /**
  * Interface for sinks that can append items.
  * Allows for different types of appendable storage (WAL, in-memory, etc.)
@@ -23,16 +25,6 @@ export type AppendableSink<T> = Recoverable & {
   isClosed: () => boolean;
   open?: () => void;
   close?: () => void;
-};
-
-/**
- * Interface for sinks that support recovery operations.
- * Represents the recoverable subset of AppendableSink functionality.
- */
-export type Recoverable = {
-  recover: () => RecoverResult<unknown>;
-  repack: (out?: string) => void;
-  finalize?: (opt?: Record<string, unknown>) => void;
 };
 
 /**
@@ -49,6 +41,16 @@ export type RecoverResult<T> = {
 };
 
 /**
+ * Interface for sinks that support recovery operations.
+ * Represents the recoverable subset of AppendableSink functionality.
+ */
+export type Recoverable = {
+  recover: () => RecoverResult<unknown>;
+  repack: (out?: string) => void;
+  finalize?: (opt?: Record<string, unknown>) => void;
+};
+
+/**
  * Statistics about the WAL file state and last recovery operation.
  */
 export type WalStats<T> = {
@@ -56,10 +58,6 @@ export type WalStats<T> = {
   filePath: string;
   /** Whether the WAL file is currently closed */
   isClosed: boolean;
-  /** Whether the WAL file exists on disk */
-  fileExists: boolean;
-  /** File size in bytes (0 if file doesn't exist) */
-  fileSize: number;
   /** Last recovery state from the most recent {@link recover} or {@link repack} operation */
   lastRecovery: RecoverResult<T | InvalidEntry<string>> | null;
 };
@@ -142,7 +140,7 @@ export function recoverFromContent<T>(
  * Write-Ahead Log implementation for crash-safe append-only logging.
  * Provides atomic operations for writing, recovering, and repacking log entries.
  */
-export class WriteAheadLogFile<T> implements AppendableSink<T> {
+export class WriteAheadLogFile<T extends WalRecord = WalRecord> implements AppendableSink<T> {
   #fd: number | null = null;
   readonly #file: string;
   readonly #decode: Codec<T | InvalidEntry<string>>['decode'];
@@ -153,7 +151,7 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
    * Create a new WAL file instance.
    * @param options - Configuration options
    */
-  constructor(options: { id?: string; file: string; codec: Codec<T> }) {
+  constructor(options: { file: string; codec: Codec<T> }) {
     const { file, codec } = options;
     this.#file = file;
     const c = createTolerantCodec(codec);
@@ -249,12 +247,9 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
    * @returns Statistics object with file info and last recovery state
    */
   getStats(): WalStats<T> {
-    const fileExists = fs.existsSync(this.#file);
     return {
       filePath: this.#file,
       isClosed: this.#fd == null,
-      fileExists,
-      fileSize: fileExists ? fs.statSync(this.#file).size : 0,
       lastRecovery: this.#lastRecoveryState,
     };
   }
@@ -264,7 +259,7 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
  * Format descriptor that binds codec and file extension together.
  * Prevents misconfiguration by keeping related concerns in one object.
  */
-export type WalFormat<T extends object> = {
+export type WalFormat<T extends WalRecord = WalRecord> = {
   /** Base name for the WAL (e.g., "trace") */
   baseName: string;
   /** Shard file extension (e.g., ".jsonl") */
@@ -280,7 +275,7 @@ export type WalFormat<T extends object> = {
   ) => string;
 };
 
-export const stringCodec = <T extends object = object>(): Codec<T> => ({
+export const stringCodec = <T extends WalRecord = WalRecord>(): Codec<T> => ({
   encode: v => JSON.stringify(v),
   decode: v => {
     try {
@@ -304,7 +299,7 @@ export const stringCodec = <T extends object = object>(): Codec<T> => ({
  * @param format - Partial WalFormat configuration
  * @returns Parsed WalFormat with defaults filled in
  */
-export function parseWalFormat<T extends object = object>(
+export function parseWalFormat<T extends WalRecord = WalRecord>(
   format: Partial<WalFormat<T>>,
 ): WalFormat<T> {
   const {

@@ -12,10 +12,9 @@ import { executeProcess } from '../execute-process.js';
 import type { PerformanceEntryEncoder } from '../performance-observer.js';
 import {
   asOptions,
-  markerPayload,
   trackEntryPayload,
 } from '../user-timing-extensibility-api-utils.js';
-import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
+import type { ActionTrackEntryPayload, TrackEntryPayload } from '../user-timing-extensibility-api.type.js';
 import {
   PROFILER_DEBUG_ENV_VAR,
   PROFILER_ENABLED_ENV_VAR,
@@ -28,6 +27,7 @@ import { NodejsProfiler, type NodejsProfilerOptions } from './profiler-node.js';
 import { entryToTraceEvents } from './trace-file-utils.js';
 import type { TraceEvent } from './trace-file.type.js';
 import { traceEventWalFormat } from './wal-json-trace.js';
+import process from 'node:process';
 
 describe('NodeJS Profiler Integration', () => {
   const traceEventEncoder: PerformanceEntryEncoder<TraceEvent> =
@@ -73,29 +73,18 @@ describe('NodeJS Profiler Integration', () => {
   }
 
   async function create3rdPartyMeasures(prefix: string) {
-    const trackDefaults = {
+    const defaultPayload: TrackEntryPayload = {
       track: 'Buffered Track',
       trackGroup: 'Buffered Track',
+      color: 'tertiary',
     };
 
-    expect(() =>
-      performance.mark(
-        `${prefix}:profiler-enable`,
-        asOptions(
-          markerPayload({
-            tooltipText: 'set enable to true',
-          }),
-        ),
-      ),
-    ).not.toThrow();
-
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise(resolve => setTimeout(resolve, 10));
 
     expect(() =>
-      performance.mark(`${prefix}:sync-measure:start`),
+      performance.mark(`${prefix}${prefix ? ':' : ''}measure:start`, asOptions(trackEntryPayload(defaultPayload))),
     ).not.toThrow();
 
-    // Heavy work: CPU-intensive operations
     const largeArray = Array.from({ length: 100_000 }, (_, i) => i);
     const result = largeArray
       .map(x => x * x)
@@ -103,23 +92,23 @@ describe('NodeJS Profiler Integration', () => {
       .reduce((sum, x) => sum + x, 0);
     expect(result).toBeGreaterThan(0);
     expect('sync success').toBe('sync success');
-    expect(() => performance.mark(`${prefix}:sync-measure:end`)).not.toThrow();
+    expect(() => performance.mark(`${prefix}${prefix ? ':' : ''}measure:end`, asOptions(trackEntryPayload(defaultPayload)))).not.toThrow();
 
-    performance.measure(`${prefix}:sync-measure`, {
-      start: `${prefix}:sync-measure:start`,
-      end: `${prefix}:sync-measure:end`,
+    performance.measure(`${prefix}${prefix ? ':' : ''}measure`, {
+      start: `${prefix}${prefix ? ':' : ''}measure:start`,
+      end: `${prefix}${prefix ? ':' : ''}measure:end`,
       ...asOptions(
         trackEntryPayload({
-          ...trackDefaults,
-          tooltipText: 'sync measurement returned :"sync success"',
+          ...defaultPayload,
+          tooltipText: 'Buffered sync measurement returned :"sync success"',
         }),
       ),
     });
 
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise(resolve => setTimeout(resolve, 10));
 
     expect(() =>
-      performance.mark(`${prefix}:async-measure:start`),
+      performance.mark(`${prefix}:async-measure:start`,asOptions(trackEntryPayload(defaultPayload))),
     ).not.toThrow();
     // Heavy work: More CPU-intensive operations
     const matrix = Array.from({ length: 1000 }, () =>
@@ -131,14 +120,14 @@ describe('NodeJS Profiler Integration', () => {
     await expect(Promise.resolve('async success')).resolves.toBe(
       'async success',
     );
-    expect(() => performance.mark(`${prefix}:async-measure:end`)).not.toThrow();
+    expect(() => performance.mark(`${prefix}:async-measure:end`, asOptions(trackEntryPayload(defaultPayload)))).not.toThrow();
 
     performance.measure(`${prefix}:async-measure`, {
       start: `${prefix}:async-measure:start`,
       end: `${prefix}:async-measure:end`,
       ...asOptions(
         trackEntryPayload({
-          ...trackDefaults,
+          ...defaultPayload,
           tooltipText: 'sync measurement returned :"async success"',
         }),
       ),
@@ -147,22 +136,21 @@ describe('NodeJS Profiler Integration', () => {
 
   async function createBasicMeasures(
     profiler: NodejsProfiler<TraceEvent>,
-    prefix: string,
   ) {
     expect(() =>
-      profiler.marker(`${prefix}:profiler-enable`, {
+      profiler.marker(`PID:${process.pid}: Enable profiler`, {
         tooltipText: 'set enable to true',
       }),
     ).not.toThrow();
 
     await new Promise(resolve => setTimeout(resolve, 50));
 
-    expect(profiler.measure('sync-measure', () => 'success')).toBe('success');
+    expect(profiler.measure(`PID:${process.pid} sync-measure`, () => 'success')).toBe('success');
 
     await new Promise(resolve => setTimeout(resolve, 50));
 
     await expect(
-      profiler.measureAsync('async-measure', () =>
+      profiler.measureAsync(`PID:${process.pid} async-measure`, () =>
         Promise.resolve('async success'),
       ),
     ).resolves.toBe('async success');
@@ -170,7 +158,7 @@ describe('NodeJS Profiler Integration', () => {
     await new Promise(resolve => setTimeout(resolve, 50));
 
     expect(() =>
-      profiler.marker(`${prefix}:profiler-enable`, {
+      profiler.marker(`PID:${process.pid}: Disable profiler`, {
         tooltipText: 'set enable to false',
       }),
     ).not.toThrow();
@@ -233,7 +221,7 @@ describe('NodeJS Profiler Integration', () => {
       measureName,
     });
 
-    await createBasicMeasures(profiler, prefix);
+    await createBasicMeasures(profiler);
 
     await awaitObserverCallbackAndFlush(profiler);
     await expect(
@@ -379,8 +367,7 @@ describe('NodeJS Profiler Integration', () => {
       debug: true,
     });
 
-    profiler.setEnabled(false);
-    profiler.setEnabled(true);
+    createBasicMeasures(profiler);
     await awaitObserverCallbackAndFlush(profiler);
     profiler.close();
 

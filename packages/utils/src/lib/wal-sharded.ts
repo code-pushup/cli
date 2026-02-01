@@ -9,6 +9,7 @@ import {
 } from './process-id.js';
 import {
   type WalFormat,
+  type WalRecord,
   WriteAheadLogFile,
   filterValidRecords,
   parseWalFormat,
@@ -68,7 +69,7 @@ function ensureDirectoryRemoveSync(dirPath: string): void {
  * Handles distributed logging across multiple processes/files with atomic finalization.
  */
 
-export class ShardedWal<T extends object = object> {
+export class ShardedWal<T extends WalRecord = WalRecord> {
   static instanceCount = 0;
 
   readonly #id: string = getUniqueInstanceId({

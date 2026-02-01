@@ -63,13 +63,13 @@ const baseEvent = (
  * @param name - Event name
  * @param ts - Optional timestamp in microseconds
  * @param opt - Optional event configuration
- * @returns Instant trace event (ph: 'i')
+ * @returns Instant trace event (ph: 'I')
  */
 export const instant = (
   name: string,
   ts?: number,
   opt?: Partial<TraceEvent>,
-): TraceEvent => baseEvent({ name, ph: 'i', ts, ...opt });
+): TraceEvent => baseEvent({ name, ph: 'I', ts, ...opt });
 
 /**
  * Creates a pair of begin and end span events.
