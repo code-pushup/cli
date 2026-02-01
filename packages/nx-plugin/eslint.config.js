@@ -1,21 +1,14 @@
-import tseslint from 'typescript-eslint';
-import baseConfig from '../../eslint.config.js';
+const tseslint = require('typescript-eslint');
+const baseConfig = require('../../eslint.config.js').default;
 
-if (process.env['CP_DEBUG_ESLINT_IMPORTS'] === 'true') {
-  // eslint-disable-next-line no-console
-  console.log('[CP_DEBUG] Loaded packages/nx-plugin/eslint.config.js', {
-    baseConfigLength: baseConfig.length,
-  });
-}
-
-export default tseslint.config(
+module.exports = tseslint.config(
   ...baseConfig,
   {
     files: ['**/*.ts'],
     languageOptions: {
       parserOptions: {
         projectService: true,
-        tsconfigRootDir: import.meta.dirname,
+        tsconfigRootDir: __dirname,
       },
     },
   },

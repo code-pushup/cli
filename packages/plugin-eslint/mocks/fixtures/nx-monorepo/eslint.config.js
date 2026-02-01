@@ -1,13 +1,12 @@
-import nx from '@nx/eslint-plugin';
-import jsoncParser from 'jsonc-eslint-parser';
+const nx = require('@nx/eslint-plugin');
 
-export default [
+module.exports = [
   {
     files: ['**/*.json'],
     // Override or add rules here
     rules: {},
     languageOptions: {
-      parser: jsoncParser,
+      parser: require('jsonc-eslint-parser'),
     },
   },
   ...nx.configs['flat/base'],

@@ -353,7 +353,7 @@ describe('normalizedCreateNodesV2Context', () => {
         createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
         projectJsonPath(projectRoot),
       ),
-    ).rejects.toThrowError(
+    ).rejects.toThrow(
       `Error parsing project.json file ${projectJsonPath(projectRoot)}.`,
     );
   });
@@ -372,7 +372,7 @@ describe('normalizedCreateNodesV2Context', () => {
         createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
         projectJsonPath(projectRoot),
       ),
-    ).rejects.toThrowError(
+    ).rejects.toThrow(
       `Error parsing project.json file ${projectJsonPath(projectRoot)}.`,
     );
   });

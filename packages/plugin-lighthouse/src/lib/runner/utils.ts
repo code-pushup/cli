@@ -144,6 +144,7 @@ export async function getConfig(
             message,
             result: await importModule<Config>({
               filepath: configPath,
+              format: 'esm',
             }),
           };
         }
