@@ -7,15 +7,6 @@ import node from '@code-pushup/eslint-config/node.js';
 import typescript from '@code-pushup/eslint-config/typescript.js';
 import vitest from '@code-pushup/eslint-config/vitest.js';
 
-if (process.env['CP_DEBUG_ESLINT_IMPORTS'] === 'true') {
-  // eslint-disable-next-line no-console
-  console.log('[CP_DEBUG] Loaded root eslint.config.js', {
-    typescriptLength: typescript.length,
-    nodeLength: node.length,
-    vitestLength: vitest.length,
-  });
-}
-
 export default tseslint.config(
   ...typescript,
   ...node,
