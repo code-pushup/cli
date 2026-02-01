@@ -18,6 +18,7 @@ const getShardedWal = (overrides?: {
   format?: Partial<WalFormat>;
   measureNameEnvVar?: string;
   autoCoordinator?: boolean;
+  groupId?: string;
 }) => {
   const { format, ...rest } = overrides ?? {};
   return new ShardedWal({
@@ -39,6 +40,9 @@ describe('ShardedWal', () => {
     // Clear coordinator env var for fresh state
     // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
     delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
+    // Clear measure name env var to avoid test pollution
+    // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
+    delete process.env.CP_PROFILER_MEASURE_NAME;
   });
 
   describe('initialization', () => {
@@ -70,6 +74,70 @@ describe('ShardedWal', () => {
         measureNameEnvVar: 'CP_PROFILER_MEASURE_NAME',
       });
       expect(process.env.CP_PROFILER_MEASURE_NAME).toBe(sw.groupId);
+    });
+  });
+
+  describe('path traversal validation', () => {
+    it('should reject groupId with forward slashes', () => {
+      expect(() => getShardedWal({ groupId: '../etc/passwd' })).toThrow(
+        'groupId cannot contain path separators (/ or \\)',
+      );
+    });
+
+    it('should reject groupId with backward slashes', () => {
+      expect(() => getShardedWal({ groupId: '..\\windows\\system32' })).toThrow(
+        'groupId cannot contain path separators (/ or \\)',
+      );
+    });
+
+    it('should reject groupId with parent directory reference', () => {
+      expect(() => getShardedWal({ groupId: '..' })).toThrow(
+        'groupId cannot be "." or ".."',
+      );
+    });
+
+    it('should reject groupId with current directory reference', () => {
+      expect(() => getShardedWal({ groupId: '.' })).toThrow(
+        'groupId cannot be "." or ".."',
+      );
+    });
+
+    it('should reject groupId with null bytes', () => {
+      expect(() => getShardedWal({ groupId: 'test\0malicious' })).toThrow(
+        'groupId cannot contain null bytes',
+      );
+    });
+
+    it('should reject empty groupId', () => {
+      expect(() => getShardedWal({ groupId: '' })).toThrow(
+        'groupId cannot be empty or whitespace-only',
+      );
+    });
+
+    it('should reject whitespace-only groupId', () => {
+      expect(() => getShardedWal({ groupId: '   ' })).toThrow(
+        'groupId cannot be empty or whitespace-only',
+      );
+    });
+
+    it('should accept safe alphanumeric groupId', () => {
+      const sw = getShardedWal({ groupId: 'safe-group-123' });
+      expect(sw.groupId).toBe('safe-group-123');
+    });
+
+    it('should accept groupId with underscores and hyphens', () => {
+      const sw = getShardedWal({ groupId: 'test_group-name' });
+      expect(sw.groupId).toBe('test_group-name');
+    });
+
+    it('should reject groupId from env var with path traversal', () => {
+      // eslint-disable-next-line functional/immutable-data
+      process.env.CP_PROFILER_MEASURE_NAME = '../malicious';
+      expect(() =>
+        getShardedWal({
+          measureNameEnvVar: 'CP_PROFILER_MEASURE_NAME',
+        }),
+      ).toThrow('groupId cannot contain path separators (/ or \\)');
     });
   });
 

@@ -28,6 +28,44 @@ function ensureDirectoryExistsSync(dirPath: string): void {
   }
 }
 
+/**
+ * Validates that a groupId is safe to use as a single path segment.
+ * Rejects path traversal attempts and path separators to prevent writing outside intended directory.
+ *
+ * @param groupId - The groupId to validate
+ * @throws Error if groupId contains unsafe characters or path traversal sequences
+ */
+function validateGroupId(groupId: string): void {
+  // Reject empty or whitespace-only groupIds
+  if (!groupId || groupId.trim().length === 0) {
+    throw new Error('groupId cannot be empty or whitespace-only');
+  }
+
+  // Reject path separators (both forward and backward slashes)
+  if (groupId.includes('/') || groupId.includes('\\')) {
+    throw new Error('groupId cannot contain path separators (/ or \\)');
+  }
+
+  // Reject relative path components
+  if (groupId === '..' || groupId === '.') {
+    throw new Error('groupId cannot be "." or ".."');
+  }
+
+  // Reject null bytes which can be used to bypass validation
+  if (groupId.includes('\0')) {
+    throw new Error('groupId cannot contain null bytes');
+  }
+
+  // Validate that the resolved path stays within the intended directory
+  // This catches cases where the path library normalizes to a parent directory
+  const normalized = path.normalize(groupId);
+  if (normalized !== groupId || normalized.startsWith('..')) {
+    throw new Error(
+      `groupId normalization resulted in unsafe path: ${normalized}`,
+    );
+  }
+}
+
 // eslint-disable-next-line functional/no-let
 let shardCount = 0;
 
@@ -142,10 +180,10 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
     // Determine groupId: use provided, then env var, or generate
     // eslint-disable-next-line functional/no-let
     let resolvedGroupId: string;
-    if (groupId) {
-      // User explicitly provided groupId - use it
+    if (groupId != null) {
+      // User explicitly provided groupId - use it (even if empty, validation will catch it)
       resolvedGroupId = groupId;
-    } else if (measureNameEnvVar && process.env[measureNameEnvVar]) {
+    } else if (measureNameEnvVar && process.env[measureNameEnvVar] != null) {
       // Env var is set (by coordinator or previous process) - use it
       resolvedGroupId = process.env[measureNameEnvVar];
     } else if (measureNameEnvVar) {
@@ -157,6 +195,9 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
       // No measureNameEnvVar provided - generate unique one (backward compatible)
       resolvedGroupId = getUniqueTimeId();
     }
+
+    // Validate groupId for path safety before using it
+    validateGroupId(resolvedGroupId);
 
     this.groupId = resolvedGroupId;
 
