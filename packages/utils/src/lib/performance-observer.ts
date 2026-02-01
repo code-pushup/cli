@@ -97,14 +97,8 @@ export type PerformanceObserverOptions<T> = {
    * Whether to enable buffered observation mode.
    *
    * When true, captures all performance marks and measures that exist in the Node.js
-   * performance buffer at the time `subscribe()` is called. This allows you to capture
-   * performance entries that were created before the observer was created.
-   *
-   * When false, only captures entries created after `subscribe()` is called.
-   *
-   * **Important:** The implementation uses a manual approach via `performance.getEntriesByType()`
-   * rather than the native PerformanceObserver `buffered` option. See the `subscribe()` method
-   * documentation for details on guarantees and limitations.
+   * performance buffer at the time `subscribe()` is called using `performance.getEntriesByType()`
+   * (the native `buffered` option is unreliable in Node.js).
    *
    * @default true
    */
@@ -317,37 +311,8 @@ export class PerformanceObserverSink<T> {
    *
    * Creates a Node.js PerformanceObserver that monitors 'mark' and 'measure' entries.
    * The observer uses a bounded queue with proactive flushing to manage memory usage.
-   * When buffered mode is enabled, any existing buffered entries are immediately flushed.
+   * When buffered mode is enabled, existing entries are captured via `performance.getEntriesByType()` instead of the unreliable native `buffered` option.
    * If the sink is closed, items stay in the queue until reopened.
-   *
-   * ## Buffered Mode Implementation
-   *
-   * When `captureBufferedEntries` is true, this method captures all performance entries
-   * that exist in the Node.js performance buffer at the time of subscription.
-   *
-   * **Why Manual Approach:**
-   * The standard `buffered: true` option in PerformanceObserver.observe() is not used
-   * because it has proven unreliable in Node.js environments. Instead, we use
-   * `performance.getEntriesByType()` to manually retrieve buffered entries.
-   *
-   * **Guarantees:**
-   * - All marks and measures in the performance buffer at subscription time will be captured
-   * - Entries are processed synchronously before the observer begins watching for new entries
-   * - No entries created after subscription will be missed (observer handles them)
-   *
-   * **Limitations:**
-   * - Potential for duplicate processing if an entry exists both in the buffer and is
-   *   delivered by the observer callback (though Node.js typically avoids this)
-   * - Performance buffer has a limited size; very old entries may have been evicted by Node.js
-   * - The manual approach captures a snapshot at subscription time; there's a small race
-   *   condition window where entries created during getEntriesByType() execution might
-   *   be captured by both the manual call and the observer
-   *
-   * **Memory Management:**
-   * Applications should call `performance.clearMarks()` and `performance.clearMeasures()`
-   * periodically to prevent the Node.js performance buffer from growing unbounded.
-   * This is especially important when using buffered mode, as the entire buffer is
-   * processed on subscription.
    */
   subscribe(): void {
     if (this.#observer) {
@@ -358,8 +323,7 @@ export class PerformanceObserverSink<T> {
       this.processPerformanceEntries(list.getEntries());
     });
 
-    // Manually capture buffered entries instead of using the native buffered option.
-    // See method documentation above for rationale and guarantees.
+    // Manually capture buffered entries instead of the unreliable native buffered option.
     if (this.#buffered) {
       const existingMarks = performance.getEntriesByType('mark');
       const existingMeasures = performance.getEntriesByType('measure');
@@ -369,7 +333,7 @@ export class PerformanceObserverSink<T> {
 
     this.#observer.observe({
       entryTypes: OBSERVED_TYPES,
-      // Note: buffered option intentionally omitted. See method documentation above.
+      // Note: buffered option intentionally omitted due to unreliability in Node.js.
     });
   }
 
