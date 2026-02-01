@@ -1,0 +1,420 @@
+import * as fs from 'node:fs/promises';
+import {
+  createTraceFile,
+  decodeEvent,
+  encodeEvent,
+  frameName,
+  frameTreeNodeId,
+} from '../src/lib/profiler/trace-file-utils.js';
+import type {
+  TraceEvent,
+  TraceEventContainer,
+  TraceMetadata,
+} from '../src/lib/profiler/trace-file.type';
+
+/**
+ * Parses JSONL string and decodes all events.
+ */
+const parseAndDecodeJsonl = (input: string): TraceEvent[] =>
+  input
+    .split('\n')
+    .filter(Boolean)
+    .map(line => decodeEvent(JSON.parse(line)));
+
+/**
+ * Parses JSONL string without decoding (preserves encoded format).
+ */
+const parseJsonl = (input: string): TraceEvent[] =>
+  input
+    .split('\n')
+    .filter(Boolean)
+    .map(line => JSON.parse(line) as TraceEvent);
+
+/**
+ * Loads and normalizes trace events from a JSONL file.
+ * Parses the file, decodes all events, normalizes them for deterministic testing,
+ * and returns the normalized decoded events.
+ *
+ * @param filePath - Path to the JSONL trace file
+ * @param options - Optional configuration with baseTimestampUs for timestamp normalization
+ * @returns Promise resolving to an array of normalized trace events
+ */
+export async function loadAndOmitTraceJsonl(
+  filePath: `${string}.jsonl`,
+  options?: {
+    baseTimestampUs: number;
+  },
+): Promise<TraceEvent[]> {
+  const baseTimestampUs = options?.baseTimestampUs ?? 1_700_000_005_000_000;
+  const stringContent = (await fs.readFile(filePath)).toString().trim();
+
+  // Parse and decode events
+  const events = parseAndDecodeJsonl(stringContent);
+  // Normalize decoded events
+  return normalizeAndFormatEvents(events, {
+    baseTimestampUs,
+  });
+}
+
+/**
+ * Validates that a value can be serialized to and parsed from valid JSON.
+ * Throws an error if the value cannot be round-tripped through JSON.
+ */
+function validateJsonSerializable(value: unknown): void {
+  try {
+    const serialized = JSON.stringify(value);
+    JSON.parse(serialized);
+  } catch (error) {
+    throw new Error(
+      `Value is not valid JSON serializable: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+}
+
+/**
+ * Loads and normalizes trace events from a JSON file.
+ * Parses the file, decodes events, normalizes them for deterministic testing,
+ * normalizes metadata timestamps, and validates JSON serializability.
+ *
+ * @param filePath - Path to the JSON trace file
+ * @param options - Optional configuration with baseTimestampUs for timestamp normalization
+ * @returns Promise resolving to a normalized trace event container
+ */
+export async function loadAndOmitTraceJson(
+  filePath: string,
+  options?: {
+    baseTimestampUs: number;
+  },
+): Promise<TraceEventContainer> {
+  const baseTimestampUs = options?.baseTimestampUs ?? 1_700_000_005_000_000;
+  const stringContent = (await fs.readFile(filePath)).toString().trim();
+
+  const parsed = JSON.parse(stringContent);
+
+  // Normalize metadata timestamps if present
+  function normalizeMetadata(
+    metadata?: TraceMetadata | Record<string, unknown>,
+  ): TraceMetadata | undefined {
+    if (!metadata) {
+      return undefined;
+    }
+    return {
+      ...metadata,
+      generatedAt: '2026-01-28T14:29:27.995Z',
+      startTime: '2026-01-28T14:29:27.995Z',
+    } as TraceMetadata;
+  }
+
+  // Check if it's a trace container structure
+  if (
+    typeof parsed === 'object' &&
+    ('traceEvents' in parsed || 'metadata' in parsed)
+  ) {
+    // Single trace container
+    const container = parsed as {
+      traceEvents?: TraceEvent[];
+      metadata?: TraceMetadata;
+      displayTimeUnit?: 'ms' | 'ns';
+    };
+    // Normalize events and return decoded format
+    const decodedEvents = (container.traceEvents ?? []).map(decodeEvent);
+    const normalizedEvents = normalizeAndFormatEvents(decodedEvents, {
+      baseTimestampUs,
+    });
+    const result: TraceEventContainer = {
+      traceEvents: normalizedEvents,
+    };
+    if (container.displayTimeUnit) {
+      // eslint-disable-next-line functional/immutable-data
+      result.displayTimeUnit = container.displayTimeUnit;
+    }
+    if (container.metadata) {
+      // eslint-disable-next-line functional/immutable-data
+      result.metadata = normalizeMetadata(container.metadata);
+    }
+    // Validate that the result can be serialized to valid JSON
+    validateJsonSerializable(result);
+    return result;
+  }
+
+  // Fallback: if structure is unexpected, wrap events in container
+  const fallbackResult = {
+    traceEvents: [],
+  };
+  validateJsonSerializable(fallbackResult);
+  return fallbackResult;
+}
+
+/**
+ * Normalizes trace events for deterministic snapshot testing.
+ *
+ * Replaces variable values (pid, tid, ts, id2.local) with deterministic incremental values
+ * while preserving the original order of events.
+ *
+ * - Assigns incremental IDs to pid fields starting from 10001, 10002, etc.
+ * - Assigns incremental IDs to tid fields starting from 1, 2, etc.
+ * - Normalizes timestamps by sorting them first to determine incremental order,
+ *   then mapping to incremental values starting from mocked epoch clock base,
+ *   while preserving the original order of events in the output.
+ * - Normalizes id2.local values to incremental hex values (0x1, 0x2, etc.)
+ * - Normalizes nested process IDs in args.data (frameTreeNodeId, frames[].processId, frames[].frame)
+ * - Automatically decodes events if they contain string-encoded details
+ *
+ * @param traceEvents - Array of trace events to normalize, or JSONL string
+ * @param options - Optional configuration with baseTimestampUs
+ * @returns Array of normalized events, or JSONL string if input was string
+ */
+export function normalizeAndFormatEvents(
+  traceEvents: TraceEvent[],
+  options?: { baseTimestampUs: number },
+): TraceEvent[];
+export function normalizeAndFormatEvents(
+  traceEvents: string,
+  options?: { baseTimestampUs: number },
+): string;
+export function normalizeAndFormatEvents(
+  traceEvents: TraceEvent[] | string,
+  options?: { baseTimestampUs: number },
+): TraceEvent[] | string {
+  if (typeof traceEvents === 'string') {
+    if (!traceEvents.trim()) {
+      return traceEvents;
+    }
+    const events = parseJsonl(traceEvents);
+    const decodedEvents = events.map(decodeEvent);
+    const normalized = normalizeAndFormatEventsArray(decodedEvents, options);
+    const encoded = normalized.map(encodeEvent);
+    const result = encoded.map(event => JSON.stringify(event)).join('\n');
+    const hasTrailingNewline = traceEvents.endsWith('\n');
+    return hasTrailingNewline ? `${result}\n` : result;
+  }
+  return normalizeAndFormatEventsArray(traceEvents, options);
+}
+
+/**
+ * Maps a value if it exists in the map, otherwise returns empty object.
+ */
+const mapIf = <T, R>(
+  value: T | undefined,
+  map: Map<T, R>,
+  key: string,
+): Record<string, R> =>
+  value != null && map.has(value) ? { [key]: map.get(value)! } : {};
+
+/**
+ * Normalizes frame objects with process ID and frame name.
+ */
+const normalizeFrames = (
+  frames: unknown[],
+  pid: number,
+  tid: number,
+): unknown[] =>
+  frames.map(frame =>
+    frame && typeof frame === 'object'
+      ? {
+          ...(frame as Record<string, unknown>),
+          processId: pid,
+          frame: frameName(pid, tid),
+        }
+      : frame,
+  );
+
+/**
+ * Internal function that normalizes an array of trace events.
+ */
+function normalizeAndFormatEventsArray(
+  traceEvents: TraceEvent[],
+  options?: {
+    baseTimestampUs: number;
+  },
+): TraceEvent[] {
+  if (traceEvents.length === 0) {
+    return [];
+  }
+  const { baseTimestampUs = 1_700_000_005_000_000 } = options ?? {};
+
+  // Decode events first if they have string-encoded details
+  const decodedEvents = traceEvents.map(event => {
+    // Check if details are strings and decode them
+    if (event.args?.detail && typeof event.args.detail === 'string') {
+      return decodeEvent(event);
+    }
+    if (
+      event.args?.data?.detail &&
+      typeof event.args.data.detail === 'string'
+    ) {
+      return decodeEvent(event);
+    }
+    return event;
+  });
+
+  const uniquePids = new Set<number>();
+  const uniqueTids = new Set<number>();
+  const uniqueLocalIds = new Set<string>();
+  const timestamps: number[] = [];
+
+  // eslint-disable-next-line functional/no-loop-statements
+  for (const event of decodedEvents) {
+    if (event.pid != null) uniquePids.add(event.pid);
+    if (event.tid != null) uniqueTids.add(event.tid);
+    // eslint-disable-next-line functional/immutable-data
+    timestamps.push(event.ts);
+    if (event.id2?.local && typeof event.id2.local === 'string') {
+      uniqueLocalIds.add(event.id2.local);
+    }
+  }
+
+  const pidMap = new Map(
+    [...uniquePids].sort((a, b) => a - b).map((pid, i) => [pid, 10_001 + i]),
+  );
+  const tidMap = new Map(
+    [...uniqueTids].sort((a, b) => a - b).map((tid, i) => [tid, 1 + i]),
+  );
+  const localIdMap = new Map(
+    [...uniqueLocalIds]
+      .sort()
+      .map((localId, i) => [localId, `0x${(i + 1).toString(16)}`]),
+  );
+  const tsMap = new Map(
+    [...new Set(timestamps)]
+      .sort((a, b) => a - b)
+      .map((ts, i) => [ts, baseTimestampUs + i * 100]),
+  );
+
+  // Normalize events while preserving original order
+  return decodedEvents.map(event => {
+    const pid = pidMap.get(event.pid) ?? event.pid;
+    const tid = tidMap.get(event.tid) ?? event.tid;
+
+    const normalized: TraceEvent = {
+      ...event,
+      ...mapIf(event.pid, pidMap, 'pid'),
+      ...mapIf(event.tid, tidMap, 'tid'),
+      ...mapIf(event.ts, tsMap, 'ts'),
+      ...(event.id2?.local && localIdMap.has(event.id2.local)
+        ? { id2: { ...event.id2, local: localIdMap.get(event.id2.local)! } }
+        : {}),
+    };
+
+    // Handle args normalization
+    if (event.args?.data && typeof event.args.data === 'object') {
+      // eslint-disable-next-line functional/immutable-data
+      normalized.args = {
+        ...event.args,
+        data: {
+          ...event.args.data,
+          ...(typeof pid === 'number' &&
+            typeof tid === 'number' &&
+            'frameTreeNodeId' in event.args.data && {
+              frameTreeNodeId: frameTreeNodeId(pid, tid),
+            }),
+          ...(Array.isArray(
+            (event.args.data as Record<string, unknown>).frames,
+          ) && {
+            frames: normalizeFrames(
+              (event.args.data as Record<string, unknown>).frames as unknown[],
+              pid,
+              tid,
+            ),
+          }),
+        },
+      };
+    } else if (event.args) {
+      // Preserve args if it exists and has other properties
+      // eslint-disable-next-line functional/immutable-data
+      normalized.args = event.args;
+    }
+    // If args is undefined or doesn't exist, don't include it
+
+    return normalized;
+  });
+}
+
+/**
+ * Loads and normalizes trace events from a JSON file.
+ * Parses the file, decodes events, normalizes them for deterministic testing,
+ * normalizes metadata (removes generatedAt, sets startTime to fixed value),
+ * creates a trace file container, and removes displayTimeUnit.
+ *
+ * @param filePath - Path to the JSON trace file (must end with .json)
+ * @returns Promise resolving to a normalized trace event container
+ */
+export async function loadNormalizedTraceJson(
+  filePath: `${string}.json`,
+): Promise<TraceEventContainer> {
+  const baseTimestampUs = 1_700_000_005_000_000;
+  const stringContent = (await fs.readFile(filePath)).toString().trim();
+  const parsed = JSON.parse(stringContent);
+
+  function normalizeMetadata(
+    metadata?: TraceMetadata | Record<string, unknown>,
+  ): TraceMetadata | undefined {
+    if (!metadata) {
+      return undefined;
+    }
+    // Remove generatedAt to match valid-trace.json shape
+    const { generatedAt, ...restMetadata } = metadata as Record<
+      string,
+      unknown
+    >;
+    return {
+      ...restMetadata,
+      startTime: '2026-01-28T14:29:27.995Z',
+    } as TraceMetadata;
+  }
+
+  const container = parsed as {
+    traceEvents?: TraceEvent[];
+    metadata?: TraceMetadata;
+    displayTimeUnit?: 'ms' | 'ns';
+  };
+  const decodedEvents = (container.traceEvents ?? []).map(decodeEvent);
+  const normalizedEvents = normalizeAndFormatEvents(decodedEvents, {
+    baseTimestampUs,
+  });
+  const result = createTraceFile({
+    traceEvents: normalizedEvents,
+    startTime: container.metadata?.startTime,
+    metadata: normalizeMetadata(container.metadata),
+  });
+  // Remove displayTimeUnit to match valid-trace.json shape
+  const { displayTimeUnit, ...rest } = result;
+  return rest;
+}
+
+/**
+ * Loads and normalizes trace events from a JSONL file.
+ * Parses the file, decodes all events, normalizes them for deterministic testing,
+ * and creates a trace file container.
+ *
+ * @param filePath - Path to the JSONL trace file (must end with .jsonl)
+ * @returns Promise resolving to a normalized trace event container
+ */
+export async function loadNormalizedTraceJsonl(
+  filePath: `${string}.jsonl`,
+): Promise<TraceEventContainer> {
+  const baseTimestampUs = 1_700_000_005_000_000;
+  const stringContent = (await fs.readFile(filePath)).toString().trim();
+  const events = parseAndDecodeJsonl(stringContent);
+  const normalizedEvents = normalizeAndFormatEvents(events, {
+    baseTimestampUs,
+  });
+  return createTraceFile({
+    traceEvents: normalizedEvents,
+  });
+}
+
+/**
+ * Validates that all blink.user_timing events in the container can be decoded.
+ * Throws an assertion error if any event fails to decode.
+ *
+ * @param container - Trace event container to validate
+ */
+export function expectTraceDecodable(container: TraceEventContainer): void {
+  // eslint-disable-next-line functional/no-loop-statements
+  for (const event of container.traceEvents) {
+    if (event.cat === 'blink.user_timing') {
+      expect(() => decodeEvent(event)).not.toThrow();
+    }
+  }
+}

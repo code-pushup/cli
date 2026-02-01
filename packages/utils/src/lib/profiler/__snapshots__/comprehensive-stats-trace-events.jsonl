@@ -1,8 +1,0 @@
-{"cat":"blink.user_timing","ph":"i","name":"stats-profiler:operation-1:start","pid":10001,"tid":1,"ts":1700000005000000,"args":{"detail":"{\"devtools\":{\"track\":\"Stats\",\"dataType\":\"track-entry\"}}"}}
-{"cat":"blink.user_timing","ph":"b","name":"stats-profiler:operation-1","id2":{"local":"0x1"},"pid":10001,"tid":1,"ts":1700000005000001,"args":{"data":{"detail":"{\"devtools\":{\"track\":\"Stats\",\"dataType\":\"track-entry\"}}"}}}
-{"cat":"blink.user_timing","ph":"e","name":"stats-profiler:operation-1","id2":{"local":"0x1"},"pid":10001,"tid":1,"ts":1700000005000002,"args":{"data":{"detail":"{\"devtools\":{\"track\":\"Stats\",\"dataType\":\"track-entry\"}}"}}}
-{"cat":"blink.user_timing","ph":"i","name":"stats-profiler:operation-1:end","pid":10001,"tid":1,"ts":1700000005000003,"args":{"detail":"{\"devtools\":{\"track\":\"Stats\",\"dataType\":\"track-entry\"}}"}}
-{"cat":"blink.user_timing","ph":"i","name":"stats-profiler:operation-2:start","pid":10001,"tid":1,"ts":1700000005000004,"args":{"detail":"{\"devtools\":{\"track\":\"Stats\",\"dataType\":\"track-entry\"}}"}}
-{"cat":"blink.user_timing","ph":"b","name":"stats-profiler:operation-2","id2":{"local":"0x2"},"pid":10001,"tid":1,"ts":1700000005000005,"args":{"data":{"detail":"{\"devtools\":{\"track\":\"Stats\",\"dataType\":\"track-entry\"}}"}}}
-{"cat":"blink.user_timing","ph":"e","name":"stats-profiler:operation-2","id2":{"local":"0x2"},"pid":10001,"tid":1,"ts":1700000005000006,"args":{"data":{"detail":"{\"devtools\":{\"track\":\"Stats\",\"dataType\":\"track-entry\"}}"}}}
-{"cat":"blink.user_timing","ph":"i","name":"stats-profiler:operation-2:end","pid":10001,"tid":1,"ts":1700000005000007,"args":{"detail":"{\"devtools\":{\"track\":\"Stats\",\"dataType\":\"track-entry\"}}"}}

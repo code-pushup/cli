@@ -146,35 +146,6 @@ describe('PerformanceObserverSink', () => {
     );
   });
 
-  it('internal PerformanceObserver should observe buffered by default', () => {
-    const observer = new PerformanceObserverSink(options);
-
-    observer.subscribe();
-    expect(
-      MockPerformanceObserver.lastInstance()?.observe,
-    ).toHaveBeenCalledWith(
-      expect.objectContaining({
-        buffered: true,
-      }),
-    );
-  });
-
-  it('internal PerformanceObserver should observe buffered if buffered option is provided', () => {
-    const observer = new PerformanceObserverSink({
-      ...options,
-      captureBufferedEntries: true,
-    });
-
-    observer.subscribe();
-    expect(
-      MockPerformanceObserver.lastInstance()?.observe,
-    ).toHaveBeenCalledWith(
-      expect.objectContaining({
-        buffered: true,
-      }),
-    );
-  });
-
   it('internal PerformanceObserver should process observed entries', () => {
     const observer = new PerformanceObserverSink({
       ...options,
@@ -373,10 +344,10 @@ describe('PerformanceObserverSink', () => {
       // Restore original env before each test
       if (originalEnv === undefined) {
         // eslint-disable-next-line functional/immutable-data
-        delete process.env.CP_PROFILER_DEBUG;
+        delete process.env.DEBUG;
       } else {
         // eslint-disable-next-line functional/immutable-data
-        process.env.CP_PROFILER_DEBUG = originalEnv;
+        process.env.DEBUG = originalEnv;
       }
     });
 
@@ -384,16 +355,16 @@ describe('PerformanceObserverSink', () => {
       // Restore original env after each test
       if (originalEnv === undefined) {
         // eslint-disable-next-line functional/immutable-data
-        delete process.env.CP_PROFILER_DEBUG;
+        delete process.env.DEBUG;
       } else {
         // eslint-disable-next-line functional/immutable-data
-        process.env.CP_PROFILER_DEBUG = originalEnv;
+        process.env.DEBUG = originalEnv;
       }
     });
 
     it('creates performance mark when encode fails and debug mode is enabled via env var', () => {
       // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
+      process.env.DEBUG = 'true';
 
       const failingEncode = vi.fn(() => {
         throw new Error('EncodeError');
@@ -424,7 +395,7 @@ describe('PerformanceObserverSink', () => {
 
     it('does not create performance mark when encode fails and debug mode is disabled', () => {
       // eslint-disable-next-line functional/immutable-data
-      delete process.env.CP_PROFILER_DEBUG;
+      delete process.env.DEBUG;
 
       const failingEncode = vi.fn(() => {
         throw new Error('EncodeError');
@@ -455,7 +426,7 @@ describe('PerformanceObserverSink', () => {
 
     it('handles encode errors for unnamed entries correctly', () => {
       // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
+      process.env.DEBUG = 'true';
 
       const failingEncode = vi.fn(() => {
         throw new Error('EncodeError');
@@ -483,7 +454,7 @@ describe('PerformanceObserverSink', () => {
 
     it('handles non-Error objects thrown from encode function', () => {
       // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
+      process.env.DEBUG = 'true';
 
       const failingEncode = vi.fn(() => {
         throw 'String error';
@@ -739,16 +710,16 @@ describe('PerformanceObserverSink', () => {
 
     beforeEach(() => {
       // eslint-disable-next-line functional/immutable-data
-      delete process.env.CP_PROFILER_DEBUG;
+      delete process.env.DEBUG;
     });
 
     afterEach(() => {
       if (originalEnv === undefined) {
         // eslint-disable-next-line functional/immutable-data
-        delete process.env.CP_PROFILER_DEBUG;
+        delete process.env.DEBUG;
       } else {
         // eslint-disable-next-line functional/immutable-data
-        process.env.CP_PROFILER_DEBUG = originalEnv;
+        process.env.DEBUG = originalEnv;
       }
     });
 
@@ -760,7 +731,7 @@ describe('PerformanceObserverSink', () => {
 
     it('returns true when debug env var is set to "true"', () => {
       // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
+      process.env.DEBUG = 'true';
 
       const observer = new PerformanceObserverSink(options);
 
@@ -769,7 +740,7 @@ describe('PerformanceObserverSink', () => {
 
     it('returns false when debug env var is set to a value other than "true"', () => {
       // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'false';
+      process.env.DEBUG = 'false';
 
       const observer = new PerformanceObserverSink(options);
 
@@ -778,33 +749,9 @@ describe('PerformanceObserverSink', () => {
 
     it('returns false when debug env var is set to empty string', () => {
       // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = '';
+      process.env.DEBUG = '';
 
       const observer = new PerformanceObserverSink(options);
-
-      expect(observer.debug).toBeFalse();
-    });
-
-    it('respects custom debugEnvVar option', () => {
-      // eslint-disable-next-line functional/immutable-data
-      process.env.CUSTOM_DEBUG_VAR = 'true';
-
-      const observer = new PerformanceObserverSink({
-        ...options,
-        debugEnvVar: 'CUSTOM_DEBUG_VAR',
-      });
-
-      expect(observer.debug).toBeTrue();
-
-      // eslint-disable-next-line functional/immutable-data
-      delete process.env.CUSTOM_DEBUG_VAR;
-    });
-
-    it('returns false when custom debugEnvVar is not set', () => {
-      const observer = new PerformanceObserverSink({
-        ...options,
-        debugEnvVar: 'CUSTOM_DEBUG_VAR',
-      });
 
       expect(observer.debug).toBeFalse();
     });

@@ -122,14 +122,6 @@ export type PerformanceObserverOptions<T> = {
    * @default DEFAULT_MAX_QUEUE_SIZE (10000)
    */
   maxQueueSize?: number;
-
-  /**
-   * Name of the environment variable to check for debug mode.
-   * When the env var is set to 'true', encode failures create performance marks for debugging.
-   *
-   * @default 'CP_PROFILER_DEBUG'
-   */
-  debugEnvVar?: string;
 };
 
 /**
@@ -151,7 +143,7 @@ export type PerformanceObserverOptions<T> = {
  *   - Queue cleared after successful batch writes
  *
  * - Item Disposition Scenarios 💥
- *   - **Encode Failure**: ❌ Items lost when `encode()` throws. Creates perf mark if debug env var (specified by `debugEnvVar`) is set to 'true'.
+ *   - **Encode Failure**: ❌ Items lost when `encode()` throws. Creates perf mark if 'DEBUG' env var is set to 'true'.
  *   - **Sink Write Failure**: 💾 Items stay in queue when sink write fails during flush
  *   - **Sink Closed**: 💾 Items stay in queue when sink is closed during flush
  *   - **Proactive Flush Throws**: 💾 Items stay in queue when `flush()` throws during threshold check
@@ -197,6 +189,46 @@ export class PerformanceObserverSink<T> {
   /** Whether debug mode is enabled for encode failures */
   #debug: boolean;
 
+  private processPerformanceEntries(entries: PerformanceEntry[]) {
+    entries.forEach(entry => {
+      if (OBSERVED_TYPE_SET.has(entry.entryType as ObservedEntryType)) {
+        try {
+          const items = this.encode(entry);
+          items.forEach(item => {
+            // ❌ MAX QUEUE OVERFLOW
+            if (this.#queue.length >= this.#maxQueueSize) {
+              this.#dropped++; // Items are lost forever
+              return;
+            }
+
+            if (
+              this.#queue.length >=
+              this.#maxQueueSize - this.#flushThreshold
+            ) {
+              this.flush();
+            }
+            this.#queue.push(item);
+            this.#addedSinceLastFlush++;
+          });
+        } catch (error) {
+          // ❌ Encode failure: item lost forever as user has to fix encode function.
+          this.#dropped++;
+          if (this.#debug) {
+            try {
+              performance.mark(errorToPerfMark(error, entry));
+            } catch {
+              // Ignore mark failures to prevent double errors
+            }
+          }
+        }
+      }
+    });
+
+    if (this.#addedSinceLastFlush >= this.#flushThreshold) {
+      this.flush();
+    }
+  }
+
   /**
    * Creates a new PerformanceObserverSink with the specified configuration.
    *
@@ -210,7 +242,6 @@ export class PerformanceObserverSink<T> {
       captureBufferedEntries,
       flushThreshold = DEFAULT_FLUSH_THRESHOLD,
       maxQueueSize = DEFAULT_MAX_QUEUE_SIZE,
-      debugEnvVar = PROFILER_DEBUG_ENV_VAR,
     } = options;
     this.#encodePerfEntry = encodePerfEntry;
     this.#sink = sink;
@@ -218,14 +249,13 @@ export class PerformanceObserverSink<T> {
     this.#maxQueueSize = maxQueueSize;
     validateFlushThreshold(flushThreshold, this.#maxQueueSize);
     this.#flushThreshold = flushThreshold;
-    this.#debug = isEnvVarEnabled(debugEnvVar);
+    this.#debug = isEnvVarEnabled(PROFILER_DEBUG_ENV_VAR);
   }
 
   /**
    * Returns whether debug mode is enabled for encode failures.
    *
-   * Debug mode is determined by the environment variable specified by `debugEnvVar`
-   * (defaults to 'CP_PROFILER_DEBUG'). When enabled, encode failures create
+   * Debug mode is determined by the environment variable 'DEBUG'
    * performance marks for debugging.
    *
    * @returns true if debug mode is enabled, false otherwise
@@ -283,53 +313,26 @@ export class PerformanceObserverSink<T> {
     }
 
     this.#observer = new PerformanceObserver(list => {
-      list.getEntries().forEach(entry => {
-        if (OBSERVED_TYPE_SET.has(entry.entryType as ObservedEntryType)) {
-          try {
-            const items = this.encode(entry);
-            items.forEach(item => {
-              // ❌ MAX QUEUE OVERFLOW
-              if (this.#queue.length >= this.#maxQueueSize) {
-                this.#dropped++; // Items are lost forever
-                return;
-              }
-
-              if (
-                this.#queue.length >=
-                this.#maxQueueSize - this.#flushThreshold
-              ) {
-                this.flush();
-              }
-              this.#queue.push(item);
-              this.#addedSinceLastFlush++;
-            });
-          } catch (error) {
-            // ❌ Encode failure: item lost forever as user has to fix encode function.
-            this.#dropped++;
-            if (this.#debug) {
-              try {
-                performance.mark(errorToPerfMark(error, entry));
-              } catch {
-                // Ignore mark failures to prevent double errors
-              }
-            }
-          }
-        }
-      });
-
-      if (this.#addedSinceLastFlush >= this.#flushThreshold) {
-        this.flush();
-      }
+      this.processPerformanceEntries(list.getEntries());
     });
+
+    // When buffered mode is enabled, Node.js PerformanceObserver invokes
+    // the callback synchronously with all buffered entries before observe() returns.
+    // However, entries created before any observer existed may not be buffered by Node.js.
+    // We manually retrieve entries from the performance buffer using getEntriesByType()
+    // to capture entries that were created before the observer was created.
+    if (this.#buffered) {
+      const existingMarks = performance.getEntriesByType('mark');
+      const existingMeasures = performance.getEntriesByType('measure');
+      const allEntries = [...existingMarks, ...existingMeasures];
+      this.processPerformanceEntries(allEntries);
+    }
 
     this.#observer.observe({
       entryTypes: OBSERVED_TYPES,
-      buffered: this.#buffered,
+      // @NOTE: This is for unknown reasons not working, and we manually do it above
+      // buffered: this.#buffered,
     });
-
-    if (this.#buffered) {
-      this.flush();
-    }
   }
 
   /**
