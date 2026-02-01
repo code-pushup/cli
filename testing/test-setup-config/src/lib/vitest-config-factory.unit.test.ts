@@ -1,16 +1,20 @@
-import {
-  type E2ETestOptions,
-  type TestKind,
-  createVitestConfig,
-} from './vitest-config-factory.js';
+import type { E2ETestOptions, TestKind } from './vitest-config-factory.js';
 
-vi.mock('./vitest-tsconfig-path-aliases.js', () => ({
+const tsconfigPathAliasesMock = vi.hoisted(() => ({
   tsconfigPathAliases: vi
     .fn()
     .mockReturnValue([{ find: '@test/alias', replacement: '/mock/path' }]),
 }));
 
+vi.mock('./vitest-tsconfig-path-aliases.js', () => tsconfigPathAliasesMock);
+
 describe('createVitestConfig', () => {
+  let createVitestConfig: typeof import('./vitest-config-factory.js').createVitestConfig;
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    ({ createVitestConfig } = await import('./vitest-config-factory.js'));
+  });
   describe('unit test configuration', () => {
     it('should create a complete unit test config with all defaults', () => {
       const config = createVitestConfig('test-package', 'unit');
