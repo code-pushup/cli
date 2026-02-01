@@ -88,7 +88,6 @@ export class Profiler<T extends ActionTrackConfigs> {
    */
   #debug: boolean = false;
   #enabled: boolean = false;
-  readonly #prefix: string = '';
   readonly #defaults: ActionTrackEntryPayload;
   readonly tracks: Record<keyof T, ActionTrackEntryPayload> | undefined;
   readonly #ctxOf: ReturnType<typeof measureCtx>;
@@ -119,9 +118,6 @@ export class Profiler<T extends ActionTrackConfigs> {
 
     this.#enabled = enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
     this.#debug = debug ?? isEnvVarEnabled(PROFILER_DEBUG_ENV_VAR);
-    if(prefix) {
-      this.#prefix = prefix;
-    }
     this.#defaults = { ...defaults, dataType };
     this.tracks = tracks
       ? setupTracks({ ...defaults, dataType }, tracks)
@@ -131,16 +127,6 @@ export class Profiler<T extends ActionTrackConfigs> {
       dataType,
       prefix,
     });
-  }
-
-  get stats() {
-    return {
-      prefix: this.#prefix,
-      enabled: this.#enabled,
-      debug: this.#debug,
-      tracks: this.tracks,
-      trackDefaults: this.#defaults,
-    }
   }
 
   /**

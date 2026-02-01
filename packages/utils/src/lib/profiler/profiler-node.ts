@@ -1,4 +1,3 @@
-import { performance } from 'node:perf_hooks';
 import { isEnvVarEnabled } from '../env.js';
 import { type FatalKind, subscribeProcessExit } from '../exit-process.js';
 import {
@@ -13,7 +12,7 @@ import type {
   MarkerPayload,
 } from '../user-timing-extensibility-api.type.js';
 import { ShardedWal } from '../wal-sharded.js';
-import { type WalFormat, WriteAheadLogFile } from '../wal.js';
+import { type WalFormat, type WalRecord, WriteAheadLogFile } from '../wal.js';
 import {
   PROFILER_DEBUG_MEASURE_PREFIX,
   PROFILER_ENABLED_ENV_VAR,
@@ -24,15 +23,15 @@ import {
 } from './constants.js';
 import { Profiler, type ProfilerOptions } from './profiler.js';
 
-export type ProfilerBufferOptions<DomainEvents extends object> = Omit<
+export type ProfilerBufferOptions<DomainEvents extends WalRecord> = Omit<
   PerformanceObserverOptions<DomainEvents>,
   'sink' | 'encodePerfEntry'
 >;
-export type ProfilerFormat<DomainEvents extends object> = Partial<
+export type ProfilerFormat<DomainEvents extends WalRecord> = Partial<
   WalFormat<DomainEvents>
 > &
   Pick<PerformanceObserverOptions<DomainEvents>, 'encodePerfEntry'>;
-export type PersistOptions<DomainEvents extends object> = {
+export type PersistOptions<DomainEvents extends WalRecord> = {
   /**
    * Output directory for WAL shards and final files.
    * @default 'tmp/profiles'
@@ -58,19 +57,13 @@ export type PersistOptions<DomainEvents extends object> = {
  * @template Tracks - Record type defining available track names and their configurations
  */
 export type NodejsProfilerOptions<
-  DomainEvents extends object,
+  DomainEvents extends WalRecord,
   Tracks extends Record<string, Omit<ActionTrackEntryPayload, 'dataType'>>,
 > = ProfilerOptions<Tracks> &
   ProfilerBufferOptions<DomainEvents> &
   PersistOptions<DomainEvents>;
 
 export type NodeJsProfilerState = 'idle' | 'running' | 'closed';
-type NodeJsProfilerTransitionReason =
-  | 'enable'
-  | 'disable'
-  | 'process-exit'
-  | 'fatal-error'
-  | 'api-call';
 
 /**
  * Performance profiler with automatic process exit handling for buffered performance data.
@@ -89,7 +82,7 @@ type NodeJsProfilerTransitionReason =
  * @template Tracks - Record type defining available track names and their configurations
  */
 export class NodejsProfiler<
-  DomainEvents extends object,
+  DomainEvents extends WalRecord,
   Tracks extends Record<string, ActionTrackEntryPayload> = Record<
     string,
     ActionTrackEntryPayload
@@ -145,58 +138,53 @@ export class NodejsProfiler<
       captureBufferedEntries,
       flushThreshold,
       maxQueueSize,
+      debug: this.isDebugMode()
     });
 
     this.#unsubscribeExitHandlers = subscribeProcessExit({
-      onError: (error: unknown, kind: FatalKind) => {
-        this.#fatalErrorMarker(error, kind);
-        if (this.#state !== 'closed') {
-          this.#transition('closed', 'fatal-error');
-        }
+      onError: (
+        error: unknown,
+        kind: 'uncaughtException' | 'unhandledRejection',
+      ) => {
+        this.#handleFatalError(error, kind);
       },
       onExit: (_code: number) => {
-        if (this.#state !== 'closed') {
-          this.#transition('closed', 'process-exit');
-        }
+        this.close();
       },
     });
 
     const initialEnabled =
       options.enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
     if (initialEnabled) {
-      this.#transition('running', 'enable');
+      this.#transition('running');
     }
   }
 
   /**
    * Creates a performance marker for a profiler state transition.
    */
-  #logTransition(
-    from: NodeJsProfilerState,
-    to: NodeJsProfilerState,
-    reason: NodeJsProfilerTransitionReason,
-  ): void {
-    if (!this.isDebugMode()) {
-      return;
-    }
-
-    performance.mark(
-      `${PROFILER_DEBUG_MEASURE_PREFIX}:transition`,
-      asOptions(
-        markerPayload({
-          color: 'warning',
-          tooltipText: `Profiler transition: ${from} -> ${to}`,
-          properties: [
-            ['From', from],
-            ['To', to],
-            ['Reason', reason],
-            ...objectToEntries(this.stats),
-          ],
-        }),
-      ),
-    );
+  #transitionMarker(transition: string): void {
+    const transitionMarkerPayload: MarkerPayload = {
+      dataType: 'marker',
+      color: 'primary',
+      tooltipText: `Profiler state transition: ${transition}`,
+      properties: [['Transition', transition], ...objectToEntries(this.stats)],
+    };
+    this.marker(transition, transitionMarkerPayload);
   }
 
+  /**
+   * Handles fatal errors by marking them and shutting down the profiler.
+   * @param error - The error that occurred
+   * @param kind - The kind of fatal error (uncaughtException or unhandledRejection)
+   */
+  #handleFatalError(
+    error: unknown,
+    kind: 'uncaughtException' | 'unhandledRejection',
+  ): void {
+    this.#fatalErrorMarker(error, kind);
+    this.close(); // Ensures buffers flush and sink finalizes
+  }
   /**
    * Creates a fatal errors by marking them and shutting down the profiler.
    * @param error - The error that occurred
@@ -221,10 +209,9 @@ export class NodejsProfiler<
    * - `idle -> closed`: Closes sink if it was opened and finalizes shards (irreversible)
    *
    * @param next - The target state to transition to
-   * @param reason - The caller intent for this transition
    * @throws {Error} If attempting to transition from 'closed' state or invalid transition
    */
-  #transition(next: NodeJsProfilerState, reason: NodeJsProfilerTransitionReason): void {
+  #transition(next: NodeJsProfilerState): void {
     if (this.#state === next) {
       return;
     }
@@ -232,9 +219,7 @@ export class NodejsProfiler<
       throw new Error('Profiler already closed');
     }
 
-    const prev = this.#state;
-    const transition = `${prev}->${next}`;
-    this.#logTransition(prev, next, reason);
+    const transition = `${this.#state}->${next}`;
 
     switch (transition) {
       case 'idle->running':
@@ -259,7 +244,7 @@ export class NodejsProfiler<
         break;
 
       default:
-        throw new Error(`Invalid transition: ${prev} -> ${next}`);
+        throw new Error(`Invalid transition: ${this.#state} -> ${next}`);
     }
 
     this.#state = next;
@@ -273,7 +258,7 @@ export class NodejsProfiler<
     if (this.#state === 'closed') {
       return;
     }
-    this.#transition('closed', 'api-call');
+    this.#transition('closed');
   }
 
   /** @returns Whether profiler is in 'running' state */
@@ -284,9 +269,9 @@ export class NodejsProfiler<
   /** Enables profiling (start/stop) */
   override setEnabled(enabled: boolean): void {
     if (enabled) {
-      this.#transition('running', 'api-call');
+      this.#transition('running');
     } else {
-      this.#transition('idle', 'api-call');
+      this.#transition('idle');
     }
   }
 
@@ -295,13 +280,8 @@ export class NodejsProfiler<
     return this.#state;
   }
 
-  /** @returns Whether debug mode is enabled */
-  get debug(): boolean {
-    return this.isDebugMode();
-  }
-
   /** @returns Queue statistics and profiling state for monitoring */
-  override get stats() {
+  get stats() {
     const {
       state: sharderState,
       isCoordinator,
@@ -309,7 +289,6 @@ export class NodejsProfiler<
     } = this.#sharder.getStats();
 
     return {
-      ...super.stats,
       profilerState: this.#state,
       debug: this.isDebugMode(),
       sharderState,

@@ -3,8 +3,6 @@ import {
   PerformanceObserver,
   performance,
 } from 'node:perf_hooks';
-import { isEnvVarEnabled } from './env.js';
-import { PROFILER_DEBUG_ENV_VAR } from './profiler/constants.js';
 import type { AppendableSink } from './wal.js';
 
 /**
@@ -122,6 +120,12 @@ export type PerformanceObserverOptions<T> = {
    * @default DEFAULT_MAX_QUEUE_SIZE (10000)
    */
   maxQueueSize?: number;
+  /**
+   * Whether debug mode is enabled for encode failures.
+   * When true, encode failures create performance marks for debugging.
+   *
+   */
+  debug: boolean
 };
 
 /**
@@ -242,6 +246,7 @@ export class PerformanceObserverSink<T> {
       captureBufferedEntries,
       flushThreshold = DEFAULT_FLUSH_THRESHOLD,
       maxQueueSize = DEFAULT_MAX_QUEUE_SIZE,
+      debug,
     } = options;
     this.#encodePerfEntry = encodePerfEntry;
     this.#sink = sink;
@@ -249,7 +254,7 @@ export class PerformanceObserverSink<T> {
     this.#maxQueueSize = maxQueueSize;
     validateFlushThreshold(flushThreshold, this.#maxQueueSize);
     this.#flushThreshold = flushThreshold;
-    this.#debug = isEnvVarEnabled(PROFILER_DEBUG_ENV_VAR);
+    this.#debug = debug;
   }
 
   /**
