@@ -353,9 +353,9 @@ CP_PROFILING=true DEBUG=true CP_PROFILER_MEASURE_NAME=my-measure npm run dev
 The NodeJSProfiler inherits all API methods from the base Profiler class and adds additional methods for queue management and WAL lifecycle control.
 
 | Method                               | Description                                                                              |
-| ------------------------------------ | ---------------------------------------------------------------------------------------- | --------- | ----------- |
+| ------------------------------------ | ---------------------------------------------------------------------------------------- |
 | `stats`                              | Returns comprehensive queue statistics and profiling state for monitoring and debugging. |
-| `state`                              | Returns current profiler state (`'idle'                                                  | 'running' | 'closed'`). |
+| `state`                              | Returns current profiler state (`'idle' \| 'running' \| 'closed'`).                      |
 | `close()`                            | Closes profiler and releases resources. Idempotent, safe for exit handlers.              |
 | `flush()`                            | Forces immediate writing of all queued performance entries to the WAL.                   |
 | `setEnabled(enabled: boolean): void` | Controls profiling at runtime with automatic WAL/observer lifecycle management.          |
