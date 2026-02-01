@@ -502,27 +502,7 @@ describe('ShardedWal', () => {
 
       expect(sw.stats.shardFiles).toHaveLength(0);
       sw.shard();
-      expect(sw.stats.shardFiles).toHaveLength(1);
-
-      sw.cleanupIfCoordinator();
-      expect(sw.getState()).toBe('cleaned');
-      expect(sw.stats.shardFiles).toHaveLength(1);
-    });
-
-    it('should support cleanupIfCoordinator method', () => {
-      vol.fromJSON({
-        '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.1.log':
-          'content1',
-      });
-
-      const sw = getShardedWal({
-        dir: '/shards',
-        format: { baseName: 'test', walExtension: '.log' },
-      });
-
       expect(sw.stats.shardFiles).toHaveLength(0);
-      sw.shard();
-      expect(sw.stats.shardFiles).toHaveLength(1);
 
       sw.cleanupIfCoordinator();
       expect(sw.getState()).toBe('cleaned');

@@ -8,8 +8,9 @@ import {
 import { objectToEntries } from '../transform.js';
 import {
   asOptions,
+  errorToMarkerPayload,
   markerPayload,
- errorToMarkerPayload } from '../user-timing-extensibility-api-utils.js';
+} from '../user-timing-extensibility-api-utils.js';
 import type {
   ActionTrackEntryPayload,
   MarkerPayload,
@@ -109,61 +110,26 @@ export class NodejsProfiler<
    */
 
   constructor(options: NodejsProfilerOptions<DomainEvents, Tracks>) {
+// Pick ProfilerBufferOptions
     const {
       captureBufferedEntries,
       flushThreshold,
       maxQueueSize,
+      ...allButBufferOptions
+    } = options;
+    // Pick ProfilerPersistOptions
+    const {
       format: profilerFormat,
       measureName,
       outDir = PROFILER_PERSIST_OUT_DIR,
       enabled,
       debug,
       ...profilerOptions
-    } = options;
+    } = allButBufferOptions;
 
     super({ ...profilerOptions, enabled, debug });
 
-    this.#initializeStorage(profilerFormat, {
-      captureBufferedEntries,
-      flushThreshold,
-      maxQueueSize,
-      measureName,
-      outDir,
-      debug,
-    });
-
-    this.#unsubscribeExitHandlers = subscribeProcessExit({
-      onError: (
-        error: unknown,
-        kind: 'uncaughtException' | 'unhandledRejection',
-      ) => {
-        this.#handleFatalError(error, kind);
-      },
-      onExit: (_code: number) => {
-        this.close();
-      },
-    });
-
-    const initialEnabled =
-      options.enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
-    if (initialEnabled) {
-      this.transition('running');
-    }
-  }
-
-  #initializeStorage(
-    profilerFormat: ProfilerFormat<DomainEvents>,
-    options: {
-      captureBufferedEntries?: boolean;
-      flushThreshold?: number;
-      maxQueueSize?: number;
-      measureName?: string;
-      outDir: string;
-      debug?: boolean;
-    },
-  ) {
     const { encodePerfEntry, ...format } = profilerFormat;
-    const { captureBufferedEntries, flushThreshold, maxQueueSize, measureName, outDir, debug } = options;
 
     this.#sharder = new ShardedWal<DomainEvents>({
       debug,
@@ -183,6 +149,24 @@ export class NodejsProfiler<
       maxQueueSize,
       debug: this.isDebugMode(),
     });
+
+    this.#unsubscribeExitHandlers = subscribeProcessExit({
+      onError: (
+        error: unknown,
+        kind: 'uncaughtException' | 'unhandledRejection',
+      ) => {
+        this.#handleFatalError(error, kind);
+      },
+      onExit: (_code: number) => {
+        this.close();
+      },
+    });
+
+    const initialEnabled =
+      options.enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
+    if (initialEnabled) {
+      this.transition('running');
+    }
   }
 
   /**
@@ -255,22 +239,22 @@ export class NodejsProfiler<
     switch (transition) {
       case 'idle->running':
         super.setEnabled(true);
-        this.#shard.open();
-        this.#performanceObserverSink.subscribe();
+        this.#shard?.open();
+        this.#performanceObserverSink?.subscribe();
         break;
 
       case 'running->idle':
         super.setEnabled(false);
-        this.#performanceObserverSink.unsubscribe();
-        this.#shard.close();
+        this.#performanceObserverSink?.unsubscribe();
+        this.#shard?.close();
         break;
 
       case 'running->closed':
       case 'idle->closed':
         super.setEnabled(false);
-        this.#performanceObserverSink.unsubscribe();
-        this.#shard.close();
-        this.#sharder.finalizeIfCoordinator();
+        this.#performanceObserverSink?.unsubscribe();
+        this.#shard?.close();
+        this.#sharder?.finalizeIfCoordinator();
         this.#unsubscribeExitHandlers?.();
         break;
 
@@ -317,7 +301,7 @@ export class NodejsProfiler<
       state: sharderState,
       isCoordinator,
       ...sharderStats
-    } = this.#sharder.stats;
+    } = this.#sharder?.stats ?? {};
 
     return {
       profilerState: this.#state,
@@ -325,9 +309,9 @@ export class NodejsProfiler<
       sharderState,
       ...sharderStats,
       isCoordinator,
-      shardOpen: !this.#shard.isClosed(),
-      shardPath: this.#shard.getPath(),
-      ...this.#performanceObserverSink.getStats(),
+      shardOpen: this.#shard?.isClosed(),
+      shardPath: this.#shard?.getPath(),
+      ...this.#performanceObserverSink?.getStats(),
     };
   }
 
@@ -336,6 +320,6 @@ export class NodejsProfiler<
     if (this.#state === 'closed') {
       return; // No-op if closed
     }
-    this.#performanceObserverSink.flush();
+    this.#performanceObserverSink?.flush();
   }
 }

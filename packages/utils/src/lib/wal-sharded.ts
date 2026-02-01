@@ -67,7 +67,7 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
     },
   });
   readonly groupId = getUniqueTimeId();
-  readonly #debug = false;
+  readonly #debug: boolean = false;
   readonly #format: WalFormat<T>;
   readonly #dir: string = process.cwd();
   readonly #coordinatorIdEnvVar: string;
@@ -117,7 +117,7 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
    * @param opt.measureNameEnvVar - Environment variable name for coordinating groupId across processes (optional)
    */
   constructor(opt: {
-    debug: boolean;
+    debug?: boolean;
     dir?: string;
     format: WalFormat<T>;
     groupId?: string;
@@ -128,11 +128,16 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
     const {
       dir,
       format,
+      debug,
       groupId,
       coordinatorIdEnvVar,
       autoCoordinator = true,
       measureNameEnvVar,
     } = opt;
+
+    if (debug != null) {
+      this.#debug = debug;
+    }
 
     // Determine groupId: use provided, then env var, or generate
     // eslint-disable-next-line functional/no-let
@@ -295,6 +300,11 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
       .map(entry => path.join(groupDir, entry));
   }
 
+  /** Get shard file paths created by this instance */
+  private getCreatedShardFiles() {
+    return this.#createdShardFiles.filter(f => fs.existsSync(f));
+  }
+
   /**
    * Finalize all shards by merging them into a single output file.
    * Recovers all records from all shards, validates no errors, and writes merged result.
@@ -355,9 +365,11 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
       return;
     }
 
-    this.shardFiles().forEach(f => {
-      fs.unlinkSync(f);
-    });
+    this.getCreatedShardFiles()
+      .filter(f => fs.existsSync(f))
+      .forEach(f => {
+        fs.unlinkSync(f);
+      });
 
     this.#state = 'cleaned';
   }
@@ -367,13 +379,13 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
       lastRecover: this.#lastRecovery,
       state: this.#state,
       groupId: this.groupId,
-      shardCount: this.shardFiles().length,
+      shardCount: this.getCreatedShardFiles().length,
       isCoordinator: this.isCoordinator(),
       isFinalized: this.isFinalized(),
       isCleaned: this.isCleaned(),
       finalFilePath: this.getFinalFilePath(),
-      shardFileCount: this.shardFiles().length,
-      shardFiles: this.shardFiles(),
+      shardFileCount: this.getCreatedShardFiles().length,
+      shardFiles: this.getCreatedShardFiles(),
     };
   }
 

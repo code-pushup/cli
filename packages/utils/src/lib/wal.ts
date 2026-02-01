@@ -14,12 +14,12 @@ export type Codec<I, O = string> = {
 
 export type InvalidEntry<O = string> = { __invalid: true; raw: O };
 
-type CodecInput<C extends Codec<any, any>> =
-  C extends Codec<infer I, any> ? I : never;
-type CodecOutput<C extends Codec<any, any>> =
-  C extends Codec<any, infer O> ? O : never;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type CodecInput<C> = C extends Codec<infer I, infer O> ? I : never;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type CodecOutput<C> = C extends Codec<infer I, infer O> ? O : never;
 
-export type TolerantCodec<C extends Codec<any, any>> = Codec<
+export type TolerantCodec<C> = Codec<
   CodecInput<C> | InvalidEntry<CodecOutput<C>>,
   CodecOutput<C>
 >;
