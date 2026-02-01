@@ -335,17 +335,27 @@ function processDetail<T extends { detail?: unknown }>(
   return target;
 }
 
+function encodeDetailToString<T extends { detail?: unknown }>(
+  target: T,
+): T & { detail?: string } {
+  return processDetail(target, (detail: string | object) =>
+    typeof detail === 'object' ? JSON.stringify(detail) : detail,
+  ) as T & { detail?: string };
+}
+
 /**
  * Decodes a JSON string detail property back to its original object form.
  * @param target - Object containing a detail property as a JSON string
  * @returns UserTimingDetail with the detail property parsed from JSON
  */
-export function decodeDetail(target: { detail: string }): UserTimingDetail {
+export function decodeDetail<T extends { detail?: string | object }>(
+  target: T,
+): T {
   return processDetail(target, detail =>
     typeof detail === 'string'
       ? (JSON.parse(detail) as string | object)
       : detail,
-  ) as UserTimingDetail;
+  );
 }
 
 /**
@@ -353,14 +363,14 @@ export function decodeDetail(target: { detail: string }): UserTimingDetail {
  * @param target - UserTimingDetail object with detail property to encode
  * @returns UserTimingDetail with object details converted to JSON strings
  */
-export function encodeDetail(target: UserTimingDetail): UserTimingDetail {
+export function encodeDetail<T extends { detail?: string | object }>(
+  target: T,
+): T {
   return processDetail(
-    target as UserTimingDetail & { detail?: unknown },
+    target as T & { detail?: unknown },
     (detail: string | object) =>
-      typeof detail === 'object'
-        ? JSON.stringify(detail as UserTimingDetail)
-        : detail,
-  ) as UserTimingDetail;
+      typeof detail === 'object' ? JSON.stringify(detail) : detail,
+  );
 }
 
 /**
@@ -406,13 +416,13 @@ export function encodeTraceEvent({
     return rest as TraceEventRaw;
   }
 
-  const processedArgs = encodeDetail(args as UserTimingDetail);
+  const processedArgs = encodeDetailToString(args as { detail?: unknown });
   if ('data' in args && args.data && typeof args.data === 'object') {
     const result: TraceEventRaw = {
       ...rest,
       args: {
         ...processedArgs,
-        data: encodeDetail(args.data as UserTimingDetail),
+        data: encodeDetailToString(args.data as { detail?: unknown }),
       },
     };
     return result;

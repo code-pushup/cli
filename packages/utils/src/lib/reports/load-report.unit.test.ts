@@ -19,6 +19,7 @@ describe('loadReport', () => {
         outputDir: MEMFS_VOLUME,
         filename: 'report',
         format: 'json',
+        skipReports: false,
       }),
     ).resolves.toEqual(reportMock());
   });
@@ -38,6 +39,7 @@ describe('loadReport', () => {
         outputDir: MEMFS_VOLUME,
         format: 'md',
         filename: 'report',
+        skipReports: false,
       }),
     ).resolves.toBe('test-42');
   });
@@ -58,6 +60,7 @@ describe('loadReport', () => {
         outputDir: MEMFS_VOLUME,
         filename: 'report',
         format: 'json',
+        skipReports: false,
       }),
     ).rejects.toThrow('slug has to follow the pattern');
   });

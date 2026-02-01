@@ -132,7 +132,7 @@ export type ActionTrackEntryPayload = TrackEntryPayload & ActionColorPayload;
  * Utility type that adds an optional devtools payload property.
  */
 export type WithDevToolsPayload<T extends TrackEntryPayload | MarkerPayload> = {
-  devtools?: T;
+  devtools: T;
 };
 
 /**

@@ -623,16 +623,18 @@ describe('getTraceMetadata', () => {
 
 describe('decodeDetail', () => {
   it('should decode string detail back to object', () => {
-    const input = { detail: '{"key": "value"}' };
+    const input = {
+      detail: '{"devtools":{"dataType":"marker","color":"primary"}}',
+    };
     const result = decodeDetail(input);
 
     expect(result).toStrictEqual({
-      detail: { key: 'value' },
+      detail: { devtools: { dataType: 'marker', color: 'primary' } },
     });
   });
 
   it('should return object detail unchanged', () => {
-    const input = { detail: { key: 'value' } };
+    const input = { detail: { devtools: { dataType: 'marker' as const } } };
     const result = decodeDetail(input);
 
     expect(result).toStrictEqual(input);
@@ -655,11 +657,11 @@ describe('decodeDetail', () => {
 
 describe('encodeDetail', () => {
   it('should encode object detail to JSON string', () => {
-    const input = { detail: { key: 'value' } };
+    const input = { detail: { devtools: { dataType: 'marker' as const } } };
     const result = encodeDetail(input);
 
     expect(result).toStrictEqual({
-      detail: '{"key":"value"}',
+      detail: '{"devtools":{"dataType":"marker"}}',
     });
   });
 
@@ -695,8 +697,11 @@ describe('decodeTraceEvent', () => {
       tid: 456,
       ts: 1000,
       args: {
-        detail: '{"custom": "data"}',
-        data: { detail: '{"nested": "value"}' },
+        detail: '{"devtools":{"dataType":"marker","color":"primary"}}',
+        data: {
+          detail:
+            '{"devtools":{"dataType":"track-entry","track":"test-track"}}',
+        },
       },
     };
 
@@ -710,8 +715,14 @@ describe('decodeTraceEvent', () => {
       tid: 456,
       ts: 1000,
       args: {
-        detail: { custom: 'data' },
-        data: { detail: { nested: 'value' } },
+        detail: {
+          devtools: { dataType: 'marker' as const, color: 'primary' as const },
+        },
+        data: {
+          detail: {
+            devtools: { dataType: 'track-entry' as const, track: 'test-track' },
+          },
+        },
       },
     });
   });
@@ -724,6 +735,7 @@ describe('decodeTraceEvent', () => {
       pid: 123,
       tid: 456,
       ts: 1000,
+      args: {},
     };
 
     const result = decodeTraceEvent(rawEvent);
@@ -735,6 +747,7 @@ describe('decodeTraceEvent', () => {
       pid: 123,
       tid: 456,
       ts: 1000,
+      args: {},
     });
   });
 
@@ -747,7 +760,7 @@ describe('decodeTraceEvent', () => {
       tid: 456,
       ts: 1000,
       args: {
-        detail: '{"custom": "data"}',
+        detail: '{"devtools":{"dataType":"marker","color":"primary"}}',
       },
     };
 
@@ -761,7 +774,9 @@ describe('decodeTraceEvent', () => {
       tid: 456,
       ts: 1000,
       args: {
-        detail: { custom: 'data' },
+        detail: {
+          devtools: { dataType: 'marker' as const, color: 'primary' as const },
+        },
       },
     });
   });
@@ -777,8 +792,14 @@ describe('encodeTraceEvent', () => {
       tid: 456,
       ts: 1000,
       args: {
-        detail: { custom: 'data' },
-        data: { detail: { nested: 'value' } },
+        detail: {
+          devtools: { dataType: 'marker' as const, color: 'primary' as const },
+        },
+        data: {
+          detail: {
+            devtools: { dataType: 'track-entry' as const, track: 'test-track' },
+          },
+        },
       },
     };
 
@@ -792,8 +813,11 @@ describe('encodeTraceEvent', () => {
       tid: 456,
       ts: 1000,
       args: {
-        detail: '{"custom":"data"}',
-        data: { detail: '{"nested":"value"}' },
+        detail: '{"devtools":{"dataType":"marker","color":"primary"}}',
+        data: {
+          detail:
+            '{"devtools":{"dataType":"track-entry","track":"test-track"}}',
+        },
       },
     });
   });
@@ -806,6 +830,7 @@ describe('encodeTraceEvent', () => {
       pid: 123,
       tid: 456,
       ts: 1000,
+      args: {},
     };
 
     const result = encodeTraceEvent(event);
@@ -817,6 +842,7 @@ describe('encodeTraceEvent', () => {
       pid: 123,
       tid: 456,
       ts: 1000,
+      args: {},
     });
   });
 
@@ -829,7 +855,9 @@ describe('encodeTraceEvent', () => {
       tid: 456,
       ts: 1000,
       args: {
-        detail: { custom: 'data' },
+        detail: {
+          devtools: { dataType: 'marker' as const, color: 'primary' as const },
+        },
       },
     };
 
@@ -843,7 +871,7 @@ describe('encodeTraceEvent', () => {
       tid: 456,
       ts: 1000,
       args: {
-        detail: '{"custom":"data"}',
+        detail: '{"devtools":{"dataType":"marker","color":"primary"}}',
       },
     });
   });
