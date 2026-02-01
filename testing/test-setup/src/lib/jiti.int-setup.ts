@@ -1,4 +1,5 @@
 import { beforeEach, vi } from 'vitest';
+import type { ImportModuleOptions } from '@code-pushup/utils';
 
 // Integration test setup - disable jiti caching to avoid stale module resolution
 vi.mock('@code-pushup/utils', async () => {
@@ -9,14 +10,13 @@ vi.mock('@code-pushup/utils', async () => {
 
   return {
     ...utils,
-    importModule: async (options: any) => {
+    importModule: async (options: ImportModuleOptions) =>
       // Disable caching in integration tests
-      return utils.importModule({
+      utils.importModule({
         ...options,
         fsCache: false,
         moduleCache: false,
-      });
-    },
+      }),
   };
 });
 
