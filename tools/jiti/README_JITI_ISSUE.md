@@ -1,5 +1,34 @@
 # JITI ISSUES
 
+## Issue Discovery Workflow
+
+When encountering a module loading error with jiti/tsx, follow this systematic approach to identify the problematic package:
+
+1. **Isolate the issue**
+
+   - Open `code-pushup.config.ts`
+   - Comment out all plugin configurations
+   - Run: `nx code-pushup --print-config --output out.json`
+   - Verify the command succeeds without errors
+
+2. **Identify the problematic plugin**
+
+   - Uncomment plugins one at a time
+   - After each plugin, run: `nx code-pushup --print-config --output out.json`
+   - Continue until the error reproduces
+   - The last plugin uncommented is the one causing the issue
+
+3. **Document the issue**
+   - Once the problematic plugin is identified, collect all relevant information
+   - Fill out the issue template below with:
+     - The library/package name
+     - Error message and stack trace
+     - Reproduction steps
+     - Source code locations
+     - Any preliminary fixes or workarounds
+
+- add the issue to the list of issues below
+
 ## Issue Template
 
 **Library** (required)  
@@ -30,7 +59,13 @@ Links to a file, a snippet or a PR with the fix
 Local files are preferred.
 Location of the file: `tools/jiti/<library-name>/fix-<library-name>.ts`
 
-## Issues
+## List of Issues
+
+### My Issue
+
+...
+
+## Old Issuess for reference
 
 ### axe-core
 
