@@ -138,19 +138,19 @@ describe('NodeJS Profiler Integration', () => {
     profiler: NodejsProfiler<TraceEvent>,
   ) {
     expect(() =>
-      profiler.marker(`PID:${process.pid}: Enable profiler`, {
+      profiler.marker(`Enable profiler`, {
         tooltipText: 'set enable to true',
       }),
     ).not.toThrow();
 
     await new Promise(resolve => setTimeout(resolve, 50));
 
-    expect(profiler.measure(`PID:${process.pid} sync-measure`, () => 'success')).toBe('success');
+    expect(profiler.measure(`sync-measure`, () => 'success')).toBe('success');
 
     await new Promise(resolve => setTimeout(resolve, 50));
 
     await expect(
-      profiler.measureAsync(`PID:${process.pid} async-measure`, () =>
+      profiler.measureAsync(`async-measure`, () =>
         Promise.resolve('async success'),
       ),
     ).resolves.toBe('async success');
@@ -158,7 +158,7 @@ describe('NodeJS Profiler Integration', () => {
     await new Promise(resolve => setTimeout(resolve, 50));
 
     expect(() =>
-      profiler.marker(`PID:${process.pid}: Disable profiler`, {
+      profiler.marker(`Disable profiler`, {
         tooltipText: 'set enable to false',
       }),
     ).not.toThrow();

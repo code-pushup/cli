@@ -583,16 +583,18 @@ describe('NodejsProfiler', () => {
 
     it('should expose debug flag via getter', () => {
       const profiler = createProfiler('debug-getter-false');
-      expect(profiler.debug).toBe(false);
+      expect(profiler.isDebugMode()).toBe(false);
+      expect(profiler.stats.debug).toBe(false);
 
       // eslint-disable-next-line functional/immutable-data
       process.env.DEBUG = 'true';
       const debugProfiler = createProfiler('debug-getter-true');
-      expect(debugProfiler.debug).toBe(true);
+      expect(debugProfiler.isDebugMode()).toBe(true);
+      expect(debugProfiler.stats.debug).toBe(true);
     });
 
     // eslint-disable-next-line vitest/expect-expect
-    it('should create transition marker when debug is enabled and transitioning to running', () => {
+    it('does not create transition marker when debug is enabled and transitioning to running', () => {
       // eslint-disable-next-line functional/immutable-data
       process.env.DEBUG = 'true';
       const profiler = createProfiler({
@@ -603,7 +605,7 @@ describe('NodejsProfiler', () => {
       performance.clearMarks();
       profiler.setEnabled(true);
 
-      expectTransitionMarker('debug:idle->running');
+      expectNoTransitionMarker('debug:idle->running');
     });
 
     // eslint-disable-next-line vitest/expect-expect
@@ -616,7 +618,7 @@ describe('NodejsProfiler', () => {
       expectNoTransitionMarker('idle->running');
     });
 
-    it('should include stats in transition marker properties when transitioning to running', () => {
+    it('does not emit transition marker payload when transitioning to running', () => {
       // eslint-disable-next-line functional/immutable-data
       process.env.DEBUG = 'true';
       const profiler = createProfiler({
@@ -631,25 +633,21 @@ describe('NodejsProfiler', () => {
       const transitionMark = marks.find(
         mark => mark.name === 'debug:idle->running',
       );
-      expect(transitionMark).toBeDefined();
+      expect(transitionMark).toBeUndefined();
 
-      expect(transitionMark?.name).toBe('debug:idle->running');
-      expect(transitionMark?.detail).toBeDefined();
-      const detail = transitionMark?.detail as UserTimingDetail;
-      expect(detail.devtools).toBeDefined();
-      expect(detail.devtools?.dataType).toBe('marker');
-      expect(detail.devtools?.properties).toBeDefined();
+      expect(profiler.stats.debug).toBe(true);
     });
 
     // eslint-disable-next-line vitest/max-nested-describe
     describe('setDebugMode', () => {
       it('should enable debug mode when called with true', () => {
         const profiler = createProfiler('set-debug-true');
-        expect(profiler.debug).toBe(false);
+        expect(profiler.isDebugMode()).toBe(false);
+        expect(profiler.stats.debug).toBe(false);
 
         profiler.setDebugMode(true);
 
-        expect(profiler.debug).toBe(true);
+        expect(profiler.isDebugMode()).toBe(true);
         expect(profiler.stats.debug).toBe(true);
       });
     });

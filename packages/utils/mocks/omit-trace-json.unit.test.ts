@@ -78,7 +78,7 @@ describe('normalizeAndFormatEvents', () => {
         ph: 'i',
         name: 'plugin-eslint:run-eslint:start',
         pid: 10_001,
-        tid: 1,
+        tid: 0,
         ts: 1_700_000_005_000_000,
         args: {
           data: {
@@ -119,7 +119,7 @@ describe('normalizeAndFormatEvents', () => {
         ph: 'b',
         name: 'plugin-eslint:run-eslint',
         pid: 10_001,
-        tid: 1,
+        tid: 0,
         ts: 1_700_000_005_000_000,
         id2: { local: '0x1' },
         args: {
@@ -167,16 +167,16 @@ describe('normalizeAndFormatEvents', () => {
         ph: 'i',
         name: 'TracingStartedInBrowser',
         pid: 10_001,
-        tid: 1,
+        tid: 0,
         ts: 1_700_000_005_000_000,
         args: {
           data: {
-            frameTreeNodeId: 1_000_101, // 10001 + '0' + 1
+            frameTreeNodeId: 805_700,
             frames: [
               {
-                frame: 'FRAME0P10001T1',
+                frame: 'FRAME0P8057T0',
                 isInPrimaryMainFrame: true,
-                processId: 10_001,
+                processId: 8057,
                 url: 'trace.json',
               },
             ],
@@ -270,7 +270,7 @@ describe('normalizeAndFormatEvents', () => {
         ph: 'i',
         name: 'test',
         pid: 10_001,
-        tid: 1,
+        tid: 0,
         ts: 1_700_000_005_000_000,
         args: {
           detail: { type: 'mark' },
@@ -309,13 +309,13 @@ describe('loadAndOmitTraceJsonl', () => {
     await expect(loadAndOmitTraceJsonl('trace.jsonl')).resolves.toStrictEqual([
       {
         pid: 10_001,
-        tid: 1,
+        tid: 0,
         ts: 1_700_000_005_000_000,
         args: { data: { detail: { devtools: { dataType: 'track-entry' } } } },
       },
       {
         pid: 10_001,
-        tid: 1,
+        tid: 0,
         ts: 1_700_000_005_000_100,
         args: { detail: { devtools: { dataType: 'track-entry' } } },
       },
@@ -353,7 +353,7 @@ describe('loadAndOmitTraceJson', () => {
 
     await expect(loadAndOmitTraceJson('trace.json')).resolves.toStrictEqual({
       traceEvents: [
-        { pid: 10_001, tid: 1, ts: 1_700_000_005_000_000, name: 'test' },
+        { pid: 10_001, tid: 0, ts: 1_700_000_005_000_000, name: 'test' },
       ],
     });
   });
