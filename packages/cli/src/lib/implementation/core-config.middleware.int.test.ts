@@ -64,6 +64,6 @@ describe('coreConfigMiddleware', () => {
         ),
         ...CLI_DEFAULTS,
       }),
-    ).rejects.toThrow("Cannot find package '@example/custom-plugin'");
+    ).rejects.toThrow("Cannot find module '@example/custom-plugin'");
   });
 });
