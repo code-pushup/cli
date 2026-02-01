@@ -40,6 +40,9 @@ describe('ShardedWal', () => {
     // Clear coordinator env var for fresh state
     // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
     delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
+    // Clear measure name env var to avoid test pollution
+    // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
+    delete process.env.CP_PROFILER_MEASURE_NAME;
   });
 
   describe('initialization', () => {
