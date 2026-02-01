@@ -32,7 +32,7 @@ export function stringifyError(
 }
 
 /**
- * Extend an error with a new mamessage and keeps the original as cause.
+ * Extends an error with a new message and keeps the original as the cause.
  * @param error - The error to extend
  * @param message - The new message to add to the error
  * @returns A new error with the extended message and the original as cause
