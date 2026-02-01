@@ -26,7 +26,7 @@ vi.mock('@code-pushup/utils', async () => {
   };
 });
 
-// Note: memfs files are used for fileExists checks, but the actual import uses the mocked importModule
+// Note: memfs files are only listed to satisfy a system check, value is used from the mocked importModule
 describe('autoloadRc', () => {
   it('prioritise a .ts configuration file', async () => {
     vol.fromJSON(
