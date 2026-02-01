@@ -210,7 +210,6 @@ observerRecords.forEach(e => {
 // API: performance.clearMarks should be type safe
 // Valid examples
 performance.clearMarks();
-// Invalid examples
 performance.clearMarks('name');
 
 // API: performance.clearMeasures should be type safe
