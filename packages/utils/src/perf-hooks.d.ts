@@ -10,7 +10,7 @@ import type {
   PerformanceResourceTiming,
   TimerifyOptions,
   performance,
-} from 'perf_hooks';
+} from 'node:perf_hooks';
 import type { DetailPayloadWithDevtools } from './lib/user-timing-extensibility-api.type';
 
 export type EntryType = 'mark' | 'measure';
