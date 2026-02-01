@@ -138,7 +138,16 @@ describe('ShardedWal Integration', () => {
     shard.close();
 
     shardedWal.finalize();
-    expect(shardedWal.stats.lastRecover).toStrictEqual([]);
+    // When debug is true, lastRecover should contain recovery results
+    expect(shardedWal.stats.lastRecover).toHaveLength(1);
+    expect(shardedWal.stats.lastRecover[0]).toMatchObject({
+      file: expect.stringContaining('test.'),
+      result: expect.objectContaining({
+        records: expect.arrayContaining(['valid1', 'invalid', 'valid2']),
+        errors: [],
+        partialTail: null,
+      }),
+    });
 
     const finalFile = path.join(
       testDir,
