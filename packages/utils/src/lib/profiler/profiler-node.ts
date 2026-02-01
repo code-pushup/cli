@@ -117,7 +117,7 @@ export class NodejsProfiler<
       ...profilerOptions
     } = allButBufferOptions;
 
-    super(profilerOptions);
+    super({ ...profilerOptions, enabled, debug });
 
     const { encodePerfEntry, ...format } = profilerFormat;
 
