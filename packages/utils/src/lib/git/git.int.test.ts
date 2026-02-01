@@ -133,7 +133,9 @@ describe('git utils in a git repo', () => {
     });
 
     it('safeCheckout should throw if history is dirty', async () => {
-      await expect(safeCheckout('master', undefined, emptyGit)).rejects.toThrowError(
+      await expect(
+        safeCheckout('master', undefined, emptyGit),
+      ).rejects.toThrowError(
         `Working directory needs to be clean before we you can proceed. Commit your local changes or stash them: \n ${JSON.stringify(
           {
             not_added: ['new-file.md'],

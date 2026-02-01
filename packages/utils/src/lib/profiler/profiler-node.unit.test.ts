@@ -532,9 +532,11 @@ describe('NodejsProfiler', () => {
       });
 
       const error = new Error('Async test error');
-      await expect(profiler.measureAsync('async-error-test', async () => {
+      await expect(
+        profiler.measureAsync('async-error-test', async () => {
           throw error;
-        })).rejects.toThrowError(error);
+        }),
+      ).rejects.toThrowError(error);
     });
 
     it('should skip measurement when profiler is not active', () => {

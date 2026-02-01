@@ -163,7 +163,9 @@ describe('getSemverTags', () => {
   });
 
   it('should throw if "from" is undefined but "to" is defined', async () => {
-    await expect(getSemverTags({ from: undefined, to: 'a' })).rejects.toThrowError(
+    await expect(
+      getSemverTags({ from: undefined, to: 'a' }),
+    ).rejects.toThrowError(
       'filter needs the "from" option defined to accept the "to" option',
     );
   });

@@ -339,9 +339,9 @@ describe('Profiler', () => {
       throw error;
     });
 
-    expect(() => enabledProfiler.measure('test-event-error', workFn)).toThrowError(
-      error,
-    );
+    expect(() =>
+      enabledProfiler.measure('test-event-error', workFn),
+    ).toThrowError(error);
     expect(workFn).toHaveBeenCalled();
 
     // Verify that performance marks were created even though error occurred

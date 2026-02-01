@@ -88,19 +88,11 @@ const uniq = <T>(v: (T | undefined)[]) => [
 ];
 const ctx = (e: TraceEvent[], base = BASE_TS) => ({
   pid: new Map(
-    [...uniq(e.map(x => x.pid))]
-      .sort()
-      .map((v, i) => [v, 10_001 + i]),
+    [...uniq(e.map(x => x.pid))].sort().map((v, i) => [v, 10_001 + i]),
   ),
-  tid: new Map(
-    [...uniq(e.map(x => x.tid))]
-      .sort()
-      .map((v, i) => [v, i + 1]),
-  ),
+  tid: new Map([...uniq(e.map(x => x.tid))].sort().map((v, i) => [v, i + 1])),
   ts: new Map(
-    [...uniq(e.map(x => x.ts))]
-      .sort()
-      .map((v, i) => [v, base + i * 100]),
+    [...uniq(e.map(x => x.ts))].sort().map((v, i) => [v, base + i * 100]),
   ),
   id: new Map(
     [...uniq(e.map(x => x.id2?.local))]

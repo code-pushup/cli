@@ -575,7 +575,9 @@ ${ansis.red('✖')} Uploading report to portal → ${ansis.red('GraphQL error: I
         `${ansis.cyan('⠋')} ${ansis.blue('$')} npx eslint . --format=json`,
       );
 
-      await expect(command).rejects.toThrowError('Process failed with exit code 1');
+      await expect(command).rejects.toThrowError(
+        'Process failed with exit code 1',
+      );
 
       expect(stdout).toBe(
         `${ansis.red('✖')} ${ansis.red('$')} npx eslint . --format=json\n`,
@@ -831,7 +833,9 @@ ${ansis.cyan('-')} ${ansis.blue('$')} npx eslint . --format=json`,
       );
 
       vi.advanceTimersToNextTimer();
-      await expect(group).rejects.toThrowError('Process failed with exit code 1');
+      await expect(group).rejects.toThrowError(
+        'Process failed with exit code 1',
+      );
 
       expect(stdout).toBe(
         `
@@ -920,7 +924,9 @@ ${ansis.red.bold('Cancelled by SIGINT')}
         return 'ESLint reported 0 problems';
       });
 
-      await expect(group).rejects.toThrowError('Process failed with exit code 2');
+      await expect(group).rejects.toThrowError(
+        'Process failed with exit code 2',
+      );
 
       expect(ansis.strip(stdout)).toBe(
         `
