@@ -323,7 +323,6 @@ new NodejsProfiler<DomainEvents, Tracks>(options: NodejsProfilerOptions<DomainEv
 | `format`                 | `ProfilerFormat<DomainEvents>`          | _required_       | WAL format configuration for sharded write-ahead logging, including `encodePerfEntry` |
 | `measureName`            | `string`                                | _auto-generated_ | Optional folder name for sharding. If not provided, a new group ID will be generated  |
 | `outDir`                 | `string`                                | `'tmp/profiles'` | Output directory for WAL shards and final files                                       |
-| `outBaseName`            | `string`                                | _optional_       | Override the base name for WAL files (overrides format.baseName)                      |
 | `format.encodePerfEntry` | `PerformanceEntryEncoder<DomainEvents>` | _required_       | Function that encodes raw PerformanceEntry objects into domain-specific types         |
 | `captureBufferedEntries` | `boolean`                               | `true`           | Whether to capture performance entries that occurred before observation started       |
 | `flushThreshold`         | `number`                                | `20`             | Threshold for triggering queue flushes based on queue length                          |
