@@ -47,11 +47,11 @@ describe('importModule', () => {
   it('should throw if the file does not exist', async () => {
     await expect(
       importModule({ filepath: 'path/to/non-existent-export.mjs' }),
-    ).rejects.toThrow("File 'path/to/non-existent-export.mjs' does not exist");
+    ).rejects.toThrowError("File 'path/to/non-existent-export.mjs' does not exist");
   });
 
   it('should throw if path is a directory', async () => {
-    await expect(importModule({ filepath: mockDir })).rejects.toThrow(
+    await expect(importModule({ filepath: mockDir })).rejects.toThrowError(
       `Expected '${mockDir}' to be a file`,
     );
   });
@@ -59,7 +59,7 @@ describe('importModule', () => {
   it('should throw if file is not valid JS', async () => {
     await expect(
       importModule({ filepath: path.join(mockDir, 'invalid-js-file.json') }),
-    ).rejects.toThrow(
+    ).rejects.toThrowError(
       `${path.join(mockDir, 'invalid-js-file.json')} is not a valid JS file`,
     );
   });

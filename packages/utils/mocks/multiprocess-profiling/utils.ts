@@ -7,7 +7,6 @@ import type { TraceEvent } from '../../src/lib/profiler/trace-file.type.js';
 import { traceEventWalFormat } from '../../src/lib/profiler/wal-json-trace.js';
 import {
   asOptions,
-  markerPayload,
   trackEntryPayload,
 } from '../../src/lib/user-timing-extensibility-api-utils.js';
 import type {

@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
   type Codec,
-  type InvalidEntry,
   WriteAheadLogFile,
   createTolerantCodec,
   filterValidRecords,
@@ -29,7 +28,7 @@ describe('createTolerantCodec', () => {
         throw new Error('decoding error');
       },
     });
-    expect(() => c.encode(42)).toThrow('encoding error');
+    expect(() => c.encode(42)).toThrowError('encoding error');
     expect(c.decode('42')).toEqual({ __invalid: true, raw: '42' });
   });
 
@@ -176,7 +175,7 @@ describe('WriteAheadLogFile', () => {
   describe('append operations', () => {
     it('throws error when appending without opening', () => {
       const w = wal('/test/a.log');
-      expect(() => w.append('a')).toThrow('WAL not opened');
+      expect(() => w.append('a')).toThrowError('WAL not opened');
     });
 
     it('appends records with encoding', () => {

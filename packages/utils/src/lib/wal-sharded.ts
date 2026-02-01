@@ -54,19 +54,6 @@ export function getShardId(): string {
 }
 
 /**
- * NOTE: this helper is only used in this file. The rest of the repo avoids sync methods so it is not reusable.
- * Attempts to remove a directory if it exists and is empty, ignoring errors if removal fails.
- * @param dirPath - The directory path to remove
- */
-function ensureDirectoryRemoveSync(dirPath: string): void {
-  try {
-    fs.rmdirSync(dirPath);
-  } catch {
-    // Directory might not be empty or already removed, ignore
-  }
-}
-
-/**
  * Sharded Write-Ahead Log manager for coordinating multiple WAL shards.
  * Handles distributed logging across multiple processes/files with atomic finalization.
  */
@@ -89,6 +76,7 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
     file: string;
     result: RecoverResult<T | InvalidEntry<string>>;
   }[] = [];
+  #createdShardFiles: string[] = [];
 
   /**
    * Initialize the origin PID environment variable if not already set.
@@ -278,12 +266,14 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
 
   shard() {
     this.assertActive();
+    const filePath = path.join(
+      this.#dir,
+      this.groupId,
+      this.getShardedFileName(getShardId()),
+    );
+    this.#createdShardFiles.push(filePath);
     return new WriteAheadLogFile({
-      file: path.join(
-        this.#dir,
-        this.groupId,
-        this.getShardedFileName(getShardId()),
-      ),
+      file: filePath,
       codec: this.#format.codec,
     });
   }
@@ -340,9 +330,9 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
         this.getFinalFilePath(),
         this.#format.finalizer(filterValidRecords(records), opt),
       );
-    } catch (e) {
+    } catch (error) {
       throw extendError(
-        e,
+        error,
         'Could not finalize sharded wal. Finalizer method in format throws.',
         { appendMessage: true },
       );

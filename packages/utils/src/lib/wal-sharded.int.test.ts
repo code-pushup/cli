@@ -4,10 +4,8 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { PROFILER_SHARDER_ID_ENV_VAR } from './profiler/constants.js';
 import { ShardedWal } from './wal-sharded.js';
 import {
-  type InvalidEntry,
   type WalFormat,
   type WalRecord,
-  createTolerantCodec,
   stringCodec,
 } from './wal.js';
 

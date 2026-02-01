@@ -82,7 +82,7 @@ describe('git utils in a git repo', () => {
     it('safeCheckout should throw if a given branch does not exist', async () => {
       await expect(
         safeCheckout('non-existing-branch', undefined, emptyGit),
-      ).rejects.toThrow(
+      ).rejects.toThrowError(
         "pathspec 'non-existing-branch' did not match any file(s) known to git",
       );
     });
@@ -133,7 +133,7 @@ describe('git utils in a git repo', () => {
     });
 
     it('safeCheckout should throw if history is dirty', async () => {
-      await expect(safeCheckout('master', undefined, emptyGit)).rejects.toThrow(
+      await expect(safeCheckout('master', undefined, emptyGit)).rejects.toThrowError(
         `Working directory needs to be clean before we you can proceed. Commit your local changes or stash them: \n ${JSON.stringify(
           {
             not_added: ['new-file.md'],

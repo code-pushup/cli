@@ -72,7 +72,7 @@ describe('getSortableAuditByRef', () => {
           },
         ],
       ),
-    ).toThrow('Audit pancake-coverage is not present in coverage');
+    ).toThrowError('Audit pancake-coverage is not present in coverage');
   });
 });
 
@@ -174,7 +174,7 @@ describe('getSortableGroupByRef', () => {
           },
         ],
       ),
-    ).toThrow('Group test-coverage is not present in coverage');
+    ).toThrowError('Group test-coverage is not present in coverage');
   });
 });
 

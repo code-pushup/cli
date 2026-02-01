@@ -144,12 +144,12 @@ describe('pluginUrlContextSchema', () => {
     [{ urlCount: 2 }, /expected record/i],
     [{ urlCount: 2, weights: { 1: 1 } }, /weights count must match/i],
   ])('should throw error for invalid context: %j', (pattern, expectedError) => {
-    expect(() => pluginUrlContextSchema.parse(pattern)).toThrow(expectedError);
+    expect(() => pluginUrlContextSchema.parse(pattern)).toThrowError(expectedError);
   });
 
   it('should accept valid context', () => {
     expect(() =>
       pluginUrlContextSchema.parse({ urlCount: 2, weights: { 1: 1, 2: 1 } }),
-    ).not.toThrow();
+    ).not.toThrowError();
   });
 });

@@ -6,9 +6,7 @@ import { PROFILER_SHARDER_ID_ENV_VAR } from './profiler/constants.js';
 import { ShardedWal } from './wal-sharded.js';
 import {
   type WalFormat,
-  type WalRecord,
   WriteAheadLogFile,
-  createTolerantCodec,
   parseWalFormat,
   stringCodec,
 } from './wal.js';
@@ -56,6 +54,7 @@ describe('ShardedWal', () => {
     });
 
     it('should use groupId from env var when measureNameEnvVar is set', () => {
+      // eslint-disable-next-line functional/immutable-data
       process.env.CP_PROFILER_MEASURE_NAME = 'from-env';
       const sw = getShardedWal({
         measureNameEnvVar: 'CP_PROFILER_MEASURE_NAME',
@@ -65,7 +64,7 @@ describe('ShardedWal', () => {
     });
 
     it('should set env var when measureNameEnvVar is provided and unset', () => {
-      // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
+      // eslint-disable-next-line functional/immutable-data
       delete process.env.CP_PROFILER_MEASURE_NAME;
       const sw = getShardedWal({
         measureNameEnvVar: 'CP_PROFILER_MEASURE_NAME',
@@ -263,7 +262,7 @@ describe('ShardedWal', () => {
       });
 
       // Instance won't be coordinator, so cleanup() should throw
-      expect(() => sw.cleanup()).toThrow(
+      expect(() => sw.cleanup()).toThrowError(
         'cleanup() can only be called by coordinator',
       );
     });
@@ -304,7 +303,7 @@ describe('ShardedWal', () => {
       );
 
       // cleanupIfCoordinator won't throw even if files don't exist
-      expect(() => sw.cleanupIfCoordinator()).not.toThrow();
+      expect(() => sw.cleanupIfCoordinator()).not.toThrowError();
     });
 
     it('should ignore directory removal failures during cleanup', () => {
@@ -319,7 +318,7 @@ describe('ShardedWal', () => {
         format: { baseName: 'test', walExtension: '.log' },
       });
 
-      expect(() => sw.cleanup()).not.toThrow();
+      expect(() => sw.cleanup()).not.toThrowError();
       expect(
         vol.readFileSync('/shards/20231114-221320-000/keep.txt', 'utf8'),
       ).toBe('keep');
@@ -402,7 +401,7 @@ describe('ShardedWal', () => {
       sw.cleanup();
       expect(sw.getState()).toBe('cleaned');
 
-      expect(() => sw.cleanup()).not.toThrow();
+      expect(() => sw.cleanup()).not.toThrowError();
       expect(sw.getState()).toBe('cleaned');
     });
 
@@ -419,7 +418,7 @@ describe('ShardedWal', () => {
 
       sw.finalize();
 
-      expect(() => sw.shard()).toThrow('WAL is finalized, cannot modify');
+      expect(() => sw.shard()).toThrowError('WAL is finalized, cannot modify');
     });
 
     it('should prevent shard creation after cleanup', () => {
@@ -449,7 +448,7 @@ describe('ShardedWal', () => {
 
       sw.cleanupIfCoordinator();
 
-      expect(() => sw.shard()).toThrow('WAL is cleaned, cannot modify');
+      expect(() => sw.shard()).toThrowError('WAL is cleaned, cannot modify');
     });
 
     it('should make finalize idempotent', () => {

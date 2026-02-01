@@ -159,7 +159,7 @@ ${ansis.red('Failed to load config')}
             "ENOENT: no such file or directory, open '.code-pushup/eslint/results.json'",
           );
         }),
-      ).rejects.toThrow(
+      ).rejects.toThrowError(
         "ENOENT: no such file or directory, open '.code-pushup/eslint/results.json'",
       );
       expect(stdout).toBe(
@@ -349,7 +349,7 @@ ${ansis.magenta('└')} ${ansis.green(`Total line coverage is ${ansis.bold('82%'
 
       expect(stdout).toBe(`${ansis.cyan('⠋')} Uploading report to portal`);
 
-      await expect(task).rejects.toThrow('GraphQL error: Invalid API key');
+      await expect(task).rejects.toThrowError('GraphQL error: Invalid API key');
 
       expect(stdout).toBe(
         `${ansis.red('✖')} Uploading report to portal → ${ansis.red('GraphQL error: Invalid API key')}\n`,
@@ -502,7 +502,7 @@ ${ansis.green('✔')} Uploaded report to portal ${ansis.gray('(42 ms)')}
       expect(stdout).toBe(`${ansis.cyan('⠋')} Uploading report to portal`);
 
       vi.advanceTimersByTime(42);
-      await expect(task).rejects.toThrow('GraphQL error: Invalid API key');
+      await expect(task).rejects.toThrowError('GraphQL error: Invalid API key');
 
       expect(stdout).toBe(
         `
@@ -575,7 +575,7 @@ ${ansis.red('✖')} Uploading report to portal → ${ansis.red('GraphQL error: I
         `${ansis.cyan('⠋')} ${ansis.blue('$')} npx eslint . --format=json`,
       );
 
-      await expect(command).rejects.toThrow('Process failed with exit code 1');
+      await expect(command).rejects.toThrowError('Process failed with exit code 1');
 
       expect(stdout).toBe(
         `${ansis.red('✖')} ${ansis.red('$')} npx eslint . --format=json\n`,
@@ -831,7 +831,7 @@ ${ansis.cyan('-')} ${ansis.blue('$')} npx eslint . --format=json`,
       );
 
       vi.advanceTimersToNextTimer();
-      await expect(group).rejects.toThrow('Process failed with exit code 1');
+      await expect(group).rejects.toThrowError('Process failed with exit code 1');
 
       expect(stdout).toBe(
         `
@@ -920,7 +920,7 @@ ${ansis.red.bold('Cancelled by SIGINT')}
         return 'ESLint reported 0 problems';
       });
 
-      await expect(group).rejects.toThrow('Process failed with exit code 2');
+      await expect(group).rejects.toThrowError('Process failed with exit code 2');
 
       expect(ansis.strip(stdout)).toBe(
         `
@@ -950,7 +950,7 @@ ${ansis.red.bold('Cancelled by SIGINT')}
           await logger.group('Inner group', async () => 'Inner group complete');
           return 'Outer group complete';
         }),
-      ).rejects.toThrow(
+      ).rejects.toThrowError(
         'Internal Logger error - nested groups are not supported',
       );
     });
@@ -963,7 +963,7 @@ ${ansis.red.bold('Cancelled by SIGINT')}
           await logger.group('Some group', async () => 'Group completed');
           return 'Async process completed';
         }),
-      ).rejects.toThrow(
+      ).rejects.toThrowError(
         'Internal Logger error - creating group in active spinner is not supported',
       );
     });
@@ -976,7 +976,7 @@ ${ansis.red.bold('Cancelled by SIGINT')}
           logger.task('Task 1', async () => 'DONE'),
           logger.task('Task 2', async () => 'DONE'),
         ]),
-      ).rejects.toThrow(
+      ).rejects.toThrowError(
         'Internal Logger error - concurrent spinners are not supported',
       );
     });
@@ -990,7 +990,7 @@ ${ansis.red.bold('Cancelled by SIGINT')}
         await logger.task('Task 2', async () => 'DONE');
         return 'DONE';
       }),
-    ).rejects.toThrow(
+    ).rejects.toThrowError(
       'Internal Logger error - concurrent spinners are not supported',
     );
   });

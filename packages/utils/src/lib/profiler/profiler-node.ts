@@ -9,8 +9,7 @@ import { objectToEntries } from '../transform.js';
 import {
   asOptions,
   markerPayload,
-} from '../user-timing-extensibility-api-utils.js';
-import { errorToMarkerPayload } from '../user-timing-extensibility-api-utils.js';
+ errorToMarkerPayload } from '../user-timing-extensibility-api-utils.js';
 import type {
   ActionTrackEntryPayload,
   MarkerPayload,
@@ -110,44 +109,27 @@ export class NodejsProfiler<
    */
 
   constructor(options: NodejsProfilerOptions<DomainEvents, Tracks>) {
-    // Pick ProfilerBufferOptions
     const {
       captureBufferedEntries,
       flushThreshold,
       maxQueueSize,
-      ...allButBufferOptions
-    } = options;
-    // Pick ProfilerPersistOptions
-    const {
       format: profilerFormat,
       measureName,
       outDir = PROFILER_PERSIST_OUT_DIR,
       enabled,
       debug,
       ...profilerOptions
-    } = allButBufferOptions;
+    } = options;
 
     super({ ...profilerOptions, enabled, debug });
 
-    const { encodePerfEntry, ...format } = profilerFormat;
-
-    this.#sharder = new ShardedWal<DomainEvents>({
-      debug,
-      dir: process.env[PROFILER_OUT_DIR_ENV_VAR] ?? outDir,
-      format: parseWalFormat<DomainEvents>(format),
-      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
-      measureNameEnvVar: PROFILER_MEASURE_NAME_ENV_VAR,
-      groupId: measureName,
-    });
-
-    this.#shard = this.#sharder.shard();
-    this.#performanceObserverSink = new PerformanceObserverSink({
-      sink: this.#shard,
-      encodePerfEntry,
+    this.#initializeStorage(profilerFormat, {
       captureBufferedEntries,
       flushThreshold,
       maxQueueSize,
-      debug: this.isDebugMode(),
+      measureName,
+      outDir,
+      debug,
     });
 
     this.#unsubscribeExitHandlers = subscribeProcessExit({
@@ -167,6 +149,40 @@ export class NodejsProfiler<
     if (initialEnabled) {
       this.transition('running');
     }
+  }
+
+  #initializeStorage(
+    profilerFormat: ProfilerFormat<DomainEvents>,
+    options: {
+      captureBufferedEntries?: boolean;
+      flushThreshold?: number;
+      maxQueueSize?: number;
+      measureName?: string;
+      outDir: string;
+      debug?: boolean;
+    },
+  ) {
+    const { encodePerfEntry, ...format } = profilerFormat;
+    const { captureBufferedEntries, flushThreshold, maxQueueSize, measureName, outDir, debug } = options;
+
+    this.#sharder = new ShardedWal<DomainEvents>({
+      debug,
+      dir: process.env[PROFILER_OUT_DIR_ENV_VAR] ?? outDir,
+      format: parseWalFormat<DomainEvents>(format),
+      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
+      measureNameEnvVar: PROFILER_MEASURE_NAME_ENV_VAR,
+      groupId: measureName,
+    });
+
+    this.#shard = this.#sharder.shard();
+    this.#performanceObserverSink = new PerformanceObserverSink({
+      sink: this.#shard,
+      encodePerfEntry,
+      captureBufferedEntries,
+      flushThreshold,
+      maxQueueSize,
+      debug: this.isDebugMode(),
+    });
   }
 
   /**

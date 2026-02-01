@@ -258,11 +258,11 @@ describe('NodejsProfiler', () => {
       // shardPath points to a JSONL file, use loadAndOmitTraceJsonl
       await expect(
         loadAndOmitTraceJsonl(profiler.stats.shardPath as `${string}.jsonl`),
-      ).resolves.not.toThrow();
+      ).resolves.not.toThrowError();
 
       await expect(
         loadAndOmitTraceJson(profiler.stats.finalFilePath),
-      ).resolves.not.toThrow();
+      ).resolves.not.toThrowError();
     });
 
     it('should NOT initialize as coordinator if env vars is defined', async () => {
@@ -276,10 +276,10 @@ describe('NodejsProfiler', () => {
       // shardPath points to a JSONL file, use loadAndOmitTraceJsonl
       await expect(
         loadAndOmitTraceJsonl(profiler.stats.shardPath as `${string}.jsonl`),
-      ).resolves.not.toThrow();
+      ).resolves.not.toThrowError();
       await expect(
         loadAndOmitTraceJson(profiler.stats.finalFilePath),
-      ).rejects.toThrow('no such file or directory');
+      ).rejects.toThrowError('no such file or directory');
     });
   });
 
@@ -380,10 +380,10 @@ describe('NodejsProfiler', () => {
 
       profiler.close();
 
-      expect(() => profiler.setEnabled(true)).toThrow(
+      expect(() => profiler.setEnabled(true)).toThrowError(
         'Profiler already closed',
       );
-      expect(() => profiler.setEnabled(false)).toThrow(
+      expect(() => profiler.setEnabled(false)).toThrowError(
         'Profiler already closed',
       );
 
@@ -397,7 +397,7 @@ describe('NodejsProfiler', () => {
         enabled: false,
       });
 
-      expect(() => profiler.forceTransition('invalid')).toThrow(
+      expect(() => profiler.forceTransition('invalid')).toThrowError(
         'Invalid transition: idle -> invalid',
       );
     });
@@ -510,7 +510,7 @@ describe('NodejsProfiler', () => {
       const profiler = createProfiler({
         measureName: 'flush-running',
       });
-      expect(() => profiler.flush()).not.toThrow();
+      expect(() => profiler.flush()).not.toThrowError();
     });
 
     it('should propagate errors from measure work function', () => {
@@ -523,7 +523,7 @@ describe('NodejsProfiler', () => {
         profiler.measure('error-test', () => {
           throw error;
         });
-      }).toThrow(error);
+      }).toThrowError(error);
     });
 
     it('should propagate errors from measureAsync work function', async () => {
@@ -532,11 +532,9 @@ describe('NodejsProfiler', () => {
       });
 
       const error = new Error('Async test error');
-      await expect(async () => {
-        await profiler.measureAsync('async-error-test', async () => {
+      await expect(profiler.measureAsync('async-error-test', async () => {
           throw error;
-        });
-      }).rejects.toThrow(error);
+        })).rejects.toThrowError(error);
     });
 
     it('should skip measurement when profiler is not active', () => {
@@ -582,7 +580,7 @@ describe('NodejsProfiler', () => {
 
       expect(() => {
         profiler.marker('inactive-marker');
-      }).not.toThrow();
+      }).not.toThrowError();
     });
 
     it('base Profiler behavior: should always be active in base profiler', () => {
@@ -606,7 +604,7 @@ describe('NodejsProfiler', () => {
 
       expect(() => {
         profiler.marker('base-marker');
-      }).not.toThrow();
+      }).not.toThrowError();
     });
   });
 
@@ -717,7 +715,7 @@ describe('NodejsProfiler', () => {
     it('installs exit handlers on construction', () => {
       expect(() =>
         createSimpleProfiler({ measureName: 'exit-handlers-install' }),
-      ).not.toThrow();
+      ).not.toThrowError();
 
       expect(mockSubscribeProcessExit).toHaveBeenCalledWith({
         onError: expect.any(Function),
@@ -744,7 +742,7 @@ describe('NodejsProfiler', () => {
         createSimpleProfiler({
           measureName: 'exit-uncaught-exception',
         }),
-      ).not.toThrow();
+      ).not.toThrowError();
 
       const testError = new Error('Test fatal error');
       handlers.onError?.(testError, 'uncaughtException');

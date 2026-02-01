@@ -32,7 +32,7 @@ describe('getCurrentBranchOrTag', () => {
     it('getCurrentBranchOrTag should throw if no branch or tag is given', async () => {
       await expect(
         getCurrentBranchOrTag(currentBranchOrTagGitMock),
-      ).rejects.toThrow('No names found, cannot describe anything');
+      ).rejects.toThrowError('No names found, cannot describe anything');
     });
   });
 
@@ -104,7 +104,7 @@ describe('getHashes', () => {
 
   describe('without a branch and commits', () => {
     it('should throw', async () => {
-      await expect(getHashes({}, gitMock)).rejects.toThrow(
+      await expect(getHashes({}, gitMock)).rejects.toThrowError(
         "your current branch 'main' does not have any commits yet",
       );
     });
@@ -165,7 +165,7 @@ describe('getHashes', () => {
     it('should throw if "from" is undefined but "to" is defined', async () => {
       await expect(
         getHashes({ from: undefined, to: 'a' }, gitMock),
-      ).rejects.toThrow(
+      ).rejects.toThrowError(
         'filter needs the "from" option defined to accept the "to" option.',
       );
     });

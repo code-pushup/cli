@@ -88,22 +88,22 @@ const uniq = <T>(v: (T | undefined)[]) => [
 ];
 const ctx = (e: TraceEvent[], base = BASE_TS) => ({
   pid: new Map(
-    uniq(e.map(x => x.pid))
+    [...uniq(e.map(x => x.pid))]
       .sort()
-      .map((v, i) => [v, 10001 + i]),
+      .map((v, i) => [v, 10_001 + i]),
   ),
   tid: new Map(
-    uniq(e.map(x => x.tid))
+    [...uniq(e.map(x => x.tid))]
       .sort()
       .map((v, i) => [v, i + 1]),
   ),
   ts: new Map(
-    uniq(e.map(x => x.ts))
+    [...uniq(e.map(x => x.ts))]
       .sort()
       .map((v, i) => [v, base + i * 100]),
   ),
   id: new Map(
-    uniq(e.map(x => x.id2?.local))
+    [...uniq(e.map(x => x.id2?.local))]
       .sort()
       .map((v, i) => [v, `0x${(i + 1).toString(16)}`]),
   ),
@@ -165,7 +165,7 @@ export const normalizeTraceEvents = (
   events: TraceEvent[],
   { baseTimestampUs = BASE_TS } = {},
 ) => {
-  if (!events.length) return [];
+  if (events.length === 0) return [];
   const decoded = events.map(decodeEvent);
   const c = ctx(decoded, baseTimestampUs);
   return decoded.map(e => normalizeEvent(e, c));
