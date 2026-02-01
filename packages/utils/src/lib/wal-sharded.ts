@@ -365,7 +365,7 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
       return;
     }
 
-    this.getCreatedShardFiles()
+    this.shardFiles()
       .filter(f => fs.existsSync(f))
       .forEach(f => {
         fs.unlinkSync(f);

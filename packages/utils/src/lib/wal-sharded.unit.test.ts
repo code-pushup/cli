@@ -471,11 +471,6 @@ describe('ShardedWal', () => {
     });
 
     it('should prevent finalize after cleanup', () => {
-      vol.fromJSON({
-        '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.1.log':
-          'content1',
-      });
-
       // Generate the instance ID that will be used by the constructor
       // The constructor increments ShardedWal.instanceCount, so we need to
       // generate the ID using the value that will be used (current + 1)
