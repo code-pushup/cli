@@ -43,14 +43,12 @@ function validateGroupId(groupId: string): void {
 
   // Reject path separators (both forward and backward slashes)
   if (groupId.includes('/') || groupId.includes('\\')) {
-    throw new Error(
-      'groupId cannot contain path separators (/ or \\): path traversal detected',
-    );
+    throw new Error('groupId cannot contain path separators (/ or \\)');
   }
 
   // Reject relative path components
   if (groupId === '..' || groupId === '.') {
-    throw new Error('groupId cannot be "." or "..": path traversal detected');
+    throw new Error('groupId cannot be "." or ".."');
   }
 
   // Reject null bytes which can be used to bypass validation

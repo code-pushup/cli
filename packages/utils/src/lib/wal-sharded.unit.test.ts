@@ -77,13 +77,13 @@ describe('ShardedWal', () => {
   describe('path traversal validation', () => {
     it('should reject groupId with forward slashes', () => {
       expect(() => getShardedWal({ groupId: '../etc/passwd' })).toThrow(
-        'groupId cannot contain path separators',
+        'groupId cannot contain path separators (/ or \\)',
       );
     });
 
     it('should reject groupId with backward slashes', () => {
       expect(() => getShardedWal({ groupId: '..\\windows\\system32' })).toThrow(
-        'groupId cannot contain path separators',
+        'groupId cannot contain path separators (/ or \\)',
       );
     });
 
@@ -134,7 +134,7 @@ describe('ShardedWal', () => {
         getShardedWal({
           measureNameEnvVar: 'CP_PROFILER_MEASURE_NAME',
         }),
-      ).toThrow('groupId cannot contain path separators');
+      ).toThrow('groupId cannot contain path separators (/ or \\)');
     });
   });
 
