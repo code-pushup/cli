@@ -45,10 +45,15 @@ export function getProfilerConfig(
  */
 export async function createBufferedEvents(): Promise<void> {
   const bM1 = `buffered-mark-${process.pid}`;
-  performance.mark(bM1, asOptions(trackEntryPayload({
-    ...getTrackConfig(),
-    color: 'tertiary'
-  })));
+  performance.mark(
+    bM1,
+    asOptions(
+      trackEntryPayload({
+        ...getTrackConfig(),
+        color: 'tertiary',
+      }),
+    ),
+  );
   const intervalDelay = Math.floor(Math.random() * 50) + 25;
   await new Promise(resolve => setTimeout(resolve, intervalDelay));
   performance.measure(`buffered-${process.pid}`, {

@@ -125,7 +125,7 @@ export type PerformanceObserverOptions<T> = {
    * When true, encode failures create performance marks for debugging.
    *
    */
-  debug: boolean
+  debug: boolean;
 };
 
 /**

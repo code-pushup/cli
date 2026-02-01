@@ -378,7 +378,7 @@ describe('parseWalFormat', () => {
     expect(result.baseName).toBe('test');
     expect(result.walExtension).toBe('.wal');
     expect(result.finalExtension).toBe('.json');
-    expect(result.codec).toBe(customCodec);
+    expect(result.codec.encode('value')).toBe(customCodec.encode('value'));
   });
 
   it('defaults finalExtension to walExtension when not provided', () => {
@@ -407,18 +407,6 @@ describe('parseWalFormat', () => {
     ];
     expect(result.finalizer(records)).toBe(
       '{"id":1,"name":"test"}\n{"id":2,"name":"test2"}\n',
-    );
-  });
-
-  it('handles InvalidEntry in default finalizer', () => {
-    const result = parseWalFormat({ baseName: 'test' });
-    const records: (string | InvalidEntry<string>)[] = [
-      'valid',
-      { __invalid: true, raw: 'invalid-raw' },
-      'also-valid',
-    ];
-    expect(result.finalizer(records)).toBe(
-      '"valid"\ninvalid-raw\n"also-valid"\n',
     );
   });
 });

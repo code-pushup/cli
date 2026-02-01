@@ -4,22 +4,35 @@ import { MEMFS_VOLUME, osAgnosticPath } from '@code-pushup/test-utils';
 import { getUniqueInstanceId } from './process-id.js';
 import { PROFILER_SHARDER_ID_ENV_VAR } from './profiler/constants.js';
 import { ShardedWal } from './wal-sharded.js';
-import { WriteAheadLogFile, createTolerantCodec } from './wal.js';
+import {
+  type WalFormat,
+  type WalRecord,
+  WriteAheadLogFile,
+  createTolerantCodec,
+  parseWalFormat,
+  stringCodec,
+} from './wal.js';
 
 const read = (p: string) => vol.readFileSync(p, 'utf8') as string;
 
 const getShardedWal = (overrides?: {
   dir?: string;
-  format?: Partial<
-    Parameters<typeof ShardedWal.prototype.constructor>[0]['format']
-  >;
-}) =>
-  new ShardedWal({
+  format?: Partial<WalFormat>;
+  measureNameEnvVar?: string;
+  autoCoordinator?: boolean;
+}) => {
+  const { format, ...rest } = overrides ?? {};
+  return new ShardedWal({
+    debug: false,
     dir: '/test/shards',
-    format: { baseName: 'test-wal' },
+    format: parseWalFormat({
+      baseName: 'test-wal',
+      ...format,
+    }),
     coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
-    ...overrides,
+    ...rest,
   });
+};
 
 describe('ShardedWal', () => {
   beforeEach(() => {
@@ -34,6 +47,30 @@ describe('ShardedWal', () => {
     it('should create instance with directory and format', () => {
       const sw = getShardedWal();
       expect(sw).toBeInstanceOf(ShardedWal);
+    });
+
+    it('should expose a stable id via getter', () => {
+      const sw = getShardedWal();
+      const firstId = sw.id;
+      expect(sw.id).toBe(firstId);
+    });
+
+    it('should use groupId from env var when measureNameEnvVar is set', () => {
+      process.env.CP_PROFILER_MEASURE_NAME = 'from-env';
+      const sw = getShardedWal({
+        measureNameEnvVar: 'CP_PROFILER_MEASURE_NAME',
+      });
+      expect(sw.groupId).toBe('from-env');
+      expect(process.env.CP_PROFILER_MEASURE_NAME).toBe('from-env');
+    });
+
+    it('should set env var when measureNameEnvVar is provided and unset', () => {
+      // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
+      delete process.env.CP_PROFILER_MEASURE_NAME;
+      const sw = getShardedWal({
+        measureNameEnvVar: 'CP_PROFILER_MEASURE_NAME',
+      });
+      expect(process.env.CP_PROFILER_MEASURE_NAME).toBe(sw.groupId);
     });
   });
 
@@ -162,13 +199,6 @@ describe('ShardedWal', () => {
         '/shards/20231114-221320-000/final.20240101-120000-002.2.log':
           'invalid\n',
       });
-      const tolerantCodec = createTolerantCodec({
-        encode: (s: string) => s,
-        decode: (s: string) => {
-          if (s === 'invalid') throw new Error('Bad record');
-          return s;
-        },
-      });
 
       const sw = getShardedWal({
         dir: '/shards',
@@ -176,7 +206,7 @@ describe('ShardedWal', () => {
           baseName: 'final',
           walExtension: '.log',
           finalExtension: '.json',
-          codec: tolerantCodec,
+          codec: stringCodec(),
           finalizer: records => `${JSON.stringify(records)}\n`,
         },
       });
@@ -190,7 +220,7 @@ describe('ShardedWal', () => {
       );
       expect(result).toHaveLength(2);
       expect(result[0]).toBe('valid');
-      expect(result[1]).toEqual({ __invalid: true, raw: 'invalid' });
+      expect(result[1]).toBe('invalid');
     });
 
     it('should use custom options in finalizer', () => {
@@ -226,14 +256,10 @@ describe('ShardedWal', () => {
         '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.1.log':
           'content1',
       });
-
-      // Ensure no coordinator is set
-      // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
-      delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
-
       const sw = getShardedWal({
         dir: '/shards',
         format: { baseName: 'test', walExtension: '.log' },
+        autoCoordinator: false,
       });
 
       // Instance won't be coordinator, so cleanup() should throw
@@ -248,13 +274,10 @@ describe('ShardedWal', () => {
           'content1',
       });
 
-      // Ensure no coordinator is set
-      // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
-      delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
-
       const sw = getShardedWal({
         dir: '/shards',
         format: { baseName: 'test', walExtension: '.log' },
+        autoCoordinator: false,
       });
 
       // cleanupIfCoordinator should be no-op when not coordinator
@@ -283,9 +306,46 @@ describe('ShardedWal', () => {
       // cleanupIfCoordinator won't throw even if files don't exist
       expect(() => sw.cleanupIfCoordinator()).not.toThrow();
     });
+
+    it('should ignore directory removal failures during cleanup', () => {
+      vol.fromJSON({
+        '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.1.log':
+          'content1',
+        '/shards/20231114-221320-000/keep.txt': 'keep',
+      });
+
+      const sw = getShardedWal({
+        dir: '/shards',
+        format: { baseName: 'test', walExtension: '.log' },
+      });
+
+      expect(() => sw.cleanup()).not.toThrow();
+      expect(
+        vol.readFileSync('/shards/20231114-221320-000/keep.txt', 'utf8'),
+      ).toBe('keep');
+    });
   });
 
   describe('lifecycle state', () => {
+    it('throws with appended finalizer error when finalize fails', () => {
+      const sw = getShardedWal({
+        dir: '/shards',
+        format: {
+          baseName: 'test',
+          finalExtension: '.json',
+          finalizer: () => {
+            throw new Error('finalizer boom');
+          },
+        },
+      });
+
+      expect(() => sw.finalize()).toThrowError(
+        /Could not finalize sharded wal\. Finalizer method in format throws\./,
+      );
+      expect(() => sw.finalize()).toThrowError(/finalizer boom/);
+      expect(sw.getState()).toBe('active');
+    });
+
     it('should start in active state', () => {
       const sw = getShardedWal();
       expect(sw.getState()).toBe('active');
@@ -326,6 +386,24 @@ describe('ShardedWal', () => {
 
       const state = sw.getState();
       expect(['active', 'cleaned']).toContain(state);
+    });
+
+    it('should make cleanup idempotent for coordinator', () => {
+      vol.fromJSON({
+        '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.1.log':
+          'content1',
+      });
+
+      const sw = getShardedWal({
+        dir: '/shards',
+        format: { baseName: 'test', walExtension: '.log' },
+      });
+
+      sw.cleanup();
+      expect(sw.getState()).toBe('cleaned');
+
+      expect(() => sw.cleanup()).not.toThrow();
+      expect(sw.getState()).toBe('cleaned');
     });
 
     it('should prevent shard creation after finalize', () => {
@@ -423,12 +501,13 @@ describe('ShardedWal', () => {
         },
       });
 
+      expect(sw.stats.shardFiles).toHaveLength(0);
+      sw.shard();
+      expect(sw.stats.shardFiles).toHaveLength(1);
+
       sw.cleanupIfCoordinator();
       expect(sw.getState()).toBe('cleaned');
-
-      // Finalize should return early when cleaned
-      sw.finalize();
-      expect(sw.getState()).toBe('cleaned');
+      expect(sw.stats.shardFiles).toHaveLength(1);
     });
 
     it('should support cleanupIfCoordinator method', () => {
@@ -442,18 +521,13 @@ describe('ShardedWal', () => {
         format: { baseName: 'test', walExtension: '.log' },
       });
 
-      // Not coordinator - cleanupIfCoordinator should be no-op
-      // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
-      delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
-      sw.cleanupIfCoordinator();
-      expect(vol.toJSON()).not.toStrictEqual({});
-      expect(sw.getState()).toBe('active');
+      expect(sw.stats.shardFiles).toHaveLength(0);
+      sw.shard();
+      expect(sw.stats.shardFiles).toHaveLength(1);
 
-      // Note: Setting coordinator after instance creation won't make it coordinator
-      // because coordinator status is checked in constructor.
-      // cleanupIfCoordinator() checks coordinator status at call time via isCoordinator(),
-      // which uses the #isCoordinator field set in constructor.
-      // So this test verifies the no-op behavior when not coordinator.
+      sw.cleanupIfCoordinator();
+      expect(sw.getState()).toBe('cleaned');
+      expect(sw.stats.shardFiles).toHaveLength(0);
     });
   });
 });

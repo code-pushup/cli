@@ -1,7 +1,12 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { WriteAheadLogFile, stringCodec, type WalRecord, type Codec } from './wal.js';
+import {
+  type Codec,
+  type WalRecord,
+  WriteAheadLogFile,
+  stringCodec,
+} from './wal.js';
 
 describe('WriteAheadLogFile Integration', () => {
   const testDir = path.join(process.cwd(), 'tmp', 'int', 'utils', 'wal');
@@ -119,5 +124,4 @@ describe('WriteAheadLogFile Integration', () => {
     expect(recovered.errors).toEqual([]);
     expect(recovered.partialTail).toBeNull();
   });
-
 });

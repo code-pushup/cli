@@ -2,17 +2,19 @@ import * as fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { threadId } from 'node:worker_threads';
+import { extendError } from './errors.js';
 import {
   type Counter,
   getUniqueInstanceId,
   getUniqueTimeId,
 } from './process-id.js';
 import {
+  type InvalidEntry,
+  type RecoverResult,
   type WalFormat,
   type WalRecord,
   WriteAheadLogFile,
   filterValidRecords,
-  parseWalFormat,
 } from './wal.js';
 
 /**
@@ -78,10 +80,15 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
     },
   });
   readonly groupId = getUniqueTimeId();
+  readonly #debug = false;
   readonly #format: WalFormat<T>;
   readonly #dir: string = process.cwd();
   readonly #coordinatorIdEnvVar: string;
   #state: 'active' | 'finalized' | 'cleaned' = 'active';
+  #lastRecovery: {
+    file: string;
+    result: RecoverResult<T | InvalidEntry<string>>;
+  }[] = [];
 
   /**
    * Initialize the origin PID environment variable if not already set.
@@ -118,17 +125,26 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
    * @param opt.format - WAL format configuration
    * @param opt.groupId - Group ID for sharding (defaults to generated group ID)
    * @param opt.coordinatorIdEnvVar - Environment variable name for storing coordinator ID (defaults to CP_SHARDED_WAL_COORDINATOR_ID)
+   * @param opt.autoCoordinator - Whether to auto-set the coordinator ID on construction (defaults to true)
    * @param opt.measureNameEnvVar - Environment variable name for coordinating groupId across processes (optional)
    */
   constructor(opt: {
+    debug: boolean;
     dir?: string;
-    format: Partial<WalFormat<T>>;
+    format: WalFormat<T>;
     groupId?: string;
     coordinatorIdEnvVar: string;
+    autoCoordinator?: boolean;
     measureNameEnvVar?: string;
   }) {
-    const { dir, format, groupId, coordinatorIdEnvVar, measureNameEnvVar } =
-      opt;
+    const {
+      dir,
+      format,
+      groupId,
+      coordinatorIdEnvVar,
+      autoCoordinator = true,
+      measureNameEnvVar,
+    } = opt;
 
     // Determine groupId: use provided, then env var, or generate
     // eslint-disable-next-line functional/no-let
@@ -154,8 +170,12 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
     if (dir) {
       this.#dir = dir;
     }
-    this.#format = parseWalFormat<T>(format);
+    this.#format = format;
     this.#coordinatorIdEnvVar = coordinatorIdEnvVar;
+
+    if (autoCoordinator) {
+      ShardedWal.setCoordinatorProcess(this.#coordinatorIdEnvVar, this.#id);
+    }
   }
 
   /**
@@ -178,17 +198,6 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
    */
   isCoordinator(): boolean {
     return ShardedWal.isCoordinatorProcess(this.#coordinatorIdEnvVar, this.#id);
-  }
-
-  /**
-   * Ensures this instance is set as the coordinator if no coordinator is currently set.
-   * This method is idempotent - if a coordinator is already set (even if it's not this instance),
-   * it will not change the coordinator.
-   *
-   * This should be called after construction to ensure the first instance becomes the coordinator.
-   */
-  ensureCoordinator(): void {
-    ShardedWal.setCoordinatorProcess(this.#coordinatorIdEnvVar, this.#id);
   }
 
   /**
@@ -285,22 +294,22 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
       return [];
     }
 
-    const groupIdDir = path.join(this.#dir, this.groupId);
+    const groupDir = path.join(this.#dir, this.groupId);
     // create dir if not existing
-    ensureDirectoryExistsSync(groupIdDir);
+    ensureDirectoryExistsSync(groupDir);
 
     return fs
-      .readdirSync(groupIdDir)
+      .readdirSync(groupDir)
       .filter(entry => entry.endsWith(this.#format.walExtension))
       .filter(entry => entry.startsWith(`${this.#format.baseName}`))
-      .map(entry => path.join(groupIdDir, entry));
+      .map(entry => path.join(groupDir, entry));
   }
 
   /**
    * Finalize all shards by merging them into a single output file.
    * Recovers all records from all shards, validates no errors, and writes merged result.
    * Idempotent: returns early if already finalized or cleaned.
-   * @throws Error if any shard contains decode errors
+   * @throws Error if custom finalizer method throws
    */
   finalize(opt?: Record<string, unknown>) {
     if (this.#state !== 'active') {
@@ -312,31 +321,32 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
 
     const fileRecoveries = this.shardFiles().map(f => ({
       file: f,
-      recovery: new WriteAheadLogFile({
+      result: new WriteAheadLogFile({
         file: f,
         codec: this.#format.codec,
       }).recover(),
     }));
 
-    const records = fileRecoveries.flatMap(({ recovery }) => recovery.records);
+    const records = fileRecoveries.flatMap(({ result }) => result.records);
 
-    // Check if any records are invalid entries (from tolerant codec)
-    const hasInvalidEntries = records.some(
-      r => typeof r === 'object' && r != null && '__invalid' in r,
-    );
+    if (this.#debug) {
+      this.#lastRecovery = fileRecoveries;
+    }
 
-    const recordsToFinalize = hasInvalidEntries
-      ? records
-      : filterValidRecords(records);
+    ensureDirectoryExistsSync(path.dirname(this.getFinalFilePath()));
 
-    // Ensure groupId directory exists (even if no shard files were created)
-    const groupIdDir = path.join(this.#dir, this.groupId);
-    ensureDirectoryExistsSync(groupIdDir);
-
-    fs.writeFileSync(
-      this.getFinalFilePath(),
-      this.#format.finalizer(recordsToFinalize, opt),
-    );
+    try {
+      fs.writeFileSync(
+        this.getFinalFilePath(),
+        this.#format.finalizer(filterValidRecords(records), opt),
+      );
+    } catch (e) {
+      throw extendError(
+        e,
+        'Could not finalize sharded wal. Finalizer method in format throws.',
+        { appendMessage: true },
+      );
+    }
 
     this.#state = 'finalized';
   }
@@ -356,21 +366,15 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
     }
 
     this.shardFiles().forEach(f => {
-      // Remove the shard file
       fs.unlinkSync(f);
-      // Remove the parent directory (shard group directory)
-      const shardDir = path.dirname(f);
-      ensureDirectoryRemoveSync(shardDir);
     });
-
-    // Also try to remove the root directory if it becomes empty
-    ensureDirectoryRemoveSync(this.#dir);
 
     this.#state = 'cleaned';
   }
 
-  getStats() {
+  get stats() {
     return {
+      lastRecover: this.#lastRecovery,
       state: this.#state,
       groupId: this.groupId,
       shardCount: this.shardFiles().length,

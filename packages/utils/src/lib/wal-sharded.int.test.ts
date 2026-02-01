@@ -3,7 +3,13 @@ import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { PROFILER_SHARDER_ID_ENV_VAR } from './profiler/constants.js';
 import { ShardedWal } from './wal-sharded.js';
-import { createTolerantCodec } from './wal.js';
+import {
+  type InvalidEntry,
+  type WalFormat,
+  type WalRecord,
+  createTolerantCodec,
+  stringCodec,
+} from './wal.js';
 
 describe('ShardedWal Integration', () => {
   const testDir = path.join(
@@ -13,6 +19,25 @@ describe('ShardedWal Integration', () => {
     'utils',
     'wal-sharded',
   );
+  const makeMockFormat = <T extends WalRecord>(
+    overrides: Partial<WalFormat<T>>,
+  ): WalFormat<T> => {
+    const {
+      baseName = 'wal',
+      walExtension = '.log',
+      finalExtension = '.json',
+      codec = stringCodec<T>(),
+      finalizer = records => `${JSON.stringify(records)}\n`,
+    } = overrides;
+
+    return {
+      baseName,
+      walExtension,
+      finalExtension,
+      codec,
+      finalizer,
+    };
+  };
   let shardedWal: ShardedWal<string>;
 
   beforeEach(() => {
@@ -33,13 +58,11 @@ describe('ShardedWal Integration', () => {
 
   it('should create and finalize shards correctly', () => {
     shardedWal = new ShardedWal({
+      debug: false,
       dir: testDir,
-      format: {
+      format: makeMockFormat({
         baseName: 'trace',
-        walExtension: '.log',
-        finalExtension: '.json',
-        finalizer: records => `${JSON.stringify(records)}\n`,
-      },
+      }),
       coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       groupId: 'create-finalize',
     });
@@ -71,13 +94,11 @@ describe('ShardedWal Integration', () => {
 
   it('should merge multiple shards correctly', () => {
     shardedWal = new ShardedWal({
+      debug: false,
       dir: testDir,
-      format: {
+      format: makeMockFormat({
         baseName: 'merged',
-        walExtension: '.log',
-        finalExtension: '.json',
-        finalizer: records => `${JSON.stringify(records)}\n`,
-      },
+      }),
       coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       groupId: 'merge-shards',
     });
@@ -104,24 +125,13 @@ describe('ShardedWal Integration', () => {
     expect(records[4]).toBe('record-from-shard-5');
   });
 
-  it('should handle invalid entries during finalization', () => {
-    const tolerantCodec = createTolerantCodec({
-      encode: (s: string) => s,
-      decode: (s: string) => {
-        if (s === 'invalid') throw new Error('Invalid record');
-        return s;
-      },
-    });
-
+  it('should handle invalid entries during if debug true', () => {
     shardedWal = new ShardedWal({
+      debug: true,
       dir: testDir,
-      format: {
+      format: makeMockFormat({
         baseName: 'test',
-        walExtension: '.log',
-        finalExtension: '.json',
-        codec: tolerantCodec,
-        finalizer: records => `${JSON.stringify(records)}\n`,
-      },
+      }),
       coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       groupId: 'invalid-entries',
     });
@@ -134,6 +144,7 @@ describe('ShardedWal Integration', () => {
     shard.close();
 
     shardedWal.finalize();
+    expect(shardedWal.stats.lastRecover).toStrictEqual([]);
 
     const finalFile = path.join(
       testDir,
@@ -142,21 +153,16 @@ describe('ShardedWal Integration', () => {
     );
     const content = fs.readFileSync(finalFile, 'utf8');
     const records = JSON.parse(content.trim());
-    expect(records).toHaveLength(3);
-    expect(records[0]).toBe('valid1');
-    expect(records[1]).toEqual({ __invalid: true, raw: 'invalid' });
-    expect(records[2]).toBe('valid2');
+    expect(records).toEqual(['valid1', 'invalid', 'valid2']);
   });
 
   it('should cleanup shard files after finalization', () => {
     shardedWal = new ShardedWal({
+      debug: false,
       dir: testDir,
-      format: {
+      format: makeMockFormat({
         baseName: 'cleanup-test',
-        walExtension: '.log',
-        finalExtension: '.json',
-        finalizer: records => `${JSON.stringify(records)}\n`,
-      },
+      }),
       coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       groupId: 'cleanup-test',
     });
@@ -190,14 +196,13 @@ describe('ShardedWal Integration', () => {
 
   it('should use custom options in finalizer', () => {
     shardedWal = new ShardedWal({
+      debug: false,
       dir: testDir,
-      format: {
+      format: makeMockFormat({
         baseName: 'custom',
-        walExtension: '.log',
-        finalExtension: '.json',
         finalizer: (records, opt) =>
           `${JSON.stringify({ records, metadata: opt })}\n`,
-      },
+      }),
       coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       groupId: 'custom-finalizer',
     });
@@ -225,13 +230,11 @@ describe('ShardedWal Integration', () => {
 
   it('should handle empty shards correctly', () => {
     shardedWal = new ShardedWal({
+      debug: false,
       dir: testDir,
-      format: {
+      format: makeMockFormat({
         baseName: 'empty',
-        walExtension: '.log',
-        finalExtension: '.json',
-        finalizer: records => `${JSON.stringify(records)}\n`,
-      },
+      }),
       coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       groupId: 'empty-shards',
     });

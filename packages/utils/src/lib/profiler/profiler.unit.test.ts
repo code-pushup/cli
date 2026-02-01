@@ -25,15 +25,11 @@ describe('Profiler', () => {
       ...overrides,
     });
 
-  let profiler: Profiler<Record<string, ActionTrackEntryPayload>>;
-
   beforeEach(() => {
     performance.clearMarks();
     performance.clearMeasures();
     // eslint-disable-next-line functional/immutable-data
     delete process.env.CP_PROFILING;
-
-    profiler = getProfiler();
   });
 
   it('should create profiler instances', () => {
@@ -124,7 +120,17 @@ describe('Profiler', () => {
     });
   });
 
+  it('setDebugState should update debug flag in subclasses', () => {
+    const testProfiler = getProfiler({
+      prefix: 'cp',
+      track: 'test-track',
+      debug: true,
+    });
+    expect(testProfiler.isDebugMode()).toBe(true);
+  });
+
   it('isEnabled should set and get enabled state', () => {
+    const profiler = getProfiler();
     expect(profiler.isEnabled()).toBe(false);
 
     profiler.setEnabled(true);
@@ -296,6 +302,7 @@ describe('Profiler', () => {
   });
 
   it('measure should always execute work function', () => {
+    const profiler = getProfiler();
     const workFn = vi.fn(() => 'result');
     const result = profiler.measure('test-event', workFn);
 
@@ -304,6 +311,7 @@ describe('Profiler', () => {
   });
 
   it('measure should propagate errors when enabled', () => {
+    const profiler = getProfiler();
     const error = new Error('Test error');
     const workFn = vi.fn(() => {
       throw error;
@@ -314,6 +322,7 @@ describe('Profiler', () => {
   });
 
   it('measure should propagate errors', () => {
+    const profiler = getProfiler();
     const error = new Error('Test error');
     const workFn = vi.fn(() => {
       throw error;
@@ -423,6 +432,7 @@ describe('Profiler', () => {
   });
 
   it('measureAsync should propagate async errors when enabled', async () => {
+    const profiler = getProfiler();
     const error = new Error('Async test error');
     const workFn = vi.fn(async () => {
       await Promise.resolve();

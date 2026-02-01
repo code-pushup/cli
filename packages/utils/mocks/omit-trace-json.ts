@@ -7,14 +7,22 @@ import {
   frameName,
   frameTreeNodeId,
 } from '../src/lib/profiler/trace-file-utils.js';
-import type { TraceEvent, TraceEventContainer, TraceMetadata } from '../src/lib/profiler/trace-file.type';
+import type {
+  TraceEvent,
+  TraceEventContainer,
+  TraceMetadata,
+} from '../src/lib/profiler/trace-file.type';
 
 const BASE_TS = 1_700_000_005_000_000;
 const FIXED_TIME = '2026-01-28T14:29:27.995Z';
 
 /* ───────────── IO ───────────── */
 const read = (p: string) => fs.readFile(p, 'utf8').then(s => s.trim());
-const parseJsonl = (s: string) => s.split('\n').filter(Boolean).map(l => JSON.parse(l));
+const parseJsonl = (s: string) =>
+  s
+    .split('\n')
+    .filter(Boolean)
+    .map(l => JSON.parse(l));
 const parseDecodeJsonl = (s: string) => parseJsonl(s).map(decodeEvent);
 
 /* ───────────── Metadata ───────────── */
@@ -24,21 +32,30 @@ const normMeta = (
 ): TraceMetadata | undefined =>
   m
     ? ({
-      ...(keepGen ? m : Object.fromEntries(Object.entries(m).filter(([k]) => k !== 'generatedAt'))),
-      startTime: FIXED_TIME,
-      ...(keepGen && { generatedAt: FIXED_TIME }),
-    } as TraceMetadata)
+        ...(keepGen
+          ? m
+          : Object.fromEntries(
+              Object.entries(m).filter(([k]) => k !== 'generatedAt'),
+            )),
+        startTime: FIXED_TIME,
+        ...(keepGen && { generatedAt: FIXED_TIME }),
+      } as TraceMetadata)
     : undefined;
 
 /* ───────────── Detail ───────────── */
 const normalizeDetail = (d: unknown): unknown => {
   const o =
-    typeof d === 'string' ? JSON.parse(d) :
-      typeof d === 'object' && d ? d : null;
+    typeof d === 'string'
+      ? JSON.parse(d)
+      : typeof d === 'object' && d
+        ? d
+        : null;
   const props = o?.devtools?.properties;
   if (!Array.isArray(props)) return d;
 
-  const isTransition = props.some(e => Array.isArray(e) && e[0] === 'Transition');
+  const isTransition = props.some(
+    e => Array.isArray(e) && e[0] === 'Transition',
+  );
 
   return {
     ...o,
@@ -66,39 +83,66 @@ const normalizeDetail = (d: unknown): unknown => {
 };
 
 /* ───────────── Context ───────────── */
-const uniq = <T>(v: (T | undefined)[]) => [...new Set(v.filter(Boolean) as T[])];
+const uniq = <T>(v: (T | undefined)[]) => [
+  ...new Set(v.filter(Boolean) as T[]),
+];
 const ctx = (e: TraceEvent[], base = BASE_TS) => ({
-  pid: new Map(uniq(e.map(x => x.pid)).sort().map((v, i) => [v, 10001 + i])),
-  tid: new Map(uniq(e.map(x => x.tid)).sort().map((v, i) => [v, i + 1])),
-  ts: new Map(uniq(e.map(x => x.ts)).sort().map((v, i) => [v, base + i * 100])),
-  id: new Map(uniq(e.map(x => x.id2?.local)).sort().map((v, i) => [v, `0x${(i + 1).toString(16)}`])),
+  pid: new Map(
+    uniq(e.map(x => x.pid))
+      .sort()
+      .map((v, i) => [v, 10001 + i]),
+  ),
+  tid: new Map(
+    uniq(e.map(x => x.tid))
+      .sort()
+      .map((v, i) => [v, i + 1]),
+  ),
+  ts: new Map(
+    uniq(e.map(x => x.ts))
+      .sort()
+      .map((v, i) => [v, base + i * 100]),
+  ),
+  id: new Map(
+    uniq(e.map(x => x.id2?.local))
+      .sort()
+      .map((v, i) => [v, `0x${(i + 1).toString(16)}`]),
+  ),
 });
 
 /* ───────────── Event normalization ───────────── */
 const mapIf = <T, R>(v: T | undefined, m: Map<T, R>, k: string) =>
   v != null && m.has(v) ? { [k]: m.get(v)! } : {};
 
-const normalizeEvent = (e: TraceEvent, c: ReturnType<typeof ctx>): TraceEvent => {
+const normalizeEvent = (
+  e: TraceEvent,
+  c: ReturnType<typeof ctx>,
+): TraceEvent => {
   const pid = c.pid.get(e.pid) ?? e.pid;
   const tid = c.tid.get(e.tid) ?? e.tid;
 
   const args = e.args && {
     ...e.args,
-    ...(e.args.detail !== undefined && { detail: normalizeDetail(e.args.detail) }),
+    ...(e.args.detail !== undefined && {
+      detail: normalizeDetail(e.args.detail),
+    }),
     ...(e.args.data &&
       typeof e.args.data === 'object' && {
         data: {
           ...(e.args.data as any),
-          ...(pid && tid && 'frameTreeNodeId' in e.args.data && {
-            frameTreeNodeId: frameTreeNodeId(pid, tid),
-          }),
-          ...(Array.isArray((e.args.data as any).frames) && pid && tid && {
-            frames: (e.args.data as any).frames.map((f: any) => ({
-              ...f,
-              processId: pid,
-              frame: frameName(pid, tid),
-            })),
-          }),
+          ...(pid &&
+            tid &&
+            'frameTreeNodeId' in e.args.data && {
+              frameTreeNodeId: frameTreeNodeId(pid, tid),
+            }),
+          ...(Array.isArray((e.args.data as any).frames) &&
+            pid &&
+            tid && {
+              frames: (e.args.data as any).frames.map((f: any) => ({
+                ...f,
+                processId: pid,
+                frame: frameName(pid, tid),
+              })),
+            }),
         },
       }),
   };
@@ -108,9 +152,10 @@ const normalizeEvent = (e: TraceEvent, c: ReturnType<typeof ctx>): TraceEvent =>
     ...mapIf(e.pid, c.pid, 'pid'),
     ...mapIf(e.tid, c.tid, 'tid'),
     ...mapIf(e.ts, c.ts, 'ts'),
-    ...(e.id2?.local && c.id.has(e.id2.local) && {
-      id2: { ...e.id2, local: c.id.get(e.id2.local)! },
-    }),
+    ...(e.id2?.local &&
+      c.id.has(e.id2.local) && {
+        id2: { ...e.id2, local: c.id.get(e.id2.local)! },
+      }),
     ...(args && { args }),
   };
 };
@@ -133,9 +178,9 @@ export const normalizeAndFormatEvents = (
   typeof input === 'string'
     ? input.trim()
       ? normalizeTraceEvents(parseJsonl(input).map(decodeEvent), opts)
-      .map(encodeEvent)
-      .map(o => JSON.stringify(o))
-      .join('\n') + (input.endsWith('\n') ? '\n' : '')
+          .map(encodeEvent)
+          .map(o => JSON.stringify(o))
+          .join('\n') + (input.endsWith('\n') ? '\n' : '')
       : input
     : normalizeTraceEvents(input, opts);
 
@@ -176,4 +221,6 @@ export const loadNormalizedTraceJson = async (
 export const loadNormalizedTraceJsonl = async (
   p: `${string}.jsonl`,
 ): Promise<TraceEventContainer> =>
-  createTraceFile({ traceEvents: normalizeTraceEvents(parseDecodeJsonl(await read(p))) });
+  createTraceFile({
+    traceEvents: normalizeTraceEvents(parseDecodeJsonl(await read(p))),
+  });

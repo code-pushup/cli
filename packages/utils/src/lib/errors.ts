@@ -30,3 +30,20 @@ export function stringifyError(
   }
   return JSON.stringify(error);
 }
+
+/**
+ * Extend an error with a new mamessage and keeps the original as cause.
+ * @param error - The error to extend
+ * @param message - The new message to add to the error
+ * @returns A new error with the extended message and the original as cause
+ */
+export function extendError(
+  error: unknown,
+  message: string,
+  { appendMessage = false } = {},
+) {
+  const errorMessage = appendMessage
+    ? `${message}\n${stringifyError(error)}`
+    : message;
+  return new Error(errorMessage, { cause: error });
+}

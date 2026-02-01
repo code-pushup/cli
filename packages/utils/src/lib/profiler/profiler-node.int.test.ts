@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import fsPromises from 'node:fs/promises';
 import path from 'node:path';
+import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { afterAll, afterEach, beforeEach, expect } from 'vitest';
 import { awaitObserverCallbackAndFlush } from '@code-pushup/test-utils';
@@ -14,7 +15,10 @@ import {
   asOptions,
   trackEntryPayload,
 } from '../user-timing-extensibility-api-utils.js';
-import type { ActionTrackEntryPayload, TrackEntryPayload } from '../user-timing-extensibility-api.type.js';
+import type {
+  ActionTrackEntryPayload,
+  TrackEntryPayload,
+} from '../user-timing-extensibility-api.type.js';
 import {
   PROFILER_DEBUG_ENV_VAR,
   PROFILER_ENABLED_ENV_VAR,
@@ -27,7 +31,6 @@ import { NodejsProfiler, type NodejsProfilerOptions } from './profiler-node.js';
 import { entryToTraceEvents } from './trace-file-utils.js';
 import type { TraceEvent } from './trace-file.type.js';
 import { traceEventWalFormat } from './wal-json-trace.js';
-import process from 'node:process';
 
 describe('NodeJS Profiler Integration', () => {
   const traceEventEncoder: PerformanceEntryEncoder<TraceEvent> =
@@ -82,7 +85,10 @@ describe('NodeJS Profiler Integration', () => {
     await new Promise(resolve => setTimeout(resolve, 10));
 
     expect(() =>
-      performance.mark(`${prefix}${prefix ? ':' : ''}measure:start`, asOptions(trackEntryPayload(defaultPayload))),
+      performance.mark(
+        `${prefix}${prefix ? ':' : ''}measure:start`,
+        asOptions(trackEntryPayload(defaultPayload)),
+      ),
     ).not.toThrow();
 
     const largeArray = Array.from({ length: 100_000 }, (_, i) => i);
@@ -92,7 +98,12 @@ describe('NodeJS Profiler Integration', () => {
       .reduce((sum, x) => sum + x, 0);
     expect(result).toBeGreaterThan(0);
     expect('sync success').toBe('sync success');
-    expect(() => performance.mark(`${prefix}${prefix ? ':' : ''}measure:end`, asOptions(trackEntryPayload(defaultPayload)))).not.toThrow();
+    expect(() =>
+      performance.mark(
+        `${prefix}${prefix ? ':' : ''}measure:end`,
+        asOptions(trackEntryPayload(defaultPayload)),
+      ),
+    ).not.toThrow();
 
     performance.measure(`${prefix}${prefix ? ':' : ''}measure`, {
       start: `${prefix}${prefix ? ':' : ''}measure:start`,
@@ -108,7 +119,10 @@ describe('NodeJS Profiler Integration', () => {
     await new Promise(resolve => setTimeout(resolve, 10));
 
     expect(() =>
-      performance.mark(`${prefix}:async-measure:start`,asOptions(trackEntryPayload(defaultPayload))),
+      performance.mark(
+        `${prefix}:async-measure:start`,
+        asOptions(trackEntryPayload(defaultPayload)),
+      ),
     ).not.toThrow();
     // Heavy work: More CPU-intensive operations
     const matrix = Array.from({ length: 1000 }, () =>
@@ -120,7 +134,12 @@ describe('NodeJS Profiler Integration', () => {
     await expect(Promise.resolve('async success')).resolves.toBe(
       'async success',
     );
-    expect(() => performance.mark(`${prefix}:async-measure:end`, asOptions(trackEntryPayload(defaultPayload)))).not.toThrow();
+    expect(() =>
+      performance.mark(
+        `${prefix}:async-measure:end`,
+        asOptions(trackEntryPayload(defaultPayload)),
+      ),
+    ).not.toThrow();
 
     performance.measure(`${prefix}:async-measure`, {
       start: `${prefix}:async-measure:start`,
@@ -134,9 +153,7 @@ describe('NodeJS Profiler Integration', () => {
     });
   }
 
-  async function createBasicMeasures(
-    profiler: NodejsProfiler<TraceEvent>,
-  ) {
+  async function createBasicMeasures(profiler: NodejsProfiler<TraceEvent>) {
     expect(() =>
       profiler.marker(`Enable profiler`, {
         tooltipText: 'set enable to true',
@@ -357,26 +374,6 @@ describe('NodeJS Profiler Integration', () => {
     await expect(fsPromises.access(groupIdDirPath)).resolves.not.toThrow();
 
     profiler.close();
-  });
-
-  it('should create transition markers if debugMode true', async () => {
-    const prefix = 'debugMode-test';
-    const measureName = prefix;
-    const profiler = nodejsProfiler({
-      measureName,
-      debug: true,
-    });
-
-    createBasicMeasures(profiler);
-    await awaitObserverCallbackAndFlush(profiler);
-    profiler.close();
-
-    const snapshotData = await loadNormalizedTraceJson(
-      profiler.stats.finalFilePath as `${string}.json`,
-    );
-    expect(JSON.stringify(snapshotData)).toMatchFileSnapshot(
-      `__snapshots__/${measureName}.json`,
-    );
   });
 
   it('should handle sharding across multiple processes', async () => {

@@ -1,3 +1,4 @@
+import { performance } from 'node:perf_hooks';
 import { isEnvVarEnabled } from '../env.js';
 import { type FatalKind, subscribeProcessExit } from '../exit-process.js';
 import {
@@ -5,14 +6,22 @@ import {
   PerformanceObserverSink,
 } from '../performance-observer.js';
 import { objectToEntries } from '../transform.js';
-import { asOptions, markerPayload } from '../user-timing-extensibility-api-utils.js';
+import {
+  asOptions,
+  markerPayload,
+} from '../user-timing-extensibility-api-utils.js';
 import { errorToMarkerPayload } from '../user-timing-extensibility-api-utils.js';
 import type {
   ActionTrackEntryPayload,
   MarkerPayload,
 } from '../user-timing-extensibility-api.type.js';
 import { ShardedWal } from '../wal-sharded.js';
-import { type WalFormat, type WalRecord, WriteAheadLogFile } from '../wal.js';
+import {
+  type WalFormat,
+  type WalRecord,
+  WriteAheadLogFile,
+  parseWalFormat,
+} from '../wal.js';
 import {
   PROFILER_DEBUG_MEASURE_PREFIX,
   PROFILER_ENABLED_ENV_VAR,
@@ -88,8 +97,8 @@ export class NodejsProfiler<
     ActionTrackEntryPayload
   >,
 > extends Profiler<Tracks> {
-  #sharder: ShardedWal<DomainEvents>;
   #shard: WriteAheadLogFile<DomainEvents>;
+  #sharder: ShardedWal<DomainEvents>;
   #performanceObserverSink: PerformanceObserverSink<DomainEvents>;
   #state: 'idle' | 'running' | 'closed' = 'idle';
   #unsubscribeExitHandlers: (() => void) | undefined;
@@ -123,13 +132,13 @@ export class NodejsProfiler<
     const { encodePerfEntry, ...format } = profilerFormat;
 
     this.#sharder = new ShardedWal<DomainEvents>({
+      debug,
       dir: process.env[PROFILER_OUT_DIR_ENV_VAR] ?? outDir,
-      format,
+      format: parseWalFormat<DomainEvents>(format),
       coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
       measureNameEnvVar: PROFILER_MEASURE_NAME_ENV_VAR,
       groupId: measureName,
     });
-    this.#sharder.ensureCoordinator();
 
     this.#shard = this.#sharder.shard();
     this.#performanceObserverSink = new PerformanceObserverSink({
@@ -138,7 +147,7 @@ export class NodejsProfiler<
       captureBufferedEntries,
       flushThreshold,
       maxQueueSize,
-      debug: this.isDebugMode()
+      debug: this.isDebugMode(),
     });
 
     this.#unsubscribeExitHandlers = subscribeProcessExit({
@@ -156,7 +165,7 @@ export class NodejsProfiler<
     const initialEnabled =
       options.enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
     if (initialEnabled) {
-      this.#transition('running');
+      this.transition('running');
     }
   }
 
@@ -170,7 +179,10 @@ export class NodejsProfiler<
       tooltipText: `Profiler state transition: ${transition}`,
       properties: [['Transition', transition], ...objectToEntries(this.stats)],
     };
-    this.marker(transition, transitionMarkerPayload);
+    performance.mark(
+      transition,
+      asOptions(markerPayload(transitionMarkerPayload)),
+    );
   }
 
   /**
@@ -211,7 +223,7 @@ export class NodejsProfiler<
    * @param next - The target state to transition to
    * @throws {Error} If attempting to transition from 'closed' state or invalid transition
    */
-  #transition(next: NodeJsProfilerState): void {
+  protected transition(next: NodeJsProfilerState): void {
     if (this.#state === next) {
       return;
     }
@@ -220,6 +232,9 @@ export class NodejsProfiler<
     }
 
     const transition = `${this.#state}->${next}`;
+    if (this.isDebugMode()) {
+      this.#transitionMarker(`${PROFILER_DEBUG_MEASURE_PREFIX}:${transition}`);
+    }
 
     switch (transition) {
       case 'idle->running':
@@ -258,7 +273,7 @@ export class NodejsProfiler<
     if (this.#state === 'closed') {
       return;
     }
-    this.#transition('closed');
+    this.transition('closed');
   }
 
   /** @returns Whether profiler is in 'running' state */
@@ -269,9 +284,9 @@ export class NodejsProfiler<
   /** Enables profiling (start/stop) */
   override setEnabled(enabled: boolean): void {
     if (enabled) {
-      this.#transition('running');
+      this.transition('running');
     } else {
-      this.#transition('idle');
+      this.transition('idle');
     }
   }
 
@@ -286,7 +301,7 @@ export class NodejsProfiler<
       state: sharderState,
       isCoordinator,
       ...sharderStats
-    } = this.#sharder.getStats();
+    } = this.#sharder.stats;
 
     return {
       profilerState: this.#state,

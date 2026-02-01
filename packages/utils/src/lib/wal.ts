@@ -14,6 +14,16 @@ export type Codec<I, O = string> = {
 
 export type InvalidEntry<O = string> = { __invalid: true; raw: O };
 
+type CodecInput<C extends Codec<any, any>> =
+  C extends Codec<infer I, any> ? I : never;
+type CodecOutput<C extends Codec<any, any>> =
+  C extends Codec<any, infer O> ? O : never;
+
+export type TolerantCodec<C extends Codec<any, any>> = Codec<
+  CodecInput<C> | InvalidEntry<CodecOutput<C>>,
+  CodecOutput<C>
+>;
+
 export type WalRecord = object | string;
 
 /**
@@ -33,7 +43,7 @@ export type AppendableSink<T> = Recoverable & {
  */
 export type RecoverResult<T> = {
   /** Successfully recovered records */
-  records: T[];
+  records: (T | InvalidEntry)[];
   /** Errors encountered during recovery with line numbers and context */
   errors: { lineNo: number; line: string; error: Error }[];
   /** Last incomplete line if file was truncated (null if clean) */
@@ -140,7 +150,9 @@ export function recoverFromContent<T>(
  * Write-Ahead Log implementation for crash-safe append-only logging.
  * Provides atomic operations for writing, recovering, and repacking log entries.
  */
-export class WriteAheadLogFile<T extends WalRecord = WalRecord> implements AppendableSink<T> {
+export class WriteAheadLogFile<T extends WalRecord = WalRecord>
+  implements AppendableSink<T>
+{
   #fd: number | null = null;
   readonly #file: string;
   readonly #decode: Codec<T | InvalidEntry<string>>['decode'];
@@ -269,6 +281,14 @@ export type WalFormat<T extends WalRecord = WalRecord> = {
   /** Codec for encoding/decoding records */
   codec: Codec<T, string>;
   /** Finalizer for converting records to a string */
+  finalizer: (records: T[], opt?: Record<string, unknown>) => string;
+};
+
+export type WalFormatWithInvalids<T extends WalRecord> = Omit<
+  WalFormat<T>,
+  'codec' | 'finalizer'
+> & {
+  codec: TolerantCodec<Codec<T, string>>;
   finalizer: (
     records: (T | InvalidEntry<string>)[],
     opt?: Record<string, unknown>,
@@ -307,29 +327,19 @@ export function parseWalFormat<T extends WalRecord = WalRecord>(
     walExtension = '.log',
     finalExtension = walExtension,
     codec = stringCodec<T>(),
+    finalizer,
   } = format;
-
-  const finalizer =
-    format.finalizer ??
-    ((records: (T | InvalidEntry<string>)[]) => {
-      // Encode each record using the codec before joining.
-      // For object types, codec.encode() will JSON-stringify them properly.
-      // InvalidEntry records use their raw string value directly.
-      const encoded = records.map(record =>
-        typeof record === 'object' && record != null && '__invalid' in record
-          ? (record as InvalidEntry<string>).raw
-          : codec.encode(record as T),
-      );
-      return `${encoded.join('\n')}\n`;
-    });
 
   return {
     baseName,
     walExtension,
     finalExtension,
     codec,
-    finalizer,
-  } satisfies WalFormat<T>;
+    finalizer:
+      finalizer ??
+      ((records, _opt) =>
+        `${records.map(record => codec.encode(record)).join('\n')}\n`),
+  };
 }
 
 /**

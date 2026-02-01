@@ -9,6 +9,7 @@ import {
   loadAndOmitTraceJsonl,
 } from '../../../mocks/omit-trace-json.js';
 import { MockTraceEventFileSink } from '../../../mocks/sink.mock';
+import { isEnvVarEnabled } from '../env.js';
 import { subscribeProcessExit } from '../exit-process.js';
 import type { PerformanceEntryEncoder } from '../performance-observer.js';
 import { ID_PATTERNS } from '../process-id.js';
@@ -18,6 +19,7 @@ import type {
 } from '../user-timing-extensibility-api.type.js';
 import * as WalModule from '../wal.js';
 import {
+  PROFILER_DEBUG_ENV_VAR,
   PROFILER_OUT_BASENAME,
   PROFILER_PERSIST_OUT_DIR,
   PROFILER_SHARDER_ID_ENV_VAR,
@@ -88,6 +90,38 @@ const createProfiler = (
       baseName: opts.format?.baseName ?? PROFILER_OUT_BASENAME,
     },
     enabled: opts.enabled ?? true,
+    debug: opts.debug ?? isEnvVarEnabled(PROFILER_DEBUG_ENV_VAR),
+    measureName: opts.measureName,
+  });
+};
+
+class TestNodejsProfiler extends NodejsProfiler<TraceEvent> {
+  forceTransition(next: any) {
+    this.transition(next);
+  }
+}
+
+const createTestProfiler = (
+  options:
+    | string
+    | (Partial<
+        NodejsProfilerOptions<
+          TraceEvent,
+          Record<string, ActionTrackEntryPayload>
+        >
+      > & { measureName: string }),
+): TestNodejsProfiler => {
+  const opts = typeof options === 'string' ? { measureName: options } : options;
+  return new TestNodejsProfiler({
+    ...opts,
+    track: opts.track ?? 'int-test-track',
+    format: {
+      ...traceEventWalFormat(),
+      encodePerfEntry: entryToTraceEvents,
+      baseName: opts.format?.baseName ?? PROFILER_OUT_BASENAME,
+    },
+    enabled: opts.enabled ?? true,
+    debug: opts.debug ?? isEnvVarEnabled(PROFILER_DEBUG_ENV_VAR),
     measureName: opts.measureName,
   });
 };
@@ -111,6 +145,7 @@ const createSimpleProfiler = (
     track: 'test-track',
     measureName: overrides?.measureName ?? 'simple',
     enabled: overrides?.enabled ?? true,
+    debug: overrides?.debug ?? isEnvVarEnabled(PROFILER_DEBUG_ENV_VAR),
     format: {
       encodePerfEntry: simpleEncoder,
       baseName: overrides?.format?.baseName ?? PROFILER_OUT_BASENAME,
@@ -355,6 +390,17 @@ describe('NodejsProfiler', () => {
       profiler.flush();
       expect(profiler.state).toBe('closed');
     });
+
+    it('throws for invalid transitions', () => {
+      const profiler = createTestProfiler({
+        measureName: 'invalid-transition',
+        enabled: false,
+      });
+
+      expect(() => profiler.forceTransition('invalid')).toThrow(
+        'Invalid transition: idle -> invalid',
+      );
+    });
   });
 
   describe('profiling operations', () => {
@@ -452,6 +498,7 @@ describe('NodejsProfiler', () => {
         queued: 0,
         dropped: 0,
         written: 0,
+        lastRecover: [],
         maxQueueSize: 10_000,
         flushThreshold: 20,
         addedSinceLastFlush: 0,
@@ -594,7 +641,7 @@ describe('NodejsProfiler', () => {
     });
 
     // eslint-disable-next-line vitest/expect-expect
-    it('does not create transition marker when debug is enabled and transitioning to running', () => {
+    it('should create transition marker when debug is enabled and transitioning to running', () => {
       // eslint-disable-next-line functional/immutable-data
       process.env.DEBUG = 'true';
       const profiler = createProfiler({
@@ -605,7 +652,7 @@ describe('NodejsProfiler', () => {
       performance.clearMarks();
       profiler.setEnabled(true);
 
-      expectNoTransitionMarker('debug:idle->running');
+      expectTransitionMarker('debug:idle->running');
     });
 
     // eslint-disable-next-line vitest/expect-expect
@@ -618,7 +665,7 @@ describe('NodejsProfiler', () => {
       expectNoTransitionMarker('idle->running');
     });
 
-    it('does not emit transition marker payload when transitioning to running', () => {
+    it('should include stats in transition marker properties when transitioning to running', () => {
       // eslint-disable-next-line functional/immutable-data
       process.env.DEBUG = 'true';
       const profiler = createProfiler({
@@ -633,9 +680,14 @@ describe('NodejsProfiler', () => {
       const transitionMark = marks.find(
         mark => mark.name === 'debug:idle->running',
       );
-      expect(transitionMark).toBeUndefined();
+      expect(transitionMark).toBeDefined();
 
-      expect(profiler.stats.debug).toBe(true);
+      expect(transitionMark?.name).toBe('debug:idle->running');
+      expect(transitionMark?.detail).toBeDefined();
+      const detail = transitionMark?.detail as UserTimingDetail;
+      expect(detail.devtools).toBeDefined();
+      expect(detail.devtools?.dataType).toBe('marker');
+      expect(detail.devtools?.properties).toBeDefined();
     });
 
     // eslint-disable-next-line vitest/max-nested-describe
