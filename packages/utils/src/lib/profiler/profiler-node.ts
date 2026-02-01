@@ -110,7 +110,7 @@ export class NodejsProfiler<
    */
 
   constructor(options: NodejsProfilerOptions<DomainEvents, Tracks>) {
-// Pick ProfilerBufferOptions
+    // Pick ProfilerBufferOptions
     const {
       captureBufferedEntries,
       flushThreshold,
@@ -130,7 +130,6 @@ export class NodejsProfiler<
     super({ ...profilerOptions, enabled, debug });
 
     const { encodePerfEntry, ...format } = profilerFormat;
-
     this.#sharder = new ShardedWal<DomainEvents>({
       debug,
       dir: process.env[PROFILER_OUT_DIR_ENV_VAR] ?? outDir,
@@ -139,7 +138,6 @@ export class NodejsProfiler<
       measureNameEnvVar: PROFILER_MEASURE_NAME_ENV_VAR,
       groupId: measureName,
     });
-
     this.#shard = this.#sharder.shard();
     this.#performanceObserverSink = new PerformanceObserverSink({
       sink: this.#shard,
@@ -149,22 +147,15 @@ export class NodejsProfiler<
       maxQueueSize,
       debug: this.isDebugMode(),
     });
-
     this.#unsubscribeExitHandlers = subscribeProcessExit({
       onError: (
         error: unknown,
         kind: 'uncaughtException' | 'unhandledRejection',
-      ) => {
-        this.#handleFatalError(error, kind);
-      },
-      onExit: (_code: number) => {
-        this.close();
-      },
+      ) => this.#handleFatalError(error, kind),
+      onExit: (_code: number) => this.close(),
     });
 
-    const initialEnabled =
-      options.enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
-    if (initialEnabled) {
+    if (options.enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR)) {
       this.transition('running');
     }
   }
@@ -309,7 +300,7 @@ export class NodejsProfiler<
       sharderState,
       ...sharderStats,
       isCoordinator,
-      shardOpen: this.#shard?.isClosed(),
+      shardOpen: !this.#shard?.isClosed(),
       shardPath: this.#shard?.getPath(),
       ...this.#performanceObserverSink?.getStats(),
     };
