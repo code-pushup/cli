@@ -38,7 +38,7 @@ describe('ShardedWal Integration', () => {
       finalizer,
     };
   };
-  let shardedWal: ShardedWal<string>;
+  let shardedWal: ShardedWal;
 
   beforeEach(() => {
     if (fs.existsSync(testDir)) {
