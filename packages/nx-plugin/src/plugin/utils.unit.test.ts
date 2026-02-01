@@ -107,7 +107,9 @@ describe('normalizedCreateNodesV2Context', () => {
         createNodesV2Context({ workspaceRoot: MEMFS_VOLUME }),
         projectJsonPath(),
       ),
-    ).rejects.toThrow(`Error parsing project.json file ${projectJsonPath()}.`);
+    ).rejects.toThrowError(
+      `Error parsing project.json file ${projectJsonPath()}.`,
+    );
   });
 
   it('should provide default targetName in createOptions', async () => {

@@ -38,6 +38,15 @@
           "packages/nx-plugin/**/*.ts",
           "packages/nx-plugin/package.json",
           "packages/nx-plugin/generators.json"
+        ],
+        "args": [
+          "'{projectRoot}/**/*.{ts,cjs,mjs,js}'",
+          "{projectRoot}/package.json",
+          "--config={projectRoot}/eslint.config.mjs",
+          "--max-warnings=0",
+          "--no-warn-ignored",
+          "--error-on-unmatched-pattern=false",
+          "--format=./tools/eslint-formatter-multi/dist/src/index.js"
         ]
       }
     },

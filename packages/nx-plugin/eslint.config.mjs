@@ -48,7 +48,10 @@ export default tseslint.config(
   {
     files: ['**/*.json'],
     rules: {
-      '@nx/dependency-checks': 'error',
+      '@nx/dependency-checks': [
+        'error',
+        { ignoredDependencies: ['typescript-eslint'] },
+      ],
     },
   },
   {

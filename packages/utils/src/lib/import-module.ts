@@ -9,6 +9,18 @@ import { settlePromise } from './promises.js';
 // For unknown reason, we can't import `JitiOptions` directly in this repository
 type JitiOptions = Exclude<Parameters<typeof createJitiSource>[1], undefined>;
 
+/**
+ * Known packages that must be loaded natively (not transformed by jiti).
+ * These packages rely on import.meta.url being a real file:// URL.
+ * When jiti transforms modules, import.meta.url becomes 'about:blank',
+ * causing errors in packages that use new URL(..., import.meta.url).
+ */
+export const JITI_NATIVE_MODULES = [
+  '@vitest/eslint-plugin',
+  '@code-pushup/eslint-config',
+  'lighthouse',
+] as const;
+
 export type ImportModuleOptions = JitiOptions & {
   filepath: string;
   tsconfig?: string;
@@ -91,9 +103,13 @@ export const mapTsJsxToJitiJsx = (tsJsxMode: number): boolean =>
  * | interopDefault    | boolean                 | esModuleInterop       | boolean                  | Enable default import interop. |
  * | sourceMaps        | boolean                 | sourceMap             | boolean                  | Enable sourcemap generation. |
  * | jsx               | boolean                 | jsx                   | JsxEmit (0-5)           | TS JsxEmit enum (0-5) => boolean JSX processing. |
+ * | nativeModules     | string[]                | -                     | -                        | Modules to load natively without jiti transformation. |
  */
 export type MappableJitiOptions = Partial<
-  Pick<JitiOptions, 'alias' | 'interopDefault' | 'sourceMaps' | 'jsx'>
+  Pick<
+    JitiOptions,
+    'alias' | 'interopDefault' | 'sourceMaps' | 'jsx' | 'nativeModules'
+  >
 >;
 /**
  * Parse TypeScript compiler options to mappable jiti options
@@ -145,21 +161,32 @@ export async function createTsJiti(
   createJiti: (typeof import('jiti'))['createJiti'] = createJitiSource,
 ) {
   const { tsconfigPath, ...jitiOptions } = options;
-
   const fallbackTsconfigPath = path.resolve(process.cwd(), 'tsconfig.json');
-
   const validPath: null | string =
     tsconfigPath == null
       ? (await fileExists(fallbackTsconfigPath))
         ? fallbackTsconfigPath
         : null
       : path.resolve(process.cwd(), tsconfigPath);
-
   const tsDerivedJitiOptions: MappableJitiOptions = validPath
     ? await jitiOptionsFromTsConfig(validPath)
     : {};
 
-  return createJiti(id, { ...jitiOptions, ...tsDerivedJitiOptions });
+  return createJiti(id, {
+    ...jitiOptions,
+    ...tsDerivedJitiOptions,
+    alias: {
+      ...jitiOptions.alias,
+      ...tsDerivedJitiOptions.alias,
+    },
+    nativeModules: [
+      ...new Set([
+        ...JITI_NATIVE_MODULES,
+        ...(jitiOptions.nativeModules ?? []),
+      ]),
+    ],
+    tryNative: true,
+  });
 }
 
 /**

@@ -11,6 +11,7 @@ import coveragePlugin, {
 } from './packages/plugin-coverage/src/index.js';
 import eslintPlugin, {
   eslintConfigFromAllNxProjects,
+  eslintConfigFromNxProject,
 } from './packages/plugin-eslint/src/index.js';
 import jsPackagesPlugin from './packages/plugin-js-packages/src/index.js';
 import jsDocsPlugin from './packages/plugin-jsdocs/src/index.js';
@@ -43,18 +44,15 @@ export async function configureEslintPlugin(
   return {
     plugins: [
       projectName
-        ? await eslintPlugin(
-            { eslintrc: `packages/${projectName}/eslint.config.js` },
-            {
-              artifacts: {
-                // We leverage Nx dependsOn to only run all lint targets before we run code-pushup
-                // generateArtifactsCommand: 'npx nx run-many -t lint',
-                artifactsPaths: [
-                  `packages/${projectName}/.eslint/eslint-report.json`,
-                ],
-              },
+        ? await eslintPlugin(await eslintConfigFromNxProject(projectName), {
+            artifacts: {
+              // We leverage Nx dependsOn to only run all lint targets before we run code-pushup
+              // generateArtifactsCommand: 'npx nx run-many -t lint',
+              artifactsPaths: [
+                `packages/${projectName}/.eslint/eslint-report.json`,
+              ],
             },
-          )
+          })
         : await eslintPlugin(await eslintConfigFromAllNxProjects()),
     ],
     categories: [
