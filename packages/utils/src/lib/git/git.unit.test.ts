@@ -11,7 +11,7 @@ describe('guardAgainstLocalChanges', () => {
       guardAgainstLocalChanges({
         status: () => Promise.resolve({ files: [''] }),
       } as unknown as SimpleGit),
-    ).rejects.toThrowError(
+    ).rejects.toThrow(
       new GitStatusError({ files: [''] } as unknown as StatusResult),
     );
   });

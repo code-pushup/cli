@@ -262,7 +262,7 @@ describe('ShardedWal', () => {
       });
 
       // Instance won't be coordinator, so cleanup() should throw
-      expect(() => sw.cleanup()).toThrowError(
+      expect(() => sw.cleanup()).toThrow(
         'cleanup() can only be called by coordinator',
       );
     });
@@ -303,7 +303,7 @@ describe('ShardedWal', () => {
       );
 
       // cleanupIfCoordinator won't throw even if files don't exist
-      expect(() => sw.cleanupIfCoordinator()).not.toThrowError();
+      expect(() => sw.cleanupIfCoordinator()).not.toThrow();
     });
 
     it('should ignore directory removal failures during cleanup', () => {
@@ -318,7 +318,7 @@ describe('ShardedWal', () => {
         format: { baseName: 'test', walExtension: '.log' },
       });
 
-      expect(() => sw.cleanup()).not.toThrowError();
+      expect(() => sw.cleanup()).not.toThrow();
       expect(
         vol.readFileSync('/shards/20231114-221320-000/keep.txt', 'utf8'),
       ).toBe('keep');
@@ -338,10 +338,10 @@ describe('ShardedWal', () => {
         },
       });
 
-      expect(() => sw.finalize()).toThrowError(
+      expect(() => sw.finalize()).toThrow(
         /Could not finalize sharded wal\. Finalizer method in format throws\./,
       );
-      expect(() => sw.finalize()).toThrowError(/finalizer boom/);
+      expect(() => sw.finalize()).toThrow(/finalizer boom/);
       expect(sw.getState()).toBe('active');
     });
 
@@ -401,7 +401,7 @@ describe('ShardedWal', () => {
       sw.cleanup();
       expect(sw.getState()).toBe('cleaned');
 
-      expect(() => sw.cleanup()).not.toThrowError();
+      expect(() => sw.cleanup()).not.toThrow();
       expect(sw.getState()).toBe('cleaned');
     });
 
@@ -418,7 +418,7 @@ describe('ShardedWal', () => {
 
       sw.finalize();
 
-      expect(() => sw.shard()).toThrowError('WAL is finalized, cannot modify');
+      expect(() => sw.shard()).toThrow('WAL is finalized, cannot modify');
     });
 
     it('should prevent shard creation after cleanup', () => {
@@ -448,7 +448,7 @@ describe('ShardedWal', () => {
 
       sw.cleanupIfCoordinator();
 
-      expect(() => sw.shard()).toThrowError('WAL is cleaned, cannot modify');
+      expect(() => sw.shard()).toThrow('WAL is cleaned, cannot modify');
     });
 
     it('should make finalize idempotent', () => {

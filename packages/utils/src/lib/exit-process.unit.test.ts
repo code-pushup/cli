@@ -26,7 +26,7 @@ describe('subscribeProcessExit', () => {
   });
 
   it('should install event listeners for all expected events', () => {
-    expect(() => subscribeProcessExit({ onError, onExit })).not.toThrowError();
+    expect(() => subscribeProcessExit({ onError, onExit })).not.toThrow();
 
     expect(processOnSpy).toHaveBeenCalledWith(
       'uncaughtException',
@@ -43,7 +43,7 @@ describe('subscribeProcessExit', () => {
   });
 
   it('should call onError with error and kind for uncaughtException', () => {
-    expect(() => subscribeProcessExit({ onError })).not.toThrowError();
+    expect(() => subscribeProcessExit({ onError })).not.toThrow();
 
     const testError = new Error('Test uncaught exception');
 
@@ -57,7 +57,7 @@ describe('subscribeProcessExit', () => {
   });
 
   it('should call onError with reason and kind for unhandledRejection', () => {
-    expect(() => subscribeProcessExit({ onError })).not.toThrowError();
+    expect(() => subscribeProcessExit({ onError })).not.toThrow();
 
     const testReason = 'Test unhandled rejection';
 
@@ -73,7 +73,7 @@ describe('subscribeProcessExit', () => {
   it('should call onExit with correct code and reason for SIGINT', () => {
     expect(() =>
       subscribeProcessExit({ onExit, exitOnSignal: true }),
-    ).not.toThrowError();
+    ).not.toThrow();
 
     (process as any).emit('SIGINT');
 
@@ -88,7 +88,7 @@ describe('subscribeProcessExit', () => {
   it('should call onExit with correct code and reason for SIGTERM', () => {
     expect(() =>
       subscribeProcessExit({ onExit, exitOnSignal: true }),
-    ).not.toThrowError();
+    ).not.toThrow();
 
     (process as any).emit('SIGTERM');
 
@@ -106,7 +106,7 @@ describe('subscribeProcessExit', () => {
   it('should call onExit with correct code and reason for SIGQUIT', () => {
     expect(() =>
       subscribeProcessExit({ onExit, exitOnSignal: true }),
-    ).not.toThrowError();
+    ).not.toThrow();
 
     (process as any).emit('SIGQUIT');
 
@@ -124,7 +124,7 @@ describe('subscribeProcessExit', () => {
   it('should not exit process when exitOnSignal is false', () => {
     expect(() =>
       subscribeProcessExit({ onExit, exitOnSignal: false }),
-    ).not.toThrowError();
+    ).not.toThrow();
 
     (process as any).emit('SIGINT');
 
@@ -137,7 +137,7 @@ describe('subscribeProcessExit', () => {
   });
 
   it('should not exit process when exitOnSignal is not set', () => {
-    expect(() => subscribeProcessExit({ onExit })).not.toThrowError();
+    expect(() => subscribeProcessExit({ onExit })).not.toThrow();
 
     (process as any).emit('SIGTERM');
 
@@ -153,7 +153,7 @@ describe('subscribeProcessExit', () => {
   });
 
   it('should call onExit with exit code and reason for normal exit', () => {
-    expect(() => subscribeProcessExit({ onExit })).not.toThrowError();
+    expect(() => subscribeProcessExit({ onExit })).not.toThrow();
 
     const exitCode = 42;
     (process as any).emit('exit', exitCode);
@@ -166,7 +166,7 @@ describe('subscribeProcessExit', () => {
   it('should call onExit with fatal reason when exitOnFatal is true', () => {
     expect(() =>
       subscribeProcessExit({ onError, onExit, exitOnFatal: true }),
-    ).not.toThrowError();
+    ).not.toThrow();
 
     const testError = new Error('Test uncaught exception');
 
@@ -190,7 +190,7 @@ describe('subscribeProcessExit', () => {
         exitOnFatal: true,
         fatalExitCode: 42,
       }),
-    ).not.toThrowError();
+    ).not.toThrow();
 
     const testError = new Error('Test uncaught exception');
 
@@ -209,7 +209,7 @@ describe('subscribeProcessExit', () => {
   it('should call onExit with fatal reason for unhandledRejection when exitOnFatal is true', () => {
     expect(() =>
       subscribeProcessExit({ onError, onExit, exitOnFatal: true }),
-    ).not.toThrowError();
+    ).not.toThrow();
 
     const testReason = 'Test unhandled rejection';
 
@@ -254,7 +254,7 @@ describe('subscribeProcessExit', () => {
   it('should call onExit only once even when close is called multiple times', () => {
     expect(() =>
       subscribeProcessExit({ onExit, exitOnSignal: true }),
-    ).not.toThrowError();
+    ).not.toThrow();
 
     (process as any).emit('SIGINT');
     expect(onExit).toHaveBeenCalledExactlyOnceWith(SIGNAL_EXIT_CODES().SIGINT, {

@@ -59,6 +59,6 @@ describe('loadReport', () => {
         filename: 'report',
         format: 'json',
       }),
-    ).rejects.toThrowError('slug has to follow the pattern');
+    ).rejects.toThrow('slug has to follow the pattern');
   });
 });

@@ -89,7 +89,7 @@ describe('NodeJS Profiler Integration', () => {
         `${prefix}${prefix ? ':' : ''}measure:start`,
         asOptions(trackEntryPayload(defaultPayload)),
       ),
-    ).not.toThrowError();
+    ).not.toThrow();
 
     const largeArray = Array.from({ length: 100_000 }, (_, i) => i);
     const result = largeArray
@@ -103,7 +103,7 @@ describe('NodeJS Profiler Integration', () => {
         `${prefix}${prefix ? ':' : ''}measure:end`,
         asOptions(trackEntryPayload(defaultPayload)),
       ),
-    ).not.toThrowError();
+    ).not.toThrow();
 
     performance.measure(`${prefix}${prefix ? ':' : ''}measure`, {
       start: `${prefix}${prefix ? ':' : ''}measure:start`,
@@ -123,7 +123,7 @@ describe('NodeJS Profiler Integration', () => {
         `${prefix}:async-measure:start`,
         asOptions(trackEntryPayload(defaultPayload)),
       ),
-    ).not.toThrowError();
+    ).not.toThrow();
     // Heavy work: More CPU-intensive operations
     const matrix = Array.from({ length: 1000 }, () =>
       Array.from({ length: 1000 }, (_, i) => i),
@@ -139,7 +139,7 @@ describe('NodeJS Profiler Integration', () => {
         `${prefix}:async-measure:end`,
         asOptions(trackEntryPayload(defaultPayload)),
       ),
-    ).not.toThrowError();
+    ).not.toThrow();
 
     performance.measure(`${prefix}:async-measure`, {
       start: `${prefix}:async-measure:start`,
@@ -158,7 +158,7 @@ describe('NodeJS Profiler Integration', () => {
       profiler.marker(`Enable profiler`, {
         tooltipText: 'set enable to true',
       }),
-    ).not.toThrowError();
+    ).not.toThrow();
 
     await new Promise(resolve => setTimeout(resolve, 50));
 
@@ -178,7 +178,7 @@ describe('NodeJS Profiler Integration', () => {
       profiler.marker(`Disable profiler`, {
         tooltipText: 'set enable to false',
       }),
-    ).not.toThrowError();
+    ).not.toThrow();
   }
 
   beforeEach(async () => {
@@ -371,7 +371,7 @@ describe('NodeJS Profiler Integration', () => {
     expect(shardPath).toMatch(/\.jsonl$/);
 
     const groupIdDirPath = path.dirname(finalFilePath);
-    await expect(fsPromises.access(groupIdDirPath)).resolves.not.toThrowError();
+    await expect(fsPromises.access(groupIdDirPath)).resolves.not.toThrow();
 
     profiler.close();
   });

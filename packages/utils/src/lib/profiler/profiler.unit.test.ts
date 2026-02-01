@@ -161,7 +161,7 @@ describe('Profiler', () => {
         tooltipText: 'Test marker',
         properties: [['key', 'value']],
       });
-    }).not.toThrowError();
+    }).not.toThrow();
 
     const marks = performance.getEntriesByType('mark');
     expect(marks).toStrictEqual([
@@ -189,7 +189,7 @@ describe('Profiler', () => {
       profilerWithColor.marker('test-marker-default-color', {
         tooltipText: 'Test marker with default color',
       });
-    }).not.toThrowError();
+    }).not.toThrow();
 
     const marks = performance.getEntriesByType('mark');
     expect(marks).toStrictEqual([
@@ -216,7 +216,7 @@ describe('Profiler', () => {
         tooltipText: 'Test marker without default color',
         properties: [['key', 'value']],
       });
-    }).not.toThrowError();
+    }).not.toThrow();
 
     const marks = performance.getEntriesByType('mark');
     expect(marks).toStrictEqual([
@@ -242,7 +242,7 @@ describe('Profiler', () => {
         color: 'primary',
         tooltipText: 'This should not create a mark',
       });
-    }).not.toThrowError();
+    }).not.toThrow();
 
     const marks = performance.getEntriesByType('mark');
     expect(marks).toHaveLength(0);
@@ -316,7 +316,7 @@ describe('Profiler', () => {
       throw error;
     });
 
-    expect(() => profiler.measure('test-event', workFn)).toThrowError(error);
+    expect(() => profiler.measure('test-event', workFn)).toThrow(error);
     expect(workFn).toHaveBeenCalled();
   });
 
@@ -327,7 +327,7 @@ describe('Profiler', () => {
       throw error;
     });
 
-    expect(() => profiler.measure('test-event', workFn)).toThrowError(error);
+    expect(() => profiler.measure('test-event', workFn)).toThrow(error);
     expect(workFn).toHaveBeenCalled();
   });
 
@@ -339,9 +339,9 @@ describe('Profiler', () => {
       throw error;
     });
 
-    expect(() =>
-      enabledProfiler.measure('test-event-error', workFn),
-    ).toThrowError(error);
+    expect(() => enabledProfiler.measure('test-event-error', workFn)).toThrow(
+      error,
+    );
     expect(workFn).toHaveBeenCalled();
 
     // Verify that performance marks were created even though error occurred
@@ -440,7 +440,7 @@ describe('Profiler', () => {
 
     await expect(
       profiler.measureAsync('test-async-event', workFn),
-    ).rejects.toThrowError(error);
+    ).rejects.toThrow(error);
     expect(workFn).toHaveBeenCalled();
   });
 
@@ -455,7 +455,7 @@ describe('Profiler', () => {
 
     await expect(
       enabledProfiler.measureAsync('test-async-event-error', workFn),
-    ).rejects.toThrowError(error);
+    ).rejects.toThrow(error);
     expect(workFn).toHaveBeenCalled();
 
     // Verify that performance marks were created even though error occurred

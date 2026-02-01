@@ -14,7 +14,7 @@ describe('rowToStringArray', () => {
         columns: [{ key: 'prop' }],
         rows: [[1, 2, 3]],
       } as unknown as Table),
-    ).toThrowError('Column can`t be object when rows are primitive values');
+    ).toThrow('Column can`t be object when rows are primitive values');
   });
 
   it('should transform row of primitive values row to a string array', () => {
@@ -208,6 +208,6 @@ describe('getColumnAlignments', () => {
   it('throws for a undefined row', () => {
     expect(() =>
       getColumnAlignments({ rows: [undefined as unknown as TableRowObject] }),
-    ).toThrowError('first row can`t be undefined.');
+    ).toThrow('first row can`t be undefined.');
   });
 });

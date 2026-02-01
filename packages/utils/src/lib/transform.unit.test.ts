@@ -233,7 +233,7 @@ describe('objectToCliArgs', () => {
 
   it('should throw error for unsupported type', () => {
     const params = { unsupported: Symbol('test') as any };
-    expect(() => objectToCliArgs(params)).toThrowError('Unsupported type');
+    expect(() => objectToCliArgs(params)).toThrow('Unsupported type');
   });
 });
 
