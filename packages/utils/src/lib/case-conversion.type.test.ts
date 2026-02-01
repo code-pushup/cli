@@ -1,4 +1,3 @@
-import { assertType, describe, expectTypeOf, it } from 'vitest';
 import { lowercase, uppercase } from './case-conversions.js';
 import type { CamelCaseToKebabCase, KebabCaseToCamelCase } from './types.js';
 

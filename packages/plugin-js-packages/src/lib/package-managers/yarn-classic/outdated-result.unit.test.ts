@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { toJsonLines } from '@code-pushup/utils';
 import type {
   OutdatedDependency,
@@ -84,13 +83,13 @@ describe('yarnClassicToOutdatedResult', () => {
 
 describe('validateOutdatedFields', () => {
   it('should consider all required fields as valid', () => {
-    expect(validateOutdatedFields(REQUIRED_OUTDATED_FIELDS)).toBe(true);
+    expect(validateOutdatedFields(REQUIRED_OUTDATED_FIELDS)).toBeTrue();
   });
 
   it('should consider optional fields valid', () => {
-    expect(validateOutdatedFields([...REQUIRED_OUTDATED_FIELDS, 'URL'])).toBe(
-      true,
-    );
+    expect(
+      validateOutdatedFields([...REQUIRED_OUTDATED_FIELDS, 'URL']),
+    ).toBeTrue();
   });
 
   it('should throw for missing required fields', () => {

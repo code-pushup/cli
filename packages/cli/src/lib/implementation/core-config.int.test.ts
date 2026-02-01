@@ -1,5 +1,4 @@
 import ansis from 'ansis';
-import { describe, expect, vi } from 'vitest';
 import {
   type CoreConfig,
   DEFAULT_PERSIST_FILENAME,

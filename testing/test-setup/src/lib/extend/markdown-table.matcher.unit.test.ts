@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 describe('markdown-table-matcher', () => {
   it('should match header and data rows in a markdown table', () => {
     const markdown = `
@@ -46,7 +44,7 @@ describe('markdown-table-matcher', () => {
 
   it('should match table rows with an empty cell', () => {
     const markdown = `
-      |  Severity  | Message                   | Source file           | Line(s) |
+      |  Severity  | Message                   | Source                | Location |
       | :--------: | :------------------------ | :-------------------- | :-----: |
       | 🚨 _error_ | File size is 20KB too big | \`list.component.ts\` |         |
     `;

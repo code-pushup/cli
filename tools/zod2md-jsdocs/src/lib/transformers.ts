@@ -1,9 +1,18 @@
 import type { PluginConfig, TransformerExtras } from 'ts-patch';
 import type * as ts from 'typescript';
 
-const tsInstance: typeof ts = require('typescript');
+/* eslint-disable-next-line no-duplicate-imports */
+import tsInstance from 'typescript';
 
-function generateJSDocComment(typeName: string, baseUrl: string): string {
+/**
+ * Generates a JSDoc comment for a given type name and base URL.
+ * @param typeName
+ * @param baseUrl
+ */
+export function generateJSDocComment(
+  typeName: string,
+  baseUrl: string,
+): string {
   const markdownLink = `${baseUrl}#${typeName.toLowerCase()}`;
   return `*
  * Type Definition: \`${typeName}\`
@@ -15,7 +24,7 @@ function generateJSDocComment(typeName: string, baseUrl: string): string {
  `;
 }
 
-function annotateTypeDefinitions(
+export function annotateTypeDefinitions(
   _program: ts.Program,
   pluginConfig: PluginConfig,
   extras?: TransformerExtras,
@@ -46,10 +55,7 @@ function annotateTypeDefinitions(
       }
       return tsLib.visitEachChild(node, visitor, context);
     };
-    return (sourceFile: ts.SourceFile) => {
-      return tsLib.visitNode(sourceFile, visitor, tsLib.isSourceFile);
-    };
+    return (sourceFile: ts.SourceFile) =>
+      tsLib.visitNode(sourceFile, visitor, tsLib.isSourceFile);
   };
 }
-
-module.exports = annotateTypeDefinitions;

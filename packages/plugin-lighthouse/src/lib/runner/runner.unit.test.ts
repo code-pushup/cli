@@ -1,7 +1,6 @@
 import type { Config } from 'lighthouse';
 import { runLighthouse } from 'lighthouse/cli/run.js';
 import type { Result } from 'lighthouse/types/lhr/audit-result';
-import { expect, vi } from 'vitest';
 import { DEFAULT_PERSIST_CONFIG } from '@code-pushup/models';
 import { logger } from '@code-pushup/utils';
 import { DEFAULT_CLI_FLAGS } from './constants.js';

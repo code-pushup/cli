@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { getEnvironmentType } from './environment-type.js';
 
 describe('getEnvironmentType', () => {

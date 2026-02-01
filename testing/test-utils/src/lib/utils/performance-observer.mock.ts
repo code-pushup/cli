@@ -1,9 +1,5 @@
+import type { PerformanceEntry } from 'node:perf_hooks';
 import { vi } from 'vitest';
-
-type EntryLike = Pick<
-  PerformanceEntry,
-  'name' | 'entryType' | 'startTime' | 'duration'
->;
 
 export class MockPerformanceObserver {
   static instances: MockPerformanceObserver[] = [];
@@ -31,9 +27,9 @@ export class MockPerformanceObserver {
     this.observing = true;
     this.buffered = options.buffered ?? false;
 
-    // If buffered is true, emit all existing entries immediately
+    // If buffered is true, trigger observer callback with all existing entries
     if (this.buffered && MockPerformanceObserver.globalEntries.length > 0) {
-      this.emit(MockPerformanceObserver.globalEntries.slice());
+      this.triggerObserverCallback();
     }
   });
 
@@ -45,12 +41,11 @@ export class MockPerformanceObserver {
     }
   });
 
-  /** Test helper: simulate delivery of performance entries */
-  emit(entries: EntryLike[]) {
+  /** Test helper: trigger observer callback with current global entries */
+  triggerObserverCallback() {
     if (!this.observing) return;
 
-    const perfEntries = entries as unknown as PerformanceEntry[];
-    MockPerformanceObserver.globalEntries.push(...perfEntries);
+    const perfEntries = MockPerformanceObserver.globalEntries;
 
     // Create a mock PerformanceObserverEntryList
     const mockEntryList = {
@@ -68,33 +63,5 @@ export class MockPerformanceObserver {
     const entries = MockPerformanceObserver.globalEntries;
     MockPerformanceObserver.globalEntries = [];
     return entries as unknown as PerformanceEntryList;
-  }
-
-  emitMark(name: string) {
-    this.emit([
-      {
-        name,
-        entryType: 'mark',
-        startTime: 0,
-        duration: 0,
-      },
-    ]);
-  }
-
-  emitNavigation(
-    name: string,
-    {
-      startTime = 0,
-      duration = 0,
-    }: { startTime?: number; duration?: number } = {},
-  ) {
-    this.emit([
-      {
-        name,
-        entryType: 'navigation',
-        startTime,
-        duration,
-      },
-    ]);
   }
 }

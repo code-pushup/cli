@@ -1,4 +1,3 @@
-import { describe, expect, vi } from 'vitest';
 import { MINIMAL_PLUGIN_CONFIG_MOCK } from '@code-pushup/test-fixtures';
 import { getCurrentBranchOrTag, safeCheckout } from '@code-pushup/utils';
 import { collectAndPersistReports } from './collect-and-persist.js';
@@ -28,6 +27,11 @@ describe('history', () => {
       outputDir: '.code-pushup',
       filename: 'history-report',
       format: ['json'],
+      skipReports: false,
+    },
+    cache: {
+      read: false,
+      write: false,
     },
     plugins: [MINIMAL_PLUGIN_CONFIG_MOCK],
   };
@@ -35,7 +39,7 @@ describe('history', () => {
   it('should check out all passed commits and reset to initial branch or tag', async () => {
     await history(historyBaseOptions, ['abc', 'def']);
 
-    expect(getCurrentBranchOrTag).toHaveBeenCalledTimes(1);
+    expect(getCurrentBranchOrTag).toHaveBeenCalledOnce();
 
     expect(safeCheckout).toHaveBeenCalledTimes(3);
     // walk commit history
@@ -53,7 +57,7 @@ describe('history', () => {
 
   it('should call collect with correct filename and format', async () => {
     await history(historyBaseOptions, ['abc']);
-    expect(collectAndPersistReports).toHaveBeenCalledTimes(1);
+    expect(collectAndPersistReports).toHaveBeenCalledOnce();
     expect(collectAndPersistReports).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -78,7 +82,7 @@ describe('history', () => {
     };
     await history(historyOptions, ['abc']);
 
-    expect(upload).toHaveBeenCalledTimes(1);
+    expect(upload).toHaveBeenCalledOnce();
     expect(upload).toHaveBeenCalledWith(
       expect.objectContaining({
         persist: expect.objectContaining({ filename: 'abc-report' }),

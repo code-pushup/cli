@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import type { AuditResult } from '../../runner/audit/types.js';
 import { pnpmToAuditResult, pnpmToDirectDependency } from './audit-result.js';
 import type { PnpmAuditResultJson } from './types.js';
@@ -136,7 +135,7 @@ describe('pnpmToAuditResult', () => {
 
 describe('pnpmToDirectDependency', () => {
   it('should identify a direct dependency', () => {
-    expect(pnpmToDirectDependency('. > semver@7.0.0')).toBe(true);
+    expect(pnpmToDirectDependency('. > semver@7.0.0')).toBeTrue();
   });
 
   it('should return a direct dependency name', () => {

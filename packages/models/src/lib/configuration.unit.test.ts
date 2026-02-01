@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import {
   artifactGenerationCommandSchema,
   pluginArtifactOptionsSchema,
@@ -23,17 +22,17 @@ describe('artifactGenerationCommandSchema', () => {
 
   it('should fail if command is missing', () => {
     const data = { args: ['eslint', 'src/'] };
-    expect(artifactGenerationCommandSchema.safeParse(data).success).toBe(false);
+    expect(artifactGenerationCommandSchema.safeParse(data).success).toBeFalse();
   });
 
   it('should fail if command is empty', () => {
     const data = { command: '' };
-    expect(artifactGenerationCommandSchema.safeParse(data).success).toBe(false);
+    expect(artifactGenerationCommandSchema.safeParse(data).success).toBeFalse();
   });
 
   it('should fail if args is not an array of strings', () => {
     const data = { command: 'npx', args: [123, true] };
-    expect(artifactGenerationCommandSchema.safeParse(data).success).toBe(false);
+    expect(artifactGenerationCommandSchema.safeParse(data).success).toBeFalse();
   });
 });
 
@@ -60,7 +59,7 @@ describe('pluginArtifactOptionsSchema', () => {
 
   it('should fail if artifactsPaths is an empty array', () => {
     const data = { artifactsPaths: [] };
-    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
+    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBeFalse();
   });
 
   it('should validate with generateArtifactsCommand and artifactsPaths', () => {
@@ -79,12 +78,12 @@ describe('pluginArtifactOptionsSchema', () => {
 
   it('should fail if artifactsPaths is missing', () => {
     const data = { generateArtifactsCommand: { command: 'npm' } };
-    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
+    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBeFalse();
   });
 
   it('should fail if artifactsPaths is not string or array of strings', () => {
     const data = { artifactsPaths: 123 };
-    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
+    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBeFalse();
   });
 
   it('should fail if generateArtifactsCommand is invalid', () => {
@@ -92,7 +91,7 @@ describe('pluginArtifactOptionsSchema', () => {
       generateArtifactsCommand: { command: '' },
       artifactsPaths: 'dist/report.json',
     };
-    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
+    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBeFalse();
   });
 
   it('should validate with generateArtifactsCommand as a string', () => {
@@ -114,7 +113,7 @@ describe('pluginArtifactOptionsSchema', () => {
       generateArtifactsCommand: '',
       artifactsPaths: 'coverage/lcov.info',
     };
-    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
+    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBeFalse();
   });
 
   it('should fail if generateArtifactsCommand is a number', () => {
@@ -122,6 +121,6 @@ describe('pluginArtifactOptionsSchema', () => {
       generateArtifactsCommand: 123,
       artifactsPaths: 'coverage/lcov.info',
     };
-    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBe(false);
+    expect(pluginArtifactOptionsSchema.safeParse(data).success).toBeFalse();
   });
 });

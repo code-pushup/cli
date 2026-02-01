@@ -26,10 +26,10 @@ exports[`auditDetails > should render complete details section 1`] = `
 
 #### Issues
 
-|  Severity  | Message                                         | Source file         | Line(s) |
-| :--------: | :---------------------------------------------- | :------------------ | :-----: |
-| 🚨 _error_ | Use design system components instead of classes | \`list.component.ts\` | 400-200 |
-| 🚨 _error_ | File size is 20KB too big                       | \`list.component.ts\` |         |
+|  Severity  | Message                                         | Source              | Location |
+| :--------: | :---------------------------------------------- | :------------------ | :------: |
+| 🚨 _error_ | Use design system components instead of classes | \`list.component.ts\` | 400-200  |
+| 🚨 _error_ | File size is 20KB too big                       | \`list.component.ts\` |          |
 
 </details>
 "
@@ -38,11 +38,11 @@ exports[`auditDetails > should render complete details section 1`] = `
 exports[`auditDetailsIssues > should render complete section 1`] = `
 "#### Issues
 
-|   Severity   | Message                            | Source file    | Line(s) |
-| :----------: | :--------------------------------- | :------------- | :-----: |
-|  ℹ️ _info_   | File \`index.js\` is 56Kb.           | \`index.js\`     |         |
-| ⚠️ _warning_ | Package license is has to be "MIT" | \`package.json\` |    4    |
-|  🚨 _error_  | no unused vars                     | \`index.js\`     | 400-200 |
+|   Severity   | Message                            | Source         | Location |
+| :----------: | :--------------------------------- | :------------- | :------: |
+|  ℹ️ _info_   | File \`index.js\` is 56Kb.           | \`index.js\`     |          |
+| ⚠️ _warning_ | Package license is has to be "MIT" | \`package.json\` |    4     |
+|  🚨 _error_  | no unused vars                     | \`index.js\`     | 400-200  |
 "
 `;
 
@@ -130,11 +130,11 @@ Search engines are unable to include your pages in search results if they don't 
 
 #### Issues
 
-|   Severity   | Message                            | Source file    | Line(s) |
-| :----------: | :--------------------------------- | :------------- | :-----: |
-|  ℹ️ _info_   | File \`index.js\` is 56Kb.           | \`index.js\`     |         |
-| ⚠️ _warning_ | Package license is has to be "MIT" | \`package.json\` |    4    |
-|  🚨 _error_  | no unused vars                     | \`index.js\`     | 400-200 |
+|   Severity   | Message                            | Source         | Location |
+| :----------: | :--------------------------------- | :------------- | :------: |
+|  ℹ️ _info_   | File \`index.js\` is 56Kb.           | \`index.js\`     |          |
+| ⚠️ _warning_ | Package license is has to be "MIT" | \`package.json\` |    4     |
+|  🚨 _error_  | no unused vars                     | \`index.js\`     | 400-200  |
 
 </details>
 

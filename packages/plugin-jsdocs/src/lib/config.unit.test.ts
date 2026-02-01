@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { type JsDocsPluginConfig, jsDocsPluginConfigSchema } from './config.js';
 
 describe('JsDocsPlugin Configuration', () => {

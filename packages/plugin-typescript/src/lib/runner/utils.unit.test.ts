@@ -1,5 +1,4 @@
 import { type Diagnostic, DiagnosticCategory } from 'typescript';
-import { beforeEach, describe, expect } from 'vitest';
 import {
   getIssueFromDiagnostic,
   getSeverity,

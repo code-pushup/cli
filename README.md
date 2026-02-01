@@ -27,7 +27,6 @@ See how your project measures up. With [portal integration](./packages/cli/READM
 ![Security](https://api.staging.code-pushup.dev/badges/code-pushup/cli-workspace/security?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
 ![Updates](https://api.staging.code-pushup.dev/badges/code-pushup/cli-workspace/updates?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
 ![Documentation](https://api.staging.code-pushup.dev/badges/code-pushup/cli-workspace/docs?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
-![Axe Accessibility](https://api.staging.code-pushup.dev/badges/code-pushup/cli-workspace/axe-a11y?apiKey=cp_def67c4efe558a9149061d0c62de893e1689ad793071db332790238446173fef)
 
 ---
 

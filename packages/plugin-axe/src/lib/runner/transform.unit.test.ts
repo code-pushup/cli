@@ -1,7 +1,6 @@
 import type { AxeResults, NodeResult, Result } from 'axe-core';
-import { describe, expect, it } from 'vitest';
 import type { AuditOutput } from '@code-pushup/models';
-import { createUrlSuffix, toAuditOutputs } from './transform.js';
+import { toAuditOutputs } from './transform.js';
 
 function createMockNode(overrides: Partial<NodeResult> = {}): NodeResult {
   return {
@@ -44,7 +43,7 @@ describe('toAuditOutputs', () => {
       ],
     });
 
-    expect(toAuditOutputs(results, '')).toEqual<AuditOutput[]>([
+    expect(toAuditOutputs(results, '')).toStrictEqual<AuditOutput[]>([
       {
         slug: 'color-contrast',
         score: 1,
@@ -79,7 +78,9 @@ describe('toAuditOutputs', () => {
       ],
     });
 
-    expect(toAuditOutputs(results, '')).toEqual<AuditOutput[]>([
+    expect(toAuditOutputs(results, 'https://example.com')).toStrictEqual<
+      AuditOutput[]
+    >([
       {
         slug: 'image-alt',
         score: 0,
@@ -91,15 +92,30 @@ describe('toAuditOutputs', () => {
               message:
                 '[`img`] Fix this: Element does not have an alt attribute',
               severity: 'error',
+              source: {
+                url: 'https://example.com',
+                snippet: '<img src="logo.png">',
+                selector: 'img',
+              },
             },
             {
               message:
                 '[`.header > img:nth-child(2)`] Fix this: Element does not have an alt attribute',
               severity: 'error',
+              source: {
+                url: 'https://example.com',
+                snippet: '<img src="icon.svg">',
+                selector: '.header > img:nth-child(2)',
+              },
             },
             {
               message: '[`#main img`] Mock help for image-alt',
               severity: 'error',
+              source: {
+                url: 'https://example.com',
+                snippet: '<img src="banner.jpg">',
+                selector: '#main img',
+              },
             },
           ],
         },
@@ -127,7 +143,9 @@ describe('toAuditOutputs', () => {
       ],
     });
 
-    expect(toAuditOutputs(results, '')).toEqual<AuditOutput[]>([
+    expect(toAuditOutputs(results, 'https://example.com')).toStrictEqual<
+      AuditOutput[]
+    >([
       {
         slug: 'color-contrast',
         score: 0,
@@ -139,10 +157,20 @@ describe('toAuditOutputs', () => {
               message:
                 '[`button`] Fix this: Element has insufficient color contrast',
               severity: 'warning',
+              source: {
+                url: 'https://example.com',
+                snippet: '<button>Click me</button>',
+                selector: 'button',
+              },
             },
             {
               message: '[`a`] Review: Unable to determine contrast ratio',
               severity: 'warning',
+              source: {
+                url: 'https://example.com',
+                snippet: '<a href="#">Link</a>',
+                selector: 'a',
+              },
             },
           ],
         },
@@ -155,7 +183,7 @@ describe('toAuditOutputs', () => {
       inapplicable: [createMockResult('audio-caption', [])],
     });
 
-    expect(toAuditOutputs(results, '')).toEqual<AuditOutput[]>([
+    expect(toAuditOutputs(results, '')).toStrictEqual<AuditOutput[]>([
       {
         slug: 'audio-caption',
         score: 1,
@@ -239,7 +267,9 @@ describe('toAuditOutputs', () => {
       ],
     });
 
-    expect(toAuditOutputs(results, '')).toEqual<AuditOutput[]>([
+    expect(toAuditOutputs(results, 'https://example.com')).toStrictEqual<
+      AuditOutput[]
+    >([
       {
         slug: 'color-contrast',
         score: 0,
@@ -251,6 +281,11 @@ describe('toAuditOutputs', () => {
               message:
                 '[`#app >> my-component >> button`] Fix this: Element has insufficient color contrast',
               severity: 'error',
+              source: {
+                url: 'https://example.com',
+                snippet: '<button></button>',
+                selector: '#app >> my-component >> button',
+              },
             },
           ],
         },
@@ -258,7 +293,7 @@ describe('toAuditOutputs', () => {
     ]);
   });
 
-  it('should fall back to html when target is missing', () => {
+  it('should omit selector when target is missing', () => {
     const results = createMockAxeResults({
       violations: [
         createMockResult('aria-roles', [
@@ -273,7 +308,9 @@ describe('toAuditOutputs', () => {
       ],
     });
 
-    expect(toAuditOutputs(results, '')).toEqual<AuditOutput[]>([
+    expect(toAuditOutputs(results, 'https://example.com')).toStrictEqual<
+      AuditOutput[]
+    >([
       {
         slug: 'aria-roles',
         score: 0,
@@ -283,24 +320,16 @@ describe('toAuditOutputs', () => {
           issues: [
             {
               message:
-                '[`<div role="invalid-role">Content</div>`] Fix this: Ensure all values assigned to role="" correspond to valid ARIA roles',
+                'Fix this: Ensure all values assigned to role="" correspond to valid ARIA roles',
               severity: 'error',
+              source: {
+                url: 'https://example.com',
+                snippet: '<div role="invalid-role">Content</div>',
+              },
             },
           ],
         },
       },
     ]);
-  });
-});
-
-describe('createUrlSuffix', () => {
-  it('should return empty string for single URL', () => {
-    expect(createUrlSuffix('https://example.com', 1)).toBe('');
-  });
-
-  it('should return formatted suffix for multiple URLs', () => {
-    expect(createUrlSuffix('https://example.com', 2)).toBe(
-      ' ([example.com](https://example.com))',
-    );
   });
 });

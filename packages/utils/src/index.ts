@@ -94,6 +94,7 @@ export {
 export { interpolate } from './lib/interpolate.js';
 export { Logger, logger } from './lib/logger.js';
 export { mergeConfigs } from './lib/merge-configs.js';
+export { loadNxProjectGraph } from './lib/nx.js';
 export {
   addIndex,
   expandAuditsForUrls,
@@ -125,6 +126,11 @@ export {
   listGroupsFromAllPlugins,
 } from './lib/reports/flatten-plugins.js';
 export { formatIssueSeverities, wrapTags } from './lib/reports/formatting.js';
+export {
+  isFileIssue,
+  isFileSource,
+  isUrlSource,
+} from './lib/reports/type-guards.js';
 export { generateMdReport } from './lib/reports/generate-md-report.js';
 export {
   generateMdReportsDiff,
