@@ -1,6 +1,7 @@
 import { createJiti as createJitiSource } from 'jiti';
 import { stat } from 'node:fs/promises';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import type { CompilerOptions } from 'typescript';
 import { fileExists } from './file-system.js';
 import { loadTargetConfig } from './load-ts-config.js';
@@ -25,6 +26,11 @@ export type ImportModuleOptions = JitiOptions & {
   filepath: string;
   tsconfig?: string;
 };
+
+export function toFileUrl(filepath: string): string {
+  return pathToFileURL(filepath).href;
+}
+
 export async function importModule<T = unknown>(
   options: ImportModuleOptions,
 ): Promise<T> {
@@ -50,7 +56,9 @@ export async function importModule<T = unknown>(
     tsconfigPath: tsconfig,
   });
 
-  return (await jitiInstance.import(absoluteFilePath, { default: true })) as T;
+  return (await jitiInstance.import(toFileUrl(absoluteFilePath), {
+    default: true,
+  })) as T;
 }
 
 /**
