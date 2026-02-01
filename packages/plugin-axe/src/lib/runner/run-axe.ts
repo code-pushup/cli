@@ -1,6 +1,5 @@
 import { AxeBuilder } from '@axe-core/playwright';
 import ansis from 'ansis';
-import type { AxeResults } from 'axe-core';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import {
@@ -17,6 +16,7 @@ import {
   logger,
   pluralizeToken,
 } from '@code-pushup/utils';
+import type { AxeResults } from '../safe-axe-core-import.js';
 import { type SetupFunction, runSetup } from './setup.js';
 import { toAuditOutputs } from './transform.js';
 

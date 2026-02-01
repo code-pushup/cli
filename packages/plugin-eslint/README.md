@@ -92,6 +92,19 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
      await eslintConfigFromAllNxProjects({ exclude: ['server'] });
      ```
 
+   - If you wish to target a specific project only (without dependencies), use the `eslintConfigFromNxProject` helper:
+
+     ```js
+     import eslintPlugin, { eslintConfigFromNxProject } from '@code-pushup/eslint-plugin';
+
+     export default {
+       plugins: [
+         // ...
+         await eslintPlugin(await eslintConfigFromNxProject('<PROJECT-NAME>')),
+       ],
+     };
+     ```
+
    - If you wish to target a specific project along with other projects it depends on, use the `eslintConfigFromNxProjectAndDeps` helper and pass in in your project name:
 
      ```js

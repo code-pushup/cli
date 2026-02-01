@@ -1,9 +1,9 @@
-const react = require('eslint-plugin-react');
-const reactHooks = require('eslint-plugin-react-hooks');
-const globals = require('globals');
+import react from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
+import globals from 'globals';
 
 /** @type {import('eslint').Linter.Config[]} */
-module.exports = [
+const config = [
   {
     files: ['**/*.jsx', '**/*.js'],
     ignores: ['eslint.config.js'],
@@ -65,3 +65,5 @@ module.exports = [
     },
   },
 ];
+
+export default config;
