@@ -32,6 +32,7 @@ export {
   type ProcessObserver,
   type ProcessResult,
 } from './lib/execute-process.js';
+export { loadTargetConfig } from './lib/load-ts-config.js';
 export {
   crawlFileSystem,
   createReportPath,
@@ -41,7 +42,6 @@ export {
   filePathToCliArg,
   findLineNumberInText,
   findNearestFile,
-  importModule,
   pluginWorkDir,
   projectToFilename,
   readJsonFile,
@@ -184,3 +184,4 @@ export type {
   Prettify,
   WithRequired,
 } from './lib/types.js';
+export * from './lib/import-module.js';

@@ -39,6 +39,7 @@ const UNIT_TEST_SETUP_FILES = [
  */
 const INT_TEST_SETUP_FILES = [
   '../../testing/test-setup/src/lib/reset.mocks.ts',
+  '../../testing/test-setup/src/lib/jiti.int-setup.ts',
   '../../testing/test-setup/src/lib/logger.mock.ts',
   '../../testing/test-setup/src/lib/chrome-path.mock.ts',
   ...CUSTOM_MATCHERS,
