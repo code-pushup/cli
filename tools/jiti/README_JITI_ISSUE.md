@@ -8,7 +8,7 @@ When encountering a module loading error with jiti/tsx, follow this systematic a
 
    - Open `code-pushup.config.ts`
    - Comment out all plugin configurations
-   - Run: `nx code-pushup --print-config --output out.json`
+   - Run: `nx reset && nx code-pushup -- print-config --output out.json`
    - Verify the command succeeds without errors
 
 2. **Identify the problematic plugin**
@@ -61,12 +61,6 @@ Location of the file: `tools/jiti/<library-name>/fix-<library-name>.ts`
 
 ## List of Issues
 
-### My Issue
-
-...
-
-## Old Issuess for reference
-
 ### axe-core
 
 **Library** (required)  
@@ -113,19 +107,33 @@ import axe from 'axe-core';
 **Preliminary fix** (optional)  
 https://github.com/code-pushup/cli/pull/1228/commits/b7109fb6c78803adae7f11605446ef2b6de950ff
 
-### vitest
+### @vitest/eslint-plugin (via ESLint plugin)
 
 **Library** (required)  
 [@vitest/eslint-plugin](https://github.com/vitest-dev/vitest/tree/main/packages/eslint-plugin)
 
 **Problem** (required)  
-`@vitest/eslint-plugin` cannot be executed with tsx and jiti internally
+`@vitest/eslint-plugin` fails with Invalid URL error when ESLint configs are loaded through `configureEslintPlugin()`. The issue occurs because tsx intercepts nested imports from files loaded by jiti, transforming `@vitest/eslint-plugin` before jiti can handle it.
 
 **Description** (required)  
-The Vitest ESLint plugin is used for linting Vitest test files in our codebase. When running ESLint with tsx module loading (as used in `nx code-pushup`), the plugin fails due to URL parsing issues in its CommonJS distribution. When tsx transforms `@vitest/eslint-plugin`, `import.meta.url` becomes `'about:blank'`, causing `new URL('index.cjs', 'about:blank')` to fail with Invalid URL error.
+The ESLint plugin (`configureEslintPlugin()`) loads ESLint configuration files using `loadConfigByPath()`. When ESLint configs (like `eslint.config.js`) import `@code-pushup/eslint-config/vitest.js`, which in turn imports `@vitest/eslint-plugin`, tsx transforms the CommonJS distribution. This causes `import.meta.url` to become `'about:blank'`, leading to `new URL('index.cjs', 'about:blank')` failing with Invalid URL error.
 
-**Reproduction** (required)  
-`TSX_TSCONFIG_PATH=tsconfig.base.json node --import tsx tools/jiti/vitest/issue-vitest.ts`
+**Root Cause:**
+
+- The CLI runs with `NODE_OPTIONS="--import tsx"`, registering tsx as a Node.js loader
+- When `eslint.config.js` executes with static imports, Node.js uses tsx for module resolution
+- tsx transforms `@vitest/eslint-plugin` before jiti can handle it
+- jiti's `nativeModules` configuration only prevents jiti from transforming modules, not tsx
+- This is an architectural limitation when both jiti and tsx are used together
+
+**Reproduction** (required)
+`nx reset && nx code-pushup -- print-config --output out.json` (with `configureEslintPlugin()` enabled in `code-pushup.config.ts`)
+
+Or using the reproduction script:
+`TSX_TSCONFIG_PATH=tsconfig.base.json node --import tsx tools/jiti/eslint-vitest/issue-eslint-vitest.ts`
+
+Or using the old reproduction script (now with shorter output):
+`TSX_TSCONFIG_PATH=tsconfig.base.json node --import tsx tools/jiti/old-vitest/issue-vitest.ts`
 
 **Error** (required)
 
@@ -148,30 +156,118 @@ TypeError: Invalid URL
 ```
 
 **Issues** (optional)  
-[tools/jiti/vitest/issue-vitest.ts](tools/jiti/vitest/issue-vitest.ts)
+[tools/jiti/eslint-vitest/issue-eslint-vitest.ts](tools/jiti/eslint-vitest/issue-eslint-vitest.ts)
+
+**Status** (required)  
+Resolved - Fixed by temporarily removing `--import tsx` from `NODE_OPTIONS` when loading ESLint configs, allowing jiti to handle all module loading without tsx interference.
 
 **Source Code** (required)  
-[packages/utils/src/lib/import-module.ts](packages/utils/src/lib/import-module.ts#L19-L23) - `JITI_NATIVE_MODULES` list that includes `@vitest/eslint-plugin`
+[packages/plugin-eslint/src/lib/meta/versions/flat.ts](packages/plugin-eslint/src/lib/meta/versions/flat.ts#L64-L73) - `loadConfigByPath` function that delegates to child process loading
 
-```typescript
-export const JITI_NATIVE_MODULES = ['@vitest/eslint-plugin', '@code-pushup/eslint-config', 'lighthouse'] as const;
-```
-
-[packages/plugin-eslint/src/lib/meta/versions/flat.ts](packages/plugin-eslint/src/lib/meta/versions/flat.ts#L62-L69) - `loadConfigByPath` function that loads ESLint config files
+[packages/plugin-eslint/src/lib/meta/versions/flat.ts](packages/plugin-eslint/src/lib/meta/versions/flat.ts#L75-L210) - `loadConfigInChildProcess` function that spawns a child process without tsx
 
 ```typescript
 async function loadConfigByPath(configPath: string): Promise<FlatConfig> {
-  const absolutePath = path.isAbsolute(configPath) ? configPath : path.join(process.cwd(), configPath);
-  // Use jiti's importModule instead of dynamic import to ensure nativeModules
-  // (like @vitest/eslint-plugin) are loaded without transformation.
-  const mod = await importModule<FlatConfig | { default: FlatConfig }>({
-    filepath: absolutePath,
-  });
-  return 'default' in mod ? mod.default : mod;
+  // Temporarily remove --import tsx from NODE_OPTIONS to prevent tsx from intercepting
+  // nested imports. This allows jiti to handle all module loading and respect its
+  // nativeModules configuration (like @vitest/eslint-plugin).
+  const originalNodeOptions = process.env.NODE_OPTIONS;
+
+  // Remove --import tsx if present, preserving other options
+  const nodeOptions =
+    originalNodeOptions
+      ?.split(/\s+/)
+      .filter(opt => {
+        if (opt.includes('--import')) {
+          return !opt.includes('tsx');
+        }
+        return true;
+      })
+      .join(' ') || undefined;
+
+  // Temporarily set modified NODE_OPTIONS if it changed
+  if (nodeOptions !== originalNodeOptions) {
+    if (nodeOptions) {
+      process.env.NODE_OPTIONS = nodeOptions;
+    } else {
+      delete process.env.NODE_OPTIONS;
+    }
+  }
+
+  try {
+    // Load config - jiti will handle imports without tsx interference
+    const mod = await importModule<FlatConfig | { default: FlatConfig }>({
+      filepath: configPath,
+    });
+    return 'default' in mod ? mod.default : mod;
+  } finally {
+    // Always restore original NODE_OPTIONS
+    if (originalNodeOptions !== undefined) {
+      process.env.NODE_OPTIONS = originalNodeOptions;
+    } else {
+      delete process.env.NODE_OPTIONS;
+    }
+  }
 }
 ```
 
-**Preliminary fix** (optional)  
-[tools/jiti/vitest/fix-vitest.ts](tools/jiti/vitest/fix-vitest.ts) - Fix implementation using jiti's `importModule` instead of dynamic `import()` to ensure `@vitest/eslint-plugin` is loaded natively without transformation.
+[code-pushup.config.ts](code-pushup.config.ts#L20) - `configureEslintPlugin()` call that triggers ESLint config loading
 
-[packages/plugin-eslint/src/lib/meta/versions/flat.ts](packages/plugin-eslint/src/lib/meta/versions/flat.ts#L62-L69) - Updated `loadConfigByPath` to use `importModule` instead of dynamic import.
+[eslint.config.js](eslint.config.js#L8) - ESLint config that imports `@code-pushup/eslint-config/vitest.js`
+
+[packages/utils/src/lib/import-module.ts](packages/utils/src/lib/import-module.ts#L19-L23) - `JITI_NATIVE_MODULES` list that includes `@vitest/eslint-plugin` and `@code-pushup/eslint-config`
+
+**Solution** (required)  
+The fix loads ESLint configs in a child process without tsx to prevent tsx from intercepting nested imports. This allows jiti to handle all module loading and respect its `nativeModules` configuration.
+
+**How it works:**
+
+1. Create a temporary loader script that uses jiti to load the ESLint config
+2. Spawn a child Node.js process with `NODE_OPTIONS` that excludes `--import tsx`
+3. The child process loads the config using jiti, which handles all imports without tsx interference
+4. Serialize the config (handling circular references) and write it to a temporary file
+5. Read the serialized config from the parent process and return it
+6. Clean up temporary files
+
+**Why this works:**
+
+- Child processes don't inherit already-registered loaders from the parent process
+- By removing `--import tsx` from the child's `NODE_OPTIONS`, tsx is never registered as a loader
+- jiti can then handle all module loading and respect its `nativeModules` configuration
+- `@vitest/eslint-plugin` is loaded natively without transformation, preserving `import.meta.url`
+- The parent process continues to use tsx normally for other operations
+
+**Verification** (required)  
+Run the following command to verify the fix:
+
+```bash
+nx reset && nx code-pushup -- print-config --output out.json
+```
+
+**Expected result:** The original `TypeError: Invalid URL` error with `@vitest/eslint-plugin` should be resolved. The command should no longer fail with the tsx transformation error.
+
+**Note on optional dependencies:** If your ESLint config references optional peer dependencies (like `eslint-plugin-jsx-a11y`) that aren't installed, the child process may fail with a "Cannot find module" error. This is expected behavior and separate from the original JITI/tsx issue. To resolve:
+
+1. Install the missing optional dependency: `npm install eslint-plugin-jsx-a11y`
+2. Or remove the reference to the optional plugin from your ESLint config
+
+The reproduction script should also run without the original Invalid URL error:
+
+```bash
+TSX_TSCONFIG_PATH=tsconfig.base.json node --import tsx tools/jiti/eslint-vitest/issue-eslint-vitest.ts
+```
+
+**Known limitations:**
+
+- The child process approach requires all ESLint config dependencies to be installed. Optional peer dependencies that are referenced in the config must be installed, even if they're marked as optional in package.json.
+- This is a limitation of loading ESLint configs programmatically - ESLint itself may handle missing optional dependencies more gracefully during actual linting, but config parsing requires all referenced modules to be available.
+- When a missing optional dependency is encountered, the error message now provides clear guidance on which package needs to be installed and how to install it.
+
+**Error handling:**
+The implementation includes improved error messages for missing ESLint dependencies. When a module like `eslint-plugin-jsx-a11y` is missing, the error will clearly indicate:
+
+- Which dependency is missing
+- That it's referenced in the ESLint config but not installed
+- How to fix it (e.g., `npm install eslint-plugin-jsx-a11y`)
+
+This makes it easier to diagnose and resolve missing optional dependency issues.

@@ -17,9 +17,9 @@ type JitiOptions = Exclude<Parameters<typeof createJitiSource>[1], undefined>;
  * causing errors in packages that use new URL(..., import.meta.url).
  */
 export const JITI_NATIVE_MODULES = [
-  '@vitest/eslint-plugin',
-  '@code-pushup/eslint-config',
-  'lighthouse',
+  //'@vitest/eslint-plugin',
+  //'@code-pushup/eslint-config',
+  //'lighthouse',
 ] as const;
 
 export type ImportModuleOptions = JitiOptions & {
