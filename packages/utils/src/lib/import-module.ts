@@ -3,7 +3,6 @@ import { stat } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import type { CompilerOptions } from 'typescript';
-import { fileExists } from './file-system.js';
 import { loadTargetConfig } from './load-ts-config.js';
 import { settlePromise } from './promises.js';
 
@@ -178,19 +177,8 @@ export async function createTsJiti(
   createJiti: (typeof import('jiti'))['createJiti'] = createJitiSource,
 ) {
   const { tsconfigPath, ...jitiOptions } = options;
-  const fallbackTsconfigPath = path.resolve(process.cwd(), 'tsconfig.json');
-  const fallbackBaseTsconfigPath = path.resolve(
-    process.cwd(),
-    'tsconfig.base.json',
-  );
   const validPath: null | string =
-    tsconfigPath == null
-      ? (await fileExists(fallbackTsconfigPath))
-        ? fallbackTsconfigPath
-        : (await fileExists(fallbackBaseTsconfigPath))
-          ? fallbackBaseTsconfigPath
-          : null
-      : path.resolve(process.cwd(), tsconfigPath);
+    tsconfigPath != null ? path.resolve(process.cwd(), tsconfigPath) : null;
   const tsDerivedJitiOptions: MappableJitiOptions = validPath
     ? await jitiOptionsFromTsConfig(validPath)
     : {};
