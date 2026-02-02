@@ -95,8 +95,10 @@ export type PerformanceObserverOptions<T> = {
 
   /**
    * Whether to enable buffered observation mode.
-   * When true, captures all performance entries that occurred before observation started.
-   * When false, only captures entries after subscription begins.
+   *
+   * When true, captures all performance marks and measures that exist in the Node.js
+   * performance buffer at the time `subscribe()` is called using `performance.getEntriesByType()`
+   * (the native `buffered` option is unreliable in Node.js).
    *
    * @default true
    */
@@ -309,9 +311,8 @@ export class PerformanceObserverSink<T> {
    *
    * Creates a Node.js PerformanceObserver that monitors 'mark' and 'measure' entries.
    * The observer uses a bounded queue with proactive flushing to manage memory usage.
-   * When buffered mode is enabled, any existing buffered entries are immediately flushed.
+   * When buffered mode is enabled, existing entries are captured via `performance.getEntriesByType()` instead of the unreliable native `buffered` option.
    * If the sink is closed, items stay in the queue until reopened.
-   *
    */
   subscribe(): void {
     if (this.#observer) {
@@ -322,11 +323,7 @@ export class PerformanceObserverSink<T> {
       this.processPerformanceEntries(list.getEntries());
     });
 
-    // When buffered mode is enabled, Node.js PerformanceObserver invokes
-    // the callback synchronously with all buffered entries before observe() returns.
-    // However, entries created before any observer existed may not be buffered by Node.js.
-    // We manually retrieve entries from the performance buffer using getEntriesByType()
-    // to capture entries that were created before the observer was created.
+    // Manually capture buffered entries instead of the unreliable native buffered option.
     if (this.#buffered) {
       const existingMarks = performance.getEntriesByType('mark');
       const existingMeasures = performance.getEntriesByType('measure');
@@ -336,8 +333,7 @@ export class PerformanceObserverSink<T> {
 
     this.#observer.observe({
       entryTypes: OBSERVED_TYPES,
-      // @NOTE: This is for unknown reasons not working, and we manually do it above
-      // buffered: this.#buffered,
+      // Note: buffered option intentionally omitted due to unreliability in Node.js.
     });
   }
 
