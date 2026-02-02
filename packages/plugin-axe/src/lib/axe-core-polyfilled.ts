@@ -15,9 +15,9 @@
  * Do NOT import from this file directly. Use safe-axe-core-import.ts instead.
  */
 // Import polyfill FIRST to ensure globals are set before axe-core loads
-// eslint-disable-next-line import/no-unassigned-import
 // Now safe to import axe-core - globals exist due to polyfill import above
 import axe from 'axe-core';
+// eslint-disable-next-line import/no-unassigned-import
 import './jsdom.polyfill.js';
 
 // Re-export axe default and all types used throughout the codebase
