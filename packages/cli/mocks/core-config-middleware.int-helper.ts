@@ -13,9 +13,19 @@ const CLI_DEFAULTS = {
   skipPlugins: [],
 };
 
+const configPath = process.argv[2];
+if (!configPath) {
+  process.stderr.write = originalStderrWrite;
+  process.stderr.write('Error: Config path argument is required\n');
+  process.exit(1);
+}
+
+const tsconfigPath = process.argv[3];
+
 const result = await coreConfigMiddleware({
-  config: 'code-pushup.needs-tsconfig.config.ts', // relative path
-  // No tsconfig - should fallback to ./tsconfig.json
+  config: configPath, // relative path from cwd
+  ...(tsconfigPath ? { tsconfig: tsconfigPath } : {}),
+  // If no tsconfig provided, should fallback to ./tsconfig.json
   ...CLI_DEFAULTS,
 });
 

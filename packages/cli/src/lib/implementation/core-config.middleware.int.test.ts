@@ -23,10 +23,15 @@ const helperPath = path.join(
   'mocks',
   'core-config-middleware.int-helper.ts',
 );
-const runMiddlewareInCwd = async () =>
+const runMiddlewareInCwd = async (configPath: string, tsconfigPath?: string) =>
   await executeProcess({
     command: 'npx',
-    args: ['tsx', helperPath],
+    args: [
+      'tsx',
+      helperPath,
+      configPath,
+      ...(tsconfigPath ? [tsconfigPath] : []),
+    ],
     cwd: configDirPath,
   });
 describe('coreConfigMiddleware', () => {
@@ -55,7 +60,10 @@ describe('coreConfigMiddleware', () => {
   });
 
   it('should load config which relies on provided --tsconfig', async () => {
-    const { stdout, code } = await runMiddlewareInCwd();
+    const { stdout, code } = await runMiddlewareInCwd(
+      'code-pushup.needs-tsconfig.config.ts',
+      path.join(configDirPath, 'tsconfig.json'),
+    );
 
     expect(code).toBe(0);
     const output = JSON.parse(stdout);
