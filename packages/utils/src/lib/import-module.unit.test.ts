@@ -117,7 +117,10 @@ describe('toFileUrl', () => {
     expect(toFileUrl(absolutePath)).toBe(pathToFileURL(absolutePath).href);
   });
 
-  it('normalizes Windows absolute paths to file URLs', () => {
+  it('normalizes Windows absolute paths to file URLs for native import()', () => {
+    // Note: This is only needed for native import() calls, not for jiti.import()
+    // jiti handles Windows paths directly without URL conversion
+    // We should avoid native import calls in general
     const windowsPath = path.win32.join('C:\\', 'Users', 'me', 'config.ts');
     expect(toFileUrl(windowsPath)).toBe('file:///C:/Users/me/config.ts');
   });

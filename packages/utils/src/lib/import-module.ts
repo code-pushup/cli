@@ -28,6 +28,15 @@ export type ImportModuleOptions = JitiOptions & {
 };
 
 export function toFileUrl(filepath: string): string {
+  // Handle Windows absolute paths (C:\Users\... or C:/Users/...) on all platforms
+  // pathToFileURL on non-Windows systems treats Windows paths as relative paths
+  const windowsAbsolutePathMatch = filepath.match(/^([A-Za-z]:)([\\/].*)$/);
+  if (windowsAbsolutePathMatch) {
+    const [, drive, rest] = windowsAbsolutePathMatch;
+    // Normalize backslashes to forward slashes and construct file URL manually
+    const normalizedPath = `${drive}${rest.replace(/\\/g, '/')}`;
+    return `file:///${normalizedPath}`;
+  }
   return pathToFileURL(filepath).href;
 }
 
@@ -56,7 +65,7 @@ export async function importModule<T = unknown>(
     tsconfigPath: tsconfig,
   });
 
-  return (await jitiInstance.import(toFileUrl(absoluteFilePath), {
+  return (await jitiInstance.import(absoluteFilePath, {
     default: true,
   })) as T;
 }
