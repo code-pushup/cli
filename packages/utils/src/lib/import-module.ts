@@ -34,7 +34,7 @@ export function toFileUrl(filepath: string): string {
   if (windowsAbsolutePathMatch) {
     const [, drive, rest] = windowsAbsolutePathMatch;
     // Normalize backslashes to forward slashes and construct file URL manually
-    const normalizedPath = `${drive}${rest.replace(/\\/g, '/')}`;
+    const normalizedPath = `${drive}${rest?.replace(/\\/g, '/')}`;
     return `file:///${normalizedPath}`;
   }
   return pathToFileURL(filepath).href;
