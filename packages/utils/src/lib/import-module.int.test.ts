@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { importModule } from './file-system.js';
+import { importModule } from './import-module';
 
 describe('importModule', () => {
   const mockDir = path.join(
