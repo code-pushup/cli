@@ -27,7 +27,6 @@ export async function readRcByPath(
       const result = await importModule({
         filepath: filePath,
         tsconfig,
-        format: 'esm',
       });
       return { result, message: `Imported config from ${formattedTarget}` };
     },
