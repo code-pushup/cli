@@ -5,6 +5,11 @@ import {
   type PerformanceObserverOptions,
   PerformanceObserverSink,
 } from '../performance-observer.js';
+import {
+  type Counter,
+  getUniqueInstanceId,
+  getUniqueTimeId,
+} from '../process-id.js';
 import { objectToEntries } from '../transform.js';
 import { errorToMarkerPayload } from '../user-timing-extensibility-api-utils.js';
 import type {
@@ -14,8 +19,6 @@ import type {
 import {
   type AppendableSink,
   WriteAheadLogFile,
-  getShardId,
-  getShardedGroupId,
   getShardedPath,
 } from '../wal.js';
 import {
@@ -81,6 +84,12 @@ export class NodejsProfiler<
   #state: 'idle' | 'running' | 'closed' = 'idle';
   #debug: boolean;
   #unsubscribeExitHandlers: (() => void) | undefined;
+  #shardCounter: Counter = {
+    next: (() => {
+      let count = 0;
+      return () => ++count;
+    })(),
+  };
 
   /**
    * Creates a NodejsProfiler instance.
@@ -110,8 +119,8 @@ export class NodejsProfiler<
           process.cwd(),
           getShardedPath({
             dir: 'tmp/profiles',
-            groupId: getShardedGroupId(),
-            shardId: getShardId(),
+            groupId: getUniqueTimeId(),
+            shardId: getUniqueInstanceId(this.#shardCounter),
             format: walFormat,
           }),
         ),
