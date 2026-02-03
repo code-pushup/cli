@@ -1,11 +1,25 @@
-import type { AxeResults, NodeResult, Result } from 'axe-core';
+import type { AxeResults, CheckResult, NodeResult, Result } from 'axe-core';
 import type { AuditOutput } from '@code-pushup/models';
 import { toAuditOutputs } from './transform.js';
+
+function createMockCheck(overrides: Partial<CheckResult> = {}): CheckResult {
+  return {
+    id: 'mock-check',
+    data: null,
+    relatedNodes: [],
+    impact: 'serious',
+    message: 'Mock check message',
+    ...overrides,
+  } as CheckResult;
+}
 
 function createMockNode(overrides: Partial<NodeResult> = {}): NodeResult {
   return {
     html: '<div></div>',
     target: ['div'],
+    all: [],
+    any: [],
+    none: [],
     ...overrides,
   } as NodeResult;
 }
@@ -61,13 +75,23 @@ describe('toAuditOutputs', () => {
             html: '<img src="logo.png">',
             target: ['img'],
             impact: 'critical',
-            failureSummary: 'Fix this: Element does not have an alt attribute',
+            any: [
+              createMockCheck({
+                id: 'has-alt',
+                message: 'Element does not have an alt attribute',
+              }),
+            ],
           }),
           createMockNode({
             html: '<img src="icon.svg">',
             target: ['.header > img:nth-child(2)'],
             impact: 'serious',
-            failureSummary: 'Fix this: Element does not have an alt attribute',
+            any: [
+              createMockCheck({
+                id: 'has-alt',
+                message: 'Element does not have an alt attribute',
+              }),
+            ],
           }),
           createMockNode({
             html: '<img src="banner.jpg">',
@@ -89,8 +113,7 @@ describe('toAuditOutputs', () => {
         details: {
           issues: [
             {
-              message:
-                '[`img`] Fix this: Element does not have an alt attribute',
+              message: 'Element does not have an alt attribute',
               severity: 'error',
               source: {
                 url: 'https://example.com',
@@ -99,8 +122,7 @@ describe('toAuditOutputs', () => {
               },
             },
             {
-              message:
-                '[`.header > img:nth-child(2)`] Fix this: Element does not have an alt attribute',
+              message: 'Element does not have an alt attribute',
               severity: 'error',
               source: {
                 url: 'https://example.com',
@@ -109,7 +131,7 @@ describe('toAuditOutputs', () => {
               },
             },
             {
-              message: '[`#main img`] Mock help for image-alt',
+              message: 'Mock help for image-alt',
               severity: 'error',
               source: {
                 url: 'https://example.com',
@@ -131,13 +153,23 @@ describe('toAuditOutputs', () => {
             html: '<button>Click me</button>',
             target: ['button'],
             impact: 'moderate',
-            failureSummary: 'Fix this: Element has insufficient color contrast',
+            any: [
+              createMockCheck({
+                id: 'color-contrast',
+                message: 'Element has insufficient color contrast',
+              }),
+            ],
           }),
           createMockNode({
             html: '<a href="#">Link</a>',
             target: ['a'],
             impact: 'moderate',
-            failureSummary: 'Review: Unable to determine contrast ratio',
+            any: [
+              createMockCheck({
+                id: 'color-contrast',
+                message: 'Unable to determine contrast ratio',
+              }),
+            ],
           }),
         ]),
       ],
@@ -154,8 +186,7 @@ describe('toAuditOutputs', () => {
         details: {
           issues: [
             {
-              message:
-                '[`button`] Fix this: Element has insufficient color contrast',
+              message: 'Element has insufficient color contrast',
               severity: 'warning',
               source: {
                 url: 'https://example.com',
@@ -164,7 +195,7 @@ describe('toAuditOutputs', () => {
               },
             },
             {
-              message: '[`a`] Review: Unable to determine contrast ratio',
+              message: 'Unable to determine contrast ratio',
               severity: 'warning',
               source: {
                 url: 'https://example.com',
@@ -261,7 +292,12 @@ describe('toAuditOutputs', () => {
             html: '<button></button>',
             target: [['#app', 'my-component', 'button']],
             impact: 'critical',
-            failureSummary: 'Fix this: Element has insufficient color contrast',
+            any: [
+              createMockCheck({
+                id: 'color-contrast',
+                message: 'Element has insufficient color contrast',
+              }),
+            ],
           }),
         ]),
       ],
@@ -278,13 +314,69 @@ describe('toAuditOutputs', () => {
         details: {
           issues: [
             {
-              message:
-                '[`#app >> my-component >> button`] Fix this: Element has insufficient color contrast',
+              message: 'Element has insufficient color contrast',
               severity: 'error',
               source: {
                 url: 'https://example.com',
                 snippet: '<button></button>',
                 selector: '#app >> my-component >> button',
+              },
+            },
+          ],
+        },
+      },
+    ]);
+  });
+
+  it('should use none/all check messages over any checks', () => {
+    const results = createMockAxeResults({
+      violations: [
+        createMockResult('link-name', [
+          createMockNode({
+            html: '<a href="/page"><img src="icon.png"></a>',
+            target: ['a'],
+            impact: 'serious',
+            none: [
+              createMockCheck({
+                id: 'focusable-no-name',
+                message:
+                  'Element is in tab order and does not have accessible text',
+              }),
+            ],
+            any: [
+              createMockCheck({
+                id: 'has-visible-text',
+                message:
+                  'Element does not have text that is visible to screen readers',
+              }),
+              createMockCheck({
+                id: 'aria-label',
+                message: 'aria-label attribute does not exist or is empty',
+              }),
+            ],
+          }),
+        ]),
+      ],
+    });
+
+    expect(toAuditOutputs(results, 'https://example.com')).toStrictEqual<
+      AuditOutput[]
+    >([
+      {
+        slug: 'link-name',
+        score: 0,
+        value: 1,
+        displayValue: '1 error',
+        details: {
+          issues: [
+            {
+              message:
+                'Element is in tab order and does not have accessible text',
+              severity: 'error',
+              source: {
+                url: 'https://example.com',
+                snippet: '<a href="/page"><img src="icon.png"></a>',
+                selector: 'a',
               },
             },
           ],
@@ -301,8 +393,13 @@ describe('toAuditOutputs', () => {
             html: '<div role="invalid-role">Content</div>',
             target: undefined,
             impact: 'serious',
-            failureSummary:
-              'Fix this: Ensure all values assigned to role="" correspond to valid ARIA roles',
+            all: [
+              createMockCheck({
+                id: 'aria-allowed-role',
+                message:
+                  'Ensure all values assigned to role="" correspond to valid ARIA roles',
+              }),
+            ],
           }),
         ]),
       ],
@@ -320,7 +417,7 @@ describe('toAuditOutputs', () => {
           issues: [
             {
               message:
-                'Fix this: Ensure all values assigned to role="" correspond to valid ARIA roles',
+                'Ensure all values assigned to role="" correspond to valid ARIA roles',
               severity: 'error',
               source: {
                 url: 'https://example.com',
