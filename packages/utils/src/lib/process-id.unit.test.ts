@@ -171,10 +171,9 @@ describe('getUniqueInstanceId', () => {
       getUniqueInstanceId(counterObj),
     ];
 
-    const counters = results.map(r =>
-      Number.parseInt(r.split('.').at(-1)!, 10),
-    );
-    expect(counters).toEqual([1, 2, 3]);
+    expect(results[0]).toEndWith('.1');
+    expect(results[1]).toEndWith('.2');
+    expect(results[2]).toEndWith('.3');
   });
 
   it('should generate different IDs for different calls', () => {
