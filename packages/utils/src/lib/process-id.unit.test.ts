@@ -1,5 +1,4 @@
 import { threadId } from 'node:worker_threads';
-import { vi } from 'vitest';
 import {
   type Counter,
   ID_PATTERNS,
