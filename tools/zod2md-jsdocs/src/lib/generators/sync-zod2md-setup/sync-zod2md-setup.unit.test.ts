@@ -8,7 +8,7 @@ import {
 } from '../../plugin/constants.js';
 import { addZod2MdTransformToTsConfig } from '../configuration/tsconfig.js';
 import { generateZod2MdConfig } from '../configuration/zod2md-config.js';
-import { syncZod2mdSetupGenerator } from './sync-zod2md-setup.js';
+import { formatIssues, syncZod2mdSetupGenerator } from './sync-zod2md-setup.js';
 
 describe('sync-zod2md-setup generator', () => {
   const createProjectGraphAsyncSpy = vi.spyOn(
@@ -247,5 +247,140 @@ describe('sync-zod2md-setup generator', () => {
           dep.target === GENERATE_DOCS_TARGET_NAME),
     ).length;
     expect(generateDocsCount).toBe(1);
+  });
+
+  describe('formatIssues', () => {
+    it('should return undefined for empty issues array', () => {
+      expect(formatIssues([])).toBeUndefined();
+    });
+
+    it('should format missing tsconfig issues', () => {
+      const issues = [
+        {
+          type: 'missing-tsconfig' as const,
+          projectRoot: 'libs/project1',
+          data: undefined,
+        },
+        {
+          type: 'missing-tsconfig' as const,
+          projectRoot: 'libs/project2',
+          data: undefined,
+        },
+      ];
+
+      expect(formatIssues(issues)).toBe(`Missing tsconfig in:
+  - libs/project1
+  - libs/project2`);
+    });
+
+    it('should format missing target issues', () => {
+      const issues = [
+        {
+          type: 'missing-target' as const,
+          projectRoot: 'libs/project1',
+          data: { target: 'generate-docs' },
+        },
+      ];
+
+      expect(formatIssues(issues)).toBe(`Missing "generate-docs" target in:
+  - libs/project1`);
+    });
+
+    it('should format missing build dependencies issues', () => {
+      const issues = [
+        {
+          type: 'missing-build-depends-on' as const,
+          projectRoot: 'libs/project1',
+          data: { missing: ['generate-docs', 'ts-patch'] },
+        },
+        {
+          type: 'missing-build-depends-on' as const,
+          projectRoot: 'libs/project2',
+          data: { missing: ['generate-docs'] },
+        },
+      ];
+
+      expect(formatIssues(issues)).toBe(`Missing build.dependsOn entries:
+  - libs/project1: generate-docs, ts-patch
+  - libs/project2: generate-docs`);
+    });
+
+    it('should format missing ts plugin issues', () => {
+      const issues = [
+        {
+          type: 'missing-ts-plugin' as const,
+          projectRoot: 'libs/project1',
+          data: undefined,
+        },
+      ];
+
+      expect(formatIssues(issues))
+        .toBe(`Missing Zod2Md TypeScript plugin configuration in:
+  - libs/project1`);
+    });
+
+    it('should format multiple issue types', () => {
+      const issues = [
+        {
+          type: 'missing-tsconfig' as const,
+          projectRoot: 'libs/project1',
+          data: undefined,
+        },
+        {
+          type: 'missing-target' as const,
+          projectRoot: 'libs/project2',
+          data: { target: 'generate-docs' },
+        },
+        {
+          type: 'missing-build-depends-on' as const,
+          projectRoot: 'libs/project3',
+          data: { missing: ['generate-docs'] },
+        },
+        {
+          type: 'missing-ts-plugin' as const,
+          projectRoot: 'libs/project4',
+          data: undefined,
+        },
+      ];
+
+      const expected = `Missing tsconfig in:
+  - libs/project1
+
+Missing "generate-docs" target in:
+  - libs/project2
+
+Missing build.dependsOn entries:
+  - libs/project3: generate-docs
+
+Missing Zod2Md TypeScript plugin configuration in:
+  - libs/project4`;
+
+      expect(formatIssues(issues)).toBe(expected);
+    });
+
+    it('should filter out null formatted sections', () => {
+      const issues = [
+        {
+          type: 'missing-tsconfig' as const,
+          projectRoot: 'libs/project1',
+          data: undefined,
+        },
+        // No missing-target issues
+        // No missing-build-deps issues
+        {
+          type: 'missing-ts-plugin' as const,
+          projectRoot: 'libs/project2',
+          data: undefined,
+        },
+      ];
+
+      const expected = `Missing tsconfig in:
+  - libs/project1
+
+Missing Zod2Md TypeScript plugin configuration in:
+  - libs/project2`;
+
+      expect(formatIssues(issues)).toBe(expected);
+    });
   });
 });

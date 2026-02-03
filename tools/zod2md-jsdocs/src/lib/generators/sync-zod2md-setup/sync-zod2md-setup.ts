@@ -209,23 +209,9 @@ function applyFixes(
     });
   }
 }
-function formatIssues(issues: readonly SyncIssue[]): string | undefined {
-  if (issues.length === 0) {
-    return undefined;
-  }
-  const grouped: Record<SyncIssue['type'], readonly SyncIssue[]> =
-    issues.reduce<Record<SyncIssue['type'], readonly SyncIssue[]>>(
-      (acc, issue) => ({
-        ...acc,
-        [issue.type]: [...(acc[issue.type] ?? []), issue],
-      }),
-      {
-        [missingTsconfig]: [],
-        [missingTarget]: [],
-        [missingBuildDeps]: [],
-        [missingTsPlugin]: [],
-      },
-    );
+function formatIssueGroups(
+  grouped: Record<SyncIssue['type'], readonly SyncIssue[]>,
+): readonly (string | null)[] {
   return [
     grouped[missingTsconfig]?.length
       ? `Missing tsconfig in:\n${grouped[missingTsconfig]
@@ -258,9 +244,27 @@ function formatIssues(issues: readonly SyncIssue[]): string | undefined {
           .map(i => `  - ${i.projectRoot}`)
           .join('\n')}`
       : null,
-  ]
-    .filter(Boolean)
-    .join('\n\n');
+  ];
+}
+
+export function formatIssues(issues: readonly SyncIssue[]): string | undefined {
+  if (issues.length === 0) {
+    return undefined;
+  }
+  const grouped: Record<SyncIssue['type'], readonly SyncIssue[]> =
+    issues.reduce<Record<SyncIssue['type'], readonly SyncIssue[]>>(
+      (acc, issue) => ({
+        ...acc,
+        [issue.type]: [...(acc[issue.type] ?? []), issue],
+      }),
+      {
+        [missingTsconfig]: [],
+        [missingTarget]: [],
+        [missingBuildDeps]: [],
+        [missingTsPlugin]: [],
+      },
+    );
+  return formatIssueGroups(grouped).filter(Boolean).join('\n\n');
 }
 export async function syncZod2mdSetupGenerator(tree: Tree, _?: unknown) {
   const graph = await createProjectGraphAsync();
