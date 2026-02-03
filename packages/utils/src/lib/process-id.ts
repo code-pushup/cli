@@ -47,10 +47,6 @@ export const ID_PATTERNS = Object.freeze({
    * Used by: getUniqueInstanceId()
    */
   INSTANCE_ID: new RegExp(`^${TIME_ID_BASE.source}\\.\\d+\\.\\d+\\.\\d+$`),
-  /** @deprecated Use INSTANCE_ID instead */
-  SHARD_ID: new RegExp(`^${TIME_ID_BASE.source}\\.\\d+\\.\\d+\\.\\d+$`),
-  /** @deprecated Use TIME_ID instead */
-  READABLE_DATE: new RegExp(`^${TIME_ID_BASE.source}$`),
 } as const);
 
 /**

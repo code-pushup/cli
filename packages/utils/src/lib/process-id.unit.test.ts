@@ -77,16 +77,16 @@ describe('ID_PATTERNS', () => {
   );
 
   it.each(['20231114-221320-000.12345.1.1'])(
-    'SHARD_ID should match valid shard ID (deprecated alias): %s',
-    shardId => {
-      expect(shardId).toMatch(ID_PATTERNS.SHARD_ID);
+    'INSTANCE_ID should match valid instance ID: %s',
+    instanceId => {
+      expect(instanceId).toMatch(ID_PATTERNS.INSTANCE_ID);
     },
   );
 
   it.each(['20231114-221320-000'])(
-    'READABLE_DATE should match valid readable date (deprecated alias): %s',
-    readableDate => {
-      expect(readableDate).toMatch(ID_PATTERNS.READABLE_DATE);
+    'TIME_ID should match valid time ID: %s',
+    timeId => {
+      expect(timeId).toMatch(ID_PATTERNS.TIME_ID);
     },
   );
 });

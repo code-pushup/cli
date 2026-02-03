@@ -3,6 +3,11 @@ import * as fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { threadId } from 'node:worker_threads';
+import {
+  type Counter,
+  getUniqueInstanceId,
+  getUniqueTimeId,
+} from './process-id.js';
 
 /**
  * Codec for encoding/decoding values to/from strings for WAL storage.
@@ -376,65 +381,18 @@ export function setCoordinatorProcess(
 let shardCount = 0;
 
 /**
+ * Simple counter implementation for generating sequential IDs.
+ */
+const shardCounter: Counter = {
+  next: () => ++shardCount,
+};
+
+/**
  * Generates a unique sharded WAL ID based on performance time origin, process ID, thread ID, and instance count.
  */
 function getShardedWalId() {
   // eslint-disable-next-line functional/immutable-data
   return `${Math.round(performance.timeOrigin)}.${process.pid}.${threadId}.${++ShardedWal.instanceCount}`;
-}
-
-/**
- * Generates a human-readable shard ID.
- * This ID is unique per process/thread/shard combination and used in the file name.
- * Format: readable-timestamp.pid.threadId.shardCount
- * Example: "20240101-120000-000.12345.1.1"
- * Becomes file: trace.20240101-120000-000.12345.1.1.log
- */
-export function getShardId(): string {
-  const timestamp = Math.round(performance.timeOrigin + performance.now());
-  const readableTimestamp = sortableReadableDateString(`${timestamp}`);
-  return `${readableTimestamp}.${process.pid}.${threadId}.${++shardCount}`;
-}
-
-/**
- * Generates a human-readable sharded group ID.
- * This ID is a globally unique, sortable, human-readable date string per run.
- * Used directly as the folder name to group shards.
- * Format: yyyymmdd-hhmmss-ms
- * Example: "20240101-120000-000"
- */
-export function getShardedGroupId(): string {
-  return sortableReadableDateString(
-    `${Math.round(performance.timeOrigin + performance.now())}`,
-  );
-}
-
-/**
- * Regex patterns for validating WAL ID formats
- */
-export const WAL_ID_PATTERNS = {
-  /** Readable date format: yyyymmdd-hhmmss-ms */
-  READABLE_DATE: /^\d{8}-\d{6}-\d{3}$/,
-  /** Group ID format: yyyymmdd-hhmmss-ms */
-  GROUP_ID: /^\d{8}-\d{6}-\d{3}$/,
-  /** Shard ID format: readable-date.pid.threadId.count */
-  SHARD_ID: /^\d{8}-\d{6}-\d{3}(?:\.\d+){3}$/,
-} as const;
-
-export function sortableReadableDateString(timestampMs: string): string {
-  const timestamp = Number.parseInt(timestampMs, 10);
-  const date = new Date(timestamp);
-  const MILLISECONDS_PER_SECOND = 1000;
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const dd = String(date.getDate()).padStart(2, '0');
-  const hh = String(date.getHours()).padStart(2, '0');
-  const min = String(date.getMinutes()).padStart(2, '0');
-  const ss = String(date.getSeconds()).padStart(2, '0');
-  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-  const ms = String(timestamp % MILLISECONDS_PER_SECOND).padStart(3, '0');
-
-  return `${yyyy}${mm}${dd}-${hh}${min}${ss}-${ms}`;
 }
 
 /**
@@ -491,7 +449,7 @@ export function getShardedFinalPath<T extends object | string = object>(opt: {
 export class ShardedWal<T extends object | string = object> {
   static instanceCount = 0;
   readonly #id: string = getShardedWalId();
-  readonly groupId = getShardedGroupId();
+  readonly groupId = getUniqueTimeId();
   readonly #format: WalFormat<T>;
   readonly #dir: string = process.cwd();
   readonly #isCoordinator: boolean;
@@ -511,7 +469,7 @@ export class ShardedWal<T extends object | string = object> {
     coordinatorIdEnvVar: string;
   }) {
     const { dir, format, groupId, coordinatorIdEnvVar } = opt;
-    this.groupId = groupId ?? getShardedGroupId();
+    this.groupId = groupId ?? getUniqueTimeId();
     if (dir) {
       this.#dir = dir;
     }
@@ -531,7 +489,7 @@ export class ShardedWal<T extends object | string = object> {
     return this.#isCoordinator;
   }
 
-  shard(shardId: string = getShardId()) {
+  shard(shardId: string = getUniqueInstanceId(shardCounter)) {
     return new WriteAheadLogFile({
       file: getShardedPath({
         dir: this.#dir,

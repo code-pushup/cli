@@ -1,16 +1,18 @@
 import { vol } from 'memfs';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import {
+  ID_PATTERNS,
+  getUniqueInstanceId,
+  getUniqueTimeId,
+} from './process-id.js';
 import { SHARDED_WAL_COORDINATOR_ID_ENV_VAR } from './profiler/constants.js';
 import {
   type Codec,
   type InvalidEntry,
   ShardedWal,
-  WAL_ID_PATTERNS,
   WriteAheadLogFile,
   createTolerantCodec,
   filterValidRecords,
-  getShardId,
-  getShardedGroupId,
   isCoordinatorProcess,
   parseWalFormat,
   recoverFromContent,
@@ -506,15 +508,18 @@ describe('stringCodec', () => {
 
 describe('getShardId', () => {
   it('should generate shard ID with readable timestamp', () => {
-    const result = getShardId();
+    const counter = { next: () => 1 };
+    const result = getUniqueInstanceId(counter);
 
-    expect(result).toMatch(WAL_ID_PATTERNS.SHARD_ID);
+    expect(result).toMatch(ID_PATTERNS.INSTANCE_ID);
     expect(result).toStartWith('20231114-221320-000.');
   });
 
   it('should generate different shard IDs for different calls', () => {
-    const result1 = getShardId();
-    const result2 = getShardId();
+    let count = 0;
+    const counter = { next: () => ++count };
+    const result1 = getUniqueInstanceId(counter);
+    const result2 = getUniqueInstanceId(counter);
 
     expect(result1).not.toBe(result2);
     expect(result1).toStartWith('20231114-221320-000.');
@@ -555,15 +560,15 @@ describe('getShardId', () => {
 
 describe('getShardedGroupId', () => {
   it('should work with mocked timeOrigin', () => {
-    const result = getShardedGroupId();
+    const result = getUniqueTimeId();
 
     expect(result).toBe('20231114-221320-000');
-    expect(result).toMatch(WAL_ID_PATTERNS.GROUP_ID);
+    expect(result).toMatch(ID_PATTERNS.TIME_ID);
   });
 
   it('should be idempotent within same process', () => {
-    const result1 = getShardedGroupId();
-    const result2 = getShardedGroupId();
+    const result1 = getUniqueTimeId();
+    const result2 = getUniqueTimeId();
 
     expect(result1).toBe(result2);
   });

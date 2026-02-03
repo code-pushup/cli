@@ -5,7 +5,7 @@ import {
   omitTraceJson,
 } from '@code-pushup/test-utils';
 import type { PerformanceEntryEncoder } from '../performance-observer.js';
-import { WAL_ID_PATTERNS } from '../wal.js';
+import { ID_PATTERNS } from '../process-id.js';
 import { NodejsProfiler } from './profiler-node.js';
 import { entryToTraceEvents } from './trace-file-utils.js';
 import type { TraceEvent } from './trace-file.type.js';
@@ -261,7 +261,7 @@ describe('NodeJS Profiler Integration', () => {
       const groupIdDir = pathParts.at(-2);
       const fileName = pathParts.at(-1);
 
-      expect(groupIdDir).toMatch(WAL_ID_PATTERNS.GROUP_ID);
+      expect(groupIdDir).toMatch(ID_PATTERNS.TIME_ID);
       expect(fileName).toMatch(/^trace\.\d{8}-\d{6}-\d{3}(?:\.\d+){3}\.jsonl$/);
 
       const groupIdDirPath = path.dirname(filePath);
@@ -283,7 +283,7 @@ describe('NodeJS Profiler Integration', () => {
       const dirPath = path.dirname(filePath);
       const groupId = path.basename(dirPath);
 
-      expect(groupId).toMatch(WAL_ID_PATTERNS.GROUP_ID);
+      expect(groupId).toMatch(ID_PATTERNS.TIME_ID);
       // eslint-disable-next-line n/no-sync
       expect(fs.existsSync(dirPath)).toBeTrue();
       // eslint-disable-next-line n/no-sync
