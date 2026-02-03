@@ -43,7 +43,7 @@ export type AppendableSink<T> = Recoverable & {
  */
 export type RecoverResult<T> = {
   /** Successfully recovered records */
-  records: (T | InvalidEntry)[];
+  records: (T | InvalidEntry<string>)[];
   /** Errors encountered during recovery with line numbers and context */
   errors: { lineNo: number; line: string; error: Error }[];
   /** Last incomplete line if file was truncated (null if clean) */
