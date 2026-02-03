@@ -111,7 +111,7 @@ export const getInstantEventTracingStartedInBrowser = (
 
   return {
     cat: 'devtools.timeline',
-    ph: 'i',
+    ph: 'I',
     name: 'TracingStartedInBrowser',
     pid,
     tid,

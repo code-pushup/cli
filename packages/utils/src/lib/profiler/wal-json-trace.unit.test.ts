@@ -230,7 +230,7 @@ describe('generateTraceContent', () => {
       traceEvents: [
         expect.objectContaining({
           name: 'TracingStartedInBrowser',
-          ph: 'i',
+          ph: 'I',
           cat: 'devtools.timeline',
           args: {
             data: expect.objectContaining({
@@ -304,7 +304,7 @@ describe('generateTraceContent', () => {
       traceEvents: [
         expect.objectContaining({
           name: 'TracingStartedInBrowser',
-          ph: 'i',
+          ph: 'I',
           cat: 'devtools.timeline',
           args: {
             data: expect.objectContaining({
