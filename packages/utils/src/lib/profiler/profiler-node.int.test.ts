@@ -8,13 +8,13 @@ import type { PerformanceEntryEncoder } from '../performance-observer.js';
 import { WAL_ID_PATTERNS } from '../wal.js';
 import { NodejsProfiler } from './profiler-node.js';
 import { entryToTraceEvents } from './trace-file-utils.js';
-import type { UserTimingTraceEvent } from './trace-file.type.js';
+import type { TraceEvent } from './trace-file.type.js';
 
 describe('NodeJS Profiler Integration', () => {
-  const traceEventEncoder: PerformanceEntryEncoder<UserTimingTraceEvent> =
+  const traceEventEncoder: PerformanceEntryEncoder<TraceEvent> =
     entryToTraceEvents;
 
-  let nodejsProfiler: NodejsProfiler<UserTimingTraceEvent>;
+  let nodejsProfiler: NodejsProfiler<TraceEvent>;
 
   beforeEach(() => {
     performance.clearMarks();
