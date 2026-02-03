@@ -86,6 +86,7 @@ export class NodejsProfiler<
   #unsubscribeExitHandlers: (() => void) | undefined;
   #shardCounter: Counter = {
     next: (() => {
+      // eslint-disable-next-line functional/no-let
       let count = 0;
       return () => ++count;
     })(),
