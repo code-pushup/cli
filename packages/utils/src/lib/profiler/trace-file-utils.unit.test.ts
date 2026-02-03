@@ -721,7 +721,6 @@ describe('serializeTraceEvent', () => {
     const result = serializeTraceEvent(event);
 
     expect(result).toBeString();
-    expect(() => JSON.parse(result)).not.toThrow();
     const parsed = JSON.parse(result);
     expect(parsed).toStrictEqual({
       cat: 'blink.user_timing',
