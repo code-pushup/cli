@@ -377,15 +377,14 @@ export function setCoordinatorProcess(
   }
 }
 
-// eslint-disable-next-line functional/no-let
-let shardCount = 0;
-
 /**
  * Simple counter implementation for generating sequential IDs.
  */
-const shardCounter: Counter = {
-  next: () => ++shardCount,
-};
+const shardCounter: Counter = (() => {
+  // eslint-disable-next-line functional/no-let
+  let count = 0;
+  return { next: () => ++count };
+})();
 
 /**
  * Generates a unique sharded WAL ID based on performance time origin, process ID, thread ID, and instance count.

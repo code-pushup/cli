@@ -506,7 +506,7 @@ describe('stringCodec', () => {
   });
 });
 
-describe('getShardId', () => {
+describe('getUniqueInstanceId', () => {
   it('should generate shard ID with readable timestamp', () => {
     const counter = { next: () => 1 };
     const result = getUniqueInstanceId(counter);
@@ -527,25 +527,30 @@ describe('getShardId', () => {
   });
 
   it('should handle zero values', () => {
-    const result = getShardId();
+    const counter = { next: () => 1 };
+    const result = getUniqueInstanceId(counter);
     expect(result).toStartWith('20231114-221320-000.');
   });
 
   it('should handle negative timestamps', () => {
-    const result = getShardId();
+    const counter = { next: () => 1 };
+    const result = getUniqueInstanceId(counter);
 
     expect(result).toStartWith('20231114-221320-000.');
   });
 
   it('should handle large timestamps', () => {
-    const result = getShardId();
+    const counter = { next: () => 1 };
+    const result = getUniqueInstanceId(counter);
 
     expect(result).toStartWith('20231114-221320-000.');
   });
 
   it('should generate incrementing counter', () => {
-    const result1 = getShardId();
-    const result2 = getShardId();
+    let count = 0;
+    const counter = { next: () => ++count };
+    const result1 = getUniqueInstanceId(counter);
+    const result2 = getUniqueInstanceId(counter);
 
     const parts1 = result1.split('.');
     const parts2 = result2.split('.');
@@ -558,7 +563,7 @@ describe('getShardId', () => {
   });
 });
 
-describe('getShardedGroupId', () => {
+describe('getUniqueTimeId', () => {
   it('should work with mocked timeOrigin', () => {
     const result = getUniqueTimeId();
 
@@ -824,7 +829,7 @@ describe('ShardedWal', () => {
       },
       coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
-    // Create the group directory (matches actual getShardedGroupId() output)
+    // Create the group directory (matches actual getUniqueTimeId() output)
     vol.mkdirSync('/empty/20231114-221320-000', { recursive: true });
     const files = (sw as any).shardFiles();
     expect(files).toEqual([]);
