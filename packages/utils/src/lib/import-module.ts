@@ -11,7 +11,10 @@ export async function importModule<T = unknown>(options: Options): Promise<T> {
     throw new Error(`Expected '${options.filepath}' to be a file`);
   }
 
-  const { mod } = await bundleRequire<object>(options);
+  const { mod } = await bundleRequire<object>({
+    format: 'esm',
+    ...options,
+  });
 
   if (typeof mod === 'object' && 'default' in mod) {
     return mod.default as T;
