@@ -11,13 +11,13 @@ import * as path from 'node:path';
 import {
   GENERATE_DOCS_TARGET_NAME,
   PATCH_TS_TARGET_NAME,
-} from '../../plugin/constants.js';
-import { DEFAULT_ZOD2MD_CONFIG_FILE_NAME } from '../configuration/constants.js';
+} from '../../plugin/constants';
+import { DEFAULT_ZOD2MD_CONFIG_FILE_NAME } from '../configuration/constants';
 import {
   type PluginDefinition,
   addZod2MdTransformToTsConfig,
   getFirstExistingTsConfig,
-} from '../configuration/tsconfig.js';
+} from '../configuration/tsconfig';
 
 const missingTsconfig = 'missing-tsconfig' as const;
 const missingTarget = 'missing-target' as const;

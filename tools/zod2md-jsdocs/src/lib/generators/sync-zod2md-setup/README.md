@@ -87,13 +87,53 @@ This is especially useful when integrating the sync generator into CI or workspa
 
 ---
 
-## Registering / Testing the generator
+## Register a Global Sync Generator
 
-To register the generator in your workspace:
+Global sync generators are registered in the _nx.json_ file like this:
 
-```bash
-nx g @tooling/zod2md-jsdocs:sync-zod2md-setup --register
+_nx.json_
+
+```json
+{
+  "sync": {
+    "globalGenerators": ["./tools/zod2md-jsdocs:sync-zod2md-setup"]
+  }
+}
 ```
+
+## Register a Local Sync Generator
+
+Local sync generators are registered in the project's `package.json` or `project.json` file under the `syncGenerators` property for specific targets:
+
+_package.json_
+
+```json
+{
+  "name": "my-project",
+  "nx": {
+    "targets": {
+      "build": {
+        "syncGenerators": ["./tools/zod2md-jsdocs:sync-zod2md-setup"]
+      }
+    }
+  }
+}
+```
+
+_project.json_
+
+```json
+{
+  "name": "my-project",
+  "targets": {
+    "build": {
+      "syncGenerators": ["./tools/zod2md-jsdocs:sync-zod2md-setup"]
+    }
+  }
+}
+```
+
+With this configuration, the sync generator will run automatically before the specified target (e.g., `build`).
 
 ## Notes
 

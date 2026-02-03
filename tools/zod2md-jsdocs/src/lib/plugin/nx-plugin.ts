@@ -49,9 +49,7 @@ const createNodesV2: CreateNodesV2 = [
                         projects: 'self',
                       },
                     ],
-                    syncGenerators: [
-                      './tools/zod2md-jsdocs/dist:sync-zod2md-setup',
-                    ],
+                    syncGenerators: ['./tools/zod2md-jsdocs:sync-zod2md-setup'],
                   },
                   [GENERATE_DOCS_TARGET_NAME]: createDocsTargetConfig({
                     config,

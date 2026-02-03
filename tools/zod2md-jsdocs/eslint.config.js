@@ -44,6 +44,13 @@ module.exports = tseslint.config(
       '@nx/dependency-checks': 'error',
     },
   },
+  // Nx compiles the sync generators on the fly with SWC and there the .js ending is not working
+  {
+    files: ['**/sync-*.ts'],
+    rules: {
+      'n/file-extension-in-import': 'off',
+    },
+  },
   {
     files: ['**/package.json', '**/generators.json'],
     rules: {
