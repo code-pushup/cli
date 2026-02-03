@@ -115,8 +115,8 @@ export async function nxShowProjectJson<T extends ProjectConfiguration>(
     };
     return {
       code: execError.code ?? 1,
-      stderr: execError.stderr ?? String(error),
-      projectJson: JSON.parse(execError.stdout ?? '{}') as T,
+      stderr: execError.stderr ?? String((error as Error).message),
+      projectJson: JSON.parse('{}'),
     };
   }
 }
