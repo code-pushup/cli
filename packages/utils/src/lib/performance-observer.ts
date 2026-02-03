@@ -195,6 +195,9 @@ export class PerformanceObserverSink<T> {
   /** Whether debug mode is enabled for encode failures */
   #debug: boolean;
 
+  /** Whether buffered entries have been captured at least once */
+  #capturedBufferedOnce: boolean = false;
+
   private processPerformanceEntries(entries: PerformanceEntry[]) {
     entries.forEach(entry => {
       if (OBSERVED_TYPE_SET.has(entry.entryType as ObservedEntryType)) {
@@ -324,11 +327,14 @@ export class PerformanceObserverSink<T> {
     });
 
     // Manually capture buffered entries instead of the unreliable native buffered option.
-    if (this.#buffered) {
+    // Only capture buffered entries on the first subscription to prevent duplicates
+    // when unsubscribe/resubscribe occurs.
+    if (this.#buffered && !this.#capturedBufferedOnce) {
       const existingMarks = performance.getEntriesByType('mark');
       const existingMeasures = performance.getEntriesByType('measure');
       const allEntries = [...existingMarks, ...existingMeasures];
       this.processPerformanceEntries(allEntries);
+      this.#capturedBufferedOnce = true;
     }
 
     this.#observer.observe({

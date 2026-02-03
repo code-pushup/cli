@@ -320,6 +320,34 @@ describe('PerformanceObserverSink', () => {
     expect(MockPerformanceObserver.instances).toHaveLength(0);
   });
 
+  it('captures buffered entries only once, even after unsubscribe/resubscribe', () => {
+    const observer = new PerformanceObserverSink({
+      ...options,
+      captureBufferedEntries: true,
+      flushThreshold: 10,
+    });
+
+    performance.mark('buffered-mark-1');
+    performance.mark('buffered-mark-2');
+    performance.measure(
+      'buffered-measure-1',
+      'buffered-mark-1',
+      'buffered-mark-2',
+    );
+
+    observer.subscribe();
+    observer.flush();
+
+    expect(encodePerfEntry).toHaveBeenCalledTimes(3);
+
+    encodePerfEntry.mockClear();
+    observer.unsubscribe();
+    observer.subscribe();
+    observer.flush();
+
+    expect(encodePerfEntry).not.toHaveBeenCalled();
+  });
+
   it('handles encodePerfEntry errors gracefully and drops items', () => {
     const failingEncode = vi.fn(() => {
       throw new Error('Encode failed');
