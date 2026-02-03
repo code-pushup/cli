@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import ansis from 'ansis';
 import type { CategoryConfig, PluginConfig } from '@code-pushup/models';
-import { axeCategories, extractGroupSlugs } from './categories.js';
+import { axeCategories } from './categories.js';
 import { AXE_PLUGIN_SLUG } from './constants.js';
 import { axeGroupRef } from './utils.js';
 
@@ -112,33 +112,12 @@ describe('axeCategories', () => {
   });
 
   it('should throw for invalid context', () => {
-    const plugin = createMockPlugin({
-      context: { urlCount: 2, weights: { 1: 1 } },
-    });
-
-    expect(() => axeCategories(plugin)).toThrow(
-      'Invalid plugin context: weights count must match urlCount',
-    );
-  });
-});
-
-describe('extractGroupSlugs', () => {
-  it('should extract unique base slugs from groups', () => {
-    expect(
-      extractGroupSlugs([
-        { slug: 'aria-1', title: 'ARIA 1', refs: [] },
-        { slug: 'aria-2', title: 'ARIA 2', refs: [] },
-        { slug: 'color', title: 'Color & Contrast', refs: [] },
-      ]),
-    ).toEqual(['aria', 'color']);
-  });
-
-  it('should filter out invalid group slugs', () => {
-    expect(
-      extractGroupSlugs([
-        { slug: 'aria', title: 'ARIA', refs: [] },
-        { slug: 'invalid-group', title: 'Invalid', refs: [] },
-      ]),
-    ).toEqual(['aria']);
+    expect(() =>
+      axeCategories(
+        createMockPlugin({
+          context: { urlCount: 2, weights: { 1: 1 } },
+        }),
+      ),
+    ).toThrow(`Invalid ${ansis.bold('PluginUrlContext')}`);
   });
 });

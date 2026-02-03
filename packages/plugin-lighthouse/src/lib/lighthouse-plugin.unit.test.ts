@@ -1,4 +1,3 @@
-import { expect } from 'vitest';
 import { pluginConfigSchema } from '@code-pushup/models';
 import { lighthousePlugin } from './lighthouse-plugin.js';
 import type { LighthouseOptions } from './types.js';

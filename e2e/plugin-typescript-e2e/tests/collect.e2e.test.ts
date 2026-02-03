@@ -1,6 +1,5 @@
 import { cp } from 'node:fs/promises';
 import path from 'node:path';
-import { afterAll, beforeAll, expect } from 'vitest';
 import { type Report, reportSchema } from '@code-pushup/models';
 import {
   omitVariableReportData,

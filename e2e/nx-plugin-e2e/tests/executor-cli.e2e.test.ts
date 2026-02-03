@@ -1,7 +1,6 @@
 import { type Tree, updateProjectConfiguration } from '@nx/devkit';
 import path from 'node:path';
 import { readProjectConfiguration } from 'nx/src/generators/utils/project-configuration';
-import { afterAll, afterEach, beforeEach, expect } from 'vitest';
 import {
   type AutorunCommandExecutorOptions,
   generateCodePushupConfig,

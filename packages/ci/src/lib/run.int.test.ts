@@ -9,7 +9,7 @@ import {
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { type SimpleGit, simpleGit } from 'simple-git';
-import { type MockInstance, expect } from 'vitest';
+import type { MockInstance } from 'vitest';
 import {
   type ReportFragment,
   downloadReportFromPortal,

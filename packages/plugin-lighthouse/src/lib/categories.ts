@@ -1,35 +1,34 @@
-import type { CategoryConfig, Group, PluginConfig } from '@code-pushup/models';
+import {
+  type CategoryConfig,
+  type PluginConfig,
+  validate,
+} from '@code-pushup/models';
 import {
   type PluginUrlContext,
-  createCategoryRefs,
   expandCategoryRefs,
-  removeIndex,
+  pluginUrlContextSchema,
   shouldExpandForUrls,
-  validateUrlContext,
 } from '@code-pushup/utils';
 import { LIGHTHOUSE_GROUP_SLUGS, LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
 import { LIGHTHOUSE_GROUPS } from './runner/constants.js';
 import type { LighthouseGroupSlug } from './types.js';
-import { isLighthouseGroupSlug } from './utils.js';
+import { lighthouseGroupSlugs } from './utils.js';
 
 /**
- * Expands and aggregates categories for multi-URL Lighthouse runs.
- *
- * - If user categories are provided, expands all refs (groups and audits) for each URL.
- * - If not, generates categories from plugin groups only.
- * - Assigns per-URL weights with correct precedence.
- *
- * @public
- * @param plugin - {@link PluginConfig} object with groups and context
- * @param categories - {@link CategoryConfig} optional user-defined categories
- * @returns {CategoryConfig[]} - expanded and agregated categories
+ * @deprecated Use `lighthouseGroupRefs` to build categories manually instead.
  *
  * @example
- * const lhPlugin = await lighthousePlugin(urls);
- * const lhCoreConfig = {
- *   plugins: [lhPlugin],
- *   categories: lighthouseCategories(lhPlugin),
- * };
+ * // Instead of:
+ * const categories = lighthouseCategories(lhPlugin);
+ *
+ * // Use:
+ * const categories = [
+ *   {
+ *     slug: 'performance',
+ *     title: 'Performance',
+ *     refs: lighthouseGroupRefs(lhPlugin, 'performance'),
+ *   },
+ * ];
  */
 export function lighthouseCategories(
   plugin: Pick<PluginConfig, 'groups' | 'context'>,
@@ -38,11 +37,10 @@ export function lighthouseCategories(
   if (!plugin.groups || plugin.groups.length === 0) {
     return categories ?? [];
   }
-  validateUrlContext(plugin.context);
   if (!categories) {
-    return createCategories(plugin.groups, plugin.context);
+    return createCategories(plugin);
   }
-  return expandCategories(categories, plugin.context);
+  return expandCategories(plugin, categories);
 }
 
 /**
@@ -52,18 +50,19 @@ export function lighthouseCategories(
 export const mergeLighthouseCategories = lighthouseCategories;
 
 function createCategories(
-  groups: Group[],
-  context: PluginUrlContext,
+  plugin: Pick<PluginConfig, 'groups' | 'context'>,
 ): CategoryConfig[] {
-  return extractGroupSlugs(groups).map(slug =>
+  const context = validate(pluginUrlContextSchema, plugin.context);
+  return lighthouseGroupSlugs(plugin).map(slug =>
     createAggregatedCategory(slug, context),
   );
 }
 
 function expandCategories(
+  plugin: Pick<PluginConfig, 'context'>,
   categories: CategoryConfig[],
-  context: PluginUrlContext,
 ): CategoryConfig[] {
+  const context = validate(pluginUrlContextSchema, plugin.context);
   if (!shouldExpandForUrls(context.urlCount)) {
     return categories;
   }
@@ -91,7 +90,10 @@ export function createAggregatedCategory(
     slug: group.slug,
     title: group.title,
     ...(group.description && { description: group.description }),
-    refs: createCategoryRefs(group.slug, LIGHTHOUSE_PLUGIN_SLUG, context),
+    refs: expandCategoryRefs(
+      { plugin: LIGHTHOUSE_PLUGIN_SLUG, slug: group.slug, type: 'group' },
+      context,
+    ),
   };
 }
 
@@ -111,13 +113,4 @@ export function expandAggregatedCategory(
         : [ref],
     ),
   };
-}
-
-/**
- * Extracts unique, unsuffixed group slugs from a list of groups.
- * Useful for deduplicating and normalizing group slugs when generating categories.
- */
-export function extractGroupSlugs(groups: Group[]): LighthouseGroupSlug[] {
-  const slugs = groups.map(({ slug }) => removeIndex(slug));
-  return [...new Set(slugs)].filter(isLighthouseGroupSlug);
 }

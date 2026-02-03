@@ -1,11 +1,10 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 import { createProjectGraphAsync } from '@nx/devkit';
-import type {
-  CategoryConfig,
-  CoreConfig,
-  PluginUrls,
-} from './packages/models/src/index.js';
-import axePlugin, { axeCategories } from './packages/plugin-axe/src/index.js';
+import type { CoreConfig, PluginUrls } from './packages/models/src/index.js';
+import axePlugin, {
+  type AxePluginOptions,
+  axeGroupRefs,
+} from './packages/plugin-axe/src/index.js';
 import coveragePlugin, {
   type CoveragePluginConfig,
   getNxCoveragePaths,
@@ -16,12 +15,12 @@ import eslintPlugin, {
 import jsPackagesPlugin from './packages/plugin-js-packages/src/index.js';
 import jsDocsPlugin from './packages/plugin-jsdocs/src/index.js';
 import {
-  lighthouseCategories,
-  lighthouseGroupRef,
+  lighthouseGroupRefs,
   lighthousePlugin,
 } from './packages/plugin-lighthouse/src/index.js';
 import typescriptPlugin, {
   getCategories,
+  tsconfigFromAllNxProjects,
 } from './packages/plugin-typescript/src/index.js';
 
 export function configureUpload(projectName: string = 'workspace'): CoreConfig {
@@ -152,10 +151,17 @@ export async function configureJsPackagesPlugin(): Promise<CoreConfig> {
   };
 }
 
-export function configureTypescriptPlugin(projectName?: string): CoreConfig {
+export async function configureTypescriptPlugin(
+  projectName?: string,
+): Promise<CoreConfig> {
   const tsconfig = projectName
     ? `packages/${projectName}/tsconfig.lib.json`
-    : 'tsconfig.code-pushup.json';
+    : await tsconfigFromAllNxProjects({
+        exclude: [
+          'test-fixtures', // Intentionally incomplete tsconfigs
+          'models', // Uses ts-patch transformer plugin
+        ],
+      });
   return {
     plugins: [typescriptPlugin({ tsconfig })],
     categories: getCategories(),
@@ -195,38 +201,46 @@ export async function configureLighthousePlugin(
   urls: PluginUrls,
 ): Promise<CoreConfig> {
   const lhPlugin = await lighthousePlugin(urls);
-  const lhCategories: CategoryConfig[] = [
-    {
-      slug: 'performance',
-      title: 'Performance',
-      refs: [lighthouseGroupRef('performance')],
-    },
-    {
-      slug: 'a11y',
-      title: 'Accessibility',
-      refs: [lighthouseGroupRef('accessibility')],
-    },
-    {
-      slug: 'best-practices',
-      title: 'Best Practices',
-      refs: [lighthouseGroupRef('best-practices')],
-    },
-    {
-      slug: 'seo',
-      title: 'SEO',
-      refs: [lighthouseGroupRef('seo')],
-    },
-  ];
   return {
     plugins: [lhPlugin],
-    categories: lighthouseCategories(lhPlugin, lhCategories),
+    categories: [
+      {
+        slug: 'performance',
+        title: 'Performance',
+        refs: lighthouseGroupRefs(lhPlugin, 'performance'),
+      },
+      {
+        slug: 'a11y',
+        title: 'Accessibility',
+        refs: lighthouseGroupRefs(lhPlugin, 'accessibility'),
+      },
+      {
+        slug: 'best-practices',
+        title: 'Best Practices',
+        refs: lighthouseGroupRefs(lhPlugin, 'best-practices'),
+      },
+      {
+        slug: 'seo',
+        title: 'SEO',
+        refs: lighthouseGroupRefs(lhPlugin, 'seo'),
+      },
+    ],
   };
 }
 
-export function configureAxePlugin(urls: PluginUrls): CoreConfig {
-  const axe = axePlugin(urls);
+export function configureAxePlugin(
+  urls: PluginUrls,
+  options?: AxePluginOptions,
+): CoreConfig {
+  const axe = axePlugin(urls, options);
   return {
     plugins: [axe],
-    categories: axeCategories(axe),
+    categories: [
+      {
+        slug: 'axe-a11y',
+        title: 'Axe Accessibility',
+        refs: axeGroupRefs(axe),
+      },
+    ],
   };
 }

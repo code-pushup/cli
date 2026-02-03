@@ -1,5 +1,4 @@
 import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
-import { describe, expect } from 'vitest';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { executorContext, registerPluginInWorkspace } from './nx.js';
 

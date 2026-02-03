@@ -1,5 +1,4 @@
 import { vol } from 'memfs';
-import { describe, expect, vi } from 'vitest';
 import { CONFIG_FILE_NAME, type CoreConfig } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { autoloadRc } from './read-rc-file.js';

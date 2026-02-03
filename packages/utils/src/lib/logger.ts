@@ -1,11 +1,11 @@
 /* eslint-disable max-lines, no-console, @typescript-eslint/class-methods-use-this */
 import ansis, { type AnsiColors } from 'ansis';
-import os from 'node:os';
 import ora, { type Ora } from 'ora';
 import { formatCommandStatus } from './command.js';
 import { dateToUnixTimestamp } from './dates.js';
 import { isEnvVarEnabled } from './env.js';
 import { stringifyError } from './errors.js';
+import { SIGNAL_EXIT_CODES } from './exit-process.js';
 import { formatDuration, indentLines, transformLines } from './formatting.js';
 import { settlePromise } from './promises.js';
 
@@ -27,12 +27,6 @@ export type DebugLogOptions = LogOptions & {
 };
 
 const HEX_RADIX = 16;
-
-const SIGINT_CODE = 2;
-// https://www.gnu.org/software/bash/manual/html_node/Exit-Status.html#:~:text=When%20a%20command%20terminates%20on%20a%20fatal%20signal%20whose%20number%20is%20N%2C%20Bash%20uses%20the%20value%20128%2BN%20as%20the%20exit%20status.
-const SIGNALS_CODE_OFFSET_UNIX = 128;
-const SIGINT_EXIT_CODE_UNIX = SIGNALS_CODE_OFFSET_UNIX + SIGINT_CODE;
-const SIGINT_EXIT_CODE_WINDOWS = SIGINT_CODE;
 
 /**
  * Rich logging implementation for Code PushUp CLI, plugins, etc.
@@ -77,11 +71,7 @@ export class Logger {
     this.newline();
     this.error(ansis.bold('Cancelled by SIGINT'));
     // eslint-disable-next-line n/no-process-exit, unicorn/no-process-exit
-    process.exit(
-      os.platform() === 'win32'
-        ? SIGINT_EXIT_CODE_WINDOWS
-        : SIGINT_EXIT_CODE_UNIX,
-    );
+    process.exit(SIGNAL_EXIT_CODES().SIGINT);
   };
 
   /**

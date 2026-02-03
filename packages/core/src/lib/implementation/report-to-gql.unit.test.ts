@@ -1,4 +1,3 @@
-import { describe } from 'vitest';
 import { type AuditReportTree, TreeType } from '@code-pushup/portal-client';
 import { issueToGQL, tableToGQL, treeToGQL } from './report-to-gql.js';
 

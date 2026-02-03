@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { filterItemRefsBy } from './filter.js';
 
 describe('filterItemsWithRefBy', () => {

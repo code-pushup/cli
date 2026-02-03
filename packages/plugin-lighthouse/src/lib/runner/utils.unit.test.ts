@@ -6,7 +6,6 @@ import type { Result } from 'lighthouse/types/lhr/audit-result';
 import { vol } from 'memfs';
 import os from 'node:os';
 import path from 'node:path';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   type AuditOutput,
   type CoreConfig,
@@ -265,7 +264,7 @@ describe('toAuditOutputs', () => {
       ),
       { verbose: true },
     );
-    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledOnce();
   });
 
   it('should not parse empty audit details', () => {
@@ -412,33 +411,33 @@ describe('determineAndSetLogLevel', () => {
 
   it('should set log level to info and return "info" as level if no options are given', () => {
     expect(determineAndSetLogLevel()).toBe('info');
-    expect(log.isVerbose()).toBe(false);
-    expect(debugLib.enabled('LH:*')).toBe(false);
-    expect(debugLib.enabled('LH:*:verbose')).toBe(false);
+    expect(log.isVerbose()).toBeFalse();
+    expect(debugLib.enabled('LH:*')).toBeFalse();
+    expect(debugLib.enabled('LH:*:verbose')).toBeFalse();
   });
 
   it('should set log level to verbose and return "verbose" as level', () => {
     expect(determineAndSetLogLevel({ verbose: true })).toBe('verbose');
-    expect(log.isVerbose()).toBe(true);
-    expect(debugLib.enabled('LH:*')).toBe(false);
-    expect(debugLib.enabled('LH:*:verbose')).toBe(false);
+    expect(log.isVerbose()).toBeTrue();
+    expect(debugLib.enabled('LH:*')).toBeFalse();
+    expect(debugLib.enabled('LH:*:verbose')).toBeFalse();
   });
 
   it('should set log level to quiet and return "silent" as level', () => {
     expect(determineAndSetLogLevel({ quiet: true })).toBe('silent');
-    expect(log.isVerbose()).toBe(false);
-    expect(debugLib.enabled('LH:*')).toBe(false);
-    expect(debugLib.enabled('-LH:*')).toBe(false);
-    expect(debugLib.enabled('LH:*:verbose')).toBe(false);
+    expect(log.isVerbose()).toBeFalse();
+    expect(debugLib.enabled('LH:*')).toBeFalse();
+    expect(debugLib.enabled('-LH:*')).toBeFalse();
+    expect(debugLib.enabled('LH:*:verbose')).toBeFalse();
   });
 
   it('should set log level to verbose if verbose and quiet are given and return "verbose" as level', () => {
     expect(determineAndSetLogLevel({ verbose: true, quiet: true })).toBe(
       'verbose',
     );
-    expect(log.isVerbose()).toBe(true);
-    expect(debugLib.enabled('LH:*')).toBe(false);
-    expect(debugLib.enabled('LH:*:verbose')).toBe(false);
+    expect(log.isVerbose()).toBeTrue();
+    expect(debugLib.enabled('LH:*')).toBeFalse();
+    expect(debugLib.enabled('LH:*:verbose')).toBeFalse();
   });
 });
 

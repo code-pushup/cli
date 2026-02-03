@@ -4,7 +4,11 @@ export {
 } from './lib/implementation/schemas.js';
 export {
   sourceFileLocationSchema,
+  sourceUrlLocationSchema,
+  issueSourceSchema,
+  type IssueSource,
   type SourceFileLocation,
+  type SourceUrlLocation,
 } from './lib/source.js';
 
 export {
@@ -66,9 +70,11 @@ export {
   filePathSchema,
   globPathSchema,
   materialIconSchema,
+  nonnegativeNumberSchema,
   positiveIntSchema,
   scoreSchema,
   slugSchema,
+  weightSchema,
   type MaterialIcon,
 } from './lib/implementation/schemas.js';
 export { exists } from './lib/implementation/utils.js';
@@ -78,10 +84,14 @@ export {
   validateAsync,
 } from './lib/implementation/validate.js';
 export {
+  fileIssueSchema,
   issueSchema,
   issueSeveritySchema,
+  urlIssueSchema,
+  type FileIssue,
   type Issue,
   type IssueSeverity,
+  type UrlIssue,
 } from './lib/issue.js';
 export {
   formatSchema,
@@ -164,3 +174,4 @@ export {
   type Tree,
 } from './lib/tree.js';
 export { uploadConfigSchema, type UploadConfig } from './lib/upload-config.js';
+export { convertAsyncZodFunctionToSchema } from './lib/implementation/function.js';

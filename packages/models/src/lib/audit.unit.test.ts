@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { type Audit, auditSchema, pluginAuditsSchema } from './audit.js';
 
 describe('auditSchema', () => {

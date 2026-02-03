@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { axePresetSchema } from './config.js';
 
-/* WCAG presets for rule loading */
+/** WCAG presets for rule loading */
 const axeWcagTags = [
   'wcag2a',
   'wcag21a',
@@ -27,11 +27,12 @@ const WCAG_PRESET_TAGS: Record<AxeWcagPreset, AxeWcagTag[]> = {
   wcag22aa: ['wcag2a', 'wcag21a', 'wcag2aa', 'wcag21aa', 'wcag22aa'],
 };
 
+/** Returns the WCAG tags for a given preset. */
 export function getWcagPresetTags(preset: AxeWcagPreset): AxeWcagTag[] {
   return WCAG_PRESET_TAGS[preset];
 }
 
-/* Category groups for all presets */
+/** Category groups for all presets */
 const axeCategoryGroupSlugs = [
   'aria',
   'color',
@@ -54,6 +55,7 @@ export const axeCategoryGroupSlugSchema = z
 
 export type AxeCategoryGroupSlug = z.infer<typeof axeCategoryGroupSlugSchema>;
 
+/** Maps category group slugs to human-readable titles. */
 export const CATEGORY_GROUPS: Record<AxeCategoryGroupSlug, string> = {
   aria: 'ARIA',
   color: 'Color & Contrast',
@@ -70,10 +72,11 @@ export const CATEGORY_GROUPS: Record<AxeCategoryGroupSlug, string> = {
   'time-and-media': 'Media',
 };
 
+/** Type guard for valid Axe group slugs. */
 export function isAxeGroupSlug(slug: unknown): slug is AxeCategoryGroupSlug {
   return axeCategoryGroupSlugSchema.safeParse(slug).success;
 }
 
-/* Combined exports */
+// Combined exports
 export const axeGroupSlugSchema = axeCategoryGroupSlugSchema;
 export type AxeGroupSlug = AxeCategoryGroupSlug;

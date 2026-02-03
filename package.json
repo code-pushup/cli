@@ -22,7 +22,7 @@
     "@axe-core/playwright": "^4.11.0",
     "@code-pushup/portal-client": "^0.16.0",
     "@nx/devkit": "22.3.3",
-    "@swc/helpers": "0.5.13",
+    "@swc/helpers": "0.5.18",
     "ansis": "^3.3.2",
     "build-md": "^0.4.2",
     "bundle-require": "^5.1.0",
@@ -45,7 +45,7 @@
     "wrap-ansi": "^9.0.2",
     "yaml": "^2.5.1",
     "yargs": "^17.7.2",
-    "zod": "^4.0.5"
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@actions/core": "^1.11.1",
@@ -67,7 +67,7 @@
     "@push-based/nx-verdaccio": "0.0.7",
     "@swc-node/register": "1.9.2",
     "@swc/cli": "0.6.0",
-    "@swc/core": "1.5.7",
+    "@swc/core": "1.15.8",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "16.1.0",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",

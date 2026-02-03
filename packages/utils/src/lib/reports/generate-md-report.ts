@@ -9,8 +9,9 @@ import {
   REPORT_HEADLINE_TEXT,
 } from './constants.js';
 import {
+  formatSelectorLocation,
   formatSourceLine,
-  linkToLocalSourceForIde,
+  linkToSource,
   metaDescription,
   tableSection,
   treeSection,
@@ -20,6 +21,7 @@ import {
   categoriesDetailsSection,
   categoriesOverviewSection,
 } from './generate-md-report-category-section.js';
+import { isFileSource, isUrlSource } from './type-guards.js';
 import type { MdReportOptions, ScoredReport } from './types.js';
 import {
   formatReportScore,
@@ -82,8 +84,8 @@ export function auditDetailsIssues(
       [
         { heading: 'Severity', alignment: 'center' },
         { heading: 'Message', alignment: 'left' },
-        { heading: 'Source file', alignment: 'left' },
-        { heading: 'Line(s)', alignment: 'center' },
+        { heading: 'Source', alignment: 'left' },
+        { heading: 'Location', alignment: 'center' },
       ],
       issues.map(({ severity: level, message, source }: Issue) => {
         const severity = md`${severityMarker(level)} ${md.italic(level)}`;
@@ -92,12 +94,20 @@ export function auditDetailsIssues(
         if (!source) {
           return [severity, formattedMessage];
         }
-        const file = linkToLocalSourceForIde(source, options);
-        if (!source.position) {
-          return [severity, formattedMessage, file];
+
+        const sourceLink = linkToSource(source, options);
+
+        if (isFileSource(source) && source.position) {
+          const location = formatSourceLine(source.position);
+          return [severity, formattedMessage, sourceLink, location];
         }
-        const line = formatSourceLine(source.position);
-        return [severity, formattedMessage, file, line];
+
+        if (isUrlSource(source) && source.selector) {
+          const location = formatSelectorLocation(source.selector);
+          return [severity, formattedMessage, sourceLink, md.code(location)];
+        }
+
+        return [severity, formattedMessage, sourceLink];
       }),
     );
 }

@@ -1,4 +1,6 @@
 export * from './lib/constants.js';
+export * from './lib/utils/performance-observer.mock.js';
+export * from './lib/utils/perf-hooks.mock.js';
 export * from './lib/utils/execute-process-helper.mock.js';
 export * from './lib/utils/os-agnostic-paths.js';
 export * from './lib/utils/env.js';
@@ -8,3 +10,5 @@ export * from './lib/utils/file-system.js';
 export * from './lib/utils/create-npm-workshpace.js';
 export * from './lib/utils/project-graph.js';
 export * from './lib/utils/test-folder-setup.js';
+export * from './lib/utils/omit-trace-json.js';
+export * from './lib/utils/profiler.mock.js';

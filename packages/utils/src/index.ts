@@ -94,20 +94,19 @@ export {
 export { interpolate } from './lib/interpolate.js';
 export { Logger, logger } from './lib/logger.js';
 export { mergeConfigs } from './lib/merge-configs.js';
+export { loadNxProjectGraph } from './lib/nx.js';
 export {
   addIndex,
-  ContextValidationError,
-  createCategoryRefs,
   expandAuditsForUrls,
   expandCategoryRefs,
   expandGroupsForUrls,
-  removeIndex,
+  extractGroupSlugs,
   shouldExpandForUrls,
-  validateUrlContext,
 } from './lib/plugin-url-aggregation.js';
 export {
   getUrlIdentifier,
   normalizeUrlInput,
+  pluginUrlContextSchema,
   type PluginUrlContext,
 } from './lib/plugin-url-config.js';
 export {
@@ -127,6 +126,11 @@ export {
   listGroupsFromAllPlugins,
 } from './lib/reports/flatten-plugins.js';
 export { formatIssueSeverities, wrapTags } from './lib/reports/formatting.js';
+export {
+  isFileIssue,
+  isFileSource,
+  isUrlSource,
+} from './lib/reports/type-guards.js';
 export { generateMdReport } from './lib/reports/generate-md-report.js';
 export {
   generateMdReportsDiff,

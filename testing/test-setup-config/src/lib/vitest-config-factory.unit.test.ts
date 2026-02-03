@@ -1,4 +1,3 @@
-import { describe, expect, it, vi } from 'vitest';
 import {
   type E2ETestOptions,
   type TestKind,
@@ -38,7 +37,27 @@ describe('createVitestConfig', () => {
           coverage: expect.objectContaining({
             reporter: ['text', 'lcov'],
             reportsDirectory: '../../coverage/test-package/unit-tests',
-            exclude: ['mocks/**', '**/types.ts', 'perf/**'],
+            exclude: [
+              'tests/**',
+              'perf/**',
+              'mocks/**',
+              '**/fixtures/**',
+              '**/*.mock.ts',
+              '**/*.fixture.ts',
+              '**/vitest.*.config.ts',
+              '**/vitest.config.ts',
+              '**/code-pushup.config.ts',
+              '**/*.config.ts',
+              '**/index.ts',
+              '**/index.js',
+              '**/index.mjs',
+              '**/models.ts',
+              '**/*.model.ts',
+              '**/types.ts',
+              '**/*.type.ts',
+              '**/constants.ts',
+              '**/*.d.ts',
+            ],
           }),
           typecheck: { include: ['**/*.type.test.ts'] },
         }),
@@ -270,9 +289,25 @@ describe('createVitestConfig', () => {
       const config = createVitestConfig('test-package', 'unit');
 
       expect(config.test!.coverage!.exclude).toEqual([
-        'mocks/**',
-        '**/types.ts',
+        'tests/**',
         'perf/**',
+        'mocks/**',
+        '**/fixtures/**',
+        '**/*.mock.ts',
+        '**/*.fixture.ts',
+        '**/vitest.*.config.ts',
+        '**/vitest.config.ts',
+        '**/code-pushup.config.ts',
+        '**/*.config.ts',
+        '**/index.ts',
+        '**/index.js',
+        '**/index.mjs',
+        '**/models.ts',
+        '**/*.model.ts',
+        '**/types.ts',
+        '**/*.type.ts',
+        '**/constants.ts',
+        '**/*.d.ts',
       ]);
     });
   });

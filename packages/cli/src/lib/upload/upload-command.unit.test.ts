@@ -1,5 +1,4 @@
 import { vol } from 'memfs';
-import { describe, expect, it } from 'vitest';
 import { uploadReportToPortal } from '@code-pushup/portal-client';
 import { readRcByPath } from '@code-pushup/core';
 import { MINIMAL_REPORT_MOCK } from '@code-pushup/test-fixtures';

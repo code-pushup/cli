@@ -9,6 +9,7 @@
     "vitest.e2e.config.ts",
     "tests/**/*.e2e.test.ts",
     "tests/**/*.d.ts",
-    "mocks/**/*.ts"
+    "mocks/**/*.ts",
+    "../../testing/test-setup/src/vitest.d.ts"
   ]
 }

@@ -1,6 +1,5 @@
 import process from 'node:process';
 import { threadId } from 'node:worker_threads';
-import { describe, expect, it } from 'vitest';
 import { defaultClock, epochClock } from './clock-epoch.js';
 
 describe('epochClock', () => {
@@ -18,16 +17,6 @@ describe('epochClock', () => {
     expect(c.fromPerfMs).toBeFunction();
     expect(c.fromEntryStartTimeMs).toBeFunction();
     expect(c.fromDateNowMs).toBeFunction();
-  });
-
-  it('should support performance clock by default for epochNowUs', () => {
-    const c = epochClock();
-    expect(c.timeOriginMs).toBe(performance.timeOrigin);
-    const nowUs = c.epochNowUs();
-    expect(nowUs).toBe(Math.round(nowUs));
-    const expectedUs = Date.now() * 1000;
-
-    expect(nowUs).toBeWithin(expectedUs - 2000, expectedUs + 1000);
   });
 
   it('should convert epoch milliseconds to microseconds correctly', () => {

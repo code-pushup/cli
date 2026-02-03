@@ -1,3 +1,146 @@
+## 0.112.0 (2026-01-29)
+
+### 🚀 Features
+
+- **plugin-typescript:** support multiple tsconfigs ([#1229](https://github.com/code-pushup/cli/pull/1229))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
+## 0.111.1 (2026-01-27)
+
+### 🩹 Fixes
+
+- add exit handler to profiler ([#1221](https://github.com/code-pushup/cli/pull/1221))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
+## 0.111.0 (2026-01-27)
+
+### 🚀 Features
+
+- **utils:** add NodeJS profiler ([#1219](https://github.com/code-pushup/cli/pull/1219))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
+## 0.110.0 (2026-01-26)
+
+### 🚀 Features
+
+- **utils:** add WriteAheadLog classes ([#1210](https://github.com/code-pushup/cli/pull/1210))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
+## 0.109.0 (2026-01-26)
+
+### 🚀 Features
+
+- **models:** add URL source type for issues ([ef5a5be1](https://github.com/code-pushup/cli/commit/ef5a5be1))
+- **plugin-axe:** add source field to issues ([fe6f94ea](https://github.com/code-pushup/cli/commit/fe6f94ea))
+- **utils:** add type guards and URL source formatting ([cde6309e](https://github.com/code-pushup/cli/commit/cde6309e))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
+## 0.108.2 (2026-01-26)
+
+### 🩹 Fixes
+
+- add missing vitest.d.ts to test tsconfigs ([c9c47f36](https://github.com/code-pushup/cli/commit/c9c47f36))
+- **zod2md-jsdocs:** exclude tests from build ([69707ff8](https://github.com/code-pushup/cli/commit/69707ff8))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
+## 0.108.1 (2026-01-20)
+
+### 🩹 Fixes
+
+- **utils:** unique names for parallel plugin execution ([#1222](https://github.com/code-pushup/cli/pull/1222))
+
+### ❤️ Thank You
+
+- Nicolas Beaussart @beaussan
+
+## 0.108.0 (2026-01-16)
+
+### 🚀 Features
+
+- add profiler class and measure API ([#1216](https://github.com/code-pushup/cli/pull/1216))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
+## 0.107.0 (2026-01-16)
+
+### 🚀 Features
+
+- **plugin-axe:** add authentication support via setup script ([#1198](https://github.com/code-pushup/cli/pull/1198))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
+## 0.106.0 (2026-01-15)
+
+### 🚀 Features
+
+- multi-URL aware helpers for cross-plugin composition ([6bfad3ce](https://github.com/code-pushup/cli/commit/6bfad3ce))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
+## 0.105.0 (2026-01-14)
+
+### 🚀 Features
+
+- add trace event utils ([#1215](https://github.com/code-pushup/cli/pull/1215))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
+## 0.104.0 (2026-01-14)
+
+### 🚀 Features
+
+- **utils:** measure utils ([#1211](https://github.com/code-pushup/cli/pull/1211))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
+## 0.103.0 (2026-01-14)
+
+### 🚀 Features
+
+- add process exit handler ([#1212](https://github.com/code-pushup/cli/pull/1212))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
+## 0.102.0 (2026-01-10)
+
+### 🚀 Features
+
+- **utils:** add performance observer ([#1206](https://github.com/code-pushup/cli/pull/1206))
+
+### ❤️ Thank You
+
+- Michael Hladky @BioPhoton
+
 ## 0.101.1 (2026-01-06)
 
 ### 🩹 Fixes

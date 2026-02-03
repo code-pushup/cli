@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { ZodError } from 'zod';
 import type { ConfigPatterns } from './models.js';
 import { configPatternsSchema, interpolatedSlugSchema } from './schemas.js';

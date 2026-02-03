@@ -1,6 +1,5 @@
 import { vol } from 'memfs';
 import path from 'node:path';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getGitRoot, logger } from '@code-pushup/utils';
 import type { CoverageResult, CoverageType } from '../../config.js';
 import { lcovResultsToAuditOutputs, parseLcovFiles } from './lcov-runner.js';

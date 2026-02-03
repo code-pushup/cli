@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { ZodError } from 'zod';
 import { axePluginOptionsSchema } from './config.js';
 
@@ -16,6 +15,12 @@ describe('axePluginOptionsSchema', () => {
       expect(() => axePluginOptionsSchema.parse({ preset })).not.toThrow();
     },
   );
+
+  it('should accept setupScript as a file path', () => {
+    expect(() =>
+      axePluginOptionsSchema.parse({ setupScript: 'src/axe-setup.js' }),
+    ).not.toThrow();
+  });
 
   it('should accept scoreTargets as a number between 0 and 1', () => {
     expect(() =>

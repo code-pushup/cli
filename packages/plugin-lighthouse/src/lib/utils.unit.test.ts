@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import {
   type Audit,
   type Group,
@@ -6,9 +5,12 @@ import {
   categoryRefSchema,
   pluginConfigSchema,
 } from '@code-pushup/models';
+import { LIGHTHOUSE_PLUGIN_SLUG } from './constants.js';
 import {
   lighthouseAuditRef,
+  lighthouseAuditRefs,
   lighthouseGroupRef,
+  lighthouseGroupRefs,
   markSkippedAuditsAndGroups,
   validateAudits,
   validateOnlyCategories,
@@ -41,6 +43,112 @@ describe('lighthouseGroupRef', () => {
       lighthouseGroupRef('performance', 0),
     );
     expect(groupRef.weight).toBe(0);
+  });
+});
+
+describe('lighthouseGroupRefs', () => {
+  it('should return refs for all groups when no slug provided', () => {
+    expect(
+      lighthouseGroupRefs({
+        groups: [
+          { slug: 'performance-1', title: 'Performance (url1)', refs: [] },
+          { slug: 'performance-2', title: 'Performance (url2)', refs: [] },
+        ],
+        context: { urlCount: 2, weights: { 1: 2, 2: 3 } },
+      }),
+    ).toStrictEqual([
+      {
+        plugin: LIGHTHOUSE_PLUGIN_SLUG,
+        slug: 'performance-1',
+        type: 'group',
+        weight: 2,
+      },
+      {
+        plugin: LIGHTHOUSE_PLUGIN_SLUG,
+        slug: 'performance-2',
+        type: 'group',
+        weight: 3,
+      },
+    ]);
+  });
+
+  it('should return refs for specific group when slug provided', () => {
+    expect(
+      lighthouseGroupRefs(
+        {
+          groups: [
+            { slug: 'performance-1', title: 'Performance (url1)', refs: [] },
+            { slug: 'performance-2', title: 'Performance (url2)', refs: [] },
+          ],
+          context: { urlCount: 2, weights: { 1: 1, 2: 1 } },
+        },
+        'performance',
+        3,
+      ),
+    ).toStrictEqual([
+      {
+        plugin: LIGHTHOUSE_PLUGIN_SLUG,
+        slug: 'performance-1',
+        type: 'group',
+        weight: 2,
+      },
+      {
+        plugin: LIGHTHOUSE_PLUGIN_SLUG,
+        slug: 'performance-2',
+        type: 'group',
+        weight: 2,
+      },
+    ]);
+  });
+
+  it('should return empty array when plugin has no groups', () => {
+    expect(
+      lighthouseGroupRefs({
+        groups: undefined,
+        context: { urlCount: 1, weights: { 1: 1 } },
+      }),
+    ).toBeEmpty();
+  });
+});
+
+describe('lighthouseAuditRefs', () => {
+  it('should return refs for specific audit with multi-URL expansion', () => {
+    expect(
+      lighthouseAuditRefs(
+        { audits: [], context: { urlCount: 2, weights: { 1: 1, 2: 2 } } },
+        'first-contentful-paint',
+        3,
+      ),
+    ).toStrictEqual([
+      {
+        plugin: LIGHTHOUSE_PLUGIN_SLUG,
+        slug: 'first-contentful-paint-1',
+        type: 'audit',
+        weight: 2,
+      },
+      {
+        plugin: LIGHTHOUSE_PLUGIN_SLUG,
+        slug: 'first-contentful-paint-2',
+        type: 'audit',
+        weight: 2.5,
+      },
+    ]);
+  });
+
+  it('should return refs for all audits when no slug provided', () => {
+    expect(
+      lighthouseAuditRefs({
+        audits: [{ slug: 'first-contentful-paint', title: '' }],
+        context: { urlCount: 1, weights: { 1: 1 } },
+      }),
+    ).toStrictEqual([
+      {
+        plugin: LIGHTHOUSE_PLUGIN_SLUG,
+        slug: 'first-contentful-paint',
+        type: 'audit',
+        weight: 1,
+      },
+    ]);
   });
 });
 
