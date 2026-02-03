@@ -385,6 +385,113 @@ describe('toAuditOutputs', () => {
     ]);
   });
 
+  it('should join none and all check messages', () => {
+    const results = createMockAxeResults({
+      violations: [
+        createMockResult('aria-allowed-attr', [
+          createMockNode({
+            html: '<div role="button" aria-checked="true" aria-invalid-attr="x"></div>',
+            target: ['div'],
+            impact: 'critical',
+            none: [
+              createMockCheck({
+                id: 'aria-unsupported-attr',
+                message:
+                  'aria-invalid-attr attribute is not supported for role button',
+              }),
+            ],
+            all: [
+              createMockCheck({
+                id: 'aria-allowed-attr',
+                message:
+                  'aria-checked attribute is not allowed for role button',
+              }),
+            ],
+          }),
+        ]),
+      ],
+    });
+
+    expect(toAuditOutputs(results, 'https://example.com')).toStrictEqual<
+      AuditOutput[]
+    >([
+      {
+        slug: 'aria-allowed-attr',
+        score: 0,
+        value: 1,
+        displayValue: '1 error',
+        details: {
+          issues: [
+            {
+              message:
+                'aria-invalid-attr attribute is not supported for role button. aria-checked attribute is not allowed for role button',
+              severity: 'error',
+              source: {
+                url: 'https://example.com',
+                snippet:
+                  '<div role="button" aria-checked="true" aria-invalid-attr="x"></div>',
+                selector: 'div',
+              },
+            },
+          ],
+        },
+      },
+    ]);
+  });
+
+  it('should join multiple all check messages', () => {
+    const results = createMockAxeResults({
+      violations: [
+        createMockResult('aria-hidden-focus', [
+          createMockNode({
+            html: '<div aria-hidden="true"><button>Click</button></div>',
+            target: ['div'],
+            impact: 'serious',
+            all: [
+              createMockCheck({
+                id: 'focusable-modal-open',
+                message: 'No focusable modal is open',
+              }),
+              createMockCheck({
+                id: 'focusable-disabled',
+                message: 'Element is keyboard accessible',
+              }),
+              createMockCheck({
+                id: 'focusable-not-tabbable',
+                message: 'Element is in tab order',
+              }),
+            ],
+          }),
+        ]),
+      ],
+    });
+
+    expect(toAuditOutputs(results, 'https://example.com')).toStrictEqual<
+      AuditOutput[]
+    >([
+      {
+        slug: 'aria-hidden-focus',
+        score: 0,
+        value: 1,
+        displayValue: '1 error',
+        details: {
+          issues: [
+            {
+              message:
+                'No focusable modal is open. Element is keyboard accessible. Element is in tab order',
+              severity: 'error',
+              source: {
+                url: 'https://example.com',
+                snippet: '<div aria-hidden="true"><button>Click</button></div>',
+                selector: 'div',
+              },
+            },
+          ],
+        },
+      },
+    ]);
+  });
+
   it('should omit selector when target is missing', () => {
     const results = createMockAxeResults({
       violations: [
