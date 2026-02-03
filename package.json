@@ -20,7 +20,7 @@
   "private": true,
   "dependencies": {
     "@axe-core/playwright": "^4.11.0",
-    "@code-pushup/portal-client": "^0.16.0",
+    "@code-pushup/portal-client": "^0.17.0",
     "@nx/devkit": "22.3.3",
     "@swc/helpers": "0.5.18",
     "ansis": "^3.3.2",
