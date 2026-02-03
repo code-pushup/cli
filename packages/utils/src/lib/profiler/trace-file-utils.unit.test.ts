@@ -720,7 +720,7 @@ describe('serializeTraceEvent', () => {
 
     const result = serializeTraceEvent(event);
 
-    expect(typeof result).toBe('string');
+    expect(result).toBeString();
     expect(() => JSON.parse(result)).not.toThrow();
     const parsed = JSON.parse(result);
     expect(parsed).toStrictEqual({
