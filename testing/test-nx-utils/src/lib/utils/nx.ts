@@ -9,7 +9,7 @@ import {
 } from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
 import type { LibraryGeneratorSchema } from '@nx/js/src/generators/library/schema';
-import path from 'node:path';
+import * as path from 'node:path';
 import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
 import { executeProcess } from '@code-pushup/test-utils';
 
@@ -98,7 +98,7 @@ export async function nxShowProjectJson<T extends ProjectConfiguration>(
   try {
     const { stderr, stdout } = await executeProcess({
       command: 'npx',
-      args: ['nx', 'show', 'project', '--json', project],
+      args: ['nx', 'show', 'project', project, '--json'],
       cwd,
     });
 
@@ -109,13 +109,14 @@ export async function nxShowProjectJson<T extends ProjectConfiguration>(
     };
   } catch (error: unknown) {
     const execError = error as {
-      code?: number;
+      code?: number | string | null;
       stderr?: string;
       stdout?: string;
+      message?: string;
     };
     return {
-      code: execError.code ?? 1,
-      stderr: execError.stderr ?? String((error as Error).message),
+      code: typeof execError.code === 'number' ? execError.code : 1,
+      stderr: execError.stderr ?? execError.message ?? String(error),
       projectJson: JSON.parse('{}'),
     };
   }
