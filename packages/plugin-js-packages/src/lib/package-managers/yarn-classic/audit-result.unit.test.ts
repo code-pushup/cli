@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { toJsonLines } from '@code-pushup/utils';
 import type { AuditResult } from '../../runner/audit/types.js';
 import { yarnClassicToAuditResult } from './audit-result.js';

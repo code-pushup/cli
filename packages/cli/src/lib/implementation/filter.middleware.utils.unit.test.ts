@@ -1,4 +1,3 @@
-import { describe, expect } from 'vitest';
 import type { CategoryRef } from '@code-pushup/models';
 import {
   extractSkippedItems,
@@ -22,7 +21,7 @@ describe('isValidCategoryRef', () => {
       plugin: 'p1',
       weight: 1,
     } satisfies CategoryRef;
-    expect(isValidCategoryRef(ref, plugins)).toBe(true);
+    expect(isValidCategoryRef(ref, plugins)).toBeTrue();
   });
 
   it('should return false for skipped audit ref', () => {
@@ -32,7 +31,7 @@ describe('isValidCategoryRef', () => {
       plugin: 'p1',
       weight: 1,
     } satisfies CategoryRef;
-    expect(isValidCategoryRef(ref, plugins)).toBe(false);
+    expect(isValidCategoryRef(ref, plugins)).toBeFalse();
   });
 
   it('should return true for valid group ref', () => {
@@ -42,7 +41,7 @@ describe('isValidCategoryRef', () => {
       plugin: 'p1',
       weight: 1,
     } satisfies CategoryRef;
-    expect(isValidCategoryRef(ref, plugins)).toBe(true);
+    expect(isValidCategoryRef(ref, plugins)).toBeTrue();
   });
 
   it('should return false for skipped group ref', () => {
@@ -52,7 +51,7 @@ describe('isValidCategoryRef', () => {
       plugin: 'p1',
       weight: 1,
     } satisfies CategoryRef;
-    expect(isValidCategoryRef(ref, plugins)).toBe(false);
+    expect(isValidCategoryRef(ref, plugins)).toBeFalse();
   });
 
   it('should return false for nonexistent plugin', () => {
@@ -62,7 +61,7 @@ describe('isValidCategoryRef', () => {
       plugin: 'nonexistent',
       weight: 1,
     } satisfies CategoryRef;
-    expect(isValidCategoryRef(ref, plugins)).toBe(false);
+    expect(isValidCategoryRef(ref, plugins)).toBeFalse();
   });
 });
 

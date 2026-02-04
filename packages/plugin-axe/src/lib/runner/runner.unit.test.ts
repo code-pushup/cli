@@ -1,5 +1,4 @@
 import type { AxeResults, IncompleteResult, Result } from 'axe-core';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { type AuditOutput, DEFAULT_PERSIST_CONFIG } from '@code-pushup/models';
 import type { AxeUrlResult } from './run-axe.js';
 import { createRunnerFunction } from './runner.js';

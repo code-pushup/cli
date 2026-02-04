@@ -73,14 +73,14 @@ Performance metrics [📖 Docs](https://developers.google.com/web/fundamentals/p
 
 #### Issues
 
-|   Severity   | Message                                          | Source file                     | Line(s) |
-| :----------: | :----------------------------------------------- | :------------------------------ | :-----: |
-| ⚠️ _warning_ | 'onCreate' is missing in props validation        | `src/components/CreateTodo.jsx` |   15    |
-| ⚠️ _warning_ | 'setQuery' is missing in props validation        | `src/components/TodoFilter.jsx` |   10    |
-| ⚠️ _warning_ | 'setHideComplete' is missing in props validation | `src/components/TodoFilter.jsx` |   18    |
-| ⚠️ _warning_ | 'todos' is missing in props validation           | `src/components/TodoList.jsx`   |    6    |
-| ⚠️ _warning_ | 'todos.map' is missing in props validation       | `src/components/TodoList.jsx`   |    6    |
-| ⚠️ _warning_ | 'onEdit' is missing in props validation          | `src/components/TodoList.jsx`   |   13    |
+|   Severity   | Message                                          | Source                          | Location |
+| :----------: | :----------------------------------------------- | :------------------------------ | :------: |
+| ⚠️ _warning_ | 'onCreate' is missing in props validation        | `src/components/CreateTodo.jsx` |    15    |
+| ⚠️ _warning_ | 'setQuery' is missing in props validation        | `src/components/TodoFilter.jsx` |    10    |
+| ⚠️ _warning_ | 'setHideComplete' is missing in props validation | `src/components/TodoFilter.jsx` |    18    |
+| ⚠️ _warning_ | 'todos' is missing in props validation           | `src/components/TodoList.jsx`   |    6     |
+| ⚠️ _warning_ | 'todos.map' is missing in props validation       | `src/components/TodoList.jsx`   |    6     |
+| ⚠️ _warning_ | 'onEdit' is missing in props validation          | `src/components/TodoList.jsx`   |    13    |
 
 </details>
 
@@ -93,11 +93,11 @@ ESLint rule **prop-types**, from _react_ plugin. [📖 Docs](https://github.com/
 
 #### Issues
 
-|   Severity   | Message                                                            | Source file             | Line(s) |
-| :----------: | :----------------------------------------------------------------- | :---------------------- | :-----: |
-| ⚠️ _warning_ | 'data' is already declared in the upper scope on line 5 column 10. | `src/hooks/useTodos.js` |   11    |
-| ⚠️ _warning_ | 'data' is already declared in the upper scope on line 5 column 10. | `src/hooks/useTodos.js` |   29    |
-| ⚠️ _warning_ | 'data' is already declared in the upper scope on line 5 column 10. | `src/hooks/useTodos.js` |   41    |
+|   Severity   | Message                                                            | Source                  | Location |
+| :----------: | :----------------------------------------------------------------- | :---------------------- | :------: |
+| ⚠️ _warning_ | 'data' is already declared in the upper scope on line 5 column 10. | `src/hooks/useTodos.js` |    11    |
+| ⚠️ _warning_ | 'data' is already declared in the upper scope on line 5 column 10. | `src/hooks/useTodos.js` |    29    |
+| ⚠️ _warning_ | 'data' is already declared in the upper scope on line 5 column 10. | `src/hooks/useTodos.js` |    41    |
 
 </details>
 
@@ -110,11 +110,11 @@ ESLint rule **no-shadow**. [📖 Docs](https://eslint.org/docs/latest/rules/no-s
 
 #### Issues
 
-|   Severity   | Message                      | Source file             | Line(s) |
-| :----------: | :--------------------------- | :---------------------- | :-----: |
-| ⚠️ _warning_ | Expected property shorthand. | `src/hooks/useTodos.js` |   19    |
-| ⚠️ _warning_ | Expected property shorthand. | `src/hooks/useTodos.js` |   32    |
-| ⚠️ _warning_ | Expected property shorthand. | `src/hooks/useTodos.js` |   33    |
+|   Severity   | Message                      | Source                  | Location |
+| :----------: | :--------------------------- | :---------------------- | :------: |
+| ⚠️ _warning_ | Expected property shorthand. | `src/hooks/useTodos.js` |    19    |
+| ⚠️ _warning_ | Expected property shorthand. | `src/hooks/useTodos.js` |    32    |
+| ⚠️ _warning_ | Expected property shorthand. | `src/hooks/useTodos.js` |    33    |
 
 </details>
 
@@ -127,10 +127,10 @@ ESLint rule **object-shorthand**. [📖 Docs](https://eslint.org/docs/latest/rul
 
 #### Issues
 
-|   Severity   | Message                                                                                                                  | Source file             | Line(s) |
-| :----------: | :----------------------------------------------------------------------------------------------------------------------- | :---------------------- | :-----: |
-| ⚠️ _warning_ | React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies? | `src/hooks/useTodos.js` |   17    |
-| ⚠️ _warning_ | React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies? | `src/hooks/useTodos.js` |   40    |
+|   Severity   | Message                                                                                                                  | Source                  | Location |
+| :----------: | :----------------------------------------------------------------------------------------------------------------------- | :---------------------- | :------: |
+| ⚠️ _warning_ | React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies? | `src/hooks/useTodos.js` |    17    |
+| ⚠️ _warning_ | React Hook useCallback does nothing when called with only one argument. Did you forget to pass an array of dependencies? | `src/hooks/useTodos.js` |    40    |
 
 </details>
 
@@ -143,9 +143,9 @@ ESLint rule **exhaustive-deps**, from _react-hooks_ plugin. [📖 Docs](https://
 
 #### Issues
 
-|   Severity   | Message                                    | Source file                   | Line(s) |
-| :----------: | :----------------------------------------- | :---------------------------- | :-----: |
-| ⚠️ _warning_ | Missing "key" prop for element in iterator | `src/components/TodoList.jsx` |  7-28   |
+|   Severity   | Message                                    | Source                        | Location |
+| :----------: | :----------------------------------------- | :---------------------------- | :------: |
+| ⚠️ _warning_ | Missing "key" prop for element in iterator | `src/components/TodoList.jsx` |   7-28   |
 
 </details>
 
@@ -158,9 +158,9 @@ ESLint rule **jsx-key**, from _react_ plugin. [📖 Docs](https://github.com/jsx
 
 #### Issues
 
-|   Severity   | Message                                       | Source file   | Line(s) |
-| :----------: | :-------------------------------------------- | :------------ | :-----: |
-| ⚠️ _warning_ | 'loading' is assigned a value but never used. | `src/App.jsx` |    8    |
+|   Severity   | Message                                       | Source        | Location |
+| :----------: | :-------------------------------------------- | :------------ | :------: |
+| ⚠️ _warning_ | 'loading' is assigned a value but never used. | `src/App.jsx` |    8     |
 
 </details>
 
@@ -173,9 +173,9 @@ ESLint rule **no-unused-vars**. [📖 Docs](https://eslint.org/docs/latest/rules
 
 #### Issues
 
-|   Severity   | Message                                                        | Source file             | Line(s) |
-| :----------: | :------------------------------------------------------------- | :---------------------- | :-----: |
-| ⚠️ _warning_ | Arrow function has too many lines (71). Maximum allowed is 50. | `src/hooks/useTodos.js` |  3-73   |
+|   Severity   | Message                                                        | Source                  | Location |
+| :----------: | :------------------------------------------------------------- | :---------------------- | :------: |
+| ⚠️ _warning_ | Arrow function has too many lines (71). Maximum allowed is 50. | `src/hooks/useTodos.js` |   3-73   |
 
 </details>
 
@@ -188,9 +188,9 @@ ESLint rule **max-lines-per-function**. [📖 Docs](https://eslint.org/docs/late
 
 #### Issues
 
-|   Severity   | Message                                          | Source file     | Line(s) |
-| :----------: | :----------------------------------------------- | :-------------- | :-----: |
-| ⚠️ _warning_ | 'root' is never reassigned. Use 'const' instead. | `src/index.jsx` |    5    |
+|   Severity   | Message                                          | Source          | Location |
+| :----------: | :----------------------------------------------- | :-------------- | :------: |
+| ⚠️ _warning_ | 'root' is never reassigned. Use 'const' instead. | `src/index.jsx` |    5     |
 
 </details>
 
@@ -203,9 +203,9 @@ ESLint rule **prefer-const**. [📖 Docs](https://eslint.org/docs/latest/rules/p
 
 #### Issues
 
-|   Severity   | Message                                                                                                | Source file                     | Line(s) |
-| :----------: | :----------------------------------------------------------------------------------------------------- | :------------------------------ | :-----: |
-| ⚠️ _warning_ | Unexpected block statement surrounding arrow body; move the returned value immediately after the `=>`. | `src/components/TodoFilter.jsx` |  3-25   |
+|   Severity   | Message                                                                                                | Source                          | Location |
+| :----------: | :----------------------------------------------------------------------------------------------------- | :------------------------------ | :------: |
+| ⚠️ _warning_ | Unexpected block statement surrounding arrow body; move the returned value immediately after the `=>`. | `src/components/TodoFilter.jsx` |   3-25   |
 
 </details>
 
@@ -218,9 +218,9 @@ ESLint rule **arrow-body-style**. [📖 Docs](https://eslint.org/docs/latest/rul
 
 #### Issues
 
-|   Severity   | Message                              | Source file             | Line(s) |
-| :----------: | :----------------------------------- | :---------------------- | :-----: |
-| ⚠️ _warning_ | Expected '===' and instead saw '=='. | `src/hooks/useTodos.js` |   41    |
+|   Severity   | Message                              | Source                  | Location |
+| :----------: | :----------------------------------- | :---------------------- | :------: |
+| ⚠️ _warning_ | Expected '===' and instead saw '=='. | `src/hooks/useTodos.js` |    41    |
 
 </details>
 

@@ -1,4 +1,4 @@
-import { logger, pluralizeToken } from '@code-pushup/utils';
+import { loadNxProjectGraph, logger, pluralizeToken } from '@code-pushup/utils';
 import type { ESLintTarget } from '../config.js';
 import { formatMetaLog } from '../meta/format.js';
 import { nxProjectsToConfig } from './projects-to-config.js';
@@ -32,8 +32,7 @@ import { findAllDependencies } from './traverse-graph.js';
 export async function eslintConfigFromNxProjectAndDeps(
   projectName: string,
 ): Promise<ESLintTarget[]> {
-  const { createProjectGraphAsync } = await import('@nx/devkit');
-  const projectGraph = await createProjectGraphAsync({ exitOnError: false });
+  const projectGraph = await loadNxProjectGraph();
 
   const dependencies = findAllDependencies(projectName, projectGraph);
 

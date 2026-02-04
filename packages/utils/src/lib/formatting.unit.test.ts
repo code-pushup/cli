@@ -1,5 +1,4 @@
 import ansis from 'ansis';
-import { describe, expect, it } from 'vitest';
 import {
   formatBytes,
   formatCoveragePercentage,

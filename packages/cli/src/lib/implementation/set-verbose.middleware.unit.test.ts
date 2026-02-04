@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { logger } from '@code-pushup/utils';
 import { setVerboseMiddleware } from './set-verbose.middleware.js';
 

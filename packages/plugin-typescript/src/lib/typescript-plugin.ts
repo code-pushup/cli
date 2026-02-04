@@ -22,7 +22,7 @@ export function typescriptPlugin(
   options?: TypescriptPluginOptions,
 ): PluginConfig {
   const {
-    tsconfig = DEFAULT_TS_CONFIG,
+    tsconfig = [DEFAULT_TS_CONFIG],
     onlyAudits,
     scoreTargets,
   } = parseOptions(options ?? {});

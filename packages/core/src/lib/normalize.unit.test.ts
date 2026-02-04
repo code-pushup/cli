@@ -1,5 +1,4 @@
 import path from 'node:path';
-import { describe, expect } from 'vitest';
 import type { AuditOutput, Issue } from '@code-pushup/models';
 import { normalizeAuditOutputs, normalizeIssue } from './normalize.js';
 

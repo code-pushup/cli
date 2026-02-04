@@ -1,5 +1,4 @@
 import path from 'node:path';
-import { afterEach, expect } from 'vitest';
 import { nxTargetProject } from '@code-pushup/test-nx-utils';
 import {
   E2E_ENVIRONMENTS_DIR,

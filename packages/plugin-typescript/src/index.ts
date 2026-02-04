@@ -9,3 +9,4 @@ export {
   type TypescriptPluginOptions,
 } from './lib/schema.js';
 export { getCategories, getCategoryRefsFromGroups } from './lib/utils.js';
+export { tsconfigFromAllNxProjects } from './lib/nx/tsconfig-paths.js';

@@ -1,0 +1,4 @@
+{"cat":"blink.user_timing","ph":"i","name":"api-server:user-lookup:start","pid":10001,"tid":1,"ts":1700000005000000,"args":{"detail":"{\"devtools\":{\"track\":\"cache\",\"dataType\":\"track-entry\"}}"}}
+{"cat":"blink.user_timing","ph":"b","name":"api-server:user-lookup","id2":{"local":"0x1"},"pid":10001,"tid":1,"ts":1700000005000001,"args":{"data":{"detail":"{\"devtools\":{\"track\":\"cache\",\"dataType\":\"track-entry\"}}"}}}
+{"cat":"blink.user_timing","ph":"e","name":"api-server:user-lookup","id2":{"local":"0x1"},"pid":10001,"tid":1,"ts":1700000005000002,"args":{"data":{"detail":"{\"devtools\":{\"track\":\"cache\",\"dataType\":\"track-entry\"}}"}}}
+{"cat":"blink.user_timing","ph":"i","name":"api-server:user-lookup:end","pid":10001,"tid":1,"ts":1700000005000003,"args":{"detail":"{\"devtools\":{\"track\":\"cache\",\"dataType\":\"track-entry\"}}"}}
