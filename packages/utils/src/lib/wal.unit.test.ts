@@ -1,16 +1,18 @@
 import { vol } from 'memfs';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import {
+  ID_PATTERNS,
+  getUniqueInstanceId,
+  getUniqueTimeId,
+} from './process-id.js';
 import { SHARDED_WAL_COORDINATOR_ID_ENV_VAR } from './profiler/constants.js';
 import {
   type Codec,
   type InvalidEntry,
   ShardedWal,
-  WAL_ID_PATTERNS,
   WriteAheadLogFile,
   createTolerantCodec,
   filterValidRecords,
-  getShardId,
-  getShardedGroupId,
   isCoordinatorProcess,
   parseWalFormat,
   recoverFromContent,
@@ -504,17 +506,20 @@ describe('stringCodec', () => {
   });
 });
 
-describe('getShardId', () => {
+describe('getUniqueInstanceId', () => {
   it('should generate shard ID with readable timestamp', () => {
-    const result = getShardId();
+    const counter = { next: () => 1 };
+    const result = getUniqueInstanceId(counter);
 
-    expect(result).toMatch(WAL_ID_PATTERNS.SHARD_ID);
+    expect(result).toMatch(ID_PATTERNS.INSTANCE_ID);
     expect(result).toStartWith('20231114-221320-000.');
   });
 
   it('should generate different shard IDs for different calls', () => {
-    const result1 = getShardId();
-    const result2 = getShardId();
+    let count = 0;
+    const counter = { next: () => ++count };
+    const result1 = getUniqueInstanceId(counter);
+    const result2 = getUniqueInstanceId(counter);
 
     expect(result1).not.toBe(result2);
     expect(result1).toStartWith('20231114-221320-000.');
@@ -522,25 +527,30 @@ describe('getShardId', () => {
   });
 
   it('should handle zero values', () => {
-    const result = getShardId();
+    const counter = { next: () => 1 };
+    const result = getUniqueInstanceId(counter);
     expect(result).toStartWith('20231114-221320-000.');
   });
 
   it('should handle negative timestamps', () => {
-    const result = getShardId();
+    const counter = { next: () => 1 };
+    const result = getUniqueInstanceId(counter);
 
     expect(result).toStartWith('20231114-221320-000.');
   });
 
   it('should handle large timestamps', () => {
-    const result = getShardId();
+    const counter = { next: () => 1 };
+    const result = getUniqueInstanceId(counter);
 
     expect(result).toStartWith('20231114-221320-000.');
   });
 
   it('should generate incrementing counter', () => {
-    const result1 = getShardId();
-    const result2 = getShardId();
+    let count = 0;
+    const counter = { next: () => ++count };
+    const result1 = getUniqueInstanceId(counter);
+    const result2 = getUniqueInstanceId(counter);
 
     const parts1 = result1.split('.');
     const parts2 = result2.split('.');
@@ -553,17 +563,17 @@ describe('getShardId', () => {
   });
 });
 
-describe('getShardedGroupId', () => {
+describe('getUniqueTimeId', () => {
   it('should work with mocked timeOrigin', () => {
-    const result = getShardedGroupId();
+    const result = getUniqueTimeId();
 
     expect(result).toBe('20231114-221320-000');
-    expect(result).toMatch(WAL_ID_PATTERNS.GROUP_ID);
+    expect(result).toMatch(ID_PATTERNS.TIME_ID);
   });
 
   it('should be idempotent within same process', () => {
-    const result1 = getShardedGroupId();
-    const result2 = getShardedGroupId();
+    const result1 = getUniqueTimeId();
+    const result2 = getUniqueTimeId();
 
     expect(result1).toBe(result2);
   });
@@ -819,7 +829,7 @@ describe('ShardedWal', () => {
       },
       coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
-    // Create the group directory (matches actual getShardedGroupId() output)
+    // Create the group directory (matches actual getUniqueTimeId() output)
     vol.mkdirSync('/empty/20231114-221320-000', { recursive: true });
     const files = (sw as any).shardFiles();
     expect(files).toEqual([]);
