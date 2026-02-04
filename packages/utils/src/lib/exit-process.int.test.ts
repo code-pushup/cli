@@ -48,8 +48,10 @@ describe('subscribeProcessExit', () => {
 
     (process as any).emit('uncaughtException', testError);
 
-    expect(onError).toHaveBeenCalledWith(testError, 'uncaughtException');
-    expect(onError).toHaveBeenCalledOnce();
+    expect(onError).toHaveBeenCalledExactlyOnceWith(
+      testError,
+      'uncaughtException',
+    );
     expect(onExit).not.toHaveBeenCalled();
   });
 
@@ -60,8 +62,10 @@ describe('subscribeProcessExit', () => {
 
     (process as any).emit('unhandledRejection', testReason);
 
-    expect(onError).toHaveBeenCalledWith(testReason, 'unhandledRejection');
-    expect(onError).toHaveBeenCalledOnce();
+    expect(onError).toHaveBeenCalledExactlyOnceWith(
+      testReason,
+      'unhandledRejection',
+    );
     expect(onExit).not.toHaveBeenCalled();
   });
 
@@ -70,8 +74,7 @@ describe('subscribeProcessExit', () => {
 
     (process as any).emit('SIGINT');
 
-    expect(onExit).toHaveBeenCalledOnce();
-    expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGINT, {
+    expect(onExit).toHaveBeenCalledExactlyOnceWith(SIGNAL_EXIT_CODES().SIGINT, {
       kind: 'signal',
       signal: 'SIGINT',
     });
@@ -83,11 +86,13 @@ describe('subscribeProcessExit', () => {
 
     (process as any).emit('SIGTERM');
 
-    expect(onExit).toHaveBeenCalledOnce();
-    expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGTERM, {
-      kind: 'signal',
-      signal: 'SIGTERM',
-    });
+    expect(onExit).toHaveBeenCalledExactlyOnceWith(
+      SIGNAL_EXIT_CODES().SIGTERM,
+      {
+        kind: 'signal',
+        signal: 'SIGTERM',
+      },
+    );
     expect(onError).not.toHaveBeenCalled();
   });
 
@@ -96,11 +101,13 @@ describe('subscribeProcessExit', () => {
 
     (process as any).emit('SIGQUIT');
 
-    expect(onExit).toHaveBeenCalledOnce();
-    expect(onExit).toHaveBeenCalledWith(SIGNAL_EXIT_CODES().SIGQUIT, {
-      kind: 'signal',
-      signal: 'SIGQUIT',
-    });
+    expect(onExit).toHaveBeenCalledExactlyOnceWith(
+      SIGNAL_EXIT_CODES().SIGQUIT,
+      {
+        kind: 'signal',
+        signal: 'SIGQUIT',
+      },
+    );
     expect(onError).not.toHaveBeenCalled();
   });
 
@@ -109,8 +116,7 @@ describe('subscribeProcessExit', () => {
 
     (process as any).emit('exit', 0);
 
-    expect(onExit).toHaveBeenCalledOnce();
-    expect(onExit).toHaveBeenCalledWith(0, { kind: 'exit' });
+    expect(onExit).toHaveBeenCalledExactlyOnceWith(0, { kind: 'exit' });
     expect(onError).not.toHaveBeenCalled();
     expect(processExitSpy).not.toHaveBeenCalled();
   });
@@ -120,8 +126,7 @@ describe('subscribeProcessExit', () => {
 
     (process as any).emit('exit', 1);
 
-    expect(onExit).toHaveBeenCalledOnce();
-    expect(onExit).toHaveBeenCalledWith(1, { kind: 'exit' });
+    expect(onExit).toHaveBeenCalledExactlyOnceWith(1, { kind: 'exit' });
     expect(onError).not.toHaveBeenCalled();
     expect(processExitSpy).not.toHaveBeenCalled();
   });

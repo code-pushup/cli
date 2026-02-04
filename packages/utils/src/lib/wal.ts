@@ -1,8 +1,5 @@
-/* eslint-disable max-lines */
 import * as fs from 'node:fs';
 import path from 'node:path';
-import process from 'node:process';
-import { threadId } from 'node:worker_threads';
 
 /**
  * Codec for encoding/decoding values to/from strings for WAL storage.
@@ -17,6 +14,18 @@ export type Codec<I, O = string> = {
 
 export type InvalidEntry<O = string> = { __invalid: true; raw: O };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type CodecInput<C> = C extends Codec<infer I, infer O> ? I : never;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type CodecOutput<C> = C extends Codec<infer I, infer O> ? O : never;
+
+export type TolerantCodec<C> = Codec<
+  CodecInput<C> | InvalidEntry<CodecOutput<C>>,
+  CodecOutput<C>
+>;
+
+export type WalRecord = object | string;
+
 /**
  * Interface for sinks that can append items.
  * Allows for different types of appendable storage (WAL, in-memory, etc.)
@@ -26,6 +35,19 @@ export type AppendableSink<T> = Recoverable & {
   isClosed: () => boolean;
   open?: () => void;
   close?: () => void;
+};
+
+/**
+ * Result of recovering records from a WAL file.
+ * Contains successfully recovered records and any errors encountered during parsing.
+ */
+export type RecoverResult<T> = {
+  /** Successfully recovered records */
+  records: (T | InvalidEntry<string>)[];
+  /** Errors encountered during recovery with line numbers and context */
+  errors: { lineNo: number; line: string; error: Error }[];
+  /** Last incomplete line if file was truncated (null if clean) */
+  partialTail: string | null;
 };
 
 /**
@@ -39,19 +61,6 @@ export type Recoverable = {
 };
 
 /**
- * Result of recovering records from a WAL file.
- * Contains successfully recovered records and any errors encountered during parsing.
- */
-export type RecoverResult<T> = {
-  /** Successfully recovered records */
-  records: T[];
-  /** Errors encountered during recovery with line numbers and context */
-  errors: { lineNo: number; line: string; error: Error }[];
-  /** Last incomplete line if file was truncated (null if clean) */
-  partialTail: string | null;
-};
-
-/**
  * Statistics about the WAL file state and last recovery operation.
  */
 export type WalStats<T> = {
@@ -59,10 +68,6 @@ export type WalStats<T> = {
   filePath: string;
   /** Whether the WAL file is currently closed */
   isClosed: boolean;
-  /** Whether the WAL file exists on disk */
-  fileExists: boolean;
-  /** File size in bytes (0 if file doesn't exist) */
-  fileSize: number;
   /** Last recovery state from the most recent {@link recover} or {@link repack} operation */
   lastRecovery: RecoverResult<T | InvalidEntry<string>> | null;
 };
@@ -145,7 +150,9 @@ export function recoverFromContent<T>(
  * Write-Ahead Log implementation for crash-safe append-only logging.
  * Provides atomic operations for writing, recovering, and repacking log entries.
  */
-export class WriteAheadLogFile<T> implements AppendableSink<T> {
+export class WriteAheadLogFile<T extends WalRecord = WalRecord>
+  implements AppendableSink<T>
+{
   #fd: number | null = null;
   readonly #file: string;
   readonly #decode: Codec<T | InvalidEntry<string>>['decode'];
@@ -157,8 +164,9 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
    * @param options - Configuration options
    */
   constructor(options: { file: string; codec: Codec<T> }) {
-    this.#file = options.file;
-    const c = createTolerantCodec(options.codec);
+    const { file, codec } = options;
+    this.#file = file;
+    const c = createTolerantCodec(codec);
     this.#decode = c.decode;
     this.#encode = c.encode;
   }
@@ -239,9 +247,8 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
       // eslint-disable-next-line no-console
       console.log('Found invalid entries during WAL repack');
     }
-    const recordsToWrite = hasInvalidEntries
-      ? (r.records as T[])
-      : filterValidRecords(r.records);
+    // Always filter out invalid entries when repacking
+    const recordsToWrite = filterValidRecords(r.records);
     ensureDirectoryExistsSync(path.dirname(out));
     fs.writeFileSync(out, `${recordsToWrite.map(this.#encode).join('\n')}\n`);
   }
@@ -252,12 +259,9 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
    * @returns Statistics object with file info and last recovery state
    */
   getStats(): WalStats<T> {
-    const fileExists = fs.existsSync(this.#file);
     return {
       filePath: this.#file,
       isClosed: this.#fd == null,
-      fileExists,
-      fileSize: fileExists ? fs.statSync(this.#file).size : 0,
       lastRecovery: this.#lastRecoveryState,
     };
   }
@@ -267,7 +271,7 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
  * Format descriptor that binds codec and file extension together.
  * Prevents misconfiguration by keeping related concerns in one object.
  */
-export type WalFormat<T extends object | string> = {
+export type WalFormat<T extends WalRecord = WalRecord> = {
   /** Base name for the WAL (e.g., "trace") */
   baseName: string;
   /** Shard file extension (e.g., ".jsonl") */
@@ -277,21 +281,27 @@ export type WalFormat<T extends object | string> = {
   /** Codec for encoding/decoding records */
   codec: Codec<T, string>;
   /** Finalizer for converting records to a string */
+  finalizer: (records: T[], opt?: Record<string, unknown>) => string;
+};
+
+export type WalFormatWithInvalids<T extends WalRecord> = Omit<
+  WalFormat<T>,
+  'codec' | 'finalizer'
+> & {
+  codec: TolerantCodec<Codec<T, string>>;
   finalizer: (
     records: (T | InvalidEntry<string>)[],
     opt?: Record<string, unknown>,
   ) => string;
 };
 
-export const stringCodec = <
-  T extends string | object = string,
->(): Codec<T> => ({
-  encode: v => (typeof v === 'string' ? v : JSON.stringify(v)),
+export const stringCodec = <T extends WalRecord = WalRecord>(): Codec<T> => ({
+  encode: v => JSON.stringify(v),
   decode: v => {
     try {
       return JSON.parse(v) as T;
     } catch {
-      return v as T;
+      return v as unknown as T;
     }
   },
 });
@@ -309,7 +319,7 @@ export const stringCodec = <
  * @param format - Partial WalFormat configuration
  * @returns Parsed WalFormat with defaults filled in
  */
-export function parseWalFormat<T extends object | string = object>(
+export function parseWalFormat<T extends WalRecord = WalRecord>(
   format: Partial<WalFormat<T>>,
 ): WalFormat<T> {
   const {
@@ -317,306 +327,28 @@ export function parseWalFormat<T extends object | string = object>(
     walExtension = '.log',
     finalExtension = walExtension,
     codec = stringCodec<T>(),
+    finalizer,
   } = format;
-
-  const finalizer =
-    format.finalizer ??
-    ((records: (T | InvalidEntry<string>)[]) => {
-      // Encode each record using the codec before joining.
-      // For object types, codec.encode() will JSON-stringify them properly.
-      // InvalidEntry records use their raw string value directly.
-      const encoded = records.map(record =>
-        typeof record === 'object' && record != null && '__invalid' in record
-          ? (record as InvalidEntry<string>).raw
-          : codec.encode(record as T),
-      );
-      return `${encoded.join('\n')}\n`;
-    });
 
   return {
     baseName,
     walExtension,
     finalExtension,
     codec,
-    finalizer,
-  } satisfies WalFormat<T>;
+    finalizer:
+      finalizer ??
+      ((records, _opt) =>
+        `${records.map(record => codec.encode(record)).join('\n')}\n`),
+  };
 }
 
 /**
- * Determines if this process is the leader WAL process using the origin PID heuristic.
- *
- * The leader is the process that first enabled profiling (the one that set CP_PROFILER_ORIGIN_PID).
- * All descendant processes inherit the environment but have different PIDs.
- *
- * @returns true if this is the leader WAL process, false otherwise
- */
-export function isCoordinatorProcess(
-  envVarName: string,
-  profilerID: string,
-): boolean {
-  return process.env[envVarName] === profilerID;
-}
-
-/**
- * Initialize the origin PID environment variable if not already set.
- * This must be done as early as possible before any user code runs.
- * Sets envVarName to the current process ID if not already defined.
- */
-export function setCoordinatorProcess(
-  envVarName: string,
-  profilerID: string,
-): void {
-  if (!process.env[envVarName]) {
-    // eslint-disable-next-line functional/immutable-data
-    process.env[envVarName] = profilerID;
-  }
-}
-
-// eslint-disable-next-line functional/no-let
-let shardCount = 0;
-
-/**
- * Generates a unique sharded WAL ID based on performance time origin, process ID, thread ID, and instance count.
- */
-function getShardedWalId() {
-  // eslint-disable-next-line functional/immutable-data
-  return `${Math.round(performance.timeOrigin)}.${process.pid}.${threadId}.${++ShardedWal.instanceCount}`;
-}
-
-/**
- * Generates a human-readable shard ID.
- * This ID is unique per process/thread/shard combination and used in the file name.
- * Format: readable-timestamp.pid.threadId.shardCount
- * Example: "20240101-120000-000.12345.1.1"
- * Becomes file: trace.20240101-120000-000.12345.1.1.log
- */
-export function getShardId(): string {
-  const timestamp = Math.round(performance.timeOrigin + performance.now());
-  const readableTimestamp = sortableReadableDateString(`${timestamp}`);
-  return `${readableTimestamp}.${process.pid}.${threadId}.${++shardCount}`;
-}
-
-/**
- * Generates a human-readable sharded group ID.
- * This ID is a globally unique, sortable, human-readable date string per run.
- * Used directly as the folder name to group shards.
- * Format: yyyymmdd-hhmmss-ms
- * Example: "20240101-120000-000"
- */
-export function getShardedGroupId(): string {
-  return sortableReadableDateString(
-    `${Math.round(performance.timeOrigin + performance.now())}`,
-  );
-}
-
-/**
- * Regex patterns for validating WAL ID formats
- */
-export const WAL_ID_PATTERNS = {
-  /** Readable date format: yyyymmdd-hhmmss-ms */
-  READABLE_DATE: /^\d{8}-\d{6}-\d{3}$/,
-  /** Group ID format: yyyymmdd-hhmmss-ms */
-  GROUP_ID: /^\d{8}-\d{6}-\d{3}$/,
-  /** Shard ID format: readable-date.pid.threadId.count */
-  SHARD_ID: /^\d{8}-\d{6}-\d{3}(?:\.\d+){3}$/,
-} as const;
-
-export function sortableReadableDateString(timestampMs: string): string {
-  const timestamp = Number.parseInt(timestampMs, 10);
-  const date = new Date(timestamp);
-  const MILLISECONDS_PER_SECOND = 1000;
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const dd = String(date.getDate()).padStart(2, '0');
-  const hh = String(date.getHours()).padStart(2, '0');
-  const min = String(date.getMinutes()).padStart(2, '0');
-  const ss = String(date.getSeconds()).padStart(2, '0');
-  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-  const ms = String(timestamp % MILLISECONDS_PER_SECOND).padStart(3, '0');
-
-  return `${yyyy}${mm}${dd}-${hh}${min}${ss}-${ms}`;
-}
-
-/**
+ * NOTE: this helper is only used in this file. The rest of the repo avoids sync methods so it is not reusable.
  * Ensures a directory exists, creating it recursively if necessary using sync methods.
  * @param dirPath - The directory path to ensure exists
  */
 function ensureDirectoryExistsSync(dirPath: string): void {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
-  }
-}
-
-/**
- * Generates a path to a shard file using human-readable IDs.
- * Both groupId and shardId are already in readable date format.
- *
- * Example with groupId "20240101-120000-000" and shardId "20240101-120000-000.12345.1.1":
- * Full path: /base/20240101-120000-000/trace.20240101-120000-000.12345.1.1.log
- *
- * @param opt.dir - The directory to store the shard file
- * @param opt.format - The WalFormat to use for the shard file
- * @param opt.groupId - The human-readable group ID (yyyymmdd-hhmmss-ms format)
- * @param opt.shardId - The human-readable shard ID (readable-timestamp.pid.threadId.count format)
- * @returns The path to the shard file
- */
-export function getShardedPath<T extends object | string = object>(opt: {
-  dir?: string;
-  format: WalFormat<T>;
-  groupId: string;
-  shardId: string;
-}): string {
-  const { dir = '', format, groupId, shardId } = opt;
-  const { baseName, walExtension } = format;
-
-  return path.join(dir, groupId, `${baseName}.${shardId}${walExtension}`);
-}
-
-export function getShardedFinalPath<T extends object | string = object>(opt: {
-  dir?: string;
-  format: WalFormat<T>;
-  groupId: string;
-}): string {
-  const { dir = '', format, groupId } = opt;
-  const { baseName, finalExtension } = format;
-
-  return path.join(dir, groupId, `${baseName}.${groupId}${finalExtension}`);
-}
-
-/**
- * Sharded Write-Ahead Log manager for coordinating multiple WAL shards.
- * Handles distributed logging across multiple processes/files with atomic finalization.
- */
-
-export class ShardedWal<T extends object | string = object> {
-  static instanceCount = 0;
-  readonly #id: string = getShardedWalId();
-  readonly groupId = getShardedGroupId();
-  readonly #format: WalFormat<T>;
-  readonly #dir: string = process.cwd();
-  readonly #isCoordinator: boolean;
-
-  /**
-   * Create a sharded WAL manager.
-   *
-   * @param opt.dir - Base directory to store shard files (defaults to process.cwd())
-   * @param opt.format - WAL format configuration
-   * @param opt.groupId - Group ID for sharding (defaults to generated group ID)
-   * @param opt.coordinatorIdEnvVar - Environment variable name for storing coordinator ID (defaults to CP_SHARDED_WAL_COORDINATOR_ID)
-   */
-  constructor(opt: {
-    dir?: string;
-    format: Partial<WalFormat<T>>;
-    groupId?: string;
-    coordinatorIdEnvVar: string;
-  }) {
-    const { dir, format, groupId, coordinatorIdEnvVar } = opt;
-    this.groupId = groupId ?? getShardedGroupId();
-    if (dir) {
-      this.#dir = dir;
-    }
-    this.#format = parseWalFormat<T>(format);
-    this.#isCoordinator = isCoordinatorProcess(coordinatorIdEnvVar, this.#id);
-  }
-
-  /**
-   * Is this instance the coordinator?
-   *
-   * Coordinator status is determined from the coordinatorIdEnvVar environment variable.
-   * The coordinator handles finalization and cleanup of shard files.
-   *
-   * @returns true if this instance is the coordinator, false otherwise
-   */
-  isCoordinator(): boolean {
-    return this.#isCoordinator;
-  }
-
-  shard(shardId: string = getShardId()) {
-    return new WriteAheadLogFile({
-      file: getShardedPath({
-        dir: this.#dir,
-        format: this.#format,
-        groupId: this.groupId,
-        shardId,
-      }),
-      codec: this.#format.codec,
-    });
-  }
-
-  /** Get all shard file paths matching this WAL's base name */
-  private shardFiles() {
-    if (!fs.existsSync(this.#dir)) {
-      return [];
-    }
-
-    const groupIdDir = path.dirname(
-      getShardedFinalPath({
-        dir: this.#dir,
-        format: this.#format,
-        groupId: this.groupId,
-      }),
-    );
-    // create dir if not existing
-    ensureDirectoryExistsSync(groupIdDir);
-
-    return fs
-      .readdirSync(groupIdDir)
-      .filter(entry => entry.endsWith(this.#format.walExtension))
-      .filter(entry => entry.startsWith(`${this.#format.baseName}`))
-      .map(entry => path.join(groupIdDir, entry));
-  }
-
-  /**
-   * Finalize all shards by merging them into a single output file.
-   * Recovers all records from all shards, validates no errors, and writes merged result.
-   * @throws Error if any shard contains decode errors
-   */
-  finalize(opt?: Record<string, unknown>) {
-    const fileRecoveries = this.shardFiles().map(f => ({
-      file: f,
-      recovery: new WriteAheadLogFile({
-        file: f,
-        codec: this.#format.codec,
-      }).recover(),
-    }));
-
-    const records = fileRecoveries.flatMap(({ recovery }) => recovery.records);
-
-    // Check if any records are invalid entries (from tolerant codec)
-    const hasInvalidEntries = records.some(
-      r => typeof r === 'object' && r != null && '__invalid' in r,
-    );
-
-    const recordsToFinalize = hasInvalidEntries
-      ? records
-      : filterValidRecords(records);
-    const out = getShardedFinalPath({
-      dir: this.#dir,
-      format: this.#format,
-      groupId: this.groupId,
-    });
-    ensureDirectoryExistsSync(path.dirname(out));
-    fs.writeFileSync(out, this.#format.finalizer(recordsToFinalize, opt));
-  }
-
-  cleanup() {
-    this.shardFiles().forEach(f => {
-      // Remove the shard file
-      fs.unlinkSync(f);
-      // Remove the parent directory (shard group directory)
-      const shardDir = path.dirname(f);
-      try {
-        fs.rmdirSync(shardDir);
-      } catch {
-        // Directory might not be empty or already removed, ignore
-      }
-    });
-
-    // Also try to remove the root directory if it becomes empty
-    try {
-      fs.rmdirSync(this.#dir);
-    } catch {
-      // Directory might not be empty or already removed, ignore
-    }
   }
 }

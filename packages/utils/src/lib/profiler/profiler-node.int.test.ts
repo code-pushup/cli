@@ -1,317 +1,458 @@
 import fs from 'node:fs';
+import fsPromises from 'node:fs/promises';
 import path from 'node:path';
+import process from 'node:process';
+import { fileURLToPath } from 'node:url';
+import { afterAll, afterEach, beforeEach, expect } from 'vitest';
+import { awaitObserverCallbackAndFlush } from '@code-pushup/test-utils';
 import {
-  awaitObserverCallbackAndFlush,
-  omitTraceJson,
-} from '@code-pushup/test-utils';
+  loadAndOmitTraceJsonl,
+  loadNormalizedTraceJson,
+} from '../../../mocks/omit-trace-json.js';
+import { executeProcess } from '../execute-process.js';
 import type { PerformanceEntryEncoder } from '../performance-observer.js';
-import { WAL_ID_PATTERNS } from '../wal.js';
-import { NodejsProfiler } from './profiler-node.js';
+import {
+  asOptions,
+  trackEntryPayload,
+} from '../user-timing-extensibility-api-utils.js';
+import type {
+  ActionTrackEntryPayload,
+  TrackEntryPayload,
+} from '../user-timing-extensibility-api.type.js';
+import {
+  PROFILER_DEBUG_ENV_VAR,
+  PROFILER_ENABLED_ENV_VAR,
+  PROFILER_MEASURE_NAME_ENV_VAR,
+  PROFILER_OUT_BASENAME,
+  PROFILER_OUT_DIR_ENV_VAR,
+  PROFILER_SHARDER_ID_ENV_VAR,
+} from './constants.js';
+import { NodejsProfiler, type NodejsProfilerOptions } from './profiler-node.js';
 import { entryToTraceEvents } from './trace-file-utils.js';
-import type { UserTimingTraceEvent } from './trace-file.type.js';
+import type { TraceEvent } from './trace-file.type.js';
+import { traceEventWalFormat } from './wal-json-trace.js';
 
 describe('NodeJS Profiler Integration', () => {
-  const traceEventEncoder: PerformanceEntryEncoder<UserTimingTraceEvent> =
+  const traceEventEncoder: PerformanceEntryEncoder<TraceEvent> =
     entryToTraceEvents;
+  const testSuitDir = path.join(process.cwd(), 'tmp', 'int', 'utils');
+  const activeProfilers: NodejsProfiler<TraceEvent>[] = [];
 
-  let nodejsProfiler: NodejsProfiler<UserTimingTraceEvent>;
+  const workerScriptPath = path.resolve(
+    fileURLToPath(path.dirname(import.meta.url)),
+    '../../../mocks/multiprocess-profiling/profiler-worker.mjs',
+  );
 
-  beforeEach(() => {
+  function nodejsProfiler(
+    optionsOrMeasureName:
+      | string
+      | (Partial<
+          NodejsProfilerOptions<
+            TraceEvent,
+            Record<string, ActionTrackEntryPayload>
+          >
+        > & { measureName: string }),
+  ): NodejsProfiler<TraceEvent> {
+    const options =
+      typeof optionsOrMeasureName === 'string'
+        ? { measureName: optionsOrMeasureName }
+        : optionsOrMeasureName;
+    const profiler = new NodejsProfiler({
+      ...options,
+      track: options.track ?? 'int-test-track',
+      format: {
+        ...traceEventWalFormat(),
+        encodePerfEntry: traceEventEncoder,
+        baseName: options.format?.baseName ?? PROFILER_OUT_BASENAME,
+      },
+      outDir: testSuitDir,
+      enabled: options.enabled ?? true,
+      debug: options.debug ?? false,
+      measureName: options.measureName,
+    });
+    // eslint-disable-next-line functional/immutable-data
+    activeProfilers.push(profiler);
+    return profiler;
+  }
+
+  async function create3rdPartyMeasures(prefix: string) {
+    const defaultPayload: TrackEntryPayload = {
+      track: 'Buffered Track',
+      trackGroup: 'Buffered Track',
+      color: 'tertiary',
+    };
+
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    expect(() =>
+      performance.mark(
+        `${prefix}${prefix ? ':' : ''}measure:start`,
+        asOptions(trackEntryPayload(defaultPayload)),
+      ),
+    ).not.toThrow();
+
+    const largeArray = Array.from({ length: 100_000 }, (_, i) => i);
+    const result = largeArray
+      .map(x => x * x)
+      .filter(x => x % 2 === 0)
+      .reduce((sum, x) => sum + x, 0);
+    expect(result).toBeGreaterThan(0);
+    expect('sync success').toBe('sync success');
+    expect(() =>
+      performance.mark(
+        `${prefix}${prefix ? ':' : ''}measure:end`,
+        asOptions(trackEntryPayload(defaultPayload)),
+      ),
+    ).not.toThrow();
+
+    performance.measure(`${prefix}${prefix ? ':' : ''}measure`, {
+      start: `${prefix}${prefix ? ':' : ''}measure:start`,
+      end: `${prefix}${prefix ? ':' : ''}measure:end`,
+      ...asOptions(
+        trackEntryPayload({
+          ...defaultPayload,
+          tooltipText: 'Buffered sync measurement returned :"sync success"',
+        }),
+      ),
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    expect(() =>
+      performance.mark(
+        `${prefix}:async-measure:start`,
+        asOptions(trackEntryPayload(defaultPayload)),
+      ),
+    ).not.toThrow();
+    // Heavy work: More CPU-intensive operations
+    const matrix = Array.from({ length: 1000 }, () =>
+      Array.from({ length: 1000 }, (_, i) => i),
+    );
+    const flattened = matrix.flat();
+    const sum = flattened.reduce((acc, val) => acc + val, 0);
+    expect(sum).toBeGreaterThan(0);
+    await expect(Promise.resolve('async success')).resolves.toBe(
+      'async success',
+    );
+    expect(() =>
+      performance.mark(
+        `${prefix}:async-measure:end`,
+        asOptions(trackEntryPayload(defaultPayload)),
+      ),
+    ).not.toThrow();
+
+    performance.measure(`${prefix}:async-measure`, {
+      start: `${prefix}:async-measure:start`,
+      end: `${prefix}:async-measure:end`,
+      ...asOptions(
+        trackEntryPayload({
+          ...defaultPayload,
+          tooltipText: 'sync measurement returned :"async success"',
+        }),
+      ),
+    });
+  }
+
+  async function createBasicMeasures(profiler: NodejsProfiler<TraceEvent>) {
+    expect(() =>
+      profiler.marker(`Enable profiler`, {
+        tooltipText: 'set enable to true',
+      }),
+    ).not.toThrow();
+
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    expect(profiler.measure(`sync-measure`, () => 'success')).toBe('success');
+
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    await expect(
+      profiler.measureAsync(`async-measure`, () =>
+        Promise.resolve('async success'),
+      ),
+    ).resolves.toBe('async success');
+
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    expect(() =>
+      profiler.marker(`Disable profiler`, {
+        tooltipText: 'set enable to false',
+      }),
+    ).not.toThrow();
+  }
+
+  beforeEach(async () => {
+    if (fs.existsSync(testSuitDir)) {
+      fs.rmSync(testSuitDir, { recursive: true, force: true });
+    }
+    fs.mkdirSync(testSuitDir, { recursive: true });
+
     performance.clearMarks();
     performance.clearMeasures();
-    vi.stubEnv('CP_PROFILING', undefined!);
-    vi.stubEnv('CP_PROFILER_DEBUG', undefined!);
-
-    // Clean up trace files from previous test runs
-    const traceFilesDir = path.join(process.cwd(), 'tmp', 'int', 'utils');
-    // eslint-disable-next-line n/no-sync
-    if (fs.existsSync(traceFilesDir)) {
-      // eslint-disable-next-line n/no-sync
-      const files = fs.readdirSync(traceFilesDir);
-      // eslint-disable-next-line functional/no-loop-statements
-      for (const file of files) {
-        if (file.endsWith('.json') || file.endsWith('.jsonl')) {
-          // eslint-disable-next-line n/no-sync
-          fs.unlinkSync(path.join(traceFilesDir, file));
-        }
-      }
-    }
-
-    nodejsProfiler = new NodejsProfiler({
-      prefix: 'test',
-      track: 'test-track',
-      encodePerfEntry: traceEventEncoder,
-      filename: path.join(process.cwd(), 'tmp', 'int', 'utils', 'trace.json'),
-      enabled: true,
-    });
+    vi.stubEnv(PROFILER_ENABLED_ENV_VAR, undefined!);
+    vi.stubEnv(PROFILER_DEBUG_ENV_VAR, undefined!);
+    // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
+    delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
   });
 
   afterEach(() => {
-    if (nodejsProfiler && nodejsProfiler.state !== 'closed') {
-      nodejsProfiler.close();
+    // eslint-disable-next-line functional/no-loop-statements
+    for (const profiler of activeProfilers) {
+      if (profiler.stats.profilerState !== 'closed') {
+        profiler.close();
+      }
     }
-    vi.stubEnv('CP_PROFILING', undefined!);
-    vi.stubEnv('CP_PROFILER_DEBUG', undefined!);
+    // eslint-disable-next-line functional/immutable-data
+    activeProfilers.length = 0;
+
+    vi.stubEnv(PROFILER_ENABLED_ENV_VAR, undefined!);
+    vi.stubEnv(PROFILER_DEBUG_ENV_VAR, undefined!);
+    // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
+    delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
   });
 
-  it('should initialize with sink opened when enabled', () => {
-    expect(nodejsProfiler.isEnabled()).toBeTrue();
-    expect(nodejsProfiler.stats.walOpen).toBeTrue();
+  afterAll(async () => {
+    // Final cleanup of test directory
+    if (fs.existsSync(testSuitDir)) {
+      //   await fsPromises.rm(testSuitDir, { recursive: true, force: true });
+    }
   });
 
-  it('should create performance entries and write to sink', () => {
-    expect(nodejsProfiler.measure('test-operation', () => 'success')).toBe(
-      'success',
+  it('should initialize with shard opened when enabled', () => {
+    const profiler = nodejsProfiler('initialize-shard-opened');
+    expect(profiler.isEnabled()).toBe(true);
+    expect(profiler.stats).toEqual(
+      expect.objectContaining({
+        profilerState: 'running',
+        shardOpen: true,
+        isSubscribed: true,
+      }),
     );
   });
 
-  it('should handle async operations', async () => {
+  it('should create mark and measure performance entries and write to .jsonl and .json', async () => {
+    const measureName = 'entries-write-to-shard';
+    const prefix = 'write-j-jl';
+    const profiler = nodejsProfiler({
+      prefix,
+      measureName,
+    });
+
+    await createBasicMeasures(profiler);
+
+    await awaitObserverCallbackAndFlush(profiler);
     await expect(
-      nodejsProfiler.measureAsync('async-test', async () => {
-        await new Promise(resolve => setTimeout(resolve, 1));
-        return 'async-result';
-      }),
-    ).resolves.toBe('async-result');
-  });
+      loadAndOmitTraceJsonl(profiler.stats.shardPath as `${string}.jsonl`),
+    ).resolves.toMatchFileSnapshot(`__snapshots__/${measureName}.jsonl`);
+    profiler.close();
 
-  it('should disable profiling and close sink', () => {
-    nodejsProfiler.setEnabled(false);
-    expect(nodejsProfiler.isEnabled()).toBeFalse();
-    expect(nodejsProfiler.stats.walOpen).toBeFalse();
-
-    expect(nodejsProfiler.measure('disabled-test', () => 'success')).toBe(
-      'success',
+    const snapshotData = await loadNormalizedTraceJson(
+      profiler.stats.finalFilePath as `${string}.json`,
+    );
+    expect(JSON.stringify(snapshotData)).toMatchFileSnapshot(
+      `__snapshots__/${measureName}.json`,
     );
   });
 
-  it('should re-enable profiling correctly', () => {
-    nodejsProfiler.setEnabled(false);
-    expect(nodejsProfiler.stats.walOpen).toBeFalse();
+  it('should capture buffered entries when buffered option is enabled', async () => {
+    const measureName = 'buffered-test';
+    const prefix = 'write-buffered-j-jl';
+    await create3rdPartyMeasures(prefix);
 
-    nodejsProfiler.setEnabled(true);
-
-    expect(nodejsProfiler.isEnabled()).toBeTrue();
-    expect(nodejsProfiler.stats.walOpen).toBeTrue();
-
-    expect(nodejsProfiler.measure('re-enabled-test', () => 42)).toBe(42);
-  });
-
-  it('should support custom tracks', async () => {
-    const traceTracksFile = path.join(
-      process.cwd(),
-      'tmp',
-      'int',
-      'utils',
-      'trace-tracks.json',
-    );
-    const profilerWithTracks = new NodejsProfiler({
-      prefix: 'api-server',
-      track: 'HTTP',
-      tracks: {
-        db: { track: 'Database', color: 'secondary' },
-        cache: { track: 'Cache', color: 'primary' },
-      },
-      encodePerfEntry: traceEventEncoder,
-      filename: traceTracksFile,
-      enabled: true,
-    });
-
-    expect(profilerWithTracks.filePath).toBe(traceTracksFile);
-
-    expect(
-      profilerWithTracks.measure('user-lookup', () => 'user123', {
-        track: 'cache',
-      }),
-    ).toBe('user123');
-
-    await awaitObserverCallbackAndFlush(profilerWithTracks);
-    profilerWithTracks.close();
-
-    // eslint-disable-next-line n/no-sync
-    const content = fs.readFileSync(traceTracksFile, 'utf8');
-    const normalizedContent = omitTraceJson(content);
-    await expect(normalizedContent).toMatchFileSnapshot(
-      '__snapshots__/custom-tracks-trace-events.jsonl',
-    );
-  });
-
-  it('should capture buffered entries when buffered option is enabled', () => {
-    const bufferedProfiler = new NodejsProfiler({
-      prefix: 'buffered-test',
-      track: 'Test',
-      encodePerfEntry: traceEventEncoder,
+    const profiler = nodejsProfiler({
+      prefix,
+      measureName,
       captureBufferedEntries: true,
-      filename: path.join(
-        process.cwd(),
-        'tmp',
-        'int',
-        'utils',
-        'trace-buffered.json',
-      ),
-      enabled: true,
     });
+    await awaitObserverCallbackAndFlush(profiler);
+    profiler.close();
 
-    const bufferedStats = bufferedProfiler.stats;
-    expect(bufferedStats.state).toBe('running');
-    expect(bufferedStats.walOpen).toBeTrue();
-    expect(bufferedStats.isSubscribed).toBeTrue();
-    expect(bufferedStats.queued).toBe(0);
-    expect(bufferedStats.dropped).toBe(0);
-    expect(bufferedStats.written).toBe(0);
+    const snapshotData = await loadNormalizedTraceJson(
+      profiler.stats.finalFilePath as `${string}.json`,
+    );
 
-    bufferedProfiler.close();
+    expect(JSON.stringify(snapshotData)).toMatchFileSnapshot(
+      `__snapshots__/${measureName}.json`,
+    );
   });
 
   it('should return correct getStats with dropped and written counts', () => {
-    const statsProfiler = new NodejsProfiler({
-      prefix: 'stats-test',
-      track: 'Stats',
-      encodePerfEntry: traceEventEncoder,
-      maxQueueSize: 2,
-      flushThreshold: 2,
-      filename: path.join(
-        process.cwd(),
-        'tmp',
-        'int',
-        'utils',
-        'trace-stats.json',
-      ),
-      enabled: true,
-    });
+    const prefix = 'stats-test';
+    const statsProfiler = nodejsProfiler(prefix);
 
     expect(statsProfiler.measure('test-op', () => 'result')).toBe('result');
 
     const stats = statsProfiler.stats;
-    expect(stats.state).toBe('running');
-    expect(stats.walOpen).toBeTrue();
-    expect(stats.isSubscribed).toBeTrue();
-    expect(typeof stats.queued).toBe('number');
-    expect(typeof stats.dropped).toBe('number');
-    expect(typeof stats.written).toBe('number');
+    expect(stats).toEqual(
+      expect.objectContaining({
+        profilerState: 'running',
+        shardOpen: true,
+        isSubscribed: true,
+        groupId: prefix,
+        maxQueueSize: 10_000,
+        flushThreshold: 20,
+        buffered: true,
+        isCoordinator: true,
+      }),
+    );
 
     statsProfiler.close();
   });
 
   it('should provide comprehensive queue statistics via getStats', async () => {
-    const traceStatsFile = path.join(
-      process.cwd(),
-      'tmp',
-      'int',
-      'utils',
-      'trace-stats-comprehensive.json',
-    );
-    const profiler = new NodejsProfiler({
-      prefix: 'stats-profiler',
+    const prefix = 'stats-comprehensive';
+    const profiler = nodejsProfiler({
+      measureName: prefix,
       track: 'Stats',
-      encodePerfEntry: traceEventEncoder,
-      maxQueueSize: 3,
       flushThreshold: 2,
-      filename: traceStatsFile,
-      enabled: true,
+      maxQueueSize: 3,
     });
 
     const initialStats = profiler.stats;
-    expect(initialStats.state).toBe('running');
-    expect(initialStats.walOpen).toBeTrue();
-    expect(initialStats.isSubscribed).toBeTrue();
-    expect(initialStats.queued).toBe(0);
-    expect(initialStats.dropped).toBe(0);
-    expect(initialStats.written).toBe(0);
+    expect(initialStats).toEqual(
+      expect.objectContaining({
+        profilerState: 'running',
+        shardOpen: true,
+        isSubscribed: true,
+        groupId: prefix,
+        queued: 0,
+        dropped: 0,
+        written: 0,
+        maxQueueSize: 3,
+        flushThreshold: 2,
+        buffered: true,
+        isCoordinator: true,
+      }),
+    );
 
     profiler.measure('operation-1', () => 'result1');
     profiler.measure('operation-2', () => 'result2');
     await awaitObserverCallbackAndFlush(profiler);
-    // Each measure creates 4 events (start marker, begin span, end span, end marker)
-    // 2 measures × 4 events = 8 events written
     expect(profiler.stats.written).toBe(8);
 
     profiler.setEnabled(false);
 
     const finalStats = profiler.stats;
-    expect(finalStats.state).toBe('idle');
-    expect(finalStats.walOpen).toBeFalse();
-    expect(finalStats.isSubscribed).toBeFalse();
-    expect(finalStats.queued).toBe(0);
-
-    profiler.flush();
-    profiler.close();
-
-    // eslint-disable-next-line n/no-sync
-    const content = fs.readFileSync(traceStatsFile, 'utf8');
-    const normalizedContent = omitTraceJson(content);
-    await expect(normalizedContent).toMatchFileSnapshot(
-      '__snapshots__/comprehensive-stats-trace-events.jsonl',
+    expect(finalStats).toEqual(
+      expect.objectContaining({
+        profilerState: 'idle',
+        shardOpen: false,
+        isSubscribed: false,
+        groupId: prefix,
+        queued: 0,
+        written: 8,
+        maxQueueSize: 3,
+        flushThreshold: 2,
+        buffered: true,
+        isCoordinator: true,
+      }),
     );
   });
 
-  describe('sharded path structure', () => {
-    it('should create sharded path structure when filename is not provided', () => {
-      const profiler = new NodejsProfiler({
-        prefix: 'sharded-test',
-        track: 'Test',
-        encodePerfEntry: traceEventEncoder,
-        enabled: true,
-      });
+  it('should create sharded path structure when filename is not provided', async () => {
+    const prefix = 'sharded-test';
+    const measureName = prefix;
+    const profiler = nodejsProfiler(measureName);
 
-      const filePath = profiler.filePath;
-      expect(filePath).toContainPath('tmp/profiles');
-      expect(filePath).toMatch(/\.jsonl$/);
+    const { finalFilePath, shardPath } = profiler.stats;
+    expect(finalFilePath).toContainPath('tmp/int/utils');
+    expect(finalFilePath).toMatch(/\.json$/);
 
-      const pathParts = filePath.split(path.sep);
-      const groupIdDir = pathParts.at(-2);
-      const fileName = pathParts.at(-1);
+    const pathParts = finalFilePath.split(path.sep);
+    const groupIdDir = pathParts.at(-2);
+    const fileName = pathParts.at(-1);
 
-      expect(groupIdDir).toMatch(WAL_ID_PATTERNS.GROUP_ID);
-      expect(fileName).toMatch(/^trace\.\d{8}-\d{6}-\d{3}(?:\.\d+){3}\.jsonl$/);
+    expect(groupIdDir).toStrictEqual(measureName);
+    expect(fileName).toMatch(
+      new RegExp(`^${PROFILER_OUT_BASENAME}\\.${measureName}\\.json$`),
+    );
 
-      const groupIdDirPath = path.dirname(filePath);
-      // eslint-disable-next-line n/no-sync
-      expect(fs.existsSync(groupIdDirPath)).toBeTrue();
+    expect(shardPath).toContain(measureName);
+    expect(shardPath).toMatch(/\.jsonl$/);
 
-      profiler.close();
-    });
+    const groupIdDirPath = path.dirname(finalFilePath);
+    await expect(fsPromises.access(groupIdDirPath)).resolves.not.toThrow();
 
-    it('should create correct folder structure for sharded paths', () => {
-      const profiler = new NodejsProfiler({
-        prefix: 'folder-test',
-        track: 'Test',
-        encodePerfEntry: traceEventEncoder,
-        enabled: true,
-      });
-
-      const filePath = profiler.filePath;
-      const dirPath = path.dirname(filePath);
-      const groupId = path.basename(dirPath);
-
-      expect(groupId).toMatch(WAL_ID_PATTERNS.GROUP_ID);
-      // eslint-disable-next-line n/no-sync
-      expect(fs.existsSync(dirPath)).toBeTrue();
-      // eslint-disable-next-line n/no-sync
-      expect(fs.statSync(dirPath).isDirectory()).toBeTrue();
-
-      profiler.close();
-    });
-
-    it('should write trace events to sharded path file', async () => {
-      const profiler = new NodejsProfiler({
-        prefix: 'write-test',
-        track: 'Test',
-        encodePerfEntry: traceEventEncoder,
-        enabled: true,
-      });
-
-      profiler.measure('test-operation', () => 'result');
-
-      await awaitObserverCallbackAndFlush(profiler);
-      profiler.close();
-
-      const filePath = profiler.filePath;
-      // eslint-disable-next-line n/no-sync
-      const content = fs.readFileSync(filePath, 'utf8');
-      const normalizedContent = omitTraceJson(content);
-      await expect(normalizedContent).toMatchFileSnapshot(
-        '__snapshots__/sharded-path-trace-events.jsonl',
-      );
-    });
+    profiler.close();
   });
+
+  it('should handle sharding across multiple processes', async () => {
+    const numProcesses = 3;
+    const startTime = performance.now();
+
+    const { [PROFILER_MEASURE_NAME_ENV_VAR]: _measureName, ...cleanEnv } =
+      process.env;
+
+    const processStartTime = performance.now();
+    const { stdout, stderr } = await executeProcess({
+      command: 'npx',
+      args: [
+        'tsx',
+        '--tsconfig',
+        'tsconfig.base.json',
+        path.relative(process.cwd(), workerScriptPath),
+        String(numProcesses),
+      ],
+      cwd: process.cwd(),
+      env: {
+        ...cleanEnv,
+        [PROFILER_ENABLED_ENV_VAR]: 'true',
+        [PROFILER_DEBUG_ENV_VAR]: 'true',
+        [PROFILER_OUT_DIR_ENV_VAR]: testSuitDir,
+      },
+    });
+    const processDuration = performance.now() - processStartTime;
+
+    if (!stdout.trim()) {
+      const stderrMessage = stderr ? ` stderr: ${stderr}` : '';
+      throw new Error(
+        `Worker process produced no stdout output.${stderrMessage}`,
+      );
+    }
+
+    let coordinatorStats;
+    try {
+      coordinatorStats = JSON.parse(stdout.trim());
+    } catch (error) {
+      throw new Error(
+        `Failed to parse worker output as JSON. stdout: "${stdout}", stderr: "${stderr}"`,
+        { cause: error },
+      );
+    }
+
+    const validationStartTime = performance.now();
+    expect(coordinatorStats).toMatchObject({
+      isCoordinator: true,
+      shardFileCount: numProcesses + 1, // numProcesses child processes + 1 coordinator shard
+      groupId: expect.stringMatching(/^\d{8}-\d{6}-\d{3}$/), // Auto-generated groupId format
+    });
+
+    // Verify all processes share the same groupId
+    const groupId = coordinatorStats.groupId;
+    expect(coordinatorStats.finalFilePath).toContainPath(groupId);
+
+    const snapshotData = await loadNormalizedTraceJson(
+      coordinatorStats.finalFilePath as `${string}.json`,
+    );
+
+    const processIds = new Set<string>();
+    snapshotData.traceEvents?.forEach((e: TraceEvent) => {
+      if (e.name?.includes('process-')) {
+        const match = e.name.match(/process-(\d+)/);
+        if (match && match[1]) {
+          processIds.add(match[1]);
+        }
+      }
+    });
+
+    expect(processIds.size).toStrictEqual(numProcesses);
+    const validationDuration = performance.now() - validationStartTime;
+    const totalDuration = performance.now() - startTime;
+
+    // Log timing information for debugging
+    // eslint-disable-next-line no-console
+    console.log(
+      `[Timing] Process execution: ${processDuration.toFixed(2)}ms, Validation: ${validationDuration.toFixed(2)}ms, Total: ${totalDuration.toFixed(2)}ms`,
+    );
+  }, 10_000); // Timeout: 10 seconds for multi-process coordination
 });

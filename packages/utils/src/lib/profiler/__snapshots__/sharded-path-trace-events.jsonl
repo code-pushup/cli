@@ -1,4 +1,0 @@
-{"cat":"blink.user_timing","ph":"i","name":"write-test:test-operation:start","pid":10001,"tid":1,"ts":1700000005000000,"args":{"detail":"{\"devtools\":{\"track\":\"Test\",\"dataType\":\"track-entry\"}}"}}
-{"cat":"blink.user_timing","ph":"b","name":"write-test:test-operation","id2":{"local":"0x1"},"pid":10001,"tid":1,"ts":1700000005000001,"args":{"data":{"detail":"{\"devtools\":{\"track\":\"Test\",\"dataType\":\"track-entry\"}}"}}}
-{"cat":"blink.user_timing","ph":"e","name":"write-test:test-operation","id2":{"local":"0x1"},"pid":10001,"tid":1,"ts":1700000005000002,"args":{"data":{"detail":"{\"devtools\":{\"track\":\"Test\",\"dataType\":\"track-entry\"}}"}}}
-{"cat":"blink.user_timing","ph":"i","name":"write-test:test-operation:end","pid":10001,"tid":1,"ts":1700000005000003,"args":{"detail":"{\"devtools\":{\"track\":\"Test\",\"dataType\":\"track-entry\"}}"}}

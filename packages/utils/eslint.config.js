@@ -13,7 +13,11 @@ export default tseslint.config(
     },
   },
   {
-    files: ['packages/utils/src/lib/**/wal*.ts'],
+    files: [
+      'packages/utils/src/lib/**/wal*.ts',
+      'packages/utils/src/lib/**/wal*.test.ts',
+      'packages/utils/src/lib/profiler/*.test.ts',
+    ],
     rules: {
       'n/no-sync': 'off',
     },
