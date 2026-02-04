@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "tools/workspace-baseline/src",
   "projectType": "library",
-  "tags": [],
+  "tags": ["scope:tooling", "type:feature"],
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
@@ -36,6 +36,26 @@
           }
         ]
       }
-    }
+    },
+    "lint": {
+      "options": {
+        "lintFilePatterns": [
+          "tools/workspace-baseline/**/*.ts",
+          "tools/workspace-baseline/package.json",
+          "tools/workspace-baseline/generators.json"
+        ]
+      }
+    },
+    "lint-report": {
+      "options": {
+        "lintFilePatterns": [
+          "tools/workspace-baseline/**/*.ts",
+          "tools/workspace-baseline/package.json",
+          "tools/workspace-baseline/generators.json"
+        ]
+      }
+    },
+    "unit-test": {},
+    "int-test": {}
   }
 }

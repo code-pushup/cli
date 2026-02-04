@@ -345,7 +345,7 @@
     "appsDir": "examples",
     "libsDir": "packages"
   },
-  "generators": {},
+  "sync": [],
   "release": {
     "projects": ["packages/*"],
     "projectsRelationship": "fixed",
@@ -373,7 +373,6 @@
     "releaseTagPattern": "v{version}"
   },
   "plugins": [
-    "./tools/zod2md-jsdocs/src/nx-plugin.ts",
     {
       "plugin": "@push-based/nx-verdaccio",
       "options": {

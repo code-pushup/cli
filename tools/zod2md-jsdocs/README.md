@@ -4,44 +4,9 @@ A comprehensive toolset for generating and enhancing TypeScript documentation fr
 
 ## What's Included
 
-This package provides two main components:
+This package provides the following components:
 
-1. **[Nx Plugin](./docs/zod2md-jsdocs-nx-plugin.md)** - Automatically generates documentation targets for projects with Zod schemas
-2. **[TypeScript Transformer](./docs/zod2md-jsdocs-ts-transformer.md)** - Enhances generated type definitions with JSDoc comments and schema metadata
-
-## Quick Start
-
-### Using the Nx Plugin
-
-Add the plugin to your `nx.json`:
-
-```jsonc
-{
-  "plugins": ["./tools/zod2md-jsdocs/src/nx-plugin.ts"],
-}
-```
-
-Create a `zod2md.config.ts` in your project, and you'll automatically get a `generate-docs` target.
-
-[Learn more about the Nx Plugin →](./docs/zod2md-jsdocs-nx-plugin.md)
-
-### Using the TypeScript Transformer
-
-1. Install ts-patch: `ts-patch install`
-2. Add to your `tsconfig.json`:
-
-```json
-{
-  "compilerOptions": {
-    "plugins": [
-      {
-        "transform": "./tools/zod2md-jsdocs/dist/src",
-        "afterDeclarations": true,
-        "baseUrl": "https://github.com/code-pushup/cli/blob/main/packages/<PROJECT-NAME>/docs/models-reference.md"
-      }
-    ]
-  }
-}
-```
-
-[Learn more about the TypeScript Transformer →](./docs/zod2md-jsdocs-ts-transformer.md)
+1. **[Nx Plugin](./src/lib/plugin/README.md)** - Automatically generates documentation targets for projects with Zod schemas
+2. **[Nx Configuration Generator](./src/lib/generators/configuration/README.md)** - Automatically generates documentation targets for projects with Zod schemas
+3. **[Nx Sync Zod2Md Setup Generator](./src/lib/generators/sync-zod2md-setup/README.md)** - Automatically generates documentation targets for projects with Zod schemas
+4. **[TypeScript Transformer](./src/lib/transformers/README.md)** - Enhances generated type definitions with JSDoc comments and schema metadata

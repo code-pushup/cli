@@ -1,3 +1,1 @@
-export interface SyncBaselineGeneratorSchema {
-  name: string;
-}
+export interface SyncBaselineGeneratorSchema {}

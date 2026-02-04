@@ -1,5 +1,5 @@
-import { type Tree, readJson, updateJson } from '@nx/devkit';
-import glob from 'glob';
+import { type Tree, readJson } from '@nx/devkit';
+import * as glob from 'glob';
 import type { Diagnostic, Updater } from './json-updater.js';
 
 type ReadFirstMatchOptions<T> = {
@@ -12,15 +12,13 @@ export const readFirstMatchingFile = <T>(
   tree: Tree,
   globMatcher: string | string[],
   { read }: ReadFirstMatchOptions<T>,
-): T => {
+): T | null => {
   const patterns = toArray(globMatcher);
 
-  const match = patterns
-    .flatMap(p => glob.sync(p, { nodir: true }))
-    .find(p => tree.exists(p));
+  const match = patterns.find(p => tree.exists(p));
 
   if (!match) {
-    throw new Error(`No file matched: ${patterns.join(', ')}`);
+    return null;
   }
 
   return read(tree, match);
@@ -30,10 +28,8 @@ type TsConfigFileName<B extends string = string> =
   | 'tsconfig.json'
   | `tsconfig.${B}.json`;
 
-type TsBase = {
-  sync(tree: Tree): {
-    outOfSyncMessage: string;
-  };
+export type TsBase = {
+  sync(tree: Tree): Diagnostic[];
 };
 
 export const diagnosticsToMessage = (
@@ -84,6 +80,11 @@ export const createTsconfigBase = (
         read: (_, p) => p,
       });
 
+      if (!path) {
+        // No matching file found, skip this baseline
+        return diagnostics;
+      }
+
       const current = readJson(tree, path);
 
       const apply = <T>(
@@ -110,12 +111,10 @@ export const createTsconfigBase = (
       };
 
       if (diagnostics.length > 0) {
-        updateJson(tree, path, next);
+        tree.write(path, JSON.stringify(next, null, 2));
       }
 
-      return {
-        outOfSyncMessage: diagnosticsToMessage(diagnostics, path),
-      };
+      return diagnostics;
     },
   };
 };

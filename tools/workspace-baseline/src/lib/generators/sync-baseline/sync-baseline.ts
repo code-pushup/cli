@@ -1,10 +1,11 @@
 import { type Tree } from '@nx/devkit';
 import { createProjectGraphAsync, joinPathFragments } from '@nx/devkit';
-import { tsconfigLibBase } from '../baseline/tsconfig-lib.baseline';
-import { diagnosticsToMessage } from './diagnostics-to-message';
+import { diagnosticsToMessage } from '../../baseline.tsconfig';
+import { loadBaselineRc } from './load-baseline-rc';
 
 export const syncBaseline = async (tree: Tree) => {
   const graph = await createProjectGraphAsync();
+  const baselines = await loadBaselineRc();
 
   const diagnostics = Object.values(graph.nodes).flatMap(project => {
     const root = project.data.root;
@@ -17,10 +18,13 @@ export const syncBaseline = async (tree: Tree) => {
         tree.write(joinPathFragments(root, p), c),
     };
 
-    return tsconfigLibBase.sync(scopedTree as any).map(d => ({
-      ...d,
-      path: `${project.name}:${d.path}`,
-    }));
+    // Apply all baselines to each project and collect diagnostics
+    return baselines.flatMap(baseline =>
+      baseline.sync(scopedTree as any).map(d => ({
+        ...d,
+        path: `${project.name}:${d.path}`,
+      })),
+    );
   });
 
   return diagnostics.length
@@ -32,3 +36,5 @@ export const syncBaseline = async (tree: Tree) => {
       }
     : {};
 };
+
+export default syncBaseline;

@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "AddTsConfigToProject",
+  "title": "Generate tsconfig.{targetName}.json file",
+  "description": "Generate a TypeScript configuration file with the specified target name",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "The name of the project.",
+      "x-prompt": "Which project should configure tsconfig?",
+      "x-dropdown": "projects",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    },
+    "targetName": {
+      "type": "string",
+      "description": "The basename for the tsconfig file (e.g., 'tools' for tsconfig.tools.json).",
+      "x-prompt": "What should be the target name for the tsconfig file?",
+      "$default": {
+        "$source": "argv",
+        "index": 1
+      }
+    },
+    "skipConfig": {
+      "type": "boolean",
+      "description": "Skip adding the tsconfig.{targetName}.json to the project root.",
+      "$default": "false"
+    },
+    "skipFormat": {
+      "type": "boolean",
+      "description": "Skip formatting of changed files",
+      "$default": "false"
+    }
+  },
+  "required": ["project", "targetName"]
+}

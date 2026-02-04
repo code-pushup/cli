@@ -1,8 +1,7 @@
 {
   "$schema": "https://json-schema.org/schema",
-  "$id": "SyncBaseline",
+  "$id": "SyncZod2mdSetup",
   "title": "",
   "type": "object",
-  "properties": {},
-  "required": []
+  "properties": {}
 }
