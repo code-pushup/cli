@@ -7,8 +7,14 @@
   "types": "./src/index.d.ts",
   "dependencies": {
     "@nx/devkit": "22.3.3",
+    "ansis": "^3.1.0",
+    "cli-highlight": "^2.1.11",
+    "diff": "^7.0.0",
     "glob": "^10.3.10",
     "tslib": "^2.3.0"
   },
-  "generators": "./generators.json"
+  "generators": "./generators.json",
+  "devDependencies": {
+    "@types/diff": "^7.0.2"
+  }
 }

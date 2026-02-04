@@ -5,9 +5,10 @@
     "rootDir": "./",
     "module": "commonjs",
     "types": ["node"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "verbatimModuleSyntax": false
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "baseline/**/*.ts"],
   "exclude": [
     "**/__snapshots__/**",
     "vite.config.ts",

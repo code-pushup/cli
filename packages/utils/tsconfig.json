@@ -14,7 +14,7 @@
       "path": "./tsconfig.test.json"
     },
     {
-      "path": "./tsconfig.perf.json"
+      "path": "./tsconfig.tools.json"
     }
   ]
 }

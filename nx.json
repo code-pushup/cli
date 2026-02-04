@@ -345,7 +345,9 @@
     "appsDir": "examples",
     "libsDir": "packages"
   },
-  "sync": [],
+  "sync": {
+    "globalGenerators": ["./tools/workspace-baseline:sync-baseline"]
+  },
   "release": {
     "projects": ["packages/*"],
     "projectsRelationship": "fixed",

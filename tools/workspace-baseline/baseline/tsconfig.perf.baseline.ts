@@ -3,19 +3,22 @@ import { arr, obj } from '../src/lib/baseline.tsconfig';
 import {
   DEFAULT_OUT_DIR,
   EXTENDS_TSCONFIG_JSON,
-  LIB_EXCLUDES,
-  LIB_INCLUDES,
   NODE_TYPES,
+  PERF_PATTERN,
 } from './constants';
 
-export const tsconfigLibBase = createTsconfigBase('tsconfig.lib.json', {
-  tags: ['tsc-bae', 'tsc-nx-plugin'],
+/**
+ * Baseline for performance test configurations (tsconfig.perf.json).
+ *
+ * Standardizes:
+ * - Minimal config for performance tests
+ * - Includes perf files (perf folder)
+ */
+export const tsconfigPerfBase = createTsconfigBase('tsconfig.perf.json', {
   extends: EXTENDS_TSCONFIG_JSON,
   compilerOptions: obj.add({
     outDir: DEFAULT_OUT_DIR,
-    declaration: true,
     types: NODE_TYPES,
   }),
-  include: arr.add(...LIB_INCLUDES),
-  exclude: arr.add(...LIB_EXCLUDES),
+  include: arr.add(PERF_PATTERN),
 });

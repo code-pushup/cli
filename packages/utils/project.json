@@ -7,7 +7,7 @@
     "build": {},
     "lint": {},
     "perf": {
-      "command": "npx tsx --tsconfig=../tsconfig.perf.json",
+      "command": "npx tsx --tsconfig=../tsconfig.tools.json",
       "options": {
         "cwd": "./packages/utils/perf"
       }
