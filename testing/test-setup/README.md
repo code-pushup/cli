@@ -13,11 +13,11 @@ See [`@code-pushup/test-setup-config` docs](../test-setup-config/README.md) on h
 In this library you can find all files that can be used in `setupFiles` property of `vitest.config.(unit|int|e2e).ts` files. Currently include:
 
 - [console](./src/lib/console.mock.ts) mocking
-- [file system](./src/lib/fs.mock.ts) mocking
-- [`portal-client`](./src/lib/portal-client.mock.ts) mocking
-- [git](./src/lib/git.mock.ts) mocking
+- [file system](./src/lib/fs.setup-file.ts) mocking
+- [`portal-client`](./src/lib/portal-client.setup-file.ts) mocking
+- [git](./src/lib/git.setup-file.ts) mocking
 
 Additionally, you may find helper functions for:
 
 - setting up and tearing down a [testing folder](./src/lib/test-folder.setup.ts)
-- [resetting](./src/lib/reset.mocks.ts) mocks
+- [resetting](./src/lib/reset.setup-file.ts) mocks

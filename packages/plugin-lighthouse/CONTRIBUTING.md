@@ -15,7 +15,7 @@ To test lighthouse properly we work with a predefined testing setup.
 
 On some OS there could be a problem finding the path to Chrome.
 
-We try to detect it automatically in the [`chrome-path.mock.ts` script](../../testing/test-setup/src/lib/chrome-path.mock.ts).
+We try to detect it automatically in the [`chrome-path.setup-file.ts` script](../../testing/test-setup/src/lib/chrome-path.setup-file.ts).
 There we use `getChromePath` and have `chromium` installed as NPM package, so detecting the path should not cause any problem.
 
 However, if no chrome path is detected automatically the error looks like this:
@@ -46,7 +46,7 @@ In the CI you can set a static path if needed over the env variable like this:
 # ...
 ```
 
-We consider this path in our `beforeAll` hook in a [`chrome-path.mock.ts` script](../../testing/test-setup/src/lib/chrome-path.mock.ts).
+We consider this path in our `beforeAll` hook in a [`chrome-path.setup-file.ts` script](../../testing/test-setup/src/lib/chrome-path.setup-file.ts).
 
 ### Testing chrome flags
 
@@ -66,15 +66,15 @@ For a full list of available flags check out [this document](https://peter.sh/ex
 
 ### Chrome User Data
 
-To bootstrap Chrome with a predefined for setting we have to provide a couple of config files that we located under `<project-root>/mock/chromium-user-data`.
+To bootstrap Chrome with a predefined for setting we have to provide a couple of config files that we located under `<project-root>/mocks/chromium-user-data`.
 When executing Lighthouse we provide the path to this folder over the `Flag` object.
 
 To generate initialise or edit the file structure under `chromium-user-data` do the following steps:
 
-1. Spin up Chrome by running `npx chrome-debug --user-data-dir=./packages/plugin-lighthouse/mock/chromium-user-data`
+1. Spin up Chrome by running `npx chrome-debug --user-data-dir=./packages/plugin-lighthouse/mocks/chromium-user-data`
    <img width="1202" alt="chrome-blank-screen" src="./docs/images/chrome-blank-screen.png">
 
-2. If you do this the first time you should already see content under `<project-root>/mock/chromium-user-data`
+2. If you do this the first time you should already see content under `<project-root>/mocks/chromium-user-data`
 3. Edit the configuration over the Chrome UI. E.g. adding a profile
 4. Close chromium and open it again, and you should see chromium bootstraps as the configured user
    <img width="1202" alt="chrome-blank-screen-pre-configured" src="./docs/images/chrome-blank-screen-pre-configure.png">
