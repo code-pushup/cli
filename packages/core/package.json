@@ -44,7 +44,7 @@
     "ansis": "^3.3.0"
   },
   "peerDependencies": {
-    "@code-pushup/portal-client": "^0.16.0"
+    "@code-pushup/portal-client": "^0.17.0"
   },
   "peerDependenciesMeta": {
     "@code-pushup/portal-client": {
