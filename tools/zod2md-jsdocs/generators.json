@@ -1,0 +1,19 @@
+{
+  "generators": {
+    "sync-zod2md-setup": {
+      "factory": "./src/lib/generators/sync-zod2md-setup/sync-zod2md-setup",
+      "schema": "./src/lib/generators/sync-zod2md-setup/schema.json",
+      "description": "sync-zod2md-setup generator"
+    },
+    "configuration": {
+      "factory": "./src/lib/generators/configuration/configuration",
+      "schema": "./src/lib/generators/configuration/schema.json",
+      "description": "configuration generator"
+    },
+    "sync-zod2md-docs": {
+      "factory": "./src/lib/generators/sync-zod2md-docs/sync-zod2md-docs",
+      "schema": "./src/lib/generators/sync-zod2md-docs/schema.json",
+      "description": "sync-zod2md-docs generator"
+    }
+  }
+}

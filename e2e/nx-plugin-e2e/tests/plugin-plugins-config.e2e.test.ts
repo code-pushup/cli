@@ -74,7 +74,8 @@ describe('nx-plugin pluginsConfig', () => {
 
     await materializeTree(tree, cwd);
 
-    const { code, projectJson } = await nxShowProjectJson(cwd, project);
+    const { code, stderr, projectJson } = await nxShowProjectJson(cwd, project);
+    expect(stderr).toBe('');
     expect(code).toBe(0);
 
     expect(projectJson).toStrictEqual(
