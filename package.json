@@ -15,7 +15,9 @@
   "scripts": {
     "prepare": "husky install",
     "commit": "git-cz",
-    "knip": "knip"
+    "knip": "knip",
+    "ci:nx": "node tools/scripts/ci-tsx.js nx",
+    "ci:node": "node tools/scripts/ci-tsx.js node"
   },
   "private": true,
   "dependencies": {
@@ -86,6 +88,7 @@
     "chromium": "^3.0.3",
     "commitizen": "^4.3.1",
     "commitlint-plugin-tense": "^1.0.3",
+    "cross-env": "^10.1.0",
     "dotenv": "^16.4.5",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-functional": "^7.1.0",
