@@ -33,6 +33,12 @@ const runMiddlewareInCwd = async (configPath: string, tsconfigPath?: string) =>
       ...(tsconfigPath ? [tsconfigPath] : []),
     ],
     cwd: configDirPath,
+    env: {
+      ...process.env,
+      // Disable all logger output to avoid interfering with JSON output
+      CP_VERBOSE: 'false',
+      CI: 'false',
+    },
   });
 describe('coreConfigMiddleware', () => {
   const CLI_DEFAULTS = {
