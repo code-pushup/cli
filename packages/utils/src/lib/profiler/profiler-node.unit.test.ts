@@ -294,10 +294,10 @@ describe('NodejsProfiler', () => {
 
       profiler.close();
 
-      expect(() => profiler.setEnabled(true)).toThrowError(
+      expect(() => profiler.setEnabled(true)).toThrow(
         'Profiler already closed',
       );
-      expect(() => profiler.setEnabled(false)).toThrowError(
+      expect(() => profiler.setEnabled(false)).toThrow(
         'Profiler already closed',
       );
 
@@ -317,7 +317,7 @@ describe('NodejsProfiler', () => {
         // This should not throw since we're using the public API correctly
         profiler.setEnabled(false);
         profiler.setEnabled(true);
-      }).not.toThrowError();
+      }).not.toThrow();
     });
   });
 
@@ -399,7 +399,7 @@ describe('NodejsProfiler', () => {
         profiler.measure('error-test', () => {
           throw error;
         });
-      }).toThrowError(error);
+      }).toThrow(error);
     });
 
     it('should propagate errors from measureAsync work function', async () => {
@@ -410,7 +410,7 @@ describe('NodejsProfiler', () => {
         profiler.measureAsync('async-error-test', async () => {
           throw error;
         }),
-      ).rejects.toThrowError(error);
+      ).rejects.toThrow(error);
     });
 
     it('should skip measurement when profiler is not active', () => {
@@ -447,7 +447,7 @@ describe('NodejsProfiler', () => {
 
       expect(() => {
         profiler.marker('inactive-marker');
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
     it('base Profiler behavior: should always be active in base profiler', () => {
@@ -471,7 +471,7 @@ describe('NodejsProfiler', () => {
 
       expect(() => {
         profiler.marker('base-marker');
-      }).not.toThrowError();
+      }).not.toThrow();
     });
   });
 
@@ -789,7 +789,7 @@ describe('NodejsProfiler', () => {
     });
 
     it('installs exit handlers on construction', () => {
-      expect(() => createProfiler()).not.toThrowError();
+      expect(() => createProfiler()).not.toThrow();
 
       expect(mockSubscribeProcessExit).toHaveBeenCalledWith({
         onError: expect.any(Function),

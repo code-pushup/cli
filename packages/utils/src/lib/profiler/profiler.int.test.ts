@@ -231,7 +231,7 @@ describe('Profiler Integration', () => {
       profiler.measure('error-test', () => {
         throw error;
       });
-    }).toThrowError(error);
+    }).toThrow(error);
 
     const measures = performance.getEntriesByType('measure');
     expect(measures).toStrictEqual(
@@ -258,7 +258,7 @@ describe('Profiler Integration', () => {
       profiler.measure('custom-error-test', () => {
         throw customError;
       });
-    }).toThrowError(customError);
+    }).toThrow(customError);
 
     const measures = performance.getEntriesByType('measure');
     expect(measures).toStrictEqual(
