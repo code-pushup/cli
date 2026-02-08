@@ -128,6 +128,7 @@ export { formatIssueSeverities, wrapTags } from './lib/reports/formatting.js';
 export {
   isFileIssue,
   isFileSource,
+  isUrlIssue,
   isUrlSource,
 } from './lib/reports/type-guards.js';
 export { generateMdReport } from './lib/reports/generate-md-report.js';

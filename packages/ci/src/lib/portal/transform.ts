@@ -166,6 +166,17 @@ function transformGQLIssue(issue: IssueFragment): Issue {
         }),
       },
     }),
+    ...(issue.source?.__typename === 'SourceUrlLocation' && {
+      source: {
+        url: issue.source.url,
+        ...(issue.source.snippet != null && {
+          snippet: issue.source.snippet,
+        }),
+        ...(issue.source.selector != null && {
+          selector: issue.source.selector,
+        }),
+      },
+    }),
   };
 }
 
