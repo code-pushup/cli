@@ -1,7 +1,7 @@
 import ansis from 'ansis';
 import { z } from 'zod';
 import { SchemaValidationError } from '@code-pushup/models';
-import { extendError, stringifyError } from './errors.js';
+import { stringifyError } from './errors.js';
 
 describe('stringifyError', () => {
   it('should use only message from plain Error instance', () => {
@@ -111,27 +111,5 @@ describe('stringifyError', () => {
         oneline: true,
       }),
     ).toBe(`SchemaValidationError: Invalid ${ansis.bold('User')} […]`);
-  });
-});
-
-describe('extendError', () => {
-  it('adds message, appends original error, and keeps cause', () => {
-    const original = new Error('boom');
-
-    const extended = extendError(original, 'wrap failed', {
-      appendMessage: true,
-    });
-
-    expect(extended.message).toBe('wrap failed\nboom');
-    expect(extended.cause).toBe(original);
-  });
-
-  it('uses only the provided message by default', () => {
-    const original = new Error('boom');
-
-    const extended = extendError(original, 'wrap failed');
-
-    expect(extended.message).toBe('wrap failed');
-    expect(extended.cause).toBe(original);
   });
 });
