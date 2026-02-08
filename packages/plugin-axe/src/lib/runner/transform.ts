@@ -1,4 +1,3 @@
-import axe from 'axe-core';
 import type {
   AuditOutput,
   AuditOutputs,
@@ -10,6 +9,7 @@ import {
   pluralizeToken,
   truncateIssueMessage,
 } from '@code-pushup/utils';
+import axe from '../safe-axe-core-import.js';
 
 /**
  * Transforms Axe results into audit outputs.

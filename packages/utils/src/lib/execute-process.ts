@@ -162,9 +162,10 @@ export function executeProcess(cfg: ProcessConfig): Promise<ProcessResult> {
   const worker = () =>
     new Promise<ProcessResult>((resolve, reject) => {
       const spawnedProcess = spawn(command, args ?? [], {
-        // shell:true tells Windows to use shell command for spawning a child process
+        // shell is only needed on Windows to spawn child processes correctly
         // https://stackoverflow.com/questions/60386867/node-spawn-child-process-not-working-in-windows
-        shell: true,
+        // Using shell conditionally avoids Node.js DEP0190 deprecation warning
+        shell: process.platform === 'win32',
         windowsHide: true,
         ...options,
       }) as ChildProcessByStdio<Writable, Readable, Readable>;

@@ -30,14 +30,15 @@
     "@code-pushup/models": "0.113.0",
     "ansis": "^3.3.0",
     "build-md": "^0.4.2",
-    "bundle-require": "^5.1.0",
     "esbuild": "^0.25.2",
     "ora": "^9.0.0",
     "semver": "^7.6.0",
     "simple-git": "^3.20.0",
     "string-width": "^8.1.0",
     "wrap-ansi": "^9.0.2",
-    "zod": "^4.2.1"
+    "zod": "^4.2.1",
+    "jiti": "^2.4.2",
+    "typescript": "5.7.3"
   },
   "peerDependencies": {
     "@nx/devkit": ">=17.0.0"

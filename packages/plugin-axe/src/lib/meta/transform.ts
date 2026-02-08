@@ -1,4 +1,3 @@
-import axe from 'axe-core';
 import type { Audit, Group } from '@code-pushup/models';
 import { objectToEntries, wrapTags } from '@code-pushup/utils';
 import type { AxePreset } from '../config.js';
@@ -7,6 +6,7 @@ import {
   CATEGORY_GROUPS,
   getWcagPresetTags,
 } from '../groups.js';
+import axe from '../safe-axe-core-import.js';
 
 /** Loads Axe rules filtered by the specified preset. */
 export function loadAxeRules(preset: AxePreset): axe.RuleMetadata[] {
