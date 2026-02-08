@@ -36,12 +36,21 @@ function isProjectIncluded(
  */
 async function findTsconfigsInProject(projectRoot: string): Promise<string[]> {
   const absoluteRoot = path.resolve(process.cwd(), projectRoot);
-  const files = await readdir(absoluteRoot);
 
-  return files
-    .filter(file => TSCONFIG_PATTERN.test(file))
-    .filter(file => hasFilesToCompile(path.join(absoluteRoot, file)))
-    .map(file => path.join(projectRoot, file));
+  try {
+    const files = await readdir(absoluteRoot);
+
+    return files
+      .filter(file => TSCONFIG_PATTERN.test(file))
+      .filter(file => hasFilesToCompile(path.join(absoluteRoot, file)))
+      .map(file => path.join(projectRoot, file));
+  } catch (error) {
+    // If directory doesn't exist or can't be read, return empty array
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      return [];
+    }
+    throw error;
+  }
 }
 
 /**
