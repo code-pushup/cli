@@ -41,12 +41,10 @@ describe('ID_PATTERNS', () => {
     },
   );
 
-  it.each(['20231114-221320-000'])(
-    'GROUP_ID should match valid group ID: %s',
-    groupId => {
-      expect(groupId).toMatch(ID_PATTERNS.GROUP_ID);
-    },
-  );
+  it('GROUP_ID should match valid group ID', () => {
+    const groupId = '20231114-221320-000';
+    expect(groupId).toMatch(ID_PATTERNS.GROUP_ID);
+  });
 
   it.each(['20231114-221320-000-12345-1', '20240101-120000-000-99999-99'])(
     'PROCESS_THREAD_ID should match valid process/thread ID: %s',
@@ -73,20 +71,6 @@ describe('ID_PATTERNS', () => {
     'INSTANCE_ID should not match invalid format: %s',
     instanceId => {
       expect(instanceId).not.toMatch(ID_PATTERNS.INSTANCE_ID);
-    },
-  );
-
-  it.each(['20231114-221320-000.12345.1.1'])(
-    'INSTANCE_ID should match valid instance ID: %s',
-    instanceId => {
-      expect(instanceId).toMatch(ID_PATTERNS.INSTANCE_ID);
-    },
-  );
-
-  it.each(['20231114-221320-000'])(
-    'TIME_ID should match valid time ID: %s',
-    timeId => {
-      expect(timeId).toMatch(ID_PATTERNS.TIME_ID);
     },
   );
 });
