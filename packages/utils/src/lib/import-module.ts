@@ -183,20 +183,25 @@ export async function createTsJiti(
     ? await jitiOptionsFromTsConfig(validPath)
     : {};
 
+  const mergedAlias = {
+    ...jitiOptions.alias,
+    ...tsDerivedJitiOptions.alias,
+  };
+
   return createJiti(id, {
     ...jitiOptions,
     ...tsDerivedJitiOptions,
-    alias: {
-      ...jitiOptions.alias,
-      ...tsDerivedJitiOptions.alias,
-    },
+    alias: mergedAlias,
     nativeModules: [
       ...new Set([
         ...JITI_NATIVE_MODULES,
         ...(jitiOptions.nativeModules ?? []),
       ]),
     ],
-    tryNative: true,
+    // Don't use native imports when we have aliases to resolve
+    // When tryNative is true, jiti attempts to use native Node.js imports first,
+    // which don't understand path aliases and will fail with ERR_MODULE_NOT_FOUND
+    tryNative: Object.keys(mergedAlias).length === 0,
   });
 }
 

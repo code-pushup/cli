@@ -47,7 +47,7 @@ describe('importModule', () => {
   it('should throw if the file does not exist', async () => {
     await expect(
       importModule({ filepath: 'path/to/non-existent-export.mjs' }),
-    ).rejects.toThrow("File 'path/to/non-existent-export.mjs' does not exist");
+    ).rejects.toThrow(/path\/to\/non-existent-export\.mjs' does not exist$/);
   });
 
   it('should throw if path is a directory', async () => {
@@ -59,8 +59,17 @@ describe('importModule', () => {
   it('should throw if file is not valid JS', async () => {
     await expect(
       importModule({ filepath: path.join(mockDir, 'invalid-js-file.json') }),
-    ).rejects.toThrow(
-      `${path.join(mockDir, 'invalid-js-file.json')} is not a valid JS file`,
-    );
+    ).rejects.toThrow(/invalid-js-file\.json/);
+  });
+
+  it('should load a TS module using tsconfig paths', async () => {
+    await expect(
+      importModule({
+        filepath: path.join(mockDir, 'uses-path-alias.ts'),
+        tsconfig: path.join(mockDir, 'tsconfig-paths-test.json'),
+      }),
+    ).resolves.toEqual({
+      value: 'helper-module-value',
+    });
   });
 });

@@ -109,6 +109,23 @@ describe('parseTsConfigToJitiConfig', () => {
       jsx: true,
     });
   });
+
+  it('handles path alias without wildcards and no baseUrl', () => {
+    const compilerOptions: CompilerOptions = {
+      paths: {
+        '@test/helper': ['./helper-module.ts'],
+      },
+    };
+
+    const tsconfigDir = '/Users/test/project/mocks';
+    const result = parseTsConfigToJitiConfig(compilerOptions, tsconfigDir);
+
+    expect(result).toStrictEqual({
+      alias: {
+        '@test/helper': expect.pathToEndWith('mocks/helper-module.ts'),
+      },
+    });
+  });
 });
 
 describe('toFileUrl', () => {
