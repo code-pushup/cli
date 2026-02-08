@@ -1,4 +1,6 @@
-import { createTsconfigBaseTyped } from '../src/lib/baseline.tsconfig';
+import { createJsonBaselineTyped } from '../src/lib/baseline/baseline.json';
+import { arr, object } from '../src/lib/baseline/baseline.json';
+import type { TsConfigJson } from '../src/lib/baseline/tsconfig.type';
 import {
   DEFAULT_OUT_DIR,
   EXTENDS_TSCONFIG_JSON,
@@ -10,22 +12,25 @@ import {
  * Baseline for test configurations (tsconfig.test.json).
  *
  * Standardizes:
- * - Includes mocks pattern (standardized naming: mocks folder)
- * - Includes test files and vitest setup
- * - Uses repo root path resolution: paths prefixed with 'repo:' are resolved relative to repo root
- * - Renames tsconfig.spec.json files to tsconfig.test.json
+ * - Test files (unit and integration tests)
+ * - Vitest globals and types
+ * - Includes mocks, test files, and declaration files
+ * - Uses test types for test code
  */
-export const tsconfigTestBase = createTsconfigBaseTyped('tsconfig.test.json', {
-  renameFrom: 'tsconfig.spec.json', // Match and rename from spec to test
-
-  config: {
-    extends: EXTENDS_TSCONFIG_JSON,
-
-    compilerOptions: {
-      outDir: DEFAULT_OUT_DIR,
-      types: [...TEST_TYPES],
-    },
-
-    include: [...STANDARD_TEST_INCLUDES],
-  },
+const tsconfigTestBase = createJsonBaselineTyped<TsConfigJson>({
+  matcher: ['tsconfig.test.json'],
+  fileName: 'tsconfig.test.json',
+  baseline: root =>
+    root.set({
+      extends: EXTENDS_TSCONFIG_JSON,
+      compilerOptions: object(c =>
+        c.set({
+          outDir: DEFAULT_OUT_DIR,
+          types: [...TEST_TYPES],
+        }),
+      ),
+      include: arr(a => a.add(...STANDARD_TEST_INCLUDES)),
+    }),
 });
+
+export default tsconfigTestBase;

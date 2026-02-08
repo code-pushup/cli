@@ -1,7 +1,7 @@
-import { createTsconfigBase } from '../src/lib/baseline.tsconfig';
-import { arr, obj } from '../src/lib/baseline.tsconfig';
+import { createJsonBaselineTyped } from '../src/lib/baseline/baseline.json';
+import { arr, object } from '../src/lib/baseline/baseline.json';
+import type { TsConfigJson } from '../src/lib/baseline/tsconfig.type';
 import {
-  DEFAULT_OUT_DIR,
   EXTENDS_TSCONFIG_JSON,
   NODENEXT_TYPES,
   TOOLS_CONFIG_FILES,
@@ -15,12 +15,22 @@ import {
  * - Uses nodenext types for tool scripts
  * - Renames tsconfig.perf.json files to tsconfig.tools.json
  */
-export const tsconfigToolsBase = createTsconfigBase('tsconfig.tools.json', {
-  renameFrom: 'tsconfig.perf.json', // Match and rename from perf to tools
-  extends: EXTENDS_TSCONFIG_JSON,
-  compilerOptions: obj.add({
-    outDir: DEFAULT_OUT_DIR,
-    types: NODENEXT_TYPES,
-  }),
-  include: arr.add(...TOOLS_CONFIG_FILES),
+const tsconfigToolsBase = createJsonBaselineTyped<TsConfigJson>({
+  matcher: ['tsconfig.(tools|perf).json'],
+  fileName: 'tsconfig.tools.json',
+  baseline: root =>
+    root.set({
+      exclude: arr(a => a.add(...TOOLS_CONFIG_FILES)),
+      extends: EXTENDS_TSCONFIG_JSON,
+      compilerOptions: object(c =>
+        c.set({
+          baseUrl: '.',
+          rootDir: '.',
+          types: NODENEXT_TYPES,
+        }),
+      ),
+      include: arr(a => a.add(...TOOLS_CONFIG_FILES)),
+    }),
 });
+
+export default tsconfigToolsBase;

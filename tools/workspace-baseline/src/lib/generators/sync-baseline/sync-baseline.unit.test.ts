@@ -2,11 +2,11 @@ import * as devkit from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import * as path from 'node:path';
 import {
-  createTsconfigBase,
+  createJsonBaseline,
   createTsconfigFormatter,
-} from '../../baseline.tsconfig';
-import type { TsBase } from '../../baseline.tsconfig';
-import { obj } from '../../baseline.tsconfig';
+} from '../../baseline/baseline.json';
+import type { BaselineConfig } from '../../baseline/baseline.json';
+import { obj } from '../../baseline/baseline.json';
 import { loadBaselineRc } from './load-baseline-rc';
 import { syncBaseline } from './sync-baseline';
 
@@ -173,12 +173,15 @@ describe('sync-baseline generator', () => {
     });
 
     it('should apply baseline when project has matching tag', async () => {
-      const baselineWithTags: TsBase = createTsconfigBase('tsconfig.lib.json', {
-        tags: ['tsc-bae'],
-        compilerOptions: obj.add({
-          strict: true,
-        }),
-      });
+      const baselineWithTags: BaselineConfig = createJsonBaseline(
+        'tsconfig.lib.json',
+        {
+          tags: ['tsc-bae'],
+          compilerOptions: obj.add({
+            strict: true,
+          }),
+        },
+      );
 
       vi.mocked(loadBaselineRc).mockResolvedValue([baselineWithTags]);
 
@@ -206,12 +209,15 @@ describe('sync-baseline generator', () => {
     });
 
     it('should skip baseline when project has no matching tags', async () => {
-      const baselineWithTags: TsBase = createTsconfigBase('tsconfig.lib.json', {
-        tags: ['tsc-bae'],
-        compilerOptions: obj.add({
-          strict: true,
-        }),
-      });
+      const baselineWithTags: BaselineConfig = createJsonBaseline(
+        'tsconfig.lib.json',
+        {
+          tags: ['tsc-bae'],
+          compilerOptions: obj.add({
+            strict: true,
+          }),
+        },
+      );
 
       vi.mocked(loadBaselineRc).mockResolvedValue([baselineWithTags]);
 
@@ -239,7 +245,7 @@ describe('sync-baseline generator', () => {
     });
 
     it('should apply baseline when no tags filter is specified', async () => {
-      const baselineWithoutTags: TsBase = createTsconfigBase(
+      const baselineWithoutTags: BaselineConfig = createJsonBaseline(
         'tsconfig.lib.json',
         {
           compilerOptions: obj.add({
@@ -275,7 +281,7 @@ describe('sync-baseline generator', () => {
     });
 
     it('should apply baseline when project has ANY of the specified tags', async () => {
-      const baselineWithMultipleTags: TsBase = createTsconfigBase(
+      const baselineWithMultipleTags: BaselineConfig = createJsonBaseline(
         'tsconfig.lib.json',
         {
           tags: ['tsc-bae', 'tsc-nx-plugin'],
@@ -312,12 +318,15 @@ describe('sync-baseline generator', () => {
     });
 
     it('should group diagnostics by baseline type', async () => {
-      const tsconfigLibBase: TsBase = createTsconfigBase('tsconfig.lib.json', {
-        compilerOptions: obj.add({
-          strict: true,
-        }),
-      });
-      const tsconfigTestBase: TsBase = createTsconfigBase(
+      const tsconfigLibBase: BaselineConfig = createJsonBaseline(
+        'tsconfig.lib.json',
+        {
+          compilerOptions: obj.add({
+            strict: true,
+          }),
+        },
+      );
+      const tsconfigTestBase: BaselineConfig = createJsonBaseline(
         'tsconfig.test.json',
         {
           compilerOptions: obj.add({
@@ -347,7 +356,7 @@ describe('sync-baseline generator', () => {
 
     it('should use baseline formatter when provided', async () => {
       const customFormatter = createTsconfigFormatter({ styling: 'minimal' });
-      const baselineWithFormatter: TsBase = createTsconfigBase(
+      const baselineWithFormatter: BaselineConfig = createJsonBaseline(
         'tsconfig.lib.json',
         {
           formatter: customFormatter,
@@ -368,7 +377,7 @@ describe('sync-baseline generator', () => {
     });
 
     it('should use default formatter when baseline has no formatter', async () => {
-      const baselineWithoutFormatter: TsBase = createTsconfigBase(
+      const baselineWithoutFormatter: BaselineConfig = createJsonBaseline(
         'tsconfig.lib.json',
         {
           compilerOptions: obj.add({
@@ -397,7 +406,7 @@ describe('sync-baseline generator', () => {
       const tsconfigSpecPath = path.join(projectRoot, 'tsconfig.spec.json');
       const tsconfigTestPath = path.join(projectRoot, 'tsconfig.test.json');
 
-      const baselineWithRename: TsBase = createTsconfigBase(
+      const baselineWithRename: BaselineConfig = createJsonBaseline(
         'tsconfig.test.json',
         {
           renameFrom: 'tsconfig.spec.json',
@@ -441,7 +450,7 @@ describe('sync-baseline generator', () => {
       const tsconfigSpecPath = path.join(projectRoot, 'tsconfig.spec.json');
       const tsconfigTestPath = path.join(projectRoot, 'tsconfig.test.json');
 
-      const baselineWithRename: TsBase = createTsconfigBase(
+      const baselineWithRename: BaselineConfig = createJsonBaseline(
         'tsconfig.test.json',
         {
           renameFrom: 'tsconfig.spec.json',
@@ -485,7 +494,7 @@ describe('sync-baseline generator', () => {
     it('should not rename if renameFrom pattern does not match', async () => {
       const tsconfigTestPath = path.join(projectRoot, 'tsconfig.test.json');
 
-      const baselineWithRename: TsBase = createTsconfigBase(
+      const baselineWithRename: BaselineConfig = createJsonBaseline(
         'tsconfig.test.json',
         {
           renameFrom: 'tsconfig.spec.json',

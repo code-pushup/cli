@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "GenerateBaselineConfig",
+  "title": "Generate baseline configuration files for tsconfig files",
+  "description": "Generate baseline TypeScript configuration files for tsconfig files found in projects",
+  "type": "object",
+  "properties": {
+    "projectsFilter": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Nx filter syntax to filter projects (e.g., ['--tags=scope:api', '--affected', '--exclude=*-e2e'])",
+      "$default": []
+    },
+    "configMatcher": {
+      "type": "string",
+      "description": "Glob pattern to match tsconfig files (e.g., 'tsconfig.*.json' or 'tsconfig.{lib,test}.json')",
+      "$default": "tsconfig*.json"
+    },
+    "skipFormat": {
+      "type": "boolean",
+      "description": "Skip formatting of changed files",
+      "$default": "false"
+    },
+    "skipExisting": {
+      "type": "boolean",
+      "description": "Skip creating baseline files if they already exist",
+      "$default": "false"
+    }
+  },
+  "required": []
+}

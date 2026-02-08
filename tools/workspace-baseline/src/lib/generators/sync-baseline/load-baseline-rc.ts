@@ -1,7 +1,7 @@
 import { glob } from 'glob';
 import * as path from 'node:path';
 import { z } from 'zod';
-import type { TsBase } from '../../baseline.tsconfig';
+import type { BaselineConfig } from '../../baseline/baseline.json';
 
 // Zod schema to validate TsBase shape
 const tsBaseSchema = z.object({
@@ -9,6 +9,7 @@ const tsBaseSchema = z.object({
   tags: z.array(z.string()).optional(),
   formatter: z.any().optional(), // DiagnosticFormatter is complex, using any for now
   filePath: z.string().optional(),
+  matcher: z.union([z.string(), z.array(z.string())]).optional(),
 });
 
 /**
@@ -16,7 +17,7 @@ const tsBaseSchema = z.object({
  *
  * @returns Array of baseline configurations
  */
-export async function loadBaselineRc(): Promise<TsBase[]> {
+export async function loadBaselineRc(): Promise<BaselineConfig[]> {
   const baselineDir =
     process.env.BASELINE_DIR || path.join(__dirname, '../../../../baseline');
 
@@ -26,27 +27,28 @@ export async function loadBaselineRc(): Promise<TsBase[]> {
     absolute: true,
   });
 
-  const baselines: TsBase[] = [];
+  const baselines: BaselineConfig[] = [];
 
   // Dynamically import and validate each baseline file
   for (const filePath of baselineFiles) {
     try {
       const module = await import(filePath);
 
-      // Check all exports from the module
-      for (const [exportName, exportValue] of Object.entries(module)) {
-        // Skip non-baseline exports (like imported constants, etc.)
-        if (exportName.endsWith('Base')) {
-          const result = tsBaseSchema.safeParse(exportValue);
-          if (result.success) {
-            baselines.push(result.data as TsBase);
-          } else {
-            console.warn(
-              `Invalid baseline export "${exportName}" in ${filePath}:`,
-              result.error.message,
-            );
-          }
+      // Load default export from the module
+      if (module.default) {
+        const result = tsBaseSchema.safeParse(module.default);
+        if (result.success) {
+          baselines.push(result.data as BaselineConfig);
+        } else {
+          console.warn(
+            `Invalid baseline default export in ${filePath}:`,
+            result.error.message,
+          );
         }
+      } else {
+        console.warn(
+          `Baseline file ${filePath} does not have a default export`,
+        );
       }
     } catch (error) {
       console.warn(`Failed to load baseline file ${filePath}:`, error);

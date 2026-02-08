@@ -131,7 +131,15 @@ export const EXCLUDE_VITEST_CONFIGS = [
 ] as const;
 
 /** Test files to exclude */
-export const EXCLUDE_TEST_FILES = ['src/**/*.test.ts'] as const;
+export const EXCLUDE_TEST_FILES = [
+  'src/**/*.test.ts',
+  'src/**/*.test.tsx',
+  'src/**/*.test.js',
+  'src/**/*.test.jsx',
+  'src/**/*.unit.test.ts',
+  'src/**/*.int.test.ts',
+  'src/**/*.e2e.test.ts',
+] as const;
 
 /** Mock files to exclude */
 export const EXCLUDE_MOCK_FILES = [

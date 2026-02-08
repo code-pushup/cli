@@ -9,6 +9,11 @@
       "factory": "./src/lib/generators/configuration/generator",
       "schema": "./src/lib/generators/configuration/schema.json",
       "description": "Generate tsconfig.{targetName}.json files"
+    },
+    "baseline": {
+      "factory": "./src/lib/generators/baseline/generator",
+      "schema": "./src/lib/generators/baseline/schema.json",
+      "description": "Generate baseline configuration files for tsconfig files"
     }
   }
 }

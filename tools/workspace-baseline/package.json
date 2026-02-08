@@ -11,6 +11,7 @@
     "cli-highlight": "^2.1.11",
     "diff": "^7.0.0",
     "glob": "^10.3.10",
+    "minimatch": "^9.0.0",
     "tslib": "^2.3.0"
   },
   "generators": "./generators.json",
