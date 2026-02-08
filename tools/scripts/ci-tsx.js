@@ -22,6 +22,9 @@ if (!command) {
   process.exit(1);
 }
 
+// Log the command being executed
+console.log(`> ${command} ${args.join(' ')}`);
+
 // Spawn the command with the configured environment
 const child = spawn(command, args, {
   env,
