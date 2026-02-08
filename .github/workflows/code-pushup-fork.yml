@@ -22,9 +22,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Standalone mode (fork)
     if: github.event.pull_request.head.repo.fork
-    env:
-      NODE_OPTIONS: --import tsx
-      TSX_TSCONFIG_PATH: tsconfig.base.json
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -49,9 +46,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Monorepo mode (fork)
     if: github.event.pull_request.head.repo.fork
-    env:
-      NODE_OPTIONS: --import tsx
-      TSX_TSCONFIG_PATH: tsconfig.base.json
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

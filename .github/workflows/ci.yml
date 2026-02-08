@@ -29,10 +29,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Check formatting of affected files
-        env:
-          NODE_OPTIONS: --import tsx
-          TSX_TSCONFIG_PATH: tsconfig.base.json
-        run: npx nx format:check --verbose
+        run: npx nx format:check
 
   lint:
     runs-on: ubuntu-latest
