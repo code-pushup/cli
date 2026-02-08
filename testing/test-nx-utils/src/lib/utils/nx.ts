@@ -9,7 +9,7 @@ import {
 } from '@nx/devkit';
 import { libraryGenerator } from '@nx/js';
 import type { LibraryGeneratorSchema } from '@nx/js/src/generators/library/schema';
-import * as path from 'node:path';
+import path from 'node:path';
 import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
 import { executeProcess } from '@code-pushup/test-utils';
 
