@@ -32,7 +32,7 @@ vi.mock('@code-pushup/utils', async () => {
       '@code-pushup/utils',
     );
   const { CORE_CONFIG_MOCK }: Record<string, CoreConfig> =
-    await vi.importActual('@code-pushup/test-utils');
+    await vi.importActual('@code-pushup/test-fixtures');
 
   return {
     ...utils,

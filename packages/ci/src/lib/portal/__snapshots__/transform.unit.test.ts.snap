@@ -197,6 +197,36 @@ exports[`transformGQLReport > should convert full GraphQL report to valid report
       "slug": "bundle-stats",
       "title": "Bundle stats",
     },
+    {
+      "audits": [
+        {
+          "details": {
+            "issues": [
+              {
+                "message": "Element has insufficient color contrast of 4.33",
+                "severity": "error",
+                "source": {
+                  "selector": ".hero > span:nth-child(2)",
+                  "snippet": "<span style="color: #aaa">Low contrast</span>",
+                  "url": "https://example.com/",
+                },
+              },
+            ],
+          },
+          "displayValue": "1 error",
+          "score": 0,
+          "slug": "color-contrast",
+          "title": "Elements must meet minimum color contrast ratio thresholds",
+          "value": 1,
+        },
+      ],
+      "date": "2025-08-01T00:10:25.000Z",
+      "duration": 5000,
+      "groups": [],
+      "icon": "folder-syntax",
+      "slug": "axe",
+      "title": "Axe accessibility",
+    },
   ],
   "version": "0.42.0",
 }
