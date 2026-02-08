@@ -198,10 +198,14 @@ export async function createTsJiti(
         ...(jitiOptions.nativeModules ?? []),
       ]),
     ],
-    // Don't use native imports when we have aliases to resolve
-    // When tryNative is true, jiti attempts to use native Node.js imports first,
-    // which don't understand path aliases and will fail with ERR_MODULE_NOT_FOUND
-    tryNative: Object.keys(mergedAlias).length === 0,
+    // Use tryNative: false by default for consistent, predictable behavior
+    // Native imports don't support:
+    // - TypeScript files (.ts)
+    // - Path aliases from tsconfig
+    // - Non-standard JavaScript features that jiti can transpile
+    // Since this is used for config file loading where these features are common,
+    // it's safer to always let jiti handle the transformation
+    tryNative: false,
   });
 }
 

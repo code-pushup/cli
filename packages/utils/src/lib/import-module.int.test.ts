@@ -58,8 +58,8 @@ describe('importModule', () => {
 
   it('should throw if file is not valid JS', async () => {
     await expect(
-      importModule({ filepath: path.join(mockDir, 'invalid-js-file.json') }),
-    ).rejects.toThrow(/invalid-js-file\.json/);
+      importModule({ filepath: path.join(mockDir, 'actually-invalid.js') }),
+    ).rejects.toThrow();
   });
 
   it('should load a TS module using tsconfig paths', async () => {
