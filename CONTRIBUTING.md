@@ -16,39 +16,11 @@ npm install
 
 This table provides a quick overview of the environmental setup, with detailed explanations in the corresponding sections.
 
-| Feature                         | Local Default       | CI Default                | Description                                                                                                                   |
-| ------------------------------- | ------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `NODE_OPTIONS` **⚙️**           | Set in `.env.local` | Set globally in workflows | `--import tsx` - Enables TypeScript execution for local Nx plugins and generators. **Required for development.**              |
-| `TSX_TSCONFIG_PATH` **⚙️**      | Set in `.env.local` | Set globally in workflows | `tsconfig.base.json` - Resolves TypeScript path aliases for local packages. **Required for development.**                     |
-| `env.INCLUDE_SLOW_TESTS` **❗️** | `false`             | `true`                    | Controls inclusion of long-running tests. Overridden by setting. Details in the [Testing](#Testing) section.                  |
-| `env.CUSTOM_CHROME_PATH`        | N/A                 | Windows **❗️❗️**          | Path to Chrome executable. See [plugin-lighthouse/CONTRIBUTING.md](./packages/plugin-lighthouse/CONTRIBUTING.md#chrome-path). |
-| Quality Pipeline                | Off                 | On                        | Runs all plugins against the codebase.                                                                                        |
-
-**⚙️** TypeScript Execution Setup (Required)
-
-This project uses local Nx plugins and generators written in TypeScript. To run them, you need:
-
-1. **Create `.env.local`** (gitignored, local-only):
-
-   ```sh
-   cp .env.local.example .env.local
-   ```
-
-2. **The file includes** (already configured in the example):
-
-   ```sh
-   NODE_OPTIONS=--import tsx
-   TSX_TSCONFIG_PATH=tsconfig.base.json
-   ```
-
-3. **Why these are needed**:
-   - `NODE_OPTIONS` - Allows importing TypeScript files with `.js` extensions (used throughout the repo)
-   - `TSX_TSCONFIG_PATH` - Enables path aliases like `@code-pushup/models` in generators/executors
-
-4. **CI Configuration**:
-   - Both variables are set at the **job or step level** in all GitHub Actions workflows
-   - Applied after `npm ci` to ensure `tsx` is installed before Node tries to import it
-   - Ensures consistent behavior between local development and CI
+| Feature                         | Local Default | CI Default       | Description                                                                                                                   |
+| ------------------------------- | ------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `env.INCLUDE_SLOW_TESTS` **❗️** | `false`       | `true`           | Controls inclusion of long-running tests. Overridden by setting. Details in the [Testing](#Testing) section.                  |
+| `env.CUSTOM_CHROME_PATH`        | N/A           | Windows **❗️❗️** | Path to Chrome executable. See [plugin-lighthouse/CONTRIBUTING.md](./packages/plugin-lighthouse/CONTRIBUTING.md#chrome-path). |
+| Quality Pipeline                | Off           | On               | Runs all plugins against the codebase.                                                                                        |
 
 **❗️** Test Inclusion Logic
 
@@ -94,7 +66,7 @@ Some of the plugins have a longer runtime. In order to ensure better DX, longer 
 
 You can control the execution of long-running tests over the `INCLUDE_SLOW_TESTS` environment variable.
 
-To change this setup, open your `.env.local` file in the root folder (or copy from `.env.local.example` if it doesn't exist).
+To change this setup, open (or create) the `.env` file in the root folder.
 Edit or add the environment variable there as follows: `INCLUDE_SLOW_TESTS=true`.
 
 ## Git
