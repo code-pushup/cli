@@ -747,7 +747,6 @@ describe('serializeTraceEvent', () => {
 
     const result = serializeTraceEvent(event);
 
-    expect(typeof result).toBe('string');
     const parsed = JSON.parse(result);
     expect(parsed).toStrictEqual({
       cat: 'blink.user_timing',
@@ -775,7 +774,6 @@ describe('serializeTraceEvent', () => {
 
     const result = serializeTraceEvent(event);
 
-    expect(typeof result).toBe('string');
     const parsed = JSON.parse(result);
     expect(parsed.args).toStrictEqual({
       detail: '{"custom":"data"}',
