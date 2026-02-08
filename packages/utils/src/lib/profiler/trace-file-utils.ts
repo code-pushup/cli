@@ -1,3 +1,4 @@
+import os from 'node:os';
 import type {
   PerformanceEntry,
   PerformanceMark,
@@ -292,7 +293,7 @@ export function getTraceMetadata({
     source: 'DevTools',
     startTime: parsedStartDate,
     dataOrigin: 'TraceEvents',
-    hardwareConcurrency: navigator.hardwareConcurrency,
+    hardwareConcurrency: os.availableParallelism(),
     ...metadata,
   };
 }
