@@ -20,7 +20,7 @@ describe('coreConfigMiddleware', () => {
     skipPlugins: [],
   };
 
-  it('should load a valid .%s config', async () => {
+  it('should load a valid .ts config', async () => {
     const config = await coreConfigMiddleware({
       config: path.join(configDirPath, `code-pushup.config.ts`),
       ...CLI_DEFAULTS,
