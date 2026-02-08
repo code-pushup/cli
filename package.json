@@ -15,7 +15,9 @@
   "scripts": {
     "prepare": "husky install",
     "commit": "git-cz",
-    "knip": "knip"
+    "knip": "knip",
+    "ci:nx": "node tools/scripts/ci-exec.mjs nx",
+    "ci:node": "node tools/scripts/ci-exec.mjs node"
   },
   "private": true,
   "dependencies": {
