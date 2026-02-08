@@ -16,8 +16,8 @@
     "prepare": "husky install",
     "commit": "git-cz",
     "knip": "knip",
-    "ci:nx": "cross-env-shell NODE_OPTIONS=\"--import tsx\" \"TSX_TSCONFIG_PATH=${GITHUB_WORKSPACE:-$PWD}/tsconfig.base.json\" nx",
-    "ci:node": "cross-env-shell NODE_OPTIONS=\"--import tsx\" \"TSX_TSCONFIG_PATH=${GITHUB_WORKSPACE:-$PWD}/tsconfig.base.json\" node"
+    "ci:nx": "node tools/scripts/ci-tsx.js nx",
+    "ci:node": "node tools/scripts/ci-tsx.js node"
   },
   "private": true,
   "dependencies": {
