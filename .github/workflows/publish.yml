@@ -42,4 +42,4 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Publish packages to npm
-        run: npm run tsx-nx -- release publish
+        run: npm run ci:nx -- release publish

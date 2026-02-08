@@ -16,8 +16,8 @@
     "prepare": "husky install",
     "commit": "git-cz",
     "knip": "knip",
-    "tsx-nx": "NODE_OPTIONS='--import tsx' TSX_TSCONFIG_PATH=\"${GITHUB_WORKSPACE:-$PWD}/tsconfig.base.json\" nx",
-    "tsx-node": "NODE_OPTIONS='--import tsx' TSX_TSCONFIG_PATH=\"${GITHUB_WORKSPACE:-$PWD}/tsconfig.base.json\" node"
+    "ci:nx": "cross-env-shell NODE_OPTIONS=\"--import tsx\" \"TSX_TSCONFIG_PATH=${GITHUB_WORKSPACE:-$PWD}/tsconfig.base.json\" nx",
+    "ci:node": "cross-env-shell NODE_OPTIONS=\"--import tsx\" \"TSX_TSCONFIG_PATH=${GITHUB_WORKSPACE:-$PWD}/tsconfig.base.json\" node"
   },
   "private": true,
   "dependencies": {
@@ -88,6 +88,7 @@
     "chromium": "^3.0.3",
     "commitizen": "^4.3.1",
     "commitlint-plugin-tense": "^1.0.3",
+    "cross-env": "^10.1.0",
     "dotenv": "^16.4.5",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-functional": "^7.1.0",

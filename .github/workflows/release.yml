@@ -48,4 +48,4 @@ jobs:
       - name: Version, release and generate changelog
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: npm run tsx-nx -- release --skip-publish
+        run: npm run ci:nx -- release --skip-publish

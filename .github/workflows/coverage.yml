@@ -25,7 +25,7 @@ jobs:
       - name: List packages using Nx CLI
         id: list-packages
         run: |
-          matrix=$(npm run tsx-node -- tools/scripts/create-codecov-matrix.js)
+          matrix=$(npm run ci:node -- tools/scripts/create-codecov-matrix.js)
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
     outputs:
       matrix: ${{ steps.list-packages.outputs.matrix }}
@@ -48,7 +48,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Execute tests with coverage
-        run: npm run tsx-nx -- run ${{ matrix.project }}:${{ matrix.target }}
+        run: npm run ci:nx -- run ${{ matrix.project }}:${{ matrix.target }}
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:
