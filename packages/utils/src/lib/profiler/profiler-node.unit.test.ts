@@ -106,7 +106,7 @@ describe('NodejsProfiler', () => {
       expect(typeof profiler.measureAsync).toBe('function');
       expect(typeof profiler.marker).toBe('function');
       expect(typeof profiler.close).toBe('function');
-      expect(typeof profiler.state).toBe('string');
+      expect(profiler.state).toBeString();
       expect(typeof profiler.setEnabled).toBe('function');
     });
 
