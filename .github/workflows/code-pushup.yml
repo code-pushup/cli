@@ -9,8 +9,6 @@ on:
 env:
   NX_NON_NATIVE_HASHER: true
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-  NODE_OPTIONS: --import tsx
-  TSX_TSCONFIG_PATH: tsconfig.base.json
 
 permissions:
   pull-requests: write
@@ -50,6 +48,8 @@ jobs:
     if: ${{ !github.event.pull_request.head.repo.fork }}
     env:
       CP_API_KEY: ${{ secrets.CP_API_KEY }}
+      NODE_OPTIONS: --import tsx
+      TSX_TSCONFIG_PATH: tsconfig.base.json
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

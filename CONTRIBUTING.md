@@ -46,7 +46,8 @@ This project uses local Nx plugins and generators written in TypeScript. To run 
    - `TSX_TSCONFIG_PATH` - Enables path aliases like `@code-pushup/models` in generators/executors
 
 4. **CI Configuration**:
-   - Both variables are set **globally** in all GitHub Actions workflows
+   - Both variables are set at the **job or step level** in all GitHub Actions workflows
+   - Applied after `npm ci` to ensure `tsx` is installed before Node tries to import it
    - Ensures consistent behavior between local development and CI
 
 **❗️** Test Inclusion Logic
