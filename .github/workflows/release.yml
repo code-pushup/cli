@@ -47,5 +47,7 @@ jobs:
         run: npm ci
       - name: Version, release and generate changelog
         env:
+          NODE_OPTIONS: --import tsx
+          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: npm run ci:nx -- release --skip-publish
+        run: npx nx release --skip-publish

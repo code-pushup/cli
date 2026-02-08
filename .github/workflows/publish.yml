@@ -42,4 +42,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Publish packages to npm
-        run: npm run ci:nx -- release publish
+        env:
+          NODE_OPTIONS: --import tsx
+          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
+        run: npx nx release publish
