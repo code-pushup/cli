@@ -2,27 +2,45 @@
  * Axe-core Polyfilled Import
  *
  * This file ensures the jsdom polyfill runs BEFORE axe-core is imported.
- * Due to ES module import hoisting, we must import the polyfill explicitly
- * at the top of this file, then import axe-core. This guarantees the correct
- * execution order: polyfill setup → axe-core import.
+ * Uses dynamic import to avoid ES module hoisting issues.
+ *
+ * WHY THIS EXISTS:
+ * axe-core has side effects on import - it expects global `window` and `document` objects
+ * to be available when the module is loaded. In Node.js environments, these don't exist
+ * by default. This polyfill creates a virtual DOM using JSDOM and sets these globals
+ * before axe-core is imported.
+ *
+ * HOW IT WORKS:
+ * 1. Top-level code sets up JSDOM polyfill (runs immediately)
+ * 2. Axe-core is imported dynamically (runs after polyfill)
+ * 3. Module exports a promise that resolves to axe-core
  *
  * IMPORT CHAIN:
- * 1. jsdom.polyfill.ts (sets globalThis.window and globalThis.document)
- * 2. This file (imports polyfill, then imports axe-core)
- * 3. safe-axe-core-import.ts (re-exports for clean imports)
+ * 1. This file (sets up polyfill, then dynamically imports axe-core)
+ * 2. safe-axe-core-import.ts (re-exports for clean imports)
  *
  * USAGE:
  * Do NOT import from this file directly. Use safe-axe-core-import.ts instead.
+ *
+ * @see https://github.com/dequelabs/axe-core/issues/3962
  */
-// Import polyfill FIRST to ensure globals are set before axe-core loads
-// Now safe to import axe-core - globals exist due to polyfill import above
-import axe from 'axe-core';
-// eslint-disable-next-line import/no-unassigned-import
-import './jsdom.polyfill.js';
+import { JSDOM } from 'jsdom';
 
-// Re-export axe default and all types used throughout the codebase
-export default axe;
+// Polyfill setup - runs immediately before any axe-core code
+const html = `<!DOCTYPE html>\n<html></html>`;
+const { window: jsdomWindow } = new JSDOM(html);
 
+// Set globals for axe-core compatibility
+// eslint-disable-next-line functional/immutable-data
+globalThis.window = jsdomWindow as unknown as Window & typeof globalThis;
+// eslint-disable-next-line functional/immutable-data
+globalThis.document = jsdomWindow.document;
+
+// Dynamic import ensures polyfill runs first
+// This cannot be a top-level await, so we export the promise
+const axePromise = import('axe-core');
+
+// Re-export types (these are compile-time only, no runtime impact)
 export type {
   AxeResults,
   NodeResult,
@@ -32,3 +50,7 @@ export type {
   ImpactValue,
   CrossTreeSelector,
 } from 'axe-core';
+
+// Export the axe instance synchronously by awaiting at the top level
+// Top-level await is supported in ES modules
+export default (await axePromise).default;
