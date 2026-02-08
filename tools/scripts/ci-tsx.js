@@ -25,11 +25,19 @@ if (!command) {
 // Log the command being executed
 console.log(`> ${command} ${args.join(' ')}`);
 
-// Spawn the command with the configured environment
-const child = spawn(command, args, {
+// Handle Windows-specific command execution
+// On Windows, npm bin scripts need .cmd extension (e.g., nx.cmd)
+const isWindows = process.platform === 'win32';
+const commandToRun =
+  isWindows && !command.endsWith('.exe') && !command.endsWith('.cmd')
+    ? `${command}.cmd`
+    : command;
+
+// Spawn the command with the configured environment without shell
+// This avoids the DEP0190 deprecation warning
+const child = spawn(commandToRun, args, {
   env,
   stdio: 'inherit',
-  shell: true,
 });
 
 // Forward exit code
