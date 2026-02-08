@@ -1,5 +1,3 @@
-import { type CoreConfig } from '@code-pushup/models';
-
 export default {
   upload: {
     organization: 'code-pushup',
@@ -42,4 +40,4 @@ export default {
       icon: 'javascript',
     },
   ],
-} satisfies CoreConfig;
+};
