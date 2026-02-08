@@ -13,6 +13,8 @@ on:
 
 env:
   NX_NON_NATIVE_HASHER: true
+  NODE_OPTIONS: --import tsx
+  TSX_TSCONFIG_PATH: tsconfig.base.json
 
 permissions:
   pull-requests: write
