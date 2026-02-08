@@ -1,10 +1,5 @@
 import { vol } from 'memfs';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import {
-  ID_PATTERNS,
-  getUniqueInstanceId,
-  getUniqueTimeId,
-} from './process-id.js';
 import { SHARDED_WAL_COORDINATOR_ID_ENV_VAR } from './profiler/constants.js';
 import {
   type Codec,
@@ -503,79 +498,6 @@ describe('stringCodec', () => {
     expect(codec.decode('false')).toBeFalse();
     expect(codec.decode('"quoted string"')).toBe('quoted string');
     expect(codec.decode('42')).toBe(42);
-  });
-});
-
-describe('getUniqueInstanceId', () => {
-  it('should generate shard ID with readable timestamp', () => {
-    const counter = { next: () => 1 };
-    const result = getUniqueInstanceId(counter);
-
-    expect(result).toMatch(ID_PATTERNS.INSTANCE_ID);
-    expect(result).toStartWith('20231114-221320-000.');
-  });
-
-  it('should generate different shard IDs for different calls', () => {
-    let count = 0;
-    const counter = { next: () => ++count };
-    const result1 = getUniqueInstanceId(counter);
-    const result2 = getUniqueInstanceId(counter);
-
-    expect(result1).not.toBe(result2);
-    expect(result1).toStartWith('20231114-221320-000.');
-    expect(result2).toStartWith('20231114-221320-000.');
-  });
-
-  it('should handle zero values', () => {
-    const counter = { next: () => 1 };
-    const result = getUniqueInstanceId(counter);
-    expect(result).toStartWith('20231114-221320-000.');
-  });
-
-  it('should handle negative timestamps', () => {
-    const counter = { next: () => 1 };
-    const result = getUniqueInstanceId(counter);
-
-    expect(result).toStartWith('20231114-221320-000.');
-  });
-
-  it('should handle large timestamps', () => {
-    const counter = { next: () => 1 };
-    const result = getUniqueInstanceId(counter);
-
-    expect(result).toStartWith('20231114-221320-000.');
-  });
-
-  it('should generate incrementing counter', () => {
-    let count = 0;
-    const counter = { next: () => ++count };
-    const result1 = getUniqueInstanceId(counter);
-    const result2 = getUniqueInstanceId(counter);
-
-    const parts1 = result1.split('.');
-    const parts2 = result2.split('.');
-    const counter1 = parts1.at(-1) as string;
-    const counter2 = parts2.at(-1) as string;
-
-    expect(Number.parseInt(counter1, 10)).toBe(
-      Number.parseInt(counter2, 10) - 1,
-    );
-  });
-});
-
-describe('getUniqueTimeId', () => {
-  it('should work with mocked timeOrigin', () => {
-    const result = getUniqueTimeId();
-
-    expect(result).toBe('20231114-221320-000');
-    expect(result).toMatch(ID_PATTERNS.TIME_ID);
-  });
-
-  it('should be idempotent within same process', () => {
-    const result1 = getUniqueTimeId();
-    const result2 = getUniqueTimeId();
-
-    expect(result1).toBe(result2);
   });
 });
 
