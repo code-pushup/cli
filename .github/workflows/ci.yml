@@ -29,10 +29,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Check formatting of affected files
-        env:
-          NODE_OPTIONS: --import tsx
-          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
-        run: NX_DAEMON=false npx nx format:check --skipNxCache
+        run: NX_DAEMON=false npm run tsx-nx -- format:check --skipNxCache
 
   lint:
     runs-on: ubuntu-latest
@@ -52,10 +49,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint affected projects
-        env:
-          NODE_OPTIONS: --import tsx
-          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
-        run: npx nx affected -t lint --parallel=3
+        run: npm run tsx-nx -- affected -t lint --parallel=3
 
   unit-test:
     strategy:
@@ -79,10 +73,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Unit test affected projects
-        env:
-          NODE_OPTIONS: --import tsx
-          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
-        run: npx nx affected -t unit-test --parallel=3
+        run: npm run tsx-nx -- affected -t unit-test --parallel=3
 
   integration-test:
     strategy:
@@ -106,10 +97,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Integration test affected projects
-        env:
-          NODE_OPTIONS: --import tsx
-          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
-        run: npx nx affected -t int-test --parallel=3
+        run: npm run tsx-nx -- affected -t int-test --parallel=3
 
   e2e:
     strategy:
@@ -133,10 +121,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: E2E test affected projects
-        env:
-          NODE_OPTIONS: --import tsx
-          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
-        run: npx nx affected -t e2e-test --parallel=1
+        run: npm run tsx-nx -- affected -t e2e-test --parallel=1
 
   build:
     runs-on: ubuntu-latest
@@ -156,9 +141,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build all projects # affected is not used to be able to test-releae packages
-        env:
-          NODE_OPTIONS: --import tsx
-          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
-        run: npx nx run-many --target=build --parallel=3
+        run: npm run tsx-nx -- run-many --target=build --parallel=3
       - name: Test-release packages
         run: npx pkg-pr-new publish "packages/**/dist"
