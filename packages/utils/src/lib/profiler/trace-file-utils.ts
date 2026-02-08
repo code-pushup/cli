@@ -281,15 +281,18 @@ export const deserializeTraceEvent = (json: string): TraceEvent =>
  * @param metadata - Optional additional metadata to merge into the trace metadata
  * @returns TraceMetadata object with source, startTime, and merged custom metadata
  */
-export function getTraceMetadata(
-  startDate?: Date,
-  metadata?: Record<string, unknown>,
-): TraceMetadata {
+export function getTraceMetadata({
+  startDate,
+  ...metadata
+}: Partial<TraceMetadata> = {}): TraceMetadata {
+  const parsedStartDate = (
+    startDate instanceof Date ? startDate : new Date()
+  ).toISOString();
   return {
     source: 'DevTools',
-    startTime: startDate?.toISOString() ?? new Date().toISOString(),
-    hardwareConcurrency: 1,
+    startTime: parsedStartDate,
     dataOrigin: 'TraceEvents',
+    hardwareConcurrency: navigator.hardwareConcurrency,
     ...metadata,
   };
 }
@@ -301,13 +304,9 @@ export function getTraceMetadata(
  */
 export const createTraceFile = (opt: {
   traceEvents: TraceEvent[];
-  startTime?: string;
   metadata?: Partial<TraceMetadata>;
 }): TraceEventContainer => ({
   traceEvents: opt.traceEvents.map(encodeEvent),
   displayTimeUnit: 'ms',
-  metadata: getTraceMetadata(
-    opt.startTime ? new Date(opt.startTime) : new Date(),
-    opt.metadata,
-  ),
+  metadata: getTraceMetadata(opt.metadata),
 });

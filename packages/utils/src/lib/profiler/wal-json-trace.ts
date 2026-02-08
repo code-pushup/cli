@@ -5,11 +5,10 @@ import {
   complete,
   createTraceFile,
   deserializeTraceEvent,
-  encodeEvent,
   getInstantEventTracingStartedInBrowser,
   serializeTraceEvent,
 } from './trace-file-utils.js';
-import type { TraceEvent } from './trace-file.type.js';
+import type { TraceEvent, TraceMetadata } from './trace-file.type.js';
 
 /** Name for the trace start margin event */
 const TRACE_START_MARGIN_NAME = '[trace padding start]';
@@ -22,17 +21,8 @@ const TRACE_MARGIN_DURATION_US = 20_000;
 
 export function generateTraceContent(
   events: TraceEvent[],
-  metadata?: Record<string, unknown>,
+  metadata?: Partial<TraceMetadata>,
 ): string {
-  const traceContainer = createTraceFile({
-    traceEvents: events,
-    startTime: new Date().toISOString(),
-    metadata: {
-      ...metadata,
-      generatedAt: new Date().toISOString(),
-    },
-  });
-
   const fallbackTs = defaultClock.epochNowUs();
   const sortedEvents =
     events.length > 0 ? [...events].sort((a, b) => a.ts - b.ts) : [];
@@ -40,22 +30,28 @@ export function generateTraceContent(
   const firstTs = sortedEvents.at(0)?.ts ?? fallbackTs;
   const lastTs = sortedEvents.at(-1)?.ts ?? fallbackTs;
 
-  return JSON.stringify({
-    ...traceContainer,
-    traceEvents: [
-      getInstantEventTracingStartedInBrowser({
-        ts: firstTs - TRACE_MARGIN_US,
-        url: events.length > 0 ? 'generated-trace' : 'empty-trace',
-      }),
-      complete(TRACE_START_MARGIN_NAME, TRACE_MARGIN_DURATION_US, {
-        ts: firstTs - TRACE_MARGIN_US,
-      }),
-      ...sortedEvents.map(encodeEvent),
-      complete(TRACE_END_MARGIN_NAME, TRACE_MARGIN_DURATION_US, {
-        ts: lastTs + TRACE_MARGIN_US,
-      }),
-    ],
-  });
+  return JSON.stringify(
+    createTraceFile({
+      traceEvents: [
+        getInstantEventTracingStartedInBrowser({
+          ts: firstTs - TRACE_MARGIN_US,
+          // TODO: add the stringifies command of the process that was traced when sharded WAL is implemented in profiler
+          url: events.length > 0 ? 'generated-trace' : 'empty-trace',
+        }),
+        complete(TRACE_START_MARGIN_NAME, TRACE_MARGIN_DURATION_US, {
+          ts: firstTs - TRACE_MARGIN_US,
+        }),
+        ...sortedEvents,
+        complete(TRACE_END_MARGIN_NAME, TRACE_MARGIN_DURATION_US, {
+          ts: lastTs + TRACE_MARGIN_US,
+        }),
+      ],
+      metadata: {
+        ...metadata,
+        startTime: new Date(firstTs / 1000).toISOString(),
+      },
+    }),
+  );
 }
 
 /**
@@ -79,7 +75,7 @@ export function traceEventWalFormat() {
     finalExtension: '.json',
     codec: traceEventCodec,
     finalizer: (
-      records: (TraceEvent | InvalidEntry<string>)[],
+      records: (TraceEvent | InvalidEntry)[],
       metadata?: Record<string, unknown>,
     ) =>
       generateTraceContent(

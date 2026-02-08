@@ -154,7 +154,6 @@ describe('traceEventCodec', () => {
   describe('encode direction (memory object → JSON string)', () => {
     it('should encode instant event to JSON string', () => {
       const encoded = traceEventCodec.encode(instantEvent);
-      expect(typeof encoded).toBe('string');
       const parsed = JSON.parse(encoded);
       expect(parsed.args.detail).toBe(JSON.stringify({ custom: 'data' }));
       expect(parsed.args.data.detail).toBe(JSON.stringify({ nested: 'value' }));
@@ -162,14 +161,12 @@ describe('traceEventCodec', () => {
 
     it('should encode span begin event to JSON string', () => {
       const encoded = traceEventCodec.encode(spanBeginEvent);
-      expect(typeof encoded).toBe('string');
       const decoded = traceEventCodec.decode(encoded);
       expect(decoded).toStrictEqual(spanBeginEvent);
     });
 
     it('should encode span end event to JSON string', () => {
       const encoded = traceEventCodec.encode(spanEndEvent);
-      expect(typeof encoded).toBe('string');
       const decoded = traceEventCodec.decode(encoded);
       expect(decoded).toStrictEqual(spanEndEvent);
     });
@@ -177,8 +174,8 @@ describe('traceEventCodec', () => {
     it('should encode nested detail objects as JSON strings', () => {
       const encoded = traceEventCodec.encode(instantEvent);
       const parsed = JSON.parse(encoded);
-      expect(typeof parsed.args.detail).toBe('string');
-      expect(typeof parsed.args.data.detail).toBe('string');
+      expect(parsed.args.detail).toBeString();
+      expect(parsed.args.data.detail).toBeString();
       expect(JSON.parse(parsed.args.detail)).toStrictEqual({ custom: 'data' });
       expect(JSON.parse(parsed.args.data.detail)).toStrictEqual({
         nested: 'value',
@@ -221,7 +218,7 @@ describe('traceEventCodec', () => {
 describe('generateTraceContent', () => {
   it('should generate trace content for empty events array', () => {
     const events: TraceEvent[] = [];
-    const metadata = { version: '1.0.0', generatedAt: '2024-01-01T00:00:00Z' };
+    const metadata = { version: '1.0.0' };
 
     const result = generateTraceContent(events, metadata);
 
@@ -262,7 +259,6 @@ describe('generateTraceContent', () => {
         hardwareConcurrency: 1,
         dataOrigin: 'TraceEvents',
         version: '1.0.0',
-        generatedAt: expect.any(String),
       },
     });
   });
@@ -336,7 +332,6 @@ describe('generateTraceContent', () => {
         startTime: expect.any(String),
         hardwareConcurrency: 1,
         dataOrigin: 'TraceEvents',
-        generatedAt: expect.any(String),
       },
     });
   });
@@ -471,7 +466,6 @@ describe('traceEventWalFormat', () => {
     };
 
     const encoded = format.codec.encode(testEvent);
-    expect(typeof encoded).toBe('string');
 
     const decoded = format.codec.decode(encoded);
     expect(decoded).toStrictEqual(testEvent);
@@ -519,25 +513,9 @@ describe('traceEventWalFormat', () => {
 
     const result = format.finalizer(records);
 
-    expect(typeof result).toBe('string');
     const parsed = JSON.parse(result);
     expect(parsed).toHaveProperty('traceEvents');
     expect(parsed).toHaveProperty('metadata');
     expect(parsed.traceEvents).toBeArray();
-  });
-
-  it('should include generatedAt in finalizer metadata', () => {
-    const format = traceEventWalFormat();
-    const records: TraceEvent[] = [];
-
-    const result = format.finalizer(records);
-    const parsed = JSON.parse(result);
-
-    expect(parsed.metadata).toHaveProperty('generatedAt');
-    expect(typeof parsed.metadata.generatedAt).toBe('string');
-    // Should be recent timestamp
-    expect(new Date(parsed.metadata.generatedAt).getTime()).toBeGreaterThan(
-      Date.now() - 10_000,
-    );
   });
 });

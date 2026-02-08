@@ -62,7 +62,9 @@ describe('getTraceFile', () => {
   it('should use custom startTime when provided', () => {
     const result = createTraceFile({
       traceEvents: [],
-      startTime: '2023-01-01T00:00:00.000Z',
+      metadata: {
+        startTime: '2023-01-01T00:00:00.000Z',
+      },
     });
 
     expect(result).toHaveProperty(
@@ -520,14 +522,14 @@ describe('getTraceMetadata', () => {
 
   it('should use provided startDate', () => {
     const startDate = new Date('2023-01-01T00:00:00.000Z');
-    const metadata = getTraceMetadata(startDate);
+    const metadata = getTraceMetadata({ startDate });
 
     expect(metadata.startTime).toBe('2023-01-01T00:00:00.000Z');
   });
 
   it('should merge custom metadata', () => {
     const customMetadata = { version: '1.0.0', platform: 'node' };
-    const metadata = getTraceMetadata(undefined, customMetadata);
+    const metadata = getTraceMetadata(customMetadata);
 
     expect(metadata).toStrictEqual({
       source: 'DevTools',
