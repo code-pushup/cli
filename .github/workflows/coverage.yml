@@ -26,7 +26,7 @@ jobs:
         id: list-packages
         env:
           NODE_OPTIONS: --import tsx
-          TSX_TSCONFIG_PATH: tsconfig.base.json
+          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
         run: |
           matrix=$(node tools/scripts/create-codecov-matrix.js)
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
@@ -53,7 +53,7 @@ jobs:
       - name: Execute tests with coverage
         env:
           NODE_OPTIONS: --import tsx
-          TSX_TSCONFIG_PATH: tsconfig.base.json
+          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
         run: npx nx run ${{ matrix.project }}:${{ matrix.target }}
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4

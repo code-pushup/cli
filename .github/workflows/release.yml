@@ -48,6 +48,6 @@ jobs:
       - name: Version, release and generate changelog
         env:
           NODE_OPTIONS: --import tsx
-          TSX_TSCONFIG_PATH: tsconfig.base.json
+          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: npx nx release --skip-publish

@@ -44,5 +44,5 @@ jobs:
       - name: Publish packages to npm
         env:
           NODE_OPTIONS: --import tsx
-          TSX_TSCONFIG_PATH: tsconfig.base.json
+          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
         run: npx nx release publish

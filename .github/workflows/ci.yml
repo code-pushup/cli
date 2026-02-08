@@ -31,7 +31,7 @@ jobs:
       - name: Check formatting of affected files
         env:
           NODE_OPTIONS: --import tsx
-          TSX_TSCONFIG_PATH: tsconfig.base.json
+          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
         run: npx nx format:check
 
   lint:
@@ -54,7 +54,7 @@ jobs:
       - name: Lint affected projects
         env:
           NODE_OPTIONS: --import tsx
-          TSX_TSCONFIG_PATH: tsconfig.base.json
+          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
         run: npx nx affected -t lint --parallel=3
 
   unit-test:
@@ -81,7 +81,7 @@ jobs:
       - name: Unit test affected projects
         env:
           NODE_OPTIONS: --import tsx
-          TSX_TSCONFIG_PATH: tsconfig.base.json
+          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
         run: npx nx affected -t unit-test --parallel=3
 
   integration-test:
@@ -108,7 +108,7 @@ jobs:
       - name: Integration test affected projects
         env:
           NODE_OPTIONS: --import tsx
-          TSX_TSCONFIG_PATH: tsconfig.base.json
+          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
         run: npx nx affected -t int-test --parallel=3
 
   e2e:
@@ -135,7 +135,7 @@ jobs:
       - name: E2E test affected projects
         env:
           NODE_OPTIONS: --import tsx
-          TSX_TSCONFIG_PATH: tsconfig.base.json
+          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
         run: npx nx affected -t e2e-test --parallel=1
 
   build:
@@ -158,7 +158,7 @@ jobs:
       - name: Build all projects # affected is not used to be able to test-releae packages
         env:
           NODE_OPTIONS: --import tsx
-          TSX_TSCONFIG_PATH: tsconfig.base.json
+          TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
         run: npx nx run-many --target=build --parallel=3
       - name: Test-release packages
         run: npx pkg-pr-new publish "packages/**/dist"
