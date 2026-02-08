@@ -19,6 +19,7 @@
  *
  * @see https://github.com/dequelabs/axe-core/issues/3962
  */
+// @ts-expect-error - jsdom types are in devDependencies at root level
 import { JSDOM } from 'jsdom';
 
 const html = `<!DOCTYPE html>\n<html></html>`;
