@@ -72,7 +72,6 @@ Detected ESLint rules are mapped to Code PushUp audits. Audit reports are calcul
    ```
 
    If you're using an Nx monorepo, additional helper functions are provided to simplify your configuration:
-
    - If you wish to combine all projects in your workspace into one report, use the `eslintConfigFromAllNxProjects` helper:
 
      ```js

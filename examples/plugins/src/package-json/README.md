@@ -20,7 +20,6 @@ You can configure the plugin with the following options:
 1. If you haven't already, install [@code-pushup/cli](../cli/README.md) and create a configuration file.
 
 2. Copy the [plugin source](../package-json) as is into your project
-
    1. Add this plugin to the `plugins` array in your Code PushUp CLI config file (e.g. `code-pushup.config.js`).
 
       Pass in the path or the directory to crawl (relative to `process.cwd()`).
