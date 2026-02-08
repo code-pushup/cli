@@ -2,6 +2,9 @@ import { type Tree } from '@nx/devkit';
 import ansis from 'ansis';
 import { createTwoFilesPatch } from 'diff';
 
+// Force color support for terminals/IDEs that don't auto-detect ANSI
+process.env.FORCE_COLOR = '1';
+
 export type RenderTreeDiffOptions = {
   /**
    * Optional title to display above the diff
@@ -39,6 +42,9 @@ export type RenderTreeDiffOptions = {
  * tree.write(baselinePath, baselineContent);
  * ```
  */
+// Maximum file size for diff rendering (100KB)
+const MAX_DIFF_SIZE = 100 * 1024;
+
 export function renderTreeDiff(
   tree: Tree,
   filePath: string,
@@ -51,6 +57,21 @@ export function renderTreeDiff(
 
   if (prevContent === nextContent) {
     return '';
+  }
+
+  // Skip diff for very large files to avoid performance issues
+  if (
+    prevContent.length > MAX_DIFF_SIZE ||
+    nextContent.length > MAX_DIFF_SIZE
+  ) {
+    const lines: string[] = [];
+    if (options?.title) {
+      lines.push(ansis.bold.cyan(options.title));
+    }
+    const sizeInfo = `(File too large for diff: ${Math.round(Math.max(prevContent.length, nextContent.length) / 1024)}KB)`;
+    lines.push(ansis.yellow(sizeInfo));
+    lines.push(ansis.green('+ File will be updated'));
+    return lines.join('\n');
   }
 
   const diff = createTwoFilesPatch(

@@ -203,6 +203,41 @@ export default {
       expect(result.baselineValue).toBeDefined();
     });
 
+    it('should support defineConfig wrapper and custom imports', () => {
+      const vitestConfig = `import { defineConfig } from 'vite';
+
+export default defineConfig({
+  test: {
+    globals: true,
+  },
+});`;
+
+      tree.write('vitest.unit.config.ts', vitestConfig);
+
+      const baseline = createTsBaseline<VitestUserConfig>({
+        matcher: 'vitest.unit.config.ts',
+        fileName: 'vitest.unit.config.ts',
+        preserveImports: false,
+        fallbackImports: ["import { defineConfig } from 'vite';"],
+        exportDefault: {
+          wrapper: 'defineConfig',
+          satisfiesType: false,
+        },
+        baseline: root =>
+          root.set({
+            test: object(t => t.set({ pool: 'threads' })),
+          }),
+      });
+
+      const result = baseline.sync(tree);
+
+      expect(result.formattedContent).toContain(
+        "import { defineConfig } from 'vite';",
+      );
+      expect(result.formattedContent).toContain('export default defineConfig(');
+      expect(result.formattedContent).not.toContain('satisfies');
+    });
+
     it('should handle array mutations', () => {
       const vitestConfig = `import type { UserConfig as ViteUserConfig } from 'vitest/config';
 
@@ -327,6 +362,146 @@ export default {
       // Should parse successfully, function call replaced with null
       expect(result.baselineValue?.test).toBeDefined();
       expect(result.baselineValue?.test?.pool).toBe('threads');
+    });
+  });
+
+  describe('array config support', () => {
+    let tree: ReturnType<typeof createTreeWithEmptyWorkspace>;
+
+    beforeEach(() => {
+      tree = createTreeWithEmptyWorkspace();
+    });
+
+    type ESLintFlatConfig = Array<{
+      files?: string[];
+      rules?: Record<string, any>;
+    }>;
+
+    it('should parse array-based configs with spread operators', () => {
+      const eslintConfig = `import tseslint from 'typescript-eslint';
+import baseConfig from '../../eslint.config.js';
+
+export default tseslint.config(
+  ...baseConfig,
+  {
+    files: ['**/*.ts'],
+    rules: { 'no-console': 'warn' },
+  },
+  {
+    files: ['**/*.json'],
+    rules: { '@nx/dependency-checks': 'error' },
+  },
+);`;
+
+      tree.write('eslint.config.js', eslintConfig);
+
+      const baseline = createTsBaseline<ESLintFlatConfig>({
+        matcher: 'eslint.config.js',
+        fileName: 'eslint.config.js',
+        preserveImports: true,
+        exportDefault: {
+          wrapper: 'tseslint.config',
+          satisfiesType: false,
+        },
+        baseline: root =>
+          root.set(
+            arr(a =>
+              a.add({
+                files: ['**/*.test.ts'],
+                rules: { 'vitest/expect-expect': 'error' },
+              }),
+            ),
+          ),
+      });
+
+      const result = baseline.sync(tree);
+
+      // Should preserve spread operator and existing items
+      expect(Array.isArray(result.baselineValue)).toBe(true);
+      const config = result.baselineValue as any[];
+      expect(config.length).toBeGreaterThan(2);
+
+      // Should have spread marker
+      expect(config.some((item: any) => '__SPREAD__' in item)).toBe(true);
+
+      // Should add new item
+      expect(
+        config.some(
+          (item: any) =>
+            item.files?.includes('**/*.test.ts') &&
+            item.rules?.['vitest/expect-expect'] === 'error',
+        ),
+      ).toBe(true);
+    });
+
+    it('should handle empty array configs', () => {
+      const eslintConfig = `import tseslint from 'typescript-eslint';
+
+export default tseslint.config();`;
+
+      tree.write('eslint.config.js', eslintConfig);
+
+      const baseline = createTsBaseline<ESLintFlatConfig>({
+        matcher: 'eslint.config.js',
+        fileName: 'eslint.config.js',
+        preserveImports: true,
+        exportDefault: {
+          wrapper: 'tseslint.config',
+          satisfiesType: false,
+        },
+        baseline: root =>
+          root.set(
+            arr(a =>
+              a.add({
+                files: ['**/*.json'],
+                rules: { '@nx/dependency-checks': 'error' },
+              }),
+            ),
+          ),
+      });
+
+      const result = baseline.sync(tree);
+
+      // Should create array with one item
+      expect(Array.isArray(result.baselineValue)).toBe(true);
+      const config = result.baselineValue as any[];
+      expect(config.length).toBe(1);
+      expect(config[0].files).toEqual(['**/*.json']);
+      expect(config[0].rules?.['@nx/dependency-checks']).toBe('error');
+    });
+
+    it('should preserve imports when parsing array configs', () => {
+      const eslintConfig = `import tseslint from 'typescript-eslint';
+import baseConfig from '../../eslint.config.js';
+import customPlugin from 'eslint-plugin-custom';
+
+export default tseslint.config(...baseConfig);`;
+
+      tree.write('eslint.config.js', eslintConfig);
+
+      const baseline = createTsBaseline<ESLintFlatConfig>({
+        matcher: 'eslint.config.js',
+        fileName: 'eslint.config.js',
+        preserveImports: true,
+        exportDefault: {
+          wrapper: 'tseslint.config',
+          satisfiesType: false,
+        },
+        baseline: root => root.set(arr(a => a)),
+      });
+
+      const result = baseline.sync(tree);
+
+      // Should preserve imports
+      expect(result.formattedContent).toContain(
+        "import tseslint from 'typescript-eslint'",
+      );
+      expect(result.formattedContent).toContain(
+        "import baseConfig from '../../eslint.config.js'",
+      );
+      expect(result.formattedContent).toContain(
+        "import customPlugin from 'eslint-plugin-custom'",
+      );
     });
   });
 });

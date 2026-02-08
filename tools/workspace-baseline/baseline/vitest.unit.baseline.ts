@@ -1,6 +1,12 @@
 import { arr, object } from '../src/lib/baseline/baseline.json';
 import { createTsBaseline } from '../src/lib/baseline/baseline.ts';
-import type { VitestUserConfig } from '../src/lib/baseline/vitest.type';
+import type { VitestUserConfig } from './vitest';
+import {
+  COVERAGE_UNIT_DIR,
+  PROJECT_CACHE_DIR,
+  STANDARD_COVERAGE_EXCLUDES,
+  STANDARD_VITEST_SETUP_FILES,
+} from './vitest';
 
 /**
  * Baseline for Vitest unit test configurations (vitest.unit.config.ts).
@@ -12,6 +18,12 @@ import type { VitestUserConfig } from '../src/lib/baseline/vitest.type';
  * - Global setup and setup files
  * - Coverage configuration with standard exclusions
  * - Typecheck configuration for type tests
+ *
+ * Note: This baseline uses the {projectName} placeholder for project-specific substitutions.
+ * For import paths, you can use Nx-style interpolation:
+ * - {workspaceRoot}/path/to/file - resolves to workspace root
+ * - {projectRoot}/path/to/file - resolves to project root
+ * - {projectName} - resolves to project name
  */
 const vitestUnitBase = createTsBaseline({
   matcher: ['vitest.unit.config.ts'],
@@ -19,7 +31,7 @@ const vitestUnitBase = createTsBaseline({
   fileName: 'vitest.unit.config.ts',
   baseline: root =>
     root.set({
-      cacheDir: '../../node_modules/.vite/{projectName}',
+      cacheDir: PROJECT_CACHE_DIR,
       test: object(t =>
         t.set({
           reporters: arr(r => r.add('basic')),
@@ -40,47 +52,12 @@ const vitestUnitBase = createTsBaseline({
             ),
           ),
           globalSetup: arr(g => g.add('../../global-setup.ts')),
-          setupFiles: arr(s =>
-            s.add(
-              '../../testing/test-setup/src/lib/reset.mocks.ts',
-              '../../testing/test-setup/src/lib/fs.mock.ts',
-              '../../testing/test-setup/src/lib/logger.mock.ts',
-              '../../testing/test-setup/src/lib/git.mock.ts',
-              '../../testing/test-setup/src/lib/performance.setup-file.ts',
-              '../../testing/test-setup/src/lib/portal-client.mock.ts',
-              '../../testing/test-setup/src/lib/process.setup-file.ts',
-              '../../testing/test-setup/src/lib/extend/jest-extended.matcher.ts',
-              '../../testing/test-setup/src/lib/extend/path.matcher.ts',
-              '../../testing/test-setup/src/lib/extend/markdown-table.matcher.ts',
-            ),
-          ),
+          setupFiles: arr(s => s.add(...STANDARD_VITEST_SETUP_FILES)),
           coverage: object(c =>
             c.set({
               reporter: arr(r => r.add('text', 'lcov')),
-              reportsDirectory: '../../coverage/{projectName}/unit-tests',
-              exclude: arr(e =>
-                e.add(
-                  'tests/**',
-                  'perf/**',
-                  'mocks/**',
-                  '**/fixtures/**',
-                  '**/*.mock.ts',
-                  '**/*.fixture.ts',
-                  '**/vitest.*.config.ts',
-                  '**/vitest.config.ts',
-                  '**/code-pushup.config.ts',
-                  '**/*.config.ts',
-                  '**/index.ts',
-                  '**/index.js',
-                  '**/index.mjs',
-                  '**/models.ts',
-                  '**/*.model.ts',
-                  '**/types.ts',
-                  '**/*.type.ts',
-                  '**/constants.ts',
-                  '**/*.d.ts',
-                ),
-              ),
+              reportsDirectory: COVERAGE_UNIT_DIR,
+              exclude: arr(e => e.add(...STANDARD_COVERAGE_EXCLUDES)),
             }),
           ),
           typecheck: object(tc =>

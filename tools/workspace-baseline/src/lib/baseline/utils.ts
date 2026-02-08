@@ -28,6 +28,11 @@ export const resolveRepoRootPath = (
   return upPath;
 };
 
+/**
+ * @deprecated Use Nx-style {workspaceRoot} and {projectRoot} placeholders instead.
+ * The `repo:` prefix is maintained for backwards compatibility but new code should use
+ * Nx interpolation patterns like `{workspaceRoot}/path/to/file`.
+ */
 export const pathSubstitutions = { 'repo:': resolveRepoRootPath };
 
 /**

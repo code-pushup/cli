@@ -4,9 +4,12 @@ import {
   STANDARD_TEST_INCLUDES,
   TEST_TYPES,
 } from '../baseline/constants';
-import { createJsonBaselineTyped } from '../src/lib/baseline/baseline.json';
-import { arr, object } from '../src/lib/baseline/baseline.json';
-import type { TsConfigJson } from '../src/lib/baseline/tsconfig.type';
+import type { TsConfigJson } from '../baseline/tsconfig';
+import {
+  arr,
+  createJsonBaselineTyped,
+  object,
+} from '../src/lib/baseline/baseline.json';
 
 /**
  * Baseline for test configurations (tsconfig.test.json).

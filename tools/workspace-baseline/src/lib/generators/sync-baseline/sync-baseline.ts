@@ -1,4 +1,4 @@
-import { type Tree, logger } from '@nx/devkit';
+import { type Tree, logger, workspaceRoot } from '@nx/devkit';
 import { createProjectGraphAsync, joinPathFragments } from '@nx/devkit';
 import type { ProjectGraphProjectNode } from '@nx/devkit';
 import ansis from 'ansis';
@@ -83,65 +83,74 @@ export const syncBaseline = async (tree: Tree) => {
   // Track which baseline produced which diagnostics
   const baselineDiagnostics: BaselineDiagnostics[] = [];
 
-  Object.values(graph.nodes)
-    .filter(project => projectFilter(project))
-    .forEach(project => {
-      const root = project.data.root;
+  for (const project of Object.values(graph.nodes).filter(project =>
+    projectFilter(project),
+  )) {
+    const root = project.data.root;
 
-      const scopedTree = {
-        ...tree,
-        exists: (p: string) => tree.exists(joinPathFragments(root, p)),
-        read: (p: string) => tree.read(joinPathFragments(root, p)),
-        write: (p: string, c: string) =>
-          tree.write(joinPathFragments(root, p), c),
-        delete: (p: string) => tree.delete(joinPathFragments(root, p)),
-        children: (p: string) => {
-          const fullPath = p === '.' ? root : joinPathFragments(root, p);
-          return tree.children(fullPath);
-        },
-      };
+    const scopedTree = {
+      ...tree,
+      // Add baseline context for Nx-style interpolation
+      __baselineContext: {
+        projectRoot: root,
+        projectName: project.name,
+        workspaceRoot: workspaceRoot,
+      },
+      // Keep reference to original tree for workspace-root baselines
+      __workspaceTree: tree,
+      exists: (p: string) => tree.exists(joinPathFragments(root, p)),
+      read: (p: string) => tree.read(joinPathFragments(root, p)),
+      write: (p: string, c: string) =>
+        tree.write(joinPathFragments(root, p), c),
+      delete: (p: string) => tree.delete(joinPathFragments(root, p)),
+      children: (p: string) => {
+        const fullPath = p === '.' ? root : joinPathFragments(root, p);
+        return tree.children(fullPath);
+      },
+    };
 
-      // Apply baselines that match project tags and collect diagnostics
-      baselines
-        .filter(baseline => shouldApplyBaseline(baseline, project))
-        .forEach(baseline => {
-          const result = baseline.sync(scopedTree as any);
-          const syncResult: {
-            diagnostics: Diagnostic[];
-            matchedFile?: string;
-            renamedFrom?: string;
-            baselineValue?: Record<string, unknown>;
-            formattedContent?: string;
-          } =
-            result && typeof result === 'object' && 'diagnostics' in result
-              ? result
-              : {
-                  diagnostics: result as any[],
-                  matchedFile: undefined,
-                  renamedFrom: undefined,
-                  baselineValue: undefined,
-                  formattedContent: undefined,
-                };
-          const diagnostics = syncResult.diagnostics.map(d => ({
-            ...d,
-            path: `${project.name}:${d.path}`,
-          }));
+    // Apply baselines that match project tags and collect diagnostics
+    for (const baseline of baselines.filter(baseline =>
+      shouldApplyBaseline(baseline, project),
+    )) {
+      const result = await baseline.sync(scopedTree as any);
 
-          // Always include if there are diagnostics OR if baselineValue exists (to show baseline structure)
-          if (diagnostics.length > 0 || syncResult.baselineValue) {
-            baselineDiagnostics.push({
-              baseline,
-              diagnostics,
-              matchedFile: syncResult.matchedFile,
-              renamedFrom: syncResult.renamedFrom,
-              projectName: project.name,
-              projectRoot: root,
-              baselineValue: syncResult.baselineValue,
-              formattedContent: syncResult.formattedContent,
-            });
-          }
+      const syncResult: {
+        diagnostics: Diagnostic[];
+        matchedFile?: string;
+        renamedFrom?: string;
+        baselineValue?: Record<string, unknown>;
+        formattedContent?: string;
+      } =
+        result && typeof result === 'object' && 'diagnostics' in result
+          ? result
+          : {
+              diagnostics: result as any[],
+              matchedFile: undefined,
+              renamedFrom: undefined,
+              baselineValue: undefined,
+              formattedContent: undefined,
+            };
+      const diagnostics = syncResult.diagnostics.map(d => ({
+        ...d,
+        path: `${project.name}:${d.path}`,
+      }));
+
+      // Always include if there are diagnostics OR if baselineValue exists (to show baseline structure)
+      if (diagnostics.length > 0 || syncResult.baselineValue) {
+        baselineDiagnostics.push({
+          baseline,
+          diagnostics,
+          matchedFile: syncResult.matchedFile,
+          renamedFrom: syncResult.renamedFrom,
+          projectName: project.name,
+          projectRoot: root,
+          baselineValue: syncResult.baselineValue,
+          formattedContent: syncResult.formattedContent,
         });
-    });
+      }
+    }
+  }
 
   if (baselineDiagnostics.length === 0) {
     return {};
@@ -184,6 +193,7 @@ export const syncBaseline = async (tree: Tree) => {
       if (tree.exists(diffSourcePath)) {
         const diff = renderTreeDiff(tree, diffSourcePath, newContent, {
           title,
+          context: 1,
         });
 
         if (diff) {
