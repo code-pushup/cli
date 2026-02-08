@@ -332,7 +332,7 @@ export function mergeDevtoolsPayload<
 }
 export type ActionTrackConfigs<T extends string = string> = Record<
   T,
-  Omit<ActionTrackEntryPayload, 'dataType'>
+  ActionTrackEntryPayload
 >;
 /**
  * Sets up tracks with default values merged into each track.

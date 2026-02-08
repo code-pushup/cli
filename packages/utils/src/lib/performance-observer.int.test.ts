@@ -31,7 +31,7 @@ describe('PerformanceObserverSink', () => {
   });
 
   it('creates instance with required options', () => {
-    expect(() => new PerformanceObserverSink(options)).not.toThrowError();
+    expect(() => new PerformanceObserverSink(options)).not.toThrow();
   });
 
   it('unsubscribe stops observing performance entries', async () => {

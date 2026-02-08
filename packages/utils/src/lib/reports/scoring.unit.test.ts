@@ -60,7 +60,7 @@ describe('calculateScore', () => {
   it('should throw for an empty reference array', () => {
     expect(() =>
       calculateScore<{ weight: number }>([], ref => ref.weight),
-    ).toThrowError('Reference array cannot be empty.');
+    ).toThrow('Reference array cannot be empty.');
   });
 
   it('should throw negative weight', () => {
@@ -69,7 +69,7 @@ describe('calculateScore', () => {
         [{ slug: 'first-contentful-paint', weight: -1, score: 0.5 }],
         ref => ref.score,
       ),
-    ).toThrowError('Weight cannot be negative.');
+    ).toThrow('Weight cannot be negative.');
   });
 
   it('should throw for a reference array full of zero weights', () => {
@@ -81,7 +81,7 @@ describe('calculateScore', () => {
         ],
         ref => ref.score,
       ),
-    ).toThrowError('All references cannot have zero weight.');
+    ).toThrow('All references cannot have zero weight.');
   });
 
   it('should throw for a negative score', () => {
@@ -90,7 +90,7 @@ describe('calculateScore', () => {
         [{ slug: 'first-contentful-paint', weight: 1, score: -0.8 }],
         ref => ref.score,
       ),
-    ).toThrowError('All scores must be in range 0-1.');
+    ).toThrow('All scores must be in range 0-1.');
   });
 
   it('should throw for score above 1', () => {
@@ -99,7 +99,7 @@ describe('calculateScore', () => {
         [{ slug: 'first-contentful-paint', weight: 1, score: 2 }],
         ref => ref.score,
       ),
-    ).toThrowError('All scores must be in range 0-1.');
+    ).toThrow('All scores must be in range 0-1.');
   });
 });
 
