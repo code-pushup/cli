@@ -32,7 +32,7 @@ jobs:
         env:
           NODE_OPTIONS: --import tsx
           TSX_TSCONFIG_PATH: ${{ github.workspace }}/tsconfig.base.json
-        run: npx nx format:check
+        run: NX_DAEMON=false npx nx format:check --skipNxCache
 
   lint:
     runs-on: ubuntu-latest
