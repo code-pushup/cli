@@ -34,7 +34,7 @@ describe('createTolerantCodec', () => {
         throw new Error('decoding error');
       },
     });
-    expect(() => c.encode(42)).toThrow('encoding error');
+    expect(() => c.encode(42)).toThrowError('encoding error');
     const result = c.decode('42');
     expect(result).toEqual({ __invalid: true, raw: '42' });
   });
@@ -169,7 +169,7 @@ describe('WriteAheadLogFile', () => {
     w.open();
     expect(() =>
       w.append('{ id: 1, name:...' as unknown as object),
-    ).not.toThrow();
+    ).not.toThrowError();
     w.close();
     expect(w.recover().records).toStrictEqual([
       { id: 1, name: 'test' },
@@ -187,7 +187,7 @@ describe('WriteAheadLogFile', () => {
   it('throws error when appending without opening', () => {
     const w = wal('/test/a.log');
     expect(w.isClosed()).toBeTrue();
-    expect(() => w.append('a')).toThrow('WAL not opened');
+    expect(() => w.append('a')).toThrowError('WAL not opened');
   });
 
   it('opens and closes correctly', () => {
@@ -920,7 +920,7 @@ describe('ShardedWal', () => {
     vol.unlinkSync(
       '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.1.log',
     );
-    expect(() => sw.cleanup()).not.toThrow();
+    expect(() => sw.cleanup()).not.toThrowError();
   });
 
   it('should use custom options in finalizer', () => {

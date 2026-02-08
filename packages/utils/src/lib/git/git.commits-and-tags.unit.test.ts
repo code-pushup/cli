@@ -53,7 +53,7 @@ describe('filterLogs', () => {
   });
 
   it('should throw for "to" without "from" filter', () => {
-    expect(() => filterLogs([], { to: 'e' })).toThrow(
+    expect(() => filterLogs([], { to: 'e' })).toThrowError(
       'filter needs the "from" option defined to accept the "to" option.',
     );
   });
@@ -163,7 +163,9 @@ describe('getSemverTags', () => {
   });
 
   it('should throw if "from" is undefined but "to" is defined', async () => {
-    await expect(getSemverTags({ from: undefined, to: 'a' })).rejects.toThrow(
+    await expect(
+      getSemverTags({ from: undefined, to: 'a' }),
+    ).rejects.toThrowError(
       'filter needs the "from" option defined to accept the "to" option',
     );
   });

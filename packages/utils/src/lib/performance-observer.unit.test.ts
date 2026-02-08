@@ -27,7 +27,7 @@ describe('validateFlushThreshold', () => {
     ({ flushThreshold }) => {
       expect(() =>
         validateFlushThreshold(flushThreshold, DEFAULT_MAX_QUEUE_SIZE),
-      ).not.toThrow();
+      ).not.toThrowError();
     },
   );
 
@@ -48,7 +48,7 @@ describe('validateFlushThreshold', () => {
     ({ flushThreshold, expectedError }) => {
       expect(() =>
         validateFlushThreshold(flushThreshold, DEFAULT_MAX_QUEUE_SIZE),
-      ).toThrow(expectedError);
+      ).toThrowError(expectedError);
     },
   );
 });
@@ -76,7 +76,7 @@ describe('PerformanceObserverSink', () => {
   });
 
   it('creates instance with required options without starting to observe', () => {
-    expect(() => new PerformanceObserverSink(options)).not.toThrow();
+    expect(() => new PerformanceObserverSink(options)).not.toThrowError();
     expect(MockPerformanceObserver.instances).toHaveLength(0);
   });
 
@@ -87,7 +87,7 @@ describe('PerformanceObserverSink', () => {
           sink,
           encodePerfEntry,
         }),
-    ).not.toThrow();
+    ).not.toThrowError();
     expect(MockPerformanceObserver.instances).toHaveLength(0);
   });
 
@@ -99,7 +99,7 @@ describe('PerformanceObserverSink', () => {
           captureBufferedEntries: true,
           flushThreshold: 10,
         }),
-    ).not.toThrow();
+    ).not.toThrowError();
     expect(MockPerformanceObserver.instances).toHaveLength(0);
   });
 
@@ -119,7 +119,7 @@ describe('PerformanceObserverSink', () => {
             ...options,
             flushThreshold,
           }),
-      ).toThrow(expectedError);
+      ).toThrowError(expectedError);
     },
   );
 
@@ -303,8 +303,8 @@ describe('PerformanceObserverSink', () => {
       encodePerfEntry,
     });
 
-    expect(() => observer.flush()).not.toThrow();
-    expect(() => observer.flush()).not.toThrow();
+    expect(() => observer.flush()).not.toThrowError();
+    expect(() => observer.flush()).not.toThrowError();
     expect(sink.getWrittenItems()).toStrictEqual([]);
   });
 
@@ -326,8 +326,8 @@ describe('PerformanceObserverSink', () => {
     });
     sink.close();
 
-    expect(() => observer.flush()).not.toThrow();
-    expect(() => observer.flush()).not.toThrow();
+    expect(() => observer.flush()).not.toThrowError();
+    expect(() => observer.flush()).not.toThrowError();
     expect(observer.getStats()).toHaveProperty('queued', 1);
 
     observer.unsubscribe();
@@ -359,7 +359,7 @@ describe('PerformanceObserverSink', () => {
 
     const mockObserver = MockPerformanceObserver.lastInstance();
     performance.mark('test-mark');
-    expect(() => mockObserver?.triggerObserverCallback()).not.toThrow();
+    expect(() => mockObserver?.triggerObserverCallback()).not.toThrowError();
 
     const stats = observer.getStats();
     expect(stats.dropped).toBe(1);
@@ -569,7 +569,7 @@ describe('PerformanceObserverSink', () => {
     expect(statsBefore.queued).toBe(1);
 
     // flush should not throw, but failed items stay in queue for retry
-    expect(() => observer.flush()).not.toThrow();
+    expect(() => observer.flush()).not.toThrowError();
 
     const statsAfter = observer.getStats();
     expect(statsAfter.dropped).toBe(0); // Items not dropped, kept for retry

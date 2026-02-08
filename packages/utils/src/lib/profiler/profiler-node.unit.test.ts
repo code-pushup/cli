@@ -294,10 +294,10 @@ describe('NodejsProfiler', () => {
 
       profiler.close();
 
-      expect(() => profiler.setEnabled(true)).toThrow(
+      expect(() => profiler.setEnabled(true)).toThrowError(
         'Profiler already closed',
       );
-      expect(() => profiler.setEnabled(false)).toThrow(
+      expect(() => profiler.setEnabled(false)).toThrowError(
         'Profiler already closed',
       );
 
@@ -317,7 +317,7 @@ describe('NodejsProfiler', () => {
         // This should not throw since we're using the public API correctly
         profiler.setEnabled(false);
         profiler.setEnabled(true);
-      }).not.toThrow();
+      }).not.toThrowError();
     });
   });
 
@@ -399,18 +399,18 @@ describe('NodejsProfiler', () => {
         profiler.measure('error-test', () => {
           throw error;
         });
-      }).toThrow(error);
+      }).toThrowError(error);
     });
 
     it('should propagate errors from measureAsync work function', async () => {
       const { profiler } = getNodejsProfiler({ enabled: true });
 
       const error = new Error('Async test error');
-      await expect(async () => {
-        await profiler.measureAsync('async-error-test', async () => {
+      await expect(
+        profiler.measureAsync('async-error-test', async () => {
           throw error;
-        });
-      }).rejects.toThrow(error);
+        }),
+      ).rejects.toThrowError(error);
     });
 
     it('should skip measurement when profiler is not active', () => {
@@ -447,7 +447,7 @@ describe('NodejsProfiler', () => {
 
       expect(() => {
         profiler.marker('inactive-marker');
-      }).not.toThrow();
+      }).not.toThrowError();
     });
 
     it('base Profiler behavior: should always be active in base profiler', () => {
@@ -471,7 +471,7 @@ describe('NodejsProfiler', () => {
 
       expect(() => {
         profiler.marker('base-marker');
-      }).not.toThrow();
+      }).not.toThrowError();
     });
   });
 
@@ -789,7 +789,7 @@ describe('NodejsProfiler', () => {
     });
 
     it('installs exit handlers on construction', () => {
-      expect(() => createProfiler()).not.toThrow();
+      expect(() => createProfiler()).not.toThrowError();
 
       expect(mockSubscribeProcessExit).toHaveBeenCalledWith({
         onError: expect.any(Function),
