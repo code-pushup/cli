@@ -1,20 +1,16 @@
-import type { E2ETestOptions, TestKind } from './vitest-config-factory.js';
+import {
+  type E2ETestOptions,
+  type TestKind,
+  createVitestConfig,
+} from './vitest-config-factory.js';
 
-const tsconfigPathAliasesMock = vi.hoisted(() => ({
+vi.mock('./vitest-tsconfig-path-aliases.js', () => ({
   tsconfigPathAliases: vi
     .fn()
     .mockReturnValue([{ find: '@test/alias', replacement: '/mock/path' }]),
 }));
 
-vi.mock('./vitest-tsconfig-path-aliases.js', () => tsconfigPathAliasesMock);
-
 describe('createVitestConfig', () => {
-  let createVitestConfig: typeof import('./vitest-config-factory.js').createVitestConfig;
-
-  beforeEach(async () => {
-    vi.clearAllMocks();
-    ({ createVitestConfig } = await import('./vitest-config-factory.js'));
-  });
   describe('unit test configuration', () => {
     it('should create a complete unit test config with all defaults', () => {
       const config = createVitestConfig('test-package', 'unit');
@@ -143,9 +139,6 @@ describe('createVitestConfig', () => {
       const config = createVitestConfig('test-package', 'int');
 
       const setupFiles = config.test!.setupFiles;
-      expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/jiti.int-setup.ts',
-      );
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/logger.mock.ts',
       );

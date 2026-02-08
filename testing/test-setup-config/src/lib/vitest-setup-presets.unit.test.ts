@@ -1,27 +1,26 @@
-const configFactoryMock = vi.hoisted(() => ({
+import * as configFactory from './vitest-config-factory.js';
+import {
+  createE2ETestConfig,
+  createIntTestConfig,
+  createUnitTestConfig,
+} from './vitest-setup-presets.js';
+
+vi.mock('./vitest-config-factory.js', () => ({
   createVitestConfig: vi.fn().mockReturnValue('mocked-config'),
 }));
-
-vi.mock('./vitest-config-factory.js', () => configFactoryMock);
 
 const MOCK_PROJECT_KEY = 'test-package';
 
 describe('vitest-setup-presets', () => {
-  let createUnitTestConfig: typeof import('./vitest-setup-presets.js').createUnitTestConfig;
-  let createIntTestConfig: typeof import('./vitest-setup-presets.js').createIntTestConfig;
-  let createE2ETestConfig: typeof import('./vitest-setup-presets.js').createE2ETestConfig;
-
-  beforeEach(async () => {
+  beforeEach(() => {
     vi.clearAllMocks();
-    ({ createUnitTestConfig, createIntTestConfig, createE2ETestConfig } =
-      await import('./vitest-setup-presets.js'));
   });
 
   describe('createUnitTestConfig', () => {
     it('should call createVitestConfig with unit kind', () => {
       const result = createUnitTestConfig(MOCK_PROJECT_KEY);
 
-      expect(configFactoryMock.createVitestConfig).toHaveBeenCalledWith(
+      expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
         MOCK_PROJECT_KEY,
         'unit',
       );
@@ -31,7 +30,7 @@ describe('vitest-setup-presets', () => {
     it('should handle different project names', () => {
       createUnitTestConfig('my-custom-package');
 
-      expect(configFactoryMock.createVitestConfig).toHaveBeenCalledWith(
+      expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
         'my-custom-package',
         'unit',
       );
@@ -40,10 +39,7 @@ describe('vitest-setup-presets', () => {
     it('should handle empty projectKey', () => {
       createUnitTestConfig('');
 
-      expect(configFactoryMock.createVitestConfig).toHaveBeenCalledWith(
-        '',
-        'unit',
-      );
+      expect(configFactory.createVitestConfig).toHaveBeenCalledWith('', 'unit');
     });
   });
 
@@ -51,7 +47,7 @@ describe('vitest-setup-presets', () => {
     it('should call createVitestConfig with int kind', () => {
       const result = createIntTestConfig(MOCK_PROJECT_KEY);
 
-      expect(configFactoryMock.createVitestConfig).toHaveBeenCalledWith(
+      expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
         MOCK_PROJECT_KEY,
         'int',
       );
@@ -61,7 +57,7 @@ describe('vitest-setup-presets', () => {
     it('should handle different project names', () => {
       createIntTestConfig('integration-package');
 
-      expect(configFactoryMock.createVitestConfig).toHaveBeenCalledWith(
+      expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
         'integration-package',
         'int',
       );
@@ -72,7 +68,7 @@ describe('vitest-setup-presets', () => {
     it('should call createVitestConfig with e2e kind and no options', () => {
       const result = createE2ETestConfig(MOCK_PROJECT_KEY);
 
-      expect(configFactoryMock.createVitestConfig).toHaveBeenCalledWith(
+      expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
         MOCK_PROJECT_KEY,
         'e2e',
         undefined,
@@ -87,7 +83,7 @@ describe('vitest-setup-presets', () => {
 
       createE2ETestConfig(MOCK_PROJECT_KEY, options);
 
-      expect(configFactoryMock.createVitestConfig).toHaveBeenCalledWith(
+      expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
         MOCK_PROJECT_KEY,
         'e2e',
         options,
@@ -97,7 +93,7 @@ describe('vitest-setup-presets', () => {
     it('should handle testTimeout option', () => {
       createE2ETestConfig(MOCK_PROJECT_KEY, { testTimeout: 30_000 });
 
-      expect(configFactoryMock.createVitestConfig).toHaveBeenCalledWith(
+      expect(configFactory.createVitestConfig).toHaveBeenCalledWith(
         MOCK_PROJECT_KEY,
         'e2e',
         { testTimeout: 30_000 },
@@ -119,17 +115,17 @@ describe('vitest-setup-presets', () => {
       createIntTestConfig('pkg2');
       createE2ETestConfig('pkg3');
 
-      expect(configFactoryMock.createVitestConfig).toHaveBeenNthCalledWith(
+      expect(configFactory.createVitestConfig).toHaveBeenNthCalledWith(
         1,
         'pkg1',
         'unit',
       );
-      expect(configFactoryMock.createVitestConfig).toHaveBeenNthCalledWith(
+      expect(configFactory.createVitestConfig).toHaveBeenNthCalledWith(
         2,
         'pkg2',
         'int',
       );
-      expect(configFactoryMock.createVitestConfig).toHaveBeenNthCalledWith(
+      expect(configFactory.createVitestConfig).toHaveBeenNthCalledWith(
         3,
         'pkg3',
         'e2e',
@@ -144,7 +140,7 @@ describe('vitest-setup-presets', () => {
         e2e: { test: 'e2e-config' },
       };
 
-      vi.mocked(configFactoryMock.createVitestConfig)
+      vi.mocked(configFactory.createVitestConfig)
         .mockReturnValueOnce(mockConfigs.unit as any)
         .mockReturnValueOnce(mockConfigs.int as any)
         .mockReturnValueOnce(mockConfigs.e2e as any);
