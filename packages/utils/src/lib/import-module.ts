@@ -11,7 +11,8 @@ type JitiOptions = Exclude<Parameters<typeof createJitiSource>[1], undefined>;
 
 /**
  * Known packages that must be loaded natively (not transformed by jiti).
- * These packages rely on import.meta.url being a real file:// URL.
+ * These packages rely on import.meta.url being a real file:// URL,
+ * or have critical import side effects that must execute in order.
  * When jiti transforms modules, import.meta.url becomes 'about:blank',
  * causing errors in packages that use new URL(..., import.meta.url).
  */
@@ -19,6 +20,8 @@ export const JITI_NATIVE_MODULES = [
   //'@vitest/eslint-plugin',
   //'@code-pushup/eslint-config',
   //'lighthouse',
+  'axe-core', // Has side effects that require window/document globals at import time
+  'jsdom', // Needed for axe-core polyfill - must execute its side effects before axe-core loads
 ] as const;
 
 export type ImportModuleOptions = JitiOptions & {
