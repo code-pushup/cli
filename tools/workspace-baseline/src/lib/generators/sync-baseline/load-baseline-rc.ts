@@ -6,8 +6,8 @@ import type { BaselineConfig } from '../../baseline/baseline.json';
 // Zod schema to validate TsBase shape
 const tsBaseSchema = z.object({
   sync: z.function(),
+  projects: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
-  formatter: z.any().optional(), // DiagnosticFormatter is complex, using any for now
   filePath: z.string().optional(),
   matcher: z.union([z.string(), z.array(z.string())]).optional(),
 });

@@ -8,7 +8,12 @@
     "esModuleInterop": true,
     "verbatimModuleSyntax": false
   },
-  "include": ["src/**/*.ts", "baseline/**/*.ts"],
+  "include": [
+    "src/**/*.ts",
+    "baseline/**/*.ts",
+    "old/package.json.baseline.ts",
+    "old/tsconfig.tools.baseline.ts"
+  ],
   "exclude": [
     "**/__snapshots__/**",
     "vite.config.ts",

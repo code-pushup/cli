@@ -1,5 +1,3 @@
-import { createE2ETestConfig } from '../../testing/test-setup-config/src/index.js';
+import { UserConfigFn, defineConfig } from 'vite';
 
-export default createE2ETestConfig('plugin-typescript-e2e', {
-  testTimeout: 20_000,
-});
+export default defineConfig({});

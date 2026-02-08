@@ -6,6 +6,6 @@
     "baseUrl": ".",
     "rootDir": "."
   },
-  "include": ["zod2md.config.ts"],
+  "include": ["perf/**/*.ts", "zod2md.config.ts"],
   "exclude": ["zod2md.config.ts"]
 }

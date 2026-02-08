@@ -127,6 +127,19 @@ export function object<T extends object>(
   return fn(m) || m;
 }
 
+// Add static methods to object function
+object.add = <T extends object>(values: Partial<T>): ObjectMutation<T> => {
+  return createObjectMutation(
+    pipe(createBaseUpdater({} as T), objUpdater.add(values)),
+  );
+};
+
+object.remove = <T extends object>(...keys: (keyof T)[]): ObjectMutation<T> => {
+  return createObjectMutation(
+    pipe(createBaseUpdater({} as T), objUpdater.remove(...keys)),
+  );
+};
+
 export function array<T>(
   fn: (builder: ArrayMutation<T>) => void | ArrayMutation<T>,
 ): ArrayMutation<T>;
@@ -140,6 +153,19 @@ export function array<T = string>(
   return fn(m) || m;
 }
 
+// Add static methods to array function
+array.add = <T>(...items: T[]): ArrayMutation<T> => {
+  return createArrayMutation(
+    pipe(createBaseUpdater([] as T[]), arrUpdater.add(...items)),
+  );
+};
+
+array.remove = <T>(...items: T[]): ArrayMutation<T> => {
+  return createArrayMutation(
+    pipe(createBaseUpdater([] as T[]), arrUpdater.remove(...items)),
+  );
+};
+
 export const obj = object;
 export const arr = array;
 
@@ -147,7 +173,7 @@ export function unset(): { [UNSET_SYMBOL]: true } {
   return { [UNSET_SYMBOL]: true as const };
 }
 
-function createRootBuilder<T>(): RootBuilder<T> {
+export function createRootBuilder<T>(): RootBuilder<T> {
   const updaters: Updater<T>[] = [];
 
   const builder: RootBuilder<T> = {
@@ -353,6 +379,7 @@ export type SyncResult = {
   matchedFile?: string;
   renamedFrom?: string;
   baselineValue?: Record<string, unknown>;
+  formattedContent?: string;
 };
 
 export type BaselineConfig = {
@@ -361,7 +388,6 @@ export type BaselineConfig = {
   filePath?: string;
   matcher?: string | string[];
   tags?: string[];
-  formatter?: import('./formatter').DiagnosticFormatter;
 };
 
 export const createJsonBaselineTyped = <T extends object>(o: {
@@ -425,15 +451,104 @@ export const createJsonBaselineTyped = <T extends object>(o: {
         );
       }
 
-      if (diagnostics.length > 0) {
-        tree.write(path, JSON.stringify(finalValue, null, 2));
-      }
+      // Note: We don't write to the tree here - that's done by the sync command
+      // This function only reports what needs to change
+
+      // Check if this is a rename scenario (matched file != desired fileName)
+      const pathFileName = path.split('/').pop() || '';
+      const isRename = pathFileName !== o.fileName;
 
       return {
         diagnostics,
         matchedFile: path,
-        baselineValue: finalValue, // Always return baselineValue, even when no diagnostics
+        baselineValue: finalValue, // Always return baselineValue for diffing
+        ...(isRename ? { renamedFrom: path } : {}),
       };
     },
   };
 };
+
+export function createJsonBaseline(
+  fileName: string,
+  config: {
+    tags?: string[];
+    renameFrom?: string;
+    [key: string]: any;
+  },
+): BaselineConfig {
+  const { tags, renameFrom, ...baselineProps } = config;
+
+  const baseConfig = createJsonBaselineTyped({
+    matcher: fileName,
+    fileName: fileName,
+    baseline: root => root.set(baselineProps),
+  });
+
+  // Create a new config with additional properties
+  const extendedConfig: BaselineConfig = {
+    ...baseConfig,
+    tags,
+  };
+
+  // Wrap the sync method to handle renaming
+  if (renameFrom) {
+    const originalSync = baseConfig.sync.bind(baseConfig);
+    extendedConfig.sync = (tree: Tree) => {
+      const renameFromMatchers = Array.isArray(renameFrom)
+        ? renameFrom
+        : [renameFrom];
+
+      // Check if the file to rename exists
+      const renameFromPath = findMatchingFile(
+        tree as Tree & { children?: (path: string) => string[] },
+        renameFromMatchers,
+      );
+
+      // Note: We don't actually rename the file here - that's done by the sync command
+      // This function only reports what needs to change
+
+      // If there's a file to rename, we need to sync against the OLD file content
+      // But originalSync will try to find the NEW filename, so we need to create a wrapper tree
+      let result;
+      if (renameFromPath) {
+        const targetPath = renameFromPath.replace(/[^/]+$/, fileName);
+
+        // Create a wrapper tree that makes the old file appear as the new filename
+        const wrapperTree = {
+          ...tree,
+          exists: (p: string) =>
+            p === fileName ? tree.exists(renameFromPath) : tree.exists(p),
+          read: (p: string, encoding?: BufferEncoding) =>
+            p === fileName
+              ? tree.read(renameFromPath, encoding ?? 'utf-8')
+              : tree.read(p, encoding ?? 'utf-8'),
+          write: (p: string, c: Buffer | string) => tree.write(p, c),
+          delete: (p: string) => tree.delete(p),
+          children: tree.children,
+        };
+
+        result = originalSync(wrapperTree as any);
+      } else {
+        result = originalSync(tree);
+      }
+
+      // Add rename info to result
+      if (
+        renameFromPath &&
+        typeof result === 'object' &&
+        'diagnostics' in result
+      ) {
+        return {
+          ...result,
+          renamedFrom: renameFromPath,
+          // Override matchedFile to be the old file for diffing purposes
+          matchedFile: renameFromPath,
+        };
+      }
+
+      return result;
+    };
+  }
+
+  return extendedConfig;
+}

@@ -1,12 +1,12 @@
-import { createJsonBaselineTyped } from '../src/lib/baseline/baseline.json';
-import { arr, object } from '../src/lib/baseline/baseline.json';
-import type { TsConfigJson } from '../src/lib/baseline/tsconfig.type';
 import {
   DEFAULT_OUT_DIR,
   EXTENDS_TSCONFIG_JSON,
   STANDARD_TEST_INCLUDES,
   TEST_TYPES,
-} from './constants';
+} from '../baseline/constants';
+import { createJsonBaselineTyped } from '../src/lib/baseline/baseline.json';
+import { arr, object } from '../src/lib/baseline/baseline.json';
+import type { TsConfigJson } from '../src/lib/baseline/tsconfig.type';
 
 /**
  * Baseline for test configurations (tsconfig.test.json).

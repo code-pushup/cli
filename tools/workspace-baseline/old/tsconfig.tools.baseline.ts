@@ -1,11 +1,11 @@
-import { createJsonBaselineTyped } from '../src/lib/baseline/baseline.json';
-import { arr, object } from '../src/lib/baseline/baseline.json';
-import type { TsConfigJson } from '../src/lib/baseline/tsconfig.type';
 import {
   EXTENDS_TSCONFIG_JSON,
   NODENEXT_TYPES,
   TOOLS_CONFIG_FILES,
-} from './constants';
+} from '../baseline/constants';
+import { createJsonBaselineTyped } from '../src/lib/baseline/baseline.json';
+import { arr, object } from '../src/lib/baseline/baseline.json';
+import type { TsConfigJson } from '../src/lib/baseline/tsconfig.type';
 
 /**
  * Baseline for tools configurations (tsconfig.tools.json).

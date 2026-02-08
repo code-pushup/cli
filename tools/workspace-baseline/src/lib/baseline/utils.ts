@@ -1,5 +1,7 @@
-import { type Tree } from '@nx/devkit';
+import { type ProjectGraphProjectNode, type Tree } from '@nx/devkit';
 import { minimatch } from 'minimatch';
+// Note: Internal Nx API - may change between versions
+import { findMatchingProjects } from 'nx/src/utils/find-matching-projects';
 import { dirname } from 'path';
 
 /**
@@ -155,3 +157,17 @@ export const findMatchingFile = (
 
   return null;
 };
+
+/**
+ * Nx-like project filter for top-level project selection.
+ * Currently returns true for all projects.
+ *
+ * TODO: Accept CLI patterns like: nx sync-baseline --projects=tag:type:feature
+ *
+ * @param project - The project node to check
+ * @returns true if the project should be processed, false otherwise
+ */
+export function projectFilter(project: ProjectGraphProjectNode): boolean {
+  // Future: Read patterns from CLI args and use findMatchingProjects
+  return true;
+}

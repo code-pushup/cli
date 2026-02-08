@@ -1,12 +1,12 @@
-import { createJsonBaselineTyped } from '../src/lib/baseline/baseline.json';
-import { arr, object } from '../src/lib/baseline/baseline.json';
-import type { TsConfigJson } from '../src/lib/baseline/tsconfig.type';
 import {
   DEFAULT_OUT_DIR,
   DEFAULT_TEST_INCLUDES,
   EXTENDS_TSCONFIG_JSON,
   TEST_TYPES,
-} from './constants';
+} from '../baseline/constants';
+import { createJsonBaselineTyped } from '../src/lib/baseline/baseline.json';
+import { arr, object } from '../src/lib/baseline/baseline.json';
+import type { TsConfigJson } from '../src/lib/baseline/tsconfig.type';
 
 /**
  * Baseline for e2e test configurations (tsconfig.e2e.json).

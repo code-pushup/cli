@@ -1,3 +1,5 @@
-import { createUnitTestConfig } from '../../testing/test-setup-config/src/index.js';
+import type { UserConfig as ViteUserConfig } from 'vitest/config';
 
-export default createUnitTestConfig('workspace-baseline');
+import vitestTsconfigPathAliases = require('testing/test-setup-config/src/lib/vitest-tsconfig-path-aliases');
+
+export default {} satisfies ViteUserConfig;
