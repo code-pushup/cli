@@ -1,5 +1,5 @@
 import type { UploadConfig } from '@code-pushup/models';
-import { normalizedExecutorContext } from '../../../mock/utils/executor.js';
+import { normalizedExecutorContext } from '../../../mocks/utils/executor.js';
 import * as config from '../internal/config.js';
 import { parseCliExecutorOptions } from './utils.js';
 

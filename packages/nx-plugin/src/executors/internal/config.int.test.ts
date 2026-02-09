@@ -1,4 +1,4 @@
-import { ENV } from '../../../mock/fixtures/env.js';
+import { ENV } from '../../../mocks/fixtures/env.js';
 import { uploadConfig } from './config.js';
 import * as env from './env.js';
 
