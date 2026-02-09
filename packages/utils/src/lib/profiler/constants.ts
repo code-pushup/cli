@@ -25,3 +25,9 @@ export const PROFILER_DEBUG_ENV_VAR = 'CP_PROFILER_DEBUG';
  */
 export const SHARDED_WAL_COORDINATOR_ID_ENV_VAR =
   'CP_SHARDED_WAL_COORDINATOR_ID';
+
+/**
+ * Default base name for WAL files.
+ * Used as the base name for sharded WAL files (e.g., "trace" in "trace.json").
+ */
+export const PROFILER_PERSIST_BASENAME = 'trace';
