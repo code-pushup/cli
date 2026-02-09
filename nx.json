@@ -41,7 +41,11 @@
       { "env": "NODE_OPTIONS" },
       { "env": "TSX_TSCONFIG_PATH" }
     ],
-    "sharedGlobals": [{ "runtime": "node -v" }, { "runtime": "npm -v" }]
+    "sharedGlobals": [
+      { "runtime": "node -v" },
+      { "runtime": "npm -v" },
+      "{workspaceRoot}/.env.local"
+    ]
   },
   "targetDefaults": {
     "lint": {
