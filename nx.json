@@ -40,7 +40,12 @@
       { "env": "NODE_OPTIONS" },
       { "env": "TSX_TSCONFIG_PATH" }
     ],
-    "sharedGlobals": [{ "runtime": "node -v" }, { "runtime": "npm -v" }]
+    "sharedGlobals": [
+      { "runtime": "node -v" },
+      { "runtime": "npm -v" },
+      { "env": "NODE_OPTIONS" },
+      { "env": "TSX_TSCONFIG_PATH" }
+    ]
   },
   "targetDefaults": {
     "lint": {
