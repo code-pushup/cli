@@ -1,0 +1,104 @@
+{
+  "traceEvents": [
+    {
+      "cat": "disabled-by-default-devtools.timeline",
+      "name": "TracingStartedInBrowser",
+      "ph": "I",
+      "pid": 1,
+      "tid": 0,
+      "ts": 1,
+      "s": "t",
+      "args": {
+        "data": {
+          "frames": [
+            {
+              "processId": 1,
+              "url": "file://has-to-be-a-valid-URL-pattern"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "args": {
+        "description": "Artificial RunTask event to mark end of the trace"
+      },
+      "cat": "devtools.timeline",
+      "dur": 10,
+      "name": "RunTask",
+      "ph": "X",
+      "pid": 1,
+      "tid": 0,
+      "ts": 1
+    },
+    {
+      "args": {
+        "data": {
+          "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"track\":\"CustomT\",\"trackGroup\":\"CustomG\"}}"
+        }
+      },
+      "cat": "blink.user_timing",
+      "name": "measure-1:start",
+      "id2": { "local": "0x2" },
+      "s": "t",
+      "ph": "I",
+      "pid": 1,
+      "tid": 1,
+      "ts": 44
+    },
+
+    {
+      "cat": "blink.user_timing",
+      "s": "t",
+      "ph": "b",
+      "name": "measure-1",
+      "pid": 1,
+      "tid": 1,
+      "ts": 45,
+      "id2": { "local": "0x3" },
+      "args": {
+        "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"track\":\"CustomT\",\"trackGroup\":\"CustomG\"}}"
+      }
+    },
+    {
+      "cat": "blink.user_timing",
+      "s": "t",
+      "ph": "e",
+      "name": "measure-1",
+      "pid": 1,
+      "tid": 1,
+      "ts": 65,
+      "id2": { "local": "0x3" },
+      "args": {
+        "detail": "{\"devtools\":{\"dataType\":\"track-entry\",\"track\":\"CustomT\",\"trackGroup\":\"CustomG\"}}"
+      }
+    },
+    {
+      "args": {
+        "data": {
+          "detail": "{\"devtools\":{\"dataType\":\"marker\",\"track\":\"CustomT\",\"trackGroup\":\"CustomG\"}}"
+        }
+      },
+      "cat": "blink.user_timing",
+      "name": "measure-1:end",
+      "id2": { "local": "0x5" },
+      "s": "t",
+      "ph": "I",
+      "pid": 1,
+      "tid": 1,
+      "ts": 66
+    },
+    {
+      "args": {
+        "description": "Artificial RunTask event to mark end of the trace"
+      },
+      "cat": "devtools.timeline",
+      "dur": 10,
+      "name": "RunTask",
+      "ph": "X",
+      "pid": 1,
+      "tid": 0,
+      "ts": 165
+    }
+  ]
+}

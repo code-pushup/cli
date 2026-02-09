@@ -69,6 +69,7 @@ describe('PerformanceObserverSink', () => {
       sink,
       encodePerfEntry,
       flushThreshold: 1,
+      debug: false,
     };
 
     performance.clearMarks();
@@ -86,6 +87,7 @@ describe('PerformanceObserverSink', () => {
         new PerformanceObserverSink({
           sink,
           encodePerfEntry,
+          debug: false,
         }),
     ).not.toThrow();
     expect(MockPerformanceObserver.instances).toHaveLength(0);
@@ -98,6 +100,7 @@ describe('PerformanceObserverSink', () => {
           ...options,
           captureBufferedEntries: true,
           flushThreshold: 10,
+          debug: false,
         }),
     ).not.toThrow();
     expect(MockPerformanceObserver.instances).toHaveLength(0);
@@ -142,35 +145,6 @@ describe('PerformanceObserverSink', () => {
     ).toHaveBeenCalledWith(
       expect.objectContaining({
         entryTypes: ['mark', 'measure'],
-      }),
-    );
-  });
-
-  it('internal PerformanceObserver should observe buffered by default', () => {
-    const observer = new PerformanceObserverSink(options);
-
-    observer.subscribe();
-    expect(
-      MockPerformanceObserver.lastInstance()?.observe,
-    ).toHaveBeenCalledWith(
-      expect.objectContaining({
-        buffered: true,
-      }),
-    );
-  });
-
-  it('internal PerformanceObserver should observe buffered if buffered option is provided', () => {
-    const observer = new PerformanceObserverSink({
-      ...options,
-      captureBufferedEntries: true,
-    });
-
-    observer.subscribe();
-    expect(
-      MockPerformanceObserver.lastInstance()?.observe,
-    ).toHaveBeenCalledWith(
-      expect.objectContaining({
-        buffered: true,
       }),
     );
   });
@@ -301,6 +275,7 @@ describe('PerformanceObserverSink', () => {
     const observer = new PerformanceObserverSink({
       sink,
       encodePerfEntry,
+      debug: false,
     });
 
     expect(() => observer.flush()).not.toThrow();
@@ -313,6 +288,7 @@ describe('PerformanceObserverSink', () => {
       sink,
       encodePerfEntry,
       flushThreshold: 10,
+      debug: false,
     });
     sink.open();
     observer.subscribe();
@@ -344,6 +320,34 @@ describe('PerformanceObserverSink', () => {
     expect(MockPerformanceObserver.instances).toHaveLength(0);
   });
 
+  it('captures buffered entries only once, even after unsubscribe/resubscribe', () => {
+    const observer = new PerformanceObserverSink({
+      ...options,
+      captureBufferedEntries: true,
+      flushThreshold: 10,
+    });
+
+    performance.mark('buffered-mark-1');
+    performance.mark('buffered-mark-2');
+    performance.measure(
+      'buffered-measure-1',
+      'buffered-mark-1',
+      'buffered-mark-2',
+    );
+
+    observer.subscribe();
+    observer.flush();
+
+    expect(encodePerfEntry).toHaveBeenCalledTimes(3);
+
+    encodePerfEntry.mockClear();
+    observer.unsubscribe();
+    observer.subscribe();
+    observer.flush();
+
+    expect(encodePerfEntry).not.toHaveBeenCalled();
+  });
+
   it('handles encodePerfEntry errors gracefully and drops items', () => {
     const failingEncode = vi.fn(() => {
       throw new Error('Encode failed');
@@ -353,6 +357,7 @@ describe('PerformanceObserverSink', () => {
       sink,
       encodePerfEntry: failingEncode,
       flushThreshold: 10,
+      debug: false,
     });
 
     observer.subscribe();
@@ -366,35 +371,8 @@ describe('PerformanceObserverSink', () => {
     expect(stats.queued).toBe(0);
   });
 
-  describe('debug mode with env var', () => {
-    const originalEnv = process.env.CP_PROFILER_DEBUG;
-
-    beforeEach(() => {
-      // Restore original env before each test
-      if (originalEnv === undefined) {
-        // eslint-disable-next-line functional/immutable-data
-        delete process.env.CP_PROFILER_DEBUG;
-      } else {
-        // eslint-disable-next-line functional/immutable-data
-        process.env.CP_PROFILER_DEBUG = originalEnv;
-      }
-    });
-
-    afterEach(() => {
-      // Restore original env after each test
-      if (originalEnv === undefined) {
-        // eslint-disable-next-line functional/immutable-data
-        delete process.env.CP_PROFILER_DEBUG;
-      } else {
-        // eslint-disable-next-line functional/immutable-data
-        process.env.CP_PROFILER_DEBUG = originalEnv;
-      }
-    });
-
-    it('creates performance mark when encode fails and debug mode is enabled via env var', () => {
-      // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
-
+  describe('debug mode', () => {
+    it('creates performance mark when encode fails and debug mode is enabled', () => {
       const failingEncode = vi.fn(() => {
         throw new Error('EncodeError');
       });
@@ -403,6 +381,7 @@ describe('PerformanceObserverSink', () => {
         sink,
         encodePerfEntry: failingEncode,
         flushThreshold: 10,
+        debug: true,
       });
 
       observer.subscribe();
@@ -423,9 +402,6 @@ describe('PerformanceObserverSink', () => {
     });
 
     it('does not create performance mark when encode fails and debug mode is disabled', () => {
-      // eslint-disable-next-line functional/immutable-data
-      delete process.env.CP_PROFILER_DEBUG;
-
       const failingEncode = vi.fn(() => {
         throw new Error('EncodeError');
       });
@@ -434,6 +410,7 @@ describe('PerformanceObserverSink', () => {
         sink,
         encodePerfEntry: failingEncode,
         flushThreshold: 10,
+        debug: false,
       });
 
       performance.clearMarks();
@@ -454,9 +431,6 @@ describe('PerformanceObserverSink', () => {
     });
 
     it('handles encode errors for unnamed entries correctly', () => {
-      // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
-
       const failingEncode = vi.fn(() => {
         throw new Error('EncodeError');
       });
@@ -465,6 +439,7 @@ describe('PerformanceObserverSink', () => {
         sink,
         encodePerfEntry: failingEncode,
         flushThreshold: 10,
+        debug: true,
       });
 
       observer.subscribe();
@@ -482,9 +457,6 @@ describe('PerformanceObserverSink', () => {
     });
 
     it('handles non-Error objects thrown from encode function', () => {
-      // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
-
       const failingEncode = vi.fn(() => {
         throw 'String error';
       });
@@ -493,6 +465,7 @@ describe('PerformanceObserverSink', () => {
         sink,
         encodePerfEntry: failingEncode,
         flushThreshold: 10,
+        debug: true,
       });
 
       observer.subscribe();
@@ -527,6 +500,7 @@ describe('PerformanceObserverSink', () => {
       sink,
       encodePerfEntry: failingEncode,
       flushThreshold: 10,
+      debug: false,
     });
 
     observer.subscribe();
@@ -556,6 +530,7 @@ describe('PerformanceObserverSink', () => {
       sink: failingSink as any,
       encodePerfEntry,
       flushThreshold: 10,
+      debug: false,
     });
 
     observer.subscribe();
@@ -582,6 +557,7 @@ describe('PerformanceObserverSink', () => {
       encodePerfEntry,
       maxQueueSize: 20,
       flushThreshold: 10,
+      debug: false,
     });
 
     expect(observer.getStats()).toStrictEqual(
@@ -597,6 +573,7 @@ describe('PerformanceObserverSink', () => {
       sink,
       encodePerfEntry,
       flushThreshold: 10,
+      debug: false,
     });
 
     observer.subscribe();
@@ -618,6 +595,7 @@ describe('PerformanceObserverSink', () => {
       encodePerfEntry,
       maxQueueSize: smallQueueSize,
       flushThreshold: smallQueueSize,
+      debug: false,
     });
 
     const flushSpy = vi.spyOn(observer, 'flush').mockImplementation(() => {});
@@ -646,6 +624,7 @@ describe('PerformanceObserverSink', () => {
       sink,
       encodePerfEntry,
       flushThreshold: 2,
+      debug: false,
     });
 
     observer.subscribe();
@@ -682,6 +661,7 @@ describe('PerformanceObserverSink', () => {
       encodePerfEntry: (entry: PerformanceEntry) => [
         `${entry.name}:${entry.duration}`,
       ],
+      debug: false,
     });
 
     observer.subscribe();
@@ -700,6 +680,7 @@ describe('PerformanceObserverSink', () => {
       sink,
       encodePerfEntry,
       flushThreshold: 10,
+      debug: false,
     });
 
     expect(observer.getStats().addedSinceLastFlush).toBe(0);
@@ -735,75 +716,28 @@ describe('PerformanceObserverSink', () => {
   });
 
   describe('debug getter', () => {
-    const originalEnv = process.env.CP_PROFILER_DEBUG;
-
-    beforeEach(() => {
-      // eslint-disable-next-line functional/immutable-data
-      delete process.env.CP_PROFILER_DEBUG;
-    });
-
-    afterEach(() => {
-      if (originalEnv === undefined) {
-        // eslint-disable-next-line functional/immutable-data
-        delete process.env.CP_PROFILER_DEBUG;
-      } else {
-        // eslint-disable-next-line functional/immutable-data
-        process.env.CP_PROFILER_DEBUG = originalEnv;
-      }
-    });
-
-    it('returns false when debug env var is not set', () => {
-      const observer = new PerformanceObserverSink(options);
-
-      expect(observer.debug).toBeFalse();
-    });
-
-    it('returns true when debug env var is set to "true"', () => {
-      // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
-
-      const observer = new PerformanceObserverSink(options);
-
-      expect(observer.debug).toBeTrue();
-    });
-
-    it('returns false when debug env var is set to a value other than "true"', () => {
-      // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'false';
-
-      const observer = new PerformanceObserverSink(options);
-
-      expect(observer.debug).toBeFalse();
-    });
-
-    it('returns false when debug env var is set to empty string', () => {
-      // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = '';
-
-      const observer = new PerformanceObserverSink(options);
-
-      expect(observer.debug).toBeFalse();
-    });
-
-    it('respects custom debugEnvVar option', () => {
-      // eslint-disable-next-line functional/immutable-data
-      process.env.CUSTOM_DEBUG_VAR = 'true';
-
+    it('returns false when debug is disabled', () => {
       const observer = new PerformanceObserverSink({
         ...options,
-        debugEnvVar: 'CUSTOM_DEBUG_VAR',
+        debug: false,
+      });
+
+      expect(observer.debug).toBeFalse();
+    });
+
+    it('returns true when debug is enabled', () => {
+      const observer = new PerformanceObserverSink({
+        ...options,
+        debug: true,
       });
 
       expect(observer.debug).toBeTrue();
-
-      // eslint-disable-next-line functional/immutable-data
-      delete process.env.CUSTOM_DEBUG_VAR;
     });
 
-    it('returns false when custom debugEnvVar is not set', () => {
+    it('returns false when debug is disabled via options', () => {
       const observer = new PerformanceObserverSink({
         ...options,
-        debugEnvVar: 'CUSTOM_DEBUG_VAR',
+        debug: false,
       });
 
       expect(observer.debug).toBeFalse();

@@ -1,7 +1,6 @@
 import { performance } from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { ActionTrackEntryPayload } from '../user-timing-extensibility-api.type.js';
 import { Profiler, type ProfilerOptions, getProfilerId } from './profiler.js';
 
 vi.mock('../exit-process.js');
@@ -22,18 +21,15 @@ describe('Profiler', () => {
     new Profiler({
       prefix: 'cp',
       track: 'test-track',
+      enabled: true,
       ...overrides,
     });
-
-  let profiler: Profiler<Record<string, ActionTrackEntryPayload>>;
 
   beforeEach(() => {
     performance.clearMarks();
     performance.clearMeasures();
     // eslint-disable-next-line functional/immutable-data
     delete process.env.CP_PROFILING;
-
-    profiler = getProfiler();
   });
 
   it('should create profiler instances', () => {
@@ -48,7 +44,7 @@ describe('Profiler', () => {
   });
 
   it('constructor should use defaults for measure', () => {
-    const customProfiler = getProfiler({ color: 'secondary', enabled: true });
+    const customProfiler = getProfiler({ color: 'secondary' });
 
     const result = customProfiler.measure('test-operation', () => 'success');
 
@@ -123,7 +119,17 @@ describe('Profiler', () => {
     });
   });
 
+  it('setDebugState should update debug flag in subclasses', () => {
+    const testProfiler = getProfiler({
+      prefix: 'cp',
+      track: 'test-track',
+      debug: true,
+    });
+    expect(testProfiler.isDebugMode()).toBe(true);
+  });
+
   it('isEnabled should set and get enabled state', () => {
+    const profiler = getProfiler({ enabled: false });
     expect(profiler.isEnabled()).toBe(false);
 
     profiler.setEnabled(true);
@@ -147,7 +153,7 @@ describe('Profiler', () => {
   });
 
   it('marker should execute without error when enabled', () => {
-    const enabledProfiler = getProfiler({ enabled: true });
+    const enabledProfiler = getProfiler();
     expect(() => {
       enabledProfiler.marker('test-marker', {
         color: 'primary',
@@ -175,7 +181,7 @@ describe('Profiler', () => {
   it('marker should execute without error when enabled with default color', () => {
     performance.clearMarks();
 
-    const profilerWithColor = getProfiler({ color: 'primary', enabled: true });
+    const profilerWithColor = getProfiler({ color: 'primary' });
 
     expect(() => {
       profilerWithColor.marker('test-marker-default-color', {
@@ -199,7 +205,7 @@ describe('Profiler', () => {
   });
 
   it('marker should execute without error when enabled with no default color', () => {
-    const profilerNoColor = getProfiler({ enabled: true });
+    const profilerNoColor = getProfiler();
 
     expect(() => {
       profilerNoColor.marker('test-marker-no-color', {
@@ -243,7 +249,7 @@ describe('Profiler', () => {
     performance.clearMarks();
     performance.clearMeasures();
 
-    const enabledProfiler = getProfiler({ enabled: true });
+    const enabledProfiler = getProfiler();
     const workFn = vi.fn(() => 'result');
     const result = enabledProfiler.measure('test-event', workFn, {
       color: 'primary',
@@ -291,6 +297,7 @@ describe('Profiler', () => {
   });
 
   it('measure should always execute work function', () => {
+    const profiler = getProfiler();
     const workFn = vi.fn(() => 'result');
     const result = profiler.measure('test-event', workFn);
 
@@ -299,6 +306,7 @@ describe('Profiler', () => {
   });
 
   it('measure should propagate errors when enabled', () => {
+    const profiler = getProfiler();
     const error = new Error('Test error');
     const workFn = vi.fn(() => {
       throw error;
@@ -309,6 +317,7 @@ describe('Profiler', () => {
   });
 
   it('measure should propagate errors', () => {
+    const profiler = getProfiler();
     const error = new Error('Test error');
     const workFn = vi.fn(() => {
       throw error;
@@ -319,7 +328,7 @@ describe('Profiler', () => {
   });
 
   it('measure should propagate errors when enabled and call error callback', () => {
-    const enabledProfiler = getProfiler({ enabled: true });
+    const enabledProfiler = getProfiler();
     const error = new Error('Enabled test error');
     const workFn = vi.fn(() => {
       throw error;
@@ -357,7 +366,7 @@ describe('Profiler', () => {
   });
 
   it('measureAsync should handle async operations correctly when enabled', async () => {
-    const enabledProfiler = getProfiler({ enabled: true });
+    const enabledProfiler = getProfiler();
     const workFn = vi.fn(async () => {
       await Promise.resolve();
       return 'async-result';
@@ -416,6 +425,7 @@ describe('Profiler', () => {
   });
 
   it('measureAsync should propagate async errors when enabled', async () => {
+    const profiler = getProfiler();
     const error = new Error('Async test error');
     const workFn = vi.fn(async () => {
       await Promise.resolve();
@@ -429,7 +439,7 @@ describe('Profiler', () => {
   });
 
   it('measureAsync should propagate async errors when enabled and call error callback', async () => {
-    const enabledProfiler = getProfiler({ enabled: true });
+    const enabledProfiler = getProfiler();
     const error = new Error('Enabled async test error');
     const workFn = vi.fn(async () => {
       await Promise.resolve();
