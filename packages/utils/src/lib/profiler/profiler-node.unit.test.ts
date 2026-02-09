@@ -106,7 +106,7 @@ describe('NodejsProfiler', () => {
       expect(typeof profiler.measureAsync).toBe('function');
       expect(typeof profiler.marker).toBe('function');
       expect(typeof profiler.close).toBe('function');
-      expect(typeof profiler.state).toBe('string');
+      expect(profiler.state).toBeString();
       expect(typeof profiler.setEnabled).toBe('function');
     });
 
@@ -406,11 +406,11 @@ describe('NodejsProfiler', () => {
       const { profiler } = getNodejsProfiler({ enabled: true });
 
       const error = new Error('Async test error');
-      await expect(async () => {
-        await profiler.measureAsync('async-error-test', async () => {
+      await expect(
+        profiler.measureAsync('async-error-test', async () => {
           throw error;
-        });
-      }).rejects.toThrow(error);
+        }),
+      ).rejects.toThrow(error);
     });
 
     it('should skip measurement when profiler is not active', () => {

@@ -19,6 +19,13 @@ export default tseslint.config(
     },
   },
   {
+    files: ['packages/utils/src/lib/profiler/trace-file-utils.ts'],
+    rules: {
+      // os.availableParallelism() is checked for existence before use, with fallback to os.cpus().length
+      'n/no-unsupported-features/node-builtins': 'off',
+    },
+  },
+  {
     files: ['**/*.json'],
     rules: {
       '@nx/dependency-checks': [
