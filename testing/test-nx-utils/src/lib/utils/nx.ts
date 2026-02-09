@@ -11,7 +11,7 @@ import { libraryGenerator } from '@nx/js';
 import type { LibraryGeneratorSchema } from '@nx/js/src/generators/library/schema';
 import path from 'node:path';
 import { createTreeWithEmptyWorkspace } from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
-import { executeProcess } from '@code-pushup/utils';
+import { executeProcess } from '@code-pushup/test-utils';
 
 export function executorContext<
   T extends { projectName: string; cwd?: string },
@@ -95,11 +95,29 @@ export async function nxShowProjectJson<T extends ProjectConfiguration>(
   cwd: string,
   project: string,
 ) {
-  const { code, stderr, stdout } = await executeProcess({
-    command: 'npx',
-    args: ['nx', 'show', `project --json  ${project}`],
-    cwd,
-  });
+  try {
+    const { stderr, stdout } = await executeProcess({
+      command: 'npx',
+      args: ['nx', 'show', 'project', project, '--json'],
+      cwd,
+    });
 
-  return { code, stderr, projectJson: JSON.parse(stdout) as T };
+    return {
+      code: 0,
+      stderr,
+      projectJson: JSON.parse(stdout) as T,
+    };
+  } catch (error: unknown) {
+    const execError = error as {
+      code?: number | string | null;
+      stderr?: string;
+      stdout?: string;
+      message?: string;
+    };
+    return {
+      code: typeof execError.code === 'number' ? execError.code : 1,
+      stderr: execError.stderr ?? execError.message ?? String(error),
+      projectJson: JSON.parse('{}'),
+    };
+  }
 }

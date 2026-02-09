@@ -7,7 +7,11 @@ export async function materializeTree(tree: Tree, targetFolder: string) {
   const changes = tree.listChanges();
   await Promise.all(
     changes.map(async change => {
-      const filePath = path.join(targetFolder, change.path);
+      // Handle absolute paths that start with '/' by making them relative
+      const relativePath = change.path.startsWith('/')
+        ? change.path.slice(1)
+        : change.path;
+      const filePath = path.join(targetFolder, relativePath);
 
       if (change.type === 'CREATE' || change.type === 'UPDATE') {
         try {
