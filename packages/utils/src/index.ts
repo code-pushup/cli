@@ -41,7 +41,6 @@ export {
   filePathToCliArg,
   findLineNumberInText,
   findNearestFile,
-  importModule,
   pluginWorkDir,
   projectToFilename,
   readJsonFile,
@@ -129,6 +128,7 @@ export { formatIssueSeverities, wrapTags } from './lib/reports/formatting.js';
 export {
   isFileIssue,
   isFileSource,
+  isUrlIssue,
   isUrlSource,
 } from './lib/reports/type-guards.js';
 export { generateMdReport } from './lib/reports/generate-md-report.js';
@@ -184,3 +184,4 @@ export type {
   Prettify,
   WithRequired,
 } from './lib/types.js';
+export * from './lib/import-module.js';
