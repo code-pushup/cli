@@ -62,7 +62,9 @@ describe('getTraceFile', () => {
   it('should use custom startTime when provided', () => {
     const result = createTraceFile({
       traceEvents: [],
-      startTime: '2023-01-01T00:00:00.000Z',
+      metadata: {
+        startTime: '2023-01-01T00:00:00.000Z',
+      },
     });
 
     expect(result).toHaveProperty(
@@ -89,7 +91,7 @@ describe('getInstantEventTracingStartedInBrowser', () => {
       getInstantEventTracingStartedInBrowser({ url: 'https://example.com' }),
     ).toStrictEqual({
       cat: 'devtools.timeline',
-      ph: 'i',
+      ph: 'I',
       name: 'TracingStartedInBrowser',
       pid: expect.any(Number),
       tid: expect.any(Number),
@@ -122,7 +124,7 @@ describe('getInstantEventTracingStartedInBrowser', () => {
       }),
     ).toStrictEqual({
       cat: 'devtools.timeline',
-      ph: 'i',
+      ph: 'I',
       name: 'TracingStartedInBrowser',
       pid: 777,
       tid: 888,
@@ -520,14 +522,14 @@ describe('getTraceMetadata', () => {
 
   it('should use provided startDate', () => {
     const startDate = new Date('2023-01-01T00:00:00.000Z');
-    const metadata = getTraceMetadata(startDate);
+    const metadata = getTraceMetadata({ startDate });
 
     expect(metadata.startTime).toBe('2023-01-01T00:00:00.000Z');
   });
 
   it('should merge custom metadata', () => {
     const customMetadata = { version: '1.0.0', platform: 'node' };
-    const metadata = getTraceMetadata(undefined, customMetadata);
+    const metadata = getTraceMetadata(customMetadata);
 
     expect(metadata).toStrictEqual({
       source: 'DevTools',
@@ -544,7 +546,7 @@ describe('decodeEvent', () => {
   it('should decode trace event with string details', () => {
     const encodedEvent = {
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -559,7 +561,7 @@ describe('decodeEvent', () => {
 
     expect(result).toStrictEqual({
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -574,7 +576,7 @@ describe('decodeEvent', () => {
   it('should handle trace event without args', () => {
     const encodedEvent = {
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -585,7 +587,7 @@ describe('decodeEvent', () => {
 
     expect(result).toStrictEqual({
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -596,7 +598,7 @@ describe('decodeEvent', () => {
   it('should handle args without data property', () => {
     const encodedEvent = {
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -610,7 +612,7 @@ describe('decodeEvent', () => {
 
     expect(result).toStrictEqual({
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -626,7 +628,7 @@ describe('encodeEvent', () => {
   it('should encode trace event with object details', () => {
     const event = {
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -641,7 +643,7 @@ describe('encodeEvent', () => {
 
     expect(result).toStrictEqual({
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -656,7 +658,7 @@ describe('encodeEvent', () => {
   it('should handle trace event without args', () => {
     const event = {
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -667,7 +669,7 @@ describe('encodeEvent', () => {
 
     expect(result).toStrictEqual({
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -678,7 +680,7 @@ describe('encodeEvent', () => {
   it('should handle args without data property', () => {
     const event = {
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -692,7 +694,7 @@ describe('encodeEvent', () => {
 
     expect(result).toStrictEqual({
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -708,7 +710,7 @@ describe('serializeTraceEvent', () => {
   it('should serialize trace event to JSON string', () => {
     const event = {
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -720,12 +722,11 @@ describe('serializeTraceEvent', () => {
 
     const result = serializeTraceEvent(event);
 
-    expect(typeof result).toBe('string');
-    expect(() => JSON.parse(result)).not.toThrow();
+    expect(result).toBeString();
     const parsed = JSON.parse(result);
     expect(parsed).toStrictEqual({
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -739,7 +740,7 @@ describe('serializeTraceEvent', () => {
   it('should handle trace event without args', () => {
     const event = {
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -748,11 +749,10 @@ describe('serializeTraceEvent', () => {
 
     const result = serializeTraceEvent(event);
 
-    expect(typeof result).toBe('string');
     const parsed = JSON.parse(result);
     expect(parsed).toStrictEqual({
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -763,7 +763,7 @@ describe('serializeTraceEvent', () => {
   it('should handle nested object details in args', () => {
     const event = {
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -776,7 +776,6 @@ describe('serializeTraceEvent', () => {
 
     const result = serializeTraceEvent(event);
 
-    expect(typeof result).toBe('string');
     const parsed = JSON.parse(result);
     expect(parsed.args).toStrictEqual({
       detail: '{"custom":"data"}',
@@ -789,7 +788,7 @@ describe('deserializeTraceEvent', () => {
   it('should deserialize JSON string back to trace event', () => {
     const originalEvent = {
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -808,7 +807,7 @@ describe('deserializeTraceEvent', () => {
   it('should handle round-trip serialization', () => {
     const originalEvent = {
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'round-trip-test',
       pid: 789,
       tid: 101,
@@ -830,7 +829,7 @@ describe('deserializeTraceEvent', () => {
   it('should handle trace event without args', () => {
     const originalEvent = {
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,
@@ -846,7 +845,7 @@ describe('deserializeTraceEvent', () => {
   it('should decode string-encoded details back to objects', () => {
     const jsonString = JSON.stringify({
       cat: 'blink.user_timing',
-      ph: 'i',
+      ph: 'I',
       name: 'test-event',
       pid: 123,
       tid: 456,

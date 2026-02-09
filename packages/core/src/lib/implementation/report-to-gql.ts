@@ -33,7 +33,7 @@ import type {
   TableAlignment,
   Tree,
 } from '@code-pushup/models';
-import { isFileIssue } from '@code-pushup/utils';
+import { isFileIssue, isUrlIssue } from '@code-pushup/utils';
 
 export function reportToGQL(
   report: Report,
@@ -114,6 +114,12 @@ export function issueToGQL(issue: Issue): PortalIssue {
       sourceStartColumn: issue.source.position?.startColumn,
       sourceEndLine: issue.source.position?.endLine,
       sourceEndColumn: issue.source.position?.endColumn,
+    }),
+    ...(isUrlIssue(issue) && {
+      sourceType: safeEnum<PortalIssueSourceType>('Url'),
+      sourceUrl: issue.source.url,
+      sourceSnippet: issue.source.snippet,
+      sourceSelector: issue.source.selector,
     }),
   };
 }

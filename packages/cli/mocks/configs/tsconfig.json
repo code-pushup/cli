@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "allowImportingTsExtensions": true,
+    "moduleResolution": "node",
+    "paths": {
+      "@example/custom-plugin": ["./custom-plugin.ts"]
+    }
+  },
+  "include": ["*.ts"]
+}

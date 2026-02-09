@@ -1,62 +1,32 @@
-import { performance } from 'node:perf_hooks';
+import path from 'node:path';
 import { isEnvVarEnabled } from '../env.js';
-import { type FatalKind, subscribeProcessExit } from '../exit-process.js';
+import { subscribeProcessExit } from '../exit-process.js';
 import {
   type PerformanceObserverOptions,
   PerformanceObserverSink,
 } from '../performance-observer.js';
-import { objectToEntries } from '../transform.js';
 import {
-  asOptions,
-  errorToMarkerPayload,
-  markerPayload,
-} from '../user-timing-extensibility-api-utils.js';
+  type Counter,
+  getUniqueInstanceId,
+  getUniqueTimeId,
+} from '../process-id.js';
+import { objectToEntries } from '../transform.js';
+import { errorToMarkerPayload } from '../user-timing-extensibility-api-utils.js';
 import type {
   ActionTrackEntryPayload,
   MarkerPayload,
 } from '../user-timing-extensibility-api.type.js';
-import { ShardedWal } from '../wal-sharded.js';
 import {
-  type WalFormat,
-  type WalRecord,
+  type AppendableSink,
   WriteAheadLogFile,
-  parseWalFormat,
+  getShardedPath,
 } from '../wal.js';
 import {
-  PROFILER_DEBUG_MEASURE_PREFIX,
+  PROFILER_DEBUG_ENV_VAR,
   PROFILER_ENABLED_ENV_VAR,
-  PROFILER_MEASURE_NAME_ENV_VAR,
-  PROFILER_OUT_DIR_ENV_VAR,
-  PROFILER_PERSIST_OUT_DIR,
-  PROFILER_SHARDER_ID_ENV_VAR,
 } from './constants.js';
 import { Profiler, type ProfilerOptions } from './profiler.js';
-
-export type ProfilerBufferOptions<DomainEvents extends WalRecord> = Omit<
-  PerformanceObserverOptions<DomainEvents>,
-  'sink' | 'encodePerfEntry'
->;
-export type ProfilerFormat<DomainEvents extends WalRecord> = Partial<
-  WalFormat<DomainEvents>
-> &
-  Pick<PerformanceObserverOptions<DomainEvents>, 'encodePerfEntry'>;
-export type PersistOptions<DomainEvents extends WalRecord> = {
-  /**
-   * Output directory for WAL shards and final files.
-   * @default 'tmp/profiles'
-   */
-  outDir?: string;
-
-  /**
-   * Optional name for your measurement that is reflected in path name. If not provided, a new group ID will be generated.
-   */
-  measureName?: string;
-  /**
-   * WAL format configuration for sharded write-ahead logging.
-   * Defines codec, extensions, and finalizer for the WAL files.
-   */
-  format: ProfilerFormat<DomainEvents>;
-};
+import { traceEventWalFormat } from './wal-json-trace.js';
 
 /**
  * Options for configuring a NodejsProfiler instance.
@@ -66,13 +36,25 @@ export type PersistOptions<DomainEvents extends WalRecord> = {
  * @template Tracks - Record type defining available track names and their configurations
  */
 export type NodejsProfilerOptions<
-  DomainEvents extends WalRecord,
-  Tracks extends Record<string, Omit<ActionTrackEntryPayload, 'dataType'>>,
+  DomainEvents extends string | object,
+  Tracks extends Record<string, ActionTrackEntryPayload>,
 > = ProfilerOptions<Tracks> &
-  ProfilerBufferOptions<DomainEvents> &
-  PersistOptions<DomainEvents>;
-
-export type NodeJsProfilerState = 'idle' | 'running' | 'closed';
+  Omit<PerformanceObserverOptions<DomainEvents>, 'sink'> & {
+    /**
+     * File path for the WriteAheadLogFile sink.
+     * If not provided, defaults to `trace.json` in the current working directory.
+     *
+     * @default path.join(process.cwd(), 'trace.json')
+     */
+    filename?: string;
+    /**
+     * Name of the environment variable to check for debug mode.
+     * When the env var is set to 'true', profiler state transitions create performance marks for debugging.
+     *
+     * @default 'CP_PROFILER_DEBUG'
+     */
+    debugEnvVar?: string;
+  };
 
 /**
  * Performance profiler with automatic process exit handling for buffered performance data.
@@ -91,77 +73,118 @@ export type NodeJsProfilerState = 'idle' | 'running' | 'closed';
  * @template Tracks - Record type defining available track names and their configurations
  */
 export class NodejsProfiler<
-  DomainEvents extends WalRecord,
+  DomainEvents extends string | object,
   Tracks extends Record<string, ActionTrackEntryPayload> = Record<
     string,
     ActionTrackEntryPayload
   >,
 > extends Profiler<Tracks> {
-  #shard: WriteAheadLogFile<DomainEvents>;
-  #sharder: ShardedWal<DomainEvents>;
+  #sink: AppendableSink<DomainEvents>;
   #performanceObserverSink: PerformanceObserverSink<DomainEvents>;
   #state: 'idle' | 'running' | 'closed' = 'idle';
+  #debug: boolean;
   #unsubscribeExitHandlers: (() => void) | undefined;
+  #shardCounter: Counter = {
+    next: (() => {
+      // eslint-disable-next-line functional/no-let
+      let count = 0;
+      return () => ++count;
+    })(),
+  };
 
   /**
    * Creates a NodejsProfiler instance.
    * A WriteAheadLogFile sink is automatically created for buffering performance data.
    * @param options - Configuration options
    */
-
+  // eslint-disable-next-line max-lines-per-function
   constructor(options: NodejsProfilerOptions<DomainEvents, Tracks>) {
-    // Pick ProfilerBufferOptions
     const {
-      captureBufferedEntries,
-      flushThreshold,
-      maxQueueSize,
-      ...allButBufferOptions
-    } = options;
-    // Pick ProfilerPersistOptions
-    const {
-      format: profilerFormat,
-      measureName,
-      outDir = PROFILER_PERSIST_OUT_DIR,
-      enabled,
-      debug,
-      ...profilerOptions
-    } = allButBufferOptions;
-
-    super({ ...profilerOptions, enabled, debug });
-
-    const { encodePerfEntry, ...format } = profilerFormat;
-    this.#sharder = new ShardedWal<DomainEvents>({
-      debug,
-      dir: process.env[PROFILER_OUT_DIR_ENV_VAR] ?? outDir,
-      format: parseWalFormat<DomainEvents>(format),
-      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
-      measureNameEnvVar: PROFILER_MEASURE_NAME_ENV_VAR,
-      groupId: measureName,
-    });
-    this.#shard = this.#sharder.shard();
-    this.#performanceObserverSink = new PerformanceObserverSink({
-      sink: this.#shard,
       encodePerfEntry,
       captureBufferedEntries,
       flushThreshold,
       maxQueueSize,
-      debug: this.isDebugMode(),
+      enabled,
+      filename,
+      debugEnvVar = PROFILER_DEBUG_ENV_VAR,
+      ...profilerOptions
+    } = options;
+    const initialEnabled = enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
+    super({ ...profilerOptions, enabled: initialEnabled });
+
+    const walFormat = traceEventWalFormat();
+    this.#sink = new WriteAheadLogFile({
+      file:
+        filename ??
+        path.join(
+          process.cwd(),
+          getShardedPath({
+            dir: 'tmp/profiles',
+            groupId: getUniqueTimeId(),
+            shardId: getUniqueInstanceId(this.#shardCounter),
+            format: walFormat,
+          }),
+        ),
+      codec: walFormat.codec,
+    }) as AppendableSink<DomainEvents>;
+    this.#debug = isEnvVarEnabled(debugEnvVar);
+
+    this.#performanceObserverSink = new PerformanceObserverSink({
+      sink: this.#sink,
+      encodePerfEntry,
+      captureBufferedEntries,
+      flushThreshold,
+      maxQueueSize,
+      debugEnvVar,
     });
+
     this.#unsubscribeExitHandlers = subscribeProcessExit({
       onError: (
         error: unknown,
         kind: 'uncaughtException' | 'unhandledRejection',
-      ) => this.#handleFatalError(error, kind),
-      onExit: (_code: number) => this.close(),
+      ) => {
+        this.#handleFatalError(error, kind);
+      },
+      onExit: (_code: number) => {
+        this.close();
+      },
     });
 
-    if (options.enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR)) {
-      this.transition('running');
+    if (initialEnabled) {
+      this.#transition('running');
     }
   }
 
   /**
+   * Returns whether debug mode is enabled for profiler state transitions.
+   *
+   * Debug mode is initially determined by the environment variable specified by `debugEnvVar`
+   * (defaults to 'CP_PROFILER_DEBUG') during construction, but can be changed at runtime
+   * using {@link setDebugMode}. When enabled, profiler state transitions create
+   * performance marks for debugging.
+   *
+   * @returns true if debug mode is enabled, false otherwise
+   */
+  get debug(): boolean {
+    return this.#debug;
+  }
+
+  /**
+   * Sets debug mode for profiler state transitions.
+   *
+   * When debug mode is enabled, profiler state transitions create performance marks
+   * for debugging. This allows runtime control of debug mode without needing to
+   * restart the application or change environment variables.
+   *
+   * @param enabled - Whether to enable debug mode
+   */
+  setDebugMode(enabled: boolean): void {
+    this.#debug = enabled;
+  }
+
+  /**
    * Creates a performance marker for a profiler state transition.
+   * @param transition - The state transition that occurred
    */
   #transitionMarker(transition: string): void {
     const transitionMarkerPayload: MarkerPayload = {
@@ -170,10 +193,7 @@ export class NodejsProfiler<
       tooltipText: `Profiler state transition: ${transition}`,
       properties: [['Transition', transition], ...objectToEntries(this.stats)],
     };
-    performance.mark(
-      transition,
-      asOptions(markerPayload(transitionMarkerPayload)),
-    );
+    this.marker(transition, transitionMarkerPayload);
   }
 
   /**
@@ -185,21 +205,13 @@ export class NodejsProfiler<
     error: unknown,
     kind: 'uncaughtException' | 'unhandledRejection',
   ): void {
-    this.#fatalErrorMarker(error, kind);
-    this.close(); // Ensures buffers flush and sink finalizes
-  }
-  /**
-   * Creates a fatal errors by marking them and shutting down the profiler.
-   * @param error - The error that occurred
-   * @param kind - The kind of fatal error (uncaughtException or unhandledRejection)
-   */
-  #fatalErrorMarker(error: unknown, kind: FatalKind): void {
     this.marker(
       'Fatal Error',
       errorToMarkerPayload(error, {
         tooltipText: `${kind} caused fatal error`,
       }),
     );
+    this.close(); // Ensures buffers flush and sink finalizes
   }
 
   /**
@@ -208,13 +220,13 @@ export class NodejsProfiler<
    * State transitions enforce lifecycle invariants:
    * - `idle -> running`: Enables profiling, opens sink, and subscribes to performance observer
    * - `running -> idle`: Disables profiling, unsubscribes, and closes sink (sink will be reopened on re-enable)
-   * - `running -> closed`: Disables profiling, unsubscribes, closes sink, and finalizes shards (irreversible)
-   * - `idle -> closed`: Closes sink if it was opened and finalizes shards (irreversible)
+   * - `running -> closed`: Disables profiling, unsubscribes, and closes sink (irreversible)
+   * - `idle -> closed`: Closes sink if it was opened (irreversible)
    *
    * @param next - The target state to transition to
    * @throws {Error} If attempting to transition from 'closed' state or invalid transition
    */
-  protected transition(next: NodeJsProfilerState): void {
+  #transition(next: 'idle' | 'running' | 'closed'): void {
     if (this.#state === next) {
       return;
     }
@@ -223,30 +235,24 @@ export class NodejsProfiler<
     }
 
     const transition = `${this.#state}->${next}`;
-    if (this.isDebugMode()) {
-      this.#transitionMarker(`${PROFILER_DEBUG_MEASURE_PREFIX}:${transition}`);
-    }
 
     switch (transition) {
       case 'idle->running':
         super.setEnabled(true);
-        this.#shard?.open();
-        this.#performanceObserverSink?.subscribe();
+        this.#sink.open?.();
+        this.#performanceObserverSink.subscribe();
         break;
 
       case 'running->idle':
+      case 'running->closed':
         super.setEnabled(false);
-        this.#performanceObserverSink?.unsubscribe();
-        this.#shard?.close();
+        this.#performanceObserverSink.unsubscribe();
+        this.#sink.close?.();
         break;
 
-      case 'running->closed':
       case 'idle->closed':
-        super.setEnabled(false);
-        this.#performanceObserverSink?.unsubscribe();
-        this.#shard?.close();
-        this.#sharder?.finalizeIfCoordinator();
-        this.#unsubscribeExitHandlers?.();
+        // Sink may have been opened before, close it
+        this.#sink.close?.();
         break;
 
       default:
@@ -254,6 +260,10 @@ export class NodejsProfiler<
     }
 
     this.#state = next;
+
+    if (this.#debug) {
+      this.#transitionMarker(transition);
+    }
   }
 
   /**
@@ -264,7 +274,13 @@ export class NodejsProfiler<
     if (this.#state === 'closed') {
       return;
     }
-    this.transition('closed');
+    this.#unsubscribeExitHandlers?.();
+    this.#transition('closed');
+  }
+
+  /** @returns Current profiler state */
+  get state(): 'idle' | 'running' | 'closed' {
+    return this.#state;
   }
 
   /** @returns Whether profiler is in 'running' state */
@@ -275,34 +291,19 @@ export class NodejsProfiler<
   /** Enables profiling (start/stop) */
   override setEnabled(enabled: boolean): void {
     if (enabled) {
-      this.transition('running');
+      this.#transition('running');
     } else {
-      this.transition('idle');
+      this.#transition('idle');
     }
-  }
-
-  /** @returns Current profiler state */
-  get state(): 'idle' | 'running' | 'closed' {
-    return this.#state;
   }
 
   /** @returns Queue statistics and profiling state for monitoring */
   get stats() {
-    const {
-      state: sharderState,
-      isCoordinator,
-      ...sharderStats
-    } = this.#sharder?.stats ?? {};
-
     return {
-      profilerState: this.#state,
-      debug: this.isDebugMode(),
-      sharderState,
-      ...sharderStats,
-      isCoordinator,
-      shardOpen: !this.#shard?.isClosed(),
-      shardPath: this.#shard?.getPath(),
-      ...this.#performanceObserverSink?.getStats(),
+      ...this.#performanceObserverSink.getStats(),
+      debug: this.#debug,
+      state: this.#state,
+      walOpen: !this.#sink.isClosed(),
     };
   }
 
@@ -311,6 +312,11 @@ export class NodejsProfiler<
     if (this.#state === 'closed') {
       return; // No-op if closed
     }
-    this.#performanceObserverSink?.flush();
+    this.#performanceObserverSink.flush();
+  }
+
+  /** @returns The file path of the WriteAheadLogFile sink */
+  get filePath(): string {
+    return (this.#sink as WriteAheadLogFile<DomainEvents>).getPath();
   }
 }

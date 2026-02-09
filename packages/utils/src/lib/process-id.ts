@@ -47,10 +47,6 @@ export const ID_PATTERNS = Object.freeze({
    * Used by: getUniqueInstanceId()
    */
   INSTANCE_ID: new RegExp(`^${TIME_ID_BASE.source}\\.\\d+\\.\\d+\\.\\d+$`),
-  /** @deprecated Use INSTANCE_ID instead */
-  SHARD_ID: new RegExp(`^${TIME_ID_BASE.source}\\.\\d+\\.\\d+\\.\\d+$`),
-  /** @deprecated Use TIME_ID instead */
-  READABLE_DATE: new RegExp(`^${TIME_ID_BASE.source}$`),
 } as const);
 
 /**
@@ -91,30 +87,6 @@ export function getUniqueProcessThreadId(): string {
  */
 export function getUniqueInstanceId(counter: Counter): string {
   return `${getUniqueTimeId()}.${process.pid}.${threadId}.${counter.next()}`;
-}
-
-/**
- * Generates a unique instance ID and updates a static class property.
- * Encapsulates the read → increment → write pattern safely within a single execution context.
- *
- * @param getCount - Function that returns the current instance count
- * @param setCount - Function that sets the new instance count
- * @returns A unique ID string combining timestamp, process ID, thread ID, and counter
- */
-export function getUniqueInstanceIdAndUpdate(
-  getCount: () => number,
-  setCount: (value: number) => void,
-): string {
-  // eslint-disable-next-line functional/no-let
-  let value = getCount();
-  const counter: Counter = {
-    next() {
-      return ++value;
-    },
-  };
-  const id = getUniqueInstanceId(counter);
-  setCount(value);
-  return id;
 }
 
 /**

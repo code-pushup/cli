@@ -4,7 +4,6 @@ import type {
   AuditOutputs,
   Issue,
   IssueSeverity,
-  SourceUrlLocation,
 } from '@code-pushup/models';
 import {
   formatIssueSeverities,
@@ -71,26 +70,35 @@ function formatSelector(selector: axe.CrossTreeSelector): string {
   return selector.join(' >> ');
 }
 
+/**
+ * Joins `none`/`all` check messages (each must be fixed).
+ * Falls back to first `any` check (OR-ed, one represents the group).
+ */
+function formatNodeMessage(node: axe.NodeResult, fallback: string): string {
+  const requiredMessages = [...node.none, ...node.all].map(
+    check => check.message,
+  );
+  if (requiredMessages.length > 0) {
+    return requiredMessages.join('. ');
+  }
+  return node.any[0]?.message ?? fallback;
+}
+
 function toIssue(node: axe.NodeResult, result: axe.Result, url: string): Issue {
   const selector = node.target?.[0]
     ? formatSelector(node.target[0])
     : undefined;
-  const rawMessage = node.failureSummary || result.help;
-  const cleanMessage = rawMessage.replace(/\s+/g, ' ').trim();
 
-  // TODO: Remove selector prefix from message once Portal supports URL sources
-  const message = selector ? `[\`${selector}\`] ${cleanMessage}` : cleanMessage;
-
-  const source: SourceUrlLocation = {
-    url,
-    ...(node.html && { snippet: node.html }),
-    ...(selector && { selector }),
-  };
+  const message = formatNodeMessage(node, result.help);
 
   return {
     message: truncateIssueMessage(message),
     severity: impactToSeverity(node.impact),
-    source,
+    source: {
+      url,
+      ...(node.html && { snippet: node.html }),
+      ...(selector && { selector }),
+    },
   };
 }
 
