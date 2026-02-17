@@ -272,7 +272,7 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
  * Format descriptor that binds codec and file extension together.
  * Prevents misconfiguration by keeping related concerns in one object.
  */
-export type WalFormat<T extends object | string> = {
+export type WalFormat<T extends WalRecord> = {
   /** Base name for the WAL (e.g., "trace") */
   baseName: string;
   /** Shard file extension (e.g., ".jsonl") */
@@ -288,9 +288,7 @@ export type WalFormat<T extends object | string> = {
   ) => string;
 };
 
-export const stringCodec = <
-  T extends string | object = string,
->(): Codec<T> => ({
+export const stringCodec = <T extends WalRecord = WalRecord>(): Codec<T> => ({
   encode: v => (typeof v === 'string' ? v : JSON.stringify(v)),
   decode: v => {
     try {
@@ -314,7 +312,7 @@ export const stringCodec = <
  * @param format - Partial WalFormat configuration
  * @returns Parsed WalFormat with defaults filled in
  */
-export function parseWalFormat<T extends object | string = object>(
+export function parseWalFormat<T extends WalRecord = WalRecord>(
   format: Partial<WalFormat<T>>,
 ): WalFormat<T> {
   const {
@@ -417,7 +415,7 @@ function ensureDirectoryExistsSync(dirPath: string): void {
  * @param opt.shardId - The human-readable shard ID (readable-timestamp.pid.threadId.count format)
  * @returns The path to the shard file
  */
-export function getShardedPath<T extends object | string = object>(opt: {
+export function getShardedPath<T extends WalRecord = WalRecord>(opt: {
   dir?: string;
   format: WalFormat<T>;
   groupId: string;
@@ -429,7 +427,7 @@ export function getShardedPath<T extends object | string = object>(opt: {
   return path.join(dir, groupId, `${baseName}.${shardId}${walExtension}`);
 }
 
-export function getShardedFinalPath<T extends object | string = object>(opt: {
+export function getShardedFinalPath<T extends WalRecord = WalRecord>(opt: {
   dir?: string;
   format: WalFormat<T>;
   groupId: string;
@@ -440,12 +438,14 @@ export function getShardedFinalPath<T extends object | string = object>(opt: {
   return path.join(dir, groupId, `${baseName}.${groupId}${finalExtension}`);
 }
 
+export type WalRecord = object | string;
+
 /**
  * Sharded Write-Ahead Log manager for coordinating multiple WAL shards.
  * Handles distributed logging across multiple processes/files with atomic finalization.
  */
 
-export class ShardedWal<T extends object | string = object> {
+export class ShardedWal<T extends WalRecord = WalRecord> {
   static instanceCount = 0;
   readonly #id: string = getShardedWalId();
   readonly groupId = getUniqueTimeId();
