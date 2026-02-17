@@ -1,3 +1,13 @@
+## 0.113.0 (2026-02-04)
+
+### 🚀 Features
+
+- support URL sources upload to portal ([#1235](https://github.com/code-pushup/cli/pull/1235))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.112.0 (2026-01-29)
 
 ### 🚀 Features

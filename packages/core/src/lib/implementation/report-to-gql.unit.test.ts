@@ -2,7 +2,7 @@ import { type AuditReportTree, TreeType } from '@code-pushup/portal-client';
 import { issueToGQL, tableToGQL, treeToGQL } from './report-to-gql.js';
 
 describe('issueToGQL', () => {
-  it('transforms issue to GraphQL input type', () => {
+  it('should transform issue with file source to GraphQL input type', () => {
     expect(
       issueToGQL({
         message: 'No let, use const instead.',
@@ -21,6 +21,27 @@ describe('issueToGQL', () => {
       sourceStartColumn: 10,
       sourceEndLine: undefined,
       sourceEndColumn: 25,
+    });
+  });
+
+  it('should transform issue with URL source to GraphQL input type', () => {
+    expect(
+      issueToGQL({
+        message: 'Fix any of the following: Unable to determine contrast ratio',
+        severity: 'error',
+        source: {
+          url: 'https://code-pushup.dev/',
+          snippet: '<span>measure development KPIs</span>',
+          selector: '.text-box > span:nth-child(3)',
+        },
+      }),
+    ).toStrictEqual({
+      message: 'Fix any of the following: Unable to determine contrast ratio',
+      severity: 'Error',
+      sourceSelector: '.text-box > span:nth-child(3)',
+      sourceSnippet: '<span>measure development KPIs</span>',
+      sourceType: 'Url',
+      sourceUrl: 'https://code-pushup.dev/',
     });
   });
 });

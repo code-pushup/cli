@@ -207,6 +207,29 @@ describe('transformGQLReport', () => {
         },
         groups: [],
       },
+      {
+        slug: 'axe',
+        title: 'Axe accessibility',
+        icon: 'folder-syntax',
+        runnerStartDate: '2025-08-01T00:10:25.000Z',
+        runnerDuration: 5000,
+        audits: {
+          edges: [
+            {
+              node: {
+                slug: 'color-contrast',
+                title:
+                  'Elements must meet minimum color contrast ratio thresholds',
+                score: 0,
+                value: 1,
+                formattedValue: '1 error',
+                details: { enabled: true, trees: [], tables: [] },
+              },
+            },
+          ],
+        },
+        groups: [],
+      },
     ],
     issues: {
       edges: [
@@ -229,6 +252,19 @@ describe('transformGQLReport', () => {
             message:
               '`main.js` is **420 kB**, exceeds warning threshold of 350 kB',
             severity: IssueSeverity.Warning,
+          },
+        },
+        {
+          node: {
+            audit: { plugin: { slug: 'axe' }, slug: 'color-contrast' },
+            message: 'Element has insufficient color contrast of 4.33',
+            severity: IssueSeverity.Error,
+            source: {
+              __typename: 'SourceUrlLocation',
+              url: 'https://example.com/',
+              snippet: '<span style="color: #aaa">Low contrast</span>',
+              selector: '.hero > span:nth-child(2)',
+            },
           },
         },
       ],
