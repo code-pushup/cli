@@ -1,5 +1,13 @@
+/* eslint-disable max-lines */
 import * as fs from 'node:fs';
 import path from 'node:path';
+import process from 'node:process';
+import { threadId } from 'node:worker_threads';
+import {
+  type Counter,
+  getUniqueInstanceId,
+  getUniqueTimeId,
+} from './process-id.js';
 
 /**
  * Codec for encoding/decoding values to/from strings for WAL storage.
@@ -14,18 +22,6 @@ export type Codec<I, O = string> = {
 
 export type InvalidEntry<O = string> = { __invalid: true; raw: O };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type CodecInput<C> = C extends Codec<infer I, infer O> ? I : never;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type CodecOutput<C> = C extends Codec<infer I, infer O> ? O : never;
-
-export type TolerantCodec<C> = Codec<
-  CodecInput<C> | InvalidEntry<CodecOutput<C>>,
-  CodecOutput<C>
->;
-
-export type WalRecord = object | string;
-
 /**
  * Interface for sinks that can append items.
  * Allows for different types of appendable storage (WAL, in-memory, etc.)
@@ -35,19 +31,6 @@ export type AppendableSink<T> = Recoverable & {
   isClosed: () => boolean;
   open?: () => void;
   close?: () => void;
-};
-
-/**
- * Result of recovering records from a WAL file.
- * Contains successfully recovered records and any errors encountered during parsing.
- */
-export type RecoverResult<T> = {
-  /** Successfully recovered records */
-  records: (T | InvalidEntry)[];
-  /** Errors encountered during recovery with line numbers and context */
-  errors: { lineNo: number; line: string; error: Error }[];
-  /** Last incomplete line if file was truncated (null if clean) */
-  partialTail: string | null;
 };
 
 /**
@@ -61,6 +44,19 @@ export type Recoverable = {
 };
 
 /**
+ * Result of recovering records from a WAL file.
+ * Contains successfully recovered records and any errors encountered during parsing.
+ */
+export type RecoverResult<T> = {
+  /** Successfully recovered records */
+  records: T[];
+  /** Errors encountered during recovery with line numbers and context */
+  errors: { lineNo: number; line: string; error: Error }[];
+  /** Last incomplete line if file was truncated (null if clean) */
+  partialTail: string | null;
+};
+
+/**
  * Statistics about the WAL file state and last recovery operation.
  */
 export type WalStats<T> = {
@@ -68,6 +64,10 @@ export type WalStats<T> = {
   filePath: string;
   /** Whether the WAL file is currently closed */
   isClosed: boolean;
+  /** Whether the WAL file exists on disk */
+  fileExists: boolean;
+  /** File size in bytes (0 if file doesn't exist) */
+  fileSize: number;
   /** Last recovery state from the most recent {@link recover} or {@link repack} operation */
   lastRecovery: RecoverResult<T | InvalidEntry<string>> | null;
 };
@@ -150,9 +150,7 @@ export function recoverFromContent<T>(
  * Write-Ahead Log implementation for crash-safe append-only logging.
  * Provides atomic operations for writing, recovering, and repacking log entries.
  */
-export class WriteAheadLogFile<T extends WalRecord = WalRecord>
-  implements AppendableSink<T>
-{
+export class WriteAheadLogFile<T> implements AppendableSink<T> {
   #fd: number | null = null;
   readonly #file: string;
   readonly #decode: Codec<T | InvalidEntry<string>>['decode'];
@@ -164,9 +162,8 @@ export class WriteAheadLogFile<T extends WalRecord = WalRecord>
    * @param options - Configuration options
    */
   constructor(options: { file: string; codec: Codec<T> }) {
-    const { file, codec } = options;
-    this.#file = file;
-    const c = createTolerantCodec(codec);
+    this.#file = options.file;
+    const c = createTolerantCodec(options.codec);
     this.#decode = c.decode;
     this.#encode = c.encode;
   }
@@ -247,8 +244,9 @@ export class WriteAheadLogFile<T extends WalRecord = WalRecord>
       // eslint-disable-next-line no-console
       console.log('Found invalid entries during WAL repack');
     }
-    // Always filter out invalid entries when repacking
-    const recordsToWrite = filterValidRecords(r.records);
+    const recordsToWrite = hasInvalidEntries
+      ? (r.records as T[])
+      : filterValidRecords(r.records);
     ensureDirectoryExistsSync(path.dirname(out));
     fs.writeFileSync(out, `${recordsToWrite.map(this.#encode).join('\n')}\n`);
   }
@@ -259,9 +257,12 @@ export class WriteAheadLogFile<T extends WalRecord = WalRecord>
    * @returns Statistics object with file info and last recovery state
    */
   getStats(): WalStats<T> {
+    const fileExists = fs.existsSync(this.#file);
     return {
       filePath: this.#file,
       isClosed: this.#fd == null,
+      fileExists,
+      fileSize: fileExists ? fs.statSync(this.#file).size : 0,
       lastRecovery: this.#lastRecoveryState,
     };
   }
@@ -271,7 +272,7 @@ export class WriteAheadLogFile<T extends WalRecord = WalRecord>
  * Format descriptor that binds codec and file extension together.
  * Prevents misconfiguration by keeping related concerns in one object.
  */
-export type WalFormat<T extends WalRecord = WalRecord> = {
+export type WalFormat<T extends object | string> = {
   /** Base name for the WAL (e.g., "trace") */
   baseName: string;
   /** Shard file extension (e.g., ".jsonl") */
@@ -281,27 +282,21 @@ export type WalFormat<T extends WalRecord = WalRecord> = {
   /** Codec for encoding/decoding records */
   codec: Codec<T, string>;
   /** Finalizer for converting records to a string */
-  finalizer: (records: T[], opt?: Record<string, unknown>) => string;
-};
-
-export type WalFormatWithInvalids<T extends WalRecord> = Omit<
-  WalFormat<T>,
-  'codec' | 'finalizer'
-> & {
-  codec: TolerantCodec<Codec<T, string>>;
   finalizer: (
     records: (T | InvalidEntry<string>)[],
     opt?: Record<string, unknown>,
   ) => string;
 };
 
-export const stringCodec = <T extends WalRecord = WalRecord>(): Codec<T> => ({
-  encode: v => JSON.stringify(v),
+export const stringCodec = <
+  T extends string | object = string,
+>(): Codec<T> => ({
+  encode: v => (typeof v === 'string' ? v : JSON.stringify(v)),
   decode: v => {
     try {
       return JSON.parse(v) as T;
     } catch {
-      return v as unknown as T;
+      return v as T;
     }
   },
 });
@@ -319,7 +314,7 @@ export const stringCodec = <T extends WalRecord = WalRecord>(): Codec<T> => ({
  * @param format - Partial WalFormat configuration
  * @returns Parsed WalFormat with defaults filled in
  */
-export function parseWalFormat<T extends WalRecord = WalRecord>(
+export function parseWalFormat<T extends object | string = object>(
   format: Partial<WalFormat<T>>,
 ): WalFormat<T> {
   const {
@@ -327,23 +322,79 @@ export function parseWalFormat<T extends WalRecord = WalRecord>(
     walExtension = '.log',
     finalExtension = walExtension,
     codec = stringCodec<T>(),
-    finalizer,
   } = format;
+
+  const finalizer =
+    format.finalizer ??
+    ((records: (T | InvalidEntry<string>)[]) => {
+      // Encode each record using the codec before joining.
+      // For object types, codec.encode() will JSON-stringify them properly.
+      // InvalidEntry records use their raw string value directly.
+      const encoded = records.map(record =>
+        typeof record === 'object' && record != null && '__invalid' in record
+          ? (record as InvalidEntry<string>).raw
+          : codec.encode(record as T),
+      );
+      return `${encoded.join('\n')}\n`;
+    });
 
   return {
     baseName,
     walExtension,
     finalExtension,
     codec,
-    finalizer:
-      finalizer ??
-      ((records, _opt) =>
-        `${records.map(record => codec.encode(record)).join('\n')}\n`),
-  };
+    finalizer,
+  } satisfies WalFormat<T>;
 }
 
 /**
- * NOTE: this helper is only used in this file. The rest of the repo avoids sync methods so it is not reusable.
+ * Determines if this process is the leader WAL process using the origin PID heuristic.
+ *
+ * The leader is the process that first enabled profiling (the one that set CP_PROFILER_ORIGIN_PID).
+ * All descendant processes inherit the environment but have different PIDs.
+ *
+ * @returns true if this is the leader WAL process, false otherwise
+ */
+export function isCoordinatorProcess(
+  envVarName: string,
+  profilerID: string,
+): boolean {
+  return process.env[envVarName] === profilerID;
+}
+
+/**
+ * Initialize the origin PID environment variable if not already set.
+ * This must be done as early as possible before any user code runs.
+ * Sets envVarName to the current process ID if not already defined.
+ */
+export function setCoordinatorProcess(
+  envVarName: string,
+  profilerID: string,
+): void {
+  if (!process.env[envVarName]) {
+    // eslint-disable-next-line functional/immutable-data
+    process.env[envVarName] = profilerID;
+  }
+}
+
+/**
+ * Simple counter implementation for generating sequential IDs.
+ */
+const shardCounter: Counter = (() => {
+  // eslint-disable-next-line functional/no-let
+  let count = 0;
+  return { next: () => ++count };
+})();
+
+/**
+ * Generates a unique sharded WAL ID based on performance time origin, process ID, thread ID, and instance count.
+ */
+function getShardedWalId() {
+  // eslint-disable-next-line functional/immutable-data
+  return `${Math.round(performance.timeOrigin)}.${process.pid}.${threadId}.${++ShardedWal.instanceCount}`;
+}
+
+/**
  * Ensures a directory exists, creating it recursively if necessary using sync methods.
  * @param dirPath - The directory path to ensure exists
  */
