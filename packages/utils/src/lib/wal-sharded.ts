@@ -14,19 +14,9 @@ import {
   type WalFormat,
   type WalRecord,
   WriteAheadLogFile,
+  ensureDirectoryExistsSync,
   filterValidRecords,
 } from './wal.js';
-
-/**
- * NOTE: this helper is only used in this file. The rest of the repo avoids sync methods so it is not reusable.
- * Ensures a directory exists, creating it recursively if necessary using sync methods.
- * @param dirPath - The directory path to ensure exists
- */
-function ensureDirectoryExistsSync(dirPath: string): void {
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
-  }
-}
 
 /**
  * Validates that a groupId is safe to use as a single path segment.
@@ -43,7 +33,7 @@ function validateGroupId(groupId: string): void {
 
   // Reject path separators (both forward and backward slashes)
   if (groupId.includes('/') || groupId.includes('\\')) {
-    throw new Error('groupId cannot contain path separators (/ or \\)');
+    throw new Error('groupId cannot contain path separators');
   }
 
   // Reject relative path components
@@ -89,6 +79,31 @@ export const ShardedWalCounter: Counter = {
  */
 export function getShardId(): string {
   return `${getUniqueTimeId()}.${process.pid}.${threadId}.${ShardedWalCounter.next()}`;
+}
+
+/**
+ * Generates a path to a shard file using human-readable IDs.
+ * Both groupId and shardId are already in readable date format.
+ *
+ * Example with groupId "20240101-120000-000" and shardId "20240101-120000-000.12345.1.1":
+ * Full path: /base/20240101-120000-000/trace.20240101-120000-000.12345.1.1.log
+ *
+ * @param opt.dir - The directory to store the shard file
+ * @param opt.format - The WalFormat to use for the shard file
+ * @param opt.groupId - The human-readable group ID (yyyymmdd-hhmmss-ms format)
+ * @param opt.shardId - The human-readable shard ID (readable-timestamp.pid.threadId.count format)
+ * @returns The path to the shard file
+ */
+export function getShardedPath<T extends object | string = object>(opt: {
+  dir?: string;
+  format: WalFormat<T>;
+  groupId: string;
+  shardId: string;
+}): string {
+  const { dir = '', format, groupId, shardId } = opt;
+  const { baseName, walExtension } = format;
+
+  return path.join(dir, groupId, `${baseName}.${shardId}${walExtension}`);
 }
 
 /**

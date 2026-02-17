@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { PROFILER_SHARDER_ID_ENV_VAR } from './profiler/constants.js';
+import { SHARDED_WAL_COORDINATOR_ID_ENV_VAR } from './profiler/constants.js';
 import { ShardedWal } from './wal-sharded.js';
 import { type WalFormat, type WalRecord, stringCodec } from './wal.js';
 
@@ -57,7 +57,7 @@ describe('ShardedWal Integration', () => {
       format: makeMockFormat({
         baseName: 'trace',
       }),
-      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: 'create-finalize',
     });
 
@@ -93,7 +93,7 @@ describe('ShardedWal Integration', () => {
       format: makeMockFormat({
         baseName: 'merged',
       }),
-      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: 'merge-shards',
     });
 
@@ -126,7 +126,7 @@ describe('ShardedWal Integration', () => {
       format: makeMockFormat({
         baseName: 'test',
       }),
-      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: 'invalid-entries',
     });
 
@@ -166,7 +166,7 @@ describe('ShardedWal Integration', () => {
       format: makeMockFormat({
         baseName: 'cleanup-test',
       }),
-      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: 'cleanup-test',
     });
 
@@ -206,7 +206,7 @@ describe('ShardedWal Integration', () => {
         finalizer: (records, opt) =>
           `${JSON.stringify({ records, metadata: opt })}\n`,
       }),
-      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: 'custom-finalizer',
     });
 
@@ -238,7 +238,7 @@ describe('ShardedWal Integration', () => {
       format: makeMockFormat({
         baseName: 'empty',
       }),
-      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: 'empty-shards',
     });
 

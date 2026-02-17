@@ -268,7 +268,7 @@ export type WalRecord = object | string;
  * Format descriptor that binds codec and file extension together.
  * Prevents misconfiguration by keeping related concerns in one object.
  */
-export type WalFormat<T extends WalRecord> = {
+export type WalFormat<T extends WalRecord = WalRecord> = {
   /** Base name for the WAL (e.g., "trace") */
   baseName: string;
   /** Shard file extension (e.g., ".jsonl") */
@@ -344,10 +344,11 @@ export function parseWalFormat<T extends WalRecord = WalRecord>(
 }
 
 /**
+ * NOTE: this helper is only used in this file. The rest of the repo avoids sync methods so it is not reusable.
  * Ensures a directory exists, creating it recursively if necessary using sync methods.
  * @param dirPath - The directory path to ensure exists
  */
-function ensureDirectoryExistsSync(dirPath: string): void {
+export function ensureDirectoryExistsSync(dirPath: string): void {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
   }
