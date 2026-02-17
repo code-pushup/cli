@@ -2,7 +2,10 @@ import { vol } from 'memfs';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME, osAgnosticPath } from '@code-pushup/test-utils';
 import { getUniqueInstanceId } from './process-id.js';
-import { SHARDED_WAL_COORDINATOR_ID_ENV_VAR } from './profiler/constants.js';
+import {
+  PROFILER_MEASURE_NAME,
+  SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+} from './profiler/constants.js';
 import { ShardedWal } from './wal-sharded.js';
 import {
   type WalFormat,
@@ -43,7 +46,7 @@ describe('ShardedWal', () => {
     delete process.env[SHARDED_WAL_COORDINATOR_ID_ENV_VAR];
     // Clear measure name env var to avoid test pollution
     // eslint-disable-next-line functional/immutable-data
-    delete process.env['CP_PROFILER_MEASURE_NAME'];
+    delete process.env[PROFILER_MEASURE_NAME];
   });
 
   describe('initialization', () => {
@@ -60,9 +63,9 @@ describe('ShardedWal', () => {
 
     it('should use groupId from env var when measureNameEnvVar is set', () => {
       // eslint-disable-next-line functional/immutable-data
-      process.env['CP_PROFILER_MEASURE_NAME'] = 'from-env';
+      process.env[PROFILER_MEASURE_NAME] = 'from-env';
       const sw = getShardedWal({
-        measureNameEnvVar: 'CP_PROFILER_MEASURE_NAME',
+        measureNameEnvVar: PROFILER_MEASURE_NAME,
       });
       expect(sw.groupId).toBe('from-env');
       expect(process.env.CP_PROFILER_MEASURE_NAME).toBe('from-env');
@@ -72,7 +75,7 @@ describe('ShardedWal', () => {
       // eslint-disable-next-line functional/immutable-data
       delete process.env.CP_PROFILER_MEASURE_NAME;
       const sw = getShardedWal({
-        measureNameEnvVar: 'CP_PROFILER_MEASURE_NAME',
+        measureNameEnvVar: PROFILER_MEASURE_NAME,
       });
       expect(process.env.CP_PROFILER_MEASURE_NAME).toBe(sw.groupId);
     });
@@ -136,7 +139,7 @@ describe('ShardedWal', () => {
       process.env.CP_PROFILER_MEASURE_NAME = '../malicious';
       expect(() =>
         getShardedWal({
-          measureNameEnvVar: 'CP_PROFILER_MEASURE_NAME',
+          measureNameEnvVar: PROFILER_MEASURE_NAME,
         }),
       ).toThrow('groupId cannot contain path separators');
     });
