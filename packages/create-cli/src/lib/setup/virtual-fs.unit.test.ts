@@ -1,3 +1,4 @@
+import { toUnixPath } from '@code-pushup/utils';
 import type { FileSystemAdapter } from './types.js';
 import { createTree } from './virtual-fs.js';
 
@@ -12,22 +13,22 @@ function createMockFs(
     written,
     dirs,
     readFileSync(path: string) {
-      const content = store.get(path);
+      const content = store.get(toUnixPath(path));
       if (content == null) {
         throw new Error(`ENOENT: no such file or directory, open '${path}'`);
       }
       return content;
     },
     writeFileSync(path: string, content: string) {
-      store.set(path, content);
-      written.set(path, content);
+      store.set(toUnixPath(path), content);
+      written.set(toUnixPath(path), content);
     },
     existsSync(path: string) {
-      return store.has(path);
+      return store.has(toUnixPath(path));
     },
     mkdirSync(_path: string, _options: { recursive: boolean }) {
       // eslint-disable-next-line functional/immutable-data
-      dirs.push(_path);
+      dirs.push(toUnixPath(_path));
     },
   };
 }
