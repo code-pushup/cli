@@ -16,11 +16,7 @@ import type {
   ActionTrackEntryPayload,
   MarkerPayload,
 } from '../user-timing-extensibility-api.type.js';
-import {
-  type AppendableSink,
-  WriteAheadLogFile,
-  getShardedPath,
-} from '../wal.js';
+import { type AppendableSink, WriteAheadLogFile } from '../wal.js';
 import {
   PROFILER_DEBUG_ENV_VAR,
   PROFILER_ENABLED_ENV_VAR,

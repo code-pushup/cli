@@ -1,13 +1,5 @@
-/* eslint-disable max-lines */
 import * as fs from 'node:fs';
 import path from 'node:path';
-import process from 'node:process';
-import { threadId } from 'node:worker_threads';
-import {
-  type Counter,
-  getUniqueInstanceId,
-  getUniqueTimeId,
-} from './process-id.js';
 
 /**
  * Codec for encoding/decoding values to/from strings for WAL storage.
@@ -150,7 +142,9 @@ export function recoverFromContent<T>(
  * Write-Ahead Log implementation for crash-safe append-only logging.
  * Provides atomic operations for writing, recovering, and repacking log entries.
  */
-export class WriteAheadLogFile<T> implements AppendableSink<T> {
+export class WriteAheadLogFile<T extends WalRecord = WalRecord>
+  implements AppendableSink<T>
+{
   #fd: number | null = null;
   readonly #file: string;
   readonly #decode: Codec<T | InvalidEntry<string>>['decode'];
@@ -268,11 +262,13 @@ export class WriteAheadLogFile<T> implements AppendableSink<T> {
   }
 }
 
+export type WalRecord = object | string;
+
 /**
  * Format descriptor that binds codec and file extension together.
  * Prevents misconfiguration by keeping related concerns in one object.
  */
-export type WalFormat<T extends object | string> = {
+export type WalFormat<T extends WalRecord> = {
   /** Base name for the WAL (e.g., "trace") */
   baseName: string;
   /** Shard file extension (e.g., ".jsonl") */
@@ -314,7 +310,7 @@ export const stringCodec = <
  * @param format - Partial WalFormat configuration
  * @returns Parsed WalFormat with defaults filled in
  */
-export function parseWalFormat<T extends object | string = object>(
+export function parseWalFormat<T extends WalRecord = WalRecord>(
   format: Partial<WalFormat<T>>,
 ): WalFormat<T> {
   const {
@@ -345,53 +341,6 @@ export function parseWalFormat<T extends object | string = object>(
     codec,
     finalizer,
   } satisfies WalFormat<T>;
-}
-
-/**
- * Determines if this process is the leader WAL process using the origin PID heuristic.
- *
- * The leader is the process that first enabled profiling (the one that set CP_PROFILER_ORIGIN_PID).
- * All descendant processes inherit the environment but have different PIDs.
- *
- * @returns true if this is the leader WAL process, false otherwise
- */
-export function isCoordinatorProcess(
-  envVarName: string,
-  profilerID: string,
-): boolean {
-  return process.env[envVarName] === profilerID;
-}
-
-/**
- * Initialize the origin PID environment variable if not already set.
- * This must be done as early as possible before any user code runs.
- * Sets envVarName to the current process ID if not already defined.
- */
-export function setCoordinatorProcess(
-  envVarName: string,
-  profilerID: string,
-): void {
-  if (!process.env[envVarName]) {
-    // eslint-disable-next-line functional/immutable-data
-    process.env[envVarName] = profilerID;
-  }
-}
-
-/**
- * Simple counter implementation for generating sequential IDs.
- */
-const shardCounter: Counter = (() => {
-  // eslint-disable-next-line functional/no-let
-  let count = 0;
-  return { next: () => ++count };
-})();
-
-/**
- * Generates a unique sharded WAL ID based on performance time origin, process ID, thread ID, and instance count.
- */
-function getShardedWalId() {
-  // eslint-disable-next-line functional/immutable-data
-  return `${Math.round(performance.timeOrigin)}.${process.pid}.${threadId}.${++ShardedWal.instanceCount}`;
 }
 
 /**

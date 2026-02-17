@@ -30,3 +30,21 @@ export function stringifyError(
   }
   return JSON.stringify(error);
 }
+
+/**
+ * Extends an error with a new message and keeps the original as the cause.
+ * This helps to keep the stacktrace intact and enables better debugging.
+ * @param error - The error to extend
+ * @param message - The new message to add to the error
+ * @returns A new error with the extended message and the original as cause
+ */
+export function extendError(
+  error: unknown,
+  message: string,
+  { appendMessage = false } = {},
+) {
+  const errorMessage = appendMessage
+    ? `${message}\n${stringifyError(error)}`
+    : message;
+  return new Error(errorMessage, { cause: error });
+}
