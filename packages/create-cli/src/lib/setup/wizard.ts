@@ -1,4 +1,4 @@
-import { asyncSequential, logger } from '@code-pushup/utils';
+import { asyncSequential, formatAsciiTable, logger } from '@code-pushup/utils';
 import { generateConfigSource } from './codegen.js';
 import { promptPluginOptions } from './prompts.js';
 import type {
@@ -8,8 +8,6 @@ import type {
   PluginSetupBinding,
 } from './types.js';
 import { createTree } from './virtual-fs.js';
-
-const COLUMN_GAP = 3;
 
 export async function runSetupWizard(
   bindings: PluginSetupBinding[],
@@ -26,7 +24,10 @@ export async function runSetupWizard(
 
   const tree = createTree(targetDir);
   // TODO: #1243 — select config file format (TS/JS/MJS) based on user choice or tsconfig detection
-  tree.write('code-pushup.config.ts', generateConfigSource(pluginResults));
+  await tree.write(
+    'code-pushup.config.ts',
+    generateConfigSource(pluginResults),
+  );
 
   const changes = tree.listChanges();
 
@@ -39,7 +40,7 @@ export async function runSetupWizard(
     logger.info('Setup complete.');
     logger.newline();
     logNextSteps([
-      ['npx code-pushup collect', 'Run your first report'],
+      ['npx code-pushup', 'Collect your first report'],
       ['https://github.com/code-pushup/cli#readme', 'Documentation'],
     ]);
   }
@@ -52,7 +53,7 @@ async function resolveBinding(
   const answers = binding.prompts
     ? await promptPluginOptions(binding.prompts, cliArgs)
     : {};
-  return binding.codegenConfig(answers);
+  return binding.generateConfig(answers);
 }
 
 function logChanges(changes: FileChange[]): void {
@@ -62,9 +63,13 @@ function logChanges(changes: FileChange[]): void {
 }
 
 function logNextSteps(steps: [string, string][]): void {
-  const colWidth = Math.max(...steps.map(([label]) => label.length));
-  logger.info('Next steps:');
-  steps.forEach(([label, description]) => {
-    logger.info(`  ${label.padEnd(colWidth + COLUMN_GAP)}${description}`);
-  });
+  logger.info(
+    formatAsciiTable(
+      {
+        title: 'Next steps:',
+        rows: steps,
+      },
+      { borderless: true },
+    ),
+  );
 }

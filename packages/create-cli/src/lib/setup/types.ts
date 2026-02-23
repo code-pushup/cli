@@ -3,9 +3,9 @@ import type { PluginMeta } from '@code-pushup/models';
 /** Virtual file system that buffers writes in memory until flushed to disk. */
 export type Tree = {
   root: string;
-  exists: (filePath: string) => boolean;
-  read: (filePath: string) => string | null;
-  write: (filePath: string, content: string) => void;
+  exists: (filePath: string) => Promise<boolean>;
+  read: (filePath: string) => Promise<string | null>;
+  write: (filePath: string, content: string) => Promise<void>;
   listChanges: () => FileChange[];
   flush: () => Promise<void>;
 };
@@ -17,10 +17,13 @@ export type FileChange = {
 };
 
 export type FileSystemAdapter = {
-  readFileSync: (path: string, encoding: 'utf8') => string;
-  writeFileSync: (path: string, content: string) => void;
-  existsSync: (path: string) => boolean;
-  mkdirSync: (path: string, options: { recursive: boolean }) => void;
+  readFile: (path: string, encoding: 'utf8') => Promise<string>;
+  writeFile: (path: string, content: string) => Promise<void>;
+  exists: (path: string) => Promise<boolean>;
+  mkdir: (
+    path: string,
+    options: { recursive: true },
+  ) => Promise<string | undefined>;
 };
 
 export type PluginSetupBinding = {
@@ -29,7 +32,7 @@ export type PluginSetupBinding = {
   packageName: NonNullable<PluginMeta['packageName']>;
   // TODO: #1244 — add async pre-selection callback (e.g. detect eslint.config.js in repo)
   prompts?: PluginPromptDescriptor[];
-  codegenConfig: (
+  generateConfig: (
     answers: Record<string, string | string[]>,
   ) => PluginCodegenResult;
 };
@@ -52,23 +55,23 @@ type PromptBase = {
   message: string;
 };
 
-type PromptChoice = { name: string; value: string };
+type PromptChoice<T extends string> = { name: string; value: T };
 
 type InputPrompt = PromptBase & {
   type: 'input';
   default: string;
 };
 
-type SelectPrompt = PromptBase & {
+type SelectPrompt<T extends string = string> = PromptBase & {
   type: 'select';
-  choices: PromptChoice[];
-  default: string;
+  choices: PromptChoice<T>[];
+  default: T;
 };
 
-type CheckboxPrompt = PromptBase & {
+type CheckboxPrompt<T extends string = string> = PromptBase & {
   type: 'checkbox';
-  choices: PromptChoice[];
-  default: string[];
+  choices: PromptChoice<T>[];
+  default: T[];
 };
 
 export type PluginPromptDescriptor =

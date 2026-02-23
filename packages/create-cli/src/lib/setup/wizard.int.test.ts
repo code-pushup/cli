@@ -17,7 +17,7 @@ const TEST_BINDINGS: PluginSetupBinding[] = [
         default: 'alpha.config.js',
       },
     ],
-    codegenConfig(answers) {
+    generateConfig(answers) {
       const configPath = answers['alpha.path'] ?? 'alpha.config.js';
       return {
         imports: [
@@ -34,7 +34,7 @@ const TEST_BINDINGS: PluginSetupBinding[] = [
     slug: 'beta',
     title: 'Beta Plugin',
     packageName: '@code-pushup/beta-plugin',
-    codegenConfig: () => ({
+    generateConfig: () => ({
       imports: [
         {
           moduleSpecifier: '@code-pushup/beta-plugin',
@@ -61,15 +61,19 @@ describe('runSetupWizard', () => {
 
     await expect(
       readFile(path.join(outputDir, 'code-pushup.config.ts'), 'utf8'),
-    ).resolves.toBe(
-      [
-        "import type { CoreConfig } from '@code-pushup/models';",
-        "import alphaPlugin from '@code-pushup/alpha-plugin';",
-        "import betaPlugin from '@code-pushup/beta-plugin';",
-        'export default { plugins: [alphaPlugin("alpha.config.js"), betaPlugin()] } satisfies CoreConfig;',
-        '',
-      ].join('\n'),
-    );
+    ).resolves.toMatchInlineSnapshot(`
+      "import alphaPlugin from '@code-pushup/alpha-plugin';
+      import betaPlugin from '@code-pushup/beta-plugin';
+      import type { CoreConfig } from '@code-pushup/models';
+
+      export default {
+        plugins: [
+          alphaPlugin("alpha.config.js"),
+          betaPlugin(),
+        ],
+      } satisfies CoreConfig;
+      "
+    `);
   });
 
   it('should not write files in dry-run mode', async () => {
@@ -93,14 +97,18 @@ describe('runSetupWizard', () => {
 
     await expect(
       readFile(path.join(outputDir, 'code-pushup.config.ts'), 'utf8'),
-    ).resolves.toBe(
-      [
-        "import type { CoreConfig } from '@code-pushup/models';",
-        "import alphaPlugin from '@code-pushup/alpha-plugin';",
-        "import betaPlugin from '@code-pushup/beta-plugin';",
-        'export default { plugins: [alphaPlugin("custom.config.mjs"), betaPlugin()] } satisfies CoreConfig;',
-        '',
-      ].join('\n'),
-    );
+    ).resolves.toMatchInlineSnapshot(`
+      "import alphaPlugin from '@code-pushup/alpha-plugin';
+      import betaPlugin from '@code-pushup/beta-plugin';
+      import type { CoreConfig } from '@code-pushup/models';
+
+      export default {
+        plugins: [
+          alphaPlugin("custom.config.mjs"),
+          betaPlugin(),
+        ],
+      } satisfies CoreConfig;
+      "
+    `);
   });
 });

@@ -1,7 +1,6 @@
 #! /usr/bin/env node
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import type { CliArgs } from './lib/setup/types.js';
 import { runSetupWizard } from './lib/setup/wizard.js';
 
 const argv = await yargs(hideBin(process.argv))
@@ -19,4 +18,4 @@ const argv = await yargs(hideBin(process.argv))
   .parse();
 
 // TODO: #1244 — provide plugin bindings from registry
-await runSetupWizard([], argv as CliArgs);
+await runSetupWizard([], argv);

@@ -15,7 +15,7 @@ const TEST_BINDING: PluginSetupBinding = {
   slug: 'test-plugin',
   title: 'Test Plugin',
   packageName: '@code-pushup/test-plugin',
-  codegenConfig: () => ({
+  generateConfig: () => ({
     imports: [
       {
         moduleSpecifier: '@code-pushup/test-plugin',
@@ -37,21 +37,23 @@ describe('runSetupWizard', () => {
       'target-dir': MEMFS_VOLUME,
     });
 
-    await expect(
-      readFile(`${MEMFS_VOLUME}/code-pushup.config.ts`, 'utf8'),
-    ).resolves.toBe(
-      [
-        "import type { CoreConfig } from '@code-pushup/models';",
-        "import testPlugin from '@code-pushup/test-plugin';",
-        'export default { plugins: [testPlugin()] } satisfies CoreConfig;',
-        '',
-      ].join('\n'),
-    );
+    await expect(readFile(`${MEMFS_VOLUME}/code-pushup.config.ts`, 'utf8'))
+      .resolves.toMatchInlineSnapshot(`
+      "import type { CoreConfig } from '@code-pushup/models';
+      import testPlugin from '@code-pushup/test-plugin';
+
+      export default {
+        plugins: [
+          testPlugin(),
+        ],
+      } satisfies CoreConfig;
+      "
+    `);
 
     expect(logger.info).toHaveBeenCalledWith('CREATE code-pushup.config.ts');
     expect(logger.info).toHaveBeenCalledWith('Setup complete.');
     expect(logger.info).toHaveBeenCalledWith(
-      expect.stringContaining('npx code-pushup collect'),
+      expect.stringContaining('npx code-pushup'),
     );
   });
 
@@ -73,15 +75,15 @@ describe('runSetupWizard', () => {
       'target-dir': MEMFS_VOLUME,
     });
 
-    await expect(
-      readFile(`${MEMFS_VOLUME}/code-pushup.config.ts`, 'utf8'),
-    ).resolves.toBe(
-      [
-        "import type { CoreConfig } from '@code-pushup/models';",
-        'export default { plugins: [] } satisfies CoreConfig;',
-        '',
-      ].join('\n'),
-    );
+    await expect(readFile(`${MEMFS_VOLUME}/code-pushup.config.ts`, 'utf8'))
+      .resolves.toMatchInlineSnapshot(`
+      "import type { CoreConfig } from '@code-pushup/models';
+
+      export default {
+        plugins: [],
+      } satisfies CoreConfig;
+      "
+    `);
 
     expect(logger.info).toHaveBeenCalledWith('CREATE code-pushup.config.ts');
     expect(logger.info).toHaveBeenCalledWith('Setup complete.');

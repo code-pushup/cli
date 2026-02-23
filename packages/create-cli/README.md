@@ -9,7 +9,7 @@ An interactive setup wizard that scaffolds a `code-pushup.config.ts` file in you
 ## Usage
 
 ```bash
-npx @code-pushup/create-cli
+npm init @code-pushup/cli
 ```
 
 The wizard will prompt you to select plugins and configure their options, then generate a `code-pushup.config.ts` file.
@@ -27,17 +27,17 @@ The wizard will prompt you to select plugins and configure their options, then g
 Run interactively (default):
 
 ```bash
-npx @code-pushup/create-cli
+npm init @code-pushup/cli
 ```
 
 Skip prompts and enable specific plugins:
 
 ```bash
-npx @code-pushup/create-cli -y --plugins=eslint,coverage
+npm init @code-pushup/cli -y --plugins=eslint,coverage
 ```
 
 Preview the generated config without writing:
 
 ```bash
-npx @code-pushup/create-cli -y --dry-run
+npm init @code-pushup/cli -y --dry-run
 ```

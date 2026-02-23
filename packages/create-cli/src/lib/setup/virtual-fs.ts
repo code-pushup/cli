@@ -1,46 +1,43 @@
-/* eslint-disable n/no-sync */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { fileExists } from '@code-pushup/utils';
 import type { FileChange, FileSystemAdapter, Tree } from './types.js';
 
 const DEFAULT_FS: FileSystemAdapter = {
-  readFileSync,
-  writeFileSync,
-  existsSync,
-  mkdirSync,
+  readFile,
+  writeFile,
+  exists: fileExists,
+  mkdir,
 };
 
 export function createTree(
   root: string,
   fs: FileSystemAdapter = DEFAULT_FS,
 ): Tree {
-  const pending = new Map<
-    string,
-    { content: string; type: 'CREATE' | 'UPDATE' }
-  >();
+  const pending = new Map<FileChange['path'], Omit<FileChange, 'path'>>();
 
   const resolve = (filePath: string): string => path.resolve(root, filePath);
 
   return {
     root,
 
-    exists: (filePath: string): boolean =>
-      pending.has(filePath) || fs.existsSync(resolve(filePath)),
+    exists: async (filePath: string): Promise<boolean> =>
+      pending.has(filePath) || fs.exists(resolve(filePath)),
 
-    read: (filePath: string): string | null => {
+    read: async (filePath: string): Promise<string | null> => {
       const entry = pending.get(filePath);
       if (entry) {
         return entry.content;
       }
       const absolutePath = resolve(filePath);
-      if (!fs.existsSync(absolutePath)) {
+      if (!(await fs.exists(absolutePath))) {
         return null;
       }
-      return fs.readFileSync(absolutePath, 'utf8');
+      return fs.readFile(absolutePath, 'utf8');
     },
 
-    write: (filePath: string, content: string): void => {
-      const type = fs.existsSync(resolve(filePath)) ? 'UPDATE' : 'CREATE';
+    write: async (filePath: string, content: string): Promise<void> => {
+      const type = (await fs.exists(resolve(filePath))) ? 'UPDATE' : 'CREATE';
       pending.set(filePath, { content, type });
     },
 
@@ -52,11 +49,13 @@ export function createTree(
       })),
 
     async flush(): Promise<void> {
-      [...pending.entries()].forEach(([filePath, { content }]) => {
-        const absolutePath = resolve(filePath);
-        fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
-        fs.writeFileSync(absolutePath, content);
-      });
+      await Promise.all(
+        [...pending.entries()].map(async ([filePath, { content }]) => {
+          const absolutePath = resolve(filePath);
+          await fs.mkdir(path.dirname(absolutePath), { recursive: true });
+          await fs.writeFile(absolutePath, content);
+        }),
+      );
       pending.clear();
     },
   };
