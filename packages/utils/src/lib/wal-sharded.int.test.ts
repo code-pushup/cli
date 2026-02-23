@@ -119,7 +119,7 @@ describe('ShardedWal Integration', () => {
     expect(records[4]).toBe('record-from-shard-5');
   });
 
-  it('should handle invalid entries during if debug true', () => {
+  it('should expose recovery details in stats when debug is true', () => {
     shardedWal = new ShardedWal({
       debug: true,
       dir: testDir,
