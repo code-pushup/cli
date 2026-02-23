@@ -31,8 +31,8 @@ describe('createVitestConfig', () => {
           ],
           globalSetup: ['../../global-setup.ts'],
           setupFiles: expect.arrayContaining([
-            '../../testing/test-setup/src/lib/reset.mocks.ts',
-            '../../testing/test-setup/src/lib/fs.mock.ts',
+            '../../testing/test-setup/src/lib/reset.setup-file.ts',
+            '../../testing/test-setup/src/lib/fs.setup-file.ts',
           ]),
           coverage: expect.objectContaining({
             reporter: ['text', 'lcov'],
@@ -69,19 +69,19 @@ describe('createVitestConfig', () => {
 
       const setupFiles = config.test!.setupFiles;
       expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/reset.mocks.ts',
+        '../../testing/test-setup/src/lib/reset.setup-file.ts',
       );
       expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/fs.mock.ts',
+        '../../testing/test-setup/src/lib/fs.setup-file.ts',
       );
       expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/git.mock.ts',
+        '../../testing/test-setup/src/lib/git.setup-file.ts',
       );
       expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/portal-client.mock.ts',
+        '../../testing/test-setup/src/lib/portal-client.setup-file.ts',
       );
       expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/logger.mock.ts',
+        '../../testing/test-setup/src/lib/logger.setup-file.ts',
       );
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/extend/markdown-table.matcher.ts',
@@ -140,16 +140,16 @@ describe('createVitestConfig', () => {
 
       const setupFiles = config.test!.setupFiles;
       expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/logger.mock.ts',
+        '../../testing/test-setup/src/lib/logger.setup-file.ts',
       );
       expect(setupFiles).not.toContain(
-        '../../testing/test-setup/src/lib/fs.mock.ts',
+        '../../testing/test-setup/src/lib/fs.setup-file.ts',
       );
       expect(setupFiles).not.toContain(
-        '../../testing/test-setup/src/lib/cliui.mock.ts',
+        '../../testing/test-setup/src/lib/cliui.setup-file.ts',
       );
       expect(setupFiles).not.toContain(
-        '../../testing/test-setup/src/lib/git.mock.ts',
+        '../../testing/test-setup/src/lib/git.setup-file.ts',
       );
       expect(setupFiles).toContain(
         '../../testing/test-setup/src/lib/extend/path.matcher.ts',
@@ -185,14 +185,14 @@ describe('createVitestConfig', () => {
       const setupFiles = config.test!.setupFiles;
       // Should only include reset mocks
       expect(setupFiles).toContain(
-        '../../testing/test-setup/src/lib/reset.mocks.ts',
+        '../../testing/test-setup/src/lib/reset.setup-file.ts',
       );
       // Should NOT include fs, git, etc.
       expect(setupFiles).not.toContain(
-        '../../testing/test-setup/src/lib/git.mock.ts',
+        '../../testing/test-setup/src/lib/git.setup-file.ts',
       );
       expect(setupFiles).not.toContain(
-        '../../testing/test-setup/src/lib/fs.mock.ts',
+        '../../testing/test-setup/src/lib/fs.setup-file.ts',
       );
       // Should include all matchers
       expect(setupFiles).toContain(
