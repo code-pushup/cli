@@ -288,7 +288,7 @@ describe('WriteAheadLogFile', () => {
     expect(read('/test/a.log')).toBe('a\nb\n');
   });
 
-  it('repacks with decode errors using tolerant codec', () => {
+  it('repacks without decode errors using tolerant codec', () => {
     vol.mkdirSync('/test', { recursive: true });
     write('/test/a.log', 'ok\nbad\n');
 
@@ -301,7 +301,7 @@ describe('WriteAheadLogFile', () => {
     });
 
     wal('/test/a.log', tolerantCodec).repack();
-    expect(read('/test/a.log')).toBe('ok\nbad\n');
+    expect(read('/test/a.log')).toBe('ok\n');
   });
 
   it('logs decode errors during content recovery', () => {
@@ -323,7 +323,7 @@ describe('WriteAheadLogFile', () => {
     expect(result.records).toEqual(['good', 'good']);
   });
 
-  it('repacks with invalid entries and logs warning', () => {
+  it('repacks with without invalid entries and logs warning', () => {
     const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
     vol.mkdirSync('/test', { recursive: true });
@@ -342,7 +342,7 @@ describe('WriteAheadLogFile', () => {
     expect(consoleLogSpy).toHaveBeenCalledWith(
       'Found invalid entries during WAL repack',
     );
-    expect(read('/test/a.log')).toBe('ok\nbad\n');
+    expect(read('/test/a.log')).toBe('ok\n');
 
     consoleLogSpy.mockRestore();
   });
