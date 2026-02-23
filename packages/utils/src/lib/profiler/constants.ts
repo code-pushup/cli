@@ -36,4 +36,4 @@ export const PROFILER_PERSIST_BASENAME = 'trace';
  * Name for current measure.
  * Used as the name for the sharded folder.
  */
-export const PROFILER_MEASURE_NAME = 'CP_PROFILER_MEASURE_NAME';
+export const PROFILER_MEASURE_NAME_ENV_VAR = 'CP_PROFILER_MEASURE_NAME';
