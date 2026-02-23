@@ -1,4 +1,3 @@
-import { IndentationText, Project, QuoteKind } from 'ts-morph';
 import type {
   ImportDeclarationStructure,
   PluginCodegenResult,
@@ -10,38 +9,74 @@ const CORE_CONFIG_IMPORT: ImportDeclarationStructure = {
   isTypeOnly: true,
 };
 
+class CodeBuilder {
+  private lines: string[] = [];
+  private depth = 0;
+
+  addLine(text: string): void {
+    this.lines.push(`${'  '.repeat(this.depth)}${text}`);
+  }
+
+  addEmptyLine(): void {
+    this.lines.push('');
+  }
+
+  indent(fn: () => void): void {
+    this.depth++;
+    fn();
+    this.depth--;
+  }
+
+  toString(): string {
+    return `${this.lines.join('\n')}\n`;
+  }
+}
+
+function formatImport({
+  moduleSpecifier,
+  defaultImport,
+  namedImports,
+  isTypeOnly,
+}: ImportDeclarationStructure): string {
+  const named = namedImports?.length ? `{ ${namedImports.join(', ')} }` : '';
+  const bindings = [defaultImport, named].filter(Boolean).join(', ');
+  const from = bindings ? `${bindings} from ` : '';
+  const type = isTypeOnly ? 'type ' : '';
+  return `import ${type}${from}'${moduleSpecifier}';`;
+}
+
 function collectImports(
   plugins: PluginCodegenResult[],
 ): ImportDeclarationStructure[] {
-  return [CORE_CONFIG_IMPORT, ...plugins.flatMap(({ imports }) => imports)];
-}
-
-function buildExportStatement(plugins: PluginCodegenResult[]): string {
-  const items = plugins.map(({ pluginInit }) => pluginInit).join(', ');
-  return `export default { plugins: [${items}] } satisfies CoreConfig;`;
+  return [
+    CORE_CONFIG_IMPORT,
+    ...plugins.flatMap(({ imports }) => imports),
+  ].toSorted((a, b) => a.moduleSpecifier.localeCompare(b.moduleSpecifier));
 }
 
 export function generateConfigSource(plugins: PluginCodegenResult[]): string {
-  const project = new Project({
-    useInMemoryFileSystem: true,
-    manipulationSettings: {
-      quoteKind: QuoteKind.Single,
-      indentationText: IndentationText.TwoSpaces,
-    },
+  const builder = new CodeBuilder();
+
+  collectImports(plugins).forEach(declaration => {
+    builder.addLine(formatImport(declaration));
   });
-  const sourceFile = project.createSourceFile('code-pushup.config.ts');
 
-  collectImports(plugins).forEach(imp =>
-    sourceFile.addImportDeclaration({
-      moduleSpecifier: imp.moduleSpecifier,
-      defaultImport: imp.defaultImport,
-      namedImports: imp.namedImports,
-      isTypeOnly: imp.isTypeOnly,
-    }),
-  );
+  builder.addEmptyLine();
+  builder.addLine('export default {');
+  builder.indent(() => {
+    if (plugins.length === 0) {
+      builder.addLine('plugins: [],');
+    } else {
+      builder.addLine('plugins: [');
+      builder.indent(() => {
+        plugins.forEach(({ pluginInit }) => {
+          builder.addLine(`${pluginInit},`);
+        });
+      });
+      builder.addLine('],');
+    }
+  });
+  builder.addLine('} satisfies CoreConfig;');
 
-  sourceFile.addStatements(buildExportStatement(plugins));
-  sourceFile.formatText();
-
-  return sourceFile.getFullText();
+  return builder.toString();
 }

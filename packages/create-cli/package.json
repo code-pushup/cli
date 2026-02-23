@@ -28,7 +28,6 @@
   "dependencies": {
     "@code-pushup/utils": "0.113.0",
     "@inquirer/prompts": "^8.0.0",
-    "ts-morph": "^24.0.0",
     "yargs": "^17.7.2"
   },
   "files": [

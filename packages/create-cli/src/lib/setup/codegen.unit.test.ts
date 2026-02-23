@@ -3,13 +3,14 @@ import type { PluginCodegenResult } from './types.js';
 
 describe('generateConfigSource', () => {
   it('should generate config with empty plugins array', () => {
-    expect(generateConfigSource([])).toBe(
-      [
-        "import type { CoreConfig } from '@code-pushup/models';",
-        'export default { plugins: [] } satisfies CoreConfig;',
-        '',
-      ].join('\n'),
-    );
+    expect(generateConfigSource([])).toMatchInlineSnapshot(`
+      "import type { CoreConfig } from '@code-pushup/models';
+
+      export default {
+        plugins: [],
+      } satisfies CoreConfig;
+      "
+    `);
   });
 
   it('should generate config with a single plugin', () => {
@@ -23,14 +24,43 @@ describe('generateConfigSource', () => {
       pluginInit: 'await eslintPlugin()',
     };
 
-    expect(generateConfigSource([plugin])).toBe(
-      [
-        "import type { CoreConfig } from '@code-pushup/models';",
-        "import eslintPlugin from '@code-pushup/eslint-plugin';",
-        'export default { plugins: [await eslintPlugin()] } satisfies CoreConfig;',
-        '',
-      ].join('\n'),
-    );
+    expect(generateConfigSource([plugin])).toMatchInlineSnapshot(`
+      "import eslintPlugin from '@code-pushup/eslint-plugin';
+      import type { CoreConfig } from '@code-pushup/models';
+
+      export default {
+        plugins: [
+          await eslintPlugin(),
+        ],
+      } satisfies CoreConfig;
+      "
+    `);
+  });
+
+  it('should generate config with combined default and named imports', () => {
+    const plugin: PluginCodegenResult = {
+      imports: [
+        {
+          moduleSpecifier: '@code-pushup/eslint-plugin',
+          defaultImport: 'eslintPlugin',
+          namedImports: ['eslintConfigFromAllNxProjects'],
+        },
+      ],
+      pluginInit:
+        'await eslintPlugin({ eslintrc: eslintConfigFromAllNxProjects() })',
+    };
+
+    expect(generateConfigSource([plugin])).toMatchInlineSnapshot(`
+      "import eslintPlugin, { eslintConfigFromAllNxProjects } from '@code-pushup/eslint-plugin';
+      import type { CoreConfig } from '@code-pushup/models';
+
+      export default {
+        plugins: [
+          await eslintPlugin({ eslintrc: eslintConfigFromAllNxProjects() }),
+        ],
+      } satisfies CoreConfig;
+      "
+    `);
   });
 
   it('should generate config with multiple plugins', () => {
@@ -56,14 +86,18 @@ describe('generateConfigSource', () => {
       },
     ];
 
-    expect(generateConfigSource(plugins)).toBe(
-      [
-        "import type { CoreConfig } from '@code-pushup/models';",
-        "import eslintPlugin from '@code-pushup/eslint-plugin';",
-        "import coveragePlugin from '@code-pushup/coverage-plugin';",
-        "export default { plugins: [await eslintPlugin(), await coveragePlugin({ reports: [{ resultsPath: 'coverage/lcov.info', pathToProject: '' }] })] } satisfies CoreConfig;",
-        '',
-      ].join('\n'),
-    );
+    expect(generateConfigSource(plugins)).toMatchInlineSnapshot(`
+      "import coveragePlugin from '@code-pushup/coverage-plugin';
+      import eslintPlugin from '@code-pushup/eslint-plugin';
+      import type { CoreConfig } from '@code-pushup/models';
+
+      export default {
+        plugins: [
+          await eslintPlugin(),
+          await coveragePlugin({ reports: [{ resultsPath: 'coverage/lcov.info', pathToProject: '' }] }),
+        ],
+      } satisfies CoreConfig;
+      "
+    `);
   });
 });
