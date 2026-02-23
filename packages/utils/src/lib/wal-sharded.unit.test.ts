@@ -37,16 +37,17 @@ const getShardedWal = (overrides?: {
   });
 };
 
+const deleteEnvVar = (key: string) => {
+  // eslint-disable-next-line functional/immutable-data,@typescript-eslint/no-dynamic-delete
+  delete process.env[key];
+};
+
 describe('ShardedWal', () => {
   beforeEach(() => {
     vol.reset();
     vol.fromJSON({}, MEMFS_VOLUME);
-    // Clear coordinator env var for fresh state
-    // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
-    delete process.env[SHARDED_WAL_COORDINATOR_ID_ENV_VAR];
-    // Clear measure name env var to avoid test pollution
-    // eslint-disable-next-line functional/immutable-data
-    delete process.env[PROFILER_MEASURE_NAME_ENV_VAR];
+    deleteEnvVar(SHARDED_WAL_COORDINATOR_ID_ENV_VAR);
+    deleteEnvVar(PROFILER_MEASURE_NAME_ENV_VAR);
   });
 
   describe('initialization', () => {
@@ -62,7 +63,6 @@ describe('ShardedWal', () => {
     });
 
     it('should use groupId from env var when measureNameEnvVar is set', () => {
-      // eslint-disable-next-line functional/immutable-data
       vi.stubEnv(PROFILER_MEASURE_NAME_ENV_VAR, 'from-env');
       const sw = getShardedWal({
         measureNameEnvVar: PROFILER_MEASURE_NAME_ENV_VAR,
