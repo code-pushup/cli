@@ -239,8 +239,8 @@ export class WriteAheadLogFile<T extends WalRecord = WalRecord>
       console.log('Found invalid entries during WAL repack');
     }
     const recordsToWrite = hasInvalidEntries
-      ? (r.records as T[])
-      : filterValidRecords(r.records);
+      ? filterValidRecords(r.records)
+      : (r.records as T[]);
     ensureDirectoryExistsSync(path.dirname(out));
     fs.writeFileSync(out, `${recordsToWrite.map(this.#encode).join('\n')}\n`);
   }
