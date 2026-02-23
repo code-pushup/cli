@@ -1,168 +1,30 @@
-import type { UserTimingDetail } from '../user-timing-extensibility-api.type.js';
+import type {
+  MarkerPayload,
+  TrackEntryPayload,
+} from '../user-timing-extensibility-api.type.js';
+
+/** DevTools payload type for trace events. */
+export type DevToolsPayload = TrackEntryPayload | MarkerPayload;
 
 /**
- * Arguments for instant trace events.
- * @property {UserTimingDetail} [detail] - Optional user timing detail with DevTools payload
+ * Unified trace event type for Chrome DevTools trace format.
  */
-export type InstantEventArgs = {
-  detail?: UserTimingDetail;
-} & { [key: string]: unknown };
-
-/**
- * Arguments for span trace events (begin/end events).
- * @property {object} [data] - Optional data object
- * @property {UserTimingDetail} [data.detail] - Optional user timing detail with DevTools payload
- */
-export type SpanEventArgs = {
-  data?: { detail?: UserTimingDetail };
-} & { [key: string]: unknown };
-
-/**
- * Arguments for complete trace events.
- * @property {Record<string, unknown>} [detail] - Optional detail object with arbitrary properties
- */
-export type CompleteEventArgs = { detail?: Record<string, unknown> };
-
-/**
- * Arguments for start tracing events.
- * @property {object} data - Tracing initialization data
- * @property {number} data.frameTreeNodeId - Frame tree node identifier
- * @property {Array} data.frames - Array of frame information
- * @property {boolean} data.persistentIds - Whether IDs are persistent
- */
-export type InstantEventTracingStartedInBrowserArgs = {
-  data: {
-    frameTreeNodeId: number;
-    frames: {
-      frame: string;
-      isInPrimaryMainFrame: boolean;
-      isOutermostMainFrame: boolean;
-      name: string;
-      processId: number;
-      url: string;
-    }[];
-    persistentIds: boolean;
-  };
-};
-
-/**
- * Union type of all possible trace event arguments.
- */
-export type TraceArgs =
-  | InstantEventArgs
-  | SpanEventArgs
-  | CompleteEventArgs
-  | InstantEventTracingStartedInBrowserArgs;
-
-/**
- * Base properties shared by all trace events.
- * @property {string} cat - Event category
- * @property {string} name - Event name
- * @property {number} pid - Process ID
- * @property {number} tid - Thread ID
- * @property {number} ts - Timestamp in epoch microseconds
- * @property {TraceArgs} [args] - Optional event arguments
- */
-export type BaseTraceEvent = {
+export type TraceEvent = {
   cat: string;
+  ph: string;
   name: string;
   pid: number;
   tid: number;
   ts: number;
-  args: TraceArgs;
+  dur?: number;
+  id2?: { local: string };
+  args?: {
+    detail?: unknown;
+    data?: { detail?: unknown; [key: string]: unknown };
+    devtools?: DevToolsPayload;
+    [key: string]: unknown;
+  };
 };
-
-/**
- * Start tracing event for Chrome DevTools tracing.
- */
-export type InstantEventTracingStartedInBrowser = BaseTraceEvent & {
-  cat: 'devtools.timeline';
-  ph: 'i';
-  name: 'TracingStartedInBrowser';
-  args: InstantEventTracingStartedInBrowserArgs;
-};
-
-/**
- * Complete trace event with duration.
- * Represents a complete operation with start time and duration.
- * @property {'X'} ph - Phase indicator for complete events
- * @property {number} dur - Duration in microseconds
- */
-export type CompleteEvent = BaseTraceEvent & { ph: 'X'; dur: number };
-
-/**
- * Instant trace event representing a single point in time.
- * Used for user timing marks and other instantaneous events.
- * @property {'blink.user_timing'} cat - Fixed category for user timing events
- * @property {'i'} ph - Phase indicator for instant events
- * @property {never} [dur] - Duration is not applicable for instant events
- * @property {InstantEventArgs} [args] - Optional event arguments
- */
-export type InstantEvent = Omit<BaseTraceEvent, 'cat' | 'args'> & {
-  cat: 'blink.user_timing';
-  ph: 'i';
-  dur?: never;
-  args: InstantEventArgs;
-};
-
-/**
- * Core properties for span trace events (begin/end pairs).
- * @property {object} id2 - Span identifier
- * @property {string} id2.local - Local span ID (unique to the process, same for b and e events)
- * @property {SpanEventArgs} [args] - Optional event arguments
- */
-type SpanCore = Omit<BaseTraceEvent, 'args'> & {
-  id2: { local: string };
-  args: SpanEventArgs;
-};
-/**
- * Begin event for a span (paired with an end event).
- * @property {'b'} ph - Phase indicator for begin events
- * @property {never} [dur] - Duration is not applicable for begin events
- */
-export type BeginEvent = SpanCore & {
-  ph: 'b';
-  dur?: never;
-};
-
-/**
- * End event for a span (paired with a begin event).
- * @property {'e'} ph - Phase indicator for end events
- * @property {never} [dur] - Duration is not applicable for end events
- */
-export type EndEvent = SpanCore & { ph: 'e'; dur?: never };
-
-/**
- * Union type for span events (begin or end).
- */
-export type SpanEvent = BeginEvent | EndEvent;
-
-/**
- * Union type of all trace event types.
- */
-export type UserTimingTraceEvent = InstantEvent | SpanEvent;
-
-/**
- * All trace events including system events added during finalization.
- */
-export type TraceEvent =
-  | UserTimingTraceEvent
-  | CompleteEvent
-  | InstantEventTracingStartedInBrowser;
-
-/**
- * Raw arguments format for trace events before processing.
- * Either contains a detail string directly or nested in a data object.
- */
-type RawArgs =
-  | { detail?: string; [key: string]: unknown }
-  | { data?: { detail?: string }; [key: string]: unknown };
-
-/**
- * Raw trace event format before type conversion.
- * Similar to TraceEvent but with unprocessed arguments.
- */
-export type TraceEventRaw = Omit<TraceEvent, 'args'> & { args: RawArgs };
 
 /**
  * Time window bounds (min, max) in trace time units (e.g. microseconds).
@@ -293,4 +155,12 @@ export type TraceEventContainer = {
 /**
  * Trace file format - either an array of events or a structured container.
  */
-export type TraceFile = TraceEvent[] | TraceEventContainer;
+export type TraceFile = TraceEventContainer;
+
+/** Options for creating a tracing started in browser event. */
+export type TracingStartedInBrowserOptions = {
+  url: string;
+  ts?: number;
+  pid?: number;
+  tid?: number;
+};
