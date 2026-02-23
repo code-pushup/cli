@@ -5,12 +5,9 @@ import {
   type Codec,
   type InvalidEntry,
   ShardedWal,
-  WAL_ID_PATTERNS,
   WriteAheadLogFile,
   createTolerantCodec,
   filterValidRecords,
-  getShardId,
-  getShardedGroupId,
   isCoordinatorProcess,
   parseWalFormat,
   recoverFromContent,
@@ -504,71 +501,6 @@ describe('stringCodec', () => {
   });
 });
 
-describe('getShardId', () => {
-  it('should generate shard ID with readable timestamp', () => {
-    const result = getShardId();
-
-    expect(result).toMatch(WAL_ID_PATTERNS.SHARD_ID);
-    expect(result).toStartWith('20231114-221320-000.');
-  });
-
-  it('should generate different shard IDs for different calls', () => {
-    const result1 = getShardId();
-    const result2 = getShardId();
-
-    expect(result1).not.toBe(result2);
-    expect(result1).toStartWith('20231114-221320-000.');
-    expect(result2).toStartWith('20231114-221320-000.');
-  });
-
-  it('should handle zero values', () => {
-    const result = getShardId();
-    expect(result).toStartWith('20231114-221320-000.');
-  });
-
-  it('should handle negative timestamps', () => {
-    const result = getShardId();
-
-    expect(result).toStartWith('20231114-221320-000.');
-  });
-
-  it('should handle large timestamps', () => {
-    const result = getShardId();
-
-    expect(result).toStartWith('20231114-221320-000.');
-  });
-
-  it('should generate incrementing counter', () => {
-    const result1 = getShardId();
-    const result2 = getShardId();
-
-    const parts1 = result1.split('.');
-    const parts2 = result2.split('.');
-    const counter1 = parts1.at(-1) as string;
-    const counter2 = parts2.at(-1) as string;
-
-    expect(Number.parseInt(counter1, 10)).toBe(
-      Number.parseInt(counter2, 10) - 1,
-    );
-  });
-});
-
-describe('getShardedGroupId', () => {
-  it('should work with mocked timeOrigin', () => {
-    const result = getShardedGroupId();
-
-    expect(result).toBe('20231114-221320-000');
-    expect(result).toMatch(WAL_ID_PATTERNS.GROUP_ID);
-  });
-
-  it('should be idempotent within same process', () => {
-    const result1 = getShardedGroupId();
-    const result2 = getShardedGroupId();
-
-    expect(result1).toBe(result2);
-  });
-});
-
 describe('parseWalFormat', () => {
   it('should apply all defaults when given empty config', () => {
     const result = parseWalFormat({});
@@ -819,7 +751,7 @@ describe('ShardedWal', () => {
       },
       coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     });
-    // Create the group directory (matches actual getShardedGroupId() output)
+    // Create the group directory (matches actual getUniqueTimeId() output)
     vol.mkdirSync('/empty/20231114-221320-000', { recursive: true });
     const files = (sw as any).shardFiles();
     expect(files).toEqual([]);

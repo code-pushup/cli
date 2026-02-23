@@ -139,6 +139,7 @@ export default tseslint.config(
   {
     ignores: [
       '**/*.mock.*',
+      '**/*.setup-file.*',
       '**/code-pushup.config.ts',
       '**/mocks/fixtures/**',
       '**/__snapshots__/**',
