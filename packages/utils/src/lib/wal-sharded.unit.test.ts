@@ -1,5 +1,4 @@
 import { vol } from 'memfs';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME, osAgnosticPath } from '@code-pushup/test-utils';
 import { getUniqueInstanceId } from './process-id.js';
 import {
