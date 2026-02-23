@@ -433,10 +433,6 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
   get stats() {
     // When finalized, count all shard files from filesystem (for multi-process scenarios)
     // Otherwise, count only files created by this instance
-    const shardFileCount =
-      this.#state === 'finalized' || this.#state === 'cleaned'
-        ? this.shardFiles().length
-        : this.getCreatedShardFiles().length;
     const shardFilesList =
       this.#state === 'finalized' || this.#state === 'cleaned'
         ? this.shardFiles()
@@ -446,12 +442,12 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
       lastRecover: this.#lastRecovery,
       state: this.#state,
       groupId: this.groupId,
-      shardCount: this.getCreatedShardFiles().length,
+      shardCount: shardFilesList.length,
       isCoordinator: this.isCoordinator(),
       isFinalized: this.isFinalized(),
       isCleaned: this.isCleaned(),
       finalFilePath: this.getFinalFilePath(),
-      shardFileCount,
+      shardFileCount: shardFilesList.length,
       shardFiles: shardFilesList,
     };
   }
