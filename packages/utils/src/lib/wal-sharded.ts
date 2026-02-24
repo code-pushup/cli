@@ -133,31 +133,31 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
   #createdShardFiles: string[] = [];
 
   /**
-   * Initialize the origin PID environment variable if not already set.
+   * Initialize the given environment variable if not already set.
    * This must be done as early as possible before any user code runs.
-   * Sets envVarName to the current process ID if not already defined.
+   * Sets envVarName to the current instance ID if not already defined.
    *
    * @param envVarName - Environment variable name for storing coordinator ID
-   * @param profilerID - The profiler ID to set as coordinator
+   * @param instanceID - The instance ID to set as coordinator
    */
-  static setCoordinatorProcess(envVarName: string, profilerID: string): void {
+  static setCoordinatorProcess(envVarName: string, instanceID: string): void {
     if (!process.env[envVarName]) {
-      process.env[envVarName] = profilerID;
+      process.env[envVarName] = instanceID;
     }
   }
 
   /**
-   * Determines if this process is the leader WAL process using the origin PID heuristic.
+   * Determines if this process is the leader WAL process.
    *
-   * The leader is the process that first enabled profiling (the one that set CP_PROFILER_ORIGIN_PID).
-   * All descendant processes inherit the environment but have different PIDs.
+   * The leader is the process that first enabled profiling over the given env var.
+   * All descendant processes inherit the environment.
    *
    * @param envVarName - Environment variable name for storing coordinator ID
-   * @param profilerID - The profiler ID to check
+   * @param instanceID - The instance ID to check
    * @returns true if this is the leader WAL process, false otherwise
    */
-  static isCoordinatorProcess(envVarName: string, profilerID: string): boolean {
-    return process.env[envVarName] === profilerID;
+  static isCoordinatorProcess(envVarName: string, instanceID: string): boolean {
+    return process.env[envVarName] === instanceID;
   }
 
   /**
