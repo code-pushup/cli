@@ -421,7 +421,7 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
         : this.getCreatedShardFiles();
 
     return {
-      lastRecover: this.#lastRecovery,
+      lastRecovery: this.#lastRecovery,
       state: this.#state,
       groupId: this.groupId,
       shardCount: shardFilesList.length,
