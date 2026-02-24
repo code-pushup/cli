@@ -60,22 +60,6 @@ describe('ShardedWal', () => {
       const firstId = sw.id;
       expect(sw.id).toBe(firstId);
     });
-
-    it('should use groupId from env var when measureNameEnvVar is set', () => {
-      vi.stubEnv(PROFILER_MEASURE_NAME_ENV_VAR, 'from-env');
-      const sw = getShardedWal({
-        measureNameEnvVar: PROFILER_MEASURE_NAME_ENV_VAR,
-      });
-      expect(sw.groupId).toBe('from-env');
-      expect(process.env.CP_PROFILER_MEASURE_NAME).toBe('from-env');
-    });
-
-    it('should set env var when measureNameEnvVar is provided and unset', () => {
-      const sw = getShardedWal({
-        measureNameEnvVar: PROFILER_MEASURE_NAME_ENV_VAR,
-      });
-      expect(process.env.CP_PROFILER_MEASURE_NAME).toBe(sw.groupId);
-    });
   });
 
   describe('path traversal validation', () => {
@@ -129,16 +113,6 @@ describe('ShardedWal', () => {
     it('should accept groupId with underscores and hyphens', () => {
       const sw = getShardedWal({ groupId: 'test_group-name' });
       expect(sw.groupId).toBe('test_group-name');
-    });
-
-    it('should reject groupId from env var with path traversal', () => {
-      // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_MEASURE_NAME = '../malicious';
-      expect(() =>
-        getShardedWal({
-          measureNameEnvVar: PROFILER_MEASURE_NAME_ENV_VAR,
-        }),
-      ).toThrow('groupId cannot contain path separators');
     });
   });
 

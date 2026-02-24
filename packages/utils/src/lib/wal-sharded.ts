@@ -119,7 +119,7 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
       return ++ShardedWal.instanceCount;
     },
   });
-  readonly groupId = getUniqueTimeId();
+  readonly groupId: string;
   readonly #debug: boolean = false;
   readonly #format: WalFormat<T>;
   readonly #dir: string = process.cwd();
@@ -176,7 +176,6 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
     groupId?: string;
     coordinatorIdEnvVar: string;
     autoCoordinator?: boolean;
-    measureNameEnvVar?: string;
   }) {
     const {
       dir,
@@ -185,7 +184,6 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
       groupId,
       coordinatorIdEnvVar,
       autoCoordinator = true,
-      measureNameEnvVar,
     } = opt;
 
     if (debug != null) {
@@ -193,24 +191,8 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
     }
 
     // Determine groupId: use provided, then env var, or generate
-    // eslint-disable-next-line functional/no-let
-    let resolvedGroupId: string;
-    if (groupId != null) {
-      // User explicitly provided groupId - use it (even if empty, validation will catch it)
-      resolvedGroupId = groupId;
-    } else if (measureNameEnvVar && process.env[measureNameEnvVar] != null) {
-      // Env var is set (by coordinator or previous process) - use it
-      resolvedGroupId = process.env[measureNameEnvVar];
-    } else if (measureNameEnvVar) {
-      // Env var not set - we're likely the first/coordinator, generate and set it
-      resolvedGroupId = getUniqueTimeId();
-
-      process.env[measureNameEnvVar] = resolvedGroupId;
-    } else {
-      // No measureNameEnvVar provided - generate unique one (backward compatible)
-      resolvedGroupId = getUniqueTimeId();
-    }
-
+    const resolvedGroupId: string =
+      groupId == null ? getUniqueTimeId() : groupId;
     // Validate groupId for path safety before using it
     validateGroupId(resolvedGroupId);
 
