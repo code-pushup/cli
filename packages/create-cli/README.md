@@ -4,29 +4,40 @@
 [![downloads](https://img.shields.io/npm/dm/%40code-pushup%2Fcreate-cli)](https://npmtrends.com/@code-pushup/create-cli)
 [![dependencies](https://img.shields.io/librariesio/release/npm/%40code-pushup/create-cli)](https://www.npmjs.com/package/@code-pushup/create-cli?activeTab=dependencies)
 
-A CLI tool to set up Code PushUp in your repository.
+An interactive setup wizard that scaffolds a `code-pushup.config.ts` file in your repository.
 
 ## Usage
 
-To set up Code PushUp, run the following command:
-
 ```bash
-npx init @code-pushup/cli
+npm init @code-pushup/cli
 ```
 
-alternatives:
+The wizard will prompt you to select plugins and configure their options, then generate a `code-pushup.config.ts` file.
+
+## Options
+
+| Flag          | Description                            | Default |
+| ------------- | -------------------------------------- | ------- |
+| `--plugins`   | Comma-separated plugin slugs to enable |         |
+| `--dry-run`   | Preview changes without writing files  | `false` |
+| `--yes`, `-y` | Skip prompts and use defaults          | `false` |
+
+### Examples
+
+Run interactively (default):
 
 ```bash
-npx @code-pushup/create-cli
-npm exec @code-pushup/create-cli
+npm init @code-pushup/cli
 ```
 
-It should generate the following output:
+Skip prompts and enable specific plugins:
 
 ```bash
->  <✓>  Generating @code-pushup/nx-plugin:init
+npm init @code-pushup/cli -y --plugins=eslint,coverage
+```
 
->  <✓>  Generating @code-pushup/nx-plugin:configuration
+Preview the generated config without writing:
 
-CREATE code-pushup.config.ts
+```bash
+npm init @code-pushup/cli -y --dry-run
 ```

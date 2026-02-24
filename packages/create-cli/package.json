@@ -26,8 +26,10 @@
   },
   "type": "module",
   "dependencies": {
-    "@code-pushup/nx-plugin": "0.113.1",
-    "@code-pushup/utils": "0.113.1"
+    "@code-pushup/models": "0.113.0",
+    "@code-pushup/utils": "0.113.0",
+    "@inquirer/prompts": "^8.0.0",
+    "yargs": "^17.7.2"
   },
   "files": [
     "src",
