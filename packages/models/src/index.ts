@@ -3,9 +3,9 @@ export {
   type TableCellValue,
 } from './lib/implementation/schemas.js';
 export {
+  issueSourceSchema,
   sourceFileLocationSchema,
   sourceUrlLocationSchema,
-  issueSourceSchema,
   type IssueSource,
   type SourceFileLocation,
   type SourceUrlLocation,
@@ -59,6 +59,7 @@ export {
   DEFAULT_PERSIST_OUTPUT_DIR,
   DEFAULT_PERSIST_SKIP_REPORT,
 } from './lib/implementation/constants.js';
+export { convertAsyncZodFunctionToSchema } from './lib/implementation/function.js';
 export {
   MAX_DESCRIPTION_LENGTH,
   MAX_ISSUE_MESSAGE_LENGTH,
@@ -148,7 +149,6 @@ export {
 export {
   tableAlignmentSchema,
   tableColumnObjectSchema,
-  tableColumnPrimitiveSchema,
   tableRowObjectSchema,
   tableRowPrimitiveSchema,
   tableSchema,
@@ -174,4 +174,3 @@ export {
   type Tree,
 } from './lib/tree.js';
 export { uploadConfigSchema, type UploadConfig } from './lib/upload-config.js';
-export { convertAsyncZodFunctionToSchema } from './lib/implementation/function.js';
