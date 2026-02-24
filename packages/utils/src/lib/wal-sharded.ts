@@ -329,8 +329,9 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
     }
 
     const groupDir = path.join(this.#dir, this.groupId);
-    // create dir if not existing
-    ensureDirectoryExistsSync(groupDir);
+    if (!fs.existsSync(groupDir)) {
+      return [];
+    }
 
     return fs
       .readdirSync(groupDir)
@@ -358,7 +359,7 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
     // Ensure base directory exists before calling shardFiles()
     ensureDirectoryExistsSync(this.#dir);
 
-    const fileRecoveries = this.shardFiles().map(f => ({
+    const lastRecovery = this.shardFiles().map(f => ({
       file: f,
       result: new WriteAheadLogFile({
         file: f,
@@ -366,10 +367,10 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
       }).recover(),
     }));
 
-    const records = fileRecoveries.flatMap(({ result }) => result.records);
+    const records = lastRecovery.flatMap(({ result }) => result.records);
 
     if (this.#debug) {
-      this.#lastRecovery = fileRecoveries;
+      this.#lastRecovery = lastRecovery;
     }
 
     ensureDirectoryExistsSync(path.dirname(this.getFinalFilePath()));
