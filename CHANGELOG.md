@@ -1,3 +1,13 @@
+## 0.114.0 (2026-02-24)
+
+### 🚀 Features
+
+- **create-cli:** setup wizard architecture ([#1248](https://github.com/code-pushup/cli/pull/1248))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.113.1 (2026-02-23)
 
 This was a version bump only, there were no code changes.

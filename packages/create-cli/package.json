@@ -1,6 +1,6 @@
 {
   "name": "@code-pushup/create-cli",
-  "version": "0.113.1",
+  "version": "0.114.0",
   "license": "MIT",
   "bin": "index.js",
   "homepage": "https://github.com/code-pushup/cli/tree/main/packages/create-cli#readme",
@@ -26,8 +26,8 @@
   },
   "type": "module",
   "dependencies": {
-    "@code-pushup/models": "0.113.0",
-    "@code-pushup/utils": "0.113.0",
+    "@code-pushup/models": "0.114.0",
+    "@code-pushup/utils": "0.114.0",
     "@inquirer/prompts": "^8.0.0",
     "yargs": "^17.7.2"
   },
