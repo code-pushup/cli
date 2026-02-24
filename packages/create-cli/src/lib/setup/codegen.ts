@@ -11,20 +11,19 @@ const CORE_CONFIG_IMPORT: ImportDeclarationStructure = {
 
 class CodeBuilder {
   private lines: string[] = [];
-  private depth = 0;
 
-  addLine(text: string): void {
-    this.lines.push(`${'  '.repeat(this.depth)}${text}`);
+  addLine(text: string, depth = 0): void {
+    this.lines.push(`${'  '.repeat(depth)}${text}`);
+  }
+
+  addLines(texts: string[], depth = 0): void {
+    texts.forEach(text => {
+      this.addLine(text, depth);
+    });
   }
 
   addEmptyLine(): void {
     this.lines.push('');
-  }
-
-  indent(fn: () => void): void {
-    this.depth++;
-    fn();
-    this.depth--;
   }
 
   toString(): string {
@@ -57,25 +56,19 @@ function collectImports(
 export function generateConfigSource(plugins: PluginCodegenResult[]): string {
   const builder = new CodeBuilder();
 
-  collectImports(plugins).forEach(declaration => {
-    builder.addLine(formatImport(declaration));
-  });
-
+  builder.addLines(collectImports(plugins).map(formatImport));
   builder.addEmptyLine();
   builder.addLine('export default {');
-  builder.indent(() => {
-    if (plugins.length === 0) {
-      builder.addLine('plugins: [],');
-    } else {
-      builder.addLine('plugins: [');
-      builder.indent(() => {
-        plugins.forEach(({ pluginInit }) => {
-          builder.addLine(`${pluginInit},`);
-        });
-      });
-      builder.addLine('],');
-    }
-  });
+  if (plugins.length === 0) {
+    builder.addLine('plugins: [],', 1);
+  } else {
+    builder.addLine('plugins: [', 1);
+    builder.addLines(
+      plugins.map(({ pluginInit }) => `${pluginInit},`),
+      2,
+    );
+    builder.addLine('],', 1);
+  }
   builder.addLine('} satisfies CoreConfig;');
 
   return builder.toString();
