@@ -15,6 +15,11 @@ const argv = await yargs(hideBin(process.argv))
     default: false,
     describe: 'Skip prompts and use defaults',
   })
+  .option('config-format', {
+    type: 'string',
+    choices: ['ts', 'js', 'mjs'],
+    describe: 'Config file format (default: auto-detected from project)',
+  })
   .parse();
 
 // TODO: #1244 — provide plugin bindings from registry
