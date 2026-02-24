@@ -344,7 +344,7 @@ export function parseWalFormat<T extends WalRecord = WalRecord>(
 }
 
 /**
- * NOTE: this helper is only used in this file. The rest of the repo avoids sync methods so it is not reusable.
+ * NOTE: this helper is only used within the scope of wal and sharded wal logic. The rest of the repo avoids sync methods so it is not reusable.
  * Ensures a directory exists, creating it recursively if necessary using sync methods.
  * @param dirPath - The directory path to ensure exists
  */
