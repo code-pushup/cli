@@ -4,10 +4,10 @@ import { createTree } from './virtual-fs.js';
 
 function createMockFs(
   files: Record<string, string> = {},
-): FileSystemAdapter & { written: Map<string, string>; dirs: string[] } {
+): FileSystemAdapter & { written: Map<string, string>; dirs: Set<string> } {
   const store = new Map(Object.entries(files));
   const written = new Map<string, string>();
-  const dirs: string[] = [];
+  const dirs = new Set<string>();
 
   return {
     written,
@@ -26,9 +26,8 @@ function createMockFs(
     async exists(path: string) {
       return store.has(toUnixPath(path));
     },
-    async mkdir(_path: string, _options: { recursive: boolean }) {
-      // eslint-disable-next-line functional/immutable-data
-      dirs.push(toUnixPath(_path));
+    async mkdir(path: string): Promise<undefined> {
+      dirs.add(toUnixPath(path));
     },
   };
 }
