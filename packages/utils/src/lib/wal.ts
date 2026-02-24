@@ -147,9 +147,9 @@ export class WriteAheadLogFile<T extends WalRecord = WalRecord>
 {
   #fd: number | null = null;
   readonly #file: string;
-  readonly #decode: Codec<T | InvalidEntry<string>>['decode'];
+  readonly #decode: Codec<T | InvalidEntry>['decode'];
   readonly #encode: Codec<T>['encode'];
-  #lastRecoveryState: RecoverResult<T | InvalidEntry<string>> | null = null;
+  #lastRecoveryState: RecoverResult<T | InvalidEntry> | null = null;
 
   /**
    * Create a new WAL file instance.

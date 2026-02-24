@@ -82,6 +82,7 @@ export function getShardId(): string {
 }
 
 /**
+ * @TODO remove in PR https://github.com/code-pushup/cli/pull/1231 in favour of class method getShardedFileName
  * Generates a path to a shard file using human-readable IDs.
  * Both groupId and shardId are already in readable date format.
  *

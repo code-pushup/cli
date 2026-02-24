@@ -17,7 +17,11 @@ import type {
   MarkerPayload,
 } from '../user-timing-extensibility-api.type.js';
 import { getShardedPath } from '../wal-sharded.js';
-import { type AppendableSink, WriteAheadLogFile } from '../wal.js';
+import {
+  type AppendableSink,
+  type WalRecord,
+  WriteAheadLogFile,
+} from '../wal.js';
 import {
   PROFILER_DEBUG_ENV_VAR,
   PROFILER_ENABLED_ENV_VAR,
@@ -70,7 +74,7 @@ export type NodejsProfilerOptions<
  * @template Tracks - Record type defining available track names and their configurations
  */
 export class NodejsProfiler<
-  DomainEvents extends string | object,
+  DomainEvents extends WalRecord,
   Tracks extends Record<string, ActionTrackEntryPayload> = Record<
     string,
     ActionTrackEntryPayload
@@ -115,6 +119,7 @@ export class NodejsProfiler<
         filename ??
         path.join(
           process.cwd(),
+          // @TODO remove in PR https://github.com/code-pushup/cli/pull/1231 in favour of class method getShardedFileName
           getShardedPath({
             dir: 'tmp/profiles',
             groupId: getUniqueTimeId(),
