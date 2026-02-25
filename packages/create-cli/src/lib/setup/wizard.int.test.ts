@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { cleanTestFolder } from '@code-pushup/test-utils';
 import type { PluginSetupBinding } from './types.js';
@@ -53,9 +53,10 @@ describe('runSetupWizard', () => {
     await cleanTestFolder(outputDir);
   });
 
-  it('should write a valid config file with provided bindings', async () => {
+  it('should write a valid ts config file with provided bindings', async () => {
     await runSetupWizard(TEST_BINDINGS, {
       yes: true,
+      'config-format': 'ts',
       'target-dir': outputDir,
     });
 
@@ -79,6 +80,7 @@ describe('runSetupWizard', () => {
   it('should not write files in dry-run mode', async () => {
     await runSetupWizard(TEST_BINDINGS, {
       yes: true,
+      'config-format': 'ts',
       'dry-run': true,
       'target-dir': outputDir,
     });
@@ -91,6 +93,7 @@ describe('runSetupWizard', () => {
   it('should pass custom plugin options through to codegen', async () => {
     await runSetupWizard(TEST_BINDINGS, {
       'alpha.path': 'custom.config.mjs',
+      'config-format': 'ts',
       yes: true,
       'target-dir': outputDir,
     });
@@ -108,6 +111,59 @@ describe('runSetupWizard', () => {
           betaPlugin(),
         ],
       } satisfies CoreConfig;
+      "
+    `);
+  });
+
+  it('should write a js config file with .js extension for ESM package', async () => {
+    await writeFile(
+      path.join(outputDir, 'package.json'),
+      JSON.stringify({ type: 'module' }),
+    );
+
+    await runSetupWizard(TEST_BINDINGS, {
+      yes: true,
+      'config-format': 'js',
+      'target-dir': outputDir,
+    });
+
+    await expect(
+      readFile(path.join(outputDir, 'code-pushup.config.js'), 'utf8'),
+    ).resolves.toMatchInlineSnapshot(`
+      "import alphaPlugin from '@code-pushup/alpha-plugin';
+      import betaPlugin from '@code-pushup/beta-plugin';
+
+      /** @type {import('@code-pushup/models').CoreConfig} */
+      export default {
+        plugins: [
+          alphaPlugin("alpha.config.js"),
+          betaPlugin(),
+        ],
+      };
+      "
+    `);
+  });
+
+  it('should write a js config file with .mjs extension for non-ESM package', async () => {
+    await runSetupWizard(TEST_BINDINGS, {
+      yes: true,
+      'config-format': 'js',
+      'target-dir': outputDir,
+    });
+
+    await expect(
+      readFile(path.join(outputDir, 'code-pushup.config.mjs'), 'utf8'),
+    ).resolves.toMatchInlineSnapshot(`
+      "import alphaPlugin from '@code-pushup/alpha-plugin';
+      import betaPlugin from '@code-pushup/beta-plugin';
+
+      /** @type {import('@code-pushup/models').CoreConfig} */
+      export default {
+        plugins: [
+          alphaPlugin("alpha.config.js"),
+          betaPlugin(),
+        ],
+      };
       "
     `);
   });

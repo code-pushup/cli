@@ -1,5 +1,8 @@
 import type { PluginMeta } from '@code-pushup/models';
 
+export const CONFIG_FILE_FORMATS = ['ts', 'js', 'mjs'] as const;
+export type ConfigFileFormat = (typeof CONFIG_FILE_FORMATS)[number];
+
 /** Virtual file system that buffers writes in memory until flushed to disk. */
 export type Tree = {
   root: string;
@@ -47,7 +50,7 @@ export type ImportDeclarationStructure = {
 export type PluginCodegenResult = {
   imports: ImportDeclarationStructure[];
   pluginInit: string;
-  // TODO: #1243 — add categories support (categoryRefs for generated categories array)
+  // TODO: #1244 — add categories support (categoryRefs for generated categories array)
 };
 
 type PromptBase = {
@@ -82,6 +85,7 @@ export type PluginPromptDescriptor =
 export type CliArgs = {
   'dry-run'?: boolean;
   yes?: boolean;
+  'config-format'?: string;
   // TODO: #1244 — add 'plugins' field for CLI-based plugin selection
   'target-dir'?: string;
   [key: string]: unknown;

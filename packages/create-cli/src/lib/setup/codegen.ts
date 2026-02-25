@@ -1,4 +1,5 @@
 import type {
+  ConfigFileFormat,
   ImportDeclarationStructure,
   PluginCodegenResult,
 } from './types.js';
@@ -44,7 +45,7 @@ function formatImport({
   return `import ${type}${from}'${moduleSpecifier}';`;
 }
 
-function collectImports(
+function collectTsImports(
   plugins: PluginCodegenResult[],
 ): ImportDeclarationStructure[] {
   return [
@@ -53,12 +54,19 @@ function collectImports(
   ].toSorted((a, b) => a.moduleSpecifier.localeCompare(b.moduleSpecifier));
 }
 
-export function generateConfigSource(plugins: PluginCodegenResult[]): string {
-  const builder = new CodeBuilder();
+function collectJsImports(
+  plugins: PluginCodegenResult[],
+): ImportDeclarationStructure[] {
+  return plugins
+    .flatMap(({ imports }) => imports)
+    .map(({ isTypeOnly: _, ...rest }) => rest)
+    .toSorted((a, b) => a.moduleSpecifier.localeCompare(b.moduleSpecifier));
+}
 
-  builder.addLines(collectImports(plugins).map(formatImport));
-  builder.addEmptyLine();
-  builder.addLine('export default {');
+function addPlugins(
+  builder: CodeBuilder,
+  plugins: PluginCodegenResult[],
+): void {
   if (plugins.length === 0) {
     builder.addLine('plugins: [],', 1);
   } else {
@@ -69,7 +77,42 @@ export function generateConfigSource(plugins: PluginCodegenResult[]): string {
     );
     builder.addLine('],', 1);
   }
+}
+
+export function generateConfigSource(
+  plugins: PluginCodegenResult[],
+  format: ConfigFileFormat,
+): string {
+  return format === 'ts'
+    ? generateTsConfig(plugins)
+    : generateJsConfig(plugins);
+}
+
+function generateTsConfig(plugins: PluginCodegenResult[]): string {
+  const builder = new CodeBuilder();
+
+  builder.addLines(collectTsImports(plugins).map(formatImport));
+  builder.addEmptyLine();
+  builder.addLine('export default {');
+  addPlugins(builder, plugins);
   builder.addLine('} satisfies CoreConfig;');
+
+  return builder.toString();
+}
+
+function generateJsConfig(plugins: PluginCodegenResult[]): string {
+  const builder = new CodeBuilder();
+
+  const pluginImports = collectJsImports(plugins);
+  if (pluginImports.length > 0) {
+    builder.addLines(pluginImports.map(formatImport));
+    builder.addEmptyLine();
+  }
+
+  builder.addLine("/** @type {import('@code-pushup/models').CoreConfig} */");
+  builder.addLine('export default {');
+  addPlugins(builder, plugins);
+  builder.addLine('};');
 
   return builder.toString();
 }
