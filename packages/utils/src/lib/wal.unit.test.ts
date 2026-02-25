@@ -323,7 +323,7 @@ describe('WriteAheadLogFile', () => {
     expect(result.records).toEqual(['good', 'good']);
   });
 
-  it('repacks with without invalid entries and logs warning', () => {
+  it('repacks without invalid entries and logs warning', () => {
     const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
     vol.mkdirSync('/test', { recursive: true });
