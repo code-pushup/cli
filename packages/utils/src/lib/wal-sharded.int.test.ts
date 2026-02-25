@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { PROFILER_SHARDER_ID_ENV_VAR } from './profiler/constants.js';
+import { SHARDED_WAL_COORDINATOR_ID_ENV_VAR } from './profiler/constants.js';
 import { ShardedWal } from './wal-sharded.js';
 import { type WalFormat, type WalRecord, stringCodec } from './wal.js';
 
@@ -57,7 +56,7 @@ describe('ShardedWal Integration', () => {
       format: makeMockFormat({
         baseName: 'trace',
       }),
-      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: 'create-finalize',
     });
 
@@ -93,7 +92,7 @@ describe('ShardedWal Integration', () => {
       format: makeMockFormat({
         baseName: 'merged',
       }),
-      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: 'merge-shards',
     });
 
@@ -119,14 +118,14 @@ describe('ShardedWal Integration', () => {
     expect(records[4]).toBe('record-from-shard-5');
   });
 
-  it('should handle invalid entries during if debug true', () => {
+  it('should expose recovery details in stats when debug is true', () => {
     shardedWal = new ShardedWal({
       debug: true,
       dir: testDir,
       format: makeMockFormat({
         baseName: 'test',
       }),
-      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: 'invalid-entries',
     });
 
@@ -138,9 +137,9 @@ describe('ShardedWal Integration', () => {
     shard.close();
 
     shardedWal.finalize();
-    // When debug is true, lastRecover should contain recovery results
-    expect(shardedWal.stats.lastRecover).toHaveLength(1);
-    expect(shardedWal.stats.lastRecover[0]).toMatchObject({
+    // When debug is true, lastRecovery should contain recovery results
+    expect(shardedWal.stats.lastRecovery).toHaveLength(1);
+    expect(shardedWal.stats.lastRecovery[0]).toMatchObject({
       file: expect.stringContaining('test.'),
       result: expect.objectContaining({
         records: expect.arrayContaining(['valid1', 'invalid', 'valid2']),
@@ -166,7 +165,7 @@ describe('ShardedWal Integration', () => {
       format: makeMockFormat({
         baseName: 'cleanup-test',
       }),
-      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: 'cleanup-test',
     });
 
@@ -206,7 +205,7 @@ describe('ShardedWal Integration', () => {
         finalizer: (records, opt) =>
           `${JSON.stringify({ records, metadata: opt })}\n`,
       }),
-      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: 'custom-finalizer',
     });
 
@@ -238,7 +237,7 @@ describe('ShardedWal Integration', () => {
       format: makeMockFormat({
         baseName: 'empty',
       }),
-      coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
       groupId: 'empty-shards',
     });
 

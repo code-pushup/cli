@@ -1,11 +1,14 @@
 import { vol } from 'memfs';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { MEMFS_VOLUME, osAgnosticPath } from '@code-pushup/test-utils';
 import { getUniqueInstanceId } from './process-id.js';
-import { PROFILER_SHARDER_ID_ENV_VAR } from './profiler/constants.js';
+import {
+  PROFILER_MEASURE_NAME_ENV_VAR,
+  SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+} from './profiler/constants.js';
 import { ShardedWal } from './wal-sharded.js';
 import {
   type WalFormat,
+  type WalRecord,
   WriteAheadLogFile,
   parseWalFormat,
   stringCodec,
@@ -16,7 +19,6 @@ const read = (p: string) => vol.readFileSync(p, 'utf8') as string;
 const getShardedWal = (overrides?: {
   dir?: string;
   format?: Partial<WalFormat>;
-  measureNameEnvVar?: string;
   autoCoordinator?: boolean;
   groupId?: string;
 }) => {
@@ -28,21 +30,22 @@ const getShardedWal = (overrides?: {
       baseName: 'test-wal',
       ...format,
     }),
-    coordinatorIdEnvVar: PROFILER_SHARDER_ID_ENV_VAR,
+    coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     ...rest,
   });
+};
+
+const deleteEnvVar = (key: string) => {
+  // eslint-disable-next-line functional/immutable-data,@typescript-eslint/no-dynamic-delete
+  delete process.env[key];
 };
 
 describe('ShardedWal', () => {
   beforeEach(() => {
     vol.reset();
     vol.fromJSON({}, MEMFS_VOLUME);
-    // Clear coordinator env var for fresh state
-    // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
-    delete process.env[PROFILER_SHARDER_ID_ENV_VAR];
-    // Clear measure name env var to avoid test pollution
-    // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
-    delete process.env.CP_PROFILER_MEASURE_NAME;
+    deleteEnvVar(SHARDED_WAL_COORDINATOR_ID_ENV_VAR);
+    deleteEnvVar(PROFILER_MEASURE_NAME_ENV_VAR);
   });
 
   describe('initialization', () => {
@@ -56,38 +59,19 @@ describe('ShardedWal', () => {
       const firstId = sw.id;
       expect(sw.id).toBe(firstId);
     });
-
-    it('should use groupId from env var when measureNameEnvVar is set', () => {
-      // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_MEASURE_NAME = 'from-env';
-      const sw = getShardedWal({
-        measureNameEnvVar: 'CP_PROFILER_MEASURE_NAME',
-      });
-      expect(sw.groupId).toBe('from-env');
-      expect(process.env.CP_PROFILER_MEASURE_NAME).toBe('from-env');
-    });
-
-    it('should set env var when measureNameEnvVar is provided and unset', () => {
-      // eslint-disable-next-line functional/immutable-data
-      delete process.env.CP_PROFILER_MEASURE_NAME;
-      const sw = getShardedWal({
-        measureNameEnvVar: 'CP_PROFILER_MEASURE_NAME',
-      });
-      expect(process.env.CP_PROFILER_MEASURE_NAME).toBe(sw.groupId);
-    });
   });
 
   describe('path traversal validation', () => {
     it('should reject groupId with forward slashes', () => {
       expect(() => getShardedWal({ groupId: '../etc/passwd' })).toThrow(
-        'groupId cannot contain path separators (/ or \\)',
+        'groupId cannot contain path separators',
       );
     });
 
     it('should reject groupId with backward slashes', () => {
-      expect(() => getShardedWal({ groupId: '..\\windows\\system32' })).toThrow(
-        'groupId cannot contain path separators (/ or \\)',
-      );
+      expect(() =>
+        getShardedWal({ groupId: String.raw`..\windows\system32` }),
+      ).toThrow('groupId cannot contain path separators');
     });
 
     it('should reject groupId with parent directory reference', () => {
@@ -128,16 +112,6 @@ describe('ShardedWal', () => {
     it('should accept groupId with underscores and hyphens', () => {
       const sw = getShardedWal({ groupId: 'test_group-name' });
       expect(sw.groupId).toBe('test_group-name');
-    });
-
-    it('should reject groupId from env var with path traversal', () => {
-      // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_MEASURE_NAME = '../malicious';
-      expect(() =>
-        getShardedWal({
-          measureNameEnvVar: 'CP_PROFILER_MEASURE_NAME',
-        }),
-      ).toThrow('groupId cannot contain path separators (/ or \\)');
     });
   });
 
@@ -219,7 +193,7 @@ describe('ShardedWal', () => {
         format: {
           baseName: 'final',
           finalExtension: '.json',
-          finalizer: records => `${JSON.stringify(records)}\n`,
+          finalizer: (records: WalRecord) => `${JSON.stringify(records)}\n`,
         },
       });
 
@@ -245,7 +219,7 @@ describe('ShardedWal', () => {
           baseName: 'merged',
           walExtension: '.log',
           finalExtension: '.json',
-          finalizer: records => `${JSON.stringify(records)}\n`,
+          finalizer: (records: WalRecord) => `${JSON.stringify(records)}\n`,
         },
       });
 
@@ -274,7 +248,7 @@ describe('ShardedWal', () => {
           walExtension: '.log',
           finalExtension: '.json',
           codec: stringCodec(),
-          finalizer: records => `${JSON.stringify(records)}\n`,
+          finalizer: (records: WalRecord) => `${JSON.stringify(records)}\n`,
         },
       });
 
@@ -302,7 +276,7 @@ describe('ShardedWal', () => {
           baseName: 'final',
           walExtension: '.log',
           finalExtension: '.json',
-          finalizer: (records, opt) =>
+          finalizer: (records: WalRecord, opt) =>
             `${JSON.stringify({ records, meta: opt })}\n`,
         },
       });
@@ -427,7 +401,7 @@ describe('ShardedWal', () => {
         format: {
           baseName: 'test',
           finalExtension: '.json',
-          finalizer: records => `${JSON.stringify(records)}\n`,
+          finalizer: (records: WalRecord) => `${JSON.stringify(records)}\n`,
         },
       });
 
@@ -480,7 +454,7 @@ describe('ShardedWal', () => {
         format: {
           baseName: 'test',
           finalExtension: '.json',
-          finalizer: records => `${JSON.stringify(records)}\n`,
+          finalizer: (records: WalRecord) => `${JSON.stringify(records)}\n`,
         },
       });
 
@@ -507,7 +481,10 @@ describe('ShardedWal', () => {
       });
 
       // Set coordinator BEFORE creating instance
-      ShardedWal.setCoordinatorProcess(PROFILER_SHARDER_ID_ENV_VAR, instanceId);
+      ShardedWal.setCoordinatorProcess(
+        SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+        instanceId,
+      );
 
       const sw = getShardedWal({
         dir: '/shards',
@@ -526,7 +503,7 @@ describe('ShardedWal', () => {
         format: {
           baseName: 'test',
           finalExtension: '.json',
-          finalizer: records => `${JSON.stringify(records)}\n`,
+          finalizer: (records: WalRecord) => `${JSON.stringify(records)}\n`,
         },
       });
 
@@ -551,7 +528,10 @@ describe('ShardedWal', () => {
       });
 
       // Set coordinator BEFORE creating instance
-      ShardedWal.setCoordinatorProcess(PROFILER_SHARDER_ID_ENV_VAR, instanceId);
+      ShardedWal.setCoordinatorProcess(
+        SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+        instanceId,
+      );
 
       const sw = getShardedWal({
         dir: '/shards',

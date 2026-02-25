@@ -14,19 +14,9 @@ import {
   type WalFormat,
   type WalRecord,
   WriteAheadLogFile,
+  ensureDirectoryExistsSync,
   filterValidRecords,
 } from './wal.js';
-
-/**
- * NOTE: this helper is only used in this file. The rest of the repo avoids sync methods so it is not reusable.
- * Ensures a directory exists, creating it recursively if necessary using sync methods.
- * @param dirPath - The directory path to ensure exists
- */
-function ensureDirectoryExistsSync(dirPath: string): void {
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
-  }
-}
 
 /**
  * Validates that a groupId is safe to use as a single path segment.
@@ -43,7 +33,7 @@ function validateGroupId(groupId: string): void {
 
   // Reject path separators (both forward and backward slashes)
   if (groupId.includes('/') || groupId.includes('\\')) {
-    throw new Error('groupId cannot contain path separators (/ or \\)');
+    throw new Error('groupId cannot contain path separators');
   }
 
   // Reject relative path components
@@ -92,6 +82,32 @@ export function getShardId(): string {
 }
 
 /**
+ * @TODO remove in PR https://github.com/code-pushup/cli/pull/1231 in favour of class method getShardedFileName
+ * Generates a path to a shard file using human-readable IDs.
+ * Both groupId and shardId are already in readable date format.
+ *
+ * Example with groupId "20240101-120000-000" and shardId "20240101-120000-000.12345.1.1":
+ * Full path: /base/20240101-120000-000/trace.20240101-120000-000.12345.1.1.log
+ *
+ * @param opt.dir - The directory to store the shard file
+ * @param opt.format - The WalFormat to use for the shard file
+ * @param opt.groupId - The human-readable group ID (yyyymmdd-hhmmss-ms format)
+ * @param opt.shardId - The human-readable shard ID (readable-timestamp.pid.threadId.count format)
+ * @returns The path to the shard file
+ */
+export function getShardedPath<T extends object | string = object>(opt: {
+  dir?: string;
+  format: WalFormat<T>;
+  groupId: string;
+  shardId: string;
+}): string {
+  const { dir = '', format, groupId, shardId } = opt;
+  const { baseName, walExtension } = format;
+
+  return path.join(dir, groupId, `${baseName}.${shardId}${walExtension}`);
+}
+
+/**
  * Sharded Write-Ahead Log manager for coordinating multiple WAL shards.
  * Handles distributed logging across multiple processes/files with atomic finalization.
  */
@@ -104,7 +120,7 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
       return ++ShardedWal.instanceCount;
     },
   });
-  readonly groupId = getUniqueTimeId();
+  readonly groupId: string;
   readonly #debug: boolean = false;
   readonly #format: WalFormat<T>;
   readonly #dir: string = process.cwd();
@@ -117,31 +133,31 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
   #createdShardFiles: string[] = [];
 
   /**
-   * Initialize the origin PID environment variable if not already set.
+   * Initialize the given environment variable if not already set.
    * This must be done as early as possible before any user code runs.
-   * Sets envVarName to the current process ID if not already defined.
+   * Sets envVarName to the current instance ID if not already defined.
    *
    * @param envVarName - Environment variable name for storing coordinator ID
-   * @param profilerID - The profiler ID to set as coordinator
+   * @param instanceID - The instance ID to set as coordinator
    */
-  static setCoordinatorProcess(envVarName: string, profilerID: string): void {
+  static setCoordinatorProcess(envVarName: string, instanceID: string): void {
     if (!process.env[envVarName]) {
-      process.env[envVarName] = profilerID;
+      process.env[envVarName] = instanceID;
     }
   }
 
   /**
-   * Determines if this process is the leader WAL process using the origin PID heuristic.
+   * Determines if this process is the leader WAL process.
    *
-   * The leader is the process that first enabled profiling (the one that set CP_PROFILER_ORIGIN_PID).
-   * All descendant processes inherit the environment but have different PIDs.
+   * The leader is the process that first enabled profiling over the given env var.
+   * All descendant processes inherit the environment.
    *
    * @param envVarName - Environment variable name for storing coordinator ID
-   * @param profilerID - The profiler ID to check
+   * @param instanceID - The instance ID to check
    * @returns true if this is the leader WAL process, false otherwise
    */
-  static isCoordinatorProcess(envVarName: string, profilerID: string): boolean {
-    return process.env[envVarName] === profilerID;
+  static isCoordinatorProcess(envVarName: string, instanceID: string): boolean {
+    return process.env[envVarName] === instanceID;
   }
 
   /**
@@ -152,7 +168,6 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
    * @param opt.groupId - Group ID for sharding (defaults to generated group ID)
    * @param opt.coordinatorIdEnvVar - Environment variable name for storing coordinator ID (defaults to CP_SHARDED_WAL_COORDINATOR_ID)
    * @param opt.autoCoordinator - Whether to auto-set the coordinator ID on construction (defaults to true)
-   * @param opt.measureNameEnvVar - Environment variable name for coordinating groupId across processes (optional)
    */
   constructor(opt: {
     debug?: boolean;
@@ -161,7 +176,6 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
     groupId?: string;
     coordinatorIdEnvVar: string;
     autoCoordinator?: boolean;
-    measureNameEnvVar?: string;
   }) {
     const {
       dir,
@@ -170,7 +184,6 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
       groupId,
       coordinatorIdEnvVar,
       autoCoordinator = true,
-      measureNameEnvVar,
     } = opt;
 
     if (debug != null) {
@@ -178,24 +191,8 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
     }
 
     // Determine groupId: use provided, then env var, or generate
-    // eslint-disable-next-line functional/no-let
-    let resolvedGroupId: string;
-    if (groupId != null) {
-      // User explicitly provided groupId - use it (even if empty, validation will catch it)
-      resolvedGroupId = groupId;
-    } else if (measureNameEnvVar && process.env[measureNameEnvVar] != null) {
-      // Env var is set (by coordinator or previous process) - use it
-      resolvedGroupId = process.env[measureNameEnvVar];
-    } else if (measureNameEnvVar) {
-      // Env var not set - we're likely the first/coordinator, generate and set it
-      resolvedGroupId = getUniqueTimeId();
-
-      process.env[measureNameEnvVar] = resolvedGroupId;
-    } else {
-      // No measureNameEnvVar provided - generate unique one (backward compatible)
-      resolvedGroupId = getUniqueTimeId();
-    }
-
+    const resolvedGroupId: string =
+      groupId == null ? getUniqueTimeId() : groupId;
     // Validate groupId for path safety before using it
     validateGroupId(resolvedGroupId);
 
@@ -331,8 +328,9 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
     }
 
     const groupDir = path.join(this.#dir, this.groupId);
-    // create dir if not existing
-    ensureDirectoryExistsSync(groupDir);
+    if (!fs.existsSync(groupDir)) {
+      return [];
+    }
 
     return fs
       .readdirSync(groupDir)
@@ -360,7 +358,7 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
     // Ensure base directory exists before calling shardFiles()
     ensureDirectoryExistsSync(this.#dir);
 
-    const fileRecoveries = this.shardFiles().map(f => ({
+    const lastRecovery = this.shardFiles().map(f => ({
       file: f,
       result: new WriteAheadLogFile({
         file: f,
@@ -368,10 +366,10 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
       }).recover(),
     }));
 
-    const records = fileRecoveries.flatMap(({ result }) => result.records);
+    const records = lastRecovery.flatMap(({ result }) => result.records);
 
     if (this.#debug) {
-      this.#lastRecovery = fileRecoveries;
+      this.#lastRecovery = lastRecovery;
     }
 
     ensureDirectoryExistsSync(path.dirname(this.getFinalFilePath()));
@@ -385,7 +383,7 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
       throw extendError(
         error,
         'Could not finalize sharded wal. Finalizer method in format throws.',
-        { appendMessage: true },
+        { appendOriginalMessage: true },
       );
     }
 
@@ -418,25 +416,20 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
   get stats() {
     // When finalized, count all shard files from filesystem (for multi-process scenarios)
     // Otherwise, count only files created by this instance
-    const shardFileCount =
-      this.#state === 'finalized' || this.#state === 'cleaned'
-        ? this.shardFiles().length
-        : this.getCreatedShardFiles().length;
     const shardFilesList =
       this.#state === 'finalized' || this.#state === 'cleaned'
         ? this.shardFiles()
         : this.getCreatedShardFiles();
 
     return {
-      lastRecover: this.#lastRecovery,
+      lastRecovery: this.#lastRecovery,
       state: this.#state,
       groupId: this.groupId,
-      shardCount: this.getCreatedShardFiles().length,
+      shardCount: shardFilesList.length,
       isCoordinator: this.isCoordinator(),
       isFinalized: this.isFinalized(),
       isCleaned: this.isCleaned(),
       finalFilePath: this.getFinalFilePath(),
-      shardFileCount,
       shardFiles: shardFilesList,
     };
   }

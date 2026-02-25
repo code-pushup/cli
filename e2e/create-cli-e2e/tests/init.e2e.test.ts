@@ -12,6 +12,7 @@ import { executeProcess, readJsonFile, readTextFile } from '@code-pushup/utils';
 const fakeCacheFolderName = () =>
   `fake-cache-${new Date().toISOString().replace(/[:.]/g, '-')}`;
 
+// TODO: rewrite e2e tests for the new setup wizard (old tests reference removed nx-plugin integration)
 /* after a new release of the nx-verdaccio plugin we can enable the test again. For now, it is too flaky to be productive. (5.jan.2025) */
 describe.todo('create-cli-init', () => {
   const workspaceRoot = path.join(E2E_ENVIRONMENTS_DIR, nxTargetProject());

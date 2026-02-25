@@ -31,3 +31,9 @@ export const SHARDED_WAL_COORDINATOR_ID_ENV_VAR =
  * Used as the base name for sharded WAL files (e.g., "trace" in "trace.json").
  */
 export const PROFILER_PERSIST_BASENAME = 'trace';
+
+/**
+ * Name for current measure.
+ * Used as the name for the sharded folder.
+ */
+export const PROFILER_MEASURE_NAME_ENV_VAR = 'CP_PROFILER_MEASURE_NAME';
