@@ -19,7 +19,6 @@ const read = (p: string) => vol.readFileSync(p, 'utf8') as string;
 const getShardedWal = (overrides?: {
   dir?: string;
   format?: Partial<WalFormat>;
-  measureNameEnvVar?: string;
   autoCoordinator?: boolean;
   groupId?: string;
 }) => {

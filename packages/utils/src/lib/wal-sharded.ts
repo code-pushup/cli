@@ -168,7 +168,6 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
    * @param opt.groupId - Group ID for sharding (defaults to generated group ID)
    * @param opt.coordinatorIdEnvVar - Environment variable name for storing coordinator ID (defaults to CP_SHARDED_WAL_COORDINATOR_ID)
    * @param opt.autoCoordinator - Whether to auto-set the coordinator ID on construction (defaults to true)
-   * @param opt.measureNameEnvVar - Environment variable name for coordinating groupId across processes (optional)
    */
   constructor(opt: {
     debug?: boolean;
