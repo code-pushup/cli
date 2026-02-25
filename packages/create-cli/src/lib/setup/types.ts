@@ -1,6 +1,7 @@
 import type { PluginMeta } from '@code-pushup/models';
 
-export type ConfigFileFormat = 'ts' | 'js' | 'mjs';
+export const CONFIG_FILE_FORMATS = ['ts', 'js', 'mjs'] as const;
+export type ConfigFileFormat = (typeof CONFIG_FILE_FORMATS)[number];
 
 /** Virtual file system that buffers writes in memory until flushed to disk. */
 export type Tree = {

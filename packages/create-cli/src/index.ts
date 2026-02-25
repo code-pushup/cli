@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { CONFIG_FILE_FORMATS } from './lib/setup/types.js';
 import { runSetupWizard } from './lib/setup/wizard.js';
 
 const argv = await yargs(hideBin(process.argv))
@@ -17,7 +18,7 @@ const argv = await yargs(hideBin(process.argv))
   })
   .option('config-format', {
     type: 'string',
-    choices: ['ts', 'js', 'mjs'],
+    choices: CONFIG_FILE_FORMATS,
     describe: 'Config file format (default: auto-detected from project)',
   })
   .parse();

@@ -3,7 +3,11 @@ import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 import type { PackageJson } from 'type-fest';
 import { fileExists, readJsonFile } from '@code-pushup/utils';
-import type { CliArgs, ConfigFileFormat } from './types.js';
+import {
+  CONFIG_FILE_FORMATS,
+  type CliArgs,
+  type ConfigFileFormat,
+} from './types.js';
 
 const TSCONFIG_PATTERN = /^tsconfig(\..+)?\.json$/;
 
@@ -61,5 +65,6 @@ async function detectDefaultFormat(targetDir: string): Promise<DefaultFormat> {
 function isConfigFileFormat(
   value: string | undefined,
 ): value is ConfigFileFormat {
-  return value === 'ts' || value === 'js' || value === 'mjs';
+  const validValues: readonly string[] = CONFIG_FILE_FORMATS;
+  return value != null && validValues.includes(value);
 }
