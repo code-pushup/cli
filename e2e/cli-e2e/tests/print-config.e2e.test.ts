@@ -27,6 +27,11 @@ describe('CLI print-config', () => {
   const testFileDummySetup = path.join(testFileDir, 'dummy-setup');
   const configFilePath = (ext: (typeof extensions)[number]) =>
     path.join(process.cwd(), testFileDummySetup, `code-pushup.config.${ext}`);
+  const tsconfigFilePath = path.join(
+    process.cwd(),
+    testFileDummySetup,
+    'tsconfig.base.json',
+  );
 
   beforeAll(async () => {
     await cp(fixtureDummyDir, testFileDummySetup, { recursive: true });
@@ -46,7 +51,7 @@ describe('CLI print-config', () => {
           'print-config',
           '--output=config.json',
           `--config=${configFilePath(ext)}`,
-          '--tsconfig=tsconfig.base.json',
+          `--tsconfig=${tsconfigFilePath}`,
           '--persist.outputDir=output-dir',
           '--persist.format=md',
           `--persist.filename=${ext}-report`,
@@ -63,7 +68,7 @@ describe('CLI print-config', () => {
       expect(JSON.parse(output)).toEqual(
         expect.objectContaining({
           config: expect.stringContaining(`code-pushup.config.${ext}`),
-          tsconfig: 'tsconfig.base.json',
+          tsconfig: tsconfigFilePath,
           plugins: [
             expect.objectContaining({
               slug: 'dummy-plugin',
