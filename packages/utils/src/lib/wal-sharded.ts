@@ -383,7 +383,7 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
       throw extendError(
         error,
         'Could not finalize sharded wal. Finalizer method in format throws.',
-        { appendMessage: true },
+        { appendOriginalMessage: true },
       );
     }
 
