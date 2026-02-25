@@ -1,3 +1,13 @@
+## 0.115.0 (2026-02-25)
+
+### 🚀 Features
+
+- **create-cli:** support config file format selection ([#1250](https://github.com/code-pushup/cli/pull/1250))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.114.0 (2026-02-24)
 
 ### 🚀 Features
