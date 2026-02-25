@@ -1,17 +1,13 @@
 import { vol } from 'memfs';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { SHARDED_WAL_COORDINATOR_ID_ENV_VAR } from './profiler/constants.js';
 import {
   type Codec,
   type InvalidEntry,
-  ShardedWal,
   WriteAheadLogFile,
   createTolerantCodec,
   filterValidRecords,
-  isCoordinatorProcess,
   parseWalFormat,
   recoverFromContent,
-  setCoordinatorProcess,
   stringCodec,
 } from './wal.js';
 
@@ -292,7 +288,7 @@ describe('WriteAheadLogFile', () => {
     expect(read('/test/a.log')).toBe('a\nb\n');
   });
 
-  it('repacks with decode errors using tolerant codec', () => {
+  it('repacks without decode errors using tolerant codec', () => {
     vol.mkdirSync('/test', { recursive: true });
     write('/test/a.log', 'ok\nbad\n');
 
@@ -305,7 +301,7 @@ describe('WriteAheadLogFile', () => {
     });
 
     wal('/test/a.log', tolerantCodec).repack();
-    expect(read('/test/a.log')).toBe('ok\nbad\n');
+    expect(read('/test/a.log')).toBe('ok\n');
   });
 
   it('logs decode errors during content recovery', () => {
@@ -327,7 +323,7 @@ describe('WriteAheadLogFile', () => {
     expect(result.records).toEqual(['good', 'good']);
   });
 
-  it('repacks with invalid entries and logs warning', () => {
+  it('repacks without invalid entries and logs warning', () => {
     const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
     vol.mkdirSync('/test', { recursive: true });
@@ -346,7 +342,7 @@ describe('WriteAheadLogFile', () => {
     expect(consoleLogSpy).toHaveBeenCalledWith(
       'Found invalid entries during WAL repack',
     );
-    expect(read('/test/a.log')).toBe('ok\nbad\n');
+    expect(read('/test/a.log')).toBe('ok\n');
 
     consoleLogSpy.mockRestore();
   });
@@ -607,346 +603,5 @@ describe('parseWalFormat', () => {
     // Should be JSON strings, not [object Object]
     expect(output).toBe('{"id":1,"name":"test1"}\n{"id":2,"name":"test2"}\n');
     expect(output).not.toContain('[object Object]');
-  });
-});
-
-describe('isCoordinatorProcess', () => {
-  it('should return true when env var matches current pid', () => {
-    const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    vi.stubEnv('TEST_LEADER_PID', profilerId);
-
-    const result = isCoordinatorProcess('TEST_LEADER_PID', profilerId);
-    expect(result).toBeTrue();
-  });
-
-  it('should return false when env var does not match current profilerId', () => {
-    const wrongProfilerId = `${Math.round(performance.timeOrigin)}${process.pid}.2.0`;
-    vi.stubEnv('TEST_LEADER_PID', wrongProfilerId);
-
-    const currentProfilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    const result = isCoordinatorProcess('TEST_LEADER_PID', currentProfilerId);
-    expect(result).toBeFalse();
-  });
-
-  it('should return false when env var is not set', () => {
-    vi.stubEnv('NON_EXISTENT_VAR', undefined as any);
-
-    const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    const result = isCoordinatorProcess('NON_EXISTENT_VAR', profilerId);
-    expect(result).toBeFalse();
-  });
-
-  it('should return false when env var is empty string', () => {
-    vi.stubEnv('TEST_LEADER_PID', '');
-
-    const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    const result = isCoordinatorProcess('TEST_LEADER_PID', profilerId);
-    expect(result).toBeFalse();
-  });
-});
-
-describe('setCoordinatorProcess', () => {
-  beforeEach(() => {
-    // Clean up any existing TEST_ORIGIN_PID
-    // eslint-disable-next-line functional/immutable-data
-    delete process.env['TEST_ORIGIN_PID'];
-  });
-
-  it('should set env var when not already set', () => {
-    expect(process.env['TEST_ORIGIN_PID']).toBeUndefined();
-
-    const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    setCoordinatorProcess('TEST_ORIGIN_PID', profilerId);
-
-    expect(process.env['TEST_ORIGIN_PID']).toBe(profilerId);
-  });
-
-  it('should not overwrite existing env var', () => {
-    const existingProfilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    const newProfilerId = `${Math.round(performance.timeOrigin)}${process.pid}.2.0`;
-
-    vi.stubEnv('TEST_ORIGIN_PID', existingProfilerId);
-    setCoordinatorProcess('TEST_ORIGIN_PID', newProfilerId);
-
-    expect(process.env['TEST_ORIGIN_PID']).toBe(existingProfilerId);
-  });
-
-  it('should set env var to profiler id', () => {
-    const profilerId = `${Math.round(performance.timeOrigin)}${process.pid}.1.0`;
-    setCoordinatorProcess('TEST_ORIGIN_PID', profilerId);
-
-    expect(process.env['TEST_ORIGIN_PID']).toBe(profilerId);
-  });
-});
-
-describe('ShardedWal', () => {
-  beforeEach(() => {
-    vol.reset();
-    vol.fromJSON({}, MEMFS_VOLUME);
-  });
-
-  it('should create instance with directory and format', () => {
-    const sw = new ShardedWal({
-      dir: '/test/shards',
-      format: {
-        baseName: 'test-wal',
-      },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-    });
-
-    expect(sw).toBeInstanceOf(ShardedWal);
-  });
-
-  it('should create shard with correct file path', () => {
-    const sw = new ShardedWal({
-      dir: '/test/shards',
-      format: {
-        baseName: 'trace',
-        walExtension: '.log',
-      },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-    });
-
-    const shard = sw.shard('20231114-221320-000.1.2.3');
-    expect(shard).toBeInstanceOf(WriteAheadLogFile);
-    expect(shard.getPath()).toMatchPath(
-      '/test/shards/20231114-221320-000/trace.20231114-221320-000.1.2.3.log',
-    );
-  });
-
-  it('should create shard with default shardId when no argument provided', () => {
-    const sw = new ShardedWal({
-      dir: '/test/shards',
-      format: {
-        baseName: 'trace',
-        walExtension: '.log',
-      },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-    });
-
-    const shard = sw.shard();
-    expect(shard.getPath()).toStartWithPath(
-      '/test/shards/20231114-221320-000/trace.20231114-221320-000.10001',
-    );
-    expect(shard.getPath()).toEndWithPath('.log');
-  });
-
-  it('should list no shard files when directory does not exist', () => {
-    const sw = new ShardedWal({
-      dir: '/nonexistent',
-      format: {
-        baseName: 'test-wal',
-      },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-    });
-    const files = (sw as any).shardFiles();
-    expect(files).toEqual([]);
-  });
-
-  it('should list no shard files when directory is empty', () => {
-    const sw = new ShardedWal({
-      dir: '/empty',
-      format: {
-        baseName: 'test-wal',
-      },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-    });
-    // Create the group directory (matches actual getUniqueTimeId() output)
-    vol.mkdirSync('/empty/20231114-221320-000', { recursive: true });
-    const files = (sw as any).shardFiles();
-    expect(files).toEqual([]);
-  });
-
-  it('should list shard files matching extension', () => {
-    // Note: Real shard IDs look like "1704067200000.12345.1.1" (timestamp.pid.threadId.count)
-    // These test IDs use simplified format "001.1", "002.2" for predictability
-    vol.fromJSON({
-      '/shards/20231114-221320-000/trace.19700101-000820-001.1.log': 'content1',
-      '/shards/20231114-221320-000/trace.19700101-000820-002.2.log': 'content2',
-      '/shards/other.txt': 'not a shard',
-    });
-
-    const sw = new ShardedWal({
-      dir: '/shards',
-      format: {
-        baseName: 'trace',
-        walExtension: '.log',
-      },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-    });
-    const files = (sw as any).shardFiles();
-
-    expect(files).toHaveLength(2);
-    expect(files).toEqual(
-      expect.arrayContaining([
-        expect.pathToMatch(
-          '/shards/20231114-221320-000/trace.19700101-000820-001.1.log',
-        ),
-        expect.pathToMatch(
-          '/shards/20231114-221320-000/trace.19700101-000820-002.2.log',
-        ),
-      ]),
-    );
-  });
-
-  it('should finalize empty shards to empty result', () => {
-    const sw = new ShardedWal({
-      dir: '/shards',
-      format: {
-        baseName: 'final',
-        finalExtension: '.json',
-        finalizer: records => `${JSON.stringify(records)}\n`,
-      },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-    });
-
-    // Create the group directory
-    vol.mkdirSync('/shards/20231114-221320-000', { recursive: true });
-    sw.finalize();
-
-    expect(
-      read('/shards/20231114-221320-000/final.20231114-221320-000.json'),
-    ).toBe('[]\n');
-  });
-
-  it('should finalize multiple shards into single file', () => {
-    vol.fromJSON({
-      '/shards/20231114-221320-000/merged.20240101-120000-001.1.log':
-        'record1\n',
-      '/shards/20231114-221320-000/merged.20240101-120000-002.2.log':
-        'record2\n',
-    });
-
-    const sw = new ShardedWal({
-      dir: '/shards',
-      format: {
-        baseName: 'merged',
-        walExtension: '.log',
-        finalExtension: '.json',
-        finalizer: records => `${JSON.stringify(records)}\n`,
-      },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-    });
-
-    sw.finalize();
-
-    const result = JSON.parse(
-      read(
-        '/shards/20231114-221320-000/merged.20231114-221320-000.json',
-      ).trim(),
-    );
-    expect(result).toEqual(['record1', 'record2']);
-  });
-
-  it('should handle invalid entries during finalize', () => {
-    vol.fromJSON({
-      '/shards/20231114-221320-000/final.20240101-120000-001.1.log': 'valid\n',
-      '/shards/20231114-221320-000/final.20240101-120000-002.2.log':
-        'invalid\n',
-    });
-    const tolerantCodec = createTolerantCodec({
-      encode: (s: string) => s,
-      decode: (s: string) => {
-        if (s === 'invalid') throw new Error('Bad record');
-        return s;
-      },
-    });
-
-    const sw = new ShardedWal({
-      dir: '/shards',
-      format: {
-        baseName: 'final',
-        walExtension: '.log',
-        finalExtension: '.json',
-        codec: tolerantCodec,
-        finalizer: records => `${JSON.stringify(records)}\n`,
-      },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-    });
-
-    sw.finalize();
-
-    const result = JSON.parse(
-      read('/shards/20231114-221320-000/final.20231114-221320-000.json').trim(),
-    );
-    expect(result).toHaveLength(2);
-    expect(result[0]).toBe('valid');
-    expect(result[1]).toEqual({ __invalid: true, raw: 'invalid' });
-  });
-
-  it('should cleanup shard files', () => {
-    vol.fromJSON({
-      '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.1.log':
-        'content1',
-      '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.2.log':
-        'content2',
-    });
-    const sw = new ShardedWal({
-      dir: '/shards',
-      format: {
-        baseName: 'test',
-        walExtension: '.log',
-      },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-    });
-
-    expect(vol.toJSON()).toStrictEqual({
-      '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.1.log':
-        'content1',
-      '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.2.log':
-        'content2',
-    });
-
-    sw.cleanup();
-
-    expect(vol.toJSON()).toStrictEqual({});
-  });
-
-  it('should handle cleanup when some shard files do not exist', () => {
-    vol.fromJSON({
-      '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.1.log':
-        'content1',
-    });
-
-    const sw = new ShardedWal({
-      dir: '/shards',
-      format: {
-        baseName: 'test',
-        walExtension: '.log',
-      },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-    });
-
-    vol.unlinkSync(
-      '/shards/20231114-221320-000/test.20231114-221320-000.10001.2.1.log',
-    );
-    expect(() => sw.cleanup()).not.toThrow();
-  });
-
-  it('should use custom options in finalizer', () => {
-    vol.fromJSON({
-      '/shards/20231114-221320-000/final.20231114-221320-000.10001.2.1.log':
-        'record1\n',
-    });
-
-    const sw = new ShardedWal({
-      dir: '/shards',
-      format: {
-        baseName: 'final',
-        walExtension: '.log',
-        finalExtension: '.json',
-        finalizer: (records, opt) =>
-          `${JSON.stringify({ records, meta: opt })}\n`,
-      },
-      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
-    });
-
-    sw.finalize({ version: '1.0', compressed: true });
-
-    const result = JSON.parse(
-      read('/shards/20231114-221320-000/final.20231114-221320-000.json'),
-    );
-    expect(result.records).toEqual(['record1']);
-    expect(result.meta).toEqual({ version: '1.0', compressed: true });
   });
 });

@@ -1,0 +1,453 @@
+import * as fs from 'node:fs';
+import path from 'node:path';
+import process from 'node:process';
+import { threadId } from 'node:worker_threads';
+import { extendError } from './errors.js';
+import {
+  type Counter,
+  getUniqueInstanceId,
+  getUniqueTimeId,
+} from './process-id.js';
+import {
+  type InvalidEntry,
+  type RecoverResult,
+  type WalFormat,
+  type WalRecord,
+  WriteAheadLogFile,
+  ensureDirectoryExistsSync,
+  filterValidRecords,
+} from './wal.js';
+
+/**
+ * Validates that a groupId is safe to use as a single path segment.
+ * Rejects path traversal attempts and path separators to prevent writing outside intended directory.
+ *
+ * @param groupId - The groupId to validate
+ * @throws Error if groupId contains unsafe characters or path traversal sequences
+ */
+function validateGroupId(groupId: string): void {
+  // Reject empty or whitespace-only groupIds
+  if (!groupId || groupId.trim().length === 0) {
+    throw new Error('groupId cannot be empty or whitespace-only');
+  }
+
+  // Reject path separators (both forward and backward slashes)
+  if (groupId.includes('/') || groupId.includes('\\')) {
+    throw new Error('groupId cannot contain path separators');
+  }
+
+  // Reject relative path components
+  if (groupId === '..' || groupId === '.') {
+    throw new Error('groupId cannot be "." or ".."');
+  }
+
+  // Reject null bytes which can be used to bypass validation
+  if (groupId.includes('\0')) {
+    throw new Error('groupId cannot contain null bytes');
+  }
+
+  // Validate that the resolved path stays within the intended directory
+  // This catches cases where the path library normalizes to a parent directory
+  const normalized = path.normalize(groupId);
+  if (normalized !== groupId || normalized.startsWith('..')) {
+    throw new Error(
+      `groupId normalization resulted in unsafe path: ${normalized}`,
+    );
+  }
+}
+
+// eslint-disable-next-line functional/no-let
+let shardCount = 0;
+
+/**
+ * Counter for generating sequential shard IDs.
+ * Encapsulates the shard count increment logic.
+ */
+export const ShardedWalCounter: Counter = {
+  next() {
+    return ++shardCount;
+  },
+};
+
+/**
+ * Generates a unique readable instance ID.
+ * This ID uniquely identifies a shard/file per process/thread combination with a human-readable timestamp.
+ * Format: readable-timestamp.pid.threadId.counter
+ * Example: "20240101-120000-000.12345.1.1"
+ *
+ * @returns A unique ID string with readable timestamp, process ID, thread ID, and counter
+ */
+export function getShardId(): string {
+  return `${getUniqueTimeId()}.${process.pid}.${threadId}.${ShardedWalCounter.next()}`;
+}
+
+/**
+ * @TODO remove in PR https://github.com/code-pushup/cli/pull/1231 in favour of class method getShardedFileName
+ * Generates a path to a shard file using human-readable IDs.
+ * Both groupId and shardId are already in readable date format.
+ *
+ * Example with groupId "20240101-120000-000" and shardId "20240101-120000-000.12345.1.1":
+ * Full path: /base/20240101-120000-000/trace.20240101-120000-000.12345.1.1.log
+ *
+ * @param opt.dir - The directory to store the shard file
+ * @param opt.format - The WalFormat to use for the shard file
+ * @param opt.groupId - The human-readable group ID (yyyymmdd-hhmmss-ms format)
+ * @param opt.shardId - The human-readable shard ID (readable-timestamp.pid.threadId.count format)
+ * @returns The path to the shard file
+ */
+export function getShardedPath<T extends object | string = object>(opt: {
+  dir?: string;
+  format: WalFormat<T>;
+  groupId: string;
+  shardId: string;
+}): string {
+  const { dir = '', format, groupId, shardId } = opt;
+  const { baseName, walExtension } = format;
+
+  return path.join(dir, groupId, `${baseName}.${shardId}${walExtension}`);
+}
+
+/**
+ * Sharded Write-Ahead Log manager for coordinating multiple WAL shards.
+ * Handles distributed logging across multiple processes/files with atomic finalization.
+ */
+
+export class ShardedWal<T extends WalRecord = WalRecord> {
+  static instanceCount = 0;
+
+  readonly #id: string = getUniqueInstanceId({
+    next() {
+      return ++ShardedWal.instanceCount;
+    },
+  });
+  readonly groupId: string;
+  readonly #debug: boolean = false;
+  readonly #format: WalFormat<T>;
+  readonly #dir: string = process.cwd();
+  readonly #coordinatorIdEnvVar: string;
+  #state: 'active' | 'finalized' | 'cleaned' = 'active';
+  #lastRecovery: {
+    file: string;
+    result: RecoverResult<T | InvalidEntry<string>>;
+  }[] = [];
+  #createdShardFiles: string[] = [];
+
+  /**
+   * Initialize the given environment variable if not already set.
+   * This must be done as early as possible before any user code runs.
+   * Sets envVarName to the current instance ID if not already defined.
+   *
+   * @param envVarName - Environment variable name for storing coordinator ID
+   * @param instanceID - The instance ID to set as coordinator
+   */
+  static setCoordinatorProcess(envVarName: string, instanceID: string): void {
+    if (!process.env[envVarName]) {
+      process.env[envVarName] = instanceID;
+    }
+  }
+
+  /**
+   * Determines if this process is the leader WAL process.
+   *
+   * The leader is the process that first enabled profiling over the given env var.
+   * All descendant processes inherit the environment.
+   *
+   * @param envVarName - Environment variable name for storing coordinator ID
+   * @param instanceID - The instance ID to check
+   * @returns true if this is the leader WAL process, false otherwise
+   */
+  static isCoordinatorProcess(envVarName: string, instanceID: string): boolean {
+    return process.env[envVarName] === instanceID;
+  }
+
+  /**
+   * Create a sharded WAL manager.
+   *
+   * @param opt.dir - Base directory to store shard files (defaults to process.cwd())
+   * @param opt.format - WAL format configuration
+   * @param opt.groupId - Group ID for sharding (defaults to generated group ID)
+   * @param opt.coordinatorIdEnvVar - Environment variable name for storing coordinator ID (defaults to CP_SHARDED_WAL_COORDINATOR_ID)
+   * @param opt.autoCoordinator - Whether to auto-set the coordinator ID on construction (defaults to true)
+   */
+  constructor(opt: {
+    debug?: boolean;
+    dir?: string;
+    format: WalFormat<T>;
+    groupId?: string;
+    coordinatorIdEnvVar: string;
+    autoCoordinator?: boolean;
+  }) {
+    const {
+      dir,
+      format,
+      debug,
+      groupId,
+      coordinatorIdEnvVar,
+      autoCoordinator = true,
+    } = opt;
+
+    if (debug != null) {
+      this.#debug = debug;
+    }
+
+    // Determine groupId: use provided, then env var, or generate
+    const resolvedGroupId: string =
+      groupId == null ? getUniqueTimeId() : groupId;
+    // Validate groupId for path safety before using it
+    validateGroupId(resolvedGroupId);
+
+    this.groupId = resolvedGroupId;
+
+    if (dir) {
+      this.#dir = dir;
+    }
+    this.#format = format;
+    this.#coordinatorIdEnvVar = coordinatorIdEnvVar;
+
+    if (autoCoordinator) {
+      ShardedWal.setCoordinatorProcess(this.#coordinatorIdEnvVar, this.#id);
+    }
+  }
+
+  /**
+   * Gets the unique instance ID for this ShardedWal.
+   *
+   * @returns The unique instance ID
+   */
+  get id(): string {
+    return this.#id;
+  }
+
+  /**
+   * Is this instance the coordinator?
+   *
+   * Coordinator status is determined from the coordinatorIdEnvVar environment variable.
+   * The coordinator handles finalization and cleanup of shard files.
+   * Checks dynamically to allow coordinator to be set after construction.
+   *
+   * @returns true if this instance is the coordinator, false otherwise
+   */
+  isCoordinator(): boolean {
+    return ShardedWal.isCoordinatorProcess(this.#coordinatorIdEnvVar, this.#id);
+  }
+
+  /**
+   * Asserts that the WAL is in 'active' state.
+   * Throws an error if the WAL has been finalized or cleaned.
+   *
+   * @throws Error if WAL is not in 'active' state
+   */
+  private assertActive(): void {
+    if (this.#state !== 'active') {
+      throw new Error(`WAL is ${this.#state}, cannot modify`);
+    }
+  }
+
+  /**
+   * Gets the current lifecycle state of the WAL.
+   *
+   * @returns Current lifecycle state: 'active', 'finalized', or 'cleaned'
+   */
+  getState(): 'active' | 'finalized' | 'cleaned' {
+    return this.#state;
+  }
+
+  /**
+   * Checks if the WAL has been finalized.
+   *
+   * @returns true if WAL is in 'finalized' state, false otherwise
+   */
+  isFinalized(): boolean {
+    return this.#state === 'finalized';
+  }
+
+  /**
+   * Checks if the WAL has been cleaned.
+   *
+   * @returns true if WAL is in 'cleaned' state, false otherwise
+   */
+  isCleaned(): boolean {
+    return this.#state === 'cleaned';
+  }
+
+  /**
+   * Generates a filename for a shard file using a shard ID.
+   * Both groupId and shardId are already in readable date format.
+   *
+   * Example with baseName "trace" and shardId "20240101-120000-000.12345.1.1":
+   * Filename: trace.20240101-120000-000.12345.1.1.log
+   *
+   * @param shardId - The human-readable shard ID (readable-timestamp.pid.threadId.count format)
+   * @returns The filename for the shard file
+   */
+  getShardedFileName(shardId: string) {
+    const { baseName, walExtension } = this.#format;
+    return `${baseName}.${shardId}${walExtension}`;
+  }
+
+  /**
+   * Generates a filename for the final merged output file.
+   * Uses the groupId as the identifier in the final filename.
+   *
+   * Example with baseName "trace" and groupId "20240101-120000-000":
+   * Filename: trace.20240101-120000-000.json
+   *
+   * Example with baseName "trace" and groupId "measureName":
+   * Filename: trace.measureName.json
+   *
+   * @returns The filename for the final merged output file
+   */
+  getFinalFilePath() {
+    const groupIdDir = path.join(this.#dir, this.groupId);
+    const { baseName, finalExtension } = this.#format;
+
+    return path.join(
+      groupIdDir,
+      `${baseName}.${this.groupId}${finalExtension}`,
+    );
+  }
+
+  shard() {
+    this.assertActive();
+    const filePath = path.join(
+      this.#dir,
+      this.groupId,
+      this.getShardedFileName(getShardId()),
+    );
+    this.#createdShardFiles.push(filePath);
+    return new WriteAheadLogFile({
+      file: filePath,
+      codec: this.#format.codec,
+    });
+  }
+
+  /** Get all shard file paths matching this WAL's base name */
+  private shardFiles() {
+    if (!fs.existsSync(this.#dir)) {
+      return [];
+    }
+
+    const groupDir = path.join(this.#dir, this.groupId);
+    if (!fs.existsSync(groupDir)) {
+      return [];
+    }
+
+    return fs
+      .readdirSync(groupDir)
+      .filter(entry => entry.endsWith(this.#format.walExtension))
+      .filter(entry => entry.startsWith(`${this.#format.baseName}`))
+      .map(entry => path.join(groupDir, entry));
+  }
+
+  /** Get shard file paths created by this instance */
+  private getCreatedShardFiles() {
+    return this.#createdShardFiles.filter(f => fs.existsSync(f));
+  }
+
+  /**
+   * Finalize all shards by merging them into a single output file.
+   * Recovers all records from all shards, validates no errors, and writes merged result.
+   * Idempotent: returns early if already finalized or cleaned.
+   * @throws Error if custom finalizer method throws
+   */
+  finalize(opt?: Record<string, unknown>) {
+    if (this.#state !== 'active') {
+      return;
+    }
+
+    // Ensure base directory exists before calling shardFiles()
+    ensureDirectoryExistsSync(this.#dir);
+
+    const lastRecovery = this.shardFiles().map(f => ({
+      file: f,
+      result: new WriteAheadLogFile({
+        file: f,
+        codec: this.#format.codec,
+      }).recover(),
+    }));
+
+    const records = lastRecovery.flatMap(({ result }) => result.records);
+
+    if (this.#debug) {
+      this.#lastRecovery = lastRecovery;
+    }
+
+    ensureDirectoryExistsSync(path.dirname(this.getFinalFilePath()));
+
+    try {
+      fs.writeFileSync(
+        this.getFinalFilePath(),
+        this.#format.finalizer(filterValidRecords(records), opt),
+      );
+    } catch (error) {
+      throw extendError(
+        error,
+        'Could not finalize sharded wal. Finalizer method in format throws.',
+        { appendOriginalMessage: true },
+      );
+    }
+
+    this.#state = 'finalized';
+  }
+
+  /**
+   * Cleanup shard files by removing them from disk.
+   * Coordinator-only: throws error if not coordinator to prevent race conditions.
+   * Idempotent: returns early if already cleaned.
+   */
+  cleanup() {
+    if (!this.isCoordinator()) {
+      throw new Error('cleanup() can only be called by coordinator');
+    }
+
+    if (this.#state === 'cleaned') {
+      return;
+    }
+
+    this.shardFiles()
+      .filter(f => fs.existsSync(f))
+      .forEach(f => {
+        fs.unlinkSync(f);
+      });
+
+    this.#state = 'cleaned';
+  }
+
+  get stats() {
+    // When finalized, count all shard files from filesystem (for multi-process scenarios)
+    // Otherwise, count only files created by this instance
+    const shardFilesList =
+      this.#state === 'finalized' || this.#state === 'cleaned'
+        ? this.shardFiles()
+        : this.getCreatedShardFiles();
+
+    return {
+      lastRecovery: this.#lastRecovery,
+      state: this.#state,
+      groupId: this.groupId,
+      shardCount: shardFilesList.length,
+      isCoordinator: this.isCoordinator(),
+      isFinalized: this.isFinalized(),
+      isCleaned: this.isCleaned(),
+      finalFilePath: this.getFinalFilePath(),
+      shardFileCount: shardFilesList.length,
+      shardFiles: shardFilesList,
+    };
+  }
+
+  finalizeIfCoordinator(opt?: Record<string, unknown>) {
+    if (this.isCoordinator()) {
+      this.finalize(opt);
+    }
+  }
+
+  /**
+   * Cleanup shard files if this instance is the coordinator.
+   * Safe to call from any process - only coordinator will execute cleanup.
+   */
+  cleanupIfCoordinator() {
+    if (this.isCoordinator()) {
+      this.cleanup();
+    }
+  }
+}
