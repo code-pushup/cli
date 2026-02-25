@@ -1,8 +1,17 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { cleanTestFolder } from '@code-pushup/test-utils';
+import { getGitRoot } from '@code-pushup/utils';
 import type { PluginSetupBinding } from './types.js';
 import { runSetupWizard } from './wizard.js';
+
+vi.mock('@code-pushup/utils', async () => {
+  const actual = await vi.importActual('@code-pushup/utils');
+  return {
+    ...actual,
+    getGitRoot: vi.fn(),
+  };
+});
 
 const TEST_BINDINGS: PluginSetupBinding[] = [
   {
@@ -51,6 +60,7 @@ describe('runSetupWizard', () => {
 
   beforeEach(async () => {
     await cleanTestFolder(outputDir);
+    vi.mocked(getGitRoot).mockResolvedValue(path.resolve(outputDir));
   });
 
   it('should write a valid ts config file with provided bindings', async () => {
@@ -166,5 +176,48 @@ describe('runSetupWizard', () => {
       };
       "
     `);
+  });
+
+  it('should create .gitignore with .code-pushup entry', async () => {
+    await runSetupWizard(TEST_BINDINGS, {
+      yes: true,
+      'config-format': 'ts',
+      'target-dir': outputDir,
+    });
+
+    await expect(
+      readFile(path.join(outputDir, '.gitignore'), 'utf8'),
+    ).resolves.toBe('# Code PushUp reports\n.code-pushup\n');
+  });
+
+  it('should append .code-pushup to existing .gitignore', async () => {
+    await writeFile(path.join(outputDir, '.gitignore'), 'node_modules\n');
+
+    await runSetupWizard(TEST_BINDINGS, {
+      yes: true,
+      'config-format': 'ts',
+      'target-dir': outputDir,
+    });
+
+    await expect(
+      readFile(path.join(outputDir, '.gitignore'), 'utf8'),
+    ).resolves.toBe('node_modules\n\n# Code PushUp reports\n.code-pushup\n');
+  });
+
+  it('should not modify .gitignore if .code-pushup already present', async () => {
+    await writeFile(
+      path.join(outputDir, '.gitignore'),
+      'node_modules\n.code-pushup\n',
+    );
+
+    await runSetupWizard(TEST_BINDINGS, {
+      yes: true,
+      'config-format': 'ts',
+      'target-dir': outputDir,
+    });
+
+    await expect(
+      readFile(path.join(outputDir, '.gitignore'), 'utf8'),
+    ).resolves.toBe('node_modules\n.code-pushup\n');
   });
 });

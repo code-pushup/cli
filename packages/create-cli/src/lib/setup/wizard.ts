@@ -5,6 +5,7 @@ import {
   readPackageJson,
   resolveConfigFilename,
 } from './config-format.js';
+import { resolveGitignore, updateGitignore } from './gitignore.js';
 import { promptPluginOptions } from './prompts.js';
 import type {
   CliArgs,
@@ -35,21 +36,26 @@ export async function runSetupWizard(
   const tree = createTree(targetDir);
   await tree.write(filename, generateConfigSource(pluginResults, format));
 
-  const changes = tree.listChanges();
+  const configChanges = tree.listChanges();
+  const gitignoreChange = await resolveGitignore();
+  const changes = collectChanges(configChanges, gitignoreChange);
+
+  logChanges(changes);
 
   if (cliArgs['dry-run']) {
-    logChanges(changes);
     logger.info('Dry run — no files written.');
-  } else {
-    await tree.flush();
-    logChanges(changes);
-    logger.info('Setup complete.');
-    logger.newline();
-    logNextSteps([
-      ['npx code-pushup', 'Collect your first report'],
-      ['https://github.com/code-pushup/cli#readme', 'Documentation'],
-    ]);
+    return;
   }
+
+  await tree.flush();
+  await updateGitignore(gitignoreChange);
+
+  logger.info('Setup complete.');
+  logger.newline();
+  logNextSteps([
+    ['npx code-pushup', 'Collect your first report'],
+    ['https://github.com/code-pushup/cli#readme', 'Documentation'],
+  ]);
 }
 
 async function resolveBinding(
@@ -60,6 +66,12 @@ async function resolveBinding(
     ? await promptPluginOptions(binding.prompts, cliArgs)
     : {};
   return binding.generateConfig(answers);
+}
+
+function collectChanges(
+  ...sources: (FileChange[] | FileChange | null)[]
+): FileChange[] {
+  return sources.flat().filter((c): c is FileChange => c != null);
 }
 
 function logChanges(changes: FileChange[]): void {
