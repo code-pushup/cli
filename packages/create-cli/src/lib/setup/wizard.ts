@@ -1,11 +1,16 @@
-import { asyncSequential, formatAsciiTable, logger } from '@code-pushup/utils';
+import {
+  asyncSequential,
+  formatAsciiTable,
+  getGitRoot,
+  logger,
+} from '@code-pushup/utils';
 import { generateConfigSource } from './codegen.js';
 import {
   promptConfigFormat,
   readPackageJson,
   resolveConfigFilename,
 } from './config-format.js';
-import { resolveGitignore, updateGitignore } from './gitignore.js';
+import { resolveGitignore } from './gitignore.js';
 import { promptPluginOptions } from './prompts.js';
 import type {
   CliArgs,
@@ -15,7 +20,12 @@ import type {
 } from './types.js';
 import { createTree } from './virtual-fs.js';
 
-/** Runs the interactive setup wizard that generates a Code PushUp config file. */
+/**
+ * Runs the interactive setup wizard that generates a Code PushUp config file.
+ *
+ * All file changes are buffered in a virtual tree rooted at the git root,
+ * then flushed to disk in one step (or skipped on `--dry-run`).
+ */
 export async function runSetupWizard(
   bindings: PluginSetupBinding[],
   cliArgs: CliArgs,
@@ -33,14 +43,12 @@ export async function runSetupWizard(
     resolveBinding(binding, cliArgs),
   );
 
-  const tree = createTree(targetDir);
+  const gitRoot = await getGitRoot();
+  const tree = createTree(gitRoot);
   await tree.write(filename, generateConfigSource(pluginResults, format));
+  await resolveGitignore(tree);
 
-  const configChanges = tree.listChanges();
-  const gitignoreChange = await resolveGitignore();
-  const changes = collectChanges(configChanges, gitignoreChange);
-
-  logChanges(changes);
+  logChanges(tree.listChanges());
 
   if (cliArgs['dry-run']) {
     logger.info('Dry run — no files written.');
@@ -48,7 +56,6 @@ export async function runSetupWizard(
   }
 
   await tree.flush();
-  await updateGitignore(gitignoreChange);
 
   logger.info('Setup complete.');
   logger.newline();
@@ -66,12 +73,6 @@ async function resolveBinding(
     ? await promptPluginOptions(binding.prompts, cliArgs)
     : {};
   return binding.generateConfig(answers);
-}
-
-function collectChanges(
-  ...sources: (FileChange[] | FileChange | null)[]
-): FileChange[] {
-  return sources.flat().filter((c): c is FileChange => c != null);
 }
 
 function logChanges(changes: FileChange[]): void {

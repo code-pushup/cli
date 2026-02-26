@@ -1,46 +1,40 @@
-import { writeFile } from 'node:fs/promises';
-import path from 'node:path';
-import { fileExists, getGitRoot, readTextFile } from '@code-pushup/utils';
-import type { FileChange } from './types.js';
+import type { Tree } from './types.js';
 
 const GITIGNORE_FILENAME = '.gitignore';
 const REPORTS_DIR = '.code-pushup';
+const REPORTS_DIR_ENTRIES = new Set([REPORTS_DIR, `**/${REPORTS_DIR}`]);
+const REPORTS_SECTION = `# Code PushUp reports\n${REPORTS_DIR}\n`;
 
-export async function resolveGitignore(): Promise<FileChange | null> {
-  const gitRoot = await getGitRoot();
-  const gitignorePath = path.join(gitRoot, GITIGNORE_FILENAME);
+export async function resolveGitignore(tree: Tree): Promise<void> {
+  const content = await tree.read(GITIGNORE_FILENAME);
+  const updated = resolveGitignoreContent(content);
 
-  const section = `# Code PushUp reports\n${REPORTS_DIR}\n`;
-
-  const hasGitignore = await fileExists(gitignorePath);
-  if (!hasGitignore) {
-    return { type: 'CREATE', path: GITIGNORE_FILENAME, content: section };
+  if (updated != null) {
+    await tree.write(GITIGNORE_FILENAME, updated);
   }
+}
 
-  const currentContent = await readTextFile(gitignorePath);
-  if (currentContent.includes(REPORTS_DIR)) {
+function resolveGitignoreContent(content: string | null): string | null {
+  if (content == null) {
+    return REPORTS_SECTION;
+  }
+  if (gitignoreContainsEntry(content)) {
     return null;
   }
-
-  const separator = currentContent.endsWith('\n\n')
+  const separator = content.endsWith('\n\n')
     ? ''
-    : currentContent.endsWith('\n')
+    : content.endsWith('\n')
       ? '\n'
       : '\n\n';
 
-  return {
-    type: 'UPDATE',
-    path: GITIGNORE_FILENAME,
-    content: `${currentContent}${separator}${section}`,
-  };
+  return `${content}${separator}${REPORTS_SECTION}`;
 }
 
-export async function updateGitignore(
-  change: FileChange | null,
-): Promise<void> {
-  if (change == null) {
-    return;
-  }
-  const gitRoot = await getGitRoot();
-  await writeFile(path.join(gitRoot, change.path), change.content);
+function gitignoreContainsEntry(content: string): boolean {
+  return content.split('\n').some(raw => {
+    const line = raw.trim();
+    return (
+      line !== '' && !line.startsWith('#') && REPORTS_DIR_ENTRIES.has(line)
+    );
+  });
 }
