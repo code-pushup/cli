@@ -1,10 +1,16 @@
-import { asyncSequential, formatAsciiTable, logger } from '@code-pushup/utils';
+import {
+  asyncSequential,
+  formatAsciiTable,
+  getGitRoot,
+  logger,
+} from '@code-pushup/utils';
 import { generateConfigSource } from './codegen.js';
 import {
   promptConfigFormat,
   readPackageJson,
   resolveConfigFilename,
 } from './config-format.js';
+import { resolveGitignore } from './gitignore.js';
 import { promptPluginOptions } from './prompts.js';
 import type {
   CliArgs,
@@ -14,7 +20,12 @@ import type {
 } from './types.js';
 import { createTree } from './virtual-fs.js';
 
-/** Runs the interactive setup wizard that generates a Code PushUp config file. */
+/**
+ * Runs the interactive setup wizard that generates a Code PushUp config file.
+ *
+ * All file changes are buffered in a virtual tree rooted at the git root,
+ * then flushed to disk in one step (or skipped on `--dry-run`).
+ */
 export async function runSetupWizard(
   bindings: PluginSetupBinding[],
   cliArgs: CliArgs,
@@ -32,24 +43,26 @@ export async function runSetupWizard(
     resolveBinding(binding, cliArgs),
   );
 
-  const tree = createTree(targetDir);
+  const gitRoot = await getGitRoot();
+  const tree = createTree(gitRoot);
   await tree.write(filename, generateConfigSource(pluginResults, format));
+  await resolveGitignore(tree);
 
-  const changes = tree.listChanges();
+  logChanges(tree.listChanges());
 
   if (cliArgs['dry-run']) {
-    logChanges(changes);
     logger.info('Dry run — no files written.');
-  } else {
-    await tree.flush();
-    logChanges(changes);
-    logger.info('Setup complete.');
-    logger.newline();
-    logNextSteps([
-      ['npx code-pushup', 'Collect your first report'],
-      ['https://github.com/code-pushup/cli#readme', 'Documentation'],
-    ]);
+    return;
   }
+
+  await tree.flush();
+
+  logger.info('Setup complete.');
+  logger.newline();
+  logNextSteps([
+    ['npx code-pushup', 'Collect your first report'],
+    ['https://github.com/code-pushup/cli#readme', 'Documentation'],
+  ]);
 }
 
 async function resolveBinding(
