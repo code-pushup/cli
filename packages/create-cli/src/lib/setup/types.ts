@@ -29,11 +29,19 @@ export type FileSystemAdapter = {
   ) => Promise<string | undefined>;
 };
 
+/**
+ * Defines how a plugin integrates with the setup wizard.
+ *
+ * Each supported plugin provides a binding that controls:
+ * - Pre-selection: `isRecommended` detects if the plugin is relevant for the repository
+ * - Configuration: `prompts` collect plugin-specific options interactively
+ * - Code generation: `generateConfig` produces the import and initialization code
+ */
 export type PluginSetupBinding = {
   slug: PluginMeta['slug'];
   title: PluginMeta['title'];
   packageName: NonNullable<PluginMeta['packageName']>;
-  // TODO: #1244 — add async pre-selection callback (e.g. detect eslint.config.js in repo)
+  isRecommended?: (targetDir: string) => Promise<boolean>;
   prompts?: PluginPromptDescriptor[];
   generateConfig: (
     answers: Record<string, string | string[]>,
@@ -50,7 +58,7 @@ export type ImportDeclarationStructure = {
 export type PluginCodegenResult = {
   imports: ImportDeclarationStructure[];
   pluginInit: string;
-  // TODO: #1244 — add categories support (categoryRefs for generated categories array)
+  // TODO: add categories support (categoryRefs for generated categories array)
 };
 
 type PromptBase = {
@@ -86,7 +94,7 @@ export type CliArgs = {
   'dry-run'?: boolean;
   yes?: boolean;
   'config-format'?: string;
-  // TODO: #1244 — add 'plugins' field for CLI-based plugin selection
+  plugins?: string;
   'target-dir'?: string;
   [key: string]: unknown;
 };

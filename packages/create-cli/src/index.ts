@@ -21,7 +21,11 @@ const argv = await yargs(hideBin(process.argv))
     choices: CONFIG_FILE_FORMATS,
     describe: 'Config file format (default: auto-detected from project)',
   })
+  .option('plugins', {
+    type: 'string',
+    describe: 'Comma-separated plugin slugs to include (e.g. eslint,coverage)',
+  })
   .parse();
 
-// TODO: #1244 — provide plugin bindings from registry
+// TODO: create, import and pass plugin bindings (eslint, coverage, lighthouse, typescript, js-packages, jsdocs, axe)
 await runSetupWizard([], argv);
