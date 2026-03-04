@@ -154,10 +154,10 @@ describe('promptPluginSelection', () => {
       expect(result[0]).toHaveProperty('slug', 'eslint');
     });
 
-    it('should return all plugins when none are recommended', async () => {
+    it('should return no plugins when none are recommended', async () => {
       await expect(
         promptPluginSelection(bindings, '/test', { yes: true }),
-      ).resolves.toStrictEqual(bindings);
+      ).resolves.toBeArrayOfSize(0);
     });
   });
 

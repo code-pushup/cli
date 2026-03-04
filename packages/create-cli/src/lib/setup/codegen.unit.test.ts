@@ -3,12 +3,14 @@ import type { PluginCodegenResult } from './types.js';
 
 describe('generateConfigSource', () => {
   describe('TypeScript format', () => {
-    it('should generate config with empty plugins array', () => {
+    it('should generate config with TODO placeholder when no plugins provided', () => {
       expect(generateConfigSource([], 'ts')).toMatchInlineSnapshot(`
         "import type { CoreConfig } from '@code-pushup/models';
 
         export default {
-          plugins: [],
+          plugins: [
+            // TODO: register some plugins
+          ],
         } satisfies CoreConfig;
         "
       `);
@@ -104,11 +106,13 @@ describe('generateConfigSource', () => {
   });
 
   describe('JavaScript format', () => {
-    it('should generate JS config with empty plugins array', () => {
+    it('should generate JS config with TODO placeholder when no plugins provided', () => {
       expect(generateConfigSource([], 'js')).toMatchInlineSnapshot(`
         "/** @type {import('@code-pushup/models').CoreConfig} */
         export default {
-          plugins: [],
+          plugins: [
+            // TODO: register some plugins
+          ],
         };
         "
       `);

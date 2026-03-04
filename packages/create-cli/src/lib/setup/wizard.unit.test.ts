@@ -15,6 +15,7 @@ const TEST_BINDING: PluginSetupBinding = {
   slug: 'test-plugin',
   title: 'Test Plugin',
   packageName: '@code-pushup/test-plugin',
+  isRecommended: () => Promise.resolve(true),
   generateConfig: () => ({
     imports: [
       {
@@ -72,7 +73,7 @@ describe('runSetupWizard', () => {
       expect(logger.info).toHaveBeenCalledWith('Dry run — no files written.');
     });
 
-    it('should generate empty config with no bindings', async () => {
+    it('should generate config with TODO placeholder when no bindings provided', async () => {
       await runSetupWizard([], {
         yes: true,
         'target-dir': MEMFS_VOLUME,
@@ -83,7 +84,9 @@ describe('runSetupWizard', () => {
         "import type { CoreConfig } from '@code-pushup/models';
 
         export default {
-          plugins: [],
+          plugins: [
+            // TODO: register some plugins
+          ],
         } satisfies CoreConfig;
         "
       `);

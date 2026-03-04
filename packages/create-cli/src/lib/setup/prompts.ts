@@ -10,8 +10,8 @@ import type {
  * Resolves which plugins to include in the generated config.
  *
  * Resolution order (first match wins):
- * 1. `--plugins` CLI argument: comma-separated slugs, validated against available bindings
- * 2. `--yes` flag: recommended plugins (or all if none recommended)
+ * 1. `--plugins`: comma-separated slugs, validated against available bindings
+ * 2. `--yes`: recommended plugins
  * 3. Interactive: checkbox prompt with recommended plugins pre-checked
  */
 export async function promptPluginSelection(
@@ -28,9 +28,7 @@ export async function promptPluginSelection(
   }
   const recommended = await detectRecommended(bindings, targetDir);
   if (cliArgs.yes) {
-    return recommended.size > 0
-      ? bindings.filter(({ slug }) => recommended.has(slug))
-      : bindings;
+    return bindings.filter(({ slug }) => recommended.has(slug));
   }
   const selected = await checkbox({
     message: 'Plugins to include:',
