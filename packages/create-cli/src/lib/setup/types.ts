@@ -94,7 +94,7 @@ export type CliArgs = {
   'dry-run'?: boolean;
   yes?: boolean;
   'config-format'?: string;
-  plugins?: string;
+  plugins?: string[];
   'target-dir'?: string;
   [key: string]: unknown;
 };

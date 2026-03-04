@@ -10,24 +10,23 @@ import type {
  * Resolves which plugins to include in the generated config.
  *
  * Resolution order (first match wins):
- * 1. `--plugins`: comma-separated slugs, validated against available bindings
+ * 1. `--plugins`: user-provided slugs
  * 2. `--yes`: recommended plugins
  * 3. Interactive: checkbox prompt with recommended plugins pre-checked
  */
 export async function promptPluginSelection(
   bindings: PluginSetupBinding[],
   targetDir: string,
-  cliArgs: CliArgs,
+  { plugins, yes }: CliArgs,
 ): Promise<PluginSetupBinding[]> {
   if (bindings.length === 0) {
     return [];
   }
-  const slugs = parsePluginSlugs(cliArgs.plugins);
-  if (slugs != null) {
-    return filterBindingsBySlugs(bindings, slugs);
+  if (plugins != null && plugins.length > 0) {
+    return bindings.filter(b => plugins.includes(b.slug));
   }
   const recommended = await detectRecommended(bindings, targetDir);
-  if (cliArgs.yes) {
+  if (yes) {
     return bindings.filter(({ slug }) => recommended.has(slug));
   }
   const selected = await checkbox({
@@ -41,33 +40,6 @@ export async function promptPluginSelection(
   });
   const selectedSet = new Set(selected);
   return bindings.filter(({ slug }) => selectedSet.has(slug));
-}
-
-function parsePluginSlugs(value: string | undefined): string[] | null {
-  if (value == null || value.trim() === '') {
-    return null;
-  }
-  return [
-    ...new Set(
-      value
-        .split(',')
-        .map(s => s.trim())
-        .filter(Boolean),
-    ),
-  ];
-}
-
-function filterBindingsBySlugs(
-  bindings: PluginSetupBinding[],
-  slugs: string[],
-): PluginSetupBinding[] {
-  const unknown = slugs.filter(slug => !bindings.some(b => b.slug === slug));
-  if (unknown.length > 0) {
-    throw new Error(
-      `Unknown plugin slugs: ${unknown.join(', ')}. Available: ${bindings.map(b => b.slug).join(', ')}`,
-    );
-  }
-  return bindings.filter(b => slugs.includes(b.slug));
 }
 
 /**

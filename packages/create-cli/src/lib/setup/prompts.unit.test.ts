@@ -124,17 +124,11 @@ describe('promptPluginSelection', () => {
     it('should return matching bindings for valid slugs', async () => {
       await expect(
         promptPluginSelection(bindings, '/test', {
-          plugins: 'eslint,lighthouse',
+          plugins: ['eslint', 'lighthouse'],
         }),
       ).resolves.toStrictEqual([bindings[0], bindings[2]]);
 
       expect(mockCheckbox).not.toHaveBeenCalled();
-    });
-
-    it('should throw on unknown slug', async () => {
-      await expect(
-        promptPluginSelection(bindings, '/test', { plugins: 'eslint,unknown' }),
-      ).rejects.toThrow('Unknown plugin slugs: unknown');
     });
   });
 
