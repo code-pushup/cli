@@ -1,8 +1,7 @@
 import type { CreateNodesV2, NxPlugin, TargetConfiguration } from '@nx/devkit';
 import * as path from 'node:path';
-
-const ZOD2MD_CONFIG_FILE = 'zod2md.config.ts';
-const GENERATE_DOCS_TARGET_NAME = 'generate-docs';
+// this would break without setting node loader in .env.local
+import { GENERATE_DOCS_TARGET_NAME, ZOD2MD_CONFIG_FILE } from './constants.js';
 
 type DocsTargetConfigParams = {
   config: string;
