@@ -1,3 +1,14 @@
+## 0.116.0 (2026-03-04)
+
+### 🚀 Features
+
+- **create-cli:** add gitignore setup step ([#1252](https://github.com/code-pushup/cli/pull/1252))
+- **create-cli:** add plugin selection step ([#1261](https://github.com/code-pushup/cli/pull/1261))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.115.0 (2026-02-25)
 
 ### 🚀 Features
