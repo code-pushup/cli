@@ -18,6 +18,7 @@ const TEST_BINDINGS: PluginSetupBinding[] = [
     slug: 'alpha',
     title: 'Alpha Plugin',
     packageName: '@code-pushup/alpha-plugin',
+    isRecommended: () => Promise.resolve(true),
     prompts: [
       {
         key: 'alpha.path',
@@ -43,6 +44,7 @@ const TEST_BINDINGS: PluginSetupBinding[] = [
     slug: 'beta',
     title: 'Beta Plugin',
     packageName: '@code-pushup/beta-plugin',
+    isRecommended: () => Promise.resolve(true),
     generateConfig: () => ({
       imports: [
         {

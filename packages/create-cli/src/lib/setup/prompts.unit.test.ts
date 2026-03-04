@@ -1,4 +1,4 @@
-import { promptPluginOptions } from './prompts.js';
+import { promptPluginOptions, promptPluginSelection } from './prompts.js';
 import type { PluginPromptDescriptor } from './types.js';
 
 vi.mock('@inquirer/prompts', () => ({
@@ -87,5 +87,139 @@ describe('promptPluginOptions', () => {
         { yes: true },
       ),
     ).resolves.toStrictEqual({ formats: [] });
+  });
+});
+
+describe('promptPluginSelection', () => {
+  const bindings = [
+    {
+      slug: 'eslint',
+      title: 'ESLint',
+      packageName: '@code-pushup/eslint-plugin',
+      generateConfig: () => ({ imports: [], pluginInit: '' }),
+    },
+    {
+      slug: 'coverage',
+      title: 'Code Coverage',
+      packageName: '@code-pushup/coverage-plugin',
+      generateConfig: () => ({ imports: [], pluginInit: '' }),
+    },
+    {
+      slug: 'lighthouse',
+      title: 'Lighthouse',
+      packageName: '@code-pushup/lighthouse-plugin',
+      generateConfig: () => ({ imports: [], pluginInit: '' }),
+    },
+  ];
+
+  it('should return empty array when given no bindings', async () => {
+    await expect(promptPluginSelection([], '/test', {})).resolves.toStrictEqual(
+      [],
+    );
+
+    expect(mockCheckbox).not.toHaveBeenCalled();
+  });
+
+  describe('--plugins CLI arg', () => {
+    it('should return matching bindings for valid slugs', async () => {
+      await expect(
+        promptPluginSelection(bindings, '/test', {
+          plugins: ['eslint', 'lighthouse'],
+        }),
+      ).resolves.toStrictEqual([bindings[0], bindings[2]]);
+
+      expect(mockCheckbox).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('--yes (non-interactive)', () => {
+    it('should return only recommended plugins when some are recommended', async () => {
+      const result = await promptPluginSelection(
+        [
+          { ...bindings[0]!, isRecommended: () => Promise.resolve(true) },
+          bindings[1]!,
+          bindings[2]!,
+        ],
+        '/test',
+        { yes: true },
+      );
+
+      expect(result).toBeArrayOfSize(1);
+      expect(result[0]).toHaveProperty('slug', 'eslint');
+    });
+
+    it('should return no plugins when none are recommended', async () => {
+      await expect(
+        promptPluginSelection(bindings, '/test', { yes: true }),
+      ).resolves.toBeArrayOfSize(0);
+    });
+  });
+
+  describe('interactive prompt', () => {
+    it('should pre-check recommended plugins and leave others unchecked', async () => {
+      mockCheckbox.mockResolvedValue(['eslint']);
+
+      await promptPluginSelection(
+        [
+          { ...bindings[0]!, isRecommended: () => Promise.resolve(true) },
+          bindings[1]!,
+          bindings[2]!,
+        ],
+        '/test',
+        {},
+      );
+
+      expect(mockCheckbox).toHaveBeenCalledWith(
+        expect.objectContaining({
+          required: true,
+          choices: [
+            { name: 'ESLint', value: 'eslint', checked: true },
+            { name: 'Code Coverage', value: 'coverage', checked: false },
+            { name: 'Lighthouse', value: 'lighthouse', checked: false },
+          ],
+        }),
+      );
+    });
+
+    it('should not pre-check any plugins when none are recommended', async () => {
+      mockCheckbox.mockResolvedValue(['eslint']);
+
+      await promptPluginSelection(bindings, '/test', {});
+
+      expect(mockCheckbox).toHaveBeenCalledWith(
+        expect.objectContaining({
+          required: true,
+          choices: [
+            { name: 'ESLint', value: 'eslint', checked: false },
+            { name: 'Code Coverage', value: 'coverage', checked: false },
+            { name: 'Lighthouse', value: 'lighthouse', checked: false },
+          ],
+        }),
+      );
+    });
+
+    it('should return only user-selected bindings', async () => {
+      mockCheckbox.mockResolvedValue(['coverage']);
+
+      await expect(
+        promptPluginSelection(bindings, '/test', {}),
+      ).resolves.toStrictEqual([bindings[1]]);
+    });
+  });
+
+  describe('isRecommended callback', () => {
+    it('should receive targetDir as argument', async () => {
+      const isRecommended = vi.fn().mockResolvedValue(false);
+
+      mockCheckbox.mockResolvedValue(['eslint']);
+
+      await promptPluginSelection(
+        [{ ...bindings[0]!, isRecommended }],
+        '/my/project',
+        {},
+      );
+
+      expect(isRecommended).toHaveBeenCalledWith('/my/project');
+    });
   });
 });

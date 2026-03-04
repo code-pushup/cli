@@ -68,7 +68,9 @@ function addPlugins(
   plugins: PluginCodegenResult[],
 ): void {
   if (plugins.length === 0) {
-    builder.addLine('plugins: [],', 1);
+    builder.addLine('plugins: [', 1);
+    builder.addLine('// TODO: register some plugins', 2);
+    builder.addLine('],', 1);
   } else {
     builder.addLine('plugins: [', 1);
     builder.addLines(

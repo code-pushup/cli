@@ -11,7 +11,7 @@ import {
   resolveConfigFilename,
 } from './config-format.js';
 import { resolveGitignore } from './gitignore.js';
-import { promptPluginOptions } from './prompts.js';
+import { promptPluginOptions, promptPluginSelection } from './prompts.js';
 import type {
   CliArgs,
   FileChange,
@@ -33,13 +33,17 @@ export async function runSetupWizard(
   const targetDir = cliArgs['target-dir'] ?? process.cwd();
 
   // TODO: #1245 — prompt for standalone vs monorepo mode
-  // TODO: #1244 — prompt user to select plugins from available bindings
+  const selectedBindings = await promptPluginSelection(
+    bindings,
+    targetDir,
+    cliArgs,
+  );
 
   const format = await promptConfigFormat(targetDir, cliArgs);
   const packageJson = await readPackageJson(targetDir);
   const filename = resolveConfigFilename(format, packageJson.type === 'module');
 
-  const pluginResults = await asyncSequential(bindings, binding =>
+  const pluginResults = await asyncSequential(selectedBindings, binding =>
     resolveBinding(binding, cliArgs),
   );
 

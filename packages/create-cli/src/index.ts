@@ -1,8 +1,15 @@
 #! /usr/bin/env node
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { CONFIG_FILE_FORMATS } from './lib/setup/types.js';
+import { parsePluginSlugs, validatePluginSlugs } from './lib/setup/plugins.js';
+import {
+  CONFIG_FILE_FORMATS,
+  type PluginSetupBinding,
+} from './lib/setup/types.js';
 import { runSetupWizard } from './lib/setup/wizard.js';
+
+// TODO: create, import and pass plugin bindings (eslint, coverage, lighthouse, typescript, js-packages, jsdocs, axe)
+const bindings: PluginSetupBinding[] = [];
 
 const argv = await yargs(hideBin(process.argv))
   .option('dry-run', {
@@ -21,7 +28,15 @@ const argv = await yargs(hideBin(process.argv))
     choices: CONFIG_FILE_FORMATS,
     describe: 'Config file format (default: auto-detected from project)',
   })
+  .option('plugins', {
+    type: 'string',
+    describe: 'Comma-separated plugin slugs to include (e.g. eslint,coverage)',
+    coerce: parsePluginSlugs,
+  })
+  .check(parsed => {
+    validatePluginSlugs(bindings, parsed.plugins);
+    return true;
+  })
   .parse();
 
-// TODO: #1244 — provide plugin bindings from registry
-await runSetupWizard([], argv);
+await runSetupWizard(bindings, argv);
