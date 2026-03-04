@@ -185,3 +185,20 @@ export type {
   WithRequired,
 } from './lib/types.js';
 export * from './lib/import-module.js';
+export {
+  detectMonorepoTool,
+  isMonorepoTool,
+  MONOREPO_TOOL_DETECTORS,
+  MONOREPO_TOOLS,
+  type MonorepoTool,
+} from './lib/monorepo.js';
+export {
+  hasCodePushUpDependency,
+  hasScript,
+  hasWorkspacesEnabled,
+  listPackages,
+  listWorkspaces,
+  readPnpmWorkspacePatterns,
+  readRootPackageJson,
+  type WorkspacePackage,
+} from './lib/workspace-packages.js';

@@ -1,6 +1,6 @@
 import type { Format, PersistConfig, UploadConfig } from '@code-pushup/models';
+import type { MonorepoTool } from '@code-pushup/utils';
 import type { SourceFileIssue } from './issues.js';
-import type { MonorepoTool } from './monorepo/index.js';
 
 /**
  * Customization options for {@link runInCI}
