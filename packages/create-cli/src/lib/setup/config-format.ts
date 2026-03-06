@@ -35,18 +35,18 @@ export async function promptConfigFormat(
   });
 }
 
-/** Returns `code-pushup.config.{ts,js,mjs}` based on format and ESM context. */
-export function resolveConfigFilename(
+export function resolveFilename(
+  baseName: string,
   format: ConfigFileFormat,
   isEsm: boolean,
 ): string {
   if (format === 'ts') {
-    return 'code-pushup.config.ts';
+    return `${baseName}.ts`;
   }
   if (format === 'js' && isEsm) {
-    return 'code-pushup.config.js';
+    return `${baseName}.js`;
   }
-  return 'code-pushup.config.mjs';
+  return `${baseName}.mjs`;
 }
 
 export async function readPackageJson(targetDir: string): Promise<PackageJson> {

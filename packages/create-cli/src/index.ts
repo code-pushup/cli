@@ -5,6 +5,7 @@ import { parsePluginSlugs, validatePluginSlugs } from './lib/setup/plugins.js';
 import {
   CONFIG_FILE_FORMATS,
   type PluginSetupBinding,
+  SETUP_MODES,
 } from './lib/setup/types.js';
 import { runSetupWizard } from './lib/setup/wizard.js';
 
@@ -32,6 +33,11 @@ const argv = await yargs(hideBin(process.argv))
     type: 'string',
     describe: 'Comma-separated plugin slugs to include (e.g. eslint,coverage)',
     coerce: parsePluginSlugs,
+  })
+  .option('mode', {
+    type: 'string',
+    choices: SETUP_MODES,
+    describe: 'Setup mode (default: auto-detected from project)',
   })
   .check(parsed => {
     validatePluginSlugs(bindings, parsed.plugins);

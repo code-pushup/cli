@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { promptConfigFormat, resolveConfigFilename } from './config-format.js';
+import { promptConfigFormat, resolveFilename } from './config-format.js';
 import type { ConfigFileFormat } from './types.js';
 
 vi.mock('@inquirer/prompts', () => ({
@@ -18,7 +18,7 @@ describe('resolveConfigFilename', () => {
     ['js', true, 'code-pushup.config.js'],
     ['js', false, 'code-pushup.config.mjs'],
   ])('should resolve format %j (ESM: %j) to %j', (format, isEsm, expected) => {
-    expect(resolveConfigFilename(format, isEsm)).toBe(expected);
+    expect(resolveFilename('code-pushup.config', format, isEsm)).toBe(expected);
   });
 });
 
