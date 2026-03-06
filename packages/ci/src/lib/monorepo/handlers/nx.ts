@@ -1,7 +1,6 @@
-import path from 'node:path';
 import {
+  MONOREPO_TOOL_DETECTORS,
   executeProcess,
-  fileExists,
   interpolate,
   stringifyError,
   toArray,
@@ -13,7 +12,7 @@ export const nxHandler: MonorepoToolHandler = {
 
   async isConfigured(options) {
     return (
-      (await fileExists(path.join(options.cwd, 'nx.json'))) &&
+      (await MONOREPO_TOOL_DETECTORS.nx(options.cwd)) &&
       (
         await executeProcess({
           command: 'npx',

@@ -28,7 +28,7 @@ import {
   teardownTestFolder,
 } from '@code-pushup/test-utils';
 import * as utils from '@code-pushup/utils';
-import { logger } from '@code-pushup/utils';
+import { type MonorepoTool, logger } from '@code-pushup/utils';
 import type {
   Comment,
   GitBranch,
@@ -37,7 +37,6 @@ import type {
   ProviderAPIClient,
   RunResult,
 } from './models.js';
-import type { MonorepoTool } from './monorepo/index.js';
 import { runInCI } from './run.js';
 
 vi.mock('@code-pushup/portal-client', async importOriginal => {

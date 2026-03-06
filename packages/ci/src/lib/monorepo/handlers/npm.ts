@@ -1,21 +1,16 @@
-import path from 'node:path';
-import { fileExists } from '@code-pushup/utils';
 import {
+  MONOREPO_TOOL_DETECTORS,
   hasCodePushUpDependency,
   hasScript,
-  hasWorkspacesEnabled,
   listWorkspaces,
-} from '../packages.js';
+} from '@code-pushup/utils';
 import type { MonorepoToolHandler } from '../tools.js';
 
 export const npmHandler: MonorepoToolHandler = {
   tool: 'npm',
 
   async isConfigured(options) {
-    return (
-      (await fileExists(path.join(options.cwd, 'package-lock.json'))) &&
-      (await hasWorkspacesEnabled(options.cwd))
-    );
+    return MONOREPO_TOOL_DETECTORS.npm(options.cwd);
   },
 
   async listProjects(options) {

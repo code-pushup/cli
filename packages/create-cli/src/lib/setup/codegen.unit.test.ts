@@ -1,5 +1,20 @@
-import { generateConfigSource } from './codegen.js';
+import {
+  computeRelativePresetImport,
+  generateConfigSource,
+  generatePresetSource,
+  generateProjectSource,
+} from './codegen.js';
 import type { PluginCodegenResult } from './types.js';
+
+const ESLINT_PLUGIN: PluginCodegenResult = {
+  imports: [
+    {
+      moduleSpecifier: '@code-pushup/eslint-plugin',
+      defaultImport: 'eslintPlugin',
+    },
+  ],
+  pluginInit: "await eslintPlugin({ patterns: '.' })",
+};
 
 describe('generateConfigSource', () => {
   describe('TypeScript format', () => {
@@ -186,4 +201,76 @@ describe('generateConfigSource', () => {
       );
     });
   });
+});
+
+describe('generatePresetSource', () => {
+  it('should generate TS preset with function signature and plugins', () => {
+    expect(generatePresetSource([ESLINT_PLUGIN], 'ts')).toMatchInlineSnapshot(`
+      "import eslintPlugin from '@code-pushup/eslint-plugin';
+      import type { CoreConfig } from '@code-pushup/models';
+
+      /**
+       * Creates a Code PushUp config for a project.
+       * @param project Project name
+       */
+      export async function createConfig(project: string): Promise<CoreConfig> {
+        return {
+          plugins: [
+            await eslintPlugin({ patterns: '.' }),
+          ],
+        };
+      }
+      "
+    `);
+  });
+
+  it('should generate JS preset with JSDoc annotation', () => {
+    expect(generatePresetSource([ESLINT_PLUGIN], 'js')).toMatchInlineSnapshot(`
+      "import eslintPlugin from '@code-pushup/eslint-plugin';
+
+      /**
+       * Creates a Code PushUp config for a project.
+       * @param {string} project Project name
+       * @returns {Promise<import('@code-pushup/models').CoreConfig>}
+       */
+      export async function createConfig(project) {
+        return {
+          plugins: [
+            await eslintPlugin({ patterns: '.' }),
+          ],
+        };
+      }
+      "
+    `);
+  });
+});
+
+describe('generateProjectSource', () => {
+  it('should generate import and createConfig call', () => {
+    const source = generateProjectSource(
+      'my-app',
+      '../../code-pushup.preset.js',
+    );
+    expect(source).toMatchInlineSnapshot(`
+      "import { createConfig } from '../../code-pushup.preset.js';
+
+      export default await createConfig('my-app');
+      "
+    `);
+  });
+});
+
+describe('computeRelativePresetImport', () => {
+  it.each([
+    ['packages/my-app', 'code-pushup.preset.ts', '../../code-pushup.preset.js'],
+    ['apps/web', 'code-pushup.preset.mjs', '../../code-pushup.preset.mjs'],
+    ['packages/lib', 'code-pushup.preset.js', '../../code-pushup.preset.js'],
+  ])(
+    'should resolve %j relative to %j as %j',
+    (projectDir, presetFilename, expected) => {
+      expect(computeRelativePresetImport(projectDir, presetFilename)).toBe(
+        expected,
+      );
+    },
+  );
 });

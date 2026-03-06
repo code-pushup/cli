@@ -1,15 +1,14 @@
 import { glob } from 'glob';
 import path from 'node:path';
+import {
+  type MonorepoTool,
+  detectMonorepoTool,
+  listPackages,
+} from '@code-pushup/utils';
 import { logDebug, logInfo } from '../log.js';
 import type { Settings } from '../models.js';
-import { detectMonorepoTool } from './detect-tool.js';
 import { getToolHandler } from './handlers/index.js';
-import { listPackages } from './packages.js';
-import type {
-  MonorepoHandlerOptions,
-  MonorepoTool,
-  ProjectConfig,
-} from './tools.js';
+import type { MonorepoHandlerOptions, ProjectConfig } from './tools.js';
 
 export type MonorepoProjects = {
   tool: MonorepoTool | null;
@@ -74,7 +73,7 @@ async function resolveMonorepoTool(
     return settings.monorepo;
   }
 
-  const tool = await detectMonorepoTool(options);
+  const tool = await detectMonorepoTool(options.cwd);
   if (tool) {
     logInfo(`Auto-detected monorepo tool ${tool}`);
   } else {
