@@ -3,3 +3,6 @@
 /coverage
 /.nx
 __snapshots__
+
+# Test fixtures with intentional syntax errors
+packages/utils/mocks/fixtures/actually-invalid.js

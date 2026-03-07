@@ -1,5 +1,9 @@
-import type { AxeResults, CheckResult, NodeResult, Result } from 'axe-core';
 import type { AuditOutput } from '@code-pushup/models';
+import type {
+  AxeResults,
+  NodeResult,
+  Result,
+} from '../safe-axe-core-import.js';
 import { toAuditOutputs } from './transform.js';
 
 function createMockCheck(overrides: Partial<CheckResult> = {}): CheckResult {

@@ -32,6 +32,7 @@ export {
   type ProcessObserver,
   type ProcessResult,
 } from './lib/execute-process.js';
+export { loadTargetConfig } from './lib/load-ts-config.js';
 export {
   crawlFileSystem,
   createReportPath,

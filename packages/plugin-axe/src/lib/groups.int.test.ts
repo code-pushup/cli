@@ -1,5 +1,5 @@
-import axe from 'axe-core';
 import { axeCategoryGroupSlugSchema, axeWcagTagSchema } from './groups.js';
+import axe from './safe-axe-core-import.js';
 
 describe('axeCategoryGroupSlugSchema', () => {
   const axeCategoryTags = axe

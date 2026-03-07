@@ -42,6 +42,7 @@ const INT_TEST_SETUP_FILES = [
   '../../testing/test-setup/src/lib/reset.setup-file.ts',
   '../../testing/test-setup/src/lib/logger.setup-file.ts',
   '../../testing/test-setup/src/lib/chrome-path.setup-file.ts',
+  '../../testing/test-setup/src/lib/jiti.setup-file.ts',
   ...CUSTOM_MATCHERS,
 ] as const;
 

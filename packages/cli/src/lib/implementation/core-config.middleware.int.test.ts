@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { executeProcess } from '@code-pushup/utils';
 import { coreConfigMiddleware } from './core-config.middleware.js';
 
 const configDirPath = path.join(
@@ -12,7 +13,33 @@ const configDirPath = path.join(
   'mocks',
   'configs',
 );
-
+const helperPath = path.join(
+  fileURLToPath(path.dirname(import.meta.url)),
+  '..',
+  '..',
+  '..',
+  '..',
+  'cli',
+  'mocks',
+  'core-config-middleware.int-helper.ts',
+);
+const runMiddlewareInCwd = async (configPath: string, tsconfigPath?: string) =>
+  await executeProcess({
+    command: 'npx',
+    args: [
+      'tsx',
+      helperPath,
+      configPath,
+      ...(tsconfigPath ? [tsconfigPath] : []),
+    ],
+    cwd: configDirPath,
+    env: {
+      ...process.env,
+      // Disable all logger output to avoid interfering with JSON output
+      CP_VERBOSE: 'false',
+      CI: 'false',
+    },
+  });
 describe('coreConfigMiddleware', () => {
   const CLI_DEFAULTS = {
     plugins: [],
@@ -30,15 +57,16 @@ describe('coreConfigMiddleware', () => {
   });
 
   it('should load config which relies on provided --tsconfig', async () => {
-    await expect(
-      coreConfigMiddleware({
-        config: path.join(
-          configDirPath,
-          'code-pushup.needs-tsconfig.config.ts',
-        ),
-        tsconfig: path.join(configDirPath, 'tsconfig.json'),
-        ...CLI_DEFAULTS,
-      }),
-    ).resolves.toBeTruthy();
+    const { stdout, code } = await runMiddlewareInCwd(
+      'code-pushup.needs-tsconfig.config.ts',
+      path.join(configDirPath, 'tsconfig.json'),
+    );
+
+    expect(code).toBe(0);
+    const output = JSON.parse(stdout);
+    expect(output).toStrictEqual({
+      success: true,
+      config: expect.any(String),
+    });
   });
 });

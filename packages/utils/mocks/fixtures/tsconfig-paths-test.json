@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@test/helper": ["./helper-module.ts"]
+    }
+  }
+}

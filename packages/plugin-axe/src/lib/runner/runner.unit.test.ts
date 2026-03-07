@@ -1,5 +1,9 @@
-import type { AxeResults, IncompleteResult, Result } from 'axe-core';
 import { type AuditOutput, DEFAULT_PERSIST_CONFIG } from '@code-pushup/models';
+import type {
+  AxeResults,
+  IncompleteResult,
+  Result,
+} from '../safe-axe-core-import.js';
 import type { AxeUrlResult } from './run-axe.js';
 import { createRunnerFunction } from './runner.js';
 import * as setup from './setup.js';
