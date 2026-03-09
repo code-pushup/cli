@@ -30,7 +30,7 @@ export default tseslint.config(
     rules: {
       '@nx/dependency-checks': [
         'error',
-        { ignoredDependencies: ['esbuild', 'type-fest'] }, // esbuild is a peer dependency of bundle-require
+        { ignoredDependencies: ['esbuild'] }, // esbuild is a peer dependency of bundle-require
       ],
     },
   },
