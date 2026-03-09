@@ -14,18 +14,17 @@ type TurboConfig = {
 export const turboHandler: MonorepoToolHandler = {
   tool: 'turbo',
 
-  async isConfigured(options) {
-    const configPath = path.join(options.cwd, 'turbo.json');
-    return (
-      (await MONOREPO_TOOL_DETECTORS.turbo(options.cwd)) &&
-      options.task in (await readJsonFile<TurboConfig>(configPath)).tasks
-    );
-  },
-
   async listProjects(options) {
+    const configPath = path.join(options.cwd, 'turbo.json');
+    if (
+      !(options.task in (await readJsonFile<TurboConfig>(configPath)).tasks)
+    ) {
+      throw new Error(`Task "${options.task}" not found in turbo.json`);
+    }
+
     // eslint-disable-next-line functional/no-loop-statements
     for (const handler of WORKSPACE_HANDLERS) {
-      if (await handler.isConfigured(options)) {
+      if (await MONOREPO_TOOL_DETECTORS[handler.tool](options.cwd)) {
         const projects = await handler.listProjects(options);
         return projects
           .filter(({ bin }) => bin.includes(`run ${options.task}`)) // must have package.json script

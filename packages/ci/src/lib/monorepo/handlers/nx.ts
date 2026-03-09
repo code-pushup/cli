@@ -1,5 +1,4 @@
 import {
-  MONOREPO_TOOL_DETECTORS,
   executeProcess,
   interpolate,
   stringifyError,
@@ -10,21 +9,18 @@ import type { MonorepoToolHandler } from '../tools.js';
 export const nxHandler: MonorepoToolHandler = {
   tool: 'nx',
 
-  async isConfigured(options) {
-    return (
-      (await MONOREPO_TOOL_DETECTORS.nx(options.cwd)) &&
-      (
-        await executeProcess({
-          command: 'npx',
-          args: ['nx', 'report'],
-          cwd: options.cwd,
-          ignoreExitCode: true,
-        })
-      ).code === 0
-    );
-  },
-
   async listProjects({ cwd, task, nxProjectsFilter }) {
+    const { code, stderr } = await executeProcess({
+      command: 'npx',
+      args: ['nx', 'report'],
+      cwd,
+      ignoreExitCode: true,
+    });
+    if (code !== 0) {
+      const suffix = stderr ? ` - ${stderr}` : '';
+      throw new Error(`'nx report' failed with exit code ${code}${suffix}`);
+    }
+
     const { stdout } = await executeProcess({
       command: 'npx',
       args: [

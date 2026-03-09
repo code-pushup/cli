@@ -2,7 +2,6 @@ import type { MonorepoTool } from '@code-pushup/utils';
 
 export type MonorepoToolHandler = {
   tool: MonorepoTool;
-  isConfigured: (options: MonorepoHandlerOptions) => Promise<boolean>;
   listProjects: (options: MonorepoHandlerOptions) => Promise<ProjectConfig[]>;
   createRunManyCommand: (
     options: MonorepoHandlerOptions,

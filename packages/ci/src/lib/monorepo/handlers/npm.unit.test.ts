@@ -18,47 +18,6 @@ describe('npmHandler', () => {
   const pkgJsonContent = (content: PackageJson): string =>
     JSON.stringify(content);
 
-  describe('isConfigured', () => {
-    it('should detect NPM workspaces when package-lock.json exists and "workspaces" set in package.json', async () => {
-      vol.fromJSON(
-        {
-          'package.json': pkgJsonContent({
-            private: true,
-            workspaces: ['packages/*'],
-          }),
-          'package-lock.json': '',
-        },
-        MEMFS_VOLUME,
-      );
-      await expect(npmHandler.isConfigured(options)).resolves.toBeTrue();
-    });
-
-    it('should NOT detect NPM workspaces when "workspaces" not set in package.json', async () => {
-      vol.fromJSON(
-        {
-          'package.json': pkgJsonContent({}),
-          'package-lock.json': '',
-        },
-        MEMFS_VOLUME,
-      );
-      await expect(npmHandler.isConfigured(options)).resolves.toBeFalse();
-    });
-
-    it("should NOT detect NPM workspaces when package-lock.json doesn't exist", async () => {
-      vol.fromJSON(
-        {
-          'package.json': pkgJsonContent({
-            private: true,
-            workspaces: ['packages/*'],
-          }),
-          'yarn.lock': '',
-        },
-        MEMFS_VOLUME,
-      );
-      await expect(npmHandler.isConfigured(options)).resolves.toBeFalse();
-    });
-  });
-
   describe('listProjects', () => {
     it('should list all NPM workspaces with code-pushup script', async () => {
       vol.fromJSON(

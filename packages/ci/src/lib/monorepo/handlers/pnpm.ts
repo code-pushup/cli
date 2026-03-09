@@ -1,5 +1,4 @@
 import {
-  MONOREPO_TOOL_DETECTORS,
   hasCodePushUpDependency,
   hasScript,
   listPackages,
@@ -10,10 +9,6 @@ import type { MonorepoToolHandler } from '../tools.js';
 
 export const pnpmHandler: MonorepoToolHandler = {
   tool: 'pnpm',
-
-  async isConfigured(options) {
-    return MONOREPO_TOOL_DETECTORS.pnpm(options.cwd);
-  },
 
   async listProjects(options) {
     const patterns = await readPnpmWorkspacePatterns(options.cwd);

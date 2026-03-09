@@ -1,5 +1,4 @@
 import {
-  MONOREPO_TOOL_DETECTORS,
   hasCodePushUpDependency,
   hasScript,
   listWorkspaces,
@@ -8,10 +7,6 @@ import type { MonorepoToolHandler } from '../tools.js';
 
 export const npmHandler: MonorepoToolHandler = {
   tool: 'npm',
-
-  async isConfigured(options) {
-    return MONOREPO_TOOL_DETECTORS.npm(options.cwd);
-  },
 
   async listProjects(options) {
     const { workspaces, rootPackageJson } = await listWorkspaces(options.cwd);

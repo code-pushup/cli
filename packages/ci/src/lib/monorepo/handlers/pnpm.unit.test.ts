@@ -19,43 +19,6 @@ describe('pnpmHandler', () => {
   const pkgJsonContent = (content: PackageJson): string =>
     JSON.stringify(content);
 
-  describe('isConfigured', () => {
-    it('should detect PNPM workspace when pnpm-workspace.yaml and package.json files exist', async () => {
-      vol.fromJSON(
-        {
-          'package.json': pkgJsonContent({}),
-          'pnpm-workspace.yaml': 'packages:\n- apps/*\n- libs/*\n\n',
-        },
-        MEMFS_VOLUME,
-      );
-      await expect(pnpmHandler.isConfigured(options)).resolves.toBeTrue();
-    });
-
-    it("should NOT detect PNPM workspace when pnpm-workspace.yaml doesn't exist", async () => {
-      vol.fromJSON(
-        {
-          'package.json': pkgJsonContent({}),
-          'pnpm-lock.yaml': '',
-        },
-        MEMFS_VOLUME,
-      );
-      await expect(pnpmHandler.isConfigured(options)).resolves.toBeFalse();
-    });
-
-    it("should NOT detect PNPM workspace when root package.json doesn't exist", async () => {
-      vol.fromJSON(
-        {
-          'packages/cli/package.json': pkgJsonContent({}),
-          'packages/cli/pnpm-lock.yaml': '',
-          'packages/core/package.json': pkgJsonContent({}),
-          'packages/core/pnpm-lock.yaml': '',
-        },
-        MEMFS_VOLUME,
-      );
-      await expect(pnpmHandler.isConfigured(options)).resolves.toBeFalse();
-    });
-  });
-
   describe('listProjects', () => {
     it('should list all PNPM workspace packages with code-pushup script', async () => {
       vol.fromJSON(

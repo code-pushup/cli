@@ -20,47 +20,6 @@ describe('yarnHandler', () => {
   const pkgJsonContent = (content: PackageJson): string =>
     JSON.stringify(content);
 
-  describe('isConfigured', () => {
-    it('should detect Yarn workspaces when yarn.lock exists and "workspaces" set in package.json', async () => {
-      vol.fromJSON(
-        {
-          'package.json': pkgJsonContent({
-            private: true,
-            workspaces: ['packages/*'],
-          }),
-          'yarn.lock': '',
-        },
-        MEMFS_VOLUME,
-      );
-      await expect(yarnHandler.isConfigured(options)).resolves.toBeTrue();
-    });
-
-    it('should NOT detect Yarn workspaces when "workspaces" not set in package.json', async () => {
-      vol.fromJSON(
-        {
-          'package.json': pkgJsonContent({}),
-          'yarn.lock': '',
-        },
-        MEMFS_VOLUME,
-      );
-      await expect(yarnHandler.isConfigured(options)).resolves.toBeFalse();
-    });
-
-    it("should NOT detect Yarn workspaces when yarn.lock doesn't exist", async () => {
-      vol.fromJSON(
-        {
-          'package.json': pkgJsonContent({
-            private: true,
-            workspaces: ['packages/*'],
-          }),
-          'package-lock.json': '',
-        },
-        MEMFS_VOLUME,
-      );
-      await expect(yarnHandler.isConfigured(options)).resolves.toBeFalse();
-    });
-  });
-
   describe('listProjects', () => {
     it('should list all Yarn workspaces with code-pushup script', async () => {
       vol.fromJSON(
