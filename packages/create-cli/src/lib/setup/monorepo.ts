@@ -4,42 +4,65 @@ import {
   MONOREPO_TOOL_DETECTORS,
   type MonorepoTool,
   type WorkspacePackage,
+  detectMonorepoTool,
   hasScript,
   listPackages,
   listWorkspaces,
   loadNxProjectGraph,
+  logger,
   readPnpmWorkspacePatterns,
   toUnixPath,
 } from '@code-pushup/utils';
-import {
-  type CliArgs,
-  SETUP_MODES,
-  type SetupMode,
-  type Tree,
-  type WizardProject,
+import type {
+  CliArgs,
+  ConfigContext,
+  SetupMode,
+  Tree,
+  WizardProject,
 } from './types.js';
 
 const TARGET_NAME = 'code-pushup';
 
 export async function promptSetupMode(
-  tool: MonorepoTool | null,
+  targetDir: string,
   cliArgs: CliArgs,
-): Promise<SetupMode> {
-  if (isSetupMode(cliArgs.mode)) {
-    return cliArgs.mode;
+): Promise<ConfigContext> {
+  switch (cliArgs.mode) {
+    case 'standalone':
+      return toContext(cliArgs.mode, null);
+    case 'monorepo': {
+      const tool = await detectMonorepoTool(targetDir);
+      return toContext(cliArgs.mode, tool);
+    }
+    case undefined: {
+      const tool = await detectMonorepoTool(targetDir);
+      const mode = cliArgs.yes ? inferMode(tool) : await promptMode(tool);
+      return toContext(mode, tool);
+    }
   }
-  const mode = tool ? 'monorepo' : 'standalone';
-  if (cliArgs.yes) {
-    return mode;
-  }
+}
+
+async function promptMode(tool: MonorepoTool | null): Promise<SetupMode> {
   return select<SetupMode>({
     message: 'Setup mode:',
     choices: [
       { name: 'Standalone (single config)', value: 'standalone' },
       { name: 'Monorepo (per-project configs)', value: 'monorepo' },
     ],
-    default: mode,
+    default: inferMode(tool),
   });
+}
+
+function inferMode(tool: MonorepoTool | null): SetupMode {
+  return tool ? 'monorepo' : 'standalone';
+}
+
+function toContext(mode: SetupMode, tool: MonorepoTool | null): ConfigContext {
+  if (mode === 'monorepo' && tool == null) {
+    logger.warn('No monorepo tool detected, falling back to standalone mode.');
+    return { mode: 'standalone', tool: null };
+  }
+  return { mode, tool };
 }
 
 export async function listProjects(
@@ -156,9 +179,4 @@ function toProject(cwd: string, pkg: WorkspacePackage): WizardProject {
     directory: pkg.directory,
     relativeDir: toUnixPath(path.relative(cwd, pkg.directory)),
   };
-}
-
-function isSetupMode(value: string | undefined): value is SetupMode {
-  const validValues: readonly string[] = SETUP_MODES;
-  return value != null && validValues.includes(value);
 }

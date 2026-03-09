@@ -2,7 +2,6 @@ import path from 'node:path';
 import {
   type MonorepoTool,
   asyncSequential,
-  detectMonorepoTool,
   formatAsciiTable,
   getGitRoot,
   logger,
@@ -49,8 +48,7 @@ export async function runSetupWizard(
 ): Promise<void> {
   const targetDir = cliArgs['target-dir'] ?? process.cwd();
 
-  const tool = await detectMonorepoTool(targetDir);
-  const mode = await promptSetupMode(tool, cliArgs);
+  const { mode, tool } = await promptSetupMode(targetDir, cliArgs);
   const selectedBindings = await promptPluginSelection(
     bindings,
     targetDir,
@@ -66,7 +64,7 @@ export async function runSetupWizard(
     selectedBindings,
     async binding => ({
       scope: binding.scope ?? 'project',
-      result: await resolveBinding(binding, cliArgs, { tool, mode }),
+      result: await resolveBinding(binding, cliArgs, { mode, tool }),
     }),
   );
 
