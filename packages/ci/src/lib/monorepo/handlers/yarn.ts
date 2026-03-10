@@ -1,22 +1,13 @@
-import path from 'node:path';
-import { executeProcess, fileExists } from '@code-pushup/utils';
 import {
+  executeProcess,
   hasCodePushUpDependency,
   hasScript,
-  hasWorkspacesEnabled,
   listWorkspaces,
-} from '../packages.js';
+} from '@code-pushup/utils';
 import type { MonorepoToolHandler } from '../tools.js';
 
 export const yarnHandler: MonorepoToolHandler = {
   tool: 'yarn',
-
-  async isConfigured(options) {
-    return (
-      (await fileExists(path.join(options.cwd, 'yarn.lock'))) &&
-      (await hasWorkspacesEnabled(options.cwd))
-    );
-  },
 
   async listProjects(options) {
     const { workspaces, rootPackageJson } = await listWorkspaces(options.cwd);

@@ -1,4 +1,5 @@
-import type { MonorepoTool, MonorepoToolHandler } from '../tools.js';
+import type { MonorepoTool } from '@code-pushup/utils';
+import type { MonorepoToolHandler } from '../tools.js';
 import { npmHandler } from './npm.js';
 import { nxHandler } from './nx.js';
 import { pnpmHandler } from './pnpm.js';

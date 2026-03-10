@@ -1,7 +1,5 @@
-import path from 'node:path';
 import {
   executeProcess,
-  fileExists,
   interpolate,
   stringifyError,
   toArray,
@@ -11,21 +9,18 @@ import type { MonorepoToolHandler } from '../tools.js';
 export const nxHandler: MonorepoToolHandler = {
   tool: 'nx',
 
-  async isConfigured(options) {
-    return (
-      (await fileExists(path.join(options.cwd, 'nx.json'))) &&
-      (
-        await executeProcess({
-          command: 'npx',
-          args: ['nx', 'report'],
-          cwd: options.cwd,
-          ignoreExitCode: true,
-        })
-      ).code === 0
-    );
-  },
-
   async listProjects({ cwd, task, nxProjectsFilter }) {
+    const { code, stderr } = await executeProcess({
+      command: 'npx',
+      args: ['nx', 'report'],
+      cwd,
+      ignoreExitCode: true,
+    });
+    if (code !== 0) {
+      const suffix = stderr ? ` - ${stderr}` : '';
+      throw new Error(`'nx report' failed with exit code ${code}${suffix}`);
+    }
+
     const { stdout } = await executeProcess({
       command: 'npx',
       args: [

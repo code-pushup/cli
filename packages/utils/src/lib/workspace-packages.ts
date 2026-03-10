@@ -1,9 +1,10 @@
 import { glob } from 'glob';
 import path from 'node:path';
 import type { PackageJson } from 'type-fest';
-import { readJsonFile } from '@code-pushup/utils';
+import * as YAML from 'yaml';
+import { readJsonFile, readTextFile } from './file-system.js';
 
-type WorkspacePackage = {
+export type WorkspacePackage = {
   name: string;
   directory: string;
   packageJson: PackageJson;
@@ -57,6 +58,14 @@ export async function hasWorkspacesEnabled(cwd: string): Promise<boolean> {
 
 export async function readRootPackageJson(cwd: string): Promise<PackageJson> {
   return await readJsonFile<PackageJson>(path.join(cwd, 'package.json'));
+}
+
+export async function readPnpmWorkspacePatterns(
+  cwd: string,
+): Promise<string[]> {
+  const content = await readTextFile(path.join(cwd, 'pnpm-workspace.yaml'));
+  const workspace = YAML.parse(content) as { packages?: string[] };
+  return workspace.packages ?? [];
 }
 
 export function hasDependency(packageJson: PackageJson, name: string): boolean {

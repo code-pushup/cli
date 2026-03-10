@@ -17,7 +17,7 @@ export default tseslint.config(
     rules: {
       '@nx/dependency-checks': [
         'error',
-        { ignoredDependencies: ['type-fest'] }, // only for internal typings
+        { ignoredDependencies: ['type-fest'] }, // type-only imports not detected by rule
       ],
     },
   },

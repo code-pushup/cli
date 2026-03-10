@@ -1,22 +1,38 @@
+import path from 'node:path';
 import {
+  type MonorepoTool,
   asyncSequential,
   formatAsciiTable,
   getGitRoot,
   logger,
+  toUnixPath,
 } from '@code-pushup/utils';
-import { generateConfigSource } from './codegen.js';
+import {
+  computeRelativePresetImport,
+  generateConfigSource,
+  generatePresetSource,
+  generateProjectSource,
+} from './codegen.js';
 import {
   promptConfigFormat,
   readPackageJson,
-  resolveConfigFilename,
+  resolveFilename,
 } from './config-format.js';
 import { resolveGitignore } from './gitignore.js';
+import {
+  addCodePushUpCommand,
+  listProjects,
+  promptSetupMode,
+} from './monorepo.js';
 import { promptPluginOptions, promptPluginSelection } from './prompts.js';
 import type {
   CliArgs,
+  ConfigContext,
   FileChange,
   PluginCodegenResult,
   PluginSetupBinding,
+  ScopedPluginResult,
+  WriteContext,
 } from './types.js';
 import { createTree } from './virtual-fs.js';
 
@@ -32,7 +48,7 @@ export async function runSetupWizard(
 ): Promise<void> {
   const targetDir = cliArgs['target-dir'] ?? process.cwd();
 
-  // TODO: #1245 — prompt for standalone vs monorepo mode
+  const { mode, tool } = await promptSetupMode(targetDir, cliArgs);
   const selectedBindings = await promptPluginSelection(
     bindings,
     targetDir,
@@ -41,15 +57,29 @@ export async function runSetupWizard(
 
   const format = await promptConfigFormat(targetDir, cliArgs);
   const packageJson = await readPackageJson(targetDir);
-  const filename = resolveConfigFilename(format, packageJson.type === 'module');
+  const isEsm = packageJson.type === 'module';
+  const configFilename = resolveFilename('code-pushup.config', format, isEsm);
 
-  const pluginResults = await asyncSequential(selectedBindings, binding =>
-    resolveBinding(binding, cliArgs),
+  const resolved: ScopedPluginResult[] = await asyncSequential(
+    selectedBindings,
+    async binding => ({
+      scope: binding.scope ?? 'project',
+      result: await resolveBinding(binding, cliArgs, { mode, tool }),
+    }),
   );
 
   const gitRoot = await getGitRoot();
   const tree = createTree(gitRoot);
-  await tree.write(filename, generateConfigSource(pluginResults, format));
+
+  const writeContext: WriteContext = { tree, format, configFilename, isEsm };
+
+  await (mode === 'monorepo' && tool != null
+    ? writeMonorepoConfigs(writeContext, resolved, targetDir, tool)
+    : writeStandaloneConfig(
+        writeContext,
+        resolved.map(r => r.result),
+      ));
+
   await resolveGitignore(tree);
 
   logChanges(tree.listChanges());
@@ -72,11 +102,59 @@ export async function runSetupWizard(
 async function resolveBinding(
   binding: PluginSetupBinding,
   cliArgs: CliArgs,
+  context: ConfigContext,
 ): Promise<PluginCodegenResult> {
   const answers = binding.prompts
     ? await promptPluginOptions(binding.prompts, cliArgs)
     : {};
-  return binding.generateConfig(answers);
+  return binding.generateConfig(answers, context);
+}
+
+async function writeStandaloneConfig(
+  { tree, format, configFilename }: WriteContext,
+  results: PluginCodegenResult[],
+): Promise<void> {
+  await tree.write(configFilename, generateConfigSource(results, format));
+}
+
+async function writeMonorepoConfigs(
+  { tree, format, configFilename, isEsm }: WriteContext,
+  resolved: ScopedPluginResult[],
+  targetDir: string,
+  tool: MonorepoTool,
+): Promise<void> {
+  const projectResults = resolved
+    .filter(r => r.scope === 'project')
+    .map(r => r.result);
+
+  const rootResults = resolved
+    .filter(r => r.scope === 'root')
+    .map(r => r.result);
+
+  const presetFilename = resolveFilename('code-pushup.preset', format, isEsm);
+  await tree.write(
+    presetFilename,
+    generatePresetSource(projectResults, format),
+  );
+
+  if (rootResults.length > 0) {
+    await tree.write(configFilename, generateConfigSource(rootResults, format));
+  }
+
+  const projects = await listProjects(targetDir, tool);
+  await Promise.all(
+    projects.map(async project => {
+      const importPath = computeRelativePresetImport(
+        project.relativeDir,
+        presetFilename,
+      );
+      await tree.write(
+        toUnixPath(path.join(project.relativeDir, configFilename)),
+        generateProjectSource(project.name, importPath),
+      );
+      await addCodePushUpCommand(tree, project, tool);
+    }),
+  );
 }
 
 function logChanges(changes: FileChange[]): void {
