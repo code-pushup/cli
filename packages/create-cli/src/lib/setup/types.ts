@@ -1,6 +1,9 @@
 import type { PluginMeta } from '@code-pushup/models';
 import type { MonorepoTool } from '@code-pushup/utils';
 
+export const CI_PROVIDERS = ['github', 'gitlab', 'skip'] as const;
+export type CiProvider = (typeof CI_PROVIDERS)[number];
+
 export const CONFIG_FILE_FORMATS = ['ts', 'js', 'mjs'] as const;
 export type ConfigFileFormat = (typeof CONFIG_FILE_FORMATS)[number];
 
@@ -16,6 +19,7 @@ export type CliArgs = {
   'config-format'?: string;
   mode?: SetupMode;
   plugins?: string[];
+  ci?: string;
   'target-dir'?: string;
   [key: string]: unknown;
 };

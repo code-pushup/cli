@@ -3,6 +3,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { parsePluginSlugs, validatePluginSlugs } from './lib/setup/plugins.js';
 import {
+  CI_PROVIDERS,
   CONFIG_FILE_FORMATS,
   type PluginSetupBinding,
   SETUP_MODES,
@@ -38,6 +39,11 @@ const argv = await yargs(hideBin(process.argv))
     type: 'string',
     choices: SETUP_MODES,
     describe: 'Setup mode (default: auto-detected from project)',
+  })
+  .option('ci', {
+    type: 'string',
+    choices: CI_PROVIDERS,
+    describe: 'CI/CD integration (github, gitlab, or skip)',
   })
   .check(parsed => {
     validatePluginSlugs(bindings, parsed.plugins);

@@ -7,6 +7,7 @@ import {
   logger,
   toUnixPath,
 } from '@code-pushup/utils';
+import { promptCiProvider, resolveCi } from './ci.js';
 import {
   computeRelativePresetImport,
   generateConfigSource,
@@ -48,39 +49,39 @@ export async function runSetupWizard(
 ): Promise<void> {
   const targetDir = cliArgs['target-dir'] ?? process.cwd();
 
-  const { mode, tool } = await promptSetupMode(targetDir, cliArgs);
+  const context = await promptSetupMode(targetDir, cliArgs);
   const selectedBindings = await promptPluginSelection(
     bindings,
     targetDir,
     cliArgs,
   );
-
   const format = await promptConfigFormat(targetDir, cliArgs);
-  const packageJson = await readPackageJson(targetDir);
-  const isEsm = packageJson.type === 'module';
-  const configFilename = resolveFilename('code-pushup.config', format, isEsm);
+  const ciProvider = await promptCiProvider(cliArgs);
 
   const resolved: ScopedPluginResult[] = await asyncSequential(
     selectedBindings,
     async binding => ({
       scope: binding.scope ?? 'project',
-      result: await resolveBinding(binding, cliArgs, { mode, tool }),
+      result: await resolveBinding(binding, cliArgs, context),
     }),
   );
 
-  const gitRoot = await getGitRoot();
-  const tree = createTree(gitRoot);
+  const packageJson = await readPackageJson(targetDir);
+  const isEsm = packageJson.type === 'module';
+  const configFilename = resolveFilename('code-pushup.config', format, isEsm);
 
+  const tree = createTree(await getGitRoot());
   const writeContext: WriteContext = { tree, format, configFilename, isEsm };
 
-  await (mode === 'monorepo' && tool != null
-    ? writeMonorepoConfigs(writeContext, resolved, targetDir, tool)
+  await (context.mode === 'monorepo' && context.tool != null
+    ? writeMonorepoConfigs(writeContext, resolved, targetDir, context.tool)
     : writeStandaloneConfig(
         writeContext,
         resolved.map(r => r.result),
       ));
 
   await resolveGitignore(tree);
+  await resolveCi(tree, ciProvider, context);
 
   logChanges(tree.listChanges());
 
