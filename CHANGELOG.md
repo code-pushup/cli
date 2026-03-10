@@ -1,3 +1,13 @@
+## 0.117.0 (2026-03-10)
+
+### 🚀 Features
+
+- **create-cli:** add monorepo setup mode ([#1265](https://github.com/code-pushup/cli/pull/1265))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.116.0 (2026-03-04)
 
 ### 🚀 Features
