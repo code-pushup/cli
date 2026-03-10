@@ -21,7 +21,7 @@ import type {
   WizardProject,
 } from './types.js';
 
-const TARGET_NAME = 'code-pushup';
+const TASK_NAME = 'code-pushup';
 
 export async function promptSetupMode(
   targetDir: string,
@@ -133,14 +133,14 @@ async function addNxTarget(
     return false;
   }
   const config = JSON.parse(raw);
-  if (config.targets[TARGET_NAME] != null) {
+  if (config.targets[TASK_NAME] != null) {
     return true;
   }
   const updated = {
     ...config,
     targets: {
       ...config.targets,
-      [TARGET_NAME]: {
+      [TASK_NAME]: {
         executor: 'nx:run-commands',
         options: { command: 'npx code-pushup' },
       },
@@ -160,14 +160,14 @@ async function addPackageJsonScript(
     return;
   }
   const packageJson = JSON.parse(raw);
-  if (hasScript(packageJson, TARGET_NAME)) {
+  if (hasScript(packageJson, TASK_NAME)) {
     return;
   }
   const updated = {
     ...packageJson,
     scripts: {
       ...packageJson.scripts,
-      [TARGET_NAME]: 'code-pushup',
+      [TASK_NAME]: 'code-pushup',
     },
   };
   await tree.write(filePath, `${JSON.stringify(updated, null, 2)}\n`);
