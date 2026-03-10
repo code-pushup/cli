@@ -13,6 +13,15 @@ export default tseslint.config(
     },
   },
   {
+    files: ['**/*.json'],
+    rules: {
+      '@nx/dependency-checks': [
+        'error',
+        { ignoredDependencies: ['type-fest'] }, // type-only imports not detected by rule
+      ],
+    },
+  },
+  {
     files: ['**/*.test.ts'],
     rules: {
       'vitest/max-nested-describe': ['warn', { max: 3 }],
