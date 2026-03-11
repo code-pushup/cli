@@ -1,13 +1,17 @@
 import { select } from '@inquirer/prompts';
 import { vol } from 'memfs';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { logger } from '@code-pushup/utils';
 import { promptCiProvider, resolveCi } from './ci.js';
 import type { ConfigContext } from './types.js';
 import { createTree } from './virtual-fs.js';
 
 vi.mock('@inquirer/prompts', () => ({
   select: vi.fn(),
+}));
+
+vi.mock('@code-pushup/utils', async importOriginal => ({
+  ...(await importOriginal<typeof import('@code-pushup/utils')>()),
+  getGitDefaultBranch: vi.fn().mockResolvedValue('main'),
 }));
 
 describe('promptCiProvider', () => {
@@ -64,6 +68,7 @@ describe('resolveCi', () => {
         jobs:
           code-pushup:
             runs-on: ubuntu-latest
+            name: Code PushUp
             steps:
               - name: Clone repository
                 uses: actions/checkout@v5
@@ -100,6 +105,7 @@ describe('resolveCi', () => {
         jobs:
           code-pushup:
             runs-on: ubuntu-latest
+            name: Code PushUp
             steps:
               - name: Clone repository
                 uses: actions/checkout@v5
@@ -127,9 +133,59 @@ describe('resolveCi', () => {
         path: '.gitlab-ci.yml',
         type: 'CREATE',
       });
+      await expect(tree.read('.gitlab-ci.yml')).resolves.toMatchInlineSnapshot(`
+        "workflow:
+          rules:
+            - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+            - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+
+        include:
+          - https://gitlab.com/code-pushup/gitlab-pipelines-template/-/raw/latest/code-pushup.yml
+        "
+      `);
     });
 
-    it('should create separate file and log include instruction when .gitlab-ci.yml already exists', async () => {
+    it('should append local include when .gitlab-ci.yml has include array', async () => {
+      vol.fromJSON(
+        {
+          'package.json': '{}',
+          '.gitlab-ci.yml': 'include:\n  - local: .gitlab/ci/version.yml\n',
+        },
+        MEMFS_VOLUME,
+      );
+      const tree = createTree(MEMFS_VOLUME);
+
+      await resolveCi(tree, 'gitlab', STANDALONE_CONTEXT);
+
+      await expect(tree.read('.gitlab-ci.yml')).resolves.toMatchInlineSnapshot(`
+        "include:
+          - local: .gitlab/ci/version.yml
+          - local: .gitlab/ci/code-pushup.gitlab-ci.yml
+        "
+      `);
+    });
+
+    it('should wrap single include object into array and append', async () => {
+      vol.fromJSON(
+        {
+          'package.json': '{}',
+          '.gitlab-ci.yml': 'include:\n  local: .gitlab/ci/version.yml\n',
+        },
+        MEMFS_VOLUME,
+      );
+      const tree = createTree(MEMFS_VOLUME);
+
+      await resolveCi(tree, 'gitlab', STANDALONE_CONTEXT);
+
+      await expect(tree.read('.gitlab-ci.yml')).resolves.toMatchInlineSnapshot(`
+        "include:
+          - local: .gitlab/ci/version.yml
+          - local: .gitlab/ci/code-pushup.gitlab-ci.yml
+        "
+      `);
+    });
+
+    it('should create include array when .gitlab-ci.yml has no include key', async () => {
       vol.fromJSON(
         {
           'package.json': '{}',
@@ -141,16 +197,13 @@ describe('resolveCi', () => {
 
       await resolveCi(tree, 'gitlab', STANDALONE_CONTEXT);
 
-      expect(tree.listChanges()).toPartiallyContain({
-        path: 'code-pushup.gitlab-ci.yml',
-        type: 'CREATE',
-      });
-      expect(tree.listChanges()).not.toPartiallyContain({
-        path: '.gitlab-ci.yml',
-      });
-      expect(logger.warn).toHaveBeenCalledWith(
-        expect.stringContaining('code-pushup.gitlab-ci.yml'),
-      );
+      await expect(tree.read('.gitlab-ci.yml')).resolves.toMatchInlineSnapshot(`
+        "stages:
+          - test
+        include:
+          - local: .gitlab/ci/code-pushup.gitlab-ci.yml
+        "
+      `);
     });
   });
 

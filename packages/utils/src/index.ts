@@ -79,6 +79,7 @@ export {
 } from './lib/git/git.commits-and-tags.js';
 export {
   formatGitPath,
+  getGitDefaultBranch,
   getGitRoot,
   guardAgainstLocalChanges,
   safeCheckout,

@@ -1,5 +1,7 @@
 import { select } from '@inquirer/prompts';
-import { logger } from '@code-pushup/utils';
+import path from 'node:path';
+import * as YAML from 'yaml';
+import { getGitDefaultBranch, logger, toUnixPath } from '@code-pushup/utils';
 import {
   CI_PROVIDERS,
   type CiProvider,
@@ -10,7 +12,9 @@ import {
 
 const GITHUB_WORKFLOW_PATH = '.github/workflows/code-pushup.yml';
 const GITLAB_CONFIG_PATH = '.gitlab-ci.yml';
-const GITLAB_CONFIG_SEPARATE_PATH = 'code-pushup.gitlab-ci.yml';
+const GITLAB_CONFIG_SEPARATE_PATH = toUnixPath(
+  path.join('.gitlab', 'ci', 'code-pushup.gitlab-ci.yml'),
+);
 
 export async function promptCiProvider(cliArgs: CliArgs): Promise<CiProvider> {
   if (isCiProvider(cliArgs.ci)) {
@@ -51,18 +55,22 @@ async function writeGitHubWorkflow(
   tree: Tree,
   context: ConfigContext,
 ): Promise<void> {
-  await tree.write(GITHUB_WORKFLOW_PATH, generateGitHubYaml(context));
+  await tree.write(GITHUB_WORKFLOW_PATH, await generateGitHubYaml(context));
 }
 
-function generateGitHubYaml({ mode, tool }: ConfigContext): string {
+async function generateGitHubYaml({
+  mode,
+  tool,
+}: ConfigContext): Promise<string> {
+  const branch = await getGitDefaultBranch();
   const lines = [
     'name: Code PushUp',
     '',
     'on:',
     '  push:',
-    '    branches: [main]',
+    `    branches: [${branch}]`,
     '  pull_request:',
-    '    branches: [main]',
+    `    branches: [${branch}]`,
     '',
     'permissions:',
     '  contents: read',
@@ -72,6 +80,7 @@ function generateGitHubYaml({ mode, tool }: ConfigContext): string {
     'jobs:',
     '  code-pushup:',
     '    runs-on: ubuntu-latest',
+    '    name: Code PushUp',
     '    steps:',
     '      - name: Clone repository',
     '        uses: actions/checkout@v5',
@@ -93,13 +102,7 @@ async function writeGitLabConfig(tree: Tree): Promise<void> {
   await tree.write(filePath, generateGitLabYaml());
 
   if (filePath === GITLAB_CONFIG_SEPARATE_PATH) {
-    logger.warn(
-      [
-        `Add the following to your ${GITLAB_CONFIG_PATH}:`,
-        '  include:',
-        `    - local: ${GITLAB_CONFIG_SEPARATE_PATH}`,
-      ].join('\n'),
-    );
+    await patchRootGitLabConfig(tree);
   }
 }
 
@@ -114,6 +117,31 @@ function generateGitLabYaml(): string {
     '  - https://gitlab.com/code-pushup/gitlab-pipelines-template/-/raw/latest/code-pushup.yml',
   ];
   return `${lines.join('\n')}\n`;
+}
+
+async function patchRootGitLabConfig(tree: Tree): Promise<void> {
+  const content = await tree.read(GITLAB_CONFIG_PATH);
+  if (content == null) {
+    return;
+  }
+  const doc = YAML.parseDocument(content);
+  if (!YAML.isMap(doc.contents)) {
+    logger.warn(
+      `Could not update ${GITLAB_CONFIG_PATH}. Add an include entry for ${GITLAB_CONFIG_SEPARATE_PATH} to your config.`,
+    );
+    return;
+  }
+  const entry = { local: GITLAB_CONFIG_SEPARATE_PATH };
+  const include = doc.get('include', true);
+  if (include == null) {
+    doc.set('include', doc.createNode([entry]));
+  } else if (YAML.isSeq(include)) {
+    include.add(doc.createNode(entry));
+  } else {
+    const existing = doc.get('include');
+    doc.set('include', doc.createNode([existing, entry]));
+  }
+  await tree.write(GITLAB_CONFIG_PATH, doc.toString());
 }
 
 async function resolveGitLabFilePath(tree: Tree): Promise<string> {
