@@ -284,9 +284,7 @@ export type WalFormat<T extends WalRecord = WalRecord> = {
   ) => string;
 };
 
-export const stringCodec = <
-  T extends string | object = string,
->(): Codec<T> => ({
+export const stringCodec = <T extends WalRecord = WalRecord>(): Codec<T> => ({
   encode: v => (typeof v === 'string' ? v : JSON.stringify(v)),
   decode: v => {
     try {

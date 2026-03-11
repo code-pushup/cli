@@ -137,7 +137,7 @@ export class NodejsProfiler<
       captureBufferedEntries,
       flushThreshold,
       maxQueueSize,
-      debugEnvVar,
+      debug: this.#debug,
     });
 
     this.#unsubscribeExitHandlers = subscribeProcessExit({

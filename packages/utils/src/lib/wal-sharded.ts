@@ -430,7 +430,6 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
       isFinalized: this.isFinalized(),
       isCleaned: this.isCleaned(),
       finalFilePath: this.getFinalFilePath(),
-      shardFileCount: shardFilesList.length,
       shardFiles: shardFilesList,
     };
   }
