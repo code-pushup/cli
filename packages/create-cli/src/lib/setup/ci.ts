@@ -1,7 +1,6 @@
 import { select } from '@inquirer/prompts';
-import path from 'node:path';
 import * as YAML from 'yaml';
-import { getGitDefaultBranch, logger, toUnixPath } from '@code-pushup/utils';
+import { getGitDefaultBranch, logger } from '@code-pushup/utils';
 import {
   CI_PROVIDERS,
   type CiProvider,
@@ -12,9 +11,7 @@ import {
 
 const GITHUB_WORKFLOW_PATH = '.github/workflows/code-pushup.yml';
 const GITLAB_CONFIG_PATH = '.gitlab-ci.yml';
-const GITLAB_CONFIG_SEPARATE_PATH = toUnixPath(
-  path.join('.gitlab', 'ci', 'code-pushup.gitlab-ci.yml'),
-);
+const GITLAB_CONFIG_SEPARATE_PATH = '.gitlab/ci/code-pushup.gitlab-ci.yml';
 
 export async function promptCiProvider(cliArgs: CliArgs): Promise<CiProvider> {
   if (isCiProvider(cliArgs.ci)) {
