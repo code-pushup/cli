@@ -43,7 +43,7 @@ const argv = await yargs(hideBin(process.argv))
   .option('ci', {
     type: 'string',
     choices: CI_PROVIDERS,
-    describe: 'CI/CD integration (github, gitlab, or skip)',
+    describe: 'CI/CD integration (github, gitlab, or none)',
   })
   .check(parsed => {
     validatePluginSlugs(bindings, parsed.plugins);

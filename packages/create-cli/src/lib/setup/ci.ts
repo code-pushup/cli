@@ -1,6 +1,12 @@
 import { select } from '@inquirer/prompts';
 import { logger } from '@code-pushup/utils';
-import type { CiProvider, CliArgs, ConfigContext, Tree } from './types.js';
+import {
+  CI_PROVIDERS,
+  type CiProvider,
+  type CliArgs,
+  type ConfigContext,
+  type Tree,
+} from './types.js';
 
 const GITHUB_WORKFLOW_PATH = '.github/workflows/code-pushup.yml';
 const GITLAB_CONFIG_PATH = '.gitlab-ci.yml';
@@ -11,16 +17,16 @@ export async function promptCiProvider(cliArgs: CliArgs): Promise<CiProvider> {
     return cliArgs.ci;
   }
   if (cliArgs.yes) {
-    return 'skip';
+    return 'none';
   }
   return select<CiProvider>({
     message: 'CI/CD integration:',
     choices: [
       { name: 'GitHub Actions', value: 'github' },
       { name: 'GitLab CI/CD', value: 'gitlab' },
-      { name: 'Skip', value: 'skip' },
+      { name: 'none', value: 'none' },
     ],
-    default: 'skip',
+    default: 'none',
   });
 }
 
@@ -36,7 +42,7 @@ export async function resolveCi(
     case 'gitlab':
       await writeGitLabConfig(tree);
       break;
-    case 'skip':
+    case 'none':
       break;
   }
 }
@@ -118,5 +124,6 @@ async function resolveGitLabFilePath(tree: Tree): Promise<string> {
 }
 
 function isCiProvider(value: string | undefined): value is CiProvider {
-  return value === 'github' || value === 'gitlab' || value === 'skip';
+  const validValues: readonly string[] = CI_PROVIDERS;
+  return value != null && validValues.includes(value);
 }

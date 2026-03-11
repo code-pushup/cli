@@ -1,7 +1,7 @@
 import type { PluginMeta } from '@code-pushup/models';
 import type { MonorepoTool } from '@code-pushup/utils';
 
-export const CI_PROVIDERS = ['github', 'gitlab', 'skip'] as const;
+export const CI_PROVIDERS = ['github', 'gitlab', 'none'] as const;
 export type CiProvider = (typeof CI_PROVIDERS)[number];
 
 export const CONFIG_FILE_FORMATS = ['ts', 'js', 'mjs'] as const;

@@ -11,7 +11,7 @@ vi.mock('@inquirer/prompts', () => ({
 }));
 
 describe('promptCiProvider', () => {
-  it.each(['github', 'gitlab', 'skip'] as const)(
+  it.each(['github', 'gitlab', 'none'] as const)(
     'should return %j when --ci %s is provided',
     async ci => {
       await expect(promptCiProvider({ ci })).resolves.toBe(ci);
@@ -19,8 +19,8 @@ describe('promptCiProvider', () => {
     },
   );
 
-  it('should return "skip" when --yes is provided', async () => {
-    await expect(promptCiProvider({ yes: true })).resolves.toBe('skip');
+  it('should return "none" when --yes is provided', async () => {
+    await expect(promptCiProvider({ yes: true })).resolves.toBe('none');
     expect(select).not.toHaveBeenCalled();
   });
 
@@ -31,7 +31,7 @@ describe('promptCiProvider', () => {
     expect(select).toHaveBeenCalledWith(
       expect.objectContaining({
         message: 'CI/CD integration:',
-        default: 'skip',
+        default: 'none',
       }),
     );
   });
@@ -154,12 +154,12 @@ describe('resolveCi', () => {
     });
   });
 
-  describe('skip', () => {
-    it('should make no changes when provider is skip', async () => {
+  describe('none', () => {
+    it('should make no changes when provider is none', async () => {
       vol.fromJSON({ 'package.json': '{}' }, MEMFS_VOLUME);
       const tree = createTree(MEMFS_VOLUME);
 
-      await resolveCi(tree, 'skip', STANDALONE_CONTEXT);
+      await resolveCi(tree, 'none', STANDALONE_CONTEXT);
 
       expect(tree.listChanges()).toStrictEqual([]);
     });
