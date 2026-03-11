@@ -1,10 +1,23 @@
 import path from 'node:path';
 import { type StatusResult, simpleGit } from 'simple-git';
+import { stringifyError } from '../errors.js';
 import { logger } from '../logger.js';
 import { toUnixPath } from '../transform.js';
 
 export function getGitRoot(git = simpleGit()): Promise<string> {
   return git.revparse('--show-toplevel');
+}
+
+export async function getGitDefaultBranch(git = simpleGit()): Promise<string> {
+  try {
+    const head = await git.revparse('--abbrev-ref origin/HEAD');
+    return head.replace(/^origin\//, '');
+  } catch (error) {
+    logger.warn(
+      `Failed to get the default Git branch, falling back to main - ${stringifyError(error)}`,
+    );
+    return 'main';
+  }
 }
 
 export function formatGitPath(filePath: string, gitRoot: string): string {
