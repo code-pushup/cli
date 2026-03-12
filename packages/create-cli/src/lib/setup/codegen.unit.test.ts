@@ -1,3 +1,4 @@
+import type { CategoryConfig } from '@code-pushup/models';
 import {
   computeRelativePresetImport,
   generateConfigSource,
@@ -14,6 +15,24 @@ const ESLINT_PLUGIN: PluginCodegenResult = {
     },
   ],
   pluginInit: "await eslintPlugin({ patterns: '.' })",
+};
+
+const ESLINT_CATEGORIES: CategoryConfig[] = [
+  {
+    slug: 'bug-prevention',
+    title: 'Bug prevention',
+    refs: [{ type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 }],
+  },
+  {
+    slug: 'code-style',
+    title: 'Code style',
+    refs: [{ type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 }],
+  },
+];
+
+const ESLINT_PLUGIN_WITH_CATEGORIES: PluginCodegenResult = {
+  ...ESLINT_PLUGIN,
+  categories: ESLINT_CATEGORIES,
 };
 
 describe('generateConfigSource', () => {
@@ -201,6 +220,86 @@ describe('generateConfigSource', () => {
       );
     });
   });
+
+  describe('categories', () => {
+    it('should include categories block when plugin provides categories', () => {
+      expect(generateConfigSource([ESLINT_PLUGIN_WITH_CATEGORIES], 'ts'))
+        .toMatchInlineSnapshot(`
+          "import eslintPlugin from '@code-pushup/eslint-plugin';
+          import type { CoreConfig } from '@code-pushup/models';
+
+          export default {
+            plugins: [
+              await eslintPlugin({ patterns: '.' }),
+            ],
+            categories: [
+              {
+                slug: 'bug-prevention',
+                title: 'Bug prevention',
+                refs: [
+                  { type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 },
+                ],
+              },
+              {
+                slug: 'code-style',
+                title: 'Code style',
+                refs: [
+                  { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
+                ],
+              },
+            ],
+          } satisfies CoreConfig;
+          "
+        `);
+    });
+
+    it('should omit categories block when no categories provided', () => {
+      const source = generateConfigSource([ESLINT_PLUGIN], 'ts');
+      expect(source).not.toContain('categories');
+    });
+
+    it('should merge categories from multiple plugins', () => {
+      const coveragePlugin: PluginCodegenResult = {
+        imports: [
+          {
+            moduleSpecifier: '@code-pushup/coverage-plugin',
+            defaultImport: 'coveragePlugin',
+          },
+        ],
+        pluginInit: 'await coveragePlugin()',
+        categories: [
+          {
+            slug: 'code-coverage',
+            title: 'Code coverage',
+            refs: [
+              {
+                type: 'group',
+                plugin: 'coverage',
+                slug: 'coverage',
+                weight: 1,
+              },
+            ],
+          },
+        ],
+      };
+      const source = generateConfigSource(
+        [ESLINT_PLUGIN_WITH_CATEGORIES, coveragePlugin],
+        'ts',
+      );
+      expect(source).toContain("slug: 'bug-prevention'");
+      expect(source).toContain("slug: 'code-style'");
+      expect(source).toContain("slug: 'code-coverage'");
+    });
+
+    it('should include categories in JS format config', () => {
+      const source = generateConfigSource(
+        [ESLINT_PLUGIN_WITH_CATEGORIES],
+        'js',
+      );
+      expect(source).toContain('categories: [');
+      expect(source).toContain("slug: 'bug-prevention'");
+    });
+  });
 });
 
 describe('generatePresetSource', () => {
@@ -242,6 +341,43 @@ describe('generatePresetSource', () => {
       }
       "
     `);
+  });
+
+  it('should include categories in TS preset source', () => {
+    expect(generatePresetSource([ESLINT_PLUGIN_WITH_CATEGORIES], 'ts'))
+      .toMatchInlineSnapshot(`
+        "import eslintPlugin from '@code-pushup/eslint-plugin';
+        import type { CoreConfig } from '@code-pushup/models';
+
+        /**
+         * Creates a Code PushUp config for a project.
+         * @param project Project name
+         */
+        export async function createConfig(project: string): Promise<CoreConfig> {
+          return {
+            plugins: [
+              await eslintPlugin({ patterns: '.' }),
+            ],
+            categories: [
+              {
+                slug: 'bug-prevention',
+                title: 'Bug prevention',
+                refs: [
+                  { type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 },
+                ],
+              },
+              {
+                slug: 'code-style',
+                title: 'Code style',
+                refs: [
+                  { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
+                ],
+              },
+            ],
+          };
+        }
+        "
+      `);
   });
 });
 
