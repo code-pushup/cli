@@ -16,11 +16,14 @@ The wizard will prompt you to select plugins and configure their options, then g
 
 ## Options
 
-| Flag          | Description                            | Default |
-| ------------- | -------------------------------------- | ------- |
-| `--plugins`   | Comma-separated plugin slugs to enable |         |
-| `--dry-run`   | Preview changes without writing files  | `false` |
-| `--yes`, `-y` | Skip prompts and use defaults          | `false` |
+| Flag              | Description                                    | Default       |
+| ----------------- | ---------------------------------------------- | ------------- |
+| `--plugins`       | Comma-separated plugin slugs to enable         |               |
+| `--config-format` | Config file format (`ts`, `js`, `mjs`)         | auto-detected |
+| `--mode`          | Setup mode (`standalone`, `monorepo`)          | auto-detected |
+| `--ci`            | CI/CD integration (`github`, `gitlab`, `none`) |               |
+| `--dry-run`       | Preview changes without writing files          | `false`       |
+| `--yes`, `-y`     | Skip prompts and use defaults                  | `false`       |
 
 ### Examples
 
@@ -34,6 +37,12 @@ Skip prompts and enable specific plugins:
 
 ```bash
 npm init @code-pushup/cli -y --plugins=eslint,coverage
+```
+
+Set up a monorepo with GitHub CI integration:
+
+```bash
+npm init @code-pushup/cli --mode=monorepo --ci=github
 ```
 
 Preview the generated config without writing:
