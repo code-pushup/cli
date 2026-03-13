@@ -1,4 +1,4 @@
-import type { PluginMeta } from '@code-pushup/models';
+import type { CategoryConfig, PluginMeta } from '@code-pushup/models';
 import type { MonorepoTool } from '@code-pushup/utils';
 
 export const CI_PROVIDERS = ['github', 'gitlab', 'none'] as const;
@@ -65,7 +65,7 @@ export type ImportDeclarationStructure = {
 export type PluginCodegenResult = {
   imports: ImportDeclarationStructure[];
   pluginInit: string;
-  // TODO: add categories support (categoryRefs for generated categories array)
+  categories?: CategoryConfig[];
 };
 
 export type ScopedPluginResult = {

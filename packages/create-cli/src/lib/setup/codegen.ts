@@ -1,5 +1,6 @@
 import path from 'node:path';
-import { toUnixPath } from '@code-pushup/utils';
+import type { CategoryRef } from '@code-pushup/models';
+import { mergeCategoriesBySlug, toUnixPath } from '@code-pushup/utils';
 import type {
   ConfigFileFormat,
   ImportDeclarationStructure,
@@ -43,11 +44,13 @@ export function generateConfigSource(
   if (format === 'ts') {
     builder.addLine('export default {');
     addPlugins(builder, plugins);
+    addCategories(builder, plugins);
     builder.addLine('} satisfies CoreConfig;');
   } else {
     builder.addLine("/** @type {import('@code-pushup/models').CoreConfig} */");
     builder.addLine('export default {');
     addPlugins(builder, plugins);
+    addCategories(builder, plugins);
     builder.addLine('};');
   }
   return builder.toString();
@@ -172,6 +175,52 @@ function addPresetExport(
   }
   builder.addLine('return {', 1);
   addPlugins(builder, plugins, 2);
+  addCategories(builder, plugins, 2);
   builder.addLine('};', 1);
   builder.addLine('}');
+}
+
+function addCategories(
+  builder: CodeBuilder,
+  plugins: PluginCodegenResult[],
+  depth = 1,
+): void {
+  const categories = mergeCategoriesBySlug(
+    plugins.flatMap(p => p.categories ?? []),
+  );
+  if (categories.length === 0) {
+    return;
+  }
+  builder.addLine('categories: [', depth);
+  categories.forEach(({ slug, title, description, docsUrl, refs }) => {
+    builder.addLine('{', depth + 1);
+    builder.addLine(`slug: '${slug}',`, depth + 2);
+    builder.addLine(`title: ${toJsStringLiteral(title)},`, depth + 2);
+    if (description) {
+      builder.addLine(
+        `description: ${toJsStringLiteral(description)},`,
+        depth + 2,
+      );
+    }
+    if (docsUrl) {
+      builder.addLine(`docsUrl: ${toJsStringLiteral(docsUrl)},`, depth + 2);
+    }
+    builder.addLine('refs: [', depth + 2);
+    builder.addLines(refs.map(formatCategoryRef), depth + 3);
+    builder.addLine('],', depth + 2);
+    builder.addLine('},', depth + 1);
+  });
+  builder.addLine('],', depth);
+}
+
+function formatCategoryRef(ref: CategoryRef): string {
+  return `{ type: '${ref.type}', plugin: '${ref.plugin}', slug: '${ref.slug}', weight: ${ref.weight} },`;
+}
+
+/** Wraps a value in single-quoted JS string literal with special characters escaped. */
+function toJsStringLiteral(value: string): string {
+  const inner = JSON.stringify(value)
+    .slice(1, -1)
+    .replace(/'/g, String.raw`\'`);
+  return `'${inner}'`;
 }

@@ -93,7 +93,7 @@ export {
 } from './lib/guards.js';
 export { interpolate } from './lib/interpolate.js';
 export { Logger, logger } from './lib/logger.js';
-export { mergeConfigs } from './lib/merge-configs.js';
+export { mergeCategoriesBySlug, mergeConfigs } from './lib/merge-configs.js';
 export { loadNxProjectGraph } from './lib/nx.js';
 export {
   addIndex,
