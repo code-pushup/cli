@@ -299,6 +299,75 @@ describe('generateConfigSource', () => {
       expect(source).toContain('categories: [');
       expect(source).toContain("slug: 'bug-prevention'");
     });
+
+    it.each([
+      ["Project's docs", String.raw`title: 'Project\'s docs'`],
+      [String.raw`C:\Users\test`, String.raw`title: 'C:\\Users\\test'`],
+      ['Line one\nLine two', String.raw`title: 'Line one\nLine two'`],
+    ])('should escape %j in category title', (title, expected) => {
+      const plugin: PluginCodegenResult = {
+        ...ESLINT_PLUGIN,
+        categories: [
+          {
+            slug: 'test',
+            title,
+            refs: [{ type: 'audit', plugin: 'p', slug: 's', weight: 1 }],
+          },
+        ],
+      };
+      expect(generateConfigSource([plugin], 'ts')).toContain(expected);
+    });
+
+    it('should include description and docsUrl when provided', () => {
+      const plugin: PluginCodegenResult = {
+        ...ESLINT_PLUGIN,
+        categories: [
+          {
+            slug: 'perf',
+            title: 'Performance',
+            description: 'Measures runtime performance.',
+            docsUrl: 'https://example.com/perf',
+            refs: [{ type: 'audit', plugin: 'perf', slug: 'lcp', weight: 1 }],
+          },
+        ],
+      };
+      const source = generateConfigSource([plugin], 'ts');
+      expect(source).toContain("description: 'Measures runtime performance.'");
+      expect(source).toContain("docsUrl: 'https://example.com/perf'");
+    });
+
+    it('should merge categories with same slug from different plugins', () => {
+      const ref = (plugin: string, slug: string) => ({
+        type: 'group' as const,
+        plugin,
+        slug,
+        weight: 1,
+      });
+      const source = generateConfigSource(
+        [
+          {
+            ...ESLINT_PLUGIN,
+            categories: [
+              {
+                slug: 'bugs',
+                title: 'Bugs',
+                refs: [ref('eslint', 'problems')],
+              },
+            ],
+          },
+          {
+            ...ESLINT_PLUGIN,
+            categories: [
+              { slug: 'bugs', title: 'Bugs', refs: [ref('ts', 'errors')] },
+            ],
+          },
+        ],
+        'ts',
+      );
+      expect(source.match(/slug: 'bugs'/g)).toHaveLength(1);
+      expect(source).toContain("plugin: 'eslint'");
+      expect(source).toContain("plugin: 'ts'");
+    });
   });
 });
 

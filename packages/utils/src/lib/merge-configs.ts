@@ -65,6 +65,35 @@ function mergeCategories(
   return { categories: [...mergedMap.values()] };
 }
 
+/** Deduplicates categories that share the same slug. */
+export function mergeCategoriesBySlug(
+  categories: CategoryConfig[],
+): CategoryConfig[] {
+  const map = categories.reduce((acc, category) => {
+    const existing = acc.get(category.slug);
+    acc.set(
+      category.slug,
+      existing
+        ? {
+            slug: existing.slug,
+            title: existing.title,
+            description: mergeDescriptions(
+              existing.description,
+              category.description,
+            ),
+            docsUrl: existing.docsUrl ?? category.docsUrl,
+            refs: mergeByUniqueCategoryRefCombination(
+              existing.refs,
+              category.refs,
+            ),
+          }
+        : category,
+    );
+    return acc;
+  }, new Map<string, CategoryConfig>());
+  return [...map.values()];
+}
+
 function mergePlugins(
   a: PluginConfig[] | undefined,
   b: PluginConfig[] | undefined,
@@ -149,4 +178,25 @@ function mergeUpload(
   } else {
     return { upload: b };
   }
+}
+
+function toSentence(text: string): string {
+  const trimmed = text.trimEnd();
+  if (trimmed.endsWith('.') || trimmed.endsWith('!') || trimmed.endsWith('?')) {
+    return trimmed;
+  }
+  return `${trimmed}.`;
+}
+
+function mergeDescriptions(
+  a: string | undefined,
+  b: string | undefined,
+): string | undefined {
+  if (!a) {
+    return b;
+  }
+  if (!b || a === b) {
+    return a;
+  }
+  return `${toSentence(a)} ${toSentence(b)}`;
 }
