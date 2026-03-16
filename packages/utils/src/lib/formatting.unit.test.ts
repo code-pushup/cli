@@ -10,6 +10,7 @@ import {
   pluralizeToken,
   roundDecimals,
   serializeCommandWithArgs,
+  singleQuote,
   slugify,
   transformLines,
   truncateMultilineText,
@@ -318,5 +319,23 @@ describe('formatCoveragePercentage', () => {
 
   it('should not render invalid percentage', () => {
     expect(formatCoveragePercentage({ covered: 0, total: 0 })).toBe('-');
+  });
+});
+
+describe('singleQuote', () => {
+  it.each([
+    ['hello', "'hello'"],
+    ["it's", String.raw`'it\'s'`],
+    [String.raw`back\slash`, String.raw`'back\\slash'`],
+    ['line\nbreak', String.raw`'line\nbreak'`],
+  ])(
+    'should escape %j for use in a single-quoted JS literal',
+    (input, expected) => {
+      expect(singleQuote(input)).toBe(expected);
+    },
+  );
+
+  it('should leave double quotes unescaped', () => {
+    expect(singleQuote('say "hi"')).toBe(`'say "hi"'`);
   });
 });
