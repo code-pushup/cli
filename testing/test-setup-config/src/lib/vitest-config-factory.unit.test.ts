@@ -26,6 +26,7 @@ describe('createVitestConfig', () => {
           poolOptions: { threads: { singleThread: true } },
           environment: 'node',
           include: [
+            'mocks/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
             'src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
             'src/**/*.type.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
           ],
@@ -126,7 +127,10 @@ describe('createVitestConfig', () => {
         test: expect.objectContaining({
           reporters: ['basic'],
           globals: true,
-          include: ['src/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+          include: [
+            'mocks/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+            'src/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+          ],
           globalSetup: ['../../global-setup.ts'],
           coverage: expect.objectContaining({
             reportsDirectory: '../../coverage/test-package/int-tests',
@@ -243,10 +247,14 @@ describe('createVitestConfig', () => {
 
         const expectedIncludes = {
           unit: [
+            'mocks/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
             'src/**/*.unit.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
             'src/**/*.type.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
           ],
-          int: ['src/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+          int: [
+            'mocks/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+            'src/**/*.int.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+          ],
           e2e: ['tests/**/*.e2e.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
         };
 
