@@ -1,5 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { eslintSetupBinding } from '@code-pushup/eslint-plugin';
 import { cleanTestFolder } from '@code-pushup/test-utils';
 import { getGitRoot } from '@code-pushup/utils';
 import type { PluginSetupBinding } from './types.js';
@@ -19,7 +20,7 @@ const TEST_BINDINGS: PluginSetupBinding[] = [
     title: 'Alpha Plugin',
     packageName: '@code-pushup/alpha-plugin',
     isRecommended: () => Promise.resolve(true),
-    prompts: [
+    prompts: async () => [
       {
         key: 'alpha.path',
         message: 'Path to config',
@@ -221,5 +222,72 @@ describe('runSetupWizard', () => {
     await expect(
       readFile(path.join(outputDir, '.gitignore'), 'utf8'),
     ).resolves.toBe('node_modules\n.code-pushup\n');
+  });
+
+  it('should generate config with ESLint plugin using defaults', async () => {
+    await runSetupWizard([eslintSetupBinding], {
+      yes: true,
+      plugins: ['eslint'],
+      'config-format': 'ts',
+      'target-dir': outputDir,
+    });
+
+    await expect(
+      readFile(path.join(outputDir, 'code-pushup.config.ts'), 'utf8'),
+    ).resolves.toMatchInlineSnapshot(`
+      "import eslintPlugin from '@code-pushup/eslint-plugin';
+      import type { CoreConfig } from '@code-pushup/models';
+
+      export default {
+        plugins: [
+          await eslintPlugin(),
+        ],
+        categories: [
+          {
+            slug: 'bug-prevention',
+            title: 'Bug prevention',
+            description: 'Lint rules that find **potential bugs** in your code.',
+            refs: [
+              { type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 },
+            ],
+          },
+          {
+            slug: 'code-style',
+            title: 'Code style',
+            description: 'Lint rules that promote **good practices** and consistency in your code.',
+            refs: [
+              { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
+            ],
+          },
+        ],
+      } satisfies CoreConfig;
+      "
+    `);
+  });
+
+  it('should generate config with custom ESLint options', async () => {
+    await runSetupWizard([eslintSetupBinding], {
+      yes: true,
+      plugins: ['eslint'],
+      'config-format': 'ts',
+      'target-dir': outputDir,
+      'eslint.eslintrc': 'custom-eslint.config.js',
+      'eslint.patterns': 'src',
+      'eslint.categories': 'no',
+    });
+
+    await expect(
+      readFile(path.join(outputDir, 'code-pushup.config.ts'), 'utf8'),
+    ).resolves.toMatchInlineSnapshot(`
+      "import eslintPlugin from '@code-pushup/eslint-plugin';
+      import type { CoreConfig } from '@code-pushup/models';
+
+      export default {
+        plugins: [
+          await eslintPlugin({ eslintrc: 'custom-eslint.config.js', patterns: 'src' }),
+        ],
+      } satisfies CoreConfig;
+      "
+    `);
   });
 });
