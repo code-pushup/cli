@@ -1,3 +1,13 @@
+## 0.119.0 (2026-03-16)
+
+### 🚀 Features
+
+- **create-cli:** add categories codegen ([#1267](https://github.com/code-pushup/cli/pull/1267))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.118.0 (2026-03-11)
 
 ### 🚀 Features
