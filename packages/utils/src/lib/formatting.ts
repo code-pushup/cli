@@ -196,3 +196,12 @@ export function formatCoveragePercentage(stats: {
   const percentage = (covered / total) * 100;
   return `${percentage.toFixed(1)}%`;
 }
+
+/** Escapes a string and wraps it in single quotes for use in JS code. */
+export function singleQuote(value: string): string {
+  const inner = JSON.stringify(value)
+    .slice(1, -1)
+    .replace(/\\"/g, '"')
+    .replace(/'/g, String.raw`\'`);
+  return `'${inner}'`;
+}

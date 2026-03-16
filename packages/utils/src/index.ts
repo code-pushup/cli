@@ -60,6 +60,7 @@ export {
   pluralizeToken,
   roundDecimals,
   serializeCommandWithArgs,
+  singleQuote,
   slugify,
   transformLines,
   truncateDescription,
