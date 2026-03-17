@@ -1,3 +1,13 @@
+## 0.120.0 (2026-03-17)
+
+### 🚀 Features
+
+- **plugin-eslint:** add setup wizard binding ([#1269](https://github.com/code-pushup/cli/pull/1269))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.119.1 (2026-03-17)
 
 ### 🩹 Fixes
