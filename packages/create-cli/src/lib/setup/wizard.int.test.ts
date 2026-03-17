@@ -273,7 +273,7 @@ describe('runSetupWizard', () => {
       'target-dir': outputDir,
       'eslint.eslintrc': 'custom-eslint.config.js',
       'eslint.patterns': 'src',
-      'eslint.categories': 'no',
+      'eslint.categories': false,
     });
 
     await expect(

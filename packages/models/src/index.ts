@@ -114,6 +114,7 @@ export {
 } from './lib/plugin-config.js';
 export type {
   ImportDeclarationStructure,
+  PluginAnswer,
   PluginCodegenResult,
   PluginPromptDescriptor,
   PluginSetupBinding,

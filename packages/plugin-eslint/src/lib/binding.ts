@@ -1,14 +1,27 @@
 import { readdir } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import path from 'node:path';
-import type { CategoryConfig, PluginSetupBinding } from '@code-pushup/models';
-import { directoryExists, readJsonFile, singleQuote } from '@code-pushup/utils';
+import type {
+  CategoryConfig,
+  PluginAnswer,
+  PluginSetupBinding,
+} from '@code-pushup/models';
+import {
+  directoryExists,
+  hasDependency,
+  readJsonFile,
+  singleQuote,
+} from '@code-pushup/utils';
 import {
   DEFAULT_PATTERN,
   ESLINT_PLUGIN_SLUG,
   ESLINT_PLUGIN_TITLE,
 } from './constants.js';
 
-const PACKAGE_NAME = '@code-pushup/eslint-plugin';
+const { name: PACKAGE_NAME } = createRequire(import.meta.url)(
+  '../../package.json',
+) as typeof import('../../package.json');
+
 const ESLINT_CONFIG_PATTERN = /^(\.eslintrc(\.\w+)?|eslint\.config\.\w+)$/;
 
 const ESLINT_CATEGORIES: CategoryConfig[] = [
@@ -64,16 +77,12 @@ export const eslintSetupBinding = {
     {
       key: 'eslint.categories',
       message: 'Add recommended categories (bug prevention, code style)?',
-      type: 'select',
-      choices: [
-        { name: 'Yes', value: 'yes' },
-        { name: 'No', value: 'no' },
-      ],
-      default: 'yes',
+      type: 'confirm',
+      default: true,
     },
   ],
-  generateConfig: (answers: Record<string, string | string[]>) => {
-    const withCategories = answers['eslint.categories'] !== 'no';
+  generateConfig: (answers: Record<string, PluginAnswer>) => {
+    const withCategories = answers['eslint.categories'] !== false;
     const args = [
       resolveEslintrc(answers['eslint.eslintrc']),
       resolvePatterns(answers['eslint.patterns']),
@@ -108,17 +117,14 @@ async function isRecommended(targetDir: string): Promise<boolean> {
       dependencies?: Record<string, string>;
       devDependencies?: Record<string, string>;
     }>(path.join(targetDir, 'package.json'));
-    return (
-      'eslint' in (packageJson.dependencies ?? {}) ||
-      'eslint' in (packageJson.devDependencies ?? {})
-    );
+    return hasDependency(packageJson, 'eslint');
   } catch {
     return false;
   }
 }
 
 /** Omits `eslintrc` for standard config filenames (ESLint discovers them automatically). */
-function resolveEslintrc(value: string | string[] | undefined): string {
+function resolveEslintrc(value: PluginAnswer | undefined): string {
   if (typeof value !== 'string' || !value) {
     return '';
   }
@@ -129,9 +135,14 @@ function resolveEslintrc(value: string | string[] | undefined): string {
 }
 
 /** Formats patterns as a string or array literal, omitting the plugin default. */
-function resolvePatterns(value: string | string[] | undefined): string {
-  const items = typeof value === 'string' ? value.split(',') : (value ?? []);
-  const patterns = items
+function resolvePatterns(value: PluginAnswer | undefined): string {
+  if (typeof value === 'string') {
+    return resolvePatterns(value.split(','));
+  }
+  if (!Array.isArray(value)) {
+    return '';
+  }
+  const patterns = value
     .map(s => s.trim())
     .filter(s => s !== '' && s !== DEFAULT_PATTERN)
     .map(singleQuote);

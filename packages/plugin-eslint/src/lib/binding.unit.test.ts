@@ -114,7 +114,7 @@ describe('eslintSetupBinding', () => {
         eslintSetupBinding.generateConfig({
           'eslint.eslintrc': 'eslint.config.ts',
           'eslint.patterns': 'src',
-          'eslint.categories': 'yes',
+          'eslint.categories': true,
         }).pluginInit,
       ).toBe("await eslintPlugin({ patterns: 'src' })");
     });
@@ -124,7 +124,7 @@ describe('eslintSetupBinding', () => {
         eslintSetupBinding.generateConfig({
           'eslint.eslintrc': 'configs/eslint.config.js',
           'eslint.patterns': 'src',
-          'eslint.categories': 'no',
+          'eslint.categories': false,
         }).pluginInit,
       ).toBe(
         "await eslintPlugin({ eslintrc: 'configs/eslint.config.js', patterns: 'src' })",
@@ -136,7 +136,7 @@ describe('eslintSetupBinding', () => {
         eslintSetupBinding.generateConfig({
           'eslint.eslintrc': '',
           'eslint.patterns': 'src, lib',
-          'eslint.categories': 'no',
+          'eslint.categories': false,
         }).pluginInit,
       ).toBe("await eslintPlugin({ patterns: ['src', 'lib'] })");
     });
@@ -146,7 +146,7 @@ describe('eslintSetupBinding', () => {
         eslintSetupBinding.generateConfig({
           'eslint.eslintrc': '',
           'eslint.patterns': '',
-          'eslint.categories': 'no',
+          'eslint.categories': false,
         }).pluginInit,
       ).toBe('await eslintPlugin()');
     });
@@ -156,7 +156,7 @@ describe('eslintSetupBinding', () => {
         eslintSetupBinding.generateConfig({
           'eslint.eslintrc': '',
           'eslint.patterns': '',
-          'eslint.categories': 'yes',
+          'eslint.categories': true,
         }).categories,
       ).toHaveLength(2);
     });
@@ -166,7 +166,7 @@ describe('eslintSetupBinding', () => {
         eslintSetupBinding.generateConfig({
           'eslint.eslintrc': '',
           'eslint.patterns': '',
-          'eslint.categories': 'no',
+          'eslint.categories': false,
         }).categories,
       ).toBeUndefined();
     });
@@ -176,7 +176,7 @@ describe('eslintSetupBinding', () => {
         eslintSetupBinding.generateConfig({
           'eslint.eslintrc': '',
           'eslint.patterns': '',
-          'eslint.categories': 'no',
+          'eslint.categories': false,
         }).imports,
       ).toEqual([
         {

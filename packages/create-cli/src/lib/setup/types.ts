@@ -3,6 +3,7 @@ import type { MonorepoTool } from '@code-pushup/utils';
 
 export type {
   ImportDeclarationStructure,
+  PluginAnswer,
   PluginCodegenResult,
   PluginPromptDescriptor,
   PluginSetupBinding,

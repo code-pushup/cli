@@ -31,11 +31,11 @@ Each plugin exposes its own configuration keys that can be passed as CLI argumen
 
 #### ESLint
 
-| Option                    | Type              | Default       | Description                |
-| ------------------------- | ----------------- | ------------- | -------------------------- |
-| **`--eslint.eslintrc`**   | `string`          | auto-detected | Path to ESLint config      |
-| **`--eslint.patterns`**   | `string`          | `src` or `.`  | File patterns to lint      |
-| **`--eslint.categories`** | `'yes'` \| `'no'` | `yes`         | Add recommended categories |
+| Option                    | Type      | Default       | Description                |
+| ------------------------- | --------- | ------------- | -------------------------- |
+| **`--eslint.eslintrc`**   | `string`  | auto-detected | Path to ESLint config      |
+| **`--eslint.patterns`**   | `string`  | `src` or `.`  | File patterns to lint      |
+| **`--eslint.categories`** | `boolean` | `true`        | Add recommended categories |
 
 ### Examples
 

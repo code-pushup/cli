@@ -25,11 +25,17 @@ type CheckboxPrompt<T extends string = string> = PromptBase & {
   default: T[];
 };
 
+type ConfirmPrompt = PromptBase & {
+  type: 'confirm';
+  default: boolean;
+};
+
 /** Declarative prompt definition used to collect plugin-specific options. */
 export type PluginPromptDescriptor =
   | InputPrompt
   | SelectPrompt
-  | CheckboxPrompt;
+  | CheckboxPrompt
+  | ConfirmPrompt;
 
 export type ImportDeclarationStructure = {
   moduleSpecifier: string;
@@ -37,6 +43,9 @@ export type ImportDeclarationStructure = {
   namedImports?: string[];
   isTypeOnly?: boolean;
 };
+
+/** A single value in the answers record produced by plugin prompts. */
+export type PluginAnswer = string | string[] | boolean;
 
 /** Import declarations and plugin initialization code produced by `generateConfig`. */
 export type PluginCodegenResult = {
@@ -61,6 +70,6 @@ export type PluginSetupBinding = {
   prompts?: (targetDir: string) => Promise<PluginPromptDescriptor[]>;
   isRecommended?: (targetDir: string) => Promise<boolean>;
   generateConfig: (
-    answers: Record<string, string | string[]>,
+    answers: Record<string, PluginAnswer>,
   ) => PluginCodegenResult;
 };
