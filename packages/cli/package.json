@@ -39,7 +39,7 @@
   },
   "type": "module",
   "bin": {
-    "code-pushup": "./bin/index.js"
+    "code-pushup": "./bin.js"
   },
   "engines": {
     "node": ">=20"

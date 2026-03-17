@@ -166,7 +166,7 @@ export default tseslint.config(
   },
   {
     // in bin files, imports with side effects are allowed
-    files: ['**/bin/**/*.ts', '**/bin/**/*.js'],
+    files: ['**/bin/**/*.ts', '**/bin/**/*.js', '**/bin.js'],
     rules: {
       'import/no-unassigned-import': 'off',
     },

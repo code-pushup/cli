@@ -8,4 +8,4 @@
  * By tracking this file in git with executable permissions (+x), we ensure
  * the CLI remains executable after npm publish without needing post-install scripts.
  */
-import '../src/index.js';
+import './src/index.js';
