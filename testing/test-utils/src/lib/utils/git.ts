@@ -18,17 +18,50 @@ export async function initGitRepo(
     baseBranch?: string;
   },
 ): Promise<SimpleGit> {
-  const { baseDir, config, baseBranch } = opt;
-  const { email = 'john.doe@example.com', name = 'John Doe' } = config ?? {};
+  const { baseDir, baseBranch } = opt;
   await mkdir(baseDir, { recursive: true });
   const git = simpleGit(baseDir);
   await git.init();
+  await git.branch(['-M', baseBranch ?? 'main']);
+  await configureGitUser(git, opt.config);
+  return git;
+}
+
+/** Like {@link initGitRepo}, but with a simulated remote origin. Working directory is `<baseDir>/repo`. */
+export async function initGitRepoWithRemote(
+  simpleGit: SimpleGitFactory,
+  opt: {
+    baseDir: string;
+    config?: GitConfig;
+    baseBranch?: string;
+  },
+): Promise<SimpleGit> {
+  const { baseDir, baseBranch = 'main' } = opt;
+  const originDir = path.join(baseDir, 'origin.git');
+  const repoDir = path.join(baseDir, 'repo');
+
+  await mkdir(originDir, { recursive: true });
+  await simpleGit(originDir).init(true, ['--initial-branch', baseBranch]);
+  await simpleGit(baseDir).clone(originDir, repoDir);
+
+  const git = simpleGit(repoDir);
+  await configureGitUser(git, opt.config);
+  await commitFile(git, { baseDir: repoDir });
+  await git.push('origin', baseBranch);
+  await git.remote(['set-head', 'origin', baseBranch]);
+
+  return git;
+}
+
+async function configureGitUser(
+  git: SimpleGit,
+  config?: GitConfig,
+): Promise<void> {
+  const { email = 'john.doe@example.com', name = 'John Doe' } = config ?? {};
   await git.addConfig('user.name', name);
   await git.addConfig('user.email', email);
   await git.addConfig('commit.gpgSign', 'false');
   await git.addConfig('tag.gpgSign', 'false');
-  await git.branch(['-M', baseBranch ?? 'main']);
-  return git;
 }
 
 export async function commitFile(

@@ -10,7 +10,7 @@ export function getGitRoot(git = simpleGit()): Promise<string> {
 
 export async function getGitDefaultBranch(git = simpleGit()): Promise<string> {
   try {
-    const head = await git.revparse('--abbrev-ref origin/HEAD');
+    const head = await git.revparse(['--abbrev-ref', 'origin/HEAD']);
     return head.replace(/^origin\//, '');
   } catch (error) {
     logger.warn(
