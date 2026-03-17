@@ -1,3 +1,13 @@
+## 0.119.1 (2026-03-17)
+
+### 🩹 Fixes
+
+- add bin wrapper and resolve Nx project discovery ([#1270](https://github.com/code-pushup/cli/pull/1270))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.119.0 (2026-03-16)
 
 ### 🚀 Features

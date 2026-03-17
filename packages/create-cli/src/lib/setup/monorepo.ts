@@ -1,4 +1,5 @@
 import { select } from '@inquirer/prompts';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import {
   MONOREPO_TOOL_DETECTORS,
@@ -8,9 +9,9 @@ import {
   hasScript,
   listPackages,
   listWorkspaces,
-  loadNxProjectGraph,
   logger,
   readPnpmWorkspacePatterns,
+  stringifyError,
   toUnixPath,
 } from '@code-pushup/utils';
 import type {
@@ -83,7 +84,15 @@ export async function listProjects(
 }
 
 async function listNxProjects(cwd: string): Promise<WizardProject[]> {
-  const graph = await loadNxProjectGraph();
+  const require = createRequire(path.join(cwd, 'package.json'));
+  const { readCachedProjectGraph, createProjectGraphAsync } =
+    require('@nx/devkit') as typeof import('@nx/devkit');
+
+  const graph = await loadProjectGraph(
+    readCachedProjectGraph,
+    createProjectGraphAsync,
+  );
+
   return Object.values(graph.nodes).map(({ name, data }) => ({
     name,
     directory: path.join(cwd, data.root),
@@ -133,7 +142,7 @@ async function addNxTarget(
     return false;
   }
   const config = JSON.parse(raw);
-  if (config.targets[TASK_NAME] != null) {
+  if (config.targets?.[TASK_NAME] != null) {
     return true;
   }
   const updated = {
@@ -179,4 +188,18 @@ function toProject(cwd: string, pkg: WorkspacePackage): WizardProject {
     directory: pkg.directory,
     relativeDir: toUnixPath(path.relative(cwd, pkg.directory)),
   };
+}
+
+async function loadProjectGraph(
+  readCached: typeof import('@nx/devkit').readCachedProjectGraph,
+  createAsync: typeof import('@nx/devkit').createProjectGraphAsync,
+) {
+  try {
+    return readCached();
+  } catch (error) {
+    logger.warn(
+      `Could not read cached project graph, falling back to async creation.\n${stringifyError(error)}`,
+    );
+    return createAsync({ exitOnError: false });
+  }
 }
