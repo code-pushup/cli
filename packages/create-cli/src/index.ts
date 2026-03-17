@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { eslintSetupBinding } from '@code-pushup/eslint-plugin';
 import { parsePluginSlugs, validatePluginSlugs } from './lib/setup/plugins.js';
 import {
   CI_PROVIDERS,
@@ -10,8 +11,8 @@ import {
 } from './lib/setup/types.js';
 import { runSetupWizard } from './lib/setup/wizard.js';
 
-// TODO: create, import and pass plugin bindings (eslint, coverage, lighthouse, typescript, js-packages, jsdocs, axe)
-const bindings: PluginSetupBinding[] = [];
+// TODO: create, import and pass remaining plugin bindings (coverage, lighthouse, typescript, js-packages, jsdocs, axe)
+const bindings: PluginSetupBinding[] = [eslintSetupBinding];
 
 const argv = await yargs(hideBin(process.argv))
   .option('dry-run', {

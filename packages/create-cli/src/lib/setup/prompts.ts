@@ -1,7 +1,8 @@
-import { checkbox, input, select } from '@inquirer/prompts';
+import { checkbox, confirm, input, select } from '@inquirer/prompts';
 import { asyncSequential } from '@code-pushup/utils';
 import type {
   CliArgs,
+  PluginAnswer,
   PluginPromptDescriptor,
   PluginSetupBinding,
 } from './types.js';
@@ -64,7 +65,7 @@ async function detectRecommended(
 export async function promptPluginOptions(
   descriptors: PluginPromptDescriptor[],
   cliArgs: CliArgs,
-): Promise<Record<string, string | string[]>> {
+): Promise<Record<string, PluginAnswer>> {
   const fallback = cliArgs['yes']
     ? (descriptor: PluginPromptDescriptor) => descriptor.default
     : runPrompt;
@@ -76,14 +77,17 @@ export async function promptPluginOptions(
   return Object.fromEntries(entries);
 }
 
-function cliValue(key: string, cliArgs: CliArgs): string | undefined {
+function cliValue(key: string, cliArgs: CliArgs): PluginAnswer | undefined {
   const value = cliArgs[key];
-  return typeof value === 'string' ? value : undefined;
+  if (typeof value === 'string' || typeof value === 'boolean') {
+    return value;
+  }
+  return undefined;
 }
 
 async function runPrompt(
   descriptor: PluginPromptDescriptor,
-): Promise<string | string[]> {
+): Promise<PluginAnswer> {
   switch (descriptor.type) {
     case 'input':
       return input({
@@ -99,6 +103,11 @@ async function runPrompt(
       return checkbox({
         message: descriptor.message,
         choices: [...descriptor.choices],
+      });
+    case 'confirm':
+      return confirm({
+        message: descriptor.message,
+        default: descriptor.default,
       });
   }
 }

@@ -25,6 +25,18 @@ The wizard will prompt you to select plugins and configure their options, then g
 | **`--dry-run`**       | `boolean`                            | `false`       | Preview changes without writing files  |
 | **`--yes`**, `-y`     | `boolean`                            | `false`       | Skip prompts and use defaults          |
 
+### Plugin options
+
+Each plugin exposes its own configuration keys that can be passed as CLI arguments to skip the corresponding prompts.
+
+#### ESLint
+
+| Option                    | Type      | Default       | Description                |
+| ------------------------- | --------- | ------------- | -------------------------- |
+| **`--eslint.eslintrc`**   | `string`  | auto-detected | Path to ESLint config      |
+| **`--eslint.patterns`**   | `string`  | `src` or `.`  | File patterns to lint      |
+| **`--eslint.categories`** | `boolean` | `true`        | Add recommended categories |
+
 ### Examples
 
 Run interactively (default):

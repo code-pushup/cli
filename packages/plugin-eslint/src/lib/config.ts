@@ -4,6 +4,7 @@ import {
   pluginScoreTargetsSchema,
 } from '@code-pushup/models';
 import { toArray } from '@code-pushup/utils';
+import { DEFAULT_PATTERN } from './constants.js';
 
 const patternsSchema = z.union([z.string(), z.array(z.string()).min(1)]).meta({
   description:
@@ -17,7 +18,7 @@ const eslintrcSchema = z
 const eslintTargetObjectSchema = z
   .object({
     eslintrc: eslintrcSchema.optional(),
-    patterns: patternsSchema.optional().default('.'),
+    patterns: patternsSchema.optional().default(DEFAULT_PATTERN),
   })
   .meta({ title: 'ESLintTargetObject' });
 

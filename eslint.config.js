@@ -45,7 +45,12 @@ export default tseslint.config(
             },
             {
               sourceTag: 'scope:tooling',
-              onlyDependOnLibsWithTags: ['scope:tooling', 'scope:shared'],
+              onlyDependOnLibsWithTags: [
+                'scope:tooling',
+                'scope:core',
+                'scope:plugin',
+                'scope:shared',
+              ],
             },
             {
               sourceTag: 'type:e2e',

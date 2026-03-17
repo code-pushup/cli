@@ -1,5 +1,13 @@
-import type { CategoryConfig, PluginMeta } from '@code-pushup/models';
+import type { PluginCodegenResult } from '@code-pushup/models';
 import type { MonorepoTool } from '@code-pushup/utils';
+
+export type {
+  ImportDeclarationStructure,
+  PluginAnswer,
+  PluginCodegenResult,
+  PluginPromptDescriptor,
+  PluginSetupBinding,
+} from '@code-pushup/models';
 
 export const CI_PROVIDERS = ['github', 'gitlab', 'none'] as const;
 export type CiProvider = (typeof CI_PROVIDERS)[number];
@@ -24,50 +32,6 @@ export type CliArgs = {
   [key: string]: unknown;
 };
 
-type PromptBase = {
-  key: string;
-  message: string;
-};
-
-type PromptChoice<T extends string> = { name: string; value: T };
-
-type InputPrompt = PromptBase & {
-  type: 'input';
-  default: string;
-};
-
-type SelectPrompt<T extends string = string> = PromptBase & {
-  type: 'select';
-  choices: PromptChoice<T>[];
-  default: T;
-};
-
-type CheckboxPrompt<T extends string = string> = PromptBase & {
-  type: 'checkbox';
-  choices: PromptChoice<T>[];
-  default: T[];
-};
-
-/** Declarative prompt definition used to collect plugin-specific options. */
-export type PluginPromptDescriptor =
-  | InputPrompt
-  | SelectPrompt
-  | CheckboxPrompt;
-
-export type ImportDeclarationStructure = {
-  moduleSpecifier: string;
-  defaultImport?: string;
-  namedImports?: string[];
-  isTypeOnly?: boolean;
-};
-
-/** Import declarations and plugin initialization code produced by `generateConfig`. */
-export type PluginCodegenResult = {
-  imports: ImportDeclarationStructure[];
-  pluginInit: string;
-  categories?: CategoryConfig[];
-};
-
 export type ScopedPluginResult = {
   scope: PluginScope;
   result: PluginCodegenResult;
@@ -77,27 +41,6 @@ export type ScopedPluginResult = {
 export type ConfigContext = {
   mode: SetupMode;
   tool: MonorepoTool | null;
-};
-
-/**
- * Defines how a plugin integrates with the setup wizard.
- *
- * Each supported plugin provides a binding that controls:
- * - Pre-selection: `isRecommended` detects if the plugin is relevant for the repository
- * - Configuration: `prompts` collect plugin-specific options interactively
- * - Code generation: `generateConfig` produces the import and initialization code
- */
-export type PluginSetupBinding = {
-  slug: PluginMeta['slug'];
-  title: PluginMeta['title'];
-  packageName: NonNullable<PluginMeta['packageName']>;
-  prompts?: PluginPromptDescriptor[];
-  scope?: PluginScope;
-  isRecommended?: (targetDir: string) => Promise<boolean>;
-  generateConfig: (
-    answers: Record<string, string | string[]>,
-    context: ConfigContext,
-  ) => PluginCodegenResult;
 };
 
 /** A project discovered in a monorepo workspace. */

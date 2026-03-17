@@ -196,6 +196,7 @@ export {
 } from './lib/monorepo.js';
 export {
   hasCodePushUpDependency,
+  hasDependency,
   hasScript,
   hasWorkspacesEnabled,
   listPackages,

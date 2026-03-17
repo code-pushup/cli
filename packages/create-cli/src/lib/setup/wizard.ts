@@ -28,7 +28,6 @@ import {
 import { promptPluginOptions, promptPluginSelection } from './prompts.js';
 import type {
   CliArgs,
-  ConfigContext,
   FileChange,
   PluginCodegenResult,
   PluginSetupBinding,
@@ -62,7 +61,7 @@ export async function runSetupWizard(
     selectedBindings,
     async binding => ({
       scope: binding.scope ?? 'project',
-      result: await resolveBinding(binding, cliArgs, context),
+      result: await resolveBinding(binding, cliArgs, targetDir),
     }),
   );
 
@@ -103,12 +102,14 @@ export async function runSetupWizard(
 async function resolveBinding(
   binding: PluginSetupBinding,
   cliArgs: CliArgs,
-  context: ConfigContext,
+  targetDir: string,
 ): Promise<PluginCodegenResult> {
-  const answers = binding.prompts
-    ? await promptPluginOptions(binding.prompts, cliArgs)
-    : {};
-  return binding.generateConfig(answers, context);
+  const descriptors = binding.prompts ? await binding.prompts(targetDir) : [];
+  const answers =
+    descriptors.length > 0
+      ? await promptPluginOptions(descriptors, cliArgs)
+      : {};
+  return binding.generateConfig(answers);
 }
 
 async function writeStandaloneConfig(
