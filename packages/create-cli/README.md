@@ -48,17 +48,17 @@ npm init @code-pushup/cli
 Skip prompts and enable specific plugins:
 
 ```bash
-npm init @code-pushup/cli -y --plugins=eslint,coverage
+npm init @code-pushup/cli -- -y --plugins=eslint,coverage
 ```
 
 Set up a monorepo with GitHub CI integration:
 
 ```bash
-npm init @code-pushup/cli --mode=monorepo --ci=github
+npm init @code-pushup/cli -- --mode=monorepo --ci=github
 ```
 
 Preview the generated config without writing:
 
 ```bash
-npm init @code-pushup/cli -y --dry-run
+npm init @code-pushup/cli -- -y --dry-run
 ```
