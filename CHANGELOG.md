@@ -1,3 +1,13 @@
+## 0.120.1 (2026-03-18)
+
+### 🩹 Fixes
+
+- **utils:** pass revparse args as array ([f912a1ff](https://github.com/code-pushup/cli/commit/f912a1ff))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
 ## 0.120.0 (2026-03-17)
 
 ### 🚀 Features
