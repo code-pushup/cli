@@ -47,11 +47,15 @@ export type ImportDeclarationStructure = {
 /** A single value in the answers record produced by plugin prompts. */
 export type PluginAnswer = string | string[] | boolean;
 
-/** Import declarations and plugin initialization code produced by `generateConfig`. */
+/** Code and file changes a plugin binding contributes to the generated config. */
 export type PluginCodegenResult = {
   imports: ImportDeclarationStructure[];
   pluginInit: string;
   categories?: CategoryConfig[];
+  adjustments?: {
+    path: string;
+    transform: (content: string) => string;
+  }[];
 };
 
 /**
