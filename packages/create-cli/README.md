@@ -39,15 +39,15 @@ Each plugin exposes its own configuration keys that can be passed as CLI argumen
 
 #### Coverage
 
-| Option                          | Type                                   | Default              | Description                    |
-| ------------------------------- | -------------------------------------- | -------------------- | ------------------------------ |
-| **`--coverage.framework`**      | `'jest'` \| `'vitest'` \| `'other'`    | auto-detected        | Test framework                 |
-| **`--coverage.configFile`**     | `string`                               | auto-detected        | Path to test config file       |
-| **`--coverage.reportPath`**     | `string`                               | `coverage/lcov.info` | Path to LCOV report file       |
-| **`--coverage.testCommand`**    | `string`                               | auto-detected        | Command to run tests           |
-| **`--coverage.types`**          | `'function'` \| `'branch'` \| `'line'` | all                  | Coverage types to measure      |
-| **`--coverage.continueOnFail`** | `boolean`                              | `true`               | Continue if test command fails |
-| **`--coverage.categories`**     | `boolean`                              | `true`               | Add code coverage category     |
+| Option                          | Type                                       | Default              | Description                    |
+| ------------------------------- | ------------------------------------------ | -------------------- | ------------------------------ |
+| **`--coverage.framework`**      | `'jest'` \| `'vitest'` \| `'other'`        | auto-detected        | Test framework                 |
+| **`--coverage.configFile`**     | `string`                                   | auto-detected        | Path to test config file       |
+| **`--coverage.reportPath`**     | `string`                                   | `coverage/lcov.info` | Path to LCOV report file       |
+| **`--coverage.testCommand`**    | `string`                                   | auto-detected        | Command to run tests           |
+| **`--coverage.types`**          | `('function'` \| `'branch'` \| `'line')[]` | all                  | Coverage types to measure      |
+| **`--coverage.continueOnFail`** | `boolean`                                  | `true`               | Continue if test command fails |
+| **`--coverage.categories`**     | `boolean`                                  | `true`               | Add code coverage category     |
 
 ### Examples
 
