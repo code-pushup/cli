@@ -118,6 +118,7 @@ export type {
   PluginCodegenResult,
   PluginPromptDescriptor,
   PluginSetupBinding,
+  PluginSetupTree,
 } from './lib/plugin-setup.js';
 export {
   auditReportSchema,

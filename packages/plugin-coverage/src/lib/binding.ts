@@ -4,10 +4,15 @@ import path from 'node:path';
 import type {
   CategoryConfig,
   PluginAnswer,
-  PluginCodegenResult,
   PluginSetupBinding,
+  PluginSetupTree,
 } from '@code-pushup/models';
-import { hasDependency, readJsonFile, singleQuote } from '@code-pushup/utils';
+import {
+  hasDependency,
+  pluralize,
+  readJsonFile,
+  singleQuote,
+} from '@code-pushup/utils';
 import { addLcovReporter, hasLcovReporter } from './config-file.js';
 import {
   ALL_COVERAGE_TYPES,
@@ -24,6 +29,9 @@ const VITEST_CONFIG = new RegExp(`^vi(test|te)\\.config\\.${CONFIG_EXT}$`);
 const VITEST_WORKSPACE = new RegExp(`^vitest\\.workspace\\.${CONFIG_EXT}$`);
 const JEST_CONFIG = new RegExp(`^jest\\.config\\.${CONFIG_EXT}$`);
 const DEFAULT_REPORT_PATH = 'coverage/lcov.info';
+
+const LCOV_COMMENT =
+  '// NOTE: Ensure your test config includes "lcov" in coverage reporters.';
 
 const FRAMEWORKS = [
   { name: 'Jest', value: 'jest' },
@@ -63,6 +71,7 @@ export const coverageSetupBinding = {
   title: COVERAGE_PLUGIN_TITLE,
   packageName: PACKAGE_NAME,
   isRecommended,
+  // eslint-disable-next-line max-lines-per-function
   prompts: async (targetDir: string) => {
     const framework = await detectFramework(targetDir);
     const configFile = await detectConfigFile(targetDir, framework);
@@ -96,7 +105,10 @@ export const coverageSetupBinding = {
         key: 'coverage.types',
         message: 'Coverage types to measure',
         type: 'checkbox',
-        choices: ALL_COVERAGE_TYPES.map(type => ({ name: type, value: type })),
+        choices: ALL_COVERAGE_TYPES.map(type => ({
+          name: pluralize(type),
+          value: type,
+        })),
         default: [...ALL_COVERAGE_TYPES],
       },
       {
@@ -113,20 +125,22 @@ export const coverageSetupBinding = {
       },
     ];
   },
-  generateConfig: (answers: Record<string, PluginAnswer>) => {
+  generateConfig: async (
+    answers: Record<string, PluginAnswer>,
+    tree?: PluginSetupTree,
+  ) => {
     const args = parseAnswers(answers);
+    const lcovConfigured = await configureLcovReporter(args, tree);
     return {
       imports: [
         { moduleSpecifier: PACKAGE_NAME, defaultImport: 'coveragePlugin' },
       ],
-      pluginInit: formatPluginInit(args),
+      pluginInit: formatPluginInit(args, lcovConfigured),
       ...(args.categories ? { categories: CATEGORIES } : {}),
-      ...resolveAdjustments(args),
     };
   },
 } satisfies PluginSetupBinding;
 
-/** Applies defaults for missing or empty values. */
 function parseAnswers(answers: Record<string, PluginAnswer>): CoverageOptions {
   const string = (key: string) => {
     const value = answers[key];
@@ -149,44 +163,54 @@ function parseAnswers(answers: Record<string, PluginAnswer>): CoverageOptions {
   };
 }
 
-/** Omits options that match plugin defaults. */
-function formatPluginInit(options: CoverageOptions): string {
+/** Returns true if lcov reporter is already present or was successfully added. */
+async function configureLcovReporter(
+  options: CoverageOptions,
+  tree?: PluginSetupTree,
+): Promise<boolean> {
+  const { framework, configFile } = options;
+  if (framework === 'other' || !configFile || !tree) {
+    return false;
+  }
+  const content = await tree.read(configFile);
+  if (content == null) {
+    return false;
+  }
+  if (hasLcovReporter(content, framework)) {
+    return true;
+  }
+  const modified = addLcovReporter(content, framework);
+  if (modified === content) {
+    return false;
+  }
+  await tree.write(configFile, modified);
+  return true;
+}
+
+function formatPluginInit(
+  options: CoverageOptions,
+  lcovConfigured: boolean,
+): string {
   const { reportPath, testCommand, types, continueOnFail } = options;
 
-  const args = [
+  const hasCustomTypes =
+    types.length > 0 && types.length < ALL_COVERAGE_TYPES.length;
+
+  const body = [
     `reports: [${singleQuote(reportPath)}]`,
     testCommand
       ? `coverageToolCommand: { command: ${singleQuote(testCommand)} }`
       : '',
-    types.length > 0 && types.length < ALL_COVERAGE_TYPES.length
+    hasCustomTypes
       ? `coverageTypes: [${types.map(singleQuote).join(', ')}]`
       : '',
     continueOnFail ? '' : 'continueOnCommandFail: false',
-  ].filter(Boolean);
+  ]
+    .filter(Boolean)
+    .join(',\n    ');
 
-  return `await coveragePlugin({
-    ${args.join(',\n    ')},
-  })`;
-}
-
-function resolveAdjustments(
-  options: CoverageOptions,
-): Pick<PluginCodegenResult, 'adjustments'> {
-  const { framework, configFile } = options;
-  if (framework === 'other' || !configFile) {
-    return {};
-  }
-  return {
-    adjustments: [
-      {
-        path: configFile,
-        transform: (content: string) =>
-          hasLcovReporter(content, framework)
-            ? content
-            : addLcovReporter(content, framework),
-      },
-    ],
-  };
+  const init = `await coveragePlugin({\n    ${body},\n  })`;
+  return lcovConfigured ? init : `${LCOV_COMMENT}\n  ${init}`;
 }
 
 async function isRecommended(targetDir: string): Promise<boolean> {

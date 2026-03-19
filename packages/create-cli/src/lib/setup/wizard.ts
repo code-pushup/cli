@@ -64,11 +64,9 @@ export async function runSetupWizard(
     selectedBindings,
     async binding => ({
       scope: binding.scope ?? 'project',
-      result: await resolveBinding(binding, cliArgs, targetDir),
+      result: await resolveBinding(binding, cliArgs, targetDir, tree),
     }),
   );
-
-  await applyAdjustments(tree, resolved);
 
   const packageJson = await readPackageJson(targetDir);
   const isEsm = packageJson.type === 'module';
@@ -106,28 +104,14 @@ async function resolveBinding(
   binding: PluginSetupBinding,
   cliArgs: CliArgs,
   targetDir: string,
+  tree: Pick<Tree, 'read' | 'write'>,
 ): Promise<PluginCodegenResult> {
   const descriptors = binding.prompts ? await binding.prompts(targetDir) : [];
   const answers =
     descriptors.length > 0
       ? await promptPluginOptions(descriptors, cliArgs)
       : {};
-  return binding.generateConfig(answers);
-}
-
-async function applyAdjustments(
-  tree: Pick<Tree, 'read' | 'write'>,
-  resolved: ScopedPluginResult[],
-): Promise<void> {
-  await asyncSequential(
-    resolved.flatMap(({ result }) => result.adjustments ?? []),
-    async ({ path: filePath, transform }) => {
-      const content = await tree.read(filePath);
-      if (content != null) {
-        await tree.write(filePath, transform(content));
-      }
-    },
-  );
+  return binding.generateConfig(answers, tree);
 }
 
 async function writeStandaloneConfig(

@@ -47,15 +47,17 @@ export type ImportDeclarationStructure = {
 /** A single value in the answers record produced by plugin prompts. */
 export type PluginAnswer = string | string[] | boolean;
 
-/** Code and file changes a plugin binding contributes to the generated config. */
+/** Code a plugin binding contributes to the generated config. */
 export type PluginCodegenResult = {
   imports: ImportDeclarationStructure[];
   pluginInit: string;
   categories?: CategoryConfig[];
-  adjustments?: {
-    path: string;
-    transform: (content: string) => string;
-  }[];
+};
+
+/** Minimal file system abstraction passed to plugin bindings. */
+export type PluginSetupTree = {
+  read: (path: string) => Promise<string | null>;
+  write: (path: string, content: string) => Promise<void>;
 };
 
 /**
@@ -75,5 +77,6 @@ export type PluginSetupBinding = {
   isRecommended?: (targetDir: string) => Promise<boolean>;
   generateConfig: (
     answers: Record<string, PluginAnswer>,
-  ) => PluginCodegenResult;
+    tree?: PluginSetupTree,
+  ) => PluginCodegenResult | Promise<PluginCodegenResult>;
 };
