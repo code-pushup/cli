@@ -5,11 +5,29 @@ import {
 } from './config-file.js';
 
 describe('hasLcovReporter', () => {
-  it('should detect lcov in vitest config', () => {
+  it('should return true for vitest reporter with lcov', () => {
     expect(hasLcovReporter("reporter: ['text', 'lcov']", 'vitest')).toBeTrue();
   });
 
-  it('should return false when lcov is absent', () => {
+  it('should return false for vitest reporter without lcov', () => {
+    expect(hasLcovReporter("reporter: ['text']", 'vitest')).toBeFalse();
+  });
+
+  it('should return false for vitest without reporter key', () => {
+    expect(hasLcovReporter('globals: true', 'vitest')).toBeFalse();
+  });
+
+  it('should return true for jest without coverageReporters (lcov is default)', () => {
+    expect(hasLcovReporter('testEnvironment: "node"', 'jest')).toBeTrue();
+  });
+
+  it('should return true for jest coverageReporters with lcov', () => {
+    expect(
+      hasLcovReporter("coverageReporters: ['text', 'lcov']", 'jest'),
+    ).toBeTrue();
+  });
+
+  it('should return false for jest coverageReporters without lcov', () => {
     expect(hasLcovReporter("coverageReporters: ['text']", 'jest')).toBeFalse();
   });
 });
@@ -56,7 +74,7 @@ export default defineConfig({
           globals: true,
 
           coverage: {
-            reporter: ['lcov'],
+            reporter: ['text', 'html', 'clover', 'json', 'lcov'],
           },
         },
       });"
@@ -75,17 +93,12 @@ export default defineConfig({
     `);
   });
 
-  it('should add coverageReporters to jest config when missing', () => {
+  it('should not modify jest config when coverageReporters is missing (lcov enabled by default)', () => {
     const input = `export default {
   testEnvironment: 'node',
 };
 `;
-    expect(addLcovReporter(input, 'jest')).toMatchInlineSnapshot(`
-      "export default {
-        testEnvironment: 'node',
-        coverageReporters: ['lcov'],
-      };"
-    `);
+    expect(addLcovReporter(input, 'jest')).toBe(input);
   });
 
   it('should return CJS config unchanged', () => {

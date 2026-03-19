@@ -1,68 +1,64 @@
 import { generateCode, parseModule } from 'magicast';
-import { deepMergeObject } from 'magicast/helpers';
+import { deepMergeObject, getDefaultExportOptions } from 'magicast/helpers';
 
-type ProxyObject = Record<string, unknown> & {
-  toJSON?: () => unknown;
-};
-
-const REPORTER_CONFIGS: Record<string, { path: string[]; key: string }> = {
-  vitest: { path: ['test', 'coverage'], key: 'reporter' },
-  jest: { path: [], key: 'coverageReporters' },
-};
+const VITEST_DEFAULTS = ['text', 'html', 'clover', 'json'];
 
 export function hasLcovReporter(content: string, framework: string): boolean {
-  const reporterConfig = REPORTER_CONFIGS[framework];
-  if (!reporterConfig) {
-    return false;
+  switch (framework) {
+    case 'vitest':
+      return /['"]lcov['"]/.test(content) && content.includes('reporter');
+    case 'jest':
+      return (
+        !content.includes('coverageReporters') || /['"]lcov['"]/.test(content)
+      );
+    default:
+      return false;
   }
-  return /['"]lcov['"]/.test(content) && content.includes(reporterConfig.key);
 }
 
 export function addLcovReporter(content: string, framework: string): string {
-  const reporterConfig = REPORTER_CONFIGS[framework];
-  if (!reporterConfig) {
-    return content;
+  switch (framework) {
+    case 'vitest':
+      return addLcovToVitest(content);
+    case 'jest':
+      return addLcovToJest(content);
+    default:
+      return content;
   }
+}
+
+function addLcovToVitest(content: string): string {
   try {
     const mod = parseModule(content);
-    const exported = mod.exports['default'];
-    const configObject =
-      exported.$type === 'function-call' ? exported.$args[0] : exported;
-    const currentReporters = readReporters(configObject, reporterConfig);
-    const updatedReporters = [...currentReporters, 'lcov'];
-
+    const config = getDefaultExportOptions(mod);
+    const reporter = config['test']?.['coverage']?.['reporter'];
+    const base = reporter?.['length'] ? [...reporter] : VITEST_DEFAULTS;
     deepMergeObject(
-      configObject,
-      buildNestedObject(
-        [...reporterConfig.path, reporterConfig.key],
-        updatedReporters,
-      ),
+      config,
+      buildNestedObject(['test', 'coverage', 'reporter'], [...base, 'lcov']),
     );
-
     return generateCode(mod).code;
   } catch {
     return content;
   }
 }
 
-function isProxyObject(value: unknown): value is ProxyObject {
-  return typeof value === 'object' && value != null;
-}
-
-function readReporters(
-  configObject: ProxyObject,
-  { path, key }: { path: string[]; key: string },
-): string[] {
-  const container = path.reduce<ProxyObject>((parent, segment) => {
-    const nested = parent[segment];
-    return isProxyObject(nested) ? nested : {};
-  }, configObject);
-  const reporterProxy = container[key];
-  const resolved =
-    isProxyObject(reporterProxy) && typeof reporterProxy.toJSON === 'function'
-      ? reporterProxy.toJSON()
-      : reporterProxy;
-  return Array.isArray(resolved) ? resolved : [];
+function addLcovToJest(content: string): string {
+  try {
+    const mod = parseModule(content);
+    const config = getDefaultExportOptions(mod);
+    const reporters = config['coverageReporters'];
+    if (!reporters?.['length']) {
+      return content;
+    }
+    deepMergeObject(
+      config,
+      buildNestedObject(['coverageReporters'], [...reporters, 'lcov']),
+    );
+    return generateCode(mod).code;
+  } catch {
+    return content;
+  }
 }
 
 export function buildNestedObject(
