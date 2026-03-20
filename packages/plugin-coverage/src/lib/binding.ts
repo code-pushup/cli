@@ -184,27 +184,29 @@ async function configureLcovReporter(
 function formatPluginInit(
   options: CoverageOptions,
   lcovConfigured: boolean,
-): string {
+): string[] {
   const { reportPath, testCommand, types, continueOnFail } = options;
 
   const hasCustomTypes =
     types.length > 0 && types.length < ALL_COVERAGE_TYPES.length;
 
   const body = [
-    `reports: [${singleQuote(reportPath)}]`,
+    `reports: [${singleQuote(reportPath)}],`,
     testCommand
-      ? `coverageToolCommand: { command: ${singleQuote(testCommand)} }`
+      ? `coverageToolCommand: { command: ${singleQuote(testCommand)} },`
       : '',
     hasCustomTypes
-      ? `coverageTypes: [${types.map(singleQuote).join(', ')}]`
+      ? `coverageTypes: [${types.map(singleQuote).join(', ')}],`
       : '',
-    continueOnFail ? '' : 'continueOnCommandFail: false',
-  ]
-    .filter(Boolean)
-    .join(',\n    ');
+    continueOnFail ? '' : 'continueOnCommandFail: false,',
+  ].filter(Boolean);
 
-  const init = `await coveragePlugin({\n    ${body},\n  })`;
-  return lcovConfigured ? init : `${LCOV_COMMENT}\n  ${init}`;
+  const init = [
+    'await coveragePlugin({',
+    ...body.map(line => `  ${line}`),
+    '}),',
+  ];
+  return lcovConfigured ? init : [LCOV_COMMENT, ...init];
 }
 
 async function isRecommended(targetDir: string): Promise<boolean> {

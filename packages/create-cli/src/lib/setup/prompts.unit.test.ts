@@ -96,19 +96,19 @@ describe('promptPluginSelection', () => {
       slug: 'eslint',
       title: 'ESLint',
       packageName: '@code-pushup/eslint-plugin',
-      generateConfig: () => ({ imports: [], pluginInit: '' }),
+      generateConfig: () => ({ imports: [], pluginInit: [] }),
     },
     {
       slug: 'coverage',
       title: 'Code Coverage',
       packageName: '@code-pushup/coverage-plugin',
-      generateConfig: () => ({ imports: [], pluginInit: '' }),
+      generateConfig: () => ({ imports: [], pluginInit: [] }),
     },
     {
       slug: 'lighthouse',
       title: 'Lighthouse',
       packageName: '@code-pushup/lighthouse-plugin',
-      generateConfig: () => ({ imports: [], pluginInit: '' }),
+      generateConfig: () => ({ imports: [], pluginInit: [] }),
     },
   ];
 

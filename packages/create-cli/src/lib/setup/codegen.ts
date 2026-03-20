@@ -147,7 +147,7 @@ function addPlugins(
     builder.addLine('// TODO: register some plugins', depth + 1);
   } else {
     builder.addLines(
-      plugins.map(({ pluginInit }) => `${pluginInit},`),
+      plugins.flatMap(({ pluginInit }) => pluginInit),
       depth + 1,
     );
   }
