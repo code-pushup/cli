@@ -49,6 +49,15 @@ Each plugin exposes its own configuration keys that can be passed as CLI argumen
 | **`--coverage.continueOnFail`** | `boolean`                                  | `true`               | Continue if test command fails |
 | **`--coverage.categories`**     | `boolean`                                  | `true`               | Add Code coverage categories   |
 
+#### JS Packages
+
+| Option                               | Type                                                       | Default       | Description                |
+| ------------------------------------ | ---------------------------------------------------------- | ------------- | -------------------------- |
+| **`--js-packages.packageManager`**   | `'npm'` \| `'yarn-classic'` \| `'yarn-modern'` \| `'pnpm'` | auto-detected | Package manager            |
+| **`--js-packages.checks`**           | `('audit'` \| `'outdated')[]`                              | both          | Checks to run              |
+| **`--js-packages.dependencyGroups`** | `('prod'` \| `'dev'` \| `'optional')[]`                    | `prod`, `dev` | Dependency groups          |
+| **`--js-packages.categories`**       | `boolean`                                                  | `true`        | Add JS packages categories |
+
 ### Examples
 
 Run interactively (default):

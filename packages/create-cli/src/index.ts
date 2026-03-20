@@ -3,6 +3,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { coverageSetupBinding } from '@code-pushup/coverage-plugin';
 import { eslintSetupBinding } from '@code-pushup/eslint-plugin';
+import { jsPackagesSetupBinding } from '@code-pushup/js-packages-plugin';
 import { parsePluginSlugs, validatePluginSlugs } from './lib/setup/plugins.js';
 import {
   CI_PROVIDERS,
@@ -12,10 +13,11 @@ import {
 } from './lib/setup/types.js';
 import { runSetupWizard } from './lib/setup/wizard.js';
 
-// TODO: create, import and pass remaining plugin bindings (lighthouse, typescript, js-packages, jsdocs, axe)
+// TODO: create, import and pass remaining plugin bindings (lighthouse, typescript, jsdocs, axe)
 const bindings: PluginSetupBinding[] = [
   eslintSetupBinding,
   coverageSetupBinding,
+  jsPackagesSetupBinding,
 ];
 
 const argv = await yargs(hideBin(process.argv))
