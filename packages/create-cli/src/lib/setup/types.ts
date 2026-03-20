@@ -7,6 +7,7 @@ export type {
   PluginCodegenResult,
   PluginPromptDescriptor,
   PluginSetupBinding,
+  PluginSetupTree,
 } from '@code-pushup/models';
 
 export const CI_PROVIDERS = ['github', 'gitlab', 'none'] as const;

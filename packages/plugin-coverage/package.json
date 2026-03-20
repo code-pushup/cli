@@ -36,6 +36,7 @@
   "dependencies": {
     "@code-pushup/models": "0.120.1",
     "@code-pushup/utils": "0.120.1",
+    "magicast": "^0.3.5",
     "parse-lcov": "^1.0.4",
     "zod": "^4.2.1"
   },

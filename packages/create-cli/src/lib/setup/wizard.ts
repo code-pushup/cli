@@ -32,6 +32,7 @@ import type {
   PluginCodegenResult,
   PluginSetupBinding,
   ScopedPluginResult,
+  Tree,
   WriteContext,
 } from './types.js';
 import { createTree } from './virtual-fs.js';
@@ -57,19 +58,19 @@ export async function runSetupWizard(
   const format = await promptConfigFormat(targetDir, cliArgs);
   const ciProvider = await promptCiProvider(cliArgs);
 
+  const tree = createTree(await getGitRoot());
+
   const resolved: ScopedPluginResult[] = await asyncSequential(
     selectedBindings,
     async binding => ({
       scope: binding.scope ?? 'project',
-      result: await resolveBinding(binding, cliArgs, targetDir),
+      result: await resolveBinding(binding, cliArgs, targetDir, tree),
     }),
   );
 
   const packageJson = await readPackageJson(targetDir);
   const isEsm = packageJson.type === 'module';
   const configFilename = resolveFilename('code-pushup.config', format, isEsm);
-
-  const tree = createTree(await getGitRoot());
   const writeContext: WriteContext = { tree, format, configFilename, isEsm };
 
   await (context.mode === 'monorepo' && context.tool != null
@@ -103,13 +104,14 @@ async function resolveBinding(
   binding: PluginSetupBinding,
   cliArgs: CliArgs,
   targetDir: string,
+  tree: Pick<Tree, 'read' | 'write'>,
 ): Promise<PluginCodegenResult> {
   const descriptors = binding.prompts ? await binding.prompts(targetDir) : [];
   const answers =
     descriptors.length > 0
       ? await promptPluginOptions(descriptors, cliArgs)
       : {};
-  return binding.generateConfig(answers);
+  return binding.generateConfig(answers, tree);
 }
 
 async function writeStandaloneConfig(

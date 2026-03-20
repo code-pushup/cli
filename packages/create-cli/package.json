@@ -26,6 +26,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@code-pushup/coverage-plugin": "0.120.1",
     "@code-pushup/eslint-plugin": "0.120.1",
     "@code-pushup/models": "0.120.1",
     "@code-pushup/utils": "0.120.1",
