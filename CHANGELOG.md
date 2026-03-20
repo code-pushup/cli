@@ -1,3 +1,13 @@
+## 0.121.0 (2026-03-20)
+
+### 🚀 Features
+
+- **plugin-coverage:** add setup wizard binding ([#1273](https://github.com/code-pushup/cli/pull/1273))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.120.1 (2026-03-18)
 
 ### 🩹 Fixes
