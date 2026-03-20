@@ -50,7 +50,7 @@ export type PluginAnswer = string | string[] | boolean;
 /** Code a plugin binding contributes to the generated config. */
 export type PluginCodegenResult = {
   imports: ImportDeclarationStructure[];
-  pluginInit: string;
+  pluginInit: string[];
   categories?: CategoryConfig[];
 };
 

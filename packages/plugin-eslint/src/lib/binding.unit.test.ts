@@ -116,7 +116,7 @@ describe('eslintSetupBinding', () => {
           'eslint.patterns': 'src',
           'eslint.categories': true,
         }).pluginInit,
-      ).toBe("await eslintPlugin({ patterns: 'src' })");
+      ).toEqual(["await eslintPlugin({ patterns: 'src' }),"]);
     });
 
     it('should include eslintrc for non-standard config paths', () => {
@@ -126,9 +126,9 @@ describe('eslintSetupBinding', () => {
           'eslint.patterns': 'src',
           'eslint.categories': false,
         }).pluginInit,
-      ).toBe(
-        "await eslintPlugin({ eslintrc: 'configs/eslint.config.js', patterns: 'src' })",
-      );
+      ).toEqual([
+        "await eslintPlugin({ eslintrc: 'configs/eslint.config.js', patterns: 'src' }),",
+      ]);
     });
 
     it('should format comma-separated patterns as array', () => {
@@ -138,7 +138,7 @@ describe('eslintSetupBinding', () => {
           'eslint.patterns': 'src, lib',
           'eslint.categories': false,
         }).pluginInit,
-      ).toBe("await eslintPlugin({ patterns: ['src', 'lib'] })");
+      ).toEqual(["await eslintPlugin({ patterns: ['src', 'lib'] }),"]);
     });
 
     it('should produce no-arg call when no options provided', () => {
@@ -148,7 +148,7 @@ describe('eslintSetupBinding', () => {
           'eslint.patterns': '',
           'eslint.categories': false,
         }).pluginInit,
-      ).toBe('await eslintPlugin()');
+      ).toEqual(['await eslintPlugin(),']);
     });
 
     it('should include categories when user confirms', () => {

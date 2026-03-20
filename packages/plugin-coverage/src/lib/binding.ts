@@ -8,6 +8,9 @@ import type {
   PluginSetupTree,
 } from '@code-pushup/models';
 import {
+  answerArray,
+  answerBoolean,
+  answerString,
   hasDependency,
   pluralize,
   readJsonFile,
@@ -119,7 +122,7 @@ export const coverageSetupBinding = {
       },
       {
         key: 'coverage.categories',
-        message: 'Add code coverage category?',
+        message: 'Add Code coverage categories?',
         type: 'confirm',
         default: true,
       },
@@ -129,37 +132,28 @@ export const coverageSetupBinding = {
     answers: Record<string, PluginAnswer>,
     tree?: PluginSetupTree,
   ) => {
-    const args = parseAnswers(answers);
-    const lcovConfigured = await configureLcovReporter(args, tree);
+    const options = parseAnswers(answers);
+    const lcovConfigured = await configureLcovReporter(options, tree);
     return {
       imports: [
         { moduleSpecifier: PACKAGE_NAME, defaultImport: 'coveragePlugin' },
       ],
-      pluginInit: formatPluginInit(args, lcovConfigured),
-      ...(args.categories ? { categories: CATEGORIES } : {}),
+      pluginInit: formatPluginInit(options, lcovConfigured),
+      ...(options.categories ? { categories: CATEGORIES } : {}),
     };
   },
 } satisfies PluginSetupBinding;
 
 function parseAnswers(answers: Record<string, PluginAnswer>): CoverageOptions {
-  const string = (key: string) => {
-    const value = answers[key];
-    return typeof value === 'string' ? value : '';
-  };
-  const types = answers['coverage.types'];
   return {
-    framework: string('coverage.framework'),
-    configFile: string('coverage.configFile'),
-    reportPath: string('coverage.reportPath') || DEFAULT_REPORT_PATH,
-    testCommand: string('coverage.testCommand'),
-    types: Array.isArray(types)
-      ? types
-      : (typeof types === 'string' ? types : '')
-          .split(',')
-          .map(item => item.trim())
-          .filter(Boolean),
-    continueOnFail: answers['coverage.continueOnFail'] !== false,
-    categories: answers['coverage.categories'] !== false,
+    framework: answerString(answers, 'coverage.framework'),
+    configFile: answerString(answers, 'coverage.configFile'),
+    reportPath:
+      answerString(answers, 'coverage.reportPath') || DEFAULT_REPORT_PATH,
+    testCommand: answerString(answers, 'coverage.testCommand'),
+    types: answerArray(answers, 'coverage.types'),
+    continueOnFail: answerBoolean(answers, 'coverage.continueOnFail'),
+    categories: answerBoolean(answers, 'coverage.categories'),
   };
 }
 
@@ -190,27 +184,29 @@ async function configureLcovReporter(
 function formatPluginInit(
   options: CoverageOptions,
   lcovConfigured: boolean,
-): string {
+): string[] {
   const { reportPath, testCommand, types, continueOnFail } = options;
 
   const hasCustomTypes =
     types.length > 0 && types.length < ALL_COVERAGE_TYPES.length;
 
   const body = [
-    `reports: [${singleQuote(reportPath)}]`,
+    `reports: [${singleQuote(reportPath)}],`,
     testCommand
-      ? `coverageToolCommand: { command: ${singleQuote(testCommand)} }`
+      ? `coverageToolCommand: { command: ${singleQuote(testCommand)} },`
       : '',
     hasCustomTypes
-      ? `coverageTypes: [${types.map(singleQuote).join(', ')}]`
+      ? `coverageTypes: [${types.map(singleQuote).join(', ')}],`
       : '',
-    continueOnFail ? '' : 'continueOnCommandFail: false',
-  ]
-    .filter(Boolean)
-    .join(',\n    ');
+    continueOnFail ? '' : 'continueOnCommandFail: false,',
+  ].filter(Boolean);
 
-  const init = `await coveragePlugin({\n    ${body},\n  })`;
-  return lcovConfigured ? init : `${LCOV_COMMENT}\n  ${init}`;
+  const init = [
+    'await coveragePlugin({',
+    ...body.map(line => `  ${line}`),
+    '}),',
+  ];
+  return lcovConfigured ? init : [LCOV_COMMENT, ...init];
 }
 
 async function isRecommended(targetDir: string): Promise<boolean> {

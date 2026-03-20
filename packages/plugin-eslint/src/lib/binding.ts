@@ -7,6 +7,9 @@ import type {
   PluginSetupBinding,
 } from '@code-pushup/models';
 import {
+  answerArray,
+  answerBoolean,
+  answerString,
   directoryExists,
   hasDependency,
   readJsonFile,
@@ -54,6 +57,12 @@ const ESLINT_CATEGORIES: CategoryConfig[] = [
   },
 ];
 
+type EslintOptions = {
+  eslintrc: string;
+  patterns: string[];
+  categories: boolean;
+};
+
 export const eslintSetupBinding = {
   slug: ESLINT_PLUGIN_SLUG,
   title: ESLINT_PLUGIN_TITLE,
@@ -76,36 +85,49 @@ export const eslintSetupBinding = {
     },
     {
       key: 'eslint.categories',
-      message: 'Add recommended categories (bug prevention, code style)?',
+      message: 'Add ESLint categories?',
       type: 'confirm',
       default: true,
     },
   ],
   generateConfig: (answers: Record<string, PluginAnswer>) => {
-    const withCategories = answers['eslint.categories'] !== false;
-    const args = [
-      resolveEslintrc(answers['eslint.eslintrc']),
-      resolvePatterns(answers['eslint.patterns']),
-    ].filter(Boolean);
-
+    const options = parseAnswers(answers);
     return {
       imports: [
         { moduleSpecifier: PACKAGE_NAME, defaultImport: 'eslintPlugin' },
       ],
-      pluginInit:
-        args.length > 0
-          ? `await eslintPlugin({ ${args.join(', ')} })`
-          : 'await eslintPlugin()',
-      ...(withCategories ? { categories: ESLINT_CATEGORIES } : {}),
+      pluginInit: formatPluginInit(options),
+      ...(options.categories ? { categories: ESLINT_CATEGORIES } : {}),
     };
   },
 } satisfies PluginSetupBinding;
 
-async function detectEslintConfig(
-  targetDir: string,
-): Promise<string | undefined> {
-  const files = await readdir(targetDir, { encoding: 'utf8' });
-  return files.find(file => ESLINT_CONFIG_PATTERN.test(file));
+function parseAnswers(answers: Record<string, PluginAnswer>): EslintOptions {
+  return {
+    eslintrc: answerString(answers, 'eslint.eslintrc'),
+    patterns: answerArray(answers, 'eslint.patterns'),
+    categories: answerBoolean(answers, 'eslint.categories'),
+  };
+}
+
+function formatPluginInit({ eslintrc, patterns }: EslintOptions): string[] {
+  const useCustomEslintrc =
+    eslintrc !== '' && !ESLINT_CONFIG_PATTERN.test(eslintrc);
+  const customPatterns = patterns
+    .filter(s => s !== '' && s !== DEFAULT_PATTERN)
+    .map(singleQuote);
+
+  const body = [
+    useCustomEslintrc ? `eslintrc: ${singleQuote(eslintrc)}` : '',
+    customPatterns.length === 1 ? `patterns: ${customPatterns[0]}` : '',
+    customPatterns.length > 1 ? `patterns: [${customPatterns.join(', ')}]` : '',
+  ]
+    .filter(Boolean)
+    .join(', ');
+
+  return body
+    ? [`await eslintPlugin({ ${body} }),`]
+    : ['await eslintPlugin(),'];
 }
 
 async function isRecommended(targetDir: string): Promise<boolean> {
@@ -123,34 +145,9 @@ async function isRecommended(targetDir: string): Promise<boolean> {
   }
 }
 
-/** Omits `eslintrc` for standard config filenames (ESLint discovers them automatically). */
-function resolveEslintrc(value: PluginAnswer | undefined): string {
-  if (typeof value !== 'string' || !value) {
-    return '';
-  }
-  if (ESLINT_CONFIG_PATTERN.test(value)) {
-    return '';
-  }
-  return `eslintrc: ${singleQuote(value)}`;
-}
-
-/** Formats patterns as a string or array literal, omitting the plugin default. */
-function resolvePatterns(value: PluginAnswer | undefined): string {
-  if (typeof value === 'string') {
-    return resolvePatterns(value.split(','));
-  }
-  if (!Array.isArray(value)) {
-    return '';
-  }
-  const patterns = value
-    .map(s => s.trim())
-    .filter(s => s !== '' && s !== DEFAULT_PATTERN)
-    .map(singleQuote);
-  if (patterns.length === 0) {
-    return '';
-  }
-  if (patterns.length === 1) {
-    return `patterns: ${patterns.join('')}`;
-  }
-  return `patterns: [${patterns.join(', ')}]`;
+async function detectEslintConfig(
+  targetDir: string,
+): Promise<string | undefined> {
+  const files = await readdir(targetDir, { encoding: 'utf8' });
+  return files.find(file => ESLINT_CONFIG_PATTERN.test(file));
 }

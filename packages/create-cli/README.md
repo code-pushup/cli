@@ -31,11 +31,11 @@ Each plugin exposes its own configuration keys that can be passed as CLI argumen
 
 #### ESLint
 
-| Option                    | Type      | Default       | Description                |
-| ------------------------- | --------- | ------------- | -------------------------- |
-| **`--eslint.eslintrc`**   | `string`  | auto-detected | Path to ESLint config      |
-| **`--eslint.patterns`**   | `string`  | `src` or `.`  | File patterns to lint      |
-| **`--eslint.categories`** | `boolean` | `true`        | Add recommended categories |
+| Option                    | Type      | Default       | Description           |
+| ------------------------- | --------- | ------------- | --------------------- |
+| **`--eslint.eslintrc`**   | `string`  | auto-detected | Path to ESLint config |
+| **`--eslint.patterns`**   | `string`  | `src` or `.`  | File patterns to lint |
+| **`--eslint.categories`** | `boolean` | `true`        | Add ESLint categories |
 
 #### Coverage
 
@@ -47,7 +47,16 @@ Each plugin exposes its own configuration keys that can be passed as CLI argumen
 | **`--coverage.testCommand`**    | `string`                                   | auto-detected        | Command to run tests           |
 | **`--coverage.types`**          | `('function'` \| `'branch'` \| `'line')[]` | all                  | Coverage types to measure      |
 | **`--coverage.continueOnFail`** | `boolean`                                  | `true`               | Continue if test command fails |
-| **`--coverage.categories`**     | `boolean`                                  | `true`               | Add code coverage category     |
+| **`--coverage.categories`**     | `boolean`                                  | `true`               | Add Code coverage categories   |
+
+#### JS Packages
+
+| Option                               | Type                                                       | Default       | Description                |
+| ------------------------------------ | ---------------------------------------------------------- | ------------- | -------------------------- |
+| **`--js-packages.packageManager`**   | `'npm'` \| `'yarn-classic'` \| `'yarn-modern'` \| `'pnpm'` | auto-detected | Package manager            |
+| **`--js-packages.checks`**           | `('audit'` \| `'outdated')[]`                              | both          | Checks to run              |
+| **`--js-packages.dependencyGroups`** | `('prod'` \| `'dev'` \| `'optional')[]`                    | `prod`, `dev` | Dependency groups          |
+| **`--js-packages.categories`**       | `boolean`                                                  | `true`        | Add JS packages categories |
 
 ### Examples
 

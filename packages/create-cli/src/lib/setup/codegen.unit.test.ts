@@ -14,7 +14,7 @@ const ESLINT_PLUGIN: PluginCodegenResult = {
       defaultImport: 'eslintPlugin',
     },
   ],
-  pluginInit: "await eslintPlugin({ patterns: '.' })",
+  pluginInit: ["await eslintPlugin({ patterns: '.' }),"],
 };
 
 const ESLINT_CATEGORIES: CategoryConfig[] = [
@@ -58,7 +58,7 @@ describe('generateConfigSource', () => {
             defaultImport: 'eslintPlugin',
           },
         ],
-        pluginInit: 'await eslintPlugin()',
+        pluginInit: ['await eslintPlugin(),'],
       };
 
       expect(generateConfigSource([plugin], 'ts')).toMatchInlineSnapshot(`
@@ -83,8 +83,9 @@ describe('generateConfigSource', () => {
             namedImports: ['eslintConfigFromAllNxProjects'],
           },
         ],
-        pluginInit:
-          'await eslintPlugin({ eslintrc: eslintConfigFromAllNxProjects() })',
+        pluginInit: [
+          'await eslintPlugin({ eslintrc: eslintConfigFromAllNxProjects() }),',
+        ],
       };
 
       expect(generateConfigSource([plugin], 'ts')).toMatchInlineSnapshot(`
@@ -100,7 +101,7 @@ describe('generateConfigSource', () => {
       `);
     });
 
-    it('should generate config with multiple plugins', () => {
+    it('should generate config with multiple plugins including multiline', () => {
       const plugins: PluginCodegenResult[] = [
         {
           imports: [
@@ -109,7 +110,7 @@ describe('generateConfigSource', () => {
               defaultImport: 'eslintPlugin',
             },
           ],
-          pluginInit: 'await eslintPlugin()',
+          pluginInit: ['await eslintPlugin(),'],
         },
         {
           imports: [
@@ -118,8 +119,11 @@ describe('generateConfigSource', () => {
               defaultImport: 'coveragePlugin',
             },
           ],
-          pluginInit:
-            "await coveragePlugin({ reports: [{ resultsPath: 'coverage/lcov.info', pathToProject: '' }] })",
+          pluginInit: [
+            'await coveragePlugin({',
+            "  reports: ['coverage/lcov.info'],",
+            '}),',
+          ],
         },
       ];
 
@@ -131,7 +135,9 @@ describe('generateConfigSource', () => {
         export default {
           plugins: [
             await eslintPlugin(),
-            await coveragePlugin({ reports: [{ resultsPath: 'coverage/lcov.info', pathToProject: '' }] }),
+            await coveragePlugin({
+              reports: ['coverage/lcov.info'],
+            }),
           ],
         } satisfies CoreConfig;
         "
@@ -160,7 +166,7 @@ describe('generateConfigSource', () => {
             defaultImport: 'eslintPlugin',
           },
         ],
-        pluginInit: 'await eslintPlugin()',
+        pluginInit: ['await eslintPlugin(),'],
       };
 
       expect(generateConfigSource([plugin], 'js')).toMatchInlineSnapshot(`
@@ -185,7 +191,7 @@ describe('generateConfigSource', () => {
               defaultImport: 'eslintPlugin',
             },
           ],
-          pluginInit: 'await eslintPlugin()',
+          pluginInit: ['await eslintPlugin(),'],
         },
         {
           imports: [
@@ -194,8 +200,9 @@ describe('generateConfigSource', () => {
               defaultImport: 'coveragePlugin',
             },
           ],
-          pluginInit:
-            "await coveragePlugin({ reports: [{ resultsPath: 'coverage/lcov.info', pathToProject: '' }] })",
+          pluginInit: [
+            "await coveragePlugin({ reports: [{ resultsPath: 'coverage/lcov.info', pathToProject: '' }] }),",
+          ],
         },
       ];
 
@@ -266,7 +273,7 @@ describe('generateConfigSource', () => {
             defaultImport: 'coveragePlugin',
           },
         ],
-        pluginInit: 'await coveragePlugin()',
+        pluginInit: ['await coveragePlugin(),'],
         categories: [
           {
             slug: 'code-coverage',
