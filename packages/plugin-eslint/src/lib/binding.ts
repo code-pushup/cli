@@ -110,7 +110,7 @@ function parseAnswers(answers: Record<string, PluginAnswer>): EslintOptions {
   };
 }
 
-function formatPluginInit({ eslintrc, patterns }: EslintOptions): string {
+function formatPluginInit({ eslintrc, patterns }: EslintOptions): string[] {
   const useCustomEslintrc =
     eslintrc !== '' && !ESLINT_CONFIG_PATTERN.test(eslintrc);
   const customPatterns = patterns
@@ -125,7 +125,9 @@ function formatPluginInit({ eslintrc, patterns }: EslintOptions): string {
     .filter(Boolean)
     .join(', ');
 
-  return body ? `await eslintPlugin({ ${body} })` : 'await eslintPlugin()';
+  return body
+    ? [`await eslintPlugin({ ${body} }),`]
+    : ['await eslintPlugin(),'];
 }
 
 async function isRecommended(targetDir: string): Promise<boolean> {

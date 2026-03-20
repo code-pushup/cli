@@ -121,13 +121,13 @@ describe('coverageSetupBinding', () => {
   describe('generateConfig', () => {
     it('should generate vitest config', async () => {
       const { pluginInit } = await binding.generateConfig(defaultAnswers);
-      expect(pluginInit).toMatchInlineSnapshot(`
-        "// NOTE: Ensure your test config includes "lcov" in coverage reporters.
-          await coveragePlugin({
-            reports: ['coverage/lcov.info'],
-            coverageToolCommand: { command: 'npx vitest run --coverage.enabled' },
-          })"
-      `);
+      expect(pluginInit).toEqual([
+        '// NOTE: Ensure your test config includes "lcov" in coverage reporters.',
+        'await coveragePlugin({',
+        "  reports: ['coverage/lcov.info'],",
+        "  coverageToolCommand: { command: 'npx vitest run --coverage.enabled' },",
+        '}),',
+      ]);
     });
 
     it('should generate jest config', async () => {
@@ -136,13 +136,13 @@ describe('coverageSetupBinding', () => {
         'coverage.framework': 'jest',
         'coverage.testCommand': 'npx jest --coverage',
       });
-      expect(pluginInit).toMatchInlineSnapshot(`
-        "// NOTE: Ensure your test config includes "lcov" in coverage reporters.
-          await coveragePlugin({
-            reports: ['coverage/lcov.info'],
-            coverageToolCommand: { command: 'npx jest --coverage' },
-          })"
-      `);
+      expect(pluginInit).toEqual([
+        '// NOTE: Ensure your test config includes "lcov" in coverage reporters.',
+        'await coveragePlugin({',
+        "  reports: ['coverage/lcov.info'],",
+        "  coverageToolCommand: { command: 'npx jest --coverage' },",
+        '}),',
+      ]);
     });
 
     it('should omit coverageToolCommand when test command is empty', async () => {
@@ -150,7 +150,11 @@ describe('coverageSetupBinding', () => {
         ...defaultAnswers,
         'coverage.testCommand': '',
       });
-      expect(pluginInit).not.toContain('coverageToolCommand');
+      expect(pluginInit).not.toEqual(
+        expect.arrayContaining([
+          expect.stringContaining('coverageToolCommand'),
+        ]),
+      );
     });
 
     it('should use default report path when empty', async () => {
@@ -158,7 +162,11 @@ describe('coverageSetupBinding', () => {
         ...defaultAnswers,
         'coverage.reportPath': '',
       });
-      expect(pluginInit).toContain("'coverage/lcov.info'");
+      expect(pluginInit).toEqual(
+        expect.arrayContaining([
+          expect.stringContaining("'coverage/lcov.info'"),
+        ]),
+      );
     });
 
     it('should use custom report path when provided', async () => {
@@ -166,12 +174,18 @@ describe('coverageSetupBinding', () => {
         ...defaultAnswers,
         'coverage.reportPath': 'dist/coverage/lcov.info',
       });
-      expect(pluginInit).toContain("'dist/coverage/lcov.info'");
+      expect(pluginInit).toEqual(
+        expect.arrayContaining([
+          expect.stringContaining("'dist/coverage/lcov.info'"),
+        ]),
+      );
     });
 
     it('should omit coverageTypes when all selected', async () => {
       const { pluginInit } = await binding.generateConfig(defaultAnswers);
-      expect(pluginInit).not.toContain('coverageTypes');
+      expect(pluginInit).not.toEqual(
+        expect.arrayContaining([expect.stringContaining('coverageTypes')]),
+      );
     });
 
     it('should include coverageTypes when subset selected', async () => {
@@ -179,7 +193,11 @@ describe('coverageSetupBinding', () => {
         ...defaultAnswers,
         'coverage.types': ['branch', 'line'],
       });
-      expect(pluginInit).toContain("coverageTypes: ['branch', 'line']");
+      expect(pluginInit).toEqual(
+        expect.arrayContaining([
+          expect.stringContaining("coverageTypes: ['branch', 'line']"),
+        ]),
+      );
     });
 
     it('should disable continueOnCommandFail when declined', async () => {
@@ -187,12 +205,20 @@ describe('coverageSetupBinding', () => {
         ...defaultAnswers,
         'coverage.continueOnFail': false,
       });
-      expect(pluginInit).toContain('continueOnCommandFail: false');
+      expect(pluginInit).toEqual(
+        expect.arrayContaining([
+          expect.stringContaining('continueOnCommandFail: false'),
+        ]),
+      );
     });
 
     it('should omit continueOnCommandFail when default', async () => {
       const { pluginInit } = await binding.generateConfig(defaultAnswers);
-      expect(pluginInit).not.toContain('continueOnCommandFail');
+      expect(pluginInit).not.toEqual(
+        expect.arrayContaining([
+          expect.stringContaining('continueOnCommandFail'),
+        ]),
+      );
     });
 
     it('should omit categories when declined', async () => {
@@ -227,7 +253,9 @@ describe('coverageSetupBinding', () => {
           "export default { test: { coverage: { reporter: ['lcov'] } } };",
       });
       const { pluginInit } = await binding.generateConfig(vitestAnswers, tree);
-      expect(pluginInit).not.toContain('NOTE');
+      expect(pluginInit).not.toEqual(
+        expect.arrayContaining([expect.stringContaining('NOTE')]),
+      );
     });
 
     it('should not include comment when lcov is successfully added', async () => {
@@ -236,7 +264,9 @@ describe('coverageSetupBinding', () => {
           "import { defineConfig } from 'vitest/config';\nexport default defineConfig({ test: { coverage: { reporter: ['text'] } } });",
       });
       const { pluginInit } = await binding.generateConfig(vitestAnswers, tree);
-      expect(pluginInit).not.toContain('NOTE');
+      expect(pluginInit).not.toEqual(
+        expect.arrayContaining([expect.stringContaining('NOTE')]),
+      );
       expect(tree.written.get('vitest.config.ts')).toContain('lcov');
     });
 
@@ -245,13 +275,17 @@ describe('coverageSetupBinding', () => {
         ...defaultAnswers,
         'coverage.framework': 'other',
       });
-      expect(pluginInit).toContain('NOTE');
+      expect(pluginInit).toEqual(
+        expect.arrayContaining([expect.stringContaining('NOTE')]),
+      );
     });
 
     it('should include comment when config file cannot be read', async () => {
       const tree = createMockTree({});
       const { pluginInit } = await binding.generateConfig(vitestAnswers, tree);
-      expect(pluginInit).toContain('NOTE');
+      expect(pluginInit).toEqual(
+        expect.arrayContaining([expect.stringContaining('NOTE')]),
+      );
     });
 
     it('should include comment when magicast cannot modify the file', async () => {
@@ -266,7 +300,9 @@ describe('coverageSetupBinding', () => {
         },
         tree,
       );
-      expect(pluginInit).toContain('NOTE');
+      expect(pluginInit).toEqual(
+        expect.arrayContaining([expect.stringContaining('NOTE')]),
+      );
     });
   });
 });

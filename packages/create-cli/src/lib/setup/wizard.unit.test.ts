@@ -30,7 +30,7 @@ const TEST_BINDING: PluginSetupBinding = {
         defaultImport: 'testPlugin',
       },
     ],
-    pluginInit: 'testPlugin()',
+    pluginInit: ['testPlugin(),'],
   }),
 };
 
@@ -172,7 +172,7 @@ describe('runSetupWizard', () => {
             defaultImport: 'testPlugin',
           },
         ],
-        pluginInit: 'testPlugin()',
+        pluginInit: ['testPlugin(),'],
       }),
     };
 
@@ -189,7 +189,7 @@ describe('runSetupWizard', () => {
             defaultImport: 'rootPlugin',
           },
         ],
-        pluginInit: 'rootPlugin()',
+        pluginInit: ['rootPlugin(),'],
       }),
     };
 

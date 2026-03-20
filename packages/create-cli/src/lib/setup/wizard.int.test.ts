@@ -37,7 +37,7 @@ const TEST_BINDINGS: PluginSetupBinding[] = [
             defaultImport: 'alphaPlugin',
           },
         ],
-        pluginInit: `alphaPlugin(${JSON.stringify(configPath)})`,
+        pluginInit: [`alphaPlugin(${JSON.stringify(configPath)}),`],
       };
     },
   },
@@ -53,7 +53,7 @@ const TEST_BINDINGS: PluginSetupBinding[] = [
           defaultImport: 'betaPlugin',
         },
       ],
-      pluginInit: 'betaPlugin()',
+      pluginInit: ['betaPlugin(),'],
     }),
   },
 ];
