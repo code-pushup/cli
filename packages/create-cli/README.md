@@ -31,11 +31,11 @@ Each plugin exposes its own configuration keys that can be passed as CLI argumen
 
 #### ESLint
 
-| Option                    | Type      | Default       | Description                |
-| ------------------------- | --------- | ------------- | -------------------------- |
-| **`--eslint.eslintrc`**   | `string`  | auto-detected | Path to ESLint config      |
-| **`--eslint.patterns`**   | `string`  | `src` or `.`  | File patterns to lint      |
-| **`--eslint.categories`** | `boolean` | `true`        | Add recommended categories |
+| Option                    | Type      | Default       | Description           |
+| ------------------------- | --------- | ------------- | --------------------- |
+| **`--eslint.eslintrc`**   | `string`  | auto-detected | Path to ESLint config |
+| **`--eslint.patterns`**   | `string`  | `src` or `.`  | File patterns to lint |
+| **`--eslint.categories`** | `boolean` | `true`        | Add ESLint categories |
 
 #### Coverage
 
@@ -47,7 +47,7 @@ Each plugin exposes its own configuration keys that can be passed as CLI argumen
 | **`--coverage.testCommand`**    | `string`                                   | auto-detected        | Command to run tests           |
 | **`--coverage.types`**          | `('function'` \| `'branch'` \| `'line')[]` | all                  | Coverage types to measure      |
 | **`--coverage.continueOnFail`** | `boolean`                                  | `true`               | Continue if test command fails |
-| **`--coverage.categories`**     | `boolean`                                  | `true`               | Add code coverage category     |
+| **`--coverage.categories`**     | `boolean`                                  | `true`               | Add Code coverage categories   |
 
 ### Examples
 

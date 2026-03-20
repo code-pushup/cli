@@ -195,6 +195,11 @@ export {
   type MonorepoTool,
 } from './lib/monorepo.js';
 export {
+  answerArray,
+  answerBoolean,
+  answerString,
+} from './lib/plugin-answers.js';
+export {
   hasCodePushUpDependency,
   hasDependency,
   hasScript,
