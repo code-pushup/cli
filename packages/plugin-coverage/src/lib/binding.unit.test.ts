@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import type { PluginAnswer, PluginSetupTree } from '@code-pushup/models';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import { readJsonFile } from '@code-pushup/utils';
-import { coverageSetupBinding } from './binding.js';
+import { coverageSetupBinding as binding } from './binding.js';
 
 vi.mock('@code-pushup/utils', async () => {
   const actual = await vi.importActual('@code-pushup/utils');
@@ -12,24 +12,15 @@ vi.mock('@code-pushup/utils', async () => {
   };
 });
 
-function generateConfig(
-  overrides: Record<string, PluginAnswer> = {},
-  tree?: PluginSetupTree,
-) {
-  return coverageSetupBinding.generateConfig(
-    {
-      'coverage.framework': 'vitest',
-      'coverage.configFile': '',
-      'coverage.reportPath': 'coverage/lcov.info',
-      'coverage.testCommand': 'npx vitest run --coverage.enabled',
-      'coverage.types': ['function', 'branch', 'line'],
-      'coverage.continueOnFail': true,
-      'coverage.categories': true,
-      ...overrides,
-    },
-    tree,
-  );
-}
+const defaultAnswers: Record<string, PluginAnswer> = {
+  'coverage.framework': 'vitest',
+  'coverage.configFile': '',
+  'coverage.reportPath': 'coverage/lcov.info',
+  'coverage.testCommand': 'npx vitest run --coverage.enabled',
+  'coverage.types': ['function', 'branch', 'line'],
+  'coverage.continueOnFail': true,
+  'coverage.categories': true,
+};
 
 function createMockTree(
   files: Record<string, string> = {},
@@ -58,9 +49,7 @@ describe('coverageSetupBinding', () => {
     ])('should detect %s', async file => {
       vol.fromJSON({ [file]: '' }, MEMFS_VOLUME);
 
-      await expect(
-        coverageSetupBinding.isRecommended(MEMFS_VOLUME),
-      ).resolves.toBeTrue();
+      await expect(binding.isRecommended(MEMFS_VOLUME)).resolves.toBeTrue();
     });
 
     it.each(['dependencies', 'devDependencies'])(
@@ -70,9 +59,7 @@ describe('coverageSetupBinding', () => {
           [field]: { vitest: '^2.0.0' },
         });
 
-        await expect(
-          coverageSetupBinding.isRecommended(MEMFS_VOLUME),
-        ).resolves.toBeTrue();
+        await expect(binding.isRecommended(MEMFS_VOLUME)).resolves.toBeTrue();
       },
     );
 
@@ -83,18 +70,14 @@ describe('coverageSetupBinding', () => {
           [field]: { jest: '^29.0.0' },
         });
 
-        await expect(
-          coverageSetupBinding.isRecommended(MEMFS_VOLUME),
-        ).resolves.toBeTrue();
+        await expect(binding.isRecommended(MEMFS_VOLUME)).resolves.toBeTrue();
       },
     );
 
     it('should not recommend when no test framework found', async () => {
       vi.mocked(readJsonFile).mockResolvedValue({});
 
-      await expect(
-        coverageSetupBinding.isRecommended(MEMFS_VOLUME),
-      ).resolves.toBeFalse();
+      await expect(binding.isRecommended(MEMFS_VOLUME)).resolves.toBeFalse();
     });
   });
 
@@ -103,7 +86,7 @@ describe('coverageSetupBinding', () => {
       vol.fromJSON({ 'vitest.config.ts': '' }, MEMFS_VOLUME);
 
       await expect(
-        coverageSetupBinding.prompts(MEMFS_VOLUME),
+        binding.prompts(MEMFS_VOLUME),
       ).resolves.toIncludeAllPartialMembers([
         { key: 'coverage.framework', default: 'vitest' },
         { key: 'coverage.configFile', default: 'vitest.config.ts' },
@@ -115,7 +98,7 @@ describe('coverageSetupBinding', () => {
       vol.fromJSON({ 'jest.config.js': '' }, MEMFS_VOLUME);
 
       await expect(
-        coverageSetupBinding.prompts(MEMFS_VOLUME),
+        binding.prompts(MEMFS_VOLUME),
       ).resolves.toIncludeAllPartialMembers([
         { key: 'coverage.framework', default: 'jest' },
         { key: 'coverage.configFile', default: 'jest.config.js' },
@@ -126,7 +109,7 @@ describe('coverageSetupBinding', () => {
       vi.mocked(readJsonFile).mockResolvedValue({});
 
       await expect(
-        coverageSetupBinding.prompts(MEMFS_VOLUME),
+        binding.prompts(MEMFS_VOLUME),
       ).resolves.toIncludeAllPartialMembers([
         { key: 'coverage.framework', default: 'other' },
         { key: 'coverage.reportPath', default: '' },
@@ -137,7 +120,7 @@ describe('coverageSetupBinding', () => {
 
   describe('generateConfig', () => {
     it('should generate vitest config', async () => {
-      const { pluginInit } = await generateConfig();
+      const { pluginInit } = await binding.generateConfig(defaultAnswers);
       expect(pluginInit).toMatchInlineSnapshot(`
         "// NOTE: Ensure your test config includes "lcov" in coverage reporters.
           await coveragePlugin({
@@ -148,7 +131,8 @@ describe('coverageSetupBinding', () => {
     });
 
     it('should generate jest config', async () => {
-      const { pluginInit } = await generateConfig({
+      const { pluginInit } = await binding.generateConfig({
+        ...defaultAnswers,
         'coverage.framework': 'jest',
         'coverage.testCommand': 'npx jest --coverage',
       });
@@ -162,59 +146,65 @@ describe('coverageSetupBinding', () => {
     });
 
     it('should omit coverageToolCommand when test command is empty', async () => {
-      const { pluginInit } = await generateConfig({
+      const { pluginInit } = await binding.generateConfig({
+        ...defaultAnswers,
         'coverage.testCommand': '',
       });
       expect(pluginInit).not.toContain('coverageToolCommand');
     });
 
     it('should use default report path when empty', async () => {
-      const { pluginInit } = await generateConfig({
+      const { pluginInit } = await binding.generateConfig({
+        ...defaultAnswers,
         'coverage.reportPath': '',
       });
       expect(pluginInit).toContain("'coverage/lcov.info'");
     });
 
     it('should use custom report path when provided', async () => {
-      const { pluginInit } = await generateConfig({
+      const { pluginInit } = await binding.generateConfig({
+        ...defaultAnswers,
         'coverage.reportPath': 'dist/coverage/lcov.info',
       });
       expect(pluginInit).toContain("'dist/coverage/lcov.info'");
     });
 
     it('should omit coverageTypes when all selected', async () => {
-      const { pluginInit } = await generateConfig();
+      const { pluginInit } = await binding.generateConfig(defaultAnswers);
       expect(pluginInit).not.toContain('coverageTypes');
     });
 
     it('should include coverageTypes when subset selected', async () => {
-      const { pluginInit } = await generateConfig({
+      const { pluginInit } = await binding.generateConfig({
+        ...defaultAnswers,
         'coverage.types': ['branch', 'line'],
       });
       expect(pluginInit).toContain("coverageTypes: ['branch', 'line']");
     });
 
     it('should disable continueOnCommandFail when declined', async () => {
-      const { pluginInit } = await generateConfig({
+      const { pluginInit } = await binding.generateConfig({
+        ...defaultAnswers,
         'coverage.continueOnFail': false,
       });
       expect(pluginInit).toContain('continueOnCommandFail: false');
     });
 
     it('should omit continueOnCommandFail when default', async () => {
-      const { pluginInit } = await generateConfig();
+      const { pluginInit } = await binding.generateConfig(defaultAnswers);
       expect(pluginInit).not.toContain('continueOnCommandFail');
     });
 
     it('should omit categories when declined', async () => {
-      const { categories } = await generateConfig({
+      const { categories } = await binding.generateConfig({
+        ...defaultAnswers,
         'coverage.categories': false,
       });
       expect(categories).toBeUndefined();
     });
 
     it('should import from @code-pushup/coverage-plugin', async () => {
-      const { imports } = await generateConfig();
+      const { imports } = await binding.generateConfig(defaultAnswers);
       expect(imports).toEqual([
         {
           moduleSpecifier: '@code-pushup/coverage-plugin',
@@ -225,7 +215,8 @@ describe('coverageSetupBinding', () => {
   });
 
   describe('lcov reporter configuration', () => {
-    const VITEST_ANSWERS = {
+    const vitestAnswers = {
+      ...defaultAnswers,
       'coverage.framework': 'vitest',
       'coverage.configFile': 'vitest.config.ts',
     } as const;
@@ -235,7 +226,7 @@ describe('coverageSetupBinding', () => {
         'vitest.config.ts':
           "export default { test: { coverage: { reporter: ['lcov'] } } };",
       });
-      const { pluginInit } = await generateConfig(VITEST_ANSWERS, tree);
+      const { pluginInit } = await binding.generateConfig(vitestAnswers, tree);
       expect(pluginInit).not.toContain('NOTE');
     });
 
@@ -244,13 +235,14 @@ describe('coverageSetupBinding', () => {
         'vitest.config.ts':
           "import { defineConfig } from 'vitest/config';\nexport default defineConfig({ test: { coverage: { reporter: ['text'] } } });",
       });
-      const { pluginInit } = await generateConfig(VITEST_ANSWERS, tree);
+      const { pluginInit } = await binding.generateConfig(vitestAnswers, tree);
       expect(pluginInit).not.toContain('NOTE');
       expect(tree.written.get('vitest.config.ts')).toContain('lcov');
     });
 
     it('should include comment when framework is other', async () => {
-      const { pluginInit } = await generateConfig({
+      const { pluginInit } = await binding.generateConfig({
+        ...defaultAnswers,
         'coverage.framework': 'other',
       });
       expect(pluginInit).toContain('NOTE');
@@ -258,7 +250,7 @@ describe('coverageSetupBinding', () => {
 
     it('should include comment when config file cannot be read', async () => {
       const tree = createMockTree({});
-      const { pluginInit } = await generateConfig(VITEST_ANSWERS, tree);
+      const { pluginInit } = await binding.generateConfig(vitestAnswers, tree);
       expect(pluginInit).toContain('NOTE');
     });
 
@@ -266,8 +258,9 @@ describe('coverageSetupBinding', () => {
       const tree = createMockTree({
         'jest.config.js': "module.exports = { coverageReporters: ['text'] };",
       });
-      const { pluginInit } = await generateConfig(
+      const { pluginInit } = await binding.generateConfig(
         {
+          ...defaultAnswers,
           'coverage.framework': 'jest',
           'coverage.configFile': 'jest.config.js',
         },
