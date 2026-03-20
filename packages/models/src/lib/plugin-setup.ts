@@ -77,6 +77,6 @@ export type PluginSetupBinding = {
   isRecommended?: (targetDir: string) => Promise<boolean>;
   generateConfig: (
     answers: Record<string, PluginAnswer>,
-    tree?: PluginSetupTree,
+    tree: PluginSetupTree,
   ) => PluginCodegenResult | Promise<PluginCodegenResult>;
 };
