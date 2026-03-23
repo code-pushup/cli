@@ -58,6 +58,13 @@ Each plugin exposes its own configuration keys that can be passed as CLI argumen
 | **`--js-packages.dependencyGroups`** | `('prod'` \| `'dev'` \| `'optional')[]`                    | `prod`, `dev` | Dependency groups          |
 | **`--js-packages.categories`**       | `boolean`                                                  | `true`        | Add JS packages categories |
 
+#### TypeScript
+
+| Option                        | Type      | Default       | Description               |
+| ----------------------------- | --------- | ------------- | ------------------------- |
+| **`--typescript.tsconfig`**   | `string`  | auto-detected | TypeScript config file    |
+| **`--typescript.categories`** | `boolean` | `true`        | Add TypeScript categories |
+
 ### Examples
 
 Run interactively (default):

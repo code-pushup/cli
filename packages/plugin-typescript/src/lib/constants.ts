@@ -8,6 +8,8 @@ export const TYPESCRIPT_PLUGIN_TITLE = 'TypeScript';
 
 export const DEFAULT_TS_CONFIG = 'tsconfig.json';
 
+export const TSCONFIG_PATTERN = /^tsconfig(\..+)?\.json$/;
+
 const AUDIT_DESCRIPTIONS: Record<AuditSlug, string> = {
   'semantic-errors':
     'Errors that occur during type checking and type inference',

@@ -3,9 +3,8 @@ import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { readConfigFile, sys } from 'typescript';
 import { loadNxProjectGraph, logger, pluralizeToken } from '@code-pushup/utils';
+import { TSCONFIG_PATTERN } from '../constants.js';
 import { formatMetaLog } from '../format.js';
-
-const TSCONFIG_PATTERN = /^tsconfig(\..+)?\.json$/;
 
 /**
  * Returns true only if config explicitly defines files or include with values.
