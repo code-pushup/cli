@@ -7,9 +7,11 @@ vi.mock('@inquirer/prompts', () => ({
   select: vi.fn(),
 }));
 
-const { input: mockInput, checkbox: mockCheckbox } = vi.mocked(
-  await import('@inquirer/prompts'),
-);
+const {
+  input: mockInput,
+  select: mockSelect,
+  checkbox: mockCheckbox,
+} = vi.mocked(await import('@inquirer/prompts'));
 
 describe('promptPluginOptions', () => {
   const descriptors: PluginPromptDescriptor[] = [
@@ -45,6 +47,30 @@ describe('promptPluginOptions', () => {
     });
 
     expect(mockInput).toHaveBeenCalledOnce();
+  });
+
+  it('should pass default to select prompt', async () => {
+    mockSelect.mockResolvedValue('pnpm');
+
+    await promptPluginOptions(
+      [
+        {
+          key: 'js-packages.packageManager',
+          message: 'Package manager',
+          type: 'select',
+          choices: [
+            { name: 'npm', value: 'npm' },
+            { name: 'pnpm', value: 'pnpm' },
+          ],
+          default: 'pnpm',
+        },
+      ],
+      {},
+    );
+
+    expect(mockSelect).toHaveBeenCalledWith(
+      expect.objectContaining({ default: 'pnpm' }),
+    );
   });
 
   it('should return checkbox values as array', async () => {

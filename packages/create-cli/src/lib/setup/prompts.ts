@@ -98,6 +98,7 @@ async function runPrompt(
       return select({
         message: descriptor.message,
         choices: [...descriptor.choices],
+        default: descriptor.default,
       });
     case 'checkbox':
       return checkbox({
