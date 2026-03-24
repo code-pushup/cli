@@ -1,3 +1,13 @@
+## 0.122.1 (2026-03-24)
+
+### 🩹 Fixes
+
+- **create-cli:** pass default value to select prompt ([9654c004](https://github.com/code-pushup/cli/commit/9654c004))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
 ## 0.122.0 (2026-03-23)
 
 ### 🚀 Features
