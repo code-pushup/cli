@@ -1,3 +1,13 @@
+## 0.123.0 (2026-03-24)
+
+### 🚀 Features
+
+- **plugin-typescript:** add setup wizard binding ([32f3e518](https://github.com/code-pushup/cli/commit/32f3e518))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.122.1 (2026-03-24)
 
 ### 🩹 Fixes
