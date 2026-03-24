@@ -30,6 +30,7 @@
     "@code-pushup/eslint-plugin": "0.122.1",
     "@code-pushup/js-packages-plugin": "0.122.1",
     "@code-pushup/models": "0.122.1",
+    "@code-pushup/typescript-plugin": "0.122.1",
     "@code-pushup/utils": "0.122.1",
     "@inquirer/prompts": "^8.0.0",
     "yaml": "^2.5.1",
