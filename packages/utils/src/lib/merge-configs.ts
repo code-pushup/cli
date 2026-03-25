@@ -188,7 +188,7 @@ function toSentence(text: string): string {
   return `${trimmed}.`;
 }
 
-function mergeDescriptions(
+export function mergeDescriptions(
   a: string | undefined,
   b: string | undefined,
 ): string | undefined {
