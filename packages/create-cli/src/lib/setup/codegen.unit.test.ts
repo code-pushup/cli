@@ -490,9 +490,7 @@ describe('generateConfigSource', () => {
             {
               slug: 'performance',
               title: 'Performance',
-              refs: [
-                ...lighthouseGroupRefs(lhPlugin, 'performance'),
-              ],
+              refs: lighthouseGroupRefs(lhPlugin, 'performance'),
             },
           ],
         } satisfies CoreConfig;

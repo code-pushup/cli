@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
-import type { PluginAnswer, PluginSetupTree } from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import type { PluginAnswer } from '@code-pushup/models';
+import { MEMFS_VOLUME, createMockTree } from '@code-pushup/test-utils';
 import { readJsonFile } from '@code-pushup/utils';
 import { coverageSetupBinding as binding } from './binding.js';
 
@@ -21,19 +21,6 @@ const defaultAnswers: Record<string, PluginAnswer> = {
   'coverage.continueOnFail': true,
   'coverage.categories': true,
 };
-
-function createMockTree(
-  files: Record<string, string> = {},
-): PluginSetupTree & { written: Map<string, string> } {
-  const written = new Map<string, string>();
-  return {
-    written,
-    read: async (filePath: string) => files[filePath] ?? null,
-    write: async (filePath: string, content: string) => {
-      written.set(filePath, content);
-    },
-  };
-}
 
 describe('coverageSetupBinding', () => {
   beforeEach(() => {

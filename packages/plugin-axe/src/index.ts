@@ -12,3 +12,4 @@ export {
   axeGroupRefs,
 } from './lib/utils.js';
 export { axeCategories } from './lib/categories.js';
+export { axeSetupBinding } from './lib/binding.js';
