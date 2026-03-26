@@ -69,7 +69,7 @@ Each plugin exposes its own configuration keys that can be passed as CLI argumen
 
 | Option                        | Type                                                             | Default                 | Description                     |
 | ----------------------------- | ---------------------------------------------------------------- | ----------------------- | ------------------------------- |
-| **`--lighthouse.urls`**       | `string`                                                         | `http://localhost:4200` | Target URL(s) (comma-separated) |
+| **`--lighthouse.urls`**       | `string \| string[]`                                             | `http://localhost:4200` | Target URL(s) (comma-separated) |
 | **`--lighthouse.categories`** | `('performance'` \| `'a11y'` \| `'best-practices'` \| `'seo')[]` | all                     | Lighthouse categories           |
 
 ### Examples
