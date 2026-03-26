@@ -85,6 +85,10 @@ function addCategoryRefs(
   refsExpressions: MergedCategory['refsExpressions'],
   depth: number,
 ): void {
+  if (refsExpressions.length === 1 && refs.length === 0) {
+    builder.addLine(`refs: ${refsExpressions[0]},`, depth);
+    return;
+  }
   builder.addLine('refs: [', depth);
   builder.addLines(
     refsExpressions.map(expr => `...${expr},`),

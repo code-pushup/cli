@@ -72,6 +72,15 @@ Each plugin exposes its own configuration keys that can be passed as CLI argumen
 | **`--lighthouse.urls`**       | `string \| string[]`                                             | `http://localhost:4200` | Target URL(s) (comma-separated) |
 | **`--lighthouse.categories`** | `('performance'` \| `'a11y'` \| `'best-practices'` \| `'seo')[]` | all                     | Lighthouse categories           |
 
+#### Axe
+
+| Option                  | Type                                                         | Default                 | Description                                |
+| ----------------------- | ------------------------------------------------------------ | ----------------------- | ------------------------------------------ |
+| **`--axe.urls`**        | `string \| string[]`                                         | `http://localhost:4200` | Target URL(s) (comma-separated)            |
+| **`--axe.preset`**      | `'wcag21aa'` \| `'wcag22aa'` \| `'best-practice'` \| `'all'` | `wcag21aa`              | Accessibility preset                       |
+| **`--axe.setupScript`** | `boolean`                                                    | `false`                 | Create setup script for auth-protected app |
+| **`--axe.categories`**  | `boolean`                                                    | `true`                  | Add Axe categories                         |
+
 ### Examples
 
 Run interactively (default):

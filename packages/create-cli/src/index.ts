@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { axeSetupBinding } from '@code-pushup/axe-plugin';
 import { coverageSetupBinding } from '@code-pushup/coverage-plugin';
 import { eslintSetupBinding } from '@code-pushup/eslint-plugin';
 import { jsPackagesSetupBinding } from '@code-pushup/js-packages-plugin';
@@ -15,13 +16,14 @@ import {
 } from './lib/setup/types.js';
 import { runSetupWizard } from './lib/setup/wizard.js';
 
-// TODO: create, import and pass remaining plugin bindings (jsdocs, axe)
+// TODO: create, import and pass remaining plugin bindings (jsdocs)
 const bindings: PluginSetupBinding[] = [
   eslintSetupBinding,
   coverageSetupBinding,
   jsPackagesSetupBinding,
   typescriptSetupBinding,
   lighthouseSetupBinding,
+  axeSetupBinding,
 ];
 
 const argv = await yargs(hideBin(process.argv))

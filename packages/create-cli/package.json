@@ -26,6 +26,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@code-pushup/axe-plugin": "0.124.0",
     "@code-pushup/coverage-plugin": "0.124.0",
     "@code-pushup/eslint-plugin": "0.124.0",
     "@code-pushup/js-packages-plugin": "0.124.0",
