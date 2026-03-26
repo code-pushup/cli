@@ -10,9 +10,11 @@ import {
   singleQuote,
 } from '@code-pushup/utils';
 import {
+  LIGHTHOUSE_GROUP_SLUGS,
   LIGHTHOUSE_PLUGIN_SLUG,
   LIGHTHOUSE_PLUGIN_TITLE,
 } from './constants.js';
+import type { LighthouseGroupSlug } from './types.js';
 
 const { name: PACKAGE_NAME } = createRequire(import.meta.url)(
   '../../package.json',
@@ -20,6 +22,13 @@ const { name: PACKAGE_NAME } = createRequire(import.meta.url)(
 
 const DEFAULT_URL = 'http://localhost:4200';
 const PLUGIN_VAR = 'lhPlugin';
+
+const CATEGORY_TO_GROUP: Record<string, LighthouseGroupSlug> = {
+  performance: 'performance',
+  a11y: 'accessibility',
+  'best-practices': 'best-practices',
+  seo: 'seo',
+};
 
 const CATEGORIES: CategoryCodegenConfig[] = [
   {
@@ -86,7 +95,6 @@ export const lighthouseSetupBinding = {
   generateConfig: (answers: Record<string, PluginAnswer>) => {
     const options = parseAnswers(answers);
     const hasCategories = options.categories.length > 0;
-    const formattedUrls = formatUrls(options.urls);
     const imports = [
       {
         moduleSpecifier: PACKAGE_NAME,
@@ -94,17 +102,19 @@ export const lighthouseSetupBinding = {
         ...(hasCategories ? { namedImports: ['lighthouseGroupRefs'] } : {}),
       },
     ];
+    const pluginCall = formatPluginCall(options);
+
     if (!hasCategories) {
       return {
         imports,
-        pluginInit: [`lighthousePlugin(${formattedUrls}),`],
+        pluginInit: [`${pluginCall},`],
       };
     }
     return {
       imports,
       pluginDeclaration: {
         identifier: PLUGIN_VAR,
-        expression: `lighthousePlugin(${formattedUrls})`,
+        expression: pluginCall,
       },
       pluginInit: [`${PLUGIN_VAR},`],
       categories: createCategories(options),
@@ -119,6 +129,19 @@ function parseAnswers(
     urls: answerNonEmptyArray(answers, 'lighthouse.urls', DEFAULT_URL),
     categories: answerArray(answers, 'lighthouse.categories'),
   };
+}
+
+function formatPluginCall({ urls, categories }: LighthouseOptions): string {
+  const formattedUrls = formatUrls(urls);
+  const groups = categories.flatMap(slug => {
+    const group = CATEGORY_TO_GROUP[slug];
+    return group ? [group] : [];
+  });
+  if (groups.length === 0 || groups.length === LIGHTHOUSE_GROUP_SLUGS.length) {
+    return `lighthousePlugin(${formattedUrls})`;
+  }
+  const onlyGroups = groups.map(singleQuote).join(', ');
+  return `lighthousePlugin(${formattedUrls}, { onlyGroups: [${onlyGroups}] })`;
 }
 
 function formatUrls([first, ...rest]: [string, ...string[]]): string {

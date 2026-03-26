@@ -73,6 +73,21 @@ describe('lighthouseSetupBinding', () => {
       ]);
     });
 
+    it('should pass onlyGroups when not all categories are selected', () => {
+      const { pluginDeclaration } = binding.generateConfig({
+        ...defaultAnswers,
+        'lighthouse.categories': ['performance', 'seo'],
+      });
+      expect(pluginDeclaration!.expression).toContain(
+        "onlyGroups: ['performance', 'seo']",
+      );
+    });
+
+    it('should omit onlyGroups when all categories are selected', () => {
+      const { pluginDeclaration } = binding.generateConfig(defaultAnswers);
+      expect(pluginDeclaration!.expression).not.toContain('onlyGroups');
+    });
+
     it('should use custom URL in plugin declaration', () => {
       expect(
         binding.generateConfig({
