@@ -1,3 +1,13 @@
+## 0.124.0 (2026-03-26)
+
+### 🚀 Features
+
+- **plugin-lighthouse:** add setup wizard binding ([#1277](https://github.com/code-pushup/cli/pull/1277))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.123.0 (2026-03-24)
 
 ### 🚀 Features
