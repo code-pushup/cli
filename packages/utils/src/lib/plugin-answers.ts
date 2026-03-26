@@ -24,6 +24,16 @@ export function answerArray(
     .filter(Boolean);
 }
 
+/** Extracts a non-empty string array from a plugin answer, using a default if empty. */
+export function answerNonEmptyArray(
+  answers: Record<string, PluginAnswer>,
+  key: string,
+  defaultValue: string,
+): [string, ...string[]] {
+  const [first = defaultValue, ...rest] = answerArray(answers, key);
+  return [first, ...rest];
+}
+
 /** Extracts a boolean from a plugin answer, defaulting to `true`. */
 export function answerBoolean(
   answers: Record<string, PluginAnswer>,

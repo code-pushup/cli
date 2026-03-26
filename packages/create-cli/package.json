@@ -29,6 +29,7 @@
     "@code-pushup/coverage-plugin": "0.123.0",
     "@code-pushup/eslint-plugin": "0.123.0",
     "@code-pushup/js-packages-plugin": "0.123.0",
+    "@code-pushup/lighthouse-plugin": "0.123.0",
     "@code-pushup/models": "0.123.0",
     "@code-pushup/typescript-plugin": "0.123.0",
     "@code-pushup/utils": "0.123.0",

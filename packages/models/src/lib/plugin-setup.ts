@@ -37,6 +37,9 @@ export type PluginPromptDescriptor =
   | CheckboxPrompt
   | ConfirmPrompt;
 
+/** A single value in the answers record produced by plugin prompts. */
+export type PluginAnswer = string | string[] | boolean;
+
 export type ImportDeclarationStructure = {
   moduleSpecifier: string;
   defaultImport?: string;
@@ -44,14 +47,23 @@ export type ImportDeclarationStructure = {
   isTypeOnly?: boolean;
 };
 
-/** A single value in the answers record produced by plugin prompts. */
-export type PluginAnswer = string | string[] | boolean;
+export type PluginDeclarationStructure = {
+  identifier: string;
+  expression: string;
+};
 
-/** Code a plugin binding contributes to the generated config. */
+type CategoryCodegenRefs =
+  | { refs: CategoryConfig['refs'] }
+  | { refsExpression: string };
+
+export type CategoryCodegenConfig = CategoryCodegenRefs &
+  Pick<CategoryConfig, 'slug' | 'title' | 'description' | 'docsUrl'>;
+
 export type PluginCodegenResult = {
   imports: ImportDeclarationStructure[];
+  pluginDeclaration?: PluginDeclarationStructure;
   pluginInit: string[];
-  categories?: CategoryConfig[];
+  categories?: CategoryCodegenConfig[];
 };
 
 /** Minimal file system abstraction passed to plugin bindings. */

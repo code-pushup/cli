@@ -2,6 +2,7 @@ import type { PluginCodegenResult } from '@code-pushup/models';
 import type { MonorepoTool } from '@code-pushup/utils';
 
 export type {
+  CategoryCodegenConfig,
   ImportDeclarationStructure,
   PluginAnswer,
   PluginCodegenResult,

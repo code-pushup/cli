@@ -113,9 +113,11 @@ export {
   type PluginUrls,
 } from './lib/plugin-config.js';
 export type {
+  CategoryCodegenConfig,
   ImportDeclarationStructure,
   PluginAnswer,
   PluginCodegenResult,
+  PluginDeclarationStructure,
   PluginPromptDescriptor,
   PluginSetupBinding,
   PluginSetupTree,

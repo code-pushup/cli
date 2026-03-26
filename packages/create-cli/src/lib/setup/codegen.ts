@@ -1,10 +1,6 @@
 import path from 'node:path';
-import type { CategoryRef } from '@code-pushup/models';
-import {
-  mergeCategoriesBySlug,
-  singleQuote,
-  toUnixPath,
-} from '@code-pushup/utils';
+import { exists, toUnixPath } from '@code-pushup/utils';
+import { addCategories } from './codegen-categories.js';
 import type {
   ConfigFileFormat,
   ImportDeclarationStructure,
@@ -17,7 +13,7 @@ const CORE_CONFIG_IMPORT: ImportDeclarationStructure = {
   isTypeOnly: true,
 };
 
-class CodeBuilder {
+export class CodeBuilder {
   private lines: string[] = [];
 
   addLine(text: string, depth = 0): void {
@@ -45,6 +41,7 @@ export function generateConfigSource(
 ): string {
   const builder = new CodeBuilder();
   addImports(builder, collectImports(plugins, format));
+  addPluginDeclarations(builder, plugins);
   if (format === 'ts') {
     builder.addLine('export default {');
     addPlugins(builder, plugins);
@@ -66,6 +63,7 @@ export function generatePresetSource(
 ): string {
   const builder = new CodeBuilder();
   addImports(builder, collectImports(plugins, format));
+  addPluginDeclarations(builder, plugins);
   addPresetExport(builder, plugins, format);
   return builder.toString();
 }
@@ -137,6 +135,20 @@ function addImports(
   }
 }
 
+function addPluginDeclarations(
+  builder: CodeBuilder,
+  plugins: PluginCodegenResult[],
+): void {
+  const declarations = plugins
+    .map(({ pluginDeclaration }) => pluginDeclaration)
+    .filter(exists)
+    .map(d => `const ${d.identifier} = ${d.expression};`);
+  if (declarations.length > 0) {
+    builder.addLines(declarations);
+    builder.addEmptyLine();
+  }
+}
+
 function addPlugins(
   builder: CodeBuilder,
   plugins: PluginCodegenResult[],
@@ -182,38 +194,4 @@ function addPresetExport(
   addCategories(builder, plugins, 2);
   builder.addLine('};', 1);
   builder.addLine('}');
-}
-
-function addCategories(
-  builder: CodeBuilder,
-  plugins: PluginCodegenResult[],
-  depth = 1,
-): void {
-  const categories = mergeCategoriesBySlug(
-    plugins.flatMap(p => p.categories ?? []),
-  );
-  if (categories.length === 0) {
-    return;
-  }
-  builder.addLine('categories: [', depth);
-  categories.forEach(({ slug, title, description, docsUrl, refs }) => {
-    builder.addLine('{', depth + 1);
-    builder.addLine(`slug: '${slug}',`, depth + 2);
-    builder.addLine(`title: ${singleQuote(title)},`, depth + 2);
-    if (description) {
-      builder.addLine(`description: ${singleQuote(description)},`, depth + 2);
-    }
-    if (docsUrl) {
-      builder.addLine(`docsUrl: ${singleQuote(docsUrl)},`, depth + 2);
-    }
-    builder.addLine('refs: [', depth + 2);
-    builder.addLines(refs.map(formatCategoryRef), depth + 3);
-    builder.addLine('],', depth + 2);
-    builder.addLine('},', depth + 1);
-  });
-  builder.addLine('],', depth);
-}
-
-function formatCategoryRef(ref: CategoryRef): string {
-  return `{ type: '${ref.type}', plugin: '${ref.plugin}', slug: '${ref.slug}', weight: ${ref.weight} },`;
 }

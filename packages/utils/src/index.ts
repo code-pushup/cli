@@ -94,7 +94,11 @@ export {
 } from './lib/guards.js';
 export { interpolate } from './lib/interpolate.js';
 export { Logger, logger } from './lib/logger.js';
-export { mergeCategoriesBySlug, mergeConfigs } from './lib/merge-configs.js';
+export {
+  mergeCategoriesBySlug,
+  mergeConfigs,
+  mergeDescriptions,
+} from './lib/merge-configs.js';
 export { loadNxProjectGraph } from './lib/nx.js';
 export {
   addIndex,
@@ -197,6 +201,7 @@ export {
 export {
   answerArray,
   answerBoolean,
+  answerNonEmptyArray,
   answerString,
 } from './lib/plugin-answers.js';
 export {

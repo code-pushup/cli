@@ -376,6 +376,130 @@ describe('generateConfigSource', () => {
       expect(source).toContain("plugin: 'ts'");
     });
   });
+
+  describe('pluginDeclaration', () => {
+    it('should emit variable declaration between imports and config export', () => {
+      const plugin: PluginCodegenResult = {
+        imports: [
+          {
+            moduleSpecifier: '@code-pushup/lighthouse-plugin',
+            defaultImport: 'lighthousePlugin',
+          },
+        ],
+        pluginDeclaration: {
+          identifier: 'lhPlugin',
+          expression: "lighthousePlugin('http://localhost:4200')",
+        },
+        pluginInit: ['lhPlugin,'],
+      };
+      expect(generateConfigSource([plugin], 'ts')).toMatchInlineSnapshot(`
+        "import lighthousePlugin from '@code-pushup/lighthouse-plugin';
+        import type { CoreConfig } from '@code-pushup/models';
+
+        const lhPlugin = lighthousePlugin('http://localhost:4200');
+
+        export default {
+          plugins: [
+            lhPlugin,
+          ],
+        } satisfies CoreConfig;
+        "
+      `);
+    });
+  });
+
+  describe('expression refs', () => {
+    it('should generate config with expression refs and merged categories', () => {
+      expect(
+        generateConfigSource(
+          [
+            {
+              imports: [
+                {
+                  moduleSpecifier: '@code-pushup/lighthouse-plugin',
+                  defaultImport: 'lighthousePlugin',
+                  namedImports: ['lighthouseGroupRefs'],
+                },
+              ],
+              pluginDeclaration: {
+                identifier: 'lhPlugin',
+                expression: "lighthousePlugin('http://localhost:4200')",
+              },
+              pluginInit: ['lhPlugin,'],
+              categories: [
+                {
+                  slug: 'a11y',
+                  title: 'Accessibility',
+                  refsExpression:
+                    "lighthouseGroupRefs(lhPlugin, 'accessibility')",
+                },
+                {
+                  slug: 'performance',
+                  title: 'Performance',
+                  refsExpression:
+                    "lighthouseGroupRefs(lhPlugin, 'performance')",
+                },
+              ],
+            },
+            {
+              imports: [
+                {
+                  moduleSpecifier: '@code-pushup/axe-plugin',
+                  defaultImport: 'axePlugin',
+                  namedImports: ['axeGroupRefs'],
+                },
+              ],
+              pluginDeclaration: {
+                identifier: 'axe',
+                expression: "axePlugin('http://localhost:4200')",
+              },
+              pluginInit: ['axe,'],
+              categories: [
+                {
+                  slug: 'a11y',
+                  title: 'Accessibility',
+                  refsExpression: 'axeGroupRefs(axe)',
+                },
+              ],
+            },
+          ],
+          'ts',
+        ),
+      ).toMatchInlineSnapshot(`
+        "import axePlugin, { axeGroupRefs } from '@code-pushup/axe-plugin';
+        import lighthousePlugin, { lighthouseGroupRefs } from '@code-pushup/lighthouse-plugin';
+        import type { CoreConfig } from '@code-pushup/models';
+
+        const lhPlugin = lighthousePlugin('http://localhost:4200');
+        const axe = axePlugin('http://localhost:4200');
+
+        export default {
+          plugins: [
+            lhPlugin,
+            axe,
+          ],
+          categories: [
+            {
+              slug: 'a11y',
+              title: 'Accessibility',
+              refs: [
+                ...lighthouseGroupRefs(lhPlugin, 'accessibility'),
+                ...axeGroupRefs(axe),
+              ],
+            },
+            {
+              slug: 'performance',
+              title: 'Performance',
+              refs: [
+                ...lighthouseGroupRefs(lhPlugin, 'performance'),
+              ],
+            },
+          ],
+        } satisfies CoreConfig;
+        "
+      `);
+    });
+  });
 });
 
 describe('generatePresetSource', () => {
