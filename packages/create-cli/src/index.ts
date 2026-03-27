@@ -5,6 +5,7 @@ import { axeSetupBinding } from '@code-pushup/axe-plugin';
 import { coverageSetupBinding } from '@code-pushup/coverage-plugin';
 import { eslintSetupBinding } from '@code-pushup/eslint-plugin';
 import { jsPackagesSetupBinding } from '@code-pushup/js-packages-plugin';
+import { jsDocsSetupBinding } from '@code-pushup/jsdocs-plugin';
 import { lighthouseSetupBinding } from '@code-pushup/lighthouse-plugin';
 import { typescriptSetupBinding } from '@code-pushup/typescript-plugin';
 import { parsePluginSlugs, validatePluginSlugs } from './lib/setup/plugins.js';
@@ -16,7 +17,6 @@ import {
 } from './lib/setup/types.js';
 import { runSetupWizard } from './lib/setup/wizard.js';
 
-// TODO: create, import and pass remaining plugin bindings (jsdocs)
 const bindings: PluginSetupBinding[] = [
   eslintSetupBinding,
   coverageSetupBinding,
@@ -24,6 +24,7 @@ const bindings: PluginSetupBinding[] = [
   typescriptSetupBinding,
   lighthouseSetupBinding,
   axeSetupBinding,
+  jsDocsSetupBinding,
 ];
 
 const argv = await yargs(hideBin(process.argv))
