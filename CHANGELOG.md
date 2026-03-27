@@ -1,3 +1,13 @@
+## 0.125.0 (2026-03-27)
+
+### 🚀 Features
+
+- **plugin-axe:** add setup wizard binding ([5f2df75f](https://github.com/code-pushup/cli/commit/5f2df75f))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
 ## 0.124.0 (2026-03-26)
 
 ### 🚀 Features
