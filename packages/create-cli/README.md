@@ -72,6 +72,13 @@ Each plugin exposes its own configuration keys that can be passed as CLI argumen
 | **`--lighthouse.urls`**       | `string \| string[]`                                             | `http://localhost:4200` | Target URL(s) (comma-separated) |
 | **`--lighthouse.categories`** | `('performance'` \| `'a11y'` \| `'best-practices'` \| `'seo')[]` | all                     | Lighthouse categories           |
 
+#### JSDocs
+
+| Option                    | Type                 | Default                                      | Description                            |
+| ------------------------- | -------------------- | -------------------------------------------- | -------------------------------------- |
+| **`--jsdocs.patterns`**   | `string \| string[]` | `src/**/*.ts, src/**/*.js, !**/node_modules` | Source file patterns (comma-separated) |
+| **`--jsdocs.categories`** | `boolean`            | `true`                                       | Add JSDocs categories                  |
+
 #### Axe
 
 | Option                  | Type                                                         | Default                 | Description                                |
