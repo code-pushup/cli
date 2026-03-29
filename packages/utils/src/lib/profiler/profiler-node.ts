@@ -25,9 +25,9 @@ import {
   SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
 } from './constants.js';
 import { Profiler, type ProfilerOptions } from './profiler.js';
-import { entryToTraceEvents } from './trace-file-utils';
-import type { TraceEvent } from './trace-file.type';
-import { getTraceEventWalFormat } from './wal-json-trace';
+import { entryToTraceEvents } from './trace-file-utils.js';
+import type { TraceEvent } from './trace-file.type.js';
+import { getTraceEventWalFormat } from './wal-json-trace.js';
 
 /**
  * Strips encodePerfEntry from a profiler format option and returns the WalFormat part.
@@ -140,8 +140,6 @@ export class NodejsProfiler<
    * A WriteAheadLogFile sink is automatically created for buffering performance data.
    * @param options - Configuration options
    */
-  constructor(options: NodejsProfilerOptionsDefault<Tracks>);
-  constructor(options: NodejsProfilerOptionsWithFormat<DomainEvents, Tracks>);
   // eslint-disable-next-line max-lines-per-function
   constructor(
     options:

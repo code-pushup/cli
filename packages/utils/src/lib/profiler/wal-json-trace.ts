@@ -1,5 +1,5 @@
 import { defaultClock } from '../clock-epoch.js';
-import type { Codec, InvalidEntry, WalFormat, WalRecord } from '../wal.js';
+import type { Codec, WalFormat, WalRecord } from '../wal.js';
 import { PROFILER_PERSIST_BASENAME } from './constants.js';
 import {
   complete,

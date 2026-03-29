@@ -119,7 +119,7 @@ describe('extendError', () => {
     const original = new Error('boom');
 
     const extended = extendError(original, 'wrap failed', {
-      appendMessage: true,
+      appendOriginalMessage: true,
     });
 
     expect(extended.message).toBe('wrap failed\nboom');

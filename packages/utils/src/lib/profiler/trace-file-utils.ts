@@ -6,7 +6,7 @@ import type {
 } from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
 import { defaultClock } from '../clock-epoch.js';
-import type { WalRecord } from '../wal';
+import type { WalRecord } from '../wal.js';
 import type {
   TraceEvent,
   TraceEventContainer,

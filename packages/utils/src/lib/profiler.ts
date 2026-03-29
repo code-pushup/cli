@@ -1,4 +1,4 @@
-import { getNodeJSProfiler } from './profiler/profiler-node';
+import { getNodeJSProfiler } from './profiler/profiler-node.js';
 
 export const profiler = getNodeJSProfiler({
   track: 'CLI',

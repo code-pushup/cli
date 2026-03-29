@@ -29,14 +29,12 @@ describe('NodeJS Profiler Integration', () => {
 
     // Clean up trace files from previous test runs
     const traceFilesDir = path.join(process.cwd(), 'tmp', 'int', 'utils');
-    // eslint-disable-next-line n/no-sync
+
     if (fs.existsSync(traceFilesDir)) {
-      // eslint-disable-next-line n/no-sync
       const files = fs.readdirSync(traceFilesDir);
       // eslint-disable-next-line functional/no-loop-statements
       for (const file of files) {
         if (file.endsWith('.json') || file.endsWith('.jsonl')) {
-          // eslint-disable-next-line n/no-sync
           fs.unlinkSync(path.join(traceFilesDir, file));
         }
       }
@@ -266,7 +264,7 @@ describe('NodeJS Profiler Integration', () => {
       expect(fileName).toMatch(/^trace\.\d{8}-\d{6}-\d{3}(?:\.\d+){3}\.jsonl$/);
 
       const groupIdDirPath = path.dirname(filePath);
-      // eslint-disable-next-line n/no-sync
+
       expect(fs.existsSync(groupIdDirPath)).toBeTrue();
 
       profiler.close();
@@ -288,9 +286,9 @@ describe('NodeJS Profiler Integration', () => {
       const groupId = path.basename(dirPath);
 
       expect(groupId).toMatch(ID_PATTERNS.TIME_ID);
-      // eslint-disable-next-line n/no-sync
+
       expect(fs.existsSync(dirPath)).toBeTrue();
-      // eslint-disable-next-line n/no-sync
+
       expect(fs.statSync(dirPath).isDirectory()).toBeTrue();
 
       profiler.close();
