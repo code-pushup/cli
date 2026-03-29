@@ -69,10 +69,9 @@ export type WalStats<T> = {
   lastRecovery: RecoverResult<T | InvalidEntry<string>> | null;
 };
 
-export const createTolerantCodec = <I, O = string>(codec: {
-  encode: (v: I) => O;
-  decode: (d: O) => I;
-}): Codec<I | InvalidEntry<O>, O> => {
+export const createTolerantCodec = <I, O = string, D = I>(
+  codec: Codec<I, O, D>,
+): Codec<I | InvalidEntry<O>, O, D | InvalidEntry<O>> => {
   const { encode, decode } = codec;
 
   return {
@@ -160,7 +159,8 @@ export class WriteAheadLogFile<T extends WalRecord = WalRecord>
    * Create a new WAL file instance.
    * @param options - Configuration options
    */
-  constructor(options: { file: string; codec: Codec<T> }) {
+  /** Codec may decode to a supertype of T (e.g. TraceEvent when T is a narrower event type). */
+  constructor(options: { file: string; codec: Codec<T, string, any> }) {
     this.#file = options.file;
     const c = createTolerantCodec(options.codec);
     this.#decode = c.decode;
