@@ -16,7 +16,6 @@ import type {
 const BASE_TS = 1_700_000_005_000_000;
 const FIXED_TIME = '2026-01-28T14:29:27.995Z';
 
-/* ───────────── IO ───────────── */
 const read = (p: string) => fs.readFile(p, 'utf8').then(s => s.trim());
 const parseJsonl = (s: string) =>
   s
@@ -25,7 +24,6 @@ const parseJsonl = (s: string) =>
     .map(l => JSON.parse(l));
 const parseDecodeJsonl = (s: string) => parseJsonl(s).map(decodeEvent);
 
-/* ───────────── Metadata ───────────── */
 const normMeta = (
   m?: TraceMetadata | Record<string, unknown>,
   keepGen = true,
@@ -42,7 +40,6 @@ const normMeta = (
       } as TraceMetadata)
     : undefined;
 
-/* ───────────── Detail ───────────── */
 const normalizeDetail = (d: unknown): unknown => {
   const o =
     typeof d === 'string'
@@ -101,7 +98,6 @@ const ctx = (e: TraceEvent[], base = BASE_TS) => ({
   ),
 });
 
-/* ───────────── Event normalization ───────────── */
 const mapIf = <T, R>(v: T | undefined, m: Map<T, R>, k: string) =>
   v != null && m.has(v) ? { [k]: m.get(v)! } : {};
 
@@ -152,7 +148,6 @@ const normalizeEvent = (
   };
 };
 
-/* ───────────── Public normalization ───────────── */
 export const normalizeTraceEvents = (
   events: TraceEvent[],
   { baseTimestampUs = BASE_TS } = {},
@@ -176,11 +171,8 @@ export const normalizeAndFormatEvents = (
       : input
     : normalizeTraceEvents(input, opts);
 
-/* ───────────── Loaders ───────────── */
 export const loadAndOmitTraceJsonl = (p: `${string}.jsonl`, o?: any) =>
   read(p).then(s => normalizeAndFormatEvents(parseDecodeJsonl(s), o));
-
-export const loadTraceJsonlForSnapshot = loadAndOmitTraceJsonl;
 
 export const loadAndOmitTraceJson = async (
   p: string,
@@ -196,23 +188,3 @@ export const loadAndOmitTraceJson = async (
   JSON.stringify(r);
   return r;
 };
-
-export const loadNormalizedTraceJson = async (
-  p: `${string}.json`,
-): Promise<TraceEventContainer> => {
-  const j = JSON.parse(await read(p));
-  const r = createTraceFile({
-    traceEvents: normalizeTraceEvents(j.traceEvents?.map(decodeEvent) ?? []),
-    metadata: normMeta(j.metadata, false),
-    startTime: j.metadata?.startTime,
-  });
-  const { displayTimeUnit, ...rest } = r;
-  return rest;
-};
-
-export const loadNormalizedTraceJsonl = async (
-  p: `${string}.jsonl`,
-): Promise<TraceEventContainer> =>
-  createTraceFile({
-    traceEvents: normalizeTraceEvents(parseDecodeJsonl(await read(p))),
-  });

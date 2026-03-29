@@ -1,6 +1,6 @@
 import {
   NodejsProfiler,
-  type NodejsProfilerOptions,
+  type NodejsProfilerOptionsWithFormat,
 } from '../../src/lib/profiler/profiler-node.js';
 import { entryToTraceEvents } from '../../src/lib/profiler/trace-file-utils.js';
 import type { TraceEvent } from '../../src/lib/profiler/trace-file.type.js';
@@ -26,12 +26,18 @@ export function getTrackConfig(): TrackMeta {
  */
 export function getProfilerConfig(
   options?: Partial<
-    NodejsProfilerOptions<TraceEvent, Record<string, ActionTrackEntryPayload>>
+    NodejsProfilerOptionsWithFormat<
+      TraceEvent,
+      Record<string, ActionTrackEntryPayload>
+    >
   >,
-): NodejsProfilerOptions<TraceEvent, Record<string, ActionTrackEntryPayload>> {
+): NodejsProfilerOptionsWithFormat<
+  TraceEvent,
+  Record<string, ActionTrackEntryPayload>
+> {
   return {
     format: {
-      ...traceEventWalFormat(),
+      ...traceEventWalFormat,
       encodePerfEntry: entryToTraceEvents,
     },
     ...getTrackConfig(),

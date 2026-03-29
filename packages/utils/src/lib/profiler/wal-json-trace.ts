@@ -1,5 +1,5 @@
 import { defaultClock } from '../clock-epoch.js';
-import type { InvalidEntry, WalFormat } from '../wal.js';
+import type { Codec, InvalidEntry, WalFormat, WalRecord } from '../wal.js';
 import { PROFILER_PERSIST_BASENAME } from './constants.js';
 import {
   complete,
@@ -57,30 +57,38 @@ export function generateTraceContent(
 /**
  * Codec for encoding and decoding trace events.
  * Encodes nested objects in args.detail and args.data.detail to JSON strings for storage.
+ * Decode returns TraceEvent; use with WalFormat<T, TraceEvent> when T extends TraceEvent.
  */
-export const traceEventCodec = {
+export const traceEventCodec: Codec<
+  TraceEvent & WalRecord,
+  string,
+  TraceEvent
+> = {
   encode: serializeTraceEvent,
   decode: deserializeTraceEvent,
 };
 
 /**
- * Creates a WAL (Write-Ahead Logging) format configuration for Chrome DevTools trace files.
- * Automatically finalizes shards into complete trace files with proper metadata and margin events.
- * @returns WalFormat configuration object with baseName, codec, extensions, and finalizer
+ * WAL format for Chrome DevTools trace files (codec decodes to TraceEvent).
+ * Use getTraceEventWalFormat<T>() to get a format typed for subtype T.
  */
-export function traceEventWalFormat() {
-  return {
-    baseName: PROFILER_PERSIST_BASENAME,
-    walExtension: '.jsonl',
-    finalExtension: '.json',
-    codec: traceEventCodec,
-    finalizer: (
-      records: (TraceEvent | InvalidEntry)[],
-      metadata?: Record<string, unknown>,
-    ) =>
-      generateTraceContent(
-        records.filter((r): r is TraceEvent => !('__invalid' in (r as object))),
-        metadata,
-      ),
-  } satisfies WalFormat<TraceEvent>;
+export const traceEventWalFormat: WalFormat<
+  TraceEvent & WalRecord,
+  TraceEvent
+> = {
+  baseName: PROFILER_PERSIST_BASENAME,
+  walExtension: '.jsonl',
+  finalExtension: '.json',
+  codec: traceEventCodec,
+  finalizer: generateTraceContent,
+};
+
+/**
+ * Returns the default trace format for use when no custom format is passed.
+ * Typed as WalFormat<T, TraceEvent> so it is assignable without casts when T extends TraceEvent.
+ */
+export function getTraceEventWalFormat<
+  T extends TraceEvent & WalRecord,
+>(): WalFormat<T, TraceEvent> {
+  return traceEventWalFormat;
 }

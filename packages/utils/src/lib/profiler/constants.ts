@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 /**
  * Environment variable name for enabling/disabling profiling globally.
  * When set to 'true', profiling is enabled. When set to 'false' or unset, profiling is disabled.
@@ -31,6 +33,12 @@ export const SHARDED_WAL_COORDINATOR_ID_ENV_VAR =
  * Used as the base name for sharded WAL files (e.g., "trace" in "trace.json").
  */
 export const PROFILER_PERSIST_BASENAME = 'trace';
+
+/**
+ * Default base name for WAL files.
+ * Used as the base name for sharded WAL files (e.g., "trace" in "trace.json").
+ */
+export const PROFILER_PERSIST_OUTDIR = path.join('tmp', 'profiles');
 
 /**
  * Name for current measure.

@@ -4,12 +4,17 @@ import path from 'node:path';
 /**
  * Codec for encoding/decoding values to/from strings for WAL storage.
  * Used to serialize/deserialize records written to and read from WAL files.
+ *
+ * @template I - Type accepted by encode (and usually decoded)
+ * @template O - Encoded string type (default string)
+ * @template D - Type returned by decode; defaults to I. Use a supertype of I when the codec
+ *   decodes to a base type (e.g. TraceEvent) and the format is used for subtypes (e.g. OtelTraceEvent).
  */
-export type Codec<I, O = string> = {
+export type Codec<I, O = string, D = I> = {
   /** Encode a value to a string for storage */
   encode: (v: I) => O;
-  /** Decode a string back to the original value type */
-  decode: (data: O) => I;
+  /** Decode a string back to a value (type D; when D extends I, decode returns a supertype of I) */
+  decode: (data: O) => D;
 };
 
 export type InvalidEntry<O = string> = { __invalid: true; raw: O };
@@ -267,24 +272,25 @@ export type WalRecord = object | string;
 /**
  * Format descriptor that binds codec and file extension together.
  * Prevents misconfiguration by keeping related concerns in one object.
+ *
+ * @template T - Record type written to and read from the WAL
+ * @template DecodeOut - Type returned by codec.decode; defaults to T. Use a supertype of T
+ *   when the codec decodes to a base type (e.g. TraceEvent) and the format is used for subtypes.
  */
-export type WalFormat<T extends WalRecord = WalRecord> = {
+export type WalFormat<T extends WalRecord, DecodeOut = T> = {
   /** Base name for the WAL (e.g., "trace") */
   baseName: string;
   /** Shard file extension (e.g., ".jsonl") */
   walExtension: string;
   /** Final file extension (e.g., ".json", ".trace.json") falls back to walExtension if not provided */
   finalExtension: string;
-  /** Codec for encoding/decoding records */
-  codec: Codec<T, string>;
+  /** Codec for encoding/decoding records; decode may return DecodeOut (a supertype of T) */
+  codec: Codec<T, string, DecodeOut>;
   /** Finalizer for converting records to a string */
-  finalizer: (
-    records: (T | InvalidEntry<string>)[],
-    opt?: Record<string, unknown>,
-  ) => string;
+  finalizer: (records: T[], opt?: Record<string, unknown>) => string;
 };
 
-export const stringCodec = <T extends WalRecord = WalRecord>(): Codec<T> => ({
+export const stringCodec = <T extends WalRecord>(): Codec<T> => ({
   encode: v => (typeof v === 'string' ? v : JSON.stringify(v)),
   decode: v => {
     try {
@@ -294,52 +300,6 @@ export const stringCodec = <T extends WalRecord = WalRecord>(): Codec<T> => ({
     }
   },
 });
-
-/**
- * Parses a partial WalFormat configuration and returns a complete WalFormat object.
- * All fallback values are targeting string types.
- *  - baseName defaults to 'wal'
- *  - walExtension defaults to '.log'
- *  - finalExtension defaults to '.log'
- *  - codec defaults to stringCodec<T>()
- *  - finalizer defaults to encoding each record using codec.encode() and joining with newlines.
- *    For object types, this properly JSON-stringifies them (not [object Object]).
- *    InvalidEntry records use their raw string value directly.
- * @param format - Partial WalFormat configuration
- * @returns Parsed WalFormat with defaults filled in
- */
-export function parseWalFormat<T extends WalRecord = WalRecord>(
-  format: Partial<WalFormat<T>>,
-): WalFormat<T> {
-  const {
-    baseName = 'wal',
-    walExtension = '.log',
-    finalExtension = walExtension,
-    codec = stringCodec<T>(),
-  } = format;
-
-  const finalizer =
-    format.finalizer ??
-    ((records: (T | InvalidEntry<string>)[]) => {
-      // Encode each record using the codec before joining.
-      // For object types, codec.encode() will JSON-stringify them properly.
-      // InvalidEntry records use their raw string value directly.
-      const encoded = records.map(record =>
-        typeof record === 'object' && record != null && '__invalid' in record
-          ? (record as InvalidEntry<string>).raw
-          : codec.encode(record as T),
-      );
-      return `${encoded.join('\n')}\n`;
-    });
-
-  return {
-    baseName,
-    walExtension,
-    finalExtension,
-    codec,
-    finalizer,
-  } satisfies WalFormat<T>;
-}
 
 /**
  * NOTE: this helper is only used within the scope of wal and sharded wal logic. The rest of the repo avoids sync methods so it is not reusable.
