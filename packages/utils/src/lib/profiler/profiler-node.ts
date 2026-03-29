@@ -381,11 +381,13 @@ export class NodejsProfiler<
   }
 }
 
-export function getNodeJSProfiler<
-  Tracks extends Record<string, ActionTrackEntryPayload>,
->(
-  options: NodejsProfilerOptionsDefault<Tracks>,
-): NodejsProfiler<TraceEvent, Tracks>;
+export function getTraceEventProfilerFormat() {
+  return {
+    ...getTraceEventWalFormat(),
+    encodePerfEntry: entryToTraceEvents,
+  };
+}
+
 export function getNodeJSProfiler<
   DomainEvents extends TraceEvent & WalRecord,
   Tracks extends Record<string, ActionTrackEntryPayload>,

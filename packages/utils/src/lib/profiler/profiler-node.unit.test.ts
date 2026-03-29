@@ -28,6 +28,7 @@ import {
 import {
   NodejsProfiler,
   type NodejsProfilerOptionsWithFormat,
+  getTraceEventProfilerFormat,
 } from './profiler-node.js';
 import { Profiler, getProfilerId } from './profiler.js';
 import { entryToTraceEvents } from './trace-file-utils.js';
@@ -98,8 +99,7 @@ const createProfiler = (
     track: opts.track ?? 'int-test-track',
     groupId: opts.measureName,
     format: {
-      ...traceEventWalFormat,
-      encodePerfEntry: entryToTraceEvents,
+      ...getTraceEventProfilerFormat(),
       baseName: opts.format?.baseName ?? PROFILER_PERSIST_BASENAME,
     },
     enabled: opts.enabled ?? true,
