@@ -1,3 +1,134 @@
+## 0.125.0 (2026-03-27)
+
+### 🚀 Features
+
+- **plugin-axe:** add setup wizard binding ([5f2df75f](https://github.com/code-pushup/cli/commit/5f2df75f))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
+## 0.124.0 (2026-03-26)
+
+### 🚀 Features
+
+- **plugin-lighthouse:** add setup wizard binding ([#1277](https://github.com/code-pushup/cli/pull/1277))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
+## 0.123.0 (2026-03-24)
+
+### 🚀 Features
+
+- **plugin-typescript:** add setup wizard binding ([32f3e518](https://github.com/code-pushup/cli/commit/32f3e518))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
+## 0.122.1 (2026-03-24)
+
+### 🩹 Fixes
+
+- **create-cli:** pass default value to select prompt ([9654c004](https://github.com/code-pushup/cli/commit/9654c004))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
+## 0.122.0 (2026-03-23)
+
+### 🚀 Features
+
+- **plugin-js-packages:** add setup wizard binding ([96f03124](https://github.com/code-pushup/cli/commit/96f03124))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
+## 0.121.0 (2026-03-20)
+
+### 🚀 Features
+
+- **plugin-coverage:** add setup wizard binding ([#1273](https://github.com/code-pushup/cli/pull/1273))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
+## 0.120.1 (2026-03-18)
+
+### 🩹 Fixes
+
+- **utils:** pass revparse args as array ([f912a1ff](https://github.com/code-pushup/cli/commit/f912a1ff))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
+## 0.120.0 (2026-03-17)
+
+### 🚀 Features
+
+- **plugin-eslint:** add setup wizard binding ([#1269](https://github.com/code-pushup/cli/pull/1269))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
+## 0.119.1 (2026-03-17)
+
+### 🩹 Fixes
+
+- add bin wrapper and resolve Nx project discovery ([#1270](https://github.com/code-pushup/cli/pull/1270))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
+## 0.119.0 (2026-03-16)
+
+### 🚀 Features
+
+- **create-cli:** add categories codegen ([#1267](https://github.com/code-pushup/cli/pull/1267))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
+## 0.118.0 (2026-03-11)
+
+### 🚀 Features
+
+- **create-cli:** add CI/CD setup step ([#1266](https://github.com/code-pushup/cli/pull/1266))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
+## 0.117.0 (2026-03-10)
+
+### 🚀 Features
+
+- **create-cli:** add monorepo setup mode ([#1265](https://github.com/code-pushup/cli/pull/1265))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
+## 0.116.0 (2026-03-04)
+
+### 🚀 Features
+
+- **create-cli:** add gitignore setup step ([#1252](https://github.com/code-pushup/cli/pull/1252))
+- **create-cli:** add plugin selection step ([#1261](https://github.com/code-pushup/cli/pull/1261))
+
+### ❤️ Thank You
+
+- Hanna Skryl @hanna-skryl
+
 ## 0.115.0 (2026-02-25)
 
 ### 🚀 Features

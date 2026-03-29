@@ -1,9 +1,13 @@
-import { mkdir, rm, stat, writeFile } from 'node:fs/promises';
+import { rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { type SimpleGit, simpleGit } from 'simple-git';
-import { initGitRepo, teardownTestFolder } from '@code-pushup/test-utils';
+import {
+  initGitRepoWithRemote,
+  teardownTestFolder,
+} from '@code-pushup/test-utils';
 import { toUnixPath } from '../transform.js';
 import {
+  getGitDefaultBranch,
   getGitRoot,
   guardAgainstLocalChanges,
   safeCheckout,
@@ -12,11 +16,14 @@ import {
 
 describe('git utils in a git repo', () => {
   const baseDir = path.join(process.cwd(), 'tmp', 'git-tests');
+  const repoDir = path.join(baseDir, 'repo');
   let emptyGit: SimpleGit;
 
   beforeAll(async () => {
-    await mkdir(baseDir, { recursive: true });
-    emptyGit = await initGitRepo(simpleGit, { baseDir, baseBranch: 'master' });
+    emptyGit = await initGitRepoWithRemote(simpleGit, {
+      baseDir,
+      baseBranch: 'master',
+    });
   });
 
   afterAll(async () => {
@@ -25,13 +32,15 @@ describe('git utils in a git repo', () => {
 
   describe('without a branch and commits', () => {
     it('getGitRoot should return git root in a set up repo', async () => {
-      await expect(getGitRoot(emptyGit)).resolves.toMatch(/tmp\/git-tests$/);
+      await expect(getGitRoot(emptyGit)).resolves.toMatch(
+        /tmp\/git-tests\/repo$/,
+      );
     });
   });
 
   describe('with a branch and commits clean', () => {
     beforeAll(async () => {
-      await writeFile(path.join(baseDir, 'README.md'), '# hello-world\n');
+      await writeFile(path.join(repoDir, 'README.md'), '# hello-world\n');
       await emptyGit.add('README.md');
       await emptyGit.commit('Create README');
 
@@ -45,24 +54,24 @@ describe('git utils in a git repo', () => {
     });
 
     it('should find Git root', async () => {
-      await expect(getGitRoot(emptyGit)).resolves.toBe(toUnixPath(baseDir));
+      await expect(getGitRoot(emptyGit)).resolves.toBe(toUnixPath(repoDir));
     });
 
     it('should convert absolute path to relative Git path', async () => {
       await expect(
-        toGitPath(path.join(baseDir, 'src', 'utils.ts'), emptyGit),
+        toGitPath(path.join(repoDir, 'src', 'utils.ts'), emptyGit),
       ).resolves.toBe('src/utils.ts');
     });
 
     it('should convert relative Windows path to relative Git path', async () => {
       await expect(
         toGitPath(String.raw`Backend\API\Startup.cs`, emptyGit),
-      ).resolves.toBe('../../Backend/API/Startup.cs');
+      ).resolves.toBe('../../../Backend/API/Startup.cs');
     });
 
     it('should keep relative Unix path as is (already a Git path)', async () => {
       await expect(toGitPath('Backend/API/Startup.cs', emptyGit)).resolves.toBe(
-        '../../Backend/API/Startup.cs',
+        '../../../Backend/API/Startup.cs',
       );
     });
 
@@ -89,10 +98,10 @@ describe('git utils in a git repo', () => {
   });
 
   describe('with a branch and commits dirty', () => {
-    const newFilePath = path.join(baseDir, 'new-file.md');
+    const newFilePath = path.join(repoDir, 'new-file.md');
 
     beforeAll(async () => {
-      await writeFile(path.join(baseDir, 'README.md'), '# hello-world\n');
+      await writeFile(path.join(repoDir, 'README.md'), '# hello-world\n');
       await emptyGit.add('README.md');
       await emptyGit.commit('Create README');
 
@@ -177,6 +186,12 @@ describe('git utils in a git repo', () => {
           2,
         ),
       );
+    });
+  });
+
+  describe('getGitDefaultBranch', () => {
+    it('should resolve the default branch name from origin/HEAD', async () => {
+      await expect(getGitDefaultBranch(emptyGit)).resolves.toBe('master');
     });
   });
 });

@@ -21,61 +21,6 @@ describe('turboHandler', () => {
   const turboJsonContent = (content: { tasks: Record<string, object> }) =>
     JSON.stringify(content);
 
-  describe('isConfigured', () => {
-    it('should detect Turborepo when turbo.json exists and has code-pushup task', async () => {
-      vol.fromJSON(
-        {
-          'package.json': pkgJsonContent({}),
-          'turbo.json': turboJsonContent({
-            tasks: {
-              'code-pushup': {
-                env: ['CP_API_KEY'],
-                outputs: ['.code-pushup'],
-              },
-            },
-          }),
-        },
-        MEMFS_VOLUME,
-      );
-      await expect(turboHandler.isConfigured(options)).resolves.toBeTrue();
-    });
-
-    it("should NOT detect Turborepo when turbo.json doesn't exist", async () => {
-      vol.fromJSON(
-        {
-          'package.json': pkgJsonContent({}),
-          'pnpm-lock.yaml': '',
-        },
-        MEMFS_VOLUME,
-      );
-      await expect(turboHandler.isConfigured(options)).resolves.toBeFalse();
-    });
-
-    it("should NOT detect Turborepo when turbo.json doesn't include code-pushup task", async () => {
-      vol.fromJSON(
-        {
-          'package.json': pkgJsonContent({}),
-          'turbo.json': turboJsonContent({
-            tasks: {
-              build: {
-                dependsOn: ['^build'],
-                outputs: ['dist/**'],
-              },
-              lint: {},
-              test: {},
-              dev: {
-                cache: false,
-                persistent: true,
-              },
-            },
-          }),
-        },
-        MEMFS_VOLUME,
-      );
-      await expect(turboHandler.isConfigured(options)).resolves.toBeFalse();
-    });
-  });
-
   describe('listProjects', () => {
     it.each([
       [
@@ -148,6 +93,22 @@ describe('turboHandler', () => {
       },
     );
 
+    it('should throw if task not found in turbo.json', async () => {
+      vol.fromJSON(
+        {
+          'package.json': pkgJsonContent({}),
+          'turbo.json': turboJsonContent({
+            tasks: { build: {}, lint: {} },
+          }),
+        },
+        MEMFS_VOLUME,
+      );
+
+      await expect(turboHandler.listProjects(options)).rejects.toThrow(
+        'Task "code-pushup" not found in turbo.json',
+      );
+    });
+
     it('should throw if no supported package manager configured', async () => {
       vol.fromJSON(
         {
@@ -171,19 +132,16 @@ describe('turboHandler', () => {
           name: 'api',
           directory: path.join(MEMFS_VOLUME, 'api'),
           bin: 'npx turbo run code-pushup --',
-          binUncached: 'npx turbo run code-pushup --',
         },
         {
           name: 'cms',
           directory: path.join(MEMFS_VOLUME, 'cms'),
           bin: 'npx turbo run code-pushup --',
-          binUncached: 'npx turbo run code-pushup --',
         },
         {
           name: 'web',
           directory: path.join(MEMFS_VOLUME, 'web'),
           bin: 'npx turbo run code-pushup --',
-          binUncached: 'npx turbo run code-pushup --',
         },
       ],
     };

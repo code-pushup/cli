@@ -45,7 +45,12 @@ export default tseslint.config(
             },
             {
               sourceTag: 'scope:tooling',
-              onlyDependOnLibsWithTags: ['scope:tooling', 'scope:shared'],
+              onlyDependOnLibsWithTags: [
+                'scope:tooling',
+                'scope:core',
+                'scope:plugin',
+                'scope:shared',
+              ],
             },
             {
               sourceTag: 'type:e2e',
@@ -166,7 +171,7 @@ export default tseslint.config(
   },
   {
     // in bin files, imports with side effects are allowed
-    files: ['**/bin/**/*.ts', '**/bin/**/*.js'],
+    files: ['**/bin/**/*.ts', '**/bin/**/*.js', '**/bin.js'],
     rules: {
       'import/no-unassigned-import': 'off',
     },

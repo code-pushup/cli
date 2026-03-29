@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { fileExists, readJsonFile } from '@code-pushup/utils';
+import { MONOREPO_TOOL_DETECTORS, readJsonFile } from '@code-pushup/utils';
 import type { MonorepoToolHandler } from '../tools.js';
 import { npmHandler } from './npm.js';
 import { pnpmHandler } from './pnpm.js';
@@ -14,18 +14,17 @@ type TurboConfig = {
 export const turboHandler: MonorepoToolHandler = {
   tool: 'turbo',
 
-  async isConfigured(options) {
-    const configPath = path.join(options.cwd, 'turbo.json');
-    return (
-      (await fileExists(configPath)) &&
-      options.task in (await readJsonFile<TurboConfig>(configPath)).tasks
-    );
-  },
-
   async listProjects(options) {
+    const configPath = path.join(options.cwd, 'turbo.json');
+    if (
+      !(options.task in (await readJsonFile<TurboConfig>(configPath)).tasks)
+    ) {
+      throw new Error(`Task "${options.task}" not found in turbo.json`);
+    }
+
     // eslint-disable-next-line functional/no-loop-statements
     for (const handler of WORKSPACE_HANDLERS) {
-      if (await handler.isConfigured(options)) {
+      if (await MONOREPO_TOOL_DETECTORS[handler.tool](options.cwd)) {
         const projects = await handler.listProjects(options);
         return projects
           .filter(({ bin }) => bin.includes(`run ${options.task}`)) // must have package.json script

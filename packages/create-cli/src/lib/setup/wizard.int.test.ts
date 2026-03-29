@@ -1,15 +1,26 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { eslintSetupBinding } from '@code-pushup/eslint-plugin';
 import { cleanTestFolder } from '@code-pushup/test-utils';
+import { getGitRoot } from '@code-pushup/utils';
 import type { PluginSetupBinding } from './types.js';
 import { runSetupWizard } from './wizard.js';
+
+vi.mock('@code-pushup/utils', async () => {
+  const actual = await vi.importActual('@code-pushup/utils');
+  return {
+    ...actual,
+    getGitRoot: vi.fn(),
+  };
+});
 
 const TEST_BINDINGS: PluginSetupBinding[] = [
   {
     slug: 'alpha',
     title: 'Alpha Plugin',
     packageName: '@code-pushup/alpha-plugin',
-    prompts: [
+    isRecommended: () => Promise.resolve(true),
+    prompts: async () => [
       {
         key: 'alpha.path',
         message: 'Path to config',
@@ -26,7 +37,7 @@ const TEST_BINDINGS: PluginSetupBinding[] = [
             defaultImport: 'alphaPlugin',
           },
         ],
-        pluginInit: `alphaPlugin(${JSON.stringify(configPath)})`,
+        pluginInit: [`alphaPlugin(${JSON.stringify(configPath)}),`],
       };
     },
   },
@@ -34,6 +45,7 @@ const TEST_BINDINGS: PluginSetupBinding[] = [
     slug: 'beta',
     title: 'Beta Plugin',
     packageName: '@code-pushup/beta-plugin',
+    isRecommended: () => Promise.resolve(true),
     generateConfig: () => ({
       imports: [
         {
@@ -41,7 +53,7 @@ const TEST_BINDINGS: PluginSetupBinding[] = [
           defaultImport: 'betaPlugin',
         },
       ],
-      pluginInit: 'betaPlugin()',
+      pluginInit: ['betaPlugin(),'],
     }),
   },
 ];
@@ -51,6 +63,7 @@ describe('runSetupWizard', () => {
 
   beforeEach(async () => {
     await cleanTestFolder(outputDir);
+    vi.mocked(getGitRoot).mockResolvedValue(path.resolve(outputDir));
   });
 
   it('should write a valid ts config file with provided bindings', async () => {
@@ -164,6 +177,116 @@ describe('runSetupWizard', () => {
           betaPlugin(),
         ],
       };
+      "
+    `);
+  });
+
+  it('should create .gitignore with .code-pushup entry', async () => {
+    await runSetupWizard(TEST_BINDINGS, {
+      yes: true,
+      'config-format': 'ts',
+      'target-dir': outputDir,
+    });
+
+    await expect(
+      readFile(path.join(outputDir, '.gitignore'), 'utf8'),
+    ).resolves.toBe('# Code PushUp reports\n.code-pushup\n');
+  });
+
+  it('should append .code-pushup to existing .gitignore', async () => {
+    await writeFile(path.join(outputDir, '.gitignore'), 'node_modules\n');
+
+    await runSetupWizard(TEST_BINDINGS, {
+      yes: true,
+      'config-format': 'ts',
+      'target-dir': outputDir,
+    });
+
+    await expect(
+      readFile(path.join(outputDir, '.gitignore'), 'utf8'),
+    ).resolves.toBe('node_modules\n\n# Code PushUp reports\n.code-pushup\n');
+  });
+
+  it('should not modify .gitignore if .code-pushup already present', async () => {
+    await writeFile(
+      path.join(outputDir, '.gitignore'),
+      'node_modules\n.code-pushup\n',
+    );
+
+    await runSetupWizard(TEST_BINDINGS, {
+      yes: true,
+      'config-format': 'ts',
+      'target-dir': outputDir,
+    });
+
+    await expect(
+      readFile(path.join(outputDir, '.gitignore'), 'utf8'),
+    ).resolves.toBe('node_modules\n.code-pushup\n');
+  });
+
+  it('should generate config with ESLint plugin using defaults', async () => {
+    await runSetupWizard([eslintSetupBinding], {
+      yes: true,
+      plugins: ['eslint'],
+      'config-format': 'ts',
+      'target-dir': outputDir,
+    });
+
+    await expect(
+      readFile(path.join(outputDir, 'code-pushup.config.ts'), 'utf8'),
+    ).resolves.toMatchInlineSnapshot(`
+      "import eslintPlugin from '@code-pushup/eslint-plugin';
+      import type { CoreConfig } from '@code-pushup/models';
+
+      export default {
+        plugins: [
+          await eslintPlugin(),
+        ],
+        categories: [
+          {
+            slug: 'bug-prevention',
+            title: 'Bug prevention',
+            description: 'Lint rules that find **potential bugs** in your code.',
+            refs: [
+              { type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 },
+            ],
+          },
+          {
+            slug: 'code-style',
+            title: 'Code style',
+            description: 'Lint rules that promote **good practices** and consistency in your code.',
+            refs: [
+              { type: 'group', plugin: 'eslint', slug: 'suggestions', weight: 1 },
+            ],
+          },
+        ],
+      } satisfies CoreConfig;
+      "
+    `);
+  });
+
+  it('should generate config with custom ESLint options', async () => {
+    await runSetupWizard([eslintSetupBinding], {
+      yes: true,
+      plugins: ['eslint'],
+      'config-format': 'ts',
+      'target-dir': outputDir,
+      'eslint.eslintrc': 'custom-eslint.config.js',
+      'eslint.patterns': 'src',
+      'eslint.categories': false,
+    });
+
+    await expect(
+      readFile(path.join(outputDir, 'code-pushup.config.ts'), 'utf8'),
+    ).resolves.toMatchInlineSnapshot(`
+      "import eslintPlugin from '@code-pushup/eslint-plugin';
+      import type { CoreConfig } from '@code-pushup/models';
+
+      export default {
+        plugins: [
+          await eslintPlugin({ eslintrc: 'custom-eslint.config.js', patterns: 'src' }),
+        ],
+      } satisfies CoreConfig;
       "
     `);
   });

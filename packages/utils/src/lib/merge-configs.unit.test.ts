@@ -1,5 +1,9 @@
-import type { CoreConfig, PluginConfig } from '@code-pushup/models';
-import { mergeConfigs } from './merge-configs.js';
+import type {
+  CategoryConfig,
+  CoreConfig,
+  PluginConfig,
+} from '@code-pushup/models';
+import { mergeCategoriesBySlug, mergeConfigs } from './merge-configs.js';
 
 const MOCK_CONFIG_PERSIST = {
   persist: {
@@ -326,5 +330,144 @@ describe('mergeObjects', () => {
         },
       ],
     });
+  });
+});
+
+describe('mergeCategoriesBySlug', () => {
+  it('should return categories unchanged when no duplicates', () => {
+    const categories: CategoryConfig[] = [
+      { slug: 'bug-prevention', title: 'Bug prevention', refs: [] },
+      { slug: 'code-style', title: 'Code style', refs: [] },
+    ];
+    expect(mergeCategoriesBySlug(categories)).toEqual(categories);
+  });
+
+  it('should merge duplicate slugs — first title wins, refs concatenated', () => {
+    expect(
+      mergeCategoriesBySlug([
+        {
+          slug: 'bug-prevention',
+          title: 'Bug prevention',
+          refs: [
+            { type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 },
+          ],
+        },
+        {
+          slug: 'bug-prevention',
+          title: 'Bug detection',
+          refs: [
+            {
+              type: 'group',
+              plugin: 'basic-plugin',
+              slug: 'problems',
+              weight: 1,
+            },
+          ],
+        },
+      ]),
+    ).toEqual([
+      {
+        slug: 'bug-prevention',
+        title: 'Bug prevention',
+        refs: [
+          { type: 'group', plugin: 'eslint', slug: 'problems', weight: 1 },
+          {
+            type: 'group',
+            plugin: 'basic-plugin',
+            slug: 'problems',
+            weight: 1,
+          },
+        ],
+      },
+    ]);
+  });
+
+  it('should join different descriptions as sentences', () => {
+    expect(
+      mergeCategoriesBySlug([
+        {
+          slug: 'bug-prevention',
+          title: 'Bug prevention',
+          description: 'Catches common bugs',
+          refs: [],
+        },
+        {
+          slug: 'bug-prevention',
+          title: 'Bug prevention',
+          description: 'Enforces type safety.',
+          refs: [],
+        },
+      ]),
+    ).toContainEqual(
+      expect.objectContaining({
+        description: 'Catches common bugs. Enforces type safety.',
+      }),
+    );
+  });
+
+  it('should not duplicate identical descriptions', () => {
+    expect(
+      mergeCategoriesBySlug([
+        {
+          slug: 'code-style',
+          title: 'Code style',
+          description: 'Consistent formatting.',
+          refs: [],
+        },
+        {
+          slug: 'code-style',
+          title: 'Code style',
+          description: 'Consistent formatting.',
+          refs: [],
+        },
+      ]),
+    ).toContainEqual(
+      expect.objectContaining({ description: 'Consistent formatting.' }),
+    );
+  });
+
+  it('should use first non-empty docsUrl', () => {
+    expect(
+      mergeCategoriesBySlug([
+        {
+          slug: 'bug-prevention',
+          title: 'Bug prevention',
+          docsUrl: 'https://eslint.org/rules',
+          refs: [],
+        },
+        {
+          slug: 'bug-prevention',
+          title: 'Bug prevention',
+          docsUrl: 'https://typescript-eslint.io/rules',
+          refs: [],
+        },
+      ]),
+    ).toContainEqual(
+      expect.objectContaining({ docsUrl: 'https://eslint.org/rules' }),
+    );
+  });
+
+  it('should fall back to second value when first is missing', () => {
+    expect(
+      mergeCategoriesBySlug([
+        { slug: 'code-style', title: 'Code style', refs: [] },
+        {
+          slug: 'code-style',
+          title: 'Code style',
+          docsUrl: 'https://eslint.org/rules',
+          description: 'Consistent formatting.',
+          refs: [],
+        },
+      ]),
+    ).toContainEqual(
+      expect.objectContaining({
+        docsUrl: 'https://eslint.org/rules',
+        description: 'Consistent formatting.',
+      }),
+    );
+  });
+
+  it('should return empty array for empty input', () => {
+    expect(mergeCategoriesBySlug([])).toEqual([]);
   });
 });

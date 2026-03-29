@@ -1,3 +1,6 @@
+import path from 'node:path';
+import { exists, toUnixPath } from '@code-pushup/utils';
+import { addCategories } from './codegen-categories.js';
 import type {
   ConfigFileFormat,
   ImportDeclarationStructure,
@@ -10,7 +13,7 @@ const CORE_CONFIG_IMPORT: ImportDeclarationStructure = {
   isTypeOnly: true,
 };
 
-class CodeBuilder {
+export class CodeBuilder {
   private lines: string[] = [];
 
   addLine(text: string, depth = 0): void {
@@ -32,6 +35,64 @@ class CodeBuilder {
   }
 }
 
+export function generateConfigSource(
+  plugins: PluginCodegenResult[],
+  format: ConfigFileFormat,
+): string {
+  const builder = new CodeBuilder();
+  addImports(builder, collectImports(plugins, format));
+  addPluginDeclarations(builder, plugins);
+  if (format === 'ts') {
+    builder.addLine('export default {');
+    addPlugins(builder, plugins);
+    addCategories(builder, plugins);
+    builder.addLine('} satisfies CoreConfig;');
+  } else {
+    builder.addLine("/** @type {import('@code-pushup/models').CoreConfig} */");
+    builder.addLine('export default {');
+    addPlugins(builder, plugins);
+    addCategories(builder, plugins);
+    builder.addLine('};');
+  }
+  return builder.toString();
+}
+
+export function generatePresetSource(
+  plugins: PluginCodegenResult[],
+  format: ConfigFileFormat,
+): string {
+  const builder = new CodeBuilder();
+  addImports(builder, collectImports(plugins, format));
+  addPluginDeclarations(builder, plugins);
+  addPresetExport(builder, plugins, format);
+  return builder.toString();
+}
+
+export function generateProjectSource(
+  projectName: string,
+  presetImportPath: string,
+): string {
+  const builder = new CodeBuilder();
+  builder.addLine(
+    formatImport({
+      moduleSpecifier: presetImportPath,
+      namedImports: ['createConfig'],
+    }),
+  );
+  builder.addEmptyLine();
+  builder.addLine(`export default await createConfig('${projectName}');`);
+  return builder.toString();
+}
+
+export function computeRelativePresetImport(
+  projectRelativeDir: string,
+  presetFilename: string,
+): string {
+  const relativePath = path.relative(projectRelativeDir, presetFilename);
+  const importPath = toUnixPath(relativePath).replace(/\.ts$/, '.js');
+  return importPath.startsWith('.') ? importPath : `./${importPath}`;
+}
+
 function formatImport({
   moduleSpecifier,
   defaultImport,
@@ -45,74 +106,92 @@ function formatImport({
   return `import ${type}${from}'${moduleSpecifier}';`;
 }
 
-function collectTsImports(
-  plugins: PluginCodegenResult[],
+function sortImports(
+  imports: ImportDeclarationStructure[],
 ): ImportDeclarationStructure[] {
-  return [
-    CORE_CONFIG_IMPORT,
-    ...plugins.flatMap(({ imports }) => imports),
-  ].toSorted((a, b) => a.moduleSpecifier.localeCompare(b.moduleSpecifier));
+  return imports.toSorted((a, b) =>
+    a.moduleSpecifier.localeCompare(b.moduleSpecifier),
+  );
 }
 
-function collectJsImports(
+function collectImports(
   plugins: PluginCodegenResult[],
+  format: ConfigFileFormat,
 ): ImportDeclarationStructure[] {
-  return plugins
-    .flatMap(({ imports }) => imports)
-    .map(({ isTypeOnly: _, ...rest }) => rest)
-    .toSorted((a, b) => a.moduleSpecifier.localeCompare(b.moduleSpecifier));
+  const pluginImports = plugins.flatMap(({ imports }) => imports);
+  if (format === 'ts') {
+    return sortImports([CORE_CONFIG_IMPORT, ...pluginImports]);
+  }
+  return sortImports(pluginImports.map(({ isTypeOnly: _, ...rest }) => rest));
+}
+
+function addImports(
+  builder: CodeBuilder,
+  imports: ImportDeclarationStructure[],
+): void {
+  if (imports.length > 0) {
+    builder.addLines(imports.map(formatImport));
+    builder.addEmptyLine();
+  }
+}
+
+function addPluginDeclarations(
+  builder: CodeBuilder,
+  plugins: PluginCodegenResult[],
+): void {
+  const declarations = plugins
+    .map(({ pluginDeclaration }) => pluginDeclaration)
+    .filter(exists)
+    .map(d => `const ${d.identifier} = ${d.expression};`);
+  if (declarations.length > 0) {
+    builder.addLines(declarations);
+    builder.addEmptyLine();
+  }
 }
 
 function addPlugins(
   builder: CodeBuilder,
   plugins: PluginCodegenResult[],
+  depth = 1,
 ): void {
+  builder.addLine('plugins: [', depth);
   if (plugins.length === 0) {
-    builder.addLine('plugins: [],', 1);
+    builder.addLine('// TODO: register some plugins', depth + 1);
   } else {
-    builder.addLine('plugins: [', 1);
     builder.addLines(
-      plugins.map(({ pluginInit }) => `${pluginInit},`),
-      2,
+      plugins.flatMap(({ pluginInit }) => pluginInit),
+      depth + 1,
     );
-    builder.addLine('],', 1);
   }
+  builder.addLine('],', depth);
 }
 
-export function generateConfigSource(
+function addPresetExport(
+  builder: CodeBuilder,
   plugins: PluginCodegenResult[],
   format: ConfigFileFormat,
-): string {
-  return format === 'ts'
-    ? generateTsConfig(plugins)
-    : generateJsConfig(plugins);
-}
-
-function generateTsConfig(plugins: PluginCodegenResult[]): string {
-  const builder = new CodeBuilder();
-
-  builder.addLines(collectTsImports(plugins).map(formatImport));
-  builder.addEmptyLine();
-  builder.addLine('export default {');
-  addPlugins(builder, plugins);
-  builder.addLine('} satisfies CoreConfig;');
-
-  return builder.toString();
-}
-
-function generateJsConfig(plugins: PluginCodegenResult[]): string {
-  const builder = new CodeBuilder();
-
-  const pluginImports = collectJsImports(plugins);
-  if (pluginImports.length > 0) {
-    builder.addLines(pluginImports.map(formatImport));
-    builder.addEmptyLine();
+): void {
+  if (format === 'ts') {
+    builder.addLines([
+      '/**',
+      ' * Creates a Code PushUp config for a project.',
+      ' * @param project Project name',
+      ' */',
+      'export async function createConfig(project: string): Promise<CoreConfig> {',
+    ]);
+  } else {
+    builder.addLines([
+      '/**',
+      ' * Creates a Code PushUp config for a project.',
+      ' * @param {string} project Project name',
+      " * @returns {Promise<import('@code-pushup/models').CoreConfig>}",
+      ' */',
+      'export async function createConfig(project) {',
+    ]);
   }
-
-  builder.addLine("/** @type {import('@code-pushup/models').CoreConfig} */");
-  builder.addLine('export default {');
-  addPlugins(builder, plugins);
-  builder.addLine('};');
-
-  return builder.toString();
+  builder.addLine('return {', 1);
+  addPlugins(builder, plugins, 2);
+  addCategories(builder, plugins, 2);
+  builder.addLine('};', 1);
+  builder.addLine('}');
 }

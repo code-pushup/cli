@@ -5,6 +5,9 @@ import type { DependencyGroupLong } from './runner/outdated/types.js';
 export const JS_PACKAGES_PLUGIN_SLUG = 'js-packages';
 export const JS_PACKAGES_PLUGIN_TITLE = 'JS packages';
 
+export const DEFAULT_CHECKS = ['audit', 'outdated'] as const;
+export const DEFAULT_DEPENDENCY_GROUPS = ['prod', 'dev'] as const;
+
 export const defaultAuditLevelMapping: Record<
   PackageAuditLevel,
   IssueSeverity

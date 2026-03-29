@@ -2,6 +2,7 @@ import { typescriptPlugin } from './lib/typescript-plugin.js';
 
 export default typescriptPlugin;
 
+export { typescriptSetupBinding } from './lib/binding.js';
 export { TYPESCRIPT_PLUGIN_SLUG } from './lib/constants.js';
 export {
   typescriptPluginConfigSchema,

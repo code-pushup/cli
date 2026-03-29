@@ -1,9 +1,7 @@
-export const MONOREPO_TOOLS = ['nx', 'turbo', 'yarn', 'pnpm', 'npm'] as const;
-export type MonorepoTool = (typeof MONOREPO_TOOLS)[number];
+import type { MonorepoTool } from '@code-pushup/utils';
 
 export type MonorepoToolHandler = {
   tool: MonorepoTool;
-  isConfigured: (options: MonorepoHandlerOptions) => Promise<boolean>;
   listProjects: (options: MonorepoHandlerOptions) => Promise<ProjectConfig[]>;
   createRunManyCommand: (
     options: MonorepoHandlerOptions,
@@ -28,7 +26,3 @@ export type ProjectConfig = {
   bin: string;
   directory?: string;
 };
-
-export function isMonorepoTool(value: string): value is MonorepoTool {
-  return MONOREPO_TOOLS.includes(value as MonorepoTool);
-}

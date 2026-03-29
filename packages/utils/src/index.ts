@@ -60,6 +60,7 @@ export {
   pluralizeToken,
   roundDecimals,
   serializeCommandWithArgs,
+  singleQuote,
   slugify,
   transformLines,
   truncateDescription,
@@ -79,6 +80,7 @@ export {
 } from './lib/git/git.commits-and-tags.js';
 export {
   formatGitPath,
+  getGitDefaultBranch,
   getGitRoot,
   guardAgainstLocalChanges,
   safeCheckout,
@@ -92,7 +94,11 @@ export {
 } from './lib/guards.js';
 export { interpolate } from './lib/interpolate.js';
 export { Logger, logger } from './lib/logger.js';
-export { mergeConfigs } from './lib/merge-configs.js';
+export {
+  mergeCategoriesBySlug,
+  mergeConfigs,
+  mergeDescriptions,
+} from './lib/merge-configs.js';
 export { loadNxProjectGraph } from './lib/nx.js';
 export {
   addIndex,
@@ -185,3 +191,27 @@ export type {
   WithRequired,
 } from './lib/types.js';
 export * from './lib/import-module.js';
+export {
+  detectMonorepoTool,
+  isMonorepoTool,
+  MONOREPO_TOOL_DETECTORS,
+  MONOREPO_TOOLS,
+  type MonorepoTool,
+} from './lib/monorepo.js';
+export {
+  answerArray,
+  answerBoolean,
+  answerNonEmptyArray,
+  answerString,
+} from './lib/plugin-answers.js';
+export {
+  hasCodePushUpDependency,
+  hasDependency,
+  hasScript,
+  hasWorkspacesEnabled,
+  listPackages,
+  listWorkspaces,
+  readPnpmWorkspacePatterns,
+  readRootPackageJson,
+  type WorkspacePackage,
+} from './lib/workspace-packages.js';

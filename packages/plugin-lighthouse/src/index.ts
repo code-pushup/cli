@@ -19,3 +19,4 @@ export {
   lighthouseCategories,
   mergeLighthouseCategories,
 } from './lib/categories.js';
+export { lighthouseSetupBinding } from './lib/binding.js';

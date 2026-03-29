@@ -4,7 +4,11 @@ import {
   issueSeveritySchema,
   pluginScoreTargetsSchema,
 } from '@code-pushup/models';
-import { defaultAuditLevelMapping } from './constants.js';
+import {
+  DEFAULT_CHECKS,
+  DEFAULT_DEPENDENCY_GROUPS,
+  defaultAuditLevelMapping,
+} from './constants.js';
 
 export const dependencyGroups = ['prod', 'dev', 'optional'] as const;
 const dependencyGroupSchema = z.enum(dependencyGroups);
@@ -63,7 +67,7 @@ export const jsPackagesPluginConfigSchema = z
     checks: z
       .array(packageCommandSchema)
       .min(1)
-      .default(['audit', 'outdated'])
+      .default([...DEFAULT_CHECKS])
       .meta({
         description:
           'Package manager commands to be run. Defaults to both audit and outdated.',
@@ -74,7 +78,7 @@ export const jsPackagesPluginConfigSchema = z
     dependencyGroups: z
       .array(dependencyGroupSchema)
       .min(1)
-      .default(['prod', 'dev']),
+      .default([...DEFAULT_DEPENDENCY_GROUPS]),
     auditLevelMapping: z
       .partialRecord(packageAuditLevelSchema, issueSeveritySchema)
       .default(defaultAuditLevelMapping)

@@ -1,30 +1,18 @@
-import path from 'node:path';
-import * as YAML from 'yaml';
-import { fileExists, readTextFile } from '@code-pushup/utils';
 import {
   hasCodePushUpDependency,
   hasScript,
   listPackages,
+  readPnpmWorkspacePatterns,
   readRootPackageJson,
-} from '../packages.js';
+} from '@code-pushup/utils';
 import type { MonorepoToolHandler } from '../tools.js';
-
-const WORKSPACE_FILE = 'pnpm-workspace.yaml';
 
 export const pnpmHandler: MonorepoToolHandler = {
   tool: 'pnpm',
 
-  async isConfigured(options) {
-    return (
-      (await fileExists(path.join(options.cwd, WORKSPACE_FILE))) &&
-      (await fileExists(path.join(options.cwd, 'package.json')))
-    );
-  },
-
   async listProjects(options) {
-    const yaml = await readTextFile(path.join(options.cwd, WORKSPACE_FILE));
-    const workspace = YAML.parse(yaml) as { packages?: string[] };
-    const packages = await listPackages(options.cwd, workspace.packages);
+    const patterns = await readPnpmWorkspacePatterns(options.cwd);
+    const packages = await listPackages(options.cwd, patterns);
     const rootPackageJson = await readRootPackageJson(options.cwd);
     return packages
       .filter(

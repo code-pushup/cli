@@ -112,6 +112,16 @@ export {
   type PluginScoreTargets,
   type PluginUrls,
 } from './lib/plugin-config.js';
+export type {
+  CategoryCodegenConfig,
+  ImportDeclarationStructure,
+  PluginAnswer,
+  PluginCodegenResult,
+  PluginDeclarationStructure,
+  PluginPromptDescriptor,
+  PluginSetupBinding,
+  PluginSetupTree,
+} from './lib/plugin-setup.js';
 export {
   auditReportSchema,
   pluginReportSchema,
