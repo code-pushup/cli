@@ -160,10 +160,10 @@ export class WriteAheadLogFile<T extends WalRecord = WalRecord>
    * @param options - Configuration options
    */
   /** Codec may decode to a supertype of T (e.g. TraceEvent when T is a narrower event type). */
-  constructor(options: { file: string; codec: Codec<T, string, any> }) {
+  constructor(options: { file: string; codec: Codec<T, string, unknown> }) {
     this.#file = options.file;
     const c = createTolerantCodec(options.codec);
-    this.#decode = c.decode;
+    this.#decode = c.decode as Codec<T | InvalidEntry>['decode'];
     this.#encode = c.encode;
   }
 
