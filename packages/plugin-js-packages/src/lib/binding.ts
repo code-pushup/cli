@@ -12,14 +12,13 @@ import {
   fileExists,
   singleQuote,
 } from '@code-pushup/utils';
-import type { PackageManagerId } from './config.js';
 import {
   DEFAULT_CHECKS,
   DEFAULT_DEPENDENCY_GROUPS,
   JS_PACKAGES_PLUGIN_SLUG,
   JS_PACKAGES_PLUGIN_TITLE,
 } from './constants.js';
-import { derivePackageManager } from './package-managers/derive-package-manager.js';
+import { detectPackageManager } from './package-managers/derive-package-manager.js';
 
 const { name: PACKAGE_NAME } = createRequire(import.meta.url)(
   '../../package.json',
@@ -73,7 +72,9 @@ export const jsPackagesSetupBinding = {
   packageName: PACKAGE_NAME,
   isRecommended,
   prompts: async (targetDir: string) => {
-    const packageManager = await detectPackageManager(targetDir);
+    const packageManager = await detectPackageManager(targetDir).catch(
+      () => DEFAULT_PACKAGE_MANAGER,
+    );
     return [
       {
         key: 'js-packages.packageManager',
@@ -174,14 +175,4 @@ function createCategories({
 
 async function isRecommended(targetDir: string): Promise<boolean> {
   return fileExists(path.join(targetDir, 'package.json'));
-}
-
-async function detectPackageManager(
-  targetDir: string,
-): Promise<PackageManagerId> {
-  try {
-    return await derivePackageManager(targetDir);
-  } catch {
-    return DEFAULT_PACKAGE_MANAGER;
-  }
 }
