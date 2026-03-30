@@ -31,34 +31,41 @@ export async function derivePackageManagerInPackageJson(
   return false;
 }
 
-export async function derivePackageManager(
-  currentDir = process.cwd(),
-): Promise<PackageManagerId> {
+type DetectionResult = {
+  id: PackageManagerId;
+  sourceDescription: string;
+};
+
+async function resolvePackageManager(
+  currentDir: string,
+): Promise<DetectionResult> {
   const pkgManagerFromPackageJson =
     await derivePackageManagerInPackageJson(currentDir);
   if (pkgManagerFromPackageJson) {
-    logDerivedPackageManager(
-      pkgManagerFromPackageJson,
-      'packageManager field in package.json',
-    );
-    return pkgManagerFromPackageJson;
+    return {
+      id: pkgManagerFromPackageJson,
+      sourceDescription: 'packageManager field in package.json',
+    };
   }
 
   // Check for lock files
   if (await fileExists(path.join(currentDir, 'package-lock.json'))) {
-    logDerivedPackageManager('npm', 'existence of package-lock.json file');
-    return 'npm';
+    return {
+      id: 'npm',
+      sourceDescription: 'existence of package-lock.json file',
+    };
   } else if (await fileExists(path.join(currentDir, 'pnpm-lock.yaml'))) {
-    logDerivedPackageManager('pnpm', 'existence of pnpm-lock.yaml file');
-    return 'pnpm';
+    return {
+      id: 'pnpm',
+      sourceDescription: 'existence of pnpm-lock.yaml file',
+    };
   } else if (await fileExists(path.join(currentDir, 'yarn.lock'))) {
     const yarnVersion = await deriveYarnVersion();
     if (yarnVersion) {
-      logDerivedPackageManager(
-        yarnVersion,
-        'existence of yarn.lock file and yarn -v command',
-      );
-      return yarnVersion;
+      return {
+        id: yarnVersion,
+        sourceDescription: 'existence of yarn.lock file and yarn -v command',
+      };
     }
   }
 
@@ -67,14 +74,22 @@ export async function derivePackageManager(
   );
 }
 
-function logDerivedPackageManager(
-  id: PackageManagerId,
-  sourceDescription: string,
-): void {
+export async function detectPackageManager(
+  currentDir = process.cwd(),
+): Promise<PackageManagerId> {
+  const { id } = await resolvePackageManager(currentDir);
+  return id;
+}
+
+export async function derivePackageManager(
+  currentDir = process.cwd(),
+): Promise<PackageManagerId> {
+  const { id, sourceDescription } = await resolvePackageManager(currentDir);
   const pm = packageManagers[id];
   logger.info(
     formatMetaLog(
       `Inferred ${pm.name} package manager from ${sourceDescription}`,
     ),
   );
+  return id;
 }
