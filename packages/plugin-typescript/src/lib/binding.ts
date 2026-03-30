@@ -54,13 +54,13 @@ export const typescriptSetupBinding = {
     return [
       {
         key: 'typescript.tsconfig',
-        message: 'TypeScript config file',
+        message: 'TypeScript config file:',
         type: 'input',
         default: tsconfig,
       },
       {
         key: 'typescript.categories',
-        message: 'Add TypeScript categories?',
+        message: 'Add categories?',
         type: 'confirm',
         default: true,
       },

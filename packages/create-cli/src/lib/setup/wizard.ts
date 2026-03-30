@@ -1,3 +1,4 @@
+import ansis from 'ansis';
 import path from 'node:path';
 import {
   type MonorepoTool,
@@ -28,7 +29,6 @@ import {
 import { promptPluginOptions, promptPluginSelection } from './prompts.js';
 import type {
   CliArgs,
-  FileChange,
   PluginCodegenResult,
   PluginSetupBinding,
   ScopedPluginResult,
@@ -83,21 +83,7 @@ export async function runSetupWizard(
   await resolveGitignore(tree);
   await resolveCi(tree, ciProvider, context);
 
-  logChanges(tree.listChanges());
-
-  if (cliArgs['dry-run']) {
-    logger.info('Dry run — no files written.');
-    return;
-  }
-
-  await tree.flush();
-
-  logger.info('Setup complete.');
-  logger.newline();
-  logNextSteps([
-    ['npx code-pushup', 'Collect your first report'],
-    ['https://github.com/code-pushup/cli#readme', 'Documentation'],
-  ]);
+  await finalize(tree, cliArgs['dry-run']);
 }
 
 async function resolveBinding(
@@ -106,7 +92,12 @@ async function resolveBinding(
   targetDir: string,
   tree: Pick<Tree, 'read' | 'write'>,
 ): Promise<PluginCodegenResult> {
-  const descriptors = binding.prompts ? await binding.prompts(targetDir) : [];
+  if (!binding.prompts) {
+    return binding.generateConfig({}, tree);
+  }
+  logger.newline();
+  logger.info(ansis.bold(binding.title));
+  const descriptors = await binding.prompts(targetDir);
   const answers =
     descriptors.length > 0
       ? await promptPluginOptions(descriptors, cliArgs)
@@ -161,18 +152,32 @@ async function writeMonorepoConfigs(
   );
 }
 
-function logChanges(changes: FileChange[]): void {
-  changes.forEach(change => {
+async function finalize(tree: Tree, dryRun?: boolean): Promise<void> {
+  logger.newline();
+
+  tree.listChanges().forEach(change => {
     logger.info(`${change.type} ${change.path}`);
   });
-}
 
-function logNextSteps(steps: [string, string][]): void {
+  if (dryRun) {
+    logger.newline();
+    logger.info('Dry run — no files written.');
+    return;
+  }
+
+  await tree.flush();
+
+  logger.newline();
+  logger.info('Setup complete.');
+  logger.newline();
   logger.info(
     formatAsciiTable(
       {
         title: 'Next steps:',
-        rows: steps,
+        rows: [
+          ['npx code-pushup', 'Collect your first report'],
+          ['https://github.com/code-pushup/cli#readme', 'Documentation'],
+        ],
       },
       { borderless: true },
     ),

@@ -21,19 +21,21 @@ const DEFAULT_PATTERNS: [string, ...string[]] = [
   '!**/node_modules',
 ];
 
-const CATEGORY: CategoryConfig = {
-  slug: 'docs',
-  title: 'Documentation',
-  description: 'Measures how much of your code is **documented**.',
-  refs: [
-    {
-      type: 'group',
-      plugin: PLUGIN_SLUG,
-      slug: 'documentation-coverage',
-      weight: 1,
-    },
-  ],
-};
+const CATEGORIES: CategoryConfig[] = [
+  {
+    slug: 'docs',
+    title: 'Documentation',
+    description: 'Measures how much of your code is **documented**.',
+    refs: [
+      {
+        type: 'group',
+        plugin: PLUGIN_SLUG,
+        slug: 'documentation-coverage',
+        weight: 1,
+      },
+    ],
+  },
+];
 
 type JsDocsOptions = {
   patterns: [string, ...string[]];
@@ -47,13 +49,13 @@ export const jsDocsSetupBinding = {
   prompts: async () => [
     {
       key: 'jsdocs.patterns',
-      message: 'Source file patterns (comma-separated)',
+      message: 'Source file patterns (comma-separated):',
       type: 'input',
       default: DEFAULT_PATTERNS.join(', '),
     },
     {
       key: 'jsdocs.categories',
-      message: 'Add JSDocs categories?',
+      message: 'Add categories?',
       type: 'confirm',
       default: true,
     },
@@ -65,7 +67,7 @@ export const jsDocsSetupBinding = {
         { moduleSpecifier: PACKAGE_NAME, defaultImport: 'jsDocsPlugin' },
       ],
       pluginInit: formatPluginInit(options.patterns),
-      ...(options.categories ? { categories: [CATEGORY] } : {}),
+      ...(options.categories ? { categories: CATEGORIES } : {}),
     };
   },
 } satisfies PluginSetupBinding;

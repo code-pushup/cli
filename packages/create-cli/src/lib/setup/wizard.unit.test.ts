@@ -18,21 +18,26 @@ vi.mock('./monorepo.js', async importOriginal => ({
   addCodePushUpCommand: vi.fn().mockResolvedValue(undefined),
 }));
 
-const TEST_BINDING: PluginSetupBinding = {
-  slug: 'test-plugin',
-  title: 'Test Plugin',
-  packageName: '@code-pushup/test-plugin',
-  isRecommended: () => Promise.resolve(true),
-  generateConfig: () => ({
-    imports: [
-      {
-        moduleSpecifier: '@code-pushup/test-plugin',
-        defaultImport: 'testPlugin',
-      },
-    ],
-    pluginInit: ['testPlugin(),'],
-  }),
-};
+function createBinding(
+  overrides?: Partial<PluginSetupBinding>,
+): PluginSetupBinding {
+  return {
+    slug: 'test-plugin',
+    title: 'Test Plugin',
+    packageName: '@code-pushup/test-plugin',
+    isRecommended: () => Promise.resolve(true),
+    generateConfig: () => ({
+      imports: [
+        {
+          moduleSpecifier: '@code-pushup/test-plugin',
+          defaultImport: 'testPlugin',
+        },
+      ],
+      pluginInit: ['testPlugin(),'],
+    }),
+    ...overrides,
+  };
+}
 
 describe('runSetupWizard', () => {
   describe('TypeScript config', () => {
@@ -41,7 +46,7 @@ describe('runSetupWizard', () => {
     });
 
     it('should generate ts config and log success', async () => {
-      await runSetupWizard([TEST_BINDING], {
+      await runSetupWizard([createBinding()], {
         yes: true,
         'target-dir': MEMFS_VOLUME,
       });
@@ -67,7 +72,7 @@ describe('runSetupWizard', () => {
     });
 
     it('should log dry-run message without writing files', async () => {
-      await runSetupWizard([TEST_BINDING], {
+      await runSetupWizard([createBinding()], {
         yes: true,
         'dry-run': true,
         'target-dir': MEMFS_VOLUME,
@@ -109,7 +114,7 @@ describe('runSetupWizard', () => {
     });
 
     it('should generate .mjs config when js format is auto-detected', async () => {
-      await runSetupWizard([TEST_BINDING], {
+      await runSetupWizard([createBinding()], {
         yes: true,
         'target-dir': MEMFS_VOLUME,
       });
@@ -136,7 +141,7 @@ describe('runSetupWizard', () => {
         MEMFS_VOLUME,
       );
 
-      await runSetupWizard([TEST_BINDING], {
+      await runSetupWizard([createBinding()], {
         yes: true,
         'config-format': 'js',
         'target-dir': MEMFS_VOLUME,
@@ -159,40 +164,26 @@ describe('runSetupWizard', () => {
     });
   });
 
+  it('should log a heading for each plugin with prompts', async () => {
+    vol.fromJSON({ 'tsconfig.json': '{}' }, MEMFS_VOLUME);
+    const withPrompts = (title: string) =>
+      createBinding({
+        title,
+        prompts: async () => [
+          { key: 'x', message: 'X:', type: 'input', default: '' },
+        ],
+      });
+
+    await runSetupWizard(
+      [withPrompts('Alpha'), createBinding(), withPrompts('Beta')],
+      { yes: true, 'target-dir': MEMFS_VOLUME },
+    );
+
+    expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('Alpha'));
+    expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('Beta'));
+  });
+
   describe('Monorepo config', () => {
-    const PROJECT_BINDING: PluginSetupBinding = {
-      slug: 'test-plugin',
-      title: 'Test Plugin',
-      packageName: '@code-pushup/test-plugin',
-      isRecommended: () => Promise.resolve(true),
-      generateConfig: () => ({
-        imports: [
-          {
-            moduleSpecifier: '@code-pushup/test-plugin',
-            defaultImport: 'testPlugin',
-          },
-        ],
-        pluginInit: ['testPlugin(),'],
-      }),
-    };
-
-    const ROOT_BINDING: PluginSetupBinding = {
-      slug: 'root-plugin',
-      title: 'Root Plugin',
-      packageName: '@code-pushup/root-plugin',
-      scope: 'root',
-      isRecommended: () => Promise.resolve(true),
-      generateConfig: () => ({
-        imports: [
-          {
-            moduleSpecifier: '@code-pushup/root-plugin',
-            defaultImport: 'rootPlugin',
-          },
-        ],
-        pluginInit: ['rootPlugin(),'],
-      }),
-    };
-
     beforeEach(() => {
       vol.fromJSON(
         {
@@ -216,7 +207,7 @@ describe('runSetupWizard', () => {
     });
 
     it('should generate preset and per-project configs', async () => {
-      await runSetupWizard([PROJECT_BINDING], {
+      await runSetupWizard([createBinding()], {
         yes: true,
         mode: 'monorepo',
         'target-dir': MEMFS_VOLUME,
@@ -269,7 +260,23 @@ describe('runSetupWizard', () => {
     });
 
     it('should generate root config for root-scoped plugins', async () => {
-      await runSetupWizard([PROJECT_BINDING, ROOT_BINDING], {
+      const rootBinding = createBinding({
+        slug: 'root-plugin',
+        title: 'Root Plugin',
+        packageName: '@code-pushup/root-plugin',
+        scope: 'root',
+        generateConfig: () => ({
+          imports: [
+            {
+              moduleSpecifier: '@code-pushup/root-plugin',
+              defaultImport: 'rootPlugin',
+            },
+          ],
+          pluginInit: ['rootPlugin(),'],
+        }),
+      });
+
+      await runSetupWizard([createBinding(), rootBinding], {
         yes: true,
         mode: 'monorepo',
         'target-dir': MEMFS_VOLUME,

@@ -78,28 +78,28 @@ export const jsPackagesSetupBinding = {
     return [
       {
         key: 'js-packages.packageManager',
-        message: 'Package manager',
+        message: 'Package manager:',
         type: 'select',
         choices: [...PACKAGE_MANAGERS],
         default: packageManager,
       },
       {
         key: 'js-packages.checks',
-        message: 'Checks to run',
+        message: 'Checks to run:',
         type: 'checkbox',
         choices: [...CHECKS],
         default: [...DEFAULT_CHECKS],
       },
       {
         key: 'js-packages.dependencyGroups',
-        message: 'Dependency groups',
+        message: 'Dependency groups:',
         type: 'checkbox',
         choices: [...DEPENDENCY_GROUPS],
         default: [...DEFAULT_DEPENDENCY_GROUPS],
       },
       {
         key: 'js-packages.categories',
-        message: 'Add JS packages categories?',
+        message: 'Add categories?',
         type: 'confirm',
         default: true,
       },
