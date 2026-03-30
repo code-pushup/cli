@@ -1,3 +1,13 @@
+## 0.126.0 (2026-03-30)
+
+### 🚀 Features
+
+- **plugin-jsdocs:** add setup wizard binding ([0a047d5c](https://github.com/code-pushup/cli/commit/0a047d5c))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
 ## 0.125.0 (2026-03-27)
 
 ### 🚀 Features
