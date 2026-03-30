@@ -96,6 +96,16 @@ describe('createTree', () => {
       ]);
     });
 
+    it('should preserve CREATE type when writing to the same path twice', async () => {
+      const tree = createTree('/project', createMockFs());
+      await tree.write('new.ts', 'first');
+      await tree.write('new.ts', 'second');
+
+      expect(tree.listChanges()).toStrictEqual([
+        { path: 'new.ts', type: 'CREATE', content: 'second' },
+      ]);
+    });
+
     it('should mark existing files as UPDATE', async () => {
       const tree = createTree(
         '/project',

@@ -37,8 +37,13 @@ export function createTree(
     },
 
     write: async (filePath: string, content: string): Promise<void> => {
-      const type = (await fs.exists(resolve(filePath))) ? 'UPDATE' : 'CREATE';
-      pending.set(filePath, { content, type });
+      const entry = pending.get(filePath);
+      if (entry) {
+        pending.set(filePath, { ...entry, content });
+      } else {
+        const type = (await fs.exists(resolve(filePath))) ? 'UPDATE' : 'CREATE';
+        pending.set(filePath, { content, type });
+      }
     },
 
     listChanges: (): FileChange[] =>
