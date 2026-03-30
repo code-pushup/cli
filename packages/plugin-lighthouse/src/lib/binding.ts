@@ -14,7 +14,6 @@ import {
   LIGHTHOUSE_PLUGIN_SLUG,
   LIGHTHOUSE_PLUGIN_TITLE,
 } from './constants.js';
-import type { LighthouseGroupSlug } from './types.js';
 
 const { name: PACKAGE_NAME } = createRequire(import.meta.url)(
   '../../package.json',
@@ -23,50 +22,36 @@ const { name: PACKAGE_NAME } = createRequire(import.meta.url)(
 const DEFAULT_URL = 'http://localhost:4200';
 const PLUGIN_VAR = 'lhPlugin';
 
-const CATEGORY_TO_GROUP: Record<string, LighthouseGroupSlug> = {
-  performance: 'performance',
-  a11y: 'accessibility',
-  'best-practices': 'best-practices',
-  seo: 'seo',
-};
-
-const CATEGORIES: CategoryCodegenConfig[] = [
+const CATEGORIES = [
   {
     slug: 'performance',
     title: 'Performance',
     description:
       'Measure performance and find opportunities to speed up page loads.',
-    refsExpression: `lighthouseGroupRefs(${PLUGIN_VAR}, 'performance')`,
+    group: 'performance',
   },
   {
     slug: 'a11y',
     title: 'Accessibility',
     description:
       'Determine if all users access content and navigate your site effectively.',
-    refsExpression: `lighthouseGroupRefs(${PLUGIN_VAR}, 'accessibility')`,
+    group: 'accessibility',
   },
   {
     slug: 'best-practices',
     title: 'Best Practices',
     description:
       'Improve code health of your web page following these best practices.',
-    refsExpression: `lighthouseGroupRefs(${PLUGIN_VAR}, 'best-practices')`,
+    group: 'best-practices',
   },
   {
     slug: 'seo',
     title: 'SEO',
     description:
       'Ensure that your page is optimized for search engine results ranking.',
-    refsExpression: `lighthouseGroupRefs(${PLUGIN_VAR}, 'seo')`,
+    group: 'seo',
   },
 ];
-
-const CATEGORY_CHOICES = CATEGORIES.map(({ slug, title }) => ({
-  name: title,
-  value: slug,
-}));
-
-const DEFAULT_CATEGORIES = CATEGORIES.map(({ slug }) => slug);
 
 type LighthouseOptions = {
   urls: [string, ...string[]];
@@ -88,8 +73,11 @@ export const lighthouseSetupBinding = {
       key: 'lighthouse.categories',
       message: 'Lighthouse categories',
       type: 'checkbox',
-      choices: [...CATEGORY_CHOICES],
-      default: [...DEFAULT_CATEGORIES],
+      choices: CATEGORIES.map(({ slug, title }) => ({
+        name: title,
+        value: slug,
+      })),
+      default: CATEGORIES.map(({ slug }) => slug),
     },
   ],
   generateConfig: (answers: Record<string, PluginAnswer>) => {
@@ -133,10 +121,9 @@ function parseAnswers(
 
 function formatPluginCall({ urls, categories }: LighthouseOptions): string {
   const formattedUrls = formatUrls(urls);
-  const groups = categories.flatMap(slug => {
-    const group = CATEGORY_TO_GROUP[slug];
-    return group ? [group] : [];
-  });
+  const groups = CATEGORIES.filter(({ slug }) => categories.includes(slug)).map(
+    ({ group }) => group,
+  );
   if (groups.length === 0 || groups.length === LIGHTHOUSE_GROUP_SLUGS.length) {
     return `lighthousePlugin(${formattedUrls})`;
   }
@@ -144,15 +131,22 @@ function formatPluginCall({ urls, categories }: LighthouseOptions): string {
   return `lighthousePlugin(${formattedUrls}, { onlyGroups: [${onlyGroups}] })`;
 }
 
+function createCategories({
+  categories,
+}: LighthouseOptions): CategoryCodegenConfig[] {
+  return CATEGORIES.filter(({ slug }) => categories.includes(slug)).map(
+    ({ slug, title, description, group }) => ({
+      slug,
+      title,
+      description,
+      refsExpression: `lighthouseGroupRefs(${PLUGIN_VAR}, ${singleQuote(group)})`,
+    }),
+  );
+}
+
 function formatUrls([first, ...rest]: [string, ...string[]]): string {
   if (rest.length === 0) {
     return singleQuote(first);
   }
   return `[${[first, ...rest].map(singleQuote).join(', ')}]`;
-}
-
-function createCategories({
-  categories,
-}: LighthouseOptions): CategoryCodegenConfig[] {
-  return CATEGORIES.filter(({ slug }) => categories.includes(slug));
 }
