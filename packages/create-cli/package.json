@@ -30,6 +30,7 @@
     "@code-pushup/coverage-plugin": "0.126.0",
     "@code-pushup/eslint-plugin": "0.126.0",
     "@code-pushup/js-packages-plugin": "0.126.0",
+    "@code-pushup/jsdocs-plugin": "0.126.0",
     "@code-pushup/lighthouse-plugin": "0.126.0",
     "@code-pushup/models": "0.126.0",
     "@code-pushup/typescript-plugin": "0.126.0",
