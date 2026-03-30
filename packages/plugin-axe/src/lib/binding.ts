@@ -60,13 +60,13 @@ export const axeSetupBinding = {
   prompts: async () => [
     {
       key: 'axe.urls',
-      message: 'Target URL(s) (comma-separated)',
+      message: 'Target URL(s) (comma-separated):',
       type: 'input',
       default: DEFAULT_URL,
     },
     {
       key: 'axe.preset',
-      message: 'Accessibility preset',
+      message: 'Accessibility preset:',
       type: 'select',
       choices: [...PRESET_CHOICES],
       default: AXE_DEFAULT_PRESET,
@@ -79,7 +79,7 @@ export const axeSetupBinding = {
     },
     {
       key: 'axe.categories',
-      message: 'Add Axe categories?',
+      message: 'Add categories?',
       type: 'confirm',
       default: true,
     },

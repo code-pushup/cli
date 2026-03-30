@@ -81,32 +81,32 @@ export const coverageSetupBinding = {
     return [
       {
         key: 'coverage.framework',
-        message: 'Test framework',
+        message: 'Test framework:',
         type: 'select',
         choices: [...FRAMEWORKS],
         default: framework,
       },
       {
         key: 'coverage.configFile',
-        message: 'Path to test config file',
+        message: 'Path to test config file:',
         type: 'input',
         default: configFile ?? '',
       },
       {
         key: 'coverage.reportPath',
-        message: 'Path to LCOV report file',
+        message: 'Path to LCOV report file:',
         type: 'input',
         default: framework === 'other' ? '' : DEFAULT_REPORT_PATH,
       },
       {
         key: 'coverage.testCommand',
-        message: 'Command to run tests with coverage',
+        message: 'Command to run tests with coverage:',
         type: 'input',
         default: defaultTestCommand(framework),
       },
       {
         key: 'coverage.types',
-        message: 'Coverage types to measure',
+        message: 'Coverage types:',
         type: 'checkbox',
         choices: ALL_COVERAGE_TYPES.map(type => ({
           name: pluralize(type),
@@ -122,7 +122,7 @@ export const coverageSetupBinding = {
       },
       {
         key: 'coverage.categories',
-        message: 'Add Code coverage categories?',
+        message: 'Add categories?',
         type: 'confirm',
         default: true,
       },

@@ -35,7 +35,7 @@ Each plugin exposes its own configuration keys that can be passed as CLI argumen
 | ------------------------- | --------- | ------------- | --------------------- |
 | **`--eslint.eslintrc`**   | `string`  | auto-detected | Path to ESLint config |
 | **`--eslint.patterns`**   | `string`  | `src` or `.`  | File patterns to lint |
-| **`--eslint.categories`** | `boolean` | `true`        | Add ESLint categories |
+| **`--eslint.categories`** | `boolean` | `true`        | Add categories        |
 
 #### Coverage
 
@@ -47,37 +47,37 @@ Each plugin exposes its own configuration keys that can be passed as CLI argumen
 | **`--coverage.testCommand`**    | `string`                                   | auto-detected        | Command to run tests           |
 | **`--coverage.types`**          | `('function'` \| `'branch'` \| `'line')[]` | all                  | Coverage types to measure      |
 | **`--coverage.continueOnFail`** | `boolean`                                  | `true`               | Continue if test command fails |
-| **`--coverage.categories`**     | `boolean`                                  | `true`               | Add Code coverage categories   |
+| **`--coverage.categories`**     | `boolean`                                  | `true`               | Add categories                 |
 
 #### JS Packages
 
-| Option                               | Type                                                       | Default       | Description                |
-| ------------------------------------ | ---------------------------------------------------------- | ------------- | -------------------------- |
-| **`--js-packages.packageManager`**   | `'npm'` \| `'yarn-classic'` \| `'yarn-modern'` \| `'pnpm'` | auto-detected | Package manager            |
-| **`--js-packages.checks`**           | `('audit'` \| `'outdated')[]`                              | both          | Checks to run              |
-| **`--js-packages.dependencyGroups`** | `('prod'` \| `'dev'` \| `'optional')[]`                    | `prod`, `dev` | Dependency groups          |
-| **`--js-packages.categories`**       | `boolean`                                                  | `true`        | Add JS packages categories |
+| Option                               | Type                                                       | Default       | Description       |
+| ------------------------------------ | ---------------------------------------------------------- | ------------- | ----------------- |
+| **`--js-packages.packageManager`**   | `'npm'` \| `'yarn-classic'` \| `'yarn-modern'` \| `'pnpm'` | auto-detected | Package manager   |
+| **`--js-packages.checks`**           | `('audit'` \| `'outdated')[]`                              | both          | Checks to run     |
+| **`--js-packages.dependencyGroups`** | `('prod'` \| `'dev'` \| `'optional')[]`                    | `prod`, `dev` | Dependency groups |
+| **`--js-packages.categories`**       | `boolean`                                                  | `true`        | Add categories    |
 
 #### TypeScript
 
-| Option                        | Type      | Default       | Description               |
-| ----------------------------- | --------- | ------------- | ------------------------- |
-| **`--typescript.tsconfig`**   | `string`  | auto-detected | TypeScript config file    |
-| **`--typescript.categories`** | `boolean` | `true`        | Add TypeScript categories |
+| Option                        | Type      | Default       | Description            |
+| ----------------------------- | --------- | ------------- | ---------------------- |
+| **`--typescript.tsconfig`**   | `string`  | auto-detected | TypeScript config file |
+| **`--typescript.categories`** | `boolean` | `true`        | Add categories         |
 
 #### Lighthouse
 
 | Option                        | Type                                                             | Default                 | Description                     |
 | ----------------------------- | ---------------------------------------------------------------- | ----------------------- | ------------------------------- |
 | **`--lighthouse.urls`**       | `string \| string[]`                                             | `http://localhost:4200` | Target URL(s) (comma-separated) |
-| **`--lighthouse.categories`** | `('performance'` \| `'a11y'` \| `'best-practices'` \| `'seo')[]` | all                     | Lighthouse categories           |
+| **`--lighthouse.categories`** | `('performance'` \| `'a11y'` \| `'best-practices'` \| `'seo')[]` | all                     | Categories                      |
 
 #### JSDocs
 
 | Option                    | Type                 | Default                                      | Description                            |
 | ------------------------- | -------------------- | -------------------------------------------- | -------------------------------------- |
 | **`--jsdocs.patterns`**   | `string \| string[]` | `src/**/*.ts, src/**/*.js, !**/node_modules` | Source file patterns (comma-separated) |
-| **`--jsdocs.categories`** | `boolean`            | `true`                                       | Add JSDocs categories                  |
+| **`--jsdocs.categories`** | `boolean`            | `true`                                       | Add categories                         |
 
 #### Axe
 
@@ -86,7 +86,7 @@ Each plugin exposes its own configuration keys that can be passed as CLI argumen
 | **`--axe.urls`**        | `string \| string[]`                                         | `http://localhost:4200` | Target URL(s) (comma-separated)            |
 | **`--axe.preset`**      | `'wcag21aa'` \| `'wcag22aa'` \| `'best-practice'` \| `'all'` | `wcag21aa`              | Accessibility preset                       |
 | **`--axe.setupScript`** | `boolean`                                                    | `false`                 | Create setup script for auth-protected app |
-| **`--axe.categories`**  | `boolean`                                                    | `true`                  | Add Axe categories                         |
+| **`--axe.categories`**  | `boolean`                                                    | `true`                  | Add categories                             |
 
 ### Examples
 

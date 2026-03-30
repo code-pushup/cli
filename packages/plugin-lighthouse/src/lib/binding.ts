@@ -65,13 +65,13 @@ export const lighthouseSetupBinding = {
   prompts: async (_targetDir: string) => [
     {
       key: 'lighthouse.urls',
-      message: 'Target URL(s) (comma-separated)',
+      message: 'Target URL(s) (comma-separated):',
       type: 'input',
       default: DEFAULT_URL,
     },
     {
       key: 'lighthouse.categories',
-      message: 'Lighthouse categories',
+      message: 'Categories:',
       type: 'checkbox',
       choices: CATEGORIES.map(({ slug, title }) => ({
         name: title,

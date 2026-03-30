@@ -71,13 +71,13 @@ export const eslintSetupBinding = {
   prompts: async (targetDir: string) => [
     {
       key: 'eslint.eslintrc',
-      message: 'Path to ESLint config',
+      message: 'Path to ESLint config:',
       type: 'input',
       default: (await detectEslintConfig(targetDir)) ?? '',
     },
     {
       key: 'eslint.patterns',
-      message: 'File patterns to lint',
+      message: 'File patterns to lint:',
       type: 'input',
       default: (await directoryExists(path.join(targetDir, 'src')))
         ? 'src'
@@ -85,7 +85,7 @@ export const eslintSetupBinding = {
     },
     {
       key: 'eslint.categories',
-      message: 'Add ESLint categories?',
+      message: 'Add categories?',
       type: 'confirm',
       default: true,
     },
