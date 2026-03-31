@@ -1,3 +1,13 @@
+## 0.126.2 (2026-03-31)
+
+### 🩹 Fixes
+
+- **create-cli:** preserve write type on repeated writes ([d1e2e067](https://github.com/code-pushup/cli/commit/d1e2e067))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
 ## 0.126.1 (2026-03-31)
 
 ### 🩹 Fixes
