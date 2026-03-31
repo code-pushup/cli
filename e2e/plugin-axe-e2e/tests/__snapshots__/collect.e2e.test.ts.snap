@@ -304,7 +304,7 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
           "value": 0,
         },
         {
-          "description": "Ensure elements that have scrollable content are accessible by keyboard",
+          "description": "Ensure elements that have scrollable content are accessible by keyboard in Safari",
           "displayValue": "0 elements",
           "docsUrl": "https://dequeuniversity.com/rules/axe/4.11/scrollable-region-focusable?application=axeAPI",
           "score": 1,
@@ -532,7 +532,7 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
                 "severity": "error",
                 "source": {
                   "selector": ".low-contrast",
-                  "snippet": "<div class=\"low-contrast\">
+                  "snippet": "<div class="low-contrast">
       This text has poor color contrast and may be hard to read.
     </div>",
                   "url": "file:///<TEST_DIR>/index.html",
@@ -627,8 +627,8 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
                 "message": "Invalid ARIA attribute name: aria-invalid-attribute",
                 "severity": "error",
                 "source": {
-                  "selector": "div[role=\"button\"]",
-                  "snippet": "<div role=\"button\" aria-invalid-attribute=\"true\">
+                  "selector": "div[role="button"]",
+                  "snippet": "<div role="button" aria-invalid-attribute="true">
       Button with invalid ARIA attribute
     </div>",
                   "url": "file:///<TEST_DIR>/index.html",
@@ -652,7 +652,7 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
                 "severity": "error",
                 "source": {
                   "selector": "img",
-                  "snippet": "<img src=\"test-image.jpg\" width=\"200\" height=\"150\">",
+                  "snippet": "<img src="test-image.jpg" width="200" height="150">",
                   "url": "file:///<TEST_DIR>/index.html",
                 },
               },
@@ -674,7 +674,7 @@ exports[`PLUGIN collect report with axe-plugin NPM package > should run plugin o
                 "severity": "error",
                 "source": {
                   "selector": "a",
-                  "snippet": "<a href=\"#\"></a>",
+                  "snippet": "<a href="#"></a>",
                   "url": "file:///<TEST_DIR>/index.html",
                 },
               },
