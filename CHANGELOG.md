@@ -1,3 +1,13 @@
+## 0.126.1 (2026-03-31)
+
+### 🩹 Fixes
+
+- **create-cli:** add missing jsdocs-plugin dependency ([705e777b](https://github.com/code-pushup/cli/commit/705e777b))
+
+### ❤️ Thank You
+
+- hanna-skryl
+
 ## 0.126.0 (2026-03-30)
 
 ### 🚀 Features
