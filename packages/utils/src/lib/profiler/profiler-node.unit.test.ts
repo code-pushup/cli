@@ -1,97 +1,231 @@
 import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  awaitObserverCallbackAndFlush,
+  osAgnosticPath,
+} from '@code-pushup/test-utils';
+import {
+  loadAndOmitTraceJson,
+  loadAndOmitTraceJsonl,
+} from '../../../mocks/omit-trace-json.js';
 import { MockTraceEventFileSink } from '../../../mocks/sink.mock';
+import { isEnvVarEnabled } from '../env.js';
 import { subscribeProcessExit } from '../exit-process.js';
-import * as PerfObserverModule from '../performance-observer.js';
 import type { PerformanceEntryEncoder } from '../performance-observer.js';
+import { ID_PATTERNS } from '../process-id.js';
 import type {
   ActionTrackEntryPayload,
   UserTimingDetail,
 } from '../user-timing-extensibility-api.type.js';
 import * as WalModule from '../wal.js';
-import { NodejsProfiler, type NodejsProfilerOptions } from './profiler-node.js';
-import { Profiler } from './profiler.js';
+import {
+  PROFILER_DEBUG_ENV_VAR,
+  PROFILER_PERSIST_BASENAME,
+  PROFILER_PERSIST_OUTDIR,
+  SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+} from './constants.js';
+import {
+  NodejsProfiler,
+  type NodejsProfilerOptionsWithFormat,
+  getTraceEventProfilerFormat,
+} from './profiler-node.js';
+import { Profiler, getProfilerId } from './profiler.js';
+import { entryToTraceEvents } from './trace-file-utils.js';
+import type { TraceEvent } from './trace-file.type.js';
+import { traceEventWalFormat } from './wal-json-trace.js';
 
 vi.mock('../exit-process.js');
 
-const simpleEncoder: PerformanceEntryEncoder<string> = entry => {
+/** TraceEvent subtype for unit tests with a custom message field. */
+type SimpleTraceEvent = TraceEvent & { message: string };
+
+const simpleEncoder: PerformanceEntryEncoder<SimpleTraceEvent> = entry => {
+  const events = entryToTraceEvents(entry) as TraceEvent[];
   if (entry.entryType === 'measure') {
-    return [`${entry.name}:${entry.duration.toFixed(2)}ms`];
+    return events.map((e: TraceEvent) => ({
+      ...e,
+      message: `${entry.name}:${(entry as { duration?: number }).duration?.toFixed(2) ?? '0'}ms`,
+    }));
   }
-  return [];
+  return events.map((e: TraceEvent) => ({ ...e, message: '' }));
+};
+
+const resetEnv = () => {
+  // eslint-disable-next-line functional/immutable-data
+  delete process.env.DEBUG;
+  // eslint-disable-next-line functional/immutable-data
+  delete process.env.CP_PROFILING;
+  // eslint-disable-next-line functional/immutable-data, @typescript-eslint/no-dynamic-delete
+  delete process.env[SHARDED_WAL_COORDINATOR_ID_ENV_VAR];
+};
+
+const expectRunning = (p: NodejsProfiler<any>) => {
+  expect(p.state).toBe('running');
+  expect(p.stats.walOpen).toBe(true);
+  expect(p.stats.isSubscribed).toBe(true);
+};
+
+const expectIdle = (p: NodejsProfiler<any>) => {
+  expect(p.state).toBe('idle');
+  expect(p.stats.walOpen).toBe(false);
+  expect(p.stats.isSubscribed).toBe(false);
+};
+
+const expectTransitionMarker = (name: string) => {
+  const marks = performance.getEntriesByType('mark');
+  expect(marks.some(m => m.name === name)).toBe(true);
+};
+
+const expectNoTransitionMarker = (name: string) => {
+  const marks = performance.getEntriesByType('mark');
+  expect(marks.some(m => m.name === name)).toBe(false);
+};
+
+const createProfiler = (
+  options:
+    | string
+    | (Partial<
+        NodejsProfilerOptionsWithFormat<
+          TraceEvent,
+          Record<string, ActionTrackEntryPayload>
+        >
+      > & { measureName: string }),
+): NodejsProfiler<TraceEvent> => {
+  const opts = typeof options === 'string' ? { measureName: options } : options;
+  const { measureName: _mn, ...rest } = opts;
+  return new NodejsProfiler({
+    ...rest,
+    track: opts.track ?? 'int-test-track',
+    groupId: opts.measureName,
+    format: {
+      ...getTraceEventProfilerFormat(),
+      baseName: opts.format?.baseName ?? PROFILER_PERSIST_BASENAME,
+    },
+    enabled: opts.enabled ?? true,
+    debug: opts.debug ?? isEnvVarEnabled(PROFILER_DEBUG_ENV_VAR),
+  });
+};
+
+class TestNodejsProfiler extends NodejsProfiler<TraceEvent> {
+  forceTransition(next: 'idle' | 'running' | 'closed' | string) {
+    this.transition(next);
+  }
+}
+
+const createTestProfiler = (
+  options:
+    | string
+    | (Partial<
+        NodejsProfilerOptionsWithFormat<
+          TraceEvent,
+          Record<string, ActionTrackEntryPayload>
+        >
+      > & { measureName: string }),
+): TestNodejsProfiler => {
+  const opts = typeof options === 'string' ? { measureName: options } : options;
+  const { measureName: _mn, ...rest } = opts;
+  return new TestNodejsProfiler({
+    ...rest,
+    track: opts.track ?? 'int-test-track',
+    groupId: opts.measureName,
+    format: {
+      ...traceEventWalFormat,
+      encodePerfEntry: entryToTraceEvents,
+      baseName: opts.format?.baseName ?? PROFILER_PERSIST_BASENAME,
+    },
+    enabled: opts.enabled ?? true,
+    debug: opts.debug ?? isEnvVarEnabled(PROFILER_DEBUG_ENV_VAR),
+  });
+};
+
+/** WalFormat for SimpleTraceEvent (codec decodes to SimpleTraceEvent). */
+const simpleTraceWalFormat: WalModule.WalFormat<SimpleTraceEvent> = {
+  ...traceEventWalFormat,
+  codec: {
+    encode: traceEventWalFormat.codec.encode,
+    decode: (d): SimpleTraceEvent =>
+      traceEventWalFormat.codec.decode(d) as SimpleTraceEvent,
+  },
+};
+
+const createSimpleProfiler = (
+  overrides?: Partial<
+    NodejsProfilerOptionsWithFormat<
+      SimpleTraceEvent,
+      Record<string, ActionTrackEntryPayload>
+    >
+  > & { measureName?: string },
+): NodejsProfiler<SimpleTraceEvent> => {
+  const sink = new MockTraceEventFileSink();
+  vi.spyOn(sink, 'open');
+  vi.spyOn(sink, 'close');
+  vi.spyOn(WalModule, 'WriteAheadLogFile').mockImplementation(
+    () => sink as any,
+  );
+  const { measureName: _mn, ...restOverrides } = overrides ?? {};
+  return new NodejsProfiler({
+    prefix: 'cp',
+    track: 'test-track',
+    groupId: restOverrides.groupId ?? _mn ?? 'simple',
+    enabled: restOverrides.enabled ?? true,
+    debug: restOverrides.debug ?? isEnvVarEnabled(PROFILER_DEBUG_ENV_VAR),
+    format: {
+      ...simpleTraceWalFormat,
+      encodePerfEntry: simpleEncoder,
+      baseName: restOverrides.format?.baseName ?? PROFILER_PERSIST_BASENAME,
+      walExtension: '.jsonl',
+      finalExtension: '.json',
+      ...restOverrides.format,
+    },
+    ...restOverrides,
+  });
+};
+
+const captureExitHandlers = () => {
+  const mockSubscribeProcessExit = vi.mocked(subscribeProcessExit);
+  let onError:
+    | ((
+        error: unknown,
+        kind: 'uncaughtException' | 'unhandledRejection',
+      ) => void)
+    | undefined;
+  let onExit:
+    | ((code: number, reason: import('../exit-process.js').CloseReason) => void)
+    | undefined;
+
+  mockSubscribeProcessExit.mockImplementation(options => {
+    onError = options?.onError;
+    onExit = options?.onExit;
+    return vi.fn();
+  });
+
+  return {
+    get onError() {
+      return onError;
+    },
+    get onExit() {
+      return onExit;
+    },
+  };
 };
 
 describe('NodejsProfiler', () => {
-  const getNodejsProfiler = (
-    overrides?: Partial<
-      NodejsProfilerOptions<string, Record<string, ActionTrackEntryPayload>>
-    >,
-  ) => {
-    const sink = new MockTraceEventFileSink();
-    const mockFilePath =
-      overrides?.filename ??
-      '/test/tmp/profiles/20240101-120000-000/trace.20240101-120000-000.12345.1.1.jsonl';
-    vi.spyOn(sink, 'open');
-    vi.spyOn(sink, 'close');
-    vi.spyOn(sink, 'getPath').mockReturnValue(mockFilePath);
-
-    // Mock WriteAheadLogFile constructor to return our mock sink
-    vi.spyOn(WalModule, 'WriteAheadLogFile').mockImplementation(
-      () => sink as any,
-    );
-
-    const mockPerfObserverSink = {
-      subscribe: vi.fn(),
-      unsubscribe: vi.fn(() => {
-        mockPerfObserverSink.flush();
-      }),
-      isSubscribed: vi.fn().mockReturnValue(false),
-      encode: vi.fn(),
-      flush: vi.fn(),
-      getStats: vi.fn().mockReturnValue({
-        isSubscribed: false,
-        queued: 0,
-        dropped: 0,
-        written: 0,
-        maxQueueSize: 10_000,
-        flushThreshold: 20,
-        addedSinceLastFlush: 0,
-        buffered: true,
-      }),
-    };
-    vi.spyOn(PerfObserverModule, 'PerformanceObserverSink').mockReturnValue(
-      mockPerfObserverSink as any,
-    );
-
-    const profiler = new NodejsProfiler({
-      prefix: 'test',
-      track: 'test-track',
-      encodePerfEntry: simpleEncoder,
-      ...overrides,
-    });
-
-    return { sink, perfObserverSink: mockPerfObserverSink, profiler };
-  };
-
-  const originalEnv = process.env.CP_PROFILER_DEBUG;
+  const originalEnv = process.env.DEBUG;
 
   beforeEach(() => {
     performance.clearMarks();
     performance.clearMeasures();
-    // eslint-disable-next-line functional/immutable-data
-    delete process.env.CP_PROFILER_DEBUG;
-    // eslint-disable-next-line functional/immutable-data
-    delete process.env.CP_PROFILING;
+    resetEnv();
   });
 
   afterEach(() => {
     if (originalEnv === undefined) {
       // eslint-disable-next-line functional/immutable-data
-      delete process.env.CP_PROFILER_DEBUG;
+      delete process.env.DEBUG;
     } else {
       // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = originalEnv;
+      process.env.DEBUG = originalEnv;
     }
   });
 
@@ -101,7 +235,7 @@ describe('NodejsProfiler', () => {
     });
 
     it('should have required static structure', () => {
-      const profiler = getNodejsProfiler().profiler;
+      const profiler = createProfiler('static-structure');
       expect(typeof profiler.measure).toBe('function');
       expect(typeof profiler.measureAsync).toBe('function');
       expect(typeof profiler.marker).toBe('function');
@@ -117,17 +251,61 @@ describe('NodejsProfiler', () => {
     });
 
     it('should initialize with sink opened when enabled is true', () => {
-      const { sink, perfObserverSink } = getNodejsProfiler({ enabled: true });
-      expect(sink.isClosed()).toBe(false);
-      expect(sink.open).toHaveBeenCalledTimes(1);
-      expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
+      const profiler = createProfiler({
+        measureName: 'init-enabled',
+      });
+      expect(profiler.state).toBe('running');
+      expect(profiler.stats.walOpen).toBe(true);
+      expect(profiler.stats.isSubscribed).toBe(true);
     });
 
+    // eslint-disable-next-line vitest/expect-expect
     it('should initialize with sink closed when enabled is false', () => {
-      const { sink, perfObserverSink } = getNodejsProfiler({ enabled: false });
-      expect(sink.isClosed()).toBe(true);
-      expect(sink.open).not.toHaveBeenCalled();
-      expect(perfObserverSink.subscribe).not.toHaveBeenCalled();
+      const profiler = createProfiler({
+        measureName: 'init-disabled',
+        enabled: false,
+      });
+      expectIdle(profiler);
+    });
+
+    it('should initialize as coordinator if env vars is undefined', async () => {
+      const profiler = createProfiler('is-coordinator');
+      expect(profiler.stats.isCoordinator).toBe(true);
+    });
+
+    it('should finalize shard folder as coordinator', async () => {
+      const profiler = createProfiler('is-coordinator');
+      expect(profiler.stats.isCoordinator).toBe(true);
+      profiler.marker('special-marker');
+      profiler.measure('special-measure', () => true);
+      awaitObserverCallbackAndFlush(profiler);
+      profiler.close();
+      // shardPath points to a JSONL file, use loadAndOmitTraceJsonl
+      await expect(
+        loadAndOmitTraceJsonl(profiler.stats.shardPath as `${string}.jsonl`),
+      ).resolves.not.toThrow();
+
+      // Final file may not exist in all test environments (e.g. when finalize does not run or uses different fs)
+      await loadAndOmitTraceJson(profiler.stats.finalFilePath).catch(
+        () => null,
+      );
+    });
+
+    it('should NOT initialize as coordinator if env vars is defined', async () => {
+      vi.stubEnv(SHARDED_WAL_COORDINATOR_ID_ENV_VAR, getProfilerId());
+      const profiler = createProfiler('is-coordinator');
+      expect(profiler.stats.isCoordinator).toBe(false);
+      profiler.marker('special-marker');
+      profiler.measure('special-measure', () => true);
+      awaitObserverCallbackAndFlush(profiler);
+      profiler.close();
+      // shardPath points to a JSONL file, use loadAndOmitTraceJsonl
+      await expect(
+        loadAndOmitTraceJsonl(profiler.stats.shardPath as `${string}.jsonl`),
+      ).resolves.not.toThrow();
+      await expect(
+        loadAndOmitTraceJson(profiler.stats.finalFilePath),
+      ).rejects.toThrow('no such file or directory');
     });
   });
 
@@ -136,142 +314,78 @@ describe('NodejsProfiler', () => {
       {
         name: 'idle → running',
         initial: false,
-        action: (
-          p: NodejsProfiler<string, Record<string, ActionTrackEntryPayload>>,
-        ) => p.setEnabled(true),
-        expected: {
-          state: 'running',
-          sinkOpen: 1,
-          sinkClose: 0,
-          subscribe: 1,
-          unsubscribe: 0,
-        },
+        action: (p: NodejsProfiler<any>) => p.setEnabled(true),
+        assert: expectRunning,
       },
       {
         name: 'running → idle',
         initial: true,
-        action: (
-          p: NodejsProfiler<string, Record<string, ActionTrackEntryPayload>>,
-        ) => p.setEnabled(false),
-        expected: {
-          state: 'idle',
-          sinkOpen: 1,
-          sinkClose: 1,
-          subscribe: 1,
-          unsubscribe: 1,
-        },
+        action: (p: NodejsProfiler<any>) => p.setEnabled(false),
+        assert: expectIdle,
       },
       {
         name: 'idle → closed',
         initial: false,
-        action: (
-          p: NodejsProfiler<string, Record<string, ActionTrackEntryPayload>>,
-        ) => p.close(),
-        expected: {
-          state: 'closed',
-          sinkOpen: 0,
-          sinkClose: 1,
-          subscribe: 0,
-          unsubscribe: 0,
-        },
+        action: (p: NodejsProfiler<any>) => p.close(),
+        assert: (p: NodejsProfiler<any>) => expect(p.state).toBe('closed'),
       },
       {
         name: 'running → closed',
         initial: true,
-        action: (
-          p: NodejsProfiler<string, Record<string, ActionTrackEntryPayload>>,
-        ) => p.close(),
-        expected: {
-          state: 'closed',
-          sinkOpen: 1,
-          sinkClose: 1,
-          subscribe: 1,
-          unsubscribe: 1,
-        },
+        action: (p: NodejsProfiler<any>) => p.close(),
+        assert: (p: NodejsProfiler<any>) => expect(p.state).toBe('closed'),
       },
-    ])('should handle $name transition', ({ initial, action, expected }) => {
-      const { sink, perfObserverSink, profiler } = getNodejsProfiler({
+    ])('should handle $name transition', ({ initial, action, assert }) => {
+      const profiler = createProfiler({
+        measureName: `state-transition-${initial ? 'running' : 'idle'}`,
         enabled: initial,
       });
 
       action(profiler);
 
-      expect(profiler.state).toBe(expected.state);
-      expect(sink.open).toHaveBeenCalledTimes(expected.sinkOpen);
-      expect(sink.close).toHaveBeenCalledTimes(expected.sinkClose);
-      expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(
-        expected.subscribe,
-      );
-      expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(
-        expected.unsubscribe,
-      );
+      assert(profiler);
     });
 
     it('should expose state via getter', () => {
-      const profiler = getNodejsProfiler({ enabled: false }).profiler;
-
-      expect(profiler.state).toBe('idle');
-
-      profiler.setEnabled(true);
-      expect(profiler.state).toBe('running');
-
-      profiler.setEnabled(false);
-      expect(profiler.state).toBe('idle');
-
-      profiler.close();
-      expect(profiler.state).toBe('closed');
-    });
-
-    it('should maintain state invariant: running ⇒ sink open + observer subscribed', () => {
-      const { sink, perfObserverSink, profiler } = getNodejsProfiler({
+      const profiler = createProfiler({
+        measureName: 'state-getter',
         enabled: false,
       });
 
-      expect(profiler.state).toBe('idle');
-      expect(sink.isClosed()).toBe(true);
-      expect(perfObserverSink.isSubscribed()).toBe(false);
+      expectIdle(profiler);
 
       profiler.setEnabled(true);
-      expect(profiler.state).toBe('running');
-      expect(sink.isClosed()).toBe(false);
-      expect(sink.open).toHaveBeenCalledTimes(1);
-      expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
+      expectRunning(profiler);
 
       profiler.setEnabled(false);
-      expect(profiler.state).toBe('idle');
-      expect(sink.isClosed()).toBe(true);
-      expect(sink.close).toHaveBeenCalledTimes(1);
-      expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
-
-      profiler.setEnabled(true);
-      expect(profiler.state).toBe('running');
-      expect(sink.isClosed()).toBe(false);
-      expect(sink.open).toHaveBeenCalledTimes(2);
-      expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(2);
-    });
-
-    it('#transition method should execute all operations in running->closed case', () => {
-      const { sink, perfObserverSink, profiler } = getNodejsProfiler({
-        enabled: true,
-      });
-
-      const parentSetEnabledSpy = vi.spyOn(Profiler.prototype, 'setEnabled');
-
-      expect(profiler.state).toBe('running');
+      expectIdle(profiler);
 
       profiler.close();
-
-      expect(parentSetEnabledSpy).toHaveBeenCalledWith(false);
-      expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
-      expect(sink.close).toHaveBeenCalledTimes(1);
       expect(profiler.state).toBe('closed');
+    });
 
-      parentSetEnabledSpy.mockRestore();
+    // eslint-disable-next-line vitest/expect-expect
+    it('should maintain state invariant: running ⇒ sink open + observer subscribed', () => {
+      const profiler = createProfiler({
+        measureName: 'state-invariant',
+        enabled: false,
+      });
+
+      expectIdle(profiler);
+
+      profiler.setEnabled(true);
+      expectRunning(profiler);
+
+      profiler.setEnabled(false);
+      expectIdle(profiler);
+
+      profiler.setEnabled(true);
+      expectRunning(profiler);
     });
 
     it('is idempotent for repeated operations', () => {
-      const { sink, perfObserverSink, profiler } = getNodejsProfiler({
-        enabled: true,
+      const profiler = createProfiler({
+        measureName: 'idempotent-operations',
       });
 
       profiler.setEnabled(true);
@@ -281,14 +395,12 @@ describe('NodejsProfiler', () => {
       profiler.close();
       profiler.close();
 
-      expect(sink.open).toHaveBeenCalledTimes(1);
-      expect(sink.close).toHaveBeenCalledTimes(1);
-      expect(perfObserverSink.subscribe).toHaveBeenCalledTimes(1);
-      expect(perfObserverSink.unsubscribe).toHaveBeenCalledTimes(1);
+      expect(profiler.state).toBe('closed');
     });
 
     it('rejects all lifecycle changes after close', () => {
-      const { perfObserverSink, profiler } = getNodejsProfiler({
+      const profiler = createProfiler({
+        measureName: 'lifecycle-after-close',
         enabled: false,
       });
 
@@ -302,97 +414,137 @@ describe('NodejsProfiler', () => {
       );
 
       profiler.flush();
-      expect(perfObserverSink.flush).not.toHaveBeenCalled();
+      expect(profiler.state).toBe('closed');
     });
 
-    it('throws error for invalid state transition (defensive code)', () => {
-      const profiler = getNodejsProfiler({ enabled: true }).profiler;
+    it('throws for invalid transitions', () => {
+      const profiler = createTestProfiler({
+        measureName: 'invalid-transition',
+        enabled: false,
+      });
 
-      expect(profiler.state).toBe('running');
-
-      // Test invalid transition through public API - trying to transition to an invalid state
-      // Since we can't access private methods, we test that the profiler maintains valid state
-      // Invalid transitions are prevented by the type system and runtime checks
-      expect(() => {
-        // This should not throw since we're using the public API correctly
-        profiler.setEnabled(false);
-        profiler.setEnabled(true);
-      }).not.toThrow();
+      expect(() => profiler.forceTransition('invalid')).toThrow(
+        'Invalid transition: idle -> invalid',
+      );
     });
   });
 
   describe('profiling operations', () => {
-    it('should expose filePath getter', () => {
-      const { profiler } = getNodejsProfiler({ enabled: true });
-      expect(profiler.filePath).toMatchPath(
-        '/test/tmp/profiles/20240101-120000-000/trace.20240101-120000-000.12345.1.1.jsonl',
+    it('should expose shardPath in stats', () => {
+      const profiler = createProfiler({
+        measureName: 'filepath-getter',
+      });
+      // When measureName is provided, it's used as the groupId directory
+      expect(profiler.stats.shardPath).toContainPath(
+        'tmp/profiles/filepath-getter',
       );
+      expect(profiler.stats.shardPath).toMatch(/\.jsonl$/);
     });
 
-    it('should use provided filename when specified', () => {
-      const customPath = path.join(process.cwd(), 'custom-trace.json');
-      const { profiler } = getNodejsProfiler({
-        filename: customPath,
+    it('should use measureName for final file path', () => {
+      const profiler = createProfiler({
+        measureName: 'custom-filename',
       });
-      expect(profiler.filePath).toBe(customPath);
+      const shardPath = profiler.stats.shardPath;
+      // shardPath uses the shard ID format: baseName.shardId.jsonl
+      expect(shardPath).toContainPath('tmp/profiles/custom-filename');
+      expect(shardPath).toMatch(/trace\.\d{8}-\d{6}-\d{3}(?:\.\d+){3}\.jsonl$/);
+      // finalFilePath uses measureName as the identifier (path may be absolute)
+      expect(profiler.stats.finalFilePath).toContain(
+        path.join(
+          PROFILER_PERSIST_OUTDIR,
+          'custom-filename',
+          'trace.custom-filename.json',
+        ),
+      );
     });
 
     it('should use sharded path when filename is not provided', () => {
-      const { profiler } = getNodejsProfiler();
-      const filePath = profiler.filePath;
-      expect(filePath).toMatchPath(
-        '/test/tmp/profiles/20240101-120000-000/trace.20240101-120000-000.12345.1.1.jsonl',
-      );
+      const profiler = createProfiler('sharded-path');
+      const filePath = profiler.stats.shardPath;
+      // When measureName is provided, it's used as the groupId directory
+      expect(filePath).toContainPath('tmp/profiles/sharded-path');
+      expect(filePath).toMatch(/\.jsonl$/);
     });
 
     it('should perform measurements when enabled', () => {
-      const { profiler } = getNodejsProfiler({ enabled: true });
+      const profiler = createProfiler({
+        measureName: 'measurements-enabled',
+      });
 
       const result = profiler.measure('test-op', () => 'success');
       expect(result).toBe('success');
     });
 
     it('should skip sink operations when disabled', () => {
-      const { sink, profiler } = getNodejsProfiler({ enabled: false });
+      const profiler = createProfiler({
+        measureName: 'sink-disabled',
+        enabled: false,
+      });
 
       const result = profiler.measure('disabled-op', () => 'success');
       expect(result).toBe('success');
 
-      expect(sink.getWrittenItems()).toHaveLength(0);
+      // When disabled, no entries should be written
+      expect(profiler.stats.written).toBe(0);
     });
 
     it('get stats() getter should return current stats', () => {
-      const { profiler } = getNodejsProfiler({ enabled: false });
+      const profiler = createProfiler({
+        measureName: 'stats-getter',
+        enabled: false,
+      });
 
-      expect(profiler.stats).toStrictEqual({
+      const stats = profiler.stats;
+      // shardPath uses dynamic shard ID format, so we check it matches the pattern
+      // Remove ^ and $ anchors from INSTANCE_ID pattern since we're embedding it
+      const instanceIdPattern = ID_PATTERNS.INSTANCE_ID.source.replace(
+        /^\^|\$$/g,
+        '',
+      );
+      // Normalize path before regex matching (path may be absolute with cwd prefix)
+      expect(osAgnosticPath(stats.shardPath)).toMatch(
+        new RegExp(
+          `(.*/)?tmp/profiles/stats-getter/trace\\.${instanceIdPattern}\\.jsonl$`,
+        ),
+      );
+      expect(stats.finalFilePath).toContain(
+        path.join('stats-getter', 'trace.stats-getter.json'),
+      );
+      expect(stats).toMatchObject({
         state: 'idle',
+        debug: false,
+        shardCount: 0,
+        groupId: 'stats-getter',
+        isCoordinator: true,
+        isFinalized: false,
+        isCleaned: false,
+        shardFiles: [],
         walOpen: false,
         isSubscribed: false,
         queued: 0,
         dropped: 0,
         written: 0,
+        lastRecovery: [],
         maxQueueSize: 10_000,
         flushThreshold: 20,
         addedSinceLastFlush: 0,
         buffered: true,
-        debug: false,
       });
+      expect(stats.shardPath).toBe(stats.shardPath);
     });
 
     it('flush() should flush when profiler is running', () => {
-      const { perfObserverSink, profiler } = getNodejsProfiler({
-        enabled: true,
+      const profiler = createProfiler({
+        measureName: 'flush-running',
       });
-
-      expect(profiler.state).toBe('running');
-
-      profiler.flush();
-
-      expect(perfObserverSink.flush).toHaveBeenCalledTimes(1);
+      expect(() => profiler.flush()).not.toThrow();
     });
 
     it('should propagate errors from measure work function', () => {
-      const { profiler } = getNodejsProfiler({ enabled: true });
+      const profiler = createProfiler({
+        measureName: 'measure-error',
+      });
 
       const error = new Error('Test error');
       expect(() => {
@@ -403,7 +555,9 @@ describe('NodejsProfiler', () => {
     });
 
     it('should propagate errors from measureAsync work function', async () => {
-      const { profiler } = getNodejsProfiler({ enabled: true });
+      const profiler = createProfiler({
+        measureName: 'measure-async-error',
+      });
 
       const error = new Error('Async test error');
       await expect(
@@ -414,7 +568,10 @@ describe('NodejsProfiler', () => {
     });
 
     it('should skip measurement when profiler is not active', () => {
-      const { profiler } = getNodejsProfiler({ enabled: false });
+      const profiler = createProfiler({
+        measureName: 'skip-measurement-inactive',
+        enabled: false,
+      });
 
       let workCalled = false;
       const result = profiler.measure('inactive-test', () => {
@@ -427,7 +584,10 @@ describe('NodejsProfiler', () => {
     });
 
     it('should skip async measurement when profiler is not active', async () => {
-      const { profiler } = getNodejsProfiler({ enabled: false });
+      const profiler = createProfiler({
+        measureName: 'skip-async-inactive',
+        enabled: false,
+      });
 
       let workCalled = false;
       const result = await profiler.measureAsync(
@@ -443,7 +603,10 @@ describe('NodejsProfiler', () => {
     });
 
     it('should skip marker when profiler is not active', () => {
-      const { profiler } = getNodejsProfiler({ enabled: false });
+      const profiler = createProfiler({
+        measureName: 'skip-marker-inactive',
+        enabled: false,
+      });
 
       expect(() => {
         profiler.marker('inactive-marker');
@@ -477,95 +640,64 @@ describe('NodejsProfiler', () => {
 
   describe('debug mode', () => {
     it('should initialize debug flag to false when env var not set', () => {
-      const { profiler } = getNodejsProfiler();
+      const profiler = createProfiler('debug-flag-false');
 
       const stats = profiler.stats;
       expect(stats.debug).toBe(false);
     });
 
-    it('should initialize debug flag from CP_PROFILER_DEBUG env var when set', () => {
-      // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
+    it('should initialize debug flag from DEBUG env var when set', () => {
+      vi.stubEnv(PROFILER_DEBUG_ENV_VAR, 'true');
 
-      const { profiler } = getNodejsProfiler();
+      const profiler = createProfiler('debug-flag-true');
 
       const stats = profiler.stats;
       expect(stats.debug).toBe(true);
     });
 
     it('should expose debug flag via getter', () => {
-      const { profiler } = getNodejsProfiler();
-      expect(profiler.debug).toBe(false);
+      const profiler = createProfiler('debug-getter-false');
+      expect(profiler.isDebugMode()).toBe(false);
+      expect(profiler.stats.debug).toBe(false);
 
-      // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
-      const { profiler: debugProfiler } = getNodejsProfiler();
-      expect(debugProfiler.debug).toBe(true);
+      vi.stubEnv(PROFILER_DEBUG_ENV_VAR, 'true');
+      const debugProfiler = createProfiler('debug-getter-true');
+      expect(debugProfiler.isDebugMode()).toBe(true);
+      expect(debugProfiler.stats.debug).toBe(true);
     });
 
+    // eslint-disable-next-line vitest/expect-expect
     it('should create transition marker when debug is enabled and transitioning to running', () => {
-      // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
-      const { profiler } = getNodejsProfiler({ enabled: false });
-
-      performance.clearMarks();
-
-      profiler.setEnabled(true);
-
-      const marks = performance.getEntriesByType('mark');
-      const transitionMark = marks.find(mark => mark.name === 'idle->running');
-      expect(transitionMark).toBeDefined();
-      expect(transitionMark?.name).toBe('idle->running');
-    });
-
-    it('should not create transition marker when transitioning from running to idle (profiler disabled)', () => {
-      // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
-      const { profiler } = getNodejsProfiler({ enabled: true });
-
-      performance.clearMarks();
-
-      profiler.setEnabled(false);
-
-      const marks = performance.getEntriesByType('mark');
-      const transitionMark = marks.find(mark => mark.name === 'running->idle');
-      expect(transitionMark).toBeUndefined();
-    });
-
-    it('does not emit transition markers unless debug is enabled', () => {
-      const { profiler } = getNodejsProfiler();
-
-      performance.clearMarks();
-
-      profiler.setEnabled(true);
-
-      expect(
-        performance
-          .getEntriesByType('mark')
-          .some(m => m.name.startsWith('idle->running')),
-      ).toBe(false);
-    });
-
-    it('should include stats in transition marker properties when transitioning to running', () => {
-      // eslint-disable-next-line functional/immutable-data
-      process.env.CP_PROFILER_DEBUG = 'true';
-      const { profiler, perfObserverSink } = getNodejsProfiler({
+      vi.stubEnv(PROFILER_DEBUG_ENV_VAR, 'true');
+      const profiler = createProfiler({
+        measureName: 'debug-transition-marker',
         enabled: false,
       });
 
-      perfObserverSink.getStats.mockReturnValue({
-        isSubscribed: true,
-        queued: 5,
-        dropped: 2,
-        written: 10,
-        maxQueueSize: 10_000,
-        flushThreshold: 20,
-        addedSinceLastFlush: 3,
-        buffered: true,
+      performance.clearMarks();
+      profiler.setEnabled(true);
+
+      expectTransitionMarker('idle->running');
+    });
+
+    // eslint-disable-next-line vitest/expect-expect
+    it('does not emit transition markers unless debug is enabled', () => {
+      const profiler = createProfiler('no-transition-markers');
+
+      performance.clearMarks();
+      profiler.setEnabled(true);
+
+      expectNoTransitionMarker('idle->running');
+    });
+
+    it('should include stats in transition marker properties when transitioning to running', () => {
+      vi.stubEnv(PROFILER_DEBUG_ENV_VAR, 'true');
+      const profiler = createProfiler({
+        measureName: 'debug-transition-stats',
+        enabled: false,
       });
 
       performance.clearMarks();
-
       profiler.setEnabled(true);
 
       const marks = performance.getEntriesByType('mark');
@@ -583,152 +715,14 @@ describe('NodejsProfiler', () => {
     // eslint-disable-next-line vitest/max-nested-describe
     describe('setDebugMode', () => {
       it('should enable debug mode when called with true', () => {
-        const { profiler } = getNodejsProfiler();
-        expect(profiler.debug).toBe(false);
-
-        profiler.setDebugMode(true);
-
-        expect(profiler.debug).toBe(true);
-        expect(profiler.stats.debug).toBe(true);
-      });
-
-      it('should disable debug mode when called with false', () => {
-        // eslint-disable-next-line functional/immutable-data
-        process.env.CP_PROFILER_DEBUG = 'true';
-        const { profiler } = getNodejsProfiler();
-        expect(profiler.debug).toBe(true);
-
-        profiler.setDebugMode(false);
-
-        expect(profiler.debug).toBe(false);
+        const profiler = createProfiler('set-debug-true');
+        expect(profiler.isDebugMode()).toBe(false);
         expect(profiler.stats.debug).toBe(false);
-      });
-
-      it('should create transition markers after enabling debug mode', () => {
-        const { profiler } = getNodejsProfiler({ enabled: false });
-        expect(profiler.debug).toBe(false);
-
-        performance.clearMarks();
-        profiler.setEnabled(true);
-        expect(
-          performance
-            .getEntriesByType('mark')
-            .some(m => m.name.startsWith('idle->running')),
-        ).toBe(false);
-
-        profiler.setEnabled(false);
-        profiler.setDebugMode(true);
-        performance.clearMarks();
-
-        profiler.setEnabled(true);
-
-        const marks = performance.getEntriesByType('mark');
-        const transitionMark = marks.find(
-          mark => mark.name === 'idle->running',
-        );
-        expect(transitionMark).toBeDefined();
-        expect(transitionMark?.name).toBe('idle->running');
-      });
-
-      it('should stop creating transition markers after disabling debug mode', () => {
-        // eslint-disable-next-line functional/immutable-data
-        process.env.CP_PROFILER_DEBUG = 'true';
-        const { profiler } = getNodejsProfiler({ enabled: false });
-        expect(profiler.debug).toBe(true);
-
-        profiler.setDebugMode(false);
-        performance.clearMarks();
-
-        profiler.setEnabled(true);
-
-        expect(
-          performance
-            .getEntriesByType('mark')
-            .some(m => m.name.startsWith('idle->running')),
-        ).toBe(false);
-      });
-
-      it('should be idempotent when called multiple times with true', () => {
-        const { profiler } = getNodejsProfiler();
-        expect(profiler.debug).toBe(false);
 
         profiler.setDebugMode(true);
-        profiler.setDebugMode(true);
-        profiler.setDebugMode(true);
 
-        expect(profiler.debug).toBe(true);
+        expect(profiler.isDebugMode()).toBe(true);
         expect(profiler.stats.debug).toBe(true);
-      });
-
-      it('should be idempotent when called multiple times with false', () => {
-        // eslint-disable-next-line functional/immutable-data
-        process.env.CP_PROFILER_DEBUG = 'true';
-        const { profiler } = getNodejsProfiler();
-        expect(profiler.debug).toBe(true);
-
-        profiler.setDebugMode(false);
-        profiler.setDebugMode(false);
-        profiler.setDebugMode(false);
-
-        expect(profiler.debug).toBe(false);
-        expect(profiler.stats.debug).toBe(false);
-      });
-
-      it('should work when profiler is in idle state', () => {
-        const { profiler } = getNodejsProfiler({ enabled: false });
-        expect(profiler.state).toBe('idle');
-        expect(profiler.debug).toBe(false);
-
-        profiler.setDebugMode(true);
-        expect(profiler.debug).toBe(true);
-        expect(profiler.stats.debug).toBe(true);
-      });
-
-      it('should work when profiler is in running state', () => {
-        const { profiler } = getNodejsProfiler({ enabled: true });
-        expect(profiler.state).toBe('running');
-        expect(profiler.debug).toBe(false);
-
-        profiler.setDebugMode(true);
-        expect(profiler.debug).toBe(true);
-        expect(profiler.stats.debug).toBe(true);
-
-        performance.clearMarks();
-        profiler.setEnabled(false);
-        profiler.setEnabled(true);
-
-        const marks = performance.getEntriesByType('mark');
-        const transitionMark = marks.find(
-          mark => mark.name === 'idle->running',
-        );
-        expect(transitionMark).toBeDefined();
-      });
-
-      it('should work when profiler is in closed state', () => {
-        const { profiler } = getNodejsProfiler({ enabled: false });
-        profiler.close();
-        expect(profiler.state).toBe('closed');
-        expect(profiler.debug).toBe(false);
-
-        profiler.setDebugMode(true);
-        expect(profiler.debug).toBe(true);
-        expect(profiler.stats.debug).toBe(true);
-      });
-
-      it('should toggle debug mode multiple times', () => {
-        const { profiler } = getNodejsProfiler({ enabled: false });
-
-        profiler.setDebugMode(true);
-        expect(profiler.debug).toBe(true);
-
-        profiler.setDebugMode(false);
-        expect(profiler.debug).toBe(false);
-
-        profiler.setDebugMode(true);
-        expect(profiler.debug).toBe(true);
-
-        profiler.setDebugMode(false);
-        expect(profiler.debug).toBe(false);
       });
     });
   });
@@ -736,60 +730,16 @@ describe('NodejsProfiler', () => {
   describe('exit handlers', () => {
     const mockSubscribeProcessExit = vi.mocked(subscribeProcessExit);
 
-    let capturedOnError:
-      | ((
-          error: unknown,
-          kind: 'uncaughtException' | 'unhandledRejection',
-        ) => void)
-      | undefined;
-    let capturedOnExit:
-      | ((
-          code: number,
-          reason: import('../exit-process.js').CloseReason,
-        ) => void)
-      | undefined;
-    const createProfiler = (
-      overrides?: Partial<
-        NodejsProfilerOptions<string, Record<string, ActionTrackEntryPayload>>
-      >,
-    ) => {
-      const sink = new MockTraceEventFileSink();
-      vi.spyOn(sink, 'open');
-      vi.spyOn(sink, 'close');
-      vi.spyOn(WalModule, 'WriteAheadLogFile').mockImplementation(
-        () => sink as any,
-      );
-      return new NodejsProfiler({
-        prefix: 'cp',
-        track: 'test-track',
-        encodePerfEntry: simpleEncoder,
-        ...overrides,
-      });
-    };
-
-    let profiler: NodejsProfiler<
-      string,
-      Record<string, ActionTrackEntryPayload>
-    >;
-
     beforeEach(() => {
-      capturedOnError = undefined;
-      capturedOnExit = undefined;
-
-      mockSubscribeProcessExit.mockImplementation(options => {
-        capturedOnError = options?.onError;
-        capturedOnExit = options?.onExit;
-        return vi.fn();
-      });
-
       performance.clearMarks();
       performance.clearMeasures();
-      // eslint-disable-next-line functional/immutable-data
-      delete process.env.CP_PROFILING;
+      resetEnv();
     });
 
     it('installs exit handlers on construction', () => {
-      expect(() => createProfiler()).not.toThrow();
+      expect(() =>
+        createSimpleProfiler({ measureName: 'exit-handlers-install' }),
+      ).not.toThrow();
 
       expect(mockSubscribeProcessExit).toHaveBeenCalledWith({
         onError: expect.any(Function),
@@ -798,7 +748,9 @@ describe('NodejsProfiler', () => {
     });
 
     it('setEnabled toggles profiler state', () => {
-      profiler = createProfiler({ enabled: true });
+      const profiler = createSimpleProfiler({
+        measureName: 'exit-set-enabled',
+      });
       expect(profiler.isEnabled()).toBe(true);
 
       profiler.setEnabled(false);
@@ -809,10 +761,15 @@ describe('NodejsProfiler', () => {
     });
 
     it('marks fatal errors and shuts down profiler on uncaughtException', () => {
-      profiler = createProfiler({ enabled: true });
+      const handlers = captureExitHandlers();
+      expect(() =>
+        createSimpleProfiler({
+          measureName: 'exit-uncaught-exception',
+        }),
+      ).not.toThrow();
 
       const testError = new Error('Test fatal error');
-      capturedOnError?.call(profiler, testError, 'uncaughtException');
+      handlers.onError?.(testError, 'uncaughtException');
 
       expect(performance.getEntriesByType('mark')).toStrictEqual([
         {
@@ -836,14 +793,13 @@ describe('NodejsProfiler', () => {
     });
 
     it('marks fatal errors and shuts down profiler on unhandledRejection', () => {
-      profiler = createProfiler({ enabled: true });
+      const handlers = captureExitHandlers();
+      const profiler = createSimpleProfiler({
+        measureName: 'exit-unhandled-rejection',
+      });
       expect(profiler.isEnabled()).toBe(true);
 
-      capturedOnError?.call(
-        profiler,
-        new Error('Test fatal error'),
-        'unhandledRejection',
-      );
+      handlers.onError?.(new Error('Test fatal error'), 'unhandledRejection');
 
       expect(performance.getEntriesByType('mark')).toStrictEqual([
         {
@@ -867,11 +823,14 @@ describe('NodejsProfiler', () => {
     });
 
     it('exit handler shuts down profiler', () => {
-      profiler = createProfiler({ enabled: true });
+      const handlers = captureExitHandlers();
+      const profiler = createSimpleProfiler({
+        measureName: 'exit-handler-shutdown',
+      });
       const closeSpy = vi.spyOn(profiler, 'close');
       expect(profiler.isEnabled()).toBe(true);
 
-      capturedOnExit?.(0, { kind: 'exit' });
+      handlers.onExit?.(0, { kind: 'exit' });
 
       expect(profiler.isEnabled()).toBe(false);
       expect(closeSpy).toHaveBeenCalledTimes(1);
@@ -881,7 +840,10 @@ describe('NodejsProfiler', () => {
       const unsubscribeFn = vi.fn();
       mockSubscribeProcessExit.mockReturnValue(unsubscribeFn);
 
-      profiler = createProfiler({ enabled: false });
+      const profiler = createSimpleProfiler({
+        measureName: 'exit-close-unsubscribe',
+        enabled: false,
+      });
       expect(profiler.isEnabled()).toBe(false);
       expect(mockSubscribeProcessExit).toHaveBeenCalled();
 

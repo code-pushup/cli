@@ -1,14 +1,19 @@
 import fs from 'node:fs';
+import fsPromises from 'node:fs/promises';
 import path from 'node:path';
-import {
-  awaitObserverCallbackAndFlush,
-  omitTraceJson,
-} from '@code-pushup/test-utils';
+import { awaitObserverCallbackAndFlush } from '@code-pushup/test-utils';
+import { normalizeAndFormatEvents } from '../../../mocks/omit-trace-json.js';
 import type { PerformanceEntryEncoder } from '../performance-observer.js';
 import { ID_PATTERNS } from '../process-id.js';
+import {
+  PROFILER_DEBUG_ENV_VAR,
+  PROFILER_ENABLED_ENV_VAR,
+  PROFILER_PERSIST_OUTDIR,
+} from './constants.js';
 import { NodejsProfiler } from './profiler-node.js';
 import { entryToTraceEvents } from './trace-file-utils.js';
 import type { TraceEvent } from './trace-file.type.js';
+import { traceEventWalFormat } from './wal-json-trace.js';
 
 describe('NodeJS Profiler Integration', () => {
   const traceEventEncoder: PerformanceEntryEncoder<TraceEvent> =
@@ -19,19 +24,17 @@ describe('NodeJS Profiler Integration', () => {
   beforeEach(() => {
     performance.clearMarks();
     performance.clearMeasures();
-    vi.stubEnv('CP_PROFILING', undefined!);
-    vi.stubEnv('CP_PROFILER_DEBUG', undefined!);
+    vi.stubEnv(PROFILER_ENABLED_ENV_VAR, undefined!);
+    vi.stubEnv(PROFILER_DEBUG_ENV_VAR, undefined!);
 
     // Clean up trace files from previous test runs
     const traceFilesDir = path.join(process.cwd(), 'tmp', 'int', 'utils');
-    // eslint-disable-next-line n/no-sync
+
     if (fs.existsSync(traceFilesDir)) {
-      // eslint-disable-next-line n/no-sync
       const files = fs.readdirSync(traceFilesDir);
       // eslint-disable-next-line functional/no-loop-statements
       for (const file of files) {
         if (file.endsWith('.json') || file.endsWith('.jsonl')) {
-          // eslint-disable-next-line n/no-sync
           fs.unlinkSync(path.join(traceFilesDir, file));
         }
       }
@@ -40,8 +43,10 @@ describe('NodeJS Profiler Integration', () => {
     nodejsProfiler = new NodejsProfiler({
       prefix: 'test',
       track: 'test-track',
-      encodePerfEntry: traceEventEncoder,
-      filename: path.join(process.cwd(), 'tmp', 'int', 'utils', 'trace.json'),
+      format: {
+        ...traceEventWalFormat,
+        encodePerfEntry: traceEventEncoder,
+      },
       enabled: true,
     });
   });
@@ -50,8 +55,8 @@ describe('NodeJS Profiler Integration', () => {
     if (nodejsProfiler && nodejsProfiler.state !== 'closed') {
       nodejsProfiler.close();
     }
-    vi.stubEnv('CP_PROFILING', undefined!);
-    vi.stubEnv('CP_PROFILER_DEBUG', undefined!);
+    vi.stubEnv(PROFILER_ENABLED_ENV_VAR, undefined!);
+    vi.stubEnv(PROFILER_DEBUG_ENV_VAR, undefined!);
   });
 
   it('should initialize with sink opened when enabled', () => {
@@ -97,13 +102,7 @@ describe('NodeJS Profiler Integration', () => {
   });
 
   it('should support custom tracks', async () => {
-    const traceTracksFile = path.join(
-      process.cwd(),
-      'tmp',
-      'int',
-      'utils',
-      'trace-tracks.json',
-    );
+    const groupId = 'trace-tracks';
     const profilerWithTracks = new NodejsProfiler({
       prefix: 'api-server',
       track: 'HTTP',
@@ -111,12 +110,18 @@ describe('NodeJS Profiler Integration', () => {
         db: { track: 'Database', color: 'secondary' },
         cache: { track: 'Cache', color: 'primary' },
       },
-      encodePerfEntry: traceEventEncoder,
-      filename: traceTracksFile,
+      groupId,
+      format: {
+        ...traceEventWalFormat,
+        encodePerfEntry: traceEventEncoder,
+      },
       enabled: true,
     });
 
-    expect(profilerWithTracks.filePath).toBe(traceTracksFile);
+    expect(profilerWithTracks.filePath).toContainPath(
+      path.join(PROFILER_PERSIST_OUTDIR, groupId),
+    );
+    expect(profilerWithTracks.filePath).toMatch(/\.jsonl$/);
 
     expect(
       profilerWithTracks.measure('user-lookup', () => 'user123', {
@@ -127,9 +132,10 @@ describe('NodeJS Profiler Integration', () => {
     await awaitObserverCallbackAndFlush(profilerWithTracks);
     profilerWithTracks.close();
 
-    // eslint-disable-next-line n/no-sync
-    const content = fs.readFileSync(traceTracksFile, 'utf8');
-    const normalizedContent = omitTraceJson(content);
+    const shardText = (
+      await fsPromises.readFile(profilerWithTracks.filePath, 'utf8')
+    ).trim();
+    const normalizedContent = normalizeAndFormatEvents(shardText);
     await expect(normalizedContent).toMatchFileSnapshot(
       '__snapshots__/custom-tracks-trace-events.jsonl',
     );
@@ -139,15 +145,11 @@ describe('NodeJS Profiler Integration', () => {
     const bufferedProfiler = new NodejsProfiler({
       prefix: 'buffered-test',
       track: 'Test',
-      encodePerfEntry: traceEventEncoder,
       captureBufferedEntries: true,
-      filename: path.join(
-        process.cwd(),
-        'tmp',
-        'int',
-        'utils',
-        'trace-buffered.json',
-      ),
+      format: {
+        ...traceEventWalFormat,
+        encodePerfEntry: traceEventEncoder,
+      },
       enabled: true,
     });
 
@@ -166,16 +168,12 @@ describe('NodeJS Profiler Integration', () => {
     const statsProfiler = new NodejsProfiler({
       prefix: 'stats-test',
       track: 'Stats',
-      encodePerfEntry: traceEventEncoder,
       maxQueueSize: 2,
       flushThreshold: 2,
-      filename: path.join(
-        process.cwd(),
-        'tmp',
-        'int',
-        'utils',
-        'trace-stats.json',
-      ),
+      format: {
+        ...traceEventWalFormat,
+        encodePerfEntry: traceEventEncoder,
+      },
       enabled: true,
     });
 
@@ -193,20 +191,17 @@ describe('NodeJS Profiler Integration', () => {
   });
 
   it('should provide comprehensive queue statistics via getStats', async () => {
-    const traceStatsFile = path.join(
-      process.cwd(),
-      'tmp',
-      'int',
-      'utils',
-      'trace-stats-comprehensive.json',
-    );
+    const groupId = 'trace-stats-comprehensive';
     const profiler = new NodejsProfiler({
       prefix: 'stats-profiler',
       track: 'Stats',
-      encodePerfEntry: traceEventEncoder,
       maxQueueSize: 3,
       flushThreshold: 2,
-      filename: traceStatsFile,
+      groupId,
+      format: {
+        ...traceEventWalFormat,
+        encodePerfEntry: traceEventEncoder,
+      },
       enabled: true,
     });
 
@@ -236,9 +231,10 @@ describe('NodeJS Profiler Integration', () => {
     profiler.flush();
     profiler.close();
 
-    // eslint-disable-next-line n/no-sync
-    const content = fs.readFileSync(traceStatsFile, 'utf8');
-    const normalizedContent = omitTraceJson(content);
+    const shardText = (
+      await fsPromises.readFile(profiler.filePath, 'utf8')
+    ).trim();
+    const normalizedContent = normalizeAndFormatEvents(shardText);
     await expect(normalizedContent).toMatchFileSnapshot(
       '__snapshots__/comprehensive-stats-trace-events.jsonl',
     );
@@ -249,7 +245,10 @@ describe('NodeJS Profiler Integration', () => {
       const profiler = new NodejsProfiler({
         prefix: 'sharded-test',
         track: 'Test',
-        encodePerfEntry: traceEventEncoder,
+        format: {
+          ...traceEventWalFormat,
+          encodePerfEntry: traceEventEncoder,
+        },
         enabled: true,
       });
 
@@ -265,7 +264,7 @@ describe('NodeJS Profiler Integration', () => {
       expect(fileName).toMatch(/^trace\.\d{8}-\d{6}-\d{3}(?:\.\d+){3}\.jsonl$/);
 
       const groupIdDirPath = path.dirname(filePath);
-      // eslint-disable-next-line n/no-sync
+
       expect(fs.existsSync(groupIdDirPath)).toBeTrue();
 
       profiler.close();
@@ -275,7 +274,10 @@ describe('NodeJS Profiler Integration', () => {
       const profiler = new NodejsProfiler({
         prefix: 'folder-test',
         track: 'Test',
-        encodePerfEntry: traceEventEncoder,
+        format: {
+          ...traceEventWalFormat,
+          encodePerfEntry: traceEventEncoder,
+        },
         enabled: true,
       });
 
@@ -284,9 +286,9 @@ describe('NodeJS Profiler Integration', () => {
       const groupId = path.basename(dirPath);
 
       expect(groupId).toMatch(ID_PATTERNS.TIME_ID);
-      // eslint-disable-next-line n/no-sync
+
       expect(fs.existsSync(dirPath)).toBeTrue();
-      // eslint-disable-next-line n/no-sync
+
       expect(fs.statSync(dirPath).isDirectory()).toBeTrue();
 
       profiler.close();
@@ -296,7 +298,10 @@ describe('NodeJS Profiler Integration', () => {
       const profiler = new NodejsProfiler({
         prefix: 'write-test',
         track: 'Test',
-        encodePerfEntry: traceEventEncoder,
+        format: {
+          ...traceEventWalFormat,
+          encodePerfEntry: traceEventEncoder,
+        },
         enabled: true,
       });
 
@@ -305,10 +310,10 @@ describe('NodeJS Profiler Integration', () => {
       await awaitObserverCallbackAndFlush(profiler);
       profiler.close();
 
-      const filePath = profiler.filePath;
-      // eslint-disable-next-line n/no-sync
-      const content = fs.readFileSync(filePath, 'utf8');
-      const normalizedContent = omitTraceJson(content);
+      const shardText = (
+        await fsPromises.readFile(profiler.filePath, 'utf8')
+      ).trim();
+      const normalizedContent = normalizeAndFormatEvents(shardText);
       await expect(normalizedContent).toMatchFileSnapshot(
         '__snapshots__/sharded-path-trace-events.jsonl',
       );

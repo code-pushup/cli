@@ -10,7 +10,6 @@ import {
   type WalFormat,
   type WalRecord,
   WriteAheadLogFile,
-  parseWalFormat,
   stringCodec,
 } from './wal.js';
 
@@ -18,7 +17,7 @@ const read = (p: string) => vol.readFileSync(p, 'utf8') as string;
 
 const getShardedWal = (overrides?: {
   dir?: string;
-  format?: Partial<WalFormat>;
+  format?: Partial<WalFormat<WalRecord>>;
   autoCoordinator?: boolean;
   groupId?: string;
 }) => {
@@ -26,10 +25,14 @@ const getShardedWal = (overrides?: {
   return new ShardedWal({
     debug: false,
     dir: '/test/shards',
-    format: parseWalFormat({
+    format: {
       baseName: 'test-wal',
+      walExtension: '.log',
+      finalExtension: '.json',
+      codec: stringCodec<WalRecord>(),
+      finalizer: records => `${JSON.stringify(records)}\n`,
       ...format,
-    }),
+    },
     coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
     ...rest,
   });

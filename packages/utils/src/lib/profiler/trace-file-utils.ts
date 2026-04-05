@@ -6,6 +6,7 @@ import type {
 } from 'node:perf_hooks';
 import { threadId } from 'node:worker_threads';
 import { defaultClock } from '../clock-epoch.js';
+import type { WalRecord } from '../wal.js';
 import type {
   TraceEvent,
   TraceEventContainer,
@@ -202,12 +203,14 @@ export const measureToSpanEvents = (
  * @param entry - Performance entry
  * @returns Array of trace events
  */
-export function entryToTraceEvents(entry: PerformanceEntry): TraceEvent[] {
+export function entryToTraceEvents<T extends WalRecord>(
+  entry: PerformanceEntry,
+): T[] {
   if (entry.entryType === 'mark') {
-    return [markToInstantEvent(entry as PerformanceMark)];
+    return [markToInstantEvent(entry as PerformanceMark) as T];
   }
   if (entry.entryType === 'measure') {
-    return measureToSpanEvents(entry as PerformanceMeasure);
+    return measureToSpanEvents(entry as PerformanceMeasure) as T[];
   }
   return [];
 }
@@ -263,7 +266,7 @@ export const decodeEvent = (e: TraceEvent): TraceEvent => {
  * @param event - Trace event to serialize
  * @returns JSON string representation of the encoded trace event
  */
-export const serializeTraceEvent = (event: TraceEvent): string =>
+export const serializeTraceEvent = (event: TraceEvent & WalRecord): string =>
   JSON.stringify(encodeEvent(event));
 
 /**

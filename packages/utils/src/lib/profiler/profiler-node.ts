@@ -5,49 +5,97 @@ import {
   type PerformanceObserverOptions,
   PerformanceObserverSink,
 } from '../performance-observer.js';
-import {
-  type Counter,
-  getUniqueInstanceId,
-  getUniqueTimeId,
-} from '../process-id.js';
 import { objectToEntries } from '../transform.js';
 import { errorToMarkerPayload } from '../user-timing-extensibility-api-utils.js';
 import type {
   ActionTrackEntryPayload,
   MarkerPayload,
 } from '../user-timing-extensibility-api.type.js';
-import { getShardedPath } from '../wal-sharded.js';
+import { ShardedWal } from '../wal-sharded.js';
 import {
   type AppendableSink,
+  type WalFormat,
   type WalRecord,
   WriteAheadLogFile,
 } from '../wal.js';
 import {
   PROFILER_DEBUG_ENV_VAR,
   PROFILER_ENABLED_ENV_VAR,
+  PROFILER_PERSIST_OUTDIR,
+  SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
 } from './constants.js';
 import { Profiler, type ProfilerOptions } from './profiler.js';
-import { traceEventWalFormat } from './wal-json-trace.js';
+import { entryToTraceEvents } from './trace-file-utils.js';
+import type { TraceEvent } from './trace-file.type.js';
+import { getTraceEventWalFormat } from './wal-json-trace.js';
 
 /**
- * Options for configuring a NodejsProfiler instance.
- *
- * Extends ProfilerOptions with a required sink parameter.
+ * Strips encodePerfEntry from a profiler format option and returns the WalFormat part.
+ */
+function formatOptionToWalFormat<DomainEvents extends WalRecord>(
+  option: Pick<PerformanceObserverOptions<DomainEvents>, 'encodePerfEntry'> &
+    WalFormat<DomainEvents>,
+): WalFormat<DomainEvents> {
+  const { encodePerfEntry: _e, ...format } = option;
+  return format as WalFormat<DomainEvents>;
+}
+
+export type ProfilerBufferingOptions<
+  DomainEvents extends WalRecord = WalRecord,
+> = Omit<
+  PerformanceObserverOptions<DomainEvents>,
+  'sink' | 'debug' | 'encodePerfEntry'
+>;
+
+/**
+ * Options for NodejsProfiler when using the default trace format (no custom format).
+ * When used, the profiler is NodejsProfiler<TraceEvent, Tracks>.
  *
  * @template Tracks - Record type defining available track names and their configurations
  */
-export type NodejsProfilerOptions<
-  DomainEvents extends string | object,
-  Tracks extends Record<string, ActionTrackEntryPayload>,
+export type NodejsProfilerOptionsDefault<
+  Tracks extends Record<string, ActionTrackEntryPayload> = Record<
+    string,
+    ActionTrackEntryPayload
+  >,
 > = ProfilerOptions<Tracks> &
-  Omit<PerformanceObserverOptions<DomainEvents>, 'sink'> & {
+  ProfilerBufferingOptions<TraceEvent> & {
     /**
-     * File path for the WriteAheadLogFile sink.
-     * If not provided, defaults to `trace.json` in the current working directory.
-     *
-     * @default path.join(process.cwd(), 'trace.json')
+     * Group ID for the sharded WAL (used as directory name and in final file path).
+     * When not set, a time-based ID is generated.
      */
-    filename?: string;
+    groupId?: string;
+    /**
+     * Name of the environment variable to check for debug mode.
+     * When the env var is set to 'true', profiler state transitions create performance marks for debugging.
+     *
+     * @default 'CP_PROFILER_DEBUG'
+     */
+    debugEnvVar?: string;
+  };
+
+/**
+ * Options for NodejsProfiler when providing a custom format.
+ * format is required; when used, the profiler is NodejsProfiler<DomainEvents, Tracks>.
+ *
+ * @template DomainEvents - The type of domain-specific events (must extend TraceEvent & WalRecord)
+ * @template Tracks - Record type defining available track names and their configurations
+ */
+export type NodejsProfilerOptionsWithFormat<
+  DomainEvents extends TraceEvent & WalRecord,
+  Tracks extends Record<string, ActionTrackEntryPayload> = Record<
+    string,
+    ActionTrackEntryPayload
+  >,
+> = ProfilerOptions<Tracks> &
+  ProfilerBufferingOptions<DomainEvents> & {
+    format: Pick<PerformanceObserverOptions<DomainEvents>, 'encodePerfEntry'> &
+      WalFormat<DomainEvents>;
+    /**
+     * Group ID for the sharded WAL (used as directory name and in final file path).
+     * When not set, a time-based ID is generated.
+     */
+    groupId?: string;
     /**
      * Name of the environment variable to check for debug mode.
      * When the env var is set to 'true', profiler state transitions create performance marks for debugging.
@@ -74,24 +122,18 @@ export type NodejsProfilerOptions<
  * @template Tracks - Record type defining available track names and their configurations
  */
 export class NodejsProfiler<
-  DomainEvents extends WalRecord,
+  DomainEvents extends TraceEvent & WalRecord = TraceEvent,
   Tracks extends Record<string, ActionTrackEntryPayload> = Record<
     string,
     ActionTrackEntryPayload
   >,
 > extends Profiler<Tracks> {
+  #shardedWal: ShardedWal<DomainEvents>;
   #sink: AppendableSink<DomainEvents>;
   #performanceObserverSink: PerformanceObserverSink<DomainEvents>;
   #state: 'idle' | 'running' | 'closed' = 'idle';
   #debug: boolean;
   #unsubscribeExitHandlers: (() => void) | undefined;
-  #shardCounter: Counter = {
-    next: (() => {
-      // eslint-disable-next-line functional/no-let
-      let count = 0;
-      return () => ++count;
-    })(),
-  };
 
   /**
    * Creates a NodejsProfiler instance.
@@ -99,45 +141,50 @@ export class NodejsProfiler<
    * @param options - Configuration options
    */
   // eslint-disable-next-line max-lines-per-function
-  constructor(options: NodejsProfilerOptions<DomainEvents, Tracks>) {
+  constructor(
+    options:
+      | NodejsProfilerOptionsDefault<Tracks>
+      | NodejsProfilerOptionsWithFormat<DomainEvents, Tracks>,
+  ) {
+    const hasFormat = 'format' in options && options.format != null;
+    const parsedFormat: WalFormat<DomainEvents, unknown> = hasFormat
+      ? formatOptionToWalFormat(options.format)
+      : getTraceEventWalFormat<DomainEvents>();
+    const encodePerfEntry =
+      (hasFormat ? options.format.encodePerfEntry : undefined) ??
+      entryToTraceEvents;
+
     const {
-      encodePerfEntry,
+      format: _,
       captureBufferedEntries,
       flushThreshold,
       maxQueueSize,
       enabled,
-      filename,
+      groupId,
       debugEnvVar = PROFILER_DEBUG_ENV_VAR,
       ...profilerOptions
-    } = options;
+    } = options as NodejsProfilerOptionsDefault<Tracks> & {
+      format?: NodejsProfilerOptionsWithFormat<DomainEvents, Tracks>['format'];
+    };
     const initialEnabled = enabled ?? isEnvVarEnabled(PROFILER_ENABLED_ENV_VAR);
     super({ ...profilerOptions, enabled: initialEnabled });
-
-    const walFormat = traceEventWalFormat();
-    this.#sink = new WriteAheadLogFile({
-      file:
-        filename ??
-        path.join(
-          process.cwd(),
-          // @TODO remove in PR https://github.com/code-pushup/cli/pull/1231 in favour of class method getShardedFileName
-          getShardedPath({
-            dir: 'tmp/profiles',
-            groupId: getUniqueTimeId(),
-            shardId: getUniqueInstanceId(this.#shardCounter),
-            format: walFormat,
-          }),
-        ),
-      codec: walFormat.codec,
-    }) as AppendableSink<DomainEvents>;
     this.#debug = isEnvVarEnabled(debugEnvVar);
 
-    this.#performanceObserverSink = new PerformanceObserverSink({
+    this.#shardedWal = new ShardedWal<DomainEvents>({
+      debug: this.#debug,
+      dir: path.join(process.cwd(), PROFILER_PERSIST_OUTDIR),
+      format: parsedFormat,
+      coordinatorIdEnvVar: SHARDED_WAL_COORDINATOR_ID_ENV_VAR,
+      ...(groupId != null && { groupId }),
+    });
+    this.#sink = this.#shardedWal.shard();
+    this.#performanceObserverSink = new PerformanceObserverSink<DomainEvents>({
       sink: this.#sink,
       encodePerfEntry,
       captureBufferedEntries,
       flushThreshold,
       maxQueueSize,
-      debugEnvVar,
+      debug: this.#debug,
     });
 
     this.#unsubscribeExitHandlers = subscribeProcessExit({
@@ -228,7 +275,7 @@ export class NodejsProfiler<
    * @param next - The target state to transition to
    * @throws {Error} If attempting to transition from 'closed' state or invalid transition
    */
-  #transition(next: 'idle' | 'running' | 'closed'): void {
+  protected transition(next: 'idle' | 'running' | 'closed' | string): void {
     if (this.#state === next) {
       return;
     }
@@ -261,11 +308,15 @@ export class NodejsProfiler<
         throw new Error(`Invalid transition: ${this.#state} -> ${next}`);
     }
 
-    this.#state = next;
+    this.#state = next as 'idle' | 'running' | 'closed';
 
     if (this.#debug) {
       this.#transitionMarker(transition);
     }
+  }
+
+  #transition(next: 'idle' | 'running' | 'closed'): void {
+    this.transition(next);
   }
 
   /**
@@ -290,6 +341,11 @@ export class NodejsProfiler<
     return this.#state === 'running';
   }
 
+  /** @returns Whether debug mode is enabled (uses NodejsProfiler's debug state). */
+  override isDebugMode(): boolean {
+    return this.#debug;
+  }
+
   /** Enables profiling (start/stop) */
   override setEnabled(enabled: boolean): void {
     if (enabled) {
@@ -303,6 +359,8 @@ export class NodejsProfiler<
   get stats() {
     return {
       ...this.#performanceObserverSink.getStats(),
+      ...this.#shardedWal.stats,
+      shardPath: (this.#sink as WriteAheadLogFile<DomainEvents>).getPath(),
       debug: this.#debug,
       state: this.#state,
       walOpen: !this.#sink.isClosed(),
@@ -321,4 +379,28 @@ export class NodejsProfiler<
   get filePath(): string {
     return (this.#sink as WriteAheadLogFile<DomainEvents>).getPath();
   }
+}
+
+export function getTraceEventProfilerFormat() {
+  return {
+    ...getTraceEventWalFormat(),
+    encodePerfEntry: entryToTraceEvents,
+  };
+}
+
+export function getNodeJSProfiler<
+  DomainEvents extends TraceEvent & WalRecord,
+  Tracks extends Record<string, ActionTrackEntryPayload>,
+>(
+  options: NodejsProfilerOptionsWithFormat<DomainEvents, Tracks>,
+): NodejsProfiler<DomainEvents, Tracks>;
+export function getNodeJSProfiler<
+  DomainEvents extends TraceEvent & WalRecord,
+  Tracks extends Record<string, ActionTrackEntryPayload>,
+>(
+  options:
+    | NodejsProfilerOptionsDefault<Tracks>
+    | NodejsProfilerOptionsWithFormat<DomainEvents, Tracks>,
+): NodejsProfiler<DomainEvents, Tracks> {
+  return new NodejsProfiler(options);
 }

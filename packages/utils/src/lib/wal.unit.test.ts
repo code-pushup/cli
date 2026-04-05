@@ -2,11 +2,9 @@ import { vol } from 'memfs';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
 import {
   type Codec,
-  type InvalidEntry,
   WriteAheadLogFile,
   createTolerantCodec,
   filterValidRecords,
-  parseWalFormat,
   recoverFromContent,
   stringCodec,
 } from './wal.js';
@@ -494,114 +492,5 @@ describe('stringCodec', () => {
     expect(codec.decode('false')).toBeFalse();
     expect(codec.decode('"quoted string"')).toBe('quoted string');
     expect(codec.decode('42')).toBe(42);
-  });
-});
-
-describe('parseWalFormat', () => {
-  it('should apply all defaults when given empty config', () => {
-    const result = parseWalFormat({});
-
-    expect(result.baseName).toBe('wal');
-    expect(result.walExtension).toBe('.log');
-    expect(result.finalExtension).toBe('.log');
-    expect(result.codec).toBeDefined();
-    expect(typeof result.finalizer).toBe('function');
-  });
-
-  it('should use provided baseName and default others', () => {
-    const result = parseWalFormat({ baseName: 'test' });
-
-    expect(result.baseName).toBe('test');
-    expect(result.walExtension).toBe('.log');
-    expect(result.finalExtension).toBe('.log');
-  });
-
-  it('should use provided walExtension and default finalExtension to match', () => {
-    const result = parseWalFormat({ walExtension: '.wal' });
-
-    expect(result.walExtension).toBe('.wal');
-    expect(result.finalExtension).toBe('.wal');
-  });
-
-  it('should use provided finalExtension independently', () => {
-    const result = parseWalFormat({
-      walExtension: '.wal',
-      finalExtension: '.json',
-    });
-
-    expect(result.walExtension).toBe('.wal');
-    expect(result.finalExtension).toBe('.json');
-  });
-
-  it('should use provided codec', () => {
-    const customCodec = stringCodec<string>();
-    const result = parseWalFormat({ codec: customCodec });
-
-    expect(result.codec).toBe(customCodec);
-  });
-
-  it('should use custom finalizer function', () => {
-    const customFinalizer = (records: any[]) => `custom: ${records.length}`;
-    const result = parseWalFormat({ finalizer: customFinalizer });
-
-    expect(result.finalizer(['a', 'b'])).toBe('custom: 2');
-  });
-
-  it('should work with all custom parameters', () => {
-    const config = {
-      baseName: 'my-wal',
-      walExtension: '.wal',
-      finalExtension: '.json',
-      codec: stringCodec<string>(),
-      finalizer: (records: any[]) => JSON.stringify(records),
-    };
-
-    const result = parseWalFormat(config);
-
-    expect(result.baseName).toBe('my-wal');
-    expect(result.walExtension).toBe('.wal');
-    expect(result.finalExtension).toBe('.json');
-    expect(result.codec).toBe(config.codec);
-    expect(result.finalizer(['test'])).toBe('["test"]');
-  });
-
-  it('should use default finalizer when none provided', () => {
-    const result = parseWalFormat<string>({ baseName: 'test' });
-    expect(result.finalizer(['line1', 'line2'])).toBe('line1\nline2\n');
-    expect(result.finalizer([])).toBe('\n');
-  });
-
-  it('should encode objects to JSON strings in default finalizer', () => {
-    const result = parseWalFormat<object>({ baseName: 'test' });
-    const records = [
-      { id: 1, name: 'test' },
-      { id: 2, name: 'test2' },
-    ];
-    const output = result.finalizer(records);
-    expect(output).toBe('{"id":1,"name":"test"}\n{"id":2,"name":"test2"}\n');
-  });
-
-  it('should handle InvalidEntry in default finalizer', () => {
-    const result = parseWalFormat<string>({ baseName: 'test' });
-    const records: (string | InvalidEntry<string>)[] = [
-      'valid',
-      { __invalid: true, raw: 'invalid-raw' },
-      'also-valid',
-    ];
-    const output = result.finalizer(records);
-    expect(output).toBe('valid\ninvalid-raw\nalso-valid\n');
-  });
-
-  it('should encode objects correctly when using default type parameter', () => {
-    // Test parseWalFormat({}) with default type parameter (object)
-    const result = parseWalFormat({});
-    const records = [
-      { id: 1, name: 'test1' },
-      { id: 2, name: 'test2' },
-    ];
-    const output = result.finalizer(records);
-    // Should be JSON strings, not [object Object]
-    expect(output).toBe('{"id":1,"name":"test1"}\n{"id":2,"name":"test2"}\n');
-    expect(output).not.toContain('[object Object]');
   });
 });

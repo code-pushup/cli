@@ -428,7 +428,7 @@ describe('generateTraceContent', () => {
 
 describe('traceEventWalFormat', () => {
   it('should create WAL format with default directory', () => {
-    const format = traceEventWalFormat();
+    const format = traceEventWalFormat;
 
     expect(format).toStrictEqual({
       baseName: 'trace',
@@ -443,7 +443,7 @@ describe('traceEventWalFormat', () => {
   });
 
   it('should create WAL format with consistent structure', () => {
-    const format = traceEventWalFormat();
+    const format = traceEventWalFormat;
 
     expect(format.baseName).toBe('trace');
     expect(format.walExtension).toBe('.jsonl');
@@ -451,7 +451,7 @@ describe('traceEventWalFormat', () => {
   });
 
   it('should encode and decode trace events correctly', () => {
-    const format = traceEventWalFormat();
+    const format = traceEventWalFormat;
     const testEvent: TraceEvent = {
       name: 'cp:test-event',
       ph: 'I',
@@ -472,7 +472,7 @@ describe('traceEventWalFormat', () => {
   });
 
   it('should maintain consistency through decode -> encode -> decode round-trip', () => {
-    const format = traceEventWalFormat();
+    const format = traceEventWalFormat;
     const originalEvent: TraceEvent = {
       name: 'cp:round-trip-test',
       ph: 'I',
@@ -498,7 +498,7 @@ describe('traceEventWalFormat', () => {
   });
 
   it('should finalize records into trace content', () => {
-    const format = traceEventWalFormat();
+    const format = traceEventWalFormat;
     const records: TraceEvent[] = [
       {
         name: 'cp:operation:start',

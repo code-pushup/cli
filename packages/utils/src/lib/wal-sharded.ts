@@ -82,32 +82,6 @@ export function getShardId(): string {
 }
 
 /**
- * @TODO remove in PR https://github.com/code-pushup/cli/pull/1231 in favour of class method getShardedFileName
- * Generates a path to a shard file using human-readable IDs.
- * Both groupId and shardId are already in readable date format.
- *
- * Example with groupId "20240101-120000-000" and shardId "20240101-120000-000.12345.1.1":
- * Full path: /base/20240101-120000-000/trace.20240101-120000-000.12345.1.1.log
- *
- * @param opt.dir - The directory to store the shard file
- * @param opt.format - The WalFormat to use for the shard file
- * @param opt.groupId - The human-readable group ID (yyyymmdd-hhmmss-ms format)
- * @param opt.shardId - The human-readable shard ID (readable-timestamp.pid.threadId.count format)
- * @returns The path to the shard file
- */
-export function getShardedPath<T extends object | string = object>(opt: {
-  dir?: string;
-  format: WalFormat<T>;
-  groupId: string;
-  shardId: string;
-}): string {
-  const { dir = '', format, groupId, shardId } = opt;
-  const { baseName, walExtension } = format;
-
-  return path.join(dir, groupId, `${baseName}.${shardId}${walExtension}`);
-}
-
-/**
  * Sharded Write-Ahead Log manager for coordinating multiple WAL shards.
  * Handles distributed logging across multiple processes/files with atomic finalization.
  */
@@ -122,7 +96,7 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
   });
   readonly groupId: string;
   readonly #debug: boolean = false;
-  readonly #format: WalFormat<T>;
+  readonly #format: WalFormat<T, unknown>;
   readonly #dir: string = process.cwd();
   readonly #coordinatorIdEnvVar: string;
   #state: 'active' | 'finalized' | 'cleaned' = 'active';
@@ -172,7 +146,7 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
   constructor(opt: {
     debug?: boolean;
     dir?: string;
-    format: WalFormat<T>;
+    format: WalFormat<T, unknown>;
     groupId?: string;
     coordinatorIdEnvVar: string;
     autoCoordinator?: boolean;
@@ -430,7 +404,6 @@ export class ShardedWal<T extends WalRecord = WalRecord> {
       isFinalized: this.isFinalized(),
       isCleaned: this.isCleaned(),
       finalFilePath: this.getFinalFilePath(),
-      shardFileCount: shardFilesList.length,
       shardFiles: shardFilesList,
     };
   }
