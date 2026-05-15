@@ -5,6 +5,7 @@ export type {
   CategoryCodegenConfig,
   ImportDeclarationStructure,
   PluginAnswer,
+  PluginCodegenInput,
   PluginCodegenResult,
   PluginPromptDescriptor,
   PluginSetupBinding,

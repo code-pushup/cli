@@ -93,7 +93,12 @@ async function resolveBinding(
   tree: Pick<Tree, 'read' | 'write'>,
 ): Promise<PluginCodegenResult> {
   if (!binding.prompts) {
-    return binding.generateConfig({}, tree);
+    return binding.generateConfig({
+      tree,
+      targetDir,
+      cliArgs,
+      answers: {},
+    });
   }
   logger.newline();
   logger.info(ansis.bold(binding.title));
@@ -102,7 +107,7 @@ async function resolveBinding(
     descriptors.length > 0
       ? await promptPluginOptions(descriptors, cliArgs)
       : {};
-  return binding.generateConfig(answers, tree);
+  return binding.generateConfig({ tree, targetDir, cliArgs, answers });
 }
 
 async function writeStandaloneConfig(

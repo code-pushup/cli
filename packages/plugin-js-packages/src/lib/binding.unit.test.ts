@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import type { PluginAnswer } from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { MEMFS_VOLUME, createMockCodegenInput } from '@code-pushup/test-utils';
 import { jsPackagesSetupBinding as binding } from './binding.js';
 
 const defaultAnswers: Record<string, PluginAnswer> = {
@@ -85,7 +85,10 @@ describe('jsPackagesSetupBinding', () => {
 
   describe('generateConfig', () => {
     it('should always include packageManager in plugin init', () => {
-      expect(binding.generateConfig(defaultAnswers).pluginInit).toEqual(
+      expect(
+        binding.generateConfig(createMockCodegenInput(defaultAnswers))
+          .pluginInit,
+      ).toEqual(
         expect.arrayContaining([
           expect.stringContaining("packageManager: 'npm'"),
         ]),
@@ -93,34 +96,44 @@ describe('jsPackagesSetupBinding', () => {
     });
 
     it('should omit checks when all defaults (audit and outdated) are selected', () => {
-      expect(binding.generateConfig(defaultAnswers).pluginInit).not.toEqual(
+      expect(
+        binding.generateConfig(createMockCodegenInput(defaultAnswers))
+          .pluginInit,
+      ).not.toEqual(
         expect.arrayContaining([expect.stringContaining('checks')]),
       );
     });
 
     it('should include checks when only audit is selected', () => {
       expect(
-        binding.generateConfig({
-          ...defaultAnswers,
-          'js-packages.checks': ['audit'],
-        }).pluginInit,
+        binding.generateConfig(
+          createMockCodegenInput({
+            ...defaultAnswers,
+            'js-packages.checks': ['audit'],
+          }),
+        ).pluginInit,
       ).toEqual(
         expect.arrayContaining([expect.stringContaining("checks: ['audit']")]),
       );
     });
 
     it('should omit dependencyGroups when default prod and dev are selected', () => {
-      expect(binding.generateConfig(defaultAnswers).pluginInit).not.toEqual(
+      expect(
+        binding.generateConfig(createMockCodegenInput(defaultAnswers))
+          .pluginInit,
+      ).not.toEqual(
         expect.arrayContaining([expect.stringContaining('dependencyGroups')]),
       );
     });
 
     it('should include dependencyGroups when optionalDependencies are added', () => {
       expect(
-        binding.generateConfig({
-          ...defaultAnswers,
-          'js-packages.dependencyGroups': ['prod', 'dev', 'optional'],
-        }).pluginInit,
+        binding.generateConfig(
+          createMockCodegenInput({
+            ...defaultAnswers,
+            'js-packages.dependencyGroups': ['prod', 'dev', 'optional'],
+          }),
+        ).pluginInit,
       ).toEqual(
         expect.arrayContaining([
           expect.stringContaining(
@@ -132,24 +145,31 @@ describe('jsPackagesSetupBinding', () => {
 
     it('should generate security category for audit check', () => {
       expect(
-        binding.generateConfig({
-          ...defaultAnswers,
-          'js-packages.checks': ['audit'],
-        }).categories,
+        binding.generateConfig(
+          createMockCodegenInput({
+            ...defaultAnswers,
+            'js-packages.checks': ['audit'],
+          }),
+        ).categories,
       ).toEqual([expect.objectContaining({ slug: 'security' })]);
     });
 
     it('should generate updates category for outdated check', () => {
       expect(
-        binding.generateConfig({
-          ...defaultAnswers,
-          'js-packages.checks': ['outdated'],
-        }).categories,
+        binding.generateConfig(
+          createMockCodegenInput({
+            ...defaultAnswers,
+            'js-packages.checks': ['outdated'],
+          }),
+        ).categories,
       ).toEqual([expect.objectContaining({ slug: 'updates' })]);
     });
 
     it('should generate both categories when audit and outdated checks are selected', () => {
-      expect(binding.generateConfig(defaultAnswers).categories).toEqual([
+      expect(
+        binding.generateConfig(createMockCodegenInput(defaultAnswers))
+          .categories,
+      ).toEqual([
         expect.objectContaining({ slug: 'security' }),
         expect.objectContaining({ slug: 'updates' }),
       ]);
@@ -157,10 +177,12 @@ describe('jsPackagesSetupBinding', () => {
 
     it('should use package manager as prefix in category group refs', () => {
       expect(
-        binding.generateConfig({
-          ...defaultAnswers,
-          'js-packages.packageManager': 'pnpm',
-        }).categories,
+        binding.generateConfig(
+          createMockCodegenInput({
+            ...defaultAnswers,
+            'js-packages.packageManager': 'pnpm',
+          }),
+        ).categories,
       ).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
@@ -175,15 +197,19 @@ describe('jsPackagesSetupBinding', () => {
 
     it('should omit categories when declined', () => {
       expect(
-        binding.generateConfig({
-          ...defaultAnswers,
-          'js-packages.categories': false,
-        }).categories,
+        binding.generateConfig(
+          createMockCodegenInput({
+            ...defaultAnswers,
+            'js-packages.categories': false,
+          }),
+        ).categories,
       ).toBeUndefined();
     });
 
     it('should import from @code-pushup/js-packages-plugin', () => {
-      expect(binding.generateConfig(defaultAnswers).imports).toEqual([
+      expect(
+        binding.generateConfig(createMockCodegenInput(defaultAnswers)).imports,
+      ).toEqual([
         {
           moduleSpecifier: '@code-pushup/js-packages-plugin',
           defaultImport: 'jsPackagesPlugin',

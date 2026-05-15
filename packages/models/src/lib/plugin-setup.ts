@@ -72,6 +72,13 @@ export type PluginSetupTree = {
   write: (path: string, content: string) => Promise<void>;
 };
 
+export type PluginCodegenInput = {
+  answers: Record<string, PluginAnswer>;
+  tree: PluginSetupTree;
+  targetDir: string;
+  cliArgs: Record<string, unknown>;
+};
+
 /**
  * Defines how a plugin integrates with the setup wizard.
  *
@@ -88,7 +95,6 @@ export type PluginSetupBinding = {
   prompts?: (targetDir: string) => Promise<PluginPromptDescriptor[]>;
   isRecommended?: (targetDir: string) => Promise<boolean>;
   generateConfig: (
-    answers: Record<string, PluginAnswer>,
-    tree: PluginSetupTree,
+    input: PluginCodegenInput,
   ) => PluginCodegenResult | Promise<PluginCodegenResult>;
 };

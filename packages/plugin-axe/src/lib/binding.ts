@@ -3,7 +3,6 @@ import type {
   CategoryCodegenConfig,
   PluginAnswer,
   PluginSetupBinding,
-  PluginSetupTree,
 } from '@code-pushup/models';
 import {
   answerBoolean,
@@ -84,10 +83,7 @@ export const axeSetupBinding = {
       default: true,
     },
   ],
-  generateConfig: async (
-    answers: Record<string, PluginAnswer>,
-    tree: PluginSetupTree,
-  ) => {
+  generateConfig: async ({ answers, tree }) => {
     const options = parseAnswers(answers);
     if (options.setupScript) {
       await tree.write(SETUP_SCRIPT_PATH, SETUP_SCRIPT_CONTENT);
