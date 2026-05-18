@@ -3,6 +3,7 @@ import path from 'node:path';
 import {
   type MonorepoTool,
   asyncSequential,
+  createTree,
   formatAsciiTable,
   getGitRoot,
   logger,
@@ -35,7 +36,6 @@ import type {
   Tree,
   WriteContext,
 } from './types.js';
-import { createTree } from './virtual-fs.js';
 
 /**
  * Runs the interactive setup wizard that generates a Code PushUp config file.
