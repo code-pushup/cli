@@ -244,9 +244,9 @@ if (result.mode === 'monorepo') {
 
 ### Faster CI runs with `configPatterns`
 
-By default, the `print-config` command is run sequentially for each project in order to reliably detect how `code-pushup` is configured - specifically, where to read output files from (`persist` config) and whether portal may be used as a cache (`upload` config). This allows for each project to be configured in its own way without breaking anything, but for large monorepos these extra `code-pushup print-config` executions can accumulate and significantly slow down CI pipelines.
+By default, the `print-config` command is run sequentially for each project in order to reliably detect how `code-pushup` is configured - specifically, where to read output files from (`persist` config) and whether the portal may be used as a cache (`upload` config). This allows for each project to be configured in its own way without breaking anything, but for large monorepos these extra `code-pushup print-config` executions can accumulate and significantly slow down CI pipelines.
 
-As a more scalable alternative, `configPatterns` may be provided. A user declares upfront how every project is configured, which allows `print-config` to be skipped. It's the user's responsibility to ensure this configuration holds for every project (it won't be checked). The `configPatterns` support string interpolation, substituting `{projectName}` with each project's name. Other than that, each project's `code-pushup.config` must have exactly the same `persist` and `upload` configurations.
+As a more scalable alternative, `configPatterns` may be provided. A user declares upfront how every project is configured, which allows `print-config` to be skipped. It's the user's responsibility to ensure this configuration holds for every project (it won't be checked). The `configPatterns` support string interpolation, substituting `{projectName}` with each project's (slugified) name. Other than that, each project's `code-pushup.config` must have exactly the same `persist` and `upload` configurations.
 
 ```ts
 await runInCI(refs, api, {

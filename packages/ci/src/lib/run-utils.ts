@@ -16,6 +16,7 @@ import {
   objectFromEntries,
   readJsonFile,
   removeUndefinedAndEmptyProps,
+  slugify,
   stringifyError,
 } from '@code-pushup/utils';
 import {
@@ -510,8 +511,8 @@ export function configFromPatterns(
       upload: {
         server: upload.server,
         apiKey: upload.apiKey,
-        organization: interpolate(upload.organization, variables),
-        project: interpolate(upload.project, variables),
+        organization: slugify(interpolate(upload.organization, variables)),
+        project: slugify(interpolate(upload.project, variables)),
         ...(upload.timeout != null && { timeout: upload.timeout }),
       },
     }),
