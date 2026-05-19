@@ -23,19 +23,14 @@ jobs:
     name: Standalone mode (fork)
     if: github.event.pull_request.head.repo.fork
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Clone repository
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-          cache: npm
       - name: Set base and head for Nx affected commands
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@v5
       - name: Install dependencies
-        run: npm ci
+        uses: ./.github/actions/install
       - name: Run Code PushUp action
         uses: ./.github/actions/code-pushup
         with:
@@ -47,19 +42,14 @@ jobs:
     name: Monorepo mode (fork)
     if: github.event.pull_request.head.repo.fork
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Clone repository
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-          cache: npm
       - name: Set base and head for Nx affected commands
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@v5
       - name: Install dependencies
-        run: npm ci
+        uses: ./.github/actions/install
       - name: Run Code PushUp action
         uses: ./.github/actions/code-pushup
         with:
