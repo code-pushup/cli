@@ -1,15 +1,18 @@
 import type { PluginCodegenResult } from '@code-pushup/models';
-import type { MonorepoTool } from '@code-pushup/utils';
+import type { MonorepoTool, Tree } from '@code-pushup/utils';
 
 export type {
   CategoryCodegenConfig,
   ImportDeclarationStructure,
   PluginAnswer,
+  PluginCodegenInput,
   PluginCodegenResult,
   PluginPromptDescriptor,
   PluginSetupBinding,
   PluginSetupTree,
 } from '@code-pushup/models';
+
+export type { FileChange, FileSystemAdapter, Tree } from '@code-pushup/utils';
 
 export const CI_PROVIDERS = ['github', 'gitlab', 'none'] as const;
 export type CiProvider = (typeof CI_PROVIDERS)[number];
@@ -57,32 +60,4 @@ export type WriteContext = {
   format: ConfigFileFormat;
   configFilename: string;
   isEsm: boolean;
-};
-
-/** A single file operation recorded by the virtual tree. */
-export type FileChange = {
-  path: string;
-  type: 'CREATE' | 'UPDATE';
-  content: string;
-};
-
-/** Virtual file system that buffers writes in memory until flushed to disk. */
-export type Tree = {
-  root: string;
-  exists: (filePath: string) => Promise<boolean>;
-  read: (filePath: string) => Promise<string | null>;
-  write: (filePath: string, content: string) => Promise<void>;
-  listChanges: () => FileChange[];
-  flush: () => Promise<void>;
-};
-
-/** Abstraction over `node:fs` used by the virtual tree for disk I/O. */
-export type FileSystemAdapter = {
-  readFile: (path: string, encoding: 'utf8') => Promise<string>;
-  writeFile: (path: string, content: string) => Promise<void>;
-  exists: (path: string) => Promise<boolean>;
-  mkdir: (
-    path: string,
-    options: { recursive: true },
-  ) => Promise<string | undefined>;
 };

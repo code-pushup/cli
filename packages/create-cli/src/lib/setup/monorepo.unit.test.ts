@@ -1,10 +1,9 @@
 import { select } from '@inquirer/prompts';
 import { vol } from 'memfs';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
-import { logger } from '@code-pushup/utils';
+import { createTree, logger } from '@code-pushup/utils';
 import { addCodePushUpCommand, promptSetupMode } from './monorepo.js';
 import type { WizardProject } from './types.js';
-import { createTree } from './virtual-fs.js';
 
 vi.mock('@inquirer/prompts', () => ({
   select: vi.fn(),

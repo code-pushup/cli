@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import type { PluginAnswer } from '@code-pushup/models';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { MEMFS_VOLUME, createMockCodegenInput } from '@code-pushup/test-utils';
 import { typescriptSetupBinding as binding } from './binding.js';
 
 const defaultAnswers: Record<string, PluginAnswer> = {
@@ -81,17 +81,20 @@ describe('typescriptSetupBinding', () => {
 
   describe('generateConfig', () => {
     it('should omit tsconfig option when using default tsconfig.json', () => {
-      expect(binding.generateConfig(defaultAnswers).pluginInit).toEqual([
-        'typescriptPlugin(),',
-      ]);
+      expect(
+        binding.generateConfig(createMockCodegenInput(defaultAnswers))
+          .pluginInit,
+      ).toEqual(['typescriptPlugin(),']);
     });
 
     it('should include tsconfig when non-default path provided', () => {
       expect(
-        binding.generateConfig({
-          ...defaultAnswers,
-          'typescript.tsconfig': 'tsconfig.base.json',
-        }).pluginInit,
+        binding.generateConfig(
+          createMockCodegenInput({
+            ...defaultAnswers,
+            'typescript.tsconfig': 'tsconfig.base.json',
+          }),
+        ).pluginInit,
       ).toEqual([
         'typescriptPlugin({',
         "  tsconfig: 'tsconfig.base.json',",
@@ -100,7 +103,10 @@ describe('typescriptSetupBinding', () => {
     });
 
     it('should generate bug-prevention category from problems group when confirmed', () => {
-      expect(binding.generateConfig(defaultAnswers).categories).toEqual([
+      expect(
+        binding.generateConfig(createMockCodegenInput(defaultAnswers))
+          .categories,
+      ).toEqual([
         expect.objectContaining({
           slug: 'bug-prevention',
           refs: [
@@ -116,15 +122,19 @@ describe('typescriptSetupBinding', () => {
 
     it('should omit categories when declined', () => {
       expect(
-        binding.generateConfig({
-          ...defaultAnswers,
-          'typescript.categories': false,
-        }).categories,
+        binding.generateConfig(
+          createMockCodegenInput({
+            ...defaultAnswers,
+            'typescript.categories': false,
+          }),
+        ).categories,
       ).toBeUndefined();
     });
 
     it('should import from @code-pushup/typescript-plugin', () => {
-      expect(binding.generateConfig(defaultAnswers).imports).toEqual([
+      expect(
+        binding.generateConfig(createMockCodegenInput(defaultAnswers)).imports,
+      ).toEqual([
         {
           moduleSpecifier: '@code-pushup/typescript-plugin',
           defaultImport: 'typescriptPlugin',

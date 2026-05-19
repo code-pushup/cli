@@ -1,5 +1,8 @@
 import type { PluginAnswer } from '@code-pushup/models';
-import { createMockTree } from '@code-pushup/test-utils';
+import {
+  createMockCodegenInput,
+  createMockTree,
+} from '@code-pushup/test-utils';
 import { axeSetupBinding as binding } from './binding.js';
 
 const defaultAnswers: Record<string, PluginAnswer> = {
@@ -32,8 +35,7 @@ describe('axeSetupBinding', () => {
   describe('generateConfig with categories selected', () => {
     it('should declare plugin as a variable for use in category refs', async () => {
       const { pluginDeclaration } = await binding.generateConfig(
-        defaultAnswers,
-        createMockTree(),
+        createMockCodegenInput(defaultAnswers, createMockTree()),
       );
       expect(pluginDeclaration).toStrictEqual({
         identifier: 'axe',
@@ -43,8 +45,7 @@ describe('axeSetupBinding', () => {
 
     it('should import axeGroupRefs helper', async () => {
       const { imports } = await binding.generateConfig(
-        defaultAnswers,
-        createMockTree(),
+        createMockCodegenInput(defaultAnswers, createMockTree()),
       );
       expect(imports).toStrictEqual([
         expect.objectContaining({ namedImports: ['axeGroupRefs'] }),
@@ -53,8 +54,7 @@ describe('axeSetupBinding', () => {
 
     it('should produce accessibility category with refs expression', async () => {
       const { categories } = await binding.generateConfig(
-        defaultAnswers,
-        createMockTree(),
+        createMockCodegenInput(defaultAnswers, createMockTree()),
       );
       expect(categories).toStrictEqual([
         expect.objectContaining({
@@ -68,24 +68,21 @@ describe('axeSetupBinding', () => {
   describe('generateConfig without categories selected', () => {
     it('should not declare plugin as a variable', async () => {
       const { pluginDeclaration } = await binding.generateConfig(
-        noCategoryAnswers,
-        createMockTree(),
+        createMockCodegenInput(noCategoryAnswers, createMockTree()),
       );
       expect(pluginDeclaration).toBeUndefined();
     });
 
     it('should not import axeGroupRefs helper', async () => {
       const { imports } = await binding.generateConfig(
-        noCategoryAnswers,
-        createMockTree(),
+        createMockCodegenInput(noCategoryAnswers, createMockTree()),
       );
       expect(imports[0]).not.toHaveProperty('namedImports');
     });
 
     it('should not produce categories', async () => {
       const { categories } = await binding.generateConfig(
-        noCategoryAnswers,
-        createMockTree(),
+        createMockCodegenInput(noCategoryAnswers, createMockTree()),
       );
       expect(categories).toBeUndefined();
     });
@@ -95,8 +92,10 @@ describe('axeSetupBinding', () => {
     it('should write setup script file when confirmed', async () => {
       const tree = createMockTree();
       await binding.generateConfig(
-        { ...defaultAnswers, 'axe.setupScript': true },
-        tree,
+        createMockCodegenInput(
+          { ...defaultAnswers, 'axe.setupScript': true },
+          tree,
+        ),
       );
       expect(tree.written.get('./axe-setup.ts')).toContain(
         "import type { Page } from 'playwright-core'",
@@ -105,8 +104,10 @@ describe('axeSetupBinding', () => {
 
     it('should include setupScript in plugin call when confirmed', async () => {
       const { pluginDeclaration } = await binding.generateConfig(
-        { ...defaultAnswers, 'axe.setupScript': true },
-        createMockTree(),
+        createMockCodegenInput(
+          { ...defaultAnswers, 'axe.setupScript': true },
+          createMockTree(),
+        ),
       );
       expect(pluginDeclaration!.expression).toContain(
         "setupScript: './axe-setup.ts'",
@@ -115,26 +116,32 @@ describe('axeSetupBinding', () => {
 
     it('should not write setup script file when declined', async () => {
       const tree = createMockTree();
-      await binding.generateConfig(defaultAnswers, tree);
+      await binding.generateConfig(
+        createMockCodegenInput(defaultAnswers, tree),
+      );
       expect(tree.written.size).toBe(0);
     });
   });
 
   it('should include non-default preset in plugin call', async () => {
     const { pluginDeclaration } = await binding.generateConfig(
-      { ...defaultAnswers, 'axe.preset': 'wcag22aa' },
-      createMockTree(),
+      createMockCodegenInput(
+        { ...defaultAnswers, 'axe.preset': 'wcag22aa' },
+        createMockTree(),
+      ),
     );
     expect(pluginDeclaration!.expression).toContain("preset: 'wcag22aa'");
   });
 
   it('should format multiple URLs as array', async () => {
     const { pluginDeclaration } = await binding.generateConfig(
-      {
-        ...defaultAnswers,
-        'axe.urls': 'http://localhost:4200/login, http://localhost:4200/home',
-      },
-      createMockTree(),
+      createMockCodegenInput(
+        {
+          ...defaultAnswers,
+          'axe.urls': 'http://localhost:4200/login, http://localhost:4200/home',
+        },
+        createMockTree(),
+      ),
     );
     expect(pluginDeclaration!.expression).toContain(
       "axePlugin(['http://localhost:4200/login', 'http://localhost:4200/home']",

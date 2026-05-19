@@ -1,6 +1,10 @@
 import { vol } from 'memfs';
 import type { PluginAnswer } from '@code-pushup/models';
-import { MEMFS_VOLUME, createMockTree } from '@code-pushup/test-utils';
+import {
+  MEMFS_VOLUME,
+  createMockCodegenInput,
+  createMockTree,
+} from '@code-pushup/test-utils';
 import { readJsonFile } from '@code-pushup/utils';
 import { coverageSetupBinding as binding } from './binding.js';
 
@@ -107,7 +111,9 @@ describe('coverageSetupBinding', () => {
 
   describe('generateConfig', () => {
     it('should generate vitest config', async () => {
-      const { pluginInit } = await binding.generateConfig(defaultAnswers);
+      const { pluginInit } = await binding.generateConfig(
+        createMockCodegenInput(defaultAnswers),
+      );
       expect(pluginInit).toEqual([
         '// NOTE: Ensure your test config includes "lcov" in coverage reporters.',
         'await coveragePlugin({',
@@ -118,11 +124,13 @@ describe('coverageSetupBinding', () => {
     });
 
     it('should generate jest config', async () => {
-      const { pluginInit } = await binding.generateConfig({
-        ...defaultAnswers,
-        'coverage.framework': 'jest',
-        'coverage.testCommand': 'npx jest --coverage',
-      });
+      const { pluginInit } = await binding.generateConfig(
+        createMockCodegenInput({
+          ...defaultAnswers,
+          'coverage.framework': 'jest',
+          'coverage.testCommand': 'npx jest --coverage',
+        }),
+      );
       expect(pluginInit).toEqual([
         '// NOTE: Ensure your test config includes "lcov" in coverage reporters.',
         'await coveragePlugin({',
@@ -133,10 +141,12 @@ describe('coverageSetupBinding', () => {
     });
 
     it('should omit coverageToolCommand when test command is empty', async () => {
-      const { pluginInit } = await binding.generateConfig({
-        ...defaultAnswers,
-        'coverage.testCommand': '',
-      });
+      const { pluginInit } = await binding.generateConfig(
+        createMockCodegenInput({
+          ...defaultAnswers,
+          'coverage.testCommand': '',
+        }),
+      );
       expect(pluginInit).not.toEqual(
         expect.arrayContaining([
           expect.stringContaining('coverageToolCommand'),
@@ -145,10 +155,12 @@ describe('coverageSetupBinding', () => {
     });
 
     it('should use default report path when empty', async () => {
-      const { pluginInit } = await binding.generateConfig({
-        ...defaultAnswers,
-        'coverage.reportPath': '',
-      });
+      const { pluginInit } = await binding.generateConfig(
+        createMockCodegenInput({
+          ...defaultAnswers,
+          'coverage.reportPath': '',
+        }),
+      );
       expect(pluginInit).toEqual(
         expect.arrayContaining([
           expect.stringContaining("'coverage/lcov.info'"),
@@ -157,10 +169,12 @@ describe('coverageSetupBinding', () => {
     });
 
     it('should use custom report path when provided', async () => {
-      const { pluginInit } = await binding.generateConfig({
-        ...defaultAnswers,
-        'coverage.reportPath': 'dist/coverage/lcov.info',
-      });
+      const { pluginInit } = await binding.generateConfig(
+        createMockCodegenInput({
+          ...defaultAnswers,
+          'coverage.reportPath': 'dist/coverage/lcov.info',
+        }),
+      );
       expect(pluginInit).toEqual(
         expect.arrayContaining([
           expect.stringContaining("'dist/coverage/lcov.info'"),
@@ -169,17 +183,21 @@ describe('coverageSetupBinding', () => {
     });
 
     it('should omit coverageTypes when all selected', async () => {
-      const { pluginInit } = await binding.generateConfig(defaultAnswers);
+      const { pluginInit } = await binding.generateConfig(
+        createMockCodegenInput(defaultAnswers),
+      );
       expect(pluginInit).not.toEqual(
         expect.arrayContaining([expect.stringContaining('coverageTypes')]),
       );
     });
 
     it('should include coverageTypes when subset selected', async () => {
-      const { pluginInit } = await binding.generateConfig({
-        ...defaultAnswers,
-        'coverage.types': ['branch', 'line'],
-      });
+      const { pluginInit } = await binding.generateConfig(
+        createMockCodegenInput({
+          ...defaultAnswers,
+          'coverage.types': ['branch', 'line'],
+        }),
+      );
       expect(pluginInit).toEqual(
         expect.arrayContaining([
           expect.stringContaining("coverageTypes: ['branch', 'line']"),
@@ -188,10 +206,12 @@ describe('coverageSetupBinding', () => {
     });
 
     it('should disable continueOnCommandFail when declined', async () => {
-      const { pluginInit } = await binding.generateConfig({
-        ...defaultAnswers,
-        'coverage.continueOnFail': false,
-      });
+      const { pluginInit } = await binding.generateConfig(
+        createMockCodegenInput({
+          ...defaultAnswers,
+          'coverage.continueOnFail': false,
+        }),
+      );
       expect(pluginInit).toEqual(
         expect.arrayContaining([
           expect.stringContaining('continueOnCommandFail: false'),
@@ -200,7 +220,9 @@ describe('coverageSetupBinding', () => {
     });
 
     it('should omit continueOnCommandFail when default', async () => {
-      const { pluginInit } = await binding.generateConfig(defaultAnswers);
+      const { pluginInit } = await binding.generateConfig(
+        createMockCodegenInput(defaultAnswers),
+      );
       expect(pluginInit).not.toEqual(
         expect.arrayContaining([
           expect.stringContaining('continueOnCommandFail'),
@@ -209,15 +231,19 @@ describe('coverageSetupBinding', () => {
     });
 
     it('should omit categories when declined', async () => {
-      const { categories } = await binding.generateConfig({
-        ...defaultAnswers,
-        'coverage.categories': false,
-      });
+      const { categories } = await binding.generateConfig(
+        createMockCodegenInput({
+          ...defaultAnswers,
+          'coverage.categories': false,
+        }),
+      );
       expect(categories).toBeUndefined();
     });
 
     it('should import from @code-pushup/coverage-plugin', async () => {
-      const { imports } = await binding.generateConfig(defaultAnswers);
+      const { imports } = await binding.generateConfig(
+        createMockCodegenInput(defaultAnswers),
+      );
       expect(imports).toEqual([
         {
           moduleSpecifier: '@code-pushup/coverage-plugin',
@@ -239,7 +265,9 @@ describe('coverageSetupBinding', () => {
         'vitest.config.ts':
           "export default { test: { coverage: { reporter: ['lcov'] } } };",
       });
-      const { pluginInit } = await binding.generateConfig(vitestAnswers, tree);
+      const { pluginInit } = await binding.generateConfig(
+        createMockCodegenInput(vitestAnswers, tree),
+      );
       expect(pluginInit).not.toEqual(
         expect.arrayContaining([expect.stringContaining('NOTE')]),
       );
@@ -250,7 +278,9 @@ describe('coverageSetupBinding', () => {
         'vitest.config.ts':
           "import { defineConfig } from 'vitest/config';\nexport default defineConfig({ test: { coverage: { reporter: ['text'] } } });",
       });
-      const { pluginInit } = await binding.generateConfig(vitestAnswers, tree);
+      const { pluginInit } = await binding.generateConfig(
+        createMockCodegenInput(vitestAnswers, tree),
+      );
       expect(pluginInit).not.toEqual(
         expect.arrayContaining([expect.stringContaining('NOTE')]),
       );
@@ -258,10 +288,12 @@ describe('coverageSetupBinding', () => {
     });
 
     it('should include comment when framework is other', async () => {
-      const { pluginInit } = await binding.generateConfig({
-        ...defaultAnswers,
-        'coverage.framework': 'other',
-      });
+      const { pluginInit } = await binding.generateConfig(
+        createMockCodegenInput({
+          ...defaultAnswers,
+          'coverage.framework': 'other',
+        }),
+      );
       expect(pluginInit).toEqual(
         expect.arrayContaining([expect.stringContaining('NOTE')]),
       );
@@ -269,7 +301,9 @@ describe('coverageSetupBinding', () => {
 
     it('should include comment when config file cannot be read', async () => {
       const tree = createMockTree({});
-      const { pluginInit } = await binding.generateConfig(vitestAnswers, tree);
+      const { pluginInit } = await binding.generateConfig(
+        createMockCodegenInput(vitestAnswers, tree),
+      );
       expect(pluginInit).toEqual(
         expect.arrayContaining([expect.stringContaining('NOTE')]),
       );
@@ -280,12 +314,14 @@ describe('coverageSetupBinding', () => {
         'jest.config.js': "module.exports = { coverageReporters: ['text'] };",
       });
       const { pluginInit } = await binding.generateConfig(
-        {
-          ...defaultAnswers,
-          'coverage.framework': 'jest',
-          'coverage.configFile': 'jest.config.js',
-        },
-        tree,
+        createMockCodegenInput(
+          {
+            ...defaultAnswers,
+            'coverage.framework': 'jest',
+            'coverage.configFile': 'jest.config.js',
+          },
+          tree,
+        ),
       );
       expect(pluginInit).toEqual(
         expect.arrayContaining([expect.stringContaining('NOTE')]),

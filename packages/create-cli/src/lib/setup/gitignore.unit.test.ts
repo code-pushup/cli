@@ -1,8 +1,8 @@
 import { vol } from 'memfs';
 import { readFile } from 'node:fs/promises';
 import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { createTree } from '@code-pushup/utils';
 import { resolveGitignore } from './gitignore.js';
-import { createTree } from './virtual-fs.js';
 
 describe('resolveGitignore', () => {
   it('should create .gitignore with comment when it does not exist', async () => {

@@ -1,16 +1,24 @@
-import { toUnixPath } from '@code-pushup/utils';
+import { toUnixPath } from '../transform.js';
 import type { FileSystemAdapter } from './types.js';
 import { createTree } from './virtual-fs.js';
 
+type MockFs = FileSystemAdapter & {
+  written: Map<string, string>;
+  unlinked: Set<string>;
+  dirs: Set<string>;
+};
+
 function createMockFs(
   files: Record<string, string> = {},
-): FileSystemAdapter & { written: Map<string, string>; dirs: Set<string> } {
+  options: { failOnWrite?: string } = {},
+): MockFs {
   const store = new Map(Object.entries(files));
   const written = new Map<string, string>();
+  const unlinked = new Set<string>();
   const dirs = new Set<string>();
-
   return {
     written,
+    unlinked,
     dirs,
     async readFile(path: string) {
       const content = store.get(toUnixPath(path));
@@ -20,6 +28,9 @@ function createMockFs(
       return content;
     },
     async writeFile(path: string, content: string) {
+      if (options.failOnWrite === toUnixPath(path)) {
+        throw new Error(`EACCES: permission denied, open '${path}'`);
+      }
       store.set(toUnixPath(path), content);
       written.set(toUnixPath(path), content);
     },
@@ -28,6 +39,10 @@ function createMockFs(
     },
     async mkdir(path: string): Promise<undefined> {
       dirs.add(toUnixPath(path));
+    },
+    async unlink(path: string) {
+      store.delete(toUnixPath(path));
+      unlinked.add(toUnixPath(path));
     },
   };
 }
@@ -38,13 +53,13 @@ describe('createTree', () => {
   });
 
   describe('exists', () => {
-    it('should return false for non-existent files', async () => {
+    it('should report exists() as false for non-existent files', async () => {
       await expect(
         createTree('/project', createMockFs()).exists('missing.ts'),
       ).resolves.toBeFalse();
     });
 
-    it('should return true for files on disk', async () => {
+    it('should report exists() as true for files on disk', async () => {
       await expect(
         createTree(
           '/project',
@@ -53,15 +68,16 @@ describe('createTree', () => {
       ).resolves.toBeTrue();
     });
 
-    it('should return true for files written to the tree', async () => {
+    it('should report exists() as true for files written to the tree', async () => {
       const tree = createTree('/project', createMockFs());
       await tree.write('new.ts', 'content');
+
       await expect(tree.exists('new.ts')).resolves.toBeTrue();
     });
   });
 
   describe('read', () => {
-    it('should return null for non-existent files', async () => {
+    it('should return null from read() for non-existent files', async () => {
       await expect(
         createTree('/project', createMockFs()).read('missing.ts'),
       ).resolves.toBeNull();
@@ -76,18 +92,19 @@ describe('createTree', () => {
       ).resolves.toBe('disk content');
     });
 
-    it('should return pending content over disk content', async () => {
+    it('should return pending content over disk content from read()', async () => {
       const tree = createTree(
         '/project',
         createMockFs({ '/project/file.ts': 'old' }),
       );
       await tree.write('file.ts', 'new');
+
       await expect(tree.read('file.ts')).resolves.toBe('new');
     });
   });
 
   describe('write', () => {
-    it('should mark new files as CREATE', async () => {
+    it('should mark new files as CREATE on write()', async () => {
       const tree = createTree('/project', createMockFs());
       await tree.write('new.ts', 'content');
 
@@ -106,7 +123,7 @@ describe('createTree', () => {
       ]);
     });
 
-    it('should mark existing files as UPDATE', async () => {
+    it('should mark existing files as UPDATE on write()', async () => {
       const tree = createTree(
         '/project',
         createMockFs({ '/project/existing.ts': 'old' }),
@@ -117,16 +134,33 @@ describe('createTree', () => {
         { path: 'existing.ts', type: 'UPDATE', content: 'new' },
       ]);
     });
-  });
 
-  describe('listChanges', () => {
-    it('should return empty array when no changes are detected', () => {
+    it('should skip recording when written content matches disk content', async () => {
+      const tree = createTree(
+        '/project',
+        createMockFs({ '/project/existing.ts': 'same' }),
+      );
+      await tree.write('existing.ts', 'same');
+
+      expect(tree.listChanges()).toStrictEqual([]);
+    });
+
+    it('should skip re-recording when pending content is overwritten with the same value', async () => {
+      const tree = createTree('/project', createMockFs());
+      await tree.write('new.ts', 'content');
+      const before = tree.listChanges();
+      await tree.write('new.ts', 'content');
+
+      expect(tree.listChanges()).toStrictEqual(before);
+    });
+
+    it('should return empty array from listChanges() when no changes are detected', () => {
       expect(
         createTree('/project', createMockFs()).listChanges(),
       ).toStrictEqual([]);
     });
 
-    it('should return all pending changes', async () => {
+    it('should return all pending changes from listChanges()', async () => {
       const tree = createTree(
         '/project',
         createMockFs({ '/project/existing.ts': 'old' }),
@@ -146,10 +180,19 @@ describe('createTree', () => {
         content: 'updated',
       });
     });
+
+    it('should buffer writes without touching the fs until flush()', async () => {
+      const fs = createMockFs();
+      const tree = createTree('/project', fs);
+      await tree.write('first.ts', 'one');
+      await tree.write('second.ts', 'two');
+
+      expect(fs.written.size).toBe(0);
+    });
   });
 
   describe('flush', () => {
-    it('should write all pending files to the fs', async () => {
+    it('should write all pending files to the fs on flush()', async () => {
       const fs = createMockFs();
       const tree = createTree('/project', fs);
       await tree.write('src/config.ts', 'export default {};');
@@ -161,7 +204,7 @@ describe('createTree', () => {
       );
     });
 
-    it('should create parent directories', async () => {
+    it('should create parent directories on flush()', async () => {
       const fs = createMockFs();
       const tree = createTree('/project', fs);
       await tree.write('src/deep/config.ts', 'content');
@@ -171,7 +214,7 @@ describe('createTree', () => {
       expect(fs.dirs).toContain('/project/src/deep');
     });
 
-    it('should clear pending changes after flush', async () => {
+    it('should clear pending changes after flush()', async () => {
       const tree = createTree('/project', createMockFs());
       await tree.write('file.ts', 'content');
 
@@ -180,12 +223,49 @@ describe('createTree', () => {
       expect(tree.listChanges()).toStrictEqual([]);
     });
 
-    it('should not write anything when no changes are pending', async () => {
+    it('should not write anything on flush() when no changes are pending', async () => {
       const fs = createMockFs();
 
       await createTree('/project', fs).flush();
 
       expect(fs.written.size).toBe(0);
+    });
+
+    it('should rollback created files by unlinking them when a later write fails', async () => {
+      const fs = createMockFs({}, { failOnWrite: '/project/second.ts' });
+      const tree = createTree('/project', fs);
+      await tree.write('first.ts', 'one');
+      await tree.write('second.ts', 'two');
+
+      await expect(tree.flush()).rejects.toThrow(/EACCES/);
+
+      expect(fs.unlinked).toContain('/project/first.ts');
+    });
+
+    it('should rollback updated files by restoring original content when a later write fails', async () => {
+      const fs = createMockFs(
+        { '/project/existing.ts': 'original' },
+        { failOnWrite: '/project/second.ts' },
+      );
+      const tree = createTree('/project', fs);
+      await tree.write('existing.ts', 'modified');
+      await tree.write('second.ts', 'new');
+
+      await expect(tree.flush()).rejects.toThrow(/EACCES/);
+
+      expect(fs.written.get('/project/existing.ts')).toBe('original');
+      expect(fs.unlinked).not.toContain('/project/existing.ts');
+    });
+
+    it('should keep pending changes after a failed flush() so it can be retried', async () => {
+      const fs = createMockFs({}, { failOnWrite: '/project/second.ts' });
+      const tree = createTree('/project', fs);
+      await tree.write('first.ts', 'one');
+      await tree.write('second.ts', 'two');
+
+      await expect(tree.flush()).rejects.toThrow(/EACCES/);
+
+      expect(tree.listChanges()).toHaveLength(2);
     });
   });
 });

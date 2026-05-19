@@ -205,6 +205,12 @@ export {
   answerString,
 } from './lib/plugin-answers.js';
 export {
+  createTree,
+  type FileChange,
+  type FileSystemAdapter,
+  type Tree,
+} from './lib/wizard/index.js';
+export {
   hasCodePushUpDependency,
   hasDependency,
   hasScript,

@@ -28,7 +28,7 @@ const TEST_BINDINGS: PluginSetupBinding[] = [
         default: 'alpha.config.js',
       },
     ],
-    generateConfig(answers) {
+    generateConfig({ answers }) {
       const configPath = answers['alpha.path'] ?? 'alpha.config.js';
       return {
         imports: [

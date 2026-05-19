@@ -128,10 +128,7 @@ export const coverageSetupBinding = {
       },
     ];
   },
-  generateConfig: async (
-    answers: Record<string, PluginAnswer>,
-    tree?: PluginSetupTree,
-  ) => {
+  generateConfig: async ({ answers, tree }) => {
     const options = parseAnswers(answers);
     const lcovConfigured = await configureLcovReporter(options, tree);
     return {

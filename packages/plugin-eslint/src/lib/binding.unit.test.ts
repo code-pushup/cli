@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import { MEMFS_VOLUME } from '@code-pushup/test-utils';
+import { MEMFS_VOLUME, createMockCodegenInput } from '@code-pushup/test-utils';
 import { directoryExists, readJsonFile } from '@code-pushup/utils';
 import { eslintSetupBinding } from './binding.js';
 
@@ -111,21 +111,25 @@ describe('eslintSetupBinding', () => {
   describe('generateConfig', () => {
     it('should omit eslintrc for standard config filenames', () => {
       expect(
-        eslintSetupBinding.generateConfig({
-          'eslint.eslintrc': 'eslint.config.ts',
-          'eslint.patterns': 'src',
-          'eslint.categories': true,
-        }).pluginInit,
+        eslintSetupBinding.generateConfig(
+          createMockCodegenInput({
+            'eslint.eslintrc': 'eslint.config.ts',
+            'eslint.patterns': 'src',
+            'eslint.categories': true,
+          }),
+        ).pluginInit,
       ).toEqual(["await eslintPlugin({ patterns: 'src' }),"]);
     });
 
     it('should include eslintrc for non-standard config paths', () => {
       expect(
-        eslintSetupBinding.generateConfig({
-          'eslint.eslintrc': 'configs/eslint.config.js',
-          'eslint.patterns': 'src',
-          'eslint.categories': false,
-        }).pluginInit,
+        eslintSetupBinding.generateConfig(
+          createMockCodegenInput({
+            'eslint.eslintrc': 'configs/eslint.config.js',
+            'eslint.patterns': 'src',
+            'eslint.categories': false,
+          }),
+        ).pluginInit,
       ).toEqual([
         "await eslintPlugin({ eslintrc: 'configs/eslint.config.js', patterns: 'src' }),",
       ]);
@@ -133,51 +137,61 @@ describe('eslintSetupBinding', () => {
 
     it('should format comma-separated patterns as array', () => {
       expect(
-        eslintSetupBinding.generateConfig({
-          'eslint.eslintrc': '',
-          'eslint.patterns': 'src, lib',
-          'eslint.categories': false,
-        }).pluginInit,
+        eslintSetupBinding.generateConfig(
+          createMockCodegenInput({
+            'eslint.eslintrc': '',
+            'eslint.patterns': 'src, lib',
+            'eslint.categories': false,
+          }),
+        ).pluginInit,
       ).toEqual(["await eslintPlugin({ patterns: ['src', 'lib'] }),"]);
     });
 
     it('should produce no-arg call when no options provided', () => {
       expect(
-        eslintSetupBinding.generateConfig({
-          'eslint.eslintrc': '',
-          'eslint.patterns': '',
-          'eslint.categories': false,
-        }).pluginInit,
+        eslintSetupBinding.generateConfig(
+          createMockCodegenInput({
+            'eslint.eslintrc': '',
+            'eslint.patterns': '',
+            'eslint.categories': false,
+          }),
+        ).pluginInit,
       ).toEqual(['await eslintPlugin(),']);
     });
 
     it('should include categories when user confirms', () => {
       expect(
-        eslintSetupBinding.generateConfig({
-          'eslint.eslintrc': '',
-          'eslint.patterns': '',
-          'eslint.categories': true,
-        }).categories,
+        eslintSetupBinding.generateConfig(
+          createMockCodegenInput({
+            'eslint.eslintrc': '',
+            'eslint.patterns': '',
+            'eslint.categories': true,
+          }),
+        ).categories,
       ).toHaveLength(2);
     });
 
     it('should omit categories when user declines', () => {
       expect(
-        eslintSetupBinding.generateConfig({
-          'eslint.eslintrc': '',
-          'eslint.patterns': '',
-          'eslint.categories': false,
-        }).categories,
+        eslintSetupBinding.generateConfig(
+          createMockCodegenInput({
+            'eslint.eslintrc': '',
+            'eslint.patterns': '',
+            'eslint.categories': false,
+          }),
+        ).categories,
       ).toBeUndefined();
     });
 
     it('should import from @code-pushup/eslint-plugin', () => {
       expect(
-        eslintSetupBinding.generateConfig({
-          'eslint.eslintrc': '',
-          'eslint.patterns': '',
-          'eslint.categories': false,
-        }).imports,
+        eslintSetupBinding.generateConfig(
+          createMockCodegenInput({
+            'eslint.eslintrc': '',
+            'eslint.patterns': '',
+            'eslint.categories': false,
+          }),
+        ).imports,
       ).toEqual([
         {
           moduleSpecifier: '@code-pushup/eslint-plugin',

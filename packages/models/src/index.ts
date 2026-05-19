@@ -116,6 +116,7 @@ export type {
   CategoryCodegenConfig,
   ImportDeclarationStructure,
   PluginAnswer,
+  PluginCodegenInput,
   PluginCodegenResult,
   PluginDeclarationStructure,
   PluginPromptDescriptor,

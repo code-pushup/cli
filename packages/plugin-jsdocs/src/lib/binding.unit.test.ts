@@ -1,4 +1,5 @@
 import type { PluginAnswer } from '@code-pushup/models';
+import { createMockCodegenInput } from '@code-pushup/test-utils';
 import { jsDocsSetupBinding as binding } from './binding.js';
 
 const defaultAnswers: Record<string, PluginAnswer> = {
@@ -32,7 +33,9 @@ describe('jsDocsSetupBinding', () => {
 
   describe('generateConfig', () => {
     it('should import from @code-pushup/jsdocs-plugin', () => {
-      const { imports } = binding.generateConfig(defaultAnswers);
+      const { imports } = binding.generateConfig(
+        createMockCodegenInput(defaultAnswers),
+      );
       expect(imports).toStrictEqual([
         expect.objectContaining({
           defaultImport: 'jsDocsPlugin',
@@ -41,7 +44,9 @@ describe('jsDocsSetupBinding', () => {
     });
 
     it('should pass multiple patterns as array to plugin call', () => {
-      const { pluginInit } = binding.generateConfig(defaultAnswers);
+      const { pluginInit } = binding.generateConfig(
+        createMockCodegenInput(defaultAnswers),
+      );
       expect(pluginInit).toStrictEqual([
         'jsDocsPlugin([',
         "  'src/**/*.ts',",
@@ -52,15 +57,19 @@ describe('jsDocsSetupBinding', () => {
     });
 
     it('should pass single pattern as string to plugin call', () => {
-      const { pluginInit } = binding.generateConfig({
-        ...defaultAnswers,
-        'jsdocs.patterns': 'src/**/*.ts',
-      });
+      const { pluginInit } = binding.generateConfig(
+        createMockCodegenInput({
+          ...defaultAnswers,
+          'jsdocs.patterns': 'src/**/*.ts',
+        }),
+      );
       expect(pluginInit).toStrictEqual(["jsDocsPlugin('src/**/*.ts'),"]);
     });
 
     it('should generate Documentation category from documentation-coverage group', () => {
-      const { categories } = binding.generateConfig(defaultAnswers);
+      const { categories } = binding.generateConfig(
+        createMockCodegenInput(defaultAnswers),
+      );
       expect(categories).toStrictEqual([
         expect.objectContaining({
           slug: 'docs',
@@ -76,7 +85,9 @@ describe('jsDocsSetupBinding', () => {
     });
 
     it('should omit categories when declined', () => {
-      const { categories } = binding.generateConfig(noCategoryAnswers);
+      const { categories } = binding.generateConfig(
+        createMockCodegenInput(noCategoryAnswers),
+      );
       expect(categories).toBeUndefined();
     });
   });

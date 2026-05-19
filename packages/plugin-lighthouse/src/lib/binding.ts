@@ -80,7 +80,7 @@ export const lighthouseSetupBinding = {
       default: CATEGORIES.map(({ slug }) => slug),
     },
   ],
-  generateConfig: (answers: Record<string, PluginAnswer>) => {
+  generateConfig: ({ answers }) => {
     const options = parseAnswers(answers);
     const hasCategories = options.categories.length > 0;
     const imports = [

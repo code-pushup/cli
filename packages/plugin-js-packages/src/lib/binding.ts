@@ -105,7 +105,7 @@ export const jsPackagesSetupBinding = {
       },
     ];
   },
-  generateConfig: (answers: Record<string, PluginAnswer>) => {
+  generateConfig: ({ answers }) => {
     const options = parseAnswers(answers);
     return {
       imports: [

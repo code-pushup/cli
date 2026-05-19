@@ -1,4 +1,5 @@
 import type { PluginAnswer } from '@code-pushup/models';
+import { createMockCodegenInput } from '@code-pushup/test-utils';
 import { lighthouseSetupBinding as binding } from './binding.js';
 
 const defaultAnswers: Record<string, PluginAnswer> = {
@@ -26,20 +27,27 @@ describe('lighthouseSetupBinding', () => {
 
   describe('generateConfig with categories selected', () => {
     it('should declare plugin as a variable for use in category refs', () => {
-      expect(binding.generateConfig(defaultAnswers).pluginDeclaration).toEqual({
+      expect(
+        binding.generateConfig(createMockCodegenInput(defaultAnswers))
+          .pluginDeclaration,
+      ).toEqual({
         identifier: 'lhPlugin',
         expression: "lighthousePlugin('http://localhost:4200')",
       });
     });
 
     it('should import lighthouseGroupRefs helper', () => {
-      expect(binding.generateConfig(defaultAnswers).imports).toEqual([
+      expect(
+        binding.generateConfig(createMockCodegenInput(defaultAnswers)).imports,
+      ).toEqual([
         expect.objectContaining({ namedImports: ['lighthouseGroupRefs'] }),
       ]);
     });
 
     it('should produce categories with refs expressions for each selected group', () => {
-      const { categories } = binding.generateConfig(defaultAnswers);
+      const { categories } = binding.generateConfig(
+        createMockCodegenInput(defaultAnswers),
+      );
       expect(categories).toHaveLength(4);
       expect(categories).toEqual([
         expect.objectContaining({
@@ -62,10 +70,12 @@ describe('lighthouseSetupBinding', () => {
     });
 
     it('should only include selected categories', () => {
-      const { categories } = binding.generateConfig({
-        ...defaultAnswers,
-        'lighthouse.categories': ['performance', 'seo'],
-      });
+      const { categories } = binding.generateConfig(
+        createMockCodegenInput({
+          ...defaultAnswers,
+          'lighthouse.categories': ['performance', 'seo'],
+        }),
+      );
       expect(categories).toHaveLength(2);
       expect(categories).toEqual([
         expect.objectContaining({ slug: 'performance' }),
@@ -74,26 +84,32 @@ describe('lighthouseSetupBinding', () => {
     });
 
     it('should pass onlyGroups when not all categories are selected', () => {
-      const { pluginDeclaration } = binding.generateConfig({
-        ...defaultAnswers,
-        'lighthouse.categories': ['performance', 'seo'],
-      });
+      const { pluginDeclaration } = binding.generateConfig(
+        createMockCodegenInput({
+          ...defaultAnswers,
+          'lighthouse.categories': ['performance', 'seo'],
+        }),
+      );
       expect(pluginDeclaration!.expression).toContain(
         "onlyGroups: ['performance', 'seo']",
       );
     });
 
     it('should omit onlyGroups when all categories are selected', () => {
-      const { pluginDeclaration } = binding.generateConfig(defaultAnswers);
+      const { pluginDeclaration } = binding.generateConfig(
+        createMockCodegenInput(defaultAnswers),
+      );
       expect(pluginDeclaration!.expression).not.toContain('onlyGroups');
     });
 
     it('should use custom URL in plugin declaration', () => {
       expect(
-        binding.generateConfig({
-          ...defaultAnswers,
-          'lighthouse.urls': 'https://example.com',
-        }).pluginDeclaration,
+        binding.generateConfig(
+          createMockCodegenInput({
+            ...defaultAnswers,
+            'lighthouse.urls': 'https://example.com',
+          }),
+        ).pluginDeclaration,
       ).toEqual(
         expect.objectContaining({
           expression: "lighthousePlugin('https://example.com')",
@@ -103,10 +119,12 @@ describe('lighthouseSetupBinding', () => {
 
     it('should format multiple URLs as an array', () => {
       expect(
-        binding.generateConfig({
-          ...defaultAnswers,
-          'lighthouse.urls': 'http://localhost:4200, http://localhost:4201',
-        }).pluginDeclaration,
+        binding.generateConfig(
+          createMockCodegenInput({
+            ...defaultAnswers,
+            'lighthouse.urls': 'http://localhost:4200, http://localhost:4201',
+          }),
+        ).pluginDeclaration,
       ).toEqual(
         expect.objectContaining({
           expression:
@@ -119,18 +137,22 @@ describe('lighthouseSetupBinding', () => {
   describe('generateConfig without categories selected', () => {
     it('should not declare plugin as a variable', () => {
       expect(
-        binding.generateConfig(noCategoryAnswers).pluginDeclaration,
+        binding.generateConfig(createMockCodegenInput(noCategoryAnswers))
+          .pluginDeclaration,
       ).toBeUndefined();
     });
 
     it('should not import lighthouseGroupRefs helper', () => {
-      const { imports } = binding.generateConfig(noCategoryAnswers);
+      const { imports } = binding.generateConfig(
+        createMockCodegenInput(noCategoryAnswers),
+      );
       expect(imports[0]).not.toHaveProperty('namedImports');
     });
 
     it('should not produce categories', () => {
       expect(
-        binding.generateConfig(noCategoryAnswers).categories,
+        binding.generateConfig(createMockCodegenInput(noCategoryAnswers))
+          .categories,
       ).toBeUndefined();
     });
   });
