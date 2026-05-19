@@ -13,9 +13,9 @@ jobs:
       pull-requests: write
       issues: write
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v4
-      - uses: actions/labeler@v5
+      - name: Clone repository
+        uses: actions/checkout@v6
+      - uses: actions/labeler@v6
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
           sync-labels: true

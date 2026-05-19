@@ -12,8 +12,8 @@ jobs:
     name: Scan new dependencies
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Check for vulnerabilities in new dependencies
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v5
         with:
           comment-summary-in-pr: on-failure

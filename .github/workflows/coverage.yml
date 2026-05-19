@@ -13,15 +13,10 @@ jobs:
     name: List packages
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-          cache: npm
+      - name: Clone repository
+        uses: actions/checkout@v6
       - name: Install dependencies
-        run: npm ci
+        uses: ./.github/actions/install
       - name: List packages using Nx CLI
         id: list-packages
         run: |
@@ -38,15 +33,10 @@ jobs:
     name: Collect coverage
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-          cache: npm
+      - name: Clone repository
+        uses: actions/checkout@v6
       - name: Install dependencies
-        run: npm ci
+        uses: ./.github/actions/install
       - name: Execute tests with coverage
         run: npx nx run ${{ matrix.project }}:${{ matrix.target }}
       - name: Upload coverage reports to Codecov
