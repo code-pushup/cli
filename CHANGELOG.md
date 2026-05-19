@@ -1,3 +1,15 @@
+## 0.126.3 (2026-05-19)
+
+### 🩹 Fixes
+
+- **ci:** slugify project name in configPatterns ([59470112](https://github.com/code-pushup/cli/commit/59470112))
+- **plugin-axe-e2e:** update snapshot after axe-core patch ([47eb97ae](https://github.com/code-pushup/cli/commit/47eb97ae))
+
+### ❤️ Thank You
+
+- hanna-skryl
+- Matěj Chalk
+
 ## 0.126.2 (2026-03-31)
 
 ### 🩹 Fixes
