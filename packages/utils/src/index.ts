@@ -16,6 +16,13 @@ export {
 } from './lib/coverage-tree.js';
 export { createRunnerFiles } from './lib/create-runner-files.js';
 export { dateToUnixTimestamp } from './lib/dates.js';
+export { FALLBACK_DEV_SERVER_URL } from './lib/dev-server/default-ports.js';
+export {
+  detectDevServerUrl,
+  detectDevServerUrlWithSource,
+  resetDevServerUrlCache,
+  resolveDevServerUrlPrompt,
+} from './lib/dev-server/detect-dev-server-url.js';
 export { comparePairs, matchArrayItemsByKey, type Diff } from './lib/diff.js';
 export {
   coerceBooleanValue,
