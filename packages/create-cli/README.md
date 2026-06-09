@@ -67,10 +67,10 @@ Each plugin exposes its own configuration keys that can be passed as CLI argumen
 
 #### Lighthouse
 
-| Option                        | Type                                                             | Default                 | Description                     |
-| ----------------------------- | ---------------------------------------------------------------- | ----------------------- | ------------------------------- |
-| **`--lighthouse.urls`**       | `string \| string[]`                                             | `http://localhost:4200` | Target URL(s) (comma-separated) |
-| **`--lighthouse.categories`** | `('performance'` \| `'a11y'` \| `'best-practices'` \| `'seo')[]` | all                     | Categories                      |
+| Option                        | Type                                                             | Default                    | Description                     |
+| ----------------------------- | ---------------------------------------------------------------- | -------------------------- | ------------------------------- |
+| **`--lighthouse.urls`**       | `string \| string[]`                                             | auto-detected from project | Target URL(s) (comma-separated) |
+| **`--lighthouse.categories`** | `('performance'` \| `'a11y'` \| `'best-practices'` \| `'seo')[]` | all                        | Categories                      |
 
 #### JSDocs
 
@@ -81,12 +81,25 @@ Each plugin exposes its own configuration keys that can be passed as CLI argumen
 
 #### Axe
 
-| Option                  | Type                                                         | Default                 | Description                                |
-| ----------------------- | ------------------------------------------------------------ | ----------------------- | ------------------------------------------ |
-| **`--axe.urls`**        | `string \| string[]`                                         | `http://localhost:4200` | Target URL(s) (comma-separated)            |
-| **`--axe.preset`**      | `'wcag21aa'` \| `'wcag22aa'` \| `'best-practice'` \| `'all'` | `wcag21aa`              | Accessibility preset                       |
-| **`--axe.setupScript`** | `boolean`                                                    | `false`                 | Create setup script for auth-protected app |
-| **`--axe.categories`**  | `boolean`                                                    | `true`                  | Add categories                             |
+| Option                  | Type                                                         | Default                    | Description                                |
+| ----------------------- | ------------------------------------------------------------ | -------------------------- | ------------------------------------------ |
+| **`--axe.urls`**        | `string \| string[]`                                         | auto-detected from project | Target URL(s) (comma-separated)            |
+| **`--axe.preset`**      | `'wcag21aa'` \| `'wcag22aa'` \| `'best-practice'` \| `'all'` | `wcag21aa`                 | Accessibility preset                       |
+| **`--axe.setupScript`** | `boolean`                                                    | `false`                    | Create setup script for auth-protected app |
+| **`--axe.categories`**  | `boolean`                                                    | `true`                     | Add categories                             |
+
+#### Dev server URL auto-detection (Axe and Lighthouse)
+
+When Axe or Lighthouse is enabled, the wizard pre-fills the target URL from project files and npm scripts. The prompt shows the detection source when available.
+
+| Signal                   | Default URL                        |
+| ------------------------ | ---------------------------------- |
+| Vite (`vite.config.*`)   | `http://localhost:5173`            |
+| Next.js (`next dev`)     | `http://localhost:3000`            |
+| Angular (`angular.json`) | `http://localhost:4200`            |
+| Unknown / empty project  | `http://localhost:4200` (fallback) |
+
+Detection is heuristic: config files are scanned with regex and are not executed.
 
 ### Examples
 
