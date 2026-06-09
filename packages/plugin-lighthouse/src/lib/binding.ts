@@ -5,8 +5,10 @@ import type {
   PluginSetupBinding,
 } from '@code-pushup/models';
 import {
+  FALLBACK_DEV_SERVER_URL,
   answerArray,
   answerNonEmptyArray,
+  resolveDevServerUrlPrompt,
   singleQuote,
 } from '@code-pushup/utils';
 import {
@@ -19,7 +21,6 @@ const { name: PACKAGE_NAME } = createRequire(import.meta.url)(
   '../../package.json',
 ) as typeof import('../../package.json');
 
-const DEFAULT_URL = 'http://localhost:4200';
 const PLUGIN_VAR = 'lhPlugin';
 
 const CATEGORIES = [
@@ -62,24 +63,26 @@ export const lighthouseSetupBinding = {
   slug: LIGHTHOUSE_PLUGIN_SLUG,
   title: LIGHTHOUSE_PLUGIN_TITLE,
   packageName: PACKAGE_NAME,
-  prompts: async (_targetDir: string) => [
-    {
-      key: 'lighthouse.urls',
-      message: 'Target URL(s) (comma-separated):',
-      type: 'input',
-      default: DEFAULT_URL,
-    },
-    {
-      key: 'lighthouse.categories',
-      message: 'Categories:',
-      type: 'checkbox',
-      choices: CATEGORIES.map(({ slug, title }) => ({
-        name: title,
-        value: slug,
-      })),
-      default: CATEGORIES.map(({ slug }) => slug),
-    },
-  ],
+  prompts: async targetDir => {
+    const urlPrompt = await resolveDevServerUrlPrompt(targetDir);
+    return [
+      {
+        key: 'lighthouse.urls',
+        type: 'input',
+        ...urlPrompt,
+      },
+      {
+        key: 'lighthouse.categories',
+        message: 'Categories:',
+        type: 'checkbox',
+        choices: CATEGORIES.map(({ slug, title }) => ({
+          name: title,
+          value: slug,
+        })),
+        default: CATEGORIES.map(({ slug }) => slug),
+      },
+    ];
+  },
   generateConfig: ({ answers }) => {
     const options = parseAnswers(answers);
     const hasCategories = options.categories.length > 0;
@@ -114,7 +117,11 @@ function parseAnswers(
   answers: Record<string, PluginAnswer>,
 ): LighthouseOptions {
   return {
-    urls: answerNonEmptyArray(answers, 'lighthouse.urls', DEFAULT_URL),
+    urls: answerNonEmptyArray(
+      answers,
+      'lighthouse.urls',
+      FALLBACK_DEV_SERVER_URL,
+    ),
     categories: answerArray(answers, 'lighthouse.categories'),
   };
 }
