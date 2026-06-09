@@ -205,3 +205,10 @@ export function singleQuote(value: string): string {
     .replace(/'/g, String.raw`\'`);
   return `'${inner}'`;
 }
+
+export function formatUrls([first, ...rest]: [string, ...string[]]): string {
+  if (rest.length === 0) {
+    return singleQuote(first);
+  }
+  return `[${[first, ...rest].map(singleQuote).join(', ')}]`;
+}

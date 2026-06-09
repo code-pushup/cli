@@ -8,6 +8,7 @@ import {
   FALLBACK_DEV_SERVER_URL,
   answerArray,
   answerNonEmptyArray,
+  formatUrls,
   resolveDevServerUrlPrompt,
   singleQuote,
 } from '@code-pushup/utils';
@@ -149,11 +150,4 @@ function createCategories({
       refsExpression: `lighthouseGroupRefs(${PLUGIN_VAR}, ${singleQuote(group)})`,
     }),
   );
-}
-
-function formatUrls([first, ...rest]: [string, ...string[]]): string {
-  if (rest.length === 0) {
-    return singleQuote(first);
-  }
-  return `[${[first, ...rest].map(singleQuote).join(', ')}]`;
 }
