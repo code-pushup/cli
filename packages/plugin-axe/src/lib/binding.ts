@@ -5,9 +5,11 @@ import type {
   PluginSetupBinding,
 } from '@code-pushup/models';
 import {
+  FALLBACK_DEV_SERVER_URL,
   answerBoolean,
   answerNonEmptyArray,
   answerString,
+  resolveDevServerUrlPrompt,
   singleQuote,
 } from '@code-pushup/utils';
 import {
@@ -21,7 +23,6 @@ const { name: PACKAGE_NAME } = createRequire(import.meta.url)(
   '../../package.json',
 ) as typeof import('../../package.json');
 
-const DEFAULT_URL = 'http://localhost:4200';
 const PLUGIN_VAR = 'axe';
 const SETUP_SCRIPT_PATH = './axe-setup.ts';
 
@@ -56,33 +57,35 @@ export const axeSetupBinding = {
   slug: AXE_PLUGIN_SLUG,
   title: AXE_PLUGIN_TITLE,
   packageName: PACKAGE_NAME,
-  prompts: async () => [
-    {
-      key: 'axe.urls',
-      message: 'Target URL(s) (comma-separated):',
-      type: 'input',
-      default: DEFAULT_URL,
-    },
-    {
-      key: 'axe.preset',
-      message: 'Accessibility preset:',
-      type: 'select',
-      choices: [...PRESET_CHOICES],
-      default: AXE_DEFAULT_PRESET,
-    },
-    {
-      key: 'axe.setupScript',
-      message: 'Create setup script for auth-protected app?',
-      type: 'confirm',
-      default: false,
-    },
-    {
-      key: 'axe.categories',
-      message: 'Add categories?',
-      type: 'confirm',
-      default: true,
-    },
-  ],
+  prompts: async targetDir => {
+    const urlPrompt = await resolveDevServerUrlPrompt(targetDir);
+    return [
+      {
+        key: 'axe.urls',
+        type: 'input',
+        ...urlPrompt,
+      },
+      {
+        key: 'axe.preset',
+        message: 'Accessibility preset:',
+        type: 'select',
+        choices: [...PRESET_CHOICES],
+        default: AXE_DEFAULT_PRESET,
+      },
+      {
+        key: 'axe.setupScript',
+        message: 'Create setup script for auth-protected app?',
+        type: 'confirm',
+        default: false,
+      },
+      {
+        key: 'axe.categories',
+        message: 'Add categories?',
+        type: 'confirm',
+        default: true,
+      },
+    ];
+  },
   generateConfig: async ({ answers, tree }) => {
     const options = parseAnswers(answers);
     if (options.setupScript) {
@@ -118,7 +121,7 @@ export const axeSetupBinding = {
 
 function parseAnswers(answers: Record<string, PluginAnswer>): AxeOptions {
   return {
-    urls: answerNonEmptyArray(answers, 'axe.urls', DEFAULT_URL),
+    urls: answerNonEmptyArray(answers, 'axe.urls', FALLBACK_DEV_SERVER_URL),
     preset: answerString(answers, 'axe.preset') || AXE_DEFAULT_PRESET,
     setupScript: answerBoolean(answers, 'axe.setupScript'),
     categories: answerBoolean(answers, 'axe.categories'),
