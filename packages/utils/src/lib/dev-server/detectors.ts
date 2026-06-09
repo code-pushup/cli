@@ -168,9 +168,6 @@ const configFileDetector: DevServerDetector = {
 
     for (const file of files) {
       const filePath = path.join(targetDir, file);
-      if (!(await fileExists(filePath))) {
-        continue;
-      }
 
       for (const detector of CONFIG_FILE_DETECTORS) {
         if (!detector.pattern.test(file)) {
@@ -179,7 +176,6 @@ const configFileDetector: DevServerDetector = {
 
         const port =
           (await parsePortFromConfigFile(filePath, {
-            defaultPort: detector.defaultPort,
             sections: [...detector.sections],
           })) ?? detector.defaultPort;
 
@@ -191,7 +187,6 @@ const configFileDetector: DevServerDetector = {
       ) {
         const port =
           (await parsePortFromConfigFile(filePath, {
-            defaultPort: DEV_SERVER_PORTS.vueCli,
             sections: ['devServer'],
           })) ?? DEV_SERVER_PORTS.vueCli;
 

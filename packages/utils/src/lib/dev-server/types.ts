@@ -1,7 +1,7 @@
 export type DevServerDetectionResult = {
   url: string;
   port: number;
-  source: string | null;
+  source: string;
 };
 
 export type DevServerDetector = {

@@ -59,7 +59,7 @@ export async function resolveDevServerUrlPrompt(
   return {
     default: detection.url,
     message:
-      detection.source != null && detection.source !== 'fallback'
+      detection.source !== 'fallback'
         ? `Target URL(s) (detected from ${detection.source}, comma-separated):`
         : 'Target URL(s) (comma-separated):',
   };

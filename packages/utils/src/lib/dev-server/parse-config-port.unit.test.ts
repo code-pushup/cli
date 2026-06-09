@@ -1,4 +1,8 @@
-import { parseLoosePort, parsePortFromSection } from './parse-config-port.js';
+import {
+  parseLoosePort,
+  parsePortFromConfigFile,
+  parsePortFromSection,
+} from './parse-config-port.js';
 
 describe('parsePortFromSection', () => {
   it('should parse port from a named config section', () => {
@@ -20,5 +24,32 @@ describe('parseLoosePort', () => {
     expect(
       parseLoosePort('const port = 1; export default { port: 4321 }'),
     ).toBe(4321);
+  });
+
+  it('should return first port when multiple appear', () => {
+    expect(
+      parseLoosePort('const x = { port: 1234 }; const y = { port: 5678 }'),
+    ).toBe(1234);
+  });
+
+  it('should return null when no port is present', () => {
+    expect(parseLoosePort('export default {}')).toBeNull();
+  });
+});
+
+describe('parsePortFromConfigFile', () => {
+  it('should return null when file does not exist', async () => {
+    await expect(
+      parsePortFromConfigFile('/nonexistent/vite.config.ts'),
+    ).resolves.toBeNull();
+  });
+
+  it('should return null when file has no port', async () => {
+    await expect(
+      parsePortFromConfigFile(
+        new URL('./parse-config-port.unit.test.ts', import.meta.url).pathname,
+        { sections: ['server'] },
+      ),
+    ).resolves.toBeNull();
   });
 });

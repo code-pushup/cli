@@ -18,13 +18,7 @@ export function parseLoosePort(content: string): number | null {
 
 export async function parsePortFromConfigFile(
   filePath: string,
-  {
-    defaultPort,
-    sections = ['server', 'devServer'],
-  }: {
-    defaultPort: number;
-    sections?: string[];
-  },
+  { sections = ['server', 'devServer'] }: { sections?: string[] } = {},
 ): Promise<number | null> {
   try {
     const content = await readTextFile(filePath);
@@ -34,7 +28,7 @@ export async function parsePortFromConfigFile(
         return sectionPort;
       }
     }
-    return parseLoosePort(content) ?? defaultPort;
+    return parseLoosePort(content);
   } catch {
     return null;
   }
