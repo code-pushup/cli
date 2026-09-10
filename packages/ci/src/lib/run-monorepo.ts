@@ -243,10 +243,18 @@ async function compareManyProjects(
   runManyCommand: RunManyCommand,
   env: RunEnv,
 ): Promise<Record<string, ProjectRunResult>> {
+  if (projectsToCompare.length === 0) {
+    logInfo('No projects have previous reports, skipping comparison');
+    return {};
+  }
+
   await Promise.all(projectsToCompare.map(prepareReportFilesToCompare));
 
+  const onlyProjects = projectsToCompare.map(({ project }) => project.name);
+  logInfo(`Comparing reports for ${onlyProjects.length} projects`);
   await compareMany(runManyCommand, env, {
     hasFormats: allProjectsHaveDefaultPersistFormats(projectsToCompare),
+    onlyProjects,
   });
 
   const projectsNewIssues = env.settings.detectNewIssues
@@ -385,19 +393,23 @@ async function compareMany(
   env: RunEnv,
   options: {
     hasFormats: boolean;
+    onlyProjects: string[];
   },
 ): Promise<void> {
   const { settings } = env;
-  const { hasFormats } = options;
+  const { hasFormats, onlyProjects } = options;
 
+  const command = await runManyCommand(onlyProjects);
   const ctx: CommandContext = {
     ...createCommandContext(settings, null),
-    bin: await runManyCommand(),
+    bin: command,
   };
 
   await runCompare(ctx, { hasFormats });
 
-  logDebug('Compared all project reports');
+  logDebug(
+    `Compared ${onlyProjects.length} project reports using command \`${command}\``,
+  );
 }
 
 export function allProjectsHaveDefaultPersistFormats(

@@ -3,6 +3,7 @@ import {
   cp,
   mkdir,
   readFile,
+  readdir,
   rename,
   writeFile,
 } from 'node:fs/promises';
@@ -89,6 +90,29 @@ function simulateDownloadReportFromPortal() {
   return utils.readJsonFile<ReportFragment>(fixturePaths.reports.before.portal);
 }
 
+// a project only exists in branches where its manifest file is checked out
+async function isProjectCheckedOut(projectDir: string): Promise<boolean> {
+  if (projectDir === workDir) {
+    return true;
+  }
+  const manifests = await Promise.all(
+    ['package.json', 'project.json'].map(manifest =>
+      utils.fileExists(path.join(projectDir, manifest)),
+    ),
+  );
+  return manifests.includes(true);
+}
+
+function parseProjectFilters(command: string): string[] {
+  const projects = command.match(/--projects=(\S+)/)?.[1];
+  if (projects) {
+    return projects.split(',');
+  }
+  return (command.match(/--(?:filter|include)=\S+/g) ?? []).map(
+    arg => arg.split('=')[1] ?? '',
+  );
+}
+
 describe('runInCI', () => {
   const options = {
     bin: 'npx code-pushup',
@@ -121,15 +145,28 @@ describe('runInCI', () => {
     args,
     cwd,
   }: utils.ProcessConfig): Promise<utils.ProcessResult> {
-    const nxMatch = command.match(/nx run (\w+):code-pushup/);
-    const outputDir = nxMatch
-      ? path.join(workDir, `packages/${nxMatch[1]}/.code-pushup`)
-      : path.join(cwd as string, '.code-pushup');
+    const nxMatch = command.match(/nx run ([\w-]+):code-pushup/);
+    const projectDir = nxMatch
+      ? path.join(workDir, 'packages', nxMatch[1] ?? '')
+      : (cwd as string);
+    if (!(await isProjectCheckedOut(projectDir))) {
+      // simulates failure for project which doesn't exist in checked out branch
+      throw new Error(`Project not found in ${projectDir}`);
+    }
+
+    const outputDir = path.join(projectDir, '.code-pushup');
     await mkdir(outputDir, { recursive: true });
     let stdout = '';
 
     const isBulkCommand = /workspaces|concurrency|parallel/.test(command);
-    const projectOutputDirs = ['cli', 'core', 'utils'].map(project =>
+    const filteredProjects = parseProjectFilters(command);
+    const bulkProjects = isBulkCommand
+      ? filteredProjects.length > 0
+        ? filteredProjects
+        : // no filters in command means all projects in checked out branch
+          await readdir(path.join(workDir, 'packages'))
+      : [];
+    const projectOutputDirs = bulkProjects.map(project =>
       path.join(workDir, `packages/${project}/.code-pushup`),
     );
 
@@ -603,6 +640,7 @@ describe('runInCI', () => {
     tool: MonorepoTool;
     run: string;
     runMany: string;
+    runManyFiltered: string;
     persistOutputDir: string;
     setup?: () => void;
   }>([
@@ -614,6 +652,8 @@ describe('runInCI', () => {
       ),
       runMany:
         'npx nx run-many --targets=code-pushup --parallel=false --projects=cli,core,utils --',
+      runManyFiltered:
+        'npx nx run-many --targets=code-pushup --parallel=false --projects=cli,core,utils --',
       persistOutputDir: 'packages/{projectName}/.code-pushup',
     },
     {
@@ -621,6 +661,8 @@ describe('runInCI', () => {
       tool: 'turbo',
       run: 'npx turbo run code-pushup --',
       runMany: 'npx turbo run code-pushup --concurrency=1 --',
+      runManyFiltered:
+        'npx turbo run code-pushup --filter=cli --filter=core --filter=utils --concurrency=1 --',
       persistOutputDir: '.code-pushup',
     },
     {
@@ -628,6 +670,8 @@ describe('runInCI', () => {
       tool: 'pnpm',
       run: 'pnpm run code-pushup',
       runMany: 'pnpm --recursive --workspace-concurrency=1 code-pushup',
+      runManyFiltered:
+        'pnpm --recursive --workspace-concurrency=1 --filter=cli --filter=core --filter=utils code-pushup',
       persistOutputDir: '.code-pushup',
     },
     {
@@ -635,6 +679,8 @@ describe('runInCI', () => {
       tool: 'yarn',
       run: 'yarn run code-pushup',
       runMany: 'yarn workspaces foreach --all code-pushup',
+      runManyFiltered:
+        'yarn workspaces foreach --include=cli --include=core --include=utils code-pushup',
       persistOutputDir: '.code-pushup',
       setup: () => {
         yarnVersion = '2.0.0';
@@ -645,6 +691,7 @@ describe('runInCI', () => {
       tool: 'yarn',
       run: 'yarn run code-pushup',
       runMany: 'yarn workspaces run code-pushup',
+      runManyFiltered: 'yarn workspaces run code-pushup',
       persistOutputDir: '.code-pushup',
       setup: () => {
         yarnVersion = '1.0.0';
@@ -655,11 +702,12 @@ describe('runInCI', () => {
       tool: 'npm',
       run: 'npm run code-pushup --',
       runMany: 'npm run code-pushup --workspaces --if-present --',
+      runManyFiltered: 'npm run code-pushup --workspaces --if-present --',
       persistOutputDir: '.code-pushup',
     },
   ])(
     'monorepo mode - $name',
-    ({ tool, run, runMany, persistOutputDir, setup }) => {
+    ({ tool, run, runMany, runManyFiltered, persistOutputDir, setup }) => {
       beforeEach(async () => {
         const monorepoDir = path.join(fixturesDir, 'monorepos', tool);
         await cp(monorepoDir, workDir, { recursive: true });
@@ -980,7 +1028,7 @@ describe('runInCI', () => {
             silent: true,
           } satisfies utils.ProcessConfig);
           expect(utils.executeProcess).toHaveBeenCalledWith({
-            command: runMany,
+            command: runManyFiltered,
             args: ['compare'],
             cwd: expect.stringContaining(workDir),
             observer: expect.any(Object),
@@ -1011,6 +1059,86 @@ describe('runInCI', () => {
           expect(logger.warn).not.toHaveBeenCalled();
           expect(logger.info).toHaveBeenCalled();
           expect(logger.debug).toHaveBeenCalled();
+        });
+
+        it("should skip project which doesn't exist in base branch", async () => {
+          const api: ProviderAPIClient = {
+            maxCommentChars: 1_000_000,
+            createComment: vi.fn().mockResolvedValue(mockComment),
+            updateComment: vi.fn(),
+            listComments: vi.fn().mockResolvedValue([]),
+          };
+
+          const newProjectDir = path.join(workDir, 'packages', 'newlib');
+          await mkdir(newProjectDir, { recursive: true });
+          await writeFile(
+            path.join(newProjectDir, 'package.json'),
+            JSON.stringify({
+              name: 'newlib',
+              scripts: { 'code-pushup': 'code-pushup' },
+            }),
+          );
+          await writeFile(
+            path.join(newProjectDir, 'project.json'),
+            JSON.stringify({
+              name: 'newlib',
+              targets: {
+                'code-pushup': {
+                  command:
+                    'npx code-pushup --persist.outputDir=packages/newlib/.code-pushup',
+                },
+              },
+            }),
+          );
+          await git.add('packages/newlib');
+          await git.commit('Create newlib package');
+
+          await expect(
+            runInCI(refs, api, { ...options, monorepo: tool }, git),
+          ).resolves.toEqual({
+            mode: 'monorepo',
+            commentId: mockComment.id,
+            files: {
+              comparison: {
+                md: path.join(outputDir, '.comparison/report-diff.md'),
+              },
+            },
+            projects: [
+              expect.objectContaining({ name: 'cli' }),
+              expect.objectContaining({ name: 'core' }),
+              {
+                // no comparison for project missing in base branch
+                name: 'newlib',
+                files: {
+                  current: {
+                    json: path.join(outputDir, 'newlib/.current/report.json'),
+                    md: path.join(outputDir, 'newlib/.current/report.md'),
+                  },
+                },
+              },
+              expect.objectContaining({ name: 'utils' }),
+            ],
+          } satisfies RunResult);
+
+          expect(utils.executeProcess).toHaveBeenCalledWith({
+            command: runManyFiltered,
+            args: ['compare'],
+            cwd: expect.stringContaining(workDir),
+            observer: expect.any(Object),
+            silent: true,
+          } satisfies utils.ProcessConfig);
+          expect(utils.executeProcess).not.toHaveBeenCalledWith(
+            expect.objectContaining({
+              command: expect.stringContaining('newlib'),
+              args: ['compare'],
+            }),
+          );
+
+          expect(logger.info).toHaveBeenCalledWith(
+            expect.stringContaining(
+              "Skipping 1 projects which aren't configured in base branch main",
+            ),
+          );
         });
 
         it('should skip print-config for source and target branches if configPatterns provided', async () => {
@@ -1084,7 +1212,7 @@ describe('runInCI', () => {
             silent: true,
           } satisfies utils.ProcessConfig);
           expect(utils.executeProcess).toHaveBeenCalledWith({
-            command: runMany,
+            command: runManyFiltered,
             args: ['compare'],
             cwd: expect.stringContaining(workDir),
             observer: expect.any(Object),
@@ -1167,7 +1295,7 @@ describe('runInCI', () => {
             silent: true,
           } satisfies utils.ProcessConfig);
           expect(utils.executeProcess).toHaveBeenCalledWith({
-            command: runMany,
+            command: runManyFiltered,
             args: expect.arrayContaining(['compare']),
             cwd: expect.stringContaining(workDir),
             observer: expect.any(Object),
