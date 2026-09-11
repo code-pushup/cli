@@ -1,3 +1,14 @@
+## 0.126.4 (2026-09-11)
+
+### 🩹 Fixes
+
+- **ci:** exclude projects without previous report from bulk compare ([1fa12a59](https://github.com/code-pushup/cli/commit/1fa12a59))
+
+### ❤️ Thank You
+
+- Claude Opus 5
+- Matěj Chalk
+
 ## 0.126.3 (2026-05-19)
 
 ### 🩹 Fixes
