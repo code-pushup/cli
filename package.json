@@ -15,7 +15,8 @@
   "scripts": {
     "prepare": "husky install",
     "commit": "git-cz",
-    "knip": "knip"
+    "knip": "knip",
+    "nx": "NODE_OPTIONS='--import tsx' tsx --tsconfig=tsconfig.base.json ./node_modules/.bin/nx"
   },
   "private": true,
   "dependencies": {
