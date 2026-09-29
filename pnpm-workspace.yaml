@@ -1,0 +1,18 @@
+minimumReleaseAge: 10080 # 7 days
+
+trustPolicy: no-downgrade
+trustPolicyIgnoreAfter: 129600 # 90 days
+
+strictPeerDependencies: true
+
+blockExoticSubdeps: true
+
+resolutionMode: time-based
+
+allowBuilds:
+  '@swc/core': true
+  chromium: true
+  esbuild: true
+  nice-napi: true
+  nx: true
+  unrs-resolver: true

@@ -15,19 +15,14 @@ jobs:
     runs-on: ubuntu-latest
     name: Format check
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Clone repository
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-          cache: npm
       - name: Set base and head for Nx affected commands
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@v5
       - name: Install dependencies
-        run: npm ci
+        uses: ./.github/actions/install
       - name: Check formatting of affected files
         run: npx nx format:check
 
@@ -35,19 +30,14 @@ jobs:
     runs-on: ubuntu-latest
     name: Linter
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Clone repository
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-          cache: npm
       - name: Set base and head for Nx affected commands
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@v5
       - name: Install dependencies
-        run: npm ci
+        uses: ./.github/actions/install
       - name: Lint affected projects
         run: npx nx affected -t lint --parallel=3
 
@@ -59,19 +49,14 @@ jobs:
     name: Unit tests
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Clone repository
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-          cache: npm
       - name: Set base and head for Nx affected commands
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@v5
       - name: Install dependencies
-        run: npm ci
+        uses: ./.github/actions/install
       - name: Unit test affected projects
         run: npx nx affected -t unit-test --parallel=3
 
@@ -83,19 +68,14 @@ jobs:
     name: Integration tests
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Clone repository
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-          cache: npm
       - name: Set base and head for Nx affected commands
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@v5
       - name: Install dependencies
-        run: npm ci
+        uses: ./.github/actions/install
       - name: Integration test affected projects
         run: npx nx affected -t int-test --parallel=3
 
@@ -107,19 +87,14 @@ jobs:
     name: E2E tests
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Clone repository
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-          cache: npm
       - name: Set base and head for Nx affected commands
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@v5
       - name: Install dependencies
-        run: npm ci
+        uses: ./.github/actions/install
       - name: E2E test affected projects
         run: npx nx affected -t e2e-test --parallel=1
 
@@ -127,19 +102,14 @@ jobs:
     runs-on: ubuntu-latest
     name: Build
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Clone repository
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-          cache: npm
       - name: Set base and head for Nx affected commands
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@v5
       - name: Install dependencies
-        run: npm ci
+        uses: ./.github/actions/install
       - name: Build all projects # affected is not used to be able to test-releae packages
         run: npx nx run-many --target=build --parallel=3
       - name: Test-release packages
