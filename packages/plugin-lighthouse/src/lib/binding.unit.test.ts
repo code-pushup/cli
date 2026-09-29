@@ -1,5 +1,7 @@
+import { vol } from 'memfs';
 import type { PluginAnswer } from '@code-pushup/models';
-import { createMockCodegenInput } from '@code-pushup/test-utils';
+import { MEMFS_VOLUME, createMockCodegenInput } from '@code-pushup/test-utils';
+import { resetDevServerUrlCache } from '@code-pushup/utils';
 import { lighthouseSetupBinding as binding } from './binding.js';
 
 const defaultAnswers: Record<string, PluginAnswer> = {
@@ -13,15 +15,54 @@ const noCategoryAnswers: Record<string, PluginAnswer> = {
 };
 
 describe('lighthouseSetupBinding', () => {
+  beforeEach(() => {
+    vol.reset();
+    resetDevServerUrlCache();
+  });
+
   describe('prompts', () => {
     it('should select all categories by default', async () => {
-      await expect(binding.prompts!('')).resolves.toIncludeAllPartialMembers([
+      vol.fromJSON({ '.gitkeep': '' }, MEMFS_VOLUME);
+
+      await expect(
+        binding.prompts!(MEMFS_VOLUME),
+      ).resolves.toIncludeAllPartialMembers([
         {
           key: 'lighthouse.categories',
           type: 'checkbox',
           default: ['performance', 'a11y', 'best-practices', 'seo'],
         },
       ]);
+    });
+
+    it('should fall back to localhost:4200 when no dev server config is found', async () => {
+      vol.fromJSON({ '.gitkeep': '' }, MEMFS_VOLUME);
+
+      await expect(binding.prompts!(MEMFS_VOLUME)).resolves.toContainEqual(
+        expect.objectContaining({
+          key: 'lighthouse.urls',
+          default: 'http://localhost:4200',
+          message: 'Target URL(s) (comma-separated):',
+        }),
+      );
+    });
+
+    it('should detect Next.js default URL from package.json dev script', async () => {
+      vol.fromJSON(
+        {
+          'package.json': JSON.stringify({ scripts: { dev: 'next dev' } }),
+        },
+        MEMFS_VOLUME,
+      );
+
+      await expect(binding.prompts!(MEMFS_VOLUME)).resolves.toContainEqual(
+        expect.objectContaining({
+          key: 'lighthouse.urls',
+          default: 'http://localhost:3000',
+          message:
+            'Target URL(s) (detected from package.json dev script, comma-separated):',
+        }),
+      );
     });
   });
 

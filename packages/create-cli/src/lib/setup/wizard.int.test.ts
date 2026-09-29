@@ -1,5 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { axeSetupBinding } from '@code-pushup/axe-plugin';
 import { eslintSetupBinding } from '@code-pushup/eslint-plugin';
 import { cleanTestFolder } from '@code-pushup/test-utils';
 import { getGitRoot } from '@code-pushup/utils';
@@ -289,5 +290,28 @@ describe('runSetupWizard', () => {
       } satisfies CoreConfig;
       "
     `);
+  });
+
+  it('should detect Vite dev server URL for Axe plugin setup', async () => {
+    await writeFile(
+      path.join(outputDir, 'vite.config.js'),
+      'export default { plugins: [] }',
+    );
+    await writeFile(
+      path.join(outputDir, 'package.json'),
+      JSON.stringify({ type: 'module' }),
+    );
+
+    await runSetupWizard([axeSetupBinding], {
+      yes: true,
+      plugins: ['axe'],
+      'config-format': 'js',
+      'target-dir': outputDir,
+      'axe.categories': false,
+    });
+
+    await expect(
+      readFile(path.join(outputDir, 'code-pushup.config.js'), 'utf8'),
+    ).resolves.toContain("axePlugin('http://localhost:5173')");
   });
 });

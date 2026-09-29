@@ -7,6 +7,7 @@ import {
   formatAsciiTable,
   getGitRoot,
   logger,
+  resetDevServerUrlCache,
   toUnixPath,
 } from '@code-pushup/utils';
 import { promptCiProvider, resolveCi } from './ci.js';
@@ -47,6 +48,7 @@ export async function runSetupWizard(
   bindings: PluginSetupBinding[],
   cliArgs: CliArgs,
 ): Promise<void> {
+  resetDevServerUrlCache();
   const targetDir = cliArgs['target-dir'] ?? process.cwd();
 
   const context = await promptSetupMode(targetDir, cliArgs);
